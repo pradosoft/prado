@@ -18,12 +18,12 @@ use Prado\TPropertyValue;
  * TModuleView class.
  *
  * TModuleView disables its children controls when a module is not present.  In their
- * place the optional {@see getNotFoundTemplate NotFoundTemplate} is instantiated.
+ * place the optional {@see getFallbackTemplate FallbackTemplate} is instantiated.
  *
  * Properties:
  * - <b>ModuleId</b>, string — the application module ID to check the presence of.
  * - <b>Condition</b>, bool — the condition to display module specific children controls.
- * - <b>NotFoundTemplate</b>, ITemplate — template rendered when the module is absent.
+ * - <b>FallbackTemplate</b>, ITemplate — template rendered when the module is absent.
  *
  * By leaving out the ModuleId, it becomes like a {@see TConditional}, except this
  * does not create the children when the condition is not met.
@@ -39,7 +39,7 @@ class TModuleView extends TCompositeControl
 	private $_condition = '';
 
 	/** @var ?ITemplate Template rendered when the module is not found. */
-	private $_notfoundtemplate;
+	private $_fallbacktemplate;
 
 	/**
 	 * Creates child controls.
@@ -51,8 +51,8 @@ class TModuleView extends TCompositeControl
 	{
 		if (!$this->getIsActive()) {
 			$this->getControls()->clear();
-			if ($this->_notfoundtemplate) {
-				$this->_notfoundtemplate->instantiateIn($this);
+			if ($this->_fallbacktemplate) {
+				$this->_fallbacktemplate->instantiateIn($this);
 			}
 		}
 		parent::createChildControls();
@@ -71,7 +71,7 @@ class TModuleView extends TCompositeControl
 	/**
 	 * Whether or not the control is active with the module and the condition expression
 	 * evaluating to true.
-	 * @return bool is the Module View active otherwise the NotFoundTemplate is showing.
+	 * @return bool is the Module View active otherwise the FallbackTemplate is showing.
 	 */
 	public function getIsActive(): bool
 	{
@@ -179,17 +179,17 @@ class TModuleView extends TCompositeControl
 	/**
 	 * @return ?ITemplate the template rendered when the module is not found
 	 */
-	public function getNotFoundTemplate()
+	public function getFallbackTemplate()
 	{
-		return $this->_notfoundtemplate;
+		return $this->_fallbacktemplate;
 	}
 
 	/**
 	 * @param ITemplate $template the template rendered when the module is not found
 	 */
-	public function setNotFoundTemplate($template)
+	public function setFallbackTemplate($template)
 	{
-		$this->_notfoundtemplate = $template;
+		$this->_fallbacktemplate = $template;
 	}
 
 	//  --- TControl Overrides

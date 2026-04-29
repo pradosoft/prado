@@ -117,27 +117,27 @@ class TModuleViewTest extends TestCase
 		$this->assertFalse($control->getAllowChildControls());
 	}
 
-	public function testNotFoundTemplateDefaultNull()
+	public function testFallbackTemplateDefaultNull()
 	{
 		$control = new TModuleView();
-		$this->assertNull($control->getNotFoundTemplate());
+		$this->assertNull($control->getFallbackTemplate());
 	}
 
-	public function testSetNotFoundTemplate()
+	public function testSetFallbackTemplate()
 	{
 		$control = new TModuleView();
 		$template = $this->createMock(\Prado\Web\UI\ITemplate::class);
-		$control->setNotFoundTemplate($template);
-		$this->assertSame($template, $control->getNotFoundTemplate());
+		$control->setFallbackTemplate($template);
+		$this->assertSame($template, $control->getFallbackTemplate());
 	}
 
-	public function testSetNotFoundTemplateNull()
+	public function testSetFallbackTemplateNull()
 	{
 		$control = new TModuleView();
 		$template = $this->createMock(\Prado\Web\UI\ITemplate::class);
-		$control->setNotFoundTemplate($template);
-		$control->setNotFoundTemplate(null);
-		$this->assertNull($control->getNotFoundTemplate());
+		$control->setFallbackTemplate($template);
+		$control->setFallbackTemplate(null);
+		$this->assertNull($control->getFallbackTemplate());
 	}
 
 	public function testConditionDefaultTrue()
@@ -222,7 +222,7 @@ class TModuleViewTest extends TestCase
 		$this->assertFalse($control->getIsActive());
 	}
 
-	public function testCreateChildControlsClearsControlsWhenInactive_NoNotFoundTemplate()
+	public function testCreateChildControlsClearsControlsWhenInactive_NoFallbackTemplate()
 	{
 		$moduleView = new TModuleView();
 		$moduleView->setID('ModuleView1');
@@ -254,14 +254,14 @@ class TModuleViewTest extends TestCase
 		$this->assertTrue($moduleView->getControls()->contains($childLabel));
 	}
 
-	public function testNotFoundTemplateInstantiatedWhenInactive()
+	public function testFallbackTemplateInstantiatedWhenInactive()
 	{
 		$moduleView = new TModuleView();
 		$moduleView->setID('ModuleView3');
 		$moduleView->setModuleId('test-module-l');
 		$moduleView->setCondition('false');
 		$notFoundTpl = $this->newTemplate('<com:TLabel ID="NotFoundLabel" />');
-		$moduleView->setNotFoundTemplate($notFoundTpl);
+		$moduleView->setFallbackTemplate($notFoundTpl);
 		$childLabel = new TLabel();
 		$childLabel->setID('ChildLabel');
 		$moduleView->getControls()->add($childLabel);
@@ -274,14 +274,14 @@ class TModuleViewTest extends TestCase
 		$this->assertNull($moduleView->findControl('ChildLabel'));
 	}
 
-	public function testNotFoundTemplateNotUsedWhenActive()
+	public function testFallbackTemplateNotUsedWhenActive()
 	{
 		$moduleView = new TModuleView();
 		$moduleView->setID('ModuleView4');
 		$moduleView->setModuleId('test-module-m');
 		$moduleView->setCondition('true');
 		$notFoundTpl = $this->newTemplate('<com:TLabel ID="NotFoundLabel" />');
-		$moduleView->setNotFoundTemplate($notFoundTpl);
+		$moduleView->setFallbackTemplate($notFoundTpl);
 		$childLabel = new TLabel();
 		$childLabel->setID('ChildLabel');
 		$moduleView->getControls()->add($childLabel);
@@ -294,14 +294,14 @@ class TModuleViewTest extends TestCase
 		$this->assertNull($moduleView->findControl('NotFoundLabel'));
 	}
 
-	public function testModulePresentConditionFalse_NotFoundTemplate()
+	public function testModulePresentConditionFalse_FallbackTemplate()
 	{
 		$moduleView = new TModuleView();
 		$moduleView->setID('ModuleView5');
 		$moduleView->setModuleId('test-module-n');
 		$moduleView->setCondition('false');
 		$notFoundTpl = $this->newTemplate('<com:TLabel ID="NotFoundLabel" />');
-		$moduleView->setNotFoundTemplate($notFoundTpl);
+		$moduleView->setFallbackTemplate($notFoundTpl);
 		$this->_page->getControls()->add($moduleView);
 		$this->setupModuleView($moduleView);
 		$this->setModuleAvailable('test-module-n', true);
@@ -311,14 +311,14 @@ class TModuleViewTest extends TestCase
 		$this->assertEquals(1, $moduleView->getControls()->count());
 	}
 
-	public function testModuleNotPresentConditionTrue_NotFoundTemplate()
+	public function testModuleNotPresentConditionTrue_FallbackTemplate()
 	{
 		$moduleView = new TModuleView();
 		$moduleView->setID('ModuleView6');
 		$moduleView->setModuleId('test-module-o');
 		$moduleView->setCondition('true');
 		$notFoundTpl = $this->newTemplate('<com:TLabel ID="NotFoundLabel" />');
-		$moduleView->setNotFoundTemplate($notFoundTpl);
+		$moduleView->setFallbackTemplate($notFoundTpl);
 		$moduleView->getControls()->add(new TLabel());
 		$this->_page->getControls()->add($moduleView);
 		$this->setupModuleView($moduleView);
@@ -329,14 +329,14 @@ class TModuleViewTest extends TestCase
 		$this->assertNull($moduleView->findControl('ChildLabel'));
 	}
 
-	public function testModuleNotPresentConditionFalse_NotFoundTemplate()
+	public function testModuleNotPresentConditionFalse_FallbackTemplate()
 	{
 		$moduleView = new TModuleView();
 		$moduleView->setID('ModuleView7');
 		$moduleView->setModuleId('test-module-p');
 		$moduleView->setCondition('false');
 		$notFoundTpl = $this->newTemplate('<com:TLabel ID="NotFoundLabel" />');
-		$moduleView->setNotFoundTemplate($notFoundTpl);
+		$moduleView->setFallbackTemplate($notFoundTpl);
 		$moduleView->getControls()->add(new TLabel());
 		$this->_page->getControls()->add($moduleView);
 		$this->setupModuleView($moduleView);
@@ -347,14 +347,14 @@ class TModuleViewTest extends TestCase
 		$this->assertNull($moduleView->findControl('ChildLabel'));
 	}
 
-	public function testClearControlsHappensBeforeNotFoundTemplate()
+	public function testClearControlsHappensBeforeFallbackTemplate()
 	{
 		$moduleView = new TModuleView();
 		$moduleView->setID('ModuleView8');
 		$moduleView->setModuleId('test-module-q');
 		$moduleView->setCondition('false');
 		$notFoundTpl = $this->newTemplate('<com:TLabel ID="NotFoundLabel1" /><com:TLabel ID="NotFoundLabel2" />');
-		$moduleView->setNotFoundTemplate($notFoundTpl);
+		$moduleView->setFallbackTemplate($notFoundTpl);
 		$moduleView->getControls()->add(new TLabel());
 		$this->_page->getControls()->add($moduleView);
 		$this->setupModuleView($moduleView);
@@ -388,7 +388,7 @@ class TModuleViewTest extends TestCase
 		$moduleView->setModuleId('test-module-r');
 		$moduleView->setCondition('1 == 0');
 		$notFoundTpl = $this->newTemplate('<com:TLabel ID="NotFoundLabel" />');
-		$moduleView->setNotFoundTemplate($notFoundTpl);
+		$moduleView->setFallbackTemplate($notFoundTpl);
 		$childLabel = new TLabel();
 		$childLabel->setID('ChildLabel');
 		$moduleView->getControls()->add($childLabel);
@@ -408,7 +408,7 @@ class TModuleViewTest extends TestCase
 		$moduleView->setModuleId('test-module-s');
 		$moduleView->setCondition('1 == 1');
 		$notFoundTpl = $this->newTemplate('<com:TLabel ID="NotFoundLabel" />');
-		$moduleView->setNotFoundTemplate($notFoundTpl);
+		$moduleView->setFallbackTemplate($notFoundTpl);
 		$childLabel = new TLabel();
 		$childLabel->setID('ChildLabel');
 		$moduleView->getControls()->add($childLabel);
@@ -451,7 +451,7 @@ class TModuleViewTest extends TestCase
 		$moduleView->setModuleId('test-module-v');
 		$moduleView->setCondition('false');
 		$notFoundTpl = $this->newTemplate('<com:TLabel ID="NotFoundLabel" />');
-		$moduleView->setNotFoundTemplate($notFoundTpl);
+		$moduleView->setFallbackTemplate($notFoundTpl);
 		$this->_page->getControls()->add($moduleView);
 		$this->setupModuleView($moduleView);
 		$this->setModuleAvailable('test-module-v', true);
@@ -467,7 +467,7 @@ class TModuleViewTest extends TestCase
 		$moduleView->setModuleId('test-module-w');
 		$moduleView->setCondition('true');
 		$notFoundTpl = $this->newTemplate('<com:TLabel ID="NotFoundLabel" />');
-		$moduleView->setNotFoundTemplate($notFoundTpl);
+		$moduleView->setFallbackTemplate($notFoundTpl);
 		$childLabel = new TLabel();
 		$childLabel->setID('ChildLabel');
 		$moduleView->getControls()->add($childLabel);
@@ -504,7 +504,7 @@ class TModuleViewTest extends TestCase
 		$this->assertNotNull($moduleView->findControl('ChildLabel'));
 	}
 
-	public function testTemplate_ModulePresentConditionFalse_NotFoundTemplate()
+	public function testTemplate_ModulePresentConditionFalse_FallbackTemplate()
 	{
 		$this->setModuleAvailable('test-tpl-module-2', true);
 		$template = '<com:TModuleView ID="MV2" ModuleId="test-tpl-module-2" Condition="false">
@@ -520,7 +520,7 @@ class TModuleViewTest extends TestCase
 		$this->assertNotNull($page->findControl('NotFoundLabel'));
 	}
 
-	public function testTemplate_ModuleNotPresentConditionTrue_NotFoundTemplate()
+	public function testTemplate_ModuleNotPresentConditionTrue_FallbackTemplate()
 	{
 		$this->setModuleAvailable('test-tpl-module-3', false);
 		$template = '<com:TModuleView ID="MV3" ModuleId="test-tpl-module-3" Condition="true">
@@ -536,7 +536,7 @@ class TModuleViewTest extends TestCase
 		$this->assertNotNull($page->findControl('NotFoundLabel'));
 	}
 
-	public function testTemplate_ModuleNotPresentConditionFalse_NotFoundTemplate()
+	public function testTemplate_ModuleNotPresentConditionFalse_FallbackTemplate()
 	{
 		$this->setModuleAvailable('test-tpl-module-4', false);
 		$template = '<com:TModuleView ID="MV4" ModuleId="test-tpl-module-4" Condition="false">
@@ -562,7 +562,7 @@ class TModuleViewTest extends TestCase
 		$this->assertEquals(0, $moduleView->getControls()->count());
 	}
 
-	public function testTemplate_ModuleNotPresentConditionTrue_NoChildren_NoNotFoundTemplate()
+	public function testTemplate_ModuleNotPresentConditionTrue_NoChildren_NoFallbackTemplate()
 	{
 		$this->setModuleAvailable('test-tpl-module-6', false);
 		$template = '<com:TModuleView ID="MV6" ModuleId="test-tpl-module-6" Condition="true">
@@ -574,7 +574,7 @@ class TModuleViewTest extends TestCase
 		$this->assertNull($moduleView->findControl('ChildLabel'));
 	}
 
-	public function testTemplate_ModulePresentConditionFalse_NoNotFoundTemplate()
+	public function testTemplate_ModulePresentConditionFalse_NoFallbackTemplate()
 	{
 		$this->setModuleAvailable('test-tpl-module-7', true);
 		$template = '<com:TModuleView ID="MV7" ModuleId="test-tpl-module-7" Condition="false">
@@ -589,7 +589,7 @@ class TModuleViewTest extends TestCase
 		$this->assertEquals(0, $moduleView->getControls()->count());
 	}
 
-	public function testTemplate_ModuleNotPresentConditionFalse_NoNotFoundTemplate()
+	public function testTemplate_ModuleNotPresentConditionFalse_NoFallbackTemplate()
 	{
 		$this->setModuleAvailable('test-tpl-module-8', false);
 		$template = '<com:TModuleView ID="MV8" ModuleId="test-tpl-module-8" Condition="false">
