@@ -1433,7 +1433,7 @@ class TTarFileExtractor
 	{
 		return $this->getManifestValue($path, 'tarpath');
 	}
-	
+
 	/**
 	 * Returns the normalised POSIX path (`tarpath_norm`) for the given archive entry.
 	 *
@@ -1450,7 +1450,7 @@ class TTarFileExtractor
 	{
 		return $this->getManifestValue($path, 'tarpath_norm');
 	}
-	
+
 	/**
 	 * Returns the raw POSIX link target (`tarlink`) for the given archive entry, exactly
 	 * as stored in the tar header.
@@ -1467,7 +1467,7 @@ class TTarFileExtractor
 	{
 		return $this->getManifestValue($path, 'tarlink');
 	}
-	
+
 	/**
 	 * Returns the normalised POSIX link target (`tarlink_norm`) for the given archive entry.
 	 *
@@ -1484,7 +1484,7 @@ class TTarFileExtractor
 	{
 		return $this->getManifestValue($path, 'tarlink_norm');
 	}
-	
+
 	/**
 	 * Returns the OS-native path (`filepath`) for the given archive entry.
 	 *
@@ -1502,7 +1502,7 @@ class TTarFileExtractor
 	{
 		return $this->getManifestValue($path, 'filepath');
 	}
-	
+
 	/**
 	 * Returns the normalised OS-native path (`filepath_norm`) for the given archive entry.
 	 *
@@ -1519,7 +1519,7 @@ class TTarFileExtractor
 	{
 		return $this->getManifestValue($path, 'filepath_norm');
 	}
-	
+
 	/**
 	 * Returns the OS-native link target (`linkpath`) for the given archive entry.
 	 *
@@ -1536,7 +1536,7 @@ class TTarFileExtractor
 	{
 		return $this->getManifestValue($path, 'linkpath');
 	}
-	
+
 	/**
 	 * Returns the normalised OS-native link target (`linkpath_norm`) for the given archive entry.
 	 *
@@ -1744,7 +1744,7 @@ class TTarFileExtractor
 		}
 		return $typeflag === self::TYPE_SYMLINK;
 	}
-	
+
 	/**
 	 * Returns whether the given archive entry is a device or FIFO special file.
 	 * Returns null if the path is not found.
@@ -2128,11 +2128,11 @@ class TTarFileExtractor
 				// $p_remove_path_prefix is POSIX; compare against tarlink (raw POSIX),
 				// then strip the same byte-length from linkpath (safe 1:1 mapping).
 				if ($p_remove_path_prefix && str_starts_with($v_header['tarlink'], $p_remove_path_prefix)) {
-					$v_header['tarlink'] 		= substr($v_header['tarlink'], $p_remove_path_prefix_length);
-					$v_header['tarlink_norm']	= substr($v_header['tarlink_norm'], $p_remove_path_prefix_length);
-					$v_header['linkpath']		= substr($v_header['linkpath'], $p_remove_path_prefix_length);
-					$v_header['linkpath_norm']	= substr($v_header['linkpath_norm'], $p_remove_path_prefix_length);
-					$v_header['linksafe']		= $this->_isRelativePathSafe($v_header['tarlink_norm']);
+					$v_header['tarlink'] = substr($v_header['tarlink'], $p_remove_path_prefix_length);
+					$v_header['tarlink_norm'] = substr($v_header['tarlink_norm'], $p_remove_path_prefix_length);
+					$v_header['linkpath'] = substr($v_header['linkpath'], $p_remove_path_prefix_length);
+					$v_header['linkpath_norm'] = substr($v_header['linkpath_norm'], $p_remove_path_prefix_length);
+					$v_header['linksafe'] = $this->_isRelativePathSafe($v_header['tarlink_norm']);
 				}
 
 				$v_linkpath = trim($v_header['linkpath'] ?? '');
@@ -3333,10 +3333,10 @@ class TTarFileExtractor
 		$tarpath_norm = $this->_normalizePath($tarpath);
 		$filepath = $this->_toSystemSpecificPath($tarpath);
 		$filepath_norm = $this->_toSystemSpecificPath($tarpath_norm);
-		
+
 		//	$filepath_norm doesn't need the trailing DIRECTORY_SEPARATOR.
 		if ($typeFlag === self::TYPE_DIRECTORY) {	// But add it here
-			$tarpath_norm .= '/';	
+			$tarpath_norm .= '/';
 		}
 
 		$tarlink = trim($v_data['tarlink']);
@@ -3349,7 +3349,7 @@ class TTarFileExtractor
 		$v_header['tarpath_norm'] = strlen($tarpath) ? $tarpath_norm : '';
 		$v_header['filesafe'] = $this->_isRelativePathSafe((string) ($tarpath_norm ?? ''));
 		$v_header['filepath'] = $filepath;  // OS-native path for filesystem ops.
-		$v_header['filepath_norm'] =  strlen($filepath) ? $filepath_norm : '';
+		$v_header['filepath_norm'] = strlen($filepath) ? $filepath_norm : '';
 		$v_header['filename'] = basename($filepath_norm);  // Entry basename.
 		$v_header['mode'] = OctDec(trim($v_data['mode']));
 		$v_header['uid'] = OctDec(trim($v_data['uid']));
@@ -3372,10 +3372,11 @@ class TTarFileExtractor
 				break;
 			case self::TYPE_SYMLINK:
 			case self::TYPE_HARDLINK:
-				$v_header['linksafe'] 		= $this->_isRelativePathSafe((string) ($tarlink_norm ?? ''));
-				$v_header['linkpath'] 		= $linkpath;  // OS-native link target for filesystem ops.
-				$v_header['linkpath_norm'] 	= strlen($linkpath) ? $linkpath_norm : '';;
-				$v_header['linkname'] 		= basename($linkpath_norm);  // Link target basename.
+				$v_header['linksafe'] = $this->_isRelativePathSafe((string) ($tarlink_norm ?? ''));
+				$v_header['linkpath'] = $linkpath;  // OS-native link target for filesystem ops.
+				$v_header['linkpath_norm'] = strlen($linkpath) ? $linkpath_norm : '';
+				;
+				$v_header['linkname'] = basename($linkpath_norm);  // Link target basename.
 				break;
 		}
 
@@ -3437,23 +3438,24 @@ class TTarFileExtractor
 			$filepath_norm = $this->_toSystemSpecificPath($tarpath_norm);
 			//	$filepath_norm doesn't need the trailing DIRECTORY_SEPARATOR.
 			if ($v_header['typeflag'] === self::TYPE_DIRECTORY) {	// But add it here
-				$tarpath_norm .= '/';	
+				$tarpath_norm .= '/';
 			}
-			$v_header['tarpath'] 		= $tarfile;
-			$v_header['tarpath_norm'] 	= strlen($tarfile) ? $tarpath_norm : '';
-			$v_header['filesafe'] 		= $this->_isRelativePathSafe((string) ($tarpath_norm ?? ''));
-			$v_header['filepath'] 		= $this->_toSystemSpecificPath($tarfile);
-			$v_header['filepath_norm'] 	= strlen($tarfile) ? $filepath_norm : '';;
-			$v_header['filename'] 		= basename($filepath_norm);
+			$v_header['tarpath'] = $tarfile;
+			$v_header['tarpath_norm'] = strlen($tarfile) ? $tarpath_norm : '';
+			$v_header['filesafe'] = $this->_isRelativePathSafe((string) ($tarpath_norm ?? ''));
+			$v_header['filepath'] = $this->_toSystemSpecificPath($tarfile);
+			$v_header['filepath_norm'] = strlen($tarfile) ? $filepath_norm : '';
+			;
+			$v_header['filename'] = basename($filepath_norm);
 		} elseif ($field === 'linkpath') {
 			$tarlink_norm = $this->_normalizePath($tarfile);
 			$linkpath_norm = $this->_toSystemSpecificPath($tarlink_norm);
-			$v_header['tarlink'] 		= $tarfile;
-			$v_header['tarlink_norm'] 	= strlen($tarfile) ? $tarlink_norm : '';
-			$v_header['linksafe'] 		= $this->_isRelativePathSafe((string) ($tarlink_norm ?? ''));
-			$v_header['linkpath'] 		= $this->_toSystemSpecificPath($tarfile);
-			$v_header['linkpath_norm'] 	= strlen($tarfile) ? $linkpath_norm : '';
-			$v_header['linkname'] 		= basename($linkpath_norm);
+			$v_header['tarlink'] = $tarfile;
+			$v_header['tarlink_norm'] = strlen($tarfile) ? $tarlink_norm : '';
+			$v_header['linksafe'] = $this->_isRelativePathSafe((string) ($tarlink_norm ?? ''));
+			$v_header['linkpath'] = $this->_toSystemSpecificPath($tarfile);
+			$v_header['linkpath_norm'] = strlen($tarfile) ? $linkpath_norm : '';
+			$v_header['linkname'] = basename($linkpath_norm);
 		} else {
 			$v_header[$field] = $tarfile;
 		}
