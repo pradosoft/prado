@@ -22,30 +22,43 @@ define('PRADO_TAR_DIR_DEFAULT', true);
  *  - LZMA-compressed tar  (.tar.xz, .txz)   — requires the `xz` or `xzdec` system command
  *
  * The format is detected from magic bytes. File extension is used as a fallback when
- * bytes are unavailable, for example when passed a remote URL before the file is downloaded.
+ * bytes are unavailable, for example when passed a remote URL before the file is
+ * downloaded. LZMA (.tar.xz, .txz) is extracted by command line function into an
+ * uncompressed temporary tar file.  If the PHP gz/bzip2 extensions are not
+ * available, the class will attempt to use the command line executables, in the
+ * same way that LZMA is required to. LZMA does not have a php extension (yet).
  *
  * Remote archives (http://, https://, and ftp://) are downloaded to a system temp file,
  * extracted, and the temp file is deleted automatically on completion.
  *
- * **Non-atomic extraction with restore (default)**
+ * **Extraction with restore on failure**
  *
- * By default ({@see getAtomic()} is false) files are written directly to the destination.
- * When {@see getRestoreOnFailure()} is true (also the default), any pre-existing file that
- * would be overwritten is first renamed to a private backup directory; on success the
- * backups are discarded, and on failure any newly-written files are removed and the
- * originals are restored from backup.  Use {@see setRestoreOnFailure(false)} to disable
- * this safety net (faster, but partial extractions are permanent on failure).
+ * Files are written directly to the destination.  If a file will be overwritten it
+ * is renamed to a private backup directory created adjacent to the destination.
+ * On success the backups are discarded; on failure any newly-written files are
+ * removed and the originals are restored from backup, leaving the destination in
+ * the pre-extraction state.
  *
- * **Atomic extraction (opt-in)**
+ * **Atomic extraction**
  *
- * When {@see getAtomic()} is true, the archive is first extracted into a private staging
- * directory under the system temp directory, then files are moved into the real destination
- * one by one.  A failure at any point leaves the destination directory in its original
- * state — either the staging phase failed before anything was written to the destination,
- * or the move phase restores any files it already overwrote.  Use {@see setAtomic(true)}
- * to enable this mode (stronger guarantee, but uses extra disk space for staging).
- * Note: {@see getRestoreOnFailure()} has no bearing on atomic extraction; the atomic mode
- * maintains its own independent backup mechanism during the merge phase.
+ * When {@see setAtomic()} is set to `true` (default `false`) extraction uses a
+ * two-phase strategy to keep the destination directory consistent at all times.
+ *
+ * *Phase 1 — staging:* All archive entries are extracted to a private staging
+ * directory created adjacent to the destination.  The destination is never
+ * touched during this phase.  If phase 1 fails the staging directory is removed
+ * and the destination remains exactly as it was before extraction began.
+ *
+ * *Phase 2 — merge ({@see _mergeStaging()}):* Files are moved from the staging
+ * directory to the destination one by one.  Any file that would be overwritten
+ * is first renamed into a private backup directory (also adjacent to the
+ * destination) using the same backup structure as non-atomic extraction.  If the
+ * merge fails part-way through, all already-moved files are removed, every
+ * overwritten original is restored from the backup directory, and both the
+ * backup and staging directories are removed — leaving the destination in its
+ * original state.  On success the backup and staging directories are removed.
+ *
+ * Use {@see getAtomic()} / {@see setAtomic()} to toggle the mode.
  *
  * **Permission overrides**
  *
@@ -66,8 +79,8 @@ define('PRADO_TAR_DIR_DEFAULT', true);
  *  - `CONFLICT_SKIP`     — silently skip entries that conflict.
  *  - `CONFLICT_NEWER`    — keep whichever copy (archive or existing) is newer.
  *  - `CONFLICT_OLDER`    — keep whichever copy (archive or existing) is older.
+ * Or provide your own callback function.
  *
- * Conflict modes apply identically in both atomic and non-atomic modes.
  * Directory entries are never considered a conflict.
  *
  * **Security**
@@ -89,8 +102,9 @@ define('PRADO_TAR_DIR_DEFAULT', true);
  *
  * @author Vincent Blavet <vincent@phpconcept.net>
  * @author Brad Anderson <belisoful@icloud.com> v4.3.3 - Zip Slip Defense, Manifest
- *			Inspection, Atomic Extraction-Restore, file conflict resolution, gz/bzip2/xz
- *			decompression, honors tar file and directory modes, callable conflict mode.
+ *			Inspection, Restore on Failure, Atomic extraction, gz/bzip2/xz decompression,
+ *			honors tar file and directory modes, callable conflict mode.file conflict
+ *			resolution.
  * @since 3.0
  */
 class TTarFileExtractor
@@ -358,32 +372,41 @@ class TTarFileExtractor
 	 */
 	public const COMPRESSION_LZMA = 3;
 
+	/**
+	 * CLI decompression command candidates, keyed by COMPRESSION_* constant.
+	 *
+	 * Each entry is a list of `[command-name, flags-or-null]` pairs tried in
+	 * priority order.  `flags` is a string inserted between the command name and
+	 * the input path; `null` means no flags are added.  The command line built is:
+	 *
+	 *   `<cmd> [flags] <input> > <output>`
+	 *
+	 * Used by {@see _decompressViaCli()} for LZMA (always) and as a fallback for
+	 * gzip / bzip2 when the corresponding PHP extension is unavailable.
+	 *
+	 * @var array<int, list<array{0: string, 1: null|string}>>
+	 * @since 4.3.3
+	 */
+	private const CLI_DECOMPRESS_CANDIDATES = [
+		1 => [['gunzip', '-c'],  ['gzip',  '-dc']],   // COMPRESSION_GZIP
+		2 => [['bunzip2', '-c'], ['bzip2', '-dc']],   // COMPRESSION_BZIP2
+		3 => [['xzdec',  null],  ['xz',   '-dc']],    // COMPRESSION_LZMA
+	];
+
 	// =========================================================================
 	// Staging / working-mode constants
 	// =========================================================================
 
 	/**
 	 * UNIX mode applied to directories during extraction before final permissions
-	 * are set by the deferred-chmod pass.  Also used for the atomic staging root
+	 * are set by the deferred-chmod pass.  Also used for the restore backup directory
 	 * and any intermediate parent directories created by {@see _dirCheck()}.
 	 * Owner+group can read, write, and traverse; world has no access.
 	 *
 	 * @var int
 	 * @since 4.3.3
 	 */
-	public const STAGING_DIR_MODE = 0o755;
-
-	/**
-	 * UNIX mode applied to regular files written into the atomic staging
-	 * directory while the merge is in progress.  The final permission (from the
-	 * archive or {@see setFileModeOverride()}) is applied by {@see _mergeStaging()}
-	 * after the file is moved to the real destination.
-	 * Owner+group can read and write; world has no access; no execution.
-	 *
-	 * @var int
-	 * @since 4.3.3
-	 */
-	public const STAGING_FILE_MODE = 0o644;
+	public const WORKING_DIR_MODE = 0o755;
 
 	/**
 	 * UNIX mode applied to extracted directories when none is specified. Within PRADO,
@@ -485,17 +508,6 @@ class TTarFileExtractor
 	 * @since 4.3.3
 	 */
 	private bool $_atomic = false;
-
-	/**
-	 * When true (the default) and {@see $_atomic} is false, pre-existing destination
-	 * files that would be overwritten are first renamed to a private backup directory
-	 * before writing the archive entry.  On success the backups are discarded; on
-	 * failure any newly-written files are removed and the originals are restored.
-	 * Has no effect when {@see $_atomic} is true (atomic mode manages its own backup).
-	 * @var bool
-	 * @since 4.3.3
-	 */
-	private bool $_restoreOnFailure = true;
 
 	/**
 	 * Controls how existing destination files are handled during extraction.
@@ -661,43 +673,6 @@ class TTarFileExtractor
 	public function setAtomic(bool $value): static
 	{
 		$this->_atomic = $value;
-		return $this;
-	}
-
-	/**
-	 * Returns whether the non-atomic extractor restores the destination on failure
-	 * (default true).
-	 *
-	 * When true and {@see getAtomic()} is false, any pre-existing file that would be
-	 * overwritten is renamed to a private backup directory before the archive entry is
-	 * written.  On success the backups are discarded; on failure any newly-written
-	 * files are removed and the originals are restored.  Has no effect when
-	 * {@see getAtomic()} is true.
-	 *
-	 * @return bool
-	 * @since 4.3.3
-	 */
-	public function getRestoreOnFailure(): bool
-	{
-		return $this->_restoreOnFailure;
-	}
-
-	/**
-	 * Enables or disables the non-atomic restore-on-failure safety net.
-	 *
-	 * When true (the default), the non-atomic extractor backs up pre-existing
-	 * destination files before overwriting them and restores them if extraction
-	 * fails.  Set to false to disable this behaviour (faster, but a partial
-	 * extraction cannot be rolled back).  Has no effect when {@see getAtomic()}
-	 * is true.
-	 *
-	 * @param bool $value
-	 * @return static $this For method chaining.
-	 * @since 4.3.3
-	 */
-	public function setRestoreOnFailure(bool $value): static
-	{
-		$this->_restoreOnFailure = $value;
 		return $this;
 	}
 
@@ -1048,7 +1023,7 @@ class TTarFileExtractor
 	 * Returns whether the temp file for a URL or LZMA archive is retained
 	 * across multiple operations until the object is destroyed.
 	 *
-	 * @return bool
+	 * @return bool Default false.
 	 * @since 4.3.3
 	 */
 	public function getRetainTempFile(): bool
@@ -1162,34 +1137,57 @@ class TTarFileExtractor
 	 * {@see DIRECTORY_SEPARATOR}.  Directory entries precede file entries.
 	 *
 	 * Each value array contains at minimum:
-	 *  - `path`          string   Canonical map key (matches the array key).
-	 *  - `name`          string   Entry basename.
-	 *  - `type`          string   'file', 'directory', 'symlink', 'hardlink',
-	 *                            'char_device', 'block_device', or 'fifo'.
-	 *  - `typeflag`      int      One of the TYPE_* constants.
-	 *  - `filename`      string   Raw relative path stored in the archive.
-	 *  - `filepath`      string   Working relative path (after prefix removal).
-	 *  - `size`          int      Stored size in bytes.
-	 *  - `mtime`         int      Modification time (Unix epoch).
-	 *  - `mode`          int      UNIX permission bits.
-	 *  - `uid`           int      Numeric user ID.
-	 *  - `gid`           int      Numeric group ID.
-	 *  - `uname`         string   Symbolic user name.
-	 *  - `gname`         string   Symbolic group name.
-	 *  - `linkpath`      string   Symlink / hard-link target (empty for other types).
-	 *  - `checksum`      int      Stored header checksum.
-	 *  - `filesafe`      bool     True when the path contains no traversal sequences.
-	 *  - `device`        bool     True for character / block special device entries.
-	 *  - `extracted`     bool     Was the entry extracted.
-	 *  - `extractedPath` string   Path of the extracted file, directory, or link.
-	 *  - `reason`        string   Present only when the entry would be skipped during
-	 *                         extraction (e.g. 'zip_slip', 'device', 'symlink',
-	 *                         'hardlink', 'conflict_skip', 'conflict_existing_newer',
-	 *                         'conflict_existing_older').
-	 *  - `security`      string   Present only for entries skipped due to a security
-	 *                         policy violation: 'zip_slip_attack', 'is_device', or
-	 *						   'linkpath_above_root'.  Absent for conflict-based skips,
-	 *                         allowing callers to distinguish the two categories.
+	 *  - `path`           string   Canonical map key (matches the array key);
+	 *                              derived from `tarpath_norm`.
+	 *  - `type`           string   'file', 'directory', 'symlink', 'hardlink',
+	 *                              'char_device', 'block_device', or 'fifo'.
+	 *  - `typeflag`       int      One of the TYPE_* constants.
+	 *  - `tarpath`        string   Raw POSIX path as stored in the tar header
+	 *                              (forward-slash separated, may have a leading `/`).
+	 *  - `tarpath_norm`   string   Normalised POSIX relative path (no leading `/`,
+	 *                              no `..` sequences); used as the manifest key.
+	 *  - `tarlink`        string   Raw POSIX link target as stored in the tar header
+	 *                              (empty for non-link types).
+	 *  - `tarlink_norm`   string   Normalised POSIX relative link target (no leading
+	 *                              `/`, no `..` sequences).  Empty for non-link types.
+	 *  - `filepath`       string   OS-native working path after prefix removal,
+	 *                              using {@see DIRECTORY_SEPARATOR}.
+	 *  - `filepath_norm`  string   Normalised OS-native relative path (no leading
+	 *                              separator, no `..` sequences), using
+	 *                              {@see DIRECTORY_SEPARATOR}.
+	 *  - `filename`       string   Entry basename — `basename($filepath_norm)`.
+	 *  - `linkpath`       string   OS-native symlink / hard-link target using
+	 *                              {@see DIRECTORY_SEPARATOR} (empty for other types).
+	 *  - `linkpath_norm`  string   Normalised OS-native link target path, using
+	 *                              {@see DIRECTORY_SEPARATOR}.  Empty for non-link types.
+	 *  - `linkname`       string   Link-target basename — `basename($linkpath_norm)`.
+	 *                              Empty for non-link types.
+	 *  - `size`           int      Stored size in bytes.
+	 *  - `mtime`          int      Modification time (Unix epoch).
+	 *  - `mode`           int      UNIX permission bits.
+	 *  - `uid`            int      Numeric user ID.
+	 *  - `gid`            int      Numeric group ID.
+	 *  - `uname`          string   Symbolic user name.
+	 *  - `gname`          string   Symbolic group name.
+	 *  - `checksum`       int      Stored header checksum.
+	 *  - `filesafe`       bool     True when `tarpath_norm` contains no traversal
+	 *                              sequences (i.e. would not escape the destination).
+	 *  - `linksafe`       bool     True when `tarlink_norm` contains no traversal
+	 *                              sequences.  Always true for non-link types.
+	 *  - `device`         bool     True for character / block special device entries.
+	 *  - `extracted`      bool     Was the entry extracted.
+	 *  - `extractedPath`  string   Absolute path of the extracted file, directory,
+	 *                              or link.
+	 *  - `reason`         string   Present only when the entry would be skipped during
+	 *                              extraction (e.g. 'zip_slip', 'device', 'symlink',
+	 *                              'hardlink', 'conflict_skip',
+	 *                              'conflict_existing_newer',
+	 *                              'conflict_existing_older').
+	 *  - `security`       string   Present only for entries skipped due to a security
+	 *                              policy violation: 'zip_slip_attack', 'is_device',
+	 *                              or 'linkpath_above_root'.  Absent for
+	 *                              conflict-based skips, allowing callers to
+	 *                              distinguish the two categories.
 	 *
 	 *
 	 * @return ?array<string,array>
@@ -1259,33 +1257,54 @@ class TTarFileExtractor
 	 * {@see DIRECTORY_SEPARATOR}.  Directory entries precede file entries.
 	 *
 	 * Each value array contains at minimum:
-	 *  - `path`      string   Canonical map key (matches the array key).
-	 *  - `name`      string   Entry basename.
-	 *  - `type`      string   'file', 'directory', 'symlink', 'hardlink',
-	 *                         'char_device', 'block_device', or 'fifo'.
-	 *  - `typeflag`  int      One of the TYPE_* constants.
-	 *  - `filename`  string   Raw relative path stored in the archive.
-	 *  - `filepath`  string   Working relative path (after prefix removal).
-	 *  - `size`      int      Stored size in bytes.
-	 *  - `mtime`     int      Modification time (Unix epoch).
-	 *  - `mode`      int      UNIX permission bits.
-	 *  - `uid`       int      Numeric user ID.
-	 *  - `gid`       int      Numeric group ID.
-	 *  - `uname`     string   Symbolic user name.
-	 *  - `gname`     string   Symbolic group name.
-	 *  - `linkpath`  string   Symlink / hard-link target (empty for other types).
-	 *  - `checksum`  int      Stored header checksum.
-	 *  - `filesafe`  bool     True when the path contains no traversal sequences.
-	 *  - `device`    bool     True for character / block special device entries.
-	 *  - `reason`    string   Present only when the entry would be skipped during
-	 *                         extraction (e.g. 'zip_slip', 'device', 'symlink',
-	 *                         'hardlink', 'conflict_skip', 'conflict_existing_newer',
-	 *                         'conflict_existing_older').
-	 *  - `security`  string   Present only for entries skipped due to a security
-	 *                         policy violation: 'zip_slip_attack', 'is_device',
-	 *                         or 'linkpath_above_root'.  Absent for conflict-based
-	 *						   skips, allowing callers to distinguish the two
-	 *						   categories.
+	 *  - `path`           string   Canonical map key (matches the array key);
+	 *                              derived from `tarpath_norm`.
+	 *  - `type`           string   'file', 'directory', 'symlink', 'hardlink',
+	 *                              'char_device', 'block_device', or 'fifo'.
+	 *  - `typeflag`       int      One of the TYPE_* constants.
+	 *  - `tarpath`        string   Raw POSIX path as stored in the tar header
+	 *                              (forward-slash separated, may have a leading `/`).
+	 *  - `tarpath_norm`   string   Normalised POSIX relative path (no leading `/`,
+	 *                              no `..` sequences); used as the manifest key.
+	 *  - `tarlink`        string   Raw POSIX link target as stored in the tar header
+	 *                              (empty for non-link types).
+	 *  - `tarlink_norm`   string   Normalised POSIX relative link target (no leading
+	 *                              `/`, no `..` sequences).  Empty for non-link types.
+	 *  - `filepath`       string   OS-native working path after prefix removal,
+	 *                              using {@see DIRECTORY_SEPARATOR}.
+	 *  - `filepath_norm`  string   Normalised OS-native relative path (no leading
+	 *                              separator, no `..` sequences), using
+	 *                              {@see DIRECTORY_SEPARATOR}.
+	 *  - `filename`       string   Entry basename — `basename($filepath_norm)`.
+	 *  - `linkpath`       string   OS-native symlink / hard-link target using
+	 *                              {@see DIRECTORY_SEPARATOR} (empty for other types).
+	 *  - `linkpath_norm`  string   Normalised OS-native link target path, using
+	 *                              {@see DIRECTORY_SEPARATOR}.  Empty for non-link types.
+	 *  - `linkname`       string   Link-target basename — `basename($linkpath_norm)`.
+	 *                              Empty for non-link types.
+	 *  - `size`           int      Stored size in bytes.
+	 *  - `mtime`          int      Modification time (Unix epoch).
+	 *  - `mode`           int      UNIX permission bits.
+	 *  - `uid`            int      Numeric user ID.
+	 *  - `gid`            int      Numeric group ID.
+	 *  - `uname`          string   Symbolic user name.
+	 *  - `gname`          string   Symbolic group name.
+	 *  - `checksum`       int      Stored header checksum.
+	 *  - `filesafe`       bool     True when `tarpath_norm` contains no traversal
+	 *                              sequences (i.e. would not escape the destination).
+	 *  - `linksafe`       bool     True when `tarlink_norm` contains no traversal
+	 *                              sequences.  Always true for non-link types.
+	 *  - `device`         bool     True for character / block special device entries.
+	 *  - `reason`         string   Present only when the entry would be skipped during
+	 *                              extraction (e.g. 'zip_slip', 'device', 'symlink',
+	 *                              'hardlink', 'conflict_skip',
+	 *                              'conflict_existing_newer',
+	 *                              'conflict_existing_older').
+	 *  - `security`       string   Present only for entries skipped due to a security
+	 *                              policy violation: 'zip_slip_attack', 'is_device',
+	 *                              or 'linkpath_above_root'.  Absent for
+	 *                              conflict-based skips, allowing callers to
+	 *                              distinguish the two categories.
 	 *
 	 * If the archive has not been extracted yet, a scan-only pass is performed.
 	 *
@@ -1399,6 +1418,144 @@ class TTarFileExtractor
 	}
 
 	/**
+	 * Returns the raw POSIX path (`tarpath`) for the given archive entry, exactly as
+	 * stored in the tar header.
+	 *
+	 * The value uses forward slashes and preserves the trailing `/` that tar archives
+	 * append to directory entries.  No normalisation is applied; for the
+	 * traversal-safe variant see {@see getManifestTarPathNormalized()}.
+	 *
+	 * @param string $path Relative archive path.
+	 * @return ?string Raw POSIX path as stored in the tar header, or null if not found.
+	 * @since 4.3.3
+	 */
+	public function getManifestTarPath(string $path): ?string
+	{
+		return $this->getManifestValue($path, 'tarpath');
+	}
+	
+	/**
+	 * Returns the normalised POSIX path (`tarpath_norm`) for the given archive entry.
+	 *
+	 * Traversal sequences are resolved and leading `/` is stripped.  The trailing `/`
+	 * that tar appends to directory entries is preserved so that directory entries
+	 * remain distinguishable from files.
+	 *
+	 * @param string $path Relative archive path.
+	 * @return ?string Normalised POSIX path (trailing separator preserved for directories),
+	 *                 or null if not found.
+	 * @since 4.3.3
+	 */
+	public function getManifestTarPathNormalized(string $path): ?string
+	{
+		return $this->getManifestValue($path, 'tarpath_norm');
+	}
+	
+	/**
+	 * Returns the raw POSIX link target (`tarlink`) for the given archive entry, exactly
+	 * as stored in the tar header.
+	 *
+	 * Returns an empty string for non-link entries (regular files, directories).
+	 * Returns null if the path is not found in the manifest.
+	 * For the normalised variant see {@see getManifestTarLinkNormalized()}.
+	 *
+	 * @param string $path Relative archive path.
+	 * @return ?string Raw POSIX link target (empty for non-link entries), or null if not found.
+	 * @since 4.3.3
+	 */
+	public function getManifestTarLink(string $path): ?string
+	{
+		return $this->getManifestValue($path, 'tarlink');
+	}
+	
+	/**
+	 * Returns the normalised POSIX link target (`tarlink_norm`) for the given archive entry.
+	 *
+	 * Traversal sequences are resolved and leading `/` is stripped.
+	 * Returns an empty string for non-link entries (regular files, directories).
+	 * Returns null if the path is not found in the manifest.
+	 *
+	 * @param string $path Relative archive path.
+	 * @return ?string Normalised POSIX link target (empty for non-link entries),
+	 *                 or null if not found.
+	 * @since 4.3.3
+	 */
+	public function getManifestTarLinkNormalized(string $path): ?string
+	{
+		return $this->getManifestValue($path, 'tarlink_norm');
+	}
+	
+	/**
+	 * Returns the OS-native path (`filepath`) for the given archive entry.
+	 *
+	 * Derived from `tarpath` by replacing `/` with {@see DIRECTORY_SEPARATOR}.
+	 * On Linux and macOS this is identical to `tarpath`.  The trailing `/` that tar
+	 * appends to directory entries is preserved.  For the traversal-safe
+	 * variant see {@see getManifestFilePathNormalized()}.
+	 *
+	 * @param string $path Relative archive path.
+	 * @return ?string OS-native path (trailing separator preserved for directories),
+	 *                 or null if not found.
+	 * @since 4.3.3
+	 */
+	public function getManifestFilePath(string $path): ?string
+	{
+		return $this->getManifestValue($path, 'filepath');
+	}
+	
+	/**
+	 * Returns the normalised OS-native path (`filepath_norm`) for the given archive entry.
+	 *
+	 * Derived from `tarpath_norm` by replacing `/` with {@see DIRECTORY_SEPARATOR}.
+	 * Trailing slashes are stripped (directory entries appear without a trailing
+	 * separator) and traversal sequences are resolved.  On Linux and macOS this is
+	 * identical to `tarpath_norm`.
+	 *
+	 * @param string $path Relative archive path.
+	 * @return ?string Normalised OS-native path (no trailing separator), or null if not found.
+	 * @since 4.3.3
+	 */
+	public function getManifestFilePathNormalized(string $path): ?string
+	{
+		return $this->getManifestValue($path, 'filepath_norm');
+	}
+	
+	/**
+	 * Returns the OS-native link target (`linkpath`) for the given archive entry.
+	 *
+	 * Derived from `tarlink` by replacing `/` with {@see DIRECTORY_SEPARATOR}.
+	 * Returns an empty string for non-link entries (regular files, directories).
+	 * Returns null if the path is not found in the manifest.
+	 * For the normalised variant see {@see getManifestLinkPathNormalized()}.
+	 *
+	 * @param string $path Relative archive path.
+	 * @return ?string OS-native link target (empty for non-link entries), or null if not found.
+	 * @since 4.3.3
+	 */
+	public function getManifestLinkPath(string $path): ?string
+	{
+		return $this->getManifestValue($path, 'linkpath');
+	}
+	
+	/**
+	 * Returns the normalised OS-native link target (`linkpath_norm`) for the given archive entry.
+	 *
+	 * Derived from `tarlink_norm` by replacing `/` with {@see DIRECTORY_SEPARATOR}.
+	 * Trailing slashes and traversal sequences are resolved.
+	 * Returns an empty string for non-link entries (regular files, directories).
+	 * Returns null if the path is not found in the manifest.
+	 *
+	 * @param string $path Relative archive path.
+	 * @return ?string Normalised OS-native link target (empty for non-link entries),
+	 *                 or null if not found.
+	 * @since 4.3.3
+	 */
+	public function getManifestLinkPathNormalized(string $path): ?string
+	{
+		return $this->getManifestValue($path, 'linkpath_norm');
+	}
+
+	/**
 	 * Returns the stored size in bytes for the given archive entry, or null if not found.
 	 * TAR archives do not store a creation time; use {@see getManifestMtime()}.
 	 *
@@ -1486,19 +1643,6 @@ class TTarFileExtractor
 	}
 
 	/**
-	 * Returns the symlink / hard-link target for the given archive entry.
-	 * Returns an empty string for non-link entries, null if the path is not found.
-	 *
-	 * @param string $path Relative archive path.
-	 * @return ?string Link target string (may be empty for non-link entries), or null if not found.
-	 * @since 4.3.3
-	 */
-	public function getManifestLinkPath(string $path): ?string
-	{
-		return $this->getManifestValue($path, 'linkpath');
-	}
-
-	/**
 	 * Returns whether the given archive path is free of traversal sequences.
 	 * True = safe, false = contains '..', absolute, or Windows drive-letter prefix.
 	 * Returns null if the path is not found.
@@ -1544,6 +1688,64 @@ class TTarFileExtractor
 	}
 
 	/**
+	 * Returns whether the given archive entry is a regular file.
+	 * Returns null if the path is not found.
+	 *
+	 * True when the entry's typeflag is {@see TYPE_FILE} (`0`) or
+	 * {@see TYPE_CONTIGUOUS} (`7`), both of which represent regular file content.
+	 *
+	 * @param string $path Relative archive path.
+	 * @return ?bool True if the entry is a regular file, false otherwise, null if not found.
+	 * @since 4.3.3
+	 */
+	public function getManifestIsFile(string $path): ?bool
+	{
+		$typeflag = $this->getManifestValue($path, 'typeflag');
+		if ($typeflag === null) {
+			return null;
+		}
+		return $typeflag === self::TYPE_FILE || $typeflag === self::TYPE_CONTIGUOUS;
+	}
+
+	/**
+	 * Returns whether the given archive entry is a directory.
+	 * Returns null if the path is not found.
+	 *
+	 * True when the entry's typeflag is {@see TYPE_DIRECTORY} (`5`).
+	 *
+	 * @param string $path Relative archive path.
+	 * @return ?bool True if the entry is a directory, false otherwise, null if not found.
+	 * @since 4.3.3
+	 */
+	public function getManifestIsDirectory(string $path): ?bool
+	{
+		$typeflag = $this->getManifestValue($path, 'typeflag');
+		if ($typeflag === null) {
+			return null;
+		}
+		return $typeflag === self::TYPE_DIRECTORY;
+	}
+
+	/**
+	 * Returns whether the given archive entry is a symbolic link.
+	 * Returns null if the path is not found.
+	 *
+	 * True when the entry's typeflag is {@see TYPE_SYMLINK} (`2`).
+	 *
+	 * @param string $path Relative archive path.
+	 * @return ?bool True if the entry is a symlink, false otherwise, null if not found.
+	 * @since 4.3.3
+	 */
+	public function getManifestIsSymLink(string $path): ?bool
+	{
+		$typeflag = $this->getManifestValue($path, 'typeflag');
+		if ($typeflag === null) {
+			return null;
+		}
+		return $typeflag === self::TYPE_SYMLINK;
+	}
+	
+	/**
 	 * Returns whether the given archive entry is a device or FIFO special file.
 	 * Returns null if the path is not found.
 	 *
@@ -1556,12 +1758,39 @@ class TTarFileExtractor
 		return $this->getManifestValue($path, 'device');
 	}
 
+	/**
+	 * Returns whether the given archive entry's typeflag matches the given `TYPE_*` constant.
+	 * Returns null if the path is not found.
+	 *
+	 * ```php
+	 * $extractor->getManifestIsTypeFlag('link.txt', TTarFileExtractor::TYPE_HARDLINK);
+	 * $extractor->getManifestIsTypeFlag('dev',      TTarFileExtractor::TYPE_CHAR_SPECIAL);
+	 * ```
+	 *
+	 * @param string $path     Relative archive path.
+	 * @param int    $typeFlag One of the `TYPE_*` constants.
+	 * @return ?bool True if the entry's typeflag matches `$typeFlag`, false otherwise,
+	 *               null if the path is not found.
+	 * @since 4.3.3
+	 */
+	public function getManifestIsTypeFlag(string $path, int $typeFlag): ?bool
+	{
+		$value = $this->getManifestValue($path, 'typeflag');
+		if ($value === null) {
+			return null;
+		}
+		return $value === $typeFlag;
+	}
+
 	// =========================================================================
 	// Protected — Core Extraction
 	// =========================================================================
 
 	/**
 	 * Extracts the archive to $p_destPath, optionally stripping a path prefix.
+	 * On failure, any newly-written files are removed and pre-existing files that
+	 * were overwritten are restored from backup, leaving the destination in its
+	 * pre-extraction state.
 	 *
 	 * @param string  $p_destPath      Destination directory.
 	 * @param ?string $p_remove_path   Path prefix to strip from each entry's path.
@@ -1570,32 +1799,27 @@ class TTarFileExtractor
 	protected function extractModify(string $p_destPath, ?string $p_remove_path = null): bool
 	{
 		if (!empty($p_destPath)) {
-			
-			$p_checkPath = rtrim($p_destPath, '/');
-			
-			// Pre-check: fail fast if the destination is not writable before any staging I/O.
+			$p_checkPath = rtrim($p_destPath, '/\\');
+
+			// Pre-check: fail fast if the destination is not writable.
 			if (is_dir($p_checkPath)) {
 				if (!is_writable($p_checkPath)) {
-					$this->_error("Atomic extraction destination '$p_checkPath' is not writable");
+					$this->_error("Extraction destination '$p_checkPath' is not writable");
 					return false;
 				}
 			} else {
 				$parentDir = dirname($p_checkPath);
 				if (!is_dir($parentDir)) {
-					$this->_error("Atomic extraction destination parent '$parentDir' does not exist");
+					$this->_error("Extraction destination parent '$parentDir' does not exist");
 					return false;
 				}
 				if (!is_writable($parentDir)) {
-					$this->_error("Atomic extraction destination parent '$parentDir' is not writable");
+					$this->_error("Extraction destination parent '$parentDir' is not writable");
 					return false;
 				}
 			}
-			
 			if ($this->getAtomic()) {
 				return $this->_extractAtomic($p_destPath, $p_remove_path);
-			}
-			if ($this->getRestoreOnFailure()) {
-				return $this->_extractDirectWithRestore($p_destPath, $p_remove_path);
 			}
 		}
 		return $this->_extractDirect($p_destPath, $p_remove_path);
@@ -1611,16 +1835,13 @@ class TTarFileExtractor
 	 * @param ?string    $p_remove_path_prefix Path prefix to strip from stored paths.
 	 * @param mixed      $conflictMode         CONFLICT_* constant; null = uses {@see getConflictMode()}.
 	 * @param bool       $applyPermissions     When false, skip chmod/touch on files and dirs.
-	 *                                         Pass false for staging extractions; permissions
-	 *                                         will be applied during the merge phase instead.
 	 * @param ?callable  $preWriteHook         Optional hook called just before writing each
 	 *                                         non-directory entry (after conflict checks pass).
 	 *                                         Signature: `function(string $extractedPath, bool $preexisted): void`.
-	 *                                         Used by {@see _extractDirectWithRestore()} to back up
+	 *                                         Used by {@see _extractDirect()} to back up
 	 *                                         pre-existing files before they are overwritten.
 	 *                                         The hook may throw to abort the extraction.
 	 * @return bool True on success.
-	 * @since 4.3.3
 	 */
 	protected function _extractList(
 		?string $p_destPath,
@@ -1644,12 +1865,15 @@ class TTarFileExtractor
 				return;
 			}
 
+			/*
 			$normKey = $fileInfo['filepath_norm'] ?? rtrim($fileInfo['filepath'] ?? '', '/\\');
 			if (($fileInfo['typeflag'] ?? 0) === self::TYPE_DIRECTORY) {
 				$mapKey = rtrim((string) $normKey, '/\\') . DIRECTORY_SEPARATOR;
 			} else {
 				$mapKey = (string) $normKey;
 			}
+			*/
+			$mapKey = $fileInfo['tarpath_norm'];
 
 			$fileInfo['path'] = $mapKey;
 
@@ -1674,8 +1898,8 @@ class TTarFileExtractor
 
 		if ($p_destPath !== null && $p_destPath !== '') {
 			$p_destPath = $this->_translateWinPath($p_destPath, false);
-			if ($p_destPath !== './' && $p_destPath !== '/') {
-				$p_destPath = rtrim($p_destPath, '/');
+			if ($p_destPath !== DIRECTORY_SEPARATOR && $p_destPath !== '.' . DIRECTORY_SEPARATOR) {
+				$p_destPath = rtrim($p_destPath, '/\\');
 			}
 		}
 
@@ -1715,12 +1939,13 @@ class TTarFileExtractor
 			if ($v_extract_file && is_array($p_file_list)) {
 				$v_extract_file = false;
 				foreach ($p_file_list as $allowedPath) {
+					// $p_file_list entries are POSIX; compare against tarpath (raw POSIX).
 					if (str_ends_with($allowedPath, '/')) {
-						if (str_starts_with($v_header['filepath'], $allowedPath)) {
+						if (str_starts_with($v_header['tarpath'], $allowedPath)) {
 							$v_extract_file = true;
 							break;
 						}
-					} elseif ($allowedPath === $v_header['filepath']) {
+					} elseif ($allowedPath === $v_header['tarpath']) {
 						$v_extract_file = true;
 						break;
 					}
@@ -1728,10 +1953,15 @@ class TTarFileExtractor
 			}
 
 			// Strip path prefix.
-			if ($p_remove_path_prefix && str_starts_with($v_header['filepath'], $p_remove_path_prefix)) {
+			// $p_remove_path_prefix is POSIX (processed via _translateWinPath); compare
+			// against tarpath, then strip the same byte-length from filepath (safe because
+			// each '/' maps 1:1 to DIRECTORY_SEPARATOR — both are single-byte characters).
+			if ($p_remove_path_prefix && str_starts_with($v_header['tarpath'], $p_remove_path_prefix)) {
+				$v_header['tarpath'] = substr($v_header['tarpath'], $p_remove_path_prefix_length);
+				$v_header['tarpath_norm'] = substr($v_header['tarpath_norm'], $p_remove_path_prefix_length);
 				$v_header['filepath'] = substr($v_header['filepath'], $p_remove_path_prefix_length);
-				$v_header['filepath_norm'] = $this->_normalizePath($v_header['filepath']);
-				$v_header['filesafe'] = $this->_isRelativePathSafe((string) ($v_header['filepath_norm'] ?? ''));
+				$v_header['filepath_norm'] = substr($v_header['filepath_norm'], $p_remove_path_prefix_length);
+				$v_header['filesafe'] = $this->_isRelativePathSafe((string) ($v_header['tarpath_norm'] ?? ''));
 			}
 
 			$typeFlag = $v_header['typeflag'];
@@ -1759,8 +1989,9 @@ class TTarFileExtractor
 				// Unsafe symlink / hardlink targets.
 				if ($typeFlag === self::TYPE_SYMLINK || $typeFlag === self::TYPE_HARDLINK) {
 					$linkpath = trim($v_header['linkpath'] ?? '');
-					$linksafe = $v_header['linksafe'] ?? $this->_isRelativePathSafe($this->_normalizePath($linkpath) ?? '');
-					if (!$linksafe || str_starts_with($linkpath, '/')) {
+					$tarlink = trim($v_header['tarlink'] ?? $linkpath);
+					$linksafe = $v_header['linksafe'] ?? $this->_isRelativePathSafe($this->_normalizePath($tarlink) ?? '');
+					if (!$linksafe || str_starts_with($tarlink, '/')) {
 						$reason = ($typeFlag === self::TYPE_SYMLINK) ? self::REASON_SYMLINK : self::REASON_HARDLINK;
 						$recordEntryDetail($v_header, null, $reason, self::SECURITY_LINKPATH_OUTSIDE_DESTINATION);
 						continue;
@@ -1775,7 +2006,7 @@ class TTarFileExtractor
 				continue;
 			}	// end of List Mode - loop back to block processing.
 
-			$extractedPath = $p_destPath . '/' . ltrim($v_header['filepath'], '/');
+			$extractedPath = $p_destPath . DIRECTORY_SEPARATOR . ltrim($v_header['filepath'], '/\\');
 
 			// ---------------------------------------------------------------
 			// Extraction mode — validate path security (Zip Slip).
@@ -1795,7 +2026,7 @@ class TTarFileExtractor
 
 			// Device / special files.
 			if (in_array($typeFlag, [self::TYPE_CHAR_SPECIAL, self::TYPE_BLOCK_SPECIAL, self::TYPE_FIFO], true)) {
-				$message = "Special file type cannot be extracted: '$extractedPath'";
+				$message = "'Special' file type cannot be extracted: '$extractedPath'";
 				if ($this->getStrict()) {
 					$this->_error($message);
 					return false;
@@ -1834,25 +2065,25 @@ class TTarFileExtractor
 			// ---------------------------------------------------------------
 			// Ensure parent directory exists.
 			// For TYPE_DIRECTORY entries we only create *parent* directories here;
-			// the directory itself is created below with STAGING_DIR_MODE so that
+			// the directory itself is created below with WORKING_DIR_MODE so that
 			// files can be written into it before the deferred-chmod loop applies
 			// the final (potentially restrictive) permission.
 			//
-			// Always pass STAGING_DIR_MODE as the working mode so that any intermediate
+			// Always pass WORKING_DIR_MODE as the working mode so that any intermediate
 			// parent directories — whether they are archive entries whose final mode
 			// will be applied by the deferred loop, or implicit parents with no archive
 			// entry — remain owner+group traversable but are not world-accessible.
 			// ---------------------------------------------------------------
 			if (!$v_preexisted || $typeFlag === self::TYPE_DIRECTORY) {
-				if (!$this->_dirCheck(dirname($extractedPath), self::STAGING_DIR_MODE)) {
+				if (!$this->_dirCheck(dirname($extractedPath), self::WORKING_DIR_MODE)) {
 					$this->_error("Unable to create path for '$extractedPath'");
 					return false;
 				}
 			}
 
 			// Pre-write hook: invoked once per non-directory entry that will be written,
-			// after all conflict checks pass.  Used by _extractDirectWithRestore() to
-			// back up pre-existing files before they are overwritten.  The hook may
+			// after all conflict checks pass.  Used by _extractDirect() to back up
+			// pre-existing files before they are overwritten.  The hook may
 			// throw to abort the extraction (caught by the caller).
 			if ($preWriteHook !== null && $typeFlag !== self::TYPE_DIRECTORY) {
 				$preWriteHook((string) $extractedPath, $v_preexisted);
@@ -1864,11 +2095,11 @@ class TTarFileExtractor
 			if ($typeFlag === self::TYPE_DIRECTORY) {
 				$v_created = !$v_preexisted;
 				if (!@file_exists($extractedPath)) {
-					// Create with STAGING_DIR_MODE (owner+group only) so files can
+					// Create with WORKING_DIR_MODE (owner+group only) so files can
 					// be written into the directory before final permissions are applied.
 					// The override (or tar mode) is applied by the deferred $directoryModes
 					// loop below, which is only executed when $applyPermissions is true.
-					if (!@mkdir($extractedPath, self::STAGING_DIR_MODE)) {
+					if (!@mkdir($extractedPath, self::WORKING_DIR_MODE)) {
 						$this->_error("Unable to create directory {$extractedPath}");
 						return false;
 					}
@@ -1894,10 +2125,14 @@ class TTarFileExtractor
 				$linkType = $isSymLink ? 'Symlink' : 'Hard link';
 				$linkMethod = $isSymLink ? 'symlink' : 'link';
 
-				if ($p_remove_path_prefix && str_starts_with($v_header['linkpath'], $p_remove_path_prefix)) {
-					$v_header['linkpath'] = substr($v_header['linkpath'], $p_remove_path_prefix_length);
-					$v_header['linkpath_norm'] = $this->_normalizePath($v_header['linkpath']);
-					$v_header['linksafe'] = $this->_isRelativePathSafe($v_header['linkpath_norm']);
+				// $p_remove_path_prefix is POSIX; compare against tarlink (raw POSIX),
+				// then strip the same byte-length from linkpath (safe 1:1 mapping).
+				if ($p_remove_path_prefix && str_starts_with($v_header['tarlink'], $p_remove_path_prefix)) {
+					$v_header['tarlink'] 		= substr($v_header['tarlink'], $p_remove_path_prefix_length);
+					$v_header['tarlink_norm']	= substr($v_header['tarlink_norm'], $p_remove_path_prefix_length);
+					$v_header['linkpath']		= substr($v_header['linkpath'], $p_remove_path_prefix_length);
+					$v_header['linkpath_norm']	= substr($v_header['linkpath_norm'], $p_remove_path_prefix_length);
+					$v_header['linksafe']		= $this->_isRelativePathSafe($v_header['tarlink_norm']);
 				}
 
 				$v_linkpath = trim($v_header['linkpath'] ?? '');
@@ -1921,8 +2156,8 @@ class TTarFileExtractor
 					$v_resolvedLinkpath = $v_linkpath;
 				} else {
 					$v_resolvedLinkpath = $v_linkpath;
-					if (!str_starts_with($v_resolvedLinkpath, '/')) {
-						$v_resolvedLinkpath = dirname($extractedPath) . '/' . $v_resolvedLinkpath;
+					if (!str_starts_with($v_resolvedLinkpath, '/') && !str_starts_with($v_resolvedLinkpath, DIRECTORY_SEPARATOR)) {
+						$v_resolvedLinkpath = dirname($extractedPath) . DIRECTORY_SEPARATOR . $v_resolvedLinkpath;
 					}
 				}
 
@@ -1958,8 +2193,7 @@ class TTarFileExtractor
 				}
 				@fclose($v_dest_file);
 
-				// Apply mtime and permissions (skipped for staging extractions;
-				// _mergeStaging applies them to the final destination).
+				// Apply mtime and permissions.
 				if ($applyPermissions) {
 					@touch($extractedPath, $v_header['mtime']);
 					$v_tarFileMode = (int) ($v_header['mode'] ?? 0);
@@ -1967,10 +2201,6 @@ class TTarFileExtractor
 					if ($v_effFileMode > 0) {
 						@chmod($extractedPath, $v_effFileMode);
 					}
-				} else {
-					// Staging extraction: restrict file to owner+group (STAGING_FILE_MODE) so that
-					// world cannot read sensitive content while the merge is in progress.
-					@chmod($extractedPath, self::STAGING_FILE_MODE);
 				}
 
 				// Verify extracted size.
@@ -1989,7 +2219,6 @@ class TTarFileExtractor
 		} // end while
 
 		// Apply deferred directory permissions (after all files are in place).
-		// Skipped for staging extractions; _mergeStaging applies them to the final destination.
 		if ($applyPermissions) {
 			foreach ($directoryModes as $dirPath => $mode) {
 				@chmod($dirPath, $mode);
@@ -2000,122 +2229,75 @@ class TTarFileExtractor
 	}
 
 	/**
-	 * Extracts the archive directly into the destination directory with inline
-	 * conflict resolution.
+	 * Extracts the archive directly into the destination directory with conflict
+	 * resolution and restore-on-failure.
 	 *
-	 * When {@see getRestoreOnFailure()} is true and `$p_destPath` is non-empty,
-	 * delegates to {@see _extractDirectWithRestore()} which backs up pre-existing
-	 * files and restores them on failure.  Otherwise extracts with no rollback.
+	 * When `$p_destPath` is non-empty, a private backup directory path is reserved
+	 * adjacent to the destination.  The directory is only created on demand — the
+	 * first time a pre-existing file needs to be backed up before overwriting.
+	 * Extracting into a new or empty directory therefore never creates it.
+	 * On success any backups are discarded; on failure any newly-written files are
+	 * removed and the originals are restored so the destination is left in its
+	 * pre-extraction state.
 	 *
-	 * @param string  $p_destPath
-	 * @param ?string $p_remove_path
-	 * @return bool
+	 * When `$p_destPath` is empty, the archive is scanned in list-only mode with no
+	 * backup or write I/O.
+	 *
+	 * @param string  $p_destPath    Destination directory, or '' for scan-only mode.
+	 * @param ?string $p_remove_path Path prefix to strip from archive entries.
+	 * @return bool True on success.
+	 * @since 4.3.3
 	 */
 	private function _extractDirect(string $p_destPath, ?string $p_remove_path): bool
 	{
-		$extractionManifest = [];
-		$v_result = true;
+		$backupDir = null;
+		$backups = [];
+		$written = [];
+		$preWriteHook = null;
 
-		if (!($v_result = $this->_openRead())) {
+		if (!empty($p_destPath)) {
+			// Compute the backup directory path.  The directory itself is created on
+			// demand — only when the first pre-existing file actually needs to be backed
+			// up.  Extracting into a new or empty destination never creates it.
+			$backupDir = rtrim($p_destPath, '/\\') . DIRECTORY_SEPARATOR . $this->_backup_dir_name();
+
+			// Pre-write hook: called once for each non-directory entry just before it is
+			// written, after all conflict checks pass.  Backs up any pre-existing file to
+			// $backupDir and records the write attempt in $written so the failure path
+			// knows what to clean up.
+			$preWriteHook = function (string $extractedPath, bool $preexisted) use ($backupDir, &$backups, &$written): void {
+				if (file_exists($extractedPath) || is_link($extractedPath)) {
+					// Create the backup directory on first use.
+					if (!is_dir($backupDir) && !@mkdir($backupDir, self::WORKING_DIR_MODE, true)) {
+						$this->_error("Unable to create restore backup directory '$backupDir'");
+					}
+					// Rename the pre-existing file/link to a deterministic backup path.
+					$backupPath = $backupDir . DIRECTORY_SEPARATOR . $this->_backup_filename($extractedPath);
+					if (!@rename($extractedPath, $backupPath)) {
+						$this->_error("Unable to backup '$extractedPath' before overwrite");
+					}
+					$backups[$extractedPath] = $backupPath;
+				}
+				// Track every path we are about to write, regardless of pre-existence.
+				$written[$extractedPath] = true;
+			};
+		}
+
+		if (!$this->_openRead()) {
 			return false;
 		}
 
+		$extractionManifest = [];
 		$v_exception = null;
+		$v_result = false;
 		try {
 			$v_result = $this->_extractList(
 				$p_destPath !== '' ? $p_destPath : null,
 				$extractionManifest,
 				null,
-				$p_remove_path
-			);
-		} catch (\Exception $e) {
-			$v_result = false;
-			$v_exception = $e;
-		}
-
-		$this->_sortManifest($extractionManifest);
-		$this->setExtractManifest($extractionManifest);
-
-		$this->_close();
-
-		if ($v_exception !== null) {
-			throw $v_exception;
-		}
-
-		if ($this->_tarManifest === null) {
-			$this->setManifest($extractionManifest);
-		}
-
-		return $v_result;
-	}
-
-	/**
-	 * Non-atomic extraction with restore-on-failure.
-	 *
-	 * Files are written directly to `$p_destPath`, but before each non-directory
-	 * entry is overwritten its pre-existing destination file (if any) is renamed
-	 * into a private backup directory created under {@see _staging_temp_directory()}.
-	 *
-	 * On success:  all backup files are deleted and the backup directory removed.
-	 * On failure:  every file written during this extraction is removed, every
-	 *              backed-up original is renamed back to its destination path, and
-	 *              the backup directory is removed.
-	 *
-	 * This provides a lightweight rollback that avoids the extra staging I/O of
-	 * {@see _extractAtomic()}.  The backup directory name is produced by
-	 * {@see _staging_backup_dir_name()}.
-	 *
-	 * @param string  $p_destPath    Non-empty destination directory.
-	 * @param ?string $p_remove_path Path prefix to strip from archive entries.
-	 * @return bool True on success.
-	 */
-	private function _extractDirectWithRestore(string $p_destPath, ?string $p_remove_path): bool
-	{
-		// Create a private backup directory under the system temp dir.
-		$restoreDir = rtrim($p_destPath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $this->_staging_backup_dir_name();
-		if (!@mkdir($restoreDir, self::STAGING_DIR_MODE, true)) {
-			$this->_error("Unable to create restore backup directory '$restoreDir'");
-			return false;
-		}
-
-		$extractionManifest = [];
-		// $backups:  destPath => backupPath  — pre-existing files renamed before overwrite.
-		// $written:  destPath => true         — paths that the extraction attempted to write.
-		$backups = [];
-		$written = [];
-
-		// Pre-write hook: called once for each non-directory entry just before it is
-		// written, after all conflict checks pass.  Backs up any pre-existing file to
-		// $restoreDir and records the write attempt in $written so the failure path
-		// knows what to clean up.
-		$preWriteHook = function (string $extractedPath, bool $preexisted) use ($restoreDir, &$backups, &$written): void {
-			if (file_exists($extractedPath) || is_link($extractedPath)) {
-				// Rename the pre-existing file/link to the backup directory.
-				$backupPath = $restoreDir . DIRECTORY_SEPARATOR . uniqid('', true);
-				if (!@rename($extractedPath, $backupPath)) {
-					$this->_error("Unable to backup '$extractedPath' before overwrite (restore-on-failure)");
-				}
-				$backups[$extractedPath] = $backupPath;
-			}
-			// Track every path we are about to write, regardless of pre-existence.
-			$written[$extractedPath] = true;
-		};
-
-		if (!$this->_openRead()) {
-			@rmdir($restoreDir);
-			return false;
-		}
-
-		$v_exception = null;
-		$v_result = false;
-		try {
-			$v_result = $this->_extractList(
-				$p_destPath,
-				$extractionManifest,
-				null,
 				$p_remove_path,
-				null,      // conflictMode: use getConflictMode()
-				true,      // applyPermissions
+				null,  // conflictMode: use getConflictMode()
+				true,  // applyPermissions
 				$preWriteHook
 			);
 		} catch (\Exception $e) {
@@ -2125,32 +2307,33 @@ class TTarFileExtractor
 
 		$this->_close();
 
-		if ($v_result && $v_exception === null) {
-			// Success: discard all backups and clean up the backup directory.
-			foreach ($backups as $backupPath) {
-				if (file_exists($backupPath) || is_link($backupPath)) {
-					@unlink($backupPath);
+		if ($backupDir !== null) {
+			if ($v_result && $v_exception === null) {
+				// Success: discard all backups and clean up the backup directory.
+				foreach ($backups as $backupPath) {
+					if (file_exists($backupPath) || is_link($backupPath)) {
+						@unlink($backupPath);
+					}
+				}
+			} else {
+				// Failure: remove newly-written files and restore original backups.
+				foreach ($written as $writtenPath => $unused) {
+					// Only unlink files that were not also backed up; for backed-up paths,
+					// the rename below will atomically replace whatever was written.
+					if (!isset($backups[$writtenPath]) && (file_exists($writtenPath) || is_link($writtenPath))) {
+						@unlink($writtenPath);
+					}
+				}
+				foreach ($backups as $origPath => $backupPath) {
+					if (file_exists($backupPath) || is_link($backupPath)) {
+						@rename($backupPath, $origPath);
+					}
 				}
 			}
-		} else {
-			// Failure: remove newly-written files and restore original backups.
-			foreach ($written as $writtenPath => $unused) {
-				// Only unlink files that were not also backed up; for backed-up paths,
-				// the rename below will atomically replace whatever was written.
-				if (!isset($backups[$writtenPath]) && (file_exists($writtenPath) || is_link($writtenPath))) {
-					@unlink($writtenPath);
-				}
+			// Remove the (now-empty) backup directory.
+			if (is_dir($backupDir)) {
+				@rmdir($backupDir);
 			}
-			foreach ($backups as $origPath => $backupPath) {
-				if (file_exists($backupPath) || is_link($backupPath)) {
-					@rename($backupPath, $origPath);
-				}
-			}
-		}
-
-		// Remove the (now-empty) backup directory.
-		if (is_dir($restoreDir)) {
-			@rmdir($restoreDir);
 		}
 
 		$this->_sortManifest($extractionManifest);
@@ -2165,6 +2348,45 @@ class TTarFileExtractor
 		}
 
 		return $v_result;
+	}
+
+	// =========================================================================
+	// Protected — Backup Helpers
+	// =========================================================================
+
+	/**
+	 * Returns a unique backup-directory name used during extraction restore.
+	 *
+	 * A single directory with this name is created adjacent to the destination to
+	 * hold backed-up originals during extraction.  Each call returns a different
+	 * value to prevent collisions between concurrent operations.
+	 *
+	 * Override in a subclass or test double to substitute a fixed, known name.
+	 *
+	 * @return string Unique backup directory name (relative, no separators).
+	 * @since 4.3.3
+	 */
+	protected function _backup_dir_name(): string
+	{
+		return '.~tar_bkp_' . uniqid('', true) . '~';
+	}
+
+	/**
+	 * Returns a deterministic backup filename for the given extracted path.
+	 *
+	 * The name is a SHA-1 hex digest of the full path concatenated with an
+	 * underscore and the basename.  This is collision-resistant (two different
+	 * paths produce different names) while remaining predictable for the same path.
+	 *
+	 * Override in a subclass or test double to substitute a fixed, known name.
+	 *
+	 * @param string $extractedPath Absolute destination path of the file being backed up.
+	 * @return string Backup filename (relative, no directory separators).
+	 * @since 4.3.3
+	 */
+	protected function _backup_filename(string $extractedPath): string
+	{
+		return sha1($extractedPath) . '.' . basename($extractedPath);
 	}
 
 	// =========================================================================
@@ -2180,15 +2402,21 @@ class TTarFileExtractor
 	 * @param string  $p_destPath
 	 * @param ?string $p_remove_path
 	 * @return bool
+	 * @since 4.3.3
 	 */
 	private function _extractAtomic(string $p_destPath, ?string $p_remove_path): bool
 	{
-		// Create the staging directory under the system temp dir for portability.
-		$stagingDir = $this->_staging_dir();
-		if (!@mkdir($stagingDir, self::STAGING_DIR_MODE, true)) {
+		// Staging directory is placed adjacent to the destination (same filesystem
+		// ensures rename() is atomic on POSIX systems).
+		$stagingDir = $this->_staging_directory($p_destPath) . DIRECTORY_SEPARATOR . $this->_staging_dir_name($p_destPath);
+		if (!@mkdir($stagingDir, self::WORKING_DIR_MODE, true)) {
 			$this->_error("Unable to create atomic staging directory '$stagingDir'");
 			return false;
 		}
+
+		// Backup directory is adjacent to the destination — the same structure used
+		// by _extractDirect() — so that per-file originals can be restored on failure.
+		$backupDir = rtrim($p_destPath, '/\\') . DIRECTORY_SEPARATOR . $this->_backup_dir_name();
 
 		$stagingManifest = [];
 
@@ -2231,17 +2459,18 @@ class TTarFileExtractor
 		// and before cleanup deletes the staging tree.
 		$this->_onStagingReady($stagingDir, $stagingManifest);
 
-		// Phase 2: merge staging → destination, applying conflict mode.
+		// Phase 2: merge staging into destination, applying conflict mode.
 		$backups = [];
 		try {
-			$this->_mergeStaging($stagingDir, $p_destPath, $stagingManifest, $backups);
+			$this->_mergeStaging($stagingDir, $p_destPath, $stagingManifest, $backups, $backupDir);
 		} catch (\Exception $e) {
-			// Restore overwritten files from backups.
+			// Restore overwritten files from backups, then clean up both dirs.
 			foreach ($backups as $origPath => $backupPath) {
 				if (file_exists($backupPath)) {
 					@rename($backupPath, $origPath);
 				}
 			}
+			$this->_removeDirectory($backupDir);
 			$this->_removeDirectory($stagingDir);
 			$this->_sortManifest($stagingManifest);
 			$this->setExtractManifest($stagingManifest);
@@ -2251,13 +2480,14 @@ class TTarFileExtractor
 			throw $e;
 		}
 
-		// Success: clean up staging and backups.
-		$this->_removeDirectory($stagingDir);
+		// Success: delete backup files, remove backup dir, then remove staging dir.
 		foreach ($backups as $backupPath) {
 			if (file_exists($backupPath)) {
 				@unlink($backupPath);
 			}
 		}
+		$this->_removeDirectory($backupDir);
+		$this->_removeDirectory($stagingDir);
 
 		$this->_sortManifest($stagingManifest);
 		$this->setExtractManifest($stagingManifest);
@@ -2270,23 +2500,30 @@ class TTarFileExtractor
 
 	/**
 	 * Merges files from $stagingDir into $destDir, applying the active conflict mode.
-	 * Files that are overwritten have their originals backed up in $backups for rollback.
+	 * Files that are overwritten have their originals backed up in $backupDir for rollback.
 	 * On completion $manifest entries have their extractedPath updated to point into $destDir.
 	 *
-	 * @param string  $stagingDir
-	 * @param string  $destDir
-	 * @param array  &$manifest
-	 * @param array  &$backups   Map of original-path => backup-path for rollback.
+	 * The $backupDir is pre-created by _extractAtomic() adjacent to the destination,
+	 * using the same structure as _extractDirect() so that rollback works identically
+	 * in both modes.
+	 *
+	 * @param string  $stagingDir  Absolute path to the staging directory root.
+	 * @param string  $destDir     Absolute path to the extraction destination.
+	 * @param array  &$manifest    Manifest populated by phase-1 extraction.
+	 * @param array  &$backups     Map of original-path => backup-path for rollback.
+	 * @param string  $backupDir   Absolute path to the pre-created backup directory.
+	 * @since 4.3.3
 	 */
 	private function _mergeStaging(
 		string $stagingDir,
 		string $destDir,
 		array &$manifest,
-		array &$backups
+		array &$backups,
+		string $backupDir
 	): void {
 		$this->_dirCheck($destDir);
 
-		$stagingDir = rtrim($stagingDir, '/');
+		$stagingDir = rtrim($stagingDir, '/\\');
 		$stagingDirLen = strlen($stagingDir);
 
 		// Directory permissions are applied after all files have been moved so that
@@ -2322,8 +2559,8 @@ class TTarFileExtractor
 			}
 			$relPath = substr($entry['extractedPath'], $stagingDirLen);
 			$destPath = $destDir . $relPath;
-			// Use STAGING_DIR_MODE (owner+group only); deferred chmod below applies the final mode.
-			$this->_dirCheck($destPath, self::STAGING_DIR_MODE);
+			// Use WORKING_DIR_MODE (traversable during merge); deferred chmod applies the final mode.
+			$this->_dirCheck($destPath, self::WORKING_DIR_MODE);
 
 			// Defer directory chmod — applying restrictive modes before files are moved
 			// in would prevent traversal of the directory during the merge phase.
@@ -2375,8 +2612,12 @@ class TTarFileExtractor
 			}
 
 			// Backup existing file so we can restore it on merge failure.
+			// Uses the same backup dir + per-file naming as _extractDirect().
 			if ($exists) {
-				$backupPath = $destPath . $this->_staging_backup_dir_name();
+				if (!is_dir($backupDir)) {
+					@mkdir($backupDir, self::WORKING_DIR_MODE, true);
+				}
+				$backupPath = $backupDir . DIRECTORY_SEPARATOR . $this->_backup_filename($destPath);
 				if (!@rename($destPath, $backupPath)) {
 					$this->_error("Unable to backup '$destPath' for atomic replace");
 				}
@@ -2384,9 +2625,9 @@ class TTarFileExtractor
 			}
 
 			// Ensure the parent directory exists in the destination.
-			// Use STAGING_DIR_MODE (owner+group only); archive-entry dirs are already
-			// in $deferredDirModes and will receive their final mode below.
-			$this->_dirCheck(dirname($destPath), self::STAGING_DIR_MODE);
+			// Use WORKING_DIR_MODE; archive-entry dirs are already in $deferredDirModes
+			// and will receive their final mode below.
+			$this->_dirCheck(dirname($destPath), self::WORKING_DIR_MODE);
 
 			// Hard link entries: re-create the link relationship in the destination
 			// rather than moving the staging copy.  On the same filesystem rename()
@@ -2397,7 +2638,7 @@ class TTarFileExtractor
 			if ($typeFlag === self::TYPE_HARDLINK) {
 				$rawLinkpath = trim($entry['linkpath'] ?? '');
 				if ($rawLinkpath !== '') {
-					$linkTargetDest = $destDir . '/' . ltrim($rawLinkpath, '/');
+					$linkTargetDest = $destDir . DIRECTORY_SEPARATOR . ltrim($rawLinkpath, '/\\');
 					if (file_exists($linkTargetDest) && @link($linkTargetDest, $destPath)) {
 						@unlink($stagingPath);  // best-effort cleanup of the staging copy
 						$moved = true;
@@ -2425,21 +2666,6 @@ class TTarFileExtractor
 			@chmod($dirPath, $mode);
 		}
 	}
-	
-	/**
-	 * Returns the full absolute path for a new atomic staging directory.
-	 *
-	 * Combines {@see _staging_temp_directory()} and {@see _staging_dir_name()} to
-	 * produce a unique, non-existent path under the system temp directory.  Called
-	 * once per atomic extraction to allocate the staging root.
-	 *
-	 * @return string Absolute path for the staging directory (not yet created).
-	 * @since 4.3.3
-	 */
-	protected function _staging_dir(): string
-	{
-		return $this->_staging_temp_directory() . DIRECTORY_SEPARATOR . $this->_staging_dir_name();
-	}
 
 	/**
 	 * Returns the base directory under which staging directories are created.
@@ -2447,12 +2673,13 @@ class TTarFileExtractor
 	 * Defaults to {@see sys_get_temp_dir()}.  Override in a subclass or test
 	 * double to redirect staging I/O to a controlled location.
 	 *
-	 * @return string Absolute path to the staging parent directory.
 	 * @since 4.3.3
+	 * @param string $p_destPath
+	 * @return string Absolute path to the staging parent directory.
 	 */
-	protected function _staging_temp_directory(): string
+	protected function _staging_directory(string $p_destPath): string
 	{
-		return sys_get_temp_dir();
+		return rtrim($p_destPath, '/\\');
 	}
 
 	/**
@@ -2462,38 +2689,20 @@ class TTarFileExtractor
 	 * extractions do not collide.  The name is prefixed with `.prado_tar_stage_`
 	 * and suffixed with `.tmp` to aid cleanup scripts.
 	 *
+	 * @since 4.3.3
+	 * @param string $p_destPath
 	 * @return string Unique directory name (relative, no separators).
-	 * @since 4.3.3
 	 */
-	protected function _staging_dir_name(): string
+	protected function _staging_dir_name(string $p_destPath): string
 	{
-		return uniqid('.prado_tar_stage_', true) . '.tmp';
-	}
-
-	/**
-	 * Returns a unique backup-directory name used during the atomic merge phase
-	 * and during non-atomic restore-on-failure backups.
-	 *
-	 * In atomic mode ({@see _mergeStaging()}) the name is appended to each
-	 * destination file path to create a sibling backup path.  In non-atomic
-	 * restore mode ({@see _extractDirectWithRestore()}) a single directory with
-	 * this name is created under {@see _staging_temp_directory()} to hold all
-	 * backed-up originals.  Each call returns a different value to prevent
-	 * collisions between concurrent operations.
-	 *
-	 * @return string Unique backup identifier / directory name.
-	 * @since 4.3.3
-	 */
-	protected function _staging_backup_dir_name(): string
-	{
-		return '.~staging_bkp_' . uniqid('', true) . '~';
+		return uniqid('.tar_stage_') . '.' . basename($this->getTarPath());
 	}
 
 	/**
 	 * Called after phase-1 (staging extraction) completes successfully and before
 	 * phase-2 (_mergeStaging) begins.  The staging directory still contains all
-	 * extracted files with their staging permissions (STAGING_DIR_MODE /
-	 * STAGING_FILE_MODE) and has not yet been cleaned up.
+	 * extracted files with WORKING_DIR_MODE permissions and has not yet been
+	 * cleaned up.
 	 *
 	 * The default implementation is a no-op.  Override in a subclass or test
 	 * double to inspect staging contents, assert permissions, or inject faults.
@@ -2596,9 +2805,10 @@ class TTarFileExtractor
 	 * Opens the archive for reading, downloading remote URLs to a temp file first.
 	 * Detects compression and sets the appropriate stream handle.
 	 *
+	 * @param ?string $p_tempDir
 	 * @return bool True on success.
 	 */
-	private function _openRead(): bool
+	private function _openRead(?string $p_tempDir = null): bool
 	{
 		$isTemporary = false;
 
@@ -2609,7 +2819,7 @@ class TTarFileExtractor
 
 			$v_temppath = $this->getTempPath();
 			if ($v_temppath === null) {
-				$v_temppath = $this->_new_local_temppath('tar');
+				$v_temppath = $this->_new_local_temppath($p_tempDir, 'tar');
 
 				$ctx = stream_context_create([
 					'http' => ['timeout' => $timeout = $this->getUrlTimeout()],
@@ -2655,7 +2865,7 @@ class TTarFileExtractor
 
 		return true;
 	}
-	
+
 	/**
 	 * Returns a full absolute path for a new unique temporary file.
 	 *
@@ -2664,12 +2874,14 @@ class TTarFileExtractor
 	 * LZMA-compressed archive must be written to disk before extraction.
 	 *
 	 * @param string $prefix Optional filename prefix (e.g. `'tar'`, `'lzma'`).
+	 * @param ?string $p_tempDir
+	 * @param string $basename
 	 * @return string Absolute path for a new temp file (not yet created).
 	 * @since 4.3.3
 	 */
-	protected function _new_local_temppath(string $prefix = ''): string
+	protected function _new_local_temppath(?string $p_tempDir, string $prefix = '', string $basename = ''): string
 	{
-		return $this->_local_temp_directory() . DIRECTORY_SEPARATOR . $this->_local_temp_file($prefix);
+		return $this->_local_temp_directory($p_tempDir) . DIRECTORY_SEPARATOR . $this->_local_temp_file($prefix, $basename);
 	}
 
 	/**
@@ -2678,11 +2890,15 @@ class TTarFileExtractor
 	 * Defaults to {@see sys_get_temp_dir()}.  Override in a subclass or test
 	 * double to redirect temporary file I/O to a controlled location.
 	 *
+	 * @param ?string $p_tempDir
 	 * @return string Absolute path to the local temp file parent directory.
 	 * @since 4.3.3
 	 */
-	protected function _local_temp_directory(): string
+	protected function _local_temp_directory(?string $p_tempDir = null): string
 	{
+		if (!empty($p_tempDir)) {
+			return $p_tempDir;
+		}
 		return sys_get_temp_dir();
 	}
 
@@ -2693,25 +2909,40 @@ class TTarFileExtractor
 	 * aid cleanup scripts and to make the file type obvious.
 	 *
 	 * @param string $prefix Optional filename prefix (e.g. `'tar'`, `'lzma'`).
+	 * @param string $basename
 	 * @return string Unique filename (relative, no directory separators).
 	 * @since 4.3.3
 	 */
-	protected function _local_temp_file(string $prefix = ''): string
+	protected function _local_temp_file(string $prefix = '', string $basename = ''): string
 	{
-		return uniqid($prefix, true) . '.tmp';
+		return uniqid($prefix, true) . (empty($basename) ? '.tmp' : '.' . $basename);
 	}
 
 	/**
 	 * Opens a (possibly compressed) file for reading and returns the stream handle.
-	 * Returns a string error message on failure, false if the handle could not be created.
 	 *
-	 * @param string $filepath     Path to the file; updated in place for LZMA decompression.
+	 * For gzip and bzip2 the PHP extension is tried first (`gzopen` / `bzopen`).
+	 * When the extension is unavailable the method falls back to CLI decompression
+	 * via {@see _decompressViaCli()}, identical to the strategy always used for LZMA.
+	 * After CLI decompression the resulting plain tar is opened with `fopen` and
+	 * `_workingCompression` is set to `COMPRESSION_NONE` so that subsequent read,
+	 * seek, and close calls use the plain-file variants.
+	 *
+	 * When `$isTemporary` is true and CLI decompression is used, the compressed
+	 * source file (e.g. a URL download) is deleted and `$filepath` is updated to
+	 * the decompressed temp path so that the caller can register it for cleanup.
+	 *
+	 * @param string $filepath     Path to the file; updated in-place when CLI
+	 *                             decompression replaces a temp file.
 	 * @param int    $compression  One of the COMPRESSION_* constants.
 	 * @param bool   $isTemporary  True when $filepath is a downloaded/decompressed temp file.
-	 * @return false|resource|string
+	 * @return false|resource|string Resource handle on success; string error message on
+	 *                               recoverable failure; false for an unknown compression type.
 	 */
 	private function _openFile(string &$filepath, int $compression, bool $isTemporary)
 	{
+		$workingCompression = $compression;
+
 		switch ($compression) {
 			case self::COMPRESSION_NONE:
 				$handle = @fopen($filepath, 'rb');
@@ -2721,63 +2952,161 @@ class TTarFileExtractor
 				break;
 
 			case self::COMPRESSION_GZIP:
-				if (!function_exists('gzopen')) {
-					return 'zlib extension is required for gzip compression';
+				if (function_exists('gzopen')) {
+					$handle = @gzopen($filepath, 'rb');
+					if ($handle === false) {
+						return "Unable to open gzip in read binary mode '$filepath'";
+					}
+					break;
 				}
-				$handle = @gzopen($filepath, 'rb');
+				// PHP zlib extension unavailable — fall back to CLI decompression.
+				$tempFile = '';
+				$err = $this->_decompressViaCli($compression, $filepath, $isTemporary, $tempFile);
+				if ($err !== null) {
+					return $err;
+				}
+				if ($isTemporary) {
+					$filepath = $tempFile;
+				}
+				$handle = @fopen($tempFile, 'rb');
 				if ($handle === false) {
-					return "Unable to open gzip in read binary mode '$filepath'";
+					return "Unable to open CLI-decompressed gzip in read binary mode '$tempFile'";
 				}
+				$workingCompression = self::COMPRESSION_NONE;
 				break;
 
 			case self::COMPRESSION_BZIP2:
-				if (!function_exists('bzopen')) {
-					return 'bzip2 extension is required for bzip2 compression';
+				if (function_exists('bzopen')) {
+					$handle = @bzopen($filepath, 'r');
+					if ($handle === false) {
+						return "Unable to open bzip2 in read binary mode '$filepath'";
+					}
+					break;
 				}
-				$handle = @bzopen($filepath, 'r');
+				// PHP bz2 extension unavailable — fall back to CLI decompression.
+				$tempFile = '';
+				$err = $this->_decompressViaCli($compression, $filepath, $isTemporary, $tempFile);
+				if ($err !== null) {
+					return $err;
+				}
+				if ($isTemporary) {
+					$filepath = $tempFile;
+				}
+				$handle = @fopen($tempFile, 'rb');
 				if ($handle === false) {
-					return "Unable to open bzip2 in read binary mode '$filepath'";
+					return "Unable to open CLI-decompressed bzip2 in read binary mode '$tempFile'";
 				}
+				$workingCompression = self::COMPRESSION_NONE;
 				break;
 
 			case self::COMPRESSION_LZMA:
-				$xzDec = trim(shell_exec('which xzdec') ?: '');
-				$xzCmd = trim(shell_exec('which xz') ?: '');
-				if (!$xzDec && !$xzCmd) {
-					return 'xz command is required for LZMA compression';
+				$tempFile = '';
+				$err = $this->_decompressViaCli($compression, $filepath, $isTemporary, $tempFile);
+				if ($err !== null) {
+					return $err;
 				}
-				$tempFile = $this->_new_local_temppath('lzma');
-				$command = $xzDec
-					? escapeshellarg($xzDec) . ' ' . escapeshellarg($filepath) . ' > ' . escapeshellarg($tempFile)
-					: escapeshellarg($xzCmd) . ' -dc ' . escapeshellarg($filepath) . ' > ' . escapeshellarg($tempFile);
-
-				$output = [];
-				$returnVar = -1;
-				exec($command, $output, $returnVar);
-
-				if (!file_exists($tempFile)) {
-					return $returnVar !== 0
-						? "Unable to decompress LZMA archive: command failed (exit $returnVar)"
-						: "Unable to decompress LZMA archive: temp file not created '$tempFile'";
-				}
-
 				if ($isTemporary) {
-					@unlink($filepath);
 					$filepath = $tempFile;
 				}
-
 				$handle = @fopen($tempFile, 'rb');
 				if ($handle === false) {
-					return "Unable to open decompressed LZMA in read binary mode '$filepath'";
+					return "Unable to open CLI-decompressed LZMA in read binary mode '$tempFile'";
 				}
+				$workingCompression = self::COMPRESSION_NONE;
 				break;
 
 			default:
 				return false;
 		}
 
-		$this->_workingCompression = $compression;
+		$this->_workingCompression = $workingCompression;
 		return $handle;
+	}
+
+	/**
+	 * Decompresses a compressed file to a new temporary file using a system CLI command.
+	 *
+	 * Iterates through {@see CLI_DECOMPRESS_CANDIDATES} for the given compression type,
+	 * locates the first available command via `which`, and executes it to stream the
+	 * decompressed output into a new temp file.  The command line built is:
+	 *
+	 *   `<cmd> [flags] <input> > <output>`
+	 *
+	 * If `$isTemporary` is true the compressed source file (e.g. a URL download temp)
+	 * is deleted after successful decompression.
+	 *
+	 * This is the shared decompression backend used for LZMA (always) and for gzip /
+	 * bzip2 when the corresponding PHP extension is unavailable.
+	 *
+	 * @param int    $compression  One of COMPRESSION_GZIP, COMPRESSION_BZIP2, or
+	 *                             COMPRESSION_LZMA.
+	 * @param string $filepath     Path to the compressed source file.
+	 * @param bool   $isTemporary  True when $filepath is a temp file (e.g. URL download)
+	 *                             that should be deleted after decompression.
+	 * @param string &$outpath     Receives the absolute path of the decompressed temp
+	 *                             file on success.  Unchanged on failure.
+	 * @return null|string Null on success; a human-readable error message on failure.
+	 * @since 4.3.3
+	 */
+	private function _decompressViaCli(int $compression, string $filepath, bool $isTemporary, string &$outpath): ?string
+	{
+		$candidates = self::CLI_DECOMPRESS_CANDIDATES[$compression] ?? null;
+		if ($candidates === null) {
+			return "No CLI decompression candidates defined for compression type $compression";
+		}
+
+		$cmdPath = null;
+		$cmdFlags = null;
+		foreach ($candidates as [$name, $flags]) {
+			$found = trim((string) shell_exec('which ' . escapeshellarg($name)));
+			if ($found !== '') {
+				$cmdPath = $found;
+				$cmdFlags = $flags;
+				break;
+			}
+		}
+
+		if ($cmdPath === null) {
+			$names = array_column($candidates, 0);
+			$label = match ($compression) {
+				self::COMPRESSION_GZIP => 'gzip',
+				self::COMPRESSION_BZIP2 => 'bzip2',
+				self::COMPRESSION_LZMA => 'LZMA/xz',
+				default => "compression type $compression",
+			};
+			return 'CLI decompression of ' . $label . ' requires one of: ' . implode(', ', $names);
+		}
+
+		$prefix = match ($compression) {
+			self::COMPRESSION_GZIP => 'gz',
+			self::COMPRESSION_BZIP2 => 'bz2',
+			self::COMPRESSION_LZMA => 'lzma',
+			default => 'dec',
+		};
+		$tempFile = $this->_new_local_temppath(null, $prefix, 'tar');
+
+		$cmd = escapeshellarg($cmdPath);
+		if ($cmdFlags !== null) {
+			$cmd .= ' ' . $cmdFlags;
+		}
+		$cmd .= ' ' . escapeshellarg($filepath) . ' > ' . escapeshellarg($tempFile);
+
+		$output = [];
+		$returnVar = -1;
+		exec($cmd, $output, $returnVar);
+
+		if (!file_exists($tempFile)) {
+			return $returnVar !== 0
+				? "Unable to decompress archive via CLI: command failed (exit $returnVar)"
+				: "Unable to decompress archive via CLI: temp file not created '$tempFile'";
+		}
+
+		if ($isTemporary) {
+			@unlink($filepath);
+		}
+
+		$outpath = $tempFile;
+		return null;
 	}
 
 	/**
@@ -2815,6 +3144,7 @@ class TTarFileExtractor
 	 * Called from the destructor.
 	 *
 	 * @return bool
+	 * @since 4.3.3
 	 */
 	private function _completeTarFile(): bool
 	{
@@ -2886,6 +3216,10 @@ class TTarFileExtractor
 	 * Detects the compression format of $tarname using magic bytes (local files)
 	 * or file-extension heuristics (URLs / unavailable files).
 	 *
+	 * Detection is format-only: the method does not probe for PHP extensions or
+	 * CLI tools.  If neither a PHP extension nor a CLI command is available for the
+	 * detected format, {@see _openFile()} will surface an appropriate error.
+	 *
 	 * @param string $tarname Archive path or URL.
 	 * @return int One of the COMPRESSION_* constants.
 	 * @since 4.3.3
@@ -2904,39 +3238,27 @@ class TTarFileExtractor
 			if ($magic !== false && strlen($magic) >= 2) {
 				$bytes = array_values(unpack('C6', str_pad($magic, 6, "\x00")));
 
-				if ($bytes[0] === 0x1f && $bytes[1] === 0x8b && function_exists('gzopen')) {
+				if ($bytes[0] === 0x1f && $bytes[1] === 0x8b) {
 					return self::COMPRESSION_GZIP;
 				}
-				if ($bytes[0] === 0x42 && $bytes[1] === 0x5a && function_exists('bzopen')) {
+				if ($bytes[0] === 0x42 && $bytes[1] === 0x5a) {
 					return self::COMPRESSION_BZIP2;
 				}
 				if ($bytes[0] === 0xfd && strlen($magic) >= 6 && $magic === "\xfd\x37\x7a\x58\x5a\x00") {
-					$xzDec = trim(shell_exec('which xzdec') ?: '');
-					$xzCmd = trim(shell_exec('which xz') ?: '');
-					if ($xzDec || $xzCmd) {
-						return self::COMPRESSION_LZMA;
-					}
+					return self::COMPRESSION_LZMA;
 				}
 			}
 		}
 
 		$lower = strtolower($tarname);
 		if (str_ends_with($lower, '.tar.gz') || str_ends_with($lower, '.tgz')) {
-			if (function_exists('gzopen')) {
-				return self::COMPRESSION_GZIP;
-			}
+			return self::COMPRESSION_GZIP;
 		}
 		if (str_ends_with($lower, '.tar.bz2') || str_ends_with($lower, '.tbz2')) {
-			if (function_exists('bzopen')) {
-				return self::COMPRESSION_BZIP2;
-			}
+			return self::COMPRESSION_BZIP2;
 		}
 		if (str_ends_with($lower, '.tar.xz') || str_ends_with($lower, '.txz')) {
-			$xzDec = trim(shell_exec('which xzdec') ?: '');
-			$xzCmd = trim(shell_exec('which xz') ?: '');
-			if ($xzDec || $xzCmd) {
-				return self::COMPRESSION_LZMA;
-			}
+			return self::COMPRESSION_LZMA;
 		}
 
 		return self::COMPRESSION_NONE;
@@ -2976,8 +3298,8 @@ class TTarFileExtractor
 		}
 
 		$v_data = unpack(
-			'a100filepath/a8mode/a8uid/a8gid/a12size/a12mtime/'
-			. 'a8checksum/a1typeflag/a100linkpath/a6magic/a2version/'
+			'a100tarpath/a8mode/a8uid/a8gid/a12size/a12mtime/'
+			. 'a8checksum/a1typeflag/a100tarlink/a6magic/a2version/'
 			. 'a32uname/a32gname/a8devmajor/a8devminor',
 			$v_binary_data
 		);
@@ -2990,7 +3312,7 @@ class TTarFileExtractor
 				return true;
 			}
 			$this->_error(
-				'Invalid checksum for file "' . $v_data['filepath']
+				'Invalid checksum for file "' . $v_data['tarpath']
 				. '" : ' . $v_checksum . ' calculated, '
 				. $v_header['checksum'] . ' expected'
 			);
@@ -3007,26 +3329,41 @@ class TTarFileExtractor
 			$typeFlag = ord($rawTypeflag[0]);
 		}
 
-		$filepath = trim($v_data['filepath']);
-		$linkpath = trim($v_data['linkpath']);
-		$filenorm = $this->_normalizePath($filepath);
+		$tarpath = trim($v_data['tarpath']);
+		$tarpath_norm = $this->_normalizePath($tarpath);
+		$filepath = $this->_toSystemSpecificPath($tarpath);
+		$filepath_norm = $this->_toSystemSpecificPath($tarpath_norm);
+		
+		//	$filepath_norm doesn't need the trailing DIRECTORY_SEPARATOR.
+		if ($typeFlag === self::TYPE_DIRECTORY) {	// But add it here
+			$tarpath_norm .= '/';	
+		}
 
-		$v_header['tarpath'] = $filepath;
-		$v_header['filepath'] = $filepath;
-		$v_header['filepath_norm'] = $filenorm;
-		$v_header['filesafe'] = $this->_isRelativePathSafe((string) ($filenorm ?? ''));
-		$v_header['name'] = basename($filepath);
-		$v_header['filename'] = $filepath;
+		$tarlink = trim($v_data['tarlink']);
+		$tarlink_norm = $this->_normalizePath($tarlink);
+		$linkpath = $this->_toSystemSpecificPath($tarlink);
+		$linkpath_norm = $this->_toSystemSpecificPath($tarlink_norm);
+
+		$v_header['typeflag'] = $typeFlag;
+		$v_header['tarpath'] = $tarpath;  // Raw POSIX path as stored in the tar header.
+		$v_header['tarpath_norm'] = strlen($tarpath) ? $tarpath_norm : '';
+		$v_header['filesafe'] = $this->_isRelativePathSafe((string) ($tarpath_norm ?? ''));
+		$v_header['filepath'] = $filepath;  // OS-native path for filesystem ops.
+		$v_header['filepath_norm'] =  strlen($filepath) ? $filepath_norm : '';
+		$v_header['filename'] = basename($filepath_norm);  // Entry basename.
 		$v_header['mode'] = OctDec(trim($v_data['mode']));
 		$v_header['uid'] = OctDec(trim($v_data['uid']));
 		$v_header['gid'] = OctDec(trim($v_data['gid']));
 		$v_header['size'] = OctDec(trim($v_data['size']));
 		$v_header['mtime'] = OctDec(trim($v_data['mtime']));
-		$v_header['tarlink'] = $linkpath;
-		$v_header['linkpath'] = $linkpath;
+		$v_header['tarlink'] = $tarlink;  // Raw POSIX link target as stored in the tar header.
+		$v_header['tarlink_norm'] = strlen($tarlink) ? $tarlink_norm : '';
+		$v_header['linksafe'] = '';//$this->_isRelativePathSafe((string) ($tarlink_norm ?? ''));
+		$v_header['linkpath'] = '';//$linkpath;  // OS-native link target for filesystem ops.
+		$v_header['linkpath_norm'] = '';//$linkpath_norm;
+		$v_header['linkname'] = '';//basename($linkpath_norm);  // Link target basename.
 		$v_header['uname'] = trim($v_data['uname']);
 		$v_header['gname'] = trim($v_data['gname']);
-		$v_header['typeflag'] = $typeFlag;
 		$v_header['device'] = in_array($typeFlag, [self::TYPE_CHAR_SPECIAL, self::TYPE_BLOCK_SPECIAL], true);
 
 		switch ($typeFlag) {
@@ -3035,9 +3372,10 @@ class TTarFileExtractor
 				break;
 			case self::TYPE_SYMLINK:
 			case self::TYPE_HARDLINK:
-				$linknorm = $this->_normalizePath($linkpath);
-				$v_header['linkpath_norm'] = $linknorm;
-				$v_header['linksafe'] = $this->_isRelativePathSafe((string) ($linknorm ?? ''));
+				$v_header['linksafe'] 		= $this->_isRelativePathSafe((string) ($tarlink_norm ?? ''));
+				$v_header['linkpath'] 		= $linkpath;  // OS-native link target for filesystem ops.
+				$v_header['linkpath_norm'] 	= strlen($linkpath) ? $linkpath_norm : '';;
+				$v_header['linkname'] 		= basename($linkpath_norm);  // Link target basename.
 				break;
 		}
 
@@ -3052,6 +3390,20 @@ class TTarFileExtractor
 		};
 
 		return true;
+	}
+
+	/**
+	 * Converts a POSIX-style path to the OS-native equivalent by replacing every
+	 * `/` with {@see DIRECTORY_SEPARATOR}.  On Linux/macOS this is a no-op;
+	 * on Windows forward slashes become backslashes.
+	 *
+	 * @param string $path POSIX-style path.
+	 * @return string OS-native path.
+	 * @since 4.3.3
+	 */
+	private function _toSystemSpecificPath(string $path): string
+	{
+		return str_replace('/', DIRECTORY_SEPARATOR, $path);
 	}
 
 	/**
@@ -3078,14 +3430,32 @@ class TTarFileExtractor
 			return false;
 		}
 
-		$v_header[$field] = rtrim($v_data, "\x00");
+		$tarfile = rtrim($v_data, "\x00");
 
 		if ($field === 'filepath') {
-			$filenorm = $this->_normalizePath($v_header['filepath']);
-			$v_header['filepath_norm'] = $filenorm;
-			$v_header['filesafe'] = $this->_isRelativePathSafe((string) ($filenorm ?? ''));
-			$v_header['name'] = basename($v_header['filepath']);
-			$v_header['filename'] = $v_header['filepath'];
+			$tarpath_norm = $this->_normalizePath($tarfile);
+			$filepath_norm = $this->_toSystemSpecificPath($tarpath_norm);
+			//	$filepath_norm doesn't need the trailing DIRECTORY_SEPARATOR.
+			if ($v_header['typeflag'] === self::TYPE_DIRECTORY) {	// But add it here
+				$tarpath_norm .= '/';	
+			}
+			$v_header['tarpath'] 		= $tarfile;
+			$v_header['tarpath_norm'] 	= strlen($tarfile) ? $tarpath_norm : '';
+			$v_header['filesafe'] 		= $this->_isRelativePathSafe((string) ($tarpath_norm ?? ''));
+			$v_header['filepath'] 		= $this->_toSystemSpecificPath($tarfile);
+			$v_header['filepath_norm'] 	= strlen($tarfile) ? $filepath_norm : '';;
+			$v_header['filename'] 		= basename($filepath_norm);
+		} elseif ($field === 'linkpath') {
+			$tarlink_norm = $this->_normalizePath($tarfile);
+			$linkpath_norm = $this->_toSystemSpecificPath($tarlink_norm);
+			$v_header['tarlink'] 		= $tarfile;
+			$v_header['tarlink_norm'] 	= strlen($tarfile) ? $tarlink_norm : '';
+			$v_header['linksafe'] 		= $this->_isRelativePathSafe((string) ($tarlink_norm ?? ''));
+			$v_header['linkpath'] 		= $this->_toSystemSpecificPath($tarfile);
+			$v_header['linkpath_norm'] 	= strlen($tarfile) ? $linkpath_norm : '';
+			$v_header['linkname'] 		= basename($linkpath_norm);
+		} else {
+			$v_header[$field] = $tarfile;
 		}
 
 		return true;
@@ -3097,6 +3467,7 @@ class TTarFileExtractor
 	 *
 	 * @param array &$v_header
 	 * @return bool True if a fatal read error occurred (caller should abort).
+	 * @since 4.3.3
 	 */
 	protected function processLongHeader(array &$v_header): bool
 	{
@@ -3169,7 +3540,7 @@ class TTarFileExtractor
 			return false;
 		}
 
-		return str_starts_with($normalizedFilePath . '/', $normalizedDestPath . '/');
+		return str_starts_with($normalizedFilePath . DIRECTORY_SEPARATOR, $normalizedDestPath . DIRECTORY_SEPARATOR);
 	}
 
 	/**
@@ -3187,8 +3558,8 @@ class TTarFileExtractor
 		if ($v_linkpath === '') {
 			return false;
 		}
-		if (!str_starts_with($v_linkpath, '/')) {
-			$v_linkpath = $v_dir . '/' . $v_linkpath;
+		if (!str_starts_with($v_linkpath, '/') && !str_starts_with($v_linkpath, DIRECTORY_SEPARATOR)) {
+			$v_linkpath = $v_dir . DIRECTORY_SEPARATOR . $v_linkpath;
 		}
 		return $this->_validatePathSecurity($v_linkpath, $p_destPath);
 	}
@@ -3205,6 +3576,9 @@ class TTarFileExtractor
 		if ($path === null) {
 			return null;
 		}
+
+		// Normalise Windows backslashes so both separator styles are handled.
+		$path = str_replace('\\', '/', $path);
 
 		$isAbsolute = str_starts_with($path, '/');
 		$parts = explode('/', $path);

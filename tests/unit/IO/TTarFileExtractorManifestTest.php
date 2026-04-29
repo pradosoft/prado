@@ -182,9 +182,8 @@ class TTarFileExtractorManifestTest extends TestCase
 
 		$this->assertNotNull($info);
 		$this->assertSame('meta.txt', $info['path']);
-		$this->assertSame('meta.txt', $info['name']);
-		$this->assertSame('file', $info['type']);
 		$this->assertSame('meta.txt', $info['filename']);
+		$this->assertSame('file', $info['type']);
 		$this->assertSame(strlen($content), $info['size']);
 		$this->assertSame(self::FIXED_MTIME, $info['mtime']);
 		$this->assertSame(0o755, $info['mode']);
@@ -380,6 +379,105 @@ class TTarFileExtractorManifestTest extends TestCase
 		$this->assertNull($extractor->getManifestIsDevice('nonexistent'));
 	}
 
+	public function testGetManifestIsFileForFileAndNonFile()
+	{
+		$tarFile = $this->testDir . '/isfile.tar';
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('dir/', '', '5'),
+			TarTestHelper::entry('file.txt', 'data'),
+			TarTestHelper::entry('link.txt', '', '2', 'file.txt'),
+			TarTestHelper::entry('hardlink.txt', '', '1', 'file.txt'),
+		]);
+
+		$extractor = new TTarFileExtractor($tarFile);
+
+		// TYPE_FILE (0) → true.
+		$this->assertTrue($extractor->getManifestIsFile('file.txt'));
+		// TYPE_DIRECTORY (5), TYPE_SYMLINK (2), TYPE_HARDLINK (1) → false.
+		$this->assertFalse($extractor->getManifestIsFile('dir/'));
+		$this->assertFalse($extractor->getManifestIsFile('link.txt'));
+		$this->assertFalse($extractor->getManifestIsFile('hardlink.txt'));
+		// Missing entry → null.
+		$this->assertNull($extractor->getManifestIsFile('nonexistent.txt'));
+	}
+
+	public function testGetManifestIsDirectoryForDirAndNonDir()
+	{
+		$tarFile = $this->testDir . '/isdir.tar';
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('mydir/', '', '5'),
+			TarTestHelper::entry('mydir/file.txt', 'data'),
+			TarTestHelper::entry('link.txt', '', '2', 'mydir/file.txt'),
+		]);
+
+		$extractor = new TTarFileExtractor($tarFile);
+
+		// TYPE_DIRECTORY (5) → true.
+		$this->assertTrue($extractor->getManifestIsDirectory('mydir/'));
+		// TYPE_FILE (0), TYPE_SYMLINK (2) → false.
+		$this->assertFalse($extractor->getManifestIsDirectory('mydir/file.txt'));
+		$this->assertFalse($extractor->getManifestIsDirectory('link.txt'));
+		// Missing entry → null.
+		$this->assertNull($extractor->getManifestIsDirectory('nonexistent/'));
+	}
+
+	public function testGetManifestIsSymLinkForSymlinkAndNonSymlink()
+	{
+		$tarFile = $this->testDir . '/issymlink.tar';
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('target.txt', 'data'),
+			TarTestHelper::entry('symlink.txt', '', '2', 'target.txt'),
+			TarTestHelper::entry('hardlink.txt', '', '1', 'target.txt'),
+			TarTestHelper::entry('dir/', '', '5'),
+		]);
+
+		$extractor = new TTarFileExtractor($tarFile);
+
+		// TYPE_SYMLINK (2) → true.
+		$this->assertTrue($extractor->getManifestIsSymLink('symlink.txt'));
+		// TYPE_FILE (0), TYPE_HARDLINK (1), TYPE_DIRECTORY (5) → false.
+		$this->assertFalse($extractor->getManifestIsSymLink('target.txt'));
+		$this->assertFalse($extractor->getManifestIsSymLink('hardlink.txt'));
+		$this->assertFalse($extractor->getManifestIsSymLink('dir/'));
+		// Missing entry → null.
+		$this->assertNull($extractor->getManifestIsSymLink('nonexistent.txt'));
+	}
+
+	public function testGetManifestIsTypeFlagMatchesExactConstant()
+	{
+		$tarFile = $this->testDir . '/istypeflag.tar';
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('file.txt', 'data'),
+			TarTestHelper::entry('dir/', '', '5'),
+			TarTestHelper::entry('symlink.txt', '', '2', 'file.txt'),
+			TarTestHelper::entry('hardlink.txt', '', '1', 'file.txt'),
+			TarTestHelper::entry('char_dev', '', '3'),
+			TarTestHelper::entry('block_dev', '', '4'),
+			TarTestHelper::entry('fifo_pipe', '', '6'),
+		]);
+
+		$extractor = new TTarFileExtractor($tarFile);
+		$extractor->setStrict(false);
+		$extractor->getManifest();
+
+		// Each entry matches only its own TYPE_* constant.
+		$this->assertTrue($extractor->getManifestIsTypeFlag('file.txt',     TTarFileExtractor::TYPE_FILE));
+		$this->assertTrue($extractor->getManifestIsTypeFlag('dir/',         TTarFileExtractor::TYPE_DIRECTORY));
+		$this->assertTrue($extractor->getManifestIsTypeFlag('symlink.txt',  TTarFileExtractor::TYPE_SYMLINK));
+		$this->assertTrue($extractor->getManifestIsTypeFlag('hardlink.txt', TTarFileExtractor::TYPE_HARDLINK));
+		$this->assertTrue($extractor->getManifestIsTypeFlag('char_dev',     TTarFileExtractor::TYPE_CHAR_SPECIAL));
+		$this->assertTrue($extractor->getManifestIsTypeFlag('block_dev',    TTarFileExtractor::TYPE_BLOCK_SPECIAL));
+		$this->assertTrue($extractor->getManifestIsTypeFlag('fifo_pipe',    TTarFileExtractor::TYPE_FIFO));
+
+		// Cross-checks: a wrong constant returns false.
+		$this->assertFalse($extractor->getManifestIsTypeFlag('file.txt',    TTarFileExtractor::TYPE_DIRECTORY));
+		$this->assertFalse($extractor->getManifestIsTypeFlag('dir/',        TTarFileExtractor::TYPE_FILE));
+		$this->assertFalse($extractor->getManifestIsTypeFlag('symlink.txt', TTarFileExtractor::TYPE_HARDLINK));
+
+		// Missing entry → null regardless of the requested typeflag.
+		$this->assertNull($extractor->getManifestIsTypeFlag('nonexistent.txt', TTarFileExtractor::TYPE_FILE));
+	}
+
 	public function testgetManifestInfoReturnsNullForMissingPath()
 	{
 		$tarFile = $this->testDir . '/missing.tar';
@@ -399,6 +497,203 @@ class TTarFileExtractorManifestTest extends TestCase
 		$extractor = new TTarFileExtractor($tarFile);
 		$this->assertNotNull($extractor->getManifestInfo('src/'));
 		$this->assertNotNull($extractor->getManifestInfo('src'));  // without trailing sep
+	}
+
+	// ---------------------------------------------------------------------------
+	// Group 3b: Path-field getters — getManifestTarPath / getManifestTarLink / getManifestFilePath
+	// ---------------------------------------------------------------------------
+
+	public function testGetManifestTarPathReturnsRawPosixPath()
+	{
+		$tarFile = $this->testDir . '/tarpath.tar';
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('subdir/', '', '5'),
+			TarTestHelper::entry('subdir/file.txt', 'hello'),
+		]);
+
+		$extractor = new TTarFileExtractor($tarFile);
+
+		// Raw tarpath preserves the trailing slash on directory entries.
+		$this->assertSame('subdir/', $extractor->getManifestTarPath('subdir/'));
+		$this->assertSame('subdir/file.txt', $extractor->getManifestTarPath('subdir/file.txt'));
+		$this->assertNull($extractor->getManifestTarPath('nonexistent.txt'));
+	}
+
+	public function testGetManifestTarPathRootLevelFile()
+	{
+		$tarFile = $this->testDir . '/tarpath_root.tar';
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('root.txt', 'data'),
+		]);
+
+		$extractor = new TTarFileExtractor($tarFile);
+
+		$this->assertSame('root.txt', $extractor->getManifestTarPath('root.txt'));
+	}
+
+	public function testGetManifestTarLinkEmptyForNonLinkEntries()
+	{
+		$tarFile = $this->testDir . '/tarlink_nonlink.tar';
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('dir/', '', '5'),
+			TarTestHelper::entry('file.txt', 'data'),
+		]);
+
+		$extractor = new TTarFileExtractor($tarFile);
+
+		$this->assertSame('', $extractor->getManifestTarLink('file.txt'));
+		$this->assertSame('', $extractor->getManifestTarLink('dir/'));
+		$this->assertNull($extractor->getManifestTarLink('nonexistent.txt'));
+	}
+
+	public function testGetManifestTarLinkForSymlinkAndHardlink()
+	{
+		$tarFile = $this->testDir . '/tarlink_links.tar';
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('original.txt', 'data'),
+			TarTestHelper::entry('symlink.txt', '', '2', 'original.txt'),
+			TarTestHelper::entry('hardlink.txt', '', '1', 'original.txt'),
+		]);
+
+		$extractor = new TTarFileExtractor($tarFile);
+
+		$this->assertSame('original.txt', $extractor->getManifestTarLink('symlink.txt'));
+		$this->assertSame('original.txt', $extractor->getManifestTarLink('hardlink.txt'));
+	}
+
+	public function testGetManifestTarPathNormalizedPreservesDirectorySlash()
+	{
+		$tarFile = $this->testDir . '/tarpath_norm.tar';
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('subdir/', '', '5'),
+			TarTestHelper::entry('subdir/file.txt', 'hello'),
+			TarTestHelper::entry('root.txt', 'data'),
+		]);
+
+		$extractor = new TTarFileExtractor($tarFile);
+
+		// Directory entries retain the trailing slash after normalisation.
+		$this->assertSame('subdir/', $extractor->getManifestTarPathNormalized('subdir/'));
+		// Regular files are unchanged.
+		$this->assertSame('subdir/file.txt', $extractor->getManifestTarPathNormalized('subdir/file.txt'));
+		$this->assertSame('root.txt', $extractor->getManifestTarPathNormalized('root.txt'));
+		// Missing entry returns null.
+		$this->assertNull($extractor->getManifestTarPathNormalized('nonexistent.txt'));
+	}
+
+	public function testGetManifestTarLinkNormalizedEmptyForNonLinks()
+	{
+		$tarFile = $this->testDir . '/tarlink_norm_nonlink.tar';
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('dir/', '', '5'),
+			TarTestHelper::entry('file.txt', 'data'),
+		]);
+
+		$extractor = new TTarFileExtractor($tarFile);
+
+		$this->assertSame('', $extractor->getManifestTarLinkNormalized('file.txt'));
+		$this->assertSame('', $extractor->getManifestTarLinkNormalized('dir/'));
+		$this->assertNull($extractor->getManifestTarLinkNormalized('nonexistent.txt'));
+	}
+
+	public function testGetManifestTarLinkNormalizedForLinks()
+	{
+		$tarFile = $this->testDir . '/tarlink_norm_links.tar';
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('original.txt', 'data'),
+			TarTestHelper::entry('symlink.txt', '', '2', 'original.txt'),
+			TarTestHelper::entry('hardlink.txt', '', '1', 'original.txt'),
+		]);
+
+		$extractor = new TTarFileExtractor($tarFile);
+
+		$this->assertSame('original.txt', $extractor->getManifestTarLinkNormalized('symlink.txt'));
+		$this->assertSame('original.txt', $extractor->getManifestTarLinkNormalized('hardlink.txt'));
+	}
+
+	public function testGetManifestFilePathReturnsOsNativePath()
+	{
+		$tarFile = $this->testDir . '/filepath.tar';
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('subdir/', '', '5'),
+			TarTestHelper::entry('subdir/file.txt', 'hello'),
+		]);
+
+		$extractor = new TTarFileExtractor($tarFile);
+
+		$sep = DIRECTORY_SEPARATOR;
+		$this->assertSame('subdir' . $sep, $extractor->getManifestFilePath('subdir/'));
+		$this->assertSame('subdir' . $sep . 'file.txt', $extractor->getManifestFilePath('subdir/file.txt'));
+		$this->assertNull($extractor->getManifestFilePath('nonexistent.txt'));
+	}
+
+	public function testGetManifestFilePathMatchesTarPathOnPosix()
+	{
+		$tarFile = $this->testDir . '/filepath_posix.tar';
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('subdir/', '', '5'),
+			TarTestHelper::entry('a/b/c.txt', 'deep'),
+		]);
+
+		$extractor = new TTarFileExtractor($tarFile);
+
+		if (DIRECTORY_SEPARATOR === '/') {
+			// On POSIX systems filepath (raw OS-native) equals tarpath (raw POSIX).
+			$this->assertSame(
+				$extractor->getManifestTarPath('subdir/'),
+				$extractor->getManifestFilePath('subdir/')
+			);
+			$this->assertSame(
+				$extractor->getManifestTarPath('a/b/c.txt'),
+				$extractor->getManifestFilePath('a/b/c.txt')
+			);
+		} else {
+			// On Windows forward slashes become backslashes in filepath.
+			$tarPath = $extractor->getManifestTarPath('a/b/c.txt');
+			$this->assertSame(
+				str_replace('/', '\\', (string) $tarPath),
+				$extractor->getManifestFilePath('a\\b\\c.txt')
+			);
+		}
+	}
+
+	public function testGetManifestFilePathNormalizedStripsTrailingSlash()
+	{
+		$tarFile = $this->testDir . '/filepath_norm.tar';
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('subdir/', '', '5'),
+			TarTestHelper::entry('subdir/file.txt', 'hello'),
+		]);
+
+		$extractor = new TTarFileExtractor($tarFile);
+
+		$sep = DIRECTORY_SEPARATOR;
+		// Normalized filepath strips the trailing separator from directory entries.
+		$this->assertSame('subdir', $extractor->getManifestFilePathNormalized('subdir/'));
+		$this->assertSame('subdir' . $sep . 'file.txt', $extractor->getManifestFilePathNormalized('subdir/file.txt'));
+		$this->assertNull($extractor->getManifestFilePathNormalized('nonexistent.txt'));
+	}
+
+	public function testGetManifestLinkPathNormalized()
+	{
+		$tarFile = $this->testDir . '/linkpath_norm.tar';
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('dir/', '', '5'),
+			TarTestHelper::entry('original.txt', 'data'),
+			TarTestHelper::entry('symlink.txt', '', '2', 'original.txt'),
+			TarTestHelper::entry('hardlink.txt', '', '1', 'original.txt'),
+		]);
+
+		$extractor = new TTarFileExtractor($tarFile);
+
+		// Non-link entries return empty string.
+		$this->assertSame('', $extractor->getManifestLinkPathNormalized('original.txt'));
+		$this->assertSame('', $extractor->getManifestLinkPathNormalized('dir/'));
+		// Link entries return the normalised OS-native target.
+		$this->assertSame('original.txt', $extractor->getManifestLinkPathNormalized('symlink.txt'));
+		$this->assertSame('original.txt', $extractor->getManifestLinkPathNormalized('hardlink.txt'));
+		// Missing entry returns null.
+		$this->assertNull($extractor->getManifestLinkPathNormalized('nonexistent.txt'));
 	}
 
 	// ---------------------------------------------------------------------------
@@ -1074,6 +1369,7 @@ class TTarFileExtractorManifestTest extends TestCase
 	public function testUnwindOnFailureRemovesExtractedFilesOnError()
 	{
 		// Archive: valid file first, then a device file that will throw in strict mode.
+		// Restore-on-failure is the sole extraction mode — extracted files are unwound on failure.
 		$tarFile = $this->testDir . '/unwind_test.tar';
 		TarTestHelper::writeTar($tarFile, [
 			TarTestHelper::entry('first.txt', 'first file content'),
@@ -1082,7 +1378,6 @@ class TTarFileExtractorManifestTest extends TestCase
 
 		$extractor = new TTarFileExtractor($tarFile);
 		$extractor->setStrict(true);
-		$extractor->setAtomic(true);
 
 		$threw = false;
 		try {
@@ -1092,30 +1387,8 @@ class TTarFileExtractorManifestTest extends TestCase
 		}
 
 		$this->assertTrue($threw, 'Expected exception from device file in strict mode');
-		// first.txt was extracted then unwound.
-		$this->assertFileDoesNotExist($this->extractDir . '/first.txt', 'Unwind should have removed extracted file');
-	}
-
-	public function testNoUnwindLeavesPartialExtractionOnError()
-	{
-		$tarFile = $this->testDir . '/no_unwind.tar';
-		TarTestHelper::writeTar($tarFile, [
-			TarTestHelper::entry('partial.txt', 'partial content'),
-			TarTestHelper::entry('char_dev', '', '3'),
-		]);
-
-		$extractor = new TTarFileExtractor($tarFile);
-		$extractor->setStrict(true);
-		$extractor->setAtomic(false);
-
-		try {
-			$extractor->extract($this->extractDir);
-		} catch (\Exception $e) {
-			// Expected.
-		}
-
-		// Without unwind, partial.txt should remain.
-		$this->assertFileExists($this->extractDir . '/partial.txt', 'File extracted before failure should remain when unwind is off');
+		// first.txt was extracted then unwound by restore-on-failure.
+		$this->assertFileDoesNotExist($this->extractDir . '/first.txt', 'Restore-on-failure should have removed extracted file');
 	}
 
 	public function testUnwindOnFailureWithZipSlipThrow()
@@ -1129,7 +1402,6 @@ class TTarFileExtractorManifestTest extends TestCase
 
 		$extractor = new TTarFileExtractor($tarFile);
 		$extractor->setStrict(true);
-		$extractor->setAtomic(true);
 
 		try {
 			$extractor->extract($this->extractDir);
@@ -1137,7 +1409,7 @@ class TTarFileExtractorManifestTest extends TestCase
 			// Expected.
 		}
 
-		$this->assertFileDoesNotExist($this->extractDir . '/good.txt', 'Unwind should have removed good.txt');
+		$this->assertFileDoesNotExist($this->extractDir . '/good.txt', 'Restore-on-failure should have removed good.txt');
 	}
 
 	// ---------------------------------------------------------------------------
@@ -1274,7 +1546,7 @@ class TTarFileExtractorManifestTest extends TestCase
 
 		// Map keys should be relative to the stripped prefix.
 		$map = $extractor->getManifest();
-		$this->assertArrayHasKey('subdir' . DIRECTORY_SEPARATOR, $map);
+		$this->assertArrayHasKey('subdir/', $map);
 		$this->assertArrayHasKey('subdir/file.txt', $map);
 	}
 

@@ -5,34 +5,31 @@ use PHPUnit\Framework\TestCase;
 use Prado\IO\TTarFileExtractor;
 
 /**
- * Atomic extraction tests for TTarFileExtractor introduced in 4.3.3.
+ * Non-atomic (direct) extraction tests for TTarFileExtractor introduced in 4.3.3.
  *
- * All extraction tests run with atomic=true explicitly set via setAtomic(true).
- * In atomic mode, files are first extracted into a private staging directory
- * adjacent to the destination, then merged into the destination via _mergeStaging().
- * If the merge fails, any overwritten files are restored from the backup directory.
+ * All extraction tests run with atomic=false (the default) explicitly set via
+ * setAtomic(false).  This file covers the restore-on-failure path of
+ * _extractDirect(): pre-existing files are backed up before being overwritten,
+ * and restored if an error occurs mid-extraction.
  *
  * Covers:
- *  - getAtomic() / setAtomic() property (Group 2)
  *  - CONFLICT_* constant values
  *  - getConflictMode() / setConflictMode() property
- *  - Atomic extraction: staging then merge
- *  - All five conflict modes in atomic mode
+ *  - Non-atomic (direct) extraction with restore-on-failure
+ *  - All five conflict modes in non-atomic mode
  *  - File and directory permission application (chmod)
  *  - Scan-mode reason annotation (zip_slip, device, symlink, hardlink)
- *  - Staging directory cleanup on success and failure
- *  - Hard link inode preservation through staging+merge
  *
  * @since 4.3.3
  */
-class TTarFileExtractorAtomicTest extends TestCase
+class TTarFileExtractorRollbackTest extends TestCase
 {
 	private string $testDir   = '';
 	private string $extractDir = '';
 
 	protected function setUp(): void
 	{
-		$this->testDir    = sys_get_temp_dir() . '/prado_tar_atomic_test_' . uniqid();
+		$this->testDir    = sys_get_temp_dir() . '/prado_tar_rollback_test_' . uniqid();
 		$this->extractDir = $this->testDir . '/extract';
 		mkdir($this->extractDir, 0o777, true);
 	}
@@ -61,11 +58,12 @@ class TTarFileExtractorAtomicTest extends TestCase
 	}
 
 	/**
-	 * Creates a TTarFileExtractor for the given tar path with atomic=true set.
+	 * Creates a TTarFileExtractor for the given tar path with atomic=false
+	 * (non-atomic, direct extraction with restore-on-failure) explicitly set.
 	 */
 	private function newExtractor(string $tarFile): TTarFileExtractor
 	{
-		return (new TTarFileExtractor($tarFile))->setAtomic(true);
+		return (new TTarFileExtractor($tarFile))->setAtomic(false);
 	}
 
 	// =========================================================================
@@ -100,39 +98,6 @@ class TTarFileExtractorAtomicTest extends TestCase
 			TTarFileExtractor::CONFLICT_OLDER,
 		];
 		$this->assertSame(count($values), count(array_unique($values)));
-	}
-
-	// =========================================================================
-	// Group 2: getAtomic / setAtomic
-	// =========================================================================
-
-	public function testAtomicDefaultFalse()
-	{
-		$extractor = new TTarFileExtractor('/dev/null');
-		$this->assertFalse($extractor->getAtomic(), 'atomic must default to false');
-	}
-
-	public function testSetAtomicTrue()
-	{
-		$extractor = new TTarFileExtractor('/dev/null');
-		$extractor->setAtomic(true);
-		$this->assertTrue($extractor->getAtomic());
-	}
-
-	public function testSetAtomicReturnsSelf()
-	{
-		$extractor = new TTarFileExtractor('/dev/null');
-		$result = $extractor->setAtomic(true);
-		$this->assertSame($extractor, $result);
-	}
-
-	public function testSetAtomicRoundtrip()
-	{
-		$extractor = new TTarFileExtractor('/dev/null');
-		$extractor->setAtomic(true);
-		$this->assertTrue($extractor->getAtomic());
-		$extractor->setAtomic(false);
-		$this->assertFalse($extractor->getAtomic());
 	}
 
 	// =========================================================================
@@ -905,7 +870,7 @@ class TTarFileExtractorAtomicTest extends TestCase
 			$this->markTestSkipped('Inode equality not reliable on Windows');
 		}
 
-		$tarFile = $this->testDir . '/hardlink_atomic.tar';
+		$tarFile = $this->testDir . '/hardlink_nonatomic.tar';
 		TarTestHelper::writeTar($tarFile, [
 			TarTestHelper::entry('original.txt', 'shared content'),
 			TarTestHelper::entry('hardlink.txt', '', '1', 'original.txt'),
@@ -925,7 +890,7 @@ class TTarFileExtractorAtomicTest extends TestCase
 
 		$origIno = stat($origPath)['ino'];
 		$linkIno = stat($linkPath)['ino'];
-		$this->assertSame($origIno, $linkIno, 'Atomic extraction must preserve the shared inode for hard link entries');
+		$this->assertSame($origIno, $linkIno, 'Extraction must preserve the shared inode for hard link entries');
 	}
 
 	public function testFailsWhenDestinationExistsButNotWritable()
@@ -953,122 +918,5 @@ class TTarFileExtractorAtomicTest extends TestCase
 			// Restore so tearDown can clean up.
 			chmod($this->extractDir, 0o755);
 		}
-	}
-
-	// =========================================================================
-	// Group 15: Atomic-specific behaviour
-	// =========================================================================
-
-	public function testAtomicExtractionSucceeds()
-	{
-		$tarFile = $this->testDir . '/atomic_basic.tar';
-		TarTestHelper::writeTar($tarFile, [
-			TarTestHelper::entry('a.txt', 'alpha'),
-			TarTestHelper::entry('b.txt', 'beta'),
-		]);
-
-		$extractor = $this->newExtractor($tarFile);
-		$result = $extractor->extract($this->extractDir);
-
-		$this->assertTrue($result);
-		$this->assertSame('alpha', file_get_contents($this->extractDir . '/a.txt'));
-		$this->assertSame('beta',  file_get_contents($this->extractDir . '/b.txt'));
-	}
-
-	public function testAtomicStagingDirCleanedUpOnSuccess()
-	{
-		$tarFile = $this->testDir . '/atomic_cleanup.tar';
-		TarTestHelper::writeTar($tarFile, [
-			TarTestHelper::entry('cleanup.txt', 'data'),
-		]);
-
-		$extractor = $this->newExtractor($tarFile);
-		$extractor->extract($this->extractDir);
-
-		// After successful extraction no staging dirs (.tar_stage_*) should remain.
-		$items = array_diff(scandir($this->extractDir), ['.', '..']);
-		foreach ($items as $item) {
-			$this->assertStringNotContainsString(
-				'.tar_stage_',
-				$item,
-				"Staging directory '$item' was not cleaned up after successful atomic extraction"
-			);
-		}
-	}
-
-	public function testAtomicExtractionPopulatesManifest()
-	{
-		$tarFile = $this->testDir . '/atomic_manifest.tar';
-		TarTestHelper::writeTar($tarFile, [
-			TarTestHelper::entry('manifest_a.txt', 'aaa'),
-			TarTestHelper::entry('manifest_b.txt', 'bbb'),
-		]);
-
-		$extractor = $this->newExtractor($tarFile);
-		$result = $extractor->extract($this->extractDir);
-
-		$this->assertTrue($result);
-		$manifest = $extractor->getExtractManifest();
-		$this->assertArrayHasKey('manifest_a.txt', $manifest);
-		$this->assertArrayHasKey('manifest_b.txt', $manifest);
-		$this->assertTrue($manifest['manifest_a.txt']['extracted'] ?? false);
-		$this->assertTrue($manifest['manifest_b.txt']['extracted'] ?? false);
-	}
-
-	public function testAtomicExtractionDestUntouchedWhenStagingFails()
-	{
-		// A strict+device entry causes _extractList to throw during phase-1.
-		// The destination must be completely untouched because the merge never started.
-		$tarFile = $this->testDir . '/atomic_stage_fail.tar';
-		TarTestHelper::writeTar($tarFile, [
-			TarTestHelper::entry('safe.txt', 'original'),
-			TarTestHelper::entry('cdev', '', '3'),   // device — throws in strict mode
-		]);
-		file_put_contents($this->extractDir . '/safe.txt', 'original');
-
-		$extractor = $this->newExtractor($tarFile);
-		$extractor->setStrict(true);  // device entry will throw during phase-1
-
-		try {
-			$extractor->extract($this->extractDir);
-		} catch (\Exception $e) {
-			// Expected: staging fails, destination untouched.
-		}
-
-		// The original file must be unchanged.
-		$this->assertSame(
-			'original',
-			file_get_contents($this->extractDir . '/safe.txt'),
-			'Destination file must be unchanged when staging phase fails'
-		);
-	}
-
-	public function testAtomicHardLinkPreservesSharedInode()
-	{
-		if (strncasecmp(PHP_OS, 'WIN', 3) === 0) {
-			$this->markTestSkipped('Inode equality not reliable on Windows');
-		}
-
-		$tarFile = $this->testDir . '/atomic_hardlink.tar';
-		TarTestHelper::writeTar($tarFile, [
-			TarTestHelper::entry('original.txt', 'shared content'),
-			TarTestHelper::entry('hardlink.txt', '', '1', 'original.txt'),
-		]);
-
-		$extractor = $this->newExtractor($tarFile);
-		$result = $extractor->extract($this->extractDir);
-
-		$this->assertTrue($result);
-
-		$origPath = $this->extractDir . '/original.txt';
-		$linkPath = $this->extractDir . '/hardlink.txt';
-
-		$this->assertFileExists($origPath);
-		$this->assertFileExists($linkPath);
-		$this->assertSame('shared content', file_get_contents($linkPath));
-
-		$origIno = stat($origPath)['ino'];
-		$linkIno = stat($linkPath)['ino'];
-		$this->assertSame($origIno, $linkIno, 'Atomic extraction must preserve shared inode through staging+merge');
 	}
 }

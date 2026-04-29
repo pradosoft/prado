@@ -971,7 +971,6 @@ class TTarFileExtractorTest extends TestCase
 		file_put_contents($this->extractDir . '/existing.txt', 'original');
 
 		$extractor = new TTarFileExtractor($tarFile);
-		$extractor->setAtomic(false);
 		// Callable always returns false (skip), leaves $reason unset → default reason applied.
 		$extractor->setConflictMode(static function (array $entry, string $path, ?string &$reason): bool {
 			return false;
@@ -999,7 +998,6 @@ class TTarFileExtractorTest extends TestCase
 		file_put_contents($this->extractDir . '/existing.txt', 'original');
 
 		$extractor = new TTarFileExtractor($tarFile);
-		$extractor->setAtomic(false);
 		$extractor->setConflictMode(static function (array $entry, string $path, ?string &$reason): bool {
 			$reason = 'my_custom_skip';
 			return false;
@@ -1024,7 +1022,6 @@ class TTarFileExtractorTest extends TestCase
 		file_put_contents($this->extractDir . '/existing.txt', 'original');
 
 		$extractor = new TTarFileExtractor($tarFile);
-		$extractor->setAtomic(false);
 		// Callable returns true → always overwrite.
 		$extractor->setConflictMode(static function (array $entry, string $path, ?string &$reason): bool {
 			return true;
@@ -1053,7 +1050,6 @@ class TTarFileExtractorTest extends TestCase
 		$capturedPath  = null;
 
 		$extractor = new TTarFileExtractor($tarFile);
-		$extractor->setAtomic(false);
 		$extractor->setConflictMode(function (array $entry, string $path, ?string &$reason) use (&$capturedEntry, &$capturedPath): bool {
 			$capturedEntry = $entry;
 			$capturedPath  = $path;
@@ -1078,7 +1074,6 @@ class TTarFileExtractorTest extends TestCase
 		file_put_contents($this->extractDir . '/existing.txt', 'original');
 
 		$extractor = new TTarFileExtractor($tarFile);
-		$extractor->setAtomic(false);
 		// Callable that throws TypeError (incompatible signature simulation).
 		$extractor->setConflictMode(static function (array $entry, string $path, ?string &$reason): bool {
 			throw new \TypeError('bad type');
@@ -1093,52 +1088,6 @@ class TTarFileExtractorTest extends TestCase
 		$skipped = array_values($extractor->getSkippedFiles());
 		$this->assertCount(1, $skipped);
 		$this->assertSame(TTarFileExtractor::REASON_CONFLICT_CALLABLE_ERROR_SKIP, $skipped[0]['reason']);
-
-		unlink($tarFile);
-	}
-
-	public function testCallableConflictModeAtomicSkip(): void
-	{
-		$tarFile = $this->testDir . '/callable_atomic_skip.tar';
-		$this->createConflictTar($tarFile, 'archive content');
-
-		file_put_contents($this->extractDir . '/existing.txt', 'original');
-
-		$extractor = new TTarFileExtractor($tarFile);
-		$extractor->setAtomic(true);
-		$extractor->setConflictMode(static function (array $entry, string $path, ?string &$reason): bool {
-			return false;
-		});
-
-		$result = $extractor->extract($this->extractDir);
-
-		$this->assertTrue($result);
-		$this->assertSame('original', file_get_contents($this->extractDir . '/existing.txt'));
-
-		$skipped = array_values($extractor->getSkippedFiles());
-		$this->assertCount(1, $skipped);
-		$this->assertSame(TTarFileExtractor::REASON_CONFLICT_CALLABLE_SKIP, $skipped[0]['reason']);
-
-		unlink($tarFile);
-	}
-
-	public function testCallableConflictModeAtomicOverwrite(): void
-	{
-		$tarFile = $this->testDir . '/callable_atomic_overwrite.tar';
-		$this->createConflictTar($tarFile, 'from archive');
-
-		file_put_contents($this->extractDir . '/existing.txt', 'original');
-
-		$extractor = new TTarFileExtractor($tarFile);
-		$extractor->setAtomic(true);
-		$extractor->setConflictMode(static function (array $entry, string $path, ?string &$reason): bool {
-			return true;
-		});
-
-		$result = $extractor->extract($this->extractDir);
-
-		$this->assertTrue($result);
-		$this->assertSame('from archive', file_get_contents($this->extractDir . '/existing.txt'));
 
 		unlink($tarFile);
 	}
@@ -1168,48 +1117,6 @@ class TTarFileExtractorTest extends TestCase
 		$fn = static fn(): bool => true;
 		$extractor->setConflictMode($fn);
 		$this->assertSame($fn, $extractor->getConflictMode());
-	}
-
-	// =========================================================================
-	// atomic default
-	// =========================================================================
-
-	public function testAtomicDefaultIsFalse(): void
-	{
-		$extractor = new TTarFileExtractor('/dev/null');
-		$this->assertFalse($extractor->getAtomic());
-	}
-
-	// =========================================================================
-	// restoreOnFailure — property tests
-	// =========================================================================
-
-	public function testRestoreOnFailureDefaultIsTrue(): void
-	{
-		$extractor = new TTarFileExtractor('/dev/null');
-		$this->assertTrue($extractor->getRestoreOnFailure());
-	}
-
-	public function testSetRestoreOnFailureReturnsSelf(): void
-	{
-		$extractor = new TTarFileExtractor('/dev/null');
-		$result = $extractor->setRestoreOnFailure(false);
-		$this->assertSame($extractor, $result);
-	}
-
-	public function testSetRestoreOnFailureFalse(): void
-	{
-		$extractor = new TTarFileExtractor('/dev/null');
-		$extractor->setRestoreOnFailure(false);
-		$this->assertFalse($extractor->getRestoreOnFailure());
-	}
-
-	public function testSetRestoreOnFailureTrue(): void
-	{
-		$extractor = new TTarFileExtractor('/dev/null');
-		$extractor->setRestoreOnFailure(false);
-		$extractor->setRestoreOnFailure(true);
-		$this->assertTrue($extractor->getRestoreOnFailure());
 	}
 
 	// =========================================================================
@@ -1298,25 +1205,22 @@ class TTarFileExtractorTest extends TestCase
 
 	public function testRestoreOnFailureSuccessBackupDirCleaned(): void
 	{
-		// Use a subclass that redirects temp I/O to a known directory so we can
-		// assert the backup directory is fully cleaned up after a successful extraction.
-		$tempDir = $this->testDir . '/temp';
-		mkdir($tempDir, 0o777, true);
-
+		// Use a subclass with a deterministic backup-dir name so we can assert
+		// the backup directory is fully removed after a successful extraction.
 		$tarFile = $this->testDir . '/restore_clean.tar';
 		TarTestHelper::writeTar($tarFile, [
 			TarTestHelper::entry('data.txt', 'new content'),
 		]);
 		file_put_contents($this->extractDir . '/data.txt', 'old content');
 
-		$extractor = new TTarRestoreTestExtractor($tarFile, $tempDir);
+		$extractor = new TTarRestoreTestExtractor($tarFile);
 		$result = $extractor->extract($this->extractDir);
 
 		$this->assertTrue($result);
 		$this->assertSame('new content', file_get_contents($this->extractDir . '/data.txt'));
-		// The backup directory and its contents must be fully removed on success.
-		$remaining = array_diff(scandir($tempDir), ['.', '..']);
-		$this->assertEmpty($remaining, 'Restore backup directory was not cleaned up after successful extraction');
+		// The backup directory must be fully removed after a successful extraction.
+		$backupDir = $this->extractDir . '/' . TTarRestoreTestExtractor::BACKUP_DIR;
+		$this->assertDirectoryDoesNotExist($backupDir, 'Restore backup directory was not cleaned up after successful extraction');
 	}
 
 	public function testRestoreOnFailureSuccessWithDirectoryEntries(): void
@@ -1410,21 +1314,18 @@ class TTarFileExtractorTest extends TestCase
 
 	public function testRestoreOnFailureBackupDirRemovedOnFailure(): void
 	{
-		$tempDir = $this->testDir . '/temp';
-		mkdir($tempDir, 0o777, true);
-
 		$tarFile = $this->testDir . '/restore_cleanup.tar';
 		$this->createTarWithZipSlipTrap($tarFile, [
 			TarTestHelper::entry('data.txt', 'content'),
 		]);
 		file_put_contents($this->extractDir . '/data.txt', 'original');
 
-		$extractor = new TTarRestoreTestExtractor($tarFile, $tempDir);
+		$extractor = new TTarRestoreTestExtractor($tarFile);
 		$this->extractExpectingException($extractor, $this->extractDir);
 
 		// Backup directory must be removed even after a failed extraction.
-		$remaining = array_diff(scandir($tempDir), ['.', '..']);
-		$this->assertEmpty($remaining, 'Restore backup directory was not cleaned up after failed extraction');
+		$backupDir = $this->extractDir . '/' . TTarRestoreTestExtractor::BACKUP_DIR;
+		$this->assertDirectoryDoesNotExist($backupDir, 'Restore backup directory was not cleaned up after failed extraction');
 	}
 
 	public function testRestoreOnFailureExceptionIsRethrown(): void
@@ -1455,67 +1356,29 @@ class TTarFileExtractorTest extends TestCase
 	}
 
 	// =========================================================================
-	// restoreOnFailure = false — disabled tests
-	// =========================================================================
-
-	public function testRestoreOnFailureDisabledDoesNotRestoreOnFailure(): void
-	{
-		$tarFile = $this->testDir . '/restore_disabled.tar';
-		$this->createTarWithZipSlipTrap($tarFile, [
-			TarTestHelper::entry('data.txt', 'from archive'),
-		]);
-		file_put_contents($this->extractDir . '/data.txt', 'original');
-
-		$extractor = new TTarFileExtractor($tarFile);
-		$extractor->setRestoreOnFailure(false);
-		$this->extractExpectingException($extractor, $this->extractDir);
-
-		// Without restore-on-failure the file written by partial extraction is NOT restored.
-		$this->assertSame('from archive', file_get_contents($this->extractDir . '/data.txt'));
-	}
-
-	public function testRestoreOnFailureDisabledDoesNotRemoveNewFilesOnFailure(): void
-	{
-		$tarFile = $this->testDir . '/restore_disabled_new.tar';
-		$this->createTarWithZipSlipTrap($tarFile, [
-			TarTestHelper::entry('newfile.txt', 'written'),
-		]);
-
-		$extractor = new TTarFileExtractor($tarFile);
-		$extractor->setRestoreOnFailure(false);
-		$this->extractExpectingException($extractor, $this->extractDir);
-
-		// Without restore-on-failure, newly-written files are NOT removed on failure.
-		$this->assertFileExists($this->extractDir . '/newfile.txt');
-	}
-
-	// =========================================================================
 	// restoreOnFailure — conflict-mode interactions
 	// =========================================================================
 
 	public function testRestoreOnFailureConflictSkipPreservesOriginalOnSuccess(): void
 	{
 		// A conflict-skipped entry must not trigger the pre-write hook, so the
-		// original file must remain untouched and nothing lands in the backup dir.
-		$tempDir = $this->testDir . '/temp';
-		mkdir($tempDir, 0o777, true);
-
+		// original file must remain untouched and the backup dir is cleaned up on success.
 		$tarFile = $this->testDir . '/restore_skip.tar';
 		TarTestHelper::writeTar($tarFile, [
 			TarTestHelper::entry('existing.txt', 'from archive'),
 		]);
 		file_put_contents($this->extractDir . '/existing.txt', 'original');
 
-		$extractor = new TTarRestoreTestExtractor($tarFile, $tempDir);
+		$extractor = new TTarRestoreTestExtractor($tarFile);
 		$extractor->setConflictMode(TTarFileExtractor::CONFLICT_SKIP);
 		$result = $extractor->extract($this->extractDir);
 
 		$this->assertTrue($result);
 		$this->assertSame('original', file_get_contents($this->extractDir . '/existing.txt'));
 		$this->assertTrue($extractor->hasSkippedFiles());
-		// Pre-write hook was never called for the skipped entry, so no backup files exist.
-		$remaining = array_diff(scandir($tempDir), ['.', '..']);
-		$this->assertEmpty($remaining, 'Backup directory unexpectedly created for a conflict-skipped entry');
+		// Pre-write hook was never called for the skipped entry — backup dir removed on success.
+		$backupDir = $this->extractDir . '/' . TTarRestoreTestExtractor::BACKUP_DIR;
+		$this->assertDirectoryDoesNotExist($backupDir, 'Backup directory was not cleaned up after successful extraction');
 	}
 
 	public function testRestoreOnFailureConflictSkippedFileUnaffectedByFailure(): void
@@ -1536,70 +1399,25 @@ class TTarFileExtractorTest extends TestCase
 		$this->assertSame('original', file_get_contents($this->extractDir . '/skipped.txt'));
 	}
 
-	// =========================================================================
-	// restoreOnFailure — atomic mode is unaffected
-	// =========================================================================
-
-	public function testRestoreOnFailureDoesNotAffectAtomicModeSuccess(): void
-	{
-		$tarFile = $this->testDir . '/restore_atomic.tar';
-		TarTestHelper::writeTar($tarFile, [
-			TarTestHelper::entry('data.txt', 'atomic content'),
-		]);
-		file_put_contents($this->extractDir . '/data.txt', 'original');
-
-		$extractor = new TTarFileExtractor($tarFile);
-		$extractor->setAtomic(true);   // atomic mode; restoreOnFailure has no bearing
-		$result = $extractor->extract($this->extractDir);
-
-		$this->assertTrue($result);
-		$this->assertSame('atomic content', file_get_contents($this->extractDir . '/data.txt'));
-	}
-
-	public function testRestoreOnFailureFalseDoesNotAffectAtomicModeSuccess(): void
-	{
-		// Even with restoreOnFailure=false, atomic mode must still work correctly.
-		$tarFile = $this->testDir . '/restore_atomic_disabled.tar';
-		TarTestHelper::writeTar($tarFile, [
-			TarTestHelper::entry('data.txt', 'atomic content'),
-		]);
-		file_put_contents($this->extractDir . '/data.txt', 'original');
-
-		$extractor = new TTarFileExtractor($tarFile);
-		$extractor->setAtomic(true);
-		$extractor->setRestoreOnFailure(false);
-		$result = $extractor->extract($this->extractDir);
-
-		$this->assertTrue($result);
-		$this->assertSame('atomic content', file_get_contents($this->extractDir . '/data.txt'));
-	}
 }
 
 /**
- * TTarFileExtractor subclass that redirects all temporary I/O (staging dirs,
- * local temp files) to a controlled directory supplied by the test.  This lets
- * tests verify that backup / staging directories are created and properly cleaned
- * up without depending on the real system temp directory.
+ * TTarFileExtractor subclass that uses a deterministic backup-directory name so
+ * tests can locate and verify backup-dir cleanup without pattern-matching uniqid().
  *
  * @since 4.3.3
  */
 class TTarRestoreTestExtractor extends TTarFileExtractor
 {
-	private string $controlledTempDir;
+	public const BACKUP_DIR = '.~staging_bkp_test~';
 
-	public function __construct(string $tarpath, string $tempDir)
+	public function __construct(string $tarpath)
 	{
 		parent::__construct($tarpath);
-		$this->controlledTempDir = $tempDir;
 	}
 
-	protected function _staging_temp_directory(): string
+	protected function _backup_dir_name(): string
 	{
-		return $this->controlledTempDir;
-	}
-
-	protected function _local_temp_directory(): string
-	{
-		return $this->controlledTempDir;
+		return self::BACKUP_DIR;
 	}
 }
