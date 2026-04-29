@@ -102,7 +102,10 @@ class TConditional extends \Prado\Web\UI\TControl
 	 */
 	public function getCondition()
 	{
-		return empty($this->_condition) ? 'true' : $this->_condition;
+		if (empty($this->_condition)) {
+			return 'true';
+		}
+		return $this->_condition;
 	}
 
 	/**
