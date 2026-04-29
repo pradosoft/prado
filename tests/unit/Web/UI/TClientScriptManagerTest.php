@@ -224,10 +224,10 @@ class TClientScriptManagerTest extends PHPUnit\Framework\TestCase
 			$_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 			$_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0';
 
-			
 			$_SERVER['SCRIPT_FILENAME'] = dirname(__FILE__) . '/../../../FunctionalTests/features/protected/';
 			$_SERVER['SCRIPT_NAME'] = '/index.php';
 			self::$app = new TApplication(realpath(dirname(__FILE__) . '/../app'));
+
 			self::$app->initApplication();
 		}
 

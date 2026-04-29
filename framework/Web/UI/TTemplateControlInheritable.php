@@ -53,6 +53,7 @@ class TTemplateControlInheritable extends TTemplateControl
 		}
 
 		$_template->instantiateIn($this);
+		parent::createChildControls();
 	}
 
 	/**
