@@ -74,11 +74,17 @@ class TConditional extends \Prado\Web\UI\TControl
 	public function createChildControls()
 	{
 		$this->_creatingChildren = true;
+		$this->getControls()->clear();
 		$result = true;
+		$condition = $this->getCondition();
+		$tplControl = $this->getTemplateControl();
+		if (!$tplControl) {
+			return;
+		}
 		try {
-			$result = $this->getTemplateControl()->evaluateExpression($this->_condition);
+			$result = $tplControl->evaluateExpression($condition);
 		} catch (\Exception $e) {
-			throw new TInvalidDataValueException('conditional_condition_invalid', $this->_condition, $e->getMessage());
+			throw new TInvalidDataValueException('conditional_condition_invalid', $condition, $e->getMessage());
 		}
 		if ($result) {
 			if ($this->_trueTemplate) {
@@ -88,6 +94,7 @@ class TConditional extends \Prado\Web\UI\TControl
 			$this->_falseTemplate->instantiateIn($this->getTemplateControl(), $this);
 		}
 		$this->_creatingChildren = false;
+		parent::createChildControls();
 	}
 
 	/**
@@ -95,6 +102,9 @@ class TConditional extends \Prado\Web\UI\TControl
 	 */
 	public function getCondition()
 	{
+		if (empty($this->_condition)) {
+			return 'true';
+		}
 		return $this->_condition;
 	}
 
@@ -105,7 +115,9 @@ class TConditional extends \Prado\Web\UI\TControl
 	 */
 	public function setCondition($value)
 	{
-		$this->_condition = TPropertyValue::ensureString($value);
+		$value = TPropertyValue::ensureString($value);
+		$value = html_entity_decode($value, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
+		$this->_condition = $value;
 	}
 
 	/**

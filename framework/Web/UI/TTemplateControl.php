@@ -146,6 +146,7 @@ class TTemplateControl extends TCompositeControl
 			}
 			$tpl->instantiateIn($this);
 		}
+		parent::createChildControls();
 	}
 
 	/**

@@ -36,6 +36,7 @@ class TEventContent extends TCompositeControl
 		if ($event = $this->getBroadcastEvent()) {
 			$this->raiseEvent($event, $this, new TEventParameter($this->getControls()));
 		}
+		parent::createChildControls();
 	}
 
 	/**
