@@ -941,14 +941,14 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 	{
 		return [
 			'mysql'     => [TDbDriver::DRIVER_MYSQL,    true],
-			'pgsql'     => [TDbDriver::DRIVER_PGSQL,    true],
-			'sqlite'    => [TDbDriver::DRIVER_SQLITE,   false], // sole exception
+			'pgsql'     => [TDbDriver::DRIVER_PGSQL,    false], // pgsql does not expose ATTR_AUTOCOMMIT
+			'sqlite'    => [TDbDriver::DRIVER_SQLITE,   false],
 			'sqlite2'   => [TDbDriver::DRIVER_SQLITE2,  true],
 			'firebird'  => [TDbDriver::DRIVER_FIREBIRD, true],
 			'interbase' => [TDbDriver::DRIVER_INTERBASE,true],
 			'oci'       => [TDbDriver::DRIVER_OCI,      true],
-			'sqlsrv'    => [TDbDriver::DRIVER_SQLSRV,   true],
-			'dblib'     => [TDbDriver::DRIVER_DBLIB,    true],
+			'sqlsrv'    => [TDbDriver::DRIVER_SQLSRV,   false], // sqlsrv does not expose ATTR_AUTOCOMMIT
+			'dblib'     => [TDbDriver::DRIVER_DBLIB,    false], // dblib does not expose ATTR_AUTOCOMMIT
 			'ibm'       => [TDbDriver::DRIVER_IBM,      true],
 			'unknown'   => ['unknown_driver',            true],
 		];

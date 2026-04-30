@@ -658,7 +658,13 @@ class TDbDriverCapabilities
 	 */
 	public static function hasAutoCommitAttribute(string $driver): bool
 	{
-		return $driver !== TDbDriver::DRIVER_SQLITE;
+		return match ($driver) {
+			TDbDriver::DRIVER_SQLITE,
+			TDbDriver::DRIVER_PGSQL,
+			TDbDriver::DRIVER_SQLSRV,
+			TDbDriver::DRIVER_DBLIB => false,
+			default => true,
+		};
 	}
 
 	// =========================================================================
