@@ -146,40 +146,30 @@ class TDbConnectionCharsetMssqlIntegrationTest extends PHPUnit\Framework\TestCas
 	}
 
 	// -----------------------------------------------------------------------
-	// hasAutoCommitAttribute = true behavioral verification
+	// hasAutoCommitAttribute behavioral verification
 	//
-	// SQL Server (sqlsrv) exposes PDO::ATTR_AUTOCOMMIT.  TDbConnection can read
-	// and write it without error.
+	// SQL Server (sqlsrv/dblib) does NOT expose PDO::ATTR_AUTOCOMMIT — the driver
+	// throws a PDOException when the attribute is read or written.  TDbConnection
+	// reports HasAutoCommit = false for sqlsrv/dblib.
 	// -----------------------------------------------------------------------
 
-	public function testMssqlHasAutoCommitAttribute(): void
+	public function testMssqlHasAutoCommitAttributeIsFalse(): void
 	{
 		$conn = $this->openMssql();
-		$this->assertTrue(
-			$conn->HasAutoCommit,
-			'SQL Server (sqlsrv) must report hasAutoCommitAttribute = true.'
-		);
-		$conn->Active = false;
-	}
-
-	public function testMssqlAutoCommitIsTrueByDefault(): void
-	{
-		$conn = $this->openMssql();
-		$this->assertTrue(
-			$conn->AutoCommit,
-			'SQL Server AutoCommit must be true when no explicit transaction is active.'
-		);
-		$conn->Active = false;
-	}
-
-	public function testMssqlAutoCommitIsFalseInsideExplicitTransaction(): void
-	{
-		$conn = $this->openMssql();
-		$conn->beginTransaction();
 		$this->assertFalse(
-			$conn->AutoCommit,
-			'AutoCommit must be false while inside an explicit SQL Server transaction.'
+			$conn->HasAutoCommit,
+			'SQL Server (sqlsrv) must report hasAutoCommitAttribute = false (ATTR_AUTOCOMMIT is not supported).'
 		);
+		$conn->Active = false;
+	}
+
+	public function testMssqlBeginTransactionSucceedsAndRollbackWorks(): void
+	{
+		// sqlsrv does not expose ATTR_AUTOCOMMIT.  Simply verify that
+		// beginTransaction/rollback work without error.
+		$conn = $this->openMssql();
+		$tx   = $conn->beginTransaction();
+		$this->assertTrue($tx->getActive(), 'SQL Server beginTransaction must return an active transaction.');
 		$conn->rollback();
 		$conn->Active = false;
 	}

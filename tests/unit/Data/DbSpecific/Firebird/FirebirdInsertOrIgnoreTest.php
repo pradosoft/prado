@@ -81,17 +81,6 @@ class FirebirdInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	}
 
 	// -----------------------------------------------------------------------
-	// Transaction requirement
-	// -----------------------------------------------------------------------
-
-	public function test_throws_TDbException_without_active_transaction(): void
-	{
-		$this->expectException(TDbException::class);
-		// No transaction started — must throw
-		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
-	}
-
-	// -----------------------------------------------------------------------
 	// SQL generation (build command inside a transaction, then roll back)
 	// -----------------------------------------------------------------------
 

@@ -1597,4 +1597,134 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 		$result = $method->invoke($conn, $dsn);
 		$this->assertStringContainsString('charset=', $result);
 	}
+
+	// -----------------------------------------------------------------------
+	// createTransaction() — serial-mode determination
+	// -----------------------------------------------------------------------
+
+	/**
+	 * Build a mock PDO whose getAttribute() returns the given driver name for
+	 * ATTR_DRIVER_NAME and the given integer for ATTR_AUTOCOMMIT.
+	 */
+	private function makePdoForDriver(string $driver, int $autoCommit = 1): \PDO
+	{
+		$pdo = $this->getMockBuilder(\PDO::class)
+			->disableOriginalConstructor()
+			->onlyMethods(['getAttribute', 'beginTransaction', 'inTransaction'])
+			->getMock();
+
+		$pdo->method('getAttribute')
+			->willReturnCallback(function (int $attr) use ($driver, $autoCommit) {
+				return match ($attr) {
+					PDO::ATTR_DRIVER_NAME  => $driver,
+					PDO::ATTR_AUTOCOMMIT   => $autoCommit,
+					default                => null,
+				};
+			});
+
+		$pdo->method('inTransaction')->willReturn(false);
+		$pdo->method('beginTransaction')->willReturn(true);
+
+		return $pdo;
+	}
+
+	/** Call createTransaction() via reflection on a connection with an injected PDO. */
+	private function callCreateTransaction(TDbConnection $conn): \Prado\Data\TDbTransaction
+	{
+		$method = new \ReflectionMethod(TDbConnection::class, 'createTransaction');
+		$method->setAccessible(true);
+		return $method->invoke($conn);
+	}
+
+	public function testCreateTransactionIsNotSerialForNonSerialDriverWithAutoCommitOn(): void
+	{
+		// MySQL, autocommit ON (default) → non-serial transaction.
+		$conn = new TDbConnection('mysql:host=localhost');
+		$this->injectMockPdo($conn, $this->makePdoForDriver('mysql', 1));
+		$tx = $this->callCreateTransaction($conn);
+		$this->assertFalse(
+			$tx->getSerial(),
+			'createTransaction() must produce a non-serial transaction when autocommit is on.'
+		);
+	}
+
+	public function testCreateTransactionIsSerialForNonSerialDriverWithAutoCommitOff(): void
+	{
+		// MySQL, autocommit OFF → serial transaction, because every commit/rollback
+		// must immediately restart a new transaction to maintain the non-autocommit state.
+		$conn = new TDbConnection('mysql:host=localhost');
+		$this->injectMockPdo($conn, $this->makePdoForDriver('mysql', 0));
+		$tx = $this->callCreateTransaction($conn);
+		$this->assertTrue(
+			$tx->getSerial(),
+			'createTransaction() must produce a serial transaction when autocommit is off and the driver exposes ATTR_AUTOCOMMIT.'
+		);
+	}
+
+	public function testCreateTransactionIsSerialForFirebird(): void
+	{
+		// Firebird always uses serial transactions (usesSerialTransaction=true),
+		// regardless of the ATTR_AUTOCOMMIT state.
+		$conn = new TDbConnection('firebird:dbname=localhost:/db/test.fdb');
+		$this->injectMockPdo($conn, $this->makePdoForDriver('firebird', 1));
+		$tx = $this->callCreateTransaction($conn);
+		$this->assertTrue(
+			$tx->getSerial(),
+			'createTransaction() must produce a serial transaction for Firebird (usesSerialTransaction=true).'
+		);
+	}
+
+	public function testCreateTransactionIsNotSerialForSqliteEvenWithAutoCommitOff(): void
+	{
+		// SQLite has hasAutoCommitAttribute=false; the autocommit-off path must
+		// never apply.  The serial flag must be false regardless of ATTR_AUTOCOMMIT.
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		// SQLite doesn't support ATTR_AUTOCOMMIT; the mock returns 0 to verify
+		// that hasAutoCommitAttribute=false gates the condition correctly.
+		$pdo = $this->getMockBuilder(\PDO::class)
+			->disableOriginalConstructor()
+			->onlyMethods(['getAttribute'])
+			->getMock();
+		$pdo->method('getAttribute')
+			->willReturnCallback(function (int $attr) {
+				return match ($attr) {
+					PDO::ATTR_DRIVER_NAME => 'sqlite',
+					PDO::ATTR_AUTOCOMMIT  => 0, // forced off; must still be ignored
+					default               => null,
+				};
+			});
+		$this->injectMockPdo($conn, $pdo);
+		$tx = $this->callCreateTransaction($conn);
+		$this->assertFalse(
+			$tx->getSerial(),
+			'createTransaction() must NOT produce a serial transaction for SQLite (hasAutoCommitAttribute=false).'
+		);
+		$conn->Active = false;
+	}
+
+	public function testCreateTransactionIsNotSerialForPgsqlEvenWithAutoCommitOff(): void
+	{
+		// pgsql has hasAutoCommitAttribute=false; the autocommit-off path must
+		// never apply.
+		$conn = new TDbConnection('pgsql:host=localhost');
+		$pdo  = $this->getMockBuilder(\PDO::class)
+			->disableOriginalConstructor()
+			->onlyMethods(['getAttribute'])
+			->getMock();
+		$pdo->method('getAttribute')
+			->willReturnCallback(function (int $attr) {
+				return match ($attr) {
+					PDO::ATTR_DRIVER_NAME => 'pgsql',
+					PDO::ATTR_AUTOCOMMIT  => 0,
+					default               => null,
+				};
+			});
+		$this->injectMockPdo($conn, $pdo);
+		$tx = $this->callCreateTransaction($conn);
+		$this->assertFalse(
+			$tx->getSerial(),
+			'createTransaction() must NOT produce a serial transaction for pgsql (hasAutoCommitAttribute=false).'
+		);
+	}
 }

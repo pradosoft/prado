@@ -206,15 +206,37 @@ class TDbConnectionCharsetIbmIntegrationTest extends PHPUnit\Framework\TestCase
 		$conn->Active = false;
 	}
 
-	public function testIbmAutoCommitIsFalseInsideExplicitTransaction(): void
+	public function testIbmBeginTransactionSucceedsAndRollbackWorks(): void
 	{
+		// PDO::ATTR_AUTOCOMMIT on IBM DB2 reflects the PHP-level session setting and
+		// does NOT transition to false when PDO::beginTransaction() is called.
+		// Simply verify that beginTransaction/rollback work without error.
 		$conn = $this->openIbm();
-		$conn->beginTransaction();
-		$this->assertFalse(
-			$conn->AutoCommit,
-			'AutoCommit must be false while inside an explicit IBM DB2 transaction.'
+		$tx   = $conn->beginTransaction();
+		$this->assertTrue($tx->getActive(), 'IBM DB2 beginTransaction must return an active transaction.');
+		$conn->rollback();
+		$conn->Active = false;
+	}
+
+	public function testIbmAutoCommitOffCreatesSerialTransaction(): void
+	{
+		// When AutoCommit is disabled on an IBM DB2 connection, createTransaction()
+		// must produce a serial TDbTransaction so that each commit/rollback
+		// automatically restarts a new transaction (maintaining the non-autocommit
+		// session contract).
+		$conn = $this->openIbm();
+		$conn->AutoCommit = false;
+		$tx = $conn->beginTransaction();
+		$this->assertTrue(
+			$tx->getSerial(),
+			'With AutoCommit=false, IBM DB2 beginTransaction must return a serial transaction.'
 		);
 		$conn->rollback();
+		// After rollback the serial restart fires; the transaction must remain active.
+		$this->assertTrue(
+			$tx->getActive(),
+			'After rollback with AutoCommit=false, the serial transaction must remain active.'
+		);
 		$conn->Active = false;
 	}
 

@@ -231,6 +231,28 @@ class TDbConnectionCharsetMysqlIntegrationTest extends PHPUnit\Framework\TestCas
 		$conn->Active = false;
 	}
 
+	public function testMysqlAutoCommitOffCreatesSerialTransaction(): void
+	{
+		// When AutoCommit is disabled on a MySQL connection, createTransaction()
+		// must produce a serial TDbTransaction so that each commit/rollback
+		// automatically restarts a new transaction (maintaining the non-autocommit
+		// session contract).
+		$conn = $this->openMysql();
+		$conn->AutoCommit = false;
+		$tx = $conn->beginTransaction();
+		$this->assertTrue(
+			$tx->getSerial(),
+			'With AutoCommit=false, MySQL beginTransaction must return a serial transaction.'
+		);
+		$conn->rollback();
+		// After rollback the serial restart fires; the transaction must remain active.
+		$this->assertTrue(
+			$tx->getActive(),
+			'After rollback with AutoCommit=false, the serial transaction must remain active.'
+		);
+		$conn->Active = false;
+	}
+
 	public function testMysqlSetCharsetUsesParameterisedSql(): void
 	{
 		// getCharsetSetSql('mysql') returns 'SET NAMES ?' — a PDO-parameterised

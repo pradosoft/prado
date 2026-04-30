@@ -354,7 +354,10 @@ class TDbDriverCapabilitiesFirebirdIntegrationTest extends PHPUnit\Framework\Tes
 		$rows = $conn->createCommand($sql)->queryAll();
 
 		// The query returns TRIM(RDB$RELATION_NAME) AS tbl_name.
+		// pdo_firebird returns column aliases in uppercase ('TBL_NAME'), so
+		// normalise all row keys to lowercase before extracting the column.
 		// Firebird stores table names in uppercase by default.
+		$rows  = array_map(fn($r) => array_change_key_case($r, CASE_LOWER), $rows);
 		$names = array_column($rows, 'tbl_name');
 		$this->assertContains('CAPS_FB_LIST_TEST', $names);
 
@@ -372,6 +375,7 @@ class TDbDriverCapabilitiesFirebirdIntegrationTest extends PHPUnit\Framework\Tes
 		$conn = $this->openFirebird('UTF-8');
 		$sql  = TDbDriverCapabilities::getListTablesSql('firebird');
 		$rows = $conn->createCommand($sql)->queryAll();
+		$rows  = array_map(fn($r) => array_change_key_case($r, CASE_LOWER), $rows);
 		$names = array_column($rows, 'tbl_name');
 		$this->assertNotContains('RDB$RELATIONS', $names);
 		$conn->Active = false;
@@ -390,6 +394,7 @@ class TDbDriverCapabilitiesFirebirdIntegrationTest extends PHPUnit\Framework\Tes
 
 		$sql  = TDbDriverCapabilities::getListTablesSql('firebird');
 		$rows = $conn->createCommand($sql)->queryAll();
+		$rows  = array_map(fn($r) => array_change_key_case($r, CASE_LOWER), $rows);
 		$names = array_column($rows, 'tbl_name');
 		$this->assertNotContains('CAPS_FB_VIEW_TEST', $names);
 

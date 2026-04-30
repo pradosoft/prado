@@ -210,39 +210,28 @@ class TDbConnectionCharsetPgsqlIntegrationTest extends PHPUnit\Framework\TestCas
 	// -----------------------------------------------------------------------
 	// hasAutoCommitAttribute behavioral verification
 	//
-	// PostgreSQL has hasAutoCommitAttribute = true.  TDbConnection::getAutoCommit()
-	// reads PDO::ATTR_AUTOCOMMIT; outside of an explicit transaction it is true.
+	// PostgreSQL does NOT expose PDO::ATTR_AUTOCOMMIT — pdo_pgsql throws a
+	// PDOException when the attribute is read or written.  TDbConnection reports
+	// HasAutoCommit = false for pgsql, and AutoCommit access is not applicable.
 	// -----------------------------------------------------------------------
 
-	public function testPgsqlHasAutoCommitAttribute(): void
+	public function testPgsqlHasAutoCommitAttributeIsFalse(): void
 	{
 		$conn = $this->openPgsql();
-		$this->assertTrue(
-			$conn->HasAutoCommit,
-			'PostgreSQL must report hasAutoCommitAttribute = true.'
-		);
-		$conn->Active = false;
-	}
-
-	public function testPgsqlAutoCommitIsTrueOutsideTransaction(): void
-	{
-		// PDO::ATTR_AUTOCOMMIT is true when no explicit transaction is active.
-		$conn = $this->openPgsql();
-		$this->assertTrue(
-			$conn->AutoCommit,
-			'AutoCommit must be true outside of an explicit PostgreSQL transaction.'
-		);
-		$conn->Active = false;
-	}
-
-	public function testPgsqlAutoCommitIsFalseInsideTransaction(): void
-	{
-		$conn = $this->openPgsql();
-		$conn->beginTransaction();
 		$this->assertFalse(
-			$conn->AutoCommit,
-			'AutoCommit must be false while inside an explicit PostgreSQL transaction.'
+			$conn->HasAutoCommit,
+			'PostgreSQL must report hasAutoCommitAttribute = false (ATTR_AUTOCOMMIT is not supported).'
 		);
+		$conn->Active = false;
+	}
+
+	public function testPgsqlBeginTransactionSucceedsAndRollbackWorks(): void
+	{
+		// pgsql does not expose ATTR_AUTOCOMMIT.  Simply verify that
+		// beginTransaction/rollback work without error.
+		$conn = $this->openPgsql();
+		$tx   = $conn->beginTransaction();
+		$this->assertTrue($tx->getActive(), 'PostgreSQL beginTransaction must return an active transaction.');
 		$conn->rollback();
 		$conn->Active = false;
 	}

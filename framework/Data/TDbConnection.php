@@ -594,16 +594,29 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	}
 
 	/**
+	 * Creates a new {@see IDataTransaction} for this connection.
+	 *
+	 * A transaction is created in **serial mode** when either:
+	 * - the driver architecturally requires it ({@see TDbDriverCapabilities::usesSerialTransaction}),
+	 *   e.g. Firebird/Interbase; or
+	 * - the driver exposes {@see PDO::ATTR_AUTOCOMMIT} and autocommit is currently
+	 *   disabled on this connection — because autocommit-off means every
+	 *   commit/rollback must immediately restart a new transaction to keep the
+	 *   connection in its intended non-autocommit state.
+	 *
 	 * @return IDataTransaction A new transaction from this connection.
 	 * @since 4.3.3
 	 */
 	protected function createTransaction(): IDataTransaction
 	{
-		$transaction = Prado::createComponent($this->getTransactionClass() ?? self::DEFAULT_TRANSACTION_CLASS, $this);
-		if ($transaction->hasMethod('setSerial')) {
-			$transaction->setSerial(!$this->getAutoCommit());
-		}
-		return $transaction;
+		$driver = $this->getDriverName();
+		$serial = TDbDriverCapabilities::usesSerialTransaction($driver)
+			|| (TDbDriverCapabilities::hasAutoCommitAttribute($driver) && !$this->getAutoCommit());
+		return Prado::createComponent(
+			$this->getTransactionClass() ?? self::DEFAULT_TRANSACTION_CLASS,
+			$this,
+			$serial
+		);
 	}
 
 	/**

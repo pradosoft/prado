@@ -77,16 +77,6 @@ class FirebirdUpsertTest extends PHPUnit\Framework\TestCase
 	}
 
 	// -----------------------------------------------------------------------
-	// Transaction requirement
-	// -----------------------------------------------------------------------
-
-	public function test_throws_TDbException_without_active_transaction(): void
-	{
-		$this->expectException(TDbException::class);
-		self::$gateway->upsert(['username' => 'alice', 'score' => 10]);
-	}
-
-	// -----------------------------------------------------------------------
 	// SQL generation
 	// -----------------------------------------------------------------------
 

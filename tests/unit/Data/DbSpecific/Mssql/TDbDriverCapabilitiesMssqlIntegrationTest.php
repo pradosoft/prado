@@ -17,7 +17,7 @@ use Prado\TApplication;
  *
  * Key MSSQL characteristics:
  *  - supportsCharset = true for both sqlsrv and dblib
- *  - hasAutoCommitAttribute = true
+ *  - hasAutoCommitAttribute = false  (sqlsrv/dblib do not expose PDO::ATTR_AUTOCOMMIT)
  *  - usesSerialTransaction = false
  *  - requiresPreBeginTransactionFlush = false
  *  - requiresPostTransactionFlush = false
@@ -95,9 +95,11 @@ class TDbDriverCapabilitiesMssqlIntegrationTest extends PHPUnit\Framework\TestCa
 		$this->assertTrue(TDbDriverCapabilities::supportsCharset('sqlsrv'));
 	}
 
-	public function testSqlsrvHasAutoCommitAttribute(): void
+	public function testSqlsrvHasAutoCommitAttributeIsFalse(): void
 	{
-		$this->assertTrue(TDbDriverCapabilities::hasAutoCommitAttribute('sqlsrv'));
+		// sqlsrv does not expose PDO::ATTR_AUTOCOMMIT; reading or writing it
+		// throws a PDOException.  hasAutoCommitAttribute must return false.
+		$this->assertFalse(TDbDriverCapabilities::hasAutoCommitAttribute('sqlsrv'));
 	}
 
 	public function testSqlsrvDoesNotUseSerialTransaction(): void
@@ -176,9 +178,11 @@ class TDbDriverCapabilitiesMssqlIntegrationTest extends PHPUnit\Framework\TestCa
 		$this->assertTrue(TDbDriverCapabilities::supportsCharset('dblib'));
 	}
 
-	public function testDblibHasAutoCommitAttribute(): void
+	public function testDblibHasAutoCommitAttributeIsFalse(): void
 	{
-		$this->assertTrue(TDbDriverCapabilities::hasAutoCommitAttribute('dblib'));
+		// dblib does not expose PDO::ATTR_AUTOCOMMIT; reading or writing it
+		// throws a PDOException.  hasAutoCommitAttribute must return false.
+		$this->assertFalse(TDbDriverCapabilities::hasAutoCommitAttribute('dblib'));
 	}
 
 	public function testDblibDoesNotUseSerialTransaction(): void
@@ -244,9 +248,11 @@ class TDbDriverCapabilitiesMssqlIntegrationTest extends PHPUnit\Framework\TestCa
 		$this->assertSame('ASCII', TDbDriverCapabilities::resolveCharset('ASCII', 'sqlsrv'));
 	}
 
-	public function testSqlsrvResolveWin1250ReturnsCp1250(): void
+	public function testSqlsrvResolveWin1250ReturnsWindows1250(): void
 	{
-		$this->assertSame('CP1250', TDbDriverCapabilities::resolveCharset('Windows-1250', 'sqlsrv'));
+		// sqlsrv has no alias entry for Windows-1250; resolveCharset returns the
+		// canonical form (Windows-1250) rather than a driver-specific alias.
+		$this->assertSame('Windows-1250', TDbDriverCapabilities::resolveCharset('Windows-1250', 'sqlsrv'));
 	}
 
 	public function testSqlsrvUnresolveUtf8ReturnsUtf8Standard(): void
@@ -323,9 +329,15 @@ class TDbDriverCapabilitiesMssqlIntegrationTest extends PHPUnit\Framework\TestCa
 	{
 		// Create a temporary table, run the INFORMATION_SCHEMA.TABLES query, verify
 		// the name appears, then clean up.  sqlsrv stores table names case-insensitively.
+		// Skipped automatically when the connected user lacks DDL permissions (e.g. master db).
 		$conn = $this->openSqlsrv();
-		$conn->createCommand('IF OBJECT_ID(\'caps_mssql_list_test\',\'U\') IS NOT NULL DROP TABLE caps_mssql_list_test')->execute();
-		$conn->createCommand('CREATE TABLE caps_mssql_list_test (id INT NOT NULL PRIMARY KEY)')->execute();
+		try {
+			$conn->createCommand('IF OBJECT_ID(\'caps_mssql_list_test\',\'U\') IS NOT NULL DROP TABLE caps_mssql_list_test')->execute();
+			$conn->createCommand('CREATE TABLE caps_mssql_list_test (id INT NOT NULL PRIMARY KEY)')->execute();
+		} catch (\Exception $e) {
+			$conn->Active = false;
+			$this->markTestSkipped('DDL not permitted on this SQL Server connection: ' . $e->getMessage());
+		}
 
 		$sql  = TDbDriverCapabilities::getListTablesSql('sqlsrv');
 		$rows = $conn->createCommand($sql)->queryAll();
@@ -341,9 +353,15 @@ class TDbDriverCapabilitiesMssqlIntegrationTest extends PHPUnit\Framework\TestCa
 	public function testSqlsrvListTablesQueryExcludesViews(): void
 	{
 		// The capability SQL filters TABLE_TYPE = 'BASE TABLE'; views must not appear.
+		// Skipped automatically when the connected user lacks DDL permissions (e.g. master db).
 		$conn = $this->openSqlsrv();
-		$conn->createCommand('IF OBJECT_ID(\'caps_mssql_view_test\',\'V\') IS NOT NULL DROP VIEW caps_mssql_view_test')->execute();
-		$conn->createCommand('CREATE VIEW caps_mssql_view_test AS SELECT 1 AS n')->execute();
+		try {
+			$conn->createCommand('IF OBJECT_ID(\'caps_mssql_view_test\',\'V\') IS NOT NULL DROP VIEW caps_mssql_view_test')->execute();
+			$conn->createCommand('CREATE VIEW caps_mssql_view_test AS SELECT 1 AS n')->execute();
+		} catch (\Exception $e) {
+			$conn->Active = false;
+			$this->markTestSkipped('DDL not permitted on this SQL Server connection: ' . $e->getMessage());
+		}
 
 		$sql  = TDbDriverCapabilities::getListTablesSql('sqlsrv');
 		$rows = $conn->createCommand($sql)->queryAll();
@@ -356,10 +374,16 @@ class TDbDriverCapabilitiesMssqlIntegrationTest extends PHPUnit\Framework\TestCa
 
 	public function testSqlsrvListTablesQueryDoesNotReturnDroppedTable(): void
 	{
+		// Skipped automatically when the connected user lacks DDL permissions (e.g. master db).
 		$conn = $this->openSqlsrv();
-		$conn->createCommand('IF OBJECT_ID(\'caps_mssql_dropped_test\',\'U\') IS NOT NULL DROP TABLE caps_mssql_dropped_test')->execute();
-		$conn->createCommand('CREATE TABLE caps_mssql_dropped_test (id INT NOT NULL PRIMARY KEY)')->execute();
-		$conn->createCommand('DROP TABLE caps_mssql_dropped_test')->execute();
+		try {
+			$conn->createCommand('IF OBJECT_ID(\'caps_mssql_dropped_test\',\'U\') IS NOT NULL DROP TABLE caps_mssql_dropped_test')->execute();
+			$conn->createCommand('CREATE TABLE caps_mssql_dropped_test (id INT NOT NULL PRIMARY KEY)')->execute();
+			$conn->createCommand('DROP TABLE caps_mssql_dropped_test')->execute();
+		} catch (\Exception $e) {
+			$conn->Active = false;
+			$this->markTestSkipped('DDL not permitted on this SQL Server connection: ' . $e->getMessage());
+		}
 
 		$sql  = TDbDriverCapabilities::getListTablesSql('sqlsrv');
 		$rows = $conn->createCommand($sql)->queryAll();

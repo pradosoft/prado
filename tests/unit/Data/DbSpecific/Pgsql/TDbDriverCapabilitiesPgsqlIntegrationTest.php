@@ -15,7 +15,7 @@ use Prado\TApplication;
  *
  * Key PostgreSQL characteristics:
  *  - supportsCharset = true (via SET client_encoding TO, no DSN param)
- *  - hasAutoCommitAttribute = true
+ *  - hasAutoCommitAttribute = false  (pdo_pgsql does not expose PDO::ATTR_AUTOCOMMIT)
  *  - usesSerialTransaction = false
  *  - requiresPreBeginTransactionFlush = false
  *  - requiresPostTransactionFlush = false
@@ -95,9 +95,11 @@ class TDbDriverCapabilitiesPgsqlIntegrationTest extends PHPUnit\Framework\TestCa
 		$this->assertTrue(TDbDriverCapabilities::supportsCharset('pgsql'));
 	}
 
-	public function testPgsqlHasAutoCommitAttribute(): void
+	public function testPgsqlHasAutoCommitAttributeIsFalse(): void
 	{
-		$this->assertTrue(TDbDriverCapabilities::hasAutoCommitAttribute('pgsql'));
+		// pdo_pgsql does not expose PDO::ATTR_AUTOCOMMIT; reading or writing it
+		// throws a PDOException.  hasAutoCommitAttribute must return false.
+		$this->assertFalse(TDbDriverCapabilities::hasAutoCommitAttribute('pgsql'));
 	}
 
 	public function testPgsqlDoesNotUseSerialTransaction(): void
