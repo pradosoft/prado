@@ -19,7 +19,7 @@ use Prado\Prado;
 /**
  * TDbCommand class.
  *
- * TDbCommand represents an SQL statement to execute against a database.
+ * TDbCommand represents a PHP PDO SQL statement to execute against a database.
  * It is usually created by calling {@see \Prado\Data\TDbConnection::createCommand}.
  * The SQL statement to be executed may be set via {@see setText Text}.
  *

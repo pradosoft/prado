@@ -162,4 +162,65 @@ class TDbConnectionCharsetSqliteIntegrationTest extends PHPUnit\Framework\TestCa
 		$this->assertSame('UTF-8', $conn->DatabaseCharset);
 		$conn->Active = false;
 	}
+
+	// -----------------------------------------------------------------------
+	// hasAutoCommitAttribute = false behavioral verification
+	//
+	// SQLite does not expose PDO::ATTR_AUTOCOMMIT.  TDbDriverCapabilities returns
+	// false for hasAutoCommitAttribute('sqlite'), and TDbConnection::getAutoCommit()
+	// short-circuits to return false without ever calling PDO::getAttribute().
+	// Attempting to call PDO::getAttribute(PDO::ATTR_AUTOCOMMIT) directly on a
+	// SQLite connection throws or returns a meaningless value; TDbConnection must
+	// not do so.
+	// -----------------------------------------------------------------------
+
+	public function testSqliteHasNoAutoCommitAttributeFlag(): void
+	{
+		$conn = $this->openSqlite();
+		$this->assertFalse(
+			$conn->HasAutoCommit,
+			'SQLite must report hasAutoCommitAttribute = false.'
+		);
+		$conn->Active = false;
+	}
+
+	public function testSqliteGetAutoCommitReturnsFalseWithoutCrash(): void
+	{
+		// getAutoCommit() must return false for SQLite without throwing.
+		// PDO::getAttribute(PDO::ATTR_AUTOCOMMIT) is NOT called on SQLite.
+		$conn = $this->openSqlite();
+		$this->assertFalse(
+			$conn->AutoCommit,
+			'AutoCommit must return false for SQLite (PDO::ATTR_AUTOCOMMIT not supported).'
+		);
+		$conn->Active = false;
+	}
+
+	public function testSqliteSetAutoCommitIsSafelyIgnored(): void
+	{
+		// setAutoCommit() must be a safe no-op for SQLite — no exception, no crash.
+		$conn = $this->openSqlite();
+		$conn->AutoCommit = true;   // must not throw
+		$conn->AutoCommit = false;  // must not throw
+		$this->assertTrue($conn->Active, 'Connection must remain active after setAutoCommit no-ops.');
+		// The value is still false because sqlite ignores the attribute.
+		$this->assertFalse($conn->AutoCommit);
+		$conn->Active = false;
+	}
+
+	public function testSqliteGetCharsetPragmaSqlAppliedSafelyViaQuote(): void
+	{
+		// getCharsetPragmaSql() returns 'PRAGMA encoding = %s'.  TDbConnection
+		// executes it via sprintf($sql, $pdo->quote($charset)) — PDO::quote()
+		// ensures the value is safely escaped rather than raw string concatenation.
+		// Verify the PRAGMA is actually executed (no error) and takes effect.
+		$conn = $this->openSqlite('UTF-8');
+		$encoding = $this->queryScalar($conn, 'PRAGMA encoding');
+		$this->assertSame(
+			'UTF-8',
+			$encoding,
+			'PRAGMA encoding must be applied via PDO::quote()-escaped sprintf, not raw concatenation.'
+		);
+		$conn->Active = false;
+	}
 }

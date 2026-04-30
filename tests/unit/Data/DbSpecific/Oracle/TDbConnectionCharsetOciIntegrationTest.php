@@ -148,4 +148,56 @@ class TDbConnectionCharsetOciIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertSame('WE8ISO8859P1', $conn->DatabaseCharset);
 		$conn->Active = false;
 	}
+
+	// -----------------------------------------------------------------------
+	// hasAutoCommitAttribute = true behavioral verification
+	//
+	// Oracle (pdo_oci) exposes PDO::ATTR_AUTOCOMMIT; TDbConnection can read it.
+	// -----------------------------------------------------------------------
+
+	public function testOciHasAutoCommitAttribute(): void
+	{
+		$conn = $this->openOci();
+		$this->assertTrue(
+			$conn->HasAutoCommit,
+			'Oracle (pdo_oci) must report hasAutoCommitAttribute = true.'
+		);
+		$conn->Active = false;
+	}
+
+	public function testOciAutoCommitIsTrueByDefault(): void
+	{
+		$conn = $this->openOci();
+		$this->assertTrue(
+			$conn->AutoCommit,
+			'Oracle AutoCommit must be true when no explicit transaction is active.'
+		);
+		$conn->Active = false;
+	}
+
+	public function testOciAutoCommitIsFalseInsideExplicitTransaction(): void
+	{
+		$conn = $this->openOci();
+		$conn->beginTransaction();
+		$this->assertFalse(
+			$conn->AutoCommit,
+			'AutoCommit must be false while inside an explicit Oracle transaction.'
+		);
+		$conn->rollback();
+		$conn->Active = false;
+	}
+
+	public function testOciCharsetInjectedIntoDsnWithCharsetParam(): void
+	{
+		// applyCharsetToDsn() appends ;charset=AL32UTF8 for oci.
+		// The raw ConnectionString (stored before modification) must not contain it.
+		$conn = $this->openOci('UTF-8');
+		$this->assertTrue($conn->Active);
+		$this->assertStringNotContainsString(
+			'charset',
+			strtolower($conn->getConnectionString()),
+			'The raw stored DSN must not contain charset; only the modified copy passed to PDO does.'
+		);
+		$conn->Active = false;
+	}
 }

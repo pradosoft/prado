@@ -494,6 +494,7 @@ dbproperties_property_required			= {1}.{0} is a required property.
 
 dbconnection_open_failed				= TDbConnection failed to establish DB connection: {0}
 dbconnection_connection_inactive		= TDbConnection is inactive.
+dbconnection_active_transaction			= TDbConnection cannot begin a new transaction: a transaction is already open and has uncommitted work pending. Commit or roll back the existing transaction first.
 dbconnection_unsupported_driver_charset	= Database driver '{0}' doesn't support setting charset.
 dbconnection_charset_unchangeable		= Database driver '{0}' cannot change the charset after opening. Charset is a DSN parameter.
 

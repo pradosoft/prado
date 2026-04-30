@@ -170,4 +170,80 @@ class TDbConnectionCharsetMysqlIntegrationTest extends PHPUnit\Framework\TestCas
 		$this->assertSame('latin1', $conn->DatabaseCharset);
 		$conn->Active = false;
 	}
+
+	// -----------------------------------------------------------------------
+	// hasAutoCommitAttribute = true behavioral verification
+	//
+	// MySQL exposes PDO::ATTR_AUTOCOMMIT.  TDbConnection::getAutoCommit() reads
+	// it; setAutoCommit() writes it.  Outside of an explicit transaction, MySQL
+	// defaults to autocommit-on.  These tests verify that TDbConnection can read
+	// and write the attribute without error, and that its value reflects the real
+	// connection state.
+	// -----------------------------------------------------------------------
+
+	public function testMysqlHasAutoCommitAttribute(): void
+	{
+		$conn = $this->openMysql();
+		$this->assertTrue(
+			$conn->HasAutoCommit,
+			'MySQL must report hasAutoCommitAttribute = true.'
+		);
+		$conn->Active = false;
+	}
+
+	public function testMysqlAutoCommitIsTrueByDefault(): void
+	{
+		// MySQL defaults to autocommit mode outside of an explicit transaction.
+		$conn = $this->openMysql();
+		$this->assertTrue(
+			$conn->AutoCommit,
+			'MySQL AutoCommit must be true when no explicit transaction is active.'
+		);
+		$conn->Active = false;
+	}
+
+	public function testMysqlSetAutoCommitToFalseDisablesAutocommit(): void
+	{
+		$conn = $this->openMysql();
+		$conn->AutoCommit = false;
+		$this->assertFalse(
+			$conn->AutoCommit,
+			'AutoCommit must be false after setAutoCommit(false) on MySQL.'
+		);
+		// Re-enable so subsequent work on the same session is not surprised.
+		$conn->AutoCommit = true;
+		$conn->Active = false;
+	}
+
+	public function testMysqlBeginTransactionSucceedsAndRollbackWorks(): void
+	{
+		// PDO::ATTR_AUTOCOMMIT on MySQL reflects the PHP-level session setting (1 by
+		// default) and does NOT transition to 0 when PDO::beginTransaction() is called.
+		// MySQL's transaction implementation uses SET autocommit=0 internally, but the
+		// PDO attribute getter returns the cached initial value, not the live session
+		// state.  Use PDO::inTransaction() (not ATTR_AUTOCOMMIT) to detect transaction
+		// state in MySQL.  This test simply verifies that beginTransaction/rollback
+		// work without throwing for MySQL.
+		$conn = $this->openMysql();
+		$tx   = $conn->beginTransaction();
+		$this->assertTrue($tx->getActive(), 'MySQL beginTransaction must return an active transaction.');
+		$conn->rollback();
+		$conn->Active = false;
+	}
+
+	public function testMysqlSetCharsetUsesParameterisedSql(): void
+	{
+		// getCharsetSetSql('mysql') returns 'SET NAMES ?' — a PDO-parameterised
+		// statement.  TDbConnection executes it via $pdo->prepare($sql)->execute([$charset])
+		// so the charset value is bound as a parameter, not concatenated into SQL.
+		// Verify the functional outcome: setting UTF-8 results in utf8mb4 on the server.
+		$conn = $this->openMysql();
+		$conn->Charset = 'UTF-8';
+		$this->assertSame(
+			'utf8mb4',
+			$this->mysqlClientCharset($conn),
+			'SET NAMES ? must have been executed with \'utf8mb4\' as the parameter value.'
+		);
+		$conn->Active = false;
+	}
 }

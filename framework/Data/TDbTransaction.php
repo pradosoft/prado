@@ -11,14 +11,13 @@
 namespace Prado\Data;
 
 use PDO;
+use Prado\Data\Common\TDbMetaData;
 use Prado\Exceptions\TDbException;
-use Prado\Prado;
-use Prado\TPropertyValue;
 
 /**
  * TDbTransaction class.
  *
- * TDbTransaction represents a DB transaction.
+ * TDbTransaction represents a PHP PDO database connection transaction.
  * It is usually created by calling {@see \Prado\Data\TDbConnection::beginTransaction}.
  *
  * The following code is a common scenario of using transactions:
@@ -37,8 +36,7 @@ use Prado\TPropertyValue;
  * }
  * ```
  *
- * Since 4.3.3, TDbTransaction supports serial transaction mode for drivers
- * that always keep an implicit transaction alive (e.g. Firebird/pdo_firebird).
+ * Since 4.3.3, TDbTransaction supports serial transactions. If {@see TDbConnection::getAutoLoad}
  * In serial mode, the transaction remains active after commit or rollback
  * and immediately begins a new explicit transaction. This provides seamless
  * reuse of the transaction object without additional calls.
@@ -50,20 +48,22 @@ class TDbTransaction extends \Prado\TComponent implements IDataTransaction
 {
 	private $_connection;
 	private $_active;
+	private $_serial = false;
 
 	/**
 	 * Constructor.
 	 * @param \Prado\Data\TDbConnection $connection the connection associated with this transaction
+	 * @param bool $serial
 	 * @see TDbConnection::beginTransaction
 	 */
-	public function __construct(TDbConnection $connection)
+	public function __construct(TDbConnection $connection, bool $serial = false)
 	{
-		$this->_connection = $connection;
+		$this->setConnection($connection);
 		$this->setActive(true);
+		$this->setSerial($serial);
 		parent::__construct();
 	}
-	
-	
+
 	/**
 	 * Creates a command for execution.
 	 * @param string $sql SQL statement associated with the new command.
@@ -101,11 +101,11 @@ class TDbTransaction extends \Prado\TComponent implements IDataTransaction
 	public function commit()
 	{
 		$connection = $this->getConnection();
-		
+
 		if (!$this->getActive() || !$connection->getActive()) {
 			throw new TDbException('dbtransaction_transaction_inactive');
 		}
-		
+
 		$pdo = $connection->getPdoInstance();
 		$pdo->commit();
 
@@ -140,11 +140,11 @@ class TDbTransaction extends \Prado\TComponent implements IDataTransaction
 	public function rollback()
 	{
 		$connection = $this->getConnection();
-		
+
 		if (!$this->getActive() || !$connection->getActive()) {
 			throw new TDbException('dbtransaction_transaction_inactive');
 		}
-		
+
 		$pdo = $connection->getPdoInstance();
 		$pdo->rollBack();
 
@@ -163,22 +163,21 @@ class TDbTransaction extends \Prado\TComponent implements IDataTransaction
 	}
 
 	/**
-	 * Children should override this if the transaction is not complete after
-	 * rollback/commit, eg Serial.
-	 * @return bool should the transaction mark as no longer active.
-	 * @since 4.3.3
-	 */
-	public function isTransactionComplete(): bool
-	{
-		return true;
-	}
-
-	/**
 	 * @return \Prado\Data\TDbConnection the DB connection for this transaction
 	 */
 	public function getConnection()
 	{
 		return $this->_connection;
+	}
+
+	/**
+	 * @param TDbConnection $connection
+	 * @return static
+	 */
+	protected function setConnection(TDbConnection $connection): static
+	{
+		$this->_connection = $connection;
+		return $this;
 	}
 
 	/**
@@ -191,9 +190,65 @@ class TDbTransaction extends \Prado\TComponent implements IDataTransaction
 
 	/**
 	 * @param bool $value whether this transaction is active
+	 * @return static For method chaining.
 	 */
-	protected function setActive(bool $value)
+	protected function setActive(bool $value): static
 	{
 		$this->_active = $value;
+		if (!$value) {
+			$this->setSerial(false);
+		}
+		return $this;
+	}
+
+	/**
+	 * @return bool Whether this transaction is a serial transaction
+	 * @since 4.3.3
+	 */
+	public function getSerial()
+	{
+		return $this->_serial;
+	}
+
+	/**
+	 * @param bool $value Whether this transaction is a serial transaction
+	 * @return static For method chaining.
+	 * @since 4.3.3
+	 */
+	protected function setSerial(bool $value): static
+	{
+		$this->_serial = $value;
+		return $this;
+	}
+
+	/**
+	 * @param mixed $returnValue
+	 * @return bool Should the transaction expire.
+	 * @since 4.3.3
+	 */
+	protected function isTransactionComplete($returnValue = true): bool
+	{
+		if ($this->getSerial()) {
+			if ($returnValue && !$this->getConnection()->getAutoCommit()) {
+				$this->restartTransaction();
+				$returnValue = false;
+			}
+		}
+		return $this->dyIsTransactionComplete($returnValue);
+	}
+
+	/**
+	 * Restarts the serial transaction after a commit or rollback by delegating
+	 * to {@see TDbConnection::beginTransaction()}.
+	 *
+	 * All PDO-level work — flushing any implicit driver transaction and calling
+	 * PDO::beginTransaction() — is handled by the connection, which is the
+	 * single authoritative owner of every PDO::beginTransaction() call.
+	 *
+	 * @since 4.3.3
+	 */
+	protected function restartTransaction(): void
+	{
+		$this->getConnection()->beginTransaction();
 	}
 }

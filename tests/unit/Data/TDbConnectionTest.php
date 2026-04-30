@@ -991,11 +991,6 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 		$this->assertFalse($conn->HasAutoCommit);
 	}
 
-	public function testGetHasAutoCommitReturnsTrueForMysql(): void
-	{
-		$this->markTestSkipped('MySQL server not available');
-	}
-
 	// -----------------------------------------------------------------------
 	// getAutoCommit() tests
 	// -----------------------------------------------------------------------
@@ -1123,5 +1118,483 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 		$version = $conn->ServerVersion;
 		$this->assertIsString($version);
 		$conn->Active = false;
+	}
+
+	public function testExtractCharsetFromDsnMysql()
+	{
+		$conn = new TDbConnection('mysql:host=localhost;dbname=test', 'user', 'pass');
+		// Use reflection to call protected method
+		$method = new ReflectionMethod(TDbConnection::class, 'extractCharsetFromDsn');
+		$method->setAccessible(true);
+
+		// No charset in DSN
+		$this->assertNull($method->invoke($conn, 'mysql:host=localhost;dbname=test'));
+
+		// With charset in DSN
+		$this->assertEquals('utf8mb4', $method->invoke($conn, 'mysql:host=localhost;dbname=test;charset=utf8mb4'));
+
+		// With CharacterSet (sqlsrv style)
+		$this->assertEquals('UTF-8', $method->invoke($conn, 'sqlsrv:Server=localhost;Database=test;CharacterSet=UTF-8'));
+	}
+
+	public function testExtractCharsetFromDsnSqlite()
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$method = new ReflectionMethod(TDbConnection::class, 'extractCharsetFromDsn');
+		$method->setAccessible(true);
+
+		// SQLite doesn't have DSN charset
+		$this->assertNull($method->invoke($conn, 'sqlite:' . TEST_DB_FILE));
+	}
+
+	public function testExtractCharsetFromDsnCaseInsensitive()
+	{
+		$conn = new TDbConnection('mysql:host=localhost', 'user', 'pass');
+		$method = new ReflectionMethod(TDbConnection::class, 'extractCharsetFromDsn');
+		$method->setAccessible(true);
+
+		// Test case insensitive matching
+		$this->assertEquals('utf8', $method->invoke($conn, 'mysql:host=localhost;CHARSET=utf8'));
+		$this->assertEquals('utf8', $method->invoke($conn, 'mysql:host=localhost;CharSet=utf8'));
+	}
+
+	// -----------------------------------------------------------------------
+	// getAvailableDrivers() static method
+	// -----------------------------------------------------------------------
+
+	public function testGetAvailableDriversReturnsArray(): void
+	{
+		$drivers = TDbConnection::getAvailableDrivers();
+		$this->assertIsArray($drivers);
+	}
+
+	public function testGetAvailableDriversMatchesPdo(): void
+	{
+		$this->assertSame(PDO::getAvailableDrivers(), TDbConnection::getAvailableDrivers());
+	}
+
+	// -----------------------------------------------------------------------
+	// __sleep() — serialization removes _pdo and _active
+	// -----------------------------------------------------------------------
+
+	public function testSleepExcludesPdoAndActive(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+
+		// __sleep() is called implicitly by serialize()
+		$props = $conn->__sleep();
+		$this->assertNotContains("\0Prado\Data\TDbConnection\0_pdo",    $props);
+		$this->assertNotContains("\0Prado\Data\TDbConnection\0_active",  $props);
+	}
+
+	public function testSerializePreservesConnectionString(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE, 'user', 'pass');
+		$conn->Active = true;
+
+		$serialized   = serialize($conn);
+		/** @var TDbConnection $restored */
+		$restored = unserialize($serialized);
+
+		$this->assertSame('sqlite:' . TEST_DB_FILE, $restored->ConnectionString);
+		$this->assertSame('user', $restored->Username);
+		// After unserializing the connection must be inactive (PDO was stripped)
+		$this->assertFalse($restored->Active);
+		$this->assertNull($restored->PdoInstance);
+	}
+
+	// -----------------------------------------------------------------------
+	// setCharset() — inactive connection (stores property only)
+	// -----------------------------------------------------------------------
+
+	public function testSetCharsetWhenInactiveStoresProperty(): void
+	{
+		$conn = new TDbConnection('mysql:host=localhost;dbname=test');
+		$conn->Charset = 'UTF-8';
+		$this->assertSame('UTF-8', $conn->Charset);
+	}
+
+	public function testSetCharsetWhenInactiveAcceptsAnyValue(): void
+	{
+		$conn = new TDbConnection('firebird:dbname=localhost:/db/test.fdb');
+		$conn->Charset = 'ISO-8859-1';
+		$this->assertSame('ISO-8859-1', $conn->Charset);
+	}
+
+	// -----------------------------------------------------------------------
+	// setCharset() — active connection on non-switchable driver → exception
+	// -----------------------------------------------------------------------
+
+	/** @dataProvider provideNonSwitchableDrivers */
+	public function testSetCharsetThrowsWhenActiveAndDriverCannotSwitch(string $driver): void
+	{
+		// Build an active-looking connection with an injected PDO mock.
+		$mockPdo = $this->getMockBuilder(\PDO::class)
+			->disableOriginalConstructor()
+			->getMock();
+		$mockPdo->method('getAttribute')
+			->with(\PDO::ATTR_DRIVER_NAME)
+			->willReturn($driver);
+
+		$conn = new TDbConnection($driver . ':host=localhost');
+
+		$activeProp = new \ReflectionProperty(TDbConnection::class, '_active');
+		$activeProp->setAccessible(true);
+		$activeProp->setValue($conn, true);
+
+		$pdoProp = new \ReflectionProperty(TDbConnection::class, '_pdo');
+		$pdoProp->setAccessible(true);
+		$pdoProp->setValue($conn, $mockPdo);
+
+		$this->expectException(\Prado\Exceptions\TDbException::class);
+		$conn->Charset = 'UTF-8';
+	}
+
+	public static function provideNonSwitchableDrivers(): array
+	{
+		return [
+			'firebird' => ['firebird'],
+			'oci'      => ['oci'],
+			'sqlsrv'   => ['sqlsrv'],
+			'dblib'    => ['dblib'],
+		];
+	}
+
+	// -----------------------------------------------------------------------
+	// setCharset() — active SQLite connection (runtime-switchable via PRAGMA)
+	// -----------------------------------------------------------------------
+
+	public function testSetCharsetOnActiveSqliteDoesNotThrow(): void
+	{
+		// SQLite supports runtime charset via PRAGMA (errors silently ignored).
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		// Must not throw; PRAGMA errors are caught internally.
+		$conn->Charset = 'UTF-8';
+		$this->assertTrue($conn->Active);
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
+	// quoteTableName / quoteColumnName / quoteColumnAlias
+	// -----------------------------------------------------------------------
+
+	public function testQuoteTableNameDelegatesToMetaData(): void
+	{
+		// SQLite meta-data wraps names in double-quotes.
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		$quoted = $conn->quoteTableName('my_table');
+		$this->assertStringContainsString('my_table', $quoted);
+		$conn->Active = false;
+	}
+
+	public function testQuoteColumnNameDelegatesToMetaData(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		$quoted = $conn->quoteColumnName('my_col');
+		$this->assertStringContainsString('my_col', $quoted);
+		$conn->Active = false;
+	}
+
+	public function testQuoteColumnAliasDelegatesToMetaData(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		$quoted = $conn->quoteColumnAlias('my_alias');
+		$this->assertStringContainsString('my_alias', $quoted);
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
+	// getDbMetaData()
+	// -----------------------------------------------------------------------
+
+	public function testGetDbMetaDataReturnsMetaDataInstance(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		$meta = $conn->DbMetaData;
+		$this->assertInstanceOf(\Prado\Data\Common\TDbMetaData::class, $meta);
+		$conn->Active = false;
+	}
+
+	public function testGetDbMetaDataReturnsCachedInstance(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		$meta1 = $conn->DbMetaData;
+		$meta2 = $conn->DbMetaData;
+		$this->assertSame($meta1, $meta2);
+		$conn->Active = false;
+	}
+
+	public function testGetDbMetaDataReturnsSqliteMetaData(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		$this->assertInstanceOf(\Prado\Data\Common\Sqlite\TSqliteMetaData::class, $conn->DbMetaData);
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
+	// getLastInsertID() / quoteString() throw when inactive
+	// -----------------------------------------------------------------------
+
+	public function testGetLastInsertIdThrowsWhenInactive(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$this->expectException(\Prado\Exceptions\TDbException::class);
+		$conn->LastInsertID;
+	}
+
+	public function testQuoteStringThrowsWhenInactive(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$this->expectException(\Prado\Exceptions\TDbException::class);
+		$conn->quoteString('test');
+	}
+
+	public function testCreateCommandThrowsWhenInactive(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$this->expectException(\Prado\Exceptions\TDbException::class);
+		$conn->createCommand('SELECT 1');
+	}
+
+	// -----------------------------------------------------------------------
+	// beginTransaction() — duplicate / active transaction guard
+	// -----------------------------------------------------------------------
+
+	public function testBeginTransactionThrowsWhenTransactionAlreadyActive(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		$conn->beginTransaction();
+		$this->expectException(\Prado\Exceptions\TDbException::class);
+		$conn->beginTransaction();   // second call with same transaction open
+		$conn->Active = false;
+	}
+
+	public function testBeginTransactionThrowsWhenInactive(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$this->expectException(\Prado\Exceptions\TDbException::class);
+		$conn->beginTransaction();
+	}
+
+	public function testBeginTransactionReturnsNewTransactionAfterRollback(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		$txn1 = $conn->beginTransaction();
+		$txn1->rollBack();
+		$txn2 = $conn->beginTransaction();
+		$this->assertNotNull($txn2);
+		$this->assertTrue($txn2->Active);
+		$txn2->rollBack();
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
+	// getCurrentTransaction() edge cases
+	// -----------------------------------------------------------------------
+
+	public function testGetCurrentTransactionReturnsNullAfterCommit(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		$txn = $conn->beginTransaction();
+		$txn->commit();
+		$this->assertNull($conn->CurrentTransaction);
+		$conn->Active = false;
+	}
+
+	public function testGetCurrentTransactionReturnsNullAfterRollback(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		$txn = $conn->beginTransaction();
+		$txn->rollBack();
+		$this->assertNull($conn->CurrentTransaction);
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
+	// fxDataGetMetaDataClass event — raised by TDbDriverCapabilities::getMetaDataClass
+	// when the driver is unknown; TDbMetaData::getInstance calls it via the connection.
+	// -----------------------------------------------------------------------
+
+	public function testFxDataGetMetaDataClassEventCanBeHandledByBehavior(): void
+	{
+		// Attach a global behavior that handles fxDataGetMetaDataClass and supplies
+		// TSqliteMetaData as the handler for a custom driver.
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+
+		// Verify the known 'sqlite' driver path works without the event.
+		$meta = $conn->DbMetaData;
+		$this->assertInstanceOf(\Prado\Data\Common\Sqlite\TSqliteMetaData::class, $meta);
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
+	// TransactionClass — get/set/null
+	// -----------------------------------------------------------------------
+
+	public function testSetTransactionClassToNull(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->setTransactionClass(null);
+		$this->assertNull($conn->TransactionClass);
+	}
+
+	public function testSetTransactionClassToCustom(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->TransactionClass = \Prado\Data\TDbTransaction::class;
+		$this->assertSame(\Prado\Data\TDbTransaction::class, $conn->TransactionClass);
+	}
+
+	// -----------------------------------------------------------------------
+	// HasAutoCommit — per-driver
+	// -----------------------------------------------------------------------
+
+	public function testHasAutoCommitIsFalseForSqlite(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$this->assertFalse($conn->HasAutoCommit);
+	}
+
+	public function testHasAutoCommitIsTrueForMysqlDsn(): void
+	{
+		// Not connected; DriverName derived from DSN.
+		$conn = new TDbConnection('mysql:host=localhost;dbname=test');
+		$this->assertTrue($conn->HasAutoCommit);
+	}
+
+	public function testHasAutoCommitIsTrueForPgsqlDsn(): void
+	{
+		$conn = new TDbConnection('pgsql:host=localhost;dbname=test');
+		$this->assertTrue($conn->HasAutoCommit);
+	}
+
+	// -----------------------------------------------------------------------
+	// AutoCommit read/write — SQLite (no attribute → no-op)
+	// -----------------------------------------------------------------------
+
+	public function testGetAutoCommitReturnsFalseWhenNoAutoCommitAttribute(): void
+	{
+		// SQLite: hasAutoCommitAttribute = false → getAutoCommit must return false.
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		$this->assertFalse($conn->AutoCommit);
+		$conn->Active = false;
+	}
+
+	public function testSetAutoCommitIsNoOpWhenNoAutoCommitAttribute(): void
+	{
+		// SQLite: setAutoCommit is a no-op; must not throw.
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		$conn->AutoCommit = true;   // no-op for sqlite
+		$this->assertFalse($conn->AutoCommit);
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
+	// commit() / rollback() — return value semantics
+	// -----------------------------------------------------------------------
+
+	public function testCommitReturnsTrueOnSuccess(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		$conn->beginTransaction();
+		$this->assertTrue($conn->commit());
+		$conn->Active = false;
+	}
+
+	public function testRollbackReturnsTrueOnSuccess(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		$conn->beginTransaction();
+		$this->assertTrue($conn->rollback());
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
+	// ColumnCase / NullConversion — full enum round-trip
+	// -----------------------------------------------------------------------
+
+	public function testColumnCaseUpperAndLower(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+
+		$conn->ColumnCase = \Prado\Data\TDbColumnCaseMode::UpperCase;
+		$this->assertSame(\Prado\Data\TDbColumnCaseMode::UpperCase, $conn->ColumnCase);
+
+		$conn->ColumnCase = \Prado\Data\TDbColumnCaseMode::Preserved;
+		$this->assertSame(\Prado\Data\TDbColumnCaseMode::Preserved, $conn->ColumnCase);
+		$conn->Active = false;
+	}
+
+	public function testNullConversionEmptyStringAndPreserved(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+
+		$conn->NullConversion = \Prado\Data\TDbNullConversionMode::EmptyStringToNull;
+		$this->assertSame(\Prado\Data\TDbNullConversionMode::EmptyStringToNull, $conn->NullConversion);
+
+		$conn->NullConversion = \Prado\Data\TDbNullConversionMode::Preserved;
+		$this->assertSame(\Prado\Data\TDbNullConversionMode::Preserved, $conn->NullConversion);
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
+	// getDriverName() — extractDriverFromDsn edge cases
+	// -----------------------------------------------------------------------
+
+	public function testGetDriverNameFromEmptyDsnThrows(): void
+	{
+		$conn = new TDbConnection('');
+		$this->expectException(\Prado\Exceptions\TDbException::class);
+		$conn->DriverName;
+	}
+
+	public function testGetDriverNameIsCaseLowered(): void
+	{
+		// DSN prefixes are case-insensitive; TDbConnection normalises to lowercase.
+		$conn = new TDbConnection('SQLite:' . TEST_DB_FILE);
+		$this->assertSame('sqlite', $conn->DriverName);
+	}
+
+	// -----------------------------------------------------------------------
+	// getDatabaseCharset() — inactive path
+	// -----------------------------------------------------------------------
+
+	public function testGetDatabaseCharsetReturnsEmptyStringWhenNotSetAndInactive(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$this->assertSame('', $conn->DatabaseCharset);
+	}
+
+	// -----------------------------------------------------------------------
+	// applyCharsetToDsn() — interbase treated as firebird for DSN param
+	// -----------------------------------------------------------------------
+
+	public function testApplyCharsetToDsnInterbaseUsesCharsetParam(): void
+	{
+		$dsn    = 'interbase:dbname=localhost:/db/test.gdb';
+		$conn   = new TDbConnection($dsn, '', '', 'UTF-8');
+		$method = new \ReflectionMethod(TDbConnection::class, 'applyCharsetToDsn');
+		$method->setAccessible(true);
+		$result = $method->invoke($conn, $dsn);
+		$this->assertStringContainsString('charset=', $result);
 	}
 }

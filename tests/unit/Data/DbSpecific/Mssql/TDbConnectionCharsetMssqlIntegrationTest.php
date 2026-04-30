@@ -144,4 +144,60 @@ class TDbConnectionCharsetMssqlIntegrationTest extends PHPUnit\Framework\TestCas
 		$this->assertSame('ISO-8859-1', $conn->DatabaseCharset);
 		$conn->Active = false;
 	}
+
+	// -----------------------------------------------------------------------
+	// hasAutoCommitAttribute = true behavioral verification
+	//
+	// SQL Server (sqlsrv) exposes PDO::ATTR_AUTOCOMMIT.  TDbConnection can read
+	// and write it without error.
+	// -----------------------------------------------------------------------
+
+	public function testMssqlHasAutoCommitAttribute(): void
+	{
+		$conn = $this->openMssql();
+		$this->assertTrue(
+			$conn->HasAutoCommit,
+			'SQL Server (sqlsrv) must report hasAutoCommitAttribute = true.'
+		);
+		$conn->Active = false;
+	}
+
+	public function testMssqlAutoCommitIsTrueByDefault(): void
+	{
+		$conn = $this->openMssql();
+		$this->assertTrue(
+			$conn->AutoCommit,
+			'SQL Server AutoCommit must be true when no explicit transaction is active.'
+		);
+		$conn->Active = false;
+	}
+
+	public function testMssqlAutoCommitIsFalseInsideExplicitTransaction(): void
+	{
+		$conn = $this->openMssql();
+		$conn->beginTransaction();
+		$this->assertFalse(
+			$conn->AutoCommit,
+			'AutoCommit must be false while inside an explicit SQL Server transaction.'
+		);
+		$conn->rollback();
+		$conn->Active = false;
+	}
+
+	public function testMssqlCharsetInjectedIntoDsnWithCharacterSetParam(): void
+	{
+		// applyCharsetToDsn() appends ;CharacterSet=UTF-8 for sqlsrv (not lowercase 'charset').
+		// After connecting, the raw ConnectionString (before applyCharsetToDsn) must not
+		// contain the injected param; the connection must succeed, proving the DSN was built.
+		$conn = $this->openMssql('UTF-8');
+		$this->assertTrue($conn->Active);
+		// The raw DSN does not contain the injected segment (applyCharsetToDsn builds
+		// a modified copy; _dsn is never mutated).
+		$this->assertStringNotContainsString(
+			'CharacterSet',
+			$conn->getConnectionString(),
+			'The raw stored DSN must not contain CharacterSet; only the copy passed to PDO does.'
+		);
+		$conn->Active = false;
+	}
 }

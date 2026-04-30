@@ -160,4 +160,106 @@ class TDbConnectionCharsetPgsqlIntegrationTest extends PHPUnit\Framework\TestCas
 		$this->assertSame('LATIN1', $conn->DatabaseCharset);
 		$conn->Active = false;
 	}
+
+	// -----------------------------------------------------------------------
+	// requiresPostConnectCharset behavioral verification
+	//
+	// PostgreSQL has no DSN charset parameter (getCharsetDsnParam('pgsql') = null).
+	// TDbConnection::applyCharsetToDsn() returns the DSN unchanged for pgsql.
+	// Instead, TDbConnection::open() calls setConnectionCharset() immediately after
+	// connecting, which executes SET client_encoding TO ? via a prepared statement.
+	// This means:
+	//   (a) the raw DSN stored in ConnectionString must NOT contain 'charset'
+	//   (b) the charset IS applied (verified by pg_client_encoding())
+	// -----------------------------------------------------------------------
+
+	public function testPgsqlCharsetIsAppliedPostConnectNotViaDsn(): void
+	{
+		// Open with charset set; pgsql has no DSN charset param so applyCharsetToDsn()
+		// must NOT append charset=... to the raw DSN.
+		$conn = $this->openPgsql('UTF-8');
+
+		// (a) Raw DSN string must not contain a charset parameter.
+		$this->assertStringNotContainsString(
+			'charset',
+			strtolower($conn->getConnectionString()),
+			'PostgreSQL DSN must not have a charset parameter — charset is applied post-connect via SQL.'
+		);
+
+		// (b) Charset IS applied: pg_client_encoding() must reflect the requested encoding.
+		$activeEncoding = $this->pgsqlClientEncoding($conn);
+		$this->assertSame(
+			'UTF8',
+			$activeEncoding,
+			'SET client_encoding must have been issued post-connect so pg_client_encoding() reflects it.'
+		);
+
+		$conn->Active = false;
+	}
+
+	public function testPgsqlCharsetAppliedPostConnectForIso88591(): void
+	{
+		$conn = $this->openPgsql('ISO-8859-1');
+
+		$this->assertStringNotContainsString('charset', strtolower($conn->getConnectionString()));
+		$this->assertSame('LATIN1', $this->pgsqlClientEncoding($conn));
+
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
+	// hasAutoCommitAttribute behavioral verification
+	//
+	// PostgreSQL has hasAutoCommitAttribute = true.  TDbConnection::getAutoCommit()
+	// reads PDO::ATTR_AUTOCOMMIT; outside of an explicit transaction it is true.
+	// -----------------------------------------------------------------------
+
+	public function testPgsqlHasAutoCommitAttribute(): void
+	{
+		$conn = $this->openPgsql();
+		$this->assertTrue(
+			$conn->HasAutoCommit,
+			'PostgreSQL must report hasAutoCommitAttribute = true.'
+		);
+		$conn->Active = false;
+	}
+
+	public function testPgsqlAutoCommitIsTrueOutsideTransaction(): void
+	{
+		// PDO::ATTR_AUTOCOMMIT is true when no explicit transaction is active.
+		$conn = $this->openPgsql();
+		$this->assertTrue(
+			$conn->AutoCommit,
+			'AutoCommit must be true outside of an explicit PostgreSQL transaction.'
+		);
+		$conn->Active = false;
+	}
+
+	public function testPgsqlAutoCommitIsFalseInsideTransaction(): void
+	{
+		$conn = $this->openPgsql();
+		$conn->beginTransaction();
+		$this->assertFalse(
+			$conn->AutoCommit,
+			'AutoCommit must be false while inside an explicit PostgreSQL transaction.'
+		);
+		$conn->rollback();
+		$conn->Active = false;
+	}
+
+	public function testPgsqlSetCharsetUsesParameterisedSql(): void
+	{
+		// getCharsetSetSql('pgsql') returns 'SET client_encoding TO ?' — a PDO-
+		// parameterised statement.  TDbConnection executes it via
+		// $pdo->prepare($sql)->execute([$charset]) so the value is bound, not
+		// concatenated.  Verify the functional outcome.
+		$conn = $this->openPgsql();
+		$conn->Charset = 'UTF-8';
+		$this->assertSame(
+			'UTF8',
+			$this->pgsqlClientEncoding($conn),
+			'SET client_encoding TO ? must have been executed with \'UTF8\' bound as the parameter.'
+		);
+		$conn->Active = false;
+	}
 }

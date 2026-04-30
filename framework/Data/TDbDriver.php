@@ -3,7 +3,7 @@
 /**
  * TDbConnection class file
  *
- * @author Qiang Xue <qiang.xue@gmail.com>
+ * @author Brad Anderson <belisoful@icloud.com>>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
@@ -13,9 +13,41 @@ namespace Prado\Data;
 use Prado\TEnumerable;
 
 /**
- * TDbDrivers class
+ * TDbDriver is a static enumeration class that defines PDO database driver constants
+ * used throughout the PRADO framework for database connectivity.
  *
- * @author Brad Anderson <belisoful@icloud.com> Charset.
+ * This class provides standardized string identifiers for all supported PDO database
+ * drivers, ensuring consistency across the framework. The constants are used by:
+ * - {@see TDbConnection} for establishing database connections
+ * - {@see TDbDriverCapabilities} for driver-specific capability lookups
+ * - {@see \Prado\Data\Common\TDbMetaData} for metadata handler resolution
+ * - {@see \Prado\Data\ActiveRecord\Scaffold\InputBuilder\TScaffoldInputBase} for scaffold generation
+ *
+ * Each constant value matches the driver name expected by PHP's PDO extension.
+ * The class extends {@see TEnumerable} to allow iteration over all driver constants.
+ *
+ * Supported drivers:
+ * - **MySQL/MariaDB**: {@see DRIVER_MYSQL}
+ * - **PostgreSQL**: {@see DRIVER_PGSQL}
+ * - **SQLite**: {@see DRIVER_SQLITE}, {@see DRIVER_SQLITE2}
+ * - **Microsoft SQL Server**: {@see DRIVER_SQLSRV}, {@see DRIVER_DBLIB}
+ * - **Oracle**: {@see DRIVER_OCI}
+ * - **IBM DB2**: {@see DRIVER_IBM}
+ * - **Firebird/Interbase**: {@see DRIVER_FIREBIRD}, {@see DRIVER_INTERBASE}
+ * - **MongoDB** (external extension): {@see DRIVER_MONGO}
+ *
+ * Unsupported drivers (listed for reference): {@see DRIVER_ODBC},
+ * {@see DRIVER_CUBRID}, {@see DRIVER_INFORMIX}
+ *
+ * Example usage:
+ * ```php
+ * // Get all driver constants
+ * foreach (TDbDriver::getValues() as $driver) {
+ *     echo $driver . "\n";
+ * }
+ * ```
+ *
+ * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3
  */
 class TDbDriver extends TEnumerable
@@ -37,5 +69,7 @@ class TDbDriver extends TEnumerable
 	public const DRIVER_ODBC = 'odbc';		// Generic ODBC (various databases)
 	public const DRIVER_CUBRID = 'cubrid';		// CUBRID database
 	public const DRIVER_INFORMIX = 'informix';	//
+
+	//	Common
 	public const DRIVER_MONGO = 'mongo';		// {@see https://github.com/belisoful/prado-mongo }
 }

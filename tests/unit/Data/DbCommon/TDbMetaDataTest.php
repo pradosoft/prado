@@ -62,13 +62,14 @@ class TDbMetaDataTest extends PHPUnit\Framework\TestCase
 		TDbMetaData::getInstance($conn);
 	}
 
-public function test_getInstance_raises_fxDataGetMetaDataInstance_for_unknown_driver()
+	public function test_getInstance_raises_fxDataGetMetaDataInstance_for_unknown_driver()
 	{
-		$conn = $this->createMockConnection('custom_driver');
+		$driver = 'custom_driver';
+		$conn = $this->createMockConnection($driver);
 
 		$conn->expects($this->once())
 			->method('raiseEvent')
-			->with('fxDataGetMetaDataInstance', $this->anything(), $conn)
+			->with('fxDataGetMetaDataClass', $conn, $driver)
 			->willReturn([]);
 
 		$this->expectException(TDbException::class);

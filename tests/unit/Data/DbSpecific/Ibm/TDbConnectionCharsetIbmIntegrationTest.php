@@ -146,4 +146,95 @@ class TDbConnectionCharsetIbmIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertSame('ISO-8859-1', $conn->DatabaseCharset);
 		$conn->Active = false;
 	}
+
+	// -----------------------------------------------------------------------
+	// supportsCharset = false behavioral verification
+	//
+	// IBM DB2 has no charset support of any kind.  TDbDriverCapabilities::
+	// supportsCharset('ibm') returns false.  TDbConnection::setConnectionCharset()
+	// must do nothing for this driver — no DSN injection, no post-connect SQL.
+	// Constructing a connection with a Charset property set must still succeed.
+	// -----------------------------------------------------------------------
+
+	public function testIbmSupportsCharsetIsFalse(): void
+	{
+		// IBM DB2 is unique: supportsCharset returns false for all charset methods.
+		// TDbConnection must open successfully even when Charset is set, because
+		// applyCharsetToDsn() and setConnectionCharset() are both no-ops for ibm.
+		$conn = $this->openIbm('UTF-8');
+		$this->assertTrue($conn->Active, 'IBM DB2 connection must open even when Charset is specified.');
+		$conn->Active = false;
+	}
+
+	public function testIbmNoDsnCharsetParameterIsInjected(): void
+	{
+		// applyCharsetToDsn() returns the DSN unchanged for ibm (no DSN charset param).
+		$conn = $this->openIbm('UTF-8');
+		// The raw ConnectionString (before applyCharsetToDsn) must be unchanged.
+		$this->assertStringNotContainsString(
+			'charset',
+			strtolower($conn->getConnectionString()),
+			'IBM DB2 DSN must not have a charset parameter injected.'
+		);
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
+	// hasAutoCommitAttribute = true behavioral verification
+	//
+	// IBM DB2 (pdo_ibm) exposes PDO::ATTR_AUTOCOMMIT.  TDbConnection reads it
+	// without error; the default is true (autocommit mode).
+	// -----------------------------------------------------------------------
+
+	public function testIbmHasAutoCommitAttribute(): void
+	{
+		$conn = $this->openIbm();
+		$this->assertTrue(
+			$conn->HasAutoCommit,
+			'IBM DB2 must report hasAutoCommitAttribute = true.'
+		);
+		$conn->Active = false;
+	}
+
+	public function testIbmAutoCommitIsTrueByDefault(): void
+	{
+		$conn = $this->openIbm();
+		$this->assertTrue(
+			$conn->AutoCommit,
+			'IBM DB2 AutoCommit must be true when no explicit transaction is active.'
+		);
+		$conn->Active = false;
+	}
+
+	public function testIbmAutoCommitIsFalseInsideExplicitTransaction(): void
+	{
+		$conn = $this->openIbm();
+		$conn->beginTransaction();
+		$this->assertFalse(
+			$conn->AutoCommit,
+			'AutoCommit must be false while inside an explicit IBM DB2 transaction.'
+		);
+		$conn->rollback();
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
+	// Live connection — getCharsetSetSql live verification
+	//
+	// IBM DB2 has no SQL-level charset command (getCharsetSetSql returns null).
+	// Setting Charset after connect must throw TDbException (no runtime switch
+	// method exists and supportsCharset is false → raises the "unsupported"
+	// error path).
+	// -----------------------------------------------------------------------
+
+	public function testIbmSetCharsetAfterConnectThrowsForUnsupportedDriver(): void
+	{
+		// The framework's setConnectionCharset() path for IBM reaches the
+		// "unsupported driver charset" exception because supportsCharset('ibm')
+		// is the only driver where supportsRuntimeCharsetSet=false and
+		// getCharsetDsnParam=null and supportsCharset=false.
+		$conn = $this->openIbm();
+		$this->expectException(\Prado\Exceptions\TDbException::class);
+		$conn->Charset = 'UTF-8';
+	}
 }

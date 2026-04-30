@@ -37,7 +37,7 @@ use Prado\Prado;
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
  */
-abstract class TDbMetaData extends \Prado\TComponent
+abstract class TDbMetaData extends \Prado\TComponent implements IDataMetaData
 {
 	private $_tableInfoCache = [];
 	private $_connection;
@@ -80,19 +80,11 @@ abstract class TDbMetaData extends \Prado\TComponent
 	{
 		$conn->setActive(true); //must be connected before retrieving driver name
 		$driver = strtolower($conn->getDriverName());
-		$class = TDbDriverCapabilities::getMetaDataClass($driver);
-		if ($class !== null) {
-			return new $class($conn);
+		$class = TDbDriverCapabilities::getMetaDataClass($driver, $conn);
+		if ($class === null) {
+			return null;
 		}
-		$instances = $conn->raiseEvent('fxDataGetMetaDataInstance', self::class, $conn);
-		if (empty($instances)) {
-			throw new TDbException('dbmetadata_invalid_database_driver', $driver);
-		}
-		$metaData = $instances[0];
-		if ($metaData instanceof static) {
-			throw new TDbException('dbmetadata_not_meta_data', $metaData::class, static::class);
-		}
-		return $metaData;
+		return new $class($conn);
 	}
 
 	/**
