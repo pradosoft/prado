@@ -11,35 +11,59 @@
 namespace Prado\Data;
 
 use PDO;
+use PDOException;
 use Prado\Data\Common\TDbMetaData;
 use Prado\Exceptions\TDbException;
 
 /**
  * TDbTransaction class.
  *
- * TDbTransaction represents a PHP PDO database connection transaction.
- * It is usually created by calling {@see \Prado\Data\TDbConnection::beginTransaction}.
+ * TDbTransaction represents a PDO database transaction. It is created by calling
+ * {@see TDbConnection::beginTransaction()} and must be explicitly committed or
+ * rolled back. After either operation the transaction becomes inactive.
  *
- * The following code is a common scenario of using transactions:
+ * **Single-use pattern** — the classic approach, where each work unit gets a
+ * fresh transaction object from the connection:
+ *
  * ```php
- * try
- * {
- *    $transaction=$connection->beginTransaction();
- *    $connection->createCommand($sql1)->execute();
- *    $connection->createCommand($sql2)->execute();
- *    //.... other SQL executions
- *    $transaction->commit();
- * }
- * catch(Exception $e)
- * {
- *    $transaction->rollBack();
+ * try {
+ *     $transaction = $connection->beginTransaction();
+ *     $connection->createCommand($sql1)->execute();
+ *     $connection->createCommand($sql2)->execute();
+ *     $transaction->commit();
+ * } catch (Exception $e) {
+ *     $transaction->rollback();
  * }
  * ```
  *
- * Since 4.3.3, TDbTransaction supports serial transactions. If {@see TDbConnection::getAutoLoad}
- * In serial mode, the transaction remains active after commit or rollback
- * and immediately begins a new explicit transaction. This provides seamless
- * reuse of the transaction object without additional calls.
+ * **Reuse pattern** — a single `TDbTransaction` instance can be restarted for
+ * sequential work units by calling {@see beginTransaction()} on the object
+ * itself after committing or rolling back, avoiding a new object allocation:
+ *
+ * ```php
+ * $tx = $connection->beginTransaction();
+ * try {
+ *     $connection->createCommand($sql1)->execute();
+ *     $tx->commit();
+ * } catch (Exception $e) {
+ *     $tx->rollback();
+ * }
+ * // Start the next unit of work on the same object.
+ * $tx->beginTransaction();
+ * try {
+ *     $connection->createCommand($sql2)->execute();
+ *     $tx->commit();
+ * } catch (Exception $e) {
+ *     $tx->rollback();
+ * }
+ * ```
+ *
+ * **Supersession:** calling {@see TDbConnection::beginTransaction()} always
+ * creates a **new** `TDbTransaction` object.  If the connection's
+ * `beginTransaction()` is called after a TDbTransaction completes, that old
+ * transaction is superseded.  Attempting to restart a superseded transaction
+ * via self {@see TDbTransaction::beginTransaction()} will throw a
+ * {@see TDbException}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -48,27 +72,26 @@ class TDbTransaction extends \Prado\TComponent implements IDataTransaction
 {
 	private $_connection;
 	private $_active;
-	private $_serial = false;
 
 	/**
 	 * Constructor.
-	 * @param \Prado\Data\TDbConnection $connection the connection associated with this transaction
-	 * @param bool $serial
+	 * @param TDbConnection $connection the connection that owns this transaction.
 	 * @see TDbConnection::beginTransaction
 	 */
-	public function __construct(TDbConnection $connection, bool $serial = false)
+	public function __construct(TDbConnection $connection)
 	{
 		$this->setConnection($connection);
 		$this->setActive(true);
-		$this->setSerial($serial);
 		parent::__construct();
 	}
 
 	/**
-	 * Creates a command for execution.
-	 * @param string $sql SQL statement associated with the new command.
-	 * @throws TDbException if the connection is not active
-	 * @return TDbCommand the DB command
+	 * Creates a command on this transaction's connection.
+	 *
+	 * Convenience shorthand for `$transaction->getConnection()->createCommand($sql)`.
+	 *
+	 * @param string $sql SQL statement for the new command.
+	 * @return TDbCommand the new command object.
 	 * @since 4.3.3
 	 */
 	public function createCommand($sql)
@@ -77,7 +100,12 @@ class TDbTransaction extends \Prado\TComponent implements IDataTransaction
 	}
 
 	/**
-	 * @return TDbMetaData
+	 * Returns the metadata helper for this transaction's connection.
+	 *
+	 * Convenience shorthand for `$transaction->getConnection()->getDbMetaData()`.
+	 *
+	 * @return TDbMetaData the metadata helper.
+	 * @since 4.3.3
 	 */
 	public function getDbMetaData()
 	{
@@ -85,85 +113,148 @@ class TDbTransaction extends \Prado\TComponent implements IDataTransaction
 	}
 
 	/**
-	 * Commits a transaction.
+	 * Starts a new transaction on this transaction's connection, reactivating
+	 * this transaction object for a new work unit.
 	 *
-	 * For Firebird connections, `pdo_firebird` starts a new implicit transaction
-	 * immediately inside `isc_commit_transaction`, before the just-committed
-	 * transaction's changes are fully visible in Firebird's Transaction Inventory
-	 * Page. That implicit transaction's MVCC snapshot can therefore miss rows
-	 * committed by the transaction that was just finished, which causes subsequent
-	 * reads (including DELETE cleanup in test setUp) to see stale data. Committing
-	 * the empty implicit transaction forces pdo_firebird to open a fresh one whose
-	 * snapshot is guaranteed to reflect the completed commit.
+	 * This allows a single TDbTransaction instance to span multiple sequential
+	 * work units without allocating a new object each time:
 	 *
-	 * @throws TDbException if the transaction or the DB connection is not active.
+	 * ```php
+	 * $tx = $conn->beginTransaction();
+	 * $tx->commit();
+	 * // ...
+	 * $tx->beginTransaction(); // reuse the same object
+	 * $tx->commit();
+	 * ```
+	 *
+	 * This is equivalent to calling {@see TDbConnection::beginTransaction()} but
+	 * reactivates this existing object rather than returning a new one.
+	 *
+	 * **Supersession guard:** {@see TDbConnection::beginTransaction()} always
+	 * allocates a **new** transaction object and stores it on the connection.
+	 * If it was called after this transaction completed, this object is
+	 * superseded — the connection now owns a different, newer transaction.
+	 * Calling `beginTransaction()` on a superseded object throws a
+	 * {@see TDbException} to prevent silently bypassing the active transaction's
+	 * lifecycle.  Use the new transaction object returned by the last
+	 * {@see TDbConnection::beginTransaction()} call instead, or call it again.
+	 *
+	 * For pdo_firebird a pre-begin flush (`PDO::commit()`) is issued before
+	 * `PDO::beginTransaction()` to clear the implicit transaction that Firebird
+	 * keeps running in autocommit mode. See {@see TDbConnection::beginTransaction()}
+	 * for the full explanation of this requirement.
+	 *
+	 * @throws TDbException if this transaction is already active, if its
+	 *   connection is not active, or if this transaction has been superseded by
+	 *   a newer transaction on the same connection.
+	 * @return static
+	 * @since 4.3.3
+	 * @see TDbConnection::beginTransaction
+	 */
+	public function beginTransaction(): static
+	{
+		if ($this->getActive()) {
+			throw new TDbException('dbconnection_active_transaction');
+		}
+		$connection = $this->getConnection();
+		$connection->assertActive();
+		if ($connection->getLastTransaction() !== $this) {
+			throw new TDbException('dbtransaction_transaction_superseded');
+		}
+		$pdo = $connection->getPdoInstance();
+		if (TDbDriverCapabilities::requiresPreBeginTransactionFlush($connection->getDriverName())) {
+			try {
+				$pdo->commit();
+			} catch (PDOException $e) {
+			}
+		}
+		$pdo->beginTransaction();
+		$this->setActive(true);
+		return $this;
+	}
+
+	/**
+	 * Asserts that this transaction and its connection are both active, then
+	 * returns the underlying PDO instance.
+	 *
+	 * @throws TDbException if the transaction or its connection is not active.
+	 * @return PDO the active PDO instance.
+	 */
+	protected function assertActive(): PDO
+	{
+		$connection = $this->getConnection();
+
+		if (!$this->getActive() || !$connection->getActive()) {
+			throw new TDbException('dbtransaction_transaction_inactive');
+		}
+
+		return $connection->getPdoInstance();
+	}
+
+	/**
+	 * Marks the transaction inactive and, for drivers that require it, flushes
+	 * the implicit transaction that the driver opens immediately after a commit
+	 * or rollback.
+	 *
+	 * pdo_firebird starts a new implicit transaction right after every
+	 * `isc_commit_transaction` or `isc_rollback_transaction` call, before the
+	 * completed transaction is fully visible in Firebird's Transaction Inventory
+	 * Page. The implicit transaction's MVCC snapshot can therefore see stale data.
+	 * Committing the empty implicit transaction forces pdo_firebird to open a fresh
+	 * one whose snapshot reflects the completed work.
+	 *
+	 * @param PDO $pdo the PDO instance returned by {@see assertActive()}.
+	 */
+	protected function completeTransaction(PDO $pdo): void
+	{
+		if (TDbDriverCapabilities::requiresPostTransactionFlush($pdo->getAttribute(PDO::ATTR_DRIVER_NAME))) {
+			try {
+				$pdo->commit();
+			} catch (PDOException $e) {
+			}
+		}
+
+		$this->setActive(false);
+	}
+
+	/**
+	 * Commits the transaction.
+	 *
+	 * The transaction becomes inactive after commit. To start another work unit,
+	 * either call {@see TDbTransaction::beginTransaction()} on this object (reuse
+	 * pattern) or call {@see TDbConnection::beginTransaction()} to obtain a fresh
+	 * transaction object.
+	 *
+	 * @throws TDbException if the transaction or its connection is not active.
 	 */
 	public function commit()
 	{
-		$connection = $this->getConnection();
-
-		if (!$this->getActive() || !$connection->getActive()) {
-			throw new TDbException('dbtransaction_transaction_inactive');
-		}
-
-		$pdo = $connection->getPdoInstance();
+		$pdo = $this->assertActive();
 		$pdo->commit();
-
-		if ($this->isTransactionComplete()) {
-			// pdo_firebird starts a new implicit transaction immediately after
-			// commit, with a snapshot that may not yet reflect the committed
-			// data. Commit it so the next read starts with a fresh snapshot.
-			if (TDbDriverCapabilities::requiresPostTransactionFlush($pdo->getAttribute(PDO::ATTR_DRIVER_NAME))) {
-				try {
-					$pdo->commit();
-				} catch (\Exception $e) {
-				}
-			}
-			$this->setActive(false);
-		}
+		$this->completeTransaction($pdo);
 	}
 
 	/**
-	 * Rolls back a transaction.
+	 * Rolls back the transaction.
 	 *
-	 * For Firebird connections, `pdo_firebird` starts a new implicit transaction
-	 * immediately inside `isc_rollback_transaction`, before the rolled-back
-	 * transaction is fully recorded in Firebird's Transaction Inventory Page.
-	 * That implicit transaction's MVCC snapshot can therefore see stale data
-	 * (e.g. a pre-rollback committed row whose deletion is not yet visible).
-	 * Committing the empty implicit transaction forces pdo_firebird to open a
-	 * fresh one whose snapshot is guaranteed to reflect the completed rollback,
-	 * so that subsequent reads on the same connection return correct results.
+	 * The transaction becomes inactive after rollback. To start another work unit,
+	 * either call {@see TDbTransaction::beginTransaction()} on this object (reuse
+	 * pattern) or call {@see TDbConnection::beginTransaction()} to obtain a fresh
+	 * transaction object.
 	 *
-	 * @throws TDbException if the transaction or the DB connection is not active.
+	 * @throws TDbException if the transaction or its connection is not active.
 	 */
 	public function rollback()
 	{
-		$connection = $this->getConnection();
-
-		if (!$this->getActive() || !$connection->getActive()) {
-			throw new TDbException('dbtransaction_transaction_inactive');
-		}
-
-		$pdo = $connection->getPdoInstance();
+		$pdo = $this->assertActive();
 		$pdo->rollBack();
-
-		if ($this->isTransactionComplete()) {
-			// pdo_firebird starts a new implicit transaction immediately after
-			// rollback, with a snapshot that may not yet reflect the rolled-back
-			// state. Commit it so the next read starts with a fresh snapshot.
-			if (TDbDriverCapabilities::requiresPostTransactionFlush($pdo->getAttribute(PDO::ATTR_DRIVER_NAME))) {
-				try {
-					$pdo->commit();
-				} catch (\Exception $e) {
-				}
-			}
-			$this->setActive(false);
-		}
+		$this->completeTransaction($pdo);
 	}
 
 	/**
-	 * @return \Prado\Data\TDbConnection the DB connection for this transaction
+	 * Returns the connection that owns this transaction.
+	 *
+	 * @return TDbConnection the connection that created this transaction.
 	 */
 	public function getConnection()
 	{
@@ -171,7 +262,11 @@ class TDbTransaction extends \Prado\TComponent implements IDataTransaction
 	}
 
 	/**
-	 * @param TDbConnection $connection
+	 * Sets the connection that owns this transaction.
+	 *
+	 * Called once by the constructor; not intended for external use.
+	 *
+	 * @param TDbConnection $connection the owning connection.
 	 * @return static
 	 */
 	protected function setConnection(TDbConnection $connection): static
@@ -181,7 +276,10 @@ class TDbTransaction extends \Prado\TComponent implements IDataTransaction
 	}
 
 	/**
-	 * @return bool whether this transaction is active
+	 * Returns whether this transaction is currently active (i.e. has been
+	 * started and not yet committed or rolled back).
+	 *
+	 * @return bool true while the transaction is open, false after commit/rollback.
 	 */
 	public function getActive()
 	{
@@ -189,66 +287,17 @@ class TDbTransaction extends \Prado\TComponent implements IDataTransaction
 	}
 
 	/**
-	 * @param bool $value whether this transaction is active
-	 * @return static For method chaining.
+	 * Sets the active state of this transaction.
+	 *
+	 * Managed internally by {@see beginTransaction()}, {@see completeTransaction()},
+	 * and the constructor; not intended for external use.
+	 *
+	 * @param bool $value true to mark as active, false to mark as inactive.
+	 * @return static
 	 */
 	protected function setActive(bool $value): static
 	{
 		$this->_active = $value;
-		if (!$value) {
-			$this->setSerial(false);
-		}
 		return $this;
-	}
-
-	/**
-	 * @return bool Whether this transaction is a serial transaction
-	 * @since 4.3.3
-	 */
-	public function getSerial()
-	{
-		return $this->_serial;
-	}
-
-	/**
-	 * @param bool $value Whether this transaction is a serial transaction
-	 * @return static For method chaining.
-	 * @since 4.3.3
-	 */
-	protected function setSerial(bool $value): static
-	{
-		$this->_serial = $value;
-		return $this;
-	}
-
-	/**
-	 * @param mixed $returnValue
-	 * @return bool Should the transaction expire.
-	 * @since 4.3.3
-	 */
-	protected function isTransactionComplete($returnValue = true): bool
-	{
-		if ($this->getSerial()) {
-			if ($returnValue && !$this->getConnection()->getAutoCommit()) {
-				$this->restartTransaction();
-				$returnValue = false;
-			}
-		}
-		return $this->dyIsTransactionComplete($returnValue);
-	}
-
-	/**
-	 * Restarts the serial transaction after a commit or rollback by delegating
-	 * to {@see TDbConnection::beginTransaction()}.
-	 *
-	 * All PDO-level work — flushing any implicit driver transaction and calling
-	 * PDO::beginTransaction() — is handled by the connection, which is the
-	 * single authoritative owner of every PDO::beginTransaction() call.
-	 *
-	 * @since 4.3.3
-	 */
-	protected function restartTransaction(): void
-	{
-		$this->getConnection()->beginTransaction();
 	}
 }

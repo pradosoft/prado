@@ -32,26 +32,26 @@ use Prado\TPropertyValue;
  * specifying {@see setConnectionString ConnectionString},
  * {@see setUsername Username} and {@see setPassword Password}.
  *
- * Since 4.3.3, the connection charset could be set (for PDO databases, except
- * IBM) using the {@see setCharset Charset} property. The value of this property
- * was database **independent**.
+ * Since 4.3.3, the connection charset can be set (for all PDO drivers except
+ * IBM DB2) via the {@see setCharset Charset} property using driver-independent
+ * IANA-style names such as 'UTF-8' or 'ISO-8859-1'; the value is translated to
+ * the driver-specific format automatically.
  *
- * Firebird (firebird), MSSQL (mssql, sqlsrv, dblib), IBM DB2 (ibm), and
- * Oracle (oci) do not support runtime charset switching via SQL; configure
- * their charset at the DSN or with {@see setCharset Charset} property before
- * activating the connection.
+ * Firebird (firebird), MSSQL (mssql, sqlsrv, dblib), and Oracle (oci) do not
+ * support runtime charset switching via SQL; their charset must be configured
+ * before the connection is opened (it is injected into the DSN automatically).
+ * IBM DB2 (ibm) has no charset support at all.
  *
- * Most formats of the Charset are supported and translated to the proper
- * database specific charset. The database specific format gat be retrieved
- * on active connections with the method {@see getDatabaseCharset()}.
- * Only mysql, pgsql, sqlite and firebird support discovery of the database
- * charset.
+ * The driver-specific charset name in use can be retrieved from an active
+ * connection via {@see getDatabaseCharset()}.  Live charset discovery (by
+ * querying the server) is supported for mysql, pgsql, sqlite, and firebird;
+ * for other drivers the resolved charset property value is returned.  These
+ * charsets inspect the dns for overriding charset to retrieve it for the
+ * property, or sets the charset in the dns from the property.
  *
- * Pgsql, sqlite, ibm databases do not support DSN charset.
- * Pgsql must set the charset after the connection is established.
- * sqlite only supports UTF-8 and UTF-16, set before tables are created.
- * When a table is present in sqlite, {@see setCharset()} becomes no-op.
- * Ibm Db2 has no charset support.
+ * PostgreSQL and SQLite do not support DSN-level charset; PostgreSQL applies it
+ * after connect, SQLite applies it via PRAGMA before any tables are created
+ * (silently ignored thereafter).
  *
  * The following example shows how to create a TDbConnection instance and
  * establish the actual connection:
@@ -100,7 +100,7 @@ use Prado\TPropertyValue;
  * of certain DBMS attributes, such as {@see getNullConversion NullConversion}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @author Brad Anderson <belisoful@icloud.com> Charset.
+ * @author Brad Anderson <belisoful@icloud.com> Charset, TDbDriverCapabilities
  * @since 3.0
  */
 class TDbConnection extends \Prado\TComponent implements IDataConnection
@@ -126,25 +126,27 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	private $_dbMeta;
 
 	/**
-	 * @var string The Transaction Class for the Connection. null means auto-detect from the driver name.
+	 * @var string Fully-qualified class name used to allocate transaction objects.
+	 *   Defaults to {@see DEFAULT_TRANSACTION_CLASS} (TDbTransaction).
+	 *   Never null: {@see setTransactionClass} resets to the default on empty/null input.
 	 * @since 3.1.7
 	 */
 	private $_transactionClass = self::DEFAULT_TRANSACTION_CLASS;
 
 	/**
 	 * Constructor.
-	 * Note, the DB connection is not established when this connection
-	 * instance is created. Set {@see setActive Active} property to true
-	 * to establish the connection.
-	 * Since 3.1.2, you can set the charset for MySql connection
 	 *
-	 * @param string $dsn The Data Source Name, or DSN, contains the information required to connect to the database.
+	 * The DB connection is not established until {@see setActive Active} is set
+	 * to true.
+	 *
+	 * @param string $dsn The Data Source Name containing the information required
+	 *   to connect to the database.
 	 * @param string $username The user name for the DSN string.
 	 * @param string $password The password for the DSN string.
-	 * @param string $charset Charset used for DB Connection; except IBM DB2 (ibm).
-	 *   MSSQL (mssql, sqlsrv, dblib), and Oracle (oci) require configuration
-	 * 	 of the charset before opening.
-	 *   If not set, will use the default charset of your database server.
+	 * @param string $charset Charset for the connection (driver-independent name,
+	 *   e.g. 'UTF-8').  Not supported for IBM DB2 (ibm).  For MSSQL and Oracle
+	 *   the value is applied at DSN level before the connection opens; for other
+	 *   drivers it is applied after connect.  Defaults to empty (server default).
 	 * @see http://www.php.net/manual/en/function.PDO-construct.php
 	 */
 	public function __construct($dsn = '', $username = '', #[\SensitiveParameter] $password = '', $charset = '')
@@ -248,9 +250,6 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 			if (TDbDriverCapabilities::requiresPostConnectCharset($driver)) {
 				$this->setConnectionCharset($this->getCharset());	// PostgreSQL, sets charset after
 			}
-			if (TDbDriverCapabilities::usesSerialTransaction($driver)) {
-				$this->_transaction = $this->createTransaction();
-			}
 		} catch (PDOException $e) {
 			throw new TDbException('dbconnection_open_failed', $e->getMessage());
 		}
@@ -339,7 +338,7 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 		if (($pragmaSql = TDbDriverCapabilities::getCharsetPragmaSql($driver)) !== null) {
 			try {	// SQLite, and only before tables are created.
 				$pdo->exec(sprintf($pragmaSql, $pdo->quote($charset)));
-			} catch (\Exception $e) {
+			} catch (PDOException $e) {
 				// Silently ignored.
 			}
 			return;
@@ -577,12 +576,7 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 
 	/**
 	 * Returns the currently active transaction, or null if none is open.
-	 *
-	 * For drivers that use serial transactions (e.g. Firebird), the transaction
-	 * is always active — PDO::beginTransaction() is called in its constructor and
-	 * restarted after every commit/rollback, so there is always an explicit
-	 * transaction in progress for the lifetime of the connection.
-	 *
+	 * Use this to check for an active Transaction.
 	 * @return null|TDbTransaction the active transaction, or null.
 	 */
 	public function getCurrentTransaction()
@@ -594,96 +588,84 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	}
 
 	/**
-	 * Creates a new {@see IDataTransaction} for this connection.
+	 * Returns the last {@see TDbTransaction} object associated with this
+	 * connection, whether or not it is still active.
 	 *
-	 * A transaction is created in **serial mode** when either:
-	 * - the driver architecturally requires it ({@see TDbDriverCapabilities::usesSerialTransaction}),
-	 *   e.g. Firebird/Interbase; or
-	 * - the driver exposes {@see PDO::ATTR_AUTOCOMMIT} and autocommit is currently
-	 *   disabled on this connection — because autocommit-off means every
-	 *   commit/rollback must immediately restart a new transaction to keep the
-	 *   connection in its intended non-autocommit state.
+	 * This is the transaction stored internally when {@see beginTransaction()}
+	 * was last called.  It differs from {@see getCurrentTransaction()}, which
+	 * returns non-null only while the transaction is open.
+	 *
+	 * The primary use case is inside {@see TDbTransaction::beginTransaction()}:
+	 * before reactivating a completed transaction object the method checks that
+	 * the object is still the last one associated with this connection.  If a
+	 * caller has since invoked {@see beginTransaction()} again, a new
+	 * {@see TDbTransaction} is stored here and the old object is considered
+	 * superseded — attempting to restart it would silently bypass the new
+	 * transaction's lifecycle.
+	 *
+	 * @return null|TDbTransaction the last transaction object, or null if
+	 *   {@see beginTransaction()} has never been called on this connection.
+	 * @since 4.3.3
+	 */
+	public function getLastTransaction(): ?TDbTransaction
+	{
+		return $this->_transaction;
+	}
+
+	/**
+	 * Creates a new {@see IDataTransaction} for this connection.
 	 *
 	 * @return IDataTransaction A new transaction from this connection.
 	 * @since 4.3.3
 	 */
 	protected function createTransaction(): IDataTransaction
 	{
-		$driver = $this->getDriverName();
-		$serial = TDbDriverCapabilities::usesSerialTransaction($driver)
-			|| (TDbDriverCapabilities::hasAutoCommitAttribute($driver) && !$this->getAutoCommit());
-		return Prado::createComponent(
-			$this->getTransactionClass() ?? self::DEFAULT_TRANSACTION_CLASS,
-			$this,
-			$serial
-		);
+		return Prado::createComponent($this->getTransactionClass(), $this);
 	}
 
 	/**
 	 * Starts a transaction.
 	 *
-	 * This method is the **sole owner** of every `PDO::beginTransaction()` call
-	 * on this connection, including restarts triggered by serial-transaction
-	 * commit/rollback cycles (see {@see TDbTransaction::restartTransaction()}).
+	 * Throws {@see TDbException} if the connection is not active, or if a
+	 * transaction is already open (i.e. {@see getCurrentTransaction()} returns
+	 * non-null). Commit or roll back the current transaction before starting
+	 * a new one.
 	 *
-	 * Behaviour by state:
+	 * Each call allocates a **new** {@see TDbTransaction} object and stores it
+	 * as the last transaction via {@see getLastTransaction()}.  Any previously
+	 * returned transaction object is superseded: calling
+	 * {@see TDbTransaction::beginTransaction()} on it will throw because it is
+	 * no longer the connection's current transaction object.
 	 *
-	 * - **Non-serial, active**: throws {@see TDbException} — the open transaction
-	 *   must be committed or rolled back before starting a new one.
-	 * - **Non-serial, inactive** (completed): begins a fresh PDO transaction and
-	 *   returns a new {@see TDbTransaction}.
-	 * - **Serial, active, `PDO::inTransaction()` true**: throws
-	 *   {@see TDbException} — `beginTransaction()` has already claimed this cycle
-	 *   and no matching `commit()`/`rollback()` has occurred yet.
-	 * - **Serial, active, `PDO::inTransaction()` false**: the previous cycle
-	 *   completed (or the connection just opened); the implicit driver transaction
-	 *   is flushed, `PDO::beginTransaction()` starts a new explicit transaction,
-	 *   and the existing serial {@see TDbTransaction} object is returned.
-	 * - **No existing transaction** (or inactive): begins a fresh PDO transaction
-	 *   and returns a new {@see TDbTransaction}.
-	 *
-	 * For pdo_firebird, `PDO::inTransaction()` returns `false` immediately after
-	 * `PDO::commit()` or `PDO::rollBack()`, even though Firebird internally
-	 * cycles into a new implicit transaction. This makes it a reliable guard for
-	 * double-begin detection on serial connections.
+	 * For pdo_firebird, a pre-begin flush (PDO::commit()) is issued before
+	 * PDO::beginTransaction() to clear Firebird's always-running implicit
+	 * transaction; without this the driver throws "There is already an active
+	 * transaction".
 	 *
 	 * @throws TDbException if the connection is not active, or if a transaction
 	 *   is already open with uncommitted work.
-	 * @return TDbTransaction the transaction for the new work unit.
+	 * @return TDbTransaction the transaction object for the new work unit.
+	 * @see TDbTransaction::beginTransaction
 	 */
 	public function beginTransaction()
 	{
 		$this->assertActive();
 
-		$txn = $this->_transaction;
-
-		if ($txn !== null && $txn->getActive()) {
-			if (!$txn->getSerial()) {
-				// Non-serial, active: a transaction is already open.
-				throw new TDbException('dbconnection_active_transaction');
-			}
-			// Serial, active: PDO::inTransaction() is false when the serial
-			// transaction is fresh (only the driver's implicit transaction is
-			// running), and true when this cycle has already been claimed by a
-			// prior beginTransaction() call with no matching commit/rollback yet.
-			if ($this->getPdoInstance()->inTransaction()) {
-				throw new TDbException('dbconnection_active_transaction');
-			}
+		if ($this->_transaction !== null && $this->_transaction->getActive()) {
+			throw new TDbException('dbconnection_active_transaction');
 		}
 
-		// No existing active transaction. Start a fresh explicit PDO transaction.
+		$pdo = $this->getPdoInstance();
 		if (TDbDriverCapabilities::requiresPreBeginTransactionFlush($this->getDriverName())) {
+			// Firebird keeps an implicit transaction alive at all times; commit it
+			// before calling PDO::beginTransaction() so the driver does not throw
+			// "There is already an active transaction".
 			try {
-				// Commit any implicit connection-time transaction (e.g. Firebird)
-				// before calling PDO::beginTransaction().
-				$this->getPdoInstance()->commit();
-			} catch (\Exception $e) {
+				$pdo->commit();
+			} catch (PDOException $e) {
 			}
 		}
-		$this->getPdoInstance()->beginTransaction();
-		if ($txn !== null && $txn->getActive() && $txn->getSerial()) {
-			return $txn;
-		}
+		$pdo->beginTransaction();
 		$this->_transaction = $this->createTransaction();
 		return $this->_transaction;
 	}
@@ -692,18 +674,17 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	 * Convenience method: commits the current transaction on this connection.
 	 *
 	 * Delegates to the active transaction's {@see TDbTransaction::commit()} method.
-	 * Particularly useful for serial transaction connections (Firebird),
-	 * where the transaction object is long-lived and not always held by the caller.
-	 *
 	 * If no transaction is currently active (i.e. {@see getCurrentTransaction()}
-	 * returns null), this method is a safe no-op.
+	 * returns null), this method is a safe no-op and returns false.
 	 *
+	 * @return ?bool true if a transaction was committed, false if none was active,
+	 *   null if the connection itself is not active.
 	 * @since 4.3.3
 	 */
-	public function commit(): bool
+	public function commit(): ?bool
 	{
 		if (!$this->getActive()) {
-			return false;
+			return null;
 		}
 		$txn = $this->getCurrentTransaction();
 		if ($txn === null || !$txn->getActive()) {
@@ -717,18 +698,17 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	 * Convenience method: rolls back the current transaction on this connection.
 	 *
 	 * Delegates to the active transaction's {@see TDbTransaction::rollback()} method.
-	 * Particularly useful for serial transaction connections (Firebird),
-	 * where the transaction object is long-lived and not always held by the caller.
-	 *
 	 * If no transaction is currently active (i.e. {@see getCurrentTransaction()}
-	 * returns null), this method is a safe no-op.
+	 * returns null), this method is a safe no-op and returns false.
 	 *
+	 * @return ?bool true if a transaction was rolled back, false if none was active,
+	 *   null if the connection itself is not active.
 	 * @since 4.3.3
 	 */
-	public function rollback(): bool
+	public function rollback(): ?bool
 	{
 		if (!$this->getActive()) {
-			return false;
+			return null;
 		}
 		$txn = $this->getCurrentTransaction();
 		if ($txn === null || !$txn->getActive()) {
@@ -739,35 +719,38 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	}
 
 	/**
-	 * Returns the transaction class name to use when creating transaction objects.
+	 * Returns the fully-qualified class name used to create transaction objects.
 	 *
-	 * When the property has been set explicitly via {@see setTransactionClass},
-	 * that value is returned unchanged.
+	 * The default is {@see DEFAULT_TRANSACTION_CLASS} (`TDbTransaction`).
+	 * The property is never null: passing null or an empty string to
+	 * {@see setTransactionClass} resets it to the default.
 	 *
-	 * When the property is null (the default), the class is auto-detected:
-	 * - All drivers use {@see TDbTransaction}, which now supports serial
-	 *   transaction mode for drivers that keep an implicit transaction
-	 *   alive (e.g. Firebird).
-	 *
-	 * @return ?string fully-qualified transaction class name, or null if unset.
+	 * @return string fully-qualified transaction class name.
 	 * @since 3.1.7
 	 */
-	public function getTransactionClass(): ?string
+	public function getTransactionClass(): string
 	{
 		return $this->_transactionClass;
 	}
 
 	/**
-	 * @param ?string $value fully-qualified transaction class name.
+	 * Sets the fully-qualified class name used to create transaction objects.
+	 *
+	 * Pass null or an empty string to reset to {@see DEFAULT_TRANSACTION_CLASS}.
+	 * The supplied class must be instantiable with a single {@see TDbConnection}
+	 * argument and should implement {@see IDataTransaction}.
+	 *
+	 * @param ?string $value fully-qualified transaction class name, or null/empty to reset.
 	 * @since 3.1.7
 	 */
 	public function setTransactionClass($value)
 	{
-		if ($value !== null) {
-			$this->_transactionClass = TPropertyValue::ensureString($value);
+		if (empty($value)) {
+			$value = self::DEFAULT_TRANSACTION_CLASS;
 		} else {
-			$this->_transactionClass = null;
+			$value = TPropertyValue::ensureString($value);
 		}
+		$this->_transactionClass = $value;
 	}
 
 	/**
@@ -779,11 +762,7 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	public function getLastInsertID($sequenceName = '')
 	{
 		$this->assertActive();
-		if ($this->getActive()) {
-			return $this->getPdoInstance()->lastInsertId($sequenceName);
-		} else {
-			throw new TDbException('dbconnection_connection_inactive');
-		}
+		return $this->getPdoInstance()->lastInsertId($sequenceName);
 	}
 
 	/**
@@ -910,8 +889,15 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	}
 
 	/**
-	 * @return bool whether creating or updating a DB record will be automatically committed.
-	 * Some DBMS (such as sqlite) may not support this feature.
+	 * Returns whether DML statements are automatically committed outside an
+	 * explicit transaction.
+	 *
+	 * Reads the live `PDO::ATTR_AUTOCOMMIT` attribute from the connection.
+	 * Returns `false` without querying PDO when the driver does not expose this
+	 * attribute (i.e. when {@see getHasAutoCommit()} is false).
+	 *
+	 * @return bool true if auto-commit is enabled, false otherwise or when the
+	 *   driver does not support the `PDO::ATTR_AUTOCOMMIT` attribute.
 	 */
 	public function getAutoCommit()
 	{
@@ -922,8 +908,12 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	}
 
 	/**
-	 * @param bool $value whether creating or updating a DB record will be automatically committed.
-	 * Some DBMS (such as sqlite) may not support this feature.
+	 * Enables or disables auto-commit on the connection.
+	 *
+	 * When the driver does not expose `PDO::ATTR_AUTOCOMMIT` (i.e. when
+	 * {@see getHasAutoCommit()} is false) this method is a silent no-op.
+	 *
+	 * @param bool $value true to enable auto-commit, false to disable it.
 	 */
 	public function setAutoCommit($value)
 	{
@@ -934,7 +924,15 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	}
 
 	/**
-	 * Tells if the Driver has the AutoCommit attribute
+	 * Returns whether the current driver exposes the `PDO::ATTR_AUTOCOMMIT`
+	 * attribute.
+	 *
+	 * Delegates to {@see TDbDriverCapabilities::hasAutoCommitAttribute}. When
+	 * this returns false, {@see getAutoCommit()} always returns false and
+	 * {@see setAutoCommit()} is a no-op.  Drivers known to expose the attribute
+	 * include mysql, pgsql, oci, sqlsrv, dblib, mssql, and ibm.
+	 *
+	 * @return bool true if the driver exposes `PDO::ATTR_AUTOCOMMIT`.
 	 * @since 4.3.3
 	 */
 	public function getHasAutoCommit(): bool
@@ -1060,10 +1058,14 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	}
 
 	/**
-	 * Sets an attribute on the database connection.
-	 * @throws TDbException
+	 * Throws a {@see TDbException} if the connection is not currently active.
+	 *
+	 * Call this at the top of any method that requires an open connection.
+	 *
+	 * @throws TDbException if the connection is not active.
+	 * @since 4.3.3
 	 */
-	protected function assertActive()
+	public function assertActive()
 	{
 		if (!$this->getActive()) {
 			throw new TDbException('dbconnection_connection_inactive');
@@ -1071,9 +1073,9 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	}
 
 	/**
-	 * @since 4.3.3
 	 * @param mixed $dsn
 	 * @return ?string Driver name from dsn, or null if invalid or not found.
+	 * @since 4.3.3
 	 */
 	protected function extractDriverFromDsn($dsn): ?string
 	{

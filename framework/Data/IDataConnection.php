@@ -52,42 +52,72 @@ interface IDataConnection
 	public function createCommand($query);
 
 	/**
-	 * Begins a transaction.
+	 * Begins a new transaction.
 	 *
-	 * For drivers that use serial transactions (e.g. Firebird) where a transaction
-	 * is always active, this returns the existing active transaction object without
-	 * starting a new one.
+	 * Each call allocates a **new** {@see IDataTransaction} object.  Any
+	 * previously returned transaction object is superseded: calling
+	 * {@see IDataTransaction::beginTransaction()} on it will throw because it is
+	 * no longer the connection's current transaction.
 	 *
-	 * @return IDataTransaction the transaction object.
+	 * Throws an exception if a transaction is already active. Commit or roll back
+	 * the current transaction before starting a new one.
+	 *
+	 * To reuse the same transaction object for sequential work units without
+	 * allocating a new one, call {@see IDataTransaction::beginTransaction()}
+	 * directly on the returned object after commit or rollback.
+	 *
+	 * @return IDataTransaction the transaction object for the new work unit.
 	 */
 	public function beginTransaction();
 
 	/**
 	 * Returns the currently active transaction, or null if none is open.
+	 * If a transaction is not active (as in, the transaction has been completed),
+	 * then this returns null.
 	 *
 	 * @return null|IDataTransaction the active transaction, or null.
 	 */
 	public function getCurrentTransaction();
 
 	/**
+	 * Returns the last {@see IDataTransaction} object associated with this
+	 * connection, whether or not it is still active.
+	 *
+	 * Differs from {@see getCurrentTransaction()}, which returns non-null only
+	 * while a transaction is open.  This method returns the object stored when
+	 * {@see beginTransaction()} was last called, regardless of its state.
+	 *
+	 * The primary use case is the supersession guard inside
+	 * {@see IDataTransaction::beginTransaction()}: before reactivating a
+	 * completed transaction object the implementation checks that it is still
+	 * the last one on the connection.  If {@see beginTransaction()} has been
+	 * called again since, a newer object is stored here and the old one is
+	 * considered superseded.
+	 *
+	 * @return null|IDataTransaction the last transaction object, or null if
+	 *   {@see beginTransaction()} has never been called on this connection.
+	 */
+	public function getLastTransaction(): ?IDataTransaction;
+
+	/**
 	 * Commits the currently active transaction on this connection.
 	 *
-	 * This is a convenience method for serial-transaction connections (e.g. Firebird)
-	 * where the caller may not hold a reference to the transaction object.
-	 * Returns false (and is a no-op) when no transaction is active.
+	 * A convenience method for cases where the caller does not hold a reference
+	 * to the transaction object. Returns false (and is a no-op) when no
+	 * transaction is active.
 	 *
-	 * @return bool true if a transaction was committed, false if none was active.
+	 * @return ?bool true if a transaction was committed, false if none was active.
 	 */
-	public function commit(): bool;
+	public function commit(): ?bool;
 
 	/**
 	 * Rolls back the currently active transaction on this connection.
 	 *
-	 * This is a convenience method for serial-transaction connections (e.g. Firebird)
-	 * where the caller may not hold a reference to the transaction object.
-	 * Returns false (and is a no-op) when no transaction is active.
+	 * A convenience method for cases where the caller does not hold a reference
+	 * to the transaction object. Returns false (and is a no-op) when no
+	 * transaction is active.
 	 *
-	 * @return bool true if a transaction was rolled back, false if none was active.
+	 * @return ?bool true if a transaction was rolled back, false if none was active.
 	 */
-	public function rollback(): bool;
+	public function rollback(): ?bool;
 }

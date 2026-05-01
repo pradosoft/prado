@@ -16,7 +16,6 @@ use Prado\TApplication;
  * Key Oracle characteristics:
  *  - supportsCharset = true (DSN charset= param only)
  *  - hasAutoCommitAttribute = true
- *  - usesSerialTransaction = false
  *  - requiresPreBeginTransactionFlush = false
  *  - requiresPostTransactionFlush = false
  *  - supportsRuntimeCharsetSet = false (DSN-only charset)
@@ -104,10 +103,6 @@ class TDbDriverCapabilitiesOracleIntegrationTest extends PHPUnit\Framework\TestC
 		$this->assertTrue(TDbDriverCapabilities::hasAutoCommitAttribute('oci'));
 	}
 
-	public function testOciDoesNotUseSerialTransaction(): void
-	{
-		$this->assertFalse(TDbDriverCapabilities::usesSerialTransaction('oci'));
-	}
 
 	public function testOciRequiresNoPreBeginTransactionFlush(): void
 	{
@@ -236,6 +231,46 @@ class TDbDriverCapabilitiesOracleIntegrationTest extends PHPUnit\Framework\TestC
 	}
 
 	// -----------------------------------------------------------------------
+	// Live connection — charset (DSN-based, no runtime query)
+	//
+	// Oracle configures charset via the DSN 'charset=' parameter only.
+	// getCharsetQuerySql('oci') returns null, so DatabaseCharset returns the
+	// driver-resolved form of whatever was passed to TDbConnection (e.g.
+	// 'UTF-8' → 'AL32UTF8').  This exercises the DSN-injection path.
+	// -----------------------------------------------------------------------
+
+	public function testOciDatabaseCharsetReturnsAl32Utf8WhenUtf8Configured(): void
+	{
+		$conn = $this->openOci('UTF-8');
+		// getCharsetQuerySql is null for oci; getDatabaseCharset() returns
+		// the driver-resolved charset name that was injected into the DSN.
+		$this->assertSame('AL32UTF8', $conn->DatabaseCharset);
+		$conn->Active = false;
+	}
+
+	public function testOciDatabaseCharsetReturnsWe8Iso8859P1WhenLatin1Configured(): void
+	{
+		$conn = $this->openOci('ISO-8859-1');
+		$this->assertSame('WE8ISO8859P1', $conn->DatabaseCharset);
+		$conn->Active = false;
+	}
+
+	public function testOciSupportsCharsetFlagMatchesLiveDriver(): void
+	{
+		$conn = $this->openOci();
+		$this->assertTrue(TDbDriverCapabilities::supportsCharset($conn->getDriverName()));
+		$conn->Active = false;
+	}
+
+	public function testOciDoesNotSupportRuntimeCharsetSetLive(): void
+	{
+		// supportsRuntimeCharsetSet is false for oci; verify this matches the live driver.
+		$conn = $this->openOci('UTF-8');
+		$this->assertFalse(TDbDriverCapabilities::supportsRuntimeCharsetSet($conn->getDriverName()));
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
 	// Scaffold factory
 	// -----------------------------------------------------------------------
 
@@ -360,6 +395,140 @@ class TDbDriverCapabilitiesOracleIntegrationTest extends PHPUnit\Framework\TestC
 		$this->assertTrue($tx->getActive());
 		$tx->rollBack();
 		$this->assertFalse($tx->getActive());
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
+	// Live connection — hasAutoCommitAttribute live verification
+	//
+	// pdo_oci exposes PDO::ATTR_AUTOCOMMIT. TDbConnection::HasAutoCommit is
+	// true; AutoCommit reads the live session flag and returns true by default.
+	// -----------------------------------------------------------------------
+
+	public function testOciHasAutoCommitAttributeViaConnection(): void
+	{
+		$conn = $this->openOci();
+		$this->assertTrue(
+			$conn->HasAutoCommit,
+			'Oracle (pdo_oci) must report HasAutoCommit = true via TDbConnection.'
+		);
+		$conn->Active = false;
+	}
+
+	public function testOciAutoCommitIsTrueByDefault(): void
+	{
+		$conn = $this->openOci();
+		$this->assertTrue(
+			$conn->AutoCommit,
+			'Oracle AutoCommit must be true when no explicit transaction is active.'
+		);
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
+	// Live connection — TDbTransaction::beginTransaction() (reuse & supersession)
+	//
+	// Oracle DDL auto-commits, so CREATE/DROP TABLE statements execute outside
+	// any explicit transaction and do not need to be wrapped in one.
+	// -----------------------------------------------------------------------
+
+	public function testOciTxBeginTransactionIsActiveAfterReuseViaCommit(): void
+	{
+		// After commit(), calling beginTransaction() on the same object reactivates it.
+		$conn = $this->openOci();
+		$tx = $conn->beginTransaction();
+		$tx->commit();
+		$this->assertFalse($tx->getActive(), 'Transaction must be inactive after commit.');
+
+		$returned = $tx->beginTransaction();
+		$this->assertSame($tx, $returned, 'beginTransaction() must return $this.');
+		$this->assertTrue($tx->getActive(), 'Transaction must be active after reuse.');
+		$tx->rollBack();
+		$conn->Active = false;
+	}
+
+	public function testOciTxBeginTransactionIsActiveAfterReuseViaRollback(): void
+	{
+		// After rollback(), calling beginTransaction() on the same object reactivates it.
+		$conn = $this->openOci();
+		$tx = $conn->beginTransaction();
+		$tx->rollBack();
+		$this->assertFalse($tx->getActive(), 'Transaction must be inactive after rollback.');
+
+		$returned = $tx->beginTransaction();
+		$this->assertSame($tx, $returned, 'beginTransaction() must return $this.');
+		$this->assertTrue($tx->getActive(), 'Transaction must be active after reuse.');
+		$tx->rollBack();
+		$conn->Active = false;
+	}
+
+	public function testOciTxBeginTransactionReuseIsolatesWorkUnits(): void
+	{
+		// Two sequential work units on the same object: first commits (row persists),
+		// second rolls back (row discarded). Oracle DDL auto-commits.
+		$conn = $this->openOci();
+
+		try {
+			$conn->createCommand('DROP TABLE CAPS_OCI_TX_REUSE')->execute();
+		} catch (\Exception $e) {
+		}
+		$conn->createCommand(
+			'CREATE TABLE CAPS_OCI_TX_REUSE (ID NUMBER(10) NOT NULL PRIMARY KEY)'
+		)->execute();
+
+		$tx = $conn->beginTransaction();
+		$conn->createCommand('INSERT INTO CAPS_OCI_TX_REUSE VALUES (1)')->execute();
+		$tx->commit();
+
+		$tx->beginTransaction();
+		$conn->createCommand('INSERT INTO CAPS_OCI_TX_REUSE VALUES (2)')->execute();
+		$tx->rollBack();
+
+		$count = (int) $conn->createCommand(
+			'SELECT COUNT(*) FROM CAPS_OCI_TX_REUSE'
+		)->queryScalar();
+		$this->assertSame(1, $count, 'Only the committed row must persist after reuse rollback.');
+
+		try {
+			$conn->createCommand('DROP TABLE CAPS_OCI_TX_REUSE')->execute();
+		} catch (\Exception $e) {
+		}
+		$conn->Active = false;
+	}
+
+	public function testOciTxBeginTransactionThrowsWhenSuperseded(): void
+	{
+		// After $conn->beginTransaction() supersedes $tx1, calling
+		// $tx1->beginTransaction() must throw TDbException.
+		$conn = $this->openOci();
+		$tx1 = $conn->beginTransaction();
+		$tx1->commit();
+		$tx2 = $conn->beginTransaction(); // supersedes $tx1
+
+		try {
+			$this->expectException(\Prado\Exceptions\TDbException::class);
+			$tx1->beginTransaction();
+		} finally {
+			if ($tx2->getActive()) {
+				$tx2->rollBack();
+			}
+			$conn->Active = false;
+		}
+	}
+
+	public function testOciGetLastTransactionReflectsNewestObject(): void
+	{
+		// After $conn->beginTransaction() creates $tx2, getLastTransaction()
+		// must return $tx2, not the superseded $tx1.
+		$conn = $this->openOci();
+		$tx1 = $conn->beginTransaction();
+		$this->assertSame($tx1, $conn->getLastTransaction());
+		$tx1->commit();
+
+		$tx2 = $conn->beginTransaction();
+		$this->assertSame($tx2, $conn->getLastTransaction());
+		$this->assertNotSame($tx1, $conn->getLastTransaction());
+		$tx2->rollBack();
 		$conn->Active = false;
 	}
 }

@@ -18,15 +18,14 @@ use Prado\TApplication;
  * Key Firebird characteristics:
  *  - supportsCharset = true (DSN charset= param only, no runtime SQL)
  *  - hasAutoCommitAttribute = true
- *  - usesSerialTransaction = true  ← always has an implicit transaction
  *  - requiresPreBeginTransactionFlush = true  ← flush before beginTransaction
  *  - requiresPostTransactionFlush = true  ← flush after commit/rollback
  *  - supportsRuntimeCharsetSet = false  ← DSN-only charset
  *  - requiresPostConnectCharset = false
  *  - getCharsetDsnParam = 'charset'
  *
- * The 'interbase' driver is an alias for charset resolution and
- * usesSerialTransaction but is NOT aliased for the flush flags.
+ * The 'interbase' driver is an alias for charset resolution but is NOT
+ * aliased for the pre/post flush flags.
  *
  * Tests are skipped automatically when pdo_firebird is missing or the
  * prado_unitest.fdb database is unreachable.
@@ -108,12 +107,6 @@ class TDbDriverCapabilitiesFirebirdIntegrationTest extends PHPUnit\Framework\Tes
 		$this->assertTrue(TDbDriverCapabilities::hasAutoCommitAttribute('firebird'));
 	}
 
-	public function testFirebirdUsesSerialTransaction(): void
-	{
-		// pdo_firebird always maintains an implicit transaction; serial mode is required.
-		$this->assertTrue(TDbDriverCapabilities::usesSerialTransaction('firebird'));
-	}
-
 	public function testFirebirdRequiresPreBeginTransactionFlush(): void
 	{
 		// Before beginTransaction(), the implicit transaction must be flushed.
@@ -183,14 +176,9 @@ class TDbDriverCapabilitiesFirebirdIntegrationTest extends PHPUnit\Framework\Tes
 	// -----------------------------------------------------------------------
 	// Static capability flags — interbase alias
 	//
-	// 'interbase' aliases firebird for charset resolution and usesSerialTransaction
-	// but is NOT aliased for the pre/post flush flags.
+	// 'interbase' aliases firebird for charset resolution but is NOT aliased
+	// for the pre/post flush flags.
 	// -----------------------------------------------------------------------
-
-	public function testInterbaseUsesSerialTransaction(): void
-	{
-		$this->assertTrue(TDbDriverCapabilities::usesSerialTransaction('interbase'));
-	}
 
 	public function testInterbaseDoesNotRequirePreBeginTransactionFlush(): void
 	{
@@ -419,61 +407,84 @@ class TDbDriverCapabilitiesFirebirdIntegrationTest extends PHPUnit\Framework\Tes
 	}
 
 	// -----------------------------------------------------------------------
+	// Live connection — charset query
+	// -----------------------------------------------------------------------
+
+	public function testFirebirdCharsetQuerySqlExecutesAndReturnsCharset(): void
+	{
+		// getCharsetQuerySql('firebird') returns a MON$ATTACHMENTS JOIN query.
+		// Execute it directly against a live UTF-8 connection and verify it
+		// returns the Firebird charset name ('UTF8').
+		$conn = $this->openFirebird('UTF-8');
+		$sql     = TDbDriverCapabilities::getCharsetQuerySql('firebird');
+		$this->assertNotNull($sql, 'getCharsetQuerySql must not return null for firebird.');
+		$charset = $this->queryScalar($conn, $sql);
+		$this->assertSame('UTF8', $charset,
+			'getCharsetQuerySql must return the charset name the server reports for the current attachment.');
+		$conn->Active = false;
+	}
+
+	public function testFirebirdDsnCharsetParamAppliedOnConnect(): void
+	{
+		// Connecting with 'ISO-8859-1' (which resolves to 'ISO8859_1') must be reflected
+		// in DatabaseCharset.
+		$conn = $this->openFirebird('ISO-8859-1');
+		$this->assertSame('ISO8859_1', $conn->DatabaseCharset);
+		$conn->Active = false;
+	}
+
+	public function testFirebirdSupportsCharsetFlagMatchesLiveDriver(): void
+	{
+		$conn = $this->openFirebird('UTF-8');
+		$this->assertTrue(TDbDriverCapabilities::supportsCharset($conn->getDriverName()));
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
 	// Live connection — transactions
 	// -----------------------------------------------------------------------
 
 	public function testFirebirdTransactionCommitSucceeds(): void
 	{
-		// For Firebird serial transactions, commit() completes the explicit PDO
-		// transaction and immediately restarts a new one — the TDbTransaction
-		// object remains active throughout (it is never deactivated).
+		// commit() completes the explicit transaction and deactivates it.
 		$conn = $this->openFirebird('UTF-8');
 		$tx = $conn->beginTransaction();
 		$this->assertTrue($tx->getActive());
-		$tx->commit(); // serial restart: does NOT deactivate the transaction
-		$this->assertTrue(
+		$tx->commit();
+		$this->assertFalse(
 			$tx->getActive(),
-			'Firebird serial transaction must remain active after commit (serial restart).'
+			'Firebird transaction must be inactive after commit.'
 		);
 		$conn->Active = false;
 	}
 
 	public function testFirebirdTransactionRollbackSucceeds(): void
 	{
-		// Same serial-restart behaviour applies to rollBack().
+		// rollBack() aborts the explicit transaction and deactivates it.
 		$conn = $this->openFirebird('UTF-8');
 		$tx = $conn->beginTransaction();
 		$this->assertTrue($tx->getActive());
-		$tx->rollBack(); // serial restart: does NOT deactivate the transaction
-		$this->assertTrue(
+		$tx->rollBack();
+		$this->assertFalse(
 			$tx->getActive(),
-			'Firebird serial transaction must remain active after rollback (serial restart).'
+			'Firebird transaction must be inactive after rollback.'
 		);
 		$conn->Active = false;
 	}
 
 	public function testFirebirdMultipleSequentialTransactionsSucceed(): void
 	{
-		// For a Firebird serial transaction, commit/rollback triggers an automatic
-		// internal restart (isTransactionComplete → restartTransaction).  The caller
-		// must NOT call beginTransaction() again after each cycle; the same $tx
-		// reference remains valid and active.
+		// Multiple beginTransaction/commit/rollback cycles on the same connection
+		// must all succeed.  Each cycle requires a new beginTransaction() call.
 		$conn = $this->openFirebird('UTF-8');
 
 		$tx = $conn->beginTransaction();
 		$tx->commit();
-		// Serial restart keeps the transaction alive.
-		$this->assertNotNull(
-			$conn->getCurrentTransaction(),
-			'Serial transaction must remain current after commit.'
-		);
+		$this->assertNull($conn->getCurrentTransaction(), 'No active transaction after commit.');
 
-		$tx->rollBack();
-		// Serial restart again.
-		$this->assertNotNull(
-			$conn->getCurrentTransaction(),
-			'Serial transaction must remain current after rollback.'
-		);
+		$tx2 = $conn->beginTransaction();
+		$tx2->rollBack();
+		$this->assertNull($conn->getCurrentTransaction(), 'No active transaction after rollback.');
 
 		$conn->Active = false;
 	}
@@ -559,13 +570,9 @@ class TDbDriverCapabilitiesFirebirdIntegrationTest extends PHPUnit\Framework\Tes
 	public function testFirebirdThreeSequentialTransactionsWithDataPersistCorrectly(): void
 	{
 		// Verify that the pre-begin flush (clearing the implicit Firebird transaction
-		// before beginTransaction()) and the serial restart (re-starting an explicit
-		// transaction after every commit/rollback) work correctly across three cycles.
-		//
-		// IMPORTANT: For serial Firebird transactions, beginTransaction() is called
-		// once.  After each commit/rollback the serial restart calls PDO::beginTransaction()
-		// internally, so the caller must reuse the same $tx reference — not call
-		// beginTransaction() again (which would find inTransaction()=true and throw).
+		// before beginTransaction()) works correctly across three commit/rollback cycles.
+		// Each cycle calls beginTransaction() afresh; the pre-begin flush clears the
+		// implicit transaction that pdo_firebird opens after every commit/rollback.
 		$conn = $this->openFirebird('UTF-8');
 
 		try {
@@ -576,21 +583,22 @@ class TDbDriverCapabilitiesFirebirdIntegrationTest extends PHPUnit\Framework\Tes
 			'CREATE TABLE CAPS_FB_MULTI_TEST (ID INTEGER NOT NULL PRIMARY KEY)'
 		)->execute();
 
+		// Cycle 1: commit id=1.
 		$tx = $conn->beginTransaction();
-
-		// Cycle 1: commit id=1; serial restart starts a fresh explicit tx.
 		$conn->createCommand('INSERT INTO CAPS_FB_MULTI_TEST VALUES (1)')->execute();
 		$tx->commit();
 		$count = (int) $conn->createCommand('SELECT COUNT(*) FROM CAPS_FB_MULTI_TEST')->queryScalar();
 		$this->assertSame(1, $count, 'After cycle 1 commit, 1 row expected.');
 
-		// Cycle 2: rollback (insert id=2, then discard); serial restart again.
+		// Cycle 2: rollback (insert id=2, then discard).
+		$tx = $conn->beginTransaction();
 		$conn->createCommand('INSERT INTO CAPS_FB_MULTI_TEST VALUES (2)')->execute();
 		$tx->rollBack();
 		$count = (int) $conn->createCommand('SELECT COUNT(*) FROM CAPS_FB_MULTI_TEST')->queryScalar();
 		$this->assertSame(1, $count, 'After cycle 2 rollback, still only 1 row expected.');
 
-		// Cycle 3: commit id=3; serial restart again.
+		// Cycle 3: commit id=3.
+		$tx = $conn->beginTransaction();
 		$conn->createCommand('INSERT INTO CAPS_FB_MULTI_TEST VALUES (3)')->execute();
 		$tx->commit();
 		$count = (int) $conn->createCommand('SELECT COUNT(*) FROM CAPS_FB_MULTI_TEST')->queryScalar();
@@ -600,6 +608,148 @@ class TDbDriverCapabilitiesFirebirdIntegrationTest extends PHPUnit\Framework\Tes
 			$conn->createCommand('DROP TABLE CAPS_FB_MULTI_TEST')->execute();
 		} catch (\Exception $e) {
 		}
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
+	// Live connection — hasAutoCommitAttribute live verification
+	//
+	// pdo_firebird exposes PDO::ATTR_AUTOCOMMIT and always returns 1 (true),
+	// even inside an explicit transaction (the attribute reflects the PHP-level
+	// session setting, not the live transaction state). TDbConnection::HasAutoCommit
+	// returns true; AutoCommit reads the attribute and returns true by default.
+	// -----------------------------------------------------------------------
+
+	public function testFirebirdHasAutoCommitAttributeViaConnection(): void
+	{
+		$conn = $this->openFirebird('UTF-8');
+		$this->assertTrue(
+			$conn->HasAutoCommit,
+			'Firebird must report HasAutoCommit = true via TDbConnection.'
+		);
+		$conn->Active = false;
+	}
+
+	public function testFirebirdAutoCommitIsTrueByDefault(): void
+	{
+		$conn = $this->openFirebird('UTF-8');
+		$this->assertTrue(
+			$conn->AutoCommit,
+			'Firebird AutoCommit must be true when no explicit transaction is active.'
+		);
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
+	// Live connection — TDbTransaction::beginTransaction() (reuse & supersession)
+	//
+	// Firebird requires requiresPreBeginTransactionFlush = true, so every call
+	// to beginTransaction() (whether on the connection or on the transaction
+	// object for reuse) issues a PDO::commit() first to clear the implicit
+	// transaction that pdo_firebird keeps running. The reuse tests verify this
+	// path works correctly across multiple cycles on the same object.
+	// -----------------------------------------------------------------------
+
+	public function testFirebirdTxBeginTransactionIsActiveAfterReuseViaCommit(): void
+	{
+		// After commit(), calling beginTransaction() on the same object reactivates it.
+		// The pre-begin flush in TDbTransaction::beginTransaction() clears the implicit
+		// Firebird transaction so pdo_firebird does not throw "active transaction".
+		$conn = $this->openFirebird('UTF-8');
+		$tx = $conn->beginTransaction();
+		$tx->commit();
+		$this->assertFalse($tx->getActive(), 'Transaction must be inactive after commit.');
+
+		$returned = $tx->beginTransaction();
+		$this->assertSame($tx, $returned, 'beginTransaction() must return $this.');
+		$this->assertTrue($tx->getActive(), 'Transaction must be active after reuse.');
+		$tx->rollBack();
+		$conn->Active = false;
+	}
+
+	public function testFirebirdTxBeginTransactionIsActiveAfterReuseViaRollback(): void
+	{
+		// After rollback(), calling beginTransaction() on the same object reactivates it.
+		$conn = $this->openFirebird('UTF-8');
+		$tx = $conn->beginTransaction();
+		$tx->rollBack();
+		$this->assertFalse($tx->getActive(), 'Transaction must be inactive after rollback.');
+
+		$returned = $tx->beginTransaction();
+		$this->assertSame($tx, $returned, 'beginTransaction() must return $this.');
+		$this->assertTrue($tx->getActive(), 'Transaction must be active after reuse.');
+		$tx->rollBack();
+		$conn->Active = false;
+	}
+
+	public function testFirebirdTxBeginTransactionReuseIsolatesWorkUnits(): void
+	{
+		// Two sequential work units on the same object via reuse: first commits
+		// (row persists), second rolls back (row discarded). Firebird DDL
+		// auto-commits, so the CREATE TABLE is outside any explicit transaction.
+		$conn = $this->openFirebird('UTF-8');
+
+		try {
+			$conn->createCommand('DROP TABLE CAPS_FB_TX_REUSE')->execute();
+		} catch (\Exception $e) {
+		}
+		$conn->createCommand(
+			'CREATE TABLE CAPS_FB_TX_REUSE (ID INTEGER NOT NULL PRIMARY KEY)'
+		)->execute();
+
+		$tx = $conn->beginTransaction();
+		$conn->createCommand('INSERT INTO CAPS_FB_TX_REUSE VALUES (1)')->execute();
+		$tx->commit();
+
+		$tx->beginTransaction();
+		$conn->createCommand('INSERT INTO CAPS_FB_TX_REUSE VALUES (2)')->execute();
+		$tx->rollBack();
+
+		$count = (int) $conn->createCommand(
+			'SELECT COUNT(*) FROM CAPS_FB_TX_REUSE'
+		)->queryScalar();
+		$this->assertSame(1, $count, 'Only the committed row must persist after reuse rollback.');
+
+		try {
+			$conn->createCommand('DROP TABLE CAPS_FB_TX_REUSE')->execute();
+		} catch (\Exception $e) {
+		}
+		$conn->Active = false;
+	}
+
+	public function testFirebirdTxBeginTransactionThrowsWhenSuperseded(): void
+	{
+		// After $conn->beginTransaction() supersedes $tx1, calling
+		// $tx1->beginTransaction() must throw TDbException.
+		$conn = $this->openFirebird('UTF-8');
+		$tx1 = $conn->beginTransaction();
+		$tx1->commit();
+		$tx2 = $conn->beginTransaction(); // supersedes $tx1
+
+		try {
+			$this->expectException(\Prado\Exceptions\TDbException::class);
+			$tx1->beginTransaction();
+		} finally {
+			if ($tx2->getActive()) {
+				$tx2->rollBack();
+			}
+			$conn->Active = false;
+		}
+	}
+
+	public function testFirebirdGetLastTransactionReflectsNewestObject(): void
+	{
+		// After $conn->beginTransaction() creates $tx2, getLastTransaction()
+		// must return $tx2, not the superseded $tx1.
+		$conn = $this->openFirebird('UTF-8');
+		$tx1 = $conn->beginTransaction();
+		$this->assertSame($tx1, $conn->getLastTransaction());
+		$tx1->commit();
+
+		$tx2 = $conn->beginTransaction();
+		$this->assertSame($tx2, $conn->getLastTransaction());
+		$this->assertNotSame($tx1, $conn->getLastTransaction());
+		$tx2->rollBack();
 		$conn->Active = false;
 	}
 }

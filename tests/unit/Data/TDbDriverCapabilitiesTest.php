@@ -39,7 +39,6 @@ use Prado\Exceptions\TDbException;
  *  - getCharsetQuerySql
  *  - requiresPreBeginTransactionFlush
  *  - requiresPostTransactionFlush
- *  - usesSerialTransaction
  *  - getListTablesSql
  *  - supportsCharset
  *  - hasAutoCommitAttribute
@@ -781,33 +780,6 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 	}
 
 	// =========================================================================
-	//  usesSerialTransaction
-	// =========================================================================
-
-	/** @dataProvider provideUsesSerialTransaction */
-	public function testUsesSerialTransaction(string $driver, bool $expected): void
-	{
-		$this->assertSame($expected, TDbDriverCapabilities::usesSerialTransaction($driver));
-	}
-
-	public static function provideUsesSerialTransaction(): array
-	{
-		return [
-			'firebird'  => [TDbDriver::DRIVER_FIREBIRD, true],
-			'interbase' => [TDbDriver::DRIVER_INTERBASE,true],
-			'mysql'     => [TDbDriver::DRIVER_MYSQL,    false],
-			'pgsql'     => [TDbDriver::DRIVER_PGSQL,    false],
-			'sqlite'    => [TDbDriver::DRIVER_SQLITE,   false],
-			'sqlite2'   => [TDbDriver::DRIVER_SQLITE2,  false],
-			'oci'       => [TDbDriver::DRIVER_OCI,      false],
-			'sqlsrv'    => [TDbDriver::DRIVER_SQLSRV,   false],
-			'dblib'     => [TDbDriver::DRIVER_DBLIB,    false],
-			'ibm'       => [TDbDriver::DRIVER_IBM,      false],
-			'unknown'   => ['unknown_driver',            false],
-		];
-	}
-
-	// =========================================================================
 	//  getListTablesSql
 	// =========================================================================
 
@@ -1235,13 +1207,9 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 
 	public function testFirebirdTransactionFlagsConsistency(): void
 	{
-		// Pre/post flush and serial transaction: all true for firebird, false for interbase
-		// (interbase is aliased to firebird for charset but NOT for transaction flags).
+		// Firebird requires pre/post flush; interbase is NOT aliased for these flags.
 		$this->assertTrue(TDbDriverCapabilities::requiresPreBeginTransactionFlush(TDbDriver::DRIVER_FIREBIRD));
 		$this->assertTrue(TDbDriverCapabilities::requiresPostTransactionFlush(TDbDriver::DRIVER_FIREBIRD));
-		$this->assertTrue(TDbDriverCapabilities::usesSerialTransaction(TDbDriver::DRIVER_FIREBIRD));
-		$this->assertTrue(TDbDriverCapabilities::usesSerialTransaction(TDbDriver::DRIVER_INTERBASE));
-		// interbase does NOT flush (only firebird does via the match default=null path)
 		$this->assertFalse(TDbDriverCapabilities::requiresPreBeginTransactionFlush(TDbDriver::DRIVER_INTERBASE));
 		$this->assertFalse(TDbDriverCapabilities::requiresPostTransactionFlush(TDbDriver::DRIVER_INTERBASE));
 	}

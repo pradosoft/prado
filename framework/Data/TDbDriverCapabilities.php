@@ -570,31 +570,6 @@ class TDbDriverCapabilities
 	}
 
 	// =========================================================================
-	//  Transaction model
-	// =========================================================================
-
-	/**
-	 * Returns true when the driver operates in a "continuing transaction" mode —
-	 * meaning the PDO layer always keeps an implicit transaction alive and the
-	 * connection never returns to a fully transaction-free state.
-	 *
-	 * For these drivers, TDbTransaction with Serial=true is appropriate:
-	 * it remains valid and ready for re-use after each commit or rollback
-	 * rather than becoming inactive.
-	 *
-	 * pdo_firebird is the canonical example: isc_commit_transaction and
-	 * isc_rollback_transaction immediately start a new implicit transaction
-	 * before returning, so the connection is always inside a transaction.
-	 *
-	 * @param string $driver PDO driver name
-	 * @return bool
-	 */
-	public static function usesSerialTransaction(string $driver): bool
-	{
-		return $driver === TDbDriver::DRIVER_FIREBIRD || $driver === TDbDriver::DRIVER_INTERBASE;
-	}
-
-	// =========================================================================
 	//  ActiveRecord — table enumeration
 	// =========================================================================
 

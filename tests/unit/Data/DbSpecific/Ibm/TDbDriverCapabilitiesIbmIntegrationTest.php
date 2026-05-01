@@ -17,7 +17,6 @@ use Prado\TApplication;
  *  - supportsCharset = false  ← unique among supported drivers; DB2 has no
  *      charset support through PDO
  *  - hasAutoCommitAttribute = true
- *  - usesSerialTransaction = false
  *  - requiresPreBeginTransactionFlush = false
  *  - requiresPostTransactionFlush = false
  *  - supportsRuntimeCharsetSet = false
@@ -111,10 +110,6 @@ class TDbDriverCapabilitiesIbmIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue(TDbDriverCapabilities::hasAutoCommitAttribute('ibm'));
 	}
 
-	public function testIbmDoesNotUseSerialTransaction(): void
-	{
-		$this->assertFalse(TDbDriverCapabilities::usesSerialTransaction('ibm'));
-	}
 
 	public function testIbmRequiresNoPreBeginTransactionFlush(): void
 	{
@@ -335,6 +330,154 @@ class TDbDriverCapabilitiesIbmIntegrationTest extends PHPUnit\Framework\TestCase
 		// Confirm that the static capability flag aligns with the live driver string.
 		$conn = $this->openIbm();
 		$this->assertFalse(TDbDriverCapabilities::supportsCharset($conn->getDriverName()));
+		$conn->Active = false;
+	}
+
+	public function testIbmDatabaseCharsetReturnsEmptyWhenNoCharsetConfigured(): void
+	{
+		// supportsCharset = false and getCharsetQuerySql = null: DatabaseCharset falls
+		// back to the raw Charset property which is empty when none was configured.
+		$conn = $this->openIbm();
+		$this->assertSame('', $conn->DatabaseCharset);
+		$conn->Active = false;
+	}
+
+	public function testIbmDoesNotSupportRuntimeCharsetSetLive(): void
+	{
+		// supportsRuntimeCharsetSet is false for ibm; confirm against live driver.
+		$conn = $this->openIbm();
+		$this->assertFalse(TDbDriverCapabilities::supportsRuntimeCharsetSet($conn->getDriverName()));
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
+	// Live connection — hasAutoCommitAttribute live verification
+	//
+	// pdo_ibm exposes PDO::ATTR_AUTOCOMMIT. TDbConnection::HasAutoCommit is
+	// true; AutoCommit reads the live session flag and returns true by default.
+	// -----------------------------------------------------------------------
+
+	public function testIbmHasAutoCommitAttributeViaConnection(): void
+	{
+		$conn = $this->openIbm();
+		$this->assertTrue(
+			$conn->HasAutoCommit,
+			'IBM DB2 must report HasAutoCommit = true via TDbConnection.'
+		);
+		$conn->Active = false;
+	}
+
+	public function testIbmAutoCommitIsTrueByDefault(): void
+	{
+		$conn = $this->openIbm();
+		$this->assertTrue(
+			$conn->AutoCommit,
+			'IBM DB2 AutoCommit must be true when no explicit transaction is active.'
+		);
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
+	// Live connection — TDbTransaction::beginTransaction() (reuse & supersession)
+	// -----------------------------------------------------------------------
+
+	public function testIbmTxBeginTransactionIsActiveAfterReuseViaCommit(): void
+	{
+		// After commit(), calling beginTransaction() on the same object reactivates it.
+		$conn = $this->openIbm();
+		$tx = $conn->beginTransaction();
+		$tx->commit();
+		$this->assertFalse($tx->getActive(), 'Transaction must be inactive after commit.');
+
+		$returned = $tx->beginTransaction();
+		$this->assertSame($tx, $returned, 'beginTransaction() must return $this.');
+		$this->assertTrue($tx->getActive(), 'Transaction must be active after reuse.');
+		$tx->rollBack();
+		$conn->Active = false;
+	}
+
+	public function testIbmTxBeginTransactionIsActiveAfterReuseViaRollback(): void
+	{
+		// After rollback(), calling beginTransaction() on the same object reactivates it.
+		$conn = $this->openIbm();
+		$tx = $conn->beginTransaction();
+		$tx->rollBack();
+		$this->assertFalse($tx->getActive(), 'Transaction must be inactive after rollback.');
+
+		$returned = $tx->beginTransaction();
+		$this->assertSame($tx, $returned, 'beginTransaction() must return $this.');
+		$this->assertTrue($tx->getActive(), 'Transaction must be active after reuse.');
+		$tx->rollBack();
+		$conn->Active = false;
+	}
+
+	public function testIbmTxBeginTransactionReuseIsolatesWorkUnits(): void
+	{
+		// Two sequential work units on the same object: first commits (row persists),
+		// second rolls back (row discarded). IBM DB2 DDL auto-commits.
+		$conn = $this->openIbm();
+
+		try {
+			$conn->createCommand('DROP TABLE CAPS_IBM_TX_REUSE')->execute();
+		} catch (\Exception $e) {
+		}
+		$conn->createCommand(
+			'CREATE TABLE CAPS_IBM_TX_REUSE (ID INTEGER NOT NULL PRIMARY KEY)'
+		)->execute();
+
+		$tx = $conn->beginTransaction();
+		$conn->createCommand('INSERT INTO CAPS_IBM_TX_REUSE VALUES (1)')->execute();
+		$tx->commit();
+
+		$tx->beginTransaction();
+		$conn->createCommand('INSERT INTO CAPS_IBM_TX_REUSE VALUES (2)')->execute();
+		$tx->rollBack();
+
+		$count = (int) $conn->createCommand(
+			'SELECT COUNT(*) FROM CAPS_IBM_TX_REUSE'
+		)->queryScalar();
+		$this->assertSame(1, $count, 'Only the committed row must persist after reuse rollback.');
+
+		try {
+			$conn->createCommand('DROP TABLE CAPS_IBM_TX_REUSE')->execute();
+		} catch (\Exception $e) {
+		}
+		$conn->Active = false;
+	}
+
+	public function testIbmTxBeginTransactionThrowsWhenSuperseded(): void
+	{
+		// After $conn->beginTransaction() supersedes $tx1, calling
+		// $tx1->beginTransaction() must throw TDbException.
+		$conn = $this->openIbm();
+		$tx1 = $conn->beginTransaction();
+		$tx1->commit();
+		$tx2 = $conn->beginTransaction(); // supersedes $tx1
+
+		try {
+			$this->expectException(\Prado\Exceptions\TDbException::class);
+			$tx1->beginTransaction();
+		} finally {
+			if ($tx2->getActive()) {
+				$tx2->rollBack();
+			}
+			$conn->Active = false;
+		}
+	}
+
+	public function testIbmGetLastTransactionReflectsNewestObject(): void
+	{
+		// After $conn->beginTransaction() creates $tx2, getLastTransaction()
+		// must return $tx2, not the superseded $tx1.
+		$conn = $this->openIbm();
+		$tx1 = $conn->beginTransaction();
+		$this->assertSame($tx1, $conn->getLastTransaction());
+		$tx1->commit();
+
+		$tx2 = $conn->beginTransaction();
+		$this->assertSame($tx2, $conn->getLastTransaction());
+		$this->assertNotSame($tx1, $conn->getLastTransaction());
+		$tx2->rollBack();
 		$conn->Active = false;
 	}
 }

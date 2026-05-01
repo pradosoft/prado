@@ -18,7 +18,6 @@ use Prado\TApplication;
  * Key MSSQL characteristics:
  *  - supportsCharset = true for both sqlsrv and dblib
  *  - hasAutoCommitAttribute = false  (sqlsrv/dblib do not expose PDO::ATTR_AUTOCOMMIT)
- *  - usesSerialTransaction = false
  *  - requiresPreBeginTransactionFlush = false
  *  - requiresPostTransactionFlush = false
  *  - supportsRuntimeCharsetSet = false (DSN-only charset)
@@ -102,10 +101,6 @@ class TDbDriverCapabilitiesMssqlIntegrationTest extends PHPUnit\Framework\TestCa
 		$this->assertFalse(TDbDriverCapabilities::hasAutoCommitAttribute('sqlsrv'));
 	}
 
-	public function testSqlsrvDoesNotUseSerialTransaction(): void
-	{
-		$this->assertFalse(TDbDriverCapabilities::usesSerialTransaction('sqlsrv'));
-	}
 
 	public function testSqlsrvRequiresNoPreBeginTransactionFlush(): void
 	{
@@ -185,10 +180,6 @@ class TDbDriverCapabilitiesMssqlIntegrationTest extends PHPUnit\Framework\TestCa
 		$this->assertFalse(TDbDriverCapabilities::hasAutoCommitAttribute('dblib'));
 	}
 
-	public function testDblibDoesNotUseSerialTransaction(): void
-	{
-		$this->assertFalse(TDbDriverCapabilities::usesSerialTransaction('dblib'));
-	}
 
 	public function testDblibRequiresNoPreBeginTransactionFlush(): void
 	{
@@ -299,6 +290,39 @@ class TDbDriverCapabilitiesMssqlIntegrationTest extends PHPUnit\Framework\TestCa
 			TDbDriverCapabilities::getScaffoldInputClass('sqlsrv'),
 			TDbDriverCapabilities::getScaffoldInputClass('dblib')
 		);
+	}
+
+	// -----------------------------------------------------------------------
+	// Live connection — charset (DSN-based, no runtime query)
+	//
+	// MSSQL (sqlsrv) configures charset via the DSN 'CharacterSet=' parameter
+	// only.  getCharsetQuerySql('sqlsrv') returns null, so DatabaseCharset
+	// returns the driver-resolved form of the configured charset (for sqlsrv,
+	// the canonical name is passed through unchanged — 'UTF-8' stays 'UTF-8').
+	// -----------------------------------------------------------------------
+
+	public function testSqlsrvDatabaseCharsetReturnsUtf8WhenConfigured(): void
+	{
+		$conn = $this->openSqlsrv('UTF-8');
+		// getCharsetQuerySql is null for sqlsrv; getDatabaseCharset() returns
+		// the driver-resolved charset injected into the DSN CharacterSet= param.
+		$this->assertSame('UTF-8', $conn->DatabaseCharset);
+		$conn->Active = false;
+	}
+
+	public function testSqlsrvSupportsCharsetFlagMatchesLiveDriver(): void
+	{
+		$conn = $this->openSqlsrv();
+		$this->assertTrue(TDbDriverCapabilities::supportsCharset($conn->getDriverName()));
+		$conn->Active = false;
+	}
+
+	public function testSqlsrvDoesNotSupportRuntimeCharsetSetLive(): void
+	{
+		// supportsRuntimeCharsetSet is false for sqlsrv; verify against live driver.
+		$conn = $this->openSqlsrv('UTF-8');
+		$this->assertFalse(TDbDriverCapabilities::supportsRuntimeCharsetSet($conn->getDriverName()));
+		$conn->Active = false;
 	}
 
 	// -----------------------------------------------------------------------
@@ -414,6 +438,137 @@ class TDbDriverCapabilitiesMssqlIntegrationTest extends PHPUnit\Framework\TestCa
 		$this->assertTrue($tx->getActive());
 		$tx->rollBack();
 		$this->assertFalse($tx->getActive());
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
+	// Live connection — hasAutoCommitAttribute live verification
+	//
+	// sqlsrv and dblib do not expose PDO::ATTR_AUTOCOMMIT (reading it throws a
+	// PDOException). TDbConnection::HasAutoCommit returns false; AutoCommit
+	// returns false gracefully without attempting to read the absent attribute.
+	// -----------------------------------------------------------------------
+
+	public function testSqlsrvHasNoAutoCommitAttributeViaConnection(): void
+	{
+		$conn = $this->openSqlsrv();
+		$this->assertFalse(
+			$conn->HasAutoCommit,
+			'MSSQL (sqlsrv) must report HasAutoCommit = false via TDbConnection.'
+		);
+		$conn->Active = false;
+	}
+
+	public function testSqlsrvAutoCommitReturnsFalseWhenAttributeAbsent(): void
+	{
+		$conn = $this->openSqlsrv();
+		$this->assertFalse(
+			$conn->AutoCommit,
+			'MSSQL (sqlsrv) AutoCommit must return false when the attribute is not supported.'
+		);
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
+	// Live connection — TDbTransaction::beginTransaction() (reuse & supersession)
+	// -----------------------------------------------------------------------
+
+	public function testSqlsrvTxBeginTransactionIsActiveAfterReuseViaCommit(): void
+	{
+		// After commit(), calling beginTransaction() on the same object reactivates it.
+		$conn = $this->openSqlsrv();
+		$tx = $conn->beginTransaction();
+		$tx->commit();
+		$this->assertFalse($tx->getActive(), 'Transaction must be inactive after commit.');
+
+		$returned = $tx->beginTransaction();
+		$this->assertSame($tx, $returned, 'beginTransaction() must return $this.');
+		$this->assertTrue($tx->getActive(), 'Transaction must be active after reuse.');
+		$tx->rollBack();
+		$conn->Active = false;
+	}
+
+	public function testSqlsrvTxBeginTransactionIsActiveAfterReuseViaRollback(): void
+	{
+		// After rollback(), calling beginTransaction() on the same object reactivates it.
+		$conn = $this->openSqlsrv();
+		$tx = $conn->beginTransaction();
+		$tx->rollBack();
+		$this->assertFalse($tx->getActive(), 'Transaction must be inactive after rollback.');
+
+		$returned = $tx->beginTransaction();
+		$this->assertSame($tx, $returned, 'beginTransaction() must return $this.');
+		$this->assertTrue($tx->getActive(), 'Transaction must be active after reuse.');
+		$tx->rollBack();
+		$conn->Active = false;
+	}
+
+	public function testSqlsrvTxBeginTransactionReuseIsolatesWorkUnits(): void
+	{
+		// Two sequential work units on the same object: first commits (row persists),
+		// second rolls back (row discarded).
+		$conn = $this->openSqlsrv();
+		try {
+			$conn->createCommand(
+				"IF OBJECT_ID('caps_mssql_tx_reuse','U') IS NOT NULL DROP TABLE caps_mssql_tx_reuse"
+			)->execute();
+			$conn->createCommand(
+				'CREATE TABLE caps_mssql_tx_reuse (id INT NOT NULL PRIMARY KEY)'
+			)->execute();
+		} catch (\Exception $e) {
+			$conn->Active = false;
+			$this->markTestSkipped('DDL not permitted on this SQL Server connection: ' . $e->getMessage());
+		}
+
+		$tx = $conn->beginTransaction();
+		$conn->createCommand('INSERT INTO caps_mssql_tx_reuse VALUES (1)')->execute();
+		$tx->commit();
+
+		$tx->beginTransaction();
+		$conn->createCommand('INSERT INTO caps_mssql_tx_reuse VALUES (2)')->execute();
+		$tx->rollBack();
+
+		$count = (int) $conn->createCommand(
+			'SELECT COUNT(*) FROM caps_mssql_tx_reuse'
+		)->queryScalar();
+		$this->assertSame(1, $count, 'Only the committed row must persist after reuse rollback.');
+		$conn->createCommand('DROP TABLE caps_mssql_tx_reuse')->execute();
+		$conn->Active = false;
+	}
+
+	public function testSqlsrvTxBeginTransactionThrowsWhenSuperseded(): void
+	{
+		// After $conn->beginTransaction() supersedes $tx1, calling
+		// $tx1->beginTransaction() must throw TDbException.
+		$conn = $this->openSqlsrv();
+		$tx1 = $conn->beginTransaction();
+		$tx1->commit();
+		$tx2 = $conn->beginTransaction(); // supersedes $tx1
+
+		try {
+			$this->expectException(\Prado\Exceptions\TDbException::class);
+			$tx1->beginTransaction();
+		} finally {
+			if ($tx2->getActive()) {
+				$tx2->rollBack();
+			}
+			$conn->Active = false;
+		}
+	}
+
+	public function testSqlsrvGetLastTransactionReflectsNewestObject(): void
+	{
+		// After $conn->beginTransaction() creates $tx2, getLastTransaction()
+		// must return $tx2, not the superseded $tx1.
+		$conn = $this->openSqlsrv();
+		$tx1 = $conn->beginTransaction();
+		$this->assertSame($tx1, $conn->getLastTransaction());
+		$tx1->commit();
+
+		$tx2 = $conn->beginTransaction();
+		$this->assertSame($tx2, $conn->getLastTransaction());
+		$this->assertNotSame($tx1, $conn->getLastTransaction());
+		$tx2->rollBack();
 		$conn->Active = false;
 	}
 }

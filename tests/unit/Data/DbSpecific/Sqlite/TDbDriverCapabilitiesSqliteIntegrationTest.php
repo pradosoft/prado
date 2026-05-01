@@ -18,7 +18,6 @@ use Prado\TApplication;
  * Key SQLite characteristics:
  *  - supportsCharset = true (via PRAGMA encoding, UTF-8 / UTF-16 only)
  *  - hasAutoCommitAttribute = false (PDO::ATTR_AUTOCOMMIT not implemented)
- *  - usesSerialTransaction = false
  *  - requiresPreBeginTransactionFlush = false
  *  - requiresPostTransactionFlush = false
  *  - supportsRuntimeCharsetSet = true (PRAGMA encoding on empty DB)
@@ -94,10 +93,6 @@ class TDbDriverCapabilitiesSqliteIntegrationTest extends PHPUnit\Framework\TestC
 		$this->assertFalse(TDbDriverCapabilities::hasAutoCommitAttribute('sqlite'));
 	}
 
-	public function testSqliteDoesNotUseSerialTransaction(): void
-	{
-		$this->assertFalse(TDbDriverCapabilities::usesSerialTransaction('sqlite'));
-	}
 
 	public function testSqliteRequiresNoPreBeginTransactionFlush(): void
 	{
@@ -348,14 +343,132 @@ class TDbDriverCapabilitiesSqliteIntegrationTest extends PHPUnit\Framework\TestC
 
 	// -----------------------------------------------------------------------
 	// Live connection — hasAutoCommitAttribute live verification
+	//
+	// SQLite does not expose PDO::ATTR_AUTOCOMMIT. TDbConnection::HasAutoCommit
+	// returns false; TDbConnection::AutoCommit returns false gracefully without
+	// attempting to read the absent attribute.
 	// -----------------------------------------------------------------------
 
 	public function testSqliteHasNoAutoCommitAttributeLive(): void
 	{
-		// Confirmed by the capability flag: SQLite PDO does not implement
-		// PDO::ATTR_AUTOCOMMIT.  TDbConnection must not attempt to read or write it.
 		$conn = $this->openSqlite();
 		$this->assertFalse(TDbDriverCapabilities::hasAutoCommitAttribute($conn->getDriverName()));
+		$conn->Active = false;
+	}
+
+	public function testSqliteHasNoAutoCommitAttributeViaConnection(): void
+	{
+		$conn = $this->openSqlite();
+		$this->assertFalse(
+			$conn->HasAutoCommit,
+			'SQLite must report HasAutoCommit = false via TDbConnection.'
+		);
+		$conn->Active = false;
+	}
+
+	public function testSqliteAutoCommitReturnsFalseWhenAttributeAbsent(): void
+	{
+		// TDbConnection::getAutoCommit() returns false when hasAutoCommitAttribute
+		// is false, without attempting to read PDO::ATTR_AUTOCOMMIT from the driver.
+		$conn = $this->openSqlite();
+		$this->assertFalse(
+			$conn->AutoCommit,
+			'SQLite AutoCommit must return false when the attribute is not supported.'
+		);
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
+	// Live connection — TDbTransaction::beginTransaction() (reuse & supersession)
+	// -----------------------------------------------------------------------
+
+	public function testSqliteTxBeginTransactionIsActiveAfterReuseViaCommit(): void
+	{
+		// After commit(), calling beginTransaction() on the same object reactivates it.
+		$conn = $this->openSqlite();
+		$tx = $conn->beginTransaction();
+		$tx->commit();
+		$this->assertFalse($tx->getActive(), 'Transaction must be inactive after commit.');
+
+		$returned = $tx->beginTransaction();
+		$this->assertSame($tx, $returned, 'beginTransaction() must return $this.');
+		$this->assertTrue($tx->getActive(), 'Transaction must be active after reuse.');
+		$tx->rollBack();
+		$conn->Active = false;
+	}
+
+	public function testSqliteTxBeginTransactionIsActiveAfterReuseViaRollback(): void
+	{
+		// After rollback(), calling beginTransaction() on the same object reactivates it.
+		$conn = $this->openSqlite();
+		$tx = $conn->beginTransaction();
+		$tx->rollBack();
+		$this->assertFalse($tx->getActive(), 'Transaction must be inactive after rollback.');
+
+		$returned = $tx->beginTransaction();
+		$this->assertSame($tx, $returned, 'beginTransaction() must return $this.');
+		$this->assertTrue($tx->getActive(), 'Transaction must be active after reuse.');
+		$tx->rollBack();
+		$conn->Active = false;
+	}
+
+	public function testSqliteTxBeginTransactionReuseIsolatesWorkUnits(): void
+	{
+		// Two sequential work units on the same object: first commits (row persists),
+		// second rolls back (row discarded). SQLite in-memory: no cleanup needed.
+		$conn = $this->openSqlite();
+		$conn->createCommand(
+			'CREATE TABLE caps_sqlite_tx_reuse (id INTEGER PRIMARY KEY)'
+		)->execute();
+
+		$tx = $conn->beginTransaction();
+		$conn->createCommand('INSERT INTO caps_sqlite_tx_reuse VALUES (1)')->execute();
+		$tx->commit();
+
+		$tx->beginTransaction();
+		$conn->createCommand('INSERT INTO caps_sqlite_tx_reuse VALUES (2)')->execute();
+		$tx->rollBack();
+
+		$count = (int) $conn->createCommand(
+			'SELECT COUNT(*) FROM caps_sqlite_tx_reuse'
+		)->queryScalar();
+		$this->assertSame(1, $count, 'Only the committed row must persist after reuse rollback.');
+		$conn->Active = false;
+	}
+
+	public function testSqliteTxBeginTransactionThrowsWhenSuperseded(): void
+	{
+		// After $conn->beginTransaction() supersedes $tx1, calling
+		// $tx1->beginTransaction() must throw TDbException.
+		$conn = $this->openSqlite();
+		$tx1 = $conn->beginTransaction();
+		$tx1->commit();
+		$tx2 = $conn->beginTransaction(); // supersedes $tx1
+
+		try {
+			$this->expectException(\Prado\Exceptions\TDbException::class);
+			$tx1->beginTransaction();
+		} finally {
+			if ($tx2->getActive()) {
+				$tx2->rollBack();
+			}
+			$conn->Active = false;
+		}
+	}
+
+	public function testSqliteGetLastTransactionReflectsNewestObject(): void
+	{
+		// After $conn->beginTransaction() creates $tx2, getLastTransaction()
+		// must return $tx2, not the superseded $tx1.
+		$conn = $this->openSqlite();
+		$tx1 = $conn->beginTransaction();
+		$this->assertSame($tx1, $conn->getLastTransaction());
+		$tx1->commit();
+
+		$tx2 = $conn->beginTransaction();
+		$this->assertSame($tx2, $conn->getLastTransaction());
+		$this->assertNotSame($tx1, $conn->getLastTransaction());
+		$tx2->rollBack();
 		$conn->Active = false;
 	}
 }

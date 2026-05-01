@@ -218,28 +218,6 @@ class TDbConnectionCharsetIbmIntegrationTest extends PHPUnit\Framework\TestCase
 		$conn->Active = false;
 	}
 
-	public function testIbmAutoCommitOffCreatesSerialTransaction(): void
-	{
-		// When AutoCommit is disabled on an IBM DB2 connection, createTransaction()
-		// must produce a serial TDbTransaction so that each commit/rollback
-		// automatically restarts a new transaction (maintaining the non-autocommit
-		// session contract).
-		$conn = $this->openIbm();
-		$conn->AutoCommit = false;
-		$tx = $conn->beginTransaction();
-		$this->assertTrue(
-			$tx->getSerial(),
-			'With AutoCommit=false, IBM DB2 beginTransaction must return a serial transaction.'
-		);
-		$conn->rollback();
-		// After rollback the serial restart fires; the transaction must remain active.
-		$this->assertTrue(
-			$tx->getActive(),
-			'After rollback with AutoCommit=false, the serial transaction must remain active.'
-		);
-		$conn->Active = false;
-	}
-
 	// -----------------------------------------------------------------------
 	// Live connection — getCharsetSetSql live verification
 	//

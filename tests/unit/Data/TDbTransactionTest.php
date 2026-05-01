@@ -6,8 +6,6 @@ use Prado\Data\TDbConnection;
 use Prado\Data\TDbTransaction;
 use Prado\Exceptions\TDbException;
 use Prado\TApplication;
-use Prado\Util\TBehavior;
-use Prado\Util\TCallChain;
 
 if (!defined('TEST_DB_FILE')) {
 	define('TEST_DB_FILE', __DIR__ . '/db/test.db');
@@ -84,52 +82,42 @@ class TDbTransactionTest extends PHPUnit\Framework\TestCase
 	// -----------------------------------------------------------------------
 
 	/**
-	 * Make an anonymous TBehavior that intercepts dyIsTransactionComplete and
-	 * always returns the supplied boolean, ignoring the call chain.
-	 */
-	private function makeDyBehavior(bool $force): TBehavior
-	{
-		return new class($force) extends TBehavior {
-			private bool $_force;
-
-			public function __construct(bool $force)
-			{
-				$this->_force = $force;
-				parent::__construct();
-			}
-
-			public function dyIsTransactionComplete($returnValue, ?TCallChain $chain = null): bool
-			{
-				return $this->_force;
-			}
-		};
-	}
-
-	/**
 	 * Build a mock TDbConnection whose PDO instance is entirely controlled by
 	 * the test. The original constructor is suppressed so no real DB is opened.
+	 * getDriverName() is derived from the mock PDO's ATTR_DRIVER_NAME.
 	 */
 	private function createMockConnectionWithPdo(object $mockPdo): TDbConnection
 	{
 		$conn = $this->getMockBuilder(TDbConnection::class)
 			->disableOriginalConstructor()
-			->onlyMethods(['getActive', 'getPdoInstance'])
+			->onlyMethods(['getActive', 'getPdoInstance', 'getDriverName', 'getLastTransaction'])
 			->getMock();
 
 		$conn->method('getActive')->willReturn(true);
 		$conn->method('getPdoInstance')->willReturn($mockPdo);
+		$conn->method('getDriverName')->willReturn(
+			$mockPdo->getAttribute(PDO::ATTR_DRIVER_NAME)
+		);
+		// getLastTransaction() defaults to null; override per-test when
+		// TDbTransaction::beginTransaction() is exercised so the supersession
+		// guard sees the correct transaction object.
 
 		return $conn;
 	}
 
 	/**
-	 * Build a mock PDO-like stub whose commit / rollBack / getAttribute calls
-	 * can be asserted. getAttribute(PDO::ATTR_DRIVER_NAME) returns $driver.
+	 * Build a mock PDO stub whose commit / rollBack / getAttribute /
+	 * beginTransaction calls can be asserted.
+	 * getAttribute(PDO::ATTR_DRIVER_NAME) returns $driver.
+	 *
+	 * Must extend \PDO (via disableOriginalConstructor) so that the strict
+	 * return type `PDO` on TDbTransaction::assertActive() is satisfied.
 	 */
-	private function createMockPdo(string $driver): object
+	private function createMockPdo(string $driver): \PDO
 	{
-		$pdo = $this->getMockBuilder(\stdClass::class)
-			->addMethods(['commit', 'rollBack', 'getAttribute'])
+		$pdo = $this->getMockBuilder(\PDO::class)
+			->disableOriginalConstructor()
+			->onlyMethods(['commit', 'rollBack', 'getAttribute', 'beginTransaction'])
 			->getMock();
 
 		$pdo->method('getAttribute')
@@ -154,13 +142,6 @@ class TDbTransactionTest extends PHPUnit\Framework\TestCase
 	{
 		$tx = $this->_connection->beginTransaction();
 		$this->assertSame($this->_connection, $tx->getConnection());
-		$tx->rollBack();
-	}
-
-	public function testGetSerialDefaultsFalse(): void
-	{
-		$tx = $this->_connection->beginTransaction();
-		$this->assertFalse($tx->getSerial());
 		$tx->rollBack();
 	}
 
@@ -236,100 +217,6 @@ class TDbTransactionTest extends PHPUnit\Framework\TestCase
 		$tx = $this->_connection->beginTransaction();
 		$this->_connection->Active = false;
 		$this->expectException(TDbException::class);
-		$tx->rollBack();
-	}
-
-	// -----------------------------------------------------------------------
-	// dyIsTransactionComplete — dynamic event (behavior interception)
-	// -----------------------------------------------------------------------
-
-	/**
-	 * A behavior that returns false from dyIsTransactionComplete prevents
-	 * setActive(false) from being called, so the TDbTransaction stays "active"
-	 * at the PHP level even though the underlying PDO transaction was committed.
-	 */
-	public function testDyBehaviorCanKeepTransactionActiveAfterCommit(): void
-	{
-		$tx = $this->_connection->beginTransaction();
-		$tx->attachBehavior('keepAlive', $this->makeDyBehavior(false));
-
-		// PDO commits, but the behavior blocks deactivation by returning false.
-		$tx->commit();
-
-		$this->assertTrue($tx->getActive());
-	}
-
-	/**
-	 * A behavior that returns true from dyIsTransactionComplete forces the
-	 * transaction to be marked complete — the same outcome as the default
-	 * (no-behavior) path.
-	 */
-	public function testDyBehaviorReturningTrueDeactivatesTransaction(): void
-	{
-		$tx = $this->_connection->beginTransaction();
-		$tx->attachBehavior('forceComplete', $this->makeDyBehavior(true));
-
-		$tx->commit(); // behavior returns true → setActive(false) is called
-
-		$this->assertFalse($tx->getActive());
-	}
-
-	/**
-	 * With no behaviors attached, dyIsTransactionComplete passes through the
-	 * default value (true), so commit() always deactivates the transaction.
-	 */
-	public function testDyIsTransactionCompleteDefaultPassesThroughTrue(): void
-	{
-		$tx = $this->_connection->beginTransaction();
-		$tx->commit();
-		// Default: no behaviors → isTransactionComplete returns true → inactive
-		$this->assertFalse($tx->getActive());
-	}
-
-	// -----------------------------------------------------------------------
-	// setActive() bug regression — $active vs $value
-	// -----------------------------------------------------------------------
-
-	/**
-	 * setActive(true) must NOT clear the serial flag.
-	 *
-	 * The original setActive() used the undefined variable `$active` (evaluating
-	 * to null, so `!null === true`), which caused setSerial(false) to run even
-	 * when activating the transaction. The fix changed the guard to `!$value`.
-	 */
-	public function testSetActiveTrueDoesNotClearSerialFlag(): void
-	{
-		$tx  = $this->_connection->beginTransaction();
-		$ref = new \ReflectionClass($tx);
-
-		$setSerial = $ref->getMethod('setSerial');
-		$setSerial->setAccessible(true);
-		$setActive = $ref->getMethod('setActive');
-		$setActive->setAccessible(true);
-
-		// Manually enable serial mode.
-		$setSerial->invoke($tx, true);
-		$this->assertTrue($tx->getSerial(), 'Precondition: serial must be true.');
-
-		// setActive(true) must leave the serial flag untouched.
-		$setActive->invoke($tx, true);
-		$this->assertTrue(
-			$tx->getSerial(),
-			'setActive(true) must NOT reset the serial flag to false (was bug: used $active instead of $value).'
-		);
-
-		// setActive(false) MUST clear the serial flag.
-		$setActive->invoke($tx, false);
-		$this->assertFalse(
-			$tx->getSerial(),
-			'setActive(false) must reset the serial flag to false.'
-		);
-
-		// The underlying PDO transaction is still open (setActive via reflection did
-		// not call PDO::rollBack).  Restore active=true so we can roll back cleanly
-		// via the normal TDbTransaction API without calling beginTransaction() again
-		// (which would throw "already active" since PDO is still in a transaction).
-		$setActive->invoke($tx, true);
 		$tx->rollBack();
 	}
 
@@ -461,5 +348,188 @@ class TDbTransactionTest extends PHPUnit\Framework\TestCase
 
 		$tx = new TDbTransaction($this->createMockConnectionWithPdo($pdo));
 		$tx->commit();
+	}
+
+	// -----------------------------------------------------------------------
+	// beginTransaction() — reactivates a committed / rolled-back transaction
+	// -----------------------------------------------------------------------
+
+	public function testBeginTransactionOnCommittedTransactionReactivatesIt(): void
+	{
+		$tx = $this->_connection->beginTransaction();
+		$tx->commit();
+		$this->assertFalse($tx->getActive());
+
+		$tx->beginTransaction();
+		$this->assertTrue($tx->getActive());
+		$tx->rollBack();
+	}
+
+	public function testBeginTransactionOnRolledBackTransactionReactivatesIt(): void
+	{
+		$tx = $this->_connection->beginTransaction();
+		$tx->rollBack();
+		$this->assertFalse($tx->getActive());
+
+		$tx->beginTransaction();
+		$this->assertTrue($tx->getActive());
+		$tx->rollBack();
+	}
+
+	public function testBeginTransactionReturnsStatic(): void
+	{
+		$tx = $this->_connection->beginTransaction();
+		$tx->commit();
+		$result = $tx->beginTransaction();
+		$this->assertSame($tx, $result);
+		$tx->rollBack();
+	}
+
+	public function testBeginTransactionOnActiveTransactionThrows(): void
+	{
+		$tx = $this->_connection->beginTransaction();
+		$this->expectException(TDbException::class);
+		try {
+			$tx->beginTransaction();
+		} finally {
+			$tx->rollBack();
+		}
+	}
+
+	public function testBeginTransactionThrowsWhenConnectionInactive(): void
+	{
+		$tx = $this->_connection->beginTransaction();
+		$tx->commit();
+		$this->_connection->Active = false;
+		$this->expectException(TDbException::class);
+		$tx->beginTransaction();
+	}
+
+	public function testBeginTransactionThrowsWhenSupersededByNewTransaction(): void
+	{
+		// After $tx1 commits, calling $conn->beginTransaction() creates $tx2 and
+		// stores it as the connection's last transaction.  $tx1 is now superseded:
+		// $tx1->beginTransaction() must throw because the connection no longer
+		// tracks $tx1 — restarting it would silently bypass $tx2's lifecycle.
+		$tx1 = $this->_connection->beginTransaction();
+		$tx1->commit();
+
+		$tx2 = $this->_connection->beginTransaction(); // supersedes $tx1
+
+		try {
+			$this->expectException(TDbException::class);
+			$tx1->beginTransaction();
+		} finally {
+			// Clean up: roll back the still-active superseding transaction so that
+			// tearDown() can close the connection without a dangling transaction.
+			if ($tx2->getActive()) {
+				$tx2->rollBack();
+			}
+		}
+	}
+
+	public function testLastTransactionReflectsNewestObject(): void
+	{
+		// getLastTransaction() must always return the most recently created
+		// TDbTransaction, not the one that was superseded.
+		$tx1 = $this->_connection->beginTransaction();
+		$this->assertSame($tx1, $this->_connection->getLastTransaction());
+		$tx1->commit();
+
+		$tx2 = $this->_connection->beginTransaction();
+		$this->assertSame($tx2, $this->_connection->getLastTransaction());
+		$tx2->rollBack();
+	}
+
+	public function testBeginTransactionRestoresConnectionCurrentTransaction(): void
+	{
+		// After beginTransaction(), getCurrentTransaction() must return $tx.
+		$tx = $this->_connection->beginTransaction();
+		$tx->commit();
+		$this->assertNull($this->_connection->getCurrentTransaction());
+
+		$tx->beginTransaction();
+		$this->assertSame($tx, $this->_connection->getCurrentTransaction());
+		$tx->rollBack();
+	}
+
+	public function testBeginTransactionCommitCycleCanRepeat(): void
+	{
+		// Two full begin/commit cycles using the same transaction object.
+		$tx = $this->_connection->beginTransaction();
+		$this->_connection->createCommand('INSERT INTO foo(id,name) VALUES (1,\'a\')')->execute();
+		$tx->commit();
+
+		$tx->beginTransaction();
+		$this->_connection->createCommand('INSERT INTO foo(id,name) VALUES (2,\'b\')')->execute();
+		$tx->commit();
+
+		$count = (int) $this->_connection->createCommand('SELECT COUNT(*) FROM foo')->queryScalar();
+		$this->assertSame(2, $count);
+	}
+
+	public function testBeginTransactionPreFlushIssuedForFirebird(): void
+	{
+		// For Firebird, TDbTransaction::beginTransaction() must issue PDO::commit()
+		// (pre-begin flush) before PDO::beginTransaction(), to clear the implicit
+		// transaction pdo_firebird keeps alive in autocommit mode.
+		$pdo = $this->createMockPdo('firebird');
+		$calls = [];
+		$pdo->method('commit')->willReturnCallback(function () use (&$calls) {
+			$calls[] = 'commit';
+			return true;
+		});
+		$pdo->method('rollBack')->willReturnCallback(function () use (&$calls) {
+			$calls[] = 'rollBack';
+			return true;
+		});
+		$pdo->method('beginTransaction')->willReturnCallback(function () use (&$calls) {
+			$calls[] = 'beginTransaction';
+			return true;
+		});
+
+		$conn = $this->createMockConnectionWithPdo($pdo);
+		$tx = new TDbTransaction($conn);
+		// Tell the mock that $tx is still the connection's last transaction so the
+		// supersession guard in TDbTransaction::beginTransaction() does not fire.
+		$conn->method('getLastTransaction')->willReturn($tx);
+		// First commit deactivates the transaction (also issues the Firebird post-flush commit).
+		$tx->commit();
+		$calls = []; // reset — focus only on beginTransaction()
+
+		$tx->beginTransaction();
+
+		// Expected: commit (pre-begin flush) followed by beginTransaction.
+		$this->assertSame(['commit', 'beginTransaction'], $calls);
+		$this->assertTrue($tx->getActive());
+	}
+
+	public function testBeginTransactionNoPreFlushForNonFirebird(): void
+	{
+		// Non-Firebird drivers must not receive a PDO::commit() before beginTransaction().
+		$pdo = $this->createMockPdo('mysql');
+		$calls = [];
+		$pdo->method('commit')->willReturnCallback(function () use (&$calls) {
+			$calls[] = 'commit';
+			return true;
+		});
+		$pdo->method('beginTransaction')->willReturnCallback(function () use (&$calls) {
+			$calls[] = 'beginTransaction';
+			return true;
+		});
+
+		$conn = $this->createMockConnectionWithPdo($pdo);
+		$tx = new TDbTransaction($conn);
+		// Tell the mock that $tx is still the connection's last transaction so the
+		// supersession guard in TDbTransaction::beginTransaction() does not fire.
+		$conn->method('getLastTransaction')->willReturn($tx);
+		$tx->commit(); // deactivate
+		$calls = [];
+
+		$tx->beginTransaction();
+
+		// Only beginTransaction should be called; no pre-flush commit.
+		$this->assertSame(['beginTransaction'], $calls);
+		$this->assertTrue($tx->getActive());
 	}
 }

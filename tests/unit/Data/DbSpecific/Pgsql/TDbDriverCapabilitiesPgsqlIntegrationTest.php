@@ -16,7 +16,6 @@ use Prado\TApplication;
  * Key PostgreSQL characteristics:
  *  - supportsCharset = true (via SET client_encoding TO, no DSN param)
  *  - hasAutoCommitAttribute = false  (pdo_pgsql does not expose PDO::ATTR_AUTOCOMMIT)
- *  - usesSerialTransaction = false
  *  - requiresPreBeginTransactionFlush = false
  *  - requiresPostTransactionFlush = false
  *  - supportsRuntimeCharsetSet = true
@@ -102,10 +101,6 @@ class TDbDriverCapabilitiesPgsqlIntegrationTest extends PHPUnit\Framework\TestCa
 		$this->assertFalse(TDbDriverCapabilities::hasAutoCommitAttribute('pgsql'));
 	}
 
-	public function testPgsqlDoesNotUseSerialTransaction(): void
-	{
-		$this->assertFalse(TDbDriverCapabilities::usesSerialTransaction('pgsql'));
-	}
 
 	public function testPgsqlRequiresNoPreBeginTransactionFlush(): void
 	{
@@ -367,6 +362,142 @@ class TDbDriverCapabilitiesPgsqlIntegrationTest extends PHPUnit\Framework\TestCa
 		$count = (int) $this->queryScalar($conn, 'SELECT COUNT(*) FROM caps_pg_tx2');
 		$this->assertSame(0, $count);
 		$conn->createCommand('DROP TABLE caps_pg_tx2')->execute();
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
+	// Live connection — hasAutoCommitAttribute live verification
+	//
+	// pdo_pgsql does not expose PDO::ATTR_AUTOCOMMIT (reading it throws a
+	// PDOException). TDbConnection::HasAutoCommit returns false; AutoCommit
+	// returns false gracefully without attempting to read the absent attribute.
+	// -----------------------------------------------------------------------
+
+	public function testPgsqlHasNoAutoCommitAttributeViaConnection(): void
+	{
+		$conn = $this->openPgsql();
+		$this->assertFalse(
+			$conn->HasAutoCommit,
+			'PostgreSQL must report HasAutoCommit = false via TDbConnection.'
+		);
+		$conn->Active = false;
+	}
+
+	public function testPgsqlAutoCommitReturnsFalseWhenAttributeAbsent(): void
+	{
+		// TDbConnection::getAutoCommit() returns false when hasAutoCommitAttribute
+		// is false, without attempting to read PDO::ATTR_AUTOCOMMIT from pdo_pgsql.
+		$conn = $this->openPgsql();
+		$this->assertFalse(
+			$conn->AutoCommit,
+			'PostgreSQL AutoCommit must return false when the attribute is not supported.'
+		);
+		$conn->Active = false;
+	}
+
+	public function testPgsqlRawAutoCommitAttributeThrows(): void
+	{
+		// Directly reading PDO::ATTR_AUTOCOMMIT on a pgsql connection throws a
+		// PDOException, confirming that TDbDriverCapabilities correctly marks
+		// pgsql as hasAutoCommitAttribute = false so TDbConnection never reads it.
+		$conn = $this->openPgsql();
+		$this->expectException(\PDOException::class);
+		$conn->getPdoInstance()->getAttribute(\PDO::ATTR_AUTOCOMMIT);
+	}
+
+	// -----------------------------------------------------------------------
+	// Live connection — TDbTransaction::beginTransaction() (reuse & supersession)
+	// -----------------------------------------------------------------------
+
+	public function testPgsqlTxBeginTransactionIsActiveAfterReuseViaCommit(): void
+	{
+		// After commit(), calling beginTransaction() on the same object reactivates it.
+		$conn = $this->openPgsql();
+		$tx = $conn->beginTransaction();
+		$tx->commit();
+		$this->assertFalse($tx->getActive(), 'Transaction must be inactive after commit.');
+
+		$returned = $tx->beginTransaction();
+		$this->assertSame($tx, $returned, 'beginTransaction() must return $this.');
+		$this->assertTrue($tx->getActive(), 'Transaction must be active after reuse.');
+		$tx->rollBack();
+		$conn->Active = false;
+	}
+
+	public function testPgsqlTxBeginTransactionIsActiveAfterReuseViaRollback(): void
+	{
+		// After rollback(), calling beginTransaction() on the same object reactivates it.
+		$conn = $this->openPgsql();
+		$tx = $conn->beginTransaction();
+		$tx->rollBack();
+		$this->assertFalse($tx->getActive(), 'Transaction must be inactive after rollback.');
+
+		$returned = $tx->beginTransaction();
+		$this->assertSame($tx, $returned, 'beginTransaction() must return $this.');
+		$this->assertTrue($tx->getActive(), 'Transaction must be active after reuse.');
+		$tx->rollBack();
+		$conn->Active = false;
+	}
+
+	public function testPgsqlTxBeginTransactionReuseIsolatesWorkUnits(): void
+	{
+		// Two sequential work units on the same object: first commits (row persists),
+		// second rolls back (row discarded).
+		$conn = $this->openPgsql();
+		$conn->createCommand(
+			'CREATE TABLE IF NOT EXISTS caps_pgsql_tx_reuse (id INT PRIMARY KEY)'
+		)->execute();
+		$conn->createCommand('DELETE FROM caps_pgsql_tx_reuse')->execute();
+
+		$tx = $conn->beginTransaction();
+		$conn->createCommand('INSERT INTO caps_pgsql_tx_reuse VALUES (1)')->execute();
+		$tx->commit();
+
+		$tx->beginTransaction();
+		$conn->createCommand('INSERT INTO caps_pgsql_tx_reuse VALUES (2)')->execute();
+		$tx->rollBack();
+
+		$count = (int) $conn->createCommand(
+			'SELECT COUNT(*) FROM caps_pgsql_tx_reuse'
+		)->queryScalar();
+		$this->assertSame(1, $count, 'Only the committed row must persist after reuse rollback.');
+		$conn->createCommand('DROP TABLE caps_pgsql_tx_reuse')->execute();
+		$conn->Active = false;
+	}
+
+	public function testPgsqlTxBeginTransactionThrowsWhenSuperseded(): void
+	{
+		// After $conn->beginTransaction() supersedes $tx1, calling
+		// $tx1->beginTransaction() must throw TDbException.
+		$conn = $this->openPgsql();
+		$tx1 = $conn->beginTransaction();
+		$tx1->commit();
+		$tx2 = $conn->beginTransaction(); // supersedes $tx1
+
+		try {
+			$this->expectException(\Prado\Exceptions\TDbException::class);
+			$tx1->beginTransaction();
+		} finally {
+			if ($tx2->getActive()) {
+				$tx2->rollBack();
+			}
+			$conn->Active = false;
+		}
+	}
+
+	public function testPgsqlGetLastTransactionReflectsNewestObject(): void
+	{
+		// After $conn->beginTransaction() creates $tx2, getLastTransaction()
+		// must return $tx2, not the superseded $tx1.
+		$conn = $this->openPgsql();
+		$tx1 = $conn->beginTransaction();
+		$this->assertSame($tx1, $conn->getLastTransaction());
+		$tx1->commit();
+
+		$tx2 = $conn->beginTransaction();
+		$this->assertSame($tx2, $conn->getLastTransaction());
+		$this->assertNotSame($tx1, $conn->getLastTransaction());
+		$tx2->rollBack();
 		$conn->Active = false;
 	}
 }

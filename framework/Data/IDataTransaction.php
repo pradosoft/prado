@@ -27,14 +27,14 @@ use Prado\Data\Common\IDataMetaData;
 interface IDataTransaction
 {
 	/**
-	 * @return bool whether the transaction is currently active.
-	 */
-	public function getActive();
-
-	/**
 	 * @return IDataConnection the connection associated with this transaction.
 	 */
 	public function getConnection();
+
+	/**
+	 * @return bool whether the transaction is currently active.
+	 */
+	public function getActive();
 
 	/**
 	 * Creates a command for execution within this transaction's connection.
@@ -44,7 +44,6 @@ interface IDataTransaction
 	 *
 	 * @param mixed $query the query specification (SQL string or equivalent).
 	 * @return IDataCommand the new command object.
-	 * @since 4.3.3
 	 */
 	public function createCommand($query);
 
@@ -55,23 +54,43 @@ interface IDataTransaction
 	 * `$transaction->getConnection()->getDbMetaData()`.
 	 *
 	 * @return IDataMetaData the metadata helper.
-	 * @since 4.3.3
 	 */
 	public function getDbMetaData();
 
 	/**
+	 * Starts a new transaction on this transaction's connection, reactivating
+	 * this transaction object for a new work unit.
+	 *
+	 * This is the reuse-pattern counterpart to
+	 * {@see IDataConnection::beginTransaction()}: it reactivates the existing
+	 * object rather than allocating a new one, which avoids unnecessary
+	 * object allocation for sequential work units.
+	 *
+	 * Implementations must guard against supersession: if
+	 * {@see IDataConnection::beginTransaction()} was called after this
+	 * transaction completed, this object has been superseded and restarting
+	 * it must throw an exception rather than silently bypassing the newer
+	 * transaction's lifecycle.
+	 *
+	 * @return static
+	 */
+	public function beginTransaction(): static;
+
+	/**
 	 * Commits the transaction.
 	 *
-	 * For serial transactions (e.g. Firebird), commit immediately restarts a new
-	 * explicit transaction so the object remains active and ready for re-use.
+	 * The transaction becomes inactive after commit completes. To start another
+	 * work unit, call {@see beginTransaction()} on this object (reuse pattern)
+	 * or call {@see IDataConnection::beginTransaction()} for a fresh object.
 	 */
 	public function commit();
 
 	/**
 	 * Rolls back (aborts) the transaction.
 	 *
-	 * For serial transactions (e.g. Firebird), rollback immediately restarts a
-	 * new explicit transaction so the object remains active and ready for re-use.
+	 * The transaction becomes inactive after rollback completes. To start another
+	 * work unit, call {@see beginTransaction()} on this object (reuse pattern)
+	 * or call {@see IDataConnection::beginTransaction()} for a fresh object.
 	 */
 	public function rollback();
 }

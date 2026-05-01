@@ -18,7 +18,6 @@ use Prado\TApplication;
  * Key MySQL characteristics:
  *  - supportsCharset = true (SET NAMES + DSN charset= param)
  *  - hasAutoCommitAttribute = true
- *  - usesSerialTransaction = false
  *  - requiresPreBeginTransactionFlush = false
  *  - requiresPostTransactionFlush = false
  *  - supportsRuntimeCharsetSet = true (SET NAMES command)
@@ -100,10 +99,6 @@ class TDbDriverCapabilitiesMysqlIntegrationTest extends PHPUnit\Framework\TestCa
 		$this->assertTrue(TDbDriverCapabilities::hasAutoCommitAttribute('mysql'));
 	}
 
-	public function testMysqlDoesNotUseSerialTransaction(): void
-	{
-		$this->assertFalse(TDbDriverCapabilities::usesSerialTransaction('mysql'));
-	}
 
 	public function testMysqlRequiresNoPreBeginTransactionFlush(): void
 	{
@@ -357,14 +352,148 @@ class TDbDriverCapabilitiesMysqlIntegrationTest extends PHPUnit\Framework\TestCa
 
 	// -----------------------------------------------------------------------
 	// Live connection — hasAutoCommitAttribute live verification
+	//
+	// MySQL exposes PDO::ATTR_AUTOCOMMIT. TDbConnection::HasAutoCommit is true;
+	// TDbConnection::AutoCommit reads and writes the live session flag.
 	// -----------------------------------------------------------------------
 
 	public function testMysqlAutoCommitAttributeIsReadable(): void
 	{
 		$conn = $this->openMysql();
-		// Reading PDO::ATTR_AUTOCOMMIT should not throw for MySQL.
 		$value = $conn->getPdoInstance()->getAttribute(\PDO::ATTR_AUTOCOMMIT);
 		$this->assertNotNull($value);
+		$conn->Active = false;
+	}
+
+	public function testMysqlHasAutoCommitAttributeViaConnection(): void
+	{
+		$conn = $this->openMysql();
+		$this->assertTrue(
+			$conn->HasAutoCommit,
+			'MySQL must report HasAutoCommit = true via TDbConnection.'
+		);
+		$conn->Active = false;
+	}
+
+	public function testMysqlAutoCommitIsTrueByDefault(): void
+	{
+		$conn = $this->openMysql();
+		$this->assertTrue(
+			$conn->AutoCommit,
+			'MySQL AutoCommit must be true when no explicit transaction is active.'
+		);
+		$conn->Active = false;
+	}
+
+	public function testMysqlAutoCommitCanBeSetToFalseAndBack(): void
+	{
+		$conn = $this->openMysql();
+		$conn->AutoCommit = false;
+		$this->assertFalse(
+			$conn->AutoCommit,
+			'MySQL AutoCommit must be false after setAutoCommit(false).'
+		);
+		$conn->AutoCommit = true;
+		$this->assertTrue(
+			$conn->AutoCommit,
+			'MySQL AutoCommit must return to true after setAutoCommit(true).'
+		);
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
+	// Live connection — TDbTransaction::beginTransaction() (reuse & supersession)
+	// -----------------------------------------------------------------------
+
+	public function testMysqlTxBeginTransactionIsActiveAfterReuseViaCommit(): void
+	{
+		// After commit(), calling beginTransaction() on the same object reactivates it.
+		$conn = $this->openMysql();
+		$tx = $conn->beginTransaction();
+		$tx->commit();
+		$this->assertFalse($tx->getActive(), 'Transaction must be inactive after commit.');
+
+		$returned = $tx->beginTransaction();
+		$this->assertSame($tx, $returned, 'beginTransaction() must return $this.');
+		$this->assertTrue($tx->getActive(), 'Transaction must be active after reuse.');
+		$tx->rollBack();
+		$conn->Active = false;
+	}
+
+	public function testMysqlTxBeginTransactionIsActiveAfterReuseViaRollback(): void
+	{
+		// After rollback(), calling beginTransaction() on the same object reactivates it.
+		$conn = $this->openMysql();
+		$tx = $conn->beginTransaction();
+		$tx->rollBack();
+		$this->assertFalse($tx->getActive(), 'Transaction must be inactive after rollback.');
+
+		$returned = $tx->beginTransaction();
+		$this->assertSame($tx, $returned, 'beginTransaction() must return $this.');
+		$this->assertTrue($tx->getActive(), 'Transaction must be active after reuse.');
+		$tx->rollBack();
+		$conn->Active = false;
+	}
+
+	public function testMysqlTxBeginTransactionReuseIsolatesWorkUnits(): void
+	{
+		// Two sequential work units on the same object: first commits (row persists),
+		// second rolls back (row discarded).
+		$conn = $this->openMysql();
+		$conn->createCommand(
+			'CREATE TABLE IF NOT EXISTS caps_mysql_tx_reuse (id INT PRIMARY KEY)'
+		)->execute();
+		$conn->createCommand('DELETE FROM caps_mysql_tx_reuse')->execute();
+
+		$tx = $conn->beginTransaction();
+		$conn->createCommand('INSERT INTO caps_mysql_tx_reuse VALUES (1)')->execute();
+		$tx->commit();
+
+		$tx->beginTransaction();
+		$conn->createCommand('INSERT INTO caps_mysql_tx_reuse VALUES (2)')->execute();
+		$tx->rollBack();
+
+		$count = (int) $conn->createCommand(
+			'SELECT COUNT(*) FROM caps_mysql_tx_reuse'
+		)->queryScalar();
+		$this->assertSame(1, $count, 'Only the committed row must persist after reuse rollback.');
+		$conn->createCommand('DROP TABLE caps_mysql_tx_reuse')->execute();
+		$conn->Active = false;
+	}
+
+	public function testMysqlTxBeginTransactionThrowsWhenSuperseded(): void
+	{
+		// After $conn->beginTransaction() supersedes $tx1, calling
+		// $tx1->beginTransaction() must throw TDbException.
+		$conn = $this->openMysql();
+		$tx1 = $conn->beginTransaction();
+		$tx1->commit();
+		$tx2 = $conn->beginTransaction(); // supersedes $tx1
+
+		try {
+			$this->expectException(\Prado\Exceptions\TDbException::class);
+			$tx1->beginTransaction();
+		} finally {
+			if ($tx2->getActive()) {
+				$tx2->rollBack();
+			}
+			$conn->Active = false;
+		}
+	}
+
+	public function testMysqlGetLastTransactionReflectsNewestObject(): void
+	{
+		// After $conn->beginTransaction() creates $tx2, getLastTransaction()
+		// must return $tx2, not the superseded $tx1.
+		$conn = $this->openMysql();
+		$tx1 = $conn->beginTransaction();
+		$this->assertSame($tx1, $conn->getLastTransaction());
+		$tx1->commit();
+
+		$tx2 = $conn->beginTransaction();
+		$this->assertSame($tx2, $conn->getLastTransaction());
+		$this->assertNotSame($tx1, $conn->getLastTransaction());
+		$tx2->rollBack();
 		$conn->Active = false;
 	}
 }

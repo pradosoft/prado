@@ -219,133 +219,6 @@ class TDbConnectionCharsetFirebirdIntegrationTest extends PHPUnit\Framework\Test
 	}
 
 	// -----------------------------------------------------------------------
-	// Live connection — usesSerialTransaction behavioral verification
-	//
-	// pdo_firebird always keeps an implicit transaction alive.  TDbConnection
-	// responds by creating a serial TDbTransaction immediately in open(), so
-	// getCurrentTransaction() returns non-null immediately after connect.
-	// TDbTransaction::isTransactionComplete() restarts the transaction after
-	// every commit/rollback instead of deactivating it, so the transaction
-	// remains active for the lifetime of the connection.
-	// -----------------------------------------------------------------------
-
-	public function testFirebirdConnectionHasSerialTransactionAtConnectTime(): void
-	{
-		// open() calls createTransaction() for Firebird (usesSerialTransaction=true),
-		// so getCurrentTransaction() must return a non-null active transaction object
-		// even before the application has called beginTransaction().
-		$conn = $this->openFirebird('UTF-8');
-
-		$serialTx = $conn->getCurrentTransaction();
-		$this->assertNotNull(
-			$serialTx,
-			'Firebird connection must have a serial transaction immediately at connect time.'
-		);
-		$this->assertTrue(
-			$serialTx->getActive(),
-			'The connect-time serial transaction must be active.'
-		);
-		// Note: getSerial() depends on PDO::ATTR_AUTOCOMMIT at connect time; we
-		// assert the *observable* outcome (transaction exists) rather than the
-		// internal flag, which is an implementation detail of pdo_firebird.
-
-		$conn->Active = false;
-	}
-
-	public function testFirebirdBeginTransactionReturnsActiveTransaction(): void
-	{
-		// beginTransaction() on a Firebird connection must succeed without throwing
-		// and return an active TDbTransaction.  For serial connections the call
-		// flushes the implicit driver transaction (pre-begin flush) and starts an
-		// explicit PDO transaction before returning.
-		$conn = $this->openFirebird('UTF-8');
-
-		$tx = $conn->beginTransaction();
-		$this->assertTrue(
-			$tx->getActive(),
-			'beginTransaction must return an active TDbTransaction for Firebird.'
-		);
-
-		$tx->commit();
-		$conn->Active = false;
-	}
-
-	public function testFirebirdSerialTransactionRemainsActiveAfterCommit(): void
-	{
-		// After commit(), isTransactionComplete() restarts the transaction instead
-		// of deactivating it, so getCurrentTransaction() must still return non-null.
-		$conn = $this->openFirebird('UTF-8');
-
-		$tx = $conn->beginTransaction();
-		$tx->commit();
-
-		$this->assertNotNull(
-			$conn->getCurrentTransaction(),
-			'Serial transaction must remain the current transaction after commit.'
-		);
-		$this->assertTrue(
-			$conn->getCurrentTransaction()->getActive(),
-			'Serial transaction must still be active after commit.'
-		);
-
-		$conn->Active = false;
-	}
-
-	public function testFirebirdSerialTransactionRemainsActiveAfterRollback(): void
-	{
-		$conn = $this->openFirebird('UTF-8');
-
-		$tx = $conn->beginTransaction();
-		$tx->rollBack();
-
-		$this->assertNotNull(
-			$conn->getCurrentTransaction(),
-			'Serial transaction must remain current after rollback.'
-		);
-		$this->assertTrue(
-			$conn->getCurrentTransaction()->getActive(),
-			'Serial transaction must still be active after rollback.'
-		);
-
-		$conn->Active = false;
-	}
-
-	public function testFirebirdSerialTransactionSupportsMultipleCommitRollbackCycles(): void
-	{
-		// A Firebird serial transaction is restarted automatically after each
-		// commit/rollback; the same TDbTransaction remains active throughout.
-		// Call beginTransaction() once to claim the cycle, then commit/rollback
-		// multiple times on the same reference without calling beginTransaction()
-		// again (the restart happens internally via isTransactionComplete →
-		// restartTransaction → beginTransaction).
-		$conn = $this->openFirebird('UTF-8');
-
-		$tx = $conn->beginTransaction();
-
-		for ($cycle = 1; $cycle <= 3; $cycle++) {
-			$this->assertTrue(
-				$tx->getActive(),
-				"Cycle $cycle: serial transaction must be active before the operation."
-			);
-			if ($cycle % 2 === 0) {
-				$tx->rollBack();
-			} else {
-				$tx->commit();
-			}
-			$this->assertNotNull(
-				$conn->getCurrentTransaction(),
-				"Cycle $cycle: getCurrentTransaction must return non-null after operation (serial restart)."
-			);
-			$this->assertTrue(
-				$conn->getCurrentTransaction()->getActive(),
-				"Cycle $cycle: the restarted serial transaction must still be active."
-			);
-		}
-
-		$conn->Active = false;
-	}
-
-	// -----------------------------------------------------------------------
 	// Live connection — requiresPreBeginTransactionFlush behavioral verification
 	//
 	// pdo_firebird starts an implicit transaction at connect time and after every
@@ -354,6 +227,22 @@ class TDbConnectionCharsetFirebirdIntegrationTest extends PHPUnit\Framework\Test
 	// TDbConnection::beginTransaction() calls PDO::commit() first (the "pre-begin
 	// flush") so that PDO::beginTransaction() always succeeds cleanly.
 	// -----------------------------------------------------------------------
+
+	public function testFirebirdBeginTransactionReturnsActiveTransaction(): void
+	{
+		// beginTransaction() on a Firebird connection must succeed without throwing
+		// and return an active TDbTransaction.  The pre-begin flush commits the
+		// always-running implicit transaction before PDO::beginTransaction() is called.
+		$conn = $this->openFirebird('UTF-8');
+		$tx   = $conn->beginTransaction();
+		$this->assertTrue(
+			$tx->getActive(),
+			'beginTransaction must return an active TDbTransaction for Firebird.'
+		);
+		$tx->commit();
+		$this->assertFalse($tx->getActive(), 'Transaction must be inactive after commit.');
+		$conn->Active = false;
+	}
 
 	public function testFirebirdBeginTransactionSucceedsOnFreshConnection(): void
 	{
@@ -372,23 +261,18 @@ class TDbConnectionCharsetFirebirdIntegrationTest extends PHPUnit\Framework\Test
 	{
 		// TDbConnection performs a pre-begin flush (PDO::commit()) before each
 		// PDO::beginTransaction() call to clear Firebird's always-running implicit
-		// transaction.  A serial transaction auto-restarts after commit/rollback via
-		// isTransactionComplete → restartTransaction → beginTransaction internally.
-		// Call beginTransaction() once to claim the cycle, then verify repeated
-		// commit/rollback operations on the same object never throw.
+		// transaction.  Multiple beginTransaction/commit cycles on the same connection
+		// must all succeed without throwing.
 		$conn = $this->openFirebird('UTF-8');
-		$tx   = $conn->beginTransaction();
 		for ($i = 0; $i < 4; $i++) {
-			$this->assertTrue(
-				$tx->getActive(),
-				"Cycle $i: transaction must be active before operation."
-			);
-			// Alternate commit and rollback to exercise both PDO paths.
+			$tx = $conn->beginTransaction();
+			$this->assertTrue($tx->getActive(), "Cycle $i: transaction must be active.");
 			if ($i % 2 === 0) {
 				$tx->commit();
 			} else {
 				$tx->rollBack();
 			}
+			$this->assertFalse($tx->getActive(), "Cycle $i: transaction must be inactive after operation.");
 		}
 		$conn->Active = false;
 	}
@@ -396,9 +280,12 @@ class TDbConnectionCharsetFirebirdIntegrationTest extends PHPUnit\Framework\Test
 	// -----------------------------------------------------------------------
 	// Live connection — hasAutoCommitAttribute behavioral verification
 	//
-	// Firebird has hasAutoCommitAttribute = true.  After PDO::beginTransaction(),
-	// PDO::ATTR_AUTOCOMMIT transitions to false; after commit/rollback + restart,
-	// the serial transaction restarts it, keeping autocommit false throughout.
+	// Firebird has hasAutoCommitAttribute = true.  However, pdo_firebird's
+	// PDO::ATTR_AUTOCOMMIT always returns 1 (true) — even inside an explicit
+	// PDO::beginTransaction() transaction.  This is a pdo_firebird driver
+	// quirk: the attribute reflects the session configuration, not whether a
+	// PDO-managed transaction is currently active.  TDbConnection reads the
+	// attribute via HasAutoCommit/AutoCommit properties.
 	// -----------------------------------------------------------------------
 
 	public function testFirebirdHasAutoCommitAttribute(): void
@@ -408,16 +295,26 @@ class TDbConnectionCharsetFirebirdIntegrationTest extends PHPUnit\Framework\Test
 		$conn->Active = false;
 	}
 
-	public function testFirebirdAutoCommitIsFalseInsideExplicitTransaction(): void
+	public function testFirebirdAutoCommitIsTrueByDefault(): void
 	{
-		// PDO::ATTR_AUTOCOMMIT returns false while an explicit transaction is active.
+		// pdo_firebird reports ATTR_AUTOCOMMIT = 1 always (even inside a
+		// PDO-managed explicit transaction).  AutoCommit must therefore be true.
 		$conn = $this->openFirebird('UTF-8');
-		$conn->beginTransaction();
-		$this->assertFalse(
+		$this->assertTrue(
 			$conn->AutoCommit,
-			'AutoCommit must be false while inside an explicit Firebird transaction.'
+			'Firebird AutoCommit must be true (pdo_firebird ATTR_AUTOCOMMIT is always 1).'
 		);
-		$conn->commit();
+		$conn->Active = false;
+	}
+
+	public function testFirebirdBeginTransactionSucceedsAndRollbackWorks(): void
+	{
+		// beginTransaction() and rollback() must both work without throwing.
+		$conn = $this->openFirebird('UTF-8');
+		$tx   = $conn->beginTransaction();
+		$this->assertTrue($tx->getActive(), 'Firebird beginTransaction must return an active transaction.');
+		$conn->rollback();
+		$this->assertFalse($tx->getActive(), 'Transaction must be inactive after rollback.');
 		$conn->Active = false;
 	}
 }

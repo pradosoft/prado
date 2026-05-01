@@ -187,28 +187,6 @@ class TDbConnectionCharsetOciIntegrationTest extends PHPUnit\Framework\TestCase
 		$conn->Active = false;
 	}
 
-	public function testOciAutoCommitOffCreatesSerialTransaction(): void
-	{
-		// When AutoCommit is disabled on an Oracle connection, createTransaction()
-		// must produce a serial TDbTransaction so that each commit/rollback
-		// automatically restarts a new transaction (maintaining the non-autocommit
-		// session contract).
-		$conn = $this->openOci();
-		$conn->AutoCommit = false;
-		$tx = $conn->beginTransaction();
-		$this->assertTrue(
-			$tx->getSerial(),
-			'With AutoCommit=false, Oracle beginTransaction must return a serial transaction.'
-		);
-		$conn->rollback();
-		// After rollback the serial restart fires; the transaction must remain active.
-		$this->assertTrue(
-			$tx->getActive(),
-			'After rollback with AutoCommit=false, the serial transaction must remain active.'
-		);
-		$conn->Active = false;
-	}
-
 	public function testOciCharsetInjectedIntoDsnWithCharsetParam(): void
 	{
 		// applyCharsetToDsn() appends ;charset=AL32UTF8 for oci.
