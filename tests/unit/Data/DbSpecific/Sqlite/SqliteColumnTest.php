@@ -90,7 +90,7 @@ class SqliteColumnTest extends PHPUnit\Framework\TestCase
 
 		$this->assertCount(10, $table->getColumns());
 		$this->assertEquals('table1', $table->getTableName());
-		$this->assertEquals("'table1'", $table->getTableFullName());
+		$this->assertEquals('"table1"', $table->getTableFullName());
 		$this->assertEquals(['id'], $table->getPrimaryKeys());
 
 		$columns = [];
@@ -254,7 +254,7 @@ class SqliteColumnTest extends PHPUnit\Framework\TestCase
 		$data = ['name' => 'test', 'field1_int' => 1, 'field3_real' => 1.5];
 		$insert = $builder->createInsertCommand($data);
 		$this->assertStringContainsString('INSERT INTO', $insert->Text);
-		$this->assertStringContainsString("'table1'", $insert->Text);
+		$this->assertStringContainsString('"table1"', $insert->Text);
 		$this->assertStringContainsString('"name"', $insert->Text);
 	}
 
@@ -276,7 +276,7 @@ class SqliteColumnTest extends PHPUnit\Framework\TestCase
 
 		$delete = $builder->createDeleteCommand('id=1');
 		$this->assertStringContainsString('DELETE FROM', $delete->Text);
-		$this->assertStringContainsString("'table1'", $delete->Text);
+		$this->assertStringContainsString('"table1"', $delete->Text);
 		$this->assertStringContainsString('WHERE id=1', $delete->Text);
 	}
 

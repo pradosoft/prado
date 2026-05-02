@@ -275,11 +275,6 @@ class TTableGatewaySqliteIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->insertRow('Bob',   7.3);
 		$criteria = new TSqlCriteria('1=1', null);
 		$criteria->OrdersBy = ['name' => 'asc'];
-		// Setting Select = null expands SELECT * to an explicit column list.
-		// This avoids a PDO+SQLite SQLITE_RANGE bug that occurs when
-		// SELECT * is combined with ORDER BY "quoted_column" against a
-		// single-quoted table name ('gw_test').
-		$criteria->Select = null;
 		$rows = self::$gw->findAll($criteria)->readAll();
 		$this->assertSame('Alice', $rows[0]['name']);
 		$this->assertSame('Bob',   $rows[1]['name']);

@@ -236,8 +236,10 @@ class TDbMetaDataSqliteIntegrationTest extends PHPUnit\Framework\TestCase
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$quoted = $meta->quoteTableName('foo');
-		// SQLite quoteTableName uses single-quotes.
-		$this->assertSame("'foo'", $quoted);
+		// SQLite quoteTableName uses double-quotes (SQL standard identifier quoting).
+		// Single-quotes are string literals and cause SQLITE_RANGE when ORDER BY
+		// references quoted column names against a single-quoted table source.
+		$this->assertSame('"foo"', $quoted);
 	}
 
 	public function testQuoteColumnName(): void

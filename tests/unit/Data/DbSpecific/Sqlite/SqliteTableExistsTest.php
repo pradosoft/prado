@@ -8,8 +8,8 @@ require_once(__DIR__ . '/../../../PradoUnit.php');
  * Uses an in-memory SQLite database so no external server is required.
  * Skipped automatically when the pdo_sqlite extension is unavailable.
  *
- * SQLite's TSqliteTableInfo::getTableFullName() wraps the name in single-quotes,
- * e.g. 'upsert_test', which is the quoting style used by all SQLite probe queries.
+ * SQLite's TSqliteTableInfo::getTableFullName() wraps the name in double-quotes
+ * (SQL standard identifier quoting), e.g. "upsert_test".
  */
 
 use Prado\Data\Common\TDbMetaData;
