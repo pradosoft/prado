@@ -387,7 +387,7 @@ class TOracleMetaData extends TDbMetaData
 	WHERE object_type = 'TABLE' AND owner=:schema
 	EOD;
 			$command = $this->getDbConnection()->createCommand($sql);
-			$command->bindParameter(':schema', $schema);
+			$command->bindValue(':schema', $schema);
 		}
 
 		$rows = $command->query();

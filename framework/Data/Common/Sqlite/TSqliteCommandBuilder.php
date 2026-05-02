@@ -23,6 +23,34 @@ use Prado\Data\TDbCommand;
 class TSqliteCommandBuilder extends TDbCommandBuilder
 {
 	/**
+	 * Creates a SELECT command for the table.
+	 *
+	 * Overrides the base implementation to always expand the wildcard selector
+	 * to an explicit column list.  PHP's pdo_sqlite has a known bug
+	 * (SQLITE_RANGE, error 25) where {@see SELECT *} combined with
+	 * {@see ORDER BY "quoted_column"} causes a column-index out-of-range
+	 * error.  Passing {@see null} instead of {@see '*'} to the parent triggers
+	 * {@see getSelectFieldList()} to return the explicit column name list,
+	 * avoiding the bug entirely.
+	 *
+	 * @param string $where query condition.
+	 * @param array $parameters condition parameters.
+	 * @param array $ordering ORDER BY clause.
+	 * @param int $limit maximum rows.
+	 * @param int $offset row offset.
+	 * @param string $select columns to select.
+	 * @return \Prado\Data\TDbCommand query command.
+	 * @since 4.3.3
+	 */
+	public function createFindCommand($where = '1=1', $parameters = [], $ordering = [], $limit = -1, $offset = -1, $select = '*')
+	{
+		if ($select === '*') {
+			$select = null;
+		}
+		return parent::createFindCommand($where, $parameters, $ordering, $limit, $offset, $select);
+	}
+
+	/**
 	 * Creates a SQLite INSERT OR IGNORE command.
 	 * Silently skips the insert when a unique/PK constraint is violated.
 	 * @param array $data name-value pairs of data to be inserted.
