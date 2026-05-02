@@ -23,31 +23,37 @@ use Prado\Data\TDbCommand;
 class TSqliteCommandBuilder extends TDbCommandBuilder
 {
 	/**
-	 * Creates a SELECT command for the table.
+	 * Applies ORDER BY to a SQL string, using unquoted column identifiers.
 	 *
-	 * Overrides the base implementation to always expand the wildcard selector
-	 * to an explicit column list.  PHP's pdo_sqlite has a known bug
-	 * (SQLITE_RANGE, error 25) where {@see SELECT *} combined with
-	 * {@see ORDER BY "quoted_column"} causes a column-index out-of-range
-	 * error.  Passing {@see null} instead of {@see '*'} to the parent triggers
-	 * {@see getSelectFieldList()} to return the explicit column name list,
-	 * avoiding the bug entirely.
+	 * PHP's pdo_sqlite has a known bug (SQLITE_RANGE, error 25): when
+	 * ORDER BY references a double-quoted column name (e.g. {@see "name"})
+	 * the driver's internal column-index calculation goes out of range and
+	 * the query fails.  Using bare, unquoted column names in ORDER BY
+	 * (e.g. {@see name ASC}) avoids the bug while remaining valid SQLite SQL.
 	 *
-	 * @param string $where query condition.
-	 * @param array $parameters condition parameters.
-	 * @param array $ordering ORDER BY clause.
-	 * @param int $limit maximum rows.
-	 * @param int $offset row offset.
-	 * @param string $select columns to select.
-	 * @return \Prado\Data\TDbCommand query command.
+	 * @param string $sql SQL string without existing ordering.
+	 * @param array $ordering pairs of column names as key and direction as value.
+	 * @return string modified SQL applied with ORDER BY.
 	 * @since 4.3.3
 	 */
-	public function createFindCommand($where = '1=1', $parameters = [], $ordering = [], $limit = -1, $offset = -1, $select = '*')
+	public function applyOrdering($sql, $ordering)
 	{
-		if ($select === '*') {
-			$select = null;
+		$orders = [];
+		foreach ($ordering as $name => $direction) {
+			$direction = strtolower($direction) === 'desc' ? 'DESC' : 'ASC';
+			if (false !== strpos($name, '(') && false !== strpos($name, ')')) {
+				$key = $name;
+			} else {
+				// Use the unquoted column id — quoted identifiers in ORDER BY
+				// trigger SQLITE_RANGE (error 25) in PHP's pdo_sqlite driver.
+				$key = $this->getTableInfo()->getColumn($name)->getColumnId();
+			}
+			$orders[] = $key . ' ' . $direction;
 		}
-		return parent::createFindCommand($where, $parameters, $ordering, $limit, $offset, $select);
+		if (count($orders) > 0) {
+			$sql .= ' ORDER BY ' . implode(', ', $orders);
+		}
+		return $sql;
 	}
 
 	/**

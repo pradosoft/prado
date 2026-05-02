@@ -201,9 +201,9 @@ class TDbCommandOracleIntegrationTest extends PHPUnit\Framework\TestCase
 
 	public function testBindParameterWithNamedPlaceholder(): void
 	{
-		// pdo_oci does not support positional (?) placeholders — using them can
-		// cause a PHP segfault.  Oracle natively uses named parameters, so this
-		// test exercises bindParameter() with a named placeholder instead.
+		// Oracle uses named placeholders (:name). TDbCommand::bindParameter()
+		// internally falls back to PDOStatement::bindValue() for pdo_oci because
+		// PDOStatement::bindParam() segfaults in some PHP 8.2 builds of pdo_oci.
 		$cmd = $this->_conn->createCommand('SELECT NAME FROM CMD_TEST WHERE ID = :id');
 		$id = 2;
 		$cmd->bindParameter(':id', $id);

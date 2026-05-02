@@ -136,6 +136,10 @@ class TDbCommand extends \Prado\TComponent implements IDataCommand
 	 * placeholders, this will be the 1-indexed position of the parameter.
 	 * Unlike {@see bindValue}, the variable is bound as a reference and will
 	 * only be evaluated at the time that {@see execute} or {@see query} is called.
+	 * Note: pdo_oci's {@see PDOStatement::bindParam()} is known to cause a PHP
+	 * process segfault in some PHP 8.2 builds.  When the active driver is
+	 * {@see oci}, this method silently falls back to {@see PDOStatement::bindValue()}
+	 * (binding by value rather than by reference) to avoid the crash.
 	 * @param mixed $value The value to bind to the parameter
 	 * @param null|int $dataType SQL data type of the parameter
 	 * @param null|int $length length of the data type
@@ -144,6 +148,16 @@ class TDbCommand extends \Prado\TComponent implements IDataCommand
 	public function bindParameter($name, &$value, $dataType = null, $length = null)
 	{
 		$this->prepare();
+		// pdo_oci's PDOStatement::bindParam segfaults in some PHP 8.2 builds.
+		// Fall back to bindValue for oci so callers get safe behaviour.
+		if ($this->_connection->getDriverName() === 'oci') {
+			if ($dataType === null) {
+				$this->_statement->bindValue($name, $value);
+			} else {
+				$this->_statement->bindValue($name, $value, $dataType);
+			}
+			return;
+		}
 		if ($dataType === null) {
 			$this->_statement->bindParam($name, $value);
 		} elseif ($length === null) {
