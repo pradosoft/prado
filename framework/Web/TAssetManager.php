@@ -134,6 +134,8 @@ class TAssetManager extends \Prado\TModule
 
 	/** Default web accessible base path for storing private files  */
 	public const DEFAULT_BASEPATH = 'assets';
+	/** @var array<string> explicit files/directories to exclude. */
+	public const PATH_COPY_EXCEPTIONS = ['.svn', '.git', '.github', '.claude'];
 
 	/** @var string base web accessible path for storing private files */
 	private $_basePath;
@@ -684,10 +686,7 @@ class TAssetManager extends \Prado\TModule
 		}
 		if ($folder = @opendir($src)) {
 			while ($file = @readdir($folder)) {
-				if ($file === '.' || $file === '..') {
-					continue;
-				}
-				if ($file[0] === '.' && ($file === '.svn' || $file === '.git' || $file === '.github' || $file === '.claude' || strlen($file) > 1)) {
+				if ((strlen($file) > 0 && $file[0] === '.') || in_array($file, self::PATH_COPY_EXCEPTIONS)) {
 					continue;
 				}
 				$srcPath = $src . DIRECTORY_SEPARATOR . $file;
@@ -748,9 +747,6 @@ class TAssetManager extends \Prado\TModule
 	protected function matchFilePattern($path, $only, $except, $caseSensitive)
 	{
 		$filename = basename($path);
-		$checkCase = $caseSensitive ? 'fnmatch' : function ($pattern, $name) {
-			return fnmatch($pattern, $name, FNM_CASEFOLD);
-		};
 
 		if ($except !== null) {
 			$fnFlags = $caseSensitive ? 0 : FNM_CASEFOLD;
