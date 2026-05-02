@@ -226,8 +226,8 @@ class TDbMetaDataIbmIntegrationTest extends PHPUnit\Framework\TestCase
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$tables = $meta->findTableNames();
-		// DB2 returns uppercase table names.
-		$this->assertContains('META_TEST', $tables);
+		// TIbmMetaData::findTableNames() normalises names to lowercase.
+		$this->assertContains('meta_test', $tables);
 	}
 
 	public function testFindTableNamesReturnsArray(): void

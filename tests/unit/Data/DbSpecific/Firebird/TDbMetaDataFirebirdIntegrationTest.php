@@ -226,8 +226,8 @@ class TDbMetaDataFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$tables = $meta->findTableNames();
-		// Firebird returns uppercase table names.
-		$this->assertContains('META_TEST', $tables);
+		// TFirebirdMetaData::findTableNames() normalises names to lowercase.
+		$this->assertContains('meta_test', $tables);
 	}
 
 	public function testFindTableNamesReturnsArray(): void

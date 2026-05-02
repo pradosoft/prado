@@ -236,7 +236,7 @@ class TDbMetaDataSqliteIntegrationTest extends PHPUnit\Framework\TestCase
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$quoted = $meta->quoteTableName('foo');
-		// SQLite uses double-quotes.
+		// SQLite quoteTableName uses single-quotes.
 		$this->assertSame("'foo'", $quoted);
 	}
 
