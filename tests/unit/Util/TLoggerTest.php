@@ -338,7 +338,9 @@ class TLoggerTest extends PHPUnit\Framework\TestCase
 		
 		$logger->log('msg0', TLogger::INFO, \Prado\TApplication::class, 'page.div.ctl2');
 		$logger->log('token1', TLogger::PROFILE_BEGIN, \Prado\Web\THttpRequest::class, 'page.ctl1');
+		usleep(1000); // ensure a measurable gap before and after $middleTime on fast hardware (e.g. Apple Silicon)
 		$middleTime = microtime(true);
+		usleep(1000);
 		$logger->log('token2', TLogger::PROFILE_BEGIN);
 		$logger->log('token1', TLogger::PROFILE_END, \Prado\TApplication::class, 'page.ctl1');
 		$logger->log('msg1', TLogger::DEBUG, \Prado\TModule::class, 'page2.other.ctl3');
