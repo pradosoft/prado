@@ -256,21 +256,31 @@ class TProcessHelper
 			$pid = getmypid();
 		}
 		if (static::isSystemWindows()) {
-			$output = shell_exec("wmic process where ProcessId={$pid} get priority");
-			preg_match('/^\s*Priority\s*\r?\n\s*(\d+)/m', $output, $matches);
-			if (isset($matches[1])) {
-				$priorityValues = [ // Map Windows Priority Numbers to Linux style Numbers
-					TProcessWindowsPriority::Idle => static::WINDOWS_IDLE_PRIORITY,
-					TProcessWindowsPriority::BelowNormal => static::WINDOWS_BELOW_NORMAL_PRIORITY,
-					TProcessWindowsPriority::Normal => static::WINDOWS_NORMAL_PRIORITY,
-					TProcessWindowsPriority::AboveNormal => static::WINDOWS_ABOVE_NORMAL_PRIORITY,
-					TProcessWindowsPriority::HighPriority => static::WINDOWS_HIGH_PRIORITY,
-					TProcessWindowsPriority::Realtime => static::WINDOWS_REALTIME_PRIORITY,
-				];
-				return $priorityValues[$matches[1]] ?? null;
-			} else {
+			// wmic is deprecated and removed on modern Windows (Server 2025 / Win11+); use PowerShell.
+			$psOutput = shell_exec("powershell -NoProfile -Command \"try { (Get-Process -Id $pid).PriorityClass } catch { '' }\" 2>NUL");
+			// PowerShell returns the ProcessPriorityClass enum name, e.g. 'Normal', 'BelowNormal'.
+			$psName = strtolower(trim((string) $psOutput));
+			$psToNumeric = [
+				'idle' => TProcessWindowsPriority::Idle,
+				'belownormal' => TProcessWindowsPriority::BelowNormal,
+				'normal' => TProcessWindowsPriority::Normal,
+				'abovenormal' => TProcessWindowsPriority::AboveNormal,
+				'high' => TProcessWindowsPriority::HighPriority,
+				'realtime' => TProcessWindowsPriority::Realtime,
+			];
+			$numericPriority = $psToNumeric[$psName] ?? null;
+			if ($numericPriority === null) {
 				return null;
 			}
+			$priorityValues = [ // Map TProcessWindowsPriority numeric values to Prado/Linux-style values
+				TProcessWindowsPriority::Idle => static::WINDOWS_IDLE_PRIORITY,
+				TProcessWindowsPriority::BelowNormal => static::WINDOWS_BELOW_NORMAL_PRIORITY,
+				TProcessWindowsPriority::Normal => static::WINDOWS_NORMAL_PRIORITY,
+				TProcessWindowsPriority::AboveNormal => static::WINDOWS_ABOVE_NORMAL_PRIORITY,
+				TProcessWindowsPriority::HighPriority => static::WINDOWS_HIGH_PRIORITY,
+				TProcessWindowsPriority::Realtime => static::WINDOWS_REALTIME_PRIORITY,
+			];
+			return $priorityValues[$numericPriority] ?? null;
 		} else {
 			if (strlen($priority = trim(shell_exec('exec ps -o nice= -p ' . $pid)))) {
 				return (int) $priority;
@@ -291,28 +301,24 @@ class TProcessHelper
 			$pid = getmypid();
 		}
 		if (static::isSystemWindows()) {
-			$priorityValues = [ // The priority cap to windows text priority.
-				-15 => TProcessWindowsPriorityName::Realtime,
-				-10 => TProcessWindowsPriorityName::HighPriority,
-				-5 => TProcessWindowsPriorityName::AboveNormal,
-				4 => TProcessWindowsPriorityName::Normal,
-				9 => TProcessWindowsPriorityName::BelowNormal,
-				PHP_INT_MAX => TProcessWindowsPriorityName::Idle,
+			// wmic is deprecated and removed on modern Windows (Server 2025 / Win11+); use PowerShell.
+			// Map Prado priority thresholds to PowerShell ProcessPriorityClass enum names.
+			$psNames = [
+				-15 => 'RealTime',
+				-10 => 'High',
+				-5 => 'AboveNormal',
+				4 => 'Normal',
+				9 => 'BelowNormal',
+				PHP_INT_MAX => 'Idle',
 			];
-			foreach ($priorityValues as $keyPriority => $priorityName) {
+			foreach ($psNames as $keyPriority => $psName) {
 				if ($priority <= $keyPriority) {
 					break;
 				}
 			}
-			$command = "wmic process where ProcessId={$pid} CALL setpriority \"$priorityName\"";
-			$result = shell_exec($command);
-			if (strpos($result, 'successful') !== false) {
-				return true;
-			}
-			if (!preg_match('/ReturnValue\s*=\s*(\d+);/m', $result, $matches)) {
-				return false;
-			}
-			return $matches[1] === 0;
+			$exitCode = -1;
+			exec("powershell -NoProfile -Command \"try { (Get-Process -Id $pid).PriorityClass = [System.Diagnostics.ProcessPriorityClass]::$psName; exit 0 } catch { exit 1 }\" 2>NUL", $psOut, $exitCode);
+			return $exitCode === 0;
 		} else {
 			if (static::isSystemMacOS()) {
 				if (($pp = static::getProcessPriority($pid)) === null) {
