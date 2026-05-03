@@ -205,6 +205,9 @@ class TTarFileExtractorZipSlipTest extends TestCase
 
 	public function testExtractAllowedSymlinkWithinDestination(): void
 	{
+		if (DIRECTORY_SEPARATOR === '\\') {
+			$this->markTestSkipped('Symlink creation requires elevated privileges on Windows.');
+		}
 		$tarFile = $this->createTarWithSafeSymlink();
 
 		$extractor = new TTarFileExtractor($tarFile);

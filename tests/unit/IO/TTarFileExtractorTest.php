@@ -279,6 +279,9 @@ class TTarFileExtractorTest extends TestCase
 
 	public function testExtractSymlinkWithinDestination()
 	{
+		if (DIRECTORY_SEPARATOR === '\\') {
+			$this->markTestSkipped('Symlink creation requires elevated privileges on Windows.');
+		}
 		$tarFile = $this->testDir . '/safe_symlink.tar';
 		TarTestHelper::writeTar($tarFile, [
 			TarTestHelper::entry('target.txt', 'Target content'),
@@ -299,6 +302,9 @@ class TTarFileExtractorTest extends TestCase
 
 	public function testExtractSymlinkWithRelativePathWithinDestination()
 	{
+		if (DIRECTORY_SEPARATOR === '\\') {
+			$this->markTestSkipped('Symlink creation requires elevated privileges on Windows.');
+		}
 		$tarFile = $this->testDir . '/relative_symlink.tar';
 
 		mkdir($this->extractDir . '/subdir', 0o777, true);
@@ -531,7 +537,7 @@ class TTarFileExtractorTest extends TestCase
 		$this->assertCount(1, $skipped);
 		$this->assertEquals('symlink', $skipped[0]['reason']);
 		$this->assertStringContainsString('mylink', $skipped[0]['filepath']);
-		$this->assertEquals('/etc/passwd', $skipped[0]['linkpath']);
+		$this->assertEquals('/etc/passwd', $skipped[0]['tarlink']); // tarlink is always POSIX; linkpath is OS-native.
 
 		unlink($tarFile);
 	}
@@ -571,7 +577,7 @@ class TTarFileExtractorTest extends TestCase
 		$this->assertEquals('hardlink', $skipped[0]['reason']);
 		$this->assertEquals('linkpath_above_root', $skipped[0]['security']);
 		$this->assertStringContainsString('mylink', $skipped[0]['filepath']);
-		$this->assertEquals('/etc/passwd', $skipped[0]['linkpath']);
+		$this->assertEquals('/etc/passwd', $skipped[0]['tarlink']); // tarlink is always POSIX; linkpath is OS-native.
 
 		unlink($tarFile);
 	}

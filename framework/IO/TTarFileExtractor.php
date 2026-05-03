@@ -1133,7 +1133,7 @@ class TTarFileExtractor
 	 * `reason`, and `security` fields.  Populated after {@see extract()}; null before.
 	 * Returns the full metadata map for every entry in the archive.
 	 *
-	 * Keys are normalised relative paths; directory keys always end with
+	 * Keys are normalized relative paths; directory keys always end with
 	 * {@see DIRECTORY_SEPARATOR}.  Directory entries precede file entries.
 	 *
 	 * Each value array contains at minimum:
@@ -1144,21 +1144,21 @@ class TTarFileExtractor
 	 *  - `typeflag`       int      One of the TYPE_* constants.
 	 *  - `tarpath`        string   Raw POSIX path as stored in the tar header
 	 *                              (forward-slash separated, may have a leading `/`).
-	 *  - `tarpath_norm`   string   Normalised POSIX relative path (no leading `/`,
+	 *  - `tarpath_norm`   string   Normalized POSIX relative path (no leading `/`,
 	 *                              no `..` sequences); used as the manifest key.
 	 *  - `tarlink`        string   Raw POSIX link target as stored in the tar header
 	 *                              (empty for non-link types).
-	 *  - `tarlink_norm`   string   Normalised POSIX relative link target (no leading
+	 *  - `tarlink_norm`   string   Normalized POSIX relative link target (no leading
 	 *                              `/`, no `..` sequences).  Empty for non-link types.
 	 *  - `filepath`       string   OS-native working path after prefix removal,
 	 *                              using {@see DIRECTORY_SEPARATOR}.
-	 *  - `filepath_norm`  string   Normalised OS-native relative path (no leading
+	 *  - `filepath_norm`  string   Normalized OS-native relative path (no leading
 	 *                              separator, no `..` sequences), using
 	 *                              {@see DIRECTORY_SEPARATOR}.
 	 *  - `filename`       string   Entry basename — `basename($filepath_norm)`.
 	 *  - `linkpath`       string   OS-native symlink / hard-link target using
 	 *                              {@see DIRECTORY_SEPARATOR} (empty for other types).
-	 *  - `linkpath_norm`  string   Normalised OS-native link target path, using
+	 *  - `linkpath_norm`  string   Normalized OS-native link target path, using
 	 *                              {@see DIRECTORY_SEPARATOR}.  Empty for non-link types.
 	 *  - `linkname`       string   Link-target basename — `basename($linkpath_norm)`.
 	 *                              Empty for non-link types.
@@ -1253,7 +1253,7 @@ class TTarFileExtractor
 	/**
 	 * Returns the full metadata map for every entry in the archive.
 	 *
-	 * Keys are normalised relative paths; directory keys always end with
+	 * Keys are normalized relative paths; directory keys always end with
 	 * {@see DIRECTORY_SEPARATOR}.  Directory entries precede file entries.
 	 *
 	 * Each value array contains at minimum:
@@ -1264,21 +1264,21 @@ class TTarFileExtractor
 	 *  - `typeflag`       int      One of the TYPE_* constants.
 	 *  - `tarpath`        string   Raw POSIX path as stored in the tar header
 	 *                              (forward-slash separated, may have a leading `/`).
-	 *  - `tarpath_norm`   string   Normalised POSIX relative path (no leading `/`,
+	 *  - `tarpath_norm`   string   Normalized POSIX relative path (no leading `/`,
 	 *                              no `..` sequences); used as the manifest key.
 	 *  - `tarlink`        string   Raw POSIX link target as stored in the tar header
 	 *                              (empty for non-link types).
-	 *  - `tarlink_norm`   string   Normalised POSIX relative link target (no leading
+	 *  - `tarlink_norm`   string   Normalized POSIX relative link target (no leading
 	 *                              `/`, no `..` sequences).  Empty for non-link types.
 	 *  - `filepath`       string   OS-native working path after prefix removal,
 	 *                              using {@see DIRECTORY_SEPARATOR}.
-	 *  - `filepath_norm`  string   Normalised OS-native relative path (no leading
+	 *  - `filepath_norm`  string   Normalized OS-native relative path (no leading
 	 *                              separator, no `..` sequences), using
 	 *                              {@see DIRECTORY_SEPARATOR}.
 	 *  - `filename`       string   Entry basename — `basename($filepath_norm)`.
 	 *  - `linkpath`       string   OS-native symlink / hard-link target using
 	 *                              {@see DIRECTORY_SEPARATOR} (empty for other types).
-	 *  - `linkpath_norm`  string   Normalised OS-native link target path, using
+	 *  - `linkpath_norm`  string   Normalized OS-native link target path, using
 	 *                              {@see DIRECTORY_SEPARATOR}.  Empty for non-link types.
 	 *  - `linkname`       string   Link-target basename — `basename($linkpath_norm)`.
 	 *                              Empty for non-link types.
@@ -1435,14 +1435,14 @@ class TTarFileExtractor
 	}
 
 	/**
-	 * Returns the normalised POSIX path (`tarpath_norm`) for the given archive entry.
+	 * Returns the normalized POSIX path (`tarpath_norm`) for the given archive entry.
 	 *
 	 * Traversal sequences are resolved and leading `/` is stripped.  The trailing `/`
 	 * that tar appends to directory entries is preserved so that directory entries
 	 * remain distinguishable from files.
 	 *
 	 * @param string $path Relative archive path.
-	 * @return ?string Normalised POSIX path (trailing separator preserved for directories),
+	 * @return ?string Normalized POSIX path (trailing separator preserved for directories),
 	 *                 or null if not found.
 	 * @since 4.3.3
 	 */
@@ -1457,7 +1457,7 @@ class TTarFileExtractor
 	 *
 	 * Returns an empty string for non-link entries (regular files, directories).
 	 * Returns null if the path is not found in the manifest.
-	 * For the normalised variant see {@see getManifestTarLinkNormalized()}.
+	 * For the normalized variant see {@see getManifestTarLinkNormalized()}.
 	 *
 	 * @param string $path Relative archive path.
 	 * @return ?string Raw POSIX link target (empty for non-link entries), or null if not found.
@@ -1469,14 +1469,14 @@ class TTarFileExtractor
 	}
 
 	/**
-	 * Returns the normalised POSIX link target (`tarlink_norm`) for the given archive entry.
+	 * Returns the normalized POSIX link target (`tarlink_norm`) for the given archive entry.
 	 *
 	 * Traversal sequences are resolved and leading `/` is stripped.
 	 * Returns an empty string for non-link entries (regular files, directories).
 	 * Returns null if the path is not found in the manifest.
 	 *
 	 * @param string $path Relative archive path.
-	 * @return ?string Normalised POSIX link target (empty for non-link entries),
+	 * @return ?string Normalized POSIX link target (empty for non-link entries),
 	 *                 or null if not found.
 	 * @since 4.3.3
 	 */
@@ -1504,7 +1504,7 @@ class TTarFileExtractor
 	}
 
 	/**
-	 * Returns the normalised OS-native path (`filepath_norm`) for the given archive entry.
+	 * Returns the normalized OS-native path (`filepath_norm`) for the given archive entry.
 	 *
 	 * Derived from `tarpath_norm` by replacing `/` with {@see DIRECTORY_SEPARATOR}.
 	 * Trailing slashes are stripped (directory entries appear without a trailing
@@ -1512,7 +1512,7 @@ class TTarFileExtractor
 	 * identical to `tarpath_norm`.
 	 *
 	 * @param string $path Relative archive path.
-	 * @return ?string Normalised OS-native path (no trailing separator), or null if not found.
+	 * @return ?string Normalized OS-native path (no trailing separator), or null if not found.
 	 * @since 4.3.3
 	 */
 	public function getManifestFilePathNormalized(string $path): ?string
@@ -1526,7 +1526,7 @@ class TTarFileExtractor
 	 * Derived from `tarlink` by replacing `/` with {@see DIRECTORY_SEPARATOR}.
 	 * Returns an empty string for non-link entries (regular files, directories).
 	 * Returns null if the path is not found in the manifest.
-	 * For the normalised variant see {@see getManifestLinkPathNormalized()}.
+	 * For the normalized variant see {@see getManifestLinkPathNormalized()}.
 	 *
 	 * @param string $path Relative archive path.
 	 * @return ?string OS-native link target (empty for non-link entries), or null if not found.
@@ -1538,7 +1538,7 @@ class TTarFileExtractor
 	}
 
 	/**
-	 * Returns the normalised OS-native link target (`linkpath_norm`) for the given archive entry.
+	 * Returns the normalized OS-native link target (`linkpath_norm`) for the given archive entry.
 	 *
 	 * Derived from `tarlink_norm` by replacing `/` with {@see DIRECTORY_SEPARATOR}.
 	 * Trailing slashes and traversal sequences are resolved.
@@ -1546,7 +1546,7 @@ class TTarFileExtractor
 	 * Returns null if the path is not found in the manifest.
 	 *
 	 * @param string $path Relative archive path.
-	 * @return ?string Normalised OS-native link target (empty for non-link entries),
+	 * @return ?string Normalized OS-native link target (empty for non-link entries),
 	 *                 or null if not found.
 	 * @since 4.3.3
 	 */
@@ -3057,8 +3057,15 @@ class TTarFileExtractor
 
 		$cmdPath = null;
 		$cmdFlags = null;
+		// 'which' is the Unix tool locator; on Windows use 'where' (and take only the first line).
+		$isWindows = self::isSystemWindows();
 		foreach ($candidates as [$name, $flags]) {
-			$found = trim((string) shell_exec('which ' . escapeshellarg($name)));
+			if ($isWindows) {
+				$raw = (string) shell_exec('where ' . escapeshellarg($name) . ' 2>NUL');
+				$found = trim(strtok($raw, "\r\n"));
+			} else {
+				$found = trim((string) shell_exec('which ' . escapeshellarg($name)));
+			}
 			if ($found !== '') {
 				$cmdPath = $found;
 				$cmdFlags = $flags;
@@ -3542,7 +3549,7 @@ class TTarFileExtractor
 			return false;
 		}
 
-		return str_starts_with($normalizedFilePath . DIRECTORY_SEPARATOR, $normalizedDestPath . DIRECTORY_SEPARATOR);
+		return str_starts_with($normalizedFilePath . '/', $normalizedDestPath . '/');
 	}
 
 	/**
@@ -3613,7 +3620,15 @@ class TTarFileExtractor
 	}
 
 	/**
-	 * Normalises path separators and removes Windows drive letters.
+	 * @return bool If the platform is Windows.
+	 */
+	protected static function isSystemWindows(): bool
+	{
+		return strncasecmp(PHP_OS, 'WIN', 3) === 0;
+	}
+
+	/**
+	 * Normalizes path separators and removes Windows drive letters.
 	 *
 	 * @param string $p_destPath
 	 * @param bool   $p_remove_disk_letter
@@ -3621,7 +3636,7 @@ class TTarFileExtractor
 	 */
 	protected function _translateWinPath(string $p_destPath, bool $p_remove_disk_letter = true): string
 	{
-		if (strncasecmp(PHP_OS, 'WIN', 3) !== 0) {
+		if (!self::isSystemWindows()) {
 			return $p_destPath;
 		}
 		if ($p_remove_disk_letter && ($v_position = strpos($p_destPath, ':')) !== false) {
@@ -3650,14 +3665,18 @@ class TTarFileExtractor
 		if ($this->_tarManifest === null) {
 			return null;
 		}
+		// Manifest keys always use POSIX forward-slash; normalise Windows backslashes.
+		$path = str_replace('\\', '/', $path);
 		if (isset($this->_tarManifest[$path])) {
 			return $path;
 		}
-		$withSep = rtrim($path, '/\\') . DIRECTORY_SEPARATOR;
+		// Try adding a trailing slash (directory key convention).
+		$withSep = rtrim($path, '/') . '/';
 		if (isset($this->_tarManifest[$withSep])) {
 			return $withSep;
 		}
-		$withoutSep = rtrim($path, '/\\');
+		// Try without trailing slash (file key convention).
+		$withoutSep = rtrim($path, '/');
 		if ($withoutSep !== $path && isset($this->_tarManifest[$withoutSep])) {
 			return $withoutSep;
 		}
@@ -3676,14 +3695,18 @@ class TTarFileExtractor
 		if ($this->_tarExtractManifest === null) {
 			return null;
 		}
+		// Extraction manifest keys always use POSIX forward-slash; normalise Windows backslashes.
+		$path = str_replace('\\', '/', $path);
 		if (isset($this->_tarExtractManifest[$path])) {
 			return $path;
 		}
-		$withSep = rtrim($path, '/\\') . DIRECTORY_SEPARATOR;
+		// Try adding a trailing slash (directory key convention).
+		$withSep = rtrim($path, '/') . '/';
 		if (isset($this->_tarExtractManifest[$withSep])) {
 			return $withSep;
 		}
-		$withoutSep = rtrim($path, '/\\');
+		// Try without trailing slash (file key convention).
+		$withoutSep = rtrim($path, '/');
 		if ($withoutSep !== $path && isset($this->_tarExtractManifest[$withoutSep])) {
 			return $withoutSep;
 		}

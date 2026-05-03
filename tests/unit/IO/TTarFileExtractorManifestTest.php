@@ -120,7 +120,8 @@ class TTarFileExtractorManifestTest extends TestCase
 
 		$extractor = new TTarFileExtractor($tarFile);
 		$map = $extractor->getManifest();
-		$key = 'mydir' . DIRECTORY_SEPARATOR;
+		// Manifest keys always use POSIX forward-slash, regardless of OS.
+		$key = 'mydir/';
 
 		$this->assertArrayHasKey($key, $map);
 	}
@@ -839,7 +840,7 @@ class TTarFileExtractorManifestTest extends TestCase
 		$extractor = new TTarFileExtractor($tarFile);
 		$map = $extractor->getManifest();
 
-		$this->assertArrayHasKey('gz_dir' . DIRECTORY_SEPARATOR, $map);
+		$this->assertArrayHasKey('gz_dir/', $map); // Manifest keys always use POSIX forward-slash.
 		$this->assertArrayHasKey('gz_dir/gz.txt', $map);
 	}
 
@@ -956,11 +957,14 @@ class TTarFileExtractorManifestTest extends TestCase
 
 		$this->assertArrayHasKey('mylink.txt', $map);
 		$this->assertSame('symlink', $map['mylink.txt']['type']);
-		$this->assertSame($longLink, $map['mylink.txt']['linkpath']);
+		$this->assertSame($longLink, $map['mylink.txt']['tarlink']); // tarlink is always POSIX; linkpath is OS-native.
 	}
 
 	public function testGnuLongLinkExtracted()
 	{
+		if (DIRECTORY_SEPARATOR === '\\') {
+			$this->markTestSkipped('Symlink creation requires elevated privileges on Windows.');
+		}
 		// Long link target that is safe (resides inside extraction dir).
 		$subdir = str_repeat('s', 40);
 		$longLink = $subdir . '/' . str_repeat('t', 50) . '.txt'; // safe relative path
@@ -977,7 +981,7 @@ class TTarFileExtractorManifestTest extends TestCase
 		$this->assertTrue($result);
 		$this->assertFileExists($this->extractDir . '/mylink.txt');
 		$map = $extractor->getManifest();
-		$this->assertSame($longLink, $map['mylink.txt']['linkpath']);
+		$this->assertSame($longLink, $map['mylink.txt']['tarlink']); // tarlink is always POSIX; linkpath is OS-native.
 	}
 
 	// ---------------------------------------------------------------------------
@@ -1203,6 +1207,9 @@ class TTarFileExtractorManifestTest extends TestCase
 
 	public function testSafeSymlinkExtracted()
 	{
+		if (DIRECTORY_SEPARATOR === '\\') {
+			$this->markTestSkipped('Symlink creation requires elevated privileges on Windows.');
+		}
 		$tarFile = $this->testDir . '/safe_symlink.tar';
 		TarTestHelper::writeTar($tarFile, [
 			TarTestHelper::entry('target.txt', 'target content'),
@@ -1247,7 +1254,7 @@ class TTarFileExtractorManifestTest extends TestCase
 		$this->assertTrue($extractor->hasSkippedFiles());
 		$skipped = array_values($extractor->getSkippedFiles());
 		$this->assertSame('symlink', $skipped[0]['reason']);
-		$this->assertSame('../../../etc/passwd', $skipped[0]['linkpath']);
+		$this->assertSame('../../../etc/passwd', $skipped[0]['tarlink']); // tarlink is always POSIX; linkpath is OS-native.
 		$this->assertFileDoesNotExist($this->extractDir . '/evil_link.txt');
 	}
 
@@ -1431,7 +1438,7 @@ class TTarFileExtractorManifestTest extends TestCase
 
 		$this->assertTrue($result);
 		$map = $extractor->getExtractManifest();
-		$this->assertArrayHasKey('dir' . DIRECTORY_SEPARATOR, $map);
+		$this->assertArrayHasKey('dir/', $map); // Manifest keys always use POSIX forward-slash.
 		$this->assertArrayHasKey('dir/url_file.txt', $map);
 		$this->assertTrue($map['dir/url_file.txt']['extracted']);
 	}
@@ -1568,6 +1575,9 @@ class TTarFileExtractorManifestTest extends TestCase
 
 	public function testSymlinkEntryInMap()
 	{
+		if (DIRECTORY_SEPARATOR === '\\') {
+			$this->markTestSkipped('Symlink creation requires elevated privileges on Windows.');
+		}
 		$tarFile = $this->testDir . '/sym_map.tar';
 		TarTestHelper::writeTar($tarFile, [
 			TarTestHelper::entry('target.txt', 'data'),
