@@ -173,7 +173,7 @@ jobs:
         with:
           php-version: '8.2'
           # memcached extension omitted: libmemcached is not available on Windows
-          extensions: ctype, dom, intl, json, mbstring, pdo_mysql, pdo_pgsql, pdo_sqlite, openssl, pcre, spl, zip, zlib
+          extensions: ctype, dom, intl, json, mbstring, pdo_mysql, pdo_pgsql, pdo_sqlite, openssl, pcre, spl, bz2, xsl, zip, zlib
           tools: php-cs-fixer, phpstan, cs2pr
 
       - name: Validate composer.json and composer.lock
