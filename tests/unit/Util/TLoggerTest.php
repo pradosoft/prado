@@ -338,7 +338,9 @@ class TLoggerTest extends PHPUnit\Framework\TestCase
 		
 		$logger->log('msg0', TLogger::INFO, \Prado\TApplication::class, 'page.div.ctl2');
 		$logger->log('token1', TLogger::PROFILE_BEGIN, \Prado\Web\THttpRequest::class, 'page.ctl1');
+		usleep(1000); // ensure a measurable gap before and after $middleTime on fast hardware (e.g. Apple Silicon)
 		$middleTime = microtime(true);
+		usleep(1000);
 		$logger->log('token2', TLogger::PROFILE_BEGIN);
 		$logger->log('token1', TLogger::PROFILE_END, \Prado\TApplication::class, 'page.ctl1');
 		$logger->log('msg1', TLogger::DEBUG, \Prado\TModule::class, 'page2.other.ctl3');
@@ -428,11 +430,16 @@ class TLoggerTest extends PHPUnit\Framework\TestCase
 		$logger = new TTestLogger();
 		
 		$logger->log('message1', TLogger::INFO);
+		// Use explicitly increasing timestamps well past message1 so the sort order is
+		// deterministic even on fast machines where all microtime(true) calls may return
+		// the same value (the stable usort would otherwise preserve the _profileLogs-first
+		// merge order and put profiler1 before message1).
+		$t = microtime(true) + 0.1;
 		$newLogs = [
-				['profiler1', TLogger::PROFILE_BEGIN, \Prado\TApplication::class, microtime(true), memory_get_usage(), 'page.ctl1', null, -10000],
-				['messageChild', TLogger::INFO, \Prado\TModule::class, microtime(true), memory_get_usage(), 'page.ctl1', null, -10000],
-				['profiler1', TLogger::PROFILE_BEGIN, \Prado\TApplication::class, microtime(true), memory_get_usage(), 'page.ctl1', null, -11111],
-				['profiler1', TLogger::PROFILE_END, \Prado\TApplication::class, microtime(true), memory_get_usage(), 'page.ctl1', null, -11111],
+				['profiler1', TLogger::PROFILE_BEGIN, \Prado\TApplication::class, $t + 0.001, memory_get_usage(), 'page.ctl1', null, -10000],
+				['messageChild', TLogger::INFO, \Prado\TModule::class, $t + 0.002, memory_get_usage(), 'page.ctl1', null, -10000],
+				['profiler1', TLogger::PROFILE_BEGIN, \Prado\TApplication::class, $t + 0.003, memory_get_usage(), 'page.ctl1', null, -11111],
+				['profiler1', TLogger::PROFILE_END, \Prado\TApplication::class, $t + 0.004, memory_get_usage(), 'page.ctl1', null, -11111],
 			];
 		$logger->mergeLogs($newLogs);
 		

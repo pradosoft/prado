@@ -93,8 +93,138 @@ jobs:
         run: |
           composer functionaltest
 
+  prado-macos:
+    name: Prado (macOS)
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP, with composer and extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: ctype, dom, intl, json, mbstring, memcached, pdo_mysql, pdo_pgsql, pdo_sqlite, openssl, pcre, spl, zlib
+          tools: php-cs-fixer, phpstan, cs2pr
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate --strict
+
+      - name: Validate code syntax using php-cs-fixer
+        run: php-cs-fixer fix -vvv --dry-run --using-cache=no --format=checkstyle | cs2pr
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Validate code using phpstan
+        run: phpstan analyse --error-format=checkstyle | cs2pr
+
+      - name: Setup MySQL service
+        run: |
+          MYSQL=$(brew list --formula 2>/dev/null | grep '^mysql' | sort -V | tail -1)
+          [ -z "$MYSQL" ] && brew install mysql && MYSQL=mysql
+          brew services start "$MYSQL"
+          sleep 5
+          $(brew --prefix "$MYSQL")/bin/mysql -uroot < ./tests/initdb_mysql.sql
+
+      - name: Setup PostgreSQL service
+        run: |
+          PG=$(brew list --formula 2>/dev/null | grep '^postgresql' | sort -V | tail -1)
+          [ -z "$PG" ] && brew install postgresql && PG=postgresql
+          brew services start "$PG"
+          sleep 5
+          $(brew --prefix "$PG")/bin/createdb -h 127.0.0.1 prado_unitest
+          $(brew --prefix "$PG")/bin/psql -h 127.0.0.1 prado_unitest -f ./tests/initdb_pgsql.sql
+
+      - name: Setup Memcached service
+        run: |
+          brew install memcached
+          brew services start memcached
+
+      - name: Run Unit Tests
+        run: composer unittest
+
+  prado-windows:
+    name: Prado (Windows)
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Configure git for LF line endings
+        run: git config --global core.autocrlf false
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP, with composer and extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          # memcached extension omitted: libmemcached is not available on Windows
+          extensions: ctype, dom, intl, json, mbstring, pdo_mysql, pdo_pgsql, pdo_sqlite, openssl, pcre, spl, bz2, xsl, zip, zlib
+          tools: php-cs-fixer, phpstan, cs2pr
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate --strict
+
+      - name: Validate code syntax using php-cs-fixer
+        run: php-cs-fixer fix -vvv --dry-run --using-cache=no --format=checkstyle | cs2pr
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Disable phpdocumentor shim plugin (GPG key import fails on Windows)
+        run: composer config allow-plugins.phpdocumentor/shim false
+
+      - name: Install Composer dependencies
+        run: composer install --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Validate code using phpstan
+        run: phpstan analyse --error-format=checkstyle | cs2pr
+
+      - name: Setup MySQL service
+        uses: shogo82148/actions-setup-mysql@v1
+        with:
+          mysql-version: '8.0'
+          auto-start: true
+
+      - name: Init MySQL schema
+        run: mysql -uroot < ./tests/initdb_mysql.sql
+
+      - name: Setup PostgreSQL service
+        shell: pwsh
+        run: |
+          # The runner image installs PostgreSQL but leaves the service disabled.
+          # PGBIN, PGDATA, and PGPASSWORD (=root) are pre-set as machine env vars.
+          & "$env:PGBIN\pg_ctl.exe" start -D $env:PGDATA -w
+          & "$env:PGBIN\createdb.exe" -h 127.0.0.1 -U postgres prado_unitest
+          & "$env:PGBIN\psql.exe" -h 127.0.0.1 -U postgres prado_unitest -f .\tests\initdb_pgsql.sql
+
+      - name: Run Unit Tests
+        run: composer unittest
+
   db-mssql:
-    name: SQL Server
+    name: Microsoft SQL Server
     runs-on: ubuntu-latest
     services:
       mssql:

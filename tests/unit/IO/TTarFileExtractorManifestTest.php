@@ -86,29 +86,86 @@ class TTarFileExtractorManifestTest extends TestCase
 		$this->assertContains('root.txt', $paths);
 	}
 
-	public function testDirectoriesAlwaysPrecedeFilesInPathMap()
+	public function testManifestSortIsHierarchicalAndAlphabetical()
 	{
 		$tarFile = $this->testDir . '/ordering.tar';
-		// Archive has files first, then directory — map must reorder dirs before files.
+		// Archive entries in tar-file order (intentionally scrambled).
+		// After sorting the manifest must match the expected hierarchical order:
+		// each directory key appears immediately before its own children, while
+		// sibling entries are sorted alphabetically.
 		TarTestHelper::writeTar($tarFile, [
-			TarTestHelper::entry('z_file.txt', 'data'),
-			TarTestHelper::entry('a_dir/', '', '5'),
-			TarTestHelper::entry('a_dir/child.txt', 'child'),
+			TarTestHelper::entry('d_file.txt', 'data'),
+			TarTestHelper::entry('c_dir/', '', '5'),
+			TarTestHelper::entry('c_dir/b_file.txt', 'child b'),
+			TarTestHelper::entry('c_dir/a_file.txt', 'child a'),
+			TarTestHelper::entry('b_file.txt', 'data'),
+			TarTestHelper::entry('a_file.txt', 'data'),
 		]);
 
 		$extractor = new TTarFileExtractor($tarFile);
 		$paths = $extractor->getManifestPaths();
 
-		$firstDir = false;
-		foreach ($paths as $p) {
-			if (str_ends_with($p, '/')) {
-				$firstDir = true;
-			} elseif ($firstDir === false) {
-				// A file appeared before any directory — fail.
-				$this->fail('File appeared before directory in path map: ' . $p);
-			}
+		$this->assertSame([
+			'a_file.txt',
+			'b_file.txt',
+			'c_dir/',
+			'c_dir/a_file.txt',
+			'c_dir/b_file.txt',
+			'd_file.txt',
+		], $paths);
+	}
+
+	/**
+	 * _sortManifest must identify directory keys by the POSIX '/' suffix, not by
+	 * DIRECTORY_SEPARATOR.  On Windows DIRECTORY_SEPARATOR is '\', so using it would
+	 * cause every directory entry to be treated as a file and the dirs-first ordering
+	 * would silently break.  This test exercises _sortManifest directly via reflection
+	 * with keys that end with '/' and asserts that directories are sorted before files
+	 * on every platform — including Windows.
+	 *
+	 * The test also explicitly demonstrates that str_ends_with($key, DIRECTORY_SEPARATOR)
+	 * is NOT a reliable check: on Windows it returns false for a key like 'dir/', whereas
+	 * str_ends_with($key, '/') correctly returns true.
+	 */
+	public function testSortManifestUsesPosixSlashNotDirectorySeparator()
+	{
+		$extractor = new TTarFileExtractor('');
+
+		// 'z_dir/' must sort immediately before its child 'z_dir/file.txt'.
+		// 'a_file.txt' < 'z_dir' alphabetically, so it comes first.
+		// Keys always use POSIX '/'; the tie-break that places 'z_dir/' before
+		// 'z_dir/file.txt' relies on str_ends_with($key, '/'), NOT DIRECTORY_SEPARATOR.
+		// On Windows DIRECTORY_SEPARATOR === '\\', so using it would make rtrim
+		// and the tie-break behave incorrectly for POSIX keys.
+		$manifest = [
+			'z_dir/file.txt' => ['tarpath_norm' => 'z_dir/file.txt', 'typeflag' => TTarFileExtractor::TYPE_FILE],
+			'z_dir/'         => ['tarpath_norm' => 'z_dir/',         'typeflag' => TTarFileExtractor::TYPE_DIRECTORY],
+			'a_file.txt'     => ['tarpath_norm' => 'a_file.txt',     'typeflag' => TTarFileExtractor::TYPE_FILE],
+		];
+
+		$method = new \ReflectionMethod(TTarFileExtractor::class, '_sortManifest');
+		$method->setAccessible(true);
+		$method->invokeArgs($extractor, [&$manifest]);
+
+		$keys = array_keys($manifest);
+
+		// Expected: a_file.txt, z_dir/, z_dir/file.txt
+		$this->assertSame(['a_file.txt', 'z_dir/', 'z_dir/file.txt'], $keys,
+			'Directory key must sort immediately before its children'
+		);
+
+		// Explicitly demonstrate the '/' vs DIRECTORY_SEPARATOR distinction.
+		// Manifest keys always end with '/' for directories; on Windows
+		// DIRECTORY_SEPARATOR is '\\', so the old check would have failed.
+		$this->assertTrue(str_ends_with('z_dir/', '/'),
+			"Manifest directory key ends with '/'"
+		);
+		if (DIRECTORY_SEPARATOR !== '/') {
+			$this->assertFalse(str_ends_with('z_dir/', DIRECTORY_SEPARATOR),
+				"str_ends_with('z_dir/', DIRECTORY_SEPARATOR) is false on Windows — "
+				. "using DIRECTORY_SEPARATOR would mis-classify the directory key"
+			);
 		}
-		$this->assertTrue($firstDir, 'Expected at least one directory entry');
 	}
 
 	public function testDirectoryKeyEndsWithDirectorySeparator()
@@ -120,7 +177,8 @@ class TTarFileExtractorManifestTest extends TestCase
 
 		$extractor = new TTarFileExtractor($tarFile);
 		$map = $extractor->getManifest();
-		$key = 'mydir' . DIRECTORY_SEPARATOR;
+		// Manifest keys always use POSIX forward-slash, regardless of OS.
+		$key = 'mydir/';
 
 		$this->assertArrayHasKey($key, $map);
 	}
@@ -839,7 +897,7 @@ class TTarFileExtractorManifestTest extends TestCase
 		$extractor = new TTarFileExtractor($tarFile);
 		$map = $extractor->getManifest();
 
-		$this->assertArrayHasKey('gz_dir' . DIRECTORY_SEPARATOR, $map);
+		$this->assertArrayHasKey('gz_dir/', $map); // Manifest keys always use POSIX forward-slash.
 		$this->assertArrayHasKey('gz_dir/gz.txt', $map);
 	}
 
@@ -956,11 +1014,14 @@ class TTarFileExtractorManifestTest extends TestCase
 
 		$this->assertArrayHasKey('mylink.txt', $map);
 		$this->assertSame('symlink', $map['mylink.txt']['type']);
-		$this->assertSame($longLink, $map['mylink.txt']['linkpath']);
+		$this->assertSame($longLink, $map['mylink.txt']['tarlink']); // tarlink is always POSIX; linkpath is OS-native.
 	}
 
 	public function testGnuLongLinkExtracted()
 	{
+		if (DIRECTORY_SEPARATOR === '\\') {
+			$this->markTestSkipped('Symlink creation requires elevated privileges on Windows.');
+		}
 		// Long link target that is safe (resides inside extraction dir).
 		$subdir = str_repeat('s', 40);
 		$longLink = $subdir . '/' . str_repeat('t', 50) . '.txt'; // safe relative path
@@ -977,7 +1038,7 @@ class TTarFileExtractorManifestTest extends TestCase
 		$this->assertTrue($result);
 		$this->assertFileExists($this->extractDir . '/mylink.txt');
 		$map = $extractor->getManifest();
-		$this->assertSame($longLink, $map['mylink.txt']['linkpath']);
+		$this->assertSame($longLink, $map['mylink.txt']['tarlink']); // tarlink is always POSIX; linkpath is OS-native.
 	}
 
 	// ---------------------------------------------------------------------------
@@ -1203,6 +1264,9 @@ class TTarFileExtractorManifestTest extends TestCase
 
 	public function testSafeSymlinkExtracted()
 	{
+		if (DIRECTORY_SEPARATOR === '\\') {
+			$this->markTestSkipped('Symlink creation requires elevated privileges on Windows.');
+		}
 		$tarFile = $this->testDir . '/safe_symlink.tar';
 		TarTestHelper::writeTar($tarFile, [
 			TarTestHelper::entry('target.txt', 'target content'),
@@ -1247,7 +1311,7 @@ class TTarFileExtractorManifestTest extends TestCase
 		$this->assertTrue($extractor->hasSkippedFiles());
 		$skipped = array_values($extractor->getSkippedFiles());
 		$this->assertSame('symlink', $skipped[0]['reason']);
-		$this->assertSame('../../../etc/passwd', $skipped[0]['linkpath']);
+		$this->assertSame('../../../etc/passwd', $skipped[0]['tarlink']); // tarlink is always POSIX; linkpath is OS-native.
 		$this->assertFileDoesNotExist($this->extractDir . '/evil_link.txt');
 	}
 
@@ -1431,7 +1495,7 @@ class TTarFileExtractorManifestTest extends TestCase
 
 		$this->assertTrue($result);
 		$map = $extractor->getExtractManifest();
-		$this->assertArrayHasKey('dir' . DIRECTORY_SEPARATOR, $map);
+		$this->assertArrayHasKey('dir/', $map); // Manifest keys always use POSIX forward-slash.
 		$this->assertArrayHasKey('dir/url_file.txt', $map);
 		$this->assertTrue($map['dir/url_file.txt']['extracted']);
 	}
@@ -1568,6 +1632,9 @@ class TTarFileExtractorManifestTest extends TestCase
 
 	public function testSymlinkEntryInMap()
 	{
+		if (DIRECTORY_SEPARATOR === '\\') {
+			$this->markTestSkipped('Symlink creation requires elevated privileges on Windows.');
+		}
 		$tarFile = $this->testDir . '/sym_map.tar';
 		TarTestHelper::writeTar($tarFile, [
 			TarTestHelper::entry('target.txt', 'data'),

@@ -21,6 +21,7 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 
 	protected function setUp(): void
 	{
+		// Defensive unlink
 		@unlink(TEST_DB_FILE);
 		@unlink(TEST_DB_FILE2);
 
@@ -35,8 +36,17 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 
 	protected function tearDown(): void
 	{
-		$this->_connection1 = null;
-		$this->_connection2 = null;
+		// Explicitly close PDO connections before unlinking to release file locks on Windows.
+		if ($this->_connection1 !== null) {
+			$this->_connection1->Active = false;
+			$this->_connection1 = null;
+		}
+		if ($this->_connection2 !== null) {
+			$this->_connection2->Active = false;
+			$this->_connection2 = null;
+		}
+		@unlink(TEST_DB_FILE);
+		@unlink(TEST_DB_FILE2);
 	}
 
 	public function testActive()

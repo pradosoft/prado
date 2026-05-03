@@ -45,7 +45,8 @@ class TXmlTransformTest extends PHPUnit\Framework\TestCase
 		$expected = $this->documentPath;
 		$transform = new TXmlTransform();
 		$transform->setDocumentPath('UnitTest.hello');
-		$this->assertEquals($expected, $transform->getDocumentPath());
+		// Normalize separators so the comparison is cross-platform (Windows may use backslashes).
+		$this->assertEquals(str_replace('\\', '/', $expected), str_replace('\\', '/', (string) $transform->getDocumentPath()));
 	}
 
 	public function testSetTransformContent()
@@ -72,7 +73,8 @@ class TXmlTransformTest extends PHPUnit\Framework\TestCase
 		$expected = $this->transformPath;
 		$transform = new TXmlTransform();
 		$transform->setTransformPath('UnitTest.hello');
-		$this->assertEquals($expected, $transform->getTransformPath());
+		// Normalize separators so the comparison is cross-platform (Windows may use backslashes).
+		$this->assertEquals(str_replace('\\', '/', $expected), str_replace('\\', '/', (string) $transform->getTransformPath()));
 	}
 
 	public function testAddParameter()

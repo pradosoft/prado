@@ -102,7 +102,8 @@ class TUrlManager extends \Prado\TModule
 			case THttpRequestUrlFormat::Path:
 				return $request->getApplicationUrl() . '/' . strtr($url, [$amp => '/', '?' => '/', '=' => $request->getUrlParamSeparator()]);
 			case THttpRequestUrlFormat::HiddenPath:
-				return rtrim(dirname($request->getApplicationUrl()), '/') . '/' . strtr($url, [$amp => '/', '?' => '/', '=' => $request->getUrlParamSeparator()]);
+				// dirname() returns '\' on Windows for root-level paths; normalize to '/' unconditionally.
+				return rtrim(str_replace('\\', '/', dirname($request->getApplicationUrl())), '/') . '/' . strtr($url, [$amp => '/', '?' => '/', '=' => $request->getUrlParamSeparator()]);
 			default:
 				return $request->getApplicationUrl() . '?' . $url;
 		}
