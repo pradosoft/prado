@@ -500,7 +500,9 @@ class TLoggerTest extends PHPUnit\Framework\TestCase
 		$logger->log('token1', TLogger::DEBUG);
 		$logger->log('token2', TLogger::INFO);
 		$logger->log('token3', TLogger::NOTICE);
+		usleep(1000);
 		$middleTime = microtime(true);
+		usleep(1000);
 		$logger->log('token4', TLogger::WARNING, null, 'page.ctl1');
 		$logger->log('token5', TLogger::ERROR, null, 'page.div.ctl2');
 		$logger->log('token6', TLogger::ALERT, null, 'page.ctl3');
