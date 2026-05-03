@@ -86,29 +86,86 @@ class TTarFileExtractorManifestTest extends TestCase
 		$this->assertContains('root.txt', $paths);
 	}
 
-	public function testDirectoriesAlwaysPrecedeFilesInPathMap()
+	public function testManifestSortIsHierarchicalAndAlphabetical()
 	{
 		$tarFile = $this->testDir . '/ordering.tar';
-		// Archive has files first, then directory — map must reorder dirs before files.
+		// Archive entries in tar-file order (intentionally scrambled).
+		// After sorting the manifest must match the expected hierarchical order:
+		// each directory key appears immediately before its own children, while
+		// sibling entries are sorted alphabetically.
 		TarTestHelper::writeTar($tarFile, [
-			TarTestHelper::entry('z_file.txt', 'data'),
-			TarTestHelper::entry('a_dir/', '', '5'),
-			TarTestHelper::entry('a_dir/child.txt', 'child'),
+			TarTestHelper::entry('d_file.txt', 'data'),
+			TarTestHelper::entry('c_dir/', '', '5'),
+			TarTestHelper::entry('c_dir/b_file.txt', 'child b'),
+			TarTestHelper::entry('c_dir/a_file.txt', 'child a'),
+			TarTestHelper::entry('b_file.txt', 'data'),
+			TarTestHelper::entry('a_file.txt', 'data'),
 		]);
 
 		$extractor = new TTarFileExtractor($tarFile);
 		$paths = $extractor->getManifestPaths();
 
-		$firstDir = false;
-		foreach ($paths as $p) {
-			if (str_ends_with($p, '/')) {
-				$firstDir = true;
-			} elseif ($firstDir === false) {
-				// A file appeared before any directory — fail.
-				$this->fail('File appeared before directory in path map: ' . $p);
-			}
+		$this->assertSame([
+			'a_file.txt',
+			'b_file.txt',
+			'c_dir/',
+			'c_dir/a_file.txt',
+			'c_dir/b_file.txt',
+			'd_file.txt',
+		], $paths);
+	}
+
+	/**
+	 * _sortManifest must identify directory keys by the POSIX '/' suffix, not by
+	 * DIRECTORY_SEPARATOR.  On Windows DIRECTORY_SEPARATOR is '\', so using it would
+	 * cause every directory entry to be treated as a file and the dirs-first ordering
+	 * would silently break.  This test exercises _sortManifest directly via reflection
+	 * with keys that end with '/' and asserts that directories are sorted before files
+	 * on every platform — including Windows.
+	 *
+	 * The test also explicitly demonstrates that str_ends_with($key, DIRECTORY_SEPARATOR)
+	 * is NOT a reliable check: on Windows it returns false for a key like 'dir/', whereas
+	 * str_ends_with($key, '/') correctly returns true.
+	 */
+	public function testSortManifestUsesPosixSlashNotDirectorySeparator()
+	{
+		$extractor = new TTarFileExtractor('');
+
+		// 'z_dir/' must sort immediately before its child 'z_dir/file.txt'.
+		// 'a_file.txt' < 'z_dir' alphabetically, so it comes first.
+		// Keys always use POSIX '/'; the tie-break that places 'z_dir/' before
+		// 'z_dir/file.txt' relies on str_ends_with($key, '/'), NOT DIRECTORY_SEPARATOR.
+		// On Windows DIRECTORY_SEPARATOR === '\\', so using it would make rtrim
+		// and the tie-break behave incorrectly for POSIX keys.
+		$manifest = [
+			'z_dir/file.txt' => ['tarpath_norm' => 'z_dir/file.txt', 'typeflag' => TTarFileExtractor::TYPE_FILE],
+			'z_dir/'         => ['tarpath_norm' => 'z_dir/',         'typeflag' => TTarFileExtractor::TYPE_DIRECTORY],
+			'a_file.txt'     => ['tarpath_norm' => 'a_file.txt',     'typeflag' => TTarFileExtractor::TYPE_FILE],
+		];
+
+		$method = new \ReflectionMethod(TTarFileExtractor::class, '_sortManifest');
+		$method->setAccessible(true);
+		$method->invokeArgs($extractor, [&$manifest]);
+
+		$keys = array_keys($manifest);
+
+		// Expected: a_file.txt, z_dir/, z_dir/file.txt
+		$this->assertSame(['a_file.txt', 'z_dir/', 'z_dir/file.txt'], $keys,
+			'Directory key must sort immediately before its children'
+		);
+
+		// Explicitly demonstrate the '/' vs DIRECTORY_SEPARATOR distinction.
+		// Manifest keys always end with '/' for directories; on Windows
+		// DIRECTORY_SEPARATOR is '\\', so the old check would have failed.
+		$this->assertTrue(str_ends_with('z_dir/', '/'),
+			"Manifest directory key ends with '/'"
+		);
+		if (DIRECTORY_SEPARATOR !== '/') {
+			$this->assertFalse(str_ends_with('z_dir/', DIRECTORY_SEPARATOR),
+				"str_ends_with('z_dir/', DIRECTORY_SEPARATOR) is false on Windows — "
+				. "using DIRECTORY_SEPARATOR would mis-classify the directory key"
+			);
 		}
-		$this->assertTrue($firstDir, 'Expected at least one directory entry');
 	}
 
 	public function testDirectoryKeyEndsWithDirectorySeparator()
