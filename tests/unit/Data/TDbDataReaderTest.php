@@ -50,7 +50,12 @@ class TDbDataReaderTest extends PHPUnit\Framework\TestCase
 
 	protected function tearDown(): void
 	{
-		$this->_connection = null;
+		// Explicitly close the PDO connection before unlinking to release the file
+		// lock on Windows (where an open handle prevents unlink from succeeding).
+		if ($this->_connection !== null) {
+			$this->_connection->Active = false;
+			$this->_connection = null;
+		}
 		@unlink(TEST_DB_FILE);
 	}
 
