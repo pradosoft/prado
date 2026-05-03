@@ -109,6 +109,7 @@ return [
 'TMysqlTableColumn' => 'Prado\Data\Common\Mysql\TMysqlTableColumn',
 'TMysqlTableInfo' => 'Prado\Data\Common\Mysql\TMysqlTableInfo',
 'TOracleCommandBuilder' => 'Prado\Data\Common\Oracle\TOracleCommandBuilder',
+'TOracleDbCommand' => 'Prado\Data\Common\Oracle\TOracleDbCommand',
 'TOracleMetaData' => 'Prado\Data\Common\Oracle\TOracleMetaData',
 'TOracleTableColumn' => 'Prado\Data\Common\Oracle\TOracleTableColumn',
 'TOracleTableInfo' => 'Prado\Data\Common\Oracle\TOracleTableInfo',

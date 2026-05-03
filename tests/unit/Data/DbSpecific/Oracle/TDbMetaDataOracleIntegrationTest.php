@@ -102,10 +102,11 @@ class TDbMetaDataOracleIntegrationTest extends PHPUnit\Framework\TestCase
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('META_TEST');
 		$names = $info->getColumnNames();
-		$this->assertContains('ID',    $names);
-		$this->assertContains('NAME',  $names);
-		$this->assertContains('SCORE', $names);
-		$this->assertContains('NOTE',  $names);
+		// TOracleMetaData stores column names in lowercase (LOWER(COLUMN_NAME)).
+		$this->assertContains('id',    $names);
+		$this->assertContains('name',  $names);
+		$this->assertContains('score', $names);
+		$this->assertContains('note',  $names);
 		$this->assertCount(4, $names);
 	}
 

@@ -564,6 +564,13 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 
 	/**
 	 * Creates a command for execution.
+	 *
+	 * The concrete {@see TDbCommand} subclass is selected via
+	 * {@see TDbDriverCapabilities::getCommandClass()} so that driver-specific
+	 * behaviour (e.g. the pdo_oci prepared-statement workaround in
+	 * {@see \Prado\Data\Common\Oracle\TOracleDbCommand}) is applied
+	 * automatically without any driver checks in calling code.
+	 *
 	 * @param string $sql SQL statement associated with the new command.
 	 * @throws TDbException if the connection is not active
 	 * @return TDbCommand the DB command
@@ -571,7 +578,8 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	public function createCommand($sql)
 	{
 		$this->assertActive();
-		return new TDbCommand($this, $sql);
+		$class = TDbDriverCapabilities::getCommandClass($this->getDriverName());
+		return new $class($this, $sql);
 	}
 
 	/**

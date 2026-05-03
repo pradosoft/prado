@@ -16,6 +16,7 @@ use Prado\Data\Common\Ibm\TIbmMetaData;
 use Prado\Data\Common\IDataMetaData;
 use Prado\Data\Common\Mssql\TMssqlMetaData;
 use Prado\Data\Common\Mysql\TMysqlMetaData;
+use Prado\Data\Common\Oracle\TOracleDbCommand;
 use Prado\Data\Common\Oracle\TOracleMetaData;
 use Prado\Data\Common\Pgsql\TPgsqlMetaData;
 use Prado\Data\Common\Sqlite\TSqliteMetaData;
@@ -640,6 +641,30 @@ class TDbDriverCapabilities
 			TDbDriver::DRIVER_DBLIB => false,
 			default => true,
 		};
+	}
+
+	// =========================================================================
+	//  Command factory
+	// =========================================================================
+
+	/**
+	 * Returns the fully-qualified {@see TDbCommand} subclass name appropriate
+	 * for the given driver.
+	 *
+	 * Most drivers use the base {@see TDbCommand} class.  Oracle (pdo_oci) uses
+	 * {@see TOracleDbCommand}, which works around the PHP 8.2 pdo_oci segfault
+	 * in the prepared-statement path by accumulating bound values and
+	 * substituting them via {@see \PDO::quote()} at execution time.
+	 *
+	 * {@see \Prado\Data\TDbConnection::createCommand()} delegates to this
+	 * method to select the right class.
+	 *
+	 * @param string $driver PDO driver name (lowercase)
+	 * @return string fully-qualified class name
+	 */
+	public static function getCommandClass(string $driver): string
+	{
+		return $driver === TDbDriver::DRIVER_OCI ? TOracleDbCommand::class : TDbCommand::class;
 	}
 
 	// =========================================================================
