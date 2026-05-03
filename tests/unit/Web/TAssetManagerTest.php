@@ -48,7 +48,8 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 		}
 
 		if (self::$assetDir === null) {
-			self::$assetDir = __DIR__ . '/assets';
+			// Use DIRECTORY_SEPARATOR so the path matches what framework internals produce on all OSes.
+			self::$assetDir = __DIR__ . DIRECTORY_SEPARATOR . 'assets';
 		}
 		// Make asset directory if not exists
 		if (!file_exists(self::$assetDir)) {
@@ -162,7 +163,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 		$fileToPublish = __DIR__ . '/data/pradoheader.gif';
 		$publishedUrl = $manager->publishFilePath($fileToPublish);
 		$publishedFile = self::$assetDir . $publishedUrl;
-		self::assertEquals($publishedFile, $manager->getPublishedPath($fileToPublish));
+		self::assertEquals(str_replace('\\', '/', $publishedFile), str_replace('\\', '/', $manager->getPublishedPath($fileToPublish)));
 		self::assertEquals($publishedUrl, $manager->getPublishedUrl($fileToPublish));
 		self::assertTrue(is_file($publishedFile));
 
@@ -184,7 +185,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 		$dirToPublish = __DIR__ . '/data';
 		$publishedUrl = $manager->publishFilePath($dirToPublish);
 		$publishedDir = self::$assetDir . $publishedUrl;
-		self::assertEquals($publishedDir, $manager->getPublishedPath($dirToPublish));
+		self::assertEquals(str_replace('\\', '/', $publishedDir), str_replace('\\', '/', $manager->getPublishedPath($dirToPublish)));
 		self::assertEquals($publishedUrl, $manager->getPublishedUrl($dirToPublish));
 		self::assertTrue(is_dir($publishedDir));
 		self::assertTrue(is_file($publishedDir . '/pradoheader.gif'));
@@ -594,6 +595,9 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testFileMode()
 	{
+		if (DIRECTORY_SEPARATOR === '\\') {
+			$this->markTestSkipped('File permission modes (chmod) are not honored on Windows NTFS.');
+		}
 		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setFileMode(0644);
@@ -610,6 +614,9 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testDirMode()
 	{
+		if (DIRECTORY_SEPARATOR === '\\') {
+			$this->markTestSkipped('Directory permission modes (chmod) are not honored on Windows NTFS.');
+		}
 		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setDirMode(0755);
