@@ -10,8 +10,6 @@
 
 namespace Prado\Exceptions;
 
-use Prado\TPropertyValue;
-
 /**
  * THttpException class
  *
@@ -33,21 +31,12 @@ class THttpException extends TSystemException
 	 * in the message file. If so, the message in the preferred language
 	 * will be used as the error message. Any rest parameters will be used
 	 * to replace placeholders ({0}, {1}, {2}, etc.) in the message.
+	 * @param array $args
 	 */
-	public function __construct($statusCode, $errorMessage)
+	public function __construct($statusCode, $errorMessage, ...$args)
 	{
 		$this->_statusCode = $statusCode;
-		$this->setErrorCode($errorMessage);
-		$errorMessage = $this->translateErrorMessage($errorMessage);
-		$args = func_get_args();
-		array_shift($args);
-		array_shift($args);
-		$n = count($args);
-		$tokens = [];
-		for ($i = 0; $i < $n; ++$i) {
-			$tokens['{' . $i . '}'] = TPropertyValue::ensureString($args[$i]);
-		}
-		parent::__construct(strtr($errorMessage, $tokens));
+		parent::__construct($errorMessage, ...$args);
 	}
 
 	/**

@@ -3,7 +3,7 @@
 /**
  * TPriorityMap, TPriorityMapIterator classes
  *
- * @author Brad Anderson <javalizard@mac.com>
+ * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */

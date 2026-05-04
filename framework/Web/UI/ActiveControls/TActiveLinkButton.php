@@ -156,7 +156,7 @@ class TActiveLinkButton extends TLinkButton implements IActiveControl, ICallback
 					$this->getPostBackOptions()
 				);
 			} else {
-				$this->getPage()->getCallbackClient()->setAttribute($this, 'href', false);
+				$this->getPage()->getCallbackClient()->removeAttribute($this, 'href');
 			}
 		}
 	}

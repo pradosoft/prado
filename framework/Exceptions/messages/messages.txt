@@ -41,6 +41,8 @@ map_data_not_iterable					= Data must be either an array or an object implementi
 map_readonly							= {0} is read-only.
 map_readonly_set						= {0} cannot change Read-Only once it is already set.
 
+tnull_clone_disallowed					= TNull singleton cannot be cloned. Use TNull::null() instead.
+
 weakcallablecollection_callable_required = TWeakCallableCollection can only accept callables.
 
 arraysubscription_no_change				= TArraySubscription.{0} cannot be changed after being subscribed.
@@ -89,7 +91,6 @@ httprequest_urlmanager_invalid			= THttpRequest.UrlManager '{0}' must point to a
 
 httpcookiecollection_httpcookie_required = THttpCookieCollection can only accept THttpCookie objects.
 
-httpresponse_bufferoutput_unchangeable	= THttpResponse.BufferOutput cannot be modified after THttpResponse is initialized.
 httpresponse_file_inexistent			= THttpResponse cannot send file '{0}'. The file does not exist.
 httpresponse_responsedata_method_unavailable = THttpResponse: method '{0}' cannot be used without a proper adapter implementing it.
 httpresponse_headersmanager_inexist     = THttpResponse.HeadersManager '{0}' does not point to an existing module.
@@ -130,8 +131,6 @@ sqlitecache_dbfile_invalid				= TSqliteCache.DbFile is invalid. Make sure it is 
 
 memcache_extension_required				= TMemCache requires memcache PHP extension.
 memcache_connection_failed				= TMemCache failed to connect to memcache server {0}:{1}.
-memcache_host_unchangeable				= TMemCache.Host cannot be modified after the module is initialized.
-memcache_port_unchangeable				= TMemCache.Port cannot be modified after the module is initialized.
 memcache_not_initialized				= Options cannot be set on TMemCache before the module is initialized.
 
 apccache_extension_required				= TAPCCache requires APC PHP extension.
@@ -167,6 +166,8 @@ behavior_has_owner						= The TBehavior "{0}" can only attach to one owner.
 behavior_bad_attach_component			= The TBehavior "{0}" can only attach to a TComponent.
 behavior_detach_without_owner			= The TBehavior "{0}" cannot be detached without an owner.
 behavior_detach_wrong_owner				= The TBehavior "{0}" cannot detach from an object that is not its owner.
+behavior_property_unchangeable			= {1}.{0} cannot be modified after the behavior is attached.
+behavior_requires_owner					= {1}.{0} requires an owner.
 classbehavior_owner_attach_once			= The TClassBehavior "{0}" can only be attached to an owner once.  The handlers would not be unique.
 classbehavior_bad_attach_component		= The TClassBehavior "{0}" can only attach to a TComponent.
 classbehavior_detach_without_owner		= The TClassBehavior "{0}" cannot be detached without an owner.
@@ -198,11 +199,6 @@ parameterizebehavior_no_property		= TParameterizeBehavior must have a Property a
 parameterizebehavior_owner_get_only_property = TParameterizeBehavior owner has Property '{0}' but is read-only.
 parameterizebehavior_owner_has_no_property = TParameterizeBehavior owner has no Property '{0}'.
 parameterizebehavior_cannot_set_parameter_to_blank_after_attach = TParameterizeBehavior cannot blank the Parameter after being attached.
-parameterizebehavior_cannot_set_property_after_attach = TParameterizeBehavior cannot set Property after being attached.
-parameterizebehavior_cannot_set_validNullValue_after_attach = TParameterizeBehavior cannot set ValidNullValue after being attached.
-parameterizebehavior_cannot_set_defaultValue_after_attach = TParameterizeBehavior cannot set DefaultValue after being attached.
-parameterizebehavior_cannot_set_localize_after_attach = TParameterizeBehavior cannot set Localize after being attached.
-parameterizebehavior_cannot_set_routeBehaviorName_after_attach = TParameterizeBehavior cannot set RouteBehaviorName after being attached.
 
 processhelper_no_forking				= Process Forking is not supported.
 processhelper_no_signals				= Process signals cannot be sent on Windows.
@@ -212,6 +208,9 @@ appsignals_not_a_dispatcher				= '{0}' is not a TSignalsDispatcher.
 
 signalsdispatcher_bad_pid				= '{0}' is not a valid PID.
 signalsdispatcher_no_change				= TSignalsDispatcher::{0} cannot be changed after attaching.
+
+initialized_property_unchangeable		= {1}.{0} cannot be set because it is already initialized.
+initialized_requires_initialization		= {1}.{0} requires initialization before processing.
 
 template_closingtag_unexpected			= Unexpected closing tag '{0}' is found.
 template_closingtag_expected			= Closing tag '{0}' is expected, found '{1}'.
@@ -238,6 +237,9 @@ xmldocument_file_write_failed			= TXmlDocument is unable to write file '{0}'.
 
 xmlelementlist_xmlelement_required		= TXmlElementList can only accept TXmlElement objects.
 
+xmlelement_null_tag						= TXmlElement Tag Name cannot be null.
+xmlelement_empty_tag					= TXmlElement Tag Name cannot be an empty string.
+
 authorizationrule_action_invalid		= TAuthorizationRule.Action can only take 'allow' or 'deny' as the value.
 authorizationrule_verb_invalid			= TAuthorizationRule.Verb can only take 'get' or 'post' as the value.
 
@@ -249,7 +251,6 @@ usermanager_userfile_unchangeable		= TUserManager.UserFile cannot be modified. T
 authmanager_usermanager_required		= TAuthManager.UserManager must be assigned a value.
 authmanager_usermanager_inexistent		= TAuthManager.UserManager '{0}' does not refer to an ID of application module.
 authmanager_usermanager_invalid			= TAuthManager.UserManager '{0}' does not refer to a valid TUserManager application module.
-authmanager_usermanager_unchangeable	= TAuthManager.UserManager cannot be modified after the module is initialized.
 authmanager_session_required			= TAuthManager requires a session application module.
 
 permissions_events_invalid				= TPermissionEvent.Event cannot set an invalid value '{0}'.
@@ -262,7 +263,6 @@ permissions_role_children_invalid		= TPermissionsManager configuration role '{0}
 permissions_rule_invalid				= TPermissionsManager configuration permission rule '{0}' has properties that is not an array.
 permissions_rules_require_name			= TPermissionsManager rules must have a permission "name" property.
 permissions_children_invalid			= TPermissionsManager.*RoleChildren children must be a string or array but is '{0}'.
-permissions_property_unchangeable		= TPermissionsManager.{0} cannot be set because it is already initialized.
 permissions_permissionfile_invalid		= TPermissionsManager.PermissionFile '{0}' is not a valid file.
 
 thememanager_basepath_invalid			= TThemeManager.BasePath '{0}' is not a valid path alias. Make sure you have defined this alias in configuration and it points to a valid directory.
@@ -484,9 +484,13 @@ xmltransform_transform_required			= Either TransformContent or TransformPath pro
 ttriggeredcallback_invalid_controlid	= ControlID property for '{0}' must not be empty.
 tactivecustomvalidator_clientfunction_unsupported = {0} does not support client side validator function.
 
+dbproperties_connectionid_invalid		= {1}.ConnectionID '{0}' does not identify a valid TDataSourceConfig module.
+dbproperties_property_required			= {1}.{0} is a required property.
+
 dbconnection_open_failed				= TDbConnection failed to establish DB connection: {0}
 dbconnection_connection_inactive		= TDbConnection is inactive.
 dbconnection_unsupported_driver_charset	= Database driver '{0}' doesn't support setting charset.
+dbconnection_charset_unchangeable		= Database driver '{0}' cannot change the charset after opening. Charset is a DSN parameter.
 
 dbcommand_prepare_failed				= TDbCommand failed to prepare the SQL statement "{1}": {0}
 dbcommand_execute_failed				= TDbCommand failed to execute the SQL statement "{1}": {0}
@@ -591,7 +595,6 @@ db_cachetable_inexistent				= TDbCache cannot find DB table '{0}' to store cache
 dbparametermodule_table_nonexistent		= TDbParameterModule cannot find DB table '{0}' to store parameter data.
 dbparametermodule_get_no_blank_key		= TDbParameterModule cannot get an empty key.
 dbparametermodule_set_no_blank_key		= TDbParameterModule cannot set an empty key with a value.
-dbparametermodule_property_unchangeable = TDbParameterModule.{0} cannot change after initialization.
 dbparametermodule_connectionid_invalid	= TDbParameterModule.ConnectionID '{0}' does not point to a valid TDataSourceConfig module.
 dbparametermodule_serializer_not_callable= TDbParameterModule Serializer is not a callable.
 
@@ -603,7 +606,6 @@ cron_duplicate_task_name				= TCronModule must have task jobs that hare of uniqu
 cron_schedule_required					= Cron Task must have a schedule.
 cron_task_required						= Cron Task must have a task.
 cron_not_a_crontask						= Cron Task '{0}' is not a TCronTask.
-cron_property_unchangeable				= TCronModule.{0} is already initialized and cannot be changed.
 cron_additional_tasks_invalid			= '{0}' is not a valid additional cron task.
 crontask_no_module						= TCronTask could not find module '{0}'.
 dbcronclean_moduleid_is_null			= TDbCronCleanLogTask could not find the specified module '{0}'.
@@ -611,7 +613,6 @@ dbcron_invalid_name						= TDbCronModule the task name '{0}' is invalid .
 dbcron_conflicting_task_names			= Configuration cron tasks conflict with DB cron tasks '{0}'.
 dbcron_table_nonexistent				= TDbCronModule database table does not exist.
 dbcron_connectionid_invalid				= TDbCronModule.ConnectionID '{0}' is not a TDataSourceConfig.
-dbcron_property_unchangeable			= TDbCronModule.{0} is already initialized and cannot be changed.
 
 timescheduler_invalid_string			= TTimeScheduler could not parse the schedule element '{0}'
 
@@ -625,6 +626,9 @@ bithelper_bad_mirror_bits				= TBitHelper cannot mirror '{0}' bits in a {1} bit 
 ar_data_invalid							= {0}.copyFrom() can only take an object or array as parameter.
 ar_save_invalid							= The {0} instance cannot be saved because it is either deleted or in an unknown state.
 ar_delete_invalid						= The {0} instance cannot be deleted because it is either a new record or a record already deleted.
+
+dbmetadata_invalid_database_driver		= Driver '{0}' is unsupported. Please install its PRADO Driver, if available.
+dbmetadata_not_meta_data				= Expected driver class {1} but got class {0}.
 
 datasource_dbconnection_invalid			= TDataSourceConfig.DbConnection '{0}' is invalid. Please make sure it points to a valid application module.
 distributeddatasource_child_required		= {0} requires one '{1}' child element at minimum.

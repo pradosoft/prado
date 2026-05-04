@@ -3,6 +3,10 @@
   <testsuites>
     <testsuite name="unit">
       <directory suffix="Test.php">./tests/unit</directory>
+      <exclude>./tests/unit/PHPStan</exclude>
+    </testsuite>
+    <testsuite name="phpstan">
+      <directory suffix="Test.php">./tests/unit/PHPStan</directory>
     </testsuite>
     <testsuite name="functional">
       <directory suffix="TestCase.php">./tests/FunctionalTests</directory>

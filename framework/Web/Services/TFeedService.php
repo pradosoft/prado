@@ -88,6 +88,7 @@ class TFeedService extends \Prado\TService
 				}
 			}
 		}
+		parent::init($config);
 	}
 
 	/**

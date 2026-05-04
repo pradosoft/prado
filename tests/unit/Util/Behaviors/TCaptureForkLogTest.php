@@ -4,6 +4,7 @@ use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\TComponent;
 use Prado\Prado;
 use Prado\Util\Behaviors\TMapLazyLoadBehavior;
+use Prado\Util\Helpers\TProcessHelper;
 
 
 class TCaptureForkLogTest extends PHPUnit\Framework\TestCase
@@ -24,6 +25,10 @@ class TCaptureForkLogTest extends PHPUnit\Framework\TestCase
 
 	public function testFork()
 	{
+		if (!TProcessHelper::isForkable()) {
+			$this->markTestSkipped('pcntl_fork is not available on this platform.');
+		}
+
 		$logger = Prado::getLogger();
 
 		$logger->deleteLogs();

@@ -353,7 +353,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	/**
 	 * Returns the module associated with the class path of the control.  This is for Composer
 	 * extensions adding their own Controls to access their associated Module.
-	 * @return null|\Prado\Util\IPluginModule the module associated with this TControl
+	 * @return null|mixed the module associated with this TControl
 	 * @since 4.2.0
 	 */
 	public function getPluginModule()
@@ -1021,12 +1021,14 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 
 	/**
 	 * Creates child controls.
-	 * This method can be overriden for controls who want to have their controls.
+	 * This method can be overridden for controls who want to have their controls.
 	 * Do not call this method directly. Instead, call {@see ensureChildControls}
 	 * to ensure child controls are created only once.
+	 * @method dyCreateChildControls() for the behaviors to process children.
 	 */
 	public function createChildControls()
 	{
+		$this->dyCreateChildControls();
 	}
 
 	/**
@@ -1211,6 +1213,8 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	}
 
 	/**
+	 * @todo v4.4 param $inTemplate for whether or not its for template or for creating control
+	 *					This can be used by TModuleView.
 	 * @return bool whether body contents are allowed for this control. Defaults to true.
 	 */
 	public function getAllowChildControls()

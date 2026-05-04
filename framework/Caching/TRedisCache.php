@@ -15,6 +15,7 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
 use Prado\TPropertyValue;
+use Prado\Util\Traits\TInitializedTrait;
 use Prado\Xml\TXmlElement;
 
 /**
@@ -81,10 +82,8 @@ use Prado\Xml\TXmlElement;
  */
 class TRedisCache extends TCache
 {
-	/**
-	 * @var bool if the module is initialized
-	 */
-	private $_initialized = false;
+	use TInitializedTrait;
+
 	/**
 	 * @var \Redis the Redis instance
 	 */
@@ -138,7 +137,7 @@ class TRedisCache extends TCache
 		$this->_cache->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
 		$this->_cache->select($this->_index);
 		parent::init($config);
-		$this->_initialized = true;
+		$this->markInitialized();
 	}
 
 	/**
@@ -164,11 +163,8 @@ class TRedisCache extends TCache
 	 */
 	public function setHost($value)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('rediscache_host_unchangeable');
-		} else {
-			$this->_host = $value;
-		}
+		$this->assertUninitialized('Host');
+		$this->_host = $value;
 	}
 
 	/**
@@ -185,11 +181,8 @@ class TRedisCache extends TCache
 	 */
 	public function setPort($value)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('rediscache_port_unchangeable');
-		} else {
-			$this->_port = TPropertyValue::ensureInteger($value);
-		}
+		$this->assertUninitialized('Port');
+		$this->_port = TPropertyValue::ensureInteger($value);
 	}
 
 	/**
@@ -206,11 +199,8 @@ class TRedisCache extends TCache
 	 */
 	public function setSocket($value)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('rediscache_socket_unchangeable');
-		} else {
-			$this->_socket = TPropertyValue::ensureString($value);
-		}
+		$this->assertUninitialized('Socket');
+		$this->_socket = TPropertyValue::ensureString($value);
 	}
 
 	/**
@@ -227,11 +217,8 @@ class TRedisCache extends TCache
 	 */
 	public function setIndex($value)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('rediscache_index_unchangeable');
-		} else {
-			$this->_index = TPropertyValue::ensureInteger($value);
-		}
+		$this->assertUninitialized('Index');
+		$this->_index = TPropertyValue::ensureInteger($value);
 	}
 
 	/**

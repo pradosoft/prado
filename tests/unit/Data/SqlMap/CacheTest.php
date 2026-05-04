@@ -23,7 +23,7 @@ class CacheTest extends BaseCase
 	 */
 	public function testJIRA28()
 	{
-		$this->markTestSkipped('Needs fixing');
+		$this->markTestSkipped('Test exposes framework bug: Serialization of PDOStatement is not allowed');
 		/*
 				$account = self::$sqlmap->queryForObject("GetNoAccountWithCache",-99);
 				$this->assertNull($account);

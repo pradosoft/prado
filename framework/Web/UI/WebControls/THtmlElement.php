@@ -22,7 +22,7 @@ use Prado\TPropertyValue;
  * To change the default tag your subclass should override {@see getDefaultTagName}
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @author Brad Anderson <javalizard@gmail.com>
+ * @author Brad Anderson <belisoful@icloud.com>
  * @since 3.1.2
  */
 class THtmlElement extends \Prado\Web\UI\WebControls\TWebControl

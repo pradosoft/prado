@@ -13,6 +13,7 @@ namespace Prado\Web\UI;
 
 use Prado\Prado;
 use Prado\TApplicationMode;
+use Prado\TEventResults;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\Javascripts\TJavaScriptAsset;
@@ -23,6 +24,75 @@ use Prado\Web\THttpUtility;
  * TClientScriptManager class.
  *
  * TClientScriptManager manages javascript and CSS stylesheets for a page.
+ *
+ * This class provides functionality for registering and rendering JavaScript files
+ * and blocks, CSS stylesheets and blocks, hidden fields, and callback/postback
+ * scripts. It integrates with the PRADO framework's asset management system
+ * to publish and manage JavaScript libraries.
+ *
+ * ## JavaScript Package System
+ *
+ * PRADO uses a package-based JavaScript loading system defined in
+ * {@see PACKAGES_FILE} (Web/Javascripts/packages.php). Each package consists of:
+ * - **Folders**: Base folders for JavaScript libraries in PRADO namespace notation
+ * - **Packages**: Named collections of JavaScript files
+ * - **Dependencies**: Package dependency mappings determining load order
+ *
+ * Available default packages include: 'prado', 'jquery', 'ajax', 'validator',
+ * 'datepicker', 'tabpanel', 'accordion', 'slider', 'keyboard', 'htmlarea',
+ * 'htmlarea5', 'colorpicker', 'ratings', 'inlineeditor', 'activefileupload',
+ * 'activedatepicker', 'logger', 'tinymce', 'highlightjs', 'clipboard', etc.
+ *
+ * ## Global Event fxLoadPradoJavascript
+ *
+ * When {@see ensurePradoJavascript} is called, it raises the global event
+ * `fxLoadPradoJavascript` to allow plugins to extend the JavaScript package
+ * system. This event uses the feed-forward pattern via
+ * {@see \Prado\TEventResults::EVENT_RESULT_FEED_FORWARD}, allowing event
+ * handlers to modify the folders, packages, and dependencies arrays.
+ *
+ * The event signature is:
+ * ```php
+ * function fxLoadPradoJavascript($sender, $foldersPackagesDependencies)
+ * ```
+ *
+ * - `string $sender` The class name raising the event ('TClientScriptManager')
+ * - `array $foldersPackagesDependencies` Array containing:
+ *   - `[0] => array $folders` Map of package base folder keys to PRADO namespace paths
+ *   - `[1] => array $packages` Map of package names to arrays of script file paths
+ *   - `[2] => array $dependencies` Map of package names to arrays of dependency package names
+ *
+ * Handlers should return the modified `$foldersPackagesDependencies` array
+ * to feed forward the updated data. Multiple handlers can progressively modify
+ * the data. Returning null is no results, and is skipped in the feed forward.
+ *
+ * Example plugin implementation:
+ * ```php
+ * class TMyPlugin extends \Prado\Util\TBehavior
+ * {
+ *     public function fxLoadPradoJavascript($sender, $foldersPackagesDependencies)
+ *     {
+ *         [$folders, $packages, $dependencies] = $foldersPackagesDependencies;
+ *
+ *         // Add new JavaScript folder
+ *         $folders['myplugin'] = 'MyPlugin\\Javascript';
+ *
+ *         // Add new package
+ *         $packages['myplugin'] = ['myplugin/myplugin.js'];
+ *
+ *         // Add dependencies
+ *         $dependencies['myplugin'] = ['jquery', 'prado'];
+ *
+ *         return [$folders, $packages, $dependencies];
+ *     }
+ * }
+ * ```
+ *
+ * ## CSS Package System
+ *
+ * CSS stylesheets use a similar package system defined in
+ * {@see CSS_PACKAGES_FILE} (Web/Javascripts/css-packages.php) with the same
+ * folder, package, and dependency structure.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Gabor Berczi <gabor.berczi@devworx.hu> (lazyload additions & progressive rendering)
@@ -94,30 +164,45 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	 */
 	private static $_scriptsFolders;
 	/**
-	 * @var array registered PRADO style libraries
+	 * @var array registered PRADO style libraries, keyed by style name.
 	 */
 	private $_registeredStyles = [];
 	/**
-	 * Client-side style library dependencies, loads from CSS_PACKAGES_FILE;
+	 * Client-side style library dependencies, keyed by package name.
+	 * Loaded from CSS_PACKAGES_FILE and fxLoadPradoJavascript.
 	 * @var array
 	 */
 	private static $_styles;
 	/**
-	 * Client-side style library packages, loads from CSS_PACKAGES_FILE;
+	 * Client-side style library packages, keyed by package name.
+	 * Loaded from CSS_PACKAGES_FILE and fxLoadPradoJavascript.
 	 * @var array
 	 */
 	private static $_stylesPackages;
 	/**
-	 * Client-side style library folders, loads from CSS_PACKAGES_FILE;
+	 * Client-side style library folders, keyed by base folder key.
+	 * Loaded from CSS_PACKAGES_FILE and fxLoadPradoJavascript.
 	 * @var array
 	 */
 	private static $_stylesFolders;
 
+	/**
+	 * @var array Tracks which hidden fields have been rendered to prevent duplicate rendering.
+	 */
 	private $_renderedHiddenFields;
 
+	/**
+	 * @var array Map of script URLs that have been rendered.
+	 */
 	private $_renderedScriptFiles = [];
 
+	/**
+	 * @var array Map of expanded JavaScript scripts to prevent duplicate expansion.
+	 */
 	private $_expandedScripts;
+	/**
+	 * @var array Map of expanded CSS styles to prevent duplicate expansion.
+	 */
 	private $_expandedStyles;
 
 	/**
@@ -140,14 +225,97 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 			|| count($this->_headScriptFiles) || count($this->_headScripts);
 	}
 
+	/**
+	 * Returns the PRADO JavaScript packages definitions.
+	 *
+	 * Packages define named collections of JavaScript files and their dependencies.
+	 * Ensures JavaScript packages are loaded via {@see ensurePradoJavascript}.
+	 *
+	 * @return array Map of package names to arrays of script file paths relative to their package folder.
+	 */
 	public static function getPradoPackages()
 	{
+		static::ensurePradoJavascript();
 		return self::$_scriptsPackages;
 	}
 
+	/**
+	 * Returns the PRADO JavaScript package dependencies.
+	 *
+	 * Dependencies map each package name to an array of its dependency package names.
+	 * The dependencies determine the load order when registering scripts.
+	 * Ensures JavaScript packages are loaded via {@see ensurePradoJavascript}.
+	 *
+	 * @return array Map of package names to arrays of dependency package names.
+	 */
 	public static function getPradoScripts()
 	{
+		static::ensurePradoJavascript();
 		return self::$_scripts;
+	}
+
+	/**
+	 * Returns the PRADO JavaScript source folder mappings.
+	 *
+	 * Folders map package base keys (e.g., 'prado', 'jquery') to PRADO namespace
+	 * paths where the JavaScript files are located.
+	 * Ensures JavaScript packages are loaded via {@see ensurePradoJavascript}.
+	 *
+	 * @return array Map of package base keys to PRADO namespace paths.
+	 * @since 4.3.3
+	 */
+	public static function getPradoScriptsFolders()
+	{
+		static::ensurePradoJavascript();
+		return self::$_scriptsFolders;
+	}
+
+	/**
+	 * Ensures the PRADO JavaScript packages are loaded.
+	 *
+	 * This method loads the JavaScript package definitions from {@see PACKAGES_FILE}
+	 * and raises the global event `fxLoadPradoJavascript` to allow plugins to extend
+	 * the package system with custom JavaScript libraries.
+	 *
+	 * The event uses {@see \Prado\TEventResults::EVENT_RESULT_FEED_FORWARD}, meaning
+	 * handlers can modify and return the folders/packages/dependencies array to
+	 * feed forward their changes. See the class docblock for the full event signature
+	 * and example implementation.
+	 *
+	 * {@see TPage::getClientScript()} calls {@see TPageService::getClientScriptManagerClass()}
+	 * to instantiate its own client script manager.
+	 *
+	 * @since 4.3.3
+	 * @see loadPradoJavascript
+	 */
+	public static function ensurePradoJavascript()
+	{
+		if (self::$_scripts === null) {
+			$foldersPackagesDependencies = static::loadPradoJavascript();
+
+			// Connect Plugins
+			$results = Prado::getApplication()->raiseEvent('fxLoadPradoJavascript', static::class, $foldersPackagesDependencies, TEventResults::EVENT_RESULT_FEED_FORWARD);
+			if (!empty($results)) {
+				$foldersPackagesDependencies = array_pop($results);
+			}
+
+			[$folders, $packages, $deps] = $foldersPackagesDependencies;
+
+			self::$_scriptsFolders = $folders;
+			self::$_scriptsPackages = $packages;
+			self::$_scripts = $deps;
+		}
+	}
+
+	/**
+	 * This loads the Prado Javascript Folders, Packages, and Dependencies.
+	 * @return array[3] Script Folders, Scripts, and Script Packages.
+	 * @since 4.3.3
+	 */
+	public static function loadPradoJavascript()
+	{
+		$packageFile = Prado::getFrameworkPath() . DIRECTORY_SEPARATOR . self::PACKAGES_FILE;
+		return include($packageFile);
 	}
 
 	/**
@@ -170,13 +338,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	{
 		// $this->checkIfNotInRender();
 		if (!isset($this->_registeredScripts[$name])) {
-			if (self::$_scripts === null) {
-				$packageFile = Prado::getFrameworkPath() . DIRECTORY_SEPARATOR . self::PACKAGES_FILE;
-				[$folders, $packages, $deps] = include($packageFile);
-				self::$_scriptsFolders = $folders;
-				self::$_scripts = $deps;
-				self::$_scriptsPackages = $packages;
-			}
+			static::ensurePradoJavascript();
 
 			if (isset(self::$_scripts[$name])) {
 				$this->_registeredScripts[$name] = true;
@@ -221,41 +383,66 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param mixed $script
-	 * @return string Prado javascript library base asset url.
+	 * Returns the published asset URL for a PRADO JavaScript library.
+	 *
+	 * This method ensures the JavaScript packages are loaded, registers the script
+	 * if not already registered, and returns the published asset URL through the
+	 * application's asset manager.
+	 *
+	 * @param string $script The script package key (e.g., 'prado', 'jquery', 'ajax').
+	 *                       Defaults to 'prado'.
+	 * @return string The published asset URL for the script library.
 	 */
 	public function getPradoScriptAssetUrl($script = 'prado')
 	{
+		static::ensurePradoJavascript();
+
 		if (!isset(self::$_scriptsFolders[$script])) {
 			$this->registerPradoScriptInternal($script);
 		}
 
 		$base = Prado::getPathOfNameSpace(self::$_scriptsFolders[$script]);
-		$assets = Prado::getApplication()->getAssetManager();
+		$assets = $this->getApplication()->getAssetManager();
 		return $assets->getPublishedUrl($base);
 	}
 
 	/**
-	 * @param mixed $script
-	 * @return string Prado javascript library base asset path in local filesystem.
+	 * Returns the local filesystem path for a PRADO JavaScript library asset.
+	 *
+	 * This method ensures the JavaScript packages are loaded, registers the script
+	 * if not already registered, and returns the published filesystem path through
+	 * the application's asset manager.
+	 *
+	 * @param string $script The script package key (e.g., 'prado', 'jquery', 'ajax').
+	 *                       Defaults to 'prado'.
+	 * @return string The published filesystem path for the script library.
 	 */
 	public function getPradoScriptAssetPath($script = 'prado')
 	{
+		static::ensurePradoJavascript();
+
 		if (!isset(self::$_scriptsFolders[$script])) {
 			$this->registerPradoScriptInternal($script);
 		}
 
 		$base = Prado::getPathOfNameSpace(self::$_scriptsFolders[$script]);
-		$assets = Prado::getApplication()->getAssetManager();
+		$assets = $this->getApplication()->getAssetManager();
 		return $assets->getPublishedPath($base);
 	}
 
 	/**
-	 * Returns the URLs of all script files referenced on the page
-	 * @return array Combined list of all script urls used in the page
+	 * Returns all registered JavaScript file URLs.
+	 *
+	 * This includes both head section scripts (registered via {@see registerHeadScriptFile})
+	 * and form-body scripts (registered via {@see registerScriptFile}). URLs are returned
+	 * in registration order with duplicates removed.
+	 *
+	 * @return array Combined list of all unique script URLs used in the page.
 	 */
 	public function getScriptUrls()
 	{
+		static::ensurePradoJavascript();
+
 		$scripts = array_values(array_map(function ($v) {
 			return $v->getUrl();
 		}, $this->_headScriptFiles));
@@ -266,12 +453,20 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param string $base javascript or css package path.
-	 * @return array tuple($path,$url).
+	 * Resolves the filesystem path and URL for a package base folder.
+	 *
+	 * If the base path is not already published via the asset manager,
+	 * it will be published. Returns both the local filesystem path and
+	 * the corresponding URL for the published asset.
+	 *
+	 * @param string $base The base folder path (javascript or css package path).
+	 * @return array Tuple containing `[$path, $url]` where:
+	 *   - `string $path` Local filesystem path to the published asset
+	 *   - `string $url` URL to access the published asset
 	 */
 	protected function getPackagePathUrl($base)
 	{
-		$assets = Prado::getApplication()->getAssetManager();
+		$assets = $this->getApplication()->getAssetManager();
 		if (strpos($base, $assets->getBaseUrl()) === false) {
 			return [$assets->getPublishedPath($base), $assets->publishFilePath($base)];
 		} else {
@@ -280,11 +475,22 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param string $script javascript package source folder path.
-	 * @return array tuple($basepath,$subpath).
+	 * Resolves the base folder and relative path for a JavaScript package script.
+	 *
+	 * Given a script path like 'prado/prado.js', this splits it into the package
+	 * base folder (e.g., 'prado') and the relative script path (e.g., 'prado.js').
+	 * The base folder is resolved from the namespace to a filesystem directory.
+	 *
+	 * @param string $script JavaScript package source path (e.g., 'prado/prado.js').
+	 * @throws TInvalidOperationException if the package base folder is not registered
+	 * @return array Tuple containing `[$basepath, $subpath]` where:
+	 *   - `string $basepath` Resolved filesystem path to the package base folder
+	 *   - `string $subpath` Relative path to the script within the package
 	 */
 	protected function getScriptPackageFolder($script)
 	{
+		static::ensurePradoJavascript();
+
 		[$base, $subPath] = explode("/", $script, 2);
 
 		if (!array_key_exists($base, self::$_scriptsFolders)) {
@@ -300,8 +506,17 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param string $script css package source folder path.
-	 * @return array tuple($basepath,$subpath).
+	 * Resolves the base folder and relative path for a CSS package stylesheet.
+	 *
+	 * Given a style path like 'jquery-ui/jquery-ui.css', this splits it into the package
+	 * base folder (e.g., 'jquery-ui') and the relative stylesheet path (e.g., 'jquery-ui.css').
+	 * The base folder is resolved from the namespace to a filesystem directory.
+	 *
+	 * @param string $script CSS package source path (e.g., 'jquery-ui/jquery-ui.css').
+	 * @throws TInvalidOperationException if the package base folder is not registered
+	 * @return array Tuple containing `[$basepath, $subpath]` where:
+	 *   - `string $basepath` Resolved filesystem path to the package base folder
+	 *   - `string $subpath` Relative path to the stylesheet within the package
 	 */
 	protected function getStylePackageFolder($script)
 	{
@@ -328,7 +543,6 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	public function getCallbackReference(ICallbackEventHandler $callbackHandler, $options = null)
 	{
 		$options = !is_array($options) ? [] : $options;
-		$class = new \ReflectionClass($callbackHandler);
 		$clientSide = $callbackHandler->getActiveControl()->getClientSide();
 		$options = array_merge($options, $clientSide->getOptions()->toArray());
 		$optionString = TJavaScript::encode($options);
@@ -338,9 +552,16 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * Registers callback javascript for a control.
-	 * @param string $class javascript class responsible for the control being registered for callback
-	 * @param array $options callback options
+	 * Registers a JavaScript callback control.
+	 *
+	 * This registers a JavaScript class that handles callback requests from a control.
+	 * The callback script will be rendered at the end of the form. This method also
+	 * automatically registers the 'ajax' Prado script package which is required
+	 * for callback functionality.
+	 *
+	 * @param string $class JavaScript class name responsible for handling the callback
+	 *                      (e.g., 'Prado.WebUI.CallbackControl').
+	 * @param array $options Callback options that will be passed to the JavaScript class constructor.
 	 */
 	public function registerCallbackControl($class, $options)
 	{
@@ -354,10 +575,19 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * Registers postback javascript for a control. A null class parameter will prevent
-	 * the javascript code registration.
-	 * @param string $class javascript class responsible for the control being registered for postback
-	 * @param array $options postback options
+	 * Registers a JavaScript postback control.
+	 *
+	 * This registers a JavaScript class that handles postback requests from a control.
+	 * The postback script will be rendered at the end of the form. This method also
+	 * automatically registers the 'prado' Prado script package which is required
+	 * for postback functionality.
+	 *
+	 * If $class is null, no JavaScript code will be registered.
+	 *
+	 * @param null|string $class JavaScript class name responsible for handling the postback
+	 *                           (e.g., 'Prado.WebUI.PostBackControl'), or null to skip registration.
+	 * @param array $options Postback options that will be passed to the JavaScript class constructor.
+	 *                       If 'FormID' is not provided, it will be auto-detected from the page form.
 	 */
 	public function registerPostBackControl($class, $options)
 	{
@@ -406,9 +636,20 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param string $panelID the unique ID of the container control
-	 * @param string $buttonID the unique ID of the button control
-	 * @return array default button options.
+	 * Builds the JavaScript options for a default button registration.
+	 *
+	 * These options are used by the Prado.WebUI.DefaultButton JavaScript class
+	 * to handle the default button behavior (pressing Enter in a panel triggers
+	 * the button click).
+	 *
+	 * @param string $panelID The unique ID of the container panel control.
+	 * @param string $buttonID The unique ID of the button control to trigger.
+	 * @return array Default button options containing:
+	 *   - `ID`: Client-side ID of the panel
+	 *   - `Panel`: Client-side ID of the panel (same as ID)
+	 *   - `Target`: Client-side ID of the button
+	 *   - `EventTarget`: Server-side unique ID of the button
+	 *   - `Event`: Event name ('click')
 	 */
 	protected function getDefaultButtonOptions($panelID, $buttonID)
 	{
@@ -437,9 +678,14 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * Registers Prado style by library name. See "Web/Javascripts/packages.php"
-	 * for library names.
-	 * @param string $name style library name.
+	 * Registers a PRADO CSS style library to be loaded.
+	 *
+	 * Style libraries are defined in {@see CSS_PACKAGES_FILE} and include
+	 * packages like 'jquery-ui', etc. The registered styles will be
+	 * automatically expanded to include their dependencies.
+	 *
+	 * @param string $name The CSS library name (e.g., 'jquery-ui').
+	 * @throws TInvalidOperationException if the style name is not a valid registered package.
 	 */
 	public function registerPradoStyle($name)
 	{
@@ -449,8 +695,15 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * Registers a Prado style library to be loaded.
-	 * @param mixed $name
+	 * Internal method to register a Prado CSS style library.
+	 *
+	 * This method handles the actual registration logic including loading the CSS
+	 * package definitions, validating the style name, expanding dependencies,
+	 * and registering the stylesheet files. Style registrations are cached.
+	 *
+	 * @param string $name The CSS library name (e.g., 'jquery-ui').
+	 * @throws TInvalidOperationException if the style name is not a valid registered package.
+	 * @see CSS_PACKAGES_FILE
 	 */
 	protected function registerPradoStyleInternal($name)
 	{
@@ -556,7 +809,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 			}, $this->_styleSheetFiles)
 		);
 
-		foreach (Prado::getApplication()->getAssetManager()->getPublished() as $path => $url) {
+		foreach ($this->getApplication()->getAssetManager()->getPublished() as $path => $url) {
 			if (substr($url, strlen($url) - 4) == '.css') {
 				$stylesheets[] = $url;
 			}
@@ -789,16 +1042,41 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		$writer->write(TJavaScript::renderScriptBlocks($this->_headScripts));
 	}
 
+	/**
+	 * Renders pending script files at the beginning of the form.
+	 *
+	 * This is typically called during form rendering to output script file tags.
+	 * Scripts marked as already rendered will be skipped.
+	 *
+	 * @param \Prado\Web\UI\THtmlWriter $writer The HTML writer for output.
+	 */
 	public function renderScriptFilesBegin($writer)
 	{
 		$this->renderAllPendingScriptFiles($writer);
 	}
 
+	/**
+	 * Renders pending script files at the end of the form.
+	 *
+	 * This is typically called during form rendering to output script file tags.
+	 * Scripts marked as already rendered will be skipped.
+	 *
+	 * @param \Prado\Web\UI\THtmlWriter $writer The HTML writer for output.
+	 */
 	public function renderScriptFilesEnd($writer)
 	{
 		$this->renderAllPendingScriptFiles($writer);
 	}
 
+	/**
+	 * Marks a script file as rendered to prevent duplicate rendering.
+	 *
+	 * Call this method to indicate that a script file has already been output
+	 * and should not be rendered again by subsequent render calls.
+	 *
+	 * @param string|TJavaScriptAsset $url The URL of the script file to mark as rendered,
+	 *                                      or a TJavaScriptAsset object.
+	 */
 	public function markScriptFileAsRendered($url)
 	{
 		$url = (is_object($url) && ($url instanceof TJavaScriptAsset)) ? $url->getUrl() : $url;
@@ -807,6 +1085,15 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		$this->_page->registerCachingAction('Page.ClientScript', 'markScriptFileAsRendered', $params);
 	}
 
+	/**
+	 * Renders a collection of script files to the writer.
+	 *
+	 * Each script is output using {@see TJavaScript::renderScriptFile} and
+	 * marked as rendered.
+	 *
+	 * @param \Prado\Web\UI\THtmlWriter $writer The HTML writer for output.
+	 * @param array $scripts Array of script file URLs or TJavaScriptAsset objects.
+	 */
 	protected function renderScriptFiles($writer, array $scripts)
 	{
 		foreach ($scripts as $script) {
@@ -815,13 +1102,23 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		}
 	}
 
+	/**
+	 * Returns the list of script files that have been marked as rendered.
+	 *
+	 * @return array Map of rendered script URLs to themselves.
+	 */
 	protected function getRenderedScriptFiles()
 	{
 		return $this->_renderedScriptFiles;
 	}
 
 	/**
-	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
+	 * Renders all pending (not yet rendered) script files.
+	 *
+	 * Only scripts that have not been marked as rendered will be output.
+	 * After rendering, scripts are marked as rendered to prevent duplicates.
+	 *
+	 * @param \Prado\Web\UI\THtmlWriter $writer The HTML writer for output.
 	 */
 	public function renderAllPendingScriptFiles($writer)
 	{
@@ -863,20 +1160,42 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		$writer->write(TJavaScript::renderScriptBlocksCallback($this->_endScripts));
 	}
 
+	/**
+	 * Renders hidden fields at the beginning of the form.
+	 *
+	 * Hidden fields are rendered as text input elements with autocomplete="off"
+	 * to prevent browser restoration of values on page reload.
+	 *
+	 * @param \Prado\Web\UI\THtmlWriter $writer The HTML writer for output.
+	 */
 	public function renderHiddenFieldsBegin($writer)
 	{
 		$this->renderHiddenFieldsInt($writer, true);
 	}
 
+	/**
+	 * Renders hidden fields at the end of the form.
+	 *
+	 * Hidden fields that were already rendered in begin will be skipped.
+	 *
+	 * @param \Prado\Web\UI\THtmlWriter $writer The HTML writer for output.
+	 */
 	public function renderHiddenFieldsEnd($writer)
 	{
 		$this->renderHiddenFieldsInt($writer, false);
 	}
 
 	/**
-	 * Flushes all pending script registrations
-	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
-	 * @param null|TControl $control the control forcing the flush (used only in error messages)
+	 * Flushes all pending script file registrations.
+	 *
+	 * This forces any pending script files to be rendered immediately.
+	 * This is useful when a control needs to ensure its scripts are included
+	 * before rendering completes. On callback requests, this does nothing
+	 * as scripts are handled differently for callbacks.
+	 *
+	 * @param \Prado\Web\UI\THtmlWriter $writer The HTML writer for output.
+	 * @param null|TControl $control The control forcing the flush (used only in error messages).
+	 * @see renderAllPendingScriptFiles
 	 */
 	public function flushScriptFiles($writer, $control = null)
 	{
@@ -919,6 +1238,12 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		}
 	}
 
+	/**
+	 * Returns all registered hidden fields.
+	 *
+	 * @return array Map of hidden field names to their values.
+	 *                If a value is an array, multiple hidden fields will be rendered.
+	 */
 	public function getHiddenFields()
 	{
 		return $this->_hiddenFields;

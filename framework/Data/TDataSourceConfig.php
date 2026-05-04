@@ -13,6 +13,7 @@ namespace Prado\Data;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TApplication;
+use Prado\TModule;
 
 /**
  * TDataSourceConfig module class provides <module> configuration for database connections.
@@ -39,17 +40,17 @@ use Prado\TApplication;
  * }
  * ```
  *
- * The properties of <connection> are those of the class TDbConnection.
+ * The properties of <database ... /> are routed to the created TDbConnection on {@see init}
  * Set {@see setConnectionClass} attribute for a custom database connection class
  * that extends the TDbConnection class.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
  */
-class TDataSourceConfig extends \Prado\TModule
+class TDataSourceConfig extends TModule
 {
-	private $_connID = '';
-	private $_conn;
+	use TDbPropertiesTrait;
+
 	private $_connClass = \Prado\Data\TDbConnection::class;
 
 	/**
@@ -77,25 +78,6 @@ class TDataSourceConfig extends \Prado\TModule
 	}
 
 	/**
-	 * The module ID of another TDataSourceConfig. The {@see getDbConnection DbConnection}
-	 * property of this configuration will equal to {@see getDbConnection DbConnection}
-	 * of the given TDataSourceConfig module.
-	 * @param string $value module ID.
-	 */
-	public function setConnectionID($value)
-	{
-		$this->_connID = $value;
-	}
-
-	/**
-	 * @return string connection module ID.
-	 */
-	public function getConnectionID()
-	{
-		return $this->_connID;
-	}
-
-	/**
 	 * Gets the TDbConnection from another module if {@see setConnectionID ConnectionID}
 	 * is supplied and valid. Otherwise, a connection of type given by
 	 * {@see setConnectionClass ConnectionClass} is created.
@@ -104,8 +86,9 @@ class TDataSourceConfig extends \Prado\TModule
 	public function getDbConnection()
 	{
 		if ($this->_conn === null) {
-			if ($this->_connID !== '') {
-				$this->_conn = $this->findConnectionByID($this->getConnectionID());
+			$connID = $this->getConnectionID();
+			if ($connID !== '') {
+				$this->_conn = $this->findConnectionByID($connID);
 			} else {
 				$this->_conn = Prado::createComponent($this->getConnectionClass());
 			}

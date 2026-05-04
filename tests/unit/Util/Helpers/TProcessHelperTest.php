@@ -124,6 +124,7 @@ class TProcessHelperTest extends PHPUnit\Framework\TestCase
 		$process = proc_open($command, $descriptorspec, $pipes);
 		$info = proc_get_status($process);
 		$pid = $info['pid'];
+		usleep(50_000); // Allow time for the process to appear in the OS task list (needed on Windows).
 		self::assertTrue(TProcessHelper::isRunning($pid));
 		
 		self::assertTrue(is_int($processPriority = TProcessHelper::getProcessPriority($pid)));
@@ -154,7 +155,8 @@ class TProcessHelperTest extends PHPUnit\Framework\TestCase
 			$this->assertEquals($expected, TProcessHelper::escapeShellArg($argument));
 			
 			$argument = '"quoted"';
-			$expected = '\\"quoted\\"';
+			// 'quoted' is non-quote content so $addQuote=true; result is outer double-quotes wrapping the escaped inner quotes.
+			$expected = '"\"quoted\""';
 			$this->assertEquals($expected, TProcessHelper::escapeShellArg($argument));
 			
 			$argument = '%ENVIRONMENT%';

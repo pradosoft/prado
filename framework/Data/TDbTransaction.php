@@ -39,7 +39,7 @@ use Prado\TPropertyValue;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
-class TDbTransaction extends \Prado\TComponent
+class TDbTransaction extends \Prado\TComponent implements IDataTransaction
 {
 	private $_connection;
 	private $_active;

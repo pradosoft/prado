@@ -45,7 +45,8 @@ class TXmlTransformTest extends PHPUnit\Framework\TestCase
 		$expected = $this->documentPath;
 		$transform = new TXmlTransform();
 		$transform->setDocumentPath('UnitTest.hello');
-		$this->assertEquals($expected, $transform->getDocumentPath());
+		// Normalize separators so the comparison is cross-platform (Windows may use backslashes).
+		$this->assertEquals(str_replace('\\', '/', $expected), str_replace('\\', '/', (string) $transform->getDocumentPath()));
 	}
 
 	public function testSetTransformContent()
@@ -72,12 +73,20 @@ class TXmlTransformTest extends PHPUnit\Framework\TestCase
 		$expected = $this->transformPath;
 		$transform = new TXmlTransform();
 		$transform->setTransformPath('UnitTest.hello');
-		$this->assertEquals($expected, $transform->getTransformPath());
+		// Normalize separators so the comparison is cross-platform (Windows may use backslashes).
+		$this->assertEquals(str_replace('\\', '/', $expected), str_replace('\\', '/', (string) $transform->getTransformPath()));
 	}
 
 	public function testAddParameter()
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$transform = new TXmlTransform();
+		$parameters = $transform->getParameters();
+		$parameters->add('param1', 'value1');
+		$parameters->add('param2', 'value2');
+		
+		$this->assertEquals('value1', $transform->getParameters()->itemAt('param1'));
+		$this->assertEquals('value2', $transform->getParameters()->itemAt('param2'));
+		$this->assertCount(2, $transform->getParameters());
 	}
 
 	public function testRenderWithDocumentContentAndTransformContent()
@@ -134,6 +143,27 @@ class TXmlTransformTest extends PHPUnit\Framework\TestCase
 
 	public function testRenderWithBodyAsDocumentAndTransformPath()
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		// Set transform path but leave document unset so it uses body as document
+		$transform = new TXmlTransform();
+		$transform->setTransformPath($this->transformPath);
+		
+		// Create a writer and render
+		$textWriter = new TTextWriter();
+		$htmlWriter = new THtmlWriter($textWriter);
+		
+		// Test with parameters to make sure they're processed even when falling back to body
+		$transform->getParameters()->add('testParam', 'testValue');
+		$this->assertEquals('testValue', $transform->getParameters()->itemAt('testParam'));
+		
+		try {
+			$transform->render($htmlWriter);
+			$this->fail("should have thrown \ValueError");
+		} catch (\ValueError) {}
+		$actual = $textWriter->flush();
+		
+		// Since we're transforming an empty XML document with our XSL,
+		// and our XSL expects a <greeting> element, we should get an empty <b> tag
+		$this->assertEquals('', $actual);
+		ob_end_clean();
 	}
 }

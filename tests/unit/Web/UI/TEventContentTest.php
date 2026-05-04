@@ -22,7 +22,8 @@ class TEventContentTest extends PHPUnit\Framework\TestCase
 
 	public function testConstruct()
 	{
-		self::assertInstanceOf(TEventContent::class, $this->obj);
+		// Default state: no broadcast event assigned yet
+		self::assertEquals('', $this->obj->getBroadcastEvent());
 	}
 
 	public function testBroadcastEvent()

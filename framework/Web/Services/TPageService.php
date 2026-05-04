@@ -10,12 +10,13 @@
 
 namespace Prado\Web\Services;
 
-use Prado\Prado;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\THttpException;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\Prado;
 use Prado\TApplication;
 use Prado\TApplicationMode;
+use Prado\Util\Traits\TInitializedTrait;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\TTemplateManager;
 use Prado\Web\UI\TThemeManager;
@@ -77,6 +78,8 @@ use Prado\Web\UI\TThemeManager;
  */
 class TPageService extends \Prado\TService
 {
+	use TInitializedTrait;
+
 	/**
 	 * Configuration file name
 	 */
@@ -134,10 +137,6 @@ class TPageService extends \Prado\TService
 	 * @var array list of initial page property values
 	 */
 	private $_properties = [];
-	/**
-	 * @var bool whether service is initialized
-	 */
-	private $_initialized = false;
 
 	/**
 	 * Initializes the service.
@@ -151,8 +150,8 @@ class TPageService extends \Prado\TService
 		$pageConfig = $this->loadPageConfig($config);
 
 		$this->initPageContext($pageConfig);
-
-		$this->_initialized = true;
+		parent::init($config);
+		$this->markInitialized();
 	}
 
 	/**
@@ -358,11 +357,8 @@ class TPageService extends \Prado\TService
 	 */
 	public function setDefaultPage($value)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('pageservice_defaultpage_unchangeable');
-		} else {
-			$this->_defaultPage = $value;
-		}
+		$this->assertUninitialized('DefaultPage');
+		$this->_defaultPage = $value;
 	}
 
 	/**
@@ -396,9 +392,8 @@ class TPageService extends \Prado\TService
 	 */
 	public function setBasePath($value)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('pageservice_basepath_unchangeable');
-		} elseif (($path = Prado::getPathOfNamespace($value)) === null || !is_dir($path)) {
+		$this->assertUninitialized('BasePath');
+		if (($path = Prado::getPathOfNamespace($value)) === null || !is_dir($path)) {
 			throw new TConfigurationException('pageservice_basepath_invalid', $value);
 		}
 		$this->_basePath = realpath($path);
@@ -555,8 +550,9 @@ class TPageService extends \Prado\TService
 	}
 
 	/**
-	 * This event is raised just before the page is run.  Any part of the system can  patch into the page
-	 * events with an onPreRunPage handler.
+	 * This event is raised just before the page is run.  Any part of the system can
+	 * patch into the page through this method. Modules can link into each page with
+	 * their event handlers on this event. This is a critical event in PRADO.
 	 * @param mixed $param what is passed as the parameter to the event
 	 * @since 4.2.0
 	 */

@@ -40,7 +40,7 @@ use Prado\Prado;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
-class TDbCommand extends \Prado\TComponent
+class TDbCommand extends \Prado\TComponent implements IDataCommand
 {
 	private $_connection;
 	private $_text = '';
@@ -297,5 +297,17 @@ class TDbCommand extends \Prado\TComponent
 			$column[] = current($row);
 		}
 		return $column;
+	}
+
+	/**
+	 * Executes the SQL statement and returns all rows as an array.
+	 * This is a convenience method equivalent to calling query()->readAll().
+	 * @throws TDbException execution failed
+	 * @return array the query result as an array of rows
+	 * @since 4.3.3
+	 */
+	public function queryAll()
+	{
+		return $this->query()->readAll();
 	}
 }

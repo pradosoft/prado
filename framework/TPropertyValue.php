@@ -1,13 +1,9 @@
 <?php
 
 /**
- * TComponent, TPropertyValue classes
+ * TPropertyValue class file
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- *
- * Global Events, intra-object events, Class behaviors, expanded behaviors
- * @author Brad Anderson <javalizard@mac.com>
- *
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
@@ -160,6 +156,9 @@ class TPropertyValue
 	{
 		static $types = [];
 		if (func_num_args() === 2 && is_string($enums)) {
+			if ($enums instanceof TEnumerable) {
+				return $enums::hasConstant($value);
+			}
 			if (!isset($types[$enums])) {
 				$types[$enums] = new \ReflectionClass($enums);
 			}
@@ -209,6 +208,7 @@ class TPropertyValue
 	 *	 for allow web colors to translate into their # hex color.
 	 * @param null|float|int $blue The blue color. Default null for (A) or (B)
 	 * @return string The valid # hex color.
+	 * @since 4.3.0
 	 */
 	public static function ensureHexColor($value, $green = true, $blue = null)
 	{
@@ -238,7 +238,7 @@ class TPropertyValue
 		if ($green && $len > 0 && $value[0] !== '#') {
 			static $colors;
 			if (!$colors) {
-				$reflect = new \ReflectionClass(\Prado\Web\UI\TWebColors::class);
+				$reflect = new \ReflectionClass(\Prado\Web\UI\TWebColor::class);
 				$colors = $reflect->getConstants();
 				$colors = array_change_key_case($colors);
 			}

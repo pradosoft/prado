@@ -31,8 +31,11 @@ class TApplicationSignalTest extends PHPUnit\Framework\TestCase
 
 	public function testAttachDetach()
 	{
+		if (!TSignalsDispatcher::hasSignals()) {
+			$this->markTestSkipped('pcntl signals are not available on this platform.');
+		}
 		$app = Prado::getApplication();
-		
+
 		self::assertNull(TSignalsDispatcher::singleton(false));
 		$this->behavior->setSignalsClass(TTestAppSignalsDispatcher::class);
 		

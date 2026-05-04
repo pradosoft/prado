@@ -221,6 +221,9 @@ class TSignalsDispatcherTest extends PHPUnit\Framework\TestCase
 	
 	public function testTEventSubscription()
 	{
+		if (!TSignalsDispatcher::hasSignals()) {
+			$this->markTestSkipped('pcntl signals are not available on this platform.');
+		}
 		$this->dispatcher = TSignalsDispatcher::singleton();
 		$subscription = new TEventSubscription($this->dispatcher, SIGTERM, $handler = function($sender, $param) {return true;}, 5);
 		self::assertTrue($subscription->getIsSubscribed());
@@ -308,6 +311,9 @@ class TSignalsDispatcherTest extends PHPUnit\Framework\TestCase
 	
 	public function testInvoke()
 	{
+		if (!TSignalsDispatcher::hasSignals()) {
+			$this->markTestSkipped('pcntl signals are not available on this platform.');
+		}
 		// Preset custom handlers, stored on attach, to be restored on detach
 		$ogHandler = new TTestSignalInvokable(8);
 		
@@ -481,6 +487,9 @@ class TSignalsDispatcherTest extends PHPUnit\Framework\TestCase
 	
 	public function testDelegateChild()
 	{
+		if (!TSignalsDispatcher::hasSignals()) {
+			$this->markTestSkipped('pcntl signals are not available on this platform.');
+		}
 		$this->dispatcher = new TTestSignalsDispatcher();
 		
 		$this->dispatcher->delegateChild($this->dispatcher, null);

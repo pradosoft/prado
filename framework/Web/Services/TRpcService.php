@@ -131,6 +131,7 @@ class TRpcService extends \Prado\TService
 	public function init($config)
 	{
 		$this->loadConfig($config);
+		parent::init($config);
 	}
 
 	/**

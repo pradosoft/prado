@@ -17,6 +17,33 @@ use Prado\Exceptions\{TInvalidOperationException, TInvalidDataValueException};
 use Prado\TComponent;
 use Prado\Util\Helpers\TProcessHelper;
 
+// Signal constants are provided by the pcntl extension (Linux/macOS only).
+// Define POSIX-standard stub values on systems where pcntl is unavailable (e.g. Windows)
+// so the class can be loaded.  The actual signal functionality is guarded by hasSignals().
+if (!function_exists('pcntl_signal')) {
+	defined('SIGALRM') || define('SIGALRM', 14);
+	defined('SIGHUP') || define('SIGHUP', 1);
+	defined('SIGINT') || define('SIGINT', 2);
+	defined('SIGQUIT') || define('SIGQUIT', 3);
+	defined('SIGTRAP') || define('SIGTRAP', 5);
+	defined('SIGABRT') || define('SIGABRT', 6);
+	defined('SIGUSR1') || define('SIGUSR1', 10);
+	defined('SIGUSR2') || define('SIGUSR2', 12);
+	defined('SIGTERM') || define('SIGTERM', 15);
+	defined('SIGCHLD') || define('SIGCHLD', 17);
+	defined('SIGCONT') || define('SIGCONT', 18);
+	defined('SIGTSTP') || define('SIGTSTP', 20);
+	defined('SIGTTIN') || define('SIGTTIN', 21);
+	defined('SIGTTOU') || define('SIGTTOU', 22);
+	defined('SIGURG') || define('SIGURG', 23);
+	defined('SIGBUS') || define('SIGBUS', 7);
+	defined('SIGFPE') || define('SIGFPE', 8);
+	defined('SIGILL') || define('SIGILL', 4);
+	defined('SIGPIPE') || define('SIGPIPE', 13);
+	defined('SIGSEGV') || define('SIGSEGV', 11);
+	defined('SIGSYS') || define('SIGSYS', 31);
+}
+
 /**
  * TSignalsDispatcher class.
  *
@@ -214,11 +241,17 @@ class TSignalsDispatcher extends TComponent implements \Prado\ISingleton
 	 */
 	public function attach(): bool
 	{
-		if (!static::hasSignals() || self::$_singleton !== null) {
+		if (self::$_singleton !== null) {
 			return false;
 		}
 
+		// Always register as singleton (even without pcntl) so the object can be used
+		// for non-signal purposes (e.g. child-PID tracking, testing).
 		self::$_singleton = $this;
+
+		if (!static::hasSignals()) {
+			return false; // Singleton set; signal handlers cannot be registered without pcntl.
+		}
 
 		if (self::$_asyncSignals === null) {
 			static::setAsyncSignals(true);
@@ -235,7 +268,9 @@ class TSignalsDispatcher extends TComponent implements \Prado\ISingleton
 			$callable = is_callable($handler);
 			if ($callable) {
 				$handler = function ($sender, $param) use ($handler) {
-					return $handler($param->getSignal(), $param->getParameter());
+					if (is_callable($handler)) {
+						return $handler($param->getSignal(), $param->getParameter());
+					}
 				};
 				self::$_priorHandlers[$signal][1] = $handler;
 			}
@@ -301,7 +336,9 @@ class TSignalsDispatcher extends TComponent implements \Prado\ISingleton
 		static::$_alarms = [];
 		self::$_singleton = null;
 
-		static::setAsyncSignals(self::$_priorAsync);
+		if (static::hasSignals()) {
+			static::setAsyncSignals(self::$_priorAsync);
+		}
 		self::$_priorAsync = null;
 		self::$_asyncSignals = null;
 

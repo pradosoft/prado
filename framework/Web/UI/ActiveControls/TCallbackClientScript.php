@@ -249,6 +249,21 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	}
 
 	/**
+	 * Removes the attribute of a particular control.
+	 * @param \Prado\Web\UI\TControl $control control element or element id
+	 * @param string $name attribute name
+	 * @since 4.3.3
+	 */
+	public function removeAttribute($control, $name)
+	{
+		// Attributes should be applied on Surrounding tag, except for 'disabled' attribute
+		if ($control instanceof ISurroundable && strtolower($name) !== 'disabled') {
+			$control = $control->getSurroundingTagID();
+		}
+		$this->callClientFunction('Prado.Element.removeAttribute', [$control, $name]);
+	}
+
+	/**
 	 * Sets the options of a select input element.
 	 * @param \Prado\Web\UI\TControl $control control element or element id
 	 * @param array|TListControl $items a list of new options

@@ -13,6 +13,7 @@ namespace Prado\Caching;
 use Prado\Prado;
 use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbConnection;
+use Prado\Data\TDbPropertiesTrait;
 use Prado\Exceptions\TConfigurationException;
 use Prado\TPropertyValue;
 use Prado\Util\Cron\TCronTaskInfo;
@@ -91,14 +92,10 @@ use Prado\Util\Cron\TCronTaskInfo;
  */
 class TDbCache extends TCache implements \Prado\Util\IDbModule
 {
-	/**
-	 * @var string the ID of TDataSourceConfig module
-	 */
-	private $_connID = '';
-	/**
-	 * @var TDbConnection the DB connection instance
-	 */
-	private $_db;
+	use TDbPropertiesTrait {
+		getDbConnection as getTraitDbConnection;
+	}
+
 	/**
 	 * @var string name of the DB cache table
 	 */
@@ -122,18 +119,6 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 	private $_username = '';
 	private $_password = '';
 	private $_connectionString = '';
-
-	/**
-	 * Destructor.
-	 * Disconnect the db connection.
-	 */
-	public function __destruct()
-	{
-		if ($this->_db !== null) {
-			$this->_db->setActive(false);
-		}
-		parent::__destruct();
-	}
 
 	/**
 	 * Initializes this module.
@@ -195,7 +180,7 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 			}
 
 			if ($this->_autoCreate && !$this->_createCheck) {
-				Prado::trace(($force ? 'Force initializing: ' : 'Initializing: ') . $this->_connID . ', ' . $this->_cacheTable, TDbCache::class);
+				Prado::trace(($force ? 'Force initializing: ' : 'Initializing: ') . $this->getConnectionID() . ', ' . $this->_cacheTable, TDbCache::class);
 
 				$sql = 'SELECT 1 FROM ' . $this->_cacheTable . ' WHERE 0=1';
 				$db->createCommand($sql)->queryScalar();
@@ -252,7 +237,7 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 			if (!$this->_cacheInitialized) {
 				$this->initializeCache();
 			}
-			Prado::trace(($force ? 'Force flush of expired items: ' : 'Flush expired items: ') . $this->_connID . ', ' . $this->_cacheTable, TDbCache::class);
+			Prado::trace(($force ? 'Force flush of expired items: ' : 'Flush expired items: ') . $this->getConnectionID() . ', ' . $this->_cacheTable, TDbCache::class);
 			$sql = 'DELETE FROM ' . $this->_cacheTable . ' WHERE expire<>0 AND expire<' . $now;
 			$this->getDbConnection()->createCommand($sql)->execute();
 			$this->getApplication()->setGlobalState($key, $now);
@@ -293,71 +278,44 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 	}
 
 	/**
-	 * Creates the DB connection.
-	 * @throws TConfigurationException if module ID is invalid or empty
-	 * @return \Prado\Data\TDbConnection the created DB connection
+	 * Active on every getDbConnection.
+	 * @return ?bool What kind of activation for the connection on retrieving.
+	 * @since 4.3.3
 	 */
-	protected function createDbConnection()
+	protected function getDbConnectionActivationType(): ?bool
 	{
-		if ($this->_connID !== '') {
-			$config = $this->getApplication()->getModule($this->_connID);
-			if ($config instanceof TDataSourceConfig) {
-				return $config->getDbConnection();
-			} else {
-				throw new TConfigurationException('dbcache_connectionid_invalid', $this->_connID);
-			}
-		} else {
-			$db = new TDbConnection();
-			if ($this->_connectionString !== '') {
-				$db->setConnectionString($this->_connectionString);
-				if ($this->_username !== '') {
-					$db->setUsername($this->_username);
-				}
-				if ($this->_password !== '') {
-					$db->setPassword($this->_password);
-				}
-			} else {
-				// default to SQLite3 database
-				$dbFile = $this->getApplication()->getRuntimePath() . '/sqlite3.cache';
-				$db->setConnectionString('sqlite:' . $dbFile);
-			}
-			return $db;
+		return true;
+	}
+
+	/**
+	 * If there is a custom Db Connection that isn't referenced by ConnectionID.
+	 * @return ?TDbConnection the custom DB connection, or null if not implemented
+	 * @since 4.3.3
+	 */
+	protected function getCustomDbConnection(): ?TDbConnection
+	{
+		$connectionString = $this->getConnectionString();
+		if (empty($connectionString)) {
+			return null;
 		}
-	}
-
-	/**
-	 * @return \Prado\Data\TDbConnection the DB connection instance
-	 */
-	public function getDbConnection()
-	{
-		if ($this->_db === null) {
-			$this->_db = $this->createDbConnection();
+		$db = new TDbConnection();
+		$db->setConnectionString($connectionString);
+		if ($this->_username !== '') {
+			$db->setUsername($this->getUsername());
 		}
-
-		$this->_db->setActive(true);
-		return $this->_db;
+		if ($this->_password !== '') {
+			$db->setPassword($this->_password);
+		}
+		return $db;
 	}
 
 	/**
-	 * @return string the ID of a {@see \Prado\Data\TDataSourceConfig} module. Defaults to empty string, meaning not set.
-	 * @since 3.1.1
+	 * @return string the SQLite database filename within the PRADO runtime path.
+	 * @since 4.3.3
 	 */
-	public function getConnectionID()
+	protected function getSqliteDatabaseName()
 	{
-		return $this->_connID;
-	}
-
-	/**
-	 * Sets the ID of a TDataSourceConfig module.
-	 * The datasource module will be used to establish the DB connection for this cache module.
-	 * The database connection can also be specified via {@see \Prado\Caching\TDbCache::setConnectionString() ConnectionString}.
-	 * When both ConnectionID and ConnectionString are specified, the former takes precedence.
-	 * @param string $value ID of the {@see \Prado\Data\TDataSourceConfig} module
-	 * @since 3.1.1
-	 */
-	public function setConnectionID($value)
-	{
-		$this->_connID = $value;
+		return 'sqlite3.cache';
 	}
 
 	/**

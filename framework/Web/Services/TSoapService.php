@@ -130,6 +130,7 @@ class TSoapService extends \Prado\TService
 		$this->loadConfig($config);
 
 		$this->resolveRequest();
+		parent::init($config);
 	}
 
 	/**

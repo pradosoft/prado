@@ -13,6 +13,8 @@ class TDbTransactionTest extends PHPUnit\Framework\TestCase
 
 	protected function setUp(): void
 	{
+		// Remove any stale DB file from a previous test run (guards against Windows
+		// file-lock failures leaving the file behind after tearDown).
 		@unlink(TEST_DB_FILE);
 
 		// create application just to provide application mode
@@ -25,7 +27,13 @@ class TDbTransactionTest extends PHPUnit\Framework\TestCase
 
 	protected function tearDown(): void
 	{
-		$this->_connection = null;
+		// Explicitly close the PDO connection before unlinking to release the file
+		// lock on Windows (where an open handle prevents unlink from succeeding).
+		if ($this->_connection !== null) {
+			$this->_connection->Active = false;
+			$this->_connection = null;
+		}
+		@unlink(TEST_DB_FILE);
 	}
 
 	public function testRollBack()

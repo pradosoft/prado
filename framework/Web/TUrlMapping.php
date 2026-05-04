@@ -69,6 +69,15 @@ use Prado\Xml\TXmlElement;
  * to constructUrl() and every parameter in the {@see getPattern Pattern} is found
  * in the GET variables.
  *
+ * Since PRADO 4.3.3, URL patterns support HTTP verb matching via the {@see \Prado\Web\TUrlMappingPattern::getVerbs Verbs} attribute.
+ * This allows restricting URL patterns to specific HTTP methods (GET, POST, PUT, DELETE, etc.).
+ * Use a comma-separated list for multiple verbs. Use the prefix '~' or '!' to negate a verb.
+ * For example:
+ * - verbs="GET" - only matches GET requests
+ * - verbs="POST,PUT" - matches POST or PUT requests
+ * - verbs="~GET" or verbs="!GET" - matches any request except GET requests
+ * - verbs="~GET,!PUT" - multiple negative verbs can be matched
+ *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.0.5
  */

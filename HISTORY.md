@@ -1,3 +1,15 @@
+## Version 4.3.3 - TBA
+
+ENH: Issue #1052 - Integration for 3rd Party Databases into ActiveRecord and TTableGateway. eg.[PRADO MongoDB](https://github.com/belisoful/prado-mongodb)
+ENH: Issue #1037 - Adds skipping `#` and `;` comments in errorMessages.txt processing
+ENH: Issue #1036 - Adds IBM DB2 and Firebird support to Data.Common
+ENH: Issue #1027 - Adds TNull to represent `null` in Collections.
+ENH: Issue #776 - TDataSize supports ronna- and quetta- sizes, and uses cultural units for peta- and under (decimal only).
+ENH: Issue #782 - CultureInfo loads and formats units from ICU.
+BUG: Issue #1013 - CultureInfo loads more than one ICU key.
+
+## Version 4.3.2 - January 28, 2026
+
 ## Version 4.3.1 - May 21, 2025
 
 ENH: Issue #993 - Added TDatePicker::DropDownCssClass to apply a class to all the dropdowns

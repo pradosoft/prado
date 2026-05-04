@@ -72,9 +72,6 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	 */
 	protected $_routeBehaviorName;
 
-	/** @var bool is the behavior attached */
-	private $_initialized = false;
-
 	/**
 	 * This method sets the Owner Property to the Application Parameter of Parameter. When
 	 * {@see getRouteBehaviorName} is set, a {@see \Prado\Util\Behaviors\TMapRouteBehavior} is attached to
@@ -87,7 +84,6 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 		parent::attach($owner);
 
 		if (!$this->getEnabled()) {
-			$this->_initialized = true;
 			return;
 		}
 		if (!$this->_parameter) {
@@ -117,7 +113,6 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 			}
 			$owner->setSubProperty($this->_property, $value);
 		}
-		$this->_initialized = true;
 
 		$this->attachParamMapRoute();
 	}
@@ -170,7 +165,6 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 			Prado::getApplication()->getParameters()->detachBehavior($this->_routeBehaviorName);
 			$this->_routeBehaviorName = null;
 		}
-		$this->_initialized = false;
 		parent::detach($owner);
 	}
 
@@ -209,9 +203,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	 */
 	public function setValidNullValue($value)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('parameterizebehavior_cannot_set_validNullValue_after_attach');
-		}
+		$this->assertWithoutOwner('ValidNullValue');
 		$this->_validNullValue = TPropertyValue::ensureBoolean($value);
 	}
 
@@ -228,9 +220,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	 */
 	public function setProperty($value)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('parameterizebehavior_cannot_set_property_after_attach');
-		}
+		$this->assertWithoutOwner('Property');
 		$this->_property = TPropertyValue::ensureString($value);
 	}
 
@@ -247,9 +237,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	 */
 	public function setDefaultValue($value)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('parameterizebehavior_cannot_set_defaultValue_after_attach');
-		}
+		$this->assertWithoutOwner('DefaultValue');
 		$this->_defaultValue = TPropertyValue::ensureString($value);
 	}
 
@@ -266,9 +254,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	 */
 	public function setLocalize($value)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('parameterizebehavior_cannot_set_localize_after_attach');
-		}
+		$this->assertWithoutOwner('Localize');
 		$this->_localize = TPropertyValue::ensureBoolean($value);
 	}
 
@@ -285,9 +271,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	 */
 	public function setRouteBehaviorName($value)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('parameterizebehavior_cannot_set_routeBehaviorName_after_attach');
-		}
+		$this->assertWithoutOwner('RouteBehaviorName');
 		$this->_routeBehaviorName = TPropertyValue::ensureString($value);
 	}
 }

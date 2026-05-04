@@ -71,6 +71,7 @@
 		"ext-memcached" : "Enables the use of TMemCache as a cache handler",
 		"ext-pdo" : "Used by all the Prado\\Data components, eg. TActiveRecord",
 		"ext-soap" : "Used by TSoapService to provide a soap backend",
+		"ext-sockets" : "Used by TCaptureForkLog to capture the log of a child process",
 		"ext-xdebug": "Useful to get stack traces on Php fatal errors",
 		"ext-xsl" : "Used by the TXmlTransform component",
 		"ext-zlib" : "Enables compression to reduce page size",
@@ -95,12 +96,23 @@
 		"docs" : "http://www.pradoframework.net/site/documentation"
 	},
     "scripts": {
+		"devtools": [
+			"composer require --dev friendsofphp/php-cs-fixer",
+			"composer require --dev phpstan/phpstan",
+			"composer require --dev phpunit/phpunit"
+		],
         "gendoc": "phpdoc --template=./vendor/pradosoft/prado-phpdoc-template",
         "unittest": "phpunit --testsuite unit",
         "functionaltest": [
         	"Composer\\Config::disableProcessTimeout",
         	"phpunit --testsuite functional"
-        ]
+        ],
+		"stantest": "vendor/bin/phpunit --testsuite phpstan",
+		"fulltest": [
+			"php-cs-fixer fix",
+			"phpstan analyse --memory-limit=512M",
+			"phpunit --testsuite unit"
+		]
     },
 	"bin" : [
 		"bin/prado-cli"

@@ -443,7 +443,13 @@ class TCaptcha extends TImage
 	 */
 	protected function generateRandomKey()
 	{
-		return md5(rand() . rand() . rand() . rand());
+		try {
+			return bin2hex(random_bytes(16));
+		} catch (\Exception $e) {
+			// @todo from PHP 8.2, this is \Random\RandomException
+			// Fallback for environments without proper random support
+			return sha1(uniqid(mt_rand(), true));
+		}
 	}
 
 	/**

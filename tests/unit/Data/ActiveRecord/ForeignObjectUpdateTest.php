@@ -1,13 +1,17 @@
 <?php
 
+require_once(__DIR__ . '/../../PradoUnit.php');
 
 class BaseFkRecord extends TActiveRecord
 {
+	use PradoUnitDataConnectionTrait;
+	
 	public function getDbConnection()
 	{
 		static $conn;
 		if ($conn === null) {
-			$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest', 'prado_unitest');
+			
+			$conn = $this->setUpConnection('prado_unitest', true);
 			//$this->OnExecuteCommand[] = array($this,'logger');
 		}
 		return $conn;
@@ -117,7 +121,7 @@ class ForeignObjectUpdateTest extends PHPUnit\Framework\TestCase
 {
 	public function test_add_has_one()
 	{
-		$this->markTestSkipped('Needs fixing');
+		$this->markTestSkipped('Test exposes framework bug: TList cannot be converted to int for foreign key');
 		/*
 				ProfileRecord::finder()->deleteByPk(1);
 
@@ -142,7 +146,7 @@ class ForeignObjectUpdateTest extends PHPUnit\Framework\TestCase
 
 	public function test_add_many()
 	{
-		$this->markTestSkipped('Needs fixing');
+		$this->markTestSkipped('Test exposes framework bug: Property "players" on null');
 		/*
 				PlayerRecord::finder()->deleteAll("player_id > ?", 3);
 
@@ -179,7 +183,7 @@ class ForeignObjectUpdateTest extends PHPUnit\Framework\TestCase
 
 	public function test_add_belongs_to()
 	{
-		$this->markTestSkipped('Needs fixing');
+		$this->markTestSkipped('Test exposes framework bug: null foreign key not allowed when column allows null');
 		/*
 				TeamRecord::finder()->deleteByPk('Team c');
 				PlayerRecord::finder()->deleteAll("player_id > ?", 3);
@@ -199,7 +203,7 @@ class ForeignObjectUpdateTest extends PHPUnit\Framework\TestCase
 
 	public function test_add_many_via_association()
 	{
-		$this->markTestSkipped('Needs fixing');
+		$this->markTestSkipped('Test exposes framework bug: null foreign key not allowed when column allows null');
 		/*
 				PlayerRecord::finder()->deleteAll("player_id > ?", 3);
 				SkillRecord::finder()->deleteAll("skill_id > ?", 3);

@@ -149,14 +149,14 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 				} elseif (basename($file, self::SKIN_FILE_EXT) !== $file) {
 					$template = new TSkinTemplate(file_get_contents($themePath . DIRECTORY_SEPARATOR . $file), $themePath, $themePath . DIRECTORY_SEPARATOR . $file);
 					foreach ($template->getItems() as $skin) {
-						if (!isset($skin[2])) {  // a text string, ignored
+						if (!isset($skin[TTemplate::TPL_PROPS])) {  // a text string, ignored
 							continue;
-						} elseif ($skin[0] !== -1) {
+						} elseif ($skin[TTemplate::TPL_PARENT_INDEX] !== -1) {
 							throw new TConfigurationException('theme_control_nested', $skin[1], dirname($themePath));
 						}
-						$type = $skin[1];
-						$id = $skin[2]['skinid'] ?? 0;
-						unset($skin[2]['skinid']);
+						$type = $skin[TTemplate::TPL_TYPE];
+						$id = $skin[TTemplate::TPL_PROPS]['skinid'] ?? 0;
+						unset($skin[TTemplate::TPL_PROPS]['skinid']);
 						if (isset($this->_skins[$type][$id])) {
 							throw new TConfigurationException('theme_skinid_duplicated', $type, $id, dirname($themePath));
 						}
@@ -167,7 +167,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 								throw new TConfigurationException('theme_databind_forbidden',dirname($themePath),$type,$id);
 						}
 						*/
-						$this->_skins[$type][$id] = $skin[2];
+						$this->_skins[$type][$id] = $skin[TTemplate::TPL_PROPS];
 					}
 				}
 			}
@@ -263,47 +263,45 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 		}
 		if (isset($this->_skins[$type][$id])) {
 			foreach ($this->_skins[$type][$id] as $name => $value) {
-				Prado::trace("Applying skin $name to $type", \Prado\Web\UI\TThemeManager::class);
-				if (is_array($value)) {
-					switch ($value[0]) {
-						case TTemplate::CONFIG_EXPRESSION:
-							$value = $this->evaluateExpression($value[1]);
-							break;
-						case TTemplate::CONFIG_ASSET:
-							$value = $this->_themeUrl . '/' . ltrim($value[1], '/');
-							break;
-						case TTemplate::CONFIG_DATABIND:
-							$control->bindProperty($name, $value[1]);
-							break;
-						case TTemplate::CONFIG_PARAMETER:
-							$control->setSubProperty($name, $this->getApplication()->getParameters()->itemAt($value[1]));
-							break;
-						case TTemplate::CONFIG_TEMPLATE:
-							$control->setSubProperty($name, $value[1]);
-							break;
-						case TTemplate::CONFIG_LOCALIZATION:
-							$control->setSubProperty($name, Prado::localize($value[1]));
-							break;
-						default:
-							throw new TConfigurationException('theme_tag_unexpected', $name, $value[0]);
-							break;
-					}
-				}
-				if (!is_array($value)) {
-					if (strpos($name, '.') === false) {	// is simple property or custom attribute
-						if ($control->hasProperty($name)) {
-							if ($control->canSetProperty($name)) {
-								$setter = 'set' . $name;
-								$control->$setter($value);
+				$propName = $value[TTemplate::PROP_NAME];
+				Prado::trace("Applying skin $propName to $type", \Prado\Web\UI\TThemeManager::class);
+				switch ($value[TTemplate::PROP_TYPE]) {
+					case TTemplate::CONFIG_VALUE:
+						if (strpos($name, '.') === false) {	// is simple property or custom attribute
+							if ($control->hasProperty($name)) {
+								if ($control->canSetProperty($name)) {
+									$control->$propName = $value[TTemplate::PROP_VALUE];
+								} else {
+									throw new TConfigurationException('theme_property_readonly', $type, $propName);
+								}
 							} else {
-								throw new TConfigurationException('theme_property_readonly', $type, $name);
+								throw new TConfigurationException('theme_property_undefined', $type, $propName);
 							}
-						} else {
-							throw new TConfigurationException('theme_property_undefined', $type, $name);
+						} else {	// complex property
+							$control->setSubProperty($propName, $value[TTemplate::PROP_VALUE]);
 						}
-					} else {	// complex property
-						$control->setSubProperty($name, $value);
-					}
+						break;
+					case TTemplate::CONFIG_EXPRESSION:
+						$value = $this->evaluateExpression($value[TTemplate::PROP_VALUE]);
+						break;
+					case TTemplate::CONFIG_ASSET:
+						$value = $this->_themeUrl . '/' . ltrim($value[TTemplate::PROP_VALUE], '/');
+						break;
+					case TTemplate::CONFIG_DATABIND:
+						$control->bindProperty($propName, $value[TTemplate::PROP_VALUE]);
+						break;
+					case TTemplate::CONFIG_PARAMETER:
+						$control->setSubProperty($propName, $this->getApplication()->getParameters()->itemAt($value[TTemplate::PROP_VALUE]));
+						break;
+					case TTemplate::CONFIG_TEMPLATE:
+						$control->setSubProperty($propName, $value[TTemplate::PROP_VALUE]);
+						break;
+					case TTemplate::CONFIG_LOCALIZATION:
+						$control->setSubProperty($propName, Prado::localize($value[TTemplate::PROP_VALUE]));
+						break;
+					default:
+						throw new TConfigurationException('theme_tag_unexpected', $propName, $value[TTemplate::PROP_TYPE]);
+						break;
 				}
 			}
 			return true;

@@ -35,7 +35,7 @@ use Prado\Exceptions\TDbException;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
-class TDbDataReader extends \Prado\TComponent implements \Iterator
+class TDbDataReader extends \Prado\TComponent implements IDataReader
 {
 	private $_statement;
 	private $_closed = false;

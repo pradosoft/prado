@@ -6,7 +6,7 @@ class TableGatewayDeleteByPkTest extends BaseGateway
 {
 	public function test_delete_by_1_pk()
 	{
-		$this->markTestSkipped('Needs fixing');
+		$this->markTestSkipped('Test exposes framework bug: count(): Argument must be of type Countable|array, null given');
 		/*
 				$this->add_record1();
 				$id = $this->getGateway()->getLastInsertId();
@@ -18,7 +18,7 @@ class TableGatewayDeleteByPkTest extends BaseGateway
 
 	public function test_delete_by_multiple_pk()
 	{
-		$this->markTestSkipped('Needs fixing');
+		$this->markTestSkipped('Test exposes framework bug: PDO::quote() deprecated null handling');
 		/*
 				$this->add_record1();
 				$id1 = $this->getGateway()->getLastInsertId();
@@ -33,7 +33,7 @@ class TableGatewayDeleteByPkTest extends BaseGateway
 
 	public function test_delete_by_multiple_pk2()
 	{
-		$this->markTestSkipped('Needs fixing');
+		$this->markTestSkipped('Test exposes framework bug: PDO::quote() deprecated null handling');
 		/*
 				$this->add_record1();
 				$id1 = $this->getGateway()->getLastInsertId();
@@ -48,7 +48,7 @@ class TableGatewayDeleteByPkTest extends BaseGateway
 
 	public function test_delete_by_multiple_pk3()
 	{
-		$this->markTestSkipped('Needs fixing');
+		$this->markTestSkipped('Test exposes framework bug: PDO::quote() deprecated null handling');
 		/*
 				$this->add_record1();
 				$id1 = $this->getGateway()->getLastInsertId();

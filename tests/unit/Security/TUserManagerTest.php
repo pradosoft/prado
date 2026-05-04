@@ -77,7 +77,7 @@ class TUserManagerTest extends PHPUnit\Framework\TestCase
 			$userManager = new TUserManager();
 			$userManager->setUserFile('App.users');
 			$userManager->init(new TXmlDocument()); // Empty config
-			self::assertEquals(__DIR__ . '/users.xml', $userManager->getUserFile());
+			self::assertEquals(str_replace('\\', '/', __DIR__ . '/users.xml'), str_replace('\\', '/', $userManager->getUserFile()));
 			unlink(__DIR__ . '/users.xml');
 			$userManager = null;
 		}

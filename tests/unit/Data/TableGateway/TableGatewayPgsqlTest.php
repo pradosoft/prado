@@ -4,14 +4,32 @@ require_once(__DIR__ . '/BaseGateway.php');
 
 class TableGatewayPgsqlTest extends BaseGateway
 {
+	use PradoUnitDataConnectionTrait;
+	
+	protected static $pgTableGateway = null;
+	
+	protected function getPradoUnitSetup(): ?string
+	{
+		return 'setupPgsqlConnection';
+	}
+	
+	protected function getTestTables(): array
+	{
+		return ['address'];
+	}
+	
 	protected function setUp(): void
 	{
-		if (!extension_loaded('pdo_pgsql')) {
-			$this->markTestSkipped(
-				'The pdo_pgsql extension is not available.'
-			);
+		if (static::$pgTableGateway === null) {
+			$conn = $this->setupConnection('prado_unitest');
+			if ($conn instanceof TDbConnection) {
+				static::$pgTableGateway = new TTableGateway('address', $conn);;
+			}
 		}
 	}
+	
+	
+	//	------- Tests
 
 	public function test_update()
 	{
@@ -20,7 +38,7 @@ class TableGatewayPgsqlTest extends BaseGateway
 		$address = ['username' => 'tester 1', 'field5_text' => null];
 		$result = $this->getGateway()->update($address, 'username = ?', 'Username');
 
-		$this->markTestSkipped('Needs fixing');
+		$this->markTestSkipped('Test exposes framework bug: PDO::quote() deprecated null handling');
 		/*
 				$this->assertTrue($result);
 
@@ -43,7 +61,7 @@ class TableGatewayPgsqlTest extends BaseGateway
 		$address = ['username' => 'tester 1', 'field5_text' => null];
 		$result = $this->getGateway()->update($address, 'username = :name', [':name' => 'Username']);
 
-		$this->markTestSkipped('Needs fixing');
+		$this->markTestSkipped('Test exposes framework bug: PDO::quote() deprecated null handling');
 		/*
 				$this->assertTrue($result);
 

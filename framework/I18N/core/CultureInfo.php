@@ -19,6 +19,9 @@
 namespace Prado\I18N\core;
 
 use Exception;
+use Prado\I18N\core\CultureInfoUnits;
+use Prado\Prado;
+use IntlException;
 
 /**
  * CultureInfo class.
@@ -26,11 +29,11 @@ use Exception;
  * Represents information about a specific culture including the
  * names of the culture, the calendar used, as well as access to
  * culture-specific objects that provide methods for common operations,
- * such as formatting dates, numbers, and currency.
+ * such as formatting dates, numbers, currency, and units.
  *
  * The CultureInfo class holds culture-specific information, such as the
- * associated language, sublanguage, country/region, calendar, and cultural
- * conventions.
+ * associated language, sublanguage, country/region, time, calendar, units,
+ * and cultural conventions.
  *
  * The culture names follow the format "<languagecode>_<country/regioncode>",
  * where <languagecode> is a lowercase two-letter code derived from ISO 639
@@ -43,16 +46,35 @@ use Exception;
  *
  * For example, Australian English is "en_AU".
  *
+ * CultureInfo can format a number with formatNumber.
+ *
+ * The unit-related methods getUnit(), formatUnit(), and formatPerUnit() provide
+ * access to localized unit names and formatted unit values based on the culture's
+ * conventions. These methods utilize ICU's unit data bundles to return appropriate
+ * localized representations for various unit types.
+ *
+ * `CultureInfo::getCultureInfo` provides for caching ICU resources.
+ *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  */
 class CultureInfo
 {
+	use TNumberFormatterTrait;
+
 	/**
-	 * The ICU data array, shared by all instances of this class.
+	 * Shared cache of CultureInfo.
+	 * Format self::$cultureInfos[$culture] = new CultureInfo($culture);
 	 * @var array
 	 */
-	protected static $data = [];
+	private static array $cultureInfos = [];
+
+	/**
+	 * The ICU data array, shared by all instances of this class.
+	 * Format: self::$data[$culture][$ICUBundleKey] = \ResourceBundle::create($culture, $ICUBundleKey, true);
+	 * @var array[]
+	 */
+	protected static array $data = [];
 
 	/**
 	 * The current culture.
@@ -70,6 +92,7 @@ class CultureInfo
 		'Languages' => 'ICUDATA-lang',
 		'Countries' => 'ICUDATA-region',
 		'zoneStrings' => 'ICUDATA-zone',
+		'Units' => 'ICUDATA-unit',
 	];
 
 	/**
@@ -98,6 +121,23 @@ class CultureInfo
 	 * @var int
 	 */
 	public const SPECIFIC = 2;
+
+	/**
+	 * @param null|mixed $culture
+	 * @return \Prado\I18N\core\CultureInfo The Culture Info for the {@see getCulture()}.
+	 */
+	public static function getCultureInfo($culture = null)
+	{
+		if ($culture === null && ($app = Prado::getApplication()) && ($globalize = $app->getGlobalization(false))) {
+			$culture = $globalize->getCulture();
+		}
+		if (isset(self::$cultureInfos[$culture])) {
+			return self::$cultureInfos[$culture];
+		}
+		$info = new CultureInfo($culture);
+		self::$cultureInfos[$culture] = $info;
+		return $info;
+	}
 
 	/**
 	 * Display the culture name.
@@ -230,7 +270,8 @@ class CultureInfo
 			}
 		}
 
-		if (!array_key_exists($this->culture, self::$data)) {
+		if (!array_key_exists($this->culture, self::$data)
+			 || !array_key_exists($key, self::$data[$this->culture])) {
 			$this->loadCultureData($key);
 		}
 		if (!array_key_exists($this->culture, self::$data) || !array_key_exists($key, self::$data[$this->culture])) {
@@ -493,5 +534,111 @@ class CultureInfo
 			}
 		}
 		return $arr;
+	}
+
+	/**
+	 * Get a list of units in the language of the localized version.
+	 *
+	 * ```php
+	 * // Conceptually, $resourceBundle['units'][$unitCategory][$unitName] looks like:
+	 * [
+	 *	 "dnam" => "meters",
+	 *	 "one"   => "{0} meter",
+	 *	 "other" => "{0} meters"
+	 *   "per" => "{0} per meter"
+	 * ]
+	 * ```
+	 *
+	 * @return array list of localized unit names.
+	 * @since 4.3.3
+	 */
+	public function getUnits()
+	{
+		return $this->simplify($this->findInfo('units', 'Units'));
+	}
+
+	/**
+	 * Get the display name for a specified unit.
+	 * @param string $unitType The unit type identifier (e.g. 'digital-gigabyte')
+	 * @return string The display name of the unit.
+	 * @since 4.3.3
+	 */
+	public function getUnit($unitType)
+	{
+		$unitData = $this->findInfo('units/' . str_replace('-', '/', $unitType), 'Units');
+
+		if (!isset($unitData[CultureInfoUnits::UNIT_DISPLAY_NAME])) {
+			return null;
+		}
+
+		return $unitData[CultureInfoUnits::UNIT_DISPLAY_NAME];
+	}
+
+	/**
+	 * Helper method to format number according to current culture settings.
+	 * @param float $number The number to format
+	 * @param int $format The format to apply to the number.
+	 *					  Default: \NumberFormatter::DECIMAL
+	 * @throws \IntlException when format is bad.
+	 * @return string The culture-formatted number
+	 * @since 4.3.3
+	 */
+	public function formatNumber($number, $format = null)
+	{
+		if (class_exists('NumberFormatter')) {
+			if ($format == null) {
+				$format = \NumberFormatter::DECIMAL;
+			}
+
+			$formatter = $this->getFormatter($this->culture, $format);
+			return $formatter->format($number);
+		}
+
+		// Fallback
+		return number_format($number, 2, '.', ',');
+	}
+
+	/**
+	 * Format a number with a unit.
+	 * @param float $number The number to format
+	 * @param string $unitType The unit type identifier (e.g. 'digital-gigabyte')
+	 * @return string The formatted string with the number and unit.
+	 * @since 4.3.3
+	 */
+	public function formatUnit($number, $unitType)
+	{
+		$pluralForm = ($number == 1) ? CultureInfoUnits::UNIT_ONE_PATTERN : CultureInfoUnits::UNIT_OTHER_PATTERN;
+
+		$unitData = $this->findInfo('units/' . str_replace('-', '/', $unitType), 'Units');
+
+		if (!isset($unitData) || !isset($unitData[$pluralForm])) {
+			return null;
+		}
+
+		$pattern = $unitData[$pluralForm];
+
+		// Replace {0} with the number
+		return str_replace('{0}', $this->formatNumber($number), $pattern);
+	}
+
+	/**
+	 * Format a number with a per unit.
+	 * @param float $number The number to format
+	 * @param string $unitType The unit type identifier (e.g. 'digital-gigabyte')
+	 * @return string The formatted string with the number and per unit.
+	 * @since 4.3.3
+	 */
+	public function formatPerUnit($number, $unitType)
+	{
+		$unitData = $this->findInfo('units/' . str_replace('-', '/', $unitType), 'Units');
+
+		if (!isset($unitData) || !isset($unitData[CultureInfoUnits::UNIT_PER_UNIT_PATTERN])) {
+			return null;
+		}
+
+		$pattern = $unitData[CultureInfoUnits::UNIT_PER_UNIT_PATTERN];
+
+		// Replace {0} with the number
+		return str_replace('{0}', $this->formatNumber($number), $pattern);
 	}
 }

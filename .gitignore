@@ -11,8 +11,9 @@ atlassian-ide-plugin.xml
 /vendor
 /composer.lock
 /.cache
+.claude/
 tests/FunctionalTests/results.dat
-tests/unit/Data/db/test.db
+tests/unit/Data/db/
 
 # Composer stuff
 vendor/*

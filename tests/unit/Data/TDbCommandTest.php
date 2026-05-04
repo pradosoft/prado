@@ -15,6 +15,7 @@ class TDbCommandTest extends PHPUnit\Framework\TestCase
 
 	protected function setUp(): void
 	{
+		// Defensive unlink
 		@unlink(TEST_DB_FILE);
 
 		// create application just to provide application mode
@@ -29,7 +30,11 @@ class TDbCommandTest extends PHPUnit\Framework\TestCase
 
 	protected function tearDown(): void
 	{
-		$this->_connection = null;
+		if ($this->_connection !== null) {
+			$this->_connection->Active = false;
+			$this->_connection = null;
+		}
+		@unlink(TEST_DB_FILE);
 	}
 
 	public function testGetText()

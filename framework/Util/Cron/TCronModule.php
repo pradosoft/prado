@@ -21,6 +21,7 @@ use Prado\Security\Permissions\TPermissionEvent;
 use Prado\Shell\TShellApplication;
 use Prado\TPropertyValue;
 use Prado\Util\TLogger;
+use Prado\Util\Traits\TInitializedTrait;
 use Prado\Xml\TXmlElement;
 use Prado\Xml\TXmlDocument;
 
@@ -69,6 +70,8 @@ use Prado\Xml\TXmlDocument;
  */
 class TCronModule extends \Prado\TModule implements IPermissions
 {
+	use TInitializedTrait;
+
 	/** The behavior name for the Shell Log behavior */
 	public const SHELL_LOG_BEHAVIOR = 'shellLog';
 
@@ -94,9 +97,6 @@ class TCronModule extends \Prado\TModule implements IPermissions
 
 	/** The permission for the cron shell */
 	public const PERM_CRON_SHELL = 'cron_shell';
-
-	/** @var bool if the module has been initialized */
-	protected $_initialized = false;
 
 	/** @var IUserManager user manager instance */
 	private $_userManager;
@@ -176,8 +176,8 @@ class TCronModule extends \Prado\TModule implements IPermissions
 				$app->attachEventHandler('OnEndRequest', [$this, 'processPendingTasks'], 20);
 			}
 		}
-		$this->_initialized = true;
 		parent::init($config);
+		$this->markInitialized();
 	}
 
 	/**
@@ -571,9 +571,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	 */
 	public function setDefaultUserName($id)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('cron_property_unchangeable', 'DefaultUserName');
-		}
+		$this->assertUninitialized('DefaultUserName');
 		$this->_defaultUserName = TPropertyValue::ensureString($id);
 	}
 
@@ -592,9 +590,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	 */
 	public function setUserManager($provider)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('cron_property_unchangeable', 'UserManager');
-		}
+		$this->assertUninitialized('UserManager');
 		if (!is_string($provider) && !($provider instanceof IUserManager) && $provider !== null) {
 			throw new TConfigurationException('cron_usermanager_invalid', is_object($provider) ? $provider::class : $provider);
 		}
@@ -615,9 +611,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	 */
 	public function setEnableRequestCron($allow)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('cron_property_unchangeable', 'EnableRequestCron');
-		}
+		$this->assertUninitialized('EnableRequestCron');
 		$this->_enableRequestCron = TPropertyValue::ensureBoolean($allow);
 	}
 
@@ -635,9 +629,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	 */
 	public function setRequestCronProbability($probability)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('cron_property_unchangeable', 'RequestCronProbability');
-		}
+		$this->assertUninitialized('RequestCronProbability');
 		$this->_requestCronProbability = TPropertyValue::ensureFloat($probability);
 	}
 
@@ -678,9 +670,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	 */
 	public function setAdditionalCronTasks($tasks)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('cron_property_unchangeable', 'AdditionalCronTasks');
-		}
+		$this->assertUninitialized('AdditionalCronTasks');
 		if (is_string($tasks)) {
 			if (($t = @unserialize($tasks)) !== false) {
 				$tasks = $t;

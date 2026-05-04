@@ -1,9 +1,14 @@
 <?php
 
+require_once(__DIR__ . '/../../PradoUnit.php');
 use Prado\Data\DataGateway\TTableGateway;
+use Prado\Data\TDbConnection;
 
 class BaseGateway extends PHPUnit\Framework\TestCase
 {
+	use PradoUnitDataConnectionTrait;
+
+	protected static $conn = null;
 	protected $gateway1;
 	protected $gateway2;
 
@@ -13,25 +18,52 @@ class BaseGateway extends PHPUnit\Framework\TestCase
 	public function getGateway()
 	{
 		if ($this->gateway1 === null) {
-			$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest', 'prado_unitest');
-			$this->gateway1 = new TTableGateway('address', $conn);
+			$this->gateway1 = new TTableGateway('address', static::$conn);
 		}
 		return $this->gateway1;
 	}
 
 	/**
+	 * @todo 
 	 * @return TTableGateway
 	 */
 	public function getGateway2()
 	{
 		if ($this->gateway2 === null) {
-			$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest', 'prado_unitest');
-			$this->gateway2 = new TTableGateway('department_sections', $conn);
+			$this->gateway2 = new TTableGateway('department_sections', static::$conn);
 		}
 		return $this->gateway2;
 	}
-
+	
+	protected function getDatabaseName(): ?string
+	{
+		return 'prado_unitest';
+	}
+	
+	protected function getPradoUnitSetup(): ?string
+	{
+		return 'setupMysqlConnection';
+	}
+	
+	protected function getIsForActiveRecord(): bool
+	{
+		return false;
+	}
+	
+	protected function getTestTables(): array
+	{
+		return ['address', 'department_sections'];
+	}
+	
 	protected function setUp(): void
+	{
+		if (!static::$conn) {
+			static::$conn = $this->setupConnection();
+			$this->gateway1 = new TTableGateway('address', static::$conn);
+		}
+	}
+
+	protected function tearDown(): void
 	{
 		$this->delete_all();
 	}

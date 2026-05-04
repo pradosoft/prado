@@ -25,19 +25,19 @@ use Prado\Prado;
 class TSqliteTableInfo extends TDbTableInfo
 {
 	/**
+	 * @return string full name of the table, database dependent.
+	 */
+	public function getTableFullName()
+	{
+		return "'" . $this->getTableName() . "'";
+	}
+
+	/**
 	 * @param \Prado\Data\TDbConnection $connection database connection.
 	 * @return \Prado\Data\Common\TDbCommandBuilder new command builder
 	 */
 	public function createCommandBuilder($connection)
 	{
 		return new TSqliteCommandBuilder($connection, $this);
-	}
-
-	/**
-	 * @return string full name of the table, database dependent.
-	 */
-	public function getTableFullName()
-	{
-		return "'" . $this->getTableName() . "'";
 	}
 }
