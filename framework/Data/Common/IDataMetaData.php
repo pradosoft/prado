@@ -13,21 +13,29 @@ namespace Prado\Data\Common;
 use Prado\Data\IDataConnection;
 
 /**
- * IDataMetaData defines the interface for retrieving metadata information from a data store.
+ * IDataMetaData defines the interface for retrieving schema metadata from a
+ * data store.
  *
- * This interface provides a common abstraction over database-specific metadata implementations,
- * allowing application code to work with metadata from different database systems through a unified API.
+ * The interface provides a common abstraction over driver-specific metadata
+ * implementations so that application code and PRADO plugins can work with any
+ * supported data store through a single, stable API — including future NoSQL or
+ * third-party implementations that do not extend {@see TDbMetaData}.
  *
- * Implementations include:
- * - {@see TDbMetaData} subclasses for SQL databases (TMysqlMetaData, TSqliteMetaData, TPgsqlMetaData, etc.)
- * - 3rd Party Implementations, like Mongo.
- * - Future implementations for NoSQL databases and other data stores
+ * The interface covers four areas:
+ * - **Table introspection** — {@see getTableInfo()} returns a structured
+ *   {@see IDataTableInfo} describing the columns, keys, and constraints of a
+ *   named table.
+ * - **Command builder factory** — {@see createCommandBuilder()} returns an
+ *   {@see IDataCommandBuilder} ready to generate CRUD commands for a table.
+ * - **Identifier quoting** — {@see quoteTableName()}, {@see quoteColumnName()},
+ *   and {@see quoteColumnAlias()} wrap identifiers in driver-specific delimiters.
+ * - **Table discovery** — {@see findTableNames()} enumerates all tables in a
+ *   schema.
  *
- * The interface covers core metadata operations:
- * - Table metadata retrieval (column information, constraints, etc.)
- * - Command builder creation for CRUD operations
- * - Identifier quoting for SQL statements
- * - Table discovery
+ * Concrete implementations: {@see TDbMetaData} and its driver-specific
+ * subclasses ({@see TMysqlMetaData}, {@see TSqliteMetaData},
+ * {@see TPgsqlMetaData}, {@see TMssqlMetaData}, {@see TOracleMetaData},
+ * {@see TIbmMetaData}, {@see TFirebirdMetaData}).
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3

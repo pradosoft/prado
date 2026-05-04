@@ -13,19 +13,18 @@ namespace Prado\Data\Common;
 use Prado\Data\IDataConnection;
 
 /**
- * IDataTableInfo defines the interface for SQL table (or view) metadata.
+ * IDataTableInfo defines the interface for table (or view) metadata.
  *
- * This interface provides a common abstraction over database-specific table
- * metadata implementations, allowing application code and PRADO plugins to
- * supply their own implementations without coupling to a concrete class.
+ * The interface is shaped after {@see TDbTableInfo}, which is the canonical SQL
+ * implementation, but is intentionally decoupled from it so that application
+ * code and third-party plugins can supply custom implementations without
+ * coupling to the SQL class hierarchy.  Terminology is relational (columns,
+ * primary keys, foreign keys) rather than document-store-centric.
  *
- * The interface is shaped after {@see TDbTableInfo}, which is the canonical
- * SQL implementation. Terminology is SQL-centric (columns, primary keys, foreign
- * keys) rather than document-store-centric (fields, indexes, validation schemas).
- *
- * Implementations include:
- * - {@see TDbTableInfo} and its driver-specific subclasses (MySQL, PostgreSQL,
- *   SQLite, Firebird, MSSQL, Oracle, IBM DB2).
+ * Concrete implementations: {@see TDbTableInfo} and its driver-specific
+ * subclasses ({@see TMysqlTableInfo}, {@see TSqliteTableInfo},
+ * {@see TPgsqlTableInfo}, {@see TMssqlTableInfo}, {@see TOracleTableInfo},
+ * {@see TIbmTableInfo}, {@see TFirebirdTableInfo}).
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3

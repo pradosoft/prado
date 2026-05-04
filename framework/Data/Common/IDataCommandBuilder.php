@@ -14,22 +14,24 @@ use Prado\Data\IDataCommand;
 use Prado\Data\IDataConnection;
 
 /**
- * IDataCommandBuilder defines the interface for creating SQL command objects for
- * CRUD operations on a single table.
- *
- * This interface provides a common abstraction over database-specific command
- * builder implementations, allowing application code and PRADO plugins to supply
- * their own {@see TDbCommandBuilder} subclasses (or entirely custom builders)
- * without coupling to a concrete class.
+ * IDataCommandBuilder defines the interface for building command objects for
+ * CRUD operations on a single database table.
  *
  * The interface is shaped after {@see TDbCommandBuilder}, which is the canonical
- * SQL implementation. The method signatures — WHERE clauses, parameter arrays,
- * ordering arrays, limit/offset integers, and a column-select string — reflect
- * relational database conventions and are intentionally SQL-centric.
+ * SQL implementation, but is intentionally decoupled from it so that application
+ * code and third-party PRADO plugins can supply entirely custom builders (e.g.
+ * for NoSQL or time-series data stores) without inheriting from the SQL class
+ * hierarchy.
  *
- * Implementations include:
- * - {@see TDbCommandBuilder} and its driver-specific subclasses (MySQL, PostgreSQL,
- *   SQLite, Firebird, MSSQL, Oracle, IBM DB2).
+ * All method signatures are SQL-centric: WHERE clause strings, column-name →
+ * value parameter arrays, column-name → direction ordering arrays, integer
+ * limit/offset values, and a column-select descriptor.
+ *
+ * Concrete implementations: {@see TDbCommandBuilder} and its driver-specific
+ * subclasses ({@see TMysqlCommandBuilder}, {@see TSqliteCommandBuilder},
+ * {@see TPgsqlCommandBuilder}, {@see TMssqlCommandBuilder},
+ * {@see TOracleCommandBuilder}, {@see TIbmCommandBuilder},
+ * {@see TFirebirdCommandBuilder}).
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3

@@ -15,16 +15,74 @@ use Prado\Exceptions\TException;
 use Traversable;
 
 /**
- * Search criteria for TDbDataGateway.
+ * TSqlCriteria class
  *
- * Criteria object for data gateway finder methods. Usage:
+ * Search criteria for {@see TDbDataGateway} and {@see TTableGateway} finder methods.
+ *
+ * TSqlCriteria encapsulates a SQL WHERE condition together with its bound
+ * parameters, an ORDER BY specification, and LIMIT / OFFSET values.  It is
+ * the primary object passed to `find()`, `findAll()`, `count()`, `update()`,
+ * and `deleteAll()`.
+ *
+ * ## Constructor forms
+ *
+ * The constructor accepts the condition string and parameters in several
+ * equivalent ways:
+ *
+ * ```php
+ * // No arguments — empty criteria (matches all rows).
+ * $c = new TSqlCriteria();
+ *
+ * // Condition only — no bound parameters.
+ * $c = new TSqlCriteria('active = 1');
+ *
+ * // Condition with a named-parameter array.
+ * $c = new TSqlCriteria('name = :name', [':name' => 'Alice']);
+ *
+ * // Condition with positional parameters as an indexed array.
+ * $c = new TSqlCriteria('id = ?', [42]);
+ *
+ * // Condition with positional parameters passed as individual varargs
+ * // (any scalar value after the condition string is collected into an
+ * // indexed array automatically).
+ * $c = new TSqlCriteria('id = ?', 42);
+ * $c = new TSqlCriteria('id = ? AND active = ?', 42, 1);
+ *
+ * // null $parameters — treated identically to omitting the argument; no
+ * // parameters are bound.  Passing null explicitly is safe and intentional,
+ * // for example when the caller conditionally sets parameters later:
+ * $c = new TSqlCriteria('active = 1', null);
+ * ```
+ *
+ * **Varargs vs. null** — the varargs collection is only activated when the
+ * second argument is a non-null, non-array scalar.  A null second argument
+ * is treated as "no parameters" so that callers can safely write
+ * `new TSqlCriteria($condition, $maybeNullParams)` without accidentally
+ * binding a spurious `null` value.
+ *
+ * ## Condition shorthand
+ *
+ * ORDER BY, LIMIT, and OFFSET clauses embedded directly in the condition
+ * string are parsed out and applied to the respective properties:
+ *
+ * ```php
+ * $c = new TSqlCriteria('active = 1 ORDER BY name ASC LIMIT 10 OFFSET 20');
+ * // Equivalent to:
+ * $c = new TSqlCriteria('active = 1');
+ * $c->OrdersBy['name'] = 'asc';
+ * $c->Limit  = 10;
+ * $c->Offset = 20;
+ * ```
+ *
+ * ## Typical property-based usage
+ *
  * ```php
  * $criteria = new TSqlCriteria();
  * $criteria->Parameters[':name'] = 'admin';
  * $criteria->Parameters[':pass'] = 'prado';
  * $criteria->OrdersBy['level'] = 'desc';
- * $criteria->OrdersBy['name'] = 'asc';
- * $criteria->Limit = 10;
+ * $criteria->OrdersBy['name']  = 'asc';
+ * $criteria->Limit  = 10;
  * $criteria->Offset = 20;
  * ```
  *
@@ -45,9 +103,25 @@ class TSqlCriteria extends \Prado\TComponent
 	private $_offset;
 
 	/**
-	 * Creates a new criteria with given condition;
-	 * @param null|string $condition sql string after the WHERE stanza
-	 * @param mixed $parameters named or indexed parameters, accepts as multiple arguments.
+	 * Creates a new criteria with an optional condition and parameters.
+	 *
+	 * `$parameters` is resolved as follows:
+	 * - **omitted or null** — no parameters are bound; `null` is treated
+	 *   identically to omitting the argument so callers may safely pass a
+	 *   nullable variable without accidentally binding a spurious null value.
+	 * - **array** — used as-is; named (`:key => value`) or positional
+	 *   (`0 => value`) arrays are both accepted.
+	 * - **non-null scalar** — activates varargs collection: every argument
+	 *   after `$condition` is gathered into a positional array, so
+	 *   `new TSqlCriteria('id = ?', 42)` and
+	 *   `new TSqlCriteria('a = ? AND b = ?', 1, 2)` both work.
+	 *
+	 * @param null|string $condition SQL fragment placed after WHERE; may
+	 *   embed ORDER BY, LIMIT, and OFFSET clauses which are parsed out
+	 *   automatically.
+	 * @param null|array|mixed $parameters bound parameters: null or omitted
+	 *   for none, an array for named/positional params, or the first of
+	 *   multiple varargs scalar values.
 	 */
 	public function __construct($condition = null, $parameters = [])
 	{

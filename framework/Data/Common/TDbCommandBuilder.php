@@ -16,16 +16,82 @@ use Prado\Data\TDbCommand;
 use Prado\Exceptions\TDbException;
 
 /**
- * TDbCommandBuilder provides basic methods to create query commands for tables
- * given by {@see setTableInfo TableInfo}.
+ * TDbCommandBuilder class
  *
- * This builder creates database-specific SQL commands for CRUD operations:
- * - {@see createFindCommand()}: SELECT queries
- * - {@see createInsertCommand()}: INSERT statements
- * - {@see createUpdateCommand()}: UPDATE statements
- * - {@see createDeleteCommand()}: DELETE statements
- * - {@see createInsertOrIgnoreCommand()}: INSERT OR IGNORE (since 4.3.3)
- * - {@see createUpsertCommand()}: INSERT...ON CONFLICT UPDATE (since 4.3.3)
+ * TDbCommandBuilder is the base class for SQL command builders that generate
+ * {@see TDbCommand} objects for CRUD operations on a single database table.
+ *
+ * Each instance is bound to a {@see TDbConnection} and a {@see TDbTableInfo}
+ * that describes the target table.  The builder consults the column metadata to
+ * quote identifiers correctly and to bind parameter values with the right PDO
+ * type.  Instances are obtained via {@see TDbMetaData::createCommandBuilder()}
+ * or {@see TDbTableInfo::createCommandBuilder()}.
+ *
+ * ## Command factory methods
+ *
+ * | Method                                | SQL generated                                    |
+ * |---------------------------------------|--------------------------------------------------|
+ * | {@see createFindCommand()}            | `SELECT … FROM … WHERE … ORDER BY … LIMIT …`    |
+ * | {@see createCountCommand()}           | `SELECT COUNT(*) FROM … WHERE …`                 |
+ * | {@see createInsertCommand()}          | `INSERT INTO … (cols) VALUES (:cols)`            |
+ * | {@see createUpdateCommand()}          | `UPDATE … SET col = :col … WHERE …`              |
+ * | {@see createDeleteCommand()}          | `DELETE FROM … WHERE …`                          |
+ * | {@see createInsertOrIgnoreCommand()}  | driver-specific; base throws {@see TDbException} |
+ * | {@see createUpsertCommand()}          | driver-specific; base throws {@see TDbException} |
+ *
+ * {@see applyCriterias()} is the central assembly method: it applies ORDER BY
+ * via {@see applyOrdering()}, LIMIT/OFFSET via {@see applyLimitOffset()}, and
+ * then binds parameters via {@see bindArrayValues()}.
+ *
+ * ## Driver-specific subclasses
+ *
+ * Subclasses override only the methods that differ from the ANSI SQL baseline:
+ *
+ * - {@see applyLimitOffset()} — MSSQL uses `TOP` / `OFFSET … FETCH NEXT`;
+ *   Oracle wraps in a `ROWNUM` subquery.
+ * - {@see createInsertOrIgnoreCommand()} — MySQL (`INSERT IGNORE`), SQLite /
+ *   PostgreSQL (`INSERT OR IGNORE` / `ON CONFLICT DO NOTHING`); MERGE-based
+ *   drivers use {@see buildMergeStatement()} with an empty update set.
+ * - {@see createUpsertCommand()} — MySQL (`ON DUPLICATE KEY UPDATE`), SQLite /
+ *   PostgreSQL (`ON CONFLICT … DO UPDATE`); MERGE-based drivers use
+ *   {@see buildMergeStatement()}.
+ *
+ * ## MERGE helper (MSSQL / Oracle / Firebird / IBM DB2)
+ *
+ * {@see buildMergeStatement()} assembles a portable
+ * `MERGE INTO … USING (SELECT …) ON … WHEN MATCHED … WHEN NOT MATCHED …`
+ * statement.  Subclasses tune its output via two extension hooks:
+ *
+ * - {@see processMergeColumn()} — controls the `:col AS col` fragment in the
+ *   USING sub-select (e.g. Oracle uses positional `? AS col` bindings).
+ * - {@see postProcessMerge()} — post-processes the assembled SQL string before
+ *   the command is created (e.g. MSSQL appends a semicolon).
+ *
+ * MERGE-based upserts always require an active transaction; call
+ * {@see requiresActiveTransaction()} at the start of those overrides.
+ *
+ * ## Parameter binding
+ *
+ * Two binding helpers are provided:
+ *
+ * - {@see bindColumnValues()} — binds a column-name → value map using each
+ *   column's declared PDO type from the table metadata; uses `PDO::PARAM_NULL`
+ *   for `null` values on nullable columns.
+ * - {@see bindArrayValues()} — binds a plain value array; if any key is an
+ *   integer the array is treated as positional (`?` placeholders, 1-based),
+ *   otherwise as named (`:name` placeholders).  The PDO type is inferred from
+ *   the PHP value type via the static {@see getPdoType()}.
+ *
+ * ## SELECT field list
+ *
+ * {@see getSelectFieldList()} resolves the `$select` argument of
+ * {@see createFindCommand()} into an array of SQL column expressions:
+ *
+ * - **`'*'` or comma-separated string** — returned as-is (split on commas).
+ * - **`null`** — expands to all quoted column names from the table metadata.
+ * - **array** — supports column aliasing, computed expressions (`COUNT(*)`),
+ *   literal values, and the `'*'` wildcard to mix explicit columns with the
+ *   full column list.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1

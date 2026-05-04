@@ -13,7 +13,62 @@ namespace Prado\Data\Common;
 use PDO;
 
 /**
- * TDbTableColumn class describes the column meta data of the schema for a database table.
+ * TDbTableColumn class
+ *
+ * TDbTableColumn describes the metadata of a single column in a database table.
+ *
+ * Each instance wraps a flat associative info array that is populated by the
+ * driver-specific {@see TDbMetaData} subclass when it introspects the live
+ * schema.  The info array is passed to the constructor and accessed internally
+ * through {@see getInfo()} / {@see setInfo()}.  Driver subclasses
+ * (e.g. {@see TMysqlTableColumn}, {@see TSqliteTableColumn}) extend this class
+ * to map native database types to PHP primitives and to expose any
+ * engine-specific column attributes.
+ *
+ * ## Info array keys
+ *
+ * The following keys are recognized by the base class; each has a getter:
+ *
+ * | Key                  | Getter                          | Notes                                             |
+ * |----------------------|---------------------------------|---------------------------------------------------|
+ * | `ColumnName`         | {@see getColumnName()}          | Identifier-quoted name, e.g. `"id"` or `` `id` `` |
+ * | `ColumnId`           | {@see getColumnId()}            | Bare (unquoted) column name used in ORDER BY       |
+ * | `ColumnSize`         | {@see getColumnSize()}          | Maximum character or byte length, if applicable    |
+ * | `ColumnIndex`        | {@see getColumnIndex()}         | Zero-based ordinal position in the table           |
+ * | `DbType`             | {@see getDbType()}              | Native type string, e.g. `'varchar'`, `'integer'`  |
+ * | `AllowNull`          | {@see getAllowNull()}           | `true` when NULL is a legal value; default `false` |
+ * | `DefaultValue`       | {@see getDefaultValue()}        | Column default; {@see UNDEFINED_VALUE} when absent |
+ * | `NumericPrecision`   | {@see getNumericPrecision()}    | Total significant-digit count for numeric types    |
+ * | `NumericScale`       | {@see getNumericScale()}        | Decimal digits after the point for numeric types   |
+ * | `IsPrimaryKey`       | {@see getIsPrimaryKey()}        | `true` when the column is part of the primary key  |
+ * | `IsForeignKey`       | {@see getIsForeignKey()}        | `true` when the column is a foreign key            |
+ * | `SequenceName`       | {@see getSequenceName()}        | Auto-increment sequence name, or null if none      |
+ *
+ * ## UNDEFINED_VALUE
+ *
+ * The sentinel {@see UNDEFINED_VALUE} is PHP's `INF`.  It is returned by
+ * {@see getDefaultValue()} when the column has no declared default, so callers
+ * can distinguish "default is `null`" from "no default defined":
+ * ```php
+ * if ($col->getDefaultValue() === TDbTableColumn::UNDEFINED_VALUE) {
+ *     // no default — column must be supplied on INSERT
+ * }
+ * ```
+ *
+ * ## Type mapping
+ *
+ * {@see getPHPType()} returns the PHP primitive type that best represents the
+ * column's database type: `'string'` (default), `'integer'`, or `'boolean'`.
+ * Driver subclasses override this to implement their specific type maps.
+ * {@see getPdoType()} translates the PHP type to a `PDO::PARAM_*` constant and
+ * is used by {@see TDbCommandBuilder::bindColumnValues()} when constructing
+ * INSERT and UPDATE commands.
+ *
+ * ## Exclusion
+ *
+ * {@see getIsExcluded()} returns `false` in the base class.  Driver subclasses
+ * may override it to mark computed or auto-generated columns that should be
+ * omitted from INSERT and UPDATE statements.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1

@@ -15,7 +15,60 @@ use Prado\Exceptions\TDbException;
 use Prado\Prado;
 
 /**
- * TDbTableInfo class describes the meta data of a database table.
+ * TDbTableInfo class
+ *
+ * TDbTableInfo describes the metadata of a single database table or view.
+ *
+ * Each instance holds a flat info array for table-level attributes and a
+ * {@see TMap} of {@see TDbTableColumn} objects (one per column, keyed by the
+ * bare column ID).  It also stores the primary-key and foreign-key column name
+ * lists that were discovered during schema introspection.
+ *
+ * Instances are created by driver-specific {@see TDbMetaData} subclasses and
+ * returned — with results cached — by {@see TDbMetaData::getTableInfo()}.
+ *
+ * ## Info array keys
+ *
+ * The following keys are recognised by the base class; each has a getter:
+ *
+ * | Key           | Getter                    | Notes                                          |
+ * |---------------|---------------------------|------------------------------------------------|
+ * | `TableName`   | {@see getTableName()}     | Unqualified table or view name                 |
+ * | `IsView`      | {@see getIsView()}        | `true` when the object is a view               |
+ * | `SchemaName`  | {@see getSchemaName()}    | Schema/owner name; returned only when the      |
+ * |               |                           | concrete class also implements {@see IDbHasSchema} |
+ *
+ * ## Full name and schema gating
+ *
+ * {@see getTableFullName()} returns the table name as it should appear in SQL.
+ * The base implementation returns the bare table name; schema-aware subclasses
+ * (MySQL, PostgreSQL, MSSQL, Oracle, IBM DB2) override this to prepend the
+ * quoted schema name so that queries reference `"schema"."table"`.
+ *
+ * {@see getSchemaName()} is gated by an `instanceof IDbHasSchema` check: even
+ * if a value were written to the info array, schema-less engines (SQLite,
+ * Firebird) will always receive `null`.
+ *
+ * ## Column map
+ *
+ * Columns are added to the internal {@see TMap} during schema introspection by
+ * the driver metadata class.  The map is keyed by the bare (unquoted) column
+ * ID.  Key accessors:
+ * - {@see getColumns()} — the full TMap of {@see TDbTableColumn} objects.
+ * - {@see getColumn(string $name)} — a single column by ID; throws
+ *   {@see TDbException} when the column does not exist.
+ * - {@see getColumnNames()} — quoted column names for all columns (used to
+ *   expand `SELECT *` into an explicit column list).
+ * - {@see getLowerCaseColumnNames()} — case-insensitive lookup table mapping
+ *   `strtolower($id)` to the canonical column ID.
+ *
+ * ## Command builder
+ *
+ * {@see createCommandBuilder()} instantiates the appropriate
+ * {@see TDbCommandBuilder} subclass for the driver.  The base implementation
+ * returns a plain {@see TDbCommandBuilder}; driver subclasses override this
+ * to return their specialised builder (e.g. {@see TSqliteCommandBuilder},
+ * {@see TMysqlCommandBuilder}).
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
