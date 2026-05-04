@@ -159,16 +159,32 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	}
 
 	/**
-	 * Close the connection when serializing.
+	 * Excludes non-serializable and connection-runtime state from serialization.
+	 *
+	 * `_pdo` is excluded because PDO instances are never serializable.
+	 * `_active` is excluded because the connection cannot survive serialization;
+	 * it will be `false` (the declared default) after deserialization and the
+	 * caller is responsible for reopening it.
+	 * `_transaction` is excluded because an in-flight transaction requires a
+	 * live PDO; without one it would be inconsistent after deserialization.
+	 * `_dbMeta` is excluded when null because it is a lazy-loaded cache that
+	 * will be repopulated on first use; a populated instance is worth keeping.
+	 *
+	 * Note: the connection is intentionally NOT closed during serialization
+	 * because serializing does not necessarily mean the connection is no longer
+	 * needed in the current process.
+	 *
+	 * @param array $exprops by reference, list of property names to exclude.
 	 */
-	public function __sleep()
+	protected function _getZappableSleepProps(&$exprops)
 	{
-		/*
-		 * $this->close();
-		 * DO NOT CLOSE the current connection as serializing doesn't necessarily mean
-		 * we don't this connection anymore in the current session
-		 */
-		return array_diff(parent::__sleep(), ["\0Prado\Data\TDbConnection\0_pdo", "\0Prado\Data\TDbConnection\0_active"]);
+		parent::_getZappableSleepProps($exprops);
+		$exprops[] = "\0" . TDbConnection::class . "\0_pdo";
+		$exprops[] = "\0" . TDbConnection::class . "\0_active";
+		$exprops[] = "\0" . TDbConnection::class . "\0_transaction";
+		if ($this->_dbMeta === null) {
+			$exprops[] = "\0" . TDbConnection::class . "\0_dbMeta";
+		}
 	}
 
 	/**
