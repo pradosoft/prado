@@ -24,3 +24,6 @@ ar_relations_undefined						= Unable to determine Active Record relationships be
 ar_undefined_relation_prop					= Unable to find {1}::${2}['{0}'], Active Record relationship definition for property "{0}" not found in entries of {1}::${2}.
 ar_invalid_relationship						= Invalid active record relationship.
 ar_relations_missing_fk						= Unable to find foreign key relationships in table '{0}' that corresponds to table '{1}'.
+ar_belongs_to_multiple_result				= BelongsTo/HasOne relationship returned more than one result but exactly one was expected.
+scaffold_unable_to_find_edit_view			= Unable to find scaffold edit view control with ID '{0}'.
+scaffold_unable_to_find_list_view			= Unable to find scaffold list view control with ID '{0}'.

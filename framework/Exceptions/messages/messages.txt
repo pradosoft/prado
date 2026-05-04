@@ -644,6 +644,7 @@ dbmetadata_not_meta_data				= Expected driver class {1} but got class {0}.
 dbmetadata_tableinfo_class_invalid		= TDbMetaData table info class '{0}' is a directory namespace, not a class.
 
 datasource_dbconnection_invalid			= TDataSourceConfig.DbConnection '{0}' is invalid. Please make sure it points to a valid application module.
+datasource_dbconnection_exists			= Cannot set ConnectionClass to '{0}': a database connection has already been established.
 distributeddatasource_child_required		= {0} requires one '{1}' child element at minimum.
 masterslavedbconnection_connection_exists	= {0}.{1} connection already exists.
 masterslavedbconnection_interface_required	= {0}.{1} requires an instance implementing {2} interface.
