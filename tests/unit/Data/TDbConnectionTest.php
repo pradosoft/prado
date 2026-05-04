@@ -240,16 +240,6 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 	}
 
 	/**
-	 * Call the protected resolveCharsetForDriver() method via reflection.
-	 */
-	private function callResolveCharsetForDriver(TDbConnection $conn, string $charset, string $driver): string
-	{
-		$method = new \ReflectionMethod(TDbConnection::class, 'resolveCharsetForDriver');
-		$method->setAccessible(true);
-		return $method->invoke($conn, $charset, $driver);
-	}
-
-	/**
 	 * @dataProvider provideSetNamesDrivers
 	 * @param string $driver          PDO driver string
 	 * @param string $inputCharset    value the caller sets on Charset
@@ -391,81 +381,6 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 
 		$this->expectException(TDbException::class);
 		$this->callSetConnectionCharset($conn);
-	}
-
-	// -----------------------------------------------------------------------
-	// resolveCharsetForDriver() tests
-	// -----------------------------------------------------------------------
-
-	/** @dataProvider provideCharsetResolutions */
-	public function testResolveCharsetForDriver(
-		string $inputCharset,
-		string $driver,
-		string $expectedCharset
-	): void {
-		$conn = new TDbConnection();
-		$resolved = $this->callResolveCharsetForDriver($conn, $inputCharset, $driver);
-		$this->assertSame($expectedCharset, $resolved);
-	}
-
-	public static function provideCharsetResolutions(): array
-	{
-		return [
-			// --- UTF-8 family: various spellings all resolve correctly ---
-			'UTF-8 mysql'       => ['UTF-8',   'mysql',    'utf8mb4'],
-			'utf8 mysql'        => ['utf8',     'mysql',    'utf8mb4'],
-			'UTF8 mysql'        => ['UTF8',     'mysql',    'utf8mb4'],
-			'utf-8 mysql'       => ['utf-8',    'mysql',    'utf8mb4'],
-			'UTF-8 sqlite'      => ['UTF-8',    'sqlite',   'UTF-8'],
-			'UTF-8 pgsql'       => ['UTF-8',    'pgsql',    'UTF8'],
-			'UTF-8 firebird'    => ['UTF-8',    'firebird', 'UTF8'],
-			// utf8mb4 is treated as the same canonical entry as utf8
-			'utf8mb4 mysql'     => ['utf8mb4',  'mysql',    'utf8mb4'],
-			'utf8mb4 pgsql'     => ['utf8mb4',  'pgsql',    'UTF8'],
-			'utf8mb4 firebird'  => ['utf8mb4',  'firebird', 'UTF8'],
-			// --- ISO-8859-1 / latin1 ---
-			'ISO-8859-1 mysql'    => ['ISO-8859-1', 'mysql',    'latin1'],
-			'ISO-8859-1 pgsql'    => ['ISO-8859-1', 'pgsql',    'LATIN1'],
-			'ISO-8859-1 firebird' => ['ISO-8859-1', 'firebird', 'ISO8859_1'],
-			'latin1 pgsql'        => ['latin1',     'pgsql',    'LATIN1'],
-			'latin1 firebird'     => ['latin1',     'firebird', 'ISO8859_1'],
-			// --- ISO-8859-2 / latin2 ---
-			'ISO-8859-2 mysql'    => ['ISO-8859-2', 'mysql',    'latin2'],
-			'ISO-8859-2 pgsql'    => ['ISO-8859-2', 'pgsql',    'LATIN2'],
-			'ISO-8859-2 firebird' => ['ISO-8859-2', 'firebird', 'ISO8859_2'],
-			// --- ASCII ---
-			'ascii mysql'    => ['ascii', 'mysql',    'ascii'],
-			'ascii pgsql'    => ['ascii', 'pgsql',    'SQL_ASCII'],
-			'ascii firebird' => ['ascii', 'firebird', 'ASCII'],
-			// --- Windows code pages ---
-			'WIN-1252 mysql'       => ['WIN-1252',     'mysql',    'cp1252'],
-			'WIN-1252 pgsql'       => ['WIN-1252',     'pgsql',    'WIN1252'],
-			'WIN-1252 firebird'    => ['WIN-1252',     'firebird', 'WIN1252'],
-			'Windows-1252 mysql'   => ['Windows-1252', 'mysql',    'cp1252'],
-			'win1251 mysql'        => ['win1251',       'mysql',    'cp1251'],
-			'Windows-1250 pgsql'   => ['Windows-1250',  'pgsql',   'WIN1250'],
-			// --- KOI8 ---
-			'KOI8-R mysql'    => ['KOI8-R', 'mysql',    'koi8r'],
-			'KOI8-R pgsql'    => ['KOI8-R', 'pgsql',    'KOI8R'],
-			'KOI8-R firebird' => ['KOI8-R', 'firebird', 'KOI8R'],
-			// --- OCI charset names ---
-			'UTF-8 oci'        => ['UTF-8',      'oci', 'AL32UTF8'],
-			'ISO-8859-1 oci'   => ['ISO-8859-1', 'oci', 'WE8ISO8859P1'],
-			'ISO-8859-2 oci'   => ['ISO-8859-2', 'oci', 'EE8ISO8859P2'],
-			'ascii oci'        => ['ascii',       'oci', 'US7ASCII'],
-			'WIN-1252 oci'     => ['WIN-1252',    'oci', 'WE8MSWIN1252'],
-			'KOI8-R oci'       => ['KOI8-R',      'oci', 'CL8KOI8R'],
-			// --- sqlsrv charset names ---
-			'UTF-8 sqlsrv'     => ['UTF-8',      'sqlsrv', 'UTF-8'],
-			// --- dblib charset names ---
-			'ISO-8859-2 dblib' => ['ISO-8859-2', 'dblib', 'ISO-8859-2'],
-			'KOI8-R dblib'     => ['KOI8-R',     'dblib', 'KOI8-R'],
-			// --- IBM DB2: no table entry → pass-through ---
-			'UTF-8 ibm'        => ['UTF-8', 'ibm', 'UTF-8'],
-			// --- Unknown / driver-specific names pass through unchanged ---
-			'unknown mysql'    => ['my_custom_cs', 'mysql', 'my_custom_cs'],
-			'unknown pgsql'    => ['EUC_JP',       'pgsql', 'EUC_JP'],
-		];
 	}
 
 	public function testCharsetIsAppliedOnActivate(): void

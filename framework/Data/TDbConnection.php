@@ -381,24 +381,6 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	}
 
 	/**
-	 * Resolves a charset name to its driver-specific equivalent, allowing callers to
-	 * use universal IANA-style names like 'UTF-8' or 'ISO-8859-1' regardless of the
-	 * underlying database driver.
-	 *
-	 * Delegates to {@see TDbDriverCapabilities::resolveCharset}. Override this method
-	 * to add or change mappings for custom database configurations.
-	 *
-	 * @param string $charset the charset name as supplied by the caller (e.g. 'UTF-8')
-	 * @param string $driver  PDO driver name (e.g. 'mysql', 'pgsql', 'firebird', 'oci')
-	 * @return string the charset name appropriate for $driver
-	 * @since 4.3.3
-	 */
-	protected function resolveCharsetForDriver(string $charset, string $driver): string
-	{
-		return TDbDriverCapabilities::resolveCharset($charset, $driver);
-	}
-
-	/**
 	 * Returns the DSN string with a charset parameter appended for the current
 	 * driver, if {@see $_charset} is set and the DSN does not already contain
 	 * a charset directive.
@@ -443,7 +425,7 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 			return $dsn;
 		}
 
-		$resolved = $this->resolveCharsetForDriver($charset, $driver);
+		$resolved = TDbDriverCapabilities::resolveCharset($charset, $driver);
 
 		return $dsn . ';' . $paramName . '=' . $resolved;
 	}
@@ -560,12 +542,12 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 				if ($result !== false && $result !== null) {
 					return (string) $result;
 				}
-				return $this->resolveCharsetForDriver($this->getCharset(), $driver);
+				return TDbDriverCapabilities::resolveCharset($this->getCharset(), $driver);
 			}
 			// Drivers that configure charset via DSN (oci, mssql, sqlsrv, dblib, ibm):
 			// return the charset name as it was resolved for this driver so the caller
 			// can confirm what was injected into the connection string.
-			return $this->resolveCharsetForDriver($this->getCharset(), $driver);
+			return TDbDriverCapabilities::resolveCharset($this->getCharset(), $driver);
 		} catch (\Throwable $e) {
 			return $this->_charset;
 		}
