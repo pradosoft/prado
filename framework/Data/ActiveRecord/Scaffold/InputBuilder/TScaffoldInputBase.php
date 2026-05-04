@@ -27,9 +27,9 @@ use Prado\Exceptions\TConfigurationException;
  * TDatePicker, etc.
  *
  * The input builders are created via the static {@see createInputBuilder} method which
- * determines the appropriate builder based on the database driver. When no built-in driver
- * matches, the {@see fxActiveRecordCreateScaffoldInput()} global event is raised to allow
- * for extensibility through custom implementations.
+ * determines the appropriate builder based on the database driver. All driver resolution
+ * logic — including the `fxActiveRecordCreateScaffoldInput` global event for unknown
+ * drivers — is encapsulated in {@see TDbDriverCapabilities::createScaffoldInput}.
  *
  * Example usage:
  * ```php
@@ -55,9 +55,14 @@ class TScaffoldInputBase
 	/**
 	 * Creates a database-specific scaffold input builder based on the active record's database driver.
 	 *
-	 * This method determines the appropriate input builder for the given database driver.
-	 * If no built-in driver is found, the {@see fxActiveRecordCreateScaffoldInput()} global event
-	 * is raised to allow custom implementations to provide a builder.
+	 * For built-in drivers the appropriate builder is loaded and returned directly.
+	 * For unknown drivers, {@see TDbDriverCapabilities::createScaffoldInput} raises
+	 * the **`fxActiveRecordCreateScaffoldInput`** global event on the connection,
+	 * allowing third-party code to supply a custom builder.
+	 *
+	 * The `fxActiveRecordCreateScaffoldInput` event is raised and managed
+	 * entirely by {@see TDbDriverCapabilities::createScaffoldInput}; this method
+	 * does not call `raiseEvent` directly.
 	 *
 	 * @param \Prado\Data\ActiveRecord\TActiveRecord $record the active record instance.
 	 * @throws TConfigurationException if no builder can be created for the driver.
@@ -68,19 +73,8 @@ class TScaffoldInputBase
 		$connection = $record->getDbConnection();
 		$connection->setActive(true); //must be connected before retrieving driver name!
 		$driver = strtolower($connection->getDriverName());
-		$file = TDbDriverCapabilities::getScaffoldInputFile($driver);
-		$class = TDbDriverCapabilities::getScaffoldInputClass($driver);
-		if ($file !== null && $class !== null) {
-			require_once(__DIR__ . $file);
-			return new $class();
-		}
-		$instances = $connection->raiseEvent('fxActiveRecordCreateScaffoldInput', self::class, $connection);
-		if (empty($instances)) {
-			// @todo v4.4 TActiveRecordConfigurationException, move message
-			throw new TConfigurationException('ar_invalid_database_driver', $driver);
-		}
-		$scaffoldInput = $instances[0];
-		if ($scaffoldInput instanceof static) {
+		$scaffoldInput = TDbDriverCapabilities::createScaffoldInput($driver, $connection, self::class);
+		if (!($scaffoldInput instanceof static)) {
 			// @todo v4.4 TActiveRecordConfigurationException, move message
 			throw new TConfigurationException('ar_not_input_base', $scaffoldInput::class, static::class);
 		}

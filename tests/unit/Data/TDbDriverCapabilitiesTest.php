@@ -45,6 +45,7 @@ use Prado\Exceptions\TDbException;
  *  - getMetaDataClass (all drivers + fxDataGetMetaDataClass event)
  *  - getScaffoldInputFile
  *  - getScaffoldInputClass
+ *  - createScaffoldInput (all drivers + fxActiveRecordCreateScaffoldInput event)
  */
 class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 {
@@ -1148,6 +1149,62 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 			$this->assertSame($class . '.php', ltrim($file, '/'),
 				"Class/file mismatch for '$driver'");
 		}
+	}
+
+	// =========================================================================
+	//  createScaffoldInput
+	// =========================================================================
+
+	/** @dataProvider provideScaffoldInputClass */
+	public function testCreateScaffoldInputBuiltInDriverReturnsInstance(string $driver, ?string $expected): void
+	{
+		if ($expected === null) {
+			$this->markTestSkipped('Unknown driver — tested separately via event path.');
+		}
+		$conn = $this->createMock(TDbConnection::class);
+		$conn->expects($this->never())->method('raiseEvent');
+
+		$result = TDbDriverCapabilities::createScaffoldInput($driver, $conn, self::class);
+		$this->assertInstanceOf($expected, $result);
+	}
+
+	public function testCreateScaffoldInputUnknownDriverThrowsWhenNoEventHandlers(): void
+	{
+		// Connection present but raiseEvent returns empty → TConfigurationException.
+		$conn = $this->createMock(TDbConnection::class);
+		$conn->expects($this->once())
+			->method('raiseEvent')
+			->with('fxActiveRecordCreateScaffoldInput', self::class, $conn)
+			->willReturn([]);
+
+		$this->expectException(\Prado\Exceptions\TConfigurationException::class);
+		TDbDriverCapabilities::createScaffoldInput('unknown_driver', $conn, self::class);
+	}
+
+	public function testCreateScaffoldInputFxEventRaisedWithCorrectParameters(): void
+	{
+		// The event must be raised on $connection with ($callerClass, $connection).
+		$driver = 'my_custom_driver';
+		$conn = $this->createMock(TDbConnection::class);
+		$conn->expects($this->once())
+			->method('raiseEvent')
+			->with('fxActiveRecordCreateScaffoldInput', self::class, $conn)
+			->willReturn([]);
+
+		$this->expectException(\Prado\Exceptions\TConfigurationException::class);
+		TDbDriverCapabilities::createScaffoldInput($driver, $conn, self::class);
+	}
+
+	public function testCreateScaffoldInputFxEventFirstHandlerWins(): void
+	{
+		// createScaffoldInput returns $instances[0] — the first event result.
+		$conn = $this->createMock(TDbConnection::class);
+		$first = $this->createMock(\Prado\Data\ActiveRecord\Scaffold\InputBuilder\TScaffoldInputBase::class);
+		$second = $this->createMock(\Prado\Data\ActiveRecord\Scaffold\InputBuilder\TScaffoldInputBase::class);
+		$conn->method('raiseEvent')->willReturn([$first, $second]);
+
+		$result = TDbDriverCapabilities::createScaffoldInput('custom_driver', $conn, self::class);
+		$this->assertSame($first, $result);
 	}
 
 	// =========================================================================

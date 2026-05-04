@@ -7,7 +7,7 @@ use Prado\Exceptions\TDbException;
 /**
  * Unit tests for TDbMetaData.
  *
- * Tests the getInstance factory method and fxDataGetMetaDataInstance event.
+ * Tests the getInstance factory method and fxDataGetMetaDataClass event.
  * Does not require a database connection; uses mocked connections.
  */
 class TDbMetaDataTest extends PHPUnit\Framework\TestCase
@@ -62,7 +62,7 @@ class TDbMetaDataTest extends PHPUnit\Framework\TestCase
 		TDbMetaData::getInstance($conn);
 	}
 
-	public function test_getInstance_raises_fxDataGetMetaDataInstance_for_unknown_driver()
+	public function test_getInstance_raises_fxDataGetMetaDataClass_for_unknown_driver()
 	{
 		$driver = 'custom_driver';
 		$conn = $this->createMockConnection($driver);
