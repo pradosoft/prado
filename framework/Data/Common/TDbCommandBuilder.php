@@ -68,7 +68,7 @@ use Prado\Exceptions\TDbException;
  *   the command is created (e.g. MSSQL appends a semicolon).
  *
  * MERGE-based upserts always require an active transaction; call
- * {@see requiresActiveTransaction()} at the start of those overrides.
+ * {@see assertActiveTransaction()} at the start of those overrides.
  *
  * ## Parameter binding
  *
@@ -534,7 +534,7 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDataCommandBuilder
 	 * @throws TDbException if no active transaction is found.
 	 * @since 4.3.3
 	 */
-	protected function requiresActiveTransaction(): void
+	protected function assertActiveTransaction(): void
 	{
 		if ($this->getDbConnection()->getCurrentTransaction() === null) {
 			throw new TDbException('dbcommandbuilder_upsert_requires_transaction', $this::class);

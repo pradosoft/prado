@@ -38,7 +38,7 @@ class TFirebirdCommandBuilder extends TDbCommandBuilder
 	 */
 	public function createInsertOrIgnoreCommand(array $data): TDbCommand
 	{
-		$this->requiresActiveTransaction();
+		$this->assertActiveTransaction();
 		$conflictColumns = $this->resolveConflictColumns(null);
 		return $this->buildMergeStatement($data, [], $conflictColumns, 'FROM RDB$DATABASE', false);
 	}
@@ -54,7 +54,7 @@ class TFirebirdCommandBuilder extends TDbCommandBuilder
 	 */
 	public function createUpsertCommand(array $data, ?array $updateData = null, ?array $conflictColumns = null): TDbCommand
 	{
-		$this->requiresActiveTransaction();
+		$this->assertActiveTransaction();
 		$conflictColumns = $this->resolveConflictColumns($conflictColumns);
 		$updateData = $this->resolveUpdateData($data, $updateData, $conflictColumns);
 		return $this->buildMergeStatement($data, $updateData, $conflictColumns, 'FROM RDB$DATABASE', false);
