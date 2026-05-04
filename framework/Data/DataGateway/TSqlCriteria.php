@@ -81,8 +81,8 @@ use Traversable;
  * $criteria->Parameters[':name'] = 'admin';
  * $criteria->Parameters[':pass'] = 'prado';
  * $criteria->OrdersBy['level'] = 'desc';
- * $criteria->OrdersBy['name']  = 'asc';
- * $criteria->Limit  = 10;
+ * $criteria->OrdersBy['name'] = 'asc';
+ * $criteria->Limit = 10;
  * $criteria->Offset = 20;
  * ```
  *
