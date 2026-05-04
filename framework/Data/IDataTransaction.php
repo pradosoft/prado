@@ -10,8 +10,6 @@
 
 namespace Prado\Data;
 
-use Prado\Data\Common\IDataMetaData;
-
 /**
  * IDataTransaction defines the interface for a data-store transaction.
  *
@@ -46,16 +44,6 @@ interface IDataTransaction
 	 * @return IDataCommand the new command object.
 	 */
 	public function createCommand($query);
-
-	/**
-	 * Returns the metadata helper for this transaction's connection.
-	 *
-	 * This is a convenience method equivalent to
-	 * `$transaction->getConnection()->getDbMetaData()`.
-	 *
-	 * @return IDataMetaData the metadata helper.
-	 */
-	public function getDbMetaData();
 
 	/**
 	 * Starts a new transaction on this transaction's connection, reactivating

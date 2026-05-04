@@ -12,7 +12,6 @@ namespace Prado\Data;
 
 use PDO;
 use PDOException;
-use Prado\Data\Common\TDbMetaData;
 use Prado\Exceptions\TDbException;
 
 /**
@@ -97,19 +96,6 @@ class TDbTransaction extends \Prado\TComponent implements IDataTransaction
 	public function createCommand($sql)
 	{
 		return $this->getConnection()->createCommand($sql);
-	}
-
-	/**
-	 * Returns the metadata helper for this transaction's connection.
-	 *
-	 * Convenience shorthand for `$transaction->getConnection()->getDbMetaData()`.
-	 *
-	 * @return TDbMetaData the metadata helper.
-	 * @since 4.3.3
-	 */
-	public function getDbMetaData()
-	{
-		return $this->getConnection()->getDbMetaData();
 	}
 
 	/**

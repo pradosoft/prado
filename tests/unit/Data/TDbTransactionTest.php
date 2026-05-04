@@ -1,6 +1,5 @@
 <?php
 
-use Prado\Data\Common\TDbMetaData;
 use Prado\Data\TDbCommand;
 use Prado\Data\TDbConnection;
 use Prado\Data\TDbTransaction;
@@ -150,14 +149,6 @@ class TDbTransactionTest extends PHPUnit\Framework\TestCase
 		$tx = $this->_connection->beginTransaction();
 		$cmd = $tx->createCommand('SELECT 1');
 		$this->assertInstanceOf(TDbCommand::class, $cmd);
-		$tx->rollBack();
-	}
-
-	public function testGetDbMetaDataReturnsTDbMetaData(): void
-	{
-		$tx = $this->_connection->beginTransaction();
-		$meta = $tx->getDbMetaData();
-		$this->assertInstanceOf(TDbMetaData::class, $meta);
 		$tx->rollBack();
 	}
 
