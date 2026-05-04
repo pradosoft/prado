@@ -175,6 +175,7 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	 * needed in the current process.
 	 *
 	 * @param array $exprops by reference, list of property names to exclude.
+	 * @since 4.3.3
 	 */
 	protected function _getZappableSleepProps(&$exprops)
 	{

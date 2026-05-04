@@ -66,6 +66,7 @@ class TDbCommand extends \Prado\TComponent implements IDataCommand
 	 * The statement is not serializable and will be recreated on demand
 	 * by {@see prepare()} after deserialization.
 	 * @param array $exprops by reference, list of property names to exclude.
+	 * @since 4.3.3
 	 */
 	protected function _getZappableSleepProps(&$exprops)
 	{
