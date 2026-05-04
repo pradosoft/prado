@@ -62,6 +62,31 @@ class TDbMetaDataTest extends PHPUnit\Framework\TestCase
 		TDbMetaData::getInstance($conn);
 	}
 
+	public function test_getInstance_throws_when_event_returns_instance_instead_of_class_name()
+	{
+		// Event handlers must return a class name string, not an object instance.
+		// TDbDriverCapabilities::getMetaDataClass raises TDbException when an
+		// IDataMetaData object is returned instead.
+		$conn = $this->createMockConnection('custom_driver');
+		$badReturn = $this->createMock(\Prado\Data\Common\IDataMetaData::class);
+		$conn->method('raiseEvent')->willReturn([$badReturn]);
+
+		$this->expectException(TDbException::class);
+		TDbMetaData::getInstance($conn);
+	}
+
+	public function test_getInstance_throws_when_event_class_does_not_implement_IDataMetaData()
+	{
+		// If the class name returned by the event does not implement IDataMetaData,
+		// TDbDriverCapabilities::getMetaDataClass must throw TDbException before
+		// getInstance attempts instantiation.
+		$conn = $this->createMockConnection('custom_driver');
+		$conn->method('raiseEvent')->willReturn([\stdClass::class]);
+
+		$this->expectException(TDbException::class);
+		TDbMetaData::getInstance($conn);
+	}
+
 	public function test_getInstance_raises_fxDataGetMetaDataClass_for_unknown_driver()
 	{
 		$driver = 'custom_driver';

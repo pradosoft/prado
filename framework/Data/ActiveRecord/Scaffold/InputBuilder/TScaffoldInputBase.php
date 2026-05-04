@@ -19,17 +19,18 @@ use Prado\Exceptions\TConfigurationException;
  *
  * TScaffoldInputBase is the base class for creating scaffold input builders
  * that generate appropriate input controls for active record columns based on
- * the database driver.
+ * the database driver.  It implements {@see IScaffoldInput}, the common
+ * interface that all scaffold input builders must satisfy.
  *
- * This class provides the foundation for database-specific input builder implementations
- * (e.g., TMysqlScaffoldInput, TSqliteScaffoldInput, etc.) that map database
- * column types to appropriate Prado web controls like TTextBox, TCheckBox, TDropDownList,
- * TDatePicker, etc.
+ * This class provides the foundation for database-specific input builder
+ * implementations (e.g., TMysqlScaffoldInput, TSqliteScaffoldInput) that map
+ * database column types to appropriate Prado web controls like TTextBox,
+ * TCheckBox, TDropDownList, TDatePicker, etc.
  *
- * The input builders are created via the static {@see createInputBuilder} method which
- * determines the appropriate builder based on the database driver. All driver resolution
- * logic — including the `fxActiveRecordCreateScaffoldInput` global event for unknown
- * drivers — is encapsulated in {@see TDbDriverCapabilities::createScaffoldInput}.
+ * The input builders are created via the static {@see createInputBuilder}
+ * method which delegates all driver resolution — including the
+ * `fxActiveRecordCreateScaffoldInput` global event for unknown drivers — to
+ * {@see TDbDriverCapabilities::createScaffoldInput}.
  *
  * Example usage:
  * ```php
@@ -37,9 +38,9 @@ use Prado\Exceptions\TConfigurationException;
  * $builder->createScaffoldInput($parent, $item, $column, $record);
  * ```
  */
-class TScaffoldInputBase
+class TScaffoldInputBase implements IScaffoldInput
 {
-	public const DEFAULT_ID = 'scaffold_input';
+	public const DEFAULT_ID = IScaffoldInput::DEFAULT_ID;
 	private $_parent;
 
 	/**
@@ -53,20 +54,25 @@ class TScaffoldInputBase
 	}
 
 	/**
-	 * Creates a database-specific scaffold input builder based on the active record's database driver.
+	 * Creates a database-specific scaffold input builder based on the active
+	 * record's database driver.
 	 *
-	 * For built-in drivers the appropriate builder is loaded and returned directly.
-	 * For unknown drivers, {@see TDbDriverCapabilities::createScaffoldInput} raises
-	 * the **`fxActiveRecordCreateScaffoldInput`** global event on the connection,
-	 * allowing third-party code to supply a custom builder.
+	 * For built-in drivers the appropriate builder is loaded and returned
+	 * directly.  For unknown drivers,
+	 * {@see TDbDriverCapabilities::createScaffoldInput} raises the
+	 * **`fxActiveRecordCreateScaffoldInput`** global event on the connection.
+	 * Event handlers must return the fully-qualified **class name** of a class
+	 * that implements {@see IScaffoldInput}; the class is then instantiated
+	 * here and validated.
 	 *
-	 * The `fxActiveRecordCreateScaffoldInput` event is raised and managed
-	 * entirely by {@see TDbDriverCapabilities::createScaffoldInput}; this method
-	 * does not call `raiseEvent` directly.
+	 * All driver resolution and event raising is encapsulated in
+	 * {@see TDbDriverCapabilities::createScaffoldInput}; this method does not
+	 * call `raiseEvent` directly.
 	 *
 	 * @param \Prado\Data\ActiveRecord\TActiveRecord $record the active record instance.
-	 * @throws TConfigurationException if no builder can be created for the driver.
-	 * @return self the appropriate input builder for the database driver.
+	 * @throws TConfigurationException if no builder can be created for the
+	 *   driver, or if the returned instance does not implement {@see IScaffoldInput}.
+	 * @return IScaffoldInput the appropriate input builder for the database driver.
 	 */
 	public static function createInputBuilder($record)
 	{
@@ -74,9 +80,9 @@ class TScaffoldInputBase
 		$connection->setActive(true); //must be connected before retrieving driver name!
 		$driver = strtolower($connection->getDriverName());
 		$scaffoldInput = TDbDriverCapabilities::createScaffoldInput($driver, $connection, self::class);
-		if (!($scaffoldInput instanceof static)) {
+		if (!($scaffoldInput instanceof IScaffoldInput)) {
 			// @todo v4.4 TActiveRecordConfigurationException, move message
-			throw new TConfigurationException('ar_not_input_base', $scaffoldInput::class, static::class);
+			throw new TConfigurationException('ar_not_input_base', $scaffoldInput::class, IScaffoldInput::class);
 		}
 		return $scaffoldInput;
 	}

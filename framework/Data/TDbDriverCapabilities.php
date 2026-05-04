@@ -12,6 +12,7 @@ namespace Prado\Data;
 
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TDbException;
+use Prado\Data\ActiveRecord\Scaffold\InputBuilder\IScaffoldInput;
 use Prado\Data\Common\Firebird\TFirebirdMetaData;
 use Prado\Data\Common\Ibm\TIbmMetaData;
 use Prado\Data\Common\IDataMetaData;
@@ -60,8 +61,8 @@ use Prado\Data\Common\Sqlite\TSqliteMetaData;
  *   a fully-qualified class name implementing {@see \Prado\Data\Common\IDataMetaData}.
  * - **`fxActiveRecordCreateScaffoldInput`** — raised by {@see createScaffoldInput}
  *   when no built-in scaffold input file is registered for the driver.  Handlers
- *   must return an instance of
- *   {@see \Prado\Data\ActiveRecord\Scaffold\InputBuilder\TScaffoldInputBase}.
+ *   must return the **fully-qualified class name** of a class that implements
+ *   {@see \Prado\Data\ActiveRecord\Scaffold\InputBuilder\IScaffoldInput}.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3
@@ -737,8 +738,8 @@ class TDbDriverCapabilities
 			throw new TDbException('dbmetadata_invalid_database_driver', $driver);
 		}
 		$class = array_pop($driverClasses);
-		if ($class instanceof IDataMetaData) {
-			throw new TDbException('dbmetadata_not_meta_data', $class::class, IDataMetaData::class);
+		if (!is_string($class) || !is_a($class, IDataMetaData::class, true)) {
+			throw new TDbException('dbmetadata_not_meta_data', is_string($class) ? $class : $class::class, IDataMetaData::class);
 		}
 		return $class;
 	}
@@ -808,13 +809,13 @@ class TDbDriverCapabilities
 	/**
 	 * Creates and returns a scaffold input builder instance for the given driver.
 	 *
-	 * For built-in drivers, the appropriate file is loaded via `require_once` and
-	 * a new instance of the driver-specific class is returned directly.
+	 * For built-in drivers, the appropriate file is loaded via `require_once`
+	 * and a new instance of the driver-specific class is returned directly.
 	 *
-	 * For unknown drivers, the **`fxActiveRecordCreateScaffoldInput`** global event
-	 * is raised on `$connection`.  Event handlers must return an instance of
-	 * {@see \Prado\Data\ActiveRecord\Scaffold\InputBuilder\TScaffoldInputBase}.
-	 * The first value in the event result array is returned to the caller.
+	 * For unknown drivers, the **`fxActiveRecordCreateScaffoldInput`** global
+	 * event is raised on `$connection`.  Event handlers must return the
+	 * **fully-qualified class name** of a class that implements
+	 * {@see IScaffoldInput}.  The first value in the event result array is used.
 	 *
 	 * This method fully encapsulates the `fxActiveRecordCreateScaffoldInput`
 	 * event so that callers (e.g.
@@ -827,10 +828,11 @@ class TDbDriverCapabilities
 	 * @param string $callerClass passed as the `$sender` argument of the event
 	 *   so handlers can identify the originator (typically `static::class`)
 	 * @throws TConfigurationException if the driver is unknown and no event
-	 *   handler provides a builder.
-	 * @return object the scaffold input builder instance.
+	 *   handler provides a class name, or if a handler returns an
+	 *   {@see IScaffoldInput} instance instead of a class name string.
+	 * @return IScaffoldInput the scaffold input builder instance.
 	 */
-	public static function createScaffoldInput(string $driver, TDbConnection $connection, string $callerClass): object
+	public static function createScaffoldInput(string $driver, TDbConnection $connection, string $callerClass): IScaffoldInput
 	{
 		$file = static::getScaffoldInputFile($driver);
 		$class = static::getScaffoldInputClass($driver);
@@ -838,11 +840,16 @@ class TDbDriverCapabilities
 			require_once(__DIR__ . '/ActiveRecord/Scaffold/InputBuilder' . $file);
 			return new $class();
 		}
-		$instances = $connection->raiseEvent('fxActiveRecordCreateScaffoldInput', $callerClass, $connection);
-		if (empty($instances)) {
+		$inputClasses = $connection->raiseEvent('fxActiveRecordCreateScaffoldInput', $callerClass, $connection);
+		if (empty($inputClasses)) {
 			// @todo v4.4 TActiveRecordConfigurationException, move message
 			throw new TConfigurationException('ar_invalid_database_driver', $driver);
 		}
-		return $instances[0];
+		$class = $inputClasses[0];
+		if (!is_string($class) || !is_a($class, IScaffoldInput::class, true)) {
+			// @todo v4.4 TActiveRecordConfigurationException, move message
+			throw new TConfigurationException('ar_not_input_base', is_string($class) ? $class : $class::class, IScaffoldInput::class);
+		}
+		return new $class();
 	}
 }

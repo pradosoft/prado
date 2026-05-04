@@ -1030,6 +1030,18 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 		TDbDriverCapabilities::getMetaDataClass('custom_driver', $conn);
 	}
 
+	public function testGetMetaDataClassFxEventReturningNonImplementingClassThrowsTdbException(): void
+	{
+		// If a handler returns a class name that does not implement IDataMetaData,
+		// getMetaDataClass must throw rather than returning the bad class name to
+		// the caller.
+		$conn = $this->createMock(TDbConnection::class);
+		$conn->method('raiseEvent')->willReturn([\stdClass::class]);
+
+		$this->expectException(TDbException::class);
+		TDbDriverCapabilities::getMetaDataClass('custom_driver', $conn);
+	}
+
 	public function testGetMetaDataClassKnownDriverIgnoresConnection(): void
 	{
 		// For known drivers, the connection is never consulted.
@@ -1197,14 +1209,30 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 
 	public function testCreateScaffoldInputFxEventFirstHandlerWins(): void
 	{
-		// createScaffoldInput returns $instances[0] — the first event result.
+		// createScaffoldInput uses $instances[0] — the first event result (class name string).
+		// Using 'sqlite' as a stand-in: it's a known class with no require_once needed here
+		// because TDbDriverCapabilities::createScaffoldInput will instantiate the returned string.
 		$conn = $this->createMock(TDbConnection::class);
-		$first = $this->createMock(\Prado\Data\ActiveRecord\Scaffold\InputBuilder\TScaffoldInputBase::class);
-		$second = $this->createMock(\Prado\Data\ActiveRecord\Scaffold\InputBuilder\TScaffoldInputBase::class);
-		$conn->method('raiseEvent')->willReturn([$first, $second]);
+		$conn->method('raiseEvent')->willReturn([
+			\Prado\Data\ActiveRecord\Scaffold\InputBuilder\TSqliteScaffoldInput::class,
+			\Prado\Data\ActiveRecord\Scaffold\InputBuilder\TPgsqlScaffoldInput::class,
+		]);
 
 		$result = TDbDriverCapabilities::createScaffoldInput('custom_driver', $conn, self::class);
-		$this->assertSame($first, $result);
+		$this->assertInstanceOf(\Prado\Data\ActiveRecord\Scaffold\InputBuilder\TSqliteScaffoldInput::class, $result);
+	}
+
+	public function testCreateScaffoldInputFxEventReturningObjectThrowsTConfigurationException(): void
+	{
+		// If a handler accidentally returns an IScaffoldInput instance instead of a class name
+		// string, createScaffoldInput must throw to signal the incorrect usage.
+		$badReturn = $this->createMock(\Prado\Data\ActiveRecord\Scaffold\InputBuilder\IScaffoldInput::class);
+
+		$conn = $this->createMock(TDbConnection::class);
+		$conn->method('raiseEvent')->willReturn([$badReturn]);
+
+		$this->expectException(\Prado\Exceptions\TConfigurationException::class);
+		TDbDriverCapabilities::createScaffoldInput('custom_driver', $conn, self::class);
 	}
 
 	// =========================================================================

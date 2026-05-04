@@ -124,7 +124,11 @@ abstract class TDbMetaData extends \Prado\TComponent implements IDataMetaData
 		if ($class === null) {
 			return null;
 		}
-		return new $class($conn);
+		$instance = new $class($conn);
+		if (!($instance instanceof IDataMetaData)) {
+			throw new TDbException('dbmetadata_not_meta_data', $class, IDataMetaData::class);
+		}
+		return $instance;
 	}
 
 	/**

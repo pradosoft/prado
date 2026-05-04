@@ -76,6 +76,7 @@ return [
 'TScaffoldInputCommon' => 'Prado\Data\ActiveRecord\Scaffold\InputBuilder\TScaffoldInputCommon',
 'TSqliteScaffoldInput' => 'Prado\Data\ActiveRecord\Scaffold\InputBuilder\TSqliteScaffoldInput',
 'IScaffoldEditRenderer' => 'Prado\Data\ActiveRecord\Scaffold\IScaffoldEditRenderer',
+'IScaffoldInput' => 'Prado\Data\ActiveRecord\Scaffold\InputBuilder\IScaffoldInput',
 'TScaffoldBase' => 'Prado\Data\ActiveRecord\Scaffold\TScaffoldBase',
 'TScaffoldEditView' => 'Prado\Data\ActiveRecord\Scaffold\TScaffoldEditView',
 'TScaffoldListView' => 'Prado\Data\ActiveRecord\Scaffold\TScaffoldListView',

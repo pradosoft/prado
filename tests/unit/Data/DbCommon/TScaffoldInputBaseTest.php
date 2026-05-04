@@ -55,13 +55,28 @@ class TScaffoldInputBaseTest extends PHPUnit\Framework\TestCase
 		TScaffoldInputBase::createInputBuilder($record);
 	}
 
-	public function test_createInputBuilder_throws_when_event_returns_wrong_type()
+	public function test_createInputBuilder_throws_when_event_returns_instance_instead_of_class_name()
 	{
-		// If an event handler returns an object that is not a TScaffoldInputBase
-		// subclass, createInputBuilder must throw TConfigurationException.
+		// Event handlers must return a class name string implementing IScaffoldInput.
+		// If a handler returns an IScaffoldInput instance instead, TDbDriverCapabilities
+		// throws TConfigurationException before instantiation.
 		$record = $this->createMockRecord('custom_driver');
 		$conn = $record->getDbConnection();
-		$conn->method('raiseEvent')->willReturn([new \stdClass()]);
+		$badReturn = $this->createMock(\Prado\Data\ActiveRecord\Scaffold\InputBuilder\IScaffoldInput::class);
+		$conn->method('raiseEvent')->willReturn([$badReturn]);
+
+		$this->expectException(TConfigurationException::class);
+		TScaffoldInputBase::createInputBuilder($record);
+	}
+
+	public function test_createInputBuilder_throws_when_event_class_does_not_implement_IScaffoldInput()
+	{
+		// If the class name returned by the event does not implement IScaffoldInput,
+		// TDbDriverCapabilities::createScaffoldInput must throw TConfigurationException
+		// before attempting instantiation.
+		$record = $this->createMockRecord('custom_driver');
+		$conn = $record->getDbConnection();
+		$conn->method('raiseEvent')->willReturn([\stdClass::class]);
 
 		$this->expectException(TConfigurationException::class);
 		TScaffoldInputBase::createInputBuilder($record);
