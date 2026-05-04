@@ -14,28 +14,32 @@ use Prado\Data\Common\TDbCommandBuilder;
 use Prado\Data\TDbCommand;
 
 /**
- * TSqliteCommandBuilder provides specifics methods to create limit/offset query commands
- * for Sqlite database.
+ * TSqliteCommandBuilder class
+ *
+ * TSqliteCommandBuilder provides SQLite-specific methods to create query
+ * commands, including LIMIT/OFFSET, ORDER BY, INSERT OR IGNORE, and UPSERT.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
  */
 class TSqliteCommandBuilder extends TDbCommandBuilder
 {
-	/**
-	 * Applies ORDER BY to a SQL string, using unquoted column identifiers.
+	/*
+	 * Applies ORDER BY to a SQL string using bare (unquoted) column identifiers.
 	 *
-	 * PHP's pdo_sqlite has a known bug (SQLITE_RANGE, error 25): when
-	 * ORDER BY references a double-quoted column name (e.g. {@see "name"})
-	 * the driver's internal column-index calculation goes out of range and
-	 * the query fails.  Using bare, unquoted column names in ORDER BY
-	 * (e.g. {@see name ASC}) avoids the bug while remaining valid SQLite SQL.
+	 * Bare identifiers are used rather than the quoted names returned by
+	 * {@see \Prado\Data\Common\TDbTableColumn::getColumnName()} because SQLite
+	 * handles unquoted identifiers reliably across all known builds; this avoids
+	 * any risk of quoted-identifier edge cases on non-standard builds.
+	 *
+	 * Note: {@see createFindCommand()} delegates ordering to this method via
+	 * {@see TDbCommandBuilder::applyCriterias()}.
 	 *
 	 * @param string $sql SQL string without existing ordering.
 	 * @param array $ordering pairs of column names as key and direction as value.
 	 * @return string modified SQL applied with ORDER BY.
 	 * @since 4.3.3
-	 */
+	 *
 	public function applyOrdering($sql, $ordering)
 	{
 		$orders = [];
@@ -44,8 +48,7 @@ class TSqliteCommandBuilder extends TDbCommandBuilder
 			if (false !== strpos($name, '(') && false !== strpos($name, ')')) {
 				$key = $name;
 			} else {
-				// Use the unquoted column id — quoted identifiers in ORDER BY
-				// trigger SQLITE_RANGE (error 25) in PHP's pdo_sqlite driver.
+				// Use the bare (unquoted) column id.
 				$key = $this->getTableInfo()->getColumn($name)->getColumnId();
 			}
 			$orders[] = $key . ' ' . $direction;
@@ -54,7 +57,7 @@ class TSqliteCommandBuilder extends TDbCommandBuilder
 			$sql .= ' ORDER BY ' . implode(', ', $orders);
 		}
 		return $sql;
-	}
+	}*/
 
 	/**
 	 * Creates a SQLite INSERT OR IGNORE command.
@@ -74,11 +77,14 @@ class TSqliteCommandBuilder extends TDbCommandBuilder
 
 	/**
 	 * Creates a SQLite INSERT ... ON CONFLICT(pk,...) DO UPDATE SET command.
-	 * On conflict with $conflictColumns (defaults to primary keys), updates $updateData columns
-	 * (defaults to all non-PK columns), referencing the excluded pseudo-table for new values.
+	 * On conflict with $conflictColumns (defaults to primary keys), updates
+	 * $updateData columns (defaults to all non-PK columns), referencing the
+	 * excluded pseudo-table for new values.
 	 * @param array $data name-value pairs of data to insert.
-	 * @param null|array $updateData column=>value pairs to update on conflict; null = all non-PK columns from $data.
-	 * @param null|array $conflictColumns conflict target columns; null = primary key columns.
+	 * @param null|array $updateData column=>value pairs to update on conflict;
+	 *   null = all non-PK columns from $data.
+	 * @param null|array $conflictColumns conflict target columns;
+	 *   null = primary key columns.
 	 * @return TDbCommand upsert command.
 	 * @since 4.3.3
 	 */
@@ -90,7 +96,6 @@ class TSqliteCommandBuilder extends TDbCommandBuilder
 		$table = $this->getTableInfo()->getTableFullName();
 		[$fields, $bindings] = $this->getInsertFieldBindings($data);
 
-		// Build ON CONFLICT(pk1, pk2, ...) clause
 		$conflictParts = [];
 		foreach ($conflictColumns as $pk) {
 			$conflictParts[] = $this->getTableInfo()->getColumn($pk)->getColumnName();

@@ -10,13 +10,11 @@
 
 namespace Prado\Data\Common\Sqlite;
 
-/**
- * Loads the base TDbTableInfo class and TSqliteTableColumn class.
- */
 use Prado\Data\Common\TDbTableInfo;
-use Prado\Prado;
 
 /**
+ * TSqliteTableInfo class
+ *
  * TSqliteTableInfo class provides additional table information for PostgreSQL database.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>

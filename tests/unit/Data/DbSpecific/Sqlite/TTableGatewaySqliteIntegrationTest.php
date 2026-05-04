@@ -273,7 +273,7 @@ class TTableGatewaySqliteIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->insertRow('Carol', 8.1);
 		$this->insertRow('Alice', 9.5);
 		$this->insertRow('Bob',   7.3);
-		$criteria = new TSqlCriteria('1=1', null);
+		$criteria = new TSqlCriteria('1=1');
 		$criteria->OrdersBy = ['name' => 'asc'];
 		$rows = self::$gw->findAll($criteria)->readAll();
 		$this->assertSame('Alice', $rows[0]['name']);
