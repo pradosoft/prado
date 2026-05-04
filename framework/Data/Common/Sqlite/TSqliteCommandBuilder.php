@@ -24,41 +24,6 @@ use Prado\Data\TDbCommand;
  */
 class TSqliteCommandBuilder extends TDbCommandBuilder
 {
-	/*
-	 * Applies ORDER BY to a SQL string using bare (unquoted) column identifiers.
-	 *
-	 * Bare identifiers are used rather than the quoted names returned by
-	 * {@see \Prado\Data\Common\TDbTableColumn::getColumnName()} because SQLite
-	 * handles unquoted identifiers reliably across all known builds; this avoids
-	 * any risk of quoted-identifier edge cases on non-standard builds.
-	 *
-	 * Note: {@see createFindCommand()} delegates ordering to this method via
-	 * {@see TDbCommandBuilder::applyCriterias()}.
-	 *
-	 * @param string $sql SQL string without existing ordering.
-	 * @param array $ordering pairs of column names as key and direction as value.
-	 * @return string modified SQL applied with ORDER BY.
-	 * @since 4.3.3
-	 *
-	public function applyOrdering($sql, $ordering)
-	{
-		$orders = [];
-		foreach ($ordering as $name => $direction) {
-			$direction = strtolower($direction) === 'desc' ? 'DESC' : 'ASC';
-			if (false !== strpos($name, '(') && false !== strpos($name, ')')) {
-				$key = $name;
-			} else {
-				// Use the bare (unquoted) column id.
-				$key = $this->getTableInfo()->getColumn($name)->getColumnId();
-			}
-			$orders[] = $key . ' ' . $direction;
-		}
-		if (count($orders) > 0) {
-			$sql .= ' ORDER BY ' . implode(', ', $orders);
-		}
-		return $sql;
-	}*/
-
 	/**
 	 * Creates a SQLite INSERT OR IGNORE command.
 	 * Silently skips the insert when a unique/PK constraint is violated.
