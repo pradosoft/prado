@@ -17,6 +17,8 @@ use Prado\Data\TDbDataReader;
 use Prado\Exceptions\TDbException;
 
 /**
+ * TOracleDbCommand class
+ *
  * TOracleDbCommand is a {@see TDbCommand} specialisation for Oracle (pdo_oci)
  * connections.
  *
@@ -52,12 +54,14 @@ class TOracleDbCommand extends TDbCommand
 	// -----------------------------------------------------------------------
 
 	/**
-	 * Exclude the accumulated OCI parameters from serialization; they are
-	 * always empty at the start of a new request.
+	 * Excludes the accumulated OCI parameter bindings from serialization; they
+	 * are always empty at the start of a new request and need not be persisted.
+	 * @param array $exprops by reference, list of property names to exclude.
 	 */
-	public function __sleep()
+	protected function _getZappableSleepProps(&$exprops)
 	{
-		return array_diff(parent::__sleep(), ["\0TOracleDbCommand\0_ociParams"]);
+		parent::_getZappableSleepProps($exprops);
+		$exprops[] = "\0" . TOracleDbCommand::class . "\0_ociParams";
 	}
 
 	// -----------------------------------------------------------------------
@@ -181,7 +185,7 @@ class TOracleDbCommand extends TDbCommand
 	{
 		if (($ociSql = $this->buildOciSql()) !== null) {
 			try {
-				$this->_statement = $this->getConnection()->getPdoInstance()->query($ociSql);
+				$this->setPdoStatement($this->getConnection()->getPdoInstance()->query($ociSql));
 				return new TDbDataReader($this);
 			} catch (Exception $e) {
 				throw new TDbException('dbcommand_query_failed', $e->getMessage(), $this->getDebugStatementText());
