@@ -7,7 +7,7 @@ use Prado\Exceptions\TConfigurationException;
 /**
  * Unit tests for TScaffoldInputBase.
  *
- * Tests the createInputBuilder factory method. The fxActiveRecordCreateScaffoldInput
+ * Tests the createInputBuilder factory method. The fxActiveRecordScaffoldInputClass
  * global event is managed by TDbDriverCapabilities::createScaffoldInput; these tests
  * verify that the event is raised on the connection for unknown drivers (the connection
  * mock intercepts the call regardless of which class triggers it).
@@ -26,7 +26,7 @@ class TScaffoldInputBaseTest extends PHPUnit\Framework\TestCase
 
 	public function test_createInputBuilder_throws_for_unknown_driver_with_no_event_handlers()
 	{
-		// TDbDriverCapabilities::createScaffoldInput raises fxActiveRecordCreateScaffoldInput
+		// TDbDriverCapabilities::createScaffoldInput raises fxActiveRecordScaffoldInputClass
 		// on the connection; when handlers return nothing, TConfigurationException is thrown.
 		$record = $this->createMockRecord('unknown_driver');
 		$conn = $record->getDbConnection();
@@ -40,7 +40,7 @@ class TScaffoldInputBaseTest extends PHPUnit\Framework\TestCase
 
 	public function test_createInputBuilder_fxEvent_raised_with_correct_parameters()
 	{
-		// The fxActiveRecordCreateScaffoldInput event must be raised on the connection
+		// The fxActiveRecordScaffoldInputClass event must be raised on the connection
 		// with the caller class and connection as arguments. This is delegated to
 		// TDbDriverCapabilities::createScaffoldInput, which calls $connection->raiseEvent().
 		$record = $this->createMockRecord('custom_driver');
@@ -48,7 +48,7 @@ class TScaffoldInputBaseTest extends PHPUnit\Framework\TestCase
 
 		$conn->expects($this->once())
 			->method('raiseEvent')
-			->with('fxActiveRecordCreateScaffoldInput', $this->anything(), $conn)
+			->with('fxActiveRecordScaffoldInputClass', $this->anything(), $conn)
 			->willReturn([]);
 
 		$this->expectException(TConfigurationException::class);

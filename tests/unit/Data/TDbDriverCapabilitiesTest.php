@@ -45,7 +45,7 @@ use Prado\Exceptions\TDbException;
  *  - getMetaDataClass (all drivers + fxDataGetMetaDataClass event)
  *  - getScaffoldInputFile
  *  - getScaffoldInputClass
- *  - createScaffoldInput (all drivers + fxActiveRecordCreateScaffoldInput event)
+ *  - createScaffoldInput (all drivers + fxActiveRecordScaffoldInputClass event)
  */
 class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 {
@@ -1186,7 +1186,7 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 		$conn = $this->createMock(TDbConnection::class);
 		$conn->expects($this->once())
 			->method('raiseEvent')
-			->with('fxActiveRecordCreateScaffoldInput', self::class, $conn)
+			->with('fxActiveRecordScaffoldInputClass', self::class, $conn)
 			->willReturn([]);
 
 		$this->expectException(\Prado\Exceptions\TConfigurationException::class);
@@ -1200,7 +1200,7 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 		$conn = $this->createMock(TDbConnection::class);
 		$conn->expects($this->once())
 			->method('raiseEvent')
-			->with('fxActiveRecordCreateScaffoldInput', self::class, $conn)
+			->with('fxActiveRecordScaffoldInputClass', self::class, $conn)
 			->willReturn([]);
 
 		$this->expectException(\Prado\Exceptions\TConfigurationException::class);

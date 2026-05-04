@@ -29,7 +29,7 @@ use Prado\Exceptions\TConfigurationException;
  *
  * The input builders are created via the static {@see createInputBuilder}
  * method which delegates all driver resolution — including the
- * `fxActiveRecordCreateScaffoldInput` global event for unknown drivers — to
+ * `fxActiveRecordScaffoldInputClass` global event for unknown drivers — to
  * {@see TDbDriverCapabilities::createScaffoldInput}.
  *
  * Example usage:
@@ -60,7 +60,7 @@ class TScaffoldInputBase implements IScaffoldInput
 	 * For built-in drivers the appropriate builder is loaded and returned
 	 * directly.  For unknown drivers,
 	 * {@see TDbDriverCapabilities::createScaffoldInput} raises the
-	 * **`fxActiveRecordCreateScaffoldInput`** global event on the connection.
+	 * **`fxActiveRecordScaffoldInputClass`** global event on the connection.
 	 * Event handlers must return the fully-qualified **class name** of a class
 	 * that implements {@see IScaffoldInput}; the class is then instantiated
 	 * here and validated.
