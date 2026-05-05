@@ -154,6 +154,9 @@ class TTableGateway extends \Prado\TComponent
 	 * driver-specific metadata tables, so the check works uniformly across all supported
 	 * drivers and returns no rows even on large tables.
 	 *
+	 * {@see TDbCommand::query()} wraps all PDO-level errors as {@see TDbException}, so
+	 * a missing or inaccessible table is caught as `TDbException` and returns `false`.
+	 *
 	 * @return bool true if the table (or view) exists and is accessible, false otherwise.
 	 * @since 4.3.3
 	 */
@@ -163,7 +166,7 @@ class TTableGateway extends \Prado\TComponent
 		try {
 			$this->getDbConnection()->createCommand($sql)->query()->close();
 			return true;
-		} catch (\Exception $e) {
+		} catch (TDbException $e) {
 			return false;
 		}
 	}
