@@ -16,8 +16,6 @@ class TDbTransactionTest extends PHPUnit\Framework\TestCase
 
 	protected function setUp(): void
 	{
-		// Remove any stale DB file from a previous test run (guards against Windows
-		// file-lock failures leaving the file behind after tearDown).
 		@unlink(TEST_DB_FILE);
 
 		// create application just to provide application mode
@@ -25,17 +23,21 @@ class TDbTransactionTest extends PHPUnit\Framework\TestCase
 
 		$this->_connection = new TDbConnection('sqlite:' . TEST_DB_FILE);
 		$this->_connection->Active = true;
+		// DROP first in case a previous test's @unlink was blocked by a
+		// lingering file lock on Windows (belt-and-suspenders guard).
+		//$this->_connection->createCommand('DROP TABLE IF EXISTS foo')->execute();
 		$this->_connection->createCommand('CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(8))')->execute();
 	}
 
 	protected function tearDown(): void
 	{
-		// Explicitly close the PDO connection before unlinking to release the file
-		// lock on Windows (where an open handle prevents unlink from succeeding).
 		if ($this->_connection !== null) {
 			$this->_connection->Active = false;
 			$this->_connection = null;
 		}
+		// Force GC so that any lingering PDO handles are released before we
+		// attempt to delete the SQLite file (required on Windows).
+		gc_collect_cycles();
 		@unlink(TEST_DB_FILE);
 	}
 

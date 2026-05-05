@@ -30,13 +30,15 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 
 		$this->_connection1 = new TDbConnection('sqlite:' . TEST_DB_FILE);
 		$this->_connection1->Active = true;
+		// DROP first in case a previous test's @unlink was blocked by a
+		// lingering file lock on Windows (belt-and-suspenders guard).
+		//$this->_connection1->createCommand('DROP TABLE IF EXISTS foo')->execute();
 		$this->_connection1->createCommand('CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(8))')->execute();
 		$this->_connection2 = new TDbConnection('sqlite:' . TEST_DB_FILE2);
 	}
 
 	protected function tearDown(): void
 	{
-		// Explicitly close PDO connections before unlinking to release file locks on Windows.
 		if ($this->_connection1 !== null) {
 			$this->_connection1->Active = false;
 			$this->_connection1 = null;
@@ -45,6 +47,9 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 			$this->_connection2->Active = false;
 			$this->_connection2 = null;
 		}
+		// Force GC so that any lingering PDO handles are released before we
+		// attempt to delete the SQLite files (required on Windows).
+		gc_collect_cycles();
 		@unlink(TEST_DB_FILE);
 		@unlink(TEST_DB_FILE2);
 	}
