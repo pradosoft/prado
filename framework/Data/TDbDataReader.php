@@ -75,6 +75,7 @@ class TDbDataReader extends \Prado\TComponent implements IDataReader
 	 * The statement is not reconstructable after deserialization; the reader
 	 * should not be serialized while data is being consumed.
 	 * @param array $exprops by reference, list of property names to exclude.
+	 * @since 4.3.3
 	 */
 	protected function _getZappableSleepProps(&$exprops)
 	{

@@ -84,6 +84,60 @@ class TDbTransaction extends \Prado\TComponent implements IDataTransaction
 		parent::__construct();
 	}
 
+	//	-----   Getters and Setters  -----
+
+	/**
+	 * Returns the connection that owns this transaction.
+	 *
+	 * @return TDbConnection the connection that created this transaction.
+	 */
+	public function getConnection()
+	{
+		return $this->_connection;
+	}
+
+	/**
+	 * Sets the connection that owns this transaction.
+	 *
+	 * Called once by the constructor; not intended for external use.
+	 *
+	 * @param TDbConnection $connection the owning connection.
+	 * @return static
+	 */
+	protected function setConnection(TDbConnection $connection): static
+	{
+		$this->_connection = $connection;
+		return $this;
+	}
+
+	/**
+	 * Returns whether this transaction is currently active (i.e. has been
+	 * started and not yet committed or rolled back).
+	 *
+	 * @return bool true while the transaction is open, false after commit/rollback.
+	 */
+	public function getActive()
+	{
+		return $this->_active;
+	}
+
+	/**
+	 * Sets the active state of this transaction.
+	 *
+	 * Managed internally by {@see beginTransaction()}, {@see completeTransaction()},
+	 * and the constructor; not intended for external use.
+	 *
+	 * @param bool $value true to mark as active, false to mark as inactive.
+	 * @return static
+	 */
+	protected function setActive(bool $value): static
+	{
+		$this->_active = $value;
+		return $this;
+	}
+
+	//	-----   Methods  -----
+
 	/**
 	 * Creates a command on this transaction's connection.
 	 *
@@ -96,6 +150,84 @@ class TDbTransaction extends \Prado\TComponent implements IDataTransaction
 	public function createCommand($sql)
 	{
 		return $this->getConnection()->createCommand($sql);
+	}
+
+	/**
+	 * Commits the transaction.
+	 *
+	 * The transaction becomes inactive after commit. To start another work unit,
+	 * either call {@see TDbTransaction::beginTransaction()} on this object (reuse
+	 * pattern) or call {@see TDbConnection::beginTransaction()} to obtain a fresh
+	 * transaction object.
+	 *
+	 * @throws TDbException if the transaction or its connection is not active.
+	 */
+	public function commit()
+	{
+		$pdo = $this->assertActive();
+		$pdo->commit();
+		$this->completeTransaction($pdo);
+	}
+
+	/**
+	 * Rolls back the transaction.
+	 *
+	 * The transaction becomes inactive after rollback. To start another work unit,
+	 * either call {@see TDbTransaction::beginTransaction()} on this object (reuse
+	 * pattern) or call {@see TDbConnection::beginTransaction()} to obtain a fresh
+	 * transaction object.
+	 *
+	 * @throws TDbException if the transaction or its connection is not active.
+	 */
+	public function rollback()
+	{
+		$pdo = $this->assertActive();
+		$pdo->rollBack();
+		$this->completeTransaction($pdo);
+	}
+
+	/**
+	 * Asserts that this transaction and its connection are both active, then
+	 * returns the underlying PDO instance.
+	 *
+	 * @throws TDbException if the transaction or its connection is not active.
+	 * @return PDO the active PDO instance.
+	 */
+	protected function assertActive(): PDO
+	{
+		$connection = $this->getConnection();
+
+		if (!$this->getActive() || !$connection->getActive()) {
+			throw new TDbException('dbtransaction_transaction_inactive');
+		}
+
+		return $connection->getPdoInstance();
+	}
+
+	/**
+	 * Marks the transaction inactive and, for drivers that require it, flushes
+	 * the implicit transaction that the driver opens immediately after a commit
+	 * or rollback.
+	 *
+	 * pdo_firebird starts a new implicit transaction right after every
+	 * `isc_commit_transaction` or `isc_rollback_transaction` call, before the
+	 * completed transaction is fully visible in Firebird's Transaction Inventory
+	 * Page. The implicit transaction's MVCC snapshot can therefore see stale data.
+	 * Committing the empty implicit transaction forces pdo_firebird to open a fresh
+	 * one whose snapshot reflects the completed work.
+	 *
+	 * @param PDO $pdo the PDO instance returned by {@see assertActive()}.
+	 */
+	protected function completeTransaction(PDO $pdo): void
+	{
+		if (TDbDriverCapabilities::requiresPostTransactionFlush($pdo->getAttribute(PDO::ATTR_DRIVER_NAME))) {
+			try {
+				$pdo->commit();
+			} catch (PDOException $e) {
+			}
+		}
+
+		$this->setActive(false);
 	}
 
 	/**
@@ -156,134 +288,6 @@ class TDbTransaction extends \Prado\TComponent implements IDataTransaction
 		}
 		$pdo->beginTransaction();
 		$this->setActive(true);
-		return $this;
-	}
-
-	/**
-	 * Asserts that this transaction and its connection are both active, then
-	 * returns the underlying PDO instance.
-	 *
-	 * @throws TDbException if the transaction or its connection is not active.
-	 * @return PDO the active PDO instance.
-	 */
-	protected function assertActive(): PDO
-	{
-		$connection = $this->getConnection();
-
-		if (!$this->getActive() || !$connection->getActive()) {
-			throw new TDbException('dbtransaction_transaction_inactive');
-		}
-
-		return $connection->getPdoInstance();
-	}
-
-	/**
-	 * Marks the transaction inactive and, for drivers that require it, flushes
-	 * the implicit transaction that the driver opens immediately after a commit
-	 * or rollback.
-	 *
-	 * pdo_firebird starts a new implicit transaction right after every
-	 * `isc_commit_transaction` or `isc_rollback_transaction` call, before the
-	 * completed transaction is fully visible in Firebird's Transaction Inventory
-	 * Page. The implicit transaction's MVCC snapshot can therefore see stale data.
-	 * Committing the empty implicit transaction forces pdo_firebird to open a fresh
-	 * one whose snapshot reflects the completed work.
-	 *
-	 * @param PDO $pdo the PDO instance returned by {@see assertActive()}.
-	 */
-	protected function completeTransaction(PDO $pdo): void
-	{
-		if (TDbDriverCapabilities::requiresPostTransactionFlush($pdo->getAttribute(PDO::ATTR_DRIVER_NAME))) {
-			try {
-				$pdo->commit();
-			} catch (PDOException $e) {
-			}
-		}
-
-		$this->setActive(false);
-	}
-
-	/**
-	 * Commits the transaction.
-	 *
-	 * The transaction becomes inactive after commit. To start another work unit,
-	 * either call {@see TDbTransaction::beginTransaction()} on this object (reuse
-	 * pattern) or call {@see TDbConnection::beginTransaction()} to obtain a fresh
-	 * transaction object.
-	 *
-	 * @throws TDbException if the transaction or its connection is not active.
-	 */
-	public function commit()
-	{
-		$pdo = $this->assertActive();
-		$pdo->commit();
-		$this->completeTransaction($pdo);
-	}
-
-	/**
-	 * Rolls back the transaction.
-	 *
-	 * The transaction becomes inactive after rollback. To start another work unit,
-	 * either call {@see TDbTransaction::beginTransaction()} on this object (reuse
-	 * pattern) or call {@see TDbConnection::beginTransaction()} to obtain a fresh
-	 * transaction object.
-	 *
-	 * @throws TDbException if the transaction or its connection is not active.
-	 */
-	public function rollback()
-	{
-		$pdo = $this->assertActive();
-		$pdo->rollBack();
-		$this->completeTransaction($pdo);
-	}
-
-	/**
-	 * Returns the connection that owns this transaction.
-	 *
-	 * @return TDbConnection the connection that created this transaction.
-	 */
-	public function getConnection()
-	{
-		return $this->_connection;
-	}
-
-	/**
-	 * Sets the connection that owns this transaction.
-	 *
-	 * Called once by the constructor; not intended for external use.
-	 *
-	 * @param TDbConnection $connection the owning connection.
-	 * @return static
-	 */
-	protected function setConnection(TDbConnection $connection): static
-	{
-		$this->_connection = $connection;
-		return $this;
-	}
-
-	/**
-	 * Returns whether this transaction is currently active (i.e. has been
-	 * started and not yet committed or rolled back).
-	 *
-	 * @return bool true while the transaction is open, false after commit/rollback.
-	 */
-	public function getActive()
-	{
-		return $this->_active;
-	}
-
-	/**
-	 * Sets the active state of this transaction.
-	 *
-	 * Managed internally by {@see beginTransaction()}, {@see completeTransaction()},
-	 * and the constructor; not intended for external use.
-	 *
-	 * @param bool $value true to mark as active, false to mark as inactive.
-	 * @return static
-	 */
-	protected function setActive(bool $value): static
-	{
-		$this->_active = $value;
 		return $this;
 	}
 }
