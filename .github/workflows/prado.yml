@@ -306,6 +306,9 @@ jobs:
           & "$env:PGBIN\pg_ctl.exe" start -D $env:PGDATA -w
           & "$env:PGBIN\createdb.exe" -h 127.0.0.1 -U postgres prado_unitest
           & "$env:PGBIN\psql.exe" -h 127.0.0.1 -U postgres prado_unitest -f .\tests\initdb_pgsql.sql
+          # Windows PostgreSQL uses scram-sha-256 (no trust); set the password so
+          # setupPgsqlConnection('prado_unitest', 'prado_unitest') can authenticate.
+          & "$env:PGBIN\psql.exe" -h 127.0.0.1 -U postgres -c "ALTER ROLE prado_unitest WITH PASSWORD 'prado_unitest';"
 
       - name: Run Unit Tests
         run: composer unittest
