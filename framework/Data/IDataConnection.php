@@ -11,6 +11,8 @@
 namespace Prado\Data;
 
 /**
+ * IDataConnection interface
+ *
  * IDataConnection defines the interface for a data-store connection.
  *
  * This interface provides a common abstraction over SQL connections

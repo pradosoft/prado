@@ -20,6 +20,8 @@ use Prado\TPropertyValue;
 use ReflectionClass;
 
 /**
+ * TActiveRecord class
+ *
  * Base class for active records.
  *
  * An active record creates an object that wraps a row in a database table

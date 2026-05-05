@@ -15,6 +15,8 @@ use Prado\Caching\ICache;
 use Prado\TPropertyValue;
 
 /**
+ * TActiveRecordManager class
+ *
  * TActiveRecordManager provides the default DB connection,
  * default active record gateway, and table meta data inspector.
  *

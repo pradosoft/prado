@@ -15,7 +15,7 @@ use PDOStatement;
 use Prado\Exceptions\TDbException;
 
 /**
- * TDbDataReader class.
+ * TDbDataReader class
  *
  * TDbDataReader represents a forward-only stream of rows from a query result
  * set.  It implements both {@see IDataReader} and PHP's `Iterator` interface,

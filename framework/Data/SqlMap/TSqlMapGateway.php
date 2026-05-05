@@ -17,7 +17,9 @@ use Prado\Data\SqlMap\DataMapper\TSqlMapPagedList;
 use Prado\Prado;
 
 /**
- * DataMapper client, a fascade to provide access the rest of the DataMapper
+ * TSqlMapGateway class
+ *
+ * DataMapper client, a façade to provide access the rest of the DataMapper
  * framework. It provides three core functions:
  *
  *  # execute an update query (including insert and delete).

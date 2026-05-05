@@ -15,7 +15,7 @@ use PDOException;
 use Prado\Exceptions\TDbException;
 
 /**
- * TDbTransaction class.
+ * TDbTransaction class
  *
  * TDbTransaction represents a PDO database transaction. It is created by calling
  * {@see TDbConnection::beginTransaction()} and must be explicitly committed or

@@ -11,6 +11,8 @@
 namespace Prado\Data\Common;
 
 /**
+ * IDbHasSchema interface
+ *
  * IDbHasSchema is a marker interface for database table-info classes whose
  * underlying database engine supports the concept of a schema (also called an
  * owner or namespace that groups tables within a database).

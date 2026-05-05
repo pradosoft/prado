@@ -20,6 +20,8 @@ use Prado\Exceptions\TDbException;
 use Prado\Prado;
 
 /**
+ * TTableGateway class
+ *
  * TTableGateway class provides several find methods to get data from the database
  * and update, insert, and delete methods.
  *

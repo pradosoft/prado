@@ -24,6 +24,8 @@ use Prado\Data\SqlMap\Statements\IMappedStatement;
 use Prado\Prado;
 
 /**
+ * TSqlMapManager class
+ *
  * TSqlMapManager class holds the sqlmap configuation result maps, statements
  * parameter maps and a type handler factory.
  *

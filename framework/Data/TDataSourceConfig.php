@@ -16,6 +16,8 @@ use Prado\TApplication;
 use Prado\TModule;
 
 /**
+ * TDataSourceConfig class
+ *
  * TDataSourceConfig module class provides <module> configuration for database connections.
  *
  * Example usage: mysql connection

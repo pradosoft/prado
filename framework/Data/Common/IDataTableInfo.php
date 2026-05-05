@@ -13,6 +13,8 @@ namespace Prado\Data\Common;
 use Prado\Data\IDataConnection;
 
 /**
+ * IDataTableInfo interface
+ *
  * IDataTableInfo defines the interface for table (or view) metadata.
  *
  * The interface is shaped after {@see TDbTableInfo}, which is the canonical SQL

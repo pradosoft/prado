@@ -17,7 +17,7 @@ use Prado\Exceptions\TDbException;
 use Prado\Prado;
 
 /**
- * TDbCommand class.
+ * TDbCommand class
  *
  * TDbCommand represents a PHP PDO SQL statement to execute against a database.
  * It is usually created by calling {@see \Prado\Data\TDbConnection::createCommand}.

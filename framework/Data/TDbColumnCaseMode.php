@@ -11,7 +11,7 @@
 namespace Prado\Data;
 
 /**
- * TDbColumnCaseMode
+ * TDbColumnCaseMode class
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

@@ -11,7 +11,7 @@
 namespace Prado\Data\ActiveRecord\Exceptions;
 
 /**
- * TActiveRecordConfigurationException class.
+ * TActiveRecordConfigurationException class
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1

@@ -11,6 +11,8 @@
 namespace Prado\Data;
 
 /**
+ * IDataCommand interface
+ *
  * IDataCommand defines the interface for a data-store command.
  *
  * Implementations include {@see TDbCommand} for SQL/PDO databases.

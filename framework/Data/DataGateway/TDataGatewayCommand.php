@@ -17,6 +17,8 @@ use Prado\Data\Common\TDbTableInfo;
 use Prado\Exceptions\TDbException;
 
 /**
+ * TDataGatewayCommand class
+ *
  * TDataGatewayCommand is command builder and executor class for
  * TTableGateway and TActiveRecordGateway.
  *

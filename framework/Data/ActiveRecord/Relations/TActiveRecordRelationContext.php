@@ -17,6 +17,8 @@ use Prado\Data\ActiveRecord\TActiveRecordCriteria;
 use Prado\Prado;
 
 /**
+ * TActiveRecordRelationContext class
+ *
  * TActiveRecordRelationContext holds information regarding record relationships
  * such as record relation property name, query criteria and foreign object record
  * class names.

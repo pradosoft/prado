@@ -11,6 +11,8 @@
 namespace Prado\Data\DataGateway;
 
 /**
+ * TDataGatewayEventParameter class
+ *
  * TDataGatewayEventParameter class contains the TDbCommand to be executed as
  * well as the criteria object.
  *

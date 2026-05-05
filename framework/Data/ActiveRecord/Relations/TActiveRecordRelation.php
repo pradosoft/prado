@@ -18,7 +18,67 @@ use Prado\Data\ActiveRecord\TActiveRecord;
 use Prado\Prado;
 
 /**
- * Base class for active record relationships.
+ * TActiveRecordRelation class
+ *
+ * Abstract base class for all Active Record relationship handlers.
+ *
+ * Active Record relationships are declared via the static `$RELATIONS` array on
+ * each {@see TActiveRecord} subclass. Each entry maps a property name to an
+ * array whose first element is one of the four relationship constants and whose
+ * second element is the foreign record class name:
+ *
+ * ```php
+ * public static $RELATIONS = [
+ *     'profile'    => [self::HAS_ONE,              'ProfileRecord'],
+ *     'orders'     => [self::HAS_MANY,             'OrderRecord'],
+ *     'team'       => [self::BELONGS_TO,           'TeamRecord'],
+ *     'categories' => [self::HAS_MANY_ASSOC,       'CategoryRecord', 'Article_Category'],
+ * ];
+ * ```
+ *
+ * The four relationship types are:
+ *
+ * - **HAS_ONE** ({@see TActiveRecordHasOne}) — the foreign table carries a foreign key
+ *   that points back to this record's primary key. The related property is a single
+ *   object (or `null`).
+ * - **HAS_MANY** ({@see TActiveRecordHasMany}) — same foreign-key direction as HAS_ONE,
+ *   but the related property is a collection (array) of foreign objects.
+ * - **BELONGS_TO** ({@see TActiveRecordBelongsTo}) — this record's table carries the
+ *   foreign key that points to the related record's primary key. The related
+ *   property is a single object (or `null`).
+ * - **HAS_MANY_ASSOC** ({@see TActiveRecordHasManyAssociation}) — a many-to-many
+ *   relationship resolved through an intermediate association table. A third
+ *   element in the `$RELATIONS` entry names the association table.
+ *
+ * ## Fetching related objects
+ *
+ * Related objects are fetched lazily by chaining a relationship call onto a
+ * finder method call:
+ *
+ * ```php
+ * // Fetch all teams with their players eagerly loaded.
+ * $teams = TeamRecord::finder()->withPlayers()->findAll();
+ *
+ * // Chain multiple relationships.
+ * $articles = ArticleRecord::finder()->withCategories()->withAuthor()->findAll();
+ * ```
+ *
+ * The {@see __call()} method intercepts `with<Property>()` calls, delegates the
+ * underlying finder call to the source record, then calls
+ * {@see collectForeignObjects()} to populate each result's relationship property.
+ * Multiple chained `with*()` calls are queued via a static stack so that all
+ * relationships are applied to the same result set.
+ *
+ * ## Implementing a new relationship type
+ *
+ * Subclasses must implement:
+ * - {@see collectForeignObjects()} — given the source results, fetch and assign
+ *   the corresponding foreign objects to each source record's relationship
+ *   property.
+ * - {@see getRelationForeignKeys()} — return the foreign key mapping (FK field
+ *   names as keys, source property names as values) used by this relationship.
+ * - {@see updateAssociatedRecords()} — persist any changes to the associated
+ *   foreign objects (e.g. insert/delete rows in an association table).
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1

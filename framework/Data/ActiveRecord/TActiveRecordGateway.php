@@ -22,6 +22,8 @@ use Prado\Prado;
 use ReflectionClass;
 
 /**
+ * TActiveRecordGateway class
+ *
  * TActiveRecordGateway executes SQL command queries and returns the data as arrays for finder methods.
  *
  * This gateway acts as the bridge between TActiveRecord models and the underlying database.

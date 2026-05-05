@@ -13,6 +13,8 @@ namespace Prado\Data;
 use Prado\TEnumerable;
 
 /**
+ * TDbDriver class
+ *
  * TDbDriver is a static enumeration class that defines PDO database driver constants
  * used throughout the PRADO framework for database connectivity.
  *

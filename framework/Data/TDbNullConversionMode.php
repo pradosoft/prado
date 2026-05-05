@@ -11,7 +11,7 @@
 namespace Prado\Data;
 
 /**
- * TDbNullConversionMode
+ * TDbNullConversionMode class
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

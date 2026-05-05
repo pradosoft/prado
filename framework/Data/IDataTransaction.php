@@ -11,6 +11,8 @@
 namespace Prado\Data;
 
 /**
+ * IDataTransaction interface
+ *
  * IDataTransaction defines the interface for a data-store transaction.
  *
  * This interface provides a common abstraction over database-specific transaction

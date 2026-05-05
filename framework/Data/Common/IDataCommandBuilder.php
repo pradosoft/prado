@@ -14,6 +14,8 @@ use Prado\Data\IDataCommand;
 use Prado\Data\IDataConnection;
 
 /**
+ * IDataCommandBuilder interface
+ *
  * IDataCommandBuilder defines the interface for building command objects for
  * CRUD operations on a single database table.
  *

@@ -13,6 +13,8 @@ namespace Prado\Data\Common;
 use Prado\Data\IDataConnection;
 
 /**
+ * IDataMetaData interface
+ *
  * IDataMetaData defines the interface for retrieving schema metadata from a
  * data store.
  *
