@@ -64,7 +64,6 @@ class TFirebirdCommandBuilder extends TDbCommandBuilder
 	 * Children override this if there is something specific about the column Name.
 	 * @param string $columnName The name of the column to place in the sql.
 	 * @return string null if no change, or a string if there is a change.
-	 * @since 4.3.3
 	 */
 	protected function processMergeColumn(string $columnName): string
 	{
@@ -81,7 +80,6 @@ class TFirebirdCommandBuilder extends TDbCommandBuilder
 	 *
 	 * @param string $name logical column name (PHP array key from $data).
 	 * @return string SQL type string suitable for use in CAST(:name AS <type>).
-	 * @since 4.3.3
 	 */
 	private function getFirebirdCastType(string $name): string
 	{

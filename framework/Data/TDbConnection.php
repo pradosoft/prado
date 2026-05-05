@@ -336,10 +336,10 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	 * before being sent to the database, so universal names like 'UTF-8' or
 	 * 'ISO-8859-1' work across all supported drivers without any
 	 * driver-specific knowledge from the caller.
+	 * @param ?string $charset
 	 * @since 3.1.2
-	 * @param null|mixed $charset
 	 */
-	protected function setConnectionCharset($charset = null)
+	protected function setConnectionCharset(?string $charset = null)
 	{
 		if ($charset === null) {
 			$charset = $this->getCharset();
@@ -1080,11 +1080,11 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	}
 
 	/**
-	 * @param mixed $dsn
+	 * @param string $dsn
 	 * @return ?string Driver name from dsn, or null if invalid or not found.
 	 * @since 4.3.3
 	 */
-	protected function extractDriverFromDsn($dsn): ?string
+	protected function extractDriverFromDsn(string $dsn): ?string
 	{
 		if (!is_string($dsn) || strpos($dsn, ':') === false) {
 			return null;

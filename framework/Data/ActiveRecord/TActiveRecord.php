@@ -669,7 +669,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * ```
 	 *
 	 * @param string|TActiveRecordCriteria $criteria SQL condition or criteria object.
-	 * @param mixed $parameters parameter values.
+	 * @param mixed $parameters parameter values; passing `null` sets the first SQL parameter to null, not an empty list; use `[]` or omit to pass no parameters.
 	 * @return TActiveRecord matching record object. Null if no result is found.
 	 */
 	public function find($criteria, $parameters = [])
@@ -685,7 +685,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * Same as find() but returns an array of objects.
 	 *
 	 * @param string|TActiveRecordCriteria $criteria SQL condition or criteria object.
-	 * @param mixed $parameters parameter values.
+	 * @param mixed $parameters parameter values; passing `null` sets the first SQL parameter to null, not an empty list; use `[]` or omit to pass no parameters.
 	 * @return array matching record objects. Empty array if no result is found.
 	 */
 	public function findAll($criteria = null, $parameters = [])
@@ -802,7 +802,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	/**
 	 * Find the number of records.
 	 * @param string|TActiveRecordCriteria $criteria SQL condition or criteria object.
-	 * @param mixed $parameters parameter values.
+	 * @param mixed $parameters parameter values; passing `null` sets the first SQL parameter to null, not an empty list; use `[]` or omit to pass no parameters.
 	 * @return int number of records.
 	 */
 	public function count($criteria = null, $parameters = [])

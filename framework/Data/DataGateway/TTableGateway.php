@@ -266,7 +266,7 @@ class TTableGateway extends \Prado\TComponent
 	 * ```
 	 *
 	 * @param string|TSqlCriteria $criteria SQL condition or criteria object.
-	 * @param mixed $parameters parameter values.
+	 * @param mixed $parameters parameter values; passing `null` sets the first SQL parameter to null, not an empty list; use `[]` or omit to pass no parameters.
 	 * @return array matching record object.
 	 */
 	public function find($criteria, $parameters = [])
@@ -279,7 +279,7 @@ class TTableGateway extends \Prado\TComponent
 	/**
 	 * Accepts same parameters as find(), but returns TDbDataReader instead.
 	 * @param string|TSqlCriteria $criteria SQL condition or criteria object.
-	 * @param mixed $parameters parameter values.
+	 * @param mixed $parameters parameter values; passing `null` sets the first SQL parameter to null, not an empty list; use `[]` or omit to pass no parameters.
 	 * @return TDbDataReader matching records.
 	 */
 	public function findAll($criteria = null, $parameters = [])
@@ -344,7 +344,7 @@ class TTableGateway extends \Prado\TComponent
 	 * $table->delete('age > ? AND location = ?', $age, $location);
 	 * ```
 	 * @param string $criteria delete condition.
-	 * @param array $parameters condition parameters.
+	 * @param array $parameters condition parameters; passing `null` sets the first SQL parameter to null, not an empty list; use `[]` or omit to pass no parameters.
 	 * @return int number of records deleted.
 	 */
 	public function deleteAll($criteria, $parameters = [])
@@ -400,7 +400,7 @@ class TTableGateway extends \Prado\TComponent
 	/**
 	 * Find the number of records.
 	 * @param string|TSqlCriteria $criteria SQL condition or criteria object.
-	 * @param mixed $parameters parameter values.
+	 * @param mixed $parameters parameter values; passing `null` sets the first SQL parameter to null, not an empty list; use `[]` or omit to pass no parameters.
 	 * @return int number of records.
 	 */
 	public function count($criteria = null, $parameters = [])

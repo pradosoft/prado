@@ -47,18 +47,10 @@ use Traversable;
  * // indexed array automatically).
  * $c = new TSqlCriteria('id = ?', 42);
  * $c = new TSqlCriteria('id = ? AND active = ?', 42, 1);
- *
- * // null $parameters — treated identically to omitting the argument; no
- * // parameters are bound.  Passing null explicitly is safe and intentional,
- * // for example when the caller conditionally sets parameters later:
- * $c = new TSqlCriteria('active = 1', null);
  * ```
  *
- * **Varargs vs. null** — the varargs collection is only activated when the
- * second argument is a non-null, non-array scalar.  A null second argument
- * is treated as "no parameters" so that callers can safely write
- * `new TSqlCriteria($condition, $maybeNullParams)` without accidentally
- * binding a spurious `null` value.
+ * > **Note:** passing `null` sets the first SQL parameter to null, not an empty
+ * > list; use `[]` or omit to pass no parameters.
  *
  * ## Condition shorthand
  *
@@ -106,22 +98,22 @@ class TSqlCriteria extends \Prado\TComponent
 	 * Creates a new criteria with an optional condition and parameters.
 	 *
 	 * `$parameters` is resolved as follows:
-	 * - **omitted or null** — no parameters are bound; `null` is treated
-	 *   identically to omitting the argument so callers may safely pass a
-	 *   nullable variable without accidentally binding a spurious null value.
+	 * - **omitted** — no parameters are bound;
 	 * - **array** — used as-is; named (`:key => value`) or positional
 	 *   (`0 => value`) arrays are both accepted.
-	 * - **non-null scalar** — activates varargs collection: every argument
+	 * - **scalars** — activates varargs collection: every argument
 	 *   after `$condition` is gathered into a positional array, so
 	 *   `new TSqlCriteria('id = ?', 42)` and
 	 *   `new TSqlCriteria('a = ? AND b = ?', 1, 2)` both work.
+	 *   This includes `null`, which will be bound as the first parameter.
 	 *
 	 * @param null|string $condition SQL fragment placed after WHERE; may
 	 *   embed ORDER BY, LIMIT, and OFFSET clauses which are parsed out
 	 *   automatically.
-	 * @param null|array|mixed $parameters bound parameters: null or omitted
-	 *   for none, an array for named/positional params, or the first of
-	 *   multiple varargs scalar values.
+	 * @param array|mixed $parameters bound parameters: omitted for none,
+	 *   an array for named/positional params, or the first of multiple
+	 *   varargs scalar values. Passing `null` sets the first SQL parameter
+	 *   to null, not an empty list; use `[]` or omit to pass no parameters.
 	 */
 	public function __construct($condition = null, $parameters = [])
 	{
