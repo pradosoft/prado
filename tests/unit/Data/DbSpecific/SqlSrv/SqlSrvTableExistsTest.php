@@ -3,11 +3,11 @@
 require_once(__DIR__ . '/../../../PradoUnit.php');
 
 /**
- * MssqlTableExistsTest — driver-specific tests for {@see TTableGateway::getTableExists()} on SQL Server.
+ * SqlSrvTableExistsTest — driver-specific tests for {@see TTableGateway::getTableExists()} on SQL Server.
  *
  * Skipped automatically when pdo_sqlsrv is unavailable or the prado_unitest DB cannot be reached.
  *
- * MSSQL's TMssqlTableInfo::getTableFullName() produces fully-qualified bracket-quoted names,
+ * SQL Server's TSqlSrvTableInfo::getTableFullName() produces fully-qualified bracket-quoted names,
  * e.g. [prado_unitest].[dbo].[upsert_test].
  *
  * SQL Server does not support DROP TABLE IF EXISTS before SQL Server 2016; using
@@ -20,7 +20,7 @@ use Prado\Data\Common\TDbMetaData;
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
 
-class MssqlTableExistsTest extends PHPUnit\Framework\TestCase
+class SqlSrvTableExistsTest extends PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 
@@ -30,7 +30,7 @@ class MssqlTableExistsTest extends PHPUnit\Framework\TestCase
 
 	protected function getPradoUnitSetup(): ?string
 	{
-		return 'setupMssqlConnection';
+		return 'setupSqlSrvConnection';
 	}
 
 	protected function getDatabaseName(): ?string

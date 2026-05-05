@@ -2,11 +2,11 @@
 
 require_once(__DIR__ . '/../../../PradoUnit.php');
 
-use Prado\Data\Common\Mssql\TMssqlMetaData;
+use Prado\Data\Common\SqlSrv\TSqlSrvMetaData;
 use Prado\Data\Common\TDbTableColumn;
 use Prado\Data\DataGateway\TTableGateway;
 
-class MssqlColumnTest extends PHPUnit\Framework\TestCase
+class SqlSrvColumnTest extends PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 
@@ -15,7 +15,7 @@ class MssqlColumnTest extends PHPUnit\Framework\TestCase
 
 	protected function getPradoUnitSetup(): ?string
 	{
-		return 'setupMssqlConnection';
+		return 'setupSqlSrvConnection';
 	}
 
 	protected function getDatabaseName(): ?string
@@ -34,7 +34,7 @@ class MssqlColumnTest extends PHPUnit\Framework\TestCase
 			$conn = $this->setUpConnection();
 			if ($conn instanceof TDbConnection) {
 				static::$msConn = $conn;
-				static::$msMetaData = new TMssqlMetaData($conn);
+				static::$msMetaData = new TSqlSrvMetaData($conn);
 			}
 		}
 	}
@@ -44,7 +44,7 @@ class MssqlColumnTest extends PHPUnit\Framework\TestCase
 		return static::$msConn;
 	}
 
-	public function meta_data(): TMssqlMetaData
+	public function meta_data(): TSqlSrvMetaData
 	{
 		return static::$msMetaData;
 	}

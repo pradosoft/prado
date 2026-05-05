@@ -1,8 +1,8 @@
 <?php
 
-use Prado\Data\Common\Mssql\TMssqlCommandBuilder;
+use Prado\Data\Common\SqlSrv\TSqlSrvCommandBuilder;
 
-class CommandBuilderMssqlTest extends PHPUnit\Framework\TestCase
+class CommandBuilderSqlSrvTest extends PHPUnit\Framework\TestCase
 {
 	protected static $sql = [
 		'simple' => 'SELECT username, age FROM accounts',
@@ -14,7 +14,7 @@ class CommandBuilderMssqlTest extends PHPUnit\Framework\TestCase
 
 	public function test_limit()
 	{
-		$builder = new TMssqlCommandBuilder();
+		$builder = new TSqlSrvCommandBuilder();
 
 		$sql = $builder->applyLimitOffset(self::$sql['simple'], 3);
 		$expect = 'SELECT TOP 3 username, age FROM accounts';

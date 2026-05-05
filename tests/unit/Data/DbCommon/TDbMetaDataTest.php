@@ -151,7 +151,7 @@ class TDbMetaDataTest extends PHPUnit\Framework\TestCase
 		$conn->expects($this->never())->method('raiseEvent');
 
 		$result = TDbMetaData::getInstance($conn);
-		$this->assertInstanceOf(\Prado\Data\Common\Mssql\TMssqlMetaData::class, $result);
+		$this->assertInstanceOf(\Prado\Data\Common\SqlSrv\TSqlSrvMetaData::class, $result);
 	}
 
 	public function test_getInstance_valid_dblib_driver()
@@ -160,7 +160,7 @@ class TDbMetaDataTest extends PHPUnit\Framework\TestCase
 		$conn->expects($this->never())->method('raiseEvent');
 
 		$result = TDbMetaData::getInstance($conn);
-		$this->assertInstanceOf(\Prado\Data\Common\Mssql\TMssqlMetaData::class, $result);
+		$this->assertInstanceOf(\Prado\Data\Common\SqlSrv\TSqlSrvMetaData::class, $result);
 	}
 
 	public function test_getInstance_valid_oracle_driver()

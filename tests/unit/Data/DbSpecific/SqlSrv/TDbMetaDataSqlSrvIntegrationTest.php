@@ -2,7 +2,7 @@
 
 require_once(__DIR__ . '/../../../PradoUnit.php');
 
-use Prado\Data\Common\Mssql\TMssqlMetaData;
+use Prado\Data\Common\SqlSrv\TSqlSrvMetaData;
 use Prado\Data\Common\TDbCommandBuilder;
 use Prado\Data\Common\TDbMetaData;
 use Prado\Data\TDbConnection;
@@ -15,7 +15,7 @@ use Prado\TApplication;
  * the TDbTableInfo / TDbTableColumn API against a real SQL Server database.
  *
  * SQL Server uses bracket quoting for table/column names; column aliases use
- * double-quotes (as per TMssqlMetaData).
+ * double-quotes (as per TSqlSrvMetaData).
  *
  * Table schema used throughout:
  *   meta_test (
@@ -25,13 +25,13 @@ use Prado\TApplication;
  *     note  NVARCHAR(100) DEFAULT 'fallback'
  *   )
  */
-class TDbMetaDataMssqlIntegrationTest extends PHPUnit\Framework\TestCase
+class TDbMetaDataSqlSrvIntegrationTest extends PHPUnit\Framework\TestCase
 {
 	private ?TDbConnection $_conn = null;
 
-	private function openMssql(): TDbConnection
+	private function openSqlSrv(): TDbConnection
 	{
-		$conn = PradoUnit::setupMssqlConnection('prado_unitest');
+		$conn = PradoUnit::setupSqlSrvConnection('prado_unitest');
 		if (is_string($conn)) {
 			$this->markTestSkipped($conn);
 		}
@@ -45,7 +45,7 @@ class TDbMetaDataMssqlIntegrationTest extends PHPUnit\Framework\TestCase
 			new TApplication(__DIR__ . '/../../../Security/app', false, TApplication::CONFIG_TYPE_PHP);
 			$booted = true;
 		}
-		$this->_conn = $this->openMssql();
+		$this->_conn = $this->openSqlSrv();
 
 		try {
 			$this->_conn->createCommand(
@@ -80,10 +80,10 @@ class TDbMetaDataMssqlIntegrationTest extends PHPUnit\Framework\TestCase
 	// TDbMetaData::getInstance()
 	// -----------------------------------------------------------------------
 
-	public function testGetInstanceReturnsMssqlMetaData(): void
+	public function testGetInstanceReturnsSqlSrvMetaData(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
-		$this->assertInstanceOf(TMssqlMetaData::class, $meta);
+		$this->assertInstanceOf(TSqlSrvMetaData::class, $meta);
 	}
 
 	// -----------------------------------------------------------------------
@@ -278,7 +278,7 @@ class TDbMetaDataMssqlIntegrationTest extends PHPUnit\Framework\TestCase
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$quoted = $meta->quoteColumnAlias('baz');
-		// TMssqlMetaData uses double-quotes for aliases.
+		// TSqlSrvMetaData uses double-quotes for aliases.
 		$this->assertSame('"baz"', $quoted);
 	}
 }

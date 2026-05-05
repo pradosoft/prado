@@ -3,7 +3,7 @@
 require_once(__DIR__ . '/../../../PradoUnit.php');
 
 /**
- * MssqlInsertOrIgnoreTest — comprehensive tests for SQL Server insertOrIgnore behaviour.
+ * SqlSrvInsertOrIgnoreTest — comprehensive tests for SQL Server insertOrIgnore behaviour.
  *
  * SQL Server has no native INSERT OR IGNORE; Prado uses a MERGE statement.
  * MERGE requires an active transaction — tests verify both the exception thrown
@@ -21,7 +21,7 @@ use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TDbException;
 
-class MssqlInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
+class SqlSrvInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 
@@ -30,7 +30,7 @@ class MssqlInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 
 	protected function getPradoUnitSetup(): ?string
 	{
-		return 'setupMssqlConnection';
+		return 'setupSqlSrvConnection';
 	}
 
 	protected function getDatabaseName(): ?string

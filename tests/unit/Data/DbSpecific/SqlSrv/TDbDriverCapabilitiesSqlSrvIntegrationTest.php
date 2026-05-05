@@ -2,7 +2,7 @@
 
 require_once(__DIR__ . '/../../../PradoUnit.php');
 
-use Prado\Data\Common\Mssql\TMssqlMetaData;
+use Prado\Data\Common\SqlSrv\TSqlSrvMetaData;
 use Prado\Data\Common\TDbMetaData;
 use Prado\Data\TDbConnection;
 use Prado\Data\TDbDriverCapabilities;
@@ -28,13 +28,13 @@ use Prado\TApplication;
  * Tests are skipped automatically when pdo_sqlsrv is missing or the
  * SQL Server at localhost:1433 is unreachable.
  */
-class TDbDriverCapabilitiesMssqlIntegrationTest extends PHPUnit\Framework\TestCase
+class TDbDriverCapabilitiesSqlSrvIntegrationTest extends PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 
 	protected function getPradoUnitSetup(): ?string
 	{
-		return 'setupMssqlConnection';
+		return 'setupSqlSrvConnection';
 	}
 
 	protected function getDatabaseName(): ?string
@@ -161,7 +161,7 @@ class TDbDriverCapabilitiesMssqlIntegrationTest extends PHPUnit\Framework\TestCa
 
 	public function testSqlsrvMetaDataClassName(): void
 	{
-		$this->assertSame(TMssqlMetaData::class, TDbDriverCapabilities::getMetaDataClass('sqlsrv'));
+		$this->assertSame(TSqlSrvMetaData::class, TDbDriverCapabilities::getMetaDataClass('sqlsrv'));
 	}
 
 	// -----------------------------------------------------------------------
@@ -217,7 +217,7 @@ class TDbDriverCapabilitiesMssqlIntegrationTest extends PHPUnit\Framework\TestCa
 
 	public function testDblibMetaDataClassNameMatchesSqlsrv(): void
 	{
-		$this->assertSame(TMssqlMetaData::class, TDbDriverCapabilities::getMetaDataClass('dblib'));
+		$this->assertSame(TSqlSrvMetaData::class, TDbDriverCapabilities::getMetaDataClass('dblib'));
 	}
 
 	// -----------------------------------------------------------------------
@@ -276,12 +276,12 @@ class TDbDriverCapabilitiesMssqlIntegrationTest extends PHPUnit\Framework\TestCa
 
 	public function testSqlsrvScaffoldInputClass(): void
 	{
-		$this->assertSame('TMssqlScaffoldInput', TDbDriverCapabilities::getScaffoldInputClass('sqlsrv'));
+		$this->assertSame('TSqlSrvScaffoldInput', TDbDriverCapabilities::getScaffoldInputClass('sqlsrv'));
 	}
 
 	public function testSqlsrvScaffoldInputFile(): void
 	{
-		$this->assertSame('/TMssqlScaffoldInput.php', TDbDriverCapabilities::getScaffoldInputFile('sqlsrv'));
+		$this->assertSame('/TSqlSrvScaffoldInput.php', TDbDriverCapabilities::getScaffoldInputFile('sqlsrv'));
 	}
 
 	public function testDblibScaffoldInputMatchesSqlsrv(): void
@@ -329,11 +329,11 @@ class TDbDriverCapabilitiesMssqlIntegrationTest extends PHPUnit\Framework\TestCa
 	// Live connection — MetaData factory
 	// -----------------------------------------------------------------------
 
-	public function testSqlsrvMetaDataInstanceIsTMssqlMetaData(): void
+	public function testSqlsrvMetaDataInstanceIsTSqlSrvMetaData(): void
 	{
 		$conn = $this->openSqlsrv();
 		$meta = TDbMetaData::getInstance($conn);
-		$this->assertInstanceOf(TMssqlMetaData::class, $meta);
+		$this->assertInstanceOf(TSqlSrvMetaData::class, $meta);
 		$conn->Active = false;
 	}
 

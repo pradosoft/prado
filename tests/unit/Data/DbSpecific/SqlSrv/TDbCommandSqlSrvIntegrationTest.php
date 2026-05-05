@@ -21,13 +21,13 @@ use Prado\TApplication;
  *   (2, 'Bob',   7.3, 0, NULL)
  *   (3, 'Carol', 8.1, 1, 'third')
  */
-class TDbCommandMssqlIntegrationTest extends PHPUnit\Framework\TestCase
+class TDbCommandSqlSrvIntegrationTest extends PHPUnit\Framework\TestCase
 {
 	private ?TDbConnection $_conn = null;
 
-	private function openMssql(): TDbConnection
+	private function openSqlSrv(): TDbConnection
 	{
-		$conn = PradoUnit::setupMssqlConnection('prado_unitest');
+		$conn = PradoUnit::setupSqlSrvConnection('prado_unitest');
 		if (is_string($conn)) {
 			$this->markTestSkipped($conn);
 		}
@@ -41,7 +41,7 @@ class TDbCommandMssqlIntegrationTest extends PHPUnit\Framework\TestCase
 			new TApplication(__DIR__ . '/../../../Security/app', false, TApplication::CONFIG_TYPE_PHP);
 			$booted = true;
 		}
-		$this->_conn = $this->openMssql();
+		$this->_conn = $this->openSqlSrv();
 
 		// Drop table if it exists from a previous run, then create fresh.
 		try {

@@ -24,13 +24,13 @@ use Prado\TApplication;
  * TrustServerCertificate=yes is required for ODBC Driver 18+ which enforces
  * encrypted connections and rejects self-signed certificates.
  */
-class TDbConnectionCharsetMssqlIntegrationTest extends PHPUnit\Framework\TestCase
+class TDbConnectionCharsetSqlSrvIntegrationTest extends PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 
 	protected function getPradoUnitSetup(): ?string
 	{
-		return 'setupMssqlConnection';
+		return 'setupSqlSrvConnection';
 	}
 
 	protected function getDatabaseName(): ?string
@@ -81,7 +81,7 @@ class TDbConnectionCharsetMssqlIntegrationTest extends PHPUnit\Framework\TestCas
 	 * Open a SQL Server connection without a CharacterSet in the DSN, so that
 	 * the Charset property is the sole source of encoding negotiation.
 	 */
-	private function openMssql(string $charset = ''): TDbConnection
+	private function openSqlSrv(string $charset = ''): TDbConnection
 	{
 		if (!extension_loaded('pdo_sqlsrv')) {
 			$this->markTestSkipped('pdo_sqlsrv extension not available.');
@@ -98,28 +98,28 @@ class TDbConnectionCharsetMssqlIntegrationTest extends PHPUnit\Framework\TestCas
 	// Tests — charset injected into DSN via applyCharsetToDsn()
 	// -----------------------------------------------------------------------
 
-	public function testMssqlUtf8ResolvedAndInjectedIntoDsn(): void
+	public function testSqlSrvUtf8ResolvedAndInjectedIntoDsn(): void
 	{
 		// 'UTF-8' → resolveCharsetForDriver() → 'UTF-8' for sqlsrv.
 		// applyCharsetToDsn() appends CharacterSet=UTF-8 to the DSN.
-		$conn = $this->openMssql('UTF-8');
+		$conn = $this->openSqlSrv('UTF-8');
 		$this->assertTrue($conn->Active);
 		$conn->Active = false;
 	}
 
-	public function testMssqlDriverSpecificNamePassesThrough(): void
+	public function testSqlSrvDriverSpecificNamePassesThrough(): void
 	{
 		// 'UTF-8' is both the universal name and the sqlsrv-resolved name.
-		$conn = $this->openMssql('UTF-8');
+		$conn = $this->openSqlSrv('UTF-8');
 		$this->assertTrue($conn->Active);
 		$conn->Active = false;
 	}
 
-	public function testMssqlSetCharsetAfterConnectThrowsException(): void
+	public function testSqlSrvSetCharsetAfterConnectThrowsException(): void
 	{
 		// For sqlsrv, charset is DSN-only; setting it after connect is a no-op
 		// at the server level (no SQL command is sent).  The connection stays active.
-		$conn = $this->openMssql();
+		$conn = $this->openSqlSrv();
 		$this->expectException(TDbException::class);
 		$conn->Charset = 'UTF-8';
 	}
@@ -128,19 +128,19 @@ class TDbConnectionCharsetMssqlIntegrationTest extends PHPUnit\Framework\TestCas
 	// getDatabaseCharset() — falls back to resolveCharsetForDriver() for sqlsrv
 	// -----------------------------------------------------------------------
 
-	public function testMssqlGetDatabaseCharsetReturnsResolvedCharset(): void
+	public function testSqlSrvGetDatabaseCharsetReturnsResolvedCharset(): void
 	{
 		// sqlsrv has no live-query path; getDatabaseCharset() returns
 		// resolveCharsetForDriver('UTF-8', 'sqlsrv') = 'UTF-8'.
-		$conn = $this->openMssql('UTF-8');
+		$conn = $this->openSqlSrv('UTF-8');
 		$this->assertSame('UTF-8', $conn->DatabaseCharset);
 		$conn->Active = false;
 	}
 
-	public function testMssqlGetDatabaseCharsetReturnsResolvedIso88591(): void
+	public function testSqlSrvGetDatabaseCharsetReturnsResolvedIso88591(): void
 	{
 		// 'ISO-8859-1' → resolves to 'ISO-8859-1' for sqlsrv (mssql/dblib charset name).
-		$conn = $this->openMssql('ISO-8859-1');
+		$conn = $this->openSqlSrv('ISO-8859-1');
 		$this->assertSame('ISO-8859-1', $conn->DatabaseCharset);
 		$conn->Active = false;
 	}
@@ -153,9 +153,9 @@ class TDbConnectionCharsetMssqlIntegrationTest extends PHPUnit\Framework\TestCas
 	// reports HasAutoCommit = false for sqlsrv/dblib.
 	// -----------------------------------------------------------------------
 
-	public function testMssqlHasAutoCommitAttributeIsFalse(): void
+	public function testSqlSrvHasAutoCommitAttributeIsFalse(): void
 	{
-		$conn = $this->openMssql();
+		$conn = $this->openSqlSrv();
 		$this->assertFalse(
 			$conn->HasAutoCommit,
 			'SQL Server (sqlsrv) must report hasAutoCommitAttribute = false (ATTR_AUTOCOMMIT is not supported).'
@@ -163,23 +163,23 @@ class TDbConnectionCharsetMssqlIntegrationTest extends PHPUnit\Framework\TestCas
 		$conn->Active = false;
 	}
 
-	public function testMssqlBeginTransactionSucceedsAndRollbackWorks(): void
+	public function testSqlSrvBeginTransactionSucceedsAndRollbackWorks(): void
 	{
 		// sqlsrv does not expose ATTR_AUTOCOMMIT.  Simply verify that
 		// beginTransaction/rollback work without error.
-		$conn = $this->openMssql();
+		$conn = $this->openSqlSrv();
 		$tx   = $conn->beginTransaction();
 		$this->assertTrue($tx->getActive(), 'SQL Server beginTransaction must return an active transaction.');
 		$conn->rollback();
 		$conn->Active = false;
 	}
 
-	public function testMssqlCharsetInjectedIntoDsnWithCharacterSetParam(): void
+	public function testSqlSrvCharsetInjectedIntoDsnWithCharacterSetParam(): void
 	{
 		// applyCharsetToDsn() appends ;CharacterSet=UTF-8 for sqlsrv (not lowercase 'charset').
 		// After connecting, the raw ConnectionString (before applyCharsetToDsn) must not
 		// contain the injected param; the connection must succeed, proving the DSN was built.
-		$conn = $this->openMssql('UTF-8');
+		$conn = $this->openSqlSrv('UTF-8');
 		$this->assertTrue($conn->Active);
 		// The raw DSN does not contain the injected segment (applyCharsetToDsn builds
 		// a modified copy; _dsn is never mutated).

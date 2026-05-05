@@ -15,7 +15,7 @@ use Prado\Data\TDbDriverCapabilities;
 use Prado\Data\Common\Firebird\TFirebirdMetaData;
 use Prado\Data\Common\Ibm\TIbmMetaData;
 use Prado\Data\Common\IDataMetaData;
-use Prado\Data\Common\Mssql\TMssqlMetaData;
+use Prado\Data\Common\SqlSrv\TSqlSrvMetaData;
 use Prado\Data\Common\Mysql\TMysqlMetaData;
 use Prado\Data\Common\Oracle\TOracleMetaData;
 use Prado\Data\Common\Pgsql\TPgsqlMetaData;
@@ -947,8 +947,8 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 			'sqlite2'   => [TDbDriver::DRIVER_SQLITE2,  TSqliteMetaData::class],
 			'firebird'  => [TDbDriver::DRIVER_FIREBIRD, TFirebirdMetaData::class],
 			'interbase' => [TDbDriver::DRIVER_INTERBASE,TFirebirdMetaData::class],
-			'sqlsrv'    => [TDbDriver::DRIVER_SQLSRV,   TMssqlMetaData::class],
-			'dblib'     => [TDbDriver::DRIVER_DBLIB,    TMssqlMetaData::class],
+			'sqlsrv'    => [TDbDriver::DRIVER_SQLSRV,   TSqlSrvMetaData::class],
+			'dblib'     => [TDbDriver::DRIVER_DBLIB,    TSqlSrvMetaData::class],
 			'oci'       => [TDbDriver::DRIVER_OCI,      TOracleMetaData::class],
 			'ibm'       => [TDbDriver::DRIVER_IBM,      TIbmMetaData::class],
 		];
@@ -1071,8 +1071,8 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 			'sqlite2'   => [TDbDriver::DRIVER_SQLITE2,  '/TSqliteScaffoldInput.php'],
 			'firebird'  => [TDbDriver::DRIVER_FIREBIRD, '/TFirebirdScaffoldInput.php'],
 			'interbase' => [TDbDriver::DRIVER_INTERBASE,'/TFirebirdScaffoldInput.php'],
-			'sqlsrv'    => [TDbDriver::DRIVER_SQLSRV,   '/TMssqlScaffoldInput.php'],
-			'dblib'     => [TDbDriver::DRIVER_DBLIB,    '/TMssqlScaffoldInput.php'],
+			'sqlsrv'    => [TDbDriver::DRIVER_SQLSRV,   '/TSqlSrvScaffoldInput.php'],
+			'dblib'     => [TDbDriver::DRIVER_DBLIB,    '/TSqlSrvScaffoldInput.php'],
 			'oci'       => [TDbDriver::DRIVER_OCI,      '/TOracleScaffoldInput.php'],
 			'ibm'       => [TDbDriver::DRIVER_IBM,      '/TIbmScaffoldInput.php'],
 			'unknown'   => ['unknown_driver',            null],
@@ -1137,8 +1137,8 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 			'sqlite2'   => [TDbDriver::DRIVER_SQLITE2,  'TSqliteScaffoldInput'],
 			'firebird'  => [TDbDriver::DRIVER_FIREBIRD, 'TFirebirdScaffoldInput'],
 			'interbase' => [TDbDriver::DRIVER_INTERBASE,'TFirebirdScaffoldInput'],
-			'sqlsrv'    => [TDbDriver::DRIVER_SQLSRV,   'TMssqlScaffoldInput'],
-			'dblib'     => [TDbDriver::DRIVER_DBLIB,    'TMssqlScaffoldInput'],
+			'sqlsrv'    => [TDbDriver::DRIVER_SQLSRV,   'TSqlSrvScaffoldInput'],
+			'dblib'     => [TDbDriver::DRIVER_DBLIB,    'TSqlSrvScaffoldInput'],
 			'oci'       => [TDbDriver::DRIVER_OCI,      'TOracleScaffoldInput'],
 			'ibm'       => [TDbDriver::DRIVER_IBM,      'TIbmScaffoldInput'],
 			'unknown'   => ['unknown_driver',            null],

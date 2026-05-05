@@ -679,7 +679,7 @@ class PradoUnit {
 	 *   `TActiveRecordManager::getInstance()`.
 	 * @return \Prado\Data\TDbConnection|string|\Exception
 	 */
-	public static function setupMssqlConnection($database = '', $isActiveRecord = false)
+	public static function setupSqlSrvConnection($database = '', $isActiveRecord = false)
 	{
 		if (!extension_loaded('pdo_sqlsrv')) {
 			return 'The pdo_sqlsrv extension is not available.';
@@ -700,6 +700,12 @@ class PradoUnit {
 		}
 		return $conn;
 	}
+	/*
+	public static function setupMssqlConnection($database = '', $isActiveRecord = false)
+	{
+		return static::setupSqlSrvConnection($database, $isActiveRecord);
+	}
+	*/
 
 	/**
 	 * Opens an Oracle database connection for unit tests.

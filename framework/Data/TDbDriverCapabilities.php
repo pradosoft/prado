@@ -16,7 +16,7 @@ use Prado\Data\ActiveRecord\Scaffold\InputBuilder\IScaffoldInput;
 use Prado\Data\Common\Firebird\TFirebirdMetaData;
 use Prado\Data\Common\Ibm\TIbmMetaData;
 use Prado\Data\Common\IDataMetaData;
-use Prado\Data\Common\Mssql\TMssqlMetaData;
+use Prado\Data\Common\SqlSrv\TSqlSrvMetaData;
 use Prado\Data\Common\Mysql\TMysqlMetaData;
 use Prado\Data\Common\Oracle\TOracleDbCommand;
 use Prado\Data\Common\Oracle\TOracleMetaData;
@@ -723,7 +723,7 @@ class TDbDriverCapabilities
 			TDbDriver::DRIVER_INTERBASE,
 			TDbDriver::DRIVER_FIREBIRD => TFirebirdMetaData::class,
 			TDbDriver::DRIVER_DBLIB,
-			TDbDriver::DRIVER_SQLSRV => TMssqlMetaData::class,
+			TDbDriver::DRIVER_SQLSRV => TSqlSrvMetaData::class,
 			TDbDriver::DRIVER_OCI => TOracleMetaData::class,
 			TDbDriver::DRIVER_IBM => TIbmMetaData::class,
 			default => null,
@@ -771,7 +771,7 @@ class TDbDriverCapabilities
 			TDbDriver::DRIVER_INTERBASE,
 			TDbDriver::DRIVER_FIREBIRD => '/TFirebirdScaffoldInput.php',
 			TDbDriver::DRIVER_DBLIB,
-			TDbDriver::DRIVER_SQLSRV => '/TMssqlScaffoldInput.php',
+			TDbDriver::DRIVER_SQLSRV => '/TSqlSrvScaffoldInput.php',
 			TDbDriver::DRIVER_OCI => '/TOracleScaffoldInput.php',
 			TDbDriver::DRIVER_IBM => '/TIbmScaffoldInput.php',
 			default => null,
@@ -799,7 +799,7 @@ class TDbDriverCapabilities
 			TDbDriver::DRIVER_INTERBASE,
 			TDbDriver::DRIVER_FIREBIRD => 'TFirebirdScaffoldInput',
 			TDbDriver::DRIVER_DBLIB,
-			TDbDriver::DRIVER_SQLSRV => 'TMssqlScaffoldInput',
+			TDbDriver::DRIVER_SQLSRV => 'TSqlSrvScaffoldInput',
 			TDbDriver::DRIVER_OCI => 'TOracleScaffoldInput',
 			TDbDriver::DRIVER_IBM => 'TIbmScaffoldInput',
 			default => null,
