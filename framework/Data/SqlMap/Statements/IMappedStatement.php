@@ -9,6 +9,8 @@
 namespace Prado\Data\SqlMap\Statements;
 
 /**
+ * IMappedStatement interface
+ *
  * Interface for all mapping statements.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>

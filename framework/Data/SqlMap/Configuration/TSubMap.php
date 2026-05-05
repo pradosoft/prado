@@ -11,6 +11,8 @@
 namespace Prado\Data\SqlMap\Configuration;
 
 /**
+ * TSubMap class
+ *
  * TSubMap class defines a submapping value and the corresponding <resultMap>
  *
  * The {@see Value setValue()} property is used for comparison with the
@@ -20,6 +22,7 @@ namespace Prado\Data\SqlMap\Configuration;
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
+ * @see TDiscriminator
  */
 class TSubMap extends \Prado\TComponent
 {

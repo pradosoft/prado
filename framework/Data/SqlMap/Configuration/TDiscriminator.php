@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TDiscriminator and TSubMap classes file.
+ * TDiscriminator classes file.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
@@ -14,6 +14,8 @@ use Prado\TPropertyValue;
 use Prado\Data\TSqlMapManager;
 
 /**
+ * TDiscriminator class
+ *
  * The TDiscriminator corresponds to the <discriminator> tag within a <resultMap>.
  *
  * TDiscriminator allows inheritance logic in SqlMap result mappings.
@@ -25,6 +27,7 @@ use Prado\Data\TSqlMapManager;
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
+ * @see TSubMap
  */
 class TDiscriminator extends \Prado\TComponent
 {

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TSqlMapXmlConfigBuilder, TSqlMapXmlConfiguration, TSqlMapXmlMappingConfiguration classes file.
+ * TSqlMapXmlMappingConfiguration classes file.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
@@ -25,6 +25,8 @@ use Prado\Data\SqlMap\Statements\TUpsertMappedStatement;
 use Prado\Prado;
 
 /**
+ * TSqlMapXmlMappingConfiguration class
+ *
  * TSqlMapXmlMappingConfiguration loads statements, result maps, and parameter maps from XML mapping files.
  *
  * This builder parses XML mapping files and registers them with the SqlMap manager.

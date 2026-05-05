@@ -14,7 +14,7 @@ use Prado\Data\SqlMap\TSqlMapManager;
 use Prado\Data\SqlMap\DataMapper\TSqlMapConfigurationException;
 
 /**
- * TSqlMapXmlConfig class.
+ * TSqlMapXmlConfig class
  *
  * Configures the TSqlMapManager using xml configuration file.
  *
