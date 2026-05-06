@@ -5,7 +5,6 @@ use Prado\TApplication;
 use Prado\Web\THttpHeader;
 use Prado\Web\THttpHeaderCSP;
 use Prado\Web\THttpHeadersManager;
-use Prado\Web\THttpResponse;
 use Prado\Web\Javascripts\TJavaScript;
 
 /**
@@ -189,90 +188,4 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(['A: 1', 'B: 2', 'C: 3'], $manager->sentHeaders);
 	}
 
-	// -----------------------------------------------------------------------
-	// getNonce
-	// -----------------------------------------------------------------------
-
-	public function testGetNonceReturnsNullWhenNoCspHeader()
-	{
-		$manager = new TTestableHttpHeadersManager();
-		$manager->publicLoadHeaders([
-			'headers' => [
-				['properties' => ['Name' => 'X-Frame-Options', 'Value' => 'DENY']],
-			],
-		]);
-
-		self::assertNull($manager->getNonce());
-	}
-
-	public function testGetNonceReturnsNullWhenCspHasNoNoncePlaceholder()
-	{
-		$manager = new TTestableHttpHeadersManager();
-		$manager->publicLoadHeaders([
-			'headers' => [
-				[
-					'class'    => THttpHeaderCSP::class,
-					'policies' => [
-						['name' => 'default-src', 'value' => "'self'"],
-					],
-				],
-			],
-		]);
-
-		self::assertNull($manager->getNonce());
-	}
-
-	public function testGetNonceReturnsNonceWhenCspHasNoncePlaceholder()
-	{
-		// Requires a live security manager to generate the nonce
-		$sm = new \Prado\Security\TSecurityManager();
-		$sm->init(null);
-
-		$manager = new TTestableHttpHeadersManager();
-		$manager->publicLoadHeaders([
-			'headers' => [
-				[
-					'class'    => THttpHeaderCSP::class,
-					'policies' => [
-						['name' => 'default-src', 'value' => "'self' NONCE"],
-					],
-				],
-			],
-		]);
-
-		$nonce = $manager->getNonce();
-		self::assertNotNull($nonce);
-		self::assertIsString($nonce);
-		self::assertNotEmpty($nonce);
-	}
-
-	public function testGetNonceReturnsFirstCspNonce()
-	{
-		$sm = new \Prado\Security\TSecurityManager();
-		$sm->init(null);
-
-		$manager = new TTestableHttpHeadersManager();
-		$manager->publicLoadHeaders([
-			'headers' => [
-				['properties' => ['Name' => 'X-Frame-Options', 'Value' => 'DENY']],
-				[
-					'class'    => THttpHeaderCSP::class,
-					'policies' => [
-						['name' => 'script-src', 'value' => "'self' NONCE"],
-					],
-				],
-			],
-		]);
-
-		// The first header is a plain THttpHeader (no nonce); getNonce() must
-		// look past it and find the CSP header's nonce.
-		$nonce = $manager->getNonce();
-		self::assertNotNull($nonce);
-	}
-
-	public function testGetNonceWithNoCspHeadersAtAllReturnsNull()
-	{
-		$manager = new TTestableHttpHeadersManager();
-		self::assertNull($manager->getNonce());
-	}
 }

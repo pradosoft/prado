@@ -44,7 +44,8 @@ class TJavaScript
 
 	/**
 	 * Sets the per-request CSP nonce included as `nonce` on every rendered script tag.
-	 * Called automatically by {@see \Prado\Web\THttpHeaderCSP::setNonce()}.
+	 * Called automatically by {@see \Prado\Web\THttpHeaderCSP::init()} when a policy
+	 * contains the {@see \Prado\Web\THttpHeaderCSP::NONCE} placeholder.
 	 * @param ?string $nonce raw nonce value (no `nonce-` prefix), or null to clear
 	 * @since 4.3.3
 	 */
@@ -63,7 +64,7 @@ class TJavaScript
 	 */
 	public static function renderScriptHeader($attributes = [])
 	{
-		$attributes['nonce'] ??= self::$_scriptNonce;
+		$attributes['nonce'] ??= self::getScriptNonce();
 		$attrs = THttpUtility::buildHtmlAttributes($attributes);
 		return "<script{$attrs}>\n/*<![CDATA[*/\n";
 	}

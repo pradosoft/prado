@@ -153,21 +153,6 @@ class THttpHeadersManager extends \Prado\TModule
 	}
 
 	/**
-	 * Returns the nonce from the first {@see THttpHeaderCSP} header that has one,
-	 * or `null` if none is registered.
-	 * @return ?string the nonce value, or null
-	 */
-	public function getNonce(): ?string
-	{
-		foreach ($this->_headers as $header) {
-			if ($header instanceof THttpHeaderCSP && ($nonce = $header->getNonce()) !== null) {
-				return $nonce;
-			}
-		}
-		return null;
-	}
-
-	/**
 	 * Ensures that custom headers are sent by the module
 	 */
 	public function ensureHeadersSent()

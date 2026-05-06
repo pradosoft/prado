@@ -6,18 +6,6 @@ use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\THttpHeaderCSP;
 use Prado\Web\THttpHeadersManager;
 
-/**
- * Exposes the protected setNonce() method so tests can drive nonce state
- * without triggering the full init() / TSecurityManager path.
- */
-class TTestHttpHeaderCSP extends THttpHeaderCSP
-{
-	public function publicSetNonce(?string $nonce): void
-	{
-		$this->setNonce($nonce);
-	}
-}
-
 /** Minimal manager stub — needed by the THttpHeader constructor. */
 class TTestCSPManagerStub extends THttpHeadersManager {}
 
@@ -95,9 +83,7 @@ class THttpHeaderCSPTest extends PHPUnit\Framework\TestCase
 			['name' => 'script-src',  'value' => "'self'"],
 		]]);
 
-		// Each directive must end with "; "
-		$value = $csp->getValue();
-		self::assertStringContainsString(';', $value);
+		self::assertStringContainsString(';', $csp->getValue());
 	}
 
 	public function testGetValueWithEmptyPoliciesIsEmptyString()
@@ -108,70 +94,63 @@ class THttpHeaderCSPTest extends PHPUnit\Framework\TestCase
 	}
 
 	// -----------------------------------------------------------------------
-	// getNonce — no NONCE placeholder
+	// getValue — with nonce
 	// -----------------------------------------------------------------------
 
-	public function testGetNonceIsNullWhenNoPoliciesUsePlaceholder()
-	{
-		$csp = new THttpHeaderCSP($this->manager);
-		$csp->init(['policies' => [
-			['name' => 'default-src', 'value' => "'self'"],
-		]]);
-
-		self::assertNull($csp->getNonce());
-	}
-
-	public function testGetNonceIsNullBeforeInit()
-	{
-		$csp = new THttpHeaderCSP($this->manager);
-		self::assertNull($csp->getNonce());
-	}
-
-	// -----------------------------------------------------------------------
-	// setNonce (via subclass) — nonce state and TJavaScript side-effect
-	// -----------------------------------------------------------------------
-
-	public function testSetNonceSetsNonceProperty()
-	{
-		$csp = new TTestHttpHeaderCSP($this->manager);
-		$csp->publicSetNonce('abc123');
-		self::assertEquals('abc123', $csp->getNonce());
-	}
-
-	public function testSetNonceForwardedToTJavaScript()
-	{
-		$csp = new TTestHttpHeaderCSP($this->manager);
-		$csp->publicSetNonce('myNonce');
-		self::assertEquals('myNonce', TJavaScript::getScriptNonce());
-	}
-
-	public function testSetNonceNullClearsNonce()
-	{
-		$csp = new TTestHttpHeaderCSP($this->manager);
-		$csp->publicSetNonce('abc');
-		$csp->publicSetNonce(null);
-		self::assertNull($csp->getNonce());
-		self::assertNull(TJavaScript::getScriptNonce());
-	}
-
-	// -----------------------------------------------------------------------
-	// getNonce / getValue — with NONCE placeholder
-	// -----------------------------------------------------------------------
-
-	public function testInitWithNoncePlaceholderSetsNonce()
+	public function testGetValueReplacesNoncePlaceholderWithActualNonce()
 	{
 		$sm = new TSecurityManager();
 		$sm->init(null);
 
 		$csp = new THttpHeaderCSP($this->manager);
 		$csp->init(['policies' => [
-			['name' => 'default-src', 'value' => "'self' NONCE"],
+			['name' => 'script-src', 'value' => "'self' NONCE"],
 		]]);
 
-		self::assertNotNull($csp->getNonce());
-		self::assertIsString($csp->getNonce());
-		self::assertNotEmpty($csp->getNonce());
+		// init() set the real CSP nonce; override with a known value so the
+		// assertion is deterministic — getValue() reads TJavaScript at call time.
+		TJavaScript::setScriptNonce('testNonce999');
+
+		$value = $csp->getValue();
+		self::assertStringNotContainsString('NONCE', $value);
+		self::assertStringContainsString("'nonce-testNonce999'", $value);
+		self::assertStringContainsString("script-src 'self' 'nonce-testNonce999'", $value);
 	}
+
+	public function testGetValueDoesNotReplaceNonceWhenNonceIsNull()
+	{
+		// TJavaScript nonce is null (set in setUp); no replacement should occur.
+		$csp = new THttpHeaderCSP($this->manager);
+		$csp->init(['policies' => [
+			['name' => 'default-src', 'value' => "'self'"],
+		]]);
+
+		self::assertStringNotContainsString('nonce-', $csp->getValue());
+	}
+
+	public function testGetValueNoncePlaceholderReplacedInAllMatchingPolicies()
+	{
+		$sm = new TSecurityManager();
+		$sm->init(null);
+
+		$csp = new THttpHeaderCSP($this->manager);
+		$csp->init(['policies' => [
+			['name' => 'script-src', 'value' => "'self' NONCE"],
+			['name' => 'style-src',  'value' => "'self' NONCE"],
+		]]);
+
+		// Override with a known value after init() has set the real CSP nonce.
+		TJavaScript::setScriptNonce('myN0nce');
+
+		$value = $csp->getValue();
+		// Both directives must have the placeholder replaced.
+		self::assertEquals(2, substr_count($value, "'nonce-myN0nce'"));
+		self::assertStringNotContainsString(' NONCE', $value);
+	}
+
+	// -----------------------------------------------------------------------
+	// init — NONCE placeholder triggers TJavaScript::setScriptNonce()
+	// -----------------------------------------------------------------------
 
 	public function testInitWithNoncePlaceholderRegistersNonceWithTJavaScript()
 	{
@@ -183,51 +162,21 @@ class THttpHeaderCSPTest extends PHPUnit\Framework\TestCase
 			['name' => 'script-src', 'value' => "'self' NONCE"],
 		]]);
 
-		self::assertEquals($csp->getNonce(), TJavaScript::getScriptNonce());
+		// init() must have called TJavaScript::setScriptNonce() with a real value.
+		self::assertNotNull(TJavaScript::getScriptNonce());
+		self::assertIsString(TJavaScript::getScriptNonce());
+		self::assertNotEmpty(TJavaScript::getScriptNonce());
 	}
 
-	public function testGetValueReplacesNoncePlaceholderWithActualNonce()
-	{
-		$csp = new TTestHttpHeaderCSP($this->manager);
-		$csp->init(['policies' => [
-			['name' => 'script-src', 'value' => "'self' NONCE"],
-		]]);
-		$csp->publicSetNonce('testNonce999');
-
-		$value = $csp->getValue();
-		self::assertStringNotContainsString('NONCE', $value);
-		self::assertStringContainsString("'nonce-testNonce999'", $value);
-		self::assertStringContainsString("script-src 'self' 'nonce-testNonce999'", $value);
-	}
-
-	public function testGetValueDoesNotReplaceNonceWhenNonceIsNull()
+	public function testInitWithoutNoncePlaceholderDoesNotSetScriptNonce()
 	{
 		$csp = new THttpHeaderCSP($this->manager);
 		$csp->init(['policies' => [
-			// No NONCE placeholder → nonce stays null
 			['name' => 'default-src', 'value' => "'self'"],
 		]]);
 
-		$value = $csp->getValue();
-		self::assertStringNotContainsString("nonce-", $value);
-	}
-
-	public function testGetValueNoncePlaceholderReplacedInAllMatchingPolicies()
-	{
-		$sm = new TSecurityManager();
-		$sm->init(null);
-
-		$csp = new TTestHttpHeaderCSP($this->manager);
-		$csp->init(['policies' => [
-			['name' => 'script-src', 'value' => "'self' NONCE"],
-			['name' => 'style-src',  'value' => "'self' NONCE"],
-		]]);
-		$csp->publicSetNonce('myN0nce');
-
-		$value = $csp->getValue();
-		// Both directives must have the nonce replaced
-		self::assertEquals(2, substr_count($value, "'nonce-myN0nce'"));
-		self::assertStringNotContainsString(' NONCE', $value);
+		// No NONCE placeholder — TJavaScript nonce must remain null.
+		self::assertNull(TJavaScript::getScriptNonce());
 	}
 
 	public function testInitWithNoncePlaceholderOnlyInOnePolicy()
@@ -237,12 +186,12 @@ class THttpHeaderCSPTest extends PHPUnit\Framework\TestCase
 
 		$csp = new THttpHeaderCSP($this->manager);
 		$csp->init(['policies' => [
-			['name' => 'frame-src',  'value' => "'self'"],    // no NONCE
+			['name' => 'frame-src',  'value' => "'self'"],       // no NONCE
 			['name' => 'script-src', 'value' => "'self' NONCE"], // has NONCE
 		]]);
 
-		// Should have generated a nonce because at least one policy has the placeholder
-		self::assertNotNull($csp->getNonce());
+		// At least one policy has NONCE — the nonce must have been set.
+		self::assertNotNull(TJavaScript::getScriptNonce());
 	}
 
 	// -----------------------------------------------------------------------
@@ -251,14 +200,11 @@ class THttpHeaderCSPTest extends PHPUnit\Framework\TestCase
 
 	public function testToStringFormat()
 	{
-		$sm = new TSecurityManager();
-		$sm->init(null);
-
-		$csp = new TTestHttpHeaderCSP($this->manager);
+		// No nonce so the output is deterministic.
+		$csp = new THttpHeaderCSP($this->manager);
 		$csp->init(['policies' => [
 			['name' => 'default-src', 'value' => "'self'"],
 		]]);
-		$csp->publicSetNonce(null); // ensure no nonce for predictable output
 
 		$str = (string) $csp;
 		self::assertStringStartsWith('Content-Security-Policy: ', $str);
