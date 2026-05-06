@@ -337,6 +337,7 @@ class TSecurityManager extends \Prado\TModule
 	/**
 	 * Returns a per-request nonce value to be used in a Content-security-policy
 	 * @return string nonce
+	 * @since 4.3.3
 	 */
 	public function getCSPNonce()
 	{

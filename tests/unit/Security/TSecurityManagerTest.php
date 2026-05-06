@@ -610,6 +610,120 @@ class TSecurityManagerTest extends PHPUnit\Framework\TestCase
 		}
 	}
 
+	// -----------------------------------------------------------------------
+	// getCSPNonce
+	// -----------------------------------------------------------------------
+
+	/**
+	 * getCSPNonce() must return a non-empty hexadecimal string.
+	 * bin2hex(random_bytes(16)) always produces 32 lowercase hex characters.
+	 */
+	public function testGetCSPNonceReturnsNonEmptyHexString()
+	{
+		$sec = new TSecurityManager();
+		$sec->init(null);
+
+		$nonce = $sec->getCSPNonce();
+
+		self::assertIsString($nonce);
+		self::assertNotEmpty($nonce);
+		self::assertMatchesRegularExpression('/^[0-9a-f]+$/i', $nonce);
+	}
+
+	/**
+	 * generateRandomKey() returns bin2hex(random_bytes(16)) = 32 hex characters.
+	 */
+	public function testGetCSPNonceHasExpectedLength()
+	{
+		$sec = new TSecurityManager();
+		$sec->init(null);
+
+		self::assertSame(32, strlen($sec->getCSPNonce()));
+	}
+
+	/**
+	 * Multiple calls on the same instance must return the identical nonce value.
+	 * The function-level static ensures a single nonce per PHP process.
+	 */
+	public function testGetCSPNonceIsIdempotentOnSameInstance()
+	{
+		$sec = new TSecurityManager();
+		$sec->init(null);
+
+		$first  = $sec->getCSPNonce();
+		$second = $sec->getCSPNonce();
+		$third  = $sec->getCSPNonce();
+
+		self::assertSame($first, $second);
+		self::assertSame($first, $third);
+	}
+
+	/**
+	 * Different TSecurityManager instances must return the same nonce within a
+	 * single PHP process because getCSPNonce() uses a function-level static.
+	 */
+	public function testGetCSPNonceIsIdempotentAcrossInstances()
+	{
+		$sec1 = new TSecurityManager();
+		$sec1->init(null);
+		$sec2 = new TSecurityManager();
+		$sec2->init(null);
+
+		self::assertSame($sec1->getCSPNonce(), $sec2->getCSPNonce());
+	}
+
+	/**
+	 * The nonce retrieved via the application's registered security manager
+	 * must be the same process-level value.
+	 */
+	public function testGetCSPNonceIsAccessibleViaApplication()
+	{
+		$sec = new TSecurityManager();
+		$sec->init(null);
+
+		$direct = $sec->getCSPNonce();
+		$viaApp = self::$app->getSecurityManager()->getCSPNonce();
+
+		self::assertSame($direct, $viaApp);
+	}
+
+	/**
+	 * In a fresh PHP process the static $nonce is null and getCSPNonce()
+	 * generates a new 32-character hex value on the very first call.
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
+	public function testGetCSPNonceGeneratesValueOnFirstCall()
+	{
+		$sec = new TSecurityManager();
+		$sec->init(null);
+
+		$nonce = $sec->getCSPNonce();
+
+		self::assertIsString($nonce);
+		self::assertSame(32, strlen($nonce));
+		self::assertMatchesRegularExpression('/^[0-9a-f]+$/i', $nonce);
+	}
+
+	/**
+	 * In a fresh PHP process the nonce is stable: repeated calls to
+	 * getCSPNonce() on the same instance return the identical value.
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
+	public function testGetCSPNonceStableWithinFreshProcess()
+	{
+		$sec = new TSecurityManager();
+		$sec->init(null);
+
+		$a = $sec->getCSPNonce();
+		$b = $sec->getCSPNonce();
+
+		self::assertSame($a, $b);
+	}
+
 	public function testEncryptDecryptWithChangedEncryptionKeyAlgorithmMidProcess()
 	{
 		if (!extension_loaded('openssl')) {
