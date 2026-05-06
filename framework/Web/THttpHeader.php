@@ -10,6 +10,8 @@
 
 namespace Prado\Web;
 
+use Prado\TPropertyValue;
+
 /**
  * THttpHeader class
  *
@@ -17,19 +19,18 @@ namespace Prado\Web;
  * in the form of a Name and a textual Value.
  *
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
- * @since 4.3.2
+ * @since 4.3.3
  */
 class THttpHeader extends \Prado\TComponent
 {
 	/**
-	 * @var THttpHeadersManager the URL manager instance
+	 * @var THttpHeadersManager the headers manager instance
 	 */
 	private $_manager;
 	/**
 	 * @var string Name
 	 */
 	protected $_name;
-
 	/**
 	 * @var string Value
 	 */
@@ -46,7 +47,7 @@ class THttpHeader extends \Prado\TComponent
 	}
 
 	/**
-	 * @return THttpHeadersManager the URL manager instance
+	 * @return THttpHeadersManager the headers manager instance
 	 */
 	public function getManager()
 	{
@@ -55,10 +56,19 @@ class THttpHeader extends \Prado\TComponent
 
 	/**
 	 * Initializes the header.
-	 * @param \Prado\Xml\TXmlElement $config configuration for this module.
+	 * @param array|\Prado\Xml\TXmlElement $config configuration for this module.
 	 */
 	public function init($config)
 	{
+	}
+
+	/**
+	 * Renders the header as a `Name: Value` string.
+	 * @return string the header line
+	 */
+	public function __toString(): string
+	{
+		return $this->getName() . ': ' . $this->getValue();
 	}
 
 	/**
@@ -71,11 +81,11 @@ class THttpHeader extends \Prado\TComponent
 
 	/**
 	 * Sets the textual name of the header
-	 * @param string $name the texttual name
+	 * @param string $name the textual name
 	 */
 	public function setName($name)
 	{
-		$this->_name = $name;
+		$this->_name = TPropertyValue::ensureString($name);
 	}
 
 	/**
@@ -88,10 +98,10 @@ class THttpHeader extends \Prado\TComponent
 
 	/**
 	 * Sets the textual value of the header
-	 * @param string $value the texttual value
+	 * @param string $value the textual value
 	 */
 	public function setValue($value)
 	{
-		$this->_value = $value;
+		$this->_value = TPropertyValue::ensureString($value);
 	}
 }
