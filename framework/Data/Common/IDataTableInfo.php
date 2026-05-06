@@ -49,9 +49,9 @@ interface IDataTableInfo
 	public function getIsView();
 
 	/**
-	 * Returns all column metadata objects for the table, keyed by column name.
+	 * Returns all column metadata objects for the table or collection, keyed by column name.
 	 *
-	 * @return TDbTableColumn[] the column metadata objects.
+	 * @return IDataColumn[] the column metadata objects.
 	 */
 	public function getColumns();
 
@@ -59,7 +59,7 @@ interface IDataTableInfo
 	 * Returns the column metadata for a specific column, or null if not found.
 	 *
 	 * @param string $name the column name.
-	 * @return null|TDbTableColumn the column metadata, or null.
+	 * @return ?IDataColumn the column metadata, or null.
 	 */
 	public function getColumn($name);
 

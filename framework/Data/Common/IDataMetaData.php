@@ -52,14 +52,14 @@ interface IDataMetaData
 
 	/**
 	 * Retrieves metadata for a specific table or view.
-	 * @param null|string $tableName the table or view name. If null, returns metadata for the current database.
+	 * @param ?string $tableName the table or view name. If null, returns metadata for the current database.
 	 * @return IDataTableInfo the table metadata.
 	 */
 	public function getTableInfo($tableName = null);
 
 	/**
 	 * Creates a command builder for performing CRUD operations on a specific table.
-	 * @param null|string $tableName the table name.
+	 * @param ?string $tableName the table name.
 	 * @return IDataCommandBuilder the command builder instance for the given table.
 	 */
 	public function createCommandBuilder($tableName = null);

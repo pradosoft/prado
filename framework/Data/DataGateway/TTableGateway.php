@@ -14,8 +14,8 @@ namespace Prado\Data\DataGateway;
  * Loads the data gateway command builder and sql criteria.
  */
 use Prado\Data\TDbDataReader;
+use Prado\Data\Common\IDataTableInfo;
 use Prado\Data\Common\TDbMetaData;
-use Prado\Data\Common\TDbTableInfo;
 use Prado\Exceptions\TDbException;
 use Prado\Prado;
 
@@ -33,7 +33,7 @@ use Prado\Prado;
  * ```php
  * // Create a connection
  * $dsn = 'pgsql:host=localhost;dbname=test';
- * $conn = new TDbConnection($dsn, 'dbuser','dbpass');
+ * $conn = new TDbConnection($dsn, 'dbuser','dbpass'); // TDbConnection implements IDataConnection
  *
  * // Create a table gateway for table/view named 'address'
  * $table = new TTableGateway('address', $conn);
@@ -103,15 +103,15 @@ class TTableGateway extends \Prado\TComponent
 	/**
 	 * Creates a new generic table gateway for a given table or view name
 	 * and a database connection.
-	 * @param string|TDbTableInfo $table table or view name or table information.
-	 * @param \Prado\Data\TDbConnection $connection database connection.
+	 * @param \Prado\Data\Common\IDataTableInfo|string $table table or view name or table information.
+	 * @param \Prado\Data\IDataConnection $connection database connection.
 	 */
 	public function __construct($table, $connection)
 	{
 		$this->_connection = $connection;
 		if (is_string($table)) {
 			$this->setTableName($table);
-		} elseif ($table instanceof TDbTableInfo) {
+		} elseif ($table instanceof IDataTableInfo) {
 			$this->setTableInfo($table);
 		} else {
 			throw new TDbException('dbtablegateway_invalid_table_info');
@@ -120,7 +120,7 @@ class TTableGateway extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDbTableInfo $tableInfo table or view information.
+	 * @param \Prado\Data\Common\IDataTableInfo $tableInfo table or view information.
 	 */
 	protected function setTableInfo($tableInfo)
 	{
@@ -134,7 +134,7 @@ class TTableGateway extends \Prado\TComponent
 	 */
 	protected function setTableName($tableName)
 	{
-		$meta = TDbMetaData::getInstance($this->getDbConnection());
+		$meta = $this->getDbConnection()->getDbMetaData();
 		$this->initCommandBuilder($meta->createCommandBuilder($tableName));
 	}
 
@@ -219,7 +219,7 @@ class TTableGateway extends \Prado\TComponent
 	}
 
 	/**
-	 * @return \Prado\Data\TDbConnection database connection.
+	 * @return \Prado\Data\IDataConnection database connection.
 	 */
 	public function getDbConnection()
 	{

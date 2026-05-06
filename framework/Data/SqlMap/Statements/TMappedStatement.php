@@ -27,7 +27,7 @@ use Prado\Exceptions\TInvalidDataValueException;
  * TMappedStatement class executes SQL mapped statements. Mapped Statements can
  * hold any SQL statement and use Parameter Maps and Result Maps for input and output.
  *
- * This class is usualy instantiated during SQLMap configuration by TSqlDomBuilder.
+ * This class is usually instantiated during SQLMap configuration by TSqlDomBuilder.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.0
@@ -89,7 +89,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	}
 
 	/**
-	 * @return TSqlMapStatement The SQL statment used by this MappedStatement
+	 * @return TSqlMapStatement The SQL statement used by this MappedStatement
 	 */
 	public function getStatement()
 	{
@@ -160,7 +160,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	}
 
 	/**
-	 * Executes the SQL and retuns a List of result objects.
+	 * Executes the SQL and returns a List of result objects.
 	 * @param \Prado\Data\TDbConnection $connection database connection
 	 * @param mixed $parameter The object used to set the parameters in the SQL.
 	 * @param null|object $result result collection object.
@@ -177,7 +177,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	}
 
 	/**
-	 * Executes the SQL and retuns a List of result objects.
+	 * Executes the SQL and returns a List of result objects.
 	 *
 	 * This method should only be called by internal developers, consider using
 	 * <tt>executeQueryForList()</tt> first.
@@ -221,14 +221,14 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	}
 
 	/**
-	 * Executes the SQL and retuns all rows selected in a map that is keyed on
+	 * Executes the SQL and returns all rows selected in a map that is keyed on
 	 * the property named in the keyProperty parameter.  The value at each key
 	 * will be the value of the property specified in the valueProperty parameter.
 	 * If valueProperty is null, the entire result object will be entered.
 	 * @param \Prado\Data\TDbConnection $connection database connection
 	 * @param mixed $parameter The object used to set the parameters in the SQL.
 	 * @param string $keyProperty The property of the result object to be used as the key.
-	 * @param null|string $valueProperty The property of the result object to be used as the value (or null).
+	 * @param ?string $valueProperty The property of the result object to be used as the value (or null).
 	 * @param int $skip The number of rows to skip over.
 	 * @param int $max The maximum number of rows to return.
 	 * @param null|callable $delegate row delegate handler
@@ -241,7 +241,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	}
 
 	/**
-	 * Executes the SQL and retuns all rows selected in a map that is keyed on
+	 * Executes the SQL and returns all rows selected in a map that is keyed on
 	 * the property named in the keyProperty parameter.  The value at each key
 	 * will be the value of the property specified in the valueProperty parameter.
 	 * If valueProperty is null, the entire result object will be entered.
@@ -253,8 +253,8 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * @param mixed $parameter The object used to set the parameters in the SQL.
 	 * @param mixed $command
 	 * @param string $keyProperty The property of the result object to be used as the key.
-	 * @param null|string $valueProperty The property of the result object to be used as the value (or null).
-	 * @param null|callable $delegate row delegate, a callback function
+	 * @param ?string $valueProperty The property of the result object to be used as the value (or null).
+	 * @param ?callable $delegate row delegate, a callback function
 	 * @return array An array of object containing the rows keyed by keyProperty.
 	 * @see executeQueryForMap()
 	 */
@@ -360,7 +360,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	}
 
 	/**
-	 * Execute an insert statement. Fill the parameter object with the ouput
+	 * Execute an insert statement. Fill the parameter object with the output
 	 * parameters if any, also could return the insert generated key.
 	 * @param \Prado\Data\TDbConnection $connection database connection
 	 * @param mixed $parameter The parameter object used to fill the statement.
@@ -386,7 +386,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * Gets the insert generated ID before executing an insert statement.
 	 * @param \Prado\Data\TDbConnection $connection database connection
 	 * @param mixed $parameter insert statement parameter.
-	 * @return null|string new insert ID if pre-select key statement was executed, null otherwise.
+	 * @return ?string new insert ID if pre-select key statement was executed, null otherwise.
 	 */
 	protected function getPreGeneratedSelectKey($connection, $parameter)
 	{
@@ -403,7 +403,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * Gets the inserted row ID after executing an insert statement.
 	 * @param \Prado\Data\TDbConnection $connection database connection
 	 * @param mixed $parameter insert statement parameter.
-	 * @return null|string last insert ID, null otherwise.
+	 * @return ?string last insert ID, null otherwise.
 	 */
 	protected function getPostGeneratedSelectKey($connection, $parameter)
 	{
@@ -483,7 +483,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 	/**
 	 * Raise the execute query event.
-	 * @param array $sql prepared SQL statement and subsititution parameters
+	 * @param array $sql prepared SQL statement and substitution parameters
 	 */
 	public function onExecuteQuery($sql)
 	{
@@ -669,10 +669,10 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	}
 
 	/**
-	 * Gets the result 'group by' groupping key for each row.
+	 * Gets the result 'group by' grouping key for each row.
 	 * @param TResultMap $resultMap result mapping details.
 	 * @param array $row a result set row retrieved from the database
-	 * @return string groupping key.
+	 * @return string grouping key.
 	 */
 	protected function getResultMapGroupKey($resultMap, $row)
 	{

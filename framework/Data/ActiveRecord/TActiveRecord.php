@@ -221,7 +221,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	protected $_relationsObjs = [];
 
 	/**
-	 * @var TDbConnection database connection object.
+	 * @var \Prado\Data\IDataConnection database connection object.
 	 */
 	protected $_connection; // use protected so that serialization is fine
 
@@ -257,7 +257,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * can be saved to the database specified by the $connection object.
 	 *
 	 * @param array $data optional name value pair record data.
-	 * @param null|TDbConnection $connection optional database connection this object record use.
+	 * @param null|\Prado\Data\IDataConnection $connection optional database connection this object record use.
 	 */
 	public function __construct($data = [], $connection = null)
 	{
@@ -357,7 +357,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	/*
 	 * Gets the database connection active for all ActiveRecord classes.
 	 * This static method returns the default connection from TActiveRecordManager.
-	 * @return \Prado\Data\TDbConnection current db connection.
+	 * @return \Prado\Data\IDataConnection current db connection.
 	 */
 	public static function getActiveDbConnection()
 	{
@@ -370,7 +370,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	/**
 	 * Gets the current Db connection, the connection object is obtained from
 	 * the TActiveRecordManager if connection is currently null.
-	 * @return \Prado\Data\TDbConnection current db connection for this object.
+	 * @return \Prado\Data\IDataConnection current db connection for this object.
 	 */
 	public function getDbConnection()
 	{
@@ -381,7 +381,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	}
 
 	/**
-	 * @param \Prado\Data\TDbConnection $connection db connection object for this record.
+	 * @param \Prado\Data\IDataConnection $connection db connection object for this record.
 	 */
 	public function setDbConnection($connection)
 	{

@@ -10,6 +10,8 @@
 
 namespace Prado\Data;
 
+use Prado\Data\Common\IDataMetaData;
+
 /**
  * IDataConnection interface
  *
@@ -122,4 +124,104 @@ interface IDataConnection
 	 * @return ?bool true if a transaction was rolled back, false if none was active.
 	 */
 	public function rollback(): ?bool;
+
+	/**
+	 * Returns the ID of the last inserted row or sequence value.
+	 *
+	 * For SQL/PDO drivers this wraps `PDO::lastInsertId()`.  Non-SQL drivers
+	 * should return the equivalent last-insert identifier for their store, or
+	 * an empty string if the concept does not apply.
+	 *
+	 * @param string $sequenceName name of the sequence object (required by some DBMS).
+	 * @return string the row ID of the last inserted row, or the last value retrieved
+	 *   from the sequence object.
+	 */
+	public function getLastInsertID($sequenceName = '');
+
+	/**
+	 * Returns the metadata helper for this connection.
+	 *
+	 * The metadata object provides schema introspection (table and column info)
+	 * and identifier quoting.  For SQL connections this returns the appropriate
+	 * {@see \Prado\Data\Common\TDbMetaData} subclass for the active driver.
+	 *
+	 * @return IDataMetaData the metadata helper for this connection.
+	 * @since 4.3.3
+	 */
+	public function getDbMetaData();
+
+	// -------------------------------------------------------------------------
+	// SQL/PDO-oriented methods.
+	// SQL drivers implement these fully.  Non-SQL drivers should provide no-op
+	// stubs (return null, empty string, or a sensible default) for any method
+	// that does not apply to their underlying store.
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Returns the connection string (DSN) used to open this connection.
+	 *
+	 * Non-SQL drivers that do not use a DSN may return an empty string or a
+	 * driver-defined connection descriptor.
+	 *
+	 * @return string the connection string / DSN.
+	 */
+	public function getConnectionString();
+
+	/**
+	 * Quotes a string for safe inclusion in a SQL query.
+	 *
+	 * Wraps the underlying driver's quoting function (e.g. PDO::quote for SQL
+	 * drivers).  The connection must be open before calling this method.
+	 * Non-SQL drivers should return the string unmodified.
+	 *
+	 * @param string $str the string to quote.
+	 * @return string the properly quoted string.
+	 */
+	public function quoteString($str);
+
+	/**
+	 * Returns the current column-name case mode for this connection.
+	 *
+	 * Wraps PDO::ATTR_CASE for SQL drivers.  Returns a
+	 * {@see \Prado\Data\TDbColumnCaseMode} value.  Non-SQL drivers may return
+	 * null or a driver-defined default.
+	 *
+	 * @return mixed the current column case mode (TDbColumnCaseMode enum value).
+	 */
+	public function getColumnCase();
+
+	/**
+	 * Sets the column-name case mode for this connection.
+	 *
+	 * Wraps PDO::ATTR_CASE for SQL drivers.  Accepts a
+	 * {@see \Prado\Data\TDbColumnCaseMode} value.  Non-SQL drivers may no-op
+	 * this method.
+	 *
+	 * @param mixed $value the column case mode (TDbColumnCaseMode enum value).
+	 */
+	public function setColumnCase($value);
+
+	/**
+	 * Returns the value of a driver connection attribute.
+	 *
+	 * For SQL drivers the attribute name is a PDO attribute constant
+	 * (e.g. PDO::ATTR_CASE).  Non-SQL drivers may return null for unknown
+	 * attribute names.
+	 *
+	 * @param int $name the attribute identifier.
+	 * @return mixed the attribute value, or null if not supported.
+	 */
+	public function getAttribute($name);
+
+	/**
+	 * Sets a driver connection attribute.
+	 *
+	 * For SQL drivers the attribute name is a PDO attribute constant
+	 * (e.g. PDO::ATTR_CASE).  Non-SQL drivers may no-op this method.
+	 *
+	 * @param int $name the attribute identifier.
+	 * @param mixed $value the attribute value to set.
+	 */
+	public function setAttribute($name, $value);
+
 }

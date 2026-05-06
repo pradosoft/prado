@@ -161,7 +161,7 @@ trait TDbPropertiesTrait
 	 * If no ConnectionID is available, this will try to start a sqlite database
 	 * if the subclass has a name via getSqliteDatabaseName().
 	 *
-	 * @param null|string $connectionID the module ID for TDataSourceConfig. If null, uses getConnectionID().
+	 * @param ?string $connectionID the module ID for TDataSourceConfig. If null, uses getConnectionID().
 	 * @throws TConfigurationException if module ID is invalid or empty without a Sqlite database.
 	 * @return TDbConnection the created DB connection
 	 */
@@ -225,7 +225,7 @@ trait TDbPropertiesTrait
 	 * When the class overrides this method, createDbConnection will try to
 	 * start a sqlite database in the PRADO Runtime Path.
 	 *
-	 * @return null|string if the using class wants a sqlite db then return the name, otherwise null
+	 * @return ?string if the using class wants a sqlite db then return the name, otherwise null
 	 */
 	protected function getSqliteDatabaseName(): ?string
 	{

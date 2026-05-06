@@ -94,7 +94,7 @@ class TOracleDbCommand extends TDbCommand
 	 * Both positional (`?`) and named (`:name`) placeholders are supported.
 	 * NULL values are rendered as the literal SQL NULL.
 	 *
-	 * @return null|string Substituted SQL ready for direct execution, or null
+	 * @return ?string Substituted SQL ready for direct execution, or null
 	 *                     if no parameters have been bound.
 	 */
 	private function buildOciSql(): ?string

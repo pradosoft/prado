@@ -50,7 +50,7 @@ use Traversable;
  * ```
  *
  * > **Note:** passing `null` sets the first SQL parameter to null, not an empty
- * > list; use `[]` or omit to pass no parameters.
+ * > list; use `[]` or omit parameters for no parameters.
  *
  * ## Condition shorthand
  *
@@ -107,7 +107,7 @@ class TSqlCriteria extends \Prado\TComponent
 	 *   `new TSqlCriteria('a = ? AND b = ?', 1, 2)` both work.
 	 *   This includes `null`, which will be bound as the first parameter.
 	 *
-	 * @param null|string $condition SQL fragment placed after WHERE; may
+	 * @param ?string $condition SQL fragment placed after WHERE; may
 	 *   embed ORDER BY, LIMIT, and OFFSET clauses which are parsed out
 	 *   automatically.
 	 * @param array|mixed $parameters bound parameters: omitted for none,

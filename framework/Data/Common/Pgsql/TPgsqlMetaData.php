@@ -257,7 +257,7 @@ class TPgsqlMetaData extends TDbMetaData
 	/**
 	 * @param TPgsqlTableInfo $tableInfo
 	 * @param mixed $src
-	 * @return null|string serial name if found, null otherwise.
+	 * @return ?string serial name if found, null otherwise.
 	 */
 	protected function getSequenceName($tableInfo, $src)
 	{

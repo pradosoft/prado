@@ -73,7 +73,7 @@ use PDO;
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
  */
-class TDbTableColumn extends \Prado\TComponent
+class TDbTableColumn extends \Prado\TComponent implements IDataColumn
 {
 	public const UNDEFINED_VALUE = INF; //use infinity for undefined value
 

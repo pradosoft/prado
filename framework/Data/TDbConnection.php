@@ -284,7 +284,7 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	 * via {@see TDbDriverCapabilities::unresolveCharset}.
 	 *
 	 * @param string $dsn the DSN string to inspect
-	 * @return null|string the charset value from the DSN, or null if not present
+	 * @return ?string the charset value from the DSN, or null if not present
 	 * @since 4.3.3
 	 */
 	protected function extractCharsetFromDsn(string $dsn): ?string
@@ -815,7 +815,7 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	}
 
 	/**
-	 * @return TDbMetaData
+	 * @return \Prado\Data\Common\TDbMetaData
 	 */
 	public function getDbMetaData()
 	{

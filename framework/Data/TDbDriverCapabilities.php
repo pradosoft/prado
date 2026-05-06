@@ -400,7 +400,7 @@ class TDbDriverCapabilities
 	 * statement parameters; use {@see getCharsetPragmaSql} for that case.
 	 *
 	 * @param string $driver PDO driver name
-	 * @return null|string SQL template with a `?` placeholder, or null
+	 * @return ?string SQL template with a `?` placeholder, or null
 	 */
 	public static function getCharsetSetSql(string $driver): ?string
 	{
@@ -423,7 +423,7 @@ class TDbDriverCapabilities
 	 * errors are silently ignored so it is safe to call on any SQLite connection.
 	 *
 	 * @param string $driver PDO driver name
-	 * @return null|string SQL template with a `%s` slot, or null
+	 * @return ?string SQL template with a `%s` slot, or null
 	 */
 	public static function getCharsetPragmaSql(string $driver): ?string
 	{
@@ -493,7 +493,7 @@ class TDbDriverCapabilities
 	 *   ibm    — IBM DB2 has no charset support via DSN.
 	 *
 	 * @param string $driver PDO driver name
-	 * @return null|string e.g. 'charset', 'CharacterSet', or null
+	 * @return ?string e.g. 'charset', 'CharacterSet', or null
 	 */
 	public static function getCharsetDsnParam(string $driver): ?string
 	{
@@ -518,7 +518,7 @@ class TDbDriverCapabilities
 	 * capture the value in the first capture group.
 	 *
 	 * @param string $driver PDO driver name
-	 * @return null|string case-insensitive regex, e.g. '/[;?]charset\s*=\s*([^;]+)/i', or null
+	 * @return ?string case-insensitive regex, e.g. '/[;?]charset\s*=\s*([^;]+)/i', or null
 	 */
 	public static function getCharsetDsnPattern(string $driver): ?string
 	{
@@ -550,7 +550,7 @@ class TDbDriverCapabilities
 	 * the resolved charset property when the privilege is absent.
 	 *
 	 * @param string $driver PDO driver name
-	 * @return null|string SQL query string, or null
+	 * @return ?string SQL query string, or null
 	 */
 	public static function getCharsetQuerySql(string $driver): ?string
 	{
@@ -622,7 +622,7 @@ class TDbDriverCapabilities
 	 * ({@see \Prado\Shell\Actions\TActiveRecordAction}).
 	 *
 	 * @param string $driver PDO driver name (lowercase)
-	 * @return null|string SQL query string, or null
+	 * @return ?string SQL query string, or null
 	 */
 	public static function getListTablesSql(string $driver): ?string
 	{
@@ -732,7 +732,7 @@ class TDbDriverCapabilities
 	 *   event fallback for unknown drivers.
 	 * @throws TDbException if the driver is unknown, a connection is provided,
 	 *   and no event handler supplies a class name.
-	 * @return null|string fully-qualified class name, or null when no connection
+	 * @return ?string fully-qualified class name, or null when no connection
 	 *   was given and the driver is unknown.
 	 */
 	public static function getMetaDataClass(string $driver, ?TDbConnection $connection = null): ?string
@@ -781,7 +781,7 @@ class TDbDriverCapabilities
 	 * class without going through the `fxActiveRecordScaffoldInputClass` event.
 	 *
 	 * @param string $driver PDO driver name (lowercase)
-	 * @return null|string e.g. '/TMysqlScaffoldInput.php', or null
+	 * @return ?string e.g. '/TMysqlScaffoldInput.php', or null
 	 */
 	public static function getScaffoldInputFile(string $driver): ?string
 	{
@@ -809,7 +809,7 @@ class TDbDriverCapabilities
 	 * unknown drivers.
 	 *
 	 * @param string $driver PDO driver name (lowercase)
-	 * @return null|string e.g. 'TMysqlScaffoldInput', or null
+	 * @return ?string e.g. 'TMysqlScaffoldInput', or null
 	 */
 	public static function getScaffoldInputClass(string $driver): ?string
 	{

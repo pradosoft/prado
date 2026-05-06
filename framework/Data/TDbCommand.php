@@ -201,6 +201,42 @@ class TDbCommand extends \Prado\TComponent implements IDataCommand
 	}
 
 	/**
+	 * Returns the driver-specific type token for a given PHP value, inferred from
+	 * the value's runtime type.
+	 *
+	 * For PDO-backed commands this maps PHP types to `PDO::PARAM_*` constants:
+	 *
+	 * | PHP type    | PDO constant      |
+	 * |-------------|-------------------|
+	 * | `boolean`   | `PDO::PARAM_BOOL` |
+	 * | `integer`   | `PDO::PARAM_INT`  |
+	 * | `string`    | `PDO::PARAM_STR`  |
+	 * | `NULL`      | `PDO::PARAM_NULL` |
+	 * | other       | `null`            |
+	 *
+	 * Non-SQL driver implementations may return a different type representation;
+	 * the return type on {@see IDataCommand} is therefore `mixed`.
+	 *
+	 * This method supersedes the deprecated static
+	 * {@see \Prado\Data\Common\TDbCommandBuilder::getPdoType()}.
+	 *
+	 * @param mixed $value the PHP value to inspect.
+	 * @return mixed the PDO::PARAM_* constant for this driver, or null when the
+	 *   PHP type has no direct mapping.
+	 * @since 4.3.3
+	 */
+	public function getColumnTypeFromValue($value)
+	{
+		switch (gettype($value)) {
+			case 'boolean': return PDO::PARAM_BOOL;
+			case 'integer': return PDO::PARAM_INT;
+			case 'string':  return PDO::PARAM_STR;
+			case 'NULL':    return PDO::PARAM_NULL;
+		}
+		return null;
+	}
+
+	/**
 	 * Executes the SQL statement.
 	 * This method is meant only for executing non-query SQL statement.
 	 * No result set will be returned.

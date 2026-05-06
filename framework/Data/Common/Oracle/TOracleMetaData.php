@@ -27,7 +27,7 @@ use Prado\Prado;
 class TOracleMetaData extends TDbMetaData
 {
 	/**
-	 * @var null|string Default schema (owner).  null = not yet resolved;
+	 * @var ?string Default schema (owner).  null = not yet resolved;
 	 *                  resolved lazily from {@see SELECT USER FROM DUAL} on
 	 *                  first use so that unquoted table names are found under
 	 *                  the connected user's schema rather than the hardcoded
@@ -256,7 +256,7 @@ class TOracleMetaData extends TDbMetaData
 	/**
 	 * @param mixed $tableInfo
 	 * @param mixed $src
-	 * @return null|string serial name if found, null otherwise.
+	 * @return ?string serial name if found, null otherwise.
 	 */
 	protected function getSequenceName($tableInfo, $src)
 	{

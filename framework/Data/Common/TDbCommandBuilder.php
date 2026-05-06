@@ -79,8 +79,8 @@ use Prado\Exceptions\TDbException;
  *   for `null` values on nullable columns.
  * - {@see bindArrayValues()} — binds a plain value array; if any key is an
  *   integer the array is treated as positional (`?` placeholders, 1-based),
- *   otherwise as named (`:name` placeholders).  The PDO type is inferred from
- *   the PHP value type via the static {@see getPdoType()}.
+ *   otherwise as named (`:name` placeholders).  The PHP value type is inferred
+ *   via {@see \Prado\Data\TDbCommand::getColumnTypeFromValue()}.
  *
  * ## SELECT field list
  *
@@ -725,19 +725,23 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDataCommandBuilder
 		if ($this->hasIntegerKey($values)) {
 			$values = array_values($values);
 			for ($i = 0, $max = count($values); $i < $max; $i++) {
-				$command->bindValue($i + 1, $values[$i], $this->getPdoType($values[$i]));
+				$command->bindValue($i + 1, $values[$i], $command->getColumnTypeFromValue($values[$i]));
 			}
 		} else {
 			foreach ($values as $name => $value) {
 				$prop = $name[0] === ':' ? $name : ':' . $name;
-				$command->bindValue($prop, $value, $this->getPdoType($value));
+				$command->bindValue($prop, $value, $command->getColumnTypeFromValue($value));
 			}
 		}
 	}
 
 	/**
+	 * Maps a PHP value's runtime type to the corresponding PDO parameter-type constant.
+	 *
 	 * @param mixed $value PHP value
-	 * @return null|int PDO parameter types.
+	 * @return null|int PDO::PARAM_* constant, or null for unconvertible types.
+	 * @deprecated since 4.3.3 — use {@see \Prado\Data\TDbCommand::getColumnTypeFromValue()} instead.
+	 * @todo 4.4 — remove this static method.
 	 */
 	public static function getPdoType($value)
 	{

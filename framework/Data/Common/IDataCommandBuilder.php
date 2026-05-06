@@ -213,7 +213,7 @@ interface IDataCommandBuilder
 	public function createCommand($sql);
 
 	/**
-	 * Binds column-name → value pairs to a command, using each column's PDO type.
+	 * Binds column-name → value pairs to a command, using each column's native type.
 	 *
 	 * @param IDataCommand $command the command to bind into.
 	 * @param array $values column-name → value pairs.
