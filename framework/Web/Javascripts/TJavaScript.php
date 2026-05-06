@@ -25,17 +25,53 @@ use Prado\Prado;
 class TJavaScript
 {
 	/**
-	 * Renders javascript header block
-	 * @return string rendering result
+	 * @var null|string Per-request CSP nonce to be injected into inline script tags.
+	 * Set by {@see THttpHeaderCSP::init()} when a CSP policy referencing a nonce is active.
+	 * Null means no CSP nonce is in use and no nonce attribute is emitted.
+	 * @since 4.3.3
 	 */
-	public static function renderScriptHeader()
+	private static $_scriptNonce;
+
+	/**
+	 * Returns the currently registered CSP nonce, or null if none is set.
+	 * @return null|string the nonce value
+	 * @since 4.3.3
+	 */
+	public static function getScriptNonce()
 	{
-		return "<script>\n/*<![CDATA[*/\n";
+		return self::$_scriptNonce;
+	}
+
+	/**
+	 * Sets the per-request CSP nonce included as `nonce` on every rendered script tag.
+	 * Called automatically by {@see \Prado\Web\THttpHeaderCSP::setNonce()}.
+	 * @param ?string $nonce raw nonce value (no `nonce-` prefix), or null to clear
+	 * @since 4.3.3
+	 */
+	public static function setScriptNonce($nonce)
+	{
+		self::$_scriptNonce = $nonce;
+	}
+
+	/**
+	 * Renders an opening `<script>` tag with a CDATA block header.
+	 * The current {@see getScriptNonce() nonce} is merged into `$attributes`
+	 * unless a `nonce` key is already present.
+	 * @param array $attributes additional HTML attributes for the tag
+	 * @return string the opening tag and CDATA preamble
+	 * @since 4.3.3
+	 */
+	public static function renderScriptHeader($attributes = [])
+	{
+		$attributes['nonce'] ??= self::$_scriptNonce;
+		$attrs = THttpUtility::buildHtmlAttributes($attributes);
+		return "<script{$attrs}>\n/*<![CDATA[*/\n";
 	}
 
 	/**
 	 * Renders javascript footer block
 	 * @return string rendering result
+	 * @since 4.3.3
 	 */
 	public static function renderScriptFooter()
 	{
@@ -57,16 +93,23 @@ class TJavaScript
 	}
 
 	/**
-	 * Renders a javascript file
-	 * @param \Prado\Web\Javascripts\TJavaScriptAsset|string $asset URL to the javascript file or TJavaScriptAsset
-	 * @return string rendering result
+	 * Renders a `<script src="…"></script>` tag for `$asset`.
+	 * {@see TJavaScriptAsset} objects are rendered via their own {@see TJavaScriptAsset::__toString()}.
+	 * Plain URLs are HTML-encoded (angle brackets and quotes only; `&` is preserved as-is so
+	 * query-string separators survive intact) and receive the current {@see getScriptNonce() nonce}.
+	 * @param string|TJavaScriptAsset $asset script URL or asset object
+	 * @return string the rendered tag with a trailing newline
 	 */
 	public static function renderScriptFile($asset)
 	{
 		if (is_object($asset) && ($asset instanceof TJavaScriptAsset)) {
 			return $asset->__toString() . "\n";
 		}
-		return '<script src="' . THttpUtility::htmlEncode($asset) . "\"></script>\n";
+		$attrs = THttpUtility::buildHtmlAttributes([
+			'!src' => THttpUtility::htmlEncode((string) $asset),
+			'nonce' => self::getScriptNonce(),
+		]);
+		return "<script{$attrs}></script>\n";
 	}
 
 	/**
