@@ -89,8 +89,9 @@ class TDbDriverCapabilities
 	 *
 	 * **sqlsrv limitation** — PDO_SQLSRV's `CharacterSet` DSN parameter only
 	 * accepts `'UTF-8'` or `'SQLSRV_ENC_CHAR'` (the system ANSI code page).
-	 * All non-UTF-8 charsets therefore resolve to `'SQLSRV_ENC_CHAR'`; the
-	 * actual code page in use depends on the operating system locale.
+	 * Non-UTF-8 charsets have no sqlsrv entry in the table and pass through
+	 * unchanged; {@see TDbConnection::applyCharsetToDsn} guards against injecting
+	 * an unacceptable value via {@see getDsnAcceptedCharsets}.
 	 *
 	 * **ibm** — IBM DB2 has no charset DSN parameter and is absent from all rows.
 	 *
@@ -119,8 +120,9 @@ class TDbDriverCapabilities
 			//   are valid; unsupported values are passed through and silently ignored).
 			// Drivers oci/dblib: DSN-parameter charset names.
 			// Driver sqlsrv: PDO_SQLSRV only accepts 'UTF-8' or 'SQLSRV_ENC_CHAR'
-			//   (system ANSI code page) as the CharacterSet DSN value; all non-UTF-8
-			//   charsets therefore resolve to 'SQLSRV_ENC_CHAR'.
+			//   (system ANSI code page) as the CharacterSet DSN value.  Non-UTF-8
+			//   charsets have no sqlsrv entry and pass through unchanged; DSN injection
+			//   is guarded by getDsnAcceptedCharsets() in TDbConnection::applyCharsetToDsn.
 			// Driver ibm: IBM DB2 has no charset DSN parameter; absent from all rows.
 			// Drivers pgsql/dblib/sqlsrv: absent from UTF-16 — PostgreSQL does not
 			//   support UTF-16 as a server encoding; FreeTDS and PDO_SQLSRV have no
@@ -154,7 +156,6 @@ class TDbDriverCapabilities
 				TDbDriver::DRIVER_OCI => 'WE8ISO8859P1',
 				TDbDriver::DRIVER_PGSQL => 'LATIN1',
 				TDbDriver::DRIVER_SQLITE => 'UTF-8',
-				TDbDriver::DRIVER_SQLSRV => 'SQLSRV_ENC_CHAR',
 				TDbDriver::DRIVER_DBLIB => 'ISO-8859-1',
 			],
 
@@ -166,7 +167,6 @@ class TDbDriverCapabilities
 				TDbDriver::DRIVER_OCI => 'EE8ISO8859P2',
 				TDbDriver::DRIVER_PGSQL => 'LATIN2',
 				TDbDriver::DRIVER_SQLITE => 'UTF-8',
-				TDbDriver::DRIVER_SQLSRV => 'SQLSRV_ENC_CHAR',
 				TDbDriver::DRIVER_DBLIB => 'ISO-8859-2',
 			],
 
@@ -177,7 +177,6 @@ class TDbDriverCapabilities
 				TDbDriver::DRIVER_OCI => 'US7ASCII',
 				TDbDriver::DRIVER_PGSQL => 'SQL_ASCII',
 				TDbDriver::DRIVER_SQLITE => 'UTF-8',
-				TDbDriver::DRIVER_SQLSRV => 'SQLSRV_ENC_CHAR',
 				TDbDriver::DRIVER_DBLIB => 'ASCII',
 			],
 
@@ -190,7 +189,6 @@ class TDbDriverCapabilities
 				TDbDriver::DRIVER_OCI => 'EE8MSWIN1250',
 				TDbDriver::DRIVER_PGSQL => 'WIN1250',
 				TDbDriver::DRIVER_SQLITE => 'UTF-8',
-				TDbDriver::DRIVER_SQLSRV => 'SQLSRV_ENC_CHAR',
 				TDbDriver::DRIVER_DBLIB => 'CP1250',
 			],
 
@@ -203,7 +201,6 @@ class TDbDriverCapabilities
 				TDbDriver::DRIVER_OCI => 'CL8MSWIN1251',
 				TDbDriver::DRIVER_PGSQL => 'WIN1251',
 				TDbDriver::DRIVER_SQLITE => 'UTF-8',
-				TDbDriver::DRIVER_SQLSRV => 'SQLSRV_ENC_CHAR',
 				TDbDriver::DRIVER_DBLIB => 'CP1251',
 			],
 
@@ -216,7 +213,6 @@ class TDbDriverCapabilities
 				TDbDriver::DRIVER_OCI => 'WE8MSWIN1252',
 				TDbDriver::DRIVER_PGSQL => 'WIN1252',
 				TDbDriver::DRIVER_SQLITE => 'UTF-8',
-				TDbDriver::DRIVER_SQLSRV => 'SQLSRV_ENC_CHAR',
 				TDbDriver::DRIVER_DBLIB => 'CP1252',
 			],
 
@@ -227,7 +223,6 @@ class TDbDriverCapabilities
 				TDbDriver::DRIVER_OCI => 'CL8KOI8R',
 				TDbDriver::DRIVER_PGSQL => 'KOI8R',
 				TDbDriver::DRIVER_SQLITE => 'UTF-8',
-				TDbDriver::DRIVER_SQLSRV => 'SQLSRV_ENC_CHAR',
 				TDbDriver::DRIVER_DBLIB => 'KOI8-R',
 			],
 
@@ -238,7 +233,6 @@ class TDbDriverCapabilities
 				TDbDriver::DRIVER_OCI => 'CL8KOI8U',
 				TDbDriver::DRIVER_PGSQL => 'KOI8U',
 				TDbDriver::DRIVER_SQLITE => 'UTF-8',
-				TDbDriver::DRIVER_SQLSRV => 'SQLSRV_ENC_CHAR',
 				TDbDriver::DRIVER_DBLIB => 'KOI8-U',
 			],
 		];
@@ -529,6 +523,32 @@ class TDbDriverCapabilities
 			TDbDriver::DRIVER_OCI,
 			TDbDriver::DRIVER_DBLIB => '/[;?]charset\s*=\s*([^;]+)/i',
 			TDbDriver::DRIVER_SQLSRV => '/[;?]CharacterSet\s*=\s*([^;]+)/i',
+			default => null,
+		};
+	}
+
+	/**
+	 * Returns the set of charset values that are valid in the DSN `CharacterSet=`
+	 * parameter for the given driver, or null when the driver accepts any resolved
+	 * charset value (i.e. no allowlist is needed).
+	 *
+	 * For pdo_sqlsrv the `CharacterSet` DSN parameter only accepts `'UTF-8'` or
+	 * `'SQLSRV_ENC_CHAR'` (the Windows system default encoding).  Any other value
+	 * will cause the connection to fail, so {@see TDbConnection::applyCharsetToDsn}
+	 * must skip injection when the resolved charset is not in this list.
+	 *
+	 * For all other drivers that accept a charset DSN parameter the driver maps
+	 * whatever charset name is returned by {@see resolveCharset}, so no allowlist
+	 * is required and null is returned.
+	 *
+	 * @param string $driver PDO driver name
+	 * @return ?array<string> allowlisted DSN charset values, or null if unrestricted
+	 * @since 4.3.3
+	 */
+	public static function getDsnAcceptedCharsets(string $driver): ?array
+	{
+		return match ($driver) {
+			TDbDriver::DRIVER_SQLSRV => ['UTF-8', 'SQLSRV_ENC_CHAR'],
 			default => null,
 		};
 	}

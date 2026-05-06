@@ -13,6 +13,7 @@ namespace Prado\Data;
 use PDO;
 use PDOException;
 use Prado\Data\Common\TDbMetaData;
+use Prado\Data\IDbConnection;
 use Prado\Exceptions\TDbException;
 use Prado\Prado;
 use Prado\TPropertyValue;
@@ -103,7 +104,7 @@ use Prado\TPropertyValue;
  * @author Brad Anderson <belisoful@icloud.com> Charset, TDbDriverCapabilities
  * @since 3.0
  */
-class TDbConnection extends \Prado\TComponent implements IDataConnection
+class TDbConnection extends \Prado\TComponent implements IDbConnection
 {
 	/**
 	 * @since 3.1.7
@@ -262,6 +263,15 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 					TDbDriverCapabilities::canonicalizeCharset($newPropCharset)) {
 					$this->_charset = $newPropCharset;
 				}
+			} elseif ($this->_charset !== '') {
+				//allow only certain charsets (ahem: sqlsrv)
+				$accepted = TDbDriverCapabilities::getDsnAcceptedCharsets($driver);
+				if ($accepted !== null) {
+					$resolved = TDbDriverCapabilities::resolveCharset($this->_charset, $driver);
+					if (!in_array($resolved, $accepted, true)) {
+						$this->_charset = '';
+					}
+				}
 			}
 
 			if (TDbDriverCapabilities::requiresPostConnectCharset($driver)) {
@@ -394,11 +404,16 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	 * (potentially modified) copy.  DSN charset takes priority: if the caller
 	 * already included a charset directive in the DSN it is left unchanged.
 	 *
-	 * Driver capabilities (parameter name, detection pattern) are provided by
-	 * {@see TDbDriverCapabilities::getCharsetDsnParam} and
-	 * {@see TDbDriverCapabilities::getCharsetDsnPattern}.
+	 * Driver capabilities (parameter name, detection pattern, and accepted values)
+	 * are provided by {@see TDbDriverCapabilities::getCharsetDsnParam},
+	 * {@see TDbDriverCapabilities::getCharsetDsnPattern}, and
+	 * {@see TDbDriverCapabilities::getDsnAcceptedCharsets}.
 	 * PostgreSQL, SQLite, and IBM DB2 have no DSN charset parameter and are
-	 * returned unchanged.
+	 * returned unchanged.  For drivers with a restricted allowlist (e.g. pdo_sqlsrv,
+	 * which only accepts 'UTF-8' or 'SQLSRV_ENC_CHAR'), the charset is silently
+	 * omitted from the DSN when the resolved value is not in the allowlist; {@see open}
+	 * then clears the Charset property so {@see getDatabaseCharset} reflects the
+	 * actual connection state rather than the unmet user intent.
 	 *
 	 * @param string $dsn the raw DSN string as set by the caller
 	 * @return string the DSN, with a charset parameter appended if required
@@ -426,6 +441,15 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 		}
 
 		$resolved = TDbDriverCapabilities::resolveCharset($charset, $driver);
+
+		// Some drivers only accept a restricted set of values in the DSN charset
+		// parameter (e.g. pdo_sqlsrv only accepts 'UTF-8' or 'SQLSRV_ENC_CHAR').
+		// If the resolved value is not in the allowlist, skip DSN injection to
+		// avoid a connection failure.
+		$accepted = TDbDriverCapabilities::getDsnAcceptedCharsets($driver);
+		if ($accepted !== null && !in_array($resolved, $accepted, true)) {
+			return $dsn;
+		}
 
 		return $dsn . ';' . $paramName . '=' . $resolved;
 	}

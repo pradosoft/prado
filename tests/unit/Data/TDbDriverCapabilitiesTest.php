@@ -139,7 +139,7 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 			'ISO-8859-1/firebird'  => ['ISO-8859-1', TDbDriver::DRIVER_FIREBIRD, 'ISO8859_1'],
 			'ISO-8859-1/interbase' => ['ISO-8859-1', TDbDriver::DRIVER_INTERBASE,'ISO8859_1'],
 			'ISO-8859-1/oci'       => ['ISO-8859-1', TDbDriver::DRIVER_OCI,      'WE8ISO8859P1'],
-			'ISO-8859-1/sqlsrv'    => ['ISO-8859-1', TDbDriver::DRIVER_SQLSRV,   'SQLSRV_ENC_CHAR'],  // ANSI charsets → system code page
+			'ISO-8859-1/sqlsrv'    => ['ISO-8859-1', TDbDriver::DRIVER_SQLSRV,   'ISO-8859-1'],  // no sqlsrv entry → pass-through
 			'ISO-8859-1/dblib'     => ['ISO-8859-1', TDbDriver::DRIVER_DBLIB,    'ISO-8859-1'],
 			'ISO-8859-1/ibm'       => ['ISO-8859-1', TDbDriver::DRIVER_IBM,      'ISO-8859-1'],  // no entry → pass-through
 
@@ -148,7 +148,7 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 			'ISO-8859-2/pgsql'    => ['ISO-8859-2', TDbDriver::DRIVER_PGSQL,    'LATIN2'],
 			'ISO-8859-2/sqlite'   => ['ISO-8859-2', TDbDriver::DRIVER_SQLITE,   'UTF-8'],
 			'ISO-8859-2/firebird' => ['ISO-8859-2', TDbDriver::DRIVER_FIREBIRD, 'ISO8859_2'],
-			'ISO-8859-2/sqlsrv'   => ['ISO-8859-2', TDbDriver::DRIVER_SQLSRV,   'SQLSRV_ENC_CHAR'],
+			'ISO-8859-2/sqlsrv'   => ['ISO-8859-2', TDbDriver::DRIVER_SQLSRV,   'ISO-8859-2'],  // no sqlsrv entry → pass-through
 			'ISO-8859-2/oci'      => ['ISO-8859-2', TDbDriver::DRIVER_OCI,      'EE8ISO8859P2'],
 			'ISO-8859-2/dblib'    => ['ISO-8859-2', TDbDriver::DRIVER_DBLIB,    'ISO-8859-2'],
 			'ISO-8859-2/ibm'      => ['ISO-8859-2', TDbDriver::DRIVER_IBM,      'ISO-8859-2'],
@@ -158,7 +158,7 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 			'ASCII/pgsql'    => ['ASCII', TDbDriver::DRIVER_PGSQL,    'SQL_ASCII'],
 			'ASCII/sqlite'   => ['ASCII', TDbDriver::DRIVER_SQLITE,   'UTF-8'],
 			'ASCII/firebird' => ['ASCII', TDbDriver::DRIVER_FIREBIRD, 'ASCII'],
-			'ASCII/sqlsrv'   => ['ASCII', TDbDriver::DRIVER_SQLSRV,   'SQLSRV_ENC_CHAR'],
+			'ASCII/sqlsrv'   => ['ASCII', TDbDriver::DRIVER_SQLSRV,   'ASCII'],  // no sqlsrv entry → pass-through
 			'ASCII/oci'      => ['ASCII', TDbDriver::DRIVER_OCI,      'US7ASCII'],
 			'ASCII/dblib'    => ['ASCII', TDbDriver::DRIVER_DBLIB,    'ASCII'],
 			'ASCII/ibm'      => ['ASCII', TDbDriver::DRIVER_IBM,      'ASCII'],
@@ -168,7 +168,7 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 			'Windows-1250/pgsql'    => ['Windows-1250', TDbDriver::DRIVER_PGSQL,    'WIN1250'],
 			'Windows-1250/sqlite'   => ['Windows-1250', TDbDriver::DRIVER_SQLITE,   'UTF-8'],
 			'Windows-1250/firebird' => ['Windows-1250', TDbDriver::DRIVER_FIREBIRD, 'WIN1250'],
-			'Windows-1250/sqlsrv'   => ['Windows-1250', TDbDriver::DRIVER_SQLSRV,   'SQLSRV_ENC_CHAR'],
+			'Windows-1250/sqlsrv'   => ['Windows-1250', TDbDriver::DRIVER_SQLSRV,   'Windows-1250'],  // no sqlsrv entry → pass-through
 			'Windows-1250/oci'      => ['Windows-1250', TDbDriver::DRIVER_OCI,      'EE8MSWIN1250'],
 			'Windows-1250/dblib'    => ['Windows-1250', TDbDriver::DRIVER_DBLIB,    'CP1250'],
 
@@ -177,7 +177,7 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 			'Windows-1251/pgsql'    => ['Windows-1251', TDbDriver::DRIVER_PGSQL,    'WIN1251'],
 			'Windows-1251/sqlite'   => ['Windows-1251', TDbDriver::DRIVER_SQLITE,   'UTF-8'],
 			'Windows-1251/firebird' => ['Windows-1251', TDbDriver::DRIVER_FIREBIRD, 'WIN1251'],
-			'Windows-1251/sqlsrv'   => ['Windows-1251', TDbDriver::DRIVER_SQLSRV,   'SQLSRV_ENC_CHAR'],
+			'Windows-1251/sqlsrv'   => ['Windows-1251', TDbDriver::DRIVER_SQLSRV,   'Windows-1251'],  // no sqlsrv entry → pass-through
 			'Windows-1251/oci'      => ['Windows-1251', TDbDriver::DRIVER_OCI,      'CL8MSWIN1251'],
 			'Windows-1251/dblib'    => ['Windows-1251', TDbDriver::DRIVER_DBLIB,    'CP1251'],
 
@@ -186,7 +186,7 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 			'Windows-1252/pgsql'    => ['Windows-1252', TDbDriver::DRIVER_PGSQL,    'WIN1252'],
 			'Windows-1252/sqlite'   => ['Windows-1252', TDbDriver::DRIVER_SQLITE,   'UTF-8'],
 			'Windows-1252/firebird' => ['Windows-1252', TDbDriver::DRIVER_FIREBIRD, 'WIN1252'],
-			'Windows-1252/sqlsrv'   => ['Windows-1252', TDbDriver::DRIVER_SQLSRV,   'SQLSRV_ENC_CHAR'],
+			'Windows-1252/sqlsrv'   => ['Windows-1252', TDbDriver::DRIVER_SQLSRV,   'Windows-1252'],  // no sqlsrv entry → pass-through
 			'Windows-1252/oci'      => ['Windows-1252', TDbDriver::DRIVER_OCI,      'WE8MSWIN1252'],
 			'Windows-1252/dblib'    => ['Windows-1252', TDbDriver::DRIVER_DBLIB,    'CP1252'],
 
@@ -195,7 +195,7 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 			'KOI8-R/pgsql'    => ['KOI8-R', TDbDriver::DRIVER_PGSQL,    'KOI8R'],
 			'KOI8-R/sqlite'   => ['KOI8-R', TDbDriver::DRIVER_SQLITE,   'UTF-8'],
 			'KOI8-R/firebird' => ['KOI8-R', TDbDriver::DRIVER_FIREBIRD, 'KOI8R'],
-			'KOI8-R/sqlsrv'   => ['KOI8-R', TDbDriver::DRIVER_SQLSRV,   'SQLSRV_ENC_CHAR'],
+			'KOI8-R/sqlsrv'   => ['KOI8-R', TDbDriver::DRIVER_SQLSRV,   'KOI8-R'],  // no sqlsrv entry → pass-through
 			'KOI8-R/oci'      => ['KOI8-R', TDbDriver::DRIVER_OCI,      'CL8KOI8R'],
 			'KOI8-R/dblib'    => ['KOI8-R', TDbDriver::DRIVER_DBLIB,    'KOI8-R'],
 
@@ -204,7 +204,7 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 			'KOI8-U/pgsql'    => ['KOI8-U', TDbDriver::DRIVER_PGSQL,    'KOI8U'],
 			'KOI8-U/sqlite'   => ['KOI8-U', TDbDriver::DRIVER_SQLITE,   'UTF-8'],
 			'KOI8-U/firebird' => ['KOI8-U', TDbDriver::DRIVER_FIREBIRD, 'KOI8U'],
-			'KOI8-U/sqlsrv'   => ['KOI8-U', TDbDriver::DRIVER_SQLSRV,   'SQLSRV_ENC_CHAR'],
+			'KOI8-U/sqlsrv'   => ['KOI8-U', TDbDriver::DRIVER_SQLSRV,   'KOI8-U'],  // no sqlsrv entry → pass-through
 			'KOI8-U/oci'      => ['KOI8-U', TDbDriver::DRIVER_OCI,      'CL8KOI8U'],
 			'KOI8-U/dblib'    => ['KOI8-U', TDbDriver::DRIVER_DBLIB,    'KOI8-U'],
 
@@ -395,9 +395,9 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 			TDbDriver::DRIVER_FIREBIRD,
 			TDbDriver::DRIVER_OCI,
 			TDbDriver::DRIVER_DBLIB,
-			// sqlsrv handled separately — ANSI charsets resolve to 'SQLSRV_ENC_CHAR' which
-			// cannot be unresolved back to the original charset (lossy); only UTF-8 and
-			// UTF-16 round-trip losslessly.
+			// sqlsrv handled separately — non-UTF-8 charsets pass through unchanged (no
+			// sqlsrv entry in the resolve table) and cannot be unresolved; only UTF-8
+			// round-trips losslessly for sqlsrv.
 		];
 		// SQLite only has UTF-8 and UTF-16 in its unresolve table;
 		// other charsets resolve to 'UTF-8' but unresolve('UTF-8', sqlite) = 'UTF-8' ≠ original.
@@ -683,6 +683,51 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 			preg_match($pattern, 'mysql:host=localhost;charset=utf8mb4;other=val', $m)
 		);
 		$this->assertSame('utf8mb4', trim($m[1]));
+	}
+
+	// =========================================================================
+	//  getDsnAcceptedCharsets
+	// =========================================================================
+
+	/** @dataProvider provideGetDsnAcceptedCharsets */
+	public function testGetDsnAcceptedCharsets(string $driver, ?array $expected): void
+	{
+		$this->assertSame($expected, TDbDriverCapabilities::getDsnAcceptedCharsets($driver));
+	}
+
+	public static function provideGetDsnAcceptedCharsets(): array
+	{
+		return [
+			'sqlsrv returns utf8 and enc_char' => [TDbDriver::DRIVER_SQLSRV, ['UTF-8', 'SQLSRV_ENC_CHAR']],
+			'mysql returns null (unrestricted)' => [TDbDriver::DRIVER_MYSQL,  null],
+			'pgsql returns null'                => [TDbDriver::DRIVER_PGSQL,  null],
+			'sqlite returns null'               => [TDbDriver::DRIVER_SQLITE, null],
+			'firebird returns null'             => [TDbDriver::DRIVER_FIREBIRD, null],
+			'oci returns null'                  => [TDbDriver::DRIVER_OCI,    null],
+			'dblib returns null'                => [TDbDriver::DRIVER_DBLIB,  null],
+			'ibm returns null'                  => [TDbDriver::DRIVER_IBM,    null],
+			'unknown returns null'              => ['unknown_driver',          null],
+		];
+	}
+
+	public function testSqlsrvUtf8IsInDsnAcceptedCharsets(): void
+	{
+		$accepted = TDbDriverCapabilities::getDsnAcceptedCharsets(TDbDriver::DRIVER_SQLSRV);
+		$this->assertContains('UTF-8', $accepted);
+	}
+
+	public function testSqlsrvEncCharIsInDsnAcceptedCharsets(): void
+	{
+		$accepted = TDbDriverCapabilities::getDsnAcceptedCharsets(TDbDriver::DRIVER_SQLSRV);
+		$this->assertContains('SQLSRV_ENC_CHAR', $accepted);
+	}
+
+	public function testSqlsrvIso88591IsNotInDsnAcceptedCharsets(): void
+	{
+		// ISO-8859-1 must NOT be injected into the sqlsrv DSN; it is not a valid
+		// CharacterSet value and would cause a connection failure.
+		$accepted = TDbDriverCapabilities::getDsnAcceptedCharsets(TDbDriver::DRIVER_SQLSRV);
+		$this->assertNotContains('ISO-8859-1', $accepted);
 	}
 
 	// =========================================================================

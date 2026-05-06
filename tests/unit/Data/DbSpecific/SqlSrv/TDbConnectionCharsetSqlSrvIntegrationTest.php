@@ -137,11 +137,15 @@ class TDbConnectionCharsetSqlSrvIntegrationTest extends PHPUnit\Framework\TestCa
 		$conn->Active = false;
 	}
 
-	public function testSqlSrvGetDatabaseCharsetReturnsResolvedIso88591(): void
+	public function testSqlSrvUnsupportedCharsetClearedAfterConnect(): void
 	{
-		// 'ISO-8859-1' → resolves to 'ISO-8859-1' for sqlsrv (mssql/dblib charset name).
+		// pdo_sqlsrv only accepts 'UTF-8' or 'SQLSRV_ENC_CHAR' in CharacterSet=.
+		// 'ISO-8859-1' is not in the allowlist, so applyCharsetToDsn() skips injection
+		// and open() clears the Charset property to '' so getDatabaseCharset() reports
+		// the true connection state (system default, not the unmet user intent).
 		$conn = $this->openSqlSrv('ISO-8859-1');
-		$this->assertSame('ISO-8859-1', $conn->DatabaseCharset);
+		$this->assertSame('', $conn->Charset, 'Charset property must be cleared when the requested charset cannot be applied.');
+		$this->assertSame('', $conn->DatabaseCharset, 'DatabaseCharset must reflect the actual connection state, not unmet intent.');
 		$conn->Active = false;
 	}
 

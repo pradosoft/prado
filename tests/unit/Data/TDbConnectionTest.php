@@ -632,6 +632,28 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 		$this->assertSame($dsn, $result);
 	}
 
+	public function testApplyCharsetToDsnSkipsSqlsrvIso88591(): void
+	{
+		// pdo_sqlsrv only accepts 'UTF-8' or 'SQLSRV_ENC_CHAR' in CharacterSet=.
+		// ISO-8859-1 resolves to itself (pass-through) and is NOT in the allowlist,
+		// so applyCharsetToDsn() must return the DSN unchanged rather than injecting
+		// an invalid CharacterSet=ISO-8859-1 that would cause a connection failure.
+		$dsn = 'sqlsrv:Server=localhost;Database=test';
+		$conn = $this->makeConnWithCharset($dsn, 'ISO-8859-1');
+		$result = $this->callApplyCharsetToDsn($conn, $dsn);
+		$this->assertSame($dsn, $result);
+		$this->assertStringNotContainsString('CharacterSet', $result);
+	}
+
+	public function testApplyCharsetToDsnSkipsSqlsrvAscii(): void
+	{
+		// ASCII also resolves to itself for sqlsrv and is not in the DSN allowlist.
+		$dsn = 'sqlsrv:Server=localhost;Database=test';
+		$conn = $this->makeConnWithCharset($dsn, 'ASCII');
+		$result = $this->callApplyCharsetToDsn($conn, $dsn);
+		$this->assertSame($dsn, $result);
+	}
+
 	/** @dataProvider provideApplyCharsetToDsnNoOp */
 	public function testApplyCharsetToDsnSkipsForDriver(string $dsn, string $charset): void
 	{
