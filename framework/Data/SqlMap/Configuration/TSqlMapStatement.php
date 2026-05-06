@@ -301,10 +301,11 @@ class TSqlMapStatement extends \Prado\TComponent
 		}
 	}
 
-	public function __sleep()
+	protected function _getZappableSleepProps(&$exprops)
 	{
+		parent::_getZappableSleepProps($exprops);
 		$cn = __CLASS__;
-		$exprops = ["\0$cn\0_resultMap"];
+		$exprops[] = "\0$cn\0_resultMap";
 		if (!$this->_parameterMapName) {
 			$exprops[] = "\0$cn\0_parameterMapName";
 		}
@@ -316,9 +317,6 @@ class TSqlMapStatement extends \Prado\TComponent
 		}
 		if (!$this->_resultMapName) {
 			$exprops[] = "\0$cn\0_resultMapName";
-		}
-		if (!$this->_resultMap) {
-			$exprops[] = "\0$cn\0_resultMap";
 		}
 		if (!$this->_resultClassName) {
 			$exprops[] = "\0$cn\0_resultClassName";
@@ -341,7 +339,5 @@ class TSqlMapStatement extends \Prado\TComponent
 		if (!$this->_cache) {
 			$exprops[] = "\0$cn\0_cache";
 		}
-
-		return array_diff(parent::__sleep(), $exprops);
 	}
 }

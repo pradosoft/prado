@@ -1,0 +1,98 @@
+<?php
+
+require_once(__DIR__ . '/../../PradoUnit.php');
+
+use Prado\Data\ActiveRecord\TActiveRecord;
+use Prado\Data\TDbConnection;
+
+/**
+ * Concrete subclass of TActiveRecord for sleep/wakeup testing.
+ * No real database table is needed for serialization unit tests.
+ */
+class SleepTestRecord extends TActiveRecord
+{
+	public const TABLE_NAME = 'sleep_test';
+
+	public $id;
+	public $name;
+}
+
+/**
+ * Sleep / wakeup tests for TActiveRecord._getZappableSleepProps.
+ *
+ * TActiveRecord excludes the protected $_connection property from serialization
+ * because live PDO connections cannot be serialized.  After unserialization the
+ * record must be reconnectable by setting a new connection.
+ */
+class TActiveRecordSleepTest extends PHPUnit\Framework\TestCase
+{
+	// -----------------------------------------------------------------------
+	//  _connection is always excluded
+	// -----------------------------------------------------------------------
+
+	public function testConnectionExcludedFromSleep(): void
+	{
+		$record = new SleepTestRecord();
+		$props = $record->__sleep();
+		// Protected property mangled name for _connection
+		$this->assertNotContains("\0*\0_connection", $props);
+	}
+
+	public function testConnectionExcludedEvenWhenSet(): void
+	{
+		$record = new SleepTestRecord();
+		// Set a connection on the record (inactive — no live DB needed)
+		$conn = new TDbConnection('sqlite::memory:');
+		$ref = new \ReflectionProperty(TActiveRecord::class, '_connection');
+		$ref->setAccessible(true);
+		$ref->setValue($record, $conn);
+
+		$props = $record->__sleep();
+		$this->assertNotContains("\0*\0_connection", $props);
+	}
+
+	// -----------------------------------------------------------------------
+	//  Public fields and non-excluded props survive the round trip
+	// -----------------------------------------------------------------------
+
+	public function testPublicFieldsPreservedAfterRoundTrip(): void
+	{
+		$record = new SleepTestRecord();
+		$record->id   = 7;
+		$record->name = 'Alice';
+
+		$restored = unserialize(serialize($record));
+
+		$this->assertSame(7,       $restored->id);
+		$this->assertSame('Alice', $restored->name);
+	}
+
+	public function testConnectionNullAfterRoundTrip(): void
+	{
+		$record = new SleepTestRecord();
+		// Set a live-ish connection; it must be gone after unserialize
+		$conn = new TDbConnection('sqlite::memory:');
+		$ref = new \ReflectionProperty(TActiveRecord::class, '_connection');
+		$ref->setAccessible(true);
+		$ref->setValue($record, $conn);
+
+		$restored = unserialize(serialize($record));
+
+		$resRef = new \ReflectionProperty(TActiveRecord::class, '_connection');
+		$resRef->setAccessible(true);
+		$this->assertNull($resRef->getValue($restored));
+	}
+
+	// -----------------------------------------------------------------------
+	//  __wakeup restores column mapping and relations
+	// -----------------------------------------------------------------------
+
+	public function testWakeupDoesNotThrow(): void
+	{
+		$record = new SleepTestRecord();
+		$record->id = 1;
+		// __wakeup calls setupColumnMapping() and setupRelations() — must not throw
+		$restored = unserialize(serialize($record));
+		$this->assertInstanceOf(SleepTestRecord::class, $restored);
+	}
+}

@@ -884,9 +884,9 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		parent::__wakeup();
 	}
 
-	public function __sleep()
+	protected function _getZappableSleepProps(&$exprops)
 	{
-		$exprops = [];
+		parent::_getZappableSleepProps($exprops);
 		$cn = __CLASS__;
 		if (!count($this->_selectQueue)) {
 			$exprops[] = "\0$cn\0_selectQueue";
@@ -897,6 +897,5 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		if (!$this->_IsRowDataFound) {
 			$exprops[] = "\0$cn\0_IsRowDataFound";
 		}
-		return array_diff(parent::__sleep(), $exprops);
 	}
 }

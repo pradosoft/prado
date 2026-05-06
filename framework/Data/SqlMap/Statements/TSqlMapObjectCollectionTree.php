@@ -195,9 +195,9 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 		return $this->_list;
 	}
 
-	public function __sleep()
+	protected function _getZappableSleepProps(&$exprops)
 	{
-		$exprops = [];
+		parent::_getZappableSleepProps($exprops);
 		$cn = __CLASS__;
 		if (!count($this->_tree)) {
 			$exprops[] = "\0$cn\0_tree";
@@ -208,6 +208,5 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 		if (!count($this->_list)) {
 			$exprops[] = "\0$cn\0_list";
 		}
-		return array_diff(parent::__sleep(), $exprops);
 	}
 }

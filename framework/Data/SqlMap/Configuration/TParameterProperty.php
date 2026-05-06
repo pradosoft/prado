@@ -133,10 +133,10 @@ class TParameterProperty extends \Prado\TComponent
 		$this->_nullValue = $value;
 	}
 
-	public function __sleep()
+	protected function _getZappableSleepProps(&$exprops)
 	{
-		$exprops = [];
-		$cn = 'TParameterProperty';
+		parent::_getZappableSleepProps($exprops);
+		$cn = __CLASS__;
 		if ($this->_typeHandler === null) {
 			$exprops[] = "\0$cn\0_typeHandler";
 		}
@@ -155,6 +155,5 @@ class TParameterProperty extends \Prado\TComponent
 		if ($this->_nullValue === null) {
 			$exprops[] = "\0$cn\0_nullValue";
 		}
-		return array_diff(parent::__sleep(), $exprops);
 	}
 }

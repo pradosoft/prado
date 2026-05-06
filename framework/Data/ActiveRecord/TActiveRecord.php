@@ -234,12 +234,10 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 */
 	protected $_invalidFinderResult; // use protected so that serialization is fine
 
-	/**
-	 * Prevent __call() method creating __sleep() when serializing.
-	 */
-	public function __sleep()
+	protected function _getZappableSleepProps(&$exprops)
 	{
-		return array_diff(parent::__sleep(), ["\0*\0_connection"]);
+		parent::_getZappableSleepProps($exprops);
+		$exprops[] = "\0*\0_connection";
 	}
 
 	/**

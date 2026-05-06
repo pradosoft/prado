@@ -60,9 +60,9 @@ class TPreparedStatement extends \Prado\TComponent
 		$this->_parameterValues = $value;
 	}
 
-	public function __sleep()
+	protected function _getZappableSleepProps(&$exprops)
 	{
-		$exprops = [];
+		parent::_getZappableSleepProps($exprops);
 		$cn = __CLASS__;
 		if (!$this->_parameterNames || !$this->_parameterNames->getCount()) {
 			$exprops[] = "\0$cn\0_parameterNames";
@@ -70,6 +70,5 @@ class TPreparedStatement extends \Prado\TComponent
 		if (!$this->_parameterValues || !$this->_parameterValues->getCount()) {
 			$exprops[] = "\0$cn\0_parameterValues";
 		}
-		return array_diff(parent::__sleep(), $exprops);
 	}
 }
