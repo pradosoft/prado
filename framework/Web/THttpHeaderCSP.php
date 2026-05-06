@@ -11,6 +11,7 @@
 namespace Prado\Web;
 
 use Prado\Prado;
+use Prado\Web\Javascripts\TJavaScript;
 
 /**
  * THttpHeaderCSP class.
@@ -26,8 +27,8 @@ use Prado\Prado;
  *   <header Name="X-Content-Type-Options" Value="nosniff" />
  *   <header Name="X-Frame-Options" Value="DENY" />
  *   <header class="THttpHeaderCSP">
- *     <policy Name="default-src">'self' 'unsafe-inline' www.gstatic.com NONCE</policy>
- *     <policy Name="frame-src">'self' www.google.com</policy>
+ *      <policy Name="default-src">'self' www.gstatic.com NONCE</policy>
+ *      <policy Name="frame-src">'self' www.google.com</policy>
  *   </header>
  * </module>
  * <module id="response" class="THttpResponse" HeadersManager="headers" />
@@ -37,7 +38,9 @@ use Prado\Prado;
  * automatically replaced with a valid Content-security-policy nonce.
  *
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
- * @since 4.3.2
+ * @since 4.3.3
+ * @see HTTP CSP Guide: https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP
+ * @see CSP Browser policies: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy
  */
 class THttpHeaderCSP extends \Prado\Web\THttpHeader
 {
@@ -46,16 +49,32 @@ class THttpHeaderCSP extends \Prado\Web\THttpHeader
 	 */
 	protected $_policies = [];
 
+	/**
+	 * @var ?string The resolved per-request nonce, or null when no policy
+	 * uses the {@see NONCE} placeholder.
+	 */
+	private $_nonce;
+
 	public const NONCE = 'NONCE';
 
 	/**
-	 * Initializes the CSP header.
-	 * @param \Prado\Xml\TXmlElement $config configuration for this module.
+	 * Loads policies and, if any reference {@see NONCE}, fetches a nonce from
+	 * `TSecurityManager` and registers it via {@see setNonce()}.
+	 * setNonce calls {@see TJavaScript::setScriptNonce()} for all scripts to
+	 * render the nonce.
+	 * @param array|\Prado\Xml\TXmlElement $config configuration for this module.
 	 */
 	public function init($config)
 	{
 		parent::init($config);
 		$this->loadPolicies($config);
+
+		foreach ($this->_policies as $value) {
+			if (str_contains($value, self::NONCE)) {
+				$this->setNonce(Prado::getApplication()->getSecurityManager()->getCSPNonce());
+				break;
+			}
+		}
 	}
 
 	/**
@@ -81,6 +100,27 @@ class THttpHeaderCSP extends \Prado\Web\THttpHeader
 	}
 
 	/**
+	 * Returns the per-request CSP nonce, or `null` if no policy uses {@see NONCE}.
+	 * @return ?string the nonce, or null
+	 */
+	public function getNonce()
+	{
+		return $this->_nonce;
+	}
+
+	/**
+	 * Sets the CSP nonce and forwards it to {@see TJavaScript::setScriptNonce()}
+	 * so all rendered script tags carry the matching `nonce` attribute.
+	 * Pass `null` to clear.
+	 * @param ?string $nonce the nonce value, or null to clear
+	 */
+	protected function setNonce($nonce)
+	{
+		$this->_nonce = $nonce;
+		TJavaScript::setScriptNonce($nonce);
+	}
+
+	/**
 	 * @return string the textual name of the header.
 	 */
 	public function getName()
@@ -93,10 +133,14 @@ class THttpHeaderCSP extends \Prado\Web\THttpHeader
 	 */
 	public function getValue()
 	{
-		$nonce = '\'nonce-' . Prado::getApplication()->getSecurityManager()->getCSPNonce() . '\'';
+		$nonce = $this->getNonce();
+		$nonceDirective = $nonce !== null ? '\'nonce-' . $nonce . '\'' : null;
 		$ret = '';
 		foreach ($this->_policies as $name => $value) {
-			$ret .= $name . ' ' . str_replace(self::NONCE, $nonce, $value) . '; ';
+			if ($nonceDirective !== null) {
+				$value = str_replace(self::NONCE, $nonceDirective, $value);
+			}
+			$ret .= $name . ' ' . $value . '; ';
 		}
 		return $ret;
 	}
