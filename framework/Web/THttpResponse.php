@@ -73,6 +73,15 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	public const DEFAULT_CHARSET = 'UTF-8';
 
 	/**
+	 * Sentinel value for {@see setHeadersManager() HeadersManager} that instructs
+	 * {@see getHeadersManagerModule()} to discover the headers manager automatically
+	 * by searching for any loaded {@see THttpHeadersManager} module, rather than
+	 * looking one up by a specific module ID.
+	 * @since 4.3.3
+	 */
+	public const HEADERS_MANAGER_AUTO = 'Auto';
+
+	/**
 	 * @var array<int, string> The status codes defined in RFC 2616
 	 * @see http://www.faqs.org/rfcs/rfc2616
 	 */
@@ -125,13 +134,13 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	private $_contentTypeHeaderSent;
 	/**
-	 * @var THttpHeadersManager the headers manager module
+	 * @var ?THttpHeadersManager the headers manager module
 	 */
 	private $_headersManager;
 	/**
-	 * @var string the ID of the headers manager module
+	 * @var string the ID of the headers manager module, or {@see HEADERS_MANAGER_AUTO}
 	 */
-	private $_headersManagerID = '';
+	private $_headersManagerID = self::HEADERS_MANAGER_AUTO;
 
 	/**
 	 * Destructor.
@@ -733,7 +742,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function setHtmlWriterType($value)
 	{
-		$this->_htmlWriterType = $value;
+		$this->_htmlWriterType = TPropertyValue::ensureString($value);
 	}
 
 	/**
@@ -805,8 +814,15 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 		return session_cache_limiter($value);
 	}
 
+	//	----- HeadersManager methods
+
 	/**
-	 * @return string the ID of the URL manager module
+	 * Returns the configured headers-manager ID.
+	 *
+	 * The value is either a specific module ID, an empty string (disabled), or the
+	 * sentinel {@see HEADERS_MANAGER_AUTO} (the default).
+	 * @return string module ID, empty string, or {@see HEADERS_MANAGER_AUTO}
+	 * @since 4.3.3
 	 */
 	public function getHeadersManager()
 	{
@@ -814,35 +830,79 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * Sets the headers manager module.
-	 * By default no header manager module is used
-	 * You may specify a different module for headers managing tasks
-	 * by loading it as an application module and setting this property
-	 * with the module ID.
-	 * @param string $value the ID of the URL manager module
+	 * Sets the headers-manager module by ID.
+	 *
+	 * Three meaningful values are accepted:
+	 * - A module ID string — {@see getHeadersManagerModule()} will resolve and
+	 *   validate that specific {@see THttpHeadersManager} module.
+	 * - {@see HEADERS_MANAGER_AUTO} (the default, matched case-insensitively) —
+	 *   {@see getHeadersManagerModule()} discovers the first registered
+	 *   {@see THttpHeadersManager} module automatically.
+	 * - An empty string — header management is disabled; {@see getHeadersManagerModule()}
+	 *   returns `null`.
+	 *
+	 * The resolved-module cache is cleared only when the value actually changes.
+	 * @param string $value module ID, {@see HEADERS_MANAGER_AUTO}, or empty string
+	 * @since 4.3.3
 	 */
 	public function setHeadersManager($value)
 	{
+		$value = TPropertyValue::ensureString($value);
+
+		if ($value === $this->getHeadersManager()) {
+			return;
+		}
+
 		$this->_headersManagerID = $value;
+		$this->_headersManager = null;
 	}
 
 	/**
-	 * @return null|THttpHeadersManager the URL manager module
+	 * Returns the active {@see THttpHeadersManager} module, resolving and caching it
+	 * on first call.
+	 *
+	 * Resolution depends on the value of {@see getHeadersManager() HeadersManager}:
+	 * - **`''` (empty string)** — returns `null`; header management is disabled.
+	 * - **{@see HEADERS_MANAGER_AUTO}** (case-insensitive, the default) — searches the
+	 *   application's module list for the first registered {@see THttpHeadersManager}
+	 *   instance and returns it, or `null` if none is found.
+	 * - **Any other string** — looks up that module ID. Throws
+	 *   {@see TConfigurationException} if the module does not exist or is not a
+	 *   {@see THttpHeadersManager}.
+	 *
+	 * @throws TConfigurationException if a named module ID is invalid or of the wrong type
+	 * @return ?THttpHeadersManager the resolved module, or `null` if none is active
+	 * @since 4.3.3
 	 */
 	public function getHeadersManagerModule()
 	{
-		if (empty($this->_headersManagerID)) {
+		if ($this->_headersManager !== null) {
+			return $this->_headersManager;
+		}
+
+		$headersManagerId = $this->getHeadersManager();
+
+		if ($headersManagerId === '') {
 			return null;
 		}
 
-		$this->_headersManager = $this->getApplication()->getModule($this->_headersManagerID);
-		if ($this->_headersManager === null) {
+		if (strcasecmp($headersManagerId, self::HEADERS_MANAGER_AUTO) === 0) {
+			$app = $this->getApplication();
+			foreach ($app->getModulesByType(THttpHeadersManager::class) as $id => $module) {
+				$this->_headersManager = $module ?? $app->getModule($id);
+				break;
+			}
+			return $this->_headersManager;
+		}
+
+		$module = $this->getApplication()->getModule($headersManagerId);
+		if ($module === null) {
 			throw new TConfigurationException('httpresponse_headersmanager_inexist', $this->_headersManagerID);
 		}
-		if (!($this->_headersManager instanceof THttpHeadersManager)) {
+		if (!($module instanceof THttpHeadersManager)) {
 			throw new TConfigurationException('httpresponse_headersmanager_invalid', $this->_headersManagerID);
 		}
 
-		return $this->_headersManager;
+		return $this->_headersManager = $module;
 	}
 }

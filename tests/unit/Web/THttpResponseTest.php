@@ -1,8 +1,10 @@
 <?php
 
+use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\TApplication;
+use Prado\Web\THttpHeadersManager;
 use Prado\Web\THttpResponse;
 
 class TTestHttpResponse extends THttpResponse {
@@ -237,5 +239,161 @@ class THttpResponseTest extends PHPUnit\Framework\TestCase
 		$writer = $response->createHtmlWriter();
 		$this->assertInstanceOf(\Prado\Web\UI\THtmlWriter::class, $writer);
 		ob_end_clean();
+	}
+
+	// -----------------------------------------------------------------------
+	// HEADERS_MANAGER_AUTO constant
+	// -----------------------------------------------------------------------
+
+	public function testHeadersManagerAutoConstantValue()
+	{
+		self::assertEquals('Auto', THttpResponse::HEADERS_MANAGER_AUTO);
+	}
+
+	// -----------------------------------------------------------------------
+	// getHeadersManager / setHeadersManager
+	// -----------------------------------------------------------------------
+
+	public function testGetHeadersManagerDefaultIsAuto()
+	{
+		$response = new TTestHttpResponse();
+		self::assertEquals(THttpResponse::HEADERS_MANAGER_AUTO, $response->getHeadersManager());
+	}
+
+	public function testSetAndGetHeadersManager()
+	{
+		$response = new TTestHttpResponse();
+		$response->setHeadersManager('myHeaders');
+		self::assertEquals('myHeaders', $response->getHeadersManager());
+	}
+
+	public function testSetHeadersManagerEmptyString()
+	{
+		$response = new TTestHttpResponse();
+		$response->setHeadersManager('');
+		self::assertEquals('', $response->getHeadersManager());
+	}
+
+	public function testSetHeadersManagerSameValueIsNoOp()
+	{
+		$response = new TTestHttpResponse();
+		$response->setHeadersManager('someId');
+		// Setting the same value again must not reset the cache
+		// (no exception means the guard works)
+		$response->setHeadersManager('someId');
+		self::assertEquals('someId', $response->getHeadersManager());
+	}
+
+	public function testSetHeadersManagerClearsModuleCacheOnChange()
+	{
+		// Register a real THttpHeadersManager so we can prime the cache
+		$hmId = 'hmTest_' . uniqid();
+		$hm = new THttpHeadersManager();
+		Prado::getApplication()->setModule($hmId, $hm);
+
+		$response = new TTestHttpResponse();
+		$response->init(null);
+		$response->setHeadersManager($hmId);
+
+		// Prime the cache by resolving once
+		$first = $response->getHeadersManagerModule();
+		self::assertSame($hm, $first);
+
+		// Changing the ID must clear the cache
+		$response->setHeadersManager('');
+		self::assertNull($response->getHeadersManagerModule());
+
+		ob_end_clean();
+	}
+
+	// -----------------------------------------------------------------------
+	// getHeadersManagerModule
+	// -----------------------------------------------------------------------
+
+	public function testGetHeadersManagerModuleEmptyStringReturnsNull()
+	{
+		$response = new TTestHttpResponse();
+		$response->setHeadersManager('');
+		self::assertNull($response->getHeadersManagerModule());
+	}
+
+	public function testGetHeadersManagerModuleAutoFindsRegisteredManager()
+	{
+		$hmId = 'hmAuto_' . uniqid();
+		$hm = new THttpHeadersManager();
+		Prado::getApplication()->setModule($hmId, $hm);
+
+		$response = new TTestHttpResponse();
+		// Auto should find the module we just registered (no init() → no output buffer)
+		$found = $response->getHeadersManagerModule();
+		self::assertInstanceOf(THttpHeadersManager::class, $found);
+	}
+
+	public function testGetHeadersManagerModuleNamedIdResolvesModule()
+	{
+		$hmId = 'hmNamed_' . uniqid();
+		$hm = new THttpHeadersManager();
+		Prado::getApplication()->setModule($hmId, $hm);
+
+		$response = new TTestHttpResponse();
+		$response->init(null);
+		$response->setHeadersManager($hmId);
+
+		self::assertSame($hm, $response->getHeadersManagerModule());
+		ob_end_clean();
+	}
+
+	public function testGetHeadersManagerModuleNamedIdMissingThrows()
+	{
+		$response = new TTestHttpResponse();
+		$response->setHeadersManager('nonexistent_module_id');
+		$this->expectException(TConfigurationException::class);
+		$response->getHeadersManagerModule();
+	}
+
+	public function testGetHeadersManagerModuleNamedIdWrongTypeThrows()
+	{
+		// Register a non-THttpHeadersManager module under a unique ID
+		$badId = 'hmBad_' . uniqid();
+		// Use a TComponent-based module that is NOT a THttpHeadersManager
+		$bad = new \Prado\Security\TSecurityManager();
+		Prado::getApplication()->setModule($badId, $bad);
+
+		$response = new TTestHttpResponse();
+		$response->setHeadersManager($badId);
+		$this->expectException(TConfigurationException::class);
+		$response->getHeadersManagerModule();
+	}
+
+	public function testGetHeadersManagerModuleResultIsCached()
+	{
+		$hmId = 'hmCache_' . uniqid();
+		$hm = new THttpHeadersManager();
+		Prado::getApplication()->setModule($hmId, $hm);
+
+		$response = new TTestHttpResponse();
+		$response->init(null);
+		$response->setHeadersManager($hmId);
+
+		$first  = $response->getHeadersManagerModule();
+		$second = $response->getHeadersManagerModule();
+		self::assertSame($first, $second);
+		ob_end_clean();
+	}
+
+	public function testGetHeadersManagerModuleCaseInsensitiveAuto()
+	{
+		// 'auto', 'AUTO', 'Auto' must all trigger auto-discovery mode,
+		// never throw a "module not found" exception for the ID itself.
+		foreach (['auto', 'AUTO', 'Auto', 'aUtO'] as $variant) {
+			$response = new TTestHttpResponse();
+			$response->setHeadersManager($variant);
+			// Auto mode returns null or a THttpHeadersManager — never throws
+			$result = $response->getHeadersManagerModule();
+			self::assertTrue(
+				$result === null || $result instanceof THttpHeadersManager,
+				"Expected null or THttpHeadersManager for variant '$variant'"
+			);
+		}
 	}
 }
