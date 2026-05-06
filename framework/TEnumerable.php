@@ -30,15 +30,15 @@ use Prado\Util\Traits\TConstantReflectionTrait;
  * Then, one can use the enumerable values such as TTextAlign::Left and
  * TTextAlign::Right.
  *
- * As of 4.3.3, to access a constant value by variable, check its presence,
- * or get the constant name by value, use {@see valueOf()}, {@see hasConstant()},
- * and {@see constantOf()}.  For example:
+ * As of 4.3.3, to access a constant value by name, check its presence,
+ * or get the constant name by value, use {@see valueOfConstant()},
+ * {@see hasConstant()}, and {@see constantOfValue()}.  For example:
  * ```php
  * $alignConstant = 'Left';
- * $value = TTextAlign::valueOf($alignConstant);  // returns 'Left'
- * $constant = TTextAlign::constantOf($value);    // returns 'Left'
- * $constant === $alignConstant;                  // true
- * $hasLeft = TTextAlign::hasConstant($alignConstant);  // true
+ * $value = TTextAlign::valueOfConstant($alignConstant);  // returns 'Left'
+ * $constant = TTextAlign::constantOfValue($value);       // returns 'Left'
+ * $constant === $alignConstant;                          // true
+ * $hasLeft = TTextAlign::hasConstant($alignConstant);    // true
  * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
