@@ -198,7 +198,7 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 				Prado::trace('Autocreate: ' . $this->_cacheTable, TDbCache::class);
 
 				$driver = $db->getDriverName();
-				if ($driver === TDbDriver::DRIVER_MYSQL) {
+				if (in_array($driver, [TDbDriver::DRIVER_MYSQL, TDbDriver::EXTENSION_MYSQLI])) {
 					$blob = 'LONGBLOB';
 				} elseif ($driver === TDbDriver::DRIVER_PGSQL) {
 					$blob = 'BYTEA';
@@ -460,9 +460,9 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 		}
 		$db = $this->getDbConnection();
 		$driver = $db->getDriverName();
-		if (in_array($driver, [TDbDriver::DRIVER_MYSQL, TDbDriver::DRIVER_PGSQL, TDbDriver::DRIVER_SQLITE, TDbDriver::DRIVER_SQLSRV, TDbDriver::DRIVER_DBLIB, TDbDriver::DRIVER_OCI, TDbDriver::DRIVER_IBM])) {
+		if (in_array($driver, [TDbDriver::DRIVER_MYSQL, TDbDriver::EXTENSION_MYSQLI, TDbDriver::DRIVER_PGSQL, TDbDriver::DRIVER_SQLITE, TDbDriver::DRIVER_SQLSRV, TDbDriver::DRIVER_DBLIB, TDbDriver::DRIVER_OCI, TDbDriver::DRIVER_IBM])) {
 			$expire = ($expire <= 0) ? 0 : time() + $expire;
-			if (in_array($driver, [TDbDriver::DRIVER_MYSQL, TDbDriver::DRIVER_SQLITE])) {
+			if (in_array($driver, [TDbDriver::DRIVER_MYSQL, TDbDriver::EXTENSION_MYSQLI, TDbDriver::DRIVER_SQLITE])) {
 				$sql = "REPLACE INTO {$this->_cacheTable} (itemkey,value,expire) VALUES (:key,:value,$expire)";
 			} elseif ($driver === TDbDriver::DRIVER_PGSQL) {
 				$sql = "INSERT INTO {$this->_cacheTable} (itemkey, value, expire) VALUES (:key, :value, :expire) " .

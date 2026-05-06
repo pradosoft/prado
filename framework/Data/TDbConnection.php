@@ -37,7 +37,7 @@ use Prado\TPropertyValue;
  * IANA-style names such as 'UTF-8' or 'ISO-8859-1'; the value is translated to
  * the driver-specific format automatically.
  *
- * Firebird (firebird), MSSQL (mssql, sqlsrv, dblib), and Oracle (oci) do not
+ * Firebird (firebird), SQL Server (sqlsrv, dblib), and Oracle (oci) do not
  * support runtime charset switching via SQL; their charset must be configured
  * before the connection is opened (it is injected into the DSN automatically).
  * IBM DB2 (ibm) has no charset support at all.
@@ -144,7 +144,7 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	 * @param string $username The user name for the DSN string.
 	 * @param string $password The password for the DSN string.
 	 * @param string $charset Charset for the connection (driver-independent name,
-	 *   e.g. 'UTF-8').  Not supported for IBM DB2 (ibm).  For MSSQL and Oracle
+	 *   e.g. 'UTF-8').  Not supported for IBM DB2 (ibm).  For SQL Server and Oracle
 	 *   the value is applied at DSN level before the connection opens; for other
 	 *   drivers it is applied after connect.  Defaults to empty (server default).
 	 * @see http://www.php.net/manual/en/function.PDO-construct.php
@@ -326,7 +326,7 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	 * SQLite uses  PRAGMA encoding = <charset>  which can only take effect
 	 * before any tables are created; errors are silently ignored so the method
 	 * is safe to call on any SQLite connection regardless of state.
-	 * Firebird, Oracle (oci), MSSQL (mssql, sqlsrv, dblib), and IBM DB2 (ibm) do not
+	 * Firebird, Oracle (oci), SQL Server (sqlsrv, dblib), and IBM DB2 (ibm) do not
 	 * support runtime charset switching via SQL; their charset is injected into
 	 * the DSN before the connection opens by {@see applyCharsetToDsn}.
 	 * Changing Charset after the connection is already active has no effect for
@@ -367,7 +367,7 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 		}
 
 		if (TDbDriverCapabilities::getCharsetDsnParam($driver) !== null) {
-			// Driver configures charset via DSN (Firebird, Oracle, MSSQL);
+			// Driver configures charset via DSN (Firebird, Oracle, SQL Server);
 			// runtime switching via SQL is not supported.
 			return;
 		}
@@ -387,7 +387,7 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	 *
 	 * This method is called by {@see open} before the PDO instance is created so
 	 * that drivers which only support charset configuration at connection time
-	 * (Oracle, MSSQL family) receive the correct encoding without requiring the
+	 * (Oracle, SQL Server) receive the correct encoding without requiring the
 	 * caller to embed a driver-specific parameter in the DSN manually.
 	 *
 	 * The internal {@see $_dsn} field is never mutated; the method returns a
@@ -544,7 +544,7 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 				}
 				return TDbDriverCapabilities::resolveCharset($this->getCharset(), $driver);
 			}
-			// Drivers that configure charset via DSN (oci, mssql, sqlsrv, dblib, ibm):
+			// Drivers that configure charset via DSN (oci, sqlsrv, dblib, ibm):
 			// return the charset name as it was resolved for this driver so the caller
 			// can confirm what was injected into the connection string.
 			return TDbDriverCapabilities::resolveCharset($this->getCharset(), $driver);
@@ -937,7 +937,7 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	 * Delegates to {@see TDbDriverCapabilities::hasAutoCommitAttribute}. When
 	 * this returns false, {@see getAutoCommit()} always returns false and
 	 * {@see setAutoCommit()} is a no-op.  Drivers known to expose the attribute
-	 * include mysql, pgsql, oci, sqlsrv, dblib, mssql, and ibm.
+	 * include mysql, pgsql, oci, sqlsrv, dblib, and ibm.
 	 *
 	 * @return bool true if the driver exposes `PDO::ATTR_AUTOCOMMIT`.
 	 * @since 4.3.3

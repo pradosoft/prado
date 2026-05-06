@@ -57,7 +57,7 @@ class TSqlSrvCommandBuilder extends TDbCommandBuilder
 	}
 
 	/**
-	 * MSSql has a ';' at the end of a merge.
+	 * SQL Server has a ';' at the end of a merge.
 	 * @param string $sql the sql to change before creating the command.
 	 * @return ?string null if no change, or a string if there is a change.
 	 * @since 4.3.3

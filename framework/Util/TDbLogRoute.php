@@ -270,7 +270,7 @@ class TDbLogRoute extends TLogRoute
 		$db = $this->getDbConnection();
 		$driver = $db->getDriverName();
 		$autoidAttributes = '';
-		if ($driver === TDbDriver::DRIVER_MYSQL) {
+		if (in_array($driver, [TDbDriver::DRIVER_MYSQL, TDbDriver::EXTENSION_MYSQLI])) {
 			$autoidAttributes = 'AUTO_INCREMENT';
 		}
 		if ($driver === TDbDriver::DRIVER_PGSQL) {

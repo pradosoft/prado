@@ -87,6 +87,13 @@ class TDbDriverCapabilities
 	 * ({@see getCharsetDsnParam}), so driver columns for oci, sqlsrv, and dblib
 	 * resolve to their DSN-appropriate charset values.
 	 *
+	 * **sqlsrv limitation** — PDO_SQLSRV's `CharacterSet` DSN parameter only
+	 * accepts `'UTF-8'` or `'SQLSRV_ENC_CHAR'` (the system ANSI code page).
+	 * All non-UTF-8 charsets therefore resolve to `'SQLSRV_ENC_CHAR'`; the
+	 * actual code page in use depends on the operating system locale.
+	 *
+	 * **ibm** — IBM DB2 has no charset DSN parameter and is absent from all rows.
+	 *
 	 * @param string $charset the charset name as supplied by the caller (e.g. 'UTF-8')
 	 * @param string $driver  PDO driver name (e.g. 'mysql', 'pgsql', 'firebird', 'oci')
 	 * @return string the charset name appropriate for $driver
@@ -95,6 +102,8 @@ class TDbDriverCapabilities
 	{
 		static $driverAliases = [
 			TDbDriver::DRIVER_INTERBASE => TDbDriver::DRIVER_FIREBIRD,
+			TDbDriver::EXTENSION_MYSQLI => TDbDriver::DRIVER_MYSQL,
+			TDbDriver::EXTENSION_MSSQL => TDbDriver::DRIVER_SQLSRV,
 		];
 
 		if (isset($driverAliases[$driver])) {
@@ -108,58 +117,67 @@ class TDbDriverCapabilities
 			// Drivers mysql/pgsql/firebird: SQL-level charset names.
 			// Drivers sqlite: PRAGMA encoding values (only UTF-8 and UTF-16 variants
 			//   are valid; unsupported values are passed through and silently ignored).
-			// Drivers oci/sqlsrv/dblib: DSN-parameter charset names.
+			// Drivers oci/dblib: DSN-parameter charset names.
+			// Driver sqlsrv: PDO_SQLSRV only accepts 'UTF-8' or 'SQLSRV_ENC_CHAR'
+			//   (system ANSI code page) as the CharacterSet DSN value; all non-UTF-8
+			//   charsets therefore resolve to 'SQLSRV_ENC_CHAR'.
+			// Driver ibm: IBM DB2 has no charset DSN parameter; absent from all rows.
+			// Drivers pgsql/dblib/sqlsrv: absent from UTF-16 — PostgreSQL does not
+			//   support UTF-16 as a server encoding; FreeTDS and PDO_SQLSRV have no
+			//   UTF-16 DSN charset option.
 			'utf8' => TDataCharset::UTF8,			// canonical key alias
 			'utf8mb4' => TDataCharset::UTF8,		// canonical key alias
 			TDataCharset::UTF8 => [
-				TDbDriver::DRIVER_MYSQL => 'utf8mb4',
-				TDbDriver::DRIVER_SQLITE => 'UTF-8',
-				TDbDriver::DRIVER_PGSQL => 'UTF8',
 				TDbDriver::DRIVER_FIREBIRD => 'UTF8',
+				TDbDriver::DRIVER_MYSQL => 'utf8mb4',
 				TDbDriver::DRIVER_OCI => 'AL32UTF8',
+				TDbDriver::DRIVER_PGSQL => 'UTF8',
+				TDbDriver::DRIVER_SQLITE => 'UTF-8',
 				TDbDriver::DRIVER_SQLSRV => 'UTF-8',
 				TDbDriver::DRIVER_DBLIB => 'UTF-8',
 			],
 
 			'utf16' => TDataCharset::UTF16,	// canonical key alias
 			TDataCharset::UTF16 => [
-				TDbDriver::DRIVER_MYSQL => 'utf16',
-				TDbDriver::DRIVER_SQLITE => 'UTF-16',
+				// pgsql, sqlsrv, and dblib intentionally absent — see comment above.
 				TDbDriver::DRIVER_FIREBIRD => 'UTF16BE',
+				TDbDriver::DRIVER_MYSQL => 'utf16',
 				TDbDriver::DRIVER_OCI => 'AL16UTF16',
+				TDbDriver::DRIVER_SQLITE => 'UTF-16',
 			],
 
 			'latin1' => TDataCharset::Latin1,	// canonical key alias
 			'iso88591' => TDataCharset::Latin1,	// canonical key alias
 			TDataCharset::Latin1 => [
-				TDbDriver::DRIVER_MYSQL => 'latin1',
-				TDbDriver::DRIVER_SQLITE => 'UTF-8',
-				// sqlite: PRAGMA encoding does not support latin1; value is passed
-				// through and silently ignored (SQLite stores all text in UTF-8/16).
-				TDbDriver::DRIVER_PGSQL => 'LATIN1',
 				TDbDriver::DRIVER_FIREBIRD => 'ISO8859_1',
+				TDbDriver::DRIVER_MYSQL => 'latin1',
 				TDbDriver::DRIVER_OCI => 'WE8ISO8859P1',
+				TDbDriver::DRIVER_PGSQL => 'LATIN1',
+				TDbDriver::DRIVER_SQLITE => 'UTF-8',
+				TDbDriver::DRIVER_SQLSRV => 'SQLSRV_ENC_CHAR',
 				TDbDriver::DRIVER_DBLIB => 'ISO-8859-1',
 			],
 
 			'latin2' => TDataCharset::Latin2,	// canonical key alias
 			'iso88592' => TDataCharset::Latin2,	// canonical key alias
 			TDataCharset::Latin2 => [
-				TDbDriver::DRIVER_MYSQL => 'latin2',
-				TDbDriver::DRIVER_SQLITE => 'UTF-8',
-				TDbDriver::DRIVER_PGSQL => 'LATIN2',
 				TDbDriver::DRIVER_FIREBIRD => 'ISO8859_2',
+				TDbDriver::DRIVER_MYSQL => 'latin2',
 				TDbDriver::DRIVER_OCI => 'EE8ISO8859P2',
+				TDbDriver::DRIVER_PGSQL => 'LATIN2',
+				TDbDriver::DRIVER_SQLITE => 'UTF-8',
+				TDbDriver::DRIVER_SQLSRV => 'SQLSRV_ENC_CHAR',
 				TDbDriver::DRIVER_DBLIB => 'ISO-8859-2',
 			],
 
 			'ascii' => TDataCharset::ASCII,	// canonical key alias
 			TDataCharset::ASCII => [
-				TDbDriver::DRIVER_MYSQL => 'ascii',
-				TDbDriver::DRIVER_SQLITE => 'UTF-8',
-				TDbDriver::DRIVER_PGSQL => 'SQL_ASCII',
 				TDbDriver::DRIVER_FIREBIRD => 'ASCII',
+				TDbDriver::DRIVER_MYSQL => 'ascii',
 				TDbDriver::DRIVER_OCI => 'US7ASCII',
+				TDbDriver::DRIVER_PGSQL => 'SQL_ASCII',
+				TDbDriver::DRIVER_SQLITE => 'UTF-8',
+				TDbDriver::DRIVER_SQLSRV => 'SQLSRV_ENC_CHAR',
 				TDbDriver::DRIVER_DBLIB => 'ASCII',
 			],
 
@@ -167,11 +185,12 @@ class TDbDriverCapabilities
 			'windows1250' => TDataCharset::Win1250,	// canonical key alias
 			'cp1250' => TDataCharset::Win1250,	// canonical key alias
 			TDataCharset::Win1250 => [
-				TDbDriver::DRIVER_MYSQL => 'cp1250',
-				TDbDriver::DRIVER_SQLITE => 'UTF-8',
-				TDbDriver::DRIVER_PGSQL => 'WIN1250',
 				TDbDriver::DRIVER_FIREBIRD => 'WIN1250',
+				TDbDriver::DRIVER_MYSQL => 'cp1250',
 				TDbDriver::DRIVER_OCI => 'EE8MSWIN1250',
+				TDbDriver::DRIVER_PGSQL => 'WIN1250',
+				TDbDriver::DRIVER_SQLITE => 'UTF-8',
+				TDbDriver::DRIVER_SQLSRV => 'SQLSRV_ENC_CHAR',
 				TDbDriver::DRIVER_DBLIB => 'CP1250',
 			],
 
@@ -179,11 +198,12 @@ class TDbDriverCapabilities
 			'windows1251' => TDataCharset::Win1251,	// canonical key alias
 			'cp1251' => TDataCharset::Win1251,	// canonical key alias
 			TDataCharset::Win1251 => [
-				TDbDriver::DRIVER_MYSQL => 'cp1251',
-				TDbDriver::DRIVER_SQLITE => 'UTF-8',
-				TDbDriver::DRIVER_PGSQL => 'WIN1251',
 				TDbDriver::DRIVER_FIREBIRD => 'WIN1251',
+				TDbDriver::DRIVER_MYSQL => 'cp1251',
 				TDbDriver::DRIVER_OCI => 'CL8MSWIN1251',
+				TDbDriver::DRIVER_PGSQL => 'WIN1251',
+				TDbDriver::DRIVER_SQLITE => 'UTF-8',
+				TDbDriver::DRIVER_SQLSRV => 'SQLSRV_ENC_CHAR',
 				TDbDriver::DRIVER_DBLIB => 'CP1251',
 			],
 
@@ -191,31 +211,34 @@ class TDbDriverCapabilities
 			'windows1252' => TDataCharset::Win1252,	// canonical key alias
 			'cp1252' => TDataCharset::Win1252,	// canonical key alias
 			TDataCharset::Win1252 => [
-				TDbDriver::DRIVER_MYSQL => 'cp1252',
-				TDbDriver::DRIVER_SQLITE => 'UTF-8',
-				TDbDriver::DRIVER_PGSQL => 'WIN1252',
 				TDbDriver::DRIVER_FIREBIRD => 'WIN1252',
+				TDbDriver::DRIVER_MYSQL => 'cp1252',
 				TDbDriver::DRIVER_OCI => 'WE8MSWIN1252',
+				TDbDriver::DRIVER_PGSQL => 'WIN1252',
+				TDbDriver::DRIVER_SQLITE => 'UTF-8',
+				TDbDriver::DRIVER_SQLSRV => 'SQLSRV_ENC_CHAR',
 				TDbDriver::DRIVER_DBLIB => 'CP1252',
 			],
 
 			'koi8r' => TDataCharset::KOI8R,	// canonical key alias
 			TDataCharset::KOI8R => [
-				TDbDriver::DRIVER_MYSQL => 'koi8r',
-				TDbDriver::DRIVER_SQLITE => 'UTF-8',
-				TDbDriver::DRIVER_PGSQL => 'KOI8R',
 				TDbDriver::DRIVER_FIREBIRD => 'KOI8R',
+				TDbDriver::DRIVER_MYSQL => 'koi8r',
 				TDbDriver::DRIVER_OCI => 'CL8KOI8R',
+				TDbDriver::DRIVER_PGSQL => 'KOI8R',
+				TDbDriver::DRIVER_SQLITE => 'UTF-8',
+				TDbDriver::DRIVER_SQLSRV => 'SQLSRV_ENC_CHAR',
 				TDbDriver::DRIVER_DBLIB => 'KOI8-R',
 			],
 
 			'koi8u' => TDataCharset::KOI8U,	// canonical key alias
 			TDataCharset::KOI8U => [
-				TDbDriver::DRIVER_MYSQL => 'koi8u',
-				TDbDriver::DRIVER_SQLITE => 'UTF-8',
-				TDbDriver::DRIVER_PGSQL => 'KOI8U',
 				TDbDriver::DRIVER_FIREBIRD => 'KOI8U',
+				TDbDriver::DRIVER_MYSQL => 'koi8u',
 				TDbDriver::DRIVER_OCI => 'CL8KOI8U',
+				TDbDriver::DRIVER_PGSQL => 'KOI8U',
+				TDbDriver::DRIVER_SQLITE => 'UTF-8',
+				TDbDriver::DRIVER_SQLSRV => 'SQLSRV_ENC_CHAR',
 				TDbDriver::DRIVER_DBLIB => 'KOI8-U',
 			],
 		];
@@ -270,6 +293,8 @@ class TDbDriverCapabilities
 	{
 		static $driverAliases = [
 			TDbDriver::DRIVER_INTERBASE => TDbDriver::DRIVER_FIREBIRD,
+			TDbDriver::EXTENSION_MYSQLI => TDbDriver::DRIVER_MYSQL,
+			TDbDriver::EXTENSION_MSSQL => TDbDriver::DRIVER_SQLSRV,
 		];
 
 		if (isset($driverAliases[$driver])) {
@@ -282,6 +307,18 @@ class TDbDriverCapabilities
 			// driver => [db_charset => php_charset, ...]
 			// Keys are database-specific charset names
 			// Values are TDataCharset constant values (which equal the standard PHP charset name)
+			TDbDriver::DRIVER_FIREBIRD => [
+				'UTF8' => TDataCharset::UTF8,
+				'UTF16BE' => TDataCharset::UTF16,
+				'ISO8859_1' => TDataCharset::Latin1,
+				'ISO8859_2' => TDataCharset::Latin2,
+				'ASCII' => TDataCharset::ASCII,
+				'WIN1250' => TDataCharset::Win1250,
+				'WIN1251' => TDataCharset::Win1251,
+				'WIN1252' => TDataCharset::Win1252,
+				'KOI8R' => TDataCharset::KOI8R,
+				'KOI8U' => TDataCharset::KOI8U,
+			],
 			TDbDriver::DRIVER_MYSQL => [
 				'utf8mb4' => TDataCharset::UTF8,
 				'utf8' => TDataCharset::UTF8,
@@ -295,9 +332,17 @@ class TDbDriverCapabilities
 				'koi8r' => TDataCharset::KOI8R,
 				'koi8u' => TDataCharset::KOI8U,
 			],
-			TDbDriver::DRIVER_SQLITE => [
-				'UTF-8' => TDataCharset::UTF8,
-				'UTF-16' => TDataCharset::UTF16,
+			TDbDriver::DRIVER_OCI => [
+				'AL32UTF8' => TDataCharset::UTF8,
+				'AL16UTF16' => TDataCharset::UTF16,
+				'WE8ISO8859P1' => TDataCharset::Latin1,
+				'EE8ISO8859P2' => TDataCharset::Latin2,
+				'US7ASCII' => TDataCharset::ASCII,
+				'EE8MSWIN1250' => TDataCharset::Win1250,
+				'CL8MSWIN1251' => TDataCharset::Win1251,
+				'WE8MSWIN1252' => TDataCharset::Win1252,
+				'CL8KOI8R' => TDataCharset::KOI8R,
+				'CL8KOI8U' => TDataCharset::KOI8U,
 			],
 			TDbDriver::DRIVER_PGSQL => [
 				'UTF8' => TDataCharset::UTF8,
@@ -311,40 +356,17 @@ class TDbDriverCapabilities
 				'KOI8R' => TDataCharset::KOI8R,
 				'KOI8U' => TDataCharset::KOI8U,
 			],
-			TDbDriver::DRIVER_FIREBIRD => [
-				'UTF8' => TDataCharset::UTF8,
-				'UTF16BE' => TDataCharset::UTF16,
-				'ISO8859_1' => TDataCharset::Latin1,
-				'ISO8859_2' => TDataCharset::Latin2,
-				'ASCII' => TDataCharset::ASCII,
-				'WIN1250' => TDataCharset::Win1250,
-				'WIN1251' => TDataCharset::Win1251,
-				'WIN1252' => TDataCharset::Win1252,
-				'KOI8R' => TDataCharset::KOI8R,
-				'KOI8U' => TDataCharset::KOI8U,
+			TDbDriver::DRIVER_SQLITE => [
+				'UTF-8' => TDataCharset::UTF8,
+				'UTF-16' => TDataCharset::UTF16,
 			],
-			TDbDriver::DRIVER_OCI => [
-				'AL32UTF8' => TDataCharset::UTF8,
-				'AL16UTF16' => TDataCharset::UTF16,
-				'WE8ISO8859P1' => TDataCharset::Latin1,
-				'EE8ISO8859P2' => TDataCharset::Latin2,
-				'US7ASCII' => TDataCharset::ASCII,
-				'EE8MSWIN1250' => TDataCharset::Win1250,
-				'CL8MSWIN1251' => TDataCharset::Win1251,
-				'WE8MSWIN1252' => TDataCharset::Win1252,
-				'CL8KOI8R' => TDataCharset::KOI8R,
-				'CL8KOI8U' => TDataCharset::KOI8U,
-			],
+			// PDO_SQLSRV's CharacterSet DSN param only accepts 'UTF-8' or
+			// 'SQLSRV_ENC_CHAR'; getCharsetQuerySql() returns null so this
+			// table is only reached by external callers.  'SQLSRV_ENC_CHAR'
+			// cannot be unresolved to a specific charset (system-dependent),
+			// so it is omitted and will fall through to the raw value.
 			TDbDriver::DRIVER_SQLSRV => [
 				'UTF-8' => TDataCharset::UTF8,
-				'ISO-8859-1' => TDataCharset::Latin1,
-				'ISO-8859-2' => TDataCharset::Latin2,
-				'ASCII' => TDataCharset::ASCII,
-				'CP1250' => TDataCharset::Win1250,
-				'CP1251' => TDataCharset::Win1251,
-				'CP1252' => TDataCharset::Win1252,
-				'KOI8-R' => TDataCharset::KOI8R,
-				'KOI8-U' => TDataCharset::KOI8U,
 			],
 			TDbDriver::DRIVER_DBLIB => [
 				'UTF-8' => TDataCharset::UTF8,
@@ -519,8 +541,8 @@ class TDbDriverCapabilities
 	 * Returns the SQL statement that retrieves the charset currently in use on
 	 * an active connection, or null when the driver does not support such a query.
 	 *
-	 * Drivers that configure charset via the DSN at connection time (Oracle, MSSQL
-	 * family, IBM DB2) cannot be queried cheaply at runtime; null is returned for
+	 * Drivers that configure charset via the DSN at connection time (Oracle, SQL Server,
+	 * IBM DB2) cannot be queried cheaply at runtime; null is returned for
 	 * those drivers and callers should fall back to the resolved charset property.
 	 *
 	 * The Firebird query joins MON$ATTACHMENTS with RDB$CHARACTER_SETS and requires

@@ -41,6 +41,9 @@ use Prado\TEnumerable;
  * Unsupported drivers (listed for reference): {@see DRIVER_ODBC},
  * {@see DRIVER_CUBRID}, {@see DRIVER_INFORMIX}
  *
+ * Unsupported database PHP extensions (listed for reference): {@see EXTENSION_MYSQLI},
+ * {@see EXTENSION_MSSQL}
+ *
  * Example usage:
  * ```php
  * // Get all driver constants
@@ -55,11 +58,9 @@ use Prado\TEnumerable;
 class TDbDriver extends TEnumerable
 {
 	public const DRIVER_MYSQL = 'mysql';		// MySQL / MariaDB
-	//public const DRIVER_MYSQLI 	= 'mysqli';		// separate non-PDO extension
 	public const DRIVER_PGSQL = 'pgsql';		// PostgreSQL (charset after connection is started)
 	public const DRIVER_SQLITE = 'sqlite';		// SQLite 3 (UTF-8, UTF-16, set charset without tables)
 	public const DRIVER_SQLITE2 = 'sqlite2';	// SQLite 2
-	//public const DRIVER_MSSQL 	= 'mssql'; 		// separate non-PDO extension
 	public const DRIVER_SQLSRV = 'sqlsrv';		// Microsoft SQL Server
 	public const DRIVER_DBLIB = 'dblib';		// SQL Server / Sybase (via FreeTDS)
 	public const DRIVER_OCI = 'oci';		// Oracle
@@ -74,4 +75,8 @@ class TDbDriver extends TEnumerable
 
 	//	Common
 	public const DRIVER_MONGO = 'mongo';		// {@see https://github.com/belisoful/prado-mongo }
+
+	// non-PDO PHP Extensions, included for sql determination.
+	public const EXTENSION_MYSQLI = 'mysqli';
+	public const EXTENSION_MSSQL = 'mssql';
 }

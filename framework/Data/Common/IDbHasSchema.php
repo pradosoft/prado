@@ -17,7 +17,7 @@ namespace Prado\Data\Common;
  * underlying database engine supports the concept of a schema (also called an
  * owner or namespace that groups tables within a database).
  *
- * Drivers that implement this interface: MySQL, PostgreSQL, MSSQL, IBM DB2, Oracle.
+ * Drivers that implement this interface: MySQL, PostgreSQL, SQL Server, IBM DB2, Oracle.
  * Drivers that do NOT: SQLite, Firebird (neither has a schema namespace).
  *
  * TDbTableInfo::getSchemaName() returns a non-null value only when the concrete

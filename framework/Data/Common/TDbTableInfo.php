@@ -42,7 +42,7 @@ use Prado\Prado;
  *
  * {@see getTableFullName()} returns the table name as it should appear in SQL.
  * The base implementation returns the bare table name; schema-aware subclasses
- * (MySQL, PostgreSQL, MSSQL, Oracle, IBM DB2) override this to prepend the
+ * (MySQL, PostgreSQL, SQL Server, Oracle, IBM DB2) override this to prepend the
  * quoted schema name so that queries reference `"schema"."table"`.
  *
  * {@see getSchemaName()} is gated by an `instanceof IDbHasSchema` check: even

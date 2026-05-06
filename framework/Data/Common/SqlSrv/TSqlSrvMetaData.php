@@ -18,7 +18,7 @@ use Prado\Exceptions\TDbException;
 /**
  * TSqlSrvMetaData class
  *
- * TSqlSrvMetaData loads MSSQL database table and column information.
+ * TSqlSrvMetaData loads SQL Server database table and column information.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1

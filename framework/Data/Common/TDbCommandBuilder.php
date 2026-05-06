@@ -47,7 +47,7 @@ use Prado\Exceptions\TDbException;
  *
  * Subclasses override only the methods that differ from the ANSI SQL baseline:
  *
- * - {@see applyLimitOffset()} — MSSQL uses `TOP` / `OFFSET … FETCH NEXT`;
+ * - {@see applyLimitOffset()} — SQL Server uses `TOP` / `OFFSET … FETCH NEXT`;
  *   Oracle wraps in a `ROWNUM` subquery.
  * - {@see createInsertOrIgnoreCommand()} — MySQL (`INSERT IGNORE`), SQLite /
  *   PostgreSQL (`INSERT OR IGNORE` / `ON CONFLICT DO NOTHING`); MERGE-based
@@ -56,7 +56,7 @@ use Prado\Exceptions\TDbException;
  *   PostgreSQL (`ON CONFLICT … DO UPDATE`); MERGE-based drivers use
  *   {@see buildMergeStatement()}.
  *
- * ## MERGE helper (MSSQL / Oracle / Firebird / IBM DB2)
+ * ## MERGE helper (SQL Server / Oracle / Firebird / IBM DB2)
  *
  * {@see buildMergeStatement()} assembles a portable
  * `MERGE INTO … USING (SELECT …) ON … WHEN MATCHED … WHEN NOT MATCHED …`
@@ -65,7 +65,7 @@ use Prado\Exceptions\TDbException;
  * - {@see processMergeColumn()} — controls the `:col AS col` fragment in the
  *   USING sub-select (e.g. Oracle uses positional `? AS col` bindings).
  * - {@see postProcessMerge()} — post-processes the assembled SQL string before
- *   the command is created (e.g. MSSQL appends a semicolon).
+ *   the command is created (e.g. SQL Server appends a semicolon).
  *
  * MERGE-based upserts always require an active transaction; call
  * {@see assertActiveTransaction()} at the start of those overrides.
@@ -530,7 +530,7 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDataCommandBuilder
 
 	/**
 	 * Checks that an active transaction exists on the current connection.
-	 * Called by MERGE-based drivers (MSSQL, Oracle, DB2, Firebird) before building MERGE statements.
+	 * Called by MERGE-based drivers (SQL Server, Oracle, DB2, Firebird) before building MERGE statements.
 	 * @throws TDbException if no active transaction is found.
 	 * @since 4.3.3
 	 */
@@ -542,7 +542,7 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDataCommandBuilder
 	}
 
 	/**
-	 * Builds a MERGE INTO statement for MERGE-based drivers (MSSQL, Oracle, DB2, Firebird).
+	 * Builds a MERGE INTO statement for MERGE-based drivers (SQL Server, Oracle, DB2, Firebird).
 	 *
 	 * The USING SELECT uses raw column names (from array_keys($data)) as aliases.
 	 * Table column references use getColumnName() (quoted) from the table metadata.
@@ -551,7 +551,7 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDataCommandBuilder
 	 * @param array $data full row data (all columns).
 	 * @param array $updateData columns to update on match (empty = insertOrIgnore, no UPDATE branch).
 	 * @param array $conflictColumns primary/conflict key column names.
-	 * @param string $dualSource dual/dummy table source, e.g. 'FROM DUAL', 'FROM SYSIBM.SYSDUMMY1', '' for MSSQL.
+	 * @param string $dualSource dual/dummy table source, e.g. 'FROM DUAL', 'FROM SYSIBM.SYSDUMMY1', '' for SQL Server.
 	 * @param bool $useAsAlias true to emit 'AS t'/'AS s'; false to emit bare 't'/'s' (Oracle, Firebird).
 	 * @return TDbCommand prepared MERGE command with bound parameters.
 	 * @since 4.3.3
@@ -622,7 +622,7 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDataCommandBuilder
 	}
 
 	/**
-	 * Children override this if there is something specific about the sql, eg adding a ';' to the end for MSSql.
+	 * Children override this if there is something specific about the sql, eg adding a ';' to the end for SQL Server.
 	 * @param string $sql the sql to change before creating the command.
 	 * @return ?string null if no change, or a string if there is a change.
 	 * @since 4.3.3
