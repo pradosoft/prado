@@ -66,6 +66,7 @@ use Prado\Web\UI\TThemeManager;
  * TApplication maintains a lifecycle with the following stages:
  * - [construct] : construction of the application instance
  * - [initApplication] : load application configuration and instantiate modules and the requested service
+ * - onConfigurationComplete : this event happens after all configuration is applied but before the request is resolved and a service is started; use it to register additional services programmatically
  * - onInitComplete : this event happens right after after module and service initialization. This event is particularly useful for CLI/Shell applications
  * - onBeginRequest : this event happens right after application initialization
  * - onAuthentication : this event happens when authentication is needed for the current request
@@ -700,6 +701,51 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	}
 
 	/**
+	 * Returns the service ID of the first registered service whose class is or
+	 * extends `$class`, or `null` if none matches.
+	 * ```php
+	 * $id = $this->getApplication()->getServiceIdByClass(TPageService::class);
+	 * ```
+	 * @param string $class fully-qualified class name to search for.
+	 * @return null|string the ID of the first matching service, or `null`.
+	 * @since 4.3.3
+	 */
+	public function getServiceIdByClass(string $class): ?string
+	{
+		foreach ($this->_services ?? [] as $id => $serviceConfig) {
+			$serviceClass = is_array($serviceConfig) ? $serviceConfig[0] : $serviceConfig;
+			if ($serviceClass === $class || is_a($serviceClass, $class, true)) {
+				return (string) $id;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Returns the IDs of all registered services whose class is or extends
+	 * `$class`. Pass `$strict = true` to exclude subclasses.
+	 * ```php
+	 * $ids = $this->getApplication()->getServiceIdsByClass(TJsonService::class);
+	 * [$firstId] = $this->getApplication()->getServiceIdsByClass(TPageService::class);
+	 * ```
+	 * @param string $class fully-qualified class name to search for.
+	 * @param bool $strict when `true`, only exact class matches are returned. Default `false`.
+	 * @return string[] the IDs of all matching services, or an empty array.
+	 * @since 4.3.3
+	 */
+	public function getServiceIdsByClass(string $class, bool $strict = false): array
+	{
+		$ids = [];
+		foreach ($this->_services ?? [] as $id => $serviceConfig) {
+			$serviceClass = is_array($serviceConfig) ? $serviceConfig[0] : $serviceConfig;
+			if ($strict ? ($serviceClass === $class) : ($serviceClass === $class || is_a($serviceClass, $class, true))) {
+				$ids[] = (string) $id;
+			}
+		}
+		return $ids;
+	}
+
+	/**
 	 * @param mixed $id
 	 * @return null|TModule the module with the specified ID, null if not found
 	 */
@@ -1146,7 +1192,9 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	 * Configuration file will be read and parsed (if a valid cached version exists,
 	 * it will be used instead). Then, modules are created and initialized;
 	 * Afterwards, the requested service is created and initialized.
-	 * Lastly, the onInitComplete event is raised.
+	 * After all configuration is applied, the onConfigurationComplete event is
+	 * raised so that listeners may register additional services before the
+	 * request is resolved. Lastly, the onInitComplete event is raised.
 	 * @throws TConfigurationException if module is redefined of invalid type, or service not defined or of invalid type
 	 */
 	protected function initApplication()
@@ -1166,6 +1214,8 @@ class TApplication extends \Prado\TComponent implements ISingleton
 
 			$this->applyConfiguration($config, false);
 		}
+
+		$this->onConfigurationComplete();
 
 		if (($serviceID = $this->getRequest()->resolveRequest(array_keys($this->_services))) === null) {
 			$serviceID = $this->getPageServiceID();
@@ -1227,6 +1277,18 @@ class TApplication extends \Prado\TComponent implements ISingleton
 		Prado::log($param->getMessage(), TLogger::ERROR, TApplication::class);
 		$this->raiseEvent('OnError', $this, $param);
 		$this->getErrorHandler()->handleError($this, $param);
+	}
+
+	/**
+	 * Raises onConfigurationComplete event.
+	 * Configuration is fully applied and modules are loaded, but the request
+	 * has not yet been resolved and no service has been started. Use this event
+	 * to register additional services before request routing.
+	 * @since 4.3.3
+	 */
+	public function onConfigurationComplete()
+	{
+		$this->raiseEvent('onConfigurationComplete', $this, null);
 	}
 
 	/**
