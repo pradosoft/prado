@@ -304,6 +304,47 @@ class PHPStanExtensionsTest extends TestCase
 	}
 
 	// -------------------------------------------------------------------------
+	// TComponentIsaTypeSpecifyingExtension — interface narrowing
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Without the extension, isa() guards on interface class strings do not narrow
+	 * the type, so interface-method calls inside the guard produce errors.
+	 *
+	 * This test isolates the interface case from the subclass case above.
+	 *
+	 * @group phpstan
+	 */
+	public function testIsaExtensionInterface_FailsWithoutExtension(): void
+	{
+		$result = $this->runPhpStan('IsaInterfaceFixture.php', $this->noExtensionsConfig());
+		$errors = $this->countFileErrors($result, 'IsaInterfaceFixture.php');
+		$this->assertGreaterThan(
+			0,
+			$errors,
+			'Expected PHPStan errors for interface-method calls inside isa() guards without the extension.'
+		);
+	}
+
+	/**
+	 * With the extension active, isa() guards on interface class strings narrow
+	 * the type to that interface and all guarded method calls are accepted without error.
+	 *
+	 * @group phpstan
+	 */
+	public function testIsaExtensionInterface_PassesWithExtension(): void
+	{
+		$result = $this->runPhpStan('IsaInterfaceFixture.php');
+		$errors = $this->countFileErrors($result, 'IsaInterfaceFixture.php');
+		$this->assertSame(
+			0,
+			$errors,
+			'Expected zero PHPStan errors for isa()-guarded interface-method calls with the extension.'
+				. $this->describeErrors($result, 'IsaInterfaceFixture.php')
+		);
+	}
+
+	// -------------------------------------------------------------------------
 	// TComponentCanGetPropertyTypeSpecifyingExtension
 	// -------------------------------------------------------------------------
 
