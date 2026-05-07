@@ -43,6 +43,37 @@ trait TWeakCollectionTrait
 	/** @var int Number of known objects in the collection. */
 	private int $_weakCount = 0;
 
+	/** @var bool Re-entrancy guard for {@see scrubWeakReferences}: true while executing. */
+	private bool $_scrubbing = false;
+
+	/** @var ?bool Whether GC'd entries are automatically discarded. Null = lazy init. */
+	private ?bool $_discardInvalid = null;
+
+	/** @var int Number of {@see \Prado\TEventHandler} instances currently tracked. */
+	private int $_eventHandlerCount = 0;
+
+	/**
+	 * Returns true if {@see scrubWeakReferences} is currently executing.
+	 * The re-entrancy guard prevents cyclic GC from invoking a second scrub
+	 * while the outer loop is still iterating.
+	 * @return bool
+	 * @since 4.3.3
+	 */
+	protected function isScrubbing(): bool
+	{
+		return $this->_scrubbing;
+	}
+
+	/**
+	 * Sets or clears the {@see scrubWeakReferences} re-entrancy guard.
+	 * @param bool $value True when entering the scrub loop; false on exit.
+	 * @since 4.3.3
+	 */
+	protected function setScrubbing(bool $value): void
+	{
+		$this->_scrubbing = $value;
+	}
+
 	/**
 	 * Initializes a new WeakMap
 	 */
@@ -163,11 +194,29 @@ trait TWeakCollectionTrait
 	}
 
 	/**
+	 * Appends weak-collection properties that must be excluded from serialization.
+	 *
+	 * Always excluded (pure runtime state):
+	 *  - `_weakMap` / `_weakCount` — rebuilt from data on wakeup
+	 *  - `_scrubbing` — transient re-entrancy flag, always false at rest
+	 *  - `_eventHandlerCount` — derived from data, always 0 after wakeup
+	 *
+	 * Conditionally excluded:
+	 *  - `_discardInvalid` when null — null means "lazy: derive from ReadOnly",
+	 *    so persisting null is harmless but storing the derived value is preferable;
+	 *    excluding null causes wakeup to re-derive correctly.
+	 *
 	 * @param array &$exprops Properties to remove from serialize.
+	 * @since 4.3.0
 	 */
 	protected function _weakZappableSleepProps(array &$exprops): void
 	{
 		$exprops[] = "\0" . __CLASS__ . "\0_weakMap";
 		$exprops[] = "\0" . __CLASS__ . "\0_weakCount";
+		$exprops[] = "\0" . __CLASS__ . "\0_scrubbing";
+		$exprops[] = "\0" . __CLASS__ . "\0_eventHandlerCount";
+		if ($this->_discardInvalid === null) {
+			$exprops[] = "\0" . __CLASS__ . "\0_discardInvalid";
+		}
 	}
 }
