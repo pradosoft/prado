@@ -721,4 +721,129 @@ class TEventParameterTest extends TestCase
 		$param = new TEventParameter([]);
 		$this->assertTrue($param->getParameterIsArray());
 	}
+
+	// ================================================================================
+	// ReadOnly Property Tests
+	// ================================================================================
+
+	public function testReadOnlyDefaultIsFalse()
+	{
+		$param = new TEventParameter('value');
+		$this->assertFalse($param->getReadOnly());
+	}
+
+	public function testSetReadOnlyTrue()
+	{
+		$param = new TEventParameter('value');
+		$param->setReadOnly(true);
+		$this->assertTrue($param->getReadOnly());
+	}
+
+	public function testSetReadOnlyFalse()
+	{
+		$param = new TEventParameter('value');
+		$param->setReadOnly(true);
+		$param->setReadOnly(false);
+		$this->assertFalse($param->getReadOnly());
+	}
+
+	public function testSetReadOnlyToggle()
+	{
+		$param = new TEventParameter('value');
+		$param->setReadOnly(true);
+		$this->assertTrue($param->getReadOnly());
+		$param->setReadOnly(false);
+		$this->assertFalse($param->getReadOnly());
+		$param->setReadOnly(true);
+		$this->assertTrue($param->getReadOnly());
+	}
+
+	public function testSetParameterThrowsWhenReadOnly()
+	{
+		$param = new TEventParameter('value');
+		$param->setReadOnly(true);
+		$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
+		$param->setParameter('new value');
+	}
+
+	public function testSetParameterAllowedAfterReadOnlyReset()
+	{
+		$param = new TEventParameter('value');
+		$param->setReadOnly(true);
+		$param->setReadOnly(false);
+		$param->setParameter('new value');
+		$this->assertEquals('new value', $param->getParameter());
+	}
+
+	public function testOffsetSetThrowsWhenReadOnly()
+	{
+		$param = new TEventParameter(['key' => 'value']);
+		$param->setReadOnly(true);
+		$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
+		$param->offsetSet('key', 'new value');
+	}
+
+	public function testOffsetSetOnNullThrowsWhenReadOnly()
+	{
+		$param = new TEventParameter(null);
+		$param->setReadOnly(true);
+		$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
+		$param->offsetSet('key', 'value');
+	}
+
+	public function testOffsetUnsetThrowsWhenReadOnly()
+	{
+		$param = new TEventParameter(['key' => 'value']);
+		$param->setReadOnly(true);
+		$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
+		$param->offsetUnset('key');
+	}
+
+	public function testOffsetUnsetOnNonArrayThrowsWhenReadOnly()
+	{
+		$param = new TEventParameter('string');
+		$param->setReadOnly(true);
+		$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
+		$param->offsetUnset('key');
+	}
+
+	public function testGetParameterAllowedWhenReadOnly()
+	{
+		$param = new TEventParameter('value');
+		$param->setReadOnly(true);
+		$this->assertEquals('value', $param->getParameter());
+	}
+
+	public function testOffsetGetAllowedWhenReadOnly()
+	{
+		$param = new TEventParameter(['key' => 'value']);
+		$param->setReadOnly(true);
+		$this->assertEquals('value', $param->offsetGet('key'));
+	}
+
+	public function testOffsetExistsAllowedWhenReadOnly()
+	{
+		$param = new TEventParameter(['key' => 'value']);
+		$param->setReadOnly(true);
+		$this->assertTrue($param->offsetExists('key'));
+		$this->assertFalse($param->offsetExists('missing'));
+	}
+
+	public function testSetEventNameAllowedWhenReadOnly()
+	{
+		$param = new TEventParameter('value');
+		$param->setReadOnly(true);
+		$param->setEventName('SomeEvent');
+		$this->assertEquals('SomeEvent', $param->getEventName());
+	}
+
+	public function testReadOnlyDoesNotAffectParameterChanged()
+	{
+		$param = new TEventParameter('value');
+		$param->setReadOnly(true);
+		$this->assertFalse($param->getParameterChanged());
+		// Manual flag still works
+		$param->setParameterChanged(true);
+		$this->assertTrue($param->getParameterChanged());
+	}
 }
