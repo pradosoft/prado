@@ -22,8 +22,8 @@ use Prado\Exceptions\TInvalidOperationException;
  *
  * TEventParameter is the base class for all event parameter classes.
  * When raising an event, this class captures the event name being raised by being
- * an {@see \Prado\IEventParameter}. TEventParameter encapsulates the parameter data for
- * events. The event parameter is set via {@see setParameter Parameter} property
+ * an {@see IEventParameter}. TEventParameter encapsulates the parameter data for
+ * events. The event parameter is set via {@see setParameter} property
  * or by constructor parameter.
  *
  * TEventParameter also implements \ArrayAccess to allow direct access to the
@@ -41,8 +41,12 @@ use Prado\Exceptions\TInvalidOperationException;
  * {@see offsetUnset} — will throw a {@see \Prado\Exceptions\TInvalidOperationException}.
  * Reads are always permitted regardless of ReadOnly state.
  *
+ * Subclasses may implement {@see IEventCycleParameter} to participate in the event raising
+ * process via {@see IEventCycleParameter::preRaiseEvent} and
+ * {@see IEventCycleParameter::postRaiseEvent} lifecycle hooks.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @author Brad Anderson <belisoful@icloud.com> ArrayAccess, ParameterChanged, ReadOnly
+ * @author Brad Anderson <belisoful@icloud.com> ArrayAccess, ParameterChanged, Event Life Cycle
  * @since 3.0
  */
 class TEventParameter extends \Prado\TComponent implements IEventParameter, ArrayAccess
@@ -50,16 +54,18 @@ class TEventParameter extends \Prado\TComponent implements IEventParameter, Arra
 	private string $_eventName = '';
 	private mixed $_param = null;
 	private bool $_parameterChanged = false;
-	private bool $_readOnly = false;
+	private ?bool $_readOnly = null;
 
 	/**
 	 * Constructor.
 	 * @param null|mixed $parameter parameter of the event
+	 * @param bool $readOnly
 	 * @since 4.3.0
 	 */
-	public function __construct(mixed $parameter = null)
+	public function __construct(mixed $parameter = null, $readOnly = false)
 	{
 		$this->setParameter($parameter);
+		$this->setReadOnly($readOnly);
 		$this->resetParameterChanged();
 		parent::__construct();
 	}
@@ -102,9 +108,7 @@ class TEventParameter extends \Prado\TComponent implements IEventParameter, Arra
 	 */
 	public function setParameter(mixed $value)
 	{
-		if ($this->getReadOnly()) {
-			throw new TInvalidOperationException('eventparam_readonly', $this::class);
-		}
+		$this->assertMutable();
 		$this->setParameterChanged($value !== $this->_param);
 		$this->_param = $value;
 	}
@@ -119,14 +123,11 @@ class TEventParameter extends \Prado\TComponent implements IEventParameter, Arra
 	}
 
 	/**
-	 * This provides handlers to be able to set the "parameter changed" if the internal
-	 * Event Parameter was an object, like TMap.  The handler can changed the TMap
-	 * (event parameter object) without changing the TEventParameter::Parameter. This
-	 * method provides a way to "manually" set the ParameterChanged of the event.
-	 * This is a one-way function where once ParameterChanged is true, it remains true
-	 * until {@see resetParameterChanged} is called. If false is passed, this method
-	 * does nothing.
-	 * @param bool $value Sets if the Parameter has changed.
+	 * Manually marks the parameter as changed. Useful when the parameter is a
+	 * mutable object (e.g. TMap) whose contents change without replacing the reference.
+	 * One-way: once `true`, stays `true` until {@see resetParameterChanged}.
+	 * Passing `false` is a no-op.
+	 * @param bool $value whether the parameter has changed.
 	 * @since 4.3.3
 	 */
 	public function setParameterChanged(bool $value)
@@ -149,18 +150,39 @@ class TEventParameter extends \Prado\TComponent implements IEventParameter, Arra
 	 */
 	public function getReadOnly(): bool
 	{
-		return $this->_readOnly;
+		return (bool) $this->_readOnly;
 	}
 
 	/**
-	 * When ReadOnly is true, any call to {@see setParameter}, {@see offsetSet}, or
-	 * {@see offsetUnset} will throw a {@see \Prado\Exceptions\TInvalidOperationException}.
-	 * @param bool $value whether the TEventParameter should be read-only
+	 * Sets the ReadOnly state. Internal use only; may only be called once and only
+	 * from within the object itself (constructor or subclass methods).
+	 * @param bool $value whether the TEventParameter should be read-only.
+	 * @throws TInvalidOperationException if ReadOnly has already been set, or if
+	 *   called from outside the object.
 	 * @since 4.3.3
 	 */
-	public function setReadOnly(bool $value)
+	public function setReadOnly($value)
 	{
-		$this->_readOnly = $value;
+		if ($this->_readOnly !== null) {
+			throw new TInvalidOperationException('eventparam_readonly_set', $this::class);
+		}
+		if (!Prado::isCallingSelf()) {
+			throw new TInvalidOperationException('eventparam_readonly_not_self', $this::class);
+		}
+		$this->_readOnly = (bool) $value;
+	}
+
+	/**
+	 * Asserts that the TEventParameter is mutable, throwing a
+	 * {@see TInvalidOperationException} if {@see getReadOnly ReadOnly} is true.
+	 * @throws TInvalidOperationException if the TEventParameter is read-only
+	 * @since 4.3.3
+	 */
+	protected function assertMutable(): void
+	{
+		if ($this->getReadOnly()) {
+			throw new TInvalidOperationException('eventparam_readonly', $this::class);
+		}
 	}
 
 	/**
@@ -217,9 +239,7 @@ class TEventParameter extends \Prado\TComponent implements IEventParameter, Arra
 	 */
 	public function offsetSet($offset, $item): void
 	{
-		if ($this->getReadOnly()) {
-			throw new TInvalidOperationException('eventparam_readonly', $this::class);
-		}
+		$this->assertMutable();
 		if ($this->_param === null) {
 			$this->setParameter([]);
 		}
@@ -249,9 +269,7 @@ class TEventParameter extends \Prado\TComponent implements IEventParameter, Arra
 	 */
 	public function offsetUnset($offset): void
 	{
-		if ($this->getReadOnly()) {
-			throw new TInvalidOperationException('eventparam_readonly', $this::class);
-		}
+		$this->assertMutable();
 		if (!$this->getParameterIsArray() || !isset($this->_param[$offset])) {
 			return;
 		}

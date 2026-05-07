@@ -1428,13 +1428,18 @@ class TComponent
 	 * specifying {@see \Prado\TEventResults::EVENT_REVERSE} can be used to reverse the order of the
 	 * handlers.
 	 *
+	 * If `$param` implements {@see \Prado\IEventCycleParameter}, its
+	 * {@see \Prado\IEventCycleParameter::preRaiseEvent} and
+	 * {@see \Prado\IEventCycleParameter::postRaiseEvent} are called for pre- and
+	 * post-processing of the event lifecycle.
+	 *
 	 * @param string $name the event name
 	 * @param mixed $sender the event sender object
 	 * @param \Prado\TEventParameter $param the event parameter
-	 * @param null|numeric $responsetype how the results of the event are tabulated.  default: {@see EVENT_RESULT_FILTER}  The default filters out
-	 *		null responses. optional
-	 * @param null|callable $postfunction any per handler filtering of the response result needed is passed through
-	 *		this if not null. default: null.  optional
+	 * @param null|numeric $responsetype how the results of the event are tabulated.
+	 *      default: {@see EVENT_RESULT_FILTER}  The default filters out null responses. optional
+	 * @param null|callable $postfunction any per handler filtering of the response result needed
+	 *		is passed through this if not null. default: null.  optional
 	 * @throws TInvalidOperationException if the event is undefined
 	 * @throws TInvalidDataValueException If an event handler is invalid
 	 * @return mixed the results of the event
@@ -1456,6 +1461,9 @@ class TComponent
 
 		if ($param instanceof IEventParameter) {
 			$param->setEventName($name);
+		}
+		if (($param instanceof TComponent && $param->isa(IEventCycleParameter::class)) || $param instanceof IEventCycleParameter) {
+			$param->preRaiseEvent($name, $sender, $param, $responsetype, $postfunction);
 		}
 
 		$this->callBehaviorsMethod('dyPreRaiseEvent', $name, $name, $sender, $param, $responsetype, $postfunction);
@@ -1541,6 +1549,10 @@ class TComponent
 		}
 
 		$this->callBehaviorsMethod('dyPostRaiseEvent', $responses, $responses, $name, $sender, $param, $responsetype, $postfunction);
+
+		if (($param instanceof TComponent && $param->isa(IEventCycleParameter::class)) || $param instanceof IEventCycleParameter) {
+			$param->postRaiseEvent($responses, $name, $sender, $param, $responsetype, $postfunction);
+		}
 
 		return $responses;
 	}

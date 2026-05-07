@@ -732,118 +732,155 @@ class TEventParameterTest extends TestCase
 		$this->assertFalse($param->getReadOnly());
 	}
 
-	public function testSetReadOnlyTrue()
+	public function testReadOnlyTrueViaConstructor()
 	{
-		$param = new TEventParameter('value');
-		$param->setReadOnly(true);
+		$param = new TEventParameter('value', true);
 		$this->assertTrue($param->getReadOnly());
 	}
 
-	public function testSetReadOnlyFalse()
+	public function testReadOnlyFalseViaConstructor()
 	{
-		$param = new TEventParameter('value');
-		$param->setReadOnly(true);
-		$param->setReadOnly(false);
+		$param = new TEventParameter('value', false);
 		$this->assertFalse($param->getReadOnly());
 	}
 
-	public function testSetReadOnlyToggle()
+	public function testSetReadOnlyThrowsWhenCalledExternally()
 	{
 		$param = new TEventParameter('value');
+		$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
 		$param->setReadOnly(true);
-		$this->assertTrue($param->getReadOnly());
-		$param->setReadOnly(false);
-		$this->assertFalse($param->getReadOnly());
-		$param->setReadOnly(true);
-		$this->assertTrue($param->getReadOnly());
+	}
+
+	public function testSetReadOnlyThrowsWhenAlreadySet()
+	{
+		// Use a subclass to expose setReadOnly as a second internal call
+		$param = new class('value', false) extends TEventParameter {
+			public function trySetReadOnly(bool $value): void
+			{
+				$this->setReadOnly($value);
+			}
+		};
+		$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
+		$param->trySetReadOnly(true);
 	}
 
 	public function testSetParameterThrowsWhenReadOnly()
 	{
-		$param = new TEventParameter('value');
-		$param->setReadOnly(true);
+		$param = new TEventParameter('value', true);
 		$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
 		$param->setParameter('new value');
 	}
 
-	public function testSetParameterAllowedAfterReadOnlyReset()
-	{
-		$param = new TEventParameter('value');
-		$param->setReadOnly(true);
-		$param->setReadOnly(false);
-		$param->setParameter('new value');
-		$this->assertEquals('new value', $param->getParameter());
-	}
-
 	public function testOffsetSetThrowsWhenReadOnly()
 	{
-		$param = new TEventParameter(['key' => 'value']);
-		$param->setReadOnly(true);
+		$param = new TEventParameter(['key' => 'value'], true);
 		$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
 		$param->offsetSet('key', 'new value');
 	}
 
 	public function testOffsetSetOnNullThrowsWhenReadOnly()
 	{
-		$param = new TEventParameter(null);
-		$param->setReadOnly(true);
+		$param = new TEventParameter(null, true);
 		$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
 		$param->offsetSet('key', 'value');
 	}
 
 	public function testOffsetUnsetThrowsWhenReadOnly()
 	{
-		$param = new TEventParameter(['key' => 'value']);
-		$param->setReadOnly(true);
+		$param = new TEventParameter(['key' => 'value'], true);
 		$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
 		$param->offsetUnset('key');
 	}
 
 	public function testOffsetUnsetOnNonArrayThrowsWhenReadOnly()
 	{
-		$param = new TEventParameter('string');
-		$param->setReadOnly(true);
+		$param = new TEventParameter('string', true);
 		$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
 		$param->offsetUnset('key');
 	}
 
 	public function testGetParameterAllowedWhenReadOnly()
 	{
-		$param = new TEventParameter('value');
-		$param->setReadOnly(true);
+		$param = new TEventParameter('value', true);
 		$this->assertEquals('value', $param->getParameter());
 	}
 
 	public function testOffsetGetAllowedWhenReadOnly()
 	{
-		$param = new TEventParameter(['key' => 'value']);
-		$param->setReadOnly(true);
+		$param = new TEventParameter(['key' => 'value'], true);
 		$this->assertEquals('value', $param->offsetGet('key'));
 	}
 
 	public function testOffsetExistsAllowedWhenReadOnly()
 	{
-		$param = new TEventParameter(['key' => 'value']);
-		$param->setReadOnly(true);
+		$param = new TEventParameter(['key' => 'value'], true);
 		$this->assertTrue($param->offsetExists('key'));
 		$this->assertFalse($param->offsetExists('missing'));
 	}
 
 	public function testSetEventNameAllowedWhenReadOnly()
 	{
-		$param = new TEventParameter('value');
-		$param->setReadOnly(true);
+		$param = new TEventParameter('value', true);
 		$param->setEventName('SomeEvent');
 		$this->assertEquals('SomeEvent', $param->getEventName());
 	}
 
 	public function testReadOnlyDoesNotAffectParameterChanged()
 	{
-		$param = new TEventParameter('value');
-		$param->setReadOnly(true);
+		$param = new TEventParameter('value', true);
 		$this->assertFalse($param->getParameterChanged());
-		// Manual flag still works
+		// Manual flag still works when read-only
 		$param->setParameterChanged(true);
 		$this->assertTrue($param->getParameterChanged());
+	}
+
+	// ================================================================================
+	// assertMutable Tests
+	// ================================================================================
+
+	private function makeExposed(mixed $parameter = null, bool $readOnly = false): object
+	{
+		return new class($parameter, $readOnly) extends TEventParameter {
+			public function callAssertMutable(): void
+			{
+				$this->assertMutable();
+			}
+		};
+	}
+
+	public function testAssertMutablePassesWhenNotReadOnly()
+	{
+		$param = $this->makeExposed('value', false);
+		// Must not throw
+		$param->callAssertMutable();
+		$this->assertFalse($param->getReadOnly());
+	}
+
+	public function testAssertMutableThrowsWhenReadOnly()
+	{
+		$param = $this->makeExposed('value', true);
+		$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
+		$param->callAssertMutable();
+	}
+
+	public function testAssertMutableThrowsOnSetParameterWhenReadOnly()
+	{
+		$param = $this->makeExposed('value', true);
+		$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
+		$param->setParameter('new');
+	}
+
+	public function testAssertMutableThrowsOnOffsetSetWhenReadOnly()
+	{
+		$param = $this->makeExposed(['key' => 'value'], true);
+		$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
+		$param->offsetSet('key', 'new');
+	}
+
+	public function testAssertMutableThrowsOnOffsetUnsetWhenReadOnly()
+	{
+		$param = $this->makeExposed(['key' => 'value'], true);
+		$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
+		$param->offsetUnset('key');
 	}
 }

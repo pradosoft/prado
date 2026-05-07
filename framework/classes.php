@@ -238,6 +238,7 @@ return [
 'TTranslate' => 'Prado\I18N\TTranslate',
 'TTranslateParameter' => 'Prado\I18N\TTranslateParameter',
 'IDataRenderer' => 'Prado\IDataRenderer',
+'IEventCycleParameter' => 'Prado\IEventCycleParameter',
 'IEventParameter' => 'Prado\IEventParameter',
 'IModule' => 'Prado\IModule',
 'ITextWriter' => 'Prado\IO\ITextWriter',

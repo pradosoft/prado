@@ -26,6 +26,8 @@ eventhandler_no_set_handler				= TEventHandler cannot set the event handler, ind
 eventhandler_bad_offset					= TEventHandler does not have offset "{0}".
 
 eventparam_readonly						= {0} is read-only.
+eventparam_readonly_set					= {0} cannot change ReadOnly once it has been set.
+eventparam_readonly_not_self			= {0} ReadOnly can only be set internally.
 
 list_index_invalid						= Index '{0}' is out of range.
 list_item_inexistent					= The item cannot be found in the list.
