@@ -103,14 +103,7 @@ final class TComponentIsaTypeSpecifyingExtension implements MethodTypeSpecifying
 		foreach ($constantStrings as $constString) {
 			$className = $constString->getValue();
 
-			// ← use ReflectionProvider instead of is_a()
 			if (!$this->reflectionProvider->hasClass($className)) {
-				continue;
-			}
-
-			$classReflection = $this->reflectionProvider->getClass($className);
-
-			if (!$classReflection->isSubclassOf(TComponent::class) && $className !== TComponent::class) {
 				continue;
 			}
 
