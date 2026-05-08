@@ -232,7 +232,7 @@ Prado.WebUI.TInPlaceTextBox = jQuery.klass(Prado.WebUI.Control,
 		this.editField.value = this.getText();
 		jQuery(this.editField).focus();
 		if(typeof(this.options.onSuccess)=="function")
-			this.options.onSuccess(sender,parameter);
+			this.options.onSuccess(request, parameter);
 	},
 
 	onloadExternalTextFailure : function(request, parameter)
@@ -241,7 +241,7 @@ Prado.WebUI.TInPlaceTextBox = jQuery.klass(Prado.WebUI.Control,
 		this.isEditing = false;
 		this.showLabel();
 		if(typeof(this.options.onFailure)=="function")
-			this.options.onFailure(sender,parameter);
+			this.options.onFailure(request, parameter);
 	},
 
 	/**

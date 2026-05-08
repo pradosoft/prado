@@ -408,6 +408,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 
 	errorHandler: function(request, textStatus, errorThrown)
 	{
+		var log;
 		this.data = request.responseText;
 
 		if(Prado.CallbackRequestManager.LOG_ERROR && (log = this.getLogger()))
@@ -452,12 +453,11 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 	 */
 	exceptionHandler: function(e)
 	{
+		var log;
 		if(Prado.CallbackRequestManager.LOG_ERROR && (log = this.getLogger()))
 		{
 			log.error("Uncaught Callback Client Exception:", e.message);
 			log.info('Stack:', e.stack);
-		} else {
-			debugger;
 		}
 
 		if (this.options.onException)
@@ -469,6 +469,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 	 */
 	successHandler: function(data, textStatus, request)
 	{
+		var log;
 		this.data = data;
 
 		if(Prado.CallbackRequestManager.LOG_SUCCESS && (log = this.getLogger()))
@@ -526,6 +527,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 	 */
 	updatePageState : function(request, datain)
 	{
+		var log;
 		var pagestate = jQuery("#"+Prado.CallbackRequestManager.FIELD_CALLBACK_PAGESTATE);
 		var enabled = request.options.EnablePageStateUpdate;
 		var aborted = false; //typeof(self.currentRequest) == 'undefined' || self.currentRequest == null;
@@ -566,6 +568,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 
 	checkHiddenFields : function(request, datain)
 	{
+		var log, json;
 		var data = this.extractContent(Prado.CallbackRequestManager.HIDDENFIELDLIST_HEADER);
 		if (typeof(data) == "string" && data.length > 0)
 		{
@@ -617,6 +620,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 	 */
 	loadScripts : function(request, datain, callback)
 	{
+		var log, json;
 		var data = this.extractContent(Prado.CallbackRequestManager.SCRIPTLIST_HEADER);
 		if (!this.ScriptsToLoad) this.ScriptsToLoad = new Array();
 		this.ScriptLoadFinishedCallback = callback;
@@ -668,6 +672,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 
 	loadStyleSheetsCode : function(request, datain)
 	{
+		var log, json;
 		var data = this.extractContent(Prado.CallbackRequestManager.STYLESHEET_HEADER);
 		if (typeof(data) == "string" && data.length > 0)
 		{
@@ -686,6 +691,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 
 	loadStyleSheetsAsync : function(request, datain)
 	{
+		var log, json;
 		var data = this.extractContent(Prado.CallbackRequestManager.STYLESHEETLIST_HEADER);
 		if (typeof(data) == "string" && data.length > 0)
 		{
@@ -704,6 +710,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 
 	loadStyleSheets : function(request, datain, callback)
 	{
+		var log, json;
 		var data = this.extractContent(Prado.CallbackRequestManager.STYLESHEETLIST_HEADER);
 		if (!this.StyleSheetsToLoad) this.StyleSheetsToLoad = new Array();
 		this.StyleSheetLoadFinishedCallback = callback;
@@ -756,6 +763,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 	 */
 	dispatchActions : function(request, datain)
 	{
+		var log, json;
 		var data = this.extractContent(Prado.CallbackRequestManager.ACTION_HEADER);
 		if (typeof(data) == "string" && data.length > 0)
 		{
@@ -778,6 +786,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 	 */
 	outputDebug : function(request, datain)
 	{
+		var log, json;
 		var data = this.extractContent(Prado.CallbackRequestManager.DEBUG_HEADER);
 		if (typeof(data) == "string" && data.length > 0 && (log = this.getLogger()))
 		{
@@ -950,7 +959,7 @@ if (typeof(Prado.AssetManagerClass)=="undefined") {
 		},
 
 		assetLoadFailed: function(url, element, callback) {
-			debugger;
+			var log;
 			element.assetCallbackFired = true;
 			if(Prado.CallbackRequestManager.LOG_ERROR && (log = this.getLogger()))
 				log.error("Failed to load asset: "+url, this);

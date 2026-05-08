@@ -1085,6 +1085,8 @@ jQuery.extend(String.prototype, {
 		var m = this.match(exp);
 		if (m == null)
 			return null;
+		m[1] = m[1] || "";
+		m[2] = m[2] || "";
 		var intermed = m[2] + m[5] ;
 		var cleanInput = m[1] + intermed.replace(
 				new RegExp("(\\" + groupchar + ")", "g"), "")

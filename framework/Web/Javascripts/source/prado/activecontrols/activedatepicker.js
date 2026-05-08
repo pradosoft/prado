@@ -14,15 +14,16 @@ Prado.WebUI.TActiveDatePicker = jQuery.klass(Prado.WebUI.TDatePicker,
 
 
 		//which element to trigger to show the calendar
+		var triggerEvent;
 		if(this.options.Trigger)
 		{
 			this.trigger = jQuery('#'+this.options.Trigger).get(0) ;
-			var triggerEvent = this.options.TriggerEvent || "click";
+			triggerEvent = this.options.TriggerEvent || "click";
 		}
 		else
 		{
 			this.trigger  = this.control;
-			var triggerEvent = this.options.TriggerEvent || "focus";
+			triggerEvent = this.options.TriggerEvent || "focus";
 		}
 
 		// Popup position
