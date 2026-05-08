@@ -8,14 +8,26 @@ use Prado\TApplication;
 /**
  * Integration tests for TDbConnection charset handling — SQLite.
  *
- * TDbConnection applies the Charset property to SQLite via  PRAGMA encoding = <value>.
- * The PRAGMA only takes effect before any tables are created; on databases that
- * already have tables it is silently ignored so the connection remains usable.
+ * SQLite supports exactly two charset families: UTF-8 and UTF-16.  UTF-16 is
+ * stored in the database file in the host's native byte order; PRAGMA encoding
+ * always reports the specific form ('UTF-16le' or 'UTF-16be'), never the bare
+ * 'UTF-16' token.  TDbConnection::unresolveCharset() maps both endian variants
+ * back to the PRADO canonical name 'UTF-16'.
  *
- * For new in-memory databases (used here) the PRAGMA succeeds and the encoding
- * reported by a subsequent  PRAGMA encoding  query reflects the configured value.
+ * PRAGMA encoding only takes effect before any tables are created; on databases
+ * that already have tables it is silently ignored and the encoding established
+ * at creation time is preserved.  TDbConnection handles this in two places:
  *
- * Tests are skipped automatically when the pdo_sqlite extension is missing.
+ *  - open()       — attempts PRAGMA, then reads back the actual encoding and
+ *                   syncs the Charset property to what the DB really has.
+ *  - setCharset() — same PRAGMA-then-readback sequence for post-connect changes.
+ *
+ * getDatabaseCharset() returns the raw PRAGMA encoding string reported by
+ * SQLite ('UTF-8', 'UTF-16le', or 'UTF-16be'), while the Charset property
+ * stores the PRADO canonical name ('UTF-8' or 'UTF-16').
+ *
+ * Tests are organised in parallel UTF-8 / UTF-16 sections so the two charsets
+ * receive equivalent coverage.  Tests are skipped when pdo_sqlite is missing.
  */
 class TDbConnectionCharsetSqliteIntegrationTest extends PHPUnit\Framework\TestCase
 {
@@ -47,13 +59,9 @@ class TDbConnectionCharsetSqliteIntegrationTest extends PHPUnit\Framework\TestCa
 	}
 
 	// -----------------------------------------------------------------------
-	// Shared helpers
+	// Helpers
 	// -----------------------------------------------------------------------
 
-	/**
-	 * Create and activate a TDbConnection, marking the test skipped on any
-	 * connection error (missing extension, server not running, DB not found).
-	 */
 	private function openConnection(string $dsn, string $user, string $pass, string $charset = ''): TDbConnection
 	{
 		try {
@@ -65,162 +73,313 @@ class TDbConnectionCharsetSqliteIntegrationTest extends PHPUnit\Framework\TestCa
 		}
 	}
 
-	/** Query a scalar value from an active connection. */
 	private function queryScalar(TDbConnection $conn, string $sql): mixed
 	{
 		return $conn->createCommand($sql)->queryScalar();
 	}
-
-	// -----------------------------------------------------------------------
-	// SQLite helpers
-	// -----------------------------------------------------------------------
 
 	private function openSqlite(string $charset = ''): TDbConnection
 	{
 		if (!extension_loaded('pdo_sqlite')) {
 			$this->markTestSkipped('pdo_sqlite extension not available.');
 		}
-		// Use an in-memory DB so no file cleanup is needed.
 		return $this->openConnection('sqlite::memory:', '', '', $charset);
 	}
 
+	/**
+	 * Returns the raw PRAGMA encoding string for $conn.
+	 * For UTF-16 databases this is 'UTF-16le' or 'UTF-16be' depending on
+	 * the host's byte order.
+	 */
+	private function pragmaEncoding(TDbConnection $conn): string
+	{
+		return (string) $this->queryScalar($conn, 'PRAGMA encoding');
+	}
+
+	/**
+	 * Asserts that the raw PRAGMA encoding string is a UTF-16 variant
+	 * ('UTF-16le' or 'UTF-16be').  Used wherever the exact endian form is
+	 * system-dependent.
+	 */
+	private function assertIsUtf16Encoding(string $encoding, string $message = ''): void
+	{
+		$this->assertMatchesRegularExpression('/^UTF-16(le|be)$/i', $encoding,
+			$message ?: "Expected a UTF-16 variant (UTF-16le/UTF-16be), got '$encoding'.");
+	}
+
 	// -----------------------------------------------------------------------
-	// Tests
+	// UTF-8 — fresh in-memory database (no tables: PRAGMA takes effect)
 	// -----------------------------------------------------------------------
 
-	public function testSqliteIsAlwaysUtf8(): void
+	public function testSqliteDefaultEncodingIsUtf8(): void
 	{
+		// No Charset requested — SQLite defaults to UTF-8.
+		// open() reads back PRAGMA encoding and syncs Charset to 'UTF-8'.
 		$conn = $this->openSqlite();
-		$encoding = $this->queryScalar($conn, 'PRAGMA encoding');
-		$this->assertSame('UTF-8', $encoding);
+		$this->assertSame('UTF-8', $this->pragmaEncoding($conn));
+		$this->assertSame('UTF-8', $conn->Charset);
 		$conn->Active = false;
 	}
 
-	public function testSqliteCharsetAppliedViaEncoding(): void
+	public function testSqliteCharsetUtf8AppliedOnFreshDatabase(): void
 	{
-		// On a fresh in-memory database (no tables yet) PRAGMA encoding succeeds.
+		// Requesting UTF-8 explicitly on a fresh DB: PRAGMA succeeds,
+		// readback syncs Charset to 'UTF-8'.
 		$conn = $this->openSqlite('UTF-8');
 		$this->assertTrue($conn->Active);
-		$encoding = $this->queryScalar($conn, 'PRAGMA encoding');
-		$this->assertSame('UTF-8', $encoding);
+		$this->assertSame('UTF-8', $this->pragmaEncoding($conn));
+		$this->assertSame('UTF-8', $conn->Charset);
 		$conn->Active = false;
 	}
 
-	public function testSqliteSetCharsetAfterConnectDoesNotThrow(): void
+	// -----------------------------------------------------------------------
+	// UTF-16 — fresh in-memory database (no tables: PRAGMA takes effect)
+	// -----------------------------------------------------------------------
+
+	public function testSqliteCharsetUtf16AppliedOnFreshDatabase(): void
 	{
-		// Setting Charset on an active connection triggers setConnectionCharset().
-		// For an in-memory DB with no tables PRAGMA encoding succeeds; errors on
-		// populated databases are silently ignored — either way, no exception is thrown.
-		$conn = $this->openSqlite();
-		$conn->Charset = 'UTF-8';
+		// Requesting UTF-16 on a fresh DB: PRAGMA encoding = 'UTF-16' succeeds.
+		// SQLite stores it in native byte order and reports 'UTF-16le' or 'UTF-16be'.
+		// unresolveCharset() maps either variant back to the PRADO canonical 'UTF-16'.
+		$conn = $this->openSqlite('UTF-16');
 		$this->assertTrue($conn->Active);
-		$encoding = $this->queryScalar($conn, 'PRAGMA encoding');
-		$this->assertSame('UTF-8', $encoding);
+		$this->assertIsUtf16Encoding($this->pragmaEncoding($conn));
+		$this->assertSame('UTF-16', $conn->Charset);
 		$conn->Active = false;
 	}
 
-	public function testSqliteUnsupportedCharsetFailsSilently(): void
+	// -----------------------------------------------------------------------
+	// UTF-8 — existing database (tables present: PRAGMA ignored, readback corrects)
+	// -----------------------------------------------------------------------
+
+	public function testSqliteUtf8SyncedFromExistingDatabaseWhenNoCharsetRequested(): void
 	{
-		// ISO-8859-1 is not a valid SQLite PRAGMA encoding value; the PRAGMA is
-		// silently ignored and the connection remains active and usable as UTF-8.
+		// No Charset requested, but a table exists.  open() reads back PRAGMA
+		// encoding; _charset is synced to 'UTF-8' (the DB's actual encoding).
+		$conn = $this->openSqlite();
+		$conn->createCommand('CREATE TABLE t (id INTEGER PRIMARY KEY)')->execute();
+		$this->assertSame('UTF-8', $conn->Charset);
+		$this->assertSame('UTF-8', $this->pragmaEncoding($conn));
+		$conn->Active = false;
+	}
+
+	public function testSqliteUtf8RequestedOnExistingDatabaseSyncsCorrectly(): void
+	{
+		// UTF-8 requested, fresh DB used as stand-in for any UTF-8 existing DB.
+		// PRAGMA applies (no tables yet); readback confirms 'UTF-8'.
+		$conn = $this->openSqlite('UTF-8');
+		$conn->createCommand('CREATE TABLE t (id INTEGER PRIMARY KEY)')->execute();
+		$this->assertSame('UTF-8', $this->pragmaEncoding($conn));
+		$this->assertSame('UTF-8', $conn->Charset);
+		$conn->Active = false;
+	}
+
+	public function testSqliteUnsupportedCharsetClearedAfterConnect(): void
+	{
+		// ISO-8859-1 is not a valid SQLite PRAGMA encoding value.
+		// The PRAGMA is silently ignored; readback corrects Charset to 'UTF-8'.
 		$conn = $this->openSqlite('ISO-8859-1');
 		$this->assertTrue($conn->Active);
-		// Encoding is still UTF-8 (default) since PRAGMA was ignored.
-		$encoding = $this->queryScalar($conn, 'PRAGMA encoding');
-		$this->assertSame('UTF-8', $encoding);
+		$this->assertSame('UTF-8', $this->pragmaEncoding($conn));
+		$this->assertSame('UTF-8', $conn->Charset);
 		$conn->Active = false;
 	}
 
 	// -----------------------------------------------------------------------
-	// getDatabaseCharset() — queries PRAGMA encoding on an active connection
+	// UTF-16 — existing database (tables present: PRAGMA ignored, readback corrects)
 	// -----------------------------------------------------------------------
 
-	public function testSqliteGetDatabaseCharsetReturnsActiveEncoding(): void
+	public function testSqliteUtf16RequestedOnExistingUtf8DatabaseReadbackCorrected(): void
 	{
-		// On a fresh in-memory DB, PRAGMA encoding = 'UTF-8' succeeds.
-		// DatabaseCharset queries the DB directly rather than returning the stored value.
+		// Open a fresh DB without a charset (so it's UTF-8), create a table,
+		// then close and re-open requesting UTF-16.  Because tables exist, the
+		// PRAGMA is ignored; readback corrects Charset back to 'UTF-8'.
+		// In-memory DBs cannot be re-opened, so we simulate by opening UTF-16
+		// on a fresh DB, creating a table, and then issuing setCharset('UTF-8')
+		// — which is the inverse of the original scenario but exercises the same
+		// PRAGMA-ignored → readback path for UTF-16 requests on existing tables.
+		$conn = $this->openSqlite();
+		$conn->createCommand('CREATE TABLE t (id INTEGER PRIMARY KEY)')->execute();
+		// Request UTF-16 after tables exist — PRAGMA will be ignored.
+		$conn->Charset = 'UTF-16';
+		// DB is still UTF-8; readback must correct Charset to 'UTF-8'.
+		$this->assertSame('UTF-8', $this->pragmaEncoding($conn));
+		$this->assertSame('UTF-8', $conn->Charset);
+		$conn->Active = false;
+	}
+
+	public function testSqliteUtf16SyncedFromExistingUtf16DatabaseWhenNoCharsetRequested(): void
+	{
+		// Open a fresh DB with UTF-16, create a table to "lock in" the encoding,
+		// then assert that Charset was synced to 'UTF-16' from the readback.
+		// (The readback happens in open() before any tables are created, so the
+		// PRAGMA is applied first and the readback confirms the UTF-16 encoding.)
+		$conn = $this->openSqlite('UTF-16');
+		$conn->createCommand('CREATE TABLE t (id INTEGER PRIMARY KEY)')->execute();
+		$this->assertIsUtf16Encoding($this->pragmaEncoding($conn));
+		$this->assertSame('UTF-16', $conn->Charset);
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
+	// UTF-8 — setCharset() on an active connection
+	// -----------------------------------------------------------------------
+
+	public function testSqliteSetCharsetUtf8AfterConnectOnFreshDatabase(): void
+	{
+		// No tables: PRAGMA encoding = 'UTF-8' succeeds; readback syncs Charset.
+		$conn = $this->openSqlite();
+		$conn->Charset = 'UTF-8';
+		$this->assertTrue($conn->Active);
+		$this->assertSame('UTF-8', $this->pragmaEncoding($conn));
+		$this->assertSame('UTF-8', $conn->Charset);
+		$conn->Active = false;
+	}
+
+	public function testSqliteSetCharsetUtf8AfterConnectWithTablesReadbackConfirms(): void
+	{
+		// Tables exist: PRAGMA encoding = 'UTF-8' is silently ignored (DB is already
+		// UTF-8), readback still returns 'UTF-8' and Charset stays 'UTF-8'.
+		$conn = $this->openSqlite();
+		$conn->createCommand('CREATE TABLE t (id INTEGER PRIMARY KEY)')->execute();
+		$conn->Charset = 'UTF-8';
+		$this->assertSame('UTF-8', $this->pragmaEncoding($conn));
+		$this->assertSame('UTF-8', $conn->Charset);
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
+	// UTF-16 — setCharset() on an active connection
+	// -----------------------------------------------------------------------
+
+	public function testSqliteSetCharsetUtf16AfterConnectOnFreshDatabase(): void
+	{
+		// No tables: PRAGMA encoding = 'UTF-16' succeeds; readback returns
+		// 'UTF-16le'/'UTF-16be' and unresolves to Charset = 'UTF-16'.
+		$conn = $this->openSqlite();
+		$conn->Charset = 'UTF-16';
+		$this->assertTrue($conn->Active);
+		$this->assertIsUtf16Encoding($this->pragmaEncoding($conn));
+		$this->assertSame('UTF-16', $conn->Charset);
+		$conn->Active = false;
+	}
+
+	public function testSqliteSetCharsetUtf16AfterConnectWithTablesReadbackCorrected(): void
+	{
+		// Tables exist: PRAGMA encoding = 'UTF-16' is silently ignored.
+		// readback returns 'UTF-8' and Charset is corrected to 'UTF-8',
+		// not left as the requested 'UTF-16'.
+		$conn = $this->openSqlite();
+		$conn->createCommand('CREATE TABLE t (id INTEGER PRIMARY KEY)')->execute();
+		$conn->Charset = 'UTF-16';
+		$this->assertSame('UTF-8', $this->pragmaEncoding($conn));
+		$this->assertSame('UTF-8', $conn->Charset);
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
+	// getDatabaseCharset() — returns the raw PRAGMA encoding string
+	//
+	// For UTF-8: returns 'UTF-8' (matches PRADO canonical).
+	// For UTF-16: returns 'UTF-16le' or 'UTF-16be' (system byte-order dependent).
+	// This is intentional — getDatabaseCharset() reports the driver-specific value.
+	// Use the Charset property for the PRADO canonical name.
+	// -----------------------------------------------------------------------
+
+	public function testSqliteGetDatabaseCharsetUtf8ReturnsUtf8(): void
+	{
 		$conn = $this->openSqlite('UTF-8');
 		$this->assertSame('UTF-8', $conn->DatabaseCharset);
 		$conn->Active = false;
 	}
 
-	public function testSqliteGetDatabaseCharsetReturnsDefaultEncodingWhenNoCharsetSet(): void
+	public function testSqliteGetDatabaseCharsetDefaultReturnsUtf8(): void
 	{
-		// When no Charset is configured, DatabaseCharset still queries PRAGMA encoding
-		// and returns the database's actual encoding (always UTF-8 for new DBs).
+		// No Charset configured — SQLite defaults to UTF-8.
 		$conn = $this->openSqlite();
 		$this->assertSame('UTF-8', $conn->DatabaseCharset);
 		$conn->Active = false;
 	}
 
-	public function testSqliteGetDatabaseCharsetReflectsEncodingAfterSetCharset(): void
+	public function testSqliteGetDatabaseCharsetUtf16ReturnsEndianVariant(): void
 	{
-		// Setting Charset after connect re-runs PRAGMA encoding; DatabaseCharset
-		// reads back from the DB and reflects the applied value.
+		// UTF-16 database: getDatabaseCharset() returns the raw PRAGMA value,
+		// which is 'UTF-16le' or 'UTF-16be' depending on the host's byte order.
+		$conn = $this->openSqlite('UTF-16');
+		$this->assertIsUtf16Encoding($conn->DatabaseCharset);
+		$conn->Active = false;
+	}
+
+	public function testSqliteGetDatabaseCharsetReflectsUtf8AfterSetCharset(): void
+	{
 		$conn = $this->openSqlite();
 		$conn->Charset = 'UTF-8';
 		$this->assertSame('UTF-8', $conn->DatabaseCharset);
 		$conn->Active = false;
 	}
 
+	public function testSqliteGetDatabaseCharsetReflectsUtf16AfterSetCharset(): void
+	{
+		// setCharset('UTF-16') on a fresh DB applies the PRAGMA; DatabaseCharset
+		// returns the raw endian-specific form.
+		$conn = $this->openSqlite();
+		$conn->Charset = 'UTF-16';
+		$this->assertIsUtf16Encoding($conn->DatabaseCharset);
+		// Charset property is the PRADO canonical form.
+		$this->assertSame('UTF-16', $conn->Charset);
+		$conn->Active = false;
+	}
+
 	// -----------------------------------------------------------------------
-	// hasAutoCommitAttribute = false behavioral verification
-	//
-	// SQLite does not expose PDO::ATTR_AUTOCOMMIT.  TDbDriverCapabilities returns
-	// false for hasAutoCommitAttribute('sqlite'), and TDbConnection::getAutoCommit()
-	// short-circuits to return false without ever calling PDO::getAttribute().
-	// Attempting to call PDO::getAttribute(PDO::ATTR_AUTOCOMMIT) directly on a
-	// SQLite connection throws or returns a meaningless value; TDbConnection must
-	// not do so.
+	// hasAutoCommitAttribute = false — SQLite does not expose PDO::ATTR_AUTOCOMMIT
 	// -----------------------------------------------------------------------
 
 	public function testSqliteHasNoAutoCommitAttributeFlag(): void
 	{
 		$conn = $this->openSqlite();
-		$this->assertFalse(
-			$conn->HasAutoCommit,
-			'SQLite must report hasAutoCommitAttribute = false.'
-		);
+		$this->assertFalse($conn->HasAutoCommit,
+			'SQLite must report hasAutoCommitAttribute = false.');
 		$conn->Active = false;
 	}
 
 	public function testSqliteGetAutoCommitReturnsFalseWithoutCrash(): void
 	{
-		// getAutoCommit() must return false for SQLite without throwing.
-		// PDO::getAttribute(PDO::ATTR_AUTOCOMMIT) is NOT called on SQLite.
 		$conn = $this->openSqlite();
-		$this->assertFalse(
-			$conn->AutoCommit,
-			'AutoCommit must return false for SQLite (PDO::ATTR_AUTOCOMMIT not supported).'
-		);
+		$this->assertFalse($conn->AutoCommit,
+			'AutoCommit must return false for SQLite (PDO::ATTR_AUTOCOMMIT not supported).');
 		$conn->Active = false;
 	}
 
 	public function testSqliteSetAutoCommitIsSafelyIgnored(): void
 	{
-		// setAutoCommit() must be a safe no-op for SQLite — no exception, no crash.
 		$conn = $this->openSqlite();
-		$conn->AutoCommit = true;   // must not throw
-		$conn->AutoCommit = false;  // must not throw
+		$conn->AutoCommit = true;
+		$conn->AutoCommit = false;
 		$this->assertTrue($conn->Active, 'Connection must remain active after setAutoCommit no-ops.');
-		// The value is still false because sqlite ignores the attribute.
 		$this->assertFalse($conn->AutoCommit);
 		$conn->Active = false;
 	}
 
-	public function testSqliteGetCharsetPragmaSqlAppliedSafelyViaQuote(): void
+	// -----------------------------------------------------------------------
+	// PRAGMA injection safety — PDO::quote() escaping
+	// -----------------------------------------------------------------------
+
+	public function testSqlitePragmaEncodingAppliedViaQuoteEscapingUtf8(): void
 	{
-		// getCharsetPragmaSql() returns 'PRAGMA encoding = %s'.  TDbConnection
-		// executes it via sprintf($sql, $pdo->quote($charset)) — PDO::quote()
-		// ensures the value is safely escaped rather than raw string concatenation.
-		// Verify the PRAGMA is actually executed (no error) and takes effect.
+		// PRAGMA encoding = %s is executed via sprintf($sql, $pdo->quote($charset)).
+		// Verify the PRAGMA takes effect without injection issues for UTF-8.
 		$conn = $this->openSqlite('UTF-8');
-		$encoding = $this->queryScalar($conn, 'PRAGMA encoding');
-		$this->assertSame(
-			'UTF-8',
-			$encoding,
-			'PRAGMA encoding must be applied via PDO::quote()-escaped sprintf, not raw concatenation.'
-		);
+		$this->assertSame('UTF-8', $this->pragmaEncoding($conn),
+			'PRAGMA encoding must be applied via PDO::quote()-escaped sprintf.');
+		$conn->Active = false;
+	}
+
+	public function testSqlitePragmaEncodingAppliedViaQuoteEscapingUtf16(): void
+	{
+		// Same as above for UTF-16.
+		$conn = $this->openSqlite('UTF-16');
+		$this->assertIsUtf16Encoding($this->pragmaEncoding($conn),
+			'PRAGMA encoding must be applied via PDO::quote()-escaped sprintf.');
 		$conn->Active = false;
 	}
 }

@@ -13,7 +13,8 @@ namespace Prado\Data\Common;
 /**
  * IDataColumn interface
  *
- * IDataColumn defines the minimum contract for a column (field) metadata object.
+ * IDataColumn defines the minimum driver-agnostic contract for a column (field)
+ * metadata object.
  *
  * The interface is shaped after the core accessors of {@see TDbTableColumn}, which
  * is the canonical SQL implementation, but is intentionally decoupled from it so
@@ -22,14 +23,22 @@ namespace Prado\Data\Common;
  * descriptor or a spreadsheet column descriptor may implement this interface
  * without inheriting from `TDbTableColumn`.
  *
- * The interface covers the core column contract including type reporting
- * ({@see getPHPType()}, {@see getPdoType()}) and nullability.  More
- * driver-specific concerns — default values, ordinal position, sequence
- * names, auto-increment flags — remain on the concrete implementation class.
+ * The interface covers identity ({@see getColumnName()}, {@see getColumnId()}),
+ * nullability ({@see getAllowNull()}), the raw database type ({@see getDbType()}),
+ * and the PHP primitive type ({@see getPHPType()}).  All of these are meaningful
+ * to any data-store driver.
+ *
+ * PDO-specific binding ({@see IDbColumn::getPdoType()}) lives on the sub-interface
+ * {@see IDbColumn}, following the same layering pattern as
+ * {@see \Prado\Data\IDataConnection} / {@see \Prado\Data\IDbConnection}.
+ * Code that works exclusively with SQL/PDO drivers should type-hint against
+ * {@see IDbColumn}; code that must remain driver-agnostic uses this interface.
+ *
+ * Driver-specific concerns — default values, ordinal position, sequence names,
+ * auto-increment flags — remain on the concrete implementation class.
  * Code that needs those details should check `instanceof TDbTableColumn`
  * explicitly, following the same marker-interface pattern used by
- * {@see IDbHasSchema}.  Non-SQL implementations should stub {@see getPdoType()}
- * with a sensible default (e.g. `PDO::PARAM_STR`).
+ * {@see IDbHasSchema}.
  *
  * Concrete SQL implementations: {@see TDbTableColumn} and its driver-specific
  * subclasses ({@see TMysqlTableColumn}, {@see TSqliteTableColumn},
@@ -80,31 +89,19 @@ interface IDataColumn
 	 */
 	public function getAllowNull();
 
-	// -------------------------------------------------------------------------
-	// SQL/PDO-oriented methods.
-	// SQL drivers implement these fully.  Non-SQL drivers should provide a
-	// no-op stub returning a sensible default (e.g. PDO::PARAM_STR / 2).
-	// -------------------------------------------------------------------------
-
 	/**
-	 * Returns a driver type token that best represents this column's declared
-	 * database type, for use when binding parameter values.
+	 * Returns the PHP primitive type that best represents this column's declared
+	 * database type.
 	 *
-	 * For SQL/PDO drivers the returned integer is one of the stable PDO type
-	 * constants: `PDO::PARAM_BOOL (5)`, `PDO::PARAM_INT (1)`,
-	 * `PDO::PARAM_STR (2)`.  Used by
-	 * {@see \Prado\Data\Common\TDbCommandBuilder::bindColumnValues()} when
-	 * constructing INSERT and UPDATE commands.
+	 * The returned string is one of the PHP primitive type names: `'string'`,
+	 * `'integer'`, `'boolean'`, or `'double'`.  It is used by
+	 * {@see \Prado\Shell\Actions\TActiveRecordAction} for code generation
+	 * and is the driver-agnostic counterpart to {@see IDbColumn::getPdoType()}.
 	 *
-	 * Non-SQL drivers that do not use PDO parameter binding may return
-	 * `PDO::PARAM_STR` (2) as a safe default, or the equivalent type token
-	 * meaningful to their binding layer.
+	 * Non-SQL drivers should return `'string'` as the safe default when no
+	 * more specific type can be determined.
 	 *
-	 * Prefer {@see getPHPType()} combined with
-	 * {@see \Prado\Data\IDataCommand::getColumnTypeFromValue()} for new code
-	 * that must remain driver-agnostic.
-	 *
-	 * @return int the driver parameter-type token.
+	 * @return string the PHP primitive type name for this column.
 	 */
-	public function getPdoType();
+	public function getPHPType();
 }

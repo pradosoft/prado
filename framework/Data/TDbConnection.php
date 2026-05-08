@@ -50,9 +50,13 @@ use Prado\TPropertyValue;
  * charsets inspect the dns for overriding charset to retrieve it for the
  * property, or sets the charset in the dns from the property.
  *
- * PostgreSQL and SQLite do not support DSN-level charset; PostgreSQL applies it
- * after connect, SQLite applies it via PRAGMA before any tables are created
- * (silently ignored thereafter).
+ * PostgreSQL and SQLite do not support DSN-level charset; both apply their
+ * charset via a post-connect command.  PostgreSQL issues `SET client_encoding TO ?`
+ * unconditionally.  SQLite issues `PRAGMA encoding = <value>`, which only
+ * takes effect on a brand-new database with no tables; on existing databases
+ * it is silently ignored and the encoding established at creation time is
+ * preserved.  In either case the connection's Charset property is synced to
+ * the database's actual encoding after connect.
  *
  * The following example shows how to create a TDbConnection instance and
  * establish the actual connection:
@@ -275,7 +279,24 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 			}
 
 			if (TDbDriverCapabilities::requiresPostConnectCharset($driver)) {
-				$this->setConnectionCharset($this->getCharset());	// PostgreSQL, sets charset after
+				// PostgreSQL: no DSN charset parameter; charset applied via SET client_encoding TO ?
+				$this->setConnectionCharset($this->getCharset());
+			}
+
+			if (TDbDriverCapabilities::requiresPostConnectCharsetReadback($driver)) {
+				// SQLite: apply PRAGMA encoding first (silently ignored when tables exist),
+				// then always read back the actual encoding so _charset reflects what the
+				// database really has rather than what was requested.
+				if ($this->getCharset() !== '') {
+					$this->setConnectionCharset($this->getCharset());
+				}
+				$charsetQuerySql = TDbDriverCapabilities::getCharsetQuerySql($driver);
+				if ($charsetQuerySql !== null) {
+					$actual = $pdo->query($charsetQuerySql)->fetchColumn();
+					if ($actual !== false && $actual !== '') {
+						$this->_charset = TDbDriverCapabilities::unresolveCharset((string) $actual, $driver);
+					}
+				}
 			}
 		} catch (PDOException $e) {
 			throw new TDbException('dbconnection_open_failed', $e->getMessage());
@@ -524,6 +545,19 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 		$value = TPropertyValue::ensureString($value);
 		$this->_charset = $value;
 		$this->setConnectionCharset($value);
+
+		// SQLite: PRAGMA encoding is silently ignored when tables already exist.
+		// Read back the actual encoding so _charset reflects what the DB has,
+		// not what was requested.
+		if ($this->getActive() && TDbDriverCapabilities::requiresPostConnectCharsetReadback($driver)) {
+			$charsetQuerySql = TDbDriverCapabilities::getCharsetQuerySql($driver);
+			if ($charsetQuerySql !== null) {
+				$actual = $this->getPdoInstance()->query($charsetQuerySql)->fetchColumn();
+				if ($actual !== false && $actual !== '') {
+					$this->_charset = TDbDriverCapabilities::unresolveCharset((string) $actual, $driver);
+				}
+			}
+		}
 	}
 
 	/**

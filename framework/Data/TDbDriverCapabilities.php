@@ -352,7 +352,11 @@ class TDbDriverCapabilities
 			],
 			TDbDriver::DRIVER_SQLITE => [
 				'UTF-8' => TDataCharset::UTF8,
+				// PRAGMA encoding = 'UTF-16' stores native-endian; the query
+				// always returns the specific form, never the bare 'UTF-16' token.
 				'UTF-16' => TDataCharset::UTF16,
+				'UTF-16le' => TDataCharset::UTF16,
+				'UTF-16be' => TDataCharset::UTF16,
 			],
 			// PDO_SQLSRV's CharacterSet DSN param only accepts 'UTF-8' or
 			// 'SQLSRV_ENC_CHAR'; getCharsetQuerySql() returns null so this
@@ -455,11 +459,13 @@ class TDbDriverCapabilities
 	 * {@see getCharsetSetSql} (`SET client_encoding TO ?`) after the connection
 	 * is established.
 	 *
-	 * All other supported drivers that accept a charset either receive it through
-	 * the DSN before the connection opens ({@see getCharsetDsnParam} — MySQL,
-	 * Firebird, Oracle, sqlsrv, dblib) or handle it implicitly.  SQLite's
-	 * `PRAGMA encoding` is an edge-case-only operation that only works on a
-	 * brand-new empty database and is not required at open time.
+	 * SQLite is handled separately via {@see requiresPostConnectCharsetReadback}:
+	 * it applies `PRAGMA encoding` ({@see getCharsetPragmaSql}) and then reads
+	 * back the actual encoding.  It does not go through this method.
+	 *
+	 * All other supported drivers that accept a charset receive it through the
+	 * DSN before the connection opens ({@see getCharsetDsnParam} — MySQL,
+	 * Firebird, Oracle, sqlsrv, dblib).
 	 *
 	 * This method is distinct from {@see supportsRuntimeCharsetSet}, which answers
 	 * the broader question of whether the charset can be changed mid-connection.
@@ -470,6 +476,25 @@ class TDbDriverCapabilities
 	public static function requiresPostConnectCharset(string $driver): bool
 	{
 		return $driver === TDbDriver::DRIVER_PGSQL;
+	}
+
+	/**
+	 * Returns true when the driver's post-connect charset setup requires a
+	 * subsequent read-back query to synchronise the connection's charset
+	 * property to the database's actual encoding.
+	 *
+	 * This is needed for SQLite: `PRAGMA encoding` is silently ignored when
+	 * tables already exist (the encoding was fixed at database creation time),
+	 * so the property must be updated to reflect reality rather than the
+	 * originally requested value.  The read-back uses {@see getCharsetQuerySql}.
+	 *
+	 * @param string $driver PDO driver name
+	 * @return bool
+	 * @since 4.3.3
+	 */
+	public static function requiresPostConnectCharsetReadback(string $driver): bool
+	{
+		return $driver === TDbDriver::DRIVER_SQLITE;
 	}
 
 	// =========================================================================

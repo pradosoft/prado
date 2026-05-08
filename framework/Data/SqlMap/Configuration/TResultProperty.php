@@ -50,7 +50,7 @@ class TResultProperty extends \Prado\TComponent
 	private $_isLazyLoad = false;
 	private $_select;
 
-	private $_hostResultMapID = 'inplicit internal mapping';
+	private $_hostResultMapID = 'implicit internal mapping';
 
 	public const LIST_TYPE = 0;
 	public const ARRAY_TYPE = 1;

@@ -102,6 +102,7 @@ return [
 'IDataCommandBuilder' => 'Prado\Data\Common\IDataCommandBuilder',
 'IDataMetaData' => 'Prado\Data\Common\IDataMetaData',
 'IDataTableInfo' => 'Prado\Data\Common\IDataTableInfo',
+'IDbColumn' => 'Prado\Data\Common\IDbColumn',
 'IDbHasSchema' => 'Prado\Data\Common\IDbHasSchema',
 'TMssqlCommandBuilder' => 'Prado\Data\Common\Mssql\TMssqlCommandBuilder',
 'TMssqlMetaData' => 'Prado\Data\Common\Mssql\TMssqlMetaData',
