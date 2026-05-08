@@ -65,9 +65,10 @@ use Prado\Web\UI\TThemeManager;
  *
  * TApplication maintains a lifecycle with the following stages:
  * - [construct] : construction of the application instance
- * - [initApplication] : load application configuration and instantiate modules and the requested service
- * - onConfigurationComplete : this event happens after all configuration is applied but before the request is resolved and a service is started; use it to register additional services programmatically
- * - onInitComplete : this event happens right after after module and service initialization. This event is particularly useful for CLI/Shell applications
+ * - [initApplication] : load application configuration, instantiate modules and the requested service
+ * - onConfigurationComplete : this raised after configuration but before the request is resolved and service started
+ * - onInitComplete : this event happens after service initialization. This event is particularly useful for CLI/Shell applications
+ * - [run] : runs the primary Application lifecycle
  * - onBeginRequest : this event happens right after application initialization
  * - onAuthentication : this event happens when authentication is needed for the current request
  * - onAuthenticationComplete : this event happens right after the authentication is done for the current request
