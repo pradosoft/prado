@@ -81,8 +81,8 @@ interface IEventCycleParameter extends IEventParameter
 	 * @param string $name The event name (lowercase)
 	 * @param mixed $sender The object raising the event
 	 * @param TEventParameter $param The event parameter instance
-	 * @param null|int $responsetype How results should be tabulated (see TEventResults constants)
-	 * @param null|callable $postfunction Optional callable for post-processing each handler response
+	 * @param ?int $responsetype How results should be tabulated (see TEventResults constants)
+	 * @param ?callable $postfunction Optional callable for post-processing each handler response
 	 * @see TComponent::raiseEvent
 	 * @see TEventResults
 	 */
@@ -114,8 +114,8 @@ interface IEventCycleParameter extends IEventParameter
 	 * @param string $name The event name (lowercase)
 	 * @param mixed $sender The object raising the event
 	 * @param TEventParameter $param The event parameter instance
-	 * @param null|int $responsetype How responses were tabulated
-	 * @param null|callable $postfunction The post-processing function that was used
+	 * @param ?int $responsetype How responses were tabulated
+	 * @param ?callable $postfunction The post-processing function that was used
 	 * @see TComponent::raiseEvent
 	 * @see TEventResults
 	 */

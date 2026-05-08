@@ -194,6 +194,39 @@ class TEventParameter extends \Prado\TComponent implements IEventParameter, Arra
 		return is_array($this->_param) || $this->_param instanceof ArrayAccess;
 	}
 
+	/**
+	 * Called by {@see TComponent::raiseEvent} before any event handlers are invoked.
+	 * Subclasses that implement {@see IEventCycleParameter} may override this to
+	 * perform pre-processing. This base implementation does nothing.
+	 *
+	 * @param string $name the event name
+	 * @param mixed $sender the object raising the event
+	 * @param TEventParameter $param the event parameter
+	 * @param ?int $responsetype how responses are tabulated
+	 * @param ?callable $postfunction optional per-handler response filter
+	 * @since 4.3.3
+	 */
+	public function preRaiseEvent($name, $sender, $param, $responsetype, $postfunction)
+	{
+	}
+
+	/**
+	 * Called by {@see TComponent::raiseEvent} after all event handlers have run.
+	 * Subclasses that implement {@see IEventCycleParameter} may override this to
+	 * inspect or transform the aggregated responses. This base implementation does nothing.
+	 *
+	 * @param array $responses aggregated responses from all event handlers
+	 * @param string $name the event name
+	 * @param mixed $sender the object raising the event
+	 * @param TEventParameter $param the event parameter
+	 * @param ?int $responsetype how responses were tabulated
+	 * @param ?callable $postfunction the post-processing function that was used
+	 * @since 4.3.3
+	 */
+	public function postRaiseEvent($responses, $name, $sender, $param, $responsetype, $postfunction)
+	{
+	}
+
 	//	----- ArrayAccess -----
 
 	/**
