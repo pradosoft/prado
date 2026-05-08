@@ -58,12 +58,6 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 {
 	use TWeakCollectionTrait;
 
-	/** @var ?bool Should invalid WeakReferences automatically be deleted from the list */
-	private ?bool $_discardInvalid = null;
-
-	/** @var int The number of TEventHandlers in the list */
-	private int $_eventHandlerCount = 0;
-
 	/**
 	 * Constructor.
 	 * Initializes the list with an array or an iterable object.
@@ -226,44 +220,56 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	 * have lost their object.
 	 * All invalid WeakReference[s] are optionally removed from the list when {@see
 	 * getDiscardInvalid} is true.
+	 *
+	 * This method is re-entrancy safe via the {@see isScrubbing} guard. PHP's cyclic
+	 * garbage collector can fire between opcodes and invoke object destructors
+	 * ({@see TComponent::__destruct} → `unlisten()` → `remove()`) that call back into
+	 * this method while the outer iteration is still running over `_d[$priority]`. The
+	 * guard ensures that nested calls return immediately, preventing the inner call from
+	 * modifying the array that the outer loop is currently scrubbing.
 	 * @since 4.3.0
 	 */
 	protected function scrubWeakReferences()
 	{
-		if (!$this->getDiscardInvalid() || !$this->weakChanged()) {
+		if ($this->isScrubbing() || !$this->getDiscardInvalid() || !$this->weakChanged()) {
 			return;
 		}
-		foreach (array_keys($this->_d) as $priority) {
-			for ($c = $i = count($this->_d[$priority]), $i--; $i >= 0; $i--) {
-				$a = is_array($this->_d[$priority][$i]);
-				$isEventHandler = $weakRefInvalid = false;
-				$arrayInvalid = $a && is_object($this->_d[$priority][$i][0]) && ($this->_d[$priority][$i][0] instanceof WeakReference) && $this->_d[$priority][$i][0]->get() === null;
-				if (is_object($this->_d[$priority][$i])) {
-					$object = $this->_d[$priority][$i];
-					if ($isEventHandler = ($object instanceof TEventHandler)) {
-						$object = $object->getHandlerObject(true);
+		$this->setScrubbing(true);
+		try {
+			foreach (array_keys($this->_d) as $priority) {
+				for ($c = $i = count($this->_d[$priority]), $i--; $i >= 0; $i--) {
+					$a = is_array($this->_d[$priority][$i]);
+					$isEventHandler = $weakRefInvalid = false;
+					$arrayInvalid = $a && is_object($this->_d[$priority][$i][0]) && ($this->_d[$priority][$i][0] instanceof WeakReference) && $this->_d[$priority][$i][0]->get() === null;
+					if (is_object($this->_d[$priority][$i])) {
+						$object = $this->_d[$priority][$i];
+						if ($isEventHandler = ($object instanceof TEventHandler)) {
+							$object = $object->getHandlerObject(true);
+						}
+						$weakRefInvalid = ($object instanceof WeakReference) && $object->get() === null;
 					}
-					$weakRefInvalid = ($object instanceof WeakReference) && $object->get() === null;
+					if ($arrayInvalid || $weakRefInvalid) {
+						$c--;
+						$this->_c--;
+						if ($i === $c) {
+							array_pop($this->_d[$priority]);
+						} else {
+							array_splice($this->_d[$priority], $i, 1);
+						}
+						if ($isEventHandler) {
+							$this->_eventHandlerCount--;
+						}
+					}
 				}
-				if ($arrayInvalid || $weakRefInvalid) {
-					$c--;
-					$this->_c--;
-					if ($i === $c) {
-						array_pop($this->_d[$priority]);
-					} else {
-						array_splice($this->_d[$priority], $i, 1);
-					}
-					if ($isEventHandler) {
-						$this->_eventHandlerCount--;
-					}
+				if (!$c) {
+					unset($this->_d[$priority]);
 				}
 			}
-			if (!$c) {
-				unset($this->_d[$priority]);
-			}
+			$this->_fd = null;
+			$this->weakResetCount();
+		} finally {
+			$this->setScrubbing(false);
 		}
-		$this->_fd = null;
-		$this->weakResetCount();
 	}
 
 	/**
@@ -1089,8 +1095,5 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 		$this->_c = $c;
 
 		$this->_weakZappableSleepProps($exprops);
-		if ($this->_discardInvalid === null) {
-			$exprops[] = "\0" . __CLASS__ . "\0_discardInvalid";
-		}
 	}
 }

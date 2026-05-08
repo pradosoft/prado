@@ -56,6 +56,7 @@ return [
 'TWeakCallableCollection' => 'Prado\Collections\TWeakCallableCollection',
 'TWeakCollectionTrait' => 'Prado\Collections\TWeakCollectionTrait',
 'TWeakList' => 'Prado\Collections\TWeakList',
+'TWeakMap' => 'Prado\Collections\TWeakMap',
 'TActiveRecordConfigurationException' => 'Prado\Data\ActiveRecord\Exceptions\TActiveRecordConfigurationException',
 'TActiveRecordException' => 'Prado\Data\ActiveRecord\Exceptions\TActiveRecordException',
 'TActiveRecordBelongsTo' => 'Prado\Data\ActiveRecord\Relations\TActiveRecordBelongsTo',

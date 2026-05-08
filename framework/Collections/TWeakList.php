@@ -67,14 +67,6 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 {
 	use TWeakCollectionTrait;
 
-	/** @var ?bool Should invalid WeakReference automatically be deleted from the list.
-	 *    Default True.
-	 */
-	private ?bool $_discardInvalid = null;
-
-	/** @var int The number of TEventHandlers in the list */
-	private int $_eventHandlerCount = 0;
-
 	/**
 	 * Constructor.
 	 * Initializes the weak list with an array or an iterable object.
@@ -195,32 +187,45 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 
 	/**
 	 * When a change in the WeakMap is detected, scrub the list of invalid WeakReference.
+	 *
+	 * Re-entrancy guard: PHP's cyclic garbage collector can fire between any two opcodes
+	 * and invoke object destructors mid-loop.  If a destructor removes an entry from this
+	 * list (e.g. via TComponent::__destruct → unlisten → remove → scrubWeakReferences),
+	 * the inner call would shorten $_d and $_c while the outer loop is still iterating,
+	 * making the outer index stale and causing an "Undefined array key" error.  The
+	 * {@see isScrubbing} guard prevents the inner call from executing; any entries the
+	 * inner call would have removed are picked up during the next outer pass.
 	 */
 	protected function scrubWeakReferences(): void
 	{
-		if (!$this->getDiscardInvalid() || !$this->weakChanged()) {
+		if ($this->isScrubbing() || !$this->getDiscardInvalid() || !$this->weakChanged()) {
 			return;
 		}
-		for ($i = $this->_c - 1; $i >= 0; $i--) {
-			if (is_object($this->_d[$i])) {
-				$object = $this->_d[$i];
-				if ($isEventHandler = ($object instanceof TEventHandler)) {
-					$object = $object->getHandlerObject(true);
-				}
-				if (($object instanceof WeakReference) && $object->get() === null) {
-					$this->_c--;
-					if ($i === $this->_c) {
-						array_pop($this->_d);
-					} else {
-						array_splice($this->_d, $i, 1);
+		$this->setScrubbing(true);
+		try {
+			for ($i = $this->_c - 1; $i >= 0; $i--) {
+				if (is_object($this->_d[$i])) {
+					$object = $this->_d[$i];
+					if ($isEventHandler = ($object instanceof TEventHandler)) {
+						$object = $object->getHandlerObject(true);
 					}
-					if ($isEventHandler) {
-						$this->_eventHandlerCount--;
+					if (($object instanceof WeakReference) && $object->get() === null) {
+						$this->_c--;
+						if ($i === $this->_c) {
+							array_pop($this->_d);
+						} else {
+							array_splice($this->_d, $i, 1);
+						}
+						if ($isEventHandler) {
+							$this->_eventHandlerCount--;
+						}
 					}
 				}
 			}
+			$this->weakResetCount();
+		} finally {
+			$this->setScrubbing(false);
 		}
-		$this->weakResetCount();
 	}
 
 	/**
@@ -627,8 +632,5 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 		$this->_c = $c;
 
 		$this->_weakZappableSleepProps($exprops);
-		if ($this->_discardInvalid === null) {
-			$exprops[] = "\0" . __CLASS__ . "\0_discardInvalid";
-		}
 	}
 }

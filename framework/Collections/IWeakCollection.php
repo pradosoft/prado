@@ -13,8 +13,8 @@ namespace Prado\Collections;
 /**
  * IWeakCollection interface
  *
- * This is implemented by Weak Collection classes such as {@see \Prado\Collections\TWeakCallableCollection}
- * and {@see \Prado\Collections\TWeakList} for providing weak collections.
+ * This is implemented by Weak Collection classes such as {@see \Prado\Collections\TWeakCallableCollection},
+ * {@see \Prado\Collections\TWeakList}, and {@see \Prado\Collections\TWeakMap} for providing weak collections.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.0
