@@ -99,20 +99,31 @@
 		"devtools": [
 			"composer require --dev friendsofphp/php-cs-fixer",
 			"composer require --dev phpstan/phpstan",
-			"composer require --dev phpunit/phpunit"
+			"composer require --dev phpunit/phpunit",
+			"npm install"
 		],
         "gendoc": "phpdoc --template=./vendor/pradosoft/prado-phpdoc-template",
+		"csfix": "php-cs-fixer fix",
+		"stan": "phpstan analyse --memory-limit=512M",
         "unittest": "phpunit --testsuite unit",
-        "functionaltest": [
-        	"Composer\\Config::disableProcessTimeout",
-        	"phpunit --testsuite functional"
-        ],
-		"stantest": "vendor/bin/phpunit --testsuite phpstan",
 		"fulltest": [
 			"php-cs-fixer fix",
 			"phpstan analyse --memory-limit=512M",
 			"phpunit --testsuite unit"
-		]
+		],
+		"jslint": "npm run lint",
+		"jsfix": "npm run lint:fix",
+		"jstest": "npm run test",
+		"jswatch": "npm run test:watch",
+		"jsfull": [
+			"npm run lint:fix",
+			"npm run test"
+		],
+        "functionaltest": [
+        	"Composer\\Config::disableProcessTimeout",
+        	"phpunit --testsuite functional"
+        ],
+		"stantest": "vendor/bin/phpunit --testsuite phpstan"
     },
 	"bin" : [
 		"bin/prado-cli"
