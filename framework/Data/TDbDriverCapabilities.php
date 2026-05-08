@@ -52,17 +52,21 @@ use Prado\Data\Common\Sqlite\TSqliteMetaData;
  * ## Extensibility via global fx events
  *
  * Two `fx` global events allow third-party code to extend the built-in driver
- * tables.  Both are raised on the {@see TDbConnection} passed by the caller,
- * but the raising logic is fully encapsulated in this class so callers never
- * need to call `raiseEvent` themselves:
+ * tables.  Both are raised on the connection with the driver name string as
+ * the parameter, and the raising logic is fully encapsulated in this class so
+ * callers never need to call `raiseEvent` themselves:
  *
  * - **`fxDataGetMetaDataClass`** — raised by {@see getMetaDataClass} when no
- *   built-in MetaData class is registered for the driver.  Handlers must return
- *   a fully-qualified class name implementing {@see \Prado\Data\Common\IDataMetaData}.
+ *   built-in MetaData class is registered for the driver.  Sender is the
+ *   connection; parameter is the driver name string.  Handlers must return a
+ *   fully-qualified class name implementing {@see \Prado\Data\Common\IDataMetaData}.
+ *   The last returned value wins.
  * - **`fxActiveRecordScaffoldInputClass`** — raised by {@see createScaffoldInput}
- *   when no built-in scaffold input file is registered for the driver.  Handlers
- *   must return the **fully-qualified class name** of a class that implements
+ *   when no built-in scaffold input file is registered for the driver.  Sender
+ *   is the connection; parameter is the driver name string.  Handlers must
+ *   return the **fully-qualified class name** of a class that implements
  *   {@see \Prado\Data\ActiveRecord\Scaffold\InputBuilder\IScaffoldInput}.
+ *   The first returned value wins.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3
@@ -594,7 +598,6 @@ class TDbDriverCapabilities
 	 *
 	 * @param string $driver PDO driver name
 	 * @return ?array<string> allowlisted DSN charset values, or null if unrestricted
-	 * @since 4.3.3
 	 */
 	public static function getDsnAcceptedCharsets(string $driver): ?array
 	{
@@ -786,28 +789,36 @@ class TDbDriverCapabilities
 	 * subclass appropriate for the given driver.
 	 *
 	 * For built-in drivers the class name is returned immediately.  When no
-	 * built-in class exists and a `$connection` is provided, the
-	 * **`fxDataGetMetaDataClass`** global event is raised on `$connection`.
-	 * Event handlers must return a fully-qualified class name implementing
+	 * built-in class exists and a {@see TDbConnection} is passed, the
+	 * **`fxDataGetMetaDataClass`** global event is raised on the connection
+	 * with the driver name string as the parameter.  Event handlers must return
+	 * a fully-qualified class name implementing
 	 * {@see \Prado\Data\Common\IDataMetaData}.  The last value in the event
 	 * result array is used.
 	 *
-	 * When no `$connection` is provided and the driver is unknown, `null` is
-	 * returned so the caller can decide whether to throw or fall back.
+	 * When a plain driver-name string is passed and the driver is unknown,
+	 * `null` is returned so the caller can decide whether to throw or fall back.
 	 *
 	 * This method fully encapsulates the `fxDataGetMetaDataClass` event so
 	 * callers never need to call `raiseEvent` themselves.
 	 *
-	 * @param string $driver PDO driver name (lowercase)
-	 * @param ?TDbConnection $connection the active connection; required for the
-	 *   event fallback for unknown drivers.
+	 * @param string|TDbConnection $connection the active connection (driver is
+	 *   derived via {@see TDbConnection::getDriverName()}), or a bare PDO driver
+	 *   name string when only a static lookup is needed (no event fallback).
 	 * @throws TDbException if the driver is unknown, a connection is provided,
 	 *   and no event handler supplies a class name.
-	 * @return ?string fully-qualified class name, or null when no connection
+	 * @return ?string fully-qualified class name, or null when a driver string
 	 *   was given and the driver is unknown.
 	 */
-	public static function getMetaDataClass(string $driver, ?TDbConnection $connection = null): ?string
+	public static function getMetaDataClass(TDbConnection|string $connection): ?string
 	{
+		if ($connection instanceof TDbConnection) {
+			$driver = strtolower($connection->getDriverName());
+		} else {
+			$driver = $connection;
+			$connection = null;
+		}
+
 		$class = match ($driver) {
 			TDbDriver::DRIVER_MYSQL => TMysqlMetaData::class,
 			TDbDriver::DRIVER_SQLITE2,
@@ -900,40 +911,40 @@ class TDbDriverCapabilities
 	}
 
 	/**
-	 * Creates and returns a scaffold input builder instance for the given driver.
+	 * Creates and returns a scaffold input builder instance for the given connection.
 	 *
-	 * For built-in drivers, the appropriate file is loaded via `require_once`
-	 * and a new instance of the driver-specific class is returned directly.
+	 * The driver is derived from `$connection->getDriverName()`.  For built-in
+	 * drivers, the appropriate file is loaded via `require_once` and a new
+	 * instance of the driver-specific class is returned directly.
 	 *
 	 * For unknown drivers, the **`fxActiveRecordScaffoldInputClass`** global
-	 * event is raised on `$connection`.  Event handlers must return the
-	 * **fully-qualified class name** of a class that implements
-	 * {@see IScaffoldInput}.  The first value in the event result array is used.
+	 * event is raised on `$connection` with the driver name as the parameter.
+	 * Event handlers must return the **fully-qualified class name** of a class
+	 * that implements {@see IScaffoldInput}.  The first value in the event
+	 * result array is used.
 	 *
 	 * This method fully encapsulates the `fxActiveRecordScaffoldInputClass`
 	 * event so that callers (e.g.
 	 * {@see \Prado\Data\ActiveRecord\Scaffold\InputBuilder\TScaffoldInputBase::createInputBuilder})
 	 * never need to call `raiseEvent` themselves.
 	 *
-	 * @param string $driver PDO driver name (lowercase)
-	 * @param TDbConnection $connection the active connection (used when the
-	 *   driver is unknown, to raise the extensibility event)
-	 * @param string $callerClass passed as the `$sender` argument of the event
-	 *   so handlers can identify the originator (typically `static::class`)
+	 * @param TDbConnection $connection the active connection; the driver name is
+	 *   derived via {@see TDbConnection::getDriverName()}.
 	 * @throws TConfigurationException if the driver is unknown and no event
 	 *   handler provides a class name, or if a handler returns an
 	 *   {@see IScaffoldInput} instance instead of a class name string.
 	 * @return IScaffoldInput the scaffold input builder instance.
 	 */
-	public static function createScaffoldInput(string $driver, TDbConnection $connection, string $callerClass): IScaffoldInput
+	public static function createScaffoldInput(TDbConnection $connection): IScaffoldInput
 	{
+		$driver = strtolower($connection->getDriverName());
 		$file = static::getScaffoldInputFile($driver);
 		$class = static::getScaffoldInputClass($driver);
 		if ($file !== null && $class !== null) {
 			require_once(__DIR__ . '/ActiveRecord/Scaffold/InputBuilder' . $file);
 			return new $class();
 		}
-		$inputClasses = $connection->raiseEvent('fxActiveRecordScaffoldInputClass', $callerClass, $connection);
+		$inputClasses = $connection->raiseEvent('fxActiveRecordScaffoldInputClass', $connection, $driver);
 		if (empty($inputClasses)) {
 			// @todo v4.4 TActiveRecordConfigurationException, move message
 			throw new TConfigurationException('ar_invalid_database_driver', $driver);

@@ -41,14 +41,13 @@ class TScaffoldInputBaseTest extends PHPUnit\Framework\TestCase
 	public function test_createInputBuilder_fxEvent_raised_with_correct_parameters()
 	{
 		// The fxActiveRecordScaffoldInputClass event must be raised on the connection
-		// with the caller class and connection as arguments. This is delegated to
-		// TDbDriverCapabilities::createScaffoldInput, which calls $connection->raiseEvent().
+		// with the connection as sender and the driver name as the parameter.
 		$record = $this->createMockRecord('custom_driver');
 		$conn = $record->getDbConnection();
 
 		$conn->expects($this->once())
 			->method('raiseEvent')
-			->with('fxActiveRecordScaffoldInputClass', $this->anything(), $conn)
+			->with('fxActiveRecordScaffoldInputClass', $conn, 'custom_driver')
 			->willReturn([]);
 
 		$this->expectException(TConfigurationException::class);

@@ -60,10 +60,10 @@ class TScaffoldInputBase implements IScaffoldInput
 	 * For built-in drivers the appropriate builder is loaded and returned
 	 * directly.  For unknown drivers,
 	 * {@see TDbDriverCapabilities::createScaffoldInput} raises the
-	 * **`fxActiveRecordScaffoldInputClass`** global event on the connection.
-	 * Event handlers must return the fully-qualified **class name** of a class
-	 * that implements {@see IScaffoldInput}; the class is then instantiated
-	 * here and validated.
+	 * **`fxActiveRecordScaffoldInputClass`** global event on the connection
+	 * with the driver name as the parameter.  Event handlers must return the
+	 * fully-qualified **class name** of a class that implements
+	 * {@see IScaffoldInput}; the class is then instantiated here and validated.
 	 *
 	 * All driver resolution and event raising is encapsulated in
 	 * {@see TDbDriverCapabilities::createScaffoldInput}; this method does not
@@ -78,8 +78,7 @@ class TScaffoldInputBase implements IScaffoldInput
 	{
 		$connection = $record->getDbConnection();
 		$connection->setActive(true); //must be connected before retrieving driver name!
-		$driver = strtolower($connection->getDriverName());
-		$scaffoldInput = TDbDriverCapabilities::createScaffoldInput($driver, $connection, self::class);
+		$scaffoldInput = TDbDriverCapabilities::createScaffoldInput($connection);
 		if (!($scaffoldInput instanceof IScaffoldInput)) {
 			// @todo v4.4 TActiveRecordConfigurationException, move message
 			throw new TConfigurationException('ar_not_input_base', $scaffoldInput::class, IScaffoldInput::class);

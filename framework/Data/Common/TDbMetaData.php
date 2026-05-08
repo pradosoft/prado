@@ -11,6 +11,7 @@
 namespace Prado\Data\Common;
 
 use Prado\Data\IDataConnection;
+use Prado\Data\TDbConnection;
 use Prado\Data\TDbDriverCapabilities;
 use Prado\Exceptions\TDbException;
 use Prado\Prado;
@@ -38,14 +39,14 @@ use Prado\Prado;
  * | `mysql`          | `TMysqlMetaData`       |
  * | `sqlite`         | `TSqliteMetaData`      |
  * | `pgsql`          | `TPgsqlMetaData`       |
- * | `sqlsrv`, `dblib`| `TMssqlMetaData`       |
+ * | `sqlsrv`, `dblib`| `TSqlSrvMetaData`      |
  * | `oci`            | `TOracleMetaData`      |
  * | `ibm`/`db2`      | `TIbmMetaData`         |
  * | `firebird`       | `TFirebirdMetaData`    |
  *
- * When no built-in driver matches, the global Prado event
- * `fxDataGetMetaDataInstance` is raised so that third-party extensions can
- * supply a custom handler.
+ * When no built-in driver matches, the **`fxDataGetMetaDataClass`** global event
+ * is raised on the connection so that third-party extensions can supply a
+ * custom handler class.
  *
  * ## Table-info caching
  *
@@ -110,18 +111,18 @@ abstract class TDbMetaData extends \Prado\TComponent implements IDataMetaData
 	 *
 	 * This method activates the connection, resolves the driver name, and delegates to
 	 * {@see TDbDriverCapabilities::getMetaDataClass()} to find the matching handler class.
-	 * If no built-in driver is found, the {@see fxDataGetMetaDataInstance} global event
-	 * is raised to allow third-party plugins to supply a custom metadata handler.
+	 * If no built-in driver is found, the **`fxDataGetMetaDataClass`** global event is
+	 * raised on the connection (with the driver name as the parameter) to allow
+	 * third-party extensions to supply a custom metadata handler class.
 	 *
-	 * @param \Prado\Data\IDataConnection $conn database connection.
+	 * @param \Prado\Data\TDbConnection $conn database connection.
 	 * @throws TDbException if no metadata handler can be created for the driver.
 	 * @return TDbMetaData database-specific TDbMetaData.
 	 */
 	public static function getInstance($conn)
 	{
 		$conn->setActive(true); //must be connected before retrieving driver name
-		$driver = strtolower($conn->getDriverName());
-		$class = TDbDriverCapabilities::getMetaDataClass($driver, $conn);
+		$class = TDbDriverCapabilities::getMetaDataClass($conn);
 		if ($class === null) {
 			return null;
 		}

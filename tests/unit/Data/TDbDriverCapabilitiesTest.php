@@ -1080,23 +1080,29 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 		$this->assertNull($result);
 	}
 
-	public function testGetMetaDataClassUnknownDriverNullConnectionPassedExplicitly(): void
+	public function testGetMetaDataClassKnownDriverViaConnection(): void
 	{
-		$result = TDbDriverCapabilities::getMetaDataClass('unknown_driver', null);
-		$this->assertNull($result);
+		// Passing a TDbConnection also works for known drivers (driver derived from connection).
+		$conn = $this->createMock(TDbConnection::class);
+		$conn->method('getDriverName')->willReturn(TDbDriver::DRIVER_MYSQL);
+		$conn->expects($this->never())->method('raiseEvent');
+
+		$result = TDbDriverCapabilities::getMetaDataClass($conn);
+		$this->assertSame(TMysqlMetaData::class, $result);
 	}
 
 	public function testGetMetaDataClassUnknownDriverThrowsWhenNoEventHandlers(): void
 	{
 		// Connection present but raiseEvent returns empty → TDbException.
 		$conn = $this->createMock(TDbConnection::class);
+		$conn->method('getDriverName')->willReturn('unknown_driver');
 		$conn->expects($this->once())
 			->method('raiseEvent')
 			->with('fxDataGetMetaDataClass', $conn, 'unknown_driver')
 			->willReturn([]);
 
 		$this->expectException(TDbException::class);
-		TDbDriverCapabilities::getMetaDataClass('unknown_driver', $conn);
+		TDbDriverCapabilities::getMetaDataClass($conn);
 	}
 
 	public function testGetMetaDataClassFxEventRaisedWithCorrectParameters(): void
@@ -1104,12 +1110,13 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 		// The event is raised with (connection, driver) parameters.
 		$driver = 'my_custom_driver';
 		$conn = $this->createMock(TDbConnection::class);
+		$conn->method('getDriverName')->willReturn($driver);
 		$conn->expects($this->once())
 			->method('raiseEvent')
 			->with('fxDataGetMetaDataClass', $conn, $driver)
 			->willReturn(['Prado\Data\Common\Sqlite\TSqliteMetaData']);
 
-		$result = TDbDriverCapabilities::getMetaDataClass($driver, $conn);
+		$result = TDbDriverCapabilities::getMetaDataClass($conn);
 		$this->assertSame('Prado\Data\Common\Sqlite\TSqliteMetaData', $result);
 	}
 
@@ -1117,9 +1124,10 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 	{
 		// A handler returns a fully-qualified class name → that value is returned.
 		$conn = $this->createMock(TDbConnection::class);
+		$conn->method('getDriverName')->willReturn('custom_driver');
 		$conn->method('raiseEvent')->willReturn([TMysqlMetaData::class]);
 
-		$result = TDbDriverCapabilities::getMetaDataClass('custom_driver', $conn);
+		$result = TDbDriverCapabilities::getMetaDataClass($conn);
 		$this->assertSame(TMysqlMetaData::class, $result);
 	}
 
@@ -1127,12 +1135,13 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 	{
 		// array_pop takes the last value from the event result array.
 		$conn = $this->createMock(TDbConnection::class);
+		$conn->method('getDriverName')->willReturn('custom_driver');
 		$conn->method('raiseEvent')->willReturn([
 			TMysqlMetaData::class,
 			TPgsqlMetaData::class,   // last → wins
 		]);
 
-		$result = TDbDriverCapabilities::getMetaDataClass('custom_driver', $conn);
+		$result = TDbDriverCapabilities::getMetaDataClass($conn);
 		$this->assertSame(TPgsqlMetaData::class, $result);
 	}
 
@@ -1143,10 +1152,11 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 		$badReturn = $this->createMock(IDataMetaData::class);
 
 		$conn = $this->createMock(TDbConnection::class);
+		$conn->method('getDriverName')->willReturn('custom_driver');
 		$conn->method('raiseEvent')->willReturn([$badReturn]);
 
 		$this->expectException(TDbException::class);
-		TDbDriverCapabilities::getMetaDataClass('custom_driver', $conn);
+		TDbDriverCapabilities::getMetaDataClass($conn);
 	}
 
 	public function testGetMetaDataClassFxEventReturningNonImplementingClassThrowsTdbException(): void
@@ -1155,19 +1165,21 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 		// getMetaDataClass must throw rather than returning the bad class name to
 		// the caller.
 		$conn = $this->createMock(TDbConnection::class);
+		$conn->method('getDriverName')->willReturn('custom_driver');
 		$conn->method('raiseEvent')->willReturn([\stdClass::class]);
 
 		$this->expectException(TDbException::class);
-		TDbDriverCapabilities::getMetaDataClass('custom_driver', $conn);
+		TDbDriverCapabilities::getMetaDataClass($conn);
 	}
 
 	public function testGetMetaDataClassKnownDriverIgnoresConnection(): void
 	{
-		// For known drivers, the connection is never consulted.
+		// For known drivers, the connection is never consulted via raiseEvent.
 		$conn = $this->createMock(TDbConnection::class);
+		$conn->method('getDriverName')->willReturn(TDbDriver::DRIVER_MYSQL);
 		$conn->expects($this->never())->method('raiseEvent');
 
-		$result = TDbDriverCapabilities::getMetaDataClass(TDbDriver::DRIVER_MYSQL, $conn);
+		$result = TDbDriverCapabilities::getMetaDataClass($conn);
 		$this->assertSame(TMysqlMetaData::class, $result);
 	}
 
@@ -1293,9 +1305,10 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 			$this->markTestSkipped('Unknown driver — tested separately via event path.');
 		}
 		$conn = $this->createMock(TDbConnection::class);
+		$conn->method('getDriverName')->willReturn($driver);
 		$conn->expects($this->never())->method('raiseEvent');
 
-		$result = TDbDriverCapabilities::createScaffoldInput($driver, $conn, self::class);
+		$result = TDbDriverCapabilities::createScaffoldInput($conn);
 		$this->assertInstanceOf($expected, $result);
 	}
 
@@ -1303,27 +1316,28 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 	{
 		// Connection present but raiseEvent returns empty → TConfigurationException.
 		$conn = $this->createMock(TDbConnection::class);
+		$conn->method('getDriverName')->willReturn('unknown_driver');
 		$conn->expects($this->once())
 			->method('raiseEvent')
-			->with('fxActiveRecordScaffoldInputClass', self::class, $conn)
+			->with('fxActiveRecordScaffoldInputClass', $conn, 'unknown_driver')
 			->willReturn([]);
 
 		$this->expectException(\Prado\Exceptions\TConfigurationException::class);
-		TDbDriverCapabilities::createScaffoldInput('unknown_driver', $conn, self::class);
+		TDbDriverCapabilities::createScaffoldInput($conn);
 	}
 
 	public function testCreateScaffoldInputFxEventRaisedWithCorrectParameters(): void
 	{
-		// The event must be raised on $connection with ($callerClass, $connection).
-		$driver = 'my_custom_driver';
+		// The event must be raised on $connection with ($connection, $driver).
 		$conn = $this->createMock(TDbConnection::class);
+		$conn->method('getDriverName')->willReturn('my_custom_driver');
 		$conn->expects($this->once())
 			->method('raiseEvent')
-			->with('fxActiveRecordScaffoldInputClass', self::class, $conn)
+			->with('fxActiveRecordScaffoldInputClass', $conn, 'my_custom_driver')
 			->willReturn([]);
 
 		$this->expectException(\Prado\Exceptions\TConfigurationException::class);
-		TDbDriverCapabilities::createScaffoldInput($driver, $conn, self::class);
+		TDbDriverCapabilities::createScaffoldInput($conn);
 	}
 
 	public function testCreateScaffoldInputFxEventFirstHandlerWins(): void
@@ -1332,12 +1346,13 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 		// Using 'sqlite' as a stand-in: it's a known class with no require_once needed here
 		// because TDbDriverCapabilities::createScaffoldInput will instantiate the returned string.
 		$conn = $this->createMock(TDbConnection::class);
+		$conn->method('getDriverName')->willReturn('custom_driver');
 		$conn->method('raiseEvent')->willReturn([
 			\Prado\Data\ActiveRecord\Scaffold\InputBuilder\TSqliteScaffoldInput::class,
 			\Prado\Data\ActiveRecord\Scaffold\InputBuilder\TPgsqlScaffoldInput::class,
 		]);
 
-		$result = TDbDriverCapabilities::createScaffoldInput('custom_driver', $conn, self::class);
+		$result = TDbDriverCapabilities::createScaffoldInput($conn);
 		$this->assertInstanceOf(\Prado\Data\ActiveRecord\Scaffold\InputBuilder\TSqliteScaffoldInput::class, $result);
 	}
 
@@ -1348,10 +1363,11 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 		$badReturn = $this->createMock(\Prado\Data\ActiveRecord\Scaffold\InputBuilder\IScaffoldInput::class);
 
 		$conn = $this->createMock(TDbConnection::class);
+		$conn->method('getDriverName')->willReturn('custom_driver');
 		$conn->method('raiseEvent')->willReturn([$badReturn]);
 
 		$this->expectException(\Prado\Exceptions\TConfigurationException::class);
-		TDbDriverCapabilities::createScaffoldInput('custom_driver', $conn, self::class);
+		TDbDriverCapabilities::createScaffoldInput($conn);
 	}
 
 	// =========================================================================
