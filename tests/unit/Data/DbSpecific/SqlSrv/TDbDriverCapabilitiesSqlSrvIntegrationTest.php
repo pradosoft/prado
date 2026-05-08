@@ -234,16 +234,18 @@ class TDbDriverCapabilitiesSqlSrvIntegrationTest extends PHPUnit\Framework\TestC
 		$this->assertSame('ISO-8859-1', TDbDriverCapabilities::resolveCharset('ISO-8859-1', 'sqlsrv'));
 	}
 
-	public function testSqlsrvResolveAsciiReturnsAscii(): void
+	public function testSqlsrvResolveAsciiReturnsUsAscii(): void
 	{
-		$this->assertSame('ASCII', TDbDriverCapabilities::resolveCharset('ASCII', 'sqlsrv'));
+		// sqlsrv has no ASCII entry; resolveCharset normalizes to the IANA canonical name.
+		$this->assertSame('US-ASCII', TDbDriverCapabilities::resolveCharset('ASCII', 'sqlsrv'));
+		$this->assertSame('US-ASCII', TDbDriverCapabilities::resolveCharset('US-ASCII', 'sqlsrv'));
 	}
 
-	public function testSqlsrvResolveWin1250ReturnsWindows1250(): void
+	public function testSqlsrvResolveWin1250ReturnsIanaName(): void
 	{
-		// sqlsrv has no alias entry for Windows-1250; resolveCharset returns the
-		// canonical form (Windows-1250) rather than a driver-specific alias.
-		$this->assertSame('Windows-1250', TDbDriverCapabilities::resolveCharset('Windows-1250', 'sqlsrv'));
+		// sqlsrv has no Windows-125x entry; resolveCharset normalizes to the IANA canonical name.
+		$this->assertSame('windows-1250', TDbDriverCapabilities::resolveCharset('Windows-1250', 'sqlsrv'));
+		$this->assertSame('windows-1250', TDbDriverCapabilities::resolveCharset('windows-1250', 'sqlsrv'));
 	}
 
 	public function testSqlsrvUnresolveUtf8ReturnsUtf8Standard(): void

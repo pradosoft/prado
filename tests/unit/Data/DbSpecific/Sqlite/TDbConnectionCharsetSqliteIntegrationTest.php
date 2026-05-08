@@ -10,9 +10,16 @@ use Prado\TApplication;
  *
  * SQLite supports exactly two charset families: UTF-8 and UTF-16.  UTF-16 is
  * stored in the database file in the host's native byte order; PRAGMA encoding
- * always reports the specific form ('UTF-16le' or 'UTF-16be'), never the bare
- * 'UTF-16' token.  TDbConnection::unresolveCharset() maps both endian variants
- * back to the PRADO canonical name 'UTF-16'.
+ * always reports the specific endian form ('UTF-16le' or 'UTF-16be'), never the
+ * bare 'UTF-16' token.  TDbConnection::unresolveCharset() maps those endian
+ * variants back to the PRADO canonical names 'UTF-16LE' or 'UTF-16BE'
+ * (TDataCharset::UTF16LE / TDataCharset::UTF16BE), which carry explicit
+ * endianness.
+ *
+ * The Charset property therefore reflects the byte order that SQLite actually
+ * uses, which is system-dependent (little-endian on x86; big-endian on some
+ * ARM/MIPS/PPC platforms).  Tests use assertIsUtf16CanonicalCharset() wherever
+ * the exact endian form is platform-dependent.
  *
  * PRAGMA encoding only takes effect before any tables are created; on databases
  * that already have tables it is silently ignored and the encoding established
@@ -24,7 +31,7 @@ use Prado\TApplication;
  *
  * getDatabaseCharset() returns the raw PRAGMA encoding string reported by
  * SQLite ('UTF-8', 'UTF-16le', or 'UTF-16be'), while the Charset property
- * stores the PRADO canonical name ('UTF-8' or 'UTF-16').
+ * stores the PRADO canonical name ('UTF-8', 'UTF-16LE', or 'UTF-16BE').
  *
  * Tests are organised in parallel UTF-8 / UTF-16 sections so the two charsets
  * receive equivalent coverage.  Tests are skipped when pdo_sqlite is missing.
@@ -107,6 +114,17 @@ class TDbConnectionCharsetSqliteIntegrationTest extends PHPUnit\Framework\TestCa
 			$message ?: "Expected a UTF-16 variant (UTF-16le/UTF-16be), got '$encoding'.");
 	}
 
+	/**
+	 * Asserts that the PRADO Charset property holds a canonical UTF-16 endian
+	 * value ('UTF-16LE' or 'UTF-16BE').  The actual value is system-dependent
+	 * (little-endian on x86; big-endian on some other architectures).
+	 */
+	private function assertIsUtf16CanonicalCharset(string $charset, string $message = ''): void
+	{
+		$this->assertMatchesRegularExpression('/^UTF-16(LE|BE)$/', $charset,
+			$message ?: "Expected PRADO canonical UTF-16 charset (UTF-16LE/UTF-16BE), got '$charset'.");
+	}
+
 	// -----------------------------------------------------------------------
 	// UTF-8 — fresh in-memory database (no tables: PRAGMA takes effect)
 	// -----------------------------------------------------------------------
@@ -140,11 +158,11 @@ class TDbConnectionCharsetSqliteIntegrationTest extends PHPUnit\Framework\TestCa
 	{
 		// Requesting UTF-16 on a fresh DB: PRAGMA encoding = 'UTF-16' succeeds.
 		// SQLite stores it in native byte order and reports 'UTF-16le' or 'UTF-16be'.
-		// unresolveCharset() maps either variant back to the PRADO canonical 'UTF-16'.
+		// unresolveCharset() maps 'UTF-16le' → 'UTF-16LE' and 'UTF-16be' → 'UTF-16BE'.
 		$conn = $this->openSqlite('UTF-16');
 		$this->assertTrue($conn->Active);
 		$this->assertIsUtf16Encoding($this->pragmaEncoding($conn));
-		$this->assertSame('UTF-16', $conn->Charset);
+		$this->assertIsUtf16CanonicalCharset($conn->Charset);
 		$conn->Active = false;
 	}
 
@@ -211,13 +229,13 @@ class TDbConnectionCharsetSqliteIntegrationTest extends PHPUnit\Framework\TestCa
 	public function testSqliteUtf16SyncedFromExistingUtf16DatabaseWhenNoCharsetRequested(): void
 	{
 		// Open a fresh DB with UTF-16, create a table to "lock in" the encoding,
-		// then assert that Charset was synced to 'UTF-16' from the readback.
+		// then assert that Charset was synced to 'UTF-16LE'/'UTF-16BE' from the readback.
 		// (The readback happens in open() before any tables are created, so the
 		// PRAGMA is applied first and the readback confirms the UTF-16 encoding.)
 		$conn = $this->openSqlite('UTF-16');
 		$conn->createCommand('CREATE TABLE t (id INTEGER PRIMARY KEY)')->execute();
 		$this->assertIsUtf16Encoding($this->pragmaEncoding($conn));
-		$this->assertSame('UTF-16', $conn->Charset);
+		$this->assertIsUtf16CanonicalCharset($conn->Charset);
 		$conn->Active = false;
 	}
 
@@ -255,12 +273,12 @@ class TDbConnectionCharsetSqliteIntegrationTest extends PHPUnit\Framework\TestCa
 	public function testSqliteSetCharsetUtf16AfterConnectOnFreshDatabase(): void
 	{
 		// No tables: PRAGMA encoding = 'UTF-16' succeeds; readback returns
-		// 'UTF-16le'/'UTF-16be' and unresolves to Charset = 'UTF-16'.
+		// 'UTF-16le'/'UTF-16be' and unresolves to Charset = 'UTF-16LE'/'UTF-16BE'.
 		$conn = $this->openSqlite();
 		$conn->Charset = 'UTF-16';
 		$this->assertTrue($conn->Active);
 		$this->assertIsUtf16Encoding($this->pragmaEncoding($conn));
-		$this->assertSame('UTF-16', $conn->Charset);
+		$this->assertIsUtf16CanonicalCharset($conn->Charset);
 		$conn->Active = false;
 	}
 
@@ -325,8 +343,8 @@ class TDbConnectionCharsetSqliteIntegrationTest extends PHPUnit\Framework\TestCa
 		$conn = $this->openSqlite();
 		$conn->Charset = 'UTF-16';
 		$this->assertIsUtf16Encoding($conn->DatabaseCharset);
-		// Charset property is the PRADO canonical form.
-		$this->assertSame('UTF-16', $conn->Charset);
+		// Charset property is the PRADO canonical endian-specific form.
+		$this->assertIsUtf16CanonicalCharset($conn->Charset);
 		$conn->Active = false;
 	}
 

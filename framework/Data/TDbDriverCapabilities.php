@@ -139,13 +139,34 @@ class TDbDriverCapabilities
 				TDbDriver::DRIVER_DBLIB => 'UTF-8',
 			],
 
-			'utf16' => TDataCharset::UTF16,	// canonical key alias
+			'utf16' => TDataCharset::UTF16,		// canonical key alias
 			TDataCharset::UTF16 => [
 				// pgsql, sqlsrv, and dblib intentionally absent — see comment above.
+				// UTF-16 resolves to the big-endian (or native-endian for SQLite) form
+				// for drivers that distinguish endianness; use UTF16LE / UTF16BE for
+				// explicit endianness control.
 				TDbDriver::DRIVER_FIREBIRD => 'UTF16BE',
 				TDbDriver::DRIVER_MYSQL => 'utf16',
 				TDbDriver::DRIVER_OCI => 'AL16UTF16',
 				TDbDriver::DRIVER_SQLITE => 'UTF-16',
+			],
+
+			'utf16le' => TDataCharset::UTF16LE,	// canonical key alias
+			TDataCharset::UTF16LE => [
+				// Only MySQL and SQLite expose explicit little-endian UTF-16.
+				// Firebird UTF16BE-only; Oracle AL16UTF16 is big-endian only.
+				// pgsql, sqlsrv, dblib, and ibm do not support UTF-16 at all.
+				TDbDriver::DRIVER_MYSQL => 'utf16le',
+				TDbDriver::DRIVER_SQLITE => 'UTF-16le',
+			],
+
+			'utf16be' => TDataCharset::UTF16BE,	// canonical key alias
+			TDataCharset::UTF16BE => [
+				// pgsql, sqlsrv, and dblib intentionally absent — see comment above.
+				TDbDriver::DRIVER_FIREBIRD => 'UTF16BE',
+				TDbDriver::DRIVER_MYSQL => 'utf16',
+				TDbDriver::DRIVER_OCI => 'AL16UTF16',
+				TDbDriver::DRIVER_SQLITE => 'UTF-16be',
 			],
 
 			'latin1' => TDataCharset::Latin1,	// canonical key alias
@@ -170,7 +191,8 @@ class TDbDriverCapabilities
 				TDbDriver::DRIVER_DBLIB => 'ISO-8859-2',
 			],
 
-			'ascii' => TDataCharset::ASCII,	// canonical key alias
+			'ascii' => TDataCharset::ASCII,		// canonical key alias ('ASCII' → 'ascii')
+			'usascii' => TDataCharset::ASCII,	// canonical key alias ('US-ASCII' → 'usascii')
 			TDataCharset::ASCII => [
 				TDbDriver::DRIVER_FIREBIRD => 'ASCII',
 				TDbDriver::DRIVER_MYSQL => 'ascii',
@@ -303,7 +325,7 @@ class TDbDriverCapabilities
 			// Values are TDataCharset constant values (which equal the standard PHP charset name)
 			TDbDriver::DRIVER_FIREBIRD => [
 				'UTF8' => TDataCharset::UTF8,
-				'UTF16BE' => TDataCharset::UTF16,
+				'UTF16BE' => TDataCharset::UTF16BE,
 				'ISO8859_1' => TDataCharset::Latin1,
 				'ISO8859_2' => TDataCharset::Latin2,
 				'ASCII' => TDataCharset::ASCII,
@@ -316,7 +338,8 @@ class TDbDriverCapabilities
 			TDbDriver::DRIVER_MYSQL => [
 				'utf8mb4' => TDataCharset::UTF8,
 				'utf8' => TDataCharset::UTF8,
-				'utf16' => TDataCharset::UTF16,
+				'utf16' => TDataCharset::UTF16BE,
+				'utf16le' => TDataCharset::UTF16LE,
 				'latin1' => TDataCharset::Latin1,
 				'latin2' => TDataCharset::Latin2,
 				'ascii' => TDataCharset::ASCII,
@@ -328,7 +351,7 @@ class TDbDriverCapabilities
 			],
 			TDbDriver::DRIVER_OCI => [
 				'AL32UTF8' => TDataCharset::UTF8,
-				'AL16UTF16' => TDataCharset::UTF16,
+				'AL16UTF16' => TDataCharset::UTF16BE,
 				'WE8ISO8859P1' => TDataCharset::Latin1,
 				'EE8ISO8859P2' => TDataCharset::Latin2,
 				'US7ASCII' => TDataCharset::ASCII,
@@ -353,10 +376,11 @@ class TDbDriverCapabilities
 			TDbDriver::DRIVER_SQLITE => [
 				'UTF-8' => TDataCharset::UTF8,
 				// PRAGMA encoding = 'UTF-16' stores native-endian; the query
-				// always returns the specific form, never the bare 'UTF-16' token.
+				// always returns the specific endian form, never the bare 'UTF-16' token.
+				// Map to the explicit LE/BE constants for precise round-tripping.
 				'UTF-16' => TDataCharset::UTF16,
-				'UTF-16le' => TDataCharset::UTF16,
-				'UTF-16be' => TDataCharset::UTF16,
+				'UTF-16le' => TDataCharset::UTF16LE,
+				'UTF-16be' => TDataCharset::UTF16BE,
 			],
 			// PDO_SQLSRV's CharacterSet DSN param only accepts 'UTF-8' or
 			// 'SQLSRV_ENC_CHAR'; getCharsetQuerySql() returns null so this
@@ -459,9 +483,12 @@ class TDbDriverCapabilities
 	 * {@see getCharsetSetSql} (`SET client_encoding TO ?`) after the connection
 	 * is established.
 	 *
-	 * SQLite is handled separately via {@see requiresPostConnectCharsetReadback}:
-	 * it applies `PRAGMA encoding` ({@see getCharsetPragmaSql}) and then reads
-	 * back the actual encoding.  It does not go through this method.
+	 * SQLite also falls into this category: it has no DSN charset parameter and
+	 * applies its encoding via `PRAGMA encoding` ({@see getCharsetPragmaSql}).
+	 * The PRAGMA only takes effect on a brand-new database with no tables; on
+	 * existing databases it is silently ignored and the stored encoding is
+	 * preserved.  Callers must follow up with {@see requiresPostConnectCharsetReadback}
+	 * to sync the connection's charset property to the database's actual encoding.
 	 *
 	 * All other supported drivers that accept a charset receive it through the
 	 * DSN before the connection opens ({@see getCharsetDsnParam} — MySQL,
@@ -490,7 +517,6 @@ class TDbDriverCapabilities
 	 *
 	 * @param string $driver PDO driver name
 	 * @return bool
-	 * @since 4.3.3
 	 */
 	public static function requiresPostConnectCharsetReadback(string $driver): bool
 	{

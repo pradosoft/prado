@@ -38,7 +38,7 @@ namespace Prado\Data\Common;
  * auto-increment flags — remain on the concrete implementation class.
  * Code that needs those details should check `instanceof TDbTableColumn`
  * explicitly, following the same marker-interface pattern used by
- * {@see IDbHasSchema}.
+ * {@see IDataHasSchema}.
  *
  * Concrete SQL implementations: {@see TDbTableColumn} and its driver-specific
  * subclasses ({@see TMysqlTableColumn}, {@see TSqliteTableColumn},

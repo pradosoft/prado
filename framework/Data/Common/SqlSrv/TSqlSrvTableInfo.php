@@ -10,7 +10,7 @@
 
 namespace Prado\Data\Common\SqlSrv;
 
-use Prado\Data\Common\IDbHasSchema;
+use Prado\Data\Common\IDataHasSchema;
 use Prado\Data\Common\SqlSrv\TSqlSrvCommandBuilder;
 use Prado\Data\Common\TDbTableInfo;
 
@@ -22,7 +22,7 @@ use Prado\Data\Common\TDbTableInfo;
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
  */
-class TSqlSrvTableInfo extends TDbTableInfo implements IDbHasSchema
+class TSqlSrvTableInfo extends TDbTableInfo implements IDataHasSchema
 {
 	/**
 	 * @return string catalog name (database name)

@@ -36,7 +36,7 @@ use Prado\Prado;
  * | `TableName`   | {@see getTableName()}     | Unqualified table or view name                 |
  * | `IsView`      | {@see getIsView()}        | `true` when the object is a view               |
  * | `SchemaName`  | {@see getSchemaName()}    | Schema/owner name; returned only when the      |
- * |               |                           | concrete class also implements {@see IDbHasSchema} |
+ * |               |                           | concrete class also implements {@see IDataHasSchema} |
  *
  * ## Full name and schema gating
  *
@@ -45,7 +45,7 @@ use Prado\Prado;
  * (MySQL, PostgreSQL, SQL Server, Oracle, IBM DB2) override this to prepend the
  * quoted schema name so that queries reference `"schema"."table"`.
  *
- * {@see getSchemaName()} is gated by an `instanceof IDbHasSchema` check: even
+ * {@see getSchemaName()} is gated by an `instanceof IDataHasSchema` check: even
  * if a value were written to the info array, schema-less engines (SQLite,
  * Firebird) will always receive `null`.
  *
@@ -137,7 +137,7 @@ class TDbTableInfo extends \Prado\TComponent implements IDataTableInfo
 	 * Returns the schema (owner/namespace) name for database engines that support
 	 * schemas.  Returns null for schema-less engines (SQLite, Firebird).
 	 *
-	 * The concrete class must implement {@see IDbHasSchema} for a non-null value
+	 * The concrete class must implement {@see IDataHasSchema} for a non-null value
 	 * to be returned; this prevents schema-less drivers from accidentally exposing
 	 * a stored value if one were ever written to the info array.
 	 *
@@ -146,7 +146,7 @@ class TDbTableInfo extends \Prado\TComponent implements IDataTableInfo
 	 */
 	public function getSchemaName(): ?string
 	{
-		return $this instanceof IDbHasSchema ? $this->getInfo('SchemaName') : null;
+		return $this instanceof IDataHasSchema ? $this->getInfo('SchemaName') : null;
 	}
 
 	/**

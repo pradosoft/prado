@@ -1,6 +1,6 @@
 <?php
 
-use Prado\Data\Common\IDbHasSchema;
+use Prado\Data\Common\IDataHasSchema;
 use Prado\Data\Common\TDbCommandBuilder;
 use Prado\Data\Common\TDbTableColumn;
 use Prado\Data\Common\TDbTableInfo;
@@ -52,7 +52,7 @@ class TDbTableInfoTest extends PHPUnit\Framework\TestCase
 
 	public function test_get_schema_name_returns_null_for_base_class()
 	{
-		// Base TDbTableInfo does NOT implement IDbHasSchema, so getSchemaName()
+		// Base TDbTableInfo does NOT implement IDataHasSchema, so getSchemaName()
 		// must always return null regardless of what is in the info array.
 		$info = new TDbTableInfo(['SchemaName' => 'public']);
 		$this->assertNull($info->getSchemaName());
@@ -60,14 +60,14 @@ class TDbTableInfoTest extends PHPUnit\Framework\TestCase
 
 	public function test_get_schema_name_returns_value_when_interface_implemented()
 	{
-		// An anonymous subclass that declares IDbHasSchema should return the value.
-		$info = new class(['SchemaName' => 'myschema']) extends TDbTableInfo implements IDbHasSchema {};
+		// An anonymous subclass that declares IDataHasSchema should return the value.
+		$info = new class(['SchemaName' => 'myschema']) extends TDbTableInfo implements IDataHasSchema {};
 		$this->assertEquals('myschema', $info->getSchemaName());
 	}
 
 	public function test_get_schema_name_returns_null_when_interface_implemented_but_not_set()
 	{
-		$info = new class([]) extends TDbTableInfo implements IDbHasSchema {};
+		$info = new class([]) extends TDbTableInfo implements IDataHasSchema {};
 		$this->assertNull($info->getSchemaName());
 	}
 

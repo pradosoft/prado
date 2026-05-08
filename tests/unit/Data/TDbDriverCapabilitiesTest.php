@@ -70,18 +70,27 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 			'UTF_8'         => ['UTF_8',         'utf8'],
 			'UTF-16'        => ['UTF-16',        'utf16'],
 			'utf16'         => ['utf16',         'utf16'],
+			'UTF-16LE'      => ['UTF-16LE',      'utf16le'],
+			'utf16le'       => ['utf16le',       'utf16le'],
+			'UTF-16BE'      => ['UTF-16BE',      'utf16be'],
+			'utf16be'       => ['utf16be',       'utf16be'],
 			'ISO-8859-1'    => ['ISO-8859-1',    'iso88591'],
 			'iso88591'      => ['iso88591',      'iso88591'],
 			'ISO_8859_1'    => ['ISO_8859_1',    'iso88591'],
 			'ISO-8859-2'    => ['ISO-8859-2',    'iso88592'],
 			'ASCII'         => ['ASCII',         'ascii'],
 			'ascii'         => ['ascii',         'ascii'],
+			'US-ASCII'      => ['US-ASCII',      'usascii'],
+			'usascii'       => ['usascii',       'usascii'],
 			'Windows-1250'  => ['Windows-1250',  'windows1250'],
+			'windows-1250'  => ['windows-1250',  'windows1250'],
 			'windows1250'   => ['windows1250',   'windows1250'],
 			'win1250'       => ['win1250',       'win1250'],
 			'CP1250'        => ['CP1250',        'cp1250'],
 			'Windows-1251'  => ['Windows-1251',  'windows1251'],
+			'windows-1251'  => ['windows-1251',  'windows1251'],
 			'Windows-1252'  => ['Windows-1252',  'windows1252'],
+			'windows-1252'  => ['windows-1252',  'windows1252'],
 			'KOI8-R'        => ['KOI8-R',        'koi8r'],
 			'koi8r'         => ['koi8r',         'koi8r'],
 			'KOI8_R'        => ['KOI8_R',        'koi8r'],
@@ -132,6 +141,22 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 			'UTF-16/sqlsrv'    => ['UTF-16', TDbDriver::DRIVER_SQLSRV,   'UTF-16'],  // no entry → pass-through
 			'UTF-16/ibm'       => ['UTF-16', TDbDriver::DRIVER_IBM,      'UTF-16'],  // no entry → pass-through
 
+			// --- UTF-16LE (TDataCharset::UTF16LE = 'UTF-16LE') ---
+			'UTF-16LE/mysql'   => ['UTF-16LE', TDbDriver::DRIVER_MYSQL,    'utf16le'],
+			'UTF-16LE/sqlite'  => ['UTF-16LE', TDbDriver::DRIVER_SQLITE,   'UTF-16le'],
+			'UTF-16LE/pgsql'   => ['UTF-16LE', TDbDriver::DRIVER_PGSQL,    'UTF-16LE'],  // no entry → pass-through
+			'UTF-16LE/firebird'=> ['UTF-16LE', TDbDriver::DRIVER_FIREBIRD, 'UTF-16LE'],  // no entry → pass-through
+			'UTF-16LE/oci'     => ['UTF-16LE', TDbDriver::DRIVER_OCI,      'UTF-16LE'],  // no entry → pass-through
+			'UTF-16LE/sqlsrv'  => ['UTF-16LE', TDbDriver::DRIVER_SQLSRV,   'UTF-16LE'],  // no entry → pass-through
+
+			// --- UTF-16BE (TDataCharset::UTF16BE = 'UTF-16BE') ---
+			'UTF-16BE/mysql'   => ['UTF-16BE', TDbDriver::DRIVER_MYSQL,    'utf16'],
+			'UTF-16BE/sqlite'  => ['UTF-16BE', TDbDriver::DRIVER_SQLITE,   'UTF-16be'],
+			'UTF-16BE/firebird'=> ['UTF-16BE', TDbDriver::DRIVER_FIREBIRD, 'UTF16BE'],
+			'UTF-16BE/oci'     => ['UTF-16BE', TDbDriver::DRIVER_OCI,      'AL16UTF16'],
+			'UTF-16BE/pgsql'   => ['UTF-16BE', TDbDriver::DRIVER_PGSQL,    'UTF-16BE'],  // no entry → pass-through
+			'UTF-16BE/sqlsrv'  => ['UTF-16BE', TDbDriver::DRIVER_SQLSRV,   'UTF-16BE'],  // no entry → pass-through
+
 			// --- ISO-8859-1 / Latin1 ---
 			'ISO-8859-1/mysql'     => ['ISO-8859-1', TDbDriver::DRIVER_MYSQL,    'latin1'],
 			'ISO-8859-1/pgsql'     => ['ISO-8859-1', TDbDriver::DRIVER_PGSQL,    'LATIN1'],
@@ -158,17 +183,21 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 			'ASCII/pgsql'    => ['ASCII', TDbDriver::DRIVER_PGSQL,    'SQL_ASCII'],
 			'ASCII/sqlite'   => ['ASCII', TDbDriver::DRIVER_SQLITE,   'UTF-8'],
 			'ASCII/firebird' => ['ASCII', TDbDriver::DRIVER_FIREBIRD, 'ASCII'],
-			'ASCII/sqlsrv'   => ['ASCII', TDbDriver::DRIVER_SQLSRV,   'ASCII'],  // no sqlsrv entry → pass-through
+			'ASCII/sqlsrv'   => ['ASCII', TDbDriver::DRIVER_SQLSRV,   'US-ASCII'],  // no sqlsrv entry → normalized IANA pass-through
 			'ASCII/oci'      => ['ASCII', TDbDriver::DRIVER_OCI,      'US7ASCII'],
 			'ASCII/dblib'    => ['ASCII', TDbDriver::DRIVER_DBLIB,    'ASCII'],
-			'ASCII/ibm'      => ['ASCII', TDbDriver::DRIVER_IBM,      'ASCII'],
+			'ASCII/ibm'      => ['ASCII', TDbDriver::DRIVER_IBM,      'US-ASCII'],  // no ibm entry → normalized IANA pass-through
+			// IANA canonical form also resolves correctly
+			'US-ASCII/mysql'    => ['US-ASCII', TDbDriver::DRIVER_MYSQL,    'ascii'],
+			'US-ASCII/firebird' => ['US-ASCII', TDbDriver::DRIVER_FIREBIRD, 'ASCII'],
+			'US-ASCII/oci'      => ['US-ASCII', TDbDriver::DRIVER_OCI,      'US7ASCII'],
 
 			// --- Windows-1250 ---
 			'Windows-1250/mysql'    => ['Windows-1250', TDbDriver::DRIVER_MYSQL,    'cp1250'],
 			'Windows-1250/pgsql'    => ['Windows-1250', TDbDriver::DRIVER_PGSQL,    'WIN1250'],
 			'Windows-1250/sqlite'   => ['Windows-1250', TDbDriver::DRIVER_SQLITE,   'UTF-8'],
 			'Windows-1250/firebird' => ['Windows-1250', TDbDriver::DRIVER_FIREBIRD, 'WIN1250'],
-			'Windows-1250/sqlsrv'   => ['Windows-1250', TDbDriver::DRIVER_SQLSRV,   'Windows-1250'],  // no sqlsrv entry → pass-through
+			'Windows-1250/sqlsrv'   => ['Windows-1250', TDbDriver::DRIVER_SQLSRV,   'windows-1250'],  // no sqlsrv entry → normalized IANA pass-through
 			'Windows-1250/oci'      => ['Windows-1250', TDbDriver::DRIVER_OCI,      'EE8MSWIN1250'],
 			'Windows-1250/dblib'    => ['Windows-1250', TDbDriver::DRIVER_DBLIB,    'CP1250'],
 
@@ -177,7 +206,7 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 			'Windows-1251/pgsql'    => ['Windows-1251', TDbDriver::DRIVER_PGSQL,    'WIN1251'],
 			'Windows-1251/sqlite'   => ['Windows-1251', TDbDriver::DRIVER_SQLITE,   'UTF-8'],
 			'Windows-1251/firebird' => ['Windows-1251', TDbDriver::DRIVER_FIREBIRD, 'WIN1251'],
-			'Windows-1251/sqlsrv'   => ['Windows-1251', TDbDriver::DRIVER_SQLSRV,   'Windows-1251'],  // no sqlsrv entry → pass-through
+			'Windows-1251/sqlsrv'   => ['Windows-1251', TDbDriver::DRIVER_SQLSRV,   'windows-1251'],  // no sqlsrv entry → normalized IANA pass-through
 			'Windows-1251/oci'      => ['Windows-1251', TDbDriver::DRIVER_OCI,      'CL8MSWIN1251'],
 			'Windows-1251/dblib'    => ['Windows-1251', TDbDriver::DRIVER_DBLIB,    'CP1251'],
 
@@ -186,7 +215,7 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 			'Windows-1252/pgsql'    => ['Windows-1252', TDbDriver::DRIVER_PGSQL,    'WIN1252'],
 			'Windows-1252/sqlite'   => ['Windows-1252', TDbDriver::DRIVER_SQLITE,   'UTF-8'],
 			'Windows-1252/firebird' => ['Windows-1252', TDbDriver::DRIVER_FIREBIRD, 'WIN1252'],
-			'Windows-1252/sqlsrv'   => ['Windows-1252', TDbDriver::DRIVER_SQLSRV,   'Windows-1252'],  // no sqlsrv entry → pass-through
+			'Windows-1252/sqlsrv'   => ['Windows-1252', TDbDriver::DRIVER_SQLSRV,   'windows-1252'],  // no sqlsrv entry → normalized IANA pass-through
 			'Windows-1252/oci'      => ['Windows-1252', TDbDriver::DRIVER_OCI,      'WE8MSWIN1252'],
 			'Windows-1252/dblib'    => ['Windows-1252', TDbDriver::DRIVER_DBLIB,    'CP1252'],
 
@@ -222,6 +251,11 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 			'koi8r/mysql'     => ['koi8r',   TDbDriver::DRIVER_MYSQL, 'koi8r'],     // canonical alias
 			'koi8u/pgsql'     => ['koi8u',   TDbDriver::DRIVER_PGSQL, 'KOI8U'],
 			'utf16/sqlite'    => ['utf16',   TDbDriver::DRIVER_SQLITE,'UTF-16'],    // canonical alias
+			'utf16le/mysql'   => ['utf16le', TDbDriver::DRIVER_MYSQL,  'utf16le'],  // canonical alias
+			'utf16le/sqlite'  => ['utf16le', TDbDriver::DRIVER_SQLITE, 'UTF-16le'], // canonical alias
+			'utf16be/mysql'   => ['utf16be', TDbDriver::DRIVER_MYSQL,  'utf16'],    // canonical alias
+			'utf16be/sqlite'  => ['utf16be', TDbDriver::DRIVER_SQLITE, 'UTF-16be'], // canonical alias
+			'utf16be/firebird'=> ['utf16be', TDbDriver::DRIVER_FIREBIRD,'UTF16BE'], // canonical alias
 
 			// --- Case/punctuation variants resolve via canonicalization ---
 			'UTF-8 variants/mysql'     => ['utf-8',       TDbDriver::DRIVER_MYSQL, 'utf8mb4'],
@@ -267,7 +301,8 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 			// --- MySQL ---
 			'mysql/utf8mb4'  => ['utf8mb4', TDbDriver::DRIVER_MYSQL, TDataCharset::UTF8],
 			'mysql/utf8'     => ['utf8',    TDbDriver::DRIVER_MYSQL, TDataCharset::UTF8],
-			'mysql/utf16'    => ['utf16',   TDbDriver::DRIVER_MYSQL, TDataCharset::UTF16],
+			'mysql/utf16'    => ['utf16',   TDbDriver::DRIVER_MYSQL, TDataCharset::UTF16BE],
+			'mysql/utf16le'  => ['utf16le', TDbDriver::DRIVER_MYSQL, TDataCharset::UTF16LE],
 			'mysql/latin1'   => ['latin1',  TDbDriver::DRIVER_MYSQL, TDataCharset::Latin1],
 			'mysql/latin2'   => ['latin2',  TDbDriver::DRIVER_MYSQL, TDataCharset::Latin2],
 			'mysql/ascii'    => ['ascii',   TDbDriver::DRIVER_MYSQL, TDataCharset::ASCII],
@@ -278,8 +313,10 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 			'mysql/koi8u'    => ['koi8u',   TDbDriver::DRIVER_MYSQL, TDataCharset::KOI8U],
 
 			// --- SQLite ---
-			'sqlite/UTF-8'   => ['UTF-8',  TDbDriver::DRIVER_SQLITE, TDataCharset::UTF8],
-			'sqlite/UTF-16'  => ['UTF-16', TDbDriver::DRIVER_SQLITE, TDataCharset::UTF16],
+			'sqlite/UTF-8'    => ['UTF-8',    TDbDriver::DRIVER_SQLITE, TDataCharset::UTF8],
+			'sqlite/UTF-16'   => ['UTF-16',   TDbDriver::DRIVER_SQLITE, TDataCharset::UTF16],
+			'sqlite/UTF-16le' => ['UTF-16le', TDbDriver::DRIVER_SQLITE, TDataCharset::UTF16LE],
+			'sqlite/UTF-16be' => ['UTF-16be', TDbDriver::DRIVER_SQLITE, TDataCharset::UTF16BE],
 
 			// --- PostgreSQL ---
 			'pgsql/UTF8'     => ['UTF8',      TDbDriver::DRIVER_PGSQL, TDataCharset::UTF8],
@@ -295,7 +332,7 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 
 			// --- Firebird ---
 			'firebird/UTF8'     => ['UTF8',     TDbDriver::DRIVER_FIREBIRD, TDataCharset::UTF8],
-			'firebird/UTF16BE'  => ['UTF16BE',  TDbDriver::DRIVER_FIREBIRD, TDataCharset::UTF16],
+			'firebird/UTF16BE'  => ['UTF16BE',  TDbDriver::DRIVER_FIREBIRD, TDataCharset::UTF16BE],
 			'firebird/ISO8859_1'=> ['ISO8859_1',TDbDriver::DRIVER_FIREBIRD, TDataCharset::Latin1],
 			'firebird/ISO8859_2'=> ['ISO8859_2',TDbDriver::DRIVER_FIREBIRD, TDataCharset::Latin2],
 			'firebird/ASCII'    => ['ASCII',    TDbDriver::DRIVER_FIREBIRD, TDataCharset::ASCII],
@@ -306,12 +343,13 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 			'firebird/KOI8U'    => ['KOI8U',    TDbDriver::DRIVER_FIREBIRD, TDataCharset::KOI8U],
 
 			// --- Interbase alias → same as firebird ---
-			'interbase/UTF8'    => ['UTF8',     TDbDriver::DRIVER_INTERBASE, TDataCharset::UTF8],
+			'interbase/UTF8'     => ['UTF8',    TDbDriver::DRIVER_INTERBASE, TDataCharset::UTF8],
+			'interbase/UTF16BE'  => ['UTF16BE', TDbDriver::DRIVER_INTERBASE, TDataCharset::UTF16BE],
 			'interbase/ISO8859_1'=>['ISO8859_1',TDbDriver::DRIVER_INTERBASE, TDataCharset::Latin1],
 
 			// --- Oracle ---
 			'oci/AL32UTF8'     => ['AL32UTF8',     TDbDriver::DRIVER_OCI, TDataCharset::UTF8],
-			'oci/AL16UTF16'    => ['AL16UTF16',    TDbDriver::DRIVER_OCI, TDataCharset::UTF16],
+			'oci/AL16UTF16'    => ['AL16UTF16',    TDbDriver::DRIVER_OCI, TDataCharset::UTF16BE],
 			'oci/WE8ISO8859P1' => ['WE8ISO8859P1', TDbDriver::DRIVER_OCI, TDataCharset::Latin1],
 			'oci/EE8ISO8859P2' => ['EE8ISO8859P2', TDbDriver::DRIVER_OCI, TDataCharset::Latin2],
 			'oci/US7ASCII'     => ['US7ASCII',     TDbDriver::DRIVER_OCI, TDataCharset::ASCII],
@@ -327,7 +365,7 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 			'sqlsrv/UTF-8'     => ['UTF-8',     TDbDriver::DRIVER_SQLSRV, TDataCharset::UTF8],
 			'sqlsrv/ISO-8859-1'=> ['ISO-8859-1',TDbDriver::DRIVER_SQLSRV, TDataCharset::Latin1],  // pass-through == TDataCharset::Latin1
 			'sqlsrv/ISO-8859-2'=> ['ISO-8859-2',TDbDriver::DRIVER_SQLSRV, TDataCharset::Latin2],  // pass-through == TDataCharset::Latin2
-			'sqlsrv/ASCII'     => ['ASCII',     TDbDriver::DRIVER_SQLSRV, TDataCharset::ASCII],    // pass-through == TDataCharset::ASCII
+			'sqlsrv/ASCII'     => ['ASCII',     TDbDriver::DRIVER_SQLSRV, 'ASCII'],                 // pass-through; not in sqlsrv table (TDataCharset::ASCII = 'US-ASCII')
 			'sqlsrv/CP1250'    => ['CP1250',    TDbDriver::DRIVER_SQLSRV, 'CP1250'],               // pass-through; not a valid sqlsrv-reported value
 			'sqlsrv/CP1251'    => ['CP1251',    TDbDriver::DRIVER_SQLSRV, 'CP1251'],               // pass-through; not a valid sqlsrv-reported value
 			'sqlsrv/CP1252'    => ['CP1252',    TDbDriver::DRIVER_SQLSRV, 'CP1252'],               // pass-through; not a valid sqlsrv-reported value
@@ -377,9 +415,16 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 
 	public static function provideRoundTrip(): array
 	{
+		// These charsets round-trip losslessly through all of the $drivers below.
+		// TDataCharset::UTF16 is intentionally excluded from the main loop: MySQL,
+		// Firebird, and OCI map 'UTF-16' → their BE-specific form (e.g. 'utf16' /
+		// 'UTF16BE' / 'AL16UTF16'), which now unresolves back to 'UTF-16BE', not
+		// 'UTF-16'.  UTF-16 with no explicit endianness is a "relaxed input" that
+		// resolves to the driver's preferred UTF-16 form; use UTF16BE / UTF16LE for
+		// lossless round-trips on those drivers.  UTF-16 does round-trip through
+		// sqlite (bare 'UTF-16' key), pgsql, dblib, and sqlsrv (all pass-through).
 		$charsets = [
 			TDataCharset::UTF8,
-			TDataCharset::UTF16,
 			TDataCharset::Latin1,
 			TDataCharset::Latin2,
 			TDataCharset::ASCII,
@@ -412,7 +457,22 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 		foreach ($sqliteCharsets as $cs) {
 			$cases["$cs/sqlite"] = [$cs, TDbDriver::DRIVER_SQLITE];
 		}
-		// sqlsrv: only UTF-8 and UTF-16 are lossless round-trips
+		// UTF-16 (bare, no explicit endianness) only round-trips through drivers that
+		// either pass it through unchanged or have an explicit 'UTF-16' key in their
+		// unresolve table.  It does NOT round-trip through mysql/firebird/oci because
+		// those drivers resolve 'UTF-16' to their BE-specific form and unresolve that
+		// back to 'UTF-16BE'.
+		$cases['UTF-16/pgsql']   = [TDataCharset::UTF16, TDbDriver::DRIVER_PGSQL];
+		$cases['UTF-16/dblib']   = [TDataCharset::UTF16, TDbDriver::DRIVER_DBLIB];
+		// UTF-16LE round-trips for MySQL and SQLite only (the only drivers with explicit LE support).
+		$cases['UTF-16LE/mysql']  = [TDataCharset::UTF16LE, TDbDriver::DRIVER_MYSQL];
+		$cases['UTF-16LE/sqlite'] = [TDataCharset::UTF16LE, TDbDriver::DRIVER_SQLITE];
+		// UTF-16BE round-trips for MySQL, SQLite, Firebird, and OCI.
+		$cases['UTF-16BE/mysql']    = [TDataCharset::UTF16BE, TDbDriver::DRIVER_MYSQL];
+		$cases['UTF-16BE/sqlite']   = [TDataCharset::UTF16BE, TDbDriver::DRIVER_SQLITE];
+		$cases['UTF-16BE/firebird'] = [TDataCharset::UTF16BE, TDbDriver::DRIVER_FIREBIRD];
+		$cases['UTF-16BE/oci']      = [TDataCharset::UTF16BE, TDbDriver::DRIVER_OCI];
+		// sqlsrv: only UTF-8 and UTF-16 are lossless round-trips (UTF-16 passes through)
 		$cases['UTF-8/sqlsrv']  = [TDataCharset::UTF8,  TDbDriver::DRIVER_SQLSRV];
 		$cases['UTF-16/sqlsrv'] = [TDataCharset::UTF16, TDbDriver::DRIVER_SQLSRV];
 		// interbase aliases firebird → same round-trip

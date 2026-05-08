@@ -647,7 +647,8 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 
 	public function testApplyCharsetToDsnSkipsSqlsrvAscii(): void
 	{
-		// ASCII also resolves to itself for sqlsrv and is not in the DSN allowlist.
+		// 'ASCII' normalizes to 'US-ASCII' for sqlsrv (no driver entry → IANA pass-through),
+		// which is not in the DSN allowlist — DSN is returned unchanged.
 		$dsn = 'sqlsrv:Server=localhost;Database=test';
 		$conn = $this->makeConnWithCharset($dsn, 'ASCII');
 		$result = $this->callApplyCharsetToDsn($conn, $dsn);

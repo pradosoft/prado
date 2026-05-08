@@ -1,7 +1,7 @@
 <?php
 
 /**
- * IDbHasSchema interface file.
+ * IDataHasSchema interface file.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
@@ -11,9 +11,9 @@
 namespace Prado\Data\Common;
 
 /**
- * IDbHasSchema interface
+ * IDataHasSchema interface
  *
- * IDbHasSchema is a marker interface for database table-info classes whose
+ * IDataHasSchema is a marker interface for database table-info classes whose
  * underlying database engine supports the concept of a schema (also called an
  * owner or namespace that groups tables within a database).
  *
@@ -26,12 +26,12 @@ namespace Prado\Data\Common;
  * The interface is intentionally empty — it serves as a capability declaration
  * rather than a method contract, following the marker-interface pattern used
  * elsewhere in the framework (e.g. IDbModule).  Future NoSQL metadata classes
- * may introduce analogous markers (IDbHasKeyspace, IDbHasCollection, etc.)
+ * may introduce analogous markers (IDataHasKeyspace, IDataHasCollection, etc.)
  * following the same convention.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3
  */
-interface IDbHasSchema
+interface IDataHasSchema
 {
 }
