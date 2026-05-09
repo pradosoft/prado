@@ -1,8 +1,10 @@
 <?php
 
 $finder = PhpCsFixer\Finder::create()
+	->exclude('agents/')
 	->exclude('build/')
 	->exclude('docs/')
+	->exclude('node_modules/')
 	->exclude('tests/')
 	->exclude('vendor/')
 	->in(__DIR__);
