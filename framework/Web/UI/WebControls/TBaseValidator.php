@@ -287,12 +287,16 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		if (($cssClass = $this->getControlCssClass()) !== '') {
 			$control = $this->getValidationTarget();
 			if ($control instanceof TWebControl) {
-				$class = preg_replace('/ ' . preg_quote($cssClass) . '/', '', $control->getCssClass());
+				// Split into tokens, drop empties and existing error class
+				$classes = array_values(array_filter(
+					explode(' ', $control->getCssClass()),
+					fn ($c) => $c !== '' && $c !== $cssClass
+				));
 				if (!$this->getIsValid()) {
-					$class .= ' ' . $cssClass;
-					$control->setCssClass($class);
+					$classes[] = $cssClass;
+					$control->setCssClass(implode(' ', $classes));
 				} elseif ($control instanceof \Prado\Web\UI\IValidatable && $control->getIsValid()) {
-					$control->setCssClass($class);
+					$control->setCssClass(implode(' ', $classes));
 				}
 			}
 		}
