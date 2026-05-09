@@ -33,7 +33,7 @@ class TStyleDiff extends TViewStateDiff
 		}
 		$style = $obj->getStyleFields();
 		$style = array_merge($style, $this->getStyleFromString($obj->getCustomStyle()));
-		if ($obj->hasFont()) {
+		if ($obj->getHasFont()) {
 			$style = array_merge($style, $this->getStyleFromString($obj->getFont()->toString()));
 		}
 		return $style;
