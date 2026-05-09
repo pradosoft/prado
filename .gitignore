@@ -14,6 +14,8 @@ atlassian-ide-plugin.xml
 .claude/
 tests/FunctionalTests/results.dat
 tests/unit/Data/db/
+/node_modules
+/package-lock.json
 
 # Composer stuff
 vendor/*
@@ -24,3 +26,6 @@ vendor/*
 
 sauce_connect.log
 tests/unit/Data/SqlMap/sqlite/tests.db
+
+# Vitest cache artefacts
+vitest.config.js.timestamp-*

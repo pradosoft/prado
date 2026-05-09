@@ -93,6 +93,27 @@ jobs:
         run: |
           composer functionaltest
 
+  prado-js:
+    name: Prado JS (ESLint + Vitest)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+  
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+  
+      - name: Install npm dependencies
+        run: npm install
+  
+      - name: Lint JavaScript (ESLint)
+        run: npm run lint
+  
+      - name: Run JavaScript unit tests (Vitest)
+        run: npm test
+
   prado-macos:
     name: Prado (macOS)
     runs-on: macos-latest
