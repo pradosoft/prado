@@ -78,10 +78,18 @@ class TStyleDiff extends TViewStateDiff
 	 */
 	protected function getStyleDiff()
 	{
-		$diff = array_diff_assoc(
-			$this->getCombinedStyle($this->_new),
-			$this->getCombinedStyle($this->_old)
-		);
+		$newStyle = $this->getCombinedStyle($this->_new);
+		$oldStyle = $this->getCombinedStyle($this->_old);
+
+		// Added or changed properties.
+		$diff = array_diff_assoc($newStyle, $oldStyle);
+
+		// Removed properties: present in old but absent in new.
+		// An empty-string value tells jQuery .css() to remove the property from the DOM.
+		foreach (array_keys(array_diff_key($oldStyle, $newStyle)) as $removed) {
+			$diff[$removed] = '';
+		}
+
 		return count($diff) > 0 ? $diff : null;
 	}
 
