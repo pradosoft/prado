@@ -1,6 +1,6 @@
 <?php
 
-require_once(__DIR__ . '/../../../PradoUnit.php');
+require_once(__DIR__ . '/../../../../PradoUnit.php');
 
 /**
  * PgsqlTableExistsTest — driver-specific tests for {@see TTableGateway::getTableExists()} on PostgreSQL.

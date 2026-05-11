@@ -1,6 +1,6 @@
 <?php
 
-require_once(__DIR__ . '/../../../PradoUnit.php');
+require_once(__DIR__ . '/../../../../PradoUnit.php');
 
 use Prado\Data\Common\Pgsql\TPgsqlMetaData;
 use Prado\Data\Common\TDbMetaData;
@@ -50,7 +50,7 @@ class TDbDriverCapabilitiesPgsqlIntegrationTest extends PHPUnit\Framework\TestCa
 	{
 		static $booted = false;
 		if (!$booted) {
-			new TApplication(__DIR__ . '/../../../Security/app', false, TApplication::CONFIG_TYPE_PHP);
+			new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP);
 			$booted = true;
 		}
 		$this->setUpConnection();

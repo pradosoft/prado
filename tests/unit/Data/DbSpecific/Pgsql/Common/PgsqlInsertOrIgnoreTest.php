@@ -1,6 +1,6 @@
 <?php
 
-require_once(__DIR__ . '/../../../PradoUnit.php');
+require_once(__DIR__ . '/../../../../PradoUnit.php');
 
 /**
  * PgsqlInsertOrIgnoreTest — comprehensive tests for PostgreSQL insertOrIgnore behaviour.
