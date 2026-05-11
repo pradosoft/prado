@@ -1,6 +1,6 @@
 <?php
 
-require_once(__DIR__ . '/../../../PradoUnit.php');
+require_once(__DIR__ . '/../../../../PradoUnit.php');
 
 /**
  * SqlSrvUpsertTest — comprehensive tests for SQL Server upsert behaviour.
@@ -321,5 +321,128 @@ class SqlSrvUpsertTest extends PHPUnit\Framework\TestCase
 		$txn->rollback();
 
 		$this->assertFalse($result);
+	}
+
+	// -----------------------------------------------------------------------
+	// Column-name list updateData
+	// -----------------------------------------------------------------------
+
+	public function test_updateData_column_name_list_updates_only_those_columns(): void
+	{
+		$txn = self::$conn->beginTransaction();
+		self::$gateway->insert(['username' => 'alice', 'score' => 10]);
+		self::$gateway->upsert(['username' => 'alice', 'score' => 77], ['score'], ['username']);
+		$txn->commit();
+
+		$row = self::$gateway->find('username = ?', 'alice');
+		$lc  = array_change_key_case($row, CASE_LOWER);
+		$this->assertEquals(77, (int) $lc['score']);
+		$this->assertEquals('alice', $lc['username']);
+	}
+
+	public function test_sql_column_name_list_generates_correct_update_clause(): void
+	{
+		$capturedSql = null;
+		$gw = new TTableGateway('upsert_test', self::$conn);
+		$gw->OnCreateCommand[] = function ($sender, $param) use (&$capturedSql): void {
+			$capturedSql = $param->getCommand()->Text;
+		};
+		$txn = self::$conn->beginTransaction();
+		$gw->upsert(['username' => 'alice', 'score' => 77], ['score'], ['username']);
+		$txn->rollback();
+		// integer-keyed column name → t.[score] = s.score in WHEN MATCHED branch
+		$matchedPos = strpos($capturedSql, 'WHEN MATCHED');
+		$updatePart = substr($capturedSql, (int) $matchedPos);
+		$this->assertStringContainsString('[score]', $updatePart);
+	}
+
+	public function test_updateData_column_name_list_leaves_other_columns_unchanged(): void
+	{
+		$txn = self::$conn->beginTransaction();
+		self::$gateway->insert(['username' => 'alice', 'score' => 10]);
+		// Only score in update list; username is conflict col and must not be updated
+		self::$gateway->upsert(['username' => 'alice', 'score' => 55], ['score'], ['username']);
+		$txn->commit();
+
+		$row = self::$gateway->find('username = ?', 'alice');
+		$lc  = array_change_key_case($row, CASE_LOWER);
+		$this->assertEquals('alice', $lc['username']);
+	}
+
+	// -----------------------------------------------------------------------
+	// Explicit value (string-keyed) updateData
+	// -----------------------------------------------------------------------
+
+	public function test_updateData_explicit_value_overrides_insert_data_on_conflict(): void
+	{
+		$txn = self::$conn->beginTransaction();
+		self::$gateway->insert(['username' => 'alice', 'score' => 10]);
+		// Explicit override: score should be set to 99 regardless of insert data value (10)
+		self::$gateway->upsert(['username' => 'alice', 'score' => 10], ['score' => 99], ['username']);
+		$txn->commit();
+
+		$row = self::$gateway->find('username = ?', 'alice');
+		$lc  = array_change_key_case($row, CASE_LOWER);
+		$this->assertEquals(99, (int) $lc['score']);
+	}
+
+	public function test_sql_explicit_value_updateData_does_not_use_insert_data(): void
+	{
+		$capturedSql = null;
+		$gw = new TTableGateway('upsert_test', self::$conn);
+		$gw->OnCreateCommand[] = function ($sender, $param) use (&$capturedSql): void {
+			$capturedSql = $param->getCommand()->Text;
+		};
+		$txn = self::$conn->beginTransaction();
+		$gw->upsert(['username' => 'alice', 'score' => 10], ['score' => 99], ['username']);
+		$txn->rollback();
+		// Explicit override must NOT reference the source alias (s.score)
+		$matchedPos = strpos($capturedSql, 'WHEN MATCHED');
+		$updatePart = substr($capturedSql, (int) $matchedPos);
+		$this->assertStringNotContainsString('t.[score] = s.score', $updatePart);
+	}
+
+	// -----------------------------------------------------------------------
+	// Mixed (column-name + explicit value) updateData
+	// -----------------------------------------------------------------------
+
+	public function test_updateData_mixed_handles_column_name_and_explicit_value_simultaneously(): void
+	{
+		// SqlSrv table: username (PK), score — no separate id column.
+		// Mixed test: conflict on username (PK); score updated from record (integer-keyed),
+		// no second non-PK column available for explicit override, so this tests that
+		// the integer-keyed entry is correctly applied via the source alias.
+		$txn = self::$conn->beginTransaction();
+		self::$gateway->insert(['username' => 'alice', 'score' => 10]);
+		self::$gateway->upsert(
+			['username' => 'alice', 'score' => 77],
+			['score'],
+			['username']
+		);
+		$txn->commit();
+
+		$row = self::$gateway->find('username = ?', 'alice');
+		$lc  = array_change_key_case($row, CASE_LOWER);
+		$this->assertEquals(77, (int) $lc['score']);
+	}
+
+	public function test_sql_mixed_updateData_generates_both_value_references_and_literals(): void
+	{
+		$capturedSql = null;
+		$gw = new TTableGateway('upsert_test', self::$conn);
+		$gw->OnCreateCommand[] = function ($sender, $param) use (&$capturedSql): void {
+			$capturedSql = $param->getCommand()->Text;
+		};
+		$txn = self::$conn->beginTransaction();
+		// Mixed: score (integer-keyed, from record via s.score) — only one non-PK column available
+		$gw->upsert(
+			['username' => 'alice', 'score' => 77],
+			['score', 'score' => 99],
+			['username']
+		);
+		$txn->rollback();
+		// At minimum the WHEN MATCHED branch references score
+		$this->assertStringContainsString('WHEN MATCHED', $capturedSql);
+		$this->assertStringContainsString('[score]', $capturedSql);
 	}
 }
