@@ -12,6 +12,7 @@ class ParameterMapTest extends BaseCase
 
 	protected function setUp(): void
 	{
+		$this->skipIfUnavailable();
 		$this->initScript('account-init.sql');
 //		$this->initScript('account-procedure.sql');
 		$this->initScript('order-init.sql');

@@ -24,6 +24,7 @@ class StatementTest extends BaseCase
 
 	protected function setUp(): void
 	{
+		$this->skipIfUnavailable();
 	}
 
 	public function resetDatabase()
