@@ -42,6 +42,7 @@ use Prado\Prado;
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.1
+ * see https://github.com/mybatis/
  */
 class TSqlMapManager extends \Prado\TComponent
 {

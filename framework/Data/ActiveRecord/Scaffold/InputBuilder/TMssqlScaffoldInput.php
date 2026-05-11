@@ -14,7 +14,6 @@ use Prado\Prado;
 /**
  * TMssqlScaffoldInput class.
  *
- *
  * @link https://github.com/pradosoft/prado
  * @todo v4.4 remove, replaced by TSqlSrvScaffoldInput
  * @deprecated
