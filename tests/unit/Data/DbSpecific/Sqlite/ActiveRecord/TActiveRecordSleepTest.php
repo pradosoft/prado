@@ -1,6 +1,6 @@
 <?php
 
-require_once(__DIR__ . '/../../PradoUnit.php');
+require_once(__DIR__ . '/../../../../PradoUnit.php');
 
 use Prado\Data\ActiveRecord\TActiveRecord;
 use Prado\Data\TDbConnection;
@@ -9,7 +9,7 @@ use Prado\Data\TDbConnection;
  * Concrete subclass of TActiveRecord for sleep/wakeup testing.
  * No real database table is needed for serialization unit tests.
  */
-class SleepTestRecord extends TActiveRecord
+class SqliteSleepTestRecord extends TActiveRecord
 {
 	public const TABLE_NAME = 'sleep_test';
 
@@ -24,7 +24,7 @@ class SleepTestRecord extends TActiveRecord
  * because live PDO connections cannot be serialized.  After unserialization the
  * record must be reconnectable by setting a new connection.
  */
-class TActiveRecordSleepTest extends PHPUnit\Framework\TestCase
+class SqliteTActiveRecordSleepTest extends PHPUnit\Framework\TestCase
 {
 	// -----------------------------------------------------------------------
 	//  _connection is always excluded
@@ -32,7 +32,7 @@ class TActiveRecordSleepTest extends PHPUnit\Framework\TestCase
 
 	public function testConnectionExcludedFromSleep(): void
 	{
-		$record = new SleepTestRecord();
+		$record = new SqliteSleepTestRecord();
 		$props = $record->__sleep();
 		// Protected property mangled name for _connection
 		$this->assertNotContains("\0*\0_connection", $props);
@@ -40,7 +40,7 @@ class TActiveRecordSleepTest extends PHPUnit\Framework\TestCase
 
 	public function testConnectionExcludedEvenWhenSet(): void
 	{
-		$record = new SleepTestRecord();
+		$record = new SqliteSleepTestRecord();
 		// Set a connection on the record (inactive — no live DB needed)
 		$conn = new TDbConnection('sqlite::memory:');
 		$ref = new \ReflectionProperty(TActiveRecord::class, '_connection');
@@ -57,7 +57,7 @@ class TActiveRecordSleepTest extends PHPUnit\Framework\TestCase
 
 	public function testPublicFieldsPreservedAfterRoundTrip(): void
 	{
-		$record = new SleepTestRecord();
+		$record = new SqliteSleepTestRecord();
 		$record->id   = 7;
 		$record->name = 'Alice';
 
@@ -69,7 +69,7 @@ class TActiveRecordSleepTest extends PHPUnit\Framework\TestCase
 
 	public function testConnectionNullAfterRoundTrip(): void
 	{
-		$record = new SleepTestRecord();
+		$record = new SqliteSleepTestRecord();
 		// Set a live-ish connection; it must be gone after unserialize
 		$conn = new TDbConnection('sqlite::memory:');
 		$ref = new \ReflectionProperty(TActiveRecord::class, '_connection');
@@ -89,10 +89,10 @@ class TActiveRecordSleepTest extends PHPUnit\Framework\TestCase
 
 	public function testWakeupDoesNotThrow(): void
 	{
-		$record = new SleepTestRecord();
+		$record = new SqliteSleepTestRecord();
 		$record->id = 1;
 		// __wakeup calls setupColumnMapping() and setupRelations() — must not throw
 		$restored = unserialize(serialize($record));
-		$this->assertInstanceOf(SleepTestRecord::class, $restored);
+		$this->assertInstanceOf(SqliteSleepTestRecord::class, $restored);
 	}
 }

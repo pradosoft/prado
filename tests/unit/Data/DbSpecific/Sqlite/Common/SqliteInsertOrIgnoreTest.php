@@ -1,6 +1,6 @@
 <?php
 
-require_once(__DIR__ . '/../../../PradoUnit.php');
+require_once(__DIR__ . '/../../../../PradoUnit.php');
 
 /**
  * SqliteInsertOrIgnoreTest — comprehensive tests for SQLite insertOrIgnore behaviour.

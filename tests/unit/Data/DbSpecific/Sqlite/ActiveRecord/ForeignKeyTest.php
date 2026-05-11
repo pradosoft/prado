@@ -1,22 +1,24 @@
 <?php
 
-require_once(__DIR__ . '/records/ItemRecord.php');
+require_once(__DIR__ . '/../../../ActiveRecord/records/ItemRecord.php');
 
-abstract class SqliteRecord extends TActiveRecord
+abstract class SqliteDbSpecificRecord extends TActiveRecord
 {
 	protected static $conn;
 
 	public function getDbConnection()
 	{
 		if (self::$conn === null) {
-			self::$conn = new TDbConnection('sqlite:' . __DIR__ . '/fk_tests.db');
+			self::$conn = new TDbConnection('sqlite:' . __DIR__ . '/../../../ActiveRecord/fk_tests.db');
 		}
 		return self::$conn;
 	}
 }
 
-class Album extends SqliteRecord
+class SqliteAlbum extends SqliteDbSpecificRecord
 {
+	const TABLE = 'album';
+
 	public $title;
 
 	public $Tracks = [];
@@ -25,9 +27,9 @@ class Album extends SqliteRecord
 	public $cover;
 
 	public static $RELATIONS = [
-		'Tracks' => [self::HAS_MANY, 'Track'],
-		'Artists' => [self::MANY_TO_MANY, 'Artist', 'album_artists'],
-		'cover' => [self::HAS_ONE, 'Cover']
+		'Tracks' => [self::HAS_MANY, 'SqliteTrack'],
+		'Artists' => [self::MANY_TO_MANY, 'SqliteArtist', 'album_artists'],
+		'cover' => [self::HAS_ONE, 'SqliteCover']
 	];
 
 	public static function finder($class = __CLASS__)
@@ -36,14 +38,16 @@ class Album extends SqliteRecord
 	}
 }
 
-class Artist extends SqliteRecord
+class SqliteArtist extends SqliteDbSpecificRecord
 {
+	const TABLE = 'artist';
+
 	public $name;
 
 	public $Albums = [];
 
 	public static $RELATIONS = [
-		'Albums' => [self::MANY_TO_MANY, 'Album', 'album_artists']
+		'Albums' => [self::MANY_TO_MANY, 'SqliteAlbum', 'album_artists']
 	];
 
 	public static function finder($class = __CLASS__)
@@ -52,16 +56,18 @@ class Artist extends SqliteRecord
 	}
 }
 
-class Track extends SqliteRecord
+class SqliteTrack extends SqliteDbSpecificRecord
 {
+	const TABLE = 'track';
+
 	public $id;
 	public $song_name;
-	public $album_id; //FK -> Album.id
+	public $album_id;
 
 	public $Album;
 
 	public static $RELATIONS = [
-		'Album' => [self::BELONGS_TO, 'Album'],
+		'Album' => [self::BELONGS_TO, 'SqliteAlbum'],
 	];
 
 	public static function finder($class = __CLASS__)
@@ -70,17 +76,19 @@ class Track extends SqliteRecord
 	}
 }
 
-class Cover extends SqliteRecord
+class SqliteCover extends SqliteDbSpecificRecord
 {
+	const TABLE = 'cover';
+
 	public $album;
 	public $content;
 }
 
-class ForeignKeyTest extends PHPUnit\Framework\TestCase
+class SqliteForeignKeyTest extends PHPUnit\Framework\TestCase
 {
 	public function test_has_many()
 	{
-		$albums = Album::finder()->withTracks()->findAll();
+		$albums = SqliteAlbum::finder()->withTracks()->findAll();
 		$this->assertEquals(count($albums), 2);
 
 		$this->assertEquals($albums[0]->title, 'Album 1');
@@ -102,7 +110,7 @@ class ForeignKeyTest extends PHPUnit\Framework\TestCase
 
 	public function test_has_one()
 	{
-		$albums = Album::finder()->with_cover()->findAll();
+		$albums = SqliteAlbum::finder()->with_cover()->findAll();
 		$this->assertEquals(count($albums), 2);
 
 		$this->assertEquals($albums[0]->title, 'Album 1');
@@ -120,7 +128,7 @@ class ForeignKeyTest extends PHPUnit\Framework\TestCase
 
 	public function test_belongs_to()
 	{
-		$track = Track::finder()->withAlbum()->find('id = ?', 1);
+		$track = SqliteTrack::finder()->withAlbum()->find('id = ?', 1);
 
 		$this->assertEquals($track->id, "1");
 		$this->assertEquals($track->song_name, "Track 1");
@@ -129,7 +137,7 @@ class ForeignKeyTest extends PHPUnit\Framework\TestCase
 
 	public function test_has_many_associate()
 	{
-		$album = Album::finder()->withArtists()->find('title = ?', 'Album 2');
+		$album = SqliteAlbum::finder()->withArtists()->find('title = ?', 'Album 2');
 		$this->assertEquals($album->title, 'Album 2');
 		$this->assertEquals(count($album->Artists), 3);
 
@@ -140,7 +148,7 @@ class ForeignKeyTest extends PHPUnit\Framework\TestCase
 
 	public function test_multiple_fk()
 	{
-		$album = Album::finder()->withArtists()->withTracks()->with_cover()->find('title = ?', 'Album 1');
+		$album = SqliteAlbum::finder()->withArtists()->withTracks()->with_cover()->find('title = ?', 'Album 1');
 
 		$this->assertEquals($album->title, 'Album 1');
 		$this->assertEquals(count($album->Artists), 2);
