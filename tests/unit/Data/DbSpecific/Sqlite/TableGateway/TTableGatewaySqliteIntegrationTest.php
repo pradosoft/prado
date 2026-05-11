@@ -313,4 +313,34 @@ class TTableGatewaySqliteIntegrationTest extends PHPUnit\Framework\TestCase
 		$count = (int) self::$gw->count($criteria);
 		$this->assertSame(1, $count);
 	}
+
+	// -----------------------------------------------------------------------
+	// getTableExists()
+	// -----------------------------------------------------------------------
+
+	public function testGetTableExistsReturnsTrueForExistingTable(): void
+	{
+		$this->assertTrue(self::$gw->getTableExists());
+	}
+
+	public function testGetTableExistsReturnsTrueWhenConstructedFromTableInfo(): void
+	{
+		$info    = \Prado\Data\Common\TDbMetaData::getInstance(self::$conn)->getTableInfo('gw_test');
+		$gateway = new TTableGateway($info, self::$conn);
+		$this->assertTrue($gateway->getTableExists());
+	}
+
+	public function testGetTableExistsReturnsFalseAfterTableIsDropped(): void
+	{
+		// Create a temporary table, introspect it, then drop it — the gateway
+		// constructed from TDbTableInfo must detect the absence.
+		self::$conn->createCommand(
+			'CREATE TABLE gw_exists_probe (id INTEGER PRIMARY KEY)'
+		)->execute();
+		$info    = \Prado\Data\Common\TDbMetaData::getInstance(self::$conn)->getTableInfo('gw_exists_probe');
+		$gateway = new TTableGateway($info, self::$conn);
+		$this->assertTrue($gateway->getTableExists(), 'pre-condition: table must exist before drop');
+		self::$conn->createCommand('DROP TABLE gw_exists_probe')->execute();
+		$this->assertFalse($gateway->getTableExists());
+	}
 }
