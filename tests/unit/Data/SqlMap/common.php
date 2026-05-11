@@ -124,7 +124,7 @@ class SqlSrvBaseTestConfig extends BaseTestConfig
 	public function __construct()
 	{
 		$this->_sqlmapConfigFile = SQLMAP_TESTS . '/sqlsrv.xml';
-		$this->_scriptDir = SQLMAP_TESTS . '/scripts/mssql/'; // reuse existing mssql scripts
+		$this->_scriptDir = SQLMAP_TESTS . '/scripts/sqlsrv/';
 		$this->_features = ['insert_id'];
 		$dsn = 'sqlsrv:Server=localhost,1433;Database=prado_unitest';
 		$this->_connection = new TDbConnection($dsn, 'prado_unitest', 'Prado_unitest1!');

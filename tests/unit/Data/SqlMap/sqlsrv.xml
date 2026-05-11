@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sqlMapConfig>
+
+	<properties>
+		<property name="selectKey" value="SELECT SCOPE_IDENTITY() AS value" />
+		<property name="MyCategoryName" value="'Film'" />
+		<property name="accountName" value="'Joe'" />
+	</properties>
+
+	<typeHandlers>
+		<typeHandler class="OuiNonBool" dbType="Varchar" />
+		<typeHandler dbType="date" class="TDateTimeHandler" />
+	</typeHandlers>
+
+	<sqlMaps>
+		<sqlMap resource="maps/mssql/Account.xml"/>
+		<sqlMap resource="maps/mssql/DynamicAccount.xml"/>
+		<sqlMap resource="maps/mssql/Order.xml"/>
+		<sqlMap resource="maps/mssql/Category.xml"/>
+		<sqlMap resource="maps/mssql/Complex.xml"/>
+		<sqlMap resource="maps/mssql/LineItem.xml"/>
+		<sqlMap resource="maps/mssql/Enumeration.xml"/>
+		<sqlMap resource="maps/mssql/Other.xml"/>
+		<sqlMap resource="maps/mssql/ResultClass.xml"/>
+		<sqlMap resource="maps/mssql/Document.xml"/>
+		<sqlMap resource="maps/mssql/ActiveRecord.xml"/>
+	</sqlMaps>
+
+</sqlMapConfig>
