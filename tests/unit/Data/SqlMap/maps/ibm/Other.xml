@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sqlMap namespace="Other" >
+
+	<resultMap id="other-result"  class="Other" >
+		<result property="Int"		column="Other_Int"/>
+		<result property="Long"		column="Other_Long"/>
+		<result property="Bool"		column="Other_Bit"/>
+		<result property="Bool2"	column="Other_String" typeHandler="OuiNonBool"/>
+	</resultMap>
+
+	<resultMap id="other-result-V1"  class="Other" >
+		<result property="Int"		column="Other_Int"/>
+		<result property="Long"		column="Other_Long"/>
+		<result property="Bool"		column="Other_Bit"/>
+		<result property="Bool2"	column="Other_String" />
+	</resultMap>
+
+	<resultMap id="A-result"  class="A" >
+		<result property="Id"		column="A_ID"/>
+		<result property="Libelle"	column="A_Libelle"/>
+		<result property="B"		resultMapping="B-result"/>
+		<result property="E"		resultMapping="E-result"/>
+		<result property="F"		resultMapping="F-result"/>
+	</resultMap>
+
+	<resultMap id="B-result"  class="B" >
+		<result property="Id"		column="B_ID"/>
+		<result property="Libelle"	column="B_Libelle"/>
+		<result property="C"		resultMapping="C-result"/>
+		<result property="D"		resultMapping="D-result"/>
+	</resultMap>
+
+	<resultMap id="C-result"  class="C" >
+		<result property="Id"		column="C_ID"/>
+		<result property="Libelle"	column="C_Libelle"/>
+	</resultMap>
+
+	<resultMap id="D-result"  class="D" >
+		<result property="Id"		column="D_ID"/>
+		<result property="Libelle"	column="D_Libelle"/>
+	</resultMap>
+
+	<resultMap id="E-result"  class="E" >
+		<result property="Id"		column="E_ID"/>
+		<result property="Libelle"	column="E_Libelle"/>
+	</resultMap>
+
+	<resultMap id="F-result"  class="F" >
+		<result property="Id"		column="F_ID"/>
+		<result property="Libelle"	column="F_Libelle"/>
+	</resultMap>
+
+	<select id="SelectComplexJoined" resultMap="A-result">
+	SELECT
+		A.Id AS A_ID,
+		A.A_Libelle AS A_Libelle,
+		B.ID AS B_ID,
+		B.B_Libelle AS B_Libelle,
+		C.ID AS C_ID,
+		C.C_Libelle AS C_Libelle,
+		D.ID AS D_ID,
+		D.D_Libelle AS D_Libelle,
+		E.ID AS E_ID,
+		E.E_Libelle AS E_Libelle,
+		F.ID AS F_ID,
+		F.F_Libelle AS F_Libelle
+		FROM         A
+		LEFT OUTER JOIN B ON A.B_ID = B.ID
+		LEFT OUTER JOIN C ON B.C_ID = C.ID
+		LEFT OUTER JOIN D ON B.D_ID = D.ID
+		LEFT OUTER JOIN E ON A.E_ID = E.ID
+		LEFT OUTER JOIN F ON A.F_ID = F.ID
+	</select>
+
+
+	<statement id="DynamicSelectByIntLong"
+		parameterClass="Hashtable"
+		resultMap="other-result">
+		select
+			Other_Int,
+			Other_Long,
+			Other_Bit,
+			Other_String
+		from Others
+		<dynamic prepend="WHERE">
+			<isNotEqual prepend="AND" property="year" compareValue="0">
+			Other_Int = #year#
+			</isNotEqual>
+
+			<isNotEqual prepend="AND" property="areaid" compareValue="0">
+			Other_Long = #areaid#
+			</isNotEqual>
+		</dynamic>
+	</statement>
+
+	<statement id="DynamicSelectByBool"
+		parameterClass="Other"
+		resultMap="other-result">
+		select
+			Other_Int,
+			Other_Long,
+			Other_Bit,
+			Other_String
+		from Others
+		Where Other_Bit = #Bool#
+	</statement>
+
+	<statement id="InsertBool"
+		parameterClass="Other">
+		Insert into Others
+			( Other_Int, Other_Long, Other_Bit, Other_String )
+		values
+		( #Int#, #Long#, #Bool#, 'Yes')
+	</statement>
+
+	<statement id="InsertCustomTypeHandler"
+		parameterMap="other-insert-params">
+		Insert into Others
+			( Other_Int, Other_Long, Other_Bit, Other_String  )
+		values
+		( ?, ?, ?, ?)
+	</statement>
+
+	<statement id="SelectByInt"
+		parameterClass="int"
+		resultMap="other-result">
+		select
+			Other_Int,
+			Other_Long,
+			Other_Bit,
+			Other_String
+		from Others
+		Where Other_Int = #value#
+	</statement>
+
+	<statement id="SelectByIntV1"
+		parameterClass="int"
+		resultMap="other-result-V1">
+		select
+			Other_Int,
+			Other_Long,
+			Other_Bit,
+			Other_String
+		from Others
+		Where Other_Int = #value#
+	</statement>
+
+	<statement id="InsertInlineCustomTypeHandlerV1"
+		parameterClass="Other">
+		Insert into Others
+			( Other_Int, Other_Long, Other_Bit, Other_String  )
+		values
+		( #Int#, #Long#, #Bool#, #Bool2,type=bool,dbType=Varchar#)
+	</statement>
+
+	<statement id="InsertInlineCustomTypeHandlerV2"
+		parameterClass="Other">
+		Insert into Others
+			( Other_Int, Other_Long, Other_Bit, Other_String  )
+		values
+		( #Int#, #Long#, #Bool#, #Bool2,typeHandler=OuiNonBool#)
+	</statement>
+
+	<parameterMap id="other-insert-params">
+		<parameter property="Int" />
+		<parameter property="Long" />
+		<parameter property="Bool" />
+		<parameter property="Bool2" typeHandler="OuiNonBool"/>
+	</parameterMap>
+</sqlMap>

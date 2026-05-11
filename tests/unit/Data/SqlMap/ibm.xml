@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sqlMapConfig>
+
+	<properties>
+		<property name="selectKey" value="SELECT PREVVAL FOR categories_seq AS value FROM SYSIBM.SYSDUMMY1" />
+		<property name="MyCategoryName" value="'Film'" />
+		<property name="accountName" value="'Joe'" />
+	</properties>
+
+	<typeHandlers>
+		<typeHandler class="OuiNonBool" dbType="Varchar" />
+		<typeHandler dbType="date" class="TDateTimeHandler" />
+	</typeHandlers>
+
+	<sqlMaps>
+		<sqlMap resource="maps/ibm/Account.xml"/>
+		<sqlMap resource="maps/ibm/DynamicAccount.xml"/>
+		<sqlMap resource="maps/ibm/Order.xml"/>
+		<sqlMap resource="maps/ibm/Category.xml"/>
+		<sqlMap resource="maps/ibm/Complex.xml"/>
+		<sqlMap resource="maps/ibm/LineItem.xml"/>
+		<sqlMap resource="maps/ibm/Enumeration.xml"/>
+		<sqlMap resource="maps/ibm/Other.xml"/>
+		<sqlMap resource="maps/ibm/ResultClass.xml"/>
+		<sqlMap resource="maps/ibm/Document.xml"/>
+		<sqlMap resource="maps/ibm/ActiveRecord.xml"/>
+	</sqlMaps>
+
+</sqlMapConfig>
