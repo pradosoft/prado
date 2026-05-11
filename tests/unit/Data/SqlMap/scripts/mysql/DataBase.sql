@@ -315,28 +315,14 @@ INSERT INTO `Others` (`Other_Int`, `Other_Long`, `Other_Bit`, `Other_String`) VA
 (2, 9999999999, '', 'Non'),
 (99, 1966, '', 'Non');
 
--- --------------------------------------------------------
-
--- 
--- Table structure for table `Users`
--- 
-
-DROP TABLE IF EXISTS `Users`;
-CREATE TABLE `Users` (
-  `LogonId` varchar(20) NOT NULL default '0',
-  `Name` varchar(40) default NULL,
-  `Password` varchar(20) default NULL,
-  `EmailAddress` varchar(40) default NULL,
-  `LastLogon` datetime default NULL,
-  PRIMARY KEY  (`LogonId`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- 
--- Dumping data for table `Users`
--- 
-
-
--- 
+--
+-- Note: the SqlMap `Users` (LogonId/Name/Password/EmailAddress/LastLogon) table
+-- that was here has been removed.  It is not referenced by any SqlMap map file
+-- or test, and its DROP+CREATE conflicted with the ActiveRecord `Users` table
+-- (username/password/email/...) created by initdb_mysql.sql, breaking AR tests
+-- in all branches that share the prado_unitest database.
+--
+--
 -- Constraints for dumped tables
 -- 
 

@@ -1,6 +1,6 @@
 <?php
 
-require_once(__DIR__ . '/../../../PradoUnit.php');
+require_once(__DIR__ . '/../../../../PradoUnit.php');
 
 /**
  * MysqlUpsertTest — comprehensive tests for MySQL upsert behaviour.
@@ -121,7 +121,8 @@ class MysqlUpsertTest extends PHPUnit\Framework\TestCase
 		$gw->OnCreateCommand[] = function ($sender, $param) use (&$capturedSql): void {
 			$capturedSql = $param->getCommand()->Text;
 		};
-		$gw->upsert(['username' => 'test', 'score' => 1], ['score' => 1], ['username']);
+		// integer-keyed column-name list: only 'score' appears in UPDATE via VALUES()
+		$gw->upsert(['username' => 'test', 'score' => 1], ['score'], ['username']);
 		$dupPos = strpos($capturedSql, 'ON DUPLICATE KEY UPDATE');
 		$updatePart = substr($capturedSql, (int) $dupPos);
 		$this->assertStringContainsString('`score`=VALUES(`score`)', $updatePart);
@@ -330,5 +331,132 @@ class MysqlUpsertTest extends PHPUnit\Framework\TestCase
 
 		$this->expectException(TDbException::class);
 		$base->createUpsertCommand(['username' => 'x', 'score' => 1]);
+	}
+
+	// -----------------------------------------------------------------------
+	// Column-name list updateData
+	// -----------------------------------------------------------------------
+
+	public function test_updateData_column_name_list_updates_only_those_columns(): void
+	{
+		self::$gateway->insert(['username' => 'alice', 'score' => 10]);
+		self::$gateway->upsert(['username' => 'alice', 'score' => 77], ['score'], ['username']);
+
+		$row = self::$gateway->find('username = ?', 'alice');
+		$this->assertEquals(77, (int) $row['score']);
+		$this->assertEquals('alice', $row['username']);
+	}
+
+	public function test_sql_column_name_list_generates_correct_update_clause(): void
+	{
+		$capturedSql = null;
+		$gw = new TTableGateway('upsert_test', self::$conn);
+		$gw->OnCreateCommand[] = function ($sender, $param) use (&$capturedSql): void {
+			$capturedSql = $param->getCommand()->Text;
+		};
+		$gw->upsert(['username' => 'alice', 'score' => 77], ['score'], ['username']);
+		$this->assertStringContainsString('`score`=VALUES(`score`)', $capturedSql);
+		$this->assertStringNotContainsString('`username`=VALUES(`username`)', $capturedSql);
+	}
+
+	public function test_sql_column_name_list_uses_values_function(): void
+	{
+		$capturedSql = null;
+		$gw = new TTableGateway('upsert_test', self::$conn);
+		$gw->OnCreateCommand[] = function ($sender, $param) use (&$capturedSql): void {
+			$capturedSql = $param->getCommand()->Text;
+		};
+		$gw->upsert(['username' => 'alice', 'score' => 77], ['score'], ['username']);
+		$this->assertStringContainsString('VALUES(', $capturedSql);
+	}
+
+	public function test_updateData_column_name_list_leaves_other_columns_unchanged(): void
+	{
+		self::$gateway->insert(['username' => 'alice', 'score' => 10]);
+		// Only score in the update list; username is the conflict col and is not updated
+		self::$gateway->upsert(['username' => 'alice', 'score' => 55], ['score'], ['username']);
+
+		$row = self::$gateway->find('username = ?', 'alice');
+		$this->assertEquals('alice', $row['username']);
+	}
+
+	// -----------------------------------------------------------------------
+	// Explicit value (string-keyed) updateData
+	// -----------------------------------------------------------------------
+
+	public function test_updateData_explicit_value_overrides_insert_data_on_conflict(): void
+	{
+		self::$gateway->insert(['username' => 'alice', 'score' => 10]);
+		// Explicit override: score should be set to 99 regardless of insert data value (10)
+		self::$gateway->upsert(['username' => 'alice', 'score' => 10], ['score' => 99], ['username']);
+
+		$row = self::$gateway->find('username = ?', 'alice');
+		$this->assertEquals(99, (int) $row['score']);
+	}
+
+	public function test_sql_explicit_value_updateData_does_not_use_insert_data(): void
+	{
+		$capturedSql = null;
+		$gw = new TTableGateway('upsert_test', self::$conn);
+		$gw->OnCreateCommand[] = function ($sender, $param) use (&$capturedSql): void {
+			$capturedSql = $param->getCommand()->Text;
+		};
+		$gw->upsert(['username' => 'alice', 'score' => 10], ['score' => 99], ['username']);
+		// Explicit override must NOT use VALUES(col) syntax
+		$this->assertStringNotContainsString('`score`=VALUES(`score`)', $capturedSql);
+		// Must contain a bound param reference instead
+		$this->assertStringContainsString(':_upsert_score', $capturedSql);
+	}
+
+	public function test_sql_explicit_value_does_not_use_values_function(): void
+	{
+		$capturedSql = null;
+		$gw = new TTableGateway('upsert_test', self::$conn);
+		$gw->OnCreateCommand[] = function ($sender, $param) use (&$capturedSql): void {
+			$capturedSql = $param->getCommand()->Text;
+		};
+		// Only explicit override — no integer-keyed columns — so VALUES() must not appear in UPDATE clause
+		$gw->upsert(['username' => 'alice', 'score' => 10], ['score' => 99], ['username']);
+		$dupPos = strpos($capturedSql, 'ON DUPLICATE KEY UPDATE');
+		$updatePart = substr($capturedSql, (int) $dupPos);
+		$this->assertStringNotContainsString('VALUES(`score`)', $updatePart);
+	}
+
+	// -----------------------------------------------------------------------
+	// Mixed (column-name + explicit value) updateData
+	// -----------------------------------------------------------------------
+
+	public function test_updateData_mixed_handles_column_name_and_explicit_value_simultaneously(): void
+	{
+		$id = (int) self::$gateway->insert(['username' => 'alice', 'score' => 10]);
+		// Conflict on PK (id): update score from INSERT row (77), rename username explicitly to 'alice_renamed'
+		self::$gateway->upsert(
+			['id' => $id, 'username' => 'alice', 'score' => 77],
+			['score', 'username' => 'alice_renamed'],
+			['id']
+		);
+
+		$row = self::$gateway->find('id = ?', $id);
+		$this->assertEquals(77, (int) $row['score']);
+		$this->assertEquals('alice_renamed', $row['username']);
+	}
+
+	public function test_sql_mixed_updateData_generates_both_value_references_and_literals(): void
+	{
+		$capturedSql = null;
+		$gw = new TTableGateway('upsert_test', self::$conn);
+		$gw->OnCreateCommand[] = function ($sender, $param) use (&$capturedSql): void {
+			$capturedSql = $param->getCommand()->Text;
+		};
+		$gw->upsert(
+			['id' => 1, 'username' => 'alice', 'score' => 77],
+			['score', 'username' => 'alice_renamed'],
+			['id']
+		);
+		// score uses VALUES() (integer-keyed column name)
+		$this->assertStringContainsString('`score`=VALUES(`score`)', $capturedSql);
+		// username uses explicit bound param (string-keyed override)
+		$this->assertStringContainsString(':_upsert_username', $capturedSql);
+		$this->assertStringNotContainsString('`username`=VALUES(`username`)', $capturedSql);
 	}
 }
