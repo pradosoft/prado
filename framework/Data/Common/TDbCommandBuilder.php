@@ -94,6 +94,7 @@ use Prado\Exceptions\TDbException;
  *   full column list.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
+ * @author Brad Anderson <belisoful@icloud.com> insertOrIgnore, upsert
  * @since 3.1
  */
 class TDbCommandBuilder extends \Prado\TComponent implements IDataCommandBuilder
@@ -493,7 +494,9 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDataCommandBuilder
 	 * Creates an UPSERT (insert-or-update) command for the table.
 	 * Base implementation always throws TDbException; driver-specific subclasses must override.
 	 * @param array $data name-value pairs of data to insert.
-	 * @param null|array $updateData column=>value pairs to update on conflict; null = all non-PK columns from $data.
+	 * @param null|array $updateData update source on conflict — null: all non-PK
+	 *   columns from $data; integer-keyed column names: those columns from $data;
+	 *   string-keyed column→value pairs: explicit override values; mixed: both.
 	 * @param null|array $conflictColumns conflict target columns; null = primary key columns.
 	 * @throws TDbException always, in the base implementation.
 	 * @return TDbCommand upsert command.
@@ -516,16 +519,44 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDataCommandBuilder
 	}
 
 	/**
-	 * Resolves the update data for upsert, defaulting to all non-PK columns from $data.
-	 * @param array $data full insert data.
-	 * @param null|array $updateData explicit update data, or null to use all non-PK columns.
-	 * @param array $conflictColumns the resolved conflict columns (primary keys).
-	 * @return array resolved update data.
+	 * Resolves the update data for upsert from four possible forms:
+	 *
+	 * - **`null`** — all non-conflict-column entries from `$data` (i.e. all
+	 *   non-PK columns taken from the insert row).
+	 * - **list of column names** (sequential integer-keyed array, e.g.
+	 *   `['email', 'name']`) — those specific columns taken from `$data`.
+	 * - **column → value map** (string-keyed array, e.g.
+	 *   `['email' => 'new@example.com']`) — explicit override values,
+	 *   independent of `$data`.
+	 * - **mixed array** (e.g. `['email', 'status' => 'active']`) — integer
+	 *   keys are column names resolved from `$data`; string keys are explicit
+	 *   override values.
+	 *
+	 * @param array $data full insert data (column → value pairs from the row).
+	 * @param null|array $updateData null, column names, explicit values, or a
+	 *   mix of both.
+	 * @param array $conflictColumns the resolved conflict columns.
+	 * @return array resolved column→value pairs to use in the UPDATE branch.
 	 * @since 4.3.3
 	 */
 	protected function resolveUpdateData(array $data, ?array $updateData, array $conflictColumns): array
 	{
-		return $updateData ?? array_diff_key($data, array_flip($conflictColumns));
+		if ($updateData === null) {
+			return array_diff_key($data, array_flip($conflictColumns));
+		}
+		$resolved = [];
+		foreach ($updateData as $key => $value) {
+			if (is_int($key)) {
+				// Column name — pull current value from $data
+				if (array_key_exists($value, $data)) {
+					$resolved[$value] = $data[$value];
+				}
+			} else {
+				// Explicit column => value pair
+				$resolved[$key] = $value;
+			}
+		}
+		return $resolved;
 	}
 
 	/**
@@ -548,15 +579,22 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDataCommandBuilder
 	 * Table column references use getColumnName() (quoted) from the table metadata.
 	 * When $updateData is empty, the WHEN MATCHED branch is omitted (insertOrIgnore behaviour).
 	 *
+	 * The $updateData parameter supports the same four modes as createUpsertCommand():
+	 * - **null** — all non-conflict columns from $data use the source alias (s.col).
+	 * - **[] empty array** — no WHEN MATCHED branch (insertOrIgnore semantics).
+	 * - **integer-keyed list** (e.g. ['score', 'email']) — those columns use the source alias (s.col).
+	 * - **string-keyed explicit map** (e.g. ['score' => 99]) — those columns use a bound literal value (:_upsert_col).
+	 * - **mixed** — integer-keyed entries use s.col; string-keyed entries use bound literals.
+	 *
 	 * @param array $data full row data (all columns).
-	 * @param array $updateData columns to update on match (empty = insertOrIgnore, no UPDATE branch).
+	 * @param null|array $updateData null, column-name list, explicit col=>value map, or mixed; controls WHEN MATCHED UPDATE.
 	 * @param array $conflictColumns primary/conflict key column names.
 	 * @param string $dualSource dual/dummy table source, e.g. 'FROM DUAL', 'FROM SYSIBM.SYSDUMMY1', '' for SQL Server.
 	 * @param bool $useAsAlias true to emit 'AS t'/'AS s'; false to emit bare 't'/'s' (Oracle, Firebird).
 	 * @return TDbCommand prepared MERGE command with bound parameters.
 	 * @since 4.3.3
 	 */
-	protected function buildMergeStatement(array $data, array $updateData, array $conflictColumns, string $dualSource, bool $useAsAlias): TDbCommand
+	protected function buildMergeStatement(array $data, ?array $updateData, array $conflictColumns, string $dualSource, bool $useAsAlias): TDbCommand
 	{
 		$table = $this->getTableInfo()->getTableFullName();
 		$tableAlias = $useAsAlias ? 'AS t' : 't';
@@ -583,13 +621,38 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDataCommandBuilder
 		// Build MERGE statement
 		$sql = "MERGE INTO {$table} {$tableAlias} USING ({$usingSelect}) {$sourceAlias} ON ({$onClause})";
 
-		// WHEN MATCHED branch (omit for insertOrIgnore when $updateData is empty)
-		if (!empty($updateData)) {
-			$updateParts = [];
-			foreach (array_keys($updateData) as $name) {
-				$quoted = $this->getTableInfo()->getColumn($name)->getColumnName();
-				$updateParts[] = 't.' . $quoted . ' = s.' . $name;
+		// Build WHEN MATCHED branch update parts, distinguishing source-alias vs explicit-value entries
+		$updateParts = [];
+		$explicitBindings = [];
+
+		if ($updateData === null) {
+			// Mode: null → all non-conflict columns from $data via source alias
+			foreach (array_keys($data) as $name) {
+				if (!in_array($name, $conflictColumns, true)) {
+					$quoted = $this->getTableInfo()->getColumn($name)->getColumnName();
+					$updateParts[] = 't.' . $quoted . ' = s.' . $name;
+				}
 			}
+		} elseif (!empty($updateData)) {
+			// Process each entry in $updateData
+			foreach ($updateData as $key => $value) {
+				if (is_int($key)) {
+					// Integer-keyed: column name → source alias reference (s.col)
+					$quoted = $this->getTableInfo()->getColumn($value)->getColumnName();
+					$updateParts[] = 't.' . $quoted . ' = s.' . $value;
+				} else {
+					// String-keyed: explicit literal override → bound param :_upsert_<col>
+					$quoted = $this->getTableInfo()->getColumn($key)->getColumnName();
+					$paramName = ':_upsert_' . $key;
+					$updateParts[] = 't.' . $quoted . ' = ' . $paramName;
+					$explicitBindings[$paramName] = $value;
+				}
+			}
+		}
+		// empty $updateData [] → no WHEN MATCHED branch (insertOrIgnore semantics)
+
+		// WHEN MATCHED branch (omit for insertOrIgnore when no update parts)
+		if (!empty($updateParts)) {
 			$sql .= ' WHEN MATCHED THEN UPDATE SET ' . implode(', ', $updateParts);
 		}
 
@@ -607,6 +670,9 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDataCommandBuilder
 		}
 		$command = $this->createCommand($sql);
 		$this->bindColumnValues($command, $data);
+		foreach ($explicitBindings as $paramName => $value) {
+			$command->bindValue($paramName, $value);
+		}
 		return $command;
 	}
 

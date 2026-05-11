@@ -90,11 +90,11 @@ abstract class TDbMetaData extends \Prado\TComponent implements IDataMetaData
 	protected static $delimiterIdentifier = ['[', ']', '"', '`', "'"];
 
 	/**
-	 * @param \Prado\Data\IDataConnection $conn database connection.
+	 * @param \Prado\Data\IDataConnection $connection database connection.
 	 */
-	public function __construct($conn)
+	public function __construct($connection)
 	{
-		$this->_connection = $conn;
+		$this->_connection = $connection;
 		parent::__construct();
 	}
 
@@ -115,18 +115,18 @@ abstract class TDbMetaData extends \Prado\TComponent implements IDataMetaData
 	 * raised on the connection (with the driver name as the parameter) to allow
 	 * third-party extensions to supply a custom metadata handler class.
 	 *
-	 * @param \Prado\Data\TDbConnection $conn database connection.
+	 * @param \Prado\Data\TDbConnection $connection database connection.
 	 * @throws TDbException if no metadata handler can be created for the driver.
 	 * @return TDbMetaData database-specific TDbMetaData.
 	 */
-	public static function getInstance($conn)
+	public static function getInstance($connection)
 	{
-		$conn->setActive(true); //must be connected before retrieving driver name
-		$class = TDbDriverCapabilities::getMetaDataClass($conn);
+		$connection->setActive(true); //must be connected before retrieving driver name
+		$class = TDbDriverCapabilities::getMetaDataClass($connection);
 		if ($class === null) {
 			return null;
 		}
-		$instance = new $class($conn);
+		$instance = new $class($connection);
 		if (!($instance instanceof IDataMetaData)) {
 			throw new TDbException('dbmetadata_not_meta_data', $class, IDataMetaData::class);
 		}

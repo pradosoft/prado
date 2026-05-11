@@ -20,6 +20,7 @@ use Prado\Data\TDbCommand;
  * for SQL Server.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
+ * @author Brad Anderson <belisoful@icloud.com> insertOrIgnore, upsert
  * @since 3.1
  */
 class TSqlSrvCommandBuilder extends TDbCommandBuilder
@@ -42,8 +43,16 @@ class TSqlSrvCommandBuilder extends TDbCommandBuilder
 	/**
 	 * Creates a SQL Server MERGE ... WHEN MATCHED THEN UPDATE WHEN NOT MATCHED THEN INSERT command.
 	 * Requires an active transaction; throws TDbException otherwise.
+	 *
+	 * The $updateData parameter supports four modes:
+	 * - **null** — all non-conflict columns updated via the MERGE source alias (s.col).
+	 * - **[] empty array** — no WHEN MATCHED branch (insert-or-ignore semantics).
+	 * - **integer-keyed list** (e.g. `['score']`) — those columns use the source alias (s.col).
+	 * - **string-keyed explicit map** (e.g. `['score' => 99]`) — those columns use a bound literal (`:_upsert_col`).
+	 * - **mixed** — integer-keyed use s.col; string-keyed use bound literals.
+	 *
 	 * @param array $data name-value pairs of data to insert.
-	 * @param null|array $updateData column=>value pairs to update on conflict; null = all non-PK columns from $data.
+	 * @param null|array $updateData null, column-name list, explicit col=>value map, or mixed; controls what is updated on conflict.
 	 * @param null|array $conflictColumns conflict target columns; null = primary key columns.
 	 * @return TDbCommand upsert MERGE command.
 	 * @since 4.3.3
@@ -52,7 +61,6 @@ class TSqlSrvCommandBuilder extends TDbCommandBuilder
 	{
 		$this->assertActiveTransaction();
 		$conflictColumns = $this->resolveConflictColumns($conflictColumns);
-		$updateData = $this->resolveUpdateData($data, $updateData, $conflictColumns);
 		return $this->buildMergeStatement($data, $updateData, $conflictColumns, '', true);
 	}
 

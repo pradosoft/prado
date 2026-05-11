@@ -168,10 +168,19 @@ use ReflectionClass;
  * $user->user_id = 1;
  * $user->username = 'admin';
  * $user->email = 'newemail@example.com';
- * $result = $user->upsert(); // updates email where user_id = 1
+ * $result = $user->upsert(); // all non-PK columns from record updated on conflict
  *
- * // Upsert with custom conflict columns
- * $result = $user->upsert(['email' => 'updated@example.com'], ['username']);
+ * // Upsert — specific columns from the record updated on conflict
+ * $result = $user->upsert(['email']);
+ *
+ * // Upsert — explicit override values on conflict
+ * $result = $user->upsert(['email' => 'override@example.com']);
+ *
+ * // Upsert — mix: 'email' from record, 'status' as explicit value
+ * $result = $user->upsert(['email', 'status' => 'active']);
+ *
+ * // Upsert with custom conflict target columns
+ * $result = $user->upsert(null, ['username']);
  * ```
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
@@ -532,9 +541,14 @@ abstract class TActiveRecord extends \Prado\TComponent
 
 	/**
 	 * Inserts or updates the current record.
-	 * On conflict with $conflictColumns (defaults to primary key), updates $updateData columns
-	 * (defaults to all non-PK columns). Fires the OnInsert event.
-	 * @param null|array $updateData column=>value pairs to update on conflict; null = all non-PK columns.
+	 * On conflict with $conflictColumns (defaults to primary key), updates the
+	 * record's columns according to $updateData. Fires the OnInsert event.
+	 * @param null|array $updateData update source on conflict — null: all non-PK
+	 *   columns from the record; integer-keyed column names (e.g. ['email',
+	 *   'name']): those columns from the record; string-keyed column→value pairs
+	 *   (e.g. ['email' => 'new@example.com']): explicit override values; mixed
+	 *   (e.g. ['email', 'status' => 'active']): column names from the record
+	 *   and explicit values combined.
 	 * @param null|array $conflictColumns conflict target columns; null = primary key.
 	 * @return mixed last insert ID, true on update, or false on failure.
 	 * @since 4.3.3

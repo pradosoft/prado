@@ -18,6 +18,7 @@ use Prado\Data\TDbCommand;
  * for Oracle database.
  *
  * @author Marcos Nobre <marconobre[at]gmail[dot]com>
+ * @author Brad Anderson <belisoful@icloud.com> insertOrIgnore, upsert
  * @since 3.1
  */
 class TOracleCommandBuilder extends TDbCommandBuilder
@@ -41,8 +42,16 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 	 * Creates an Oracle MERGE ... WHEN MATCHED THEN UPDATE WHEN NOT MATCHED THEN INSERT command.
 	 * Requires an active transaction; throws TDbException otherwise.
 	 * Uses Oracle MERGE with USING (SELECT ... FROM DUAL) and no AS keyword for aliases.
+	 *
+	 * The $updateData parameter supports four modes:
+	 * - **null** — all non-conflict columns updated via the MERGE source alias (s.col).
+	 * - **[] empty array** — no WHEN MATCHED branch (insert-or-ignore semantics).
+	 * - **integer-keyed list** (e.g. `['score']`) — those columns use the source alias (s.col).
+	 * - **string-keyed explicit map** (e.g. `['score' => 99]`) — those columns use a bound literal (`:_upsert_col`).
+	 * - **mixed** — integer-keyed use s.col; string-keyed use bound literals.
+	 *
 	 * @param array $data name-value pairs of data to insert.
-	 * @param null|array $updateData column=>value pairs to update on conflict; null = all non-PK columns from $data.
+	 * @param null|array $updateData null, column-name list, explicit col=>value map, or mixed; controls what is updated on conflict.
 	 * @param null|array $conflictColumns conflict target columns; null = primary key columns.
 	 * @return TDbCommand upsert MERGE command.
 	 * @since 4.3.3
@@ -51,7 +60,6 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 	{
 		$this->assertActiveTransaction();
 		$conflictColumns = $this->resolveConflictColumns($conflictColumns);
-		$updateData = $this->resolveUpdateData($data, $updateData, $conflictColumns);
 		return $this->buildMergeStatement($data, $updateData, $conflictColumns, 'FROM DUAL', false);
 	}
 

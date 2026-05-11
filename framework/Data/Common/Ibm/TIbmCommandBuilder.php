@@ -46,8 +46,16 @@ class TIbmCommandBuilder extends TDbCommandBuilder
 	 * Creates a DB2 MERGE ... WHEN MATCHED THEN UPDATE WHEN NOT MATCHED THEN INSERT command.
 	 * Requires an active transaction; throws TDbException otherwise.
 	 * Uses DB2 MERGE with USING (SELECT ... FROM SYSIBM.SYSDUMMY1) AS s syntax.
+	 *
+	 * The $updateData parameter supports four modes:
+	 * - **null** — all non-conflict columns updated via the MERGE source alias (s.col).
+	 * - **[] empty array** — no WHEN MATCHED branch (insert-or-ignore semantics).
+	 * - **integer-keyed list** (e.g. `['score']`) — those columns use the source alias (s.col).
+	 * - **string-keyed explicit map** (e.g. `['score' => 99]`) — those columns use a bound literal (`:_upsert_col`).
+	 * - **mixed** — integer-keyed use s.col; string-keyed use bound literals.
+	 *
 	 * @param array $data name-value pairs of data to insert.
-	 * @param null|array $updateData column=>value pairs to update on conflict; null = all non-PK columns from $data.
+	 * @param null|array $updateData null, column-name list, explicit col=>value map, or mixed; controls what is updated on conflict.
 	 * @param null|array $conflictColumns conflict target columns; null = primary key columns.
 	 * @return TDbCommand upsert MERGE command.
 	 */
@@ -55,7 +63,6 @@ class TIbmCommandBuilder extends TDbCommandBuilder
 	{
 		$this->assertActiveTransaction();
 		$conflictColumns = $this->resolveConflictColumns($conflictColumns);
-		$updateData = $this->resolveUpdateData($data, $updateData, $conflictColumns);
 		return $this->buildMergeStatement($data, $updateData, $conflictColumns, 'FROM SYSIBM.SYSDUMMY1', true);
 	}
 

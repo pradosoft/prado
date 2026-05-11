@@ -459,9 +459,11 @@ class TTableGateway extends \Prado\TComponent
 	/**
 	 * Inserts or updates a record.
 	 * On conflict with $conflictColumns (defaults to primary key), updates $updateData columns
-	 * (defaults to all non-PK columns).
-	 * @param array $data new record data.
-	 * @param null|array $updateData column=>value pairs to update on conflict; null = all non-PK columns.
+	 * (defaults to all non-PK columns from $data).
+	 * @param array $data new record data (column→value pairs).
+	 * @param null|array $updateData update source on conflict — null: all non-PK
+	 *   columns from $data; integer-keyed column names: those columns from $data;
+	 *   string-keyed column→value pairs: explicit override values; mixed: both.
 	 * @param null|array $conflictColumns conflict target columns; null = primary key.
 	 * @return mixed last insert id, true on update, or false on failure.
 	 * @since 4.3.3

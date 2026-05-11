@@ -18,6 +18,7 @@ use Prado\Data\TDbCommand;
  * for Pgsql database.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
+ * @author Brad Anderson <belisoful@icloud.com> insertOrIgnore, upsert
  * @since 3.1
  */
 class TPgsqlCommandBuilder extends TDbCommandBuilder
@@ -42,8 +43,16 @@ class TPgsqlCommandBuilder extends TDbCommandBuilder
 	 * Creates a PostgreSQL INSERT ... ON CONFLICT (pk,...) DO UPDATE SET command.
 	 * On conflict with $conflictColumns (defaults to primary keys), updates $updateData columns
 	 * (defaults to all non-PK columns), referencing the EXCLUDED pseudo-table for new values.
+	 *
+	 * The $updateData parameter supports four modes:
+	 * - **null** — all non-conflict columns from $data use `EXCLUDED.col` (new values from the INSERT row).
+	 * - **[] empty array** — DO NOTHING on conflict (insert-or-ignore behaviour).
+	 * - **integer-keyed list** (e.g. `['score', 'email']`) — those columns use `EXCLUDED.col`.
+	 * - **string-keyed explicit map** (e.g. `['score' => 99]`) — those columns use a bound literal value (`:_upsert_col`).
+	 * - **mixed** (e.g. `['score', 'username' => 'alice_renamed']`) — integer-keyed use `EXCLUDED.col`; string-keyed use bound literals.
+	 *
 	 * @param array $data name-value pairs of data to insert.
-	 * @param null|array $updateData column=>value pairs to update on conflict; null = all non-PK columns from $data.
+	 * @param null|array $updateData null, column-name list, explicit col=>value map, or mixed; controls what is updated on conflict.
 	 * @param null|array $conflictColumns conflict target columns; null = primary key columns.
 	 * @return TDbCommand upsert command.
 	 * @since 4.3.3
@@ -51,7 +60,6 @@ class TPgsqlCommandBuilder extends TDbCommandBuilder
 	public function createUpsertCommand(array $data, ?array $updateData = null, ?array $conflictColumns = null): TDbCommand
 	{
 		$conflictColumns = $this->resolveConflictColumns($conflictColumns);
-		$updateData = $this->resolveUpdateData($data, $updateData, $conflictColumns);
 
 		$table = $this->getTableInfo()->getTableFullName();
 		[$fields, $bindings] = $this->getInsertFieldBindings($data);
@@ -65,12 +73,35 @@ class TPgsqlCommandBuilder extends TDbCommandBuilder
 
 		$sql = "INSERT INTO {$table}({$fields}) VALUES ({$bindings}) ON CONFLICT {$conflictClause}";
 
-		if (!empty($updateData)) {
-			$updateParts = [];
-			foreach (array_keys($updateData) as $name) {
-				$quoted = $this->getTableInfo()->getColumn($name)->getColumnName();
-				$updateParts[] = $quoted . ' = EXCLUDED.' . $quoted;
+		$updateParts = [];
+		$explicitBindings = [];
+
+		if ($updateData === null) {
+			// Mode: null → all non-conflict columns from $data via EXCLUDED pseudo-table
+			foreach (array_keys($data) as $name) {
+				if (!in_array($name, $conflictColumns, true)) {
+					$quoted = $this->getTableInfo()->getColumn($name)->getColumnName();
+					$updateParts[] = $quoted . ' = EXCLUDED.' . $quoted;
+				}
 			}
+		} else {
+			// Process each entry in $updateData
+			foreach ($updateData as $key => $value) {
+				if (is_int($key)) {
+					// Integer-keyed: column name → EXCLUDED pseudo-table reference
+					$quoted = $this->getTableInfo()->getColumn($value)->getColumnName();
+					$updateParts[] = $quoted . ' = EXCLUDED.' . $quoted;
+				} else {
+					// String-keyed: explicit literal override → bound param :_upsert_<col>
+					$quoted = $this->getTableInfo()->getColumn($key)->getColumnName();
+					$paramName = ':_upsert_' . $key;
+					$updateParts[] = $quoted . ' = ' . $paramName;
+					$explicitBindings[$paramName] = $value;
+				}
+			}
+		}
+
+		if (!empty($updateParts)) {
 			$sql .= ' DO UPDATE SET ' . implode(', ', $updateParts);
 		} else {
 			$sql .= ' DO NOTHING';
@@ -78,6 +109,9 @@ class TPgsqlCommandBuilder extends TDbCommandBuilder
 
 		$command = $this->createCommand($sql);
 		$this->bindColumnValues($command, $data);
+		foreach ($explicitBindings as $paramName => $value) {
+			$command->bindValue($paramName, $value);
+		}
 		return $command;
 	}
 

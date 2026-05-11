@@ -422,7 +422,10 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 * Insert or update a record.
 	 * On conflict with $conflictColumns (defaults to primary key), updates $updateData columns.
 	 * @param TActiveRecord $record record to insert or update.
-	 * @param null|array $updateData column=>value pairs to update on conflict; null = all non-PK columns.
+	 * @param null|array $updateData update source on conflict — null: all non-PK
+	 *   columns from the record; integer-keyed column names: those columns from
+	 *   the record; string-keyed column→value pairs: explicit override values;
+	 *   mixed: both.
 	 * @param null|array $conflictColumns conflict target columns; null = primary key.
 	 * @return mixed last insert id, true on update, or false on failure.
 	 * @since 4.3.3
