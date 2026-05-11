@@ -108,15 +108,72 @@ class MSSQLBaseTestConfig extends BaseTestConfig
 	}
 }
 
+class PgsqlBaseTestConfig extends BaseTestConfig
+{
+	public function __construct()
+	{
+		$this->_sqlmapConfigFile = SQLMAP_TESTS . '/pgsql.xml';
+		$this->_scriptDir = SQLMAP_TESTS . '/scripts/pgsql/';
+		$dsn = 'pgsql:host=localhost;dbname=prado_unitest;port=5432';
+		$this->_connection = new TDbConnection($dsn, 'prado_unitest', 'prado_unitest');
+	}
+}
+
+class SqlSrvBaseTestConfig extends BaseTestConfig
+{
+	public function __construct()
+	{
+		$this->_sqlmapConfigFile = SQLMAP_TESTS . '/sqlsrv.xml';
+		$this->_scriptDir = SQLMAP_TESTS . '/scripts/mssql/'; // reuse existing mssql scripts
+		$this->_features = ['insert_id'];
+		$dsn = 'sqlsrv:Server=localhost,1433;Database=prado_unitest';
+		$this->_connection = new TDbConnection($dsn, 'prado_unitest', 'Prado_unitest1!');
+	}
+}
+
+class OracleBaseTestConfig extends BaseTestConfig
+{
+	public function __construct()
+	{
+		$this->_sqlmapConfigFile = SQLMAP_TESTS . '/oracle.xml';
+		$this->_scriptDir = SQLMAP_TESTS . '/scripts/oracle/';
+		$dsn = 'oci:dbname=//localhost:1521/FREEPDB1';
+		$this->_connection = new TDbConnection($dsn, 'prado_unitest', 'prado_unitest');
+	}
+}
+
+class IbmBaseTestConfig extends BaseTestConfig
+{
+	public function __construct()
+	{
+		$this->_sqlmapConfigFile = SQLMAP_TESTS . '/ibm.xml';
+		$this->_scriptDir = SQLMAP_TESTS . '/scripts/ibm/';
+		$dsn = 'ibm:DRIVER={IBM DB2 ODBC DRIVER};DATABASE=pradount;HOSTNAME=localhost;PORT=50000;PROTOCOL=TCPIP';
+		$this->_connection = new TDbConnection($dsn, 'db2inst1', 'db2inst1');
+	}
+}
+
+class FirebirdBaseTestConfig extends BaseTestConfig
+{
+	public function __construct()
+	{
+		$this->_sqlmapConfigFile = SQLMAP_TESTS . '/firebird.xml';
+		$this->_scriptDir = SQLMAP_TESTS . '/scripts/firebird/';
+		$dsn = 'firebird:dbname=localhost:/var/lib/firebird/data/prado_unitest.fdb;charset=UTF8';
+		$this->_connection = new TDbConnection($dsn, 'sysdba', 'masterkey');
+	}
+}
+
 class BaseTestConfig
 {
 	protected $_scriptDir;
 	protected $_connection;
 	protected $_sqlmapConfigFile;
+	protected $_features = [];
 
 	public function hasFeature($type)
 	{
-		return false;
+		return in_array($type, $this->_features, true);
 	}
 
 	public function getScriptDir()

@@ -9,9 +9,16 @@ class BaseCase extends PHPUnit\Framework\TestCase
 {
 	protected static $sqlmap;
 	protected static $connection;
-	private static $mapper;
-	private static $config;
+	protected static $mapper;
+	protected static $config;
 	protected static $scriptDirectory;
+
+	/**
+	 * Subclasses set this to a config class name (e.g. 'MySQLBaseTestConfig') to
+	 * run the full SqlMap test suite against a different database driver.
+	 * An empty string means "use BaseTestConfig::createConfigInstance()".
+	 */
+	protected static string $configClass = '';
 
 	public function testCase1()
 	{
@@ -23,31 +30,92 @@ class BaseCase extends PHPUnit\Framework\TestCase
 		$this->assertTrue(true);
 	}
 
+	protected function skipIfUnavailable(): void
+	{
+		if (static::$config === null) {
+			$this->markTestSkipped('Database connection unavailable for ' . static::class);
+		}
+	}
+
 	public function hasSupportFor($feature)
 	{
-		return self::$config->hasFeature($feature);
+		if (static::$config === null) {
+			return false;
+		}
+		return static::$config->hasFeature($feature);
+	}
+
+	protected function setUp(): void
+	{
+		$this->skipIfUnavailable();
 	}
 
 	public static function setUpBeforeClass(): void
 	{
-		self::$config = BaseTestConfig::createConfigInstance();
-		self::$scriptDirectory = self::$config->getScriptDir();
+		if (static::$configClass !== '') {
+			$cls = static::$configClass;
+			try {
+				static::$config = new $cls();
+				// Verify connectivity; skip the whole class if DB is unavailable.
+				static::$config->getConnection()->setActive(true);
+				static::$config->getConnection()->setActive(false);
+			} catch (\Exception $e) {
+				static::$config = null;
+			}
+		} else {
+			static::$config = BaseTestConfig::createConfigInstance();
+		}
+		if (static::$config !== null) {
+			static::$scriptDirectory = static::$config->getScriptDir();
+			// Bootstrap the database schema (creates tables if they don't exist yet).
+			static::initSchema();
+		}
+	}
+
+	/**
+	 * Runs the driver's schema-creation script (DataBase.sql / database.sql) if present.
+	 * This is a no-op for SQLiteBaseTestConfig which uses CopyFileScriptRunner.
+	 * For MySQL, PostgreSQL, etc. it creates the SqlMap tables so TRUNCATE-based
+	 * data-init scripts can execute successfully.
+	 */
+	protected static function initSchema(): void
+	{
+		if (static::$config === null) {
+			return;
+		}
+		$dir = static::$config->getScriptDir();
+		foreach (['DataBase.sql', 'database.sql', 'DBCreation.sql'] as $candidate) {
+			$path = $dir . $candidate;
+			if (file_exists($path)) {
+				try {
+					$runner = static::$config->getScriptRunner();
+					$runner->runScript(static::getConnection(), $path);
+				} catch (\Exception $e) {
+					// Schema initialisation failed — treat DB as unavailable.
+					static::$config = null;
+				}
+				return;
+			}
+		}
 	}
 
     public static function tearDownAfterClass(): void
     {
-		if (null !== self::$mapper) {
-			self::$mapper->cacheConfiguration();
+		if (null !== static::$mapper) {
+			static::$mapper->cacheConfiguration();
 		}
 	}
 
 	public static function getConnection()
 	{
-		if (null === self::$connection) {
-			self::$connection = self::$config->getConnection();
+		if (static::$config === null) {
+			return null;
 		}
-		self::$connection->setActive(true);
-		return self::$connection;
+		if (null === static::$connection) {
+			static::$connection = static::$config->getConnection();
+		}
+		static::$connection->setActive(true);
+		return static::$connection;
 	}
 
 	/**
@@ -55,9 +123,12 @@ class BaseCase extends PHPUnit\Framework\TestCase
 	 */
 	protected static function initSqlMap()
 	{
-		$manager = new TSqlMapManager(self::$config->getConnection());
-		$manager->configureXml(self::$config->getSqlMapConfigFile());
-		self::$sqlmap = $manager->getSqlMapGateway();
+		if (static::$config === null) {
+			return;
+		}
+		$manager = new TSqlMapManager(static::$config->getConnection());
+		$manager->configureXml(static::$config->getSqlMapConfigFile());
+		static::$sqlmap = $manager->getSqlMapGateway();
 		$manager->TypeHandlers->registerTypeHandler(new TDateTimeHandler);
 	}
 
@@ -67,8 +138,11 @@ class BaseCase extends PHPUnit\Framework\TestCase
 	 */
 	protected static function initScript($script)
 	{
-		$runner = self::$config->getScriptRunner();
-		$runner->runScript(self::getConnection(), self::$scriptDirectory . $script);
+		if (static::$config === null) {
+			return;
+		}
+		$runner = static::$config->getScriptRunner();
+		$runner->runScript(static::getConnection(), static::$scriptDirectory . $script);
 	}
 
 	/**
