@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sqlMapConfig>
+
+	<properties>
+		<property name="selectKey" value="SELECT lastval() AS value" />
+		<property name="MyCategoryName" value="'Film'" />
+		<property name="accountName" value="'Joe'" />
+	</properties>
+
+	<typeHandlers>
+		<typeHandler class="OuiNonBool" dbType="Varchar" />
+		<typeHandler dbType="date" class="TDateTimeHandler" />
+	</typeHandlers>
+
+	<sqlMaps>
+		<sqlMap resource="maps/pgsql/Account.xml"/>
+		<sqlMap resource="maps/pgsql/DynamicAccount.xml"/>
+		<sqlMap resource="maps/pgsql/Order.xml"/>
+		<sqlMap resource="maps/pgsql/Category.xml"/>
+		<sqlMap resource="maps/pgsql/Complex.xml"/>
+		<sqlMap resource="maps/pgsql/LineItem.xml"/>
+		<sqlMap resource="maps/pgsql/Enumeration.xml"/>
+		<sqlMap resource="maps/pgsql/Other.xml"/>
+		<sqlMap resource="maps/pgsql/ResultClass.xml"/>
+		<sqlMap resource="maps/pgsql/Document.xml"/>
+		<sqlMap resource="maps/pgsql/ActiveRecord.xml"/>
+	</sqlMaps>
+
+</sqlMapConfig>
