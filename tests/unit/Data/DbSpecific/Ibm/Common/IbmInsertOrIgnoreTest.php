@@ -1,6 +1,6 @@
 <?php
 
-require_once(__DIR__ . '/../../../PradoUnit.php');
+require_once(__DIR__ . '/../../../../PradoUnit.php');
 
 /**
  * IbmInsertOrIgnoreTest — comprehensive tests for IBM DB2 insertOrIgnore behaviour.
