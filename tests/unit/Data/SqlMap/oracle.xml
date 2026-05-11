@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sqlMapConfig>
+
+	<properties>
+		<property name="selectKey" value="SELECT categories_seq.CURRVAL AS value FROM DUAL" />
+		<property name="MyCategoryName" value="'Film'" />
+		<property name="accountName" value="'Joe'" />
+	</properties>
+
+	<typeHandlers>
+		<typeHandler class="OuiNonBool" dbType="Varchar" />
+		<typeHandler dbType="date" class="TDateTimeHandler" />
+	</typeHandlers>
+
+	<sqlMaps>
+		<sqlMap resource="maps/oracle/Account.xml"/>
+		<sqlMap resource="maps/oracle/DynamicAccount.xml"/>
+		<sqlMap resource="maps/oracle/Order.xml"/>
+		<sqlMap resource="maps/oracle/Category.xml"/>
+		<sqlMap resource="maps/oracle/Complex.xml"/>
+		<sqlMap resource="maps/oracle/LineItem.xml"/>
+		<sqlMap resource="maps/oracle/Enumeration.xml"/>
+		<sqlMap resource="maps/oracle/Other.xml"/>
+		<sqlMap resource="maps/oracle/ResultClass.xml"/>
+		<sqlMap resource="maps/oracle/Document.xml"/>
+		<sqlMap resource="maps/oracle/ActiveRecord.xml"/>
+	</sqlMaps>
+
+</sqlMapConfig>

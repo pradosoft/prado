@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<sqlMap namespace="Complex" >
+	
+	<statements>
+	
+		<statement id="ComplexMap"
+			resultClass="int" >
+			select Account_ID from Accounts where Account_ID = #obj.Map.Id#
+		</statement>
+		
+		<insert id="InsertComplexAccountViaInlineDefaultNull"
+			parameterClass="Hashtable" >
+			insert into Accounts 
+				(Account_ID, Account_FirstName, Account_LastName, Account_Email) 
+			values 
+				(#obj.Map.acct.Id#, #obj.Map.acct.FirstName#, #obj.Map.acct.LastName#, #obj.Map.acct.EmailAddress:Varchar:no_email@provided.com#
+			)
+		</insert>
+				
+	</statements>
+
+	
+</sqlMap>
