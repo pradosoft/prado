@@ -1,6 +1,6 @@
 <?php
 
-require_once(__DIR__ . '/../../../PradoUnit.php');
+require_once(__DIR__ . '/../../../../PradoUnit.php');
 
 /**
  * OracleInsertOrIgnoreTest — comprehensive tests for Oracle insertOrIgnore behaviour.
