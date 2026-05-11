@@ -34,6 +34,61 @@
 
 trait PradoUnitDataConnectionTrait {
 	
+	/**
+	 * Establishes and validates a database connection for the current test class.
+	 *
+	 * Called from {@see setUp()} before each test method.  Returns the live
+	 * {@see TDbConnection} on success, or `null` when no driver setup method is
+	 * configured ({@see getPradoUnitSetup()} returns an empty value).
+	 *
+	 * ## Connection phase
+	 *
+	 * Delegates to the static `PradoUnit::{getPradoUnitSetup()}` method, passing
+	 * {@see getDatabaseName()} and {@see getIsForActiveRecord()} as arguments.
+	 * That method returns one of three types:
+	 *
+	 * - **`string`** — the driver or database is unavailable in the current
+	 *   environment (e.g. the PDO extension is not loaded, or the server refused
+	 *   the connection while `PRADO_UNITTEST_SKIP_DB=1` is set).  The string
+	 *   carries a human-readable reason and this method forwards it directly to
+	 *   {@see \PHPUnit\Framework\TestCase::markTestSkipped()}, which aborts the
+	 *   test as skipped.
+	 *
+	 * - **`\Exception`** — an unexpected failure occurred (e.g. the server is
+	 *   reachable but the credentials are wrong, or `PRADO_UNITTEST_SKIP_DB` is
+	 *   *not* set and the connection was refused).  The exception is **re-thrown
+	 *   intentionally**, causing the test to fail with an error rather than be
+	 *   silently skipped.  This is by design: a loud failure alerts the developer
+	 *   that a database they expect to be reachable is not.
+	 *
+	 * - **`TDbConnection`** — the connection succeeded; the method proceeds to the
+	 *   table-validation phase below.
+	 *
+	 * ## Table-validation phase
+	 *
+	 * For each table name returned by {@see getTestTables()},
+	 * {@see PradoUnit::checkForTable()} is called.  It returns:
+	 *
+	 * - **`null`** — the table exists; continue.
+	 * - **`string`** — the table is missing or inaccessible; the test is marked
+	 *   skipped via {@see \PHPUnit\Framework\TestCase::markTestSkipped()}.
+	 * - **`\Exception`** — an unexpected error while probing the table; the
+	 *   exception is **re-thrown intentionally** for the same reason as above.
+	 *
+	 * ## Return value
+	 *
+	 * Returns the validated {@see TDbConnection} (active) after all table checks
+	 * pass.  Returns `null` only when {@see getPradoUnitSetup()} is empty —
+	 * callers must treat `null` as "no database required" and skip or ignore DB
+	 * operations accordingly.
+	 *
+	 * @return ?TDbConnection The validated database connection, or null if no
+	 *                        driver setup method is configured.
+	 * @throws \Exception     Re-thrown from {@see PradoUnit::setupXxxConnection()}
+	 *                        or {@see PradoUnit::checkForTable()} when an
+	 *                        unexpected (non-availability) failure occurs.
+	 * @agents Do not edit this method without authorization and providing a reason why.
+	 */
 	protected function setUpConnection(): ?TDbConnection
 	{
 		$unitSetup = $this->getPradoUnitSetup();
