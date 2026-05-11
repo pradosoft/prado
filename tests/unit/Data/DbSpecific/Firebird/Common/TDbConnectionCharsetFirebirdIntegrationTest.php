@@ -1,6 +1,6 @@
 <?php
 
-require_once(__DIR__ . '/../../../PradoUnit.php');
+require_once(__DIR__ . '/../../../../PradoUnit.php');
 
 use Prado\Exceptions\TDbException;
 use Prado\Data\TDbConnection;
@@ -50,7 +50,7 @@ class TDbConnectionCharsetFirebirdIntegrationTest extends PHPUnit\Framework\Test
 	{
 		static $booted = false;
 		if (!$booted) {
-			new TApplication(__DIR__ . '/../../../Security/app', false, TApplication::CONFIG_TYPE_PHP);
+			new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP);
 			$booted = true;
 		}
 		$this->setUpConnection();
