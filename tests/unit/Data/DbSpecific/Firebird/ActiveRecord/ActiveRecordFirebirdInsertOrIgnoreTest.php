@@ -20,6 +20,7 @@ class ActiveRecordFirebirdInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	use PradoUnitDataConnectionTrait;
 
 	protected static ?TDbConnection $conn = null;
+	protected static ?\Prado\Data\TDbTransaction $txn = null;
 
 	protected function getPradoUnitSetup(): ?string
 	{
@@ -50,6 +51,21 @@ class ActiveRecordFirebirdInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 			}
 		}
 		static::$conn->createCommand('DELETE FROM upsert_test')->execute();
+		// pdo_firebird keeps an implicit transaction alive after each auto-committed
+		// statement. Committing it here resets the internal handle so that our
+		// explicit beginTransaction() below succeeds without "already active" errors.
+		try { static::$conn->getPdoInstance()->commit(); } catch (\Exception $e) {}
+		// TFirebirdCommandBuilder::createInsertOrIgnoreCommand() requires an active
+		// transaction — begin one that covers the entire test method.
+		static::$txn = static::$conn->beginTransaction();
+	}
+
+	protected function tearDown(): void
+	{
+		if (static::$txn !== null) {
+			try { static::$txn->rollback(); } catch (\Exception $e) {}
+			static::$txn = null;
+		}
 	}
 
 	public static function tearDownAfterClass(): void

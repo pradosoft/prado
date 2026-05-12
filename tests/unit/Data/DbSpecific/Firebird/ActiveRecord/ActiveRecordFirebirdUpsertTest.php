@@ -21,6 +21,7 @@ class ActiveRecordFirebirdUpsertTest extends PHPUnit\Framework\TestCase
 	use PradoUnitDataConnectionTrait;
 
 	protected static ?TDbConnection $conn = null;
+	protected static ?\Prado\Data\TDbTransaction $txn = null;
 
 	protected function getPradoUnitSetup(): ?string
 	{
@@ -51,6 +52,20 @@ class ActiveRecordFirebirdUpsertTest extends PHPUnit\Framework\TestCase
 			}
 		}
 		static::$conn->createCommand('DELETE FROM upsert_test')->execute();
+		// Commit the implicit Firebird auto-commit transaction after DELETE so that
+		// the explicit beginTransaction() below doesn't raise "already active".
+		try { static::$conn->getPdoInstance()->commit(); } catch (\Exception $e) {}
+		// TFirebirdCommandBuilder::createUpsertCommand() requires an active
+		// transaction — begin one that covers the entire test method.
+		static::$txn = static::$conn->beginTransaction();
+	}
+
+	protected function tearDown(): void
+	{
+		if (static::$txn !== null) {
+			try { static::$txn->rollback(); } catch (\Exception $e) {}
+			static::$txn = null;
+		}
 	}
 
 	public static function tearDownAfterClass(): void

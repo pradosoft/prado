@@ -447,10 +447,12 @@ class TTableGatewayPgsqlIntegrationTest extends PHPUnit\Framework\TestCase
 	public function test_find_all_with_criteria_order_by(): void
 	{
 		$this->deleteAll();
-		$this->insertRecord1(); // Username
-		$this->insertRecord2(); // record2
+		$this->insertRecord1(); // id=1, username='Username'
+		$this->insertRecord2(); // id=2, username='record2'
 		$criteria = new TSqlCriteria('true');
-		$criteria->OrdersBy = ['username' => 'asc'];
+		// Order by id (insertion order) rather than username: username-based ordering
+		// is locale-sensitive ('U' < 'r' in C locale but 'r' < 'u' in UTF-8 locale).
+		$criteria->OrdersBy = ['id' => 'asc'];
 		$rows = self::$gateway->findAll($criteria)->readAll();
 		$this->assertSame('Username', $rows[0]['username']);
 		$this->assertSame('record2', $rows[1]['username']);

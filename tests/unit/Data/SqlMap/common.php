@@ -159,8 +159,9 @@ class FirebirdBaseTestConfig extends BaseTestConfig
 	{
 		$this->_sqlmapConfigFile = SQLMAP_TESTS . '/firebird.xml';
 		$this->_scriptDir = SQLMAP_TESTS . '/scripts/firebird/';
-		$dsn = 'firebird:dbname=localhost:/var/lib/firebird/data/prado_unitest.fdb;charset=UTF8';
-		$this->_connection = new TDbConnection($dsn, 'sysdba', 'masterkey');
+		$dbPath = getenv('FIREBIRD_DB_PATH') ?: '/var/lib/firebird/data/prado_unitest.fdb';
+		$dsn = 'firebird:dbname=localhost:' . $dbPath . ';charset=UTF8';
+		$this->_connection = new TDbConnection($dsn, 'SYSDBA', 'masterkey');
 	}
 }
 
