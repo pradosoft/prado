@@ -18,6 +18,7 @@ use Prado\Data\DataGateway\TSqlCriteria;
 use Prado\Prado;
 use Prado\TPropertyValue;
 use ReflectionClass;
+use ReflectionProperty;
 
 /**
  * TActiveRecord class
@@ -281,6 +282,14 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * @since 3.1.1
 	 */
 	public static $COLUMN_MAPPING = [];
+	/**
+	 * Per-class column-to-property map, keyed by the lowercase column name.
+	 * Built once in {@see setupColumnMapping()} from the class's public instance
+	 * properties (auto-generated) plus any explicit entries in {@see $COLUMN_MAPPING}
+	 * (which take precedence). Lowercase keys allow {@see getColumnValue()} and
+	 * {@see setColumnValue()} to handle uppercase column names returned by databases
+	 * such as Firebird and Oracle without requiring uppercase PHP property names.
+	 */
 	private static $_columnMapping = [];
 
 	/**
@@ -390,7 +399,19 @@ abstract class TActiveRecord extends \Prado\TComponent
 		$className = $this::class;
 		if (!isset(self::$_columnMapping[$className])) {
 			$class = new ReflectionClass($className);
-			self::$_columnMapping[$className] = $class->getStaticPropertyValue('COLUMN_MAPPING');
+			// Auto-generate from public instance properties (lowercase key → actual name).
+			$map = [];
+			foreach ($class->getProperties(ReflectionProperty::IS_PUBLIC) as $prop) {
+				if (!$prop->isStatic()) {
+					$name = $prop->getName();
+					$map[strtolower($name)] = $name;
+				}
+			}
+			// Explicit COLUMN_MAPPING entries take precedence (also stored with lowercase key).
+			foreach ($class->getStaticPropertyValue('COLUMN_MAPPING') as $col => $prop) {
+				$map[strtolower($col)] = $prop;
+			}
+			self::$_columnMapping[$className] = $map;
 		}
 	}
 
@@ -514,11 +535,18 @@ abstract class TActiveRecord extends \Prado\TComponent
 	public static function finder($className = __CLASS__)
 	{
 		static $finders = [];
+
 		if (!isset($finders[$className])) {
 			$f = Prado::createComponent($className);
 			$finders[$className] = $f;
 		}
-		return $finders[$className];
+		$finder = $finders[$className];
+
+		$managerConn = TActiveRecordManager::getInstance()->getDbConnection();
+		if ($managerConn !== null && $finder->getDbConnection() !== $managerConn) {
+			$finder->setDbConnection($managerConn);
+		}
+		return $finder;
 	}
 
 	/**
@@ -1175,8 +1203,8 @@ abstract class TActiveRecord extends \Prado\TComponent
 	public function getColumnValue($columnName)
 	{
 		$className = $this::class;
-		if (isset(self::$_columnMapping[$className][$columnName])) {
-			$columnName = self::$_columnMapping[$className][$columnName];
+		if (isset(self::$_columnMapping[$className][$lower = strtolower($columnName)])) {
+			$columnName = self::$_columnMapping[$className][$lower];
 		}
 		return $this->$columnName;
 	}
@@ -1191,8 +1219,8 @@ abstract class TActiveRecord extends \Prado\TComponent
 	public function setColumnValue($columnName, $value)
 	{
 		$className = $this::class;
-		if (isset(self::$_columnMapping[$className][$columnName])) {
-			$columnName = self::$_columnMapping[$className][$columnName];
+		if (isset(self::$_columnMapping[$className][$lower = strtolower($columnName)])) {
+			$columnName = self::$_columnMapping[$className][$lower];
 		}
 		$this->$columnName = $value;
 	}
