@@ -634,10 +634,24 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDataCommandBuilder
 				}
 			}
 		} elseif (!empty($updateData)) {
+			// String-keyed (explicit value) entries take precedence over int-keyed
+			// (source-alias) entries for the same column. Collect explicit column
+			// names first so the second pass can skip duplicates; this prevents
+			// drivers such as Firebird from rejecting a repeated column in MERGE.
+			$explicitCols = [];
+			foreach ($updateData as $key => $value) {
+				if (is_string($key)) {
+					$explicitCols[$key] = true;
+				}
+			}
 			// Process each entry in $updateData
 			foreach ($updateData as $key => $value) {
 				if (is_int($key)) {
-					// Integer-keyed: column name → source alias reference (s.col)
+					// Integer-keyed: column name → source alias reference (s.col).
+					// Skip if an explicit string-keyed entry covers the same column.
+					if (isset($explicitCols[$value])) {
+						continue;
+					}
 					$quoted = $this->getTableInfo()->getColumn($value)->getColumnName();
 					$updateParts[] = 't.' . $quoted . ' = s.' . $value;
 				} else {
