@@ -177,7 +177,7 @@ class TRenderFilterParameter extends TEventParameter implements IEventCycleParam
 		parent::offsetSet(self::RENDER_FILTER_TEXT, $html);
 		parent::offsetSet(self::RENDER_FILTER_DOM, null);
 		$this->_domCurrent = false;
-		$this->storeErrors([]);
+		$this->storeErrors(null);
 	}
 
 	// -------------------------------------------------------------------------
@@ -215,7 +215,7 @@ class TRenderFilterParameter extends TEventParameter implements IEventCycleParam
 	{
 		parent::offsetSet(self::RENDER_FILTER_DOM, $dom);
 		$this->_domCurrent = true;
-		$this->storeErrors([]);
+		$this->storeErrors(null);
 	}
 
 	// -------------------------------------------------------------------------
@@ -414,7 +414,7 @@ class TRenderFilterParameter extends TEventParameter implements IEventCycleParam
 			return;
 		}
 		if ($offset === self::RENDER_FILTER_ERRORS) {
-			$this->storeErrors([]);
+			$this->storeErrors(null);
 			return;
 		}
 		parent::offsetUnset($offset);
@@ -426,15 +426,15 @@ class TRenderFilterParameter extends TEventParameter implements IEventCycleParam
 
 	/**
 	 * Stores `$errors` in the parameter's array slot for {@see RENDER_FILTER_ERRORS},
-	 * bypassing the no-op in {@see offsetSet}.  An empty array is stored as `null`
-	 * (the no-errors sentinel).  Called by {@see htmlToDom}; subclasses that override
-	 * `htmlToDom` should call this to keep errors consistent.
+	 * bypassing the no-op in {@see offsetSet}.  `null` or an empty array is stored as
+	 * `null` (the no-errors sentinel).  Called by {@see htmlToDom}; subclasses that
+	 * override `htmlToDom` should call this to keep errors consistent.
 	 *
-	 * @param \LibXMLError[] $errors
+	 * @param ?\LibXMLError[] $errors errors to store, or `null` to clear
 	 */
-	protected function storeErrors(array $errors): void
+	protected function storeErrors(?array $errors): void
 	{
-		parent::offsetSet(self::RENDER_FILTER_ERRORS, empty($errors) ? null : $errors);
+		parent::offsetSet(self::RENDER_FILTER_ERRORS, !empty($errors) ? $errors : null);
 	}
 
 	// -------------------------------------------------------------------------
