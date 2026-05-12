@@ -30,13 +30,41 @@ trait TFilterRenderableTrait
 	/**
 	 * Raises `onRenderFilter` and returns the filtered HTML string.
 	 *
-	 * Creates a {@see TRenderFilterParameter} from `$output`, raises the event so
+	 * Creates a {@see TRenderFilterParameter} from `$renderedText`, raises the event so
 	 * handlers can modify the HTML or DOM, then returns the result via
-	 * {@see TRenderFilterParameter::getFilterText}.
+	 * {@see TRenderFilterParameter::getFilterText}.  After all handlers run,
+	 * {@see TRenderFilterParameter::postRaiseEvent} automatically serialises any
+	 * current DOM representation back to an HTML string — handlers do not need to
+	 * call `getFilterText()` themselves.
+	 *
+	 * **String handler example**
+	 * ```php
+	 * $control->onRenderFilter[] = function ($sender, TRenderFilterParameter $param) {
+	 *     $param->setFilterText(strtoupper($param->getFilterText()));
+	 * };
+	 * ```
+	 *
+	 * **DOM handler example** — add missing `alt` attributes to every `<img>`:
+	 * ```php
+	 * $control->onRenderFilter[] = function ($sender, TRenderFilterParameter $param) {
+	 *     $dom = $param->getFilterDOM(); // DOMDocument|false; makes DOM the active resource
+	 *     if ($dom === false) {
+	 *         return; // libxml failed to parse the HTML fragment
+	 *     }
+	 *     $param->walkElements(function (\DOMElement $el, TRenderFilterParameter $p) {
+	 *         if ($el->tagName === 'img' && !$el->hasAttribute('alt')) {
+	 *             $el->setAttribute('alt', '');
+	 *         }
+	 *     });
+	 *     // DOM → HTML serialisation happens automatically in postRaiseEvent
+	 * };
+	 * ```
 	 *
 	 * @param string $renderedText captured rendered HTML
 	 * @return string filtered HTML
 	 * @see TRenderFilterParameter
+	 * @see TRenderFilterParameter::walkElements()
+	 * @see TRenderFilterParameter::postRaiseEvent()
 	 */
 	public function onRenderFilter($renderedText)
 	{

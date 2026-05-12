@@ -33,7 +33,7 @@ use ReflectionClass;
  * - parent and child relationship
  * - naming container and containee relationship
  * - viewstate and controlstate features
- * - rendering scheme with event-based output filtering (onRenderFilter)
+ * - rendering scheme with event-based output filtering ({@see onRenderFilter})
  * - control lifecycles
  *
  * A property can be data-bound with an expression. By calling {@see dataBind},
@@ -66,6 +66,37 @@ use ReflectionClass;
  * which is responsible for rendering of children of the control.
  * Control's {@see getVisible Visible} property governs whether the control
  * should be rendered or not.
+ *
+ * **Render-output filtering (`onRenderFilter`)**
+ *
+ * After {@see renderControl} finishes rendering a control, it raises the
+ * `onRenderFilter` event and passes the captured HTML through registered
+ * handlers before writing to the page output.  Each handler receives a
+ * {@see TRenderFilterParameter}, which exposes the output both as a raw HTML
+ * string ({@see TRenderFilterParameter::getFilterText}) and as a lazily-parsed
+ * {@see \DOMDocument} ({@see TRenderFilterParameter::getFilterDOM}).  Accessing
+ * the DOM representation makes it the active resource; `postRaiseEvent`
+ * automatically serializes it back to HTML after all handlers have run, so
+ * handlers that work exclusively through the DOM API need not call
+ * `getFilterText()` themselves.  Use {@see TRenderFilterParameter::walkElements}
+ * for a convenient depth-first traversal of every {@see \DOMElement} in the
+ * captured fragment.
+ *
+ * ```php
+ * // Attach a DOM-based render filter to a control
+ * $this->onRenderFilter[] = function ($sender, \Prado\Web\UI\TRenderFilterParameter $param) {
+ *     $dom = $param->getFilterDOM(); // DOMDocument|false
+ *     if ($dom === false) {
+ *         return; // libxml could not parse the fragment
+ *     }
+ *     $param->walkElements(function (\DOMElement $el, \Prado\Web\UI\TRenderFilterParameter $p) {
+ *         if ($el->tagName === 'img' && !$el->hasAttribute('alt')) {
+ *             $el->setAttribute('alt', '');
+ *         }
+ *     });
+ *     // DOM → HTML serialization is automatic; no need to call setFilterText()
+ * };
+ * ```
  *
  * Each control on a page will undergo a series of lifecycles, including
  * control construction, Init, Load, PreRender, Render, and OnUnload.
