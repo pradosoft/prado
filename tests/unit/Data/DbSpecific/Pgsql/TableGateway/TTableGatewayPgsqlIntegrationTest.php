@@ -78,7 +78,9 @@ class TTableGatewayPgsqlIntegrationTest extends PHPUnit\Framework\TestCase
 		self::$gateway->deleteAll('1=1');
 		// Reset the SERIAL sequence so the next insert always gets id=1,
 		// satisfying the self-referential FK (field4_integer=1 REFERENCES address(id)).
-		self::$conn->createCommand("SELECT setval('address_id_seq', 0, true)")->execute();
+		// setval(seq, 1, false): "not yet called", so the next INSERT will get id=1.
+		// PostgreSQL sequences have a minimum of 1; setval(seq, 0, ...) is out of range.
+		self::$conn->createCommand("SELECT setval('address_id_seq', 1, false)")->execute();
 	}
 
 	private function insertRecord1(): int

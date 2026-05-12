@@ -183,6 +183,57 @@ use ReflectionClass;
  * $result = $user->upsert(null, ['username']);
  * ```
  *
+ * Since v4.3.3, subclasses may also declare two optional class constants that
+ * provide record-level defaults for {@see upsert()}:
+ *
+ * - **`CONFLICT_COLUMNS`** — default conflict-target column list.  When
+ *   `upsert()` is called without an explicit `$conflictColumns` argument (i.e.
+ *   `null`), the value of this constant is used instead of falling back to the
+ *   primary key.  Passing a non-null `$conflictColumns` argument at the call
+ *   site overrides the constant entirely (no merging), which lets individual
+ *   calls target a different constraint.
+ *
+ * - **`UPSERT_UPDATE_DATA`** — default update-data for the ON CONFLICT branch.
+ *   When `upsert()` is called without an explicit `$updateData` argument (i.e.
+ *   `null`), the constant value is used as the update-data array.  When a
+ *   non-null `$updateData` is also provided at the call site the two arrays are
+ *   merged via `array_merge(UPSERT_UPDATE_DATA, $updateData)`, so string-keyed
+ *   entries from the call site override same-keyed entries in the constant while
+ *   integer-keyed column names from the constant that are not redefined by the
+ *   call site are preserved.
+ *
+ * Example using both constants:
+ * ```php
+ * class UserRecord extends TActiveRecord
+ * {
+ *     const TABLE = 'users';
+ *     // Always upsert on the unique e-mail constraint, not the primary key.
+ *     const CONFLICT_COLUMNS   = ['email'];
+ *     // By default only refresh last_login on conflict; callers can extend this.
+ *     const UPSERT_UPDATE_DATA = ['last_login'];
+ *
+ *     public $id;
+ *     public $email;
+ *     public $last_login;
+ *     public $status;
+ * }
+ *
+ * $user = new UserRecord();
+ * $user->email      = 'admin@example.com';
+ * $user->last_login = date('Y-m-d H:i:s');
+ * $user->status     = 'active';
+ *
+ * // Uses CONFLICT_COLUMNS=['email'] and UPSERT_UPDATE_DATA=['last_login'].
+ * $user->upsert();
+ *
+ * // Uses CONFLICT_COLUMNS=['email'] (constant) but merges UPSERT_UPDATE_DATA
+ * // with the explicit arg: effectively ['last_login', 'status' => 'active'].
+ * $user->upsert(['status' => 'active']);
+ *
+ * // Overrides CONFLICT_COLUMNS entirely — conflicts on primary key instead.
+ * $user->upsert(null, ['id']);
+ * ```
+ *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
  */
@@ -196,6 +247,24 @@ abstract class TActiveRecord extends \Prado\TComponent
 	public const STATE_NEW = 0;
 	public const STATE_LOADED = 1;
 	public const STATE_DELETED = 2;
+
+	/**
+	 * Default conflict-target columns for {@see upsert()}.
+	 * null = primary key. Override in subclasses to target a different unique constraint.
+	 * A non-null $conflictColumns argument at the call site overrides this entirely.
+	 * @since 4.3.3
+	 */
+	public const CONFLICT_COLUMNS = null;
+
+	/**
+	 * Default update-data for the ON CONFLICT branch of {@see upsert()}.
+	 * null = update all non-conflict columns from the record.
+	 * Override in subclasses to restrict or fix which columns are updated.
+	 * When a non-null $updateData argument is also passed, the two are merged
+	 * via array_merge (argument wins on shared string keys).
+	 * @since 4.3.3
+	 */
+	public const UPSERT_UPDATE_DATA = null;
 
 	/**
 	 * @var int record state: 0 = new, 1 = loaded, 2 = deleted.
@@ -540,21 +609,33 @@ abstract class TActiveRecord extends \Prado\TComponent
 	}
 
 	/**
-	 * Inserts or updates the current record.
-	 * On conflict with $conflictColumns (defaults to primary key), updates the
-	 * record's columns according to $updateData. Fires the OnInsert event.
-	 * @param null|array $updateData update source on conflict — null: all non-PK
-	 *   columns from the record; integer-keyed column names (e.g. ['email',
-	 *   'name']): those columns from the record; string-keyed column→value pairs
-	 *   (e.g. ['email' => 'new@example.com']): explicit override values; mixed
-	 *   (e.g. ['email', 'status' => 'active']): column names from the record
-	 *   and explicit values combined.
-	 * @param null|array $conflictColumns conflict target columns; null = primary key.
+	 * Inserts or updates the current record. Fires the OnInsert event.
+	 *
+	 * @param null|array $updateData columns to update on conflict: null = all non-PK
+	 *   columns; int-keyed list = those columns from the record; string-keyed map =
+	 *   explicit values; mixed = both; [] = no update (insertOrIgnore semantics).
+	 *   Merged with {@see UPSERT_UPDATE_DATA} when both are set (param wins).
+	 * @param null|array $conflictColumns conflict target; null falls back to
+	 *   {@see CONFLICT_COLUMNS} if defined, otherwise the primary key.
+	 *   A non-null argument overrides the constant entirely.
 	 * @return mixed last insert ID, true on update, or false on failure.
 	 * @since 4.3.3
 	 */
 	public function upsert(?array $updateData = null, ?array $conflictColumns = null): mixed
 	{
+		// CONFLICT_COLUMNS: param overrides entirely when non-null (conflict targets
+		// are exact constraint specs — combining two lists risks an invalid ON CONFLICT).
+		if ($conflictColumns === null && static::CONFLICT_COLUMNS !== null) {
+			$conflictColumns = static::CONFLICT_COLUMNS;
+		}
+
+		// UPSERT_UPDATE_DATA: merge constant + param, param wins on shared string keys.
+		if (static::UPSERT_UPDATE_DATA !== null) {
+			$updateData = ($updateData === null)
+				? static::UPSERT_UPDATE_DATA
+				: array_merge(static::UPSERT_UPDATE_DATA, $updateData);
+		}
+
 		$gateway = $this->getRecordGateway();
 		$param = new TActiveRecordChangeEventParameter();
 		$this->onInsert($param);

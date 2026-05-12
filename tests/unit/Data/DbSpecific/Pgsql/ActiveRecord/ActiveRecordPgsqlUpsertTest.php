@@ -184,7 +184,7 @@ class ActiveRecordPgsqlUpsertTest extends PHPUnit\Framework\TestCase
 		$update = new PgsqlUpsertTestRecord();
 		$update->username = 'alice';
 		$update->score = 88;
-		$update->upsert(null, ['username']);
+		$update->upsert();
 
 		$found = PgsqlUpsertTestRecord::finder()->find('username = ?', 'alice');
 		$this->assertSame(88, (int) $found->score);
@@ -199,7 +199,7 @@ class ActiveRecordPgsqlUpsertTest extends PHPUnit\Framework\TestCase
 		$update = new PgsqlUpsertTestRecord();
 		$update->username = 'alice';
 		$update->score = 99;
-		$update->upsert([], ['username']);
+		$update->upsert([]);
 
 		$found = PgsqlUpsertTestRecord::finder()->find('username = ?', 'alice');
 		$this->assertSame(10, (int) $found->score, 'score must not change when updateData is empty');
@@ -218,7 +218,7 @@ class ActiveRecordPgsqlUpsertTest extends PHPUnit\Framework\TestCase
 		$update = new PgsqlUpsertTestRecord();
 		$update->username = 'alice';
 		$update->score = 77;
-		$update->upsert(['score'], ['username']);
+		$update->upsert(['score']);
 
 		$found = PgsqlUpsertTestRecord::finder()->find('username = ?', 'alice');
 		$this->assertSame(77, (int) $found->score);
@@ -233,7 +233,7 @@ class ActiveRecordPgsqlUpsertTest extends PHPUnit\Framework\TestCase
 		$update = new PgsqlUpsertTestRecord();
 		$update->username = 'alice';
 		$update->score = 55;
-		$update->upsert(['score' => 99], ['username']);
+		$update->upsert(['score' => 99]);
 
 		$found = PgsqlUpsertTestRecord::finder()->find('username = ?', 'alice');
 		$this->assertSame(99, (int) $found->score);

@@ -143,12 +143,12 @@ class ActiveRecordSqliteUpsertTest extends PHPUnit\Framework\TestCase
 		$original = new SqliteUpsertTestRecord();
 		$original->username = 'alice';
 		$original->score = 10;
-		$original->upsert(null, ['username']);
+		$original->upsert();
 
 		$update = new SqliteUpsertTestRecord();
 		$update->username = 'alice';
 		$update->score = 99;
-		$update->upsert(null, ['username']);
+		$update->upsert();
 
 		$found = SqliteUpsertTestRecord::finder()->find('username = ?', 'alice');
 		$this->assertSame(99, (int) $found->score);
@@ -159,13 +159,13 @@ class ActiveRecordSqliteUpsertTest extends PHPUnit\Framework\TestCase
 		$original = new SqliteUpsertTestRecord();
 		$original->username = 'alice';
 		$original->score = 10;
-		$original->upsert(null, ['username']);
+		$original->upsert();
 
 		$update = new SqliteUpsertTestRecord();
 		$update->username = 'alice';
 		$update->score = 99;
 
-		$result = $update->upsert(null, ['username']);
+		$result = $update->upsert();
 
 		$this->assertNotFalse($result);
 	}
@@ -175,12 +175,12 @@ class ActiveRecordSqliteUpsertTest extends PHPUnit\Framework\TestCase
 		$original = new SqliteUpsertTestRecord();
 		$original->username = 'alice';
 		$original->score = 10;
-		$original->upsert(null, ['username']);
+		$original->upsert();
 
 		$update = new SqliteUpsertTestRecord();
 		$update->username = 'alice';
 		$update->score = 99;
-		$update->upsert(null, ['username']);
+		$update->upsert();
 
 		$count = (int) static::$conn->createCommand('SELECT COUNT(*) FROM upsert_test')->queryScalar();
 		$this->assertSame(1, $count);
@@ -199,7 +199,7 @@ class ActiveRecordSqliteUpsertTest extends PHPUnit\Framework\TestCase
 		$update = new SqliteUpsertTestRecord();
 		$update->username = 'alice';
 		$update->score = 88;
-		$update->upsert(null, ['username']);
+		$update->upsert();
 
 		$found = SqliteUpsertTestRecord::finder()->find('username = ?', 'alice');
 		$this->assertSame(88, (int) $found->score);
@@ -214,7 +214,7 @@ class ActiveRecordSqliteUpsertTest extends PHPUnit\Framework\TestCase
 		$update = new SqliteUpsertTestRecord();
 		$update->username = 'alice';
 		$update->score = 99;
-		$update->upsert([], ['username']);
+		$update->upsert([]);
 
 		$found = SqliteUpsertTestRecord::finder()->find('username = ?', 'alice');
 		$this->assertSame(10, (int) $found->score, 'score must not change when updateData is empty');
@@ -234,7 +234,7 @@ class ActiveRecordSqliteUpsertTest extends PHPUnit\Framework\TestCase
 		$update = new SqliteUpsertTestRecord();
 		$update->username = 'alice';
 		$update->score = 77;
-		$update->upsert(['score'], ['username']);
+		$update->upsert(['score']);
 
 		$found = SqliteUpsertTestRecord::finder()->find('username = ?', 'alice');
 		$this->assertSame(77, (int) $found->score);
@@ -250,7 +250,7 @@ class ActiveRecordSqliteUpsertTest extends PHPUnit\Framework\TestCase
 		$update = new SqliteUpsertTestRecord();
 		$update->username = 'alice';
 		$update->score = 55;
-		$update->upsert(['score' => 99], ['username']);
+		$update->upsert(['score' => 99]);
 
 		$found = SqliteUpsertTestRecord::finder()->find('username = ?', 'alice');
 		$this->assertSame(99, (int) $found->score);
@@ -290,7 +290,7 @@ class ActiveRecordSqliteUpsertTest extends PHPUnit\Framework\TestCase
 		$update = new SqliteUpsertTestRecord();
 		$update->username = 'alice';
 		$update->score = 99;
-		$update->upsert(null, ['username']);
+		$update->upsert();
 
 		$bob = SqliteUpsertTestRecord::finder()->find('username = ?', 'bob');
 		$this->assertSame(20, (int) $bob->score, 'bob must be unaffected');
@@ -332,7 +332,7 @@ class ActiveRecordSqliteUpsertTest extends PHPUnit\Framework\TestCase
 			$eventFired = true;
 		};
 
-		$update->upsert(null, ['username']);
+		$update->upsert();
 
 		$this->assertTrue($eventFired, 'OnInsert event must fire on the update (conflict) path too');
 	}

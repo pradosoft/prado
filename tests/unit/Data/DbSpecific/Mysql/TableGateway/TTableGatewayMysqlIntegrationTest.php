@@ -80,6 +80,11 @@ class TTableGatewayMysqlIntegrationTest extends PHPUnit\Framework\TestCase
 		if (self::$conn === null) {
 			$this->markTestSkipped('MySQL not available or required tables missing.');
 		}
+		// Clear address rows before each test. initdb_mysql.sql pre-seeds two rows
+		// ('wei', 'fabio') and other test classes may leave residual rows; without
+		// this tearDown only covers cleanup *after* a test, leaving the first test
+		// in this class with a non-empty table.
+		self::$gateway->deleteAll('1=1');
 	}
 
 	protected function tearDown(): void
