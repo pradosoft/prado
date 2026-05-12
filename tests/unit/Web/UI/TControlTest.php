@@ -1,9 +1,67 @@
 <?php
 
+use Prado\IO\TTextWriter;
+use Prado\Web\UI\IAdapterControl;
 use Prado\Web\UI\TControl;
 use Prado\Web\UI\TControlAdapter;
+use Prado\Web\UI\THtmlWriter;
 use Prado\Web\UI\TPage;
+use Prado\Web\UI\TRenderFilterParameter;
 use Prado\Web\UI\WebControls\TLabel;
+
+/**
+ * Exposes protected getAdapterControl() for white-box testing.
+ */
+class TControlExposed extends TControl
+{
+	public function getAdapterControlPublic(): IAdapterControl
+	{
+		return $this->getAdapterControl();
+	}
+}
+
+/**
+ * Fixture: implements IRenderable only — not TControl, not IFilterRenderable.
+ * Exercises the final IRenderable branch in renderChildren.
+ */
+class TRenderableNonControl implements \Prado\Web\UI\IRenderable
+{
+	private string $_text;
+	public function __construct(string $text) { $this->_text = $text; }
+	public function render($writer): void { $writer->write($this->_text); }
+}
+
+/**
+ * Fixture: implements IFilterRenderable (via TFilterRenderableTrait) but does not extend TControl.
+ * Exercises the non-TControl IFilterRenderable branch in renderChildren.
+ */
+class TFilterRenderableNonControl extends \Prado\TComponent implements \Prado\Web\UI\IFilterRenderable
+{
+	use \Prado\Web\UI\Traits\TFilterRenderableTrait;
+
+	private string $_text;
+	public function __construct(string $text)
+	{
+		parent::__construct();
+		$this->_text = $text;
+	}
+
+	public function render($writer): void { $writer->write($this->_text); }
+}
+
+/**
+ * Adapter whose render() appends a known marker instead of delegating.
+ */
+class TControlAdapterSpy extends TControlAdapter
+{
+	public bool $renderCalled = false;
+
+	public function render($writer): void
+	{
+		$this->renderCalled = true;
+		$writer->write('ADAPTER_OUTPUT');
+	}
+}
 
 class TControlTest extends PHPUnit\Framework\TestCase
 {
@@ -649,5 +707,380 @@ class TControlTest extends PHPUnit\Framework\TestCase
 		$control->applyStyleSheetSkin($page);
 		// applyStyleSheetSkin with no theme should not change skin ID
 		$this->assertEquals('', $control->getSkinID());
+	}
+
+	/**
+	 * Test renderChildren method with onRenderFilter event
+	 */
+	public function testRenderChildrenWithOnRenderFilter()
+	{
+		$control = new TControl();
+		$child = new TLabel();
+		$child->setID('child');
+		$child->setText('Child Content');
+		$control->getControls()->add($child);
+
+		// Add an onRenderFilter event handler that modifies the output
+		$control->onRenderFilter[] = function($sender, $param) {
+			$param[TRenderFilterParameter::RENDER_FILTER_TEXT] = strtoupper($param[TRenderFilterParameter::RENDER_FILTER_TEXT]);
+		};
+
+		$writer = new \Prado\Web\UI\THtmlWriter(new \Prado\IO\TTextWriter());
+		$control->renderControl($writer);
+		$output = $writer->getWriter()->flush();
+		$this->assertStringContainsString('CHILD CONTENT', $output);
+	}
+
+	/**
+	 * Test onRenderFilter method directly
+	 */
+	public function testOnRenderFilter()
+	{
+		$control = new TControl();
+		$output = 'test output';
+
+		// Add an onRenderFilter event handler that modifies the output
+		$control->onRenderFilter[] = function($sender, $param) {
+			$param[TRenderFilterParameter::RENDER_FILTER_TEXT] = 'modified: ' . $param[TRenderFilterParameter::RENDER_FILTER_TEXT];
+		};
+
+		$result = $control->onRenderFilter($output);
+		$this->assertEquals('modified: test output', $result);
+	}
+
+	/**
+	 * Test onRenderFilter with no event handlers
+	 */
+	public function testOnRenderFilterWithoutHandlers()
+	{
+		$control = new TControl();
+		$output = 'test output';
+		$result = $control->onRenderFilter($output);
+		$this->assertEquals('test output', $result);
+	}
+
+	/**
+	 * Test onRenderFilter using getFilterText / setFilterText getter-setter API
+	 */
+	public function testOnRenderFilterGetterSetterApi()
+	{
+		$control = new TControl();
+		$control->onRenderFilter[] = function ($sender, $param) {
+			$html = $param->getFilterText();
+			$param->setFilterText(str_replace('world', 'PRADO', $html));
+		};
+
+		$result = $control->onRenderFilter('<p>hello world</p>');
+		$this->assertStringContainsString('PRADO', $result);
+		$this->assertStringNotContainsString('world', $result);
+	}
+
+	/**
+	 * Test onRenderFilter using the DOM API via walkElements
+	 */
+	public function testOnRenderFilterDomWalkElements()
+	{
+		$control = new TControl();
+		$control->onRenderFilter[] = function ($sender, $param) {
+			$param->walkElements(function (\DOMElement $el, $p) {
+				if ($el->tagName === 'img' && !$el->hasAttribute('alt')) {
+					$el->setAttribute('alt', 'auto');
+				}
+			});
+		};
+
+		$result = $control->onRenderFilter('<img src="test.png"><p>text</p>');
+		$this->assertStringContainsString('alt="auto"', $result);
+		$this->assertStringContainsString('<p>text</p>', $result);
+	}
+
+	/**
+	 * Test that postRaiseEvent converts DOM back to HTML automatically
+	 */
+	public function testOnRenderFilterDomAutoSyncOnPost()
+	{
+		$control = new TControl();
+		$control->onRenderFilter[] = function ($sender, $param) {
+			// Only access DOM — never call getFilterText; postRaiseEvent must sync
+			$dom = $param->getFilterDOM();
+			$items = $dom->getElementsByTagName('span');
+			if ($items->length > 0) {
+				$items->item(0)->setAttribute('class', 'highlight');
+			}
+		};
+
+		$result = $control->onRenderFilter('<span>hello</span>');
+		$this->assertStringContainsString('class="highlight"', $result);
+	}
+
+	// =========================================================================
+	// renderChildren — dispatch branches
+	// =========================================================================
+
+	public function testRenderChildrenStringChildWrittenDirectly()
+	{
+		// String children are written to the writer unchanged.
+		$control = new TControl();
+		$control->getControls()->add('raw string');
+
+		$tw = new TTextWriter();
+		$writer = new THtmlWriter($tw);
+		$control->render($writer);
+		$this->assertSame('raw string', $tw->flush());
+	}
+
+	public function testRenderChildrenIRenderableChildRendered()
+	{
+		// Plain IRenderable (not TControl, not IFilterRenderable) is rendered with
+		// no filter wrapping — output goes directly to the writer.
+		$control = new TControl();
+		$child = new TRenderableNonControl('renderable content');
+		$control->getControls()->add($child);
+
+		$tw = new TTextWriter();
+		$writer = new THtmlWriter($tw);
+		$control->render($writer);
+		$this->assertSame('renderable content', $tw->flush());
+	}
+
+	public function testRenderChildrenIFilterRenderableNonTControlNoHandler()
+	{
+		// IFilterRenderable (non-TControl) with no handler: output goes directly
+		// to the writer because preRenderFilter returns null.
+		$control = new TControl();
+		$child = new TFilterRenderableNonControl('filterable child');
+		$control->getControls()->add($child);
+
+		$tw = new TTextWriter();
+		$writer = new THtmlWriter($tw);
+		$control->render($writer);
+		$this->assertSame('filterable child', $tw->flush());
+	}
+
+	public function testRenderChildrenIFilterRenderableNonTControlWithHandler()
+	{
+		// IFilterRenderable (non-TControl) with an onRenderFilter handler on the child.
+		// The parent dispatches the capture-and-restore lifecycle using the child's handler.
+		$control = new TControl();
+		$child = new TFilterRenderableNonControl('filterable');
+		$child->onRenderFilter[] = function ($sender, $param) {
+			$param[TRenderFilterParameter::RENDER_FILTER_TEXT] =
+				strtoupper($param[TRenderFilterParameter::RENDER_FILTER_TEXT]);
+		};
+		$control->getControls()->add($child);
+
+		$tw = new TTextWriter();
+		$writer = new THtmlWriter($tw);
+		$control->render($writer);
+		$this->assertSame('FILTERABLE', $tw->flush());
+	}
+
+	public function testRenderChildrenNoChildren()
+	{
+		// No children — renderChildren must write nothing.
+		$control = new TControl();
+		$tw = new TTextWriter();
+		$writer = new THtmlWriter($tw);
+		$control->render($writer);
+		$this->assertSame('', $tw->flush());
+	}
+
+	public function testProcessRenderFilterEmptyCaptureRestoresWriter()
+	{
+		// Handler registered, but the control renders nothing (no children).
+		// processRenderFilter must restore the inner writer even when capture is empty,
+		// so subsequent writes to $writer still reach the original TTextWriter.
+		$control = new TControl(); // no children → render() captures nothing
+		$control->onRenderFilter[] = function ($sender, $param) { /* no-op */ };
+
+		$tw = new TTextWriter();
+		$writer = new THtmlWriter($tw);
+		$control->renderControl($writer);
+		$this->assertSame('', $tw->flush(), 'Empty capture must produce no output');
+
+		// Writer must be fully restored: a subsequent write reaches the original TTextWriter.
+		$writer->write('after');
+		$this->assertSame('after', $tw->flush());
+	}
+
+	// =========================================================================
+	// renderControl — visibility and no-handler path
+	// =========================================================================
+
+	public function testRenderControlSkipsWhenInvisible()
+	{
+		$control = new TControl();
+		$control->setVisible(false);
+		$tw = new TTextWriter();
+		$writer = new THtmlWriter($tw);
+		$control->renderControl($writer);
+		$this->assertSame('', $tw->flush(), 'Invisible control must produce no output');
+	}
+
+	public function testRenderControlRendersNormallyWithoutHandlers()
+	{
+		// No onRenderFilter handlers — output goes directly to writer unchanged.
+		$control = new TControl();
+		$child = new TLabel();
+		$child->setText('hello');
+		$control->getControls()->add($child);
+
+		$tw = new TTextWriter();
+		$writer = new THtmlWriter($tw);
+		$control->renderControl($writer);
+		$this->assertStringContainsString('hello', $tw->flush());
+	}
+
+	public function testRenderControlWithHandlerProducesFilteredOutput()
+	{
+		$control = new TControl();
+		$child = new TLabel();
+		$child->setText('hello');
+		$control->getControls()->add($child);
+
+		$control->onRenderFilter[] = function ($sender, $param) {
+			$param[TRenderFilterParameter::RENDER_FILTER_TEXT] =
+				strtoupper($param[TRenderFilterParameter::RENDER_FILTER_TEXT]);
+		};
+
+		$tw = new TTextWriter();
+		$writer = new THtmlWriter($tw);
+		$control->renderControl($writer);
+		$output = $tw->flush();
+		$this->assertStringContainsString('HELLO', $output);
+		$this->assertStringNotContainsString('hello', $output);
+	}
+
+	public function testProcessRenderFilterDoesNotWriteWhenOutputIsEmpty()
+	{
+		// A handler that clears the HTML to '' must result in nothing written to the writer.
+		$control = new TControl();
+		$child = new TLabel();
+		$child->setText('content');
+		$control->getControls()->add($child);
+
+		$control->onRenderFilter[] = function ($sender, $param) {
+			$param[TRenderFilterParameter::RENDER_FILTER_TEXT] = '';
+		};
+
+		$tw = new TTextWriter();
+		$writer = new THtmlWriter($tw);
+		$control->renderControl($writer);
+		$this->assertSame('', $tw->flush(), 'Handler clearing output must produce no bytes in the writer');
+	}
+
+	public function testMultipleRenderFilterHandlersChainingModifications()
+	{
+		$control = new TControl();
+		$child = new TLabel();
+		$child->setText('base');
+		$control->getControls()->add($child);
+
+		$control->onRenderFilter[] = function ($sender, $param) {
+			$param[TRenderFilterParameter::RENDER_FILTER_TEXT] .= '-first';
+		};
+		$control->onRenderFilter[] = function ($sender, $param) {
+			$param[TRenderFilterParameter::RENDER_FILTER_TEXT] .= '-second';
+		};
+
+		$tw = new TTextWriter();
+		$writer = new THtmlWriter($tw);
+		$control->renderControl($writer);
+		$output = $tw->flush();
+		$this->assertStringContainsString('-first', $output);
+		$this->assertStringContainsString('-second', $output);
+	}
+
+	// =========================================================================
+	// getAdapterControl
+	// =========================================================================
+
+	public function testGetAdapterControlReturnsSelfWithoutAdapter()
+	{
+		$control = new TControlExposed();
+		$this->assertSame($control, $control->getAdapterControlPublic());
+	}
+
+	public function testGetAdapterControlReturnsAdapterWhenSet()
+	{
+		$control = new TControlExposed();
+		$adapter = new TControlAdapter($control);
+		$control->setAdapter($adapter);
+		$this->assertSame($adapter, $control->getAdapterControlPublic());
+	}
+
+	public function testRenderControlDelegatesToAdapterRender()
+	{
+		$control = new TControl();
+		$spy = new TControlAdapterSpy($control);
+		$control->setAdapter($spy);
+
+		$tw = new TTextWriter();
+		$writer = new THtmlWriter($tw);
+		$control->renderControl($writer);
+
+		$this->assertTrue($spy->renderCalled, 'renderControl must call adapter render()');
+		$this->assertStringContainsString('ADAPTER_OUTPUT', $tw->flush());
+	}
+
+	public function testRenderControlAdapterOutputPassesThroughFilter()
+	{
+		$control = new TControl();
+		$spy = new TControlAdapterSpy($control);
+		$control->setAdapter($spy);
+
+		$control->onRenderFilter[] = function ($sender, $param) {
+			$param[TRenderFilterParameter::RENDER_FILTER_TEXT] =
+				str_replace('ADAPTER', 'FILTERED', $param[TRenderFilterParameter::RENDER_FILTER_TEXT]);
+		};
+
+		$tw = new TTextWriter();
+		$writer = new THtmlWriter($tw);
+		$control->renderControl($writer);
+		$output = $tw->flush();
+
+		$this->assertStringContainsString('FILTERED_OUTPUT', $output);
+		$this->assertStringNotContainsString('ADAPTER_OUTPUT', $output);
+	}
+
+	// =========================================================================
+	// preRenderFilter / processRenderFilter — unit-level
+	// =========================================================================
+
+	public function testPreRenderFilterReturnsNullWithNoHandlers()
+	{
+		// Indirectly: if preRenderFilter returned non-null when no handler,
+		// processRenderFilter would try to flush an empty inner writer and
+		// write '' — meaning any child output would be lost.  Verify children
+		// still render (writer was NOT swapped out).
+		$control = new TControl();
+		$child = new TLabel();
+		$child->setText('direct');
+		$control->getControls()->add($child);
+
+		$tw = new TTextWriter();
+		$writer = new THtmlWriter($tw);
+		$control->renderControl($writer);
+		// Output must appear in the original writer, not a swapped buffer
+		$this->assertStringContainsString('direct', $tw->flush());
+	}
+
+	public function testOnRenderFilterReturnsInputUnmodifiedWithNoHandlers()
+	{
+		$control = new TControl();
+		$result = $control->onRenderFilter('<p>unchanged</p>');
+		$this->assertSame('<p>unchanged</p>', $result);
+	}
+
+	public function testOnRenderFilterHandlerCanUsePassByReferenceOnParam()
+	{
+		// Verifies the param is the same object received by the handler.
+		$control = new TControl();
+		$receivedParam = null;
+		$control->onRenderFilter[] = function ($sender, $param) use (&$receivedParam) {
+			$receivedParam = $param;
+		};
+		$control->onRenderFilter('<p>test</p>');
+		$this->assertInstanceOf(TRenderFilterParameter::class, $receivedParam);
 	}
 }

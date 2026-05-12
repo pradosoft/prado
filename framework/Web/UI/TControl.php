@@ -11,12 +11,17 @@
 namespace Prado\Web\UI;
 
 use Exception;
+use Prado\Collections\TAttributeCollection;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\IO\ITextWriter;
+use Prado\IO\TTextWriter;
 use Prado\Prado;
+use Prado\TComponent;
+use Prado\TEventParameter;
 use Prado\TPropertyValue;
 use Prado\Web\UI\ActiveControls\IActiveControl;
-use Prado\Collections\TAttributeCollection;
+use Prado\Web\UI\Traits\TFilterRenderableTrait;
 use ReflectionClass;
 
 /**
@@ -28,7 +33,7 @@ use ReflectionClass;
  * - parent and child relationship
  * - naming container and containee relationship
  * - viewstate and controlstate features
- * - rendering scheme
+ * - rendering scheme with event-based output filtering ({@see onRenderFilter})
  * - control lifecycles
  *
  * A property can be data-bound with an expression. By calling {@see dataBind},
@@ -62,6 +67,37 @@ use ReflectionClass;
  * Control's {@see getVisible Visible} property governs whether the control
  * should be rendered or not.
  *
+ * **Render-output filtering (`onRenderFilter`)**
+ *
+ * After {@see renderControl} finishes rendering a control, it raises the
+ * `onRenderFilter` event and passes the captured HTML through registered
+ * handlers before writing to the page output.  Each handler receives a
+ * {@see TRenderFilterParameter}, which exposes the output both as a raw HTML
+ * string ({@see TRenderFilterParameter::getFilterText}) and as a lazily-parsed
+ * {@see \DOMDocument} ({@see TRenderFilterParameter::getFilterDOM}).  Accessing
+ * the DOM representation makes it the active resource; `postRaiseEvent`
+ * automatically serializes it back to HTML after all handlers have run, so
+ * handlers that work exclusively through the DOM API need not call
+ * `getFilterText()` themselves.  Use {@see TRenderFilterParameter::walkElements}
+ * for a convenient depth-first traversal of every {@see \DOMElement} in the
+ * captured fragment.
+ *
+ * ```php
+ * // Attach a DOM-based render filter to a control
+ * $this->onRenderFilter[] = function ($sender, \Prado\Web\UI\TRenderFilterParameter $param) {
+ *     $dom = $param->getFilterDOM(); // DOMDocument|false
+ *     if ($dom === false) {
+ *         return; // libxml could not parse the fragment
+ *     }
+ *     $param->walkElements(function (\DOMElement $el, \Prado\Web\UI\TRenderFilterParameter $p) {
+ *         if ($el->tagName === 'img' && !$el->hasAttribute('alt')) {
+ *             $el->setAttribute('alt', '');
+ *         }
+ *     });
+ *     // DOM → HTML serialization is automatic; no need to call setFilterText()
+ * };
+ * ```
+ *
  * Each control on a page will undergo a series of lifecycles, including
  * control construction, Init, Load, PreRender, Render, and OnUnload.
  * They work together with page lifecycles to process a page request.
@@ -69,8 +105,10 @@ use ReflectionClass;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
-class TControl extends \Prado\TApplicationComponent implements IRenderable, IBindable
+class TControl extends \Prado\TApplicationComponent implements IAdapterControl, IFilterRenderable, IBindable
 {
+	use TFilterRenderableTrait;
+
 	/**
 	 * format of control ID
 	 */
@@ -114,15 +152,15 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * In order to save memory, rare fields will only be created if they are needed.
 	 */
 	public const RF_CONTROLS = 0;			// child controls
-	public const RF_CHILD_STATE = 1;			// child state field
+	public const RF_CHILD_STATE = 1;		// child state field
 	public const RF_NAMED_CONTROLS = 2;		// list of controls whose namingcontainer is this control
 	public const RF_NAMED_CONTROLS_ID = 3;	// counter for automatic id
-	public const RF_SKIN_ID = 4;				// skin ID
+	public const RF_SKIN_ID = 4;			// skin ID
 	public const RF_DATA_BINDINGS = 5;		// data bindings
 	public const RF_EVENTS = 6;				// event handlers
 	public const RF_CONTROLSTATE = 7;		// controlstate
 	public const RF_NAMED_OBJECTS = 8;		// controls declared with ID on template
-	public const RF_ADAPTER = 9;				// adapter
+	public const RF_ADAPTER = 9;			// adapter
 	public const RF_AUTO_BINDINGS = 10;		// auto data bindings
 
 	/**
@@ -250,11 +288,20 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	}
 
 	/**
-	 * @return TControlAdapter control adapter. Null if not exists.
+	 * @return ?TControlAdapter control adapter. Null if not exists.
 	 */
 	public function getAdapter()
 	{
 		return $this->_rf[self::RF_ADAPTER] ?? null;
+	}
+
+	/**
+	 * @return IAdapterControl the adapter when one is set, or `$this` otherwise
+	 * @since 4.3.3
+	 */
+	protected function getAdapterControl(): IAdapterControl
+	{
+		return $this->_rf[self::RF_ADAPTER] ?? $this;
 	}
 
 	/**
@@ -353,7 +400,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	/**
 	 * Returns the module associated with the class path of the control.  This is for Composer
 	 * extensions adding their own Controls to access their associated Module.
-	 * @return null|mixed the module associated with this TControl
+	 * @return ?mixed the module associated with this TControl
 	 * @since 4.2.0
 	 */
 	public function getPluginModule()
@@ -791,7 +838,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * Make sure that the controlstate value must be serializable and unserializable.
 	 * @param string $key the name of the controlstate value
 	 * @param mixed $value the controlstate value to be set
-	 * @param null|mixed $defaultValue default value. If $value===$defaultValue, the item will be cleared from controlstate
+	 * @param ?mixed $defaultValue default value. If $value===$defaultValue, the item will be cleared from controlstate
 	 */
 	protected function setControlState($key, $value, $defaultValue = null)
 	{
@@ -853,7 +900,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * Make sure that the viewstate value must be serializable and unserializable.
 	 * @param string $key the name of the viewstate value
 	 * @param mixed $value the viewstate value to be set
-	 * @param null|mixed $defaultValue default value. If $value===$defaultValue, the item will be cleared from the viewstate.
+	 * @param ?mixed $defaultValue default value. If $value===$defaultValue, the item will be cleared from the viewstate.
 	 */
 	public function setViewState($key, $value, $defaultValue = null)
 	{
@@ -1004,11 +1051,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 		if (!($this->_flags & self::IS_CHILD_CREATED) && !($this->_flags & self::IS_CREATING_CHILD)) {
 			try {
 				$this->_flags |= self::IS_CREATING_CHILD;
-				if (isset($this->_rf[self::RF_ADAPTER])) {
-					$this->_rf[self::RF_ADAPTER]->createChildControls();
-				} else {
-					$this->createChildControls();
-				}
+				$this->getAdapterControl()->createChildControls();
 				$this->_flags &= ~self::IS_CREATING_CHILD;
 				$this->_flags |= self::IS_CHILD_CREATED;
 			} catch (Exception $e) {
@@ -1040,7 +1083,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * whose naming container is 'Item1' whose naming container is 'Repeater1'.
 	 * @param string $id ID of the control to be looked up
 	 * @throws TInvalidDataValueException if a control's ID is found not unique within its naming container.
-	 * @return null|mixed the control found, null if not found
+	 * @return ?mixed the control found, null if not found
 	 */
 	public function findControl($id)
 	{
@@ -1358,11 +1401,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 				$page->applyControlSkin($this);
 				$this->_flags |= self::IS_SKIN_APPLIED;
 			}
-			if (isset($this->_rf[self::RF_ADAPTER])) {
-				$this->_rf[self::RF_ADAPTER]->onInit(null);
-			} else {
-				$this->onInit(null);
-			}
+			$this->getAdapterControl()->onInit(null);
 			$this->_stage = self::CS_INITIALIZED;
 		}
 	}
@@ -1374,11 +1413,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	protected function loadRecursive()
 	{
 		if ($this->_stage < self::CS_LOADED) {
-			if (isset($this->_rf[self::RF_ADAPTER])) {
-				$this->_rf[self::RF_ADAPTER]->onLoad(null);
-			} else {
-				$this->onLoad(null);
-			}
+			$this->getAdapterControl()->onLoad(null);
 		}
 		if ($this->getHasControls()) {
 			foreach ($this->_rf[self::RF_CONTROLS] as $control) {
@@ -1401,11 +1436,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 		$this->autoDataBindProperties();
 
 		if ($this->getVisible(false)) {
-			if (isset($this->_rf[self::RF_ADAPTER])) {
-				$this->_rf[self::RF_ADAPTER]->onPreRender(null);
-			} else {
-				$this->onPreRender(null);
-			}
+			$this->getAdapterControl()->onPreRender(null);
 			if ($this->getHasControls()) {
 				foreach ($this->_rf[self::RF_CONTROLS] as $control) {
 					if ($control instanceof TControl) {
@@ -1435,11 +1466,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 				}
 			}
 		}
-		if (isset($this->_rf[self::RF_ADAPTER])) {
-			$this->_rf[self::RF_ADAPTER]->onUnload(null);
-		} else {
-			$this->onUnload(null);
-		}
+		$this->getAdapterControl()->onUnload(null);
 	}
 
 	/**
@@ -1589,12 +1616,12 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * ```php
 	 * function callback_func($control,$param) {...}
 	 * ```
-	 * where $control refers to the control being visited and $param
-	 * is the parameter that is passed originally when calling this traverse function.
+	 * where $control refers to the control being visited and $param is the
+	 * parameter that is passed originally when calling this traverse function.
 	 *
 	 * @param mixed $param parameter to be passed to callbacks for each control
-	 * @param null|callable $preCallback callback invoked before traversing child controls. If null, it is ignored.
-	 * @param null|callable $postCallback callback invoked after traversing child controls. If null, it is ignored.
+	 * @param ?callable $preCallback callback invoked before traversing child controls. If null, it is ignored.
+	 * @param ?callable $postCallback callback invoked after traversing child controls. If null, it is ignored.
 	 */
 	protected function traverseChildControls($param, $preCallback = null, $postCallback = null)
 	{
@@ -1615,17 +1642,21 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 
 	/**
 	 * Renders the control.
-	 * Only when the control is visible will the control be rendered.
-	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
+	 *
+	 * Skips rendering when the control is not visible.  When `onRenderFilter` handlers
+	 * are registered the output is captured, passed through those handlers as a
+	 * {@see TRenderFilterParameter} (accessible via {@see TRenderFilterParameter::RENDER_FILTER_TEXT}
+	 * / {@see TRenderFilterParameter::RENDER_FILTER_DOM} or the getter/setter API), and the
+	 * modified HTML is written to `$writer`.  Handlers may exchange state via extra array keys.
+	 *
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for rendering
 	 */
 	public function renderControl($writer)
 	{
 		if ($this instanceof IActiveControl || $this->getVisible(false)) {
-			if (isset($this->_rf[self::RF_ADAPTER])) {
-				$this->_rf[self::RF_ADAPTER]->render($writer);
-			} else {
-				$this->render($writer);
-			}
+			$oldWriter = $this->preRenderFilter($writer);
+			$this->getAdapterControl()->render($writer);
+			$this->processRenderFilter($writer, $oldWriter);
 		}
 	}
 
@@ -1643,8 +1674,13 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 
 	/**
 	 * Renders the children of the control.
-	 * This method iterates through all child controls and static text strings
-	 * and renders them in order.
+	 *
+	 * Each child is dispatched by type: strings are written directly; {@see TControl}
+	 * children call {@see TControl::renderControl}; non-`TControl` {@see IFilterRenderable}
+	 * children are wrapped in the capture-and-restore filter lifecycle (with `onRenderFilter`
+	 * handlers registered on the child); plain {@see IRenderable} children call `render()`
+	 * with no filtering.
+	 *
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderChildren($writer)
@@ -1655,11 +1691,80 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 					$writer->write($control);
 				} elseif ($control instanceof TControl) {
 					$control->renderControl($writer);
+				} elseif ($control instanceof IFilterRenderable) {
+					$oldWriter = $this->preRenderFilter($writer, $control);
+					$control->render($writer);
+					$this->processRenderFilter($writer, $oldWriter, $control);
 				} elseif ($control instanceof IRenderable) {
 					$control->render($writer);
 				}
 			}
 		}
+	}
+
+	/**
+	 * Sets up output capture for `onRenderFilter` filtering.
+	 *
+	 * Returns `null` (no-op) when no handlers are registered.  Otherwise replaces
+	 * the writer's inner text-writer with a fresh {@see TTextWriter} and returns
+	 * the original for later restoration by {@see processRenderFilter}.
+	 *
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer currently in use
+	 * @param ?IFilterRenderable $control control to test for handlers; defaults to `$this`
+	 * @return ?ITextWriter original inner writer, or `null` when filtering is disabled
+	 * @see processRenderFilter()
+	 * @since 4.3.3
+	 */
+	protected function preRenderFilter($writer, $control = null)
+	{
+		$control ??= $this;
+		if (!$control->hasEventHandler('onRenderFilter')) {
+			return null;
+		}
+		$oldWriter = $writer->getWriter();
+		$writer->setWriter($this->newRenderFilterWriter());
+		return $oldWriter;
+	}
+
+	/**
+	 * Returns a fresh {@see TTextWriter} for capturing rendered output.
+	 * Override to substitute a custom writer implementation.
+	 *
+	 * @return TTextWriter
+	 * @since 4.3.3
+	 */
+	protected function newRenderFilterWriter()
+	{
+		return new TTextWriter();
+	}
+
+	/**
+	 * Finalizes output filtering after rendering completes.
+	 *
+	 * No-op when `$oldWriter` is `null`.  Otherwise flushes the capture buffer,
+	 * passes the HTML through `onRenderFilter`, writes the result to `$oldWriter`,
+	 * and restores the original writer.
+	 *
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer holding the capture buffer
+	 * @param ?ITextWriter $oldWriter original writer to restore, or `null` when filtering is disabled
+	 * @param ?IFilterRenderable $control control to raise `onRenderFilter` on; defaults to `$this`
+	 * @see preRenderFilter()
+	 * @since 4.3.3
+	 */
+	protected function processRenderFilter($writer, $oldWriter, $control = null)
+	{
+		if (!$oldWriter) {
+			return;
+		}
+		$output = $writer->getWriter()->flush();
+		if (!empty($output)) {
+			$control ??= $this;
+			$output = $control->onRenderFilter($output);
+			if (!empty($output)) {
+				$oldWriter->write($output);
+			}
+		}
+		$writer->setWriter($oldWriter);
 	}
 
 	/**
@@ -1721,11 +1826,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 			}
 		}
 		$this->_stage = self::CS_STATE_LOADED;
-		if (isset($this->_rf[self::RF_ADAPTER])) {
-			$this->_rf[self::RF_ADAPTER]->loadState();
-		} else {
-			$this->loadState();
-		}
+		$this->getAdapterControl()->loadState();
 	}
 
 	/**
@@ -1736,11 +1837,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	protected function &saveStateRecursive($needViewState = true)
 	{
-		if (isset($this->_rf[self::RF_ADAPTER])) {
-			$this->_rf[self::RF_ADAPTER]->saveState();
-		} else {
-			$this->saveState();
-		}
+		$this->getAdapterControl()->saveState();
 		$needViewState = ($needViewState && !($this->_flags & self::IS_DISABLE_VIEWSTATE));
 		$state = [];
 		if ($this->getHasControls()) {
