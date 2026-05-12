@@ -21,7 +21,7 @@ use Prado\Exceptions\TInvalidOperationException;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
-class TControlAdapter extends \Prado\TApplicationComponent
+class TControlAdapter extends \Prado\TApplicationComponent implements IAdapterControl
 {
 	/**
 	 * @var \Prado\Web\UI\TControl the control to which the adapter is attached
