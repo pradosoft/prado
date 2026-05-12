@@ -20,6 +20,7 @@ class ActiveRecordOracleInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	use PradoUnitDataConnectionTrait;
 
 	protected static ?TDbConnection $conn = null;
+	protected static ?\Prado\Data\TDbTransaction $txn = null;
 
 	protected function getPradoUnitSetup(): ?string
 	{
@@ -50,6 +51,17 @@ class ActiveRecordOracleInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 			}
 		}
 		static::$conn->createCommand('DELETE FROM upsert_test')->execute();
+		// TOracleCommandBuilder::createInsertOrIgnoreCommand() requires an active
+		// transaction — begin one that covers the entire test method.
+		static::$txn = static::$conn->beginTransaction();
+	}
+
+	protected function tearDown(): void
+	{
+		if (static::$txn !== null) {
+			try { static::$txn->rollback(); } catch (\Exception $e) {}
+			static::$txn = null;
+		}
 	}
 
 	public static function tearDownAfterClass(): void
