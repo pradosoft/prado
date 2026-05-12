@@ -228,7 +228,7 @@ class TRenderFilterParameter extends TEventParameter implements IEventCycleParam
 	 * errors were cleared via {@see setFilterText} / {@see setFilterDOM} /
 	 * `unset($param[TRenderFilterParameter::RENDER_FILTER_ERRORS])`.
 	 *
-	 * @return null|\LibXMLError[]
+	 * @return ?\LibXMLError[]
 	 */
 	public function getFilterErrors(): ?array
 	{
@@ -269,7 +269,7 @@ class TRenderFilterParameter extends TEventParameter implements IEventCycleParam
 	 * ```
 	 *
 	 * @param callable $callback called as `(\DOMElement, TRenderFilterParameter, int $depth): void`
-	 * @param null|DOMNode $node starting node; `null` walks the whole document
+	 * @param ?DOMNode $node starting node; `null` walks the whole document
 	 * @param bool $recursive descend into children (default `true`)
 	 */
 	public function walkElements(callable $callback, ?DOMNode $node = null, bool $recursive = true): void
@@ -321,8 +321,8 @@ class TRenderFilterParameter extends TEventParameter implements IEventCycleParam
 	 * @param string $name event name
 	 * @param mixed $sender event sender
 	 * @param \Prado\TEventParameter $param this parameter instance
-	 * @param null|int $responsetype response accumulation mode
-	 * @param null|callable $postfunction per-handler post-processing function
+	 * @param ?int $responsetype response accumulation mode
+	 * @param ?callable $postfunction per-handler post-processing function
 	 */
 	public function postRaiseEvent($responses, $name, $sender, $param, $responsetype, $postfunction): void
 	{

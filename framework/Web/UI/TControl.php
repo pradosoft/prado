@@ -400,7 +400,7 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	/**
 	 * Returns the module associated with the class path of the control.  This is for Composer
 	 * extensions adding their own Controls to access their associated Module.
-	 * @return null|mixed the module associated with this TControl
+	 * @return ?mixed the module associated with this TControl
 	 * @since 4.2.0
 	 */
 	public function getPluginModule()
@@ -838,7 +838,7 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	 * Make sure that the controlstate value must be serializable and unserializable.
 	 * @param string $key the name of the controlstate value
 	 * @param mixed $value the controlstate value to be set
-	 * @param null|mixed $defaultValue default value. If $value===$defaultValue, the item will be cleared from controlstate
+	 * @param ?mixed $defaultValue default value. If $value===$defaultValue, the item will be cleared from controlstate
 	 */
 	protected function setControlState($key, $value, $defaultValue = null)
 	{
@@ -900,7 +900,7 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	 * Make sure that the viewstate value must be serializable and unserializable.
 	 * @param string $key the name of the viewstate value
 	 * @param mixed $value the viewstate value to be set
-	 * @param null|mixed $defaultValue default value. If $value===$defaultValue, the item will be cleared from the viewstate.
+	 * @param ?mixed $defaultValue default value. If $value===$defaultValue, the item will be cleared from the viewstate.
 	 */
 	public function setViewState($key, $value, $defaultValue = null)
 	{
@@ -1083,7 +1083,7 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	 * whose naming container is 'Item1' whose naming container is 'Repeater1'.
 	 * @param string $id ID of the control to be looked up
 	 * @throws TInvalidDataValueException if a control's ID is found not unique within its naming container.
-	 * @return null|mixed the control found, null if not found
+	 * @return ?mixed the control found, null if not found
 	 */
 	public function findControl($id)
 	{
@@ -1620,8 +1620,8 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	 * parameter that is passed originally when calling this traverse function.
 	 *
 	 * @param mixed $param parameter to be passed to callbacks for each control
-	 * @param null|callable $preCallback callback invoked before traversing child controls. If null, it is ignored.
-	 * @param null|callable $postCallback callback invoked after traversing child controls. If null, it is ignored.
+	 * @param ?callable $preCallback callback invoked before traversing child controls. If null, it is ignored.
+	 * @param ?callable $postCallback callback invoked after traversing child controls. If null, it is ignored.
 	 */
 	protected function traverseChildControls($param, $preCallback = null, $postCallback = null)
 	{
@@ -1710,8 +1710,8 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	 * the original for later restoration by {@see processRenderFilter}.
 	 *
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer currently in use
-	 * @param null|IFilterRenderable $control control to test for handlers; defaults to `$this`
-	 * @return null|ITextWriter original inner writer, or `null` when filtering is disabled
+	 * @param ?IFilterRenderable $control control to test for handlers; defaults to `$this`
+	 * @return ?ITextWriter original inner writer, or `null` when filtering is disabled
 	 * @see processRenderFilter()
 	 * @since 4.3.3
 	 */
@@ -1746,8 +1746,8 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	 * and restores the original writer.
 	 *
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer holding the capture buffer
-	 * @param null|ITextWriter $oldWriter original writer to restore, or `null` when filtering is disabled
-	 * @param null|IFilterRenderable $control control to raise `onRenderFilter` on; defaults to `$this`
+	 * @param ?ITextWriter $oldWriter original writer to restore, or `null` when filtering is disabled
+	 * @param ?IFilterRenderable $control control to raise `onRenderFilter` on; defaults to `$this`
 	 * @see preRenderFilter()
 	 * @since 4.3.3
 	 */
