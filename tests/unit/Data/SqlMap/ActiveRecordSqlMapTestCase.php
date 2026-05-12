@@ -93,8 +93,12 @@ abstract class ActiveRecordSqlMapTestCase extends BaseCase
 		$this->assertTrue($record->save());
 
 		$check1 = self::$sqlmap->queryForObject('GetActiveRecordAccounts');
-		$finder = ActiveAccount::finder();
-		$check2 = $finder->findByAccount_FirstName($record->Account_FirstName);
+		// Use a fresh instance instead of ActiveAccount::finder() to avoid the
+		// function-local static finder cache holding a stale connection from a
+		// previously-run test class (e.g. MysqlActiveRecordSqlMapTest which runs
+		// before SqliteActiveRecordSqlMapTest alphabetically and caches the finder
+		// with a MySQL _connection, causing findBy* to query MySQL instead of SQLite).
+		$check2 = (new ActiveAccount())->findByAccount_FirstName($record->Account_FirstName);
 
 
 		$this->assertSameAccount($record,$check1);
