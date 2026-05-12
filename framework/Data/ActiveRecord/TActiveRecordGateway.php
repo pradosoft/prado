@@ -198,6 +198,12 @@ class TActiveRecordGateway extends \Prado\TComponent
 			$command->attachEventHandler('OnCreateCommand', [$this, 'onCreateCommand']);
 			$command->attachEventHandler('OnExecuteCommand', [$this, 'onExecuteCommand']);
 			$this->_commandBuilders[$connStr] = $command;
+		} elseif ($this->_commandBuilders[$connStr]->getBuilder()->getDbConnection() !== $conn) {
+			// The cached builder was created with a different connection object sharing
+			// the same DSN (e.g. a reconnect or a new connection after teardown).
+			// Update the builder so connection-state checks (assertActiveTransaction,
+			// getCurrentTransaction) operate on the live handle.
+			$this->_commandBuilders[$connStr]->getBuilder()->setDbConnection($conn);
 		}
 		$this->_commandBuilders[$connStr]->getBuilder()->setTableInfo($tableInfo);
 		$this->_currentRecord = $record;
