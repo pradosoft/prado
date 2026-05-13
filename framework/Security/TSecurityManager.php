@@ -414,7 +414,7 @@ class TSecurityManager extends \Prado\TModule
 	 * mirroring the behaviour of the native substr() and mb_substr() functions.
 	 * @param string $string the input string. Must be one character or longer.
 	 * @param int $start the starting position
-	 * @param null|int $length the desired portion length, or null to read to the end
+	 * @param ?int $length the desired portion length, or null to read to the end
 	 * @return string the extracted part of string, or FALSE on failure or an empty string.
 	 */
 	private function substr($string, $start, $length = null)
