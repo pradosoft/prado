@@ -46,6 +46,68 @@ class DefaultScriptRunner
 	}
 }
 
+/**
+ * Script runner for IBM DB2. Silently ignores SQLSTATE 42704 ("undefined name")
+ * errors so that DROP TABLE/SEQUENCE statements do not abort on a fresh database
+ * where the objects do not yet exist.
+ */
+class IbmScriptRunner extends DefaultScriptRunner
+{
+	public function runScript($connection, $script)
+	{
+		$sql = file_get_contents($script);
+		$lines = explode(';', $sql);
+		foreach ($lines as $line) {
+			$line = trim($line);
+			if (strlen($line) === 0) {
+				continue;
+			}
+			try {
+				$connection->createCommand($line)->execute();
+			} catch (\Exception $e) {
+				// SQLSTATE 42704: undefined name — object does not exist, safe to ignore for DROPs.
+				if (stripos($e->getMessage(), '42704') === false) {
+					throw $e;
+				}
+			}
+		}
+	}
+}
+
+/**
+ * Script runner for Firebird. Silently ignores "object unknown" errors (SQLCODE -204)
+ * so that DROP TABLE/SEQUENCE statements do not abort on a fresh database where the
+ * objects do not yet exist.
+ */
+class FirebirdScriptRunner extends DefaultScriptRunner
+{
+	public function runScript($connection, $script)
+	{
+		$sql = file_get_contents($script);
+		$lines = explode(';', $sql);
+		foreach ($lines as $line) {
+			$line = trim($line);
+			if (strlen($line) === 0) {
+				continue;
+			}
+			try {
+				$connection->createCommand($line)->execute();
+			} catch (\Exception $e) {
+				// Firebird SQLCODE -204: object unknown (table/sequence does not exist).
+				$msg = $e->getMessage();
+				$isObjectUnknown = strpos($msg, '-204') !== false
+					|| stripos($msg, 'does not exist') !== false
+					|| stripos($msg, 'Table unknown') !== false
+					|| stripos($msg, 'Sequence unknown') !== false
+					|| stripos($msg, 'object unknown') !== false;
+				if (!$isObjectUnknown) {
+					throw $e;
+				}
+			}
+		}
+	}
+}
+
 class CopyFileScriptRunner
 {
 	protected $baseFile;
@@ -154,6 +216,11 @@ class IbmBaseTestConfig extends BaseTestConfig
 		$dsn = 'ibm:DRIVER={IBM DB2 ODBC DRIVER};DATABASE=' . $dbname . ';HOSTNAME=localhost;PORT=50000;PROTOCOL=TCPIP';
 		$this->_connection = new TDbConnection($dsn, $user, $password);
 	}
+
+	public function getScriptRunner()
+	{
+		return new IbmScriptRunner();
+	}
 }
 
 class FirebirdBaseTestConfig extends BaseTestConfig
@@ -165,6 +232,11 @@ class FirebirdBaseTestConfig extends BaseTestConfig
 		$dbPath = getenv('FIREBIRD_DB_PATH') ?: '/var/lib/firebird/data/prado_unitest.fdb';
 		$dsn = 'firebird:dbname=localhost:' . $dbPath . ';charset=UTF8';
 		$this->_connection = new TDbConnection($dsn, 'SYSDBA', 'masterkey');
+	}
+
+	public function getScriptRunner()
+	{
+		return new FirebirdScriptRunner();
 	}
 }
 

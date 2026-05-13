@@ -130,7 +130,7 @@
 					</isParameterPresent>
 				</dynamic>
 				order by Account_LastName
-				AND ROWNUM <= $MaximumAllowed$
+				AND ROWNUM &lt;= $MaximumAllowed$
 		</select>
 
   		<select id="SelectWithProperty"
