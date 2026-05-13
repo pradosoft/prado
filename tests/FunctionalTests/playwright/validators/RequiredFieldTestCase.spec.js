@@ -1,0 +1,87 @@
+import { test, expect } from '@playwright/test';
+import { genericHelper } from '../helpers.js';
+
+test.describe('RequiredFieldTestCase', () => {
+  test('test', async ({ page }) => {
+    const h = genericHelper(page);
+    const base = 'ctl0_Content_';
+    await h.url('validators/index.php?page=RequiredFieldValidator');
+    await h.assertSourceContains('RequiredFieldValidator Tests');
+    await h.assertNotVisible(`${base}validator1`);
+    await h.assertNotVisible(`${base}validator2`);
+    await h.byId(`${base}submit1`).click();
+    await h.assertVisible(`${base}validator1`);
+    await h.assertVisible(`${base}validator2`);
+    await h.type(`${base}text1`, 'testing');
+    await h.byId(`${base}submit1`).click();
+    await h.assertNotVisible(`${base}validator1`);
+    await h.byId(`${base}submit2`).click();
+    await h.assertNotVisible(`${base}validator1`);
+    await h.assertVisible(`${base}validator2`);
+    await h.assertVisible(`${base}validator3`);
+    await h.assertVisible(`${base}validator4`);
+    await h.type(`${base}text2`, 'testing2');
+    await h.byId(`${base}submit2`).click();
+    await h.assertNotVisible(`${base}validator3`);
+    await h.byId(`${base}submit3`).click();
+    await h.assertVisible(`${base}summary3`);
+    await h.byId(`${base}submit4`).click();
+    await h.assertNotVisible(`${base}validator1`);
+    await h.assertNotVisible(`${base}validator2`);
+    await h.assertNotVisible(`${base}validator3`);
+    await h.assertNotVisible(`${base}validator4`);
+    await h.byId(`${base}submit1`).click();
+    await h.assertVisible(`${base}validator2`);
+    await h.byId(`${base}check1`).click();
+    await h.byId(`${base}submit2`).click();
+    await h.assertVisible(`${base}validator4`);
+    await h.byId(`${base}submit1`).click();
+    await h.assertNotVisible(`${base}validator1`);
+    await h.assertNotVisible(`${base}validator2`);
+    await h.type(`${base}text1`, '');
+    await h.byId(`${base}check1`).click();
+    await h.byId(`${base}submit1`).click();
+    await h.assertVisible(`${base}validator1`);
+    await h.assertVisible(`${base}validator2`);
+    await h.byId(`${base}check2`).click();
+    await h.byId(`${base}submit2`).click();
+    await h.pause(50);
+
+    await h.type(`${base}text1`, 'Hello');
+    await h.byId(`${base}check1`).click();
+    await h.byId(`${base}submit2`).click();
+
+    await h.assertNotVisible(`${base}validator5`);
+    await h.assertNotVisible(`${base}validator6`);
+    await h.assertNotVisible(`${base}validator7`);
+    await h.assertNotVisible(`${base}validator8`);
+    await h.type(`${base}text1`, '');
+    await h.type(`${base}text2`, '');
+    await h.byId(`${base}check1`).click();
+    await h.byId(`${base}check2`).click();
+    await h.byId(`${base}submit3`).click();
+    await h.assertVisible(`${base}validator5`);
+    await h.assertVisible(`${base}validator6`);
+    await h.assertVisible(`${base}validator7`);
+    await h.assertVisible(`${base}validator8`);
+    await h.byId(`${base}submit4`).click();
+    await h.assertNotVisible(`${base}validator5`);
+    await h.assertNotVisible(`${base}validator6`);
+    await h.assertNotVisible(`${base}validator7`);
+    await h.assertNotVisible(`${base}validator8`);
+  });
+
+  test('testInitialValue', async ({ page }) => {
+    const h = genericHelper(page);
+    const base = 'ctl0_Content_';
+    await h.url('validators/index.php?page=RequiredFieldValidator');
+    await h.assertSourceContains('InitialValue Test');
+    await h.assertNotVisible(`${base}validator9`);
+    await h.byId(`${base}submit5`).click();
+    await h.pause(250);
+    await h.assertVisible(`${base}validator9`);
+    await h.type(`${base}text5`, 'adasd');
+    await h.pause(250);
+    await h.assertNotVisible(`${base}validator9`);
+  });
+});
