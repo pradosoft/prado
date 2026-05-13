@@ -29,3 +29,8 @@ tests/unit/Data/SqlMap/sqlite/tests.db
 
 # Vitest cache artefacts
 vitest.config.js.timestamp-*
+
+# Playwright artifacts
+/playwright-report
+/test-results
+playwright/.cache
