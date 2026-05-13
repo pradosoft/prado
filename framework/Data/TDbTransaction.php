@@ -182,7 +182,26 @@ class TDbTransaction extends \Prado\TComponent implements IDataTransaction
 	public function rollback()
 	{
 		$pdo = $this->assertActive();
-		$pdo->rollBack();
+		if ($pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'firebird') {
+			// pdo_firebird has a known bug in some builds where PDO::rollBack()
+			// internally calls isc_commit_transaction() instead of
+			// isc_rollback_transaction(), silently committing data that should be
+			// discarded.  Issuing ROLLBACK as a SQL statement first instructs the
+			// Firebird server directly to discard the current transaction; the
+			// subsequent PDO::rollBack() call then merely updates PHP's internal
+			// transaction state (and, if buggy, commits an already-empty implicit
+			// transaction, which is harmless).
+			try {
+				$pdo->exec('ROLLBACK');
+			} catch (PDOException $e) {
+			}
+			try {
+				$pdo->rollBack();
+			} catch (PDOException $e) {
+			}
+		} else {
+			$pdo->rollBack();
+		}
 		$this->completeTransaction($pdo);
 	}
 
