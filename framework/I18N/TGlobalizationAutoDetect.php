@@ -71,9 +71,17 @@ class TGlobalizationAutoDetect extends TGlobalization
 	}
 
 	/**
-	 * Checks wether the specified locale is valid and available
+	 * Checks whether the specified locale is valid and available.
+	 *
+	 * {@see \ResourceBundle::getLocales()} returns locale identifiers in a
+	 * format that varies by ICU version and locale: some entries use BCP 47
+	 * hyphens (e.g. "en-US"), others use POSIX underscores (e.g. "de_DE").
+	 * All three match directions are therefore tried, consistent with
+	 * {@see CultureInfo::validCulture()}: direct match, POSIX→BCP 47, and
+	 * BCP 47→POSIX.
 	 * @param mixed $locale
 	 * @return bool
+	 * @since 4.3.3
 	 */
 	protected function getIsValidLocale($locale)
 	{
@@ -81,7 +89,9 @@ class TGlobalizationAutoDetect extends TGlobalization
 		if ($allLocales === null) {
 			$allLocales = \ResourceBundle::getLocales('');
 		}
-		return in_array($locale, $allLocales);
+		return in_array($locale, $allLocales)
+			|| in_array(str_replace('_', '-', $locale), $allLocales)
+			|| in_array(str_replace('-', '_', $locale), $allLocales);
 	}
 
 	/**
