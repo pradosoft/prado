@@ -533,6 +533,7 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 		$this->assertSame('myKey', $captured['key']);
 		$this->assertSame('myValue', $captured['value']);
 		$this->assertFalse($captured['isDefault']);
+		$this->assertTrue($captured['isNew']);
 		// new key — oldValue must be absent
 		$this->assertFalse(isset($captured['oldValue']));
 	}
@@ -547,11 +548,12 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 
 		$this->_app->setGlobalState('k', 'after');
 
-		// overwriting an existing key — oldValue must be present
+		// overwriting an existing key — oldValue must be present, isNew must be false
 		$this->assertTrue(isset($captured['oldValue']));
 		$this->assertSame('before', $captured['oldValue']);
 		$this->assertSame('after', $captured['value']);
 		$this->assertFalse($captured['isDefault']);
+		$this->assertFalse($captured['isNew']);
 	}
 
 	public function testSetGlobalState_clearedToDefault_raisesEvent_isDefaultTrue(): void
@@ -563,13 +565,15 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 		});
 
 		// setGlobalState clears to default — 'value' is present (the passed value),
-		// 'unset' is absent (only set by clearGlobalState),
+		// 'isUnset' is absent (only set by clearGlobalState),
+		// 'isNew' is false (the key existed before being cleared),
 		// 'oldValue' is present because the key existed before.
 		$this->_app->setGlobalState('k', 'sentinel', 'sentinel');
 
 		$this->assertTrue($captured['isDefault']);
 		$this->assertSame('sentinel', $captured['value']);
-		$this->assertFalse(isset($captured['unset']));
+		$this->assertFalse(isset($captured['isUnset']));
+		$this->assertFalse($captured['isNew']);
 		$this->assertTrue(isset($captured['oldValue']));
 		$this->assertSame('existing', $captured['oldValue']);
 	}
@@ -613,7 +617,7 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 
 		$this->assertNotNull($captured);
 		$this->assertSame('k', $captured['key']);
-		$this->assertTrue($captured['unset']);
+		$this->assertTrue($captured['isUnset']);
 		$this->assertFalse(isset($captured['value']));
 		$this->assertFalse(isset($captured['isDefault']));
 		$this->assertSame('old', $captured['oldValue']);

@@ -592,6 +592,7 @@ class TApplication extends TComponent implements ISingleton
 	 * | `key`       | always                    | The global-state key that was modified.           |
 	 * | `value`     | always                    | The new value (equal to `$value`).                |
 	 * | `isDefault` | always                    | `true` when the key was cleared to its default.   |
+	 * | `isNew`     | always                    | `true` when the key did not previously exist.     |
 	 * | `oldValue`  | key existed before change | The previous value.                               |
 	 *
 	 * @param string $key the name of the value to be set
@@ -622,7 +623,7 @@ class TApplication extends TComponent implements ISingleton
 		}
 
 		if ($changed) {
-			$payload = ['key' => $key, 'value' => $value, 'isDefault' => $isDefault];
+			$payload = ['key' => $key, 'value' => $value, 'isDefault' => $isDefault, 'isNew' => !$isset];
 			if ($isset) {
 				$payload['oldValue'] = $oldValue;
 			}
@@ -645,7 +646,7 @@ class TApplication extends TComponent implements ISingleton
 	 * | Key        | Description                                                  |
 	 * |------------|--------------------------------------------------------------|
 	 * | `key`      | The global-state key that was removed.                       |
-	 * | `unset`    | Always `true` — signals the key was removed entirely.        |
+	 * | `isUnset`  | Always `true` — signals the key was removed entirely.        |
 	 * | `oldValue` | The value that was stored under `$key` before removal.       |
 	 *
 	 * @param string $key the name of the value to be cleared
@@ -658,7 +659,7 @@ class TApplication extends TComponent implements ISingleton
 			$this->_stateChanged = true;
 			$this->onGlobalStateChange(new TEventParameter([
 				'key' => $key,
-				'unset' => true,
+				'isUnset' => true,
 				'oldValue' => $oldValue,
 			], true));
 		}
@@ -678,11 +679,13 @@ class TApplication extends TComponent implements ISingleton
 	 * | `key`       | string  | always                            | The global-state key that was modified.          |
 	 * | `value`     | mixed   | {@see setGlobalState} only        | The new value.                                   |
 	 * | `isDefault` | bool    | {@see setGlobalState} only        | `true` when the key was cleared to its default.  |
-	 * | `unset`     | bool    | {@see clearGlobalState} only      | Always `true`; signals the key was removed.      |
+	 * | `isNew`     | bool    | {@see setGlobalState} only        | `true` when the key did not previously exist.    |
+	 * | `isUnset`   | bool    | {@see clearGlobalState} only      | Always `true`; signals the key was removed.      |
 	 * | `oldValue`  | mixed   | key existed before the operation  | The previous value (absent when key was new).    |
 	 *
 	 * @param TEventParameter $param the read-only event parameter
 	 * @since 4.3.3
+	 * @todo v4.4 Formalize the Parameter - TArrayValueChangeParameter?
 	 */
 	public function onGlobalStateChange($param)
 	{
