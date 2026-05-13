@@ -98,7 +98,7 @@ class TShellCronAction extends TShellAction
 	}
 
 	/**
-	 * Shows configured tasks and their run status.  For TDbCronModule, this also shows the
+	 * Shows configured tasks and their run status.  For TDbCronManager, this also shows the
 	 * database tasks as well.
 	 * @param mixed $args
 	 */
@@ -165,7 +165,7 @@ class TShellCronAction extends TShellAction
 
 	/**
 	 * shows the registered tasks from the application for possible configuration
-	 * or addition to TDbCronModule.
+	 * or addition to TDbCronManager.
 	 * @param mixed $args
 	 */
 	public function actionIndex($args)

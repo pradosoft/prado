@@ -36,7 +36,7 @@ class TDbCronZCleanLogTaskTest extends TCronTaskTest
 			self::fail("failed to throw TInvalidDataValueException when moduleid module does not exist");
 		} catch(TInvalidDataValueException $e) {}
 		
-		//module is not TDbCronModule, output has red
+		//module is not TDbCronManager, output has red
 		$cron->getOutputWriter()->setColorSupported(true);
 		$dbcron->getOutputWriter()->setColorSupported(true);
 		$this->obj->setModuleId(null);
