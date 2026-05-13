@@ -10,19 +10,21 @@
 
 namespace Prado;
 
+use Prado\Caching\ICache;
+use Prado\Collections\TMap;
+use Prado\Exceptions\{TConfigurationException, TExitException, THttpException};
 use Prado\Exceptions\TErrorHandler;
-use Prado\Exceptions\TExitException;
-use Prado\Exceptions\THttpException;
-use Prado\Exceptions\TConfigurationException;
 use Prado\I18N\TGlobalization;
+use Prado\Security\IUser;
+use Prado\Security\TAuthorizationRuleCollection;
 use Prado\Security\TSecurityManager;
+use Prado\Web\{THttpRequest, THttpResponse, THttpSession};
 use Prado\Web\TAssetManager;
-use Prado\Web\THttpRequest;
-use Prado\Web\THttpResponse;
-use Prado\Web\THttpSession;
 use Prado\Util\TLogger;
+use Prado\Web\Services\TPageService;
 use Prado\Web\UI\TTemplateManager;
 use Prado\Web\UI\TThemeManager;
+use Prado\Xml\TXmlElement;
 
 /**
  * TApplication class.
@@ -35,7 +37,7 @@ use Prado\Web\UI\TThemeManager;
  *
  * TApplication adopts a modular structure. A TApplication instance is a composition
  * of multiple modules. A module is an instance of class implementing
- * {@see \Prado\IModule} interface. Each module accomplishes certain functionalities
+ * {@see IModule} interface. Each module accomplishes certain functionalities
  * that are shared by all Prado components in an application.
  * There are default modules, composer modules, and user-defined modules. The latter
  * offers extreme flexibility of extending TApplication in a plug-and-play fashion.
@@ -63,27 +65,35 @@ use Prado\Web\UI\TThemeManager;
  * finishes the actual work for the request with the aid from the application
  * modules.
  *
+ * {@see Shell\TShellApplication} extends TApplication for CLI use. It overrides
+ * {@see initService()} to skip web service startup, overrides
+ * {@see runService()} to dispatch shell commands instead of a web service, overrides
+ * {@see flushOutput()} to write to a {@see Shell\TShellWriter} instead of the
+ * HTTP response, and attaches argument processing to {@see onConfiguration}. The full
+ * request lifecycle (all lifecycle steps) is executed for shell applications allowing
+ * for authentication.
+ *
  * TApplication maintains a lifecycle with the following stages:
- * - [construct] : construction of the application instance
- * - [initApplication] : load application configuration, instantiate modules and the requested service
- * - onConfigurationComplete : this raised after configuration but before the request is resolved and service started
- * - onInitComplete : this event happens after service initialization. This event is particularly useful for CLI/Shell applications
- * - [run] : runs the primary Application lifecycle
- * - onBeginRequest : this event happens right after application initialization
- * - onAuthentication : this event happens when authentication is needed for the current request
- * - onAuthenticationComplete : this event happens right after the authentication is done for the current request
- * - onAuthorization : this event happens when authorization is needed for the current request
- * - onAuthorizationComplete : this event happens right after the authorization is done for the current request
- * - onLoadState : this event happens when application state needs to be loaded
- * - onLoadStateComplete : this event happens right after the application state is loaded
- * - onPreRunService : this event happens right before the requested service is to run
- * - runService : the requested service runs
- * - onSaveState : this event happens when application needs to save its state
- * - onSaveStateComplete : this event happens right after the application saves its state
- * - onPreFlushOutput : this event happens right before the application flushes output to client side.
- * - flushOutput : the application flushes output to client side.
- * - onEndRequest : this is the last stage a request is being completed
- * - [destruct] : destruction of the application instance
+ * - [construct] : The application instance has been constructed.
+ * - [initApplication] : Configuration has been loaded; modules and the requested service have been instantiated.
+ * - onConfiguration : Configuration has been fully applied. The request has not yet been resolved and no service has been started.
+ * - onInitComplete : The service has been initialized. For {@see Shell\TShellApplication}, argument processing is attached to this event.
+ * - [run] : The primary request lifecycle has begun.
+ * - onBeginRequest : Application initialization has completed.
+ * - onLoadState : State loading has begun.
+ * - onLoadStateComplete : Application state has been loaded.
+ * - onAuthentication : User authentication has begun, session login.
+ * - onAuthenticationComplete : The request has been authenticated.
+ * - onAuthorization : User authorization has begun, apply Authorization Rules.
+ * - onAuthorizationComplete : The request has been authorized.
+ * - onPreRunService : The application has prepared to run the requested service.
+ * - runService : The requested service has run.
+ * - onSaveState : State saving has begun.
+ * - onSaveStateComplete : Application state has been saved.
+ * - onPreFlushOutput : The application has prepared to flush output to the client.
+ * - flushOutput : Output has been flushed to the client.
+ * - onEndRequest : The request has been fully processed.
+ * - [destruct] : The application instance has been destroyed.
  * Modules and services can attach their methods to one or several of the above
  * events and do appropriate processing when the events are raised. By this way,
  * the application is able to coordinate the activities of modules and services
@@ -100,7 +110,7 @@ use Prado\Web\UI\TThemeManager;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
-class TApplication extends \Prado\TComponent implements ISingleton
+class TApplication extends TComponent implements ISingleton
 {
 	/**
 	 * Page service ID
@@ -142,9 +152,20 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	 * Global data file
 	 */
 	public const GLOBAL_FILE = 'global.cache';
+	/**
+	 * Default Application Mode
+	 * @since 4.3.3
+	 */
+	public const DEFAULT_APPLICATION_MODE = TApplicationMode::Debug;
+	/**
+	 * Default Page Service Class
+	 * @since 4.3.3
+	 */
+	public const DEFAULT_PAGE_SERVICE_CLASS = TPageService::class;
 
 	/**
-	 * @var array list of events that define application lifecycles
+	 * @var string[] ordered list of lifecycle method names executed by {@see run()}.
+	 *   Override {@see getSteps()} to customize the lifecycle in subclasses.
 	 */
 	private static $_steps = [
 		'onBeginRequest',
@@ -195,7 +216,7 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	 */
 	private $_lazyModules = [];
 	/**
-	 * @var \Prado\Collections\TMap list of application parameters
+	 * @var TMap list of application parameters
 	 */
 	private $_parameters;
 	/**
@@ -206,6 +227,11 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	 * @var string configuration file extension
 	 */
 	private $_configFileExt;
+	/**
+	 * @var string configuration file name
+	 * @since 4.3.3
+	 */
+	private $_configFileName;
 	/**
 	 * @var string configuration type
 	 */
@@ -247,7 +273,7 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	 */
 	private $_session;
 	/**
-	 * @var \Prado\Caching\ICache cache module, could be null
+	 * @var ICache cache module, could be null
 	 */
 	private $_cache;
 	/**
@@ -255,7 +281,7 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	 */
 	private $_statePersister;
 	/**
-	 * @var \Prado\Security\IUser user instance, could be null
+	 * @var IUser user instance, could be null
 	 */
 	private $_user;
 	/**
@@ -271,26 +297,26 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	 */
 	private $_assetManager;
 	/**
-	 * @var \Prado\Web\UI\TTemplateManager template manager module
+	 * @var TTemplateManager template manager module
 	 */
 	private $_templateManager;
 	/**
-	 * @var \Prado\Web\UI\TThemeManager theme manager module
+	 * @var TThemeManager theme manager module
 	 */
 	private $_themeManager;
 	/**
-	 * @var \Prado\Security\TAuthorizationRuleCollection collection of authorization rules
+	 * @var TAuthorizationRuleCollection collection of authorization rules
 	 */
 	private $_authRules;
 	/**
 	 * @var string|TApplicationMode application mode
 	 */
-	private $_mode = TApplicationMode::Debug;
+	private $_mode;
 
 	/**
 	 * @var string Customizable page service ID
 	 */
-	private $_pageServiceID = self::PAGE_SERVICE_ID;
+	private $_pageServiceID;
 
 	/**
 	 * Constructor.
@@ -308,32 +334,37 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	 *        will be looked for. If found, the file is considered as the application
 	 *        configuration file.
 	 * @param bool $cacheConfig whether to cache application configuration. Defaults to true.
-	 * @param string $configType configuration type. Defaults to CONFIG_TYPE_XML.
+	 * @param ?string $configType configuration type. Defaults to null then set to static::CONFIG_TYPE_XML.
 	 * @throws TConfigurationException if configuration file cannot be read or the runtime path is invalid.
 	 */
-	public function __construct($basePath = 'protected', $cacheConfig = true, $configType = self::CONFIG_TYPE_XML)
+	public function __construct($basePath = 'protected', $cacheConfig = true, $configType = null)
 	{
-		// register application as a singleton
-		Prado::setApplication($this);
+		if ($configType === null) {
+			$configType = static::CONFIG_TYPE_XML;
+		}
+		$this->setMode(static::DEFAULT_APPLICATION_MODE);
+		$this->setPageServiceID(static::PAGE_SERVICE_ID);
+
+		$this->registerApplication();
 		$this->setConfigurationType($configType);
 		$this->resolvePaths($basePath);
 
 		if ($cacheConfig) {
-			$this->_cacheFile = $this->_runtimePath . DIRECTORY_SEPARATOR . self::CONFIGCACHE_FILE;
+			$this->setCacheFile($this->buildCacheFilePath($this->getRuntimePath()));
 		}
 
-		// generates unique ID by hashing the runtime path
-		$this->_uniqueID = md5($this->_runtimePath);
-		$this->_parameters = new \Prado\Collections\TMap();
-		$this->_services = [$this->getPageServiceID() => ['TPageService', [], null]];
+		$this->setParameters($this->newParameters());
 
-		Prado::setPathOfAlias('Application', $this->_basePath);
+		//This can be changed through setPageServiceID
+		$this->registerService($this->getPageServiceID(), static::DEFAULT_PAGE_SERVICE_CLASS);
+
+		Prado::setPathOfAlias('Application', $this->getBasePath());
 		parent::__construct();
 	}
 
 	/**
 	 * Returns the current Prado application.  This enables application behaviors to
-	 * be used for undefined static function calls via {@see \Prado\TComponent::__callStatic}.
+	 * be used for undefined static function calls via {@see TComponent::__callStatic}.
 	 * @param bool $create This is ignored and returns Prado::getApplication().
 	 * @return ?object The singleton instance of the class.
 	 * @since 4.3.0
@@ -344,23 +375,68 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	}
 
 	/**
+	 * Registers this instance as the primary PRADO application via {@see Prado::setApplication()}.
+	 * Called once from the constructor before any configuration is loaded.
+	 * Override in a subclass to redirect or suppress registration during testing.
+	 * @since 4.3.3
+	 */
+	protected function registerApplication()
+	{
+		Prado::setApplication($this);
+	}
+
+	/**
+	 * Returns the ordered list of lifecycle method names executed by {@see run()}.
+	 * Subclasses may override this method to add, remove, or otherwise change steps.
+	 * @return string[] the lifecycle step method names.
+	 * @since 4.3.3
+	 */
+	protected function getSteps(): array
+	{
+		return self::$_steps;
+	}
+
+	/**
+	 * Returns the index of the current lifecycle step being executed by {@see run()}.
+	 * @return int the index of the current lifecycle step being executed.
+	 * @since 4.3.3
+	 */
+	protected function getStep(): int
+	{
+		return $this->_step;
+	}
+
+	/**
+	 * Sets the lifecycle step index; used by {@see run()} to track progress through {@see getSteps()}.
+	 * @param int $value the lifecycle step index to set.
+	 * @since 4.3.3
+	 */
+	private function setStep(int $value): void
+	{
+		$this->_step = $value;
+	}
+
+	/**
 	 * Resolves application-relevant paths.
 	 * This method is invoked by the application constructor
 	 * to determine the application configuration file,
 	 * application root path and the runtime path.
+	 * The runtime path is resolved by {@see resolveRuntimePath()}, which
+	 * subclasses may override to provide alternative runtime-path strategies.
 	 * @param string $basePath the application root path or the application configuration file
 	 * @see setBasePath
 	 * @see setRuntimePath
 	 * @see setConfigurationFile
+	 * @see resolveRuntimePath
 	 */
-	protected function resolvePaths($basePath)
+	protected function resolvePaths($basePath): void
 	{
 		// determine configuration path and file
 		if (empty($errValue = $basePath) || ($basePath = realpath($basePath)) === false) {
 			throw new TConfigurationException('application_basepath_invalid', $errValue);
 		}
-		if (is_dir($basePath) && is_file($basePath . DIRECTORY_SEPARATOR . $this->getConfigurationFileName())) {
-			$configFile = $basePath . DIRECTORY_SEPARATOR . $this->getConfigurationFileName();
+		if (is_dir($basePath) && is_file($cf = $basePath . DIRECTORY_SEPARATOR . $this->getConfigurationFileName())) {
+			$configFile = $cf;
 		} elseif (is_file($basePath)) {
 			$configFile = $basePath;
 			$basePath = dirname($configFile);
@@ -368,24 +444,46 @@ class TApplication extends \Prado\TComponent implements ISingleton
 			$configFile = null;
 		}
 
-		// determine runtime path
-		$runtimePath = $basePath . DIRECTORY_SEPARATOR . self::RUNTIME_PATH;
-		if (is_writable($runtimePath)) {
-			if ($configFile !== null) {
-				$runtimePath .= DIRECTORY_SEPARATOR . basename($configFile) . '-' . Prado::getVersion();
-				if (!is_dir($runtimePath)) {
-					if (@mkdir($runtimePath) === false) {
-						throw new TConfigurationException('application_runtimepath_failed', $runtimePath);
-					}
-					@chmod($runtimePath, Prado::getDefaultDirPermissions()); //make it deletable
-				}
-				$this->setConfigurationFile($configFile);
-			}
-			$this->setBasePath($basePath);
-			$this->setRuntimePath($runtimePath);
-		} else {
+		$runtimePath = $this->resolveRuntimePath($basePath, $configFile);
+
+		if ($configFile !== null) {
+			$this->setConfigurationFile($configFile);
+		}
+		$this->setBasePath($basePath);
+		$this->setRuntimePath($runtimePath);
+	}
+
+	/**
+	 * Resolves and returns the runtime directory path.
+	 * Called by {@see resolvePaths()} after the base path and configuration
+	 * file have been determined. Subclasses may override this method to provide
+	 * alternative runtime-path strategies without having to duplicate the base
+	 * path and config-file logic in {@see resolvePaths()}.
+	 * @param string $basePath the real, validated application base path.
+	 * @param null|string $configFile the resolved configuration file path, or
+	 *   `null` when no configuration file was found.
+	 * @throws TConfigurationException if the runtime directory is not writable
+	 *   or a versioned sub-directory cannot be created.
+	 * @return string absolute path to the runtime directory, ready for use.
+	 * @see resolvePaths
+	 * @since 4.3.3
+	 */
+	protected function resolveRuntimePath(string $basePath, ?string $configFile): string
+	{
+		$runtimePath = $basePath . DIRECTORY_SEPARATOR . static::RUNTIME_PATH;
+		if (!is_writable($runtimePath)) {
 			throw new TConfigurationException('application_runtimepath_invalid', $runtimePath);
 		}
+		if ($configFile !== null) {
+			$runtimePath .= DIRECTORY_SEPARATOR . basename($configFile) . '-' . Prado::getVersion();
+			if (!is_dir($runtimePath)) {
+				if (@mkdir($runtimePath) === false) {
+					throw new TConfigurationException('application_runtimepath_failed', $runtimePath);
+				}
+				@chmod($runtimePath, Prado::getDefaultDirPermissions()); //make it deletable
+			}
+		}
+		return $runtimePath;
 	}
 
 	/**
@@ -397,28 +495,41 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	{
 		try {
 			$this->initApplication();
-			$n = count(self::$_steps);
-			$this->_step = 0;
-			$this->_requestCompleted = false;
-			while ($this->_step < $n) {
-				if ($this->_mode === TApplicationMode::Off) {
+			$steps = $this->getSteps();
+			$n = count($steps);
+			$this->setStep(0);
+			$this->setRequestCompleted(false);
+			while (($i = $this->getStep()) < $n) {
+				if ($this->getMode() === TApplicationMode::Off) {
 					throw new THttpException(503, 'application_unavailable');
 				}
-				if ($this->_requestCompleted) {
+				if ($this->getRequestCompleted()) {
 					break;
 				}
-				$method = self::$_steps[$this->_step];
+				$method = $steps[$i];
 				Prado::trace("Executing $method()", TApplication::class);
 				$this->$method();
-				$this->_step++;
+				$this->setStep(++$i);
 			}
 		} catch (TExitException $e) {
 			$this->onEndRequest();
-			exit($e->getExitCode());
+			$this->exit($e->getExitCode());
+			return;
 		} catch (\Exception $e) {
 			$this->onError($e);
 		}
 		$this->onEndRequest();
+	}
+
+	/**
+	 * Calls the PHP `exit` construct with `$exitCode`. Override to intercept
+	 * process termination (e.g. capture the code in tests instead of exiting).
+	 * @param int $exitCode exit status passed to the OS.
+	 * @since 4.3.3
+	 */
+	protected function exit(int $exitCode): void
+	{
+		exit($exitCode);
 	}
 
 	/**
@@ -428,16 +539,31 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	 */
 	public function completeRequest()
 	{
-		$this->_requestCompleted = true;
+		$this->setRequestCompleted(true);
 	}
 
 	/**
+	 * Returns whether the current request has been flagged as completed via {@see completeRequest()}.
 	 * @return bool whether the current request is processed.
 	 */
 	public function getRequestCompleted()
 	{
 		return $this->_requestCompleted;
 	}
+
+	/**
+	 * Flags the request as completed or pending; called internally by {@see completeRequest()}.
+	 * @param bool $value whether the current request is processed.
+	 * @since 4.3.3
+	 */
+	protected function setRequestCompleted($value)
+	{
+		$this->_requestCompleted = $value;
+	}
+
+	// =========================================================================
+	// Global State API
+	// =========================================================================
 
 	/**
 	 * Returns a global value.
@@ -449,7 +575,7 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	 */
 	public function getGlobalState($key, $defaultValue = null)
 	{
-		return $this->_globals[$key] ?? $defaultValue;
+		return array_key_exists($key, $this->_globals) ? $this->_globals[$key] : $defaultValue;
 	}
 
 	/**
@@ -457,19 +583,52 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	 *
 	 * A global value is one that is persistent across users sessions and requests.
 	 * Make sure that the value is serializable and unserializable.
+	 *
+	 * Raises {@see onGlobalStateChange} when the stored value actually changes, with
+	 * a read-only {@see TEventParameter} payload containing:
+	 *
+	 * | Key         | Present when              | Description                                       |
+	 * |-------------|---------------------------|---------------------------------------------------|
+	 * | `key`       | always                    | The global-state key that was modified.           |
+	 * | `value`     | always                    | The new value (equal to `$value`).                |
+	 * | `isDefault` | always                    | `true` when the key was cleared to its default.   |
+	 * | `oldValue`  | key existed before change | The previous value.                               |
+	 *
 	 * @param string $key the name of the value to be set
 	 * @param mixed $value the global value to be set
-	 * @param null|mixed $defaultValue the default value. If $key is not found, $defaultValue will be returned
-	 * @param bool $forceSave wheter to force an immediate GlobalState save. defaults to false
+	 * @param ?mixed $defaultValue the identity value: when `$value === $defaultValue`, the key is cleared rather than stored.
+	 * @param bool $forceSave whether to force an immediate GlobalState save. Defaults to false.
 	 */
 	public function setGlobalState($key, $value, $defaultValue = null, $forceSave = false)
 	{
-		$this->_stateChanged = true;
-		if ($value === $defaultValue) {
-			unset($this->_globals[$key]);
+		$isDefault = ($value === $defaultValue);
+		$isset = array_key_exists($key, $this->_globals);
+		$changed = false;
+
+		if ($isDefault) {
+			if ($isset) {
+				$oldValue = $this->_globals[$key];
+				unset($this->_globals[$key]);
+				$this->_stateChanged = true;
+				$changed = true;
+			}
 		} else {
-			$this->_globals[$key] = $value;
+			if (!$isset || $this->_globals[$key] !== $value) {
+				$oldValue = $isset ? $this->_globals[$key] : null;
+				$this->_globals[$key] = $value;
+				$this->_stateChanged = true;
+				$changed = true;
+			}
 		}
+
+		if ($changed) {
+			$payload = ['key' => $key, 'value' => $value, 'isDefault' => $isDefault];
+			if ($isset) {
+				$payload['oldValue'] = $oldValue;
+			}
+			$this->onGlobalStateChange(new TEventParameter($payload, true));
+		}
+
 		if ($forceSave) {
 			$this->saveGlobals();
 		}
@@ -479,12 +638,55 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	 * Clears a global value.
 	 *
 	 * The value cleared will no longer be available in this request and the following requests.
+	 *
+	 * Raises {@see onGlobalStateChange} when the key was present, with a read-only
+	 * {@see TEventParameter} payload containing:
+	 *
+	 * | Key        | Description                                                  |
+	 * |------------|--------------------------------------------------------------|
+	 * | `key`      | The global-state key that was removed.                       |
+	 * | `unset`    | Always `true` — signals the key was removed entirely.        |
+	 * | `oldValue` | The value that was stored under `$key` before removal.       |
+	 *
 	 * @param string $key the name of the value to be cleared
 	 */
 	public function clearGlobalState($key)
 	{
-		$this->_stateChanged = true;
-		unset($this->_globals[$key]);
+		if (array_key_exists($key, $this->_globals)) {
+			$oldValue = $this->_globals[$key];
+			unset($this->_globals[$key]);
+			$this->_stateChanged = true;
+			$this->onGlobalStateChange(new TEventParameter([
+				'key' => $key,
+				'unset' => true,
+				'oldValue' => $oldValue,
+			], true));
+		}
+	}
+
+	/**
+	 * Raises the {@see onGlobalStateChange OnGlobalStateChange} event.
+	 *
+	 * This event is raised by {@see setGlobalState} and {@see clearGlobalState}
+	 * whenever a global state value is added, changed, or cleared. The event fires
+	 * after the mutation, so handlers observe the new state via
+	 * {@see getGlobalState}. The parameter is a read-only {@see TEventParameter}
+	 * whose {@see TEventParameter::getParameter Parameter} array contains:
+	 *
+	 * | Key         | Type    | Present when                      | Description                                      |
+	 * |-------------|---------|-----------------------------------|--------------------------------------------------|
+	 * | `key`       | string  | always                            | The global-state key that was modified.          |
+	 * | `value`     | mixed   | {@see setGlobalState} only        | The new value.                                   |
+	 * | `isDefault` | bool    | {@see setGlobalState} only        | `true` when the key was cleared to its default.  |
+	 * | `unset`     | bool    | {@see clearGlobalState} only      | Always `true`; signals the key was removed.      |
+	 * | `oldValue`  | mixed   | key existed before the operation  | The previous value (absent when key was new).    |
+	 *
+	 * @param TEventParameter $param the read-only event parameter
+	 * @since 4.3.3
+	 */
+	public function onGlobalStateChange($param)
+	{
+		$this->raiseEvent('onGlobalStateChange', $this, $param);
 	}
 
 	/**
@@ -495,7 +697,7 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	 */
 	protected function loadGlobals()
 	{
-		$this->_globals = $this->getApplicationStatePersister()->load();
+		$this->_globals = $this->getApplicationStatePersister()->load() ?? [];
 	}
 
 	/**
@@ -509,6 +711,10 @@ class TApplication extends \Prado\TComponent implements ISingleton
 			$this->getApplicationStatePersister()->save($this->_globals);
 		}
 	}
+
+	// =========================================================================
+	// Property Getters and Setters
+	// =========================================================================
 
 	/**
 	 * @return string application ID
@@ -527,7 +733,9 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	}
 
 	/**
-	 * @return string page service ID
+	 * Returns the service ID used as the fallback page service when no services are explicitly
+	 * configured. The default value is {@see static::PAGE_SERVICE_ID} (`'page'`).
+	 * @return string the page service ID.
 	 */
 	public function getPageServiceID()
 	{
@@ -535,23 +743,52 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	}
 
 	/**
-	 * @param string $value page service ID
+	 * Sets the fallback page service ID.
+	 *
+	 * If the old ID is registered as a service and the new ID is not already taken,
+	 * the registry entry is moved from the old ID to the new ID.
+	 *
+	 * @param string $value the new fallback page service ID.
 	 */
 	public function setPageServiceID($value)
 	{
+		$old = $this->_pageServiceID;
 		$this->_pageServiceID = $value;
+		if ($old !== $value && $this->hasServiceId($old) && !$this->hasServiceId($value)) {
+			$this->registerService($value, ...$this->getServiceId($old));
+			$this->unregisterService($old);
+		}
 	}
 
 	/**
-	 * @return string an ID that uniquely identifies this Prado application from the others
+	 * Returns an ID that uniquely identifies this Prado application from the others.
+	 * When no explicit ID has been set via {@see setUniqueID()}, the ID is computed
+	 * on demand by passing {@see getRuntimePath()} to {@see generateAppUniqueId()},
+	 * ensuring it reflects the current runtime path even when {@see setRuntimePath()}
+	 * is called after construction.
+	 * @return string an ID that uniquely identifies this Prado application.
+	 * @see generateAppUniqueId
 	 */
 	public function getUniqueID()
 	{
-		return $this->_uniqueID;
+		return $this->_uniqueID ?? $this->generateAppUniqueId($this->getRuntimePath());
 	}
 
 	/**
-	 * @return string|TApplicationMode application mode. Defaults to TApplicationMode::Debug.
+	 * Sets an explicit unique ID for this application instance, overriding the value
+	 * that would otherwise be derived on demand by {@see getUniqueID()} via
+	 * {@see generateAppUniqueId()}. Called internally by {@see setRuntimePath()}
+	 * whenever the runtime path changes.
+	 * @param string $value a unique ID for this application instance.
+	 * @since 4.3.3
+	 */
+	protected function setUniqueID($value)
+	{
+		$this->_uniqueID = $value;
+	}
+
+	/**
+	 * @return string|TApplicationMode application mode. Defaults to static::DEFAULT_APPLICATION_MODE - TApplicationMode::Debug.
 	 */
 	public function getMode()
 	{
@@ -583,7 +820,7 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	}
 
 	/**
-	 * @return string the application configuration file (absolute path)
+	 * @return ?string the application configuration file (absolute path)
 	 */
 	public function getConfigurationFile()
 	{
@@ -599,7 +836,7 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	}
 
 	/**
-	 * @return string the application configuration file (absolute path)
+	 * @return string the configuration type ('xml' or 'php')
 	 */
 	public function getConfigurationType()
 	{
@@ -615,12 +852,13 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	}
 
 	/**
-	 * @return string the application configuration type. default is 'xml'
+	 * Returns the config file extension for the current type ('.xml' or '.php'). Result is cached on first access.
+	 * @return string the configuration file extension for the current configuration type ('.xml' or '.php').
 	 */
 	public function getConfigurationFileExt()
 	{
 		if ($this->_configFileExt === null) {
-			switch ($this->_configType) {
+			switch ($this->getConfigurationType()) {
 				case TApplication::CONFIG_TYPE_PHP:
 					$this->_configFileExt = TApplication::CONFIG_FILE_EXT_PHP;
 					break;
@@ -632,21 +870,21 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	}
 
 	/**
+	 * Returns the default config file name for the current type ('application.xml' or 'application.php'). Result is cached on first access.
 	 * @return string the default configuration file name
 	 */
 	public function getConfigurationFileName()
 	{
-		static $fileName;
-		if ($fileName == null) {
-			switch ($this->_configType) {
+		if ($this->_configFileName === null) {
+			switch ($this->getConfigurationType()) {
 				case TApplication::CONFIG_TYPE_PHP:
-					$fileName = TApplication::CONFIG_FILE_PHP;
+					$this->_configFileName = TApplication::CONFIG_FILE_PHP;
 					break;
 				default:
-					$fileName = TApplication::CONFIG_FILE_XML;
+					$this->_configFileName = TApplication::CONFIG_FILE_XML;
 			}
 		}
-		return $fileName;
+		return $this->_configFileName;
 	}
 
 	/**
@@ -658,20 +896,174 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	}
 
 	/**
+	 * Sets the runtime path field directly without rebuilding the cache file path or unique ID.
+	 * Intended for subclasses (e.g. test environments) that manage those derived values themselves.
+	 * Use {@see setRuntimePath()} for the full update.
 	 * @param string $value the directory storing cache data and application-level persistent data. (absolute path)
+	 * @since 4.3.3
 	 */
-	public function setRuntimePath($value)
+	protected function setRuntimePathDirect($value)
 	{
 		$this->_runtimePath = $value;
-		if ($this->_cacheFile) {
-			$this->_cacheFile = $this->_runtimePath . DIRECTORY_SEPARATOR . self::CONFIGCACHE_FILE;
-		}
-		// generates unique ID by hashing the runtime path
-		$this->_uniqueID = md5($this->_runtimePath);
 	}
 
 	/**
-	 * @return TService the currently requested service
+	 * Sets the runtime path and synchronizes two derived values: rebuilds the config
+	 * cache file path (if caching is enabled) and regenerates the unique application
+	 * ID via {@see generateAppUniqueId()}. Use {@see setRuntimePathDirect()} to update
+	 * the path alone without these side effects.
+	 * @param string $value the directory storing cache data and application-level persistent data. (absolute path)
+	 * @see generateAppUniqueId
+	 */
+	public function setRuntimePath($value)
+	{
+		$this->setRuntimePathDirect($value);
+		$value = $this->getRuntimePath();
+		if ($this->getCacheFile()) {
+			$this->setCacheFile($this->buildCacheFilePath($value));
+		}
+		$this->setUniqueID($this->generateAppUniqueId($value));
+	}
+
+	/**
+	 * Derives a unique application ID from `$token` (typically the runtime path).
+	 * Subclasses may override this method to substitute a different hashing algorithm.
+	 * Called by {@see setRuntimePath()} and, on demand, by {@see getUniqueID()}.
+	 * @param string $token the value to hash; normally the absolute runtime path.
+	 * @return string a unique ID derived from the token.
+	 * @since 4.3.3
+	 * @todo v4.4 change md5 to sha1
+	 */
+	protected function generateAppUniqueId(string $token): string
+	{
+		return md5($token);
+	}
+
+	/**
+	 * @return ?string the config cache file path (absolute path), or null if caching is disabled
+	 * @since 4.3.3
+	 */
+	protected function getCacheFile(): ?string
+	{
+		return $this->_cacheFile;
+	}
+
+	/**
+	 * @param ?string $value the config cache file path (absolute path)
+	 * @since 4.3.3
+	 */
+	protected function setCacheFile(?string $value): void
+	{
+		$this->_cacheFile = $value;
+	}
+
+	/**
+	 * Builds the config cache file path for the given runtime directory.
+	 * @param string $runtimePath absolute path to the runtime directory
+	 * @return string absolute path to the config cache file
+	 * @since 4.3.3
+	 */
+	protected function buildCacheFilePath(string $runtimePath): string
+	{
+		return $runtimePath . DIRECTORY_SEPARATOR . static::CONFIGCACHE_FILE;
+	}
+
+	// =========================================================================
+	// Parameters API
+	// =========================================================================
+
+	/**
+	 * @return TMap the list of application parameters
+	 * @since 4.3.3
+	 */
+	protected function newParameters()
+	{
+		return new TMap();
+	}
+
+	/**
+	 * Returns the list of application parameters.
+	 * Since the parameters are returned as a {@see TMap} object, you may use
+	 * the returned result to access, add or remove individual parameters.
+	 * @return TMap the list of application parameters
+	 */
+	public function getParameters()
+	{
+		return $this->_parameters;
+	}
+
+	/**
+	 * @param TMap $parameters the application parameter map.
+	 * @since 4.3.3
+	 */
+	protected function setParameters($parameters)
+	{
+		$this->_parameters = $parameters;
+	}
+
+	// =========================================================================
+	// Cache API
+	// =========================================================================
+
+	/**
+	 * @return ?ICache the cache module, null if cache module is not installed
+	 */
+	public function getCache()
+	{
+		return $this->_cache;
+	}
+
+	/**
+	 * @param ICache $cache the cache module
+	 */
+	public function setCache(ICache $cache)
+	{
+		$this->_cache = $cache;
+	}
+
+	// =========================================================================
+	// User API
+	// =========================================================================
+
+	/**
+	 * @return IUser the application user
+	 */
+	public function getUser()
+	{
+		return $this->_user;
+	}
+
+	/**
+	 * This sets the application user and raises the onSetUser event.
+	 * @param IUser $user the application user
+	 */
+	public function setUser(IUser $user)
+	{
+		$this->_user = $user;
+		$this->onSetUser($user);
+	}
+
+	/**
+	 * Raises onSetUser event.
+	 * Allows modules/components to run handlers when the Application User is set.
+	 * e.g. A user module could set the $_SERVER['HTTP_ACCEPT_LANGUAGE'] and
+	 * $_SERVER['HTTP_ACCEPT_CHARSET'] in a cli environment to the user's last
+	 * web Language and Charset so Emails (and other templates) get language
+	 * customized.
+	 * @param IUser $user
+	 * @since 4.2.2
+	 */
+	public function onSetUser(IUser $user)
+	{
+		$this->raiseEvent('onSetUser', $this, $user);
+	}
+
+	// =========================================================================
+	// Services API
+	// =========================================================================
+
+	/**
+	 * @return ?IService the currently active service, or null if none has been started yet.
 	 */
 	public function getService()
 	{
@@ -687,18 +1079,108 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	}
 
 	/**
-	 * Adds a module to application.
-	 * Note, this method does not do module initialization.
-	 * @param string $id ID of the module
-	 * @param null|IModule $module module object or null if the module has not been loaded yet
+	 * Registers a service in the application's service registry.
+	 * If a service is already registered under the same ID it is replaced.
+	 * The service will be available for request routing via
+	 * {@see TApplication::startService()} and discoverable by
+	 * {@see getServiceIdByClass()} / {@see getServiceIdsByClass()}.
+	 *
+	 * ```php
+	 * $app->registerService('csp-reporter', TCspReporterService::class);
+	 * $app->registerService('csp-reporter', TCspReporterService::class, ['AutoRegistered' => true]);
+	 * ```
+	 *
+	 * @param string $id service ID to register; any existing entry under the same ID is overwritten.
+	 * @param ?string $class fully-qualified class name of the service. Must be non-empty and must
+	 *   implement {@see IService}; a null or empty value throws {@see TConfigurationException}.
+	 * @param array $properties name → value map of initial properties applied to the service instance
+	 *   via {@see TComponent::setSubProperty()} before {@see TService::init()} is called.
+	 * @param null|array|TXmlElement $config optional extra configuration element passed to
+	 *   {@see TService::init()}. Pass `null` (the default) for no extra configuration.
+	 * @throws TConfigurationException if `$class` is empty, does not exist, or does not implement {@see IService}.
+	 * @since 4.3.3
 	 */
-	public function setModule($id, ?IModule $module = null)
+	public function registerService(string $id, ?string $class = null, array $properties = [], $config = null): void
 	{
-		if (isset($this->_modules[$id])) {
-			throw new TConfigurationException('application_moduleid_duplicated', $id);
-		} else {
-			$this->_modules[$id] = $module;
+		if (empty($class)) {
+			throw new TConfigurationException('application_service_class_required', $id);
 		}
+		if (!class_exists($class, true)) {
+			throw new TConfigurationException('application_service_class_not_found', $class);
+		}
+		if (!is_a($class, IService::class, true)) {
+			throw new TConfigurationException('application_service_class_not_service', $class);
+		}
+		$this->_services[$id] = [$class, $properties, $config];
+	}
+
+	/**
+	 * Removes a service from the application's service registry.
+	 *
+	 * If the ID is not registered this method is a no-op. Removing a service that has
+	 * already been started via {@see startService()} does not stop the active instance.
+	 * The default page service ID (see {@see getPageServiceID()}) cannot be unregistered.
+	 *
+	 * @param string $id service ID to remove.
+	 * @throws TConfigurationException if `$id` is the default page service ID.
+	 * @since 4.3.3
+	 */
+	public function unregisterService(string $id): void
+	{
+		if ($id === $this->getPageServiceID()) {
+			throw new TConfigurationException('application_service_default_unregister', $id);
+		}
+		unset($this->_services[$id]);
+	}
+
+	/**
+	 * Returns whether any services are registered, or whether a specific service ID is registered.
+	 *
+	 * When called with no argument (or `null`), returns `true` if at least one service is
+	 * registered. When called with a string ID, returns `true` only if that specific service
+	 * ID exists in the registry.
+	 *
+	 * @param ?string $id service ID to look for, or `null` to test whether any services exist.
+	 * @return bool `true` when at least one service is registered (no argument), or when the
+	 *   given ID is present in the service registry (string argument).
+	 * @since 4.3.3
+	 */
+	public function hasServiceId(?string $id = null): bool
+	{
+		if ($id === null) {
+			return !empty($this->_services);
+		} else {
+			return isset($this->_services[$id]);
+		}
+	}
+
+	/**
+	 * Returns the registry entry for the given service ID, or `null` if not registered.
+	 *
+	 * The returned array is a three-element tuple `[$class, $properties, $config]`:
+	 * - `$class` (`string`) — fully-qualified class name of the service.
+	 * - `$properties` (`array`) — name → value map of initial properties applied before `init()`.
+	 * - `$config` (`null|array|TXmlElement`) — optional extra configuration element.
+	 *
+	 * @param string $id service ID to look for.
+	 * @return ?array the three-element registry tuple, or `null` if the ID is not registered.
+	 * @since 4.3.3
+	 */
+	public function getServiceId(string $id): ?array
+	{
+		return $this->_services[$id] ?? null;
+	}
+
+	/**
+	 * Returns the full service registry as an array keyed by service ID.
+	 * Each value is a three-element tuple `[$class, $properties, $config]` as
+	 * described in {@see getServiceId()}.
+	 * @return array<string, array> the registered service configurations.
+	 * @since 4.3.3
+	 */
+	public function getServiceIds(): array
+	{
+		return $this->_services ?? [];
 	}
 
 	/**
@@ -708,13 +1190,13 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	 * $id = $this->getApplication()->getServiceIdByClass(TPageService::class);
 	 * ```
 	 * @param string $class fully-qualified class name to search for.
-	 * @return null|string the ID of the first matching service, or `null`.
+	 * @return ?string the ID of the first matching service, or `null`.
 	 * @since 4.3.3
 	 */
 	public function getServiceIdByClass(string $class): ?string
 	{
-		foreach ($this->_services ?? [] as $id => $serviceConfig) {
-			$serviceClass = is_array($serviceConfig) ? $serviceConfig[0] : $serviceConfig;
+		foreach ($this->getServiceIds() as $id => $serviceConfig) {
+			$serviceClass = $serviceConfig[0];
 			if ($serviceClass === $class || is_a($serviceClass, $class, true)) {
 				return (string) $id;
 			}
@@ -737,8 +1219,8 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	public function getServiceIdsByClass(string $class, bool $strict = false): array
 	{
 		$ids = [];
-		foreach ($this->_services ?? [] as $id => $serviceConfig) {
-			$serviceClass = is_array($serviceConfig) ? $serviceConfig[0] : $serviceConfig;
+		foreach ($this->getServiceIds() as $id => $serviceConfig) {
+			$serviceClass = $serviceConfig[0];
 			if ($strict ? ($serviceClass === $class) : ($serviceClass === $class || is_a($serviceClass, $class, true))) {
 				$ids[] = (string) $id;
 			}
@@ -746,9 +1228,78 @@ class TApplication extends \Prado\TComponent implements ISingleton
 		return $ids;
 	}
 
+	// =========================================================================
+	// Modules API
+	// =========================================================================
+
 	/**
-	 * @param mixed $id
-	 * @return null|TModule the module with the specified ID, null if not found
+	 * @param string $id module ID to look up.
+	 * @return bool whether the given ID has a pending lazy-module entry.
+	 * @since 4.3.3
+	 */
+	public function hasLazyModule(string $id): bool
+	{
+		return isset($this->_lazyModules[$id]);
+	}
+
+	/**
+	 * Returns the total number of lazy-module slots (including consumed ones).
+	 * Used to generate unique auto-IDs for anonymous modules.
+	 * @return int the total number of registered lazy-module slots.
+	 * @since 4.3.3
+	 */
+	public function getLazyModuleCount(): int
+	{
+		return count($this->_lazyModules);
+	}
+
+	/**
+	 * Returns the lazy-module registration tuple for the given ID, or `null` if
+	 * the ID is not registered or has already been loaded (nulled out).
+	 * The tuple is `[$class, $properties, $configElement]`.
+	 * @param string $id module ID.
+	 * @return ?array the registration tuple, or `null`.
+	 * @since 4.3.3
+	 */
+	protected function getLazyModule(string $id): ?array
+	{
+		return $this->_lazyModules[$id] ?? null;
+	}
+
+	/**
+	 * Registers or nullifies a lazy-module entry. Pass `null` to mark the slot
+	 * as consumed without removing the key (preserving the ID against reuse).
+	 * @param string $id module ID.
+	 * @param ?array $config the registration tuple `[$class, $properties, $configElement]`,
+	 *   or `null` to mark the slot as consumed.
+	 * @since 4.3.3
+	 */
+	protected function setLazyModule(string $id, ?array $config): void
+	{
+		$this->_lazyModules[$id] = $config;
+	}
+
+	/**
+	 * Adds a module to application.
+	 * Note, this method does not do module initialization.
+	 * @param string $id ID of the module
+	 * @param ?IModule $module module object or null if the module has not been loaded yet
+	 */
+	public function setModule($id, ?IModule $module = null)
+	{
+		if (isset($this->_modules[$id])) {
+			throw new TConfigurationException('application_moduleid_duplicated', $id);
+		} else {
+			$this->_modules[$id] = $module;
+		}
+	}
+
+	/**
+	 * Returns the module registered under `$id`, or `null` if no module with that ID exists.
+	 * Lazy modules are deferred at startup and loaded on first request via {@see internalLoadModule()}
+	 * and `init()`, then cached for subsequent calls.
+	 * @param string $id module ID
+	 * @return ?TModule the module with the specified ID, null if not found
 	 */
 	public function getModule($id)
 	{
@@ -780,7 +1331,7 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	 * Lazy Loading Modules are not loaded, and are null but have an ID Key.
 	 * When null modules are found, load them with {@see getModule}. eg.
 	 * ```php
-	 *	foreach (Prado::getApplication()->getModulesByType(\Prado\Caching\ICache::class) as $id => $module) {
+	 *	foreach (Prado::getApplication()->getModulesByType(ICache::class) as $id => $module) {
 	 *		$module = (!$module) ? $app->getModule($id) : $module;
 	 *		...
 	 *	}
@@ -794,9 +1345,9 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	{
 		$m = [];
 		foreach ($this->_modules as $id => $module) {
-			if ($module === null && isset($this->_lazyModules[$id])) {
-				[$moduleClass, $initProperties, $configElement] = $this->_lazyModules[$id];
-				if ($strict ? ($moduleClass === $type) : ($moduleClass instanceof $type)) {
+			if ($module === null && $this->hasLazyModule($id)) {
+				[$moduleClass, $initProperties, $configElement] = $this->getLazyModule($id);
+				if ($strict ? ($moduleClass === $type) : is_a($moduleClass, $type, true)) {
 					$m[$id] = null;
 				}
 			} elseif ($module !== null && ($strict ? ($module::class === $type) : $module->isa($type))) {
@@ -806,26 +1357,25 @@ class TApplication extends \Prado\TComponent implements ISingleton
 		return $m;
 	}
 
+	// =========================================================================
+	// Request API
+	// =========================================================================
+
 	/**
-	 * Returns the list of application parameters.
-	 * Since the parameters are returned as a {@see \Prado\Collections\TMap} object, you may use
-	 * the returned result to access, add or remove individual parameters.
-	 * @return \Prado\Collections\TMap the list of application parameters
+	 * @return THttpRequest A new request module.
+	 * @since 4.3.3
 	 */
-	public function getParameters()
+	protected function newRequest()
 	{
-		return $this->_parameters;
+		return new THttpRequest();
 	}
 
 	/**
 	 * @return THttpRequest the request module
+	 * @since 4.3.3
 	 */
-	public function getRequest()
+	protected function getRequestDirect()
 	{
-		if (!$this->_request) {
-			$this->_request = new \Prado\Web\THttpRequest();
-			$this->_request->init(null);
-		}
 		return $this->_request;
 	}
 
@@ -838,35 +1388,100 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	}
 
 	/**
-	 * @return THttpResponse the response module
+	 * Returns the request module, auto-creating it via {@see newRequest()} and calling `init(null)` if not yet set.
+	 * @return THttpRequest the request module
 	 */
-	public function getResponse()
+	public function getRequest()
 	{
-		if (!$this->_response) {
-			$this->_response = new THttpResponse();
-			$this->_response->init(null);
+		$request = $this->getRequestDirect();
+		if (!$request && ($request = $this->newRequest())) {
+			$this->setRequest($request);
+			$request->init(null);
+			$request = $this->getRequestDirect();
 		}
+		return $request;
+	}
+
+	// =========================================================================
+	// Response API
+	// =========================================================================
+
+	/**
+	 * @return THttpResponse a new response module.
+	 * @since 4.3.3
+	 */
+	protected function newResponse()
+	{
+		return new THttpResponse();
+	}
+
+	/**
+	 * @return THttpResponse the response module
+	 * @since 4.3.3
+	 */
+	protected function getResponseDirect()
+	{
 		return $this->_response;
 	}
 
 	/**
-	 * @param THttpResponse $response the request module
+	 * Returns the response module, auto-creating it via {@see newResponse()} and calling `init(null)` if not yet set.
+	 * @return THttpResponse the response module
+	 */
+	public function getResponse()
+	{
+		$response = $this->getResponseDirect();
+		if (!$response && ($response = $this->newResponse())) {
+			$this->setResponse($response);
+			$response->init(null);
+			$response = $this->getResponseDirect();
+		}
+		return $response;
+	}
+
+	/**
+	 * @param THttpResponse $response the response module
 	 */
 	public function setResponse(THttpResponse $response)
 	{
 		$this->_response = $response;
 	}
 
+	// =========================================================================
+	// Session API
+	// =========================================================================
+
 	/**
+	 * @return THttpSession a new session module.
+	 * @since 4.3.3
+	 */
+	protected function newSession()
+	{
+		return new THttpSession();
+	}
+
+	/**
+	 * @return THttpSession the session module, null if session module is not installed
+	 * @since 4.3.3
+	 */
+	protected function getSessionDirect()
+	{
+		return $this->_session;
+	}
+
+	/**
+	 * Returns the session module, auto-creating it via {@see newSession()} and calling `init(null)` if not yet set.
 	 * @return THttpSession the session module, null if session module is not installed
 	 */
 	public function getSession()
 	{
-		if (!$this->_session) {
-			$this->_session = new THttpSession();
-			$this->_session->init(null);
+		$session = $this->getSessionDirect();
+		if (!$session && ($session = $this->newSession())) {
+			$this->setSession($session);
+			$session->init(null);
+			$session = $this->getSessionDirect();
 		}
-		return $this->_session;
+		return $session;
 	}
 
 	/**
@@ -877,16 +1492,41 @@ class TApplication extends \Prado\TComponent implements ISingleton
 		$this->_session = $session;
 	}
 
+	// =========================================================================
+	// Error Handler API
+	// =========================================================================
+
 	/**
+	 * @return TErrorHandler a new error handler module.
+	 * @since 4.3.3
+	 */
+	protected function newErrorHandler()
+	{
+		return new TErrorHandler();
+	}
+
+	/**
+	 * @return TErrorHandler the error handler module
+	 * @since 4.3.3
+	 */
+	protected function getErrorHandlerDirect()
+	{
+		return $this->_errorHandler;
+	}
+
+	/**
+	 * Returns the error handler module, auto-creating it via {@see newErrorHandler()} and calling `init(null)` if not yet set.
 	 * @return TErrorHandler the error handler module
 	 */
 	public function getErrorHandler()
 	{
-		if (!$this->_errorHandler) {
-			$this->_errorHandler = new TErrorHandler();
-			$this->_errorHandler->init(null);
+		$errorHandler = $this->getErrorHandlerDirect();
+		if (!$errorHandler && ($errorHandler = $this->newErrorHandler())) {
+			$this->setErrorHandler($errorHandler);
+			$errorHandler->init(null);
+			$errorHandler = $this->getErrorHandlerDirect();
 		}
-		return $this->_errorHandler;
+		return $errorHandler;
 	}
 
 	/**
@@ -897,16 +1537,41 @@ class TApplication extends \Prado\TComponent implements ISingleton
 		$this->_errorHandler = $handler;
 	}
 
+	// =========================================================================
+	// Security Manager API
+	// =========================================================================
+
 	/**
+	 * @return TSecurityManager a new security manager module.
+	 * @since 4.3.3
+	 */
+	protected function newSecurityManager()
+	{
+		return new TSecurityManager();
+	}
+
+	/**
+	 * @return TSecurityManager the security manager module
+	 * @since 4.3.3
+	 */
+	protected function getSecurityManagerDirect()
+	{
+		return $this->_security;
+	}
+
+	/**
+	 * Returns the security manager module, auto-creating it via {@see newSecurityManager()} and calling `init(null)` if not yet set.
 	 * @return TSecurityManager the security manager module
 	 */
 	public function getSecurityManager()
 	{
-		if (!$this->_security) {
-			$this->_security = new TSecurityManager();
-			$this->_security->init(null);
+		$securityManager = $this->getSecurityManagerDirect();
+		if (!$securityManager && ($securityManager = $this->newSecurityManager())) {
+			$this->setSecurityManager($securityManager);
+			$securityManager->init(null);
+			$securityManager = $this->getSecurityManagerDirect();
 		}
-		return $this->_security;
+		return $securityManager;
 	}
 
 	/**
@@ -917,16 +1582,41 @@ class TApplication extends \Prado\TComponent implements ISingleton
 		$this->_security = $sm;
 	}
 
+	// =========================================================================
+	// Asset Manager API
+	// =========================================================================
+
 	/**
+	 * @return TAssetManager a new asset manager module.
+	 * @since 4.3.3
+	 */
+	protected function newAssetManager()
+	{
+		return new TAssetManager();
+	}
+
+	/**
+	 * @return TAssetManager asset manager
+	 * @since 4.3.3
+	 */
+	protected function getAssetManagerDirect()
+	{
+		return $this->_assetManager;
+	}
+
+	/**
+	 * Returns the asset manager module, auto-creating it via {@see newAssetManager()} and calling `init(null)` if not yet set.
 	 * @return TAssetManager asset manager
 	 */
 	public function getAssetManager()
 	{
-		if (!$this->_assetManager) {
-			$this->_assetManager = new TAssetManager();
-			$this->_assetManager->init(null);
+		$assetManager = $this->getAssetManagerDirect();
+		if (!$assetManager && ($assetManager = $this->newAssetManager())) {
+			$this->setAssetManager($assetManager);
+			$assetManager->init(null);
+			$assetManager = $this->getAssetManagerDirect();
 		}
-		return $this->_assetManager;
+		return $assetManager;
 	}
 
 	/**
@@ -937,16 +1627,41 @@ class TApplication extends \Prado\TComponent implements ISingleton
 		$this->_assetManager = $value;
 	}
 
+	// =========================================================================
+	// Template Manager API
+	// =========================================================================
+
 	/**
+	 * @return TTemplateManager a new template manager module.
+	 * @since 4.3.3
+	 */
+	protected function newTemplateManager()
+	{
+		return new TTemplateManager();
+	}
+
+	/**
+	 * @return TTemplateManager template manager
+	 * @since 4.3.3
+	 */
+	protected function getTemplateManagerDirect()
+	{
+		return $this->_templateManager;
+	}
+
+	/**
+	 * Returns the template manager module, auto-creating it via {@see newTemplateManager()} and calling `init(null)` if not yet set.
 	 * @return TTemplateManager template manager
 	 */
 	public function getTemplateManager()
 	{
-		if (!$this->_templateManager) {
-			$this->_templateManager = new TTemplateManager();
-			$this->_templateManager->init(null);
+		$templateManager = $this->getTemplateManagerDirect();
+		if (!$templateManager && ($templateManager = $this->newTemplateManager())) {
+			$this->setTemplateManager($templateManager);
+			$templateManager->init(null);
+			$templateManager = $this->getTemplateManagerDirect();
 		}
-		return $this->_templateManager;
+		return $templateManager;
 	}
 
 	/**
@@ -957,16 +1672,41 @@ class TApplication extends \Prado\TComponent implements ISingleton
 		$this->_templateManager = $value;
 	}
 
+	// =========================================================================
+	// Theme Manager API
+	// =========================================================================
+
 	/**
+	 * @return TThemeManager a new theme manager module.
+	 * @since 4.3.3
+	 */
+	protected function newThemeManager()
+	{
+		return new TThemeManager();
+	}
+
+	/**
+	 * @return TThemeManager theme manager
+	 * @since 4.3.3
+	 */
+	protected function getThemeManagerDirect()
+	{
+		return $this->_themeManager;
+	}
+
+	/**
+	 * Returns the theme manager module, auto-creating it via {@see newThemeManager()} and calling `init(null)` if not yet set.
 	 * @return TThemeManager theme manager
 	 */
 	public function getThemeManager()
 	{
-		if (!$this->_themeManager) {
-			$this->_themeManager = new TThemeManager();
-			$this->_themeManager->init(null);
+		$themeManager = $this->getThemeManagerDirect();
+		if (!$themeManager && ($themeManager = $this->newThemeManager())) {
+			$this->setThemeManager($themeManager);
+			$themeManager->init(null);
+			$themeManager = $this->getThemeManagerDirect();
 		}
-		return $this->_themeManager;
+		return $themeManager;
 	}
 
 	/**
@@ -977,16 +1717,43 @@ class TApplication extends \Prado\TComponent implements ISingleton
 		$this->_themeManager = $value;
 	}
 
+	// =========================================================================
+	// Application State Persister API
+	// =========================================================================
+
 	/**
+	 * @return IStatePersister a new application state persister.
+	 * @since 4.3.3
+	 */
+	protected function newApplicationStatePersister()
+	{
+		return new TApplicationStatePersister();
+	}
+
+	/**
+	 * @return IStatePersister application state persister
+	 * @since 4.3.3
+	 */
+	protected function getApplicationStatePersisterDirect()
+	{
+		return $this->_statePersister;
+	}
+
+	/**
+	 * Returns the application state persister, auto-creating it via {@see newApplicationStatePersister()} and calling `init(null)` if not yet set.
 	 * @return IStatePersister application state persister
 	 */
 	public function getApplicationStatePersister()
 	{
-		if (!$this->_statePersister) {
-			$this->_statePersister = new TApplicationStatePersister();
-			$this->_statePersister->init(null);
+		$statePersister = $this->getApplicationStatePersisterDirect();
+		if (!$statePersister && ($statePersister = $this->newApplicationStatePersister())) {
+			$this->setApplicationStatePersister($statePersister);
+			if ($statePersister instanceof IModule) {
+				$statePersister->init(null);
+			}
+			$statePersister = $this->getApplicationStatePersisterDirect();
 		}
-		return $this->_statePersister;
+		return $statePersister;
 	}
 
 	/**
@@ -997,95 +1764,103 @@ class TApplication extends \Prado\TComponent implements ISingleton
 		$this->_statePersister = $persister;
 	}
 
+	// =========================================================================
+	// Globalization API
+	// =========================================================================
+
 	/**
-	 * @return null|\Prado\Caching\ICache the cache module, null if cache module is not installed
+	 * @return ?TGlobalization globalization module
+	 * @since 4.3.3
 	 */
-	public function getCache()
+	protected function newGlobalization()
 	{
-		return $this->_cache;
+		return new TGlobalization();
 	}
 
 	/**
-	 * @param \Prado\Caching\ICache $cache the cache module
+	 * @return ?TGlobalization globalization module
+	 * @since 4.3.3
 	 */
-	public function setCache(\Prado\Caching\ICache $cache)
+	protected function getGlobalizationDirect()
 	{
-		$this->_cache = $cache;
-	}
-
-	/**
-	 * @return \Prado\Security\IUser the application user
-	 */
-	public function getUser()
-	{
-		return $this->_user;
-	}
-
-	/**
-	 * This sets the application user and raises the onSetUser event.
-	 * @param \Prado\Security\IUser $user the application user
-	 */
-	public function setUser(\Prado\Security\IUser $user)
-	{
-		$this->_user = $user;
-		$this->onSetUser($user);
-	}
-
-	/**
-	 * Raises onSetUser event.
-	 * Allows modules/components to run handlers when the Application User is set.
-	 * e.g. A user module could set the $_SERVER['HTTP_ACCEPT_LANGUAGE'] and
-	 * $_SERVER['HTTP_ACCEPT_CHARSET'] in a cli environment to the user's last
-	 * web Language and Charset so Emails (and other templates) get language
-	 * customized.
-	 * @param \Prado\Security\IUser $user
-	 * @since 4.2.2
-	 */
-	public function onSetUser(\Prado\Security\IUser $user)
-	{
-		$this->raiseEvent('onSetUser', $this, $user);
-	}
-
-	/**
-	 * @param bool $createIfNotExists whether to create globalization if it does not exist
-	 * @return null|TGlobalization globalization module
-	 */
-	public function getGlobalization($createIfNotExists = true)
-	{
-		if ($this->_globalization === null && $createIfNotExists) {
-			$this->_globalization = new TGlobalization();
-			$this->_globalization->init(null);
-		}
 		return $this->_globalization;
 	}
 
 	/**
-	 * @param \Prado\I18N\TGlobalization $glob globalization module
+	 * Returns the globalization module, auto-creating and initialising it via {@see newGlobalization()} when
+	 * `$createIfNotExists` is `true` (the default) and no module has been set yet. Pass `false` to return
+	 * `null` rather than auto-creating.
+	 * @param bool $createIfNotExists whether to create globalization if it does not exist
+	 * @return ?TGlobalization globalization module
 	 */
-	public function setGlobalization(\Prado\I18N\TGlobalization $glob)
+	public function getGlobalization($createIfNotExists = true)
+	{
+		$globalization = $this->getGlobalizationDirect();
+		if (!$globalization && $createIfNotExists && ($globalization = $this->newGlobalization())) {
+			$this->setGlobalization($globalization);
+			$globalization->init(null);
+			$globalization = $this->getGlobalizationDirect();
+		}
+		return $globalization;
+	}
+
+	/**
+	 * @param TGlobalization $glob globalization module
+	 */
+	public function setGlobalization(TGlobalization $glob)
 	{
 		$this->_globalization = $glob;
 	}
 
+	// =========================================================================
+	// Module Loading & Configuration
+	// =========================================================================
+
 	/**
-	 * @return \Prado\Security\TAuthorizationRuleCollection list of authorization rules for the current request
+	 * Returns the authorization rule collection for the current request, creating an empty
+	 * {@see TAuthorizationRuleCollection} on first access.
+	 * @return TAuthorizationRuleCollection list of authorization rules for the current request
 	 */
 	public function getAuthorizationRules()
 	{
 		if ($this->_authRules === null) {
-			$this->_authRules = new \Prado\Security\TAuthorizationRuleCollection();
+			$this->_authRules = new TAuthorizationRuleCollection();
 		}
 		return $this->_authRules;
 	}
 
+	/**
+	 * Returns the fully-qualified class name used to parse application configuration files.
+	 * Subclasses may override this method to substitute a custom configuration parser.
+	 * @return string the application configuration class name.
+	 * @since 4.3.3
+	 */
 	protected function getApplicationConfigurationClass()
 	{
 		return TApplicationConfiguration::class;
 	}
 
-	protected function internalLoadModule($id, $force = false)
+	/**
+	 * Loads and initializes a single module from its lazy-module registration tuple.
+	 *
+	 * If the module's `lazy` property is `true` and `$force` is `false`, the module
+	 * is registered as a null placeholder in `$_modules` and this method returns `null`.
+	 * Otherwise the module is instantiated, its properties are applied, and it is stored
+	 * in `$_modules`. The lazy-module slot is nullified to prevent ID reuse.
+	 * The caller is responsible for calling `init()` on the returned module.
+	 *
+	 * @param string $id module ID registered in `$_lazyModules`.
+	 * @param bool $force when `true`, forces loading even if the `lazy` property is set. Defaults to `false`.
+	 * @return null|array{0: IModule, 1: mixed}|false a two-element array `[$module, $configElement]`
+	 *   ready for `$module->init($configElement)`, `null` if the module was deferred, or
+	 *   `false` if `$id` is not registered in `$_lazyModules`.
+	 */
+	protected function internalLoadModule($id, bool $force = false)
 	{
-		[$moduleClass, $initProperties, $configElement] = $this->_lazyModules[$id];
+		if (($lazy = $this->getLazyModule($id)) === null) {
+			return false;
+		}
+		[$moduleClass, $initProperties, $configElement] = $lazy;
 		if (isset($initProperties['lazy']) && $initProperties['lazy'] && !$force) {
 			Prado::trace("Postponed loading of lazy module $id ({$moduleClass})", TApplication::class);
 			$this->setModule($id, null);
@@ -1102,13 +1877,20 @@ class TApplication extends \Prado\TComponent implements ISingleton
 		}
 		$this->setModule($id, $module);
 		// keep the key to avoid reuse of the old module id
-		$this->_lazyModules[$id] = null;
+		$this->setLazyModule($id, null);
 		$module->dyPreInit($configElement);
 
 		return [$module, $configElement];
 	}
+
 	/**
-	 * Applies an application configuration.
+	 * Applies a parsed application configuration in the following order:
+	 * 1. Path aliases and usings
+	 * 2. Application properties (skipped when `$withinService` is true)
+	 * 3. Services
+	 * 4. Parameters
+	 * 5. Modules (instantiated and initialized)
+	 * 6. External configuration files (evaluated conditionally and applied recursively)
 	 * @param TApplicationConfiguration $config the configuration
 	 * @param bool $withinService whether the configuration is specified within a service.
 	 */
@@ -1133,11 +1915,16 @@ class TApplication extends \Prado\TComponent implements ISingleton
 			}
 		}
 
-		if (empty($this->_services)) {
-			$this->_services = [$this->getPageServiceID() => [\Prado\Web\Services\TPageService::class, [], null]];
+		// load services, provide for modules
+		foreach ($config->getServices() as $serviceID => $serviceConfig) {
+			$this->registerService($serviceID, ...$serviceConfig);
 		}
 
+		// Default Page Service is registered at construct,
+		//		setPageServiceId changes the registered service within _services
+
 		// load parameters
+		$appParams = $this->getParameters();
 		foreach ($config->getParameters() as $id => $parameter) {
 			if (is_array($parameter)) {
 				$component = Prado::createComponent($parameter[0]);
@@ -1145,9 +1932,9 @@ class TApplication extends \Prado\TComponent implements ISingleton
 					$component->setSubProperty($name, $value);
 				}
 				$component->dyInit($parameter[2]);
-				$this->_parameters->add($id, $component);
+				$appParams->add($id, $component);
 			} else {
-				$this->_parameters->add($id, $parameter);
+				$appParams->add($id, $parameter);
 			}
 		}
 
@@ -1155,20 +1942,15 @@ class TApplication extends \Prado\TComponent implements ISingleton
 		$modules = [];
 		foreach ($config->getModules() as $id => $moduleConfig) {
 			if (!is_string($id)) {
-				$id = '_module' . count($this->_lazyModules);
+				$id = '_module' . $this->getLazyModuleCount();
 			}
-			$this->_lazyModules[$id] = $moduleConfig;
+			$this->setLazyModule($id, $moduleConfig);
 			if ($module = $this->internalLoadModule($id)) {
 				$modules[] = $module;
 			}
 		}
 		foreach ($modules as $module) {
 			$module[0]->init($module[1]);
-		}
-
-		// load service
-		foreach ($config->getServices() as $serviceID => $serviceConfig) {
-			$this->_services[$serviceID] = $serviceConfig;
 		}
 
 		// external configurations
@@ -1188,43 +1970,67 @@ class TApplication extends \Prado\TComponent implements ISingleton
 		}
 	}
 
+	// =========================================================================
+	// Life Cycle Methods and Events
+	// =========================================================================
+
 	/**
 	 * Loads configuration and initializes application.
 	 * Configuration file will be read and parsed (if a valid cached version exists,
 	 * it will be used instead). Then, modules are created and initialized;
 	 * Afterwards, the requested service is created and initialized.
-	 * After all configuration is applied, the onConfigurationComplete event is
+	 * After all configuration is applied, the onConfiguration event is
 	 * raised so that listeners may register additional services before the
 	 * request is resolved. Lastly, the onInitComplete event is raised.
 	 * @throws TConfigurationException if module is redefined of invalid type, or service not defined or of invalid type
+	 * @see onConfiguration
+	 * @see onInitComplete
 	 */
 	protected function initApplication()
 	{
 		Prado::trace('Initializing application', TApplication::class);
 
-		if ($this->_configFile !== null) {
-			if ($this->_cacheFile === null || @filemtime($this->_cacheFile) < filemtime($this->_configFile)) {
-				$config = new TApplicationConfiguration();
-				$config->loadFromFile($this->_configFile);
-				if ($this->_cacheFile !== null) {
-					file_put_contents($this->_cacheFile, serialize($config), LOCK_EX);
+		$configFile = $this->getConfigurationFile();
+		if ($configFile !== null) {
+			$cacheFile = $this->getCacheFile();
+			if ($cacheFile === null || @filemtime($cacheFile) < filemtime($configFile)) {
+				$cn = $this->getApplicationConfigurationClass();
+				$config = new $cn();
+				$config->loadFromFile($configFile);
+				if ($cacheFile !== null) {
+					file_put_contents($cacheFile, serialize($config), LOCK_EX);
 				}
 			} else {
-				$config = unserialize(file_get_contents($this->_cacheFile));
+				$config = unserialize(file_get_contents($cacheFile));
 			}
 
 			$this->applyConfiguration($config, false);
 		}
 
-		$this->onConfigurationComplete();
+		$this->onConfiguration();
+		$this->initService();
+		$this->onInitComplete();
 
-		if (($serviceID = $this->getRequest()->resolveRequest(array_keys($this->_services))) === null) {
+		Prado::trace('Initializing application complete', TApplication::class);
+	}
+
+	/**
+	 * Resolves which service to run from the current request and starts it.
+	 *
+	 * Called by {@see initApplication()} after configuration has been applied and
+	 * {@see onConfiguration} has fired.  Subclasses that do not use a web service
+	 * (e.g. {@see Shell\TShellApplication}) can override this method to do nothing,
+	 * leaving service startup entirely to their own {@see runService()} implementation.
+	 *
+	 * @since 4.3.3
+	 */
+	protected function initService(): void
+	{
+		if (($serviceID = $this->getRequest()->resolveRequest(array_keys($this->getServiceIds()))) === null) {
 			$serviceID = $this->getPageServiceID();
 		}
 
 		$this->startService($serviceID);
-
-		$this->onInitComplete();
 	}
 
 	/**
@@ -1235,36 +2041,37 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	 */
 	public function startService($serviceID)
 	{
-		if (isset($this->_services[$serviceID])) {
-			[$serviceClass, $initProperties, $configElement] = $this->_services[$serviceID];
-			$service = Prado::createComponent($serviceClass);
-			if (!($service instanceof TService)) {
-				throw new THttpException(500, 'application_service_invalid', $serviceClass);
-			}
-			if (!$service->getEnabled()) {
-				throw new THttpException(500, 'application_service_unavailable', $serviceClass);
-			}
-			$service->setID($serviceID);
-			$this->setService($service);
-
-			foreach ($initProperties as $name => $value) {
-				$service->setSubProperty($name, $value);
-			}
-
-			if ($configElement !== null) {
-				$config = new TApplicationConfiguration();
-				if ($this->getConfigurationType() == self::CONFIG_TYPE_PHP) {
-					$config->loadFromPhp($configElement, $this->getBasePath());
-				} else {
-					$config->loadFromXml($configElement, $this->getBasePath());
-				}
-				$this->applyConfiguration($config, true);
-			}
-
-			$service->init($configElement);
-		} else {
+		if (!$this->hasServiceId($serviceID)) {
 			throw new THttpException(500, 'application_service_unknown', $serviceID);
 		}
+
+		[$serviceClass, $initProperties, $configElement] = $this->getServiceId($serviceID);
+		$service = Prado::createComponent($serviceClass);
+		if (!($service instanceof IService && $service instanceof TComponent)) {
+			throw new THttpException(500, 'application_service_invalid', $serviceClass);
+		}
+		if (!$service->getEnabled()) {
+			throw new THttpException(500, 'application_service_unavailable', $serviceClass);
+		}
+		$service->setID($serviceID);
+		$this->setService($service);
+
+		foreach ($initProperties as $name => $value) {
+			$service->setSubProperty($name, $value);
+		}
+
+		if ($configElement !== null) {
+			$cn = $this->getApplicationConfigurationClass();
+			$config = new $cn();
+			if ($this->getConfigurationType() == static::CONFIG_TYPE_PHP) {
+				$config->loadFromPhp($configElement, $this->getBasePath());
+			} else {
+				$config->loadFromXml($configElement, $this->getBasePath());
+			}
+			$this->applyConfiguration($config, true);
+		}
+
+		$service->init($configElement);
 	}
 
 	/**
@@ -1281,25 +2088,24 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	}
 
 	/**
-	 * Raises onConfigurationComplete event.
+	 * Raises onConfiguration event.
 	 * Configuration is fully applied and modules are loaded, but the request
 	 * has not yet been resolved and no service has been started. Use this event
-	 * to register additional services before request routing.
+	 * to register additional services before the request routing.
 	 * @since 4.3.3
 	 */
-	public function onConfigurationComplete()
+	public function onConfiguration()
 	{
-		$this->raiseEvent('onConfigurationComplete', $this, null);
+		$this->raiseEvent('onConfiguration', $this, null);
 	}
 
 	/**
 	 * Raises onInitComplete event.
 	 * At the time when this method is invoked, application modules are loaded,
-	 * user request is resolved and the corresponding service is loaded and
-	 * initialized. The application is about to start processing the user
-	 * request.  This call is important for CLI/Shell applications that do not have
-	 * a web service lifecycle stack.  This is the first and last event for finalization
-	 * of any loaded modules in CLI/Shell mode.
+	 * the request has been resolved, and the corresponding service has been loaded
+	 * and initialized. The application is about to begin the request lifecycle.
+	 * {@see Shell\TShellApplication} attaches CLI argument processing to
+	 * this event, making it the effective entry point for shell command dispatch.
 	 * @since 4.2.0
 	 */
 	public function onInitComplete()
@@ -1384,12 +2190,13 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	}
 
 	/**
-	 * Runs the requested service.
+	 * Runs the currently active service by calling its `run()` method.
+	 * Called as the `runService` lifecycle step in {@see run()}.
 	 */
 	public function runService()
 	{
-		if ($this->_service) {
-			$this->_service->run();
+		if ($service = $this->getService()) {
+			$service->run();
 		}
 	}
 
@@ -1432,6 +2239,7 @@ class TApplication extends \Prado\TComponent implements ISingleton
 
 	/**
 	 * Raises OnEndRequest event.
+	 * Flushes any remaining buffered output, raises the event, then saves global state.
 	 * This method is invoked when the application completes the processing of the request.
 	 */
 	public function onEndRequest()

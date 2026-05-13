@@ -47,7 +47,7 @@ class TApplicationStatePersister extends \Prado\TModule implements IStatePersist
 
 	/**
 	 * Loads application state from persistent storage.
-	 * @return mixed application state
+	 * @return ?mixed application state
 	 */
 	public function load()
 	{

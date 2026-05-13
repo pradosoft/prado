@@ -53,43 +53,35 @@ class InitTrackingService extends TestBaseService
 }
 
 /**
- * Tests for TApplication's service API:
+ * Tests for TApplication's service registry API:
  *   - getPageServiceID() / setPageServiceID()
  *   - getService() / setService()
+ *   - registerService()
+ *   - hasServiceId()
+ *   - getServiceId()
+ *   - getServiceIds()
  *   - getServiceIdByClass()
  *   - getServiceIdsByClass()
  *   - startService()
+ *   - onConfiguration()
+ *   - onInitComplete()
+ *
+ * @package System
  */
 class TApplicationServiceTest extends PHPUnit\Framework\TestCase
 {
 	private TApplication $_app;
-	private \ReflectionProperty $_servicesProp;
-	private \ReflectionProperty $_serviceProp;
-	private array $_originalServices;
-	private mixed $_originalService;
-	private string $_originalPageServiceID;
+	private array $_snap = [];
 
 	protected function setUp(): void
 	{
-		$this->_app = Prado::getApplication();
-
-		$this->_servicesProp = new \ReflectionProperty(TApplication::class, '_services');
-		$this->_servicesProp->setAccessible(true);
-
-		$this->_serviceProp = new \ReflectionProperty(TApplication::class, '_service');
-		$this->_serviceProp->setAccessible(true);
-
-		// Snapshot state so tearDown can restore it cleanly.
-		$this->_originalServices     = $this->_servicesProp->getValue($this->_app) ?? [];
-		$this->_originalService      = $this->_serviceProp->getValue($this->_app);
-		$this->_originalPageServiceID = $this->_app->getPageServiceID();
+		$this->_app  = Prado::getApplication();
+		$this->_snap = TTestApplication::snapshotApp($this->_app);
 	}
 
 	protected function tearDown(): void
 	{
-		$this->_servicesProp->setValue($this->_app, $this->_originalServices);
-		$this->_serviceProp->setValue($this->_app, $this->_originalService);
-		$this->_app->setPageServiceID($this->_originalPageServiceID);
+		TTestApplication::restoreApp($this->_snap, $this->_app);
 	}
 
 	// -----------------------------------------------------------------------
@@ -103,8 +95,9 @@ class TApplicationServiceTest extends PHPUnit\Framework\TestCase
 	 */
 	private function setServices(array $services): void
 	{
-		$this->_servicesProp->setValue($this->_app, $services);
+		PradoUnit::setProp($this->_app, '_services', $services);
 	}
+
 
 	// -----------------------------------------------------------------------
 	// getPageServiceID / setPageServiceID
@@ -122,6 +115,81 @@ class TApplicationServiceTest extends PHPUnit\Framework\TestCase
 		$this->assertSame('mypage', $this->_app->getPageServiceID());
 	}
 
+	public function testPageServiceID_setterAcceptsArbitraryString(): void
+	{
+		$this->_app->setPageServiceID('custom-service-id');
+		$this->assertSame('custom-service-id', $this->_app->getPageServiceID());
+	}
+
+	public function testPageServiceID_setterMovesRegistryEntryToNewKey(): void
+	{
+		// old exists, new does not → rename fires.
+		$oldId = $this->_app->getPageServiceID();
+		$this->setServices([$oldId => [InitTrackingService::class, [], null]]);
+
+		$this->_app->setPageServiceID('newpage');
+
+		$this->assertSame('newpage', $this->_app->getPageServiceID());
+		$this->assertFalse($this->_app->hasServiceId($oldId));
+		$this->assertTrue($this->_app->hasServiceId('newpage'));
+	}
+
+	public function testPageServiceID_registryEntryPreservedAfterRename(): void
+	{
+		$oldId = $this->_app->getPageServiceID();
+		$entry = [InitTrackingService::class, [], null];
+		$this->setServices([$oldId => $entry]);
+
+		$this->_app->setPageServiceID('newpage');
+
+		$this->assertSame($entry, $this->_app->getServiceId('newpage'));
+	}
+
+	public function testPageServiceID_setterAlwaysUpdatesPageServiceID(): void
+	{
+		// _pageServiceID is updated even when the registry rename is suppressed.
+		$this->setServices([]);
+		$this->_app->setPageServiceID('explicit');
+		$this->assertSame('explicit', $this->_app->getPageServiceID());
+	}
+
+	public function testPageServiceID_setterDoesNotOverwriteExistingTarget(): void
+	{
+		// New ID already occupied → rename suppressed; both registry entries intact.
+		$oldId = $this->_app->getPageServiceID();
+		$this->setServices([
+			$oldId    => [InitTrackingService::class, [], null],
+			'newpage' => [TestBaseService::class, [], null],
+		]);
+
+		$this->_app->setPageServiceID('newpage');
+
+		$this->assertSame('newpage', $this->_app->getPageServiceID());
+		$this->assertTrue($this->_app->hasServiceId($oldId),   'old key must survive');
+		$this->assertSame(TestBaseService::class, $this->_app->getServiceId('newpage')[0], 'target must not be overwritten');
+	}
+
+	public function testPageServiceID_setterNoOpRegistryWhenSameValue(): void
+	{
+		$id     = $this->_app->getPageServiceID();
+		$before = $this->_app->getServiceIds();
+
+		$this->_app->setPageServiceID($id);
+
+		$this->assertSame($before, $this->_app->getServiceIds());
+	}
+
+	public function testPageServiceID_setterWithNoRegistryEntry(): void
+	{
+		// Old ID not in registry → no spurious entry created under new ID.
+		$this->setServices([]);
+
+		$this->_app->setPageServiceID('other');
+
+		$this->assertSame('other', $this->_app->getPageServiceID());
+		$this->assertFalse($this->_app->hasServiceId('other'));
+	}
+
 	// -----------------------------------------------------------------------
 	// getService / setService
 	// -----------------------------------------------------------------------
@@ -130,7 +198,7 @@ class TApplicationServiceTest extends PHPUnit\Framework\TestCase
 	{
 		// The bootstrap constructs TApplication but never runs it,
 		// so no service is active at the start of the suite.
-		$this->_serviceProp->setValue($this->_app, null);
+		PradoUnit::setProp($this->_app, '_service', null);
 		$this->assertNull($this->_app->getService());
 	}
 
@@ -139,6 +207,209 @@ class TApplicationServiceTest extends PHPUnit\Framework\TestCase
 		$stub = new TestBaseService();
 		$this->_app->setService($stub);
 		$this->assertSame($stub, $this->_app->getService());
+	}
+
+	public function testSetService_replacesExistingService(): void
+	{
+		$first  = new TestBaseService();
+		$second = new TestBaseService();
+		$this->_app->setService($first);
+		$this->_app->setService($second);
+		$this->assertSame($second, $this->_app->getService());
+	}
+
+	// -----------------------------------------------------------------------
+	// registerService
+	// -----------------------------------------------------------------------
+
+	public function testRegisterService_byClassRegistersService(): void
+	{
+		$this->_app->registerService('reg_svc', InitTrackingService::class);
+		$this->assertTrue($this->_app->hasServiceId('reg_svc'));
+	}
+
+	public function testRegisterService_byClassStoresCorrectFormat(): void
+	{
+		$this->_app->registerService('reg_fmt', InitTrackingService::class);
+		$entry = $this->_app->getServiceId('reg_fmt');
+		$this->assertIsArray($entry);
+		$this->assertSame(InitTrackingService::class, $entry[0]);
+		$this->assertSame([], $entry[1]);
+		$this->assertNull($entry[2]);
+	}
+
+	public function testRegisterService_withProperties(): void
+	{
+		$props = ['TrackedProp' => 'testValue'];
+		$this->_app->registerService('reg_props', InitTrackingService::class, $props);
+		$entry = $this->_app->getServiceId('reg_props');
+		$this->assertSame($props, $entry[1]);
+	}
+
+	public function testRegisterService_withConfigElement(): void
+	{
+		$config = ['some' => 'config'];
+		$this->_app->registerService('reg_cfg', InitTrackingService::class, [], $config);
+		$entry = $this->_app->getServiceId('reg_cfg');
+		$this->assertSame($config, $entry[2]);
+	}
+
+	public function testRegisterService_viaSpread(): void
+	{
+		// applyConfiguration calls registerService($id, ...$serviceConfig) where
+		// $serviceConfig is the [$class, $properties, $config] tuple from the XML
+		// parser. Verify that positional spreading maps correctly.
+		$tuple = [InitTrackingService::class, ['TrackedProp' => 'spread'], ['extra' => true]];
+		$this->_app->registerService('reg_spread', ...$tuple);
+		$entry = $this->_app->getServiceId('reg_spread');
+		$this->assertSame(InitTrackingService::class, $entry[0]);
+		$this->assertSame(['TrackedProp' => 'spread'], $entry[1]);
+		$this->assertSame(['extra' => true], $entry[2]);
+	}
+
+	public function testRegisterService_nullClassThrows(): void
+	{
+		$this->expectException(\Prado\Exceptions\TConfigurationException::class);
+		$this->expectExceptionMessage('no_class');
+		$this->_app->registerService('no_class', null);
+	}
+
+	public function testRegisterService_emptyClassThrows(): void
+	{
+		$this->expectException(\Prado\Exceptions\TConfigurationException::class);
+		$this->expectExceptionMessage('empty_class');
+		$this->_app->registerService('empty_class', '');
+	}
+
+	public function testRegisterService_overwritesExistingId(): void
+	{
+		$this->_app->registerService('overwrite', TestBaseService::class);
+		$this->_app->registerService('overwrite', InitTrackingService::class);
+		$entry = $this->_app->getServiceId('overwrite');
+		$this->assertSame(InitTrackingService::class, $entry[0]);
+	}
+
+	public function testRegisterService_nonExistentClassThrows(): void
+	{
+		$this->expectException(\Prado\Exceptions\TConfigurationException::class);
+		$this->expectExceptionMessage('ThisClassDoesNotExistAnywhere_XYZ');
+		$this->_app->registerService('bad', 'ThisClassDoesNotExistAnywhere_XYZ');
+	}
+
+	public function testRegisterService_nonServiceClassThrows(): void
+	{
+		$this->expectException(\Prado\Exceptions\TConfigurationException::class);
+		$this->expectExceptionMessage(NotAService::class);
+		$this->_app->registerService('bad', NotAService::class);
+	}
+
+	public function testRegisterService_validServiceClassSucceeds(): void
+	{
+		$this->_app->registerService('valid', InitTrackingService::class);
+		$this->assertTrue($this->_app->hasServiceId('valid'));
+		$entry = $this->_app->getServiceId('valid');
+		$this->assertSame(InitTrackingService::class, $entry[0]);
+	}
+
+	// -----------------------------------------------------------------------
+	// hasServiceId
+	// -----------------------------------------------------------------------
+
+	public function testHasServiceId_falseWhenNotRegistered(): void
+	{
+		$this->setServices([]);
+		$this->assertFalse($this->_app->hasServiceId('nonexistent'));
+	}
+
+	public function testHasServiceId_trueAfterRegister(): void
+	{
+		$this->setServices([]);
+		$this->_app->registerService('present', InitTrackingService::class);
+		$this->assertTrue($this->_app->hasServiceId('present'));
+	}
+
+	public function testHasServiceId_trueForPageServiceByDefault(): void
+	{
+		$this->assertTrue($this->_app->hasServiceId($this->_app->getPageServiceID()));
+	}
+
+	public function testHasServiceId_nullReturnsFalseWhenEmpty(): void
+	{
+		$this->setServices([]);
+		$this->assertFalse($this->_app->hasServiceId());
+	}
+
+	public function testHasServiceId_nullReturnsTrueWhenServicesExist(): void
+	{
+		$this->setServices([
+			'a' => [InitTrackingService::class, [], null],
+		]);
+		$this->assertTrue($this->_app->hasServiceId());
+	}
+
+	public function testHasServiceId_nullReturnsTrueForDefaultRegistry(): void
+	{
+		// Default app has at least the page service registered.
+		$this->assertTrue($this->_app->hasServiceId(null));
+	}
+
+	// -----------------------------------------------------------------------
+	// getServiceId
+	// -----------------------------------------------------------------------
+
+	public function testGetServiceId_nullWhenNotRegistered(): void
+	{
+		$this->setServices([]);
+		$this->assertNull($this->_app->getServiceId('ghost'));
+	}
+
+	public function testGetServiceId_returnsThreeElementArray(): void
+	{
+		$this->setServices([
+			'svc' => [TestBaseService::class, ['k' => 'v'], null],
+		]);
+		$entry = $this->_app->getServiceId('svc');
+		$this->assertIsArray($entry);
+		$this->assertCount(3, $entry);
+		$this->assertSame(TestBaseService::class, $entry[0]);
+		$this->assertSame(['k' => 'v'], $entry[1]);
+		$this->assertNull($entry[2]);
+	}
+
+	// -----------------------------------------------------------------------
+	// getServiceIds
+	// -----------------------------------------------------------------------
+
+	public function testGetServiceIds_emptyArrayWhenNoServices(): void
+	{
+		$this->setServices([]);
+		$this->assertSame([], $this->_app->getServiceIds());
+	}
+
+	public function testGetServiceIds_returnsAllRegisteredServices(): void
+	{
+		$map = [
+			'a' => [TestBaseService::class, [], null],
+			'b' => [TestChildService::class, [], null],
+		];
+		$this->setServices($map);
+		$this->assertSame($map, $this->_app->getServiceIds());
+	}
+
+	public function testGetServiceIds_pageServicePresentByDefault(): void
+	{
+		$ids = $this->_app->getServiceIds();
+		$this->assertArrayHasKey($this->_app->getPageServiceID(), $ids);
+	}
+
+	public function testGetServiceIds_returnsMap(): void
+	{
+		$this->setServices([
+			'x' => [TestBaseService::class, [], null],
+		]);
+		$ids = $this->_app->getServiceIds();
+		$this->assertIsArray($ids);
+		$this->assertArrayHasKey('x', $ids);
 	}
 
 	// -----------------------------------------------------------------------
@@ -189,6 +460,16 @@ class TApplicationServiceTest extends PHPUnit\Framework\TestCase
 	{
 		$id = $this->_app->getServiceIdByClass(\Prado\Web\Services\TPageService::class);
 		$this->assertNotNull($id);
+	}
+
+	public function testGetServiceIdByClass_skipsNonMatchingBeforeMatch(): void
+	{
+		$this->setServices([
+			'skip1'  => [TestUnrelatedService::class, [], null],
+			'skip2'  => [TestUnrelatedService::class, [], null],
+			'target' => [TestBaseService::class, [], null],
+		]);
+		$this->assertSame('target', $this->_app->getServiceIdByClass(TestBaseService::class));
 	}
 
 	// -----------------------------------------------------------------------
@@ -303,8 +584,63 @@ class TApplicationServiceTest extends PHPUnit\Framework\TestCase
 		}
 	}
 
+	public function testGetServiceIdsByClass_strictReturnStringIds(): void
+	{
+		$this->setServices([
+			0 => [TestBaseService::class, [], null],
+		]);
+		$result = $this->_app->getServiceIdsByClass(TestBaseService::class, strict: true);
+		$this->assertSame(['0'], $result);
+		$this->assertIsString($result[0]);
+	}
+
 	// -----------------------------------------------------------------------
-	// onConfigurationComplete
+	// unregisterService
+	// -----------------------------------------------------------------------
+
+	public function testUnregisterService_removesRegisteredService(): void
+	{
+		$this->_app->registerService('to_remove', InitTrackingService::class);
+		$this->assertTrue($this->_app->hasServiceId('to_remove'));
+		$this->_app->unregisterService('to_remove');
+		$this->assertFalse($this->_app->hasServiceId('to_remove'));
+	}
+
+	public function testUnregisterService_isNoOpForUnknownId(): void
+	{
+		$before = $this->_app->getServiceIds();
+		$this->_app->unregisterService('does_not_exist');
+		$this->assertSame($before, $this->_app->getServiceIds());
+	}
+
+	public function testUnregisterService_doesNotAffectOtherServices(): void
+	{
+		$this->setServices([
+			'keep'   => [InitTrackingService::class, [], null],
+			'remove' => [TestBaseService::class, [], null],
+		]);
+		$this->_app->unregisterService('remove');
+		$this->assertTrue($this->_app->hasServiceId('keep'));
+		$this->assertFalse($this->_app->hasServiceId('remove'));
+	}
+
+	public function testUnregisterService_canReregisterAfterRemoval(): void
+	{
+		$this->_app->registerService('cycle', TestBaseService::class);
+		$this->_app->unregisterService('cycle');
+		$this->_app->registerService('cycle', InitTrackingService::class);
+		$entry = $this->_app->getServiceId('cycle');
+		$this->assertSame(InitTrackingService::class, $entry[0]);
+	}
+
+	public function testUnregisterService_throwsForDefaultPageServiceId(): void
+	{
+		$this->expectException(\Prado\Exceptions\TConfigurationException::class);
+		$this->_app->unregisterService($this->_app->getPageServiceID());
+	}
+
+	// -----------------------------------------------------------------------
+	// onConfiguration
 	// -----------------------------------------------------------------------
 
 	public function testOnConfigurationComplete_eventIsRaiseable(): void
@@ -313,11 +649,11 @@ class TApplicationServiceTest extends PHPUnit\Framework\TestCase
 		$handler = function () use (&$called) {
 			$called = true;
 		};
-		$this->_app->attachEventHandler('onConfigurationComplete', $handler);
+		$this->_app->attachEventHandler('onConfiguration', $handler);
 
-		$this->_app->onConfigurationComplete();
+		$this->_app->onConfiguration();
 
-		$this->_app->detachEventHandler('onConfigurationComplete', $handler);
+		$this->_app->detachEventHandler('onConfiguration', $handler);
 		$this->assertTrue($called);
 	}
 
@@ -329,34 +665,95 @@ class TApplicationServiceTest extends PHPUnit\Framework\TestCase
 			$receivedSender = $sender;
 			$receivedParam = $param;
 		};
-		$this->_app->attachEventHandler('onConfigurationComplete', $handler);
+		$this->_app->attachEventHandler('onConfiguration', $handler);
 
-		$this->_app->onConfigurationComplete();
+		$this->_app->onConfiguration();
 
-		$this->_app->detachEventHandler('onConfigurationComplete', $handler);
+		$this->_app->detachEventHandler('onConfiguration', $handler);
 		$this->assertSame($this->_app, $receivedSender);
 		$this->assertNull($receivedParam);
+	}
+
+	public function testOnConfigurationComplete_multipleHandlersCalled(): void
+	{
+		$count = 0;
+		$handler1 = function () use (&$count) { $count++; };
+		$handler2 = function () use (&$count) { $count++; };
+		$this->_app->attachEventHandler('onConfiguration', $handler1);
+		$this->_app->attachEventHandler('onConfiguration', $handler2);
+
+		$this->_app->onConfiguration();
+
+		$this->_app->detachEventHandler('onConfiguration', $handler1);
+		$this->_app->detachEventHandler('onConfiguration', $handler2);
+		$this->assertSame(2, $count);
 	}
 
 	public function testOnConfigurationComplete_serviceRegisteredInHandlerIsVisibleToGetServiceIds(): void
 	{
 		// Simulate what a module would do: register a new service inside the
-		// onConfigurationComplete handler, then verify it is discoverable via
+		// onConfiguration handler, then verify it is discoverable via
 		// getServiceIdsByClass() after the event fires.
 		$app = $this->_app;
 		$handler = function () use ($app) {
-			$prop = new \ReflectionProperty(TApplication::class, '_services');
-			$prop->setAccessible(true);
-			$services = $prop->getValue($app);
-			$services['late_svc'] = [InitTrackingService::class, [], null];
-			$prop->setValue($app, $services);
+			$app->registerService('late_svc', InitTrackingService::class);
 		};
-		$app->attachEventHandler('onConfigurationComplete', $handler);
+		$app->attachEventHandler('onConfiguration', $handler);
 
-		$app->onConfigurationComplete();
+		$app->onConfiguration();
 
-		$app->detachEventHandler('onConfigurationComplete', $handler);
+		$app->detachEventHandler('onConfiguration', $handler);
 		$this->assertContains('late_svc', $app->getServiceIdsByClass(InitTrackingService::class));
+	}
+
+	// -----------------------------------------------------------------------
+	// onInitComplete
+	// -----------------------------------------------------------------------
+
+	public function testOnInitComplete_eventIsRaiseable(): void
+	{
+		$called = false;
+		$handler = function () use (&$called) {
+			$called = true;
+		};
+		$this->_app->attachEventHandler('onInitComplete', $handler);
+
+		$this->_app->onInitComplete();
+
+		$this->_app->detachEventHandler('onInitComplete', $handler);
+		$this->assertTrue($called);
+	}
+
+	public function testOnInitComplete_handlerReceivesApplicationAndNullParam(): void
+	{
+		$receivedSender = null;
+		$receivedParam = 'not-null';
+		$handler = function ($sender, $param) use (&$receivedSender, &$receivedParam) {
+			$receivedSender = $sender;
+			$receivedParam = $param;
+		};
+		$this->_app->attachEventHandler('onInitComplete', $handler);
+
+		$this->_app->onInitComplete();
+
+		$this->_app->detachEventHandler('onInitComplete', $handler);
+		$this->assertSame($this->_app, $receivedSender);
+		$this->assertNull($receivedParam);
+	}
+
+	public function testOnInitComplete_multipleHandlersCalled(): void
+	{
+		$count = 0;
+		$h1 = function () use (&$count) { $count++; };
+		$h2 = function () use (&$count) { $count++; };
+		$this->_app->attachEventHandler('onInitComplete', $h1);
+		$this->_app->attachEventHandler('onInitComplete', $h2);
+
+		$this->_app->onInitComplete();
+
+		$this->_app->detachEventHandler('onInitComplete', $h1);
+		$this->_app->detachEventHandler('onInitComplete', $h2);
+		$this->assertSame(2, $count);
 	}
 
 	// -----------------------------------------------------------------------
@@ -427,5 +824,34 @@ class TApplicationServiceTest extends PHPUnit\Framework\TestCase
 		/** @var InitTrackingService $service */
 		$service = $this->_app->getService();
 		$this->assertTrue($service->initCalled);
+	}
+
+	public function testStartService_registeredViaRegisterService(): void
+	{
+		// Verify that a service registered via registerService() is correctly
+		// started by startService().
+		$this->_app->registerService('dyn_svc', InitTrackingService::class, ['TrackedProp' => 'dynamic']);
+		$this->_app->startService('dyn_svc');
+		/** @var InitTrackingService $service */
+		$service = $this->_app->getService();
+		$this->assertInstanceOf(InitTrackingService::class, $service);
+		$this->assertSame('dyn_svc', $service->getID());
+		$this->assertSame('dynamic', $service->getTrackedProp());
+		$this->assertTrue($service->initCalled);
+	}
+
+	public function testStartService_multipleSequentialStarts(): void
+	{
+		// Each call to startService() must replace the active service completely.
+		$this->setServices([
+			'first'  => [InitTrackingService::class, [], null],
+			'second' => [TestChildService::class, [], null],
+		]);
+		$this->_app->startService('first');
+		$this->assertInstanceOf(InitTrackingService::class, $this->_app->getService());
+
+		$this->_app->startService('second');
+		$this->assertInstanceOf(TestChildService::class, $this->_app->getService());
+		$this->assertSame('second', $this->_app->getService()->getID());
 	}
 }
