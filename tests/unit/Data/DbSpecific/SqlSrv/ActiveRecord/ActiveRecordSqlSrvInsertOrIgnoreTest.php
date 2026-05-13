@@ -12,6 +12,10 @@ use Prado\Data\TDbConnection;
  *
  * SQL Server's upsert_test table uses `username` as the PK (no auto-increment id).
  *
+ * SQL Server uses MERGE for insertOrIgnore/upsert, which requires an active explicit
+ * transaction.  Every test that calls insertOrIgnore() wraps the call(s) in an
+ * explicit transaction so that TSqlSrvCommandBuilder does not throw.
+ *
  * Requires: prado_unitest SQL Server database with the `upsert_test` table
  *   (see tests/initdb_sqlsrv.sql).
  */
@@ -70,7 +74,9 @@ class ActiveRecordSqlSrvInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$record->username = 'alice';
 		$record->score = 10;
 
+		$txn = static::$conn->beginTransaction();
 		$result = $record->insertOrIgnore();
+		$txn->commit();
 
 		$this->assertNotFalse($result);
 	}
@@ -83,7 +89,9 @@ class ActiveRecordSqlSrvInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 
 		$this->assertSame(TActiveRecord::STATE_NEW, $record->getRecordState(), 'should start STATE_NEW');
 
+		$txn = static::$conn->beginTransaction();
 		$record->insertOrIgnore();
+		$txn->commit();
 
 		$this->assertSame(TActiveRecord::STATE_LOADED, $record->getRecordState());
 	}
@@ -94,7 +102,9 @@ class ActiveRecordSqlSrvInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$record->username = 'alice';
 		$record->score = 42;
 
+		$txn = static::$conn->beginTransaction();
 		$record->insertOrIgnore();
+		$txn->commit();
 
 		$found = SqlSrvUpsertTestRecord::finder()->findByPk('alice');
 		$this->assertNotNull($found);
@@ -111,13 +121,16 @@ class ActiveRecordSqlSrvInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$first = new SqlSrvUpsertTestRecord();
 		$first->username = 'alice';
 		$first->score = 10;
+		$txn = static::$conn->beginTransaction();
 		$first->insertOrIgnore();
+		$txn->commit();
 
 		$duplicate = new SqlSrvUpsertTestRecord();
 		$duplicate->username = 'alice';
 		$duplicate->score = 99;
-
+		$txn = static::$conn->beginTransaction();
 		$result = $duplicate->insertOrIgnore();
+		$txn->commit();
 
 		$this->assertFalse($result);
 	}
@@ -127,12 +140,16 @@ class ActiveRecordSqlSrvInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$first = new SqlSrvUpsertTestRecord();
 		$first->username = 'alice';
 		$first->score = 10;
+		$txn = static::$conn->beginTransaction();
 		$first->insertOrIgnore();
+		$txn->commit();
 
 		$duplicate = new SqlSrvUpsertTestRecord();
 		$duplicate->username = 'alice';
 		$duplicate->score = 99;
+		$txn = static::$conn->beginTransaction();
 		$duplicate->insertOrIgnore();
+		$txn->commit();
 
 		$this->assertSame(TActiveRecord::STATE_NEW, $duplicate->getRecordState());
 	}
@@ -142,12 +159,16 @@ class ActiveRecordSqlSrvInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$first = new SqlSrvUpsertTestRecord();
 		$first->username = 'alice';
 		$first->score = 10;
+		$txn = static::$conn->beginTransaction();
 		$first->insertOrIgnore();
+		$txn->commit();
 
 		$duplicate = new SqlSrvUpsertTestRecord();
 		$duplicate->username = 'alice';
 		$duplicate->score = 99;
+		$txn = static::$conn->beginTransaction();
 		$duplicate->insertOrIgnore();
+		$txn->commit();
 
 		$found = SqlSrvUpsertTestRecord::finder()->findByPk('alice');
 		$this->assertSame(10, (int) $found->score, 'original score must be unchanged');
@@ -165,7 +186,9 @@ class ActiveRecordSqlSrvInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 			$eventFired = true;
 		};
 
+		$txn = static::$conn->beginTransaction();
 		$record->insertOrIgnore();
+		$txn->commit();
 
 		$this->assertTrue($eventFired, 'OnInsert event was not fired');
 	}
@@ -180,6 +203,7 @@ class ActiveRecordSqlSrvInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 			$param->setIsValid(false);
 		};
 
+		// Veto fires before the MERGE is issued — no transaction required.
 		$result = $record->insertOrIgnore();
 
 		$this->assertFalse($result);

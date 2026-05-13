@@ -68,7 +68,7 @@ class TDbDriverCapabilitiesSqlSrvIntegrationTest extends PHPUnit\Framework\TestC
 		}
 		try {
 			$conn = new TDbConnection(
-				'sqlsrv:Server=localhost,1433;TrustServerCertificate=yes',
+				'sqlsrv:Server=localhost,1433;Database=prado_unitest;TrustServerCertificate=yes',
 				'prado_unitest',
 				'prado_unitest',
 				$charset
@@ -355,15 +355,9 @@ class TDbDriverCapabilitiesSqlSrvIntegrationTest extends PHPUnit\Framework\TestC
 	{
 		// Create a temporary table, run the INFORMATION_SCHEMA.TABLES query, verify
 		// the name appears, then clean up.  sqlsrv stores table names case-insensitively.
-		// Skipped automatically when the connected user lacks DDL permissions (e.g. master db).
 		$conn = $this->openSqlsrv();
-		try {
-			$conn->createCommand('IF OBJECT_ID(\'caps_mssql_list_test\',\'U\') IS NOT NULL DROP TABLE caps_mssql_list_test')->execute();
-			$conn->createCommand('CREATE TABLE caps_mssql_list_test (id INT NOT NULL PRIMARY KEY)')->execute();
-		} catch (\Exception $e) {
-			$conn->Active = false;
-			$this->markTestSkipped('DDL not permitted on this SQL Server connection: ' . $e->getMessage());
-		}
+		$conn->createCommand('IF OBJECT_ID(\'caps_mssql_list_test\',\'U\') IS NOT NULL DROP TABLE caps_mssql_list_test')->execute();
+		$conn->createCommand('CREATE TABLE caps_mssql_list_test (id INT NOT NULL PRIMARY KEY)')->execute();
 
 		$sql  = TDbDriverCapabilities::getListTablesSql('sqlsrv');
 		$rows = $conn->createCommand($sql)->queryAll();
@@ -379,15 +373,9 @@ class TDbDriverCapabilitiesSqlSrvIntegrationTest extends PHPUnit\Framework\TestC
 	public function testSqlsrvListTablesQueryExcludesViews(): void
 	{
 		// The capability SQL filters TABLE_TYPE = 'BASE TABLE'; views must not appear.
-		// Skipped automatically when the connected user lacks DDL permissions (e.g. master db).
 		$conn = $this->openSqlsrv();
-		try {
-			$conn->createCommand('IF OBJECT_ID(\'caps_mssql_view_test\',\'V\') IS NOT NULL DROP VIEW caps_mssql_view_test')->execute();
-			$conn->createCommand('CREATE VIEW caps_mssql_view_test AS SELECT 1 AS n')->execute();
-		} catch (\Exception $e) {
-			$conn->Active = false;
-			$this->markTestSkipped('DDL not permitted on this SQL Server connection: ' . $e->getMessage());
-		}
+		$conn->createCommand('IF OBJECT_ID(\'caps_mssql_view_test\',\'V\') IS NOT NULL DROP VIEW caps_mssql_view_test')->execute();
+		$conn->createCommand('CREATE VIEW caps_mssql_view_test AS SELECT 1 AS n')->execute();
 
 		$sql  = TDbDriverCapabilities::getListTablesSql('sqlsrv');
 		$rows = $conn->createCommand($sql)->queryAll();
@@ -400,16 +388,10 @@ class TDbDriverCapabilitiesSqlSrvIntegrationTest extends PHPUnit\Framework\TestC
 
 	public function testSqlsrvListTablesQueryDoesNotReturnDroppedTable(): void
 	{
-		// Skipped automatically when the connected user lacks DDL permissions (e.g. master db).
 		$conn = $this->openSqlsrv();
-		try {
-			$conn->createCommand('IF OBJECT_ID(\'caps_mssql_dropped_test\',\'U\') IS NOT NULL DROP TABLE caps_mssql_dropped_test')->execute();
-			$conn->createCommand('CREATE TABLE caps_mssql_dropped_test (id INT NOT NULL PRIMARY KEY)')->execute();
-			$conn->createCommand('DROP TABLE caps_mssql_dropped_test')->execute();
-		} catch (\Exception $e) {
-			$conn->Active = false;
-			$this->markTestSkipped('DDL not permitted on this SQL Server connection: ' . $e->getMessage());
-		}
+		$conn->createCommand('IF OBJECT_ID(\'caps_mssql_dropped_test\',\'U\') IS NOT NULL DROP TABLE caps_mssql_dropped_test')->execute();
+		$conn->createCommand('CREATE TABLE caps_mssql_dropped_test (id INT NOT NULL PRIMARY KEY)')->execute();
+		$conn->createCommand('DROP TABLE caps_mssql_dropped_test')->execute();
 
 		$sql  = TDbDriverCapabilities::getListTablesSql('sqlsrv');
 		$rows = $conn->createCommand($sql)->queryAll();
@@ -510,17 +492,12 @@ class TDbDriverCapabilitiesSqlSrvIntegrationTest extends PHPUnit\Framework\TestC
 		// Two sequential work units on the same object: first commits (row persists),
 		// second rolls back (row discarded).
 		$conn = $this->openSqlsrv();
-		try {
-			$conn->createCommand(
-				"IF OBJECT_ID('caps_mssql_tx_reuse','U') IS NOT NULL DROP TABLE caps_mssql_tx_reuse"
-			)->execute();
-			$conn->createCommand(
-				'CREATE TABLE caps_mssql_tx_reuse (id INT NOT NULL PRIMARY KEY)'
-			)->execute();
-		} catch (\Exception $e) {
-			$conn->Active = false;
-			$this->markTestSkipped('DDL not permitted on this SQL Server connection: ' . $e->getMessage());
-		}
+		$conn->createCommand(
+			"IF OBJECT_ID('caps_mssql_tx_reuse','U') IS NOT NULL DROP TABLE caps_mssql_tx_reuse"
+		)->execute();
+		$conn->createCommand(
+			'CREATE TABLE caps_mssql_tx_reuse (id INT NOT NULL PRIMARY KEY)'
+		)->execute();
 
 		$tx = $conn->beginTransaction();
 		$conn->createCommand('INSERT INTO caps_mssql_tx_reuse VALUES (1)')->execute();

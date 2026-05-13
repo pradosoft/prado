@@ -126,8 +126,8 @@ class SqlSrvBaseTestConfig extends BaseTestConfig
 		$this->_sqlmapConfigFile = SQLMAP_TESTS . '/sqlsrv.xml';
 		$this->_scriptDir = SQLMAP_TESTS . '/scripts/sqlsrv/';
 		$this->_features = ['insert_id'];
-		$dsn = 'sqlsrv:Server=localhost,1433;Database=prado_unitest';
-		$this->_connection = new TDbConnection($dsn, 'prado_unitest', 'Prado_unitest1!');
+		$dsn = 'sqlsrv:Server=localhost,1433;Database=prado_unitest;TrustServerCertificate=yes';
+		$this->_connection = new TDbConnection($dsn, 'prado_unitest', 'prado_unitest');
 	}
 }
 
@@ -148,8 +148,11 @@ class IbmBaseTestConfig extends BaseTestConfig
 	{
 		$this->_sqlmapConfigFile = SQLMAP_TESTS . '/ibm.xml';
 		$this->_scriptDir = SQLMAP_TESTS . '/scripts/ibm/';
-		$dsn = 'ibm:DRIVER={IBM DB2 ODBC DRIVER};DATABASE=pradount;HOSTNAME=localhost;PORT=50000;PROTOCOL=TCPIP';
-		$this->_connection = new TDbConnection($dsn, 'db2inst1', 'db2inst1');
+		$user     = getenv('DB2_USER')     ?: 'db2inst1';
+		$password = getenv('DB2_PASSWORD') ?: 'Prado_Unitest1';
+		$dbname   = getenv('DB2_DATABASE') ?: 'pradount';
+		$dsn = 'ibm:DRIVER={IBM DB2 ODBC DRIVER};DATABASE=' . $dbname . ';HOSTNAME=localhost;PORT=50000;PROTOCOL=TCPIP';
+		$this->_connection = new TDbConnection($dsn, $user, $password);
 	}
 }
 

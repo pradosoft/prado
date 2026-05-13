@@ -13,7 +13,11 @@ use Prado\Data\TDbConnection;
  * IBM DB2's upsert_test table uses `username` as the PK (no auto-increment id).
  * upsert() returns true (not an integer ID) on success.
  *
- * Requires: prado_unitest SQL Server database with the `upsert_test` table
+ * IBM DB2 uses MERGE for insertOrIgnore/upsert, which requires an active explicit
+ * transaction.  Every test that calls upsert() wraps the call(s) in an explicit
+ * transaction so that TIbmCommandBuilder does not throw.
+ *
+ * Requires: prado_unitest IBM DB2 database with the `upsert_test` table
  *   (see tests/initdb_ibm.sql).
  */
 class ActiveRecordIbmUpsertTest extends PHPUnit\Framework\TestCase
@@ -71,7 +75,9 @@ class ActiveRecordIbmUpsertTest extends PHPUnit\Framework\TestCase
 		$record->username = 'alice';
 		$record->score = 10;
 
+		$txn = static::$conn->beginTransaction();
 		$record->upsert();
+		$txn->commit();
 
 		$this->assertNotNull($record->username);
 		$this->assertSame('alice', $record->username);
@@ -85,7 +91,9 @@ class ActiveRecordIbmUpsertTest extends PHPUnit\Framework\TestCase
 
 		$this->assertSame(TActiveRecord::STATE_NEW, $record->getRecordState(), 'should start STATE_NEW');
 
+		$txn = static::$conn->beginTransaction();
 		$record->upsert();
+		$txn->commit();
 
 		$this->assertSame(TActiveRecord::STATE_LOADED, $record->getRecordState());
 	}
@@ -96,7 +104,9 @@ class ActiveRecordIbmUpsertTest extends PHPUnit\Framework\TestCase
 		$record->username = 'alice';
 		$record->score = 42;
 
+		$txn = static::$conn->beginTransaction();
 		$record->upsert();
+		$txn->commit();
 
 		$found = IbmUpsertTestRecord::finder()->findByPk('alice');
 		$this->assertNotNull($found);
@@ -110,7 +120,9 @@ class ActiveRecordIbmUpsertTest extends PHPUnit\Framework\TestCase
 		$record->username = 'alice';
 		$record->score = 10;
 
+		$txn = static::$conn->beginTransaction();
 		$result = $record->upsert();
+		$txn->commit();
 
 		$this->assertNotFalse($result);
 	}
@@ -124,12 +136,16 @@ class ActiveRecordIbmUpsertTest extends PHPUnit\Framework\TestCase
 		$original = new IbmUpsertTestRecord();
 		$original->username = 'alice';
 		$original->score = 10;
+		$txn = static::$conn->beginTransaction();
 		$original->upsert();
+		$txn->commit();
 
 		$update = new IbmUpsertTestRecord();
 		$update->username = 'alice';
 		$update->score = 99;
+		$txn = static::$conn->beginTransaction();
 		$update->upsert();
+		$txn->commit();
 
 		$found = IbmUpsertTestRecord::finder()->findByPk('alice');
 		$this->assertSame(99, (int) $found->score);
@@ -140,13 +156,16 @@ class ActiveRecordIbmUpsertTest extends PHPUnit\Framework\TestCase
 		$original = new IbmUpsertTestRecord();
 		$original->username = 'alice';
 		$original->score = 10;
+		$txn = static::$conn->beginTransaction();
 		$original->upsert();
+		$txn->commit();
 
 		$update = new IbmUpsertTestRecord();
 		$update->username = 'alice';
 		$update->score = 99;
-
+		$txn = static::$conn->beginTransaction();
 		$result = $update->upsert();
+		$txn->commit();
 
 		$this->assertNotFalse($result);
 	}
@@ -156,12 +175,16 @@ class ActiveRecordIbmUpsertTest extends PHPUnit\Framework\TestCase
 		$original = new IbmUpsertTestRecord();
 		$original->username = 'alice';
 		$original->score = 10;
+		$txn = static::$conn->beginTransaction();
 		$original->upsert();
+		$txn->commit();
 
 		$update = new IbmUpsertTestRecord();
 		$update->username = 'alice';
 		$update->score = 99;
+		$txn = static::$conn->beginTransaction();
 		$update->upsert();
+		$txn->commit();
 
 		$count = (int) static::$conn->createCommand('SELECT COUNT(*) FROM upsert_test')->queryScalar();
 		$this->assertSame(1, $count);
@@ -180,7 +203,9 @@ class ActiveRecordIbmUpsertTest extends PHPUnit\Framework\TestCase
 		$update = new IbmUpsertTestRecord();
 		$update->username = 'alice';
 		$update->score = 88;
+		$txn = static::$conn->beginTransaction();
 		$update->upsert(null, ['username']);
+		$txn->commit();
 
 		$found = IbmUpsertTestRecord::finder()->findByPk('alice');
 		$this->assertSame(88, (int) $found->score);
@@ -195,7 +220,9 @@ class ActiveRecordIbmUpsertTest extends PHPUnit\Framework\TestCase
 		$update = new IbmUpsertTestRecord();
 		$update->username = 'alice';
 		$update->score = 99;
+		$txn = static::$conn->beginTransaction();
 		$update->upsert([], ['username']);
+		$txn->commit();
 
 		$found = IbmUpsertTestRecord::finder()->findByPk('alice');
 		$this->assertSame(10, (int) $found->score, 'score must not change when updateData is empty');
@@ -214,7 +241,9 @@ class ActiveRecordIbmUpsertTest extends PHPUnit\Framework\TestCase
 		$update = new IbmUpsertTestRecord();
 		$update->username = 'alice';
 		$update->score = 77;
+		$txn = static::$conn->beginTransaction();
 		$update->upsert(['score'], ['username']);
+		$txn->commit();
 
 		$found = IbmUpsertTestRecord::finder()->findByPk('alice');
 		$this->assertSame(77, (int) $found->score);
@@ -229,7 +258,9 @@ class ActiveRecordIbmUpsertTest extends PHPUnit\Framework\TestCase
 		$update = new IbmUpsertTestRecord();
 		$update->username = 'alice';
 		$update->score = 55;
+		$txn = static::$conn->beginTransaction();
 		$update->upsert(['score' => 99], ['username']);
+		$txn->commit();
 
 		$found = IbmUpsertTestRecord::finder()->findByPk('alice');
 		$this->assertSame(99, (int) $found->score);
@@ -245,7 +276,9 @@ class ActiveRecordIbmUpsertTest extends PHPUnit\Framework\TestCase
 		$update->username = 'alice';
 		$update->score = 42;
 		// score from record (int-keyed), score is 42 so we also pass an explicit value
+		$txn = static::$conn->beginTransaction();
 		$update->upsert(['score' => 42], ['username']);
+		$txn->commit();
 
 		$found = IbmUpsertTestRecord::finder()->findByPk('alice');
 		$this->assertSame(42, (int) $found->score);
@@ -267,7 +300,9 @@ class ActiveRecordIbmUpsertTest extends PHPUnit\Framework\TestCase
 		$update = new IbmUpsertTestRecord();
 		$update->username = 'alice';
 		$update->score = 99;
+		$txn = static::$conn->beginTransaction();
 		$update->upsert();
+		$txn->commit();
 
 		$bob = IbmUpsertTestRecord::finder()->findByPk('bob');
 		$this->assertSame(20, (int) $bob->score, 'bob must be unaffected');
@@ -289,7 +324,9 @@ class ActiveRecordIbmUpsertTest extends PHPUnit\Framework\TestCase
 			$eventFired = true;
 		};
 
+		$txn = static::$conn->beginTransaction();
 		$record->upsert();
+		$txn->commit();
 
 		$this->assertTrue($eventFired, 'OnInsert event was not fired on insert path');
 	}
@@ -309,7 +346,9 @@ class ActiveRecordIbmUpsertTest extends PHPUnit\Framework\TestCase
 			$eventFired = true;
 		};
 
+		$txn = static::$conn->beginTransaction();
 		$update->upsert();
+		$txn->commit();
 
 		$this->assertTrue($eventFired, 'OnInsert event must fire on the update (conflict) path too');
 	}
@@ -324,6 +363,7 @@ class ActiveRecordIbmUpsertTest extends PHPUnit\Framework\TestCase
 			$param->setIsValid(false);
 		};
 
+		// Veto fires before the MERGE is issued — no transaction required.
 		$result = $record->upsert();
 
 		$this->assertFalse($result);
