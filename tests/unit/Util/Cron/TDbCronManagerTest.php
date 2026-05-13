@@ -5,7 +5,7 @@ use Prado\Exceptions\TInvalidOperationException;
 use Prado\Util\Cron\TDbCronModule;
 use Prado\Util\Cron\TCronMethodTask;
 
-class TDbCronModuleTest extends TCronModuleTest
+class TDbCronManagerTest extends TCronModuleTest
 {
 	protected function getTestClass()
 	{
@@ -666,8 +666,9 @@ class TDbCronModuleTest extends TCronModuleTest
 		];
 		
 		$this->obj->setLogCronTasks(true);
+		$this->obj->setInCronShell(false); // prevent minute-boundary cutoff under CI environments where TERM is unset
 		$this->obj->init($jobs);
-		
+
 		self::assertEquals(0, $this->obj->getCronLogCount());
 		self::assertEquals(5, $this->obj->processPendingTasks(false)); // 5 logs
 		

@@ -52,7 +52,7 @@ class TShellDbCronActionTest extends PHPUnit\Framework\TestCase
 		
 		//  no TCronModule in application, failed 
 		self::assertTrue($this->obj->actionRun(['cron']));
-		self::assertEquals(1, preg_match("/TDbCronModule/", $text = $this->writer->flush()));
+		self::assertEquals(1, preg_match("/TDbCronManager/", $text = $this->writer->flush()));
 		
 		$jobs = [['name' => 'testTaskA', 'schedule' => '1 2 3 4 ? 2020', 'task' => 'TTestCronModuleTask', 'username' => 'admin123', 'moduleid' => 'cronmodule99', 'propertya' => 'value1']];
 		$cronClass = $this->getTestCronClass();

@@ -17,7 +17,7 @@ use Prado\TPropertyValue;
  * TCronTaskInfo class.
  *
  * TCronTaskInfo helps distribute information for application cron tasks.
- * This is for adding cron tasks via TDbCronModule.  The Task can be a class,
+ * This is for adding cron tasks via TDbCronManager.  The Task can be a class,
  * or a module id with method and parameters.
  *
  * @author Brad Anderson <belisoful@icloud.com>

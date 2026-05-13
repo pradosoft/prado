@@ -609,10 +609,10 @@ cron_not_a_crontask						= Cron Task '{0}' is not a TCronTask.
 cron_additional_tasks_invalid			= '{0}' is not a valid additional cron task.
 crontask_no_module						= TCronTask could not find module '{0}'.
 dbcronclean_moduleid_is_null			= TDbCronCleanLogTask could not find the specified module '{0}'.
-dbcron_invalid_name						= TDbCronModule the task name '{0}' is invalid .
+dbcron_invalid_name						= TDbCronManager the task name '{0}' is invalid .
 dbcron_conflicting_task_names			= Configuration cron tasks conflict with DB cron tasks '{0}'.
-dbcron_table_nonexistent				= TDbCronModule database table does not exist.
-dbcron_connectionid_invalid				= TDbCronModule.ConnectionID '{0}' is not a TDataSourceConfig.
+dbcron_table_nonexistent				= TDbCronManager database table does not exist.
+dbcron_connectionid_invalid				= TDbCronManager.ConnectionID '{0}' is not a TDataSourceConfig.
 
 timescheduler_invalid_string			= TTimeScheduler could not parse the schedule element '{0}'
 

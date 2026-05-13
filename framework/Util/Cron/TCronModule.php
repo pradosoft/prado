@@ -122,7 +122,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	/** @var null|bool is the app running in cron shell mode or not, or null for auto-detect */
 	private $_inCronShell;
 
-	/** @var string the cli class to instance for CLI command line actions; this changes for TDbCronModule */
+	/** @var string the cli class to instance for CLI command line actions; this changes for TDbCronManager */
 	protected $_shellClass = \Prado\Util\Cron\TShellCronAction::class;
 
 	/** @var array[] any additional tasks to install from properties */

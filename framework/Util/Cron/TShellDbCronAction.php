@@ -25,7 +25,7 @@ use Prado\Shell\TShellWriter;
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0
- * @method null|\Prado\Util\Cron\TDbCronModule getCronModule()
+ * @method null|\Prado\Util\Cron\TDbCronManager getCronModule()
  */
 class TShellDbCronAction extends TShellCronAction
 {
@@ -42,12 +42,12 @@ class TShellDbCronAction extends TShellCronAction
 	];
 
 	/**
-	 * Overrides parent getModuleClass to return the TDbCronModule class.
+	 * Overrides parent getModuleClass to return the TDbCronManager class.
 	 * @return string the DbCron Class to find
 	 */
 	public function getModuleClass()
 	{
-		return \Prado\Util\Cron\TDbCronModule::class;
+		return \Prado\Util\Cron\TDbCronManager::class;
 	}
 
 	/**

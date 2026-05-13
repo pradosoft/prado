@@ -317,6 +317,7 @@ return [
 'TCronTask' => 'Prado\Util\Cron\TCronTask',
 'TCronTaskInfo' => 'Prado\Util\Cron\TCronTaskInfo',
 'TDbCronCleanLogTask' => 'Prado\Util\Cron\TDbCronCleanLogTask',
+'TDbCronManager' => 'Prado\Util\Cron\TDbCronManager',
 'TDbCronModule' => 'Prado\Util\Cron\TDbCronModule',
 'TShellCronAction' => 'Prado\Util\Cron\TShellCronAction',
 'TShellCronLogBehavior' => 'Prado\Util\Cron\TShellCronLogBehavior',

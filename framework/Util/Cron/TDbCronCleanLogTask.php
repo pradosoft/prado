@@ -32,9 +32,9 @@ class TDbCronCleanLogTask extends TCronTask
 	private $_timeperiod = 2419200; //86400 seconds/day * 28 days
 
 	/**
-	 * This clears the log of the TDBCronModule specified by the ModuleId,
+	 * This clears the log of the TDbCronManager specified by the ModuleId,
 	 * or if none specified, then the cron executing this task.
-	 * @param TDbCronModule $cron
+	 * @param \Prado\Util\Cron\TCronModule|\Prado\Util\Cron\TDbCronManager $cron
 	 */
 	public function execute($cron)
 	{
@@ -44,7 +44,7 @@ class TDbCronCleanLogTask extends TCronTask
 				throw new TInvalidDataValueException('dbcronclean_moduleid_is_null', $mid);
 			}
 		}
-		if (is_object($cron) && $cron instanceof \Prado\Util\Cron\TDbCronModule) {
+		if (is_object($cron) && $cron instanceof \Prado\Util\Cron\TDbCronManager) {
 			$count = $cron->clearCronLog($this->getTimePeriod());
 
 			if ($cron->asa(TCronModule::SHELL_LOG_BEHAVIOR)) {
