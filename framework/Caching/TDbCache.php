@@ -430,7 +430,7 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 			$this->initializeCache();
 		}
 
-		$sql = 'SELECT value FROM ' . $this->_cacheTable . ' WHERE itemkey=\'' . $key . '\' AND (expire=0 OR expire>' . time() . ') ORDER BY expire DESC';
+		$sql = 'SELECT value FROM ' . $this->_cacheTable . ' WHERE itemkey=\'' . $key . '\' AND (expire=0 OR expire>=' . time() . ') ORDER BY expire DESC';
 		$command = $this->getDbConnection()->createCommand($sql);
 		try {
 			return unserialize($command->queryScalar());
