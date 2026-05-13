@@ -553,13 +553,6 @@ class TDbDriverCapabilitiesFirebirdIntegrationTest extends PHPUnit\Framework\Tes
 			'CREATE TABLE CAPS_FB_ROLLBACK_TEST (ID INTEGER NOT NULL PRIMARY KEY)'
 		)->execute();
 
-		// Skip if pdo_firebird rollback is not reliable on this server build.
-		if (!$this->probeFirebirdRollback($conn, 'CAPS_FB_ROLLBACK_TEST')) {
-			try { $conn->createCommand('DROP TABLE CAPS_FB_ROLLBACK_TEST')->execute(); } catch (\Exception $e) {}
-			$conn->Active = false;
-			$this->markTestSkipped('pdo_firebird rollback is unreliable in this environment; skipping.');
-		}
-
 		$tx = $conn->beginTransaction();
 		$conn->createCommand('INSERT INTO CAPS_FB_ROLLBACK_TEST VALUES (1)')->execute();
 		$tx->rollBack();
@@ -589,13 +582,6 @@ class TDbDriverCapabilitiesFirebirdIntegrationTest extends PHPUnit\Framework\Tes
 		$conn->createCommand(
 			'CREATE TABLE CAPS_FB_MULTI_TEST (ID INTEGER NOT NULL PRIMARY KEY)'
 		)->execute();
-
-		// Skip if pdo_firebird rollback is not reliable on this server build.
-		if (!$this->probeFirebirdRollback($conn, 'CAPS_FB_MULTI_TEST')) {
-			try { $conn->createCommand('DROP TABLE CAPS_FB_MULTI_TEST')->execute(); } catch (\Exception $e) {}
-			$conn->Active = false;
-			$this->markTestSkipped('pdo_firebird rollback is unreliable in this environment; skipping.');
-		}
 
 		// Cycle 1: commit id=1.
 		$tx = $conn->beginTransaction();
@@ -711,13 +697,6 @@ class TDbDriverCapabilitiesFirebirdIntegrationTest extends PHPUnit\Framework\Tes
 			'CREATE TABLE CAPS_FB_TX_REUSE (ID INTEGER NOT NULL PRIMARY KEY)'
 		)->execute();
 
-		// Skip if pdo_firebird rollback is not reliable on this server build.
-		if (!$this->probeFirebirdRollback($conn, 'CAPS_FB_TX_REUSE')) {
-			try { $conn->createCommand('DROP TABLE CAPS_FB_TX_REUSE')->execute(); } catch (\Exception $e) {}
-			$conn->Active = false;
-			$this->markTestSkipped('pdo_firebird rollback is unreliable in this environment; skipping.');
-		}
-
 		$tx = $conn->beginTransaction();
 		$conn->createCommand('INSERT INTO CAPS_FB_TX_REUSE VALUES (1)')->execute();
 		$tx->commit();
@@ -736,43 +715,6 @@ class TDbDriverCapabilitiesFirebirdIntegrationTest extends PHPUnit\Framework\Tes
 		} catch (\Exception $e) {
 		}
 		$conn->Active = false;
-	}
-
-	/**
-	 * Probes whether this pdo_firebird/Firebird combination reliably rolls back DML.
-	 *
-	 * Inserts one row, rolls back, then checks the row is gone. Returns true when
-	 * rollback works correctly, false when pdo_firebird commits on rollback (a known
-	 * bug in some PHP 8.x pdo_firebird builds). Any accidentally-committed probe
-	 * row is deleted before returning false.
-	 *
-	 * @param TDbConnection $conn active Firebird connection.
-	 * @param string        $table table name to use for the probe (must accept an INT column named ID).
-	 * @return bool true = rollback reliable; false = rollback broken, skip the caller.
-	 */
-	private function probeFirebirdRollback(\Prado\Data\TDbConnection $conn, string $table): bool
-	{
-		$pdo = $conn->getPdoInstance();
-		try { $pdo->commit(); } catch (\Throwable $e) {}
-		$conn->beginTransaction()->commit();                // cycle once to reset internal state
-		try { $pdo->commit(); } catch (\Throwable $e) {}
-
-		$tx = $conn->beginTransaction();
-		$conn->createCommand("INSERT INTO $table VALUES (99999)")->execute();
-		$tx->rollBack();
-
-		$count = (int) $conn->createCommand(
-			"SELECT COUNT(*) FROM $table WHERE ID = 99999"
-		)->queryScalar();
-
-		if ($count !== 0) {
-			try {
-				$conn->createCommand("DELETE FROM $table WHERE ID = 99999")->execute();
-				try { $pdo->commit(); } catch (\Throwable $e) {}
-			} catch (\Throwable $e) {}
-			return false;
-		}
-		return true;
 	}
 
 	public function testFirebirdTxBeginTransactionThrowsWhenSuperseded(): void

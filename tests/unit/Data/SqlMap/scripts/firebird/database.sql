@@ -2,22 +2,22 @@
    Run via isql-fb after connecting to the prado_unitest.fdb database.
    Firebird note: DROP TABLE fails if the table does not exist; wrap in exception block if needed. */
 
-/* Drop tables (ignore errors on fresh DB) */
-DROP TABLE LineItems;
-DROP TABLE Orders;
-DROP TABLE Accounts;
-DROP TABLE Categories;
-DROP TABLE Documents;
-DROP TABLE Enumerations;
-DROP TABLE Others;
-DROP TABLE Users;
-DROP TABLE A;
-DROP TABLE B;
-DROP TABLE C;
-DROP TABLE D;
-DROP TABLE E;
-DROP TABLE F;
-DROP GENERATOR categories_gen;
+/* Drop tables — IF EXISTS prevents errors on a fresh database (Firebird 4.0+). */
+DROP TABLE IF EXISTS LineItems;
+DROP TABLE IF EXISTS Orders;
+DROP TABLE IF EXISTS Accounts;
+DROP TABLE IF EXISTS Categories;
+DROP TABLE IF EXISTS Documents;
+DROP TABLE IF EXISTS Enumerations;
+DROP TABLE IF EXISTS Others;
+DROP TABLE IF EXISTS Users;
+DROP TABLE IF EXISTS A;
+DROP TABLE IF EXISTS B;
+DROP TABLE IF EXISTS C;
+DROP TABLE IF EXISTS D;
+DROP TABLE IF EXISTS E;
+DROP TABLE IF EXISTS F;
+DROP SEQUENCE IF EXISTS categories_gen;
 
 CREATE TABLE C (
     ID VARCHAR(50) NOT NULL PRIMARY KEY,
