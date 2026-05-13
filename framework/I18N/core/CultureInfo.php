@@ -46,6 +46,27 @@ use IntlException;
  *
  * For example, Australian English is "en_AU".
  *
+ * **POSIX underscore convention** — PRADO uses the POSIX locale identifier
+ * format throughout (underscore separator, e.g. "en_AU", "zh_TW").  This
+ * differs from the BCP 47 web standard used by browsers and modern ICU
+ * (hyphen separator, e.g. "en-AU", "zh-TW").  {@see TGlobalization::setCulture()}
+ * normalizes incoming hyphen-separated values to the POSIX form so that the
+ * rest of the framework remains consistent.  Resource file names, page
+ * templates (e.g. Home.zh_TW.page), application config Culture attributes,
+ * and translation catalogue filenames (e.g. index.zh_TW.xml) all follow the
+ * same POSIX underscore convention.
+ *
+ * **ICU input vs ICU output** — ICU lookup functions that PRADO calls as
+ * inputs ({@see \ResourceBundle::create()}, {@see \IntlDateFormatter},
+ * {@see \NumberFormatter}) accept POSIX underscore form natively; no
+ * conversion is needed when passing PRADO culture strings to them.  The one
+ * exception is {@see \ResourceBundle::getLocales()}, which *outputs* locale
+ * identifiers in a format that varies by ICU version and locale: some entries
+ * use BCP 47 hyphens (e.g. "en-US"), others use POSIX underscores (e.g. "de_DE").
+ * Any code that compares a culture string against that list must bridge both
+ * directions — see {@see validCulture()} and
+ * {@see TGlobalizationAutoDetect::getIsValidLocale()}.
+ *
  * CultureInfo can format a number with formatNumber.
  *
  * The unit-related methods getUnit(), formatUnit(), and formatPerUnit() provide
@@ -206,12 +227,28 @@ class CultureInfo
 	/**
 	 * Determine if a given culture is valid. Simply checks that the
 	 * culture data exists.
+	 *
+	 * PRADO's convention uses underscores in culture identifiers (e.g. "de_DE"),
+	 * and {@see TGlobalization::setCulture()} normalizes any hyphen-separated
+	 * input to that form.  However, {@see ResourceBundle::getLocales()} returns
+	 * locale identifiers in a format that varies by ICU version and locale: some
+	 * entries use BCP 47 hyphens (e.g. "en-US"), others use POSIX underscores
+	 * (e.g. "de_DE").  All three cases are therefore tried here:
+	 *   1. Direct match (handles whichever form the list uses for this locale).
+	 *   2. POSIX → BCP 47 (underscore to hyphen): handles POSIX input when the
+	 *      ICU list stores the locale in BCP 47 form.
+	 *   3. BCP 47 → POSIX (hyphen to underscore): handles BCP 47 input when the
+	 *      ICU list stores the locale in POSIX form.
 	 * @param string $culture a culture
 	 * @return bool true if valid, false otherwise.
+	 * @since 4.3.3
 	 */
 	public static function validCulture($culture)
 	{
-		return in_array($culture, self::getCultures());
+		$cultures = self::getCultures();
+		return in_array($culture, $cultures)
+			|| in_array(str_replace('_', '-', $culture), $cultures)
+			|| in_array(str_replace('-', '_', $culture), $cultures);
 	}
 
 	/**
@@ -390,6 +427,13 @@ class CultureInfo
 	 * Gets a value indicating whether the current CultureInfo
 	 * represents a neutral culture. Returns true if the culture
 	 * only contains two characters.
+	 *
+	 * **POSIX assumption** — the two-character length test works for POSIX
+	 * neutral cultures (e.g. "zh", "fr") because PRADO normalises all culture
+	 * identifiers to the POSIX underscore form.  Note that BCP 47 locale tags
+	 * that include a script subtag (e.g. "zh-Hant-TW", length 10; "zh-Hant",
+	 * length 7) would not satisfy this check, but such tags are converted to
+	 * their POSIX equivalents before reaching this method.
 	 * @return bool true if culture is neutral, false otherwise.
 	 */
 	public function getIsNeutralCulture()
@@ -402,6 +446,12 @@ class CultureInfo
 	 * culture type. This is an EXPENSIVE function, it needs to traverse
 	 * a list of ICU files in the data directory.
 	 * This function can be called statically.
+	 *
+	 * **ICU vs POSIX** — {@see \ResourceBundle::getLocales()} returns locale
+	 * identifiers in BCP 47 hyphen form on modern ICU (e.g. "zh-TW"), while
+	 * PRADO's POSIX convention uses underscores (e.g. "zh_TW").  The list is
+	 * returned verbatim; callers such as {@see validCulture()} are responsible
+	 * for bridging the gap between the two forms.
 	 * @param int $type culture type, CultureInfo::ALL, CultureInfo::NEUTRAL
 	 * or CultureInfo::SPECIFIC.
 	 * @return array list of culture information available.

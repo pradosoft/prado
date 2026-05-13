@@ -58,6 +58,21 @@ class CultureInfoTest extends TestCase
 		$this->assertFalse(CultureInfo::validCulture('invalid_culture'));
 	}
 
+	/**
+	 * ResourceBundle::getLocales() stores some locales in BCP 47 hyphen form
+	 * (e.g. "en-US") and others in POSIX underscore form (e.g. "de_DE"),
+	 * depending on ICU version and locale.  validCulture() must bridge all
+	 * directions so that both POSIX and BCP 47 inputs work regardless of which
+	 * format the underlying list uses for a given locale.
+	 */
+	public function testValidCultureBridgesPosixAndBcp47Forms()
+	{
+		// POSIX input — works whether the ICU list has "de_DE" or "de-DE"
+		$this->assertTrue(CultureInfo::validCulture('de_DE'));
+		// BCP 47 input — works whether the ICU list has "de-DE" or "de_DE"
+		$this->assertTrue(CultureInfo::validCulture('de-DE'));
+	}
+
 	public function testGetNativeName()
 	{
 		$culture = CultureInfo::getCultureInfo('en_US');
@@ -88,6 +103,24 @@ class CultureInfoTest extends TestCase
 
 		$this->assertTrue($neutralCulture->getIsNeutralCulture());
 		$this->assertFalse($specificCulture->getIsNeutralCulture());
+	}
+
+	/**
+	 * TGlobalization::setCulture() converts BCP 47 hyphens to POSIX underscores,
+	 * so a BCP 47 script-subtag locale like "zh-Hant-TW" arrives as "zh_Hant_TW"
+	 * (length 10).  getIsNeutralCulture() uses a strlen() == 2 test that relies
+	 * on the POSIX convention; it must correctly classify such a culture as
+	 * specific (not neutral).
+	 */
+	public function testGetIsNeutralCulturePosixNormalizedScriptSubtagIsSpecific()
+	{
+		// "zh-Hant-TW" → POSIX-normalised to "zh_Hant_TW" (length 10, has region subtag)
+		$specific = new CultureInfo('zh_Hant_TW');
+		$this->assertFalse($specific->getIsNeutralCulture());
+
+		// "zh-Hant" → POSIX-normalised to "zh_Hant" (length 7, script-only, no region)
+		$scriptOnly = new CultureInfo('zh_Hant');
+		$this->assertFalse($scriptOnly->getIsNeutralCulture());
 	}
 
 	public function testToString()

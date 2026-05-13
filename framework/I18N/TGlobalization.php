@@ -23,6 +23,12 @@ use Prado\TPropertyValue;
  * are determined. See TGlobalizationAutoDetect for example of
  * setting the Culture based on browser settings.
  *
+ * **POSIX underscore convention** — culture identifiers are stored and
+ * propagated in POSIX form (underscore separator, e.g. "en_US", "zh_TW").
+ * Incoming BCP 47 hyphen-separated values (the web/browser standard, e.g.
+ * "en-US", "zh-TW") are normalized to POSIX form in {@see setCulture()}.
+ * See {@see CultureInfo} for details on the POSIX/BCP 47 relationship.
+ *
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
  * @since 3.0
  */
@@ -156,10 +162,17 @@ class TGlobalization extends \Prado\TModule
 	}
 
 	/**
+	 * Sets the active culture using the POSIX underscore convention
+	 * (e.g. "en_US", "zh_TW").  Hyphen-separated BCP 47 values coming from
+	 * browsers or HTTP Accept-Language headers (e.g. "en-US", "zh-TW") are
+	 * normalized to the POSIX form so the rest of the framework remains
+	 * consistent.  See {@see CultureInfo} for details on the POSIX/BCP 47
+	 * relationship.
 	 * @param string $culture culture, e.g. <tt>en_US</tt> for American English
 	 */
 	public function setCulture($culture)
 	{
+		// POSIX convention: normalize any BCP 47 hyphens to underscores.
 		if (($culture = str_replace('-', '_', $culture)) != $this->_culture) {
 			$this->_culture = $culture;
 			$this->_cultureRTL = null;
