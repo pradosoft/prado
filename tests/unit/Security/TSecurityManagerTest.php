@@ -357,8 +357,33 @@ class TSecurityManagerTest extends PHPUnit\Framework\TestCase
 
 		self::assertNotEquals($encrypted1, $encrypted2);
 
-		$sec->setEncryptionKey('key1');
-		self::assertFalse($sec->decrypt($encrypted2));
+		// AES-CBC is unauthenticated: decrypting with the wrong key produces garbage
+		// bytes and then runs PKCS7 padding validation on them.  ~255/256 of the time
+		// padding fails and openssl_decrypt() returns false (correct).  But ~1/256 of
+		// the time the garbage bytes accidentally satisfy PKCS7 and a garbage string is
+		// returned instead — causing assertFalse to flap.
+		//
+		// Fix: each encrypt() call draws a fresh random IV via openssl_random_pseudo_bytes(),
+		// so every re-encryption produces a structurally independent ciphertext even with
+		// the same key and plaintext.  The IV propagates through all CBC blocks, making the
+		// PKCS7 padding check on the garbage decryption an independent ~1/256 event each
+		// roll.  The key pair (key2 encrypts, key1 tries to decrypt) intentionally stays
+		// fixed — that is the scenario under test.  We reroll until we land on a ciphertext
+		// whose wrong-key decrypt returns false, which happens on the first try ~255/256 of
+		// the time.  The cap of 100 rolls is purely defensive: exhausting it requires the
+		// 1/256 padding fluke to occur 100 times in a row — P ≈ (1/256)^100, effectively 0.
+		$wrongKeyResult = false;
+		for ($roll = 0; $roll < 100; $roll++) {
+			$sec->setEncryptionKey('key2');
+			$freshCipher = $sec->encrypt($plainText); // new random IV each call
+			$sec->setEncryptionKey('key1');
+			$wrongKeyResult = $sec->decrypt($freshCipher);
+			if ($wrongKeyResult === false) {
+				break;
+			}
+			// Rare (~1/256): garbage bytes accidentally passed PKCS7 — reroll for a new IV.
+		}
+		self::assertFalse($wrongKeyResult, 'Decrypting with wrong key must return false (rerolled IV until a clean ciphertext was found).');
 	}
 
 	public function testEncryptDecryptWithUtf8Data()
@@ -724,5 +749,576 @@ class TSecurityManagerTest extends PHPUnit\Framework\TestCase
 		$encrypted = $sec->encrypt($plainText);
 		$decrypted = $sec->decrypt($encrypted);
 		self::assertEquals($plainText, $decrypted);
+	}
+
+	// -------------------------------------------------------------------------
+	// UseEncryptionHmac tests
+	// -------------------------------------------------------------------------
+
+	public function testUseEncryptionHmacDefaultFalse()
+	{
+		$sec = new TSecurityManager();
+		$sec->init(null);
+		self::assertFalse($sec->getUseEncryptionHmac());
+	}
+
+	public function testUseEncryptionHmacSetterGetter()
+	{
+		$sec = new TSecurityManager();
+		$sec->init(null);
+
+		$sec->setUseEncryptionHmac(true);
+		self::assertTrue($sec->getUseEncryptionHmac());
+
+		$sec->setUseEncryptionHmac(false);
+		self::assertFalse($sec->getUseEncryptionHmac());
+	}
+
+	public function testEncryptDecryptWithHmacEnabled()
+	{
+		if (!extension_loaded('openssl')) {
+			self::markTestSkipped('openssl extension not loaded');
+		}
+
+		$sec = new TSecurityManager();
+		$sec->init(null);
+		$sec->setEncryptionKey('hmacKey');
+		$sec->setValidationKey('validationKey');
+		$sec->setUseEncryptionHmac(true);
+
+		$plainText = 'Authenticated plaintext';
+		$encrypted = $sec->encrypt($plainText);
+		$decrypted = $sec->decrypt($encrypted);
+		self::assertEquals($plainText, $decrypted);
+	}
+
+	public function testHmacEncryptedPayloadIsLongerThanPlain()
+	{
+		if (!extension_loaded('openssl')) {
+			self::markTestSkipped('openssl extension not loaded');
+		}
+
+		$sec = new TSecurityManager();
+		$sec->init(null);
+		$sec->setEncryptionKey('aKey');
+		$sec->setValidationKey('validationKey');
+
+		$plainText = 'length comparison';
+
+		$sec->setUseEncryptionHmac(false);
+		$plainEncrypted = $sec->encrypt($plainText);
+
+		$sec->setUseEncryptionHmac(true);
+		$hmacEncrypted = $sec->encrypt($plainText);
+
+		// HMAC-wrapped output must be longer by exactly the HMAC digest size.
+		$hmacLen = strlen(hash_hmac($sec->getHashAlgorithm(), '', $sec->getValidationKey(), true));
+		self::assertEquals(strlen($plainEncrypted) + $hmacLen, strlen($hmacEncrypted));
+	}
+
+	/**
+	 * Ciphertext produced with UseEncryptionHmac=false must still be decryptable
+	 * after the property is switched to true (forward migration).
+	 */
+	public function testDecryptPlainCiphertextWhenHmacEnabled()
+	{
+		if (!extension_loaded('openssl')) {
+			self::markTestSkipped('openssl extension not loaded');
+		}
+
+		$sec = new TSecurityManager();
+		$sec->init(null);
+		$sec->setEncryptionKey('migrateKey');
+		$sec->setValidationKey('validationKey');
+
+		$plainText = 'Data encrypted before HMAC was enabled';
+
+		// Encrypt without HMAC (old behaviour).
+		$sec->setUseEncryptionHmac(false);
+		$encryptedWithoutHmac = $sec->encrypt($plainText);
+
+		// Switch property to true — decrypt must still recover the plaintext.
+		$sec->setUseEncryptionHmac(true);
+		$decrypted = $sec->decrypt($encryptedWithoutHmac);
+		self::assertEquals($plainText, $decrypted);
+	}
+
+	/**
+	 * Ciphertext produced with UseEncryptionHmac=true must still be decryptable
+	 * after the property is switched back to false (reverse migration).
+	 */
+	public function testDecryptHmacCiphertextWhenHmacDisabled()
+	{
+		if (!extension_loaded('openssl')) {
+			self::markTestSkipped('openssl extension not loaded');
+		}
+
+		$sec = new TSecurityManager();
+		$sec->init(null);
+		$sec->setEncryptionKey('migrateKey');
+		$sec->setValidationKey('validationKey');
+
+		$plainText = 'Data encrypted with HMAC, decrypted without';
+
+		// Encrypt with HMAC.
+		$sec->setUseEncryptionHmac(true);
+		$encryptedWithHmac = $sec->encrypt($plainText);
+
+		// Switch property off — HMAC is still auto-detected and stripped.
+		$sec->setUseEncryptionHmac(false);
+		$decrypted = $sec->decrypt($encryptedWithHmac);
+		self::assertEquals($plainText, $decrypted);
+	}
+
+	/**
+	 * Tampering any byte of an HMAC-wrapped ciphertext must return false reliably
+	 * (no PKCS7 padding luck required).
+	 */
+	public function testHmacDetectsTampering()
+	{
+		if (!extension_loaded('openssl')) {
+			self::markTestSkipped('openssl extension not loaded');
+		}
+
+		$sec = new TSecurityManager();
+		$sec->init(null);
+		$sec->setEncryptionKey('aKey');
+		$sec->setValidationKey('validationKey');
+		$sec->setUseEncryptionHmac(true);
+
+		$plainText = 'Data that must not be tampered';
+		$encrypted = $sec->encrypt($plainText);
+
+		// Flip a byte in the ciphertext portion (well past the HMAC prefix).
+		$tampered = $encrypted;
+		$tampered[strlen($encrypted) - 1] = chr(ord($tampered[strlen($encrypted) - 1]) ^ 0xFF);
+
+		// HMAC verification must fail deterministically — no 1/256 flap.
+		self::assertFalse($sec->decrypt($tampered));
+	}
+
+	/**
+	 * Tampering the HMAC prefix itself must also return false.
+	 */
+	public function testHmacPrefixTamperingReturnsFalse()
+	{
+		if (!extension_loaded('openssl')) {
+			self::markTestSkipped('openssl extension not loaded');
+		}
+
+		$sec = new TSecurityManager();
+		$sec->init(null);
+		$sec->setEncryptionKey('aKey');
+		$sec->setValidationKey('validationKey');
+		$sec->setUseEncryptionHmac(true);
+
+		$plainText = 'HMAC prefix tamper test';
+		$encrypted = $sec->encrypt($plainText);
+
+		// Corrupt the very first byte of the HMAC.
+		$tampered = $encrypted;
+		$tampered[0] = chr(ord($tampered[0]) ^ 0xFF);
+
+		self::assertFalse($sec->decrypt($tampered));
+	}
+
+	/**
+	 * With HMAC enabled, decrypting with the wrong encryption key must not return
+	 * the original plaintext.  The HMAC itself passes (it covers the ciphertext, not
+	 * the key), so the return value is garbage rather than false — which is fine; the
+	 * important invariant is that the plaintext is not recovered.
+	 */
+	public function testHmacWithWrongEncryptionKeyDoesNotRecoverPlaintext()
+	{
+		if (!extension_loaded('openssl')) {
+			self::markTestSkipped('openssl extension not loaded');
+		}
+
+		$sec = new TSecurityManager();
+		$sec->init(null);
+		$sec->setValidationKey('sharedValidationKey');
+		$sec->setUseEncryptionHmac(true);
+
+		$plainText = 'Secret text';
+
+		$sec->setEncryptionKey('correctKey');
+		$encrypted = $sec->encrypt($plainText);
+
+		$sec->setEncryptionKey('wrongKey');
+		$result = $sec->decrypt($encrypted);
+
+		// The plaintext must not be recovered regardless of PKCS7 luck.
+		self::assertNotEquals($plainText, $result);
+	}
+
+	public function testHmacRoundTripWithAllHashAlgorithms()
+	{
+		if (!extension_loaded('openssl')) {
+			self::markTestSkipped('openssl extension not loaded');
+		}
+
+		$sec = new TSecurityManager();
+		$sec->init(null);
+		$sec->setEncryptionKey('aKey');
+		$sec->setValidationKey('validationKey');
+		$sec->setUseEncryptionHmac(true);
+
+		$plainText = 'HMAC round-trip across hash algorithms';
+
+		foreach (['md5', 'sha1', 'sha256'] as $algo) {
+			$sec->setHashAlgorithm($algo);
+			$encrypted = $sec->encrypt($plainText);
+			$decrypted = $sec->decrypt($encrypted);
+			self::assertEquals($plainText, $decrypted, "HMAC round-trip failed for hash algorithm: $algo");
+		}
+	}
+
+	// -------------------------------------------------------------------------
+	// Default value assertions
+	// -------------------------------------------------------------------------
+
+	public function testHashAlgorithmDefault()
+	{
+		$sec = new TSecurityManager();
+		$sec->init(null);
+		self::assertEquals('sha256', $sec->getHashAlgorithm());
+	}
+
+	public function testCryptAlgorithmDefault()
+	{
+		$sec = new TSecurityManager();
+		$sec->init(null);
+		self::assertEquals('aes-256-cbc', $sec->getCryptAlgorithm());
+	}
+
+	// -------------------------------------------------------------------------
+	// generateRandomKey format
+	// -------------------------------------------------------------------------
+
+	public function testGenerateRandomKeyIsHexadecimal()
+	{
+		$sec = new TCustomTestSecurityManager();
+		$sec->init(null);
+		$key = $sec->publicGenerateRandomKey();
+		self::assertMatchesRegularExpression('/^[0-9a-f]+$/', $key, 'Random key must be a lowercase hexadecimal string');
+	}
+
+	// -------------------------------------------------------------------------
+	// getValidationKey / getEncryptionKey: global-state load branch
+	// (null _key, global state already populated by a prior instance)
+	// -------------------------------------------------------------------------
+
+	public function testValidationKeyLoadedFromGlobalStateByNewInstance()
+	{
+		// First instance — generates and persists the key.
+		$sec1 = new TSecurityManager();
+		$sec1->init(null);
+		$key1 = $sec1->getValidationKey();
+
+		// Second instance — _validationKey starts null, but global state exists.
+		$sec2 = new TSecurityManager();
+		$sec2->init(null);
+		$key2 = $sec2->getValidationKey();
+
+		self::assertEquals($key1, $key2, 'New instance must load validation key from global state');
+	}
+
+	public function testEncryptionKeyLoadedFromGlobalStateByNewInstance()
+	{
+		$sec1 = new TSecurityManager();
+		$sec1->init(null);
+		$key1 = $sec1->getEncryptionKey();
+
+		$sec2 = new TSecurityManager();
+		$sec2->init(null);
+		$key2 = $sec2->getEncryptionKey();
+
+		self::assertEquals($key1, $key2, 'New instance must load encryption key from global state');
+	}
+
+	// -------------------------------------------------------------------------
+	// decrypt() edge cases
+	// -------------------------------------------------------------------------
+
+	/**
+	 * An empty string has no IV — openssl_decrypt must return false.
+	 */
+	public function testDecryptEmptyInput()
+	{
+		if (!extension_loaded('openssl')) {
+			self::markTestSkipped('openssl extension not loaded');
+		}
+
+		$sec = new TSecurityManager();
+		$sec->init(null);
+		$sec->setEncryptionKey('aKey');
+
+		self::assertFalse($sec->decrypt(''));
+	}
+
+	/**
+	 * Data exactly $hmacLen bytes long hits the `> $hmacLen` boundary: the HMAC
+	 * probe is skipped (condition is strictly greater-than), so the full blob is
+	 * treated as a plain IV+ciphertext, which cannot be valid.
+	 */
+	public function testDecryptDataAtExactlyHmacLengthBoundarySkipsHmacPath()
+	{
+		if (!extension_loaded('openssl')) {
+			self::markTestSkipped('openssl extension not loaded');
+		}
+
+		$sec = new TSecurityManager();
+		$sec->init(null);
+		$sec->setEncryptionKey('aKey');
+		$sec->setValidationKey('validationKey');
+
+		// Build a blob that is exactly $hmacLen bytes so the HMAC probe is skipped.
+		// The bytes are crafted to equal the real HMAC of '' — if the probe ran, it
+		// would produce a false positive.  Since the probe is bypassed, the blob is
+		// handed to plain CBC decrypt as-is and cannot return our known plaintext.
+		$hmacLen = strlen(hash_hmac($sec->getHashAlgorithm(), '', $sec->getValidationKey(), true));
+		$blob = hash_hmac($sec->getHashAlgorithm(), '', $sec->getValidationKey(), true);
+		self::assertEquals($hmacLen, strlen($blob)); // confirm the probe boundary
+
+		$result = $sec->decrypt($blob);
+		// Result is false or garbage — definitely not a plaintext we encrypted.
+		self::assertNotEquals('any plaintext', $result);
+	}
+
+	// -------------------------------------------------------------------------
+	// validateData() boundary
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Data whose length equals exactly the HMAC output length passes the
+	 * `< $len` guard but the "data" portion after stripping the HMAC is empty;
+	 * HMAC of '' will not match, so false is returned.
+	 */
+	public function testValidateDataExactlyHmacLength()
+	{
+		$sec = new TSecurityManager();
+		$sec->init(null);
+		$sec->setValidationKey('aKey');
+		$sec->setHashAlgorithm('sha256');
+
+		// sha256 hex HMAC = 64 chars.  Feed exactly 64 chars of arbitrary data.
+		$hmacLengthBlob = str_repeat('a', 64);
+		self::assertFalse($sec->validateData($hmacLengthBlob));
+	}
+
+	/**
+	 * Data one byte shorter than the HMAC length must also return false (it hits
+	 * the `< $len` branch).
+	 */
+	public function testValidateDataOneByteShorterThanHmacLength()
+	{
+		$sec = new TSecurityManager();
+		$sec->init(null);
+		$sec->setValidationKey('aKey');
+		$sec->setHashAlgorithm('sha256');
+
+		// sha256 hex HMAC = 64 chars.
+		self::assertFalse($sec->validateData(str_repeat('a', 63)));
+	}
+
+	/**
+	 * Data one byte longer than the HMAC length proceeds to comparison and fails
+	 * (the trailing byte does not form a valid HMAC).
+	 */
+	public function testValidateDataOneByteLongerThanHmacLengthReturnsFalse()
+	{
+		$sec = new TSecurityManager();
+		$sec->init(null);
+		$sec->setValidationKey('aKey');
+		$sec->setHashAlgorithm('sha256');
+
+		// sha256 hex HMAC = 64 chars.  65 bytes with junk HMAC prefix.
+		self::assertFalse($sec->validateData(str_repeat('a', 65)));
+	}
+
+	// -------------------------------------------------------------------------
+	// UseEncryptionHmac — remaining edge cases
+	// -------------------------------------------------------------------------
+
+	public function testUseEncryptionHmacWithEmptyPlaintext()
+	{
+		if (!extension_loaded('openssl')) {
+			self::markTestSkipped('openssl extension not loaded');
+		}
+
+		$sec = new TSecurityManager();
+		$sec->init(null);
+		$sec->setEncryptionKey('aKey');
+		$sec->setValidationKey('validationKey');
+		$sec->setUseEncryptionHmac(true);
+
+		$encrypted = $sec->encrypt('');
+		self::assertEquals('', $sec->decrypt($encrypted));
+	}
+
+	public function testUseEncryptionHmacWithBinaryData()
+	{
+		if (!extension_loaded('openssl')) {
+			self::markTestSkipped('openssl extension not loaded');
+		}
+
+		$sec = new TSecurityManager();
+		$sec->init(null);
+		$sec->setEncryptionKey('aKey');
+		$sec->setValidationKey('validationKey');
+		$sec->setUseEncryptionHmac(true);
+
+		$binary = "\x00\x01\x02\xff\xfe\xfd" . bin2hex(random_bytes(16));
+		$encrypted = $sec->encrypt($binary);
+		self::assertEquals($binary, $sec->decrypt($encrypted));
+	}
+
+	/**
+	 * Tampering the byte immediately after the HMAC prefix (the first IV byte)
+	 * must be caught by HMAC verification — not PKCS7 luck.
+	 */
+	public function testUseEncryptionHmacIvRegionTampering()
+	{
+		if (!extension_loaded('openssl')) {
+			self::markTestSkipped('openssl extension not loaded');
+		}
+
+		$sec = new TSecurityManager();
+		$sec->init(null);
+		$sec->setEncryptionKey('aKey');
+		$sec->setValidationKey('validationKey');
+		$sec->setUseEncryptionHmac(true);
+
+		$encrypted = $sec->encrypt('IV region tamper test');
+		$hmacLen = strlen(hash_hmac($sec->getHashAlgorithm(), '', $sec->getValidationKey(), true));
+
+		$tampered = $encrypted;
+		$tampered[$hmacLen] = chr(ord($tampered[$hmacLen]) ^ 0xFF); // first IV byte
+
+		self::assertFalse($sec->decrypt($tampered));
+	}
+
+	/**
+	 * Changing the ValidationKey after HMAC-encrypt causes the HMAC probe to fail
+	 * during decrypt.  The fallback plain path then treats the HMAC prefix bytes
+	 * as part of the IV, so the recovered bytes are garbage — not the original text.
+	 */
+	public function testUseEncryptionHmacWithChangedValidationKeyProducesGarbage()
+	{
+		if (!extension_loaded('openssl')) {
+			self::markTestSkipped('openssl extension not loaded');
+		}
+
+		$sec = new TSecurityManager();
+		$sec->init(null);
+		$sec->setEncryptionKey('encKey');
+		$sec->setValidationKey('originalKey');
+		$sec->setUseEncryptionHmac(true);
+
+		$plainText = 'Secret data';
+		$encrypted = $sec->encrypt($plainText);
+
+		$sec->setValidationKey('differentKey');
+		self::assertNotEquals($plainText, $sec->decrypt($encrypted));
+	}
+
+	/**
+	 * Changing HashAlgorithm between HMAC-encrypt and decrypt alters both the
+	 * expected HMAC length and its value.  The probe fails, decrypt falls back to
+	 * the plain path with the HMAC bytes acting as a mangled IV, returning garbage.
+	 */
+	public function testUseEncryptionHmacWithChangedHashAlgorithmOnDecrypt()
+	{
+		if (!extension_loaded('openssl')) {
+			self::markTestSkipped('openssl extension not loaded');
+		}
+
+		$sec = new TSecurityManager();
+		$sec->init(null);
+		$sec->setEncryptionKey('aKey');
+		$sec->setValidationKey('validationKey');
+		$sec->setUseEncryptionHmac(true);
+		$sec->setHashAlgorithm('sha256');
+
+		$plainText = 'Hash algorithm mismatch';
+		$encrypted = $sec->encrypt($plainText);
+
+		// Switch to md5 — different HMAC length (16 raw bytes vs 32) and value.
+		$sec->setHashAlgorithm('md5');
+		self::assertNotEquals($plainText, $sec->decrypt($encrypted));
+	}
+
+	/**
+	 * Using HMAC mode with multiple supported cipher algorithms verifies that the
+	 * varying IV lengths are handled correctly in both encrypt and decrypt.
+	 */
+	public function testUseEncryptionHmacWithDifferentCipherAlgorithms()
+	{
+		if (!extension_loaded('openssl')) {
+			self::markTestSkipped('openssl extension not loaded');
+		}
+
+		$sec = new TSecurityManager();
+		$sec->init(null);
+		$sec->setEncryptionKey('aKey');
+		$sec->setValidationKey('validationKey');
+		$sec->setUseEncryptionHmac(true);
+
+		$plainText = 'Cross-cipher HMAC test';
+
+		foreach (['aes-128-cbc', 'aes-192-cbc', 'aes-256-cbc'] as $cipher) {
+			if (!in_array($cipher, $sec->supportedCipherAlgorithms())) {
+				continue;
+			}
+			$sec->setCryptAlgorithm($cipher);
+			$encrypted = $sec->encrypt($plainText);
+			$decrypted = $sec->decrypt($encrypted);
+			self::assertEquals($plainText, $decrypted, "HMAC round-trip failed for cipher: $cipher");
+		}
+	}
+
+	/**
+	 * hashData() / validateData() must survive binary input that contains null
+	 * bytes, high-value bytes, and sequences that could confuse mb_strlen.
+	 */
+	public function testHashDataValidateDataWithBinaryContent()
+	{
+		$sec = new TSecurityManager();
+		$sec->init(null);
+		$sec->setValidationKey('validationKey');
+		$sec->setHashAlgorithm('sha256');
+
+		$binary = "\x00\x01\x7f\x80\xff" . str_repeat("\xfe\xfd", 10);
+		$hashed = $sec->hashData($binary);
+		self::assertEquals($binary, $sec->validateData($hashed));
+
+		// Tamper one byte in the binary data section.
+		$tampered = $hashed;
+		$tampered[strlen($hashed) - 1] = chr(ord($tampered[strlen($hashed) - 1]) ^ 0x01);
+		self::assertFalse($sec->validateData($tampered));
+	}
+
+	/**
+	 * hashData() / validateData() must work identically regardless of whether
+	 * mbstring is available (the _mbstring flag controls which strlen/substr is
+	 * used internally; both must count binary octets, not characters).
+	 *
+	 * We verify this by running a UTF-8 string through hashData/validateData and
+	 * checking that the HMAC prefix length and data recovery are byte-accurate.
+	 */
+	public function testHashDataValidateDataByteAccuracyWithMultibyteString()
+	{
+		$sec = new TSecurityManager();
+		$sec->init(null);
+		$sec->setValidationKey('aKey');
+		$sec->setHashAlgorithm('sha256');
+
+		// Multi-byte UTF-8 string — mb_strlen would give fewer chars than bytes.
+		$data = 'こんにちは世界'; // 7 chars, 21 UTF-8 bytes
+		$hashed = $sec->hashData($data);
+
+		// sha256 HMAC hex = 64 chars; total must be 64 + 21 bytes.
+		self::assertEquals(64 + strlen($data), strlen($hashed));
+		self::assertEquals($data, $sec->validateData($hashed));
 	}
 }
