@@ -767,8 +767,8 @@ class TApplication extends TComponent implements ISingleton
 	{
 		$old = $this->_pageServiceID;
 		$this->_pageServiceID = $value;
-		if ($old !== $value && $this->hasServiceId($old) && !$this->hasServiceId($value)) {
-			$this->registerService($value, ...$this->getServiceId($old));
+		if ($old !== $value && $this->hasRegisteredService($old) && !$this->hasRegisteredService($value)) {
+			$this->registerService($value, ...$this->getRegisteredService($old));
 			$this->unregisterService($old);
 		}
 	}
@@ -1096,7 +1096,7 @@ class TApplication extends TComponent implements ISingleton
 	 * If a service is already registered under the same ID it is replaced.
 	 * The service will be available for request routing via
 	 * {@see TApplication::startService()} and discoverable by
-	 * {@see getServiceIdByClass()} / {@see getServiceIdsByClass()}.
+	 * {@see getRegisteredServiceByClass()} / {@see getRegisteredServicesByClass()}.
 	 *
 	 * ```php
 	 * $app->registerService('csp-reporter', TCspReporterService::class);
@@ -1158,7 +1158,7 @@ class TApplication extends TComponent implements ISingleton
 	 *   given ID is present in the service registry (string argument).
 	 * @since 4.3.3
 	 */
-	public function hasServiceId(?string $id = null): bool
+	public function hasRegisteredService(?string $id = null): bool
 	{
 		if ($id === null) {
 			return !empty($this->_services);
@@ -1179,36 +1179,45 @@ class TApplication extends TComponent implements ISingleton
 	 * @return ?array the three-element registry tuple, or `null` if the ID is not registered.
 	 * @since 4.3.3
 	 */
-	public function getServiceId(string $id): ?array
+	public function getRegisteredService(string $id): ?array
 	{
 		return $this->_services[$id] ?? null;
 	}
 
 	/**
-	 * Returns the full service registry as an array keyed by service ID.
-	 * Each value is a three-element tuple `[$class, $properties, $config]` as
-	 * described in {@see getServiceId()}.
-	 * @return array<string, array> the registered service configurations.
+	 * Returns the full service registry as an associative array keyed by service ID.
+	 *
+	 * Each value is a three-element tuple `[$class, $properties, $config]` as described
+	 * in {@see getRegisteredService()}. Entries appear in registration order.
+	 * Use {@see hasRegisteredService()} to test for a specific ID without fetching the
+	 * full map, or {@see getRegisteredServiceByClass()} /
+	 * {@see getRegisteredServicesByClass()} to search by class name.
+	 *
+	 * @return array<string, array> map of service ID → registry tuple for every registered service.
 	 * @since 4.3.3
 	 */
-	public function getServiceIds(): array
+	public function getRegisteredServices(): array
 	{
 		return $this->_services ?? [];
 	}
 
 	/**
-	 * Returns the service ID of the first registered service whose class is or
-	 * extends `$class`, or `null` if none matches.
+	 * Returns the service ID of the first registered service whose class is or extends
+	 * `$class`, or `null` if none matches. Subclass matching is always active; use
+	 * {@see getRegisteredServicesByClass()} with `$strict = true` if you need an
+	 * exact-class-only search across multiple registrations.
+	 *
 	 * ```php
-	 * $id = $this->getApplication()->getServiceIdByClass(TPageService::class);
+	 * $id = $this->getApplication()->getRegisteredServiceByClass(TPageService::class);
 	 * ```
+	 *
 	 * @param string $class fully-qualified class name to search for.
-	 * @return ?string the ID of the first matching service, or `null`.
+	 * @return ?string the ID of the first matching service in registration order, or `null`.
 	 * @since 4.3.3
 	 */
-	public function getServiceIdByClass(string $class): ?string
+	public function getRegisteredServiceByClass(string $class): ?string
 	{
-		foreach ($this->getServiceIds() as $id => $serviceConfig) {
+		foreach ($this->getRegisteredServices() as $id => $serviceConfig) {
 			$serviceClass = $serviceConfig[0];
 			if ($serviceClass === $class || is_a($serviceClass, $class, true)) {
 				return (string) $id;
@@ -1221,18 +1230,18 @@ class TApplication extends TComponent implements ISingleton
 	 * Returns the IDs of all registered services whose class is or extends
 	 * `$class`. Pass `$strict = true` to exclude subclasses.
 	 * ```php
-	 * $ids = $this->getApplication()->getServiceIdsByClass(TJsonService::class);
-	 * [$firstId] = $this->getApplication()->getServiceIdsByClass(TPageService::class);
+	 * $ids = $this->getApplication()->getRegisteredServicesByClass(TJsonService::class);
+	 * [$firstId] = $this->getApplication()->getRegisteredServicesByClass(TPageService::class);
 	 * ```
 	 * @param string $class fully-qualified class name to search for.
 	 * @param bool $strict when `true`, only exact class matches are returned. Default `false`.
 	 * @return string[] the IDs of all matching services, or an empty array.
 	 * @since 4.3.3
 	 */
-	public function getServiceIdsByClass(string $class, bool $strict = false): array
+	public function getRegisteredServicesByClass(string $class, bool $strict = false): array
 	{
 		$ids = [];
-		foreach ($this->getServiceIds() as $id => $serviceConfig) {
+		foreach ($this->getRegisteredServices() as $id => $serviceConfig) {
 			$serviceClass = $serviceConfig[0];
 			if ($strict ? ($serviceClass === $class) : ($serviceClass === $class || is_a($serviceClass, $class, true))) {
 				$ids[] = (string) $id;
@@ -2039,7 +2048,7 @@ class TApplication extends TComponent implements ISingleton
 	 */
 	protected function initService(): void
 	{
-		if (($serviceID = $this->getRequest()->resolveRequest(array_keys($this->getServiceIds()))) === null) {
+		if (($serviceID = $this->getRequest()->resolveRequest(array_keys($this->getRegisteredServices()))) === null) {
 			$serviceID = $this->getPageServiceID();
 		}
 
@@ -2054,11 +2063,11 @@ class TApplication extends TComponent implements ISingleton
 	 */
 	public function startService($serviceID)
 	{
-		if (!$this->hasServiceId($serviceID)) {
+		if (!$this->hasRegisteredService($serviceID)) {
 			throw new THttpException(500, 'application_service_unknown', $serviceID);
 		}
 
-		[$serviceClass, $initProperties, $configElement] = $this->getServiceId($serviceID);
+		[$serviceClass, $initProperties, $configElement] = $this->getRegisteredService($serviceID);
 		$service = Prado::createComponent($serviceClass);
 		if (!($service instanceof IService && $service instanceof TComponent)) {
 			throw new THttpException(500, 'application_service_invalid', $serviceClass);
