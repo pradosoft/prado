@@ -1,5 +1,6 @@
 <?php
 
+use Prado\Collections\TCollectionItemChangeParameter;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TApplication;
@@ -529,13 +530,15 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 
 		$this->_app->setGlobalState('myKey', 'myValue');
 
-		$this->assertNotNull($captured);
-		$this->assertSame('myKey', $captured['key']);
-		$this->assertSame('myValue', $captured['value']);
-		$this->assertFalse($captured['isDefault']);
-		$this->assertTrue($captured['isNew']);
-		// new key — oldValue must be absent
+		$this->assertInstanceOf(TCollectionItemChangeParameter::class, $captured);
+		$this->assertSame('myKey', $captured->getKey());
+		$this->assertSame('myValue', $captured->getValue());
+		$this->assertFalse($captured->getIsDefault());
+		$this->assertTrue($captured->getIsNew());
+		$this->assertFalse($captured->getIsUnset()); // IS_UNSET never set by setGlobalState
+		// new key — oldValue not meaningful (offsetExists false); stored as null placeholder
 		$this->assertFalse(isset($captured['oldValue']));
+		$this->assertNull($captured->getOldValue());
 	}
 
 	public function testSetGlobalState_existingKey_raisesEvent_withOldValue(): void
@@ -548,12 +551,14 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 
 		$this->_app->setGlobalState('k', 'after');
 
-		// overwriting an existing key — oldValue must be present, isNew must be false
+		// overwriting an existing key — oldValue must be meaningful, isNew and isUnset must be false
+		$this->assertInstanceOf(TCollectionItemChangeParameter::class, $captured);
 		$this->assertTrue(isset($captured['oldValue']));
-		$this->assertSame('before', $captured['oldValue']);
-		$this->assertSame('after', $captured['value']);
-		$this->assertFalse($captured['isDefault']);
-		$this->assertFalse($captured['isNew']);
+		$this->assertSame('before', $captured->getOldValue());
+		$this->assertSame('after', $captured->getValue());
+		$this->assertFalse($captured->getIsDefault());
+		$this->assertFalse($captured->getIsNew());
+		$this->assertFalse($captured->getIsUnset()); // IS_UNSET never set by setGlobalState
 	}
 
 	public function testSetGlobalState_clearedToDefault_raisesEvent_isDefaultTrue(): void
@@ -564,18 +569,18 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 			$captured = $param;
 		});
 
-		// setGlobalState clears to default — 'value' is present (the passed value),
-		// 'isUnset' is absent (only set by clearGlobalState),
+		// setGlobalState clears to default — 'value' is meaningful (the passed value),
+		// 'isUnset' offsetExists is false (only set by clearGlobalState),
 		// 'isNew' is false (the key existed before being cleared),
-		// 'oldValue' is present because the key existed before.
+		// 'oldValue' offsetExists is true because the key existed before.
 		$this->_app->setGlobalState('k', 'sentinel', 'sentinel');
 
-		$this->assertTrue($captured['isDefault']);
-		$this->assertSame('sentinel', $captured['value']);
-		$this->assertFalse(isset($captured['isUnset']));
-		$this->assertFalse($captured['isNew']);
-		$this->assertTrue(isset($captured['oldValue']));
-		$this->assertSame('existing', $captured['oldValue']);
+		$this->assertTrue($captured->getIsDefault());
+		$this->assertSame('sentinel', $captured->getValue());
+		$this->assertFalse(isset($captured['isUnset'])); // offsetExists false when !isUnset
+		$this->assertFalse($captured->getIsNew());
+		$this->assertTrue(isset($captured['oldValue'])); // offsetExists true because !isNew
+		$this->assertSame('existing', $captured->getOldValue());
 	}
 
 	public function testSetGlobalState_identicalValue_doesNotRaiseEvent(): void
@@ -615,12 +620,14 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 
 		$this->_app->clearGlobalState('k');
 
-		$this->assertNotNull($captured);
-		$this->assertSame('k', $captured['key']);
-		$this->assertTrue($captured['isUnset']);
-		$this->assertFalse(isset($captured['value']));
-		$this->assertFalse(isset($captured['isDefault']));
-		$this->assertSame('old', $captured['oldValue']);
+		$this->assertInstanceOf(TCollectionItemChangeParameter::class, $captured);
+		$this->assertSame('k', $captured->getKey());
+		$this->assertTrue($captured->getIsUnset());
+		$this->assertFalse($captured->getIsNew());         // IS_NEW never set by clearGlobalState
+		$this->assertFalse(isset($captured['value']));     // offsetExists false when isUnset
+		$this->assertFalse(isset($captured['isDefault'])); // offsetExists false when isUnset
+		$this->assertTrue(isset($captured['oldValue']));   // offsetExists true because !isNew
+		$this->assertSame('old', $captured->getOldValue());
 	}
 
 	public function testClearGlobalState_nonExistentKey_doesNotRaiseEvent(): void
@@ -712,7 +719,7 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 
 		$this->_app->setGlobalState('myKey', 'new');
 
-		$this->assertSame('myKey', $captured['key']);
+		$this->assertSame('myKey', $captured->getKey());
 	}
 
 	public function testSetGlobalState_clearedToDefault_payloadContainsKey(): void
@@ -725,7 +732,7 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 
 		$this->_app->setGlobalState('myKey', 'x', 'x');
 
-		$this->assertSame('myKey', $captured['key']);
+		$this->assertSame('myKey', $captured->getKey());
 	}
 
 	public function testSetGlobalState_eventFiresAfterMutation_newValueVisible(): void
@@ -733,7 +740,7 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 		PradoUnit::setProp($this->_app, '_globals', []);
 		$observedInHandler = 'not-set';
 		$this->_app->attachEventHandler('onGlobalStateChange', function ($sender, $param) use (&$observedInHandler) {
-			$observedInHandler = $sender->getGlobalState($param['key']);
+			$observedInHandler = $sender->getGlobalState($param->getKey());
 		});
 
 		$this->_app->setGlobalState('k', 'expected');
@@ -747,7 +754,7 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 		$keyExistsInHandler = true;
 		$this->_app->attachEventHandler('onGlobalStateChange', function ($sender, $param) use (&$keyExistsInHandler) {
 			// After clearing to default, getGlobalState returns its default (null).
-			$keyExistsInHandler = ($sender->getGlobalState($param['key'], 'missing') !== 'missing');
+			$keyExistsInHandler = ($sender->getGlobalState($param->getKey(), 'missing') !== 'missing');
 		});
 
 		$this->_app->setGlobalState('k', 'x', 'x');
@@ -760,7 +767,7 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 		PradoUnit::setProp($this->_app, '_globals', ['k' => 'old']);
 		$keyExistsInHandler = true;
 		$this->_app->attachEventHandler('onGlobalStateChange', function ($sender, $param) use (&$keyExistsInHandler) {
-			$keyExistsInHandler = ($sender->getGlobalState($param['key'], 'missing') !== 'missing');
+			$keyExistsInHandler = ($sender->getGlobalState($param->getKey(), 'missing') !== 'missing');
 		});
 
 		$this->_app->clearGlobalState('k');

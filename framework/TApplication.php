@@ -11,6 +11,7 @@
 namespace Prado;
 
 use Prado\Caching\ICache;
+use Prado\Collections\TCollectionItemChangeParameter;
 use Prado\Collections\TMap;
 use Prado\Exceptions\{TConfigurationException, TExitException, THttpException};
 use Prado\Exceptions\TErrorHandler;
@@ -584,16 +585,18 @@ class TApplication extends TComponent implements ISingleton
 	 * A global value is one that is persistent across users sessions and requests.
 	 * Make sure that the value is serializable and unserializable.
 	 *
-	 * Raises {@see onGlobalStateChange} when the stored value actually changes, with
-	 * a read-only {@see TEventParameter} payload containing:
+	 * Raises {@see onGlobalStateChange} when the stored value actually changes.
+	 * The event parameter is a read-only {@see TCollectionItemChangeParameter};
+	 * `IS_UNSET` is never set, so `->getIsUnset()` is always `false` and all
+	 * set-operation getters are meaningful:
 	 *
-	 * | Key         | Present when              | Description                                       |
-	 * |-------------|---------------------------|---------------------------------------------------|
-	 * | `key`       | always                    | The global-state key that was modified.           |
-	 * | `value`     | always                    | The new value (equal to `$value`).                |
-	 * | `isDefault` | always                    | `true` when the key was cleared to its default.   |
-	 * | `isNew`     | always                    | `true` when the key did not previously exist.     |
-	 * | `oldValue`  | key existed before change | The previous value.                               |
+	 * | Getter              | Key           | Returns  | Notes                                             |
+	 * |---------------------|---------------|----------|---------------------------------------------------|
+	 * | `->getKey()`        | `'key'`       | `string` | The global-state key that was modified.           |
+	 * | `->getValue()`      | `'value'`     | `mixed`  | The new value (equal to `$value`).                |
+	 * | `->getIsDefault()`  | `'isDefault'` | `bool`   | `true` when `$value === $defaultValue`.           |
+	 * | `->getIsNew()`      | `'isNew'`     | `bool`   | `true` when the key did not previously exist.     |
+	 * | `->getOldValue()`   | `'oldValue'`  | `mixed`  | Previous value; `null` placeholder when `isNew`.  |
 	 *
 	 * @param string $key the name of the value to be set
 	 * @param mixed $value the global value to be set
@@ -623,11 +626,15 @@ class TApplication extends TComponent implements ISingleton
 		}
 
 		if ($changed) {
-			$payload = ['key' => $key, 'value' => $value, 'isDefault' => $isDefault, 'isNew' => !$isset];
-			if ($isset) {
-				$payload['oldValue'] = $oldValue;
-			}
-			$this->onGlobalStateChange(new TEventParameter($payload, true));
+			$flags = ($isDefault ? TCollectionItemChangeParameter::IS_DEFAULT : 0)
+				| (!$isset ? TCollectionItemChangeParameter::IS_NEW : 0);
+			$this->onGlobalStateChange(new TCollectionItemChangeParameter(
+				$key,
+				$value,
+				$isset ? $oldValue : null,
+				$flags,
+				true
+			));
 		}
 
 		if ($forceSave) {
@@ -640,14 +647,15 @@ class TApplication extends TComponent implements ISingleton
 	 *
 	 * The value cleared will no longer be available in this request and the following requests.
 	 *
-	 * Raises {@see onGlobalStateChange} when the key was present, with a read-only
-	 * {@see TEventParameter} payload containing:
+	 * Raises {@see onGlobalStateChange} when the key was present. The event parameter
+	 * is a read-only {@see TCollectionItemChangeParameter} with `IS_UNSET` set and
+	 * `IS_NEW` never set, so the removal getters are:
 	 *
-	 * | Key        | Description                                                  |
-	 * |------------|--------------------------------------------------------------|
-	 * | `key`      | The global-state key that was removed.                       |
-	 * | `isUnset`  | Always `true` — signals the key was removed entirely.        |
-	 * | `oldValue` | The value that was stored under `$key` before removal.       |
+	 * | Getter             | Key          | Returns  | Notes                                         |
+	 * |--------------------|--------------|----------|-----------------------------------------------|
+	 * | `->getKey()`       | `'key'`      | `string` | The global-state key that was removed.        |
+	 * | `->getIsUnset()`   | `'isUnset'`  | `bool`   | Always `true`; signals explicit removal.      |
+	 * | `->getOldValue()`  | `'oldValue'` | `mixed`  | The value previously stored under `$key`.     |
 	 *
 	 * @param string $key the name of the value to be cleared
 	 */
@@ -657,11 +665,13 @@ class TApplication extends TComponent implements ISingleton
 			$oldValue = $this->_globals[$key];
 			unset($this->_globals[$key]);
 			$this->_stateChanged = true;
-			$this->onGlobalStateChange(new TEventParameter([
-				'key' => $key,
-				'isUnset' => true,
-				'oldValue' => $oldValue,
-			], true));
+			$this->onGlobalStateChange(new TCollectionItemChangeParameter(
+				$key,
+				null,
+				$oldValue,
+				TCollectionItemChangeParameter::IS_UNSET,
+				true
+			));
 		}
 	}
 
@@ -670,22 +680,22 @@ class TApplication extends TComponent implements ISingleton
 	 *
 	 * This event is raised by {@see setGlobalState} and {@see clearGlobalState}
 	 * whenever a global state value is added, changed, or cleared. The event fires
-	 * after the mutation, so handlers observe the new state via
-	 * {@see getGlobalState}. The parameter is a read-only {@see TEventParameter}
-	 * whose {@see TEventParameter::getParameter Parameter} array contains:
+	 * after the mutation, so handlers observe the new state via {@see getGlobalState}.
+	 * The parameter is a read-only {@see TCollectionItemChangeParameter}; use
+	 * `->getIsUnset()` to distinguish a remove (`true`) from a set (`false`):
 	 *
-	 * | Key         | Type    | Present when                      | Description                                      |
-	 * |-------------|---------|-----------------------------------|--------------------------------------------------|
-	 * | `key`       | string  | always                            | The global-state key that was modified.          |
-	 * | `value`     | mixed   | {@see setGlobalState} only        | The new value.                                   |
-	 * | `isDefault` | bool    | {@see setGlobalState} only        | `true` when the key was cleared to its default.  |
-	 * | `isNew`     | bool    | {@see setGlobalState} only        | `true` when the key did not previously exist.    |
-	 * | `isUnset`   | bool    | {@see clearGlobalState} only      | Always `true`; signals the key was removed.      |
-	 * | `oldValue`  | mixed   | key existed before the operation  | The previous value (absent when key was new).    |
+	 * | Getter              | Key           | Type     | `offsetExists` true when        | Notes                                           |
+	 * |---------------------|---------------|----------|---------------------------------|-------------------------------------------------|
+	 * | `->getKey()`        | `'key'`       | `string` | always                          | The global-state key that was modified.         |
+	 * | `->getValue()`      | `'value'`     | `mixed`  | `!isUnset` (set operations)     | The new value; stored as `null` when `isUnset`. |
+	 * | `->getIsDefault()`  | `'isDefault'` | `bool`   | `!isUnset` (set operations)     | `true` when `$value === $defaultValue`.         |
+	 * | `->getIsNew()`      | `'isNew'`     | `bool`   | `!isUnset` (set operations)     | `true` when the key did not previously exist.   |
+	 * | `->getIsUnset()`    | `'isUnset'`   | `bool`   | `isUnset` (remove operations)   | `true`; signals the key was removed entirely.   |
+	 * | `->getOldValue()`   | `'oldValue'`  | `mixed`  | `!isNew` (key existed before)   | Previous value; stored as `null` when `isNew`.  |
+	 * | `->getFlags()`      | `'flags'`     | `int`    | always                          | Raw bitmask of the `IS_*` flag constants.       |
 	 *
-	 * @param TEventParameter $param the read-only event parameter
+	 * @param TCollectionItemChangeParameter $param the read-only event parameter
 	 * @since 4.3.3
-	 * @todo v4.4 Formalize the Parameter - TArrayValueChangeParameter?
 	 */
 	public function onGlobalStateChange($param)
 	{
