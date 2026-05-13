@@ -1,26 +1,23 @@
 -- Oracle SqlMap test database schema.
--- Run as prado_unitest connected to FREEPDB1.
--- Uses WHENEVER SQLERROR CONTINUE so DROP errors are ignored on first run.
+-- Statements separated by semicolons for DefaultScriptRunner compatibility.
+-- Requires Oracle 21c+ for DROP TABLE IF EXISTS / DROP SEQUENCE IF EXISTS.
+-- CI uses Oracle 23.6 which satisfies this requirement.
 
-WHENEVER SQLERROR CONTINUE
-
-DROP TABLE LineItems;
-DROP TABLE Orders;
-DROP TABLE Accounts;
-DROP TABLE Categories;
-DROP TABLE Documents;
-DROP TABLE Enumerations;
-DROP TABLE Others;
-DROP TABLE Users;
-DROP TABLE A;
-DROP TABLE B;
-DROP TABLE C;
-DROP TABLE D;
-DROP TABLE E;
-DROP TABLE F;
-DROP SEQUENCE categories_seq;
-
-WHENEVER SQLERROR EXIT SQL.SQLCODE
+DROP TABLE IF EXISTS LineItems;
+DROP TABLE IF EXISTS Orders;
+DROP TABLE IF EXISTS Accounts;
+DROP TABLE IF EXISTS Categories;
+DROP TABLE IF EXISTS Documents;
+DROP TABLE IF EXISTS Enumerations;
+DROP TABLE IF EXISTS Others;
+DROP TABLE IF EXISTS Users;
+DROP TABLE IF EXISTS A;
+DROP TABLE IF EXISTS B;
+DROP TABLE IF EXISTS C;
+DROP TABLE IF EXISTS D;
+DROP TABLE IF EXISTS E;
+DROP TABLE IF EXISTS F;
+DROP SEQUENCE IF EXISTS categories_seq;
 
 CREATE TABLE C (
     ID VARCHAR2(50) NOT NULL PRIMARY KEY,
@@ -173,7 +170,7 @@ INSERT INTO Others VALUES (1, 8888888,    0, 'Oui');
 INSERT INTO Others VALUES (2, 9999999999, 1, 'Non');
 
 CREATE TABLE Users (
-    LogonId VARCHAR2(20) NOT NULL DEFAULT '0' PRIMARY KEY,
+    LogonId VARCHAR2(20) DEFAULT '0' NOT NULL PRIMARY KEY,
     Name VARCHAR2(40),
     Password VARCHAR2(20),
     EmailAddress VARCHAR2(40),
