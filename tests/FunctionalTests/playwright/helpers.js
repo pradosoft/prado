@@ -201,14 +201,21 @@ export class PradoTestHelper {
 
 	/**
 	 * Mirrors PradoGenericSelenium2Test::type():
-	 *   clear → fill → click body (triggers onblur)
+	 *   clear → type (character by character) → click body (triggers onblur/onchange)
+	 *
+	 * Uses pressSequentially() rather than fill() so that WebKit correctly marks
+	 * the field as "user-dirty".  Playwright's fill() sets the value
+	 * programmatically; WebKit does not fire the 'change' event on subsequent
+	 * blur for programmatically-set values, meaning TActiveTextBox AutoPostBack
+	 * callbacks never fire.  pressSequentially() dispatches real key events,
+	 * which triggers 'change' reliably in all browsers.
 	 */
 	async type(id, txt = '') {
 		await this.pause(50);
 		const locator = this.getLocator(id);
 		await locator.clear();
 		if (txt !== '') {
-			await locator.fill(txt);
+			await locator.pressSequentially(txt);
 		}
 		// trigger onblur by clicking outside (avoid datepicker popups changing value)
 		await this.page.locator('body').click();
