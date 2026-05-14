@@ -1,7 +1,7 @@
 name: Prado
 on: [push, pull_request]
 env:
-  # PHP version used by single-run jobs (non-matrix).
+  # The PHP version used for integration and functional tests
   PHP_VERSION: '8.2'
 jobs:
   prado:
@@ -110,8 +110,18 @@ jobs:
         run: npm test
 
   prado-playwright:
-    name: Prado Playwright (Chromium + Firefox + WebKit)
+    name: Prado Playwright (${{ matrix.browser_name }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - browser: chromium
+            browser_name: Chromium
+          - browser: firefox
+            browser_name: Firefox
+          - browser: webkit
+            browser_name: WebKit
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -130,8 +140,8 @@ jobs:
       - name: Install npm dependencies
         run: npm install
 
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium firefox webkit
+      - name: Install Playwright browser (${{ matrix.browser_name }})
+        run: npx playwright install --with-deps ${{ matrix.browser }}
 
       - name: Get composer cache directory
         id: composer-cache
@@ -147,14 +157,16 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --no-progress --prefer-dist --optimize-autoloader
 
-      - name: Run Playwright Functional Tests
-        run: composer functionaltest
+      - name: Run Playwright Functional Tests (${{ matrix.browser_name }})
+        run: |
+          bash tests/FunctionalTests/setup-demos.sh
+          npm run playwright -- --project=${{ matrix.browser }}
 
-      - name: Upload Playwright report
+      - name: Upload Playwright report (${{ matrix.browser_name }})
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.browser }}
           path: build/playwright-report/
           retention-days: 30
 
