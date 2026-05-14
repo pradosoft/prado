@@ -176,10 +176,10 @@
 						parameterClass="int"
 						resultClass="array">
 			select
-			Account_Id as Id,
-			Account_FirstName as FirstName,
-			Account_LastName as LastName,
-			Account_Email as EmailAddress
+			Account_Id AS "Id",
+			Account_FirstName AS "FirstName",
+			Account_LastName AS "LastName",
+			Account_Email AS "EmailAddress"
 			from Accounts
 			where Account_Id = #value#
 		</select>
@@ -187,10 +187,10 @@
 		<select id="GetAllAccountsAsHashtableViaResultClass"
 						resultClass="array">
 			select
-			Account_Id as Id,
-			Account_FirstName as FirstName,
-			Account_LastName as LastName,
-			Account_Email as EmailAddress
+			Account_Id AS "Id",
+			Account_FirstName AS "FirstName",
+			Account_LastName AS "LastName",
+			Account_Email AS "EmailAddress"
 			from Accounts
 			order by Account_Id
 		</select>
@@ -445,6 +445,7 @@
 			Account_LastName,
 			Account_Email
 			from Accounts
+			order by Account_Id
 		</select>
 
 		<select id="GetAllAccountsOrderByName"
@@ -527,8 +528,8 @@
 
 		<statement id="GetAccounts" resultMap="account-result">
 			SELECT *
-			FROM
-			Accounts
+			FROM Accounts
+			ORDER BY Account_Id
 		</statement>
 		<!-- JIRA-110 -->
 

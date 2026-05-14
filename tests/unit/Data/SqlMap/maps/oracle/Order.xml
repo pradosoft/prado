@@ -334,19 +334,19 @@
 				parameterClass="Integer"
 				resultClass="Order" >
 		select
-			Orders.Order_Id as Id,
-			Order_Date as Date,
-			Order_CardExpiry as CardExpiry,
-			Order_CardType as CardType,
-			Order_CardNumber as CardNumber,
-			Order_Street as Street,
-			Order_City as City,
-			Order_Province as Province,
-			Order_PostalCode as PostalCode,
-			LineItem_ID as "FavouriteLineItem.Id",
-			LineItem_Code as "FavouriteLineItem.Code",
-			LineItem_Quantity as "FavouriteLineItem.Quantity",
-			LineItem_Price as "FavouriteLineItem.Price"
+			Orders.Order_Id "Id",
+			Order_Date "Date",
+			Order_CardExpiry "CardExpiry",
+			Order_CardType "CardType",
+			Order_CardNumber "CardNumber",
+			Order_Street "Street",
+			Order_City "City",
+			Order_Province "Province",
+			Order_PostalCode "PostalCode",
+			LineItem_ID "FavouriteLineItem.Id",
+			LineItem_Code "FavouriteLineItem.Code",
+			LineItem_Quantity "FavouriteLineItem.Quantity",
+			LineItem_Price "FavouriteLineItem.Price"
 		from Orders, LineItems
 		where Orders.Order_Id = LineItems.Order_Id
 		and Order_FavouriteLineItem = LineItems.LineItem_ID

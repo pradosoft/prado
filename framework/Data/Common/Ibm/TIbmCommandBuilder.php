@@ -105,16 +105,22 @@ class TIbmCommandBuilder extends TDbCommandBuilder
 		if ($limit < 0 && $offset < 0) {
 			return $sql;
 		}
-		if ($limit >= 0 && $offset <= 0) {
+		if ($offset > 0 && $limit >= 0) {
+			// DB2 LUW 11.1+ (and DB2 Community Edition) native offset+limit syntax.
+			// Avoids the ROW_NUMBER() subquery whose extra column leaks into results.
+			return $sql . ' OFFSET ' . $offset . ' ROWS FETCH NEXT ' . $limit . ' ROWS ONLY';
+		}
+		if ($limit >= 0) {
 			return $sql . ' FETCH FIRST ' . $limit . ' ROWS ONLY';
 		}
-		// limit + offset: use ROW_NUMBER() subquery for broad DB2 compatibility
-		return $this->rewriteLimitOffsetSql($sql, $limit, $offset);
+		// offset only (no limit): fall back to ROW_NUMBER() subquery
+		return $this->rewriteLimitOffsetSql($sql, PHP_INT_MAX, $offset);
 	}
 
 	/**
-	 * Rewrites the SQL using a ROW_NUMBER() window function subquery for offset+limit.
-	 * Compatible with DB2 LUW 9.x and later.
+	 * Rewrites the SQL using a ROW_NUMBER() window function subquery for
+	 * offset-only queries (no limit) where native OFFSET/FETCH is not available.
+	 * Prefer {@see applyLimitOffset} which uses native syntax when possible.
 	 *
 	 * @param string $sql original SQL
 	 * @param int $limit > 0

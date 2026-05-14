@@ -1,23 +1,22 @@
 /* Firebird SqlMap test database schema.
    Run via isql-fb after connecting to the prado_unitest.fdb database.
-   FirebirdScriptRunner silently ignores SQLCODE -204 "object unknown" errors so
-   these DROP statements are safe to run on a fresh database (Firebird 4.0+). */
+   IF EXISTS prevents errors on a fresh database (Firebird 4.0+ syntax). */
 
-DROP TABLE LineItems;
-DROP TABLE Orders;
-DROP TABLE Accounts;
-DROP TABLE Categories;
-DROP TABLE Documents;
-DROP TABLE Enumerations;
-DROP TABLE Others;
-DROP TABLE Users;
-DROP TABLE A;
-DROP TABLE B;
-DROP TABLE C;
-DROP TABLE D;
-DROP TABLE E;
-DROP TABLE F;
-DROP SEQUENCE categories_gen;
+DROP TABLE IF EXISTS LineItems;
+DROP TABLE IF EXISTS Orders;
+DROP TABLE IF EXISTS Accounts;
+DROP TABLE IF EXISTS Categories;
+DROP TABLE IF EXISTS Documents;
+DROP TABLE IF EXISTS Enumerations;
+DROP TABLE IF EXISTS Others;
+DROP TABLE IF EXISTS Users;
+DROP TABLE IF EXISTS A;
+DROP TABLE IF EXISTS B;
+DROP TABLE IF EXISTS C;
+DROP TABLE IF EXISTS D;
+DROP TABLE IF EXISTS E;
+DROP TABLE IF EXISTS F;
+DROP SEQUENCE IF EXISTS categories_gen;
 
 CREATE TABLE C (
     ID VARCHAR(50) NOT NULL PRIMARY KEY,
