@@ -182,25 +182,13 @@ class TDbTransaction extends \Prado\TComponent implements IDataTransaction
 	public function rollback()
 	{
 		$pdo = $this->assertActive();
-		if ($pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'firebird') {
-			// pdo_firebird has a known bug in some builds where PDO::rollBack()
-			// internally calls isc_commit_transaction() instead of
-			// isc_rollback_transaction(), silently committing data that should be
-			// discarded.  Issuing ROLLBACK as a SQL statement first instructs the
-			// Firebird server directly to discard the current transaction; the
-			// subsequent PDO::rollBack() call then merely updates PHP's internal
-			// transaction state (and, if buggy, commits an already-empty implicit
-			// transaction, which is harmless).
-			try {
-				$pdo->exec('ROLLBACK');
-			} catch (PDOException $e) {
-			}
-			try {
-				$pdo->rollBack();
-			} catch (PDOException $e) {
-			}
-		} else {
+		try {
 			$pdo->rollBack();
+		} catch (PDOException | \Error $e) {
+			// pdo_firebird may throw if its internal transaction state is out of
+			// sync (e.g. after a previous error that already closed the Firebird
+			// transaction handle). Catching here ensures completeTransaction() is
+			// always reached so the PHP-side active flag is cleared correctly.
 		}
 		$this->completeTransaction($pdo);
 	}
@@ -239,10 +227,15 @@ class TDbTransaction extends \Prado\TComponent implements IDataTransaction
 	 */
 	protected function completeTransaction(PDO $pdo): void
 	{
-		if (TDbDriverCapabilities::requiresPostTransactionFlush($pdo->getAttribute(PDO::ATTR_DRIVER_NAME))) {
+		try {
+			$driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+		} catch (PDOException | \Error $e) {
+			$driver = null;
+		}
+		if ($driver !== null && TDbDriverCapabilities::requiresPostTransactionFlush($driver)) {
 			try {
 				$pdo->commit();
-			} catch (PDOException $e) {
+			} catch (PDOException | \Error $e) {
 			}
 		}
 
