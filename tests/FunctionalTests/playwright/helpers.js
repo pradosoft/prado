@@ -201,23 +201,51 @@ export class PradoTestHelper {
 
 	/**
 	 * Mirrors PradoGenericSelenium2Test::type():
-	 *   clear → type (character by character) → click body (triggers onblur/onchange)
+	 *   click → select-all → backspace → type → blur → body-click
 	 *
-	 * Uses pressSequentially() rather than fill() so that WebKit correctly marks
-	 * the field as "user-dirty".  Playwright's fill() sets the value
-	 * programmatically; WebKit does not fire the 'change' event on subsequent
-	 * blur for programmatically-set values, meaning TActiveTextBox AutoPostBack
-	 * callbacks never fire.  pressSequentially() dispatches real key events,
-	 * which triggers 'change' reliably in all browsers.
+	 * Step-by-step rationale:
+	 *
+	 *   1. locator.click()      — real user-initiated click to focus the element.
+	 *      Playwright's fill() / clear() focus via CDP, which WebKit does not
+	 *      treat as a user interaction.  A real click establishes the
+	 *      user-interaction context required for 'change' to fire on blur.
+	 *
+	 *   2. locator.selectText() — cross-platform select-all (calls el.select())
+	 *      so the next keystrokes replace any existing content.
+	 *
+	 *   3. keyboard.press('Backspace') — real keystroke that deletes the
+	 *      selection and marks the field as user-dirty in WebKit.
+	 *
+	 *   4. keyboard.type(txt)   — real keystrokes to set the new value.
+	 *      (skipped for empty-string clears; Backspace above already cleared it)
+	 *
+	 *   5. locator.evaluate(blur) — explicit programmatic blur.
+	 *      In WebKit, clicking a non-interactive element such as <body> does NOT
+	 *      reliably blur the active input first.  The active input keeps focus,
+	 *      so 'blur' and 'change' never fire and AutoPostBack callbacks (e.g.
+	 *      TActiveTextBox) are never dispatched.  Calling el.blur() directly
+	 *      guarantees the blur→change sequence for all browsers.
+	 *
+	 *   6. body.click()         — closes any open overlays such as date-picker
+	 *      calendars.  The element is already blurred at this point, so no
+	 *      second 'change' event fires.
 	 */
 	async type(id, txt = '') {
 		await this.pause(50);
 		const locator = this.getLocator(id);
-		await locator.clear();
+		// Real click to focus (step 1)
+		await locator.click();
+		// Select all existing text so new typing replaces it (step 2)
+		await locator.selectText().catch(() => {});
+		// Clear via real keystroke — sets the user-dirty flag in WebKit (step 3)
+		await this.page.keyboard.press('Backspace');
+		// Type the new value via real keystrokes (step 4)
 		if (txt !== '') {
-			await locator.pressSequentially(txt);
+			await this.page.keyboard.type(txt);
 		}
-		// trigger onblur by clicking outside (avoid datepicker popups changing value)
+		// Explicitly blur to fire blur→change in all browsers (step 5)
+		await locator.evaluate(el => el.blur());
+		// Click body to close any open overlays (step 6)
 		await this.page.locator('body').click();
 	}
 
