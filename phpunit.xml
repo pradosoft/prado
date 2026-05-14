@@ -9,7 +9,11 @@
       <directory suffix="Test.php">./tests/unit/PHPStan</directory>
     </testsuite>
     <testsuite name="functional">
+      <directory suffix="TestCase.php">./tests/FunctionalTests/playwright</directory>
+    </testsuite>
+    <testsuite name="selenium">
       <directory suffix="TestCase.php">./tests/FunctionalTests</directory>
+      <exclude>./tests/FunctionalTests/playwright</exclude>
     </testsuite>
   </testsuites>
   <logging>
