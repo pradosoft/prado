@@ -33,6 +33,7 @@ return [
 'IWeakRetainable' => 'Prado\Collections\IWeakRetainable',
 'TArraySubscription' => 'Prado\Collections\TArraySubscription',
 'TAttributeCollection' => 'Prado\Collections\TAttributeCollection',
+'TCollectionItemChangeParameter' => 'Prado\Collections\TCollectionItemChangeParameter',
 'TCollectionSubscription' => 'Prado\Collections\TCollectionSubscription',
 'TDummyDataSource' => 'Prado\Collections\TDummyDataSource',
 'TDummyDataSourceIterator' => 'Prado\Collections\TDummyDataSourceIterator',

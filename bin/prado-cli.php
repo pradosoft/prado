@@ -65,10 +65,11 @@ foreach ($_SERVER['argv'] as $i => $arg) {
 }
 
 if (!$found && !$dir_option) {
-	$writer = new Prado\Shell\TShellWriter(new Prado\IO\TOutputWriter());
-	$writer->writeError("Application could not be found.  Specify the app config directory with '-d=/path/to/app/protected'.");
-	$writer->flush();
-	exit();
+	// No app config found anywhere — run in no-config mode from the framework
+	// root. TShellApplication::resolvePaths() will locate or create a runtime
+	// directory automatically. Features are limited to built-in shell actions
+	// (help, php-shell) since no modules or parameters are configured.
+	$app_dir = dirname(__DIR__);
 } elseif ($dir_option && !checkForAppConfig($app_dir)) {
 	if (!checkForAppConfig($app_dir . DIRECTORY_SEPARATOR . 'protected')) {
 		$writer = new Prado\Shell\TShellWriter(new Prado\IO\TOutputWriter());
