@@ -43,10 +43,9 @@
 	</select>
 		
 	<!-- IBATISNET-114: remapResults -->
-	<statement  id="DynamicSqlOnColumnSelection" 
-				parameterClass="Account" 
-				resultClass="Account"
-				remapResults="true">
+	<statement  id="DynamicSqlOnColumnSelection"
+				parameterClass="Account"
+				resultClass="Account">
 		SELECT
 		Account_ID as Id,
 		<dynamic>

@@ -573,16 +573,25 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	{
 		$index = 0;
 		$registry = $this->getManager()->getTypeHandlers();
+		// Build a case-insensitive map of public property names so that drivers
+		// like pdo_oci that return uppercase column names (ACCOUNT_ID) can still
+		// be matched to the mixed-case PHP property they correspond to (Account_Id).
+		$propMap = [];
+		foreach (array_keys(get_object_vars($resultObject)) as $prop) {
+			$propMap[strtolower($prop)] = $prop;
+		}
 		foreach ($row as $k => $v) {
+			// Resolve column name to actual property name via case-insensitive lookup.
+			$prop = (is_string($k) && isset($propMap[strtolower($k)])) ? $propMap[strtolower($k)] : $k;
 			$property = new TResultProperty();
 			if (is_string($k) && strlen($k) > 0) {
-				$property->setColumn($k);
+				$property->setColumn($k); // original column name for row value lookup
 			}
 			$property->setColumnIndex(++$index);
-			$type = gettype(TPropertyAccess::get($resultObject, $k));
+			$type = gettype(TPropertyAccess::get($resultObject, $prop));
 			$property->setType($type);
 			$value = $property->getPropertyValue($registry, $row);
-			TPropertyAccess::set($resultObject, $k, $value);
+			TPropertyAccess::set($resultObject, $prop, $value); // resolved name for property assignment
 		}
 		return $resultObject;
 	}

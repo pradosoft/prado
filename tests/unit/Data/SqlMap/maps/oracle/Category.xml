@@ -30,10 +30,10 @@
             </selectKey>			
   			insert into Categories  
 				(Category_Name, Category_Guid) 
-			values 
-				(#Name#, #GuidString:Varchar#);
+			values
+				(#Name#, #GuidString:Varchar#)
 		</insert>
-		
+
 		<!--  -->
 		<insert id="InsertCategoryViaInsertStatement" parameterClass="Category" >
 			<selectKey property="Id" type="post" resultClass="int">
@@ -52,21 +52,21 @@
             </selectKey>
 			insert into Categories  
 				(Category_Name, Category_Guid)
-			values 
-				(?,?);
+			values
+				(?,?)
 		</insert>
 
-		<!-- Needs to be <insert> vs <statement> for MySql due to selectKey -->		
+		<!-- Needs to be <insert> vs <statement> for MySql due to selectKey -->
 		<insert id="InsertCategoryNull" parameterMap="insert-null-params">
 			<selectKey property="Id" type="post" resultClass="int">
 				SELECT categories_seq.CURRVAL AS value FROM DUAL
             </selectKey>
 			insert into Categories  
 				(Category_Name, Category_Guid)
-			values 
-				(?,?);
+			values
+				(?,?)
 		</insert>
-		
+
 		<update id="UpdateCategoryViaParameterMap" parameterMap="UpdateParam">
 			update Categories set
 			Category_Name =?,

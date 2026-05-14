@@ -76,7 +76,7 @@ INSERT INTO Accounts VALUES (5, 'Gilles', 'Bayon', NULL, 'Oui', 100);
 
 CREATE SEQUENCE categories_seq START WITH 1 INCREMENT BY 1;
 CREATE TABLE Categories (
-    Category_Id NUMBER(10) NOT NULL PRIMARY KEY,
+    Category_Id NUMBER(10) DEFAULT categories_seq.NEXTVAL NOT NULL PRIMARY KEY,
     Category_Name VARCHAR2(32),
     Category_Guid VARCHAR2(36)
 );

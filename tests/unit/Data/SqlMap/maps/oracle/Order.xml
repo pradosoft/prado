@@ -257,7 +257,7 @@
 				parameterClass="int"
 				resultClass="date">
 		select
-		Order_Date as 'datetime'
+		Order_Date "datetime"
 		from Orders where Order_Id = #value#
 	</statement>
 
@@ -466,8 +466,8 @@
 			acc.Account_FirstName as Account_FirstName,
 			acc.Account_LastName as Account_LastName,
 			acc.Account_Email as Account_Email
-		from Orders as ord
-		LEFT OUTER JOIN Accounts as acc on acc.Account_ID = ord.Account_ID
+		from Orders ord
+		LEFT OUTER JOIN Accounts acc on acc.Account_ID = ord.Account_ID
 		where Order_Id = #value#
 	</select>
 

@@ -118,15 +118,15 @@
 			insert into LineItems
 			(LineItem_ID, Order_ID, LineItem_Code, LineItem_Quantity, LineItem_Price)
 			values
-			(?, ?, ?, ?, ?);
+			(?, ?, ?, ?, ?)
 		</statement>
-		
-		<statement id="InsertLineItemWithPicture" 
+
+		<statement id="InsertLineItemWithPicture"
 					parameterMap="line-item-insert-params-picture" >
 			insert into LineItems
 			(LineItem_ID, Order_ID, LineItem_Code, LineItem_Quantity, LineItem_Price, LineItem_Picture)
 			values
-			(?, ?, ?, ?, ?, ?);
+			(?, ?, ?, ?, ?, ?)
 		</statement>
 		
 		<insert id="InsertLineItemPostKey" parameterClass="LineItem">
@@ -159,7 +159,7 @@
   		<!-- JIRA 23 -->
 		<delete id="DeleteWithComments" >
 			<!-- Delete LineItems -->
-			delete from LineItems where Order_ID = 10;
+			delete from LineItems where Order_ID = 10
 			<!-- Delete LineItems -->
 		</delete>		
 		
