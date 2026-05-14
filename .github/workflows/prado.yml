@@ -171,7 +171,7 @@ jobs:
           retention-days: 30
 
   prado-macos:
-    name: Prado (macOS)
+    name: Prado OS (macOS)
     runs-on: macos-latest
     steps:
       - name: Checkout
@@ -238,7 +238,7 @@ jobs:
         run: composer unittest
 
   prado-windows:
-    name: Prado (Windows)
+    name: Prado OS (Windows)
     runs-on: windows-latest
     defaults:
       run:
@@ -310,8 +310,8 @@ jobs:
       - name: Run Unit Tests
         run: composer unittest
 
-  db-mssql:
-    name: Microsoft SQL Server
+  db-sqlsrv:
+    name: Prado Data (Microsoft SQL Server)
     runs-on: ubuntu-latest
     services:
       mssql:
@@ -367,7 +367,7 @@ jobs:
         run: php vendor/bin/phpunit tests/unit/Data/DbSpecific/Mssql/
 
   db-firebird:
-    name: Firebird
+    name: Prado Data (Firebird)
     runs-on: ubuntu-latest
     services:
       firebird:
@@ -428,7 +428,7 @@ jobs:
         run: php vendor/bin/phpunit tests/unit/Data/DbSpecific/Firebird/
 
   db-oracle:
-    name: Oracle
+    name: Prado Data (Oracle)
     runs-on: ubuntu-latest
     # Run Oracle as a service container (like the other DB jobs) so GitHub
     # Actions owns the health-check loop and we control retries directly.
@@ -503,7 +503,7 @@ jobs:
           ORACLE_SERVICE_NAME: FREEPDB1
 
   db-ibm:
-    name: IBM DB2
+    name: Prado Data (IBM DB2)
     # DB2 image takes 2-3 minutes to start; only run on explicit manual dispatch.
     # if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
