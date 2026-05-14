@@ -573,10 +573,40 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	{
 		$index = 0;
 		$registry = $this->getManager()->getTypeHandlers();
-		// Build a case-insensitive map of public property names so that drivers
+		// Build a case-insensitive map of property names so that drivers
 		// like pdo_oci that return uppercase column names (ACCOUNT_ID) can still
 		// be matched to the mixed-case PHP property they correspond to (Account_Id).
+		// We inspect setter methods (set*) rather than get_object_vars() so that
+		// classes using private fields with getter/setter pairs are also covered.
 		$propMap = [];
+		if ($resultObject instanceof \Prado\TComponent) {
+			// TComponent exposes properties via canGetProperty() / canSetProperty(),
+			// which use Prado::method_visible() (visibility-aware) and also check
+			// behavior-forwarded properties.  Using these APIs instead of raw
+			// method_exists() ensures that infrastructure methods with parameterised
+			// getters (e.g. TActiveRecord::getColumnValue($name)) are not mistakenly
+			// treated as zero-argument PRADO-style properties and pollute the map.
+			foreach (get_class_methods($resultObject) as $method) {
+				if (strncasecmp($method, 'set', 3) === 0 && strlen($method) > 3) {
+					$propName = substr($method, 3);
+					if ($resultObject->canGetProperty($propName)) {
+						$propMap[strtolower($propName)] = $propName;
+					}
+				}
+			}
+		} else {
+			// For plain PHP objects, inspect setter methods and confirm there is a
+			// matching getter — this covers classes with private fields + accessor pairs.
+			foreach (get_class_methods($resultObject) as $method) {
+				if (strncasecmp($method, 'set', 3) === 0 && strlen($method) > 3) {
+					$propName = substr($method, 3);
+					if (method_exists($resultObject, 'get' . $propName)) {
+						$propMap[strtolower($propName)] = $propName;
+					}
+				}
+			}
+		}
+		// Also include public properties (covers plain stdClass / array-style objects).
 		foreach (array_keys(get_object_vars($resultObject)) as $prop) {
 			$propMap[strtolower($prop)] = $prop;
 		}
@@ -688,9 +718,17 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		$groupBy = $resultMap->getGroupBy();
 		if (isset($row[$groupBy])) {
 			return $resultMap->getID() . $row[$groupBy];
-		} else {
-			return $resultMap->getID() . crc32(serialize($row));
 		}
+		// Case-insensitive fallback for drivers that return column names in a
+		// different case (e.g. pdo_oci returns ACCOUNT_ID when the query says
+		// Account_Id).
+		$groupByLower = strtolower($groupBy);
+		foreach ($row as $key => $val) {
+			if (strtolower((string) $key) === $groupByLower) {
+				return $resultMap->getID() . $val;
+			}
+		}
+		return $resultMap->getID() . crc32(serialize($row));
 	}
 
 	/**
@@ -855,9 +893,21 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		$value = $property->getColumn();
 		if (is_int(strpos($value, ',', 0)) || is_int(strpos($value, '=', 0))) {
 			$keys = [];
+			// Build a lowercase key map for case-insensitive column lookup (e.g.
+			// pdo_oci returns ORDER_ID when the query alias is Order_Id).
+			$rowLower = [];
+			foreach ($row as $k => $v) {
+				$rowLower[strtolower((string) $k)] = $v;
+			}
 			foreach (explode(',', $value) as $entry) {
 				$pair = explode('=', $entry);
-				$keys[trim($pair[0])] = $row[trim($pair[1])];
+				$colName = trim($pair[1]);
+				if (array_key_exists($colName, $row)) {
+					$keys[trim($pair[0])] = $row[$colName];
+				} else {
+					// Case-insensitive fallback.
+					$keys[trim($pair[0])] = $rowLower[strtolower($colName)] ?? null;
+				}
 			}
 			return $keys;
 		} else {
