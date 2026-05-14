@@ -217,6 +217,15 @@ class TDbCommand extends \Prado\TComponent implements IDataCommand
 	 * Non-SQL driver implementations may return a different type representation;
 	 * the return type on {@see IDataCommand} is therefore `mixed`.
 	 *
+	 * When a driver does not support explicit type tokens (e.g. pdo_ibm — see
+	 * {@see TDbDriverCapabilities::requiresUntypedParameters()}), this method
+	 * returns `null` as a signal that callers must omit the `$type` argument to
+	 * {@see \PDOStatement::bindValue()} entirely, letting PDO fall back to its
+	 * default of {@see \PDO::PARAM_STR}.  Callers must not pass the `null` return
+	 * value directly as the type argument: `int $type` coerces `null` to `0`
+	 * (= {@see \PDO::PARAM_NULL}), which triggers a deprecation notice in PHP 8.1+
+	 * and is itself an unsupported type on pdo_ibm.
+	 *
 	 * This method supersedes the deprecated static
 	 * {@see \Prado\Data\Common\TDbCommandBuilder::getPdoType()}.
 	 *
@@ -227,6 +236,14 @@ class TDbCommand extends \Prado\TComponent implements IDataCommand
 	 */
 	public function getColumnTypeFromValue($value)
 	{
+		try {
+			$driver = $this->getConnection()->getDriverName();
+		} catch (\Exception $e) {
+			$driver = null;
+		}
+		if ($driver !== null && TDbDriverCapabilities::requiresUntypedParameters($driver)) {
+			return null;
+		}
 		switch (gettype($value)) {
 			case 'boolean': return PDO::PARAM_BOOL;
 			case 'integer': return PDO::PARAM_INT;

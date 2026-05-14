@@ -44,7 +44,8 @@ use Prado\Data\Common\Sqlite\TSqliteMetaData;
  *    {@see getCharsetQuerySql}
  *  - **Transaction flushing** (Firebird implicit-transaction management) —
  *    {@see requiresPreBeginTransactionFlush}, {@see requiresPostTransactionFlush}
- *  - **PDO attribute support** — {@see hasAutoCommitAttribute}
+ *  - **PDO attribute support** — {@see hasAutoCommitAttribute},
+ *    {@see requiresUntypedParameters}
  *  - **MetaData factory** — {@see getMetaDataClass}
  *  - **Scaffold input factory** — {@see getScaffoldInputFile},
  *    {@see getScaffoldInputClass}, {@see createScaffoldInput}
@@ -754,6 +755,32 @@ class TDbDriverCapabilities
 			TDbDriver::DRIVER_DBLIB => false,
 			default => true,
 		};
+	}
+
+	/**
+	 * Returns true when the driver requires that all parameter bindings omit an
+	 * explicit PDO type token (i.e. the type argument to
+	 * {@see \PDOStatement::bindValue} / {@see \PDOStatement::bindParam} must be
+	 * left as `null`).
+	 *
+	 * pdo_ibm only accepts {@see \PDO::PARAM_STR} reliably.  Passing
+	 * {@see \PDO::PARAM_INT}, {@see \PDO::PARAM_BOOL}, or {@see \PDO::PARAM_NULL}
+	 * raises "Unknown parameter type" errors.  When this method returns true,
+	 * {@see \Prado\Data\TDbCommand::getColumnTypeFromValue()} returns `null` as a
+	 * signal to callers that the `$type` argument to
+	 * {@see \PDOStatement::bindValue()} must be omitted entirely, allowing PDO to
+	 * fall back to its default of {@see \PDO::PARAM_STR}.  Callers must check for
+	 * a `null` return and branch accordingly; passing `null` directly as the `int
+	 * $type` argument coerces to `0` (= {@see \PDO::PARAM_NULL}) and triggers a
+	 * deprecation notice in PHP 8.1+.
+	 *
+	 * @param string $driver PDO driver name
+	 * @return bool
+	 * @since 4.3.3
+	 */
+	public static function requiresUntypedParameters(string $driver): bool
+	{
+		return $driver === TDbDriver::DRIVER_IBM;
 	}
 
 	// =========================================================================

@@ -805,12 +805,22 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDataCommandBuilder
 		if ($this->hasIntegerKey($values)) {
 			$values = array_values($values);
 			for ($i = 0, $max = count($values); $i < $max; $i++) {
-				$command->bindValue($i + 1, $values[$i], $command->getColumnTypeFromValue($values[$i]));
+				$type = $command->getColumnTypeFromValue($values[$i]);
+				if ($type !== null) {
+					$command->bindValue($i + 1, $values[$i], $type);
+				} else {
+					$command->bindValue($i + 1, $values[$i]);
+				}
 			}
 		} else {
 			foreach ($values as $name => $value) {
 				$prop = $name[0] === ':' ? $name : ':' . $name;
-				$command->bindValue($prop, $value, $command->getColumnTypeFromValue($value));
+				$type = $command->getColumnTypeFromValue($value);
+				if ($type !== null) {
+					$command->bindValue($prop, $value, $type);
+				} else {
+					$command->bindValue($prop, $value);
+				}
 			}
 		}
 	}
