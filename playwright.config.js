@@ -24,7 +24,7 @@ import { defineConfig, devices } from '@playwright/test';
  *   npx playwright test active-controls             # specific directory, all browsers
  */
 export default defineConfig({
-	testDir: './tests/FunctionalTests/playwright',
+	testDir: './tests/playwright',
 	testMatch: '**/*.spec.js',
 
 	/* Maximum time one test can run (mirrors phpunit max_execution_time=1200) */
@@ -59,7 +59,7 @@ export default defineConfig({
 	 * from a killed run, stop it first: pkill -f "php.*8037"
 	 */
 	webServer: {
-		command: 'bash tests/FunctionalTests/playwright/start-server.sh',
+		command: 'bash tests/playwright/start-server.sh',
 		url: 'http://127.0.0.1:8037/tests/FunctionalTests/status.html',
 		reuseExistingServer: !process.env.CI,
 		timeout: 30_000,

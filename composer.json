@@ -103,7 +103,7 @@
 			"npm run playwright:install",
 			"@setup-demos"
 		],
-		"setup-demos": "bash tests/FunctionalTests/setup-demos.sh",
+		"setup-demos": "bash tests/setup-demos.sh",
         "gendoc": "phpdoc --template=./vendor/pradosoft/prado-phpdoc-template",
 		"fix": "vendor/bin/php-cs-fixer fix",
 		"stan": "vendor/bin/phpstan analyse --memory-limit=512M",
