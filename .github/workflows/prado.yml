@@ -159,7 +159,7 @@ jobs:
 
       - name: Run Playwright Functional Tests (${{ matrix.browser_name }})
         run: |
-          bash tests/FunctionalTests/setup-demos.sh
+          bash tests/setup-demos.sh
           npm run playwright -- --project=${{ matrix.browser }}
 
       - name: Upload Playwright report (${{ matrix.browser_name }})
