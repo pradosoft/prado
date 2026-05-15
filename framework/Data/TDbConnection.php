@@ -659,7 +659,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	/**
 	 * Returns the currently active transaction, or null if none is open.
 	 * Use this to check for an active Transaction.
-	 * @return null|TDbTransaction the active transaction, or null.
+	 * @return ?TDbTransaction the active transaction, or null.
 	 */
 	public function getCurrentTransaction()
 	{
@@ -685,7 +685,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 * superseded — attempting to restart it would silently bypass the new
 	 * transaction's lifecycle.
 	 *
-	 * @return null|TDbTransaction the last transaction object, or null if
+	 * @return ?TDbTransaction the last transaction object, or null if
 	 *   {@see beginTransaction()} has never been called on this connection.
 	 * @since 4.3.3
 	 */
@@ -854,7 +854,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 * because {@see \PDO::quote()} on `null` is deprecated as of PHP 8.2 and
 	 * may return `false` instead of a valid SQL string.
 	 *
-	 * @param string|null $str string to be quoted, or null to produce SQL NULL.
+	 * @param ?string $string string to be quoted, or null to produce SQL NULL.
 	 * @return ?string the properly quoted string, or the literal `'NULL'`.
 	 * @see http://www.php.net/manual/en/function.PDO-quote.php
 	 */
