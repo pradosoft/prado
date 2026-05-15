@@ -250,15 +250,28 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 				$this->_attributes
 			);
 
-			{	// For Mysql, ignore otherwise
-				@$pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
-				// This attribute is only useful for PDO::MySql driver since PHP 8.1
-				// This ensures integers are returned as strings (needed eg. for ZEROFILL columns)
-				@$pdo->setAttribute(PDO::ATTR_STRINGIFY_FETCHES, true);
-			}
 			$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			$this->_active = true;
 			$driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+
+			if ($driver === TDbDriver::DRIVER_MYSQL) {
+				// Both attributes are required together for correct MySQL behaviour.
+				//
+				// ATTR_EMULATE_PREPARES = true: use the text protocol instead of
+				// MySQL's native binary prepared statements, which strip ZEROFILL
+				// padding server-side and mistype ENUM/SET values as integers.
+				//
+				// ATTR_STRINGIFY_FETCHES = true: PHP 8.1 broke emulated prepares by
+				// returning native int/float instead of strings (migration81.incompatible).
+				// Without this, three column types silently corrupt data on PHP 8.1+:
+				//   - ZEROFILL: INT(8) value 42 returns as int 42, not "00000042".
+				//   - BIGINT signed on 32-bit: overflows PHP_INT_MAX (2^31−1).
+				//   - BIGINT UNSIGNED on any platform: max 2^64−1 > PHP_INT_MAX (2^63−1).
+				// Known caveat (php-src #11587, PHP 8.2+): DECIMAL/FLOAT trailing
+				// fractional zeros may still be lost ("3.60" → "3.6"); PHP engine bug.
+				$pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
+				$pdo->setAttribute(PDO::ATTR_STRINGIFY_FETCHES, true);
+			}
 
 			// If DSN had a charset, it takes precedence -> reset charset property if different
 			if ($charsetInDsn !== null) {
@@ -297,6 +310,10 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 						$this->_charset = TDbDriverCapabilities::unresolveCharset((string) $actual, $driver);
 					}
 				}
+			}
+
+			foreach (TDbDriverCapabilities::getPostConnectSql($driver) as $sql) {
+				$pdo->exec($sql);
 			}
 		} catch (PDOException $e) {
 			throw new TDbException('dbconnection_open_failed', $e->getMessage());
@@ -831,15 +848,23 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	}
 
 	/**
-	 * Quotes a string for use in a query.
-	 * @param string $str string to be quoted
-	 * @return string the properly quoted string
+	 * Quotes a string value for use in a query.
+	 *
+	 * If `$str` is `null`, the SQL literal `NULL` is returned without quoting,
+	 * because {@see \PDO::quote()} on `null` is deprecated as of PHP 8.2 and
+	 * may return `false` instead of a valid SQL string.
+	 *
+	 * @param string|null $str string to be quoted, or null to produce SQL NULL.
+	 * @return ?string the properly quoted string, or the literal `'NULL'`.
 	 * @see http://www.php.net/manual/en/function.PDO-quote.php
 	 */
-	public function quoteString($str)
+	public function quoteString($string)
 	{
 		$this->assertActive();
-		return $this->getPdoInstance()->quote($str);
+		if ($string === null) {
+			return 'NULL';
+		}
+		return $this->getPdoInstance()->quote($string);
 	}
 
 	/**

@@ -183,35 +183,9 @@ class TDbTransaction extends \Prado\TComponent implements IDataTransaction
 	{
 		$pdo = $this->assertActive();
 		try {
-			$driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
-		} catch (PDOException | \Error $e) {
-			$driver = null;
-		}
-		if ($driver === 'firebird') {
-			// pdo_firebird bug (PHP ≤ 8.3 / before PR #12741): firebird_handle_doer()
-			// calls isc_commit_retaining() after every statement regardless of whether
-			// a manual transaction is active (the H->in_manually_txn guard was absent).
-			// This means each exec() inside a beginTransaction() block commits the data
-			// immediately, leaving nothing uncommitted for rollBack() to undo.
-			//
-			// Issuing SQL ROLLBACK via exec() rolls back the server-side retained
-			// transaction.  The subsequent PDO::rollBack() call may then fail on the
-			// now-stale transaction handle; swallowing that exception is intentional.
-			//
-			// Note: this workaround cannot recover data that was already committed by
-			// isc_commit_retaining() during prior statement executions.  The authoritative
-			// fix is PHP PR #12741 (introduces H->in_manually_txn to suppress autocommit
-			// during explicit transactions), available in PHP 8.4+.
-			try {
-				$pdo->exec('ROLLBACK');
-			} catch (PDOException | \Error $e) {
-			}
-		}
-		try {
 			$pdo->rollBack();
 		} catch (PDOException | \Error $e) {
-			// Swallow errors from pdo_firebird after exec('ROLLBACK') above, or
-			// from any driver where the transaction handle is already closed.
+			// Swallow errors from any driver where the transaction handle is already closed.
 		}
 		$this->completeTransaction($pdo);
 	}

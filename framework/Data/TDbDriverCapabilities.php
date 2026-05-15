@@ -46,6 +46,7 @@ use Prado\Data\Common\Sqlite\TSqliteMetaData;
  *    {@see requiresPreBeginTransactionFlush}, {@see requiresPostTransactionFlush}
  *  - **PDO attribute support** — {@see hasAutoCommitAttribute},
  *    {@see requiresUntypedParameters}
+ *  - **Post-connect SQL setup** — {@see getPostConnectSql}
  *  - **MetaData factory** — {@see getMetaDataClass}
  *  - **Scaffold input factory** — {@see getScaffoldInputFile},
  *    {@see getScaffoldInputClass}, {@see createScaffoldInput}
@@ -781,6 +782,55 @@ class TDbDriverCapabilities
 	public static function requiresUntypedParameters(string $driver): bool
 	{
 		return $driver === TDbDriver::DRIVER_IBM;
+	}
+
+	// =========================================================================
+	//  Session — post-connect SQL setup
+	// =========================================================================
+
+	/**
+	 * Returns an ordered list of SQL statements that must be executed
+	 * immediately after the connection opens to configure the session for
+	 * correct behaviour.
+	 *
+	 * **Oracle (pdo_oci):** PDO passes PHP date strings as plain quoted string
+	 * literals. Oracle's default `NLS_DATE_FORMAT` is locale-dependent
+	 * (commonly `'DD-MON-RR'`) and rejects ISO 8601 strings such as
+	 * `'2005-05-20'` with `ORA-01843` (not a valid month). Setting
+	 * `NLS_DATE_FORMAT`, `NLS_TIMESTAMP_FORMAT`, and
+	 * `NLS_TIMESTAMP_TZ_FORMAT` to ISO 8601 variants at session level aligns
+	 * Oracle's expectation with PHP's standard date representation without
+	 * requiring `TO_DATE()` wrappers in every query. `NLS_TIMESTAMP_TZ_FORMAT`
+	 * covers `TIMESTAMP WITH TIME ZONE` and `TIMESTAMP WITH LOCAL TIME ZONE`
+	 * columns, which the standard Prado data model may use in the future.
+	 *
+	 * **SQLite:** Foreign key constraint enforcement is disabled by default in
+	 * SQLite. `PRAGMA foreign_keys = ON` enables it for this connection, making
+	 * FK violations raise an error rather than silently succeeding.  The PRAGMA
+	 * must be re-issued on every connection (it is not persisted in the database
+	 * file).
+	 *
+	 * All other supported drivers either enforce foreign keys and use ISO 8601
+	 * dates natively (MySQL, PostgreSQL, IBM DB2) or handle them at the driver
+	 * level (SQL Server), and return an empty array.
+	 *
+	 * @param string $driver PDO driver name (lowercase)
+	 * @return array<string> SQL statements to execute in order, or empty array if none.
+	 */
+	public static function getPostConnectSql(string $driver): array
+	{
+		return match ($driver) {
+			TDbDriver::DRIVER_OCI => [
+				"ALTER SESSION SET NLS_DATE_FORMAT = 'YYYY-MM-DD'",
+				"ALTER SESSION SET NLS_TIMESTAMP_FORMAT = 'YYYY-MM-DD HH24:MI:SS'",
+				"ALTER SESSION SET NLS_TIMESTAMP_TZ_FORMAT = 'YYYY-MM-DD HH24:MI:SS TZH:TZM'",
+			],
+			TDbDriver::DRIVER_SQLITE2,
+			TDbDriver::DRIVER_SQLITE => [
+				'PRAGMA foreign_keys = ON',
+			],
+			default => [],
+		};
 	}
 
 	// =========================================================================

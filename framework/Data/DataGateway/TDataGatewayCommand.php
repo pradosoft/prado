@@ -195,15 +195,18 @@ class TDataGatewayCommand extends \Prado\TComponent
 	}
 
 	/**
-	 * @param array $keys multiple primary key values or composite value arrays
+	 * @param mixed $keys one or more primary key values, or null/empty to delete nothing.
 	 * @return int number of rows affected.
 	 */
 	public function deleteByPk($keys)
 	{
-		if (count($keys) == 0) {
+		// Normalize to array so that count() is always safe (count(null) is a
+		// TypeError in PHP 8 and count($scalar) emits E_WARNING).
+		$keys = $keys === null ? [] : (array) $keys;
+		if (count($keys) === 0) {
 			return 0;
 		}
-		$where = $this->getCompositeKeyCondition((array) $keys);
+		$where = $this->getCompositeKeyCondition($keys);
 		$command = $this->getBuilder()->createDeleteCommand($where);
 		$this->onCreateCommand($command, new TSqlCriteria($where, $keys));
 		$command->prepare();
