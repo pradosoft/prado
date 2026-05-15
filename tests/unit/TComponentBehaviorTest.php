@@ -25,6 +25,50 @@ class TComponentBehaviorTest extends TComponentTestBase
 		$this->assertEquals([strtolower(IDynamicMethods::class), strtolower(DynamicCatchingTrait::class), strtolower(DynamicCatchingComponent::class), strtolower(NewComponentNoListen::class), strtolower(NewComponentTestTrait::class), strtolower(NewComponent::class), strtolower(\Prado\TComponent::class)], $component->getClassHierarchy(true));
 	}
 
+	/**
+	 * Regression test for the getClassHierarchy() static-cache key bug.
+	 *
+	 * The do-while loop that walks get_parent_class() left $class set to false
+	 * after exhausting the hierarchy.  The cache write then used false as the
+	 * array key (coerced to 0 by PHP), so the lookup — which keys on the real
+	 * class-name string — never hit and every call recomputed from scratch.
+	 * The fix introduces a stable $origClass variable captured before the loop.
+	 *
+	 * We verify:
+	 *  - TComponent appears in the hierarchy (not false or a numeric artifact).
+	 *  - Both $lowercase variants return consistent results across repeated calls.
+	 *  - Two different classes return their own distinct hierarchies, not each
+	 *    other's (cross-contamination that would occur if both wrote to key [0]).
+	 */
+	public function testGetClassHierarchyCaching()
+	{
+		$component = new DynamicCatchingComponent();
+		$plain1 = $component->getClassHierarchy(false);
+		$plain2 = $component->getClassHierarchy(false);
+		$lower1 = $component->getClassHierarchy(true);
+		$lower2 = $component->getClassHierarchy(true);
+
+		// Results must be stable across repeated calls (cache hit or recompute).
+		$this->assertSame($plain1, $plain2, 'getClassHierarchy(false) returned different results on repeated calls');
+		$this->assertSame($lower1, $lower2, 'getClassHierarchy(true) returned different results on repeated calls');
+
+		// TComponent must appear in the hierarchy — not false/0 from the broken loop variable.
+		$this->assertContains(\Prado\TComponent::class, $plain1, 'TComponent missing from plain hierarchy');
+		$this->assertContains(strtolower(\Prado\TComponent::class), $lower1, 'TComponent missing from lowercase hierarchy');
+
+		// A second, simpler class must return its own distinct hierarchy.
+		$simple = new NewComponentNoListen();
+		$simpleHierarchy = $simple->getClassHierarchy(false);
+		$this->assertNotEquals($plain1, $simpleHierarchy, 'Different classes returned identical hierarchies — cache key collision');
+		$this->assertContains(NewComponentNoListen::class, $simpleHierarchy);
+		$this->assertNotContains(DynamicCatchingComponent::class, $simpleHierarchy);
+
+		// Calling getClassHierarchy() on DynamicCatchingComponent again after
+		// the NewComponentNoListen call must still return the correct result.
+		$plain3 = $component->getClassHierarchy(false);
+		$this->assertSame($plain1, $plain3, 'getClassHierarchy() result changed after another class computed its hierarchy');
+	}
+
 
 	public function testAsA()
 	{
