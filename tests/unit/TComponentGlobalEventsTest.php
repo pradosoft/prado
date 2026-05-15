@@ -102,4 +102,35 @@ class TComponentGlobalEventsTest extends TComponentTestBase
 		//This is from $this->component being instanced and listening.  $component is accessing the global event structure
 		$this->assertEquals(0, $component->getEventHandlers(TComponent::GLOBAL_RAISE_EVENT_LISTENER)->getCount());
 	}
+
+	/**
+	 * Regression test for listen() / unlisten() return-type correctness.
+	 *
+	 * Both methods return the count of fx events registered/unregistered on a
+	 * successful state change, but must return null (not 0 or false) when the
+	 * object is already in the requested state — i.e., listen() when already
+	 * listening, and unlisten() when already not listening.
+	 */
+	public function testListenUnlistenReturnNullWhenNoStateChange()
+	{
+		$component = new NewComponentNoListen();
+
+		// Not yet listening — listen() should return a positive int.
+		$count = $component->listen();
+		$this->assertIsInt($count);
+		$this->assertGreaterThan(0, $count);
+
+		// Already listening — second listen() must return null, not 0 or false.
+		$second = $component->listen();
+		$this->assertNull($second, 'listen() must return null when already listening');
+
+		// Unlisten — first call should return a positive int.
+		$count = $component->unlisten();
+		$this->assertIsInt($count);
+		$this->assertGreaterThan(0, $count);
+
+		// Already not listening — second unlisten() must return null.
+		$second = $component->unlisten();
+		$this->assertNull($second, 'unlisten() must return null when not listening');
+	}
 }

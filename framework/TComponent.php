@@ -583,15 +583,15 @@ class TComponent
 	public function getClassHierarchy($lowercase = false)
 	{
 		static $_classhierarchy = [];
-		$class = $this::class;
+		$class = $cls = $this::class;
 		if (isset($_classhierarchy[$class]) && isset($_classhierarchy[$class][$lowercase ? 1 : 0])) {
 			return $_classhierarchy[$class][$lowercase ? 1 : 0];
 		}
 		$classes = [array_values(class_implements($class))];
 		do {
-			$classes[] = array_values(class_uses($class));
-			$classes[] = [$class];
-		} while ($class = get_parent_class($class));
+			$classes[] = array_values(class_uses($cls));
+			$classes[] = [$cls];
+		} while ($cls = get_parent_class($cls));
 		$classes = array_merge(...$classes);
 		if ($lowercase) {
 			$classes = array_map('strtolower', $classes);
@@ -633,7 +633,7 @@ class TComponent
 	 * ```
 	 * to be executed when listen is called.  All attached behaviors are notified through dyListen.
 	 *
-	 * @return numeric the number of global events that were registered to the global event registry
+	 * @return ?int the number of global events that were registered to the global event registry, or null if already listening
 	 */
 	public function listen()
 	{
@@ -672,7 +672,7 @@ class TComponent
 	 * ```
 	 * to be executed when listen is called.  All attached behaviors are notified through dyUnlisten.
 	 *
-	 * @return numeric the number of global events that were unregistered from the global event registry
+	 * @return ?int the number of global events that were unregistered from the global event registry, or null if not currently listening
 	 */
 	public function unlisten()
 	{
@@ -979,7 +979,10 @@ class TComponent
 		} elseif (Prado::method_visible($this, $jssetter = 'setjs' . $name)) {
 			$this->$jssetter(null);
 		} elseif (strncasecmp($name, 'on', 2) === 0 && method_exists($this, $name)) {
-			$this->_e[strtolower($name)]->clear();
+			$name = strtolower($name);
+			if (isset($this->_e[$name])) {
+				$this->_e[$name]->clear();
+			}
 		} elseif (strncasecmp($name, 'fx', 2) === 0) {
 			$this->getEventHandlers($name)->remove([$this, $name]);
 		} elseif ($this->_m !== null && $this->_m->getCount() > 0 && $this->getBehaviorsEnabled()) {
@@ -1162,6 +1165,9 @@ class TComponent
 	 */
 	protected function getCallChain($method, ...$args): ?TCallChain
 	{
+		if ($this->_m === null) {
+			return null;
+		}
 		$classArgs = $callchain = null;
 		foreach ($this->_m->toArray() as $behavior) {
 			if ($behavior->getEnabled() && (Prado::method_visible($behavior, $method) || ($behavior instanceof IDynamicMethods))) {
@@ -1446,7 +1452,6 @@ class TComponent
 	 */
 	public function raiseEvent($name, $sender, $param, $responsetype = null, $postfunction = null)
 	{
-		$p = $param;
 		if (is_callable($responsetype)) {
 			$postfunction = $responsetype;
 			$responsetype = null;
@@ -1612,7 +1617,8 @@ class TComponent
 			$content = ob_get_contents();
 			ob_end_clean();
 			return $content;
-		} catch (\Exception $e) {
+		} catch (\Throwable $e) {
+			ob_end_clean();
 			throw new TInvalidOperationException('component_statements_invalid', $this::class, $statements, $e->getMessage());
 		}
 	}
@@ -1913,10 +1919,12 @@ class TComponent
 	 */
 	public function getBehaviors(?string $class = null)
 	{
-		if ($class === null) {
-			return isset($this->_m) ? $this->_m->toArray() : [];
-		} elseif (class_exists($class, false) || interface_exists($class, false)) {
-			return array_filter($this->_m->toArray(), fn ($b) => $b instanceof $class);
+		if (isset($this->_m)) {
+			if ($class === null) {
+				return $this->_m->toArray();
+			} elseif (class_exists($class, false) || interface_exists($class, false)) {
+				return array_filter($this->_m->toArray(), fn ($b) => $b instanceof $class);
+			}
 		}
 		return [];
 	}

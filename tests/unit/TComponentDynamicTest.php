@@ -134,8 +134,34 @@ class TComponentDynamicTest extends TComponentTestBase
 			$button = $this->component->evaluateStatements($statements);
 			$this->fail('exception not raised when evaluating an invalid statement');
 		} catch (\Prado\Exceptions\TInvalidOperationException $e) {
-			ob_end_flush();
 		}
+	}
+
+	/**
+	 * Regression test for the ob_start() leak when eval() throws a \Throwable
+	 * (\Error subclass) rather than a \Exception.  Before the fix, the catch
+	 * block only caught \Exception, so \ParseError and \Error bypassed it and
+	 * left the output buffer open.
+	 */
+	public function testEvaluateStatementsObBufferCleanedOnError()
+	{
+		// \ParseError — invalid PHP syntax inside eval().
+		$levelBefore = ob_get_level();
+		try {
+			$this->component->evaluateStatements('{{{');
+			$this->fail('TInvalidOperationException not raised for parse error');
+		} catch (\Prado\Exceptions\TInvalidOperationException $e) {
+		}
+		$this->assertSame($levelBefore, ob_get_level(), 'ob_start() leaked after \ParseError in evaluateStatements()');
+
+		// \Error — calling a method on null.
+		$levelBefore = ob_get_level();
+		try {
+			$this->component->evaluateStatements('$x = null; $x->someMethod();');
+			$this->fail('TInvalidOperationException not raised for null method call');
+		} catch (\Prado\Exceptions\TInvalidOperationException $e) {
+		}
+		$this->assertSame($levelBefore, ob_get_level(), 'ob_start() leaked after \Error in evaluateStatements()');
 	}
 
 	public function testDynamicFunctionCall()
