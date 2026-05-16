@@ -834,6 +834,118 @@ class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
 		$userManager = null;
 	}
 
+	// -----------------------------------------------------------------------
+	// loadPermissionsData() — Prado3 dot-notation rule class resolution
+	// -----------------------------------------------------------------------
+
+	public function testLoadPermissionsData_withPrado3SystemDotNotationRuleClass(): void
+	{
+		$this->obj->setAutoAllowWithPermission(false);
+		$this->obj->setAutoPresetRules(false);
+		$this->obj->setAutoDenyAll(false);
+
+		// 'System.Security.TAuthorizationRule' resolves to Prado\Security\TAuthorizationRule
+		// Before the fix, new $class(...) fails: "Class 'System.Security.TAuthorizationRule' not found"
+		$this->obj->loadPermissionsData([
+			'permissionrules' => [
+				['name' => 'test_prado3_system', 'action' => 'deny', 'roles' => 'Default',
+					'class' => 'System.Security.TAuthorizationRule'],
+			],
+		]);
+
+		$this->obj->registerPermission('test_prado3_system', 'test permission');
+		$rules = $this->obj->getPermissionRules('test_prado3_system');
+		self::assertNotNull($rules);
+		self::assertInstanceOf(TAuthorizationRuleCollection::class, $rules);
+		self::assertEquals(1, count($rules));
+		self::assertInstanceOf(TAuthorizationRule::class, $rules[0]);
+		self::assertEquals('deny', $rules[0]->getAction());
+		self::assertEquals(['default'], $rules[0]->getRoles());
+	}
+
+	public function testLoadPermissionsData_withPrado3PradoDotNotationRuleClass(): void
+	{
+		$this->obj->setAutoAllowWithPermission(false);
+		$this->obj->setAutoPresetRules(false);
+		$this->obj->setAutoDenyAll(false);
+
+		// 'Prado.Security.TAuthorizationRule' resolves to Prado\Security\TAuthorizationRule
+		$this->obj->loadPermissionsData([
+			'permissionrules' => [
+				['name' => 'test_prado3_prado', 'action' => 'allow', 'roles' => 'Admin',
+					'class' => 'Prado.Security.TAuthorizationRule'],
+			],
+		]);
+
+		$this->obj->registerPermission('test_prado3_prado', 'test permission');
+		$rules = $this->obj->getPermissionRules('test_prado3_prado');
+		self::assertNotNull($rules);
+		self::assertInstanceOf(TAuthorizationRuleCollection::class, $rules);
+		self::assertEquals(1, count($rules));
+		self::assertInstanceOf(TAuthorizationRule::class, $rules[0]);
+		self::assertEquals('allow', $rules[0]->getAction());
+	}
+
+	// -----------------------------------------------------------------------
+	// loadPermissionsData() — usingClass() false / null edge cases
+	// -----------------------------------------------------------------------
+
+	/**
+	 * A directory namespace as the rule class (usingClass returns false) must
+	 * throw TConfigurationException — not silently fall back to some default.
+	 */
+	public function testLoadPermissionsData_withDirectoryNamespaceRuleClass_throws(): void
+	{
+		$this->obj->setAutoAllowWithPermission(false);
+		$this->obj->setAutoPresetRules(false);
+		$this->obj->setAutoDenyAll(false);
+
+		$this->expectException(TConfigurationException::class);
+		$this->obj->loadPermissionsData([
+			'permissionrules' => [
+				['name' => 'test_dir', 'action' => 'deny', 'roles' => 'Default',
+					'class' => 'Prado\\Security\\*'],
+			],
+		]);
+	}
+
+	/**
+	 * A Prado3 directory dot-notation (usingClass returns false) also throws.
+	 */
+	public function testLoadPermissionsData_withPrado3DirectoryNotation_throws(): void
+	{
+		$this->obj->setAutoAllowWithPermission(false);
+		$this->obj->setAutoPresetRules(false);
+		$this->obj->setAutoDenyAll(false);
+
+		$this->expectException(TConfigurationException::class);
+		$this->obj->loadPermissionsData([
+			'permissionrules' => [
+				['name' => 'test_p3dir', 'action' => 'deny', 'roles' => 'Default',
+					'class' => 'System.Security.*'],
+			],
+		]);
+	}
+
+	/**
+	 * An unknown rule class (usingClass returns null) must throw
+	 * TConfigurationException.
+	 */
+	public function testLoadPermissionsData_withUnknownRuleClass_throws(): void
+	{
+		$this->obj->setAutoAllowWithPermission(false);
+		$this->obj->setAutoPresetRules(false);
+		$this->obj->setAutoDenyAll(false);
+
+		$this->expectException(TConfigurationException::class);
+		$this->obj->loadPermissionsData([
+			'permissionrules' => [
+				['name' => 'test_unknown', 'action' => 'deny', 'roles' => 'Default',
+					'class' => 'TFakeAuthRuleClassXYZ99999'],
+			],
+		]);
+	}
+
 	//  The last test because it sets the permissions module in the application
 	public function testGetManager()
 	{
