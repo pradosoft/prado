@@ -67,6 +67,7 @@ application_service_unknown				= Requested service '{0}' is not defined.
 application_unavailable					= Application is unavailable at this time.
 application_service_unavailable			= Service '{0}' is unavailable at this time.
 application_moduleid_duplicated			= Application module ID '{0}' is not unique.
+application_module_class_invalid		= Application module class '{0}' is a directory namespace, not a class.
 application_runtimepath_failed			= Unable to create runtime path '{0}'. Make sure the parent directory exists and is writable by the Web process.
 
 appconfig_aliaspath_invalid				= Application configuration <alias id="{0}"> uses an invalid file path "{1}".
@@ -266,6 +267,7 @@ permissions_duplicate_permission		= TPermissionsManager permission '{0}' is alre
 permissions_role_children_invalid		= TPermissionsManager configuration role '{0}' has invalid children '{1}'.
 permissions_rule_invalid				= TPermissionsManager configuration permission rule '{0}' has properties that is not an array.
 permissions_rules_require_name			= TPermissionsManager rules must have a permission "name" property.
+permissions_rule_class_invalid			= TPermissionsManager permission rule class '{0}' is a directory namespace, not a class.
 permissions_children_invalid			= TPermissionsManager.*RoleChildren children must be a string or array but is '{0}'.
 permissions_permissionfile_invalid		= TPermissionsManager.PermissionFile '{0}' is not a valid file.
 
@@ -524,9 +526,11 @@ cachedependencylist_cachedependency_required = Only objects implementing ICacheD
 
 soapservice_configfile_invalid			= TSoapService.ConfigFile '{0}' does not exist. Note, it has to be specified in a namespace format and the file extension must be '.xml' or '.php'.
 soapservice_request_invalid				= SOAP server '{0}' not found.
+soapservice_server_invalid				= TSoapService SOAP server class '{0}' is invalid. It must be TSoapServer or a subclass.
 soapservice_serverid_required			= <soap> element must have 'id' attribute.
 soapservice_serverid_duplicated			= SOAP server ID '{0}' is duplicated.
 soapserver_id_invalid					= Invalid SOAP server ID '{0}'. It should not end with '.wsdl'.
+soapserver_provider_invalid				= TSoapServer provider class '{0}' could not be resolved.
 soapserver_version_invalid				= Invalid SOAP version '{0}'. It must be either '1.1' or '1.2'.
 
 jsonservice_id_required				= TJsonService requires 'id' attribute in its JSON elements.
@@ -633,6 +637,7 @@ ar_delete_invalid						= The {0} instance cannot be deleted because it is either
 
 dbmetadata_invalid_database_driver		= Driver '{0}' is unsupported. Please install its PRADO Driver, if available.
 dbmetadata_not_meta_data				= Expected driver class {1} but got class {0}.
+dbmetadata_tableinfo_class_invalid		= TDbMetaData table info class '{0}' is a directory namespace, not a class.
 
 datasource_dbconnection_invalid			= TDataSourceConfig.DbConnection '{0}' is invalid. Please make sure it points to a valid application module.
 distributeddatasource_child_required		= {0} requires one '{1}' child element at minimum.
