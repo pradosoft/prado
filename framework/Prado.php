@@ -396,7 +396,7 @@ class Prado
 	public static function usingClass(string $namespace): string|false|null
 	{
 		$result = static::using($namespace);
-		if ($result === false) {
+		if ($result === null) {
 			return null;   // namespace could not be resolved
 		}
 		if (str_ends_with($result, '\\')) {
@@ -412,14 +412,14 @@ class Prado
 	 * to the include path. If the namespace corresponds to a file, it will be included (include_once).
 	 * @param string $namespace namespace to be used
 	 * @throws TInvalidDataValueException if the namespace is invalid
-	 * @return false|string The resolved PHP fully-qualified class, interface, or trait name when the
+	 * @return ?string The resolved PHP fully-qualified class, interface, or trait name when the
 	 *   namespace identifies a loadable class. Returns a string ending in '\' when a directory
-	 *   namespace is successfully registered (e.g. 'Prado\Web\UI\'). Returns false when the
+	 *   namespace is successfully registered (e.g. 'Prado\Web\UI\'). Returns null when the
 	 *   namespace cannot be resolved.
 	 * @since 4.3.3 return type changed from void to string|bool; directory case returns namespace
-	 *   string ending in '\' instead of true since 4.3.3
+	 *   string ending in '\' instead of true since 4.3.3; unresolvable case changed from false to null since 4.3.3
 	 */
-	public static function using($namespace): string|false
+	public static function using($namespace): ?string
 	{
 		$namespace = static::prado3NamespaceToPhpNamespace($namespace);
 
@@ -497,7 +497,7 @@ class Prado
 			}
 		}
 
-		return false;
+		return null;
 	}
 
 	/**

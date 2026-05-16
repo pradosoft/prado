@@ -390,12 +390,12 @@ class PradoBaseTest extends PHPUnit\Framework\TestCase
 	}
 
 	/**
-	 * using() returns false when the namespace cannot be resolved at all.
+	 * using() returns null when the namespace cannot be resolved at all.
 	 */
-	public function testUsing_withUnresolvableNamespace_returnsFalse(): void
+	public function testUsing_withUnresolvableNamespace_returnsNull(): void
 	{
 		$result = Prado::using('Prado\\NonExistent\\TFakeClassXYZ99999');
-		$this->assertFalse($result);
+		$this->assertNull($result);
 	}
 
 	// -------------------------------------------------------------------------
