@@ -281,4 +281,158 @@ public function test_getInstance_raises_fxDataGetMetaDataInstance_for_unknown_dr
 		$this->assertEquals('alias', $metaData->quoteColumnAlias('"alias"'));
 		$this->assertEquals('alias', $metaData->quoteColumnAlias("'alias'"));
 	}
+
+	// -----------------------------------------------------------------------
+	// getTableInfo() — Prado3 dot-notation tableInfoClass resolution
+	// -----------------------------------------------------------------------
+
+	public function test_getTableInfo_withPrado3SystemDotNotationTableInfoClass(): void
+	{
+		$conn = $this->createMockConnection('test');
+		$conn->method('getConnectionString')->willReturn('test_prado3_system');
+
+		$metaData = new class($conn) extends TDbMetaData {
+			protected function createTableInfo($tableName)
+			{
+				return new \Prado\Data\Common\TDbTableInfo([]);
+			}
+
+			public function findTableNames($schema = '')
+			{
+				return [];
+			}
+
+			// Override to return a Prado3 System dot-notation class name
+			protected function getTableInfoClass(): string
+			{
+				return 'System.Data.Common.TDbTableInfo';
+			}
+		};
+
+		// Should resolve 'System.Data.Common.TDbTableInfo' → Prado\Data\Common\TDbTableInfo
+		// and instantiate it without error. Before the fix, PHP throws "Class not found".
+		$info = $metaData->getTableInfo(null);
+		$this->assertInstanceOf(\Prado\Data\Common\TDbTableInfo::class, $info);
+	}
+
+	public function test_getTableInfo_withPrado3PradoDotNotationTableInfoClass(): void
+	{
+		$conn = $this->createMockConnection('test');
+		$conn->method('getConnectionString')->willReturn('test_prado3_prado');
+
+		$metaData = new class($conn) extends TDbMetaData {
+			protected function createTableInfo($tableName)
+			{
+				return new \Prado\Data\Common\TDbTableInfo([]);
+			}
+
+			public function findTableNames($schema = '')
+			{
+				return [];
+			}
+
+			// Override to return a Prado3 Prado dot-notation class name
+			protected function getTableInfoClass(): string
+			{
+				return 'Prado.Data.Common.TDbTableInfo';
+			}
+		};
+
+		// Should resolve 'Prado.Data.Common.TDbTableInfo' → Prado\Data\Common\TDbTableInfo
+		$info = $metaData->getTableInfo(null);
+		$this->assertInstanceOf(\Prado\Data\Common\TDbTableInfo::class, $info);
+	}
+
+	// -----------------------------------------------------------------------
+	// getTableInfo() — usingClass() false / null edge cases
+	// -----------------------------------------------------------------------
+
+	/**
+	 * A directory namespace returned by getTableInfoClass() (usingClass returns
+	 * false) must throw TDbException — a directory is not an instantiable class.
+	 */
+	public function test_getTableInfo_withDirectoryNamespaceTableInfoClass_throws(): void
+	{
+		$conn = $this->createMockConnection('test');
+		$conn->method('getConnectionString')->willReturn('test_dir_ns');
+
+		$metaData = new class($conn) extends TDbMetaData {
+			protected function createTableInfo($tableName)
+			{
+				return new \Prado\Data\Common\TDbTableInfo([]);
+			}
+
+			public function findTableNames($schema = '')
+			{
+				return [];
+			}
+
+			protected function getTableInfoClass(): string
+			{
+				return 'Prado\\Data\\Common\\*';
+			}
+		};
+
+		$this->expectException(TDbException::class);
+		$metaData->getTableInfo(null);
+	}
+
+	/**
+	 * A Prado3 directory dot-notation from getTableInfoClass() also throws.
+	 */
+	public function test_getTableInfo_withPrado3DirectoryNotation_throws(): void
+	{
+		$conn = $this->createMockConnection('test');
+		$conn->method('getConnectionString')->willReturn('test_prado3_dir');
+
+		$metaData = new class($conn) extends TDbMetaData {
+			protected function createTableInfo($tableName)
+			{
+				return new \Prado\Data\Common\TDbTableInfo([]);
+			}
+
+			public function findTableNames($schema = '')
+			{
+				return [];
+			}
+
+			protected function getTableInfoClass(): string
+			{
+				return 'System.Data.Common.*';
+			}
+		};
+
+		$this->expectException(TDbException::class);
+		$metaData->getTableInfo(null);
+	}
+
+	/**
+	 * An unresolvable class name from getTableInfoClass() (usingClass returns
+	 * null) must throw TDbException.
+	 */
+	public function test_getTableInfo_withUnknownTableInfoClass_throws(): void
+	{
+		$conn = $this->createMockConnection('test');
+		$conn->method('getConnectionString')->willReturn('test_unknown_class');
+
+		$metaData = new class($conn) extends TDbMetaData {
+			protected function createTableInfo($tableName)
+			{
+				return new \Prado\Data\Common\TDbTableInfo([]);
+			}
+
+			public function findTableNames($schema = '')
+			{
+				return [];
+			}
+
+			protected function getTableInfoClass(): string
+			{
+				return 'TFakeTableInfoClassXYZ99999';
+			}
+		};
+
+		$this->expectException(TDbException::class);
+		$metaData->getTableInfo(null);
+	}
 }

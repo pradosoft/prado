@@ -127,6 +127,10 @@ abstract class TDbMetaData extends \Prado\TComponent
 		$key = $tableName === null ? $this->getDbConnection()->getConnectionString() : $tableName;
 		if (!isset($this->_tableInfoCache[$key])) {
 			$class = $this->getTableInfoClass();
+			$class = Prado::usingClass($class);
+			if (!is_string($class)) {
+				throw new TDbException('dbmetadata_tableinfo_class_invalid', $this->getTableInfoClass());
+			}
 			$tableInfo = $tableName === null ? new $class() : $this->createTableInfo($tableName);
 			$this->_tableInfoCache[$key] = $tableInfo;
 		}
