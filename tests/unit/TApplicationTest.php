@@ -34,6 +34,7 @@ class TApplicationTestAccessor extends TApplication
 	public function pubHasLazyModule(string $id): bool { return $this->hasLazyModule($id); }
 	public function pubGetLazyModule(string $id): ?array { return $this->getLazyModule($id); }
 	public function pubSetLazyModule(string $id, ?array $config): void { $this->setLazyModule($id, $config); }
+	public function pubSetLazyModuleDirect(string $id, ?array $config): void { $this->setLazyModuleDirect($id, $config); }
 	public function pubGetLazyModuleCount(): int { return $this->getLazyModuleCount(); }
 }
 
@@ -1489,10 +1490,9 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 	// -----------------------------------------------------------------------
 	// getModulesByType — lazy modules stored with PHP FQN class names
 	//
-	// setLazyModule() resolves and validates the class name before storing,
-	// so _lazyModules always contains PHP fully-qualified class names.
-	// getModulesByType() can therefore call is_a() directly on the stored
-	// value without any further resolution step.
+	// When setLazyModule() can resolve the class at registration time it stores
+	// the PHP FQN directly. getModulesByType() then calls is_a() on the stored
+	// FQN without a further resolution step.
 	// -----------------------------------------------------------------------
 
 	public function testGetModulesByType_lazyModule_withPrado3SystemDotNotation(): void
@@ -1545,6 +1545,65 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 
 		$result = $this->_app->getModulesByType(\Prado\Caching\ICache::class);
 		$this->assertArrayNotHasKey('lazy_m', $result);
+	}
+
+	// -----------------------------------------------------------------------
+	// getModulesByType — deferred resolution of unresolved Prado3 dot-notation
+	//
+	// When setLazyModule() cannot resolve the class at registration time the
+	// raw name is stored. getModulesByType() calls usingClass() on the stored
+	// value and, if successful, normalises the entry to the PHP FQN for future
+	// calls. Directory namespaces (false) and unknown names (null) are skipped.
+	// -----------------------------------------------------------------------
+
+	public function testGetModulesByType_lazyModule_deferredResolution_resolvesPrado3DotNotation(): void
+	{
+		// Simulate a name that setLazyModule() could not resolve at registration
+		// time by storing the raw Prado3 dot-notation via setLazyModuleDirect().
+		$acc = $this->newLazyAccessor();
+		$acc->setModule('lazy_m', null);
+		$acc->pubSetLazyModuleDirect('lazy_m', ['System.Web.THttpSession', [], null]);
+
+		$result = $acc->getModulesByType(\Prado\Web\THttpSession::class);
+		$this->assertArrayHasKey('lazy_m', $result);
+		$this->assertNull($result['lazy_m']);
+	}
+
+	public function testGetModulesByType_lazyModule_deferredResolution_normalisesStoredEntry(): void
+	{
+		// After a successful deferred resolution the stored entry must be
+		// updated to the PHP FQN so subsequent calls skip the resolution step.
+		$acc = $this->newLazyAccessor();
+		$acc->setModule('lazy_m', null);
+		$acc->pubSetLazyModuleDirect('lazy_m', ['Prado.Web.THttpSession', [], null]);
+
+		$acc->getModulesByType(\Prado\Web\THttpSession::class);
+
+		$this->assertSame(\Prado\Web\THttpSession::class, $acc->pubGetLazyModule('lazy_m')[0]);
+	}
+
+	public function testGetModulesByType_lazyModule_deferredResolution_directoryNamespace_isSkipped(): void
+	{
+		// A stored class that resolves to a directory namespace (usingClass → false)
+		// must not appear in results.
+		$acc = $this->newLazyAccessor();
+		$acc->setModule('lazy_m', null);
+		$acc->pubSetLazyModuleDirect('lazy_m', ['Prado\\Web\\UI\\*', [], null]);
+
+		$result = $acc->getModulesByType(\Prado\Web\THttpSession::class);
+		$this->assertSame([], $result);
+	}
+
+	public function testGetModulesByType_lazyModule_deferredResolution_unknownClass_isSkipped(): void
+	{
+		// A stored class that cannot be resolved (usingClass → null) must not
+		// appear in results.
+		$acc = $this->newLazyAccessor();
+		$acc->setModule('lazy_m', null);
+		$acc->pubSetLazyModuleDirect('lazy_m', ['TotallyFakeClassXYZ99999', [], null]);
+
+		$result = $acc->getModulesByType(\Prado\Web\THttpSession::class);
+		$this->assertSame([], $result);
 	}
 
 	// -----------------------------------------------------------------------
@@ -2159,34 +2218,39 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 	}
 
 	/**
-	 * A directory namespace (usingClass returns false) throws at store time
-	 * rather than silently storing an unusable value.
+	 * A directory namespace (usingClass returns false) stores the original
+	 * class name unchanged — resolution is deferred to internalLoadModule().
 	 */
-	public function testSetLazyModule_withDirectoryNamespace_throws(): void
+	public function testSetLazyModule_withDirectoryNamespace_storesOriginal(): void
 	{
 		$acc = $this->newLazyAccessor();
-		$this->expectException(TConfigurationException::class);
 		$acc->pubSetLazyModule('dirmod', ['Prado\\Web\\UI\\*', [], null]);
+		$stored = $acc->pubGetLazyModule('dirmod');
+		$this->assertSame('Prado\\Web\\UI\\*', $stored[0]);
 	}
 
 	/**
-	 * A Prado3 directory dot-notation (usingClass returns false) also throws.
+	 * A Prado3 directory dot-notation (usingClass returns false) also stores
+	 * the original class name unchanged — resolution is deferred to internalLoadModule().
 	 */
-	public function testSetLazyModule_withPrado3DirectoryNotation_throws(): void
+	public function testSetLazyModule_withPrado3DirectoryNotation_storesOriginal(): void
 	{
 		$acc = $this->newLazyAccessor();
-		$this->expectException(TConfigurationException::class);
 		$acc->pubSetLazyModule('dirmod', ['System.Web.UI.*', [], null]);
+		$stored = $acc->pubGetLazyModule('dirmod');
+		$this->assertSame('System.Web.UI.*', $stored[0]);
 	}
 
 	/**
-	 * An unresolvable class name (usingClass returns null) throws at store time.
+	 * An unresolvable class name (usingClass returns null) stores the original
+	 * class name unchanged — resolution is deferred to internalLoadModule().
 	 */
-	public function testSetLazyModule_withUnknownClass_throws(): void
+	public function testSetLazyModule_withUnknownClass_storesOriginal(): void
 	{
 		$acc = $this->newLazyAccessor();
-		$this->expectException(TConfigurationException::class);
 		$acc->pubSetLazyModule('badmod', ['TotallyFakeClassXYZ99999', [], null]);
+		$stored = $acc->pubGetLazyModule('badmod');
+		$this->assertSame('TotallyFakeClassXYZ99999', $stored[0]);
 	}
 
 	// -----------------------------------------------------------------------
