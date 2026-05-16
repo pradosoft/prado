@@ -291,13 +291,10 @@ class TResultProperty extends \Prado\TComponent
 	protected function getPropertyValueType()
 	{
 		if (class_exists($type = $this->getType(), false)) { //NO force autoloading
-			if ($type === 'TList') {
+			if (is_a($type, TList::class, true)) {
 				return self::LIST_TYPE;
 			}
 			$class = new ReflectionClass($type);
-			if ($class->isSubclassOf('TList')) {
-				return self::LIST_TYPE;
-			}
 			if ($class->implementsInterface('ArrayAccess')) {
 				return self::ARRAY_TYPE;
 			}
