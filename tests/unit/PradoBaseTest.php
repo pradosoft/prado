@@ -696,16 +696,28 @@ class PradoBaseTest extends PHPUnit\Framework\TestCase
 	// -------------------------------------------------------------------------
 
 	/**
+	 * Returns the path to the Prado3-style fixture directory and ensures its
+	 * path alias 'Prado3Fixture' is registered, so tests are self-contained.
+	 */
+	private function registerPrado3FixtureAlias(): string
+	{
+		$fixturePath = __DIR__ . '/Security/app/prado3stubs';
+		Prado::setPathOfAlias('Prado3Fixture', $fixturePath);
+		return $fixturePath;
+	}
+
+	/**
 	 * using() with a path-alias dot-notation pointing to a global-namespace class
 	 * must return the path-derived FQN AND make that FQN usable via class_exists.
 	 * @since 4.3.3
 	 */
 	public function testUsing_withPrado3GlobalNamespaceClass_returnsFqnAndCreatesAlias(): void
 	{
-		// 'Application' alias maps to tests/unit/Security/app; the fixture file
-		// defines class GlobalNsComponent in global namespace (no PHP namespace).
-		$fqn = Prado::using('Application.prado3stubs.GlobalNsComponent');
-		$this->assertSame('Application\\prado3stubs\\GlobalNsComponent', $fqn);
+		// Register a self-contained alias pointing directly at the fixture dir.
+		// The fixture file defines class GlobalNsComponent in global namespace.
+		$this->registerPrado3FixtureAlias();
+		$fqn = Prado::using('Prado3Fixture.GlobalNsComponent');
+		$this->assertSame('Prado3Fixture\\GlobalNsComponent', $fqn);
 		// The returned FQN must exist as a real (aliased) PHP class.
 		$this->assertTrue(class_exists($fqn, false), 'FQN must be resolvable via class_exists(false)');
 	}
@@ -717,9 +729,10 @@ class PradoBaseTest extends PHPUnit\Framework\TestCase
 	 */
 	public function testUsingClass_withPrado3GlobalNamespaceClass_fqnPassesIsSubclassOf(): void
 	{
-		$fqn = Prado::usingClass('Application.prado3stubs.GlobalNsComponent');
+		$this->registerPrado3FixtureAlias();
+		$fqn = Prado::usingClass('Prado3Fixture.GlobalNsComponent');
 		$this->assertIsString($fqn);
-		$this->assertSame('Application\\prado3stubs\\GlobalNsComponent', $fqn);
+		$this->assertSame('Prado3Fixture\\GlobalNsComponent', $fqn);
 		// is_subclass_of must work via the reverse alias — this is what createPage
 		// and validateAttributes rely on for Prado3-style base classes.
 		$this->assertTrue(
@@ -737,9 +750,10 @@ class PradoBaseTest extends PHPUnit\Framework\TestCase
 	public function testUsing_withAlreadyLoadedGlobalNamespaceClass_returnsFqnFromEarlyReturn(): void
 	{
 		// First call loads the class; second call hits the early-return branch.
-		Prado::using('Application.prado3stubs.GlobalNsComponent');
-		$fqn = Prado::using('Application.prado3stubs.GlobalNsComponent');
-		$this->assertSame('Application\\prado3stubs\\GlobalNsComponent', $fqn);
+		$this->registerPrado3FixtureAlias();
+		Prado::using('Prado3Fixture.GlobalNsComponent');
+		$fqn = Prado::using('Prado3Fixture.GlobalNsComponent');
+		$this->assertSame('Prado3Fixture\\GlobalNsComponent', $fqn);
 		$this->assertTrue(class_exists($fqn, false));
 		$this->assertTrue(is_subclass_of($fqn, \Prado\TComponent::class));
 	}
