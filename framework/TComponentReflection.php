@@ -74,9 +74,6 @@ class TComponentReflection extends \Prado\TComponent
 		$properties = [];
 		$events = [];
 		$methods = [];
-		// Use is_a() so that Prado3 short-name class aliases (created by Prado::using()
-		// via class_alias()) are resolved correctly. A plain === comparison against the
-		// FQN string would fail when _className is an alias such as 'TComponent'.
 		$isComponent = is_a($this->_className, TComponent::class, true);
 		foreach ($class->getMethods() as $method) {
 			if ($method->isPublic() || $method->isProtected()) {
