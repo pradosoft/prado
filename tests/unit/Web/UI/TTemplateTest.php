@@ -777,6 +777,22 @@ $this->assertArrayHasKey(TTemplate::TPL_PROPS, $item);
 		$this->assertEquals('Prado\\Web\\UI\\WebControls\\TLabel', $item[TTemplate::TPL_TYPE]);
 	}
 
+	public function testComponentTagWithPrado3SystemDotNotation()
+	{
+		// Prado3-style System.* dot-notation is converted to PHP FQN via usingClass()
+		$tpl = $this->newTemplate('<com:System.Web.UI.WebControls.TLabel ID="lbl1" />');
+		$item = array_values($tpl->getItems())[0];
+		$this->assertEquals('Prado\\Web\\UI\\WebControls\\TLabel', $item[TTemplate::TPL_TYPE]);
+	}
+
+	public function testComponentTagWithPrado3PradoDotNotation()
+	{
+		// Prado3-style Prado.* dot-notation (dots-to-backslashes) is resolved to PHP FQN
+		$tpl = $this->newTemplate('<com:Prado.Web.UI.WebControls.TLabel ID="lbl1" />');
+		$item = array_values($tpl->getItems())[0];
+		$this->assertEquals('Prado\\Web\\UI\\WebControls\\TLabel', $item[TTemplate::TPL_TYPE]);
+	}
+
 	public function testComponentTagWithAttributeExpressionValue()
 	{
 		$tpl = $this->newTemplate('<com:TLabel ID="lbl1" Text=<%= $this->Name %> />');
@@ -1329,6 +1345,16 @@ $this->assertArrayHasKey(TTemplate::TPL_PROPS, $item);
 		$this->expectException(TConfigurationException::class);
 		$this->expectExceptionMessageMatches('/not a component/i');
 		$this->newTemplate('<com:stdClass />');
+	}
+
+	public function testComponentTag_withUnresolvableClass_throwsComponentRequired()
+	{
+		// usingClass() returns null for a class that cannot be found anywhere;
+		// validateAttributes() must throw template_component_required rather than
+		// crashing with a ReflectionException or a silent failure
+		$this->expectException(TConfigurationException::class);
+		$this->expectExceptionMessageMatches('/not a component/i');
+		$this->newTemplate('<com:TFakeClassXYZ99999 />');
 	}
 
 	public function testClosingTagMismatch()
