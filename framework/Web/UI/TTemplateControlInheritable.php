@@ -36,24 +36,27 @@ class TTemplateControlInheritable extends TTemplateControl
 	 * Uses the controls template if available or the base class template otherwise.
 	 *
 	 * @throws TConfigurationException if a template control directive is invalid
+	 * @method dyCreateChildControls() for behaviors to process children.
 	 */
 	public function createChildControls()
 	{
 		if (null === ($_template = $this->getTemplate())) {
 			$this->doCreateChildControlsFor($this::class);
-			return;
-		}
+		} else {
+			foreach ($_template->getDirective() as $_name => $_value) {
+				if (!is_string($_value)) {
+					throw new TConfigurationException('templatecontrol_directive_invalid', $this::class, $_name);
+				}
 
-		foreach ($_template->getDirective() as $_name => $_value) {
-			if (!is_string($_value)) {
-				throw new TConfigurationException('templatecontrol_directive_invalid', $this::class, $_name);
+				$this->setSubProperty($_name, $_value);
 			}
 
-			$this->setSubProperty($_name, $_value);
+			$_template->instantiateIn($this);
 		}
 
-		$_template->instantiateIn($this);
-		parent::createChildControls();
+		{ // replicate parent::parent(TCompositeControl) behavior
+			$this->dyCreateChildControls();
+		}
 	}
 
 	/**
