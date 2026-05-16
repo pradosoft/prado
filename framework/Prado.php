@@ -473,6 +473,11 @@ class Prado
 				if (class_exists($className, false) ||
 					interface_exists($className, false) ||
 					trait_exists($className, false)) {
+					if (!class_exists($namespace, false) &&
+						!interface_exists($namespace, false) &&
+						!trait_exists($namespace, false)) {
+						class_alias($className, $namespace);
+					}
 					return $namespace;
 				}
 
@@ -482,6 +487,10 @@ class Prado
 						!interface_exists($className, false) &&
 						!trait_exists($className, false)) {
 						class_alias($namespace, $className);
+					} elseif (!class_exists($namespace, false) &&
+						!interface_exists($namespace, false) &&
+						!trait_exists($namespace, false)) {
+						class_alias($className, $namespace);
 					}
 					return $namespace;
 				}

@@ -686,6 +686,63 @@ class PradoBaseTest extends PHPUnit\Framework\TestCase
 		// Strict distinctness between the two non-string values
 		$this->assertNotSame($directory, $notFound, 'false and null must be strictly different');
 	}
+
+	// -------------------------------------------------------------------------
+	// Prado::using() — Prado3 global-namespace reverse alias
+	//
+	// When a class file defines its class in global namespace (Prado3 style),
+	// using() must create a reverse alias class_alias($shortName, $fqn) so the
+	// returned FQN string is a valid, usable PHP class name.
+	// -------------------------------------------------------------------------
+
+	/**
+	 * using() with a path-alias dot-notation pointing to a global-namespace class
+	 * must return the path-derived FQN AND make that FQN usable via class_exists.
+	 * @since 4.3.3
+	 */
+	public function testUsing_withPrado3GlobalNamespaceClass_returnsFqnAndCreatesAlias(): void
+	{
+		// 'Application' alias maps to tests/unit/Security/app; the fixture file
+		// defines class GlobalNsComponent in global namespace (no PHP namespace).
+		$fqn = Prado::using('Application.prado3stubs.GlobalNsComponent');
+		$this->assertSame('Application\\prado3stubs\\GlobalNsComponent', $fqn);
+		// The returned FQN must exist as a real (aliased) PHP class.
+		$this->assertTrue(class_exists($fqn, false), 'FQN must be resolvable via class_exists(false)');
+	}
+
+	/**
+	 * usingClass() with a Prado3 dot-notation that points to a global-namespace
+	 * class must return the FQN, and that FQN must satisfy is_subclass_of.
+	 * @since 4.3.3
+	 */
+	public function testUsingClass_withPrado3GlobalNamespaceClass_fqnPassesIsSubclassOf(): void
+	{
+		$fqn = Prado::usingClass('Application.prado3stubs.GlobalNsComponent');
+		$this->assertIsString($fqn);
+		$this->assertSame('Application\\prado3stubs\\GlobalNsComponent', $fqn);
+		// is_subclass_of must work via the reverse alias — this is what createPage
+		// and validateAttributes rely on for Prado3-style base classes.
+		$this->assertTrue(
+			is_subclass_of($fqn, \Prado\TComponent::class),
+			'FQN alias must satisfy is_subclass_of against the real parent class'
+		);
+	}
+
+	/**
+	 * When using() is called a second time for the same global-namespace class
+	 * (already loaded), it must still return the correct FQN and the alias must
+	 * still be valid (early-return branch in using()).
+	 * @since 4.3.3
+	 */
+	public function testUsing_withAlreadyLoadedGlobalNamespaceClass_returnsFqnFromEarlyReturn(): void
+	{
+		// First call loads the class; second call hits the early-return branch.
+		Prado::using('Application.prado3stubs.GlobalNsComponent');
+		$fqn = Prado::using('Application.prado3stubs.GlobalNsComponent');
+		$this->assertSame('Application\\prado3stubs\\GlobalNsComponent', $fqn);
+		$this->assertTrue(class_exists($fqn, false));
+		$this->assertTrue(is_subclass_of($fqn, \Prado\TComponent::class));
+	}
 	
 	public function testMethod_Visible()
 	{
