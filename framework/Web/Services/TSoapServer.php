@@ -11,6 +11,7 @@
 
 namespace Prado\Web\Services;
 
+use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\TPropertyValue;
 use Prado\Prado;
@@ -73,8 +74,10 @@ class TSoapServer extends \Prado\TApplicationComponent
 	public function run()
 	{
 		if (($provider = $this->getProvider()) !== null) {
-			Prado::using($provider);
-			$providerClass = ($pos = strrpos($provider, '.')) !== false ? substr($provider, $pos + 1) : $provider;
+			$providerClass = Prado::usingClass($provider);
+			if (!is_string($providerClass)) {
+				throw new TConfigurationException('soapserver_provider_invalid', $provider);
+			}
 			$this->guessMethodCallRequested($providerClass);
 			$server = $this->createServer();
 			$server->setClass($providerClass, $this);
@@ -189,8 +192,10 @@ class TSoapServer extends \Prado\TApplicationComponent
 	{
 		if ($this->_wsdlUri === '') {
 			$provider = $this->getProvider();
-			$providerClass = ($pos = strrpos($provider, '.')) !== false ? substr($provider, $pos + 1) : $provider;
-			Prado::using($provider);
+			$providerClass = Prado::usingClass($provider);
+			if (!is_string($providerClass)) {
+				throw new TConfigurationException('soapserver_provider_invalid', $provider);
+			}
 			if ($this->getApplication()->getMode() === TApplicationMode::Performance && ($cache = $this->getApplication()->getCache()) !== null) {
 				$wsdl = $cache->get(self::WSDL_CACHE_PREFIX . $providerClass);
 				if (is_string($wsdl)) {
