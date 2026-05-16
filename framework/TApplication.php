@@ -1118,8 +1118,10 @@ class TApplication extends TComponent implements ISingleton
 		if (empty($class)) {
 			throw new TConfigurationException('application_service_class_required', $id);
 		}
-		if (!class_exists($class, true)) {
-			throw new TConfigurationException('application_service_class_not_found', $class);
+		$originalClass = $class;
+		$class = Prado::usingClass($class);
+		if (!is_string($class) || !class_exists($class, true)) {
+			throw new TConfigurationException('application_service_class_not_found', $class ?? $originalClass);
 		}
 		if (!is_a($class, IService::class, true)) {
 			throw new TConfigurationException('application_service_class_not_service', $class);
@@ -1217,6 +1219,10 @@ class TApplication extends TComponent implements ISingleton
 	 */
 	public function getRegisteredServiceByClass(string $class): ?string
 	{
+		$class = Prado::usingClass($class);
+		if (!is_string($class)) {
+			return null;
+		}
 		foreach ($this->getRegisteredServices() as $id => $serviceConfig) {
 			$serviceClass = $serviceConfig[0];
 			if ($serviceClass === $class || is_a($serviceClass, $class, true)) {
@@ -1240,6 +1246,10 @@ class TApplication extends TComponent implements ISingleton
 	 */
 	public function getRegisteredServicesByClass(string $class, bool $strict = false): array
 	{
+		$class = Prado::usingClass($class);
+		if (!is_string($class)) {
+			return [];
+		}
 		$ids = [];
 		foreach ($this->getRegisteredServices() as $id => $serviceConfig) {
 			$serviceClass = $serviceConfig[0];
@@ -1291,6 +1301,11 @@ class TApplication extends TComponent implements ISingleton
 	/**
 	 * Registers or nullifies a lazy-module entry. Pass `null` to mark the slot
 	 * as consumed without removing the key (preserving the ID against reuse).
+	 * When a config tuple is provided the class name is resolved via
+	 * {@see Prado::usingClass()} so that Prado3 dot-notation and short class
+	 * names are normalized to a PHP fully-qualified name before storage.
+	 * This ensures methods such as {@see getModulesByType()} that compare stored
+	 * class names with PHP `is_a()` always receive a valid FQN.
 	 * @param string $id module ID.
 	 * @param ?array $config the registration tuple `[$class, $properties, $configElement]`,
 	 *   or `null` to mark the slot as consumed.
@@ -1298,6 +1313,13 @@ class TApplication extends TComponent implements ISingleton
 	 */
 	protected function setLazyModule(string $id, ?array $config): void
 	{
+		if ($config !== null && isset($config[0])) {
+			$resolved = Prado::usingClass($config[0]);
+			if (!is_string($resolved)) {
+				throw new TConfigurationException('application_module_class_invalid', $config[0]);
+			}
+			$config[0] = $resolved;
+		}
 		$this->_lazyModules[$id] = $config;
 	}
 
@@ -1362,13 +1384,18 @@ class TApplication extends TComponent implements ISingleton
 	 * @param bool $strict should the module be the class or can the module be a subclass
 	 * @return array keys are the ids of the module and values are module of a specific class
 	 * @since 4.2.0
+	 * @todo 4.4 normalize to "ByClass"?
 	 */
 	public function getModulesByType($type, $strict = false)
 	{
+		$type = Prado::usingClass($type);
+		if (!is_string($type)) {
+			return [];
+		}
 		$m = [];
 		foreach ($this->_modules as $id => $module) {
 			if ($module === null && $this->hasLazyModule($id)) {
-				[$moduleClass, $initProperties, $configElement] = $this->getLazyModule($id);
+				[$moduleClass] = $this->getLazyModule($id);
 				if ($strict ? ($moduleClass === $type) : is_a($moduleClass, $type, true)) {
 					$m[$id] = null;
 				}
