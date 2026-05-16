@@ -830,4 +830,161 @@ class TComponentBehaviorTest extends TComponentTestBase
 			$this->assertEquals(4, $this->component->onMyEvent->getCount());
 		}
 	}
+
+	// -----------------------------------------------------------------------
+	// asa() and getBehaviors() — Prado3 dot-notation class name resolution
+	// -----------------------------------------------------------------------
+
+	/**
+	 * asa() with a Prado3 System dot-notation framework class name.
+	 *
+	 * FooBehavior extends TBehavior (\Prado\Util\TBehavior).
+	 * Calling asa('System.Util.TBehavior') must resolve to Prado\Util\TBehavior,
+	 * then return the attached FooBehavior since it is an instance of TBehavior.
+	 */
+	public function testAsA_withPrado3SystemDotNotation(): void
+	{
+		$foo = new FooBehavior();
+		$this->component->attachBehavior('fooBehaviorInstance', $foo);
+
+		// System.Util.TBehavior → Prado\Util\TBehavior; FooBehavior IS-A TBehavior
+		$result = $this->component->asa('System.Util.TBehavior');
+		$this->assertSame($foo, $result);
+
+		$this->component->detachBehavior('fooBehaviorInstance');
+	}
+
+	/**
+	 * asa() with a Prado3 Prado dot-notation framework class name.
+	 */
+	public function testAsA_withPrado3PradoDotNotation(): void
+	{
+		$foo = new FooBehavior();
+		$this->component->attachBehavior('fooBehaviorInstance2', $foo);
+
+		// Prado.Util.TBehavior → Prado\Util\TBehavior
+		$result = $this->component->asa('Prado.Util.TBehavior');
+		$this->assertSame($foo, $result);
+
+		$this->component->detachBehavior('fooBehaviorInstance2');
+	}
+
+	/**
+	 * asa() with a Prado3 name returns null when no attached behavior matches.
+	 */
+	public function testAsA_withPrado3DotNotation_returnsNullWhenNoMatch(): void
+	{
+		// Attach a FooFooBehavior but look up by TClassBehavior (unrelated) Prado3 name
+		$foo = new FooBehavior();
+		$this->component->attachBehavior('fooForNullTest', $foo);
+
+		// Prado.Util.TClassBehavior is a class behavior interface, FooBehavior is NOT one
+		$result = $this->component->asa('Prado.Util.TClassBehavior');
+		$this->assertNull($result);
+
+		$this->component->detachBehavior('fooForNullTest');
+	}
+
+	/**
+	 * getBehaviors() filtered by a Prado3 System dot-notation class name.
+	 *
+	 * FooBehavior extends TBehavior; FooFooBehavior extends FooBehavior.
+	 * Both should be returned when filtering by 'System.Util.TBehavior'.
+	 */
+	public function testGetBehaviors_withPrado3SystemDotNotation(): void
+	{
+		$foo = new FooBehavior();
+		$foofoo = new FooFooBehavior();
+		$this->component->attachBehavior('fooB', $foo);
+		$this->component->attachBehavior('foofooB', $foofoo);
+
+		// System.Util.TBehavior → Prado\Util\TBehavior; both behaviors match
+		$result = $this->component->getBehaviors('System.Util.TBehavior');
+		$this->assertContains($foo, $result);
+		$this->assertContains($foofoo, $result);
+		$this->assertCount(2, $result);
+
+		$this->component->detachBehavior('fooB');
+		$this->component->detachBehavior('foofooB');
+	}
+
+	/**
+	 * getBehaviors() filtered by a Prado3 Prado dot-notation class name.
+	 */
+	public function testGetBehaviors_withPrado3PradoDotNotation(): void
+	{
+		$foo = new FooBehavior();
+		$this->component->attachBehavior('fooBehaviorPrado3', $foo);
+
+		// Prado.Util.TBehavior → Prado\Util\TBehavior
+		$result = $this->component->getBehaviors('Prado.Util.TBehavior');
+		$this->assertContains($foo, $result);
+		$this->assertCount(1, $result);
+
+		$this->component->detachBehavior('fooBehaviorPrado3');
+	}
+
+	// -----------------------------------------------------------------------
+	// asa() and getBehaviors() — usingClass() false / null edge cases
+	// -----------------------------------------------------------------------
+
+	/**
+	 * asa() with a directory namespace (usingClass returns false) must return
+	 * null — the !is_string() guard prevents searching the behavior list.
+	 */
+	public function testAsA_withDirectoryNamespace_returnsNull(): void
+	{
+		$foo = new FooBehavior();
+		$this->component->attachBehavior('fooDir', $foo);
+
+		$result = $this->component->asa('Prado\\Util\\*');
+		$this->assertNull($result);
+
+		$this->component->detachBehavior('fooDir');
+	}
+
+	/**
+	 * asa() with an unknown class name (usingClass returns null) must return
+	 * null — the !is_string() guard prevents searching the behavior list.
+	 */
+	public function testAsA_withUnknownClass_returnsNull(): void
+	{
+		$foo = new FooBehavior();
+		$this->component->attachBehavior('fooUnknown', $foo);
+
+		$result = $this->component->asa('TFakeBehaviorClassXYZ99999');
+		$this->assertNull($result);
+
+		$this->component->detachBehavior('fooUnknown');
+	}
+
+	/**
+	 * getBehaviors() with a directory namespace (usingClass returns false)
+	 * must return an empty array.
+	 */
+	public function testGetBehaviors_withDirectoryNamespace_returnsEmptyArray(): void
+	{
+		$foo = new FooBehavior();
+		$this->component->attachBehavior('fooDirB', $foo);
+
+		$result = $this->component->getBehaviors('Prado\\Util\\*');
+		$this->assertSame([], $result);
+
+		$this->component->detachBehavior('fooDirB');
+	}
+
+	/**
+	 * getBehaviors() with an unknown class name (usingClass returns null)
+	 * must return an empty array.
+	 */
+	public function testGetBehaviors_withUnknownClass_returnsEmptyArray(): void
+	{
+		$foo = new FooBehavior();
+		$this->component->attachBehavior('fooUnknownB', $foo);
+
+		$result = $this->component->getBehaviors('TFakeBehaviorClassXYZ99999');
+		$this->assertSame([], $result);
+
+		$this->component->detachBehavior('fooUnknownB');
+	}
 }
