@@ -369,22 +369,67 @@ class Prado
 	}
 
 	/**
+	 * Resolves a namespace to a PHP class name, loading it if necessary.
+	 *
+	 * This is the preferred public API for converting a Prado3 dot-notation or
+	 * short class name to a fully-qualified PHP class name while also ensuring
+	 * the class is loaded. Combines {@see using()} with a Prado3-to-PHP namespace
+	 * fallback conversion so callers always receive a usable name.
+	 *
+	 * Returns false when the namespace identifies a directory (e.g. 'App.Common.*')
+	 * rather than a class, and null when the namespace could not be resolved at all.
+	 * Callers must check the return value before using it as a class name.
+	 *
+	 * ```php
+	 * $class = Prado::usingClass($class);
+	 * if (is_string($class)) {
+	 *     $obj = new $class();
+	 * }
+	 * ```
+	 *
+	 * @param string $namespace Prado3 dot-notation, short class name, or PHP FQN
+	 * @return null|false|string The resolved PHP fully-qualified class name, false
+	 *   when $namespace identifies a directory rather than a class, or null when
+	 *   $namespace could not be resolved to any known class.
+	 * @since 4.3.3
+	 */
+	public static function usingClass(string $namespace): string|false|null
+	{
+		$result = static::using($namespace);
+		if ($result === false) {
+			return null;   // namespace could not be resolved
+		}
+		if (str_ends_with($result, '\\')) {
+			return false;  // namespace is a directory, not a class
+		}
+		return $result;    // PHP fully-qualified class name
+	}
+
+	/**
 	 * Uses a namespace.
 	 * A namespace ending with an asterisk '*' refers to a directory, otherwise it represents a PHP file.
 	 * If the namespace corresponds to a directory, the directory will be appended
 	 * to the include path. If the namespace corresponds to a file, it will be included (include_once).
 	 * @param string $namespace namespace to be used
 	 * @throws TInvalidDataValueException if the namespace is invalid
+	 * @return false|string The resolved PHP fully-qualified class, interface, or trait name when the
+	 *   namespace identifies a loadable class. Returns a string ending in '\' when a directory
+	 *   namespace is successfully registered (e.g. 'Prado\Web\UI\'). Returns false when the
+	 *   namespace cannot be resolved.
+	 * @since 4.3.3 return type changed from void to string|bool; directory case returns namespace
+	 *   string ending in '\' instead of true since 4.3.3
 	 */
-	public static function using($namespace): void
+	public static function using($namespace): string|false
 	{
 		$namespace = static::prado3NamespaceToPhpNamespace($namespace);
 
-		if (isset(self::$_usings[$namespace]) ||
-			class_exists($namespace, false) ||
+		if (isset(self::$_usings[$namespace])) {
+			return $namespace . '\\';
+		}
+		if (class_exists($namespace, false) ||
 			interface_exists($namespace, false) ||
 			trait_exists($namespace, false)) {
-			return;
+			return $namespace;
 		}
 
 		if (array_key_exists($namespace, self::$classMap)) {
@@ -398,7 +443,7 @@ class Prado
 					!trait_exists($namespace)) {
 					class_alias($phpNamespace, $namespace);
 				}
-				return;
+				return $phpNamespace;
 			}
 		} elseif (($pos = strrpos($namespace, '\\')) === false) {
 			// trying to autoload an old class name
@@ -414,19 +459,21 @@ class Prado
 							!trait_exists($namespace)) {
 							class_alias($phpNamespace, $namespace);
 						}
-						return;
+						return $phpNamespace;
 					}
 				}
 			}
 		} elseif (($path = self::getPathOfNamespace($namespace, self::CLASS_FILE_EXT)) !== null) {
 			$className = substr($namespace, $pos + 1);
 			if ($className === '*') {  // a directory
-				self::$_usings[substr($namespace, 0, $pos)] = $path;
+				$dirNamespace = substr($namespace, 0, $pos);
+				self::$_usings[$dirNamespace] = $path;
+				return $dirNamespace . '\\';
 			} else {  // a file
 				if (class_exists($className, false) ||
 					interface_exists($className, false) ||
 					trait_exists($className, false)) {
-					return;
+					return $namespace;
 				}
 
 				if (file_exists($path)) {
@@ -436,9 +483,12 @@ class Prado
 						!trait_exists($className, false)) {
 						class_alias($namespace, $className);
 					}
+					return $namespace;
 				}
 			}
 		}
+
+		return false;
 	}
 
 	/**
