@@ -66,6 +66,7 @@ class TTemplateManager extends \Prado\TModule
 	 * Loads the template corresponding to the specified class name.
 	 * @param mixed $className
 	 * @return \Prado\Web\UI\TTemplate template for the class name, null if template doesn't exist.
+	 * @todo v4.4 normalize to "ByClass"?
 	 */
 	public function getTemplateByClassName($className)
 	{
@@ -86,7 +87,8 @@ class TTemplateManager extends \Prado\TModule
 		if ($tplClass === null) {
 			$tplClass = $this->_defaultTemplateClass;
 		}
-		if (!is_subclass_of($tplClass, ITemplate::class)) {
+		$tplClass = Prado::usingClass($tplClass);
+		if (!is_string($tplClass) || !is_subclass_of($tplClass, ITemplate::class)) {
 			return null;
 		}
 		if (($fileName = $this->getLocalizedTemplate($fileName, $culture)) !== null) {

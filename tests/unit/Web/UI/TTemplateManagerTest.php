@@ -176,4 +176,75 @@ class TTemplateManagerTest extends PHPUnit\Framework\TestCase
 		$result = $manager->getTemplateByClassName(\Prado\TComponent::class);
 		$this->assertNull($result);
 	}
+
+	// -----------------------------------------------------------------------
+	// getTemplateByFileName() — Prado3 dot-notation class name resolution
+	// -----------------------------------------------------------------------
+
+	public function testGetTemplateByFileNameWithPrado3SystemDotNotation(): void
+	{
+		$manager = new TTemplateManager();
+		$file = $this->createTplFile('content');
+		// System.Web.UI.TSkinTemplate resolves to Prado\Web\UI\TSkinTemplate via prado3NamespaceToPhpNamespace
+		$result = $manager->getTemplateByFileName($file, 'System.Web.UI.TSkinTemplate');
+		$this->assertInstanceOf(TSkinTemplate::class, $result);
+	}
+
+	public function testGetTemplateByFileNameWithPrado3PradoDotNotation(): void
+	{
+		$manager = new TTemplateManager();
+		$file = $this->createTplFile('content');
+		// Prado.Web.UI.TSkinTemplate resolves to Prado\Web\UI\TSkinTemplate
+		$result = $manager->getTemplateByFileName($file, 'Prado.Web.UI.TSkinTemplate');
+		$this->assertInstanceOf(TSkinTemplate::class, $result);
+	}
+
+	public function testGetTemplateByFileNameWithPrado3DotNotationDefaultClass(): void
+	{
+		$manager = new TTemplateManager();
+		// Set default template class using Prado3 dot-notation
+		$manager->setDefaultTemplateClass('System.Web.UI.TSkinTemplate');
+		$file = $this->createTplFile('content');
+		// getTemplateByFileName(null) falls back to default class; must resolve Prado3 name
+		$result = $manager->getTemplateByFileName($file, null);
+		$this->assertInstanceOf(TSkinTemplate::class, $result);
+	}
+
+	// -----------------------------------------------------------------------
+	// getTemplateByFileName() — usingClass() false / null edge cases
+	// -----------------------------------------------------------------------
+
+	/**
+	 * A directory namespace (usingClass returns false) is not a valid template
+	 * class; getTemplateByFileName() must return null.
+	 */
+	public function testGetTemplateByFileName_withDirectoryNamespaceTplClass_returnsNull(): void
+	{
+		$manager = new TTemplateManager();
+		$file = $this->createTplFile('content');
+		$result = $manager->getTemplateByFileName($file, 'Prado\\Web\\UI\\*');
+		$this->assertNull($result);
+	}
+
+	/**
+	 * A Prado3 directory dot-notation (usingClass returns false) also returns null.
+	 */
+	public function testGetTemplateByFileName_withPrado3DirectoryNotation_returnsNull(): void
+	{
+		$manager = new TTemplateManager();
+		$file = $this->createTplFile('content');
+		$result = $manager->getTemplateByFileName($file, 'System.Web.UI.*');
+		$this->assertNull($result);
+	}
+
+	/**
+	 * An unknown class name (usingClass returns null) returns null.
+	 */
+	public function testGetTemplateByFileName_withUnknownTplClass_returnsNull(): void
+	{
+		$manager = new TTemplateManager();
+		$file = $this->createTplFile('content');
+		$result = $manager->getTemplateByFileName($file, 'TFakeTemplateClassXYZ99999');
+		$this->assertNull($result);
+	}
 }
