@@ -74,7 +74,7 @@ class TComponentReflection extends \Prado\TComponent
 		$properties = [];
 		$events = [];
 		$methods = [];
-		$isComponent = is_subclass_of($this->_className, 'TComponent') || strcasecmp($this->_className, 'TComponent') === 0;
+		$isComponent = is_a($this->_className, TComponent::class, true);
 		foreach ($class->getMethods() as $method) {
 			if ($method->isPublic() || $method->isProtected()) {
 				$methodName = $method->getName();

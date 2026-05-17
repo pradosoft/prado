@@ -1091,7 +1091,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	public function renderItem($writer, $repeatInfo, $itemType, $index)
 	{
 		$item = $this->getItem($itemType, $index);
-		if ($repeatInfo->getRepeatLayout() === TRepeatLayout::Raw && $item::class === 'TDataListItem') {
+		if ($repeatInfo->getRepeatLayout() === TRepeatLayout::Raw && $item instanceof TDataListItem) {
 			$item->setTagName('div');
 		}
 		$item->renderControl($writer);

@@ -63,7 +63,7 @@ class TTemplateControlInheritable extends TTemplateControl
 	 */
 	public function doCreateChildControlsFor($parentClass)
 	{
-		if (false !== ($_parentClass = get_parent_class($parentClass)) && 'TTemplateControl' != $_parentClass) {
+		if (false !== ($_parentClass = get_parent_class($parentClass)) && TTemplateControl::class !== $_parentClass) {
 			$this->doCreateChildControlsFor($_parentClass);
 		}
 
