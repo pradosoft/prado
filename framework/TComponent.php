@@ -1853,11 +1853,13 @@ class TComponent
 	 */
 	public function asa($behaviorname)
 	{
-		$behaviorname = strtolower($behaviorname);
-		if (isset($this->_m[$behaviorname])) {
-			return $this->_m[$behaviorname];
+		$behaviorname_lower = strtolower($behaviorname);
+		if (isset($this->_m[$behaviorname_lower])) {
+			return $this->_m[$behaviorname_lower];
 		}
-		if ((class_exists($behaviorname, false) || interface_exists($behaviorname, false)) && $this->_m) {
+
+		$behaviorname = Prado::usingClass($behaviorname);
+		if (is_string($behaviorname) && (class_exists($behaviorname, false) || interface_exists($behaviorname, false)) && $this->_m) {
 			foreach ($this->_m->toArray() as $behavior) {
 				if ($behavior instanceof $behaviorname) {
 					return $behavior;
@@ -1922,7 +1924,9 @@ class TComponent
 		if (isset($this->_m)) {
 			if ($class === null) {
 				return $this->_m->toArray();
-			} elseif (class_exists($class, false) || interface_exists($class, false)) {
+			}
+			$class = Prado::usingClass($class);
+			if (is_string($class) && (class_exists($class, false) || interface_exists($class, false))) {
 				return array_filter($this->_m->toArray(), fn ($b) => $b instanceof $class);
 			}
 		}

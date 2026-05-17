@@ -96,22 +96,18 @@ class TRpcService extends \Prado\TService
 			throw new TConfigurationException('rpcservice_apiprovider_required');
 		}
 
-		Prado::using($_providerClass);
-
-		$_providerClassName = ($_pos = strrpos($_providerClass, '.')) !== false ? substr($_providerClass, $_pos + 1) : $_providerClass;
-		if (!is_subclass_of($_providerClassName, self::BASE_API_PROVIDER)) {
-			throw new TConfigurationException('rpcservice_apiprovider_invalid');
+		$_providerClassName = Prado::usingClass($_providerClass);
+		if (!is_string($_providerClassName) || !is_subclass_of($_providerClassName, self::BASE_API_PROVIDER)) {
+			throw new TConfigurationException('rpcservice_apiprovider_invalid', $_providerClass);
 		}
 
 		if (($_rpcServerClass = $_properties->remove('server')) === null) {
 			$_rpcServerClass = self::BASE_RPC_SERVER;
 		}
 
-		Prado::using($_rpcServerClass);
-
-		$_rpcServerClassName = ($_pos = strrpos($_rpcServerClass, '.')) !== false ? substr($_rpcServerClass, $_pos + 1) : $_rpcServerClass;
-		if ($_rpcServerClassName !== self::BASE_RPC_SERVER && !is_subclass_of($_rpcServerClassName, self::BASE_RPC_SERVER)) {
-			throw new TConfigurationException('rpcservice_rpcserver_invalid');
+		$_rpcServerClassName = Prado::usingClass($_rpcServerClass);
+		if (!is_string($_rpcServerClassName) || ($_rpcServerClassName !== self::BASE_RPC_SERVER && !is_subclass_of($_rpcServerClassName, self::BASE_RPC_SERVER))) {
+			throw new TConfigurationException('rpcservice_rpcserver_invalid', $_rpcServerClass);
 		}
 
 		$_apiProvider = new $_providerClassName(new $_rpcServerClassName($protocolHandler));

@@ -34,6 +34,7 @@ class TApplicationTestAccessor extends TApplication
 	public function pubHasLazyModule(string $id): bool { return $this->hasLazyModule($id); }
 	public function pubGetLazyModule(string $id): ?array { return $this->getLazyModule($id); }
 	public function pubSetLazyModule(string $id, ?array $config): void { $this->setLazyModule($id, $config); }
+	public function pubSetLazyModuleDirect(string $id, ?array $config): void { $this->setLazyModuleDirect($id, $config); }
 	public function pubGetLazyModuleCount(): int { return $this->getLazyModuleCount(); }
 }
 
@@ -1487,6 +1488,195 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 	}
 
 	// -----------------------------------------------------------------------
+	// getModulesByType — lazy modules stored with PHP FQN class names
+	//
+	// When setLazyModule() can resolve the class at registration time it stores
+	// the PHP FQN directly. getModulesByType() then calls is_a() on the stored
+	// FQN without a further resolution step.
+	// -----------------------------------------------------------------------
+
+	public function testGetModulesByType_lazyModule_withPrado3SystemDotNotation(): void
+	{
+		// setLazyModule converts 'System.Web.THttpSession' → Prado\Web\THttpSession
+		// before storage, so the value in _lazyModules is always the PHP FQN.
+		PradoUnit::setProp($this->_app, '_modules', ['lazy_m' => null]);
+		PradoUnit::setProp($this->_app, '_lazyModules', [
+			'lazy_m' => [\Prado\Web\THttpSession::class, [], null],
+		]);
+
+		$result = $this->_app->getModulesByType(\Prado\Web\THttpSession::class);
+		$this->assertArrayHasKey('lazy_m', $result);
+		$this->assertNull($result['lazy_m']);
+	}
+
+	public function testGetModulesByType_lazyModule_withPrado3PradoDotNotation(): void
+	{
+		// setLazyModule converts 'Prado.Web.THttpSession' → Prado\Web\THttpSession
+		// before storage; the stored value is always the PHP FQN.
+		PradoUnit::setProp($this->_app, '_modules', ['lazy_m' => null]);
+		PradoUnit::setProp($this->_app, '_lazyModules', [
+			'lazy_m' => [\Prado\Web\THttpSession::class, [], null],
+		]);
+
+		$result = $this->_app->getModulesByType(\Prado\Web\THttpSession::class);
+		$this->assertArrayHasKey('lazy_m', $result);
+		$this->assertNull($result['lazy_m']);
+	}
+
+	public function testGetModulesByType_lazyModule_withPrado3SystemDotNotation_strictMode(): void
+	{
+		// Strict mode (===) works because the stored PHP FQN matches exactly.
+		PradoUnit::setProp($this->_app, '_modules', ['lazy_m' => null]);
+		PradoUnit::setProp($this->_app, '_lazyModules', [
+			'lazy_m' => [\Prado\Web\THttpSession::class, [], null],
+		]);
+
+		$result = $this->_app->getModulesByType(\Prado\Web\THttpSession::class, true);
+		$this->assertArrayHasKey('lazy_m', $result);
+	}
+
+	public function testGetModulesByType_lazyModule_withPrado3DotNotation_doesNotMatchUnrelatedType(): void
+	{
+		// A lazy module must NOT appear in results for an unrelated type.
+		PradoUnit::setProp($this->_app, '_modules', ['lazy_m' => null]);
+		PradoUnit::setProp($this->_app, '_lazyModules', [
+			'lazy_m' => [\Prado\Web\THttpSession::class, [], null],
+		]);
+
+		$result = $this->_app->getModulesByType(\Prado\Caching\ICache::class);
+		$this->assertArrayNotHasKey('lazy_m', $result);
+	}
+
+	// -----------------------------------------------------------------------
+	// getModulesByType — deferred resolution of unresolved Prado3 dot-notation
+	//
+	// When setLazyModule() cannot resolve the class at registration time the
+	// raw name is stored. getModulesByType() calls usingClass() on the stored
+	// value and, if successful, normalises the entry to the PHP FQN for future
+	// calls. Directory namespaces (false) and unknown names (null) are skipped.
+	// -----------------------------------------------------------------------
+
+	public function testGetModulesByType_lazyModule_deferredResolution_resolvesPrado3DotNotation(): void
+	{
+		// Simulate a name that setLazyModule() could not resolve at registration
+		// time by storing the raw Prado3 dot-notation via setLazyModuleDirect().
+		$acc = $this->newLazyAccessor();
+		$acc->setModule('lazy_m', null);
+		$acc->pubSetLazyModuleDirect('lazy_m', ['System.Web.THttpSession', [], null]);
+
+		$result = $acc->getModulesByType(\Prado\Web\THttpSession::class);
+		$this->assertArrayHasKey('lazy_m', $result);
+		$this->assertNull($result['lazy_m']);
+	}
+
+	public function testGetModulesByType_lazyModule_deferredResolution_normalisesStoredEntry(): void
+	{
+		// After a successful deferred resolution the stored entry must be
+		// updated to the PHP FQN so subsequent calls skip the resolution step.
+		$acc = $this->newLazyAccessor();
+		$acc->setModule('lazy_m', null);
+		$acc->pubSetLazyModuleDirect('lazy_m', ['Prado.Web.THttpSession', [], null]);
+
+		$acc->getModulesByType(\Prado\Web\THttpSession::class);
+
+		$this->assertSame(\Prado\Web\THttpSession::class, $acc->pubGetLazyModule('lazy_m')[0]);
+	}
+
+	public function testGetModulesByType_lazyModule_deferredResolution_directoryNamespace_isSkipped(): void
+	{
+		// A stored class that resolves to a directory namespace (usingClass → false)
+		// must not appear in results.
+		$acc = $this->newLazyAccessor();
+		$acc->setModule('lazy_m', null);
+		$acc->pubSetLazyModuleDirect('lazy_m', ['Prado\\Web\\UI\\*', [], null]);
+
+		$result = $acc->getModulesByType(\Prado\Web\THttpSession::class);
+		$this->assertSame([], $result);
+	}
+
+	public function testGetModulesByType_lazyModule_deferredResolution_unknownClass_isSkipped(): void
+	{
+		// A stored class that cannot be resolved (usingClass → null) must not
+		// appear in results.
+		$acc = $this->newLazyAccessor();
+		$acc->setModule('lazy_m', null);
+		$acc->pubSetLazyModuleDirect('lazy_m', ['TotallyFakeClassXYZ99999', [], null]);
+
+		$result = $acc->getModulesByType(\Prado\Web\THttpSession::class);
+		$this->assertSame([], $result);
+	}
+
+	// -----------------------------------------------------------------------
+	// internalLoadModule — Prado3 dot-notation class name resolution
+	//
+	// internalLoadModule() calls Prado::createComponent($moduleClass), which
+	// already routes through prado3NamespaceToPhpNamespace() internally.
+	// getModule() is the public entry-point that forces a lazy module to load;
+	// these tests verify the full round-trip from Prado3 name → live instance.
+	//
+	// TSecurityManager is used because its init($config) never touches $config,
+	// making it safe to call with null in a test context.
+	// -----------------------------------------------------------------------
+
+	public function testGetModule_withPrado3SystemDotNotation_instantiatesCorrectClass(): void
+	{
+		// 'System.Security.TSecurityManager' is the Prado3 name for
+		// Prado\Security\TSecurityManager. getModule() must force-load it
+		// via internalLoadModule() → Prado::createComponent(), which resolves
+		// the Prado3 name, and return a live instance of the correct PHP class.
+		PradoUnit::setProp($this->_app, '_modules', ['prado3_mod' => null]);
+		PradoUnit::setProp($this->_app, '_lazyModules', [
+			'prado3_mod' => ['System.Security.TSecurityManager', [], null],
+		]);
+
+		$module = $this->_app->getModule('prado3_mod');
+		$this->assertInstanceOf(\Prado\Security\TSecurityManager::class, $module);
+	}
+
+	public function testGetModule_withPrado3PradoDotNotation_instantiatesCorrectClass(): void
+	{
+		// 'Prado.Security.TSecurityManager' uses dots instead of backslashes —
+		// another valid Prado3 form; createComponent() must resolve it identically.
+		PradoUnit::setProp($this->_app, '_modules', ['prado3_mod' => null]);
+		PradoUnit::setProp($this->_app, '_lazyModules', [
+			'prado3_mod' => ['Prado.Security.TSecurityManager', [], null],
+		]);
+
+		$module = $this->_app->getModule('prado3_mod');
+		$this->assertInstanceOf(\Prado\Security\TSecurityManager::class, $module);
+	}
+
+	public function testGetModule_withPrado3ClassMapShortName_instantiatesCorrectClass(): void
+	{
+		// Short classMap names (e.g. 'TSecurityManager') are resolved by
+		// Prado::using() into a class_alias. Verify the full load path works
+		// for this form too, as a regression guard.
+		PradoUnit::setProp($this->_app, '_modules', ['prado3_mod' => null]);
+		PradoUnit::setProp($this->_app, '_lazyModules', [
+			'prado3_mod' => ['TSecurityManager', [], null],
+		]);
+
+		$module = $this->_app->getModule('prado3_mod');
+		$this->assertInstanceOf(\Prado\Security\TSecurityManager::class, $module);
+	}
+
+	public function testGetModule_withPrado3SystemDotNotation_moduleIsRegisteredAfterLoad(): void
+	{
+		// After force-loading, the module must be findable via getModules() as a
+		// live instance (not null), and under the same ID it was registered with.
+		PradoUnit::setProp($this->_app, '_modules', ['prado3_mod' => null]);
+		PradoUnit::setProp($this->_app, '_lazyModules', [
+			'prado3_mod' => ['System.Security.TSecurityManager', [], null],
+		]);
+
+		$this->_app->getModule('prado3_mod');
+
+		$modules = $this->_app->getModules();
+		$this->assertArrayHasKey('prado3_mod', $modules);
+		$this->assertInstanceOf(\Prado\Security\TSecurityManager::class, $modules['prado3_mod']);
+	}
+
+	// -----------------------------------------------------------------------
 	// flushOutput
 	// -----------------------------------------------------------------------
 
@@ -1929,7 +2119,8 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 	public function testSetLazyModule_registersConfig(): void
 	{
 		$acc    = $this->newLazyAccessor();
-		$config = ['MyClass', ['prop' => 'val'], null];
+		// setLazyModule() validates the class via usingClass() — must use a real class.
+		$config = [AppTestModule::class, ['prop' => 'val'], null];
 		$acc->pubSetLazyModule('mymod', $config);
 		$this->assertSame($config, $acc->pubGetLazyModule('mymod'));
 	}
@@ -1937,7 +2128,7 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 	public function testHasLazyModule_trueAfterRegistration(): void
 	{
 		$acc = $this->newLazyAccessor();
-		$acc->pubSetLazyModule('mymod', ['Class', [], null]);
+		$acc->pubSetLazyModule('mymod', [AppTestModule::class, [], null]);
 		$this->assertTrue($acc->pubHasLazyModule('mymod'));
 	}
 
@@ -1950,7 +2141,7 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 	public function testSetLazyModule_nullMarksSlotConsumed(): void
 	{
 		$acc = $this->newLazyAccessor();
-		$acc->pubSetLazyModule('consumed', ['C', [], null]);
+		$acc->pubSetLazyModule('consumed', [AppTestModule::class, [], null]);
 		// Nullify to mark as consumed (module has been loaded).
 		$acc->pubSetLazyModule('consumed', null);
 		$this->assertNull($acc->pubGetLazyModule('consumed'));
@@ -1960,7 +2151,7 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 	{
 		// isset() on a null array value returns false.
 		$acc = $this->newLazyAccessor();
-		$acc->pubSetLazyModule('mod', ['C', [], null]);
+		$acc->pubSetLazyModule('mod', [AppTestModule::class, [], null]);
 		$acc->pubSetLazyModule('mod', null);
 		$this->assertFalse($acc->pubHasLazyModule('mod'));
 	}
@@ -1974,8 +2165,8 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 	public function testGetLazyModuleCount_incrementsOnEachSet(): void
 	{
 		$acc = $this->newLazyAccessor();
-		$acc->pubSetLazyModule('a', ['A', [], null]);
-		$acc->pubSetLazyModule('b', ['B', [], null]);
+		$acc->pubSetLazyModule('a', [AppTestModule::class, [], null]);
+		$acc->pubSetLazyModule('b', [AppTestModuleSubclass::class, [], null]);
 		$this->assertSame(2, $acc->pubGetLazyModuleCount());
 	}
 
@@ -1984,7 +2175,7 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 		// Consumed (nulled) slots still contribute to the count — they are used
 		// as auto-ID seeds to prevent duplicate anonymous module IDs.
 		$acc = $this->newLazyAccessor();
-		$acc->pubSetLazyModule('mod', ['C', [], null]);
+		$acc->pubSetLazyModule('mod', [AppTestModule::class, [], null]);
 		$acc->pubSetLazyModule('mod', null);  // consume
 		$this->assertSame(1, $acc->pubGetLazyModuleCount());
 	}
@@ -1992,11 +2183,99 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 	public function testSetLazyModule_overwritesExistingConfig(): void
 	{
 		$acc      = $this->newLazyAccessor();
-		$original = ['First', [], null];
-		$updated  = ['Second', ['x' => 1], null];
+		$original = [AppTestModule::class, [], null];
+		$updated  = [AppTestModuleSubclass::class, ['x' => 1], null];
 		$acc->pubSetLazyModule('mod', $original);
 		$acc->pubSetLazyModule('mod', $updated);
 		$this->assertSame($updated, $acc->pubGetLazyModule('mod'));
+	}
+
+	// -----------------------------------------------------------------------
+	// setLazyModule() — usingClass() edge cases (false / null return values)
+	// -----------------------------------------------------------------------
+
+	/**
+	 * A Prado3 System dot-notation class name is resolved to the PHP FQN at
+	 * store time, so getModulesByType() always sees a PHP-native class string.
+	 */
+	public function testSetLazyModule_withPrado3SystemDotNotation_storesResolvedFqn(): void
+	{
+		$acc = $this->newLazyAccessor();
+		$acc->pubSetLazyModule('p3mod', ['System.Web.THttpSession', [], null]);
+		$stored = $acc->pubGetLazyModule('p3mod');
+		$this->assertSame(\Prado\Web\THttpSession::class, $stored[0]);
+	}
+
+	/**
+	 * Same for Prado dot-notation.
+	 */
+	public function testSetLazyModule_withPrado3PradoDotNotation_storesResolvedFqn(): void
+	{
+		$acc = $this->newLazyAccessor();
+		$acc->pubSetLazyModule('p3mod', ['Prado.Web.THttpSession', [], null]);
+		$stored = $acc->pubGetLazyModule('p3mod');
+		$this->assertSame(\Prado\Web\THttpSession::class, $stored[0]);
+	}
+
+	/**
+	 * A directory namespace (usingClass returns false) stores the original
+	 * class name unchanged — resolution is deferred to internalLoadModule().
+	 */
+	public function testSetLazyModule_withDirectoryNamespace_storesOriginal(): void
+	{
+		$acc = $this->newLazyAccessor();
+		$acc->pubSetLazyModule('dirmod', ['Prado\\Web\\UI\\*', [], null]);
+		$stored = $acc->pubGetLazyModule('dirmod');
+		$this->assertSame('Prado\\Web\\UI\\*', $stored[0]);
+	}
+
+	/**
+	 * A Prado3 directory dot-notation (usingClass returns false) also stores
+	 * the original class name unchanged — resolution is deferred to internalLoadModule().
+	 */
+	public function testSetLazyModule_withPrado3DirectoryNotation_storesOriginal(): void
+	{
+		$acc = $this->newLazyAccessor();
+		$acc->pubSetLazyModule('dirmod', ['System.Web.UI.*', [], null]);
+		$stored = $acc->pubGetLazyModule('dirmod');
+		$this->assertSame('System.Web.UI.*', $stored[0]);
+	}
+
+	/**
+	 * An unresolvable class name (usingClass returns null) stores the original
+	 * class name unchanged — resolution is deferred to internalLoadModule().
+	 */
+	public function testSetLazyModule_withUnknownClass_storesOriginal(): void
+	{
+		$acc = $this->newLazyAccessor();
+		$acc->pubSetLazyModule('badmod', ['TotallyFakeClassXYZ99999', [], null]);
+		$stored = $acc->pubGetLazyModule('badmod');
+		$this->assertSame('TotallyFakeClassXYZ99999', $stored[0]);
+	}
+
+	// -----------------------------------------------------------------------
+	// getModulesByType() — usingClass() edge cases for the $type argument
+	// -----------------------------------------------------------------------
+
+	/**
+	 * A directory namespace passed as $type (usingClass returns false)
+	 * results in an empty array — no modules match an unresolvable type.
+	 */
+	public function testGetModulesByType_withDirectoryNamespaceType_returnsEmptyArray(): void
+	{
+		$this->_app->setModule('live_m', new AppTestModule());
+		$result = $this->_app->getModulesByType('Prado\\Web\\UI\\*');
+		$this->assertSame([], $result);
+	}
+
+	/**
+	 * An unknown class name passed as $type (usingClass returns null)
+	 * results in an empty array.
+	 */
+	public function testGetModulesByType_withUnknownType_returnsEmptyArray(): void
+	{
+		$result = $this->_app->getModulesByType('TFakeClassThatDoesNotExistXYZ99999');
+		$this->assertSame([], $result);
 	}
 
 	// -----------------------------------------------------------------------

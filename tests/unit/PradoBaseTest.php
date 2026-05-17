@@ -300,6 +300,10 @@ class PradoBaseTest extends PHPUnit\Framework\TestCase
 	const CLASS_FQN = 'Prado\\Web\\UI\\WebControls\\TButton';
 	const CLASS_PRADO_FULLNAME = 'System.Web.UI.WebControls.TButton';
 
+	// -------------------------------------------------------------------------
+	// Prado::using() — existing load behaviour
+	// -------------------------------------------------------------------------
+
 	public function testUsingNamespace()
 	{
 		$this->assertFalse(class_exists(self::CLASS_FQN, false));
@@ -312,6 +316,446 @@ class PradoBaseTest extends PHPUnit\Framework\TestCase
 		$this->assertFalse(interface_exists(self::INTERFACE_SHORT_NAME, false));
 		Prado::using(self::INTERFACE_FQN);
 		$this->assertTrue(interface_exists(self::INTERFACE_SHORT_NAME, false));
+	}
+
+	// -------------------------------------------------------------------------
+	// Prado::using() — return-value contract (string|true|false)
+	// -------------------------------------------------------------------------
+
+	/**
+	 * using() returns the PHP FQN string when it resolves a class that is
+	 * already loaded (bootstrap guarantees TApplication is present).
+	 */
+	public function testUsing_withAlreadyLoadedClassFqn_returnsString(): void
+	{
+		$result = Prado::using(\Prado\TApplication::class);
+		$this->assertIsString($result);
+		$this->assertSame(\Prado\TApplication::class, $result);
+	}
+
+	/**
+	 * using() returns the PHP FQN string when it resolves a loadable interface.
+	 */
+	public function testUsing_withLoadableInterfaceFqn_returnsString(): void
+	{
+		$result = Prado::using(self::INTERFACE_FQN);
+		$this->assertIsString($result);
+		$this->assertSame(self::INTERFACE_FQN, $result);
+	}
+
+	/**
+	 * using() returns the registered PHP namespace string with a trailing '\' for a
+	 * valid directory namespace (e.g. 'Prado\Web\UI\*' → 'Prado\Web\UI\').
+	 */
+	public function testUsing_withDirectoryNamespace_returnsNamespaceStringWithTrailingBackslash(): void
+	{
+		$result = Prado::using('Prado\\Web\\UI\\*');
+		$this->assertIsString($result);
+		$this->assertSame('Prado\\Web\\UI\\', $result);
+	}
+
+	/**
+	 * using() accepts a Prado3 System.* directory notation and returns the
+	 * equivalent PHP namespace string with a trailing '\'.
+	 * 'System.Web.UI.*' → prado3ToPhp → 'Prado\Web\UI\*' → registers → 'Prado\Web\UI\'.
+	 */
+	public function testUsing_withPrado3SystemDirectoryNotation_returnsPhpNamespaceWithTrailingBackslash(): void
+	{
+		$result = Prado::using('System.Web.UI.*');
+		$this->assertIsString($result);
+		$this->assertSame('Prado\\Web\\UI\\', $result);
+	}
+
+	/**
+	 * using() accepts a Prado3 Prado.* directory notation and returns the
+	 * equivalent PHP namespace string with a trailing '\'.
+	 * 'Prado.Web.UI.*' → prado3ToPhp → 'Prado\Web\UI\*' → registers → 'Prado\Web\UI\'.
+	 */
+	public function testUsing_withPrado3PradoDirectoryNotation_returnsPhpNamespaceWithTrailingBackslash(): void
+	{
+		$result = Prado::using('Prado.Web.UI.*');
+		$this->assertIsString($result);
+		$this->assertSame('Prado\\Web\\UI\\', $result);
+	}
+
+	/**
+	 * using() returns a namespace string with trailing '\' for a namespace already
+	 * registered in $_usings (e.g. the pre-registered 'Prado' root).
+	 */
+	public function testUsing_withPreRegisteredNamespace_returnsStringWithTrailingBackslash(): void
+	{
+		$result = Prado::using('Prado');
+		$this->assertIsString($result);
+		$this->assertSame('Prado\\', $result);
+	}
+
+	/**
+	 * using() returns null when the namespace cannot be resolved at all.
+	 */
+	public function testUsing_withUnresolvableNamespace_returnsNull(): void
+	{
+		$result = Prado::using('Prado\\NonExistent\\TFakeClassXYZ99999');
+		$this->assertNull($result);
+	}
+
+	// -------------------------------------------------------------------------
+	// Prado::usingClass() — returns string (resolved PHP FQN)
+	// -------------------------------------------------------------------------
+
+	/**
+	 * PHP FQN for an already-loaded class → same FQN returned.
+	 * TApplication is loaded at bootstrap, exercising the fast path
+	 * (class_exists() true before any file loading).
+	 */
+	public function testUsingClass_withAlreadyLoadedClassFqn_returnsString(): void
+	{
+		$result = Prado::usingClass(\Prado\TApplication::class);
+		$this->assertIsString($result);
+		$this->assertSame(\Prado\TApplication::class, $result);
+	}
+
+	/**
+	 * PHP FQN for a loadable interface → same FQN returned.
+	 */
+	public function testUsingClass_withPhpFqnInterface_returnsString(): void
+	{
+		$result = Prado::usingClass(self::INTERFACE_FQN);
+		$this->assertIsString($result);
+		$this->assertSame(self::INTERFACE_FQN, $result);
+	}
+
+	/**
+	 * PHP FQN for a loadable trait → same FQN returned.
+	 */
+	public function testUsingClass_withPhpFqnTrait_returnsString(): void
+	{
+		$result = Prado::usingClass(\Prado\Util\Traits\TInitializedTrait::class);
+		$this->assertIsString($result);
+		$this->assertSame(\Prado\Util\Traits\TInitializedTrait::class, $result);
+	}
+
+	/**
+	 * Short class name in classMap → resolved PHP FQN returned.
+	 * 'TApplication' maps to 'Prado\TApplication' via classMap.
+	 */
+	public function testUsingClass_withShortClassName_returnsPhpFqn(): void
+	{
+		$result = Prado::usingClass('TApplication');
+		$this->assertIsString($result);
+		$this->assertSame(\Prado\TApplication::class, $result);
+	}
+
+	/**
+	 * Short interface name in classMap → resolved PHP FQN returned.
+	 * 'ICache' maps to 'Prado\Caching\ICache' via classMap.
+	 */
+	public function testUsingClass_withShortInterfaceName_returnsPhpFqn(): void
+	{
+		$result = Prado::usingClass('ICache');
+		$this->assertIsString($result);
+		$this->assertSame(\Prado\Caching\ICache::class, $result);
+	}
+
+	/**
+	 * Short trait name in classMap → resolved PHP FQN returned.
+	 * 'TInitializedTrait' maps to 'Prado\Util\Traits\TInitializedTrait' via classMap.
+	 */
+	public function testUsingClass_withShortTraitName_returnsPhpFqn(): void
+	{
+		$result = Prado::usingClass('TInitializedTrait');
+		$this->assertIsString($result);
+		$this->assertSame(\Prado\Util\Traits\TInitializedTrait::class, $result);
+	}
+
+	/**
+	 * Prado3 System.* dot-notation for a class → PHP FQN returned.
+	 * 'System.TApplication' → prado3ToPhp → 'Prado\TApplication'.
+	 */
+	public function testUsingClass_withPrado3SystemDotNotationClass_returnsPhpFqn(): void
+	{
+		$result = Prado::usingClass('System.TApplication');
+		$this->assertIsString($result);
+		$this->assertSame(\Prado\TApplication::class, $result);
+	}
+
+	/**
+	 * Prado3 Prado.* dot-notation for a class → PHP FQN returned.
+	 * 'Prado.TApplication' → prado3ToPhp → 'Prado\TApplication'.
+	 */
+	public function testUsingClass_withPrado3PradoDotNotationClass_returnsPhpFqn(): void
+	{
+		$result = Prado::usingClass('Prado.TApplication');
+		$this->assertIsString($result);
+		$this->assertSame(\Prado\TApplication::class, $result);
+	}
+
+	/**
+	 * Full Prado3 System.* path (the canonical Prado3 form) → PHP FQN returned.
+	 * CLASS_PRADO_FULLNAME = 'System.Web.UI.WebControls.TButton'
+	 */
+	public function testUsingClass_withPrado3SystemFullPath_returnsPhpFqn(): void
+	{
+		$result = Prado::usingClass(self::CLASS_PRADO_FULLNAME);
+		$this->assertIsString($result);
+		$this->assertSame(self::CLASS_FQN, $result);
+	}
+
+	/**
+	 * Full Prado3 Prado.* path → PHP FQN returned.
+	 */
+	public function testUsingClass_withPrado3PradoFullPath_returnsPhpFqn(): void
+	{
+		$result = Prado::usingClass('Prado.Web.UI.WebControls.TButton');
+		$this->assertIsString($result);
+		$this->assertSame(self::CLASS_FQN, $result);
+	}
+
+	/**
+	 * Prado3 System.* notation for an interface → PHP FQN returned.
+	 * 'System.Caching.ICache' → 'Prado\Caching\ICache'.
+	 */
+	public function testUsingClass_withPrado3SystemDotNotationInterface_returnsPhpFqn(): void
+	{
+		$result = Prado::usingClass('System.Caching.ICache');
+		$this->assertIsString($result);
+		$this->assertSame(\Prado\Caching\ICache::class, $result);
+	}
+
+	/**
+	 * Prado3 System.* notation for a trait → PHP FQN returned.
+	 * 'System.Util.Traits.TInitializedTrait' → 'Prado\Util\Traits\TInitializedTrait'.
+	 */
+	public function testUsingClass_withPrado3SystemDotNotationTrait_returnsPhpFqn(): void
+	{
+		$result = Prado::usingClass('System.Util.Traits.TInitializedTrait');
+		$this->assertIsString($result);
+		$this->assertSame(\Prado\Util\Traits\TInitializedTrait::class, $result);
+	}
+
+	/**
+	 * Calling usingClass() twice with the same FQN returns the same string
+	 * (idempotency — the already-loaded fast-path is exercised on the second call).
+	 */
+	public function testUsingClass_calledTwiceWithFqn_returnsSameString(): void
+	{
+		$first = Prado::usingClass(\Prado\TApplication::class);
+		$second = Prado::usingClass(\Prado\TApplication::class);
+		$this->assertIsString($first);
+		$this->assertSame($first, $second);
+	}
+
+	/**
+	 * Calling usingClass() twice with the same Prado3 name returns the same string.
+	 */
+	public function testUsingClass_calledTwiceWithPrado3Name_returnsSameString(): void
+	{
+		$first = Prado::usingClass('System.TApplication');
+		$second = Prado::usingClass('System.TApplication');
+		$this->assertIsString($first);
+		$this->assertSame($first, $second);
+	}
+
+	// -------------------------------------------------------------------------
+	// Prado::usingClass() — returns false (directory namespace)
+	// -------------------------------------------------------------------------
+
+	/**
+	 * A PHP directory namespace (ends with *) → strictly false, never null.
+	 */
+	public function testUsingClass_withPhpDirectoryNamespace_returnsFalse(): void
+	{
+		$result = Prado::usingClass('Prado\\Web\\UI\\*');
+		$this->assertFalse($result);
+	}
+
+	/**
+	 * A Prado3 System.* directory notation → false.
+	 * 'System.Web.UI.*' → prado3ToPhp → 'Prado\Web\UI\*' → directory.
+	 */
+	public function testUsingClass_withPrado3SystemDirectoryNotation_returnsFalse(): void
+	{
+		$result = Prado::usingClass('System.Web.UI.*');
+		$this->assertFalse($result);
+	}
+
+	/**
+	 * A Prado3 Prado.* directory notation → false.
+	 */
+	public function testUsingClass_withPrado3PradoDirectoryNotation_returnsFalse(): void
+	{
+		$result = Prado::usingClass('Prado.Web.UI.*');
+		$this->assertFalse($result);
+	}
+
+	/**
+	 * A namespace prefix already registered in $_usings → false.
+	 * 'Prado' is pre-registered at Prado class initialization time, so
+	 * using() returns 'Prado\' immediately without touching the filesystem,
+	 * and usingClass() maps that trailing-backslash string to false.
+	 */
+	public function testUsingClass_withRegisteredDirectoryPrefix_returnsFalse(): void
+	{
+		$result = Prado::usingClass('Prado');
+		$this->assertFalse($result);
+	}
+
+	// -------------------------------------------------------------------------
+	// Prado::usingClass() — returns null (namespace could not be resolved)
+	// -------------------------------------------------------------------------
+
+	/**
+	 * A well-formed PHP FQN that resolves to no file → null.
+	 */
+	public function testUsingClass_withUnknownPhpFqn_returnsNull(): void
+	{
+		$result = Prado::usingClass('Prado\\NonExistent\\TFakeClassXYZ99999');
+		$this->assertNull($result);
+	}
+
+	/**
+	 * A Prado3 System.* name that converts to a non-existent class → null.
+	 */
+	public function testUsingClass_withUnknownPrado3SystemDotNotation_returnsNull(): void
+	{
+		$result = Prado::usingClass('System.NonExistent.TFakeClassXYZ99999');
+		$this->assertNull($result);
+	}
+
+	/**
+	 * A Prado3 Prado.* name that converts to a non-existent class → null.
+	 */
+	public function testUsingClass_withUnknownPrado3PradoDotNotation_returnsNull(): void
+	{
+		$result = Prado::usingClass('Prado.NonExistent.TFakeClassXYZ99999');
+		$this->assertNull($result);
+	}
+
+	/**
+	 * A short name not in classMap and not found in any registered directory → null.
+	 */
+	public function testUsingClass_withUnknownShortName_returnsNull(): void
+	{
+		$result = Prado::usingClass('TFakeClassThatDoesNotExistXYZ99999');
+		$this->assertNull($result);
+	}
+
+	// -------------------------------------------------------------------------
+	// Prado::usingClass() — type-distinctness of false vs null
+	//
+	// The call sites all use !is_string() to guard against both directory and
+	// not-found results. These tests verify that the two non-string return
+	// values are strictly distinct from each other AND both satisfy the guard.
+	// -------------------------------------------------------------------------
+
+	/**
+	 * The directory result is strictly false, not null.
+	 */
+	public function testUsingClass_directoryResult_isStrictlyFalseNotNull(): void
+	{
+		$result = Prado::usingClass('Prado\\Web\\UI\\*');
+		$this->assertFalse($result);
+		$this->assertNotNull($result);
+		$this->assertFalse(is_string($result), '!is_string() guard must catch false');
+	}
+
+	/**
+	 * The not-found result is strictly null, not false.
+	 */
+	public function testUsingClass_notFoundResult_isStrictlyNullNotFalse(): void
+	{
+		$result = Prado::usingClass('Prado\\NonExistent\\TFakeClassXYZ99999');
+		$this->assertNull($result);
+		$this->assertNotFalse($result);
+		$this->assertFalse(is_string($result), '!is_string() guard must catch null');
+	}
+
+	/**
+	 * Both false and null satisfy the !is_string() guard used at all call sites,
+	 * while a resolved string does not.
+	 */
+	public function testUsingClass_isStringGuard_distinguishesAllThreeOutcomes(): void
+	{
+		$resolved = Prado::usingClass(\Prado\TApplication::class);
+		$directory = Prado::usingClass('Prado\\Web\\UI\\*');
+		$notFound = Prado::usingClass('Prado\\NonExistent\\TFakeClassXYZ99999');
+
+		$this->assertTrue(is_string($resolved), 'Resolved FQN must satisfy is_string()');
+		$this->assertFalse(is_string($directory), 'Directory false must not satisfy is_string()');
+		$this->assertFalse(is_string($notFound), 'Not-found null must not satisfy is_string()');
+
+		// Strict distinctness between the two non-string values
+		$this->assertNotSame($directory, $notFound, 'false and null must be strictly different');
+	}
+
+	// -------------------------------------------------------------------------
+	// Prado::using() — Prado3 global-namespace reverse alias
+	//
+	// When a class file defines its class in global namespace (Prado3 style),
+	// using() must create a reverse alias class_alias($shortName, $fqn) so the
+	// returned FQN string is a valid, usable PHP class name.
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Returns the path to the Prado3-style fixture directory and ensures its
+	 * path alias 'Prado3Fixture' is registered, so tests are self-contained.
+	 */
+	private function registerPrado3FixtureAlias(): string
+	{
+		$fixturePath = __DIR__ . '/Security/app/prado3stubs';
+		Prado::setPathOfAlias('Prado3Fixture', $fixturePath);
+		return $fixturePath;
+	}
+
+	/**
+	 * using() with a path-alias dot-notation pointing to a global-namespace class
+	 * must return the path-derived FQN AND make that FQN usable via class_exists.
+	 * @since 4.3.3
+	 */
+	public function testUsing_withPrado3GlobalNamespaceClass_returnsFqnAndCreatesAlias(): void
+	{
+		// Register a self-contained alias pointing directly at the fixture dir.
+		// The fixture file defines class GlobalNsComponent in global namespace.
+		$this->registerPrado3FixtureAlias();
+		$fqn = Prado::using('Prado3Fixture.GlobalNsComponent');
+		$this->assertSame('Prado3Fixture\\GlobalNsComponent', $fqn);
+		// The returned FQN must exist as a real (aliased) PHP class.
+		$this->assertTrue(class_exists($fqn, false), 'FQN must be resolvable via class_exists(false)');
+	}
+
+	/**
+	 * usingClass() with a Prado3 dot-notation that points to a global-namespace
+	 * class must return the FQN, and that FQN must satisfy is_subclass_of.
+	 * @since 4.3.3
+	 */
+	public function testUsingClass_withPrado3GlobalNamespaceClass_fqnPassesIsSubclassOf(): void
+	{
+		$this->registerPrado3FixtureAlias();
+		$fqn = Prado::usingClass('Prado3Fixture.GlobalNsComponent');
+		$this->assertIsString($fqn);
+		$this->assertSame('Prado3Fixture\\GlobalNsComponent', $fqn);
+		// is_subclass_of must work via the reverse alias — this is what createPage
+		// and validateAttributes rely on for Prado3-style base classes.
+		$this->assertTrue(
+			is_subclass_of($fqn, \Prado\TComponent::class),
+			'FQN alias must satisfy is_subclass_of against the real parent class'
+		);
+	}
+
+	/**
+	 * When using() is called a second time for the same global-namespace class
+	 * (already loaded), it must still return the correct FQN and the alias must
+	 * still be valid (early-return branch in using()).
+	 * @since 4.3.3
+	 */
+	public function testUsing_withAlreadyLoadedGlobalNamespaceClass_returnsFqnFromEarlyReturn(): void
+	{
+		// First call loads the class; second call hits the early-return branch.
+		$this->registerPrado3FixtureAlias();
+		Prado::using('Prado3Fixture.GlobalNsComponent');
+		$fqn = Prado::using('Prado3Fixture.GlobalNsComponent');
+		$this->assertSame('Prado3Fixture\\GlobalNsComponent', $fqn);
+		$this->assertTrue(class_exists($fqn, false));
+		$this->assertTrue(is_subclass_of($fqn, \Prado\TComponent::class));
 	}
 	
 	public function testMethod_Visible()

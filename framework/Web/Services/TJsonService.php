@@ -15,6 +15,7 @@ use Prado\Prado;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\THttpException;
 use Prado\Web\Javascripts\TJavaScript;
+use Prado\Xml\TXmlElement;
 
 /**
  * TJsonService class provides to end-users javascript content response in
@@ -87,7 +88,7 @@ class TJsonService extends \Prado\TService
 					$this->_services[$id] = $json;
 				}
 			}
-		} else {
+		} elseif ($config instanceof TXmlElement) {
 			foreach ($config->getElementsByTagName('json') as $json) {
 				if (($id = $json->getAttribute('id')) !== null) {
 					$this->_services[$id] = $json;

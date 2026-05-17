@@ -228,6 +228,110 @@ class TApplicationServiceTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($this->_app->hasRegisteredService('reg_svc'));
 	}
 
+	// -----------------------------------------------------------------------
+	// registerService — Prado3 dot-notation class name resolution
+	//
+	// Legacy application.xml files use dot-notation class names such as
+	// "System.Web.Services.TSoapService". Since PR #1105 introduced
+	// registerService(), passing such a name directly causes a
+	// TConfigurationException because class_exists('System...', true) returns
+	// false even after Prado::using() loads the underlying PHP class — no
+	// alias is created for the dot-notation form.
+	//
+	// Short classMap names (e.g. 'TJsonService') already work because
+	// Prado::using() creates a class_alias for them; that behaviour is
+	// documented here as a regression guard.
+	// -----------------------------------------------------------------------
+
+	public function testRegisterService_withPrado3SystemDotNotationSucceeds(): void
+	{
+		// 'System.Web.Services.TJsonService' is the Prado3 form of
+		// Prado\Web\Services\TJsonService. registerService() must resolve it
+		// via Prado::using() rather than calling class_exists() on the raw string.
+		$this->_app->registerService('prado3_sys', 'System.Web.Services.TJsonService');
+		$this->assertTrue($this->_app->hasRegisteredService('prado3_sys'));
+	}
+
+	public function testRegisterService_withPrado3PradoDotNotationSucceeds(): void
+	{
+		// 'Prado.Web.Services.TJsonService' uses dots in place of backslashes —
+		// another valid Prado3 form that must be resolved before class_exists().
+		$this->_app->registerService('prado3_dot', 'Prado.Web.Services.TJsonService');
+		$this->assertTrue($this->_app->hasRegisteredService('prado3_dot'));
+	}
+
+	public function testRegisterService_withClassMapShortNameSucceeds(): void
+	{
+		// Short classMap names (e.g. 'TJsonService') are already handled by the
+		// PHP autoloader via Prado::using() → class_alias(). This test documents
+		// that the current behaviour survives the fix.
+		$this->_app->registerService('prado3_short', 'TJsonService');
+		$this->assertTrue($this->_app->hasRegisteredService('prado3_short'));
+	}
+
+	public function testRegisterService_prado3SystemDotNotation_storesResolvableClass(): void
+	{
+		// The class stored in the registry must be recognisable as an IService
+		// implementor so that getRegisteredServiceByClass() / startService() work.
+		$this->_app->registerService('prado3_sys', 'System.Web.Services.TJsonService');
+		$entry = $this->_app->getRegisteredService('prado3_sys');
+		$storedClass = $entry[0];
+		$this->assertTrue(
+			is_a($storedClass, \Prado\IService::class, true),
+			"Stored class '{$storedClass}' must implement IService"
+		);
+	}
+
+	public function testRegisterService_prado3PradoDotNotation_storesResolvableClass(): void
+	{
+		$this->_app->registerService('prado3_dot', 'Prado.Web.Services.TJsonService');
+		$entry = $this->_app->getRegisteredService('prado3_dot');
+		$storedClass = $entry[0];
+		$this->assertTrue(
+			is_a($storedClass, \Prado\IService::class, true),
+			"Stored class '{$storedClass}' must implement IService"
+		);
+	}
+
+	public function testRegisterService_prado3SystemDotNotation_storesResolvableClassProperties(): void
+	{
+		// Properties and config element must be preserved alongside the resolved class.
+		$props = ['SomeProperty' => 'value'];
+		$this->_app->registerService('prado3_props', 'System.Web.Services.TJsonService', $props);
+		$entry = $this->_app->getRegisteredService('prado3_props');
+		$this->assertSame($props, $entry[1]);
+		$this->assertNull($entry[2]);
+	}
+
+	public function testGetRegisteredServiceByClass_withPrado3SystemDotNotationRegistration(): void
+	{
+		// A service registered with a Prado3 name must be discoverable by its
+		// canonical PHP class name via getRegisteredServiceByClass().
+		$this->_app->registerService('prado3_lookup', 'System.Web.Services.TJsonService');
+		$id = $this->_app->getRegisteredServiceByClass(\Prado\Web\Services\TJsonService::class);
+		$this->assertSame('prado3_lookup', $id);
+	}
+
+	public function testGetRegisteredServicesByClass_withPrado3SystemDotNotationRegistration(): void
+	{
+		// Same discoverability requirement for the plural variant.
+		$this->_app->registerService('prado3_lookup', 'System.Web.Services.TJsonService');
+		$ids = $this->_app->getRegisteredServicesByClass(\Prado\Web\Services\TJsonService::class);
+		$this->assertContains('prado3_lookup', $ids);
+	}
+
+	public function testStartService_withPrado3SystemDotNotationRegistration(): void
+	{
+		// Full round-trip: register with Prado3 name → startService → running instance.
+		// TJsonService::init(null) is safe: it skips JSON-endpoint parsing when
+		// $config is null (as it is when no config element was supplied).
+		$this->setServices([]);
+		$this->_app->registerService('prado3_start', 'System.Web.Services.TJsonService');
+		$this->_app->startService('prado3_start');
+		$this->assertInstanceOf(\Prado\Web\Services\TJsonService::class, $this->_app->getService());
+		$this->assertSame('prado3_start', $this->_app->getService()->getID());
+	}
+
 	public function testRegisterService_byClassStoresCorrectFormat(): void
 	{
 		$this->_app->registerService('reg_fmt', InitTrackingService::class);
@@ -291,9 +395,24 @@ class TApplicationServiceTest extends PHPUnit\Framework\TestCase
 
 	public function testRegisterService_nonExistentClassThrows(): void
 	{
+		// usingClass() returns null for an unknown name → !is_string() guard fires.
 		$this->expectException(\Prado\Exceptions\TConfigurationException::class);
 		$this->expectExceptionMessage('ThisClassDoesNotExistAnywhere_XYZ');
 		$this->_app->registerService('bad', 'ThisClassDoesNotExistAnywhere_XYZ');
+	}
+
+	public function testRegisterService_withDirectoryNamespace_throws(): void
+	{
+		// usingClass() returns false for a directory namespace → !is_string() guard fires.
+		$this->expectException(\Prado\Exceptions\TConfigurationException::class);
+		$this->_app->registerService('dirservice', 'Prado\\Web\\Services\\*');
+	}
+
+	public function testRegisterService_withPrado3DirectoryNotation_throws(): void
+	{
+		// Prado3 dot-notation directory resolves to false → !is_string() guard fires.
+		$this->expectException(\Prado\Exceptions\TConfigurationException::class);
+		$this->_app->registerService('dirservice', 'System.Web.Services.*');
 	}
 
 	public function testRegisterService_nonServiceClassThrows(): void
@@ -416,6 +535,25 @@ class TApplicationServiceTest extends PHPUnit\Framework\TestCase
 	// getRegisteredServiceByClass — singular
 	// -----------------------------------------------------------------------
 
+	/**
+	 * A directory namespace (usingClass returns false) is not a valid class
+	 * to look up; the method returns null immediately.
+	 */
+	public function testGetRegisteredServiceByClass_withDirectoryNamespace_returnsNull(): void
+	{
+		$result = $this->_app->getRegisteredServiceByClass('Prado\\Web\\Services\\*');
+		$this->assertNull($result);
+	}
+
+	/**
+	 * An unknown class name (usingClass returns null) also returns null immediately.
+	 */
+	public function testGetRegisteredServiceByClass_withUnknownClass_returnsNull(): void
+	{
+		$result = $this->_app->getRegisteredServiceByClass('TFakeServiceClassXYZ99999');
+		$this->assertNull($result);
+	}
+
 	public function testGetRegisteredServiceByClass_returnsNullWhenNoServices(): void
 	{
 		$this->setServices([]);
@@ -475,6 +613,24 @@ class TApplicationServiceTest extends PHPUnit\Framework\TestCase
 	// -----------------------------------------------------------------------
 	// getRegisteredServicesByClass — plural
 	// -----------------------------------------------------------------------
+
+	/**
+	 * A directory namespace (usingClass returns false) → empty array immediately.
+	 */
+	public function testGetRegisteredServicesByClass_withDirectoryNamespace_returnsEmptyArray(): void
+	{
+		$result = $this->_app->getRegisteredServicesByClass('Prado\\Web\\Services\\*');
+		$this->assertSame([], $result);
+	}
+
+	/**
+	 * An unknown class name (usingClass returns null) → empty array immediately.
+	 */
+	public function testGetRegisteredServicesByClass_withUnknownClass_returnsEmptyArray(): void
+	{
+		$result = $this->_app->getRegisteredServicesByClass('TFakeServiceClassXYZ99999');
+		$this->assertSame([], $result);
+	}
 
 	public function testGetRegisteredServicesByClass_returnsEmptyArrayWhenNoServices(): void
 	{
