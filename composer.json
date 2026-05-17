@@ -99,31 +99,44 @@
 		"devtools": [
 			"composer require --dev friendsofphp/php-cs-fixer",
 			"composer require --dev phpstan/phpstan",
-			"composer require --dev phpunit/phpunit",
-			"npm install"
+			"npm install",
+			"npm run playwright:install",
+			"@setup-demos"
 		],
+		"setup-demos": "bash tests/setup-demos.sh",
         "gendoc": "phpdoc --template=./vendor/pradosoft/prado-phpdoc-template",
-		"csfix": "php-cs-fixer fix",
-		"stan": "phpstan analyse --memory-limit=512M",
-        "unittest": "phpunit --testsuite unit",
+		"fix": "vendor/bin/php-cs-fixer fix",
+		"stan": "vendor/bin/phpstan analyse --memory-limit=512M",
+        "unittest": "vendor/bin/phpunit --testsuite unit",
 		"fulltest": [
-			"php-cs-fixer fix",
-			"phpstan analyse --memory-limit=512M",
-			"phpunit --testsuite unit"
+			"@fix",
+			"@stan",
+			"@unittest"
 		],
+		"stantest": "vendor/bin/phpunit --testsuite phpstan",
 		"jslint": "npm run lint",
 		"jsfix": "npm run lint:fix",
 		"jstest": "npm run test",
 		"jswatch": "npm run test:watch",
 		"jsfull": [
-			"npm run lint:fix",
-			"npm run test"
+			"@jsfix",
+			"@jstest"
+		],
+		"functest": [
+			"Composer\\Config::disableProcessTimeout",
+			"@setup-demos",
+			"npm run playwright -- --project=chromium"
 		],
         "functionaltest": [
         	"Composer\\Config::disableProcessTimeout",
-        	"phpunit --testsuite functional"
+        	"@setup-demos",
+        	"npm run playwright"
         ],
-		"stantest": "vendor/bin/phpunit --testsuite phpstan"
+		"seleniumtest": [
+			"Composer\\Config::disableProcessTimeout",
+			"@setup-demos",
+			"bash tests/FunctionalTests/run-selenium-tests.sh"
+		]
     },
 	"bin" : [
 		"bin/prado-cli"

@@ -135,28 +135,61 @@ Starting point:
 
 ## Testing
 
-PRADO uses phpunit (https://phpunit.de/) for unit testing and Selenium (http://www.seleniumhq.org/) for functional testing.
+PRADO uses [phpunit](https://phpunit.de/) for unit testing, [PHPStan](https://phpstan.org/) for static analysis, and [Playwright](https://playwright.dev/) for functional testing.
 
-In order to run tests, first clone the PRADO repository and have composer install the needed development libraries:
-```
-git clone https://github.com/pradosoft/prado.git`
+First clone the PRADO repository and install dependencies:
+```sh
+git clone https://github.com/pradosoft/prado.git
 cd prado
-composer install
+composer devtools        # composer install, npm install, playwright install
 ```
 
-For functional tests only, you need to manually download and run an app called [Selenium Server](https://www.selenium.dev/downloads/).
-It's a java application, so you'll need to install a [JRE/JDK](https://java.com/) and then run it from a terminal:
+Run the test suites:
+
+```sh
+# PHP
+composer fix             # php-cs-fixer code style fix
+composer stan            # PHPStan static analysis of framework/
+composer unittest        # PHPUnit unit tests
+composer unittest -- --filter TApplicationTest          # single test class
+composer unittest -- --filter testLogCronTask           # single test method
+composer unittest -- --filter Web/UI                      # all tests in a directory
+composer fulltest        # fix + stan + unittest combined (pre-commit check)
+
+composer stantest        # PHPUnit tests for the custom PHPStan extensions
+
+# Playwright functional tests (PHP server on port 8037 starts automatically)
+composer functest        # Chromium only (faster for local iteration)
+composer functionaltest  # all three browsers (Chromium, Firefox, WebKit)
+
+# Legacy Selenium functional tests
+composer seleniumtest    # requires a Selenium Server (see below)
+
+# JavaScript
+composer jsfix           # eslint JS code style fix
+composer jstest          # Vitest unit tests for JS assets
+composer jsfull          # eslint fix + Vitest
+```
+
+The Playwright suite starts a PHP built-in server automatically on **port 8037**
+before any test runs and stops it afterwards — no manual server setup is needed.
+
+The legacy Selenium suite (`composer seleniumtest`) requires a running [Selenium Server](https://www.selenium.dev/downloads/) (Java) and the appropriate [browser driver](https://www.selenium.dev/documentation/en/webdriver/driver_requirements/):
 ```sh
 java -jar selenium-server-4.x.x.jar standalone
 ```
 
-Depending on the browser you want to use to do functional testing, you may need an [additional driver](https://www.selenium.dev/documentation/en/webdriver/driver_requirements/).
+Local Playwright test servers automatically terminate when the parent unit test process exits.
+If a stale Playwright server is left over from a previously killed run, stop it first:
+```sh
+pkill -f "php.*8037"
+```
 
-
-Now you are redy to run tests; a phpunit configuration file is providen, to run the tests just execute
-
-```composer unittest``` to run unit tests and
-```composer functionaltest``` to run functional tests.
+To run a specific test file or directory:
+```sh
+npx playwright test active-controls        # specific directory
+npx playwright test --project=chromium     # Chromium only
+```
 
 Test results will be saved in in the `build/tests/` directory.
 
