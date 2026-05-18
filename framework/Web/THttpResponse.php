@@ -354,7 +354,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 			'jpeg' => 'image/jpeg',
 			'htm' => 'text/html',
 			'html' => 'text/html',
-			'js' => 'javascript/js',
+			'js' => 'text/javascript',
 			'pdf' => 'application/pdf',
 			'xls' => 'application/vnd.ms-excel',
 		];
