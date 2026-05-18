@@ -5,8 +5,8 @@
 # Port 8037 is the shared functional test server port used by both Playwright
 # and Selenium.  It is unprivileged (no sudo needed) and avoids conflicts with
 # port 8080 (common development default for TWebServerAction) and other ports.
-# Both tests/FunctionalTests/ and vendor/pradosoft/prado-demos/ are served
-# from the repo root under this single server via their URL path prefixes.
+# Both tests/harness/ and vendor/pradosoft/prado-demos/ are served from the
+# repo root under this single server via their URL path prefixes.
 #
 # Two complementary shutdown mechanisms:
 #
