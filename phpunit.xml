@@ -26,5 +26,7 @@
     <ini name="max_execution_time" value="1200"/>
     <ini name="memory_limit" value="1G"/>
     <const name="PRADO_TEST_RUN" value="true"/>
+    <!-- indicate Selenium test suite to start/stop Driver -->
+    <const name="SELENIUM_TESTSUITE_NAME" value="selenium"/>
   </php>
 </phpunit>
