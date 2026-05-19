@@ -48,11 +48,11 @@ export default defineConfig({
 	/*
 	 * One PHP server serves the entire Prado tree on port 8037.
 	 * Both test suites resolve under it via their own URL prefixes:
-	 *   http://127.0.0.1:8037/tests/FunctionalTests/…   (generic tests)
+	 *   http://127.0.0.1:8037/tests/harness/…                 (generic tests)
 	 *   http://127.0.0.1:8037/vendor/pradosoft/prado-demos/…  (demos tests)
 	 *
-	 * `status.html` is a pre-existing static file that returns 200 instantly,
-	 * giving Playwright a reliable startup signal.
+	 * `status.html` in tests/harness/ returns 200 instantly, giving Playwright
+	 * a reliable startup signal.
 	 *
 	 * reuseExistingServer: on CI a fresh server is always started; locally an
 	 * already-running :8037 server is reused.  If a stale server is left over
@@ -60,7 +60,7 @@ export default defineConfig({
 	 */
 	webServer: {
 		command: 'bash tests/playwright/start-server.sh',
-		url: 'http://127.0.0.1:8037/tests/FunctionalTests/status.html',
+		url: 'http://127.0.0.1:8037/tests/harness/status.html',
 		reuseExistingServer: !process.env.CI,
 		timeout: 30_000,
 	},
