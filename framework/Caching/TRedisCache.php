@@ -65,20 +65,51 @@ use Prado\Xml\TXmlElement;
  * If loaded as module, TRedisCache will register itself with {@see \Prado\TApplication} as the
  * default cache module. It can be accessed via {@see \Prado\TApplication::getCache()}.
  *
- * TRedisCache may be configured in application configuration file as follows
+ * XML configuration style, TCP:
  * ```xml
  * <modules>
- *     <module id="cache" class="Prado\Caching\TRedisCache" Host="localhost" Port="6379" />
+ *   <module id="cache" class="Prado\Caching\TRedisCache" Host="localhost" Port="6379" />
  * </modules>
  * ```
- * or
+ *
+ * PHP configuration style, TCP:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'cache' => [
+ *             'class' => 'Prado\Caching\TRedisCache',
+ *             'properties' => [
+ *                 'Host' => 'localhost',
+ *                 'Port' => '6379',
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
+ *
+ * XML configuration style, Unix socket:
  * ```xml
  * <modules>
- *     <module id="cache" class="Prado\Caching\TRedisCache" Socket="/var/run/redis/redis.sock" Index="2" />
+ *   <module id="cache" class="Prado\Caching\TRedisCache" Socket="/var/run/redis/redis.sock" Index="2" />
  * </modules>
  * ```
- * where {@see setHost Host} and {@see setPort Port} or {@see setSocket Socket} are configurable properties
- * of TRedisCache.
+ *
+ * PHP configuration style, Unix socket:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'cache' => [
+ *             'class' => 'Prado\Caching\TRedisCache',
+ *             'properties' => [
+ *                 'Socket' => '/var/run/redis/redis.sock',
+ *                 'Index' => '2',
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
+ * where {@see setHost Host} and {@see setPort Port} or {@see setSocket Socket} are configurable
+ * properties of TRedisCache.
  *
  * PHP configuration style:
  * ```php
@@ -122,13 +153,22 @@ class TRedisCache extends TCache
 	private $_index = 0;
 
 	/**
+	 * @todo
+	 */
+	public static function getIsAvailable(): bool
+	{
+		return extension_loaded('redis') && class_exists('\Redis', false);
+	}
+
+	/**
 	 * Destructor.
 	 * Disconnect the redis cache server.
 	 */
 	public function __destruct()
 	{
-		if ($this->_cache instanceof \Redis) {
-			$this->_cache->close();
+		$cacheObject = $this->getCacheDirect();
+		if ($cacheObject instanceof \Redis) {
+			$cacheObject->close();
 		}
 		parent::__destruct();
 	}
@@ -141,28 +181,38 @@ class TRedisCache extends TCache
 	 */
 	public function init($config)
 	{
-		if (!extension_loaded('redis') || !class_exists('\Redis', false)) {
+		if (!static::getIsAvailable()) {
 			throw new TConfigurationException('rediscache_extension_required');
 		}
-		$this->_cache = new \Redis();
+		$this->setCacheDirect(new \Redis());
+		$cacheObject = $this->getCacheDirect();
 		if ($this->_socket !== null) {
-			$this->_cache->connect($this->_socket);
+			$cacheObject->connect($this->getSocket());
 		} else {
-			$this->_cache->connect($this->_host, $this->_port);
+			$cacheObject->connect($this->getHost(), $this->getPort());
 		}
-		$this->_cache->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
-		$this->_cache->select($this->_index);
+		$cacheObject->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
+		$cacheObject->select($this->getIndex());
 		parent::init($config);
 		$this->markInitialized();
 	}
 
 	/**
-	 * @param mixed $key
-	 * @return bool always true
+	 * @return \Redis the underlying Redis instance
+	 * @since 4.3.3
 	 */
-	public function valid($key)
+	protected function getCacheDirect(): object
 	{
-		return true;
+		return $this->_cache;
+	}
+
+	/**
+	 * @param \Redis $value the underlying Redis instance
+	 * @since 4.3.3
+	 */
+	protected function setCacheDirect($value): void
+	{
+		$this->_cache = $value;
 	}
 
 	/**
@@ -238,20 +288,15 @@ class TRedisCache extends TCache
 	}
 
 	/**
-	 * Retrieves a value from cache with a specified key.
-	 * This is the implementation of the method declared in the parent class.
 	 * @param string $key a unique key identifying the cached value
 	 * @return false|string the value stored in cache, false if the value is not in the cache or expired.
 	 */
 	protected function getValue($key)
 	{
-		return $this->_cache->get($key);
+		return $this->getCacheDirect()->get($key);
 	}
 
 	/**
-	 * Stores a value identified by a key in cache.
-	 * This is the implementation of the method declared in the parent class.
-	 *
 	 * @param string $key the key identifying the value to be cached
 	 * @param string $value the value to be cached
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
@@ -260,13 +305,10 @@ class TRedisCache extends TCache
 	protected function setValue($key, $value, $expire)
 	{
 		$options = $expire === 0 ? [] : ['ex' => $expire];
-		return $this->_cache->set($key, $value, $options);
+		return $this->getCacheDirect()->set($key, $value, $options);
 	}
 
 	/**
-	 * Stores a value identified by a key into cache if the cache does not contain this key.
-	 * This is the implementation of the method declared in the parent class.
-	 *
 	 * @param string $key the key identifying the value to be cached
 	 * @param string $value the value to be cached
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
@@ -275,18 +317,16 @@ class TRedisCache extends TCache
 	protected function addValue($key, $value, $expire)
 	{
 		$options = $expire === 0 ? ['nx'] : ['nx', 'ex' => $expire];
-		return $this->_cache->set($key, $value, $options);
+		return $this->getCacheDirect()->set($key, $value, $options);
 	}
 
 	/**
-	 * Deletes a value with the specified key from cache
-	 * This is the implementation of the method declared in the parent class.
 	 * @param string $key the key of the value to be deleted
-	 * @return bool if no error happens during deletion
+	 * @return bool true if no error happens during deletion
 	 */
 	protected function deleteValue($key)
 	{
-		$this->_cache->delete($key);
+		$this->getCacheDirect()->delete($key);
 		return true;
 	}
 
@@ -296,6 +336,6 @@ class TRedisCache extends TCache
 	 */
 	public function flush()
 	{
-		return $this->_cache->flushDB();
+		return $this->getCacheDirect()->flushDB();
 	}
 }
