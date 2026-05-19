@@ -4,6 +4,7 @@
     <testsuite name="unit">
       <directory suffix="Test.php">./tests/unit</directory>
       <exclude>./tests/unit/PHPStan</exclude>
+      <exclude>./tests/unit/Data/DbSpecific</exclude>
     </testsuite>
     <testsuite name="phpstan">
       <directory suffix="Test.php">./tests/unit/PHPStan</directory>
@@ -13,6 +14,28 @@
     </testsuite>
     <testsuite name="selenium">
       <directory suffix="TestCase.php">./tests/FunctionalTests</directory>
+    </testsuite>
+    <!-- Driver-specific integration test suites — used by dedicated CI jobs only. -->
+    <testsuite name="db-mysql">
+      <directory suffix="Test.php">./tests/unit/Data/DbSpecific/Mysql</directory>
+    </testsuite>
+    <testsuite name="db-pgsql">
+      <directory suffix="Test.php">./tests/unit/Data/DbSpecific/Pgsql</directory>
+    </testsuite>
+    <testsuite name="db-sqlite">
+      <directory suffix="Test.php">./tests/unit/Data/DbSpecific/Sqlite</directory>
+    </testsuite>
+    <testsuite name="db-sqlsrv">
+      <directory suffix="Test.php">./tests/unit/Data/DbSpecific/SqlSrv</directory>
+    </testsuite>
+    <testsuite name="db-firebird">
+      <directory suffix="Test.php">./tests/unit/Data/DbSpecific/Firebird</directory>
+    </testsuite>
+    <testsuite name="db-oracle">
+      <directory suffix="Test.php">./tests/unit/Data/DbSpecific/Oracle</directory>
+    </testsuite>
+    <testsuite name="db-ibm">
+      <directory suffix="Test.php">./tests/unit/Data/DbSpecific/Ibm</directory>
     </testsuite>
   </testsuites>
   <logging>
