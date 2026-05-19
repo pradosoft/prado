@@ -25,10 +25,8 @@ namespace Prado\Exceptions;
  */
 class TExitException extends TSystemException
 {
-	/**
-	 * @var int The exit code
-	 */
-	protected int $_exitCode;
+	/** @var int The exit code. */
+	private int $_exitCode;
 
 	/**
 	 * Constructor.
@@ -38,7 +36,7 @@ class TExitException extends TSystemException
 	 */
 	public function __construct(int $exitCode = 0, ?string $message = null, ...$args)
 	{
-		$this->_exitCode = $exitCode;
+		$this->setExitCodeDirect($exitCode);
 		parent::__construct($message, ...$args);
 	}
 
@@ -47,6 +45,22 @@ class TExitException extends TSystemException
 	 */
 	public function getExitCode(): int
 	{
+		return $this->getExitCodeDirect();
+	}
+
+	/**
+	 * @return int Get exit code property directly.
+	 */
+	protected function getExitCodeDirect(): int
+	{
 		return $this->_exitCode;
+	}
+
+	/**
+	 * @param int $value Set exit code property directly.
+	 */
+	protected function setExitCodeDirect(int $value)
+	{
+		$this->_exitCode = $value;
 	}
 }
