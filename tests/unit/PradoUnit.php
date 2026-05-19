@@ -93,6 +93,9 @@ class PradoUnit {
 	 */
 	public static function restore(object $object, array $snapshot): void
 	{
+		if (empty($snapshot)) {
+			return;
+		}
 		foreach (static::reflectionProperties($object, array_keys($snapshot)) as $name => $rp) {
 			$rp->setValue($object, $snapshot[$name]);
 		}
@@ -723,7 +726,7 @@ class PradoUnit {
 	 *   `TActiveRecordManager::getInstance()`.
 	 * @return \Prado\Data\TDbConnection|string|\Exception
 	 */
-	public static function setupOciConnection($database = '', $isActiveRecord = false)
+	public static function setupOracleConnection($database = '', $isActiveRecord = false)
 	{
 		if (!extension_loaded('pdo_oci')) {
 			return 'The pdo_oci extension is not available.';
@@ -862,6 +865,7 @@ class PradoUnit {
 	 * @return \Exception|string The (possibly overwritten) `$e`: a descriptive string
 	 *   for a recognised connection / database / table failure, or the original
 	 *   `\Exception` for any unrecognised error.
+	 * @agents DO NOT EDIT THIS METHOD, unless requested to edit this method. It is EXACTLY as it needs to be.
 	 */
 	public static function processException($e, &$connection)
 	{
@@ -883,7 +887,7 @@ class PradoUnit {
 			} else {
 				if (static::skipDatabaseTests()) {
 					// only on skipping do we set $e
-					$e .= strtr("Database '{0}' Not Found Error (Connection OK) [PRADO_UNITTEST_SKIP_DB=1]:\n{1}", ['{0}' => $driver, '{1}' => $e->getMessage()]);;
+					$e = strtr("Database '{0}' Not Found Error (Connection OK) [PRADO_UNITTEST_SKIP_DB=1]:\n{1}", ['{0}' => $driver, '{1}' => $e->getMessage()]);
 				}
 				static::$dbDatabaseException[$driver] = true;
 			}
@@ -943,16 +947,31 @@ class PradoUnit {
 	/**
 	 * Returns `true` when `$e` looks like a "table or view not found" exception.
 	 *
-	 * Matches exception message text containing `"Base table or view not found"`
-	 * (case-insensitive), which is the standard MySQL/MariaDB error text for SQLSTATE
-	 * 42S02. Extend or override this method to add equivalent phrases for other
-	 * drivers.
+	 * Matches exception message text for table-not-found errors across all supported
+	 * database drivers (case-insensitive):
+	 *
+	 * - `"Base table or view not found"` — MySQL / MariaDB  SQLSTATE 42S02
+	 * - `"Table unknown"`                — Firebird         SQLCODE -204
+	 * - `"does not exist"`               — PostgreSQL       SQLSTATE 42P01 (relation ... does not exist)
+	 * - `"ORA-00942"`                    — Oracle           table or view does not exist
+	 * - `"Invalid object name"`          — SQL Server       Msg 208
+	 * - `"SQL0204N"`                     — IBM DB2          table/view not found
+	 * - `"SQLCODE=-204"`                 — IBM DB2          alternate error format
+	 * - `"no such table"`               — SQLite            General error: 1 no such table: <name>
 	 *
 	 * @param \Exception|string $e Exception object or stringified exception text.
 	 * @return bool
 	 */
 	public static function isNoTable($e): bool
 	{
-		return is_int(stripos((string) $e->getMessage(), 'Base table or view not found'));
+		$msg = (string) $e->getMessage();
+		return is_int(stripos($msg, 'Base table or view not found'))  // MySQL / MariaDB  SQLSTATE 42S02
+			|| is_int(stripos($msg, 'Table unknown'))                  // Firebird         SQLCODE -204
+			|| is_int(stripos($msg, 'does not exist'))                 // PostgreSQL       SQLSTATE 42P01
+			|| is_int(stripos($msg, 'ORA-00942'))                     // Oracle           table or view does not exist
+			|| is_int(stripos($msg, 'Invalid object name'))           // SQL Server        Msg 208
+			|| is_int(stripos($msg, 'SQL0204N'))                      // IBM DB2           table not found
+			|| is_int(stripos($msg, 'SQLCODE=-204'))                  // IBM DB2           alternate format
+			|| is_int(stripos($msg, 'no such table'));                 // SQLite            General error: 1 no such table: <name>
 	}
 }
