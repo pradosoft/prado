@@ -43,10 +43,10 @@ use Prado\Exceptions\TConfigurationException;
  * If loaded, TEtcdCache will register itself with {@see \Prado\TApplication} as the
  * cache module. It can be accessed via {@see \Prado\TApplication::getCache()}.
  *
- * TEtcdCache may be configured in application configuration file as follows
+ * XML configuration style:
  * ```xml
  * <modules>
- *     <module id="cache" class="Prado\Caching\TEtcdCache" Host="localhost" Port="2379" Dir="pradocache" />
+ *   <module id="cache" class="Prado\Caching\TEtcdCache" Host="localhost" Port="2379" Dir="pradocache" />
  * </modules>
  * ```
  *
@@ -56,7 +56,11 @@ use Prado\Exceptions\TConfigurationException;
  *     'modules' => [
  *         'cache' => [
  *             'class' => 'Prado\Caching\TEtcdCache',
- *             'properties' => ['Host' => 'localhost', 'Port' => '2379', 'Dir' => 'pradocache'],
+ *             'properties' => [
+ *                 'Host' => 'localhost',
+ *                 'Port' => '2379',
+ *                 'Dir' => 'pradocache',
+ *             ],
  *         ],
  *     ],
  * ];
@@ -70,17 +74,25 @@ class TEtcdCache extends TCache
 	/**
 	 * @var string the etcd host
 	 */
-	protected $_host = 'localhost';
+	private $_host = 'localhost';
 
 	/**
 	 * @var int the etcd port
 	 */
-	protected $_port = 2379;
+	private $_port = 2379;
 
 	/**
 	 * @var string the directory to store values in
 	 */
-	protected $_dir = 'pradocache';
+	private $_dir = 'pradocache';
+
+	/**
+	 * @return bool whether the cURL extension is loaded.
+	 */
+	public static function getIsAvailable(): bool
+	{
+		return function_exists('curl_version');
+	}
 
 	/**
 	 * Initializes this module.
@@ -90,7 +102,7 @@ class TEtcdCache extends TCache
 	 */
 	public function init($config)
 	{
-		if (!function_exists('curl_version')) {
+		if (!static::getIsAvailable()) {
 			throw new TConfigurationException('curl_extension_required');
 		}
 		parent::init($config);
@@ -133,8 +145,7 @@ class TEtcdCache extends TCache
 	}
 
 	/**
-	 * Sets the directory to store values in, defaults to 'pradocache'.
-	 * @return string the directory to store values in
+	 * @return string the directory to store values in. Defaults to 'pradocache'.
 	 */
 	public function getDir()
 	{
@@ -142,7 +153,6 @@ class TEtcdCache extends TCache
 	}
 
 	/**
-	 * Gets the directory to store values in.
 	 * @param string $value the directory to store values in
 	 */
 	public function setDir($value)
@@ -151,21 +161,16 @@ class TEtcdCache extends TCache
 	}
 
 	/**
-	 * Retrieves a value from cache with a specified key.
-	 * This is the implementation of the method declared in the parent class.
 	 * @param string $key a unique key identifying the cached value
 	 * @return false|string the value stored in cache, false if the value is not in the cache or expired.
 	 */
 	protected function getValue($key)
 	{
-		$result = $this->request('GET', $this->_dir . '/' . $key);
+		$result = $this->request('GET', $this->getDir() . '/' . $key);
 		return property_exists($result, 'errorCode') ? false : unserialize($result->node->value);
 	}
 
 	/**
-	 * Stores a value identified by a key in cache.
-	 * This is the implementation of the method declared in the parent class.
-	 *
 	 * @param string $key the key identifying the value to be cached
 	 * @param string $value the value to be cached
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
@@ -177,14 +182,11 @@ class TEtcdCache extends TCache
 		if ($expire > 0) {
 			$value['ttl'] = $expire;
 		}
-		$result = $this->request('PUT', $this->_dir . '/' . $key, $value);
+		$result = $this->request('PUT', $this->getDir() . '/' . $key, $value);
 		return !property_exists($result, 'errorCode');
 	}
 
 	/**
-	 * Stores a value identified by a key into cache if the cache does not contain this key.
-	 * This is the implementation of the method declared in the parent class.
-	 *
 	 * @param string $key the key identifying the value to be cached
 	 * @param string $value the value to be cached
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
@@ -196,19 +198,17 @@ class TEtcdCache extends TCache
 		if ($expire > 0) {
 			$value['ttl'] = $expire;
 		}
-		$result = $this->request('PUT', $this->_dir . '/' . $key, $value);
+		$result = $this->request('PUT', $this->getDir() . '/' . $key, $value);
 		return !property_exists($result, 'errorCode');
 	}
 
 	/**
-	 * Deletes a value with the specified key from cache
-	 * This is the implementation of the method declared in the parent class.
 	 * @param string $key the key of the value to be deleted
-	 * @return bool if no error happens during deletion
+	 * @return bool true if no error happens during deletion
 	 */
 	protected function deleteValue($key)
 	{
-		$this->request('DELETE', $this->_dir . '/' . $key);
+		$this->request('DELETE', $this->getDir() . '/' . $key);
 		return true;
 	}
 
@@ -219,7 +219,7 @@ class TEtcdCache extends TCache
 	 */
 	public function flush()
 	{
-		$this->request('DELETE', $this->_dir . '?recursive=true');
+		$this->request('DELETE', $this->getDir() . '?recursive=true');
 		return true;
 	}
 
@@ -235,7 +235,7 @@ class TEtcdCache extends TCache
 	 */
 	protected function request($method, $key, $value = [])
 	{
-		$curl = curl_init("http://{$this->_host}:{$this->_port}/v2/keys/{$key}");
+		$curl = curl_init("http://{$this->getHost()}:{$this->getPort()}/v2/keys/{$key}");
 		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
 		curl_setopt($curl, CURLOPT_HEADER, false);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
