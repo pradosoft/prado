@@ -56,39 +56,52 @@ use Prado\Xml\TXmlElement;
  * $object2=$cache->get('object');
  * ```
  *
- * You can configure TMemCache two different ways. If you only need one memcache server
- * you may use the method as follows.
- * ```php
- * <module id="cache" class="Prado\Caching\TMemCache" Host="localhost" Port="11211" />
- * ```
- *
- * If you want a more complex configuration, you may use the method as follows.
- * ```php
- * <module id="cache" class="Prado\Caching\TMemCache">
- *     <server Host="localhost" Port="11211" Weight="1" />
- *     <server Host="anotherhost" Port="11211" Weight="1" />
- * </module>
- * ```
- *
  * If loaded, TMemCache will register itself with {@see \Prado\TApplication} as the
  * cache module. It can be accessed via {@see \Prado\TApplication::getCache()}.
  *
- * TMemCache may be configured in application configuration file as follows
+ * XML configuration style, single server:
  * ```xml
  * <modules>
- *     <module id="cache" class="Prado\Caching\TMemCache" Host="localhost" Port="11211" />
+ *   <module id="cache" class="Prado\Caching\TMemCache" Host="localhost" Port="11211" />
  * </modules>
  * ```
- * where {@see getHost Host} and {@see getPort Port} are configurable properties
- * of TMemCache.
+ * where {@see getHost Host} and {@see getPort Port} are configurable properties of TMemCache.
  *
- * PHP configuration style:
+ * PHP configuration style, single server:
  * ```php
  * return [
  *     'modules' => [
  *         'cache' => [
  *             'class' => 'Prado\Caching\TMemCache',
- *             'properties' => ['Host' => 'localhost', 'Port' => '11211'],
+ *             'properties' => [
+ *                 'Host' => 'localhost',
+ *                 'Port' => '11211',
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
+ *
+ * XML configuration style, multi-server:
+ * ```xml
+ * <modules>
+ *   <module id="cache" class="Prado\Caching\TMemCache">
+ *     <server Host="localhost" Port="11211" Weight="1" />
+ *     <server Host="anotherhost" Port="11211" Weight="1" />
+ *   </module>
+ * </modules>
+ * ```
+ *
+ * PHP configuration style, multi-server:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'cache' => [
+ *             'class' => 'Prado\Caching\TMemCache',
+ *             'servers' => [
+ *                 ['Host' => 'localhost', 'Port' => '11211', 'Weight' => '1'],
+ *                 ['Host' => 'anotherhost', 'Port' => '11211', 'Weight' => '1'],
+ *             ],
  *         ],
  *     ],
  * ];
@@ -107,7 +120,7 @@ class TMemCache extends TCache
 	use TInitializedTrait;
 
 	/**
-	 * @var \Memcached the Memcached instance
+	 * @var \Memcached The Memcached instance.
 	 */
 	private $_cache;
 	/**
@@ -128,14 +141,22 @@ class TMemCache extends TCache
 	private $_persistentid;
 
 	/**
+	 * @todo
+	 */
+	public static function getIsAvailable(): bool
+	{
+		return function_exists('memcached');
+	}
+
+	/**
 	 * Destructor.
 	 * Disconnect the memcache server.
 	 */
 	public function __destruct()
 	{
-		if ($this->_cache !== null) {
+		if ($this->getCacheDirect() !== null) {
 			// Quit() is available only for memcached >= 2
-			// $this->_cache->quit();
+			// $this->getCacheDirect()->quit();
 		}
 		parent::__destruct();
 	}
@@ -150,19 +171,22 @@ class TMemCache extends TCache
 	 */
 	public function init($config)
 	{
-		if (!extension_loaded('memcached')) {
+		if (!static::getIsAvailable()) {
 			throw new TConfigurationException('memcached_extension_required');
 		}
 
 		$this->loadConfig($config);
-		$this->_cache = new \Memcached($this->_persistentid);
-		if ($this->_persistentid !== null && count($this->_cache->getServerList()) > 0) {
-			Prado::trace('Skipping re-adding servers for persistent id ' . $this->_persistentid, TMemCache::class);
+
+		$persistentId = $this->getPersistentID();
+		$this->setCacheDirect(new \Memcached($persistentId));
+		$memCache = $this->getCacheDirect();
+		if ($persistentId !== null && count($memCache->getServerList()) > 0) {
+			Prado::trace('Skipping re-adding servers for persistent id ' . $persistentId, TMemCache::class);
 		} else {
 			if (count($this->_servers)) {
 				foreach ($this->_servers as $server) {
 					Prado::trace('Adding server ' . $server['Host'] . ' from serverlist', TMemCache::class);
-					if ($this->_cache->addServer(
+					if ($memCache->addServer(
 						$server['Host'],
 						$server['Port'],
 						$server['Weight']
@@ -171,9 +195,9 @@ class TMemCache extends TCache
 					}
 				}
 			} else {
-				Prado::trace('Adding server ' . $this->_host, TMemCache::class);
-				if ($this->_cache->addServer($this->_host, $this->_port) === false) {
-					throw new TConfigurationException('memcache_connection_failed', $this->_host, $this->_port);
+				Prado::trace('Adding server ' . $this->getHost(), TMemCache::class);
+				if ($memCache->addServer($this->getHost(), $this->getPort()) === false) {
+					throw new TConfigurationException('memcache_connection_failed', $this->getHost(), $this->getPort());
 				}
 			}
 		}
@@ -182,14 +206,14 @@ class TMemCache extends TCache
 	}
 
 	/**
-	 * Loads configuration from an XML element
-	 * @param \Prado\Xml\TXmlElement $xml configuration node
-	 * @throws TConfigurationException if log route class or type is not specified
+	 * Loads configuration from an XML element or PHP array.
+	 * @param array|\Prado\Xml\TXmlElement $config configuration node
+	 * @throws TConfigurationException if a server Host or Port is missing or invalid
 	 */
-	private function loadConfig($xml)
+	private function loadConfig($config)
 	{
-		if ($xml instanceof TXmlElement) {
-			foreach ($xml->getElementsByTagName('server') as $serverConfig) {
+		if ($config instanceof TXmlElement) {
+			foreach ($config->getElementsByTagName('server') as $serverConfig) {
 				$properties = $serverConfig->getAttributes();
 				if (($host = $properties->remove('Host')) === null) {
 					throw new TConfigurationException('memcache_serverhost_required');
@@ -214,7 +238,45 @@ class TMemCache extends TCache
 				}
 				$this->_servers[] = $server;
 			}
+		} elseif (is_array($config) && isset($config['servers']) && is_array($config['servers'])) {
+			foreach ($config['servers'] as $serverConfig) {
+				if (!isset($serverConfig['Host'])) {
+					throw new TConfigurationException('memcache_serverhost_required');
+				}
+				if (!isset($serverConfig['Port'])) {
+					throw new TConfigurationException('memcache_serverport_required');
+				}
+				if (!is_numeric($serverConfig['Port'])) {
+					throw new TConfigurationException('memcache_serverport_invalid');
+				}
+				$server = ['Host' => $serverConfig['Host'], 'Port' => $serverConfig['Port'], 'Weight' => 1];
+				if (isset($serverConfig['Weight'])) {
+					if (!is_numeric($serverConfig['Weight'])) {
+						throw new TConfigurationException('memcache_serverweight_invalid');
+					}
+					$server['Weight'] = $serverConfig['Weight'];
+				}
+				$this->_servers[] = $server;
+			}
 		}
+	}
+
+	/**
+	 * @return \Memcached the underlying Memcached instance
+	 * @since 4.3.3
+	 */
+	protected function getCacheDirect(): object
+	{
+		return $this->_cache;
+	}
+
+	/**
+	 * @param \Memcached $value the underlying Memcached instance
+	 * @since 4.3.3
+	 */
+	protected function setCacheDirect($value): void
+	{
+		$this->_cache = $value;
 	}
 
 	/**
@@ -263,7 +325,7 @@ class TMemCache extends TCache
 		if (!$this->getIsInitialized()) {
 			throw new TInvalidOperationException('memcache_not_initialized');
 		}
-		$this->_cache->setOptions(TPropertyValue::ensureArray($value));
+		$this->getCacheDirect()->setOptions(TPropertyValue::ensureArray($value));
 	}
 
 	/**
@@ -295,20 +357,15 @@ class TMemCache extends TCache
 	}
 
 	/**
-	 * Retrieves a value from cache with a specified key.
-	 * This is the implementation of the method declared in the parent class.
 	 * @param string $key a unique key identifying the cached value
 	 * @return false|string the value stored in cache, false if the value is not in the cache or expired.
 	 */
 	protected function getValue($key)
 	{
-		return $this->_cache->get($key);
+		return $this->getCacheDirect()->get($key);
 	}
 
 	/**
-	 * Stores a value identified by a key in cache.
-	 * This is the implementation of the method declared in the parent class.
-	 *
 	 * @param string $key the key identifying the value to be cached
 	 * @param string $value the value to be cached
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
@@ -316,13 +373,10 @@ class TMemCache extends TCache
 	 */
 	protected function setValue($key, $value, $expire)
 	{
-		return $this->_cache->set($key, $value, $expire);
+		return $this->getCacheDirect()->set($key, $value, $expire);
 	}
 
 	/**
-	 * Stores a value identified by a key into cache if the cache does not contain this key.
-	 * This is the implementation of the method declared in the parent class.
-	 *
 	 * @param string $key the key identifying the value to be cached
 	 * @param string $value the value to be cached
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
@@ -330,18 +384,16 @@ class TMemCache extends TCache
 	 */
 	protected function addValue($key, $value, $expire)
 	{
-		return $this->_cache->add($key, $value, $expire);
+		return $this->getCacheDirect()->add($key, $value, $expire);
 	}
 
 	/**
-	 * Deletes a value with the specified key from cache
-	 * This is the implementation of the method declared in the parent class.
 	 * @param string $key the key of the value to be deleted
-	 * @return bool if no error happens during deletion
+	 * @return bool true if no error happens during deletion
 	 */
 	protected function deleteValue($key)
 	{
-		return $this->_cache->delete($key);
+		return $this->getCacheDirect()->delete($key);
 	}
 
 	/**
@@ -351,6 +403,6 @@ class TMemCache extends TCache
 	 */
 	public function flush()
 	{
-		return $this->_cache->flush();
+		return $this->getCacheDirect()->flush();
 	}
 }
