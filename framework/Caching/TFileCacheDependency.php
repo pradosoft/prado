@@ -62,9 +62,7 @@ class TFileCacheDependency extends TCacheDependency
 	}
 
 	/**
-	 * Performs the actual dependency checking.
-	 * This method returns true if the last modification time of the file is changed.
-	 * @return bool whether the dependency is changed or not.
+	 * @return bool true if the file's last modification time has changed.
 	 */
 	public function getHasChanged()
 	{

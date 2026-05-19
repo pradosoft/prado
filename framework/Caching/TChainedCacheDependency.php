@@ -41,10 +41,7 @@ class TChainedCacheDependency extends TCacheDependency
 	}
 
 	/**
-	 * Performs the actual dependency checking.
-	 * This method returns true if any of the dependency objects
-	 * reports a dependency change.
-	 * @return bool whether the dependency is changed or not.
+	 * @return bool true if any dependency in the chain has changed.
 	 */
 	public function getHasChanged()
 	{

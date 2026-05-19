@@ -57,9 +57,7 @@ class TGlobalStateCacheDependency extends TCacheDependency
 	}
 
 	/**
-	 * Performs the actual dependency checking.
-	 * This method returns true if the specified global state is changed.
-	 * @return bool whether the dependency is changed or not.
+	 * @return bool true if the specified global state has changed.
 	 */
 	public function getHasChanged()
 	{
