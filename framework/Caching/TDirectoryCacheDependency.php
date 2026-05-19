@@ -109,9 +109,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 	}
 
 	/**
-	 * Performs the actual dependency checking.
-	 * This method returns true if the directory is changed.
-	 * @return bool whether the dependency is changed or not.
+	 * @return bool true if any file's modification time or the file count has changed.
 	 */
 	public function getHasChanged()
 	{
