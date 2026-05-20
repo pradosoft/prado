@@ -18,7 +18,7 @@ use Prado\Exceptions\TConfigurationException;
  * TAPCCache implements a cache application module based on {@see http://www.php.net/apcu APCu}.
  *
  * By definition, cache does not ensure the existence of a value
- * even if it never expires. Cache is not meant to be an persistent storage.
+ * even if it never expires. Cache is not meant to be a persistent storage.
  *
  * To use this module, the APCu PHP extension must be loaded and set in the php.ini file.
  *
@@ -33,10 +33,10 @@ use Prado\Exceptions\TConfigurationException;
  * If loaded, TAPCCache will register itself with {@see \Prado\TApplication} as the
  * cache module. It can be accessed via {@see \Prado\TApplication::getCache()}.
  *
- * TAPCCache may be configured in application configuration file as follows
+ * XML configuration style:
  * ```xml
  * <modules>
- *     <module id="cache" class="Prado\Caching\TAPCCache" />
+ *   <module id="cache" class="Prado\Caching\TAPCCache" />
  * </modules>
  * ```
  *
@@ -44,7 +44,9 @@ use Prado\Exceptions\TConfigurationException;
  * ```php
  * return [
  *     'modules' => [
- *         'cache' => ['class' => 'Prado\Caching\TAPCCache'],
+ *         'cache' => [
+ *             'class' => 'Prado\Caching\TAPCCache',
+ *         ],
  *     ],
  * ];
  * ```
@@ -56,10 +58,20 @@ use Prado\Exceptions\TConfigurationException;
 class TAPCCache extends TCache
 {
 	/**
+	 * @return bool whether APCu is loaded, enabled, and (for CLI) `apc.enable_cli` is on.
+	 */
+	public static function getIsAvailable(): bool
+	{
+		return extension_loaded('apcu')
+			&& ini_get('apc.enabled')
+			&& !(substr(php_sapi_name(), 0, 3) === 'cli' && !ini_get('apc.enable_cli'));
+	}
+
+	/**
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
 	 * @param \Prado\Xml\TXmlElement $config configuration for this module, can be null
-	 * @throws TConfigurationException if apc extension is not installed or not started, check your php.ini
+	 * @throws TConfigurationException if the APCu extension is not installed, not enabled, or not enabled for CLI
 	 */
 	public function init($config)
 	{
@@ -79,8 +91,6 @@ class TAPCCache extends TCache
 	}
 
 	/**
-	 * Retrieves a value from cache with a specified key.
-	 * This is the implementation of the method declared in the parent class.
 	 * @param string $key a unique key identifying the cached value
 	 * @return false|string the value stored in cache, false if the value is not in the cache or expired.
 	 */
@@ -90,9 +100,6 @@ class TAPCCache extends TCache
 	}
 
 	/**
-	 * Stores a value identified by a key in cache.
-	 * This is the implementation of the method declared in the parent class.
-	 *
 	 * @param string $key the key identifying the value to be cached
 	 * @param string $value the value to be cached
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
@@ -104,9 +111,6 @@ class TAPCCache extends TCache
 	}
 
 	/**
-	 * Stores a value identified by a key into cache if the cache does not contain this key.
-	 * This is the implementation of the method declared in the parent class.
-	 *
 	 * @param string $key the key identifying the value to be cached
 	 * @param string $value the value to be cached
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
@@ -118,10 +122,8 @@ class TAPCCache extends TCache
 	}
 
 	/**
-	 * Deletes a value with the specified key from cache
-	 * This is the implementation of the method declared in the parent class.
 	 * @param string $key the key of the value to be deleted
-	 * @return bool if no error happens during deletion
+	 * @return bool true if no error happens during deletion
 	 */
 	protected function deleteValue($key)
 	{
