@@ -43,6 +43,56 @@ use Prado\Util\TLogger;
  * shell cron will execute the task.  This could occur if the user presses stop
  * before the page completes.
  *
+ * XML configuration style:
+ * ```xml
+ * <modules>
+ *   <module id="db" class="Prado\Data\TDataSourceConfig">
+ *     <database ConnectionString="mysql:host=localhost;dbname=mydb"
+ *       Username="dbuser" Password="dbpass" />
+ *   </module>
+ *   <module id="cron" class="Prado\Util\Cron\TDbCronManager"
+ *       ConnectionID="db" DefaultUserName="cron"
+ *       EnableRequestCron="false" LogCronTasks="true">
+ *     <job Name="dbcacheclean" Schedule="0 0 * * * *" Task="dbcache->flushCacheExpired(true)" />
+ *   </module>
+ * </modules>
+ * ```
+ * where {@see setConnectionID ConnectionID} refers to the ID of a
+ * {@see \Prado\Data\TDataSourceConfig} module and tasks are specified as nested
+ * `<job>` elements identical to those of {@see \Prado\Util\Cron\TCronModule}.
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'db' => [
+ *             'class' => 'Prado\Data\TDataSourceConfig',
+ *             'database' => [
+ *                 'ConnectionString' => 'mysql:host=localhost;dbname=mydb',
+ *                 'Username' => 'dbuser',
+ *                 'Password' => 'dbpass',
+ *             ],
+ *         ],
+ *         'cron' => [
+ *             'class' => 'Prado\Util\Cron\TDbCronManager',
+ *             'properties' => [
+ *                 'ConnectionID' => 'db',
+ *                 'DefaultUserName' => 'cron',
+ *                 'EnableRequestCron' => 'false',
+ *                 'LogCronTasks' => 'true',
+ *             ],
+ *             'jobs' => [
+ *                 [
+ *                     'Name' => 'dbcacheclean',
+ *                     'Schedule' => '0 0 * * * *',
+ *                     'Task' => 'dbcache->flushCacheExpired(true)',
+ *                 ],
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
+ *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3
  * @method bool dyClearCronLog(bool $return, int $seconds)

@@ -14,10 +14,33 @@ namespace Prado\I18N;
  * TGlobalizationAutoDetect class will automatically try to resolve the default
  * culture using the user browser language settings.
  *
- * You can specify the list of available cultures on the website by setting the {@see setAvailableLanguages AvailableLanguages} property, eg:
+ * XML configuration style, optionally restricting the accepted cultures via
+ * {@see setAvailableLanguages AvailableLanguages}:
  * ```xml
- * <module id="globalization" class="TGlobalizationAutoDetect" charset="UTF-8" DefaultCulture="it" TranslateDefaultCulture="false" AvailableLanguages="it, en">
+ * <modules>
+ *   <module id="globalization" class="Prado\I18N\TGlobalizationAutoDetect"
+ *       Charset="UTF-8" DefaultCulture="en" TranslateDefaultCulture="false"
+ *       AvailableLanguages="en, it, de" />
+ * </modules>
  * ```
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'globalization' => [
+ *             'class' => 'Prado\I18N\TGlobalizationAutoDetect',
+ *             'properties' => [
+ *                 'Charset' => 'UTF-8',
+ *                 'DefaultCulture' => 'en',
+ *                 'TranslateDefaultCulture' => 'false',
+ *                 'AvailableLanguages' => 'en, it, de',
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
+ *
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
  */
 class TGlobalizationAutoDetect extends TGlobalization

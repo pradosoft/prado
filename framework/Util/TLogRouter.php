@@ -25,15 +25,47 @@ use Prado\Xml\TXmlDocument;
  * in log files. An email log route {@see \Prado\Util\TEmailLogRoute} sends log messages
  * to email addresses.
  *
- * Log routes may be configured in application or page folder configuration files
- * or an external configuration file specified by {@see setConfigFile ConfigFile}.
- * The format is as follows,
+ * XML configuration style:
  * ```xml
- *   <route class="TFileLogRoute" Categories="Prado\Web\UI" Levels="Warning" />
- *   <route class="TEmailLogRoute" Categories="Application" Levels="Fatal" Emails="admin@prado.local" />
+ * <modules>
+ *   <module id="log" class="Prado\Util\TLogRouter">
+ *     <route class="Prado\Util\TFileLogRoute" Levels="Warning, Error, Fatal" />
+ *     <route class="Prado\Util\TEmailLogRoute" Categories="Application"
+ *         Levels="Fatal" Emails="admin@example.com" />
+ *   </module>
+ * </modules>
  * ```
+ * Log routes may also be specified in an external configuration file via
+ * {@see setConfigFile ConfigFile}.
  * You can specify multiple routes with different filtering conditions and different
  * targets, even if the routes are of the same type.
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'log' => [
+ *             'class' => 'Prado\Util\TLogRouter',
+ *             'routes' => [
+ *                 [
+ *                     'class' => 'Prado\Util\TFileLogRoute',
+ *                     'properties' => [
+ *                         'Levels' => 'Warning, Error, Fatal',
+ *                     ],
+ *                 ],
+ *                 [
+ *                     'class' => 'Prado\Util\TEmailLogRoute',
+ *                     'properties' => [
+ *                         'Categories' => 'Application',
+ *                         'Levels' => 'Fatal',
+ *                         'Emails' => 'admin@example.com',
+ *                     ],
+ *                 ],
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>

@@ -21,6 +21,42 @@ use Prado\Exceptions\TLogException;
  * Optionally, you may set the email {@see setSubject Subject} and the
  * {@see setSentFrom SentFrom} address.
  *
+ * TEmailLogRoute is configured as a `<route>` element inside a
+ * {@see \Prado\Util\TLogRouter} module in the application configuration.
+ *
+ * XML configuration style:
+ * ```xml
+ * <modules>
+ *   <module id="log" class="Prado\Util\TLogRouter">
+ *     <route class="Prado\Util\TEmailLogRoute" Levels="Error, Fatal"
+ *         Emails="admin@example.com" SentFrom="app@example.com"
+ *         Subject="Application Error" />
+ *   </module>
+ * </modules>
+ * ```
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'log' => [
+ *             'class' => 'Prado\Util\TLogRouter',
+ *             'routes' => [
+ *                 [
+ *                     'class' => 'Prado\Util\TEmailLogRoute',
+ *                     'properties' => [
+ *                         'Levels' => 'Error, Fatal',
+ *                         'Emails' => 'admin@example.com',
+ *                         'SentFrom' => 'app@example.com',
+ *                         'Subject' => 'Application Error',
+ *                     ],
+ *                 ],
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */

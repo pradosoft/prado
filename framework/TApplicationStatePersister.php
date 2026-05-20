@@ -17,6 +17,24 @@ namespace Prado;
  * in a file named 'global.cache' under the 'runtime' directory of the application.
  * Cache will be exploited if it is enabled.
  *
+ * XML configuration style:
+ * ```xml
+ * <modules>
+ *   <module id="state" class="Prado\TApplicationStatePersister" />
+ * </modules>
+ * ```
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'state' => [
+ *             'class' => 'Prado\TApplicationStatePersister',
+ *         ],
+ *     ],
+ * ];
+ * ```
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */

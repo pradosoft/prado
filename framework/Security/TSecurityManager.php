@@ -55,6 +55,36 @@ use Prado\TPropertyValue;
  * default, which does not have an equivalent in OpenSSL. Developers should keep that in mind
  * when migrating from Prado3 to Prado4.
  *
+ * XML configuration style:
+ * ```xml
+ * <modules>
+ *   <module id="security" class="Prado\Security\TSecurityManager"
+ *       ValidationKey="your-secret-validation-key"
+ *       EncryptionKey="your-secret-encryption-key"
+ *       HashAlgorithm="sha256"
+ *       CryptAlgorithm="aes-256-cbc"
+ *       UseEncryptionHmac="true" />
+ * </modules>
+ * ```
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'security' => [
+ *             'class' => 'Prado\Security\TSecurityManager',
+ *             'properties' => [
+ *                 'ValidationKey' => 'your-secret-validation-key',
+ *                 'EncryptionKey' => 'your-secret-encryption-key',
+ *                 'HashAlgorithm' => 'sha256',
+ *                 'CryptAlgorithm' => 'aes-256-cbc',
+ *                 'UseEncryptionHmac' => 'true',
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @since 3.0
