@@ -16,33 +16,51 @@ use Prado\TApplication;
 use Prado\TModule;
 
 /**
- * TDataSourceConfig module class provides <module> configuration for database connections.
+ * TDataSourceConfig module class provides Application Module configuration
+ * for database connections.
  *
- * Example usage: mysql connection
- * ```php
+ * XML configuration style, for example with a MySQL connection:
+ * ```xml
  * <modules>
- * 	<module id="db1">
- * 		<database ConnectionString="mysqli:host=localhost;dbname=test"
- * 			username="dbuser" password="dbpass" />
- * 	</module>
+ *   <module id="db1" class="Prado\Data\TDataSourceConfig">
+ *     <database ConnectionString="mysql:host=localhost;dbname=mydb"
+ *       Username="dbuser" Password="dbpass" />
+ *   </module>
  * </modules>
  * ```
  *
- * Usage in php:
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'db1' => [
+ *             'class' => 'Prado\Data\TDataSourceConfig',
+ *             'database' => [
+ *                 'ConnectionString' => 'mysql:host=localhost;dbname=mydb',
+ *                 'Username' => 'dbuser',
+ *                 'Password' => 'dbpass',
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
+ *
+ * The configured connection may then be retrieved in page or component code:
  * ```php
  * class Home extends TPage
  * {
- * 		function onLoad($param)
- * 		{
- * 			$db = $this->Application->Modules['db1']->DbConnection;
- * 			$db->createCommand('...'); //...
- * 		}
+ *   public function onLoad($param)
+ *   {
+ *     $db = $this->Application->Modules['db1']->DbConnection;
+ *     $db->createCommand('SELECT ...')->query();
+ *   }
  * }
  * ```
  *
- * The properties of <database ... /> are routed to the created TDbConnection on {@see init}
- * Set {@see setConnectionClass} attribute for a custom database connection class
- * that extends the TDbConnection class.
+ * The properties of the {@see \Prado\Data\TDbConnection} are set via attributes on the
+ * nested `<database ... />` element, routed through {@see init}.
+ * Set the {@see setConnectionClass ConnectionClass} attribute to use a custom
+ * database connection class that extends {@see \Prado\Data\TDbConnection}.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1

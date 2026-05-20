@@ -20,7 +20,7 @@ use Prado\TPropertyValue;
  * and TranslationConfiguration.
  *
  * TGlobalization can be subclassed to change how the Culture, Charset
- * are determined. See TGlobalizationAutoDetect for example of
+ * are determined. See {@see \Prado\I18N\TGlobalizationAutoDetect} for an example of
  * setting the Culture based on browser settings.
  *
  * **POSIX underscore convention** — culture identifiers are stored and
@@ -28,6 +28,40 @@ use Prado\TPropertyValue;
  * Incoming BCP 47 hyphen-separated values (the web/browser standard, e.g.
  * "en-US", "zh-TW") are normalized to POSIX form in {@see setCulture()}.
  * See {@see CultureInfo} for details on the POSIX/BCP 47 relationship.
+ *
+ * XML configuration style:
+ * ```xml
+ * <modules>
+ *   <module id="globalization" class="Prado\I18N\TGlobalization"
+ *       DefaultCulture="en_US" DefaultCharset="UTF-8">
+ *     <translation type="gettext" source="Application.messages" autosave="true" cache="true" />
+ *   </module>
+ * </modules>
+ * ```
+ * where {@see getDefaultCulture DefaultCulture} and {@see getDefaultCharset DefaultCharset}
+ * are configurable properties of TGlobalization, and the nested `<translation>` element
+ * configures message translation via {@see setTranslationConfiguration TranslationConfiguration}.
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'globalization' => [
+ *             'class' => 'Prado\I18N\TGlobalization',
+ *             'properties' => [
+ *                 'DefaultCulture' => 'en_US',
+ *                 'DefaultCharset' => 'UTF-8',
+ *             ],
+ *             'translate' => [
+ *                 'type' => 'gettext',
+ *                 'source' => 'Application.messages',
+ *                 'autosave' => 'true',
+ *                 'cache' => 'true',
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
  *
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
  * @since 3.0

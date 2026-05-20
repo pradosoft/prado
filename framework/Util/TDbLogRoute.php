@@ -43,6 +43,52 @@ use Prado\TPropertyValue;
  * 4.3.0 Notes: Add the `prefix` to the log table:
  * `ALTER TABLE pradolog ADD COLUMN prefix VARCHAR(128) AFTER category;`
  *
+ * TDbLogRoute is configured as a `<route>` element inside a
+ * {@see \Prado\Util\TLogRouter} module in the application configuration.
+ *
+ * XML configuration style:
+ * ```xml
+ * <modules>
+ *   <module id="db" class="Prado\Data\TDataSourceConfig">
+ *     <database ConnectionString="mysql:host=localhost;dbname=mydb"
+ *       Username="dbuser" Password="dbpass" />
+ *   </module>
+ *   <module id="log" class="Prado\Util\TLogRouter">
+ *     <route class="Prado\Util\TDbLogRoute" ConnectionID="db"
+ *         LogTableName="pradolog" Levels="Warning, Error, Fatal" />
+ *   </module>
+ * </modules>
+ * ```
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'db' => [
+ *             'class' => 'Prado\Data\TDataSourceConfig',
+ *             'database' => [
+ *                 'ConnectionString' => 'mysql:host=localhost;dbname=mydb',
+ *                 'Username' => 'dbuser',
+ *                 'Password' => 'dbpass',
+ *             ],
+ *         ],
+ *         'log' => [
+ *             'class' => 'Prado\Util\TLogRouter',
+ *             'routes' => [
+ *                 [
+ *                     'class' => 'Prado\Util\TDbLogRoute',
+ *                     'properties' => [
+ *                         'ConnectionID' => 'db',
+ *                         'LogTableName' => 'pradolog',
+ *                         'Levels' => 'Warning, Error, Fatal',
+ *                     ],
+ *                 ],
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 3.1.2

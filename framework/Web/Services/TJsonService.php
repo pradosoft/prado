@@ -26,7 +26,7 @@ use Prado\Xml\TXmlElement;
  * The service parameter, referring to the ID of the service, specifies
  * which javascript content to be provided to end-users.
  *
- * To use TJsonService, configure it in application configuration as follows,
+ * XML configuration style:
  * ```xml
  *  <service id="json" class="Prado\Web\Services\TJsonService">
  *    <json id="get_article" class="Path\To\JsonResponseClass1" .../>

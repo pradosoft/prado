@@ -18,6 +18,40 @@ use Prado\Web\THttpUtility;
  *
  * TBrowserLogRoute prints selected log messages in the response.
  *
+ * TBrowserLogRoute is configured as a `<route>` element inside a
+ * {@see \Prado\Util\TLogRouter} module in the application configuration.
+ *
+ * XML configuration style:
+ * ```xml
+ * <modules>
+ *   <module id="log" class="Prado\Util\TLogRouter">
+ *     <route class="Prado\Util\TBrowserLogRoute" Levels="Debug, Info, Warning, Error, Fatal"
+ *         Categories="Application" ColorizeDelta="true" />
+ *   </module>
+ * </modules>
+ * ```
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'log' => [
+ *             'class' => 'Prado\Util\TLogRouter',
+ *             'routes' => [
+ *                 [
+ *                     'class' => 'Prado\Util\TBrowserLogRoute',
+ *                     'properties' => [
+ *                         'Levels' => 'Debug, Info, Warning, Error, Fatal',
+ *                         'Categories' => 'Application',
+ *                         'ColorizeDelta' => 'true',
+ *                     ],
+ *                 ],
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
+ *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.0
  */
