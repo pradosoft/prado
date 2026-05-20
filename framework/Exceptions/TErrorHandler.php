@@ -92,10 +92,14 @@ class TErrorHandler extends \Prado\TModule
 
 	/**
 	 * @var ?array cached path replacement map for hidePrivatePathParts()
+	 * @since 4.3.3
 	 */
 	private $_privatePathReplacements;
 
-	/** @var bool whether an error is currently being handled (prevents infinite loops) */
+	/**
+	 * @var bool whether an error is currently being handled (prevents infinite loops)
+	 * @since 4.3.3
+	 */
 	private bool $_handling = false;
 
 	/**
@@ -115,10 +119,7 @@ class TErrorHandler extends \Prado\TModule
 	 */
 	protected function setAppErrorHandler()
 	{
-		if (!($app = $this->getApplication())) {
-			return;
-		}
-		$app->setErrorHandler($this);
+		$this->getApplication()?->setErrorHandler($this);
 	}
 
 	/**
