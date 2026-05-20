@@ -331,8 +331,8 @@ class TRedisCache extends TCache
 	}
 
 	/**
-	 * Deletes all values from cache, only clearing the currently selected database.
-	 * @return bool if no error happens during flush
+	 * Flushes the currently selected Redis database only.
+	 * @return bool true if no error happens during flush
 	 */
 	public function flush()
 	{

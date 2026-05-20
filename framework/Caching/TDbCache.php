@@ -605,9 +605,7 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 	}
 
 	/**
-	 * Deletes all values from cache.
-	 * Be careful of performing this operation if the cache is shared by multiple applications.
-	 * @return bool if no error happens during flush
+	 * @return bool true if no error happens during flush
 	 */
 	public function flush()
 	{
