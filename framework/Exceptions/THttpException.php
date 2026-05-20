@@ -44,7 +44,7 @@ class THttpException extends TSystemException
 	/**
 	 * @return int HTTP status code, such as 404, 500, etc.
 	 */
-	public function getStatusCode(): int
+	public function getStatusCode()
 	{
 		return $this->getStatusCodeDirect();
 	}

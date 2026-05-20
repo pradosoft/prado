@@ -38,7 +38,7 @@ class TXmlElementList extends \Prado\Collections\TList
 	/**
 	 * Constructor.
 	 * Initializes a new TXmlElementList with the specified owner.
-	 * @param TXmlElement $owner Owner of this list
+	 * @param ?TXmlElement $owner Owner of this list
 	 */
 	public function __construct(?TXmlElement $owner)
 	{
@@ -50,7 +50,7 @@ class TXmlElementList extends \Prado\Collections\TList
 	 * Gets the owner of this list.
 	 * @return TXmlElement Owner of this list
 	 */
-	protected function getOwner(): ?TXmlElement
+	protected function getOwner()
 	{
 		return $this->_o;
 	}
@@ -92,7 +92,7 @@ class TXmlElementList extends \Prado\Collections\TList
 	 * @param int $index The index of the item to be removed.
 	 * @return mixed The removed item.
 	 */
-	public function removeAt($index): mixed
+	public function removeAt($index)
 	{
 		$item = parent::removeAt($index);
 		if ($item instanceof TXmlElement) {
