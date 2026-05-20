@@ -1115,7 +1115,7 @@ class TApplication extends TComponent implements ISingleton
 	 */
 	public function registerService(string $id, ?string $class = null, array $properties = [], $config = null): void
 	{
-		if (empty($class)) {
+		if ($class === null || $class === '') {
 			throw new TConfigurationException('application_service_class_required', $id);
 		}
 		$originalClass = $class;
