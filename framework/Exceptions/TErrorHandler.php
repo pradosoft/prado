@@ -300,7 +300,7 @@ class TErrorHandler extends \Prado\TModule
 	 * @param ?\Exception $exception
 	 * @since 3.1.6
 	 */
-	protected function hideSecurityRelated($value, $exception = null): string
+	protected function hideSecurityRelated($value, $exception = null)
 	{
 		$aRpl = [];
 		if ($exception !== null && $exception instanceof \Exception) {
@@ -338,7 +338,7 @@ class TErrorHandler extends \Prado\TModule
 	 * @param int $statusCode
 	 * @param \Exception $exception
 	 */
-	protected function handleExternalError($statusCode, $exception): void
+	protected function handleExternalError($statusCode, $exception)
 	{
 		if (!($exception instanceof THttpException)) {
 			$this->errorLog($exception->__toString());
@@ -380,7 +380,7 @@ class TErrorHandler extends \Prado\TModule
 	 * Bypasses templates to avoid triggering further errors.
 	 * @param \Exception $exception
 	 */
-	protected function handleRecursiveError($exception): void
+	protected function handleRecursiveError($exception)
 	{
 		if ($this->getApplication()->getMode() === TApplicationMode::Debug) {
 			echo "<html><head><title>Recursive Error</title></head>\n";
@@ -408,7 +408,7 @@ class TErrorHandler extends \Prado\TModule
 	 * Replaces private filesystem paths in a string using the instance replacement map.
 	 * @param string $value
 	 */
-	protected function hidePrivatePathParts($value): string
+	protected function hidePrivatePathParts($value)
 	{
 		$aRpl = $this->getPrivatePathReplacements();
 		return str_replace(array_keys($aRpl), $aRpl, $value);
@@ -476,7 +476,7 @@ class TErrorHandler extends \Prado\TModule
 	 * falling back to `exception.html`.
 	 * @param \Exception $exception
 	 */
-	protected function getExceptionTemplate($exception): string
+	protected function getExceptionTemplate($exception)
 	{
 		$lang = Prado::getPreferredLanguage();
 		$templatePath = $this->getErrorTemplatePath();
@@ -506,7 +506,7 @@ class TErrorHandler extends \Prado\TModule
 	 * @param int $statusCode
 	 * @param \Exception $exception
 	 */
-	protected function getErrorTemplate($statusCode, $exception): string
+	protected function getErrorTemplate($statusCode, $exception)
 	{
 		$base = $this->getErrorTemplatePath() . DIRECTORY_SEPARATOR . static::ERROR_FILE_NAME;
 		$lang = Prado::getPreferredLanguage();
@@ -534,7 +534,7 @@ class TErrorHandler extends \Prado\TModule
 	 * on PHP 8+).
 	 * @param \Exception $exception
 	 */
-	protected function getExactTrace($exception): ?array
+	protected function getExactTrace($exception)
 	{
 		$result = null;
 		if ($exception instanceof TPhpFatalErrorException &&
@@ -573,7 +573,7 @@ class TErrorHandler extends \Prado\TModule
 	 * When xdebug is active and the exception is a fatal error, uses the xdebug stack.
 	 * @param \Exception $exception
 	 */
-	protected function getExactTraceAsString($exception): string
+	protected function getExactTraceAsString($exception)
 	{
 		if ($exception instanceof TPhpFatalErrorException &&
 			function_exists('xdebug_get_function_stack')) {
@@ -604,7 +604,7 @@ class TErrorHandler extends \Prado\TModule
 	 * @param array $trace
 	 * @param string $pattern
 	 */
-	protected function getPropertyAccessTrace($trace, $pattern): ?array
+	protected function getPropertyAccessTrace($trace, $pattern)
 	{
 		$result = null;
 		foreach ($trace as $t) {
@@ -624,7 +624,7 @@ class TErrorHandler extends \Prado\TModule
 	 * @param null|array $lines
 	 * @param int $errorLine
 	 */
-	protected function getSourceCode($lines, $errorLine): string
+	protected function getSourceCode($lines, $errorLine)
 	{
 		$numLines = is_countable($lines) ? count($lines) : 0;
 		$beginLine = $errorLine - static::SOURCE_LINES >= 0 ? $errorLine - static::SOURCE_LINES : 0;
@@ -646,7 +646,7 @@ class TErrorHandler extends \Prado\TModule
 	 * Wraps the first recognized Prado class name in the message with a documentation hyperlink.
 	 * @param string $message
 	 */
-	protected function addLink($message): string
+	protected function addLink($message)
 	{
 		if (null !== ($class = $this->getErrorClassNameSpace($message))) {
 			return str_replace($class['name'], '<a href="' . $class['url'] . '" target="_blank">' . $class['name'] . '</a>', $message);
@@ -659,7 +659,7 @@ class TErrorHandler extends \Prado\TModule
 	 * @param string $message
 	 * @return ?array{url: string, name: string} associative array with 'url' and 'name' keys, or null
 	 */
-	protected function getErrorClassNameSpace($message): ?array
+	protected function getErrorClassNameSpace($message)
 	{
 		$matches = [];
 		preg_match('/\b(T[A-Z]\w+)\b/', $message, $matches);
