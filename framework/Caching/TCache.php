@@ -27,11 +27,11 @@ use Prado\TPropertyValue;
  * - {@see flush()} : delete all values from cache
  *
  * Each value is associated with an expiration time. The {@see get()} operation
- * ensures that any expired value will not be returned. The expiration time by
- * the number of seconds. A expiration time 0 represents never expire.
+ * ensures that any expired value will not be returned. The expiration time is
+ * specified by the number of seconds. An expiration time of 0 means never expire.
  *
  * By definition, cache does not ensure the existence of a value
- * even if it never expires. Cache is not meant to be an persistent storage.
+ * even if it never expires. Cache is not meant to be a persistent storage.
  *
  * Child classes must implement the following methods:
  * - {@see getValue()}
@@ -39,10 +39,44 @@ use Prado\TPropertyValue;
  * - {@see addValue()}
  * - {@see deleteValue()}
  *
- * and optionally {@see flush()}
+ * and optionally {@see flush()}.
  *
  * Since version 3.1.2, TCache implements the \ArrayAccess interface such that
  * the cache acts as an array.
+ *
+ * When loaded as a module, a TCache subclass registers itself with
+ * {@see \Prado\TApplication} as the application cache (accessible via
+ * {@see \Prado\TApplication::getCache()}) unless {@see setPrimaryCache PrimaryCache}
+ * is set to `false`. Only one primary cache module may be loaded at a time.
+ *
+ * The {@see setKeyPrefix KeyPrefix} property may be used to namespace cache keys,
+ * which is useful when multiple applications share the same cache backend.
+ * By default it is set to {@see \Prado\TApplication::getUniqueID()}.
+ *
+ * XML configuration style, using {@see \Prado\Caching\TAPCCache} as a representative example:
+ * ```xml
+ * <modules>
+ *   <module id="cache" class="Prado\Caching\TMemCache"
+ *       PrimaryCache="true" KeyPrefix="myapp-" />
+ * </modules>
+ * ```
+ * where {@see getPrimaryCache PrimaryCache} and {@see getKeyPrefix KeyPrefix} are
+ * configurable properties inherited by all TCache subclasses.
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'cache' => [
+ *             'class' => 'Prado\Caching\TMemCache',
+ *             'properties' => [
+ *                 'PrimaryCache' => 'true',
+ *                 'KeyPrefix' => 'myapp-',
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -60,15 +94,14 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 */
 	public function init($config)
 	{
-		if ($this->_prefix === null) {
-			$this->_prefix = $this->getApplication()->getUniqueID();
+		if ($this->getKeyPrefix() === null) {
+			$this->setKeyPrefix($this->getApplication()?->getUniqueID() ?? '');
 		}
-		if ($this->_primary) {
-			if ($this->getApplication()->getCache() === null) {
-				$this->setAppCache();
-			} else {
-				throw new TConfigurationException('cache_primary_duplicated', $this::class);
+		if ($this->getPrimaryCache()) {
+			if ($this->getApplication()?->getCache() !== null) {
+				throw new TConfigurationException('cache_primary_duplicated', static::class);
 			}
+			$this->setAppCache();
 		}
 		parent::init($config);
 	}
@@ -76,7 +109,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	/**
 	 * Registers this module as the application cache when an application is available.
 	 * Called during {@see init()}; may also be called by behaviors or subclasses.
-	 * @since 4.4.0
+	 * @since 4.3.3
 	 */
 	protected function setAppCache()
 	{
@@ -94,7 +127,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	}
 
 	/**
-	 * @param bool $value whether this cache module is used as primary/system cache. Defaults to false.
+	 * @param bool $value whether this cache module is used as primary/system cache. Defaults to true.
 	 * @see getPrimaryCache
 	 */
 	public function setPrimaryCache($value)
@@ -125,7 +158,20 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 */
 	protected function generateUniqueKey($key)
 	{
-		return md5($this->_prefix . $key);
+		return $this->hashToken($this->getKeyPrefix() . $key);
+	}
+
+	/**
+	 * Hashes a token string for use as a cache key.
+	 * Override in a subclass to substitute a different hashing algorithm.
+	 * @param string $token the raw token to hash
+	 * @return string the hashed token
+	 * @since 4.3.3
+	 * @todo 4.4: change to sha1 for security
+	 */
+	protected function hashToken($token)
+	{
+		return md5($token);
 	}
 
 	/**
@@ -199,7 +245,6 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	/**
 	 * Deletes all values from cache.
 	 * Be careful of performing this operation if the cache is shared by multiple applications.
-	 * Child classes may implement this method to realize the flush operation.
 	 * @throws TNotSupportedException if this method is not overridden by child classes
 	 */
 	public function flush()
@@ -207,12 +252,15 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 		throw new TNotSupportedException('cache_flush_unsupported');
 	}
 
+	/*
+	 * Returns whether this cache backend's prerequisites (extensions, services) are met.
+	 * @since 4.4.0
+	 */
+	//abstract public static function getIsAvailable(): bool;
+
 	/**
 	 * Retrieves a value from cache with a specified key.
-	 * This method should be implemented by child classes to store the data
-	 * in specific cache storage. The uniqueness and dependency are handled
-	 * in {@see \Prado\Caching\TCache::get()} already. So only the implementation of data retrieval
-	 * is needed.
+	 * Uniqueness and dependency are handled by {@see get()}; implement storage retrieval only.
 	 * @param string $key a unique key identifying the cached value
 	 * @return false|string the value stored in cache, false if the value is not in the cache or expired.
 	 */
@@ -220,11 +268,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 
 	/**
 	 * Stores a value identified by a key in cache.
-	 * This method should be implemented by child classes to store the data
-	 * in specific cache storage. The uniqueness and dependency are handled
-	 * in {@see \Prado\Caching\TCache::set()} already. So only the implementation of data storage
-	 * is needed.
-	 *
+	 * Uniqueness and dependency are handled by {@see set()}; implement storage write only.
 	 * @param string $key the key identifying the value to be cached
 	 * @param string $value the value to be cached
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
@@ -234,11 +278,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 
 	/**
 	 * Stores a value identified by a key into cache if the cache does not contain this key.
-	 * This method should be implemented by child classes to store the data
-	 * in specific cache storage. The uniqueness and dependency are handled
-	 * in {@see \Prado\Caching\TCache::add()} already. So only the implementation of data storage
-	 * is needed.
-	 *
+	 * Uniqueness and dependency are handled by {@see add()}; implement storage write only.
 	 * @param string $key the key identifying the value to be cached
 	 * @param string $value the value to be cached
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
@@ -247,10 +287,9 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	abstract protected function addValue($key, $value, $expire);
 
 	/**
-	 * Deletes a value with the specified key from cache
-	 * This method should be implemented by child classes to delete the data from actual cache storage.
+	 * Deletes a value with the specified key from cache.
 	 * @param string $key the key of the value to be deleted
-	 * @return bool if no error happens during deletion
+	 * @return bool true if no error happens during deletion
 	 */
 	abstract protected function deleteValue($key);
 
