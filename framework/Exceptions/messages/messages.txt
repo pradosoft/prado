@@ -142,6 +142,8 @@ sqlitecache_table_creation_failed		= TSqliteCache failed to create cache databas
 sqlitecache_dbfile_unchangeable			= TSqliteCache.DbFile cannot be modified after the module is initialized.
 sqlitecache_dbfile_invalid				= TSqliteCache.DbFile is invalid. Make sure it is in a proper namespace format.
 
+dbcache_unavailable						= TDbCache requires the PDO PHP extension.
+
 memcache_extension_required				= TMemCache requires memcache PHP extension.
 memcache_connection_failed				= TMemCache failed to connect to memcache server {0}:{1}.
 memcache_not_initialized				= Options cannot be set on TMemCache before the module is initialized.
