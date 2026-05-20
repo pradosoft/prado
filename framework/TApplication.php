@@ -430,7 +430,7 @@ class TApplication extends TComponent implements ISingleton
 	 * @see setConfigurationFile
 	 * @see resolveRuntimePath
 	 */
-	protected function resolvePaths($basePath): void
+	protected function resolvePaths($basePath)
 	{
 		// determine configuration path and file
 		if (empty($errValue = $basePath) || ($basePath = realpath($basePath)) === false) {
@@ -1927,7 +1927,7 @@ class TApplication extends TComponent implements ISingleton
 	 *   ready for `$module->init($configElement)`, `null` if the module was deferred, or
 	 *   `false` if `$id` is not registered in `$_lazyModules`.
 	 */
-	protected function internalLoadModule($id, bool $force = false)
+	protected function internalLoadModule($id, $force = false)
 	{
 		if (($lazy = $this->getLazyModule($id)) === null) {
 			return false;
