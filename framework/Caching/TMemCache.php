@@ -176,9 +176,8 @@ class TMemCache extends TCache
 		}
 
 		$this->loadConfig($config);
-
 		$persistentId = $this->getPersistentID();
-		$this->setCacheDirect(new \Memcached($persistentId));
+		$this->setCacheDirect($this->newMemcached($persistentId));
 		$memCache = $this->getCacheDirect();
 		if ($persistentId !== null && count($memCache->getServerList()) > 0) {
 			Prado::trace('Skipping re-adding servers for persistent id ' . $persistentId, TMemCache::class);
@@ -262,16 +261,28 @@ class TMemCache extends TCache
 	}
 
 	/**
-	 * @return \Memcached the underlying Memcached instance
+	 * Creates the Memcached instance.
+	 * Override in a subclass to substitute a mock or alternative implementation.
+	 * @param null|string $persistentId the persistent ID; null creates a non-persistent instance
+	 * @return \Memcached the new Memcached instance
 	 * @since 4.3.3
 	 */
-	protected function getCacheDirect(): object
+	protected function newMemcached($persistentId): object
+	{
+		return new \Memcached($persistentId);
+	}
+
+	/**
+	 * @return ?\Memcached the underlying Memcached instance, or null before initialization
+	 * @since 4.3.3
+	 */
+	protected function getCacheDirect(): ?object
 	{
 		return $this->_cache;
 	}
 
 	/**
-	 * @param \Memcached $value the underlying Memcached instance
+	 * @param ?\Memcached $value the underlying Memcached instance
 	 * @since 4.3.3
 	 */
 	protected function setCacheDirect($value): void

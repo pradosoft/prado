@@ -132,7 +132,7 @@ class TRedisCache extends TCache
 	use TInitializedTrait;
 
 	/**
-	 * @var \Redis the Redis instance
+	 * @var ?\Redis the Redis instance
 	 */
 	private $_cache;
 	/**
@@ -184,7 +184,7 @@ class TRedisCache extends TCache
 		if (!static::getIsAvailable()) {
 			throw new TConfigurationException('rediscache_extension_required');
 		}
-		$this->setCacheDirect(new \Redis());
+		$this->setCacheDirect($this->newRedis());
 		$cacheObject = $this->getCacheDirect();
 		if ($this->_socket !== null) {
 			$cacheObject->connect($this->getSocket());
@@ -198,16 +198,27 @@ class TRedisCache extends TCache
 	}
 
 	/**
-	 * @return \Redis the underlying Redis instance
+	 * Creates the Redis instance.
+	 * Override in a subclass to substitute a mock or alternative implementation.
+	 * @return \Redis the new Redis instance
 	 * @since 4.3.3
 	 */
-	protected function getCacheDirect(): object
+	protected function newRedis(): object
+	{
+		return new \Redis();
+	}
+
+	/**
+	 * @return ?\Redis the underlying Redis instance, or null before initialization
+	 * @since 4.3.3
+	 */
+	protected function getCacheDirect(): ?object
 	{
 		return $this->_cache;
 	}
 
 	/**
-	 * @param \Redis $value the underlying Redis instance
+	 * @param ?\Redis $value the underlying Redis instance
 	 * @since 4.3.3
 	 */
 	protected function setCacheDirect($value): void
