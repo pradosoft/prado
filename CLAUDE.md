@@ -106,10 +106,12 @@ TApplication
 | Classes | `TPascalCase` | `TComponent`, `TApplication` |
 | Methods | `camelCase` | `getComponent` |
 | Variables | `camelCase` | `$componentName` |
-| Constants | `SCREAMING_SNAKE_CASE` | `MAX_RETRY_COUNT` |
+| Class Constants | `SCREAMING_SNAKE_CASE` | `MAX_RETRY_COUNT` |
+| Enumerated Constants | `PascalCase` | `DeepSkyBlue` |
+| Class properties| `_camelCase` | `_propertyOfClass`, `_styleFieldNames` |
 | Namespaces | `Prado\{Module}` | `Prado\Web\UI\TControl` |
-| Template files | `.tpl` | `MyPortlet.tpl` |
-| Web Page templates | `.page` | `Home.page` |
+| MasterClass and Template files | `.tpl` | `MyPortlet.tpl` |
+| Web Page templates | `.page` with `.php` backing | `Home.page`, `Home.php` |
 
 ## Important Rules
 
@@ -118,6 +120,7 @@ TApplication
 - **Error codes** for PRADO exceptions are defined in `framework/Exceptions/messages/messages.txt` (English master); language variants are `messages-<lang>.txt` in the same directory.
 - **Backward compatibility** — all changes must be backward compatible for point releases. Minor releases can have breaking changes, but minimize the breaks.
 - **`@since` tag** — use the next release version (`4.4.0`) when adding new methods or classes.
+- **Uniform Access Principal - Self Encapsulation** is required; for an example see framework/TApplication.php
 
 ## Test Bootstrap
 

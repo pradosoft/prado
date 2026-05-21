@@ -26,16 +26,15 @@
 - All PHP files must begin with `<?php` tag (short open tags not allowed)
 - Use 1 tab for indentations (no spaces)
 - All class properties must be declared with visibility modifiers (public, protected, private)
+- Uniform Access Principal - Self Encapsulation is required; for an example see framework/TApplication.php
 
 ### Naming Conventions
-- Class names: `TPascalCase` (eg. `TComponent`)
-- Class name prefix: `T*` (eg. `TApplication`)
+- Class names: `TPascalCase` (eg. `TComponent`, `TApplication`)
 - Method names: `camelCase` (eg. `getComponent`)
 - Variables: `camelCase` (eg. `$componentName`)
 - Class Constants: `SCREAMING_SNAKE_CASE` (eg. `MAX_RETRY_COUNT`)
-- Class properties: `_camelCase` (eg. `_propertyOfClass`)
-- Class properties prefix: `_*` (eg. `_countForCache`)
 - Enumerated Constants: `PascalCase` (eg. `DeepSkyBlue`)
+- Class properties: `_camelCase` (eg. `_propertyOfClass`, `_styleFieldNames`)
 - Namespace: `Prado\{Module}` (eg. `Prado\Web\UI\TControl`)
 - MasterClass and Template file extension: ".tpl"
 - Web Page template file extensions: ".page" with ".php" backing
