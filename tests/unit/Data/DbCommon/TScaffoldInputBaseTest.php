@@ -7,7 +7,7 @@ use Prado\Exceptions\TConfigurationException;
 /**
  * Unit tests for TScaffoldInputBase.
  *
- * Tests the createInputBuilder factory method and fxActiveRecordCreateScaffoldInput event.
+ * Tests the createInputBuilder factory method and fxActiveRecordScaffoldInputClass event.
  */
 class TScaffoldInputBaseTest extends PHPUnit\Framework\TestCase
 {
@@ -33,14 +33,14 @@ class TScaffoldInputBaseTest extends PHPUnit\Framework\TestCase
 		TScaffoldInputBase::createInputBuilder($record);
 	}
 
-	public function test_createInputBuilder_raises_fxActiveRecordCreateScaffoldInput_for_unknown_driver()
+	public function test_createInputBuilder_raises_fxActiveRecordScaffoldInputClass_for_unknown_driver()
 	{
 		$record = $this->createMockRecord('custom_driver');
 		$conn = $record->getDbConnection();
 
 		$conn->expects($this->once())
 			->method('raiseEvent')
-			->with('fxActiveRecordCreateScaffoldInput', $this->anything(), $conn)
+			->with('fxActiveRecordScaffoldInputClass', $this->anything(), 'custom_driver')
 			->willReturn([]);
 
 		$this->expectException(TConfigurationException::class);

@@ -16,6 +16,7 @@ use Prado\Security\Permissions\TPermissionEvent;
 use Prado\Security\Permissions\TUserOwnerRule;
 use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbConnection;
+use Prado\Data\TDbDriver;
 use Prado\Data\TDbPropertiesTrait;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
@@ -310,11 +311,11 @@ class TDbCronManager extends TCronModule implements IDbModule
 		$driver = $db->getDriverName();
 		$autotype = 'INTEGER';
 		$autoidAttributes = '';
-		if ($driver === 'mysql') {
+		if ($driver === TDbDriver::DRIVER_MYSQL) {
 			$autoidAttributes = ' AUTO_INCREMENT';
-		} elseif ($driver === 'sqlite') {
+		} elseif ($driver === TDbDriver::DRIVER_SQLITE) {
 			$autoidAttributes = ' AUTOINCREMENT';
-		} elseif ($driver === 'postgresql') {
+		} elseif ($driver === TDbDriver::DRIVER_PGSQL) {
 			$autotype = 'SERIAL';
 		}
 		$postIndices = '; CREATE INDEX tname ON ' . $this->_tableName . '(`name`);' .

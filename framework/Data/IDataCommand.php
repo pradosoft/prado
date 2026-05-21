@@ -11,6 +11,8 @@
 namespace Prado\Data;
 
 /**
+ * IDataCommand interface
+ *
  * IDataCommand defines the interface for a data-store command.
  *
  * Implementations include {@see TDbCommand} for SQL/PDO databases.
@@ -64,4 +66,32 @@ interface IDataCommand
 	 * @return array all result rows.
 	 */
 	public function queryAll();
+
+	/**
+	 * Binds a value to a named or positional parameter in the command.
+	 *
+	 * For SQL commands this maps to {@see \PDOStatement::bindValue()}.
+	 * Non-SQL implementations may store the value for later substitution.
+	 *
+	 * @param int|string $name parameter name (`:name`) or 1-based positional index.
+	 * @param mixed $value the value to bind.
+	 * @param null|int $dataType PDO data-type constant; null to infer from value.
+	 * @return void
+	 */
+	public function bindValue($name, $value, $dataType = null);
+
+	/**
+	 * Binds a PHP variable to a named or positional parameter by reference.
+	 *
+	 * The variable is read at execute time, so changes made after this call are
+	 * reflected when the command runs.
+	 *
+	 * @param int|string $name parameter name (`:name`) or 1-based positional index.
+	 * @param mixed &$value the variable to bind by reference.
+	 * @param null|int $dataType PDO data-type constant; null to infer from value.
+	 * @param null|int $length maximum expected length in bytes; required by some
+	 *   drivers for OUTPUT parameters.
+	 * @return void
+	 */
+	public function bindParameter($name, &$value, $dataType = null, $length = null);
 }

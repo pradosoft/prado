@@ -17,6 +17,8 @@ use Prado\Data\Common\Mysql\TMysqlMetaData;
 use Prado\Data\Common\Oracle\TOracleMetaData;
 use Prado\Data\Common\Pgsql\TPgsqlMetaData;
 use Prado\Data\Common\Sqlite\TSqliteMetaData;
+use Prado\Data\IDataConnection;
+use Prado\Data\TDbDriver;
 use Prado\Exceptions\TDbException;
 use Prado\Prado;
 
@@ -30,8 +32,8 @@ use Prado\Prado;
  *
  * The metadata instances are created via the static {@see getInstance} method which
  * determines the appropriate metadata handler based on the database driver. When no built-in driver
- * matches, the {@see fxDataGetMetaDataInstance()} global event is raised to allow
- * for extensibility through custom implementations.
+ * matches, the {@see fxDataGetMetaDataClass} global event is raised on the connection
+ * to allow extensibility through custom implementations.
  *
  * Example usage:
  * ```php
@@ -42,7 +44,7 @@ use Prado\Prado;
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
  */
-abstract class TDbMetaData extends \Prado\TComponent
+abstract class TDbMetaData extends \Prado\TComponent implements IDataMetaData
 {
 	private $_tableInfoCache = [];
 	private $_connection;
@@ -53,7 +55,7 @@ abstract class TDbMetaData extends \Prado\TComponent
 	protected static $delimiterIdentifier = ['[', ']', '"', '`', "'"];
 
 	/**
-	 * @param \Prado\Data\TDbConnection $conn database connection.
+	 * @param IDataConnection $conn database connection.
 	 */
 	public function __construct($conn)
 	{
@@ -62,7 +64,7 @@ abstract class TDbMetaData extends \Prado\TComponent
 	}
 
 	/**
-	 * @return \Prado\Data\TDbConnection database connection.
+	 * @return IDataConnection database connection.
 	 */
 	public function getDbConnection()
 	{
@@ -73,47 +75,51 @@ abstract class TDbMetaData extends \Prado\TComponent
 	 * Obtains a database-specific TDbMetaData class based on the database connection driver.
 	 *
 	 * This method determines the appropriate metadata handler for the given database driver.
-	 * If no built-in driver is found, the {@see fxDataGetMetaDataInstance} global event
-	 * is raised to allow custom implementations to provide a metadata handler.
+	 * If no built-in driver is found, the {@see fxDataGetMetaDataClass} global event
+	 * is raised on the connection with the driver name as the parameter. Handlers must
+	 * return a fully-qualified class name implementing {@see IDataMetaData}.
+	 * The last returned value wins.
 	 *
-	 * @param \Prado\Data\TDbConnection $conn database connection.
+	 * @param IDataConnection $conn database connection.
 	 * @throws TDbException if no metadata handler can be created for the driver.
-	 * @return TDbMetaData database-specific TDbMetaData.
+	 * @return IDataMetaData database-specific metadata handler.
 	 */
 	public static function getInstance($conn)
 	{
 		$conn->setActive(true); //must be connected before retrieving driver name
 		$driver = $conn->getDriverName();
 		switch (strtolower($driver)) {
-			case 'pgsql':
+			case TDbDriver::DRIVER_PGSQL:
 				return new TPgsqlMetaData($conn);
-			case 'mysqli':
-			case 'mysql':
+			case TDbDriver::EXTENSION_MYSQLI:
+			case TDbDriver::DRIVER_MYSQL:
 				return new TMysqlMetaData($conn);
-			case 'sqlite': //sqlite 3
-			case 'sqlite2': //sqlite 2
+			case TDbDriver::DRIVER_SQLITE: //sqlite 3
+			case TDbDriver::DRIVER_SQLITE2: //sqlite 2
 				return new TSqliteMetaData($conn);
-			case 'mssql': // Mssql driver on windows hosts
-			case 'sqlsrv': // sqlsrv driver on windows hosts
-			case 'dblib': // dblib drivers on linux (and maybe others os) hosts
+			case TDbDriver::EXTENSION_MSSQL: // Mssql driver on windows hosts
+			case TDbDriver::DRIVER_SQLSRV: // sqlsrv driver on windows hosts
+			case TDbDriver::DRIVER_DBLIB: // dblib drivers on linux (and maybe others os) hosts
 				return new TMssqlMetaData($conn);
-			case 'oci':
+			case TDbDriver::DRIVER_OCI:
 				return new TOracleMetaData($conn);
-			case 'ibm':
+			case TDbDriver::DRIVER_IBM:
 				return new TIbmMetaData($conn);
-			case 'firebird':
-			case 'interbase':
+			case TDbDriver::DRIVER_FIREBIRD:
+			case TDbDriver::DRIVER_INTERBASE:
 				return new TFirebirdMetaData($conn);
 			default:
-				$instances = $conn->raiseEvent('fxDataGetMetaDataInstance', self::class, $conn);
-				if (empty($instances)) {
+				$driverClasses = ($conn instanceof \Prado\TComponent)
+					? $conn->raiseEvent('fxDataGetMetaDataClass', $conn, $driver)
+					: [];
+				if (empty($driverClasses)) {
 					throw new TDbException('dbmetadata_invalid_database_driver', $driver);
 				}
-				$metaData = $instances[0];
-				if ($metaData instanceof static) {
-					throw new TDbException('dbmetadata_not_meta_data', $metaData::class, static::class);
+				$class = array_pop($driverClasses);
+				if (!is_string($class) || !is_a($class, IDataMetaData::class, true)) {
+					throw new TDbException('dbmetadata_not_meta_data', is_string($class) ? $class : $class::class, IDataMetaData::class);
 				}
-				return $metaData;
+				return new $class($conn);
 		}
 	}
 

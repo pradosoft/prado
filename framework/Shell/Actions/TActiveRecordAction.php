@@ -12,6 +12,7 @@ namespace Prado\Shell\Actions;
 
 use Prado\Data\ActiveRecord\TActiveRecordConfig;
 use Prado\Data\ActiveRecord\TActiveRecordManager;
+use Prado\Data\TDbDriver;
 use Prado\Prado;
 use Prado\Shell\TShellAction;
 
@@ -69,30 +70,30 @@ class TActiveRecordAction extends TShellAction
 			$command = null;
 
 			switch ($con->getDriverName()) {
-				case 'mysqli':
-				case 'mysql':
+				case TDbDriver::EXTENSION_MYSQLI:
+				case TDbDriver::DRIVER_MYSQL:
 					$command = $con->createCommand("SHOW TABLES");
 					break;
-				case 'sqlite': //sqlite 3
-				case 'sqlite2': //sqlite 2
+				case TDbDriver::DRIVER_SQLITE: //sqlite 3
+				case TDbDriver::DRIVER_SQLITE2: //sqlite 2
 					$command = $con->createCommand("SELECT DISTINCT tbl_name FROM sqlite_master WHERE tbl_name<>'sqlite_sequence'");
 					break;
-				case 'pgsql':
+				case TDbDriver::DRIVER_PGSQL:
 					$command = $con->createCommand("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE'");
 					break;
-				case 'mssql': // Mssql driver on windows hosts
-				case 'sqlsrv': // sqlsrv driver on windows hosts
-				case 'dblib': // dblib drivers on linux (and maybe others os) hosts
+				case TDbDriver::EXTENSION_MSSQL: // Mssql driver on windows hosts
+				case TDbDriver::DRIVER_SQLSRV: // sqlsrv driver on windows hosts
+				case TDbDriver::DRIVER_DBLIB: // dblib drivers on linux (and maybe others os) hosts
 					$command = $con->createCommand("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'");
 					break;
-				case 'oci':
+				case TDbDriver::DRIVER_OCI:
 					$command = $con->createCommand("SELECT table_name FROM user_tables");
 					break;
-				case 'ibm':
+				case TDbDriver::DRIVER_IBM:
 					$command = $con->createCommand("SELECT TABNAME FROM SYSCAT.TABLES WHERE TABSCHEMA = CURRENT SCHEMA AND TYPE = 'T' ORDER BY TABNAME");
 					break;
-				case 'firebird':
-				case 'interbase':
+				case TDbDriver::DRIVER_FIREBIRD:
+				case TDbDriver::DRIVER_INTERBASE:
 					$command = $con->createCommand("SELECT TRIM(RDB\$RELATION_NAME) AS tbl_name FROM RDB\$RELATIONS WHERE RDB\$SYSTEM_FLAG = 0 AND RDB\$VIEW_BLR IS NULL ORDER BY RDB\$RELATION_NAME");
 					break;
 				default:

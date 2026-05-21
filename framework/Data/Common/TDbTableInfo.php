@@ -11,6 +11,7 @@
 namespace Prado\Data\Common;
 
 use Prado\Collections\TMap;
+use Prado\Data\Common\IDataTableInfo;
 use Prado\Exceptions\TDbException;
 use Prado\Prado;
 
@@ -20,7 +21,7 @@ use Prado\Prado;
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
  */
-class TDbTableInfo extends \Prado\TComponent
+class TDbTableInfo extends \Prado\TComponent implements IDataTableInfo
 {
 	private $_info = [];
 

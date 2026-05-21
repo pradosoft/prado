@@ -14,6 +14,7 @@ use Exception;
 use PDO;
 use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbConnection;
+use Prado\Data\TDbDriver;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
@@ -273,10 +274,10 @@ class TDbParameterModule extends TDbModule implements IPermissions
 		($this->_autoLoadField ? ' CREATE INDEX tauto ON ' . $this->_tableName . '(' . $this->_autoLoadField . ');' : '');
 
 		switch ($driver) {
-			case 'sqlite':
+			case TDbDriver::DRIVER_SQLITE:
 				$autoidAttributes = ' AUTOINCREMENT';
 				break;
-			case 'postgresql':
+			case TDbDriver::DRIVER_PGSQL:
 				$autotype = 'SERIAL';
 				break;
 			default:	// mysql

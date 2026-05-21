@@ -13,6 +13,7 @@ namespace Prado\Data;
 use PDO;
 use PDOException;
 use Prado\Data\Common\TDbMetaData;
+use Prado\Data\TDbDriver;
 use Prado\Exceptions\TDbException;
 use Prado\Prado;
 use Prado\TPropertyValue;
@@ -103,7 +104,7 @@ use Prado\TPropertyValue;
  * @author Brad Anderson <belisoful@icloud.com> Charset.
  * @since 3.0
  */
-class TDbConnection extends \Prado\TComponent implements IDataConnection
+class TDbConnection extends \Prado\TComponent implements IDbConnection
 {
 	/**
 	 *
@@ -272,13 +273,13 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 		$driver = $this->_pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
 		$charset = $this->resolveCharsetForDriver($this->_charset, $driver);
 		switch ($driver) {
-			case 'mysql':
+			case TDbDriver::DRIVER_MYSQL:
 				$stmt = $this->_pdo->prepare('SET NAMES ?');
 				break;
-			case 'pgsql':
+			case TDbDriver::DRIVER_PGSQL:
 				$stmt = $this->_pdo->prepare('SET client_encoding TO ?');
 				break;
-			case 'sqlite':
+			case TDbDriver::DRIVER_SQLITE:
 				// PRAGMA encoding sets the internal storage encoding, but only takes
 				// effect before any tables are created.  PRAGMA does not support
 				// parameterised values, so PDO::quote is used to safely embed the
@@ -289,12 +290,12 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 					// Silently ignored.
 				}
 				return;
-			case 'firebird':
-			case 'mssql':
-			case 'sqlsrv':
-			case 'dblib':
-			case 'ibm':
-			case 'oci':
+			case TDbDriver::DRIVER_FIREBIRD:
+			case TDbDriver::EXTENSION_MSSQL:
+			case TDbDriver::DRIVER_SQLSRV:
+			case TDbDriver::DRIVER_DBLIB:
+			case TDbDriver::DRIVER_IBM:
+			case TDbDriver::DRIVER_OCI:
 				// These drivers do not support runtime charset switching via SQL.
 				return;
 			default:
@@ -334,104 +335,104 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 			//   are valid; unsupported values are passed through and silently ignored).
 			// Drivers oci/sqlsrv/mssql/dblib: DSN-parameter charset names.
 			'utf8' => [
-				'mysql' => 'utf8mb4',
-				'sqlite' => 'UTF-8',
-				'pgsql' => 'UTF8',
-				'firebird' => 'UTF8',
-				'oci' => 'AL32UTF8',
-				'sqlsrv' => 'UTF-8',
-				'mssql' => 'UTF-8',
-				'dblib' => 'UTF-8',
+				TDbDriver::DRIVER_MYSQL => 'utf8mb4',
+				TDbDriver::DRIVER_SQLITE => 'UTF-8',
+				TDbDriver::DRIVER_PGSQL => 'UTF8',
+				TDbDriver::DRIVER_FIREBIRD => 'UTF8',
+				TDbDriver::DRIVER_OCI => 'AL32UTF8',
+				TDbDriver::DRIVER_SQLSRV => 'UTF-8',
+				TDbDriver::EXTENSION_MSSQL => 'UTF-8',
+				TDbDriver::DRIVER_DBLIB => 'UTF-8',
 			],
 			'utf8mb4' => [
-				'mysql' => 'utf8mb4',
-				'sqlite' => 'UTF-8',
-				'pgsql' => 'UTF8',
-				'firebird' => 'UTF8',
-				'oci' => 'AL32UTF8',
-				'sqlsrv' => 'UTF-8',
-				'mssql' => 'UTF-8',
-				'dblib' => 'UTF-8',
+				TDbDriver::DRIVER_MYSQL => 'utf8mb4',
+				TDbDriver::DRIVER_SQLITE => 'UTF-8',
+				TDbDriver::DRIVER_PGSQL => 'UTF8',
+				TDbDriver::DRIVER_FIREBIRD => 'UTF8',
+				TDbDriver::DRIVER_OCI => 'AL32UTF8',
+				TDbDriver::DRIVER_SQLSRV => 'UTF-8',
+				TDbDriver::EXTENSION_MSSQL => 'UTF-8',
+				TDbDriver::DRIVER_DBLIB => 'UTF-8',
 			],
 			'utf16' => [
-				'mysql' => 'utf16',
-				'sqlite' => 'UTF-16',
-				'firebird' => 'UTF16BE',
-				'oci' => 'AL16UTF16',
+				TDbDriver::DRIVER_MYSQL => 'utf16',
+				TDbDriver::DRIVER_SQLITE => 'UTF-16',
+				TDbDriver::DRIVER_FIREBIRD => 'UTF16BE',
+				TDbDriver::DRIVER_OCI => 'AL16UTF16',
 			],
 			'latin1' => [
-				'mysql' => 'latin1',
+				TDbDriver::DRIVER_MYSQL => 'latin1',
 				// sqlite: no PRAGMA encoding support for latin1 — pass-through and
 				// silently ignored; SQLite stores all text internally as UTF-8/UTF-16.
-				'pgsql' => 'LATIN1',
-				'firebird' => 'ISO8859_1',
-				'oci' => 'WE8ISO8859P1',
-				'mssql' => 'ISO-8859-1',
-				'dblib' => 'ISO-8859-1',
+				TDbDriver::DRIVER_PGSQL => 'LATIN1',
+				TDbDriver::DRIVER_FIREBIRD => 'ISO8859_1',
+				TDbDriver::DRIVER_OCI => 'WE8ISO8859P1',
+				TDbDriver::EXTENSION_MSSQL => 'ISO-8859-1',
+				TDbDriver::DRIVER_DBLIB => 'ISO-8859-1',
 			],
 			'iso88591' => 'latin1',
 			'latin2' => [
-				'mysql' => 'latin2',
-				'pgsql' => 'LATIN2',
-				'firebird' => 'ISO8859_2',
-				'oci' => 'EE8ISO8859P2',
-				'mssql' => 'ISO-8859-2',
-				'dblib' => 'ISO-8859-2',
+				TDbDriver::DRIVER_MYSQL => 'latin2',
+				TDbDriver::DRIVER_PGSQL => 'LATIN2',
+				TDbDriver::DRIVER_FIREBIRD => 'ISO8859_2',
+				TDbDriver::DRIVER_OCI => 'EE8ISO8859P2',
+				TDbDriver::EXTENSION_MSSQL => 'ISO-8859-2',
+				TDbDriver::DRIVER_DBLIB => 'ISO-8859-2',
 			],
 			'iso88592' => 'latin2',
 			'ascii' => [
-				'mysql' => 'ascii',
-				'pgsql' => 'SQL_ASCII',
-				'firebird' => 'ASCII',
-				'oci' => 'US7ASCII',
-				'mssql' => 'ASCII',
-				'dblib' => 'ASCII',
+				TDbDriver::DRIVER_MYSQL => 'ascii',
+				TDbDriver::DRIVER_PGSQL => 'SQL_ASCII',
+				TDbDriver::DRIVER_FIREBIRD => 'ASCII',
+				TDbDriver::DRIVER_OCI => 'US7ASCII',
+				TDbDriver::EXTENSION_MSSQL => 'ASCII',
+				TDbDriver::DRIVER_DBLIB => 'ASCII',
 			],
 			'win1250' => [
-				'mysql' => 'cp1250',
-				'pgsql' => 'WIN1250',
-				'firebird' => 'WIN1250',
-				'oci' => 'EE8MSWIN1250',
-				'mssql' => 'CP1250',
-				'dblib' => 'CP1250',
+				TDbDriver::DRIVER_MYSQL => 'cp1250',
+				TDbDriver::DRIVER_PGSQL => 'WIN1250',
+				TDbDriver::DRIVER_FIREBIRD => 'WIN1250',
+				TDbDriver::DRIVER_OCI => 'EE8MSWIN1250',
+				TDbDriver::EXTENSION_MSSQL => 'CP1250',
+				TDbDriver::DRIVER_DBLIB => 'CP1250',
 			],
 			'windows1250' => 'win1250',
 			'cp1250' => 'win1250',
 			'win1251' => [
-				'mysql' => 'cp1251',
-				'pgsql' => 'WIN1251',
-				'firebird' => 'WIN1251',
-				'oci' => 'CL8MSWIN1251',
-				'mssql' => 'CP1251',
-				'dblib' => 'CP1251',
+				TDbDriver::DRIVER_MYSQL => 'cp1251',
+				TDbDriver::DRIVER_PGSQL => 'WIN1251',
+				TDbDriver::DRIVER_FIREBIRD => 'WIN1251',
+				TDbDriver::DRIVER_OCI => 'CL8MSWIN1251',
+				TDbDriver::EXTENSION_MSSQL => 'CP1251',
+				TDbDriver::DRIVER_DBLIB => 'CP1251',
 			],
 			'windows1251' => 'win1251',
 			'cp1251' => 'win1251',
 			'win1252' => [
-				'mysql' => 'cp1252',
-				'pgsql' => 'WIN1252',
-				'firebird' => 'WIN1252',
-				'oci' => 'WE8MSWIN1252',
-				'mssql' => 'CP1252',
-				'dblib' => 'CP1252',
+				TDbDriver::DRIVER_MYSQL => 'cp1252',
+				TDbDriver::DRIVER_PGSQL => 'WIN1252',
+				TDbDriver::DRIVER_FIREBIRD => 'WIN1252',
+				TDbDriver::DRIVER_OCI => 'WE8MSWIN1252',
+				TDbDriver::EXTENSION_MSSQL => 'CP1252',
+				TDbDriver::DRIVER_DBLIB => 'CP1252',
 			],
 			'windows1252' => 'win1252',
 			'cp1252' => 'win1252',
 			'koi8r' => [
-				'mysql' => 'koi8r',
-				'pgsql' => 'KOI8R',
-				'firebird' => 'KOI8R',
-				'oci' => 'CL8KOI8R',
-				'mssql' => 'KOI8-R',
-				'dblib' => 'KOI8-R',
+				TDbDriver::DRIVER_MYSQL => 'koi8r',
+				TDbDriver::DRIVER_PGSQL => 'KOI8R',
+				TDbDriver::DRIVER_FIREBIRD => 'KOI8R',
+				TDbDriver::DRIVER_OCI => 'CL8KOI8R',
+				TDbDriver::EXTENSION_MSSQL => 'KOI8-R',
+				TDbDriver::DRIVER_DBLIB => 'KOI8-R',
 			],
 			'koi8u' => [
-				'mysql' => 'koi8u',
-				'pgsql' => 'KOI8U',
-				'firebird' => 'KOI8U',
-				'oci' => 'CL8KOI8U',
-				'mssql' => 'KOI8-U',
-				'dblib' => 'KOI8-U',
+				TDbDriver::DRIVER_MYSQL => 'koi8u',
+				TDbDriver::DRIVER_PGSQL => 'KOI8U',
+				TDbDriver::DRIVER_FIREBIRD => 'KOI8U',
+				TDbDriver::DRIVER_OCI => 'CL8KOI8U',
+				TDbDriver::EXTENSION_MSSQL => 'KOI8-U',
+				TDbDriver::DRIVER_DBLIB => 'KOI8-U',
 			],
 		];
 
@@ -484,12 +485,12 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 		// Maps each supported driver to [dsn_param_name, regex_detecting_existing_param].
 		// Drivers absent from this table (pgsql, sqlite, ibm) are returned unchanged.
 		$dsnCharsetParams = [
-			'mysql' => ['charset',      '/[;?]charset\s*=/i'],
-			'firebird' => ['charset',      '/[;?]charset\s*=/i'],
-			'oci' => ['charset',      '/[;?]charset\s*=/i'],
-			'sqlsrv' => ['CharacterSet', '/[;?]CharacterSet\s*=/i'],
-			'mssql' => ['charset',      '/[;?]charset\s*=/i'],
-			'dblib' => ['charset',      '/[;?]charset\s*=/i'],
+			TDbDriver::DRIVER_MYSQL => ['charset',      '/[;?]charset\s*=/i'],
+			TDbDriver::DRIVER_FIREBIRD => ['charset',      '/[;?]charset\s*=/i'],
+			TDbDriver::DRIVER_OCI => ['charset',      '/[;?]charset\s*=/i'],
+			TDbDriver::DRIVER_SQLSRV => ['CharacterSet', '/[;?]CharacterSet\s*=/i'],
+			TDbDriver::EXTENSION_MSSQL => ['charset',      '/[;?]charset\s*=/i'],
+			TDbDriver::DRIVER_DBLIB => ['charset',      '/[;?]charset\s*=/i'],
 		];
 
 		if (!isset($dsnCharsetParams[$driver])) {
@@ -588,7 +589,7 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	public function getCanCharsetChange(): bool
 	{
 		$driver = $this->getDriverName();
-		return !$this->getActive() || in_array($driver, ['mysql', 'pgsql', 'sqlite']);
+		return !$this->getActive() || in_array($driver, [TDbDriver::DRIVER_MYSQL, TDbDriver::DRIVER_PGSQL, TDbDriver::DRIVER_SQLITE]);
 	}
 
 	/**
@@ -626,13 +627,13 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 		$driver = $this->getDriverName();
 		try {
 			switch ($driver) {
-				case 'mysql':
+				case TDbDriver::DRIVER_MYSQL:
 					return (string) $this->createCommand('SELECT @@character_set_connection')->queryScalar();
-				case 'pgsql':
+				case TDbDriver::DRIVER_PGSQL:
 					return (string) $this->createCommand('SELECT pg_client_encoding()')->queryScalar();
-				case 'sqlite':
+				case TDbDriver::DRIVER_SQLITE:
 					return (string) $this->createCommand('PRAGMA encoding')->queryScalar();
-				case 'firebird':
+				case TDbDriver::DRIVER_FIREBIRD:
 					$result = $this->createCommand(
 						'SELECT TRIM(c.RDB$CHARACTER_SET_NAME)' .
 						'  FROM MON$ATTACHMENTS a' .
