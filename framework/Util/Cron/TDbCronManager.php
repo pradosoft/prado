@@ -437,7 +437,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 			return;
 		}
 		$numtasks = count($runtimeTasks);
-		$cronlogger = $this->asa(TCronModule::SHELL_LOG_BEHAVIOR);
+		$cronlogger = $this->asa(TShellCronLogBehavior::class);
 		if ($cronlogger) {
 			$enabled = $cronlogger->getEnabled();
 			$cronlogger->setEnabled(false);

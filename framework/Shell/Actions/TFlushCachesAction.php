@@ -50,6 +50,7 @@ class TFlushCachesAction extends TShellAction
 		foreach ($app->getModulesByType(ICache::class) as $id => $module) {
 			if (in_array($id, $args)) {
 				$module = (!$module) ? $app->getModule($id) : $module;
+				/** @var ICache $module */
 				$module->flush();
 				$this->_outWriter->write('  ');
 				$this->_outWriter->write($id, [TShellWriter::GREEN, TShellWriter::BOLD]);
@@ -78,6 +79,7 @@ class TFlushCachesAction extends TShellAction
 		$module = null;
 		foreach ($app->getModulesByType(ICache::class) as $id => $module) {
 			$module = (!$module) ? $app->getModule($id) : $module;
+			/** @var ICache $module */
 			$module->flush();
 			$this->_outWriter->write('  ');
 			$this->_outWriter->write($id, [TShellWriter::GREEN, TShellWriter::BOLD]);

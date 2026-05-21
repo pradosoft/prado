@@ -68,7 +68,7 @@ class TShellCronAction extends TShellAction
 				return null;
 			}
 		}
-		if (!$this->_cron->asa(TCronModule::SHELL_LOG_BEHAVIOR)) {
+		if (!$this->_cron->asa(TShellCronLogBehavior::class)) {
 			$this->_cron->attachBehavior(TCronModule::SHELL_LOG_BEHAVIOR, new TShellCronLogBehavior($this->getWriter()));
 		}
 		return $this->_cron;

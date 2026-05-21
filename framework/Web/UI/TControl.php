@@ -1111,9 +1111,10 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 
 	/**
 	 * Finds all child and grand-child controls that are of the specified type.
-	 * @param string $type the class name
+	 * @template T
+	 * @param class-string<T> $type the class name
 	 * @param bool $strict whether the type comparison is strict or not. If false, controls of the parent classes of the specified class will also be returned.
-	 * @return array list of controls found
+	 * @return T[] list of controls found
 	 */
 	public function findControlsByType($type, $strict = true)
 	{
