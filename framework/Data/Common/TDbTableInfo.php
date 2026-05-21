@@ -11,7 +11,6 @@
 namespace Prado\Data\Common;
 
 use Prado\Collections\TMap;
-use Prado\Data\Common\IDataTableInfo;
 use Prado\Exceptions\TDbException;
 use Prado\Prado;
 

@@ -9,7 +9,6 @@
 
 namespace Prado\Data\ActiveRecord\Scaffold\InputBuilder;
 
-use Prado\Data\ActiveRecord\Scaffold\InputBuilder\IScaffoldInput;
 use Prado\Data\Common\TDbTableColumn;
 use Prado\Data\TDbDriver;
 use Prado\Exceptions\TConfigurationException;

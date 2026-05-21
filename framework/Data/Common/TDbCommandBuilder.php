@@ -13,7 +13,6 @@ namespace Prado\Data\Common;
 use PDO;
 use Traversable;
 use Prado\Data\TDbCommand;
-use Prado\Data\Common\IDataCommandBuilder;
 
 /**
  * TDbCommandBuilder provides basic methods to create query commands for tables
