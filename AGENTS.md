@@ -49,7 +49,8 @@
   - `@author` for attribution
   - `@method` for dynamic events with prefix 'dy-'; which are called (on "$this->dy-") but not defined.
 - Inline comments should start with `//`
-- **`@since` tag** — use the next release version when adding new methods or classes; omit the method tag when the method's `@since` matches the class `@since`, because the class tag covers it
+- Use `?` for single nullable types and in doc blocks
+- **`@since` tag** — use the next release version when adding new methods or classes; omit the method tag when it matches the class tag
 - All comments and documentation must be written in: **Present Perfect tense**, **American English**
 - Method Doc Blocks should be technical, thorough, **tight**, and have at minimum one sentence in the description.
 

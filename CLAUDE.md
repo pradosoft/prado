@@ -119,7 +119,7 @@ TApplication
 - **`if` statements** always use a block (`{}`), never a single-line body.
 - **Error codes** for PRADO exceptions are defined in `framework/Exceptions/messages/messages.txt` (English master); language variants are `messages-<lang>.txt` in the same directory.
 - **Backward compatibility** — all changes must be backward compatible for point releases. Minor releases can have breaking changes, but minimize the breaks.
-- **`@since` tag** — use the next release version (`4.4.0`) when adding new methods or classes.
+- **`@since` tag** — use the next release version (`4.4.0`) when adding new methods or classes; omit the method tag when it matches the class tag.
 - **Uniform Access Principal - Self Encapsulation** is required; for an example see framework/TApplication.php
 
 ## Test Bootstrap
@@ -132,6 +132,7 @@ Tests require a running `TApplication`. The bootstrap (`tests/test_tools/phpunit
 - Line endings: Unix (`\n`)
 - PHP minimum: 8.1 (CI tests 8.1, 8.2, 8.3)
 - PSR-12 enforced via php-cs-fixer
+- Use `?` for single nullable types and in doc blocks
 
 ## Working Knowledge (`agents/`)
 
