@@ -121,6 +121,7 @@ TApplication
 - **Backward compatibility** — all changes must be backward compatible for point releases. Minor releases can have breaking changes, but minimize the breaks.
 - **`@since` tag** — use the next release version (`4.4.0`) when adding new methods or classes; omit the method tag when it matches the class tag.
 - **Uniform Access Principal - Self Encapsulation** is required; for an example see framework/TApplication.php
+- **Extract Method → Predicate/Guard Clause (Fowler) is suggested
 
 ## Test Bootstrap
 

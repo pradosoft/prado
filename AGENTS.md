@@ -27,6 +27,7 @@
 - Use 1 tab for indentations (no spaces)
 - All class properties must be declared with visibility modifiers (public, protected, private)
 - Uniform Access Principal - Self Encapsulation is required; for an example see framework/TApplication.php
+- Extract Method → Predicate/Guard Clause (Fowler) is suggested
 
 ### Naming Conventions
 - Class names: `TPascalCase` (eg. `TComponent`, `TApplication`)
