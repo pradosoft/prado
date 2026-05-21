@@ -91,7 +91,7 @@ TApplication
   - **`on` prefix** — `onEventName(TEventParameter $param)` raised with `$this->raiseEvent('OnEventName', $this, $param)`.
   - **`dy` prefix** — dynamic events called on attached/active Behaviors (e.g., `dyShouldContinue`, `dyClone`, `dyValidate`).
   - **`fx` prefix** — global events, auto-registered depending on `getAutoGlobalListen()` (e.g., `fxAttachClassBehavior`).
-- All events are raised in specified priority order.
+- Behaviors and `on` events are called in specified Collections Priority order.
 - `@method` PHPDoc tags document dynamic `dy-` events on classes.
 
 
@@ -122,6 +122,9 @@ TApplication
 - **`@since` tag** — use the next release version (`4.4.0`) when adding new methods or classes; omit the method tag when it matches the class tag.
 - **Uniform Access Principal - Self Encapsulation** is required; for an example see framework/TApplication.php
 - **Extract Method → Predicate/Guard Clause (Fowler) is suggested
+- All comments and documentation must be: **Present Perfect tense**, **American English**, clear, thorough, and technical
+- Method Doc Blocks should be **tight**, and have at minimum one sentence in the description.
+- The per directory "<dir_path>/CLAUDE.md" is found at "agents/<dir_path>/INDEX.md" to keep the framework uncluttered. 
 
 ## Test Bootstrap
 

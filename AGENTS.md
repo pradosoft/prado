@@ -52,8 +52,8 @@
 - Inline comments should start with `//`
 - Use `?` for single nullable types and in doc blocks
 - **`@since` tag** — use the next release version when adding new methods or classes; omit the method tag when it matches the class tag
-- All comments and documentation must be written in: **Present Perfect tense**, **American English**
-- Method Doc Blocks should be technical, thorough, **tight**, and have at minimum one sentence in the description.
+- All comments and documentation must be: **Present Perfect tense**, **American English**, clear, thorough, and technical
+- Method Doc Blocks should be **tight**, and have at minimum one sentence in the description.
 
 ### Error Handling
 - Use try/catch blocks for operations that can fail
@@ -75,6 +75,7 @@
 - Behaviors can be attached to any `TComponent` to alter its behavior and functionality.
 - Use the event-driven programming model with events; like `onLoad`, `onInit`, `onPreRender`
 - Methods with prefix 'dy' are dynamic events to call attached and active Behaviors; like 'dyShouldContinue', 'dyClone', and 'dyValidate'
+- Behaviors and Events are called in Collection Priority order
 - Called Dynamic Events must be documented in the class phpdoc with "@method"
 - Dynamic event are implemented by attached behaviors not in the calling class
 - The first parameter of a dynamic event is always filtered and returned.
@@ -94,6 +95,7 @@
 - Minor releases can be breaking, but minimize the breakages where possible.
 - A full check consists of the 4 checks (in order): `php -l` compile, php-cs-fixer, phpstan, phpunit (all checks must pass successfully)
 - A full check must be done for code to be ready for git commit.
+- The per directory "<dir_path>/" information is found at "agents/<dir_path>/INDEX.md" to keep the framework uncluttered. 
 - **The current version is 4.3.3. The next release version is 4.4.0**.
 
 ### ActiveControls JavaScript
