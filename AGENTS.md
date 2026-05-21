@@ -25,21 +25,20 @@
 - Follow PSR-4 autoloading standard
 - All PHP files must begin with `<?php` tag (short open tags not allowed)
 - Use 1 tab for indentations (no spaces)
-- All class names must be in PascalCase
-- All method names must be in camelCase
-- All variable names must be in camelCase
-- Constants must be in SCREAMING_SNAKE_CASE
 - All class properties must be declared with visibility modifiers (public, protected, private)
 
 ### Naming Conventions
-- Class names: `TPascalCase` (e.g., `TComponent`)
-- Class name prefix: `T*` (e.g. `TApplication`)
-- Method names: `camelCase` (e.g., `getComponent`)
-- Variables: `camelCase` (e.g., `$componentName`)
-- Constants: `SCREAMING_SNAKE_CASE` (e.g., `MAX_RETRY_COUNT`)
-- Namespace: `Prado\{Module}` (e.g., `Prado\Web\UI\TControl`)
-- Template file extension: ".tpl"
-- Web Page template file extension: ".page"
+- Class names: `TPascalCase` (eg. `TComponent`)
+- Class name prefix: `T*` (eg. `TApplication`)
+- Method names: `camelCase` (eg. `getComponent`)
+- Variables: `camelCase` (eg. `$componentName`)
+- Class Constants: `SCREAMING_SNAKE_CASE` (eg. `MAX_RETRY_COUNT`)
+- Class properties: `_camelCase` (eg. `_propertyOfClass`)
+- Class properties prefix: `_*` (eg. `_countForCache`)
+- Enumerated Constants: `PascalCase` (eg. `DeepSkyBlue`)
+- Namespace: `Prado\{Module}` (eg. `Prado\Web\UI\TControl`)
+- MasterClass and Template file extension: ".tpl"
+- Web Page template file extensions: ".page" with ".php" backing
 
 ### Documentation Standards
 - All public methods must have PHPDoc comments with:
@@ -49,18 +48,18 @@
 - Classes must have a clear and comprehensive docblock at the top with class description with:
   - Examples, where necessary
   - `@author` for attribution
-  - `@since` for version
   - `@method` for dynamic events with prefix 'dy-'; which are called (on "$this->dy-") but not defined.
-- Inline comments should be in English and start with `//`
-- When documenting new methods or classes with "@since" use the next release version.
-- All documentation should be written in present perfect tense
+- Inline comments should start with `//`
+- **`@since` tag** — use the next release version when adding new methods or classes; omit the method tag when the method's `@since` matches the class `@since`, because the class tag covers it
+- All comments and documentation must be written in: **Present Perfect tense**, **American English**
+- Method Doc Blocks should be technical, thorough, **tight**, and have at minimum one sentence in the description.
 
 ### Error Handling
 - Use try/catch blocks for operations that can fail
 - Throw appropriate PRADO exceptions (`TInvalidDataValueException`, `TInvalidOperationException`, etc.)
 - Return false or null for methods that are designed to fail gracefully
 - All methods should handle edge cases and validate input parameters
-- PRADO Exceptions use errorCodes specified in framework/Exceptions/messages/messages.txt; the master error Code file in English.  messages.txt is purely for user information display only.
+- PRADO Exceptions use errorCodes specified in framework/Exceptions/messages/messages.txt; the master error Code file in American English.  messages.txt is purely for user information display only.
 - framework/Exceptions/messages/messages.txt has language specific versions at framework/Exceptions/messages/messages-<language code>.txt
 
 ### Imports and Includes
@@ -81,20 +80,20 @@
 - Optional class methods can directly be called on non-behavior classes as "dynamic events"
 - Methods with prefix 'fx' are global events that may or may not be automatically registered depending on getAutoGlobalListen(); like 'fxAttachClassBehavior'
 - getAutoGlobalListen() is optimized by class hierarchy for utility and performance
-- All events are raised in specified priority order
-- Follow the TApplication Lifecycle: onInitComplete (at end of TApplication::initApplication) → onBeginRequest → onLoadState → onLoadStateComplete → onAuthentication → onAuthenticationComplete → onAuthorization → onAuthorizationComplete → onPreRunService → runService → onSaveState → onSaveStateComplete → onPreFlushOutput → flushOutput → onEndRequest or onError (both at end of TApplication::run)
+- Follow the TApplication Lifecycle: onConfiguration → onInitComplete (at end of TApplication::initApplication) → onBeginRequest → onLoadState → onLoadStateComplete → onAuthentication → onAuthenticationComplete → onAuthorization → onAuthorizationComplete → onPreRunService → runService → onSaveState → onSaveStateComplete → onPreFlushOutput → flushOutput → onEndRequest or onError (both at end of TApplication::run)
 - Follow the TPage Lifecycle (via TPageService::runPage): onPreInit → initRecursive → onInitComplete → loadPageState (POST/Callback) → processPostData (POST/Callback) → onPreLoad → loadRecursive → processPostData (POST/Callback) → raiseChangedEvents (POST/Callback) → raisePostBackEvent (POST-only) → processCallbackEvent (Callback-only) → onLoadComplete → preRenderRecursive  onPreRenderComplete → savePageState → onSaveStateComplete → renderControl (GET/POST) → renderCallbackResponse (Callback-only) → unloadRecursive
-- XML and PHP is supported for application configuration 
+- XML and PHP is supported for application configuration
 - TPageService::onPreRunPage gives PRADO Modules event access to the TPage Lifecycle before it runs
 - 'framework/classes.php' MUST be updated with all new classes.
 - Web Pages are PHP classes with a ".page" TTemplate file with the same base name
 - UI Portlets are PHP classes with a ".tpl" TTemplate file with the same base name
 - Data components should support `TActiveRecord` pattern
 - All UI controls should have proper template support and state management
-- All changes must be backward compatible
+- All changes (eg. method param/return types) in point releases must be backward compatible.
+- Minor releases can be breaking, but minimize the breakages where possible.
 - A full check consists of the 4 checks (in order): `php -l` compile, php-cs-fixer, phpstan, phpunit (all checks must pass successfully)
 - A full check must be done for code to be ready for git commit.
-- The current version is 4.3.2. The next release version is 4.3.3
+- **The current version is 4.3.3. The next release version is 4.4.0**.
 
 ### ActiveControls JavaScript
 
@@ -160,23 +159,24 @@ Prado.WebUI.TActiveButton = jQuery.klass(Prado.WebUI.CallbackControl, { /* overr
 All instances self-register in `Prado.Registry[controlId]` on construction and are cleaned up via `deinitialize()`.
 
 ## Testing Guidelines
-- The testing platform is "phpunit"
+- The testing platforms are "phpunit", "vitest", and "playwright"
 - All new code must include unit tests
 - Unit test functions must comprehensively assert both typical and edge cases
-- Maximal coverage of code execution paths of a class is required
+- Maximal code coverage is required
 - Test error conditions and exception handling
-- Use mock objects where appropriate
+- Use PradoUnit infrastructure for access to protected and private object methods/properties.
+- Use mock objects only where appropriate, and check PradoUnit for a common solution first.
 - Functional tests should verify complete user workflows
 - Tests should be isolated from each other (no shared state)
 - When unit testing one or cluster of classes, only run the unit tests for that class or cluster/directory.
-- NEVER add/change phpunit command options when unit testing; only run project unit tests as specified
+- phpunit DOES NOT have the cli option "--verbose"
 
 ## Development Environment
 - PHP 8.1 or higher required
 - PHP extensions: ctype, dom, intl, json, pcre, spl (required)
 - Optional extensions for additional features: apcu, mbstring, openssl, pdo, soap, xsl, zlib
 - Composer for dependency management
-- Required developer dependencies for code checking: phpunit/phpunit, phpstan/phpstan, friendsofphp/php-cs-fixer
+- Required developer dependencies for code checking: phpunit/phpunit, phpstan/phpstan, friendsofphp/php-cs-fixer, npm: eslint, vitest, playwright
 - Presume that project dependencies are installed
 
 ## Directory Structure
@@ -277,22 +277,15 @@ All instances self-register in `Prado.Registry[controlId]` on construction and a
 - This is an abbreviated Directory Structure
 - All Directories have more files in them than listed
 
-## Cursor/Copilot Instructions
-No specific Cursor or Copilot rules currently defined for this project.
-
 # PRADO Framework Agent Safeguards -- ANTI-PATTERNS
 Between the next brackets, it is required without exception:
 {
-- NEVER (without exception) execute the following "git" commands without asking the developer for approval first: clone, checkout, mv, restore, rm, branch, add, commit, merge, rebase, reset, pull, push, fetch
+- NEVER (without exception) execute the following "git" commands without asking the developer for approval first: clone, mv, restore, rm, branch, commit, merge, rebase, reset, pull, push
 - NEVER (without exception) execute "rm" commands on any paths without asking the developer for approval first
-- NEVER remove composer --dev dependencies because those are a required for development on the Project
+- NEVER remove composer --dev dependencies required for development
 - NEVER perform an action that erases or overwrites files for the task of unit testing and fixing; file changes are important and must be kept, because the changes themselves are being unit tested.
 - NEVER delete any folders or files until the associated task is absolutely and totally complete.
 }
-
-# Search URL References
-- To Search the PHP language and libraries, use url: "https://www.php.net/search.php#gsc.tab=0&gsc.sort=&gsc.q=<replace with query string>"
-- To look up inherent PHP functions, use url: "https://www.php.net/manual/en/function.<replace with PHP function>.php"
 
 # Working Knowledge - Knowledge Retention Sub-Process Instructions
 - The goal of "Working Knowledge" is to make Coding Agents more efficient at project tasks.

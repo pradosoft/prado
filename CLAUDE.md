@@ -4,25 +4,28 @@ This file provides guidance to Agents when working with code in this repository.
 
 ## What This Is
 
-**Prado** is a component-based, event-driven PHP web framework. All framework source lives under `framework/` (PSR-4 namespace `Prado\`). Tests mirror that structure under `tests/unit/`. Current version: **4.3.2**; next release: **4.3.3**.
+**Prado** is a component-based, event-driven PHP web framework. All framework source lives under `framework/` (PSR-4 namespace `Prado\`). Tests mirror that structure under `tests/unit/`. Current version: **4.3.3**; next release: **4.4.0**.
 
 ## Commands
 
 ```bash
-# Run all unit tests
-vendor/bin/phpunit --testsuite unit
-
-# Run tests for a specific class, function, or directory
-vendor/bin/phpunit --testsuite unit --filter <test function, class, or directory>
-
-# Static analysis
-vendor/bin/phpstan analyse framework/ --memory-limit=512M
 
 # Code style check (dry-run)
 vendor/bin/php-cs-fixer fix --dry-run framework/
 
 # Code style fix (apply)
 vendor/bin/php-cs-fixer fix framework/
+
+# Static analysis
+vendor/bin/phpstan analyse framework/ --memory-limit=512M
+
+# Run all unit tests
+vendor/bin/phpunit --testsuite unit
+
+# Run tests for a specific class, function, or directory
+vendor/bin/phpunit --testsuite unit --filter <test function, class, or directory>
+
+# javascript commands and database commands in composer.json scripts section.
 
 # Generate API documentation
 composer gendoc
@@ -75,7 +78,7 @@ TApplication
 
 ### Application Lifecycle
 
-`onInitComplete` → `onBeginRequest` → `onLoadState` → `onLoadStateComplete` → `onAuthentication` → `onAuthenticationComplete` → `onAuthorization` → `onAuthorizationComplete` → `onPreRunService` → `runService` → `onSaveState` → `onSaveStateComplete` → `onPreFlushOutput` → `flushOutput` → `onEndRequest` / `onError`
+`onConfiguration` → `onInitComplete` → `onBeginRequest` → `onLoadState` → `onLoadStateComplete` → `onAuthentication` → `onAuthenticationComplete` → `onAuthorization` → `onAuthorizationComplete` → `onPreRunService` → `runService` → `onSaveState` → `onSaveStateComplete` → `onPreFlushOutput` → `flushOutput` → `onEndRequest` / `onError`
 
 ### Page Lifecycle (via TPageService)
 
@@ -113,8 +116,8 @@ TApplication
 - **`framework/classes.php`** — must be updated whenever a new class is added to the framework.
 - **`if` statements** always use a block (`{}`), never a single-line body.
 - **Error codes** for PRADO exceptions are defined in `framework/Exceptions/messages/messages.txt` (English master); language variants are `messages-<lang>.txt` in the same directory.
-- **Backward compatibility** — all changes must be backward compatible.
-- **`@since` tag** — use the next release version (`4.3.3`) when adding new methods or classes.
+- **Backward compatibility** — all changes must be backward compatible for point releases. Minor releases can have breaking changes, but minimize the breaks.
+- **`@since` tag** — use the next release version (`4.4.0`) when adding new methods or classes.
 
 ## Test Bootstrap
 
