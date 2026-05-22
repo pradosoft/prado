@@ -170,7 +170,7 @@ class TDbCommandTest extends PHPUnit\Framework\TestCase
 		// test unprepared SQL query
 		$sql = 'SELECT * FROM foo';
 		$row = $this->_connection->createCommand($sql)->queryRow();
-		$this->assertSame('1', $row['id']);
+		$this->assertEquals(1, $row['id']);
 		$this->assertSame('my name', $row['name']);
 
 		// test unprepared SQL query
@@ -178,7 +178,7 @@ class TDbCommandTest extends PHPUnit\Framework\TestCase
 		$command = $this->_connection->createCommand($sql);
 		$command->prepare();
 		$row = $command->queryRow();
-		$this->assertSame('1', $row['id']);
+		$this->assertEquals(1, $row['id']);
 		$this->assertSame('my name', $row['name']);
 
 		// test exception raising
@@ -195,14 +195,14 @@ class TDbCommandTest extends PHPUnit\Framework\TestCase
 		// test unprepared SQL query
 		$sql = 'SELECT * FROM foo';
 		$id = $this->_connection->createCommand($sql)->queryScalar();
-		$this->assertSame('1', $id);
+		$this->assertEquals(1, $id);
 
 		// test unprepared SQL query
 		$sql = 'SELECT * FROM foo';
 		$command = $this->_connection->createCommand($sql);
 		$command->prepare();
 		$row = $command->queryScalar();
-		$this->assertSame('1', $id);
+		$this->assertEquals(1, $id);
 
 		// test exception raising
 		try {

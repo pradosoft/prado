@@ -207,6 +207,37 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 	}
 
 	/**
+	 * Build a PDO mock that reports the given driver name and expects exec()
+	 * to be called once with the fully-rendered SQL string (no bind params).
+	 * quote() is also mocked to return a single-quoted version of $charset so
+	 * that the sprintf() inside setConnectionCharset() produces the correct SQL.
+	 *
+	 * Used for PostgreSQL, where `SET client_encoding TO ?` is not valid in a
+	 * native prepared statement and the implementation uses exec(sprintf(...)).
+	 */
+	private function makePdoExpectingExec(string $driver, string $charset): \PDO
+	{
+		$quoted = "'{$charset}'";
+
+		$mockPdo = $this->getMockBuilder(\PDO::class)
+			->disableOriginalConstructor()
+			->getMock();
+		$mockPdo->method('getAttribute')
+			->with(\PDO::ATTR_DRIVER_NAME)
+			->willReturn($driver);
+		$mockPdo->method('quote')
+			->with($charset)
+			->willReturn($quoted);
+		$mockPdo->expects($this->once())
+			->method('exec')
+			->with("SET client_encoding TO {$quoted}");
+		$mockPdo->expects($this->never())
+			->method('prepare');
+
+		return $mockPdo;
+	}
+
+	/**
 	 * Build a PDO mock that reports the given driver name and asserts that
 	 * prepare() is never called (i.e. the method returns silently).
 	 */
@@ -276,7 +307,10 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 	/** @dataProvider providePgsqlEncodings */
 	public function testSetConnectionCharsetUsesPgsqlEncoding(string $input, string $expected): void
 	{
-		[$mockPdo] = $this->makePdoExpectingPrepare('pgsql', 'SET client_encoding TO ?', $expected);
+		// PostgreSQL SET does not accept bind parameters in native prepared
+		// statements, so setConnectionCharset() uses exec(sprintf(..., quote()))
+		// rather than prepare()->execute().  The SQL template therefore uses %s.
+		$mockPdo = $this->makePdoExpectingExec('pgsql', $expected);
 		$conn = $this->makeCharsetOnlyConnection($input);
 		$this->injectMockPdo($conn, $mockPdo);
 		$this->callSetConnectionCharset($conn);
@@ -1547,6 +1581,226 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 		$method->setAccessible(true);
 		$result = $method->invoke($conn, $dsn);
 		$this->assertStringContainsString('charset=', $result);
+	}
+
+	// -----------------------------------------------------------------------
+	// getSocket() / setSocket() — property accessors
+	// -----------------------------------------------------------------------
+
+	public function testGetSocketDefaultsToEmptyString(): void
+	{
+		$conn = new TDbConnection('mysql:host=localhost;dbname=test');
+		$this->assertSame('', $conn->Socket);
+	}
+
+	public function testSetSocketStoresValue(): void
+	{
+		$conn = new TDbConnection('mysql:host=localhost;dbname=test');
+		$conn->Socket = '/var/run/mysqld/mysqld.sock';
+		$this->assertSame('/var/run/mysqld/mysqld.sock', $conn->Socket);
+	}
+
+	public function testSetSocketAcceptsEmptyString(): void
+	{
+		$conn = new TDbConnection('mysql:host=localhost;dbname=test');
+		$conn->Socket = '/var/run/mysqld/mysqld.sock';
+		$conn->Socket = '';
+		$this->assertSame('', $conn->Socket);
+	}
+
+	// -----------------------------------------------------------------------
+	// applySocketToDsn() — helper to call the protected method
+	// -----------------------------------------------------------------------
+
+	/**
+	 * Call the protected applySocketToDsn() method via reflection.
+	 */
+	private function callApplySocketToDsn(TDbConnection $conn, string $dsn): string
+	{
+		$method = new \ReflectionMethod(TDbConnection::class, 'applySocketToDsn');
+		$method->setAccessible(true);
+		return $method->invoke($conn, $dsn);
+	}
+
+	/**
+	 * Build a TDbConnection with a given DSN and socket path (inactive, no PDO).
+	 */
+	private function makeConnWithSocket(string $dsn, string $socket): TDbConnection
+	{
+		$conn = new TDbConnection($dsn);
+		$conn->Socket = $socket;
+		return $conn;
+	}
+
+	// -----------------------------------------------------------------------
+	// applySocketToDsn() — early-return paths
+	// -----------------------------------------------------------------------
+
+	public function testApplySocketToDsnSkipsWhenSocketEmpty(): void
+	{
+		$dsn  = 'mysql:host=localhost;port=3306;dbname=test';
+		$conn = new TDbConnection($dsn);
+		// Socket is '' by default
+		$result = $this->callApplySocketToDsn($conn, $dsn);
+		$this->assertSame($dsn, $result);
+	}
+
+	public function testApplySocketToDsnSkipsWhenDsnEmpty(): void
+	{
+		$conn = new TDbConnection('');
+		$conn->Socket = '/var/run/mysqld/mysqld.sock';
+		$result = $this->callApplySocketToDsn($conn, '');
+		$this->assertSame('', $result);
+	}
+
+	public function testApplySocketToDsnSkipsWhenDsnHasNoColon(): void
+	{
+		$conn = new TDbConnection('invalid_dsn');
+		$conn->Socket = '/var/run/mysqld/mysqld.sock';
+		$result = $this->callApplySocketToDsn($conn, 'invalid_dsn');
+		$this->assertSame('invalid_dsn', $result);
+	}
+
+	// -----------------------------------------------------------------------
+	// applySocketToDsn() — MySQL
+	// -----------------------------------------------------------------------
+
+	/** @dataProvider provideMysqlSocketDsnTransformations */
+	public function testApplySocketToDsnMysql(
+		string $inputDsn,
+		string $socketPath,
+		string $expectedDsn
+	): void {
+		$conn = $this->makeConnWithSocket($inputDsn, $socketPath);
+		$result = $this->callApplySocketToDsn($conn, $inputDsn);
+		$this->assertSame($expectedDsn, $result);
+	}
+
+	public static function provideMysqlSocketDsnTransformations(): array
+	{
+		return [
+			// Typical case: host and port stripped, unix_socket prepended
+			'host+port+dbname' => [
+				'mysql:host=localhost;port=3306;dbname=mydb',
+				'/var/run/mysqld/mysqld.sock',
+				'mysql:unix_socket=/var/run/mysqld/mysqld.sock;dbname=mydb',
+			],
+			// Only host, no port
+			'host+dbname only' => [
+				'mysql:host=localhost;dbname=mydb',
+				'/var/run/mysqld/mysqld.sock',
+				'mysql:unix_socket=/var/run/mysqld/mysqld.sock;dbname=mydb',
+			],
+			// Only port, no host (unusual but valid in principle)
+			'port+dbname only' => [
+				'mysql:port=3306;dbname=mydb',
+				'/var/run/mysqld/mysqld.sock',
+				'mysql:unix_socket=/var/run/mysqld/mysqld.sock;dbname=mydb',
+			],
+			// No host or port already — just prepend unix_socket
+			'dbname only' => [
+				'mysql:dbname=mydb',
+				'/var/run/mysqld/mysqld.sock',
+				'mysql:unix_socket=/var/run/mysqld/mysqld.sock;dbname=mydb',
+			],
+			// host/port appear after dbname (order independence)
+			'dbname+host+port' => [
+				'mysql:dbname=mydb;host=localhost;port=3306',
+				'/var/run/mysqld/mysqld.sock',
+				'mysql:unix_socket=/var/run/mysqld/mysqld.sock;dbname=mydb',
+			],
+			// charset= param preserved
+			'host+port+dbname+charset' => [
+				'mysql:host=localhost;port=3306;dbname=mydb;charset=utf8mb4',
+				'/var/run/mysqld/mysqld.sock',
+				'mysql:unix_socket=/var/run/mysqld/mysqld.sock;dbname=mydb;charset=utf8mb4',
+			],
+		];
+	}
+
+	public function testApplySocketToDsnMysqlHonoursExistingUnixSocket(): void
+	{
+		// If the DSN already contains unix_socket=, it must not be modified (DSN wins).
+		$dsn  = 'mysql:unix_socket=/existing/path.sock;dbname=mydb';
+		$conn = $this->makeConnWithSocket($dsn, '/new/path.sock');
+		$result = $this->callApplySocketToDsn($conn, $dsn);
+		$this->assertSame($dsn, $result);
+	}
+
+	// -----------------------------------------------------------------------
+	// applySocketToDsn() — PostgreSQL
+	// -----------------------------------------------------------------------
+
+	/** @dataProvider providePgsqlSocketDsnTransformations */
+	public function testApplySocketToDsnPgsql(
+		string $inputDsn,
+		string $socketPath,
+		string $expectedDsn
+	): void {
+		$conn = $this->makeConnWithSocket($inputDsn, $socketPath);
+		$result = $this->callApplySocketToDsn($conn, $inputDsn);
+		$this->assertSame($expectedDsn, $result);
+	}
+
+	public static function providePgsqlSocketDsnTransformations(): array
+	{
+		return [
+			// Typical case: replace existing host= with the socket directory
+			'host+dbname' => [
+				'pgsql:host=localhost;dbname=mydb',
+				'/var/run/postgresql',
+				'pgsql:host=/var/run/postgresql;dbname=mydb',
+			],
+			// host= appears after dbname
+			'dbname+host' => [
+				'pgsql:dbname=mydb;host=localhost',
+				'/var/run/postgresql',
+				'pgsql:dbname=mydb;host=/var/run/postgresql',
+			],
+			// host and port: host replaced, port preserved (libpq uses port for socket file selection)
+			'host+port+dbname' => [
+				'pgsql:host=localhost;port=5432;dbname=mydb',
+				'/var/run/postgresql',
+				'pgsql:host=/var/run/postgresql;port=5432;dbname=mydb',
+			],
+			// No host= at all: inject host= at the start
+			'dbname only' => [
+				'pgsql:dbname=mydb',
+				'/var/run/postgresql',
+				'pgsql:host=/var/run/postgresql;dbname=mydb',
+			],
+			// No host=, has port=: inject host= at the start
+			'port+dbname only' => [
+				'pgsql:port=5432;dbname=mydb',
+				'/var/run/postgresql',
+				'pgsql:host=/var/run/postgresql;port=5432;dbname=mydb',
+			],
+		];
+	}
+
+	// -----------------------------------------------------------------------
+	// applySocketToDsn() — other drivers are unchanged
+	// -----------------------------------------------------------------------
+
+	/** @dataProvider provideSocketIgnoredDrivers */
+	public function testApplySocketToDsnIgnoredForDriver(string $dsn): void
+	{
+		$conn = new TDbConnection($dsn);
+		$conn->Socket = '/var/run/some.sock';
+		$result = $this->callApplySocketToDsn($conn, $dsn);
+		$this->assertSame($dsn, $result);
+	}
+
+	public static function provideSocketIgnoredDrivers(): array
+	{
+		return [
+			'sqlite'   => ['sqlite:/tmp/test.db'],
+			'oci'      => ['oci:dbname=//localhost:1521/ORCL'],
+			'sqlsrv'   => ['sqlsrv:Server=localhost,1433;Database=mydb'],
+			'dblib'    => ['dblib:host=localhost;dbname=mydb'],
+			'firebird' => ['firebird:dbname=localhost:/var/lib/firebird/data/test.fdb'],
+			'ibm'      => ['ibm:DRIVER={IBM DB2 ODBC DRIVER};DATABASE=MYDB;HOSTNAME=localhost;PORT=50000;PROTOCOL=TCPIP'],
+		];
 	}
 
 }

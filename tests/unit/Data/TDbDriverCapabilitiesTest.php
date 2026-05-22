@@ -42,6 +42,10 @@ use Prado\Exceptions\TDbException;
  *  - getListTablesSql
  *  - supportsCharset
  *  - hasAutoCommitAttribute
+ *  - getPostConnectAttributes
+ *  - getSocketDsnParam
+ *  - getSocketDsnConflictParam
+ *  - getSocketDsnParamsToRemove
  *  - getMetaDataClass (all drivers + fxDataGetMetaDataClass event)
  *  - getScaffoldInputFile
  *  - getScaffoldInputClass
@@ -495,7 +499,7 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 	{
 		return [
 			'mysql'     => [TDbDriver::DRIVER_MYSQL,    'SET NAMES ?'],
-			'pgsql'     => [TDbDriver::DRIVER_PGSQL,    'SET client_encoding TO ?'],
+			'pgsql'     => [TDbDriver::DRIVER_PGSQL,    'SET client_encoding TO %s'],
 			'sqlite'    => [TDbDriver::DRIVER_SQLITE,   null],
 			'sqlite2'   => [TDbDriver::DRIVER_SQLITE2,  null],
 			'firebird'  => [TDbDriver::DRIVER_FIREBIRD, null],
@@ -1298,18 +1302,31 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 	//  createScaffoldInput
 	// =========================================================================
 
-	/** @dataProvider provideScaffoldInputClass */
-	public function testCreateScaffoldInputBuiltInDriverReturnsInstance(string $driver, ?string $expected): void
+	/** @dataProvider provideBuiltInScaffoldInputClass */
+	public function testCreateScaffoldInputBuiltInDriverReturnsInstance(string $driver, string $expected): void
 	{
-		if ($expected === null) {
-			$this->markTestSkipped('Unknown driver — tested separately via event path.');
-		}
 		$conn = $this->createMock(TDbConnection::class);
 		$conn->method('getDriverName')->willReturn($driver);
 		$conn->expects($this->never())->method('raiseEvent');
 
 		$result = TDbDriverCapabilities::createScaffoldInput($conn);
 		$this->assertInstanceOf($expected, $result);
+	}
+
+	public static function provideBuiltInScaffoldInputClass(): array
+	{
+		return [
+			'mysql'     => [TDbDriver::DRIVER_MYSQL,     'TMysqlScaffoldInput'],
+			'pgsql'     => [TDbDriver::DRIVER_PGSQL,     'TPgsqlScaffoldInput'],
+			'sqlite'    => [TDbDriver::DRIVER_SQLITE,    'TSqliteScaffoldInput'],
+			'sqlite2'   => [TDbDriver::DRIVER_SQLITE2,   'TSqliteScaffoldInput'],
+			'firebird'  => [TDbDriver::DRIVER_FIREBIRD,  'TFirebirdScaffoldInput'],
+			'interbase' => [TDbDriver::DRIVER_INTERBASE, 'TFirebirdScaffoldInput'],
+			'sqlsrv'    => [TDbDriver::DRIVER_SQLSRV,    'TSqlSrvScaffoldInput'],
+			'dblib'     => [TDbDriver::DRIVER_DBLIB,     'TSqlSrvScaffoldInput'],
+			'oci'       => [TDbDriver::DRIVER_OCI,       'TOracleScaffoldInput'],
+			'ibm'       => [TDbDriver::DRIVER_IBM,       'TIbmScaffoldInput'],
+		];
 	}
 
 	public function testCreateScaffoldInputUnknownDriverThrowsWhenNoEventHandlers(): void
@@ -1432,5 +1449,147 @@ class TDbDriverCapabilitiesTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue(TDbDriverCapabilities::requiresPostTransactionFlush(TDbDriver::DRIVER_FIREBIRD));
 		$this->assertFalse(TDbDriverCapabilities::requiresPreBeginTransactionFlush(TDbDriver::DRIVER_INTERBASE));
 		$this->assertFalse(TDbDriverCapabilities::requiresPostTransactionFlush(TDbDriver::DRIVER_INTERBASE));
+	}
+
+	// =========================================================================
+	//  getPostConnectAttributes
+	// =========================================================================
+
+	public function testGetPostConnectAttributesMysqlReturnsBothFlags(): void
+	{
+		$attrs = TDbDriverCapabilities::getPostConnectAttributes(TDbDriver::DRIVER_MYSQL);
+		$this->assertArrayHasKey(PDO::ATTR_EMULATE_PREPARES,  $attrs);
+		$this->assertArrayHasKey(PDO::ATTR_STRINGIFY_FETCHES, $attrs);
+		$this->assertTrue($attrs[PDO::ATTR_EMULATE_PREPARES]);
+		$this->assertTrue($attrs[PDO::ATTR_STRINGIFY_FETCHES]);
+	}
+
+	/** @dataProvider provideNoPostConnectAttributesDrivers */
+	public function testGetPostConnectAttributesReturnsEmptyForDriver(string $driver): void
+	{
+		$this->assertSame([], TDbDriverCapabilities::getPostConnectAttributes($driver));
+	}
+
+	public static function provideNoPostConnectAttributesDrivers(): array
+	{
+		return [
+			'pgsql'    => [TDbDriver::DRIVER_PGSQL],
+			'sqlite'   => [TDbDriver::DRIVER_SQLITE],
+			'sqlite2'  => [TDbDriver::DRIVER_SQLITE2],
+			'firebird' => [TDbDriver::DRIVER_FIREBIRD],
+			'oci'      => [TDbDriver::DRIVER_OCI],
+			'sqlsrv'   => [TDbDriver::DRIVER_SQLSRV],
+			'dblib'    => [TDbDriver::DRIVER_DBLIB],
+			'ibm'      => [TDbDriver::DRIVER_IBM],
+		];
+	}
+
+	// =========================================================================
+	//  getSocketDsnParam
+	// =========================================================================
+
+	/** @dataProvider provideSocketDsnParam */
+	public function testGetSocketDsnParam(string $driver, ?string $expected): void
+	{
+		$this->assertSame($expected, TDbDriverCapabilities::getSocketDsnParam($driver));
+	}
+
+	public static function provideSocketDsnParam(): array
+	{
+		return [
+			'mysql'    => [TDbDriver::DRIVER_MYSQL,    'unix_socket'],
+			'pgsql'    => [TDbDriver::DRIVER_PGSQL,    'host'],
+			'sqlite'   => [TDbDriver::DRIVER_SQLITE,   null],
+			'sqlite2'  => [TDbDriver::DRIVER_SQLITE2,  null],
+			'firebird' => [TDbDriver::DRIVER_FIREBIRD, null],
+			'oci'      => [TDbDriver::DRIVER_OCI,      null],
+			'sqlsrv'   => [TDbDriver::DRIVER_SQLSRV,   null],
+			'dblib'    => [TDbDriver::DRIVER_DBLIB,    null],
+			'ibm'      => [TDbDriver::DRIVER_IBM,      null],
+		];
+	}
+
+	// =========================================================================
+	//  getSocketDsnConflictParam
+	// =========================================================================
+
+	/** @dataProvider provideSocketDsnConflictParam */
+	public function testGetSocketDsnConflictParam(string $driver, ?string $expected): void
+	{
+		$this->assertSame($expected, TDbDriverCapabilities::getSocketDsnConflictParam($driver));
+	}
+
+	public static function provideSocketDsnConflictParam(): array
+	{
+		return [
+			// MySQL: if unix_socket= is already in the DSN, leave it alone.
+			'mysql'    => [TDbDriver::DRIVER_MYSQL,    'unix_socket'],
+			// PostgreSQL always replaces/injects host=; no conflict guard needed.
+			'pgsql'    => [TDbDriver::DRIVER_PGSQL,    null],
+			'sqlite'   => [TDbDriver::DRIVER_SQLITE,   null],
+			'firebird' => [TDbDriver::DRIVER_FIREBIRD, null],
+			'oci'      => [TDbDriver::DRIVER_OCI,      null],
+			'sqlsrv'   => [TDbDriver::DRIVER_SQLSRV,   null],
+			'ibm'      => [TDbDriver::DRIVER_IBM,      null],
+		];
+	}
+
+	// =========================================================================
+	//  getSocketDsnParamsToRemove
+	// =========================================================================
+
+	/** @dataProvider provideSocketDsnParamsToRemove */
+	public function testGetSocketDsnParamsToRemove(string $driver, array $expected): void
+	{
+		$this->assertSame($expected, TDbDriverCapabilities::getSocketDsnParamsToRemove($driver));
+	}
+
+	public static function provideSocketDsnParamsToRemove(): array
+	{
+		return [
+			// MySQL: host= and port= are incompatible with unix_socket=.
+			'mysql'    => [TDbDriver::DRIVER_MYSQL,    ['host', 'port']],
+			// PostgreSQL: host= is the socket param itself (replaced in-place).
+			'pgsql'    => [TDbDriver::DRIVER_PGSQL,    []],
+			'sqlite'   => [TDbDriver::DRIVER_SQLITE,   []],
+			'firebird' => [TDbDriver::DRIVER_FIREBIRD, []],
+			'oci'      => [TDbDriver::DRIVER_OCI,      []],
+			'sqlsrv'   => [TDbDriver::DRIVER_SQLSRV,   []],
+			'ibm'      => [TDbDriver::DRIVER_IBM,      []],
+		];
+	}
+
+	// =========================================================================
+	//  Socket capability cross-check: drivers without a socket param also have
+	//  no conflict param and no params to remove.
+	// =========================================================================
+
+	public function testSocketCapabilitiesAreConsistentForNonSocketDrivers(): void
+	{
+		$noSocketDrivers = [
+			TDbDriver::DRIVER_SQLITE,
+			TDbDriver::DRIVER_SQLITE2,
+			TDbDriver::DRIVER_FIREBIRD,
+			TDbDriver::DRIVER_INTERBASE,
+			TDbDriver::DRIVER_OCI,
+			TDbDriver::DRIVER_SQLSRV,
+			TDbDriver::DRIVER_DBLIB,
+			TDbDriver::DRIVER_IBM,
+		];
+		foreach ($noSocketDrivers as $driver) {
+			$this->assertNull(
+				TDbDriverCapabilities::getSocketDsnParam($driver),
+				"$driver: getSocketDsnParam must be null"
+			);
+			$this->assertNull(
+				TDbDriverCapabilities::getSocketDsnConflictParam($driver),
+				"$driver: getSocketDsnConflictParam must be null"
+			);
+			$this->assertSame(
+				[],
+				TDbDriverCapabilities::getSocketDsnParamsToRemove($driver),
+				"$driver: getSocketDsnParamsToRemove must be empty"
+			);
+		}
 	}
 }
