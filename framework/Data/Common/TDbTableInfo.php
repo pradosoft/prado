@@ -20,7 +20,7 @@ use Prado\Prado;
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
  */
-class TDbTableInfo extends \Prado\TComponent
+class TDbTableInfo extends \Prado\TComponent implements IDataTableInfo
 {
 	private $_info = [];
 

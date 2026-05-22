@@ -11,6 +11,8 @@
 namespace Prado\Data;
 
 /**
+ * IDataReader interface
+ *
  * IDataReader defines the interface for a forward-only data result reader.
  *
  * Implementations include {@see TDbDataReader} for SQL/PDO result sets.

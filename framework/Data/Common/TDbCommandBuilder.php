@@ -21,7 +21,7 @@ use Prado\Data\TDbCommand;
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
  */
-class TDbCommandBuilder extends \Prado\TComponent
+class TDbCommandBuilder extends \Prado\TComponent implements IDataCommandBuilder
 {
 	private $_connection;
 	private $_tableInfo;

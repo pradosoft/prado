@@ -164,7 +164,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 				continue;
 			} elseif (is_dir($path)) {
 				if (($this->_recursiveLevel < 0 || $level < $this->_recursiveLevel) && $this->validateDirectory($path)) {
-					$timestamps = array_merge($this->generateTimestamps($path, $level + 1));
+					$timestamps = array_merge($timestamps, $this->generateTimestamps($path, $level + 1));
 				}
 			} elseif ($this->validateFile($path)) {
 				$timestamps[$path] = filemtime($path);

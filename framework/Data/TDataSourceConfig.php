@@ -84,7 +84,7 @@ class TDataSourceConfig extends TModule
 					$db->setSubProperty($name, $value);
 				}
 			}
-		} else {
+		} elseif ($config !== null) {
 			if ($prop = $config->getElementByTagName('database')) {
 				$db = $this->getDbConnection();
 				foreach ($prop->getAttributes() as $name => $value) {
