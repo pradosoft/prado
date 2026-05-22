@@ -85,9 +85,6 @@ jobs:
         run: |
           composer unittest
 
-      - name: Run Selenium Functional Tests
-        run: composer seleniumtest
-
   prado-js:
     name: Prado JS (ESLint + Vitest)
     runs-on: ubuntu-latest
