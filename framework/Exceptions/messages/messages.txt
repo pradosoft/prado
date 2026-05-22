@@ -68,6 +68,8 @@ application_unavailable					= Application is unavailable at this time.
 application_service_unavailable			= Service '{0}' is unavailable at this time.
 application_moduleid_duplicated			= Application module ID '{0}' is not unique.
 application_runtimepath_failed			= Unable to create runtime path '{0}'. Make sure the parent directory exists and is writable by the Web process.
+application_module_required_dep_missing	= Module '{0}' has a required dependency on module '{1}', which is not registered with the application.
+application_module_dependency_cycle		= A dependency cycle was detected among the following modules: {0}.
 
 appconfig_aliaspath_invalid				= Application configuration <alias id="{0}"> uses an invalid file path "{1}".
 appconfig_alias_invalid					= Application configuration <alias> element must have an "id" attribute and a "path" attribute.
