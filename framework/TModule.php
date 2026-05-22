@@ -89,8 +89,9 @@ abstract class TModule extends \Prado\TApplicationComponent implements IModule
 	/**
 	 * Initializes the module. Required by {@see IModule}; invoked by the application.
 	 * Raises {@see dyInit()} on all attached behaviors.
-	 * @param ?\Prado\Xml\TXmlElement $config module configuration element, or null
-	 *   when invoked without XML configuration
+	 * @param null|array|\Prado\Xml\TXmlElement $config Module configuration element.
+	 *  `TXmlElement` for XML configuration, `array` for PHP configuration, and null
+	 *   when invoked without configuration.
 	 */
 	public function init($config)
 	{
