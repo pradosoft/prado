@@ -293,9 +293,9 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 */
 	protected function raiseRowDelegate($handler, $param)
 	{
-		if (is_string($handler)) {
+		if ($handler instanceof \Closure || is_string($handler)) {
 			call_user_func($handler, $this, $param);
-		} elseif (is_callable($handler, true)) {
+		} elseif (is_array($handler)) {
 			// an array: 0 - object, 1 - method name/path
 			[$object, $method] = $handler;
 			if (is_string($object)) {	// static method call
@@ -722,7 +722,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		// Case-insensitive fallback for drivers that return column names in a
 		// different case (e.g. pdo_oci returns ACCOUNT_ID when the query says
 		// Account_Id).
-		$groupByLower = strtolower($groupBy);
+		$groupByLower = strtolower((string) $groupBy);
 		foreach ($row as $key => $val) {
 			if (strtolower((string) $key) === $groupByLower) {
 				return $resultMap->getID() . $val;
