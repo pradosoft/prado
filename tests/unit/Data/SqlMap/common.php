@@ -9,6 +9,7 @@ if (!defined('SQLMAP_TESTS')) {
 if (!class_exists('Account', false)) {
 	include(SQLMAP_TESTS . '/domain/A.php');
 	include(SQLMAP_TESTS . '/domain/Account.php');
+	include(SQLMAP_TESTS . '/domain/Enumeration.php');
 	include(SQLMAP_TESTS . '/domain/AccountBis.php');
 	include(SQLMAP_TESTS . '/domain/AccountCollection.php');
 	include(SQLMAP_TESTS . '/domain/B.php');
@@ -134,6 +135,7 @@ class SQLiteBaseTestConfig extends BaseTestConfig
 	{
 		$this->_sqlmapConfigFile = SQLMAP_TESTS . '/sqlite.xml';
 		$this->_scriptDir = SQLMAP_TESTS . '/scripts/sqlite/';
+		$this->_features = ['insert_id'];
 
 		$this->targetFile = realpath(SQLMAP_TESTS . '/sqlite/tests.db');
 		$this->baseFile = realpath(SQLMAP_TESTS . '/sqlite/backup.db');
@@ -176,6 +178,7 @@ class PgsqlBaseTestConfig extends BaseTestConfig
 	{
 		$this->_sqlmapConfigFile = SQLMAP_TESTS . '/pgsql.xml';
 		$this->_scriptDir = SQLMAP_TESTS . '/scripts/pgsql/';
+		$this->_features = ['insert_id'];
 		$dsn = 'pgsql:host=localhost;dbname=prado_unitest;port=5432';
 		$this->_connection = new TDbConnection($dsn, 'prado_unitest', 'prado_unitest');
 	}

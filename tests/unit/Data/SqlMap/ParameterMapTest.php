@@ -123,7 +123,7 @@ class ParameterMapTest extends BaseCase
 	/// for Guid
 	public function testNullValueReplacementForGuidValue()
 	{
-		if ($this->hasSupportFor('last_insert_id')) {
+		if ($this->hasSupportFor('insert_id')) {
 			$category = new Category();
 			$category->setName("Totoasdasd");
 			$category->setGuidString('00000000-0000-0000-0000-000000000000');
@@ -135,7 +135,7 @@ class ParameterMapTest extends BaseCase
 			$this->assertSame($category->getName(), $categoryRead->getName());
 			$this->assertSame('', $categoryRead->getGuidString());
 		} else {
-			throw new PHPUnit\Framework\IncompleteTestError();
+			$this->markTestSkipped('Driver does not support last_insert_id (InsertCategoryNull uses LAST_INSERT_ID() which is MySQL-only).');
 		}
 	}
 

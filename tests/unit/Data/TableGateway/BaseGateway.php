@@ -58,7 +58,7 @@ class BaseGateway extends PHPUnit\Framework\TestCase
 	protected function setUp(): void
 	{
 		if (!static::$conn) {
-			static::$conn = $this->setupConnection();
+			static::$conn = $this->setupPradoUnitConnection();
 			$this->gateway1 = new TTableGateway('address', static::$conn);
 		}
 	}

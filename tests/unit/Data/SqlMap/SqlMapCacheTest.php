@@ -69,4 +69,103 @@ class SqlMapCacheTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($object2 === $lru->get($key2));
 		$this->assertTrue($object3 === $lru->get($key3));
 	}
+
+	public function testFifoDelete()
+	{
+		$fifo = new TSqlMapFifoCache();
+		$object1 = new TComponent;
+		$object2 = new TSqlMapManager;
+		$fifo->set('k1', $object1);
+		$fifo->set('k2', $object2);
+
+		// delete returns the removed object
+		$removed = $fifo->delete('k1');
+		$this->assertSame($object1, $removed);
+
+		// key is gone
+		$this->assertNull($fifo->get('k1'));
+		// other key still present
+		$this->assertSame($object2, $fifo->get('k2'));
+	}
+
+	public function testLruDelete()
+	{
+		$lru = new TSqlMapLruCache();
+		$object1 = new TComponent;
+		$object2 = new TSqlMapManager;
+		$lru->set('k1', $object1);
+		$lru->set('k2', $object2);
+
+		$removed = $lru->delete('k1');
+		$this->assertSame($object1, $removed);
+		$this->assertNull($lru->get('k1'));
+		$this->assertSame($object2, $lru->get('k2'));
+	}
+
+	public function testDeleteExistingReturnsObjectAndRemovesIt()
+	{
+		$fifo = new TSqlMapFifoCache();
+		$obj = new TComponent();
+		$fifo->set('k', $obj);
+
+		$removed = $fifo->delete('k');
+		$this->assertSame($obj, $removed);
+		$this->assertNull($fifo->get('k'));
+	}
+
+	public function testFifoFlush()
+	{
+		$fifo = new TSqlMapFifoCache();
+		$fifo->set('k1', new TComponent);
+		$fifo->set('k2', new TSqlMapManager);
+
+		$fifo->flush();
+		$this->assertNull($fifo->get('k1'));
+		$this->assertNull($fifo->get('k2'));
+	}
+
+	public function testLruFlush()
+	{
+		$lru = new TSqlMapLruCache();
+		$lru->set('k1', new TComponent);
+		$lru->set('k2', new TSqlMapManager);
+
+		$lru->flush();
+		$this->assertNull($lru->get('k1'));
+		$this->assertNull($lru->get('k2'));
+	}
+
+	public function testAddThrowsException()
+	{
+		$fifo = new TSqlMapFifoCache();
+		$this->expectException(\Prado\Data\SqlMap\DataMapper\TSqlMapException::class);
+		$fifo->add('key', 'value');
+	}
+
+	public function testLruAddThrowsException()
+	{
+		$lru = new TSqlMapLruCache();
+		$this->expectException(\Prado\Data\SqlMap\DataMapper\TSqlMapException::class);
+		$lru->add('key', 'value');
+	}
+
+	public function testSetCacheSizeZeroResetsToHundred()
+	{
+		$fifo = new TSqlMapFifoCache();
+		$fifo->setCacheSize(0);
+		$this->assertSame(100, $fifo->getCacheSize());
+	}
+
+	public function testSetCacheSizePositive()
+	{
+		$fifo = new TSqlMapFifoCache();
+		$fifo->setCacheSize(50);
+		$this->assertSame(50, $fifo->getCacheSize());
+	}
+
+	public function testDefaultCacheSizeIsHundred()
+	{
+		$fifo = new TSqlMapFifoCache();
+		$this->assertSame(100, $fifo->getCacheSize());
+	}
 }

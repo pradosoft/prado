@@ -52,6 +52,23 @@ class BaseCase extends PHPUnit\Framework\TestCase
 
 	public static function setUpBeforeClass(): void
 	{
+		// Reset driver-specific state so that when multiple database suites run in
+		// the same process (e.g. db-mysql,db-pgsql,db-sqlite) a stale connection
+		// from a previous driver class is never reused by the next driver class.
+		// PHP static properties declared on a base class are shared across all
+		// subclasses — without this reset, the MySQL TDbConnection left behind by
+		// MysqlStatementTest would be picked up by PgsqlStatementTest.
+		if (static::$connection !== null) {
+			try {
+				static::$connection->setActive(false);
+			} catch (\Throwable $ignored) {
+			}
+			static::$connection = null;
+		}
+		static::$sqlmap = null;
+		static::$mapper = null;
+		static::$config = null;
+
 		if (static::$configClass !== '') {
 			$cls = static::$configClass;
 			try {
@@ -99,10 +116,19 @@ class BaseCase extends PHPUnit\Framework\TestCase
 		}
 	}
 
-    public static function tearDownAfterClass(): void
-    {
+	public static function tearDownAfterClass(): void
+	{
 		if (null !== static::$mapper) {
 			static::$mapper->cacheConfiguration();
+		}
+		// Close the connection so the next class (possibly a different driver) starts
+		// fresh.  See the setUpBeforeClass() comment above.
+		if (static::$connection !== null) {
+			try {
+				static::$connection->setActive(false);
+			} catch (\Throwable $ignored) {
+			}
+			static::$connection = null;
 		}
 	}
 
@@ -316,6 +342,32 @@ class TDateTimeHandler extends TSqlMapTypeHandler
 	public function createNewInstance($data = null)
 	{
 		return new TDateTime;
+	}
+}
+
+/**
+ * TypeHandler that maps a PHP boolean to a PostgreSQL SMALLINT (0/1).
+ *
+ * PDO_PGSQL with native prepared statements encodes PHP true as the text literal
+ * 't', which PostgreSQL refuses to cast to SMALLINT.  This handler returns an
+ * integer (0 or 1) from getParameter() so the column receives a value it can
+ * accept.  On the result side it casts the fetched string back to PHP bool.
+ */
+class PgsqlSmallintBoolHandler extends TSqlMapTypeHandler
+{
+	public function getResult($string)
+	{
+		return (bool) (int) $string;
+	}
+
+	public function getParameter($parameter)
+	{
+		return $parameter ? 1 : 0;
+	}
+
+	public function createNewInstance($data = null)
+	{
+		return false;
 	}
 }
 
