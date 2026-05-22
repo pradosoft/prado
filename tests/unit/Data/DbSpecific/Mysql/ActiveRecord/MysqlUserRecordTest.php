@@ -1,23 +1,39 @@
 <?php
 
-require_once(__DIR__ . '/../../PradoUnit.php');
+require_once(__DIR__ . '/../../../../PradoUnit.php');
+require_once(__DIR__ . '/records/DepartmentRecord.php');
 require_once(__DIR__ . '/records/UserRecord.php');
 
-class UserRecordTest extends PHPUnit\Framework\TestCase
+class MysqlUserRecordTest extends PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
-	
+
+	protected function getDbDriver(): ?string
+	{
+		return TDbDriver::DRIVER_MYSQL;
+	}
+
+	protected function getDatabaseName(): ?string
+	{
+		return 'prado_unitest';
+	}
+
 	protected function getIsForActiveRecord(): bool
 	{
 		return true;
 	}
-	
+
 	protected function getTestTables(): array
 	{
-		return [DepartmentRecord::TABLE];
+		return [DepartmentRecord::TABLE, UserRecord::TABLE];
 	}
-	
-	
+
+	protected function setUp(): void
+	{
+		$this->setUpConnection();
+	}
+
+
 	//	------- Tests
 
 	public function testFindByPk()

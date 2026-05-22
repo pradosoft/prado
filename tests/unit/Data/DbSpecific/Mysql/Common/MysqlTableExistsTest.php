@@ -72,13 +72,13 @@ class MysqlTableExistsTest extends PHPUnit\Framework\TestCase
 
 	// -----------------------------------------------------------------------
 
-	public function test_getTableExists_returns_true_for_existing_table(): void
+	public function test_mysql_getTableExists_returns_true_for_existing_table(): void
 	{
 		$gateway = new TTableGateway('upsert_test', static::$conn);
 		$this->assertTrue($gateway->getTableExists());
 	}
 
-	public function test_getTableExists_returns_true_for_newly_created_table(): void
+	public function test_mysql_getTableExists_returns_true_for_newly_created_table(): void
 	{
 		static::$conn->createCommand(
 			'CREATE TABLE `' . self::TEMP_TABLE . '` (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY)'
@@ -88,7 +88,7 @@ class MysqlTableExistsTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($gateway->getTableExists());
 	}
 
-	public function test_getTableExists_returns_false_after_table_is_dropped(): void
+	public function test_mysql_getTableExists_returns_false_after_table_is_dropped(): void
 	{
 		static::$conn->createCommand(
 			'CREATE TABLE `' . self::TEMP_TABLE . '` (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY)'

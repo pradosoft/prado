@@ -44,7 +44,7 @@ class ActiveRecordMysqlInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 
 	protected function getTestTables(): array
 	{
-		return ['upsert_test'];
+		return ['upsert_test', 'Users'];
 	}
 
 	protected function setUp(): void

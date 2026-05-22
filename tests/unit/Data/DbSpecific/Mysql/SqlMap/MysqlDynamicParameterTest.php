@@ -1,50 +1,56 @@
 <?php
 
-require_once(__DIR__ . '/../../PradoUnit.php');
+require_once(__DIR__ . '/../../../../PradoUnit.php');
 use Prado\Data\SqlMap\TSqlMapManager;
 use Prado\Data\TDbConnection;
 use Prado\Prado;
 use Prado\TApplication;
 
-class DynamicParameterTest extends PHPUnit\Framework\TestCase
+class MysqlDynamicParameterTest extends PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
-	
-	protected static $myMetaData = null;
-	
+
+	protected function getDbDriver(): ?string
+	{
+		return TDbDriver::DRIVER_MYSQL;
+	}
+
 	protected function getTestTables(): array
 	{
 		return ['dynamicparametertest1'];
 	}
-	
+
 	protected function setUp(): void
 	{
-		if (static::$myMetaData === null) {
-			$conn = $this->setupConnection('prado_unitest');
-			if ($conn instanceof TDbConnection) {
-				static::$myMetaData = new TMysqlMetaData($conn);;
-			}
-		}
+		$this->setUpConnection();
 	}
-	
-	
+
+
 	//	------- Tests
 	protected function getMysqlSqlMapManager()
 	{
 		static $conn;
 		static $sqlMapManager;
 
+		$xmlFile = __DIR__ . '/DynamicParameterTestMap.xml';
+		if (!file_exists($xmlFile)) {
+			$this->markTestSkipped('DynamicParameterTestMap.xml not found — create it to enable these tests.');
+		}
+
 		if (Prado::getApplication() === null) {
 			Prado::setApplication(new TApplication(__DIR__ . '/app'));
 		}
 
 		if ($conn === null) {
-			$conn = $this->setupConnection('prado_unitest');
+			$conn = $this->setupPradoUnitConnection('prado_unitest');
+			if (!($conn instanceof TDbConnection)) {
+				$this->markTestSkipped('MySQL database not available.');
+			}
 		}
 
 		if ($sqlMapManager === null) {
 			$sqlMapManager = new TSqlMapManager($conn);
-			$sqlMapManager->configureXml(__DIR__ . '/DynamicParameterTestMap.xml');
+			$sqlMapManager->configureXml($xmlFile);
 		}
 
 		return $sqlMapManager;

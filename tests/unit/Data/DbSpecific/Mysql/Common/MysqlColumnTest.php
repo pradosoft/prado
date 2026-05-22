@@ -9,18 +9,33 @@ class MysqlColumnTest extends PHPUnit\Framework\TestCase
 	
 	protected static $myMetaData = null;
 	
+	protected function getDbDriver(): ?string
+	{
+		return TDbDriver::DRIVER_MYSQL;
+	}
+
 	protected function getTestTables(): array
 	{
 		return ['table1'];
 	}
-	
+
 	protected function setUp(): void
 	{
 		if (static::$myMetaData === null) {
-			$conn = $this->setupConnection('prado_unitest');
+			$conn = $this->setupPradoUnitConnection('prado_unitest');
+			if (is_string($conn)) {
+				$this->markTestSkipped($conn);
+				return;
+			}
+			if ($conn instanceof \Exception) {
+				throw $conn;
+			}
 			if ($conn instanceof TDbConnection) {
 				static::$myMetaData = new TMysqlMetaData($conn);
 			}
+		}
+		if (static::$myMetaData === null) {
+			$this->markTestSkipped('MySQL database not available.');
 		}
 	}
 	
@@ -32,7 +47,7 @@ class MysqlColumnTest extends PHPUnit\Framework\TestCase
 	
 	//	------- Tests
 
-	public function test_columns()
+	public function test_mysql_columns()
 	{
 		$table = static::$myMetaData->getTableInfo('table1');
 		$this->assertEquals(count($table->getColumns()), 14);

@@ -67,7 +67,7 @@ class MysqlInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// SQL generation
 	// -----------------------------------------------------------------------
 
-	public function test_sql_uses_insert_ignore_into(): void
+	public function test_mysql_sql_uses_insert_ignore_into(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -84,7 +84,7 @@ class MysqlInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertStringNotContainsString('ON DUPLICATE KEY', $capturedSql);
 	}
 
-	public function test_sql_omits_id_when_not_supplied(): void
+	public function test_mysql_sql_omits_id_when_not_supplied(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -99,7 +99,7 @@ class MysqlInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Insert new row
 	// -----------------------------------------------------------------------
 
-	public function test_new_row_is_inserted(): void
+	public function test_mysql_new_row_is_inserted(): void
 	{
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
 
@@ -109,14 +109,14 @@ class MysqlInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(10, (int) $row['score']);
 	}
 
-	public function test_new_row_returns_integer_last_insert_id(): void
+	public function test_mysql_new_row_returns_integer_last_insert_id(): void
 	{
 		$result = self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
 		$this->assertNotFalse($result);
 		$this->assertGreaterThan(0, (int) $result);
 	}
 
-	public function test_successive_inserts_return_incrementing_ids(): void
+	public function test_mysql_successive_inserts_return_incrementing_ids(): void
 	{
 		$id1 = (int) self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 1]);
 		$id2 = (int) self::$gateway->insertOrIgnore(['username' => 'bob',   'score' => 2]);
@@ -127,14 +127,14 @@ class MysqlInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Duplicate silently ignored (UNIQUE key on username)
 	// -----------------------------------------------------------------------
 
-	public function test_duplicate_username_returns_false(): void
+	public function test_mysql_duplicate_username_returns_false(): void
 	{
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
 		$result = self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 99]);
 		$this->assertFalse($result);
 	}
 
-	public function test_duplicate_does_not_increase_row_count(): void
+	public function test_mysql_duplicate_does_not_increase_row_count(): void
 	{
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 99]);
@@ -143,7 +143,7 @@ class MysqlInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(1, $count);
 	}
 
-	public function test_existing_row_unchanged_after_ignored_insert(): void
+	public function test_mysql_existing_row_unchanged_after_ignored_insert(): void
 	{
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 99]);
@@ -152,7 +152,7 @@ class MysqlInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(10, (int) $row['score']);
 	}
 
-	public function test_zero_score_value_is_stored_correctly(): void
+	public function test_mysql_zero_score_value_is_stored_correctly(): void
 	{
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 0]);
 		$row = self::$gateway->find('username = ?', 'alice');
@@ -163,7 +163,7 @@ class MysqlInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertGreaterThan(0, (int) $result);
 	}
 
-	public function test_large_score_value(): void
+	public function test_mysql_large_score_value(): void
 	{
 		$large = 2147483647; // INT max
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => $large]);
@@ -175,7 +175,7 @@ class MysqlInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Mixed: some conflict, some new
 	// -----------------------------------------------------------------------
 
-	public function test_only_conflicting_row_ignored_others_inserted(): void
+	public function test_mysql_only_conflicting_row_ignored_others_inserted(): void
 	{
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
 		$res2 = self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 99]); // conflict
@@ -189,7 +189,7 @@ class MysqlInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		);
 	}
 
-	public function test_correct_values_after_mixed_inserts(): void
+	public function test_mysql_correct_values_after_mixed_inserts(): void
 	{
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 99]);
@@ -205,7 +205,7 @@ class MysqlInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Events
 	// -----------------------------------------------------------------------
 
-	public function test_oncreatecommand_event_is_raised(): void
+	public function test_mysql_oncreatecommand_event_is_raised(): void
 	{
 		$fired = false;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -218,7 +218,7 @@ class MysqlInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($fired, 'OnCreateCommand not raised');
 	}
 
-	public function test_onexecutecommand_event_is_raised(): void
+	public function test_mysql_onexecutecommand_event_is_raised(): void
 	{
 		$captured = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -231,7 +231,7 @@ class MysqlInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(1, $captured, 'OnExecuteCommand result should be 1 for a fresh insert');
 	}
 
-	public function test_onexecutecommand_result_is_zero_on_conflict(): void
+	public function test_mysql_onexecutecommand_result_is_zero_on_conflict(): void
 	{
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
 
@@ -245,7 +245,7 @@ class MysqlInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(0, $captured, 'INSERT IGNORE returns 0 affected rows on conflict');
 	}
 
-	public function test_onexecutecommand_can_override_result(): void
+	public function test_mysql_onexecutecommand_can_override_result(): void
 	{
 		$gw = new TTableGateway('upsert_test', self::$conn);
 		$gw->OnExecuteCommand[] = function ($sender, $param): void {
@@ -260,7 +260,7 @@ class MysqlInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Base class
 	// -----------------------------------------------------------------------
 
-	public function test_base_builder_throws_for_insertOrIgnore(): void
+	public function test_mysql_base_builder_throws_for_insertOrIgnore(): void
 	{
 		$meta      = new \Prado\Data\Common\Mysql\TMysqlMetaData(self::$conn);
 		$tableInfo = $meta->getTableInfo('upsert_test');

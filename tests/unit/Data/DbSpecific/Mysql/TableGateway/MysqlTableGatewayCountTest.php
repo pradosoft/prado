@@ -2,7 +2,7 @@
 
 require_once(__DIR__ . '/BaseGateway.php');
 
-class CountTest extends BaseGateway
+class MysqlTableGatewayCountTest extends BaseGateway
 {
 	public function test_simple_count()
 	{

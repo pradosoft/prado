@@ -65,7 +65,7 @@ class TDbMetaDataMysqlIntegrationTest extends PHPUnit\Framework\TestCase
 	// TDbMetaData::getInstance()
 	// -----------------------------------------------------------------------
 
-	public function testGetInstanceReturnsMysqlMetaData(): void
+	public function testMysqlGetInstanceReturnsMysqlMetaData(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$this->assertInstanceOf(TMysqlMetaData::class, $meta);
@@ -75,21 +75,21 @@ class TDbMetaDataMysqlIntegrationTest extends PHPUnit\Framework\TestCase
 	// getTableInfo() — TDbTableInfo
 	// -----------------------------------------------------------------------
 
-	public function testGetTableInfoReturnsTableInfo(): void
+	public function testMysqlGetTableInfoReturnsTableInfo(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
 		$this->assertInstanceOf(\Prado\Data\Common\TDbTableInfo::class, $info);
 	}
 
-	public function testGetTableInfoTableName(): void
+	public function testMysqlGetTableInfoTableName(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
 		$this->assertSame('meta_test', $info->getTableName());
 	}
 
-	public function testGetTableInfoColumnNamesContainsAllColumns(): void
+	public function testMysqlGetTableInfoColumnNamesContainsAllColumns(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -101,7 +101,7 @@ class TDbMetaDataMysqlIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertCount(4, $names);
 	}
 
-	public function testGetTableInfoPrimaryKeys(): void
+	public function testMysqlGetTableInfoPrimaryKeys(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -110,7 +110,7 @@ class TDbMetaDataMysqlIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertCount(1, $pks);
 	}
 
-	public function testGetTableInfoGetColumnReturnsColumn(): void
+	public function testMysqlGetTableInfoGetColumnReturnsColumn(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -119,7 +119,7 @@ class TDbMetaDataMysqlIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertInstanceOf(\Prado\Data\Common\TDbTableColumn::class, $col);
 	}
 
-	public function testGetTableInfoGetColumnThrowsForMissingColumn(): void
+	public function testMysqlGetTableInfoGetColumnThrowsForMissingColumn(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -127,7 +127,7 @@ class TDbMetaDataMysqlIntegrationTest extends PHPUnit\Framework\TestCase
 		$info->getColumn('nonexistent_column');
 	}
 
-	public function testGetTableInfoCachingReturnsSameObject(): void
+	public function testMysqlGetTableInfoCachingReturnsSameObject(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info1 = $meta->getTableInfo('meta_test');
@@ -135,7 +135,7 @@ class TDbMetaDataMysqlIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertSame($info1, $info2);
 	}
 
-	public function testGetTableInfoThrowsForInvalidTable(): void
+	public function testMysqlGetTableInfoThrowsForInvalidTable(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$this->expectException(\Prado\Exceptions\TDbException::class);
@@ -146,7 +146,7 @@ class TDbMetaDataMysqlIntegrationTest extends PHPUnit\Framework\TestCase
 	// TDbTableColumn — column metadata
 	// -----------------------------------------------------------------------
 
-	public function testPrimaryKeyColumnIsPrimaryKey(): void
+	public function testMysqlPrimaryKeyColumnIsPrimaryKey(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -154,7 +154,7 @@ class TDbMetaDataMysqlIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($col->getIsPrimaryKey());
 	}
 
-	public function testNonPrimaryKeyColumnIsNotPrimaryKey(): void
+	public function testMysqlNonPrimaryKeyColumnIsNotPrimaryKey(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -162,7 +162,7 @@ class TDbMetaDataMysqlIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertFalse($col->getIsPrimaryKey());
 	}
 
-	public function testPrimaryKeyColumnDbType(): void
+	public function testMysqlPrimaryKeyColumnDbType(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -170,7 +170,7 @@ class TDbMetaDataMysqlIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsStringIgnoringCase('int', $col->getDbType());
 	}
 
-	public function testVarcharColumnDbType(): void
+	public function testMysqlVarcharColumnDbType(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -178,7 +178,7 @@ class TDbMetaDataMysqlIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsStringIgnoringCase('varchar', $col->getDbType());
 	}
 
-	public function testNotNullColumnDoesNotAllowNull(): void
+	public function testMysqlNotNullColumnDoesNotAllowNull(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -186,7 +186,7 @@ class TDbMetaDataMysqlIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertFalse($col->getAllowNull());
 	}
 
-	public function testNullableColumnAllowsNull(): void
+	public function testMysqlNullableColumnAllowsNull(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -194,7 +194,7 @@ class TDbMetaDataMysqlIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($col->getAllowNull());
 	}
 
-	public function testColumnWithDefaultValueHasDefault(): void
+	public function testMysqlColumnWithDefaultValueHasDefault(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -202,7 +202,7 @@ class TDbMetaDataMysqlIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertNotNull($col->getDefaultValue());
 	}
 
-	public function testColumnWithoutDefaultHasNullDefault(): void
+	public function testMysqlColumnWithoutDefaultHasNullDefault(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -215,14 +215,14 @@ class TDbMetaDataMysqlIntegrationTest extends PHPUnit\Framework\TestCase
 	// findTableNames()
 	// -----------------------------------------------------------------------
 
-	public function testFindTableNamesContainsMetaTest(): void
+	public function testMysqlFindTableNamesContainsMetaTest(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$tables = $meta->findTableNames();
 		$this->assertContains('meta_test', $tables);
 	}
 
-	public function testFindTableNamesReturnsArray(): void
+	public function testMysqlFindTableNamesReturnsArray(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$tables = $meta->findTableNames();
@@ -233,7 +233,7 @@ class TDbMetaDataMysqlIntegrationTest extends PHPUnit\Framework\TestCase
 	// createCommandBuilder()
 	// -----------------------------------------------------------------------
 
-	public function testCreateCommandBuilderReturnsBuilder(): void
+	public function testMysqlCreateCommandBuilderReturnsBuilder(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$builder = $meta->createCommandBuilder('meta_test');
@@ -244,7 +244,7 @@ class TDbMetaDataMysqlIntegrationTest extends PHPUnit\Framework\TestCase
 	// Quoting helpers
 	// -----------------------------------------------------------------------
 
-	public function testQuoteTableName(): void
+	public function testMysqlQuoteTableName(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$quoted = $meta->quoteTableName('foo');
@@ -252,14 +252,14 @@ class TDbMetaDataMysqlIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertSame('`foo`', $quoted);
 	}
 
-	public function testQuoteColumnName(): void
+	public function testMysqlQuoteColumnName(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$quoted = $meta->quoteColumnName('bar');
 		$this->assertSame('`bar`', $quoted);
 	}
 
-	public function testQuoteColumnAlias(): void
+	public function testMysqlQuoteColumnAlias(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$quoted = $meta->quoteColumnAlias('baz');

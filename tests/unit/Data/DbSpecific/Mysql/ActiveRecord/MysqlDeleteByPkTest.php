@@ -1,10 +1,10 @@
 <?php
 
-require_once(__DIR__ . '/../../PradoUnit.php');
+require_once(__DIR__ . '/../../../../PradoUnit.php');
 require_once(__DIR__ . '/records/DepartmentRecord.php');
 require_once(__DIR__ . '/records/DepSections.php');
 
-class DeleteByPkTest extends PHPUnit\Framework\TestCase
+class MysqlDeleteByPkTest extends PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 	

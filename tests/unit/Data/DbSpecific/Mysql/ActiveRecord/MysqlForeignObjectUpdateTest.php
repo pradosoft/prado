@@ -1,17 +1,21 @@
 <?php
 
-require_once(__DIR__ . '/../../PradoUnit.php');
+require_once(__DIR__ . '/../../../../PradoUnit.php');
 
 class BaseFkRecord extends TActiveRecord
 {
 	use PradoUnitDataConnectionTrait;
-	
+
+	protected function getDbDriver(): ?string
+	{
+		return TDbDriver::DRIVER_MYSQL;
+	}
+
 	public function getDbConnection()
 	{
 		static $conn;
 		if ($conn === null) {
-			
-			$conn = $this->setUpConnection('prado_unitest', true);
+			$conn = $this->setupPradoUnitConnection('prado_unitest');
 			//$this->OnExecuteCommand[] = array($this,'logger');
 		}
 		return $conn;
@@ -117,7 +121,7 @@ class SkillRecord extends BaseFkRecord
 	}
 }
 
-class ForeignObjectUpdateTest extends PHPUnit\Framework\TestCase
+class MysqlForeignObjectUpdateTest extends PHPUnit\Framework\TestCase
 {
 	/**
 	 * @agent these should stay as skipped until the framework bug is fixed

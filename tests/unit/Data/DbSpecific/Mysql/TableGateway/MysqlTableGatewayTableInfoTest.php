@@ -2,7 +2,7 @@
 
 require_once(__DIR__ . '/BaseGateway.php');
 
-class TableInfoGatewayTest extends BaseGateway
+class MysqlTableGatewayTableInfoTest extends BaseGateway
 {
 	public function test_table_info()
 	{
