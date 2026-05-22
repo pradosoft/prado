@@ -303,7 +303,7 @@ DROP TABLE IF EXISTS `Others`;
 CREATE TABLE `Others` (
   `Other_Int` int(11) default NULL,
   `Other_Long` bigint(20) default NULL,
-  `Other_Bit` bit(1) NOT NULL default '\0',
+  `Other_Bit` bit(1) NOT NULL default 0,
   `Other_String` varchar(32) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -311,9 +311,9 @@ CREATE TABLE `Others` (
 -- Dumping data for table `Others`
 -- 
 
-INSERT INTO `Others` (`Other_Int`, `Other_Long`, `Other_Bit`, `Other_String`) VALUES (1, 8888888, '\0', 'Oui'),
-(2, 9999999999, '', 'Non'),
-(99, 1966, '', 'Non');
+INSERT INTO `Others` (`Other_Int`, `Other_Long`, `Other_Bit`, `Other_String`) VALUES (1, 8888888, 0, 'Oui'),
+(2, 9999999999, 1, 'Non'),
+(99, 1966, 1, 'Non');
 
 --
 -- Note: the SqlMap `Users` (LogonId/Name/Password/EmailAddress/LastLogon) table

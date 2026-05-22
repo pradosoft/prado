@@ -257,7 +257,7 @@
 				parameterClass="int"
 				resultClass="date">
 		select
-		Order_Date as 'datetime'
+		Order_Date as "datetime"
 		from Orders where Order_Id = #value#
 	</statement>
 

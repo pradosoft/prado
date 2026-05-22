@@ -59,7 +59,7 @@
 		<!-- Needs to be <insert> vs <statement> for MySql due to selectKey -->		
 		<insert id="InsertCategoryNull" parameterMap="insert-null-params">
 			<selectKey property="Id" type="post" resultClass="int">
-				select LAST_INSERT_ID() as value
+				select last_insert_rowid() as value
             </selectKey>
 			insert into Categories  
 				(Category_Name, Category_Guid)

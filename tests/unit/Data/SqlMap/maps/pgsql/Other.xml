@@ -102,7 +102,7 @@
 			Other_Bit,
 			Other_String
 		from Others
-		Where Other_Bit = #Bool#
+		Where Other_Bit = #Bool,typeHandler=PgsqlSmallintBoolHandler#
 	</statement>
 
 	<statement id="InsertBool"
@@ -110,7 +110,7 @@
 		Insert into Others
 			( Other_Int, Other_Long, Other_Bit, Other_String )
 		values
-		( #Int#, #Long#, #Bool#, 'Yes')
+		( #Int#, #Long#, #Bool,typeHandler=PgsqlSmallintBoolHandler#, 'Yes')
 	</statement>
 
 	<statement id="InsertCustomTypeHandler"
@@ -150,7 +150,7 @@
 		Insert into Others
 			( Other_Int, Other_Long, Other_Bit, Other_String  )
 		values
-		( #Int#, #Long#, #Bool#, #Bool2,type=bool,dbType=Varchar#)
+		( #Int#, #Long#, #Bool,typeHandler=PgsqlSmallintBoolHandler#, #Bool2,type=bool,dbType=Varchar#)
 	</statement>
 
 	<statement id="InsertInlineCustomTypeHandlerV2"
@@ -158,13 +158,13 @@
 		Insert into Others
 			( Other_Int, Other_Long, Other_Bit, Other_String  )
 		values
-		( #Int#, #Long#, #Bool#, #Bool2,typeHandler=OuiNonBool#)
+		( #Int#, #Long#, #Bool,typeHandler=PgsqlSmallintBoolHandler#, #Bool2,typeHandler=OuiNonBool#)
 	</statement>
 
 	<parameterMap id="other-insert-params">
 		<parameter property="Int" />
 		<parameter property="Long" />
-		<parameter property="Bool" />
+		<parameter property="Bool" typeHandler="PgsqlSmallintBoolHandler"/>
 		<parameter property="Bool2" typeHandler="OuiNonBool"/>
 	</parameterMap>
 </sqlMap>
