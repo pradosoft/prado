@@ -411,7 +411,7 @@ class TDbParameterModule extends TDbModule implements IPermissions
 		$db = $this->getDbConnection();
 		$driver = $db->getDriverName();
 		$appendix = '';
-		if ($driver === 'mysql') {
+		if ($driver === TDbDriver::DRIVER_MYSQL) {
 			$dupl = ($this->_autoLoadField ? ", {$this->_autoLoadField}=values({$this->_autoLoadField})" : '');
 			$appendix = " ON DUPLICATE KEY UPDATE {$this->_valueField}=values({$this->_valueField}){$dupl}";
 		} else {
@@ -485,7 +485,7 @@ class TDbParameterModule extends TDbModule implements IPermissions
 		$db = $this->getDbConnection();
 		$driver = $db->getDriverName();
 		$appendix = '';
-		if ($driver === 'mysql') {
+		if ($driver === TDbDriver::DRIVER_MYSQL) {
 			$appendix = ' LIMIT 1';
 		}
 		$cmd = $db->createCommand("DELETE FROM {$this->_tableName} WHERE {$this->_keyField}=:key" . $appendix);

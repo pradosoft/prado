@@ -2,6 +2,7 @@
 
 use Prado\Data\ActiveRecord\Scaffold\InputBuilder\TScaffoldInputBase;
 use Prado\Data\ActiveRecord\TActiveRecord;
+use Prado\Data\TDbDriver;
 use Prado\Exceptions\TConfigurationException;
 
 /**
@@ -49,7 +50,7 @@ class TScaffoldInputBaseTest extends PHPUnit\Framework\TestCase
 
 	public function test_createInputBuilder_calls_setActive_on_connection()
 	{
-		$record = $this->createMockRecord('sqlite');
+		$record = $this->createMockRecord(TDbDriver::DRIVER_SQLITE);
 		$conn = $record->getDbConnection();
 		$conn->expects($this->once())->method('setActive')->with(true);
 
@@ -58,7 +59,7 @@ class TScaffoldInputBaseTest extends PHPUnit\Framework\TestCase
 
 	public function test_createInputBuilder_valid_mysql_driver()
 	{
-		$record = $this->createMockRecord('mysqli');
+		$record = $this->createMockRecord(TDbDriver::EXTENSION_MYSQLI);
 		$conn = $record->getDbConnection();
 		$conn->expects($this->never())->method('raiseEvent');
 
@@ -68,7 +69,7 @@ class TScaffoldInputBaseTest extends PHPUnit\Framework\TestCase
 
 	public function test_createInputBuilder_valid_mysql_old_driver()
 	{
-		$record = $this->createMockRecord('mysql');
+		$record = $this->createMockRecord(TDbDriver::DRIVER_MYSQL);
 		$conn = $record->getDbConnection();
 		$conn->expects($this->never())->method('raiseEvent');
 
@@ -78,7 +79,7 @@ class TScaffoldInputBaseTest extends PHPUnit\Framework\TestCase
 
 	public function test_createInputBuilder_valid_sqlite_driver()
 	{
-		$record = $this->createMockRecord('sqlite');
+		$record = $this->createMockRecord(TDbDriver::DRIVER_SQLITE);
 		$conn = $record->getDbConnection();
 		$conn->expects($this->never())->method('raiseEvent');
 
@@ -88,7 +89,7 @@ class TScaffoldInputBaseTest extends PHPUnit\Framework\TestCase
 
 	public function test_createInputBuilder_valid_sqlite2_driver()
 	{
-		$record = $this->createMockRecord('sqlite2');
+		$record = $this->createMockRecord(TDbDriver::DRIVER_SQLITE2);
 		$conn = $record->getDbConnection();
 		$conn->expects($this->never())->method('raiseEvent');
 
@@ -98,7 +99,7 @@ class TScaffoldInputBaseTest extends PHPUnit\Framework\TestCase
 
 	public function test_createInputBuilder_valid_pgsql_driver()
 	{
-		$record = $this->createMockRecord('pgsql');
+		$record = $this->createMockRecord(TDbDriver::DRIVER_PGSQL);
 		$conn = $record->getDbConnection();
 		$conn->expects($this->never())->method('raiseEvent');
 
@@ -108,7 +109,7 @@ class TScaffoldInputBaseTest extends PHPUnit\Framework\TestCase
 
 	public function test_createInputBuilder_valid_mssql_driver()
 	{
-		$record = $this->createMockRecord('mssql');
+		$record = $this->createMockRecord(TDbDriver::EXTENSION_MSSQL);
 		$conn = $record->getDbConnection();
 		$conn->expects($this->never())->method('raiseEvent');
 
@@ -118,7 +119,7 @@ class TScaffoldInputBaseTest extends PHPUnit\Framework\TestCase
 
 	public function test_createInputBuilder_valid_ibm_driver()
 	{
-		$record = $this->createMockRecord('ibm');
+		$record = $this->createMockRecord(TDbDriver::DRIVER_IBM);
 		$conn = $record->getDbConnection();
 		$conn->expects($this->never())->method('raiseEvent');
 
@@ -128,7 +129,7 @@ class TScaffoldInputBaseTest extends PHPUnit\Framework\TestCase
 
 	public function test_createInputBuilder_valid_firebird_driver()
 	{
-		$record = $this->createMockRecord('firebird');
+		$record = $this->createMockRecord(TDbDriver::DRIVER_FIREBIRD);
 		$conn = $record->getDbConnection();
 		$conn->expects($this->never())->method('raiseEvent');
 
@@ -138,7 +139,7 @@ class TScaffoldInputBaseTest extends PHPUnit\Framework\TestCase
 
 	public function test_createInputBuilder_valid_interbase_driver()
 	{
-		$record = $this->createMockRecord('interbase');
+		$record = $this->createMockRecord(TDbDriver::DRIVER_INTERBASE);
 		$conn = $record->getDbConnection();
 		$conn->expects($this->never())->method('raiseEvent');
 

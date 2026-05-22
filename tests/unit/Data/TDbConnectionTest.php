@@ -3,6 +3,7 @@
 use Prado\Data\TDbColumnCaseMode;
 use Prado\Data\TDbCommand;
 use Prado\Data\TDbConnection;
+use Prado\Data\TDbDriver;
 use Prado\Data\TDbNullConversionMode;
 use Prado\Exceptions\TDbException;
 use Prado\TApplication;
@@ -270,18 +271,18 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 	{
 		return [
 			// Universal names resolved per driver
-			'mysql/UTF-8'         => ['mysql', 'UTF-8',      'utf8mb4'],
-			'mysql/ISO-8859-1'    => ['mysql', 'ISO-8859-1', 'latin1'],
+			'mysql/UTF-8'         => [TDbDriver::DRIVER_MYSQL, 'UTF-8',      'utf8mb4'],
+			'mysql/ISO-8859-1'    => [TDbDriver::DRIVER_MYSQL, 'ISO-8859-1', 'latin1'],
 			// Driver-specific names that have no alias pass through unchanged
-			'mysql/utf8mb4'       => ['mysql', 'utf8mb4', 'utf8mb4'],
-			'mysql/latin1'        => ['mysql', 'latin1',  'latin1'],
+			'mysql/utf8mb4'       => [TDbDriver::DRIVER_MYSQL, 'utf8mb4', 'utf8mb4'],
+			'mysql/latin1'        => [TDbDriver::DRIVER_MYSQL, 'latin1',  'latin1'],
 		];
 	}
 
 	/** @dataProvider providePgsqlEncodings */
 	public function testSetConnectionCharsetUsesPgsqlEncoding(string $input, string $expected): void
 	{
-		[$mockPdo] = $this->makePdoExpectingPrepare('pgsql', 'SET client_encoding TO ?', $expected);
+		[$mockPdo] = $this->makePdoExpectingPrepare(TDbDriver::DRIVER_PGSQL, 'SET client_encoding TO ?', $expected);
 		$conn = $this->makeCharsetOnlyConnection($input);
 		$this->injectMockPdo($conn, $mockPdo);
 		$this->callSetConnectionCharset($conn);
@@ -309,12 +310,12 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 	{
 		return [
 			// These drivers return silently; charset is handled via DSN (or not at all).
-			'firebird' => ['firebird'],
-			'mssql'    => ['mssql'],
-			'sqlsrv'   => ['sqlsrv'],
-			'dblib'    => ['dblib'],
-			'ibm'      => ['ibm'],
-			'oci'      => ['oci'],
+			'firebird' => [TDbDriver::DRIVER_FIREBIRD],
+			'mssql'    => [TDbDriver::EXTENSION_MSSQL],
+			'sqlsrv'   => [TDbDriver::DRIVER_SQLSRV],
+			'dblib'    => [TDbDriver::DRIVER_DBLIB],
+			'ibm'      => [TDbDriver::DRIVER_IBM],
+			'oci'      => [TDbDriver::DRIVER_OCI],
 		];
 	}
 
@@ -331,7 +332,7 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 			->getMock();
 		$mockPdo->method('getAttribute')
 			->with(\PDO::ATTR_DRIVER_NAME)
-			->willReturn('sqlite');
+			->willReturn(TDbDriver::DRIVER_SQLITE);
 		$mockPdo->method('quote')
 			->willReturn($resolvedQuoted);
 		$mockPdo->expects($this->once())
@@ -364,7 +365,7 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 			->getMock();
 		$mockPdo->method('getAttribute')
 			->with(\PDO::ATTR_DRIVER_NAME)
-			->willReturn('sqlite');
+			->willReturn(TDbDriver::DRIVER_SQLITE);
 		$mockPdo->method('quote')
 			->with('UTF-8')
 			->willReturn("'UTF-8'");
@@ -413,62 +414,62 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 	{
 		return [
 			// --- UTF-8 family: various spellings all resolve correctly ---
-			'UTF-8 mysql'       => ['UTF-8',   'mysql',    'utf8mb4'],
-			'utf8 mysql'        => ['utf8',     'mysql',    'utf8mb4'],
-			'UTF8 mysql'        => ['UTF8',     'mysql',    'utf8mb4'],
-			'utf-8 mysql'       => ['utf-8',    'mysql',    'utf8mb4'],
-			'UTF-8 sqlite'      => ['UTF-8',    'sqlite',   'UTF-8'],
-			'UTF-8 pgsql'       => ['UTF-8',    'pgsql',    'UTF8'],
-			'UTF-8 firebird'    => ['UTF-8',    'firebird', 'UTF8'],
+			'UTF-8 mysql'       => ['UTF-8',   TDbDriver::DRIVER_MYSQL,    'utf8mb4'],
+			'utf8 mysql'        => ['utf8',     TDbDriver::DRIVER_MYSQL,    'utf8mb4'],
+			'UTF8 mysql'        => ['UTF8',     TDbDriver::DRIVER_MYSQL,    'utf8mb4'],
+			'utf-8 mysql'       => ['utf-8',    TDbDriver::DRIVER_MYSQL,    'utf8mb4'],
+			'UTF-8 sqlite'      => ['UTF-8',    TDbDriver::DRIVER_SQLITE,   'UTF-8'],
+			'UTF-8 pgsql'       => ['UTF-8',    TDbDriver::DRIVER_PGSQL,    'UTF8'],
+			'UTF-8 firebird'    => ['UTF-8',    TDbDriver::DRIVER_FIREBIRD, 'UTF8'],
 			// utf8mb4 is treated as the same canonical entry as utf8
-			'utf8mb4 mysql'     => ['utf8mb4',  'mysql',    'utf8mb4'],
-			'utf8mb4 pgsql'     => ['utf8mb4',  'pgsql',    'UTF8'],
-			'utf8mb4 firebird'  => ['utf8mb4',  'firebird', 'UTF8'],
+			'utf8mb4 mysql'     => ['utf8mb4',  TDbDriver::DRIVER_MYSQL,    'utf8mb4'],
+			'utf8mb4 pgsql'     => ['utf8mb4',  TDbDriver::DRIVER_PGSQL,    'UTF8'],
+			'utf8mb4 firebird'  => ['utf8mb4',  TDbDriver::DRIVER_FIREBIRD, 'UTF8'],
 			// --- ISO-8859-1 / latin1 ---
-			'ISO-8859-1 mysql'    => ['ISO-8859-1', 'mysql',    'latin1'],
-			'ISO-8859-1 pgsql'    => ['ISO-8859-1', 'pgsql',    'LATIN1'],
-			'ISO-8859-1 firebird' => ['ISO-8859-1', 'firebird', 'ISO8859_1'],
-			'latin1 pgsql'        => ['latin1',     'pgsql',    'LATIN1'],
-			'latin1 firebird'     => ['latin1',     'firebird', 'ISO8859_1'],
+			'ISO-8859-1 mysql'    => ['ISO-8859-1', TDbDriver::DRIVER_MYSQL,    'latin1'],
+			'ISO-8859-1 pgsql'    => ['ISO-8859-1', TDbDriver::DRIVER_PGSQL,    'LATIN1'],
+			'ISO-8859-1 firebird' => ['ISO-8859-1', TDbDriver::DRIVER_FIREBIRD, 'ISO8859_1'],
+			'latin1 pgsql'        => ['latin1',     TDbDriver::DRIVER_PGSQL,    'LATIN1'],
+			'latin1 firebird'     => ['latin1',     TDbDriver::DRIVER_FIREBIRD, 'ISO8859_1'],
 			// --- ISO-8859-2 / latin2 ---
-			'ISO-8859-2 mysql'    => ['ISO-8859-2', 'mysql',    'latin2'],
-			'ISO-8859-2 pgsql'    => ['ISO-8859-2', 'pgsql',    'LATIN2'],
-			'ISO-8859-2 firebird' => ['ISO-8859-2', 'firebird', 'ISO8859_2'],
+			'ISO-8859-2 mysql'    => ['ISO-8859-2', TDbDriver::DRIVER_MYSQL,    'latin2'],
+			'ISO-8859-2 pgsql'    => ['ISO-8859-2', TDbDriver::DRIVER_PGSQL,    'LATIN2'],
+			'ISO-8859-2 firebird' => ['ISO-8859-2', TDbDriver::DRIVER_FIREBIRD, 'ISO8859_2'],
 			// --- ASCII ---
-			'ascii mysql'    => ['ascii', 'mysql',    'ascii'],
-			'ascii pgsql'    => ['ascii', 'pgsql',    'SQL_ASCII'],
-			'ascii firebird' => ['ascii', 'firebird', 'ASCII'],
+			'ascii mysql'    => ['ascii', TDbDriver::DRIVER_MYSQL,    'ascii'],
+			'ascii pgsql'    => ['ascii', TDbDriver::DRIVER_PGSQL,    'SQL_ASCII'],
+			'ascii firebird' => ['ascii', TDbDriver::DRIVER_FIREBIRD, 'ASCII'],
 			// --- Windows code pages ---
-			'WIN-1252 mysql'       => ['WIN-1252',     'mysql',    'cp1252'],
-			'WIN-1252 pgsql'       => ['WIN-1252',     'pgsql',    'WIN1252'],
-			'WIN-1252 firebird'    => ['WIN-1252',     'firebird', 'WIN1252'],
-			'Windows-1252 mysql'   => ['Windows-1252', 'mysql',    'cp1252'],
-			'win1251 mysql'        => ['win1251',       'mysql',    'cp1251'],
-			'Windows-1250 pgsql'   => ['Windows-1250',  'pgsql',   'WIN1250'],
+			'WIN-1252 mysql'       => ['WIN-1252',     TDbDriver::DRIVER_MYSQL,    'cp1252'],
+			'WIN-1252 pgsql'       => ['WIN-1252',     TDbDriver::DRIVER_PGSQL,    'WIN1252'],
+			'WIN-1252 firebird'    => ['WIN-1252',     TDbDriver::DRIVER_FIREBIRD, 'WIN1252'],
+			'Windows-1252 mysql'   => ['Windows-1252', TDbDriver::DRIVER_MYSQL,    'cp1252'],
+			'win1251 mysql'        => ['win1251',       TDbDriver::DRIVER_MYSQL,    'cp1251'],
+			'Windows-1250 pgsql'   => ['Windows-1250',  TDbDriver::DRIVER_PGSQL,   'WIN1250'],
 			// --- KOI8 ---
-			'KOI8-R mysql'    => ['KOI8-R', 'mysql',    'koi8r'],
-			'KOI8-R pgsql'    => ['KOI8-R', 'pgsql',    'KOI8R'],
-			'KOI8-R firebird' => ['KOI8-R', 'firebird', 'KOI8R'],
+			'KOI8-R mysql'    => ['KOI8-R', TDbDriver::DRIVER_MYSQL,    'koi8r'],
+			'KOI8-R pgsql'    => ['KOI8-R', TDbDriver::DRIVER_PGSQL,    'KOI8R'],
+			'KOI8-R firebird' => ['KOI8-R', TDbDriver::DRIVER_FIREBIRD, 'KOI8R'],
 			// --- OCI charset names ---
-			'UTF-8 oci'        => ['UTF-8',      'oci', 'AL32UTF8'],
-			'ISO-8859-1 oci'   => ['ISO-8859-1', 'oci', 'WE8ISO8859P1'],
-			'ISO-8859-2 oci'   => ['ISO-8859-2', 'oci', 'EE8ISO8859P2'],
-			'ascii oci'        => ['ascii',       'oci', 'US7ASCII'],
-			'WIN-1252 oci'     => ['WIN-1252',    'oci', 'WE8MSWIN1252'],
-			'KOI8-R oci'       => ['KOI8-R',      'oci', 'CL8KOI8R'],
+			'UTF-8 oci'        => ['UTF-8',      TDbDriver::DRIVER_OCI, 'AL32UTF8'],
+			'ISO-8859-1 oci'   => ['ISO-8859-1', TDbDriver::DRIVER_OCI, 'WE8ISO8859P1'],
+			'ISO-8859-2 oci'   => ['ISO-8859-2', TDbDriver::DRIVER_OCI, 'EE8ISO8859P2'],
+			'ascii oci'        => ['ascii',       TDbDriver::DRIVER_OCI, 'US7ASCII'],
+			'WIN-1252 oci'     => ['WIN-1252',    TDbDriver::DRIVER_OCI, 'WE8MSWIN1252'],
+			'KOI8-R oci'       => ['KOI8-R',      TDbDriver::DRIVER_OCI, 'CL8KOI8R'],
 			// --- sqlsrv charset names ---
-			'UTF-8 sqlsrv'     => ['UTF-8',      'sqlsrv', 'UTF-8'],
+			'UTF-8 sqlsrv'     => ['UTF-8',      TDbDriver::DRIVER_SQLSRV, 'UTF-8'],
 			// --- mssql / dblib charset names ---
-			'UTF-8 mssql'      => ['UTF-8',      'mssql', 'UTF-8'],
-			'ISO-8859-1 mssql' => ['ISO-8859-1', 'mssql', 'ISO-8859-1'],
-			'ISO-8859-2 dblib' => ['ISO-8859-2', 'dblib', 'ISO-8859-2'],
-			'WIN-1252 mssql'   => ['WIN-1252',   'mssql', 'CP1252'],
-			'KOI8-R dblib'     => ['KOI8-R',     'dblib', 'KOI8-R'],
+			'UTF-8 mssql'      => ['UTF-8',      TDbDriver::EXTENSION_MSSQL, 'UTF-8'],
+			'ISO-8859-1 mssql' => ['ISO-8859-1', TDbDriver::EXTENSION_MSSQL, 'ISO-8859-1'],
+			'ISO-8859-2 dblib' => ['ISO-8859-2', TDbDriver::DRIVER_DBLIB,    'ISO-8859-2'],
+			'WIN-1252 mssql'   => ['WIN-1252',   TDbDriver::EXTENSION_MSSQL, 'CP1252'],
+			'KOI8-R dblib'     => ['KOI8-R',     TDbDriver::DRIVER_DBLIB,    'KOI8-R'],
 			// --- IBM DB2: no table entry → pass-through ---
-			'UTF-8 ibm'        => ['UTF-8', 'ibm', 'UTF-8'],
+			'UTF-8 ibm'        => ['UTF-8', TDbDriver::DRIVER_IBM, 'UTF-8'],
 			// --- Unknown / driver-specific names pass through unchanged ---
-			'unknown mysql'    => ['my_custom_cs', 'mysql', 'my_custom_cs'],
-			'unknown pgsql'    => ['EUC_JP',       'pgsql', 'EUC_JP'],
+			'unknown mysql'    => ['my_custom_cs', TDbDriver::DRIVER_MYSQL, 'my_custom_cs'],
+			'unknown pgsql'    => ['EUC_JP',       TDbDriver::DRIVER_PGSQL, 'EUC_JP'],
 		];
 	}
 
@@ -568,15 +569,15 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 	{
 		return [
 			// OCI: 'UTF-8' resolves to the OCI NLS name 'AL32UTF8'
-			'oci/UTF-8'        => ['oci',    'UTF-8',      'AL32UTF8'],
-			'oci/ISO-8859-1'   => ['oci',    'ISO-8859-1', 'WE8ISO8859P1'],
+			'oci/UTF-8'        => [TDbDriver::DRIVER_OCI,      'UTF-8',      'AL32UTF8'],
+			'oci/ISO-8859-1'   => [TDbDriver::DRIVER_OCI,      'ISO-8859-1', 'WE8ISO8859P1'],
 			// MSSQL / sqlsrv / dblib: iconv-compatible names
-			'mssql/UTF-8'      => ['mssql',  'UTF-8',      'UTF-8'],
-			'mssql/ISO-8859-1' => ['mssql',  'ISO-8859-1', 'ISO-8859-1'],
-			'sqlsrv/UTF-8'     => ['sqlsrv', 'UTF-8',      'UTF-8'],
-			'dblib/UTF-8'      => ['dblib',  'UTF-8',      'UTF-8'],
+			'mssql/UTF-8'      => [TDbDriver::EXTENSION_MSSQL, 'UTF-8',      'UTF-8'],
+			'mssql/ISO-8859-1' => [TDbDriver::EXTENSION_MSSQL, 'ISO-8859-1', 'ISO-8859-1'],
+			'sqlsrv/UTF-8'     => [TDbDriver::DRIVER_SQLSRV,   'UTF-8',      'UTF-8'],
+			'dblib/UTF-8'      => [TDbDriver::DRIVER_DBLIB,    'UTF-8',      'UTF-8'],
 			// IBM DB2 has no alias table entry → pass-through
-			'ibm/UTF-8'        => ['ibm',    'UTF-8',      'UTF-8'],
+			'ibm/UTF-8'        => [TDbDriver::DRIVER_IBM,      'UTF-8',      'UTF-8'],
 		];
 	}
 
@@ -589,7 +590,7 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 			->getMock();
 		$mockPdo->method('getAttribute')
 			->with(\PDO::ATTR_DRIVER_NAME)
-			->willReturn('mysql');
+			->willReturn(TDbDriver::DRIVER_MYSQL);
 		// PDO::query() is used by TDbCommand::queryScalar() for the direct-query path.
 		$mockPdo->method('query')
 			->willThrowException(new \PDOException('server gone away'));
