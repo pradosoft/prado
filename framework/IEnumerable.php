@@ -38,13 +38,13 @@ namespace Prado;
  *
  * To also support `\Iterator`, add {@see \Prado\Util\Traits\TArrayIteratorTrait}.
  * {@see TConstantReflectionTrait} already provides the required
- * `getIteratorArray()` method, so no further implementation is needed — the
+ * `getIteratorArrayCopy()` method, so no further implementation is needed — the
  * trait lazy-loads the constants on first iterator access:
  *
  * ```php
  * class TTextAlign implements \Prado\IEnumerable, \Iterator
  * {
- *     use \Prado\Util\Traits\TConstantReflectionTrait; // provides getIteratorArray()
+ *     use \Prado\Util\Traits\TConstantReflectionTrait; // provides getIteratorArrayCopy()
  *     use \Prado\Util\Traits\TArrayIteratorTrait;
  *
  *     const Left  = 'Left';

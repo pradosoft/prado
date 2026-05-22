@@ -15,7 +15,7 @@ namespace Prado\Util\Traits;
  *
  * TConstantReflectionTrait provides static reflection methods for checking,
  * getting, and iterating over class constants similar to {@see \ReflectionClass}.
- * It also implements {@see \Prado\Util\Traits\TArrayIteratorTrait::getIteratorArray()}
+ * It also implements {@see \Prado\Util\Traits\TArrayIteratorTrait::getIteratorArrayCopy()}
  * so that any class using both this trait and {@see TArrayIteratorTrait} gains full
  * `\Iterator` support over its constants with no additional implementation.
  *
@@ -231,19 +231,17 @@ trait TConstantReflectionTrait
 	}
 
 	/**
-	 * Returns all class constants as the backing array for {@see TArrayIteratorTrait}.
+	 * Returns a copy of all class constants as the backing array for {@see TArrayIteratorTrait}.
 	 *
-	 * This method satisfies the `getIteratorArray()` requirement of
-	 * {@see \Prado\Util\Traits\TArrayIteratorTrait} so that any class using both
-	 * this trait and `TArrayIteratorTrait` gains full `\Iterator` support over its
-	 * constants without any additional implementation.  A using class may
-	 * override this method to supply a different array for iteration.
+	 * Satisfies the {@see \Prado\Util\Traits\TArrayIteratorTrait::getIteratorArrayCopy()}
+	 * contract so that any class using both traits gains full `\Iterator` support over
+	 * its constants with no additional implementation.
 	 *
 	 * @return array<string,mixed> Map of constant name ⇒ constant value.
 	 * @see \Prado\Util\Traits\TArrayIteratorTrait
 	 * @since 4.4.0
 	 */
-	public function getIteratorArray(): array
+	public function getIteratorArrayCopy(): array
 	{
 		return self::getReflectionClass()->getConstants();
 	}

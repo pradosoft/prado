@@ -18,20 +18,22 @@ namespace Prado\Util\Traits;
  * reflection or domain-specific logic: it does not know or care where the array
  * comes from.
  *
- * The abstract method {@see getIteratorArray()} is the sole contract between this
- * trait and the using class.  It must be satisfied by either a concrete
- * implementation in the class itself or by another used trait.
- * {@see TConstantReflectionTrait} satisfies this contract automatically (returning
- * the class's own constants via reflection), so classes that use both traits
- * require no further implementation.  A class may always define its own
- * `getIteratorArray()` to override the default provided by `TConstantReflectionTrait`.
+ * The abstract method {@see getIteratorArrayCopy()} is the sole contract between
+ * this trait and the using class.  It must return a copy of the array to iterate
+ * over; the copy is stored in the backing store on first access and reused for all
+ * subsequent iterations.  {@see TConstantReflectionTrait} satisfies this contract
+ * automatically (returning the class's own constants via reflection), so classes
+ * that use both traits require no further implementation.  A class must always define
+ * its own `getIteratorArrayCopy()` to supply its array.
+ *
+ * Override {@see getIteratorArray()} instead to supply the array directly — bypassing
+ * the copy — when the using class manages the backing store itself.
  *
  * The backing store (`$_iterator_array`) starts as `null`.  On the first iterator
  * access the protected helper {@see ensureIteratorArray()} calls
- * {@see getIteratorArray()} and caches the result.  The public accessors
+ * {@see getIteratorArrayCopy()} and caches the result.  The protected accessors
  * {@see getIteratorArrayDirect()} and {@see setIteratorArrayDirect()} allow
- * inspection and replacement of the store without triggering or bypassing the
- * lazy-load cycle.
+ * inspection and replacement of the store without triggering the lazy-load.
  *
  * The using class must declare `implements \Iterator` on its own class signature;
  * this trait supplies the five required method bodies.
@@ -41,22 +43,22 @@ namespace Prado\Util\Traits;
  * ```php
  * class TTextAlign implements \Prado\IEnumerable, \Iterator
  * {
- *     use \Prado\Util\Traits\TConstantReflectionTrait; // provides getIteratorArray()
  *     use \Prado\Util\Traits\TArrayIteratorTrait;
+ *     use \Prado\Util\Traits\TConstantReflectionTrait; // provides getIteratorArrayCopy()
  *
  *     const Left  = 'Left';
  *     const Right = 'Right';
  * }
  * ```
  *
- * ## Usage without TConstantReflectionTrait (`getIteratorArray` implementation required)
+ * ## Usage without TConstantReflectionTrait (`getIteratorArrayCopy` implementation required)
  *
  * ```php
  * class MyList implements \Iterator
  * {
  *     use \Prado\Util\Traits\TArrayIteratorTrait;
  *
- *     public function getIteratorArray(): array
+ *     public function getIteratorArrayCopy(): array
  *     {
  *         return ['a' => 1, 'b' => 2];
  *     }
@@ -76,16 +78,12 @@ trait TArrayIteratorTrait
 	private ?array $_iterator_array = null;
 
 	/**
-	 * Returns the array that backs this iterator.
+	 * Returns a copy of the array to iterate over, cached on first access.
 	 *
-	 * Implement this method to supply the array the iterator walks over.
-	 * {@see TConstantReflectionTrait} provides a default implementation that
-	 * returns the using class's own constants via reflection; a class may
-	 * override it to supply any array.
-	 *
-	 * @return array The array to iterate over.
+	 * @return array The array to copy into the backing store.
+	 * @see \Prado\Util\Traits\TConstantReflectionTrait
 	 */
-	abstract public function getIteratorArray(): array;
+	abstract public function getIteratorArrayCopy(): array;
 
 	/**
 	 * Ensures `$_iterator_array` is populated, loading it on first call.
@@ -95,8 +93,34 @@ trait TArrayIteratorTrait
 	protected function ensureIteratorArray(): void
 	{
 		if ($this->getIteratorArrayDirect() === null) {
-			$this->setIteratorArrayDirect($this->getIteratorArray());
+			$this->setIteratorArrayDirect($this->getIteratorArrayCopy());
 		}
+	}
+
+	/**
+	 * Returns a reference to the raw backing store without triggering lazy loading.
+	 *
+	 * Returns `null` when the store has not been populated yet.  Use
+	 * {@see getEnsuredIteratorArray()} when a non-null, loaded array is required.
+	 *
+	 * @return ?array Reference to `$_iterator_array`.
+	 */
+	protected function &getIteratorArrayDirect(): ?array
+	{
+		return $this->_iterator_array;
+	}
+
+	/**
+	 * Replaces the backing array directly, bypassing lazy loading.
+	 *
+	 * Passing `null` resets the store so that the next iterator access triggers
+	 * a fresh call to {@see getIteratorArrayCopy()}.
+	 *
+	 * @param ?array $array The replacement array, or `null` to force a reload.
+	 */
+	protected function setIteratorArrayDirect(?array $array): void
+	{
+		$this->_iterator_array = $array;
 	}
 
 	/**
@@ -109,34 +133,7 @@ trait TArrayIteratorTrait
 	 *
 	 * @return array Reference to `$_iterator_array`.
 	 */
-	protected function &getIteratorArrayDirect(): array
-	{
-		return $this->_iterator_array;
-	}
-
-	/**
-	 * Replaces the backing array directly, bypassing lazy loading.
-	 *
-	 * Passing `null` resets the store so that the next iterator access triggers
-	 * a fresh call to {@see getIteratorArray()}.
-	 *
-	 * @param ?array $array The replacement array, or `null` to force a reload.
-	 */
-	protected function setIteratorArrayDirect(?array $array): void
-	{
-		$this->_iterator_array = $array;
-	}
-
-	/**
-	 * Returns the backing array directly, or `null` if not yet loaded.
-	 *
-	 * Returns the raw store without triggering a load.  A `null` return means the
-	 * store has not been populated yet and the next iterator access will call
-	 * {@see getIteratorArray()}.
-	 *
-	 * @return ?array
-	 */
-	protected function &getEnsuredIteratorArray(): ?array
+	protected function &getIteratorArray(): array
 	{
 		$this->ensureIteratorArray();
 		return $this->getIteratorArrayDirect();
@@ -150,7 +147,7 @@ trait TArrayIteratorTrait
 	#[\ReturnTypeWillChange]
 	public function current()
 	{
-		return current($this->getEnsuredIteratorArray());
+		return current($this->getIteratorArray());
 	}
 
 	/**
@@ -161,7 +158,7 @@ trait TArrayIteratorTrait
 	#[\ReturnTypeWillChange]
 	public function key()
 	{
-		return key($this->getEnsuredIteratorArray());
+		return key($this->getIteratorArray());
 	}
 
 	/**
@@ -169,7 +166,7 @@ trait TArrayIteratorTrait
 	 */
 	public function next(): void
 	{
-		next($this->getEnsuredIteratorArray());
+		next($this->getIteratorArray());
 	}
 
 	/**
@@ -177,7 +174,7 @@ trait TArrayIteratorTrait
 	 */
 	public function rewind(): void
 	{
-		reset($this->getEnsuredIteratorArray());
+		reset($this->getIteratorArray());
 	}
 
 	/**
@@ -190,6 +187,6 @@ trait TArrayIteratorTrait
 	 */
 	public function valid(): bool
 	{
-		return key($this->getEnsuredIteratorArray()) !== null;
+		return key($this->getIteratorArray()) !== null;
 	}
 }

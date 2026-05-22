@@ -46,7 +46,7 @@ use Prado\Util\Traits\TArrayIteratorTrait;
  * Classes that cannot extend TEnumerable can implement {@see IEnumerable} and
  * {@see \Iterator} by using {@see \Prado\Util\Traits\TConstantReflectionTrait}
  * and {@see \Prado\Util\Traits\TArrayIteratorTrait}; no further implementation is
- * required because {@see TConstantReflectionTrait} supplies {@see getIteratorArray()}
+ * required because {@see TConstantReflectionTrait} supplies {@see getIteratorArrayCopy()}
  * to the {@see TArrayIteratorTrait}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
