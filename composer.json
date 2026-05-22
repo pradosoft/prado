@@ -103,11 +103,13 @@
 			"npm run playwright:install",
 			"@setup-demos"
 		],
+		"dbinit": "php tests/test_tools/initdb.php",
 		"setup-demos": "bash tests/setup-demos.sh",
         "gendoc": "phpdoc --template=./vendor/pradosoft/prado-phpdoc-template",
 		"fix": "vendor/bin/php-cs-fixer fix",
 		"stan": "vendor/bin/phpstan analyse --memory-limit=512M",
-        "unittest": "vendor/bin/phpunit --testsuite unit",
+        "unittest": "vendor/bin/phpunit --testsuite unit,db-mysql,db-pgsql,db-sqlite",
+		"dbtest": "vendor/bin/phpunit --testsuite db-mysql,db-pgsql,db-sqlite",
 		"fulltest": [
 			"@fix",
 			"@stan",
