@@ -45,12 +45,7 @@ jobs:
         run: composer validate --strict
 
       - name: Validate code syntax using php-cs-fixer
-        run: |
-          php-cs-fixer check -vvv --using-cache=no || true
-          echo " "
-          echo "---------------------- Generating Annotations ----------------------"
-          echo "Run php-cs-fixer check --using-cache=no --format=checkstyle | cs2pr"
-          php-cs-fixer check --using-cache=no --format=checkstyle | cs2pr
+        run: php-cs-fixer check --using-cache=no || true
 
       - name: Get composer cache directory
         id: composer-cache
@@ -185,12 +180,7 @@ jobs:
         run: composer validate --strict
 
       - name: Validate code syntax using php-cs-fixer
-        run: |
-          php-cs-fixer check -vvv --using-cache=no || true
-          echo " "
-          echo "---------------------- Generating Annotations ----------------------"
-          echo "Run php-cs-fixer check --using-cache=no --format=checkstyle | cs2pr"
-          php-cs-fixer check --using-cache=no --format=checkstyle | cs2pr
+        run: php-cs-fixer check --using-cache=no || true
 
       - name: Get composer cache directory
         id: composer-cache
@@ -259,12 +249,7 @@ jobs:
         run: composer validate --strict
 
       - name: Validate code syntax using php-cs-fixer
-        run: |
-          php-cs-fixer check -vvv --using-cache=no || true
-          echo " "
-          echo "---------------------- Generating Annotations ----------------------"
-          echo "Run php-cs-fixer check --using-cache=no --format=checkstyle | cs2pr"
-          php-cs-fixer check --using-cache=no --format=checkstyle | cs2pr
+        run: php-cs-fixer check --using-cache=no || true
 
       - name: Get composer cache directory
         id: composer-cache
