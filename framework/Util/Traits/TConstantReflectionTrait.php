@@ -15,9 +15,11 @@ namespace Prado\Util\Traits;
  *
  * TConstantReflectionTrait provides static reflection methods for checking,
  * getting, and iterating over class constants similar to {@see \ReflectionClass}.
+ * It also implements {@see \Prado\Util\Traits\TArrayIteratorTrait::getIteratorArray()}
+ * so that any class using both this trait and {@see TArrayIteratorTrait} gains full
+ * `\Iterator` support over its constants with no additional implementation.
  *
- * This trait can be used by any class with string constants.
- * For example,
+ * This trait can be used by any class with string constants.  For example:
  * ```php
  * class TTextAlign
  * {
@@ -29,85 +31,54 @@ namespace Prado\Util\Traits;
  * ```
  * Then, one can use the reflection methods:
  * ```php
- * $value = TTextAlign::valueOfConstant('Left');  // returns 'Left'
+ * $value = TTextAlign::valueOfConstant('Left');       // returns 'Left'
  * $constant = TTextAlign::constantOfValue('Left');    // returns 'Left'
- * $hasLeft = TTextAlign::hasConstant('Left');    // true
+ * $hasLeft = TTextAlign::hasConstant('Left');         // true
  * $hasLeftValue = TTextAlign::hasConstantValue('Left'); // true
  * ```
  *
- * Then, one can use the reflection methods:
+ * **Case sensitivity** — pass `false` as the second argument for a
+ * case-insensitive name (or value) match:
  * ```php
- * $value = TTextAlign::valueOfConstant('Left');  // returns 'Left'
- * $constant = TTextAlign::constantOfValue('Left');    // returns 'Left'
- * $hasLeft = TTextAlign::hasConstant('Left');    // true
- * $hasLeftValue = TTextAlign::hasConstantValue('Left'); // true
+ * $yes = TTextAlign::hasConstant('Left');          // true  (case-sensitive)
+ * $no  = TTextAlign::hasConstant('left');          // false
+ * $yes = TTextAlign::hasConstant('left', false);   // true  (case-insensitive)
  * ```
  *
- * This trait can be used by any class with string constants.
- * For example,
+ * **Affix filtering** — pass a non-empty string as the second argument to
+ * restrict the match to constants whose *name* starts with (prefix) or ends
+ * with (suffix) the given string.  Prefix is the default; suffix is indicated
+ * by a leading `*` or `-` character.  The third argument controls whether the
+ * affix comparison itself is case-sensitive.
  * ```php
- * class TTextAlign
- * {
- *     use TConstantReflectionTrait;
+ * // const AlignLeft = 'AlignLeft', const AlignRight = 'AlignRight', const Left = 'Left'
+ * $yes = TTextAlign::hasConstant('AlignLeft',  'Align');          // prefix match
+ * $no  = TTextAlign::hasConstant('Left',       'Align');          // no prefix
+ * $yes = TTextAlign::hasConstant('AlignRight', 'align', false);   // case-insensitive prefix
  *
- *     const Left = 'Left';
- *     const Right = 'Right';
- * }
- * ```
- * Then, one can use the reflection methods:
- * ```php
- * $value = TTextAlign::valueOfConstant('Left');  // returns 'Left'
- * $constant = TTextAlign::constantOfValue('Left');    // returns 'Left'
- * $hasLeft = TTextAlign::hasConstant('Left');    // true
- * $hasLeftValue = TTextAlign::hasConstantValue('Left'); // true
- * ```
- *
- * <b>Case Sensitivity</b>
- * The second parameter can be a boolean for case sensitivity. Default is true (case sensitive).
- * ```php
- * $yes = TTextAlign::hasConstant('Left');         // true
- * $no = TTextAlign::hasConstant('left');        // false
- * $yes = TTextAlign::hasConstant('left', false);  // true (case insensitive)
- * ```
- *
- * <b>Affix Filtering</b>
- * The second parameter can be a string to filter constants by prefix or suffix.
- * - Prefix: string starting with letter/number (e.g., 'Align', 'Display')
- * - Suffix: string starting with '*' or '-' (e.g., '*Algorithm', '-Margin')
- * When using affix filtering, the third parameter controls case sensitivity.
- * ```php
- * // With const AlignLeft = 'AlignLeft', const Left = 'Left' and const AlignRight = 'AlignRight'
- * $yes = TTextAlign::hasConstant('AlignLeft', 'Align');    // starts with 'Align'
- * $yes = TTextAlign::hasConstant('AlignRight', 'align');     // starts with 'Align'
- * $no = TTextAlign::hasConstant('Left', 'align');
- *
- * // With const TopMargin = 'TopMargin' and const BottomMargin = 'BottomMargin'
- * $yes = TTextAlign::hasConstant('TopMargin', '*Margin');  // ends with 'Margin'
- * $yes = TTextAlign::hasConstant('BottomMargin', '-margin');  // ends with 'Margin'
- *
- * // Combine affix filter with case insensitive
- * $has = TTextAlign::hasConstant('Margin', '*margin', false);  // ends with 'margin'
+ * // const TopMargin = 'TopMargin', const BottomMargin = 'BottomMargin'
+ * $yes = TTextAlign::hasConstant('TopMargin',    '*Margin');        // suffix match
+ * $yes = TTextAlign::hasConstant('BottomMargin', '-margin', false); // case-insensitive suffix
  * ```
  *
  * @author Brad Anderson <belisoful@icloud.com>
+ * @see TReflectionCacheTrait
  * @since 4.3.3
  */
 trait TConstantReflectionTrait
 {
-	/** @var \ReflectionClass[] Cache of ReflectionClass instances. */
-	private static $_reflection_cache = [];
+	use TReflectionClassTrait;
 
 	/**
-	 * Check if a constant exists in this class.
+	 * Checks whether a constant with the given name exists in this class.
 	 *
-	 * This method checks for the existence of a class constant by its name.
-	 * It supports case-sensitive/insensitive matching and affix filtering
-	 * (prefix or suffix) for flexible constant name matching.
+	 * Supports case-sensitive/insensitive matching and affix filtering (prefix or
+	 * suffix) for flexible constant-name matching.
 	 *
 	 * @param string $constant The constant name to check.
-	 * @param bool|string $caseOrAffix The prefix or suffix filter, or case sensitivity. Default is true
-	 * @param bool $caseSensitive Whether to perform case-sensitive check when using affix filter. Default is true.
-	 * @return bool True if the constant exists, false otherwise.
+	 * @param bool|string $caseOrAffix Case-sensitivity flag or prefix/suffix filter string. Default `true`.
+	 * @param bool $caseSensitive Case sensitivity for the affix comparison. Default `true`.
+	 * @return bool `true` if a matching constant name is found, `false` otherwise.
 	 */
 	public static function hasConstant($constant, $caseOrAffix = true, $caseSensitive = true): bool
 	{
@@ -120,11 +91,9 @@ trait TConstantReflectionTrait
 			$caseSensitive = (bool) $caseOrAffix;
 		}
 
-		$ref = self::getReflectionClass();
 		$cmp = $caseSensitive ? 'strcmp' : 'strcasecmp';
-		$consts = $ref->getConstants();
 
-		foreach ($consts as $name => $value) {
+		foreach (self::getReflectionClass()->getConstants() as $name => $value) {
 			if ($cmp($name, $constant) !== 0) {
 				continue;
 			}
@@ -134,8 +103,7 @@ trait TConstantReflectionTrait
 			}
 
 			$affixLen = strlen($affix);
-			$match = $cmp(substr($name, $isSuffix ? -$affixLen : 0, $affixLen), $affix) === 0;
-			if ($match) {
+			if ($cmp(substr($name, $isSuffix ? -$affixLen : 0, $affixLen), $affix) === 0) {
 				return true;
 			}
 		}
@@ -143,16 +111,15 @@ trait TConstantReflectionTrait
 	}
 
 	/**
-	 * Check if a constant exists in this class.
+	 * Checks whether a constant with the given value exists in this class.
 	 *
-	 * This method checks for the existence of a class constant by its value.
-	 * It supports case-sensitive/insensitive matching and affix filtering
-	 * (prefix or suffix) for flexible constant value matching.
+	 * Supports case-sensitive/insensitive value matching and optional affix
+	 * filtering on the constant's *name* (prefix or suffix).
 	 *
 	 * @param string $value The constant value to check.
-	 * @param bool|string $caseOrAffix The prefix or suffix filter, or case sensitivity. Default is true
-	 * @param bool $caseSensitive Whether to perform case-sensitive check when using affix filter. Default is true.
-	 * @return bool True if the constant exists, false otherwise.
+	 * @param bool|string $caseOrAffix Case-sensitivity flag or prefix/suffix filter string. Default `true`.
+	 * @param bool $caseSensitive Case sensitivity for the affix comparison. Default `true`.
+	 * @return bool `true` if a constant with this value is found, `false` otherwise.
 	 */
 	public static function hasConstantValue($value, $caseOrAffix = true, $caseSensitive = true): bool
 	{
@@ -165,10 +132,9 @@ trait TConstantReflectionTrait
 			$caseSensitive = (bool) $caseOrAffix;
 		}
 
-		$ref = self::getReflectionClass();
 		$cmp = $caseSensitive ? 'strcmp' : 'strcasecmp';
 
-		foreach ($ref->getConstants() as $name => $constValue) {
+		foreach (self::getReflectionClass()->getConstants() as $name => $constValue) {
 			if ($cmp($value, $constValue) !== 0) {
 				continue;
 			}
@@ -185,16 +151,15 @@ trait TConstantReflectionTrait
 	}
 
 	/**
-	 * Gets the constant value by name.
+	 * Returns the value of the constant with the given name.
 	 *
-	 * This method retrieves the value of a class constant by its name.
-	 * It supports case-sensitive/insensitive matching and affix filtering
-	 * (prefix or suffix) for flexible constant name matching.
+	 * Supports case-sensitive/insensitive name matching and affix filtering
+	 * (prefix or suffix) for flexible constant-name lookup.
 	 *
-	 * @param string $constant The constant name to get the value of.
-	 * @param bool|string $caseOrAffix The prefix or suffix filter, or case sensitivity. Default is true
-	 * @param bool $caseSensitive Whether to perform case-sensitive check when using affix filter. Default is true.
-	 * @return ?string The constant value or null if not found.
+	 * @param string $constant The constant name to look up.
+	 * @param bool|string $caseOrAffix Case-sensitivity flag or prefix/suffix filter string. Default `true`.
+	 * @param bool $caseSensitive Case sensitivity for the affix comparison. Default `true`.
+	 * @return ?string The constant value, or `null` if not found.
 	 */
 	public static function valueOfConstant($constant, $caseOrAffix = true, $caseSensitive = true): ?string
 	{
@@ -207,11 +172,9 @@ trait TConstantReflectionTrait
 			$caseSensitive = (bool) $caseOrAffix;
 		}
 
-		$ref = self::getReflectionClass();
 		$cmp = $caseSensitive ? 'strcmp' : 'strcasecmp';
-		$consts = $ref->getConstants();
 
-		foreach ($consts as $name => $value) {
+		foreach (self::getReflectionClass()->getConstants() as $name => $value) {
 			if ($cmp($name, $constant) !== 0) {
 				continue;
 			}
@@ -228,16 +191,15 @@ trait TConstantReflectionTrait
 	}
 
 	/**
-	 * Gets the constant name by value.
+	 * Returns the name of the constant with the given value.
 	 *
-	 * This method retrieves the name of a class constant by its value.
-	 * It supports case-sensitive/insensitive matching and affix filtering
-	 * (prefix or suffix) for flexible constant value matching.
+	 * Supports case-sensitive/insensitive value matching and optional affix
+	 * filtering on the constant's *name* (prefix or suffix).
 	 *
 	 * @param string $value The constant value to search for.
-	 * @param bool|string $caseOrAffix The prefix or suffix filter, or case sensitivity. Default is true
-	 * @param bool $caseSensitive Whether to perform case-sensitive check when using affix filter. Default is true.
-	 * @return ?string The constant name or null if not found.
+	 * @param bool|string $caseOrAffix Case-sensitivity flag or prefix/suffix filter string. Default `true`.
+	 * @param bool $caseSensitive Case sensitivity for the affix comparison. Default `true`.
+	 * @return ?string The constant name, or `null` if not found.
 	 */
 	public static function constantOfValue($value, $caseOrAffix = true, $caseSensitive = true): ?string
 	{
@@ -250,10 +212,9 @@ trait TConstantReflectionTrait
 			$caseSensitive = (bool) $caseOrAffix;
 		}
 
-		$ref = self::getReflectionClass();
 		$cmp = $caseSensitive ? 'strcmp' : 'strcasecmp';
 
-		foreach ($ref->getConstants() as $name => $constValue) {
+		foreach (self::getReflectionClass()->getConstants() as $name => $constValue) {
 			if ($cmp($value, $constValue) !== 0) {
 				continue;
 			}
@@ -269,19 +230,21 @@ trait TConstantReflectionTrait
 		return null;
 	}
 
-	// ----- Private Helpers
-
 	/**
-	 * Gets or creates the ReflectionClass for the current class.
-	 * Uses a static cache to store ReflectionClass instances per class.
-	 * @return \ReflectionClass The reflection class instance.
+	 * Returns all class constants as the backing array for {@see TArrayIteratorTrait}.
+	 *
+	 * This method satisfies the `getIteratorArray()` requirement of
+	 * {@see \Prado\Util\Traits\TArrayIteratorTrait} so that any class using both
+	 * this trait and `TArrayIteratorTrait` gains full `\Iterator` support over its
+	 * constants without any additional implementation.  A using class may
+	 * override this method to supply a different array for iteration.
+	 *
+	 * @return array<string,mixed> Map of constant name ⇒ constant value.
+	 * @see \Prado\Util\Traits\TArrayIteratorTrait
+	 * @since 4.4.0
 	 */
-	private static function getReflectionClass(): \ReflectionClass
+	public function getIteratorArray(): array
 	{
-		$class = static::class;
-		if (!isset(self::$_reflection_cache[$class])) {
-			self::$_reflection_cache[$class] = new \ReflectionClass($class);
-		}
-		return self::$_reflection_cache[$class];
+		return self::getReflectionClass()->getConstants();
 	}
 }
