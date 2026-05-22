@@ -10,6 +10,7 @@
 
 namespace Prado\Data;
 
+use Prado\Data\IDataConnection;
 use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbConnection;
 use Prado\Data\DataGateway\TTableGateway;
@@ -43,12 +44,12 @@ trait TDbPropertiesTrait
 	private $_connID = '';
 
 	/**
-	 * @var null|TDbConnection the DB connection instance
+	 * @var ?IDataConnection the DB connection instance
 	 */
 	private $_conn;
 
 	/**
-	 * @var null|TTableGateway[] the cache of table gateways
+	 * @var ?TTableGateway[] the cache of table gateways
 	 */
 	private $_gateways;
 
@@ -99,9 +100,9 @@ trait TDbPropertiesTrait
 	 * createDbConnection() and activated.
 	 *
 	 * @throws TConfigurationException if the connection cannot be established
-	 * @return TDbConnection the database connection that may be used to retrieve data.
+	 * @return IDataConnection the database connection that may be used to retrieve data.
 	 */
-	public function getDbConnection(): TDbConnection
+	public function getDbConnection(): IDataConnection
 	{
 		$activation = $this->getDbConnectionActivationType();
 		if ($this->_conn === null) {
@@ -161,11 +162,11 @@ trait TDbPropertiesTrait
 	 * If no ConnectionID is available, this will try to start a sqlite database
 	 * if the subclass has a name via getSqliteDatabaseName().
 	 *
-	 * @param null|string $connectionID the module ID for TDataSourceConfig. If null, uses getConnectionID().
+	 * @param ?string $connectionID the module ID for TDataSourceConfig. If null, uses getConnectionID().
 	 * @throws TConfigurationException if module ID is invalid or empty without a Sqlite database.
-	 * @return TDbConnection the created DB connection
+	 * @return IDataConnection the created DB connection
 	 */
-	protected function createDbConnection(?string $connectionID = null): TDbConnection
+	protected function createDbConnection(?string $connectionID = null): IDataConnection
 	{
 		if ($connectionID === null) {
 			$connectionID = $this->getConnectionID();
@@ -225,7 +226,7 @@ trait TDbPropertiesTrait
 	 * When the class overrides this method, createDbConnection will try to
 	 * start a sqlite database in the PRADO Runtime Path.
 	 *
-	 * @return null|string if the using class wants a sqlite db then return the name, otherwise null
+	 * @return ?string if the using class wants a sqlite db then return the name, otherwise null
 	 */
 	protected function getSqliteDatabaseName(): ?string
 	{

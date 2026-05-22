@@ -11,7 +11,13 @@
 namespace Prado\Data;
 
 /**
+ * IDataTransaction interface
+ *
  * IDataTransaction defines the interface for a data-store transaction.
+ *
+ * This interface provides a common abstraction over database-specific transaction
+ * implementations, allowing PRADO plugins to supply their own implementations
+ * without coupling to a concrete class.
  *
  * Implementations include {@see TDbTransaction} for SQL/PDO databases.
  *
@@ -21,14 +27,9 @@ namespace Prado\Data;
 interface IDataTransaction
 {
 	/**
-	 * Commits the transaction.
+	 * @return IDataConnection the connection associated with this transaction.
 	 */
-	public function commit();
-
-	/**
-	 * Rolls back (aborts) the transaction.
-	 */
-	public function rollback();
+	public function getConnection();
 
 	/**
 	 * @return bool whether the transaction is currently active.
@@ -36,7 +37,20 @@ interface IDataTransaction
 	public function getActive();
 
 	/**
-	 * @return IDataConnection the connection associated with this transaction.
+	 * Commits the transaction.
+	 *
+	 * The transaction becomes inactive after commit completes. To start another
+	 * work unit, call {@see beginTransaction()} on this object (reuse pattern)
+	 * or call {@see IDataConnection::beginTransaction()} for a fresh object.
 	 */
-	public function getConnection();
+	public function commit();
+
+	/**
+	 * Rolls back (aborts) the transaction.
+	 *
+	 * The transaction becomes inactive after rollback completes. To start another
+	 * work unit, call {@see beginTransaction()} on this object (reuse pattern)
+	 * or call {@see IDataConnection::beginTransaction()} for a fresh object.
+	 */
+	public function rollback();
 }

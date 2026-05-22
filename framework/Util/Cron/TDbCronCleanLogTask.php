@@ -47,10 +47,10 @@ class TDbCronCleanLogTask extends TCronTask
 		if (is_object($cron) && $cron instanceof \Prado\Util\Cron\TDbCronManager) {
 			$count = $cron->clearCronLog($this->getTimePeriod());
 
-			if ($cron->asa(TCronModule::SHELL_LOG_BEHAVIOR)) {
+			if ($cron->asa(TShellCronLogBehavior::class)) {
 				$cron->getOutputWriter()->writeLine("Cleared {$count} Cron Task Logs", TShellWriter::GREEN);
 			}
-		} elseif (is_object($cron) && $cron->asa(TCronModule::SHELL_LOG_BEHAVIOR)) {
+		} elseif (is_object($cron) && $cron->asa(TShellCronLogBehavior::class)) {
 			/** @var TCronModule $cron */
 			$cron->getOutputWriter()->writeLine("No DB Cron Module to clean", TShellWriter::RED);
 		}

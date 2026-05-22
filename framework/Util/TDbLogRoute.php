@@ -13,6 +13,7 @@ namespace Prado\Util;
 use Exception;
 use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbConnection;
+use Prado\Data\TDbDriver;
 use Prado\Data\TDbPropertiesTrait;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TLogException;
@@ -316,10 +317,10 @@ class TDbLogRoute extends TLogRoute
 		$db = $this->getDbConnection();
 		$driver = $db->getDriverName();
 		$autoidAttributes = '';
-		if ($driver === 'mysql') {
+		if ($driver === TDbDriver::DRIVER_MYSQL) {
 			$autoidAttributes = 'AUTO_INCREMENT';
 		}
-		if ($driver === 'pgsql') {
+		if ($driver === TDbDriver::DRIVER_PGSQL) {
 			$param = 'SERIAL';
 		} else {
 			$param = 'INTEGER NOT NULL';
