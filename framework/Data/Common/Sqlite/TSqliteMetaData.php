@@ -134,7 +134,7 @@ class TSqliteMetaData extends TDbMetaData
 			$info['AllowNull'] = true;
 		}
 
-		if ($col['pk'] === '1') {
+		if ((int) $col['pk'] > 0) {
 			$info['IsPrimaryKey'] = true;
 		}
 		if ($this->isForeignKeyColumn($columnId, $foreign)) {
@@ -146,7 +146,7 @@ class TSqliteMetaData extends TDbMetaData
 		}
 
 		$type = strtolower($col['type']);
-		$info['AutoIncrement'] = $type === 'integer' && $col['pk'] === '1';
+		$info['AutoIncrement'] = $type === 'integer' && (int) $col['pk'] === 1;
 
 		$info['DbType'] = $type;
 		$match = [];
