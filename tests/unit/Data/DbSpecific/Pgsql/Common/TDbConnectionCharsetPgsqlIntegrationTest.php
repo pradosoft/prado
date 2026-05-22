@@ -167,7 +167,8 @@ class TDbConnectionCharsetPgsqlIntegrationTest extends PHPUnit\Framework\TestCas
 	// PostgreSQL has no DSN charset parameter (getCharsetDsnParam('pgsql') = null).
 	// TDbConnection::applyCharsetToDsn() returns the DSN unchanged for pgsql.
 	// Instead, TDbConnection::open() calls setConnectionCharset() immediately after
-	// connecting, which executes SET client_encoding TO ? via a prepared statement.
+	// connecting, which executes SET client_encoding TO <quoted> via $pdo->exec()
+	// (PostgreSQL's SET command does not accept bind parameters in prepared stmts).
 	// This means:
 	//   (a) the raw DSN stored in ConnectionString must NOT contain 'charset'
 	//   (b) the charset IS applied (verified by pg_client_encoding())
@@ -236,18 +237,19 @@ class TDbConnectionCharsetPgsqlIntegrationTest extends PHPUnit\Framework\TestCas
 		$conn->Active = false;
 	}
 
-	public function testPgsqlSetCharsetUsesParameterisedSql(): void
+	public function testPgsqlSetCharsetUsesExecSql(): void
 	{
-		// getCharsetSetSql('pgsql') returns 'SET client_encoding TO ?' — a PDO-
-		// parameterised statement.  TDbConnection executes it via
-		// $pdo->prepare($sql)->execute([$charset]) so the value is bound, not
-		// concatenated.  Verify the functional outcome.
+		// getCharsetSetSql('pgsql') returns 'SET client_encoding TO %s' — a sprintf
+		// format string.  PostgreSQL's SET command does not accept bind parameters in
+		// prepared statements, so TDbConnection executes it via
+		// $pdo->exec(sprintf($sql, $pdo->quote($charset))) instead.
+		// Verify the functional outcome: pg_client_encoding() must reflect the change.
 		$conn = $this->openPgsql();
 		$conn->Charset = 'UTF-8';
 		$this->assertSame(
 			'UTF8',
 			$this->pgsqlClientEncoding($conn),
-			'SET client_encoding TO ? must have been executed with \'UTF8\' bound as the parameter.'
+			'SET client_encoding must have been executed with \'UTF8\' as the quoted value.'
 		);
 		$conn->Active = false;
 	}

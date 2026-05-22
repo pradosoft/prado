@@ -23,10 +23,20 @@ class PgsqlColumnTest extends PHPUnit\Framework\TestCase
 	protected function setUp(): void
 	{
 		if (static::$pgMetaData === null) {
-			$conn = $this->setupConnection('prado_unitest');
-			if ($conn instanceof TDbConnection) {
-				static::$pgMetaData = new TPgsqlMetaData($conn);;
+			$conn = $this->setupPradoUnitConnection('prado_unitest');
+			if (is_string($conn)) {
+				$this->markTestSkipped($conn);
+				return;
 			}
+			if ($conn instanceof \Exception) {
+				throw $conn;
+			}
+			if ($conn instanceof TDbConnection) {
+				static::$pgMetaData = new TPgsqlMetaData($conn);
+			}
+		}
+		if (static::$pgMetaData === null) {
+			$this->markTestSkipped('PostgreSQL database not available.');
 		}
 	}
 	
@@ -43,7 +53,7 @@ class PgsqlColumnTest extends PHPUnit\Framework\TestCase
 		return static::$pgMetaData->getTableInfo($table);
 	}
 
-	public function test_text_column_def()
+	public function test_pgsql_text_column_def()
 	{
 		$table = $this->getTableInfo('public.address');
 		$this->assertEquals(count($table->getColumns()), 14);

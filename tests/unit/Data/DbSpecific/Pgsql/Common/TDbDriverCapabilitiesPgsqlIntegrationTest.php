@@ -126,7 +126,7 @@ class TDbDriverCapabilitiesPgsqlIntegrationTest extends PHPUnit\Framework\TestCa
 
 	public function testPgsqlCharsetSetSqlIsSetClientEncoding(): void
 	{
-		$this->assertSame('SET client_encoding TO ?', TDbDriverCapabilities::getCharsetSetSql('pgsql'));
+		$this->assertSame('SET client_encoding TO %s', TDbDriverCapabilities::getCharsetSetSql('pgsql'));
 	}
 
 	public function testPgsqlCharsetPragmaSqlIsNull(): void

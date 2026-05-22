@@ -65,7 +65,7 @@ class TDbMetaDataPgsqlIntegrationTest extends PHPUnit\Framework\TestCase
 	// TDbMetaData::getInstance()
 	// -----------------------------------------------------------------------
 
-	public function testGetInstanceReturnsPgsqlMetaData(): void
+	public function testPgsqlGetInstanceReturnsPgsqlMetaData(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$this->assertInstanceOf(TPgsqlMetaData::class, $meta);
@@ -75,21 +75,21 @@ class TDbMetaDataPgsqlIntegrationTest extends PHPUnit\Framework\TestCase
 	// getTableInfo() — TDbTableInfo
 	// -----------------------------------------------------------------------
 
-	public function testGetTableInfoReturnsTableInfo(): void
+	public function testPgsqlGetTableInfoReturnsTableInfo(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
 		$this->assertInstanceOf(\Prado\Data\Common\TDbTableInfo::class, $info);
 	}
 
-	public function testGetTableInfoTableName(): void
+	public function testPgsqlGetTableInfoTableName(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
 		$this->assertSame('meta_test', $info->getTableName());
 	}
 
-	public function testGetTableInfoColumnNamesContainsAllColumns(): void
+	public function testPgsqlGetTableInfoColumnNamesContainsAllColumns(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -101,7 +101,7 @@ class TDbMetaDataPgsqlIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertCount(4, $names);
 	}
 
-	public function testGetTableInfoPrimaryKeys(): void
+	public function testPgsqlGetTableInfoPrimaryKeys(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -110,7 +110,7 @@ class TDbMetaDataPgsqlIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertCount(1, $pks);
 	}
 
-	public function testGetTableInfoGetColumnReturnsColumn(): void
+	public function testPgsqlGetTableInfoGetColumnReturnsColumn(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -119,7 +119,7 @@ class TDbMetaDataPgsqlIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertInstanceOf(\Prado\Data\Common\TDbTableColumn::class, $col);
 	}
 
-	public function testGetTableInfoGetColumnThrowsForMissingColumn(): void
+	public function testPgsqlGetTableInfoGetColumnThrowsForMissingColumn(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -127,7 +127,7 @@ class TDbMetaDataPgsqlIntegrationTest extends PHPUnit\Framework\TestCase
 		$info->getColumn('nonexistent_column');
 	}
 
-	public function testGetTableInfoCachingReturnsSameObject(): void
+	public function testPgsqlGetTableInfoCachingReturnsSameObject(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info1 = $meta->getTableInfo('meta_test');
@@ -135,7 +135,7 @@ class TDbMetaDataPgsqlIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertSame($info1, $info2);
 	}
 
-	public function testGetTableInfoThrowsForInvalidTable(): void
+	public function testPgsqlGetTableInfoThrowsForInvalidTable(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$this->expectException(\Prado\Exceptions\TDbException::class);
@@ -146,7 +146,7 @@ class TDbMetaDataPgsqlIntegrationTest extends PHPUnit\Framework\TestCase
 	// TDbTableColumn — column metadata
 	// -----------------------------------------------------------------------
 
-	public function testPrimaryKeyColumnIsPrimaryKey(): void
+	public function testPgsqlPrimaryKeyColumnIsPrimaryKey(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -154,7 +154,7 @@ class TDbMetaDataPgsqlIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($col->getIsPrimaryKey());
 	}
 
-	public function testNonPrimaryKeyColumnIsNotPrimaryKey(): void
+	public function testPgsqlNonPrimaryKeyColumnIsNotPrimaryKey(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -162,7 +162,7 @@ class TDbMetaDataPgsqlIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertFalse($col->getIsPrimaryKey());
 	}
 
-	public function testPrimaryKeyColumnDbType(): void
+	public function testPgsqlPrimaryKeyColumnDbType(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -171,7 +171,7 @@ class TDbMetaDataPgsqlIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsStringIgnoringCase('int', $col->getDbType());
 	}
 
-	public function testVarcharColumnDbType(): void
+	public function testPgsqlVarcharColumnDbType(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -180,7 +180,7 @@ class TDbMetaDataPgsqlIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertMatchesRegularExpression('/varchar|character varying/i', $col->getDbType());
 	}
 
-	public function testNotNullColumnDoesNotAllowNull(): void
+	public function testPgsqlNotNullColumnDoesNotAllowNull(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -188,7 +188,7 @@ class TDbMetaDataPgsqlIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertFalse($col->getAllowNull());
 	}
 
-	public function testNullableColumnAllowsNull(): void
+	public function testPgsqlNullableColumnAllowsNull(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -196,7 +196,7 @@ class TDbMetaDataPgsqlIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($col->getAllowNull());
 	}
 
-	public function testColumnWithDefaultValueHasDefault(): void
+	public function testPgsqlColumnWithDefaultValueHasDefault(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -204,7 +204,7 @@ class TDbMetaDataPgsqlIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertNotNull($col->getDefaultValue());
 	}
 
-	public function testColumnWithoutDefaultHasNullDefault(): void
+	public function testPgsqlColumnWithoutDefaultHasNullDefault(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -217,14 +217,14 @@ class TDbMetaDataPgsqlIntegrationTest extends PHPUnit\Framework\TestCase
 	// findTableNames()
 	// -----------------------------------------------------------------------
 
-	public function testFindTableNamesContainsMetaTest(): void
+	public function testPgsqlFindTableNamesContainsMetaTest(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$tables = $meta->findTableNames();
 		$this->assertContains('meta_test', $tables);
 	}
 
-	public function testFindTableNamesReturnsArray(): void
+	public function testPgsqlFindTableNamesReturnsArray(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$tables = $meta->findTableNames();
@@ -235,7 +235,7 @@ class TDbMetaDataPgsqlIntegrationTest extends PHPUnit\Framework\TestCase
 	// createCommandBuilder()
 	// -----------------------------------------------------------------------
 
-	public function testCreateCommandBuilderReturnsBuilder(): void
+	public function testPgsqlCreateCommandBuilderReturnsBuilder(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$builder = $meta->createCommandBuilder('meta_test');
@@ -246,7 +246,7 @@ class TDbMetaDataPgsqlIntegrationTest extends PHPUnit\Framework\TestCase
 	// Quoting helpers
 	// -----------------------------------------------------------------------
 
-	public function testQuoteTableName(): void
+	public function testPgsqlQuoteTableName(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$quoted = $meta->quoteTableName('foo');
@@ -254,14 +254,14 @@ class TDbMetaDataPgsqlIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertSame('"foo"', $quoted);
 	}
 
-	public function testQuoteColumnName(): void
+	public function testPgsqlQuoteColumnName(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$quoted = $meta->quoteColumnName('bar');
 		$this->assertSame('"bar"', $quoted);
 	}
 
-	public function testQuoteColumnAlias(): void
+	public function testPgsqlQuoteColumnAlias(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$quoted = $meta->quoteColumnAlias('baz');

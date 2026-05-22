@@ -66,7 +66,7 @@ class PgsqlInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// SQL generation
 	// -----------------------------------------------------------------------
 
-	public function test_sql_uses_on_conflict_do_nothing(): void
+	public function test_pgsql_sql_uses_on_conflict_do_nothing(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -83,7 +83,7 @@ class PgsqlInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString(':score', $capturedSql);
 	}
 
-	public function test_sql_omits_id_when_not_in_data(): void
+	public function test_pgsql_sql_omits_id_when_not_in_data(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -98,7 +98,7 @@ class PgsqlInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Insert new row
 	// -----------------------------------------------------------------------
 
-	public function test_new_row_is_inserted(): void
+	public function test_pgsql_new_row_is_inserted(): void
 	{
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
 
@@ -108,14 +108,14 @@ class PgsqlInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(10, (int) $row['score']);
 	}
 
-	public function test_new_row_returns_integer_last_insert_id(): void
+	public function test_pgsql_new_row_returns_integer_last_insert_id(): void
 	{
 		$result = self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
 		$this->assertNotFalse($result);
 		$this->assertGreaterThan(0, (int) $result);
 	}
 
-	public function test_successive_inserts_return_incrementing_ids(): void
+	public function test_pgsql_successive_inserts_return_incrementing_ids(): void
 	{
 		$id1 = (int) self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 1]);
 		$id2 = (int) self::$gateway->insertOrIgnore(['username' => 'bob',   'score' => 2]);
@@ -126,14 +126,14 @@ class PgsqlInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Duplicate silently ignored
 	// -----------------------------------------------------------------------
 
-	public function test_duplicate_username_returns_false(): void
+	public function test_pgsql_duplicate_username_returns_false(): void
 	{
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
 		$result = self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 99]);
 		$this->assertFalse($result);
 	}
 
-	public function test_duplicate_does_not_create_additional_rows(): void
+	public function test_pgsql_duplicate_does_not_create_additional_rows(): void
 	{
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 99]);
@@ -142,7 +142,7 @@ class PgsqlInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(1, $count);
 	}
 
-	public function test_existing_row_unchanged_after_ignored_insert(): void
+	public function test_pgsql_existing_row_unchanged_after_ignored_insert(): void
 	{
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 99]);
@@ -151,7 +151,7 @@ class PgsqlInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(10, (int) $row['score']);
 	}
 
-	public function test_duplicate_on_serial_pk_returns_false(): void
+	public function test_pgsql_duplicate_on_serial_pk_returns_false(): void
 	{
 		// Insert with explicit id, then insert same id again
 		$id = (int) self::$gateway->insert(['username' => 'alice', 'score' => 10]);
@@ -166,7 +166,7 @@ class PgsqlInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Mixed inserts
 	// -----------------------------------------------------------------------
 
-	public function test_only_conflicting_row_ignored(): void
+	public function test_pgsql_only_conflicting_row_ignored(): void
 	{
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
 		$res2 = self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 99]);
@@ -180,7 +180,7 @@ class PgsqlInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		);
 	}
 
-	public function test_correct_values_after_mixed_inserts(): void
+	public function test_pgsql_correct_values_after_mixed_inserts(): void
 	{
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 99]);
@@ -194,7 +194,7 @@ class PgsqlInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Events
 	// -----------------------------------------------------------------------
 
-	public function test_oncreatecommand_event_is_raised(): void
+	public function test_pgsql_oncreatecommand_event_is_raised(): void
 	{
 		$fired = false;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -207,7 +207,7 @@ class PgsqlInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($fired);
 	}
 
-	public function test_onexecutecommand_event_is_raised(): void
+	public function test_pgsql_onexecutecommand_event_is_raised(): void
 	{
 		$captured = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -220,7 +220,7 @@ class PgsqlInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(1, $captured);
 	}
 
-	public function test_onexecutecommand_result_is_zero_on_pgsql_conflict(): void
+	public function test_pgsql_onexecutecommand_result_is_zero_on_pgsql_conflict(): void
 	{
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
 
@@ -234,7 +234,7 @@ class PgsqlInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(0, $captured);
 	}
 
-	public function test_onexecutecommand_can_override_result(): void
+	public function test_pgsql_onexecutecommand_can_override_result(): void
 	{
 		$gw = new TTableGateway('upsert_test', self::$conn);
 		$gw->OnExecuteCommand[] = function ($sender, $param): void {
@@ -249,7 +249,7 @@ class PgsqlInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Base class throws TDbException
 	// -----------------------------------------------------------------------
 
-	public function test_base_builder_throws_for_insertOrIgnore(): void
+	public function test_pgsql_base_builder_throws_for_insertOrIgnore(): void
 	{
 		$meta      = new \Prado\Data\Common\Pgsql\TPgsqlMetaData(self::$conn);
 		$tableInfo = $meta->getTableInfo('upsert_test');

@@ -23,10 +23,20 @@ class CommandBuilderPgsqlTest extends PHPUnit\Framework\TestCase
 	protected function setUp(): void
 	{
 		if (static::$pgMetaData === null) {
-			$conn = $this->setupConnection('prado_unitest');
-			if ($conn instanceof TDbConnection) {
-				static::$pgMetaData = new TPgsqlMetaData($conn);;
+			$conn = $this->setupPradoUnitConnection('prado_unitest');
+			if (is_string($conn)) {
+				$this->markTestSkipped($conn);
+				return;
 			}
+			if ($conn instanceof \Exception) {
+				throw $conn;
+			}
+			if ($conn instanceof TDbConnection) {
+				static::$pgMetaData = new TPgsqlMetaData($conn);
+			}
+		}
+		if (static::$pgMetaData === null) {
+			$this->markTestSkipped('PostgreSQL database not available.');
 		}
 	}
 	
@@ -38,7 +48,7 @@ class CommandBuilderPgsqlTest extends PHPUnit\Framework\TestCase
 	
 	//	------- Tests
 
-	public function test_insert_command_using_named_array()
+	public function test_pgsql_insert_command_using_named_array()
 	{
 		$builder = $this->getCommandBuilder('address');
 		$address = [
@@ -60,7 +70,7 @@ class CommandBuilderPgsqlTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals($sql, $insert->Text);
 	}
 
-	public function test_update_command()
+	public function test_pgsql_update_command()
 	{
 		$builder = $this->getCommandBuilder('address');
 		$data = [
@@ -72,7 +82,7 @@ class CommandBuilderPgsqlTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals($sql, $update->Text);
 	}
 
-	public function test_delete_command()
+	public function test_pgsql_delete_command()
 	{
 		$builder = $this->getCommandBuilder('address');
 		$where = 'phone is NULL';
@@ -81,7 +91,7 @@ class CommandBuilderPgsqlTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals($sql, $delete->Text);
 	}
 
-	public function test_select_limit()
+	public function test_pgsql_select_limit()
 	{
 		$builder = $this->getCommandBuilder('address');
 		$query = 'SELECT * FROM ' . $builder->getTableInfo('address')->getTableFullName();

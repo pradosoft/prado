@@ -67,7 +67,7 @@ class PgsqlUpsertTest extends PHPUnit\Framework\TestCase
 	// SQL generation
 	// -----------------------------------------------------------------------
 
-	public function test_sql_on_conflict_do_update_set_with_excluded(): void
+	public function test_pgsql_sql_on_conflict_do_update_set_with_excluded(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -81,7 +81,7 @@ class PgsqlUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('EXCLUDED.', $capturedSql);
 	}
 
-	public function test_sql_conflict_clause_names_the_conflict_column(): void
+	public function test_pgsql_sql_conflict_clause_names_the_conflict_column(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -93,7 +93,7 @@ class PgsqlUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('"username"', $capturedSql);
 	}
 
-	public function test_sql_update_set_references_excluded_pseudotable(): void
+	public function test_pgsql_sql_update_set_references_excluded_pseudotable(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -105,7 +105,7 @@ class PgsqlUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('"score" = EXCLUDED."score"', $capturedSql);
 	}
 
-	public function test_sql_empty_updateData_produces_do_nothing(): void
+	public function test_pgsql_sql_empty_updateData_produces_do_nothing(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -117,7 +117,7 @@ class PgsqlUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertStringNotContainsString('DO UPDATE', $capturedSql);
 	}
 
-	public function test_sql_default_pk_conflict_uses_id(): void
+	public function test_pgsql_sql_default_pk_conflict_uses_id(): void
 	{
 		// conflictColumns=null → resolves to PK ('id')
 		$capturedSql = null;
@@ -130,7 +130,7 @@ class PgsqlUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('ON CONFLICT', $capturedSql);
 	}
 
-	public function test_sql_explicit_updateData_only_those_columns_in_set(): void
+	public function test_pgsql_sql_explicit_updateData_only_those_columns_in_set(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -148,7 +148,7 @@ class PgsqlUpsertTest extends PHPUnit\Framework\TestCase
 	// Behavioral: insert new row
 	// -----------------------------------------------------------------------
 
-	public function test_upsert_inserts_new_row(): void
+	public function test_pgsql_upsert_inserts_new_row(): void
 	{
 		self::$gateway->upsert(['username' => 'alice', 'score' => 10], null, ['username']);
 
@@ -158,7 +158,7 @@ class PgsqlUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(10, (int) $row['score']);
 	}
 
-	public function test_upsert_new_row_returns_integer_id(): void
+	public function test_pgsql_upsert_new_row_returns_integer_id(): void
 	{
 		$result = self::$gateway->upsert(['username' => 'alice', 'score' => 10], null, ['username']);
 		$this->assertNotFalse($result);
@@ -169,7 +169,7 @@ class PgsqlUpsertTest extends PHPUnit\Framework\TestCase
 	// Behavioral: conflict on UNIQUE username (explicit conflict col)
 	// -----------------------------------------------------------------------
 
-	public function test_conflict_on_unique_username_updates_score(): void
+	public function test_pgsql_conflict_on_unique_username_updates_score(): void
 	{
 		self::$gateway->upsert(['username' => 'alice', 'score' => 10], null, ['username']);
 		self::$gateway->upsert(['username' => 'alice', 'score' => 99], null, ['username']);
@@ -178,7 +178,7 @@ class PgsqlUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(99, (int) $row['score']);
 	}
 
-	public function test_conflict_does_not_create_duplicate_rows(): void
+	public function test_pgsql_conflict_does_not_create_duplicate_rows(): void
 	{
 		self::$gateway->upsert(['username' => 'alice', 'score' => 10], null, ['username']);
 		self::$gateway->upsert(['username' => 'alice', 'score' => 99], null, ['username']);
@@ -187,7 +187,7 @@ class PgsqlUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(1, $count);
 	}
 
-	public function test_conflict_update_returns_truthy_value(): void
+	public function test_pgsql_conflict_update_returns_truthy_value(): void
 	{
 		self::$gateway->upsert(['username' => 'alice', 'score' => 10], null, ['username']);
 		$result = self::$gateway->upsert(['username' => 'alice', 'score' => 99], null, ['username']);
@@ -198,7 +198,7 @@ class PgsqlUpsertTest extends PHPUnit\Framework\TestCase
 	// Behavioral: conflict on PK (default conflictColumns, id in data)
 	// -----------------------------------------------------------------------
 
-	public function test_conflict_on_pk_with_id_in_data_updates_row(): void
+	public function test_pgsql_conflict_on_pk_with_id_in_data_updates_row(): void
 	{
 		$id = (int) self::$gateway->insert(['username' => 'alice', 'score' => 10]);
 		self::$gateway->upsert(['id' => $id, 'username' => 'alice', 'score' => 77]);
@@ -211,7 +211,7 @@ class PgsqlUpsertTest extends PHPUnit\Framework\TestCase
 	// Explicit updateData
 	// -----------------------------------------------------------------------
 
-	public function test_explicit_updateData_updates_only_specified_columns(): void
+	public function test_pgsql_explicit_updateData_updates_only_specified_columns(): void
 	{
 		self::$gateway->insert(['username' => 'alice', 'score' => 10]);
 		self::$gateway->upsert(
@@ -225,7 +225,7 @@ class PgsqlUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals('alice', $row['username']);
 	}
 
-	public function test_null_updateData_updates_all_non_conflict_columns(): void
+	public function test_pgsql_null_updateData_updates_all_non_conflict_columns(): void
 	{
 		self::$gateway->insert(['username' => 'alice', 'score' => 10]);
 		self::$gateway->upsert(
@@ -241,7 +241,7 @@ class PgsqlUpsertTest extends PHPUnit\Framework\TestCase
 	// Empty updateData → DO NOTHING
 	// -----------------------------------------------------------------------
 
-	public function test_empty_updateData_acts_as_insert_or_ignore(): void
+	public function test_pgsql_empty_updateData_acts_as_insert_or_ignore(): void
 	{
 		self::$gateway->upsert(['username' => 'alice', 'score' => 10], null, ['username']);
 		self::$gateway->upsert(['username' => 'alice', 'score' => 99], [],   ['username']);
@@ -250,7 +250,7 @@ class PgsqlUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(10, (int) $row['score']);
 	}
 
-	public function test_empty_updateData_on_conflict_returns_false(): void
+	public function test_pgsql_empty_updateData_on_conflict_returns_false(): void
 	{
 		self::$gateway->upsert(['username' => 'alice', 'score' => 10], null, ['username']);
 		$result = self::$gateway->upsert(['username' => 'alice', 'score' => 99], [], ['username']);
@@ -261,7 +261,7 @@ class PgsqlUpsertTest extends PHPUnit\Framework\TestCase
 	// Other rows not affected
 	// -----------------------------------------------------------------------
 
-	public function test_upsert_does_not_modify_other_rows(): void
+	public function test_pgsql_upsert_does_not_modify_other_rows(): void
 	{
 		self::$gateway->insert(['username' => 'alice', 'score' => 10]);
 		self::$gateway->insert(['username' => 'bob',   'score' => 20]);
@@ -276,7 +276,7 @@ class PgsqlUpsertTest extends PHPUnit\Framework\TestCase
 	// Events
 	// -----------------------------------------------------------------------
 
-	public function test_oncreatecommand_event_is_raised(): void
+	public function test_pgsql_oncreatecommand_event_is_raised(): void
 	{
 		$fired = false;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -289,7 +289,7 @@ class PgsqlUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($fired);
 	}
 
-	public function test_onexecutecommand_event_is_raised(): void
+	public function test_pgsql_onexecutecommand_event_is_raised(): void
 	{
 		$captured = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -302,7 +302,7 @@ class PgsqlUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertNotNull($captured);
 	}
 
-	public function test_onexecutecommand_can_override_result(): void
+	public function test_pgsql_onexecutecommand_can_override_result(): void
 	{
 		$gw = new TTableGateway('upsert_test', self::$conn);
 		$gw->OnExecuteCommand[] = function ($sender, $param): void {
@@ -317,7 +317,7 @@ class PgsqlUpsertTest extends PHPUnit\Framework\TestCase
 	// Base class throws TDbException
 	// -----------------------------------------------------------------------
 
-	public function test_base_builder_throws_for_upsert(): void
+	public function test_pgsql_base_builder_throws_for_upsert(): void
 	{
 		$meta      = new \Prado\Data\Common\Pgsql\TPgsqlMetaData(self::$conn);
 		$tableInfo = $meta->getTableInfo('upsert_test');
@@ -331,7 +331,7 @@ class PgsqlUpsertTest extends PHPUnit\Framework\TestCase
 	// Column-name list updateData
 	// -----------------------------------------------------------------------
 
-	public function test_updateData_column_name_list_updates_only_those_columns(): void
+	public function test_pgsql_updateData_column_name_list_updates_only_those_columns(): void
 	{
 		self::$gateway->insert(['username' => 'alice', 'score' => 10]);
 		self::$gateway->upsert(['username' => 'alice', 'score' => 77], ['score'], ['username']);
@@ -341,7 +341,7 @@ class PgsqlUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals('alice', $row['username']);
 	}
 
-	public function test_sql_column_name_list_generates_correct_update_clause(): void
+	public function test_pgsql_sql_column_name_list_generates_correct_update_clause(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -354,7 +354,7 @@ class PgsqlUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertStringNotContainsString('"username" = EXCLUDED."username"', $capturedSql);
 	}
 
-	public function test_updateData_column_name_list_leaves_other_columns_unchanged(): void
+	public function test_pgsql_updateData_column_name_list_leaves_other_columns_unchanged(): void
 	{
 		self::$gateway->insert(['username' => 'alice', 'score' => 10]);
 		// Only score in the update list; username is the conflict col and is not updated
@@ -368,7 +368,7 @@ class PgsqlUpsertTest extends PHPUnit\Framework\TestCase
 	// Explicit value (string-keyed) updateData
 	// -----------------------------------------------------------------------
 
-	public function test_updateData_explicit_value_overrides_insert_data_on_conflict(): void
+	public function test_pgsql_updateData_explicit_value_overrides_insert_data_on_conflict(): void
 	{
 		self::$gateway->insert(['username' => 'alice', 'score' => 10]);
 		// Explicit override: score should be set to 99 regardless of insert data value (10)
@@ -378,7 +378,7 @@ class PgsqlUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(99, (int) $row['score']);
 	}
 
-	public function test_sql_explicit_value_updateData_does_not_use_insert_data(): void
+	public function test_pgsql_sql_explicit_value_updateData_does_not_use_insert_data(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -394,7 +394,7 @@ class PgsqlUpsertTest extends PHPUnit\Framework\TestCase
 	// Mixed (column-name + explicit value) updateData
 	// -----------------------------------------------------------------------
 
-	public function test_updateData_mixed_handles_column_name_and_explicit_value_simultaneously(): void
+	public function test_pgsql_updateData_mixed_handles_column_name_and_explicit_value_simultaneously(): void
 	{
 		$id = (int) self::$gateway->insert(['username' => 'alice', 'score' => 10]);
 		// Conflict on PK (id): update score from INSERT row (77), rename username explicitly to 'alice_renamed'
@@ -409,7 +409,7 @@ class PgsqlUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals('alice_renamed', $row['username']);
 	}
 
-	public function test_sql_mixed_updateData_generates_both_value_references_and_literals(): void
+	public function test_pgsql_sql_mixed_updateData_generates_both_value_references_and_literals(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
