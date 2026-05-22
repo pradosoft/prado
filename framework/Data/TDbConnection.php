@@ -38,6 +38,18 @@ use Prado\TPropertyValue;
  * IANA-style names such as 'UTF-8' or 'ISO-8859-1'; the value is translated to
  * the driver-specific format automatically.
  *
+ * Since 4.3.3, MySQL and PostgreSQL connections can be made over a Unix domain
+ * socket by setting the {@see setSocket Socket} property to the socket path.
+ * For MySQL the path must point to the socket file itself (e.g.
+ * `/var/run/mysqld/mysqld.sock`); the `host=` and `port=` parameters are
+ * removed from the DSN and `unix_socket=<path>` is injected.  For PostgreSQL
+ * the path must be the directory that contains the socket file (e.g.
+ * `/var/run/postgresql`); libpq treats any `host=` value that starts with `/`
+ * as a socket directory, so the existing `host=` parameter is replaced (or
+ * injected when absent).  The internal ConnectionString is never mutated; the
+ * socket path is applied to a temporary copy of the DSN each time the
+ * connection opens.  Other drivers ignore the Socket property.
+ *
  * Firebird (firebird), SQL Server (sqlsrv, dblib), and Oracle (oci) do not
  * support runtime charset switching via SQL; their charset must be configured
  * before the connection is opened (it is injected into the DSN automatically).
@@ -119,6 +131,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	private $_username = '';
 	private $_password = '';
 	private $_charset = '';
+	private $_socket = '';
 	private $_attributes = [];
 	private $_active = false;
 
@@ -239,7 +252,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 			return;
 		}
 
-		$dsn = $this->getConnectionString();
+		$dsn = $this->applySocketToDsn($this->getConnectionString());
 		$charsetInDsn = $this->extractCharsetFromDsn($dsn);
 
 		try {
@@ -254,23 +267,8 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 			$this->_active = true;
 			$driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
 
-			if ($driver === TDbDriver::DRIVER_MYSQL) {
-				// Both attributes are required together for correct MySQL behaviour.
-				//
-				// ATTR_EMULATE_PREPARES = true: use the text protocol instead of
-				// MySQL's native binary prepared statements, which strip ZEROFILL
-				// padding server-side and mistype ENUM/SET values as integers.
-				//
-				// ATTR_STRINGIFY_FETCHES = true: PHP 8.1 broke emulated prepares by
-				// returning native int/float instead of strings (migration81.incompatible).
-				// Without this, three column types silently corrupt data on PHP 8.1+:
-				//   - ZEROFILL: INT(8) value 42 returns as int 42, not "00000042".
-				//   - BIGINT signed on 32-bit: overflows PHP_INT_MAX (2^31−1).
-				//   - BIGINT UNSIGNED on any platform: max 2^64−1 > PHP_INT_MAX (2^63−1).
-				// Known caveat (php-src #11587, PHP 8.2+): DECIMAL/FLOAT trailing
-				// fractional zeros may still be lost ("3.60" → "3.6"); PHP engine bug.
-				$pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
-				$pdo->setAttribute(PDO::ATTR_STRINGIFY_FETCHES, true);
+			foreach (TDbDriverCapabilities::getPostConnectAttributes($driver) as $attr => $value) {
+				$pdo->setAttribute($attr, $value);
 			}
 
 			// If DSN had a charset, it takes precedence -> reset charset property if different
@@ -410,7 +408,14 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 		}
 
 		if (($sql = TDbDriverCapabilities::getCharsetSetSql($driver)) !== null) {
-			$pdo->prepare($sql)->execute([$charset]);
+			if (str_contains($sql, '%s')) {
+				// exec-based path (e.g. PostgreSQL): SET does not accept bind
+				// parameters in prepared statements; quote the value directly.
+				$pdo->exec(sprintf($sql, $pdo->quote($charset)));
+			} else {
+				// prepared-statement path (e.g. MySQL)
+				$pdo->prepare($sql)->execute([$charset]);
+			}
 			return;
 		}
 
@@ -426,6 +431,133 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 		}
 
 		throw new TDbException('dbconnection_unsupported_driver_charset', $driver);
+	}
+
+	/**
+	 * @return string the Unix domain socket path used for MySQL or PostgreSQL
+	 *   connections, or empty string when TCP/IP is used.
+	 * @since 4.4.0
+	 */
+	public function getSocket(): string
+	{
+		return $this->_socket;
+	}
+
+	/**
+	 * Sets the Unix domain socket path for MySQL or PostgreSQL connections.
+	 *
+	 * When non-empty, {@see applySocketToDsn} rewrites the DSN before the
+	 * connection opens:
+	 *   - MySQL: `host=` and `port=` are removed; `unix_socket=<path>` is
+	 *     prepended.  Pass the full path to the socket file (e.g.
+	 *     `/var/run/mysqld/mysqld.sock`).
+	 *   - PostgreSQL: `host=` is replaced with `host=<path>` (libpq treats a
+	 *     leading `/` as a socket directory).  Pass the directory that contains
+	 *     the socket file (e.g. `/var/run/postgresql`).
+	 *   - Other drivers: the Socket value is stored but ignored.
+	 *
+	 * The {@see getConnectionString ConnectionString} is never mutated; the
+	 * socket path is applied to a temporary copy of the DSN on each open.
+	 * Setting Socket while the connection is already active has no effect until
+	 * the next {@see setActive open}.
+	 *
+	 * @param string $value the Unix socket path, or empty string to use TCP/IP.
+	 * @since 4.4.0
+	 */
+	public function setSocket(string $value): void
+	{
+		$this->_socket = TPropertyValue::ensureString($value);
+	}
+
+	/**
+	 * Returns the DSN string with Unix socket parameters applied for the
+	 * current driver when {@see $_socket} is set.
+	 *
+	 * This method is called by {@see open} before the PDO instance is created,
+	 * immediately before {@see applyCharsetToDsn}, so that both transformations
+	 * operate on the correct DSN.
+	 *
+	 * The internal {@see $_dsn} field is never mutated; the method returns a
+	 * (potentially modified) copy.  If the socket path is empty, or the driver
+	 * does not support Unix sockets (i.e.
+	 * {@see TDbDriverCapabilities::getSocketDsnParam} returns null), the DSN is
+	 * returned unchanged.
+	 *
+	 * The driver-specific rewriting strategy is fully described by three
+	 * capability methods:
+	 *  - {@see TDbDriverCapabilities::getSocketDsnParam} — the DSN parameter to
+	 *    inject or replace (e.g. `unix_socket` for MySQL, `host` for PostgreSQL).
+	 *  - {@see TDbDriverCapabilities::getSocketDsnConflictParam} — if this
+	 *    parameter is already present the DSN is returned unchanged (DSN wins).
+	 *  - {@see TDbDriverCapabilities::getSocketDsnParamsToRemove} — parameters
+	 *    stripped before injection (e.g. `host` and `port` for MySQL).
+	 *
+	 * @param string $dsn the raw DSN string (as returned by
+	 *   {@see getConnectionString()}, though in practice this is always the
+	 *   first transformation applied before charset injection).
+	 * @return string the DSN, with socket parameters applied when appropriate.
+	 * @since 4.4.0
+	 */
+	protected function applySocketToDsn(string $dsn): string
+	{
+		$socket = $this->getSocket();
+		if ($socket === '' || $dsn === '') {
+			return $dsn;
+		}
+
+		$driver = $this->extractDriverFromDsn($dsn);
+		if ($driver === null) {
+			return $dsn;
+		}
+
+		$injectParam = TDbDriverCapabilities::getSocketDsnParam($driver);
+		if ($injectParam === null) {
+			// Driver does not support a DSN socket path (sqlite, oci, sqlsrv, …).
+			return $dsn;
+		}
+
+		$colonPos = strpos($dsn, ':');
+		$prefix = substr($dsn, 0, $colonPos + 1);
+		$paramStr = substr($dsn, $colonPos + 1);
+
+		// Parse semicolon-delimited params into an ordered list.
+		$pairs = array_values(array_filter(array_map('trim', explode(';', $paramStr))));
+
+		// If a conflict param is present the caller already embedded a socket
+		// directive; honour it and leave the DSN unchanged (DSN wins).
+		$conflictParam = TDbDriverCapabilities::getSocketDsnConflictParam($driver);
+		if ($conflictParam !== null) {
+			foreach ($pairs as $pair) {
+				if (preg_match('/^\s*' . preg_quote($conflictParam, '/') . '\s*=/i', $pair)) {
+					return $dsn;
+				}
+			}
+		}
+
+		// Strip DSN parameters that are incompatible with socket mode (e.g.
+		// MySQL's host= and port= must be removed before unix_socket= is injected).
+		$removeParams = TDbDriverCapabilities::getSocketDsnParamsToRemove($driver);
+		if ($removeParams !== []) {
+			$removePattern = '/^\s*(' . implode('|', array_map('preg_quote', $removeParams)) . ')\s*=/i';
+			$pairs = array_values(array_filter($pairs, fn($p) => !preg_match($removePattern, $p)));
+		}
+
+		// Replace an existing inject param in-place, or prepend it when absent.
+		$replaced = false;
+		$result = [];
+		foreach ($pairs as $pair) {
+			if (preg_match('/^\s*' . preg_quote($injectParam, '/') . '\s*=/i', $pair)) {
+				$result[] = $injectParam . '=' . $socket;
+				$replaced = true;
+			} else {
+				$result[] = $pair;
+			}
+		}
+		if (!$replaced) {
+			array_unshift($result, $injectParam . '=' . $socket);
+		}
+
+		return $prefix . implode(';', $result);
 	}
 
 	/**

@@ -10,6 +10,7 @@
 
 namespace Prado\Data;
 
+use PDO;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TDbException;
 use Prado\Data\ActiveRecord\Scaffold\InputBuilder\IScaffoldInput;
@@ -42,6 +43,9 @@ use Prado\Data\Common\Sqlite\TSqliteMetaData;
  *    {@see getCharsetPragmaSql}, {@see supportsRuntimeCharsetSet},
  *    {@see getCharsetDsnParam}, {@see getCharsetDsnPattern},
  *    {@see getCharsetQuerySql}
+ *  - **Unix socket DSN rewriting** — {@see getSocketDsnParam},
+ *    {@see getSocketDsnConflictParam}, {@see getSocketDsnParamsToRemove}
+ *  - **Post-connect PDO attribute setup** — {@see getPostConnectAttributes}
  *  - **Transaction flushing** (Firebird implicit-transaction management) —
  *    {@see requiresPreBeginTransactionFlush}, {@see requiresPostTransactionFlush}
  *  - **PDO attribute support** — {@see hasAutoCommitAttribute},
@@ -417,24 +421,31 @@ class TDbDriverCapabilities
 	// =========================================================================
 
 	/**
-	 * Returns the parameterised SQL statement used to set the client charset on
-	 * an already-open connection, or null when runtime charset switching is not
-	 * supported via a prepared-statement SQL command for the given driver.
+	 * Returns the SQL template used to set the client charset on an already-open
+	 * connection, or null when runtime charset switching is not supported via a
+	 * SQL command for the given driver.
 	 *
-	 * The returned string contains a single positional `?` placeholder for the
-	 * resolved charset name and is intended for use with a prepared statement.
+	 * The returned string uses one of two formats depending on the driver:
+	 *
+	 * - A single positional `?` placeholder (MySQL) — intended for use with a
+	 *   PDO prepared statement: `$pdo->prepare($sql)->execute([$charset])`.
+	 * - A `%s` sprintf slot (PostgreSQL) — PostgreSQL's `SET` command does not
+	 *   accept bind parameters in prepared statements; use exec with a quoted
+	 *   value: `$pdo->exec(sprintf($sql, $pdo->quote($charset)))`.
 	 *
 	 * SQLite uses `PRAGMA encoding = <quoted>` which does not accept prepared-
 	 * statement parameters; use {@see getCharsetPragmaSql} for that case.
 	 *
 	 * @param string $driver PDO driver name
-	 * @return ?string SQL template with a `?` placeholder, or null
+	 * @return ?string SQL template with a `?` or `%s` slot, or null
 	 */
 	public static function getCharsetSetSql(string $driver): ?string
 	{
 		return match ($driver) {
 			TDbDriver::DRIVER_MYSQL => 'SET NAMES ?',
-			TDbDriver::DRIVER_PGSQL => 'SET client_encoding TO ?',
+			// PostgreSQL SET does not accept bind parameters; %s is filled via
+			// PDO::quote() and exec() in TDbConnection::setConnectionCharset().
+			TDbDriver::DRIVER_PGSQL => 'SET client_encoding TO %s',
 			default => null,
 		};
 	}
@@ -782,6 +793,132 @@ class TDbDriverCapabilities
 	public static function requiresUntypedParameters(string $driver): bool
 	{
 		return $driver === TDbDriver::DRIVER_IBM;
+	}
+
+	// =========================================================================
+	//  Unix socket — DSN rewriting
+	// =========================================================================
+
+	/**
+	 * Returns the DSN parameter name used to specify a Unix domain socket path
+	 * for the given driver, or null when the driver does not support Unix socket
+	 * connections via the PDO DSN.
+	 *
+	 * For MySQL the parameter is injected fresh (prepended after removing the TCP
+	 * parameters listed by {@see getSocketDsnParamsToRemove}).  For PostgreSQL the
+	 * parameter replaces the existing `host=` value in-place (libpq treats any
+	 * `host=` path that starts with `/` as a socket directory).
+	 *
+	 * Drivers that have no PDO DSN socket parameter (sqlite, oci, sqlsrv, dblib,
+	 * firebird, ibm) return null and {@see TDbConnection::applySocketToDsn} leaves
+	 * the DSN unchanged.
+	 *
+	 * @param string $driver PDO driver name
+	 * @return ?string the DSN parameter name (e.g. `'unix_socket'`, `'host'`),
+	 *   or null when the driver does not support a DSN socket path.
+	 * @since 4.3.3
+	 */
+	public static function getSocketDsnParam(string $driver): ?string
+	{
+		return match ($driver) {
+			TDbDriver::DRIVER_MYSQL => 'unix_socket',
+			TDbDriver::DRIVER_PGSQL => 'host',
+			default => null,
+		};
+	}
+
+	/**
+	 * Returns the DSN parameter name whose presence means the caller has already
+	 * embedded a socket directive and the DSN must not be modified (DSN wins),
+	 * or null when no such guard is needed for the given driver.
+	 *
+	 * For MySQL, if the DSN already contains `unix_socket=`, the Socket property
+	 * is ignored and the caller-supplied value takes precedence.
+	 *
+	 * PostgreSQL always replaces (or injects) `host=` regardless of whether a
+	 * `host=` is already present, so no conflict guard is needed and null is
+	 * returned.
+	 *
+	 * @param string $driver PDO driver name
+	 * @return ?string the parameter name to check (e.g. `'unix_socket'`),
+	 *   or null when the DSN should always be rewritten for this driver.
+	 * @since 4.3.3
+	 */
+	public static function getSocketDsnConflictParam(string $driver): ?string
+	{
+		return match ($driver) {
+			TDbDriver::DRIVER_MYSQL => 'unix_socket',
+			default => null,
+		};
+	}
+
+	/**
+	 * Returns the list of DSN parameter names that must be removed from the DSN
+	 * when a Unix socket path is applied, or an empty array when no parameters
+	 * need to be stripped.
+	 *
+	 * For MySQL, `host=` and `port=` are incompatible with `unix_socket=` and
+	 * must be removed before the socket parameter is injected.
+	 *
+	 * For PostgreSQL, `host=` is the socket parameter itself and is replaced
+	 * in-place rather than removed, so no extra stripping is needed.
+	 *
+	 * @param string $driver PDO driver name
+	 * @return string[] parameter names to strip (lowercase, no trailing `=`)
+	 * @since 4.3.3
+	 */
+	public static function getSocketDsnParamsToRemove(string $driver): array
+	{
+		return match ($driver) {
+			TDbDriver::DRIVER_MYSQL => ['host', 'port'],
+			default => [],
+		};
+	}
+
+	// =========================================================================
+	//  Post-connect PDO attribute setup
+	// =========================================================================
+
+	/**
+	 * Returns the PDO attributes that must be set on the connection object
+	 * immediately after it opens, as a map of `PDO::ATTR_*` constant to value.
+	 *
+	 * **MySQL:** Two attributes are required together for correct behaviour.
+	 *
+	 * `PDO::ATTR_EMULATE_PREPARES = true` — use the text protocol instead of
+	 * MySQL's native binary prepared statements.  The binary protocol strips
+	 * ZEROFILL padding server-side and misidentifies ENUM/SET values as
+	 * integers, silently corrupting data that PHP code expects to be strings.
+	 *
+	 * `PDO::ATTR_STRINGIFY_FETCHES = true` — PHP 8.1 broke emulated prepares
+	 * by returning native `int`/`float` instead of strings
+	 * (see php-src migration81.incompatible).  Without this flag, three column
+	 * types silently corrupt data on PHP 8.1+:
+	 *   - ZEROFILL: `INT(8)` value 42 returns as `int 42`, not `"00000042"`.
+	 *   - BIGINT signed on 32-bit PHP: overflows `PHP_INT_MAX` (2³¹−1).
+	 *   - BIGINT UNSIGNED: max 2⁶⁴−1 exceeds `PHP_INT_MAX` (2⁶³−1) on any
+	 *     platform.
+	 *
+	 * Known caveat (php-src #11587, PHP 8.2+): DECIMAL/FLOAT trailing
+	 * fractional zeros may still be lost (`"3.60"` → `"3.6"`); this is a PHP
+	 * engine bug and cannot be worked around at the PDO layer.
+	 *
+	 * All other supported drivers require no post-connect attribute setup and
+	 * return an empty array.
+	 *
+	 * @param string $driver PDO driver name (lowercase)
+	 * @return array<int, mixed> map of `PDO::ATTR_*` constant to value
+	 * @since 4.3.3
+	 */
+	public static function getPostConnectAttributes(string $driver): array
+	{
+		return match ($driver) {
+			TDbDriver::DRIVER_MYSQL => [
+				PDO::ATTR_EMULATE_PREPARES => true,
+				PDO::ATTR_STRINGIFY_FETCHES => true,
+			],
+			default => [],
+		};
 	}
 
 	// =========================================================================
