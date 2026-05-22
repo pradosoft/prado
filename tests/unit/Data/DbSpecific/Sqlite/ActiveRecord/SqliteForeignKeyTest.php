@@ -86,7 +86,7 @@ class SqliteCover extends SqliteDbSpecificRecord
 
 class SqliteForeignKeyTest extends PHPUnit\Framework\TestCase
 {
-	public function test_has_many()
+	public function test_sqlite_has_many()
 	{
 		$albums = SqliteAlbum::finder()->withTracks()->findAll();
 		$this->assertEquals(count($albums), 2);
@@ -108,7 +108,7 @@ class SqliteForeignKeyTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals($albums[1]->Tracks[1]->song_name, 'Track B');
 	}
 
-	public function test_has_one()
+	public function test_sqlite_has_one()
 	{
 		$albums = SqliteAlbum::finder()->with_cover()->findAll();
 		$this->assertEquals(count($albums), 2);
@@ -126,7 +126,7 @@ class SqliteForeignKeyTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(count($albums[1]->Tracks), 0);
 	}
 
-	public function test_belongs_to()
+	public function test_sqlite_belongs_to()
 	{
 		$track = SqliteTrack::finder()->withAlbum()->find('id = ?', 1);
 
@@ -135,7 +135,7 @@ class SqliteForeignKeyTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals($track->Album->title, "Album 1");
 	}
 
-	public function test_has_many_associate()
+	public function test_sqlite_has_many_associate()
 	{
 		$album = SqliteAlbum::finder()->withArtists()->find('title = ?', 'Album 2');
 		$this->assertEquals($album->title, 'Album 2');
@@ -146,7 +146,7 @@ class SqliteForeignKeyTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals($album->Artists[2]->name, 'Tom');
 	}
 
-	public function test_multiple_fk()
+	public function test_sqlite_multiple_fk()
 	{
 		$album = SqliteAlbum::finder()->withArtists()->withTracks()->with_cover()->find('title = ?', 'Album 1');
 

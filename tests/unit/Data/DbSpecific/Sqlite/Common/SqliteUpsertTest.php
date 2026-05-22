@@ -75,7 +75,7 @@ class SqliteUpsertTest extends PHPUnit\Framework\TestCase
 	// SQL generation — upsert (ON CONFLICT DO UPDATE SET)
 	// -----------------------------------------------------------------------
 
-	public function test_sql_contains_on_conflict_do_update_set(): void
+	public function test_sqlite_sql_contains_on_conflict_do_update_set(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -91,7 +91,7 @@ class SqliteUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('excluded.', $capturedSql);
 	}
 
-	public function test_sql_conflict_clause_uses_specified_columns(): void
+	public function test_sqlite_sql_conflict_clause_uses_specified_columns(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -103,7 +103,7 @@ class SqliteUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('"username"', $capturedSql);
 	}
 
-	public function test_sql_update_set_contains_non_conflict_columns(): void
+	public function test_sqlite_sql_update_set_contains_non_conflict_columns(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -115,7 +115,7 @@ class SqliteUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('"score"', $capturedSql);
 	}
 
-	public function test_sql_empty_updateData_produces_do_nothing(): void
+	public function test_sqlite_sql_empty_updateData_produces_do_nothing(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -127,7 +127,7 @@ class SqliteUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertStringNotContainsString('DO UPDATE', $capturedSql);
 	}
 
-	public function test_sql_explicit_updateData_only_those_columns_in_set(): void
+	public function test_sqlite_sql_explicit_updateData_only_those_columns_in_set(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -144,7 +144,7 @@ class SqliteUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertStringNotContainsString('"username" = excluded."username"', $setPart);
 	}
 
-	public function test_sql_default_conflict_columns_uses_pk(): void
+	public function test_sqlite_sql_default_conflict_columns_uses_pk(): void
 	{
 		// When conflictColumns=null, resolved to PK ('id')
 		$capturedSql = null;
@@ -161,7 +161,7 @@ class SqliteUpsertTest extends PHPUnit\Framework\TestCase
 	// Base class throws TDbException
 	// -----------------------------------------------------------------------
 
-	public function test_base_builder_throws_for_upsert(): void
+	public function test_sqlite_base_builder_throws_for_upsert(): void
 	{
 		$meta      = new TSqliteMetaData(self::$conn);
 		$tableInfo = $meta->getTableInfo('upsert_test');
@@ -175,7 +175,7 @@ class SqliteUpsertTest extends PHPUnit\Framework\TestCase
 	// Behavioral: insert new row
 	// -----------------------------------------------------------------------
 
-	public function test_upsert_inserts_new_row(): void
+	public function test_sqlite_upsert_inserts_new_row(): void
 	{
 		self::$gateway->upsert(['username' => 'alice', 'score' => 10], null, ['username']);
 
@@ -185,7 +185,7 @@ class SqliteUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(10, (int) $row['score']);
 	}
 
-	public function test_upsert_new_row_returns_integer_id(): void
+	public function test_sqlite_upsert_new_row_returns_integer_id(): void
 	{
 		$result = self::$gateway->upsert(['username' => 'alice', 'score' => 10], null, ['username']);
 		$this->assertNotFalse($result);
@@ -196,7 +196,7 @@ class SqliteUpsertTest extends PHPUnit\Framework\TestCase
 	// Behavioral: conflict → update
 	// -----------------------------------------------------------------------
 
-	public function test_conflict_on_unique_column_triggers_update(): void
+	public function test_sqlite_conflict_on_unique_column_triggers_update(): void
 	{
 		self::$gateway->upsert(['username' => 'alice', 'score' => 10], null, ['username']);
 		self::$gateway->upsert(['username' => 'alice', 'score' => 99], null, ['username']);
@@ -205,7 +205,7 @@ class SqliteUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(99, (int) $row['score']);
 	}
 
-	public function test_conflict_does_not_create_duplicate_rows(): void
+	public function test_sqlite_conflict_does_not_create_duplicate_rows(): void
 	{
 		self::$gateway->upsert(['username' => 'alice', 'score' => 10], null, ['username']);
 		self::$gateway->upsert(['username' => 'alice', 'score' => 99], null, ['username']);
@@ -214,7 +214,7 @@ class SqliteUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(1, $count);
 	}
 
-	public function test_conflict_on_pk_triggers_update(): void
+	public function test_sqlite_conflict_on_pk_triggers_update(): void
 	{
 		// Insert with explicit id, then upsert with same id (PK conflict)
 		$id = (int) self::$gateway->insert(['username' => 'alice', 'score' => 10]);
@@ -224,7 +224,7 @@ class SqliteUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(77, (int) $row['score']);
 	}
 
-	public function test_conflict_update_returns_truthy_value(): void
+	public function test_sqlite_conflict_update_returns_truthy_value(): void
 	{
 		self::$gateway->upsert(['username' => 'alice', 'score' => 10], null, ['username']);
 		$result = self::$gateway->upsert(['username' => 'alice', 'score' => 99], null, ['username']);
@@ -235,7 +235,7 @@ class SqliteUpsertTest extends PHPUnit\Framework\TestCase
 	// Explicit updateData
 	// -----------------------------------------------------------------------
 
-	public function test_explicit_updateData_only_updates_specified_columns(): void
+	public function test_sqlite_explicit_updateData_only_updates_specified_columns(): void
 	{
 		self::$gateway->insert(['username' => 'alice', 'score' => 10]);
 		// updateData only updates score; username should remain 'alice'
@@ -250,7 +250,7 @@ class SqliteUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals('alice', $row['username']);
 	}
 
-	public function test_null_updateData_defaults_to_all_non_conflict_columns(): void
+	public function test_sqlite_null_updateData_defaults_to_all_non_conflict_columns(): void
 	{
 		self::$gateway->insert(['username' => 'alice', 'score' => 10]);
 		self::$gateway->upsert(
@@ -267,7 +267,7 @@ class SqliteUpsertTest extends PHPUnit\Framework\TestCase
 	// Empty updateData → DO NOTHING (insert-or-ignore behaviour)
 	// -----------------------------------------------------------------------
 
-	public function test_empty_updateData_acts_as_insert_or_ignore_on_conflict(): void
+	public function test_sqlite_empty_updateData_acts_as_insert_or_ignore_on_conflict(): void
 	{
 		self::$gateway->upsert(['username' => 'alice', 'score' => 10], null, ['username']);
 		self::$gateway->upsert(['username' => 'alice', 'score' => 99], [], ['username']);
@@ -276,7 +276,7 @@ class SqliteUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(10, (int) $row['score'], 'score must remain unchanged with empty updateData');
 	}
 
-	public function test_empty_updateData_on_conflict_returns_false(): void
+	public function test_sqlite_empty_updateData_on_conflict_returns_false(): void
 	{
 		self::$gateway->upsert(['username' => 'alice', 'score' => 10], null, ['username']);
 		$result = self::$gateway->upsert(['username' => 'alice', 'score' => 99], [], ['username']);
@@ -287,7 +287,7 @@ class SqliteUpsertTest extends PHPUnit\Framework\TestCase
 	// Other rows not affected
 	// -----------------------------------------------------------------------
 
-	public function test_upsert_does_not_modify_other_rows(): void
+	public function test_sqlite_upsert_does_not_modify_other_rows(): void
 	{
 		self::$gateway->insert(['username' => 'alice', 'score' => 10]);
 		self::$gateway->insert(['username' => 'bob',   'score' => 20]);
@@ -302,7 +302,7 @@ class SqliteUpsertTest extends PHPUnit\Framework\TestCase
 	// resolveConflictColumns / resolveUpdateData helpers via SQL capture
 	// -----------------------------------------------------------------------
 
-	public function test_resolve_conflict_columns_defaults_to_pk(): void
+	public function test_sqlite_resolve_conflict_columns_defaults_to_pk(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -314,7 +314,7 @@ class SqliteUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('"id"', $capturedSql);
 	}
 
-	public function test_resolve_update_data_excludes_conflict_columns(): void
+	public function test_sqlite_resolve_update_data_excludes_conflict_columns(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -335,7 +335,7 @@ class SqliteUpsertTest extends PHPUnit\Framework\TestCase
 	// Events
 	// -----------------------------------------------------------------------
 
-	public function test_oncreatecommand_event_is_raised(): void
+	public function test_sqlite_oncreatecommand_event_is_raised(): void
 	{
 		$fired = false;
 		$gw    = new TTableGateway('upsert_test', self::$conn);
@@ -348,7 +348,7 @@ class SqliteUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($fired, 'OnCreateCommand was not raised');
 	}
 
-	public function test_onexecutecommand_event_is_raised(): void
+	public function test_sqlite_onexecutecommand_event_is_raised(): void
 	{
 		$captured = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -361,7 +361,7 @@ class SqliteUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertNotNull($captured);
 	}
 
-	public function test_onexecutecommand_can_override_result(): void
+	public function test_sqlite_onexecutecommand_can_override_result(): void
 	{
 		$gw = new TTableGateway('upsert_test', self::$conn);
 		$gw->OnExecuteCommand[] = function ($sender, $param): void {
@@ -376,7 +376,7 @@ class SqliteUpsertTest extends PHPUnit\Framework\TestCase
 	// Column-name list updateData
 	// -----------------------------------------------------------------------
 
-	public function test_updateData_column_name_list_updates_only_those_columns(): void
+	public function test_sqlite_updateData_column_name_list_updates_only_those_columns(): void
 	{
 		self::$gateway->insert(['username' => 'alice', 'score' => 10]);
 		self::$gateway->upsert(['username' => 'alice', 'score' => 77], ['score'], ['username']);
@@ -386,7 +386,7 @@ class SqliteUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals('alice', $row['username']);
 	}
 
-	public function test_sql_column_name_list_generates_correct_update_clause(): void
+	public function test_sqlite_sql_column_name_list_generates_correct_update_clause(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -399,7 +399,7 @@ class SqliteUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertStringNotContainsString('"username" = excluded."username"', $capturedSql);
 	}
 
-	public function test_updateData_column_name_list_leaves_other_columns_unchanged(): void
+	public function test_sqlite_updateData_column_name_list_leaves_other_columns_unchanged(): void
 	{
 		self::$gateway->insert(['username' => 'alice', 'score' => 10]);
 		// Only score in the update list; username is the conflict col and is not updated
@@ -413,7 +413,7 @@ class SqliteUpsertTest extends PHPUnit\Framework\TestCase
 	// Explicit value (string-keyed) updateData
 	// -----------------------------------------------------------------------
 
-	public function test_updateData_explicit_value_overrides_insert_data_on_conflict(): void
+	public function test_sqlite_updateData_explicit_value_overrides_insert_data_on_conflict(): void
 	{
 		self::$gateway->insert(['username' => 'alice', 'score' => 10]);
 		// Explicit override: score should be set to 99 regardless of insert data value (10)
@@ -423,7 +423,7 @@ class SqliteUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(99, (int) $row['score']);
 	}
 
-	public function test_sql_explicit_value_updateData_does_not_use_insert_data(): void
+	public function test_sqlite_sql_explicit_value_updateData_does_not_use_insert_data(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -439,7 +439,7 @@ class SqliteUpsertTest extends PHPUnit\Framework\TestCase
 	// Mixed (column-name + explicit value) updateData
 	// -----------------------------------------------------------------------
 
-	public function test_updateData_mixed_handles_column_name_and_explicit_value_simultaneously(): void
+	public function test_sqlite_updateData_mixed_handles_column_name_and_explicit_value_simultaneously(): void
 	{
 		$id = (int) self::$gateway->insert(['username' => 'alice', 'score' => 10]);
 		// Conflict on PK (id): update score from INSERT row (77), rename username explicitly to 'alice_renamed'
@@ -454,7 +454,7 @@ class SqliteUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals('alice_renamed', $row['username']);
 	}
 
-	public function test_sql_mixed_updateData_generates_both_value_references_and_literals(): void
+	public function test_sqlite_sql_mixed_updateData_generates_both_value_references_and_literals(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);

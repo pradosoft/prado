@@ -2,7 +2,7 @@
 
 require_once(__DIR__ . '/../../../SqlMap/TestQueryForMap.php');
 
-class SqliteTestQueryForMap extends TestQueryForMap
+class SqliteTestQueryForMapTest extends TestQueryForMap
 {
 	// Uses SQLiteBaseTestConfig (default via BaseTestConfig::createConfigInstance())
 }

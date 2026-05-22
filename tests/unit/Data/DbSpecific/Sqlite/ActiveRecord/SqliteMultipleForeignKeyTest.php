@@ -101,7 +101,7 @@ class SqliteCategoryX extends SqliteMultiFKRecord
 
 class SqliteMultipleForeignKeyTest extends PHPUnit\Framework\TestCase
 {
-	public function testBelongsTo()
+	public function testSqliteBelongsTo()
 	{
 		$obj = SqliteTable1::finder()->withObject1()->findAll();
 		$this->assertEquals(count($obj), 3);
@@ -114,7 +114,7 @@ class SqliteMultipleForeignKeyTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals($obj[2]->object1->id, '2');
 	}
 
-	public function testHasMany()
+	public function testSqliteHasMany()
 	{
 		$obj = SqliteTable2::finder()->withState1()->findAll();
 		$this->assertEquals(count($obj), 5);
@@ -133,7 +133,7 @@ class SqliteMultipleForeignKeyTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals($obj[3]->id, '4');
 	}
 
-	public function testHasOne()
+	public function testSqliteHasOne()
 	{
 		$obj = SqliteTable2::finder()->withState3('id = 3')->findAll();
 
@@ -158,12 +158,26 @@ class SqliteMultipleForeignKeyTest extends PHPUnit\Framework\TestCase
 	 * @todo fix this framework bug in ActiveRecord: PDO::quote() deprecated null handling
 	 *       prevents self-referential parent/child record loading from working correctly.
 	 */
-	public function testParentChild()
+	public function testSqliteParentChild()
 	{
-		$this->markTestSkipped('Test exposes framework bug: PDO::quote() deprecated null handling breaks parent-child ActiveRecord loading.');
+		// All 4 CategoryX rows have parent_category INTEGER = NULL.
+		// BELONGS_TO with a null FK value should resolve to null (no parent found).
+		$cats = SqliteCategoryX::finder()->withParent_category()->findAll();
+		$this->assertSame(4, count($cats));
+		foreach ($cats as $cat) {
+			$this->assertNull($cat->parent_category, 'parent_category FK is NULL so the BELONGS_TO relation must resolve to null');
+		}
+
+		// HAS_MANY child_categories: the child_categories INTEGER FK column is NULL for every row,
+		// so no row references any other row via this FK — each record has an empty children list.
+		$cats = SqliteCategoryX::finder()->withChild_categories()->findAll();
+		$this->assertSame(4, count($cats));
+		foreach ($cats as $cat) {
+			$this->assertSame([], $cat->child_categories, 'no rows have child_categories FK set, so the HAS_MANY relation must be empty');
+		}
 	}
 
-	public function testLazyLoadingGetterSetter_hasMany()
+	public function testSqliteLazyLoadingGetterSetter_hasMany()
 	{
 		$arr = SqliteTable2::finder()->findByPk(2);
 

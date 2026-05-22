@@ -84,7 +84,7 @@ class SqliteColumnTest extends PHPUnit\Framework\TestCase
 		return new TSqliteMetaData($conn);
 	}
 
-	public function test_columns()
+	public function test_sqlite_columns()
 	{
 		$table = $this->create_meta_data()->getTableInfo('table1');
 
@@ -218,7 +218,7 @@ class SqliteColumnTest extends PHPUnit\Framework\TestCase
 		$this->assertColumn($columns, $table);
 	}
 
-	public function test_foreign_key_detection()
+	public function test_sqlite_foreign_key_detection()
 	{
 		$table = $this->create_meta_data()->getTableInfo('ref_table');
 
@@ -238,7 +238,7 @@ class SqliteColumnTest extends PHPUnit\Framework\TestCase
 		$this->assertFalse($fk->AutoIncrement);
 	}
 
-	public function test_find_table_names()
+	public function test_sqlite_find_table_names()
 	{
 		$names = $this->create_meta_data()->findTableNames();
 
@@ -246,7 +246,7 @@ class SqliteColumnTest extends PHPUnit\Framework\TestCase
 		$this->assertContains('ref_table', $names);
 	}
 
-	public function test_command_builder_insert()
+	public function test_sqlite_command_builder_insert()
 	{
 		$meta = $this->create_meta_data();
 		$builder = $meta->createCommandBuilder('table1');
@@ -258,7 +258,7 @@ class SqliteColumnTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('"name"', $insert->Text);
 	}
 
-	public function test_command_builder_update()
+	public function test_sqlite_command_builder_update()
 	{
 		$meta = $this->create_meta_data();
 		$builder = $meta->createCommandBuilder('table1');
@@ -269,7 +269,7 @@ class SqliteColumnTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('WHERE id=1', $update->Text);
 	}
 
-	public function test_command_builder_delete()
+	public function test_sqlite_command_builder_delete()
 	{
 		$meta = $this->create_meta_data();
 		$builder = $meta->createCommandBuilder('table1');
@@ -280,7 +280,7 @@ class SqliteColumnTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('WHERE id=1', $delete->Text);
 	}
 
-	public function test_select_limit()
+	public function test_sqlite_select_limit()
 	{
 		$meta = $this->create_meta_data();
 		$builder = $meta->createCommandBuilder('table1');
@@ -303,7 +303,7 @@ class SqliteColumnTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals($query, $limit);
 	}
 
-	public function test_integer_pk_autoincrement_vs_int_pk_no_autoincrement()
+	public function test_sqlite_integer_pk_autoincrement_vs_int_pk_no_autoincrement()
 	{
 		// Only exact type 'integer' (lowercase) triggers AutoIncrement in SQLite.
 		// 'int', 'INT', 'INTEGER(10)', etc. do NOT set AutoIncrement.

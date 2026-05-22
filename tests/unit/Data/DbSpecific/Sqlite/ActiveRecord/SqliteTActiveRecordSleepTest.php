@@ -30,7 +30,7 @@ class SqliteTActiveRecordSleepTest extends PHPUnit\Framework\TestCase
 	//  _connection is always excluded
 	// -----------------------------------------------------------------------
 
-	public function testConnectionExcludedFromSleep(): void
+	public function testSqliteConnectionExcludedFromSleep(): void
 	{
 		$record = new SqliteSleepTestRecord();
 		$props = $record->__sleep();
@@ -38,7 +38,7 @@ class SqliteTActiveRecordSleepTest extends PHPUnit\Framework\TestCase
 		$this->assertNotContains("\0*\0_connection", $props);
 	}
 
-	public function testConnectionExcludedEvenWhenSet(): void
+	public function testSqliteConnectionExcludedEvenWhenSet(): void
 	{
 		$record = new SqliteSleepTestRecord();
 		// Set a connection on the record (inactive — no live DB needed)
@@ -55,7 +55,7 @@ class SqliteTActiveRecordSleepTest extends PHPUnit\Framework\TestCase
 	//  Public fields and non-excluded props survive the round trip
 	// -----------------------------------------------------------------------
 
-	public function testPublicFieldsPreservedAfterRoundTrip(): void
+	public function testSqlitePublicFieldsPreservedAfterRoundTrip(): void
 	{
 		$record = new SqliteSleepTestRecord();
 		$record->id   = 7;
@@ -67,7 +67,7 @@ class SqliteTActiveRecordSleepTest extends PHPUnit\Framework\TestCase
 		$this->assertSame('Alice', $restored->name);
 	}
 
-	public function testConnectionNullAfterRoundTrip(): void
+	public function testSqliteConnectionNullAfterRoundTrip(): void
 	{
 		$record = new SqliteSleepTestRecord();
 		// Set a live-ish connection; it must be gone after unserialize
@@ -87,7 +87,7 @@ class SqliteTActiveRecordSleepTest extends PHPUnit\Framework\TestCase
 	//  __wakeup restores column mapping and relations
 	// -----------------------------------------------------------------------
 
-	public function testWakeupDoesNotThrow(): void
+	public function testSqliteWakeupDoesNotThrow(): void
 	{
 		$record = new SqliteSleepTestRecord();
 		$record->id = 1;

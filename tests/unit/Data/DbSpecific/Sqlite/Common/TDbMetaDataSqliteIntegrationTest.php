@@ -69,7 +69,7 @@ class TDbMetaDataSqliteIntegrationTest extends PHPUnit\Framework\TestCase
 	// TDbMetaData::getInstance()
 	// -----------------------------------------------------------------------
 
-	public function testGetInstanceReturnsSqliteMetaData(): void
+	public function testSqliteGetInstanceReturnsSqliteMetaData(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$this->assertInstanceOf(TSqliteMetaData::class, $meta);
@@ -79,21 +79,21 @@ class TDbMetaDataSqliteIntegrationTest extends PHPUnit\Framework\TestCase
 	// getTableInfo() — TDbTableInfo
 	// -----------------------------------------------------------------------
 
-	public function testGetTableInfoReturnsTableInfo(): void
+	public function testSqliteGetTableInfoReturnsTableInfo(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
 		$this->assertInstanceOf(\Prado\Data\Common\TDbTableInfo::class, $info);
 	}
 
-	public function testGetTableInfoTableName(): void
+	public function testSqliteGetTableInfoTableName(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
 		$this->assertSame('meta_test', $info->getTableName());
 	}
 
-	public function testGetTableInfoColumnNamesContainsAllColumns(): void
+	public function testSqliteGetTableInfoColumnNamesContainsAllColumns(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -105,7 +105,7 @@ class TDbMetaDataSqliteIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertCount(4, $names);
 	}
 
-	public function testGetTableInfoPrimaryKeys(): void
+	public function testSqliteGetTableInfoPrimaryKeys(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -114,7 +114,7 @@ class TDbMetaDataSqliteIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertCount(1, $pks);
 	}
 
-	public function testGetTableInfoGetColumnReturnsColumn(): void
+	public function testSqliteGetTableInfoGetColumnReturnsColumn(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -123,7 +123,7 @@ class TDbMetaDataSqliteIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertInstanceOf(\Prado\Data\Common\TDbTableColumn::class, $col);
 	}
 
-	public function testGetTableInfoGetColumnThrowsForMissingColumn(): void
+	public function testSqliteGetTableInfoGetColumnThrowsForMissingColumn(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -131,7 +131,7 @@ class TDbMetaDataSqliteIntegrationTest extends PHPUnit\Framework\TestCase
 		$info->getColumn('nonexistent_column');
 	}
 
-	public function testGetTableInfoCachingReturnsSameObject(): void
+	public function testSqliteGetTableInfoCachingReturnsSameObject(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info1 = $meta->getTableInfo('meta_test');
@@ -139,7 +139,7 @@ class TDbMetaDataSqliteIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertSame($info1, $info2);
 	}
 
-	public function testGetTableInfoThrowsForInvalidTable(): void
+	public function testSqliteGetTableInfoThrowsForInvalidTable(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$this->expectException(\Prado\Exceptions\TDbException::class);
@@ -150,7 +150,7 @@ class TDbMetaDataSqliteIntegrationTest extends PHPUnit\Framework\TestCase
 	// TDbTableColumn — column metadata
 	// -----------------------------------------------------------------------
 
-	public function testPrimaryKeyColumnIsPrimaryKey(): void
+	public function testSqlitePrimaryKeyColumnIsPrimaryKey(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -158,7 +158,7 @@ class TDbMetaDataSqliteIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($col->getIsPrimaryKey());
 	}
 
-	public function testNonPrimaryKeyColumnIsNotPrimaryKey(): void
+	public function testSqliteNonPrimaryKeyColumnIsNotPrimaryKey(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -166,7 +166,7 @@ class TDbMetaDataSqliteIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertFalse($col->getIsPrimaryKey());
 	}
 
-	public function testPrimaryKeyColumnDbType(): void
+	public function testSqlitePrimaryKeyColumnDbType(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -174,7 +174,7 @@ class TDbMetaDataSqliteIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsStringIgnoringCase('integer', $col->getDbType());
 	}
 
-	public function testTextColumnDbType(): void
+	public function testSqliteTextColumnDbType(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -182,7 +182,7 @@ class TDbMetaDataSqliteIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsStringIgnoringCase('text', $col->getDbType());
 	}
 
-	public function testColumnWithDefaultValueHasDefault(): void
+	public function testSqliteColumnWithDefaultValueHasDefault(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -190,7 +190,7 @@ class TDbMetaDataSqliteIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertNotNull($col->getDefaultValue());
 	}
 
-	public function testColumnWithoutDefaultHasNullDefault(): void
+	public function testSqliteColumnWithoutDefaultHasNullDefault(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('meta_test');
@@ -203,14 +203,14 @@ class TDbMetaDataSqliteIntegrationTest extends PHPUnit\Framework\TestCase
 	// findTableNames()
 	// -----------------------------------------------------------------------
 
-	public function testFindTableNamesContainsMetaTest(): void
+	public function testSqliteFindTableNamesContainsMetaTest(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$tables = $meta->findTableNames();
 		$this->assertContains('meta_test', $tables);
 	}
 
-	public function testFindTableNamesReturnsArray(): void
+	public function testSqliteFindTableNamesReturnsArray(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$tables = $meta->findTableNames();
@@ -221,7 +221,7 @@ class TDbMetaDataSqliteIntegrationTest extends PHPUnit\Framework\TestCase
 	// createCommandBuilder()
 	// -----------------------------------------------------------------------
 
-	public function testCreateCommandBuilderReturnsBuilder(): void
+	public function testSqliteCreateCommandBuilderReturnsBuilder(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$builder = $meta->createCommandBuilder('meta_test');
@@ -232,7 +232,7 @@ class TDbMetaDataSqliteIntegrationTest extends PHPUnit\Framework\TestCase
 	// Quoting helpers
 	// -----------------------------------------------------------------------
 
-	public function testQuoteTableName(): void
+	public function testSqliteQuoteTableName(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$quoted = $meta->quoteTableName('foo');
@@ -242,14 +242,14 @@ class TDbMetaDataSqliteIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertSame('"foo"', $quoted);
 	}
 
-	public function testQuoteColumnName(): void
+	public function testSqliteQuoteColumnName(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$quoted = $meta->quoteColumnName('bar');
 		$this->assertSame('"bar"', $quoted);
 	}
 
-	public function testQuoteColumnAlias(): void
+	public function testSqliteQuoteColumnAlias(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$quoted = $meta->quoteColumnAlias('baz');

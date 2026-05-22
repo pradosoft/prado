@@ -75,7 +75,7 @@ class SqliteInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// SQL generation
 	// -----------------------------------------------------------------------
 
-	public function test_sql_uses_insert_or_ignore_keyword(): void
+	public function test_sqlite_sql_uses_insert_or_ignore_keyword(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -92,7 +92,7 @@ class SqliteInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertStringNotContainsString('ON CONFLICT', $capturedSql);
 	}
 
-	public function test_sql_omits_id_when_not_in_data(): void
+	public function test_sqlite_sql_omits_id_when_not_in_data(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -103,7 +103,7 @@ class SqliteInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertStringNotContainsString('"id"', $capturedSql);
 	}
 
-	public function test_sql_includes_id_when_provided(): void
+	public function test_sqlite_sql_includes_id_when_provided(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -119,7 +119,7 @@ class SqliteInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Insert new row
 	// -----------------------------------------------------------------------
 
-	public function test_new_row_is_inserted_into_table(): void
+	public function test_sqlite_new_row_is_inserted_into_table(): void
 	{
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
 
@@ -127,7 +127,7 @@ class SqliteInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(1, $count);
 	}
 
-	public function test_new_row_values_are_stored_correctly(): void
+	public function test_sqlite_new_row_values_are_stored_correctly(): void
 	{
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 42]);
 
@@ -137,21 +137,21 @@ class SqliteInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(42, (int) $row['score']);
 	}
 
-	public function test_new_row_returns_integer_last_insert_id(): void
+	public function test_sqlite_new_row_returns_integer_last_insert_id(): void
 	{
 		$result = self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
 		$this->assertNotFalse($result);
 		$this->assertGreaterThan(0, (int) $result);
 	}
 
-	public function test_successive_new_rows_return_incrementing_ids(): void
+	public function test_sqlite_successive_new_rows_return_incrementing_ids(): void
 	{
 		$id1 = (int) self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 1]);
 		$id2 = (int) self::$gateway->insertOrIgnore(['username' => 'bob',   'score' => 2]);
 		$this->assertGreaterThan($id1, $id2);
 	}
 
-	public function test_new_row_with_default_score_omitted_uses_zero(): void
+	public function test_sqlite_new_row_with_default_score_omitted_uses_zero(): void
 	{
 		// SQLite fills DEFAULT 0 when score is omitted from the data
 		self::$conn->createCommand("INSERT OR IGNORE INTO upsert_test (username) VALUES ('alice')")->execute();
@@ -163,14 +163,14 @@ class SqliteInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Duplicate silently ignored
 	// -----------------------------------------------------------------------
 
-	public function test_duplicate_username_returns_false(): void
+	public function test_sqlite_duplicate_username_returns_false(): void
 	{
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
 		$result = self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 99]);
 		$this->assertFalse($result);
 	}
 
-	public function test_duplicate_does_not_create_additional_rows(): void
+	public function test_sqlite_duplicate_does_not_create_additional_rows(): void
 	{
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 99]);
@@ -179,7 +179,7 @@ class SqliteInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(1, $count);
 	}
 
-	public function test_existing_row_not_modified_after_ignored_insert(): void
+	public function test_sqlite_existing_row_not_modified_after_ignored_insert(): void
 	{
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 99]);
@@ -188,7 +188,7 @@ class SqliteInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(10, (int) $row['score']);
 	}
 
-	public function test_duplicate_on_explicit_id_returns_false(): void
+	public function test_sqlite_duplicate_on_explicit_id_returns_false(): void
 	{
 		self::$gateway->insertOrIgnore(['id' => 1, 'username' => 'alice', 'score' => 10]);
 		$result = self::$gateway->insertOrIgnore(['id' => 1, 'username' => 'bob', 'score' => 20]);
@@ -199,7 +199,7 @@ class SqliteInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Mixed: some conflict, some new
 	// -----------------------------------------------------------------------
 
-	public function test_only_conflicting_row_is_ignored_others_inserted(): void
+	public function test_sqlite_only_conflicting_row_is_ignored_others_inserted(): void
 	{
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
 		$res2 = self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 99]); // conflict
@@ -210,7 +210,7 @@ class SqliteInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(2, (int) self::$conn->createCommand('SELECT COUNT(*) FROM upsert_test')->queryScalar());
 	}
 
-	public function test_non_conflicting_row_after_conflict_has_correct_values(): void
+	public function test_sqlite_non_conflicting_row_after_conflict_has_correct_values(): void
 	{
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 99]);
@@ -227,7 +227,7 @@ class SqliteInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Events
 	// -----------------------------------------------------------------------
 
-	public function test_oncreatecommand_event_is_raised_on_insert(): void
+	public function test_sqlite_oncreatecommand_event_is_raised_on_insert(): void
 	{
 		$fired = false;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -240,7 +240,7 @@ class SqliteInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($fired, 'OnCreateCommand was not raised');
 	}
 
-	public function test_onexecutecommand_event_is_raised_with_result(): void
+	public function test_sqlite_onexecutecommand_event_is_raised_with_result(): void
 	{
 		$captured = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -254,7 +254,7 @@ class SqliteInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(1, $captured);
 	}
 
-	public function test_onexecutecommand_can_override_result_to_false(): void
+	public function test_sqlite_onexecutecommand_can_override_result_to_false(): void
 	{
 		$gw = new TTableGateway('upsert_test', self::$conn);
 		$gw->OnExecuteCommand[] = function ($sender, $param): void {
@@ -266,7 +266,7 @@ class SqliteInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertFalse($result);
 	}
 
-	public function test_oncreatecommand_event_is_raised_on_conflict(): void
+	public function test_sqlite_oncreatecommand_event_is_raised_on_conflict(): void
 	{
 		$callCount = 0;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -284,7 +284,7 @@ class SqliteInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Base class throws TDbException
 	// -----------------------------------------------------------------------
 
-	public function test_base_builder_throws_for_insertOrIgnore(): void
+	public function test_sqlite_base_builder_throws_for_insertOrIgnore(): void
 	{
 		$meta      = new TSqliteMetaData(self::$conn);
 		$tableInfo = $meta->getTableInfo('upsert_test');

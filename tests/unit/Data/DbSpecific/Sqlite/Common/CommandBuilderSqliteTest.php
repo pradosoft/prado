@@ -18,14 +18,14 @@ class CommandBuilderSqliteTest extends PHPUnit\Framework\TestCase
 {
 	protected static string $sql = 'SELECT username, age FROM accounts';
 
-	public function test_no_limit_or_offset()
+	public function test_sqlite_no_limit_or_offset()
 	{
 		$builder = new TSqliteCommandBuilder();
 		$result = $builder->applyLimitOffset(self::$sql);
 		$this->assertEquals(self::$sql, $result);
 	}
 
-	public function test_limit_only()
+	public function test_sqlite_limit_only()
 	{
 		$builder = new TSqliteCommandBuilder();
 		$result = $builder->applyLimitOffset(self::$sql, 5);
@@ -33,7 +33,7 @@ class CommandBuilderSqliteTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(self::$sql . ' LIMIT 5', $result);
 	}
 
-	public function test_limit_with_negative_offset()
+	public function test_sqlite_limit_with_negative_offset()
 	{
 		$builder = new TSqliteCommandBuilder();
 		// Explicit offset=-1 → no OFFSET clause
@@ -41,7 +41,7 @@ class CommandBuilderSqliteTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(self::$sql . ' LIMIT 5', $result);
 	}
 
-	public function test_offset_only()
+	public function test_sqlite_offset_only()
 	{
 		$builder = new TSqliteCommandBuilder();
 		// offset > 0 triggers the block; SQLite requires LIMIT before OFFSET,
@@ -50,7 +50,7 @@ class CommandBuilderSqliteTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(self::$sql . ' LIMIT -1 OFFSET 10', $result);
 	}
 
-	public function test_offset_one()
+	public function test_sqlite_offset_one()
 	{
 		$builder = new TSqliteCommandBuilder();
 		// Smallest positive offset still forces LIMIT -1
@@ -58,14 +58,14 @@ class CommandBuilderSqliteTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(self::$sql . ' LIMIT -1 OFFSET 1', $result);
 	}
 
-	public function test_limit_and_offset()
+	public function test_sqlite_limit_and_offset()
 	{
 		$builder = new TSqliteCommandBuilder();
 		$result = $builder->applyLimitOffset(self::$sql, 5, 10);
 		$this->assertEquals(self::$sql . ' LIMIT 5 OFFSET 10', $result);
 	}
 
-	public function test_zero_limit_no_change()
+	public function test_sqlite_zero_limit_no_change()
 	{
 		$builder = new TSqliteCommandBuilder();
 		// 0 > 0 is false and offset default is -1, so entry condition fails → unchanged
@@ -73,7 +73,7 @@ class CommandBuilderSqliteTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(self::$sql, $result);
 	}
 
-	public function test_zero_zero_no_change()
+	public function test_sqlite_zero_zero_no_change()
 	{
 		$builder = new TSqliteCommandBuilder();
 		// 0 > 0 || 0 > 0 is false → unchanged (differs from MySQL which emits LIMIT 0 OFFSET 0)
@@ -81,7 +81,7 @@ class CommandBuilderSqliteTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(self::$sql, $result);
 	}
 
-	public function test_limit_with_zero_offset()
+	public function test_sqlite_limit_with_zero_offset()
 	{
 		$builder = new TSqliteCommandBuilder();
 		// limit > 0 triggers the block; offset=0 is >= 0 so OFFSET 0 is appended
