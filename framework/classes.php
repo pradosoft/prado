@@ -243,6 +243,7 @@ return [
 'IEventCycleParameter' => 'Prado\IEventCycleParameter',
 'IEventParameter' => 'Prado\IEventParameter',
 'IModule' => 'Prado\IModule',
+'IModuleDependency' => 'Prado\IModuleDependency',
 'ITextWriter' => 'Prado\IO\ITextWriter',
 'TOutputWriter' => 'Prado\IO\TOutputWriter',
 'TStdOutWriter' => 'Prado\IO\TStdOutWriter',
