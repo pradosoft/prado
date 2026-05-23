@@ -34,7 +34,7 @@ use Prado\Exceptions\TInvalidDataTypeException;
  */
 class TComponentReflection extends \Prado\TComponent
 {
-	/** @var array<string,\ReflectionClass> Shared cache of ReflectionClass instances, keyed by FQCN.  @since 4.4.0 */
+	/** @var array<string,\ReflectionClass> Shared cache of ReflectionClass instances, keyed by lowercase class name.  @since 4.4.0 */
 	private static array $_reflection_cache = [];
 
 	private $_className;
@@ -54,7 +54,6 @@ class TComponentReflection extends \Prado\TComponent
 	 * @param ?string $class Fully-qualified class name to reflect.
 	 * @return ?\ReflectionClass The cached instance, or `null` on failure.
 	 * @since 4.4.0
-	 * @note This can be used for unit tests.
 	 */
 	public static function getReflectionClassForType(?string $class): ?\ReflectionClass
 	{

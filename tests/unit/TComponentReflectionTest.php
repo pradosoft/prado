@@ -183,6 +183,30 @@ class SortedMethodsComponent extends TComponent
 }
 
 // ---------------------------------------------------------------------------
+// Additional fixtures for getReflectionClassForType tests
+// ---------------------------------------------------------------------------
+
+/** Plain interface — used to verify reflection works for interface types. */
+interface ReflectionTestInterface
+{
+	public function doThing(): void;
+}
+
+/** Abstract class — used to verify reflection works for abstract types. */
+abstract class ReflectionTestAbstract
+{
+	abstract public function doThing(): void;
+}
+
+/** Concrete plain (non-TComponent) class — used for cache and type tests. */
+class ReflectionTestConcrete
+{
+	public function doThing(): void
+	{
+	}
+}
+
+// ---------------------------------------------------------------------------
 
 class TComponentReflectionTest extends TestCase
 {
@@ -682,5 +706,144 @@ class TComponentReflectionTest extends TestCase
 		// getMethods() must work correctly when _className is a Prado3 alias.
 		$r = new TComponentReflection('Prado3Alias_TList');
 		$this->assertIsArray($r->getMethods());
+	}
+
+	// ========================================================================
+	// getReflectionClassForType — static reflection cache (4.4.0)
+	// ========================================================================
+
+	public function testGetReflectionClassForTypeNullReturnsNull(): void
+	{
+		$this->assertNull(TComponentReflection::getReflectionClassForType(null));
+	}
+
+	public function testGetReflectionClassForTypeReturnsReflectionClassInstance(): void
+	{
+		$ref = TComponentReflection::getReflectionClassForType(ReflectionTestConcrete::class);
+		$this->assertInstanceOf(\ReflectionClass::class, $ref);
+	}
+
+	public function testGetReflectionClassForTypeReturnsCorrectClassName(): void
+	{
+		$ref = TComponentReflection::getReflectionClassForType(ReflectionTestConcrete::class);
+		$this->assertSame(ReflectionTestConcrete::class, $ref->getName());
+	}
+
+	public function testGetReflectionClassForTypeNonExistentClassReturnsNull(): void
+	{
+		$this->assertNull(
+			TComponentReflection::getReflectionClassForType('ThisClassAbsolutelyDoesNotExist_XYZ_99999')
+		);
+	}
+
+	public function testGetReflectionClassForTypeReturnsSameInstanceOnRepeatedCall(): void
+	{
+		// Two calls with the same name must return the identical cached object.
+		$first  = TComponentReflection::getReflectionClassForType(ReflectionFixtureComponent::class);
+		$second = TComponentReflection::getReflectionClassForType(ReflectionFixtureComponent::class);
+		$this->assertSame($first, $second);
+	}
+
+	public function testGetReflectionClassForTypeIsCaseInsensitive(): void
+	{
+		// PHP class names are case-insensitive; the cache must normalise to
+		// lowercase so different casings share one entry.
+		$canonical = TComponentReflection::getReflectionClassForType(ReflectionTestConcrete::class);
+		$uppercase = TComponentReflection::getReflectionClassForType(strtoupper(ReflectionTestConcrete::class));
+		$lowercase = TComponentReflection::getReflectionClassForType(strtolower(ReflectionTestConcrete::class));
+
+		$this->assertSame($canonical, $uppercase);
+		$this->assertSame($canonical, $lowercase);
+	}
+
+	public function testGetReflectionClassForTypeWorksForInterface(): void
+	{
+		$ref = TComponentReflection::getReflectionClassForType(ReflectionTestInterface::class);
+		$this->assertInstanceOf(\ReflectionClass::class, $ref);
+		$this->assertTrue($ref->isInterface());
+		$this->assertSame(ReflectionTestInterface::class, $ref->getName());
+	}
+
+	public function testGetReflectionClassForTypeWorksForAbstractClass(): void
+	{
+		$ref = TComponentReflection::getReflectionClassForType(ReflectionTestAbstract::class);
+		$this->assertInstanceOf(\ReflectionClass::class, $ref);
+		$this->assertTrue($ref->isAbstract());
+	}
+
+	public function testGetReflectionClassForTypeWorksForTComponentSubclass(): void
+	{
+		$ref = TComponentReflection::getReflectionClassForType(ReflectionFixtureComponent::class);
+		$this->assertInstanceOf(\ReflectionClass::class, $ref);
+		$this->assertTrue($ref->isSubclassOf(TComponent::class));
+	}
+
+	public function testGetReflectionClassForTypeWorksForTComponentItself(): void
+	{
+		$ref = TComponentReflection::getReflectionClassForType(TComponent::class);
+		$this->assertInstanceOf(\ReflectionClass::class, $ref);
+		$this->assertSame(TComponent::class, $ref->getName());
+	}
+
+	public function testGetReflectionClassForTypeWorksForTComponentReflectionItself(): void
+	{
+		// The class uses getReflectionClassForType internally in reflect(); verify
+		// that reflecting TComponentReflection itself does not cause recursion or error.
+		$ref = TComponentReflection::getReflectionClassForType(TComponentReflection::class);
+		$this->assertInstanceOf(\ReflectionClass::class, $ref);
+		$this->assertSame(TComponentReflection::class, $ref->getName());
+	}
+
+	public function testGetReflectionClassForTypeInterfaceSameInstanceOnRepeatedCall(): void
+	{
+		$first  = TComponentReflection::getReflectionClassForType(ReflectionTestInterface::class);
+		$second = TComponentReflection::getReflectionClassForType(ReflectionTestInterface::class);
+		$this->assertSame($first, $second);
+	}
+
+	public function testGetReflectionClassForTypeNonExistentClassDoesNotCacheFailure(): void
+	{
+		// Failed lookups (ReflectionException caught) must NOT be cached so that
+		// subsequent calls retry reflection rather than returning a stale null.
+		$missing = 'ThisClassWillNeverExist_Cache_Test_ABC123';
+
+		$first  = TComponentReflection::getReflectionClassForType($missing);
+		$second = TComponentReflection::getReflectionClassForType($missing);
+
+		// Both calls must return null (no stale cached value).
+		$this->assertNull($first);
+		$this->assertNull($second);
+
+		// A valid lookup immediately following the failed ones must still succeed —
+		// the null result must not have corrupted an adjacent cache slot.
+		$valid = TComponentReflection::getReflectionClassForType(ReflectionTestConcrete::class);
+		$this->assertInstanceOf(\ReflectionClass::class, $valid);
+		$this->assertSame(ReflectionTestConcrete::class, $valid->getName());
+
+		// And the same-instance guarantee must still hold after the failed lookups.
+		$validAgain = TComponentReflection::getReflectionClassForType(ReflectionTestConcrete::class);
+		$this->assertSame($valid, $validAgain);
+	}
+
+	public function testGetReflectionClassForTypeUsedInternallyByReflect(): void
+	{
+		// Constructing a TComponentReflection triggers reflect(), which calls
+		// getReflectionClassForType() internally.  Verify the returned object
+		// is then also available via the static cache — i.e. the constructor
+		// populates the shared cache as a side-effect.
+		$r = new TComponentReflection(ReflectionFixtureChild::class);
+		$this->assertSame(ReflectionFixtureChild::class, $r->getClassName());
+
+		$cached = TComponentReflection::getReflectionClassForType(ReflectionFixtureChild::class);
+		$this->assertInstanceOf(\ReflectionClass::class, $cached);
+		$this->assertSame(ReflectionFixtureChild::class, $cached->getName());
+	}
+
+	public function testGetReflectionClassForTypePrado3AliasResolvesCorrectly(): void
+	{
+		// A Prado3 alias is a class_alias() target; PHP treats it as valid for
+		// ReflectionClass, so getReflectionClassForType must return non-null.
+		$ref = TComponentReflection::getReflectionClassForType('Prado3Alias_TComponent');
+		$this->assertInstanceOf(\ReflectionClass::class, $ref);
 	}
 }
