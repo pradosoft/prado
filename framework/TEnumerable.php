@@ -45,10 +45,7 @@ use Prado\Util\Traits\TArrayCopyIteratorTrait;
  *
  * Classes that cannot extend TEnumerable can implement {@see IEnumerable} and
  * {@see \Iterator} by using {@see \Prado\Util\Traits\TConstantReflectionTrait}
- * and {@see \Prado\Util\Traits\TArrayCopyIteratorTrait}.
- * `TArrayCopyIteratorTrait` declares {@see getIteratorArrayCopy()} as abstract,
- * and `TConstantReflectionTrait` provides the concrete constant-backed
- * implementation.
+ * and {@see \Prado\Util\Traits\TArrayCopyIteratorTrait} together.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @see \Prado\Util\Traits\TArrayCopyIteratorTrait
@@ -57,5 +54,6 @@ use Prado\Util\Traits\TArrayCopyIteratorTrait;
  */
 class TEnumerable implements IEnumerable, \Iterator
 {
-	use TArrayCopyIteratorTrait, TConstantReflectionTrait;
+	use TArrayCopyIteratorTrait;
+	use TConstantReflectionTrait;
 }

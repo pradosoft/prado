@@ -51,7 +51,7 @@ namespace Prado\Util\Traits;
  *
  * `TArrayCopyIteratorTrait` declares `getIteratorArrayCopy()` as abstract;
  * `TConstantReflectionTrait` provides a concrete implementation.  PHP resolves the
- * abstract automatically — no `insteadof` is required:
+ * abstract automatically:
  *
  * ```php
  * class TTextAlign implements \Prado\IEnumerable, \Iterator
@@ -75,7 +75,7 @@ namespace Prado\Util\Traits;
 trait TArrayCopyIteratorTrait
 {
 	use TArrayIteratorTrait;
-	
+
 	/** @var ?array Backing store for iteration; null until first load. */
 	private ?array $_iterator_array = null;
 
