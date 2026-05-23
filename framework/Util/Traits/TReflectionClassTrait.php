@@ -10,12 +10,17 @@
 
 namespace Prado\Util\Traits;
 
+use Prado\TComponentReflection;
+
 /**
  * TReflectionClassTrait trait.
  *
- * TReflectionClassTrait provides a single static cache of {@see \ReflectionClass}
- * instances, one per concrete class, to avoid repeated `new \ReflectionClass()`
- * allocations across a request.
+ * TReflectionClassTrait provides cached {@see \ReflectionClass} access for the
+ * using class.  The cache itself lives in {@see \Prado\TComponentReflection},
+ * which is the central reflection-cache authority for the framework; this trait
+ * delegates to {@see \Prado\TComponentReflection::getReflectionClassForType()} so
+ * that all `ReflectionClass` instances are shared regardless of which code path
+ * requested them.
  *
  * Any class or trait that needs to inspect its own class structure via reflection
  * can use this trait and call {@see getReflectionClass()} without worrying about
@@ -40,44 +45,19 @@ namespace Prado\Util\Traits;
  */
 trait TReflectionClassTrait
 {
-	/** @var array<string,\ReflectionClass> Cache of ReflectionClass instances, keyed by class name. */
-	private static array $_reflection_cache = [];
-
 	/**
 	 * Returns a cached {@see \ReflectionClass} for the calling class.
 	 *
-	 * Uses late static binding (`static::class`) as the cache key so that each
-	 * subclass receives its own entry rather than sharing the parent's.
+	 * Delegates to {@see \Prado\TComponentReflection::getReflectionClassForType()} using
+	 * late static binding (`static::class`) as the key so that each subclass receives
+	 * its own cache entry.
 	 *
-	 * @throws \ReflectionException if the calling class cannot be reflected.
 	 * @return \ReflectionClass The cached reflection instance for the calling class.
 	 */
 	public static function getReflectionClass(): \ReflectionClass
 	{
-		$class = static::class;
-		if (!array_key_exists($class, self::$_reflection_cache)) {
-			self::$_reflection_cache[$class] = new \ReflectionClass($class);
-		}
-		return self::$_reflection_cache[$class];
-	}
-
-	/**
-	 * Returns a cached {@see \ReflectionClass} for `$class`, or the calling class
-	 * when `$class` is `null`.  Returns `null` if `$class` does not exist.
-	 *
-	 * @param ?string $class Fully-qualified class name, or `null` for `static::class`.
-	 * @return ?\ReflectionClass
-	 */
-	protected static function getReflectionForClass(?string $class = null): ?\ReflectionClass
-	{
-		$class ??= static::class;
-		if (!array_key_exists($class, self::$_reflection_cache)) {
-			try {
-				self::$_reflection_cache[$class] = new \ReflectionClass($class);
-			} catch (\ReflectionException $e) {
-				return null;
-			}
-		}
-		return self::$_reflection_cache[$class];
+		/** @var \ReflectionClass $ref static::class is always a valid loaded class */
+		$ref = TComponentReflection::getReflectionClassForType(static::class);
+		return $ref;
 	}
 }
