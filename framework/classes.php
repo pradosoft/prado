@@ -377,6 +377,7 @@ return [
 'TLogRouter' => 'Prado\Util\TLogRouter',
 'TParameterModule' => 'Prado\Util\TParameterModule',
 'TPluginModule' => 'Prado\Util\TPluginModule',
+'TArrayCopyIteratorTrait' => 'Prado\Util\Traits\TArrayCopyIteratorTrait',
 'TArrayIteratorTrait' => 'Prado\Util\Traits\TArrayIteratorTrait',
 'TConstantReflectionTrait' => 'Prado\Util\Traits\TConstantReflectionTrait',
 'TInitializedTrait' => 'Prado\Util\Traits\TInitializedTrait',
