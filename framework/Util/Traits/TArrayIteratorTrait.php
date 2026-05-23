@@ -76,14 +76,8 @@ trait TArrayIteratorTrait
 	/**
 	 * Returns a reference to the array that backs this iterator.
 	 *
-	 * Called by every iterator method so that PHP's internal array-pointer functions
-	 * ({@see current()}, {@see key()}, {@see next()}, {@see reset()}) operate on the
-	 * same live array.  Implementations must return a reference; the return value must
-	 * never be `null`.
-	 *
-	 * {@see TArrayCopyIteratorTrait} provides a lazy-loading implementation backed
-	 * by a cached snapshot copy.  Alternatively, override this method directly in the
-	 * using class to return a reference to an array the class already owns.
+	 * Called by every iterator method.  Implementations must return a reference;
+	 * the return value must never be `null`.
 	 *
 	 * @return array Reference to the backing array.
 	 */
@@ -92,7 +86,7 @@ trait TArrayIteratorTrait
 	/**
 	 * Returns the value at the current iterator position.
 	 *
-	 * Part of the {@see \Iterator} interface.
+	 * This method is part of the {@see \Iterator} interface.
 	 *
 	 * @return mixed The current value.
 	 * @see \Iterator
@@ -106,7 +100,7 @@ trait TArrayIteratorTrait
 	/**
 	 * Returns the key at the current iterator position.
 	 *
-	 * Part of the {@see \Iterator} interface.
+	 * This method is part of the {@see \Iterator} interface.
 	 *
 	 * @return mixed The current key.
 	 * @see \Iterator
@@ -120,7 +114,7 @@ trait TArrayIteratorTrait
 	/**
 	 * Advances the iterator to the next element.
 	 *
-	 * Part of the {@see \Iterator} interface.
+	 * This method is part of the {@see \Iterator} interface.
 	 * @see \Iterator
 	 */
 	public function next(): void
@@ -131,7 +125,7 @@ trait TArrayIteratorTrait
 	/**
 	 * Rewinds the iterator to the first element.
 	 *
-	 * Part of the {@see \Iterator} interface.
+	 * This method is part of the {@see \Iterator} interface.
 	 * @see \Iterator
 	 */
 	public function rewind(): void
@@ -145,7 +139,7 @@ trait TArrayIteratorTrait
 	 * Uses {@see key()} rather than {@see current()} so that a backing array
 	 * entry whose value is `false` does not prematurely terminate iteration.
 	 *
-	 * Part of the {@see \Iterator} interface.
+	 * This method is part of the {@see \Iterator} interface.
 	 *
 	 * @return bool `true` while the iterator points to a valid element.
 	 * @see \Iterator
