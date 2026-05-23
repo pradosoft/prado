@@ -80,15 +80,18 @@ trait TArrayCopyIteratorTrait
 	private ?array $_iterator_array = null;
 
 	/**
-	 * Returns a copy of the array to iterate over; defaults to an empty array.
+	 * Returns the array to seed the backing store on first iterator access.
 	 *
-	 * Override this method to supply the initial contents of the backing store.
-	 * The return value is stored once by {@see ensureIteratorArray()} and reused for
-	 * all subsequent iterations.  To supply a live reference instead of a snapshot
-	 * copy, override {@see getIteratorArray()} directly.
+	 * Implement this method to supply the initial contents of the backing store.
+	 * The return value is stored once and reused for all subsequent iterations.
+	 * To supply a live reference instead of a snapshot copy, override
+	 * {@see getIteratorArray()} directly.
+	 *
+	 * {@see TConstantReflectionTrait} provides a concrete implementation that
+	 * returns the class's own constants via reflection; combining both traits
+	 * requires no further implementation.
 	 *
 	 * @return array The array to copy into the backing store.
-	 * @see TConstantReflectionTrait
 	 */
 	abstract protected function getIteratorArrayCopy(): array;
 
@@ -107,8 +110,8 @@ trait TArrayCopyIteratorTrait
 	/**
 	 * Returns a reference to the raw backing store without triggering lazy loading.
 	 *
-	 * Returns `null` when the store has not been populated yet.  Use
-	 * {@see getEnsuredIteratorArray()} when a non-null, loaded array is required.
+	 * Returns `null` when the store has not been populated yet.  Call
+	 * {@see ensureIteratorArray()} first when a populated array is required.
 	 *
 	 * @return ?array Reference to `$_iterator_array`.
 	 */
