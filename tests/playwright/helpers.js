@@ -65,7 +65,7 @@ import { expect } from '@playwright/test';
 // Port 8037 is the dedicated Playwright test server (started automatically by
 // playwright.config.js via start-server.sh).  Both URL prefixes resolve under
 // the same PHP built-in server rooted at the repository root.
-export const GENERIC_BASE_URL = 'http://127.0.0.1:8037/tests/FunctionalTests/';
+export const GENERIC_BASE_URL = 'http://127.0.0.1:8037/tests/harness/';
 export const DEMOS_BASE_URL = 'http://127.0.0.1:8037/vendor/pradosoft/prado-demos/';
 
 /**

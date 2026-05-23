@@ -57,13 +57,15 @@ use Prado\Web\UI\TThemeManager;
  * In page directory configurations, static authorization rules can also be specified,
  * which governs who and which roles can access particular pages.
  * Refer to {@see \Prado\Security\TAuthorizationRule} for more details about authorization rules.
- * Page authorization rules can be configured within an <authorization> tag in
- * each page directory configuration as follows,
+ * Page authorization rules can be configured within an `<authorization>` tag in
+ * each page directory `config.xml` as follows,
+ * ```xml
  * <authorization>
  *   <deny pages="Update" users="?" />
  *   <allow pages="Admin" roles="administrator" />
  *   <deny pages="Admin" users="*" />
  * </authorization>
+ * ```
  * where the 'pages' attribute may be filled with a sequence of comma-separated
  * page IDs. If 'pages' attribute does not appear in a rule, the rule will be
  * applied to all pages in this directory and all subdirectories (recursively).
@@ -71,6 +73,38 @@ use Prado\Web\UI\TThemeManager;
  * the directory containing the requested page up to all parent directories.
  * The first matching rule will be used. The last rule always allows all users
  * accessing to any resources.
+ *
+ * XML configuration style:
+ * ```xml
+ * <services>
+ *   <service id="page" class="TPageService" DefaultPage="Home"
+ *       BasePath="Application.pages" BasePageClass="Prado\Web\UI\TPage">
+ *     <pages MasterClass="Application.layouts.MainLayout" />
+ *   </service>
+ * </services>
+ * ```
+ * where {@see setDefaultPage DefaultPage} is the page shown when no page is
+ * specified in the request and {@see setBasePath BasePath} is the namespace
+ * path to the pages directory.
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'services' => [
+ *         'page' => [
+ *             'class' => 'Prado\Web\Services\TPageService',
+ *             'properties' => [
+ *                 'DefaultPage' => 'Home',
+ *                 'BasePath' => 'Application.pages',
+ *                 'BasePageClass' => 'Prado\Web\UI\TPage',
+ *             ],
+ *             'pages' => [
+ *                 'MasterClass' => 'Application.layouts.MainLayout',
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>

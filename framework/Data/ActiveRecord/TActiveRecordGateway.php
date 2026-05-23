@@ -17,6 +17,7 @@ use Prado\Data\Common\TDbTableColumn;
 use Prado\Data\Common\TDbTableInfo;
 use Prado\Data\DataGateway\TDataGatewayCommand;
 use Prado\Data\DataGateway\TSqlCriteria;
+use Prado\Data\IDataConnection;
 use Prado\Data\TDbConnection;
 use Prado\Prado;
 use ReflectionClass;
@@ -153,13 +154,15 @@ class TActiveRecordGateway extends \Prado\TComponent
 
 	/**
 	 * Returns table information for table in the database connection.
-	 * @param \Prado\Data\TDbConnection $connection database connection
+	 * @param IDataConnection $connection database connection
 	 * @param string $tableName table name
 	 * @return TDbTableInfo table details.
 	 */
-	public function getTableInfo(TDbConnection $connection, $tableName)
+	public function getTableInfo(IDataConnection $connection, $tableName)
 	{
-		$connStr = $connection->getConnectionString();
+		$connStr = $connection instanceof TDbConnection
+			? $connection->getConnectionString()
+			: $connection->getDriverName() . ':' . spl_object_id($connection);
 		$key = $connStr . $tableName;
 		if (!isset($this->_tables[$key])) {
 			//call this first to ensure that unserializing the cache

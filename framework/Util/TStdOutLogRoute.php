@@ -28,6 +28,39 @@ use Prado\Shell\TShellWriter;
  * with the configuration property {@see \Prado\Util\TStdOutLogRoute::getOnlyDevServer}
  * set to true.
  *
+ * TStdOutLogRoute is configured as a `<route>` element inside a
+ * {@see \Prado\Util\TLogRouter} module in the application configuration.
+ *
+ * XML configuration style:
+ * ```xml
+ * <modules>
+ *   <module id="log" class="Prado\Util\TLogRouter">
+ *     <route class="Prado\Util\TStdOutLogRoute" Levels="Debug, Info, Warning, Error, Fatal"
+ *         OnlyDevServer="true" />
+ *   </module>
+ * </modules>
+ * ```
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'log' => [
+ *             'class' => 'Prado\Util\TLogRouter',
+ *             'routes' => [
+ *                 [
+ *                     'class' => 'Prado\Util\TStdOutLogRoute',
+ *                     'properties' => [
+ *                         'Levels' => 'Debug, Info, Warning, Error, Fatal',
+ *                         'OnlyDevServer' => 'true',
+ *                     ],
+ *                 ],
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
+ *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.0
  */

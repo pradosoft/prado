@@ -117,7 +117,7 @@ abstract class TDbMetaData extends \Prado\TComponent implements IDataMetaData
 	 *
 	 * @param \Prado\Data\TDbConnection $connection database connection.
 	 * @throws TDbException if no metadata handler can be created for the driver.
-	 * @return TDbMetaData database-specific TDbMetaData.
+	 * @return IDataMetaData database-specific metadata handler.
 	 */
 	public static function getInstance($connection)
 	{

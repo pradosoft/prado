@@ -34,12 +34,31 @@ use Prado\Util\Traits\TInitializedTrait;
  * By default, THttpResponse is registered with {@see \Prado\TApplication} as the
  * response module. It can be accessed via {@see \Prado\TApplication::getResponse()}.
  *
- * THttpResponse may be configured in application configuration file as follows
- *
- * <module id="response" class="Prado\Web\THttpResponse" CacheExpire="20" CacheControl="nocache" BufferOutput="true" />
- *
+ * XML configuration style:
+ * ```xml
+ * <modules>
+ *   <module id="response" class="Prado\Web\THttpResponse"
+ *       CacheExpire="20" CacheControl="nocache" BufferOutput="true" />
+ * </modules>
+ * ```
  * where {@see getCacheExpire CacheExpire}, {@see getCacheControl CacheControl}
  * and {@see getBufferOutput BufferOutput} are optional properties of THttpResponse.
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'response' => [
+ *             'class' => 'Prado\Web\THttpResponse',
+ *             'properties' => [
+ *                 'CacheExpire' => '20',
+ *                 'CacheControl' => 'nocache',
+ *                 'BufferOutput' => 'true',
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
  *
  * THttpResponse sends charset header if either {@see setCharset() Charset}
  * or {@see \Prado\I18N\TGlobalization::setCharset() TGlobalization.Charset} is set.

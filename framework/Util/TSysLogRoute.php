@@ -20,6 +20,40 @@ use Prado\TPropertyValue;
  *
  * Sends the log to the syslog.
  *
+ * TSysLogRoute is configured as a `<route>` element inside a
+ * {@see \Prado\Util\TLogRouter} module in the application configuration.
+ *
+ * XML configuration style:
+ * ```xml
+ * <modules>
+ *   <module id="log" class="Prado\Util\TLogRouter">
+ *     <route class="Prado\Util\TSysLogRoute" Levels="Warning, Error, Fatal"
+ *         SysLogPrefix="myapp" Facility="LOG_USER" />
+ *   </module>
+ * </modules>
+ * ```
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'log' => [
+ *             'class' => 'Prado\Util\TLogRouter',
+ *             'routes' => [
+ *                 [
+ *                     'class' => 'Prado\Util\TSysLogRoute',
+ *                     'properties' => [
+ *                         'Levels' => 'Warning, Error, Fatal',
+ *                         'SysLogPrefix' => 'myapp',
+ *                         'Facility' => 'LOG_USER',
+ *                     ],
+ *                 ],
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
+ *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.0
  * @link https://www.php.net/manual/en/function.openlog.php

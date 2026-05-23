@@ -430,7 +430,7 @@ class TApplication extends TComponent implements ISingleton
 	 * @see setConfigurationFile
 	 * @see resolveRuntimePath
 	 */
-	protected function resolvePaths($basePath): void
+	protected function resolvePaths($basePath)
 	{
 		// determine configuration path and file
 		if (empty($errValue = $basePath) || ($basePath = realpath($basePath)) === false) {
@@ -1115,7 +1115,7 @@ class TApplication extends TComponent implements ISingleton
 	 */
 	public function registerService(string $id, ?string $class = null, array $properties = [], $config = null): void
 	{
-		if (empty($class)) {
+		if ($class === null || $class === '') {
 			throw new TConfigurationException('application_service_class_required', $id);
 		}
 		$originalClass = $class;
@@ -1391,11 +1391,11 @@ class TApplication extends TComponent implements ISingleton
 	 *		...
 	 *	}
 	 * ```
-	 * @param string $type class name of the modules to look for.
+	 * @template T of IModule
+	 * @param class-string<T> $type class name of the modules to look for.
 	 * @param bool $strict should the module be the class or can the module be a subclass
-	 * @return array keys are the ids of the module and values are module of a specific class
+	 * @return array<string, null|T> keys are the ids of the module and values are module of a specific class
 	 * @since 4.2.0
-	 * @todo 4.4 normalize to "ByClass"?
 	 */
 	public function getModulesByType($type, $strict = false)
 	{
@@ -1927,7 +1927,7 @@ class TApplication extends TComponent implements ISingleton
 	 *   ready for `$module->init($configElement)`, `null` if the module was deferred, or
 	 *   `false` if `$id` is not registered in `$_lazyModules`.
 	 */
-	protected function internalLoadModule($id, bool $force = false)
+	protected function internalLoadModule($id, $force = false)
 	{
 		if (($lazy = $this->getLazyModule($id)) === null) {
 			return false;

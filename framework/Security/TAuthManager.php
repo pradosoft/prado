@@ -34,9 +34,41 @@ use Prado\Web\THttpCookie;
  * feature will cause that {@see setAuthExpire AuthExpire} has no effect
  * since the user will be logged in again on authentication expiration.
  *
- * To load TAuthManager, configure it in application configuration as follows,
- * <module id="auth" class="Prado\Security\TAuthManager" UserManager="users" LoginPage="login" />
- * <module id="users" class="Prado\Security\TUserManager" />
+ * XML configuration style:
+ * ```xml
+ * <modules>
+ *   <module id="users" class="Prado\Security\TUserManager" PasswordMode="MD5" />
+ *   <module id="auth" class="Prado\Security\TAuthManager"
+ *       UserManager="users" LoginPage="Site.Pages.Login"
+ *       AllowAutoLogin="false" AuthExpire="0" />
+ * </modules>
+ * ```
+ * where {@see setUserManager UserManager} refers to the ID of an
+ * {@see \Prado\Security\IUserManager} module and {@see setLoginPage LoginPage}
+ * is the dot-delimited page path to redirect on authorization failure.
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'users' => [
+ *             'class' => 'Prado\Security\TUserManager',
+ *             'properties' => [
+ *                 'PasswordMode' => 'MD5',
+ *             ],
+ *         ],
+ *         'auth' => [
+ *             'class' => 'Prado\Security\TAuthManager',
+ *             'properties' => [
+ *                 'UserManager' => 'users',
+ *                 'LoginPage' => 'Site.Pages.Login',
+ *                 'AllowAutoLogin' => 'false',
+ *                 'AuthExpire' => '0',
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
  *
  * When a user logs in, onLogin event is raised with the TUser as the parameter.
  * If the user trying to login but fails the check, onLoginFailed is raised with the

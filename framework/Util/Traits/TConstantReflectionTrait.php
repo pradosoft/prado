@@ -114,7 +114,7 @@ trait TConstantReflectionTrait
 		$affix = null;
 		$isSuffix = false;
 		if (is_string($caseOrAffix)) {
-			$isSuffix = $caseOrAffix[0] === '*' || $caseOrAffix[0] === '-';
+			$isSuffix = strlen($caseOrAffix) > 0 && ($caseOrAffix[0] === '*' || $caseOrAffix[0] === '-');
 			$affix = $isSuffix ? substr($caseOrAffix, 1) : $caseOrAffix;
 		} else {
 			$caseSensitive = (bool) $caseOrAffix;
@@ -159,7 +159,7 @@ trait TConstantReflectionTrait
 		$affix = null;
 		$isSuffix = false;
 		if (is_string($caseOrAffix)) {
-			$isSuffix = $caseOrAffix[0] === '*' || $caseOrAffix[0] === '-';
+			$isSuffix = strlen($caseOrAffix) > 0 && ($caseOrAffix[0] === '*' || $caseOrAffix[0] === '-');
 			$affix = $isSuffix ? substr($caseOrAffix, 1) : $caseOrAffix;
 		} else {
 			$caseSensitive = (bool) $caseOrAffix;
@@ -201,7 +201,7 @@ trait TConstantReflectionTrait
 		$affix = null;
 		$isSuffix = false;
 		if (is_string($caseOrAffix)) {
-			$isSuffix = $caseOrAffix[0] === '*' || $caseOrAffix[0] === '-';
+			$isSuffix = strlen($caseOrAffix) > 0 && ($caseOrAffix[0] === '*' || $caseOrAffix[0] === '-');
 			$affix = $isSuffix ? substr($caseOrAffix, 1) : $caseOrAffix;
 		} else {
 			$caseSensitive = (bool) $caseOrAffix;
@@ -244,7 +244,7 @@ trait TConstantReflectionTrait
 		$affix = null;
 		$isSuffix = false;
 		if (is_string($caseOrAffix)) {
-			$isSuffix = $caseOrAffix[0] === '*' || $caseOrAffix[0] === '-';
+			$isSuffix = strlen($caseOrAffix) > 0 && ($caseOrAffix[0] === '*' || $caseOrAffix[0] === '-');
 			$affix = $isSuffix ? substr($caseOrAffix, 1) : $caseOrAffix;
 		} else {
 			$caseSensitive = (bool) $caseOrAffix;

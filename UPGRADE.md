@@ -1,4 +1,4 @@
-# Upgrading Instructions for PRADO Framework v4.3.2
+# Upgrading Instructions for PRADO Framework v4.3.3
 
 ### !!!IMPORTANT!!!
 
@@ -6,6 +6,10 @@ The following upgrading instructions are cumulative. That is,
 if you want to upgrade from version A to version C and there is
 version B between A and C, you need to following the instructions
 for both A and B.
+
+Upgrading from v4.3.2
+---------------------
+- Prado\TEventParameter adds a second constructor $readOnly
 
 Upgrading from v4.2.2
 ---------------------

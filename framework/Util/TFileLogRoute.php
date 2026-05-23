@@ -27,6 +27,43 @@ use Prado\TPropertyValue;
  * to '.3', '.1' to '.2'. The property {@see setMaxLogFiles MaxLogFiles}
  * specifies how many files to be kept.
  *
+ * TFileLogRoute is configured as a `<route>` element inside a
+ * {@see \Prado\Util\TLogRouter} module in the application configuration.
+ *
+ * XML configuration style:
+ * ```xml
+ * <modules>
+ *   <module id="log" class="Prado\Util\TLogRouter">
+ *     <route class="Prado\Util\TFileLogRoute" Levels="Warning, Error, Fatal"
+ *         LogPath="/var/log/myapp" LogFile="prado.log"
+ *         MaxFileSize="512" MaxLogFiles="5" />
+ *   </module>
+ * </modules>
+ * ```
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'log' => [
+ *             'class' => 'Prado\Util\TLogRouter',
+ *             'routes' => [
+ *                 [
+ *                     'class' => 'Prado\Util\TFileLogRoute',
+ *                     'properties' => [
+ *                         'Levels' => 'Warning, Error, Fatal',
+ *                         'LogPath' => '/var/log/myapp',
+ *                         'LogFile' => 'prado.log',
+ *                         'MaxFileSize' => '512',
+ *                         'MaxLogFiles' => '5',
+ *                     ],
+ *                 ],
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */

@@ -86,7 +86,7 @@ class TXmlDocument extends TXmlElement
 	 * @param ?string $version Version of this XML document
 	 * @param ?string $encoding Encoding of this XML document
 	 */
-	public function __construct(?string $version = '1.0', ?string $encoding = '')
+	public function __construct($version = '1.0', $encoding = '')
 	{
 		$this->setVersion($version);
 		$this->setEncoding($encoding);
@@ -108,7 +108,7 @@ class TXmlDocument extends TXmlElement
 	 * Gets the version of this XML document.
 	 * @return ?string Version of this XML document
 	 */
-	public function getVersion(): ?string
+	public function getVersion()
 	{
 		return $this->_version;
 	}
@@ -117,7 +117,7 @@ class TXmlDocument extends TXmlElement
 	 * Sets the version of this XML document.
 	 * @param ?string $version Version of this XML document
 	 */
-	public function setVersion(?string $version): void
+	public function setVersion($version)
 	{
 		$this->_version = $version;
 	}
@@ -126,7 +126,7 @@ class TXmlDocument extends TXmlElement
 	 * Gets the encoding of this XML document.
 	 * @return ?string Encoding of this XML document
 	 */
-	public function getEncoding(): ?string
+	public function getEncoding()
 	{
 		return $this->_encoding;
 	}
@@ -135,7 +135,7 @@ class TXmlDocument extends TXmlElement
 	 * Sets the encoding of this XML document.
 	 * @param ?string $encoding Encoding of this XML document
 	 */
-	public function setEncoding(?string $encoding): void
+	public function setEncoding($encoding)
 	{
 		$this->_encoding = $encoding;
 	}
@@ -146,7 +146,7 @@ class TXmlDocument extends TXmlElement
 	 * @throws TIOException if the file fails to be opened.
 	 * @return bool Whether the XML file was parsed successfully
 	 */
-	public function loadFromFile(string $file): bool
+	public function loadFromFile($file)
 	{
 		if (($str = @file_get_contents($file)) !== false) {
 			return $this->loadFromString($str);
@@ -161,7 +161,7 @@ class TXmlDocument extends TXmlElement
 	 * @param ?string $string The XML string
 	 * @return bool Whether the XML string was parsed successfully
 	 */
-	public function loadFromString(?string $string): bool
+	public function loadFromString($string)
 	{
 		if (empty($string)) {
 			return false;
@@ -240,7 +240,7 @@ class TXmlDocument extends TXmlElement
 	 * @param string $file The name of the file to be stored with XML output
 	 * @throws TIOException if the file cannot be written
 	 */
-	public function saveToFile(string $file): void
+	public function saveToFile($file)
 	{
 		if (($fw = fopen($file, 'w')) !== false) {
 			fwrite($fw, $this->saveToString());
@@ -254,7 +254,7 @@ class TXmlDocument extends TXmlElement
 	 * Saves this XML document as an XML string.
 	 * @return string The XML string of this XML document
 	 */
-	public function saveToString(): string
+	public function saveToString()
 	{
 		$version = empty($this->_version) ? ' version="1.0"' : ' version="' . $this->_version . '"';
 		$encoding = empty($this->_encoding) ? '' : ' encoding="' . $this->_encoding . '"';
@@ -276,7 +276,7 @@ class TXmlDocument extends TXmlElement
 	 * ```
 	 * @return string String representation of this document
 	 */
-	public function __toString(): string
+	public function __toString()
 	{
 		return $this->saveToString();
 	}

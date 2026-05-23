@@ -70,6 +70,33 @@ use Prado\TEventResults;
  * By default, THttpRequest is registered with {@see \Prado\TApplication} as the
  * request module. It can be accessed via {@see \Prado\TApplication::getRequest()}.
  *
+ * XML configuration style:
+ * ```xml
+ * <modules>
+ *   <module id="request" class="Prado\Web\THttpRequest"
+ *       UrlFormat="Path" UrlManager="friendly-url"
+ *       EnableCookieValidation="false" />
+ * </modules>
+ * ```
+ * where {@see setUrlFormat UrlFormat} and {@see setUrlManager UrlManager} are
+ * common configurable properties.
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'request' => [
+ *             'class' => 'Prado\Web\THttpRequest',
+ *             'properties' => [
+ *                 'UrlFormat' => 'Path',
+ *                 'UrlManager' => 'friendly-url',
+ *                 'EnableCookieValidation' => 'false',
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */

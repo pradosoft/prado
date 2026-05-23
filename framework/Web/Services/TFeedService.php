@@ -24,7 +24,7 @@ use Prado\Exceptions\THttpException;
  * TFeedService manages a set of feeds. The service parameter, referring
  * to the ID of the feed, specifies which feed content to be provided to end-users.
  *
- * To use TFeedService, configure it in application configuration as follows,
+ * XML configuration style:
  * ```xml
  *  <service id="feed" class="Prado\Web\Services\TFeedService">
  *    <feed id="ch1" class="Path\To\FeedClass1" .../>

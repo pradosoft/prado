@@ -18,34 +18,50 @@ use Prado\Prado;
  *
  * TErrorHandler handles all PHP user errors and exceptions generated during
  * servicing user requests. It displays these errors using different templates
- * and if possible, using languages preferred by the client user.
- * Note, PHP parsing errors cannot be caught and handled by TErrorHandler.
+ * and if possible, using languages preferred by the user.
+ * Note: PHP parsing errors cannot be caught and handled by TErrorHandler.
  *
  * The templates used to format the error output are stored under Prado\Exceptions.
  * You may choose to use your own templates, should you not like the templates
- * provided by Prado. Simply set {@see setErrorTemplatePath ErrorTemplatePath}
+ * provided by Prado. Simply set {@see setErrorTemplatePath()}
  * to the path (in namespace format) storing your own templates.
  *
- * There are two sets of templates, one for errors to be displayed to client users
+ * There are two sets of templates, one for errors to be displayed to users
  * (called external errors), one for errors to be displayed to system developers
  * (called internal errors). The template file name for the former is
- * <b>error[StatusCode][-LanguageCode].html</b>, and for the latter it is
- * <b>exception[-LanguageCode].html</b>, where StatusCode refers to response status
+ * `error[StatusCode][-LanguageCode].html`, and for the latter it is
+ * `exception[-LanguageCode].html`, where StatusCode refers to response status
  * code (e.g. 404, 500) specified when {@see \Prado\Exceptions\THttpException} is thrown,
- * and LanguageCode is the client user preferred language code (e.g. en, zh, de).
- * The templates <b>error.html</b> and <b>exception.html</b> are default ones
+ * and LanguageCode is the user preferred language code (e.g. en, zh, de).
+ * The templates `error.html` and `exception.html` are default ones
  * that are used if no other appropriate templates are available.
- * Note, these templates are not Prado control templates. They are simply
- * html files with keywords (e.g. %%ErrorMessage%%, %%Version%%)
+ * Note: these templates are not Prado control templates. They are simply
+ * HTML files with keywords (e.g. %%ErrorMessage%%, %%Version%%)
  * to be replaced with the corresponding information.
  *
- * By default, TErrorHandler is registered with {@see \Prado\TApplication} as the
- * error handler module. It can be accessed via {@see \Prado\TApplication::getErrorHandler()}.
- * You seldom need to deal with the error handler directly. It is mainly used
- * by the application object to handle errors.
+ * {@see init()} registers the instance with {@see \Prado\TApplication} as the
+ * error handler, accessible via {@see \Prado\TApplication::getErrorHandler()};
+ * the application then routes all unhandled errors and exceptions through
+ * {@see handleError()}.
  *
- * TErrorHandler may be configured in application configuration file as follows
- * <module id="error" class="TErrorHandler" ErrorTemplatePath="Prado\Exceptions" />
+ * TErrorHandler may be configured in application.xml as follows:
+ * ```xml
+ * <modules>
+ *   <module id="error" class="Prado\Exceptions\TErrorHandler" ErrorTemplatePath="Prado\Exceptions" />
+ * </modules>
+ * ```
+ *
+ * Or equivalently in application.php:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'error' => [
+ *             'class' => TErrorHandler::class,
+ *             'properties' => ['ErrorTemplatePath' => 'Prado\Exceptions'],
+ *         ],
+ *     ],
+ * ];
+ * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -65,7 +81,7 @@ class TErrorHandler extends \Prado\TModule
 	 */
 	public const SOURCE_LINES = 12;
 	/**
-	 * number of prado internal function calls to be dropped from stack traces on fatal errors
+	 * number of Prado internal function calls to be dropped from stack traces on fatal errors
 	 */
 	public const FATAL_ERROR_TRACE_DROP_LINES = 5;
 
@@ -75,74 +91,195 @@ class TErrorHandler extends \Prado\TModule
 	private $_templatePath;
 
 	/**
-	 * Initializes the module.
-	 * This method is required by IModule and is invoked by application.
+	 * @var ?array cached path replacement map for hidePrivatePathParts()
+	 * @since 4.3.3
+	 */
+	private $_privatePathReplacements;
+
+	/**
+	 * @var bool whether an error is currently being handled (prevents infinite loops)
+	 * @since 4.3.3
+	 */
+	private bool $_handling = false;
+
+	/**
+	 * Initializes the module and registers it as the application error handler.
 	 * @param \Prado\Xml\TXmlElement $config module configuration
 	 */
 	public function init($config)
 	{
-		$this->getApplication()->setErrorHandler($this);
+		$this->setAppErrorHandler();
 		parent::init($config);
 	}
 
 	/**
-	 * @return string the directory containing error template files.
+	 * Registers this handler as the application error handler when an application is available.
+	 * Called during {@see init()}; may also be called by behaviors or subclasses.
+	 * @since 4.3.3
 	 */
-	public function getErrorTemplatePath()
+	protected function setAppErrorHandler()
 	{
-		if ($this->_templatePath === null) {
-			$this->_templatePath = Prado::getFrameworkPath() . '/Exceptions/templates';
+		$this->getApplication()?->setErrorHandler($this);
+	}
+
+	/**
+	 * Returns the built-in framework directory containing error and exception template files.
+	 * @return string absolute filesystem path to the framework templates directory
+	 * @since 4.3.3
+	 */
+	protected function getDefaultErrorTemplatePath(): string
+	{
+		return Prado::getFrameworkPath() . '/Exceptions/templates';
+	}
+
+	/**
+	 * Returns the cached path replacement map without building it.
+	 * @return ?array associative array of path => replacement strings, or null if not yet built
+	 * @since 4.3.3
+	 */
+	protected function getPrivatePathReplacementsDirect(): ?array
+	{
+		return $this->_privatePathReplacements;
+	}
+
+	/**
+	 * Sets the cached path replacement map directly.
+	 * @param ?array $value
+	 * @since 4.3.3
+	 */
+	protected function setPrivatePathReplacementsDirect($value): void
+	{
+		$this->_privatePathReplacements = $value;
+	}
+
+	/**
+	 * Returns the map used to replace private filesystem paths in output.
+	 * Builds and caches the map on first call.
+	 * @return array associative array of path => replacement strings
+	 * @since 4.3.3
+	 */
+	protected function getPrivatePathReplacements(): array
+	{
+		if ($this->getPrivatePathReplacementsDirect() === null) {
+			$aRpl = [];
+			$docRoot = $this->serverGlobal('DOCUMENT_ROOT') ?? '';
+			if ($docRoot !== '') {
+				$aRpl[$docRoot] = '${DocumentRoot}';
+				$aRpl[str_replace('/', DIRECTORY_SEPARATOR, $docRoot)] = '${DocumentRoot}';
+			}
+			$aRpl[PRADO_DIR . DIRECTORY_SEPARATOR] = '${PradoFramework}' . DIRECTORY_SEPARATOR;
+			if (isset($aRpl[DIRECTORY_SEPARATOR])) {
+				unset($aRpl[DIRECTORY_SEPARATOR]);
+			}
+			$this->setPrivatePathReplacementsDirect(array_reverse($aRpl, true));
 		}
+		return $this->getPrivatePathReplacementsDirect();
+	}
+
+	/**
+	 * Returns the raw template path property value without applying defaults.
+	 * @return ?string
+	 * @since 4.3.3
+	 */
+	protected function getErrorTemplatePathDirect(): ?string
+	{
 		return $this->_templatePath;
 	}
 
 	/**
-	 * Sets the path storing all error and exception template files.
-	 * The path must be in namespace format, such as Prado\Exceptions (which is the default).
-	 * @param string $value template path in namespace format
-	 * @throws TConfigurationException if the template path is invalid
+	 * Sets the template path property directly to a resolved filesystem path.
+	 * @param ?string $value
+	 * @since 4.3.3
 	 */
-	public function setErrorTemplatePath($value)
+	protected function setErrorTemplatePathDirect(?string $value): void
 	{
-		if (($templatePath = Prado::getPathOfNamespace($value)) !== null && is_dir($templatePath)) {
-			$this->_templatePath = $templatePath;
-		} else {
-			throw new TConfigurationException('errorhandler_errortemplatepath_invalid', $value);
-		}
+		$this->_templatePath = $value;
 	}
 
 	/**
-	 * Handles PHP user errors and exceptions.
-	 * This is the event handler responding to the <b>Error</b> event
-	 * raised in {@see \Prado\TApplication}.
-	 * The method mainly uses appropriate template to display the error/exception.
-	 * It terminates the application immediately after the error is displayed.
-	 * @param mixed $sender sender of the event
-	 * @param mixed $param event parameter (if the event is raised by TApplication, it refers to the exception instance)
+	 * Returns the directory containing error template files.
+	 * Defaults to the built-in framework templates directory.
+	 * @return string absolute filesystem path to the template directory
+	 */
+	public function getErrorTemplatePath()
+	{
+		$errorTemplatePath = $this->getErrorTemplatePathDirect();
+		if ($errorTemplatePath === null) {
+			$this->setErrorTemplatePathDirect($this->getDefaultErrorTemplatePath());
+			$errorTemplatePath = $this->getErrorTemplatePathDirect();
+		}
+		return $errorTemplatePath;
+	}
+
+	/**
+	 * Sets the directory containing error and exception template files.
+	 * The value must be a namespace path, e.g. 'Prado\Exceptions'.
+	 * @param string $value template path in namespace format
+	 * @throws TConfigurationException if the path does not resolve to a valid directory
+	 */
+	public function setErrorTemplatePath($value)
+	{
+		if (($templatePath = Prado::getPathOfNamespace($value)) === null || !is_dir($templatePath)) {
+			throw new TConfigurationException('errorhandler_errortemplatepath_invalid', $value);
+		}
+		$this->setErrorTemplatePathDirect($templatePath);
+	}
+
+	// ── Re-entrance guard ───────────────────────────────────────────────────────
+
+	/**
+	 * Returns whether an error is currently being handled by this instance.
+	 * Used by {@see handleError()} to detect recursive error conditions.
+	 * @return bool true when error handling is already in progress
+	 * @since 4.3.3
+	 */
+	protected function getIsHandled(): bool
+	{
+		return $this->_handling;
+	}
+
+	/**
+	 * Sets the re-entrance flag that tracks whether error handling is in progress.
+	 * @param bool $value true to mark handling as active, false to reset
+	 * @since 4.3.3
+	 */
+	protected function setIsHandled(bool $value): void
+	{
+		$this->_handling = $value;
+	}
+
+	// ── error handlers ───────────────────────────────────────────────────────
+
+	/**
+	 * Handles PHP user errors and exceptions raised during request servicing.
+	 * Responds to the {@see \Prado\TApplication} Error event.
+	 * Selects an external or debug template based on the exception type and application mode.
+	 * @param mixed $sender event sender
+	 * @param \Throwable $param the exception or error to handle
 	 */
 	public function handleError($sender, $param)
 	{
-		static $handling = false;
+		$handling = $this->getIsHandled();
 		// We need to restore error and exception handlers,
 		// because within error and exception handlers, new errors and exceptions
 		// cannot be handled properly by PHP
-		restore_error_handler();
-		restore_exception_handler();
+		$this->restoreErrorHandler();
+		$this->restoreExceptionHandler();
 		// ensure that we do not enter infinite loop of error handling
 		if ($handling) {
 			$this->handleRecursiveError($param);
 		} else {
-			$handling = true;
+			$this->setIsHandled(true);
 			if (($response = $this->getResponse()) !== null) {
 				$response->clear();
 			}
-			if (!headers_sent()) {
+			if (!$this->headersSent()) {
 				$header = 'Content-Type: text/html; charset=UTF-8';
 				$response = $this->getResponse();
 				if ($response) {
 					$response->appendHeader($header);
 				} else {
-					header($header);
+					$this->header($header);
 				}
 			}
 			if ($param instanceof THttpException) {
@@ -155,20 +292,21 @@ class TErrorHandler extends \Prado\TModule
 		}
 	}
 
-
 	/**
+	 * Strips private filesystem paths from a string to prevent leaking server layout.
+	 * Replaces the document root, the framework directory, and any per-frame source
+	 * directories found in the exception trace with safe placeholder tokens.
 	 * @param string $value
-	 * @param null|\Exception $exception
-	 * @return string
+	 * @param ?\Exception $exception
 	 * @since 3.1.6
 	 */
-	protected static function hideSecurityRelated($value, $exception = null)
+	protected function hideSecurityRelated($value, $exception = null)
 	{
 		$aRpl = [];
 		if ($exception !== null && $exception instanceof \Exception) {
 			if ($exception instanceof TPhpFatalErrorException &&
 				function_exists('xdebug_get_function_stack')) {
-				$aTrace = array_slice(array_reverse(xdebug_get_function_stack()), self::FATAL_ERROR_TRACE_DROP_LINES, -1);
+				$aTrace = array_slice(array_reverse(xdebug_get_function_stack()), static::FATAL_ERROR_TRACE_DROP_LINES, -1);
 			} else {
 				$aTrace = $exception->getTrace();
 			}
@@ -179,8 +317,11 @@ class TErrorHandler extends \Prado\TModule
 				}
 			}
 		}
-		$aRpl[$_SERVER['DOCUMENT_ROOT']] = '${DocumentRoot}';
-		$aRpl[str_replace('/', DIRECTORY_SEPARATOR, $_SERVER['DOCUMENT_ROOT'])] = '${DocumentRoot}';
+		$docRoot = $this->serverGlobal('DOCUMENT_ROOT') ?? '';
+		if ($docRoot !== '') {
+			$aRpl[$docRoot] = '${DocumentRoot}';
+			$aRpl[str_replace('/', DIRECTORY_SEPARATOR, $docRoot)] = '${DocumentRoot}';
+		}
 		$aRpl[PRADO_DIR . DIRECTORY_SEPARATOR] = '${PradoFramework}' . DIRECTORY_SEPARATOR;
 		if (isset($aRpl[DIRECTORY_SEPARATOR])) {
 			unset($aRpl[DIRECTORY_SEPARATOR]);
@@ -191,30 +332,30 @@ class TErrorHandler extends \Prado\TModule
 	}
 
 	/**
-	 * Displays error to the client user.
-	 * THttpException and errors happened when the application is in <b>Debug</b>
-	 * mode will be displayed to the client user.
-	 * @param int $statusCode response status code
-	 * @param \Exception $exception exception instance
+	 * Renders a user-facing error page for the given HTTP status code.
+	 * Logs non-HTTP exceptions via {@see errorLog()}.
+	 * In non-Debug mode, strips sensitive path information from the error message.
+	 * @param int $statusCode
+	 * @param \Exception $exception
 	 */
 	protected function handleExternalError($statusCode, $exception)
 	{
 		if (!($exception instanceof THttpException)) {
-			error_log($exception->__toString());
+			$this->errorLog($exception->__toString());
 		}
 
 		$content = $this->getErrorTemplate($statusCode, $exception);
 
-		$serverAdmin = $_SERVER['SERVER_ADMIN'] ?? '';
+		$serverAdmin = $this->serverGlobal('SERVER_ADMIN') ?? '';
 
 		$isDebug = $this->getApplication()->getMode() === TApplicationMode::Debug;
 
 		$errorMessage = $exception->getMessage();
 		if ($isDebug) {
-			$version = $_SERVER['SERVER_SOFTWARE'] . ' <a href="https://github.com/pradosoft/prado">PRADO</a>/' . Prado::getVersion();
+			$version = ($this->serverGlobal('SERVER_SOFTWARE') ?? '') . ' <a href="https://github.com/pradosoft/prado">PRADO</a>/' . Prado::getVersion();
 		} else {
 			$version = '';
-			$errorMessage = self::hideSecurityRelated($errorMessage, $exception);
+			$errorMessage = $this->hideSecurityRelated($errorMessage, $exception);
 		}
 		$tokens = [
 			'%%StatusCode%%' => "$statusCode",
@@ -222,7 +363,7 @@ class TErrorHandler extends \Prado\TModule
 			'%%ErrorCode%%' => $exception->getCode(),
 			'%%ServerAdmin%%' => $serverAdmin,
 			'%%Version%%' => $version,
-			'%%Time%%' => @strftime('%Y-%m-%d %H:%M', time()),
+			'%%Time%%' => date('Y-m-d H:i'),
 		];
 
 		$this->getApplication()->getResponse()->setStatusCode($statusCode, $isDebug ? $exception->getMessage() : null);
@@ -231,11 +372,13 @@ class TErrorHandler extends \Prado\TModule
 	}
 
 	/**
-	 * Handles error occurs during error handling (called recursive error).
-	 * THttpException and errors happened when the application is in <b>Debug</b>
-	 * mode will be displayed to the client user.
-	 * Error is displayed without using existing template to prevent further errors.
-	 * @param \Exception $exception exception instance
+	 * Handles an error that occurs while already handling another error.
+	 * In Debug mode, renders a minimal HTML page with the exception details.
+	 * In non-Debug mode, logs the error via {@see errorLog()} and sends a
+	 * `HTTP/1.0 500 Internal Error` header via {@see header()}, but only when
+	 * {@see headersSent()} reports that headers have not yet been sent.
+	 * Bypasses templates to avoid triggering further errors.
+	 * @param \Exception $exception
 	 */
 	protected function handleRecursiveError($exception)
 	{
@@ -245,43 +388,41 @@ class TErrorHandler extends \Prado\TModule
 			echo "<pre>" . $exception->__toString() . "</pre>\n";
 			echo "</body></html>";
 		} else {
-			error_log("Error happened while processing an existing error:\n" . $exception->__toString());
+			$this->errorLog("Error happened while processing an existing error:\n" . $exception->__toString());
 
-			$header = 'HTTP/1.0 500 Internal Error';
-			$response = $this->getResponse();
-			if ($response) {
-				$response->appendHeader($header);
-			} else {
-				header($header);
+			if (!$this->headersSent()) {
+				$value = 'HTTP/1.0 500 Internal Error';
+				$response = $this->getResponse();
+				if ($response) {
+					$response->appendHeader($value);
+				} else {
+					$this->header($value);
+				}
 			}
 		}
 	}
 
+	// ── Template and output helpers ──────────────────────────────────────────────
+
+	/**
+	 * Replaces private filesystem paths in a string using the instance replacement map.
+	 * @param string $value
+	 */
 	protected function hidePrivatePathParts($value)
 	{
-		static $aRpl;
-		if ($aRpl === null) {
-			$aRpl[$_SERVER['DOCUMENT_ROOT']] = '${DocumentRoot}';
-			$aRpl[str_replace('/', DIRECTORY_SEPARATOR, $_SERVER['DOCUMENT_ROOT'])] = '${DocumentRoot}';
-			$aRpl[PRADO_DIR . DIRECTORY_SEPARATOR] = '${PradoFramework}' . DIRECTORY_SEPARATOR;
-			if (isset($aRpl[DIRECTORY_SEPARATOR])) {
-				unset($aRpl[DIRECTORY_SEPARATOR]);
-			}
-			$aRpl = array_reverse($aRpl, true);
-		}
-
+		$aRpl = $this->getPrivatePathReplacements();
 		return str_replace(array_keys($aRpl), $aRpl, $value);
 	}
+
 	/**
-	 * Displays exception information.
-	 * Exceptions are displayed with rich context information, including
-	 * the call stack and the context source code.
-	 * This method is only invoked when application is in <b>Debug</b> mode.
-	 * @param \Exception $exception exception instance
+	 * Renders full exception details including source context and stack trace.
+	 * Used when the application is in Debug mode.
+	 * In CLI mode outputs plain text; in web mode renders the exception HTML template.
+	 * @param \Exception $exception
 	 */
 	protected function displayException($exception)
 	{
-		if (php_sapi_name() === 'cli') {
+		if ($this->phpSapiName() === 'cli') {
 			echo $exception->getMessage() . "\n";
 			echo $this->getExactTraceAsString($exception);
 			return;
@@ -307,7 +448,7 @@ class TErrorHandler extends \Prado\TModule
 		}
 
 		if ($this->getApplication()->getMode() === TApplicationMode::Debug) {
-			$version = $_SERVER['SERVER_SOFTWARE'] . ' <a href="https://github.com/pradosoft/prado">PRADO</a>/' . Prado::getVersion();
+			$version = ($this->serverGlobal('SERVER_SOFTWARE') ?? '') . ' <a href="https://github.com/pradosoft/prado">PRADO</a>/' . Prado::getVersion();
 		} else {
 			$version = '';
 		}
@@ -320,7 +461,7 @@ class TErrorHandler extends \Prado\TModule
 			'%%SourceCode%%' => $source,
 			'%%StackTrace%%' => htmlspecialchars($this->getExactTraceAsString($exception)),
 			'%%Version%%' => $version,
-			'%%Time%%' => @strftime('%Y-%m-%d %H:%M', time()),
+			'%%Time%%' => date('Y-m-d H:i'),
 		];
 
 		$content = $this->getExceptionTemplate($exception);
@@ -329,18 +470,19 @@ class TErrorHandler extends \Prado\TModule
 	}
 
 	/**
-	 * Retrieves the template used for displaying internal exceptions.
-	 * Internal exceptions will be displayed with source code causing the exception.
-	 * This occurs when the application is in debug mode.
-	 * @param \Exception $exception the exception to be displayed
-	 * @return string the template content
+	 * Returns the HTML template used for displaying exceptions in debug mode.
+	 * Respects the configured {@see getErrorTemplatePath()}, selecting a
+	 * language-specific variant (`exception-{lang}.html`) when available and
+	 * falling back to `exception.html`.
+	 * @param \Exception $exception
 	 */
 	protected function getExceptionTemplate($exception)
 	{
 		$lang = Prado::getPreferredLanguage();
-		$exceptionFile = Prado::getFrameworkPath() . '/Exceptions/templates/' . self::EXCEPTION_FILE_NAME . '-' . $lang . '.html';
+		$templatePath = $this->getErrorTemplatePath();
+		$exceptionFile = $templatePath . DIRECTORY_SEPARATOR . static::EXCEPTION_FILE_NAME . '-' . $lang . '.html';
 		if (!is_file($exceptionFile)) {
-			$exceptionFile = Prado::getFrameworkPath() . '/Exceptions/templates/' . self::EXCEPTION_FILE_NAME . '.html';
+			$exceptionFile = $templatePath . DIRECTORY_SEPARATOR . static::EXCEPTION_FILE_NAME . '.html';
 		}
 		if (($content = @file_get_contents($exceptionFile)) === false) {
 			die("Unable to open exception template file '$exceptionFile'.");
@@ -349,25 +491,24 @@ class TErrorHandler extends \Prado\TModule
 	}
 
 	/**
-	 * Retrieves the template used for displaying external exceptions.
-	 * External exceptions are those displayed to end-users. They do not contain
-	 * error source code. Therefore, you might want to override this method
-	 * to provide your own error template for displaying certain external exceptions.
-	 * The following tokens in the template will be replaced with corresponding content:
-	 * %%StatusCode%% : the status code of the exception
-	 * %%ErrorMessage%% : the error message (HTML encoded).
-	 * %%ErrorCode%% : the exception error code.
-	 * %%ServerAdmin%% : the server admin information (retrieved from Web server configuration)
-	 * %%Version%% : the version information of the Web server.
-	 * %%Time%% : the time the exception occurs at
+	 * Returns the HTML template used for displaying a user-facing error page.
+	 * Selects the most specific available template in priority order:
+	 * error{StatusCode}-{lang}.html, error{StatusCode}.html, error-{lang}.html, error.html.
 	 *
-	 * @param int $statusCode status code (such as 404, 500, etc.)
-	 * @param \Exception $exception the exception to be displayed
-	 * @return string the template content
+	 * Override to supply a custom template for specific status codes.
+	 * The returned content supports these replacement tokens:
+	 * - %%StatusCode%% — HTTP status code
+	 * - %%ErrorMessage%% — HTML-encoded error message
+	 * - %%ErrorCode%% — exception error code
+	 * - %%ServerAdmin%% — server administrator contact (from web server configuration)
+	 * - %%Version%% — web server and PRADO version string (debug mode only)
+	 * - %%Time%% — formatted timestamp of the error
+	 * @param int $statusCode
+	 * @param \Exception $exception
 	 */
 	protected function getErrorTemplate($statusCode, $exception)
 	{
-		$base = $this->getErrorTemplatePath() . DIRECTORY_SEPARATOR . self::ERROR_FILE_NAME;
+		$base = $this->getErrorTemplatePath() . DIRECTORY_SEPARATOR . static::ERROR_FILE_NAME;
 		$lang = Prado::getPreferredLanguage();
 		if (is_file("$base$statusCode-$lang.html")) {
 			$errorFile = "$base$statusCode-$lang.html";
@@ -384,12 +525,21 @@ class TErrorHandler extends \Prado\TModule
 		return $content;
 	}
 
-	private function getExactTrace($exception)
+	/**
+	 * Returns the most relevant stack frame from an exception's trace.
+	 * For {@see TPhpErrorException}, returns the frame where the PHP error occurred.
+	 * For {@see TInvalidOperationException}, returns the frame that called __get or __set.
+	 * Returns null when no actionable frame is found or the frame is inside eval'd code
+	 * (detected by `": eval()'d code"` in the file path on PHP < 8, or `'function' => 'eval'`
+	 * on PHP 8+).
+	 * @param \Exception $exception
+	 */
+	protected function getExactTrace($exception)
 	{
 		$result = null;
 		if ($exception instanceof TPhpFatalErrorException &&
 			function_exists('xdebug_get_function_stack')) {
-			$trace = array_slice(array_reverse(xdebug_get_function_stack()), self::FATAL_ERROR_TRACE_DROP_LINES, -1);
+			$trace = array_slice(array_reverse(xdebug_get_function_stack()), static::FATAL_ERROR_TRACE_DROP_LINES, -1);
 		} else {
 			$trace = $exception->getTrace();
 		}
@@ -408,18 +558,26 @@ class TErrorHandler extends \Prado\TModule
 				$result = $this->getPropertyAccessTrace($trace, '__set');
 			}
 		}
-		if ($result !== null && strpos($result['file'], ': eval()\'d code') !== false) {
+		if ($result !== null && (
+			strpos($result['file'], ': eval()\'d code') !== false
+			|| (isset($result['function']) && $result['function'] === 'eval')
+		)) {
 			return null;
 		}
 
 		return $result;
 	}
 
-	private function getExactTraceAsString($exception)
+	/**
+	 * Returns the exception stack trace as a string, with private paths sanitized.
+	 * When xdebug is active and the exception is a fatal error, uses the xdebug stack.
+	 * @param \Exception $exception
+	 */
+	protected function getExactTraceAsString($exception)
 	{
 		if ($exception instanceof TPhpFatalErrorException &&
 			function_exists('xdebug_get_function_stack')) {
-			$trace = array_slice(array_reverse(xdebug_get_function_stack()), self::FATAL_ERROR_TRACE_DROP_LINES, -1);
+			$trace = array_slice(array_reverse(xdebug_get_function_stack()), static::FATAL_ERROR_TRACE_DROP_LINES, -1);
 			$txt = '';
 			$row = 0;
 
@@ -441,7 +599,12 @@ class TErrorHandler extends \Prado\TModule
 		return $this->hidePrivatePathParts($exception->getTraceAsString());
 	}
 
-	private function getPropertyAccessTrace($trace, $pattern)
+	/**
+	 * Scans a trace array for the outermost consecutive frame matching a magic method name.
+	 * @param array $trace
+	 * @param string $pattern
+	 */
+	protected function getPropertyAccessTrace($trace, $pattern)
 	{
 		$result = null;
 		foreach ($trace as $t) {
@@ -454,11 +617,18 @@ class TErrorHandler extends \Prado\TModule
 		return $result;
 	}
 
-	private function getSourceCode($lines, $errorLine)
+	/**
+	 * Returns an HTML fragment showing the source lines surrounding an error line.
+	 * Displays {@see SOURCE_LINES} lines before and after the error line.
+	 * The error line itself is wrapped in a `<div class="error">` element.
+	 * @param null|array $lines
+	 * @param int $errorLine
+	 */
+	protected function getSourceCode($lines, $errorLine)
 	{
 		$numLines = is_countable($lines) ? count($lines) : 0;
-		$beginLine = $errorLine - self::SOURCE_LINES >= 0 ? $errorLine - self::SOURCE_LINES : 0;
-		$endLine = $errorLine + self::SOURCE_LINES <= $numLines ? $errorLine + self::SOURCE_LINES : $numLines;
+		$beginLine = $errorLine - static::SOURCE_LINES >= 0 ? $errorLine - static::SOURCE_LINES : 0;
+		$endLine = $errorLine + static::SOURCE_LINES <= $numLines ? $errorLine + static::SOURCE_LINES : $numLines;
 
 		$source = '';
 		for ($i = $beginLine; $i < $endLine; ++$i) {
@@ -472,7 +642,11 @@ class TErrorHandler extends \Prado\TModule
 		return $source;
 	}
 
-	private function addLink($message)
+	/**
+	 * Wraps the first recognized Prado class name in the message with a documentation hyperlink.
+	 * @param string $message
+	 */
+	protected function addLink($message)
 	{
 		if (null !== ($class = $this->getErrorClassNameSpace($message))) {
 			return str_replace($class['name'], '<a href="' . $class['url'] . '" target="_blank">' . $class['name'] . '</a>', $message);
@@ -480,23 +654,110 @@ class TErrorHandler extends \Prado\TModule
 		return $message;
 	}
 
-	private function getErrorClassNameSpace($message)
+	/**
+	 * Extracts the first Prado class name from a message and returns its documentation URL.
+	 * @param string $message
+	 * @return ?array{url: string, name: string} associative array with 'url' and 'name' keys, or null
+	 */
+	protected function getErrorClassNameSpace($message)
 	{
 		$matches = [];
 		preg_match('/\b(T[A-Z]\w+)\b/', $message, $matches);
-		if (is_array($matches) && count($matches) > 0) {
+		if (count($matches) > 0) {
 			$class = $matches[0];
 			try {
-				$function = new \ReflectionClass($class);
+				$reflection = new \ReflectionClass($class);
 			} catch (\Exception $e) {
 				return null;
 			}
-			$classname = $function->getNamespaceName();
+			$classname = $reflection->getNamespaceName();
 			return [
-				'url' => 'http://pradosoft.github.io/docs/manual/class-' . str_replace('\\', '.', (string) $classname) . '.' . $class . '.html',
+				'url' => 'https://pradosoft.github.io/docs/manual/class-' . str_replace('\\', '.', (string) $classname) . '.' . $class . '.html',
 				'name' => $class,
 			];
 		}
 		return null;
+	}
+
+	// ── PHP global-function wrappers (self-encapsulation) ──────────────────────
+
+	/**
+	 * Writes a message to the PHP error log.
+	 * Extracted to allow subclasses to capture or suppress error-log output in
+	 * tests or custom logging integrations without modifying PHP ini settings.
+	 * @param string $message the message to log
+	 * @since 4.3.3
+	 */
+	protected function errorLog(string $message): void
+	{
+		error_log($message);
+	}
+
+	/**
+	 * Returns whether HTTP headers have already been sent.
+	 * Extracted to allow subclasses to mock header state in test environments.
+	 * @return bool true when headers have already been sent
+	 * @since 4.3.3
+	 */
+	protected function headersSent(): bool
+	{
+		return headers_sent();
+	}
+
+	/**
+	 * Wraps PHP's built-in {@see \header()} as a protected seam for unit testing.
+	 * @param string $header        Raw header string, e.g. `X-Frame-Options: DENY`.
+	 * @param bool   $replace       Replace an existing same-name header. Default: `true`.
+	 * @param int    $response_code HTTP response code to force; `0` leaves it unchanged.
+	 * @since 4.3.3
+	 */
+	protected function header(string $header, bool $replace = true, int $response_code = 0): void
+	{
+		header($header, $replace, $response_code);
+	}
+
+	/**
+	 * Restores the previously installed PHP error handler.
+	 * Extracted to allow subclasses to suppress restoration in test environments.
+	 * @since 4.3.3
+	 */
+	protected function restoreErrorHandler(): void
+	{
+		restore_error_handler();
+	}
+
+	/**
+	 * Restores the previously installed PHP exception handler.
+	 * Extracted to allow subclasses to suppress restoration in test environments.
+	 * @see restoreErrorHandler()
+	 * @since 4.3.3
+	 */
+	protected function restoreExceptionHandler(): void
+	{
+		restore_exception_handler();
+	}
+
+	/**
+	 * Returns the PHP SAPI name for the current process.
+	 * Extracted to allow subclasses to override the SAPI check in test environments.
+	 * @return string the SAPI name (e.g. `'cli'`, `'apache2handler'`, `'fpm-fcgi'`)
+	 * @since 4.3.3
+	 */
+	protected function phpSapiName(): string
+	{
+		return php_sapi_name();
+	}
+
+	/**
+	 * Returns a value from the `$_SERVER` superglobal, or null when the key is absent.
+	 * Extracted to allow subclasses to mock server variables in test environments
+	 * without modifying the real superglobal.
+	 * @param string $key the `$_SERVER` key to retrieve (e.g. `'DOCUMENT_ROOT'`)
+	 * @return mixed the value, or null if the key is not set
+	 * @since 4.3.3
+	 */
+	protected function serverGlobal(string $key): mixed
+	{
+		return $_SERVER[$key] ?? null;
 	}
 }

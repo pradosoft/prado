@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TDataCharset class file
+ * TDataCharset class file.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
