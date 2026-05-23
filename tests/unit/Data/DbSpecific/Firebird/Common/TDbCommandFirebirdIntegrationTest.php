@@ -76,7 +76,7 @@ class TDbCommandFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 	// TDbCommand — execute()
 	// -----------------------------------------------------------------------
 
-	public function testExecuteRunsDdlWithoutError(): void
+	public function testFirebirdExecuteRunsDdlWithoutError(): void
 	{
 		// execute() on a non-query statement must not throw.
 		try {
@@ -89,7 +89,7 @@ class TDbCommandFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->_conn->createCommand('DROP TABLE EXEC_DDL_TEST')->execute();
 	}
 
-	public function testExecuteReturnsRowCountForInsert(): void
+	public function testFirebirdExecuteReturnsRowCountForInsert(): void
 	{
 		$affected = $this->_conn->createCommand(
 			"INSERT INTO CMD_TEST VALUES (99, 'Zoe', 5.0, 0, NULL)"
@@ -101,7 +101,7 @@ class TDbCommandFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 	// TDbCommand — queryAll()
 	// -----------------------------------------------------------------------
 
-	public function testQueryAllReturnsAllRows(): void
+	public function testFirebirdQueryAllReturnsAllRows(): void
 	{
 		$rows = $this->_conn->createCommand('SELECT * FROM CMD_TEST ORDER BY ID')->queryAll();
 		$this->assertCount(3, $rows);
@@ -110,14 +110,14 @@ class TDbCommandFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertSame('Carol', trim($rows[2]['NAME']));
 	}
 
-	public function testQueryAllReturnsAssocArraysByDefault(): void
+	public function testFirebirdQueryAllReturnsAssocArraysByDefault(): void
 	{
 		$rows = $this->_conn->createCommand('SELECT ID, NAME FROM CMD_TEST ORDER BY ID')->queryAll();
 		$this->assertArrayHasKey('ID',   $rows[0]);
 		$this->assertArrayHasKey('NAME', $rows[0]);
 	}
 
-	public function testQueryAllReturnsEmptyArrayWhenNoRows(): void
+	public function testFirebirdQueryAllReturnsEmptyArrayWhenNoRows(): void
 	{
 		$rows = $this->_conn->createCommand('SELECT * FROM CMD_TEST WHERE ID = 999')->queryAll();
 		$this->assertIsArray($rows);
@@ -128,20 +128,20 @@ class TDbCommandFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 	// TDbCommand — queryRow()
 	// -----------------------------------------------------------------------
 
-	public function testQueryRowReturnsFirstRow(): void
+	public function testFirebirdQueryRowReturnsFirstRow(): void
 	{
 		$row = $this->_conn->createCommand('SELECT * FROM CMD_TEST ORDER BY ID')->queryRow();
 		$this->assertIsArray($row);
 		$this->assertSame('Alice', trim($row['NAME']));
 	}
 
-	public function testQueryRowReturnsFalseWhenNoRows(): void
+	public function testFirebirdQueryRowReturnsFalseWhenNoRows(): void
 	{
 		$row = $this->_conn->createCommand('SELECT * FROM CMD_TEST WHERE ID = 999')->queryRow();
 		$this->assertFalse($row);
 	}
 
-	public function testQueryRowReturnsOnlyOneRow(): void
+	public function testFirebirdQueryRowReturnsOnlyOneRow(): void
 	{
 		$row = $this->_conn->createCommand('SELECT * FROM CMD_TEST ORDER BY ID')->queryRow();
 		// Only a single array (one row), not a nested array.
@@ -153,19 +153,19 @@ class TDbCommandFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 	// TDbCommand — queryScalar()
 	// -----------------------------------------------------------------------
 
-	public function testQueryScalarReturnsFirstColumnFirstRow(): void
+	public function testFirebirdQueryScalarReturnsFirstColumnFirstRow(): void
 	{
 		$scalar = $this->_conn->createCommand('SELECT NAME FROM CMD_TEST ORDER BY ID')->queryScalar();
 		$this->assertSame('Alice', trim($scalar));
 	}
 
-	public function testQueryScalarReturnsFalseWhenNoRows(): void
+	public function testFirebirdQueryScalarReturnsFalseWhenNoRows(): void
 	{
 		$scalar = $this->_conn->createCommand('SELECT NAME FROM CMD_TEST WHERE ID = 999')->queryScalar();
 		$this->assertFalse($scalar);
 	}
 
-	public function testQueryScalarWorksForCountAggregate(): void
+	public function testFirebirdQueryScalarWorksForCountAggregate(): void
 	{
 		$count = (int) $this->_conn->createCommand('SELECT COUNT(*) FROM CMD_TEST')->queryScalar();
 		$this->assertSame(3, $count);
@@ -175,7 +175,7 @@ class TDbCommandFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 	// TDbCommand — queryColumn()
 	// -----------------------------------------------------------------------
 
-	public function testQueryColumnReturnsFirstColumnOfAllRows(): void
+	public function testFirebirdQueryColumnReturnsFirstColumnOfAllRows(): void
 	{
 		$names = $this->_conn->createCommand('SELECT NAME FROM CMD_TEST ORDER BY ID')->queryColumn();
 		$this->assertCount(3, $names);
@@ -184,14 +184,14 @@ class TDbCommandFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertSame('Carol', trim($names[2]));
 	}
 
-	public function testQueryColumnReturnsEmptyArrayWhenNoRows(): void
+	public function testFirebirdQueryColumnReturnsEmptyArrayWhenNoRows(): void
 	{
 		$result = $this->_conn->createCommand('SELECT NAME FROM CMD_TEST WHERE ID = 999')->queryColumn();
 		$this->assertIsArray($result);
 		$this->assertCount(0, $result);
 	}
 
-	public function testQueryColumnWorksForNumericColumn(): void
+	public function testFirebirdQueryColumnWorksForNumericColumn(): void
 	{
 		$ids = $this->_conn->createCommand('SELECT ID FROM CMD_TEST ORDER BY ID')->queryColumn();
 		$this->assertCount(3, $ids);
@@ -202,7 +202,7 @@ class TDbCommandFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 	// TDbCommand — parameter binding
 	// -----------------------------------------------------------------------
 
-	public function testBindParameterWithPositionalPlaceholder(): void
+	public function testFirebirdBindParameterWithPositionalPlaceholder(): void
 	{
 		$cmd = $this->_conn->createCommand('SELECT NAME FROM CMD_TEST WHERE ID = ?');
 		$id = 2;
@@ -210,28 +210,28 @@ class TDbCommandFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertSame('Bob', trim($cmd->queryScalar()));
 	}
 
-	public function testBindValueWithNamedPlaceholder(): void
+	public function testFirebirdBindValueWithNamedPlaceholder(): void
 	{
 		$cmd = $this->_conn->createCommand('SELECT NAME FROM CMD_TEST WHERE ID = :id');
 		$cmd->bindValue(':id', 3);
 		$this->assertSame('Carol', trim($cmd->queryScalar()));
 	}
 
-	public function testBindValueTypeInt(): void
+	public function testFirebirdBindValueTypeInt(): void
 	{
 		$cmd = $this->_conn->createCommand('SELECT NAME FROM CMD_TEST WHERE ID = :id');
 		$cmd->bindValue(':id', 1, \PDO::PARAM_INT);
 		$this->assertSame('Alice', trim($cmd->queryScalar()));
 	}
 
-	public function testBindValueTypeStr(): void
+	public function testFirebirdBindValueTypeStr(): void
 	{
 		$cmd = $this->_conn->createCommand("SELECT ID FROM CMD_TEST WHERE NAME = :name");
 		$cmd->bindValue(':name', 'Carol', \PDO::PARAM_STR);
 		$this->assertSame('3', (string) $cmd->queryScalar());
 	}
 
-	public function testPreparedStatementCanBeExecutedMultipleTimes(): void
+	public function testFirebirdPreparedStatementCanBeExecutedMultipleTimes(): void
 	{
 		$cmd = $this->_conn->createCommand('SELECT NAME FROM CMD_TEST WHERE ID = :id');
 		$cmd->bindValue(':id', 1);
@@ -248,13 +248,13 @@ class TDbCommandFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 	// TDbCommand — NULL values
 	// -----------------------------------------------------------------------
 
-	public function testQueryRowReturnsNullForNullColumn(): void
+	public function testFirebirdQueryRowReturnsNullForNullColumn(): void
 	{
 		$row = $this->_conn->createCommand('SELECT NOTE FROM CMD_TEST WHERE ID = 2')->queryRow();
 		$this->assertNull($row['NOTE']);
 	}
 
-	public function testQueryScalarReturnsNullForNullColumn(): void
+	public function testFirebirdQueryScalarReturnsNullForNullColumn(): void
 	{
 		$scalar = $this->_conn->createCommand('SELECT NOTE FROM CMD_TEST WHERE ID = 2')->queryScalar();
 		$this->assertNull($scalar);
@@ -264,14 +264,14 @@ class TDbCommandFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 	// TDbDataReader — via query()
 	// -----------------------------------------------------------------------
 
-	public function testQueryReturnsDataReader(): void
+	public function testFirebirdQueryReturnsDataReader(): void
 	{
 		$reader = $this->_conn->createCommand('SELECT * FROM CMD_TEST')->query();
 		$this->assertInstanceOf(TDbDataReader::class, $reader);
 		$reader->close();
 	}
 
-	public function testDataReaderReadReturnsRowsThenFalse(): void
+	public function testFirebirdDataReaderReadReturnsRowsThenFalse(): void
 	{
 		$reader = $this->_conn->createCommand('SELECT ID FROM CMD_TEST ORDER BY ID')->query();
 		$row1 = $reader->read();
@@ -286,7 +286,7 @@ class TDbCommandFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 		$reader->close();
 	}
 
-	public function testDataReaderReadAllReturnsAllRows(): void
+	public function testFirebirdDataReaderReadAllReturnsAllRows(): void
 	{
 		$reader = $this->_conn->createCommand('SELECT * FROM CMD_TEST ORDER BY ID')->query();
 		$rows = $reader->readAll();
@@ -294,7 +294,7 @@ class TDbCommandFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 		$reader->close();
 	}
 
-	public function testDataReaderReadColumnByIndex(): void
+	public function testFirebirdDataReaderReadColumnByIndex(): void
 	{
 		$reader = $this->_conn->createCommand('SELECT ID, NAME FROM CMD_TEST ORDER BY ID')->query();
 		$name = $reader->readColumn(1); // second column = NAME
@@ -302,7 +302,7 @@ class TDbCommandFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 		$reader->close();
 	}
 
-	public function testDataReaderForeachIteratesAllRows(): void
+	public function testFirebirdDataReaderForeachIteratesAllRows(): void
 	{
 		$reader = $this->_conn->createCommand('SELECT NAME FROM CMD_TEST ORDER BY ID')->query();
 		$names = [];
@@ -312,14 +312,14 @@ class TDbCommandFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertSame(['Alice', 'Bob', 'Carol'], $names);
 	}
 
-	public function testDataReaderGetColumnCount(): void
+	public function testFirebirdDataReaderGetColumnCount(): void
 	{
 		$reader = $this->_conn->createCommand('SELECT ID, NAME, SCORE FROM CMD_TEST')->query();
 		$this->assertSame(3, $reader->getColumnCount());
 		$reader->close();
 	}
 
-	public function testDataReaderNullValueReturnedForNullColumn(): void
+	public function testFirebirdDataReaderNullValueReturnedForNullColumn(): void
 	{
 		$reader = $this->_conn->createCommand('SELECT NOTE FROM CMD_TEST WHERE ID = 2')->query();
 		$row = $reader->read();
@@ -327,21 +327,21 @@ class TDbCommandFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 		$reader->close();
 	}
 
-	public function testDataReaderEmptyResultSetReadReturnsFalse(): void
+	public function testFirebirdDataReaderEmptyResultSetReadReturnsFalse(): void
 	{
 		$reader = $this->_conn->createCommand('SELECT * FROM CMD_TEST WHERE ID = 999')->query();
 		$this->assertFalse($reader->read());
 		$reader->close();
 	}
 
-	public function testDataReaderClosePreventsFurtherReading(): void
+	public function testFirebirdDataReaderClosePreventsFurtherReading(): void
 	{
 		$reader = $this->_conn->createCommand('SELECT * FROM CMD_TEST')->query();
 		$reader->close();
 		$this->assertTrue($reader->getIsClosed());
 	}
 
-	public function testDataReaderRewindThrowsOnSecondIteration(): void
+	public function testFirebirdDataReaderRewindThrowsOnSecondIteration(): void
 	{
 		$reader = $this->_conn->createCommand('SELECT * FROM CMD_TEST')->query();
 		// First complete iteration.
@@ -353,7 +353,7 @@ class TDbCommandFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 		}
 	}
 
-	public function testDataReaderFetchModeNum(): void
+	public function testFirebirdDataReaderFetchModeNum(): void
 	{
 		$reader = $this->_conn->createCommand('SELECT ID, NAME FROM CMD_TEST ORDER BY ID')->query();
 		$reader->setFetchMode(\PDO::FETCH_NUM);

@@ -61,7 +61,12 @@ class TDbDriverCapabilitiesFirebirdIntegrationTest extends PHPUnit\Framework\Tes
 			new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP);
 			$booted = true;
 		}
-		$this->setUpConnection();
+		// Static-capability tests (the majority of this class) exercise pure
+		// PHP logic in TDbDriverCapabilities and require no live connection.
+		// Live-connection tests call openFirebird() internally, which marks the
+		// test skipped when pdo_firebird is missing or the server is unreachable.
+		// Calling setUpConnection() here would skip ALL tests — including the
+		// static ones — whenever Firebird is unavailable, which is incorrect.
 	}
 
 	// -----------------------------------------------------------------------

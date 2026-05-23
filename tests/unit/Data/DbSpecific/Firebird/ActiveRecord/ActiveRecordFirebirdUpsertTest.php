@@ -51,6 +51,9 @@ class ActiveRecordFirebirdUpsertTest extends PHPUnit\Framework\TestCase
 				static::$conn = $conn;
 			}
 		}
+		if (static::$conn === null) {
+			$this->markTestSkipped('Firebird connection not available.');
+		}
 		static::$conn->createCommand('DELETE FROM upsert_test')->execute();
 		// Commit the implicit Firebird auto-commit transaction after DELETE so that
 		// the explicit beginTransaction() below doesn't raise "already active".

@@ -50,6 +50,9 @@ class ActiveRecordFirebirdInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 				static::$conn = $conn;
 			}
 		}
+		if (static::$conn === null) {
+			$this->markTestSkipped('Firebird connection not available.');
+		}
 		static::$conn->createCommand('DELETE FROM upsert_test')->execute();
 		// pdo_firebird keeps an implicit transaction alive after each auto-committed
 		// statement. Committing it here resets the internal handle so that our

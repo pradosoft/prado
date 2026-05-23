@@ -11,7 +11,7 @@ class CommandBuilderFirebirdTest extends PHPUnit\Framework\TestCase
 		'ordering' => 'SELECT a.username, b.age FROM accounts a ORDER BY a.age DESC',
 	];
 
-	public function test_no_limit_no_offset()
+	public function test_firebird_no_limit_no_offset()
 	{
 		$builder = new TFirebirdCommandBuilder();
 
@@ -19,7 +19,7 @@ class CommandBuilderFirebirdTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(self::$sql['simple'], $sql);
 	}
 
-	public function test_limit_only()
+	public function test_firebird_limit_only()
 	{
 		$builder = new TFirebirdCommandBuilder();
 
@@ -27,7 +27,7 @@ class CommandBuilderFirebirdTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals('SELECT FIRST 5 username, age FROM accounts', $sql);
 	}
 
-	public function test_offset_only()
+	public function test_firebird_offset_only()
 	{
 		$builder = new TFirebirdCommandBuilder();
 
@@ -35,7 +35,7 @@ class CommandBuilderFirebirdTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals('SELECT SKIP 10 username, age FROM accounts', $sql);
 	}
 
-	public function test_limit_and_offset()
+	public function test_firebird_limit_and_offset()
 	{
 		$builder = new TFirebirdCommandBuilder();
 
@@ -43,7 +43,7 @@ class CommandBuilderFirebirdTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals('SELECT FIRST 5 SKIP 10 username, age FROM accounts', $sql);
 	}
 
-	public function test_limit_and_offset_with_distinct()
+	public function test_firebird_limit_and_offset_with_distinct()
 	{
 		$builder = new TFirebirdCommandBuilder();
 
@@ -52,7 +52,7 @@ class CommandBuilderFirebirdTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals('SELECT DISTINCT FIRST 3 SKIP 2 username FROM accounts', $sql);
 	}
 
-	public function test_limit_and_offset_with_ordering()
+	public function test_firebird_limit_and_offset_with_ordering()
 	{
 		$builder = new TFirebirdCommandBuilder();
 
@@ -63,7 +63,7 @@ class CommandBuilderFirebirdTest extends PHPUnit\Framework\TestCase
 		);
 	}
 
-	public function test_multiple_table_query()
+	public function test_firebird_multiple_table_query()
 	{
 		$builder = new TFirebirdCommandBuilder();
 
@@ -74,7 +74,7 @@ class CommandBuilderFirebirdTest extends PHPUnit\Framework\TestCase
 		);
 	}
 
-	public function test_zero_offset_emits_skip()
+	public function test_firebird_zero_offset_emits_skip()
 	{
 		$builder = new TFirebirdCommandBuilder();
 
@@ -83,7 +83,7 @@ class CommandBuilderFirebirdTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals('SELECT FIRST 5 SKIP 0 username, age FROM accounts', $sql);
 	}
 
-	public function test_case_insensitive_select_keyword()
+	public function test_firebird_case_insensitive_select_keyword()
 	{
 		$builder = new TFirebirdCommandBuilder();
 

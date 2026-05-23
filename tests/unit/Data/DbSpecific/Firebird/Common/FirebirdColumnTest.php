@@ -36,7 +36,7 @@ class FirebirdColumnTest extends PHPUnit\Framework\TestCase
 		}
 	}
 
-	public function test_columns()
+	public function test_firebird_columns()
 	{
 		$table = static::$fbMetaData->getTableInfo('table1');
 
@@ -158,7 +158,7 @@ class FirebirdColumnTest extends PHPUnit\Framework\TestCase
 		$this->assertColumn($columns, $table);
 	}
 
-	public function test_find_table_names()
+	public function test_firebird_find_table_names()
 	{
 		$names = static::$fbMetaData->findTableNames();
 
@@ -166,7 +166,7 @@ class FirebirdColumnTest extends PHPUnit\Framework\TestCase
 		$this->assertContains('address', $names);
 	}
 
-	public function test_command_builder_insert()
+	public function test_firebird_command_builder_insert()
 	{
 		$builder = static::$fbMetaData->createCommandBuilder('table1');
 
@@ -178,7 +178,7 @@ class FirebirdColumnTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('"TABLE1"', $insert->Text);
 	}
 
-	public function test_select_limit()
+	public function test_firebird_select_limit()
 	{
 		$builder = static::$fbMetaData->createCommandBuilder('table1');
 		$fullName = static::$fbMetaData->getTableInfo('table1')->getTableFullName();

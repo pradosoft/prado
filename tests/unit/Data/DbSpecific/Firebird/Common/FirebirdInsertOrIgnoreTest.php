@@ -84,7 +84,7 @@ class FirebirdInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// SQL generation (build command inside a transaction, then roll back)
 	// -----------------------------------------------------------------------
 
-	public function test_sql_uses_merge_when_not_matched_then_insert(): void
+	public function test_firebird_sql_uses_merge_when_not_matched_then_insert(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -100,7 +100,7 @@ class FirebirdInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertStringNotContainsString('WHEN MATCHED', $capturedSql);
 	}
 
-	public function test_sql_using_select_contains_from_rdb_database(): void
+	public function test_firebird_sql_using_select_contains_from_rdb_database(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -113,7 +113,7 @@ class FirebirdInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('FROM RDB$DATABASE', $capturedSql);
 	}
 
-	public function test_sql_uses_bare_aliases_without_as_keyword(): void
+	public function test_firebird_sql_uses_bare_aliases_without_as_keyword(): void
 	{
 		// Firebird MERGE uses bare t / s aliases (useAsAlias=false)
 		$capturedSql = null;
@@ -132,7 +132,7 @@ class FirebirdInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertDoesNotMatchRegularExpression('/\)\s+AS\s+s\b/i', $capturedSql);
 	}
 
-	public function test_sql_has_no_dual_or_sysdummy_source(): void
+	public function test_firebird_sql_has_no_dual_or_sysdummy_source(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -150,7 +150,7 @@ class FirebirdInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Behavioral: insert within transaction
 	// -----------------------------------------------------------------------
 
-	public function test_new_row_inserted_within_transaction(): void
+	public function test_firebird_new_row_inserted_within_transaction(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
@@ -163,7 +163,7 @@ class FirebirdInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(10, (int) $lc['score']);
 	}
 
-	public function test_new_row_returns_true_for_natural_key_table(): void
+	public function test_firebird_new_row_returns_true_for_natural_key_table(): void
 	{
 		$txn    = self::$conn->beginTransaction();
 		$result = self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
@@ -177,7 +177,7 @@ class FirebirdInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Behavioral: duplicate ignored
 	// -----------------------------------------------------------------------
 
-	public function test_duplicate_pk_returns_false(): void
+	public function test_firebird_duplicate_pk_returns_false(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
@@ -187,7 +187,7 @@ class FirebirdInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertFalse($result);
 	}
 
-	public function test_duplicate_does_not_increase_row_count(): void
+	public function test_firebird_duplicate_does_not_increase_row_count(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
@@ -198,7 +198,7 @@ class FirebirdInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(1, $count);
 	}
 
-	public function test_existing_row_unchanged_after_ignored_insert(): void
+	public function test_firebird_existing_row_unchanged_after_ignored_insert(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
@@ -214,7 +214,7 @@ class FirebirdInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Mixed inserts
 	// -----------------------------------------------------------------------
 
-	public function test_only_conflicting_row_ignored_others_inserted(): void
+	public function test_firebird_only_conflicting_row_ignored_others_inserted(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
@@ -228,7 +228,7 @@ class FirebirdInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(2, $count);
 	}
 
-	public function test_transaction_rollback_undoes_insert(): void
+	public function test_firebird_transaction_rollback_undoes_insert(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
@@ -242,7 +242,7 @@ class FirebirdInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Events
 	// -----------------------------------------------------------------------
 
-	public function test_oncreatecommand_event_is_raised(): void
+	public function test_firebird_oncreatecommand_event_is_raised(): void
 	{
 		$fired = false;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -258,7 +258,7 @@ class FirebirdInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($fired);
 	}
 
-	public function test_onexecutecommand_event_is_raised(): void
+	public function test_firebird_onexecutecommand_event_is_raised(): void
 	{
 		$captured = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -274,7 +274,7 @@ class FirebirdInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertNotNull($captured);
 	}
 
-	public function test_onexecutecommand_can_override_result(): void
+	public function test_firebird_onexecutecommand_can_override_result(): void
 	{
 		$gw = new TTableGateway('upsert_test', self::$conn);
 		$gw->OnExecuteCommand[] = function ($sender, $param): void {

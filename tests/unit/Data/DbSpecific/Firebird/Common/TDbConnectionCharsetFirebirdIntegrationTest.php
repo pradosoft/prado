@@ -177,11 +177,12 @@ class TDbConnectionCharsetFirebirdIntegrationTest extends PHPUnit\Framework\Test
 		$conn->Active = false;
 	}
 
-	public function testFirebirdSetCharsetAfterConnectHasNoEffect(): void
+	public function testFirebirdSetCharsetAfterConnectThrowsTDbException(): void
 	{
-		// For Firebird, charset is DSN-only; setting Charset after the connection
-		// is open is a no-op at the server level (no SQL command is sent).
-		// The connection must remain active and no exception must be thrown.
+		// For Firebird, charset is DSN-only; TDbDriverCapabilities::supportsRuntimeCharsetSet
+		// returns false, so TDbConnection::setCharset() throws TDbException when the
+		// connection is already active.  This prevents callers from silently assuming that
+		// a post-connect charset change took effect on the server.
 		$conn = $this->openFirebird();
 		$this->expectException(TDbException::class);
 		$conn->Charset = 'UTF-8';

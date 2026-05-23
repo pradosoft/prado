@@ -72,7 +72,7 @@ class TDbMetaDataFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 	// TDbMetaData::getInstance()
 	// -----------------------------------------------------------------------
 
-	public function testGetInstanceReturnsFirebirdMetaData(): void
+	public function testFirebirdGetInstanceReturnsFirebirdMetaData(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$this->assertInstanceOf(TFirebirdMetaData::class, $meta);
@@ -82,21 +82,21 @@ class TDbMetaDataFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 	// getTableInfo() — TDbTableInfo
 	// -----------------------------------------------------------------------
 
-	public function testGetTableInfoReturnsTableInfo(): void
+	public function testFirebirdGetTableInfoReturnsTableInfo(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('META_TEST');
 		$this->assertInstanceOf(\Prado\Data\Common\TDbTableInfo::class, $info);
 	}
 
-	public function testGetTableInfoTableName(): void
+	public function testFirebirdGetTableInfoTableName(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('META_TEST');
 		$this->assertSame('META_TEST', $info->getTableName());
 	}
 
-	public function testGetTableInfoColumnNamesContainsAllColumns(): void
+	public function testFirebirdGetTableInfoColumnNamesContainsAllColumns(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('META_TEST');
@@ -108,7 +108,7 @@ class TDbMetaDataFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertCount(4, $names);
 	}
 
-	public function testGetTableInfoPrimaryKeys(): void
+	public function testFirebirdGetTableInfoPrimaryKeys(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('META_TEST');
@@ -117,7 +117,7 @@ class TDbMetaDataFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertCount(1, $pks);
 	}
 
-	public function testGetTableInfoGetColumnReturnsColumn(): void
+	public function testFirebirdGetTableInfoGetColumnReturnsColumn(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('META_TEST');
@@ -126,7 +126,7 @@ class TDbMetaDataFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertInstanceOf(\Prado\Data\Common\TDbTableColumn::class, $col);
 	}
 
-	public function testGetTableInfoGetColumnThrowsForMissingColumn(): void
+	public function testFirebirdGetTableInfoGetColumnThrowsForMissingColumn(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('META_TEST');
@@ -134,7 +134,7 @@ class TDbMetaDataFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 		$info->getColumn('nonexistent_column');
 	}
 
-	public function testGetTableInfoCachingReturnsSameObject(): void
+	public function testFirebirdGetTableInfoCachingReturnsSameObject(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info1 = $meta->getTableInfo('META_TEST');
@@ -142,7 +142,7 @@ class TDbMetaDataFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertSame($info1, $info2);
 	}
 
-	public function testGetTableInfoThrowsForInvalidTable(): void
+	public function testFirebirdGetTableInfoThrowsForInvalidTable(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$this->expectException(\Prado\Exceptions\TDbException::class);
@@ -153,7 +153,7 @@ class TDbMetaDataFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 	// TDbTableColumn — column metadata
 	// -----------------------------------------------------------------------
 
-	public function testPrimaryKeyColumnIsPrimaryKey(): void
+	public function testFirebirdPrimaryKeyColumnIsPrimaryKey(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('META_TEST');
@@ -161,7 +161,7 @@ class TDbMetaDataFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($col->getIsPrimaryKey());
 	}
 
-	public function testNonPrimaryKeyColumnIsNotPrimaryKey(): void
+	public function testFirebirdNonPrimaryKeyColumnIsNotPrimaryKey(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('META_TEST');
@@ -169,7 +169,7 @@ class TDbMetaDataFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertFalse($col->getIsPrimaryKey());
 	}
 
-	public function testPrimaryKeyColumnDbType(): void
+	public function testFirebirdPrimaryKeyColumnDbType(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('META_TEST');
@@ -177,7 +177,7 @@ class TDbMetaDataFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsStringIgnoringCase('int', $col->getDbType());
 	}
 
-	public function testVarcharColumnDbType(): void
+	public function testFirebirdVarcharColumnDbType(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('META_TEST');
@@ -185,7 +185,7 @@ class TDbMetaDataFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsStringIgnoringCase('varchar', $col->getDbType());
 	}
 
-	public function testNotNullColumnDoesNotAllowNull(): void
+	public function testFirebirdNotNullColumnDoesNotAllowNull(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('META_TEST');
@@ -193,7 +193,7 @@ class TDbMetaDataFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertFalse($col->getAllowNull());
 	}
 
-	public function testNullableColumnAllowsNull(): void
+	public function testFirebirdNullableColumnAllowsNull(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('META_TEST');
@@ -201,7 +201,7 @@ class TDbMetaDataFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($col->getAllowNull());
 	}
 
-	public function testColumnWithDefaultValueHasDefault(): void
+	public function testFirebirdColumnWithDefaultValueHasDefault(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('META_TEST');
@@ -209,7 +209,7 @@ class TDbMetaDataFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertNotNull($col->getDefaultValue());
 	}
 
-	public function testColumnWithoutDefaultHasNullDefault(): void
+	public function testFirebirdColumnWithoutDefaultHasNullDefault(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('META_TEST');
@@ -222,7 +222,7 @@ class TDbMetaDataFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 	// findTableNames()
 	// -----------------------------------------------------------------------
 
-	public function testFindTableNamesContainsMetaTest(): void
+	public function testFirebirdFindTableNamesContainsMetaTest(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$tables = $meta->findTableNames();
@@ -230,7 +230,7 @@ class TDbMetaDataFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertContains('meta_test', $tables);
 	}
 
-	public function testFindTableNamesReturnsArray(): void
+	public function testFirebirdFindTableNamesReturnsArray(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$tables = $meta->findTableNames();
@@ -241,7 +241,7 @@ class TDbMetaDataFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 	// createCommandBuilder()
 	// -----------------------------------------------------------------------
 
-	public function testCreateCommandBuilderReturnsBuilder(): void
+	public function testFirebirdCreateCommandBuilderReturnsBuilder(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$builder = $meta->createCommandBuilder('META_TEST');
@@ -252,7 +252,7 @@ class TDbMetaDataFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 	// Quoting helpers
 	// -----------------------------------------------------------------------
 
-	public function testQuoteTableName(): void
+	public function testFirebirdQuoteTableName(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$quoted = $meta->quoteTableName('FOO');
@@ -260,14 +260,14 @@ class TDbMetaDataFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertSame('"FOO"', $quoted);
 	}
 
-	public function testQuoteColumnName(): void
+	public function testFirebirdQuoteColumnName(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$quoted = $meta->quoteColumnName('BAR');
 		$this->assertSame('"BAR"', $quoted);
 	}
 
-	public function testQuoteColumnAlias(): void
+	public function testFirebirdQuoteColumnAlias(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$quoted = $meta->quoteColumnAlias('BAZ');
