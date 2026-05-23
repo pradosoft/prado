@@ -78,7 +78,7 @@ class IbmInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Transaction requirement
 	// -----------------------------------------------------------------------
 
-	public function test_throws_TDbException_without_active_transaction(): void
+	public function test_ibm_throws_TDbException_without_active_transaction(): void
 	{
 		$this->expectException(TDbException::class);
 		// No transaction started — must throw
@@ -89,7 +89,7 @@ class IbmInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// SQL generation
 	// -----------------------------------------------------------------------
 
-	public function test_sql_uses_merge_when_not_matched_then_insert(): void
+	public function test_ibm_sql_uses_merge_when_not_matched_then_insert(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -105,7 +105,7 @@ class IbmInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertStringNotContainsString('WHEN MATCHED', $capturedSql);
 	}
 
-	public function test_sql_using_select_contains_from_sysibm_sysdummy1(): void
+	public function test_ibm_sql_using_select_contains_from_sysibm_sysdummy1(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -118,7 +118,7 @@ class IbmInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('FROM SYSIBM.SYSDUMMY1', $capturedSql);
 	}
 
-	public function test_sql_uses_as_alias_keywords(): void
+	public function test_ibm_sql_uses_as_alias_keywords(): void
 	{
 		// DB2 MERGE uses AS t / AS s aliases (useAsAlias=true)
 		$capturedSql = null;
@@ -133,7 +133,7 @@ class IbmInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString(' AS s ', $capturedSql);
 	}
 
-	public function test_sql_has_no_dual_or_rdb_source(): void
+	public function test_ibm_sql_has_no_dual_or_rdb_source(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -151,7 +151,7 @@ class IbmInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Behavioral: insert within transaction
 	// -----------------------------------------------------------------------
 
-	public function test_new_row_inserted_within_transaction(): void
+	public function test_ibm_new_row_inserted_within_transaction(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
@@ -164,7 +164,7 @@ class IbmInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(10, (int) $lc['score']);
 	}
 
-	public function test_new_row_returns_true_for_natural_key_table(): void
+	public function test_ibm_new_row_returns_true_for_natural_key_table(): void
 	{
 		$txn    = self::$conn->beginTransaction();
 		$result = self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
@@ -178,7 +178,7 @@ class IbmInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Behavioral: duplicate ignored
 	// -----------------------------------------------------------------------
 
-	public function test_duplicate_pk_returns_false(): void
+	public function test_ibm_duplicate_pk_returns_false(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
@@ -188,7 +188,7 @@ class IbmInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertFalse($result);
 	}
 
-	public function test_duplicate_does_not_increase_row_count(): void
+	public function test_ibm_duplicate_does_not_increase_row_count(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
@@ -199,7 +199,7 @@ class IbmInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(1, $count);
 	}
 
-	public function test_existing_row_unchanged_after_ignored_insert(): void
+	public function test_ibm_existing_row_unchanged_after_ignored_insert(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
@@ -215,7 +215,7 @@ class IbmInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Mixed inserts
 	// -----------------------------------------------------------------------
 
-	public function test_only_conflicting_row_ignored_others_inserted(): void
+	public function test_ibm_only_conflicting_row_ignored_others_inserted(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
@@ -229,7 +229,7 @@ class IbmInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(2, $count);
 	}
 
-	public function test_transaction_rollback_undoes_insert(): void
+	public function test_ibm_transaction_rollback_undoes_insert(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
@@ -243,7 +243,7 @@ class IbmInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Events
 	// -----------------------------------------------------------------------
 
-	public function test_oncreatecommand_event_is_raised(): void
+	public function test_ibm_oncreatecommand_event_is_raised(): void
 	{
 		$fired = false;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -259,7 +259,7 @@ class IbmInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($fired);
 	}
 
-	public function test_onexecutecommand_event_is_raised(): void
+	public function test_ibm_onexecutecommand_event_is_raised(): void
 	{
 		$captured = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -275,7 +275,7 @@ class IbmInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertNotNull($captured);
 	}
 
-	public function test_onexecutecommand_can_override_result(): void
+	public function test_ibm_onexecutecommand_can_override_result(): void
 	{
 		$gw = new TTableGateway('upsert_test', self::$conn);
 		$gw->OnExecuteCommand[] = function ($sender, $param): void {

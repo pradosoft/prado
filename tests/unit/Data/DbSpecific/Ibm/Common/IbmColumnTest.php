@@ -42,7 +42,7 @@ class IbmColumnTest extends PHPUnit\Framework\TestCase
 		return static::$ibmMetaData;
 	}
 
-	public function test_columns()
+	public function test_ibm_columns()
 	{
 		$meta = $this->create_meta_data();
 		$table = $meta->getTableInfo('table1');
@@ -161,7 +161,7 @@ class IbmColumnTest extends PHPUnit\Framework\TestCase
 		$this->assertColumn($columns, $table);
 	}
 
-	public function test_schema_name()
+	public function test_ibm_schema_name()
 	{
 		$meta = $this->create_meta_data();
 		$schema = $meta->getDefaultSchema();
@@ -172,7 +172,7 @@ class IbmColumnTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals('"' . strtoupper($schema) . '"."TABLE1"', $table->getTableFullName());
 	}
 
-	public function test_find_table_names()
+	public function test_ibm_find_table_names()
 	{
 		$meta = $this->create_meta_data();
 		$names = $meta->findTableNames();
@@ -181,7 +181,7 @@ class IbmColumnTest extends PHPUnit\Framework\TestCase
 		$this->assertContains('address', $names);
 	}
 
-	public function test_command_builder_insert()
+	public function test_ibm_command_builder_insert()
 	{
 		$meta = $this->create_meta_data();
 		$builder = $meta->createCommandBuilder('table1');
@@ -192,7 +192,7 @@ class IbmColumnTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('"TABLE1"', $insert->Text);
 	}
 
-	public function test_select_limit()
+	public function test_ibm_select_limit()
 	{
 		$meta = $this->create_meta_data();
 		$builder = $meta->createCommandBuilder('table1');

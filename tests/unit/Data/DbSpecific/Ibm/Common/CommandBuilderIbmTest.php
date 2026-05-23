@@ -10,7 +10,7 @@ class CommandBuilderIbmTest extends PHPUnit\Framework\TestCase
 		'ordering' => 'SELECT a.username, b.age FROM accounts a ORDER BY a.age DESC',
 	];
 
-	public function test_no_limit_no_offset()
+	public function test_ibm_no_limit_no_offset()
 	{
 		$builder = new TIbmCommandBuilder();
 
@@ -18,7 +18,7 @@ class CommandBuilderIbmTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(self::$sql['simple'], $sql);
 	}
 
-	public function test_limit_only()
+	public function test_ibm_limit_only()
 	{
 		$builder = new TIbmCommandBuilder();
 
@@ -26,7 +26,7 @@ class CommandBuilderIbmTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(self::$sql['simple'] . ' FETCH FIRST 5 ROWS ONLY', $sql);
 	}
 
-	public function test_limit_with_zero_offset()
+	public function test_ibm_limit_with_zero_offset()
 	{
 		$builder = new TIbmCommandBuilder();
 
@@ -35,7 +35,7 @@ class CommandBuilderIbmTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(self::$sql['simple'] . ' FETCH FIRST 10 ROWS ONLY', $sql);
 	}
 
-	public function test_limit_and_offset()
+	public function test_ibm_limit_and_offset()
 	{
 		$builder = new TIbmCommandBuilder();
 
@@ -48,7 +48,7 @@ class CommandBuilderIbmTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals($expect, $sql);
 	}
 
-	public function test_limit_and_offset_page_two()
+	public function test_ibm_limit_and_offset_page_two()
 	{
 		$builder = new TIbmCommandBuilder();
 
@@ -62,7 +62,7 @@ class CommandBuilderIbmTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals($expect, $sql);
 	}
 
-	public function test_limit_and_offset_with_ordering()
+	public function test_ibm_limit_and_offset_with_ordering()
 	{
 		$builder = new TIbmCommandBuilder();
 
@@ -75,7 +75,7 @@ class CommandBuilderIbmTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals($expect, $sql);
 	}
 
-	public function test_first_page_offset_one()
+	public function test_ibm_first_page_offset_one()
 	{
 		$builder = new TIbmCommandBuilder();
 
