@@ -1,7 +1,7 @@
 # Data/ActiveRecord/Scaffold/IScaffoldEditRenderer
 
 ### Directories
-[framework](./INDEX.md) / [Data](./Data/INDEX.md) / [ActiveRecord](./Data/ActiveRecord/INDEX.md) / [Scaffold](./Data/ActiveRecord/Scaffold/INDEX.md) / **`IScaffoldEditRenderer`**
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [ActiveRecord](../INDEX.md) / [Scaffold](INDEX.md) / **`IScaffoldEditRenderer`**
 
 `Prado\Data\ActiveRecord\Scaffold\IScaffoldEditRenderer`
 

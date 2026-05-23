@@ -27,15 +27,29 @@ THttpResponse implements the mechanism for sending output to client users, manag
 - `CacheControl` (string): Cache control method for session pages
 - `StatusCode` (int): HTTP status code, defaults to 200
 - `StatusReason` (string): Reason phrase for HTTP status code
-- `HtmlWriterType` (string): Type of HTML writer to be used, defaults to [THtmlWriter](../UI/WebControls/THtmlWriter.md)
+- `HtmlWriterType` (string): Type of HTML writer to be used, defaults to [THtmlWriter](UI/THtmlWriter.md)
 
 ## Configuration
 ### XML Format
 ```xml
-<module id="response" class="Prado\Web\THttpResponse" 
-         CacheExpire="20" 
-         CacheControl="nocache" 
-         BufferOutput="true" />
+<modules>
+    <module id="response" class="Prado\Web\THttpResponse" 
+             CacheExpire="20" 
+             CacheControl="nocache" 
+             BufferOutput="true" />
+</modules>
+```
+
+**PHP equivalent:**
+```php
+return [
+    'modules' => [
+        'response' => [
+            'class' => 'Prado\Web\THttpResponse',
+            'properties' => ['ContentType' => 'text/html'],
+        ],
+    ],
+];
 ```
 
 ## Core Methods
@@ -45,7 +59,8 @@ THttpResponse implements the mechanism for sending output to client users, manag
 - `getContents()`: Returns the content in the output buffer
 - `clear()`: Clears any existing buffered content
 - `flush($continueBuffering = true)`: Flushes response contents and headers
-- `flushContent($continueBuffering = true)`: Internal flush implementation  
+- `flushContent($continueBuffering = true)`: Internal flush implementation
+- `appendFile(string $filename, bool $use_include_path = false, mixed $context = null): int|false`: Reads a file and writes it to the output buffer (@since 4.3.3)
 
 ### HTTP Status and Headers
 - `getStatusCode()`: Gets the current HTTP status code
@@ -78,6 +93,15 @@ THttpResponse implements the mechanism for sending output to client users, manag
 - `setAdapter`([THttpResponseAdapter](./THttpResponseAdapter.md) $adapter): Sets response adapter
 - `getAdapter()`: Gets response adapter
 - `getHasAdapter()`: Checks if adapter exists
+
+### Protected Overridable Helpers (@since 4.3.3)
+- `responseSetCookie(string $name, ...$args): bool` — Isolated wrapper for `setcookie()`. Override in subclasses for testing or custom cookie dispatch.
+- `sessionCacheExpire(?int $value = null): int|false` — Wrapper for `session_cache_expire()`.
+- `sessionCacheLimiter(?string $value = null): string|false` — Wrapper for `session_cache_limiter()`.
+
+## Notes
+
+- **JavaScript MIME type** — `.js` files served via `writeFile()` use MIME type `text/javascript` (the current standard; previously was `application/javascript` in some versions).
 
 ## HTTP Status Codes
 Class supports all standard HTTP status codes defined in RFC 2616 including:

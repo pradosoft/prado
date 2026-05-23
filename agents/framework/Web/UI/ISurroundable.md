@@ -1,7 +1,7 @@
 # Web/UI/ISurroundable
 
 ### Directories
-[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / **`ISurroundable`**
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [UI](INDEX.md) / **`ISurroundable`**
 
 **Location:** `framework/Web/UI/ISurroundable.php`
 **Namespace:** `Prado\Web\UI`

@@ -1,7 +1,7 @@
 # Util/Helpers/INDEX.md
 
 ### Directories
-[framework](./INDEX.md) / [Util](./Util/INDEX.md) / **`Helpers/INDEX.md`**
+[framework](../../INDEX.md) / [Util](../INDEX.md) / **`Helpers`**
 
 ## Purpose
 
@@ -37,5 +37,5 @@ Static utility classes for common low-level operations.
 
 - All classes in this directory contain only **static methods** — do not instantiate them.
 - `TBitHelper` is designed for low-level numeric manipulation (e.g., image processing, ML tensor helpers).
-- [`TProcessHelper::fork()`](../Util/Helpers/TProcessHelper.md) fires `fxPrepareForFork` / `fxRestoreAfterFork` global events — implement these in any module that holds resources (DB connections, file handles) that must be re-initialized per-process after a fork.
-- Always call [`TProcessHelper::isForkable()`](../Util/Helpers/TProcessHelper.md) before forking; returns `false` on Windows.
+- [`TProcessHelper::fork()`](TProcessHelper.md) fires `fxPrepareForFork` / `fxRestoreAfterFork` global events — implement these in any module that holds resources (DB connections, file handles) that must be re-initialized per-process after a fork.
+- Always call [`TProcessHelper::isForkable()`](TProcessHelper.md) before forking; returns `false` on Windows.

@@ -17,6 +17,10 @@ TDataSize displays file sizes in human-readable format (bytes, KB, MB, GB, etc.)
 - `Abbreviate` - Use abbreviated units (B, KB, MB) vs full names
 - `Culture` - Localization culture for formatting
 
+## New in 4.3.3
+
+- `unitFromMagnitude(int $magnitude): ?string` (protected) — Returns the ICU unit string for the given decimal magnitude (per 1000). Used internally for number formatting.
+
 ## See Also
 
 - [TLabel](./TLabel.md)

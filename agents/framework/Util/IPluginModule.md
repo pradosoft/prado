@@ -1,7 +1,7 @@
 # Util/IPluginModule
 
 ### Directories
-[framework](./INDEX.md) / [Util](./Util/INDEX.md) / **`IPluginModule`**
+[framework](../INDEX.md) / [Util](INDEX.md) / **`IPluginModule`**
 
 **Location:** `framework/Util/IPluginModule.php`
 **Namespace:** `Prado\Util`

@@ -8,7 +8,9 @@
 **Namespace:** `Prado\Web\UI`
 
 ## Overview
-Enumerable class defining all 147+ CSS named colors mapped to their hexadecimal web color values. Extends `TEnumerable`.
+**Deprecated** — `TWebColors` is now a thin stub that extends [TWebColor](./TWebColor.md) (singular). All color constants live in `TWebColor`; `TWebColors` exists only for backward compatibility and will be removed in v4.4.
+
+Use [TWebColor](./TWebColor.md) in all new code.
 
 Used by `TPropertyValue::ensureHexColor()` to convert CSS color name strings (e.g., `'CornflowerBlue'`) to their `#RRGGBB` hex equivalents for use in HTML attributes and CSS properties.
 
@@ -37,15 +39,16 @@ Note: `Aqua` and `Cyan` are aliases (`#00FFFF`); `Fuchsia` and `Magenta` are ali
 
 ## Key Methods
 
-None beyond those inherited from `TEnumerable`. Color lookup is done via PHP's constant access: `TWebColors::CornflowerBlue` returns `'#6495ED'`.
+All color constants are inherited from [TWebColor](./TWebColor.md). Color lookup is done via PHP's constant access: `TWebColors::CornflowerBlue` returns `'#6495ED'` (inherited).
 
 ## Patterns & Gotchas
 
-- **Used by `TPropertyValue::ensureHexColor()`** — that method accepts either a hex string (`#RRGGBB`, `#RGB`) or a CSS color name; it resolves names against `TWebColors` constants using case-insensitive lookup.
-- **Alias pairs** — `Aqua === Cyan` (`#00FFFF`) and `Fuchsia === Magenta` (`#FF00FF`). Both names map to the same hex value per the CSS specification.
-- **PascalCase constant names** — all color names use PascalCase (e.g., `CornflowerBlue`, not `cornflowerblue`). `TPropertyValue::ensureHexColor()` must normalize case before lookup.
-- **`TEnumerable` base class** — provides enumeration behavior allowing color names to be iterated or validated as an enum type.
-- **`@since 4.3.0`** — added in 4.3.0; previously color name handling was done elsewhere.
-- **147+ colors** — the full W3C extended web color set as defined at https://en.wikipedia.org/wiki/Web_colors.
+- **Deprecated** — use `TWebColor` (singular). `TWebColors` will be removed in v4.4.
+- **All constants are in `TWebColor`** — `TWebColors` inherits them and adds nothing new.
+- **@since 4.3.0** — added in 4.3.0; deprecated as of 4.3.3.
+
+## See Also
+
+- [TWebColor](./TWebColor.md) — canonical class with all color constants
 
 (End of file - total 46 lines)

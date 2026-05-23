@@ -160,3 +160,13 @@ Construction order matters: if `$discardInvalid = false` or (`null` + `$readOnly
 - **`$_fd` flat cache** — Inherited from [TPriorityList](./TPriorityList.md). `scrubWeakReferences()` sets it to `null` after purging dead entries. `flattenPriorities()` regenerates it. The flat cache contains the weakened (un-resolved) callables; `filterItemsForOutput` is always applied before exposing them.
 - **Read-only + DiscardInvalid** — A read-only list can still have dead WeakReferences purged if `DiscardInvalid` is explicitly set to `true`. This is useful for lists that are fixed in content but still need to exclude GC'd handlers.
 - **Precision** — Priority precision is inherited from [TPriorityList](./TPriorityList.md) (default 8 decimal places). Priorities are stored as string-keyed array keys.
+- **Re-entrancy guard** — `scrubWeakReferences()` uses `isScrubbing()` / `setScrubbing()` from [TWeakCollectionTrait](./TWeakCollectionTrait.md) (added in 4.3.3) to prevent PHP's cyclic GC from triggering a nested scrub mid-loop.
+
+## See Also
+
+- [TPriorityList](./TPriorityList.md) — Base class
+- [TWeakCollectionTrait](./TWeakCollectionTrait.md) — WeakMap bookkeeping (isScrubbing/setScrubbing added 4.3.3)
+- [IWeakCollection](./IWeakCollection.md) — Marker interface
+- [ICollectionFilter](./ICollectionFilter.md) — Input/output conversion contract
+- [TWeakList](./TWeakList.md) — List variant (non-callable) with weak values
+- [TWeakMap](./TWeakMap.md) — Map variant with weak values

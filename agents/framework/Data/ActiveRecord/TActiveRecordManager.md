@@ -37,5 +37,5 @@ $user = UserRecord::finder()->findByPk(1);
 
 ## See Also
 
-- [TActiveRecord](./TActiveRecord.md) - Base Active Record class
+- [TActiveRecord](../TActiveRecord.md) - Base Active Record class
 - [TActiveRecordConfig](./TActiveRecordConfig.md) - Configuration module

@@ -50,11 +50,11 @@ Module that handles authentication and authorization flow. Registered in `applic
 
 | Property | Description |
 |----------|-------------|
-| `UserManager` | Module ID of the `IUserManager` to use |
+| `UserManager` | Module ID or `IUserManager` instance (read-only after init) |
 | `LoginPage` | Page path to redirect to when auth fails |
 | `AuthExpire` | Session timeout in seconds (0 = never) |
 | `AllowAutoLogin` | Enable cookie-based remember-me |
-| `CookieName` | Cookie name for auto-login token |
+| `ReturnUrlVarName` | Session key for the post-login redirect URL (defaults to `AppID:ReturnUrl`) |
 
 ### Auth Flow
 
@@ -99,12 +99,14 @@ Properties: `ValidationKey`, `EncryptionKey`, `Algorithm` (hash algorithm).
 See `Security/Permissions/` for full detail. Quick summary:
 
 ```xml
-<!-- application.xml -->
-<module id="permissions" class="Prado\Security\Permissions\TPermissionsManager"
-        DefaultRoles="Default" SuperRoles="Administrator">
-    <role name="Editor" children="author,commenter" />
-    <permissionrule name="blog.post.edit" action="allow" roles="Editor" />
-</module>
+<modules>
+    <!-- application.xml -->
+    <module id="permissions" class="Prado\Security\Permissions\TPermissionsManager"
+            DefaultRoles="Default" SuperRoles="Administrator">
+        <role name="Editor" children="author,commenter" />
+        <permissionrule name="blog.post.edit" action="allow" roles="Editor" />
+    </module>
+</modules>
 ```
 
 - `SuperRoles` bypass all checks.
@@ -136,9 +138,32 @@ $user->can('blog.post.edit');  // via TUserPermissionsBehavior
 </modules>
 ```
 
+**PHP equivalent:**
+```php
+return [
+    'modules' => [
+        'auth' => [
+            'class' => 'Prado\Security\TAuthManager',
+            'properties' => ['UserManager' => 'users', 'LoginPage' => 'Login'],
+        ],
+    ],
+];
+```
+
+## Events
+
+| Event | Parameter | Description |
+|-------|-----------|-------------|
+| `onLogin` | `TUser` | Raised after a successful `login()` call |
+| `onLoginFailed` | `string $username` | Raised when `login()` fails validation |
+| `onLogout` | `TUser` | Raised at the start of `logout()`, before session destruction |
+| `onAuthExpire` | mixed | Raised when an auth session expires; default handler calls `logout()` |
+
 ## Gotchas
 
 - `TAuthManager` must be registered **before** `TPermissionsManager` in `application.xml`.
-- `LoginPage` must be publicly accessible — exempted from authorization rules.
-- Cookie auto-login requires `TSecurityManager` with a stable `ValidationKey`.
+- `LoginPage` must be publicly accessible — it is exempted from authorization checks.
+- Cookie auto-login requires a stable `ValidationKey` in `TSecurityManager`.
 - `TDbUserManager` needs a DB connection module ID in `ConnectionID` property.
+- `UserManager` cannot be changed after `init()`.
+- `updateSessionUser()` calls `$session->regenerate(true)` on every login to prevent session fixation.

@@ -6,73 +6,87 @@
 ## Class Info
 **Location:** `framework/TService.php`
 **Namespace:** `Prado`
+**Extends:** `TApplicationComponent`
+**Implements:** `IService`
 
 ## Overview
-TService is the base class for all application services in PRADO. It implements the basic methods required by IService and may be used as the foundation for creating custom application services.
-
-## Key Features
-- **Service Base Implementation**: Provides essential functionality for application services
-- **Initialization Support**: Implements the init() method required by IService interface
-- **Service Enable/Disable**: Supports enabling and disabling services
-- **Service Identification**: Provides ID-based service management
-- **Execution Framework**: Defines the run() method for service execution
+Abstract base class for all application services. Services handle actual response generation; only one service runs per request. `TApplication` resolves which service to use from the request, then calls `init($config)` followed by `run()`.
 
 ## Core Properties
-- `ID`: Unique identifier for the service
-- `Enabled`: Flag indicating whether the service is enabled
-- `_id`: Internal storage for service identifier
-- `_enabled`: Internal storage for service enable flag
+
+| Property | Description |
+|----------|-------------|
+| `ID` | Unique service identifier (set from `id` attribute in `application.xml`) |
+| `Enabled` | Whether the service may handle requests; default `true` |
 
 ## Core Methods
 
-### Service Management
-- `init()`: Initializes the service (empty implementation by default)
-- `run()`: Main execution method for the service (empty implementation by default)
-- `getID()`: Returns the service's unique identifier
-- `setID()`: Sets the service's unique identifier
-- `getEnabled()`: Returns whether the service is enabled
-- `setEnabled()`: Sets whether the service is enabled
+| Method | Description |
+|--------|-------------|
+| `init($config)` | Initializes the service; raises `dyInit($config)` for behaviors. Always call `parent::init($config)` in subclasses. |
+| `run()` | Handles the request. Override in subclasses to generate the response. Default implementation is empty. |
+| `getID()` / `setID()` | Service identifier |
+| `getEnabled()` / `setEnabled()` | Enable/disable the service |
+| `getInstance(?TApplication $app = null): ?static` | Returns the currently active service if it is an instance of the called class, or `null` otherwise. Accepts an optional `TApplication` argument; defaults to `Prado::getApplication()`. @since 4.3.3 |
 
-### Lifecycle Integration
-- Works with TApplication's service dispatching system
-- Integrates with PRADO's application lifecycle events
-- Supports service configuration through XML elements
+## Static Factory
 
-## Framework Integration
-- Works with TApplication's service management system
-- Integrates with PRADO's application lifecycle management
-- Supports module and component architecture
-- Handles request routing and execution
+`TService::getInstance()` provides a type-safe way to access the active service from anywhere in the application. Because the return type is `?static`, calling `TPageService::getInstance()` returns `?TPageService` — no cast required.
 
-## Standards Followed
-- PSR-4 autoloading compatibility
-- Proper PHPDoc comments with @param, @return, @throws
-- Consistent naming conventions (PascalCase for classes, camelCase for methods)
-- Abstract class design for service inheritance
+```php
+// Available from onInitComplete onwards:
+$app->onInitComplete[] = function () {
+    TPageService::getInstance()?->onPreRunPage[] = function (TPageService $sender, TPage $page) {
+        $page->onLoad[] = [$this, 'pageHandlerInModule'];
+    };
+};
 
-## Usage Examples
-```
-// Creating a custom service
-class MyService extends TService
-{
-    public function run()
-    {
-        // Custom service execution code
-        echo "My service is running";
-    }
+// Or from within a module's init():
+$service = TPageService::getInstance();
+if ($service !== null) {
+    // Only runs when the page service is active
 }
-
-// Service configuration in application
-/*
-<services>
-    <myService class="MyService" id="myService" enabled="true"/>
-</services>
-*/
 ```
 
-## Inheritance
-TService extends TApplicationComponent and implements IService interface, providing a solid foundation for all application services in PRADO.
+## Dynamic Events
 
-## Service States
-- **Enabled**: Service can process requests (default)
-- **Disabled**: Service skips processing (useful for temporary disabling)
+| Event | Signature | Description |
+|-------|-----------|-------------|
+| `dyInit` | `dyInit(mixed $config)` | Raised inside `init()`, allowing attached behaviors to hook into service initialization. @since 4.3.3 |
+
+## Creating a Custom Service
+
+```php
+use Prado\TService;
+
+class MyApiService extends TService
+{
+	public function run()
+	{
+		$response = $this->getResponse();
+		$response->setContentType('application/json');
+		$response->write(json_encode(['ok' => true]));
+	}
+}
+```
+
+```xml
+<!-- application.xml -->
+<services>
+    <service id="api" class="MyApiService" />
+</services>
+```
+
+## Built-in Services
+
+| Class | Default ID | Purpose |
+|-------|-----------|---------|
+| `TPageService` | `page` | Template-based web pages |
+| `TJsonService` | `json` | JSON responses |
+| `TRpcService` | `rpc` | JSON-RPC / XML-RPC |
+| `TSoapService` | `soap` | SOAP / WSDL |
+| `TFeedService` | `feed` | RSS / Atom feeds |
+
+## See Also
+- [`TModule`](./TModule.md) — sibling base class for modules
+- [`TApplication`](./TApplication.md) — manages service lifecycle

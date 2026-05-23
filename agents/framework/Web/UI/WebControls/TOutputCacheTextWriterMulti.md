@@ -19,4 +19,4 @@ TOutputCacheTextWriterMulti is an internal class used by TOutputCache to write s
 ## See Also
 
 - [TOutputCache](./TOutputCache.md)
-- [TTextWriter](./TTextWriter.md)
+- [TTextWriter](../../../IO/TTextWriter.md)

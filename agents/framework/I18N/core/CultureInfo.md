@@ -1,7 +1,7 @@
 # I18N/core/CultureInfo
 
 ### Directories
-[framework](./INDEX.md) / [I18N](./I18N/INDEX.md) / [core](./I18N/core/INDEX.md) / **`CultureInfo`**
+[framework](../../INDEX.md) / [I18N](../INDEX.md) / [core](INDEX.md) / **`CultureInfo`**
 
 **Location:** `framework/I18N/core/CultureInfo.php`
 **Namespace:** `Prado\I18N\core`
@@ -37,8 +37,9 @@ Static ICU data is cached in `self::$data` (shared across all instances, keyed b
 ### Construction & Configuration
 
 - `__construct($culture = 'en')` — Accepts a culture string; validates format with `/^[_\w]+$/`; empty string defaults to `'en'`.
+- `static getCultureInfo($culture = null)` — Returns a cached `CultureInfo` instance; falls back to application globalization culture when `$culture` is null.
 - `static getInvariantCulture()` — Singleton returning a `CultureInfo('en')` instance. Shared — changes affect all callers.
-- `static validCulture($culture)` — Checks if culture exists in `getCultures()`. **Expensive** (calls `getCultures()` internally).
+- `static validCulture($culture)` — Checks if culture exists in `getCultures()`, trying direct match, POSIX→BCP 47, and BCP 47→POSIX. **Expensive** (calls `getCultures()` internally). @since 4.3.3
 
 ### Culture Lists
 
@@ -68,10 +69,15 @@ Static ICU data is cached in `self::$data` (shared across all instances, keyed b
 - `formatUnit($number, $unitType)` — Returns localized `"{0} meters"` / `"{0} meter"` using plural form based on `$number == 1`.
 - `formatPerUnit($number, $unitType)` — Returns localized per-unit pattern (e.g., `"{0} per meter"`).
 
+## POSIX/BCP 47 Duality
+
+PRADO stores culture strings in POSIX underscore form (`en_AU`, `zh_TW`). ICU's `ResourceBundle::getLocales('')` may return entries in either BCP 47 hyphen form (`en-AU`) or POSIX underscore form depending on ICU version. `validCulture()` and `TGlobalizationAutoDetect::getIsValidLocale()` both bridge this by trying all three match directions. When passing PRADO culture strings to ICU lookup functions (`ResourceBundle::create()`, `IntlDateFormatter`, `NumberFormatter`) no conversion is needed — ICU accepts POSIX underscores natively.
+
 ## Patterns & Gotchas
 
 - **`getCultures()` is expensive** — it calls `ResourceBundle::getLocales('')` which reads ICU filesystem data. Never call it on every request; cache results at the application level.
 - **`validCulture()` calls `getCultures()`** — therefore also expensive. Avoid in hot paths.
+- **`getCultureInfo()` caches instances** — prefer this static factory over `new CultureInfo()` in hot paths.
 - **Static `$data` cache** — shared across all `CultureInfo` instances for the same culture. Very efficient after the first call per bundle per culture. But this also means all instances of the same culture share their bundle data.
 - **Invariant culture is a singleton** — `getInvariantCulture()` uses a `static` variable. Any modification to the returned instance affects all callers using the invariant culture.
 - **`__get` / `__set`** — delegates to `getXxx()` / `setXxx()` methods listed in `$this->properties` (populated from `get_class_methods()` in constructor). Only getter methods are accessible as properties; unknown properties throw a plain `Exception` (not a Prado exception).

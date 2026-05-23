@@ -28,8 +28,8 @@ TUrlMappingPattern represents a pattern used to parse and construct URLs in PRAD
 - `RegularExpression` (string): Full regular expression for pattern matching
 
 ### Parameter Handling
-- `Parameters` ([TAttributeCollection](../../Collections/TAttributeCollection.md)): Collection of parameter validation patterns (regex)
-- `Constants` ([TAttributeCollection](../../Collections/TAttributeCollection.md)): Collection of constant parameters (fixed values)
+- `Parameters` ([TAttributeCollection](../Collections/TAttributeCollection.md)): Collection of parameter validation patterns (regex)
+- `Constants` ([TAttributeCollection](../Collections/TAttributeCollection.md)): Collection of constant parameters (fixed values)
 - `CaseSensitive` (bool): Whether pattern matching is case sensitive, defaults to true
 
 ### URL Construct/Parse Options

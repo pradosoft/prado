@@ -17,4 +17,4 @@ TFlushOutput enables forced flushing of the output buffer at certain points in p
 
 ## See Also
 
-- [TControl](./TControl.md)
+- [TControl](../TControl.md)

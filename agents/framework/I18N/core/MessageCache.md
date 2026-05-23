@@ -1,7 +1,7 @@
 # I18N/core/MessageCache
 
 ### Directories
-[framework](./INDEX.md) / [I18N](./I18N/INDEX.md) / [core](./I18N/core/INDEX.md) / **`MessageCache`**
+[framework](../../INDEX.md) / [I18N](../INDEX.md) / [core](INDEX.md) / **`MessageCache`**
 
 **Location:** `framework/I18N/core/MessageCache.php`
 **Namespace:** `Prado\I18N\core`

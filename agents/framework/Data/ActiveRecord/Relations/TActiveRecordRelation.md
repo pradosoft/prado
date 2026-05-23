@@ -52,7 +52,7 @@ Fetches results for the current relationship.
 |----------|------|-------------|
 | `Context` | [`TActiveRecordRelationContext`](./TActiveRecordRelationContext.md) | The relation context |
 | `Criteria` | [`TActiveRecordCriteria`](../TActiveRecordCriteria.md) | Search criteria for the relation |
-| `SourceRecord` | [`TActiveRecord`](../TActiveRecord.md) | The source record being queried |
+| `SourceRecord` | [`TActiveRecord`](../../TActiveRecord.md) | The source record being queried |
 
 ## See Also
 

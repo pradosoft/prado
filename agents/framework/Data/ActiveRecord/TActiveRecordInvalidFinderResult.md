@@ -13,7 +13,7 @@
 ## Constants
 
 - `Null` - Return null (default)
-- `Exception` - Throw a [`TActiveRecordException`](./TActiveRecordException.md)
+- `Exception` - Throw a [`TActiveRecordException`](Exceptions/TActiveRecordException.md)
 
 ## Usage
 

@@ -1,7 +1,7 @@
 # I18N/core/ChoiceFormat
 
 ### Directories
-[framework](./INDEX.md) / [I18N](./I18N/INDEX.md) / [core](./I18N/core/INDEX.md) / **`ChoiceFormat`**
+[framework](../../INDEX.md) / [I18N](../INDEX.md) / [core](INDEX.md) / **`ChoiceFormat`**
 
 **Location:** `framework/I18N/core/ChoiceFormat.php`
 **Namespace:** `Prado\I18N\core`

@@ -33,12 +33,28 @@ TUrlMapping is a URL manager that allows PRADO to construct and recognize URLs b
 ## Configuration
 ### XML Example
 ```xml
-<module id="request" class="[THttpRequest](./THttpRequest.md)" UrlManager="friendly-url" />
-<module id="friendly-url" class="Prado\Web.TUrlMapping" EnableCustomUrl="true">
-  <url ServiceParameter="Posts.ViewPost" pattern="post/{id}/" parameters.id="\d+" />
-  <url ServiceParameter="Posts.ListPost" pattern="archive/{time}/" parameters.time="\d{6}" />
-  <url ServiceParameter="Posts.ListPost" pattern="category/{cat}/" parameters.cat="\d+" />
-</module>
+<modules>
+    <module id="request" class="Prado\Web\THttpRequest" UrlManager="friendly-url" />
+    <module id="friendly-url" class="Prado\Web\TUrlMapping" EnableCustomUrl="true">
+      <url ServiceParameter="Posts.ViewPost" pattern="post/{id}/" parameters.id="\d+" />
+      <url ServiceParameter="Posts.ListPost" pattern="archive/{time}/" parameters.time="\d{6}" />
+      <url ServiceParameter="Posts.ListPost" pattern="category/{cat}/" parameters.cat="\d+" />
+    </module>
+</modules>
+```
+
+**PHP equivalent:**
+```php
+return [
+    'modules' => [
+        'url' => [
+            'class' => 'Prado\Web\TUrlMapping',
+            'patterns' => [
+                ['class' => 'Prado\Web\TUrlMappingPattern', 'properties' => ['ServiceParameter' => 'Home', 'Pattern' => '/^home\//i']],
+            ],
+        ],
+    ],
+];
 ```
 
 ### External Configuration File

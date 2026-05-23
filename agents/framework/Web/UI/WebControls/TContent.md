@@ -26,7 +26,7 @@ TContent and TContentPlaceHolder work together as a decoration pattern:
 
 ## Core Properties
 - `ID` (string): Unique identifier for content block (required)
-- `TemplateControl` ([TTemplateControl](./TTemplateControl.md)): Template control that owns this content
+- `TemplateControl` ([TTemplateControl](../TTemplateControl.md)): Template control that owns this content
 - `Parent` (TControl): Parent control in hierarchy
 
 ## Core Methods

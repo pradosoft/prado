@@ -12,8 +12,8 @@ TEventContent loads child controls by raising a broadcast event ('fx' global eve
 
 ## Key Properties/Methods
 
-- `BroadcastEvent` - The event name to raise for loading child controls
-- `createChildControls()` - Raises the broadcast event for handlers to add controls
+- `BroadcastEvent` (stored in controlstate) - The `fx` event name to raise during `createChildControls`. Handlers receive `$this` as sender and a `TEventParameter` wrapping the `Controls` list as `$param`.
+- `createChildControls()` - Raises the configured broadcast event; then calls `parent::createChildControls()`.
 
 ## See Also
 

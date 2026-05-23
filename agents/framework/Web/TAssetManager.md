@@ -17,17 +17,54 @@ TAssetManager provides a scheme to allow web clients visiting private files that
 - Uses performance mode to skip timestamp checks when appropriate
 - Generates hashed paths for published assets to avoid conflicts
 - Supports tar file extraction and publishing
+- Supports symbolic-link publishing (`LinkAssets`) and timestamp-versioned URLs (`AppendTimestamp`) — @since 4.3.3
 
 ## Configuration
 ### XML Format
 ```xml
-<module id="asset" BasePath="Application.assets" BaseUrl="/assets" />
+<modules>
+    <module id="asset" class="Prado\Web\TAssetManager"
+        BasePath="Application.assets" BaseUrl="/assets"
+        LinkAssets="false" AppendTimestamp="false" TimestampVar="v" />
+</modules>
+```
+
+**PHP equivalent:**
+```php
+return [
+    'modules' => [
+        'asset' => [
+            'class' => 'Prado\Web\TAssetManager',
+            'properties' => [
+                'BasePath' => 'Application.assets',
+                'BaseUrl' => '/assets',
+            ],
+        ],
+    ],
+];
 ```
 
 ### Properties
-- `BasePath`: The root directory storing published asset files (default: 'assets')
-- `BaseUrl`: The base URL for accessing the publishing directory (default: '/assets')
-- `CheckTimestamp`: Whether to use timestamp checking (default: false)
+
+**Existing:**
+- `BasePath`: The root directory storing published asset files (default: `'assets'`)
+- `BaseUrl`: The base URL for accessing the publishing directory
+- `CheckTimestamp`: Whether to use modification-time checking (default: `false`)
+
+**New in 4.3.3:**
+- `LinkAssets` (bool): Use symbolic links instead of copying files when publishing. Default: `false`.
+- `ForceCopy` (bool): Copy asset files even if they already exist in the target directory. Default: `false`.
+- `AppendTimestamp` (bool): Append `?{TimestampVar}={mtime}` to every published single-file asset URL for cache-busting. Default: `false`.
+- `TimestampVar` (string): Query parameter name used when `AppendTimestamp` is true. Default: `'v'`.
+- `HashCallback` (?callable): Custom callback for generating the asset directory hash.
+- `BeforeCopy` (?callable): Callback invoked before copying each file/directory. Return `false` to skip.
+- `AfterCopy` (?callable): Callback invoked after each file/directory is successfully copied.
+- `AssetMap` (array): Mapping from source asset files (keys) to target asset files (values).
+- `Only` (?array): Glob patterns that file paths must match to be copied.
+- `Except` (?array): Glob patterns that exclude files from being copied.
+- `CaseSensitive` (bool): Whether `Only`/`Except` patterns are case sensitive. Default: `true`.
+- `FileMode` (?int): Unix permissions for newly published asset files.
+- `DirMode` (int): Unix permissions for newly created asset directories. Defaults to `Prado::getDefaultDirPermissions()`.
 
 ## Core Methods
 ### Initialization
@@ -51,6 +88,6 @@ TAssetManager provides a scheme to allow web clients visiting private files that
 - Uses default file/directory permissions from [Prado](../Prado.md)::getDefault{Dir,File}Permissions()
 
 ## Exception Handling
-- [TConfigurationException](../../Exceptions/TConfigurationException.md): Thrown when BasePath is invalid or not writable
-- [TInvalidDataValueException](../../Exceptions/TInvalidDataValueException.md): Thrown for invalid file paths or tar checksums
-- [TIOException](../../Exceptions/TIOException.md): Thrown for invalid tar files
+- [TConfigurationException](../Exceptions/TConfigurationException.md): Thrown when BasePath is invalid or not writable
+- [TInvalidDataValueException](../Exceptions/TInvalidDataValueException.md): Thrown for invalid file paths or tar checksums
+- [TIOException](../Exceptions/TIOException.md): Thrown for invalid tar files

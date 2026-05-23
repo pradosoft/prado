@@ -94,14 +94,14 @@ THttpRequest implements ArrayAccess, IteratorAggregate, and Countable interfaces
 
 ## Event Handling
 - `onResolveRequest`: Event for custom request resolution logic
-- Uses [TEventResults](../../Util/TEventResults.md) with EVENT_REVERSE priority for stacking event results
+- Uses [TEventResults](../TEventResults.md) with EVENT_REVERSE priority for stacking event results
 
 ## Integration with Other Components
 - Registered with TApplication as request module via `getApplication()->setRequest()`
 - Works with [TUrlManager](./TUrlManager.md) for URL interpretation and construction  
 - Integrates with [THttpCookieCollection](./THttpCookieCollection.md) for cookie handling
 - Uses [THttpCookie](./THttpCookie.md) for individual cookie objects
-- Interacts with [TSecurityManager](../../Security/TSecurityManager.md) for cookie validation when enabled
+- Interacts with [TSecurityManager](../Security/TSecurityManager.md) for cookie validation when enabled
 
 ## Usage Example
 ```php

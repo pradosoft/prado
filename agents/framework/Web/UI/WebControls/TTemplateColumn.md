@@ -23,4 +23,4 @@ TTemplateColumn customizes the layout of controls in a DataGrid column using tem
 ## See Also
 
 - [TDataGridColumn](./TDataGridColumn.md)
-- [IDataRenderer](./IDataRenderer.md)
+- [IDataRenderer](../../../IDataRenderer.md)

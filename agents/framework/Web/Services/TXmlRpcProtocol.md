@@ -23,4 +23,4 @@ TXmlRpcProtocol implements the XML-RPC protocol for TRpcService. It wraps PHP's 
 
 - [TRpcProtocol](./TRpcProtocol.md) - Base protocol class
 - [TJsonRpcProtocol](./TJsonRpcProtocol.md) - JSON-RPC protocol implementation
-- [TRpcService](../TRpcService.md) - The RPC service that uses these protocols
+- [TRpcService](TRpcService.md) - The RPC service that uses these protocols

@@ -19,4 +19,4 @@ TConditional displays content based on evaluation of a PHP expression. If true, 
 
 ## See Also
 
-- [TControl](./TControl.md)
+- [TControl](../TControl.md)

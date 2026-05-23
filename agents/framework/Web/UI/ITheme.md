@@ -1,7 +1,7 @@
 # Web/UI/ITheme
 
 ### Directories
-[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / **`ITheme`**
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [UI](INDEX.md) / **`ITheme`**
 
 **Location:** `framework/Web/UI/ITheme.php`
 **Namespace:** `Prado\Web\UI`

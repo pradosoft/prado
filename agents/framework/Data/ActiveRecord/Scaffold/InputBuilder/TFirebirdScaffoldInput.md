@@ -28,7 +28,7 @@ Inherits from [`TScaffoldInputCommon`](./TScaffoldInputCommon.md).
 | `SMALLINT`, `INTEGER`, `BIGINT` | `TTextBox` with integer validation |
 | `FLOAT`, `DOUBLE PRECISION`, `DECIMAL`, `NUMERIC`, `DECFLOAT(16)`, `DECFLOAT(34)` | `TTextBox` with float validation |
 | `BOOLEAN` | `TCheckBox` |
-| `CHAR`, `VARCHAR` | Single-line `TTextBox` |
+| `CHAR`, `VARCHAR` | Multiline `TTextBox` |
 | `TEXT`, `BLOB` | Multiline `TTextBox` |
 
 ## Key Methods

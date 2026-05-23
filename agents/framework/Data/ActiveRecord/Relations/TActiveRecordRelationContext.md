@@ -55,13 +55,13 @@ Updates associated records for all relations.
 | Property | Type | Description |
 |----------|------|-------------|
 | `Property` | `string` | The property name for relation results |
-| `SourceRecord` | [`TActiveRecord`](../TActiveRecord.md) | The source record instance |
+| `SourceRecord` | [`TActiveRecord`](../../TActiveRecord.md) | The source record instance |
 | `Relation` | `array` | The relation definition from `$RELATIONS` |
 
 ## See Also
 
 - [TActiveRecordRelation](./TActiveRecordRelation.md)
-- [TActiveRecord](./TActiveRecord.md)
+- [TActiveRecord](../../TActiveRecord.md)
 
 ## Category
 

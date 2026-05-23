@@ -1,7 +1,7 @@
 # Web/UI/IPostBackDataHandler
 
 ### Directories
-[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / **`IPostBackDataHandler`**
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [UI](INDEX.md) / **`IPostBackDataHandler`**
 
 **Location:** `framework/Web/UI/IPostBackDataHandler.php`
 **Namespace:** `Prado\Web\UI`
