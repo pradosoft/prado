@@ -34,8 +34,19 @@ use Prado\Exceptions\TConfigurationException;
  * cache module. It can be accessed via {@see \Prado\TApplication::getCache()}.
  *
  * TAPCCache may be configured in application configuration file as follows
+ * ```xml
+ * <modules>
+ *     <module id="cache" class="Prado\Caching\TAPCCache" />
+ * </modules>
+ * ```
+ *
+ * PHP configuration style:
  * ```php
- * <module id="cache" class="Prado\Caching\TAPCCache" />
+ * return [
+ *     'modules' => [
+ *         'cache' => ['class' => 'Prado\Caching\TAPCCache'],
+ *     ],
+ * ];
  * ```
  *
  * @author Alban Hanry <compte_messagerie@hotmail.com>

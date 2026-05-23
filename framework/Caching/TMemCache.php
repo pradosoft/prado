@@ -74,11 +74,25 @@ use Prado\Xml\TXmlElement;
  * cache module. It can be accessed via {@see \Prado\TApplication::getCache()}.
  *
  * TMemCache may be configured in application configuration file as follows
- * ```php
- * <module id="cache" class="Prado\Caching\TMemCache" Host="localhost" Port="11211" />
+ * ```xml
+ * <modules>
+ *     <module id="cache" class="Prado\Caching\TMemCache" Host="localhost" Port="11211" />
+ * </modules>
  * ```
  * where {@see getHost Host} and {@see getPort Port} are configurable properties
  * of TMemCache.
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'cache' => [
+ *             'class' => 'Prado\Caching\TMemCache',
+ *             'properties' => ['Host' => 'localhost', 'Port' => '11211'],
+ *         ],
+ *     ],
+ * ];
+ * ```
  *
  * By default the Memcached instances are destroyed at the end of the request.
  * To create an instance that persists between requests, set a persistent ID using

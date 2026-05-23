@@ -51,7 +51,7 @@ use Prado\Prado;
  * </modules>
  * ```
  *
- * Or equivalently in application.php:
+ * PHP configuration style:
  * ```php
  * return [
  *     'modules' => [
