@@ -91,6 +91,21 @@ class FirebirdScriptRunner extends DefaultScriptRunner
 			if (strlen($line) === 0) {
 				continue;
 			}
+			// Transaction control statements cannot be executed as SQL via Firebird PDO.
+			// Route them through the PDO API instead and swallow errors (e.g. no active
+			// transaction to commit/rollback) so the script runner never aborts on them.
+			if (preg_match('/^(COMMIT|ROLLBACK)(\s+WORK)?\s*$/i', $line)) {
+				try {
+					if (stripos($line, 'ROLLBACK') === 0) {
+						$connection->getPdoInstance()->rollBack();
+					} else {
+						$connection->getPdoInstance()->commit();
+					}
+				} catch (\Exception $e) {
+					// No active transaction or already committed — safe to ignore.
+				}
+				continue;
+			}
 			try {
 				$connection->createCommand($line)->execute();
 			} catch (\Exception $e) {

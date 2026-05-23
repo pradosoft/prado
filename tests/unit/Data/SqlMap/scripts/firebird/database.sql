@@ -177,4 +177,3 @@ CREATE TABLE Users (
     LastLogon TIMESTAMP
 );
 
-COMMIT;
