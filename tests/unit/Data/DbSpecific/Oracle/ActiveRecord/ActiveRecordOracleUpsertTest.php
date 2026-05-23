@@ -25,7 +25,7 @@ class ActiveRecordOracleUpsertTest extends PHPUnit\Framework\TestCase
 
 	protected function getPradoUnitSetup(): ?string
 	{
-		return 'setupOciConnection';
+		return 'setupOracleConnection';
 	}
 
 	protected function getDatabaseName(): ?string

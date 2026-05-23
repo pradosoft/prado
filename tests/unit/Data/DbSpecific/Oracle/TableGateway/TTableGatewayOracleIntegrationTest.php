@@ -40,7 +40,7 @@ class TTableGatewayOracleIntegrationTest extends PHPUnit\Framework\TestCase
 			new TApplication(__DIR__ . '/../../../../Security/app', false, TApplication::CONFIG_TYPE_PHP);
 			$booted = true;
 		}
-		$conn = PradoUnit::setupOciConnection();
+		$conn = PradoUnit::setupOracleConnection();
 		if (!$conn instanceof TDbConnection) {
 			return;
 		}

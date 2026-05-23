@@ -37,7 +37,7 @@ class TDbDriverCapabilitiesOracleIntegrationTest extends PHPUnit\Framework\TestC
 
 	protected function getPradoUnitSetup(): ?string
 	{
-		return 'setupOciConnection';
+		return 'setupOracleConnection';
 	}
 
 	protected function getDatabaseName(): ?string
@@ -93,54 +93,54 @@ class TDbDriverCapabilitiesOracleIntegrationTest extends PHPUnit\Framework\TestC
 	// Static capability flags
 	// -----------------------------------------------------------------------
 
-	public function testOciSupportsCharset(): void
+	public function testOracleSupportsCharset(): void
 	{
 		$this->assertTrue(TDbDriverCapabilities::supportsCharset('oci'));
 	}
 
-	public function testOciHasAutoCommitAttribute(): void
+	public function testOracleHasAutoCommitAttribute(): void
 	{
 		$this->assertTrue(TDbDriverCapabilities::hasAutoCommitAttribute('oci'));
 	}
 
 
-	public function testOciRequiresNoPreBeginTransactionFlush(): void
+	public function testOracleRequiresNoPreBeginTransactionFlush(): void
 	{
 		$this->assertFalse(TDbDriverCapabilities::requiresPreBeginTransactionFlush('oci'));
 	}
 
-	public function testOciRequiresNoPostTransactionFlush(): void
+	public function testOracleRequiresNoPostTransactionFlush(): void
 	{
 		$this->assertFalse(TDbDriverCapabilities::requiresPostTransactionFlush('oci'));
 	}
 
-	public function testOciDoesNotSupportRuntimeCharsetSet(): void
+	public function testOracleDoesNotSupportRuntimeCharsetSet(): void
 	{
 		// Oracle charset is configured at DSN level; no runtime SQL command exists.
 		$this->assertFalse(TDbDriverCapabilities::supportsRuntimeCharsetSet('oci'));
 	}
 
-	public function testOciRequiresNoPostConnectCharset(): void
+	public function testOracleRequiresNoPostConnectCharset(): void
 	{
 		$this->assertFalse(TDbDriverCapabilities::requiresPostConnectCharset('oci'));
 	}
 
-	public function testOciCharsetSetSqlIsNull(): void
+	public function testOracleCharsetSetSqlIsNull(): void
 	{
 		$this->assertNull(TDbDriverCapabilities::getCharsetSetSql('oci'));
 	}
 
-	public function testOciCharsetPragmaSqlIsNull(): void
+	public function testOracleCharsetPragmaSqlIsNull(): void
 	{
 		$this->assertNull(TDbDriverCapabilities::getCharsetPragmaSql('oci'));
 	}
 
-	public function testOciCharsetDsnParamIsCharset(): void
+	public function testOracleCharsetDsnParamIsCharset(): void
 	{
 		$this->assertSame('charset', TDbDriverCapabilities::getCharsetDsnParam('oci'));
 	}
 
-	public function testOciCharsetDsnPatternMatchesCharsetParam(): void
+	public function testOracleCharsetDsnPatternMatchesCharsetParam(): void
 	{
 		$pattern = TDbDriverCapabilities::getCharsetDsnPattern('oci');
 		$this->assertNotNull($pattern);
@@ -148,20 +148,20 @@ class TDbDriverCapabilitiesOracleIntegrationTest extends PHPUnit\Framework\TestC
 		$this->assertSame('AL32UTF8', $m[1]);
 	}
 
-	public function testOciCharsetQuerySqlIsNull(): void
+	public function testOracleCharsetQuerySqlIsNull(): void
 	{
 		// Oracle does not support a simple runtime charset query via PDO.
 		$this->assertNull(TDbDriverCapabilities::getCharsetQuerySql('oci'));
 	}
 
-	public function testOciGetListTablesSqlContainsUserTables(): void
+	public function testOracleGetListTablesSqlContainsUserTables(): void
 	{
 		$sql = TDbDriverCapabilities::getListTablesSql('oci');
 		$this->assertNotNull($sql);
 		$this->assertStringContainsString('user_tables', $sql);
 	}
 
-	public function testOciMetaDataClassName(): void
+	public function testOracleMetaDataClassName(): void
 	{
 		$this->assertSame(TOracleMetaData::class, TDbDriverCapabilities::getMetaDataClass('oci'));
 	}
@@ -170,62 +170,62 @@ class TDbDriverCapabilitiesOracleIntegrationTest extends PHPUnit\Framework\TestC
 	// Charset resolution
 	// -----------------------------------------------------------------------
 
-	public function testOciResolveUtf8ReturnsAl32Utf8(): void
+	public function testOracleResolveUtf8ReturnsAl32Utf8(): void
 	{
 		$this->assertSame('AL32UTF8', TDbDriverCapabilities::resolveCharset('UTF-8', 'oci'));
 	}
 
-	public function testOciResolveUtf16ReturnsAl16Utf16(): void
+	public function testOracleResolveUtf16ReturnsAl16Utf16(): void
 	{
 		$this->assertSame('AL16UTF16', TDbDriverCapabilities::resolveCharset('UTF-16', 'oci'));
 	}
 
-	public function testOciResolveLatin1ReturnsWe8Iso8859P1(): void
+	public function testOracleResolveLatin1ReturnsWe8Iso8859P1(): void
 	{
 		$this->assertSame('WE8ISO8859P1', TDbDriverCapabilities::resolveCharset('ISO-8859-1', 'oci'));
 	}
 
-	public function testOciResolveLatin2ReturnsEe8Iso8859P2(): void
+	public function testOracleResolveLatin2ReturnsEe8Iso8859P2(): void
 	{
 		$this->assertSame('EE8ISO8859P2', TDbDriverCapabilities::resolveCharset('ISO-8859-2', 'oci'));
 	}
 
-	public function testOciResolveAsciiReturnsUs7Ascii(): void
+	public function testOracleResolveAsciiReturnsUs7Ascii(): void
 	{
 		$this->assertSame('US7ASCII', TDbDriverCapabilities::resolveCharset('ASCII', 'oci'));
 	}
 
-	public function testOciResolveWin1250ReturnsEe8Mswin1250(): void
+	public function testOracleResolveWin1250ReturnsEe8Mswin1250(): void
 	{
 		$this->assertSame('EE8MSWIN1250', TDbDriverCapabilities::resolveCharset('Windows-1250', 'oci'));
 	}
 
-	public function testOciResolveWin1251ReturnsCl8Mswin1251(): void
+	public function testOracleResolveWin1251ReturnsCl8Mswin1251(): void
 	{
 		$this->assertSame('CL8MSWIN1251', TDbDriverCapabilities::resolveCharset('Windows-1251', 'oci'));
 	}
 
-	public function testOciResolveWin1252ReturnsWe8Mswin1252(): void
+	public function testOracleResolveWin1252ReturnsWe8Mswin1252(): void
 	{
 		$this->assertSame('WE8MSWIN1252', TDbDriverCapabilities::resolveCharset('Windows-1252', 'oci'));
 	}
 
-	public function testOciResolveKoi8rReturnsCl8Koi8r(): void
+	public function testOracleResolveKoi8rReturnsCl8Koi8r(): void
 	{
 		$this->assertSame('CL8KOI8R', TDbDriverCapabilities::resolveCharset('KOI8-R', 'oci'));
 	}
 
-	public function testOciResolveKoi8uReturnsCl8Koi8u(): void
+	public function testOracleResolveKoi8uReturnsCl8Koi8u(): void
 	{
 		$this->assertSame('CL8KOI8U', TDbDriverCapabilities::resolveCharset('KOI8-U', 'oci'));
 	}
 
-	public function testOciUnresolveAl32Utf8ReturnsUtf8Standard(): void
+	public function testOracleUnresolveAl32Utf8ReturnsUtf8Standard(): void
 	{
 		$this->assertSame('UTF-8', TDbDriverCapabilities::unresolveCharset('AL32UTF8', 'oci'));
 	}
 
-	public function testOciUnresolveWe8Iso8859P1ReturnsLatin1Standard(): void
+	public function testOracleUnresolveWe8Iso8859P1ReturnsLatin1Standard(): void
 	{
 		$this->assertSame('ISO-8859-1', TDbDriverCapabilities::unresolveCharset('WE8ISO8859P1', 'oci'));
 	}
@@ -239,7 +239,7 @@ class TDbDriverCapabilitiesOracleIntegrationTest extends PHPUnit\Framework\TestC
 	// 'UTF-8' → 'AL32UTF8').  This exercises the DSN-injection path.
 	// -----------------------------------------------------------------------
 
-	public function testOciDatabaseCharsetReturnsAl32Utf8WhenUtf8Configured(): void
+	public function testOracleDatabaseCharsetReturnsAl32Utf8WhenUtf8Configured(): void
 	{
 		$conn = $this->openOci('UTF-8');
 		// getCharsetQuerySql is null for oci; getDatabaseCharset() returns
@@ -248,21 +248,21 @@ class TDbDriverCapabilitiesOracleIntegrationTest extends PHPUnit\Framework\TestC
 		$conn->Active = false;
 	}
 
-	public function testOciDatabaseCharsetReturnsWe8Iso8859P1WhenLatin1Configured(): void
+	public function testOracleDatabaseCharsetReturnsWe8Iso8859P1WhenLatin1Configured(): void
 	{
 		$conn = $this->openOci('ISO-8859-1');
 		$this->assertSame('WE8ISO8859P1', $conn->DatabaseCharset);
 		$conn->Active = false;
 	}
 
-	public function testOciSupportsCharsetFlagMatchesLiveDriver(): void
+	public function testOracleSupportsCharsetFlagMatchesLiveDriver(): void
 	{
 		$conn = $this->openOci();
 		$this->assertTrue(TDbDriverCapabilities::supportsCharset($conn->getDriverName()));
 		$conn->Active = false;
 	}
 
-	public function testOciDoesNotSupportRuntimeCharsetSetLive(): void
+	public function testOracleDoesNotSupportRuntimeCharsetSetLive(): void
 	{
 		// supportsRuntimeCharsetSet is false for oci; verify this matches the live driver.
 		$conn = $this->openOci('UTF-8');
@@ -274,12 +274,12 @@ class TDbDriverCapabilitiesOracleIntegrationTest extends PHPUnit\Framework\TestC
 	// Scaffold factory
 	// -----------------------------------------------------------------------
 
-	public function testOciScaffoldInputClass(): void
+	public function testOracleScaffoldInputClass(): void
 	{
 		$this->assertSame('TOracleScaffoldInput', TDbDriverCapabilities::getScaffoldInputClass('oci'));
 	}
 
-	public function testOciScaffoldInputFile(): void
+	public function testOracleScaffoldInputFile(): void
 	{
 		$this->assertSame('/TOracleScaffoldInput.php', TDbDriverCapabilities::getScaffoldInputFile('oci'));
 	}
@@ -288,7 +288,7 @@ class TDbDriverCapabilitiesOracleIntegrationTest extends PHPUnit\Framework\TestC
 	// Live connection — MetaData factory
 	// -----------------------------------------------------------------------
 
-	public function testOciMetaDataInstanceIsTOracleMetaData(): void
+	public function testOracleMetaDataInstanceIsTOracleMetaData(): void
 	{
 		$conn = $this->openOci();
 		$meta = TDbMetaData::getInstance($conn);
@@ -300,7 +300,7 @@ class TDbDriverCapabilitiesOracleIntegrationTest extends PHPUnit\Framework\TestC
 	// Live connection — list tables
 	// -----------------------------------------------------------------------
 
-	public function testOciListTablesQueryReturnsArray(): void
+	public function testOracleListTablesQueryReturnsArray(): void
 	{
 		$conn = $this->openOci();
 		$result = $conn->createCommand(TDbDriverCapabilities::getListTablesSql('oci'))->queryAll();
@@ -308,7 +308,7 @@ class TDbDriverCapabilitiesOracleIntegrationTest extends PHPUnit\Framework\TestC
 		$conn->Active = false;
 	}
 
-	public function testOciListTablesQueryReturnsCreatedTable(): void
+	public function testOracleListTablesQueryReturnsCreatedTable(): void
 	{
 		// Oracle stores table names in uppercase in user_tables.
 		// The capability SQL is: SELECT table_name FROM user_tables.
@@ -338,7 +338,7 @@ class TDbDriverCapabilitiesOracleIntegrationTest extends PHPUnit\Framework\TestC
 		$conn->Active = false;
 	}
 
-	public function testOciListTablesQueryDoesNotReturnDroppedTable(): void
+	public function testOracleListTablesQueryDoesNotReturnDroppedTable(): void
 	{
 		$conn = $this->openOci();
 
@@ -360,7 +360,7 @@ class TDbDriverCapabilitiesOracleIntegrationTest extends PHPUnit\Framework\TestC
 		$conn->Active = false;
 	}
 
-	public function testOciListTablesQueryExcludesSystemTables(): void
+	public function testOracleListTablesQueryExcludesSystemTables(): void
 	{
 		// user_tables only returns tables owned by the current user — not system
 		// tables from SYS or SYSTEM.
@@ -378,7 +378,7 @@ class TDbDriverCapabilitiesOracleIntegrationTest extends PHPUnit\Framework\TestC
 	// Live connection — transactions
 	// -----------------------------------------------------------------------
 
-	public function testOciTransactionCommitSucceeds(): void
+	public function testOracleTransactionCommitSucceeds(): void
 	{
 		$conn = $this->openOci();
 		$tx = $conn->beginTransaction();
@@ -388,7 +388,7 @@ class TDbDriverCapabilitiesOracleIntegrationTest extends PHPUnit\Framework\TestC
 		$conn->Active = false;
 	}
 
-	public function testOciTransactionRollbackSucceeds(): void
+	public function testOracleTransactionRollbackSucceeds(): void
 	{
 		$conn = $this->openOci();
 		$tx = $conn->beginTransaction();
@@ -405,7 +405,7 @@ class TDbDriverCapabilitiesOracleIntegrationTest extends PHPUnit\Framework\TestC
 	// true; AutoCommit reads the live session flag and returns true by default.
 	// -----------------------------------------------------------------------
 
-	public function testOciHasAutoCommitAttributeViaConnection(): void
+	public function testOracleHasAutoCommitAttributeViaConnection(): void
 	{
 		$conn = $this->openOci();
 		$this->assertTrue(
@@ -415,7 +415,7 @@ class TDbDriverCapabilitiesOracleIntegrationTest extends PHPUnit\Framework\TestC
 		$conn->Active = false;
 	}
 
-	public function testOciAutoCommitIsTrueByDefault(): void
+	public function testOracleAutoCommitIsTrueByDefault(): void
 	{
 		$conn = $this->openOci();
 		$this->assertTrue(
@@ -432,7 +432,7 @@ class TDbDriverCapabilitiesOracleIntegrationTest extends PHPUnit\Framework\TestC
 	// any explicit transaction and do not need to be wrapped in one.
 	// -----------------------------------------------------------------------
 
-	public function testOciTxBeginTransactionIsActiveAfterReuseViaCommit(): void
+	public function testOracleTxBeginTransactionIsActiveAfterReuseViaCommit(): void
 	{
 		// After commit(), calling beginTransaction() on the same object reactivates it.
 		$conn = $this->openOci();
@@ -447,7 +447,7 @@ class TDbDriverCapabilitiesOracleIntegrationTest extends PHPUnit\Framework\TestC
 		$conn->Active = false;
 	}
 
-	public function testOciTxBeginTransactionIsActiveAfterReuseViaRollback(): void
+	public function testOracleTxBeginTransactionIsActiveAfterReuseViaRollback(): void
 	{
 		// After rollback(), calling beginTransaction() on the same object reactivates it.
 		$conn = $this->openOci();
@@ -462,7 +462,7 @@ class TDbDriverCapabilitiesOracleIntegrationTest extends PHPUnit\Framework\TestC
 		$conn->Active = false;
 	}
 
-	public function testOciTxBeginTransactionReuseIsolatesWorkUnits(): void
+	public function testOracleTxBeginTransactionReuseIsolatesWorkUnits(): void
 	{
 		// Two sequential work units on the same object: first commits (row persists),
 		// second rolls back (row discarded). Oracle DDL auto-commits.
@@ -496,7 +496,7 @@ class TDbDriverCapabilitiesOracleIntegrationTest extends PHPUnit\Framework\TestC
 		$conn->Active = false;
 	}
 
-	public function testOciTxBeginTransactionThrowsWhenSuperseded(): void
+	public function testOracleTxBeginTransactionThrowsWhenSuperseded(): void
 	{
 		// After $conn->beginTransaction() supersedes $tx1, calling
 		// $tx1->beginTransaction() must throw TDbException.
@@ -516,7 +516,7 @@ class TDbDriverCapabilitiesOracleIntegrationTest extends PHPUnit\Framework\TestC
 		}
 	}
 
-	public function testOciGetLastTransactionReflectsNewestObject(): void
+	public function testOracleGetLastTransactionReflectsNewestObject(): void
 	{
 		// After $conn->beginTransaction() creates $tx2, getLastTransaction()
 		// must return $tx2, not the superseded $tx1.

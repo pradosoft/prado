@@ -31,7 +31,7 @@ class TDbMetaDataOracleIntegrationTest extends PHPUnit\Framework\TestCase
 
 	private function openOracle(): TDbConnection
 	{
-		$conn = PradoUnit::setupOciConnection();
+		$conn = PradoUnit::setupOracleConnection();
 		if (is_string($conn)) {
 			$this->markTestSkipped($conn);
 		}
@@ -73,7 +73,7 @@ class TDbMetaDataOracleIntegrationTest extends PHPUnit\Framework\TestCase
 	// TDbMetaData::getInstance()
 	// -----------------------------------------------------------------------
 
-	public function testGetInstanceReturnsOracleMetaData(): void
+	public function testOracleGetInstanceReturnsOracleMetaData(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$this->assertInstanceOf(TOracleMetaData::class, $meta);
@@ -83,21 +83,21 @@ class TDbMetaDataOracleIntegrationTest extends PHPUnit\Framework\TestCase
 	// getTableInfo() — TDbTableInfo
 	// -----------------------------------------------------------------------
 
-	public function testGetTableInfoReturnsTableInfo(): void
+	public function testOracleGetTableInfoReturnsTableInfo(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('META_TEST');
 		$this->assertInstanceOf(\Prado\Data\Common\TDbTableInfo::class, $info);
 	}
 
-	public function testGetTableInfoTableName(): void
+	public function testOracleGetTableInfoTableName(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('META_TEST');
 		$this->assertSame('META_TEST', $info->getTableName());
 	}
 
-	public function testGetTableInfoColumnNamesContainsAllColumns(): void
+	public function testOracleGetTableInfoColumnNamesContainsAllColumns(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('META_TEST');
@@ -110,7 +110,7 @@ class TDbMetaDataOracleIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertCount(4, $names);
 	}
 
-	public function testGetTableInfoPrimaryKeys(): void
+	public function testOracleGetTableInfoPrimaryKeys(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('META_TEST');
@@ -119,7 +119,7 @@ class TDbMetaDataOracleIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertCount(1, $pks);
 	}
 
-	public function testGetTableInfoGetColumnReturnsColumn(): void
+	public function testOracleGetTableInfoGetColumnReturnsColumn(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('META_TEST');
@@ -128,7 +128,7 @@ class TDbMetaDataOracleIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertInstanceOf(\Prado\Data\Common\TDbTableColumn::class, $col);
 	}
 
-	public function testGetTableInfoGetColumnThrowsForMissingColumn(): void
+	public function testOracleGetTableInfoGetColumnThrowsForMissingColumn(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('META_TEST');
@@ -136,7 +136,7 @@ class TDbMetaDataOracleIntegrationTest extends PHPUnit\Framework\TestCase
 		$info->getColumn('nonexistent_column');
 	}
 
-	public function testGetTableInfoCachingReturnsSameObject(): void
+	public function testOracleGetTableInfoCachingReturnsSameObject(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info1 = $meta->getTableInfo('META_TEST');
@@ -144,7 +144,7 @@ class TDbMetaDataOracleIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertSame($info1, $info2);
 	}
 
-	public function testGetTableInfoThrowsForInvalidTable(): void
+	public function testOracleGetTableInfoThrowsForInvalidTable(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$this->expectException(\Prado\Exceptions\TDbException::class);
@@ -155,7 +155,7 @@ class TDbMetaDataOracleIntegrationTest extends PHPUnit\Framework\TestCase
 	// TDbTableColumn — column metadata
 	// -----------------------------------------------------------------------
 
-	public function testPrimaryKeyColumnIsPrimaryKey(): void
+	public function testOraclePrimaryKeyColumnIsPrimaryKey(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('META_TEST');
@@ -163,7 +163,7 @@ class TDbMetaDataOracleIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($col->getIsPrimaryKey());
 	}
 
-	public function testNonPrimaryKeyColumnIsNotPrimaryKey(): void
+	public function testOracleNonPrimaryKeyColumnIsNotPrimaryKey(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('META_TEST');
@@ -171,7 +171,7 @@ class TDbMetaDataOracleIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertFalse($col->getIsPrimaryKey());
 	}
 
-	public function testPrimaryKeyColumnDbType(): void
+	public function testOraclePrimaryKeyColumnDbType(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('META_TEST');
@@ -180,7 +180,7 @@ class TDbMetaDataOracleIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsStringIgnoringCase('number', $col->getDbType());
 	}
 
-	public function testVarcharColumnDbType(): void
+	public function testOracleVarcharColumnDbType(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('META_TEST');
@@ -188,7 +188,7 @@ class TDbMetaDataOracleIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsStringIgnoringCase('varchar', $col->getDbType());
 	}
 
-	public function testNotNullColumnDoesNotAllowNull(): void
+	public function testOracleNotNullColumnDoesNotAllowNull(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('META_TEST');
@@ -196,7 +196,7 @@ class TDbMetaDataOracleIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertFalse($col->getAllowNull());
 	}
 
-	public function testNullableColumnAllowsNull(): void
+	public function testOracleNullableColumnAllowsNull(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('META_TEST');
@@ -204,7 +204,7 @@ class TDbMetaDataOracleIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($col->getAllowNull());
 	}
 
-	public function testColumnWithDefaultValueHasDefault(): void
+	public function testOracleColumnWithDefaultValueHasDefault(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('META_TEST');
@@ -212,7 +212,7 @@ class TDbMetaDataOracleIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertNotNull($col->getDefaultValue());
 	}
 
-	public function testColumnWithoutDefaultHasNullDefault(): void
+	public function testOracleColumnWithoutDefaultHasNullDefault(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$info = $meta->getTableInfo('META_TEST');
@@ -225,7 +225,7 @@ class TDbMetaDataOracleIntegrationTest extends PHPUnit\Framework\TestCase
 	// findTableNames()
 	// -----------------------------------------------------------------------
 
-	public function testFindTableNamesContainsMetaTest(): void
+	public function testOracleFindTableNamesContainsMetaTest(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$tables = $meta->findTableNames();
@@ -233,7 +233,7 @@ class TDbMetaDataOracleIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertContains('META_TEST', $tables);
 	}
 
-	public function testFindTableNamesReturnsArray(): void
+	public function testOracleFindTableNamesReturnsArray(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$tables = $meta->findTableNames();
@@ -244,7 +244,7 @@ class TDbMetaDataOracleIntegrationTest extends PHPUnit\Framework\TestCase
 	// createCommandBuilder()
 	// -----------------------------------------------------------------------
 
-	public function testCreateCommandBuilderReturnsBuilder(): void
+	public function testOracleCreateCommandBuilderReturnsBuilder(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$builder = $meta->createCommandBuilder('META_TEST');
@@ -255,7 +255,7 @@ class TDbMetaDataOracleIntegrationTest extends PHPUnit\Framework\TestCase
 	// Quoting helpers
 	// -----------------------------------------------------------------------
 
-	public function testQuoteTableName(): void
+	public function testOracleQuoteTableName(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$quoted = $meta->quoteTableName('FOO');
@@ -263,14 +263,14 @@ class TDbMetaDataOracleIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertSame('FOO', $quoted);
 	}
 
-	public function testQuoteColumnName(): void
+	public function testOracleQuoteColumnName(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$quoted = $meta->quoteColumnName('BAR');
 		$this->assertSame('BAR', $quoted);
 	}
 
-	public function testQuoteColumnAlias(): void
+	public function testOracleQuoteColumnAlias(): void
 	{
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$quoted = $meta->quoteColumnAlias('BAZ');

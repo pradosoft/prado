@@ -4,7 +4,7 @@ require_once(__DIR__ . '/../../../../PradoUnit.php');
 
 use Prado\Data\Common\Oracle\TOracleMetaData;
 
-class OciColumnTest extends PHPUnit\Framework\TestCase
+class OracleColumnTest extends PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 
@@ -12,12 +12,12 @@ class OciColumnTest extends PHPUnit\Framework\TestCase
 
 	protected function getPradoUnitSetup(): ?string
 	{
-		return 'setupOciConnection';
+		return 'setupOracleConnection';
 	}
 
 	protected function getDatabaseName(): ?string
 	{
-		// Service name resolved inside setupOciConnection via ORACLE_SERVICE_NAME env var.
+		// Service name resolved inside setupOracleConnection via ORACLE_SERVICE_NAME env var.
 		return null;
 	}
 
@@ -43,7 +43,7 @@ class OciColumnTest extends PHPUnit\Framework\TestCase
 		return static::$ociMetaData;
 	}
 
-	public function test_columns()
+	public function test_oracle_columns()
 	{
 		$meta = $this->create_meta_data();
 		$table = $meta->getTableInfo('table1');
@@ -146,7 +146,7 @@ class OciColumnTest extends PHPUnit\Framework\TestCase
 		$this->assertColumn($columns, $table);
 	}
 
-	public function test_find_table_names()
+	public function test_oracle_find_table_names()
 	{
 		$meta = $this->create_meta_data();
 		$names = $meta->findTableNames('PRADO_UNITEST');
@@ -156,7 +156,7 @@ class OciColumnTest extends PHPUnit\Framework\TestCase
 		$this->assertContains('ADDRESS', $names);
 	}
 
-	public function test_command_builder_insert()
+	public function test_oracle_command_builder_insert()
 	{
 		$meta = $this->create_meta_data();
 		$builder = $meta->createCommandBuilder('table1');
@@ -168,7 +168,7 @@ class OciColumnTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('INSERT INTO', $insert->Text);
 	}
 
-	public function test_select_limit_and_offset()
+	public function test_oracle_select_limit_and_offset()
 	{
 		$meta = $this->create_meta_data();
 		$builder = $meta->createCommandBuilder('table1');

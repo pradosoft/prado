@@ -36,7 +36,7 @@ class OracleInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 
 	protected function getPradoUnitSetup(): ?string
 	{
-		return 'setupOciConnection';
+		return 'setupOracleConnection';
 	}
 
 	protected function getDatabaseName(): ?string
@@ -74,7 +74,7 @@ class OracleInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Transaction requirement
 	// -----------------------------------------------------------------------
 
-	public function test_throws_TDbException_without_active_transaction(): void
+	public function test_oracle_throws_TDbException_without_active_transaction(): void
 	{
 		$this->expectException(TDbException::class);
 		// No transaction started — must throw
@@ -85,7 +85,7 @@ class OracleInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// SQL generation
 	// -----------------------------------------------------------------------
 
-	public function test_sql_uses_merge_when_not_matched_then_insert(): void
+	public function test_oracle_sql_uses_merge_when_not_matched_then_insert(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('PRADO_UNITEST.upsert_test', self::$conn);
@@ -102,7 +102,7 @@ class OracleInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertStringNotContainsString('WHEN MATCHED', $capturedSql);
 	}
 
-	public function test_sql_using_select_contains_from_dual(): void
+	public function test_oracle_sql_using_select_contains_from_dual(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('PRADO_UNITEST.upsert_test', self::$conn);
@@ -116,7 +116,7 @@ class OracleInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('FROM DUAL', $capturedSql);
 	}
 
-	public function test_sql_uses_bare_aliases_without_as_keyword(): void
+	public function test_oracle_sql_uses_bare_aliases_without_as_keyword(): void
 	{
 		// Oracle MERGE uses bare t / s aliases (useAsAlias=false)
 		$capturedSql = null;
@@ -135,7 +135,7 @@ class OracleInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertDoesNotMatchRegularExpression('/\)\s+AS\s+s\b/i', $capturedSql);
 	}
 
-	public function test_sql_has_no_rdb_or_sysdummy_source(): void
+	public function test_oracle_sql_has_no_rdb_or_sysdummy_source(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('PRADO_UNITEST.upsert_test', self::$conn);
@@ -154,7 +154,7 @@ class OracleInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Behavioral: insert within transaction
 	// -----------------------------------------------------------------------
 
-	public function test_new_row_inserted_within_transaction(): void
+	public function test_oracle_new_row_inserted_within_transaction(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
@@ -167,7 +167,7 @@ class OracleInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(10, (int) $lc['score']);
 	}
 
-	public function test_new_row_returns_true_for_natural_key_table(): void
+	public function test_oracle_new_row_returns_true_for_natural_key_table(): void
 	{
 		$txn    = self::$conn->beginTransaction();
 		$result = self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
@@ -181,7 +181,7 @@ class OracleInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Behavioral: duplicate ignored
 	// -----------------------------------------------------------------------
 
-	public function test_duplicate_pk_returns_false(): void
+	public function test_oracle_duplicate_pk_returns_false(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
@@ -191,7 +191,7 @@ class OracleInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertFalse($result);
 	}
 
-	public function test_duplicate_does_not_increase_row_count(): void
+	public function test_oracle_duplicate_does_not_increase_row_count(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
@@ -202,7 +202,7 @@ class OracleInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(1, $count);
 	}
 
-	public function test_existing_row_unchanged_after_ignored_insert(): void
+	public function test_oracle_existing_row_unchanged_after_ignored_insert(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
@@ -218,7 +218,7 @@ class OracleInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Mixed inserts
 	// -----------------------------------------------------------------------
 
-	public function test_only_conflicting_row_ignored_others_inserted(): void
+	public function test_oracle_only_conflicting_row_ignored_others_inserted(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
@@ -232,7 +232,7 @@ class OracleInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(2, $count);
 	}
 
-	public function test_transaction_rollback_undoes_insert(): void
+	public function test_oracle_transaction_rollback_undoes_insert(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
@@ -246,7 +246,7 @@ class OracleInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Events
 	// -----------------------------------------------------------------------
 
-	public function test_oncreatecommand_event_is_raised(): void
+	public function test_oracle_oncreatecommand_event_is_raised(): void
 	{
 		$fired = false;
 		$gw = new TTableGateway('PRADO_UNITEST.upsert_test', self::$conn);
@@ -262,7 +262,7 @@ class OracleInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($fired);
 	}
 
-	public function test_onexecutecommand_event_is_raised(): void
+	public function test_oracle_onexecutecommand_event_is_raised(): void
 	{
 		$captured = null;
 		$gw = new TTableGateway('PRADO_UNITEST.upsert_test', self::$conn);
@@ -278,7 +278,7 @@ class OracleInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertNotNull($captured);
 	}
 
-	public function test_onexecutecommand_can_override_result(): void
+	public function test_oracle_onexecutecommand_can_override_result(): void
 	{
 		$gw = new TTableGateway('PRADO_UNITEST.upsert_test', self::$conn);
 		$gw->OnExecuteCommand[] = function ($sender, $param): void {

@@ -23,18 +23,18 @@ use Prado\TApplication;
  * ---------------------
  * ORACLE_SERVICE_NAME  Oracle PDB service name (default: FREEPDB1).
  */
-class TDbConnectionCharsetOciIntegrationTest extends PHPUnit\Framework\TestCase
+class TDbConnectionCharsetOracleIntegrationTest extends PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 
 	protected function getPradoUnitSetup(): ?string
 	{
-		return 'setupOciConnection';
+		return 'setupOracleConnection';
 	}
 
 	protected function getDatabaseName(): ?string
 	{
-		// Service name resolved inside setupOciConnection via ORACLE_SERVICE_NAME env var.
+		// Service name resolved inside setupOracleConnection via ORACLE_SERVICE_NAME env var.
 		return null;
 	}
 
@@ -95,7 +95,7 @@ class TDbConnectionCharsetOciIntegrationTest extends PHPUnit\Framework\TestCase
 	// Tests — charset injected into DSN via applyCharsetToDsn()
 	// -----------------------------------------------------------------------
 
-	public function testOciUtf8ResolvedToAl32Utf8(): void
+	public function testOracleUtf8ResolvedToAl32Utf8(): void
 	{
 		// Universal 'UTF-8' must become Oracle's 'AL32UTF8' in the DSN.
 		$conn = $this->openOci('UTF-8');
@@ -103,7 +103,7 @@ class TDbConnectionCharsetOciIntegrationTest extends PHPUnit\Framework\TestCase
 		$conn->Active = false;
 	}
 
-	public function testOciIso88591ResolvedToWe8Iso8859P1(): void
+	public function testOracleIso88591ResolvedToWe8Iso8859P1(): void
 	{
 		// 'ISO-8859-1' must become Oracle's 'WE8ISO8859P1' in the DSN.
 		$conn = $this->openOci('ISO-8859-1');
@@ -111,7 +111,7 @@ class TDbConnectionCharsetOciIntegrationTest extends PHPUnit\Framework\TestCase
 		$conn->Active = false;
 	}
 
-	public function testOciDriverSpecificNamePassesThrough(): void
+	public function testOracleDriverSpecificNamePassesThrough(): void
 	{
 		// 'AL32UTF8' is already the Oracle-native name; it passes through unchanged.
 		$conn = $this->openOci('AL32UTF8');
@@ -119,7 +119,7 @@ class TDbConnectionCharsetOciIntegrationTest extends PHPUnit\Framework\TestCase
 		$conn->Active = false;
 	}
 
-	public function testOciSetCharsetAfterConnectThrowsException(): void
+	public function testOracleSetCharsetAfterConnectThrowsException(): void
 	{
 		// For oci, charset is DSN-only; setting it after connect is a no-op at
 		// the server level (no SQL command is sent).  The connection stays active.
@@ -132,7 +132,7 @@ class TDbConnectionCharsetOciIntegrationTest extends PHPUnit\Framework\TestCase
 	// getDatabaseCharset() — falls back to resolveCharsetForDriver() for oci
 	// -----------------------------------------------------------------------
 
-	public function testOciGetDatabaseCharsetReturnsAl32Utf8ForUtf8(): void
+	public function testOracleGetDatabaseCharsetReturnsAl32Utf8ForUtf8(): void
 	{
 		// oci has no live-query path; getDatabaseCharset() returns
 		// resolveCharsetForDriver('UTF-8', 'oci') = 'AL32UTF8'.
@@ -141,7 +141,7 @@ class TDbConnectionCharsetOciIntegrationTest extends PHPUnit\Framework\TestCase
 		$conn->Active = false;
 	}
 
-	public function testOciGetDatabaseCharsetReturnsWe8Iso8859P1(): void
+	public function testOracleGetDatabaseCharsetReturnsWe8Iso8859P1(): void
 	{
 		// 'ISO-8859-1' resolves to 'WE8ISO8859P1' for Oracle.
 		$conn = $this->openOci('ISO-8859-1');
@@ -155,7 +155,7 @@ class TDbConnectionCharsetOciIntegrationTest extends PHPUnit\Framework\TestCase
 	// Oracle (pdo_oci) exposes PDO::ATTR_AUTOCOMMIT; TDbConnection can read it.
 	// -----------------------------------------------------------------------
 
-	public function testOciHasAutoCommitAttribute(): void
+	public function testOracleHasAutoCommitAttribute(): void
 	{
 		$conn = $this->openOci();
 		$this->assertTrue(
@@ -165,7 +165,7 @@ class TDbConnectionCharsetOciIntegrationTest extends PHPUnit\Framework\TestCase
 		$conn->Active = false;
 	}
 
-	public function testOciAutoCommitIsTrueByDefault(): void
+	public function testOracleAutoCommitIsTrueByDefault(): void
 	{
 		$conn = $this->openOci();
 		$this->assertTrue(
@@ -175,7 +175,7 @@ class TDbConnectionCharsetOciIntegrationTest extends PHPUnit\Framework\TestCase
 		$conn->Active = false;
 	}
 
-	public function testOciBeginTransactionSucceedsAndRollbackWorks(): void
+	public function testOracleBeginTransactionSucceedsAndRollbackWorks(): void
 	{
 		// PDO::ATTR_AUTOCOMMIT on Oracle reflects the PHP-level session setting and
 		// does NOT transition to false when PDO::beginTransaction() is called.
@@ -187,7 +187,7 @@ class TDbConnectionCharsetOciIntegrationTest extends PHPUnit\Framework\TestCase
 		$conn->Active = false;
 	}
 
-	public function testOciCharsetInjectedIntoDsnWithCharsetParam(): void
+	public function testOracleCharsetInjectedIntoDsnWithCharsetParam(): void
 	{
 		// applyCharsetToDsn() appends ;charset=AL32UTF8 for oci.
 		// The raw ConnectionString (stored before modification) must not contain it.

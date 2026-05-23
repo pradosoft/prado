@@ -17,7 +17,7 @@ class CommandBuilderOracleTest extends PHPUnit\Framework\TestCase
 		return new TOracleCommandBuilder(null, $tableInfo);
 	}
 
-	public function test_no_limit_no_offset()
+	public function test_oracle_no_limit_no_offset()
 	{
 		$builder = $this->make_builder();
 		$sql = 'SELECT username, age FROM accounts';
@@ -27,7 +27,7 @@ class CommandBuilderOracleTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals($sql, $result);
 	}
 
-	public function test_zero_limit_and_offset_returns_unchanged()
+	public function test_oracle_zero_limit_and_offset_returns_unchanged()
 	{
 		$builder = $this->make_builder();
 		$sql = 'SELECT username FROM accounts';
@@ -36,7 +36,7 @@ class CommandBuilderOracleTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals($sql, $result);
 	}
 
-	public function test_limit_and_offset_wraps_with_row_number()
+	public function test_oracle_limit_and_offset_wraps_with_row_number()
 	{
 		$builder = $this->make_builder();
 		$sql = 'SELECT age FROM accounts';
@@ -50,7 +50,7 @@ class CommandBuilderOracleTest extends PHPUnit\Framework\TestCase
 		$this->assertStringStartsWith(' SELECT age FROM', $result);
 	}
 
-	public function test_limit_only_uses_zero_based_offset()
+	public function test_oracle_limit_only_uses_zero_based_offset()
 	{
 		$builder = $this->make_builder();
 		$sql = 'SELECT id FROM accounts';
@@ -63,7 +63,7 @@ class CommandBuilderOracleTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('nn.pradoNUMLIN < 5', $result);
 	}
 
-	public function test_order_by_is_preserved_in_row_number()
+	public function test_oracle_order_by_is_preserved_in_row_number()
 	{
 		$builder = $this->make_builder();
 		$sql = 'SELECT age FROM accounts ORDER BY age DESC';
@@ -77,7 +77,7 @@ class CommandBuilderOracleTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('age DESC', $result);
 	}
 
-	public function test_table_full_name_used_in_subquery()
+	public function test_oracle_table_full_name_used_in_subquery()
 	{
 		$builder = $this->make_builder('MYSCHEMA', 'USERS');
 		$sql = 'SELECT id FROM users';
@@ -87,7 +87,7 @@ class CommandBuilderOracleTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('MYSCHEMA.USERS', $result);
 	}
 
-	public function test_row_number_default_order_is_rownum()
+	public function test_oracle_row_number_default_order_is_rownum()
 	{
 		$builder = $this->make_builder();
 		$sql = 'SELECT age FROM accounts';
