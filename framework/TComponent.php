@@ -1847,8 +1847,9 @@ class TComponent
 	 * Returns the named behavior object.  If the $behaviorname is not found, but is
 	 * an existing class or interface, this will return the first instanceof.
 	 * The name 'asa' stands for 'as a'.
-	 * @param string $behaviorname the behavior name or the class name of the behavior.
-	 * @return object the behavior object of name or class, or null if the behavior does not exist
+	 * @template T of IBaseBehavior
+	 * @param class-string<T> $behaviorname the behavior name or the class name of the behavior.
+	 * @return null|object|T the behavior object of name or class, or null if the behavior does not exist
 	 * @since 3.2.3
 	 */
 	public function asa($behaviorname)
@@ -1915,8 +1916,9 @@ class TComponent
 	/**
 	 * Returns all the behaviors attached to the TComponent.  IBaseBehavior[s] may
 	 * be attached but not {@see \Prado\Util\IBaseBehavior::getEnabled Enabled}.
-	 * @param ?string $class Filters the result by class, default null for no filter.
-	 * @return array The behaviors [optionally filtered] attached to the TComponent.
+	 * @template T of object
+	 * @param null|class-string<T> $class Filters the result by class, default null for no filter.
+	 * @return ($class is null ? array<string, IBaseBehavior> : array<string, T>)
 	 * @since 4.2.2
 	 */
 	public function getBehaviors(?string $class = null)

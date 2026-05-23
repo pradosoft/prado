@@ -34,6 +34,35 @@ use Prado\TPropertyValue;
  * Level filter and category filter are combinational, i.e., only messages
  * satisfying both filter conditions will they be returned.
  *
+ * Log route subclasses are not configured as standalone modules; they are
+ * declared as `<route>` elements inside a {@see \Prado\Util\TLogRouter} module:
+ * ```xml
+ * <modules>
+ *   <module id="log" class="Prado\Util\TLogRouter">
+ *     <route class="Prado\Util\TFileLogRoute" Levels="Warning, Error, Fatal" />
+ *   </module>
+ * </modules>
+ * ```
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'log' => [
+ *             'class' => 'Prado\Util\TLogRouter',
+ *             'routes' => [
+ *                 [
+ *                     'class' => 'Prado\Util\TFileLogRoute',
+ *                     'properties' => [
+ *                         'Levels' => 'Warning, Error, Fatal',
+ *                     ],
+ *                 ],
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 3.0

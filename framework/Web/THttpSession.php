@@ -50,24 +50,61 @@ use Prado\Util\Traits\TInitializedTrait;
  * By default, THttpSession is registered with {@see \Prado\TApplication} as the
  * request module. It can be accessed via {@see \Prado\TApplication::getSession()}.
  *
- * THttpSession may be configured in application configuration file as follows,
+ * XML configuration style:
  * ```xml
- * <module id="session" class="THttpSession" SessionName="SSID" SavePath="/tmp"
+ * <module id="session" class="Prado\Web\THttpSession" SessionName="SSID" SavePath="/tmp"
  *         CookieMode="Allow" UseCustomStorage="false" AutoStart="true" GCProbability="1"
  *         UseTransparentSessionID="true" TimeOut="3600" />
  * ```
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'session' => [
+ *             'class' => 'Prado\Web\THttpSession',
+ *             'properties' => [
+ *                 'SessionName' => 'SSID',
+ *                 'SavePath' => '/tmp',
+ *                 'CookieMode' => 'Allow',
+ *                 'UseCustomStorage' => 'false',
+ *                 'AutoStart' => 'true',
+ *                 'GCProbability' => '1',
+ *                 'UseTransparentSessionID' => 'true',
+ *                 'TimeOut' => '3600',
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
  * where {@see getSessionName SessionName}, {@see getSavePath SavePath},
- * {@see getCookieMode CookieMode}, {@see getUseCustomStorage
- * UseCustomStorage}, {@see getAutoStart AutoStart}, {@see getGCProbability
- * GCProbability}, {@see getUseTransparentSessionID UseTransparentSessionID}
+ * {@see getCookieMode CookieMode}, {@see getUseCustomStorage UseCustomStorage},
+ * {@see getAutoStart AutoStart}, {@see getGCProbability GCProbability},
+ * {@see getUseTransparentSessionID UseTransparentSessionID},
  * and {@see getTimeout TimeOut} are configurable properties of THttpSession.
  *
  * To avoid the possibility of identity theft through some variants of XSS attacks,
- * THttpSessionshould always be configured to enforce HttpOnly setting on session cookie.
- * The HttpOnly setting is disabled by default. To enable it, configure the THttpSession
- * module as follows,
+ * THttpSession should always be configured to enforce HttpOnly on the session cookie.
+ * The HttpOnly setting is disabled by default. To enable it, configure THttpSession
+ * as follows:
+ *
+ * XML configuration style, enabling HttpOnly:
  * ```xml
- * <module id="session" class="THttpSession" Cookie.HttpOnly="true" >
+ * <module id="session" class="Prado\Web\THttpSession" Cookie.HttpOnly="true" />
+ * ```
+ *
+ * PHP configuration style, enabling HttpOnly:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'session' => [
+ *             'class' => 'Prado\Web\THttpSession',
+ *             'properties' => [
+ *                 'Cookie.HttpOnly' => 'true',
+ *             ],
+ *         ],
+ *     ],
+ * ];
  * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>

@@ -18,6 +18,37 @@ namespace Prado\Util;
  * {@see http://www.getfirebug.com/ FireBug Website}
  * {@see http://www.firephp.org/ FirePHP Website}
  *
+ * TFirePhpLogRoute is configured as a `<route>` element inside a
+ * {@see \Prado\Util\TLogRouter} module in the application configuration.
+ *
+ * XML configuration style:
+ * ```xml
+ * <modules>
+ *   <module id="log" class="Prado\Util\TLogRouter">
+ *     <route class="Prado\Util\TFirePhpLogRoute" Levels="Debug, Info, Warning, Error, Fatal" />
+ *   </module>
+ * </modules>
+ * ```
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'log' => [
+ *             'class' => 'Prado\Util\TLogRouter',
+ *             'routes' => [
+ *                 [
+ *                     'class' => 'Prado\Util\TFirePhpLogRoute',
+ *                     'properties' => [
+ *                         'Levels' => 'Debug, Info, Warning, Error, Fatal',
+ *                     ],
+ *                 ],
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
+ *
  * @author Yves Berkholz <godzilla80[at]gmx[dot]net>
  * @since 3.1.5
  */

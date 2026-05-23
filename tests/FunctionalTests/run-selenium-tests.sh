@@ -32,7 +32,7 @@ for i in $(seq 1 150); do
 done
 
 # Run phpunit in the background so the parent-process poll can run alongside it.
-vendor/bin/phpunit --testsuite functional &
+vendor/bin/phpunit --testsuite selenium &
 PHPUNIT_PID=$!
 
 # Record the PID of the process that launched this script.

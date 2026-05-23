@@ -2,6 +2,7 @@
 
 use Prado\Data\Common\TDbMetaData;
 use Prado\Data\TDbConnection;
+use Prado\Data\TDbDriver;
 use Prado\Exceptions\TDbException;
 
 /**
@@ -103,7 +104,7 @@ class TDbMetaDataTest extends PHPUnit\Framework\TestCase
 
 	public function test_getInstance_calls_setActive_on_connection()
 	{
-		$conn = $this->createMockConnection('sqlite');
+		$conn = $this->createMockConnection(TDbDriver::DRIVER_SQLITE);
 		$conn->expects($this->once())->method('setActive')->with(true);
 
 		TDbMetaData::getInstance($conn);
@@ -111,7 +112,7 @@ class TDbMetaDataTest extends PHPUnit\Framework\TestCase
 
 	public function test_getInstance_valid_pgsql_driver()
 	{
-		$conn = $this->createMockConnection('pgsql');
+		$conn = $this->createMockConnection(TDbDriver::DRIVER_PGSQL);
 		$conn->expects($this->never())->method('raiseEvent');
 
 		$result = TDbMetaData::getInstance($conn);
@@ -120,7 +121,7 @@ class TDbMetaDataTest extends PHPUnit\Framework\TestCase
 
 	public function test_getInstance_valid_mysql_old_driver()
 	{
-		$conn = $this->createMockConnection('mysql');
+		$conn = $this->createMockConnection(TDbDriver::DRIVER_MYSQL);
 		$conn->expects($this->never())->method('raiseEvent');
 
 		$result = TDbMetaData::getInstance($conn);
@@ -129,7 +130,7 @@ class TDbMetaDataTest extends PHPUnit\Framework\TestCase
 
 	public function test_getInstance_valid_sqlite_driver()
 	{
-		$conn = $this->createMockConnection('sqlite');
+		$conn = $this->createMockConnection(TDbDriver::DRIVER_SQLITE);
 		$conn->expects($this->never())->method('raiseEvent');
 
 		$result = TDbMetaData::getInstance($conn);
@@ -138,7 +139,7 @@ class TDbMetaDataTest extends PHPUnit\Framework\TestCase
 
 	public function test_getInstance_valid_sqlite2_driver()
 	{
-		$conn = $this->createMockConnection('sqlite2');
+		$conn = $this->createMockConnection(TDbDriver::DRIVER_SQLITE2);
 		$conn->expects($this->never())->method('raiseEvent');
 
 		$result = TDbMetaData::getInstance($conn);
@@ -147,7 +148,7 @@ class TDbMetaDataTest extends PHPUnit\Framework\TestCase
 
 	public function test_getInstance_valid_sqlsrv_driver()
 	{
-		$conn = $this->createMockConnection('sqlsrv');
+		$conn = $this->createMockConnection(TDbDriver::DRIVER_SQLSRV);
 		$conn->expects($this->never())->method('raiseEvent');
 
 		$result = TDbMetaData::getInstance($conn);
@@ -156,7 +157,7 @@ class TDbMetaDataTest extends PHPUnit\Framework\TestCase
 
 	public function test_getInstance_valid_dblib_driver()
 	{
-		$conn = $this->createMockConnection('dblib');
+		$conn = $this->createMockConnection(TDbDriver::DRIVER_DBLIB);
 		$conn->expects($this->never())->method('raiseEvent');
 
 		$result = TDbMetaData::getInstance($conn);
@@ -165,7 +166,7 @@ class TDbMetaDataTest extends PHPUnit\Framework\TestCase
 
 	public function test_getInstance_valid_oracle_driver()
 	{
-		$conn = $this->createMockConnection('oci');
+		$conn = $this->createMockConnection(TDbDriver::DRIVER_OCI);
 		$conn->expects($this->never())->method('raiseEvent');
 
 		$result = TDbMetaData::getInstance($conn);
@@ -174,7 +175,7 @@ class TDbMetaDataTest extends PHPUnit\Framework\TestCase
 
 	public function test_getInstance_valid_ibm_driver()
 	{
-		$conn = $this->createMockConnection('ibm');
+		$conn = $this->createMockConnection(TDbDriver::DRIVER_IBM);
 		$conn->expects($this->never())->method('raiseEvent');
 
 		$result = TDbMetaData::getInstance($conn);
@@ -183,7 +184,7 @@ class TDbMetaDataTest extends PHPUnit\Framework\TestCase
 
 	public function test_getInstance_valid_firebird_driver()
 	{
-		$conn = $this->createMockConnection('firebird');
+		$conn = $this->createMockConnection(TDbDriver::DRIVER_FIREBIRD);
 		$conn->expects($this->never())->method('raiseEvent');
 
 		$result = TDbMetaData::getInstance($conn);

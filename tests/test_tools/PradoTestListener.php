@@ -20,7 +20,7 @@ class TestSuiteStarted implements Event\TestSuite\StartedSubscriber
 {
     public function notify(Event\TestSuite\Started $event): void
     {
-    	if($event->testSuite()->name() === 'functional') {
+    	if($event->testSuite()->name() === PradoTestListener::$SeleniumTestSuiteName) {
     		PradoGenericSelenium2TestSession::startDriver();
     	}
     }
@@ -30,7 +30,7 @@ class TestSuiteFinished implements Event\TestSuite\FinishedSubscriber
 {
     public function notify(Event\TestSuite\Finished $event): void
     {
-    	if($event->testSuite()->name() === 'functional') {
+    	if($event->testSuite()->name() === PradoTestListener::$SeleniumTestSuiteName) {
     		PradoGenericSelenium2TestSession::stopDriver();
     	}
     }
@@ -71,6 +71,9 @@ class PradoGenericSelenium2TestSession
 
 class PradoTestListener implements Runner\Extension\Extension
 {
+	// Default; overridden at bootstrap time by the SELENIUM_TESTSUITE_NAME const in phpunit.xml
+	public static $SeleniumTestSuiteName = 'selenium';
+
 	public function bootstrap(
 		TextUI\Configuration\Configuration $configuration,
 		Runner\Extension\Facade $facade,

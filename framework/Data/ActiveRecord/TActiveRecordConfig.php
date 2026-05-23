@@ -19,14 +19,33 @@ use Prado\TPropertyValue;
  *
  * Database configuration for the default ActiveRecord manager instance.
  *
- * Example: application.xml configuration
+ * XML configuration style:
  * ```xml
  * <modules>
- * 	<module class="Prado\Data\Data\ActiveRecord\TActiveRecordConfig" EnableCache="true">
+ * 	<module class="Prado\Data\ActiveRecord\TActiveRecordConfig" EnableCache="true">
  * 		<database ConnectionString="mysql:host=localhost;dbname=test"
  * 			Username="dbuser" Password="dbpass" />
  * 	</module>
  * </modules>
+ * ```
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'activerecord' => [
+ *             'class' => 'Prado\Data\ActiveRecord\TActiveRecordConfig',
+ *             'properties' => [
+ *                 'EnableCache' => 'true',
+ *             ],
+ *             'database' => [
+ *                 'ConnectionString' => 'mysql:host=localhost;dbname=test',
+ *                 'Username' => 'dbuser',
+ *                 'Password' => 'dbpass',
+ *             ],
+ *         ],
+ *     ],
+ * ];
  * ```
  *
  * MySQL database definition:

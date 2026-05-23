@@ -22,7 +22,8 @@ namespace Prado\Exceptions;
  */
 class THttpException extends TSystemException
 {
-	private $_statusCode;
+	/** @var int The status code. */
+	private int $_statusCode;
 
 	/**
 	 * Constructor.
@@ -32,10 +33,11 @@ class THttpException extends TSystemException
 	 * will be used as the error message. Any rest parameters will be used
 	 * to replace placeholders ({0}, {1}, {2}, etc.) in the message.
 	 * @param array $args
+	 * @todo v4.4, add type to $statusCode param
 	 */
 	public function __construct($statusCode, $errorMessage, ...$args)
 	{
-		$this->_statusCode = $statusCode;
+		$this->setStatusCodeDirect((int) $statusCode);
 		parent::__construct($errorMessage, ...$args);
 	}
 
@@ -44,6 +46,22 @@ class THttpException extends TSystemException
 	 */
 	public function getStatusCode()
 	{
+		return $this->getStatusCodeDirect();
+	}
+
+	/**
+	 * @return int Get HTTP status code property directly.
+	 */
+	protected function getStatusCodeDirect(): int
+	{
 		return $this->_statusCode;
+	}
+
+	/**
+	 * @param int $value Set HTTP status code property directly.
+	 */
+	protected function setStatusCodeDirect(int $value)
+	{
+		$this->_statusCode = $value;
 	}
 }

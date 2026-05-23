@@ -529,8 +529,9 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * This means that event handlers bound to these finder instances are class wide.
 	 * Create a new instance of the ActiveRecord class if you wish to bound the
 	 * event handlers to object instance.
-	 * @param string $className active record class name.
-	 * @return TActiveRecord active record finder instance.
+	 * @template T of TActiveRecord
+	 * @param class-string<T> $className active record class name.
+	 * @return T active record finder instance.
 	 */
 	public static function finder($className = __CLASS__)
 	{

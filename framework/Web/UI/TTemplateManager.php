@@ -30,6 +30,42 @@ use Prado\TPropertyValue;
  * By default, TTemplateManager is registered with {@see \Prado\Web\Services\TPageService} as the
  * template manager module that can be accessed via {@see \Prado\Web\Services\TPageService::getTemplateManager()}.
  *
+ * TTemplateManager is normally auto-loaded by TPageService. To override it
+ * with custom settings, configure it inside the page service tag in the
+ * application configuration:
+ *
+ * XML configuration style:
+ * ```xml
+ * <services>
+ *   <service id="page" class="TPageService" DefaultPage="Home">
+ *     <module id="template" class="Prado\Web\UI\TTemplateManager"
+ *         DefaultTemplateClass="Prado\Web\UI\TTemplate" />
+ *   </service>
+ * </services>
+ * ```
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'services' => [
+ *         'page' => [
+ *             'class' => 'Prado\Web\Services\TPageService',
+ *             'properties' => [
+ *                 'DefaultPage' => 'Home',
+ *             ],
+ *             'modules' => [
+ *                 'template' => [
+ *                     'class' => 'Prado\Web\UI\TTemplateManager',
+ *                     'properties' => [
+ *                         'DefaultTemplateClass' => 'Prado\Web\UI\TTemplate',
+ *                     ],
+ *                 ],
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  * @method \Prado\Web\Services\TPageService getService()

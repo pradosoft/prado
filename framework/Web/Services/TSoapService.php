@@ -28,7 +28,7 @@ use Prado\Xml\TXmlDocument;
  * to SOAP clients for remote invocation. TSoapService generates WSDL
  * automatically for the SOAP providers by default.
  *
- * To use TSoapService, configure it in the application specification like following:
+ * XML configuration style:
  * ```xml
  *   <services>
  *     <service id="soap" class="Prado\Web\Services\TSoapService">

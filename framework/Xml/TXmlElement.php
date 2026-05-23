@@ -116,7 +116,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	 * @throws TInvalidDataTypeException when $tagName is null
 	 * @throws TInvalidDataValueException when $tagName is empty
 	 */
-	public function __construct(string $tagName)
+	public function __construct($tagName)
 	{
 		$this->setTagName($tagName);
 		parent::__construct();
@@ -136,7 +136,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	 * Gets the parent element of this element.
 	 * @return ?TXmlElement Parent element of this element, or null if none
 	 */
-	public function getParent(): ?TXmlElement
+	public function getParent()
 	{
 		return $this->_parent;
 	}
@@ -145,7 +145,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	 * Sets the parent element of this element.
 	 * @param ?TXmlElement $parent Parent element of this element
 	 */
-	public function setParent(?TXmlElement $parent): void
+	public function setParent($parent)
 	{
 		$this->_parent = $parent;
 	}
@@ -154,7 +154,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	 * Gets the tag name of this element.
 	 * @return string Tag name of this element
 	 */
-	public function getTagName(): string
+	public function getTagName()
 	{
 		return $this->_tagName;
 	}
@@ -165,7 +165,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	 * @throws TInvalidDataTypeException when $tagName is null
 	 * @throws TInvalidDataValueException when $tagName is empty
 	 */
-	public function setTagName(string $tagName): void
+	public function setTagName($tagName)
 	{
 		if ($tagName === null) {
 			throw new TInvalidDataTypeException('xmlelement_null_tag');
@@ -180,7 +180,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	 * Gets the text content enclosed between opening and closing tags of this element.
 	 * @return ?string Text content of this element, or null if none
 	 */
-	public function getValue(): ?string
+	public function getValue()
 	{
 		return $this->_value;
 	}
@@ -189,7 +189,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	 * Sets the text content enclosed between opening and closing tags of this element.
 	 * @param ?string $value Text content of this element
 	 */
-	public function setValue($value): void
+	public function setValue($value)
 	{
 		if ($value !== null) {
 			$this->_value = TPropertyValue::ensureString($value);
@@ -202,7 +202,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	 * Gets the list of attributes for this element.
 	 * @return TMap List of attributes for this element
 	 */
-	public function getAttributes(): TMap
+	public function getAttributes()
 	{
 		if (!$this->_attributes) {
 			$this->_attributes = new TMap();
@@ -214,7 +214,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	 * Determines whether this element has any attributes.
 	 * @return bool True if this element has attributes, false otherwise
 	 */
-	public function getHasAttribute(): bool
+	public function getHasAttribute()
 	{
 		return $this->_attributes !== null && $this->_attributes->getCount() > 0;
 	}
@@ -238,7 +238,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	 * @param string $name Attribute name
 	 * @return ?string Attribute value, or null if no such attribute exists
 	 */
-	public function getAttribute(string $name): ?string
+	public function getAttribute($name)
 	{
 		if ($this->_attributes !== null) {
 			return $this->_attributes->itemAt($name);
@@ -253,7 +253,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	 * @param mixed $value Attribute value
 	 * @throws TInvalidDataTypeException if an invalid attribute value is provided
 	 */
-	public function setAttribute(string $name, $value)
+	public function setAttribute($name, $value)
 	{
 		$this->getAttributes()->add($name, TPropertyValue::ensureString($value));
 	}
@@ -274,7 +274,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	 * Gets the list of child elements of this element.
 	 * @return TXmlElementList List of child elements
 	 */
-	public function getElements(): TXmlElementList
+	public function getElements()
 	{
 		if (!$this->_elements) {
 			$this->_elements = new TXmlElementList($this);
@@ -286,7 +286,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	 * Determines whether this element has any child elements.
 	 * @return bool True if this element has child elements, false otherwise
 	 */
-	public function getHasElement(): bool
+	public function getHasElement()
 	{
 		return $this->_elements !== null && $this->_elements->getCount() > 0;
 	}
@@ -659,7 +659,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	 * ```
 	 * @return string string representation of this element
 	 */
-	public function __toString(): string
+	public function __toString()
 	{
 		return $this->toString();
 	}
@@ -670,7 +670,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	 * @param string $str The string to encode
 	 * @return string The encoded character.
 	 */
-	private function xmlEncode(string $str): string
+	private function xmlEncode($str)
 	{
 		return strtr($str, [
 			'>' => '&gt;',

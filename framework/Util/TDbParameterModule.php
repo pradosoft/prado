@@ -273,10 +273,10 @@ class TDbParameterModule extends TDbModule implements IPermissions
 		($this->_autoLoadField ? ' CREATE INDEX tauto ON ' . $this->_tableName . '(' . $this->_autoLoadField . ');' : '');
 
 		switch ($driver) {
-			case 'sqlite':
+			case TDbDriver::DRIVER_SQLITE:
 				$autoidAttributes = ' AUTOINCREMENT';
 				break;
-			case 'postgresql':
+			case TDbDriver::DRIVER_PGSQL:
 				$autotype = 'SERIAL';
 				break;
 			default:	// mysql

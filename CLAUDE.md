@@ -4,25 +4,28 @@ This file provides guidance to Agents when working with code in this repository.
 
 ## What This Is
 
-**Prado** is a component-based, event-driven PHP web framework. All framework source lives under `framework/` (PSR-4 namespace `Prado\`). Tests mirror that structure under `tests/unit/`. Current version: **4.3.2**; next release: **4.3.3**.
+**Prado** is a component-based, event-driven PHP web framework. All framework source lives under `framework/` (PSR-4 namespace `Prado\`). Tests mirror that structure under `tests/unit/`. Current version: **4.3.3**; next release: **4.4.0**.
 
 ## Commands
 
 ```bash
-# Run all unit tests
-vendor/bin/phpunit --testsuite unit
-
-# Run tests for a specific class, function, or directory
-vendor/bin/phpunit --testsuite unit --filter <test function, class, or directory>
-
-# Static analysis
-vendor/bin/phpstan analyse framework/ --memory-limit=512M
 
 # Code style check (dry-run)
 vendor/bin/php-cs-fixer fix --dry-run framework/
 
 # Code style fix (apply)
 vendor/bin/php-cs-fixer fix framework/
+
+# Static analysis
+vendor/bin/phpstan analyse framework/ --memory-limit=512M
+
+# Run all unit tests
+vendor/bin/phpunit --testsuite unit
+
+# Run tests for a specific class, function, or directory
+vendor/bin/phpunit --testsuite unit --filter <test function, class, or directory>
+
+# javascript commands and database commands in composer.json scripts section.
 
 # Generate API documentation
 composer gendoc
@@ -75,7 +78,7 @@ TApplication
 
 ### Application Lifecycle
 
-`onInitComplete` → `onBeginRequest` → `onLoadState` → `onLoadStateComplete` → `onAuthentication` → `onAuthenticationComplete` → `onAuthorization` → `onAuthorizationComplete` → `onPreRunService` → `runService` → `onSaveState` → `onSaveStateComplete` → `onPreFlushOutput` → `flushOutput` → `onEndRequest` / `onError`
+`onConfiguration` → `onInitComplete` → `onBeginRequest` → `onLoadState` → `onLoadStateComplete` → `onAuthentication` → `onAuthenticationComplete` → `onAuthorization` → `onAuthorizationComplete` → `onPreRunService` → `runService` → `onSaveState` → `onSaveStateComplete` → `onPreFlushOutput` → `flushOutput` → `onEndRequest` / `onError`
 
 ### Page Lifecycle (via TPageService)
 
@@ -88,7 +91,7 @@ TApplication
   - **`on` prefix** — `onEventName(TEventParameter $param)` raised with `$this->raiseEvent('OnEventName', $this, $param)`.
   - **`dy` prefix** — dynamic events called on attached/active Behaviors (e.g., `dyShouldContinue`, `dyClone`, `dyValidate`).
   - **`fx` prefix** — global events, auto-registered depending on `getAutoGlobalListen()` (e.g., `fxAttachClassBehavior`).
-- All events are raised in specified priority order.
+- Behaviors and `on` events are called in specified Collections Priority order.
 - `@method` PHPDoc tags document dynamic `dy-` events on classes.
 
 
@@ -103,18 +106,25 @@ TApplication
 | Classes | `TPascalCase` | `TComponent`, `TApplication` |
 | Methods | `camelCase` | `getComponent` |
 | Variables | `camelCase` | `$componentName` |
-| Constants | `SCREAMING_SNAKE_CASE` | `MAX_RETRY_COUNT` |
+| Class Constants | `SCREAMING_SNAKE_CASE` | `MAX_RETRY_COUNT` |
+| Enumerated Constants | `PascalCase` | `DeepSkyBlue` |
+| Class properties| `_camelCase` | `_propertyOfClass`, `_styleFieldNames` |
 | Namespaces | `Prado\{Module}` | `Prado\Web\UI\TControl` |
-| Template files | `.tpl` | `MyPortlet.tpl` |
-| Web Page templates | `.page` | `Home.page` |
+| MasterClass and Template files | `.tpl` | `MyPortlet.tpl` |
+| Web Page templates | `.page` with `.php` backing | `Home.page`, `Home.php` |
 
 ## Important Rules
 
 - **`framework/classes.php`** — must be updated whenever a new class is added to the framework.
 - **`if` statements** always use a block (`{}`), never a single-line body.
 - **Error codes** for PRADO exceptions are defined in `framework/Exceptions/messages/messages.txt` (English master); language variants are `messages-<lang>.txt` in the same directory.
-- **Backward compatibility** — all changes must be backward compatible.
-- **`@since` tag** — use the next release version (`4.3.3`) when adding new methods or classes.
+- **Backward compatibility** — all changes must be backward compatible for point releases. Minor releases can have breaking changes, but minimize the breaks.
+- **`@since` tag** — use the next release version (`4.4.0`) when adding new methods or classes; omit the method tag when it matches the class tag.
+- **Uniform Access Principal - Self Encapsulation** is required; for an example see framework/TApplication.php
+- **Extract Method → Predicate/Guard Clause (Fowler) is suggested
+- All comments and documentation must be: **Present Perfect tense**, **American English**, clear, thorough, and technical
+- Method Doc Blocks should be **tight**, and have at minimum one sentence in the description.
+- The per directory "<dir_path>/CLAUDE.md" is found at "agents/<dir_path>/INDEX.md" to keep the framework uncluttered. 
 
 ## Test Bootstrap
 
@@ -126,6 +136,7 @@ Tests require a running `TApplication`. The bootstrap (`tests/test_tools/phpunit
 - Line endings: Unix (`\n`)
 - PHP minimum: 8.1 (CI tests 8.1, 8.2, 8.3)
 - PSR-12 enforced via php-cs-fixer
+- Use `?` for single nullable types and in doc blocks
 
 ## Working Knowledge (`agents/`)
 

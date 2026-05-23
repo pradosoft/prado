@@ -39,13 +39,31 @@ use Prado\Util\Traits\TInitializedTrait;
  * with the function {@see publishFilePath}. This is usually
  * very useful during development.
  *
- * TAssetManager may be configured in application configuration file as follows,
+ * XML configuration style:
  * ```xml
- * <module id="asset" BasePath="Application.assets" BaseUrl="/assets" />
+ * <modules>
+ *   <module id="asset" class="Prado\Web\TAssetManager"
+ *       BasePath="Application.assets" BaseUrl="/assets" />
+ * </modules>
  * ```
  * where {@see getBasePath BasePath} and {@see getBaseUrl BaseUrl} are
  * configurable properties of TAssetManager. Make sure that BasePath is a namespace
  * pointing to a valid directory writable by the Web server process.
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'asset' => [
+ *             'class' => 'Prado\Web\TAssetManager',
+ *             'properties' => [
+ *                 'BasePath' => 'Application.assets',
+ *                 'BaseUrl' => '/assets',
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
  *
  * ## Publishing Options
  *

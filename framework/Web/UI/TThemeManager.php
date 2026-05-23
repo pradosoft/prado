@@ -31,12 +31,43 @@ use Prado\Web\Services\TPageService;
  * under the directory containing the application entry script.
  * To get a theme (normally you do not need to), call {@see getTheme}.
  *
- * TThemeManager may be configured within page service tag in application
- * configuration file as follows,
- * <module id="themes" class="Prado\Web\UI\TThemeManager"
+ * TThemeManager may be configured within the page service tag in the application
+ * configuration as follows:
+ *
+ * XML configuration style:
+ * ```xml
+ * <services>
+ *   <service id="page" class="TPageService" DefaultPage="Home">
+ *     <module id="themes" class="Prado\Web\UI\TThemeManager"
  *         BasePath="Application.themes" BaseUrl="/themes" />
- * where {@see getCacheExpire CacheExpire}, {@see getCacheControl CacheControl}
- * and {@see getBufferOutput BufferOutput} are configurable properties of THttpResponse.
+ *   </service>
+ * </services>
+ * ```
+ * where {@see getBasePath BasePath} and {@see getBaseUrl BaseUrl} are
+ * configurable properties of TThemeManager.
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'services' => [
+ *         'page' => [
+ *             'class' => 'Prado\Web\Services\TPageService',
+ *             'properties' => [
+ *                 'DefaultPage' => 'Home',
+ *             ],
+ *             'modules' => [
+ *                 'themes' => [
+ *                     'class' => 'Prado\Web\UI\TThemeManager',
+ *                     'properties' => [
+ *                         'BasePath' => 'Application.themes',
+ *                         'BaseUrl' => '/themes',
+ *                     ],
+ *                 ],
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

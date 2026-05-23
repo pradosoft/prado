@@ -16,6 +16,7 @@ use Prado\Security\Permissions\TPermissionEvent;
 use Prado\Security\Permissions\TUserOwnerRule;
 use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbConnection;
+use Prado\Data\TDbDriver;
 use Prado\Data\TDbPropertiesTrait;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
@@ -42,6 +43,56 @@ use Prado\Util\TLogger;
  * onEndRequest.  Then if it does not execute onEndRequest, then the next
  * shell cron will execute the task.  This could occur if the user presses stop
  * before the page completes.
+ *
+ * XML configuration style:
+ * ```xml
+ * <modules>
+ *   <module id="db" class="Prado\Data\TDataSourceConfig">
+ *     <database ConnectionString="mysql:host=localhost;dbname=mydb"
+ *       Username="dbuser" Password="dbpass" />
+ *   </module>
+ *   <module id="cron" class="Prado\Util\Cron\TDbCronManager"
+ *       ConnectionID="db" DefaultUserName="cron"
+ *       EnableRequestCron="false" LogCronTasks="true">
+ *     <job Name="dbcacheclean" Schedule="0 0 * * * *" Task="dbcache->flushCacheExpired(true)" />
+ *   </module>
+ * </modules>
+ * ```
+ * where {@see setConnectionID ConnectionID} refers to the ID of a
+ * {@see \Prado\Data\TDataSourceConfig} module and tasks are specified as nested
+ * `<job>` elements identical to those of {@see \Prado\Util\Cron\TCronModule}.
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'db' => [
+ *             'class' => 'Prado\Data\TDataSourceConfig',
+ *             'database' => [
+ *                 'ConnectionString' => 'mysql:host=localhost;dbname=mydb',
+ *                 'Username' => 'dbuser',
+ *                 'Password' => 'dbpass',
+ *             ],
+ *         ],
+ *         'cron' => [
+ *             'class' => 'Prado\Util\Cron\TDbCronManager',
+ *             'properties' => [
+ *                 'ConnectionID' => 'db',
+ *                 'DefaultUserName' => 'cron',
+ *                 'EnableRequestCron' => 'false',
+ *                 'LogCronTasks' => 'true',
+ *             ],
+ *             'jobs' => [
+ *                 [
+ *                     'Name' => 'dbcacheclean',
+ *                     'Schedule' => '0 0 * * * *',
+ *                     'Task' => 'dbcache->flushCacheExpired(true)',
+ *                 ],
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3
@@ -260,11 +311,11 @@ class TDbCronManager extends TCronModule implements IDbModule
 		$driver = $db->getDriverName();
 		$autotype = 'INTEGER';
 		$autoidAttributes = '';
-		if ($driver === 'mysql') {
+		if ($driver === TDbDriver::DRIVER_MYSQL) {
 			$autoidAttributes = ' AUTO_INCREMENT';
-		} elseif ($driver === 'sqlite') {
+		} elseif ($driver === TDbDriver::DRIVER_SQLITE) {
 			$autoidAttributes = ' AUTOINCREMENT';
-		} elseif ($driver === 'postgresql') {
+		} elseif ($driver === TDbDriver::DRIVER_PGSQL) {
 			$autotype = 'SERIAL';
 		}
 		$postIndices = '; CREATE INDEX tname ON ' . $this->_tableName . '(`name`);' .
@@ -386,7 +437,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 			return;
 		}
 		$numtasks = count($runtimeTasks);
-		$cronlogger = $this->asa(TCronModule::SHELL_LOG_BEHAVIOR);
+		$cronlogger = $this->asa(TShellCronLogBehavior::class);
 		if ($cronlogger) {
 			$enabled = $cronlogger->getEnabled();
 			$cronlogger->setEnabled(false);

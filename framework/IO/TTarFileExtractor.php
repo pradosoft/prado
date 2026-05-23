@@ -2791,8 +2791,9 @@ class TTarFileExtractor
 	 *
 	 * @param string $p_message
 	 * @throws \Exception
+	 * @return never
 	 */
-	protected function _error(string $p_message): never
+	protected function _error($p_message)
 	{
 		$cls = $this->getExceptionClass();
 		if (!empty($cls) && $cls !== '\Exception' && $cls !== 'Exception') {
@@ -3197,7 +3198,7 @@ class TTarFileExtractor
 	 * @param ?int $p_len Number of blocks to skip (default 1).
 	 * @return bool
 	 */
-	private function _jumpBlock(?int $p_len = null): bool
+	private function _jumpBlock($p_len = null)
 	{
 		if ($this->_file === null) {
 			return true;
@@ -3288,7 +3289,7 @@ class TTarFileExtractor
 	 * @param array  &$v_header     Receives parsed fields.
 	 * @return bool True on success; false on checksum mismatch or format error.
 	 */
-	private function _readHeader(string $v_binary_data, array &$v_header): bool
+	private function _readHeader($v_binary_data, &$v_header)
 	{
 		if (strlen($v_binary_data) === 0) {
 			$v_header['filepath'] = '';

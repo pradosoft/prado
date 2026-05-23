@@ -381,8 +381,9 @@ class TCronModule extends \Prado\TModule implements IPermissions
 
 	/**
 	 * Filters the Tasks for a specific class.
-	 * @param string $type
-	 * @return TCronTask[] the tasks of $type
+	 * @template T of TCronTask
+	 * @param class-string<T> $type
+	 * @return array<string, T> the tasks of $type, keyed by task name
 	 */
 	public function getTasksByType($type)
 	{

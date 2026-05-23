@@ -31,6 +31,35 @@ abstract class TService extends \Prado\TApplicationComponent implements IService
 	 */
 	private $_enabled = true;
 
+
+	/**
+	 * Returns the active service instance if it is an instance of the called class,
+	 * or `null` otherwise (wrong service type, no service started, or no application).
+	 *
+	 * Because the return type is `static`, calling `MyService::getInstance()` only
+	 * returns a `MyService`; calling `TService::getInstance()` matches any `TService`
+	 * subclass. Services are available from the `onInitComplete` application event
+	 * onwards:
+	 *
+	 * ```php
+	 * $app->onInitComplete[] = function () {
+	 *		TPageService::getInstance()?->onPreRunPage[] = function(TPageService $sender, TPage $page): mixed {
+	 *			$page->onLoad[] = [$this, 'pageHandlerInModule'];
+	 *		};
+	 * };
+	 * ```
+	 *
+	 * @param ?\Prado\TApplication $app defaults to {@see \Prado\Prado::getApplication()}
+	 * @return ?static the active service instance, or `null`
+	 * @since 4.3.3
+	 */
+	public static function getInstance(?\Prado\TApplication $app = null): ?static
+	{
+		$app ??= Prado::getApplication();
+		$service = $app?->getService();
+		return ($service instanceof static) ? $service : null;
+	}
+
 	/**
 	 * Initializes the service and attaches {@see run} to the RunService event of application.
 	 * This method is required by IService and is invoked by application.

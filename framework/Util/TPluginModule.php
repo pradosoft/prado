@@ -32,10 +32,35 @@ use ReflectionClass;
  * layout TContentPlaceHolder for the application and layout. For example in the application
  * configuration file:
  * ```xml
- *	<parameters>
- *	 <parameter id="PluginContentId" value="Main" />
- *  </parameters>
+ * <parameters>
+ *   <parameter id="PluginContentId" value="Main" />
+ * </parameters>
  * ```
+ *
+ * XML configuration style:
+ * ```xml
+ * <modules>
+ *   <module id="myplugin" class="MyVendor\MyPlugin\MyPluginModule"
+ *       PluginPath="path/to/plugin" />
+ * </modules>
+ * ```
+ * where {@see setPluginPath PluginPath} points to the Composer package root
+ * directory containing the plugin's Pages/ subdirectory and error message files.
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'myplugin' => [
+ *             'class' => 'MyVendor\MyPlugin\MyPluginModule',
+ *             'properties' => [
+ *                 'PluginPath' => 'path/to/plugin',
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
+ *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0
  */
