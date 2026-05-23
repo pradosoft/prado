@@ -12,7 +12,7 @@ class CommandBuilderSqlSrvTest extends PHPUnit\Framework\TestCase
 		//'compute' => 'SELECT username, age FROM accounts order by age compute avg(age)',
 	];
 
-	public function test_limit()
+	public function test_sqlsrv_limit()
 	{
 		$builder = new TSqlSrvCommandBuilder();
 

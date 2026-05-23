@@ -68,7 +68,7 @@ class SqlSrvInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Transaction requirement
 	// -----------------------------------------------------------------------
 
-	public function test_throws_TDbException_without_active_transaction(): void
+	public function test_sqlsrv_throws_TDbException_without_active_transaction(): void
 	{
 		$this->expectException(TDbException::class);
 		// No transaction started — must throw
@@ -79,7 +79,7 @@ class SqlSrvInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// SQL generation (requires transaction to build the command)
 	// -----------------------------------------------------------------------
 
-	public function test_sql_uses_merge_when_not_matched_then_insert(): void
+	public function test_sqlsrv_sql_uses_merge_when_not_matched_then_insert(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -95,7 +95,7 @@ class SqlSrvInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertStringNotContainsString('WHEN MATCHED', $capturedSql);
 	}
 
-	public function test_sql_merge_on_clause_uses_pk_column(): void
+	public function test_sqlsrv_sql_merge_on_clause_uses_pk_column(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -109,7 +109,7 @@ class SqlSrvInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('[username]', $capturedSql);
 	}
 
-	public function test_sql_uses_as_alias_keywords(): void
+	public function test_sqlsrv_sql_uses_as_alias_keywords(): void
 	{
 		// MSSQL MERGE uses AS t / AS s aliases (useAsAlias=true)
 		$capturedSql = null;
@@ -124,7 +124,7 @@ class SqlSrvInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString(' AS s ', $capturedSql);
 	}
 
-	public function test_sql_using_select_has_no_from_dual(): void
+	public function test_sqlsrv_sql_using_select_has_no_from_dual(): void
 	{
 		// MSSQL uses USING (SELECT ...) — no FROM dual/SYSIBM source
 		$capturedSql = null;
@@ -144,7 +144,7 @@ class SqlSrvInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Behavioral: insert within transaction
 	// -----------------------------------------------------------------------
 
-	public function test_new_row_inserted_within_transaction(): void
+	public function test_sqlsrv_new_row_inserted_within_transaction(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
@@ -157,7 +157,7 @@ class SqlSrvInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(10, (int) $lc['score']);
 	}
 
-	public function test_new_row_returns_true_for_natural_key_table(): void
+	public function test_sqlsrv_new_row_returns_true_for_natural_key_table(): void
 	{
 		$txn    = self::$conn->beginTransaction();
 		$result = self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
@@ -171,7 +171,7 @@ class SqlSrvInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Behavioral: duplicate ignored
 	// -----------------------------------------------------------------------
 
-	public function test_duplicate_pk_returns_false(): void
+	public function test_sqlsrv_duplicate_pk_returns_false(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
@@ -181,7 +181,7 @@ class SqlSrvInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertFalse($result);
 	}
 
-	public function test_duplicate_does_not_increase_row_count(): void
+	public function test_sqlsrv_duplicate_does_not_increase_row_count(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
@@ -192,7 +192,7 @@ class SqlSrvInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(1, $count);
 	}
 
-	public function test_existing_row_unchanged_after_ignored_insert(): void
+	public function test_sqlsrv_existing_row_unchanged_after_ignored_insert(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
@@ -208,7 +208,7 @@ class SqlSrvInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Mixed inserts
 	// -----------------------------------------------------------------------
 
-	public function test_only_conflicting_row_ignored_others_inserted(): void
+	public function test_sqlsrv_only_conflicting_row_ignored_others_inserted(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
@@ -222,7 +222,7 @@ class SqlSrvInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(2, $count);
 	}
 
-	public function test_transaction_rollback_undoes_insert(): void
+	public function test_sqlsrv_transaction_rollback_undoes_insert(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->insertOrIgnore(['username' => 'alice', 'score' => 10]);
@@ -236,7 +236,7 @@ class SqlSrvInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 	// Events
 	// -----------------------------------------------------------------------
 
-	public function test_oncreatecommand_event_is_raised(): void
+	public function test_sqlsrv_oncreatecommand_event_is_raised(): void
 	{
 		$fired = false;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -252,7 +252,7 @@ class SqlSrvInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($fired);
 	}
 
-	public function test_onexecutecommand_event_is_raised(): void
+	public function test_sqlsrv_onexecutecommand_event_is_raised(): void
 	{
 		$captured = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -268,7 +268,7 @@ class SqlSrvInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$this->assertNotNull($captured);
 	}
 
-	public function test_onexecutecommand_can_override_result(): void
+	public function test_sqlsrv_onexecutecommand_can_override_result(): void
 	{
 		$gw = new TTableGateway('upsert_test', self::$conn);
 		$gw->OnExecuteCommand[] = function ($sender, $param): void {

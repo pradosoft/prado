@@ -65,7 +65,7 @@ class SqlSrvUpsertTest extends PHPUnit\Framework\TestCase
 	// Transaction requirement
 	// -----------------------------------------------------------------------
 
-	public function test_throws_TDbException_without_active_transaction(): void
+	public function test_sqlsrv_throws_TDbException_without_active_transaction(): void
 	{
 		$this->expectException(TDbException::class);
 		self::$gateway->upsert(['username' => 'alice', 'score' => 10]);
@@ -75,7 +75,7 @@ class SqlSrvUpsertTest extends PHPUnit\Framework\TestCase
 	// SQL generation
 	// -----------------------------------------------------------------------
 
-	public function test_sql_contains_merge_when_matched_and_when_not_matched(): void
+	public function test_sqlsrv_sql_contains_merge_when_matched_and_when_not_matched(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -91,7 +91,7 @@ class SqlSrvUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('WHEN NOT MATCHED THEN INSERT', $capturedSql);
 	}
 
-	public function test_sql_update_set_contains_non_pk_columns(): void
+	public function test_sqlsrv_sql_update_set_contains_non_pk_columns(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -109,7 +109,7 @@ class SqlSrvUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertStringNotContainsString('t.[username] = s.username', $updatePart);
 	}
 
-	public function test_sql_explicit_updateData_only_those_columns_updated(): void
+	public function test_sqlsrv_sql_explicit_updateData_only_those_columns_updated(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -124,7 +124,7 @@ class SqlSrvUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('[score]', $updatePart);
 	}
 
-	public function test_sql_empty_updateData_omits_when_matched_branch(): void
+	public function test_sqlsrv_sql_empty_updateData_omits_when_matched_branch(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -142,7 +142,7 @@ class SqlSrvUpsertTest extends PHPUnit\Framework\TestCase
 	// Behavioral: insert new row
 	// -----------------------------------------------------------------------
 
-	public function test_upsert_inserts_new_row(): void
+	public function test_sqlsrv_upsert_inserts_new_row(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->upsert(['username' => 'alice', 'score' => 10]);
@@ -154,7 +154,7 @@ class SqlSrvUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(10, (int) $lc['score']);
 	}
 
-	public function test_upsert_new_row_returns_true(): void
+	public function test_sqlsrv_upsert_new_row_returns_true(): void
 	{
 		$txn    = self::$conn->beginTransaction();
 		$result = self::$gateway->upsert(['username' => 'alice', 'score' => 10]);
@@ -167,7 +167,7 @@ class SqlSrvUpsertTest extends PHPUnit\Framework\TestCase
 	// Behavioral: conflict → update
 	// -----------------------------------------------------------------------
 
-	public function test_conflict_on_pk_updates_non_pk_columns(): void
+	public function test_sqlsrv_conflict_on_pk_updates_non_pk_columns(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->upsert(['username' => 'alice', 'score' => 10]);
@@ -179,7 +179,7 @@ class SqlSrvUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(99, (int) $lc['score']);
 	}
 
-	public function test_conflict_does_not_create_duplicate_rows(): void
+	public function test_sqlsrv_conflict_does_not_create_duplicate_rows(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->upsert(['username' => 'alice', 'score' => 10]);
@@ -190,7 +190,7 @@ class SqlSrvUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(1, $count);
 	}
 
-	public function test_conflict_update_returns_truthy_value(): void
+	public function test_sqlsrv_conflict_update_returns_truthy_value(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->upsert(['username' => 'alice', 'score' => 10]);
@@ -204,7 +204,7 @@ class SqlSrvUpsertTest extends PHPUnit\Framework\TestCase
 	// Explicit updateData
 	// -----------------------------------------------------------------------
 
-	public function test_explicit_updateData_only_updates_specified_columns(): void
+	public function test_sqlsrv_explicit_updateData_only_updates_specified_columns(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->insert(['username' => 'alice', 'score' => 10]);
@@ -224,7 +224,7 @@ class SqlSrvUpsertTest extends PHPUnit\Framework\TestCase
 	// Empty updateData → insert-or-ignore behaviour
 	// -----------------------------------------------------------------------
 
-	public function test_empty_updateData_does_not_update_on_conflict(): void
+	public function test_sqlsrv_empty_updateData_does_not_update_on_conflict(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->upsert(['username' => 'alice', 'score' => 10]);
@@ -236,7 +236,7 @@ class SqlSrvUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(10, (int) $lc['score']);
 	}
 
-	public function test_empty_updateData_on_conflict_returns_false(): void
+	public function test_sqlsrv_empty_updateData_on_conflict_returns_false(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->upsert(['username' => 'alice', 'score' => 10]);
@@ -250,7 +250,7 @@ class SqlSrvUpsertTest extends PHPUnit\Framework\TestCase
 	// Other rows not affected
 	// -----------------------------------------------------------------------
 
-	public function test_upsert_does_not_modify_other_rows(): void
+	public function test_sqlsrv_upsert_does_not_modify_other_rows(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->upsert(['username' => 'alice', 'score' => 10]);
@@ -263,7 +263,7 @@ class SqlSrvUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(20, (int) $lc['score']);
 	}
 
-	public function test_transaction_rollback_undoes_upsert(): void
+	public function test_sqlsrv_transaction_rollback_undoes_upsert(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->upsert(['username' => 'alice', 'score' => 10]);
@@ -277,7 +277,7 @@ class SqlSrvUpsertTest extends PHPUnit\Framework\TestCase
 	// Events
 	// -----------------------------------------------------------------------
 
-	public function test_oncreatecommand_event_is_raised(): void
+	public function test_sqlsrv_oncreatecommand_event_is_raised(): void
 	{
 		$fired = false;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -293,7 +293,7 @@ class SqlSrvUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($fired);
 	}
 
-	public function test_onexecutecommand_event_is_raised(): void
+	public function test_sqlsrv_onexecutecommand_event_is_raised(): void
 	{
 		$captured = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -309,7 +309,7 @@ class SqlSrvUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertNotNull($captured);
 	}
 
-	public function test_onexecutecommand_can_override_result(): void
+	public function test_sqlsrv_onexecutecommand_can_override_result(): void
 	{
 		$gw = new TTableGateway('upsert_test', self::$conn);
 		$gw->OnExecuteCommand[] = function ($sender, $param): void {
@@ -327,7 +327,7 @@ class SqlSrvUpsertTest extends PHPUnit\Framework\TestCase
 	// Column-name list updateData
 	// -----------------------------------------------------------------------
 
-	public function test_updateData_column_name_list_updates_only_those_columns(): void
+	public function test_sqlsrv_updateData_column_name_list_updates_only_those_columns(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->insert(['username' => 'alice', 'score' => 10]);
@@ -340,7 +340,7 @@ class SqlSrvUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals('alice', $lc['username']);
 	}
 
-	public function test_sql_column_name_list_generates_correct_update_clause(): void
+	public function test_sqlsrv_sql_column_name_list_generates_correct_update_clause(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -356,7 +356,7 @@ class SqlSrvUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('[score]', $updatePart);
 	}
 
-	public function test_updateData_column_name_list_leaves_other_columns_unchanged(): void
+	public function test_sqlsrv_updateData_column_name_list_leaves_other_columns_unchanged(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->insert(['username' => 'alice', 'score' => 10]);
@@ -373,7 +373,7 @@ class SqlSrvUpsertTest extends PHPUnit\Framework\TestCase
 	// Explicit value (string-keyed) updateData
 	// -----------------------------------------------------------------------
 
-	public function test_updateData_explicit_value_overrides_insert_data_on_conflict(): void
+	public function test_sqlsrv_updateData_explicit_value_overrides_insert_data_on_conflict(): void
 	{
 		$txn = self::$conn->beginTransaction();
 		self::$gateway->insert(['username' => 'alice', 'score' => 10]);
@@ -386,7 +386,7 @@ class SqlSrvUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(99, (int) $lc['score']);
 	}
 
-	public function test_sql_explicit_value_updateData_does_not_use_insert_data(): void
+	public function test_sqlsrv_sql_explicit_value_updateData_does_not_use_insert_data(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);
@@ -406,7 +406,7 @@ class SqlSrvUpsertTest extends PHPUnit\Framework\TestCase
 	// Mixed (column-name + explicit value) updateData
 	// -----------------------------------------------------------------------
 
-	public function test_updateData_mixed_handles_column_name_and_explicit_value_simultaneously(): void
+	public function test_sqlsrv_updateData_mixed_handles_column_name_and_explicit_value_simultaneously(): void
 	{
 		// SqlSrv table: username (PK), score — no separate id column.
 		// Mixed test: conflict on username (PK); score updated from record (integer-keyed),
@@ -426,7 +426,7 @@ class SqlSrvUpsertTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(77, (int) $lc['score']);
 	}
 
-	public function test_sql_mixed_updateData_generates_both_value_references_and_literals(): void
+	public function test_sqlsrv_sql_mixed_updateData_generates_both_value_references_and_literals(): void
 	{
 		$capturedSql = null;
 		$gw = new TTableGateway('upsert_test', self::$conn);

@@ -49,7 +49,7 @@ class SqlSrvColumnTest extends PHPUnit\Framework\TestCase
 		return static::$msMetaData;
 	}
 
-	public function test_columns()
+	public function test_sqlsrv_columns()
 	{
 		$table = $this->meta_data()->getTableInfo('table1');
 
@@ -223,7 +223,7 @@ class SqlSrvColumnTest extends PHPUnit\Framework\TestCase
 		$this->assertColumn($columns, $table);
 	}
 
-	public function test_find_table_names()
+	public function test_sqlsrv_find_table_names()
 	{
 		$names = $this->meta_data()->findTableNames('dbo');
 
@@ -231,7 +231,7 @@ class SqlSrvColumnTest extends PHPUnit\Framework\TestCase
 		$this->assertContains('address', $names);
 	}
 
-	public function test_command_builder_insert()
+	public function test_sqlsrv_command_builder_insert()
 	{
 		$meta = $this->meta_data();
 		$builder = $meta->createCommandBuilder('table1');
@@ -243,7 +243,7 @@ class SqlSrvColumnTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('[name]', $insert->Text);
 	}
 
-	public function test_command_builder_update()
+	public function test_sqlsrv_command_builder_update()
 	{
 		$meta = $this->meta_data();
 		$builder = $meta->createCommandBuilder('table1');
@@ -255,7 +255,7 @@ class SqlSrvColumnTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('WHERE id=1', $update->Text);
 	}
 
-	public function test_command_builder_delete()
+	public function test_sqlsrv_command_builder_delete()
 	{
 		$meta = $this->meta_data();
 		$builder = $meta->createCommandBuilder('table1');
@@ -266,7 +266,7 @@ class SqlSrvColumnTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('WHERE id=1', $delete->Text);
 	}
 
-	public function test_insert()
+	public function test_sqlsrv_insert()
 	{
 		$table = new TTableGateway('table1', $this->get_conn());
 		$result = $table->insert(['name' => 'cool']);

@@ -80,7 +80,7 @@ class TDbCommandSqlSrvIntegrationTest extends PHPUnit\Framework\TestCase
 	// TDbCommand — execute()
 	// -----------------------------------------------------------------------
 
-	public function testExecuteRunsDdlWithoutError(): void
+	public function testSqlsrvExecuteRunsDdlWithoutError(): void
 	{
 		// execute() on a non-query statement must not throw.
 		try {
@@ -95,7 +95,7 @@ class TDbCommandSqlSrvIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->_conn->createCommand('DROP TABLE exec_ddl_test')->execute();
 	}
 
-	public function testExecuteReturnsRowCountForInsert(): void
+	public function testSqlsrvExecuteReturnsRowCountForInsert(): void
 	{
 		$affected = $this->_conn->createCommand(
 			"INSERT INTO cmd_test VALUES (99, 'Zoe', 5.0, 0, NULL)"
@@ -107,7 +107,7 @@ class TDbCommandSqlSrvIntegrationTest extends PHPUnit\Framework\TestCase
 	// TDbCommand — queryAll()
 	// -----------------------------------------------------------------------
 
-	public function testQueryAllReturnsAllRows(): void
+	public function testSqlsrvQueryAllReturnsAllRows(): void
 	{
 		$rows = $this->_conn->createCommand('SELECT * FROM cmd_test ORDER BY id')->queryAll();
 		$this->assertCount(3, $rows);
@@ -116,14 +116,14 @@ class TDbCommandSqlSrvIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertSame('Carol', $rows[2]['name']);
 	}
 
-	public function testQueryAllReturnsAssocArraysByDefault(): void
+	public function testSqlsrvQueryAllReturnsAssocArraysByDefault(): void
 	{
 		$rows = $this->_conn->createCommand('SELECT id, name FROM cmd_test ORDER BY id')->queryAll();
 		$this->assertArrayHasKey('id',   $rows[0]);
 		$this->assertArrayHasKey('name', $rows[0]);
 	}
 
-	public function testQueryAllReturnsEmptyArrayWhenNoRows(): void
+	public function testSqlsrvQueryAllReturnsEmptyArrayWhenNoRows(): void
 	{
 		$rows = $this->_conn->createCommand('SELECT * FROM cmd_test WHERE id = 999')->queryAll();
 		$this->assertIsArray($rows);
@@ -134,20 +134,20 @@ class TDbCommandSqlSrvIntegrationTest extends PHPUnit\Framework\TestCase
 	// TDbCommand — queryRow()
 	// -----------------------------------------------------------------------
 
-	public function testQueryRowReturnsFirstRow(): void
+	public function testSqlsrvQueryRowReturnsFirstRow(): void
 	{
 		$row = $this->_conn->createCommand('SELECT * FROM cmd_test ORDER BY id')->queryRow();
 		$this->assertIsArray($row);
 		$this->assertSame('Alice', $row['name']);
 	}
 
-	public function testQueryRowReturnsFalseWhenNoRows(): void
+	public function testSqlsrvQueryRowReturnsFalseWhenNoRows(): void
 	{
 		$row = $this->_conn->createCommand('SELECT * FROM cmd_test WHERE id = 999')->queryRow();
 		$this->assertFalse($row);
 	}
 
-	public function testQueryRowReturnsOnlyOneRow(): void
+	public function testSqlsrvQueryRowReturnsOnlyOneRow(): void
 	{
 		$row = $this->_conn->createCommand('SELECT * FROM cmd_test ORDER BY id')->queryRow();
 		// Only a single array (one row), not a nested array.
@@ -159,19 +159,19 @@ class TDbCommandSqlSrvIntegrationTest extends PHPUnit\Framework\TestCase
 	// TDbCommand — queryScalar()
 	// -----------------------------------------------------------------------
 
-	public function testQueryScalarReturnsFirstColumnFirstRow(): void
+	public function testSqlsrvQueryScalarReturnsFirstColumnFirstRow(): void
 	{
 		$scalar = $this->_conn->createCommand('SELECT name FROM cmd_test ORDER BY id')->queryScalar();
 		$this->assertSame('Alice', $scalar);
 	}
 
-	public function testQueryScalarReturnsFalseWhenNoRows(): void
+	public function testSqlsrvQueryScalarReturnsFalseWhenNoRows(): void
 	{
 		$scalar = $this->_conn->createCommand('SELECT name FROM cmd_test WHERE id = 999')->queryScalar();
 		$this->assertFalse($scalar);
 	}
 
-	public function testQueryScalarWorksForCountAggregate(): void
+	public function testSqlsrvQueryScalarWorksForCountAggregate(): void
 	{
 		$count = (int) $this->_conn->createCommand('SELECT COUNT(*) FROM cmd_test')->queryScalar();
 		$this->assertSame(3, $count);
@@ -181,20 +181,20 @@ class TDbCommandSqlSrvIntegrationTest extends PHPUnit\Framework\TestCase
 	// TDbCommand — queryColumn()
 	// -----------------------------------------------------------------------
 
-	public function testQueryColumnReturnsFirstColumnOfAllRows(): void
+	public function testSqlsrvQueryColumnReturnsFirstColumnOfAllRows(): void
 	{
 		$names = $this->_conn->createCommand('SELECT name FROM cmd_test ORDER BY id')->queryColumn();
 		$this->assertSame(['Alice', 'Bob', 'Carol'], $names);
 	}
 
-	public function testQueryColumnReturnsEmptyArrayWhenNoRows(): void
+	public function testSqlsrvQueryColumnReturnsEmptyArrayWhenNoRows(): void
 	{
 		$result = $this->_conn->createCommand('SELECT name FROM cmd_test WHERE id = 999')->queryColumn();
 		$this->assertIsArray($result);
 		$this->assertCount(0, $result);
 	}
 
-	public function testQueryColumnWorksForNumericColumn(): void
+	public function testSqlsrvQueryColumnWorksForNumericColumn(): void
 	{
 		$ids = $this->_conn->createCommand('SELECT id FROM cmd_test ORDER BY id')->queryColumn();
 		$this->assertCount(3, $ids);
@@ -205,7 +205,7 @@ class TDbCommandSqlSrvIntegrationTest extends PHPUnit\Framework\TestCase
 	// TDbCommand — parameter binding
 	// -----------------------------------------------------------------------
 
-	public function testBindParameterWithPositionalPlaceholder(): void
+	public function testSqlsrvBindParameterWithPositionalPlaceholder(): void
 	{
 		$cmd = $this->_conn->createCommand('SELECT name FROM cmd_test WHERE id = ?');
 		$id = 2;
@@ -213,28 +213,28 @@ class TDbCommandSqlSrvIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertSame('Bob', $cmd->queryScalar());
 	}
 
-	public function testBindValueWithNamedPlaceholder(): void
+	public function testSqlsrvBindValueWithNamedPlaceholder(): void
 	{
 		$cmd = $this->_conn->createCommand('SELECT name FROM cmd_test WHERE id = :id');
 		$cmd->bindValue(':id', 3);
 		$this->assertSame('Carol', $cmd->queryScalar());
 	}
 
-	public function testBindValueTypeInt(): void
+	public function testSqlsrvBindValueTypeInt(): void
 	{
 		$cmd = $this->_conn->createCommand('SELECT name FROM cmd_test WHERE id = :id');
 		$cmd->bindValue(':id', 1, \PDO::PARAM_INT);
 		$this->assertSame('Alice', $cmd->queryScalar());
 	}
 
-	public function testBindValueTypeStr(): void
+	public function testSqlsrvBindValueTypeStr(): void
 	{
 		$cmd = $this->_conn->createCommand("SELECT id FROM cmd_test WHERE name = :name");
 		$cmd->bindValue(':name', 'Carol', \PDO::PARAM_STR);
 		$this->assertSame('3', (string) $cmd->queryScalar());
 	}
 
-	public function testPreparedStatementCanBeExecutedMultipleTimes(): void
+	public function testSqlsrvPreparedStatementCanBeExecutedMultipleTimes(): void
 	{
 		$cmd = $this->_conn->createCommand('SELECT name FROM cmd_test WHERE id = :id');
 		$cmd->bindValue(':id', 1);
@@ -251,13 +251,13 @@ class TDbCommandSqlSrvIntegrationTest extends PHPUnit\Framework\TestCase
 	// TDbCommand — NULL values
 	// -----------------------------------------------------------------------
 
-	public function testQueryRowReturnsNullForNullColumn(): void
+	public function testSqlsrvQueryRowReturnsNullForNullColumn(): void
 	{
 		$row = $this->_conn->createCommand('SELECT note FROM cmd_test WHERE id = 2')->queryRow();
 		$this->assertNull($row['note']);
 	}
 
-	public function testQueryScalarReturnsNullForNullColumn(): void
+	public function testSqlsrvQueryScalarReturnsNullForNullColumn(): void
 	{
 		$scalar = $this->_conn->createCommand('SELECT note FROM cmd_test WHERE id = 2')->queryScalar();
 		$this->assertNull($scalar);
@@ -267,14 +267,14 @@ class TDbCommandSqlSrvIntegrationTest extends PHPUnit\Framework\TestCase
 	// TDbDataReader — via query()
 	// -----------------------------------------------------------------------
 
-	public function testQueryReturnsDataReader(): void
+	public function testSqlsrvQueryReturnsDataReader(): void
 	{
 		$reader = $this->_conn->createCommand('SELECT * FROM cmd_test')->query();
 		$this->assertInstanceOf(TDbDataReader::class, $reader);
 		$reader->close();
 	}
 
-	public function testDataReaderReadReturnsRowsThenFalse(): void
+	public function testSqlsrvDataReaderReadReturnsRowsThenFalse(): void
 	{
 		$reader = $this->_conn->createCommand('SELECT id FROM cmd_test ORDER BY id')->query();
 		$row1 = $reader->read();
@@ -289,7 +289,7 @@ class TDbCommandSqlSrvIntegrationTest extends PHPUnit\Framework\TestCase
 		$reader->close();
 	}
 
-	public function testDataReaderReadAllReturnsAllRows(): void
+	public function testSqlsrvDataReaderReadAllReturnsAllRows(): void
 	{
 		$reader = $this->_conn->createCommand('SELECT * FROM cmd_test ORDER BY id')->query();
 		$rows = $reader->readAll();
@@ -297,7 +297,7 @@ class TDbCommandSqlSrvIntegrationTest extends PHPUnit\Framework\TestCase
 		$reader->close();
 	}
 
-	public function testDataReaderReadColumnByIndex(): void
+	public function testSqlsrvDataReaderReadColumnByIndex(): void
 	{
 		$reader = $this->_conn->createCommand('SELECT id, name FROM cmd_test ORDER BY id')->query();
 		$name = $reader->readColumn(1); // second column = name
@@ -305,7 +305,7 @@ class TDbCommandSqlSrvIntegrationTest extends PHPUnit\Framework\TestCase
 		$reader->close();
 	}
 
-	public function testDataReaderForeachIteratesAllRows(): void
+	public function testSqlsrvDataReaderForeachIteratesAllRows(): void
 	{
 		$reader = $this->_conn->createCommand('SELECT name FROM cmd_test ORDER BY id')->query();
 		$names = [];
@@ -315,14 +315,14 @@ class TDbCommandSqlSrvIntegrationTest extends PHPUnit\Framework\TestCase
 		$this->assertSame(['Alice', 'Bob', 'Carol'], $names);
 	}
 
-	public function testDataReaderGetColumnCount(): void
+	public function testSqlsrvDataReaderGetColumnCount(): void
 	{
 		$reader = $this->_conn->createCommand('SELECT id, name, score FROM cmd_test')->query();
 		$this->assertSame(3, $reader->getColumnCount());
 		$reader->close();
 	}
 
-	public function testDataReaderNullValueReturnedForNullColumn(): void
+	public function testSqlsrvDataReaderNullValueReturnedForNullColumn(): void
 	{
 		$reader = $this->_conn->createCommand('SELECT note FROM cmd_test WHERE id = 2')->query();
 		$row = $reader->read();
@@ -330,21 +330,21 @@ class TDbCommandSqlSrvIntegrationTest extends PHPUnit\Framework\TestCase
 		$reader->close();
 	}
 
-	public function testDataReaderEmptyResultSetReadReturnsFalse(): void
+	public function testSqlsrvDataReaderEmptyResultSetReadReturnsFalse(): void
 	{
 		$reader = $this->_conn->createCommand('SELECT * FROM cmd_test WHERE id = 999')->query();
 		$this->assertFalse($reader->read());
 		$reader->close();
 	}
 
-	public function testDataReaderClosePreventsFurtherReading(): void
+	public function testSqlsrvDataReaderClosePreventsFurtherReading(): void
 	{
 		$reader = $this->_conn->createCommand('SELECT * FROM cmd_test')->query();
 		$reader->close();
 		$this->assertTrue($reader->getIsClosed());
 	}
 
-	public function testDataReaderRewindThrowsOnSecondIteration(): void
+	public function testSqlsrvDataReaderRewindThrowsOnSecondIteration(): void
 	{
 		$reader = $this->_conn->createCommand('SELECT * FROM cmd_test')->query();
 		// First complete iteration.
@@ -356,7 +356,7 @@ class TDbCommandSqlSrvIntegrationTest extends PHPUnit\Framework\TestCase
 		}
 	}
 
-	public function testDataReaderFetchModeNum(): void
+	public function testSqlsrvDataReaderFetchModeNum(): void
 	{
 		$reader = $this->_conn->createCommand('SELECT id, name FROM cmd_test ORDER BY id')->query();
 		$reader->setFetchMode(\PDO::FETCH_NUM);

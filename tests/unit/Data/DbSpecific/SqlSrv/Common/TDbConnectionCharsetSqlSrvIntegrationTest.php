@@ -98,7 +98,7 @@ class TDbConnectionCharsetSqlSrvIntegrationTest extends PHPUnit\Framework\TestCa
 	// Tests — charset injected into DSN via applyCharsetToDsn()
 	// -----------------------------------------------------------------------
 
-	public function testSqlSrvUtf8ResolvedAndInjectedIntoDsn(): void
+	public function testSqlsrvUtf8ResolvedAndInjectedIntoDsn(): void
 	{
 		// 'UTF-8' → resolveCharsetForDriver() → 'UTF-8' for sqlsrv.
 		// applyCharsetToDsn() appends CharacterSet=UTF-8 to the DSN.
@@ -107,7 +107,7 @@ class TDbConnectionCharsetSqlSrvIntegrationTest extends PHPUnit\Framework\TestCa
 		$conn->Active = false;
 	}
 
-	public function testSqlSrvDriverSpecificNamePassesThrough(): void
+	public function testSqlsrvDriverSpecificNamePassesThrough(): void
 	{
 		// 'UTF-8' is both the universal name and the sqlsrv-resolved name.
 		$conn = $this->openSqlSrv('UTF-8');
@@ -115,7 +115,7 @@ class TDbConnectionCharsetSqlSrvIntegrationTest extends PHPUnit\Framework\TestCa
 		$conn->Active = false;
 	}
 
-	public function testSqlSrvSetCharsetAfterConnectThrowsException(): void
+	public function testSqlsrvSetCharsetAfterConnectThrowsException(): void
 	{
 		// For sqlsrv, charset is DSN-only; setting it after connect is a no-op
 		// at the server level (no SQL command is sent).  The connection stays active.
@@ -128,7 +128,7 @@ class TDbConnectionCharsetSqlSrvIntegrationTest extends PHPUnit\Framework\TestCa
 	// getDatabaseCharset() — falls back to resolveCharsetForDriver() for sqlsrv
 	// -----------------------------------------------------------------------
 
-	public function testSqlSrvGetDatabaseCharsetReturnsResolvedCharset(): void
+	public function testSqlsrvGetDatabaseCharsetReturnsResolvedCharset(): void
 	{
 		// sqlsrv has no live-query path; getDatabaseCharset() returns
 		// resolveCharsetForDriver('UTF-8', 'sqlsrv') = 'UTF-8'.
@@ -137,7 +137,7 @@ class TDbConnectionCharsetSqlSrvIntegrationTest extends PHPUnit\Framework\TestCa
 		$conn->Active = false;
 	}
 
-	public function testSqlSrvUnsupportedCharsetClearedAfterConnect(): void
+	public function testSqlsrvUnsupportedCharsetClearedAfterConnect(): void
 	{
 		// pdo_sqlsrv only accepts 'UTF-8' or 'SQLSRV_ENC_CHAR' in CharacterSet=.
 		// 'ISO-8859-1' is not in the allowlist, so applyCharsetToDsn() skips injection
@@ -157,7 +157,7 @@ class TDbConnectionCharsetSqlSrvIntegrationTest extends PHPUnit\Framework\TestCa
 	// reports HasAutoCommit = false for sqlsrv/dblib.
 	// -----------------------------------------------------------------------
 
-	public function testSqlSrvHasAutoCommitAttributeIsFalse(): void
+	public function testSqlsrvHasAutoCommitAttributeIsFalse(): void
 	{
 		$conn = $this->openSqlSrv();
 		$this->assertFalse(
@@ -167,7 +167,7 @@ class TDbConnectionCharsetSqlSrvIntegrationTest extends PHPUnit\Framework\TestCa
 		$conn->Active = false;
 	}
 
-	public function testSqlSrvBeginTransactionSucceedsAndRollbackWorks(): void
+	public function testSqlsrvBeginTransactionSucceedsAndRollbackWorks(): void
 	{
 		// sqlsrv does not expose ATTR_AUTOCOMMIT.  Simply verify that
 		// beginTransaction/rollback work without error.
@@ -178,7 +178,7 @@ class TDbConnectionCharsetSqlSrvIntegrationTest extends PHPUnit\Framework\TestCa
 		$conn->Active = false;
 	}
 
-	public function testSqlSrvCharsetInjectedIntoDsnWithCharacterSetParam(): void
+	public function testSqlsrvCharsetInjectedIntoDsnWithCharacterSetParam(): void
 	{
 		// applyCharsetToDsn() appends ;CharacterSet=UTF-8 for sqlsrv (not lowercase 'charset').
 		// After connecting, the raw ConnectionString (before applyCharsetToDsn) must not
