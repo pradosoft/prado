@@ -4,7 +4,7 @@ require_once(__DIR__ . '/../../../../PradoUnit.php');
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
 
-class BaseGateway extends PHPUnit\Framework\TestCase
+class TTableGatewayTestBase extends PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

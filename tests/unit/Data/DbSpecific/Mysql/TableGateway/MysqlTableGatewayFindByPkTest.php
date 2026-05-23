@@ -8,7 +8,7 @@ require_once(__DIR__ . '/BaseGateway.php');
  * Migrated from tests/unit/Data/TableGateway/TestFindByPk.php (renamed so that
  * phpunit's suffix="Test.php" scanner discovers this file).
  */
-class MysqlTableGatewayFindByPkTest extends BaseGateway
+class MysqlTableGatewayFindByPkTest extends TTableGatewayTestBase
 {
 	public function test_one_key()
 	{

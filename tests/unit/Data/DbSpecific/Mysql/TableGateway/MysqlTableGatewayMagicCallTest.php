@@ -2,7 +2,7 @@
 
 require_once(__DIR__ . '/BaseGateway.php');
 
-class MysqlTableGatewayMagicCallTest extends BaseGateway
+class MysqlTableGatewayMagicCallTest extends TTableGatewayTestBase
 {
 	public function test_magic_call()
 	{

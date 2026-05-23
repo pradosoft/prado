@@ -2,7 +2,7 @@
 
 require_once(__DIR__ . '/BaseGateway.php');
 
-class MysqlTableGatewayCountTest extends BaseGateway
+class MysqlTableGatewayCountTest extends TTableGatewayTestBase
 {
 	public function test_simple_count()
 	{

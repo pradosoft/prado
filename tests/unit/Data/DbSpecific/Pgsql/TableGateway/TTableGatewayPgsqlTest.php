@@ -2,7 +2,7 @@
 
 require_once(__DIR__ . '/../../Mysql/TableGateway/BaseGateway.php');
 
-class TTableGatewayPgsqlTest extends BaseGateway
+class TTableGatewayPgsqlTest extends TTableGatewayTestBase
 {
 	// Own static property so that PHP late-static binding never resolves to
 	// BaseGateway::$conn, which may hold a MySQL TDbConnection left behind by

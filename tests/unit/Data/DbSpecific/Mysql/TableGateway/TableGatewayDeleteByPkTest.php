@@ -2,7 +2,7 @@
 
 require_once(__DIR__ . '/BaseGateway.php');
 
-class TableGatewayDeleteByPkTest extends BaseGateway
+class TableGatewayDeleteByPkTest extends TTableGatewayTestBase
 {
 	/**
 	 * @agent these should stay as skipped until the framework bug is fixed
