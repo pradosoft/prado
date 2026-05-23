@@ -809,14 +809,6 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 * was last called.  It differs from {@see getCurrentTransaction()}, which
 	 * returns non-null only while the transaction is open.
 	 *
-	 * The primary use case is inside {@see TDbTransaction::beginTransaction()}:
-	 * before reactivating a completed transaction object the method checks that
-	 * the object is still the last one associated with this connection.  If a
-	 * caller has since invoked {@see beginTransaction()} again, a new
-	 * {@see TDbTransaction} is stored here and the old object is considered
-	 * superseded — attempting to restart it would silently bypass the new
-	 * transaction's lifecycle.
-	 *
 	 * @return ?TDbTransaction the last transaction object, or null if
 	 *   {@see beginTransaction()} has never been called on this connection.
 	 * @since 4.3.3
@@ -846,10 +838,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 * a new one.
 	 *
 	 * Each call allocates a **new** {@see TDbTransaction} object and stores it
-	 * as the last transaction via {@see getLastTransaction()}.  Any previously
-	 * returned transaction object is superseded: calling
-	 * {@see TDbTransaction::beginTransaction()} on it will throw because it is
-	 * no longer the connection's current transaction object.
+	 * as the last transaction via {@see getLastTransaction()}.
 	 *
 	 * For pdo_firebird, a pre-begin flush (PDO::commit()) is issued before
 	 * PDO::beginTransaction() to clear Firebird's always-running implicit
@@ -859,7 +848,6 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 * @throws TDbException if the connection is not active, or if a transaction
 	 *   is already open with uncommitted work.
 	 * @return TDbTransaction the transaction object for the new work unit.
-	 * @see TDbTransaction::beginTransaction
 	 */
 	public function beginTransaction()
 	{

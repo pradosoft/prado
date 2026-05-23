@@ -37,36 +37,6 @@ interface IDataTransaction
 	public function getActive();
 
 	/**
-	 * Creates a command for execution within this transaction's connection.
-	 *
-	 * This is a convenience method equivalent to
-	 * `$transaction->getConnection()->createCommand($query)`.
-	 *
-	 * @param mixed $query the query specification (SQL string or equivalent).
-	 * @return IDataCommand the new command object.
-	 */
-	public function createCommand($query);
-
-	/**
-	 * Starts a new transaction on this transaction's connection, reactivating
-	 * this transaction object for a new work unit.
-	 *
-	 * This is the reuse-pattern counterpart to
-	 * {@see IDataConnection::beginTransaction()}: it reactivates the existing
-	 * object rather than allocating a new one, which avoids unnecessary
-	 * object allocation for sequential work units.
-	 *
-	 * Implementations must guard against supersession: if
-	 * {@see IDataConnection::beginTransaction()} was called after this
-	 * transaction completed, this object has been superseded and restarting
-	 * it must throw an exception rather than silently bypassing the newer
-	 * transaction's lifecycle.
-	 *
-	 * @return static
-	 */
-	public function beginTransaction(): static;
-
-	/**
 	 * Commits the transaction.
 	 *
 	 * The transaction becomes inactive after commit completes. To start another

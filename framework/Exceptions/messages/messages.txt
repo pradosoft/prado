@@ -504,7 +504,6 @@ dbcommand_query_failed					= TDbCommand failed to execute the query SQL "{1}": {
 dbcommand_column_empty					= TDbCommand returned an empty result and could not obtain the scalar.
 dbdatareader_rewind_invalid				= TDbDataReader is a forward-only stream. It can only be traversed once.
 dbtransaction_transaction_inactive		= TDbTransaction is inactive.
-dbtransaction_transaction_superseded	= TDbTransaction cannot be restarted: a new transaction was begun on the same PDO connection after this one completed, superseding this transaction object.
 
 dbcommandbuilder_insertorignore_not_supported = insertOrIgnore() is not supported by the base TDbCommandBuilder. Use a driver-specific subclass.
 dbcommandbuilder_upsert_not_supported         = upsert() is not supported by the base TDbCommandBuilder. Use a driver-specific subclass.

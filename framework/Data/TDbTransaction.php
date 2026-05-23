@@ -21,8 +21,7 @@ use Prado\Exceptions\TDbException;
  * {@see TDbConnection::beginTransaction()} and must be explicitly committed or
  * rolled back. After either operation the transaction becomes inactive.
  *
- * **Single-use pattern** — the classic approach, where each work unit gets a
- * fresh transaction object from the connection:
+ * Usage:
  *
  * ```php
  * try {
@@ -34,35 +33,6 @@ use Prado\Exceptions\TDbException;
  *     $transaction->rollback();
  * }
  * ```
- *
- * **Reuse pattern** — a single `TDbTransaction` instance can be restarted for
- * sequential work units by calling {@see beginTransaction()} on the object
- * itself after committing or rolling back, avoiding a new object allocation:
- *
- * ```php
- * $tx = $connection->beginTransaction();
- * try {
- *     $connection->createCommand($sql1)->execute();
- *     $tx->commit();
- * } catch (Exception $e) {
- *     $tx->rollback();
- * }
- * // Start the next unit of work on the same object.
- * $tx->beginTransaction();
- * try {
- *     $connection->createCommand($sql2)->execute();
- *     $tx->commit();
- * } catch (Exception $e) {
- *     $tx->rollback();
- * }
- * ```
- *
- * **Supersession:** calling {@see TDbConnection::beginTransaction()} always
- * creates a **new** `TDbTransaction` object.  If the connection's
- * `beginTransaction()` is called after a TDbTransaction completes, that old
- * transaction is superseded.  Attempting to restart a superseded transaction
- * via self {@see TDbTransaction::beginTransaction()} will throw a
- * {@see TDbException}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -124,8 +94,8 @@ class TDbTransaction extends \Prado\TComponent implements IDataTransaction
 	/**
 	 * Sets the active state of this transaction.
 	 *
-	 * Managed internally by {@see beginTransaction()}, {@see completeTransaction()},
-	 * and the constructor; not intended for external use.
+	 * Managed internally by {@see completeTransaction()} and the constructor;
+	 * not intended for external use.
 	 *
 	 * @param bool $value true to mark as active, false to mark as inactive.
 	 * @return static
@@ -139,26 +109,10 @@ class TDbTransaction extends \Prado\TComponent implements IDataTransaction
 	//	-----   Methods  -----
 
 	/**
-	 * Creates a command on this transaction's connection.
-	 *
-	 * Convenience shorthand for `$transaction->getConnection()->createCommand($sql)`.
-	 *
-	 * @param string $sql SQL statement for the new command.
-	 * @return TDbCommand the new command object.
-	 * @since 4.3.3
-	 */
-	public function createCommand($sql)
-	{
-		return $this->getConnection()->createCommand($sql);
-	}
-
-	/**
 	 * Commits the transaction.
 	 *
 	 * The transaction becomes inactive after commit. To start another work unit,
-	 * either call {@see TDbTransaction::beginTransaction()} on this object (reuse
-	 * pattern) or call {@see TDbConnection::beginTransaction()} to obtain a fresh
-	 * transaction object.
+	 * call {@see TDbConnection::beginTransaction()} to obtain a fresh transaction object.
 	 *
 	 * @throws TDbException if the transaction or its connection is not active.
 	 */
@@ -173,9 +127,7 @@ class TDbTransaction extends \Prado\TComponent implements IDataTransaction
 	 * Rolls back the transaction.
 	 *
 	 * The transaction becomes inactive after rollback. To start another work unit,
-	 * either call {@see TDbTransaction::beginTransaction()} on this object (reuse
-	 * pattern) or call {@see TDbConnection::beginTransaction()} to obtain a fresh
-	 * transaction object.
+	 * call {@see TDbConnection::beginTransaction()} to obtain a fresh transaction object.
 	 *
 	 * @throws TDbException if the transaction or its connection is not active.
 	 */
@@ -237,66 +189,5 @@ class TDbTransaction extends \Prado\TComponent implements IDataTransaction
 		}
 
 		$this->setActive(false);
-	}
-
-	/**
-	 * Starts a new transaction on this transaction's connection, reactivating
-	 * this transaction object for a new work unit.
-	 *
-	 * This allows a single TDbTransaction instance to span multiple sequential
-	 * work units without allocating a new object each time:
-	 *
-	 * ```php
-	 * $tx = $conn->beginTransaction();
-	 * $tx->commit();
-	 * // ...
-	 * $tx->beginTransaction(); // reuse the same object
-	 * $tx->commit();
-	 * ```
-	 *
-	 * This is equivalent to calling {@see TDbConnection::beginTransaction()} but
-	 * reactivates this existing object rather than returning a new one.
-	 *
-	 * **Supersession guard:** {@see TDbConnection::beginTransaction()} always
-	 * allocates a **new** transaction object and stores it on the connection.
-	 * If it was called after this transaction completed, this object is
-	 * superseded — the connection now owns a different, newer transaction.
-	 * Calling `beginTransaction()` on a superseded object throws a
-	 * {@see TDbException} to prevent silently bypassing the active transaction's
-	 * lifecycle.  Use the new transaction object returned by the last
-	 * {@see TDbConnection::beginTransaction()} call instead, or call it again.
-	 *
-	 * For pdo_firebird a pre-begin flush (`PDO::commit()`) is issued before
-	 * `PDO::beginTransaction()` to clear the implicit transaction that Firebird
-	 * keeps running in autocommit mode. See {@see TDbConnection::beginTransaction()}
-	 * for the full explanation of this requirement.
-	 *
-	 * @throws TDbException if this transaction is already active, if its
-	 *   connection is not active, or if this transaction has been superseded by
-	 *   a newer transaction on the same connection.
-	 * @return static
-	 * @since 4.3.3
-	 * @see TDbConnection::beginTransaction
-	 */
-	public function beginTransaction(): static
-	{
-		if ($this->getActive()) {
-			throw new TDbException('dbconnection_active_transaction');
-		}
-		$connection = $this->getConnection();
-		$connection->assertActive();
-		if ($connection->getLastTransaction() !== $this) {
-			throw new TDbException('dbtransaction_transaction_superseded');
-		}
-		$pdo = $connection->getPdoInstance();
-		if (TDbDriverCapabilities::requiresPreBeginTransactionFlush($connection->getDriverName())) {
-			try {
-				$pdo->commit();
-			} catch (PDOException $e) {
-			}
-		}
-		$pdo->beginTransaction();
-		$this->setActive(true);
-		return $this;
 	}
 }
