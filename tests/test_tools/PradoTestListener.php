@@ -79,9 +79,12 @@ class PradoTestListener implements Runner\Extension\Extension
 		Runner\Extension\Facade $facade,
 		Runner\Extension\ParameterCollection $parameters
 	): void {
-		if (defined('SELENIUM_TESTSUITE_NAME')) {
-			self::$SeleniumTestSuiteName = SELENIUM_TESTSUITE_NAME;
-		}
+		// Initialize all available test databases before any test runs.
+		// Each driver is skipped silently when its PDO extension is absent or the
+		// server is unreachable — so this is safe for every suite (unit, db-*, etc.).
+		require_once __DIR__ . '/DbInit.php';
+		DbInit::initAll(quiet: true);
+
 		$facade->registerSubscribers(
 			new TestSuiteStarted(),
 			new TestSuiteFinished()

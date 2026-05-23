@@ -64,3 +64,7 @@ sqlmap_invalid_delegate					= Invalid callback row delegate '{1}' in mapped stat
 sqlmap_invalid_prado_cache				= Unable to find Prado cache module for SQLMap cache '{0}'.
 
 sqlmap_non_groupby_array_list_type		= Expecting GroupBy property in result map '{0}' since {1}::{2} is an array or TList type.
+sqlmap_can_not_extend_select_key		= SelectKey statements do not support inheritance via the 'extends' attribute.
+sqlmap_configfile_invalid				= SQLMap configuration file or namespace '{0}' is invalid or does not exist.
+sqlmap_must_enable_custom_paging		= Custom paging is not enabled; set CustomPaging to true before accessing the PagedList.
+sqlmap_use_set_to_store_cache			= Use set() to store items in the SQLMap cache; add() is not supported.

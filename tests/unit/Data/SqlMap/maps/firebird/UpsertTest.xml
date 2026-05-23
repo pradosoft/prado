@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlMap>
+
+	<insert id="InsertUpsertRow" parameterClass="array">
+		INSERT INTO upsert_test (username, score)
+		VALUES (#username#, #score#)
+	</insert>
+
+	<insertOrIgnore id="InsertOrIgnoreUpsertRow" parameterClass="array">
+		INSERT INTO upsert_test (username, score)
+		VALUES (#username#, #score#)
+	</insertOrIgnore>
+
+	<upsert id="UpsertRow" parameterClass="array"
+		conflictColumns="username"
+		updateColumns="score">
+		INSERT INTO upsert_test (username, score)
+		VALUES (#username#, #score#)
+	</upsert>
+
+	<upsert id="UpsertRowMultiConflict" parameterClass="array"
+		conflictColumns="tenant_id, username"
+		updateColumns="score, extra">
+		INSERT INTO upsert_test (username, score)
+		VALUES (#username#, #score#)
+	</upsert>
+
+</sqlMap>

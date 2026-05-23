@@ -93,6 +93,9 @@ class PradoUnit {
 	 */
 	public static function restore(object $object, array $snapshot): void
 	{
+		if (empty($snapshot)) {
+			return;
+		}
 		foreach (static::reflectionProperties($object, array_keys($snapshot)) as $name => $rp) {
 			$rp->setValue($object, $snapshot[$name]);
 		}
@@ -679,7 +682,7 @@ class PradoUnit {
 	 *   `TActiveRecordManager::getInstance()`.
 	 * @return \Prado\Data\TDbConnection|string|\Exception
 	 */
-	public static function setupMssqlConnection($database = '', $isActiveRecord = false)
+	public static function setupSqlSrvConnection($database = '', $isActiveRecord = false)
 	{
 		if (!extension_loaded('pdo_sqlsrv')) {
 			return 'The pdo_sqlsrv extension is not available.';
@@ -700,6 +703,12 @@ class PradoUnit {
 		}
 		return $conn;
 	}
+	/*
+	public static function setupMssqlConnection($database = '', $isActiveRecord = false)
+	{
+		return static::setupSqlSrvConnection($database, $isActiveRecord);
+	}
+	*/
 
 	/**
 	 * Opens an Oracle database connection for unit tests.
@@ -717,7 +726,7 @@ class PradoUnit {
 	 *   `TActiveRecordManager::getInstance()`.
 	 * @return \Prado\Data\TDbConnection|string|\Exception
 	 */
-	public static function setupOciConnection($database = '', $isActiveRecord = false)
+	public static function setupOracleConnection($database = '', $isActiveRecord = false)
 	{
 		if (!extension_loaded('pdo_oci')) {
 			return 'The pdo_oci extension is not available.';
@@ -856,6 +865,7 @@ class PradoUnit {
 	 * @return \Exception|string The (possibly overwritten) `$e`: a descriptive string
 	 *   for a recognised connection / database / table failure, or the original
 	 *   `\Exception` for any unrecognised error.
+	 * @agents DO NOT EDIT THIS METHOD, unless requested to edit this method. It is EXACTLY as it needs to be.
 	 */
 	public static function processException($e, &$connection)
 	{
@@ -864,11 +874,10 @@ class PradoUnit {
 			if (isset(static::$dbConnectionException[$driver])) {
 				$e = strtr("Duplicated Database Driver '{0}' Unavailable Error", ['{0}' => $driver]);
 			} else {
-				$msg = strtr("Database Driver '{0}' Unavailable Error:\n-----\n{1}", ['{0}' => $driver, '{1}' => $e->getMessage()]);
 				if (static::skipDatabaseTests()) {
-					$msg .= "\n(PRADO_UNITTEST_SKIP_DB=1)";
+					// only on skipping do we set $e
+					$e = strtr("Database Driver '{0}' Unavailable Error [PRADO_UNITTEST_SKIP_DB=1]:\n{1}", ['{0}' => $driver, '{1}' => $e->getMessage()]);
 				}
-				$e = $msg;
 				static::$dbConnectionException[$driver] = true;
 			}
 		} elseif (static::isNoDatabase($e)) {
@@ -876,22 +885,20 @@ class PradoUnit {
 			if (isset(static::$dbDatabaseException[$driver])) {
 				$e = strtr("Duplicated Database '{0}' Not Found Error (Connection OK)", ['{0}' => $driver]);
 			} else {
-				$msg = strtr("Database '{0}' Not Found Error (Connection OK):\n-----\n{1}", ['{0}' => $driver, '{1}' => $e->getMessage()]);
 				if (static::skipDatabaseTests()) {
-					$msg .= "\n(PRADO_UNITTEST_SKIP_DB=1)";
+					// only on skipping do we set $e
+					$e = strtr("Database '{0}' Not Found Error (Connection OK) [PRADO_UNITTEST_SKIP_DB=1]:\n{1}", ['{0}' => $driver, '{1}' => $e->getMessage()]);
 				}
-				$e = $msg;
 				static::$dbDatabaseException[$driver] = true;
 			}
 		} elseif (static::isNoTable($e)) {
 			if (isset(static::$dbTableException[$driver])) {
 				$e = strtr("Duplicated Table Not Found Error (driver: '{0}')", ['{0}' => $driver]);
 			} else {
-				$msg = strtr("Table Not Found Error (driver: '{0}'):\n-----\n{1}", ['{0}' => $driver, '{1}' => $e->getMessage()]);
 				if (static::skipDatabaseTests()) {
-					$msg .= "\n(PRADO_UNITTEST_SKIP_DB=1)";
+					// only on skipping do we set $e
+					$e = strtr("Table Not Found Error (driver: '{0}') [PRADO_UNITTEST_SKIP_DB=1]:\n{1}", ['{0}' => $driver, '{1}' => $e->getMessage()]);
 				}
-				$e = $msg;
 				static::$dbTableException[$driver] = true;
 			}
 		}
@@ -913,7 +920,13 @@ class PradoUnit {
 	 */
 	public static function isNoConnection($e): bool
 	{
-		return is_int(stripos((string) $e, 'No such file')) || is_int(stripos((string) $e, 'Connection refused')) || is_int(stripos((string) $e, 'failed to establish'));
+		$msg = (string) $e->getMessage();
+		return is_int(stripos($msg, 'No such file')) ||
+			   is_int(stripos($msg, 'Connection refused')) ||
+			   is_int(stripos($msg, 'failed to establish')) ||
+			   is_int(stripos($msg, 'Unable to complete network request')) ||
+			   is_int(stripos($msg, 'ODBC Driver for SQL Server')) ||
+			   is_int(stripos($msg, 'could not connect'));
 	}
 
 	/**
@@ -928,22 +941,37 @@ class PradoUnit {
 	 */
 	public static function isNoDatabase($e): bool
 	{
-		return is_int(stripos((string) $e, 'Unknown database'));
+		return is_int(stripos((string) $e->getMessage(), 'Unknown database'));
 	}
 
 	/**
 	 * Returns `true` when `$e` looks like a "table or view not found" exception.
 	 *
-	 * Matches exception message text containing `"Base table or view not found"`
-	 * (case-insensitive), which is the standard MySQL/MariaDB error text for SQLSTATE
-	 * 42S02. Extend or override this method to add equivalent phrases for other
-	 * drivers.
+	 * Matches exception message text for table-not-found errors across all supported
+	 * database drivers (case-insensitive):
+	 *
+	 * - `"Base table or view not found"` — MySQL / MariaDB  SQLSTATE 42S02
+	 * - `"Table unknown"`                — Firebird         SQLCODE -204
+	 * - `"does not exist"`               — PostgreSQL       SQLSTATE 42P01 (relation ... does not exist)
+	 * - `"ORA-00942"`                    — Oracle           table or view does not exist
+	 * - `"Invalid object name"`          — SQL Server       Msg 208
+	 * - `"SQL0204N"`                     — IBM DB2          table/view not found
+	 * - `"SQLCODE=-204"`                 — IBM DB2          alternate error format
+	 * - `"no such table"`               — SQLite            General error: 1 no such table: <name>
 	 *
 	 * @param \Exception|string $e Exception object or stringified exception text.
 	 * @return bool
 	 */
 	public static function isNoTable($e): bool
 	{
-		return is_int(stripos((string) $e, 'Base table or view not found'));
+		$msg = (string) $e->getMessage();
+		return is_int(stripos($msg, 'Base table or view not found'))  // MySQL / MariaDB  SQLSTATE 42S02
+			|| is_int(stripos($msg, 'Table unknown'))                  // Firebird         SQLCODE -204
+			|| is_int(stripos($msg, 'does not exist'))                 // PostgreSQL       SQLSTATE 42P01
+			|| is_int(stripos($msg, 'ORA-00942'))                     // Oracle           table or view does not exist
+			|| is_int(stripos($msg, 'Invalid object name'))           // SQL Server        Msg 208
+			|| is_int(stripos($msg, 'SQL0204N'))                      // IBM DB2           table not found
+			|| is_int(stripos($msg, 'SQLCODE=-204'))                  // IBM DB2           alternate format
+			|| is_int(stripos($msg, 'no such table'));                 // SQLite            General error: 1 no such table: <name>
 	}
 }

@@ -17,6 +17,8 @@ use Prado\Data\ActiveRecord\TActiveRecord;
 use Prado\Prado;
 
 /**
+ * TActiveRecordHasManyAssociation class
+ *
  * Implements the M-N (many to many) relationship via association table.
  * Consider the <b>entity</b> relationship between Articles and Categories
  * via the association table <tt>Article_Category</tt>.

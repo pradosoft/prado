@@ -17,6 +17,8 @@ use Prado\Data\ActiveRecord\Exceptions\TActiveRecordException;
 use Prado\Prado;
 
 /**
+ * TActiveRecordHasOne class
+ *
  * TActiveRecordHasOne models the object relationship that a record (the source object)
  * property is an instance of foreign record object having a foreign key
  * related to the source object. The HAS_ONE relation is very similar to the

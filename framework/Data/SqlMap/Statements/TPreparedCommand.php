@@ -56,7 +56,12 @@ class TPreparedCommand
 				$value = $statement->parameterMap()->getPropertyValue($registry, $property, $parameterObject);
 				$dbType = $property->getDbType();
 				if ($dbType == '') { //relies on PHP lax comparison
-					$command->bindValue($i + 1, $value, TDbCommandBuilder::getPdoType($value));
+					$type = $command->getColumnTypeFromValue($value);
+					if ($type !== null) {
+						$command->bindValue($i + 1, $value, $type);
+					} else {
+						$command->bindValue($i + 1, $value);
+					}
 				} elseif (strpos($dbType, 'PDO::') === 0) {
 					$command->bindValue($i + 1, $value, constant($property->getDbType()));
 				} //assumes PDO types, e.g. PDO::PARAM_INT

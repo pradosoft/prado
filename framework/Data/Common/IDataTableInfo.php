@@ -13,16 +13,20 @@ namespace Prado\Data\Common;
 use Prado\Data\IDataConnection;
 
 /**
- * IDataTableInfo interface.
+ * IDataTableInfo interface
  *
- * IDataTableInfo defines the contract for structured schema metadata about a
- * single database table or view. Implementations are returned by
- * {@see IDataMetaData::getTableInfo()} and consumed by command builders,
- * scaffold generators, and the Active Record layer.
+ * IDataTableInfo defines the interface for table (or view) metadata.
  *
- * The concrete implementation for SQL/PDO databases is {@see TDbTableInfo}.
- * Driver-specific subclasses (e.g. {@see TMysqlTableInfo}) extend it with
- * driver-specific column and key handling.
+ * The interface is shaped after {@see TDbTableInfo}, which is the canonical SQL
+ * implementation, but is intentionally decoupled from it so that application
+ * code and third-party plugins can supply custom implementations without
+ * coupling to the SQL class hierarchy.  Terminology is relational (columns,
+ * primary keys, foreign keys) rather than document-store-centric.
+ *
+ * Concrete implementations: {@see TDbTableInfo} and its driver-specific
+ * subclasses ({@see TMysqlTableInfo}, {@see TSqliteTableInfo},
+ * {@see TPgsqlTableInfo}, {@see TMssqlTableInfo}, {@see TOracleTableInfo},
+ * {@see TIbmTableInfo}, {@see TFirebirdTableInfo}).
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3
@@ -30,32 +34,64 @@ use Prado\Data\IDataConnection;
 interface IDataTableInfo
 {
 	/**
-	 * @return string the unquoted table name.
+	 * @return string the unqualified table or view name.
 	 */
 	public function getTableName();
 
 	/**
-	 * Returns all columns defined on this table, keyed by column name.
-	 * @return \Prado\Collections\TMap map of column name to column metadata object.
+	 * @return string the fully-qualified table name (schema + table where applicable).
+	 */
+	public function getTableFullName();
+
+	/**
+	 * @return bool whether this metadata describes a view rather than a base table.
+	 */
+	public function getIsView();
+
+	/**
+	 * Returns all column metadata objects for the table or collection, keyed by column name.
+	 *
+	 * @return IDataColumn[] the column metadata objects.
 	 */
 	public function getColumns();
 
 	/**
-	 * Returns the names of all primary-key columns.
-	 * @return string[] primary-key column names.
+	 * Returns the column metadata for a specific column, or null if not found.
+	 *
+	 * @param string $name the column name.
+	 * @return ?IDataColumn the column metadata, or null.
+	 */
+	public function getColumn($name);
+
+	/**
+	 * Returns the names of all columns defined for the table.
+	 *
+	 * @return string[] the column names.
+	 */
+	public function getColumnNames();
+
+	/**
+	 * Returns the names of the primary-key columns.
+	 *
+	 * @return string[] primary-key column names; empty array if none defined.
 	 */
 	public function getPrimaryKeys();
 
 	/**
-	 * Returns foreign-key information for this table.
-	 * @return array foreign-key descriptors.
+	 * Returns the foreign-key descriptors for the table.
+	 *
+	 * The exact structure of each descriptor is driver-specific, but each entry
+	 * describes a foreign-key relationship for one or more columns.
+	 *
+	 * @return array foreign-key descriptors; empty array if none defined.
 	 */
 	public function getForeignKeys();
 
 	/**
-	 * Creates a command builder bound to this table for the given connection.
-	 * @param IDataConnection $connection the database connection.
-	 * @return IDataCommandBuilder the command builder for this table.
+	 * Creates a command builder for CRUD operations on this table.
+	 *
+	 * @param IDataConnection $connection the connection to use.
+	 * @return IDataCommandBuilder a new command builder for this table.
 	 */
 	public function createCommandBuilder($connection);
 }

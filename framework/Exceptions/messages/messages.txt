@@ -494,6 +494,7 @@ dbproperties_property_required			= {1}.{0} is a required property.
 
 dbconnection_open_failed				= TDbConnection failed to establish DB connection: {0}
 dbconnection_connection_inactive		= TDbConnection is inactive.
+dbconnection_active_transaction			= TDbConnection cannot begin a new transaction: a transaction is already open and has uncommitted work pending. Commit or roll back the existing transaction first.
 dbconnection_unsupported_driver_charset	= Database driver '{0}' doesn't support setting charset.
 dbconnection_charset_unchangeable		= Database driver '{0}' cannot change the charset after opening. Charset is a DSN parameter.
 
@@ -504,6 +505,9 @@ dbcommand_column_empty					= TDbCommand returned an empty result and could not o
 dbdatareader_rewind_invalid				= TDbDataReader is a forward-only stream. It can only be traversed once.
 dbtransaction_transaction_inactive		= TDbTransaction is inactive.
 
+dbcommandbuilder_insertorignore_not_supported = insertOrIgnore() is not supported by the base TDbCommandBuilder. Use a driver-specific subclass.
+dbcommandbuilder_upsert_not_supported         = upsert() is not supported by the base TDbCommandBuilder. Use a driver-specific subclass.
+dbcommandbuilder_upsert_requires_transaction  = {0} requires an active transaction. Call getDbConnection()->beginTransaction() before invoking insertOrIgnore() or upsert() with this database driver.
 dbcommandbuilder_value_must_not_be_null	= Property {0} must not be null as defined by column '{2}' in table '{1}'.
 
 dbcommon_invalid_table_name				= Database table '{0}' not found. Error message: {1}.
@@ -639,6 +643,7 @@ dbmetadata_not_meta_data				= Expected driver class {1} but got class {0}.
 dbmetadata_tableinfo_class_invalid		= TDbMetaData table info class '{0}' is a directory namespace, not a class.
 
 datasource_dbconnection_invalid			= TDataSourceConfig.DbConnection '{0}' is invalid. Please make sure it points to a valid application module.
+datasource_dbconnection_exists			= Cannot set ConnectionClass to '{0}': a database connection has already been established.
 distributeddatasource_child_required		= {0} requires one '{1}' child element at minimum.
 masterslavedbconnection_connection_exists	= {0}.{1} connection already exists.
 masterslavedbconnection_interface_required	= {0}.{1} requires an instance implementing {2} interface.

@@ -11,6 +11,7 @@
 			Account_Cart_Option
 			from Accounts
 			order by Account_Id
+			limit 1
 	</select>
 
 </sqlMap>

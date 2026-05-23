@@ -14,6 +14,8 @@ use Prado\Exceptions\TDbException;
 use Prado\Prado;
 
 /**
+ * TActiveRecordException class
+ *
  * Base exception class for Active Records.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>

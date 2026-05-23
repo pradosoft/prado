@@ -11,6 +11,8 @@
 namespace Prado\Data\DataGateway;
 
 /**
+ * TDataGatewayResultEventParameter class
+ *
  * TDataGatewayResultEventParameter contains the TDbCommand executed and the resulting
  * data returned from the database. The data can be changed by changing the
  * {@see setResult Result} property.

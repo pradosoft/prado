@@ -1,0 +1,2 @@
+DELETE FROM Categories;
+ALTER SEQUENCE categories_seq RESTART WITH 1;

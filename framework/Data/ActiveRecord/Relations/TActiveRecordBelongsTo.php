@@ -16,6 +16,8 @@ namespace Prado\Data\ActiveRecord\Relations;
 use Prado\Data\ActiveRecord\Exceptions\TActiveRecordException;
 
 /**
+ * TActiveRecordBelongsTo class
+ *
  * Implements the foreign key relationship (TActiveRecord::BELONGS_TO) between
  * the source objects and the related foreign object. Consider the
  * <b>entity</b> relationship between a Team and a Player.

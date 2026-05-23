@@ -130,8 +130,11 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 	 */
 	public function init($config)
 	{
-		$this->getApplication()->attachEventHandler('OnLoadStateComplete', [$this, 'doInitializeCache']);
-		$this->getApplication()->attachEventHandler('OnSaveState', [$this, 'doFlushCacheExpired']);
+		$app = $this->getApplication();
+		if ($app) {
+			$app->attachEventHandler('OnLoadStateComplete', [$this, 'doInitializeCache']);
+			$app->attachEventHandler('OnSaveState', [$this, 'doFlushCacheExpired']);
+		}
 		parent::init($config);
 	}
 
@@ -195,7 +198,7 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 				Prado::trace('Autocreate: ' . $this->_cacheTable, TDbCache::class);
 
 				$driver = $db->getDriverName();
-				if ($driver === TDbDriver::DRIVER_MYSQL) {
+				if (in_array($driver, [TDbDriver::DRIVER_MYSQL, TDbDriver::EXTENSION_MYSQLI])) {
 					$blob = 'LONGBLOB';
 				} elseif ($driver === TDbDriver::DRIVER_PGSQL) {
 					$blob = 'BYTEA';

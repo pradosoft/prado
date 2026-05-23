@@ -26,7 +26,14 @@ use Prado\Prado;
  */
 class TOracleMetaData extends TDbMetaData
 {
-	private $_defaultSchema = 'system';
+	/**
+	 * @var ?string Default schema (owner).  null = not yet resolved;
+	 *                  resolved lazily from {@see SELECT USER FROM DUAL} on
+	 *                  first use so that unquoted table names are found under
+	 *                  the connected user's schema rather than the hardcoded
+	 *                  'system' schema that existed in earlier versions.
+	 */
+	private $_defaultSchema;
 
 
 	/**
@@ -46,10 +53,24 @@ class TOracleMetaData extends TDbMetaData
 	}
 
 	/**
-	 * @return string default schema.
+	 * Returns the default schema (owner) used when no explicit schema is given.
+	 *
+	 * The value is resolved lazily from {@see SELECT USER FROM DUAL} on first
+	 * use so that unquoted table names resolve to the connected user's schema.
+	 * Call {@see setDefaultSchema()} to override before any table lookup.
+	 *
+	 * @return string default schema (lowercase; callers uppercase it for SQL).
 	 */
 	public function getDefaultSchema()
 	{
+		if ($this->_defaultSchema === null) {
+			try {
+				$user = $this->getDbConnection()->createCommand('SELECT USER FROM DUAL')->queryScalar();
+				$this->_defaultSchema = $user !== false ? strtolower((string) $user) : 'system';
+			} catch (\Exception $e) {
+				$this->_defaultSchema = 'system';
+			}
+		}
 		return $this->_defaultSchema;
 	}
 
@@ -235,7 +256,7 @@ class TOracleMetaData extends TDbMetaData
 	/**
 	 * @param mixed $tableInfo
 	 * @param mixed $src
-	 * @return null|string serial name if found, null otherwise.
+	 * @return ?string serial name if found, null otherwise.
 	 */
 	protected function getSequenceName($tableInfo, $src)
 	{
@@ -387,7 +408,7 @@ class TOracleMetaData extends TDbMetaData
 	WHERE object_type = 'TABLE' AND owner=:schema
 	EOD;
 			$command = $this->getDbConnection()->createCommand($sql);
-			$command->bindParameter(':schema', $schema);
+			$command->bindValue(':schema', $schema);
 		}
 
 		$rows = $command->query();

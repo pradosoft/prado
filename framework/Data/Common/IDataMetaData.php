@@ -65,6 +65,27 @@ interface IDataMetaData
 	public function createCommandBuilder($tableName = null);
 
 	/**
+	 * Quotes a table name for use in SQL queries.
+	 * @param string $name the table name to quote.
+	 * @return string the properly quoted table name.
+	 */
+	public function quoteTableName($name);
+
+	/**
+	 * Quotes a column name for use in SQL queries.
+	 * @param string $name the column name to quote.
+	 * @return string the properly quoted column name.
+	 */
+	public function quoteColumnName($name);
+
+	/**
+	 * Quotes a column alias for use in SQL queries.
+	 * @param string $name the column alias to quote.
+	 * @return string the properly quoted column alias.
+	 */
+	public function quoteColumnAlias($name);
+
+	/**
 	 * Returns all table names in the database or schema.
 	 * @param string $schema the schema name. Defaults to empty string, meaning the current or default schema.
 	 * If not empty, the returned table names will be prefixed with the schema name.

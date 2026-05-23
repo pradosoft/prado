@@ -10,44 +10,16 @@
 
 namespace Prado\Data\Common\Mssql;
 
-/**
- * Loads the base TDbTableInfo class and TMssqlTableColumn class.
- */
-use Prado\Data\Common\IDbHasSchema;
-use Prado\Data\Common\TDbTableInfo;
-use Prado\Prado;
+use Prado\Data\Common\SqlSrv\TSqlSrvTableInfo;
 
 /**
  * TMssqlTableInfo class provides additional table information for Mssql database.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
+ * @todo v4.4 remove, replaced by TSqlSrvTableInfo
+ * @deprecated
  */
-class TMssqlTableInfo extends TDbTableInfo implements IDbHasSchema
+class TMssqlTableInfo extends TSqlSrvTableInfo
 {
-	/**
-	 * @return string catalog name (database name)
-	 */
-	public function getCatalogName()
-	{
-		return $this->getInfo('CatalogName');
-	}
-
-	/**
-	 * @return string full name of the table, database dependent.
-	 */
-	public function getTableFullName()
-	{
-		//MSSQL alway returns the catalog, schem and table names.
-		return '[' . $this->getCatalogName() . '].[' . $this->getSchemaName() . '].[' . $this->getTableName() . ']';
-	}
-
-	/**
-	 * @param \Prado\Data\TDbConnection $connection database connection.
-	 * @return \Prado\Data\Common\TDbCommandBuilder new command builder
-	 */
-	public function createCommandBuilder($connection)
-	{
-		return new TMssqlCommandBuilder($connection, $this);
-	}
 }

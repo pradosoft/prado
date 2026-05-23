@@ -10,36 +10,71 @@
 
 namespace Prado\Data\Common;
 
-use Prado\Data\Common\Firebird\TFirebirdMetaData;
-use Prado\Data\Common\Ibm\TIbmMetaData;
-use Prado\Data\Common\Mssql\TMssqlMetaData;
-use Prado\Data\Common\Mysql\TMysqlMetaData;
-use Prado\Data\Common\Oracle\TOracleMetaData;
-use Prado\Data\Common\Pgsql\TPgsqlMetaData;
-use Prado\Data\Common\Sqlite\TSqliteMetaData;
 use Prado\Data\IDataConnection;
-use Prado\Data\TDbDriver;
+use Prado\Data\TDbConnection;
+use Prado\Data\TDbDriverCapabilities;
 use Prado\Exceptions\TDbException;
 use Prado\Prado;
 
 /**
- * TDbMetaData is the base class for retrieving metadata information, such as
- * table and columns information, from a database connection.
+ * TDbMetaData class
  *
- * This class provides the foundation for database-specific metadata implementations
- * (e.g., TMysqlMetaData, TSqliteMetaData, TPgsqlMetaData, etc.) that retrieve
- * table and column information from the database.
+ * TDbMetaData is the abstract base class for all driver-specific database
+ * metadata handlers.
  *
- * The metadata instances are created via the static {@see getInstance} method which
- * determines the appropriate metadata handler based on the database driver. When no built-in driver
- * matches, the {@see fxDataGetMetaDataClass} global event is raised on the connection
- * to allow extensibility through custom implementations.
+ * A metadata handler interrogates a live {@see IDataConnection} and returns
+ * structured {@see TDbTableInfo} objects that describe tables, views, and their
+ * columns.  It also provides identifier-quoting helpers and a factory for
+ * {@see TDbCommandBuilder} instances.
  *
- * Example usage:
- * ```php
- * $metaData = TDbMetaData::getInstance($connection);
- * $tableInfo = $metaData->getTableInfo('my_table');
- * ```
+ * ## Driver selection
+ *
+ * {@see getInstance()} is the normal entry point.  It activates the connection,
+ * reads the driver name, and delegates to
+ * {@see TDbDriverCapabilities::getMetaDataClass()} to resolve the matching
+ * concrete class.  Built-in drivers and their metadata classes:
+ *
+ * | PDO driver       | Metadata class         |
+ * |------------------|------------------------|
+ * | `mysql`          | `TMysqlMetaData`       |
+ * | `sqlite`         | `TSqliteMetaData`      |
+ * | `pgsql`          | `TPgsqlMetaData`       |
+ * | `sqlsrv`, `dblib`| `TSqlSrvMetaData`      |
+ * | `oci`            | `TOracleMetaData`      |
+ * | `ibm`/`db2`      | `TIbmMetaData`         |
+ * | `firebird`       | `TFirebirdMetaData`    |
+ *
+ * When no built-in driver matches, the **`fxDataGetMetaDataClass`** global event
+ * is raised on the connection so that third-party extensions can supply a
+ * custom handler class.
+ *
+ * ## Table-info caching
+ *
+ * {@see getTableInfo()} caches each resolved {@see TDbTableInfo} in a
+ * per-instance array for the lifetime of the metadata object, keyed by table
+ * name.  Passing `null` as the table name uses the connection string as the
+ * cache key and returns an empty table-info object (used in schema-less
+ * introspection scenarios).
+ *
+ * ## Identifier quoting
+ *
+ * {@see quoteTableName()}, {@see quoteColumnName()}, and
+ * {@see quoteColumnAlias()} strip any pre-existing quote characters from the
+ * `$delimiterIdentifier` set (`` ` ``, `"`, `'`, `[`, `]`) before wrapping the
+ * name in the driver-specific delimiters.  Subclasses pass their delimiter pair
+ * as the second and third arguments; the base signatures receive them via
+ * `func_get_args()` for backward compatibility.
+ *
+ * ## Subclass contract
+ *
+ * Concrete subclasses must implement:
+ * - {@see createTableInfo()} — query the live schema and build a fully
+ *   populated {@see TDbTableInfo} with all column objects added.
+ * - {@see findTableNames()} — return all table names for a given schema.
+ *
+ * They may also override {@see getTableInfoClass()} to return their driver's
+ * {@see TDbTableInfo} subclass name, which {@see getTableInfo()} instantiates
+ * when called with `null`.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
@@ -55,16 +90,16 @@ abstract class TDbMetaData extends \Prado\TComponent implements IDataMetaData
 	protected static $delimiterIdentifier = ['[', ']', '"', '`', "'"];
 
 	/**
-	 * @param IDataConnection $conn database connection.
+	 * @param \Prado\Data\IDataConnection $connection database connection.
 	 */
-	public function __construct($conn)
+	public function __construct($connection)
 	{
-		$this->_connection = $conn;
+		$this->_connection = $connection;
 		parent::__construct();
 	}
 
 	/**
-	 * @return IDataConnection database connection.
+	 * @return \Prado\Data\IDataConnection database connection.
 	 */
 	public function getDbConnection()
 	{
@@ -72,60 +107,35 @@ abstract class TDbMetaData extends \Prado\TComponent implements IDataMetaData
 	}
 
 	/**
-	 * Obtains a database-specific TDbMetaData class based on the database connection driver.
+	 * Obtains a driver-specific TDbMetaData instance for the given connection.
 	 *
-	 * This method determines the appropriate metadata handler for the given database driver.
-	 * If no built-in driver is found, the {@see fxDataGetMetaDataClass} global event
-	 * is raised on the connection with the driver name as the parameter. Handlers must
-	 * return a fully-qualified class name implementing {@see IDataMetaData}.
-	 * The last returned value wins.
+	 * This method activates the connection, resolves the driver name, and delegates to
+	 * {@see TDbDriverCapabilities::getMetaDataClass()} to find the matching handler class.
+	 * If no built-in driver is found, the **`fxDataGetMetaDataClass`** global event is
+	 * raised on the connection (with the driver name as the parameter) to allow
+	 * third-party extensions to supply a custom metadata handler class.
 	 *
-	 * @param IDataConnection $conn database connection.
+	 * @param \Prado\Data\TDbConnection $connection database connection.
 	 * @throws TDbException if no metadata handler can be created for the driver.
 	 * @return IDataMetaData database-specific metadata handler.
 	 */
-	public static function getInstance($conn)
+	public static function getInstance($connection)
 	{
-		$conn->setActive(true); //must be connected before retrieving driver name
-		$driver = $conn->getDriverName();
-		switch (strtolower($driver)) {
-			case TDbDriver::DRIVER_PGSQL:
-				return new TPgsqlMetaData($conn);
-			case TDbDriver::EXTENSION_MYSQLI:
-			case TDbDriver::DRIVER_MYSQL:
-				return new TMysqlMetaData($conn);
-			case TDbDriver::DRIVER_SQLITE: //sqlite 3
-			case TDbDriver::DRIVER_SQLITE2: //sqlite 2
-				return new TSqliteMetaData($conn);
-			case TDbDriver::EXTENSION_MSSQL: // Mssql driver on windows hosts
-			case TDbDriver::DRIVER_SQLSRV: // sqlsrv driver on windows hosts
-			case TDbDriver::DRIVER_DBLIB: // dblib drivers on linux (and maybe others os) hosts
-				return new TMssqlMetaData($conn);
-			case TDbDriver::DRIVER_OCI:
-				return new TOracleMetaData($conn);
-			case TDbDriver::DRIVER_IBM:
-				return new TIbmMetaData($conn);
-			case TDbDriver::DRIVER_FIREBIRD:
-			case TDbDriver::DRIVER_INTERBASE:
-				return new TFirebirdMetaData($conn);
-			default:
-				$driverClasses = ($conn instanceof \Prado\TComponent)
-					? $conn->raiseEvent('fxDataGetMetaDataClass', $conn, $driver)
-					: [];
-				if (empty($driverClasses)) {
-					throw new TDbException('dbmetadata_invalid_database_driver', $driver);
-				}
-				$class = array_pop($driverClasses);
-				if (!is_string($class) || !is_a($class, IDataMetaData::class, true)) {
-					throw new TDbException('dbmetadata_not_meta_data', is_string($class) ? $class : $class::class, IDataMetaData::class);
-				}
-				return new $class($conn);
+		$connection->setActive(true); //must be connected before retrieving driver name
+		$class = TDbDriverCapabilities::getMetaDataClass($connection);
+		if ($class === null) {
+			return null;
 		}
+		$instance = new $class($connection);
+		if (!($instance instanceof IDataMetaData)) {
+			throw new TDbException('dbmetadata_not_meta_data', $class, IDataMetaData::class);
+		}
+		return $instance;
 	}
 
 	/**
 	 * Obtains table meta data information for the current connection and given table name.
-	 * @param null|string $tableName table or view name
+	 * @param ?string $tableName table or view name
 	 * @return TDbTableInfo table information.
 	 */
 	public function getTableInfo($tableName = null)
@@ -145,7 +155,7 @@ abstract class TDbMetaData extends \Prado\TComponent implements IDataMetaData
 
 	/**
 	 * Creates a command builder for a given table name.
-	 * @param null|string $tableName table name.
+	 * @param ?string $tableName table name.
 	 * @return TDbCommandBuilder command builder instance for the given table.
 	 */
 	public function createCommandBuilder($tableName = null)

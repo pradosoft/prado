@@ -13,7 +13,7 @@ namespace Prado\Data;
 use PDO;
 use PDOException;
 use Prado\Data\Common\TDbMetaData;
-use Prado\Data\TDbDriver;
+use Prado\Data\IDbConnection;
 use Prado\Exceptions\TDbException;
 use Prado\Prado;
 use Prado\TPropertyValue;
@@ -21,7 +21,7 @@ use Prado\TPropertyValue;
 /**
  * TDbConnection class
  *
- * TDbConnection represents a connection to a database.
+ * TDbConnection represents a PHP PDO connection to a database.
  *
  * TDbConnection works together with {@see \Prado\Data\TDbCommand},
  * {@see \Prado\Data\TDbDataReader} and {@see \Prado\Data\TDbTransaction} to
@@ -33,26 +33,42 @@ use Prado\TPropertyValue;
  * specifying {@see setConnectionString ConnectionString},
  * {@see setUsername Username} and {@see setPassword Password}.
  *
- * Since 4.3.3, the connection charset could be set (for PDO databases, except
- * IBM) using the {@see setCharset Charset} property. The value of this property
- * was database **independent**.
+ * Since 4.3.3, the connection charset can be set (for all PDO drivers except
+ * IBM DB2) via the {@see setCharset Charset} property using driver-independent
+ * IANA-style names such as 'UTF-8' or 'ISO-8859-1'; the value is translated to
+ * the driver-specific format automatically.
  *
- * Firebird (firebird), MSSQL (mssql, sqlsrv, dblib), IBM DB2 (ibm), and
- * Oracle (oci) do not support runtime charset switching via SQL; configure
- * their charset at the DSN or with {@see setCharset Charset} property before
- * activating the connection.
+ * Since 4.3.3, MySQL and PostgreSQL connections can be made over a Unix domain
+ * socket by setting the {@see setSocket Socket} property to the socket path.
+ * For MySQL the path must point to the socket file itself (e.g.
+ * `/var/run/mysqld/mysqld.sock`); the `host=` and `port=` parameters are
+ * removed from the DSN and `unix_socket=<path>` is injected.  For PostgreSQL
+ * the path must be the directory that contains the socket file (e.g.
+ * `/var/run/postgresql`); libpq treats any `host=` value that starts with `/`
+ * as a socket directory, so the existing `host=` parameter is replaced (or
+ * injected when absent).  The internal ConnectionString is never mutated; the
+ * socket path is applied to a temporary copy of the DSN each time the
+ * connection opens.  Other drivers ignore the Socket property.
  *
- * Most formats of the Charset are supported and translated to the proper
- * database specific charset. The database specific format gat be retrieved
- * on active connections with the method {@see getDatabaseCharset()}.
- * Only mysql, pgsql, sqlite and firebird support discovery of the database
- * charset.
+ * Firebird (firebird), SQL Server (sqlsrv, dblib), and Oracle (oci) do not
+ * support runtime charset switching via SQL; their charset must be configured
+ * before the connection is opened (it is injected into the DSN automatically).
+ * IBM DB2 (ibm) has no charset support at all.
  *
- * Pgsql, sqlite, ibm databases do not support DSN charset.
- * Pgsql must set the charset after the connection is established.
- * sqlite only supports UTF-8 and UTF-16, set before tables are created.
- * When a table is present in sqlite, {@see setCharset()} becomes no-op.
- * Ibm Db2 has no charset support.
+ * The driver-specific charset name in use can be retrieved from an active
+ * connection via {@see getDatabaseCharset()}.  Live charset discovery (by
+ * querying the server) is supported for mysql, pgsql, sqlite, and firebird;
+ * for other drivers the resolved charset property value is returned.  These
+ * charsets inspect the dns for overriding charset to retrieve it for the
+ * property, or sets the charset in the dns from the property.
+ *
+ * PostgreSQL and SQLite do not support DSN-level charset; both apply their
+ * charset via a post-connect command.  PostgreSQL issues `SET client_encoding TO ?`
+ * unconditionally.  SQLite issues `PRAGMA encoding = <value>`, which only
+ * takes effect on a brand-new database with no tables; on existing databases
+ * it is silently ignored and the encoding established at creation time is
+ * preserved.  In either case the connection's Charset property is synced to
+ * the database's actual encoding after connect.
  *
  * The following example shows how to create a TDbConnection instance and
  * establish the actual connection:
@@ -101,13 +117,12 @@ use Prado\TPropertyValue;
  * of certain DBMS attributes, such as {@see getNullConversion NullConversion}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @author Brad Anderson <belisoful@icloud.com> Charset.
+ * @author Brad Anderson <belisoful@icloud.com> Charset, TDbDriverCapabilities
  * @since 3.0
  */
 class TDbConnection extends \Prado\TComponent implements IDbConnection
 {
 	/**
-	 *
 	 * @since 3.1.7
 	 */
 	public const DEFAULT_TRANSACTION_CLASS = \Prado\Data\TDbTransaction::class;
@@ -116,8 +131,10 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	private $_username = '';
 	private $_password = '';
 	private $_charset = '';
+	private $_socket = '';
 	private $_attributes = [];
 	private $_active = false;
+
 	private $_pdo;
 	private $_transaction;
 
@@ -127,25 +144,27 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	private $_dbMeta;
 
 	/**
-	 * @var string
+	 * @var string Fully-qualified class name used to allocate transaction objects.
+	 *   Defaults to {@see DEFAULT_TRANSACTION_CLASS} (TDbTransaction).
+	 *   Never null: {@see setTransactionClass} resets to the default on empty/null input.
 	 * @since 3.1.7
 	 */
 	private $_transactionClass = self::DEFAULT_TRANSACTION_CLASS;
 
 	/**
 	 * Constructor.
-	 * Note, the DB connection is not established when this connection
-	 * instance is created. Set {@see setActive Active} property to true
-	 * to establish the connection.
-	 * Since 3.1.2, you can set the charset for MySql connection
 	 *
-	 * @param string $dsn The Data Source Name, or DSN, contains the information required to connect to the database.
+	 * The DB connection is not established until {@see setActive Active} is set
+	 * to true.
+	 *
+	 * @param string $dsn The Data Source Name containing the information required
+	 *   to connect to the database.
 	 * @param string $username The user name for the DSN string.
 	 * @param string $password The password for the DSN string.
-	 * @param string $charset Charset used for DB Connection; except IBM DB2 (ibm).
-	 *   MSSQL (mssql, sqlsrv, dblib), and Oracle (oci) require configuration
-	 * 	 of the charset before opening.
-	 *   If not set, will use the default charset of your database server.
+	 * @param string $charset Charset for the connection (driver-independent name,
+	 *   e.g. 'UTF-8').  Not supported for IBM DB2 (ibm).  For SQL Server and Oracle
+	 *   the value is applied at DSN level before the connection opens; for other
+	 *   drivers it is applied after connect.  Defaults to empty (server default).
 	 * @see http://www.php.net/manual/en/function.PDO-construct.php
 	 */
 	public function __construct($dsn = '', $username = '', #[\SensitiveParameter] $password = '', $charset = '')
@@ -158,16 +177,33 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	}
 
 	/**
-	 * Close the connection when serializing.
+	 * Excludes non-serializable and connection-runtime state from serialization.
+	 *
+	 * `_pdo` is excluded because PDO instances are never serializable.
+	 * `_active` is excluded because the connection cannot survive serialization;
+	 * it will be `false` (the declared default) after deserialization and the
+	 * caller is responsible for reopening it.
+	 * `_transaction` is excluded because an in-flight transaction requires a
+	 * live PDO; without one it would be inconsistent after deserialization.
+	 * `_dbMeta` is excluded when null because it is a lazy-loaded cache that
+	 * will be repopulated on first use; a populated instance is worth keeping.
+	 *
+	 * Note: the connection is intentionally NOT closed during serialization
+	 * because serializing does not necessarily mean the connection is no longer
+	 * needed in the current process.
+	 *
+	 * @param array $exprops by reference, list of property names to exclude.
+	 * @since 4.3.3
 	 */
-	public function __sleep()
+	protected function _getZappableSleepProps(&$exprops)
 	{
-		/*
-		 * $this->close();
-		 * DO NOT CLOSE the current connection as serializing doesn't necessarily mean
-		 * we don't this connection anymore in the current session
-		 */
-		return array_diff(parent::__sleep(), ["\0Prado\Data\TDbConnection\0_pdo", "\0Prado\Data\TDbConnection\0_active"]);
+		parent::_getZappableSleepProps($exprops);
+		$exprops[] = "\0" . TDbConnection::class . "\0_pdo";
+		$exprops[] = "\0" . TDbConnection::class . "\0_active";
+		$exprops[] = "\0" . TDbConnection::class . "\0_transaction";
+		if ($this->_dbMeta === null) {
+			$exprops[] = "\0" . TDbConnection::class . "\0_dbMeta";
+		}
 	}
 
 	/**
@@ -210,29 +246,112 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 */
 	protected function open()
 	{
-		if ($this->_pdo === null) {
-			try {
-				$this->_pdo = new PDO(
-					$this->applyCharsetToDsn($this->getConnectionString()),
-					$this->getUsername(),
-					$this->getPassword(),
-					$this->_attributes
-				);
-				// This attribute is only useful for PDO::MySql driver.
-				// Ignore the warning if a driver doesn't understand this.
-				@$this->_pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
-				// This attribute is only useful for PDO::MySql driver since PHP 8.1
-				// This ensures integers are returned as strings (needed eg. for ZEROFILL columns)
-				@$this->_pdo->setAttribute(PDO::ATTR_STRINGIFY_FETCHES, true);
-				$this->_pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-				$this->_active = true;
-				if ($this->getCanCharsetChange()) {
-					$this->setConnectionCharset();
-				}
-			} catch (PDOException $e) {
-				throw new TDbException('dbconnection_open_failed', $e->getMessage());
-			}
+		$pdo = $this->getPdoInstance();
+
+		if ($pdo !== null) {
+			return;
 		}
+
+		$dsn = $this->applySocketToDsn($this->getConnectionString());
+		$charsetInDsn = $this->extractCharsetFromDsn($dsn);
+
+		try {
+			$pdo = $this->_pdo = new PDO(
+				$this->applyCharsetToDsn($dsn),
+				$this->getUsername(),
+				$this->getPassword(),
+				$this->_attributes
+			);
+
+			$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			$this->_active = true;
+			$driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+
+			foreach (TDbDriverCapabilities::getPostConnectAttributes($driver) as $attr => $value) {
+				$pdo->setAttribute($attr, $value);
+			}
+
+			// If DSN had a charset, it takes precedence -> reset charset property if different
+			if ($charsetInDsn !== null) {
+				$newPropCharset = TDbDriverCapabilities::unresolveCharset($charsetInDsn, $driver);
+				if (TDbDriverCapabilities::canonicalizeCharset($this->_charset) !==
+					TDbDriverCapabilities::canonicalizeCharset($newPropCharset)) {
+					$this->_charset = $newPropCharset;
+				}
+			} elseif ($this->_charset !== '') {
+				//allow only certain charsets (ahem: sqlsrv)
+				$accepted = TDbDriverCapabilities::getDsnAcceptedCharsets($driver);
+				if ($accepted !== null) {
+					$resolved = TDbDriverCapabilities::resolveCharset($this->_charset, $driver);
+					if (!in_array($resolved, $accepted, true)) {
+						$this->_charset = '';
+					}
+				}
+			}
+
+			if (TDbDriverCapabilities::requiresPostConnectCharset($driver)) {
+				// PostgreSQL: no DSN charset parameter; charset applied via SET client_encoding TO ?
+				$this->setConnectionCharset($this->getCharset());
+			}
+
+			if (TDbDriverCapabilities::requiresPostConnectCharsetReadback($driver)) {
+				// SQLite: apply PRAGMA encoding first (silently ignored when tables exist),
+				// then always read back the actual encoding so _charset reflects what the
+				// database really has rather than what was requested.
+				if ($this->getCharset() !== '') {
+					$this->setConnectionCharset($this->getCharset());
+				}
+				$charsetQuerySql = TDbDriverCapabilities::getCharsetQuerySql($driver);
+				if ($charsetQuerySql !== null) {
+					$actual = $pdo->query($charsetQuerySql)->fetchColumn();
+					if ($actual !== false && $actual !== '') {
+						$this->_charset = TDbDriverCapabilities::unresolveCharset((string) $actual, $driver);
+					}
+				}
+			}
+
+			foreach (TDbDriverCapabilities::getPostConnectSql($driver) as $sql) {
+				$pdo->exec($sql);
+			}
+		} catch (PDOException $e) {
+			throw new TDbException('dbconnection_open_failed', $e->getMessage());
+		}
+	}
+
+	/**
+	 * Extracts the charset value from a DSN string, if present.
+	 *
+	 * Uses the driver-specific DSN pattern from
+	 * {@see TDbDriverCapabilities::getCharsetDsnPattern} to detect a charset
+	 * directive in the DSN, and returns the value if found.
+	 *
+	 * This is used during connection opening to capture any charset that was
+	 * embedded in the DSN so it can be unresolved back to the PRADO charset
+	 * via {@see TDbDriverCapabilities::unresolveCharset}.
+	 *
+	 * @param string $dsn the DSN string to inspect
+	 * @return ?string the charset value from the DSN, or null if not present
+	 * @since 4.3.3
+	 */
+	protected function extractCharsetFromDsn(string $dsn): ?string
+	{
+		$driver = $this->extractDriverFromDsn($dsn);
+		if ($driver === null) {
+			return null;
+		}
+
+		$pattern = TDbDriverCapabilities::getCharsetDsnPattern($driver);
+
+		if ($pattern === null) {
+			return null;
+		}
+
+		$existingPattern = TDbDriverCapabilities::getCharsetDsnPattern($driver);
+		if ($existingPattern !== null && preg_match($existingPattern, $dsn, $matches)) {
+			return trim($matches[1]);
+		}
+
+		return null;
 	}
 
 	/**
@@ -245,7 +364,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 		$this->_active = false;
 	}
 
-	/*
+	/**
 	 * Apply the connection charset via a driver-appropriate SQL command.
 	 *
 	 * MySQL uses  SET NAMES <charset>.
@@ -253,196 +372,192 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 * SQLite uses  PRAGMA encoding = <charset>  which can only take effect
 	 * before any tables are created; errors are silently ignored so the method
 	 * is safe to call on any SQLite connection regardless of state.
-	 * Firebird, Oracle (oci), MSSQL (mssql, sqlsrv, dblib), and IBM DB2 (ibm) do not
+	 * Firebird, Oracle (oci), SQL Server (sqlsrv, dblib), and IBM DB2 (ibm) do not
 	 * support runtime charset switching via SQL; their charset is injected into
 	 * the DSN before the connection opens by {@see applyCharsetToDsn}.
 	 * Changing Charset after the connection is already active has no effect for
 	 * those drivers.
 	 *
-	 * All charset values are resolved through {@see resolveCharsetForDriver}
+	 * All charset values are resolved through {@see TDbDriverCapabilities::resolveCharset}
 	 * before being sent to the database, so universal names like 'UTF-8' or
 	 * 'ISO-8859-1' work across all supported drivers without any
 	 * driver-specific knowledge from the caller.
+	 * @param ?string $charset
 	 * @since 3.1.2
 	 */
-	protected function setConnectionCharset()
+	protected function setConnectionCharset(?string $charset = null)
 	{
-		if ($this->_charset === '' || $this->_active === false) {
+		if ($charset === null) {
+			$charset = $this->getCharset();
+		}
+
+		if ($charset === '' || $this->getActive() === false) {
 			return;
 		}
-		$driver = $this->_pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
-		$charset = $this->resolveCharsetForDriver($this->_charset, $driver);
-		switch ($driver) {
-			case TDbDriver::DRIVER_MYSQL:
-				$stmt = $this->_pdo->prepare('SET NAMES ?');
-				break;
-			case TDbDriver::DRIVER_PGSQL:
-				$stmt = $this->_pdo->prepare('SET client_encoding TO ?');
-				break;
-			case TDbDriver::DRIVER_SQLITE:
-				// PRAGMA encoding sets the internal storage encoding, but only takes
-				// effect before any tables are created.  PRAGMA does not support
-				// parameterised values, so PDO::quote is used to safely embed the
-				// resolved charset name.
-				try {
-					$this->_pdo->exec('PRAGMA encoding = ' . $this->_pdo->quote($charset));
-				} catch (\Exception $e) {
-					// Silently ignored.
-				}
-				return;
-			case TDbDriver::DRIVER_FIREBIRD:
-			case TDbDriver::EXTENSION_MSSQL:
-			case TDbDriver::DRIVER_SQLSRV:
-			case TDbDriver::DRIVER_DBLIB:
-			case TDbDriver::DRIVER_IBM:
-			case TDbDriver::DRIVER_OCI:
-				// These drivers do not support runtime charset switching via SQL.
-				return;
-			default:
-				throw new TDbException('dbconnection_unsupported_driver_charset', $driver);
+		$pdo = $this->getPdoInstance();
+		$driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+		$charset = TDbDriverCapabilities::resolveCharset($charset, $driver);
+
+		if (($pragmaSql = TDbDriverCapabilities::getCharsetPragmaSql($driver)) !== null) {
+			try {	// SQLite, and only before tables are created.
+				$pdo->exec(sprintf($pragmaSql, $pdo->quote($charset)));
+			} catch (PDOException $e) {
+				// Silently ignored.
+			}
+			return;
 		}
-		$stmt->execute([$charset]);
+
+		if (($sql = TDbDriverCapabilities::getCharsetSetSql($driver)) !== null) {
+			if (str_contains($sql, '%s')) {
+				// exec-based path (e.g. PostgreSQL): SET does not accept bind
+				// parameters in prepared statements; quote the value directly.
+				$pdo->exec(sprintf($sql, $pdo->quote($charset)));
+			} else {
+				// prepared-statement path (e.g. MySQL)
+				$pdo->prepare($sql)->execute([$charset]);
+			}
+			return;
+		}
+
+		if (TDbDriverCapabilities::getCharsetDsnParam($driver) !== null) {
+			// Driver configures charset via DSN (Firebird, Oracle, SQL Server);
+			// runtime switching via SQL is not supported.
+			return;
+		}
+
+		if (!TDbDriverCapabilities::supportsCharset($driver)) {
+			// Driver has no charset support at all (IBM DB2); silently ignore.
+			return;
+		}
+
+		throw new TDbException('dbconnection_unsupported_driver_charset', $driver);
 	}
 
 	/**
-	 * Resolves a charset name to its driver-specific equivalent, allowing callers to
-	 * use universal IANA-style names like 'UTF-8' or 'ISO-8859-1' regardless of the
-	 * underlying database driver.
-	 *
-	 * The lookup key is derived by lowercasing $charset and stripping all hyphens,
-	 * underscores, and spaces, so 'UTF-8', 'utf8', 'UTF_8', and 'Utf 8' all resolve
-	 * to the same entry.  If no mapping is found the original $charset string is
-	 * returned unchanged, preserving backward compatibility with driver-specific names.
-	 *
-	 * The same table is used by both {@see setConnectionCharset} (SQL-level charset
-	 * commands) and {@see applyCharsetToDsn} (DSN parameter injection), so driver
-	 * columns for oci, sqlsrv, mssql, and dblib resolve to their DSN charset values.
-	 *
-	 * Override this method to add or change mappings for custom database configurations.
-	 *
-	 * @param string $charset the charset name as supplied by the caller (e.g. 'UTF-8')
-	 * @param string $driver  PDO driver name (e.g. 'mysql', 'pgsql', 'firebird', 'oci')
-	 * @return string the charset name appropriate for $driver
-	 * @since 4.3.3
+	 * @return string the Unix domain socket path used for MySQL or PostgreSQL
+	 *   connections, or empty string when TCP/IP is used.
+	 * @since 4.4.0
 	 */
-	protected function resolveCharsetForDriver(string $charset, string $driver): string
+	public function getSocket(): string
 	{
-		static $aliases = [
-			// canonical_key => [driver => resolved_name, ...]
-			// Key = charset lowercased with hyphens, underscores, and spaces removed.
-			// Drivers mysql/pgsql/firebird: SQL-level charset names.
-			// Drivers sqlite: PRAGMA encoding values (only UTF-8 and UTF-16 variants
-			//   are valid; unsupported values are passed through and silently ignored).
-			// Drivers oci/sqlsrv/mssql/dblib: DSN-parameter charset names.
-			'utf8' => [
-				TDbDriver::DRIVER_MYSQL => 'utf8mb4',
-				TDbDriver::DRIVER_SQLITE => 'UTF-8',
-				TDbDriver::DRIVER_PGSQL => 'UTF8',
-				TDbDriver::DRIVER_FIREBIRD => 'UTF8',
-				TDbDriver::DRIVER_OCI => 'AL32UTF8',
-				TDbDriver::DRIVER_SQLSRV => 'UTF-8',
-				TDbDriver::EXTENSION_MSSQL => 'UTF-8',
-				TDbDriver::DRIVER_DBLIB => 'UTF-8',
-			],
-			'utf8mb4' => [
-				TDbDriver::DRIVER_MYSQL => 'utf8mb4',
-				TDbDriver::DRIVER_SQLITE => 'UTF-8',
-				TDbDriver::DRIVER_PGSQL => 'UTF8',
-				TDbDriver::DRIVER_FIREBIRD => 'UTF8',
-				TDbDriver::DRIVER_OCI => 'AL32UTF8',
-				TDbDriver::DRIVER_SQLSRV => 'UTF-8',
-				TDbDriver::EXTENSION_MSSQL => 'UTF-8',
-				TDbDriver::DRIVER_DBLIB => 'UTF-8',
-			],
-			'utf16' => [
-				TDbDriver::DRIVER_MYSQL => 'utf16',
-				TDbDriver::DRIVER_SQLITE => 'UTF-16',
-				TDbDriver::DRIVER_FIREBIRD => 'UTF16BE',
-				TDbDriver::DRIVER_OCI => 'AL16UTF16',
-			],
-			'latin1' => [
-				TDbDriver::DRIVER_MYSQL => 'latin1',
-				// sqlite: no PRAGMA encoding support for latin1 — pass-through and
-				// silently ignored; SQLite stores all text internally as UTF-8/UTF-16.
-				TDbDriver::DRIVER_PGSQL => 'LATIN1',
-				TDbDriver::DRIVER_FIREBIRD => 'ISO8859_1',
-				TDbDriver::DRIVER_OCI => 'WE8ISO8859P1',
-				TDbDriver::EXTENSION_MSSQL => 'ISO-8859-1',
-				TDbDriver::DRIVER_DBLIB => 'ISO-8859-1',
-			],
-			'iso88591' => 'latin1',
-			'latin2' => [
-				TDbDriver::DRIVER_MYSQL => 'latin2',
-				TDbDriver::DRIVER_PGSQL => 'LATIN2',
-				TDbDriver::DRIVER_FIREBIRD => 'ISO8859_2',
-				TDbDriver::DRIVER_OCI => 'EE8ISO8859P2',
-				TDbDriver::EXTENSION_MSSQL => 'ISO-8859-2',
-				TDbDriver::DRIVER_DBLIB => 'ISO-8859-2',
-			],
-			'iso88592' => 'latin2',
-			'ascii' => [
-				TDbDriver::DRIVER_MYSQL => 'ascii',
-				TDbDriver::DRIVER_PGSQL => 'SQL_ASCII',
-				TDbDriver::DRIVER_FIREBIRD => 'ASCII',
-				TDbDriver::DRIVER_OCI => 'US7ASCII',
-				TDbDriver::EXTENSION_MSSQL => 'ASCII',
-				TDbDriver::DRIVER_DBLIB => 'ASCII',
-			],
-			'win1250' => [
-				TDbDriver::DRIVER_MYSQL => 'cp1250',
-				TDbDriver::DRIVER_PGSQL => 'WIN1250',
-				TDbDriver::DRIVER_FIREBIRD => 'WIN1250',
-				TDbDriver::DRIVER_OCI => 'EE8MSWIN1250',
-				TDbDriver::EXTENSION_MSSQL => 'CP1250',
-				TDbDriver::DRIVER_DBLIB => 'CP1250',
-			],
-			'windows1250' => 'win1250',
-			'cp1250' => 'win1250',
-			'win1251' => [
-				TDbDriver::DRIVER_MYSQL => 'cp1251',
-				TDbDriver::DRIVER_PGSQL => 'WIN1251',
-				TDbDriver::DRIVER_FIREBIRD => 'WIN1251',
-				TDbDriver::DRIVER_OCI => 'CL8MSWIN1251',
-				TDbDriver::EXTENSION_MSSQL => 'CP1251',
-				TDbDriver::DRIVER_DBLIB => 'CP1251',
-			],
-			'windows1251' => 'win1251',
-			'cp1251' => 'win1251',
-			'win1252' => [
-				TDbDriver::DRIVER_MYSQL => 'cp1252',
-				TDbDriver::DRIVER_PGSQL => 'WIN1252',
-				TDbDriver::DRIVER_FIREBIRD => 'WIN1252',
-				TDbDriver::DRIVER_OCI => 'WE8MSWIN1252',
-				TDbDriver::EXTENSION_MSSQL => 'CP1252',
-				TDbDriver::DRIVER_DBLIB => 'CP1252',
-			],
-			'windows1252' => 'win1252',
-			'cp1252' => 'win1252',
-			'koi8r' => [
-				TDbDriver::DRIVER_MYSQL => 'koi8r',
-				TDbDriver::DRIVER_PGSQL => 'KOI8R',
-				TDbDriver::DRIVER_FIREBIRD => 'KOI8R',
-				TDbDriver::DRIVER_OCI => 'CL8KOI8R',
-				TDbDriver::EXTENSION_MSSQL => 'KOI8-R',
-				TDbDriver::DRIVER_DBLIB => 'KOI8-R',
-			],
-			'koi8u' => [
-				TDbDriver::DRIVER_MYSQL => 'koi8u',
-				TDbDriver::DRIVER_PGSQL => 'KOI8U',
-				TDbDriver::DRIVER_FIREBIRD => 'KOI8U',
-				TDbDriver::DRIVER_OCI => 'CL8KOI8U',
-				TDbDriver::EXTENSION_MSSQL => 'KOI8-U',
-				TDbDriver::DRIVER_DBLIB => 'KOI8-U',
-			],
-		];
+		return $this->_socket;
+	}
 
-		$key = strtolower(preg_replace('/[-_ ]+/', '', $charset));
+	/**
+	 * Sets the Unix domain socket path for MySQL or PostgreSQL connections.
+	 *
+	 * When non-empty, {@see applySocketToDsn} rewrites the DSN before the
+	 * connection opens:
+	 *   - MySQL: `host=` and `port=` are removed; `unix_socket=<path>` is
+	 *     prepended.  Pass the full path to the socket file (e.g.
+	 *     `/var/run/mysqld/mysqld.sock`).
+	 *   - PostgreSQL: `host=` is replaced with `host=<path>` (libpq treats a
+	 *     leading `/` as a socket directory).  Pass the directory that contains
+	 *     the socket file (e.g. `/var/run/postgresql`).
+	 *   - Other drivers: the Socket value is stored but ignored.
+	 *
+	 * The {@see getConnectionString ConnectionString} is never mutated; the
+	 * socket path is applied to a temporary copy of the DSN on each open.
+	 * Setting Socket while the connection is already active has no effect until
+	 * the next {@see setActive open}.
+	 *
+	 * @param string $value the Unix socket path, or empty string to use TCP/IP.
+	 * @since 4.4.0
+	 */
+	public function setSocket(string $value): void
+	{
+		$this->_socket = TPropertyValue::ensureString($value);
+	}
 
-		if (isset($aliases[$key]) && is_string($aliases[$key])) {
-			$key = $aliases[$key];
+	/**
+	 * Returns the DSN string with Unix socket parameters applied for the
+	 * current driver when {@see $_socket} is set.
+	 *
+	 * This method is called by {@see open} before the PDO instance is created,
+	 * immediately before {@see applyCharsetToDsn}, so that both transformations
+	 * operate on the correct DSN.
+	 *
+	 * The internal {@see $_dsn} field is never mutated; the method returns a
+	 * (potentially modified) copy.  If the socket path is empty, or the driver
+	 * does not support Unix sockets (i.e.
+	 * {@see TDbDriverCapabilities::getSocketDsnParam} returns null), the DSN is
+	 * returned unchanged.
+	 *
+	 * The driver-specific rewriting strategy is fully described by three
+	 * capability methods:
+	 *  - {@see TDbDriverCapabilities::getSocketDsnParam} — the DSN parameter to
+	 *    inject or replace (e.g. `unix_socket` for MySQL, `host` for PostgreSQL).
+	 *  - {@see TDbDriverCapabilities::getSocketDsnConflictParam} — if this
+	 *    parameter is already present the DSN is returned unchanged (DSN wins).
+	 *  - {@see TDbDriverCapabilities::getSocketDsnParamsToRemove} — parameters
+	 *    stripped before injection (e.g. `host` and `port` for MySQL).
+	 *
+	 * @param string $dsn the raw DSN string (as returned by
+	 *   {@see getConnectionString()}, though in practice this is always the
+	 *   first transformation applied before charset injection).
+	 * @return string the DSN, with socket parameters applied when appropriate.
+	 * @since 4.4.0
+	 */
+	protected function applySocketToDsn(string $dsn): string
+	{
+		$socket = $this->getSocket();
+		if ($socket === '' || $dsn === '') {
+			return $dsn;
 		}
 
-		return $aliases[$key][$driver] ?? $charset;
+		$driver = $this->extractDriverFromDsn($dsn);
+		if ($driver === null) {
+			return $dsn;
+		}
+
+		$injectParam = TDbDriverCapabilities::getSocketDsnParam($driver);
+		if ($injectParam === null) {
+			// Driver does not support a DSN socket path (sqlite, oci, sqlsrv, …).
+			return $dsn;
+		}
+
+		$colonPos = strpos($dsn, ':');
+		$prefix = substr($dsn, 0, $colonPos + 1);
+		$paramStr = substr($dsn, $colonPos + 1);
+
+		// Parse semicolon-delimited params into an ordered list.
+		$pairs = array_values(array_filter(array_map('trim', explode(';', $paramStr))));
+
+		// If a conflict param is present the caller already embedded a socket
+		// directive; honour it and leave the DSN unchanged (DSN wins).
+		$conflictParam = TDbDriverCapabilities::getSocketDsnConflictParam($driver);
+		if ($conflictParam !== null) {
+			foreach ($pairs as $pair) {
+				if (preg_match('/^\s*' . preg_quote($conflictParam, '/') . '\s*=/i', $pair)) {
+					return $dsn;
+				}
+			}
+		}
+
+		// Strip DSN parameters that are incompatible with socket mode (e.g.
+		// MySQL's host= and port= must be removed before unix_socket= is injected).
+		$removeParams = TDbDriverCapabilities::getSocketDsnParamsToRemove($driver);
+		if ($removeParams !== []) {
+			$removePattern = '/^\s*(' . implode('|', array_map('preg_quote', $removeParams)) . ')\s*=/i';
+			$pairs = array_values(array_filter($pairs, fn ($p) => !preg_match($removePattern, $p)));
+		}
+
+		// Replace an existing inject param in-place, or prepend it when absent.
+		$replaced = false;
+		$result = [];
+		foreach ($pairs as $pair) {
+			if (preg_match('/^\s*' . preg_quote($injectParam, '/') . '\s*=/i', $pair)) {
+				$result[] = $injectParam . '=' . $socket;
+				$replaced = true;
+			} else {
+				$result[] = $pair;
+			}
+		}
+		if (!$replaced) {
+			array_unshift($result, $injectParam . '=' . $socket);
+		}
+
+		return $prefix . implode(';', $result);
 	}
 
 	/**
@@ -452,23 +567,23 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 *
 	 * This method is called by {@see open} before the PDO instance is created so
 	 * that drivers which only support charset configuration at connection time
-	 * (Oracle, MSSQL family) receive the correct encoding without requiring the
+	 * (Oracle, SQL Server) receive the correct encoding without requiring the
 	 * caller to embed a driver-specific parameter in the DSN manually.
 	 *
 	 * The internal {@see $_dsn} field is never mutated; the method returns a
 	 * (potentially modified) copy.  DSN charset takes priority: if the caller
 	 * already included a charset directive in the DSN it is left unchanged.
 	 *
-	 * Drivers handled (DSN parameter name):
-	 *   mysql, firebird → charset=
-	 *   oci             → charset=
-	 *   sqlsrv          → CharacterSet=
-	 *   mssql, dblib    → charset=
-	 *
-	 * PostgreSQL has no standard DSN charset parameter (charset is applied via
-	 * {@see setConnectionCharset} after the connection opens).  SQLite is always
-	 * UTF-8.  IBM DB2 (ibm) has no reliable DSN charset parameter.  These drivers
-	 * are returned unchanged.
+	 * Driver capabilities (parameter name, detection pattern, and accepted values)
+	 * are provided by {@see TDbDriverCapabilities::getCharsetDsnParam},
+	 * {@see TDbDriverCapabilities::getCharsetDsnPattern}, and
+	 * {@see TDbDriverCapabilities::getDsnAcceptedCharsets}.
+	 * PostgreSQL, SQLite, and IBM DB2 have no DSN charset parameter and are
+	 * returned unchanged.  For drivers with a restricted allowlist (e.g. pdo_sqlsrv,
+	 * which only accepts 'UTF-8' or 'SQLSRV_ENC_CHAR'), the charset is silently
+	 * omitted from the DSN when the resolved value is not in the allowlist; {@see open}
+	 * then clears the Charset property so {@see getDatabaseCharset} reflects the
+	 * actual connection state rather than the unmet user intent.
 	 *
 	 * @param string $dsn the raw DSN string as set by the caller
 	 * @return string the DSN, with a charset parameter appended if required
@@ -476,36 +591,35 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 */
 	protected function applyCharsetToDsn(string $dsn): string
 	{
-		if ($this->_charset === '' || $dsn === '') {
+		$charset = $this->getCharset();
+		if ($charset === '' || $dsn === '') {
 			return $dsn;
 		}
 
 		$driver = $this->getDriverName();
+		$paramName = TDbDriverCapabilities::getCharsetDsnParam($driver);
 
-		// Maps each supported driver to [dsn_param_name, regex_detecting_existing_param].
-		// Drivers absent from this table (pgsql, sqlite, ibm) are returned unchanged.
-		$dsnCharsetParams = [
-			TDbDriver::DRIVER_MYSQL => ['charset',      '/[;?]charset\s*=/i'],
-			TDbDriver::DRIVER_FIREBIRD => ['charset',      '/[;?]charset\s*=/i'],
-			TDbDriver::DRIVER_OCI => ['charset',      '/[;?]charset\s*=/i'],
-			TDbDriver::DRIVER_SQLSRV => ['CharacterSet', '/[;?]CharacterSet\s*=/i'],
-			TDbDriver::EXTENSION_MSSQL => ['charset',      '/[;?]charset\s*=/i'],
-			TDbDriver::DRIVER_DBLIB => ['charset',      '/[;?]charset\s*=/i'],
-		];
-
-		if (!isset($dsnCharsetParams[$driver])) {
+		if ($paramName === null) {
 			// Driver does not use a DSN charset parameter (pgsql, sqlite, ibm, …).
 			return $dsn;
 		}
 
-		[$paramName, $existingPattern] = $dsnCharsetParams[$driver];
-
 		// If the caller already embedded a charset directive, honour it (DSN wins).
-		if (preg_match($existingPattern, $dsn)) {
+		$existingPattern = TDbDriverCapabilities::getCharsetDsnPattern($driver);
+		if ($existingPattern !== null && preg_match($existingPattern, $dsn)) {
 			return $dsn;
 		}
 
-		$resolved = $this->resolveCharsetForDriver($this->_charset, $driver);
+		$resolved = TDbDriverCapabilities::resolveCharset($charset, $driver);
+
+		// Some drivers only accept a restricted set of values in the DSN charset
+		// parameter (e.g. pdo_sqlsrv only accepts 'UTF-8' or 'SQLSRV_ENC_CHAR').
+		// If the resolved value is not in the allowlist, skip DSN injection to
+		// avoid a connection failure.
+		$accepted = TDbDriverCapabilities::getDsnAcceptedCharsets($driver);
+		if ($accepted !== null && !in_array($resolved, $accepted, true)) {
+			return $dsn;
+		}
 
 		return $dsn . ';' . $paramName . '=' . $resolved;
 	}
@@ -524,7 +638,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 */
 	public function setConnectionString($value)
 	{
-		$this->_dsn = $value;
+		$this->_dsn = TPropertyValue::ensureString($value);
 	}
 
 	/**
@@ -540,7 +654,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 */
 	public function setUsername($value)
 	{
-		$this->_username = $value;
+		$this->_username = TPropertyValue::ensureString($value);
 	}
 
 	/**
@@ -556,7 +670,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 */
 	public function setPassword(#[\SensitiveParameter] $value)
 	{
-		$this->_password = $value;
+		$this->_password = (string) $value; //Sensitive
 	}
 
 	/**
@@ -574,22 +688,25 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	public function setCharset($value)
 	{
 		$driver = $this->getDriverName();
-		if (!$this->getCanCharsetChange()) {
+		if ($this->getActive() && !TDbDriverCapabilities::supportsRuntimeCharsetSet($driver)) {
 			throw new TDbException('dbconnection_charset_unchangeable', $driver);
 		}
+		$value = TPropertyValue::ensureString($value);
 		$this->_charset = $value;
-		$this->setConnectionCharset();
-	}
+		$this->setConnectionCharset($value);
 
-	/**
-	 * If the connection is not active or
-	 * @return bool if the charset can change
-	 * @since 4.3.3
-	 */
-	public function getCanCharsetChange(): bool
-	{
-		$driver = $this->getDriverName();
-		return !$this->getActive() || in_array($driver, [TDbDriver::DRIVER_MYSQL, TDbDriver::DRIVER_PGSQL, TDbDriver::DRIVER_SQLITE]);
+		// SQLite: PRAGMA encoding is silently ignored when tables already exist.
+		// Read back the actual encoding so _charset reflects what the DB has,
+		// not what was requested.
+		if ($this->getActive() && TDbDriverCapabilities::requiresPostConnectCharsetReadback($driver)) {
+			$charsetQuerySql = TDbDriverCapabilities::getCharsetQuerySql($driver);
+			if ($charsetQuerySql !== null) {
+				$actual = $this->getPdoInstance()->query($charsetQuerySql)->fetchColumn();
+				if ($actual !== false && $actual !== '') {
+					$this->_charset = TDbDriverCapabilities::unresolveCharset((string) $actual, $driver);
+				}
+			}
+		}
 	}
 
 	/**
@@ -608,7 +725,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 *   firebird — MON$ATTACHMENTS ⋈ RDB$CHARACTER_SETS; falls back to the
 	 *              resolved Charset property value if the MONITOR privilege is
 	 *              absent
-	 *   oci, mssql, sqlsrv, dblib, ibm — charset is configured at the DSN
+	 *   oci, sqlsrv, dblib, ibm — charset is configured at the DSN
 	 *              level and cannot be queried cheaply; returns the charset
 	 *              name as resolved for the driver from the Charset property
 	 *
@@ -621,35 +738,23 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 */
 	public function getDatabaseCharset()
 	{
-		if (!$this->_active || $this->_pdo === null) {
-			return $this->_charset;
+		if (!$this->getActive() || $this->getPdoInstance() === null) {
+			return $this->getCharset();
 		}
 		$driver = $this->getDriverName();
 		try {
-			switch ($driver) {
-				case TDbDriver::DRIVER_MYSQL:
-					return (string) $this->createCommand('SELECT @@character_set_connection')->queryScalar();
-				case TDbDriver::DRIVER_PGSQL:
-					return (string) $this->createCommand('SELECT pg_client_encoding()')->queryScalar();
-				case TDbDriver::DRIVER_SQLITE:
-					return (string) $this->createCommand('PRAGMA encoding')->queryScalar();
-				case TDbDriver::DRIVER_FIREBIRD:
-					$result = $this->createCommand(
-						'SELECT TRIM(c.RDB$CHARACTER_SET_NAME)' .
-						'  FROM MON$ATTACHMENTS a' .
-						'  JOIN RDB$CHARACTER_SETS c' .
-						'    ON c.RDB$CHARACTER_SET_ID = a.MON$CHARACTER_SET_ID' .
-						' WHERE a.MON$ATTACHMENT_ID = CURRENT_CONNECTION'
-					)->queryScalar();
-					return ($result !== false && $result !== null)
-						? (string) $result
-						: $this->resolveCharsetForDriver($this->_charset, $driver);
-				default:
-					// Drivers that configure charset via DSN (oci, mssql, sqlsrv, dblib, ibm):
-					// return the charset name as it was resolved for this driver so the caller
-					// can confirm what was injected into the connection string.
-					return $this->resolveCharsetForDriver($this->_charset, $driver);
+			$sql = TDbDriverCapabilities::getCharsetQuerySql($driver);
+			if ($sql !== null) {
+				$result = $this->createCommand($sql)->queryScalar();
+				if ($result !== false && $result !== null) {
+					return (string) $result;
+				}
+				return TDbDriverCapabilities::resolveCharset($this->getCharset(), $driver);
 			}
+			// Drivers that configure charset via DSN (oci, sqlsrv, dblib, ibm):
+			// return the charset name as it was resolved for this driver so the caller
+			// can confirm what was injected into the connection string.
+			return TDbDriverCapabilities::resolveCharset($this->getCharset(), $driver);
 		} catch (\Throwable $e) {
 			return $this->_charset;
 		}
@@ -665,64 +770,189 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 
 	/**
 	 * Creates a command for execution.
+	 *
+	 * The concrete {@see TDbCommand} subclass is selected via
+	 * {@see TDbDriverCapabilities::getCommandClass()} so that driver-specific
+	 * behaviour (e.g. the pdo_oci prepared-statement workaround in
+	 * {@see \Prado\Data\Common\Oracle\TOracleDbCommand}) is applied
+	 * automatically without any driver checks in calling code.
+	 *
 	 * @param string $sql SQL statement associated with the new command.
 	 * @throws TDbException if the connection is not active
 	 * @return TDbCommand the DB command
 	 */
 	public function createCommand($sql)
 	{
-		if ($this->getActive()) {
-			return new TDbCommand($this, $sql);
-		} else {
-			throw new TDbException('dbconnection_connection_inactive');
-		}
+		$this->assertActive();
+		$class = TDbDriverCapabilities::getCommandClass($this->getDriverName());
+		return new $class($this, $sql);
 	}
 
 	/**
-	 * @return null|TDbTransaction the currently active transaction. Null if no active transaction.
+	 * Returns the currently active transaction, or null if none is open.
+	 * Use this to check for an active Transaction.
+	 * @return ?TDbTransaction the active transaction, or null.
 	 */
 	public function getCurrentTransaction()
 	{
-		if ($this->_transaction !== null) {
-			if ($this->_transaction->getActive()) {
-				return $this->_transaction;
-			}
+		if ($this->_transaction !== null && $this->_transaction->getActive()) {
+			return $this->_transaction;
 		}
 		return null;
 	}
 
 	/**
-	 * Starts a transaction.
-	 * @throws TDbException if the connection is not active
-	 * @return TDbTransaction the transaction initiated
+	 * Returns the last {@see TDbTransaction} object associated with this
+	 * connection, whether or not it is still active.
+	 *
+	 * This is the transaction stored internally when {@see beginTransaction()}
+	 * was last called.  It differs from {@see getCurrentTransaction()}, which
+	 * returns non-null only while the transaction is open.
+	 *
+	 * @return ?TDbTransaction the last transaction object, or null if
+	 *   {@see beginTransaction()} has never been called on this connection.
+	 * @since 4.3.3
 	 */
-	public function beginTransaction()
+	public function getLastTransaction(): ?TDbTransaction
 	{
-		if ($this->getActive()) {
-			$this->_pdo->beginTransaction();
-			return $this->_transaction = Prado::createComponent($this->getTransactionClass(), $this);
-		} else {
-			throw new TDbException('dbconnection_connection_inactive');
-		}
+		return $this->_transaction;
 	}
 
 	/**
-	 * @return string Transaction class name to be created by calling {@see \Prado\Data\TDbConnection::beginTransaction}. Defaults to '\Prado\Data\TDbTransaction'.
+	 * Creates a new {@see IDataTransaction} for this connection.
+	 *
+	 * @return IDataTransaction A new transaction from this connection.
+	 * @since 4.3.3
+	 */
+	protected function createTransaction(): IDataTransaction
+	{
+		return Prado::createComponent($this->getTransactionClass(), $this);
+	}
+
+	/**
+	 * Starts a transaction.
+	 *
+	 * Throws {@see TDbException} if the connection is not active, or if a
+	 * transaction is already open (i.e. {@see getCurrentTransaction()} returns
+	 * non-null). Commit or roll back the current transaction before starting
+	 * a new one.
+	 *
+	 * Each call allocates a **new** {@see TDbTransaction} object and stores it
+	 * as the last transaction via {@see getLastTransaction()}.
+	 *
+	 * For pdo_firebird, a pre-begin flush (PDO::commit()) is issued before
+	 * PDO::beginTransaction() to clear Firebird's always-running implicit
+	 * transaction; without this the driver throws "There is already an active
+	 * transaction".
+	 *
+	 * @throws TDbException if the connection is not active, or if a transaction
+	 *   is already open with uncommitted work.
+	 * @return TDbTransaction the transaction object for the new work unit.
+	 */
+	public function beginTransaction()
+	{
+		$this->assertActive();
+
+		if ($this->_transaction !== null && $this->_transaction->getActive()) {
+			throw new TDbException('dbconnection_active_transaction');
+		}
+
+		$pdo = $this->getPdoInstance();
+		if (TDbDriverCapabilities::requiresPreBeginTransactionFlush($this->getDriverName())) {
+			// Firebird keeps an implicit transaction alive at all times; commit it
+			// before calling PDO::beginTransaction() so the driver does not throw
+			// "There is already an active transaction".
+			try {
+				$pdo->commit();
+			} catch (PDOException $e) {
+			}
+		}
+		$pdo->beginTransaction();
+		$this->_transaction = $this->createTransaction();
+		return $this->_transaction;
+	}
+
+	/**
+	 * Convenience method: commits the current transaction on this connection.
+	 *
+	 * Delegates to the active transaction's {@see TDbTransaction::commit()} method.
+	 * If no transaction is currently active (i.e. {@see getCurrentTransaction()}
+	 * returns null), this method is a safe no-op and returns false.
+	 *
+	 * @return ?bool true if a transaction was committed, false if none was active,
+	 *   null if the connection itself is not active.
+	 * @since 4.3.3
+	 */
+	public function commit(): ?bool
+	{
+		if (!$this->getActive()) {
+			return null;
+		}
+		$txn = $this->getCurrentTransaction();
+		if ($txn === null || !$txn->getActive()) {
+			return false;
+		}
+		$txn->commit();
+		return true;
+	}
+
+	/**
+	 * Convenience method: rolls back the current transaction on this connection.
+	 *
+	 * Delegates to the active transaction's {@see TDbTransaction::rollback()} method.
+	 * If no transaction is currently active (i.e. {@see getCurrentTransaction()}
+	 * returns null), this method is a safe no-op and returns false.
+	 *
+	 * @return ?bool true if a transaction was rolled back, false if none was active,
+	 *   null if the connection itself is not active.
+	 * @since 4.3.3
+	 */
+	public function rollback(): ?bool
+	{
+		if (!$this->getActive()) {
+			return null;
+		}
+		$txn = $this->getCurrentTransaction();
+		if ($txn === null || !$txn->getActive()) {
+			return false;
+		}
+		$txn->rollback();
+		return true;
+	}
+
+	/**
+	 * Returns the fully-qualified class name used to create transaction objects.
+	 *
+	 * The default is {@see DEFAULT_TRANSACTION_CLASS} (`TDbTransaction`).
+	 * The property is never null: passing null or an empty string to
+	 * {@see setTransactionClass} resets it to the default.
+	 *
+	 * @return string fully-qualified transaction class name.
 	 * @since 3.1.7
 	 */
-	public function getTransactionClass()
+	public function getTransactionClass(): string
 	{
 		return $this->_transactionClass;
 	}
 
-
 	/**
-	 * @param string $value Transaction class name to be created by calling {@see \Prado\Data\TDbConnection::beginTransaction}.
+	 * Sets the fully-qualified class name used to create transaction objects.
+	 *
+	 * Pass null or an empty string to reset to {@see DEFAULT_TRANSACTION_CLASS}.
+	 * The supplied class must be instantiable with a single {@see TDbConnection}
+	 * argument and should implement {@see IDataTransaction}.
+	 *
+	 * @param ?string $value fully-qualified transaction class name, or null/empty to reset.
 	 * @since 3.1.7
 	 */
 	public function setTransactionClass($value)
 	{
-		$this->_transactionClass = (string) $value;
+		if (empty($value)) {
+			$value = self::DEFAULT_TRANSACTION_CLASS;
+		} else {
+			$value = TPropertyValue::ensureString($value);
+		}
+		$this->_transactionClass = $value;
 	}
 
 	/**
@@ -733,26 +963,28 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 */
 	public function getLastInsertID($sequenceName = '')
 	{
-		if ($this->getActive()) {
-			return $this->_pdo->lastInsertId($sequenceName);
-		} else {
-			throw new TDbException('dbconnection_connection_inactive');
-		}
+		$this->assertActive();
+		return $this->getPdoInstance()->lastInsertId($sequenceName);
 	}
 
 	/**
-	 * Quotes a string for use in a query.
-	 * @param string $str string to be quoted
-	 * @return string the properly quoted string
+	 * Quotes a string value for use in a query.
+	 *
+	 * If `$str` is `null`, the SQL literal `NULL` is returned without quoting,
+	 * because {@see \PDO::quote()} on `null` is deprecated as of PHP 8.2 and
+	 * may return `false` instead of a valid SQL string.
+	 *
+	 * @param ?string $string string to be quoted, or null to produce SQL NULL.
+	 * @return ?string the properly quoted string, or the literal `'NULL'`.
 	 * @see http://www.php.net/manual/en/function.PDO-quote.php
 	 */
-	public function quoteString($str)
+	public function quoteString($string)
 	{
-		if ($this->getActive()) {
-			return $this->_pdo->quote($str);
-		} else {
-			throw new TDbException('dbconnection_connection_inactive');
+		$this->assertActive();
+		if ($string === null) {
+			return 'NULL';
 		}
+		return $this->getPdoInstance()->quote($string);
 	}
 
 	/**
@@ -786,7 +1018,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	}
 
 	/**
-	 * @return TDbMetaData
+	 * @return \Prado\Data\Common\TDbMetaData
 	 */
 	public function getDbMetaData()
 	{
@@ -867,21 +1099,55 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	}
 
 	/**
-	 * @return bool whether creating or updating a DB record will be automatically committed.
-	 * Some DBMS (such as sqlite) may not support this feature.
+	 * Returns whether DML statements are automatically committed outside an
+	 * explicit transaction.
+	 *
+	 * Reads the live `PDO::ATTR_AUTOCOMMIT` attribute from the connection.
+	 * Returns `false` without querying PDO when the driver does not expose this
+	 * attribute (i.e. when {@see getHasAutoCommit()} is false).
+	 *
+	 * @return bool true if auto-commit is enabled, false otherwise or when the
+	 *   driver does not support the `PDO::ATTR_AUTOCOMMIT` attribute.
 	 */
 	public function getAutoCommit()
 	{
-		return $this->getAttribute(PDO::ATTR_AUTOCOMMIT);
+		if (!$this->getHasAutoCommit()) {
+			return false;
+		}
+		return (bool) $this->getAttribute(PDO::ATTR_AUTOCOMMIT);
 	}
 
 	/**
-	 * @param bool $value whether creating or updating a DB record will be automatically committed.
-	 * Some DBMS (such as sqlite) may not support this feature.
+	 * Enables or disables auto-commit on the connection.
+	 *
+	 * When the driver does not expose `PDO::ATTR_AUTOCOMMIT` (i.e. when
+	 * {@see getHasAutoCommit()} is false) this method is a silent no-op.
+	 *
+	 * @param bool $value true to enable auto-commit, false to disable it.
 	 */
 	public function setAutoCommit($value)
 	{
+		if (!$this->getHasAutoCommit()) {
+			return;
+		}
 		$this->setAttribute(PDO::ATTR_AUTOCOMMIT, TPropertyValue::ensureBoolean($value));
+	}
+
+	/**
+	 * Returns whether the current driver exposes the `PDO::ATTR_AUTOCOMMIT`
+	 * attribute.
+	 *
+	 * Delegates to {@see TDbDriverCapabilities::hasAutoCommitAttribute}. When
+	 * this returns false, {@see getAutoCommit()} always returns false and
+	 * {@see setAutoCommit()} is a no-op.  Drivers known to expose the attribute
+	 * include mysql, pgsql, oci, sqlsrv, dblib, and ibm.
+	 *
+	 * @return bool true if the driver exposes `PDO::ATTR_AUTOCOMMIT`.
+	 * @since 4.3.3
+	 */
+	public function getHasAutoCommit(): bool
+	{
+		return TDbDriverCapabilities::hasAutoCommitAttribute($this->getDriverName());
 	}
 
 	/**
@@ -911,14 +1177,12 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 			return $this->getAttribute(PDO::ATTR_DRIVER_NAME);
 		}
 
-		$connection = $this->getConnectionString();
-
-		if (is_string($connection) && strpos($connection, ':') !== false) {
-			[$driver] = explode(':', $connection, 2);
-			return $driver;
+		$dsn = $this->getConnectionString();
+		$driver = $this->extractDriverFromDsn($dsn);
+		if ($driver === null) {
+			throw new TDbException('dbconnection_connection_inactive');
 		}
-
-		throw new TDbException('dbconnection_connection_inactive');
+		return $driver;
 	}
 
 	/**
@@ -978,10 +1242,12 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 */
 	public function getAttribute($name)
 	{
-		if ($this->getActive()) {
-			return $this->_pdo->getAttribute($name);
+		$pdo = $this->getPdoInstance();
+		if ($pdo instanceof PDO) {
+			$this->assertActive();
+			return $pdo->getAttribute($name);
 		} else {
-			throw new TDbException('dbconnection_connection_inactive');
+			return $this->_attributes[$name] ?? null;
 		}
 	}
 
@@ -993,10 +1259,40 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 */
 	public function setAttribute($name, $value)
 	{
-		if ($this->_pdo instanceof PDO) {
-			$this->_pdo->setAttribute($name, $value);
+		$pdo = $this->getPdoInstance();
+		if ($pdo instanceof PDO) {
+			$pdo->setAttribute($name, $value);
 		} else {
 			$this->_attributes[$name] = $value;
 		}
+	}
+
+	/**
+	 * Throws a {@see TDbException} if the connection is not currently active.
+	 *
+	 * Call this at the top of any method that requires an open connection.
+	 *
+	 * @throws TDbException if the connection is not active.
+	 * @since 4.3.3
+	 */
+	public function assertActive()
+	{
+		if (!$this->getActive()) {
+			throw new TDbException('dbconnection_connection_inactive');
+		}
+	}
+
+	/**
+	 * @param string $dsn
+	 * @return ?string Driver name from dsn, or null if invalid or not found.
+	 * @since 4.3.3
+	 */
+	protected function extractDriverFromDsn(string $dsn): ?string
+	{
+		if (!is_string($dsn) || strpos($dsn, ':') === false) {
+			return null;
+		}
+		[$driver] = explode(':', $dsn, 2);
+		return strtolower($driver);
 	}
 }

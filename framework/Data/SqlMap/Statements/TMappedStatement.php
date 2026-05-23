@@ -27,7 +27,7 @@ use Prado\Exceptions\TInvalidDataValueException;
  * TMappedStatement class executes SQL mapped statements. Mapped Statements can
  * hold any SQL statement and use Parameter Maps and Result Maps for input and output.
  *
- * This class is usualy instantiated during SQLMap configuration by TSqlDomBuilder.
+ * This class is usually instantiated during SQLMap configuration by TSqlDomBuilder.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.0
@@ -89,7 +89,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	}
 
 	/**
-	 * @return TSqlMapStatement The SQL statment used by this MappedStatement
+	 * @return TSqlMapStatement The SQL statement used by this MappedStatement
 	 */
 	public function getStatement()
 	{
@@ -160,7 +160,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	}
 
 	/**
-	 * Executes the SQL and retuns a List of result objects.
+	 * Executes the SQL and returns a List of result objects.
 	 * @param \Prado\Data\TDbConnection $connection database connection
 	 * @param mixed $parameter The object used to set the parameters in the SQL.
 	 * @param null|object $result result collection object.
@@ -177,7 +177,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	}
 
 	/**
-	 * Executes the SQL and retuns a List of result objects.
+	 * Executes the SQL and returns a List of result objects.
 	 *
 	 * This method should only be called by internal developers, consider using
 	 * <tt>executeQueryForList()</tt> first.
@@ -221,14 +221,14 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	}
 
 	/**
-	 * Executes the SQL and retuns all rows selected in a map that is keyed on
+	 * Executes the SQL and returns all rows selected in a map that is keyed on
 	 * the property named in the keyProperty parameter.  The value at each key
 	 * will be the value of the property specified in the valueProperty parameter.
 	 * If valueProperty is null, the entire result object will be entered.
 	 * @param \Prado\Data\TDbConnection $connection database connection
 	 * @param mixed $parameter The object used to set the parameters in the SQL.
 	 * @param string $keyProperty The property of the result object to be used as the key.
-	 * @param null|string $valueProperty The property of the result object to be used as the value (or null).
+	 * @param ?string $valueProperty The property of the result object to be used as the value (or null).
 	 * @param int $skip The number of rows to skip over.
 	 * @param int $max The maximum number of rows to return.
 	 * @param null|callable $delegate row delegate handler
@@ -241,7 +241,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	}
 
 	/**
-	 * Executes the SQL and retuns all rows selected in a map that is keyed on
+	 * Executes the SQL and returns all rows selected in a map that is keyed on
 	 * the property named in the keyProperty parameter.  The value at each key
 	 * will be the value of the property specified in the valueProperty parameter.
 	 * If valueProperty is null, the entire result object will be entered.
@@ -253,8 +253,8 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * @param mixed $parameter The object used to set the parameters in the SQL.
 	 * @param mixed $command
 	 * @param string $keyProperty The property of the result object to be used as the key.
-	 * @param null|string $valueProperty The property of the result object to be used as the value (or null).
-	 * @param null|callable $delegate row delegate, a callback function
+	 * @param ?string $valueProperty The property of the result object to be used as the value (or null).
+	 * @param ?callable $delegate row delegate, a callback function
 	 * @return array An array of object containing the rows keyed by keyProperty.
 	 * @see executeQueryForMap()
 	 */
@@ -293,9 +293,9 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 */
 	protected function raiseRowDelegate($handler, $param)
 	{
-		if (is_string($handler)) {
+		if ($handler instanceof \Closure || is_string($handler)) {
 			call_user_func($handler, $this, $param);
-		} elseif (is_callable($handler, true)) {
+		} elseif (is_array($handler)) {
 			// an array: 0 - object, 1 - method name/path
 			[$object, $method] = $handler;
 			if (is_string($object)) {	// static method call
@@ -360,7 +360,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	}
 
 	/**
-	 * Execute an insert statement. Fill the parameter object with the ouput
+	 * Execute an insert statement. Fill the parameter object with the output
 	 * parameters if any, also could return the insert generated key.
 	 * @param \Prado\Data\TDbConnection $connection database connection
 	 * @param mixed $parameter The parameter object used to fill the statement.
@@ -386,7 +386,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * Gets the insert generated ID before executing an insert statement.
 	 * @param \Prado\Data\TDbConnection $connection database connection
 	 * @param mixed $parameter insert statement parameter.
-	 * @return null|string new insert ID if pre-select key statement was executed, null otherwise.
+	 * @return ?string new insert ID if pre-select key statement was executed, null otherwise.
 	 */
 	protected function getPreGeneratedSelectKey($connection, $parameter)
 	{
@@ -403,7 +403,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * Gets the inserted row ID after executing an insert statement.
 	 * @param \Prado\Data\TDbConnection $connection database connection
 	 * @param mixed $parameter insert statement parameter.
-	 * @return null|string last insert ID, null otherwise.
+	 * @return ?string last insert ID, null otherwise.
 	 */
 	protected function getPostGeneratedSelectKey($connection, $parameter)
 	{
@@ -483,7 +483,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 	/**
 	 * Raise the execute query event.
-	 * @param array $sql prepared SQL statement and subsititution parameters
+	 * @param array $sql prepared SQL statement and substitution parameters
 	 */
 	public function onExecuteQuery($sql)
 	{
@@ -573,16 +573,55 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	{
 		$index = 0;
 		$registry = $this->getManager()->getTypeHandlers();
+		// Build a case-insensitive map of property names so that drivers
+		// like pdo_oci that return uppercase column names (ACCOUNT_ID) can still
+		// be matched to the mixed-case PHP property they correspond to (Account_Id).
+		// We inspect setter methods (set*) rather than get_object_vars() so that
+		// classes using private fields with getter/setter pairs are also covered.
+		$propMap = [];
+		if ($resultObject instanceof \Prado\TComponent) {
+			// TComponent exposes properties via canGetProperty() / canSetProperty(),
+			// which use Prado::method_visible() (visibility-aware) and also check
+			// behavior-forwarded properties.  Using these APIs instead of raw
+			// method_exists() ensures that infrastructure methods with parameterised
+			// getters (e.g. TActiveRecord::getColumnValue($name)) are not mistakenly
+			// treated as zero-argument PRADO-style properties and pollute the map.
+			foreach (get_class_methods($resultObject) as $method) {
+				if (strncasecmp($method, 'set', 3) === 0 && strlen($method) > 3) {
+					$propName = substr($method, 3);
+					if ($resultObject->canGetProperty($propName)) {
+						$propMap[strtolower($propName)] = $propName;
+					}
+				}
+			}
+		} else {
+			// For plain PHP objects, inspect setter methods and confirm there is a
+			// matching getter — this covers classes with private fields + accessor pairs.
+			foreach (get_class_methods($resultObject) as $method) {
+				if (strncasecmp($method, 'set', 3) === 0 && strlen($method) > 3) {
+					$propName = substr($method, 3);
+					if (method_exists($resultObject, 'get' . $propName)) {
+						$propMap[strtolower($propName)] = $propName;
+					}
+				}
+			}
+		}
+		// Also include public properties (covers plain stdClass / array-style objects).
+		foreach (array_keys(get_object_vars($resultObject)) as $prop) {
+			$propMap[strtolower($prop)] = $prop;
+		}
 		foreach ($row as $k => $v) {
+			// Resolve column name to actual property name via case-insensitive lookup.
+			$prop = (is_string($k) && isset($propMap[strtolower($k)])) ? $propMap[strtolower($k)] : $k;
 			$property = new TResultProperty();
 			if (is_string($k) && strlen($k) > 0) {
-				$property->setColumn($k);
+				$property->setColumn($k); // original column name for row value lookup
 			}
 			$property->setColumnIndex(++$index);
-			$type = gettype(TPropertyAccess::get($resultObject, $k));
+			$type = gettype(TPropertyAccess::get($resultObject, $prop));
 			$property->setType($type);
 			$value = $property->getPropertyValue($registry, $row);
-			TPropertyAccess::set($resultObject, $k, $value);
+			TPropertyAccess::set($resultObject, $prop, $value); // resolved name for property assignment
 		}
 		return $resultObject;
 	}
@@ -669,19 +708,27 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	}
 
 	/**
-	 * Gets the result 'group by' groupping key for each row.
+	 * Gets the result 'group by' grouping key for each row.
 	 * @param TResultMap $resultMap result mapping details.
 	 * @param array $row a result set row retrieved from the database
-	 * @return string groupping key.
+	 * @return string grouping key.
 	 */
 	protected function getResultMapGroupKey($resultMap, $row)
 	{
 		$groupBy = $resultMap->getGroupBy();
 		if (isset($row[$groupBy])) {
 			return $resultMap->getID() . $row[$groupBy];
-		} else {
-			return $resultMap->getID() . crc32(serialize($row));
 		}
+		// Case-insensitive fallback for drivers that return column names in a
+		// different case (e.g. pdo_oci returns ACCOUNT_ID when the query says
+		// Account_Id).
+		$groupByLower = strtolower((string) $groupBy);
+		foreach ($row as $key => $val) {
+			if (strtolower((string) $key) === $groupByLower) {
+				return $resultMap->getID() . $val;
+			}
+		}
+		return $resultMap->getID() . crc32(serialize($row));
 	}
 
 	/**
@@ -846,9 +893,21 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		$value = $property->getColumn();
 		if (is_int(strpos($value, ',', 0)) || is_int(strpos($value, '=', 0))) {
 			$keys = [];
+			// Build a lowercase key map for case-insensitive column lookup (e.g.
+			// pdo_oci returns ORDER_ID when the query alias is Order_Id).
+			$rowLower = [];
+			foreach ($row as $k => $v) {
+				$rowLower[strtolower((string) $k)] = $v;
+			}
 			foreach (explode(',', $value) as $entry) {
 				$pair = explode('=', $entry);
-				$keys[trim($pair[0])] = $row[trim($pair[1])];
+				$colName = trim($pair[1]);
+				if (array_key_exists($colName, $row)) {
+					$keys[trim($pair[0])] = $row[$colName];
+				} else {
+					// Case-insensitive fallback.
+					$keys[trim($pair[0])] = $rowLower[strtolower($colName)] ?? null;
+				}
 			}
 			return $keys;
 		} else {
@@ -884,9 +943,9 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		parent::__wakeup();
 	}
 
-	public function __sleep()
+	protected function _getZappableSleepProps(&$exprops)
 	{
-		$exprops = [];
+		parent::_getZappableSleepProps($exprops);
 		$cn = __CLASS__;
 		if (!count($this->_selectQueue)) {
 			$exprops[] = "\0$cn\0_selectQueue";
@@ -897,6 +956,5 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		if (!$this->_IsRowDataFound) {
 			$exprops[] = "\0$cn\0_IsRowDataFound";
 		}
-		return array_diff(parent::__sleep(), $exprops);
 	}
 }

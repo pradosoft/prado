@@ -10,7 +10,8 @@
 namespace Prado\Data\ActiveRecord\Scaffold\InputBuilder;
 
 use Prado\Data\Common\TDbTableColumn;
-use Prado\Data\TDbDriver;
+use Prado\Data\TDbConnection;
+use Prado\Data\TDbDriverCapabilities;
 use Prado\Exceptions\TConfigurationException;
 
 /**
@@ -18,17 +19,18 @@ use Prado\Exceptions\TConfigurationException;
  *
  * TScaffoldInputBase is the base class for creating scaffold input builders
  * that generate appropriate input controls for active record columns based on
- * the database driver.
+ * the database driver.  It implements {@see IScaffoldInput}, the common
+ * interface that all scaffold input builders must satisfy.
  *
- * This class provides the foundation for database-specific input builder implementations
- * (e.g., TMysqlScaffoldInput, TSqliteScaffoldInput, etc.) that map database
- * column types to appropriate Prado web controls like TTextBox, TCheckBox, TDropDownList,
- * TDatePicker, etc.
+ * This class provides the foundation for database-specific input builder
+ * implementations (e.g., TMysqlScaffoldInput, TSqliteScaffoldInput) that map
+ * database column types to appropriate Prado web controls like TTextBox,
+ * TCheckBox, TDropDownList, TDatePicker, etc.
  *
- * The input builders are created via the static {@see createInputBuilder} method which
- * determines the appropriate builder based on the database driver. When no built-in driver
- * matches, the {@see fxActiveRecordScaffoldInputClass} global event is raised on the connection
- * to allow extensibility through custom implementations.
+ * The input builders are created via the static {@see createInputBuilder}
+ * method which delegates all driver resolution — including the
+ * `fxActiveRecordScaffoldInputClass` global event for unknown drivers — to
+ * {@see TDbDriverCapabilities::createScaffoldInput}.
  *
  * Example usage:
  * ```php
@@ -38,7 +40,7 @@ use Prado\Exceptions\TConfigurationException;
  */
 class TScaffoldInputBase implements IScaffoldInput
 {
-	public const DEFAULT_ID = 'scaffold_input';
+	public const DEFAULT_ID = IScaffoldInput::DEFAULT_ID;
 	private $_parent;
 
 	/**
@@ -52,59 +54,36 @@ class TScaffoldInputBase implements IScaffoldInput
 	}
 
 	/**
-	 * Creates a database-specific scaffold input builder based on the active record's database driver.
+	 * Creates a database-specific scaffold input builder based on the active
+	 * record's database driver.
 	 *
-	 * This method determines the appropriate input builder for the given database driver.
-	 * If no built-in driver is found, the {@see fxActiveRecordScaffoldInputClass} global event
-	 * is raised on the connection with the driver name as the parameter. Handlers must return
-	 * a fully-qualified class name implementing {@see IScaffoldInput}. The first returned value wins.
+	 * For built-in drivers the appropriate builder is loaded and returned
+	 * directly.  For unknown drivers,
+	 * {@see TDbDriverCapabilities::createScaffoldInput} raises the
+	 * **`fxActiveRecordScaffoldInputClass`** global event on the connection
+	 * with the driver name as the parameter.  Event handlers must return the
+	 * fully-qualified **class name** of a class that implements
+	 * {@see IScaffoldInput}; the class is then instantiated here and validated.
+	 *
+	 * All driver resolution and event raising is encapsulated in
+	 * {@see TDbDriverCapabilities::createScaffoldInput}; this method does not
+	 * call `raiseEvent` directly.
 	 *
 	 * @param \Prado\Data\ActiveRecord\TActiveRecord $record the active record instance.
-	 * @throws TConfigurationException if no builder can be created for the driver.
+	 * @throws TConfigurationException if no builder can be created for the
+	 *   driver, or if the returned instance does not implement {@see IScaffoldInput}.
 	 * @return IScaffoldInput the appropriate input builder for the database driver.
 	 */
 	public static function createInputBuilder($record)
 	{
 		$connection = $record->getDbConnection();
 		$connection->setActive(true); //must be connected before retrieving driver name!
-		$driver = $connection->getDriverName();
-		switch (strtolower($driver)) {
-			case TDbDriver::DRIVER_SQLITE: //sqlite 3
-			case TDbDriver::DRIVER_SQLITE2: //sqlite 2
-				require_once(__DIR__ . '/TSqliteScaffoldInput.php');
-				return new TSqliteScaffoldInput();
-			case TDbDriver::EXTENSION_MYSQLI:
-			case TDbDriver::DRIVER_MYSQL:
-				require_once(__DIR__ . '/TMysqlScaffoldInput.php');
-				return new TMysqlScaffoldInput();
-			case TDbDriver::DRIVER_PGSQL:
-				require_once(__DIR__ . '/TPgsqlScaffoldInput.php');
-				return new TPgsqlScaffoldInput();
-			case TDbDriver::EXTENSION_MSSQL:
-				require_once(__DIR__ . '/TMssqlScaffoldInput.php');
-				return new TMssqlScaffoldInput();
-			case TDbDriver::DRIVER_IBM:
-				require_once(__DIR__ . '/TIbmScaffoldInput.php');
-				return new TIbmScaffoldInput();
-			case TDbDriver::DRIVER_FIREBIRD:
-			case TDbDriver::DRIVER_INTERBASE:
-				require_once(__DIR__ . '/TFirebirdScaffoldInput.php');
-				return new TFirebirdScaffoldInput();
-			default:
-				$inputClasses = ($connection instanceof \Prado\TComponent)
-					? $connection->raiseEvent('fxActiveRecordScaffoldInputClass', $connection, $driver)
-					: [];
-				if (empty($inputClasses)) {
-					// @todo v4.4 TActiveRecordConfigurationException, move message
-					throw new TConfigurationException('ar_invalid_database_driver', $driver);
-				}
-				$class = $inputClasses[0];
-				if (!is_string($class) || !is_a($class, IScaffoldInput::class, true)) {
-					// @todo v4.4 TActiveRecordConfigurationException, move message
-					throw new TConfigurationException('ar_not_input_base', is_string($class) ? $class : $class::class, IScaffoldInput::class);
-				}
-				return new $class();
+		$scaffoldInput = TDbDriverCapabilities::createScaffoldInput($connection);
+		if (!($scaffoldInput instanceof IScaffoldInput)) {
+			// @todo v4.4 TActiveRecordConfigurationException, move message
+			throw new TConfigurationException('ar_not_input_base', $scaffoldInput::class, IScaffoldInput::class);
 		}
+		return $scaffoldInput;
 	}
 
 	/**

@@ -38,7 +38,7 @@ jobs:
         uses: shivammathur/setup-php@v2 #https://github.com/shivammathur/setup-php
         with:
           php-version: ${{ matrix.php-versions }}
-          extensions: ctype, dom, intl, json, mbstring, memcached, pdo_mysql, pdo_pgsql, pdo_sqlite, openssl, pcre, spl, zlib
+          extensions: ctype, dom, intl, json, mbstring, memcached, pdo_mysql, pdo_pgsql, pdo_sqlite, openssl, pcre, spl, zlib, :pdo_firebird, :pdo_sqlsrv
           tools: php-cs-fixer, phpstan, cs2pr
 
       - name: Validate composer.json and composer.lock
@@ -306,9 +306,129 @@ jobs:
           & "$env:PGBIN\pg_ctl.exe" start -D $env:PGDATA -w
           & "$env:PGBIN\createdb.exe" -h 127.0.0.1 -U postgres prado_unitest
           & "$env:PGBIN\psql.exe" -h 127.0.0.1 -U postgres prado_unitest -f .\tests\initdb_pgsql.sql
+          # Windows PostgreSQL uses scram-sha-256 (no trust); set the password so
+          # setupPgsqlConnection('prado_unitest', 'prado_unitest') can authenticate.
+          & "$env:PGBIN\psql.exe" -h 127.0.0.1 -U postgres -c "ALTER ROLE prado_unitest WITH PASSWORD 'prado_unitest';"
 
       - name: Run Unit Tests
         run: composer unittest
+
+  db-mysql:
+    name: Prado Data (MySQL)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP with MySQL extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: ctype, dom, intl, json, mbstring, pdo_mysql, openssl, pcre, spl, zlib
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Setup MySQL schema
+        run: |
+          sudo systemctl start mysql.service
+          mysql -uroot -proot < ./tests/initdb_mysql.sql
+
+      - name: Run MySQL tests
+        run: php vendor/bin/phpunit --testsuite db-mysql
+
+  db-pgsql:
+    name: Prado Data (PostgreSQL)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP with PostgreSQL extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: ctype, dom, intl, json, mbstring, pdo_pgsql, openssl, pcre, spl, zlib
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Setup PostgreSQL schema
+        run: |
+          createdb -h 127.0.0.1 -U postgres prado_unitest
+          psql -h 127.0.0.1 -U postgres -a -w prado_unitest -f ./tests/initdb_pgsql.sql
+        env:
+          PGPASSWORD: postgres
+
+      - name: Run PostgreSQL tests
+        run: php vendor/bin/phpunit --testsuite db-pgsql
+
+  db-sqlite:
+    name: Prado Data (SQLite)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP with SQLite extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: ctype, dom, intl, json, mbstring, pdo_sqlite, openssl, pcre, spl, zlib
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Run SQLite tests
+        run: php vendor/bin/phpunit --testsuite db-sqlite
 
   db-sqlsrv:
     name: Prado Data (Microsoft SQL Server)
@@ -361,10 +481,10 @@ jobs:
         run: >-
           /opt/mssql-tools18/bin/sqlcmd -C
           -U sa -P Prado_Unitest1
-          -i ./tests/initdb_mssql.sql
+          -i ./tests/initdb_sqlsrv.sql
 
       - name: Run SQL Server tests
-        run: php vendor/bin/phpunit tests/unit/Data/DbSpecific/Mssql/
+        run: php vendor/bin/phpunit --testsuite db-sqlsrv
 
   db-firebird:
     name: Prado Data (Firebird)
@@ -425,7 +545,7 @@ jobs:
           "
 
       - name: Run Firebird tests
-        run: php vendor/bin/phpunit tests/unit/Data/DbSpecific/Firebird/
+        run: php vendor/bin/phpunit --testsuite db-firebird
 
   db-oracle:
     name: Prado Data (Oracle)
@@ -498,14 +618,12 @@ jobs:
             bash -c 'source ~/.bash_profile && sqlplus -S prado_unitest/prado_unitest@//localhost/FREEPDB1 @/tmp/initdb_oracle.sql'
 
       - name: Run Oracle tests
-        run: php vendor/bin/phpunit tests/unit/Data/DbSpecific/Oracle/
+        run: php vendor/bin/phpunit --testsuite db-oracle
         env:
           ORACLE_SERVICE_NAME: FREEPDB1
 
   db-ibm:
     name: Prado Data (IBM DB2)
-    # DB2 image takes 2-3 minutes to start; only run on explicit manual dispatch.
-    # if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     services:
       db2:
@@ -554,7 +672,7 @@ jobs:
             su - db2inst1 -c "db2 connect to pradount && db2 -td@ -f /tmp/initdb.sql"
 
       - name: Run IBM DB2 tests
-        run: php vendor/bin/phpunit tests/unit/Data/DbSpecific/Ibm/
+        run: php vendor/bin/phpunit --testsuite db-ibm
         env:
           DB2_USER: db2inst1
           DB2_PASSWORD: Prado_Unitest1

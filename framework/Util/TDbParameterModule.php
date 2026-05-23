@@ -13,7 +13,6 @@ namespace Prado\Util;
 use Exception;
 use PDO;
 use Prado\Data\TDataSourceConfig;
-use Prado\Data\TDbConnection;
 use Prado\Data\TDbDriver;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataTypeException;
@@ -411,7 +410,7 @@ class TDbParameterModule extends TDbModule implements IPermissions
 		$db = $this->getDbConnection();
 		$driver = $db->getDriverName();
 		$appendix = '';
-		if ($driver === TDbDriver::DRIVER_MYSQL) {
+		if (in_array($driver, [TDbDriver::DRIVER_MYSQL, TDbDriver::EXTENSION_MYSQLI])) {
 			$dupl = ($this->_autoLoadField ? ", {$this->_autoLoadField}=values({$this->_autoLoadField})" : '');
 			$appendix = " ON DUPLICATE KEY UPDATE {$this->_valueField}=values({$this->_valueField}){$dupl}";
 		} else {
@@ -485,7 +484,7 @@ class TDbParameterModule extends TDbModule implements IPermissions
 		$db = $this->getDbConnection();
 		$driver = $db->getDriverName();
 		$appendix = '';
-		if ($driver === TDbDriver::DRIVER_MYSQL) {
+		if (in_array($driver, [TDbDriver::DRIVER_MYSQL, TDbDriver::EXTENSION_MYSQLI])) {
 			$appendix = ' LIMIT 1';
 		}
 		$cmd = $db->createCommand("DELETE FROM {$this->_tableName} WHERE {$this->_keyField}=:key" . $appendix);

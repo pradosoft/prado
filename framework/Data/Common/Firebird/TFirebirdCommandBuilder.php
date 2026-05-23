@@ -11,6 +11,7 @@
 namespace Prado\Data\Common\Firebird;
 
 use Prado\Data\Common\TDbCommandBuilder;
+use Prado\Data\TDbCommand;
 
 /**
  * TFirebirdCommandBuilder provides Firebird-specific LIMIT/OFFSET and last-insert-ID support.
@@ -28,6 +29,87 @@ use Prado\Data\Common\TDbCommandBuilder;
  */
 class TFirebirdCommandBuilder extends TDbCommandBuilder
 {
+	/**
+	 * Creates a Firebird MERGE ... WHEN NOT MATCHED THEN INSERT command (insertOrIgnore).
+	 * Requires an active transaction; throws TDbException otherwise.
+	 * Uses Firebird MERGE with USING (SELECT ... FROM RDB$DATABASE) and no AS keyword for aliases.
+	 * @param array $data name-value pairs of data to be inserted.
+	 * @return TDbCommand insert-or-ignore MERGE command.
+	 */
+	public function createInsertOrIgnoreCommand(array $data): TDbCommand
+	{
+		$this->assertActiveTransaction();
+		$conflictColumns = $this->resolveConflictColumns(null);
+		return $this->buildMergeStatement($data, [], $conflictColumns, 'FROM RDB$DATABASE', false);
+	}
+
+	/**
+	 * Creates a Firebird MERGE ... WHEN MATCHED THEN UPDATE WHEN NOT MATCHED THEN INSERT command.
+	 * Requires an active transaction; throws TDbException otherwise.
+	 * Uses Firebird MERGE with USING (SELECT ... FROM RDB$DATABASE) and no AS keyword for aliases.
+	 *
+	 * The $updateData parameter supports four modes:
+	 * - **null** — all non-conflict columns updated via the MERGE source alias (s.col).
+	 * - **[] empty array** — no WHEN MATCHED branch (insert-or-ignore semantics).
+	 * - **integer-keyed list** (e.g. `['score']`) — those columns use the source alias (s.col).
+	 * - **string-keyed explicit map** (e.g. `['score' => 99]`) — those columns use a bound literal (`:_upsert_col`).
+	 * - **mixed** — integer-keyed use s.col; string-keyed use bound literals.
+	 *
+	 * @param array $data name-value pairs of data to insert.
+	 * @param null|array $updateData null, column-name list, explicit col=>value map, or mixed; controls what is updated on conflict.
+	 * @param null|array $conflictColumns conflict target columns; null = primary key columns.
+	 * @return TDbCommand upsert MERGE command.
+	 */
+	public function createUpsertCommand(array $data, ?array $updateData = null, ?array $conflictColumns = null): TDbCommand
+	{
+		$this->assertActiveTransaction();
+		$conflictColumns = $this->resolveConflictColumns($conflictColumns);
+		return $this->buildMergeStatement($data, $updateData, $conflictColumns, 'FROM RDB$DATABASE', false);
+	}
+
+	/**
+	 * Children override this if there is something specific about the column Name.
+	 * @param string $columnName The name of the column to place in the sql.
+	 * @return string null if no change, or a string if there is a change.
+	 */
+	protected function processMergeColumn(string $columnName): string
+	{
+		$castType = $this->getFirebirdCastType($columnName);
+		return 'CAST(:' . $columnName . ' AS ' . $castType . ') AS ' . $columnName;
+	}
+
+	/**
+	 * Builds a Firebird-compatible CAST type string for the named column.
+	 *
+	 * Firebird requires explicit type annotations in CAST() expressions. This helper
+	 * maps the column's DbType (and ColumnSize / NumericPrecision / NumericScale where
+	 * applicable) to the correct SQL type string.
+	 *
+	 * @param string $name logical column name (PHP array key from $data).
+	 * @return string SQL type string suitable for use in CAST(:name AS <type>).
+	 */
+	private function getFirebirdCastType(string $name): string
+	{
+		$column = $this->getTableInfo()->getColumn($name);
+		if ($column === null) {
+			return 'VARCHAR(255)';
+		}
+
+		$dbType = strtoupper(trim($column->getDbType()));
+		$size = (int) $column->getColumnSize();
+		$prec = (int) $column->getNumericPrecision();
+		$scale = (int) $column->getNumericScale();
+
+		if (in_array($dbType, ['VARCHAR', 'CHAR'], true) && $size > 0) {
+			return $dbType . '(' . $size . ')';
+		}
+		if (in_array($dbType, ['DECIMAL', 'NUMERIC'], true) && $prec > 0) {
+			return $dbType . '(' . $prec . ($scale > 0 ? ',' . $scale : '') . ')';
+		}
+		// Fixed-length types and all others: return as-is.
+		return $dbType;
+	}
+
 	/**
 	 * Overrides parent implementation. Retrieves last identity value (Firebird 3+).
 	 * @return null|int last inserted identity value, null if no identity column.

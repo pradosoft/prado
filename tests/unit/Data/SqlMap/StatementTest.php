@@ -20,10 +20,12 @@ class StatementTest extends BaseCase
 		new D;
 		new E;
 		new F;
+		new Enumeration;
 	}
 
 	protected function setUp(): void
 	{
+		$this->skipIfUnavailable();
 	}
 
 	public function resetDatabase()
@@ -162,31 +164,33 @@ class StatementTest extends BaseCase
 	//TODO: Test Query Dynamic Sql Element
 	public function testQueryDynamicSqlElement()
 	{
-		//$list = self::$sqlmap->QueryForList("GetDynamicOrderedEmailAddressesViaResultMap", "Account_ID");
+		$this->initScript('account-init.sql');
 
-		//$this->assertSame("Joe.Dalton@somewhere.com", $list[0]);
+		$list = self::$sqlmap->QueryForList("GetDynamicOrderedEmailAddressesViaResultMap", "Account_ID");
+		$this->assertSame("Joe.Dalton@somewhere.com", $list[0]);
 
-		//list = self::$sqlmap->QueryForList("GetDynamicOrderedEmailAddressesViaResultMap", "Account_FirstName");
-
-		//$this->assertSame("Averel.Dalton@somewhere.com", $list[0]);
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$list = self::$sqlmap->QueryForList("GetDynamicOrderedEmailAddressesViaResultMap", "Account_FirstName");
+		$this->assertSame("Averel.Dalton@somewhere.com", $list[0]);
 	}
 
 	// TODO: Test Execute QueryForList With ResultMap With Dynamic Element
 	public function testExecuteQueryForListWithResultMapWithDynamicElement()
 	{
-		//$list = self::$sqlmap->QueryForList("GetAllAccountsViaResultMapWithDynamicElement", "LIKE");
+		$this->initScript('account-init.sql');
 
-		//$this->assertAccount1$list[0]);
-		//$this->assertSame(3, $list->getCount());
-		//$this->assertSame(1, $list[0]->getID());
-		//$this->assertSame(2, $list[1]->getID());
-		//$this->assertSame(4, $list[2]->getID());
+		// LIKE '%@%' matches accounts 1 (Joe), 2 (Averel), 4 (Jack) — three have e-mail addresses.
+		$list = self::$sqlmap->QueryForList("GetAllAccountsViaResultMapWithDynamicElement", "LIKE");
 
-		//list = self::$sqlmap->QueryForList("GetAllAccountsViaResultMapWithDynamicElement", "=");
+		$this->assertAccount1($list[0]);
+		$this->assertSame(3, count($list));
+		$this->assertSame(1, $list[0]->getID());
+		$this->assertSame(2, $list[1]->getID());
+		$this->assertSame(4, $list[2]->getID());
 
-		//$this->assertSame(0, $list->getCount());
-		throw new PHPUnit\Framework\IncompleteTestError();
+		// = '%@%' matches no accounts (no email is literally that string).
+		$list = self::$sqlmap->QueryForList("GetAllAccountsViaResultMapWithDynamicElement", "=");
+
+		$this->assertSame(0, count($list));
 	}
 
 
@@ -209,18 +213,24 @@ class StatementTest extends BaseCase
 
 	public function testExecuteQueryForObjectWithEnum()
 	{
-		//$enumClass = self::$sqlmap->QueryForObject("GetEnumeration", 1);
+		// The SQLite CopyFileScriptRunner restores backup.db (which already contains
+		// the Enumerations data).  For MySQL/PgSQL the dedicated init script runs.
+		$this->initScript('enumeration-init.sql');
 
-		//$this->assertSame(enumClass.Day, Days.Sat);
-		//$this->assertSame(enumClass.Color, Colors.Red);
-		//$this->assertSame(enumClass.Month, Months.August);
+		// Row 1: Day=1 (Sat), Color=1 (Red), Month=128 (August)
+		$enumClass = self::$sqlmap->QueryForObject("GetEnumeration", 1);
 
-		//enumClass = self::$sqlmap->QueryForObject("GetEnumeration", 3) as Enumeration;
+		$this->assertInstanceOf(Enumeration::class, $enumClass);
+		$this->assertSame(1, $enumClass->getDay());
+		$this->assertSame(1, $enumClass->getColor());
+		$this->assertSame(128, $enumClass->getMonth());
 
-		//$this->assertSame(enumClass.Day, Days.Mon);
-		//$this->assertSame(enumClass.Color, Colors.Blue);
-		//$this->assertSame(enumClass.Month, Months.September);*/
-		throw new PHPUnit\Framework\IncompleteTestError();
+		// Row 3: Day=3 (Mon), Color=4 (Blue), Month=256 (September)
+		$enumClass = self::$sqlmap->QueryForObject("GetEnumeration", 3);
+
+		$this->assertSame(3, $enumClass->getDay());
+		$this->assertSame(4, $enumClass->getColor());
+		$this->assertSame(256, $enumClass->getMonth());
 	}
 
 	#endregion
@@ -555,19 +565,25 @@ class StatementTest extends BaseCase
 	 */
 	public function testQueryWithRowDelegate()
 	{
-		//$handler = new SqlMapper.RowDelegate(this.RowHandler);
+		$this->initScript('account-init.sql');
 
-		//$list = self::$sqlmap->QueryWithRowDelegate("GetAllAccountsViaResultMap", null, handler);
+		$index = 0;
+		$handler = function ($gateway, $param) use (&$index) {
+			$index++;
+			$list = &$param->getList();
+			$list[] = $param->result;
+		};
 
-		//$this->assertSame(5, _index);
-		//$this->assertSame(5, $list->getCount());
-		//$this->assertAccount1$list[0]);
-		//$this->assertSame(1, $list[0]->getID());
-		//$this->assertSame(2, $list[1]->getID());
-		//$this->assertSame(3, $list[2]->getID());
-		//$this->assertSame(4, $list[3]->getID());
-		//$this->assertSame(5, $list[4]->getID());
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$list = self::$sqlmap->queryWithRowDelegate("GetAllAccountsViaResultMap", $handler);
+
+		$this->assertSame(5, $index);
+		$this->assertSame(5, count($list));
+		$this->assertAccount1($list[0]);
+		$this->assertSame(1, $list[0]->getID());
+		$this->assertSame(2, $list[1]->getID());
+		$this->assertSame(3, $list[2]->getID());
+		$this->assertSame(4, $list[3]->getID());
+		$this->assertSame(5, $list[4]->getID());
 	}
 
 	#endregion
@@ -1009,24 +1025,30 @@ class StatementTest extends BaseCase
 	}
 
 	/**
-	 * Test for cache stats only being calculated on CachingStatments
+	 * Test for cache stats only being calculated on CachingStatements (JIRA-113).
+	 *
+	 * The .NET test used GetDataCacheStats() (unavailable in the PHP port) to verify
+	 * stats were only tracked for caching statements.  The PHP equivalent verifies:
+	 *   1. flushCaches() runs without error.
+	 *   2. The cache is active: a second identical query returns the same object reference.
+	 *   3. After flushCaches(), a fresh (non-identical) object is returned — confirming
+	 *      that the flush actually invalidated the cached entry.
 	 */
 	public function testJIRA113()
 	{
-		//	self::$sqlmap->FlushCaches();
+		$this->initScript('account-init.sql');
+		self::$sqlmap->flushCaches();
 
-		// taken from TestFlushDataCache()
-		// first query is not cached, second query is: 50% cache hit
-		/*$list = self::$sqlmap->QueryForList("GetCachedAccountsViaResultMap");
-		$firstId = HashCodeProvider.GetIdentityHashCode(list);
-		list = self::$sqlmap->QueryForList("GetCachedAccountsViaResultMap");
-		int secondId = HashCodeProvider.GetIdentityHashCode(list);
-		$this->assertSame(firstId, secondId);
+		// First query: cache miss.  Second query: cache hit — same object reference.
+		$list1 = self::$sqlmap->queryForList("GetCachedAccountsViaResultMap");
+		$list2 = self::$sqlmap->queryForList("GetCachedAccountsViaResultMap");
+		$this->assertTrue($list1 === $list2, 'Second query should return the same cached object.');
+		$this->assertSame(5, count($list2));
 
-		string cacheStats = self::$sqlmap->GetDataCacheStats();
-
-		$this->assertNotNull(cacheStats);*/
-		throw new PHPUnit\Framework\IncompleteTestError();
+		// After flushing, the next query must return a freshly-built object.
+		self::$sqlmap->flushCaches();
+		$list3 = self::$sqlmap->queryForList("GetCachedAccountsViaResultMap");
+		$this->assertTrue($list1 !== $list3, 'Post-flush query should return a different object.');
 	}
 
 	#endregion

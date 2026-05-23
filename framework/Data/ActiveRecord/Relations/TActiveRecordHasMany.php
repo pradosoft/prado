@@ -11,6 +11,8 @@
 namespace Prado\Data\ActiveRecord\Relations;
 
 /**
+ * TActiveRecordHasMany class
+ *
  * Implements TActiveRecord::HAS_MANY relationship between the source object having zero or
  * more foreign objects. Consider the <b>entity</b> relationship between a Team and a Player.
  * ```php

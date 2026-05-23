@@ -17,6 +17,8 @@ use Prado\Data\Common\TDbTableInfo;
 use Prado\Exceptions\TDbException;
 
 /**
+ * TDataGatewayCommand class
+ *
  * TDataGatewayCommand is command builder and executor class for
  * TTableGateway and TActiveRecordGateway.
  *
@@ -34,6 +36,10 @@ use Prado\Exceptions\TDbException;
  * database (returned value depends on the method executed). The
  * {@see OnExecuteCommand} event is raised after the command is executed and resulting
  * data is set in the TDataGatewayResultEventParameter object's Result property.
+ *
+ * Since v4.3.3, TDataGatewayCommand supports insertion conflicts with:
+ * - {@see insertOrIgnore()}: Insert silently ignoring duplicate key conflicts
+ * - {@see upsert()}: Insert or update on conflict
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
@@ -189,15 +195,18 @@ class TDataGatewayCommand extends \Prado\TComponent
 	}
 
 	/**
-	 * @param array $keys multiple primary key values or composite value arrays
+	 * @param mixed $keys one or more primary key values, or null/empty to delete nothing.
 	 * @return int number of rows affected.
 	 */
 	public function deleteByPk($keys)
 	{
-		if (count($keys) == 0) {
+		// Normalize to array so that count() is always safe (count(null) is a
+		// TypeError in PHP 8 and count($scalar) emits E_WARNING).
+		$keys = $keys === null ? [] : (array) $keys;
+		if (count($keys) === 0) {
 			return 0;
 		}
-		$where = $this->getCompositeKeyCondition((array) $keys);
+		$where = $this->getCompositeKeyCondition($keys);
 		$command = $this->getBuilder()->createDeleteCommand($where);
 		$this->onCreateCommand($command, new TSqlCriteria($where, $keys));
 		$command->prepare();
@@ -367,6 +376,46 @@ class TDataGatewayCommand extends \Prado\TComponent
 		$command->prepare();
 		if ($this->onExecuteCommand($command, $command->execute()) > 0) {
 			$value = $this->getLastInsertId();
+			return $value !== null ? $value : true;
+		}
+		return false;
+	}
+
+	/**
+	 * Inserts a new record, silently ignoring if a duplicate key conflict occurs.
+	 * @param array $data new record data.
+	 * @return mixed last insert id, true on ignore, or false on failure.
+	 * @since 4.3.3
+	 */
+	public function insertOrIgnore(array $data): mixed
+	{
+		$command = $this->getBuilder()->createInsertOrIgnoreCommand($data);
+		$this->onCreateCommand($command, new TSqlCriteria(null, $data));
+		$command->prepare();
+		if ($this->onExecuteCommand($command, $command->execute()) > 0) {
+			$value = $this->getLastInsertID();
+			return $value !== null ? $value : true;
+		}
+		return false;
+	}
+
+	/**
+	 * Inserts or updates a record.
+	 * On conflict with $conflictColumns (defaults to primary key), updates $updateData columns
+	 * (defaults to all non-PK columns).
+	 * @param array $data new record data.
+	 * @param null|array $updateData column=>value pairs to update on conflict; null = all non-PK columns.
+	 * @param null|array $conflictColumns conflict target columns; null = primary key.
+	 * @return mixed last insert id, true on update, or false on failure.
+	 * @since 4.3.3
+	 */
+	public function upsert(array $data, ?array $updateData = null, ?array $conflictColumns = null): mixed
+	{
+		$command = $this->getBuilder()->createUpsertCommand($data, $updateData, $conflictColumns);
+		$this->onCreateCommand($command, new TSqlCriteria(null, $data));
+		$command->prepare();
+		if ($this->onExecuteCommand($command, $command->execute()) > 0) {
+			$value = $this->getLastInsertID();
 			return $value !== null ? $value : true;
 		}
 		return false;

@@ -1,0 +1,3 @@
+DELETE FROM Others;
+INSERT INTO Others VALUES (1, 8888888,    0, 'Oui');
+INSERT INTO Others VALUES (2, 9999999999, 1, 'Non');

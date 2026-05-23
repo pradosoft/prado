@@ -14,12 +14,14 @@ namespace Prado\Data\DataGateway;
  * Loads the data gateway command builder and sql criteria.
  */
 use Prado\Data\TDbDataReader;
+use Prado\Data\Common\IDataTableInfo;
 use Prado\Data\Common\TDbMetaData;
-use Prado\Data\Common\TDbTableInfo;
 use Prado\Exceptions\TDbException;
 use Prado\Prado;
 
 /**
+ * TTableGateway class
+ *
  * TTableGateway class provides several find methods to get data from the database
  * and update, insert, and delete methods.
  *
@@ -29,28 +31,40 @@ use Prado\Prado;
  *
  * Example usage:
  * ```php
- * //create a connection
+ * // Create a connection
  * $dsn = 'pgsql:host=localhost;dbname=test';
- * $conn = new TDbConnection($dsn, 'dbuser','dbpass');
+ * $conn = new TDbConnection($dsn, 'dbuser','dbpass'); // TDbConnection implements IDataConnection
  *
- * //create a table gateway for table/view named 'address'
+ * // Create a table gateway for table/view named 'address'
  * $table = new TTableGateway('address', $conn);
  *
- * //insert a new row, returns last insert id (if applicable)
+ * // Table Presence
+ * $hasTable = $table->getTableExists();
+ *
+ * // Insert a new row, returns last insert id (if applicable)
  * $id = $table->insert(array('name'=>'wei', 'phone'=>'111111'));
  *
  * $record1 = $table->findByPk($id); //find inserted record
  *
- * //finds all records, returns an iterator
+ * // Finds all records, returns an iterator
  * $records = $table->findAll();
  * print_r($records->readAll());
  *
- * //update the row
+ * // Update the row
  * $table->updateByPk($record1, $id);
+ * $table->update(array('name'=>'Updated Name'), 'id = ?', $id);
+ *
+ * // Delete a record by primary key
+ * $table->deleteByPk($id);
+ *
+ * // Delete multiple records by criteria
+ * $table->deleteAll('age > ? AND status = ?', 25, 'inactive');
  * ```
  *
  * All methods that may return more than one row of data will return an
  * TDbDataReader iterator.
+ *
+ * As of v4.3.3, use {@see getTableExists()} to check for the presence of the table.
  *
  * The OnCreateCommand event is raised when a command is prepared and parameter
  * binding is completed. The parameter object is a TDataGatewayEventParameter of which the
@@ -74,6 +88,10 @@ use Prado\Prado;
  * }
  * ```
  *
+ * Since v4.3.3, TTableGateway supports insertion conflicts with:
+ * - {@see insertOrIgnore()}: Insert silently ignoring duplicate key conflicts
+ * - {@see upsert()}: Insert or update on conflict
+ *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
  */
@@ -85,15 +103,15 @@ class TTableGateway extends \Prado\TComponent
 	/**
 	 * Creates a new generic table gateway for a given table or view name
 	 * and a database connection.
-	 * @param string|TDbTableInfo $table table or view name or table information.
-	 * @param \Prado\Data\TDbConnection $connection database connection.
+	 * @param \Prado\Data\Common\IDataTableInfo|string $table table or view name or table information.
+	 * @param \Prado\Data\IDataConnection $connection database connection.
 	 */
 	public function __construct($table, $connection)
 	{
 		$this->_connection = $connection;
 		if (is_string($table)) {
 			$this->setTableName($table);
-		} elseif ($table instanceof TDbTableInfo) {
+		} elseif ($table instanceof IDataTableInfo) {
 			$this->setTableInfo($table);
 		} else {
 			throw new TDbException('dbtablegateway_invalid_table_info');
@@ -102,7 +120,7 @@ class TTableGateway extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDbTableInfo $tableInfo table or view information.
+	 * @param \Prado\Data\Common\IDataTableInfo $tableInfo table or view information.
 	 */
 	protected function setTableInfo($tableInfo)
 	{
@@ -116,7 +134,7 @@ class TTableGateway extends \Prado\TComponent
 	 */
 	protected function setTableName($tableName)
 	{
-		$meta = TDbMetaData::getInstance($this->getDbConnection());
+		$meta = $this->getDbConnection()->getDbMetaData();
 		$this->initCommandBuilder($meta->createCommandBuilder($tableName));
 	}
 
@@ -128,6 +146,31 @@ class TTableGateway extends \Prado\TComponent
 	public function getTableName()
 	{
 		return $this->getTableInfo()->getTableName();
+	}
+
+	/**
+	 * Checks whether the table this gateway manages actually exists and is accessible
+	 * in the current database connection.
+	 *
+	 * Uses a lightweight probe query — `SELECT * FROM {table} WHERE 0=1` — rather than
+	 * driver-specific metadata tables, so the check works uniformly across all supported
+	 * drivers and returns no rows even on large tables.
+	 *
+	 * {@see TDbCommand::query()} wraps all PDO-level errors as {@see TDbException}, so
+	 * a missing or inaccessible table is caught as `TDbException` and returns `false`.
+	 *
+	 * @return bool true if the table (or view) exists and is accessible, false otherwise.
+	 * @since 4.3.3
+	 */
+	public function getTableExists(): bool
+	{
+		$sql = 'SELECT * FROM ' . $this->getTableInfo()->getTableFullName() . ' WHERE 0=1';
+		try {
+			$this->getDbConnection()->createCommand($sql)->query()->close();
+			return true;
+		} catch (TDbException $e) {
+			return false;
+		}
 	}
 
 	/**
@@ -176,7 +219,7 @@ class TTableGateway extends \Prado\TComponent
 	}
 
 	/**
-	 * @return \Prado\Data\TDbConnection database connection.
+	 * @return \Prado\Data\IDataConnection database connection.
 	 */
 	public function getDbConnection()
 	{
@@ -223,7 +266,7 @@ class TTableGateway extends \Prado\TComponent
 	 * ```
 	 *
 	 * @param string|TSqlCriteria $criteria SQL condition or criteria object.
-	 * @param mixed $parameters parameter values.
+	 * @param mixed $parameters parameter values; passing `null` sets the first SQL parameter to null, not an empty list; use `[]` or omit to pass no parameters.
 	 * @return array matching record object.
 	 */
 	public function find($criteria, $parameters = [])
@@ -236,7 +279,7 @@ class TTableGateway extends \Prado\TComponent
 	/**
 	 * Accepts same parameters as find(), but returns TDbDataReader instead.
 	 * @param string|TSqlCriteria $criteria SQL condition or criteria object.
-	 * @param mixed $parameters parameter values.
+	 * @param mixed $parameters parameter values; passing `null` sets the first SQL parameter to null, not an empty list; use `[]` or omit to pass no parameters.
 	 * @return TDbDataReader matching records.
 	 */
 	public function findAll($criteria = null, $parameters = [])
@@ -301,7 +344,7 @@ class TTableGateway extends \Prado\TComponent
 	 * $table->delete('age > ? AND location = ?', $age, $location);
 	 * ```
 	 * @param string $criteria delete condition.
-	 * @param array $parameters condition parameters.
+	 * @param array $parameters condition parameters; passing `null` sets the first SQL parameter to null, not an empty list; use `[]` or omit to pass no parameters.
 	 * @return int number of records deleted.
 	 */
 	public function deleteAll($criteria, $parameters = [])
@@ -357,7 +400,7 @@ class TTableGateway extends \Prado\TComponent
 	/**
 	 * Find the number of records.
 	 * @param string|TSqlCriteria $criteria SQL condition or criteria object.
-	 * @param mixed $parameters parameter values.
+	 * @param mixed $parameters parameter values; passing `null` sets the first SQL parameter to null, not an empty list; use `[]` or omit to pass no parameters.
 	 * @return int number of records.
 	 */
 	public function count($criteria = null, $parameters = [])
@@ -400,6 +443,34 @@ class TTableGateway extends \Prado\TComponent
 	public function insert($data)
 	{
 		return $this->getCommand()->insert($data);
+	}
+
+	/**
+	 * Inserts a new record, silently ignoring if a duplicate key conflict occurs.
+	 * @param array $data new record data.
+	 * @return mixed last insert id, true on ignore, or false on failure.
+	 * @since 4.3.3
+	 */
+	public function insertOrIgnore(array $data): mixed
+	{
+		return $this->getCommand()->insertOrIgnore($data);
+	}
+
+	/**
+	 * Inserts or updates a record.
+	 * On conflict with $conflictColumns (defaults to primary key), updates $updateData columns
+	 * (defaults to all non-PK columns from $data).
+	 * @param array $data new record data (column→value pairs).
+	 * @param null|array $updateData update source on conflict — null: all non-PK
+	 *   columns from $data; integer-keyed column names: those columns from $data;
+	 *   string-keyed column→value pairs: explicit override values; mixed: both.
+	 * @param null|array $conflictColumns conflict target columns; null = primary key.
+	 * @return mixed last insert id, true on update, or false on failure.
+	 * @since 4.3.3
+	 */
+	public function upsert(array $data, ?array $updateData = null, ?array $conflictColumns = null): mixed
+	{
+		return $this->getCommand()->upsert($data, $updateData, $conflictColumns);
 	}
 
 	/**

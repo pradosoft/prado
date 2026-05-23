@@ -18,7 +18,7 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 
 /**
- * TDbPropertiesTrait class.
+ * TDbPropertiesTrait trait
  *
  * This trait provides database connection management functionality for classes
  * that need to connect to a database. It supports both explicit connection

@@ -54,4 +54,18 @@ INSERT INTO table1 (name, field1_number, field4_float, field5_number_ps, field8_
 	VALUES ('test', 1, 1.0, 1.0, SYSTIMESTAMP, 1.0);
 INSERT INTO address (username, phone, field4_int) VALUES ('wei', '1111111', 0);
 COMMIT;
+
+BEGIN
+	EXECUTE IMMEDIATE 'DROP TABLE upsert_test';
+EXCEPTION WHEN OTHERS THEN NULL;
+END;
+/
+
+-- Oracle upsert uses MERGE ... USING (SELECT ... FROM DUAL) ON the PK column.
+CREATE TABLE upsert_test (
+	username VARCHAR2(100) NOT NULL,
+	score    NUMBER(10)    DEFAULT 0 NOT NULL,
+	CONSTRAINT pk_upsert_test PRIMARY KEY (username)
+);
+COMMIT;
 EXIT

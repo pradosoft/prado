@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sqlMapConfig>
+
+	<properties>
+		<property name="selectKey" value="SELECT GEN_ID(categories_gen, 0) AS value FROM RDB$DATABASE" />
+		<property name="MyCategoryName" value="'Film'" />
+		<property name="accountName" value="'Joe'" />
+	</properties>
+
+	<typeHandlers>
+		<typeHandler class="OuiNonBool" dbType="Varchar" />
+		<typeHandler dbType="date" class="TDateTimeHandler" />
+	</typeHandlers>
+
+	<sqlMaps>
+		<sqlMap resource="maps/firebird/Account.xml"/>
+		<sqlMap resource="maps/firebird/DynamicAccount.xml"/>
+		<sqlMap resource="maps/firebird/Order.xml"/>
+		<sqlMap resource="maps/firebird/Category.xml"/>
+		<sqlMap resource="maps/firebird/Complex.xml"/>
+		<sqlMap resource="maps/firebird/LineItem.xml"/>
+		<sqlMap resource="maps/firebird/Enumeration.xml"/>
+		<sqlMap resource="maps/firebird/Other.xml"/>
+		<sqlMap resource="maps/firebird/ResultClass.xml"/>
+		<sqlMap resource="maps/firebird/Document.xml"/>
+		<sqlMap resource="maps/firebird/ActiveRecord.xml"/>
+	</sqlMaps>
+
+</sqlMapConfig>

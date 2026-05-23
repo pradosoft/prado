@@ -12,7 +12,7 @@ namespace Prado\Shell\Actions;
 
 use Prado\Data\ActiveRecord\TActiveRecordConfig;
 use Prado\Data\ActiveRecord\TActiveRecordManager;
-use Prado\Data\TDbDriver;
+use Prado\Data\TDbDriverCapabilities;
 use Prado\Prado;
 use Prado\Shell\TShellAction;
 
@@ -67,38 +67,12 @@ class TActiveRecordAction extends TShellAction
 			$manager = TActiveRecordManager::getInstance();
 			$con = $manager->getDbConnection();
 			$con->setActive(true);
-			$command = null;
-
-			switch ($con->getDriverName()) {
-				case TDbDriver::EXTENSION_MYSQLI:
-				case TDbDriver::DRIVER_MYSQL:
-					$command = $con->createCommand("SHOW TABLES");
-					break;
-				case TDbDriver::DRIVER_SQLITE: //sqlite 3
-				case TDbDriver::DRIVER_SQLITE2: //sqlite 2
-					$command = $con->createCommand("SELECT DISTINCT tbl_name FROM sqlite_master WHERE tbl_name<>'sqlite_sequence'");
-					break;
-				case TDbDriver::DRIVER_PGSQL:
-					$command = $con->createCommand("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE'");
-					break;
-				case TDbDriver::EXTENSION_MSSQL: // Mssql driver on windows hosts
-				case TDbDriver::DRIVER_SQLSRV: // sqlsrv driver on windows hosts
-				case TDbDriver::DRIVER_DBLIB: // dblib drivers on linux (and maybe others os) hosts
-					$command = $con->createCommand("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'");
-					break;
-				case TDbDriver::DRIVER_OCI:
-					$command = $con->createCommand("SELECT table_name FROM user_tables");
-					break;
-				case TDbDriver::DRIVER_IBM:
-					$command = $con->createCommand("SELECT TABNAME FROM SYSCAT.TABLES WHERE TABSCHEMA = CURRENT SCHEMA AND TYPE = 'T' ORDER BY TABNAME");
-					break;
-				case TDbDriver::DRIVER_FIREBIRD:
-				case TDbDriver::DRIVER_INTERBASE:
-					$command = $con->createCommand("SELECT TRIM(RDB\$RELATION_NAME) AS tbl_name FROM RDB\$RELATIONS WHERE RDB\$SYSTEM_FLAG = 0 AND RDB\$VIEW_BLR IS NULL ORDER BY RDB\$RELATION_NAME");
-					break;
-				default:
-					$this->_outWriter->writeError("Sorry, generateAll is not implemented for " . $con->getDriverName() . ".");
+			$sql = TDbDriverCapabilities::getListTablesSql($con->getDriverName());
+			if ($sql === null) {
+				$this->_outWriter->writeError("Sorry, generateAll is not implemented for " . $con->getDriverName() . ".");
+				return false;
 			}
+			$command = $con->createCommand($sql);
 
 			$dataReader = $command->query();
 			$dataReader->bindColumn(1, $table);

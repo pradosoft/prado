@@ -17,9 +17,9 @@ use Prado\Exceptions\TDbException;
 use Prado\Prado;
 
 /**
- * TDbCommand class.
+ * TDbCommand class
  *
- * TDbCommand represents an SQL statement to execute against a database.
+ * TDbCommand represents a PHP PDO SQL statement to execute against a database.
  * It is usually created by calling {@see \Prado\Data\TDbConnection::createCommand}.
  * The SQL statement to be executed may be set via {@see setText Text}.
  *
@@ -42,8 +42,11 @@ use Prado\Prado;
  */
 class TDbCommand extends \Prado\TComponent implements IDataCommand
 {
+	/** @var TDbConnection The connection of the command. */
 	private $_connection;
+	/** @var string The sql command. */
 	private $_text = '';
+	/** @var ?PDOStatement The command statement. */
 	private $_statement;
 
 	/**
@@ -53,17 +56,22 @@ class TDbCommand extends \Prado\TComponent implements IDataCommand
 	 */
 	public function __construct(TDbConnection $connection, $text)
 	{
-		$this->_connection = $connection;
+		$this->setConnection($connection);
 		$this->setText($text);
 		parent::__construct();
 	}
 
 	/**
-	 * Set the statement to null when serializing.
+	 * Excludes the prepared {@see PDOStatement} from serialization.
+	 * The statement is not serializable and will be recreated on demand
+	 * by {@see prepare()} after deserialization.
+	 * @param array $exprops by reference, list of property names to exclude.
+	 * @since 4.3.3
 	 */
-	public function __sleep()
+	protected function _getZappableSleepProps(&$exprops)
 	{
-		return array_diff(parent::__sleep(), ["\0TDbCommand\0_statement"]);
+		parent::_getZappableSleepProps($exprops);
+		$exprops[] = "\0" . TDbCommand::class . "\0_statement";
 	}
 
 	/**
@@ -94,12 +102,30 @@ class TDbCommand extends \Prado\TComponent implements IDataCommand
 	}
 
 	/**
-	 * @return PDOStatement the underlying PDOStatement for this command
+	 * @param \Prado\Data\TDbConnection $value the connection associated with this command
+	 * @since 4.3.3
+	 */
+	protected function setConnection($value)
+	{
+		$this->_connection = $value;
+	}
+
+	/**
+	 * @return ?PDOStatement the underlying PDOStatement for this command
 	 * It could be null if the statement is not prepared yet.
 	 */
 	public function getPdoStatement()
 	{
 		return $this->_statement;
+	}
+
+	/**
+	 * @param ?PDOStatement  $value the underlying PDOStatement for this command
+	 * @since 4.3.3
+	 */
+	protected function setPdoStatement($value)
+	{
+		$this->_statement = $value;
 	}
 
 	/**
@@ -111,9 +137,10 @@ class TDbCommand extends \Prado\TComponent implements IDataCommand
 	 */
 	public function prepare()
 	{
-		if ($this->_statement == null) {
+		if ($this->getPdoStatement() == null) {
 			try {
-				$this->_statement = $this->getConnection()->getPdoInstance()->prepare($this->getText());
+				$statement = $this->getConnection()->getPdoInstance()->prepare($this->getText());
+				$this->setPdoStatement($statement);
 			} catch (Exception $e) {
 				throw new TDbException('dbcommand_prepare_failed', $e->getMessage(), $this->getText());
 			}
@@ -125,7 +152,7 @@ class TDbCommand extends \Prado\TComponent implements IDataCommand
 	 */
 	public function cancel()
 	{
-		$this->_statement = null;
+		$this->setPdoStatement(null);
 	}
 
 	/**
@@ -145,11 +172,11 @@ class TDbCommand extends \Prado\TComponent implements IDataCommand
 	{
 		$this->prepare();
 		if ($dataType === null) {
-			$this->_statement->bindParam($name, $value);
+			$this->getPdoStatement()->bindParam($name, $value);
 		} elseif ($length === null) {
-			$this->_statement->bindParam($name, $value, $dataType);
+			$this->getPdoStatement()->bindParam($name, $value, $dataType);
 		} else {
-			$this->_statement->bindParam($name, $value, $dataType, $length);
+			$this->getPdoStatement()->bindParam($name, $value, $dataType, $length);
 		}
 	}
 
@@ -167,10 +194,63 @@ class TDbCommand extends \Prado\TComponent implements IDataCommand
 	{
 		$this->prepare();
 		if ($dataType === null) {
-			$this->_statement->bindValue($name, $value);
+			$this->getPdoStatement()->bindValue($name, $value);
 		} else {
-			$this->_statement->bindValue($name, $value, $dataType);
+			$this->getPdoStatement()->bindValue($name, $value, $dataType);
 		}
+	}
+
+	/**
+	 * Returns the driver-specific type token for a given PHP value, inferred from
+	 * the value's runtime type.
+	 *
+	 * For PDO-backed commands this maps PHP types to `PDO::PARAM_*` constants:
+	 *
+	 * | PHP type    | PDO constant      |
+	 * |-------------|-------------------|
+	 * | `boolean`   | `PDO::PARAM_BOOL` |
+	 * | `integer`   | `PDO::PARAM_INT`  |
+	 * | `string`    | `PDO::PARAM_STR`  |
+	 * | `NULL`      | `PDO::PARAM_NULL` |
+	 * | other       | `null`            |
+	 *
+	 * Non-SQL driver implementations may return a different type representation;
+	 * the return type on {@see IDataCommand} is therefore `mixed`.
+	 *
+	 * When a driver does not support explicit type tokens (e.g. pdo_ibm — see
+	 * {@see TDbDriverCapabilities::requiresUntypedParameters()}), this method
+	 * returns `null` as a signal that callers must omit the `$type` argument to
+	 * {@see \PDOStatement::bindValue()} entirely, letting PDO fall back to its
+	 * default of {@see \PDO::PARAM_STR}.  Callers must not pass the `null` return
+	 * value directly as the type argument: `int $type` coerces `null` to `0`
+	 * (= {@see \PDO::PARAM_NULL}), which triggers a deprecation notice in PHP 8.1+
+	 * and is itself an unsupported type on pdo_ibm.
+	 *
+	 * This method supersedes the deprecated static
+	 * {@see \Prado\Data\Common\TDbCommandBuilder::getPdoType()}.
+	 *
+	 * @param mixed $value the PHP value to inspect.
+	 * @return mixed the PDO::PARAM_* constant for this driver, or null when the
+	 *   PHP type has no direct mapping.
+	 * @since 4.3.3
+	 */
+	public function getColumnTypeFromValue($value)
+	{
+		try {
+			$driver = $this->getConnection()->getDriverName();
+		} catch (\Exception $e) {
+			$driver = null;
+		}
+		if ($driver !== null && TDbDriverCapabilities::requiresUntypedParameters($driver)) {
+			return null;
+		}
+		switch (gettype($value)) {
+			case 'boolean': return PDO::PARAM_BOOL;
+			case 'integer': return PDO::PARAM_INT;
+			case 'string':  return PDO::PARAM_STR;
+			case 'NULL':    return PDO::PARAM_NULL;
+		}
+		return null;
 	}
 
 	/**
@@ -183,11 +263,12 @@ class TDbCommand extends \Prado\TComponent implements IDataCommand
 	public function execute()
 	{
 		try {
+			$statement = $this->getPdoStatement();
 			// Do not trace because it will remain even in Performance mode
 			// Prado::trace('Execute Command: '.$this->getDebugStatementText(), TDbCommand::class);
-			if ($this->_statement instanceof PDOStatement) {
-				$this->_statement->execute();
-				return $this->_statement->rowCount();
+			if ($statement instanceof PDOStatement) {
+				$statement->execute();
+				return $statement->rowCount();
 			} else {
 				return $this->getConnection()->getPdoInstance()->exec($this->getText());
 			}
@@ -201,9 +282,10 @@ class TDbCommand extends \Prado\TComponent implements IDataCommand
 	 */
 	public function getDebugStatementText()
 	{
+		$statement = $this->getPdoStatement();
 		//if(Prado::getApplication()->getMode() === TApplicationMode::Debug)
-		return $this->_statement instanceof PDOStatement ?
-				$this->_statement->queryString
+		return $statement instanceof PDOStatement ?
+				$statement->queryString
 				: $this->getText();
 	}
 
@@ -216,11 +298,13 @@ class TDbCommand extends \Prado\TComponent implements IDataCommand
 	public function query()
 	{
 		try {
+			$statement = $this->getPdoStatement();
 			// Prado::trace('Query: '.$this->getDebugStatementText(), TDbCommand::class);
-			if ($this->_statement instanceof PDOStatement) {
-				$this->_statement->execute();
+			if ($statement instanceof PDOStatement) {
+				$statement->execute();
 			} else {
-				$this->_statement = $this->getConnection()->getPdoInstance()->query($this->getText());
+				$statement = $this->getConnection()->getPdoInstance()->query($this->getText());
+				$this->setPdoStatement($statement);
 			}
 			return new TDbDataReader($this);
 		} catch (Exception $e) {
@@ -239,14 +323,16 @@ class TDbCommand extends \Prado\TComponent implements IDataCommand
 	public function queryRow($fetchAssociative = true)
 	{
 		try {
+			$statement = $this->getPdoStatement();
 			// Prado::trace('Query Row: '.$this->getDebugStatementText(), TDbCommand::class);
-			if ($this->_statement instanceof PDOStatement) {
-				$this->_statement->execute();
+			if ($statement instanceof PDOStatement) {
+				$statement->execute();
 			} else {
-				$this->_statement = $this->getConnection()->getPdoInstance()->query($this->getText());
+				$statement = $this->getConnection()->getPdoInstance()->query($this->getText());
+				$this->setPdoStatement($statement);
 			}
-			$result = $this->_statement->fetch($fetchAssociative ? PDO::FETCH_ASSOC : PDO::FETCH_NUM);
-			$this->_statement->closeCursor();
+			$result = $statement->fetch($fetchAssociative ? PDO::FETCH_ASSOC : PDO::FETCH_NUM);
+			$statement->closeCursor();
 			return $result;
 		} catch (Exception $e) {
 			throw new TDbException('dbcommand_query_failed', $e->getMessage(), $this->getDebugStatementText());
@@ -263,14 +349,16 @@ class TDbCommand extends \Prado\TComponent implements IDataCommand
 	public function queryScalar()
 	{
 		try {
+			$statement = $this->getPdoStatement();
 			// Prado::trace('Query Scalar: '.$this->getDebugStatementText(), TDbCommand::class);
-			if ($this->_statement instanceof PDOStatement) {
-				$this->_statement->execute();
+			if ($statement instanceof PDOStatement) {
+				$statement->execute();
 			} else {
-				$this->_statement = $this->getConnection()->getPdoInstance()->query($this->getText());
+				$statement = $this->getConnection()->getPdoInstance()->query($this->getText());
+				$this->setPdoStatement($statement);
 			}
-			$result = $this->_statement->fetchColumn();
-			$this->_statement->closeCursor();
+			$result = $statement->fetchColumn();
+			$statement->closeCursor();
 			if (is_resource($result) && get_resource_type($result) === 'stream') {
 				return stream_get_contents($result);
 			} else {

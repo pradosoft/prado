@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  UpsertTest.xml — SqlMap mappings for insertOrIgnore and upsert integration tests.
+  Used by SqlMapInsertOrIgnoreTest.php via the upsert_sqlmap.xml config entry.
+  Targets an SQLite database with the upsert_test table:
+    CREATE TABLE upsert_test (
+        id       INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT    NOT NULL UNIQUE,
+        score    INTEGER NOT NULL DEFAULT 0
+    )
+-->
+<sqlMap namespace="UpsertTest">
+
+	<!--
+	  insertOrIgnore: silently skips when username UNIQUE constraint fires.
+	  Returns null (no selectKey) on success; false on duplicate.
+	-->
+	<insertOrIgnore id="InsertOrIgnoreUpsertRow" parameterClass="array">
+		INSERT OR IGNORE INTO upsert_test(username, score)
+		VALUES(#username#, #score#)
+	</insertOrIgnore>
+
+	<!--
+	  upsert: inserts or updates score on username conflict.
+	  updateColumns / conflictColumns attributes are stored on the TSqlMapUpsert
+	  config object and verified via getMappedStatement() in tests.
+	  The actual conflict-resolution SQL is written here in the body.
+	-->
+	<upsert id="UpsertRow" parameterClass="array"
+			updateColumns="score" conflictColumns="username">
+		INSERT INTO upsert_test(username, score)
+		VALUES(#username#, #score#)
+		ON CONFLICT(username) DO UPDATE SET score = excluded.score
+	</upsert>
+
+	<!--
+	  upsert with multiple updateColumns and conflictColumns (composite key scenario).
+	  Used only for XML-parsing / config-property assertions; not executed.
+	-->
+	<upsert id="UpsertRowMultiConflict" parameterClass="array"
+			updateColumns="score, extra" conflictColumns="tenant_id, username">
+		INSERT INTO upsert_test(username, score)
+		VALUES(#username#, #score#)
+		ON CONFLICT(username) DO UPDATE SET score = excluded.score
+	</upsert>
+
+	<!--
+	  Plain insert used to pre-populate rows before testing duplicate behaviour.
+	-->
+	<insert id="InsertUpsertRow" parameterClass="array">
+		INSERT INTO upsert_test(username, score)
+		VALUES(#username#, #score#)
+	</insert>
+
+</sqlMap>

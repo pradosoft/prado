@@ -303,7 +303,7 @@ DROP TABLE IF EXISTS `Others`;
 CREATE TABLE `Others` (
   `Other_Int` int(11) default NULL,
   `Other_Long` bigint(20) default NULL,
-  `Other_Bit` bit(1) NOT NULL default '\0',
+  `Other_Bit` bit(1) NOT NULL default 0,
   `Other_String` varchar(32) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -311,32 +311,18 @@ CREATE TABLE `Others` (
 -- Dumping data for table `Others`
 -- 
 
-INSERT INTO `Others` (`Other_Int`, `Other_Long`, `Other_Bit`, `Other_String`) VALUES (1, 8888888, '\0', 'Oui'),
-(2, 9999999999, '', 'Non'),
-(99, 1966, '', 'Non');
+INSERT INTO `Others` (`Other_Int`, `Other_Long`, `Other_Bit`, `Other_String`) VALUES (1, 8888888, 0, 'Oui'),
+(2, 9999999999, 1, 'Non'),
+(99, 1966, 1, 'Non');
 
--- --------------------------------------------------------
-
--- 
--- Table structure for table `Users`
--- 
-
-DROP TABLE IF EXISTS `Users`;
-CREATE TABLE `Users` (
-  `LogonId` varchar(20) NOT NULL default '0',
-  `Name` varchar(40) default NULL,
-  `Password` varchar(20) default NULL,
-  `EmailAddress` varchar(40) default NULL,
-  `LastLogon` datetime default NULL,
-  PRIMARY KEY  (`LogonId`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- 
--- Dumping data for table `Users`
--- 
-
-
--- 
+--
+-- Note: the SqlMap `Users` (LogonId/Name/Password/EmailAddress/LastLogon) table
+-- that was here has been removed.  It is not referenced by any SqlMap map file
+-- or test, and its DROP+CREATE conflicted with the ActiveRecord `Users` table
+-- (username/password/email/...) created by initdb_mysql.sql, breaking AR tests
+-- in all branches that share the prado_unitest database.
+--
+--
 -- Constraints for dumped tables
 -- 
 

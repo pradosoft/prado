@@ -151,6 +151,12 @@ class TMysqlMetaData extends TDbMetaData
 			$info['IsForeignKey'] = true;
 		}
 
+		// Preserve the raw type string (e.g. 'tinyint(1)', 'varchar(255)') before
+		// the parenthesized part is stripped into DbType + ColumnSize.  This is used
+		// by TMysqlTableColumn::getPHPType() to detect the tinyint(1) → boolean
+		// convention in a way that is forward-compatible with MySQL versions that may
+		// eventually stop including integer display widths in SHOW FULL FIELDS output.
+		$info['ColumnType'] = $col['Type'];
 		$info['DbType'] = $col['Type'];
 		$match = [];
 		//find SET/ENUM values, column size, precision, and scale

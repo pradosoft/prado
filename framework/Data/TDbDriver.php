@@ -21,6 +21,7 @@ use Prado\TEnumerable;
  * This class provides standardized string identifiers for all supported PDO database
  * drivers, ensuring consistency across the framework. The constants are used by:
  * - {@see TDbConnection} for establishing database connections
+ * - {@see TDbDriverCapabilities} for driver-specific capability lookups
  * - {@see \Prado\Data\Common\TDbMetaData} for metadata handler resolution
  * - {@see \Prado\Data\ActiveRecord\Scaffold\InputBuilder\TScaffoldInputBase} for scaffold generation
  *

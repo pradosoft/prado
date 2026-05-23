@@ -369,6 +369,36 @@ class TDbCommandBuilderTest extends PHPUnit\Framework\TestCase
 	}
 
 	// -----------------------------------------------------------------------
+	// assertActiveTransaction
+	// -----------------------------------------------------------------------
+
+	public function test_assertActiveTransaction_passes_when_transaction_is_active(): void
+	{
+		$tx = self::$conn->beginTransaction();
+		try {
+			$method = new \ReflectionMethod(TDbCommandBuilder::class, 'assertActiveTransaction');
+			$method->setAccessible(true);
+			$method->invoke($this->builder()); // must not throw
+			$this->assertTrue(true);
+		} finally {
+			$tx->rollback();
+		}
+	}
+
+	public function test_assertActiveTransaction_throws_without_active_transaction(): void
+	{
+		// Ensure no transaction is active (rollback any stray one).
+		if (self::$conn->getCurrentTransaction() !== null) {
+			self::$conn->getCurrentTransaction()->rollback();
+		}
+		$method = new \ReflectionMethod(TDbCommandBuilder::class, 'assertActiveTransaction');
+		$method->setAccessible(true);
+
+		$this->expectException(\Prado\Exceptions\TDbException::class);
+		$method->invoke($this->builder());
+	}
+
+	// -----------------------------------------------------------------------
 	// applyCriterias
 	// -----------------------------------------------------------------------
 

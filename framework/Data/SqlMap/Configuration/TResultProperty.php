@@ -50,7 +50,7 @@ class TResultProperty extends \Prado\TComponent
 	private $_isLazyLoad = false;
 	private $_select;
 
-	private $_hostResultMapID = 'inplicit internal mapping';
+	private $_hostResultMapID = 'implicit internal mapping';
 
 	public const LIST_TYPE = 0;
 	public const ARRAY_TYPE = 1;
@@ -248,6 +248,17 @@ class TResultProperty extends \Prado\TComponent
 			$value = $this->getTypedValue($registry, $row[$index]);
 		} elseif (isset($row[$name])) {
 			$value = $this->getTypedValue($registry, $row[$name]);
+		} else {
+			// Case-insensitive fallback for drivers that return column names in a
+			// different case than the SQL source (e.g. pdo_oci returns ACCOUNT_ID
+			// when the query says Account_Id).
+			$nameLower = strtolower($name);
+			foreach ($row as $key => $val) {
+				if (strtolower((string) $key) === $nameLower) {
+					$value = $this->getTypedValue($registry, $val);
+					break;
+				}
+			}
 		}
 		if (($value === null) && ($this->getNullValue() !== null)) {
 			$value = $this->getTypedValue($registry, $this->getNullValue());
@@ -337,15 +348,15 @@ class TResultProperty extends \Prado\TComponent
 		return $this->getPropertyValueType() == self::ARRAY_TYPE;
 	}
 
-	public function __sleep()
+	protected function _getZappableSleepProps(&$exprops)
 	{
-		$exprops = [];
-		$cn = 'TResultProperty';
+		parent::_getZappableSleepProps($exprops);
+		$cn = __CLASS__;
 		if ($this->_nullValue === null) {
 			$exprops[] = "\0$cn\0_nullValue";
 		}
 		if ($this->_propertyName === null) {
-			$exprops[] = "\0$cn\0_propertyNama";
+			$exprops[] = "\0$cn\0_propertyName";
 		}
 		if ($this->_columnName === null) {
 			$exprops[] = "\0$cn\0_columnName";
@@ -371,6 +382,5 @@ class TResultProperty extends \Prado\TComponent
 		if ($this->_select === null) {
 			$exprops[] = "\0$cn\0_select";
 		}
-		return array_diff(parent::__sleep(), $exprops);
 	}
 }

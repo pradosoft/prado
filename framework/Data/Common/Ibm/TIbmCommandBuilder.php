@@ -11,6 +11,7 @@
 namespace Prado\Data\Common\Ibm;
 
 use Prado\Data\Common\TDbCommandBuilder;
+use Prado\Data\TDbCommand;
 
 /**
  * TIbmCommandBuilder provides DB2-specific LIMIT/OFFSET and last-insert-ID support.
@@ -27,6 +28,44 @@ use Prado\Data\Common\TDbCommandBuilder;
  */
 class TIbmCommandBuilder extends TDbCommandBuilder
 {
+	/**
+	 * Creates a DB2 MERGE ... WHEN NOT MATCHED THEN INSERT command (insertOrIgnore).
+	 * Requires an active transaction; throws TDbException otherwise.
+	 * Uses DB2 MERGE with USING (SELECT ... FROM SYSIBM.SYSDUMMY1) AS s syntax.
+	 * @param array $data name-value pairs of data to be inserted.
+	 * @return TDbCommand insert-or-ignore MERGE command.
+	 */
+	public function createInsertOrIgnoreCommand(array $data): TDbCommand
+	{
+		$this->assertActiveTransaction();
+		$conflictColumns = $this->resolveConflictColumns(null);
+		return $this->buildMergeStatement($data, [], $conflictColumns, 'FROM SYSIBM.SYSDUMMY1', true);
+	}
+
+	/**
+	 * Creates a DB2 MERGE ... WHEN MATCHED THEN UPDATE WHEN NOT MATCHED THEN INSERT command.
+	 * Requires an active transaction; throws TDbException otherwise.
+	 * Uses DB2 MERGE with USING (SELECT ... FROM SYSIBM.SYSDUMMY1) AS s syntax.
+	 *
+	 * The $updateData parameter supports four modes:
+	 * - **null** — all non-conflict columns updated via the MERGE source alias (s.col).
+	 * - **[] empty array** — no WHEN MATCHED branch (insert-or-ignore semantics).
+	 * - **integer-keyed list** (e.g. `['score']`) — those columns use the source alias (s.col).
+	 * - **string-keyed explicit map** (e.g. `['score' => 99]`) — those columns use a bound literal (`:_upsert_col`).
+	 * - **mixed** — integer-keyed use s.col; string-keyed use bound literals.
+	 *
+	 * @param array $data name-value pairs of data to insert.
+	 * @param null|array $updateData null, column-name list, explicit col=>value map, or mixed; controls what is updated on conflict.
+	 * @param null|array $conflictColumns conflict target columns; null = primary key columns.
+	 * @return TDbCommand upsert MERGE command.
+	 */
+	public function createUpsertCommand(array $data, ?array $updateData = null, ?array $conflictColumns = null): TDbCommand
+	{
+		$this->assertActiveTransaction();
+		$conflictColumns = $this->resolveConflictColumns($conflictColumns);
+		return $this->buildMergeStatement($data, $updateData, $conflictColumns, 'FROM SYSIBM.SYSDUMMY1', true);
+	}
+
 	/**
 	 * Overrides parent implementation. Retrieves last identity value via DB2 function.
 	 * @return null|int last inserted identity value, null if no identity column.
@@ -66,16 +105,22 @@ class TIbmCommandBuilder extends TDbCommandBuilder
 		if ($limit < 0 && $offset < 0) {
 			return $sql;
 		}
-		if ($limit >= 0 && $offset <= 0) {
+		if ($offset > 0 && $limit >= 0) {
+			// DB2 LUW 11.1+ (and DB2 Community Edition) native offset+limit syntax.
+			// Avoids the ROW_NUMBER() subquery whose extra column leaks into results.
+			return $sql . ' OFFSET ' . $offset . ' ROWS FETCH NEXT ' . $limit . ' ROWS ONLY';
+		}
+		if ($limit >= 0) {
 			return $sql . ' FETCH FIRST ' . $limit . ' ROWS ONLY';
 		}
-		// limit + offset: use ROW_NUMBER() subquery for broad DB2 compatibility
-		return $this->rewriteLimitOffsetSql($sql, $limit, $offset);
+		// offset only (no limit): fall back to ROW_NUMBER() subquery
+		return $this->rewriteLimitOffsetSql($sql, PHP_INT_MAX, $offset);
 	}
 
 	/**
-	 * Rewrites the SQL using a ROW_NUMBER() window function subquery for offset+limit.
-	 * Compatible with DB2 LUW 9.x and later.
+	 * Rewrites the SQL using a ROW_NUMBER() window function subquery for
+	 * offset-only queries (no limit) where native OFFSET/FETCH is not available.
+	 * Prefer {@see applyLimitOffset} which uses native syntax when possible.
 	 *
 	 * @param string $sql original SQL
 	 * @param int $limit > 0

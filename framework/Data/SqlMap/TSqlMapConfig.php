@@ -23,6 +23,7 @@ use Prado\TPropertyValue;
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
+ * see https://github.com/mybatis/
  */
 class TSqlMapConfig extends TDataSourceConfig
 {

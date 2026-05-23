@@ -23,11 +23,11 @@ namespace Prado\Data\ActiveRecord\Scaffold\InputBuilder;
  * from {@see TScaffoldInputBase}.
  *
  * Custom implementations for unsupported drivers may be registered by
- * handling the **`fxActiveRecordScaffoldInputClass`** global event raised on
- * the connection by {@see \Prado\Data\ActiveRecord\Scaffold\InputBuilder\TScaffoldInputBase}.
- * The sender is the connection and the parameter is the driver name string.
- * Handlers must return the **fully-qualified class name** of a class that
- * implements this interface; the first returned value is used.
+ * handling the **`fxActiveRecordScaffoldInputClass`** global event raised by
+ * {@see \Prado\Data\TDbDriverCapabilities::createScaffoldInput}.  The sender
+ * is the connection and the parameter is the driver name string.  Handlers
+ * must return the **fully-qualified class name** of a class that implements
+ * this interface; the first returned value is used.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3
