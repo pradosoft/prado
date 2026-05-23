@@ -13,131 +13,78 @@ namespace Prado\Util\Traits;
 /**
  * TArrayIteratorTrait trait.
  *
- * TArrayIteratorTrait provides a lazy-loading {@see \Iterator} implementation backed
- * by any array the using class can supply.  The trait is deliberately free of any
- * reflection or domain-specific logic: it does not know or care where the array
- * comes from.
+ * TArrayIteratorTrait supplies the five {@see \Iterator} method bodies —
+ * {@see current()}, {@see key()}, {@see next()}, {@see rewind()}, and
+ * {@see valid()} — delegating every call to the abstract
+ * {@see getIteratorArray()}, which subclasses or companion traits must implement.
  *
- * The abstract method {@see getIteratorArrayCopy()} is the sole contract between
- * this trait and the using class.  It must return a copy of the array to iterate
- * over; the copy is stored in the backing store on first access and reused for all
- * subsequent iterations.  {@see TConstantReflectionTrait} satisfies this contract
- * automatically (returning the class's own constants via reflection), so classes
- * that use both traits require no further implementation.  A class must always define
- * its own `getIteratorArrayCopy()` to supply its array.
+ * This trait is deliberately minimal: it owns no state, performs no caching, and
+ * carries no reflection or domain logic.  Two typical implementations exist:
  *
- * Override {@see getIteratorArray()} instead to supply the array directly — bypassing
- * the copy — when the using class manages the backing store itself.
+ * - **{@see TArrayCopyIteratorTrait}** — adds a `?array $_iterator_array` backing
+ *   store with lazy loading via an abstract {@see getIteratorArrayCopy()}.  Use this
+ *   when the iterator should operate over a snapshot copy that is built once and
+ *   reused.  This is the most common pattern and is used by {@see \Prado\TEnumerable}.
  *
- * The backing store (`$_iterator_array`) starts as `null`.  On the first iterator
- * access the protected helper {@see ensureIteratorArray()} calls
- * {@see getIteratorArrayCopy()} and caches the result.  The protected accessors
- * {@see getIteratorArrayDirect()} and {@see setIteratorArrayDirect()} allow
- * inspection and replacement of the store without triggering the lazy-load.
+ * - **Direct `getIteratorArray()` override** — the using class returns a reference
+ *   to its own live array, bypassing any copy-and-cache mechanism.  Use this when
+ *   the class already owns the backing store and wants the iterator to operate on
+ *   that array directly.
  *
- * The using class must declare `implements \Iterator` on its own class signature;
- * this trait supplies the five required method bodies.
+ * The using class must declare `implements \Iterator` on its own class signature.
  *
- * ## Usage with TConstantReflectionTrait (no override needed)
+ * ## Usage with a live array (no copy)
  *
  * ```php
- * class TTextAlign implements \Prado\IEnumerable, \Iterator
+ * class MyCollection implements \Iterator
  * {
  *     use \Prado\Util\Traits\TArrayIteratorTrait;
- *     use \Prado\Util\Traits\TConstantReflectionTrait; // provides getIteratorArrayCopy()
  *
- *     const Left  = 'Left';
- *     const Right = 'Right';
+ *     private array $_items = [];
+ *
+ *     protected function &getIteratorArray(): array
+ *     {
+ *         return $this->_items;
+ *     }
  * }
  * ```
  *
- * ## Usage without TConstantReflectionTrait (`getIteratorArrayCopy` implementation required)
+ * ## Usage with a snapshot copy (via TArrayCopyIteratorTrait)
  *
  * ```php
  * class MyList implements \Iterator
  * {
- *     use \Prado\Util\Traits\TArrayIteratorTrait;
+ *     use \Prado\Util\Traits\TArrayCopyIteratorTrait;
  *
- *     public function getIteratorArrayCopy(): array
+ *     protected function getIteratorArrayCopy(): array
  *     {
  *         return ['a' => 1, 'b' => 2];
  *     }
  * }
  * ```
  *
- * {@see \Prado\TEnumerable} is the canonical base class and demonstrates this pattern.
- *
  * @author Brad Anderson <belisoful@icloud.com>
- * @see TConstantReflectionTrait
+ * @see TArrayCopyIteratorTrait
  * @see \Prado\IEnumerable
  * @since 4.4.0
  */
 trait TArrayIteratorTrait
 {
-	/** @var ?array Backing store for iteration; null until first load. */
-	private ?array $_iterator_array = null;
-
 	/**
-	 * Returns a copy of the array to iterate over, cached on first access.
-	 *
-	 * @return array The array to copy into the backing store.
-	 * @see \Prado\Util\Traits\TConstantReflectionTrait
-	 */
-	abstract public function getIteratorArrayCopy(): array;
-
-	/**
-	 * Ensures `$_iterator_array` is populated, loading it on first call.
-	 *
-	 * Called internally by every iterator method before accessing the array.
-	 */
-	protected function ensureIteratorArray(): void
-	{
-		if ($this->getIteratorArrayDirect() === null) {
-			$this->setIteratorArrayDirect($this->getIteratorArrayCopy());
-		}
-	}
-
-	/**
-	 * Returns a reference to the raw backing store without triggering lazy loading.
-	 *
-	 * Returns `null` when the store has not been populated yet.  Use
-	 * {@see getEnsuredIteratorArray()} when a non-null, loaded array is required.
-	 *
-	 * @return ?array Reference to `$_iterator_array`.
-	 */
-	protected function &getIteratorArrayDirect(): ?array
-	{
-		return $this->_iterator_array;
-	}
-
-	/**
-	 * Replaces the backing array directly, bypassing lazy loading.
-	 *
-	 * Passing `null` resets the store so that the next iterator access triggers
-	 * a fresh call to {@see getIteratorArrayCopy()}.
-	 *
-	 * @param ?array $array The replacement array, or `null` to force a reload.
-	 */
-	protected function setIteratorArrayDirect(?array $array): void
-	{
-		$this->_iterator_array = $array;
-	}
-
-	/**
-	 * Returns a reference to the backing array, populating it on first call.
+	 * Returns a reference to the array that backs this iterator.
 	 *
 	 * Called by every iterator method so that PHP's internal array-pointer functions
 	 * ({@see current()}, {@see key()}, {@see next()}, {@see reset()}) operate on the
-	 * live store rather than a copy.  The store is guaranteed to be non-null on
-	 * return because {@see ensureIteratorArray()} is called first.
+	 * same live array.  Implementations must return a reference; the return value must
+	 * never be `null`.
 	 *
-	 * @return array Reference to `$_iterator_array`.
+	 * {@see TArrayCopyIteratorTrait} provides a lazy-loading implementation backed
+	 * by a cached snapshot copy.  Alternatively, override this method directly in the
+	 * using class to return a reference to an array the class already owns.
+	 *
+	 * @return array Reference to the backing array.
 	 */
-	protected function &getIteratorArray(): array
-	{
-		$this->ensureIteratorArray();
-		return $this->getIteratorArrayDirect();
-	}
+	abstract protected function &getIteratorArray(): array;
 
 	/**
 	 * Returns the value at the current iterator position.

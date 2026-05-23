@@ -15,9 +15,12 @@ namespace Prado\Util\Traits;
  *
  * TConstantReflectionTrait provides static reflection methods for checking,
  * getting, and iterating over class constants similar to {@see \ReflectionClass}.
- * It also implements {@see \Prado\Util\Traits\TArrayIteratorTrait::getIteratorArrayCopy()}
- * so that any class using both this trait and {@see TArrayIteratorTrait} gains full
- * `\Iterator` support over its constants with no additional implementation.
+ * It also implements {@see getIteratorArrayCopy()} so that any class using both
+ * this trait and {@see TArrayCopyIteratorTrait} gains full `\Iterator` support
+ * over its constants with no additional implementation.  Because
+ * `TArrayCopyIteratorTrait` declares `getIteratorArrayCopy()` as abstract and
+ * this trait provides a concrete implementation, PHP resolves the contract
+ * automatically.
  *
  * This trait can be used by any class with string constants.  For example:
  * ```php
@@ -231,17 +234,17 @@ trait TConstantReflectionTrait
 	}
 
 	/**
-	 * Returns a copy of all class constants as the backing array for {@see TArrayIteratorTrait}.
+	 * Returns a copy of all class constants as the backing array for iteration.
 	 *
-	 * Satisfies the {@see \Prado\Util\Traits\TArrayIteratorTrait::getIteratorArrayCopy()}
+	 * Satisfies the abstract {@see \Prado\Util\Traits\TArrayCopyIteratorTrait::getIteratorArrayCopy()}
 	 * contract so that any class using both traits gains full `\Iterator` support over
 	 * its constants with no additional implementation.
 	 *
 	 * @return array<string,mixed> Map of constant name ⇒ constant value.
-	 * @see \Prado\Util\Traits\TArrayIteratorTrait
+	 * @see \Prado\Util\Traits\TArrayCopyIteratorTrait
 	 * @since 4.4.0
 	 */
-	public function getIteratorArrayCopy(): array
+	protected function getIteratorArrayCopy(): array
 	{
 		return self::getReflectionClass()->getConstants();
 	}
