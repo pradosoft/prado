@@ -539,7 +539,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 		$removeParams = TDbDriverCapabilities::getSocketDsnParamsToRemove($driver);
 		if ($removeParams !== []) {
 			$removePattern = '/^\s*(' . implode('|', array_map('preg_quote', $removeParams)) . ')\s*=/i';
-			$pairs = array_values(array_filter($pairs, fn($p) => !preg_match($removePattern, $p)));
+			$pairs = array_values(array_filter($pairs, fn ($p) => !preg_match($removePattern, $p)));
 		}
 
 		// Replace an existing inject param in-place, or prepend it when absent.
