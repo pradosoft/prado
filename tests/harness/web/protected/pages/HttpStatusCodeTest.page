@@ -1,0 +1,4 @@
+<com:TContent ID="Content">
+<h1>THttpResponse Status Code Test</h1>
+<div id="status-echo">status:<%=$this->Response->StatusCode%></div>
+</com:TContent>

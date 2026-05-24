@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<application id="SecurityTests" Mode="Debug">
+	<modules>
+		<module id="security" class="Prado\Security\TSecurityManager" ValidationKey="security-test-validation-key-for-prado" />
+		<module id="users" class="Prado\Security\TUserManager" PasswordMode="Clear">
+			<user name="Joe" password="demo" />
+			<user name="John" password="demo" />
+			<role name="Administrator" users="John" />
+			<role name="Writer" users="Joe,John" />
+		</module>
+		<module id="auth" class="Prado\Security\TAuthManager" UserManager="users" LoginPage="Login" AllowAutoLogin="true" />
+	</modules>
+	<services>
+		<service id="page" class="TPageService" DefaultPage="Home">
+		</service>
+	</services>
+</application>

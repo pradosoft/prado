@@ -1,0 +1,4 @@
+<com:TContent ID="Content">
+<h1>THttpSession Test</h1>
+<div id="session-info"><%=$this->SessionJson%></div>
+</com:TContent>

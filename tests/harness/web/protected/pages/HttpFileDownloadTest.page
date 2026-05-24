@@ -1,0 +1,6 @@
+<com:TContent ID="Content">
+<h1>THttpResponse File Download Test</h1>
+<p id="info">Use ?action=download-text or ?action=download-inline to serve a file.</p>
+<a id="dl-attachment" href="index.php?page=HttpFileDownloadTest&amp;action=download-text">Download (attachment)</a>
+<a id="dl-inline" href="index.php?page=HttpFileDownloadTest&amp;action=download-inline">Download (inline)</a>
+</com:TContent>

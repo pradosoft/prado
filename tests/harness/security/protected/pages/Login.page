@@ -1,0 +1,17 @@
+<com:TContent ID="Content">
+<h1>Login</h1>
+<p id="login-error"><%=$this->ErrorMessage%></p>
+<form id="login-form" method="POST" action="<%=$this->Service->constructUrl('Login')%>">
+	<label>Username:
+		<input type="text" id="username" name="auth_username" autocomplete="username" />
+	</label><br />
+	<label>Password:
+		<input type="password" id="password" name="auth_password" autocomplete="current-password" />
+	</label><br />
+	<label>
+		<input type="checkbox" id="remember" name="auth_remember" value="1" />
+		Remember me (30 days)
+	</label><br />
+	<button type="submit" id="login-button">Login</button>
+</form>
+</com:TContent>

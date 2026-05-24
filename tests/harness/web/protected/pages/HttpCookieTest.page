@@ -1,0 +1,5 @@
+<com:TContent ID="Content">
+<h1>THttpCookie Test</h1>
+<div id="cookie-display">cookies:<%=$this->CookieJson%></div>
+<div id="action-result">action:<%=$this->Request->itemAt('action') ?? 'none'%></div>
+</com:TContent>
