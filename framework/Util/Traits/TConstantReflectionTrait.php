@@ -40,18 +40,21 @@ namespace Prado\Util\Traits;
  * $hasLeftValue = TTextAlign::hasConstantValue('Left'); // true
  * ```
  *
- * **Case sensitivity** — pass `false` as the second argument for a
- * case-insensitive name (or value) match:
+ * ## Case Sensitivity
+ *
+ * Pass `false` as the second argument for a case-insensitive name (or value) match:
  * ```php
  * $yes = TTextAlign::hasConstant('Left');          // true  (case-sensitive)
  * $no  = TTextAlign::hasConstant('left');          // false
  * $yes = TTextAlign::hasConstant('left', false);   // true  (case-insensitive)
  * ```
  *
- * **Affix filtering** — pass a non-empty string as the second argument to
- * restrict the match to constants whose *name* starts with (prefix) or ends
- * with (suffix) the given string.  The third argument controls whether the
- * affix comparison itself is case-sensitive.
+ * ## Affix Filtering
+ *
+ * Pass a non-empty string as the second argument to restrict the match to
+ * constants whose *name* starts with (prefix) or ends with (suffix) the given
+ * string.  The third argument controls whether the affix comparison itself is
+ * case-sensitive.
  *
  * - Prefix: a string starting with a letter or number (e.g., `'Align'`, `'Display'`)
  * - Suffix: a string starting with `*` or `-` (e.g., `'*Margin'`, `'-Algorithm'`)
@@ -59,7 +62,7 @@ namespace Prado\Util\Traits;
  * ```php
  * // const AlignLeft = 'AlignLeft', const AlignRight = 'AlignRight', const Left = 'Left'
  * $yes = TTextAlign::hasConstant('AlignLeft',  'Align');          // prefix match
- * $no  = TTextAlign::hasConstant('Left',       'Align');          // no prefix
+ * $no  = TTextAlign::hasConstant('Left',       'Align');          // value lacks prefix
  * $yes = TTextAlign::hasConstant('AlignRight', 'align', false);   // case-insensitive prefix
  *
  * // const TopMargin = 'TopMargin', const BottomMargin = 'BottomMargin'
