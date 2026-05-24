@@ -17,6 +17,7 @@ use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Util\Traits\TInitializedTrait;
+use Prado\Web\HttpHeaders\THttpHeadersManager;
 
 /**
  * THttpResponse class
@@ -35,12 +36,31 @@ use Prado\Util\Traits\TInitializedTrait;
  * By default, THttpResponse is registered with {@see \Prado\TApplication} as the
  * response module. It can be accessed via {@see \Prado\TApplication::getResponse()}.
  *
- * THttpResponse may be configured in application configuration file as follows
- *
- * <module id="response" class="Prado\Web\THttpResponse" CacheExpire="20" CacheControl="nocache" BufferOutput="true" />
- *
+ * XML configuration style:
+ * ```xml
+ * <modules>
+ *   <module id="response" class="Prado\Web\THttpResponse"
+ *       CacheExpire="20" CacheControl="nocache" BufferOutput="true" />
+ * </modules>
+ * ```
  * where {@see getCacheExpire CacheExpire}, {@see getCacheControl CacheControl}
  * and {@see getBufferOutput BufferOutput} are optional properties of THttpResponse.
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'response' => [
+ *             'class' => 'Prado\Web\THttpResponse',
+ *             'properties' => [
+ *                 'CacheExpire' => '20',
+ *                 'CacheControl' => 'nocache',
+ *                 'BufferOutput' => 'true',
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
  *
  * THttpResponse sends charset header if either {@see setCharset() Charset}
  * or {@see \Prado\I18N\TGlobalization::setCharset() TGlobalization.Charset} is set.
@@ -363,7 +383,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 			'jpeg' => 'image/jpeg',
 			'htm' => 'text/html',
 			'html' => 'text/html',
-			'js' => 'javascript/js',
+			'js' => 'text/javascript',
 			'pdf' => 'application/pdf',
 			'xls' => 'application/vnd.ms-excel',
 		];
@@ -831,16 +851,17 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function getHeadersManagerModule()
 	{
-		if (empty($this->_headersManagerID)) {
+		$headersManagerId = $this->getHeadersManager();
+		if ($headersManagerId === '') {
 			return null;
 		}
 
-		$this->_headersManager = $this->getApplication()->getModule($this->_headersManagerID);
+		$this->_headersManager = $this->getApplication()->getModule($headersManagerId);
 		if ($this->_headersManager === null) {
-			throw new TConfigurationException('httpresponse_headersmanager_inexist', $this->_headersManagerID);
+			throw new TConfigurationException('httpresponse_headersmanager_inexist', $headersManagerId);
 		}
 		if (!($this->_headersManager instanceof THttpHeadersManager)) {
-			throw new TConfigurationException('httpresponse_headersmanager_invalid', $this->_headersManagerID);
+			throw new TConfigurationException('httpresponse_headersmanager_invalid', $headersManagerId);
 		}
 
 		return $this->_headersManager;
