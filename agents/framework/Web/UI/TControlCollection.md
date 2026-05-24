@@ -8,7 +8,7 @@
 **Namespace:** `Prado\Web\UI`
 
 ## Overview
-TControlCollection implements a collection that enables controls to maintain a list of their child controls. It extends [TList](../Collections/TList.md) and performs additional operations when child controls are added or removed, including calling `addedControl()` and `removedControl()` on the owner control.
+TControlCollection implements a collection that enables controls to maintain a list of their child controls. It extends [TList](../../Collections/TList.md) and performs additional operations when child controls are added or removed, including calling `addedControl()` and `removedControl()` on the owner control.
 
 ## Key Properties/Methods
 
@@ -21,6 +21,6 @@ TControlCollection implements a collection that enables controls to maintain a l
 
 - [TControl](./TControl.md)
 - [TEmptyControlCollection](./TEmptyControlCollection.md)
-- [TList](../Collections/TList.md)
+- [TList](../../Collections/TList.md)
 
 (End of file - total 21 lines)

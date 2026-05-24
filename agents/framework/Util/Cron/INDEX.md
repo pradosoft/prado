@@ -1,7 +1,7 @@
 # Util/Cron/INDEX.md
 
 ### Directories
-[framework](./INDEX.md) / [Util](./Util/INDEX.md) / **`Cron/INDEX.md`**
+[framework](../../INDEX.md) / [Util](../INDEX.md) / **`Cron`**
 
 ## Purpose
 
@@ -9,9 +9,11 @@ Cron-style scheduled task engine for the Prado framework. Supports both file-con
 
 ## Classes
 
-- **`TCronModule`** — Main cron scheduler [`TModule`](../TModule.md). Parses cron schedule expressions (standard Linux `minute hour day month dayOfWeek` format plus special expressions like `@daily`, `@hourly`). Registers tasks and triggers execution. Designed to be called periodically by the system crontab (run the `prado-cli cron` shell action). Supports user context switching per task.
+- **`TCronModule`** — Main cron scheduler [`TModule`](../../TModule.md). Parses cron schedule expressions (standard Linux `minute hour day month dayOfWeek` format plus special expressions like `@daily`, `@hourly`). Registers tasks and triggers execution. Designed to be called periodically by the system crontab (run the `prado-cli cron` shell action). Supports user context switching per task.
 
-- **`TDbCronModule`** — Extends `TCronModule` with database-backed task storage. Supports dynamic task registration, execution logging, and failed-task retry logic.
+- **`TDbCronManager`** — Extends `TCronModule` with database-backed task storage. Supports dynamic task CRUD, execution logging, runtime task queuing (onEndRequest), and permission-gated CLI management. **Since 4.3.3.**
+
+- **`TDbCronModule`** — Deprecated alias for `TDbCronManager` (since 4.3.3). Scheduled for removal in v4.4. Existing configs continue to work.
 
 - **`TCronTask`** — Abstract base for cron tasks. Implement `execute(TCronTaskInfo)`. Properties: `Name`, `Schedule`. Methods: `init()`, `run()`.
 
@@ -42,7 +44,7 @@ minute  hour  day  month  dayOfWeek
 
 ## Conventions
 
-- Register tasks in `application.xml` under the cron module, or dynamically via [`TCronModule::addTask()`](../Util/Cron/TCronModule.md).
+- Register tasks in `application.xml` under the cron module, or dynamically via [`TCronModule::addTask()`](TCronModule.md).
 - The system crontab should call `php prado-cli.php <appdir> cron` on a regular interval (e.g., every minute).
 - `TCronModule` tracks last-run times; it will not execute a task more frequently than its schedule allows.
-- For database-backed tasks, `TDbCronModule` must have a [`TDbConnection`](../Data/TDbConnection.md) configured.
+- For database-backed tasks, `TDbCronManager` must have a [`TDbConnection`](../../Data/TDbConnection.md) configured.

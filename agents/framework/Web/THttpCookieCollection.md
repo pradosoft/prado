@@ -8,7 +8,7 @@
 **Namespace:** `Prado\Web`
 
 ## Overview
-THttpCookieCollection implements a collection class for storing cookies. It extends [TList](../../Collections/TList.md) and allows cookie retrieval by name. When cookies are added or removed from the collection, they are automatically added to or removed from the owning THttpResponse.
+THttpCookieCollection implements a collection class for storing cookies. It extends [TList](../Collections/TList.md) and allows cookie retrieval by name. When cookies are added or removed from the collection, they are automatically added to or removed from the owning THttpResponse.
 
 ## Key Properties/Methods
 

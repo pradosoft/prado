@@ -8,26 +8,30 @@
 **Namespace:** `Prado\Util`
 
 ## Overview
-`TParameterModule` is a `[TModule](TModule.md)` that loads named configuration parameters into the application's parameter store (`[TApplication](../TApplication.md)::getParameters()`). Parameters are simple name-value pairs or object instances that can be accessed anywhere in the application.
+`TParameterModule` is a `[TModule](../TModule.md)` that loads named configuration parameters into the application's parameter store (`[TApplication](../TApplication.md)::getParameters()`). Parameters are simple name-value pairs or object instances that can be accessed anywhere in the application.
 
 ## Configuration
 
 ```xml
-<module id="params" class="Prado\Util\TParameterModule">
-    <parameter id="siteName" value="My PRADO App" />
-    <parameter id="maxItems" value="50" />
-    <!-- Object parameter: class is instantiated and properties set -->
-    <parameter id="dbConfig" class="Prado\Data\TDbConnection"
-               ConnectionString="mysql:host=localhost;dbname=mydb"
-               Username="user" Password="secret" />
-</module>
+<modules>
+    <module id="params" class="Prado\Util\TParameterModule">
+        <parameter id="siteName" value="My PRADO App" />
+        <parameter id="maxItems" value="50" />
+        <!-- Object parameter: class is instantiated and properties set -->
+        <parameter id="dbConfig" class="Prado\Data\TDbConnection"
+                   ConnectionString="mysql:host=localhost;dbname=mydb"
+                   Username="user" Password="secret" />
+    </module>
+</modules>
 ```
 
 Alternatively, use an external parameter file:
 
 ```xml
-<module id="params" class="Prado\Util\TParameterModule"
-        ParameterFile="Application.Config.params" />
+<modules>
+    <module id="params" class="Prado\Util\TParameterModule"
+            ParameterFile="Application.Config.params" />
+</modules>
 ```
 
 ## PHP Config Format

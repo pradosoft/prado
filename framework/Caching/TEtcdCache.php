@@ -44,8 +44,22 @@ use Prado\Exceptions\TConfigurationException;
  * cache module. It can be accessed via {@see \Prado\TApplication::getCache()}.
  *
  * TEtcdCache may be configured in application configuration file as follows
+ * ```xml
+ * <modules>
+ *     <module id="cache" class="Prado\Caching\TEtcdCache" Host="localhost" Port="2379" Dir="pradocache" />
+ * </modules>
+ * ```
+ *
+ * PHP configuration style:
  * ```php
- * <module id="cache" class="Prado\Caching\TEtcdCache" Host="localhost" Port="2379" Dir="pradocache" />
+ * return [
+ *     'modules' => [
+ *         'cache' => [
+ *             'class' => 'Prado\Caching\TEtcdCache',
+ *             'properties' => ['Host' => 'localhost', 'Port' => '2379', 'Dir' => 'pradocache'],
+ *         ],
+ *     ],
+ * ];
  * ```
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>

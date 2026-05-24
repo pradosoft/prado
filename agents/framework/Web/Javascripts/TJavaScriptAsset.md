@@ -25,5 +25,5 @@ echo $asset; // <script async src="/assets/myfile.js"></script>
 
 ## See Also
 
-- [TAssetManager](../TAssetManager.php) - Publishes and manages asset files
-- [TClientScriptManager](../UI/TClientScriptManager.php) - Registers and renders script assets
+- [TAssetManager](../TAssetManager.md) — Publishes and manages asset files
+- [TClientScriptManager](../UI/TClientScriptManager.md) — Registers and renders script assets

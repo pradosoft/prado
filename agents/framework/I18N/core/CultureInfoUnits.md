@@ -1,7 +1,7 @@
 # I18N/core/CultureInfoUnits
 
 ### Directories
-[framework](./INDEX.md) / [I18N](./I18N/INDEX.md) / [core](./I18N/core/INDEX.md) / **`CultureInfoUnits`**
+[framework](../../INDEX.md) / [I18N](../INDEX.md) / [core](INDEX.md) / **`CultureInfoUnits`**
 
 **Location:** `framework/I18N/core/CultureInfoUnits.php`
 **Namespace:** `Prado\I18N\core`

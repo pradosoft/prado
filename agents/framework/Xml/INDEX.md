@@ -1,7 +1,7 @@
 # Xml/INDEX.md
 
 ### Directories
-[framework](./INDEX.md) / **`Xml/INDEX.md`**
+[framework](../INDEX.md) / **`Xml`**
 
 ## Purpose
 

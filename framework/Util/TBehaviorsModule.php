@@ -26,13 +26,30 @@ use Prado\Xml\TXmlElement;
  *
  * Contents enclosed within the module tag are treated as behaviors, e.g.,
  * ```xml
- * <module class="Prado\Util\TBehaviorsModule" Parameter="AdditionalBehaviors">
- *   <behavior Name="pagethemeparameter" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachToClass="Prade\Web\UI\TPage" Priority="10" Parameter="ThemeName" Property="Theme"/>
- *   <behavior Name="sharedModuleBehavior" Class="FooModuleBehavior" AttachToClass="Prado\TModule" Attribute1="abc"/>
- *   <behavior name="TimeZoneBehavior" Class="Prado\Util\Behaviors\TTimeZoneParameterBehavior" AttachTo="Application" Priority="10" TimeZone="America/New York" TimeZoneParameter="prop:TimeZone" />
- *   <behavior name="MyModuleBehavior" Class="MyModuleBehavior" AttachTo="Module:page" Property1="Value1" Property2="Value2" ... />
- *   <behavior name="MyPageTitleBehavior" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachTo="Page" Priority="10" Parameter="PageTitle" Property="Title" Localize="true"/>
- * </module>
+ * <modules>
+ *     <module id="behaviors" class="Prado\Util\TBehaviorsModule">
+ *         <behavior Name="pagethemeparameter" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachToClass="Prade\Web\UI\TPage" Priority="10" Parameter="ThemeName" Property="Theme"/>
+ *         <behavior Name="sharedModuleBehavior" Class="FooModuleBehavior" AttachToClass="Prado\TModule" Attribute1="abc"/>
+ *         <behavior name="TimeZoneBehavior" Class="Prado\Util\Behaviors\TTimeZoneParameterBehavior" AttachTo="Application" Priority="10" TimeZone="America/New York" TimeZoneParameter="prop:TimeZone" />
+ *         <behavior name="MyModuleBehavior" Class="MyModuleBehavior" AttachTo="Module:page" Property1="Value1" Property2="Value2" ... />
+ *         <behavior name="MyPageTitleBehavior" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachTo="Page" Priority="10" Parameter="PageTitle" Property="Title" Localize="true"/>
+ *     </module>
+ * </modules>
+ * ```
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'behaviors' => [
+ *             'class' => 'Prado\Util\TBehaviorsModule',
+ *             'behaviors' => [
+ *                 ['name' => 'pagetheme', 'class' => 'Prado\Util\Behaviors\TParameterizeBehavior',
+ *                  'attachto' => 'page', 'priority' => '10', 'Parameter' => 'ThemeName', 'Property' => 'Theme'],
+ *             ],
+ *         ],
+ *     ],
+ * ];
  * ```
  *
  * When the Service is not TPageService, page behaviors are not installed and have no effect other than be ignored.

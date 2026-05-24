@@ -17,7 +17,7 @@ TBroadcastEventParameter encapsulates parameter data for broadcast events. The p
 
 ## See Also
 
-- [Prado\\TEventParameter](../Prado/TEventParameter.md)
+- [Prado\\TEventParameter](../../TEventParameter.md)
 - [TEventContent](./TEventContent.md)
 
 (End of file - total 18 lines)

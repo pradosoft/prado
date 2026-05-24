@@ -6,6 +6,7 @@
 ## Class Info
 **Location:** `framework/Data/Common/TDbCommandBuilder.php`
 **Namespace:** `Prado\Data\Common`
+**Implements:** [`IDataCommandBuilder`](./IDataCommandBuilder.md)
 
 ## Overview
 `TDbCommandBuilder` provides methods to create SQL query commands for a specific table.

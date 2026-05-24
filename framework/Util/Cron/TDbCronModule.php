@@ -20,6 +20,24 @@ namespace Prado\Util\Cron;
  * TDbCronModule does everything that TCronModule does but stores the tasks and
  * persistent data in its own database table.
  *
+ * ```xml
+ * <modules>
+ *     <module id="cron" class="Prado\Util\Cron\TDbCronModule" ConnectionID="db" />
+ * </modules>
+ * ```
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'cron' => [
+ *             'class' => 'Prado\Util\Cron\TDbCronModule',
+ *             'properties' => ['ConnectionID' => 'db'],
+ *         ],
+ *     ],
+ * ];
+ * ```
+ *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0
  * @deprecated since 4.3.3 — use {@see TDbCronManager} instead.

@@ -1,7 +1,7 @@
 # PHPStan/INDEX.md
 
 ### Directories
-[framework](../INDEX.md) / **`PHPStan/INDEX.md`**
+[framework](../INDEX.md) / **`PHPStan`**
 
 ## Purpose
 
@@ -18,19 +18,19 @@ PHPStan static analysis extensions that teach PHPStan about Prado's dynamic meth
   - Parameters: variadic (accepts any arguments)
   - Side effects: `TrinaryLogic::createMaybe()`
 
-- **TComponentPropertiesReflectionExtension** — PHPStan `PropertiesClassReflectionExtension`. Maps every `get{X}()` / `set{X}()` method pair on any `TComponent` subclass to a virtual property `X`, enabling `$obj->X` access without "undefined property" errors. The readable type is derived from the getter's return type; the writable type from the setter's first parameter type. The `getjs{X}()` / `setjs{X}()` JS-aware variants are also recognised.
+- **[TComponentPropertiesReflectionExtension](./TComponentPropertiesReflectionExtension.md)** — PHPStan `PropertiesClassReflectionExtension`. Maps every `get{X}()` / `set{X}()` method pair on any `TComponent` subclass to a virtual property `X`, enabling `$obj->X` access without "undefined property" errors. The readable type is derived from the getter's return type; the writable type from the setter's first parameter type. The `getjs{X}()` / `setjs{X}()` JS-aware variants are also recognised.
 
-- **TComponentPropertyReflection** — Implements PHPStan's `PropertyReflection` for PRADO virtual properties. Stores optional getter and setter `MethodReflection` references. `isReadable()` is true when a getter exists; `isWritable()` is true when a setter exists. `canChangeTypeAfterAssignment()` returns `false` (method-hook semantics).
+- **[TComponentPropertyReflection](./TComponentPropertyReflection.md)** — Implements PHPStan's `PropertyReflection` for PRADO virtual properties. Stores optional getter and setter `MethodReflection` references. `isReadable()` is true when a getter exists; `isWritable()` is true when a setter exists. `canChangeTypeAfterAssignment()` returns `false` (method-hook semantics).
 
-- **TComponentHasMethodTypeSpecifyingExtension** — PHPStan `MethodTypeSpecifyingExtension` for `TComponent::hasMethod()`. When `$obj->hasMethod('foo')` is true inside an `if`-block, narrows the type of `$obj` to `OriginalType & HasMethodType('foo')`, making the guarded call `$obj->foo()` valid. Mirrors the behaviour of PHPStan's built-in `method_exists()` narrowing.
+- **[TComponentHasMethodTypeSpecifyingExtension](./TComponentHasMethodTypeSpecifyingExtension.md)** — PHPStan `MethodTypeSpecifyingExtension` for `TComponent::hasMethod()`. When `$obj->hasMethod('foo')` is true inside an `if`-block, narrows the type of `$obj` to `OriginalType & HasMethodType('foo')`, making the guarded call `$obj->foo()` valid. If the method name follows PRADO's `get{X}`/`set{X}`/`getjs{X}`/`setjs{X}` convention, also narrows the virtual property via `HasPropertyType`. Mirrors the behaviour of PHPStan's built-in `method_exists()` narrowing.
 
-- **TComponentCanGetPropertyTypeSpecifyingExtension** — `MethodTypeSpecifyingExtension` for `TComponent::canGetProperty()`. When `$obj->canGetProperty('Foo')` is true, narrows `$obj` to have `HasMethodType('getFoo')`, allowing `$obj->getFoo()` inside the guarded block without errors.
+- **[TComponentCanGetPropertyTypeSpecifyingExtension](./TComponentCanGetPropertyTypeSpecifyingExtension.md)** — `MethodTypeSpecifyingExtension` for `TComponent::canGetProperty()`. When `$obj->canGetProperty('Foo')` is true, narrows `$obj` to have both `HasMethodType('getFoo')` and `HasPropertyType('foo')`, allowing `$obj->getFoo()` and `$obj->foo` inside the guarded block without errors.
 
-- **TComponentCanSetPropertyTypeSpecifyingExtension** — `MethodTypeSpecifyingExtension` for `TComponent::canSetProperty()`. When `$obj->canSetProperty('Foo')` is true, narrows `$obj` to have `HasMethodType('setFoo')`, allowing `$obj->setFoo(...)` inside the guarded block without errors.
+- **[TComponentCanSetPropertyTypeSpecifyingExtension](./TComponentCanSetPropertyTypeSpecifyingExtension.md)** — `MethodTypeSpecifyingExtension` for `TComponent::canSetProperty()`. When `$obj->canSetProperty('Foo')` is true, narrows `$obj` to have both `HasMethodType('setFoo')` and `HasPropertyType('foo')`, allowing `$obj->setFoo(...)` and `$obj->foo = $v` inside the guarded block without errors.
 
-- **[TComponentIsaTypeSpecifyingExtension](./TComponentIsaTypeSpecifyingExtension.md)** — PHPStan type-specifying extension for `TComponent::isa()`. Narrows the type of the subject when `isa()` returns `true`, similar to `instanceof`.
+- **[TComponentIsaTypeSpecifyingExtension](./TComponentIsaTypeSpecifyingExtension.md)** — PHPStan type-specifying extension for `TComponent::isa()`. Narrows the type of the subject when `isa()` returns `true`, similar to `instanceof`. Supports interfaces and multiple class-name constants (produces a `UnionType`). Validates class names via `ReflectionProvider`.
 
-- **PradoMethodVisibleStaticMethodTypeSpecifyingExtension** — PHPStan `StaticMethodTypeSpecifyingExtension` for `Prado::method_visible()`. When `Prado::method_visible($obj, 'foo')` is true, narrows the type of `$obj` to have `HasMethodType('foo')`, making the guarded call `$obj->foo()` valid. Mirrors the behaviour of PHPStan's built-in `method_exists()` narrowing.
+- **[PradoMethodVisibleStaticMethodTypeSpecifyingExtension](./PradoMethodVisibleStaticMethodTypeSpecifyingExtension.md)** — PHPStan `StaticMethodTypeSpecifyingExtension` for `Prado::method_visible()`. When `Prado::method_visible($obj, 'foo')` is true, narrows the type of `$obj` to have `HasMethodType('foo')`, making the guarded call `$obj->foo()` valid. Mirrors the behaviour of PHPStan's built-in `method_exists()` narrowing.
 
 ## Configuration
 

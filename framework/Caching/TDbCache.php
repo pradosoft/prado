@@ -85,7 +85,21 @@ use Prado\Util\Cron\TCronTaskInfo;
  *
  * TDbCache may be configured in application configuration file as follows
  * ```xml
- * <module id="cache" class="Prado\Caching\TDbCache" />
+ * <modules>
+ *     <module id="cache" class="Prado\Caching\TDbCache" ConnectionID="db" />
+ * </modules>
+ * ```
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'cache' => [
+ *             'class' => 'Prado\Caching\TDbCache',
+ *             'properties' => ['ConnectionID' => 'db'],
+ *         ],
+ *     ],
+ * ];
  * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>

@@ -28,5 +28,4 @@ TSoapServer wraps PHP's SoapServer class to provide SOAP/WSDL web services. It a
 
 ## See Also
 
-- [TSoapService](../TSoapService.md) - The SOAP service
-- [WsdlGenerator](../../Xml/WsdlGenerator.md) - WSDL auto-generation
+- [TSoapService](TSoapService.md) — The SOAP service

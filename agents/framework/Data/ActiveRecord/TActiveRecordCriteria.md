@@ -25,5 +25,5 @@ $users = UserRecord::finder()->findAll($criteria);
 
 ## See Also
 
-- [TActiveRecord](./TActiveRecord.md) - Base Active Record class
+- [TActiveRecord](../TActiveRecord.md) - Base Active Record class
 - [TSqlCriteria](../DataGateway/TSqlCriteria.md) - Base criteria class

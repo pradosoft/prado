@@ -15,8 +15,10 @@ iBATIS-style SQL mapping framework. SQL lives in external XML files; PHP code ca
 ### application.xml
 
 ```xml
-<module id="sqlmap" class="Prado\Data\SqlMap\TSqlMapConfig"
-        ConnectionID="db" ConfigFile="Application.SqlMaps.sqlmap" />
+<modules>
+    <module id="sqlmap" class="Prado\Data\SqlMap\TSqlMapConfig"
+            ConnectionID="db" ConfigFile="Application.SqlMaps.sqlmap" />
+</modules>
 ```
 
 ### sqlmap.xml

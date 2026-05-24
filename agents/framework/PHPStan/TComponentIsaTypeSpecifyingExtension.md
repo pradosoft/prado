@@ -23,6 +23,10 @@ if ($component->isa(MyClass::class)) {
 // With extension, PHPStan knows $component is MyClass
 ```
 
+## How It Works
+
+Implements `MethodTypeSpecifyingExtension` and `TypeSpecifierAwareExtension`. Injects `ReflectionProvider` via constructor to validate that each class name constant actually exists before building a type. When multiple constant strings are provided, the narrowed type is a `UnionType` over all valid class names; when only one is provided, it is a plain `ObjectType`. Unknown class names are skipped. This correctly handles interfaces and abstract classes in addition to concrete classes.
+
 ## Usage
 
 Add to `phpstan.neon`:
@@ -37,9 +41,10 @@ services:
 ## Requirements
 
 - Method must be `isa`
-- First argument must be a class name constant
-- Class must be a subclass of [TComponent](../TComponent.md)
+- Caller must resolve to an object type
+- First argument must resolve to one or more constant class-name strings known to the `ReflectionProvider`
 
 ## See Also
 
-- [TComponent](../TComponent.md)::isa() - PRADO method for duck-typing with behaviors
+- [TComponent](../TComponent.md)::isa() — PRADO method for duck-typing with behaviors and interfaces
+- [TComponentHasMethodTypeSpecifyingExtension](./TComponentHasMethodTypeSpecifyingExtension.md) — sibling narrowing extension for `hasMethod()`

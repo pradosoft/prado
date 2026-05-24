@@ -1,7 +1,7 @@
 # Util/IBehavior
 
 ### Directories
-[framework](./INDEX.md) / [Util](./Util/INDEX.md) / **`IBehavior`**
+[framework](../INDEX.md) / [Util](INDEX.md) / **`IBehavior`**
 
 **Location:** `framework/Util/IBehavior.php`
 **Namespace:** `Prado\Util`

@@ -1,25 +1,25 @@
 # Web/Javascripts/INDEX.md
 
 ### Directories
-[framework](./INDEX.md) / [Web](./Web/INDEX.md) / **`Javascripts/INDEX.md`**
+[framework](../../INDEX.md) / [Web](../INDEX.md) / **`Javascripts`**
 
 ## Purpose
 
-Client-side JavaScript/CSS package registry and asset utilities for the Prado web layer. Defines the package dependency graph consumed by [TClientScriptManager](Web/UI/WebControls/TClientScriptManager.md) and provides PHP-side helpers for rendering script/style tags.
+Client-side JavaScript/CSS package registry and asset utilities for the Prado web layer. Defines the package dependency graph consumed by [TClientScriptManager](../UI/TClientScriptManager.md) and provides PHP-side helpers for rendering script/style tags.
 
 ## PHP Classes
 
-- **[TJavaScript](Web/Javascripts/TJavaScript.md)** — Static utility class. Methods:
+- **[TJavaScript](TJavaScript.md)** — Static utility class. Methods:
   - `renderScriptFile($url)` — renders a `<script src="...">` tag.
   - `renderScriptBlock($code)` — renders an inline `<script>` block.
   - `quoteJsLiteral($value)` — safely JSON-encodes a PHP value for embedding in JavaScript.
   - `jsonEncode($value)` — wrapper around `json_encode` with Prado-standard flags.
 
-- **[TJavaScriptAsset](Web/Javascripts/TJavaScriptAsset.md)** — Represents a published JS asset. Properties: `BaseUrl`, `Version`. Used by [TAssetManager](Web/TAssetManager.md) to generate cache-busted URLs.
+- **[TJavaScriptAsset](TJavaScriptAsset.md)** — Represents a published JS asset. Properties: `BaseUrl`, `Version`. Used by [TAssetManager](../TAssetManager.md) to generate cache-busted URLs.
 
-- **[TJavaScriptLiteral](Web/Javascripts/TJavaScriptLiteral.md)** — Wraps a raw JavaScript expression that should **not** be quoted when embedded in a JS context (e.g., a callback function reference). Distinguishes literal code from string values in `quoteJsLiteral()`.
+- **[TJavaScriptLiteral](TJavaScriptLiteral.md)** — Wraps a raw JavaScript expression that should **not** be quoted when embedded in a JS context (e.g., a callback function reference). Distinguishes literal code from string values in `quoteJsLiteral()`.
 
-- **[TJavaScriptString](Web/Javascripts/TJavaScriptString.md)** — Wraps a string value that **should** be quoted as a JS string literal.
+- **[TJavaScriptString](TJavaScriptString.md)** — Wraps a string value that **should** be quoted as a JS string literal.
 
 ## Package Manifests
 
@@ -30,7 +30,7 @@ Client-side JavaScript/CSS package registry and asset utilities for the Prado we
   'ajax'        => [...],
   // etc.
   ```
-  [TClientScriptManager](Web/UI/WebControls/TClientScriptManager.md) uses this to resolve and publish packages in dependency order.
+  [TClientScriptManager](../UI/TClientScriptManager.md) uses this to resolve and publish packages in dependency order.
 
 - **`css-packages.php`** — Same structure for CSS packages (jQuery UI themes and component styles).
 
@@ -58,6 +58,6 @@ External packages (jQuery, jQuery UI, TinyMCE, HighlightJS, Clipboard) are sourc
 
 ## Patterns & Gotchas
 
-- **Never reference JS files directly** — always use the package name via [TClientScriptManager::registerPackage()](Web/UI/WebControls/TClientScriptManager.md). The manager resolves dependencies, deduplicates, and handles publishing.
+- **Never reference JS files directly** — always use the package name via [TClientScriptManager::registerPackage()](../UI/TClientScriptManager.md). The manager resolves dependencies, deduplicates, and handles publishing.
 - **TJavaScriptLiteral** must be used for any PHP value that is already valid JavaScript (function references, pre-encoded JSON). Passing raw strings through `quoteJsLiteral()` will double-encode them.
-- **Asset versioning** — [TJavaScriptAsset::getVersion()](Web/Javascripts/TJavaScriptAsset.md) appends a version query parameter to bust browser caches on upgrade. Update it when making breaking JS changes.
+- **Asset versioning** — [TJavaScriptAsset::getVersion()](TJavaScriptAsset.md) appends a version query parameter to bust browser caches on upgrade. Update it when making breaking JS changes.

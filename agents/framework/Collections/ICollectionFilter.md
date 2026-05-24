@@ -1,7 +1,7 @@
 # Collections/ICollectionFilter
 
 ### Directories
-[framework](./INDEX.md) / [Collections](./Collections/INDEX.md) / **`ICollectionFilter`**
+[framework](../INDEX.md) / [Collections](INDEX.md) / **`ICollectionFilter`**
 
 **Location:** `framework/Collections/ICollectionFilter.php`
 **Namespace:** `Prado\Collections`

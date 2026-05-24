@@ -1,21 +1,21 @@
-# Framework (Last Updated: commit #777a5276)
+# Framework (Last Updated: commit #a16d37964)
 
 ### Directories
-[framework](./INDEX.md) / **`INDEX.md`**
+[framework](./INDEX.md) / **`framework`**
 
 | Directory | Purpose |
 |---|---|
 | [Caching/](Caching/INDEX.md) | Cache backends: [`TAPCCache`](Caching/TAPCCache.md), [`TMemCache`](Caching/TMemCache.md), [`TDbCache`](Caching/TDbCache.md), [`TCache`](Caching/TCache.md) abstraction with dependency invalidation ([`TFileCacheDependency`](Caching/TFileCacheDependency.md), [`TDirectoryCacheDependency`](Caching/TDirectoryCacheDependency.md), [`TChainedCacheDependency`](Caching/TChainedCacheDependency.md), etc.) |
-| [Collections/](Collections/INDEX.md) | [`TList`](Collections/TList.md), [`TMap`](Collections/TMap.md), [`TPriorityList`](Collections/TPriorityList.md), [`TPriorityMap`](Collections/TPriorityMap.md), [`TQueue`](Collections/TQueue.md), [`TStack`](Collections/TStack.md), [`TWeakList`](Collections/TWeakList.md) and interfaces |
-| [Data/](Data/INDEX.md) | Database: [`TDbConnection`](Data/TDbConnection.md) (PDO wrapper), ActiveRecord ORM, DataGateway, SqlMap |
+| [Collections/](Collections/INDEX.md) | [`TList`](Collections/TList.md), [`TMap`](Collections/TMap.md), [`TPriorityList`](Collections/TPriorityList.md), [`TPriorityMap`](Collections/TPriorityMap.md), [`TQueue`](Collections/TQueue.md), [`TStack`](Collections/TStack.md), [`TWeakList`](Collections/TWeakList.md), [`TWeakMap`](Collections/TWeakMap.md), [`TCollectionItemChangeParameter`](Collections/TCollectionItemChangeParameter.md) and interfaces |
+| [Data/](Data/INDEX.md) | Database: [`TDbConnection`](Data/TDbConnection.md) (PDO wrapper), `IDataConnection`/`IDataCommand`/`IDataReader`/`IDataTransaction` interfaces, `TDbPropertiesTrait`, ActiveRecord ORM, DataGateway, SqlMap; drivers include Firebird and IBM DB2 |
 | [Exceptions/](Exceptions/INDEX.md) | Exception hierarchy, [`TErrorHandler`](Exceptions/TErrorHandler.md), multilingual error messages |
 | [I18N/](I18N/INDEX.md) | [`TGlobalization`](I18N/TGlobalization.md), message translation, CultureInfo, date/number formatting |
 | [IO/](IO/INDEX.md) | Text writers, [`TTarFileExtractor`](IO/TTarFileExtractor.md), stream notifications |
-| [PHPStan/](PHPStan/INDEX.md) | Static analysis extensions for dynamic `dy*`/`fx*` methods and [`TComponent::isa()`](TComponent.md) |
+| [PHPStan/](PHPStan/INDEX.md) | Static analysis extensions: property reflection ([`TComponentPropertiesReflectionExtension`](PHPStan/TComponentPropertiesReflectionExtension.md), [`TComponentPropertyReflection`](PHPStan/TComponentPropertyReflection.md)), type-narrowing for `canGetProperty`, `canSetProperty`, `hasMethod`, `isa()`, and `method_visible()` |
 | [Security/](Security/INDEX.md) | [`TAuthManager`](Security/TAuthManager.md), [`TUserManager`](Security/TUserManager.md), [`TSecurityManager`](Security/TSecurityManager.md), RBAC ([`TPermissionsManager`](Security/Permissions/TPermissionsManager.md)) |
 | [Shell/](Shell/INDEX.md) | [`TShellApplication`](Shell/TShellApplication.md), [`TShellAction`](Shell/TShellAction.md), [`TShellWriter`](Shell/TShellWriter.md) — CLI application support |
-| [Util/](Util/INDEX.md) | Logging, behaviors, cron, RPC clients, helpers, [`TVarDumper`](Util/TVarDumper.md), [`TCallChain`](Util/TCallChain.md) |
-| [Web/](Web/INDEX.md) | HTTP layer, URL routing, asset management, UI controls, services, templates, javascript, active controls, jui, skins, themes |
+| [Util/](Util/INDEX.md) | Logging, behaviors, cron ([`TDbCronManager`](Util/Cron/TDbCronManager.md)), RPC clients, helpers, [`TVarDumper`](Util/TVarDumper.md), [`TCallChain`](Util/TCallChain.md), [`TDbModule`](Util/TDbModule.md), traits ([`TConstantReflectionTrait`](Util/Traits/TConstantReflectionTrait.md), [`TInitializedTrait`](Util/Traits/TInitializedTrait.md)) |
+| [Web/](Web/INDEX.md) | HTTP layer, URL routing, asset management ([`TAssetManager`](Web/TAssetManager.md) with symlink/timestamp support), UI controls, services, templates, javascript, active controls, jui, skins, themes; new semantic HTML5 controls (`TArticle`, `TAside`, `TFooter`, `THeader`, `TMain`, `TMark`, `TNav`, `TSection`), [`TModuleView`](Web/UI/TModuleView.md), [`TWebColor`](Web/UI/TWebColor.md), render-filter pipeline ([`IFilterRenderable`](Web/UI/IFilterRenderable.md), [`TRenderFilterParameter`](Web/UI/TRenderFilterParameter.md)) |
 | [Xml/](Xml/INDEX.md) | [`TXmlDocument`](Xml/TXmlDocument.md), [`TXmlElement`](Xml/TXmlElement.md) — DOM-compatible XML with XPath, ArrayAccess |
 
 ## Purpose
@@ -48,6 +48,14 @@ This is the root source directory of the **Prado** PHP framework (PSR-4 namespac
 
 - **[`TEventSubscription.php`](TEventSubscription.md)** — Temporarily subscribes a handler to an `on*` event; auto-removes on destruct.
 
+- **[`IEventCycleParameter.php`](IEventCycleParameter.md)** — Interface for event parameters that participate in the raise-event lifecycle. When implemented, `TComponent::raiseEvent` calls `preRaiseEvent($sender)` before invoking handlers and `postRaiseEvent($sender)` after. `TEventParameter` implements this interface with stub methods; override for custom lifecycle behavior. @since 4.3.3
+
+- **[`IEventParameter.php`](IEventParameter.md)** — Interface that `TEventParameter` implements. Defines `getEventName()` / `setEventName()` for tagging parameters with the event that raised them.
+
+- **[`IDataRenderer.php`](IDataRenderer.md)** — Interface for controls acting as data renderers. Defines `getData()` / `setData()`. @since 3.1
+
+- **[`TEventResults.php`](TEventResults.md)** — Enumerable defining the bit-flag constants used by `TCallChain` and feed-forward events: `EVENT_RESULT_FEED_FORWARD`, `EVENT_RESULT_FILTER`, `EVENT_RESULT_ALL`, `EVENT_REVERSE`.
+
 - **`TPropertyValue.php`** — Static type-conversion utilities used in property setters:
   - `ensureBoolean()`, `ensureInteger()`, `ensureFloat()`, `ensureString()`, `ensureArray()`, `ensureEnum()`
 
@@ -63,6 +71,6 @@ This is the root source directory of the **Prado** PHP framework (PSR-4 namespac
 - **`dy` prefix** — dynamic events dispatched to attached behaviors (e.g., `dyShouldContinue`, `dyValidate`).
 - **`fx` prefix** — global events auto-registered based on `getAutoGlobalListen()` (e.g., `fxAttachClassBehavior`).
 - **`@method` PHPDoc** — used on classes to document dynamic `dy*` events that aren't explicitly defined.
-- **`@since 4.3.3`** — tag all new files, classes, and methods with the next release version.
+- **@since 4.3.3** — tag all new files, classes, and methods with the next release version.
 - **`if` blocks** — always use `{}`, never single-line bodies.
 - **Property setters** — use `TPropertyValue::ensureXxx()` for type coercion in Configuration and templates setters.

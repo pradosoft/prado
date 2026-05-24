@@ -52,9 +52,11 @@ use Prado\Util\Traits\TInitializedTrait;
  *
  * XML configuration style:
  * ```xml
- * <module id="session" class="Prado\Web\THttpSession" SessionName="SSID" SavePath="/tmp"
+ * <modules>
+ *     <module id="session" class="Prado\Web\THttpSession" SessionName="SSID" SavePath="/tmp"
  *         CookieMode="Allow" UseCustomStorage="false" AutoStart="true" GCProbability="1"
  *         UseTransparentSessionID="true" TimeOut="3600" />
+ * </modules>
  * ```
  *
  * PHP configuration style:
@@ -90,7 +92,9 @@ use Prado\Util\Traits\TInitializedTrait;
  *
  * XML configuration style, enabling HttpOnly:
  * ```xml
- * <module id="session" class="Prado\Web\THttpSession" Cookie.HttpOnly="true" />
+ * <modules>
+ *     <module id="session" class="Prado\Web\THttpSession" Cookie.HttpOnly="true" />
+ * </modules>
  * ```
  *
  * PHP configuration style, enabling HttpOnly:

@@ -87,6 +87,6 @@ $image->setStyle("width: 200px; height: 100px; border: 1px solid #ccc;");
 $panel->getControls()->add($image);
 
 // Render
-$writer = new [THtmlWriter](./THtmlWriter.md)();
+$writer = new [THtmlWriter](../THtmlWriter.md)();
 $image->render($writer);
 ```

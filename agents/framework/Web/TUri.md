@@ -24,5 +24,5 @@ TUri represents a URI and decomposes it into its constituent parts: scheme, host
 
 ## See Also
 
-- [THttpRequest](../THttpRequest.md)
+- [THttpRequest](THttpRequest.md)
 - [THttpCookie](./THttpCookie.md)

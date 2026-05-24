@@ -6,21 +6,50 @@
 ## Class Info
 **Location:** `framework/Util/Cron/TCronTaskInfo.php`
 **Namespace:** `Prado\Util\Cron`
+**Extends:** [`TComponent`](../../TComponent.md)
 
 ## Overview
-TCronTaskInfo is a helper class that distributes metadata for application cron tasks. It encapsulates task information including name, task class/module method, module ID, title, and description for adding cron tasks via TDbCronModule.
+`TCronTaskInfo` is a value object that carries metadata for a cron task that a module wants to make available to [`TDbCronManager`](TDbCronManager.md). Modules return instances of this class from their `fxGetCronTaskInfos` global event handler so that the cron module can discover and register the task.
 
-## Key Properties/Methods
+## Constructor
 
-- `getName()` / `setName($name)` - The short reference name of the task
-- `getTask()` / `setTask($task)` - The class name or module/method string for the task
-- `getModuleId()` / `setModuleId($moduleId)` - The module ID servicing the task
-- `getModule()` - Gets the module instance from module ID
-- `getTitle()` / `setTitle($title)` - The title of the task
-- `getDescription()` / `setDescription($description)` - A short description of the task
-- `__construct($name, $task, $moduleid, $title, $description)` - Constructor setting all main properties
+```php
+new TCronTaskInfo(
+    string $name,                      // short reference name (used as task name in DB)
+    string|callable $task,             // class name or 'moduleId->method(args)' string
+    string|IModule|null $moduleid = null,   // owning module ID
+    string|null $title = null,         // human-readable title
+    string|null $description = null    // short description
+)
+```
+
+## Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `Name` | string | Short reference name |
+| `Task` | string | Task class or module method expression |
+| `ModuleId` | string | ID of the module that owns this task |
+| `Module` | TModule | Module instance (resolved from `ModuleId`) |
+| `Title` | string | Human-readable title |
+| `Description` | string | Short description |
+
+## Usage
+
+```php
+public function fxGetCronTaskInfos($sender, $param): TCronTaskInfo
+{
+    return new TCronTaskInfo(
+        'myclean',
+        MyCleanupTask::class,
+        $this->getId(),
+        Prado::localize('My Cleanup Task'),
+        Prado::localize('Cleans old records from the database.')
+    );
+}
+```
 
 ## See Also
 
-- [TDbCronModule](TDbCronModule.md)
-- [TCronTask](TCronTask.md)
+- [`TDbCronManager`](TDbCronManager.md)
+- [`TCronTask`](TCronTask.md)

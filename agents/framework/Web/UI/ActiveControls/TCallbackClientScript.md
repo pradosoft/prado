@@ -15,6 +15,7 @@ Server-side API for client-side DOM updates during callback responses. Provides 
 - `update($element, $content)` - Replace innerHTML
 - `replaceContent($element, $content)` - Replace element content
 - `setAttribute($control, $name, $value)` - Set HTML attribute
+- `removeAttribute($control, $name)` - Remove an HTML attribute (@since 4.3.3)
 - `setValue($input, $text)` - Set input element value
 - `setListItems($control, $items)` - Update select dropdown options
 - `show($element)` / `hide($element)` / `toggle($element)` - Visibility

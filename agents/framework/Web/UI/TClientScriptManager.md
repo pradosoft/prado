@@ -25,10 +25,20 @@ TClientScriptManager manages JavaScript and CSS stylesheets for a page. It suppo
 - `registerFocusControl($target)` - Registers a control to receive default focus
 - `getCallbackReference($callbackHandler, $options)` - Returns JavaScript for callback request
 
+## New in 4.3.3 (static methods)
+
+- `static getPradoScriptsFolders(): array` — Returns the map of package base keys to PRADO namespace paths used by `ensurePradoJavascript`.
+- `static ensurePradoJavascript(): void` — Ensures JavaScript packages are loaded. Raises the global event `fxLoadPradoJavascript` to allow plugins to extend the package system. Called internally by `registerPradoScript`.
+- `static loadPradoJavascript(): array` — Loads and returns `[folders, scripts, dependencies]` from the packages file.
+
+## JavaScript Package System
+
+Packages are defined in `PACKAGES_FILE` (`Web/Javascripts/packages.php`). Each package specifies folders, named JS file collections, and a dependency map. When `ensurePradoJavascript` is called it raises `fxLoadPradoJavascript` (feed-forward pattern) so behavior attachments can register additional packages.
+
 ## See Also
 
 - [TPage](./TPage.md)
-- [TJavaScript](../Javascript/TJavaScript.md)
+- [TJavaScript](../Javascripts/TJavaScript.md)
 - [ICallbackEventHandler](./ActiveControls/ICallbackEventHandler.md)
 
 (End of file - total 29 lines)

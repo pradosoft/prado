@@ -24,7 +24,6 @@ Module that manages themes for a Prado application. Each theme is a subdirectory
 | Property | Type | Description |
 |---|---|---|
 | `$_themeClass` | `string` | Class used to create `TTheme` instances; default `TTheme::class` |
-| `$_initialized` | `bool` | Set to `true` in `init()`; guards against post-init BasePath changes |
 | `$_basePath` | `?string` | Absolute filesystem path to themes directory |
 | `$_baseUrl` | `?string` | Base URL for themes (trailing `/` stripped on set) |
 
@@ -32,7 +31,7 @@ Module that manages themes for a Prado application. Each theme is a subdirectory
 
 ### Initialization
 
-- `init($config)` — Sets `$_initialized = true`; registers self with application via `Prado::getApplication()->setThemeManager($this)`.
+- `init($config)` — Registers self with application via `Prado::getApplication()->setThemeManager($this)`; calls `parent::init($config)`; marks itself initialized (after which `BasePath` becomes immutable).
 
 ### Theme Access
 
@@ -61,8 +60,22 @@ Module that manages themes for a Prado application. Each theme is a subdirectory
 - **`getTheme()` does not validate theme existence** — it constructs the path and passes it to the [TTheme](./TTheme.md) constructor without checking if the directory exists first; [TTheme](./TTheme.md) will throw or silently operate on a missing directory.
 - **Configuring in XML:**
   ```xml
-  <module id="themes" class="Prado\Web\UI\TThemeManager"
-          BasePath="Application.themes" BaseUrl="/themes" />
-  ```
+<modules>
+      <module id="themes" class="Prado\Web\UI\TThemeManager"
+              BasePath="Application.themes" BaseUrl="/themes" />
+</modules>
+```
+
+**PHP equivalent:**
+```php
+return [
+    'modules' => [
+        'themes' => [
+            'class' => 'Prado\Web\UI\TThemeManager',
+            'properties' => ['BasePath' => 'Application.themes'],
+        ],
+    ],
+];
+```
 
 (End of file - total 63 lines)

@@ -26,4 +26,4 @@ $record->onInsert[] = function($sender, $param) {
 
 ## See Also
 
-- [TActiveRecord](./TActiveRecord.md) - Base Active Record class
+- [TActiveRecord](../TActiveRecord.md) - Base Active Record class

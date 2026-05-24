@@ -46,22 +46,24 @@ use Prado\Xml\TXmlElement;
  *
  * Module XML configurations (and similarly PermissionFile) follows the format, eg:
  * ```xml
- * <module id="permissions" class="Prado\Security\Permissions\TPermissionsManager" DefaultRoles="Default" SuperRoles="Administrator">
- *	<role name="Developer" children="all, param_shell_permission, cron" />
- *	<role name="Manager" children="editor, change_user_role_permission, cron_shell" />
- *	<role name="cron_shell" children="cron_add_task, cron_update_task, cron_remove_task" />
- *	<role name="cron" children="cron_shell, cron_manage_log, cron_add_task, cron_update_task, cron_remove_task" />
- *  <role name="Default" children="register_user, blog_read_posts, blog_comment">
- *	<permissionrule name="param_shell_permission" action="deny" users="*" roles="" verb="*" IPs="" />
- *	<permissionrule name="cron_shell" action="allow" users="*" roles="Developer,cron_shell,cron_manage_log" verb="*" IPs="" />
- *	<permissionrule name="register_user" action="allow" users="?" />
- *	<permissionrule name="register_user" action="allow" roles="Manager" />
- *	<permissionrule name="change_profile" action="deny" users="?" priority="0" />
- *	<permissionrule name="blog_update_posts" class="Prado\Security\Permissions\TUserOwnerRule" Priority="5" />
- *	<permissionrule name="cron" action="allow" users="admin, user1, user2" roles="*" verb="*" IPs="*"  />
- *	<permissionrule name="blog_*" action="allow" users="admin, user1, user2" roles="*" verb="*" IPs="*"  />
- *	<permissionrule name="*" action="deny" priority="1000" />
- * </module>
+ * <modules>
+ *     <module id="permissions" class="Prado\Security\Permissions\TPermissionsManager" DefaultRoles="Default" SuperRoles="Administrator">
+ *         <role name="Developer" children="all, param_shell_permission, cron" />
+ *         <role name="Manager" children="editor, change_user_role_permission, cron_shell" />
+ *         <role name="cron_shell" children="cron_add_task, cron_update_task, cron_remove_task" />
+ *         <role name="cron" children="cron_shell, cron_manage_log, cron_add_task, cron_update_task, cron_remove_task" />
+ *         <role name="Default" children="register_user, blog_read_posts, blog_comment">
+ *             <permissionrule name="param_shell_permission" action="deny" users="*" roles="" verb="*" IPs="" />
+ *             <permissionrule name="cron_shell" action="allow" users="*" roles="Developer,cron_shell,cron_manage_log" verb="*" IPs="" />
+ *             <permissionrule name="register_user" action="allow" users="?" />
+ *             <permissionrule name="register_user" action="allow" roles="Manager" />
+ *             <permissionrule name="change_profile" action="deny" users="?" priority="0" />
+ *             <permissionrule name="blog_update_posts" class="Prado\Security\Permissions\TUserOwnerRule" Priority="5" />
+ *             <permissionrule name="cron" action="allow" users="admin, user1, user2" roles="*" verb="*" IPs="*"  />
+ *             <permissionrule name="blog_*" action="allow" users="admin, user1, user2" roles="*" verb="*" IPs="*"  />
+ *             <permissionrule name="*" action="deny" priority="1000" />
+ *         </module>
+ * </modules>
  * ```
  *
  * and in PHP the same file would follow the following format, eg:

@@ -34,15 +34,32 @@ THttpSession provides session-level data management and the related configuratio
 ## Configuration
 ### XML Format
 ```xml
-<module id="session" class="THttpSession" 
-        SessionName="SSID" 
-        SavePath="/tmp"
-        CookieMode="Allow" 
-        UseCustomStorage="false" 
-        AutoStart="true" 
-        GCProbability="1"
-        UseTransparentSessionID="true" 
-        TimeOut="3600" />
+<modules>
+    <module id="session" class="THttpSession" 
+            SessionName="SSID" 
+            SavePath="/tmp"
+            CookieMode="Allow" 
+            UseCustomStorage="false" 
+            AutoStart="true" 
+            GCProbability="1"
+            UseTransparentSessionID="true" 
+            TimeOut="3600" />
+</modules>
+```
+
+**PHP equivalent:**
+```php
+return [
+    'modules' => [
+        'session' => [
+            'class' => 'Prado\Web\THttpSession',
+            'properties' => [
+                'AutoStart' => 'true',
+                'CookieMode' => 'Allow',
+            ],
+        ],
+    ],
+];
 ```
 
 ## Core Methods

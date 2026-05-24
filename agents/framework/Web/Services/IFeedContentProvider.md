@@ -1,7 +1,7 @@
 # Web/Services/IFeedContentProvider
 
 ### Directories
-[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [Services](./Web/Services/INDEX.md) / **`IFeedContentProvider`**
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [Services](INDEX.md) / **`IFeedContentProvider`**
 
 **Location:** `framework/Web/Services/IFeedContentProvider.php`
 **Namespace:** `Prado\Web\Services`
@@ -17,4 +17,4 @@ IFeedContentProvider is an interface that must be implemented by feed content pr
 
 ## See Also
 
-- [TFeedService](../TFeedService.md) - The feed service that uses implementations
+- [TFeedService](TFeedService.md) - The feed service that uses implementations

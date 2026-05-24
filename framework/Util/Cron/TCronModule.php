@@ -33,11 +33,29 @@ use Prado\Xml\TXmlDocument;
  * '->' followed by a method with or without parameters. eg.
  *
  * ```xml
- * 	<module id="cron" class="Prado\Util\Cron\TCronModule" DefaultUserName="admin">
- *		<job Name="cronclean" Schedule="0 0 1 * * *" Task="Prado\Util\Cron\TDbCronCleanLogTask" UserName="cron" />
- *		<job Name="dbcacheclean" Schedule="* * * * *" Task="dbcache->flushCacheExpired(true)" />
- *		<job Schedule="0 * * * *" Task="mymoduleid->taskmethod" />
- *	</module>
+ * <modules>
+ *     <module id="cron" class="Prado\Util\Cron\TCronModule" DefaultUserName="admin">
+ *         <job Name="cronclean" Schedule="0 0 1 * * *" Task="Prado\Util\Cron\TDbCronCleanLogTask" UserName="cron" />
+ *         <job Name="dbcacheclean" Schedule="* * * * *" Task="dbcache->flushCacheExpired(true)" />
+ *         <job Schedule="0 * * * *" Task="mymoduleid->taskmethod" />
+ *     </module>
+ * </modules>
+ * ```
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'cron' => [
+ *             'class' => 'Prado\Util\Cron\TCronModule',
+ *             'properties' => ['DefaultUserName' => 'admin'],
+ *             'jobs' => [
+ *                 ['Name' => 'cronclean', 'Schedule' => '0 0 1 * * *', 'Task' => 'Prado\Util\Cron\TDbCronCleanLogTask', 'UserName' => 'cron'],
+ *                 ['Schedule' => '0 * * * *', 'Task' => 'mymoduleid->taskmethod'],
+ *             ],
+ *         ],
+ *     ],
+ * ];
  * ```
  *
  * The schedule is formatted like a linux crontab schedule expression.

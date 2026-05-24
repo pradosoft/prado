@@ -8,7 +8,7 @@
 **Namespace:** `Prado\I18N`
 
 ## Overview
-Localized number, currency, and percentage formatting control. Uses PHP's `NumberFormatter` internally.
+Localized number, currency, and percentage formatting control. Uses PHP's `NumberFormatter` internally via `TNumberFormatterTrait`. Extends [TI18NControl](./TI18NControl.md) which uses [TI18NControlTrait](./TI18NControlTrait.md) for `Culture` and `Charset` resolution. Implements `IDataRenderer` (`getData()`/`setData()` alias `getValue()`/`setValue()`).
 
 ## Usage
 
@@ -48,5 +48,6 @@ Localized number, currency, and percentage formatting control. Uses PHP's `Numbe
 ## See Also
 
 - [TI18NControl](./TI18NControl.md) - Base class providing Culture/Charset
+- [TI18NControlTrait](./TI18NControlTrait.md) - Trait implementing Culture/Charset resolution
 - [TDateFormat](./TDateFormat.md) - Date formatting control
 - [CultureInfo](./core/CultureInfo.md) - ICU locale data for number patterns

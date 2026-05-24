@@ -20,8 +20,7 @@ TClientSideOptions manages client-side options for components with common JavaSc
 
 ## See Also
 
-- [TActiveControl](./ActiveControls/TActiveControl.md)
 - [TBaseValidator](./WebControls/TBaseValidator.md)
-- [TMap](../Collections/TMap.md)
+- [TMap](../../Collections/TMap.md)
 
 (End of file - total 22 lines)
