@@ -151,10 +151,10 @@ class NullReturnDepModule extends \Prado\TModule implements \Prado\IModuleDepend
 class TApplicationDepAccessor extends TApplication
 {
 
-	/** @return array<array{id:string,required:bool}> */
+	/** @return array<string,array{id:string,required:bool}> */
 	public function pubCollectDeps(\Prado\IModule $module, bool $isPreInit = false): array
 	{
-		return $this->collectModuleDependencies($module, $isPreInit);
+		return $this->collectModuleDependencies($module, $isPreInit)['deps'];
 	}
 
 	public function pubSortByDep(array $pending, array &$cache = [], bool $isPreInit = false): array
@@ -476,6 +476,33 @@ class PureIModuleWithDep implements \Prado\IModule, \Prado\IModuleDependency
 	}
 }
 
+/**
+ * Module that builds its dependency array dynamically as
+ * `[$id1 => $req1, $id2 => $req2]`, where `$id1` and `$id2` are typed `mixed`
+ * so that null, false, or '' can be passed as keys.  This exercises PHP's
+ * array-key coercion rules (null→'', false→0) at construction time and lets
+ * tests assert on the framework's handling of invalid dependency IDs.
+ */
+class TwoKeyValueDepModule extends \Prado\TModule implements \Prado\IModuleDependency
+{
+	private mixed $_id1 = null;
+	private mixed $_id2 = null;
+	private bool $_req1 = true;
+	private bool $_req2 = false;
+
+	public function getModuleDependencies(bool $isPreInit = false): null|string|array
+	{
+		return [$this->_id1 => $this->_req1, $this->_id2 => $this->_req2];
+	}
+
+	public function getId1(): mixed { return $this->_id1; }
+	public function setId1(mixed $v): void { $this->_id1 = $v; }
+	public function getId2(): mixed { return $this->_id2; }
+	public function setId2(mixed $v): void { $this->_id2 = $v; }
+	public function setReq1(bool $v): void { $this->_req1 = $v; }
+	public function setReq2(bool $v): void { $this->_req2 = $v; }
+}
+
 // =============================================================================
 
 /**
@@ -486,14 +513,17 @@ class PureIModuleWithDep implements \Prado\IModule, \Prado\IModuleDependency
  * - collectModuleDependencies: IModuleDependency on module (Source 1) and on
  *   behaviors (Source 2); all input forms — indexed-string, string-shorthand,
  *   key-value, verbose array; null/empty-string/missing-id entries silently
- *   skipped; deduplication across sources; module-source priority over behavior-
- *   source for the same dep ID; two behaviors with the same dep ID (first wins);
- *   non-TComponent module (no behavior scan, no dyFilterDependencies);
- *   dyFilterDependencies integration (add dep, remove dep, end-to-end with sort).
+ *   skipped; self-dependency in any form or source throws
+ *   application_module_dependency_self_reference immediately; deduplication
+ *   across sources; module-source priority over behavior-source for the same dep
+ *   ID; two behaviors with the same dep ID (first wins); non-TComponent module
+ *   (no behavior scan, no dyFilterDependencies); dyFilterDependencies integration
+ *   (add dep, remove dep, end-to-end with sort).
  * - sortModulesByDependency: empty / single / no-deps ordering; chain; diamond;
  *   disjoint groups; external-batch dep silently ignored; advisory dep in batch
- *   still enforces order; cycle detection (2-node, 3-node, 4-node, self-cycle)
- *   with meaningful exception message; sort-result cache (hit, miss, new entry
+ *   still enforces order; cycle detection (2-node, 3-node, 4-node); self-dep
+ *   propagates through sort as application_module_dependency_self_reference;
+ *   meaningful exception message; sort-result cache (hit, miss, new entry
  *   on changed graph, new entry for different batch); phase flag threaded through.
  * - internalLoadModule: false / null / success paths; ID set; lazy slot nullified.
  * - applyConfiguration: init order respects dependencies; no-deps declaration
@@ -536,9 +566,9 @@ class TApplicationDependencyTest extends PHPUnit\Framework\TestCase
 	}
 
 	/**
-	 * Extract just the dep IDs from a collectModuleDependencies() result.
+	 * Extract just the dep IDs from a pubCollectDeps() result.
 	 *
-	 * @param array<array{id:string,required:bool}> $deps
+	 * @param array<string,array{id:string,required:bool}> $deps keyed by dep ID
 	 * @return list<string>
 	 */
 	private function depIds(array $deps): array
@@ -547,19 +577,14 @@ class TApplicationDependencyTest extends PHPUnit\Framework\TestCase
 	}
 
 	/**
-	 * Look up the required flag for a specific dep ID in a collectModuleDependencies() result.
+	 * Look up the required flag for a specific dep ID in a pubCollectDeps() result.
 	 * Returns null if the ID is not present.
 	 *
-	 * @param array<array{id:string,required:bool}> $deps
+	 * @param array<string,array{id:string,required:bool}> $deps keyed by dep ID
 	 */
 	private function depRequired(array $deps, string $id): ?bool
 	{
-		foreach ($deps as $dep) {
-			if ($dep['id'] === $id) {
-				return $dep['required'];
-			}
-		}
-		return null;
+		return isset($deps[$id]) ? $deps[$id]['required'] : null;
 	}
 
 	/**
@@ -637,10 +662,10 @@ class TApplicationDependencyTest extends PHPUnit\Framework\TestCase
 	}
 
 	// -----------------------------------------------------------------------
-	// collectModuleDependencies — string shorthand return form
+	// collectModuleDependencies — string return form (bare scalar)
 	// -----------------------------------------------------------------------
 
-	public function testCollectDeps_stringShorthand_singleDepReturned(): void
+	public function testCollectDeps_stringReturn_singleDepReturned(): void
 	{
 		// getModuleDependencies() returns a plain string — the (array) cast must
 		// convert it to a one-element indexed array so the dep is collected.
@@ -656,7 +681,7 @@ class TApplicationDependencyTest extends PHPUnit\Framework\TestCase
 			'a plain-string dep must default to required=true');
 	}
 
-	public function testCollectDeps_stringShorthand_null_returnsEmpty(): void
+	public function testCollectDeps_stringReturn_null_returnsEmpty(): void
 	{
 		// When getModuleDependencies() returns null the dep list must be empty.
 		$app    = $this->newAccessor();
@@ -667,9 +692,9 @@ class TApplicationDependencyTest extends PHPUnit\Framework\TestCase
 			'null return from getModuleDependencies() must yield an empty dep list');
 	}
 
-	public function testCollectDeps_stringShorthand_sort_depComesBefore(): void
+	public function testCollectDeps_stringReturn_sort_depComesBefore(): void
 	{
-		// Verify the string-shorthand dep is actually honoured by the topological sort.
+		// Verify the string-return dep is actually honoured by the topological sort.
 		// b returns 'a' as a plain string → sorted order must be [a, b].
 		$app = $this->newAccessor();
 		$a   = new TrackingModule();
@@ -681,7 +706,64 @@ class TApplicationDependencyTest extends PHPUnit\Framework\TestCase
 			$this->entry('a', $a),
 		]);
 		$this->assertSame(['a', 'b'], array_column($result, 'id'),
-			'a dep declared via string shorthand must be respected by the sort');
+			'a dep declared via string return must be respected by the sort');
+	}
+
+	// -----------------------------------------------------------------------
+	// collectModuleDependencies — indexed array form ([$depId])
+	// -----------------------------------------------------------------------
+
+	public function testCollectDeps_indexedArray_singleDepReturned(): void
+	{
+		// getModuleDependencies() returns [$depId] — an indexed array with an integer
+		// key and a string value.  The dep must be collected with required=true.
+		$app    = $this->newAccessor();
+		$module = new InterfaceDepModule();
+		$module->setDependencyId('db');
+
+		$deps = $app->pubCollectDeps($module);
+
+		$this->assertSame(['db'], $this->depIds($deps),
+			'an indexed-array dep entry must be collected as a single dep');
+		$this->assertTrue($this->depRequired($deps, 'db'),
+			'indexed-array dep must default to required=true');
+	}
+
+	public function testCollectDeps_indexedArray_multipleDepReturned(): void
+	{
+		// getModuleDependencies() returns ['db', 'cache'] — two integer-keyed string
+		// values.  Both must be collected with required=true.
+		$app    = $this->newAccessor();
+		$module = new BothSourcesDepModule();
+		$module->setPrimaryDepId('db');
+		$module->setSecondDepId('cache');
+
+		$deps = $app->pubCollectDeps($module);
+
+		$this->assertContains('db', $this->depIds($deps),
+			'first indexed-array dep entry must be collected');
+		$this->assertContains('cache', $this->depIds($deps),
+			'second indexed-array dep entry must be collected');
+		$this->assertCount(2, $deps);
+		$this->assertTrue($this->depRequired($deps, 'db'));
+		$this->assertTrue($this->depRequired($deps, 'cache'));
+	}
+
+	public function testCollectDeps_indexedArray_sort_depComesBefore(): void
+	{
+		// b declares dep on a via the indexed-array form ['a'] →
+		// the topological sort must place a before b.
+		$app = $this->newAccessor();
+		$a   = new TrackingModule();
+		$b   = new InterfaceDepModule();
+		$b->setDependencyId('a');
+
+		$result = $app->pubSortByDep([
+			$this->entry('b', $b),
+			$this->entry('a', $a),
+		]);
+		$this->assertSame(['a', 'b'], array_column($result, 'id'),
+			'a dep declared via indexed-array form must be respected by the sort');
 	}
 
 	// -----------------------------------------------------------------------
@@ -786,6 +868,116 @@ class TApplicationDependencyTest extends PHPUnit\Framework\TestCase
 			'a dep declared via key-value form must be respected by the sort');
 	}
 
+	public function testCollectDeps_keyValueForm_emptyStringKey_silentlyIgnored(): void
+	{
+		// An empty-string key fails the `$key !== ''` guard and must be silently skipped.
+		$app    = $this->newAccessor();
+		$module = new KeyValueDepModule();
+		$module->setDepsArray(['' => true]);
+
+		$this->assertSame([], $app->pubCollectDeps($module),
+			'key-value entry with empty-string key must be silently ignored');
+	}
+
+	public function testCollectDeps_keyValueForm_nullKey_silentlyIgnored(): void
+	{
+		// PHP coerces a null array key to '' at array-construction time.
+		// The resulting '' key must be silently skipped by the framework.
+		$app    = $this->newAccessor();
+		$module = new KeyValueDepModule();
+		// setDepsArray([null => true]) — PHP coerces null key to '' on assignment.
+		$module->setDepsArray([null => true]);
+
+		$this->assertSame([], $app->pubCollectDeps($module),
+			'key-value entry whose key is null (coerced to empty string by PHP) must be silently ignored');
+	}
+
+	public function testCollectDeps_keyValueForm_falseKey_silentlyIgnored(): void
+	{
+		// PHP coerces a false array key to 0 (integer) at array-construction time.
+		// The integer 0 fails is_string() and must be silently skipped.
+		$app    = $this->newAccessor();
+		$module = new KeyValueDepModule();
+		// setDepsArray([false => true]) — PHP coerces false key to 0 on assignment.
+		$module->setDepsArray([false => true]);
+
+		$this->assertSame([], $app->pubCollectDeps($module),
+			'key-value entry whose key is false (coerced to 0 by PHP) must be silently ignored');
+	}
+
+	public function testCollectDeps_keyValueForm_bothIdsNull_collapseAndIgnored(): void
+	{
+		// When both module ID getters return null, PHP coerces both keys to '' and
+		// the second entry silently overwrites the first (same key).  The surviving
+		// '' entry is then skipped by the framework's `$key !== ''` guard.
+		// This models the real pattern: [$this->getDepId1() => true, $this->getDepId2() => false]
+		// where both getters have not yet been configured.
+		$app    = $this->newAccessor();
+		$module = new TwoKeyValueDepModule();
+		// _id1 = null, _id2 = null (defaults) → [null=>true, null=>false] → [''=> false]
+
+		$this->assertSame([], $app->pubCollectDeps($module),
+			'both null dep IDs must collapse to a single empty-string key and be silently ignored');
+	}
+
+	public function testCollectDeps_keyValueForm_bothIdsFalse_collapseAndIgnored(): void
+	{
+		// false keys are coerced to integer 0 — both entries collapse to [0 => false].
+		// The integer key fails is_string() and is silently skipped.
+		$app    = $this->newAccessor();
+		$module = new TwoKeyValueDepModule();
+		$module->setId1(false);
+		$module->setId2(false);
+
+		$this->assertSame([], $app->pubCollectDeps($module),
+			'both false dep IDs must collapse to integer key 0 and be silently ignored');
+	}
+
+	public function testCollectDeps_keyValueForm_bothIdsEmptyString_collapseAndIgnored(): void
+	{
+		// Both IDs are already '' — the array is ['' => true, '' => false] → ['' => false].
+		// The '' key fails `$key !== ''` and is silently skipped.
+		$app    = $this->newAccessor();
+		$module = new TwoKeyValueDepModule();
+		$module->setId1('');
+		$module->setId2('');
+
+		$this->assertSame([], $app->pubCollectDeps($module),
+			'both empty-string dep IDs must be silently ignored');
+	}
+
+	public function testCollectDeps_keyValueForm_nullAndEmptyString_collapseAndIgnored(): void
+	{
+		// null and '' both coerce to '': [null=>'', ''=> false] → ['' => false].
+		// The surviving '' entry is silently skipped.
+		$app    = $this->newAccessor();
+		$module = new TwoKeyValueDepModule();
+		$module->setId1(null);
+		$module->setId2('');
+
+		$this->assertSame([], $app->pubCollectDeps($module),
+			'null and empty-string dep IDs must both collapse to empty string and be silently ignored');
+	}
+
+	public function testCollectDeps_keyValueForm_oneNullOneValid_validCollectedNullIgnored(): void
+	{
+		// When one ID is null (→ '') and the other is a real module ID, the null
+		// entry gets its own '' key (different from the real key) and is skipped,
+		// leaving only the valid dep in the result.
+		$app    = $this->newAccessor();
+		$module = new TwoKeyValueDepModule();
+		$module->setId1(null);   // → '' key — skipped
+		$module->setId2('db');   // → 'db' key — collected
+		$module->setReq1(true);
+		$module->setReq2(true);
+
+		$deps = $app->pubCollectDeps($module);
+
+		$this->assertSame(['db'], $this->depIds($deps),
+			'the valid dep ID must be collected even when the other ID is null');
+		$this->assertTrue($this->depRequired($deps, 'db'));
+	}
+
 	// -----------------------------------------------------------------------
 	// collectModuleDependencies — verbose array form
 	// -----------------------------------------------------------------------
@@ -886,6 +1078,96 @@ class TApplicationDependencyTest extends PHPUnit\Framework\TestCase
 		]);
 		$this->assertSame(['a', 'b'], array_column($result, 'id'),
 			'a dep declared via verbose array form must be respected by the sort');
+	}
+
+	// -----------------------------------------------------------------------
+	// collectModuleDependencies — self-dependency detection
+	// -----------------------------------------------------------------------
+
+	public function testCollectDeps_selfDep_stringShorthand_throws(): void
+	{
+		// A module returning its own ID as a plain string dep must throw immediately.
+		$app    = $this->newAccessor();
+		$module = new StringReturnDepModule();
+		$module->setDepId('myModule');
+		$module->setID('myModule');
+
+		try {
+			$app->pubCollectDeps($module);
+			$this->fail('Expected TConfigurationException was not thrown');
+		} catch (\Prado\Exceptions\TConfigurationException $e) {
+			$this->assertSame('application_module_dependency_self_reference', $e->getErrorCode());
+		}
+	}
+
+	public function testCollectDeps_selfDep_keyValueForm_throws(): void
+	{
+		// A module returning its own ID as a key-value key must throw immediately.
+		$app    = $this->newAccessor();
+		$module = new KeyValueDepModule();
+		$module->setDepsArray(['myModule' => true]);
+		$module->setID('myModule');
+
+		try {
+			$app->pubCollectDeps($module);
+			$this->fail('Expected TConfigurationException was not thrown');
+		} catch (\Prado\Exceptions\TConfigurationException $e) {
+			$this->assertSame('application_module_dependency_self_reference', $e->getErrorCode());
+		}
+	}
+
+	public function testCollectDeps_selfDep_verboseArrayForm_throws(): void
+	{
+		// A module returning its own ID in the verbose array form must throw immediately.
+		$app    = $this->newAccessor();
+		$module = new VerboseArrayDepModule();
+		$module->setDepsArray([['id' => 'myModule', 'required' => true]]);
+		$module->setID('myModule');
+
+		try {
+			$app->pubCollectDeps($module);
+			$this->fail('Expected TConfigurationException was not thrown');
+		} catch (\Prado\Exceptions\TConfigurationException $e) {
+			$this->assertSame('application_module_dependency_self_reference', $e->getErrorCode());
+		}
+	}
+
+	public function testCollectDeps_selfDep_behaviorSource_throws(): void
+	{
+		// A self-dep declared by an attached behavior must also throw.
+		$app    = $this->newAccessor();
+		$module = new TrackingModule();
+		$module->setID('myModule');
+
+		$behavior = new DepBehaviorAdvisory();
+		$behavior->setDepId('myModule');
+		$module->attachBehavior('selfDep', $behavior);
+
+		try {
+			$app->pubCollectDeps($module);
+			$this->fail('Expected TConfigurationException was not thrown');
+		} catch (\Prado\Exceptions\TConfigurationException $e) {
+			$this->assertSame('application_module_dependency_self_reference', $e->getErrorCode());
+		} finally {
+			$module->detachBehavior('selfDep');
+		}
+	}
+
+	public function testCollectDeps_selfDep_exceptionMessageContainsModuleId(): void
+	{
+		// The exception message must name the offending module so developers can
+		// identify the misconfiguration without reading a stack trace.
+		$app    = $this->newAccessor();
+		$module = new StringReturnDepModule();
+		$module->setDepId('offender');
+		$module->setID('offender');
+
+		try {
+			$app->pubCollectDeps($module);
+			$this->fail('Expected TConfigurationException was not thrown');
+		} catch (\Prado\Exceptions\TConfigurationException $e) {
+			$this->assertStringContainsString('offender', $e->getMessage());
+		}
 	}
 
 	// -----------------------------------------------------------------------
@@ -1209,18 +1491,28 @@ class TApplicationDependencyTest extends PHPUnit\Framework\TestCase
 		}
 	}
 
-	public function testSort_selfCycle_throwsConfigurationException(): void
+	public function testSort_selfDep_throwsViaCollect(): void
 	{
-		// A module that declares itself as a dependency is a trivial cycle.
+		// A self-dependency is caught by collectModuleDependencies before the sort
+		// runs; the exception propagates through pubSortByDep unchanged.
+		// setID() must be called so collectModuleDependencies sees the module's own ID
+		// when checking $dep === $ownId; without it getID() returns '' and the check
+		// would miss, falling through to Kahn's sort which throws cycle instead.
 		$app = $this->newAccessor();
 		$a   = new InterfaceDepModule();
+		$a->setID('a');
 		$a->setDependencyId('a');
 
-		$this->expectException(\Prado\Exceptions\TConfigurationException::class);
-		$app->pubSortByDep([
-			$this->entry('a', $a),
-			$this->entry('b', new TrackingModule()),
-		]);
+		try {
+			$app->pubSortByDep([
+				$this->entry('a', $a),
+				$this->entry('b', new TrackingModule()),
+			]);
+			$this->fail('Expected TConfigurationException was not thrown');
+		} catch (\Prado\Exceptions\TConfigurationException $e) {
+			$this->assertSame('application_module_dependency_self_reference', $e->getErrorCode(),
+				'self-dep propagated through sort must carry the self_reference error code');
+		}
 	}
 
 	public function testSort_fourNodeCycle_throwsConfigurationException(): void
@@ -1487,11 +1779,16 @@ class TApplicationDependencyTest extends PHPUnit\Framework\TestCase
 			'y' => [InterfaceDepModule::class, ['DependencyId' => 'x'], null],
 		];
 
-		$this->expectException(\Prado\Exceptions\TConfigurationException::class);
-		$app->applyConfiguration($this->moduleConfig($modules), false);
+		try {
+			$app->applyConfiguration($this->moduleConfig($modules), false);
+			$this->fail('Expected TConfigurationException was not thrown');
+		} catch (\Prado\Exceptions\TConfigurationException $e) {
+			// exception thrown as expected
+		}
 
-		// No module should have been initialized.
-		$this->assertSame([], DepOrderTracker::$order);
+		// No module must have been initialized before the cycle exception is thrown.
+		$this->assertSame([], DepOrderTracker::$order,
+			'no module must be initialized when a dependency cycle is detected');
 	}
 
 	public function testApplyConfiguration_stringShorthandDep_initOrder(): void
@@ -1509,17 +1806,18 @@ class TApplicationDependencyTest extends PHPUnit\Framework\TestCase
 			'string-shorthand dep form must be honoured in applyConfiguration init order');
 	}
 
-	public function testApplyConfiguration_keyValueDep_initOrder(): void
+	public function testApplyConfiguration_keyValueDepModule_noDeps_declarationOrder(): void
 	{
-		// A key-value dep returned from getModuleDependencies() must be sorted correctly.
+		// KeyValueDepModule's dep array is driven by setDepsArray(), which cannot be
+		// supplied via init-properties (it takes an array, not a scalar). This test
+		// verifies that when no deps are configured the module loads without error and
+		// declaration order is preserved — a smoke-test of the class in applyConfiguration.
 		$app     = $this->newAccessor();
 		$modules = [
 			'dependent' => [KeyValueDepModule::class, [], null],
 			'dep'       => [TrackingModule::class, [], null],
 		];
 
-		// After instantiation via applyConfiguration, setDepsArray cannot be called
-		// via init-properties directly. Verify the empty form (no deps) doesn't crash.
 		$app->applyConfiguration($this->moduleConfig($modules), false);
 
 		$this->assertSame(['dependent', 'dep'], DepOrderTracker::$order,
@@ -2016,22 +2314,6 @@ class TApplicationDependencyTest extends PHPUnit\Framework\TestCase
 
 		$this->assertSame(['a', 'b'], DepOrderTracker::$order,
 			'init-pass dep must enforce a-before-b in init() order');
-	}
-
-	// -----------------------------------------------------------------------
-	// collectModuleDependencies — key-value form: empty string key silently ignored
-	// -----------------------------------------------------------------------
-
-	public function testCollectDeps_keyValueForm_emptyStringKey_silentlyIgnored(): void
-	{
-		// A key-value entry whose key is the empty string ('') must be silently
-		// skipped because the is_string($key) && $key !== '' guard rejects it.
-		$app    = $this->newAccessor();
-		$module = new KeyValueDepModule();
-		$module->setDepsArray(['' => true]);
-
-		$this->assertSame([], $app->pubCollectDeps($module),
-			"key-value entry with empty string key '' must be silently ignored");
 	}
 
 	// -----------------------------------------------------------------------

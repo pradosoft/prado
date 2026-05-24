@@ -122,6 +122,7 @@ use Prado\Xml\TXmlElement;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Brad Anderson <belisoful@icloud.com> Self-encapsulation, module dependencies.
  * @since 3.0
+ * @method array dyFilterModuleDependencies(array $moduleRecords, array $pending, bool $isPreInit) Filters the complete module dependency map before topological sorting; the (possibly modified) map is returned.
  */
 class TApplication extends TComponent implements ISingleton
 {
@@ -1395,7 +1396,7 @@ class TApplication extends TComponent implements ISingleton
 					$module[0]->dyPreInit($module[1]);
 				}
 				// Ensure every declared dependency is initialized before this module (init phase).
-				foreach ($this->collectModuleDependencies($module[0], false) as $dep) {
+				foreach ($this->collectModuleDependencies($module[0], false)['deps'] as $dep) {
 					if (!array_key_exists($dep['id'], $this->_modules)) {
 						// Dep not registered at all.
 						if ($dep['required']) {
@@ -2004,118 +2005,40 @@ class TApplication extends TComponent implements ISingleton
 	}
 
 	/**
-	 * Collects all dependencies that `$module` declares for the given lifecycle
-	 * `$phase`, merging two sources in priority order — module first, then
-	 * behaviors — and deduplicating by module ID. When the same ID appears in
-	 * both sources, the module-level declaration wins.
-	 *
-	 * Sources:
-	 * 1. {@see IModuleDependency::getModuleDependencies()} on the module itself —
-	 *    fully dynamic, re-evaluated on every call. The return value is cast to
-	 *    an array, so implementations may return a single string as shorthand.
-	 * 2. Any behavior attached to the module that also implements
-	 *    {@see IModuleDependency} — fully dynamic, the behavior list is re-scanned
-	 *    and each behavior's `getModuleDependencies()` is re-evaluated on every call,
-	 *    because behaviors may be attached or detached between initialization phases.
-	 *    Behavior return values are cast to array by the same rule.
-	 *
-	 * Both sources are re-evaluated on every call with no caching.
-	 *
-	 * Verbose array entries whose `'id'` key is `null` or `''` are silently
-	 * skipped; this lets implementations return a fixed-shape array where a
-	 * dep ID that is not yet known is represented as `null`.
-	 *
-	 * Each returned element is an associative array with keys:
-	 * - `'id'`       (string) — the dependency module ID
-	 * - `'required'` (bool)   — `true` if the dependency is mandatory (default),
-	 *                           `false` if advisory (influences order when present
-	 *                           but raises no error when absent).
-	 *
-	 * @param IModule $module the module to inspect.
-	 * @param bool $isPreInit `true` when collecting for the dyPreInit pass,
-	 *   `false` when collecting for the init() pass (default). Passed verbatim to
-	 *   {@see IModuleDependency::getModuleDependencies()}.
-	 * @return array<array{id:string,required:bool}> unique list of dependency descriptors.
-	 * @since 4.4.0
-	 */
-	protected function collectModuleDependencies(IModule $module, bool $isPreInit = false): array
-	{
-		// Keyed by dep ID so that module-level declarations take priority over
-		// behavior-level ones when the same dep ID appears in both sources.
-		$deps = [];
-
-		// Source 1: IModuleDependency on the module itself.
-		// Processed first so module-level declarations take priority over behaviors.
-		if ($module instanceof IModuleDependency) {
-			foreach ((array) ($module->getModuleDependencies($isPreInit) ?? []) as $key => $dep) {
-				if (is_string($key) && $key !== '') {
-					$deps[$key] = ['id' => $key, 'required' => TPropertyValue::ensureBoolean($dep)];
-				} elseif (is_string($dep) && $dep !== '') {
-					$deps[$dep] = ['id' => $dep, 'required' => true];
-				} elseif (is_array($dep) && array_key_exists('id', $dep) && $dep['id'] !== null && $dep['id'] !== '') {
-					$deps[$dep['id']] = [
-						'id' => $dep['id'],
-						'required' => TPropertyValue::ensureBoolean($dep['required'] ?? true),
-					];
-				}
-			}
-		}
-
-		// Source 2: IModuleDependency behaviors attached to the module.
-		// Re-scanned every call — behaviors may be attached or detached between phases.
-		// Only adds IDs not already contributed by the module (Source 1 takes priority).
-		if ($module instanceof TComponent) {
-			foreach ($module->getBehaviors(IModuleDependency::class) as $behavior) {
-				foreach ((array) ($behavior->getModuleDependencies($isPreInit) ?? []) as $key => $dep) {
-					if (is_string($key) && $key !== '') {
-						if (!isset($deps[$key])) {
-							$deps[$key] = ['id' => $key, 'required' => TPropertyValue::ensureBoolean($dep)];
-						}
-					} elseif (is_string($dep) && $dep !== '') {
-						if (!isset($deps[$dep])) {
-							$deps[$dep] = ['id' => $dep, 'required' => true];
-						}
-					} elseif (is_array($dep) && array_key_exists('id', $dep) && $dep['id'] !== null && $dep['id'] !== '') {
-						if (!isset($deps[$dep['id']])) {
-							$deps[$dep['id']] = [
-								'id' => $dep['id'],
-								'required' => TPropertyValue::ensureBoolean($dep['required'] ?? true),
-							];
-						}
-					}
-				}
-			}
-			$deps = $module->dyFilterDependencies($deps);
-		}
-
-		return array_values($deps);
-	}
-
-	/**
 	 * Sorts a set of pending module entries into initialization order using
 	 * Kahn's topological sort algorithm, respecting declared module dependencies.
 	 *
-	 * Each element of `$pending` must be an associative array with keys:
-	 * - `'id'`     (string)   — the module's registration ID
-	 * - `'module'` (IModule)  — the instantiated, property-configured module
-	 * - `'config'` (mixed)    — the configuration element to pass to `init()`
+	 * Both `$pending` and the return value are arrays of entries with the same
+	 * structure — the output is the input reordered so each module appears after
+	 * all of its in-batch dependencies:
+	 * ```php
+	 * [
+	 *     'id'     => 'moduleA',   // registration ID
+	 *     'module' => $moduleA,    // IModule instance
+	 *     'config' => $config,     // configuration element passed to init()
+	 * ]
+	 * ```
 	 *
 	 * Dependencies that reference module IDs outside of `$pending` (already
 	 * initialized or not present in this configuration batch) are silently
 	 * ignored for ordering purposes. The caller is responsible for ensuring
 	 * those modules are already live.
 	 *
+	 * `$cache` is a sort-result cache passed by reference, keyed by dependency-graph
+	 * fingerprint under {@see DEP_SORT_CACHE_KEY}. Passing the same array across both
+	 * phase-sort calls within a single configuration run avoids redundant sorts when
+	 * the dependency graph is unchanged between phases.
+	 *
+	 * `$isPreInit` is forwarded to {@see collectModuleDependencies()} and from there
+	 * to each module's {@see IModuleDependency::getModuleDependencies()}, allowing
+	 * modules to declare different dependencies for the dyPreInit and init() passes.
+	 *
 	 * @param array  $pending list of pending module entries.
-	 * @param array &$cache  sort-result cache passed by reference. Sort results are
-	 *   stored under {@see DEP_SORT_CACHE_KEY} keyed by dependency-graph fingerprint.
-	 *   Pass the same array across both phase-sort calls within a single configuration
-	 *   run to avoid redundant sorts when the dependency graph is unchanged.
+	 * @param array &$cache  sort-result cache, keyed by graph fingerprint.
 	 * @param bool $isPreInit `true` when sorting the dyPreInit pass,
-	 *   `false` when sorting the init() pass (default). Passed to
-	 *   {@see collectModuleDependencies()} and then to each module's
-	 *   {@see IModuleDependency::getModuleDependencies()}.
+	 *   `false` for the init() pass (default).
 	 * @throws \Prado\Exceptions\TConfigurationException if a dependency cycle is detected.
-	 * @return array the same entries sorted in dependency-first order.
+	 * @return array the entries of `$pending` in dependency-first order.
 	 * @since 4.4.0
 	 */
 	protected function sortModulesByDependency(array $pending, array &$cache = [], bool $isPreInit = false): array
@@ -2131,20 +2054,22 @@ class TApplication extends TComponent implements ISingleton
 		}
 
 		// Collect all dependencies for this phase — fully re-evaluated on every call (no caching).
-		// Each element of $allDeps[$id] is array{id:string, required:bool}.
-		$allDeps = [];
+		$moduleRecords = [];
 		foreach ($byId as $id => $entry) {
-			$allDeps[$id] = $this->collectModuleDependencies($entry['module'], $isPreInit);
+			// $moduleRecords[$id] = ['id' => string, 'module' => IModule, 'deps' => array<depId, array{id:string,required:bool}>].
+			$moduleRecords[$id] = $this->collectModuleDependencies($entry['module'], $isPreInit);
 		}
+
+		$moduleRecords = $this->filterModuleDependencies($moduleRecords, $pending, $isPreInit);
 
 		// Build a fingerprint of the in-batch dependency graph.
 		// Only intra-batch edges influence the sort, so out-of-batch deps are excluded.
 		// The fingerprint is stored under DEP_SORT_CACHE_KEY in $cache.
 		$depGraph = [];
-		foreach ($allDeps as $id => $deps) {
+		foreach ($moduleRecords as $id => $record) {
 			$inBatch = array_values(array_filter(
-				array_column($deps, 'id'),
-				fn (string $d) => isset($byId[$d])
+				array_keys($record['deps']),
+				fn (string $depId) => isset($moduleRecords[$depId])
 			));
 			sort($inBatch);
 			$depGraph[$id] = $inBatch;
@@ -2162,15 +2087,14 @@ class TApplication extends TComponent implements ISingleton
 		$depMap = [];   // id → [dep_id, ...]  (used for cycle reporting)
 		$inDegree = [];   // id → int
 		$successors = [];   // dep_id → [dependent_id, ...]
-		foreach ($byId as $id => $_) {
+		foreach ($moduleRecords as $id => $_) {
 			$inDegree[$id] = 0;
 			$successors[$id] = [];
 			$depMap[$id] = [];
 		}
-		foreach ($allDeps as $id => $deps) {
-			foreach ($deps as $dep) {
-				$depId = $dep['id'];
-				if (!isset($byId[$depId])) {
+		foreach ($moduleRecords as $id => $record) {
+			foreach ($record['deps'] as $depId => $_dep) {
+				if (!isset($moduleRecords[$depId])) {
 					continue; // dep is outside this batch — already satisfied or truly external
 				}
 				$depMap[$id][] = $depId;
@@ -2198,8 +2122,8 @@ class TApplication extends TComponent implements ISingleton
 			}
 		}
 
-		if (count($sorted) < count($byId)) {
-			$cycleIds = array_diff(array_keys($byId), $sorted);
+		if (count($sorted) < count($moduleRecords)) {
+			$cycleIds = array_diff(array_keys($moduleRecords), $sorted);
 			$cyclePath = $this->findCyclePath($cycleIds, $depMap);
 			throw new TConfigurationException(
 				'application_module_dependency_cycle',
@@ -2212,12 +2136,183 @@ class TApplication extends TComponent implements ISingleton
 	}
 
 	/**
+	 * Collects all dependencies that `$module` declares for the given lifecycle
+	 * `$isPreInit`, merging two sources in priority order — module first, then
+	 * behaviors — and deduplicating by module ID. When the same ID appears in
+	 * both sources, the module-level declaration wins.
+	 *
+	 * Sources:
+	 * 1. {@see IModuleDependency::getModuleDependencies()} on the module itself —
+	 *    fully dynamic, re-evaluated on every call. The return value is cast to
+	 *    an array, so implementations may return a single string as shorthand.
+	 * 2. Any behavior attached to the module that also implements
+	 *    {@see IModuleDependency} — fully dynamic, the behavior list is re-scanned
+	 *    and each behavior's `getModuleDependencies()` is re-evaluated on every call,
+	 *    because behaviors may be attached or detached between initialization phases.
+	 *    Behavior return values are cast to array by the same rule.
+	 *
+	 * {@see IModuleDependency::getModuleDependencies()} may return dependencies in
+	 * any of four forms, all of which are normalized to the `deps` map format:
+	 *
+	 * - **String return** — a bare `$depId` string: cast to an indexed array before
+	 *   before processing; the dependency ID is the string value; `required`
+	 *   defaults to `true`.
+	 * - **Indexed array** — `[$depId]`: a non-empty string value with an integer key;
+	 *   the dependency ID is the value; `required` defaults to `true`.
+	 * - **Key-value** — `[$depId => $required]`: a non-empty string key is the
+	 *   dependency ID; the value is cast to `bool` via
+	 *   {@see TPropertyValue::ensureBoolean()} as the `required` flag.
+	 * - **Verbose array** — `[['id' => $depId, 'required' => $bool]]`: `'id'` may
+	 *   be any value, but entries where `'id'` is `null`, `''`, or not a string are
+	 *   silently skipped; `'required'` is optional and defaults to `true`.
+	 *
+	 * Entries that resolve to a `null`, `false`, `0`, or empty-string dependency ID
+	 * are silently skipped. This lets implementations return a fixed-shape array
+	 * where a dep ID that is not set or known is represented as `null`.
+	 *
+	 * Both sources are re-evaluated on every call with no caching.
+	 *
+	 * Example return value:
+	 * ```php
+	 * [
+	 *     'id'     => 'moduleA',             // the module's registration ID
+	 *     'module' => $moduleA,              // the IModule instance
+	 *     'deps'   => [                      // keyed by dependency module ID
+	 *         'moduleB' => ['id' => 'moduleB', 'required' => true],
+	 *         'moduleC' => ['id' => 'moduleC', 'required' => false],
+	 *     ],
+	 * ]
+	 * ```
+	 *
+	 * Each returned dependency (`deps`) is an associative array with keys:
+	 * - `'id'`       (string) — the dependency module ID
+	 * - `'required'` (bool)   — `true` if the dependency is mandatory (default),
+	 *                           `false` if advisory (influences order when present
+	 *                           but raises no error when absent).
+	 *
+	 * @param IModule $module the module to inspect.
+	 * @param bool $isPreInit `true` when collecting for the dyPreInit pass,
+	 *   `false` when collecting for the init() pass (default). Passed verbatim to
+	 *   {@see IModuleDependency::getModuleDependencies()}.
+	 * @return array{id:string,module:IModule,deps:array<string,array{id:string,required:bool}>} record containing the module ID, the module instance, and its dependency map keyed by dep ID.
+	 * @since 4.4.0
+	 * @see IModuleDependency
+	 */
+	protected function collectModuleDependencies(IModule $module, bool $isPreInit = false): array
+	{
+		// Keyed by dep ID so that module-level declarations take priority over
+		// behavior-level ones when the same dep ID appears in both sources.
+		$ownId = $module->getID();
+		$deps = [];
+
+		// Source 1: IModuleDependency on the module itself.
+		// Processed first so module-level declarations take priority over behaviors.
+		if ($module instanceof IModuleDependency) {
+			foreach ((array) ($module->getModuleDependencies($isPreInit) ?? []) as $key => $dep) {
+				$required = true;
+				if (is_string($key) && $key !== '') {
+					$required = TPropertyValue::ensureBoolean($dep);
+					$dep = $key;
+				} elseif (is_string($dep) && $dep !== '') {
+					$key = $dep;
+				} elseif (is_array($dep) && is_string($dep['id'] ?? null) && $dep['id'] !== '') {
+					$required = TPropertyValue::ensureBoolean($dep['required'] ?? true);
+					$key = $dep = $dep['id'];
+				} else {
+					continue; // no valid dep ID resolved — silently skip
+				}
+				if ($dep === $ownId) {
+					throw new TConfigurationException('application_module_dependency_self_reference', $ownId);
+				}
+				$deps[$key] = ['id' => $dep, 'required' => $required];
+			}
+		}
+
+		// Source 2: IModuleDependency behaviors attached to the module.
+		// Re-scanned every call — behaviors may be attached or detached between phases.
+		// Only adds IDs not already contributed by the module (Source 1 takes priority).
+		if ($module instanceof TComponent) {
+			foreach ($module->getBehaviors(IModuleDependency::class) as $behavior) {
+				foreach ((array) ($behavior->getModuleDependencies($isPreInit) ?? []) as $key => $dep) {
+					$required = true;
+					if (is_string($key) && $key !== '') {
+						$required = TPropertyValue::ensureBoolean($dep);
+						$dep = $key;
+					} elseif (is_string($dep) && $dep !== '') {
+						$key = $dep;
+					} elseif (is_array($dep) && is_string($dep['id'] ?? null) && $dep['id'] !== '') {
+						$required = TPropertyValue::ensureBoolean($dep['required'] ?? true);
+						$key = $dep = $dep['id'];
+					} else {
+						continue; // no valid dep ID resolved — silently skip
+					}
+					if ($dep === $ownId) {
+						throw new TConfigurationException('application_module_dependency_self_reference', $ownId);
+					}
+					if (!isset($deps[$key])) {
+						$deps[$key] = ['id' => $dep, 'required' => $required];
+					}
+				}
+			}
+			$deps = $module->dyFilterDependencies($deps);
+		}
+
+		return ['id' => $ownId, 'module' => $module, 'deps' => $deps];
+	}
+
+	/**
+	 * Filters the complete dependency map for all pending modules after every
+	 * module's own sources have been collected. Called once per sort pass, so
+	 * implementations can see — and cross-reference — the full set of edges at
+	 * once. Subclasses may override this method to inject configuration-sourced
+	 * edges or apply global ordering policies. Attached behaviors may implement
+	 * {@see dyFilterModuleDependencies()} to participate without subclassing.
+	 *
+	 * This is the application-level counterpart to
+	 * {@see \Prado\TModule::dyFilterDependencies()}, which lets each module's own
+	 * behaviors filter its individual dep list before this method is reached.
+	 *
+	 * The `$moduleRecords` map has the following structure:
+	 * ```php
+	 * [
+	 *     'moduleA' => [
+	 *         'id'     => 'moduleA',         // the module's registration ID
+	 *         'module' => $moduleA,          // the IModule instance
+	 *         'deps'   => [                  // keyed by dependency module ID
+	 *             'moduleB' => ['id' => 'moduleB', 'required' => true],
+	 *             'moduleC' => ['id' => 'moduleC', 'required' => false],
+	 *         ],
+	 *     ],
+	 *     'moduleB' => [
+	 *         'id'     => 'moduleB',
+	 *         'module' => $moduleB,
+	 *         'deps'   => [],
+	 *     ],
+	 * ]
+	 * ```
+	 *
+	 * @param array<string,array{id:string,module:IModule,deps:array<string,array{id:string,required:bool}>}> $moduleRecords map of module ID → record from {@see collectModuleDependencies()}
+	 * @param array $pending the pending module entries being sorted, each with keys
+	 *   `'id'` (string), `'module'` (IModule), and `'config'` (mixed)
+	 * @param bool $isPreInit `true` when sorting the dyPreInit pass,
+	 *   `false` for the init() pass
+	 * @return array<string,array{id:string,module:IModule,deps:array<string,array{id:string,required:bool}>}> the filtered map, keyed by module ID
+	 * @since 4.4.0
+	 */
+	protected function filterModuleDependencies(array $moduleRecords, array $pending, bool $isPreInit = false): array
+	{
+		return $this->dyFilterModuleDependencies($moduleRecords, $pending, $isPreInit);
+	}
+
+	/**
 	 * Finds and returns a representative cycle path within a known set of
 	 * cycle node IDs by following dependency edges via DFS until a node is
 	 * revisited.
 	 *
 	 * Returns a closed-loop array where the first and last elements are the
-	 * same module ID (e.g. `['a', 'b', 'c', 'a']`).
+	 * same module ID (e.g. `['a', 'b', 'c', 'a']`). Self-cycles — where a
+	 * module lists itself as a dependency — produce a two-element path
+	 * (e.g. `['a', 'a']`) and are detected the same way as multi-node cycles.
 	 *
 	 * @param array $cycleIds IDs known to participate in a cycle.
 	 * @param array $depMap   dependency map: id → [dep_id, ...].
