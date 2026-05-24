@@ -1,31 +1,36 @@
 <?php
 
+require_once __DIR__ . '/../PradoUnitRequires.php';
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Security\TAuthManager;
 use Prado\Security\TUserManager;
-use Prado\TApplication;
 use Prado\Xml\TXmlDocument;
 
 class TAuthManagerTest extends PHPUnit\Framework\TestCase
 {
-	public static $app = null;
-	public static $usrMgr = null;
+	public static TTestApplication $app;
+	public static TUserManager $usrMgr;
+
+	public static function setUpBeforeClass(): void
+	{
+		self::$app = new TTestApplication();
+
+		self::$usrMgr = new TUserManager();
+		$config = new TXmlDocument('1.0', 'utf8');
+		$config->loadFromString('<users><user name="Joe" password="demo"/><user name="John" password="demo" /><role name="Administrator" users="John" /><role name="Writer" users="Joe,John" /></users>');
+		self::$usrMgr->init($config);
+		self::$app->setModule('users', self::$usrMgr);
+	}
+
+	public static function tearDownAfterClass(): void
+	{
+		self::$app->restoreApplication();
+	}
 
 	protected function setUp(): void
 	{
-		if (self::$app === null) {
-			self::$app = new TApplication(__DIR__ . '/app');
-		}
-
-		// Make a fake user manager module
-		if (self::$usrMgr === null) {
-			self::$usrMgr = new TUserManager();
-			$config = new TXmlDocument('1.0', 'utf8');
-			$config->loadFromString('<users><user name="Joe" password="demo"/><user name="John" password="demo" /><role name="Administrator" users="John" /><role name="Writer" users="Joe,John" /></users>');
-			self::$usrMgr->init($config);
-			self::$app->setModule('users', self::$usrMgr);
-		}
 	}
 
 	protected function tearDown(): void
