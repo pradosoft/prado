@@ -18,6 +18,10 @@ use Prado\Exceptions\TInvalidDataTypeException;
  * TComponentReflection provides functionalities to inspect the public/protected
  * properties, events and methods defined in a class.
  *
+ * It also serves as the central cache for {@see \ReflectionClass} instances across
+ * the framework.  {@see \Prado\Util\Traits\TReflectionClassTrait} delegates to
+ * {@see getReflectionClassForType()}.
+ *
  * The following code displays the properties and events defined in {@see \Prado\Web\UI\WebControls\TDataGrid},
  * ```php
  *   $reflection=new TComponentReflection('TDataGrid');
@@ -30,10 +34,42 @@ use Prado\Exceptions\TInvalidDataTypeException;
  */
 class TComponentReflection extends \Prado\TComponent
 {
+	/** @var array<string,\ReflectionClass> Shared cache of ReflectionClass instances, keyed by lowercase class name.  @since 4.4.0 */
+	private static array $_reflection_cache = [];
+
 	private $_className;
 	private $_properties = [];
 	private $_events = [];
 	private $_methods = [];
+
+	/**
+	 * Returns a cached {@see \ReflectionClass} for the given class name, or `null`
+	 * if the class does not exist or cannot be reflected.
+	 *
+	 * This method is the central reflection cache for the framework.
+	 * {@see \Prado\Util\Traits\TReflectionClassTrait} delegates here rather than
+	 * maintaining its own cache, so all `ReflectionClass` instances are shared
+	 * in one place regardless of which code path requested them.
+	 *
+	 * @param ?string $class Fully-qualified class name to reflect.
+	 * @return ?\ReflectionClass The cached instance, or `null` on failure.
+	 * @since 4.4.0
+	 */
+	public static function getReflectionClassForType(?string $class): ?\ReflectionClass
+	{
+		if ($class === null) {
+			return null;
+		}
+		$key = strtolower($class);
+		if (!array_key_exists($key, self::$_reflection_cache)) {
+			try {
+				self::$_reflection_cache[$key] = new \ReflectionClass($class);
+			} catch (\ReflectionException $e) {
+				return null;
+			}
+		}
+		return self::$_reflection_cache[$key];
+	}
 
 	/**
 	 * Constructor.
@@ -70,11 +106,11 @@ class TComponentReflection extends \Prado\TComponent
 
 	private function reflect()
 	{
-		$class = new \ReflectionClass($this->_className);
+		$class = self::getReflectionClassForType($this->getClassName());
 		$properties = [];
 		$events = [];
 		$methods = [];
-		$isComponent = is_a($this->_className, TComponent::class, true);
+		$isComponent = is_a($this->getClassName(), TComponent::class, true);
 		foreach ($class->getMethods() as $method) {
 			if ($method->isPublic() || $method->isProtected()) {
 				$methodName = $method->getName();
