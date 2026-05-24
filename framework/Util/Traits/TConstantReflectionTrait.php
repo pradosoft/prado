@@ -50,9 +50,12 @@ namespace Prado\Util\Traits;
  *
  * **Affix filtering** — pass a non-empty string as the second argument to
  * restrict the match to constants whose *name* starts with (prefix) or ends
- * with (suffix) the given string.  Prefix is the default; suffix is indicated
- * by a leading `*` or `-` character.  The third argument controls whether the
+ * with (suffix) the given string.  The third argument controls whether the
  * affix comparison itself is case-sensitive.
+ *
+ * - Prefix: a string starting with a letter or number (e.g., `'Align'`, `'Display'`)
+ * - Suffix: a string starting with `*` or `-` (e.g., `'*Margin'`, `'-Algorithm'`)
+ *
  * ```php
  * // const AlignLeft = 'AlignLeft', const AlignRight = 'AlignRight', const Left = 'Left'
  * $yes = TTextAlign::hasConstant('AlignLeft',  'Align');          // prefix match
@@ -60,12 +63,13 @@ namespace Prado\Util\Traits;
  * $yes = TTextAlign::hasConstant('AlignRight', 'align', false);   // case-insensitive prefix
  *
  * // const TopMargin = 'TopMargin', const BottomMargin = 'BottomMargin'
- * $yes = TTextAlign::hasConstant('TopMargin',    '*Margin');        // suffix match
+ * $yes = TTextAlign::hasConstant('TopMargin',    '*Margin');        // suffix match (* form)
+ * $yes = TTextAlign::hasConstant('BottomMargin', '-Margin');        // suffix match (- form)
  * $yes = TTextAlign::hasConstant('BottomMargin', '-margin', false); // case-insensitive suffix
  * ```
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @see TReflectionCacheTrait
+ * @see TReflectionClassTrait
  * @since 4.3.3
  */
 trait TConstantReflectionTrait
