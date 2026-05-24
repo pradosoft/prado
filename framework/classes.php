@@ -381,7 +381,7 @@ return [
 'TArrayIteratorTrait' => 'Prado\Util\Traits\TArrayIteratorTrait',
 'TConstantReflectionTrait' => 'Prado\Util\Traits\TConstantReflectionTrait',
 'TInitializedTrait' => 'Prado\Util\Traits\TInitializedTrait',
-'TReflectionCacheTrait' => 'Prado\Util\Traits\TReflectionCacheTrait',
+'TReflectionClassTrait' => 'Prado\Util\Traits\TReflectionClassTrait',
 'TRpcClient' => 'Prado\Util\TRpcClient',
 'TRpcClientRequestException' => 'Prado\Util\TRpcClientRequestException',
 'TRpcClientResponseException' => 'Prado\Util\TRpcClientResponseException',
