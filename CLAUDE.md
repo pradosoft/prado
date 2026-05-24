@@ -30,8 +30,9 @@ vendor/bin/phpunit --testsuite unit --filter <test function, class, or directory
 # Generate API documentation
 composer gendoc
 
-# Functional tests (require Selenium Server + prado-demos repo)
-composer functionaltest
+# Playwright functional tests (PHP server on port 8037 starts automatically)
+composer functest        # Chromium only (faster for local iteration)
+composer functionaltest  # all three browsers (Chromium, Firefox, WebKit)
 ```
 
 ### Full Check (required before git commit)

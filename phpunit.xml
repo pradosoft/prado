@@ -8,25 +8,19 @@
     <testsuite name="phpstan">
       <directory suffix="Test.php">./tests/unit/PHPStan</directory>
     </testsuite>
-    <testsuite name="functional">
-      <directory suffix="TestCase.php">./tests/playwright</directory>
-    </testsuite>
-    <testsuite name="selenium">
-      <directory suffix="TestCase.php">./tests/FunctionalTests</directory>
-    </testsuite>
   </testsuites>
   <logging>
     <testdoxHtml outputFile="./build/tests/index.html"/>
   </logging>
   <extensions>
-    <bootstrap class="Prado\Tests\PradoTestListener"/>
+   <!-- <bootstrap class="Prado\Tests\PradoTestListener"/> -->
   </extensions>
   <php>
     <!-- selenium test cases can take up to 20 mins -->
     <ini name="max_execution_time" value="1200"/>
     <ini name="memory_limit" value="1G"/>
     <const name="PRADO_TEST_RUN" value="true"/>
-    <!-- indicate Selenium test suite to start/stop Driver -->
-    <const name="SELENIUM_TESTSUITE_NAME" value="selenium"/>
+    <!-- indicate Selenium test suite to start/stop Driver - - >
+    <const name="SELENIUM_TESTSUITE_NAME" value="selenium"/> -->
   </php>
 </phpunit>

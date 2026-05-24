@@ -131,12 +131,7 @@
         	"Composer\\Config::disableProcessTimeout",
         	"@setup-demos",
         	"npm run playwright"
-        ],
-		"seleniumtest": [
-			"Composer\\Config::disableProcessTimeout",
-			"@setup-demos",
-			"bash tests/FunctionalTests/run-selenium-tests.sh"
-		]
+        ]
     },
 	"bin" : [
 		"bin/prado-cli"

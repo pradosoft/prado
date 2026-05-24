@@ -4,7 +4,7 @@
 
 ### Running Tests
 - **All Unit Tests**: `vendor/bin/phpunit --testsuite unit` - runs all unit tests
-- **Functional Tests**: `composer functionaltest` - runs all functional tests
+- **Playwright Functional Tests**: `composer functest` (Chromium) / `composer functionaltest` (all browsers) — PHP server starts automatically
 - **Test Filter**: `vendor/bin/phpunit --testsuite unit --filter <test function, class, or directory>`
 
 ### Linting and Code Analysis
@@ -267,9 +267,9 @@ All instances self-register in `Prado.Registry[controlId]` on construction and a
 │   └── Xml/                    # TXmlDocument, TXmlElement
 ├── bin/                        # The Command Line Executable `prado-cli`
 ├── tests/                      # Test files
-│   ├── FunctionalTests/        # Functional tests for Active Controls
 │   ├── initdb_*.sql            # Database initialization files
-│   ├── test_tools/             # phpunit, selenium 2 and Test Listener Bootstraps
+│   ├── playwright/             # Functional tests
+│   ├── test_tools/             # phpunit bootstrap and utilities
 │   └── unit/                   # phpunit tests for './framework/' classes
 ├── CLAUDE.md                   # The Memory file for the directory
 ├── composer.json               # Package configuration
