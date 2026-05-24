@@ -1,7 +1,7 @@
 # Security/INDEX.md
 
 ### Directories
-[framework](./INDEX.md) / **`Security/INDEX.md`**
+[framework](../INDEX.md) / **`Security`**
 
 ## Purpose
 
@@ -38,15 +38,15 @@ Authentication, authorization, user management, and role-based access control (R
 
 - **`TUserManagerPasswordMode`** — Enum: `Clear`, `MD5`, `SHA1`.
 
-## Subdirectory: [Permissions/](SECURITY_PERMISSIONS_INDEX.md)
+## Subdirectory: [Permissions/](Permissions/INDEX.md)
 
 Advanced RBAC with permission hierarchies and dynamic authorization.
 
-- **`IPermissions`** — Interface for classes that declare their own permissions. Method: `getPermissions()` returns array of [`TPermissionEvent`](TPermissionEvent.md). Attach [`TPermissionsBehavior`](TPermissionsBehavior.md) automatically when registered with [`TPermissionsManager`](TPermissionsManager.md).
+- **`IPermissions`** — Interface for classes that declare their own permissions. Method: `getPermissions()` returns array of [`TPermissionEvent`](Permissions/TPermissionEvent.md). Attach [`TPermissionsBehavior`](Permissions/TPermissionsBehavior.md) automatically when registered with [`TPermissionsManager`](Permissions/TPermissionsManager.md).
 
-- **`TPermissionsManager`** — [`TModule`](TModule.md) subclass. Manages role hierarchy (roles containing other roles, recursively resolved) and named permissions. `SuperRoles` bypass all checks; `DefaultRoles` are silently merged into every user. Supports wildcard matching (`blog.*`, `*`). Loads dynamic roles/permissions from [`TDbParameterModule`](TDbParameterModule.md). Configure in `application.xml`.
+- **`TPermissionsManager`** — [`TModule`](../TModule.md) subclass. Manages role hierarchy (roles containing other roles, recursively resolved) and named permissions. `SuperRoles` bypass all checks; `DefaultRoles` are silently merged into every user. Supports wildcard matching (`blog.*`, `*`). Loads dynamic roles/permissions from [`TDbParameterModule`](../Util/TDbParameterModule.md). Configure in `application.xml`.
 
-- **`TPermissionsManagerPropertyTrait`** — Shared trait providing the `PermissionsManager` property accessor; used by controls and behaviors that need a typed reference to [`TPermissionsManager`](TPermissionsManager.md).
+- **`TPermissionsManagerPropertyTrait`** — Shared trait providing the `PermissionsManager` property accessor; used by controls and behaviors that need a typed reference to [`TPermissionsManager`](Permissions/TPermissionsManager.md).
 
 - **`TPermissionsBehavior`** — Behavior automatically attached to `IPermissions` classes. Intercepts specified dynamic events to enforce permissions.
 

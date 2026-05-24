@@ -22,4 +22,4 @@ TCronMethodTask is a concrete cron task that evaluates and executes a specific m
 ## See Also
 
 - [TCronTask](TCronTask.md)
-- [TCronModule](../TCronModule.md)
+- [TCronModule](TCronModule.md)

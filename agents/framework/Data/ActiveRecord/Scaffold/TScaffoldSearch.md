@@ -60,7 +60,7 @@ Returns the list of fields to be searched.
 
 ## Database-Specific Search
 
-The search uses [`TDbCommandBuilder`](../Common/TDbCommandBuilder.md)::getSearchExpression() which is implemented differently for each database driver.
+The search uses [`TDbCommandBuilder`](../../Common/TDbCommandBuilder.md)::getSearchExpression() which is implemented differently for each database driver.
 
 ## See Also
 

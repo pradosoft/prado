@@ -6,61 +6,95 @@
 ## Class Info
 **Location:** `framework/Collections/TWeakList.php`
 **Namespace:** `Prado\Collections`
+**Since:** 4.3.0
 
 ## Overview
-TWeakList implements an integer-indexed collection that stores objects as WeakReference. Objects that are garbage collected are automatically removed from the list.
 
-## Inheritance
+TWeakList is an integer-indexed collection that stores object values as `WeakReference` so the list does not prevent garbage collection. Non-objects, scalars, `Closure`, and `IWeakRetainable` objects are stored directly. Arrays are traversed recursively and any nested objects are also weakened.
 
-Extends [TList](./TList.md) and implements [IWeakCollection](./IWeakCollection.md), [ICollectionFilter](./ICollectionFilter.md).
+## Inheritance & Interfaces
 
-## Key Features
+Extends [TList](./TList.md). Implements [IWeakCollection](./IWeakCollection.md) and [ICollectionFilter](./ICollectionFilter.md). Uses [TWeakCollectionTrait](./TWeakCollectionTrait.md).
 
-- Objects stored as WeakReference (don't prevent garbage collection)
-- Automatic cleanup when objects are invalidated
-- Closures stored directly (not as WeakReference)
-- IWeakRetainable objects retained with full reference
+## Storage Rules
 
-## Usage
+| Item type | Stored as |
+|---|---|
+| Scalar / null | Directly |
+| `Closure` | Directly (strongly retained) |
+| `IWeakRetainable` / `TEventHandler` | Directly; inner callable object tracked in WeakMap |
+| Any other object | `WeakReference::create($object)` |
+| Array | Recursively weakened (nested objects become WeakReferences) |
 
-```php
-$list = new TWeakList();
-$list->add(new MyClass());  // Stored as WeakReference
-$list->add($object);
-$list->add(function() {});  // Closure stored directly
+## DiscardInvalid Mode
 
-// When $object is garbage collected elsewhere,
-// it's automatically removed from the list
-```
+Controlled by `DiscardInvalid` (default = opposite of `ReadOnly`):
+
+- **`true`** (default for mutable lists): dead WeakReferences are removed on detection, shrinking the list.
+- **`false`** (default for read-only lists): dead entries remain; GC'd objects are returned as `null`.
+
+Once set externally, `DiscardInvalid` is locked — only the object itself may change it again.
 
 ## Constructor
 
 ```php
-public function __construct(
-    $data = null,
-    ?bool $readOnly = null,
-    ?bool $discardInvalid = null
+new TWeakList(
+    array|\Iterator|null $data = null,
+    ?bool $readOnly        = null,
+    ?bool $discardInvalid  = null   // null = opposite of $readOnly
 )
 ```
 
-- `$discardInvalid` - If true (default), invalid weak references are removed. If false, null is returned for invalid references.
+## ICollectionFilter Methods
 
-## Key Differences from TList
+```php
+public static function filterItemForInput(mixed &$item): void
+// Recursively wraps objects (except Closure, IWeakRetainable) in WeakReference.
+// Works on plain items, arrays, and Traversable+ArrayAccess containers.
 
-- Objects stored as WeakReference internally
-- Retrieving an object that's been garbage collected returns null
-- Closures and IWeakRetainable objects stored directly
+public static function filterItemForOutput(mixed &$item): void
+// Recursively resolves WeakReferences back to the original object (null if GC'd).
+// A TEventHandler with no live inner handler resolves to null.
+```
 
-## Filtering
+## Key TList Overrides
 
-Implements [ICollectionFilter](./ICollectionFilter.md):
-- `filterItemForInput()` - Wraps objects in WeakReference
-- `filterItemForOutput()` - Unwraps WeakReference to get object
+```php
+public function getDiscardInvalid(): bool
+public function setDiscardInvalid(?bool $value): void   // locked after first external set
+
+// Called automatically before reads/writes when DiscardInvalid is true and
+// the WeakMap reports a change (weakChanged()):
+protected function scrubWeakReferences(): void
+```
+
+`scrubWeakReferences()` iterates `$_d` in reverse, removes entries whose WeakReference is dead, and calls `weakResetCount()`. A re-entrancy guard (`isScrubbing()`) prevents PHP's cyclic GC from triggering a nested scrub mid-loop.
+
+## WeakMap Bookkeeping
+
+`weakCustomAdd(object $object)` and `weakCustomRemove(object $object)` proxy to the trait's `weakAdd()`/`weakRemove()`. For `TEventHandler` items the inner handler object (not the wrapper) is tracked; `$_eventHandlerCount` is incremented/decremented accordingly.
+
+## TEventHandler Search Semantics
+
+- Searching for a `TEventHandler` instance finds only that exact object.
+- Searching for a plain callable finds direct callables **and** any `TEventHandler` wrapping that callable (two-pass search when `$_eventHandlerCount > 0`).
+
+## Serialization
+
+WeakReferences cannot be serialized. On `__sleep()` the data array is excluded. On `__wakeup()`, the WeakMap is re-initialized (if `DiscardInvalid` is true) from an empty state. `__clone()` clones the WeakMap via `weakClone()`.
+
+## Patterns & Gotchas
+
+- **Array items** — Objects nested inside array items are also weakened. If a nested object is GC'd, `filterItemForOutput` returns `null` for that nested position; the enclosing array item itself remains in the list.
+- **Closures survive GC** — A `Closure` stored in TWeakList is strongly retained; the list is the owning reference.
+- **Count/index stability** — In `DiscardInvalid = true` mode, positions shift when entries are purged. Do not cache indices across potential GC points.
 
 ## See Also
 
-- [TList](./TList.md) - Base list class
-- [IWeakCollection](./IWeakCollection.md) - Weak collection interface
-- [IWeakRetainable](./IWeakRetainable.md) - Objects to retain fully
-- [ICollectionFilter](./ICollectionFilter.md) - Item conversion interface
-- [TWeakCollectionTrait](./TWeakCollectionTrait.md) - WeakMap implementation
+- [TList](./TList.md) — Base list class
+- [IWeakCollection](./IWeakCollection.md) — Marker interface for weak collections
+- [IWeakRetainable](./IWeakRetainable.md) — Objects stored directly (not weakened)
+- [ICollectionFilter](./ICollectionFilter.md) — Input/output item conversion contract
+- [TWeakCollectionTrait](./TWeakCollectionTrait.md) — WeakMap bookkeeping
+- [TWeakCallableCollection](./TWeakCallableCollection.md) — Priority-list variant for callables
+- [TWeakMap](./TWeakMap.md) — Map variant with weak values

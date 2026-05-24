@@ -25,11 +25,12 @@ Set via `$app->setMode('Debug')` or in `application.xml`:
 <application Mode="Debug">
 ```
 
-## Lifecycle — 15 Stages
+## Lifecycle — 16 Stages
 
 ```
 initApplication()
-  → onInitComplete              ← modules initialized, services registered
+  → onConfiguration             ← config fully applied, no service started yet (@since 4.3.3)
+  → onInitComplete              ← service initialized
 
 run() → processRequest()
   → onBeginRequest              ← request parsing complete
@@ -88,6 +89,15 @@ $app->clearGlobalState($key);
 // Locale / culture:
 $app->getGlobalization();           // TGlobalization or null
 $app->getCulture();                 // current culture string
+
+// Service lookup by class (@since 4.3.3):
+$app->getServiceIdByClass(TPageService::class);   // first matching service ID or null
+$app->getServiceIdsByClass(TPageService::class);  // all matching service IDs
+
+// Module lookup by class (template-typed; @since 4.2.0):
+// Returns array<string, ?T> — keys are module IDs, values are module instances (or null if not yet loaded)
+$app->getModulesByType(ICache::class);            // all ICache modules
+$app->getModulesByType(TDbCache::class, strict: true); // only exact TDbCache (no subclasses)
 ```
 
 ## Configuration (application.xml)
@@ -133,6 +143,22 @@ Even with an empty `application.xml`, these are always present:
 - `TSecurityManager` (id: `security`)
 - `TAssetManager` (id: `asset`)
 - `TPageService` (id: `page`)
+
+## Extensibility Hooks (@since 4.3.3)
+
+These protected factory methods allow subclasses to substitute custom implementations:
+
+```php
+protected function getApplicationConfigurationClass(): string
+// Returns the class name used to parse application.xml/application.php.
+// Override to provide a custom configuration parser.
+// Default: TApplicationConfiguration::class
+
+protected function newApplicationStatePersister(): IStatePersister
+// Creates the state persister used for GlobalState storage.
+// Override to use a different persistence backend.
+// Default: new TApplicationStatePersister()
+```
 
 ## Patterns & Gotchas
 

@@ -1,7 +1,7 @@
 # Web/UI/IBindable
 
 ### Directories
-[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / **`IBindable`**
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [UI](INDEX.md) / **`IBindable`**
 
 **Location:** `framework/Web/UI/IBindable.php`
 **Namespace:** `Prado\Web\UI`

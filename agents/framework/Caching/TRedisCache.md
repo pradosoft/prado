@@ -13,13 +13,27 @@
 ## Configuration
 
 ```xml
-<!-- TCP connection -->
-<module id="cache" class="Prado\Caching\TRedisCache" 
-        Host="localhost" Port="6379" Index="0" />
+<modules>
+    <!-- TCP connection -->
+    <module id="cache" class="Prado\Caching\TRedisCache" 
+            Host="localhost" Port="6379" Index="0" />
 
-<!-- Unix socket -->
-<module id="cache" class="Prado\Caching\TRedisCache" 
-        Socket="/var/run/redis/redis.sock" Index="0" />
+    <!-- Unix socket -->
+    <module id="cache" class="Prado\Caching\TRedisCache" 
+            Socket="/var/run/redis/redis.sock" Index="0" />
+</modules>
+```
+
+**PHP equivalent:**
+```php
+return [
+    'modules' => [
+        'cache' => [
+            'class' => 'Prado\Caching\TRedisCache',
+            'properties' => ['Host' => 'localhost', 'Port' => '6379'],
+        ],
+    ],
+];
 ```
 
 ## Properties

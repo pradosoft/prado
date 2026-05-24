@@ -25,4 +25,4 @@ TJsonRpcProtocol implements the JSON-RPC protocol for TRpcService, supporting bo
 
 - [TRpcProtocol](./TRpcProtocol.md) - Base protocol class
 - [TXmlRpcProtocol](./TXmlRpcProtocol.md) - XML-RPC implementation
-- [TRpcService](../TRpcService.md) - The RPC service
+- [TRpcService](TRpcService.md) - The RPC service

@@ -1,6 +1,6 @@
 # PRADO Framework Classes
 
-**Total Classes: 749**
+**Total Classes: 775**
 
 This document lists all classes in the PRADO framework as defined in `classes.php`.
 
@@ -8,16 +8,16 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 | Directory | Classes | Interfaces | Total | Recursive |
 |-----------|---------|------------|-------|-----------|
-| [Prado](./INDEX.md) | 17 | 6 | 23 | 749 |
+| [Prado](./INDEX.md) | 17 | 7 | 24 | 775 |
 | [Prado\\Caching](./Caching/INDEX.md) | 11 | 2 | 13 | 13 |
-| [Prado\\Collections](./Collections/INDEX.md) | 25 | 7 | 32 | 32 |
-| [Prado\\Data](./Data/INDEX.md) | 7 | 0 | 7 | 128 |
+| [Prado\\Collections](./Collections/INDEX.md) | 27 | 7 | 34 | 34 |
+| [Prado\\Data](./Data/INDEX.md) | 10 | 5 | 15 | 136 |
 | [Prado\\Data\\ActiveRecord](./Data/ActiveRecord/INDEX.md) | 7 | 0 | 7 | 29 |
 | [Prado\\Data\\ActiveRecord\\Exceptions](./Data/ActiveRecord/Exceptions/INDEX.md) | 2 | 0 | 2 | 2 |
 | [Prado\\Data\\ActiveRecord\\Relations](./Data/ActiveRecord/Relations/INDEX.md) | 6 | 0 | 6 | 6 |
 | [Prado\\Data\\ActiveRecord\\Scaffold](./Data/ActiveRecord/Scaffold/INDEX.md) | 5 | 1 | 6 | 14 |
-| [Prado\\Data\\ActiveRecord\\Scaffold\\InputBuilder](./Data/ActiveRecord/Scaffold/InputBuilder/INDEX.md) | 8 | 0 | 8 | 8 |
-| [Prado\\Data\\Common](./Data/Common/INDEX.md) | 4 | 0 | 4 | 32 |
+| [Prado\\Data\\ActiveRecord\\Scaffold\\InputBuilder](./Data/ActiveRecord/Scaffold/InputBuilder/INDEX.md) | 8 | 1 | 9 | 9 |
+| [Prado\\Data\\Common](./Data/Common/INDEX.md) | 4 | 4 | 8 | 36 |
 | [Prado\\Data\\Common\\Firebird](./Data/Common/Firebird/INDEX.md) | 4 | 0 | 4 | 4 |
 | [Prado\\Data\\Common\\Ibm](./Data/Common/Ibm/INDEX.md) | 4 | 0 | 4 | 4 |
 | [Prado\\Data\\Common\\Mssql](./Data/Common/Mssql/INDEX.md) | 4 | 0 | 4 | 4 |
@@ -30,9 +30,9 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 | [Prado\\Data\\SqlMap\\Configuration](./Data/SqlMap/Configuration/INDEX.md) | 20 | 0 | 20 | 20 |
 | [Prado\\Data\\SqlMap\\DataMapper](./Data/SqlMap/DataMapper/INDEX.md) | 16 | 0 | 16 | 16 |
 | [Prado\\Data\\SqlMap\\Statements](./Data/SqlMap/Statements/INDEX.md) | 15 | 1 | 16 | 16 |
-| [Prado\\Exceptions](./Exceptions/INDEX.md) | 21 | 0 | 21 | 21 |
+| [Prado\\Exceptions](./Exceptions/INDEX.md) | 22 | 0 | 22 | 22 |
 | [Prado\\I18N](./I18N/INDEX.md) | 9 | 0 | 9 | 24 |
-| [Prado\\I18N\\core](./I18N/core/INDEX.md) | 11 | 1 | 12 | 15 |
+| [Prado\\I18N\\core](./I18N/core/INDEX.md) | 12 | 1 | 13 | 16 |
 | [Prado\\I18N\\core\\Gettext](./I18N/core/Gettext/INDEX.md) | 3 | 0 | 3 | 3 |
 | [Prado\IO](./IO/INDEX.md) | 6 | 1 | 7 | 7 |
 | [Prado\PHPStan](./PHPStan/INDEX.md) | 3 | 0 | 3 | 3 |
@@ -40,30 +40,33 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 | [Prado\\Security\\Permissions](./Security/Permissions/INDEX.md) | 8 | 1 | 9 | 9 |
 | [Prado\\Shell](./Shell/INDEX.md) | 4 | 0 | 4 | 10 |
 | [Prado\\Shell\\Actions](./Shell/Actions/INDEX.md) | 6 | 0 | 6 | 6 |
-| [Prado\\Util](./Util/INDEX.md) | 33 | 8 | 41 | 71 |
-| [Prado\\Util\\Behaviors](./Util/Behaviors/INDEX.md) | 12 | 0 | 12 | 12 |
-| [Prado\\Util\\Cron](./Util/Cron/INDEX.md) | 10 | 0 | 10 | 10 |
+| [Prado\\Util](./Util/INDEX.md) | 34 | 8 | 42 | 76 |
+| [Prado\\Util\\Behaviors](./Util/Behaviors/INDEX.md) | 14 | 0 | 14 | 14 |
+| [Prado\\Util\\Cron](./Util/Cron/INDEX.md) | 11 | 0 | 11 | 11 |
 | [Prado\\Util\\Helpers](./Util/Helpers/INDEX.md) | 6 | 0 | 6 | 6 |
 | [Prado\\Util\\Math](./Util/Math/INDEX.md) | 2 | 0 | 2 | 2 |
-| [Prado\\Web](./Web/INDEX.md) | 20 | 0 | 20 | 396 |
+| [Prado\\Util\\Traits](./Util/Traits/INDEX.md) | 2 | 0 | 2 | 2 |
+| [Prado\\Web](./Web/INDEX.md) | 21 | 0 | 21 | 418 |
 | [Prado\\Web\\Behaviors](./Web/Behaviors/INDEX.md) | 1 | 0 | 1 | 1 |
 | [Prado\\Web\\Javascripts](./Web/Javascripts/INDEX.md) | 4 | 0 | 4 | 4 |
 | [Prado\\Web\\Services](./Web/Services/INDEX.md) | 14 | 1 | 15 | 15 |
-| [Prado\\Web\\UI](./Web/UI/INDEX.md) | 26 | 13 | 39 | 356 |
-| [Prado\\Web\\UI\\ActiveControls](./Web/UI/ActiveControls/INDEX.md) | 71 | 2 | 73 | 73 |
-| [Prado\\Web\\UI\\JuiControls](./Web/UI/JuiControls/INDEX.md) | 18 | 1 | 19 | 19 |
-| [Prado\\Web\\UI\\WebControls](./Web/UI/WebControls/INDEX.md) | 220 | 5 | 225 | 225 |
+| [Prado\\Web\\UI](./Web/UI/INDEX.md) | 28 | 15 | 43 | 361 |
+| [Prado\\Web\\UI\\ActiveControls](./Web/UI/ActiveControls/INDEX.md) | 72 | 2 | 74 | 74 |
+| [Prado\\Web\\UI\\JuiControls](./Web/UI/JuiControls/INDEX.md) | 19 | 1 | 20 | 20 |
+| [Prado\\Web\\UI\\WebControls](./Web/UI/WebControls/INDEX.md) | 226 | 5 | 231 | 231 |
+| [Prado\\Web\\UI\\Traits](./Web/UI/Traits/INDEX.md) | 1 | 0 | 1 | 1 |
 | [Prado\\Xml](./Xml/INDEX.md) | 3 | 0 | 3 | 3 |
 
 ---
 
 ## Class Listings
 
-## [Prado](./INDEX.md) - Classes: 17, Interfaces: 6, Total: 23, Recursive: 749
+## [Prado](./INDEX.md) - Classes: 17, Interfaces: 7, Total: 24, Recursive: 775
 
 ### Interfaces (6)
 
 - IDataRenderer
+- IEventCycleParameter
 - IEventParameter
 - IModule
 - IService
@@ -118,7 +121,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Collections](./Collections/INDEX.md) - Classes: 25, Interfaces: 7, Total: 32, Recursive: 32
+## [Prado\Collections](./Collections/INDEX.md) - Classes: 27, Interfaces: 7, Total: 34, Recursive: 34
 
 ### Interfaces (7)
 
@@ -130,10 +133,11 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [IWeakCollection](./Collections/IWeakCollection.md)
 - [IWeakRetainable](./Collections/IWeakRetainable.md)
 
-### Classes (25)
+### Classes (27)
 
 - [TArraySubscription](./Collections/TArraySubscription.md)
 - [TAttributeCollection](./Collections/TAttributeCollection.md)
+- TCollectionItemChangeParameter
 - [TCollectionSubscription](./Collections/TCollectionSubscription.md)
 - [TDummyDataSource](./Collections/TDummyDataSource.md)
 - [TDummyDataSourceIterator](./Collections/TDummyDataSourceIterator.md)
@@ -157,19 +161,31 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TWeakCallableCollection](./Collections/TWeakCallableCollection.md)
 - [TWeakCollectionTrait](./Collections/TWeakCollectionTrait.md)
 - [TWeakList](./Collections/TWeakList.md)
+- TWeakMap
 
 ---
 
-## [Prado\Data](./Data/INDEX.md) - Classes: 7, Interfaces: 0, Total: 7, Recursive: 128
+## [Prado\Data](./Data/INDEX.md) - Classes: 10, Interfaces: 5, Total: 15, Recursive: 136
 
-### Classes (7)
+### Interfaces (5)
 
+- IDataCommand
+- IDataConnection
+- IDataReader
+- IDataTransaction
+- IDbConnection
+
+### Classes (10)
+
+- TDataCharset
 - [TDataSourceConfig](./Data/TDataSourceConfig.md)
 - [TDbColumnCaseMode](./Data/TDbColumnCaseMode.md)
 - [TDbCommand](./Data/TDbCommand.md)
 - [TDbConnection](./Data/TDbConnection.md)
 - [TDbDataReader](./Data/TDbDataReader.md)
+- TDbDriver
 - [TDbNullConversionMode](./Data/TDbNullConversionMode.md)
+- TDbPropertiesTrait
 - [TDbTransaction](./Data/TDbTransaction.md)
 
 ---
@@ -178,7 +194,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ### Classes (7)
 
-- [TActiveRecord](./Data/ActiveRecord/TActiveRecord.md)
+- [TActiveRecord](Data/TActiveRecord.md)
 - [TActiveRecordChangeEventParameter](./Data/ActiveRecord/TActiveRecordChangeEventParameter.md)
 - [TActiveRecordConfig](./Data/ActiveRecord/TActiveRecordConfig.md)
 - [TActiveRecordCriteria](./Data/ActiveRecord/TActiveRecordCriteria.md)
@@ -226,7 +242,11 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Data\ActiveRecord\Scaffold\InputBuilder](./Data/ActiveRecord/Scaffold/InputBuilder/INDEX.md) - Classes: 8, Interfaces: 0, Total: 8, Recursive: 8
+## [Prado\Data\ActiveRecord\Scaffold\InputBuilder](./Data/ActiveRecord/Scaffold/InputBuilder/INDEX.md) - Classes: 8, Interfaces: 1, Total: 9, Recursive: 9
+
+### Interfaces (1)
+
+- IScaffoldInput
 
 ### Classes (8)
 
@@ -241,7 +261,14 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Data\Common](./Data/Common/INDEX.md) - Classes: 4, Interfaces: 0, Total: 4, Recursive: 32
+## [Prado\Data\Common](./Data/Common/INDEX.md) - Classes: 4, Interfaces: 4, Total: 8, Recursive: 36
+
+### Interfaces (4)
+
+- IDataCommandBuilder
+- IDataMetaData
+- IDataTableInfo
+- IDbHasSchema
 
 ### Classes (4)
 
@@ -427,7 +454,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Exceptions](./Exceptions/INDEX.md) - Classes: 21, Interfaces: 0, Total: 21, Recursive: 21
+## [Prado\Exceptions](./Exceptions/INDEX.md) - Classes: 22, Interfaces: 0, Total: 22, Recursive: 22
 
 ### Classes (21)
 
@@ -447,6 +474,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TNetworkException](./Exceptions/TNetworkException.md)
 - [TNotSupportedException](./Exceptions/TNotSupportedException.md)
 - [TPhpErrorException](./Exceptions/TPhpErrorException.md)
+- TPhpFatalErrorException
 - [TSocketException](./Exceptions/TSocketException.md)
 - [TSystemException](./Exceptions/TSystemException.md)
 - [TTemplateException](./Exceptions/TTemplateException.md)
@@ -471,13 +499,13 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\I18N\core](./I18N/core/INDEX.md) - Classes: 11, Interfaces: 1, Total: 12, Recursive: 15
+## [Prado\I18N\core](./I18N/core/INDEX.md) - Classes: 12, Interfaces: 1, Total: 13, Recursive: 16
 
 ### Interfaces (1)
 
 - [IMessageSource](./I18N/core/IMessageSource.md)
 
-### Classes (11)
+### Classes (12)
 
 - [ChoiceFormat](./I18N/core/ChoiceFormat.md)
 - [CultureInfo](./I18N/core/CultureInfo.md)
@@ -490,6 +518,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [MessageSource_XLIFF](./I18N/core/MessageSource_XLIFF.md)
 - [MessageSource_gettext](./I18N/core/MessageSource_gettext.md)
 - [TCache_Lite](./I18N/core/TCache_Lite.md)
+- TIntlDateFormatterTrait
 - [TMessageSourceIOException](./I18N/core/TMessageSourceIOException.md)
 - [TNumberFormatterTrait](./I18N/core/TNumberFormatterTrait.md)
 
@@ -597,7 +626,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Util](./Util/INDEX.md) - Classes: 33, Interfaces: 8, Total: 41, Recursive: 71
+## [Prado\Util](./Util/INDEX.md) - Classes: 34, Interfaces: 8, Total: 42, Recursive: 76
 
 ### Interfaces (8)
 
@@ -621,6 +650,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TClassBehaviorEventParameter](./Util/TClassBehaviorEventParameter.md)
 - [TDataFieldAccessor](./Util/TDataFieldAccessor.md)
 - [TDbLogRoute](./Util/TDbLogRoute.md)
+- [TDbModule](./Util/TDbModule.md)
 - [TDbParameterModule](./Util/TDbParameterModule.md)
 - [TDbPluginModule](./Util/TDbPluginModule.md)
 - [TEmailLogRoute](./Util/TEmailLogRoute.md)
@@ -648,7 +678,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Util\Behaviors](./Util/Behaviors/INDEX.md) - Classes: 12, Interfaces: 0, Total: 12, Recursive: 12
+## [Prado\Util\Behaviors](./Util/Behaviors/INDEX.md) - Classes: 14, Interfaces: 0, Total: 14, Recursive: 14
 
 ### Classes (12)
 
@@ -659,6 +689,8 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TGlobalClassAware](./Util/Behaviors/TGlobalClassAware.md)
 - [TMapLazyLoadBehavior](./Util/Behaviors/TMapLazyLoadBehavior.md)
 - [TMapRouteBehavior](./Util/Behaviors/TMapRouteBehavior.md)
+- TNoUnserializeBehaviorTrait
+- TNoUnserializeClassBehaviorTrait
 - [TPageGlobalizationCharsetBehavior](./Util/Behaviors/TPageGlobalizationCharsetBehavior.md)
 - [TPageNoCacheBehavior](./Util/Behaviors/TPageNoCacheBehavior.md)
 - [TPageTopAnchorBehavior](./Util/Behaviors/TPageTopAnchorBehavior.md)
@@ -667,7 +699,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Util\Cron](./Util/Cron/INDEX.md) - Classes: 10, Interfaces: 0, Total: 10, Recursive: 10
+## [Prado\Util\Cron](./Util/Cron/INDEX.md) - Classes: 11, Interfaces: 0, Total: 11, Recursive: 11
 
 ### Classes (10)
 
@@ -676,6 +708,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TCronTask](./Util/Cron/TCronTask.md)
 - [TCronTaskInfo](./Util/Cron/TCronTaskInfo.md)
 - [TDbCronCleanLogTask](./Util/Cron/TDbCronCleanLogTask.md)
+- TDbCronManager
 - [TDbCronModule](./Util/Cron/TDbCronModule.md)
 - [TShellCronAction](./Util/Cron/TShellCronAction.md)
 - [TShellCronLogBehavior](./Util/Cron/TShellCronLogBehavior.md)
@@ -706,7 +739,16 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Web](./Web/INDEX.md) - Classes: 20, Interfaces: 0, Total: 20, Recursive: 396
+## [Prado\Util\Traits](./Util/Traits/INDEX.md) - Classes: 2, Interfaces: 0, Total: 2, Recursive: 2
+
+### Classes (2)
+
+- TConstantReflectionTrait
+- TInitializedTrait
+
+---
+
+## [Prado\Web](./Web/INDEX.md) - Classes: 21, Interfaces: 0, Total: 21, Recursive: 418
 
 ### Classes (20)
 
@@ -714,6 +756,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TCacheHttpSession](./Web/TCacheHttpSession.md)
 - [THttpCookie](./Web/THttpCookie.md)
 - [THttpCookieCollection](./Web/THttpCookieCollection.md)
+- THttpCookieSameSite
 - [THttpRequest](./Web/THttpRequest.md)
 - [THttpRequestParameter](./Web/THttpRequestParameter.md)
 - [THttpRequestResolveMethod](./Web/THttpRequestResolveMethod.md)
@@ -777,13 +820,15 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Web\UI](./Web/UI/INDEX.md) - Classes: 26, Interfaces: 13, Total: 39, Recursive: 356
+## [Prado\Web\UI](./Web/UI/INDEX.md) - Classes: 28, Interfaces: 15, Total: 43, Recursive: 361
 
 ### Interfaces (13)
 
+- [IAdapterControl](./Web/UI/IAdapterControl.md)
 - [IBindable](./Web/UI/IBindable.md)
 - [IBroadcastEventReceiver](./Web/UI/IBroadcastEventReceiver.md)
 - [IButtonControl](./Web/UI/IButtonControl.md)
+- [IFilterRenderable](./Web/UI/IFilterRenderable.md)
 - [INamingContainer](./Web/UI/INamingContainer.md)
 - [IPageStatePersister](./Web/UI/IPageStatePersister.md)
 - [IPostBackDataHandler](./Web/UI/IPostBackDataHandler.md)
@@ -811,10 +856,12 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TEventContent](./Web/UI/TEventContent.md)
 - [TForm](./Web/UI/TForm.md)
 - [THtmlWriter](./Web/UI/THtmlWriter.md)
+- [TModuleView](./Web/UI/TModuleView.md)
 - [TPage](./Web/UI/TPage.md)
 - [TPageStateFormatter](./Web/UI/TPageStateFormatter.md)
 - [TPageStatePersister](./Web/UI/TPageStatePersister.md)
 - [TSessionPageStatePersister](./Web/UI/TSessionPageStatePersister.md)
+- [TRenderFilterParameter](./Web/UI/TRenderFilterParameter.md)
 - [TSkinTemplate](./Web/UI/TSkinTemplate.md)
 - [TTemplate](./Web/UI/TTemplate.md)
 - [TTemplateControl](./Web/UI/TTemplateControl.md)
@@ -826,7 +873,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Web\UI\ActiveControls](./Web/UI/ActiveControls/INDEX.md) - Classes: 71, Interfaces: 2, Total: 73, Recursive: 73
+## [Prado\Web\UI\ActiveControls](./Web/UI/ActiveControls/INDEX.md) - Classes: 72, Interfaces: 2, Total: 74, Recursive: 74
 
 ### Interfaces (2)
 
@@ -856,6 +903,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TActiveDropDownListColumn](./Web/UI/ActiveControls/TActiveDropDownListColumn.md)
 - [TActiveEditCommandColumn](./Web/UI/ActiveControls/TActiveEditCommandColumn.md)
 - [TActiveFileUpload](./Web/UI/ActiveControls/TActiveFileUpload.md)
+- TActiveFileUploadItem
 - [TActiveFileUploadCallbackParams](./Web/UI/ActiveControls/TActiveFileUploadCallbackParams.md)
 - [TActiveHiddenField](./Web/UI/ActiveControls/TActiveHiddenField.md)
 - [TActiveHtmlArea](./Web/UI/ActiveControls/TActiveHtmlArea.md)
@@ -909,7 +957,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Web\UI\JuiControls](./Web/UI/JuiControls/INDEX.md) - Classes: 18, Interfaces: 1, Total: 19, Recursive: 19
+## [Prado\Web\UI\JuiControls](./Web/UI/JuiControls/INDEX.md) - Classes: 19, Interfaces: 1, Total: 20, Recursive: 20
 
 ### Interfaces (1)
 
@@ -933,12 +981,13 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TJuiResizable](./Web/UI/JuiControls/TJuiResizable.md)
 - [TJuiSelectable](./Web/UI/JuiControls/TJuiSelectable.md)
 - [TJuiSelectableTemplate](./Web/UI/JuiControls/TJuiSelectableTemplate.md)
+- TJuiSlider
 - [TJuiSortable](./Web/UI/JuiControls/TJuiSortable.md)
 - [TJuiSortableTemplate](./Web/UI/JuiControls/TJuiSortableTemplate.md)
 
 ---
 
-## [Prado\Web\UI\WebControls](./Web/UI/WebControls/INDEX.md) - Classes: 220, Interfaces: 5, Total: 225, Recursive: 225
+## [Prado\Web\UI\WebControls](./Web/UI/WebControls/INDEX.md) - Classes: 226, Interfaces: 5, Total: 231, Recursive: 231
 
 ### Interfaces (5)
 
@@ -953,6 +1002,8 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TAccordion](./Web/UI/WebControls/TAccordion.md)
 - [TAccordionView](./Web/UI/WebControls/TAccordionView.md)
 - [TAccordionViewCollection](./Web/UI/WebControls/TAccordionViewCollection.md)
+- [TArticle](./Web/UI/WebControls/TArticle.md)
+- [TAside](./Web/UI/WebControls/TAside.md)
 - [TBaseDataList](./Web/UI/WebControls/TBaseDataList.md)
 - [TBaseValidator](./Web/UI/WebControls/TBaseValidator.md)
 - [TBoundColumn](./Web/UI/WebControls/TBoundColumn.md)
@@ -1028,6 +1079,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TFileUploadItem](./Web/UI/WebControls/TFileUploadItem.md)
 - [TFlushOutput](./Web/UI/WebControls/TFlushOutput.md)
 - [TFont](./Web/UI/WebControls/TFont.md)
+- [TFooter](./Web/UI/WebControls/TFooter.md)
 - [TGravatar](./Web/UI/WebControls/TGravatar.md)
 - [THead](./Web/UI/WebControls/THead.md)
 - [THeader1](./Web/UI/WebControls/THeader1.md)
@@ -1068,9 +1120,11 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TLiteral](./Web/UI/WebControls/TLiteral.md)
 - [TLiteralColumn](./Web/UI/WebControls/TLiteralColumn.md)
 - [TMarkdown](./Web/UI/WebControls/TMarkdown.md)
+- [TMain](./Web/UI/WebControls/TMain.md)
 - [TMetaTag](./Web/UI/WebControls/TMetaTag.md)
 - [TMetaTagCollection](./Web/UI/WebControls/TMetaTagCollection.md)
 - [TMultiView](./Web/UI/WebControls/TMultiView.md)
+- [TNav](./Web/UI/WebControls/TNav.md)
 - [TOutputCache](./Web/UI/WebControls/TOutputCache.md)
 - [TOutputCacheCalculateKeyEventParameter](./Web/UI/WebControls/TOutputCacheCalculateKeyEventParameter.md)
 - [TOutputCacheCheckDependencyEventParameter](./Web/UI/WebControls/TOutputCacheCheckDependencyEventParameter.md)
@@ -1109,6 +1163,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TRepeatLayout](./Web/UI/WebControls/TRepeatLayout.md)
 - [TRequiredFieldValidator](./Web/UI/WebControls/TRequiredFieldValidator.md)
 - [TSafeHtml](./Web/UI/WebControls/TSafeHtml.md)
+- [TSection](./Web/UI/WebControls/TSection.md)
 - [TScrollBars](./Web/UI/WebControls/TScrollBars.md)
 - [TServerValidateEventParameter](./Web/UI/WebControls/TServerValidateEventParameter.md)
 - [TSlider](./Web/UI/WebControls/TSlider.md)
@@ -1170,6 +1225,14 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TWizardStep](./Web/UI/WebControls/TWizardStep.md)NavigationTemplate
 - [TWizardStep](./Web/UI/WebControls/TWizardStep.md)Type
 - [TXmlTransform](./Web/UI/WebControls/TXmlTransform.md)
+
+---
+
+## [Prado\Web\UI\Traits](./Web/UI/Traits/INDEX.md) - Classes: 1, Interfaces: 0, Total: 1, Recursive: 1
+
+### Classes (1)
+
+- TFilterRenderableTrait
 
 ---
 

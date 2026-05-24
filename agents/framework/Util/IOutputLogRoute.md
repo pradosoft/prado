@@ -1,7 +1,7 @@
 # Util/IOutputLogRoute
 
 ### Directories
-[framework](./INDEX.md) / [Util](./Util/INDEX.md) / **`IOutputLogRoute`**
+[framework](../INDEX.md) / [Util](INDEX.md) / **`IOutputLogRoute`**
 
 **Location:** `framework/Util/IOutputLogRoute.php`
 **Namespace:** `Prado\Util`

@@ -23,7 +23,7 @@ TCachePageStatePersister implements page state persistence using a cache backend
 ## See Also
 
 - [TPageStateFormatter](./TPageStateFormatter.md)
-- [ICache](../Caching/ICache.md)
+- [ICache](../../Caching/ICache.md)
 - [IPageStatePersister](./IPageStatePersister.md)
 
 (End of file - total 24 lines)

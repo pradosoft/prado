@@ -121,7 +121,7 @@ public function onBeforeSave($param)
 
 ## TActiveRecordCriteria
 
-[`TActiveRecordCriteria`](./TActiveRecordCriteria.md) class:
+[`TActiveRecordCriteria`](ActiveRecord/TActiveRecordCriteria.md) class:
 $criteria = new TActiveRecordCriteria();
 $criteria->Condition = 'active = :active AND category_id = :cat';
 $criteria->Parameters = [':active' => 1, ':cat' => 5];
@@ -135,10 +135,12 @@ $criteria = new TActiveRecordCriteria('active = 1', [], 'title ASC', 10, 0);
 
 ## TActiveRecordManager
 
-Singleton registry. Configure via [`TActiveRecordConfig`](./TActiveRecordConfig.md) in `application.xml`:
+Singleton registry. Configure via [`TActiveRecordConfig`](ActiveRecord/TActiveRecordConfig.md) in `application.xml`:
 ```xml
-<module id="ar" class="Prado\Data\ActiveRecord\TActiveRecordConfig"
-        ConnectionID="db" EnableCache="true" />
+<modules>
+    <module id="ar" class="Prado\Data\ActiveRecord\TActiveRecordConfig"
+            ConnectionID="db" EnableCache="true" />
+</modules>
 ```
 
 Or programmatically:
@@ -154,4 +156,4 @@ TActiveRecordManager::getInstance()->setDbConnection($conn);
 - **Composite PKs** — `findByPk(['col1' => $a, 'col2' => $b])`.
 - **Lazy relations** — loaded on first `__get` access; no explicit load call needed.
 - **Connection scope** — `TActiveRecordManager` uses one shared connection; for multi-database, configure separate manager instances.
-- **`TActiveRecordGateway`** handles internal SQL generation via [`TDbCommandBuilder`](../Common/TDbCommandBuilder.md) — don't use it directly.
+- **`TActiveRecordGateway`** handles internal SQL generation via [`TDbCommandBuilder`](Common/TDbCommandBuilder.md) — don't use it directly.

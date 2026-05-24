@@ -58,13 +58,15 @@ Stores `serialize([username, md5(username . password)])` in the cookie for auto-
 ## Configuration (XML)
 
 ```xml
-<module id="users" class="Prado\Security\TUserManager" PasswordMode="Clear">
-    <user name="Joe"   password="demo" />
-    <user name="John"  password="demo" />
-    <user name="Jerry" password="demo" roles="Writer,Administrator" />
-    <role name="Administrator" users="John" />
-    <role name="Writer"        users="Joe,John" />
-</module>
+<modules>
+    <module id="users" class="Prado\Security\TUserManager" PasswordMode="Clear">
+        <user name="Joe"   password="demo" />
+        <user name="John"  password="demo" />
+        <user name="Jerry" password="demo" roles="Writer,Administrator" />
+        <role name="Administrator" users="John" />
+        <role name="Writer"        users="Joe,John" />
+    </module>
+</modules>
 ```
 
 PHP array format:
@@ -86,7 +88,9 @@ PHP array format:
 
 External user file (set `UserFile` to a namespace path matching the config format above):
 ```xml
-<module id="users" class="Prado\Security\TUserManager" UserFile="Application.config.users" />
+<modules>
+    <module id="users" class="Prado\Security\TUserManager" UserFile="Application.config.users" />
+</modules>
 ```
 
 ## Patterns & Gotchas
@@ -95,5 +99,6 @@ External user file (set `UserFile` to a namespace path matching the config forma
 - **`UserFile` cannot be changed after `init()`** — throws [TInvalidOperationException](../Exceptions/TInvalidOperationException.md).
 - **Roles can be declared on `<user>` elements AND on `<role>` elements** — both are merged into the same per-user role list.
 - **Cookie auto-login token is `md5(username . storedPassword)`** — if the stored password changes, all existing cookies are immediately invalidated. This is intentional.
-- **`PasswordMode::MD5` is the default** — applications that require stronger hashing should use `TDbUserManager` with bcrypt/Argon2 in the custom `TDbUser`.
+- **`PasswordMode::MD5` is the default** — applications that require stronger hashing should use [TDbUserManager](./TDbUserManager.md) with bcrypt/Argon2 in the custom `TDbUser`.
 - **Not suitable for large user bases** — the entire user list is loaded into memory on every request.
+- **`validateUser()` uses `#[\SensitiveParameter]`** on the password argument, so it is redacted from stack traces.

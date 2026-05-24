@@ -1,7 +1,7 @@
 # Web/Javascripts/packages
 
 ### Directories
-[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [Javascripts](./Web/Javascripts/INDEX.md) / **`packages`**
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [Javascripts](INDEX.md) / **`packages`**
 
 **Location:** `framework/Web/Javascripts/packages.php`
 
@@ -47,4 +47,4 @@ Key dependencies include: `prado` requires `jquery`, `ajax` requires `jquery` an
 ## See Also
 
 - [css-packages.php](./css-packages.md) - CSS package registry
-- [TClientScriptManager](../UI/TClientScriptManager.php) - Consumes this registry
+- [TClientScriptManager](../UI/TClientScriptManager.md) — Consumes this registry

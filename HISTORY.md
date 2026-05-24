@@ -1,12 +1,21 @@
 ## Version 4.3.3 - TBA
 
-ENH: Issue #1052 - Integration for 3rd Party Databases into ActiveRecord and TTableGateway. eg.[PRADO MongoDB](https://github.com/belisoful/prado-mongodb)
-ENH: Issue #1037 - Adds skipping `#` and `;` comments in errorMessages.txt processing
-ENH: Issue #1036 - Adds IBM DB2 and Firebird support to Data.Common
-ENH: Issue #1027 - Adds TNull to represent `null` in Collections.
-ENH: Issue #776 - TDataSize supports ronna- and quetta- sizes, and uses cultural units for peta- and under (decimal only).
-ENH: Issue #782 - CultureInfo loads and formats units from ICU.
-BUG: Issue #1013 - CultureInfo loads more than one ICU key.
+ENH: Issues #1036, #1052, #1058, #1070, #1126 - Database layer: `TDbPropertiesTrait` unifies DB connection handling across modules; adds `IDataConnection`, `IDataCommand`, `IDataReader`, `IDataTransaction`, `IDataMetaData`, `IDataCommandBuilder`, `IDataTableInfo` interfaces for 3rd-party driver integration; IBM DB2 and Firebird metadata support; TDbDriver` PDO driver names, `TDataCharset` universal IANA charset names.
+ENH: Issues #1062, #1094 - TEventParameter: adds `IEventCycleParameter` lifecycle to `TComponent::raiseEvent`; `ReadOnly` flag; `ArrayAccess` support when parameter is an array.
+ENH: Issues #1095, #1105 - TApplication/TShellApplication refactor with Uniform Access Principal; adds `onConfiguration` event after config before service discovery, `TTestApplication`; PradoUnit (advanced unit testing features).
+ENH: Issues #1065, #1073 - PHPStan: improved coverage of Prado's dynamic property and method system; `TEnumerable` constant detection; `TConstantReflectionTrait` extracted for reuse.
+ENH: Issues #782, #776, #1066 - I18N/formatting: CultureInfo loads `Units` from ICU; `TDataSize` supports ronna- and quetta- sizes; `TSimpleDateFormatter` extended Java `SimpleDateFormat` pattern support.
+ENH: Issues #1078, #1079, #1100 - Web controls: `TModuleView` control; `TControl::createControlChildren` walks full behavior parent chain; render-output filter pipeline (`IFilterRenderable`, `TRenderFilterParameter`); new HTML5 semantic controls (`TArticle`, `TAside`, `TFooter`, `THeader`, `TMain`, `TMark`, `TNav`, `TSection`).
+ENH: Issues #1051, #1071 - Web infrastructure: `TAssetManager` symlink publishing, timestamp cache-busting, `Only`/`Except` filters; `TUrlMappingPattern` HTTP verb filtering.
+ENH: Issues #1061, #1106 - TSecurityManager: `UseEncryptionHmac` for authenticated encryption; `EncryptionKeyAlgorithm` for configurable HKDF key derivation.
+ENH: Issues #1027, #1037, #1068, #1074, #1076, #1093, #1104 - Utilities/Classes: `TNull` for null in Collections; `#`/`;` comments in errorMessages.txt; `TInitializedTrait` guard for object lifecycle; `TWebColor` added (`TWebColors` deprecated); `TTarFileExtractor` atomic extraction with rollback, URL download, Zip Slip defense; `TWeakMap`; singleton `TDbCronManager` added (`TDbCronModule` deprecated).
+ENH: Issue #1034 - AGENTS.md and CLAUDE.md; Working Knowledge agent documentation files under `agents/`.
+ENH: Issue #1123 - All configurable module classes now include XML and PHP configuration examples in their class doc blocks.
+ENH: Issue #1126 - `TService::getInstance()` static accessor returns the current active service as the called class (or `null` if wrong type/not started); `TApplication::registerService` tightened class-requirement condition.
+BUG: Issues #1048, #1050 - TSecurityManager: fix timing-attack vulnerability in hash comparison; cryptographically secure random key generation.
+BUG: Issues #1101, #1122 - TDbCache: expiry moment is a cache hit; TErrorHandler: refactor - `THttpException`/`TExitException` updated.
+BUG: Issue #1121 - TPgsqlMetaData: null-safe `substr()` for PHP 8 compatibility (`adsrc` column can be `null`).
+BUG: Issue #1126 - `TDirectoryCacheDependency`: fixed missing `$timestamps` capture in `array_merge` for subdirectory timestamps; `TConstantReflectionTrait`: fixed blank-string prefix edge case.
 
 ## Version 4.3.2 - January 28, 2026
 

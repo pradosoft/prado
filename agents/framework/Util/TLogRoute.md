@@ -133,6 +133,33 @@ Sends to the OS `syslog()`. Level mapping: `DEBUG`→`LOG_DEBUG`, `INFO`→`LOG_
 <route class="Prado\Util\TSysLogRoute" Levels="Error|Fatal" />
 ```
 
+## Configuration
+
+`TLogRoute` is abstract and is not configured as a standalone module. Concrete subclasses are registered as `<route>` sub-elements of a `TLogRouter` module. All subclasses follow the same pattern.
+
+**application.xml:**
+```xml
+<modules>
+  <module id="log" class="Prado\Util\TLogRouter">
+    <route class="Prado\Util\TFileLogRoute" Levels="error,warning" LogFile="app.log" />
+  </module>
+</modules>
+```
+
+**PHP equivalent:**
+```php
+return [
+    'modules' => [
+        'log' => [
+            'class' => 'Prado\Util\TLogRouter',
+            'routes' => [
+                ['class' => 'Prado\Util\TFileLogRoute', 'properties' => ['Levels' => 'error,warning', 'LogFile' => 'app.log']],
+            ],
+        ],
+    ],
+];
+```
+
 ## Patterns & Gotchas
 
 - **`processLogs()` only called on flush** — logs accumulate in `$_logs` until `ProcessInterval` is reached or `$final=true`. Do not assume immediate delivery.

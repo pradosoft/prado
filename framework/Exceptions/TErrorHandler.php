@@ -53,7 +53,7 @@ use Prado\Web\THttpHeaderName;
  * </modules>
  * ```
  *
- * Or equivalently in application.php:
+ * PHP configuration style:
  * ```php
  * return [
  *     'modules' => [

@@ -38,7 +38,7 @@ Enable the default stylesheet (default: `true`).
 
 ### `getTableInfo()`
 
-Returns the [`TDbTableInfo`](../Common/TDbTableInfo.md) for the current record's table.
+Returns the [`TDbTableInfo`](../../Common/TDbTableInfo.md) for the current record's table.
 
 ### `getRecordObject($pk = null)`
 

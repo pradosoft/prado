@@ -8,7 +8,7 @@
 **Namespace:** `Prado\Data`
 
 ## Overview
-`TDbDataReader` represents a forward-only stream of rows from a query result set. It implements `Iterator` and `Countable`.
+`TDbDataReader` represents a forward-only stream of rows from a query result set. It implements [`IDataReader`](./IDataReader.md), `Iterator`, and `Countable`.
 
 ## Key Methods
 
@@ -39,5 +39,6 @@ foreach($reader as $row) {
 
 ## See Also
 
+- [IDataReader](./IDataReader.md) - Interface this class implements
 - [TDbCommand](./TDbCommand.md) - SQL command execution
 - [TDbConnection](./TDbConnection.md) - Database connection

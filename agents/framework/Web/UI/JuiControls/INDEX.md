@@ -1,7 +1,7 @@
 # Web/UI/JuiControls/INDEX.md
 
 ### Directories
-[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / **`JuiControls/INDEX.md`**
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / **`JuiControls`**
 
 ## Purpose
 

@@ -28,15 +28,34 @@ use Prado\Util\Traits\TInitializedTrait;
  * To use TDbUserManager together with TAuthManager, configure them in
  * the application configuration like following:
  * ```xml
- * <module id="db"
- *     class="Prado\Data\TDataSourceConfig" ..../>
- * <module id="users"
- *     class="Prado\Security\TDbUserManager"
- *     UserClass="Path\To\MyUserClass"
- *     ConnectionID="db" />
- * <module id="auth"
- *     class="Prado\Security\TAuthManager"
- *     UserManager="users" LoginPage="Path\To\LoginPage" />
+ * <modules>
+ *     <module id="db"
+ *         class="Prado\Data\TDataSourceConfig" ..../>
+ *     <module id="users"
+ *         class="Prado\Security\TDbUserManager"
+ *         UserClass="Path\To\MyUserClass"
+ *         ConnectionID="db" />
+ *     <module id="auth"
+ *         class="Prado\Security\TAuthManager"
+ *         UserManager="users" LoginPage="Path\To\LoginPage" />
+ * </modules>
+ * ```
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'db' => ['class' => 'Prado\Data\TDataSourceConfig', ...],
+ *         'users' => [
+ *             'class' => 'Prado\Security\TDbUserManager',
+ *             'properties' => ['UserClass' => 'Path\To\MyUserClass', 'ConnectionID' => 'db'],
+ *         ],
+ *         'auth' => [
+ *             'class' => 'Prado\Security\TAuthManager',
+ *             'properties' => ['UserManager' => 'users', 'LoginPage' => 'Path\To\LoginPage'],
+ *         ],
+ *     ],
+ * ];
  * ```
  *
  * In the above, {@see setUserClass UserClass} specifies what class will be used

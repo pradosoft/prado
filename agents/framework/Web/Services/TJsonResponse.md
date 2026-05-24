@@ -18,4 +18,4 @@ TJsonResponse is the abstract base class for JSON response providers used by TJs
 
 ## See Also
 
-- [TJsonService](../TJsonService.md) - The JSON service that uses TJsonResponse providers
+- [TJsonService](TJsonService.md) - The JSON service that uses TJsonResponse providers

@@ -1,7 +1,7 @@
 # Util/Math/INDEX.md
 
 ### Directories
-[framework](./INDEX.md) / [Util](./Util/INDEX.md) / **`Math/INDEX.md`**
+[framework](../../INDEX.md) / [Util](../INDEX.md) / **`Math`**
 
 ## Purpose
 
@@ -16,5 +16,5 @@ Mathematical utility classes for exact rational number arithmetic.
 ## Conventions
 
 - Both classes are value objects — treat them as immutable.
-- Use [`TRational::fromFloat()`](../Util/Math/TRational.md) to approximate a float as a fraction.
-- Division by zero produces a [`TInvalidDataValueException`](../Exceptions/TInvalidDataValueException.md).
+- Use [`TRational::fromFloat()`](TRational.md) to approximate a float as a fraction.
+- Division by zero produces a [`TInvalidDataValueException`](../../Exceptions/TInvalidDataValueException.md).

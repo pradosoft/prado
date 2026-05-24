@@ -1,7 +1,7 @@
 # Collections/IPriorityCapture
 
 ### Directories
-[framework](./INDEX.md) / [Collections](./Collections/INDEX.md) / **`IPriorityCapture`**
+[framework](../INDEX.md) / [Collections](INDEX.md) / **`IPriorityCapture`**
 
 **Location:** `framework/Collections/IPriorityCapture.php`
 **Namespace:** `Prado\Collections`

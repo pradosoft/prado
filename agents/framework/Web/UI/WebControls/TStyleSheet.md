@@ -18,4 +18,4 @@ TStyleSheet represents a link to a stylesheet file and/or inline CSS code. It su
 
 ## See Also
 
-- [TControl](./TControl.md)
+- [TControl](../TControl.md)

@@ -8,7 +8,7 @@
 **Namespace:** `Prado\Data`
 
 ## Overview
-`TDbTransaction` represents a database transaction. It is created by calling [`TDbConnection::beginTransaction()`](./TDbConnection.md).
+`TDbTransaction` represents a database transaction. It is created by calling [`TDbConnection::beginTransaction()`](./TDbConnection.md). Implements [`IDataTransaction`](./IDataTransaction.md).
 
 ## Key Methods
 
@@ -33,4 +33,5 @@ try {
 
 ## See Also
 
+- [IDataTransaction](./IDataTransaction.md) - Interface this class implements
 - [TDbConnection](./TDbConnection.md) - Database connection

@@ -16,5 +16,5 @@ TDataRenderer is a convenient base class for template-based renderer controls. I
 
 ## See Also
 
-- [TTemplateControl](./TTemplateControl.md)
-- [IDataRenderer](./IDataRenderer.md)
+- [TTemplateControl](../TTemplateControl.md)
+- [IDataRenderer](../../../IDataRenderer.md)

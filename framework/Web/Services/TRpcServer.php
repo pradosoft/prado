@@ -20,6 +20,33 @@ namespace Prado\Web\Services;
  * the provider. This base class should suit the most common needs, but can be sublassed for
  * logging and debugging purposes, or to filter and modify the request/response on the fly.
  *
+ * TRpcServer is instantiated internally by TRpcService and does not need to be declared
+ * as a standalone module. To customise request handling, subclass TRpcServer and reference
+ * it via the `server` attribute of the `<rpcapi>` element:
+ * ```xml
+ * <service id="rpc" class="Prado\Web\Services\TRpcService">
+ *     <rpcapi id="customers" class="Application.Api.CustomersApi"
+ *             server="Application.Api.MyRpcServer" />
+ * </service>
+ * ```
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'services' => [
+ *         'rpc' => [
+ *             'class' => 'Prado\Web\Services\TRpcService',
+ *             'apis' => [
+ *                 'customers' => [
+ *                     'class' => 'Application\Api\CustomersApi',
+ *                     'server' => 'Application\Api\MyRpcServer',
+ *                 ],
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
+ *
  * @author Robin J. Rogge <rrogge@bigpoint.net>
  * @since 3.2
  **/

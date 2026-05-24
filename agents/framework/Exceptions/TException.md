@@ -10,6 +10,8 @@
 ## Overview
 Prado's exception hierarchy extends PHP's `Exception`. `TException` provides multilingual error messages loaded from `messages/messages.txt` keyed by error code string. `TErrorHandler` renders errors using HTML templates.
 
+Supports two constructor styles: old-style (string key as first argument) and new-style (integer PHP error code as first argument followed by string message key). Additional string arguments fill `{0}`, `{1}`, … placeholders; a trailing `Throwable` is chained as `$previous`.
+
 ## TException
 
 ```php
@@ -69,8 +71,10 @@ Loaded once per language per request; cached in `TException::$_messageCache`.
 Registered as a module in `application.xml`. Renders exceptions using HTML templates.
 
 ```xml
-<module id="error" class="Prado\Exceptions\TErrorHandler"
-        ErrorTemplatePath="Application.Pages.errors" />
+<modules>
+    <module id="error" class="Prado\Exceptions\TErrorHandler"
+            ErrorTemplatePath="Application.Pages.errors" />
+</modules>
 ```
 
 Template files: `error{code}.html` (e.g., `error404.html`), `error.html` (generic). Template tokens: `%%ErrorMessage%%`, `%%Version%%`, `%%Time%%`, `%%TraceString%%`, `%%SourceCode%%` (12 lines of context around the error).
@@ -84,9 +88,18 @@ Template files: `error{code}.html` (e.g., `error404.html`), `error.html` (generi
 2. Add translations to `messages-{lang}.txt` as needed.
 3. Throw: `throw new TApplicationException('my_error_code', $detail);`
 
+## Extra Message Files
+
+Third-party modules can register additional message files:
+```php
+TException::addMessageFile('path/to/messages.txt');
+```
+The method automatically resolves a language-specific variant if one exists.
+
 ## Gotchas
 
 - **Catch order** — catch `[TException](./TException.md)` before `Exception` when you need Prado-specific handling.
 - **`[TExitException](./TExitException.md)`** — not really an error; caught by `TApplication::run()` to perform a clean exit. Don't let it propagate to user-facing error handlers.
 - **`[THttpException](./THttpException.md)`** — triggers `[TErrorHandler](./TErrorHandler.md)` to emit the correct HTTP status code. Use for 404, 403, 500, etc.
 - **Parameter count** — constructor parameters after the error code string are substituted positionally; extra parameters are silently ignored.
+- **New-style vs old-style** — first argument is `int` for new-style (PHP error code), `string` for old-style (message key). Do not pass `0` as an integer to mean "no code" when an old-style string is intended.

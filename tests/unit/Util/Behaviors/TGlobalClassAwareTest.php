@@ -23,22 +23,25 @@ class TGlobalClassAwareTest extends PHPUnit\Framework\TestCase
 	{
 		$name = 'globalclassaware';
 		$component = new TComponent();
-		
-		self::assertFalse($component->hasEventHandler('fxAttachClassBehavior'));
-		self::assertFalse($component->hasEventHandler('fxDetachClassBehavior'));
+
+		// hasEventHandler('fx*') checks the *global* static handler list, which may
+		// already contain entries from other tests.  Assert on the specific callable
+		// instead so the test is not sensitive to global state from other test cases.
+		$attachKey = [$component, 'fxAttachClassBehavior'];
+		$detachKey = [$component, 'fxDetachClassBehavior'];
+
+		self::assertNotContains($attachKey, $component->getEventHandlers('fxAttachClassBehavior')->toArray());
+		self::assertNotContains($detachKey, $component->getEventHandlers('fxDetachClassBehavior')->toArray());
 
 		$component->attachBehavior($name, $this->behavior);
-		
-		self::assertTrue($component->hasEventHandler('fxAttachClassBehavior'));
-		self::assertEquals([[$component, 'fxAttachClassBehavior']], $component->getEventHandlers('fxAttachClassBehavior')->toArray());
-		self::assertTrue($component->hasEventHandler('fxDetachClassBehavior'));
-		self::assertEquals([[$component, 'fxDetachClassBehavior']], $component->getEventHandlers('fxDetachClassBehavior')->toArray());
-	
+
+		self::assertContains($attachKey, $component->getEventHandlers('fxAttachClassBehavior')->toArray());
+		self::assertContains($detachKey, $component->getEventHandlers('fxDetachClassBehavior')->toArray());
+
 		$component->detachBehavior($name);
-		self::assertFalse($component->hasEventHandler('fxAttachClassBehavior'));
-		self::assertFalse($component->hasEventHandler('fxDetachClassBehavior'));
 
-
+		self::assertNotContains($attachKey, $component->getEventHandlers('fxAttachClassBehavior')->toArray());
+		self::assertNotContains($detachKey, $component->getEventHandlers('fxDetachClassBehavior')->toArray());
 	}
 	
 }

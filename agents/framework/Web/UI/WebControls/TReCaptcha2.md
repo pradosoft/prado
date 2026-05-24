@@ -28,4 +28,4 @@ TReCaptcha2 displays the Google reCAPTCHA v2 widget with callback support. It ex
 
 - [TReCaptcha](./TReCaptcha.md)
 - [TReCaptcha2Validator](./TReCaptcha2Validator.md)
-- [TActivePanel](./TActivePanel.md)
+- [TActivePanel](../ActiveControls/TActivePanel.md)

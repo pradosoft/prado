@@ -13,8 +13,22 @@
 ## Configuration
 
 ```xml
-<module id="cache" class="Prado\Caching\TEtcdCache" 
-        Host="localhost" Port="2379" Dir="pradocache" />
+<modules>
+    <module id="cache" class="Prado\Caching\TEtcdCache" 
+            Host="localhost" Port="2379" Dir="pradocache" />
+</modules>
+```
+
+**PHP equivalent:**
+```php
+return [
+    'modules' => [
+        'cache' => [
+            'class' => 'Prado\Caching\TEtcdCache',
+            'properties' => ['Endpoints' => 'http://localhost:2379'],
+        ],
+    ],
+];
 ```
 
 ## Properties

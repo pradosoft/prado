@@ -104,6 +104,6 @@ $button->onClick = function($sender, $param) {
 };
 
 // Render
-$writer = new [THtmlWriter](./THtmlWriter.md)();
+$writer = new [THtmlWriter](../THtmlWriter.md)();
 $button->render($writer);
 ```

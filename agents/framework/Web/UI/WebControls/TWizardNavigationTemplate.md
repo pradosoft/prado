@@ -19,4 +19,4 @@ TWizardNavigationTemplate is the base class for wizard navigation templates. It 
 ## See Also
 
 - [TWizardStartNavigationTemplate](./TWizardStartNavigationTemplate.md)
-- [ITemplate](./ITemplate.md)
+- [ITemplate](../ITemplate.md)

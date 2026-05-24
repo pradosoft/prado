@@ -55,20 +55,34 @@ If the current application user is a [TDbUser](./TDbUser.md), delegates to `$use
 ## Configuration (XML)
 
 ```xml
-<module id="db"
-    class="Prado\Data\TDataSourceConfig"
-    ConnectionString="mysql:host=localhost;dbname=myapp"
-    Username="dbuser" Password="dbpass" />
+<modules>
+    <module id="db"
+        class="Prado\Data\TDataSourceConfig"
+        ConnectionString="mysql:host=localhost;dbname=myapp"
+        Username="dbuser" Password="dbpass" />
 
-<module id="users"
-    class="Prado\Security\TDbUserManager"
-    UserClass="Application.Security.MyUser"
-    ConnectionID="db" />
+    <module id="users"
+        class="Prado\Security\TDbUserManager"
+        UserClass="Application.Security.MyUser"
+        ConnectionID="db" />
 
-<module id="auth"
-    class="Prado\Security\TAuthManager"
-    UserManager="users"
-    LoginPage="Pages.Login" />
+    <module id="auth"
+        class="Prado\Security\TAuthManager"
+        UserManager="users"
+        LoginPage="Pages.Login" />
+</modules>
+```
+
+**PHP equivalent:**
+```php
+return [
+    'modules' => [
+        'users' => [
+            'class' => 'Prado\Security\TDbUserManager',
+            'properties' => ['ConnectionID' => 'db'],
+        ],
+    ],
+];
 ```
 
 ## Initialization Behavior
@@ -76,14 +90,25 @@ If the current application user is a [TDbUser](./TDbUser.md), delegates to `$use
 During `init()`:
 1. Validates that `UserClass` is set; throws `TConfigurationException('dbusermanager_userclass_required')` otherwise.
 2. Creates a prototype instance of `UserClass` via `Prado::createComponent($userClass, $this)`.
-3. Validates the prototype is a [TDbUser](./TDbUser.md); throws [TInvalidDataTypeException](../Exceptions/TInvalidDataTypeException.md)('dbusermanager_userclass_invalid')` otherwise.
+3. Validates the prototype is a [TDbUser](./TDbUser.md); throws `TInvalidDataTypeException('dbusermanager_userclass_invalid')` otherwise.
 4. This prototype (`$_userFactory`) is reused for all `validateUser()` and `createUser()` calls.
+5. Marks initialization complete; configuration properties become read-only.
+
+## Exception Message Keys (@since 4.3.3)
+
+`TDbUserManager` overrides `TDbModule`'s protected helper methods to supply its own error message keys:
+
+| Method | Key |
+|--------|-----|
+| `getConnectionInvalidExceptionKey()` | `'dbusermanager_connectionid_invalid'` |
+| `getConnectionRequiredExceptionKey()` | `'dbusermanager_connectionid_required'` |
 
 ## Patterns & Gotchas
 
 - **`UserClass` is required** — the module will not initialize without it.
-- **`ConnectionID` is required** — an empty value throws `TConfigurationException('dbusermanager_connectionid_required')`.
+- **`ConnectionID` is required** — an empty value throws a `TConfigurationException` (key: `dbusermanager_connectionid_required`).
 - **The factory pattern** — `$_userFactory` is a single reused prototype. It is passed `$this` (the manager) in its constructor, so `getDbConnection()` works inside `TDbUser` methods.
 - **Cookie auto-login** requires the `TDbUser` subclass to override both `createUserFromCookie()` and `saveUserToCookie()`. The default implementations are no-ops.
 - **`IDbModule` conformance** — `TDbUserManager` registers itself as a DB module, which means other framework components (e.g., `TDbParameterModule`) can discover it as a connection source.
-- **Connection is shared** — the same `TDbConnection` instance (cached in `$_conn`) is returned to all callers including the `TDbUser` instances.
+- **Connection is shared** — the same `TDbConnection` instance (cached in `TDbModule`) is returned to all callers including the `TDbUser` instances.
+- **`validateUser()` uses `#[\SensitiveParameter]`** on the password argument, so it is redacted from stack traces.
