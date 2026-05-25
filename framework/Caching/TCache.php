@@ -12,6 +12,7 @@ namespace Prado\Caching;
 
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TNotSupportedException;
+use Prado\TModule;
 use Prado\TPropertyValue;
 
 /**
@@ -81,10 +82,24 @@ use Prado\TPropertyValue;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
-abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
+abstract class TCache extends TModule implements ICache, \ArrayAccess
 {
-	private $_prefix;
-	private $_primary = true;
+	public const DEFAULT_PREFIX = '';
+
+	/** @var ?string unique key prefix for cached values, or null before initialization */
+	private ?string $_prefix = null;
+	/** @var bool whether this module is used as the primary application cache */
+	private bool $_primary = true;
+
+	// =========================================================================
+	// Lifecycle
+	// =========================================================================
+
+	public function __construct()
+	{
+		$this->setKeyPrefix(static::DEFAULT_PREFIX);
+		parent::__construct();
+	}
 
 	/**
 	 * Initializes the cache module.
@@ -94,7 +109,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 */
 	public function init($config)
 	{
-		if ($this->getKeyPrefix() === null) {
+		if ($this->getKeyPrefixDirect() === null) {
 			$this->setKeyPrefix($this->getApplication()?->getUniqueID() ?? '');
 		}
 		if ($this->getPrimaryCache()) {
@@ -109,28 +124,31 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	/**
 	 * Registers this module as the application cache when an application is available.
 	 * Called during {@see init()}; may also be called by behaviors or subclasses.
-	 * @since 4.3.3
+	 * @since 4.4.0
 	 */
-	protected function setAppCache()
+	protected function setAppCache(): void
 	{
 		$this->getApplication()?->setCache($this);
 	}
+
+	// =========================================================================
+	// Property Getters/Setters
+	// =========================================================================
 
 	/**
 	 * @return bool whether this cache module is used as primary/system cache.
 	 * A primary cache is used by PRADO core framework to cache data such as
 	 * parsed templates, themes, etc.
 	 */
-	public function getPrimaryCache()
+	public function getPrimaryCache(): bool
 	{
 		return $this->_primary;
 	}
 
 	/**
 	 * @param bool $value whether this cache module is used as primary/system cache. Defaults to true.
-	 * @see getPrimaryCache
 	 */
-	public function setPrimaryCache($value)
+	public function setPrimaryCache(bool $value): void
 	{
 		$this->_primary = TPropertyValue::ensureBoolean($value);
 	}
@@ -139,15 +157,34 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 * @return string a unique prefix for the keys of cached values.
 	 * If it is not explicitly set, it will take the value of {@see \Prado\TApplication::getUniqueID}.
 	 */
-	public function getKeyPrefix()
+	public function getKeyPrefix(): string
+	{
+		return $this->getKeyPrefixDirect() ?? '';
+	}
+
+	/**
+	 * @param string $value a unique prefix for the keys of cached values
+	 */
+	public function setKeyPrefix(string $value): void
+	{
+		$this->setKeyPrefixDirect($value);
+	}
+
+	/**
+	 * @return string a unique prefix for the keys of cached values.
+	 * If it is not explicitly set, it will take the value of {@see \Prado\TApplication::getUniqueID}.
+	 * @since 4.4.0
+	 */
+	protected function getKeyPrefixDirect(): ?string
 	{
 		return $this->_prefix;
 	}
 
 	/**
 	 * @param string $value a unique prefix for the keys of cached values
+	 * @since 4.4.0
 	 */
-	public function setKeyPrefix($value)
+	protected function setKeyPrefixDirect(string $value): void
 	{
 		$this->_prefix = $value;
 	}
@@ -156,9 +193,19 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 * @param string $key a key identifying a value to be cached
 	 * @return string a key generated from the provided key which ensures the uniqueness across applications
 	 */
-	protected function generateUniqueKey($key)
+	protected function generateUniqueKey(string $key): string
 	{
-		return $this->hashToken($this->getKeyPrefix() . $key);
+		return $this->hashToken($this->generateToken($key));
+	}
+
+	/**
+	 * @param string $key a key identifying a value to be cached
+	 * @return string a key generated from the provided key which ensures the uniqueness across applications
+	 * @since 4.4.0
+	 */
+	protected function generateToken(string $key): string
+	{
+		return $this->getKeyPrefix() . $key;
 	}
 
 	/**
@@ -166,20 +213,23 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 * Override in a subclass to substitute a different hashing algorithm.
 	 * @param string $token the raw token to hash
 	 * @return string the hashed token
-	 * @since 4.3.3
-	 * @todo 4.4: change to sha1 for security
+	 * @since 4.4.0
 	 */
-	protected function hashToken($token)
+	protected function hashToken(string $token): string
 	{
-		return md5($token);
+		return sha1($token);
 	}
+
+	// =========================================================================
+	// ICache implementation
+	// =========================================================================
 
 	/**
 	 * Retrieves a value from cache with a specified key.
 	 * @param string $id a key identifying the cached value
-	 * @return false|mixed the value stored in cache, false if the value is not in the cache or expired.
+	 * @return mixed the value stored in cache, false if the value is not in the cache or expired.
 	 */
-	public function get($id)
+	public function get(string $id): mixed
 	{
 		if (($data = $this->getValue($this->generateUniqueKey($id))) !== false) {
 			if (!is_array($data)) {
@@ -201,10 +251,10 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 * @param string $id the key identifying the value to be cached
 	 * @param mixed $value the value to be cached
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
-	 * @param ICacheDependency $dependency dependency of the cached item. If the dependency changes, the item is labeled invalid.
+	 * @param ?ICacheDependency $dependency dependency of the cached item. If the dependency changes, the item is labeled invalid.
 	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
-	public function set($id, $value, $expire = 0, $dependency = null)
+	public function set(string $id, mixed $value, int $expire = 0, ?ICacheDependency $dependency = null): bool
 	{
 		if (empty($value) && $expire === 0) {
 			return $this->delete($id);
@@ -223,7 +273,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 * @param ICacheDependency $dependency dependency of the cached item. If the dependency changes, the item is labeled invalid.
 	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
-	public function add($id, $value, $expire = 0, $dependency = null)
+	public function add(string $id, mixed $value, int $expire = 0, $dependency = null): bool
 	{
 		if (empty($value) && $expire === 0) {
 			return false;
@@ -237,7 +287,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 * @param string $id the key of the value to be deleted
 	 * @return bool if no error happens during deletion
 	 */
-	public function delete($id)
+	public function delete(string $id): bool
 	{
 		return $this->deleteValue($this->generateUniqueKey($id));
 	}
@@ -247,51 +297,65 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 * Be careful of performing this operation if the cache is shared by multiple applications.
 	 * @throws TNotSupportedException if this method is not overridden by child classes
 	 */
-	public function flush()
+	public function flush(): void
 	{
 		throw new TNotSupportedException('cache_flush_unsupported');
 	}
+
+	// =========================================================================
+	// Subclass Provider Methods
+	// =========================================================================
 
 	/*
 	 * Returns whether this cache backend's prerequisites (extensions, services) are met.
 	 * @since 4.4.0
 	 */
-	//abstract public static function getIsAvailable(): bool;
+	abstract public static function getIsAvailable(): bool;
 
 	/**
 	 * Retrieves a value from cache with a specified key.
 	 * Uniqueness and dependency are handled by {@see get()}; implement storage retrieval only.
+	 * Returns `false` on a cache miss; returns the stored mixed value (an array of
+	 * `[$value, $dependency]`) on a hit.
 	 * @param string $key a unique key identifying the cached value
-	 * @return false|string the value stored in cache, false if the value is not in the cache or expired.
+	 * @return false|mixed the stored value on a hit, or `false` on a miss or expiry.
 	 */
-	abstract protected function getValue($key);
+	abstract protected function getValue(string $key): mixed;
 
 	/**
 	 * Stores a value identified by a key in cache.
 	 * Uniqueness and dependency are handled by {@see set()}; implement storage write only.
+	 * The `$value` parameter receives a `[$value, $dependency]` array; backends are
+	 * responsible for any serialization required by their storage layer.
 	 * @param string $key the key identifying the value to be cached
-	 * @param string $value the value to be cached
+	 * @param mixed $value the value to be cached (a two-element array of value + dependency)
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
-	abstract protected function setValue($key, $value, $expire);
+	abstract protected function setValue(string $key, mixed $value, int $expire): bool;
 
 	/**
 	 * Stores a value identified by a key into cache if the cache does not contain this key.
 	 * Uniqueness and dependency are handled by {@see add()}; implement storage write only.
+	 * The `$value` parameter receives a `[$value, $dependency]` array; backends are
+	 * responsible for any serialization required by their storage layer.
 	 * @param string $key the key identifying the value to be cached
-	 * @param string $value the value to be cached
+	 * @param mixed $value the value to be cached (a two-element array of value + dependency)
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
-	abstract protected function addValue($key, $value, $expire);
+	abstract protected function addValue(string $key, mixed $value, int $expire): bool;
 
 	/**
 	 * Deletes a value with the specified key from cache.
 	 * @param string $key the key of the value to be deleted
 	 * @return bool true if no error happens during deletion
 	 */
-	abstract protected function deleteValue($key);
+	abstract protected function deleteValue(string $key): bool;
+
+	// =========================================================================
+	// \ArrayAccess
+	// =========================================================================
 
 	/**
 	 * Returns whether there is a cache entry with a specified key.
