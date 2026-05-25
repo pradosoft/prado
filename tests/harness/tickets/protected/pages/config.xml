@@ -9,5 +9,5 @@
 	</module>
   </modules>
 
-  <pages MasterClass="Application.pages.Layout" />
+  <pages MasterClass="Application.pages.HarnessWebLayout" />
 </configuration>

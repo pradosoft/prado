@@ -4,7 +4,7 @@
 
 <com:TActiveLinkButton ID="ALB" Text="Test" /><br />
 
-<!-- spans added to access embedded id-less span via CSS selector from selenium -->
+<!-- spans added to access embedded id-less span via CSS selector from Playwright -->
 <span id="acb">
 <com:TActiveCheckBox ID="ACB" Text="Test" Display="None" /><br />
 </span>

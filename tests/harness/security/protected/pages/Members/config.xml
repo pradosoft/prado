@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<configuration>
+	<authorization>
+		<!-- deny guests; any authenticated user may enter -->
+		<deny users="?" />
+	</authorization>
+</configuration>

@@ -1,0 +1,4 @@
+<com:TContent ID="Content">
+<h1>THttpResponse Redirect Test</h1>
+<p id="info">Use ?action=redirect302 or ?action=redirect-external to trigger a redirect.</p>
+</com:TContent>
