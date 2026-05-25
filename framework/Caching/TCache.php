@@ -65,12 +65,22 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 		}
 		if ($this->_primary) {
 			if ($this->getApplication()->getCache() === null) {
-				$this->getApplication()->setCache($this);
+				$this->setAppCache();
 			} else {
 				throw new TConfigurationException('cache_primary_duplicated', $this::class);
 			}
 		}
 		parent::init($config);
+	}
+
+	/**
+	 * Registers this module as the application cache when an application is available.
+	 * Called during {@see init()}; may also be called by behaviors or subclasses.
+	 * @since 4.4.0
+	 */
+	protected function setAppCache()
+	{
+		$this->getApplication()?->setCache($this);
 	}
 
 	/**

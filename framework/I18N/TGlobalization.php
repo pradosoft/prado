@@ -135,8 +135,18 @@ class TGlobalization extends \Prado\TModule
 				$this->setTranslationConfiguration($translation);
 			}
 		}
-		$this->getApplication()->setGlobalization($this);
+		$this->setAppGlobalization();
 		parent::init($config);
+	}
+
+	/**
+	 * Registers this module as the application globalization handler when an application is available.
+	 * Called during {@see init()}; may also be called by behaviors or subclasses.
+	 * @since 4.4.0
+	 */
+	protected function setAppGlobalization()
+	{
+		$this->getApplication()?->setGlobalization($this);
 	}
 
 	/**

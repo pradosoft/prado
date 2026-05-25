@@ -110,8 +110,18 @@ class TSecurityManager extends \Prado\TModule
 	public function init($config)
 	{
 		$this->_mbstring = extension_loaded('mbstring');
-		$this->getApplication()->setSecurityManager($this);
+		$this->setAppSecurityManager();
 		parent::init($config);
+	}
+
+	/**
+	 * Registers this module as the application security manager when an application is available.
+	 * Called during {@see init()}; may also be called by behaviors or subclasses.
+	 * @since 4.4.0
+	 */
+	protected function setAppSecurityManager()
+	{
+		$this->getApplication()?->setSecurityManager($this);
 	}
 
 	/**

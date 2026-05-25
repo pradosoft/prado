@@ -162,9 +162,19 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 		if ($this->_autoStart) {
 			$this->open();
 		}
-		$this->getApplication()->setSession($this);
+		$this->setAppSession();
 		register_shutdown_function([$this, "close"]);
 		$this->markInitialized();
+	}
+
+	/**
+	 * Registers this module as the application session when an application is available.
+	 * Called during {@see init()}; may also be called by behaviors or subclasses.
+	 * @since 4.4.0
+	 */
+	protected function setAppSession()
+	{
+		$this->getApplication()?->setSession($this);
 	}
 
 	/**
