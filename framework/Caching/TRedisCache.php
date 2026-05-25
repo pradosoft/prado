@@ -144,7 +144,7 @@ class TRedisCache extends TCache
 	 */
 	private $_port = 6379;
 	/**
-	 * @var string the unix socket of the redis cache server.
+	 * @var ?string the unix socket of the redis cache server, or null to use TCP.
 	 */
 	private $_socket;
 	/**
@@ -221,7 +221,7 @@ class TRedisCache extends TCache
 	 * @param ?\Redis $value the underlying Redis instance
 	 * @since 4.3.3
 	 */
-	protected function setCacheDirect($value): void
+	protected function setCacheDirect(?object $value): void
 	{
 		$this->_cache = $value;
 	}
@@ -229,7 +229,7 @@ class TRedisCache extends TCache
 	/**
 	 * @return string the host name of the redis cache server
 	 */
-	public function getHost()
+	public function getHost(): string
 	{
 		return $this->_host;
 	}
@@ -238,7 +238,7 @@ class TRedisCache extends TCache
 	 * @param string $value the host name of the redis cache server
 	 * @throws TInvalidOperationException if the module is already initialized
 	 */
-	public function setHost($value)
+	public function setHost(string $value)
 	{
 		$this->assertUninitialized('Host');
 		$this->_host = $value;
@@ -247,7 +247,7 @@ class TRedisCache extends TCache
 	/**
 	 * @return int the port number of the redis cache server
 	 */
-	public function getPort()
+	public function getPort(): int
 	{
 		return $this->_port;
 	}
@@ -265,7 +265,7 @@ class TRedisCache extends TCache
 	/**
 	 * @return string the unix socket of the redis cache server
 	 */
-	public function getSocket()
+	public function getSocket(): string
 	{
 		return $this->_socket;
 	}
@@ -283,7 +283,7 @@ class TRedisCache extends TCache
 	/**
 	 * @return int the database index to use. Defaults to 0.
 	 */
-	public function getIndex()
+	public function getIndex(): int
 	{
 		return $this->_index;
 	}
@@ -300,20 +300,20 @@ class TRedisCache extends TCache
 
 	/**
 	 * @param string $key a unique key identifying the cached value
-	 * @return false|string the value stored in cache, false if the value is not in the cache or expired.
+	 * @return mixed the stored value on a hit, or `false` on a miss or expiry.
 	 */
-	protected function getValue($key)
+	protected function getValue(string $key): mixed
 	{
 		return $this->getCacheDirect()->get($key);
 	}
 
 	/**
 	 * @param string $key the key identifying the value to be cached
-	 * @param string $value the value to be cached
+	 * @param mixed $value the value to be cached
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
-	protected function setValue($key, $value, $expire)
+	protected function setValue(string $key, mixed $value, int $expire): bool
 	{
 		$options = $expire === 0 ? [] : ['ex' => $expire];
 		return $this->getCacheDirect()->set($key, $value, $options);
@@ -321,11 +321,11 @@ class TRedisCache extends TCache
 
 	/**
 	 * @param string $key the key identifying the value to be cached
-	 * @param string $value the value to be cached
+	 * @param mixed $value the value to be cached
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
-	protected function addValue($key, $value, $expire)
+	protected function addValue(string $key, mixed $value, int $expire): bool
 	{
 		$options = $expire === 0 ? ['nx'] : ['nx', 'ex' => $expire];
 		return $this->getCacheDirect()->set($key, $value, $options);
@@ -335,7 +335,7 @@ class TRedisCache extends TCache
 	 * @param string $key the key of the value to be deleted
 	 * @return bool true if no error happens during deletion
 	 */
-	protected function deleteValue($key)
+	protected function deleteValue(string $key): bool
 	{
 		$this->getCacheDirect()->delete($key);
 		return true;
@@ -343,10 +343,9 @@ class TRedisCache extends TCache
 
 	/**
 	 * Flushes the currently selected Redis database only.
-	 * @return bool true if no error happens during flush
 	 */
-	public function flush()
+	public function flush(): void
 	{
-		return $this->getCacheDirect()->flushDB();
+		$this->getCacheDirect()->flushDB();
 	}
 }
