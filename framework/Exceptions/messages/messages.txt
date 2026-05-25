@@ -544,6 +544,7 @@ dbtablegateway_mismatch_args_exception	= TTableGateway finder method '{0}' expec
 dbtablegateway_mismatch_column_name		= In dynamic __call() method '{0}', no matching columns were found, valid columns for table '{2}' are '{1}'.
 dbtablegateway_invalid_table_info		= Table must be a string or an instance of TDbTableInfo.
 
+serializingcache_type_invalid = TSerializingCache.SerializationType '{0}' is invalid. Valid values are 'PHP' and 'JSON'.
 directorycachedependency_directory_invalid = TDirectoryCacheDependency.Directory {0} does not refer to a valid directory.
 cachedependencylist_cachedependency_required = Only objects implementing ICacheDependency can be added into TCacheDependencyList.
 
