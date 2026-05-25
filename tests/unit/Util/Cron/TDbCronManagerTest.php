@@ -9,7 +9,7 @@ class TDbCronManagerTest extends TCronModuleTest
 {
 	protected function getTestClass()
 	{
-		return TDbCronModule::class;
+		return TDbCronManager::class;
 	}
 	
 	protected function tearDown(): void
