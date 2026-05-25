@@ -179,10 +179,11 @@ class TThemeManager extends \Prado\TModule
 	public function setBasePath($value)
 	{
 		$this->assertUninitialized('BasePath');
-		$this->_basePath = Prado::getPathOfNamespace($value);
-		if ($this->_basePath === null || !is_dir($this->_basePath)) {
+		$basePath = Prado::getPathOfNamespace($value);
+		if ($basePath === null || !is_dir($basePath)) {
 			throw new TInvalidDataValueException('thememanager_basepath_invalid', $value);
 		}
+		$this->_basePath = $basePath;
 	}
 
 	/**
