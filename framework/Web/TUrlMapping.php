@@ -11,6 +11,7 @@
 namespace Prado\Web;
 
 use Prado\Exceptions\TConfigurationException;
+use Prado\IModuleDependency;
 use Prado\Prado;
 use Prado\TApplication;
 use Prado\TPropertyValue;
@@ -81,7 +82,7 @@ use Prado\Xml\TXmlElement;
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.0.5
  */
-class TUrlMapping extends TUrlManager
+class TUrlMapping extends TUrlManager implements IModuleDependency
 {
 	/**
 	 * @var TUrlMappingPattern[] list of patterns.
@@ -133,6 +134,21 @@ class TUrlMapping extends TUrlManager
 			}
 		}
 		$this->_urlPrefix = rtrim($this->_urlPrefix, '/');
+	}
+
+	/**
+	 * Returns the configured THttpRequest module IDs that init() depends on.
+	 * init() reads request state right after parent::init(); a configured
+	 * request registers itself with TApplication only after its own init()
+	 * completes. With no configured request, getRequest() lazily instantiates
+	 * a default and no ordering is needed.
+	 * @param bool $isPreInit true for the dyPreInit pass, false for the init() pass
+	 * @return null|string[] configured request module IDs, or null for pre-init
+	 * @since 4.4.0
+	 */
+	public function getModuleDependencies(bool $isPreInit): null|string|array
+	{
+		return array_keys($this->getApplication()?->getModulesByType(THttpRequest::class));
 	}
 
 	/**

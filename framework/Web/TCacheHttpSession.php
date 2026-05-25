@@ -14,6 +14,7 @@ namespace Prado\Web;
 
 use Prado\Caching\ICache;
 use Prado\Exceptions\TConfigurationException;
+use Prado\IModuleDependency;
 
 /**
  * TCacheHttpSession class
@@ -41,7 +42,7 @@ use Prado\Exceptions\TConfigurationException;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1.1
  */
-class TCacheHttpSession extends THttpSession
+class TCacheHttpSession extends THttpSession implements IModuleDependency
 {
 	private $_prefix = 'session';
 	private $_cacheModuleID = '';
@@ -66,6 +67,20 @@ class TCacheHttpSession extends THttpSession
 		}
 		$this->setUseCustomStorage(true);
 		parent::init($config);
+	}
+
+	/**
+	 * Returns the CacheModuleID that init() depends on, when set.
+	 * init() resolves the cache module then delegates to parent::init(), which
+	 * may touch session storage immediately; concrete caches open their
+	 * connection in their own init(). Empty CacheModuleID means no dependency.
+	 * @param bool $isPreInit true for the dyPreInit pass, false for the init() pass
+	 * @return null|string the cache module ID (empty if unset), or null for pre-init
+	 * @since 4.4.0
+	 */
+	public function getModuleDependencies(bool $isPreInit): null|string|array
+	{
+		return $this->getCacheModuleID();
 	}
 
 	/**
