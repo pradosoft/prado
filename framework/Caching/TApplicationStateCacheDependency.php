@@ -10,20 +10,18 @@
 
 namespace Prado\Caching;
 
-use Prado\Prado;
 use Prado\TApplicationMode;
 
 /**
- * TApplicationStateCacheDependency class.
+ * TApplicationStateCacheDependency class
  *
- * TApplicationStateCacheDependency performs dependency checking based on
- * the mode of the currently running PRADO application.
- * The dependency is reported as unchanged if and only if the application
- * is running in performance mode.
+ * TApplicationStateCacheDependency reports a cache-dependency change whenever
+ * the application is not running in {@see \Prado\TApplicationMode::Performance} mode.
+ * In performance mode the dependency is reported as unchanged, allowing cached
+ * items to be reused without further staleness checks.
  *
- * You may chain this dependency together with other dependencies
- * so that only when the application is not in performance mode the other dependencies
- * will be checked.
+ * Combine this dependency with others via {@see \Prado\Caching\TChainedCacheDependency}
+ * to gate the remaining checks behind the performance-mode bypass.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1.0
@@ -31,10 +29,11 @@ use Prado\TApplicationMode;
 class TApplicationStateCacheDependency extends TCacheDependency
 {
 	/**
-	 * @return bool true if the application is not running in performance mode.
+	 * @return bool `false` when the application is in performance mode (dependency
+	 *   has not changed); `true` for all other modes (dependency has changed).
 	 */
-	public function getHasChanged()
+	public function getHasChanged(): bool
 	{
-		return Prado::getApplication()->getMode() !== TApplicationMode::Performance;
+		return $this->getApplication()->getMode() !== TApplicationMode::Performance;
 	}
 }

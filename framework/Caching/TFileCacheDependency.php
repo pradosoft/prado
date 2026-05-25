@@ -11,7 +11,7 @@
 namespace Prado\Caching;
 
 /**
- * TFileCacheDependency class.
+ * TFileCacheDependency class
  *
  * TFileCacheDependency performs dependency checking based on the
  * last modification time of the file specified via {@see setFileName FileName}.
@@ -23,7 +23,9 @@ namespace Prado\Caching;
  */
 class TFileCacheDependency extends TCacheDependency
 {
+	/** @var string absolute path to the tracked file */
 	private $_fileName;
+	/** @var false|int last recorded modification time of the file */
 	private $_timestamp;
 
 	/**
@@ -46,11 +48,29 @@ class TFileCacheDependency extends TCacheDependency
 
 	/**
 	 * @param string $value the name of the file whose change is to be checked
+	 * @since 4.4.0
+	 */
+	protected function setFileNameDirect($value)
+	{
+		$this->_fileName = $value;
+	}
+
+	/**
+	 * @param string $value the name of the file whose change is to be checked
 	 */
 	public function setFileName($value)
 	{
-		$this->_fileName = $value;
-		$this->_timestamp = @filemtime($value);
+		$this->setFileNameDirect($value);
+		$this->updateTimestamp();
+	}
+
+	/**
+	 * @todo
+	 * @since 4.4.0
+	 */
+	public function updateTimestamp()
+	{
+		$this->setTimestamp(@filemtime($this->getFileName()));
 	}
 
 	/**
@@ -62,10 +82,19 @@ class TFileCacheDependency extends TCacheDependency
 	}
 
 	/**
+	 * @since 4.4.0
+	 * @param mixed $value
+	 */
+	protected function setTimestamp($value): void
+	{
+		$this->_timestamp = $value;
+	}
+
+	/**
 	 * @return bool true if the file's last modification time has changed.
 	 */
-	public function getHasChanged()
+	public function getHasChanged(): bool
 	{
-		return @filemtime($this->_fileName) !== $this->_timestamp;
+		return @filemtime($this->getFileName()) !== $this->getTimestamp();
 	}
 }
