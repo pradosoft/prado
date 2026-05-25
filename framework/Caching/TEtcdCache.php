@@ -69,7 +69,7 @@ use Prado\Exceptions\TConfigurationException;
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @since 4.0
  */
-class TEtcdCache extends TCache
+class TEtcdCache extends TSerializingCache
 {
 	/**
 	 * @var string the etcd host
@@ -162,43 +162,43 @@ class TEtcdCache extends TCache
 
 	/**
 	 * @param string $key a unique key identifying the cached value
-	 * @return false|string the value stored in cache, false if the value is not in the cache or expired.
+	 * @return false|string the serialized value on a hit, or `false` on a miss or expiry.
 	 */
-	protected function getValue($key)
+	protected function getSerializedValue(string $key): false|string
 	{
 		$result = $this->request('GET', $this->getDir() . '/' . $key);
-		return property_exists($result, 'errorCode') ? false : unserialize($result->node->value);
+		return property_exists($result, 'errorCode') ? false : $result->node->value;
 	}
 
 	/**
 	 * @param string $key the key identifying the value to be cached
-	 * @param string $value the value to be cached
+	 * @param string $value the serialized value to store
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
-	protected function setValue($key, $value, $expire)
+	protected function setSerializedValue(string $key, string $value, int $expire): bool
 	{
-		$value = ['value' => serialize($value)];
+		$params = ['value' => $value];
 		if ($expire > 0) {
-			$value['ttl'] = $expire;
+			$params['ttl'] = $expire;
 		}
-		$result = $this->request('PUT', $this->getDir() . '/' . $key, $value);
+		$result = $this->request('PUT', $this->getDir() . '/' . $key, $params);
 		return !property_exists($result, 'errorCode');
 	}
 
 	/**
 	 * @param string $key the key identifying the value to be cached
-	 * @param string $value the value to be cached
+	 * @param string $value the serialized value to store
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
-	protected function addValue($key, $value, $expire)
+	protected function addSerializedValue(string $key, string $value, int $expire): bool
 	{
-		$value = ['value' => serialize($value), 'prevExist' => 'false'];
+		$params = ['value' => $value, 'prevExist' => 'false'];
 		if ($expire > 0) {
-			$value['ttl'] = $expire;
+			$params['ttl'] = $expire;
 		}
-		$result = $this->request('PUT', $this->getDir() . '/' . $key, $value);
+		$result = $this->request('PUT', $this->getDir() . '/' . $key, $params);
 		return !property_exists($result, 'errorCode');
 	}
 
@@ -206,19 +206,18 @@ class TEtcdCache extends TCache
 	 * @param string $key the key of the value to be deleted
 	 * @return bool true if no error happens during deletion
 	 */
-	protected function deleteValue($key)
+	protected function deleteValue(string $key): bool
 	{
 		$this->request('DELETE', $this->getDir() . '/' . $key);
 		return true;
 	}
 
 	/**
-	 * @return bool true if no error happens during flush
+	 * Deletes all values from cache.
 	 */
-	public function flush()
+	public function flush(): void
 	{
 		$this->request('DELETE', $this->getDir() . '?recursive=true');
-		return true;
 	}
 
 	/**
