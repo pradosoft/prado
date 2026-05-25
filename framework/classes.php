@@ -30,6 +30,7 @@ return [
 'TMemCache' => 'Prado\Caching\TMemCache',
 'TMemoryCache' => 'Prado\Caching\TMemoryCache',
 'TRedisCache' => 'Prado\Caching\TRedisCache',
+'TSerializingCache' => 'Prado\Caching\TSerializingCache',
 'ICollectionFilter' => 'Prado\Collections\ICollectionFilter',
 'IPriorityCapture' => 'Prado\Collections\IPriorityCapture',
 'IPriorityCollection' => 'Prado\Collections\IPriorityCollection',
