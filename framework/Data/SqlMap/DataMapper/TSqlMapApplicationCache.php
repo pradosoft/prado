@@ -16,6 +16,8 @@ use Prado\Data\SqlMap\Configuration\TSqlMapCacheModel;
 use Prado\Prado;
 
 /**
+ * TSqlMapApplicationCache class
+ *
  * TSqlMapApplicationCache uses the default Prado application cache for
  * caching SqlMap results.
  *
@@ -33,6 +35,23 @@ class TSqlMapApplicationCache implements ICache
 	public function __construct($cacheModel = null)
 	{
 		$this->_cacheModel = $cacheModel;
+	}
+
+	/**
+	 * @return bool whether the application cache is available.
+	 * @since 4.4.0
+	 */
+	public static function getIsAvailable(): bool
+	{
+		return Prado::getApplication()?->getCache() !== null;
+	}
+
+	/**
+	 * @return ICache Application cache instance.
+	 */
+	protected function getCache()
+	{
+		return Prado::getApplication()->getCache();
 	}
 
 	/**
@@ -66,36 +85,10 @@ class TSqlMapApplicationCache implements ICache
 	}
 
 	/**
-	 * @param string $key item to be deleted.
-	 */
-	public function delete($key)
-	{
-		$keyList = $this->getKeyList();
-		$keyList->remove($key);
-		$this->getCache()->delete($key);
-		$this->setKeyList($keyList);
-		return true;
-	}
-
-	/**
-	 * Deletes all items in the cache, only for data cached by sqlmap cachemodel
-	 */
-	public function flush()
-	{
-		$keyList = $this->getKeyList();
-		$cache = $this->getCache();
-		foreach ($keyList as $key) {
-			$cache->delete($key);
-		}
-		// Remove the old keylist
-		$cache->delete($this->getKeyListId());
-	}
-
-	/**
 	 * @param mixed $key
 	 * @return mixed Gets a cached object with the specified key.
 	 */
-	public function get($key)
+	public function get($key): mixed
 	{
 		$result = $this->getCache()->get($key);
 		if ($result === false) {
@@ -115,8 +108,9 @@ class TSqlMapApplicationCache implements ICache
 	 * @param mixed $value the value to be cached
 	 * @param mixed $expire
 	 * @param null|mixed $dependency
+	 * @return bool true if the value is successfully stored into cache, false otherwise.
 	 */
-	public function set($key, $value, $expire = 0, $dependency = null)
+	public function set($key, $value, $expire = 0, $dependency = null): bool
 	{
 		$this->getCache()->set($key, $value, $expire, $dependency);
 		$keyList = $this->getKeyList();
@@ -128,22 +122,41 @@ class TSqlMapApplicationCache implements ICache
 	}
 
 	/**
-	 * @return ICache Application cache instance.
-	 */
-	protected function getCache()
-	{
-		return Prado::getApplication()->getCache();
-	}
-
-	/**
 	 * @param mixed $id
 	 * @param mixed $value
 	 * @param mixed $expire
 	 * @param null|mixed $dependency
 	 * @throws TSqlMapException not implemented.
 	 */
-	public function add($id, $value, $expire = 0, $dependency = null)
+	public function add($id, $value, $expire = 0, $dependency = null): bool
 	{
 		throw new TSqlMapException('sqlmap_use_set_to_store_cache');
+	}
+
+	/**
+	 * @param string $key item to be deleted.
+	 * @return bool true if no error happens during deletion.
+	 */
+	public function delete($key): bool
+	{
+		$keyList = $this->getKeyList();
+		$keyList->remove($key);
+		$this->getCache()->delete($key);
+		$this->setKeyList($keyList);
+		return true;
+	}
+
+	/**
+	 * Deletes all items in the cache, only for data cached by sqlmap cachemodel
+	 */
+	public function flush(): void
+	{
+		$keyList = $this->getKeyList();
+		$cache = $this->getCache();
+		foreach ($keyList as $key) {
+			$cache->delete($key);
+		}
+		// Remove the old keylist
+		$cache->delete($this->getKeyListId());
 	}
 }

@@ -1,7 +1,5 @@
 <?php
 
-namespace Prado\Data\SqlMap\DataMapper;
-
 /**
  * TSqlMapCache class file contains FIFO, LRU, and GLOBAL cache implementations.
  *
@@ -10,7 +8,11 @@ namespace Prado\Data\SqlMap\DataMapper;
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Data\SqlMap\DataMapper;
+
 /**
+ * TSqlMapLruCache class
+ *
  * Least recently used cache implementation, removes
  * object that was accessed last when the cache is full.
  *
@@ -23,13 +25,14 @@ class TSqlMapLruCache extends TSqlMapCache
 	 * @param mixed $key
 	 * @return mixed Gets a cached object with the specified key.
 	 */
-	public function get($key)
+	public function get($key): mixed
 	{
 		if ($this->_keyList->contains($key)) {
 			$this->_keyList->remove($key);
 			$this->_keyList->add($key);
 			return $this->_cache->itemAt($key);
 		}
+		return null;
 	}
 
 	/**
@@ -40,7 +43,7 @@ class TSqlMapLruCache extends TSqlMapCache
 	 * @param mixed $expire
 	 * @param null|mixed $dependency
 	 */
-	public function set($key, $value, $expire = 0, $dependency = null)
+	public function set($key, $value, $expire = 0, $dependency = null): bool
 	{
 		$this->_cache->add($key, $value);
 		$this->_keyList->add($key);
