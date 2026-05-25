@@ -25,7 +25,7 @@ class TDbCronZCleanLogTaskTest extends TCronTaskTest
 
 	public function testExecute()
 	{
-		$dbcron = new TDbCronModule();
+		$dbcron = new TDbCronManager();
 		$cron = new TCronModule();
 		$dbcron->attachBehavior('shellLog', new TShellCronLogBehavior(new TShellWriter(new TTextWriter())));
 		$cron->attachBehavior('shellLog', new TShellCronLogBehavior(new TShellWriter(new TTextWriter())));
