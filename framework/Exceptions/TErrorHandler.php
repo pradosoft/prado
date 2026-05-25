@@ -12,6 +12,7 @@ namespace Prado\Exceptions;
 
 use Prado\TApplicationMode;
 use Prado\Prado;
+use Prado\TComponentReflection;
 
 /**
  * TErrorHandler class
@@ -665,9 +666,8 @@ class TErrorHandler extends \Prado\TModule
 		preg_match('/\b(T[A-Z]\w+)\b/', $message, $matches);
 		if (count($matches) > 0) {
 			$class = $matches[0];
-			try {
-				$reflection = new \ReflectionClass($class);
-			} catch (\Exception $e) {
+			$reflection = TComponentReflection::getReflectionClassForType($class);
+			if ($reflection === null) {
 				return null;
 			}
 			$classname = $reflection->getNamespaceName();

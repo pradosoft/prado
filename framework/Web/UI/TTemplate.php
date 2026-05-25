@@ -15,6 +15,7 @@ use Prado\Exceptions\TException;
 use Prado\Exceptions\TTemplateException;
 use Prado\Prado;
 use Prado\TComponent;
+use Prado\TComponentReflection;
 use Prado\Web\Javascripts\TJavaScriptLiteral;
 use Prado\Web\Services\TPageService;
 
@@ -870,7 +871,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 		if (!is_string($className)) {
 			throw new TConfigurationException('template_component_required', $type);
 		}
-		$class = new \ReflectionClass($className);
+		$class = TComponentReflection::getReflectionClassForType($className);
 		if (!$this->_attributevalidation) {
 			return $class->getName();	//	Skins don't validate.
 		}
@@ -1059,7 +1060,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	 */
 	protected function isClassBehaviorMethod(\ReflectionClass $class, $method)
 	{
-		$component = new \ReflectionClass(TComponent::class);
+		$component = TComponentReflection::getReflectionClassForType(TComponent::class);
 		$behaviors = $component->getStaticProperties();
 		if (!isset($behaviors['_um'])) {
 			return false;

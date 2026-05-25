@@ -17,7 +17,7 @@ use Prado\Data\ActiveRecord\Relations\TActiveRecordRelationContext;
 use Prado\Data\DataGateway\TSqlCriteria;
 use Prado\Prado;
 use Prado\TPropertyValue;
-use ReflectionClass;
+use Prado\Util\Traits\TReflectionClassTrait;
 
 /**
  * Base class for active records.
@@ -148,6 +148,8 @@ use ReflectionClass;
  */
 abstract class TActiveRecord extends \Prado\TComponent
 {
+	use TReflectionClassTrait;
+
 	public const BELONGS_TO = 'BELONGS_TO';
 	public const HAS_ONE = 'HAS_ONE';
 	public const HAS_MANY = 'HAS_MANY';
@@ -282,7 +284,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	{
 		$className = $this::class;
 		if (!isset(self::$_columnMapping[$className])) {
-			$class = new ReflectionClass($className);
+			$class = static::getReflectionClass();
 			self::$_columnMapping[$className] = $class->getStaticPropertyValue('COLUMN_MAPPING');
 		}
 	}
@@ -294,7 +296,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	{
 		$className = $this::class;
 		if (!isset(self::$_relations[$className])) {
-			$class = new ReflectionClass($className);
+			$class = static::getReflectionClass();
 			$relations = [];
 			foreach ($class->getStaticPropertyValue('RELATIONS') as $key => $value) {
 				$relations[strtolower($key)] = [$key, $value];

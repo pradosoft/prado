@@ -20,7 +20,7 @@ use Prado\Data\DataGateway\TSqlCriteria;
 use Prado\Data\IDataConnection;
 use Prado\Data\TDbConnection;
 use Prado\Prado;
-use ReflectionClass;
+use Prado\TComponentReflection;
 
 /**
  * TActiveRecordGateway excutes the SQL command queries and returns the data
@@ -79,7 +79,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 */
 	protected function getRecordTableName(TActiveRecord $record)
 	{
-		$class = new ReflectionClass($record);
+		$class = TComponentReflection::getReflectionClassForType($record::class);
 		if ($class->hasConstant(self::TABLE_CONST)) {
 			$value = $class->getConstant(self::TABLE_CONST);
 			if (empty($value)) {

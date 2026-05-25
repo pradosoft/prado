@@ -12,6 +12,7 @@ namespace Prado\Web\UI;
 
 use Prado\Prado;
 use Prado\TApplicationMode;
+use Prado\TComponentReflection;
 use Prado\TPropertyValue;
 
 /**
@@ -106,7 +107,7 @@ class TTemplateManager extends \Prado\TModule
 	 */
 	public function getTemplateByClassName($className)
 	{
-		$class = new \ReflectionClass($className);
+		$class = TComponentReflection::getReflectionClassForType($className);
 		$tplFile = dirname($class->getFileName()) . DIRECTORY_SEPARATOR . $class->getShortName() . self::TEMPLATE_FILE_EXT;
 		return $this->getTemplateByFileName($tplFile);
 	}
