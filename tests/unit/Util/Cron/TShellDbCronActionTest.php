@@ -20,7 +20,7 @@ class TShellDbCronActionTest extends PHPUnit\Framework\TestCase
 	
 	protected function getTestCronClass()
 	{
-		return TDbCronModule::class;
+		return TDbCronManager::class;
 	}
 
 	protected function setUp(): void
