@@ -17,6 +17,7 @@ use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Util\Traits\TInitializedTrait;
+use Prado\Web\HttpHeaders\THttpHeadersManager;
 
 /**
  * THttpResponse class
@@ -860,16 +861,17 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function getHeadersManagerModule()
 	{
-		if (empty($this->_headersManagerID)) {
+		$headersManagerId = $this->getHeadersManager();
+		if ($headersManagerId === '') {
 			return null;
 		}
 
-		$this->_headersManager = $this->getApplication()->getModule($this->_headersManagerID);
+		$this->_headersManager = $this->getApplication()->getModule($headersManagerId);
 		if ($this->_headersManager === null) {
-			throw new TConfigurationException('httpresponse_headersmanager_inexist', $this->_headersManagerID);
+			throw new TConfigurationException('httpresponse_headersmanager_inexist', $headersManagerId);
 		}
 		if (!($this->_headersManager instanceof THttpHeadersManager)) {
-			throw new TConfigurationException('httpresponse_headersmanager_invalid', $this->_headersManagerID);
+			throw new TConfigurationException('httpresponse_headersmanager_invalid', $headersManagerId);
 		}
 
 		return $this->_headersManager;
