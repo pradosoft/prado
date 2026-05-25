@@ -13,8 +13,8 @@ namespace Prado\Data\SqlMap\Configuration;
 use Prado\Collections\TList;
 use Prado\Data\SqlMap\DataMapper\TPropertyAccess;
 use Prado\Prado;
+use Prado\TComponentReflection;
 use Prado\TPropertyValue;
-use ReflectionClass;
 
 /**
  * TResultProperty corresponds a <property> tags inside a <resultMap> tag.
@@ -294,7 +294,7 @@ class TResultProperty extends \Prado\TComponent
 			if (is_a($type, TList::class, true)) {
 				return self::LIST_TYPE;
 			}
-			$class = new ReflectionClass($type);
+			$class = TComponentReflection::getReflectionClassForType($type);
 			if ($class->implementsInterface('ArrayAccess')) {
 				return self::ARRAY_TYPE;
 			}

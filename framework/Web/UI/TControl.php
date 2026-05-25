@@ -22,7 +22,7 @@ use Prado\TEventParameter;
 use Prado\TPropertyValue;
 use Prado\Web\UI\ActiveControls\IActiveControl;
 use Prado\Web\UI\Traits\TFilterRenderableTrait;
-use ReflectionClass;
+use Prado\Util\Traits\TReflectionClassTrait;
 
 /**
  * TControl class
@@ -108,6 +108,7 @@ use ReflectionClass;
 class TControl extends \Prado\TApplicationComponent implements IAdapterControl, IFilterRenderable, IBindable
 {
 	use TFilterRenderableTrait;
+	use TReflectionClassTrait;
 
 	/**
 	 * format of control ID
@@ -408,7 +409,7 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 		if ($this->_pluginmodule === false) {
 			$this->_pluginmodule = null;
 
-			$reflect = new ReflectionClass($this::class);
+			$reflect = static::getReflectionClass();
 			$folder = $reflect->getFileName();
 
 			foreach ($this->getApplication()->getModulesByType(\Prado\Util\IPluginModule::class) as $id => $module) {

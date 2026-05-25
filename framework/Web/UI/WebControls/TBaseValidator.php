@@ -12,6 +12,7 @@ namespace Prado\Web\UI\WebControls;
 
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TNotSupportedException;
+use Prado\TComponentReflection;
 use Prado\TPropertyValue;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Web\Javascripts\TJavaScript;
@@ -207,7 +208,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 				return $shortName;
 			}
 		}
-		$reflectionClass = new \ReflectionClass($control);
+		$reflectionClass = TComponentReflection::getReflectionClassForType($control::class);
 		return $reflectionClass->getShortName();
 	}
 

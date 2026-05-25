@@ -12,6 +12,7 @@ namespace Prado;
 
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Web\Javascripts\TJavaScript;
+use Prado\Web\UI\TWebColor;
 
 /**
  * TPropertyValue class
@@ -160,7 +161,7 @@ class TPropertyValue
 				return $enums::hasConstant($value);
 			}
 			if (!isset($types[$enums])) {
-				$types[$enums] = new \ReflectionClass($enums);
+				$types[$enums] = TComponentReflection::getReflectionClassForType($enums);
 			}
 			if ($types[$enums]->hasConstant($value)) {
 				return $value;
@@ -238,7 +239,7 @@ class TPropertyValue
 		if ($green && $len > 0 && $value[0] !== '#') {
 			static $colors;
 			if (!$colors) {
-				$reflect = new \ReflectionClass(\Prado\Web\UI\TWebColor::class);
+				$reflect = TComponentReflection::getReflectionClassForType(TWebColor::class);
 				$colors = $reflect->getConstants();
 				$colors = array_change_key_case($colors);
 			}
