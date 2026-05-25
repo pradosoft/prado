@@ -223,7 +223,17 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 			$this->_pathInfo = '';
 		}
 
-		$this->getApplication()->setRequest($this);
+		$this->setAppRequest();
+	}
+
+	/**
+	 * Registers this module as the application request when an application is available.
+	 * Called during {@see init()}; may also be called by behaviors or subclasses.
+	 * @since 4.4.0
+	 */
+	protected function setAppRequest()
+	{
+		$this->getApplication()?->setRequest($this);
 	}
 
 	/**

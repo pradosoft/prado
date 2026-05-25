@@ -189,9 +189,19 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 		if ($this->_bufferOutput) {
 			ob_start();
 		}
-		$this->getApplication()->setResponse($this);
+		$this->setAppResponse();
 		parent::init($config);
 		$this->markInitialized();
+	}
+
+	/**
+	 * Registers this module as the application response when an application is available.
+	 * Called during {@see init()}; may also be called by behaviors or subclasses.
+	 * @since 4.4.0
+	 */
+	protected function setAppResponse()
+	{
+		$this->getApplication()?->setResponse($this);
 	}
 
 	/**
