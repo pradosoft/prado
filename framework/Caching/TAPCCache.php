@@ -75,16 +75,18 @@ class TAPCCache extends TCache
 	 */
 	public function init($config)
 	{
-		if (!extension_loaded('apcu')) {
-			throw new TConfigurationException('apccache_extension_required');
-		}
+		if (!static::getIsAvailable()) {
+			if (!extension_loaded('apcu')) {
+				throw new TConfigurationException('apccache_extension_required');
+			}
 
-		if (ini_get('apc.enabled') == false) {
-			throw new TConfigurationException('apccache_extension_not_enabled');
-		}
+			if (ini_get('apc.enabled') == false) {
+				throw new TConfigurationException('apccache_extension_not_enabled');
+			}
 
-		if (substr(php_sapi_name(), 0, 3) === 'cli' && ini_get('apc.enable_cli') == false) {
-			throw new TConfigurationException('apccache_extension_not_enabled_cli');
+			if (substr(php_sapi_name(), 0, 3) === 'cli' && ini_get('apc.enable_cli') == false) {
+				throw new TConfigurationException('apccache_extension_not_enabled_cli');
+			}
 		}
 
 		parent::init($config);
@@ -92,31 +94,31 @@ class TAPCCache extends TCache
 
 	/**
 	 * @param string $key a unique key identifying the cached value
-	 * @return false|string the value stored in cache, false if the value is not in the cache or expired.
+	 * @return mixed the stored value on a hit, or `false` on a miss or expiry.
 	 */
-	protected function getValue($key)
+	protected function getValue(string $key): mixed
 	{
 		return apcu_fetch($key);
 	}
 
 	/**
 	 * @param string $key the key identifying the value to be cached
-	 * @param string $value the value to be cached
+	 * @param mixed $value the value to be cached
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
-	protected function setValue($key, $value, $expire)
+	protected function setValue(string $key, mixed $value, int $expire): bool
 	{
 		return apcu_store($key, $value, $expire);
 	}
 
 	/**
 	 * @param string $key the key identifying the value to be cached
-	 * @param string $value the value to be cached
+	 * @param mixed $value the value to be cached
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
-	protected function addValue($key, $value, $expire)
+	protected function addValue(string $key, mixed $value, int $expire): bool
 	{
 		return apcu_add($key, $value, $expire);
 	}
@@ -125,16 +127,16 @@ class TAPCCache extends TCache
 	 * @param string $key the key of the value to be deleted
 	 * @return bool true if no error happens during deletion
 	 */
-	protected function deleteValue($key)
+	protected function deleteValue(string $key): bool
 	{
 		return apcu_delete($key);
 	}
 
 	/**
-	 * @return bool true if no error happens during flush
+	 * Deletes all values from cache.
 	 */
-	public function flush()
+	public function flush(): void
 	{
-		return apcu_clear_cache();
+		apcu_clear_cache();
 	}
 }
