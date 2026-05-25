@@ -14,6 +14,7 @@ use Exception;
 use PDO;
 use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbDriver;
+use Prado\Data\TDbDriverCapabilities;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
@@ -266,7 +267,7 @@ class TDbParameterModule extends TDbModule implements IPermissions
 	protected function createDbTable()
 	{
 		$db = $this->getDbConnection();
-		$driver = $db->getDriverName();
+		$driver = TDbDriverCapabilities::normalizeDriver($db->getDriverName());
 		$autoidAttributes = '';
 		$autotype = 'INTEGER';
 		$postIndices = '; CREATE UNIQUE INDEX tkey ON ' . $this->_tableName . '(' . $this->_keyField . ');' .
@@ -408,9 +409,9 @@ class TDbParameterModule extends TDbModule implements IPermissions
 		}
 		$this->ensureTable();
 		$db = $this->getDbConnection();
-		$driver = $db->getDriverName();
+		$driver = TDbDriverCapabilities::normalizeDriver($db->getDriverName());
 		$appendix = '';
-		if (in_array($driver, [TDbDriver::DRIVER_MYSQL, TDbDriver::EXTENSION_MYSQLI])) {
+		if ($driver === TDbDriver::DRIVER_MYSQL) {
 			$dupl = ($this->_autoLoadField ? ", {$this->_autoLoadField}=values({$this->_autoLoadField})" : '');
 			$appendix = " ON DUPLICATE KEY UPDATE {$this->_valueField}=values({$this->_valueField}){$dupl}";
 		} else {
@@ -482,9 +483,9 @@ class TDbParameterModule extends TDbModule implements IPermissions
 
 		$this->ensureTable();
 		$db = $this->getDbConnection();
-		$driver = $db->getDriverName();
+		$driver = TDbDriverCapabilities::normalizeDriver($db->getDriverName());
 		$appendix = '';
-		if (in_array($driver, [TDbDriver::DRIVER_MYSQL, TDbDriver::EXTENSION_MYSQLI])) {
+		if ($driver === TDbDriver::DRIVER_MYSQL) {
 			$appendix = ' LIMIT 1';
 		}
 		$cmd = $db->createCommand("DELETE FROM {$this->_tableName} WHERE {$this->_keyField}=:key" . $appendix);

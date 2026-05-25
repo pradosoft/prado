@@ -75,10 +75,49 @@ use Prado\Data\Common\Sqlite\TSqliteMetaData;
  *   The first returned value wins.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.3.3
+ * @since 4.4.0
  */
 class TDbDriverCapabilities
 {
+	// =========================================================================
+	//  Driver normalization
+	// =========================================================================
+
+	/**
+	 * Normalizes a PDO driver name by resolving legacy or extension-specific
+	 * aliases to their canonical driver name.
+	 *
+	 * The following aliases are resolved:
+	 * - `interbase` → `firebird` — `PDO_Interbase` is an older name for what is
+	 *   now `PDO_Firebird`; both report `'interbase'` or `'firebird'` depending
+	 *   on the build.
+	 * - `mysqli` → `mysql` — the procedural MySQLi extension is not a PDO driver;
+	 *   a PDO connection always reports `'mysql'`.  The alias guards any code path
+	 *   that passes a MySQLi-derived string.
+	 * - `mssql` → `sqlsrv` — the `php_mssql` extension was never a PDO driver and
+	 *   was removed in PHP 7.0.  `PDO::ATTR_DRIVER_NAME` on PHP 8.x will never
+	 *   return `'mssql'`; the alias is retained as a historical guard only.
+	 *   Modern SQL Server connections use `'sqlsrv'` ({@see TDbDriver::DRIVER_SQLSRV})
+	 *   or `'dblib'` ({@see TDbDriver::DRIVER_DBLIB}).
+	 *
+	 * All capability methods in this class that accept a driver name delegate
+	 * alias resolution to this method, so callers may pass either the canonical
+	 * or the legacy name interchangeably.
+	 *
+	 * @param string $driver PDO driver name, possibly a legacy alias.
+	 * @return string the canonical PDO driver name.
+	 */
+	public static function normalizeDriver(string $driver): string
+	{
+		static $driverAliases = [
+			TDbDriver::DRIVER_INTERBASE => TDbDriver::DRIVER_FIREBIRD,
+			TDbDriver::EXTENSION_MYSQLI => TDbDriver::DRIVER_MYSQL,
+			TDbDriver::EXTENSION_MSSQL => TDbDriver::DRIVER_SQLSRV,
+		];
+
+		return $driverAliases[$driver] ?? $driver;
+	}
+
 	// =========================================================================
 	//  Charset — resolution
 	// =========================================================================
@@ -111,15 +150,7 @@ class TDbDriverCapabilities
 	 */
 	public static function resolveCharset(string $charset, string $driver): string
 	{
-		static $driverAliases = [
-			TDbDriver::DRIVER_INTERBASE => TDbDriver::DRIVER_FIREBIRD,
-			TDbDriver::EXTENSION_MYSQLI => TDbDriver::DRIVER_MYSQL,
-			TDbDriver::EXTENSION_MSSQL => TDbDriver::DRIVER_SQLSRV,
-		];
-
-		if (isset($driverAliases[$driver])) {
-			$driver = $driverAliases[$driver];
-		}
+		$driver = static::normalizeDriver($driver);
 
 		static $aliases = [
 			// php_charset => [driver => resolved_name, ...]
@@ -317,15 +348,7 @@ class TDbDriverCapabilities
 	 */
 	public static function unresolveCharset(string $dbCharset, string $driver): string
 	{
-		static $driverAliases = [
-			TDbDriver::DRIVER_INTERBASE => TDbDriver::DRIVER_FIREBIRD,
-			TDbDriver::EXTENSION_MYSQLI => TDbDriver::DRIVER_MYSQL,
-			TDbDriver::EXTENSION_MSSQL => TDbDriver::DRIVER_SQLSRV,
-		];
-
-		if (isset($driverAliases[$driver])) {
-			$driver = $driverAliases[$driver];
-		}
+		$driver = static::normalizeDriver($driver);
 
 		// Build reverse map with TDataCharset constant values
 		// Cannot use static variable with class constants in some PHP versions

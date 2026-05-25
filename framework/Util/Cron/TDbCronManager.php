@@ -17,6 +17,7 @@ use Prado\Security\Permissions\TUserOwnerRule;
 use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbConnection;
 use Prado\Data\TDbDriver;
+use Prado\Data\TDbDriverCapabilities;
 use Prado\Data\TDbPropertiesTrait;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
@@ -847,7 +848,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 		$this->ensureTable();
 
 		$db = $this->getDbConnection();
-		$driver = $db->getDriverName();
+		$driver = TDbDriverCapabilities::normalizeDriver($db->getDriverName());
 
 		$limit = $orderby = $where = '';
 		if (is_string($name)) {
@@ -857,7 +858,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 		$offset = (int) $offset;
 		if ($pageSize !== 0) {
 			if ($offset !== 0) {
-				if ($driver === 'postgresql') {
+				if ($driver === TDbDriver::DRIVER_PGSQL) {
 					$limit = " LIMIT {$pageSize} OFFSET {$offset}";
 				} else {
 					$limit = " LIMIT {$offset}, {$pageSize}";

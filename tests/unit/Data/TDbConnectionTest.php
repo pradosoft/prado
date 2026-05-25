@@ -4,6 +4,7 @@ use Prado\Data\TDbColumnCaseMode;
 use Prado\Data\TDbCommand;
 use Prado\Data\TDbConnection;
 use Prado\Data\TDbDriver;
+use Prado\Data\TDbDriverCapabilities;
 use Prado\Data\TDbNullConversionMode;
 use Prado\Exceptions\TDbException;
 use Prado\TApplication;
@@ -180,6 +181,15 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 	}
 
 	/**
+	 * Delegates to {@see TDbDriverCapabilities::resolveCharset()} for use in
+	 * data-driven tests where the connection object is already in scope.
+	 */
+	private function callResolveCharsetForDriver(TDbConnection $conn, string $charset, string $driver): string
+	{
+		return TDbDriverCapabilities::resolveCharset($charset, $driver);
+	}
+
+	/**
 	 * Build a PDO mock that reports the given driver name and expects prepare()
 	 * to be called once with $expectedSql.  The returned PDOStatement mock will
 	 * assert that execute() is called with [$charset].
@@ -339,8 +349,9 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 	{
 		return [
 			// These drivers return silently; charset is handled via DSN (or not at all).
+			// Note: 'mssql' (EXTENSION_MSSQL) is intentionally absent — it was never a
+			// PDO driver and was removed in PHP 7.0; PDO::ATTR_DRIVER_NAME cannot return it.
 			'firebird' => [TDbDriver::DRIVER_FIREBIRD],
-			'mssql'    => [TDbDriver::EXTENSION_MSSQL],
 			'sqlsrv'   => [TDbDriver::DRIVER_SQLSRV],
 			'dblib'    => [TDbDriver::DRIVER_DBLIB],
 			'ibm'      => [TDbDriver::DRIVER_IBM],
@@ -486,14 +497,12 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 			'ascii oci'        => ['ascii',       TDbDriver::DRIVER_OCI, 'US7ASCII'],
 			'WIN-1252 oci'     => ['WIN-1252',    TDbDriver::DRIVER_OCI, 'WE8MSWIN1252'],
 			'KOI8-R oci'       => ['KOI8-R',      TDbDriver::DRIVER_OCI, 'CL8KOI8R'],
-			// --- sqlsrv charset names ---
+			// --- sqlsrv / dblib charset names ---
+			// Note: 'mssql' (EXTENSION_MSSQL) is intentionally absent — it was never a
+			// PDO driver and was removed in PHP 7.0; PDO::ATTR_DRIVER_NAME cannot return it.
 			'UTF-8 sqlsrv'     => ['UTF-8',      TDbDriver::DRIVER_SQLSRV, 'UTF-8'],
-			// --- mssql / dblib charset names ---
-			'UTF-8 mssql'      => ['UTF-8',      TDbDriver::EXTENSION_MSSQL, 'UTF-8'],
-			'ISO-8859-1 mssql' => ['ISO-8859-1', TDbDriver::EXTENSION_MSSQL, 'ISO-8859-1'],
-			'ISO-8859-2 dblib' => ['ISO-8859-2', TDbDriver::DRIVER_DBLIB,    'ISO-8859-2'],
-			'WIN-1252 mssql'   => ['WIN-1252',   TDbDriver::EXTENSION_MSSQL, 'CP1252'],
-			'KOI8-R dblib'     => ['KOI8-R',     TDbDriver::DRIVER_DBLIB,    'KOI8-R'],
+			'ISO-8859-2 dblib' => ['ISO-8859-2', TDbDriver::DRIVER_DBLIB,   'ISO-8859-2'],
+			'KOI8-R dblib'     => ['KOI8-R',     TDbDriver::DRIVER_DBLIB,   'KOI8-R'],
 			// --- IBM DB2: no table entry → pass-through ---
 			'UTF-8 ibm'        => ['UTF-8', TDbDriver::DRIVER_IBM, 'UTF-8'],
 			// --- Unknown / driver-specific names pass through unchanged ---

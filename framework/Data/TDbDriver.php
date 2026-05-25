@@ -76,7 +76,20 @@ class TDbDriver extends TEnumerable
 	//	Common
 	public const DRIVER_MONGO = 'mongo';		// {@see https://github.com/belisoful/prado-mongo }
 
-	// non-PDO PHP Extensions, included for sql determination.
+	// Non-PDO PHP extensions — included for legacy driver-name normalization only.
+	// Neither of these is a valid PDO driver name; PDO::ATTR_DRIVER_NAME will
+	// never return these strings.
+	//
+	// EXTENSION_MYSQLI: the procedural MySQLi extension.  When used as a PDO
+	//   connection the driver reports 'mysql', not 'mysqli'.  Kept so that any
+	//   code passing a MySQLi-derived driver string is silently redirected to the
+	//   canonical 'mysql' entry in capability tables.
+	//
+	// EXTENSION_MSSQL: the old php_mssql extension.  It was never a PDO driver
+	//   and was removed entirely in PHP 7.0.  Modern SQL Server connections use
+	//   PDO_SQLSRV ('sqlsrv') or PDO_DBLIB ('dblib').  The constant and its alias
+	//   in {@see TDbDriverCapabilities::normalizeDriver} are retained solely as a
+	//   historical guard; no runtime path on PHP 8.x will ever produce this string.
 	public const EXTENSION_MYSQLI = 'mysqli';
 	public const EXTENSION_MSSQL = 'mssql';
 }

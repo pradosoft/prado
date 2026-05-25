@@ -14,6 +14,7 @@ use Prado\Prado;
 use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbConnection;
 use Prado\Data\TDbDriver;
+use Prado\Data\TDbDriverCapabilities;
 use Prado\Data\TDbPropertiesTrait;
 use Prado\Exceptions\TConfigurationException;
 use Prado\TPropertyValue;
@@ -197,8 +198,8 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 			if ($this->_autoCreate) {
 				Prado::trace('Autocreate: ' . $this->_cacheTable, TDbCache::class);
 
-				$driver = $db->getDriverName();
-				if (in_array($driver, [TDbDriver::DRIVER_MYSQL, TDbDriver::EXTENSION_MYSQLI])) {
+				$driver = TDbDriverCapabilities::normalizeDriver($db->getDriverName());
+				if ($driver === TDbDriver::DRIVER_MYSQL) {
 					$blob = 'LONGBLOB';
 				} elseif ($driver === TDbDriver::DRIVER_PGSQL) {
 					$blob = 'BYTEA';
@@ -459,10 +460,10 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 			$this->initializeCache();
 		}
 		$db = $this->getDbConnection();
-		$driver = $db->getDriverName();
-		if (in_array($driver, [TDbDriver::DRIVER_MYSQL, TDbDriver::EXTENSION_MYSQLI, TDbDriver::DRIVER_SQLITE, TDbDriver::DRIVER_IBM, TDbDriver::DRIVER_OCI, TDbDriver::DRIVER_SQLSRV, TDbDriver::EXTENSION_MSSQL, TDbDriver::DRIVER_DBLIB, TDbDriver::DRIVER_PGSQL])) {
+		$driver = TDbDriverCapabilities::normalizeDriver($db->getDriverName());
+		if (in_array($driver, [TDbDriver::DRIVER_MYSQL, TDbDriver::DRIVER_SQLITE, TDbDriver::DRIVER_IBM, TDbDriver::DRIVER_OCI, TDbDriver::DRIVER_SQLSRV, TDbDriver::DRIVER_DBLIB, TDbDriver::DRIVER_PGSQL])) {
 			$expire = ($expire <= 0) ? 0 : time() + $expire;
-			if (in_array($driver, [TDbDriver::DRIVER_MYSQL, TDbDriver::EXTENSION_MYSQLI, TDbDriver::DRIVER_SQLITE])) {
+			if (in_array($driver, [TDbDriver::DRIVER_MYSQL, TDbDriver::DRIVER_SQLITE])) {
 				$sql = "REPLACE INTO {$this->_cacheTable} (itemkey,value,expire) VALUES (:key,:value,$expire)";
 			} elseif ($driver === TDbDriver::DRIVER_PGSQL) {
 				$sql = "INSERT INTO {$this->_cacheTable} (itemkey, value, expire) VALUES (:key, :value, :expire) " .
