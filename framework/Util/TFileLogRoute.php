@@ -104,10 +104,12 @@ class TFileLogRoute extends TLogRoute
 	 */
 	public function setLogPath($value): static
 	{
-		if (($this->_logPath = Prado::getPathOfNamespace($value)) === null || !is_dir($this->_logPath) || !is_writable($this->_logPath)) {
+		$logPath = Prado::getPathOfNamespace($value);
+		if ($logPath === null || !is_dir($logPath) || !is_writable($logPath)) {
 			throw new TConfigurationException('filelogroute_logpath_invalid', $value);
 		}
 
+		$this->_logPath = $logPath;
 		return $this;
 	}
 
@@ -145,11 +147,12 @@ class TFileLogRoute extends TLogRoute
 	 */
 	public function setMaxFileSize($value)
 	{
-		$this->_maxFileSize = TPropertyValue::ensureInteger($value);
-		if ($this->_maxFileSize <= 0) {
+		$maxFileSize = TPropertyValue::ensureInteger($value);
+		if ($maxFileSize <= 0) {
 			throw new TInvalidDataValueException('filelogroute_maxfilesize_invalid');
 		}
 
+		$this->_maxFileSize = $maxFileSize;
 		return $this;
 	}
 
@@ -167,11 +170,12 @@ class TFileLogRoute extends TLogRoute
 	 */
 	public function setMaxLogFiles($value): static
 	{
-		$this->_maxLogFiles = TPropertyValue::ensureInteger($value);
-		if ($this->_maxLogFiles < 1) {
+		$maxLogFiles = TPropertyValue::ensureInteger($value);
+		if ($maxLogFiles < 1) {
 			throw new TInvalidDataValueException('filelogroute_maxlogfiles_invalid');
 		}
 
+		$this->_maxLogFiles = $maxLogFiles;
 		return $this;
 	}
 

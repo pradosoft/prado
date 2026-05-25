@@ -229,10 +229,11 @@ class TAssetManager extends \Prado\TModule
 	public function setBasePath($value)
 	{
 		$this->assertUninitialized('BasePath');
-		$this->_basePath = Prado::getPathOfNamespace($value);
-		if ($this->_basePath === null || !is_dir($this->_basePath) || !is_writable($this->_basePath)) {
+		$basePath = Prado::getPathOfNamespace($value);
+		if ($basePath === null || !is_dir($basePath) || !is_writable($basePath)) {
 			throw new TInvalidDataValueException('assetmanager_basepath_invalid', $value);
 		}
+		$this->_basePath = $basePath;
 	}
 
 	/**

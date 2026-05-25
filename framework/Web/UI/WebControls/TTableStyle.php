@@ -244,9 +244,11 @@ class TTableStyle extends TStyle
 	 */
 	public function setCellPadding($value)
 	{
-		if (($this->_cellPadding = TPropertyValue::ensureInteger($value)) < -1) {
+		$cellPadding = TPropertyValue::ensureInteger($value);
+		if ($cellPadding < -1) {
 			throw new TInvalidDataValueException('tablestyle_cellpadding_invalid');
 		}
+		$this->_cellPadding = $cellPadding;
 	}
 
 	/**
@@ -265,9 +267,11 @@ class TTableStyle extends TStyle
 	 */
 	public function setCellSpacing($value)
 	{
-		if (($this->_cellSpacing = TPropertyValue::ensureInteger($value)) < -1) {
+		$cellSpacing = TPropertyValue::ensureInteger($value);
+		if ($cellSpacing < -1) {
 			throw new TInvalidDataValueException('tablestyle_cellspacing_invalid');
 		}
+		$this->_cellSpacing = $cellSpacing;
 	}
 
 	/**

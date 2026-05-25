@@ -225,9 +225,11 @@ class TLogRouter extends \Prado\TModule
 	 */
 	public function setConfigFile($value)
 	{
-		if (($this->_configFile = Prado::getPathOfNamespace($value, $this->getApplication()->getConfigurationFileExt())) === null) {
+		$configFile = Prado::getPathOfNamespace($value, $this->getApplication()->getConfigurationFileExt());
+		if ($configFile === null) {
 			throw new TConfigurationException('logrouter_configfile_invalid', $value);
 		}
+		$this->_configFile = $configFile;
 	}
 
 	/**
