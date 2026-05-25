@@ -259,8 +259,7 @@ class TDbCacheTest extends PHPUnit\Framework\TestCase
 		$this->_cache->set('key2', 'value2');
 		$this->_cache->set('key3', 'value3');
 
-		$result = $this->_cache->flush();
-		$this->assertTrue($result);
+		$this->_cache->flush();
 
 		$this->assertFalse($this->_cache->get('key1'));
 		$this->assertFalse($this->_cache->get('key2'));
