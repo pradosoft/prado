@@ -136,7 +136,7 @@ class TMemCache extends TCache
 	 */
 	private $_servers = [];
 	/**
-	 * @var null|string persistent id for the instance of the memcache server
+	 * @var ?string persistent id for the instance of the memcache server
 	 */
 	private $_persistentid;
 
@@ -263,7 +263,7 @@ class TMemCache extends TCache
 	/**
 	 * Creates the Memcached instance.
 	 * Override in a subclass to substitute a mock or alternative implementation.
-	 * @param null|string $persistentId the persistent ID; null creates a non-persistent instance
+	 * @param ?string $persistentId the persistent ID; null creates a non-persistent instance
 	 * @return \Memcached the new Memcached instance
 	 * @since 4.3.3
 	 */
@@ -369,31 +369,31 @@ class TMemCache extends TCache
 
 	/**
 	 * @param string $key a unique key identifying the cached value
-	 * @return false|string the value stored in cache, false if the value is not in the cache or expired.
+	 * @return mixed the stored value on a hit, or `false` on a miss or expiry.
 	 */
-	protected function getValue($key)
+	protected function getValue(string $key): mixed
 	{
 		return $this->getCacheDirect()->get($key);
 	}
 
 	/**
 	 * @param string $key the key identifying the value to be cached
-	 * @param string $value the value to be cached
+	 * @param mixed $value the value to be cached
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
-	protected function setValue($key, $value, $expire)
+	protected function setValue(string $key, mixed $value, int $expire): bool
 	{
 		return $this->getCacheDirect()->set($key, $value, $expire);
 	}
 
 	/**
 	 * @param string $key the key identifying the value to be cached
-	 * @param string $value the value to be cached
+	 * @param mixed $value the value to be cached
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
-	protected function addValue($key, $value, $expire)
+	protected function addValue(string $key, mixed $value, int $expire): bool
 	{
 		return $this->getCacheDirect()->add($key, $value, $expire);
 	}
@@ -402,16 +402,16 @@ class TMemCache extends TCache
 	 * @param string $key the key of the value to be deleted
 	 * @return bool true if no error happens during deletion
 	 */
-	protected function deleteValue($key)
+	protected function deleteValue(string $key): bool
 	{
 		return $this->getCacheDirect()->delete($key);
 	}
 
 	/**
-	 * @return bool true if no error happens during flush
+	 * Deletes all values from cache.
 	 */
-	public function flush()
+	public function flush(): void
 	{
-		return $this->getCacheDirect()->flush();
+		$this->getCacheDirect()->flush();
 	}
 }
