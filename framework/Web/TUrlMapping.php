@@ -121,11 +121,11 @@ class TUrlMapping extends TUrlManager implements IModuleDependency
 		if ($this->getRequest()->getRequestResolved()) {
 			throw new TConfigurationException('urlmapping_global_required');
 		}
-		if ($this->_configFile !== null) {
+		if ($this->getConfigFile() !== null) {
 			$this->loadConfigFile();
 		}
 		$this->loadUrlMappings($config);
-		if ($this->_urlPrefix === '') {
+		if ($this->getUrlPrefix() === '') {
 			$request = $this->getRequest();
 			if ($request->getUrlFormat() === THttpRequestUrlFormat::HiddenPath) {
 				$this->_urlPrefix = dirname($request->getApplicationUrl());
@@ -133,7 +133,7 @@ class TUrlMapping extends TUrlManager implements IModuleDependency
 				$this->_urlPrefix = $request->getApplicationUrl();
 			}
 		}
-		$this->_urlPrefix = rtrim($this->_urlPrefix, '/');
+		$this->_urlPrefix = rtrim($this->getUrlPrefix(), '/');
 	}
 
 	/**
@@ -157,17 +157,18 @@ class TUrlMapping extends TUrlManager implements IModuleDependency
 	 */
 	protected function loadConfigFile()
 	{
-		if (is_file($this->_configFile)) {
+		$configFile = $this->getConfigFile();
+		if (is_file($configFile)) {
 			if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
-				$config = include $this->_configFile;
+				$config = include $configFile;
 				$this->loadUrlMappings($config);
 			} else {
 				$dom = new TXmlDocument();
-				$dom->loadFromFile($this->_configFile);
+				$dom->loadFromFile($configFile);
 				$this->loadUrlMappings($dom);
 			}
 		} else {
-			throw new TConfigurationException('urlmapping_configfile_inexistent', $this->_configFile);
+			throw new TConfigurationException('urlmapping_configfile_inexistent', $configFile);
 		}
 	}
 
@@ -229,7 +230,7 @@ class TUrlMapping extends TUrlManager implements IModuleDependency
 	 */
 	public function setConfigFile($value)
 	{
-		$configFile = Prado::getPathOfNamespace($value, $this->getApplication()->getConfigurationFileExt());
+		$configFile = Prado::getPathOfNamespace($value, $this->getApplication()?->getConfigurationFileExt());
 		if ($configFile === null) {
 			throw new TConfigurationException('urlmapping_configfile_invalid', $value);
 		}
@@ -379,7 +380,7 @@ class TUrlMapping extends TUrlManager implements IModuleDependency
 	 */
 	public function constructUrl($serviceID, $serviceParam, $getItems, $encodeAmpersand, $encodeGetItems)
 	{
-		if ($this->_customUrl) {
+		if ($this->getEnableCustomUrl()) {
 			if (!(is_array($getItems) || ($getItems instanceof \Traversable))) {
 				$getItems = [];
 			}

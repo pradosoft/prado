@@ -18,7 +18,6 @@ use Prado\Data\TDbDriver;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
-use Prado\IModuleDependency;
 use Prado\TModule;
 use Prado\TPropertyValue;
 use Prado\Security\Permissions\IPermissions;
@@ -79,7 +78,7 @@ use Prado\Util\Traits\TInitializedTrait;
  * @since 4.2.0
  * @method bool dyRegisterShellAction($returnValue)
  */
-class TDbParameterModule extends TDbModule implements IPermissions, IModuleDependency
+class TDbParameterModule extends TDbModule implements IPermissions
 {
 	use TInitializedTrait;
 
@@ -173,21 +172,6 @@ class TDbParameterModule extends TDbModule implements IPermissions, IModuleDepen
 		$app->attachEventHandler('onAuthenticationComplete', [$this, 'registerShellAction']);
 		parent::init($config);
 		$this->markInitialized();
-	}
-
-	/**
-	 * Returns the ConnectionID that init() depends on, when set.
-	 * init() issues SELECT queries against the parameter table; the upstream
-	 * TDataSourceConfig::init() must have applied its <database> element
-	 * first. Empty ConnectionID means no dependency — TDbPropertiesTrait may
-	 * fall back to a sqlite store.
-	 * @param bool $isPreInit true for the dyPreInit pass, false for the init() pass
-	 * @return null|string the ConnectionID (empty if unset), or null for pre-init
-	 * @since 4.4.0
-	 */
-	public function getModuleDependencies(bool $isPreInit): null|string|array
-	{
-		return $this->getConnectionID();
 	}
 
 	/**
