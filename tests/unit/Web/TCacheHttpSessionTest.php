@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../PradoUnitRequires.php';
+
 use Prado\Caching\TMemCache;
 use Prado\Exceptions\TConfigurationException;
 use Prado\TApplication;
@@ -105,5 +107,45 @@ class TCacheHttpSessionTest extends PHPUnit\Framework\TestCase
 		$this->testSetAndGet();
 		self::$session->destroy();
 		self::assertEquals(false, self::$session->getIsStarted());
+	}
+}
+
+/**
+ * IModuleDependency contract for TCacheHttpSession.
+ *
+ * Kept in a separate class so the memcached-extension skip in
+ * TCacheHttpSessionTest::setUp() does not suppress these tests, which exercise
+ * only configuration state and do not open a session.
+ */
+class TCacheHttpSessionDependencyTest extends PHPUnit\Framework\TestCase
+{
+	use PradoUnitModuleDependencyTrait;
+
+	public function testImplementsIModuleDependency()
+	{
+		$this->assertInstanceOf(\Prado\IModuleDependency::class, new TCacheHttpSession());
+	}
+
+	public function testGetModuleDependencies_noCacheModuleID_returnsNoDeps()
+	{
+		$session = new TCacheHttpSession();
+		$this->assertModuleDependency(null, $session->getModuleDependencies(false));
+	}
+
+	public function testGetModuleDependencies_cacheModuleIDSet_returnsIt()
+	{
+		$session = new TCacheHttpSession();
+		$session->setCacheModuleID('my_cache_id');
+		$this->assertModuleDependency('my_cache_id', $session->getModuleDependencies(false));
+	}
+
+	public function testGetModuleDependencies_returnsSameRegardlessOfIsPreInit()
+	{
+		$session = new TCacheHttpSession();
+		$session->setCacheModuleID('my_cache_id');
+		$this->assertModuleDependency(
+			$session->getModuleDependencies(true),
+			$session->getModuleDependencies(false)
+		);
 	}
 }

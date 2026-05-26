@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../PradoUnitRequires.php';
+
 use Prado\Web\THttpRequest;
 use Prado\Web\THttpRequestUrlFormat;
 use Prado\Web\TUrlMapping;
@@ -13,6 +15,8 @@ use Prado\Xml\TXmlDocument;
  */
 class TUrlMappingTest extends PHPUnit\Framework\TestCase
 {
+	use PradoUnitModuleDependencyTrait;
+
 	protected static $app = null;
 
 	protected function setUp(): void
@@ -262,5 +266,71 @@ class TUrlMappingTest extends PHPUnit\Framework\TestCase
 		$pattern->setPattern('test');
 		$pattern->setVerbs('!GET,POST');
 		$this->assertEquals(['!GET', 'POST'], $pattern->getVerbs());
+	}
+
+	/**
+	 * Removes a module from the shared TApplication module map via reflection.
+	 * TApplication::setModule() throws when overwriting an existing slot, so a
+	 * direct property reset is required for safe per-test cleanup.
+	 */
+	private function unregisterAppModule(string $id): void
+	{
+		$prop = new \ReflectionProperty(TApplication::class, '_modules');
+		$prop->setAccessible(true);
+		$modules = $prop->getValue(self::$app);
+		unset($modules[$id]);
+		$prop->setValue(self::$app, $modules);
+	}
+
+	public function testImplementsIModuleDependency()
+	{
+		$this->assertInstanceOf(\Prado\IModuleDependency::class, new TUrlMapping());
+	}
+
+	public function testGetModuleDependencies_noRequestConfigured_returnsNoDeps()
+	{
+		$module = new TUrlMapping();
+		$this->assertModuleDependency(null, $module->getModuleDependencies(false));
+	}
+
+	public function testGetModuleDependencies_singleRequestConfigured_returnsId()
+	{
+		$module = new TUrlMapping();
+		self::$app->setModule('url_map_test_request_a', new THttpRequest());
+		try {
+			$this->assertModuleDependency('url_map_test_request_a', $module->getModuleDependencies(false));
+		} finally {
+			$this->unregisterAppModule('url_map_test_request_a');
+		}
+	}
+
+	public function testGetModuleDependencies_multipleRequestsConfigured_returnsAllIds()
+	{
+		$module = new TUrlMapping();
+		self::$app->setModule('url_map_test_request_b1', new THttpRequest());
+		self::$app->setModule('url_map_test_request_b2', new THttpRequest());
+		try {
+			$this->assertModuleDependency(
+				['url_map_test_request_b1', 'url_map_test_request_b2'],
+				$module->getModuleDependencies(false)
+			);
+		} finally {
+			$this->unregisterAppModule('url_map_test_request_b1');
+			$this->unregisterAppModule('url_map_test_request_b2');
+		}
+	}
+
+	public function testGetModuleDependencies_returnsSameRegardlessOfIsPreInit()
+	{
+		$module = new TUrlMapping();
+		self::$app->setModule('url_map_test_request_c', new THttpRequest());
+		try {
+			$this->assertModuleDependency(
+				$module->getModuleDependencies(true),
+				$module->getModuleDependencies(false)
+			);
+		} finally {
+			$this->unregisterAppModule('url_map_test_request_c');
+		}
 	}
 }
