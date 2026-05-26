@@ -160,7 +160,7 @@ class TApplicationComponent extends \Prado\TComponent
 		if ($className === null) {
 			$className = $this::class;
 		}
-		$class = TComponentReflection::getReflectionClassForType($className);
+		$class = TComponentReflection::getReflectionClassByType($className);
 		$fullPath = dirname($class->getFileName()) . DIRECTORY_SEPARATOR . $assetPath;
 		return $this->publishFilePath($fullPath);
 	}

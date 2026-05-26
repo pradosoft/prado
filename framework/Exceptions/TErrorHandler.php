@@ -666,7 +666,7 @@ class TErrorHandler extends \Prado\TModule
 		preg_match('/\b(T[A-Z]\w+)\b/', $message, $matches);
 		if (count($matches) > 0) {
 			$class = $matches[0];
-			$reflection = TComponentReflection::getReflectionClassForType($class);
+			$reflection = TComponentReflection::getReflectionClassByType($class);
 			if ($reflection === null) {
 				return null;
 			}

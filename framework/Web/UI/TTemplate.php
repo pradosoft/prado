@@ -871,7 +871,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 		if (!is_string($className)) {
 			throw new TConfigurationException('template_component_required', $type);
 		}
-		$class = TComponentReflection::getReflectionClassForType($className);
+		$class = TComponentReflection::getReflectionClassByType($className);
 		if (!$this->_attributevalidation) {
 			return $class->getName();	//	Skins don't validate.
 		}
@@ -1060,7 +1060,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	 */
 	protected function isClassBehaviorMethod(\ReflectionClass $class, $method)
 	{
-		$component = TComponentReflection::getReflectionClassForType(TComponent::class);
+		$component = TComponentReflection::getReflectionClassByType(TComponent::class);
 		$behaviors = $component->getStaticProperties();
 		if (!isset($behaviors['_um'])) {
 			return false;
