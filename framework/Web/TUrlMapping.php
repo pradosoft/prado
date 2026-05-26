@@ -11,6 +11,7 @@
 namespace Prado\Web;
 
 use Prado\Exceptions\TConfigurationException;
+use Prado\IModuleDependency;
 use Prado\Prado;
 use Prado\TApplication;
 use Prado\TPropertyValue;
@@ -81,7 +82,7 @@ use Prado\Xml\TXmlElement;
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.0.5
  */
-class TUrlMapping extends TUrlManager
+class TUrlMapping extends TUrlManager implements IModuleDependency
 {
 	/**
 	 * @var TUrlMappingPattern[] list of patterns.
@@ -120,11 +121,11 @@ class TUrlMapping extends TUrlManager
 		if ($this->getRequest()->getRequestResolved()) {
 			throw new TConfigurationException('urlmapping_global_required');
 		}
-		if ($this->_configFile !== null) {
+		if ($this->getConfigFile() !== null) {
 			$this->loadConfigFile();
 		}
 		$this->loadUrlMappings($config);
-		if ($this->_urlPrefix === '') {
+		if ($this->getUrlPrefix() === '') {
 			$request = $this->getRequest();
 			if ($request->getUrlFormat() === THttpRequestUrlFormat::HiddenPath) {
 				$this->_urlPrefix = dirname($request->getApplicationUrl());
@@ -132,7 +133,22 @@ class TUrlMapping extends TUrlManager
 				$this->_urlPrefix = $request->getApplicationUrl();
 			}
 		}
-		$this->_urlPrefix = rtrim($this->_urlPrefix, '/');
+		$this->_urlPrefix = rtrim($this->getUrlPrefix(), '/');
+	}
+
+	/**
+	 * Returns the configured THttpRequest module IDs that init() depends on.
+	 * init() reads request state right after parent::init(); a configured
+	 * request registers itself with TApplication only after its own init()
+	 * completes. With no configured request, getRequest() lazily instantiates
+	 * a default and no ordering is needed.
+	 * @param bool $isPreInit true for the dyPreInit pass, false for the init() pass
+	 * @return null|string[] configured request module IDs, or null for pre-init
+	 * @since 4.4.0
+	 */
+	public function getModuleDependencies(bool $isPreInit): null|string|array
+	{
+		return array_keys($this->getApplication()?->getModulesByType(THttpRequest::class));
 	}
 
 	/**
@@ -141,17 +157,18 @@ class TUrlMapping extends TUrlManager
 	 */
 	protected function loadConfigFile()
 	{
-		if (is_file($this->_configFile)) {
+		$configFile = $this->getConfigFile();
+		if (is_file($configFile)) {
 			if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
-				$config = include $this->_configFile;
+				$config = include $configFile;
 				$this->loadUrlMappings($config);
 			} else {
 				$dom = new TXmlDocument();
-				$dom->loadFromFile($this->_configFile);
+				$dom->loadFromFile($configFile);
 				$this->loadUrlMappings($dom);
 			}
 		} else {
-			throw new TConfigurationException('urlmapping_configfile_inexistent', $this->_configFile);
+			throw new TConfigurationException('urlmapping_configfile_inexistent', $configFile);
 		}
 	}
 
@@ -213,7 +230,7 @@ class TUrlMapping extends TUrlManager
 	 */
 	public function setConfigFile($value)
 	{
-		$configFile = Prado::getPathOfNamespace($value, $this->getApplication()->getConfigurationFileExt());
+		$configFile = Prado::getPathOfNamespace($value, $this->getApplication()?->getConfigurationFileExt());
 		if ($configFile === null) {
 			throw new TConfigurationException('urlmapping_configfile_invalid', $value);
 		}
@@ -363,7 +380,7 @@ class TUrlMapping extends TUrlManager
 	 */
 	public function constructUrl($serviceID, $serviceParam, $getItems, $encodeAmpersand, $encodeGetItems)
 	{
-		if ($this->_customUrl) {
+		if ($this->getEnableCustomUrl()) {
 			if (!(is_array($getItems) || ($getItems instanceof \Traversable))) {
 				$getItems = [];
 			}

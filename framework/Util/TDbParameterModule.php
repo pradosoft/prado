@@ -18,6 +18,7 @@ use Prado\Data\TDbDriver;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\IModuleDependency;
 use Prado\TModule;
 use Prado\TPropertyValue;
 use Prado\Security\Permissions\IPermissions;
@@ -78,7 +79,7 @@ use Prado\Util\Traits\TInitializedTrait;
  * @since 4.2.0
  * @method bool dyRegisterShellAction($returnValue)
  */
-class TDbParameterModule extends TDbModule implements IPermissions
+class TDbParameterModule extends TDbModule implements IPermissions, IModuleDependency
 {
 	use TInitializedTrait;
 
@@ -162,16 +163,32 @@ class TDbParameterModule extends TDbModule implements IPermissions
 	{
 		$this->loadDbParameters();
 
-		if ($this->_autoLoadField) {
-			$this->getApplication()->getParameters()->attachBehavior(self::APP_PARAMETER_LAZY_BEHAVIOR, new TMapLazyLoadBehavior([$this, 'getFromBehavior']));
+		if ($app = $this->getApplication()) {
+			if ($this->getAutoLoadField()) {
+				$app->getParameters()->attachBehavior(self::APP_PARAMETER_LAZY_BEHAVIOR, new TMapLazyLoadBehavior([$this, 'getFromBehavior']));
+			}
+			if ($this->getCaptureParameterChanges()) {
+				$app->attachEventHandler('onBeginRequest', [$this, 'attachTPageServiceHandler']);
+			}
+			$app->attachEventHandler('onAuthenticationComplete', [$this, 'registerShellAction']);
 		}
-		if ($this->_autoCapture) {
-			$this->getApplication()->attachEventHandler('onBeginRequest', [$this, 'attachTPageServiceHandler']);
-		}
-		$app = $this->getApplication();
-		$app->attachEventHandler('onAuthenticationComplete', [$this, 'registerShellAction']);
 		parent::init($config);
 		$this->markInitialized();
+	}
+
+	/**
+	 * Returns the ConnectionID that init() depends on, when set.
+	 * init() issues SELECT queries against the parameter table; the upstream
+	 * TDataSourceConfig::init() must have applied its <database> element
+	 * first. Empty ConnectionID means no dependency — TDbPropertiesTrait may
+	 * fall back to a sqlite store.
+	 * @param bool $isPreInit true for the dyPreInit pass, false for the init() pass
+	 * @return null|string the ConnectionID (empty if unset), or null for pre-init
+	 * @since 4.4.0
+	 */
+	public function getModuleDependencies(bool $isPreInit): null|string|array
+	{
+		return $this->getConnectionID();
 	}
 
 	/**
@@ -195,9 +212,10 @@ class TDbParameterModule extends TDbModule implements IPermissions
 
 		$this->ensureTable();
 
-		$where = ($this->_autoLoadField ? " WHERE {$this->_autoLoadField}={$this->_autoLoadValue}" : '');
+		$autoLoadField = $this->getAutoLoadField();
+		$where = ($autoLoadField ? " WHERE {$autoLoadField}={$this->getAutoLoadValue()}" : '');
 		$cmd = $db->createCommand(
-			"SELECT {$this->_keyField} as keyField, {$this->_valueField}  as valueField FROM {$this->_tableName}{$where}"
+			"SELECT {$this->getKeyField()} as keyField, {$this->getValueField()}  as valueField FROM {$this->getTableName()}{$where}"
 		);
 		$results = $cmd->query();
 
@@ -268,10 +286,11 @@ class TDbParameterModule extends TDbModule implements IPermissions
 	{
 		$db = $this->getDbConnection();
 		$driver = $db->getDriverName();
+		$autoLoadField = $this->getAutoLoadField();
 		$autoidAttributes = '';
 		$autotype = 'INTEGER';
-		$postIndices = '; CREATE UNIQUE INDEX tkey ON ' . $this->_tableName . '(' . $this->_keyField . ');' .
-		($this->_autoLoadField ? ' CREATE INDEX tauto ON ' . $this->_tableName . '(' . $this->_autoLoadField . ');' : '');
+		$postIndices = '; CREATE UNIQUE INDEX tkey ON ' . $this->getTableName() . '(' . $this->getKeyField() . ');' .
+		($autoLoadField ? ' CREATE INDEX tauto ON ' . $this->getTableName() . '(' . $autoLoadField . ');' : '');
 
 		switch ($driver) {
 			case TDbDriver::DRIVER_SQLITE:
@@ -285,11 +304,11 @@ class TDbParameterModule extends TDbModule implements IPermissions
 				break;
 		}
 
-		$sql = 'CREATE TABLE ' . $this->_tableName . ' (
+		$sql = 'CREATE TABLE ' . $this->getTableName() . ' (
 			param_id ' . $autotype . ' PRIMARY KEY ' . $autoidAttributes . ', ' .
-			$this->_keyField . ' VARCHAR(128) NOT NULL,' .
-			$this->_valueField . ' MEDIUMTEXT' .
-			($this->_autoLoadField ? ', ' . $this->_autoLoadField . ' BOOLEAN NOT NULL DEFAULT 1' : '') .
+			$this->getKeyField() . ' VARCHAR(128) NOT NULL,' .
+			$this->getValueField() . ' MEDIUMTEXT' .
+			($autoLoadField ? ', ' . $autoLoadField . ' BOOLEAN NOT NULL DEFAULT 1' : '') .
 			')' . $postIndices;
 		$db->createCommand($sql)->execute();
 	}
@@ -305,7 +324,7 @@ class TDbParameterModule extends TDbModule implements IPermissions
 		}
 		$this->_tableEnsured = true;
 		$db = $this->getDbConnection();
-		$sql = 'SELECT * FROM ' . $this->_tableName . ' WHERE 0=1';
+		$sql = 'SELECT * FROM ' . $this->getTableName() . ' WHERE 0=1';
 		try {
 			$db->createCommand($sql)->query()->close();
 		} catch (Exception $e) {
@@ -313,7 +332,7 @@ class TDbParameterModule extends TDbModule implements IPermissions
 			if ($this->_autoCreate) {
 				$this->createDbTable();
 			} else {
-				throw new TConfigurationException('dbparametermodule_table_nonexistent', $this->_tableName);
+				throw new TConfigurationException('dbparametermodule_table_nonexistent', $this->getTableName());
 			}
 		}
 	}
@@ -344,7 +363,7 @@ class TDbParameterModule extends TDbModule implements IPermissions
 
 		$db = $this->getDbConnection();
 		$cmd = $db->createCommand(
-			"SELECT {$this->_valueField} as valueField FROM {$this->_tableName} WHERE {$this->_keyField}=:key LIMIT 1"
+			"SELECT {$this->getValueField()} as valueField FROM {$this->getTableName()} WHERE {$this->getKeyField()}=:key LIMIT 1"
 		);
 		$cmd->bindParameter(":key", $key, PDO::PARAM_STR);
 		$results = $cmd->queryRow();
@@ -410,21 +429,22 @@ class TDbParameterModule extends TDbModule implements IPermissions
 		$this->ensureTable();
 		$db = $this->getDbConnection();
 		$driver = $db->getDriverName();
+		$autoLoadField = $this->getAutoLoadField();
 		$appendix = '';
 		if ($driver === TDbDriver::DRIVER_MYSQL) {
-			$dupl = ($this->_autoLoadField ? ", {$this->_autoLoadField}=values({$this->_autoLoadField})" : '');
-			$appendix = " ON DUPLICATE KEY UPDATE {$this->_valueField}=values({$this->_valueField}){$dupl}";
+			$dupl = ($autoLoadField ? ", {$autoLoadField}=values({$autoLoadField})" : '');
+			$appendix = " ON DUPLICATE KEY UPDATE {$this->getValueField()}=values({$this->getValueField()}){$dupl}";
 		} else {
 			$this->remove($key);
 		}
-		$field = ($this->_autoLoadField ? ", {$this->_autoLoadField}" : '');
-		$values = ($this->_autoLoadField ? ", :auto" : '');
-		$cmd = $db->createCommand("INSERT INTO {$this->_tableName} ({$this->_keyField}, {$this->_valueField}{$field}) " .
+		$field = ($autoLoadField ? ", {$autoLoadField}" : '');
+		$values = ($autoLoadField ? ", :auto" : '');
+		$cmd = $db->createCommand("INSERT INTO {$this->getTableName()} ({$this->getKeyField()}, {$this->getValueField()}{$field}) " .
 					"VALUES (:key, :value{$values})" . $appendix);
 		$cmd->bindParameter(":key", $key, PDO::PARAM_STR);
 		$cmd->bindParameter(":value", $_value, PDO::PARAM_STR);
-		if ($this->_autoLoadField) {
-			$alv = $autoLoad ? $this->_autoLoadValue : $this->_autoLoadValueFalse;
+		if ($autoLoadField) {
+			$alv = $autoLoad ? $this->getAutoLoadValue() : $this->getAutoLoadValueFalse();
 			$cmd->bindParameter(":auto", $alv, PDO::PARAM_STR);
 		}
 		$cmd->execute();
@@ -464,7 +484,7 @@ class TDbParameterModule extends TDbModule implements IPermissions
 
 		$db = $this->getDbConnection();
 		$cmd = $db->createCommand(
-			"SELECT COUNT(*) AS count FROM {$this->_tableName} WHERE {$this->_keyField}=:key"
+			"SELECT COUNT(*) AS count FROM {$this->getTableName()} WHERE {$this->getKeyField()}=:key"
 		);
 		$cmd->bindParameter(":key", $key, PDO::PARAM_STR);
 		$result = $cmd->queryRow();
@@ -488,7 +508,7 @@ class TDbParameterModule extends TDbModule implements IPermissions
 		if ($driver === TDbDriver::DRIVER_MYSQL) {
 			$appendix = ' LIMIT 1';
 		}
-		$cmd = $db->createCommand("DELETE FROM {$this->_tableName} WHERE {$this->_keyField}=:key" . $appendix);
+		$cmd = $db->createCommand("DELETE FROM {$this->getTableName()} WHERE {$this->getKeyField()}=:key" . $appendix);
 		$cmd->bindParameter(":key", $key, PDO::PARAM_STR);
 		$cmd->execute();
 		return $value;

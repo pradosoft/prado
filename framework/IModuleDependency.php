@@ -52,8 +52,10 @@ namespace Prado;
  *         advisory: it influences order when the referenced module is present
  *         but raises no error when it is absent;
  *   - an associative array whose keys are module IDs and values are the
- *     required flag in any form accepted by {@see TPropertyValue::ensureBoolean}
- *     (bool, int, or string such as `'true'`, `'false'`, `'yes'`, `'no'`).
+ *     required flag, coerced via {@see TPropertyValue::ensureBoolean}: `bool`
+ *     values pass through, the case-insensitive string `'true'` and non-zero
+ *     numeric values (including numeric strings) coerce to `true`, and every
+ *     other value coerces to `false`.
  *     Example: `['db' => true, 'cache' => false]`.
  *
  * **Contract:** {@see getModuleDependencies()} is called before
@@ -83,8 +85,9 @@ interface IModuleDependency
 	 *   - `['a', 'b']` — multiple required dependencies
 	 *   - `[['id' => 'a', 'required' => false]]` — verbose form with required flag;
 	 *     `'id'` may be `null` to represent "no dependency" in a fixed-shape array
-	 *   - `['a' => true, 'b' => false]` — key-value shorthand; value is passed through
-	 *     {@see TPropertyValue::ensureBoolean} so strings like `'true'`/`'false'` are accepted
+	 *   - `['a' => true, 'b' => false]` — key-value shorthand; the value is
+	 *     coerced via {@see TPropertyValue::ensureBoolean} (case-insensitive
+	 *     `'true'` and non-zero numerics become `true`, all else `false`)
 	 *
 	 * @param bool $isPreInit `true` when collecting for the dyPreInit pass,
 	 *   `false` when collecting for the init() pass (default)
