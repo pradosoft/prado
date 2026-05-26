@@ -11,6 +11,7 @@
 namespace Prado\Data\ActiveRecord;
 
 use Prado\Data\TDataSourceConfig;
+use Prado\IModuleDependency;
 use Prado\Prado;
 use Prado\TPropertyValue;
 
@@ -88,7 +89,7 @@ use Prado\TPropertyValue;
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
  */
-class TActiveRecordConfig extends TDataSourceConfig
+class TActiveRecordConfig extends TDataSourceConfig implements IModuleDependency
 {
 	public const DEFAULT_MANAGER_CLASS = \Prado\Data\ActiveRecord\TActiveRecordManager::class;
 	public const DEFAULT_GATEWAY_CLASS = \Prado\Data\ActiveRecord\TActiveRecordGateway::class;
@@ -127,13 +128,28 @@ class TActiveRecordConfig extends TDataSourceConfig
 	public function init($xml)
 	{
 		parent::init($xml);
-		$manager = $this -> getManager();
-		if ($this->getEnableCache()) {
-			$manager->setCache($this->getApplication()->getCache());
+		$manager = $this->getManager();
+		if ($this->getEnableCache() && ($cache = $this->getApplication()?->getCache())) {
+			$manager->setCache($cache);
 		}
 		$manager->setDbConnection($this->getDbConnection());
 		$manager->setInvalidFinderResult($this->getInvalidFinderResult());
 		$manager->setGatewayClass($this->getGatewayClass());
+	}
+
+	/**
+	 * Returns the forwarding ConnectionID that init() depends on, when set.
+	 * init() eagerly materializes the connection via setDbConnection(); a
+	 * forwarded TDataSourceConfig must have applied its <database> element
+	 * first. Empty ConnectionID means the local <database> element configures
+	 * the connection.
+	 * @param bool $isPreInit true for the dyPreInit pass, false for the init() pass
+	 * @return null|string the forwarding ConnectionID (empty if unset), or null for pre-init
+	 * @since 4.4.0
+	 */
+	public function getModuleDependencies(bool $isPreInit): null|string|array
+	{
+		return $this->getConnectionID();
 	}
 
 	/**
@@ -142,7 +158,7 @@ class TActiveRecordConfig extends TDataSourceConfig
 	public function getManager()
 	{
 		if ($this->_manager === null) {
-			$this->_manager = Prado::createComponent($this -> getManagerClass());
+			$this->_manager = Prado::createComponent($this->getManagerClass());
 		}
 		return TActiveRecordManager::getInstance($this->_manager);
 	}
