@@ -14,6 +14,7 @@ namespace Prado\Web;
 
 use Prado\Caching\ICache;
 use Prado\Exceptions\TConfigurationException;
+use Prado\IModuleDependency;
 
 /**
  * TCacheHttpSession class
@@ -41,7 +42,7 @@ use Prado\Exceptions\TConfigurationException;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1.1
  */
-class TCacheHttpSession extends THttpSession
+class TCacheHttpSession extends THttpSession implements IModuleDependency
 {
 	private $_prefix = 'session';
 	private $_cacheModuleID = '';
@@ -55,17 +56,32 @@ class TCacheHttpSession extends THttpSession
 	 */
 	public function init($config)
 	{
-		if ($this->_cacheModuleID === '') {
+		$cacheModuleId = $this->getCacheModuleID();
+		if ($cacheModuleId === '') {
 			throw new TConfigurationException('cachesession_cachemoduleid_required');
-		} elseif (($cache = $this->getApplication()->getModule($this->_cacheModuleID)) === null) {
-			throw new TConfigurationException('cachesession_cachemodule_inexistent', $this->_cacheModuleID);
+		} elseif (($cache = $this->getApplication()->getModule($cacheModuleId)) === null) {
+			throw new TConfigurationException('cachesession_cachemodule_inexistent', $cacheModuleId);
 		} elseif ($cache instanceof ICache) {
 			$this->_cache = $cache;
 		} else {
-			throw new TConfigurationException('cachesession_cachemodule_invalid', $this->_cacheModuleID);
+			throw new TConfigurationException('cachesession_cachemodule_invalid', $cacheModuleId);
 		}
 		$this->setUseCustomStorage(true);
 		parent::init($config);
+	}
+
+	/**
+	 * Returns the CacheModuleID that init() depends on, when set.
+	 * init() resolves the cache module then delegates to parent::init(), which
+	 * may touch session storage immediately; concrete caches open their
+	 * connection in their own init(). Empty CacheModuleID means no dependency.
+	 * @param bool $isPreInit true for the dyPreInit pass, false for the init() pass
+	 * @return null|string the cache module ID (empty if unset), or null for pre-init
+	 * @since 4.4.0
+	 */
+	public function getModuleDependencies(bool $isPreInit): null|string|array
+	{
+		return $this->getCacheModuleID();
 	}
 
 	/**
@@ -99,7 +115,7 @@ class TCacheHttpSession extends THttpSession
 	 */
 	public function _read($id)
 	{
-		return (string) $this->_cache->get($this->calculateKey($id));
+		return (string) $this->getCache()->get($this->calculateKey($id));
 	}
 
 	/**
@@ -110,7 +126,7 @@ class TCacheHttpSession extends THttpSession
 	 */
 	public function _write($id, $data)
 	{
-		return $this->_cache->set($this->calculateKey($id), $data, $this->getTimeout());
+		return $this->getCache()->set($this->calculateKey($id), $data, $this->getTimeout());
 	}
 
 	/**
@@ -121,7 +137,7 @@ class TCacheHttpSession extends THttpSession
 	 */
 	public function _destroy($id)
 	{
-		return $this->_cache->delete($this->calculateKey($id));
+		return $this->getCache()->delete($this->calculateKey($id));
 	}
 
 	/**
