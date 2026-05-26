@@ -47,7 +47,7 @@ trait TReflectionClassTrait
 	public static function getReflectionClass(): \ReflectionClass
 	{
 		/** @var \ReflectionClass $ref static::class is always a valid loaded class */
-		$ref = TComponentReflection::getReflectionClassForType(static::class);
+		$ref = TComponentReflection::getReflectionClassByType(static::class);
 		return $ref;
 	}
 }

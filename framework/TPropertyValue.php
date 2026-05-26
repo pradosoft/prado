@@ -161,7 +161,7 @@ class TPropertyValue
 				return $enums::hasConstant($value);
 			}
 			if (!isset($types[$enums])) {
-				$types[$enums] = TComponentReflection::getReflectionClassForType($enums);
+				$types[$enums] = TComponentReflection::getReflectionClassByType($enums);
 			}
 			if ($types[$enums]->hasConstant($value)) {
 				return $value;
@@ -239,7 +239,7 @@ class TPropertyValue
 		if ($green && $len > 0 && $value[0] !== '#') {
 			static $colors;
 			if (!$colors) {
-				$reflect = TComponentReflection::getReflectionClassForType(TWebColor::class);
+				$reflect = TComponentReflection::getReflectionClassByType(TWebColor::class);
 				$colors = $reflect->getConstants();
 				$colors = array_change_key_case($colors);
 			}

@@ -208,7 +208,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 				return $shortName;
 			}
 		}
-		$reflectionClass = TComponentReflection::getReflectionClassForType($control::class);
+		$reflectionClass = TComponentReflection::getReflectionClassByType($control::class);
 		return $reflectionClass->getShortName();
 	}
 

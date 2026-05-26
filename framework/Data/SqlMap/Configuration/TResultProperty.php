@@ -294,7 +294,7 @@ class TResultProperty extends \Prado\TComponent
 			if (is_a($type, TList::class, true)) {
 				return self::LIST_TYPE;
 			}
-			$class = TComponentReflection::getReflectionClassForType($type);
+			$class = TComponentReflection::getReflectionClassByType($type);
 			if ($class->implementsInterface('ArrayAccess')) {
 				return self::ARRAY_TYPE;
 			}

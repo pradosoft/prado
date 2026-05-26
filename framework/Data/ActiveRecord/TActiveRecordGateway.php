@@ -79,7 +79,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 */
 	protected function getRecordTableName(TActiveRecord $record)
 	{
-		$class = TComponentReflection::getReflectionClassForType($record::class);
+		$class = TComponentReflection::getReflectionClassByType($record::class);
 		if ($class->hasConstant(self::TABLE_CONST)) {
 			$value = $class->getConstant(self::TABLE_CONST);
 			if (empty($value)) {
