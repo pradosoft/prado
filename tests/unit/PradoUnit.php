@@ -9,9 +9,11 @@
  */
 
 // No Namespace for unit tests, separate from the system.
-// All shared helpers are loaded via the central requires file.  The mutual
-// require_once reference is intentional and safe: PHP marks a file as included
-// before executing it, so the circular reference never recurses.
+// PradoUnit lives at tests/unit/ as a central jump-off point into the test
+// harness; the shared helpers themselves live under tests/unit/Harness/, and
+// the loader at tests/unit/PradoUnitRequires.php walks that hierarchy.
+// The mutual require_once reference is intentional and safe: PHP marks a file
+// as included before executing it, so the circular reference never recurses.
 require_once __DIR__ . '/PradoUnitRequires.php';
 
 /**
@@ -52,6 +54,131 @@ require_once __DIR__ . '/PradoUnitRequires.php';
  */
 
 class PradoUnit {
+
+	// =========================================================================
+	// Reflection cache
+	// =========================================================================
+	//
+	// Tests reach for reflection constantly — snapshotting private state,
+	// invoking private methods, inspecting class hierarchies. Constructing a
+	// `\ReflectionClass`, `\ReflectionMethod`, or `\ReflectionProperty` is
+	// cheap individually but adds up across a 6 000-test suite. The framework
+	// itself caches `\ReflectionClass` in {@see \Prado\TComponentReflection::getReflectionClassByType()};
+	// the harness mirrors that pattern for all three reflection types.
+	//
+	// Cache keys are lowercased so case-insensitive class names share one
+	// cached object. Cache entries live for the process lifetime — classes
+	// cannot meaningfully change at runtime, so invalidation is unnecessary.
+	//
+	// Callers receive the cached instance as-is and must not mutate state on
+	// it (e.g. `setAccessible(false)`); PHP 8.1+ exposes private members
+	// without `setAccessible` so this is a non-issue in practice.
+
+	/** @var array<string, ?\ReflectionClass> Lowercased class name → cached ReflectionClass (or null when the class does not exist). */
+	private static array $_reflectionClassCache = [];
+
+	/** @var array<string, ?\ReflectionMethod> "{class}::{method}" lowercased → cached ReflectionMethod (or null when absent). */
+	private static array $_reflectionMethodCache = [];
+
+	/** @var array<string, ?\ReflectionProperty> "{class}::{property}" lowercased → cached ReflectionProperty (or null when absent at any level). */
+	private static array $_reflectionPropertyCache = [];
+
+	/**
+	 * Returns a cached {@see \ReflectionClass} for `$class`, or `null` when the
+	 * class does not exist.
+	 *
+	 * Accepts either a class-name string or an object instance (the instance's
+	 * class is reflected).
+	 *
+	 * @param string|object $class Class name or instance to reflect.
+	 * @return ?\ReflectionClass Cached instance, or `null` when reflection
+	 *   fails (e.g. unknown class).
+	 * @since 4.4.0
+	 */
+	public static function reflectionClass(string|object $class): ?\ReflectionClass
+	{
+		$name = is_object($class) ? $class::class : $class;
+		$key = strtolower($name);
+		if (!array_key_exists($key, self::$_reflectionClassCache)) {
+			try {
+				self::$_reflectionClassCache[$key] = new \ReflectionClass($name);
+			} catch (\ReflectionException) {
+				self::$_reflectionClassCache[$key] = null;
+			}
+		}
+		return self::$_reflectionClassCache[$key];
+	}
+
+	/**
+	 * Returns a cached {@see \ReflectionMethod} for `$class::$method`, or
+	 * `null` when the method does not exist.
+	 *
+	 * Resolves inherited methods through `ReflectionClass::getMethod()`. Cache
+	 * key includes the class name passed in (the resolved class of the looked-up
+	 * `ReflectionClass`), so two subclasses inheriting the same parent method
+	 * get distinct cache entries — but the underlying `ReflectionMethod` they
+	 * return refers to the same declared method.
+	 *
+	 * @param string|object $class  Class name or instance.
+	 * @param string        $method Method name.
+	 * @return ?\ReflectionMethod Cached instance, or `null` when the class or
+	 *   method does not exist.
+	 * @since 4.4.0
+	 */
+	public static function reflectionMethod(string|object $class, string $method): ?\ReflectionMethod
+	{
+		$rc = self::reflectionClass($class);
+		if ($rc === null) {
+			return null;
+		}
+		$key = strtolower($rc->getName() . '::' . $method);
+		if (!array_key_exists($key, self::$_reflectionMethodCache)) {
+			try {
+				self::$_reflectionMethodCache[$key] = $rc->getMethod($method);
+			} catch (\ReflectionException) {
+				self::$_reflectionMethodCache[$key] = null;
+			}
+		}
+		return self::$_reflectionMethodCache[$key];
+	}
+
+	/**
+	 * Returns a cached {@see \ReflectionProperty} for `$class::$property`, or
+	 * `null` when no property by that name is declared at any level of the
+	 * class hierarchy.
+	 *
+	 * Walks the full hierarchy so private properties declared in ancestor
+	 * classes are reachable — the standard `ReflectionClass::getProperty()`
+	 * cannot see ancestor `private` members from a subclass reflection.
+	 *
+	 * @param string|object $class    Class name or instance.
+	 * @param string        $property Property name (no `$` prefix).
+	 * @return ?\ReflectionProperty Cached instance, or `null` when the
+	 *   property is not declared at any level.
+	 * @since 4.4.0
+	 */
+	public static function reflectionProperty(string|object $class, string $property): ?\ReflectionProperty
+	{
+		$name = is_object($class) ? $class::class : $class;
+		$key = strtolower($name . '::' . $property);
+		if (array_key_exists($key, self::$_reflectionPropertyCache)) {
+			return self::$_reflectionPropertyCache[$key];
+		}
+		$rc = self::reflectionClass($name);
+		$found = null;
+		while ($rc !== null) {
+			$level = $rc->getName();
+			foreach ($rc->getProperties() as $rp) {
+				if ($rp->getName() === $property
+					&& $rp->getDeclaringClass()->getName() === $level) {
+					$found = $rp;
+					break 2;
+				}
+			}
+			$rc = $rc->getParentClass() ?: null;
+		}
+		return self::$_reflectionPropertyCache[$key] = $found;
+	}
 
 	// =========================================================================
 	// Object snapshot / restore
@@ -116,9 +243,9 @@ class PradoUnit {
 	{
 		$props       = [];
 		$checkFilter = !empty($filter);
-		$class       = new \ReflectionClass($object);
+		$class       = static::reflectionClass($object);
 
-		do {
+		while ($class !== null) {
 			$level = $class->getName();
 			foreach ($class->getProperties() as $rp) {
 				if ($rp->isStatic()) {
@@ -139,7 +266,8 @@ class PradoUnit {
 					$props[$name] = $rp;
 				}
 			}
-		} while ($class = $class->getParentClass());
+			$class = $class->getParentClass() ?: null;
+		}
 
 		return $props;
 	}
@@ -292,9 +420,9 @@ class PradoUnit {
 	{
 		$props = [];
 		$checkFilter = !empty($filter);
-		$rc = new \ReflectionClass($class);
+		$rc = static::reflectionClass($class);
 
-		do {
+		while ($rc !== null) {
 			$level = $rc->getName();
 			foreach ($rc->getProperties(\ReflectionProperty::IS_STATIC) as $rp) {
 				if ($rp->getDeclaringClass()->getName() !== $level) {
@@ -308,7 +436,8 @@ class PradoUnit {
 					$props[$name] = $rp;
 				}
 			}
-		} while ($rc = $rc->getParentClass());
+			$rc = $rc->getParentClass() ?: null;
+		}
 
 		return $props;
 	}
