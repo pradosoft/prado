@@ -3,10 +3,12 @@
 use Prado\Web\Behaviors\TRequestConnectionUpgrade;
 use Prado\Web\THttpRequestParameter;
 
+require_once __DIR__ . '/../../PradoUnitRequires.php';
+
 
 class TRequestConnectionUpgradeTest extends PHPUnit\Framework\TestCase
 {
-	public static $app = null;
+	protected ?TTestApplication $app = null;
 
 	protected function setUp(): void
 	{
@@ -35,13 +37,15 @@ class TRequestConnectionUpgradeTest extends PHPUnit\Framework\TestCase
 		$_COOKIE['phpsessid'] = '0123456789abcdef';
 		
 		$_FILES['userfile'] = ['name' => 'test.jpg', 'type' => 'image/jpg', 'size' => 10240, 'tmp_name' => 'tmpXXAZECZ', 'error' => 0];
-		if (self::$app === null) {
-			self::$app = new TApplication(__DIR__ . '/../app');
-		}
+		$this->app = new TTestApplication(__DIR__ . '/../app');
 	}
 
 	protected function tearDown(): void
 	{
+		if ($this->app !== null) {
+			$this->app->restoreApplication();
+			$this->app = null;
+		}
 		unset($_SERVER['HTTP_CONNECTION']);
 		unset($_SERVER['HTTP_UPGRADE']);
 	}

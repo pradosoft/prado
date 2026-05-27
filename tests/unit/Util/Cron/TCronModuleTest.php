@@ -4,6 +4,7 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
+use Prado\TApplication;
 use Prado\TComponent;
 use Prado\TApplicationComponent;
 use Prado\Security\TUserManager;
@@ -685,6 +686,7 @@ class TCronModuleTest extends PHPUnit\Framework\TestCase
 		{ // without UserManager, current user is task executor, and needs to restore.
 			$jobs = [['name' => 'testRunTask2', 'schedule' => '0 0 1 1 * 2020', 'task' => 'TTestCronUserTask']];
 			$this->obj = new $this->baseClass();
+			$this->obj->setUserManager($users);
 			$this->obj->init($jobs);
 			self::assertEquals(1, $this->obj->processPendingTasks());
 			$task = $this->obj->getTask('testRunTask2');
@@ -695,7 +697,13 @@ class TCronModuleTest extends PHPUnit\Framework\TestCase
 		
 		$userconfig = new TXmlDocument('1.0', 'utf8');
 		$userconfig->loadFromString('<users><user name="admin" password="demo"/><user name="cron" password="cron" /><user name="test" password="test" roles="Reader, User"/><role name="Administrator" users="admin,cron" /></users>');
-		$users->init($userconfig);
+		$priorConfigType = $app->getConfigurationType();
+		$app->setConfigurationType(TApplication::CONFIG_TYPE_XML);
+		try {
+			$users->init($userconfig);
+		} finally {
+			$app->setConfigurationType($priorConfigType);
+		}
 		//with UserManager
 		
 		{	//app user is restored 

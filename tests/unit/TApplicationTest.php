@@ -341,6 +341,11 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 	{
 		$this->_app->setConfigurationType(TApplication::CONFIG_TYPE_PHP);
 		$this->assertSame(TApplication::CONFIG_TYPE_PHP, $this->_app->getConfigurationType());
+		// The snapshot/restore in tearDown should cover this, but other tests
+		// (notably TCronModuleTest::testRunTask, whose TUserManager::init() reads
+		// the global configurationType to pick a loader) misbehave if the type
+		// leaks to PHP. Restore explicitly to be belt-and-suspenders safe.
+		$this->_app->setConfigurationType(TApplication::CONFIG_TYPE_XML);
 	}
 
 	public function testGetConfigurationFileExt_xmlType(): void
@@ -2334,9 +2339,12 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 
 	public function testConstructor_setsApplicationAlias(): void
 	{
-		// The constructor calls Prado::setPathOfAlias('Application', $this->getBasePath()).
+		// The constructor calls Prado::setPathOfAlias('Application', $this->getBasePath()),
+		// and setPathOfAlias() internally runs realpath() — so on platforms where the
+		// configured basePath contains a symlink (macOS /var → /private/var) the stored
+		// alias differs from the raw getBasePath(). Compare canonicalized paths.
 		$this->assertSame(
-			$this->_app->getBasePath(),
+			realpath($this->_app->getBasePath()),
 			\Prado\Prado::getPathOfAlias('Application')
 		);
 	}

@@ -5,21 +5,20 @@ use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
 use Prado\Security\TUserManager;
-use Prado\TApplication;
 use Prado\Xml\TXmlDocument;
+
+require_once __DIR__ . '/../PradoUnitRequires.php';
 
 class TUserManagerTest extends PHPUnit\Framework\TestCase
 {
-	public static $app = null;
+	protected ?TTestApplication $app = null;
 	public static $config = null;
 
 
 	protected function setUp(): void
 	{
-		if (self::$app === null) {
-			self::$app = new TApplication(__DIR__ . '/app');
-			prado::setPathofAlias('App', __DIR__);
-		}
+		$this->app = new TTestApplication(__DIR__ . '/app');
+		Prado::setPathOfAlias('App', __DIR__);
 
 		if (self::$config === null) {
 			// Simulate a config file
@@ -30,6 +29,10 @@ class TUserManagerTest extends PHPUnit\Framework\TestCase
 
 	protected function tearDown(): void
 	{
+		if ($this->app !== null) {
+			$this->app->restoreApplication();
+			$this->app = null;
+		}
 	}
 
 	public function testInit()

@@ -7,7 +7,6 @@ use Prado\Web\THttpRequestUrlFormat;
 use Prado\Web\TUrlMapping;
 use Prado\Web\TUrlMappingPattern;
 use Prado\Web\TUrlManager;
-use Prado\TApplication;
 use Prado\Xml\TXmlDocument;
 
 /**
@@ -17,7 +16,7 @@ class TUrlMappingTest extends PHPUnit\Framework\TestCase
 {
 	use PradoUnitModuleDependencyTrait;
 
-	protected static $app = null;
+	protected ?TTestApplication $app = null;
 
 	protected function setUp(): void
 	{
@@ -32,14 +31,16 @@ class TUrlMappingTest extends PHPUnit\Framework\TestCase
 		$_SERVER['PATH_INFO'] = '';
 		$_SERVER['REQUEST_METHOD'] = 'GET';
 
-		if (self::$app === null) {
-			self::$app = new TApplication(__DIR__ . '/app');
-		}
+		$this->app = new TTestApplication(__DIR__ . '/app');
 	}
 
 	protected function tearDown(): void
 	{
 		parent::tearDown();
+		if ($this->app !== null) {
+			$this->app->restoreApplication();
+			$this->app = null;
+		}
 		$_GET = [];
 		$_POST = [];
 		$_SERVER['PATH_INFO'] = '';
@@ -277,9 +278,9 @@ class TUrlMappingTest extends PHPUnit\Framework\TestCase
 	{
 		$prop = new \ReflectionProperty(TApplication::class, '_modules');
 		$prop->setAccessible(true);
-		$modules = $prop->getValue(self::$app);
+		$modules = $prop->getValue($this->app);
 		unset($modules[$id]);
-		$prop->setValue(self::$app, $modules);
+		$prop->setValue($this->app, $modules);
 	}
 
 	public function testImplementsIModuleDependency()
@@ -296,7 +297,7 @@ class TUrlMappingTest extends PHPUnit\Framework\TestCase
 	public function testGetModuleDependencies_singleRequestConfigured_returnsId()
 	{
 		$module = new TUrlMapping();
-		self::$app->setModule('url_map_test_request_a', new THttpRequest());
+		$this->app->setModule('url_map_test_request_a', new THttpRequest());
 		try {
 			$this->assertModuleDependency('url_map_test_request_a', $module->getModuleDependencies(false));
 		} finally {
@@ -307,8 +308,8 @@ class TUrlMappingTest extends PHPUnit\Framework\TestCase
 	public function testGetModuleDependencies_multipleRequestsConfigured_returnsAllIds()
 	{
 		$module = new TUrlMapping();
-		self::$app->setModule('url_map_test_request_b1', new THttpRequest());
-		self::$app->setModule('url_map_test_request_b2', new THttpRequest());
+		$this->app->setModule('url_map_test_request_b1', new THttpRequest());
+		$this->app->setModule('url_map_test_request_b2', new THttpRequest());
 		try {
 			$this->assertModuleDependency(
 				['url_map_test_request_b1', 'url_map_test_request_b2'],
@@ -323,7 +324,7 @@ class TUrlMappingTest extends PHPUnit\Framework\TestCase
 	public function testGetModuleDependencies_returnsSameRegardlessOfIsPreInit()
 	{
 		$module = new TUrlMapping();
-		self::$app->setModule('url_map_test_request_c', new THttpRequest());
+		$this->app->setModule('url_map_test_request_c', new THttpRequest());
 		try {
 			$this->assertModuleDependency(
 				$module->getModuleDependencies(true),

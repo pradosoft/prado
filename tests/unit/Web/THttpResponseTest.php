@@ -2,8 +2,9 @@
 
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
-use Prado\TApplication;
 use Prado\Web\THttpResponse;
+
+require_once __DIR__ . '/../PradoUnitRequires.php';
 
 class TTestHttpResponse extends THttpResponse {
 	public $headers = [];
@@ -34,24 +35,26 @@ class TTestHttpResponse extends THttpResponse {
 
 class THttpResponseTest extends PHPUnit\Framework\TestCase
 {
-	public static $app = null;
+	protected ?TTestApplication $app = null;
 
 	protected function setUp(): void
 	{
-		if (self::$app === null) {
-			self::$app = new TApplication(__DIR__ . '/app');
-		}
+		$this->app = new TTestApplication(__DIR__ . '/app');
 	}
 
 	protected function tearDown(): void
 	{
+		if ($this->app !== null) {
+			$this->app->restoreApplication();
+			$this->app = null;
+		}
 	}
 
 	public function testInit()
 	{
 		$response = new TTestHttpResponse();
 		$response->init(null);
-		self::assertEquals($response, self::$app->getResponse());
+		self::assertEquals($response, $this->app->getResponse());
 		// force a flush
 		ob_end_flush();
 	}

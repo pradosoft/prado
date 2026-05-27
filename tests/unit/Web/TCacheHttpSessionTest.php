@@ -4,12 +4,11 @@ require_once __DIR__ . '/../PradoUnitRequires.php';
 
 use Prado\Caching\TMemCache;
 use Prado\Exceptions\TConfigurationException;
-use Prado\TApplication;
 use Prado\Web\TCacheHttpSession;
 
 class TCacheHttpSessionTest extends PHPUnit\Framework\TestCase
 {
-	protected $app;
+	protected ?TTestApplication $app = null;
 	protected static $cache = null;
 	protected static $session = null;
 
@@ -23,7 +22,7 @@ class TCacheHttpSessionTest extends PHPUnit\Framework\TestCase
 			if (!is_writable($runtimePath)) {
 				self::markTestSkipped("'$runtimePath' is not writable");
 			}
-			$this->app = new TApplication($basePath);
+			$this->app = new TTestApplication($basePath);
 			self::$cache = new TMemCache();
 			self::$cache->setKeyPrefix('MyCache');
 			self::$cache->init(null);
@@ -36,7 +35,10 @@ class TCacheHttpSessionTest extends PHPUnit\Framework\TestCase
 
 	protected function tearDown(): void
 	{
-		$this->app = null;
+		if ($this->app !== null) {
+			$this->app->restoreApplication();
+			$this->app = null;
+		}
 		self::$cache = null;
 		self::$session = null;
 	}
