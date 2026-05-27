@@ -20,7 +20,7 @@ use Prado\Caching\ICache;
  * class so that any concrete transport — cURL, fopen, or a third-party
  * downloader provided by application code — can be cached uniformly.
  *
- * ## Behaviour
+ * ## Behavior
  *
  * Only **idempotent successful** responses are cached: requests whose method
  * is `GET` or `HEAD` and whose response carries a 2xx status. Every other
@@ -94,7 +94,7 @@ class TCachedHttpClient extends THttpClient
 
 		$response = $this->getInner()->download($method, $url, $headers, $body);
 		if ($response->isSuccess()) {
-			$cache->set($key, $response, $this->_ttl);
+			$cache->set($key, $response, $this->getTtl());
 		}
 		return $response;
 	}
@@ -118,20 +118,31 @@ class TCachedHttpClient extends THttpClient
 	}
 
 	/**
-	 * @todo
-	 * @since 4.4.0
-	 * @param string $url
-	 * @param array $headers
+	 * Computes a cache-key token from the request URL and headers.
+	 *
+	 * The token is derived by serializing the URL and the sorted header map,
+	 * then hashing the result via {@see hashToken()}. Subclasses may override
+	 * to exclude headers that do not affect the response (e.g. `User-Agent`),
+	 * or to normalize the URL before hashing.
+	 *
+	 * @param string $url Absolute request URL.
+	 * @param array<string,string> $headers Request headers (already sorted by caller).
+	 * @return string Opaque token suitable for inclusion in a cache key.
 	 */
-	protected function computeAuthToken(string $url, array $headers)
+	protected function computeAuthToken(string $url, array $headers): string
 	{
 		return $this->hashToken($url . '|' . serialize($headers));
 	}
 
 	/**
-	 * @todo
-	 * @since 4.4.0
-	 * @param string $token
+	 * Hashes an arbitrary token string into a fixed-length cache key segment.
+	 *
+	 * The default implementation uses SHA-1. Subclasses may override to use
+	 * a faster algorithm (e.g. `hash('xxh64', $token)`) when cache-key
+	 * collision resistance is not a concern.
+	 *
+	 * @param string $token Input string to hash.
+	 * @return string Hex-encoded hash string.
 	 */
 	protected function hashToken(string $token): string
 	{

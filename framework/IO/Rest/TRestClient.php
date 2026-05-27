@@ -20,7 +20,7 @@ use Prado\TPropertyValue;
  * TRestClient class
  *
  * TRestClient is the abstract base for consumers of third-party REST APIs.
- * It complements {@see TRestService} (the producer) by handling the symmetric
+ * It complements {@see \Prado\Web\Services\Rest\TRestService} (the producer) by handling the symmetric
  * job: turning typed PHP method calls into HTTP requests, decoding JSON
  * responses, and surfacing HTTP errors as exceptions.
  *
@@ -153,6 +153,7 @@ abstract class TRestClient extends TApplicationComponent
 	 * @param mixed $body Request body.
 	 * @param array<string,scalar> $query Query string parameters.
 	 * @param array<string,string> $headers Per-call headers.
+	 * @throws THttpClientException on HTTP or transport error.
 	 * @return mixed Decoded JSON body or raw response.
 	 */
 	public function put(string $path, array $pathParams = [], mixed $body = null, array $query = [], array $headers = []): mixed
@@ -167,6 +168,7 @@ abstract class TRestClient extends TApplicationComponent
 	 * @param mixed $body Request body.
 	 * @param array<string,scalar> $query Query string parameters.
 	 * @param array<string,string> $headers Per-call headers.
+	 * @throws THttpClientException on HTTP or transport error.
 	 * @return mixed Decoded JSON body or raw response.
 	 */
 	public function patch(string $path, array $pathParams = [], mixed $body = null, array $query = [], array $headers = []): mixed
@@ -180,6 +182,7 @@ abstract class TRestClient extends TApplicationComponent
 	 * @param array<string,scalar> $pathParams Path-placeholder values.
 	 * @param array<string,scalar> $query Query string parameters.
 	 * @param array<string,string> $headers Per-call headers.
+	 * @throws THttpClientException on HTTP or transport error.
 	 * @return mixed Decoded JSON body or raw response.
 	 */
 	public function delete(string $path, array $pathParams = [], array $query = [], array $headers = []): mixed

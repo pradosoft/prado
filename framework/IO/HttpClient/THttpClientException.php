@@ -16,7 +16,7 @@ use Prado\Exceptions\TException;
  * THttpClientException class.
  *
  * THttpClientException reports a failure during a {@see THttpClient} call (or
- * any wrapper built on top, such as {@see \Prado\IO\TRestClient}). Two
+ * any wrapper built on top, such as {@see \Prado\IO\Rest\TRestClient}). Two
  * distinct failure shapes share this single type:
  *
  *  - **Transport failure** — DNS resolution failed, the connection timed out,

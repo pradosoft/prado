@@ -19,7 +19,7 @@ use Prado\TPropertyValue;
  *
  * THttpClient is the abstract base for HTTP transports — a general-purpose
  * I/O abstraction for fetching resources over HTTP(S). Its canonical consumer
- * is {@see \Prado\IO\TRestClient}, but it is independent of any
+ * is {@see \Prado\IO\Rest\TRestClient}, but it is independent of any
  * higher-level protocol and can be used directly anywhere a single HTTP
  * request/response round-trip is needed. Static factories return a working
  * implementation and wrap one with caching.

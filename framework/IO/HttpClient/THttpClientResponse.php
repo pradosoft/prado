@@ -22,7 +22,7 @@ use Prado\TComponent;
  *
  * Instances are produced by downloader implementations and consumed directly
  * by callers (or via higher-level wrappers such as
- * {@see \Prado\IO\TRestClient}). Response objects are safe to cache (see
+ * {@see \Prado\IO\Rest\TRestClient}). Response objects are safe to cache (see
  * {@see TCachedHttpClient}) because they hold no live resources.
  *
  * @author Brad Anderson <belisoful@icloud.com>
