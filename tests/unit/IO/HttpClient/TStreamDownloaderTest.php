@@ -179,6 +179,34 @@ class TStreamDownloaderTest extends PHPUnit\Framework\TestCase
 		$this->assertSame('local content from disk', file_get_contents($dest));
 	}
 
+	public function testDownloadFromPlainLocalPath(): void
+	{
+		// fopen accepts plain filesystem paths (no scheme); the HTTP stream
+		// context options are simply ignored. isHttpScheme() returns false
+		// because parse_url() yields a null scheme, so a 200 is synthesised.
+		$src = $this->tmp('.src');
+		file_put_contents($src, 'plain path content');
+
+		$d = new TStreamDownloader();
+		$dest = $this->tmp('.dst');
+		$response = $d->downloadTo($src, $dest);
+
+		$this->assertSame(200, $response->getStatusCode());
+		$this->assertSame('plain path content', file_get_contents($dest));
+	}
+
+	public function testDownloadInMemoryFromPlainLocalPath(): void
+	{
+		$src = $this->tmp('.src');
+		file_put_contents($src, 'inline body');
+
+		$d = new TStreamDownloader();
+		$response = $d->download('GET', $src);
+
+		$this->assertSame(200, $response->getStatusCode());
+		$this->assertSame('inline body', $response->getBody());
+	}
+
 	public function testDownloadFromNonExistentFileSchemeThrows(): void
 	{
 		$d = new TStreamDownloader();
