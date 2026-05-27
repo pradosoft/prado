@@ -67,7 +67,9 @@ class TTestApplicationConfiguration extends TApplicationConfiguration
 	 */
 	public function addModuleConfig(string $id, string $type, array $properties = [], mixed $element = null): void
 	{
-		$this->_modules[$id] = [$type, $properties, $element];
+		$modules = PradoUnit::getProp($this, '_modules');
+		$modules[$id] = [$type, $properties, $element];
+		PradoUnit::setProp($this, '_modules', $modules);
 	}
 
 	/**
@@ -86,7 +88,9 @@ class TTestApplicationConfiguration extends TApplicationConfiguration
 	 */
 	public function addServiceConfig(string $id, string $type, array $properties = [], mixed $element = null): void
 	{
-		$this->_services[$id] = [$type, $properties, $element];
+		$services = PradoUnit::getProp($this, '_services');
+		$services[$id] = [$type, $properties, $element];
+		PradoUnit::setProp($this, '_services', $services);
 	}
 
 	/**
@@ -99,7 +103,7 @@ class TTestApplicationConfiguration extends TApplicationConfiguration
 	 */
 	public function setModuleConfigs(array $modules): void
 	{
-		$this->_modules = $modules;
+		PradoUnit::setProp($this, '_modules', $modules);
 	}
 
 	/**
@@ -112,6 +116,6 @@ class TTestApplicationConfiguration extends TApplicationConfiguration
 	 */
 	public function setServiceConfigs(array $services): void
 	{
-		$this->_services = $services;
+		PradoUnit::setProp($this, '_services', $services);
 	}
 }
