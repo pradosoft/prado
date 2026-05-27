@@ -11,12 +11,13 @@
  *    runner shared by `getModule` (lazy load) and `bootstrapDefaultModule`
  *  - {@see TApplication::bootstrapDefaultModule} — assigns canonical ID +
  *    runs lifecycle without registering in `$_modules`
- *  - {@see TApplication::bootstrapDefaultModules} — registers each
- *    instanced default under its self-reported ID, with type-collision
- *    suppression and no auto-instantiation
+ *  - {@see TApplication::bootstrapDefaultModules} — sweep that enrols
+ *    each instanced default in `$_modules` (type-collision suppression
+ *    keeps configured same-type modules in place) and flips the
+ *    STATE_DEFAULT_MODULES_BOOTSTRAPPED flag so subsequent late-arrival defaults
+ *    are registered immediately by `bootstrapDefaultModule`
  *  - the nine lazy default-module accessors and their canonical-ID
  *    assignment via `bootstrapDefaultModule`
- *  - `initApplication`'s ordering of bootstrap → onConfiguration
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
@@ -66,6 +67,26 @@ class TApplicationBootstrapAccessor extends TApplication
 class TApplicationBootstrapAccessorCustomRequestId extends TApplicationBootstrapAccessor
 {
 	public const DEFAULT_REQUEST_ID = 'custom_http_request';
+}
+
+/**
+ * Subclass exposing {@see TApplication::initApplication} as public and
+ * stubbing {@see TApplication::initService} to a no-op so the full
+ * initialization sequence can be driven from a test without HTTP setup
+ * or registered services.
+ */
+class TApplicationBootstrapInitAccessor extends TApplicationBootstrapAccessor
+{
+	public function pubInitApplication(): void
+	{
+		$this->initApplication();
+	}
+
+	protected function initService(): void
+	{
+		// No-op: bypass service resolution so initApplication() can
+		// reach setStateFlag(STATE_INITIALIZED) without a configured service.
+	}
 }
 
 /**
@@ -227,6 +248,139 @@ class TApplicationBootstrapTest extends PHPUnit\Framework\TestCase
 	}
 
 	// =======================================================================
+	// STATE_* bit constants
+	// =======================================================================
+
+	public function testConstant_stateDefaultModulesBootstrapped(): void
+	{
+		$this->assertSame(1 << 0, TApplication::STATE_DEFAULT_MODULES_BOOTSTRAPPED);
+	}
+
+	public function testConstant_stateInitialized(): void
+	{
+		$this->assertSame(1 << 1, TApplication::STATE_INITIALIZED);
+	}
+
+	public function testConstant_stateBitsAreDistinct(): void
+	{
+		// No two STATE_* bits may share a position.
+		$this->assertSame(
+			0,
+			TApplication::STATE_DEFAULT_MODULES_BOOTSTRAPPED & TApplication::STATE_INITIALIZED,
+			'STATE_* bits must occupy distinct positions in $_stateFlags'
+		);
+	}
+
+	// =======================================================================
+	// State-flag helpers — getStateFlags / hasStateFlag / setStateFlag
+	// =======================================================================
+
+	public function testStateFlags_initialValueIsZero(): void
+	{
+		$acc = $this->newAccessor();
+		$this->assertSame(0, $acc->getStateFlags());
+	}
+
+	public function testHasStateFlag_falseWhenNotSet(): void
+	{
+		$acc = $this->newAccessor();
+		$this->assertFalse($acc->hasStateFlag(TApplication::STATE_DEFAULT_MODULES_BOOTSTRAPPED));
+		$this->assertFalse($acc->hasStateFlag(TApplication::STATE_INITIALIZED));
+	}
+
+	public function testSetStateFlag_setsBit_thenHasStateFlagReportsTrue(): void
+	{
+		$acc = $this->newAccessor();
+
+		// setStateFlag is protected; drive it via reflection so we test the
+		// helper itself, not through bootstrapDefaultModules.
+		$rm = new \ReflectionMethod(TApplication::class, 'setStateFlag');
+		$rm->setAccessible(true);
+		$rm->invoke($acc, TApplication::STATE_DEFAULT_MODULES_BOOTSTRAPPED);
+
+		$this->assertTrue($acc->hasStateFlag(TApplication::STATE_DEFAULT_MODULES_BOOTSTRAPPED));
+		$this->assertSame(TApplication::STATE_DEFAULT_MODULES_BOOTSTRAPPED, $acc->getStateFlags());
+	}
+
+	public function testSetStateFlag_clearsBitWhenOnIsFalse(): void
+	{
+		$acc = $this->newAccessor();
+		$rm = new \ReflectionMethod(TApplication::class, 'setStateFlag');
+		$rm->setAccessible(true);
+
+		$rm->invoke($acc, TApplication::STATE_DEFAULT_MODULES_BOOTSTRAPPED, true);
+		$this->assertTrue($acc->hasStateFlag(TApplication::STATE_DEFAULT_MODULES_BOOTSTRAPPED));
+
+		$rm->invoke($acc, TApplication::STATE_DEFAULT_MODULES_BOOTSTRAPPED, false);
+		$this->assertFalse($acc->hasStateFlag(TApplication::STATE_DEFAULT_MODULES_BOOTSTRAPPED));
+		$this->assertSame(0, $acc->getStateFlags());
+	}
+
+	public function testSetStateFlag_idempotentOnAlreadySetBit(): void
+	{
+		$acc = $this->newAccessor();
+		$rm = new \ReflectionMethod(TApplication::class, 'setStateFlag');
+		$rm->setAccessible(true);
+
+		$rm->invoke($acc, TApplication::STATE_INITIALIZED);
+		$rm->invoke($acc, TApplication::STATE_INITIALIZED);
+
+		$this->assertTrue($acc->hasStateFlag(TApplication::STATE_INITIALIZED));
+		$this->assertSame(TApplication::STATE_INITIALIZED, $acc->getStateFlags());
+	}
+
+	public function testSetStateFlag_multipleBitsCoexist(): void
+	{
+		$acc = $this->newAccessor();
+		$rm = new \ReflectionMethod(TApplication::class, 'setStateFlag');
+		$rm->setAccessible(true);
+
+		$rm->invoke($acc, TApplication::STATE_DEFAULT_MODULES_BOOTSTRAPPED);
+		$rm->invoke($acc, TApplication::STATE_INITIALIZED);
+
+		$this->assertTrue($acc->hasStateFlag(TApplication::STATE_DEFAULT_MODULES_BOOTSTRAPPED));
+		$this->assertTrue($acc->hasStateFlag(TApplication::STATE_INITIALIZED));
+		$this->assertSame(
+			TApplication::STATE_DEFAULT_MODULES_BOOTSTRAPPED | TApplication::STATE_INITIALIZED,
+			$acc->getStateFlags()
+		);
+	}
+
+	public function testHasStateFlag_multiBitRequiresAllBitsSet(): void
+	{
+		$acc = $this->newAccessor();
+		$rm = new \ReflectionMethod(TApplication::class, 'setStateFlag');
+		$rm->setAccessible(true);
+
+		// Only set one of two bits.
+		$rm->invoke($acc, TApplication::STATE_DEFAULT_MODULES_BOOTSTRAPPED);
+
+		// Combined check must report false when any requested bit is missing.
+		$combined = TApplication::STATE_DEFAULT_MODULES_BOOTSTRAPPED | TApplication::STATE_INITIALIZED;
+		$this->assertFalse($acc->hasStateFlag($combined));
+
+		// After setting the second bit, the combined check passes.
+		$rm->invoke($acc, TApplication::STATE_INITIALIZED);
+		$this->assertTrue($acc->hasStateFlag($combined));
+	}
+
+	public function testSetStateFlag_clearOnlyAffectsRequestedBits(): void
+	{
+		$acc = $this->newAccessor();
+		$rm = new \ReflectionMethod(TApplication::class, 'setStateFlag');
+		$rm->setAccessible(true);
+
+		$rm->invoke($acc, TApplication::STATE_DEFAULT_MODULES_BOOTSTRAPPED);
+		$rm->invoke($acc, TApplication::STATE_INITIALIZED);
+
+		// Clear only one bit.
+		$rm->invoke($acc, TApplication::STATE_DEFAULT_MODULES_BOOTSTRAPPED, false);
+
+		$this->assertFalse($acc->hasStateFlag(TApplication::STATE_DEFAULT_MODULES_BOOTSTRAPPED));
+		$this->assertTrue($acc->hasStateFlag(TApplication::STATE_INITIALIZED));
+	}
+
+	// =======================================================================
 	// runModuleLifecycle — TComponent vs bare IModule, config passthrough
 	// =======================================================================
 
@@ -380,7 +534,7 @@ class TApplicationBootstrapTest extends PHPUnit\Framework\TestCase
 		$this->assertSame(
 			[],
 			$acc->getModules(),
-			'bootstrapDefaultModule must not write to $_modules; registration is bootstrapDefaultModules() time'
+			'bootstrapDefaultModule must not write to $_modules — the module\'s own init() is expected to self-register if needed'
 		);
 	}
 
@@ -392,168 +546,6 @@ class TApplicationBootstrapTest extends PHPUnit\Framework\TestCase
 
 		$this->expectException(TConfigurationException::class);
 		$acc->pubBootstrapDefaultModule($module, 'spy_id');
-	}
-
-	// =======================================================================
-	// bootstrapDefaultModules — registry sweep with type-collision suppression
-	// =======================================================================
-
-	public function testBootstrapDefaultModules_emptyApp_registersNothing(): void
-	{
-		$acc = $this->newAccessor();
-		// All nine slots already null after newAccessor (no constructor ran).
-
-		$acc->pubBootstrapDefaultModules();
-
-		$this->assertSame([], $acc->getModules());
-	}
-
-	public function testBootstrapDefaultModules_instancedRequest_registered(): void
-	{
-		$acc = $this->newAccessor();
-		$req = new \Prado\Web\THttpRequest();
-		$req->setID(TApplication::DEFAULT_REQUEST_ID);
-		PradoUnit::setProp($acc, '_request', $req);
-
-		$acc->pubBootstrapDefaultModules();
-
-		$this->assertSame(
-			$req,
-			$acc->getModules()[TApplication::DEFAULT_REQUEST_ID] ?? null,
-			'Instanced default request must be registered under its canonical ID'
-		);
-	}
-
-	public function testBootstrapDefaultModules_registersUnderModuleSelfReportedId(): void
-	{
-		$acc = $this->newAccessor();
-		$req = new \Prado\Web\THttpRequest();
-		// Deliberately give it a non-canonical ID — the registry must follow
-		// the module's own getID(), not the canonical DEFAULT_REQUEST_ID literal.
-		$req->setID('my_custom_req_id');
-		PradoUnit::setProp($acc, '_request', $req);
-
-		$acc->pubBootstrapDefaultModules();
-
-		$this->assertArrayHasKey('my_custom_req_id', $acc->getModules());
-		$this->assertArrayNotHasKey(TApplication::DEFAULT_REQUEST_ID, $acc->getModules());
-		$this->assertSame($req, $acc->getModules()['my_custom_req_id']);
-	}
-
-	public function testBootstrapDefaultModules_typeCollision_suppressesDefault(): void
-	{
-		$acc = $this->newAccessor();
-
-		// A configured THttpRequest already registered under SOME id.
-		$configured = new \Prado\Web\THttpRequest();
-		$configured->setID('configured_request');
-		PradoUnit::setProp($acc, '_modules', ['configured_request' => $configured]);
-
-		// A lazy default-request instance also exists in the slot.
-		$defaultReq = new \Prado\Web\THttpRequest();
-		$defaultReq->setID(TApplication::DEFAULT_REQUEST_ID);
-		PradoUnit::setProp($acc, '_request', $defaultReq);
-
-		$acc->pubBootstrapDefaultModules();
-
-		// The default must not be registered — configured one stays sole.
-		$this->assertSame($configured, $acc->getModules()['configured_request']);
-		$this->assertArrayNotHasKey(TApplication::DEFAULT_REQUEST_ID, $acc->getModules());
-		$this->assertCount(1, $acc->getModules());
-	}
-
-	public function testBootstrapDefaultModules_typeCollision_subclassAlsoSuppressesDefault(): void
-	{
-		$acc = $this->newAccessor();
-
-		// Subclass of THttpRequest pre-registered.
-		$configured = new class extends \Prado\Web\THttpRequest {};
-		$configured->setID('my_subclassed_request');
-		PradoUnit::setProp($acc, '_modules', ['my_subclassed_request' => $configured]);
-
-		$defaultReq = new \Prado\Web\THttpRequest();
-		$defaultReq->setID(TApplication::DEFAULT_REQUEST_ID);
-		PradoUnit::setProp($acc, '_request', $defaultReq);
-
-		$acc->pubBootstrapDefaultModules();
-
-		// Non-strict type match: subclass is-a THttpRequest so the default is
-		// still suppressed.
-		$this->assertArrayNotHasKey(TApplication::DEFAULT_REQUEST_ID, $acc->getModules());
-		$this->assertCount(1, $acc->getModules());
-	}
-
-	public function testBootstrapDefaultModules_neverInstantiatesAbsentSlot(): void
-	{
-		$acc = $this->newAccessor();
-
-		$acc->pubBootstrapDefaultModules();
-
-		// None of the nine backing fields should have been touched.
-		foreach (['_request', '_response', '_session', '_errorHandler',
-			'_security', '_assetManager', '_globalization',
-			'_templateManager', '_themeManager'] as $field) {
-			$this->assertNull(
-				PradoUnit::getProp($acc, $field),
-				"Backing field $field must remain null — bootstrapDefaultModules must never instantiate"
-			);
-		}
-	}
-
-	public function testBootstrapDefaultModules_idempotent_secondCallIsNoOp(): void
-	{
-		$acc = $this->newAccessor();
-		$req = new \Prado\Web\THttpRequest();
-		$req->setID(TApplication::DEFAULT_REQUEST_ID);
-		PradoUnit::setProp($acc, '_request', $req);
-
-		$acc->pubBootstrapDefaultModules();
-		$first = $acc->getModules();
-
-		$acc->pubBootstrapDefaultModules();
-		$second = $acc->getModules();
-
-		$this->assertSame($first, $second);
-		$this->assertSame($req, $second[TApplication::DEFAULT_REQUEST_ID]);
-	}
-
-	public function testBootstrapDefaultModules_multipleInstancedSlots_allRegistered(): void
-	{
-		$acc = $this->newAccessor();
-
-		$req  = new \Prado\Web\THttpRequest();
-		$req->setID(TApplication::DEFAULT_REQUEST_ID);
-		PradoUnit::setProp($acc, '_request', $req);
-
-		$sec  = new \Prado\Security\TSecurityManager();
-		$sec->setID(TApplication::DEFAULT_SECURITY_MANAGER_ID);
-		PradoUnit::setProp($acc, '_security', $sec);
-
-		$acc->pubBootstrapDefaultModules();
-
-		$this->assertArrayHasKey(TApplication::DEFAULT_REQUEST_ID, $acc->getModules());
-		$this->assertArrayHasKey(TApplication::DEFAULT_SECURITY_MANAGER_ID, $acc->getModules());
-		$this->assertCount(2, $acc->getModules());
-	}
-
-	public function testBootstrapDefaultModules_preservesUnrelatedModules(): void
-	{
-		$acc = $this->newAccessor();
-
-		// An unrelated configured module of a different type.
-		$unrelated = new AppTestModule();
-		$unrelated->setID('my_unrelated');
-		PradoUnit::setProp($acc, '_modules', ['my_unrelated' => $unrelated]);
-
-		$req = new \Prado\Web\THttpRequest();
-		$req->setID(TApplication::DEFAULT_REQUEST_ID);
-		PradoUnit::setProp($acc, '_request', $req);
-
-		$acc->pubBootstrapDefaultModules();
-
-		$this->assertSame($unrelated, $acc->getModules()['my_unrelated']);
-		$this->assertSame($req, $acc->getModules()[TApplication::DEFAULT_REQUEST_ID]);
-		$this->assertCount(2, $acc->getModules());
 	}
 
 	// =======================================================================
@@ -671,66 +663,224 @@ class TApplicationBootstrapTest extends PHPUnit\Framework\TestCase
 	}
 
 	// =======================================================================
-	// initApplication ordering — bootstrap fires BEFORE onConfiguration
+	// bootstrapDefaultModules — registry sweep with type-collision suppression
 	// =======================================================================
-	//
-	// We can't run initApplication() against the bootstrap singleton without
-	// extensive setup (config file, service registration, etc.), but we CAN
-	// verify the call ordering by inspecting source: bootstrapDefaultModules
-	// must be invoked before onConfiguration. The earlier integration check
-	// via grep proves the order; here we test the observable effect — an
-	// onConfiguration handler attached BEFORE initApplication runs sees the
-	// default modules already registered.
 
-	public function testInitApplication_bootstrapDefaultModulesIsCalledBeforeOnConfiguration(): void
+	public function testBootstrapDefaultModules_emptyApp_registersNothing(): void
 	{
-		// Use the accessor; instantiate without constructor so initApplication's
-		// internal calls don't try to load a config file or start services.
 		$acc = $this->newAccessor();
+		$acc->pubBootstrapDefaultModules();
+		$this->assertSame([], $acc->getModules());
+	}
 
-		// Seed an instanced default so bootstrapDefaultModules has something
-		// to register, and confirm the registration happens before the event.
+	public function testBootstrapDefaultModules_registersInstancedDefaultUnderModuleSelfReportedId(): void
+	{
+		$acc = $this->newAccessor();
+		$req = new \Prado\Web\THttpRequest();
+		$req->setID('my_custom_req_id');  // NOT the canonical literal
+		PradoUnit::setProp($acc, '_request', $req);
+
+		$acc->pubBootstrapDefaultModules();
+
+		// Registry keys on the module's own getID(), not on the canonical
+		// DEFAULT_REQUEST_ID literal — so a module that's been renamed via
+		// setID after bootstrapDefaultModule still lands under its own name.
+		$this->assertArrayHasKey('my_custom_req_id', $acc->getModules());
+		$this->assertSame($req, $acc->getModules()['my_custom_req_id']);
+	}
+
+	public function testBootstrapDefaultModules_typeCollision_suppressesDefault(): void
+	{
+		$acc = $this->newAccessor();
+		// A configured THttpRequest already registered under SOME id.
+		$configured = new \Prado\Web\THttpRequest();
+		$configured->setID('configured_request');
+		PradoUnit::setProp($acc, '_modules', ['configured_request' => $configured]);
+
+		// A lazy default-request instance also exists.
+		$defaultReq = new \Prado\Web\THttpRequest();
+		$defaultReq->setID(TApplication::DEFAULT_REQUEST_ID);
+		PradoUnit::setProp($acc, '_request', $defaultReq);
+
+		$acc->pubBootstrapDefaultModules();
+
+		$this->assertSame($configured, $acc->getModules()['configured_request']);
+		$this->assertArrayNotHasKey(TApplication::DEFAULT_REQUEST_ID, $acc->getModules());
+		$this->assertCount(1, $acc->getModules());
+	}
+
+	public function testBootstrapDefaultModules_neverInstantiatesAbsentSlot(): void
+	{
+		$acc = $this->newAccessor();
+		$acc->pubBootstrapDefaultModules();
+
+		foreach (['_request', '_response', '_session', '_errorHandler',
+			'_security', '_assetManager', '_globalization',
+			'_templateManager', '_themeManager'] as $field) {
+			$this->assertNull(
+				PradoUnit::getProp($acc, $field),
+				"Backing field $field must remain null — bootstrapDefaultModules must never instantiate"
+			);
+		}
+	}
+
+	public function testBootstrapDefaultModules_idempotent_secondCallIsNoOp(): void
+	{
+		$acc = $this->newAccessor();
 		$req = new \Prado\Web\THttpRequest();
 		$req->setID(TApplication::DEFAULT_REQUEST_ID);
 		PradoUnit::setProp($acc, '_request', $req);
 
-		// Subscribe a handler that snapshots _modules at event time.
-		$snapAtEvent = null;
-		$acc->attachEventHandler('onConfiguration', function () use ($acc, &$snapAtEvent) {
-			$snapAtEvent = $acc->getModules();
+		$acc->pubBootstrapDefaultModules();
+		$first = $acc->getModules();
+		$acc->pubBootstrapDefaultModules();
+		$second = $acc->getModules();
+
+		$this->assertSame($first, $second);
+	}
+
+	public function testBootstrapDefaultModules_setsStateDefaultModulesBootstrappedFlag(): void
+	{
+		$acc = $this->newAccessor();
+		$this->assertFalse(
+			$acc->hasStateFlag(TApplication::STATE_DEFAULT_MODULES_BOOTSTRAPPED),
+			'Sanity: flag should start clear'
+		);
+
+		$acc->pubBootstrapDefaultModules();
+
+		$this->assertTrue(
+			$acc->hasStateFlag(TApplication::STATE_DEFAULT_MODULES_BOOTSTRAPPED),
+			'bootstrapDefaultModules() must flip STATE_DEFAULT_MODULES_BOOTSTRAPPED on completion'
+		);
+	}
+
+	// =======================================================================
+	// Late-bootstrap flag — bootstrapDefaultModule registers if the sweep ran
+	// =======================================================================
+
+	public function testBootstrapDefaultModule_beforeSweep_doesNotRegister(): void
+	{
+		$acc = $this->newAccessor();
+		$module = new \Prado\Web\THttpRequest();
+
+		// Sweep has NOT been called → bootstrapDefaultModule must leave
+		// $_modules pristine.
+		$acc->pubBootstrapDefaultModule($module, 'pre_sweep_id');
+
+		$this->assertArrayNotHasKey('pre_sweep_id', $acc->getModules());
+	}
+
+	public function testBootstrapDefaultModule_afterSweep_registersLateArrival(): void
+	{
+		$acc = $this->newAccessor();
+		// Run the sweep with nothing instanced — the flag flips even on an
+		// empty registry.
+		$acc->pubBootstrapDefaultModules();
+
+		// A new default is bootstrapped late (e.g. someone calls getSession()
+		// for the first time after onConfiguration). It MUST be registered.
+		$module = new \Prado\Web\THttpSession();
+		$acc->pubBootstrapDefaultModule($module, TApplication::DEFAULT_SESSION_ID);
+
+		$this->assertSame(
+			$module,
+			$acc->getModules()[TApplication::DEFAULT_SESSION_ID] ?? null,
+			'Late-bootstrap default must be registered when the sweep has already completed'
+		);
+	}
+
+	public function testBootstrapDefaultModule_afterSweep_typeCollisionStillSuppresses(): void
+	{
+		$acc = $this->newAccessor();
+
+		// A configured same-type module is already in the registry before
+		// the sweep runs.
+		$configured = new \Prado\Web\THttpRequest();
+		$configured->setID('configured_request');
+		PradoUnit::setProp($acc, '_modules', ['configured_request' => $configured]);
+
+		$acc->pubBootstrapDefaultModules();
+
+		// Now a late default-request bootstrap arrives. It must NOT be
+		// registered — the configured same-type module takes precedence.
+		$lateDefault = new \Prado\Web\THttpRequest();
+		$acc->pubBootstrapDefaultModule($lateDefault, TApplication::DEFAULT_REQUEST_ID);
+
+		$this->assertArrayNotHasKey(TApplication::DEFAULT_REQUEST_ID, $acc->getModules());
+		$this->assertSame($configured, $acc->getModules()['configured_request']);
+		$this->assertCount(1, $acc->getModules());
+	}
+
+	// =======================================================================
+	// initApplication — STATE_INITIALIZED set after onInitComplete
+	// =======================================================================
+
+	private function newInitAccessor(): TApplicationBootstrapInitAccessor
+	{
+		$ref = new \ReflectionClass(TApplicationBootstrapInitAccessor::class);
+		$acc = $ref->newInstanceWithoutConstructor();
+		PradoUnit::setProp($acc, '_modules', []);
+		PradoUnit::setProp($acc, '_lazyModules', []);
+		return $acc;
+	}
+
+	public function testInitApplication_setsStateInitializedFlagOnCompletion(): void
+	{
+		$acc = $this->newInitAccessor();
+		$this->assertFalse(
+			$acc->hasStateFlag(TApplication::STATE_INITIALIZED),
+			'Sanity: STATE_INITIALIZED should start clear'
+		);
+
+		$acc->pubInitApplication();
+
+		$this->assertTrue(
+			$acc->hasStateFlag(TApplication::STATE_INITIALIZED),
+			'initApplication() must set STATE_INITIALIZED after onInitComplete returns'
+		);
+	}
+
+	public function testInitApplication_setsBothBootstrapAndInitializedFlags(): void
+	{
+		$acc = $this->newInitAccessor();
+
+		$acc->pubInitApplication();
+
+		// bootstrapDefaultModules is part of the initApplication sequence,
+		// so both bits should be set when initApplication returns.
+		$combined = TApplication::STATE_DEFAULT_MODULES_BOOTSTRAPPED
+			| TApplication::STATE_INITIALIZED;
+		$this->assertTrue($acc->hasStateFlag($combined));
+		$this->assertSame($combined, $acc->getStateFlags());
+	}
+
+	public function testInitApplication_initializedFlagSetAfterOnInitComplete(): void
+	{
+		$acc = $this->newInitAccessor();
+
+		// Capture the flag value INSIDE the onInitComplete handler: must be
+		// false there (the flag is set AFTER onInitComplete returns).
+		$flagDuringOnInitComplete = null;
+		$acc->attachEventHandler('onInitComplete', function () use ($acc, &$flagDuringOnInitComplete) {
+			$flagDuringOnInitComplete = $acc->hasStateFlag(TApplication::STATE_INITIALIZED);
 		});
 
-		// Drive the two steps in the order initApplication uses.
-		$acc->pubBootstrapDefaultModules();
-		$acc->onConfiguration();
+		$acc->pubInitApplication();
 
-		$this->assertIsArray($snapAtEvent);
-		$this->assertArrayHasKey(
-			TApplication::DEFAULT_REQUEST_ID,
-			$snapAtEvent,
-			'onConfiguration handlers must see default modules already registered'
+		$this->assertFalse(
+			$flagDuringOnInitComplete,
+			'STATE_INITIALIZED must NOT be set yet while onInitComplete handlers are running'
+		);
+		$this->assertTrue(
+			$acc->hasStateFlag(TApplication::STATE_INITIALIZED),
+			'STATE_INITIALIZED must be set once initApplication returns'
 		);
 	}
 
-	public function testOnConfiguration_isThinEventRaise_doesNotItselfBootstrap(): void
-	{
-		$acc = $this->newAccessor();
-
-		// Seed an instanced default. If onConfiguration is doing the
-		// bootstrapping (the old design), calling it alone would register
-		// the default — that would be wrong now.
-		$req = new \Prado\Web\THttpRequest();
-		$req->setID(TApplication::DEFAULT_REQUEST_ID);
-		PradoUnit::setProp($acc, '_request', $req);
-
-		$acc->onConfiguration();
-
-		$this->assertArrayNotHasKey(
-			TApplication::DEFAULT_REQUEST_ID,
-			$acc->getModules(),
-			'onConfiguration must not itself bootstrap; that is initApplication\'s job before raising the event'
-		);
-	}
+	// =======================================================================
+	// onConfiguration — thin event raise
+	// =======================================================================
 
 	public function testOnConfiguration_raisesEventToAttachedHandlers(): void
 	{
