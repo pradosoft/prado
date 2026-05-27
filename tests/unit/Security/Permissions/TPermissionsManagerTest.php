@@ -7,21 +7,28 @@ use Prado\Web\Services\TPageConfiguration;
 use Prado\Security\TUserManager;
 use Prado\Util\TDbParameterModule;
 
+require_once __DIR__ . '/../../PradoUnitRequires.php';
+
 class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
 {
-	public static $app = null;
+	protected ?TTestApplication $app = null;
 	protected $obj;
-	
+
 	protected function setUp(): void
 	{
 		// ini_set('session.use_cookies',0);
 		// ini_set('session.cache_limiter', 'none');
-		if (self::$app === null) {
-			Prado::getApplication()->getEventHandlers('fxattachclassbehavior')->clear();
-			Prado::getApplication()->getEventHandlers('fxdetachclassbehavior')->clear();
-			self::$app = new TApplication(__DIR__ . '/../app');
-		}
-		
+		// IMPORTANT: TTestApplication MUST be constructed BEFORE the fx*
+		// handler clears — the trait's registerApplication() snapshots
+		// TComponent's global static state (including $_ue) inside the
+		// constructor, and restoreApplication() in tearDown writes that
+		// snapshot back. Clearing first would make the snapshot capture
+		// the cleared state and the restore would permanently destroy
+		// the bootstrap handlers for all subsequent test classes.
+		$this->app = new TTestApplication(__DIR__ . '/../app');
+		Prado::getApplication()->getEventHandlers('fxattachclassbehavior')->clear();
+		Prado::getApplication()->getEventHandlers('fxdetachclassbehavior')->clear();
+
 		$this->obj = new TPermissionsManager();
 	}
 
@@ -29,6 +36,10 @@ class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
 	{
 		$this->obj->__destruct();
 		$this->obj = null;
+		if ($this->app !== null) {
+			$this->app->restoreApplication();
+			$this->app = null;
+		}
 	}
 	
 	public function testConstruct()

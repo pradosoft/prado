@@ -5,17 +5,18 @@ use Prado\Web\THttpRequestUrlFormat;
 use Prado\Web\TUrlManager;
 use Prado\Web\TUrlMappingPattern;
 use Prado\Web\TUrlMappingPatternSecureConnection;
-use Prado\TApplication;
 use Prado\Collections\TAttributeCollection;
+
+require_once __DIR__ . '/../PradoUnitRequires.php';
 
 /**
  * Test class for TUrlMappingPattern.
- * 
+ *
  * @coversDefaultClass Prado\Web\TUrlMappingPattern
  */
 class TUrlMappingPatternTest extends PHPUnit\Framework\TestCase
 {
-	protected static $app = null;
+	protected ?TTestApplication $app = null;
 	private $urlManager;
 
 	protected function setUp(): void
@@ -31,10 +32,8 @@ class TUrlMappingPatternTest extends PHPUnit\Framework\TestCase
 		$_SERVER['PATH_INFO'] = '';
 		$_SERVER['REQUEST_METHOD'] = 'GET';
 
-		if (self::$app === null) {
-			self::$app = new TApplication(__DIR__ . '/app');
-		}
-		
+		$this->app = new TTestApplication(__DIR__ . '/app');
+
 		$this->urlManager = new TUrlManager();
 		$this->urlManager->init(null);
 	}
@@ -42,6 +41,10 @@ class TUrlMappingPatternTest extends PHPUnit\Framework\TestCase
 	protected function tearDown(): void
 	{
 		parent::tearDown();
+		if ($this->app !== null) {
+			$this->app->restoreApplication();
+			$this->app = null;
+		}
 		$_GET = [];
 		$_POST = [];
 		$_SERVER['PATH_INFO'] = '';

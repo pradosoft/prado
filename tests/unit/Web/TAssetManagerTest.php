@@ -4,12 +4,13 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
-use Prado\TApplication;
 use Prado\Web\TAssetManager;
+
+require_once __DIR__ . '/../PradoUnitRequires.php';
 
 class TAssetManagerTest extends PHPUnit\Framework\TestCase
 {
-	public static $app = null;
+	protected ?TTestApplication $app = null;
 	public static $assetDir = null;
 
 	public static $class = null;
@@ -43,9 +44,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 		$_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en-US; rv:1.8.1.3) Gecko/20070309 Firefox/2.0.0.3';
 		$_SERVER['REMOTE_HOST'] = 'localhost';
 
-		if (self::$app === null) {
-			self::$app = new TApplication(__DIR__ . '/app');
-		}
+		$this->app = new TTestApplication(__DIR__ . '/app');
 
 		if (self::$assetDir === null) {
 			// Use DIRECTORY_SEPARATOR so the path matches what framework internals produce on all OSes.
@@ -91,6 +90,10 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	protected function tearDown(): void
 	{
+		if ($this->app !== null) {
+			$this->app->restoreApplication();
+			$this->app = null;
+		}
 		// Make some cleaning :)
 		$this->removeDirectory(self::$assetDir);
 	}
@@ -102,7 +105,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 		$manager->init(null);
 
 		self::assertEquals(self::$assetDir, $manager->getBasePath());
-		self::assertEquals($manager, self::$app->getAssetManager());
+		self::assertEquals($manager, $this->app->getAssetManager());
 
 		// No, remove asset directory, and catch the exception
 		if (is_dir(self::$assetDir)) {

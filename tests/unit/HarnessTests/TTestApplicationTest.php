@@ -8,7 +8,7 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-require_once __DIR__ . '/PradoUnitRequires.php';
+require_once __DIR__ . '/../PradoUnitRequires.php';
 
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;

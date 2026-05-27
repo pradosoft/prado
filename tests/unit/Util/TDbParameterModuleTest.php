@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../PradoUnitRequires.php';
+
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Util\TDbParameterModule;
@@ -14,6 +16,8 @@ function dbParamTestFunction($data, $encode)
 
 class TDbParameterModuleTest extends PHPUnit\Framework\TestCase
 {
+	use PradoUnitModuleDependencyTrait;
+
 	protected $obj;
 
 	protected function setUp(): void
@@ -396,5 +400,38 @@ class TDbParameterModuleTest extends PHPUnit\Framework\TestCase
 		self::assertFalse($this->obj->getCaptureParameterChanges());
 		$this->obj->setCaptureParameterChanges('true');
 		self::assertTrue($this->obj->getCaptureParameterChanges());
+	}
+
+	// -----------------------------------------------------------------------
+	// IModuleDependency contract
+	// -----------------------------------------------------------------------
+
+	public function testImplementsIModuleDependency()
+	{
+		$this->assertInstanceOf(\Prado\IModuleDependency::class, $this->obj);
+	}
+
+	public function testGetModuleDependencies_noConnectionID_returnsNoDeps()
+	{
+		$this->assertModuleDependency(null, $this->obj->getModuleDependencies(false));
+	}
+
+	public function testGetModuleDependencies_connectionIDSet_returnsIt()
+	{
+		// Use a local instance so the shared tearDown's $this->obj->remove()
+		// doesn't try to materialize a connection against a non-existent module.
+		$module = new TDbParameterModule();
+		$module->setConnectionID('db');
+		$this->assertModuleDependency('db', $module->getModuleDependencies(false));
+	}
+
+	public function testGetModuleDependencies_returnsSameRegardlessOfIsPreInit()
+	{
+		$module = new TDbParameterModule();
+		$module->setConnectionID('db');
+		$this->assertModuleDependency(
+			$module->getModuleDependencies(true),
+			$module->getModuleDependencies(false)
+		);
 	}
 }

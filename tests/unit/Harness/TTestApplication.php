@@ -8,7 +8,7 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-require_once __DIR__ . '/TTestApplicationRestorationTrait.php';
+require_once __DIR__ . '/Traits/TTestApplicationRestorationTrait.php';
 
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;

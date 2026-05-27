@@ -557,4 +557,107 @@ class PradoUnitTest extends PHPUnit\Framework\TestCase
 			$this->assertFalse(PradoUnit::skipSlowTests());
 		});
 	}
+
+	// -----------------------------------------------------------------------
+	// reflectionClass / reflectionMethod / reflectionProperty (cache)
+	// -----------------------------------------------------------------------
+
+	public function testReflectionClass_returnsReflectionClass_forClassName(): void
+	{
+		$rc = PradoUnit::reflectionClass(PradoUnitTestChild::class);
+		$this->assertInstanceOf(\ReflectionClass::class, $rc);
+		$this->assertSame(PradoUnitTestChild::class, $rc->getName());
+	}
+
+	public function testReflectionClass_returnsReflectionClass_forInstance(): void
+	{
+		$rc = PradoUnit::reflectionClass(new PradoUnitTestChild());
+		$this->assertInstanceOf(\ReflectionClass::class, $rc);
+		$this->assertSame(PradoUnitTestChild::class, $rc->getName());
+	}
+
+	public function testReflectionClass_cachesSameInstance(): void
+	{
+		$first  = PradoUnit::reflectionClass(PradoUnitTestChild::class);
+		$second = PradoUnit::reflectionClass(PradoUnitTestChild::class);
+		$this->assertSame($first, $second);
+	}
+
+	public function testReflectionClass_isCaseInsensitive(): void
+	{
+		$lower = PradoUnit::reflectionClass(strtolower(PradoUnitTestChild::class));
+		$exact = PradoUnit::reflectionClass(PradoUnitTestChild::class);
+		$this->assertSame($exact, $lower);
+	}
+
+	public function testReflectionClass_returnsNull_forUnknownClass(): void
+	{
+		$this->assertNull(PradoUnit::reflectionClass('NoSuchClassXyz123'));
+	}
+
+	public function testReflectionClass_cachesNullForUnknownClass(): void
+	{
+		// Second lookup of an unknown class returns the same cached null result
+		// without re-attempting the ReflectionException path.
+		$this->assertNull(PradoUnit::reflectionClass('NoSuchClassXyz456'));
+		$this->assertNull(PradoUnit::reflectionClass('NoSuchClassXyz456'));
+	}
+
+	public function testReflectionMethod_returnsMethod_byClassName(): void
+	{
+		$rm = PradoUnit::reflectionMethod(PradoUnit::class, 'reflectionClass');
+		$this->assertInstanceOf(\ReflectionMethod::class, $rm);
+		$this->assertSame('reflectionClass', $rm->getName());
+	}
+
+	public function testReflectionMethod_cachesSameInstance(): void
+	{
+		$first  = PradoUnit::reflectionMethod(PradoUnit::class, 'reflectionClass');
+		$second = PradoUnit::reflectionMethod(PradoUnit::class, 'reflectionClass');
+		$this->assertSame($first, $second);
+	}
+
+	public function testReflectionMethod_returnsNull_forUnknownMethod(): void
+	{
+		$this->assertNull(PradoUnit::reflectionMethod(PradoUnit::class, 'noSuchMethodXyz'));
+	}
+
+	public function testReflectionMethod_returnsNull_forUnknownClass(): void
+	{
+		$this->assertNull(PradoUnit::reflectionMethod('NoSuchClassXyz789', 'anything'));
+	}
+
+	public function testReflectionProperty_findsPropertyOnConcreteClass(): void
+	{
+		$rp = PradoUnit::reflectionProperty(PradoUnitTestChild::class, 'childPublic');
+		$this->assertInstanceOf(\ReflectionProperty::class, $rp);
+		$this->assertSame('childPublic', $rp->getName());
+		$this->assertSame(PradoUnitTestChild::class, $rp->getDeclaringClass()->getName());
+	}
+
+	public function testReflectionProperty_findsPrivateAncestorProperty(): void
+	{
+		// _basePrivate is declared on the parent — the standard
+		// ReflectionClass::getProperty() called on the child would miss it.
+		$rp = PradoUnit::reflectionProperty(PradoUnitTestChild::class, '_basePrivate');
+		$this->assertInstanceOf(\ReflectionProperty::class, $rp);
+		$this->assertSame(PradoUnitTestBase::class, $rp->getDeclaringClass()->getName());
+	}
+
+	public function testReflectionProperty_cachesSameInstance(): void
+	{
+		$first  = PradoUnit::reflectionProperty(PradoUnitTestChild::class, '_basePrivate');
+		$second = PradoUnit::reflectionProperty(PradoUnitTestChild::class, '_basePrivate');
+		$this->assertSame($first, $second);
+	}
+
+	public function testReflectionProperty_returnsNull_forUnknownProperty(): void
+	{
+		$this->assertNull(PradoUnit::reflectionProperty(PradoUnitTestChild::class, 'noSuchProp'));
+	}
+
+	public function testReflectionProperty_returnsNull_forUnknownClass(): void
+	{
+		$this->assertNull(PradoUnit::reflectionProperty('NoSuchClassAbc', 'anything'));
+	}
 }

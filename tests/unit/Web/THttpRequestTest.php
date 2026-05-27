@@ -4,7 +4,6 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Prado;
 use Prado\Security\TSecurityManager;
-use Prado\TApplication;
 use Prado\Web\TAssetManager;
 use Prado\Web\THttpRequest;
 use Prado\Web\THttpRequestUrlFormat;
@@ -12,9 +11,11 @@ use Prado\Web\TUrlManager;
 use Prado\Web\TUrlMapping;
 use Prado\Xml\TXmlDocument;
 
+require_once __DIR__ . '/../PradoUnitRequires.php';
+
 class THttpRequestTest extends PHPUnit\Framework\TestCase
 {
-	public static $app = null;
+	protected ?TTestApplication $app = null;
 
 	protected function setUp(): void
 	{
@@ -42,8 +43,14 @@ class THttpRequestTest extends PHPUnit\Framework\TestCase
 		$_COOKIE['phpsessid'] = '0123456789abcdef';
 
 		$_FILES['userfile'] = ['name' => 'test.jpg', 'type' => 'image/jpg', 'size' => 10240, 'tmp_name' => 'tmpXXAZECZ', 'error' => 0];
-		if (self::$app === null) {
-			self::$app = new TApplication(__DIR__ . '/app');
+		$this->app = new TTestApplication(__DIR__ . '/app');
+	}
+
+	protected function tearDown(): void
+	{
+		if ($this->app !== null) {
+			$this->app->restoreApplication();
+			$this->app = null;
 		}
 	}
 
@@ -103,7 +110,7 @@ class THttpRequestTest extends PHPUnit\Framework\TestCase
 
 		// Try with valid module id, but not instance of TUrlManager
 		$module = new TAssetManager();
-		self::$app->setModule('badmanager', $module);
+		$this->app->setModule('badmanager', $module);
 		$request = new THttpRequest();
 		$request->setUrlManager('badmanager');
 		try {
@@ -116,7 +123,7 @@ class THttpRequestTest extends PHPUnit\Framework\TestCase
 
 		// Finally, try with a valid manager
 		$module = new TUrlManager();
-		self::$app->setModule('goodmanager', $module);
+		$this->app->setModule('goodmanager', $module);
 		$request = new THttpRequest();
 		$request->setUrlManager('goodmanager');
 		$request->init(null);
@@ -307,7 +314,7 @@ class THttpRequestTest extends PHPUnit\Framework\TestCase
 
 		// Test with cookie validation
 		$security = new TSecurityManager();
-		self::$app->setModule('security', $security);
+		$this->app->setModule('security', $security);
 		$_COOKIE['phpsessid'] = $security->hashData('0123456789abcdef');
 		$request = new THttpRequest();
 		$request->init(null);
@@ -592,7 +599,7 @@ class THttpRequestTest extends PHPUnit\Framework\TestCase
 		$config = new TXmlDocument('1.0', 'utf8');
 		$config->loadFromString($confstr);
 		$module = new TUrlMapping();
-		self::$app->setModule('friendly-url', $module);
+		$this->app->setModule('friendly-url', $module);
 		if (isset($_GET['page'])) {
 			unset($_GET['page']);
 		} // Remove service from a previous test !

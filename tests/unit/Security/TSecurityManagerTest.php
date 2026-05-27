@@ -3,7 +3,8 @@
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TNotSupportedException;
 use Prado\Security\TSecurityManager;
-use Prado\TApplication;
+
+require_once __DIR__ . '/../PradoUnitRequires.php';
 
 class TCustomTestSecurityManager extends TSecurityManager
 {
@@ -15,24 +16,26 @@ class TCustomTestSecurityManager extends TSecurityManager
 
 class TSecurityManagerTest extends PHPUnit\Framework\TestCase
 {
-	public static $app;
+	protected ?TTestApplication $app = null;
 
 	protected function setUp(): void
 	{
-		if (self::$app === null) {
-			self::$app = new TApplication(__DIR__ . '/app');
-		}
+		$this->app = new TTestApplication(__DIR__ . '/app');
 	}
 
 	protected function tearDown(): void
 	{
+		if ($this->app !== null) {
+			$this->app->restoreApplication();
+			$this->app = null;
+		}
 	}
 
 	public function testInit()
 	{
 		$sec = new TSecurityManager();
 		$sec->init(null);
-		self::assertEquals($sec, self::$app->getSecurityManager());
+		self::assertEquals($sec, $this->app->getSecurityManager());
 	}
 	
 	public function testGenerateRandomKey()
@@ -51,7 +54,7 @@ class TSecurityManagerTest extends PHPUnit\Framework\TestCase
 		$sec->init(null);
 		// Random validation key
 		$valkey = $sec->getValidationKey();
-		self::assertEquals($valkey, self::$app->getGlobalState(TSecurityManager::STATE_VALIDATION_KEY));
+		self::assertEquals($valkey, $this->app->getGlobalState(TSecurityManager::STATE_VALIDATION_KEY));
 
 		$sec->setValidationKey('aKey');
 		self::assertEquals('aKey', $sec->getValidationKey());
@@ -69,7 +72,7 @@ class TSecurityManagerTest extends PHPUnit\Framework\TestCase
 		$sec->init(null);
 		// Random encryption key
 		$valkey = $sec->getEncryptionKey();
-		self::assertEquals($valkey, self::$app->getGlobalState(TSecurityManager::STATE_ENCRYPTION_KEY));
+		self::assertEquals($valkey, $this->app->getGlobalState(TSecurityManager::STATE_ENCRYPTION_KEY));
 
 		$sec->setEncryptionKey('aKey');
 		self::assertEquals('aKey', $sec->getEncryptionKey());
@@ -598,7 +601,7 @@ class TSecurityManagerTest extends PHPUnit\Framework\TestCase
 		$key2 = $sec->getValidationKey();
 
 		self::assertEquals($key1, $key2);
-		self::assertEquals($key1, self::$app->getGlobalState(TSecurityManager::STATE_VALIDATION_KEY));
+		self::assertEquals($key1, $this->app->getGlobalState(TSecurityManager::STATE_VALIDATION_KEY));
 	}
 
 	public function testEncryptionKeyGlobalStatePersistence()
@@ -610,7 +613,7 @@ class TSecurityManagerTest extends PHPUnit\Framework\TestCase
 		$key2 = $sec->getEncryptionKey();
 
 		self::assertEquals($key1, $key2);
-		self::assertEquals($key1, self::$app->getGlobalState(TSecurityManager::STATE_ENCRYPTION_KEY));
+		self::assertEquals($key1, $this->app->getGlobalState(TSecurityManager::STATE_ENCRYPTION_KEY));
 	}
 
 	public function testEncryptDecryptAllSupportedAlgorithms()
