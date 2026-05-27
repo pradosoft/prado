@@ -8,16 +8,20 @@
  *
  *  - the nine `DEFAULT_*_ID` constants and their late-static-binding override
  *  - {@see TApplication::runModuleLifecycle} — the extracted four-phase
- *    runner shared by `getModule` (lazy load) and `bootstrapDefaultModule`
- *  - {@see TApplication::bootstrapDefaultModule} — assigns canonical ID +
- *    runs lifecycle without registering in `$_modules`
+ *    runner shared by `getModule` (lazy load) and `bootstrapModule`
+ *  - {@see TApplication::bootstrapModule} — assigns the module's ID and
+ *    runs its lifecycle; `$register` (bool, default true) toggles
+ *    whether the module is added to `$_modules`
+ *  - {@see TApplication::shouldRegisterDefault} — the framework
+ *    predicate the lazy default accessors pass as `$register`: true
+ *    only after the sweep flag is set and no same-type collision
  *  - {@see TApplication::bootstrapDefaultModules} — sweep that enrols
  *    each instanced default in `$_modules` (type-collision suppression
  *    keeps configured same-type modules in place) and flips the
- *    STATE_DEFAULT_MODULES_BOOTSTRAPPED flag so subsequent late-arrival defaults
- *    are registered immediately by `bootstrapDefaultModule`
+ *    STATE_DEFAULT_MODULES_BOOTSTRAPPED flag so subsequent late-arrival
+ *    defaults are registered automatically
  *  - the nine lazy default-module accessors and their canonical-ID
- *    assignment via `bootstrapDefaultModule`
+ *    assignment via `bootstrapModule(..., shouldRegisterDefault(...))`
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
@@ -44,9 +48,14 @@ use Prado\TModule;
  */
 class TApplicationBootstrapAccessor extends TApplication
 {
-	public function pubBootstrapDefaultModule(IModule $module, string $id): void
+	public function pubBootstrapModule(IModule $module, string $id, bool $register = true): void
 	{
-		$this->bootstrapDefaultModule($module, $id);
+		$this->bootstrapModule($module, $id, $register);
+	}
+
+	public function pubShouldRegisterDefault(string $type): bool
+	{
+		return $this->shouldRegisterDefault($type);
 	}
 
 	public function pubBootstrapDefaultModules(): void
@@ -497,25 +506,25 @@ class TApplicationBootstrapTest extends PHPUnit\Framework\TestCase
 	}
 
 	// =======================================================================
-	// bootstrapDefaultModule — setID + lifecycle, no $_modules write
+	// bootstrapModule — setID + lifecycle; $register toggles registry write
 	// =======================================================================
 
-	public function testBootstrapDefaultModule_assignsCanonicalId(): void
+	public function testBootstrapModule_assignsCanonicalId(): void
 	{
 		$acc = $this->newAccessor();
 		$module = new AppBootstrapSpyModule();
 
-		$acc->pubBootstrapDefaultModule($module, 'my_canon_id');
+		$acc->pubBootstrapModule($module, 'my_canon_id');
 
 		$this->assertSame('my_canon_id', $module->getID());
 	}
 
-	public function testBootstrapDefaultModule_runsFullLifecycle_withNullConfig(): void
+	public function testBootstrapModule_runsFullLifecycle_withNullConfig(): void
 	{
 		$acc = $this->newAccessor();
 		$module = new AppBootstrapSpyModule();
 
-		$acc->pubBootstrapDefaultModule($module, 'spy');
+		$acc->pubBootstrapModule($module, 'spy');
 
 		// All three phases ran (TComponent module) with null config.
 		$this->assertSame(['dyPreInit', 'init', 'dyPostInit'], array_column($module->calls, 'phase'));
@@ -524,28 +533,108 @@ class TApplicationBootstrapTest extends PHPUnit\Framework\TestCase
 		}
 	}
 
-	public function testBootstrapDefaultModule_doesNotRegisterIn_modules(): void
+	public function testBootstrapModule_registerTrue_addsToModules(): void
 	{
 		$acc = $this->newAccessor();
 		$module = new AppBootstrapSpyModule();
 
-		$acc->pubBootstrapDefaultModule($module, 'spy_id');
+		$acc->pubBootstrapModule($module, 'spy_id', true);
 
-		$this->assertSame(
-			[],
-			$acc->getModules(),
-			'bootstrapDefaultModule must not write to $_modules — the module\'s own init() is expected to self-register if needed'
-		);
+		$this->assertSame($module, $acc->getModules()['spy_id'] ?? null);
 	}
 
-	public function testBootstrapDefaultModule_requiredDepMissing_propagates(): void
+	public function testBootstrapModule_registerFalse_doesNotAddToModules(): void
+	{
+		$acc = $this->newAccessor();
+		$module = new AppBootstrapSpyModule();
+
+		$acc->pubBootstrapModule($module, 'spy_id', false);
+
+		$this->assertArrayNotHasKey('spy_id', $acc->getModules());
+	}
+
+	public function testBootstrapModule_registerDefaultsToTrue(): void
+	{
+		// Omit the third argument; the parameter default is true so the
+		// module is added to $_modules.
+		$acc = $this->newAccessor();
+		$module = new AppBootstrapSpyModule();
+
+		$acc->pubBootstrapModule($module, 'spy_id');
+
+		$this->assertSame($module, $acc->getModules()['spy_id'] ?? null);
+	}
+
+	public function testBootstrapModule_registry_keyedByModuleGetId(): void
+	{
+		// Registration always keys on the module's own getID() — which is
+		// what bootstrapModule just set via setID($id) — so renaming via a
+		// post-init setID call wins over the id passed to bootstrapModule.
+		$acc = $this->newAccessor();
+		$module = new AppBootstrapSpyModule();
+
+		$acc->pubBootstrapModule($module, 'initial_id', true);
+
+		$this->assertArrayHasKey('initial_id', $acc->getModules());
+		$this->assertSame($module, $acc->getModules()['initial_id']);
+	}
+
+	public function testBootstrapModule_requiredDepMissing_propagates(): void
 	{
 		$acc = $this->newAccessor();
 		$module = new AppBootstrapDepSpyModule();
 		$module->declaredDeps = ['ghost_required'];
 
 		$this->expectException(TConfigurationException::class);
-		$acc->pubBootstrapDefaultModule($module, 'spy_id');
+		$acc->pubBootstrapModule($module, 'spy_id');
+	}
+
+	// =======================================================================
+	// shouldRegisterDefault — predicate the lazy default accessors call
+	// =======================================================================
+
+	public function testShouldRegisterDefault_falseBeforeSweep(): void
+	{
+		$acc = $this->newAccessor();
+		// Flag clear → no default registration is appropriate.
+		$this->assertFalse($acc->pubShouldRegisterDefault(\Prado\Web\THttpRequest::class));
+	}
+
+	public function testShouldRegisterDefault_trueAfterSweepWithNoTypeCollision(): void
+	{
+		$acc = $this->newAccessor();
+		$acc->pubBootstrapDefaultModules();  // sweep flips the flag
+
+		$this->assertTrue($acc->pubShouldRegisterDefault(\Prado\Web\THttpRequest::class));
+	}
+
+	public function testShouldRegisterDefault_falseAfterSweepWhenSameTypeAlreadyRegistered(): void
+	{
+		$acc = $this->newAccessor();
+		// Pre-register a configured same-type module under SOME id.
+		$configured = new \Prado\Web\THttpRequest();
+		$configured->setID('configured_request');
+		PradoUnit::setProp($acc, '_modules', ['configured_request' => $configured]);
+
+		$acc->pubBootstrapDefaultModules();
+
+		$this->assertFalse(
+			$acc->pubShouldRegisterDefault(\Prado\Web\THttpRequest::class),
+			'Predicate must defer to a configured same-type module'
+		);
+	}
+
+	public function testShouldRegisterDefault_falseAfterSweepWhenSubclassAlreadyRegistered(): void
+	{
+		// Non-strict type match: a subclass of the target type also suppresses.
+		$acc = $this->newAccessor();
+		$configured = new class extends \Prado\Web\THttpRequest {};
+		$configured->setID('subclass_request');
+		PradoUnit::setProp($acc, '_modules', ['subclass_request' => $configured]);
+
+		$acc->pubBootstrapDefaultModules();
+
+		$this->assertFalse($acc->pubShouldRegisterDefault(\Prado\Web\THttpRequest::class));
 	}
 
 	// =======================================================================
@@ -684,7 +773,7 @@ class TApplicationBootstrapTest extends PHPUnit\Framework\TestCase
 
 		// Registry keys on the module's own getID(), not on the canonical
 		// DEFAULT_REQUEST_ID literal — so a module that's been renamed via
-		// setID after bootstrapDefaultModule still lands under its own name.
+		// setID after bootstrapModule still lands under its own name.
 		$this->assertArrayHasKey('my_custom_req_id', $acc->getModules());
 		$this->assertSame($req, $acc->getModules()['my_custom_req_id']);
 	}
@@ -756,56 +845,61 @@ class TApplicationBootstrapTest extends PHPUnit\Framework\TestCase
 	}
 
 	// =======================================================================
-	// Late-bootstrap flag — bootstrapDefaultModule registers if the sweep ran
+	// Late-arrival default-module integration — bootstrapModule + shouldRegisterDefault
 	// =======================================================================
+	//
+	// The lazy default-module accessors all call:
+	//   $this->bootstrapModule($mod, ID, $this->shouldRegisterDefault(Type::class));
+	// These tests exercise that combination end-to-end.
 
-	public function testBootstrapDefaultModule_beforeSweep_doesNotRegister(): void
+	public function testLateDefault_beforeSweep_doesNotRegister(): void
 	{
 		$acc = $this->newAccessor();
 		$module = new \Prado\Web\THttpRequest();
 
-		// Sweep has NOT been called → bootstrapDefaultModule must leave
-		// $_modules pristine.
-		$acc->pubBootstrapDefaultModule($module, 'pre_sweep_id');
+		$acc->pubBootstrapModule(
+			$module,
+			'pre_sweep_id',
+			$acc->pubShouldRegisterDefault(\Prado\Web\THttpRequest::class)
+		);
 
 		$this->assertArrayNotHasKey('pre_sweep_id', $acc->getModules());
 	}
 
-	public function testBootstrapDefaultModule_afterSweep_registersLateArrival(): void
+	public function testLateDefault_afterSweep_registers(): void
 	{
 		$acc = $this->newAccessor();
-		// Run the sweep with nothing instanced — the flag flips even on an
-		// empty registry.
-		$acc->pubBootstrapDefaultModules();
+		$acc->pubBootstrapDefaultModules();  // sweep flips the flag
 
-		// A new default is bootstrapped late (e.g. someone calls getSession()
-		// for the first time after onConfiguration). It MUST be registered.
 		$module = new \Prado\Web\THttpSession();
-		$acc->pubBootstrapDefaultModule($module, TApplication::DEFAULT_SESSION_ID);
+		$acc->pubBootstrapModule(
+			$module,
+			TApplication::DEFAULT_SESSION_ID,
+			$acc->pubShouldRegisterDefault(\Prado\Web\THttpSession::class)
+		);
 
 		$this->assertSame(
 			$module,
 			$acc->getModules()[TApplication::DEFAULT_SESSION_ID] ?? null,
-			'Late-bootstrap default must be registered when the sweep has already completed'
+			'Late-arrival default must register when the sweep has completed'
 		);
 	}
 
-	public function testBootstrapDefaultModule_afterSweep_typeCollisionStillSuppresses(): void
+	public function testLateDefault_afterSweep_typeCollisionSuppresses(): void
 	{
 		$acc = $this->newAccessor();
-
-		// A configured same-type module is already in the registry before
-		// the sweep runs.
 		$configured = new \Prado\Web\THttpRequest();
 		$configured->setID('configured_request');
 		PradoUnit::setProp($acc, '_modules', ['configured_request' => $configured]);
 
 		$acc->pubBootstrapDefaultModules();
 
-		// Now a late default-request bootstrap arrives. It must NOT be
-		// registered — the configured same-type module takes precedence.
 		$lateDefault = new \Prado\Web\THttpRequest();
-		$acc->pubBootstrapDefaultModule($lateDefault, TApplication::DEFAULT_REQUEST_ID);
+		$acc->pubBootstrapModule(
+			$lateDefault,
+			TApplication::DEFAULT_REQUEST_ID,
+			$acc->pubShouldRegisterDefault(\Prado\Web\THttpRequest::class)
+		);
 
 		$this->assertArrayNotHasKey(TApplication::DEFAULT_REQUEST_ID, $acc->getModules());
 		$this->assertSame($configured, $acc->getModules()['configured_request']);
