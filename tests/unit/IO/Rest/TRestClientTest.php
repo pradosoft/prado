@@ -4,10 +4,10 @@ use Prado\Caching\ICache;
 use Prado\IO\HttpClient\TCachedHttpClient;
 use Prado\IO\HttpClient\TCurlHttpClient;
 use Prado\IO\HttpClient\TFopenHttpClient;
-use Prado\IO\TRestClient;
 use Prado\IO\HttpClient\THttpClientException;
 use Prado\IO\HttpClient\THttpClientResponse;
 use Prado\IO\HttpClient\THttpClient;
+use Prado\IO\Rest\TRestClient;
 
 // ── Mock downloader that records calls and returns canned responses ───────────
 
