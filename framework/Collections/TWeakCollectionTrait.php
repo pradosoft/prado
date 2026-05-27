@@ -27,6 +27,37 @@ namespace Prado\Collections;
  * the WeakMap.  The total number of objects in the WeakMap can be retrieved with
  * {@see weakCount} and the count of each object with {@see weakObjectCount}.
  *
+ * ## Scrubbing contract
+ *
+ * Every Weak collection that uses this trait implements a `scrubWeakReferences()`
+ * method that removes entries whose backing `WeakReference` has lost its referent.
+ * Because PHP's cyclic garbage collector can fire object destructors between any
+ * two opcodes — and those destructors can call back into the collection through
+ * {@see \Prado\TComponent::__destruct} → `unlisten()` → `remove()` / `add()` — the
+ * scrub must remain correct in the face of mid-loop mutations of its own backing
+ * store. Each implementer follows the same two-pass algorithm:
+ *
+ *  - **Pass 1 — Identify.** A `foreach` over the backing store iterates a
+ *    copy-on-write snapshot of the array, so destructor-triggered mutations
+ *    during the loop cannot disturb the iteration. Every stale `WeakReference`
+ *    is recorded in a local set keyed by `spl_object_id($weakRef)` — the
+ *    `WeakReference` *object* itself is still alive, only its referent has
+ *    been GC'd.
+ *
+ *  - **Pass 2 — Remove.** A second walk operates on the backing store's
+ *    *current* state (whatever destructors have left it in) and removes only
+ *    entries whose `WeakReference` identity is in the stale set. Live items
+ *    inserted by destructors during Pass 1 are not in that set, so they are
+ *    preserved.
+ *
+ * Identity-based removal — rather than the previous positional in-place splice
+ * — makes the scrub re-entrant-safe: destructor-time `insert()` and `remove()`
+ * calls on the same collection mutate the backing store directly without
+ * dropping the work or deadlocking. The {@see isScrubbing}/{@see setScrubbing}
+ * flag remains as the *outer* guard that prevents a nested scrub-of-scrub when
+ * a destructor that fires mid-scrub itself triggers another scrub; the write
+ * paths do not consult it.
+ *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.0
  * @see https://www.php.net/manual/en/class.weakmap.php
