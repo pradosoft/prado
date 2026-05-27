@@ -216,17 +216,16 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	}
 
 	/**
-	 * When a change in the WeakMap is detected, scrub the list of WeakReference that
-	 * have lost their object.
-	 * All invalid WeakReference[s] are optionally removed from the list when {@see
-	 * getDiscardInvalid} is true.
+	 * Removes entries from the priority map `_d` whose `WeakReference` has lost
+	 * its referent, following the two-pass snapshot-identify + identity-remove
+	 * scrubbing contract documented on {@see TWeakCollectionTrait}.
 	 *
-	 * This method is re-entrancy safe via the {@see isScrubbing} guard. PHP's cyclic
-	 * garbage collector can fire between opcodes and invoke object destructors
-	 * ({@see TComponent::__destruct} → `unlisten()` → `remove()`) that call back into
-	 * this method while the outer iteration is still running over `_d[$priority]`. The
-	 * guard ensures that nested calls return immediately, preventing the inner call from
-	 * modifying the array that the outer loop is currently scrubbing.
+	 * Class-specific behaviour: each entry is either a bare `WeakReference` /
+	 * `TEventHandler` (single-callable form) or a two-element array whose first
+	 * slot holds the receiver (object/`WeakReference`/`TEventHandler`). After
+	 * the second pass, `_c`, `_eventHandlerCount`, and the flat-cache `_fd`
+	 * are all recomputed from `_d`'s current state so destructor-time
+	 * insert/remove mutations are correctly reflected in the accounting.
 	 * @since 4.3.0
 	 */
 	protected function scrubWeakReferences()
@@ -236,35 +235,57 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 		}
 		$this->setScrubbing(true);
 		try {
-			foreach (array_keys($this->_d) as $priority) {
-				for ($c = $i = count($this->_d[$priority]), $i--; $i >= 0; $i--) {
-					$a = is_array($this->_d[$priority][$i]);
-					$isEventHandler = $weakRefInvalid = false;
-					$arrayInvalid = $a && is_object($this->_d[$priority][$i][0]) && ($this->_d[$priority][$i][0] instanceof WeakReference) && $this->_d[$priority][$i][0]->get() === null;
-					if (is_object($this->_d[$priority][$i])) {
-						$object = $this->_d[$priority][$i];
-						if ($isEventHandler = ($object instanceof TEventHandler)) {
-							$object = $object->getHandlerObject(true);
-						}
-						$weakRefInvalid = ($object instanceof WeakReference) && $object->get() === null;
+			// Pass 1: identify stale WeakReferences via their own spl_object_id.
+			// foreach over an array iterates a CoW snapshot; concurrent mutation
+			// of $this->_d by destructor-triggered insert/remove is safe here.
+			$staleRefIds = [];
+			foreach ($this->_d as $entries) {
+				foreach ($entries as $entry) {
+					$ref = is_array($entry) ? $entry[0] : $entry;
+					if (is_object($ref) && ($ref instanceof TEventHandler)) {
+						$ref = $ref->getHandlerObject(true);
 					}
-					if ($arrayInvalid || $weakRefInvalid) {
-						$c--;
-						$this->_c--;
-						if ($i === $c) {
-							array_pop($this->_d[$priority]);
-						} else {
-							array_splice($this->_d[$priority], $i, 1);
-						}
-						if ($isEventHandler) {
-							$this->_eventHandlerCount--;
-						}
+					if (($ref instanceof WeakReference) && $ref->get() === null) {
+						$staleRefIds[spl_object_id($ref)] = true;
 					}
 				}
-				if (!$c) {
+			}
+
+			// Pass 2: remove identified stale refs from _d's current state.
+			// Inserts/removes from Pass 1 destructors have already landed in
+			// $_d; we only delete entries whose WeakReference is in the stale
+			// set, so live inserts are preserved exactly.
+			foreach (array_keys($this->_d) as $priority) {
+				for ($i = count($this->_d[$priority]) - 1; $i >= 0; $i--) {
+					$entry = $this->_d[$priority][$i];
+					$ref = is_array($entry) ? $entry[0] : $entry;
+					$isEventHandler = is_object($ref) && ($ref instanceof TEventHandler);
+					if ($isEventHandler) {
+						$ref = $ref->getHandlerObject(true);
+					}
+					if (($ref instanceof WeakReference) && isset($staleRefIds[spl_object_id($ref)])) {
+						array_splice($this->_d[$priority], $i, 1);
+					}
+				}
+				if (empty($this->_d[$priority])) {
 					unset($this->_d[$priority]);
 				}
 			}
+
+			// Recount from the live data: insert/remove mutations from
+			// destructors may have shifted _c and _eventHandlerCount.
+			$c = 0;
+			$eh = 0;
+			foreach ($this->_d as $items) {
+				$c += count($items);
+				foreach ($items as $entry) {
+					if (is_object($entry) && ($entry instanceof TEventHandler)) {
+						$eh++;
+					}
+				}
+			}
+			$this->_c = $c;
+			$this->_eventHandlerCount = $eh;
 			$this->_fd = null;
 			$this->weakResetCount();
 		} finally {
@@ -591,7 +612,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 				} elseif ($p == $priority) {
 					if (($index = array_search($item, $this->_d[$p], true)) !== false) {
 						$absindex += $index;
-						$this->removeAtIndexInPriority($index, $p);
+						$this->internalRemoveAtIndexInPriority($index, $p);
 						return $absindex;
 					}
 				}
@@ -657,6 +678,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	 */
 	protected function internalRemoveAtIndexInPriority($index, $priority = null)
 	{
+		$priority = $this->ensurePriority($priority);
 		$item = parent::removeAtIndexInPriority($index, $priority);
 		$this->filterItemForOutput($item);
 		if (($isObj = is_object($item)) || is_array($item) && is_object($item[0])) {
