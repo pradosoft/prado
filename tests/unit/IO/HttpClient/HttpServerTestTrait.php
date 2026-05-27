@@ -12,6 +12,17 @@
  * The server runs the router at fixtures/test-server.php. URLs are obtained via
  * `self::url('/path')`. If the server fails to come up (e.g. the runner has no
  * permission to bind to a local port), tests are marked skipped automatically.
+ *
+ * On Windows the child process is spawned with `bypass_shell` and
+ * `create_no_window` so that it is not attached to the parent's console.
+ * Without this, `proc_terminate()` broadcasts a `CTRL_C_EVENT` to the entire
+ * console process group, which causes the CMD batch runner (`phpunit.bat`) to
+ * print "Terminate batch job (Y/N)?" and hang indefinitely.
+ *
+ * Shutdown always terminates the child process before closing its pipes.
+ * Windows `proc_open()` pipes do not support non-blocking mode
+ * (`stream_set_blocking()` is a no-op), so draining a pipe before the child
+ * exits blocks forever.
  */
 trait HttpServerTestTrait
 {
@@ -45,7 +56,13 @@ trait HttpServerTestTrait
 			1 => ['pipe', 'w'],
 			2 => ['pipe', 'w'],
 		];
-		$proc = proc_open($cmd, $descriptors, $pipes);
+		// On Windows, detach the child from the console so that proc_terminate()
+		// uses TerminateProcess() directly instead of broadcasting a CTRL_C_EVENT
+		// to the whole process group (which would hang the phpunit.bat runner).
+		$options = PHP_OS_FAMILY === 'Windows'
+			? ['bypass_shell' => true, 'create_no_window' => true]
+			: [];
+		$proc = proc_open($cmd, $descriptors, $pipes, null, null, $options ?: null);
 		if (!is_resource($proc)) {
 			self::$serverSkipReason = 'proc_open() failed to start the test server.';
 			return;
@@ -77,16 +94,25 @@ trait HttpServerTestTrait
 	protected static function stopHttpServer(): void
 	{
 		if (self::$serverProc !== null) {
-			// Drain pipes so the child can exit cleanly.
-			foreach (self::$serverPipes as $pipe) {
-				if (is_resource($pipe)) {
-					@stream_get_contents($pipe);
-					@fclose($pipe);
-				}
-			}
+			// Terminate FIRST, then close pipes.
+			//
+			// The naive order (drain → terminate) deadlocks on Windows: PHP's
+			// stream_set_blocking() is a no-op for proc_open() pipes on that
+			// platform, so stream_get_contents() blocks until the child exits,
+			// but the child never exits because proc_terminate() hasn't been
+			// called yet.
+			//
+			// Terminating first ensures the child process is dead (or dying)
+			// before we touch the pipes, so their read ends reach EOF quickly
+			// and fclose() returns without spinning.
 			$status = proc_get_status(self::$serverProc);
 			if (!empty($status['running'])) {
-				proc_terminate(self::$serverProc, 9);
+				proc_terminate(self::$serverProc);
+			}
+			foreach (self::$serverPipes as $pipe) {
+				if (is_resource($pipe)) {
+					@fclose($pipe);
+				}
 			}
 			proc_close(self::$serverProc);
 		}
