@@ -72,7 +72,7 @@ class TComponentReflection extends \Prado\TComponent
 	 * Failed lookups are not cached — a class that does not exist now may be
 	 * autoloaded later, so each call retries.
 	 *
-	 * @param string|object $class Fully-qualified class name or object instance to reflect.
+	 * @param object|string $class Fully-qualified class name or object instance to reflect.
 	 * @return ?\ReflectionClass The cached instance, or `null` on failure.
 	 * @since 4.4.0
 	 */
@@ -102,7 +102,7 @@ class TComponentReflection extends \Prado\TComponent
 	 * methods are cached by the behavior's own `spl_object_id`, so the same
 	 * behavior instance attached to different components shares its cache.
 	 *
-	 * @param string|object $class  Class name or instance.
+	 * @param object|string $class  Class name or instance.
 	 * @param string        $method Method name.
 	 * @return ?\ReflectionMethod Cached instance, or `null` when the method is
 	 *   not found on the class or its behaviors.
@@ -173,7 +173,7 @@ class TComponentReflection extends \Prado\TComponent
 	 * null — attached behaviors may contribute the property via a getter/setter
 	 * method, which is discoverable through {@see getReflectionMethodByType()}.
 	 *
-	 * @param string|object $class    Class name or instance.
+	 * @param object|string $class    Class name or instance.
 	 * @param string        $property Property name (without `$` prefix).
 	 * @return ?\ReflectionProperty Cached instance, or `null` when the property
 	 *   is not declared at any level.
