@@ -3,7 +3,7 @@
 /**
  * Generic postback control.
  */
-Prado.WebUI.CallbackControl = jQuery.klass(Prado.WebUI.PostBackControl,
+Prado.WebUI.CallbackControl = Prado.Class(Prado.WebUI.PostBackControl,
 {
 	onPostBack(options, event) {
 		const request = new Prado.CallbackRequest(options.EventTarget, options);
@@ -15,13 +15,13 @@ Prado.WebUI.CallbackControl = jQuery.klass(Prado.WebUI.PostBackControl,
 /**
  * TActiveButton control.
  */
-Prado.WebUI.TActiveButton = jQuery.klass(Prado.WebUI.CallbackControl);
+Prado.WebUI.TActiveButton = Prado.Class(Prado.WebUI.CallbackControl);
 /**
  * TActiveLinkButton control.
  */
-Prado.WebUI.TActiveLinkButton = jQuery.klass(Prado.WebUI.CallbackControl);
+Prado.WebUI.TActiveLinkButton = Prado.Class(Prado.WebUI.CallbackControl);
 
-Prado.WebUI.TActiveImageButton = jQuery.klass(Prado.WebUI.TImageButton,
+Prado.WebUI.TActiveImageButton = Prado.Class(Prado.WebUI.TImageButton,
 {
 	onPostBack(options, event) {
 		this.addXYInput(options, event);
@@ -34,7 +34,7 @@ Prado.WebUI.TActiveImageButton = jQuery.klass(Prado.WebUI.TImageButton,
 /**
  * Active check box.
  */
-Prado.WebUI.TActiveCheckBox = jQuery.klass(Prado.WebUI.CallbackControl,
+Prado.WebUI.TActiveCheckBox = Prado.Class(Prado.WebUI.CallbackControl,
 {
 	onPostBack(options, event) {
 		const request = new Prado.CallbackRequest(options.EventTarget, options);
@@ -46,19 +46,19 @@ Prado.WebUI.TActiveCheckBox = jQuery.klass(Prado.WebUI.CallbackControl,
 /**
  * TActiveRadioButton control.
  */
-Prado.WebUI.TActiveRadioButton = jQuery.klass(Prado.WebUI.TActiveCheckBox);
+Prado.WebUI.TActiveRadioButton = Prado.Class(Prado.WebUI.TActiveCheckBox);
 
 
-Prado.WebUI.TActiveCheckBoxList = jQuery.klass(Prado.WebUI.Control,
+Prado.WebUI.TActiveCheckBoxList = Prado.Class(Prado.WebUI.Control,
 {
 	onInit(options) {
 		for(let i = 0; i<options.ItemCount; i++)
 		{
-			const checkBoxOptions = jQuery.extend({}, options,
-			{
+			const checkBoxOptions = {
+				...options,
 				ID : `${options.ID}_c${i}`,
 				EventTarget : `${options.ListName}$c${i}`
-			});
+			};
 			new Prado.WebUI.TActiveCheckBox(checkBoxOptions);
 		}
 	}
@@ -69,14 +69,14 @@ Prado.WebUI.TActiveRadioButtonList = Prado.WebUI.TActiveCheckBoxList;
 /**
  * TActiveTextBox control, handles onchange event.
  */
-Prado.WebUI.TActiveTextBox = jQuery.klass(Prado.WebUI.TTextBox,
+Prado.WebUI.TActiveTextBox = Prado.Class(Prado.WebUI.TTextBox,
 {
 	onInit(options) {
 		this.options=options;
 		if(options['TextMode'] != 'MultiLine')
 			this.observe(this.element, "keydown", this.handleReturnKey.bind(this));
 		if(this.options['AutoPostBack']==true)
-			this.observe(this.element, "change", jQuery.proxy(this.doCallback,this,options));
+			this.observe(this.element, "change", this.doCallback.bind(this, options));
 	},
 
 	doCallback(options, event) {
@@ -90,13 +90,13 @@ Prado.WebUI.TActiveTextBox = jQuery.klass(Prado.WebUI.TTextBox,
  * TJuiAutoComplete control.
  */
 
-Prado.WebUI.TJuiAutoComplete = jQuery.klass(Prado.WebUI.TActiveTextBox,
+Prado.WebUI.TJuiAutoComplete = Prado.Class(Prado.WebUI.TActiveTextBox,
 {
 	initialize(options) {
 		this.options = options;
 		this.observers = new Array();
 		this.hasResults = false;
-		jQuery.extend(this.options, {
+		Object.assign(this.options, {
 			source: this.getUpdatedChoices.bind(this),
 			select: this.selectEntry.bind(this),
 			focus() {
@@ -129,7 +129,7 @@ Prado.WebUI.TJuiAutoComplete = jQuery.klass(Prado.WebUI.TActiveTextBox,
 	getUpdatedChoices(request, callback) {
         const lastTerm = this.extractLastTerm(request.term);
 		const params = new Array(lastTerm, "__TJuiAutoComplete_onSuggest__");
-		const options = jQuery.extend(this.options, {
+		const options = Object.assign(this.options, {
 			'autocompleteCallback' : callback
 		});
 		Prado.Callback(this.options.EventTarget, params, this.onComplete.bind(this), this.options);
@@ -159,17 +159,25 @@ Prado.WebUI.TJuiAutoComplete = jQuery.klass(Prado.WebUI.TActiveTextBox,
 
 
 	onComplete(request, result) {
-  		const that = this;
-  		if(that.options.textCssClass===undefined)
-  		{
-			jQuery.each(result, (idx, item) => {
-				result[idx]['value']=jQuery.trim(jQuery('<div/>').html(item['label']).text());
-			});
-  		} else {
-			jQuery.each(result, (idx, item) => {
-				result[idx]['value']=jQuery.trim(jQuery('<div/>').html(item['label']).find(`.${that.options.textCssClass}`).text());
-			});
-  		}
+		// Decode the HTML in `label` to plain text for the underlying value.
+		// Uses a detached <div> as the HTML parser; matches the old
+		// jQuery('<div/>').html(label).text() pattern.
+		const decode = (html) => {
+			const div = document.createElement('div');
+			div.innerHTML = html;
+			return div;
+		};
+		if(this.options.textCssClass === undefined) {
+			for (const item of result) {
+				item.value = decode(item.label).textContent.trim();
+			}
+		} else {
+			const sel = `.${this.options.textCssClass}`;
+			for (const item of result) {
+				const node = decode(item.label).querySelector(sel);
+				item.value = (node ? node.textContent : '').trim();
+			}
+		}
 
 		request.options.autocompleteCallback(result);
 	}
@@ -178,10 +186,10 @@ Prado.WebUI.TJuiAutoComplete = jQuery.klass(Prado.WebUI.TActiveTextBox,
 /**
  * Time Triggered Callback class.
  */
-Prado.WebUI.TTimeTriggeredCallback = jQuery.klass(Prado.WebUI.Control,
+Prado.WebUI.TTimeTriggeredCallback = Prado.Class(Prado.WebUI.Control,
 {
 	onInit(options) {
-		this.options = jQuery.extend({ Interval : 1	}, options || {});
+		this.options = { Interval : 1, ...(options || {}) };
 		Prado.WebUI.TTimeTriggeredCallback.registerTimer(this);
 	},
 
@@ -224,7 +232,7 @@ Prado.WebUI.TTimeTriggeredCallback = jQuery.klass(Prado.WebUI.Control,
 	}
 });
 
-jQuery.extend(Prado.WebUI.TTimeTriggeredCallback,
+Object.assign(Prado.WebUI.TTimeTriggeredCallback,
 {
 
 	//class methods
@@ -251,7 +259,7 @@ jQuery.extend(Prado.WebUI.TTimeTriggeredCallback,
 	}
 });
 
-Prado.WebUI.ActiveListControl = jQuery.klass(Prado.WebUI.Control,
+Prado.WebUI.ActiveListControl = Prado.Class(Prado.WebUI.Control,
 {
 	onInit(options) {
 		if(this.element)
@@ -268,17 +276,17 @@ Prado.WebUI.ActiveListControl = jQuery.klass(Prado.WebUI.Control,
 	}
 });
 
-Prado.WebUI.TActiveDropDownList = jQuery.klass(Prado.WebUI.ActiveListControl);
-Prado.WebUI.TActiveListBox = jQuery.klass(Prado.WebUI.ActiveListControl);
+Prado.WebUI.TActiveDropDownList = Prado.Class(Prado.WebUI.ActiveListControl);
+Prado.WebUI.TActiveListBox = Prado.Class(Prado.WebUI.ActiveListControl);
 
 /**
  * Observe event of a particular control to trigger a callback request.
  */
-Prado.WebUI.TEventTriggeredCallback = jQuery.klass(Prado.WebUI.Control,
+Prado.WebUI.TEventTriggeredCallback = Prado.Class(Prado.WebUI.Control,
 {
 	onInit(options) {
 		this.options = options || {} ;
-		const element = jQuery(`#${options['ControlID']}`).get(0);
+		const element = document.getElementById(options['ControlID']);
 		if(element)
 			this.observe(element, this.getEventName(element), this.doCallback.bind(this));
 	},
@@ -311,7 +319,7 @@ Prado.WebUI.TEventTriggeredCallback = jQuery.klass(Prado.WebUI.Control,
 /**
  * Observe changes to a property of a particular control to trigger a callback.
  */
-Prado.WebUI.TValueTriggeredCallback = jQuery.klass(Prado.WebUI.Control,
+Prado.WebUI.TValueTriggeredCallback = Prado.Class(Prado.WebUI.Control,
 {
 	count : 1,
 
@@ -320,7 +328,7 @@ Prado.WebUI.TValueTriggeredCallback = jQuery.klass(Prado.WebUI.Control,
 	onInit(options) {
 		this.options = options || {} ;
 		this.options.PropertyName = this.options.PropertyName || 'value';
-		const element = jQuery(`#${options['ControlID']}`).get(0);
+		const element = document.getElementById(options['ControlID']);
 		this.value = element ? element[this.options.PropertyName] : undefined;
 		Prado.WebUI.TValueTriggeredCallback.register(this);
 		this.startObserving();
@@ -336,7 +344,7 @@ Prado.WebUI.TValueTriggeredCallback = jQuery.klass(Prado.WebUI.Control,
 	},
 
 	checkChanges() {
-		const element = jQuery(`#${this.options.ControlID}`).get(0);
+		const element = document.getElementById(this.options.ControlID);
 		if(element)
 		{
 			const value = element[this.options.PropertyName];
@@ -367,7 +375,7 @@ Prado.WebUI.TValueTriggeredCallback = jQuery.klass(Prado.WebUI.Control,
 	}
 });
 
-jQuery.extend(Prado.WebUI.TValueTriggeredCallback,
+Object.assign(Prado.WebUI.TValueTriggeredCallback,
 {
 	//class methods
 
@@ -382,5 +390,5 @@ jQuery.extend(Prado.WebUI.TValueTriggeredCallback,
 	}
 });
 
-Prado.WebUI.TActiveTableCell = jQuery.klass(Prado.WebUI.CallbackControl);
-Prado.WebUI.TActiveTableRow = jQuery.klass(Prado.WebUI.CallbackControl);
+Prado.WebUI.TActiveTableCell = Prado.Class(Prado.WebUI.CallbackControl);
+Prado.WebUI.TActiveTableRow = Prado.Class(Prado.WebUI.CallbackControl);

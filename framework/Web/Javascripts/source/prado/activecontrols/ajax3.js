@@ -168,7 +168,42 @@ Prado.CallbackRequestManager =
     }
 };
 
-Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
+/**
+ * Serialize every `<input>`, `<select>` and `<textarea>` on the page into
+ * an application/x-www-form-urlencoded string. Matches the legacy behavior
+ * of `jQuery('input, select, textarea').serialize()` which ignored form
+ * boundaries and skipped:
+ *   - disabled controls
+ *   - elements without a `name`
+ *   - file inputs
+ *   - submit/button/image/reset inputs
+ *   - unchecked checkboxes and radios
+ */
+Prado.CallbackRequest_serializePageInputs = function() {
+	const out = [];
+	const enc = (s) => encodeURIComponent(s).replace(/%20/g, '+');
+	const skipTypes = new Set(['file', 'submit', 'reset', 'button', 'image']);
+	const fields = document.querySelectorAll('input, select, textarea');
+	for (const el of fields) {
+		if (el.disabled || !el.name) continue;
+		const tag = el.tagName.toLowerCase();
+		if (tag === 'input') {
+			const t = (el.type || 'text').toLowerCase();
+			if (skipTypes.has(t)) continue;
+			if ((t === 'checkbox' || t === 'radio') && !el.checked) continue;
+			out.push(`${enc(el.name)}=${enc(el.value)}`);
+		} else if (tag === 'select') {
+			for (const opt of el.options) {
+				if (opt.selected) out.push(`${enc(el.name)}=${enc(opt.value)}`);
+			}
+		} else { // textarea
+			out.push(`${enc(el.name)}=${enc(el.value)}`);
+		}
+	}
+	return out.join('&');
+};
+
+Prado.CallbackRequest = Prado.Class(Prado.PostBack,
 {
 
 	options : {},
@@ -190,7 +225,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 			complete: this.completeHandler
 		};
 
-		jQuery.extend(this.options, options || {});
+		Object.assign(this.options, options || {});
 
 		if(this.options.onUninitialized)
 			this.options.onUninitialized(this,null);
@@ -201,11 +236,15 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 	 * @return {Array} request options.
 	 */
 	setOptions(options) {
-		jQuery.extend(this.options, options || { });
+		Object.assign(this.options, options || {});
 	},
 
 	getForm() {
-		return jQuery(`#${this.options.ID}`).parents('form:first').get(0) || jQuery('#PRADO_PAGESTATE').get(0).form;
+		const el = document.getElementById(this.options.ID);
+		const owned = el && el.closest('form');
+		if (owned) return owned;
+		const ps = document.getElementById('PRADO_PAGESTATE');
+		return ps ? ps.form : null;
 	},
 
 	/**
@@ -341,12 +380,15 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 		if(this.options.PostInputs != false)
 		{
 			const form = this.getForm();
-			return `${jQuery('input, select, textarea').serialize()}&${jQuery.param(data)}`;
+			// Serialize every form-bearing input on the page (matches the legacy
+			// behavior of jQuery('input, select, textarea').serialize() which
+			// ignored form boundaries) plus the extra `data` object.
+			return `${Prado.CallbackRequest_serializePageInputs()}&${new URLSearchParams(data).toString()}`;
 		} else {
-			const pagestate = jQuery(`#${Prado.CallbackRequestManager.FIELD_CALLBACK_PAGESTATE}`);
+			const pagestate = document.getElementById(Prado.CallbackRequestManager.FIELD_CALLBACK_PAGESTATE);
 			if(pagestate)
-				data[Prado.CallbackRequestManager.FIELD_CALLBACK_PAGESTATE] = pagestate.val();
-			return jQuery.param(data);
+				data[Prado.CallbackRequestManager.FIELD_CALLBACK_PAGESTATE] = pagestate.value;
+			return new URLSearchParams(data).toString();
 		}
 	},
 
@@ -400,7 +442,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 				let errorData = this.extractContent(Prado.CallbackRequestManager.ERROR_HEADER);
 				if (typeof(errorData) == "string" && errorData.length > 0)
 				{
-					errorData = jQuery.parseJSON(errorData);
+					errorData = JSON.parse(errorData);
 					if(typeof(errorData) == "object")
 						Prado.CallbackRequestManager.logFormatException(log, errorData);
 				}
@@ -467,7 +509,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 		{
 			let customData=this.extractContent(Prado.CallbackRequestManager.DATA_HEADER);
 			if (typeof(customData) == "string" && customData.length > 0)
-				customData = jQuery.parseJSON(customData);
+				customData = JSON.parse(customData);
 
 			this.options.onSuccess(this,customData);
 		}
@@ -501,14 +543,14 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 	 */
 	updatePageState(request, datain) {
 		let log;
-		const pagestate = jQuery(`#${Prado.CallbackRequestManager.FIELD_CALLBACK_PAGESTATE}`);
+		const pagestate = document.getElementById(Prado.CallbackRequestManager.FIELD_CALLBACK_PAGESTATE);
 		const enabled = request.options.EnablePageStateUpdate;
 		const aborted = false; //typeof(self.currentRequest) == 'undefined' || self.currentRequest == null;
 		if(enabled && !aborted && pagestate)
 		{
 			const data = this.extractContent(Prado.CallbackRequestManager.PAGESTATE_HEADER);
 			if(typeof(data) == "string" && data.length > 0)
-				pagestate.val(data);
+				pagestate.value = data;
 			else
 			{
 				if(Prado.CallbackRequestManager.LOG_ERROR && (log = this.getLogger()))
@@ -543,7 +585,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 		const data = this.extractContent(Prado.CallbackRequestManager.HIDDENFIELDLIST_HEADER);
 		if (typeof(data) == "string" && data.length > 0)
 		{
-			json = jQuery.parseJSON(data);
+			json = JSON.parse(data);
 			if(typeof(json) != "object")
 			{
 				if(Prado.CallbackRequestManager.LOG_ERROR && (log = this.getLogger()))
@@ -595,7 +637,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 		this.ScriptLoadFinishedCallback = callback;
 		if (typeof(data) == "string" && data.length > 0)
 		{
-			json = jQuery.parseJSON(data);
+			json = JSON.parse(data);
 			if(typeof(json) != "object")
 			{
 				if(Prado.CallbackRequestManager.LOG_ERROR && (log = this.getLogger()))
@@ -643,7 +685,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 		const data = this.extractContent(Prado.CallbackRequestManager.STYLESHEET_HEADER);
 		if (typeof(data) == "string" && data.length > 0)
 		{
-			json = jQuery.parseJSON(data);
+			json = JSON.parse(data);
 			if(typeof(json) != "object")
 			{
 				if(Prado.CallbackRequestManager.LOG_ERROR && (log = this.getLogger()))
@@ -661,7 +703,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 		const data = this.extractContent(Prado.CallbackRequestManager.STYLESHEETLIST_HEADER);
 		if (typeof(data) == "string" && data.length > 0)
 		{
-			json = jQuery.parseJSON(data);
+			json = JSON.parse(data);
 			if(typeof(json) != "object")
 			{
 				if(Prado.CallbackRequestManager.LOG_ERROR && (log = this.getLogger()))
@@ -681,7 +723,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 		this.StyleSheetLoadFinishedCallback = callback;
 		if (typeof(data) == "string" && data.length > 0)
 		{
-			json = jQuery.parseJSON(data);
+			json = JSON.parse(data);
 			if(typeof(json) != "object")
 			{
 				if(Prado.CallbackRequestManager.LOG_ERROR && (log = this.getLogger()))
@@ -730,14 +772,14 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 		const data = this.extractContent(Prado.CallbackRequestManager.ACTION_HEADER);
 		if (typeof(data) == "string" && data.length > 0)
 		{
-			json = jQuery.parseJSON(data);
+			json = JSON.parse(data);
 			if(typeof(json) != "object")
 			{
 				if(Prado.CallbackRequestManager.LOG_ERROR && (log = this.getLogger()))
 					log.warn(`Invalid action:${data}`);
 			} else {
 				const that = this;
-				jQuery.each(json, (idx, item) => {
+				json.forEach((item, idx) => {
 					that.__run(that, item);
 				});
 			}
@@ -752,7 +794,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 		const data = this.extractContent(Prado.CallbackRequestManager.DEBUG_HEADER);
 		if (typeof(data) == "string" && data.length > 0 && (log = this.getLogger()))
 		{
-			json = jQuery.parseJSON(data);
+			json = JSON.parse(data);
 			if(typeof(json) == "object")
 			{
 				Prado.CallbackRequestManager.logDebug(log, json);
@@ -791,10 +833,10 @@ Prado.Callback = function(UniqueID, parameter, onSuccess, options) {
 	{
 		'EventTarget' : UniqueID || '',
 		'CallbackParameter' : parameter || '',
-		'onSuccess' : onSuccess || jQuery.noop()
+		'onSuccess' : onSuccess || (() => {})
 	};
 
-	jQuery.extend(callback, options || {});
+	Object.assign(callback, options || {});
 
 	const request = new Prado.CallbackRequest(UniqueID, callback);
 	request.dispatch();
@@ -845,7 +887,7 @@ Prado.JuiCallback = (UniqueID, eventType, event, ui, target) => {
 
 if (typeof(Prado.AssetManagerClass)=="undefined") {
 
-	Prado.AssetManagerClass = jQuery.klass();
+	Prado.AssetManagerClass = Prado.Class();
 	Prado.AssetManagerClass.prototype = {
 
 		initialize() {
@@ -898,7 +940,7 @@ if (typeof(Prado.AssetManagerClass)=="undefined") {
 
 		isAssetLoaded(url) {
 			url = this.makeFullUrl(url);
-			return (jQuery.inArray(url, this.loadedAssets)!=-1);
+			return this.loadedAssets.includes(url);
 		},
 
 		/**
@@ -907,7 +949,7 @@ if (typeof(Prado.AssetManagerClass)=="undefined") {
 		 */
 		markAssetAsLoaded(url) {
 			url = this.makeFullUrl(url);
-			if (jQuery.inArray(url, this.loadedAssets)==-1)
+			if (!this.loadedAssets.includes(url))
 				this.loadedAssets.push(url)
 		},
 
@@ -965,7 +1007,7 @@ if (typeof(Prado.AssetManagerClass)=="undefined") {
 		 */
 		ensureAssetIsLoaded(url, callback) {
 			url = this.makeFullUrl(url);
-			if (jQuery.inArray(url, this.loadedAssets)==-1)
+			if (!this.loadedAssets.includes(url))
 			{
 				this.startAssetLoad(url,callback);
 				return false;
@@ -978,7 +1020,7 @@ if (typeof(Prado.AssetManagerClass)=="undefined") {
 
 };
 
-Prado.ScriptManagerClass = jQuery.klass(Prado.AssetManagerClass, {
+Prado.ScriptManagerClass = Prado.Class(Prado.AssetManagerClass, {
 
 	findAssetUrlsInMarkup() {
 		const urls = new Array();
@@ -1002,7 +1044,7 @@ Prado.ScriptManagerClass = jQuery.klass(Prado.AssetManagerClass, {
 
 });
 
-Prado.StyleSheetManagerClass = jQuery.klass(Prado.AssetManagerClass, {
+Prado.StyleSheetManagerClass = Prado.Class(Prado.AssetManagerClass, {
 
 	findAssetUrlsInMarkup() {
 		const urls = new Array();
