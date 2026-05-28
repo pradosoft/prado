@@ -191,38 +191,31 @@ describe('TAccordion maxHeight initialisation', () => {
 // ─── checkMaxHeight ────────────────────────────────────────────────────────────
 
 describe('TAccordion.checkMaxHeight', () => {
-	it('keeps maxHeight at 0 in jsdom (no real layout)', () => {
+	it('picks up the stubbed offsetHeight from buildDOM (100 per view)', () => {
 		const { accordion } = makeAccordion(['v0', 'v1'], 0);
 		accordion.maxHeight = 0;
 		accordion.checkMaxHeight();
-		// jQuery .height() returns 0 in jsdom; maxHeight should remain 0.
-		expect(accordion.maxHeight).toBe(0);
+		// buildDOM stubs offsetHeight=100 on each view element.
+		expect(accordion.maxHeight).toBe(100);
 	});
 
 	it('updates maxHeight to the tallest panel when heights differ', () => {
-		// We need to control jQuery's .height() response.
-		const { accordion, options } = makeAccordion(['v0', 'v1'], 0);
-		// Stub height() to return different values per element.
-		const orig = global.jQuery.fn.height;
-		global.jQuery.fn.height = function () {
-			if (this.attr('id') === 'v0') return 80;
-			if (this.attr('id') === 'v1') return 120;
-			return 0;
-		};
+		const { accordion } = makeAccordion(['v0', 'v1'], 0);
+		// Override the stubbed offsetHeight on each panel.
+		Object.defineProperty(document.getElementById('v0'), 'offsetHeight', { configurable: true, value: 80 });
+		Object.defineProperty(document.getElementById('v1'), 'offsetHeight', { configurable: true, value: 120 });
 		accordion.maxHeight = 0;
 		accordion.checkMaxHeight();
-		global.jQuery.fn.height = orig;
 		expect(accordion.maxHeight).toBe(120);
 	});
 
 	it('does not decrease maxHeight if all panels are shorter', () => {
 		const { accordion } = makeAccordion(['v0', 'v1'], 0);
-		const orig = global.jQuery.fn.height;
-		global.jQuery.fn.height = function () { return 50; };
+		Object.defineProperty(document.getElementById('v0'), 'offsetHeight', { configurable: true, value: 50 });
+		Object.defineProperty(document.getElementById('v1'), 'offsetHeight', { configurable: true, value: 50 });
 		accordion.maxHeight = 200;
 		// checkMaxHeight only raises, never lowers.
 		accordion.checkMaxHeight();
-		global.jQuery.fn.height = orig;
 		// 50 < 200 so maxHeight stays at 200.
 		expect(accordion.maxHeight).toBe(200);
 	});

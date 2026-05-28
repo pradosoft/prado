@@ -1378,7 +1378,7 @@ describe('TDatePicker OnDateChanged callback — TextBox mode', () => {
 		picker.create();
 
 		picker.control.value = '2024-07-04';
-		jQuery(picker.control).trigger('change');
+		picker.control.dispatchEvent(new Event('change', { bubbles: true }));
 
 		expect(cb).toHaveBeenCalledTimes(1);
 		const [ref, dateStr] = cb.mock.calls[0];
