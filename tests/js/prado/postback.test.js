@@ -145,7 +145,9 @@ describe('Prado.PostBack.doPostBack', () => {
 			fakeEvent,
 		);
 
-		expect(validate).toHaveBeenCalledWith('testForm', undefined, expect.anything());
+		// 3rd arg is the trigger element via document.getElementById(options.ID);
+		// null is expected when no fixture element with that id exists.
+		expect(validate).toHaveBeenCalledWith('testForm', undefined, null);
 		expect(submits).toHaveLength(1);
 	});
 

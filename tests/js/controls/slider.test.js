@@ -924,8 +924,8 @@ describe('TSlider without a progress element', () => {
 
 		global.jQuery.fn.is = origIs;
 
-		// jQuery('#nonexistent').get(0) returns undefined, not null.
-	expect(slider.progress).toBeUndefined();
+		// document.getElementById of a missing id returns null.
+	expect(slider.progress).toBeNull();
 	});
 });
 
