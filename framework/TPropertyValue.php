@@ -311,7 +311,7 @@ class TPropertyValue
 			throw new TInvalidDataValueException(
 				'propertyvalue_enumvalue_invalid',
 				$errVal,
-				implode(' | ', $constants)
+				implode(' | ', array_keys($constants))
 			);
 		} elseif (!is_array($enums)) {
 			$enums = func_get_args();

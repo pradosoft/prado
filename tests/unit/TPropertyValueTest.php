@@ -1330,8 +1330,9 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 			self::assertStringContainsString('Off', $e->getMessage());
 		}
 
-		// ── ReflectionClass cache: repeated calls do not throw ────────────────
-		// The static $types cache is populated on first call; second call reuses it.
+		// ── Reflection cache: repeated calls do not throw ────────────────────
+		// TComponentReflection::getReflectionClassByType() caches internally;
+		// repeated ensureEnum calls for the same class reuse that cached instance.
 		self::assertEquals('Off', TPropertyValue::ensureEnum('Off', \Prado\TApplicationMode::class));
 		self::assertEquals('Debug', TPropertyValue::ensureEnum('Debug', \Prado\TApplicationMode::class));
 	}
