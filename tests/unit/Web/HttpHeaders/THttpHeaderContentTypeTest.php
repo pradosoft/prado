@@ -337,11 +337,26 @@ class THttpHeaderContentTypeTest extends PHPUnit\Framework\TestCase
 
 	public function testFinalizeHeaderWithNullCharsetResolvesToDefaultCharset(): void
 	{
-		// Test environment has no globalization configured → falls back to DEFAULT_CHARSET.
-		$ct = new THttpHeaderContentType();
-		self::assertNull($ct->getCharset()); // pre-condition: not set
-		$ct->finalizeHeader();
-		self::assertSame(THttpResponse::DEFAULT_CHARSET, $ct->getCharset());
+		// Temporarily remove any active globalization so the DEFAULT_CHARSET
+		// hard-fallback path is exercised regardless of the test environment.
+		$ref      = new ReflectionProperty(TApplication::class, '_globalization');
+		$ref->setAccessible(true);
+		$app      = Prado::getApplication();
+		$original = $app !== null ? $ref->getValue($app) : null;
+		if ($app !== null) {
+			$ref->setValue($app, null);
+		}
+
+		try {
+			$ct = new THttpHeaderContentType();
+			self::assertNull($ct->getCharset(), 'pre-condition: charset not yet set');
+			$ct->finalizeHeader();
+			self::assertSame(THttpResponse::DEFAULT_CHARSET, $ct->getCharset());
+		} finally {
+			if ($app !== null) {
+				$ref->setValue($app, $original);
+			}
+		}
 	}
 
 	public function testFinalizeHeaderIsIdempotent(): void
@@ -355,12 +370,27 @@ class THttpHeaderContentTypeTest extends PHPUnit\Framework\TestCase
 
 	public function testFinalizeHeaderProducesCorrectHeaderValue(): void
 	{
-		$ct = new THttpHeaderContentType();
-		$ct->finalizeHeader();
-		self::assertSame(
-			THttpResponse::DEFAULT_CONTENTTYPE . '; charset=' . THttpResponse::DEFAULT_CHARSET,
-			$ct->getHeaderValue()
-		);
+		// Temporarily remove any active globalization so DEFAULT_CHARSET is used.
+		$ref      = new ReflectionProperty(TApplication::class, '_globalization');
+		$ref->setAccessible(true);
+		$app      = Prado::getApplication();
+		$original = $app !== null ? $ref->getValue($app) : null;
+		if ($app !== null) {
+			$ref->setValue($app, null);
+		}
+
+		try {
+			$ct = new THttpHeaderContentType();
+			$ct->finalizeHeader();
+			self::assertSame(
+				THttpResponse::DEFAULT_CONTENTTYPE . '; charset=' . THttpResponse::DEFAULT_CHARSET,
+				$ct->getHeaderValue()
+			);
+		} finally {
+			if ($app !== null) {
+				$ref->setValue($app, $original);
+			}
+		}
 	}
 
 	public function testFinalizeHeaderThenGetHeaderValueContainsCharset(): void
@@ -373,11 +403,26 @@ class THttpHeaderContentTypeTest extends PHPUnit\Framework\TestCase
 	public function testFinalizeHeaderAfterCharsetResetResolvesAgain(): void
 	{
 		// finalizeHeader() must re-resolve after the charset has been cleared.
-		$ct = new THttpHeaderContentType();
-		$ct->finalizeHeader();
-		$ct->setCharset(null); // clear the resolved value
-		$ct->finalizeHeader();
-		self::assertSame(THttpResponse::DEFAULT_CHARSET, $ct->getCharset());
+		// Temporarily remove any active globalization so DEFAULT_CHARSET is used.
+		$ref      = new ReflectionProperty(TApplication::class, '_globalization');
+		$ref->setAccessible(true);
+		$app      = Prado::getApplication();
+		$original = $app !== null ? $ref->getValue($app) : null;
+		if ($app !== null) {
+			$ref->setValue($app, null);
+		}
+
+		try {
+			$ct = new THttpHeaderContentType();
+			$ct->finalizeHeader();
+			$ct->setCharset(null); // clear the resolved value
+			$ct->finalizeHeader();
+			self::assertSame(THttpResponse::DEFAULT_CHARSET, $ct->getCharset());
+		} finally {
+			if ($app !== null) {
+				$ref->setValue($app, $original);
+			}
+		}
 	}
 
 	public function testFinalizeHeaderResolvesCharsetFromGlobalization(): void
