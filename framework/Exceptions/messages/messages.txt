@@ -144,6 +144,16 @@ apccache_extension_required				= TAPCCache requires APC PHP extension.
 apccache_extension_not_enabled			= TAPCCache need apc.enabled = 1 in php.ini in order to work.
 apccache_extension_not_enabled_cli		= TAPCCache need apc.enable_cli = 1 in php.ini in order to work with PHP from the command line.
 
+cachesize_item_exceeds_maximum_size			= Cache item is {0} bytes, which exceeds the configured MaximumSize of {1} bytes.
+
+filecache_directory_required			= TFileCache.Directory is required.
+filecache_directory_create_failed		= TFileCache cannot create cache directory '{0}'.
+filecache_directory_not_writable		= TFileCache cache directory '{0}' is not writable.
+filecache_hash_token_identity			= TFileCache.hashToken must transform its input; the subclass implementation returned the token unchanged.
+filecache_hash_token_path_separator		= TFileCache.hashToken must not return a value containing a path separator ("/" or "\"); the subclass implementation returned an unsafe hash.
+
+memorycache_backing_file_directory_not_found	= TMemoryCache.BackingFile directory does not exist for path '{0}'.
+
 errorhandler_errortemplatepath_invalid	= TErrorHandler.ErrorTemplatePath '{0}' is invalid. Make sure it is in namespace form and points to a valid directory containing error template files.
 
 pageservice_page_unknown				= Page '{0}' Not Found
