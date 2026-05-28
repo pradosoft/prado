@@ -1,9 +1,8 @@
 /*! PRADO TKeyboard javascript file | github.com/pradosoft/prado */
 
-Prado.WebUI.TKeyboard = jQuery.klass(Prado.WebUI.Control,
+Prado.WebUI.TKeyboard = Prado.Class(Prado.WebUI.Control,
 {
-	onInit : function(options)
-    {
+	onInit(options) {
 		this.cssClass = options['CssClass'];
         this.forControl = document.getElementById(options['ForControl']);
         this.autoHide = options['AutoHide'];
@@ -26,7 +25,7 @@ Prado.WebUI.TKeyboard = jQuery.klass(Prado.WebUI.Control,
             this.forControl.keyboard = this;
             this.forControl.onfocus = function() {this.keyboard.show(); };
             this.forControl.onblur = function() {if (this.keyboard.flagHover == false) this.keyboard.hide();};
-            this.forControl.onkeydown = function(e) {if (!e) e = window.event; var key = (e.keyCode)?e.keyCode:e.which; if(key == 9)  this.keyboard.hide();;};
+            this.forControl.onkeydown = function(e) {if (!e) e = window.event; const key = (e.keyCode)?e.keyCode:e.which; if(key == 9)  this.keyboard.hide();;};
             this.forControl.onselect = this.saveSelection;
             this.forControl.onclick = this.saveSelection;
             this.forControl.onkeyup = this.saveSelection;
@@ -40,77 +39,66 @@ Prado.WebUI.TKeyboard = jQuery.klass(Prado.WebUI.Control,
         if (!this.autoHide) this.show();
     },
 
-	isObject : function(a)
-	{
+	isObject(a) {
 		return (typeof a == 'object' && !!a) || typeof a == 'function';
 	},
 
-	createElement : function(tagName, attributes, parent)
-    {
-        var tagElement = document.createElement(tagName);
+	createElement(tagName, attributes, parent) {
+        const tagElement = document.createElement(tagName);
         if (this.isObject(attributes)) for (attribute in attributes) tagElement[attribute] = attributes[attribute];
         if (this.isObject(parent)) parent.appendChild(tagElement);
         return tagElement;
     },
 
-	onmouseover : function()
-	{
+	onmouseover() {
 		this.className += ' Hover';
 	},
 
-	onmouseout : function()
-	{
+	onmouseout() {
 		this.className = this.className.replace(/( Hover| Active)/ig, '');
 	},
 
-    onmousedown : function()
-    {
+    onmousedown() {
     	this.className += ' Active';
 	},
 
-    onmouseup : function()
-    {
+    onmouseup() {
     	this.className = this.className.replace(/( Active)/ig, '');
     	this.keyboard.type(this.innerHTML);
 	},
 
-	render : function()
-    {
-        this.tagKeyboard = this.createElement('div', {className: this.cssClass, onselectstart: function() {return false;}}, this.element);
+	render() {
+        this.tagKeyboard = this.createElement('div', {className: this.cssClass, onselectstart() {return false;}}, this.element);
         this.tagKeyboard.keyboard = this;
 
-        for (var line = 0; line < this.keys.length; line++)
+        for (let line = 0; line < this.keys.length; line++)
         {
-            var tagLine = this.createElement('div', {className: 'Line'}, this.tagKeyboard);
-            for (var key = 0; key < this.keys[line].length; key++)
+            const tagLine = this.createElement('div', {className: 'Line'}, this.tagKeyboard);
+            for (let key = 0; key < this.keys[line].length; key++)
             {
-                var split = this.keys[line][key].split(' ');
-                var tagKey = this.createElement('div', {className: 'Key ' + split[2]}, tagLine);
-                var tagKey1 = this.createElement('div', {className: 'Key1', innerHTML: split[0], keyboard: this, onmouseover: this.onmouseover, onmouseout: this.onmouseout, onmousedown: this.onmousedown, onmouseup: this.onmouseup}, tagKey);
-                var tagKey2 = this.createElement('div', {className: 'Key2', innerHTML: split[1], keyboard: this, onmouseover: this.onmouseover, onmouseout: this.onmouseout, onmousedown: this.onmousedown, onmouseup: this.onmouseup}, tagKey);
+                const split = this.keys[line][key].split(' ');
+                const tagKey = this.createElement('div', {className: `Key ${split[2]}`}, tagLine);
+                const tagKey1 = this.createElement('div', {className: 'Key1', innerHTML: split[0], keyboard: this, onmouseover: this.onmouseover, onmouseout: this.onmouseout, onmousedown: this.onmousedown, onmouseup: this.onmouseup}, tagKey);
+                const tagKey2 = this.createElement('div', {className: 'Key2', innerHTML: split[1], keyboard: this, onmouseover: this.onmouseover, onmouseout: this.onmouseout, onmousedown: this.onmousedown, onmouseup: this.onmouseup}, tagKey);
             }
         }
     },
 
-    isShown : function()
-    {
+    isShown() {
         return (this.tagKeyboard.style.visibility.toLowerCase() == 'visible');
     },
 
-    show : function()
-    {
+    show() {
         if (this.isShown() == false) this.tagKeyboard.style.visibility = 'visible';
     },
 
-    hide : function()
-    {
+    hide() {
         if (this.isShown() == true && this.autoHide) {this.tagKeyboard.style.visibility = 'hidden'; }
     },
 
-    type : function(key)
-    {
-        var input = this.forControl;
-        var command = key.toLowerCase();
+    type(key) {
+        const input = this.forControl;
+        const command = key.toLowerCase();
 
         if (command == 'exit') {this.hide();}
         else if (input != 'undefined' && input != null && command == 'bksp') {this.insert(input, 'bksp');}
@@ -127,8 +115,7 @@ Prado.WebUI.TKeyboard = jQuery.klass(Prado.WebUI.Control,
         if (command != 'exit') input.focus();
     },
 
-    saveSelection : function()
-    {
+    saveSelection() {
         if (this.keyboard.forControl.createTextRange)
         {
             this.keyboard.selection = document.selection.createRange().duplicate();
@@ -136,8 +123,7 @@ Prado.WebUI.TKeyboard = jQuery.klass(Prado.WebUI.Control,
         }
     },
 
-    insert : function(field, value)
-    {
+    insert(field, value) {
         if (this.forControl.createTextRange && this.selection)
         {
             if (value == 'bksp') {this.selection.moveStart("character", -1); this.selection.text = '';}
@@ -147,10 +133,10 @@ Prado.WebUI.TKeyboard = jQuery.klass(Prado.WebUI.Control,
         }
         else
         {
-            var selectStart = this.forControl.selectionStart;
-            var selectEnd = this.forControl.selectionEnd;
-            var start = (this.forControl.value).substring(0, selectStart);
-            var end = (this.forControl.value).substring(selectEnd, this.forControl.textLength);
+            let selectStart = this.forControl.selectionStart;
+            const selectEnd = this.forControl.selectionEnd;
+            let start = (this.forControl.value).substring(0, selectStart);
+            let end = (this.forControl.value).substring(selectEnd, this.forControl.textLength);
 
             if (value == 'bksp') {start = start.substring(0, start.length - 1); selectStart -= 1; value = '';}
             if (value == 'del') {end = end.substring(1, end.length); value = '';}

@@ -16,59 +16,56 @@
 
 Prado.WebUI.TAccordion = jQuery.klass(Prado.WebUI.Control,
 {
-    	onInit : function(options)
-	{
-		this.accordion = jQuery('#'+options.ID).get(0);
-		this.options = options;
-		this.hiddenField = jQuery('#'+options.ID+'_1').get(0);
+    	onInit(options) {
+            this.accordion = jQuery(`#${options.ID}`).get(0);
+            this.options = options;
+            this.hiddenField = jQuery(`#${options.ID}_1`).get(0);
 
-		if (this.options.maxHeight)
+            if (this.options.maxHeight)
+            {
+                this.maxHeight = this.options.maxHeight;
+            } else {
+                this.maxHeight = 0;
+                this.checkMaxHeight();
+            }
+
+            this.currentView = null;
+            this.oldView = null;
+
+            let i = 0;
+            for(const view in this.options.Views)
+            {
+                const header = jQuery(`#${view}_0`).get(0);
+                if(header)
+                {
+                    this.observe(header, "click", jQuery.proxy(this.elementClicked,this,view));
+                    if(this.hiddenField.value == i)
+                    {
+                        this.currentView = view;
+                        if(jQuery(`#${this.currentView}`).height() != this.maxHeight)
+                            jQuery(`#${this.currentView}`).css({height: `${this.maxHeight}px`});
+                    }
+                }
+                i++;
+            }
+        },
+
+	checkMaxHeight() {
+		for(const viewID in this.options.Views)
 		{
-			this.maxHeight = this.options.maxHeight;
-		} else {
-			this.maxHeight = 0;
-			this.checkMaxHeight();
-		}
-
-		this.currentView = null;
-		this.oldView = null;
-
-		var i = 0;
-		for(var view in this.options.Views)
-		{
-			var header = jQuery('#'+view+'_0').get(0);
-			if(header)
-			{
-				this.observe(header, "click", jQuery.proxy(this.elementClicked,this,view));
-				if(this.hiddenField.value == i)
-				{
-					this.currentView = view;
-					if(jQuery('#'+this.currentView).height() != this.maxHeight)
-						jQuery('#'+this.currentView).css({height: this.maxHeight+"px"});
-				}
-			}
-			i++;
-		}
-	},
-
-	checkMaxHeight: function()
-	{
-		for(var viewID in this.options.Views)
-		{
-			var view = jQuery('#'+viewID);
+			const view = jQuery(`#${viewID}`);
 			if(view.height() > this.maxHeight)
  				this.maxHeight = view.height();
 		}
 	},
 
-	elementClicked : function(viewID, event)
-	{
-		var i = 0;
-		for(var index in this.options.Views)
+	elementClicked(viewID, event) {
+		let i = 0;
+		for(const index in this.options.Views)
 		{
-			if (jQuery('#'+index).get(0))
+			if (jQuery(`#${index}`).get(0))
 			{
-				var header = jQuery('#'+index+'_0').get(0);
+				const header = jQuery(`#${index}_0`).get(0);
 				if(index == viewID)
 				{
 					this.oldView = this.currentView;
@@ -85,29 +82,29 @@ Prado.WebUI.TAccordion = jQuery.klass(Prado.WebUI.Control,
 			{
 				this.animate();
 			} else {
-				jQuery('#'+this.currentView).css({ height: this.maxHeight+"px" });
-				jQuery('#'+this.currentView).show();
-				jQuery('#'+this.oldView).hide();
+				jQuery(`#${this.currentView}`).css({ height: `${this.maxHeight}px` });
+				jQuery(`#${this.currentView}`).show();
+				jQuery(`#${this.oldView}`).hide();
 
-				jQuery('#'+this.oldView+'_0').removeClass().addClass(this.options.HeaderCssClass);
-				jQuery('#'+this.currentView+'_0').removeClass().addClass(this.options.ActiveHeaderCssClass);
+				jQuery(`#${this.oldView}_0`).removeClass().addClass(this.options.HeaderCssClass);
+				jQuery(`#${this.currentView}_0`).removeClass().addClass(this.options.ActiveHeaderCssClass);
 			}
 		}
 	},
 
-	animate: function() {
-		jQuery('#'+this.oldView+'_0').removeClass().addClass(this.options.HeaderCssClass);
-		jQuery('#'+this.currentView+'_0').removeClass().addClass(this.options.ActiveHeaderCssClass);
+	animate() {
+		jQuery(`#${this.oldView}_0`).removeClass().addClass(this.options.HeaderCssClass);
+		jQuery(`#${this.currentView}_0`).removeClass().addClass(this.options.ActiveHeaderCssClass);
 
-		jQuery('#'+this.oldView).animate(
+		jQuery(`#${this.oldView}`).animate(
 			{height: 0},
 			this.options.Duration,
 			function() {
 				jQuery(this).hide()
 			}
 		);
-		jQuery('#'+this.currentView).css({height: 0}).show().animate(
-			{height: this.maxHeight+'px'},
+		jQuery(`#${this.currentView}`).css({height: 0}).show().animate(
+			{height: `${this.maxHeight}px`},
 			this.options.Duration
 		);
 	}
