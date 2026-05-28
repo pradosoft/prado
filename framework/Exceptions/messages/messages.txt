@@ -314,6 +314,9 @@ csmanager_pradoscript_notloaded			= Prado script library name '{0}' has not been
 csmanager_pradostyle_invalid			= Unknown Prado style library name '{0}'.
 csmanager_invalid_packages				= Unkownn packages '{1}' for javascript packages defined in '{0}'. Valid packages are '{2}'.
 
+httpclient_transport_error				= HTTP client transport error (code {0}): {1}
+httpclient_http_error						= HTTP error response with status {0}.
+
 contentplaceholder_id_required			= TContentPlaceHolder must have an ID.
 
 content_id_required						= TContent must have an ID.
