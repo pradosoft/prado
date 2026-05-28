@@ -1,6 +1,7 @@
 <?php
 
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\ICoercible;
 use Prado\IEnumerable;
 use Prado\TComponent;
 use Prado\TPropertyValue;
@@ -84,7 +85,7 @@ enum TPropertyValueTestColor: string
 	case Blue  = 'blue';
 }
 
-/** Int-backed enum used to test F-10 (ensureEnum type guard) and the step-9 int path. */
+/** Int-backed enum used to test F-10 (ensureEnum type guard) and the step-10 int path. */
 enum TPropertyValueTestPriority: int
 {
 	case Low  = 1;
@@ -92,7 +93,7 @@ enum TPropertyValueTestPriority: int
 }
 
 /**
- * Non-backed UnitEnum fixture, used to verify that the step-2 enum-validation
+ * Non-backed UnitEnum fixture, used to verify that the step-3 enum-validation
  * path handles pure UnitEnums (no `tryFrom`, name lookup only).
  */
 enum TPropertyValueTestStatus
@@ -119,6 +120,157 @@ class TPropertyValueTestCodeEnum implements IEnumerable
 
 	const Alpha = 'a';
 	const Beta  = 'b';
+}
+
+/**
+ * Fixture: a plain ICoercible class.  Accepts:
+ * - an existing instance (pass-through),
+ * - a "x,y" string (regex-parsed),
+ * - an ['x' => …, 'y' => …] array.
+ * Declines everything else by returning null.  Used as the canonical ICoercible
+ * exercise for both the single-class path and the union path.
+ */
+class TPropertyValueTestPoint implements ICoercible
+{
+	public function __construct(public readonly int $x, public readonly int $y)
+	{
+	}
+
+	public static function coerceFromValue(mixed $value): ?static
+	{
+		if ($value instanceof static) {
+			return $value;
+		}
+		if (is_array($value) && isset($value['x'], $value['y'])) {
+			return new static((int) $value['x'], (int) $value['y']);
+		}
+		if (is_string($value) && preg_match('/^(-?\d+)\s*,\s*(-?\d+)$/', $value, $m)) {
+			return new static((int) $m[1], (int) $m[2]);
+		}
+		return null;
+	}
+}
+
+/**
+ * Fixture: a second ICoercible class used to verify union-member ordering.
+ * Recognizes only "lo-hi" range strings; declines everything else.
+ */
+class TPropertyValueTestRange implements ICoercible
+{
+	public function __construct(public readonly int $lo, public readonly int $hi)
+	{
+	}
+
+	public static function coerceFromValue(mixed $value): ?static
+	{
+		if ($value instanceof static) {
+			return $value;
+		}
+		if (is_string($value) && preg_match('/^(-?\d+)-(-?\d+)$/', $value, $m)) {
+			return new static((int) $m[1], (int) $m[2]);
+		}
+		return null;
+	}
+}
+
+/**
+ * Fixture: an ICoercible whose coerceFromValue() always returns null.  Used to
+ * verify that the union chain falls through to subsequent steps when every
+ * coercer declines.
+ */
+class TPropertyValueTestDecliner implements ICoercible
+{
+	public static function coerceFromValue(mixed $value): ?static
+	{
+		return null;
+	}
+}
+
+/**
+ * Fixture: a second always-declining coercer.  Paired with
+ * {@see TPropertyValueTestDecliner} to assemble unions of two distinct
+ * declining members (PHP forbids duplicate types in a union).
+ */
+class TPropertyValueTestDecliner2 implements ICoercible
+{
+	public static function coerceFromValue(mixed $value): ?static
+	{
+		return null;
+	}
+}
+
+/**
+ * Fixture: ICoercible that throws on a shape-recognized but semantically
+ * invalid input.  Verifies the documented contract that an out-of-range value
+ * should throw {@see TInvalidDataValueException} rather than return null.
+ */
+class TPropertyValueTestPickyCoercer implements ICoercible
+{
+	public function __construct(public readonly int $value)
+	{
+	}
+
+	public static function coerceFromValue(mixed $value): ?static
+	{
+		if (is_int($value) || (is_string($value) && ctype_digit($value))) {
+			$n = (int) $value;
+			if ($n < 0 || $n > 100) {
+				throw new TInvalidDataValueException('propertyvalue_value_invalid', $n);
+			}
+			return new static($n);
+		}
+		return null;
+	}
+}
+
+/**
+ * Fixture: BackedEnum that ALSO implements ICoercible.  Verifies that
+ * ICoercible (step 2) wins for inputs it claims, while the enum-name
+ * validation step (step 3) handles the rest when ICoercible declines.
+ */
+enum TPropertyValueTestCoercibleEnum: string implements ICoercible
+{
+	case Red = 'red';
+	case Green = 'green';
+	case Blue = 'blue';
+
+	public static function coerceFromValue(mixed $value): ?static
+	{
+		// Accept hex codes; decline anything else (let name lookup handle it).
+		return match ($value) {
+			'#FF0000' => self::Red,
+			'#00FF00' => self::Green,
+			'#0000FF' => self::Blue,
+			default => null,
+		};
+	}
+}
+
+/**
+ * Fixture: IEnumerable that ALSO implements ICoercible.  Parallels the
+ * BackedEnum case above — ICoercible runs first, name lookup picks up the rest.
+ */
+class TPropertyValueTestCoercibleDirection implements IEnumerable, ICoercible
+{
+	use \Prado\Util\Traits\TConstantReflectionTrait;
+
+	const North = 'N';
+	const South = 'S';
+	const East  = 'E';
+	const West  = 'W';
+
+	public string $tag = '';
+
+	public static function coerceFromValue(mixed $value): ?static
+	{
+		// Accept a "coerced:..." marker that the enum step would never match.
+		if (is_string($value) && str_starts_with($value, 'coerced:')) {
+			$i = new static();
+			$i->tag = substr($value, 8);
+			return $i;
+		}
+		return null;
+	}
 }
 
 /**
@@ -2928,14 +3080,14 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 	// Step 2 — enumerable transition (name lookup precedes string member)
 	// ════════════════════════════════════════════════════════════════════════
 
-	public function testCoerceToTypeUnionStep2IEnumerableNameWinsOverString(): void
+	public function testCoerceToTypeUnionStep3IEnumerableNameWinsOverString(): void
 	{
 		// `TWebColor|string|null` with 'Red' has validated against TWebColor's
 		// constant names and returned the canonical name `'Red'` (any-casing
 		// input is corrected).  The enum has been used as a *validator*, not
 		// a transition table — name→value translation has stayed inside the
 		// class itself (e.g. via {@see TPropertyValue::ensureHexColor()}).
-		// Pre-step-2 the `string` union member silently dominated and the
+		// Pre-step-3 the `string` union member silently dominated and the
 		// untouched input passed through.
 		$t = $this->typeOf(fn(\Prado\Web\UI\TWebColor|string|null $x) => $x);
 		self::assertSame('Red',  TPropertyValue::coerceToType('Red',  $t));
@@ -2949,7 +3101,7 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		self::assertNull(TPropertyValue::coerceToType('', $t));
 	}
 
-	public function testCoerceToTypeUnionStep2BackedEnumNameWinsOverString(): void
+	public function testCoerceToTypeUnionStep3BackedEnumNameWinsOverString(): void
 	{
 		// `TPropertyValueTestColor|string|null` with a case name resolves to the case;
 		// the backing value also resolves (BackedEnum::tryFrom path inside _tryMatchEnum).
@@ -2994,7 +3146,7 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		self::assertSame(TPropertyValueTestPriority::High, TPropertyValue::coerceToType('High', $mixed));
 	}
 
-	public function testCoerceToTypeUnionStep2MultipleEnumsFirstMatchWins(): void
+	public function testCoerceToTypeUnionStep3MultipleEnumsFirstMatchWins(): void
 	{
 		// Union with two enumerable members.  Iteration order is the union's
 		// declared order; the first matching enum wins.  TPropertyValueTestColor
@@ -3006,7 +3158,7 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		self::assertSame(TPropertyValueTestPriority::High, TPropertyValue::coerceToType('High', $t));
 	}
 
-	public function testCoerceToTypeUnionStep2NonStringValueSkipsEnumTranslation(): void
+	public function testCoerceToTypeUnionStep3NonStringValueSkipsEnumTranslation(): void
 	{
 		// Step 2 only fires for string $value.  Non-string inputs go through
 		// the existing chain — int 1 against a BackedEnum|bool union still
@@ -3016,7 +3168,7 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		self::assertSame(TPropertyValueTestPriority::High, TPropertyValue::coerceToType(2, $t));
 	}
 
-	public function testCoerceToTypeUnionStep2EnumMissContinuesChain(): void
+	public function testCoerceToTypeUnionStep3EnumMissContinuesChain(): void
 	{
 		// An enum-name miss has let the rest of the coercion chain run.
 		// `TWebColor|int|null` with the numeric string '42' — TWebColor has no
@@ -3027,9 +3179,9 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		self::assertNull(TPropertyValue::coerceToType('', $t));
 	}
 
-	public function testCoerceToTypeUnionStep2PlainUnitEnumInUnion(): void
+	public function testCoerceToTypeUnionStep3PlainUnitEnumInUnion(): void
 	{
-		// A non-backed UnitEnum has no backing value — the step-2 path has had
+		// A non-backed UnitEnum has no backing value — the step-3 path has had
 		// to fall straight through to the cases() name scan.  Returns the case
 		// object, not a string.
 		$t = $this->typeOf(fn(TPropertyValueTestStatus|string $x) => $x);
@@ -3846,5 +3998,330 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 	{
 		$this->expectException(\Prado\Exceptions\TInvalidDataValueException::class);
 		TPropertyValue::ensureEnum('Foo', 'TPropertyValueNonExistentClass99999XYZ');
+	}
+
+	// ════════════════════════════════════════════════════════════════════════
+	// ICoercible — interface contract + fixture sanity checks
+	// ════════════════════════════════════════════════════════════════════════
+
+	public function testICoercible_interfaceExists(): void
+	{
+		self::assertTrue(interface_exists(ICoercible::class));
+		self::assertTrue(method_exists(ICoercible::class, 'coerceFromValue'));
+	}
+
+	public function testICoercible_fixtures_implementInterface(): void
+	{
+		self::assertTrue(is_a(TPropertyValueTestPoint::class,              ICoercible::class, true));
+		self::assertTrue(is_a(TPropertyValueTestRange::class,              ICoercible::class, true));
+		self::assertTrue(is_a(TPropertyValueTestDecliner::class,           ICoercible::class, true));
+		self::assertTrue(is_a(TPropertyValueTestPickyCoercer::class,       ICoercible::class, true));
+		self::assertTrue(is_a(TPropertyValueTestCoercibleEnum::class,      ICoercible::class, true));
+		self::assertTrue(is_a(TPropertyValueTestCoercibleDirection::class, ICoercible::class, true));
+		// Composite fixture also implements IEnumerable.
+		self::assertTrue(is_a(TPropertyValueTestCoercibleDirection::class, IEnumerable::class, true));
+	}
+
+	// ════════════════════════════════════════════════════════════════════════
+	// ICoercible — single-class path (coerceToType → _coerceToClass)
+	// ════════════════════════════════════════════════════════════════════════
+
+	public function testICoercible_singleClass_stringInputConstructsInstance(): void
+	{
+		$t = $this->typeOf(fn(TPropertyValueTestPoint $x) => $x);
+		$p = TPropertyValue::coerceToType('3,4', $t);
+		self::assertInstanceOf(TPropertyValueTestPoint::class, $p);
+		self::assertSame(3, $p->x);
+		self::assertSame(4, $p->y);
+	}
+
+	public function testICoercible_singleClass_arrayInputConstructsInstance(): void
+	{
+		$t = $this->typeOf(fn(TPropertyValueTestPoint $x) => $x);
+		$p = TPropertyValue::coerceToType(['x' => -5, 'y' => 12], $t);
+		self::assertInstanceOf(TPropertyValueTestPoint::class, $p);
+		self::assertSame(-5, $p->x);
+		self::assertSame(12, $p->y);
+	}
+
+	public function testICoercible_singleClass_instancePassesThrough(): void
+	{
+		$t = $this->typeOf(fn(TPropertyValueTestPoint $x) => $x);
+		$existing = new TPropertyValueTestPoint(7, 8);
+		self::assertSame($existing, TPropertyValue::coerceToType($existing, $t));
+	}
+
+	public function testICoercible_singleClass_decline_returnsValueUnchanged(): void
+	{
+		// Decliner always returns null → _coerceToClass returns $value unchanged
+		// → TypeError surfaces at the setter boundary (we only assert pass-through).
+		$t = $this->typeOf(fn(TPropertyValueTestDecliner $x) => $x);
+		self::assertSame('anything',    TPropertyValue::coerceToType('anything', $t));
+		self::assertSame(['k' => 'v'],  TPropertyValue::coerceToType(['k' => 'v'], $t));
+		self::assertSame(42,            TPropertyValue::coerceToType(42, $t));
+	}
+
+	public function testICoercible_singleClass_throwsOnInvalidInput(): void
+	{
+		$t = $this->typeOf(fn(TPropertyValueTestPickyCoercer $x) => $x);
+		// In-range input constructs.
+		$ok = TPropertyValue::coerceToType('50', $t);
+		self::assertInstanceOf(TPropertyValueTestPickyCoercer::class, $ok);
+		self::assertSame(50, $ok->value);
+		// Out-of-range throws.
+		$this->expectException(TInvalidDataValueException::class);
+		TPropertyValue::coerceToType(150, $t);
+	}
+
+	// ────────────────────────────────────────────────────────────────────────
+	// ICoercible composites: BackedEnum + ICoercible / IEnumerable + ICoercible
+	// ────────────────────────────────────────────────────────────────────────
+
+	public function testICoercible_backedEnumComposite_coercerWinsForRecognizedInput(): void
+	{
+		$t = $this->typeOf(fn(TPropertyValueTestCoercibleEnum $x) => $x);
+		// '#FF0000' is recognized by ICoercible (enum names would never match it).
+		self::assertSame(TPropertyValueTestCoercibleEnum::Red, TPropertyValue::coerceToType('#FF0000', $t));
+		self::assertSame(TPropertyValueTestCoercibleEnum::Blue, TPropertyValue::coerceToType('#0000FF', $t));
+	}
+
+	public function testICoercible_backedEnumComposite_declineFallsToEnumStep(): void
+	{
+		$t = $this->typeOf(fn(TPropertyValueTestCoercibleEnum $x) => $x);
+		// Name lookup picks up casing variants of the enum names.
+		self::assertSame(TPropertyValueTestCoercibleEnum::Red,   TPropertyValue::coerceToType('Red',   $t));
+		self::assertSame(TPropertyValueTestCoercibleEnum::Green, TPropertyValue::coerceToType('GREEN', $t));
+		// BackedEnum's own tryFrom() path also resolves the backing value.
+		self::assertSame(TPropertyValueTestCoercibleEnum::Red,   TPropertyValue::coerceToType('red',   $t));
+	}
+
+	public function testICoercible_iEnumerableComposite_coercerWinsForRecognizedInput(): void
+	{
+		$t = $this->typeOf(fn(TPropertyValueTestCoercibleDirection $x) => $x);
+		// 'coerced:foo' is recognized only by ICoercible; no enum name matches.
+		$got = TPropertyValue::coerceToType('coerced:foo', $t);
+		self::assertInstanceOf(TPropertyValueTestCoercibleDirection::class, $got);
+		self::assertSame('foo', $got->tag);
+	}
+
+	public function testICoercible_iEnumerableComposite_declineFallsToNameLookup(): void
+	{
+		$t = $this->typeOf(fn(TPropertyValueTestCoercibleDirection $x) => $x);
+		// Enum-step name lookup returns the canonical constant NAME ('North'),
+		// because that's IEnumerable's documented validate-name semantic.
+		self::assertSame('North', TPropertyValue::coerceToType('north', $t));
+		self::assertSame('East',  TPropertyValue::coerceToType('EAST',  $t));
+	}
+
+	// ════════════════════════════════════════════════════════════════════════
+	// ICoercible — union path (_coerceUnionType, step 2)
+	// ════════════════════════════════════════════════════════════════════════
+
+	public function testICoercibleUnion_coercerClaimsString(): void
+	{
+		$t = $this->typeOf(fn(TPropertyValueTestPoint|string $x) => $x);
+		$p = TPropertyValue::coerceToType('1,2', $t);
+		self::assertInstanceOf(TPropertyValueTestPoint::class, $p);
+		self::assertSame(1, $p->x);
+		self::assertSame(2, $p->y);
+	}
+
+	public function testICoercibleUnion_declineFallsToString(): void
+	{
+		// "not a point" doesn't match TPropertyValueTestPoint's regex → null →
+		// fall through; with `string` in the union, the value reaches step 5.
+		$t = $this->typeOf(fn(TPropertyValueTestPoint|string $x) => $x);
+		self::assertSame('not a point', TPropertyValue::coerceToType('not a point', $t));
+	}
+
+	public function testICoercibleUnion_nullInUnion_step1WinsForNull(): void
+	{
+		// Step 1 short-circuits null/empty-string before ICoercible runs at all.
+		$t = $this->typeOf(fn(TPropertyValueTestPoint|null $x) => $x);
+		self::assertNull(TPropertyValue::coerceToType(null, $t));
+		self::assertNull(TPropertyValue::coerceToType('',   $t));
+		// A real point string still coerces (single non-null short-circuit
+		// delegates to _coerceToClass → ICoercible).
+		$p = TPropertyValue::coerceToType('9,8', $t);
+		self::assertInstanceOf(TPropertyValueTestPoint::class, $p);
+		self::assertSame(9, $p->x);
+	}
+
+	public function testICoercibleUnion_arrayInput(): void
+	{
+		$t = $this->typeOf(fn(TPropertyValueTestPoint|string $x) => $x);
+		$p = TPropertyValue::coerceToType(['x' => 11, 'y' => 22], $t);
+		self::assertInstanceOf(TPropertyValueTestPoint::class, $p);
+		self::assertSame(11, $p->x);
+		self::assertSame(22, $p->y);
+	}
+
+	public function testICoercibleUnion_intInputDeclined_widensToInt(): void
+	{
+		// 42 is not a string and not a point-shaped array → Point declines
+		// → falls through to native-int handling (step 6, since `string` not present).
+		$t = $this->typeOf(fn(TPropertyValueTestPoint|int $x) => $x);
+		self::assertSame(42, TPropertyValue::coerceToType(42, $t));
+	}
+
+	public function testICoercibleUnion_boolInputDeclined_widensToBool(): void
+	{
+		// Point declines bool → step 6 native match returns the bool.
+		$t = $this->typeOf(fn(TPropertyValueTestPoint|bool $x) => $x);
+		self::assertTrue(TPropertyValue::coerceToType(true, $t));
+		self::assertFalse(TPropertyValue::coerceToType(false, $t));
+	}
+
+	public function testICoercibleUnion_existingInstance_passesThroughNativeStep(): void
+	{
+		// Step 4 already short-circuits typed objects ahead of stringification;
+		// ICoercible's pass-through (`instanceof static`) also handles it for
+		// the single-class path.  Both routes agree on the same outcome.
+		$existing = new TPropertyValueTestPoint(5, 6);
+		$t = $this->typeOf(fn(TPropertyValueTestPoint|string $x) => $x);
+		self::assertSame($existing, TPropertyValue::coerceToType($existing, $t));
+	}
+
+	// ────────────────────────────────────────────────────────────────────────
+	// ICoercible union — multiple coercibles, declaration-order arbitration
+	// ────────────────────────────────────────────────────────────────────────
+
+	public function testICoercibleUnion_multipleCoercers_firstClaimsWins(): void
+	{
+		// Both coercers could claim '1,2' (Point as x,y; Range only matches lo-hi
+		// with a hyphen, so this input is unambiguous).  Point wins by being
+		// the only one that recognizes the comma form.
+		$t = $this->typeOf(fn(TPropertyValueTestPoint|TPropertyValueTestRange $x) => $x);
+		$got = TPropertyValue::coerceToType('1,2', $t);
+		self::assertInstanceOf(TPropertyValueTestPoint::class, $got);
+		// '1-2' is recognized only by Range.
+		$got = TPropertyValue::coerceToType('1-2', $t);
+		self::assertInstanceOf(TPropertyValueTestRange::class, $got);
+	}
+
+	public function testICoercibleUnion_multipleCoercers_firstDeclines_secondWins(): void
+	{
+		// Decliner always returns null; Point claims '1,2'.  Verifies the
+		// fallthrough across union members in declaration order.
+		$t = $this->typeOf(fn(TPropertyValueTestDecliner|TPropertyValueTestPoint $x) => $x);
+		$got = TPropertyValue::coerceToType('1,2', $t);
+		self::assertInstanceOf(TPropertyValueTestPoint::class, $got);
+	}
+
+	public function testICoercibleUnion_allDecline_fallsThroughToLaterSteps(): void
+	{
+		// Two distinct decliners + a string member → ICoercible step yields
+		// nothing, and `string` in the union picks up the value at step 5.
+		$t = $this->typeOf(fn(TPropertyValueTestDecliner|TPropertyValueTestDecliner2|string $x) => $x);
+		self::assertSame('untouched', TPropertyValue::coerceToType('untouched', $t));
+	}
+
+	// ────────────────────────────────────────────────────────────────────────
+	// ICoercible union — interaction with the enum-validation step (step 3)
+	// ────────────────────────────────────────────────────────────────────────
+
+	public function testICoercibleUnion_coercibleWinsOverEnumStep(): void
+	{
+		// '#FF0000' is recognized only by ICoercible; this input would never
+		// satisfy the enum-step name lookup for either TPropertyValueTestColor
+		// or TPropertyValueTestStatus.
+		$t = $this->typeOf(
+			fn(TPropertyValueTestCoercibleEnum|TPropertyValueTestStatus $x) => $x
+		);
+		self::assertSame(
+			TPropertyValueTestCoercibleEnum::Red,
+			TPropertyValue::coerceToType('#FF0000', $t)
+		);
+	}
+
+	public function testICoercibleUnion_coercibleDeclines_enumStepWins(): void
+	{
+		// 'Pending' is not a hex code (ICoercible declines) and matches the
+		// non-ICoercible UnitEnum's case-name.  Enum step (step 3) wins.
+		$t = $this->typeOf(
+			fn(TPropertyValueTestCoercibleEnum|TPropertyValueTestStatus $x) => $x
+		);
+		self::assertSame(
+			TPropertyValueTestStatus::Pending,
+			TPropertyValue::coerceToType('Pending', $t)
+		);
+	}
+
+	public function testICoercibleUnion_coercibleIEnumerableComposite_overridesNameMatch(): void
+	{
+		// The composite's ICoercible accepts 'coerced:tag'; the input would
+		// otherwise miss every name-based enum step.
+		$t = $this->typeOf(
+			fn(TPropertyValueTestCoercibleDirection|TPropertyValueTestSeason $x) => $x
+		);
+		$got = TPropertyValue::coerceToType('coerced:winter', $t);
+		self::assertInstanceOf(TPropertyValueTestCoercibleDirection::class, $got);
+		self::assertSame('winter', $got->tag);
+	}
+
+	public function testICoercibleUnion_coercibleIEnumerableComposite_declineFallsToOtherEnumName(): void
+	{
+		// 'Spring' is declined by the coercible (no 'coerced:' prefix) and
+		// matches a constant name on the second IEnumerable union member.
+		$t = $this->typeOf(
+			fn(TPropertyValueTestCoercibleDirection|TPropertyValueTestSeason $x) => $x
+		);
+		self::assertSame('Spring', TPropertyValue::coerceToType('Spring', $t));
+	}
+
+	// ────────────────────────────────────────────────────────────────────────
+	// ICoercible union — throw policy
+	// ────────────────────────────────────────────────────────────────────────
+
+	public function testICoercibleUnion_throwsPropagateThroughChain(): void
+	{
+		// A shape-recognized but out-of-range value throws and does NOT
+		// fall through to subsequent union members.  This is the documented
+		// contract: decline ≠ broken; broken is a thrown exception.
+		$t = $this->typeOf(fn(TPropertyValueTestPickyCoercer|string $x) => $x);
+		$this->expectException(TInvalidDataValueException::class);
+		TPropertyValue::coerceToType(999, $t);
+	}
+
+	public function testICoercibleUnion_inRangeValueCoercesNormally(): void
+	{
+		$t = $this->typeOf(fn(TPropertyValueTestPickyCoercer|string $x) => $x);
+		$got = TPropertyValue::coerceToType(50, $t);
+		self::assertInstanceOf(TPropertyValueTestPickyCoercer::class, $got);
+		self::assertSame(50, $got->value);
+	}
+
+	public function testICoercibleUnion_pickyDeclinesNonInt_fallsToString(): void
+	{
+		// 'abc' isn't int-shaped → picky declines → string step takes it.
+		$t = $this->typeOf(fn(TPropertyValueTestPickyCoercer|string $x) => $x);
+		self::assertSame('abc', TPropertyValue::coerceToType('abc', $t));
+	}
+
+	// ════════════════════════════════════════════════════════════════════════
+	// ICoercible — order verification with no other typed members
+	// ════════════════════════════════════════════════════════════════════════
+
+	public function testICoercibleUnion_twoCoerciblesPlusNull_orderingPreserved(): void
+	{
+		// Decliner|Point|null: Decliner declines → Point claims → instance
+		// constructed.  Verifies that the null-handling step doesn't interfere
+		// with reflection-order iteration through ICoercible members.
+		$t = $this->typeOf(fn(TPropertyValueTestDecliner|TPropertyValueTestPoint|null $x) => $x);
+		$got = TPropertyValue::coerceToType('3,3', $t);
+		self::assertInstanceOf(TPropertyValueTestPoint::class, $got);
+		self::assertSame(3, $got->x);
+		self::assertNull(TPropertyValue::coerceToType(null, $t));
+		self::assertNull(TPropertyValue::coerceToType('',   $t));
+	}
+
+	public function testICoercibleUnion_unionWithNonCoercibleClass_coercibleStepSkipsNonImplementers(): void
+	{
+		// Plain stdClass (not ICoercible) appears alongside Point in the union.
+		// The ICoercible step iterates non-builtin members and SKIPS those that
+		// don't implement the interface, then Point claims.
+		$t = $this->typeOf(fn(\stdClass|TPropertyValueTestPoint $x) => $x);
+		$got = TPropertyValue::coerceToType('7,7', $t);
+		self::assertInstanceOf(TPropertyValueTestPoint::class, $got);
 	}
 }

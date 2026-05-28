@@ -156,7 +156,7 @@ class TPropertyValue
 	public const ARRAY_STRICT_ERRORS = (1 << 2);
 
 	/**
-	 * Step-10 fallback order for {@see _coerceUnionType}: non-null union members are tried in this
+	 * Step-11 fallback order for {@see _coerceUnionType}: non-null union members are tried in this
 	 * sequence — int → float → string → bool → aggregate/catch-all — so resolution is deterministic
 	 * regardless of reflection order.  `null` is absent; step 1 handles it before any fallback.
 	 * @var string[]
@@ -1346,6 +1346,7 @@ class TPropertyValue
 	 * | `mixed` / `null`      | pass-through / `null`                              |
 	 * | Backed enum class     | `tryFrom()` exact backing value, then case-insensitive case-name scan |
 	 * | {@see IEnumerable}    | case-insensitive `valueOfConstant()` name→value; unknown → pass-through |
+	 * | {@see ICoercible}     | `coerceFromValue()` factory; `null` return → pass-through |
 	 * | Union type            | heuristic chain — see {@see _coerceUnionType}      |
 	 * | Nullable (`?T`)       | empty string / `null` input → `null`               |
 	 *
@@ -1384,15 +1385,22 @@ class TPropertyValue
 	}
 
 	/**
-	 * Has coerced a value toward a non-builtin class type that Prado has
-	 * recognized as an enumerable domain.  All other class types have been
+	 * Coerces a value toward a non-builtin class type that Prado recognizes
+	 * as a coercible or enumerable domain.  All other class types are
 	 * returned unchanged.
 	 *
-	 * String inputs delegate to {@see _tryMatchEnum()} for case-insensitive
-	 * name lookup (and, for BackedEnum, value-based `tryFrom` first).  An int
-	 * input against a BackedEnum has been resolved through `tryFrom` directly.
-	 * On any miss, `$value` has been returned unchanged so the TypeError has
-	 * surfaced at the setter boundary.
+	 * Resolution order parallels {@see _coerceUnionType()}:
+	 *
+	 * 1. **ICoercible** — when `$className` implements {@see \Prado\ICoercible},
+	 *    `coerceFromValue($value)` runs first.  A non-`null` return wins; a
+	 *    `null` return continues to the enum paths below.
+	 * 2. **BackedEnum + int** — `tryFrom($value)` resolves an int input to
+	 *    its backing value's case.
+	 * 3. **String + enum** — {@see _tryMatchEnum()} performs a case-insensitive
+	 *    name lookup (and, for BackedEnum, value-based `tryFrom` first).
+	 *
+	 * On any miss, `$value` is returned unchanged so the TypeError surfaces
+	 * at the setter boundary.
 	 *
 	 * @param mixed $value the value to coerce.
 	 * @param string $className the target class or interface name.
@@ -1401,6 +1409,12 @@ class TPropertyValue
 	 */
 	private static function _coerceToClass(mixed $value, string $className): mixed
 	{
+		if (is_a($className, ICoercible::class, true)) {
+			$coerced = $className::coerceFromValue($value);
+			if ($coerced !== null) {
+				return $coerced;
+			}
+		}
 		if (is_a($className, \BackedEnum::class, true) && is_int($value)) {
 			try {
 				return $className::tryFrom($value) ?? $value;
@@ -1491,27 +1505,33 @@ class TPropertyValue
 	 * selects the most appropriate type:
 	 *
 	 * 1. `null` / empty string → `null` (when `null` is in the union)
-	 * 2. Enumerable validation — for string `$value`, case-insensitive
+	 * 2. **ICoercible** — each non-builtin union member implementing
+	 *    {@see \Prado\ICoercible} is given a chance via its
+	 *    `coerceFromValue()` factory; members are tried in declaration order
+	 *    and the first non-`null` result wins.  Runs before enum validation
+	 *    so a class that both validates names *and* coerces richer inputs
+	 *    can stake its claim first.
+	 * 3. Enumerable validation — for string `$value`, case-insensitive
 	 *    constant-name lookup via {@see _tryMatchEnum()} against each
 	 *    enum-like (UnitEnum / IEnumerable) union member; the first match
 	 *    wins.  Return shape per {@see _tryMatchEnum()}'s contract.
-	 * 3. `array` / typed object value whose type appears in the union → use it
-	 *    (pre-empts step 4 to prevent `(string)$array = "Array"` and
+	 * 4. `array` / typed object value whose type appears in the union → use it
+	 *    (pre-empts step 5 to prevent `(string)$array = "Array"` and
 	 *    `(string)$object` TypeError when the value has a native match)
-	 * 4. `string` in union → pass through / `ensureString` if not already a string
+	 * 5. `string` in union → pass through / `ensureString` if not already a string
 	 *    (scalar non-string values such as `int` and `bool` are coerced to their
 	 *    string representation here when `string` is present in the union)
-	 * 5. Non-string typed value whose PHP type directly matches a union member → use it
+	 * 6. Non-string typed value whose PHP type directly matches a union member → use it
 	 *    (only reached when `string` is NOT in the union); then PHP-compatible
 	 *    widening: `bool` → `int`/`float`, `int` → `float`
-	 * 6. `(a,b,c)` / `[a,b,c]` / `array(a,b,c)` notation + `array`/`iterable` in union → {@see ensureArray}
-	 * 7. `'true'`/`'false'` literal + `bool` in union → {@see ensureBoolean}
-	 * 8. Numeric value + `int`/`float` in union → float when `.` or `e`/`E` (scientific notation)
+	 * 7. `(a,b,c)` / `[a,b,c]` / `array(a,b,c)` notation + `array`/`iterable` in union → {@see ensureArray}
+	 * 8. `'true'`/`'false'` literal + `bool` in union → {@see ensureBoolean}
+	 * 9. Numeric value + `int`/`float` in union → float when `.` or `e`/`E` (scientific notation)
 	 *    is present, int otherwise; matching PHP non-strict behavior
-	 * 9. Non-builtin class types — value-based lookup via {@see _coerceToClass}
-	 *    catches inputs that match an enum's *backing value* (e.g. `100` for an
-	 *    int-backed enum) where step 2's *name* lookup did not apply
-	 * 10. Fallback: first non-`null` type sorted by {@see TYPE_COERCE_ORDER}
+	 * 10. Non-builtin class types — value-based lookup via {@see _coerceToClass}
+	 *     catches inputs that match an enum's *backing value* (e.g. `100` for an
+	 *     int-backed enum) where step 3's *name* lookup did not apply
+	 * 11. Fallback: first non-`null` type sorted by {@see TYPE_COERCE_ORDER}
 	 *
 	 * @param mixed $value the value to coerce.
 	 * @param \ReflectionUnionType $type the union type.
@@ -1541,7 +1561,27 @@ class TPropertyValue
 			return self::coerceToType($value, $nonNull[0]);
 		}
 
-		// 2. Enum validation.  Case-insensitive constant-name lookup against
+		// 2. ICoercible.  Each non-builtin union member that implements
+		// {@see \Prado\ICoercible} gets a chance to coerce the value via its
+		// `coerceFromValue()` factory.  Members are tried in PHP reflection
+		// (declaration) order; the first non-`null` result wins.  Runs before
+		// enum validation so an IEnumerable / UnitEnum class that also
+		// implements ICoercible can claim inputs richer than pure name
+		// matching.
+		foreach ($nonNull as $t) {
+			if ($t->isBuiltin()) {
+				continue;
+			}
+			$n = $t->getName();
+			if (is_a($n, ICoercible::class, true)) {
+				$coerced = $n::coerceFromValue($value);
+				if ($coerced !== null) {
+					return $coerced;
+				}
+			}
+		}
+
+		// 3. Enum validation.  Case-insensitive constant-name lookup against
 		// any enum-like (UnitEnum / IEnumerable) union member via
 		// {@see _tryMatchEnum()}, which returns `null` for non-enum classes;
 		// the first match wins.
@@ -1557,8 +1597,8 @@ class TPropertyValue
 			}
 		}
 
-		// 3. Non-stringable native short-circuit.  Arrays and typed-object
-		// instances have claimed a native union match before step 4 —
+		// 4. Non-stringable native short-circuit.  Arrays and typed-object
+		// instances claim a native union match before step 5 —
 		// `(string)$arr` would be the useless `"Array"` and `(string)$obj`
 		// TypeErrors without `__toString()`.
 		if (!is_string($value)) {
@@ -1580,15 +1620,15 @@ class TPropertyValue
 			}
 		}
 
-		// 4. String member.  Strings have passed through; non-string scalars
-		// (bool, int, float) have been coerced via {@see ensureString()}.
-		// Step 3 has already claimed any array or typed object with a
+		// 5. String member.  Strings pass through; non-string scalars
+		// (bool, int, float) are coerced via {@see ensureString()}.
+		// Step 4 has already claimed any array or typed object with a
 		// native union match.
 		if (in_array(self::TYPE_STRING, $names, true)) {
 			return is_string($value) ? $value : self::ensureString($value);
 		}
 
-		// 5. Native-type short-circuit: only reached when string is NOT in the union.
+		// 6. Native-type short-circuit: only reached when string is NOT in the union.
 		// First try an exact match (Pass A), then apply PHP non-strict widening
 		// coercions: bool → int/float (true=1, false=0) and int → float (Pass B).
 		if (!is_string($value)) {
@@ -1627,7 +1667,7 @@ class TPropertyValue
 		$hasInt = in_array(self::TYPE_INT, $names, true);
 		$hasFloat = in_array(self::TYPE_FLOAT, $names, true);
 
-		// 6. Array notation — unambiguous regardless of other types present.
+		// 7. Array notation — unambiguous regardless of other types present.
 		// Three delimiter forms are accepted: the Prado `(...)` convention,
 		// the PHP 8 short `[...]` form, and the PHP `array(...)` keyword form.
 		if ($hasArray) {
@@ -1642,12 +1682,12 @@ class TPropertyValue
 			}
 		}
 
-		// 7. Boolean literals — 'true'/'false' only, not generic truthy strings
+		// 8. Boolean literals — 'true'/'false' only, not generic truthy strings
 		if ($hasBool && in_array(strtolower($strValue), [self::BOOL_TRUE, self::BOOL_FALSE], true)) {
 			return self::ensureBoolean($strValue);
 		}
 
-		// 8. Numeric shape
+		// 9. Numeric shape
 		if (is_numeric($strValue)) {
 			if ($hasInt && $hasFloat) {
 				// Treat as float when: (a) a decimal point or scientific-notation exponent is
@@ -1669,7 +1709,7 @@ class TPropertyValue
 			}
 		}
 
-		// 9. Non-builtin class value-based lookup.  Tries the original $value
+		// 10. Non-builtin class value-based lookup.  Tries the original $value
 		// first so a PHP int reaches an int-backed enum's tryFrom() before
 		// stringification; retries with $strValue only when the original
 		// attempt produced no change.  `isBuiltin()` excludes the `null`
@@ -1690,7 +1730,7 @@ class TPropertyValue
 			}
 		}
 
-		// 10. Fallback.  Sorts non-null members by {@see TYPE_COERCE_ORDER}
+		// 11. Fallback.  Sorts non-null members by {@see TYPE_COERCE_ORDER}
 		// (non-builtin class names sort after every builtin, preserving
 		// reflection order among themselves) and coerces $strValue toward
 		// the winner.  $nonNull has ≥ 2 members here — single-non-null
