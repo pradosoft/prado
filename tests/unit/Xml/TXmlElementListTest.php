@@ -9,6 +9,8 @@ NOTE TO AGENTS:
 - TXmlElement::getElements() must be used to properly access TXmlElementList.
 */
 
+require_once __DIR__ . '/../PradoUnitRequires.php';
+
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Xml\TXmlElement;
 use Prado\Xml\TXmlElementList;
@@ -17,10 +19,7 @@ class TXmlElementListTest extends PHPUnit\Framework\TestCase
 {
 	protected function getPrivatePropertyValue($object, $property)
 	{
-		$reflectionClass = new ReflectionClass($object);
-		$reflectionProperty = $reflectionClass->getProperty($property);
-		$reflectionProperty->setAccessible(true);
-		return $reflectionProperty->getValue($object);
+		return PradoUnit::getProp($object, $property);
 	}
 
 	public function testConstruct()

@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../../PradoUnitRequires.php';
+
 use Prado\Collections\TMap;
 use Prado\IO\TTextWriter;
 use Prado\Prado;
@@ -22,18 +24,9 @@ class TClientScriptManagerTestable extends TClientScriptManager
 {
 	public static function resetJavascriptCache()
 	{
-		$reflection = new ReflectionClass(TClientScriptManager::class);
-		$prop = $reflection->getProperty('_scripts');
-		$prop->setAccessible(true);
-		$prop->setValue(null, null);
-
-		$prop = $reflection->getProperty('_scriptsPackages');
-		$prop->setAccessible(true);
-		$prop->setValue(null, null);
-
-		$prop = $reflection->getProperty('_scriptsFolders');
-		$prop->setAccessible(true);
-		$prop->setValue(null, null);
+		PradoUnit::setProp(TClientScriptManager::class, '_scripts', null);
+		PradoUnit::setProp(TClientScriptManager::class, '_scriptsPackages', null);
+		PradoUnit::setProp(TClientScriptManager::class, '_scriptsFolders', null);
 	}
 }
 
@@ -1122,10 +1115,7 @@ class TClientScriptManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testRegisterHeadScriptInRenderThrowsException()
 	{
-		$reflection = new ReflectionClass($this->_page);
-		$prop = $reflection->getProperty('_inFormRender');
-		$prop->setAccessible(true);
-		$prop->setValue($this->_page, true);
+		PradoUnit::setProp($this->_page, '_inFormRender', true);
 
 		$this->expectException(\Exception::class);
 		$this->_cs->registerHeadScript('myjs', 'alert("hello");');
@@ -1133,10 +1123,7 @@ class TClientScriptManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testRegisterHeadScriptFileInRenderThrowsException()
 	{
-		$reflection = new ReflectionClass($this->_page);
-		$prop = $reflection->getProperty('_inFormRender');
-		$prop->setAccessible(true);
-		$prop->setValue($this->_page, true);
+		PradoUnit::setProp($this->_page, '_inFormRender', true);
 
 		$this->expectException(\Exception::class);
 		$this->_cs->registerHeadScriptFile('myjs', 'http://example.com/script.js');
@@ -1144,10 +1131,7 @@ class TClientScriptManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testRegisterBeginScriptInRenderThrowsException()
 	{
-		$reflection = new ReflectionClass($this->_page);
-		$prop = $reflection->getProperty('_inFormRender');
-		$prop->setAccessible(true);
-		$prop->setValue($this->_page, true);
+		PradoUnit::setProp($this->_page, '_inFormRender', true);
 
 		$this->expectException(\Exception::class);
 		$this->_cs->registerBeginScript('start', 'console.log("start");');
@@ -1380,17 +1364,12 @@ class TClientScriptManagerTest extends PHPUnit\Framework\TestCase
 
 	private function getPrivateProperty($object, $property)
 	{
-		$reflection = new ReflectionClass($object);
-		$prop = $reflection->getProperty($property);
-		$prop->setAccessible(true);
-		return $prop->getValue($object);
+		return PradoUnit::getProp($object, $property);
 	}
 
 	private function invokePrivateMethod($object, $method, $args = [])
 	{
-		$reflection = new ReflectionClass($object);
-		$method = $reflection->getMethod($method);
-		$method->setAccessible(true);
-		return $method->invokeArgs($object, $args);
+		$rm = PradoUnit::reflectionMethod($object::class, $method);
+		return $rm->invokeArgs($object, $args);
 	}
 }

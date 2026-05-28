@@ -135,9 +135,7 @@ class TAuthManagerTest extends PHPUnit\Framework\TestCase
 
 		// When $_skipAuthorization is true, doAuthorization must be a no-op.
 		$fired = false;
-		$refl = new ReflectionProperty(TAuthManager::class, '_skipAuthorization');
-		$refl->setAccessible(true);
-		$refl->setValue($authManager, true);
+		PradoUnit::setProp($authManager, '_skipAuthorization', true);
 		$authManager->doAuthorization(null, null);
 		self::assertFalse($fired, 'onAuthorize must not fire when _skipAuthorization is true');
 	}

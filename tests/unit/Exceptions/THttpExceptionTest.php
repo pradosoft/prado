@@ -6,6 +6,8 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+require_once __DIR__ . '/../PradoUnitRequires.php';
+
 use Prado\Exceptions\THttpException;
 use Prado\Exceptions\TSystemException;
 use Prado\Exceptions\TException;
@@ -434,25 +436,25 @@ class THttpExceptionTest extends PHPUnit\Framework\TestCase
 
 	public function testGetStatusCodeDirectIsProtected()
 	{
-		$ref = new \ReflectionMethod(THttpException::class, 'getStatusCodeDirect');
+		$ref = PradoUnit::reflectionMethod(THttpException::class, 'getStatusCodeDirect');
 		$this->assertTrue($ref->isProtected());
 	}
 
 	public function testSetStatusCodeDirectIsProtected()
 	{
-		$ref = new \ReflectionMethod(THttpException::class, 'setStatusCodeDirect');
+		$ref = PradoUnit::reflectionMethod(THttpException::class, 'setStatusCodeDirect');
 		$this->assertTrue($ref->isProtected());
 	}
 
 	public function testStatusCodePropertyIsPrivate()
 	{
-		$ref = new \ReflectionProperty(THttpException::class, '_statusCode');
+		$ref = PradoUnit::reflectionProperty(THttpException::class, '_statusCode');
 		$this->assertTrue($ref->isPrivate());
 	}
 
 	public function testGetStatusCodeIsPublic()
 	{
-		$ref = new \ReflectionMethod(THttpException::class, 'getStatusCode');
+		$ref = PradoUnit::reflectionMethod(THttpException::class, 'getStatusCode');
 		$this->assertTrue($ref->isPublic());
 	}
 

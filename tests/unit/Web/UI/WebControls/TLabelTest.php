@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../../../PradoUnitRequires.php';
+
 use Prado\Web\UI\WebControls\TLabel;
 use Prado\Web\UI\WebControls\TTextBox;
 use Prado\Web\UI\THtmlWriter;
@@ -19,9 +21,7 @@ class TLabelTest extends TestCase
 
 	private function getTagName($label)
 	{
-		$method = new ReflectionMethod($label, 'getTagName');
-		$method->setAccessible(true);
-		return $method->invoke($label);
+		return PradoUnit::invoke($label, 'getTagName');
 	}
 
 	// ================================================================================

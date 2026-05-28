@@ -328,6 +328,53 @@ class PradoUnit {
 	}
 
 	// =========================================================================
+	// Method invocation
+	// =========================================================================
+
+	/**
+	 * Invokes a named method on an object or class via reflection, bypassing
+	 * visibility (private / protected methods are callable).
+	 *
+	 * When `$object` is a class-string the method is invoked statically
+	 * (`ReflectionMethod::invoke(null, ...$args)`).
+	 *
+	 * ```php
+	 * // Instance method (private/protected):
+	 * $result = PradoUnit::invoke($component, 'evaluateIsValid');
+	 *
+	 * // Static method via class-string:
+	 * $hash = PradoUnit::invoke(TSecurityManager::class, 'generateSalt', 16);
+	 * ```
+	 *
+	 * **By-reference parameters**: variadic spread copies argument values, so
+	 * methods that declare pass-by-reference parameters (e.g. `function (&$out)`)
+	 * cannot be called through this helper — the reference is silently broken.
+	 * Use `PradoUnit::reflectionMethod()->invokeArgs()` directly for those cases:
+	 *
+	 * ```php
+	 * // sortManifest() declares its first parameter as &$manifest:
+	 * $rm = PradoUnit::reflectionMethod(TTarFileExtractor::class, 'sortManifest');
+	 * $rm->invokeArgs($extractor, [&$manifest]);
+	 * ```
+	 *
+	 * @param object|class-string $object The object to invoke on, or a class name
+	 *   for static methods.
+	 * @param string $method Method name.
+	 * @param mixed  ...$args Arguments forwarded to the method.
+	 * @return mixed The return value of the invoked method.
+	 * @throws \ReflectionException if the method does not exist.
+	 */
+	public static function invoke(object|string $object, string $method, mixed ...$args): mixed
+	{
+		$class = is_object($object) ? $object::class : $object;
+		$rm = static::reflectionMethod($class, $method);
+		if ($rm === null) {
+			throw new \ReflectionException("Method {$method} not found on {$class}");
+		}
+		return $rm->invoke(is_object($object) ? $object : null, ...$args);
+	}
+
+	// =========================================================================
 	// Static property snapshot / restore
 	// =========================================================================
 

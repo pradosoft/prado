@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../../PradoUnitRequires.php';
+
 use Prado\TComponent;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataTypeException;
@@ -245,7 +247,7 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 
 	private function newTemplateUnvalidated($template)
 	{
-		$ref = new \ReflectionClass(TTemplate::class);
+		$ref = PradoUnit::reflectionClass(TTemplate::class);
 		$tplObj = $ref->newInstanceWithoutConstructor();
 		$props = [
 			'_sourceTemplate' => true,
@@ -257,17 +259,11 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 			'_hashCode' => md5($template),
 		];
 		foreach ($props as $name => $val) {
-			$p = $ref->getProperty($name);
-			$p->setAccessible(true);
-			$p->setValue($tplObj, $val);
+			PradoUnit::setProp($tplObj, $name, $val);
 		}
 		$ref->getParentClass()->getParentClass()->getConstructor()->invoke($tplObj);
-		$parse = $ref->getMethod('parse');
-		$parse->setAccessible(true);
-		$parse->invoke($tplObj, $template);
-		$c = $ref->getProperty('_content');
-		$c->setAccessible(true);
-		$c->setValue($tplObj, null);
+		PradoUnit::invoke($tplObj, 'parse', $template);
+		PradoUnit::setProp($tplObj, '_content', null);
 		return $tplObj;
 	}
 
@@ -759,13 +755,10 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 
 	public function testInstantiateInOrphanedChildIndexSkipped()
 	{
-		$ref = new \ReflectionClass(TTemplate::class);
 		$tplObj = $this->newTemplateUnvalidated('<com:TLabel ID="lbl1" Text="Hello" />');
-		$itemsProp = $ref->getProperty('_tpl');
-		$itemsProp->setAccessible(true);
-		$items = $itemsProp->getValue($tplObj);
+		$items = PradoUnit::getProp($tplObj, '_tpl');
 		$items[99] = [TTemplate::TPL_PARENT_INDEX => 50, TTemplate::TPL_TYPE => 'Prado\\Web\\UI\\WebControls\\TLabel', TTemplate::TPL_PROPS => ['id' => [TTemplate::PROP_TYPE => TTemplate::CONFIG_VALUE, TTemplate::PROP_NAME => 'ID', TTemplate::PROP_VALUE => 'orphan']]];
-		$itemsProp->setValue($tplObj, $items);
+		PradoUnit::setProp($tplObj, '_tpl', $items);
 		$tplControl = $this->createControlWithPage();
 		$tplObj->instantiateIn($tplControl);
 		$this->assertCount(1, $tplControl->getControls());
@@ -807,10 +800,7 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 		$this->assertCount(1, $tplControl->getControls());
 		$literal = $tplControl->getControls()[0];
 		$this->assertInstanceOf(TCompositeLiteral::class, $literal);
-		$ref = new \ReflectionClass(TCompositeLiteral::class);
-		$itemsProp = $ref->getProperty('_items');
-		$itemsProp->setAccessible(true);
-		$items = $itemsProp->getValue($literal);
+		$items = PradoUnit::getProp($literal, '_items');
 		$this->assertCount(3, $items);
 	}
 
@@ -843,10 +833,7 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 		$tpl->instantiateIn($parent1);
 		$lit1 = $parent1->getControls()[0];
 		$this->assertInstanceOf(TCompositeLiteral::class, $lit1);
-		$ref = new \ReflectionClass(TCompositeLiteral::class);
-		$exprProp = $ref->getProperty('_expressions');
-		$exprProp->setAccessible(true);
-		$exprs1 = $exprProp->getValue($lit1);
+		$exprs1 = PradoUnit::getProp($lit1, '_expressions');
 		$this->assertCount(1, $exprs1);
 	}
 
@@ -1029,17 +1016,14 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 
 	public function testInstantiateInConfigurePropertyUnexpectedTypeThrows()
 	{
-		$ref = new \ReflectionClass(TTemplate::class);
 		$tplObj = $this->newTemplateUnvalidated('<com:TLabel ID="lbl1" Text="Hello" />');
-		$itemsProp = $ref->getProperty('_tpl');
-		$itemsProp->setAccessible(true);
-		$items = $itemsProp->getValue($tplObj);
+		$items = PradoUnit::getProp($tplObj, '_tpl');
 		foreach ($items as &$item) {
 			if (isset($item[TTemplate::TPL_PROPS])) {
 				$item[TTemplate::TPL_PROPS]['badprop'] = [TTemplate::PROP_TYPE => 99, TTemplate::PROP_NAME => 'BadProp', TTemplate::PROP_VALUE => 'x'];
 			}
 		}
-		$itemsProp->setValue($tplObj, $items);
+		PradoUnit::setProp($tplObj, '_tpl', $items);
 		$parent = $this->createControlWithPage();
 		$this->expectException(TConfigurationException::class);
 		$tplObj->instantiateIn($parent);
@@ -1556,9 +1540,7 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 		$this->assertInstanceOf(TLabel::class, $label);
 		$this->assertEquals('Cached', $label->getText());
 		// TOutputCache has setCacheKeyPrefix() but no getter; read via reflection.
-		$refProp = (new \ReflectionClass(TOutputCache::class))->getProperty('_keyPrefix');
-		$refProp->setAccessible(true);
-		$prefix = $refProp->getValue($cache);
+		$prefix = PradoUnit::getProp($cache, '_keyPrefix');
 		$this->assertNotEmpty($prefix);
 		// TTemplate sets the prefix to $this->_hashCode . $tplKey; hashCode = md5 of the template string.
 		$this->assertStringStartsWith(md5($templateStr), $prefix);

@@ -6,6 +6,8 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+require_once __DIR__ . '/../PradoUnitRequires.php';
+
 use Prado\Exceptions\TExitException;
 use Prado\Exceptions\TSystemException;
 use Prado\Exceptions\TException;
@@ -391,25 +393,25 @@ class TExitExceptionTest extends PHPUnit\Framework\TestCase
 
 	public function testGetExitCodeDirectIsProtected()
 	{
-		$ref = new \ReflectionMethod(TExitException::class, 'getExitCodeDirect');
+		$ref = PradoUnit::reflectionMethod(TExitException::class, 'getExitCodeDirect');
 		$this->assertTrue($ref->isProtected());
 	}
 
 	public function testSetExitCodeDirectIsProtected()
 	{
-		$ref = new \ReflectionMethod(TExitException::class, 'setExitCodeDirect');
+		$ref = PradoUnit::reflectionMethod(TExitException::class, 'setExitCodeDirect');
 		$this->assertTrue($ref->isProtected());
 	}
 
 	public function testExitCodePropertyIsPrivate()
 	{
-		$ref = new \ReflectionProperty(TExitException::class, '_exitCode');
+		$ref = PradoUnit::reflectionProperty(TExitException::class, '_exitCode');
 		$this->assertTrue($ref->isPrivate());
 	}
 
 	public function testGetExitCodeIsPublic()
 	{
-		$ref = new \ReflectionMethod(TExitException::class, 'getExitCode');
+		$ref = PradoUnit::reflectionMethod(TExitException::class, 'getExitCode');
 		$this->assertTrue($ref->isPublic());
 	}
 

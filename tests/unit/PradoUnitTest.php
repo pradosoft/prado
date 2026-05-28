@@ -17,6 +17,8 @@ class PradoUnitTestBase
 {
 	private int $_basePrivate = 10;
 	protected string $_baseProtected = 'base';
+
+	private function multiply(int $a, int $b): int { return $a * $b; }
 }
 
 /**
@@ -39,6 +41,8 @@ class PradoUnitStaticTestBase
 {
 	private static int $_baseStaticPrivate = 10;
 	protected static string $_baseStaticProtected = 'base';
+
+	private static function add(int $a, int $b): int { return $a + $b; }
 }
 
 /**
@@ -678,6 +682,43 @@ class PradoUnitTest extends PHPUnit\Framework\TestCase
 	public function testReflectionMethod_returnsNull_forUnknownClass(): void
 	{
 		$this->assertNull(PradoUnit::reflectionMethod('NoSuchClassXyz789', 'anything'));
+	}
+
+	// -----------------------------------------------------------------------
+	// invoke — instance and static modes
+	// -----------------------------------------------------------------------
+
+	public function testInvokeCallsPrivateAncestorMethod(): void
+	{
+		$obj = new PradoUnitTestChild();
+
+		$this->assertSame(12, PradoUnit::invoke($obj, 'multiply', 3, 4));
+	}
+
+	public function testInvokeCallsStaticMethodViaClassString(): void
+	{
+		$this->assertSame(7, PradoUnit::invoke(PradoUnitStaticTestChild::class, 'add', 3, 4));
+	}
+
+	public function testInvokePassesMultipleArgs(): void
+	{
+		$obj = new PradoUnitTestChild();
+
+		$this->assertSame(0, PradoUnit::invoke($obj, 'multiply', 0, 99));
+	}
+
+	public function testInvokeThrowsForMissingMethod(): void
+	{
+		$obj = new PradoUnitTestChild();
+
+		$this->expectException(\ReflectionException::class);
+		PradoUnit::invoke($obj, 'noSuchMethodXyz');
+	}
+
+	public function testInvokeThrowsForMissingMethodOnClass(): void
+	{
+		$this->expectException(\ReflectionException::class);
+		PradoUnit::invoke(PradoUnitStaticTestChild::class, 'noSuchMethodXyz');
 	}
 
 	public function testReflectionProperty_findsPropertyOnConcreteClass(): void

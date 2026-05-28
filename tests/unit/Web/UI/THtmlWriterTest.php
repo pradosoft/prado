@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../../PradoUnitRequires.php';
+
 use Prado\IO\ITextWriter;
 use Prado\Web\THttpUtility;
 use Prado\Web\UI\THtmlWriter;
@@ -784,26 +786,17 @@ class THtmlWriterTest extends TestCase
 
 	private function getAttributes(THtmlWriter $writer): array
 	{
-		$reflection = new ReflectionClass($writer);
-		$prop = $reflection->getProperty('_attributes');
-		$prop->setAccessible(true);
-		return $prop->getValue($writer);
+		return PradoUnit::getProp($writer, '_attributes');
 	}
 
 	private function getStyles(THtmlWriter $writer): array
 	{
-		$reflection = new ReflectionClass($writer);
-		$prop = $reflection->getProperty('_styles');
-		$prop->setAccessible(true);
-		return $prop->getValue($writer);
+		return PradoUnit::getProp($writer, '_styles');
 	}
 
 	private function getOpenTags(THtmlWriter $writer): array
 	{
-		$reflection = new ReflectionClass($writer);
-		$prop = $reflection->getProperty('_openTags');
-		$prop->setAccessible(true);
-		return $prop->getValue($writer);
+		return PradoUnit::getProp($writer, '_openTags');
 	}
 	
 }

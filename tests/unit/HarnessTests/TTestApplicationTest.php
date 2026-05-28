@@ -220,8 +220,7 @@ class TTestApplicationTest extends PHPUnit\Framework\TestCase
 
 	public function testExitOverride_storesCapturedExitCode(): void
 	{
-		$ref = new \ReflectionMethod(TTestApplication::class, 'exit');
-		$ref->invoke($this->_app, 42);
+		PradoUnit::invoke($this->_app, 'exit', 42);
 
 		$this->assertSame(42, $this->_app->capturedExitCode);
 	}
@@ -229,8 +228,7 @@ class TTestApplicationTest extends PHPUnit\Framework\TestCase
 	public function testExitOverride_doesNotTerminateProcess(): void
 	{
 		// Verify that calling exit() does not throw or halt — just stores the code.
-		$ref = new \ReflectionMethod(TTestApplication::class, 'exit');
-		$ref->invoke($this->_app, 0);
+		PradoUnit::invoke($this->_app, 'exit', 0);
 
 		// If we reach this assertion, the process is still running.
 		$this->assertSame(0, $this->_app->capturedExitCode);

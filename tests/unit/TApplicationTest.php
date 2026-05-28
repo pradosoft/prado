@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/PradoUnitRequires.php';
+
 use Prado\Collections\TCollectionItemChangeParameter;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
@@ -1902,10 +1904,7 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 		$ref = new \ReflectionClass(AppCustomSteps::class);
 		$app = $ref->newInstanceWithoutConstructor();
 
-		$rm = new \ReflectionMethod(AppCustomSteps::class, 'getSteps');
-		$rm->setAccessible(true);
-
-		$this->assertSame(AppCustomSteps::CUSTOM_STEPS, $rm->invoke($app));
+		$this->assertSame(AppCustomSteps::CUSTOM_STEPS, PradoUnit::invoke($app, 'getSteps'));
 	}
 
 	public function testGetSteps_baseClassStepsUnchangedBySubclass(): void
@@ -1930,20 +1929,15 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 	public function testSetStep_viaReflection_roundTrip(): void
 	{
 		$acc = $this->newAccessor();
-		$rm  = new \ReflectionMethod(TApplication::class, 'setStep');
-		$rm->setAccessible(true);
-
-		$rm->invoke($acc, 7);
+		PradoUnit::invoke($acc, 'setStep', 7);
 		$this->assertSame(7, $acc->pubGetStep());
 	}
 
 	public function testSetStep_viaReflection_zero(): void
 	{
 		$acc = $this->newAccessor();
-		$rm  = new \ReflectionMethod(TApplication::class, 'setStep');
-		$rm->setAccessible(true);
-		$rm->invoke($acc, 3);
-		$rm->invoke($acc, 0);
+		PradoUnit::invoke($acc, 'setStep', 3);
+		PradoUnit::invoke($acc, 'setStep', 0);
 
 		$this->assertSame(0, $acc->pubGetStep());
 	}
@@ -2597,12 +2591,10 @@ class TApplicationConfigurationClassTest extends PHPUnit\Framework\TestCase
 		);
 
 		// Save and patch Prado's static alias table so the external path resolves.
-		$aliasRp = new \ReflectionProperty(\Prado\Prado::class, '_aliases');
-		$aliasRp->setAccessible(true);
-		$savedAliases = $aliasRp->getValue();
+		$savedAliases = PradoUnit::getProp(\Prado\Prado::class, '_aliases');
 		$patchedAliases = $savedAliases;
 		$patchedAliases['PradoExtTest'] = $tmpDir;
-		$aliasRp->setValue(null, $patchedAliases);
+		PradoUnit::setProp(\Prado\Prado::class, '_aliases', $patchedAliases);
 
 		try {
 			$app = $this->newApp(ConfigClassTestApp::class);
@@ -2634,7 +2626,7 @@ class TApplicationConfigurationClassTest extends PHPUnit\Framework\TestCase
 			$this->assertSame(1, AppConfigurationSpy::$instanceCount,
 				'applyConfiguration() must instantiate the class returned by getApplicationConfigurationClass() for external include files');
 		} finally {
-			$aliasRp->setValue(null, $savedAliases);
+			PradoUnit::setProp(\Prado\Prado::class, '_aliases', $savedAliases);
 			@unlink($tmpFile);
 		}
 	}

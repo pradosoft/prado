@@ -9,10 +9,13 @@
 
 namespace Prado\Tests\Collections;
 
+require_once __DIR__ . '/../PradoUnitRequires.php';
+
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\ISingleton;
 use Prado\Collections\TNull;
 use PHPUnit\Framework\TestCase;
+use PradoUnit;
 
 /**
  * TNullTest
@@ -36,9 +39,7 @@ class TNullTest extends TestCase
 	 */
 	private function resetSingleton(): void
 	{
-		$prop = new \ReflectionProperty(TNull::class, 'null');
-		$prop->setAccessible(true);
-		$prop->setValue(null, null);
+		PradoUnit::setProp(TNull::class, 'null', null);
 	}
 
 	/**
