@@ -156,7 +156,7 @@ class TPropertyValue
 	public const ARRAY_STRICT_ERRORS = (1 << 2);
 
 	/**
-	 * Step-9 fallback order for {@see _coerceUnionType}: non-null union members are tried in this
+	 * Step-10 fallback order for {@see _coerceUnionType}: non-null union members are tried in this
 	 * sequence — int → float → string → bool → aggregate/catch-all — so resolution is deterministic
 	 * regardless of reflection order.  `null` is absent; step 1 handles it before any fallback.
 	 * @var string[]
@@ -245,86 +245,6 @@ class TPropertyValue
 	}
 
 	/**
-	 * Converts a value to enum type.
-	 *
-	 * When `$enums` is a class name, three styles are supported:
-	 *
-	 * - **PHP native `\BackedEnum`** *(4.4.0+)*: accepts an existing instance of the class,
-	 *   an exact backing value (via `tryFrom()`), or a case name (case-insensitive scan over
-	 *   `cases()`).  Returns the matching `\BackedEnum` instance; throws
-	 *   {@see TInvalidDataValueException} if none match.
-	 * - **{@see IEnumerable}** (including {@see TEnumerable}): accepts a constant name
-	 *   (case-insensitive); returns the canonical constant *value* (not the input string).
-	 * - **Any other class**: accepts any constant name present on the class; returns the value.
-	 *
-	 * When `$enums` is an array (or extra variadic arguments), the value is checked for strict
-	 * membership in the list; the matching element is returned unchanged.
-	 * @param mixed $value the value to be converted.
-	 * @param mixed $enums class name of the enumerable type, or array of valid enumeration values. If this is not an array,
-	 * the method considers its parameters are of variable length, and the second till the last parameters are enumeration values.
-	 * @throws TInvalidDataValueException if the value does not match any valid enumeration entry.
-	 * @return \BackedEnum|string the valid enumeration value or instance.
-	 */
-	public static function ensureEnum($value, $enums): string|\BackedEnum
-	{
-		if (func_num_args() === 2 && is_string($enums)) {
-			if (is_a($enums, \BackedEnum::class, true)) {
-				if ($value instanceof $enums) {
-					return $value;
-				}
-				// Guard backing-type before tryFrom: float (and other non-scalar) would cause
-				// a native TypeError from tryFrom rather than a clean TInvalidDataValueException.
-				if (is_string($value) || is_int($value)) {
-					$case = $enums::tryFrom($value);
-					if ($case !== null) {
-						return $case;
-					}
-				}
-				if (is_string($value)) {
-					foreach ($enums::cases() as $case) {
-						if (strcasecmp($case->name, $value) === 0) {
-							return $case;
-						}
-					}
-				}
-				$labels = implode(' | ', array_map(fn (\BackedEnum $c) => $c->name . '=' . $c->value, $enums::cases()));
-				$errVal = is_scalar($value) || $value === null ? $value : get_debug_type($value);
-				throw new TInvalidDataValueException('propertyvalue_enumvalue_invalid', $errVal, $labels);
-			} elseif (is_a($enums, IEnumerable::class, true)) {
-				if (is_string($value)) {
-					$resolved = $enums::valueOfConstant($value, false);
-					if ($resolved !== null) {
-						return $resolved;
-					}
-				}
-				$constants = is_a($enums, TEnumerable::class, true)
-					? $enums::getReflectionClass()->getConstants()
-					: (TComponentReflection::getReflectionClassByType($enums)?->getConstants() ?? []);
-			} else {
-				$ref = TComponentReflection::getReflectionClassByType($enums);
-				if ($ref?->hasConstant($value)) {
-					return $value;
-				}
-				$constants = $ref?->getConstants() ?? [];
-			}
-			$errVal = is_scalar($value) || $value === null ? $value : get_debug_type($value);
-			throw new TInvalidDataValueException(
-				'propertyvalue_enumvalue_invalid',
-				$errVal,
-				implode(' | ', array_keys($constants))
-			);
-		} elseif (!is_array($enums)) {
-			$enums = func_get_args();
-			array_shift($enums);
-		}
-		if (in_array($value, $enums, true)) {
-			return $value;
-		} else {
-			throw new TInvalidDataValueException('propertyvalue_enumvalue_invalid', $value, implode(' | ', $enums));
-		}
-	}
-
-	/**
 	 * Converts the value to 'null' if the given value is empty
 	 * @param mixed $value value to be converted
 	 * @return mixed input or NULL if input is empty
@@ -394,50 +314,298 @@ class TPropertyValue
 	}
 
 	// =========================================================================
+	// ensureEnum() + ensureEnumValue() + Helpers
+	// =========================================================================
+
+	/**
+	 * Validates a value against a class's declared constants (case-insensitive)
+	 * or against a list of permitted values, returning the canonical constant
+	 * name on a class match or the matching extras element otherwise.  Companion
+	 * to {@see ensureEnumValue()} which performs the name → value translation
+	 * step instead.
+	 *
+	 * Three call shapes share the one method:
+	 *
+	 * - **Class** — `ensureEnum($v, MyEnum::class)`.  Any casing of a constant
+	 *   name resolves to the canonical name (`'alpha'` → `'Alpha'` for
+	 *   `const Alpha = 'a'`).  PHP enums flow through the same path since
+	 *   their cases are class constants; an enum instance passed as `$v` is
+	 *   unwrapped to its `->name`.
+	 * - **Class + extras** — `ensureEnum($v, MyEnum::class, 'Auto', null)`
+	 *   or `ensureEnum($v, MyEnum::class, ['Auto', null, 'Custom' => 'x'])`.
+	 *   Additional permitted values consulted after the class lookup misses;
+	 *   passed either variadically or as a single array.  Entry semantics
+	 *   match {@see ensureEnumValue()} (see {@see _matchEnumExtra()}): string
+	 *   keys are case-insensitive aliases that return the canonical key as
+	 *   the name; int-keyed strings are case-insensitive names that return
+	 *   themselves; int-keyed non-strings (`null`, `false`, `0`, …) are
+	 *   strict-equality sentinels.
+	 * - **Value list** (no class) — `ensureEnum($v, ['a', 'b'])` or
+	 *   `ensureEnum($v, 'a', 'b', 'c')`.  Triggered when `$enums` is an
+	 *   array, or a string that doesn't resolve to a reflectable class.
+	 *   Strict-equality membership check; matching element returned
+	 *   unchanged.
+	 *
+	 * `$enums` also accepts an instance whose class is used.  The reflection
+	 * cache is shared across calls.
+	 *
+	 * @param mixed $value the value to be validated.
+	 * @param mixed $enums class name, instance, array of values, or first
+	 *   element of a value list.
+	 * @param mixed ...$extras additional permitted values (class form only);
+	 *   variadic or a single array; shared semantics with `ensureEnumValue`.
+	 * @throws TInvalidDataValueException when no class constant, extra, or
+	 *   list element matches.
+	 * @return mixed canonical constant name (class form), or the matching
+	 *   extra / list element (other forms).
+	 */
+	public static function ensureEnum($value, $enums, mixed ...$extras): mixed
+	{
+		// Normalize extras: accept either variadic args or a single array.
+		if (count($extras) === 1 && is_array($extras[0])) {
+			$extras = $extras[0];
+		}
+		$className = null;
+		$ref = null;
+		if (is_object($enums)) {
+			$className = $enums::class;
+			$ref = TComponentReflection::getReflectionClassByType($className);
+		} elseif (is_string($enums)) {
+			$ref = TComponentReflection::getReflectionClassByType($enums);
+			if ($ref !== null) {
+				$className = $enums;
+			}
+		}
+
+		if ($className !== null) {
+			// Enum instance pass-through: unwrap to the case's canonical name.
+			if ($value instanceof \UnitEnum && $value instanceof $className) {
+				return $value->name;
+			}
+			if (is_string($value)) {
+				// Fast path — exact case match.
+				if ($ref->hasConstant($value)) {
+					return $value;
+				}
+				// Slow path — case-insensitive enumeration; returns the
+				// canonical name so any-casing input normalizes.
+				foreach ($ref->getConstants() as $name => $_) {
+					if (strcasecmp($name, $value) === 0) {
+						return $name;
+					}
+				}
+			}
+			// Extras — unified matcher; canonical name returned on match.
+			if ($extras !== []) {
+				[$ok, $result] = self::_matchEnumExtra($value, $extras, true);
+				if ($ok) {
+					return $result;
+				}
+			}
+			$labels = implode(' | ', array_keys($ref->getConstants()));
+			if ($extras !== []) {
+				$labels .= ($labels !== '' ? ' | ' : '') . self::_formatEnumExtrasLabel($extras);
+			}
+			$errVal = is_scalar($value) || $value === null ? $value : get_debug_type($value);
+			throw new TInvalidDataValueException('propertyvalue_enumvalue_invalid', $errVal, $labels);
+		}
+
+		// Array / variadic form
+		if (!is_array($enums)) {
+			$enums = func_get_args();
+			array_shift($enums);
+		}
+		if (in_array($value, $enums, true)) {
+			return $value;
+		}
+		throw new TInvalidDataValueException(
+			'propertyvalue_enumvalue_invalid',
+			$value,
+			implode(' | ', $enums)
+		);
+	}
+
+	/**
+	 * Resolves a constant name (case-insensitive) on a class to its constant
+	 * VALUE.  Companion to {@see ensureEnum()} which returns the canonical
+	 * name; this method performs the name → value translation step.  For
+	 * `const Alpha = 'a'`, any casing of `'Alpha'` resolves to `'a'`.
+	 *
+	 * A class constant whose value is a `BackedEnum` case is unwrapped to
+	 * that case's `->value`; a non-backed `UnitEnum` case is returned as
+	 * the case object (no backing value exists); other constant values are
+	 * returned as-is.  An enum instance passed as `$value` is unwrapped the
+	 * same way.
+	 *
+	 * `$extras` is an optional array consulted after the class lookup misses;
+	 * it shares the unified semantics described in {@see _matchEnumExtra()} and
+	 * accepts the same mixed shape as {@see ensureEnum()}'s extras:
+	 *
+	 * - **String key** (`'Auto' => 'auto'`) — case-insensitive alias map; the
+	 *   key matches a string `$value` and the mapped value is returned.
+	 * - **Int-keyed string** (`'Auto'`) — case-insensitive name; the string
+	 *   is its own value and is returned on match.
+	 * - **Int-keyed non-string** (`null`, `false`, …) — strict-equality
+	 *   sentinel; the value is returned on match.
+	 *
+	 * Unlike {@see ensureEnum()}'s extras (which accept either variadic or
+	 * array shapes), this parameter is always a single array.
+	 *
+	 * @param mixed $value constant name to look up (case-insensitive), an
+	 *   enum instance of `$enums` to unwrap, or a sentinel covered by an
+	 *   int-keyed extras entry.
+	 * @param object|string $enums class name or instance whose class
+	 *   provides the constant table.
+	 * @param array $extras mixed alias map / sentinel list of additional
+	 *   virtual constants (shared shape with {@see ensureEnum()}).
+	 * @throws TInvalidDataValueException when no class constant nor extras
+	 *   key matches.
+	 * @return mixed BackedEnum backing value, non-backed UnitEnum case, raw
+	 *   constant value, or the matching extras value.
+	 * @since 4.4.0
+	 */
+	public static function ensureEnumValue(mixed $value, string|object $enums, array $extras = []): mixed
+	{
+		$className = is_object($enums) ? $enums::class : $enums;
+		// Enum instance pass-through.
+		if ($value instanceof \UnitEnum && $value instanceof $className) {
+			return $value instanceof \BackedEnum ? $value->value : $value;
+		}
+		$ref = TComponentReflection::getReflectionClassByType($className);
+		if ($ref !== null && is_string($value)) {
+			// Fast path — exact case match via ReflectionClass.
+			if ($ref->hasConstant($value)) {
+				$c = $ref->getConstant($value);
+				return $c instanceof \BackedEnum ? $c->value : $c;
+			}
+			// Slow path — case-insensitive enumeration.
+			foreach ($ref->getConstants() as $name => $constValue) {
+				if (strcasecmp($name, $value) === 0) {
+					return $constValue instanceof \BackedEnum ? $constValue->value : $constValue;
+				}
+			}
+		}
+		// Extras — unified matcher; mapped value returned on match.
+		if ($extras !== []) {
+			[$ok, $result] = self::_matchEnumExtra($value, $extras, false);
+			if ($ok) {
+				return $result;
+			}
+		}
+		$labels = $ref !== null ? implode(' | ', array_keys($ref->getConstants())) : '';
+		if ($extras !== []) {
+			$labels .= ($labels !== '' ? ' | ' : '') . self::_formatEnumExtrasLabel($extras);
+		}
+		$errVal = is_scalar($value) || $value === null ? $value : get_debug_type($value);
+		throw new TInvalidDataValueException('propertyvalue_enumvalue_invalid', $errVal, $labels);
+	}
+
+	/**
+	 * Walks the unified `$extras` array on behalf of {@see ensureEnum()} and
+	 * {@see ensureEnumValue()}.  Both methods accept the same extras shape and
+	 * the same matching rules; only the return value differs:
+	 *
+	 * - **String key** (`'Alias' => 'mapped'`) — case-insensitive match on the
+	 *   KEY against a string `$value`.  Returns the key when `$returnKey` is
+	 *   true (canonical name for `ensureEnum`); returns the mapped value
+	 *   otherwise (for `ensureEnumValue`).
+	 * - **Int-keyed string** (`'Auto'`) — the string is both name and value;
+	 *   case-insensitive match returns the string itself for both methods.
+	 * - **Int-keyed non-string** (`null`, `false`, `0`, `-1`, …) — strict
+	 *   equality sentinel; the matched value is returned by both methods.
+	 *
+	 * @since 4.4.0
+	 * @param mixed $value
+	 * @param array $extras
+	 * @param bool $returnKey
+	 * @return array{0: bool, 1: mixed} `[matched, result]` — `matched` is
+	 *   false when nothing in `$extras` satisfies `$value`.
+	 */
+	private static function _matchEnumExtra(mixed $value, array $extras, bool $returnKey): array
+	{
+		foreach ($extras as $key => $extraValue) {
+			if (is_string($key)) {
+				if (is_string($value) && strcasecmp($key, $value) === 0) {
+					return [true, $returnKey ? $key : $extraValue];
+				}
+			} elseif (is_string($extraValue)) {
+				if (is_string($value) && strcasecmp($extraValue, $value) === 0) {
+					return [true, $extraValue];
+				}
+			} elseif ($extraValue === $value) {
+				return [true, $extraValue];
+			}
+		}
+		return [false, null];
+	}
+
+	/**
+	 * Formats `$extras` as a `|`-separated label list for error messages.
+	 * Mirrors {@see _matchEnumExtra()}'s entry semantics: string-keyed
+	 * entries surface as their key, int-keyed strings as the string itself,
+	 * and int-keyed non-strings as their `var_export` form.
+	 *
+	 * @since 4.4.0
+	 * @param array $extras
+	 */
+	private static function _formatEnumExtrasLabel(array $extras): string
+	{
+		$labels = [];
+		foreach ($extras as $key => $extraValue) {
+			if (is_string($key)) {
+				$labels[] = $key;
+			} elseif (is_string($extraValue)) {
+				$labels[] = $extraValue;
+			} else {
+				$labels[] = var_export($extraValue, true);
+			}
+		}
+		return implode(' | ', $labels);
+	}
+
+	// =========================================================================
 	// ensureArray() + Helpers
 	// =========================================================================
 
 	/**
-	 * Has converted a value to array type.
+	 * Converts a value to an array, parsing strings as PHP-style array literals.
 	 *
-	 * Non-string values have been cast via PHP's `(array)` coercion.  String
-	 * values have been parsed as PHP-style array literals.  The behavior has
-	 * been controlled by two flag bits:
+	 * Non-string values are cast via PHP's `(array)` coercion.  String values
+	 * are parsed as PHP array literals.  Two flag bits control the behavior:
 	 *
-	 * - {@see ARRAY_STRICT_GRAMMAR} — has restricted the parser to the
-	 *   PHP-literal grammar (`[...]` short syntax or `array(...)` keyword
-	 *   form, no bare `(...)` array, no bare-word strings, no legacy octal,
-	 *   no auto-wrap of unbracketed input).
-	 * - {@see ARRAY_STRICT_ERRORS} — has converted the silent
-	 *   single-element fallback into a thrown
-	 *   {@see TInvalidDataValueException}.  Composable with the grammar flag.
+	 * - {@see ARRAY_STRICT_GRAMMAR} — restricts the parser to the PHP-literal
+	 *   grammar (`[...]` short syntax or `array(...)` keyword form, no bare
+	 *   `(...)` array, no bare-word strings, no legacy octal, no auto-wrap
+	 *   of unbracketed input).
+	 * - {@see ARRAY_STRICT_ERRORS} — converts the silent single-element
+	 *   fallback into a thrown {@see TInvalidDataValueException}.  Composable
+	 *   with the grammar flag.
 	 *
-	 * With `$flags === 0` (the default) the loose grammar has applied:
-	 * a trimmed string that has begun with `(` or `[` has been parsed in
-	 * place; anything else has been re-parsed as if wrapped in `(...)`, so
-	 * bare element lists like `red, green, blue` have resolved to
-	 * `['red', 'green', 'blue']`.  Loose grammar has accepted PHP-style
-	 * integers (decimal, hex `0xFF`, binary `0b101`, modern octal `0o17`,
-	 * with optional underscored separators; PHP 7's leading-zero octal form
-	 * has been dropped so `017` has read as decimal 17), floats
-	 * (`1.5`, `.5`, `1e10`, `1_000.5_5`), single- or double-quoted strings
-	 * with the common backslash escapes, the keywords `true`/`false`/`null`
+	 * With `$flags === 0` (the default) the loose grammar applies: a trimmed
+	 * string that begins with `(` or `[` is parsed in place; anything else is
+	 * re-parsed as if wrapped in `(...)`, so bare element lists like
+	 * `red, green, blue` resolve to `['red', 'green', 'blue']`.  Loose grammar
+	 * accepts PHP-style integers (decimal, hex `0xFF`, binary `0b101`, modern
+	 * octal `0o17`, with optional underscore separators; PHP 7's leading-zero
+	 * octal form is dropped, so `017` reads as decimal 17), floats (`1.5`,
+	 * `.5`, `1e10`, `1_000.5_5`), single- or double-quoted strings with the
+	 * common backslash escapes, the keywords `true`/`false`/`null`
 	 * (case-insensitive), unquoted bare-word strings, and nested arrays in
-	 * `(...)`, `[...]`, or `array(...)` form freely mixed.  Each element has
-	 * supported an optional `key => ` prefix (int or string literal); a
-	 * trailing comma has been accepted.  The bare-word rule has supported
-	 * template-attribute conventions like
+	 * `(...)`, `[...]`, or `array(...)` form freely mixed.  Each element
+	 * supports an optional `key => ` prefix (int or string literal); a
+	 * trailing comma is accepted.  The bare-word rule supports template-
+	 * attribute conventions like
 	 * `<com:TControl colors="red, green, blue"/>`.
 	 *
-	 * The parser has been regex-driven — no `eval()` — and the empty string
-	 * has always returned the empty array.
+	 * The parser is regex-driven — no `eval()` — and the empty string always
+	 * returns the empty array.
 	 *
 	 * @param mixed $value the value to be converted.
 	 * @param int $flags zero or more of {@see ARRAY_STRICT_GRAMMAR},
 	 *   {@see ARRAY_STRICT_ERRORS} combined with `|`.  Defaults to `0`
 	 *   (loose grammar, silent fallback).
-	 * @throws TInvalidDataValueException when {@see ARRAY_STRICT_ERRORS} has
-	 *   been set and the input has not parsed.
+	 * @throws TInvalidDataValueException when {@see ARRAY_STRICT_ERRORS} is
+	 *   set and the input does not parse.
 	 * @return array
 	 */
 	public static function ensureArray($value, int $flags = 0): array
@@ -1106,7 +1274,7 @@ class TPropertyValue
 	}
 
 	// =========================================================================
-	// applyProperty() + Helpers
+	// applyProperty() + coerceForSetter() + coerceToType() + Helpers
 	// =========================================================================
 
 	/**
@@ -1216,49 +1384,103 @@ class TPropertyValue
 	}
 
 	/**
-	 * Coerces a value toward a non-builtin class type that Prado recognises as an
-	 * enumerable domain.  All other class types are returned unchanged.
+	 * Has coerced a value toward a non-builtin class type that Prado has
+	 * recognized as an enumerable domain.  All other class types have been
+	 * returned unchanged.
 	 *
-	 * - **PHP 8.1 backed enums** (`BackedEnum`): first tries `$className::tryFrom($value)`
-	 *   for an exact backing-value match (e.g. `'red'` → `Color::Red`).  On a miss, a
-	 *   case-insensitive name scan runs over `$className::cases()`, so the PHP case name
-	 *   may be supplied in any casing (`'Red'`, `'RED'`, `'rEd'` all resolve to
-	 *   `Color::Red`).  If neither lookup succeeds the original `$value` is returned so
-	 *   the TypeError surfaces at the setter boundary.
-	 *
-	 * - **{@see IEnumerable} implementors** (including {@see TEnumerable} subclasses):
-	 *   resolves a constant *name* to its *value* via `valueOfConstant($value, false)`
-	 *   (case-insensitive).  For the conventional case where name equals value
-	 *   (`const Left = 'Left'`), any casing of the name (`'left'`, `'LEFT'`) normalizes
-	 *   to the canonical value `'Left'`.  When name differs from value (`const Alpha = 'a'`),
-	 *   any casing of the name resolves to the value `'a'`.  If no constant name matches,
-	 *   `$value` is returned unchanged so the TypeError surfaces at the setter boundary.
+	 * String inputs delegate to {@see _tryMatchEnum()} for case-insensitive
+	 * name lookup (and, for BackedEnum, value-based `tryFrom` first).  An int
+	 * input against a BackedEnum has been resolved through `tryFrom` directly.
+	 * On any miss, `$value` has been returned unchanged so the TypeError has
+	 * surfaced at the setter boundary.
 	 *
 	 * @param mixed $value the value to coerce.
 	 * @param string $className the target class or interface name.
-	 * @return mixed the coerced value, or `$value` unchanged if coercion is not possible.
+	 * @return mixed the coerced value, or `$value` unchanged on miss.
 	 * @since 4.4.0
 	 */
 	private static function _coerceToClass(mixed $value, string $className): mixed
 	{
-		if (is_a($className, \BackedEnum::class, true) && (is_string($value) || is_int($value))) {
-			$case = $className::tryFrom($value);
-			if ($case !== null) {
-				return $case;
+		if (is_a($className, \BackedEnum::class, true) && is_int($value)) {
+			try {
+				return $className::tryFrom($value) ?? $value;
+			} catch (\TypeError) {
+				return $value;
 			}
-			if (is_string($value)) {
-				foreach ($className::cases() as $case) {
-					if (strcasecmp($case->name, $value) === 0) {
-						return $case;
-					}
-				}
-			}
-			return $value;
 		}
-		if (is_a($className, IEnumerable::class, true) && is_string($value)) {
-			return $className::valueOfConstant($value, false) ?? $value;
+		if (is_string($value)) {
+			$match = self::_tryMatchEnum($className, $value);
+			if ($match !== null) {
+				return $match;
+			}
 		}
 		return $value;
+	}
+
+	/**
+	 * Has validated a string against an enumerable class by *constant name*
+	 * (case-insensitively), returning the matched form on a hit and `null`
+	 * on a miss.  The enum has acted purely as a name-validator — name→value
+	 * translation has been left to the class itself (or to a separate
+	 * coercion pass).  Returned forms:
+	 *
+	 * - `UnitEnum` / `BackedEnum` — the matched case object; for
+	 *   `BackedEnum` a `tryFrom($value)` backing-value lookup has run first
+	 *   so a raw backing value also resolves to its case.
+	 * - {@see IEnumerable} — the canonical constant name with original
+	 *   casing preserved, so `'red'` has resolved to `'Red'` against a
+	 *   `const Red = '#FF0000'` declaration.  The constant's *value* has
+	 *   *not* been returned here — the typical property type pattern
+	 *   `TWebColor|string` accepts the validated name string and the
+	 *   class itself has translated `'Red'` → `'#FF0000'` when needed.
+	 *
+	 * Name lookup has been case-insensitive — `'red'`, `'Red'`, and `'RED'`
+	 * have all resolved to the constant named `Red`.  When `$className` has
+	 * not been an enumerable class, the function has returned `null` without
+	 * doing anything.
+	 *
+	 * The helper has been the shared resolver behind {@see _coerceToClass()}
+	 * for string inputs and behind the enumerable-validation step of
+	 * {@see _coerceUnionType()}.
+	 *
+	 * @param string $className the candidate enumerable class name.
+	 * @param string $value the candidate constant name (or backing value
+	 *   for BackedEnum).
+	 * @return mixed the matched case (UnitEnum / BackedEnum) or canonical
+	 *   constant name (IEnumerable), or `null` on miss / non-enum class.
+	 * @since 4.4.0
+	 */
+	private static function _tryMatchEnum(string $className, string $value): mixed
+	{
+		if (is_a($className, \UnitEnum::class, true)) {
+			if (is_a($className, \BackedEnum::class, true)) {
+				try {
+					$case = $className::tryFrom($value);
+					if ($case !== null) {
+						return $case;
+					}
+				} catch (\TypeError) {
+				}
+			}
+			foreach ($className::cases() as $case) {
+				if (strcasecmp($case->name, $value) === 0) {
+					return $case;
+				}
+			}
+			return null;
+		}
+		if (is_a($className, IEnumerable::class, true)) {
+			$ref = TComponentReflection::getReflectionClassByType($className);
+			if ($ref === null) {
+				return null;
+			}
+			foreach ($ref->getConstants() as $name => $_) {
+				if (strcasecmp($name, $value) === 0) {
+					return $name;
+				}
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -1269,21 +1491,27 @@ class TPropertyValue
 	 * selects the most appropriate type:
 	 *
 	 * 1. `null` / empty string → `null` (when `null` is in the union)
-	 * 2. `array` / typed object value whose type appears in the union → use it
-	 *    (pre-empts step 3 to prevent `(string)$array = "Array"` and
+	 * 2. Enumerable validation — for string `$value`, case-insensitive
+	 *    constant-name lookup via {@see _tryMatchEnum()} against each
+	 *    enum-like (UnitEnum / IEnumerable) union member; the first match
+	 *    wins.  Return shape per {@see _tryMatchEnum()}'s contract.
+	 * 3. `array` / typed object value whose type appears in the union → use it
+	 *    (pre-empts step 4 to prevent `(string)$array = "Array"` and
 	 *    `(string)$object` TypeError when the value has a native match)
-	 * 3. `string` in union → pass through / `ensureString` if not already a string
+	 * 4. `string` in union → pass through / `ensureString` if not already a string
 	 *    (scalar non-string values such as `int` and `bool` are coerced to their
 	 *    string representation here when `string` is present in the union)
-	 * 4. Non-string typed value whose PHP type directly matches a union member → use it
+	 * 5. Non-string typed value whose PHP type directly matches a union member → use it
 	 *    (only reached when `string` is NOT in the union); then PHP-compatible
 	 *    widening: `bool` → `int`/`float`, `int` → `float`
-	 * 5. `(a,b,c)` / `[a,b,c]` / `array(a,b,c)` notation + `array`/`iterable` in union → {@see ensureArray}
-	 * 6. `'true'`/`'false'` literal + `bool` in union → {@see ensureBoolean}
-	 * 7. Numeric value + `int`/`float` in union → float when `.` or `e`/`E` (scientific notation)
+	 * 6. `(a,b,c)` / `[a,b,c]` / `array(a,b,c)` notation + `array`/`iterable` in union → {@see ensureArray}
+	 * 7. `'true'`/`'false'` literal + `bool` in union → {@see ensureBoolean}
+	 * 8. Numeric value + `int`/`float` in union → float when `.` or `e`/`E` (scientific notation)
 	 *    is present, int otherwise; matching PHP non-strict behavior
-	 * 8. Non-builtin class types (backed enums, {@see IEnumerable} implementors) → {@see _coerceToClass}
-	 * 9. Fallback: first non-`null` type sorted by {@see TYPE_COERCE_ORDER}
+	 * 9. Non-builtin class types — value-based lookup via {@see _coerceToClass}
+	 *    catches inputs that match an enum's *backing value* (e.g. `100` for an
+	 *    int-backed enum) where step 2's *name* lookup did not apply
+	 * 10. Fallback: first non-`null` type sorted by {@see TYPE_COERCE_ORDER}
 	 *
 	 * @param mixed $value the value to coerce.
 	 * @param \ReflectionUnionType $type the union type.
@@ -1313,10 +1541,26 @@ class TPropertyValue
 			return self::coerceToType($value, $nonNull[0]);
 		}
 
-		// 2. Pre-string short-circuit for non-stringable native values.
-		// Arrays become the useless string "Array" via (string)$arr, and objects
-		// without __toString() throw a TypeError via (string)$obj, so these two
-		// forms are claimed before the string-member check in step 3.
+		// 2. Enum validation.  Case-insensitive constant-name lookup against
+		// any enum-like (UnitEnum / IEnumerable) union member via
+		// {@see _tryMatchEnum()}, which returns `null` for non-enum classes;
+		// the first match wins.
+		if (is_string($value)) {
+			foreach ($nonNull as $t) {
+				if ($t->isBuiltin()) {
+					continue;
+				}
+				$match = self::_tryMatchEnum($t->getName(), $value);
+				if ($match !== null) {
+					return $match;
+				}
+			}
+		}
+
+		// 3. Non-stringable native short-circuit.  Arrays and typed-object
+		// instances have claimed a native union match before step 4 —
+		// `(string)$arr` would be the useless `"Array"` and `(string)$obj`
+		// TypeErrors without `__toString()`.
 		if (!is_string($value)) {
 			if (is_array($value)) {
 				// Prefer array over iterable when both are present.
@@ -1336,16 +1580,15 @@ class TPropertyValue
 			}
 		}
 
-		// 3. string is a valid union member — value is already valid as a string;
-		// non-string scalar values (bool, int, float) are coerced to their string
-		// representation here. Arrays and typed objects have already been claimed
-		// by step 2 when a native-type match existed, so only ungrabbed values
-		// reach ensureString().
+		// 4. String member.  Strings have passed through; non-string scalars
+		// (bool, int, float) have been coerced via {@see ensureString()}.
+		// Step 3 has already claimed any array or typed object with a
+		// native union match.
 		if (in_array(self::TYPE_STRING, $names, true)) {
 			return is_string($value) ? $value : self::ensureString($value);
 		}
 
-		// 4. Native-type short-circuit: only reached when string is NOT in the union.
+		// 5. Native-type short-circuit: only reached when string is NOT in the union.
 		// First try an exact match (Pass A), then apply PHP non-strict widening
 		// coercions: bool → int/float (true=1, false=0) and int → float (Pass B).
 		if (!is_string($value)) {
@@ -1384,7 +1627,7 @@ class TPropertyValue
 		$hasInt = in_array(self::TYPE_INT, $names, true);
 		$hasFloat = in_array(self::TYPE_FLOAT, $names, true);
 
-		// 5. Array notation — unambiguous regardless of other types present.
+		// 6. Array notation — unambiguous regardless of other types present.
 		// Three delimiter forms are accepted: the Prado `(...)` convention,
 		// the PHP 8 short `[...]` form, and the PHP `array(...)` keyword form.
 		if ($hasArray) {
@@ -1399,12 +1642,12 @@ class TPropertyValue
 			}
 		}
 
-		// 6. Boolean literals — 'true'/'false' only, not generic truthy strings
+		// 7. Boolean literals — 'true'/'false' only, not generic truthy strings
 		if ($hasBool && in_array(strtolower($strValue), [self::BOOL_TRUE, self::BOOL_FALSE], true)) {
 			return self::ensureBoolean($strValue);
 		}
 
-		// 7. Numeric shape
+		// 8. Numeric shape
 		if (is_numeric($strValue)) {
 			if ($hasInt && $hasFloat) {
 				// Treat as float when: (a) a decimal point or scientific-notation exponent is
@@ -1426,12 +1669,11 @@ class TPropertyValue
 			}
 		}
 
-		// 8. Non-builtin class types (backed enums, value objects).
-		// `isBuiltin()` returns `true` for `null` so the test has already
-		// excluded the `null` member of the union.
-		// Try the original $value first so that a PHP int reaches an int-backed enum's
-		// tryFrom() before being stringified.  Only fall back to $strValue when the
-		// original attempt produced no change (e.g. string-backed enums from non-string input).
+		// 9. Non-builtin class value-based lookup.  Tries the original $value
+		// first so a PHP int reaches an int-backed enum's tryFrom() before
+		// stringification; retries with $strValue only when the original
+		// attempt produced no change.  `isBuiltin()` excludes the `null`
+		// member of the union (which it reports as builtin).
 		foreach ($named as $t) {
 			if (!$t->isBuiltin()) {
 				$n = $t->getName();
@@ -1448,10 +1690,11 @@ class TPropertyValue
 			}
 		}
 
-		// 9. Fallback: sort by TYPE_COERCE_ORDER and coerce to the highest-priority type.
-		// Non-builtin class names not in the list sort after all builtin types,
-		// preserving their original reflection order relative to each other.
-		// $nonNull always has ≥ 2 members here (single-non-null is handled above).
+		// 10. Fallback.  Sorts non-null members by {@see TYPE_COERCE_ORDER}
+		// (non-builtin class names sort after every builtin, preserving
+		// reflection order among themselves) and coerces $strValue toward
+		// the winner.  $nonNull has ≥ 2 members here — single-non-null
+		// short-circuited above.
 		$fallback = $nonNull;
 		usort($fallback, static function (\ReflectionNamedType $a, \ReflectionNamedType $b): int {
 			$max = count(self::TYPE_COERCE_ORDER);

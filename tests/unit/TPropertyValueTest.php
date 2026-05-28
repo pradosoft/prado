@@ -84,7 +84,7 @@ enum TPropertyValueTestColor: string
 	case Blue  = 'blue';
 }
 
-/** Int-backed enum used to test F-10 (ensureEnum type guard) and F-16 (step-8 int path). */
+/** Int-backed enum used to test F-10 (ensureEnum type guard) and the step-9 int path. */
 enum TPropertyValueTestPriority: int
 {
 	case Low  = 1;
@@ -92,9 +92,26 @@ enum TPropertyValueTestPriority: int
 }
 
 /**
+ * Non-backed UnitEnum fixture, used to verify that the step-2 enum-validation
+ * path handles pure UnitEnums (no `tryFrom`, name lookup only).
+ */
+enum TPropertyValueTestStatus
+{
+	case Active;
+	case Pending;
+	case Closed;
+}
+
+/**
  * IEnumerable fixture where constant NAME differs from constant VALUE.
- * Used to verify that _coerceToClass (step 8 in _coerceUnionType) actually
- * transforms 'Alpha' → 'a' and that the change is detected by the `!==` guard.
+ * Used to verify the validate-name-not-value semantic shared by both
+ * {@see TPropertyValue::ensureEnum()} and the coercion path
+ * ({@see TPropertyValue::coerceToType()} / `_coerceUnionType()`): an
+ * any-casing input that matches a constant resolves to the canonical
+ * NAME (`'Alpha'`), not the constant's value (`'a'`).  Name→value
+ * translation lives inside the enum class via the trait's
+ * `valueOfConstant()` helper, called separately by callers that need
+ * the value.
  */
 class TPropertyValueTestCodeEnum implements IEnumerable
 {
@@ -108,16 +125,6 @@ class TPropertyValueTestCodeEnum implements IEnumerable
  */
 class TPropertyValueTest extends PHPUnit\Framework\TestCase
 {
-	protected function setUp(): void
-	{
-	}
-
-
-	protected function tearDown(): void
-	{
-	}
-
-
 	// ════════════════════════════════════════════════════════════════════════
 	// Constants
 	// ════════════════════════════════════════════════════════════════════════
@@ -413,8 +420,10 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		self::assertSame((float) PHP_INT_MAX, TPropertyValue::ensureFloat(PHP_INT_MAX));
 	}
 	
-	public function testEnsureArray()
+	public function testEnsureArraySmoke(): void
 	{
+		// At-a-glance baseline for the most common shapes; the more specific
+		// tests below exercise each branch in detail.
 		self::assertSame([], TPropertyValue::ensureArray(null));
 		self::assertSame([], TPropertyValue::ensureArray(''));
 		self::assertSame([], TPropertyValue::ensureArray([]));
@@ -426,77 +435,77 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		self::assertSame(['my', 'prop'], TPropertyValue::ensureArray('("my", "prop")'));
 	}
 
-	// ── ensureArray: eval branch — string starting and ending with parentheses ──
+	// ── ensureArray: parsed-literal branch — string wrapped in `(...)`/`[...]` ──
 
-	public function testEnsureArrayEvalEmptyParens()
+	public function testEnsureArrayParseEmptyParens()
 	{
-		// '()' → eval('return array();') → []
+		// '()' → empty array literal → []
 		self::assertSame([], TPropertyValue::ensureArray('()'));
 	}
 
-	public function testEnsureArrayEvalParensWithWhitespace()
+	public function testEnsureArrayParseParensWithWhitespace()
 	{
-		// '( )' → eval('return array( );') → []
+		// '( )' → empty array literal with internal whitespace → []
 		self::assertSame([], TPropertyValue::ensureArray('( )'));
 
 		// '(   )' → same
 		self::assertSame([], TPropertyValue::ensureArray('(   )'));
 	}
 
-	public function testEnsureArrayEvalOuterWhitespaceTrimmed()
+	public function testEnsureArrayParseOuterWhitespaceTrimmed()
 	{
 		// Leading/trailing whitespace on the whole string is trimmed before the
-		// paren check, so '  ("a", "b")  ' hits the eval branch.
+		// paren check, so '  ("a", "b")  ' enters the parsed-literal branch.
 		self::assertSame(['a', 'b'], TPropertyValue::ensureArray('  ("a", "b")  '));
 	}
 
-	public function testEnsureArrayEvalDoubleQuotedStrings()
+	public function testEnsureArrayParseDoubleQuotedStrings()
 	{
 		// Double-quoted string elements
 		self::assertSame(['my', 'prop'], TPropertyValue::ensureArray('("my", "prop")'));
 		self::assertSame(['a', 'b', 'c'], TPropertyValue::ensureArray('("a", "b", "c")'));
 	}
 
-	public function testEnsureArrayEvalSingleQuotedStrings()
+	public function testEnsureArrayParseSingleQuotedStrings()
 	{
 		// Single-quoted string elements
 		self::assertSame(['my', 'prop'], TPropertyValue::ensureArray("('my', 'prop')"));
 		self::assertSame(['hello', 'world'], TPropertyValue::ensureArray("('hello', 'world')"));
 	}
 
-	public function testEnsureArrayEvalIntegerElements()
+	public function testEnsureArrayParseIntegerElements()
 	{
-		// Integer elements — eval parses them as PHP integers
+		// Integer elements
 		self::assertSame([1, 2, 3], TPropertyValue::ensureArray('(1, 2, 3)'));
 		self::assertSame([0, 100, -5], TPropertyValue::ensureArray('(0, 100, -5)'));
 	}
 
-	public function testEnsureArrayEvalFloatElements()
+	public function testEnsureArrayParseFloatElements()
 	{
 		// Float elements
 		self::assertSame([1.5, 2.5], TPropertyValue::ensureArray('(1.5, 2.5)'));
 		self::assertSame([-0.5, 3.14], TPropertyValue::ensureArray('(-0.5, 3.14)'));
 	}
 
-	public function testEnsureArrayEvalMixedTypes()
+	public function testEnsureArrayParseMixedTypes()
 	{
 		// Mixed PHP types in one expression
 		self::assertSame([1, 'two', 3.0], TPropertyValue::ensureArray('(1, "two", 3.0)'));
 	}
 
-	public function testEnsureArrayEvalBooleanAndNull()
+	public function testEnsureArrayParseBooleanAndNull()
 	{
-		// PHP keywords true, false, null parsed by eval
+		// PHP keyword tokens true / false / null (case-insensitive)
 		self::assertSame([true, false, null], TPropertyValue::ensureArray('(true, false, null)'));
 	}
 
-	public function testEnsureArrayEvalAssociativeStringKeys()
+	public function testEnsureArrayParseAssociativeStringKeys()
 	{
 		// Associative array with string keys
 		self::assertSame(['x' => 1, 'y' => 2], TPropertyValue::ensureArray('("x" => 1, "y" => 2)'));
 	}
 
-	public function testEnsureArrayEvalAssociativeIntegerKeys()
+	public function testEnsureArrayParseAssociativeIntegerKeys()
 	{
 		// Explicit integer keys
 		self::assertSame([5 => 'a', 10 => 'b'], TPropertyValue::ensureArray('(5 => "a", 10 => "b")'));
@@ -515,14 +524,14 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		self::assertSame([5 => 'a', 10 => 'b'], TPropertyValue::ensureArray("(5\f=> \"a\", 10\v=> \"b\")"));
 	}
 
-	public function testEnsureArrayEvalSingleElement()
+	public function testEnsureArrayParseSingleElement()
 	{
 		// Single element
 		self::assertSame(['only'], TPropertyValue::ensureArray('("only")'));
 		self::assertSame([42], TPropertyValue::ensureArray('(42)'));
 	}
 
-	public function testEnsureArrayEvalNestedArrays()
+	public function testEnsureArrayParseNestedArrays()
 	{
 		// Nested arrays — use the PHP 8 short `[]` form at the inner level.
 		self::assertSame([[1, 2], [3, 4]], TPropertyValue::ensureArray('([1, 2], [3, 4])'));
@@ -532,13 +541,13 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		self::assertSame([[1, 2], [3, 4]], TPropertyValue::ensureArray('[(1, 2), [3, 4]]'));
 	}
 
-	public function testEnsureArrayEvalEmptyStringElement()
+	public function testEnsureArrayParseEmptyStringElement()
 	{
 		// A single empty string element
 		self::assertSame([''], TPropertyValue::ensureArray('("")'));
 	}
 
-	public function testEnsureArrayEvalComplexExpression()
+	public function testEnsureArrayParseComplexExpression()
 	{
 		// A realistic config-style expression with integers, strings, and nested array
 		self::assertSame(
@@ -630,6 +639,11 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		// specifically to disambiguate.  Leading-zero literals have been
 		// read as decimal here.
 		self::assertSame([17, 123], TPropertyValue::ensureArray('[017, 0123]'));
+		// The auto-wrap path has also dropped legacy octal — `'017'` without
+		// brackets goes through the same int regex once wrapped in `(...)`.
+		self::assertSame([17],  TPropertyValue::ensureArray('017'));
+		self::assertSame([123], TPropertyValue::ensureArray('0123'));
+		self::assertSame([17, 123], TPropertyValue::ensureArray('017, 0123'));
 	}
 
 	public function testEnsureArrayUnderscoredIntegers()
@@ -736,6 +750,13 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		// preserved verbatim (no exception, matching PHP literal behavior).
 		self::assertSame(["a\nb"], TPropertyValue::ensureArray('["a\nb"]'));
 		self::assertSame(["tab\there"], TPropertyValue::ensureArray('["tab\there"]'));
+		// Less common control escapes — \r carriage return, \v vertical tab,
+		// \f form feed, \e escape (ESC, \x1b).  All decode to the same byte
+		// PHP's double-quoted string literal produces.
+		self::assertSame(["cr\rlf"],     TPropertyValue::ensureArray('["cr\rlf"]'));
+		self::assertSame(["v\vtab"],     TPropertyValue::ensureArray('["v\vtab"]'));
+		self::assertSame(["f\ffeed"],    TPropertyValue::ensureArray('["f\ffeed"]'));
+		self::assertSame(["esc\x1bend"], TPropertyValue::ensureArray('["esc\eend"]'));
 		self::assertSame(["back\\slash"], TPropertyValue::ensureArray('["back\\\\slash"]'));
 		self::assertSame(['quote"in'], TPropertyValue::ensureArray('["quote\"in"]'));
 		self::assertSame(['$x'], TPropertyValue::ensureArray('["\$x"]'));
@@ -771,6 +792,17 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		self::assertSame([[[[[[[[[[1]]]]]]]]]], TPropertyValue::ensureArray('[[[[[[[[[[1]]]]]]]]]]'));
 		// Mixed `(...)` / `[...]` / `array(...)` at each level.
 		self::assertSame([[[[1]]]], TPropertyValue::ensureArray('[(array([1]))]'));
+	}
+
+	public function testEnsureArrayDeepNestingUnderStrictGrammar()
+	{
+		// Strict grammar has accepted the same deep nesting through `[...]`
+		// and `array(...)` only (no bare `(...)`).
+		$strict = TPropertyValue::ARRAY_STRICT_GRAMMAR;
+		self::assertSame([[[[[[[[[[1]]]]]]]]]], TPropertyValue::ensureArray('[[[[[[[[[[1]]]]]]]]]]', $strict));
+		self::assertSame([[[1]]], TPropertyValue::ensureArray('[array([1])]', $strict));
+		// Strict rejects nested bare `(...)` and falls back to single-element.
+		self::assertSame(['[(array([1]))]'], TPropertyValue::ensureArray('[(array([1]))]', $strict));
 	}
 
 	public function testEnsureArrayUnicodeAndMultibyte()
@@ -900,6 +932,14 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		self::assertSame([1, 2], TPropertyValue::ensureArray('array (1, 2)'));
 		self::assertSame([[1], [2]], TPropertyValue::ensureArray('[array(1), [2]]'));
 		self::assertSame([[1, 2], [3, 4]], TPropertyValue::ensureArray('[(1, 2), array(3, 4)]'));
+		// Surrounding whitespace at the top level exercises _skipArrayKeyword
+		// when the parser entry sees `(?&ws)` before the `array` token.
+		self::assertSame([1, 2], TPropertyValue::ensureArray('   array  (1, 2)   '));
+		self::assertSame([1, 2], TPropertyValue::ensureArray("\tarray\t(1, 2)\t"));
+		// Nested `array(array(...))` — recursive use of the keyword form.
+		self::assertSame([[1, 2]], TPropertyValue::ensureArray('array(array(1, 2))'));
+		// Three-deep mixed: array → [ → array → scalar.
+		self::assertSame([[[1, 2]]], TPropertyValue::ensureArray('array([array(1, 2)])'));
 	}
 
 	// ── ensureArray: strict grammar ──────────────────────────────────────────
@@ -1067,6 +1107,16 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		} catch (TInvalidDataValueException $e) {
 			self::assertInstanceOf(TInvalidDataValueException::class, $e);
 		}
+		// Auto-wrap can't save an unbalanced opener inside a `[...]` input —
+		// `'[1, 2'` wrapped becomes `'([1, 2)'`, still unbalanced, still
+		// rejected by both grammars.  ARRAY_STRICT_ERRORS converts the
+		// silent fallback into a thrown exception.
+		try {
+			TPropertyValue::ensureArray('[1, 2', TPropertyValue::ARRAY_STRICT_ERRORS);
+			self::fail('Expected TInvalidDataValueException for unparseable bracketed input under loose grammar');
+		} catch (TInvalidDataValueException $e) {
+			self::assertInstanceOf(TInvalidDataValueException::class, $e);
+		}
 	}
 
 	public function testEnsureArrayStrictBothThrowsOnNonPhpLiteral()
@@ -1085,7 +1135,7 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		}
 	}
 
-	// ── ensureArray: non-eval string branch — plain strings ──────────────────
+	// ── ensureArray: fallback / passthrough branch — plain strings ──────────
 
 	public function testEnsureArrayStringNotParens()
 	{
@@ -1096,7 +1146,8 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 
 	public function testEnsureArrayStringWithLeadingParenOnly()
 	{
-		// Starts with '(' but does NOT end with ')' → plain string, not eval
+		// Starts with '(' but does NOT end with ')' → not a balanced literal;
+		// auto-wrap can't save it either, so falls back to single-element string.
 		self::assertSame(['(partial'], TPropertyValue::ensureArray('(partial'));
 	}
 
@@ -1114,7 +1165,8 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 
 	public function testEnsureArraySingleCharParens()
 	{
-		// Single-char strings: '(' or ')' have len=1 < 2, so do NOT trigger eval
+		// Single-char strings: '(' or ')' aren't a balanced literal and the
+		// wrap-then-parse retry also fails — single-element fallback wins.
 		self::assertSame(['('], TPropertyValue::ensureArray('('));
 		self::assertSame([')'], TPropertyValue::ensureArray(')'));
 	}
@@ -1304,8 +1356,8 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 
 		// ── Variadic form (func_num_args > 2 or non-string second arg) ───────
 
-		// Single-element array form: value is in the array
-		self::assertEquals('only', TPropertyValue::ensureEnum('only', ['only']));
+		// Single-value variadic form: $value matches the trailing varargs.
+		self::assertEquals('only', TPropertyValue::ensureEnum('only', 'only'));
 
 		// Variadic form with many values
 		self::assertEquals('z', TPropertyValue::ensureEnum('z', 'a', 'b', 'c', 'z'));
@@ -1317,9 +1369,10 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		} catch (TInvalidDataValueException $e) {
 		}
 
-		// ── Class-constant form — case-insensitive, returns canonical constant value ─────
+		// ── Class-constant form — case-insensitive, returns canonical constant NAME ──
 
-		// Case-insensitive: 'debug' (lowercase) resolves to 'Debug' (the constant value)
+		// Case-insensitive: 'debug' (lowercase) resolves to 'Debug' (the canonical name).
+		// TApplicationMode has name == value, so the same string doubles as the value.
 		self::assertEquals('Debug', TPropertyValue::ensureEnum('debug', \Prado\TApplicationMode::class));
 
 		// Exception message names valid constants
@@ -1337,132 +1390,519 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		self::assertEquals('Debug', TPropertyValue::ensureEnum('Debug', \Prado\TApplicationMode::class));
 	}
 	
-	// ── BackedEnum form ──────────────────────────────────────────────────────
-
-	public function testEnsureEnum_backedEnum_byBackingValue(): void
-	{
-		// A string backing value resolves via tryFrom().
-		self::assertSame(TPropertyValueTestColor::Red,   TPropertyValue::ensureEnum('red',   TPropertyValueTestColor::class));
-		self::assertSame(TPropertyValueTestColor::Green, TPropertyValue::ensureEnum('green', TPropertyValueTestColor::class));
-		self::assertSame(TPropertyValueTestColor::Blue,  TPropertyValue::ensureEnum('blue',  TPropertyValueTestColor::class));
-	}
-
-	public function testEnsureEnum_backedEnum_byCaseName(): void
-	{
-		// Case name (not backing value) resolves via name scan.
-		self::assertSame(TPropertyValueTestColor::Red,   TPropertyValue::ensureEnum('Red',   TPropertyValueTestColor::class));
-		self::assertSame(TPropertyValueTestColor::Green, TPropertyValue::ensureEnum('Green', TPropertyValueTestColor::class));
-		self::assertSame(TPropertyValueTestColor::Blue,  TPropertyValue::ensureEnum('Blue',  TPropertyValueTestColor::class));
-	}
-
-	public function testEnsureEnum_backedEnum_caseInsensitiveCaseName(): void
-	{
-		// The case-name scan is case-insensitive: any casing of the PHP case name resolves
-		// to the correct enum case, even when it does not match the backing value.
-		// TPropertyValueTestColor has Red='red', Green='green', Blue='blue'.
-		self::assertSame(TPropertyValueTestColor::Red,   TPropertyValue::ensureEnum('RED',   TPropertyValueTestColor::class));
-		self::assertSame(TPropertyValueTestColor::Green, TPropertyValue::ensureEnum('GREEN', TPropertyValueTestColor::class));
-		self::assertSame(TPropertyValueTestColor::Blue,  TPropertyValue::ensureEnum('BLUE',  TPropertyValueTestColor::class));
-		self::assertSame(TPropertyValueTestColor::Red,   TPropertyValue::ensureEnum('rEd',   TPropertyValueTestColor::class));
-		self::assertSame(TPropertyValueTestColor::Blue,  TPropertyValue::ensureEnum('bLuE',  TPropertyValueTestColor::class));
-		// Unresolvable value still throws
-		$this->expectException(TInvalidDataValueException::class);
-		TPropertyValue::ensureEnum('purple', TPropertyValueTestColor::class);
-	}
-
-	public function testEnsureEnum_backedEnum_existingInstance_passedThrough(): void
-	{
-		// An already-correct instance is returned unchanged (identity, not just equality).
-		$case = TPropertyValueTestColor::Green;
-		self::assertSame($case, TPropertyValue::ensureEnum($case, TPropertyValueTestColor::class));
-	}
-
-	public function testEnsureEnum_backedEnum_invalidValue_throws(): void
-	{
-		// A value that matches neither a backing value nor a case name throws.
-		try {
-			TPropertyValue::ensureEnum('purple', TPropertyValueTestColor::class);
-			self::fail('Expected TInvalidDataValueException for unknown backing value');
-		} catch (TInvalidDataValueException $e) {
-			self::assertStringContainsString('purple', $e->getMessage());
-		}
-	}
-
-	public function testEnsureEnum_backedEnum_errorMessageListsCases(): void
-	{
-		// The exception message includes name=value pairs for every case.
-		try {
-			TPropertyValue::ensureEnum('invalid', TPropertyValueTestColor::class);
-			self::fail('Expected TInvalidDataValueException');
-		} catch (TInvalidDataValueException $e) {
-			self::assertStringContainsString('Red=red',   $e->getMessage());
-			self::assertStringContainsString('Green=green', $e->getMessage());
-			self::assertStringContainsString('Blue=blue',  $e->getMessage());
-		}
-	}
-
-	public function testEnsureEnum_backedEnum_nonScalarValue_throwsCleanly(): void
-	{
-		// F-10: before the fix, tryFrom($value) was called without a type guard, so passing
-		// a float, array, or bool to an ensureEnum backed-enum call caused a native TypeError
-		// from tryFrom() rather than a clean TInvalidDataValueException.
-		$cases = [3.14, [], true, new \stdClass()];
-		$threw = 0;
-		foreach ($cases as $bad) {
-			try {
-				TPropertyValue::ensureEnum($bad, TPropertyValueTestColor::class);
-				self::fail('Expected TInvalidDataValueException for ' . get_debug_type($bad));
-			} catch (TInvalidDataValueException $e) {
-				$threw++;
-			}
-		}
-		self::assertSame(count($cases), $threw);
-	}
-
-	public function testEnsureEnum_backedEnum_intValue_resolvesByBackingValue(): void
-	{
-		// F-10 (positive path): an int value on an int-backed enum reaches tryFrom correctly.
-		self::assertSame(TPropertyValueTestPriority::Low,  TPropertyValue::ensureEnum(1, TPropertyValueTestPriority::class));
-		self::assertSame(TPropertyValueTestPriority::High, TPropertyValue::ensureEnum(2, TPropertyValueTestPriority::class));
-	}
-
-	public function testEnsureEnum_iEnumerable_nonStringValue_throwsCleanly(): void
-	{
-		// F-03: before the fix, hasConstant($value) was called without an is_string guard,
-		// so passing a non-string caused a native TypeError inside hasConstant().
-		$cases = [42, 3.14, true, [], null];
-		$threw = 0;
-		foreach ($cases as $bad) {
-			try {
-				TPropertyValue::ensureEnum($bad, TPropertyValueTestDirection::class);
-				self::fail('Expected TInvalidDataValueException for ' . get_debug_type($bad));
-			} catch (TInvalidDataValueException $e) {
-				$threw++;
-			}
-		}
-		self::assertSame(count($cases), $threw);
-	}
+	// ── ensureEnum — class form with case-insensitive constant-name lookup ──
 
 	public function testEnsureEnum_iEnumerable_caseInsensitiveName(): void
 	{
-		// valueOfConstant($value, false) accepts any casing of the constant name.
-		// TPropertyValueTestDirection has North='North', South='South', etc.
+		// Case-sensitive fast path matches; case-insensitive slow path
+		// matches too.  TPropertyValueTestDirection has North='North', etc.
+		// (name == value), so the canonical name returned doubles as the
+		// constant value here.
+		self::assertSame('North', TPropertyValue::ensureEnum('North', TPropertyValueTestDirection::class));
 		self::assertSame('North', TPropertyValue::ensureEnum('north', TPropertyValueTestDirection::class));
 		self::assertSame('South', TPropertyValue::ensureEnum('SOUTH', TPropertyValueTestDirection::class));
 		self::assertSame('East',  TPropertyValue::ensureEnum('east',  TPropertyValueTestDirection::class));
 		self::assertSame('West',  TPropertyValue::ensureEnum('wEsT',  TPropertyValueTestDirection::class));
 	}
 
-	public function testEnsureEnum_iEnumerable_returnsCanonicalValue(): void
+	public function testEnsureEnum_returnsCanonicalNameNotValue(): void
 	{
-		// ensureEnum must return the constant VALUE, not the input string.
-		// TPropertyValueTestCodeEnum has Alpha='a', Beta='b' (name ≠ value).
-		// Any casing of the name resolves to the canonical lowercase value.
-		self::assertSame('a', TPropertyValue::ensureEnum('Alpha', TPropertyValueTestCodeEnum::class));
-		self::assertSame('a', TPropertyValue::ensureEnum('alpha', TPropertyValueTestCodeEnum::class));
-		self::assertSame('a', TPropertyValue::ensureEnum('ALPHA', TPropertyValueTestCodeEnum::class));
-		self::assertSame('b', TPropertyValue::ensureEnum('Beta',  TPropertyValueTestCodeEnum::class));
-		self::assertSame('b', TPropertyValue::ensureEnum('BETA',  TPropertyValueTestCodeEnum::class));
+		// When constant name differs from value (TCodeEnum has `const Alpha = 'a'`),
+		// ensureEnum returns the canonical NAME (with original casing preserved),
+		// NOT the value.  Pair with {@see TPropertyValue::ensureEnumValue()} for
+		// the value-translation step.
+		self::assertSame('Alpha', TPropertyValue::ensureEnum('Alpha', TPropertyValueTestCodeEnum::class));
+		self::assertSame('Alpha', TPropertyValue::ensureEnum('alpha', TPropertyValueTestCodeEnum::class));
+		self::assertSame('Alpha', TPropertyValue::ensureEnum('ALPHA', TPropertyValueTestCodeEnum::class));
+		self::assertSame('Beta',  TPropertyValue::ensureEnum('Beta',  TPropertyValueTestCodeEnum::class));
+		self::assertSame('Beta',  TPropertyValue::ensureEnum('BETA',  TPropertyValueTestCodeEnum::class));
+	}
+
+	public function testEnsureEnum_invalidName_throwsWithConstantListing(): void
+	{
+		// The error message lists every constant of the class so the caller
+		// can see the valid set.
+		try {
+			TPropertyValue::ensureEnum('NotAMode', \Prado\TApplicationMode::class);
+			self::fail('Expected TInvalidDataValueException for invalid constant');
+		} catch (TInvalidDataValueException $e) {
+			self::assertStringContainsString('NotAMode', $e->getMessage());
+			self::assertStringContainsString('Debug',    $e->getMessage());
+			self::assertStringContainsString('Normal',   $e->getMessage());
+		}
+	}
+
+	// ── ensureEnumValue — case-insensitive name → constant VALUE ────────────
+
+	public function testEnsureEnumValue_iEnumerable_returnsConstantValue(): void
+	{
+		// ensureEnumValue resolves the input name (case-insensitively) to the
+		// constant's VALUE.  For `const Alpha = 'a'`, any casing of `'Alpha'`
+		// resolves to `'a'`.  Companion to {@see ensureEnum()} which returns
+		// the canonical name.
+		self::assertSame('a', TPropertyValue::ensureEnumValue('Alpha', TPropertyValueTestCodeEnum::class));
+		self::assertSame('a', TPropertyValue::ensureEnumValue('alpha', TPropertyValueTestCodeEnum::class));
+		self::assertSame('a', TPropertyValue::ensureEnumValue('ALPHA', TPropertyValueTestCodeEnum::class));
+		self::assertSame('b', TPropertyValue::ensureEnumValue('Beta',  TPropertyValueTestCodeEnum::class));
+		self::assertSame('b', TPropertyValue::ensureEnumValue('BETA',  TPropertyValueTestCodeEnum::class));
+	}
+
+	public function testEnsureEnumValue_iEnumerable_nameEqualsValueNoOpDistinction(): void
+	{
+		// When name == value, ensureEnumValue and ensureEnum return the same
+		// string — the distinction only matters for fixtures where name ≠ value.
+		self::assertSame('North', TPropertyValue::ensureEnumValue('north', TPropertyValueTestDirection::class));
+		self::assertSame('South', TPropertyValue::ensureEnumValue('SOUTH', TPropertyValueTestDirection::class));
+		self::assertSame('East',  TPropertyValue::ensureEnumValue('EAST',  TPropertyValueTestDirection::class));
+	}
+
+	public function testEnsureEnumValue_invalidName_throws(): void
+	{
+		try {
+			TPropertyValue::ensureEnumValue('not-a-constant', TPropertyValueTestCodeEnum::class);
+			self::fail('Expected TInvalidDataValueException for invalid IEnumerable name');
+		} catch (TInvalidDataValueException $e) {
+			self::assertStringContainsString('not-a-constant', $e->getMessage());
+			self::assertStringContainsString('Alpha', $e->getMessage());
+			self::assertStringContainsString('Beta',  $e->getMessage());
+		}
+	}
+
+	// ── ensureEnum — BackedEnum / UnitEnum support ──────────────────────────
+
+	public function testEnsureEnum_backedEnum_returnsCaseName(): void
+	{
+		// PHP enum cases are class constants — they flow through the same
+		// reflection-based path.  Returns the case name as a string (not
+		// the case instance).
+		self::assertSame('Red',   TPropertyValue::ensureEnum('Red',   TPropertyValueTestColor::class));
+		self::assertSame('Red',   TPropertyValue::ensureEnum('red',   TPropertyValueTestColor::class));
+		self::assertSame('Red',   TPropertyValue::ensureEnum('RED',   TPropertyValueTestColor::class));
+		self::assertSame('Green', TPropertyValue::ensureEnum('green', TPropertyValueTestColor::class));
+		self::assertSame('Blue',  TPropertyValue::ensureEnum('blue',  TPropertyValueTestColor::class));
+		// Int-backed enum — name lookup works the same way.
+		self::assertSame('Low',  TPropertyValue::ensureEnum('low',  TPropertyValueTestPriority::class));
+		self::assertSame('High', TPropertyValue::ensureEnum('HIGH', TPropertyValueTestPriority::class));
+	}
+
+	public function testEnsureEnum_unitEnum_returnsCaseName(): void
+	{
+		// Non-backed UnitEnum cases are also class constants.
+		self::assertSame('Active',  TPropertyValue::ensureEnum('active',  TPropertyValueTestStatus::class));
+		self::assertSame('Pending', TPropertyValue::ensureEnum('PENDING', TPropertyValueTestStatus::class));
+		self::assertSame('Closed',  TPropertyValue::ensureEnum('Closed',  TPropertyValueTestStatus::class));
+	}
+
+	public function testEnsureEnum_enumInstance_unwrappedToName(): void
+	{
+		// An already-typed enum instance passes through as its ->name.
+		self::assertSame('Red',    TPropertyValue::ensureEnum(TPropertyValueTestColor::Red,    TPropertyValueTestColor::class));
+		self::assertSame('High',   TPropertyValue::ensureEnum(TPropertyValueTestPriority::High, TPropertyValueTestPriority::class));
+		self::assertSame('Active', TPropertyValue::ensureEnum(TPropertyValueTestStatus::Active, TPropertyValueTestStatus::class));
+	}
+
+	// ── ensureEnum — object as $enums ───────────────────────────────────────
+
+	public function testEnsureEnum_objectAsEnums(): void
+	{
+		// When $enums is an object, its class is used for resolution.
+		$instance = new TPropertyValueTestDirection();
+		self::assertSame('East', TPropertyValue::ensureEnum('east', $instance));
+		// Invalid value still throws.
+		$this->expectException(TInvalidDataValueException::class);
+		TPropertyValue::ensureEnum('InvalidDirection', $instance);
+	}
+
+	// ── ensureEnum — extras (list of permitted values) ──────────────────────
+
+	public function testEnsureEnum_withExtras_classResolvesFirst(): void
+	{
+		// A valid class constant is resolved before extras are consulted.
+		self::assertSame(
+			'North',
+			TPropertyValue::ensureEnum('North', TPropertyValueTestDirection::class, null, false, 'Auto')
+		);
+	}
+
+	public function testEnsureEnum_withExtras_classFailsFallsToExtras(): void
+	{
+		// 'Auto' is not a constant in TApplicationMode but matches the extra.
+		self::assertSame(
+			'Auto',
+			TPropertyValue::ensureEnum('Auto', \Prado\TApplicationMode::class, 'Auto')
+		);
+		self::assertFalse(
+			TPropertyValue::ensureEnum(false, TPropertyValueTestDirection::class, null, false)
+		);
+		self::assertSame(
+			0,
+			TPropertyValue::ensureEnum(0, TPropertyValueTestDirection::class, null, false, 0, -1)
+		);
+	}
+
+	public function testEnsureEnum_withExtras_nullExtra(): void
+	{
+		self::assertNull(TPropertyValue::ensureEnum(null, TPropertyValueTestDirection::class, null));
+		// null is permitted, but false is not → throws.
+		try {
+			TPropertyValue::ensureEnum(false, TPropertyValueTestDirection::class, null);
+			self::fail('Expected TInvalidDataValueException for unmatched value with null extra');
+		} catch (TInvalidDataValueException $e) {
+			self::assertStringContainsString('NULL', $e->getMessage());
+		}
+	}
+
+	public function testEnsureEnum_withExtras_arrayShape(): void
+	{
+		// Extras may be passed as a single array or variadically — the two
+		// shapes produce identical results.
+		$cls = TPropertyValueTestDirection::class;
+		self::assertSame('Auto',  TPropertyValue::ensureEnum('Auto', $cls, ['Auto', null, 0]));
+		self::assertSame('Auto',  TPropertyValue::ensureEnum('Auto', $cls, 'Auto', null, 0));
+		self::assertNull(TPropertyValue::ensureEnum(null, $cls, [null, false]));
+		self::assertNull(TPropertyValue::ensureEnum(null, $cls, null, false));
+		self::assertSame(-1, TPropertyValue::ensureEnum(-1, $cls, [-1, 0, 'Auto']));
+		// A valid class constant still resolves first regardless of extras shape.
+		self::assertSame('North', TPropertyValue::ensureEnum('North', $cls, ['Auto']));
+		self::assertSame('North', TPropertyValue::ensureEnum('North', $cls, 'Auto'));
+	}
+
+	public function testEnsureEnum_withExtras_allFail_errorIncludesExtras(): void
+	{
+		try {
+			TPropertyValue::ensureEnum(
+				'NoSuchValue',
+				TPropertyValueTestDirection::class,
+				null,
+				false,
+				0,
+				-1,
+				'Auto'
+			);
+			self::fail('Expected throw when neither class nor extras match');
+		} catch (TInvalidDataValueException $e) {
+			$msg = $e->getMessage();
+			self::assertStringContainsString('North',  $msg);
+			self::assertStringContainsString('South',  $msg);
+			self::assertStringContainsString('NULL',   $msg);
+			self::assertStringContainsString('false',  $msg);
+			// Int-keyed string extras surface as the bare name (no var_export quoting).
+			self::assertStringContainsString('Auto',   $msg);
+		}
+	}
+
+	// ── ensureEnumValue — BackedEnum / UnitEnum support ─────────────────────
+
+	public function testEnsureEnumValue_backedEnum_returnsBackingValue(): void
+	{
+		// BackedEnum case constants are unwrapped to their ->value.
+		self::assertSame('red',   TPropertyValue::ensureEnumValue('Red',   TPropertyValueTestColor::class));
+		self::assertSame('red',   TPropertyValue::ensureEnumValue('red',   TPropertyValueTestColor::class));
+		self::assertSame('green', TPropertyValue::ensureEnumValue('Green', TPropertyValueTestColor::class));
+		self::assertSame('blue',  TPropertyValue::ensureEnumValue('BLUE',  TPropertyValueTestColor::class));
+		// Int-backed enum.
+		self::assertSame(1, TPropertyValue::ensureEnumValue('Low',  TPropertyValueTestPriority::class));
+		self::assertSame(2, TPropertyValue::ensureEnumValue('high', TPropertyValueTestPriority::class));
+	}
+
+	public function testEnsureEnumValue_unitEnum_returnsCaseObject(): void
+	{
+		// Non-backed UnitEnum has no underlying value — the case object
+		// (which IS the constant slot's content) is returned as-is.
+		self::assertSame(TPropertyValueTestStatus::Active,  TPropertyValue::ensureEnumValue('active',  TPropertyValueTestStatus::class));
+		self::assertSame(TPropertyValueTestStatus::Pending, TPropertyValue::ensureEnumValue('PENDING', TPropertyValueTestStatus::class));
+	}
+
+	public function testEnsureEnumValue_enumInstance_unwrapped(): void
+	{
+		// Instance pass-through: BackedEnum → ->value, UnitEnum → the case.
+		self::assertSame('red', TPropertyValue::ensureEnumValue(TPropertyValueTestColor::Red,    TPropertyValueTestColor::class));
+		self::assertSame(2,     TPropertyValue::ensureEnumValue(TPropertyValueTestPriority::High, TPropertyValueTestPriority::class));
+		self::assertSame(TPropertyValueTestStatus::Active, TPropertyValue::ensureEnumValue(TPropertyValueTestStatus::Active, TPropertyValueTestStatus::class));
+	}
+
+	// ── ensureEnumValue — object as $enums ──────────────────────────────────
+
+	public function testEnsureEnumValue_objectAsEnums(): void
+	{
+		$instance = new TPropertyValueTestDirection();
+		self::assertSame('East', TPropertyValue::ensureEnumValue('east', $instance));
+	}
+
+	// ── ensureEnumValue — $extras key/value map ─────────────────────────────
+
+	public function testEnsureEnumValue_extras_mapKeyToValue(): void
+	{
+		// $extras is a case-insensitive key→value map; matched keys resolve
+		// to their mapped values.  Distinct from ensureEnum()'s extras
+		// (list of permitted values).
+		$extras = ['Auto' => 'auto', 'System' => 0, 'Default' => null];
+		self::assertSame('auto', TPropertyValue::ensureEnumValue('Auto',    TPropertyValueTestDirection::class, $extras));
+		self::assertSame('auto', TPropertyValue::ensureEnumValue('auto',    TPropertyValueTestDirection::class, $extras));
+		self::assertSame('auto', TPropertyValue::ensureEnumValue('AUTO',    TPropertyValueTestDirection::class, $extras));
+		self::assertSame(0,      TPropertyValue::ensureEnumValue('system',  TPropertyValueTestDirection::class, $extras));
+		self::assertNull(TPropertyValue::ensureEnumValue('default', TPropertyValueTestDirection::class, $extras));
+	}
+
+	public function testEnsureEnumValue_extras_classResolvesFirst(): void
+	{
+		// A valid constant name is resolved before the extras map is consulted.
+		$extras = ['North' => 'overridden', 'Auto' => 'auto'];
+		self::assertSame('North', TPropertyValue::ensureEnumValue('North', TPropertyValueTestDirection::class, $extras));
+		self::assertSame('auto',  TPropertyValue::ensureEnumValue('Auto',  TPropertyValueTestDirection::class, $extras));
+	}
+
+	public function testEnsureEnumValue_extras_allFail_errorIncludesExtraKeys(): void
+	{
+		try {
+			TPropertyValue::ensureEnumValue(
+				'NoSuchKey',
+				TPropertyValueTestDirection::class,
+				['Auto' => 'auto', 'Custom' => 99]
+			);
+			self::fail('Expected throw when neither class nor extras match');
+		} catch (TInvalidDataValueException $e) {
+			$msg = $e->getMessage();
+			self::assertStringContainsString('NoSuchKey', $msg);
+			self::assertStringContainsString('North',  $msg);
+			self::assertStringContainsString('Auto',   $msg);
+			self::assertStringContainsString('Custom', $msg);
+		}
+	}
+
+	// ── ensureEnum / ensureEnumValue — unified extras semantics ─────────────
+
+	/**
+	 * Both methods accept the same extras shape and share matching rules; only
+	 * the return value differs.  String-keyed entries are case-insensitive
+	 * aliases on the KEY: ensureEnum returns the key (canonical name),
+	 * ensureEnumValue returns the mapped value.
+	 */
+	public function testEnsureEnum_extras_stringKeyed_returnsCanonicalKey(): void
+	{
+		$cls = TPropertyValueTestDirection::class;
+		// Same extras drive both methods to symmetric but distinct results.
+		$extras = ['Auto' => 'auto', 'System' => 0, 'Default' => null];
+		self::assertSame('Auto',   TPropertyValue::ensureEnum('auto',    $cls, $extras));
+		self::assertSame('Auto',   TPropertyValue::ensureEnum('AUTO',    $cls, $extras));
+		self::assertSame('System', TPropertyValue::ensureEnum('system',  $cls, $extras));
+		self::assertSame('Default',TPropertyValue::ensureEnum('default', $cls, $extras));
+		// And ensureEnumValue on the same extras returns the mapped values.
+		self::assertSame('auto',   TPropertyValue::ensureEnumValue('auto',    $cls, $extras));
+		self::assertSame(0,        TPropertyValue::ensureEnumValue('system',  $cls, $extras));
+		self::assertNull(TPropertyValue::ensureEnumValue('default', $cls, $extras));
+	}
+
+	/**
+	 * Int-keyed string extras are case-insensitive names whose string is its
+	 * own value — both methods return the string itself on match.  This is
+	 * the unified extension that lets `ensureEnum($v, $cls, 'Auto')` accept
+	 * any casing of `'Auto'`.
+	 */
+	public function testEnsureEnum_extras_intKeyedString_caseInsensitive(): void
+	{
+		$cls = TPropertyValueTestDirection::class;
+		// Variadic form.
+		self::assertSame('Auto', TPropertyValue::ensureEnum('AUTO', $cls, 'Auto'));
+		self::assertSame('Auto', TPropertyValue::ensureEnum('auto', $cls, 'Auto'));
+		// Array form.
+		self::assertSame('Auto', TPropertyValue::ensureEnum('AUTO', $cls, ['Auto']));
+		// Mixed with sentinels — string match wins over sentinels for string $value.
+		self::assertSame('Auto', TPropertyValue::ensureEnum('aUtO', $cls, [null, false, 'Auto']));
+		// ensureEnumValue does the same thing for int-keyed strings.
+		self::assertSame('Auto', TPropertyValue::ensureEnumValue('auto', $cls, ['Auto']));
+		self::assertSame('Auto', TPropertyValue::ensureEnumValue('AUTO', $cls, ['Auto', null, false]));
+	}
+
+	/**
+	 * Non-string $value never satisfies a string-form extra (int-keyed string
+	 * OR string-keyed alias) — case-insensitive matching is string-only by
+	 * design, so sentinels and aliases stay cleanly separated.
+	 */
+	public function testEnsureEnum_extras_nonStringValue_doesNotMatchStringForms(): void
+	{
+		$cls = TPropertyValueTestDirection::class;
+		foreach ([null, false, true, 0, 1, -1] as $nonString) {
+			// int-keyed string 'Auto' cannot satisfy a non-string $value.
+			try {
+				TPropertyValue::ensureEnum($nonString, $cls, ['Auto']);
+				self::fail('Non-string value should not match int-keyed string extra: ' . var_export($nonString, true));
+			} catch (TInvalidDataValueException $e) {
+				self::assertInstanceOf(TInvalidDataValueException::class, $e);
+			}
+			// String-keyed alias 'Auto' => 'auto' cannot either.
+			try {
+				TPropertyValue::ensureEnum($nonString, $cls, ['Auto' => 'auto']);
+				self::fail('Non-string value should not match string-keyed alias extra: ' . var_export($nonString, true));
+			} catch (TInvalidDataValueException $e) {
+				self::assertInstanceOf(TInvalidDataValueException::class, $e);
+			}
+		}
+	}
+
+	// ── ensureEnum — scalar sentinels in extras (TWebColor|false pattern) ───
+
+	/**
+	 * Properties typed as `TWebColor|false`, `TWebColor|null`, `TWebColor|int`,
+	 * etc., rely on extras to admit scalar sentinels alongside the enum's
+	 * constants without a separate branch.  This covers each of the six common
+	 * scalar sentinels (null, false, true, -1, 0, 1) as an extras member that
+	 * matches its corresponding $value input.
+	 */
+	public function testEnsureEnum_extras_scalarSentinels_eachMatchesItself(): void
+	{
+		$cls = TPropertyValueTestDirection::class;
+		self::assertNull(TPropertyValue::ensureEnum(null,  $cls, null));
+		self::assertFalse(TPropertyValue::ensureEnum(false, $cls, false));
+		self::assertTrue(TPropertyValue::ensureEnum(true,  $cls, true));
+		self::assertSame(-1, TPropertyValue::ensureEnum(-1, $cls, -1));
+		self::assertSame(0,  TPropertyValue::ensureEnum(0,  $cls, 0));
+		self::assertSame(1,  TPropertyValue::ensureEnum(1,  $cls, 1));
+		// Same matrix in array-shape extras.
+		self::assertNull(TPropertyValue::ensureEnum(null,  $cls, [null]));
+		self::assertFalse(TPropertyValue::ensureEnum(false, $cls, [false]));
+		self::assertTrue(TPropertyValue::ensureEnum(true,  $cls, [true]));
+		self::assertSame(-1, TPropertyValue::ensureEnum(-1, $cls, [-1]));
+		self::assertSame(0,  TPropertyValue::ensureEnum(0,  $cls, [0]));
+		self::assertSame(1,  TPropertyValue::ensureEnum(1,  $cls, [1]));
+		// All six sentinels coexist in a single extras list.
+		$all = [null, false, true, -1, 0, 1];
+		self::assertNull(TPropertyValue::ensureEnum(null,  $cls, $all));
+		self::assertFalse(TPropertyValue::ensureEnum(false, $cls, $all));
+		self::assertTrue(TPropertyValue::ensureEnum(true,  $cls, $all));
+		self::assertSame(-1, TPropertyValue::ensureEnum(-1, $cls, $all));
+		self::assertSame(0,  TPropertyValue::ensureEnum(0,  $cls, $all));
+		self::assertSame(1,  TPropertyValue::ensureEnum(1,  $cls, $all));
+		// Class constants still resolve ahead of the extras list.
+		self::assertSame('North', TPropertyValue::ensureEnum('North', $cls, $all));
+	}
+
+	/**
+	 * Strict equality guarantee: extras use `in_array(..., true)` so look-alike
+	 * scalars do not cross-match.  `TWebColor|false` must reject `0`; an int-
+	 * extras `1` must reject `true`; etc.  Locked in to prevent regression to
+	 * loose comparison.
+	 */
+	public function testEnsureEnum_extras_scalarSentinels_strictNoCrossMatch(): void
+	{
+		$cls = TPropertyValueTestDirection::class;
+		// Each pair: (extras-member, list of look-alike inputs that MUST be rejected).
+		$matrix = [
+			['extra' => false, 'bogus' => [0, '0', '', null]],
+			['extra' => true,  'bogus' => [1, '1', 'true']],
+			['extra' => null,  'bogus' => [false, 0, '']],
+			['extra' => 0,     'bogus' => [false, null, '0']],
+			['extra' => 1,     'bogus' => [true, '1']],
+			['extra' => -1,    'bogus' => ['-1', true]],
+		];
+		foreach ($matrix as $row) {
+			foreach ($row['bogus'] as $bogus) {
+				try {
+					TPropertyValue::ensureEnum($bogus, $cls, $row['extra']);
+					self::fail(
+						var_export($row['extra'], true) . ' extra must not cross-match '
+						. var_export($bogus, true)
+					);
+				} catch (TInvalidDataValueException $e) {
+					self::assertInstanceOf(TInvalidDataValueException::class, $e);
+				}
+			}
+		}
+	}
+
+	// ── ensureEnumValue — non-existent class ────────────────────────────────
+
+	/**
+	 * Symmetric to ensureEnum's non-existent-class test: an unreflectable class
+	 * name leaves the reflection cache holding null and triggers the extras-only
+	 * fall-through, which throws when extras is also empty.
+	 */
+	public function testEnsureEnumValue_nonExistentClass_throwsInvalidDataValueException(): void
+	{
+		$this->expectException(\Prado\Exceptions\TInvalidDataValueException::class);
+		TPropertyValue::ensureEnumValue('Foo', 'TPropertyValueNonExistentClass99999XYZ');
+	}
+
+	// ── ensureEnumValue — mixed-shape extras (alias map + sentinel list) ────
+
+	/**
+	 * String-keyed extras act as a case-insensitive alias map (key compared to
+	 * $value, mapped value returned); int-keyed extras act as a strict-equality
+	 * permitted list (value compared to $value, returned on match).  The two
+	 * shapes may be mixed freely in one array — covering sentinels like null,
+	 * false, 0 without requiring synthetic keys.
+	 */
+	public function testEnsureEnumValue_mixedExtras_aliasMapAndSentinelList(): void
+	{
+		$cls = TPropertyValueTestDirection::class;
+		// String-keyed alias still resolves a string $value.
+		self::assertSame('auto', TPropertyValue::ensureEnumValue('Auto', $cls, ['Auto' => 'auto']));
+		// Int-keyed sentinels are matched against $value with ===.
+		self::assertNull(TPropertyValue::ensureEnumValue(null,   $cls, [null]));
+		self::assertFalse(TPropertyValue::ensureEnumValue(false, $cls, [false]));
+		self::assertTrue(TPropertyValue::ensureEnumValue(true,   $cls, [true]));
+		self::assertSame(-1, TPropertyValue::ensureEnumValue(-1,  $cls, [-1]));
+		self::assertSame(0,  TPropertyValue::ensureEnumValue(0,   $cls, [0]));
+		self::assertSame(1,  TPropertyValue::ensureEnumValue(1,   $cls, [1]));
+		// Mixed: alias map + sentinel list in one array.
+		$mixed = ['Auto' => 'auto', null, false, -1];
+		self::assertSame('auto', TPropertyValue::ensureEnumValue('Auto',  $cls, $mixed));
+		self::assertSame('auto', TPropertyValue::ensureEnumValue('AUTO',  $cls, $mixed));
+		self::assertNull(TPropertyValue::ensureEnumValue(null,  $cls, $mixed));
+		self::assertFalse(TPropertyValue::ensureEnumValue(false, $cls, $mixed));
+		self::assertSame(-1, TPropertyValue::ensureEnumValue(-1,  $cls, $mixed));
+		// Class constants still resolve ahead of the extras list.
+		self::assertSame('North', TPropertyValue::ensureEnumValue('north', $cls, $mixed));
+	}
+
+	/**
+	 * Strict-equality guarantee for int-keyed extras: a `false` sentinel must
+	 * not satisfy `0`, a `null` sentinel must not satisfy `false`, etc.
+	 * Symmetric to the same matrix on ensureEnum.
+	 */
+	public function testEnsureEnumValue_intKeyedExtras_strictNoCrossMatch(): void
+	{
+		$cls = TPropertyValueTestDirection::class;
+		$matrix = [
+			['extra' => false, 'bogus' => [0, '0', '']],
+			['extra' => true,  'bogus' => [1, '1']],
+			['extra' => null,  'bogus' => [false, 0, '']],
+			['extra' => 0,     'bogus' => [false, '0']],
+			['extra' => 1,     'bogus' => [true, '1']],
+		];
+		foreach ($matrix as $row) {
+			foreach ($row['bogus'] as $bogus) {
+				try {
+					TPropertyValue::ensureEnumValue($bogus, $cls, [$row['extra']]);
+					self::fail(
+						var_export($row['extra'], true) . ' int-keyed extra must not cross-match '
+						. var_export($bogus, true)
+					);
+				} catch (TInvalidDataValueException $e) {
+					self::assertInstanceOf(TInvalidDataValueException::class, $e);
+				}
+			}
+		}
+	}
+
+	// ── ensureEnum — mixed-shape extras only normalize single-array form ────
+
+	/**
+	 * The single-array normalization fires only when extras is exactly one
+	 * array argument.  Mixing a leading scalar with a trailing array leaves
+	 * the array as a literal extras member (and matches nothing in strict
+	 * equality unless $value is also an array).
+	 */
+	public function testEnsureEnum_mixedShapeExtras_doNotNormalize(): void
+	{
+		$cls = TPropertyValueTestDirection::class;
+		// Two-arg form: ['North', ['extra1','extra2']] — the inner array is literal.
+		// 'North' resolves on the class lookup before extras are considered.
+		self::assertSame('North', TPropertyValue::ensureEnum('North', $cls, 'leading', ['trailing']));
+		// The literal array IS findable when $value is the same array (strict ==).
+		self::assertSame(['trailing'], TPropertyValue::ensureEnum(['trailing'], $cls, 'leading', ['trailing']));
+		// And the leading scalar is still findable.
+		self::assertSame('leading', TPropertyValue::ensureEnum('leading', $cls, 'leading', ['trailing']));
 	}
 
 	public function testEnsureNullIfEmpty()
@@ -1888,13 +2328,18 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 
 	public function testCoerceToTypeCodeEnumCaseInsensitiveName(): void
 	{
-		// When constant name ≠ constant value (const Alpha = 'a'), a case-insensitive
-		// name match still resolves to the canonical constant value.
+		// When the constant name differs from the constant value (`const Alpha = 'a'`),
+		// the coercion has validated the input string against the constant *name*
+		// and returned the canonical name (case-corrected) — *not* the constant
+		// value.  Any name→value translation has stayed inside the enum class
+		// itself (e.g. via `TPropertyValueTestCodeEnum::valueOfConstant()`).
+		// Compare {@see testEnsureEnum_iEnumerable_returnsCanonicalValue} which
+		// is a different entry point and intentionally returns the value.
 		$t = $this->typeOf(fn(TPropertyValueTestCodeEnum $x) => $x);
-		self::assertSame('a', TPropertyValue::coerceToType('alpha', $t));
-		self::assertSame('a', TPropertyValue::coerceToType('ALPHA', $t));
-		self::assertSame('b', TPropertyValue::coerceToType('beta',  $t));
-		self::assertSame('b', TPropertyValue::coerceToType('BETA',  $t));
+		self::assertSame('Alpha', TPropertyValue::coerceToType('alpha', $t));
+		self::assertSame('Alpha', TPropertyValue::coerceToType('ALPHA', $t));
+		self::assertSame('Beta',  TPropertyValue::coerceToType('beta',  $t));
+		self::assertSame('Beta',  TPropertyValue::coerceToType('BETA',  $t));
 	}
 
 	public function testCoerceToTypeCustomIEnumerableInvalidPassesThrough(): void
@@ -2172,8 +2617,9 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 
 	public function testCoerceToTypeUnionArrayKeywordNotationWins(): void
 	{
-		// Bug CU1: step 4 only detected `(...)` and `[...]` as array notation but
-		// missed the PHP `array(...)` keyword form.  All three must be recognized.
+		// Bug CU1: step 6 (array notation) used to detect only `(...)` and
+		// `[...]`, missing the PHP `array(...)` keyword form.  All three
+		// must be recognized.
 		$t = $this->typeOf(fn(int|array $x) => $x);
 		self::assertSame([1, 2, 3], TPropertyValue::coerceToType('array(1, 2, 3)', $t));
 		self::assertSame(['a', 'b'], TPropertyValue::coerceToType('Array("a", "b")', $t));
@@ -2212,9 +2658,9 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 
 	public function testCoerceToTypeUnionFallbackUsesTypeCoerceOrder(): void
 	{
-		// 'not-numeric' matches no heuristic → fallback (step 9).
+		// 'not-numeric' matches no heuristic → fallback (step 10).
 		// TYPE_COERCE_ORDER places int before array, so ensureInteger('not-numeric') = 0,
-		// matching PHP non-strict behaviour (implicit string→int yields 0 with a notice).
+		// matching PHP non-strict behavior (implicit string→int yields 0 with a notice).
 		$t = $this->typeOf(fn(int|array $x) => $x);
 		self::assertSame(0, TPropertyValue::coerceToType('not-numeric', $t));
 		// array-only union: no int → array is first in order → single-element array.
@@ -2234,7 +2680,7 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 	{
 		// Empty string with no `null` member: the null short-circuit does not fire.
 		// Neither array notation, bool literal, nor numeric apply to '', so the fallback
-		// (step 9) sorts by TYPE_COERCE_ORDER.  int (position 0) comes before bool
+		// (step 10) sorts by TYPE_COERCE_ORDER.  int (position 0) comes before bool
 		// (position 3); ensureInteger('') = 0.
 		$t = $this->typeOf(fn(bool|int $x) => $x);
 		self::assertSame(0, TPropertyValue::coerceToType('', $t));
@@ -2242,7 +2688,7 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 
 	public function testCoerceToTypeUnionStringMemberCoercesNonStringViaEnsureString(): void
 	{
-		// Step 2: when `string` is a union member and the value is NOT already a string,
+		// Step 4: when `string` is a union member and the value is NOT already a string,
 		// ensureString() is called (bool→'true'/'false', int→string, etc.).
 		$t = $this->typeOf(fn(string|int $x) => $x);
 		self::assertSame('true',  TPropertyValue::coerceToType(true,  $t));
@@ -2252,9 +2698,9 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 
 	public function testCoerceToTypeUnionIterableInUnion(): void
 	{
-		// `iterable` in a union sets $hasArray=true, so array-notation strings (step 4)
-		// are still parsed correctly.  Step 5 only fires for '(...)' / '[...]' / 'array(...)'
-		// notation, so 'true'/'false' fall through to step 6 (bool literals) and are coerced to bool.
+		// `iterable` in a union sets $hasArray=true, so array-notation strings (step 6)
+		// are still parsed correctly.  Step 6 only fires for '(...)' / '[...]' / 'array(...)'
+		// notation, so 'true'/'false' fall through to step 7 (bool literals) and are coerced to bool.
 		$t = $this->typeOf(fn(iterable|bool $x) => $x);
 		self::assertSame(['a', 'b'], TPropertyValue::coerceToType('("a", "b")', $t));
 		self::assertSame(true,       TPropertyValue::coerceToType('true',       $t));
@@ -2263,17 +2709,17 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 
 	public function testCoerceToTypeUnionFloatOnlyNumeric(): void
 	{
-		// Step 7: when `float` is present but `int` is not, any numeric string → float.
-		// Bool literals win step 6 before the numeric check (step 7).
+		// Step 8: when `float` is present but `int` is not, any numeric string → float.
+		// Bool literals win step 7 before the numeric check (step 8).
 		$t = $this->typeOf(fn(float|bool $x) => $x);
 		self::assertSame(3.14, TPropertyValue::coerceToType('3.14', $t));
 		self::assertSame(42.0, TPropertyValue::coerceToType('42',   $t));
 		self::assertSame(true, TPropertyValue::coerceToType('true', $t));
 	}
 
-	public function testCoerceToTypeUnionStep7ScientificNotation(): void
+	public function testCoerceToTypeUnionScientificNotation(): void
 	{
-		// Step 7: scientific notation ('1e5', '1E+3') contains no '.' but still represents
+		// Step 8 (numeric shape): scientific notation ('1e5', '1E+3') contains no '.' but still represents
 		// a float.  Without the stripos('e') check the str_contains('.') branch returned
 		// (int)'1e5', whereas PHP non-strict mode promotes these strings to float.
 		$t = $this->typeOf(fn(int|float $x) => $x);
@@ -2289,12 +2735,12 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		self::assertSame(3.14,      TPropertyValue::coerceToType('3.14',   $t));
 	}
 
-	public function testCoerceToTypeUnionStep7LargeIntStringPromotesToFloat(): void
+	public function testCoerceToTypeUnionLargeIntStringPromotesToFloat(): void
 	{
 		// F-08: a numeric string that exceeds PHP_INT_MAX (or is below PHP_INT_MIN) must
-		// promote to float when both int and float are in the union, matching PHP's own
-		// non-strict coercion rules.  Before the fix, (int)$s saturated silently at
-		// PHP_INT_MAX/MIN instead of returning the float representation.
+		// promote to float when both int and float are in the union (step 8 — numeric
+		// shape), matching PHP's own non-strict coercion rules.  Before the fix, (int)$s
+		// saturated silently at PHP_INT_MAX/MIN instead of returning the float representation.
 		$t = $this->typeOf(fn(int|float $x) => $x);
 		// Values that fit in int — must stay int
 		self::assertSame(PHP_INT_MAX, TPropertyValue::coerceToType((string) PHP_INT_MAX, $t));
@@ -2308,61 +2754,65 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		self::assertSame((float) $underMin, TPropertyValue::coerceToType($underMin, $t));
 	}
 
-	public function testCoerceToTypeUnionStep8BackedEnumInMultiMemberUnion(): void
+	public function testCoerceToTypeUnionBackedEnumInMultiMemberUnion(): void
 	{
-		// Step 8 (non-builtin class) is only reached when multiple non-null members exist
-		// (otherwise the single-non-null optimisation delegates directly).
-		// A valid enum backing value is coerced; an invalid one passes through unchanged.
+		// Step 9 (non-builtin class lookup) is only reached when multiple non-null
+		// members exist (otherwise the single-non-null optimization delegates
+		// directly).  A valid enum backing value is coerced; an invalid one
+		// passes through unchanged.
 		$t = $this->typeOf(fn(TPropertyValueTestColor|int $x) => $x);
 		self::assertSame(TPropertyValueTestColor::Blue, TPropertyValue::coerceToType('blue', $t));
-		// '99' is numeric → step 7 (int), step 8 not reached.
+		// '99' is numeric → step 8 (numeric shape) → int, step 9 not reached.
 		self::assertSame(99, TPropertyValue::coerceToType('99', $t));
 	}
 
-	public function testCoerceToTypeUnionStep8IntBackedEnumFromPhpInt(): void
+	public function testCoerceToTypeUnionIntBackedEnumFromPhpInt(): void
 	{
-		// F-16: step 8 previously called _coerceToClass($strValue, …) exclusively, so a PHP
+		// F-16: step 9 previously called _coerceToClass($strValue, …) exclusively, so a PHP
 		// int value was stringified to e.g. '1' before reaching tryFrom().  For int-backed
 		// enums tryFrom('1') returns null (type mismatch), silently failing the coercion.
 		// The fix tries _coerceToClass($value, …) first so the original PHP int reaches
 		// tryFrom(1) and resolves correctly.
 		//
 		// Union uses bool (not string/int/float) so that:
-		//   - step 3 is skipped (string absent)
-		//   - step 4 Pass A/B are skipped (int/float absent, bool doesn't match an int)
-		//   - step 7 is skipped (no int/float in union)
-		// …forcing the PHP int to reach step 8 where _coerceToClass is called.
+		//   - step 4 is skipped (string absent)
+		//   - step 5 Pass A/B are skipped (int/float absent, bool doesn't match an int)
+		//   - step 8 is skipped (no int/float in union)
+		// …forcing the PHP int to reach step 9 where _coerceToClass is called.
 		$t = $this->typeOf(fn(TPropertyValueTestPriority|bool $x) => $x);
-		// PHP int → int-backed enum via original-value path in step 8
+		// PHP int → int-backed enum via original-value path in step 9
 		self::assertSame(TPropertyValueTestPriority::Low,  TPropertyValue::coerceToType(1, $t));
 		self::assertSame(TPropertyValueTestPriority::High, TPropertyValue::coerceToType(2, $t));
-		// Unknown int → no enum case, no bool literal → step 9 picks bool (lower TYPE_COERCE_ORDER
+		// Unknown int → no enum case, no bool literal → step 10 picks bool (lower TYPE_COERCE_ORDER
 		// index than a non-builtin class); ensureBoolean(99) = true (non-zero numeric).
 		self::assertSame(true, TPropertyValue::coerceToType(99, $t));
 	}
 
-	public function testCoerceToTypeUnionStep8IEnumerableChangedValue(): void
+	public function testCoerceToTypeUnionEnumValidatesNameWithCaseCorrection(): void
 	{
-		// Step 8: when _coerceToClass returns a value DIFFERENT from $strValue, the
-		// coerced result is used.  TPropertyValueTestCodeEnum has const Alpha='a', so
-		// valueOfConstant('Alpha')='a' ≠ 'Alpha', triggering the !== guard.
+		// Step 2 has validated the input string against TCodeEnum's constant
+		// names case-insensitively and returned the *canonical name* — the
+		// constant's value (`'a'` for `const Alpha = 'a'`) has NOT been
+		// returned here; any name→value translation has stayed inside the
+		// enum class.
 		$t = $this->typeOf(fn(TPropertyValueTestCodeEnum|int $x) => $x);
-		self::assertSame('a', TPropertyValue::coerceToType('Alpha', $t));
-		self::assertSame('b', TPropertyValue::coerceToType('Beta',  $t));
-		// Unrecognised name: valueOfConstant returns null → falls back to $strValue →
-		// $coerced === $strValue → step 8 does NOT return → fallback (step 9).
-		// int|TPropertyValueTestCodeEnum canonical order: non-builtin last? or first?
-		// Either way step 9 runs ensureInteger or _coerceToClass on 'Unknown'.
-		// Assert only that the result is deterministic (no exception).
-		$result = TPropertyValue::coerceToType('Unknown', $t);
-		self::assertTrue(is_int($result) || is_string($result));
+		self::assertSame('Alpha', TPropertyValue::coerceToType('Alpha', $t));
+		self::assertSame('Alpha', TPropertyValue::coerceToType('alpha', $t));
+		self::assertSame('Alpha', TPropertyValue::coerceToType('ALPHA', $t));
+		self::assertSame('Beta',  TPropertyValue::coerceToType('Beta',  $t));
+		self::assertSame('Beta',  TPropertyValue::coerceToType('beta',  $t));
+		// Unrecognized name: step 2 misses, fallback chain runs through to
+		// step 10 (fallback) — int is first in TYPE_COERCE_ORDER, so
+		// ensureInteger('Unknown') = 0.
+		self::assertSame(0, TPropertyValue::coerceToType('Unknown', $t));
 	}
 
 	public function testCoerceToTypeUnionObjectInstancePreservedByNativeTypeShortCircuit(): void
 	{
-		// Step 3: when $value is a non-string object whose PHP type matches a non-builtin
-		// union member, it is returned without any conversion.
-		// Uses a plain stdClass (not an enum) to confirm the general object path.
+		// Step 3 (pre-string short-circuit): when $value is a non-string object
+		// whose PHP type matches a non-builtin union member, it is returned
+		// without any conversion.  Uses a plain stdClass (not an enum) to
+		// confirm the general object path.
 		$t = $this->typeOf(fn(\stdClass|int $x) => $x);
 		$obj = new \stdClass();
 		$obj->x = 'preserved';
@@ -2384,10 +2834,11 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 
 	public function testCoerceToTypeUnionArrayPreservedWhenStringAlsoInUnion(): void
 	{
-		// Bug CU2: when `string` is in the union, step 3 (the old step 2) fired
-		// ensureString() on array values, producing the useless string "Array"
-		// instead of preserving the array.  The pre-string short-circuit (step 2)
-		// must claim array values before the string coercion path fires.
+		// Bug CU2: when `string` is in the union, step 4 (string member) used
+		// to fire ensureString() on array values, producing the useless string
+		// "Array" instead of preserving the array.  The pre-string short-
+		// circuit (step 3) now claims array values before the string coercion
+		// path fires.
 		$t = $this->typeOf(fn(string|array $x) => $x);
 		self::assertSame([1, 2, 3],          TPropertyValue::coerceToType([1, 2, 3], $t));
 		self::assertSame([],                 TPropertyValue::coerceToType([],        $t));
@@ -2395,7 +2846,7 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		// A string value still passes through as-is.
 		self::assertSame('hello',            TPropertyValue::coerceToType('hello',   $t));
 		// Scalar non-string values (bool, int) still coerce to string when string
-		// is in the union — the step 2 short-circuit is limited to arrays/objects.
+		// is in the union — the step 3 short-circuit is limited to arrays/objects.
 		self::assertSame('true', TPropertyValue::coerceToType(true, $t));
 		self::assertSame('42',   TPropertyValue::coerceToType(42,   $t));
 	}
@@ -2427,46 +2878,184 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		self::assertSame(TPropertyValueTestColor::Red, TPropertyValue::coerceToType(TPropertyValueTestColor::Red, $t));
 	}
 
-	public function testCoerceToTypeUnionStep3BoolWidensToInt(): void
+	public function testCoerceToTypeUnionBoolWidensToInt(): void
 	{
-		// Step 3 pass B: when bool is absent from the union, a native bool is widened
-		// to int (true=1, false=0), matching PHP's non-strict coercion behaviour.
+		// Step 5 (native-type) pass B: when bool is absent from the union, a
+		// native bool widens to int (true=1, false=0), matching PHP's non-
+		// strict coercion behavior.
 		$t = $this->typeOf(fn(int|array $x) => $x);
 		self::assertSame(1, TPropertyValue::coerceToType(true,  $t));
 		self::assertSame(0, TPropertyValue::coerceToType(false, $t));
 	}
 
-	public function testCoerceToTypeUnionStep3BoolWidensToFloatWhenNoInt(): void
+	public function testCoerceToTypeUnionBoolWidensToFloatWhenNoInt(): void
 	{
-		// When int is absent but float is present, bool widens to float.
+		// When int is absent but float is present, bool widens to float (step 5 pass B).
 		$t = $this->typeOf(fn(float|array $x) => $x);
 		self::assertSame(1.0, TPropertyValue::coerceToType(true,  $t));
 		self::assertSame(0.0, TPropertyValue::coerceToType(false, $t));
 	}
 
-	public function testCoerceToTypeUnionStep3BoolPreservedWhenBoolInUnion(): void
+	public function testCoerceToTypeUnionBoolPreservedWhenBoolInUnion(): void
 	{
-		// When bool IS in the union, pass A exact-match fires and the value stays bool.
+		// When bool IS in the union, step 5 pass A exact-match fires and the
+		// value stays bool.
 		$t = $this->typeOf(fn(bool|int $x) => $x);
 		self::assertSame(true,  TPropertyValue::coerceToType(true,  $t));
 		self::assertSame(false, TPropertyValue::coerceToType(false, $t));
 	}
 
-	public function testCoerceToTypeUnionStep3IntWidensToFloat(): void
+	public function testCoerceToTypeUnionIntWidensToFloat(): void
 	{
-		// Step 3 pass B: when int is absent but float is present, a native int widens
-		// to float (lossless promotion), matching PHP non-strict behaviour.
+		// Step 5 (native-type) pass B: when int is absent but float is
+		// present, a native int widens to float (lossless promotion),
+		// matching PHP non-strict behavior.
 		$t = $this->typeOf(fn(float|array $x) => $x);
 		self::assertSame(42.0, TPropertyValue::coerceToType(42, $t));
 		self::assertSame(-1.0, TPropertyValue::coerceToType(-1, $t));
 	}
 
-	public function testCoerceToTypeUnionStep3IntPreservedWhenIntInUnion(): void
+	public function testCoerceToTypeUnionIntPreservedWhenIntInUnion(): void
 	{
-		// When int IS in the union, pass A exact-match fires and the value stays int.
+		// When int IS in the union, step 5 pass A exact-match fires and the
+		// value stays int.
 		$t = $this->typeOf(fn(int|float $x) => $x);
 		self::assertSame(7,  TPropertyValue::coerceToType(7,  $t));
 		self::assertSame(-3, TPropertyValue::coerceToType(-3, $t));
+	}
+
+	// ════════════════════════════════════════════════════════════════════════
+	// Step 2 — enumerable transition (name lookup precedes string member)
+	// ════════════════════════════════════════════════════════════════════════
+
+	public function testCoerceToTypeUnionStep2IEnumerableNameWinsOverString(): void
+	{
+		// `TWebColor|string|null` with 'Red' has validated against TWebColor's
+		// constant names and returned the canonical name `'Red'` (any-casing
+		// input is corrected).  The enum has been used as a *validator*, not
+		// a transition table — name→value translation has stayed inside the
+		// class itself (e.g. via {@see TPropertyValue::ensureHexColor()}).
+		// Pre-step-2 the `string` union member silently dominated and the
+		// untouched input passed through.
+		$t = $this->typeOf(fn(\Prado\Web\UI\TWebColor|string|null $x) => $x);
+		self::assertSame('Red',  TPropertyValue::coerceToType('Red',  $t));
+		self::assertSame('Red',  TPropertyValue::coerceToType('red',  $t));
+		self::assertSame('Red',  TPropertyValue::coerceToType('RED',  $t));
+		self::assertSame('Blue', TPropertyValue::coerceToType('Blue', $t));
+		self::assertSame('Blue', TPropertyValue::coerceToType('BLUE', $t));
+		// Unknown name has fallen through to step 4 (string in union) → pass through.
+		self::assertSame('not-a-color', TPropertyValue::coerceToType('not-a-color', $t));
+		// Empty string with nullable union → null (step 1 still fires first).
+		self::assertNull(TPropertyValue::coerceToType('', $t));
+	}
+
+	public function testCoerceToTypeUnionStep2BackedEnumNameWinsOverString(): void
+	{
+		// `TPropertyValueTestColor|string|null` with a case name resolves to the case;
+		// the backing value also resolves (BackedEnum::tryFrom path inside _tryMatchEnum).
+		$t = $this->typeOf(fn(TPropertyValueTestColor|string|null $x) => $x);
+		// Case name (any casing).
+		self::assertSame(TPropertyValueTestColor::Red,  TPropertyValue::coerceToType('Red',  $t));
+		self::assertSame(TPropertyValueTestColor::Red,  TPropertyValue::coerceToType('RED',  $t));
+		self::assertSame(TPropertyValueTestColor::Blue, TPropertyValue::coerceToType('Blue', $t));
+		// Backing value.
+		self::assertSame(TPropertyValueTestColor::Blue, TPropertyValue::coerceToType('blue', $t));
+		// Unknown → fall through to step 4 string member.
+		self::assertSame('not-a-color', TPropertyValue::coerceToType('not-a-color', $t));
+	}
+
+	public function testCoerceToTypeBackedEnumGuardsAgainstBackingTypeMismatch(): void
+	{
+		// PHP 8.1+ `BackedEnum::tryFrom()` is strict on the backing type — a
+		// string against an int-backed enum (or an int against a string-backed
+		// enum) raises TypeError.  Both _tryMatchEnum() (string side) and
+		// _coerceToClass() (int side) have wrapped the call so the lookup
+		// falls through to the name scan / single-element pass-through.
+
+		// String input against int-backed enum — should fall through to name
+		// lookup and resolve via `cases()` iteration.
+		$intBacked = $this->typeOf(fn(TPropertyValueTestPriority $x) => $x);
+		self::assertSame(TPropertyValueTestPriority::Low,  TPropertyValue::coerceToType('Low',  $intBacked));
+		self::assertSame(TPropertyValueTestPriority::High, TPropertyValue::coerceToType('High', $intBacked));
+		// String backing value DOES work because the input is a string and the
+		// backing-string check (gettype) matches — but for int-backed there's
+		// no string backing, so the name path is the only one that resolves.
+		self::assertSame(TPropertyValueTestPriority::Low, TPropertyValue::coerceToType('low', $intBacked));
+
+		// Int input against string-backed enum — should pass through unchanged
+		// (no name lookup for non-string inputs in _coerceToClass).
+		$stringBacked = $this->typeOf(fn(TPropertyValueTestColor $x) => $x);
+		self::assertSame(99, TPropertyValue::coerceToType(99, $stringBacked));
+
+		// Mixed-enum union (string-backed + int-backed): a string name that
+		// matches the int-backed enum has resolved via the second iteration
+		// after the first enum's tryFrom raised the wrapped TypeError.
+		$mixed = $this->typeOf(fn(TPropertyValueTestColor|TPropertyValueTestPriority $x) => $x);
+		self::assertSame(TPropertyValueTestPriority::High, TPropertyValue::coerceToType('High', $mixed));
+	}
+
+	public function testCoerceToTypeUnionStep2MultipleEnumsFirstMatchWins(): void
+	{
+		// Union with two enumerable members.  Iteration order is the union's
+		// declared order; the first matching enum wins.  TPropertyValueTestColor
+		// has cases Red/Blue, TPropertyValueTestPriority has Low/High — disjoint
+		// names, so each input resolves unambiguously.
+		$t = $this->typeOf(fn(TPropertyValueTestColor|TPropertyValueTestPriority|null $x) => $x);
+		self::assertSame(TPropertyValueTestColor::Red,    TPropertyValue::coerceToType('Red',  $t));
+		self::assertSame(TPropertyValueTestPriority::Low, TPropertyValue::coerceToType('Low',  $t));
+		self::assertSame(TPropertyValueTestPriority::High, TPropertyValue::coerceToType('High', $t));
+	}
+
+	public function testCoerceToTypeUnionStep2NonStringValueSkipsEnumTranslation(): void
+	{
+		// Step 2 only fires for string $value.  Non-string inputs go through
+		// the existing chain — int 1 against a BackedEnum|bool union still
+		// reaches step 9 (_coerceToClass) for backing-value lookup.
+		$t = $this->typeOf(fn(TPropertyValueTestPriority|bool $x) => $x);
+		self::assertSame(TPropertyValueTestPriority::Low,  TPropertyValue::coerceToType(1, $t));
+		self::assertSame(TPropertyValueTestPriority::High, TPropertyValue::coerceToType(2, $t));
+	}
+
+	public function testCoerceToTypeUnionStep2EnumMissContinuesChain(): void
+	{
+		// An enum-name miss has let the rest of the coercion chain run.
+		// `TWebColor|int|null` with the numeric string '42' — TWebColor has no
+		// constant named '42', so step 2 finds nothing; step 8 (numeric shape)
+		// converts '42' to int 42.
+		$t = $this->typeOf(fn(\Prado\Web\UI\TWebColor|int|null $x) => $x);
+		self::assertSame(42, TPropertyValue::coerceToType('42', $t));
+		self::assertNull(TPropertyValue::coerceToType('', $t));
+	}
+
+	public function testCoerceToTypeUnionStep2PlainUnitEnumInUnion(): void
+	{
+		// A non-backed UnitEnum has no backing value — the step-2 path has had
+		// to fall straight through to the cases() name scan.  Returns the case
+		// object, not a string.
+		$t = $this->typeOf(fn(TPropertyValueTestStatus|string $x) => $x);
+		self::assertSame(TPropertyValueTestStatus::Active,  TPropertyValue::coerceToType('Active',  $t));
+		self::assertSame(TPropertyValueTestStatus::Active,  TPropertyValue::coerceToType('active',  $t));
+		self::assertSame(TPropertyValueTestStatus::Pending, TPropertyValue::coerceToType('PENDING', $t));
+		// Name miss → step 4 string member.
+		self::assertSame('archived', TPropertyValue::coerceToType('archived', $t));
+	}
+
+	public function testTryMatchEnumReturnsDistinctFormsByEnumKind(): void
+	{
+		// Locks in the return-shape invariant of {@see _tryMatchEnum()} that
+		// the rest of the coercion layer depends on:
+		//   - non-backed UnitEnum → case object
+		//   - BackedEnum          → case object
+		//   - IEnumerable         → canonical NAME (string, case-corrected)
+		// All three are exercised via coerceToType on a single non-null union
+		// with the same input string so each test asserts only its own kind.
+		$status   = $this->typeOf(fn(TPropertyValueTestStatus|null $x) => $x);
+		$color    = $this->typeOf(fn(TPropertyValueTestColor|null $x) => $x);
+		$codeEnum = $this->typeOf(fn(TPropertyValueTestCodeEnum|null $x) => $x);
+		self::assertSame(TPropertyValueTestStatus::Active, TPropertyValue::coerceToType('Active', $status));
+		self::assertSame(TPropertyValueTestColor::Red,     TPropertyValue::coerceToType('Red',    $color));
+		// IEnumerable returns the canonical NAME, not the value 'a'.
+		self::assertSame('Alpha', TPropertyValue::coerceToType('Alpha', $codeEnum));
 	}
 
 	// ════════════════════════════════════════════════════════════════════════
@@ -2850,10 +3439,15 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		self::assertEquals('#BBEEDD', TPropertyValue::ensureHexColor('#BED'));
 		self::assertEquals('#CCDDEE', TPropertyValue::ensureHexColor('#cde'));
 		
-		// Web Colors 
+		// Web Colors
 		self::assertEquals('#FFFFFF', TPropertyValue::ensureHexColor('White'));
 		self::assertEquals('#C0C0C0', TPropertyValue::ensureHexColor('silver')); //lower case
 		self::assertEquals('#808080', TPropertyValue::ensureHexColor('GRAY'));	//uppers case
+		// Genuinely mixed case — verifies TWebColor::valueOfConstant($v, false)
+		// drives the lookup case-insensitively (the implementation that
+		// replaced the old `new ReflectionClass + array_change_key_case`).
+		self::assertEquals('#00BFFF', TPropertyValue::ensureHexColor('dEePsKyBlUe'));
+		self::assertEquals('#FFB6C1', TPropertyValue::ensureHexColor('LiGhTpInK'));
 		self::assertEquals('#000000', TPropertyValue::ensureHexColor('Black'));
 		self::assertEquals('#FF0000', TPropertyValue::ensureHexColor('Red'));
 		self::assertEquals('#800000', TPropertyValue::ensureHexColor('Maroon'));
@@ -3224,14 +3818,14 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 	}
 
 	// ════════════════════════════════════════════════════════════════════════
-	// ensureArray — trailing comma in eval branch
+	// ensureArray — trailing comma in array literal
 	// ════════════════════════════════════════════════════════════════════════
 
 	/**
-	 * PHP allows a trailing comma inside array() since PHP 5.0.  The eval branch
-	 * must accept expressions like '(1, 2, 3,)' without error.
+	 * PHP allows a trailing comma inside an array literal since PHP 5.0.  The
+	 * parser must accept expressions like '(1, 2, 3,)' without error.
 	 */
-	public function testEnsureArray_evalBranch_trailingCommaAccepted(): void
+	public function testEnsureArray_parseBranch_trailingCommaAccepted(): void
 	{
 		self::assertSame([1, 2, 3],       TPropertyValue::ensureArray('(1, 2, 3,)'));
 		self::assertSame(['a', 'b'],       TPropertyValue::ensureArray('("a", "b",)'));
