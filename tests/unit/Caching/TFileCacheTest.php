@@ -8,6 +8,8 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+use Prado\Caching\ICacheSize;
+use Prado\Caching\TCache;
 use Prado\Caching\TFileCache;
 use Prado\Exceptions\TConfigurationException;
 use Prado\TApplication;
@@ -258,6 +260,30 @@ class TFileCacheTest extends PHPUnit\Framework\TestCase
 	public function testIsInstanceOfTFileCache(): void
 	{
 		$this->assertInstanceOf(TFileCache::class, $this->cache);
+	}
+
+	public function testIsInstanceOfTCache(): void
+	{
+		$this->assertInstanceOf(TCache::class, $this->cache);
+	}
+
+	public function testImplementsICacheSize(): void
+	{
+		$this->assertInstanceOf(ICacheSize::class, $this->cache);
+	}
+
+	// ── ICacheSize ────────────────────────────────────────────────────────────
+
+	public function testSizeNotComputedConstantIsNegativeOne(): void
+	{
+		$this->assertSame(-1, ICacheSize::SIZE_NOT_COMPUTED,
+			'ICacheSize::SIZE_NOT_COMPUTED must equal -1.');
+	}
+
+	public function testSizeNotComputedConstantAccessibleViaClass(): void
+	{
+		$this->assertSame(ICacheSize::SIZE_NOT_COMPUTED, TFileCache::SIZE_NOT_COMPUTED,
+			'TFileCache::SIZE_NOT_COMPUTED must equal ICacheSize::SIZE_NOT_COMPUTED.');
 	}
 
 	public function testConstructWithNoArgsCreatesInstance(): void
@@ -1179,6 +1205,15 @@ class TFileCacheTest extends PHPUnit\Framework\TestCase
 	}
 
 	// ── TCacheSizeTrait — getCurrentSize() ────────────────────────────────────────
+
+	public function testGetCurrentSizeReturnsSizeNotComputedWhenNoMaximumSize(): void
+	{
+		// MaximumSize is 0 by default; size tracking is inactive, sentinel stays SIZE_NOT_COMPUTED.
+		// Access the raw field directly to confirm it has never been set.
+		$cache = new TFileCacheTestAccessor();
+		$this->assertSame(TFileCache::SIZE_NOT_COMPUTED, $cache->pubGetCurrentSizeDirect(),
+			'Initial _currentSize must be SIZE_NOT_COMPUTED when MaximumSize is 0.');
+	}
 
 	public function testGetCurrentSizeAfterWriteReflectsDiskSize(): void
 	{

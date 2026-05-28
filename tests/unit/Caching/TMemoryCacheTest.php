@@ -10,6 +10,7 @@
 
 require_once __DIR__ . '/../PradoUnitRequires.php';
 
+use Prado\Caching\ICacheSize;
 use Prado\Caching\TCache;
 use Prado\Caching\TMemoryCache;
 use Prado\Exceptions\TConfigurationException;
@@ -365,6 +366,25 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 	public function testImplementsIModuleDependency(): void
 	{
 		$this->assertInstanceOf(\Prado\IModuleDependency::class, $this->cache);
+	}
+
+	public function testImplementsICacheSize(): void
+	{
+		$this->assertInstanceOf(ICacheSize::class, $this->cache);
+	}
+
+	// ── ICacheSize ────────────────────────────────────────────────────────────
+
+	public function testSizeNotComputedConstantIsNegativeOne(): void
+	{
+		$this->assertSame(-1, ICacheSize::SIZE_NOT_COMPUTED,
+			'ICacheSize::SIZE_NOT_COMPUTED must equal -1.');
+	}
+
+	public function testSizeNotComputedConstantAccessibleViaClass(): void
+	{
+		$this->assertSame(ICacheSize::SIZE_NOT_COMPUTED, TMemoryCache::SIZE_NOT_COMPUTED,
+			'TMemoryCache::SIZE_NOT_COMPUTED must equal ICacheSize::SIZE_NOT_COMPUTED.');
 	}
 
 	// ── IModuleDependency ─────────────────────────────────────────────────────
@@ -1081,8 +1101,8 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 		$this->assertStringNotContainsString('_currentSize', $serialized,
 			'_currentSize must always be excluded from the serialized payload.');
 		$restored = unserialize($serialized);
-		$this->assertSame(-1, $restored->pubGetCurrentSizeDirect(),
-			'_currentSize must reset to -1 (sentinel) after deserialization.');
+		$this->assertSame(TMemoryCache::SIZE_NOT_COMPUTED, $restored->pubGetCurrentSizeDirect(),
+			'_currentSize must reset to SIZE_NOT_COMPUTED after deserialization.');
 	}
 
 	public function testSerializationAlwaysExcludesSizeFingerprint(): void
@@ -1669,14 +1689,14 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 
 	// ── TCacheSizeTrait — getCurrentSize() ────────────────────────────────────────
 
-	public function testGetCurrentSizeReturnsNegativeOneWhenNotComputedAndNoMaximumSize(): void
+	public function testGetCurrentSizeReturnsSizeNotComputedWhenInactiveAndNoMaximumSize(): void
 	{
 		$cache = new TMemoryCacheTestAccessor();
 		$cache->setPrimaryCache(false);
 		$cache->init(null);
-		// MaximumSize is 0 by default; size tracking is inactive, sentinel stays -1.
-		$this->assertSame(-1, $cache->pubGetCurrentSizeDirect(),
-			'Initial _currentSize sentinel must be -1 when MaximumSize is 0.');
+		// MaximumSize is 0 by default; size tracking is inactive, sentinel stays SIZE_NOT_COMPUTED.
+		$this->assertSame(TMemoryCache::SIZE_NOT_COMPUTED, $cache->pubGetCurrentSizeDirect(),
+			'Initial _currentSize must be SIZE_NOT_COMPUTED when MaximumSize is 0.');
 	}
 
 	public function testGetCurrentSizeComputesOnDemandWhenMaximumSizeActive(): void
@@ -1784,7 +1804,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 		$this->cache->set('k', 'v');
 		// Corrupt the fingerprint so validateSizeCache() is forced to recompute.
 		$this->cache->pubSetSizeFingerprintDirect('stale-fingerprint');
-		$this->cache->pubSetCurrentSizeDirect(-1); // reset to sentinel
+		$this->cache->pubSetCurrentSizeDirect(TMemoryCache::SIZE_NOT_COMPUTED); // reset to sentinel
 		$this->cache->pubValidateSizeCache();
 		$this->assertGreaterThanOrEqual(0, $this->cache->pubGetCurrentSizeDirect(),
 			'validateSizeCache() must recompute _currentSize when the fingerprint is stale.');

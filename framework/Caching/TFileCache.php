@@ -85,7 +85,7 @@ use Prado\TPropertyValue;
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
  */
-class TFileCache extends TCache
+class TFileCache extends TCache implements ICacheSize
 {
 	use TCacheSizeTrait;
 

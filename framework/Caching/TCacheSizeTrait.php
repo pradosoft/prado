@@ -13,6 +13,9 @@ namespace Prado\Caching;
 /**
  * TCacheSizeTrait provides a byte-cap and **Least Recently Used** eviction for cache modules.
  *
+ * Implementing classes must also implement {@see ICacheSize}, which defines the public
+ * size-management contract and the {@see ICacheSize::SIZE_NOT_COMPUTED} sentinel constant.
+ *
  * When {@see getMaximumSize MaximumSize} is greater than `0`, the trait enforces a
  * total size limit (in bytes) on the cache. After every write the implementing class
  * calls {@see enforceMaximumSize()}, which validates the running size total and evicts
@@ -70,11 +73,11 @@ trait TCacheSizeTrait
 	private int $_maximumSize = 0;
 
 	/**
-	 * @var int Running total byte size of all cached entries; -1 when not yet
-	 *   computed. Updated incrementally by the implementing class and recomputed in
-	 *   full by {@see validateSizeCache()} on fingerprint mismatch.
+	 * @var int Running total byte size of all cached entries; `SIZE_NOT_COMPUTED` (-1)
+	 *   when not yet computed. Updated incrementally by the implementing class and
+	 *   recomputed in full by {@see validateSizeCache()} on fingerprint mismatch.
 	 */
-	private int $_currentSize = -1;
+	private int $_currentSize = self::SIZE_NOT_COMPUTED;
 
 	/**
 	 * @var string Short hash representing the current set of cached keys.
@@ -102,7 +105,7 @@ trait TCacheSizeTrait
 	}
 
 	/**
-	 * @return int the raw CurrentSize field value; -1 when not yet computed
+	 * @return int the raw CurrentSize field value; `SIZE_NOT_COMPUTED` (-1) when not yet computed
 	 */
 	protected function getCurrentSizeDirect(): int
 	{
@@ -304,7 +307,7 @@ trait TCacheSizeTrait
 	 * the broader set of suffixes this method advertises.
 	 *
 	 * @param int|string $value the size value to parse
-	 * @return int the size in bytes; -1 on parse failure
+	 * @return int the size in bytes; `SIZE_NOT_COMPUTED` (-1) on parse failure
 	 */
 	protected static function parseSizeString(int|string $value): int
 	{
@@ -313,7 +316,7 @@ trait TCacheSizeTrait
 		}
 		$value = trim($value);
 		if (!preg_match('/^(\d+)\s*([KMGTP]?)B?$/i', $value, $m)) {
-			return -1;
+			return self::SIZE_NOT_COMPUTED;
 		}
 		$n = (int) $m[1];
 		return match (strtoupper($m[2])) {
@@ -333,7 +336,7 @@ trait TCacheSizeTrait
 	 * Callers that want to avoid the overhead when no limit is configured should
 	 * check {@see getMaximumSize()} first.
 	 *
-	 * @return int the current total byte size; -1 when size has not yet been computed
+	 * @return int the current total byte size; `SIZE_NOT_COMPUTED` (-1) when not yet computed
 	 */
 	public function getCurrentSize(): int
 	{

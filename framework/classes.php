@@ -13,6 +13,7 @@
 return [
 'ICache' => 'Prado\Caching\ICache',
 'ICacheDependency' => 'Prado\Caching\ICacheDependency',
+'ICacheSize' => 'Prado\Caching\ICacheSize',
 'TAPCCache' => 'Prado\Caching\TAPCCache',
 'TApplicationStateCacheDependency' => 'Prado\Caching\TApplicationStateCacheDependency',
 'TCache' => 'Prado\Caching\TCache',
