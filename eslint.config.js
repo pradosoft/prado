@@ -7,8 +7,9 @@ export default [
 		files: ['framework/Web/Javascripts/source/**/*.js'],
 
 		languageOptions: {
-			// Current source targets ES5+ with some ES6 idioms.
-			ecmaVersion: 2015,
+			// Source targets ES2022. Browsers: Chrome 94+, Firefox 93+, Safari 15+
+			// (the same baseline jQuery 3.7 supports).
+			ecmaVersion: 2022,
 
 			// Scripts are concatenated / loaded as <script> tags — not modules.
 			// When ESM conversion happens, change this to 'module'.
