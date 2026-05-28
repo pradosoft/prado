@@ -184,6 +184,36 @@ class TApplication extends TComponent implements ISingleton
 	public const DEP_SORT_CACHE_KEY = '_sort';
 
 	/**
+	 * Canonical IDs assigned to lazily-created default-core modules by
+	 * {@see bootstrapModule()}, and the registry keys
+	 * {@see bootstrapDefaultModules()} writes into `$_modules`.
+	 * @since 4.4.0
+	 */
+	public const DEFAULT_REQUEST_ID = 'request';
+	public const DEFAULT_RESPONSE_ID = 'response';
+	public const DEFAULT_SESSION_ID = 'session';
+	public const DEFAULT_ERROR_HANDLER_ID = 'errorHandler';
+	public const DEFAULT_SECURITY_MANAGER_ID = 'securityManager';
+	public const DEFAULT_ASSET_MANAGER_ID = 'assetManager';
+	public const DEFAULT_GLOBALIZATION_ID = 'globalization';
+	public const DEFAULT_TEMPLATE_MANAGER_ID = 'templateManager';
+	public const DEFAULT_THEME_MANAGER_ID = 'themeManager';
+
+	/**
+	 * Set by {@see bootstrapDefaultModules()} on completion; while set,
+	 * {@see bootstrapModule()} also registers late-arrival defaults
+	 * in `$_modules`.
+	 * @since 4.4.0
+	 */
+	public const STATE_DEFAULT_MODULES_BOOTSTRAPPED = (1 << 0);
+
+	/**
+	 * Set by {@see initApplication()} after {@see onInitComplete} returns.
+	 * @since 4.4.0
+	 */
+	public const STATE_INITIALIZED = (1 << 1);
+
+	/**
 	 * @var string[] ordered list of lifecycle method names executed by {@see run()}.
 	 *   Override {@see getSteps()} to customize the lifecycle in subclasses.
 	 */
@@ -218,7 +248,7 @@ class TApplication extends TComponent implements ISingleton
 	/**
 	 * @var int application state
 	 */
-	private $_step;
+	private $_step = 0;
 	/**
 	 * @var array available services and their configurations indexed by service IDs
 	 */
@@ -339,6 +369,14 @@ class TApplication extends TComponent implements ISingleton
 	private $_pageServiceID;
 
 	/**
+	 * @var int Bit field of TApplication internal state flags. Set via
+	 *   {@see setStateFlag()}, queried via {@see hasStateFlag()} or
+	 *   {@see getStateFlags()}. See the `STATE_*` constants for valid bits.
+	 * @since 4.4.0
+	 */
+	private int $_stateFlags = 0;
+
+	/**
 	 * Constructor.
 	 * Sets application base path and initializes the application singleton.
 	 * Application base path refers to the root directory storing application
@@ -434,6 +472,44 @@ class TApplication extends TComponent implements ISingleton
 	private function setStep(int $value): void
 	{
 		$this->_step = $value;
+	}
+
+	/**
+	 * Returns the raw `$_stateFlags` bit field. See the `STATE_*` constants
+	 * for which bits are defined.
+	 * @return int the raw bit field of internal state flags.
+	 * @since 4.4.0
+	 */
+	public function getStateFlags(): int
+	{
+		return $this->_stateFlags;
+	}
+
+	/**
+	 * Returns true when every bit in `$flag` is set on `$_stateFlags`.
+	 * @param int $flag one or more `STATE_*` bits to test for.
+	 * @return bool true when all of `$flag`'s bits are currently set.
+	 * @since 4.4.0
+	 */
+	public function hasStateFlag(int $flag): bool
+	{
+		return ($this->_stateFlags & $flag) === $flag;
+	}
+
+	/**
+	 * Sets (`$on = true`) or clears (`$on = false`) every bit in `$flag` on
+	 * `$_stateFlags`.
+	 * @param int  $flag one or more `STATE_*` bits to mutate.
+	 * @param bool $on   true to set the bits, false to clear them.
+	 * @since 4.4.0
+	 */
+	protected function setStateFlag(int $flag, bool $on = true): void
+	{
+		if ($on) {
+			$this->_stateFlags |= $flag;
+		} else {
+			$this->_stateFlags &= ~$flag;
+		}
 	}
 
 	/**
@@ -1391,29 +1467,7 @@ class TApplication extends TComponent implements ISingleton
 		if ($this->_modules[$id] === null) {
 			$module = $this->internalLoadModule($id, true);
 			if ($module) {
-				$isComponent = $module[0] instanceof TComponent;
-				if ($isComponent) {
-					$module[0]->dyPreInit($module[1]);
-				}
-				// Ensure every declared dependency is initialized before this module (init phase).
-				foreach ($this->collectModuleDependencies($module[0], false)['deps'] as $dep) {
-					if (!array_key_exists($dep['id'], $this->_modules)) {
-						// Dep not registered at all.
-						if ($dep['required']) {
-							throw new TConfigurationException(
-								'application_module_required_dep_missing',
-								$module[0]->getID(),
-								$dep['id']
-							);
-						}
-						continue; // advisory dep absent — skip silently
-					}
-					$this->getModule($dep['id']); // force-load if lazy
-				}
-				$module[0]->init($module[1]);
-				if ($isComponent) {
-					$module[0]->dyPostInit($module[1]);
-				}
+				$this->runModuleLifecycle($module[0], $module[1]);
 			}
 		}
 
@@ -1478,6 +1532,113 @@ class TApplication extends TComponent implements ISingleton
 		return $m;
 	}
 
+	/**
+	 * Runs the four post-construction lifecycle phases on `$module`:
+	 *  - `dyPreInit($config)`
+	 *  - dependency resolution — force-loads lazy deps via
+	 *    {@see getModule()}; missing required deps throw
+	 *    {@see TConfigurationException}
+	 *  - `init($config)`
+	 *  - `dyPostInit($config)`
+	 *
+	 * Single source of truth for both the lazy-load path in
+	 * {@see getModule()} and {@see bootstrapModule()}.
+	 * @param IModule $module the module to bring online.
+	 * @param mixed   $config configuration forwarded to every phase; `null`
+	 *   for default-bootstrapped modules.
+	 * @throws TConfigurationException when a required dependency is missing.
+	 * @since 4.4.0
+	 */
+	protected function runModuleLifecycle(IModule $module, mixed $config): void
+	{
+		$isComponent = $module instanceof TComponent;
+		if ($isComponent) {
+			$module->dyPreInit($config);
+		}
+		foreach ($this->collectModuleDependencies($module, false)['deps'] as $dep) {
+			if (!array_key_exists($dep['id'], $this->_modules)) {
+				if ($dep['required']) {
+					throw new TConfigurationException(
+						'application_module_required_dep_missing',
+						$module->getID(),
+						$dep['id']
+					);
+				}
+				continue; // advisory dep absent — skip silently
+			}
+			$this->getModule($dep['id']); // force-load if lazy
+		}
+		$module->init($config);
+		if ($isComponent) {
+			$module->dyPostInit($config);
+		}
+	}
+
+	/**
+	 * Assigns the module's ID, runs its lifecycle via
+	 * {@see runModuleLifecycle()}, and — when `$register` is true —
+	 * enrolls it in `$_modules` under `$module->getID()`.
+	 * @param IModule $module   freshly-constructed module instance.
+	 * @param string  $id       ID to assign.
+	 * @param bool    $register write to `$_modules` after the lifecycle; `true` by default.
+	 * @throws TConfigurationException when a required dependency is missing.
+	 * @since 4.4.0
+	 */
+	protected function bootstrapModule(IModule $module, string $id, bool $register = true): void
+	{
+		$module->setID($id);
+		$this->runModuleLifecycle($module, null);
+		if ($register) {
+			$this->_modules[$module->getID()] = $module;
+		}
+	}
+
+	/**
+	 * Returns true when {@see bootstrapModule()} should register a
+	 * default-core module of `$type`: the
+	 * {@see STATE_DEFAULT_MODULES_BOOTSTRAPPED} flag is set AND no
+	 * same-type module is already in `$_modules`.
+	 * @param string $type FQN of the default's canonical class.
+	 * @since 4.4.0
+	 */
+	protected function shouldRegisterDefault(string $type): bool
+	{
+		return $this->hasStateFlag(static::STATE_DEFAULT_MODULES_BOOTSTRAPPED)
+			&& empty($this->getModulesByType($type));
+	}
+
+	/**
+	 * Enrols each instanced default-core module in `$_modules` unless a
+	 * same-type module is already registered; never instantiates. Sets
+	 * {@see STATE_DEFAULT_MODULES_BOOTSTRAPPED} on completion so later
+	 * defaults register immediately via {@see bootstrapModule()}.
+	 * @since 4.4.0
+	 */
+	protected function bootstrapDefaultModules(): void
+	{
+		$defaults = [
+			static::DEFAULT_REQUEST_ID => [THttpRequest::class,    $this->getRequestDirect()],
+			static::DEFAULT_RESPONSE_ID => [THttpResponse::class,   $this->getResponseDirect()],
+			static::DEFAULT_SESSION_ID => [THttpSession::class,    $this->getSessionDirect()],
+			static::DEFAULT_ERROR_HANDLER_ID => [TErrorHandler::class,   $this->getErrorHandlerDirect()],
+			static::DEFAULT_SECURITY_MANAGER_ID => [TSecurityManager::class, $this->getSecurityManagerDirect()],
+			static::DEFAULT_ASSET_MANAGER_ID => [TAssetManager::class,   $this->getAssetManagerDirect()],
+			static::DEFAULT_GLOBALIZATION_ID => [TGlobalization::class,  $this->getGlobalizationDirect()],
+			static::DEFAULT_TEMPLATE_MANAGER_ID => [TTemplateManager::class, $this->getTemplateManagerDirect()],
+			static::DEFAULT_THEME_MANAGER_ID => [TThemeManager::class,   $this->getThemeManagerDirect()],
+		];
+		foreach ($defaults as $id => [$type, $module]) {
+			if ($module === null) {
+				continue;
+			}
+			if (!empty($this->getModulesByType($type))) {
+				continue;
+			}
+			$this->_modules[$module->getID()] = $module;
+		}
+		$this->setStateFlag(static::STATE_DEFAULT_MODULES_BOOTSTRAPPED);
+	}
+
 	// =========================================================================
 	// Request API
 	// =========================================================================
@@ -1509,7 +1670,8 @@ class TApplication extends TComponent implements ISingleton
 	}
 
 	/**
-	 * Returns the request module, auto-creating it via {@see newRequest()} and calling `init(null)` if not yet set.
+	 * Returns the request module, lazily bootstrapping a default via
+	 * {@see newRequest()} + {@see bootstrapModule()} when not yet set.
 	 * @return THttpRequest the request module
 	 */
 	public function getRequest()
@@ -1517,7 +1679,11 @@ class TApplication extends TComponent implements ISingleton
 		$request = $this->getRequestDirect();
 		if (!$request && ($request = $this->newRequest())) {
 			$this->setRequest($request);
-			$request->init(null);
+			$this->bootstrapModule(
+				$request,
+				static::DEFAULT_REQUEST_ID,
+				$this->shouldRegisterDefault(THttpRequest::class)
+			);
 			$request = $this->getRequestDirect();
 		}
 		return $request;
@@ -1546,7 +1712,8 @@ class TApplication extends TComponent implements ISingleton
 	}
 
 	/**
-	 * Returns the response module, auto-creating it via {@see newResponse()} and calling `init(null)` if not yet set.
+	 * Returns the response module, lazily bootstrapping a default via
+	 * {@see newResponse()} + {@see bootstrapModule()} when not yet set.
 	 * @return THttpResponse the response module
 	 */
 	public function getResponse()
@@ -1554,7 +1721,11 @@ class TApplication extends TComponent implements ISingleton
 		$response = $this->getResponseDirect();
 		if (!$response && ($response = $this->newResponse())) {
 			$this->setResponse($response);
-			$response->init(null);
+			$this->bootstrapModule(
+				$response,
+				static::DEFAULT_RESPONSE_ID,
+				$this->shouldRegisterDefault(THttpResponse::class)
+			);
 			$response = $this->getResponseDirect();
 		}
 		return $response;
@@ -1591,7 +1762,8 @@ class TApplication extends TComponent implements ISingleton
 	}
 
 	/**
-	 * Returns the session module, auto-creating it via {@see newSession()} and calling `init(null)` if not yet set.
+	 * Returns the session module, lazily bootstrapping a default via
+	 * {@see newSession()} + {@see bootstrapModule()} when not yet set.
 	 * @return THttpSession the session module, null if session module is not installed
 	 */
 	public function getSession()
@@ -1599,7 +1771,11 @@ class TApplication extends TComponent implements ISingleton
 		$session = $this->getSessionDirect();
 		if (!$session && ($session = $this->newSession())) {
 			$this->setSession($session);
-			$session->init(null);
+			$this->bootstrapModule(
+				$session,
+				static::DEFAULT_SESSION_ID,
+				$this->shouldRegisterDefault(THttpSession::class)
+			);
 			$session = $this->getSessionDirect();
 		}
 		return $session;
@@ -1636,7 +1812,8 @@ class TApplication extends TComponent implements ISingleton
 	}
 
 	/**
-	 * Returns the error handler module, auto-creating it via {@see newErrorHandler()} and calling `init(null)` if not yet set.
+	 * Returns the error handler module, lazily bootstrapping a default via
+	 * {@see newErrorHandler()} + {@see bootstrapModule()} when not yet set.
 	 * @return TErrorHandler the error handler module
 	 */
 	public function getErrorHandler()
@@ -1644,7 +1821,11 @@ class TApplication extends TComponent implements ISingleton
 		$errorHandler = $this->getErrorHandlerDirect();
 		if (!$errorHandler && ($errorHandler = $this->newErrorHandler())) {
 			$this->setErrorHandler($errorHandler);
-			$errorHandler->init(null);
+			$this->bootstrapModule(
+				$errorHandler,
+				static::DEFAULT_ERROR_HANDLER_ID,
+				$this->shouldRegisterDefault(TErrorHandler::class)
+			);
 			$errorHandler = $this->getErrorHandlerDirect();
 		}
 		return $errorHandler;
@@ -1681,7 +1862,8 @@ class TApplication extends TComponent implements ISingleton
 	}
 
 	/**
-	 * Returns the security manager module, auto-creating it via {@see newSecurityManager()} and calling `init(null)` if not yet set.
+	 * Returns the security manager module, lazily bootstrapping a default via
+	 * {@see newSecurityManager()} + {@see bootstrapModule()} when not yet set.
 	 * @return TSecurityManager the security manager module
 	 */
 	public function getSecurityManager()
@@ -1689,7 +1871,11 @@ class TApplication extends TComponent implements ISingleton
 		$securityManager = $this->getSecurityManagerDirect();
 		if (!$securityManager && ($securityManager = $this->newSecurityManager())) {
 			$this->setSecurityManager($securityManager);
-			$securityManager->init(null);
+			$this->bootstrapModule(
+				$securityManager,
+				static::DEFAULT_SECURITY_MANAGER_ID,
+				$this->shouldRegisterDefault(TSecurityManager::class)
+			);
 			$securityManager = $this->getSecurityManagerDirect();
 		}
 		return $securityManager;
@@ -1726,7 +1912,8 @@ class TApplication extends TComponent implements ISingleton
 	}
 
 	/**
-	 * Returns the asset manager module, auto-creating it via {@see newAssetManager()} and calling `init(null)` if not yet set.
+	 * Returns the asset manager module, lazily bootstrapping a default via
+	 * {@see newAssetManager()} + {@see bootstrapModule()} when not yet set.
 	 * @return TAssetManager asset manager
 	 */
 	public function getAssetManager()
@@ -1734,7 +1921,11 @@ class TApplication extends TComponent implements ISingleton
 		$assetManager = $this->getAssetManagerDirect();
 		if (!$assetManager && ($assetManager = $this->newAssetManager())) {
 			$this->setAssetManager($assetManager);
-			$assetManager->init(null);
+			$this->bootstrapModule(
+				$assetManager,
+				static::DEFAULT_ASSET_MANAGER_ID,
+				$this->shouldRegisterDefault(TAssetManager::class)
+			);
 			$assetManager = $this->getAssetManagerDirect();
 		}
 		return $assetManager;
@@ -1771,7 +1962,8 @@ class TApplication extends TComponent implements ISingleton
 	}
 
 	/**
-	 * Returns the template manager module, auto-creating it via {@see newTemplateManager()} and calling `init(null)` if not yet set.
+	 * Returns the template manager module, lazily bootstrapping a default via
+	 * {@see newTemplateManager()} + {@see bootstrapModule()} when not yet set.
 	 * @return TTemplateManager template manager
 	 */
 	public function getTemplateManager()
@@ -1779,7 +1971,11 @@ class TApplication extends TComponent implements ISingleton
 		$templateManager = $this->getTemplateManagerDirect();
 		if (!$templateManager && ($templateManager = $this->newTemplateManager())) {
 			$this->setTemplateManager($templateManager);
-			$templateManager->init(null);
+			$this->bootstrapModule(
+				$templateManager,
+				static::DEFAULT_TEMPLATE_MANAGER_ID,
+				$this->shouldRegisterDefault(TTemplateManager::class)
+			);
 			$templateManager = $this->getTemplateManagerDirect();
 		}
 		return $templateManager;
@@ -1816,7 +2012,8 @@ class TApplication extends TComponent implements ISingleton
 	}
 
 	/**
-	 * Returns the theme manager module, auto-creating it via {@see newThemeManager()} and calling `init(null)` if not yet set.
+	 * Returns the theme manager module, lazily bootstrapping a default via
+	 * {@see newThemeManager()} + {@see bootstrapModule()} when not yet set.
 	 * @return TThemeManager theme manager
 	 */
 	public function getThemeManager()
@@ -1824,7 +2021,11 @@ class TApplication extends TComponent implements ISingleton
 		$themeManager = $this->getThemeManagerDirect();
 		if (!$themeManager && ($themeManager = $this->newThemeManager())) {
 			$this->setThemeManager($themeManager);
-			$themeManager->init(null);
+			$this->bootstrapModule(
+				$themeManager,
+				static::DEFAULT_THEME_MANAGER_ID,
+				$this->shouldRegisterDefault(TThemeManager::class)
+			);
 			$themeManager = $this->getThemeManagerDirect();
 		}
 		return $themeManager;
@@ -1861,7 +2062,12 @@ class TApplication extends TComponent implements ISingleton
 	}
 
 	/**
-	 * Returns the application state persister, auto-creating it via {@see newApplicationStatePersister()} and calling `init(null)` if not yet set.
+	 * Returns the application state persister, auto-creating it via
+	 * {@see newApplicationStatePersister()} when not yet set. The persister
+	 * is an `IStatePersister` rather than an application module, so it is
+	 * not routed through {@see bootstrapModule()}; a direct
+	 * `init(null)` is invoked when the implementation also happens to be an
+	 * {@see IModule} (the default `TApplicationStatePersister` is).
 	 * @return IStatePersister application state persister
 	 */
 	public function getApplicationStatePersister()
@@ -1908,18 +2114,22 @@ class TApplication extends TComponent implements ISingleton
 	}
 
 	/**
-	 * Returns the globalization module, auto-creating and initialising it via {@see newGlobalization()} when
-	 * `$createIfNotExists` is `true` (the default) and no module has been set yet. Pass `false` to return
-	 * `null` rather than auto-creating.
-	 * @param bool $createIfNotExists whether to create globalization if it does not exist
-	 * @return ?TGlobalization globalization module
+	 * Returns the globalization module, lazily bootstrapping a default via
+	 * {@see newGlobalization()} + {@see bootstrapModule()} when not yet set
+	 * and `$createIfNotExists` is true; otherwise returns `null`.
+	 * @param bool $createIfNotExists whether to create on first access.
+	 * @return ?TGlobalization globalization module, or null when none exists and creation is disabled.
 	 */
 	public function getGlobalization($createIfNotExists = true)
 	{
 		$globalization = $this->getGlobalizationDirect();
 		if (!$globalization && $createIfNotExists && ($globalization = $this->newGlobalization())) {
 			$this->setGlobalization($globalization);
-			$globalization->init(null);
+			$this->bootstrapModule(
+				$globalization,
+				static::DEFAULT_GLOBALIZATION_ID,
+				$this->shouldRegisterDefault(TGlobalization::class)
+			);
 			$globalization = $this->getGlobalizationDirect();
 		}
 		return $globalization;
@@ -2465,14 +2675,16 @@ class TApplication extends TComponent implements ISingleton
 	// =========================================================================
 
 	/**
-	 * Loads configuration and initializes application.
-	 * Configuration file will be read and parsed (if a valid cached version exists,
-	 * it will be used instead). Then, modules are created and initialized;
-	 * Afterwards, the requested service is created and initialized.
-	 * After all configuration is applied, the onConfiguration event is
-	 * raised so that listeners may register additional services before the
-	 * request is resolved. Lastly, the onInitComplete event is raised.
-	 * @throws TConfigurationException if module is redefined of invalid type, or service not defined or of invalid type
+	 * Loads configuration and initializes the application. Reads the
+	 * configuration file (or its cached form when current), applies it via
+	 * {@see applyConfiguration()} so configured modules are created and
+	 * initialized, raises {@see onConfiguration} for late-stage service
+	 * registration, runs {@see bootstrapDefaultModules()} to enroll any
+	 * lazily-created default-core modules in `$_modules`, runs
+	 * {@see initService()} to resolve and start the requested service,
+	 * and finally raises {@see onInitComplete}.
+	 * @throws TConfigurationException when a module is redefined or
+	 *   invalid, or when the requested service is undefined or invalid.
 	 * @see onConfiguration
 	 * @see onInitComplete
 	 */
@@ -2497,9 +2709,11 @@ class TApplication extends TComponent implements ISingleton
 			$this->applyConfiguration($config, false);
 		}
 
+		$this->bootstrapDefaultModules();
 		$this->onConfiguration();
 		$this->initService();
 		$this->onInitComplete();
+		$this->setStateFlag(static::STATE_INITIALIZED);
 
 		Prado::trace('Initializing application complete', TApplication::class);
 	}
