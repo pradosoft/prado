@@ -8,23 +8,20 @@
  *
 */
 
-Prado.WebUI.THtmlArea5 = jQuery.klass(Prado.WebUI.Control,
+Prado.WebUI.THtmlArea5 = Prado.Class(Prado.WebUI.Control,
 {
-	initialize: function($super, options)
-	{
+	initialize($super, options) {
 		$super(options);
 	},
 
-    onInit : function(options)
-	{
+    onInit(options) {
 		this.options = options;
 		this.registerAjaxHook();
 		tinyMCE.init(this.options.EditorOptions);
 	},
 
-	removePreviousInstance: function()
-	{
-		for(var i=0;i<tinyMCE.editors.length;i++)
+	removePreviousInstance() {
+		for(let i=0;i<tinyMCE.editors.length;i++)
 			if (tinyMCE.editors[i].id==this.ID)
 			{
 				tinyMCE.editors.splice(i,1); // ugly hack, but works
@@ -32,40 +29,40 @@ Prado.WebUI.THtmlArea5 = jQuery.klass(Prado.WebUI.Control,
 			}
 	},
 
-	checkInstance: function()
-	{
+	checkInstance() {
 		if (!document.getElementById(this.ID))
 			this.deinitialize();
 	},
 
-	registerAjaxHook: function()
-	{
-		jQuery(document).on('ajaxComplete', this.ajaxresponder.bind(this));
+	registerAjaxHook() {
+		this._ajaxHandler = this.ajaxresponder.bind(this);
+		document.addEventListener('prado:ajaxComplete', this._ajaxHandler);
 	},
 
 
-	deRegisterAjaxHook: function()
-	{
-		jQuery(document).off('ajaxComplete', this.ajaxresponder.bind(this));
+	deRegisterAjaxHook() {
+		if (this._ajaxHandler) {
+			document.removeEventListener('prado:ajaxComplete', this._ajaxHandler);
+			this._ajaxHandler = null;
+		}
 	},
 
-	ajaxresponder: function(request)
-	{
+	ajaxresponder(request) {
 		this.checkInstance();
 	},
 
-	onDone: function()
-	{
+	onDone() {
 		// check for previous tinyMCE registration, and try to remove it gracefully first
-		var prev = tinyMCE.get(this.ID);
+		const prev = tinyMCE.get(this.ID);
 		if (prev)
 		{
 			tinyMCE.execCommand('mceFocus', false, this.ID);
 			// when removed, tinyMCE restores its content to the textarea. If the textarea content has been
 			// updated in this same callback, it will be overwritten with the old content. Workaround this.
-			var curtext = jQuery('#'+this.ID).get(0).value;
+			const ta = document.getElementById(this.ID);
+			const curtext = ta.value;
 			prev.remove();
-			jQuery('#'+this.ID).get(0).value = curtext;
+			ta.value = curtext;
 		}
 
 		// doublecheck editor instance here and remove manually from tinyMCE-registry if neccessary
