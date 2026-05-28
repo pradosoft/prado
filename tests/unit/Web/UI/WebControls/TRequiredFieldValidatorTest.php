@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../../../PradoUnitRequires.php';
+
 use Prado\Web\UI\WebControls\TRequiredFieldValidator;
 use Prado\Web\UI\WebControls\TTextBox;
 use Prado\Web\UI\WebControls\TDropDownList;
@@ -40,30 +42,22 @@ class TRequiredFieldValidatorTest extends TestCase
 
 	private function invokeEvaluateIsValid($validator)
 	{
-		$method = new ReflectionMethod($validator, 'evaluateIsValid');
-		$method->setAccessible(true);
-		return $method->invoke($validator);
+		return PradoUnit::invoke($validator, 'evaluateIsValid');
 	}
 
 	private function invokeGetClientScriptOptions($validator)
 	{
-		$method = new ReflectionMethod($validator, 'getClientScriptOptions');
-		$method->setAccessible(true);
-		return $method->invoke($validator);
+		return PradoUnit::invoke($validator, 'getClientScriptOptions');
 	}
 
 	private function getControlPromptValue($validator)
 	{
-		$method = new ReflectionMethod($validator, 'getControlPromptValue');
-		$method->setAccessible(true);
-		return $method->invoke($validator);
+		return PradoUnit::invoke($validator, 'getControlPromptValue');
 	}
 
 	private function getClientClassName($validator)
 	{
-		$method = new ReflectionMethod($validator, 'getClientClassName');
-		$method->setAccessible(true);
-		return $method->invoke($validator);
+		return PradoUnit::invoke($validator, 'getClientClassName');
 	}
 
 	// ================================================================================

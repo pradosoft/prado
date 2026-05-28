@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../../PradoUnitRequires.php';
+
 use Prado\IO\TTextWriter;
 use Prado\Web\UI\IAdapterControl;
 use Prado\Web\UI\TControl;
@@ -346,10 +348,7 @@ class TControlTest extends PHPUnit\Framework\TestCase
 	{
 		$label = new TLabel();
 		$label->autoBindProperty('Text', "'auto value'");
-		$ref = new ReflectionObject($label);
-		$method = $ref->getMethod('autoDataBindProperties');
-		$method->setAccessible(true);
-		$method->invoke($label);
+		PradoUnit::invoke($label, 'autoDataBindProperties');
 		$this->assertEquals('auto value', $label->getText());
 	}
 
@@ -483,10 +482,7 @@ class TControlTest extends PHPUnit\Framework\TestCase
 		$control = new TControl();
 		$this->assertFalse($control->getHasChildInitialized()); // CS_CONSTRUCTED < CS_CHILD_INITIALIZED
 		// initRecursive() advances the stage to at least CS_CHILD_INITIALIZED
-		$ref = new ReflectionObject($control);
-		$method = $ref->getMethod('initRecursive');
-		$method->setAccessible(true);
-		$method->invoke($control, null);
+		PradoUnit::invoke($control, 'initRecursive', null);
 		$this->assertTrue($control->getHasChildInitialized());
 	}
 

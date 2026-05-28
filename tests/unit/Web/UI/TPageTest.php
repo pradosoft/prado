@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../../PradoUnitRequires.php';
+
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\TPageStatePersister;
 use Prado\Web\UI\TSessionPageStatePersister;
@@ -188,47 +190,37 @@ class TPageTest extends PHPUnit\Framework\TestCase
 	{
 		$page = new TPage();
 		// setTheme has not been called → _theme is null; getTheme does not call service
-		$reflection = new ReflectionProperty(TPage::class, '_theme');
-		$reflection->setAccessible(true);
-		$this->assertNull($reflection->getValue($page));
+		$this->assertNull(PradoUnit::getProp($page, '_theme'));
 	}
 
-	public function testSetThemeWithTThemeObject(): void
+public function testSetThemeWithTThemeObject(): void
 	{
 		$page = new TPage();
 		$theme = $this->createMock(TTheme::class);
 		$page->setTheme($theme);
 
 		// getTheme() only resolves a string; with an object it returns it directly
-		$reflection = new ReflectionProperty(TPage::class, '_theme');
-		$reflection->setAccessible(true);
-		$this->assertSame($theme, $reflection->getValue($page));
+		$this->assertSame($theme, PradoUnit::getProp($page, '_theme'));
 	}
 
 	public function testSetThemeToEmptyStringStoresNull(): void
 	{
 		$page = new TPage();
 		$page->setTheme('');
-		$reflection = new ReflectionProperty(TPage::class, '_theme');
-		$reflection->setAccessible(true);
-		$this->assertNull($reflection->getValue($page));
+		$this->assertNull(PradoUnit::getProp($page, '_theme'));
 	}
 
-	public function testSetThemeToNonEmptyStringStoresString(): void
+public function testSetThemeToNonEmptyStringStoresString(): void
 	{
 		$page = new TPage();
 		$page->setTheme('SomeTheme');
-		$reflection = new ReflectionProperty(TPage::class, '_theme');
-		$reflection->setAccessible(true);
-		$this->assertEquals('SomeTheme', $reflection->getValue($page));
+		$this->assertEquals('SomeTheme', PradoUnit::getProp($page, '_theme'));
 	}
 
 	public function testGetStyleSheetThemeIsNullByDefault(): void
 	{
 		$page = new TPage();
-		$reflection = new ReflectionProperty(TPage::class, '_styleSheet');
-		$reflection->setAccessible(true);
-		$this->assertNull($reflection->getValue($page));
+		$this->assertNull(PradoUnit::getProp($page, '_styleSheet'));
 	}
 
 	public function testSetStyleSheetThemeWithTThemeObject(): void
@@ -236,9 +228,7 @@ class TPageTest extends PHPUnit\Framework\TestCase
 		$page = new TPage();
 		$theme = $this->createMock(TTheme::class);
 		$page->setStyleSheetTheme($theme);
-		$reflection = new ReflectionProperty(TPage::class, '_styleSheet');
-		$reflection->setAccessible(true);
-		$this->assertSame($theme, $reflection->getValue($page));
+		$this->assertSame($theme, PradoUnit::getProp($page, '_styleSheet'));
 	}
 
 	// -----------------------------------------------------------------------
@@ -630,9 +620,7 @@ class TPageTest extends PHPUnit\Framework\TestCase
 		$page = new TPage();
 		$page->setFocus('myElementId');
 
-		$reflection = new ReflectionProperty(TPage::class, '_focus');
-		$reflection->setAccessible(true);
-		$this->assertEquals('myElementId', $reflection->getValue($page));
+		$this->assertEquals('myElementId', PradoUnit::getProp($page, '_focus'));
 	}
 
 	// -----------------------------------------------------------------------

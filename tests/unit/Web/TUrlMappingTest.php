@@ -276,11 +276,9 @@ class TUrlMappingTest extends PHPUnit\Framework\TestCase
 	 */
 	private function unregisterAppModule(string $id): void
 	{
-		$prop = new \ReflectionProperty(TApplication::class, '_modules');
-		$prop->setAccessible(true);
-		$modules = $prop->getValue($this->app);
+		$modules = PradoUnit::getProp($this->app, '_modules');
 		unset($modules[$id]);
-		$prop->setValue($this->app, $modules);
+		PradoUnit::setProp($this->app, '_modules', $modules);
 	}
 
 	public function testImplementsIModuleDependency()

@@ -1,5 +1,6 @@
 <?php
 
+require_once __DIR__ . '/../PradoUnitRequires.php';
 
 use PHPUnit\Framework\TestCase;
 use Prado\IO\TTarFileExtractor;
@@ -46,132 +47,88 @@ class TTarFileExtractorUrlTest extends TestCase
 
 	public function testHttpProtocolDetected()
 	{
-		$reflection = new \ReflectionClass(TTarFileExtractor::class);
-		$method = $reflection->getMethod('_detectCompression');
-		$method->setAccessible(true);
-
 		$extractor = new TTarFileExtractor('http://example.com/test.tar');
-		$result = $method->invoke($extractor, 'http://example.com/test.tar');
+		$result = PradoUnit::invoke($extractor, '_detectCompression', 'http://example.com/test.tar');
 
 		$this->assertEquals(TTarFileExtractor::COMPRESSION_NONE, $result);
 	}
 
 	public function testHttpsProtocolDetected()
 	{
-		$reflection = new \ReflectionClass(TTarFileExtractor::class);
-		$method = $reflection->getMethod('_detectCompression');
-		$method->setAccessible(true);
-
 		$extractor = new TTarFileExtractor('https://example.com/test.tar');
-		$result = $method->invoke($extractor, 'https://example.com/test.tar');
+		$result = PradoUnit::invoke($extractor, '_detectCompression', 'https://example.com/test.tar');
 
 		$this->assertEquals(TTarFileExtractor::COMPRESSION_NONE, $result);
 	}
 
 	public function testHttpUrlWithGzipCompression()
 	{
-		$reflection = new \ReflectionClass(TTarFileExtractor::class);
-		$method = $reflection->getMethod('_detectCompression');
-		$method->setAccessible(true);
-
 		$extractor = new TTarFileExtractor('http://example.com/test.tar.gz');
-		$result = $method->invoke($extractor, 'http://example.com/test.tar.gz');
+		$result = PradoUnit::invoke($extractor, '_detectCompression', 'http://example.com/test.tar.gz');
 
 		$this->assertEquals(TTarFileExtractor::COMPRESSION_GZIP, $result);
 	}
 
 	public function testHttpsUrlWithGzipCompression()
 	{
-		$reflection = new \ReflectionClass(TTarFileExtractor::class);
-		$method = $reflection->getMethod('_detectCompression');
-		$method->setAccessible(true);
-
 		$extractor = new TTarFileExtractor('https://example.com/test.tar.gz');
-		$result = $method->invoke($extractor, 'https://example.com/test.tar.gz');
+		$result = PradoUnit::invoke($extractor, '_detectCompression', 'https://example.com/test.tar.gz');
 
 		$this->assertEquals(TTarFileExtractor::COMPRESSION_GZIP, $result);
 	}
 
 	public function testHttpUrlWithBzip2Compression()
 	{
-		$reflection = new \ReflectionClass(TTarFileExtractor::class);
-		$method = $reflection->getMethod('_detectCompression');
-		$method->setAccessible(true);
-
 		$extractor = new TTarFileExtractor('http://example.com/test.tar.bz2');
-		$result = $method->invoke($extractor, 'http://example.com/test.tar.bz2');
+		$result = PradoUnit::invoke($extractor, '_detectCompression', 'http://example.com/test.tar.bz2');
 
 		$this->assertEquals(TTarFileExtractor::COMPRESSION_BZIP2, $result);
 	}
 
 	public function testHttpsUrlWithBzip2Compression()
 	{
-		$reflection = new \ReflectionClass(TTarFileExtractor::class);
-		$method = $reflection->getMethod('_detectCompression');
-		$method->setAccessible(true);
-
 		$extractor = new TTarFileExtractor('https://example.com/test.tar.bz2');
-		$result = $method->invoke($extractor, 'https://example.com/test.tar.bz2');
+		$result = PradoUnit::invoke($extractor, '_detectCompression', 'https://example.com/test.tar.bz2');
 
 		$this->assertEquals(TTarFileExtractor::COMPRESSION_BZIP2, $result);
 	}
 
 	public function testHttpUrlWithLzmaCompression()
 	{
-		$reflection = new \ReflectionClass(TTarFileExtractor::class);
-		$method = $reflection->getMethod('_detectCompression');
-		$method->setAccessible(true);
-
 		$extractor = new TTarFileExtractor('http://example.com/test.tar.xz');
-		$result = $method->invoke($extractor, 'http://example.com/test.tar.xz');
+		$result = PradoUnit::invoke($extractor, '_detectCompression', 'http://example.com/test.tar.xz');
 
 		$this->assertEquals(TTarFileExtractor::COMPRESSION_LZMA, $result);
 	}
 
 	public function testHttpsUrlWithLzmaCompression()
 	{
-		$reflection = new \ReflectionClass(TTarFileExtractor::class);
-		$method = $reflection->getMethod('_detectCompression');
-		$method->setAccessible(true);
-
 		$extractor = new TTarFileExtractor('https://example.com/test.tar.xz');
-		$result = $method->invoke($extractor, 'https://example.com/test.tar.xz');
+		$result = PradoUnit::invoke($extractor, '_detectCompression', 'https://example.com/test.tar.xz');
 
 		$this->assertEquals(TTarFileExtractor::COMPRESSION_LZMA, $result);
 	}
 
 	public function testTgzExtension()
 	{
-		$reflection = new \ReflectionClass(TTarFileExtractor::class);
-		$method = $reflection->getMethod('_detectCompression');
-		$method->setAccessible(true);
-
 		$extractor = new TTarFileExtractor('http://example.com/archive.tgz');
-		$result = $method->invoke($extractor, 'http://example.com/archive.tgz');
+		$result = PradoUnit::invoke($extractor, '_detectCompression', 'http://example.com/archive.tgz');
 
 		$this->assertEquals(TTarFileExtractor::COMPRESSION_GZIP, $result);
 	}
 
 	public function testTxzExtension()
 	{
-		$reflection = new \ReflectionClass(TTarFileExtractor::class);
-		$method = $reflection->getMethod('_detectCompression');
-		$method->setAccessible(true);
-
 		$extractor = new TTarFileExtractor('https://example.com/archive.txz');
-		$result = $method->invoke($extractor, 'https://example.com/archive.txz');
+		$result = PradoUnit::invoke($extractor, '_detectCompression', 'https://example.com/archive.txz');
 
 		$this->assertEquals(TTarFileExtractor::COMPRESSION_LZMA, $result);
 	}
 
 	public function testTbz2Extension()
 	{
-		$reflection = new \ReflectionClass(TTarFileExtractor::class);
-		$method = $reflection->getMethod('_detectCompression');
-		$method->setAccessible(true);
-
 		$extractor = new TTarFileExtractor('http://example.com/archive.tbz2');
-		$result = $method->invoke($extractor, 'http://example.com/archive.tbz2');
+		$result = PradoUnit::invoke($extractor, '_detectCompression', 'http://example.com/archive.tbz2');
 
 		$this->assertEquals(TTarFileExtractor::COMPRESSION_BZIP2, $result);
 	}
@@ -184,12 +141,8 @@ class TTarFileExtractorUrlTest extends TestCase
 	{
 		$tarFile = __DIR__ . '/data/test_gzip.tar.gz';
 
-		$reflection = new \ReflectionClass(TTarFileExtractor::class);
-		$method = $reflection->getMethod('_detectCompression');
-		$method->setAccessible(true);
-
 		$extractor = new TTarFileExtractor('http://example.com/test.tar.gz');
-		$result = $method->invoke($extractor, $tarFile);
+		$result = PradoUnit::invoke($extractor, '_detectCompression', $tarFile);
 
 		$this->assertEquals(TTarFileExtractor::COMPRESSION_GZIP, $result);
 	}
@@ -198,12 +151,8 @@ class TTarFileExtractorUrlTest extends TestCase
 	{
 		$tarFile = __DIR__ . '/data/test_gzip.tar.gz';
 
-		$reflection = new \ReflectionClass(TTarFileExtractor::class);
-		$method = $reflection->getMethod('_detectCompression');
-		$method->setAccessible(true);
-
 		$extractor = new TTarFileExtractor('https://example.com/test.tar.gz');
-		$result = $method->invoke($extractor, $tarFile);
+		$result = PradoUnit::invoke($extractor, '_detectCompression', $tarFile);
 
 		$this->assertEquals(TTarFileExtractor::COMPRESSION_GZIP, $result);
 	}
@@ -214,12 +163,8 @@ class TTarFileExtractorUrlTest extends TestCase
 		$tarFile = $this->testDir . '/local.tar';
 		TarTestHelper::writeTar($tarFile, [TarTestHelper::entry('test.txt', 'test content', '0', '', 0644, 0, 0, time() - 3600)]);
 
-		$reflection = new \ReflectionClass(TTarFileExtractor::class);
-		$method = $reflection->getMethod('_detectCompression');
-		$method->setAccessible(true);
-
 		$extractor = new TTarFileExtractor($tarFile);
-		$result = $method->invoke($extractor, $tarFile);
+		$result = PradoUnit::invoke($extractor, '_detectCompression', $tarFile);
 
 		$this->assertEquals(TTarFileExtractor::COMPRESSION_NONE, $result);
 	}
@@ -235,10 +180,7 @@ class TTarFileExtractorUrlTest extends TestCase
 
 		$extractor = new TTarFileExtractor('http://example.com/test.tar');
 
-		$reflection = new \ReflectionClass($extractor);
-		$property = $reflection->getProperty('_temp_tarpath');
-		$property->setAccessible(true);
-		$property->setValue($extractor, $tarFile);
+		PradoUnit::setProp($extractor, '_temp_tarpath', $tarFile);
 
 		$result = $extractor->extract($this->extractDir);
 
@@ -254,10 +196,7 @@ class TTarFileExtractorUrlTest extends TestCase
 
 		$extractor = new TTarFileExtractor('https://example.com/test.tar');
 
-		$reflection = new \ReflectionClass($extractor);
-		$property = $reflection->getProperty('_temp_tarpath');
-		$property->setAccessible(true);
-		$property->setValue($extractor, $tarFile);
+		PradoUnit::setProp($extractor, '_temp_tarpath', $tarFile);
 
 		$result = $extractor->extract($this->extractDir);
 
@@ -277,11 +216,8 @@ class TTarFileExtractorUrlTest extends TestCase
 
 		$extractor = new TTarFileExtractor('http://example.com/test.tar.gz');
 		$extractor->setRetainTempFile(false);
-		
-		$reflection = new \ReflectionClass($extractor);
-		$property = $reflection->getProperty('_temp_tarpath');
-		$property->setAccessible(true);
-		$property->setValue($extractor, $tempArchive);
+
+		PradoUnit::setProp($extractor, '_temp_tarpath', $tempArchive);
 
 		$result = $extractor->extract($this->extractDir);
 
@@ -299,10 +235,7 @@ class TTarFileExtractorUrlTest extends TestCase
 		$extractor = new TTarFileExtractor('https://example.com/test.tar.gz');
 		$extractor->setRetainTempFile(false);
 
-		$reflection = new \ReflectionClass($extractor);
-		$property = $reflection->getProperty('_temp_tarpath');
-		$property->setAccessible(true);
-		$property->setValue($extractor, $tempArchive);
+		PradoUnit::setProp($extractor, '_temp_tarpath', $tempArchive);
 
 		$result = $extractor->extract($this->extractDir);
 
@@ -320,10 +253,7 @@ class TTarFileExtractorUrlTest extends TestCase
 		$extractor = new TTarFileExtractor('http://example.com/test.tar.bz2');
 		$extractor->setRetainTempFile(false);
 
-		$reflection = new \ReflectionClass($extractor);
-		$property = $reflection->getProperty('_temp_tarpath');
-		$property->setAccessible(true);
-		$property->setValue($extractor, $tempArchive);
+		PradoUnit::setProp($extractor, '_temp_tarpath', $tempArchive);
 
 		$result = $extractor->extract($this->extractDir);
 
@@ -341,10 +271,7 @@ class TTarFileExtractorUrlTest extends TestCase
 		$extractor = new TTarFileExtractor('https://example.com/test.tar.bz2');
 		$extractor->setRetainTempFile(false);
 
-		$reflection = new \ReflectionClass($extractor);
-		$property = $reflection->getProperty('_temp_tarpath');
-		$property->setAccessible(true);
-		$property->setValue($extractor, $tempArchive);
+		PradoUnit::setProp($extractor, '_temp_tarpath', $tempArchive);
 
 		$result = $extractor->extract($this->extractDir);
 
@@ -364,15 +291,12 @@ class TTarFileExtractorUrlTest extends TestCase
 		$extractor = new TTarFileExtractor('http://example.com/test.tar.xz');
 		$extractor->setRetainTempFile(false);
 
-		$reflection = new \ReflectionClass($extractor);
-		$tempTarnameProperty = $reflection->getProperty('_temp_tarpath');
-		$tempTarnameProperty->setAccessible(true);
-		$tempTarnameProperty->setValue($extractor, $tempXzFile);
+		PradoUnit::setProp($extractor, '_temp_tarpath', $tempXzFile);
 
 		$result = $extractor->extract($this->extractDir);
 
 		// After no-retain extraction _temp_tarpath is cleared to null by clearTempFile().
-		$newTempXzFile = $tempTarnameProperty->getValue($extractor);
+		$newTempXzFile = PradoUnit::getProp($extractor, '_temp_tarpath');
 		$this->assertNull($newTempXzFile, 'Temp path should be null after no-retain extraction');
 		$this->assertTrue($result);
 		$this->assertFileExists($this->extractDir . '/xz_content.txt');
@@ -389,10 +313,7 @@ class TTarFileExtractorUrlTest extends TestCase
 		$extractor = new TTarFileExtractor('https://example.com/test.tar.xz');
 		$extractor->setRetainTempFile(false);
 
-		$reflection = new \ReflectionClass($extractor);
-		$tempTarnameProperty = $reflection->getProperty('_temp_tarpath');
-		$tempTarnameProperty->setAccessible(true);
-		$tempTarnameProperty->setValue($extractor, $tempXzFile);
+		PradoUnit::setProp($extractor, '_temp_tarpath', $tempXzFile);
 
 		$result = $extractor->extract($this->extractDir);
 
@@ -413,14 +334,11 @@ class TTarFileExtractorUrlTest extends TestCase
 	
 		$extractor = new TTarFileExtractor('http://example.com/test.tar.gz');
 		$extractor->setRetainTempFile(true);
-	
-		$reflection = new \ReflectionClass($extractor);
-		$property = $reflection->getProperty('_temp_tarpath');
-		$property->setAccessible(true);
-		$property->setValue($extractor, $tempArchive);
-	
+
+		PradoUnit::setProp($extractor, '_temp_tarpath', $tempArchive);
+
 		$result = $extractor->extract($this->extractDir);
-	
+
 		$this->assertTrue($result);
 		$this->assertFileExists($this->extractDir . '/gzip_content.txt');
 		$this->assertEquals(TTarFileExtractor::COMPRESSION_GZIP, $extractor->getCompression());
@@ -428,19 +346,16 @@ class TTarFileExtractorUrlTest extends TestCase
 		$extractor = null;
 		$this->assertFileDoesNotExist($tempArchive, 'Downloaded gz file should be deleted after decompression');
 	}
-	
+
 	public function testHttpsUrlExtractWithGzipCompression_Retain()
 	{
 		$tempArchive = sys_get_temp_dir() . '/prado_url_gzip_' . uniqid() . '.tar.gz';
 		copy(__DIR__ . '/data/test_gzip.tar.gz', $tempArchive);
-	
+
 		$extractor = new TTarFileExtractor('https://example.com/test.tar.gz');
 		$extractor->setRetainTempFile(true);
-	
-		$reflection = new \ReflectionClass($extractor);
-		$property = $reflection->getProperty('_temp_tarpath');
-		$property->setAccessible(true);
-		$property->setValue($extractor, $tempArchive);
+
+		PradoUnit::setProp($extractor, '_temp_tarpath', $tempArchive);
 	
 		$result = $extractor->extract($this->extractDir);
 	
@@ -459,14 +374,11 @@ class TTarFileExtractorUrlTest extends TestCase
 	
 		$extractor = new TTarFileExtractor('http://example.com/test.tar.bz2');
 		$extractor->setRetainTempFile(true);
-	
-		$reflection = new \ReflectionClass($extractor);
-		$property = $reflection->getProperty('_temp_tarpath');
-		$property->setAccessible(true);
-		$property->setValue($extractor, $tempArchive);
-	
+
+		PradoUnit::setProp($extractor, '_temp_tarpath', $tempArchive);
+
 		$result = $extractor->extract($this->extractDir);
-	
+
 		$this->assertTrue($result);
 		$this->assertFileExists($this->extractDir . '/bzip2_content.txt');
 		$this->assertEquals(TTarFileExtractor::COMPRESSION_BZIP2, $extractor->getCompression());
@@ -474,19 +386,16 @@ class TTarFileExtractorUrlTest extends TestCase
 		$extractor = null;
 		$this->assertFileDoesNotExist($tempArchive, 'Downloaded bz2 file should be deleted after decompression');
 	}
-	
+
 	public function testHttpsUrlExtractWithBzip2Compression_Retain()
 	{
 		$tempArchive = sys_get_temp_dir() . '/prado_url_bzip2_' . uniqid() . '.tar.bz2';
 		copy(__DIR__ . '/data/test_bzip2.tar.bz2', $tempArchive);
-	
+
 		$extractor = new TTarFileExtractor('https://example.com/test.tar.bz2');
 		$extractor->setRetainTempFile(true);
-	
-		$reflection = new \ReflectionClass($extractor);
-		$property = $reflection->getProperty('_temp_tarpath');
-		$property->setAccessible(true);
-		$property->setValue($extractor, $tempArchive);
+
+		PradoUnit::setProp($extractor, '_temp_tarpath', $tempArchive);
 	
 		$result = $extractor->extract($this->extractDir);
 	
@@ -507,14 +416,11 @@ class TTarFileExtractorUrlTest extends TestCase
 	
 		$extractor = new TTarFileExtractor('http://example.com/test.tar.xz');
 		$extractor->setRetainTempFile(true);
-	
-		$reflection = new \ReflectionClass($extractor);
-		$tempTarnameProperty = $reflection->getProperty('_temp_tarpath');
-		$tempTarnameProperty->setAccessible(true);
-		$tempTarnameProperty->setValue($extractor, $tempXzFile);
-	
+
+		PradoUnit::setProp($extractor, '_temp_tarpath', $tempXzFile);
+
 		$result = $extractor->extract($this->extractDir);
-		$newTempXzFile = $tempTarnameProperty->getValue($extractor);
+		$newTempXzFile = PradoUnit::getProp($extractor, '_temp_tarpath');
 		
 		$this->assertNotEquals($tempXzFile, $newTempXzFile);
 		$this->assertTrue($result);
@@ -533,14 +439,11 @@ class TTarFileExtractorUrlTest extends TestCase
 	
 		$extractor = new TTarFileExtractor('https://example.com/test.tar.xz');
 		$extractor->setRetainTempFile(true);
-	
-		$reflection = new \ReflectionClass($extractor);
-		$tempTarnameProperty = $reflection->getProperty('_temp_tarpath');
-		$tempTarnameProperty->setAccessible(true);
-		$tempTarnameProperty->setValue($extractor, $tempXzFile);
-	
+
+		PradoUnit::setProp($extractor, '_temp_tarpath', $tempXzFile);
+
 		$result = $extractor->extract($this->extractDir);
-		$newTempXzFile = $tempTarnameProperty->getValue($extractor);
+		$newTempXzFile = PradoUnit::getProp($extractor, '_temp_tarpath');
 		
 		$this->assertNotEquals($tempXzFile, $newTempXzFile);
 		$this->assertTrue($result);
@@ -566,10 +469,7 @@ class TTarFileExtractorUrlTest extends TestCase
 
 		$extractor = new TTarFileExtractor('http://example.com/multi.tar');
 
-		$reflection = new \ReflectionClass($extractor);
-		$property = $reflection->getProperty('_temp_tarpath');
-		$property->setAccessible(true);
-		$property->setValue($extractor, $tarFile);
+		PradoUnit::setProp($extractor, '_temp_tarpath', $tarFile);
 
 		$result = $extractor->extract($this->extractDir);
 
@@ -590,10 +490,7 @@ class TTarFileExtractorUrlTest extends TestCase
 
 		$extractor = new TTarFileExtractor('https://example.com/multi.tar');
 
-		$reflection = new \ReflectionClass($extractor);
-		$property = $reflection->getProperty('_temp_tarpath');
-		$property->setAccessible(true);
-		$property->setValue($extractor, $tarFile);
+		PradoUnit::setProp($extractor, '_temp_tarpath', $tarFile);
 
 		$result = $extractor->extract($this->extractDir);
 

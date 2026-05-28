@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../../PradoUnitRequires.php';
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TTemplateException;
 use Prado\TComponent;
@@ -47,7 +49,7 @@ class TTemplateTest extends PHPUnit\Framework\TestCase
 
 	private function newTemplateUnvalidated($template)
 	{
-		$ref = new \ReflectionClass(TTemplate::class);
+		$ref = PradoUnit::reflectionClass(TTemplate::class);
 		$tplObj = $ref->newInstanceWithoutConstructor();
 		$props = [
 			'_sourceTemplate' => true,
@@ -59,17 +61,11 @@ class TTemplateTest extends PHPUnit\Framework\TestCase
 			'_hashCode' => md5($template),
 		];
 		foreach ($props as $name => $val) {
-			$p = $ref->getProperty($name);
-			$p->setAccessible(true);
-			$p->setValue($tplObj, $val);
+			PradoUnit::setProp($tplObj, $name, $val);
 		}
 		$ref->getParentClass()->getParentClass()->getConstructor()->invoke($tplObj);
-		$parse = $ref->getMethod('parse');
-		$parse->setAccessible(true);
-		$parse->invoke($tplObj, $template);
-		$c = $ref->getProperty('_content');
-		$c->setAccessible(true);
-		$c->setValue($tplObj, null);
+		PradoUnit::invoke($tplObj, 'parse', $template);
+		PradoUnit::setProp($tplObj, '_content', null);
 		return $tplObj;
 	}
 
@@ -289,10 +285,7 @@ class TTemplateTest extends PHPUnit\Framework\TestCase
 		$data = $item[TTemplate::TPL_TYPE];
 		if ($data instanceof TCompositeLiteral) {
 			$combined = '';
-			$ref = new \ReflectionClass(TCompositeLiteral::class);
-			$itemsProp = $ref->getProperty('_items');
-			$itemsProp->setAccessible(true);
-			foreach ($itemsProp->getValue($data) as $subItem) {
+			foreach (PradoUnit::getProp($data, '_items') as $subItem) {
 				$combined .= is_string($subItem) ? $subItem : (string) $subItem;
 			}
 			$this->assertStringContainsString('before', $combined);
@@ -314,10 +307,7 @@ class TTemplateTest extends PHPUnit\Framework\TestCase
 		$data = $item[TTemplate::TPL_TYPE];
 		if ($data instanceof TCompositeLiteral) {
 			$combined = '';
-			$ref = new \ReflectionClass(TCompositeLiteral::class);
-			$itemsProp = $ref->getProperty('_items');
-			$itemsProp->setAccessible(true);
-			foreach ($itemsProp->getValue($data) as $subItem) {
+			foreach (PradoUnit::getProp($data, '_items') as $subItem) {
 				$combined .= $subItem;
 			}
 			$this->assertStringContainsString('a', $combined);
@@ -337,10 +327,7 @@ class TTemplateTest extends PHPUnit\Framework\TestCase
 		$data = $item[TTemplate::TPL_TYPE];
 		if ($data instanceof TCompositeLiteral) {
 			$combined = '';
-			$ref = new \ReflectionClass(TCompositeLiteral::class);
-			$itemsProp = $ref->getProperty('_items');
-			$itemsProp->setAccessible(true);
-			foreach ($itemsProp->getValue($data) as $subItem) {
+			foreach (PradoUnit::getProp($data, '_items') as $subItem) {
 				$combined .= $subItem;
 			}
 			$this->assertStringContainsString('a', $combined);
@@ -435,10 +422,7 @@ class TTemplateTest extends PHPUnit\Framework\TestCase
 		$data = $item[TTemplate::TPL_TYPE];
 		if ($data instanceof TCompositeLiteral) {
 			$combined = '';
-			$ref = new \ReflectionClass(TCompositeLiteral::class);
-			$itemsProp = $ref->getProperty('_items');
-			$itemsProp->setAccessible(true);
-			foreach ($itemsProp->getValue($data) as $subItem) {
+			foreach (PradoUnit::getProp($data, '_items') as $subItem) {
 				$combined .= $subItem;
 			}
 			$this->assertStringContainsString('a', $combined);
@@ -977,13 +961,10 @@ $this->assertArrayHasKey(TTemplate::TPL_PROPS, $item);
 	public function testAttributeToMethodNameConvertsDashToUnderscore()
 	{
 		$tpl = $this->newTemplate('');
-		$tplClass = new \ReflectionClass(TTemplate::class);
-		$method = $tplClass->getMethod('attributeToMethodName');
-		$method->setAccessible(true);
-		$this->assertEquals('data_toggle', $method->invoke($tpl, 'data-toggle'));
-		$this->assertEquals('Font_Size', $method->invoke($tpl, 'Font-Size'));
-		$this->assertEquals('nocase', $method->invoke($tpl, 'nocase'));
-		$this->assertEquals('multi_dash_name', $method->invoke($tpl, 'multi-dash-name'));
+		$this->assertEquals('data_toggle', PradoUnit::invoke($tpl, 'attributeToMethodName', 'data-toggle'));
+		$this->assertEquals('Font_Size', PradoUnit::invoke($tpl, 'attributeToMethodName', 'Font-Size'));
+		$this->assertEquals('nocase', PradoUnit::invoke($tpl, 'attributeToMethodName', 'nocase'));
+		$this->assertEquals('multi_dash_name', PradoUnit::invoke($tpl, 'attributeToMethodName', 'multi-dash-name'));
 	}
 
 	public function testAttributeWithSingleQuotes()
@@ -1136,10 +1117,7 @@ $this->assertArrayHasKey(TTemplate::TPL_PROPS, $item);
 		$item = array_values($items)[0];
 		$this->assertInstanceOf(TCompositeLiteral::class, $item[TTemplate::TPL_TYPE]);
 		$this->assertEquals(-1, $item[TTemplate::TPL_PARENT_INDEX]);
-		$ref = new \ReflectionClass(TCompositeLiteral::class);
-		$exprProp = $ref->getProperty('_expressions');
-		$exprProp->setAccessible(true);
-		$expressions = $exprProp->getValue($item[TTemplate::TPL_TYPE]);
+		$expressions = PradoUnit::getProp($item[TTemplate::TPL_TYPE], '_expressions');
 		$this->assertCount(1, $expressions);
 		$this->assertStringContainsString('$this->Property', array_values($expressions)[0]);
 	}
@@ -1151,10 +1129,7 @@ $this->assertArrayHasKey(TTemplate::TPL_PROPS, $item);
 		$this->assertCount(1, $items);
 		$item = array_values($items)[0];
 		$this->assertInstanceOf(TCompositeLiteral::class, $item[TTemplate::TPL_TYPE]);
-		$ref = new \ReflectionClass(TCompositeLiteral::class);
-		$stmtProp = $ref->getProperty('_statements');
-		$stmtProp->setAccessible(true);
-		$statements = $stmtProp->getValue($item[TTemplate::TPL_TYPE]);
+		$statements = PradoUnit::getProp($item[TTemplate::TPL_TYPE], '_statements');
 		$this->assertCount(1, $statements);
 		$this->assertStringContainsString('echo "hello";', array_values($statements)[0]);
 	}
@@ -1166,13 +1141,8 @@ $this->assertArrayHasKey(TTemplate::TPL_PROPS, $item);
 		$this->assertCount(1, $items);
 		$item = array_values($items)[0];
 		$this->assertInstanceOf(TCompositeLiteral::class, $item[TTemplate::TPL_TYPE]);
-		$ref = new \ReflectionClass(TCompositeLiteral::class);
-		$exprProp = $ref->getProperty('_expressions');
-		$exprProp->setAccessible(true);
-		$itemsProp = $ref->getProperty('_items');
-		$itemsProp->setAccessible(true);
-		$expressions = $exprProp->getValue($item[TTemplate::TPL_TYPE]);
-		$literalItems = $itemsProp->getValue($item[TTemplate::TPL_TYPE]);
+		$expressions = PradoUnit::getProp($item[TTemplate::TPL_TYPE], '_expressions');
+		$literalItems = PradoUnit::getProp($item[TTemplate::TPL_TYPE], '_items');
 		$this->assertCount(1, $expressions);
 		$this->assertStringContainsString('$this->Name', array_values($expressions)[0]);
 		$this->assertCount(3, $literalItems);
@@ -1185,10 +1155,7 @@ $this->assertArrayHasKey(TTemplate::TPL_PROPS, $item);
 		$this->assertCount(1, $items);
 		$item = array_values($items)[0];
 		$this->assertInstanceOf(TCompositeLiteral::class, $item[TTemplate::TPL_TYPE]);
-		$ref = new \ReflectionClass(TCompositeLiteral::class);
-		$bindProp = $ref->getProperty('_bindings');
-		$bindProp->setAccessible(true);
-		$bindings = $bindProp->getValue($item[TTemplate::TPL_TYPE]);
+		$bindings = PradoUnit::getProp($item[TTemplate::TPL_TYPE], '_bindings');
 		$this->assertCount(1, $bindings);
 		$this->assertStringContainsString('$this->Data', array_values($bindings)[0]);
 	}
@@ -1200,10 +1167,7 @@ $this->assertArrayHasKey(TTemplate::TPL_PROPS, $item);
 		$this->assertCount(1, $items);
 		$item = array_values($items)[0];
 		$this->assertInstanceOf(TCompositeLiteral::class, $item[TTemplate::TPL_TYPE]);
-		$ref = new \ReflectionClass(TCompositeLiteral::class);
-		$exprProp = $ref->getProperty('_expressions');
-		$exprProp->setAccessible(true);
-		$expressions = $exprProp->getValue($item[TTemplate::TPL_TYPE]);
+		$expressions = PradoUnit::getProp($item[TTemplate::TPL_TYPE], '_expressions');
 		$this->assertCount(1, $expressions);
 		$this->assertStringContainsString('getParameters', array_values($expressions)[0]);
 		$this->assertStringContainsString('ParamName', array_values($expressions)[0]);
@@ -1215,10 +1179,7 @@ $this->assertArrayHasKey(TTemplate::TPL_PROPS, $item);
 		$this->assertCount(1, $items);
 		$item = array_values($items)[0];
 		$this->assertInstanceOf(TCompositeLiteral::class, $item[TTemplate::TPL_TYPE]);
-		$ref = new \ReflectionClass(TCompositeLiteral::class);
-		$exprProp = $ref->getProperty('_expressions');
-		$exprProp->setAccessible(true);
-		$expressions = $exprProp->getValue($item[TTemplate::TPL_TYPE]);
+		$expressions = PradoUnit::getProp($item[TTemplate::TPL_TYPE], '_expressions');
 		$this->assertCount(1, $expressions);
 		$this->assertStringContainsString('publishFilePath', array_values($expressions)[0]);
 		$this->assertStringContainsString('assets/logo.png', array_values($expressions)[0]);
@@ -1230,10 +1191,7 @@ $this->assertArrayHasKey(TTemplate::TPL_PROPS, $item);
 		$this->assertCount(1, $items);
 		$item = array_values($items)[0];
 		$this->assertInstanceOf(TCompositeLiteral::class, $item[TTemplate::TPL_TYPE]);
-		$ref = new \ReflectionClass(TCompositeLiteral::class);
-		$exprProp = $ref->getProperty('_expressions');
-		$exprProp->setAccessible(true);
-		$expressions = $exprProp->getValue($item[TTemplate::TPL_TYPE]);
+		$expressions = PradoUnit::getProp($item[TTemplate::TPL_TYPE], '_expressions');
 		$this->assertCount(1, $expressions);
 		$this->assertStringContainsString('path/to/page', array_values($expressions)[0]);
 	}
@@ -1244,10 +1202,7 @@ $this->assertArrayHasKey(TTemplate::TPL_PROPS, $item);
 		$this->assertCount(1, $items);
 		$item = array_values($items)[0];
 		$this->assertInstanceOf(TCompositeLiteral::class, $item[TTemplate::TPL_TYPE]);
-		$ref = new \ReflectionClass(TCompositeLiteral::class);
-		$exprProp = $ref->getProperty('_expressions');
-		$exprProp->setAccessible(true);
-		$expressions = $exprProp->getValue($item[TTemplate::TPL_TYPE]);
+		$expressions = PradoUnit::getProp($item[TTemplate::TPL_TYPE], '_expressions');
 		$this->assertCount(1, $expressions);
 		$this->assertStringContainsString('localize', array_values($expressions)[0]);
 		$this->assertStringContainsString('Hello', array_values($expressions)[0]);
@@ -1260,10 +1215,7 @@ $this->assertArrayHasKey(TTemplate::TPL_PROPS, $item);
 		$this->assertCount(1, $items);
 		$item = array_values($items)[0];
 		$this->assertInstanceOf(TCompositeLiteral::class, $item[TTemplate::TPL_TYPE]);
-		$ref = new \ReflectionClass(TCompositeLiteral::class);
-		$exprProp = $ref->getProperty('_expressions');
-		$exprProp->setAccessible(true);
-		$expressions = $exprProp->getValue($item[TTemplate::TPL_TYPE]);
+		$expressions = PradoUnit::getProp($item[TTemplate::TPL_TYPE], '_expressions');
 		$this->assertCount(2, $expressions);
 	}
 
@@ -1576,10 +1528,7 @@ $this->assertArrayHasKey(TTemplate::TPL_PROPS, $item);
 		}
 		$this->assertEquals(0, $stringCount);
 		// The composite literal has 3 sub-items: 'Hello ', expression, ' World'
-		$ref = new \ReflectionClass(TCompositeLiteral::class);
-		$itemsProp = $ref->getProperty('_items');
-		$itemsProp->setAccessible(true);
-		$literalItems = $itemsProp->getValue($item[TTemplate::TPL_TYPE]);
+		$literalItems = PradoUnit::getProp($item[TTemplate::TPL_TYPE], '_items');
 		$this->assertCount(3, $literalItems);
 	}
 
@@ -1589,11 +1538,8 @@ $this->assertArrayHasKey(TTemplate::TPL_PROPS, $item);
 
 	public function testPackTemplateWithAttributes()
 	{
-		$ref = new \ReflectionClass(TTemplate::class);
-		$tplObj = $ref->newInstanceWithoutConstructor();
-		$method = $ref->getMethod('packTemplate');
-		$method->setAccessible(true);
-		$result = $method->invoke($tplObj, -1, 'SomeClass', ['id' => [TTemplate::PROP_TYPE => TTemplate::CONFIG_VALUE, TTemplate::PROP_NAME => 'ID', TTemplate::PROP_VALUE => 'test']]);
+		$tplObj = PradoUnit::reflectionClass(TTemplate::class)->newInstanceWithoutConstructor();
+		$result = PradoUnit::invoke($tplObj, 'packTemplate', -1, 'SomeClass', ['id' => [TTemplate::PROP_TYPE => TTemplate::CONFIG_VALUE, TTemplate::PROP_NAME => 'ID', TTemplate::PROP_VALUE => 'test']]);
 		$this->assertEquals(-1, $result[TTemplate::TPL_PARENT_INDEX]);
 		$this->assertEquals('SomeClass', $result[TTemplate::TPL_TYPE]);
 		$this->assertArrayHasKey(TTemplate::TPL_PROPS, $result);
@@ -1602,11 +1548,8 @@ $this->assertArrayHasKey(TTemplate::TPL_PROPS, $item);
 
 	public function testPackTemplateWithoutAttributes()
 	{
-		$ref = new \ReflectionClass(TTemplate::class);
-		$tplObj = $ref->newInstanceWithoutConstructor();
-		$method = $ref->getMethod('packTemplate');
-		$method->setAccessible(true);
-		$result = $method->invoke($tplObj, -1, 'Hello text');
+		$tplObj = PradoUnit::reflectionClass(TTemplate::class)->newInstanceWithoutConstructor();
+		$result = PradoUnit::invoke($tplObj, 'packTemplate', -1, 'Hello text');
 		$this->assertEquals(-1, $result[TTemplate::TPL_PARENT_INDEX]);
 		$this->assertEquals('Hello text', $result[TTemplate::TPL_TYPE]);
 		$this->assertArrayNotHasKey(TTemplate::TPL_PROPS, $result);
@@ -1614,11 +1557,8 @@ $this->assertArrayHasKey(TTemplate::TPL_PROPS, $item);
 
 	public function testPackProperty()
 	{
-		$ref = new \ReflectionClass(TTemplate::class);
-		$tplObj = $ref->newInstanceWithoutConstructor();
-		$method = $ref->getMethod('packProperty');
-		$method->setAccessible(true);
-		$result = $method->invoke($tplObj, TTemplate::CONFIG_VALUE, 'Text', 'Hello');
+		$tplObj = PradoUnit::reflectionClass(TTemplate::class)->newInstanceWithoutConstructor();
+		$result = PradoUnit::invoke($tplObj, 'packProperty', TTemplate::CONFIG_VALUE, 'Text', 'Hello');
 		$this->assertEquals(TTemplate::CONFIG_VALUE, $result[TTemplate::PROP_TYPE]);
 		$this->assertEquals('Text', $result[TTemplate::PROP_NAME]);
 		$this->assertEquals('Hello', $result[TTemplate::PROP_VALUE]);
@@ -1626,81 +1566,64 @@ $this->assertArrayHasKey(TTemplate::TPL_PROPS, $item);
 
 	public function testPropertyExpressionCharToTypeMapping()
 	{
-		$ref = new \ReflectionClass(TTemplate::class);
-		$tplObj = $ref->newInstanceWithoutConstructor();
-		$method = $ref->getMethod('propertyExpressionCharToType');
-		$method->setAccessible(true);
-		$this->assertEquals(TTemplate::CONFIG_EXPRESSION, $method->invoke($tplObj, '<%= expr %>', 'prop'));
-		$this->assertEquals(TTemplate::CONFIG_DATABIND, $method->invoke($tplObj, '<%# expr %>', 'prop'));
-		$this->assertEquals(TTemplate::CONFIG_ASSET, $method->invoke($tplObj, '<%~ expr %>', 'prop'));
-		$this->assertEquals(TTemplate::CONFIG_LOCALIZATION, $method->invoke($tplObj, '<%[ expr ]%>', 'prop'));
-		$this->assertEquals(TTemplate::CONFIG_PARAMETER, $method->invoke($tplObj, '<%$ expr %>', 'prop'));
-		$this->assertEquals(TTemplate::CONFIG_EXPRESSION, $method->invoke($tplObj, '<%/ expr %>', 'prop'));
+		$tplObj = PradoUnit::reflectionClass(TTemplate::class)->newInstanceWithoutConstructor();
+		$this->assertEquals(TTemplate::CONFIG_EXPRESSION, PradoUnit::invoke($tplObj, 'propertyExpressionCharToType', '<%= expr %>', 'prop'));
+		$this->assertEquals(TTemplate::CONFIG_DATABIND, PradoUnit::invoke($tplObj, 'propertyExpressionCharToType', '<%# expr %>', 'prop'));
+		$this->assertEquals(TTemplate::CONFIG_ASSET, PradoUnit::invoke($tplObj, 'propertyExpressionCharToType', '<%~ expr %>', 'prop'));
+		$this->assertEquals(TTemplate::CONFIG_LOCALIZATION, PradoUnit::invoke($tplObj, 'propertyExpressionCharToType', '<%[ expr ]%>', 'prop'));
+		$this->assertEquals(TTemplate::CONFIG_PARAMETER, PradoUnit::invoke($tplObj, 'propertyExpressionCharToType', '<%$ expr %>', 'prop'));
+		$this->assertEquals(TTemplate::CONFIG_EXPRESSION, PradoUnit::invoke($tplObj, 'propertyExpressionCharToType', '<%/ expr %>', 'prop'));
 	}
 
 	public function testPropertyExpressionCharToTypeInvalid()
 	{
-		$ref = new \ReflectionClass(TTemplate::class);
-		$tplObj = $ref->newInstanceWithoutConstructor();
-		$method = $ref->getMethod('propertyExpressionCharToType');
-		$method->setAccessible(true);
+		$tplObj = PradoUnit::reflectionClass(TTemplate::class)->newInstanceWithoutConstructor();
 		$this->expectException(TConfigurationException::class);
-		$method->invoke($tplObj, '<%X value%>', 'prop');
+		PradoUnit::invoke($tplObj, 'propertyExpressionCharToType', '<%X value%>', 'prop');
 	}
 
 	public function testParseExpressionAllTypes()
 	{
-		$ref = new \ReflectionClass(TTemplate::class);
-		$tplObj = $ref->newInstanceWithoutConstructor();
-		$ctxProp = $ref->getProperty('_contextPath');
-		$ctxProp->setAccessible(true);
-		$ctxProp->setValue($tplObj, sys_get_temp_dir());
-		$method = $ref->getMethod('parseExpression');
-		$method->setAccessible(true);
+		$tplObj = PradoUnit::reflectionClass(TTemplate::class)->newInstanceWithoutConstructor();
+		PradoUnit::setProp($tplObj, '_contextPath', sys_get_temp_dir());
 
-		$result = $method->invoke($tplObj, '=', '$this->Prop');
+		$result = PradoUnit::invoke($tplObj, 'parseExpression', '=', '$this->Prop');
 		$this->assertEquals([TCompositeLiteral::TYPE_EXPRESSION, '$this->Prop'], $result);
 
-		$result = $method->invoke($tplObj, '%', 'echo "hi";');
+		$result = PradoUnit::invoke($tplObj, 'parseExpression', '%', 'echo "hi";');
 		$this->assertEquals([TCompositeLiteral::TYPE_STATEMENTS, 'echo "hi";'], $result);
 
-		$result = $method->invoke($tplObj, '#', '$this->Data');
+		$result = PradoUnit::invoke($tplObj, 'parseExpression', '#', '$this->Data');
 		$this->assertEquals([TCompositeLiteral::TYPE_DATABINDING, '$this->Data'], $result);
 
-		$result = $method->invoke($tplObj, '$', 'ParamName');
+		$result = PradoUnit::invoke($tplObj, 'parseExpression', '$', 'ParamName');
 		$this->assertEquals(TCompositeLiteral::TYPE_EXPRESSION, $result[0]);
 		$this->assertStringContainsString('getParameters', $result[1]);
 
-		$result = $method->invoke($tplObj, '~', 'assets/img.png');
+		$result = PradoUnit::invoke($tplObj, 'parseExpression', '~', 'assets/img.png');
 		$this->assertEquals(TCompositeLiteral::TYPE_EXPRESSION, $result[0]);
 		$this->assertStringContainsString('publishFilePath', $result[1]);
 
-		$result = $method->invoke($tplObj, '/', 'path/to/page');
+		$result = PradoUnit::invoke($tplObj, 'parseExpression', '/', 'path/to/page');
 		$this->assertEquals(TCompositeLiteral::TYPE_EXPRESSION, $result[0]);
 		$this->assertStringContainsString('path/to/page', $result[1]);
 
-		$result = $method->invoke($tplObj, '[', 'Hello World ]');
+		$result = PradoUnit::invoke($tplObj, 'parseExpression', '[', 'Hello World ]');
 		$this->assertEquals(TCompositeLiteral::TYPE_EXPRESSION, $result[0]);
 		$this->assertStringContainsString('localize', $result[1]);
 	}
 
 	public function testParseExpressionInvalidType()
 	{
-		$ref = new \ReflectionClass(TTemplate::class);
-		$tplObj = $ref->newInstanceWithoutConstructor();
-		$method = $ref->getMethod('parseExpression');
-		$method->setAccessible(true);
+		$tplObj = PradoUnit::reflectionClass(TTemplate::class)->newInstanceWithoutConstructor();
 		$this->expectException(TConfigurationException::class);
-		$method->invoke($tplObj, 'X', 'someExpression');
+		PradoUnit::invoke($tplObj, 'parseExpression', 'X', 'someExpression');
 	}
 
 	public function testParseAttributeStringValue()
 	{
-		$ref = new \ReflectionClass(TTemplate::class);
-		$tplObj = $ref->newInstanceWithoutConstructor();
-		$method = $ref->getMethod('parseAttribute');
-		$method->setAccessible(true);
-		$result = $method->invoke($tplObj, 'Text', 'Hello World');
+		$tplObj = PradoUnit::reflectionClass(TTemplate::class)->newInstanceWithoutConstructor();
+		$result = PradoUnit::invoke($tplObj, 'parseAttribute', 'Text', 'Hello World');
 		$this->assertEquals(TTemplate::CONFIG_VALUE, $result[TTemplate::PROP_TYPE]);
 		$this->assertEquals('Text', $result[TTemplate::PROP_NAME]);
 		$this->assertEquals('Hello World', $result[TTemplate::PROP_VALUE]);
@@ -1708,86 +1631,62 @@ $this->assertArrayHasKey(TTemplate::TPL_PROPS, $item);
 
 	public function testParseAttributeExpressionValue()
 	{
-		$ref = new \ReflectionClass(TTemplate::class);
-		$tplObj = $ref->newInstanceWithoutConstructor();
-		$method = $ref->getMethod('parseAttribute');
-		$method->setAccessible(true);
-		$result = $method->invoke($tplObj, 'Text', '<%= $this->Name %>');
+		$tplObj = PradoUnit::reflectionClass(TTemplate::class)->newInstanceWithoutConstructor();
+		$result = PradoUnit::invoke($tplObj, 'parseAttribute', 'Text', '<%= $this->Name %>');
 		$this->assertEquals(TTemplate::CONFIG_EXPRESSION, $result[TTemplate::PROP_TYPE]);
 		$this->assertStringContainsString('$this->Name', $result[TTemplate::PROP_VALUE]);
 	}
 
 	public function testParseAttributeDatabindValue()
 	{
-		$ref = new \ReflectionClass(TTemplate::class);
-		$tplObj = $ref->newInstanceWithoutConstructor();
-		$method = $ref->getMethod('parseAttribute');
-		$method->setAccessible(true);
-		$result = $method->invoke($tplObj, 'Text', '<%# $this->Data %>');
+		$tplObj = PradoUnit::reflectionClass(TTemplate::class)->newInstanceWithoutConstructor();
+		$result = PradoUnit::invoke($tplObj, 'parseAttribute', 'Text', '<%# $this->Data %>');
 		$this->assertEquals(TTemplate::CONFIG_DATABIND, $result[TTemplate::PROP_TYPE]);
 	}
 
 	public function testParseAttributeAssetValue()
 	{
-		$ref = new \ReflectionClass(TTemplate::class);
-		$tplObj = $ref->newInstanceWithoutConstructor();
-		$method = $ref->getMethod('parseAttribute');
-		$method->setAccessible(true);
-		$result = $method->invoke($tplObj, 'ImageUrl', '<%~ images/logo.png %>');
+		$tplObj = PradoUnit::reflectionClass(TTemplate::class)->newInstanceWithoutConstructor();
+		$result = PradoUnit::invoke($tplObj, 'parseAttribute', 'ImageUrl', '<%~ images/logo.png %>');
 		$this->assertEquals(TTemplate::CONFIG_ASSET, $result[TTemplate::PROP_TYPE]);
 		$this->assertEquals('images/logo.png', $result[TTemplate::PROP_VALUE]);
 	}
 
 	public function testParseAttributeParameterValue()
 	{
-		$ref = new \ReflectionClass(TTemplate::class);
-		$tplObj = $ref->newInstanceWithoutConstructor();
-		$method = $ref->getMethod('parseAttribute');
-		$method->setAccessible(true);
-		$result = $method->invoke($tplObj, 'Text', '<%$ AppParam %>');
+		$tplObj = PradoUnit::reflectionClass(TTemplate::class)->newInstanceWithoutConstructor();
+		$result = PradoUnit::invoke($tplObj, 'parseAttribute', 'Text', '<%$ AppParam %>');
 		$this->assertEquals(TTemplate::CONFIG_PARAMETER, $result[TTemplate::PROP_TYPE]);
 		$this->assertEquals('AppParam', $result[TTemplate::PROP_VALUE]);
 	}
 
 	public function testParseAttributeLocalizationValue()
 	{
-		$ref = new \ReflectionClass(TTemplate::class);
-		$tplObj = $ref->newInstanceWithoutConstructor();
-		$method = $ref->getMethod('parseAttribute');
-		$method->setAccessible(true);
-		$result = $method->invoke($tplObj, 'Text', '<%[ Hello World ]%>');
+		$tplObj = PradoUnit::reflectionClass(TTemplate::class)->newInstanceWithoutConstructor();
+		$result = PradoUnit::invoke($tplObj, 'parseAttribute', 'Text', '<%[ Hello World ]%>');
 		$this->assertEquals(TTemplate::CONFIG_LOCALIZATION, $result[TTemplate::PROP_TYPE]);
 		$this->assertEquals('Hello World', $result[TTemplate::PROP_VALUE]);
 	}
 
 	public function testParseAttributeUrlValue()
 	{
-		$ref = new \ReflectionClass(TTemplate::class);
-		$tplObj = $ref->newInstanceWithoutConstructor();
-		$method = $ref->getMethod('parseAttribute');
-		$method->setAccessible(true);
-		$result = $method->invoke($tplObj, 'NavigateUrl', '<%/ path/to/page %>');
+		$tplObj = PradoUnit::reflectionClass(TTemplate::class)->newInstanceWithoutConstructor();
+		$result = PradoUnit::invoke($tplObj, 'parseAttribute', 'NavigateUrl', '<%/ path/to/page %>');
 		$this->assertEquals(TTemplate::CONFIG_EXPRESSION, $result[TTemplate::PROP_TYPE]);
 		$this->assertStringContainsString('path/to/page', $result[TTemplate::PROP_VALUE]);
 	}
 
 	public function testParseAttributesEmpty()
 	{
-		$ref = new \ReflectionClass(TTemplate::class);
-		$tplObj = $ref->newInstanceWithoutConstructor();
-		$method = $ref->getMethod('parseAttributes');
-		$method->setAccessible(true);
-		$result = $method->invoke($tplObj, '', 0, false);
+		$tplObj = PradoUnit::reflectionClass(TTemplate::class)->newInstanceWithoutConstructor();
+		$result = PradoUnit::invoke($tplObj, 'parseAttributes', '', 0, false);
 		$this->assertEquals([], $result);
 	}
 
 	public function testParseAttributesDirective()
 	{
-		$ref = new \ReflectionClass(TTemplate::class);
-		$tplObj = $ref->newInstanceWithoutConstructor();
-		$method = $ref->getMethod('parseAttributes');
-		$method->setAccessible(true);
-		$result = $method->invoke($tplObj, 'Language="PHP" Master="Site"', 0, true);
+		$tplObj = PradoUnit::reflectionClass(TTemplate::class)->newInstanceWithoutConstructor();
+		$result = PradoUnit::invoke($tplObj, 'parseAttributes', 'Language="PHP" Master="Site"', 0, true);
 		$this->assertCount(2, $result);
 		$this->assertArrayHasKey('Language', $result);
 		$this->assertArrayHasKey('Master', $result);
@@ -1797,11 +1696,8 @@ $this->assertArrayHasKey(TTemplate::TPL_PROPS, $item);
 
 	public function testParseAttributesDirectiveWithDash()
 	{
-		$ref = new \ReflectionClass(TTemplate::class);
-		$tplObj = $ref->newInstanceWithoutConstructor();
-		$method = $ref->getMethod('parseAttributes');
-		$method->setAccessible(true);
-		$result = $method->invoke($tplObj, 'Master-Page="layout" Theme-Color="blue"', 0, true);
+		$tplObj = PradoUnit::reflectionClass(TTemplate::class)->newInstanceWithoutConstructor();
+		$result = PradoUnit::invoke($tplObj, 'parseAttributes', 'Master-Page="layout" Theme-Color="blue"', 0, true);
 		$this->assertCount(2, $result);
 
 		$this->assertEquals(['Master_Page' => 'layout', 'Theme_Color' => 'blue'], $result);

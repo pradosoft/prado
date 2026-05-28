@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../../../PradoUnitRequires.php';
+
 use Prado\Web\UI\WebControls\TDropDownList;
 use Prado\Web\UI\WebControls\TListItem;
 use Prado\Web\UI\THtmlWriter;
@@ -11,23 +13,17 @@ class TDropDownListTest extends TestCase
 {
 	private function invokeFormatDataValue($list, $formatString, $value)
 	{
-		$method = new ReflectionMethod($list, 'formatDataValue');
-		$method->setAccessible(true);
-		return $method->invoke($list, $formatString, $value);
+		return PradoUnit::invoke($list, 'formatDataValue', $formatString, $value);
 	}
 
 	private function getTagName($list)
 	{
-		$method = new ReflectionMethod($list, 'getTagName');
-		$method->setAccessible(true);
-		return $method->invoke($list);
+		return PradoUnit::invoke($list, 'getTagName');
 	}
 
 	private function getIsMultiSelect($list)
 	{
-		$method = new ReflectionMethod($list, 'getIsMultiSelect');
-		$method->setAccessible(true);
-		return $method->invoke($list);
+		return PradoUnit::invoke($list, 'getIsMultiSelect');
 	}
 
 	// ================================================================================
@@ -187,9 +183,7 @@ class TDropDownListTest extends TestCase
 	public function testGetClientClassName()
 	{
 		$list = new TDropDownList();
-		$method = new ReflectionMethod($list, 'getClientClassName');
-		$method->setAccessible(true);
-		$this->assertEquals('Prado.WebUI.TDropDownList', $method->invoke($list));
+		$this->assertEquals('Prado.WebUI.TDropDownList', PradoUnit::invoke($list, 'getClientClassName'));
 	}
 
 	// ================================================================================

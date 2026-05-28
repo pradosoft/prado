@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../../PradoUnitRequires.php';
+
 use Prado\Prado;
 use Prado\Web\UI\TThemeManager;
 use Prado\Web\UI\TTheme;
@@ -51,9 +53,7 @@ class TThemeManagerTest extends PHPUnit\Framework\TestCase
 	 */
 	private function setBasePath(TThemeManager $manager, string $path): void
 	{
-		$ref = new ReflectionProperty(TThemeManager::class, '_basePath');
-		$ref->setAccessible(true);
-		$ref->setValue($manager, $path);
+		PradoUnit::setProp($manager, '_basePath', $path);
 	}
 
 	/**
@@ -61,9 +61,7 @@ class TThemeManagerTest extends PHPUnit\Framework\TestCase
 	 */
 	private function getBasePathValue(TThemeManager $manager): ?string
 	{
-		$ref = new ReflectionProperty(TThemeManager::class, '_basePath');
-		$ref->setAccessible(true);
-		return $ref->getValue($manager);
+		return PradoUnit::getProp($manager, '_basePath');
 	}
 
 	// -----------------------------------------------------------------------

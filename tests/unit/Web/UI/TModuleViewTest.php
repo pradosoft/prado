@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../../PradoUnitRequires.php';
+
 use Prado\Web\UI\TModuleView;
 use Prado\Web\UI\TCompositeControl;
 use Prado\Web\UI\TTemplate;
@@ -48,9 +50,7 @@ class TModuleViewTest extends TestCase
 
 	private function setModuleAvailable(string $moduleId, bool $available): void
 	{
-		$ref = new \ReflectionProperty(TApplication::class, '_modules');
-		$ref->setAccessible(true);
-		$modules = $ref->getValue($this->_app);
+		$modules = PradoUnit::getProp($this->_app, '_modules');
 		if ($available) {
 			if (!isset($modules[$moduleId]) || $modules[$moduleId] === null) {
 				$module = new TTestModule();
@@ -60,7 +60,7 @@ class TModuleViewTest extends TestCase
 		} else {
 			unset($modules[$moduleId]);
 		}
-		$ref->setValue($this->_app, $modules);
+		PradoUnit::setProp($this->_app, '_modules', $modules);
 	}
 
 	public function testExtendsCompositeControl()

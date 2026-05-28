@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../PradoUnitRequires.php';
+
 use Prado\Data\TDbColumnCaseMode;
 use Prado\Data\TDbCommand;
 use Prado\Data\TDbConnection;
@@ -143,13 +145,8 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 	{
 		$conn = new TDbConnection();
 
-		$charsetProp = new \ReflectionProperty(TDbConnection::class, '_charset');
-		$charsetProp->setAccessible(true);
-		$charsetProp->setValue($conn, $charset);
-
-		$activeProp = new \ReflectionProperty(TDbConnection::class, '_active');
-		$activeProp->setAccessible(true);
-		$activeProp->setValue($conn, $active);
+		PradoUnit::setProp($conn, '_charset', $charset);
+		PradoUnit::setProp($conn, '_active', $active);
 
 		return $conn;
 	}
@@ -159,9 +156,7 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 	 */
 	private function injectMockPdo(TDbConnection $conn, \PDO $pdo): void
 	{
-		$prop = new \ReflectionProperty(TDbConnection::class, '_pdo');
-		$prop->setAccessible(true);
-		$prop->setValue($conn, $pdo);
+		PradoUnit::setProp($conn, '_pdo', $pdo);
 	}
 
 	/**
@@ -169,9 +164,7 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 	 */
 	private function callSetConnectionCharset(TDbConnection $conn): void
 	{
-		$method = new \ReflectionMethod(TDbConnection::class, 'setConnectionCharset');
-		$method->setAccessible(true);
-		$method->invoke($conn);
+		PradoUnit::invoke($conn, 'setConnectionCharset');
 	}
 
 	/**
@@ -245,9 +238,7 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 	 */
 	private function callResolveCharsetForDriver(TDbConnection $conn, string $charset, string $driver): string
 	{
-		$method = new \ReflectionMethod(TDbConnection::class, 'resolveCharsetForDriver');
-		$method->setAccessible(true);
-		return $method->invoke($conn, $charset, $driver);
+		return PradoUnit::invoke($conn, 'resolveCharsetForDriver', $charset, $driver);
 	}
 
 	/**
@@ -610,9 +601,7 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 	 */
 	private function callApplyCharsetToDsn(TDbConnection $conn, string $dsn): string
 	{
-		$method = new \ReflectionMethod(TDbConnection::class, 'applyCharsetToDsn');
-		$method->setAccessible(true);
-		return $method->invoke($conn, $dsn);
+		return PradoUnit::invoke($conn, 'applyCharsetToDsn', $dsn);
 	}
 
 	/**
@@ -635,9 +624,7 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 	{
 		$conn = new TDbConnection('', '', '', 'UTF-8');
 
-		$charsetProp = new \ReflectionProperty(TDbConnection::class, '_charset');
-		$charsetProp->setAccessible(true);
-		$charsetProp->setValue($conn, 'UTF-8');
+		PradoUnit::setProp($conn, '_charset', 'UTF-8');
 
 		$result = $this->callApplyCharsetToDsn($conn, '');
 		$this->assertSame('', $result);

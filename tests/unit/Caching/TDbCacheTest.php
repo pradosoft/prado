@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../PradoUnitRequires.php';
+
 use Prado\Caching\TDbCache;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TConfigurationException;
@@ -495,11 +497,7 @@ class TDbCacheTest extends PHPUnit\Framework\TestCase
 
 	public function testSqliteDatabaseName()
 	{
-		$reflection = new ReflectionClass($this->_cache);
-		$method = $reflection->getMethod('getSqliteDatabaseName');
-		$method->setAccessible(true);
-
-		$dbName = $method->invoke($this->_cache);
+		$dbName = PradoUnit::invoke($this->_cache, 'getSqliteDatabaseName');
 		$this->assertEquals('sqlite3.cache', $dbName);
 	}
 
@@ -538,14 +536,9 @@ class TDbCacheTest extends PHPUnit\Framework\TestCase
 
 		$this->_cache->set('force_key', 'force_value');
 
-		$reflection = new ReflectionClass($this->_cache);
-		$property = $reflection->getProperty('_cacheInitialized');
-		$property->setAccessible(true);
-		$property->setValue($this->_cache, false);
+		PradoUnit::setProp($this->_cache, '_cacheInitialized', false);
 
-		$method = $reflection->getMethod('initializeCache');
-		$method->setAccessible(true);
-		$method->invoke($this->_cache, true);
+		PradoUnit::invoke($this->_cache, 'initializeCache', true);
 
 		$this->assertEquals('force_value', $this->_cache->get('force_key'));
 	}
@@ -609,10 +602,7 @@ class TDbCacheTest extends PHPUnit\Framework\TestCase
 		$key = 'init_key';
 		$value = 'init_value';
 
-		$reflection = new ReflectionClass($this->_cache);
-		$property = $reflection->getProperty('_cacheInitialized');
-		$property->setAccessible(true);
-		$property->setValue($this->_cache, false);
+		PradoUnit::setProp($this->_cache, '_cacheInitialized', false);
 
 		$this->_cache->doInitializeCache();
 
@@ -634,10 +624,7 @@ class TDbCacheTest extends PHPUnit\Framework\TestCase
 	{
 		$this->initCache();
 
-		$method = new ReflectionMethod($this->_cache, 'getTraitDbConnection');
-		$method->setAccessible(true);
-
-		$db = $method->invoke($this->_cache);
+		$db = PradoUnit::invoke($this->_cache, 'getTraitDbConnection');
 		$this->assertInstanceOf(TDbConnection::class, $db);
 		$this->assertTrue($db->getActive());
 	}

@@ -278,13 +278,20 @@ class PradoUnit {
 	 * The full class hierarchy is searched so private ancestor properties are
 	 * accessible without knowing their declaring class.
 	 *
-	 * @param object $object The object to read from.
+	 * When `$object` is a class-string the method operates in static mode,
+	 * equivalent to calling {@see getStaticProp()}.
+	 *
+	 * @param object|class-string $object The object to read from, or a class name
+	 *   for static properties.
 	 * @param string $name   Property name (without `$`).
 	 * @return mixed The current property value.
-	 * @throws \ReflectionException if the property does not exist on the object.
+	 * @throws \ReflectionException if the property does not exist on the object or class.
 	 */
-	public static function getProp(object $object, string $name): mixed
+	public static function getProp(object|string $object, string $name): mixed
 	{
+		if (is_string($object)) {
+			return static::getStaticProp($object, $name);
+		}
 		$props = static::reflectionProperties($object, [$name]);
 		if (!isset($props[$name])) {
 			throw new \ReflectionException("Property $name not found on " . get_class($object));
@@ -298,18 +305,73 @@ class PradoUnit {
 	 * The full class hierarchy is searched so private ancestor properties are
 	 * writable without knowing their declaring class.
 	 *
-	 * @param object $object The object to write to.
+	 * When `$object` is a class-string the method operates in static mode,
+	 * equivalent to calling {@see setStaticProp()}.
+	 *
+	 * @param object|class-string $object The object to write to, or a class name
+	 *   for static properties.
 	 * @param string $name   Property name (without `$`).
 	 * @param mixed  $value  The value to assign.
-	 * @throws \ReflectionException if the property does not exist on the object.
+	 * @throws \ReflectionException if the property does not exist on the object or class.
 	 */
-	public static function setProp(object $object, string $name, mixed $value): void
+	public static function setProp(object|string $object, string $name, mixed $value): void
 	{
+		if (is_string($object)) {
+			static::setStaticProp($object, $name, $value);
+			return;
+		}
 		$props = static::reflectionProperties($object, [$name]);
 		if (!isset($props[$name])) {
 			throw new \ReflectionException("Property $name not found on " . get_class($object));
 		}
 		$props[$name]->setValue($object, $value);
+	}
+
+	// =========================================================================
+	// Method invocation
+	// =========================================================================
+
+	/**
+	 * Invokes a named method on an object or class via reflection, bypassing
+	 * visibility (private / protected methods are callable).
+	 *
+	 * When `$object` is a class-string the method is invoked statically
+	 * (`ReflectionMethod::invoke(null, ...$args)`).
+	 *
+	 * ```php
+	 * // Instance method (private/protected):
+	 * $result = PradoUnit::invoke($component, 'evaluateIsValid');
+	 *
+	 * // Static method via class-string:
+	 * $hash = PradoUnit::invoke(TSecurityManager::class, 'generateSalt', 16);
+	 * ```
+	 *
+	 * **By-reference parameters**: variadic spread copies argument values, so
+	 * methods that declare pass-by-reference parameters (e.g. `function (&$out)`)
+	 * cannot be called through this helper — the reference is silently broken.
+	 * Use `PradoUnit::reflectionMethod()->invokeArgs()` directly for those cases:
+	 *
+	 * ```php
+	 * // sortManifest() declares its first parameter as &$manifest:
+	 * $rm = PradoUnit::reflectionMethod(TTarFileExtractor::class, 'sortManifest');
+	 * $rm->invokeArgs($extractor, [&$manifest]);
+	 * ```
+	 *
+	 * @param object|class-string $object The object to invoke on, or a class name
+	 *   for static methods.
+	 * @param string $method Method name.
+	 * @param mixed  ...$args Arguments forwarded to the method.
+	 * @return mixed The return value of the invoked method.
+	 * @throws \ReflectionException if the method does not exist.
+	 */
+	public static function invoke(object|string $object, string $method, mixed ...$args): mixed
+	{
+		$class = is_object($object) ? $object::class : $object;
+		$rm = static::reflectionMethod($class, $method);
+		if ($rm === null) {
+			throw new \ReflectionException("Method {$method} not found on {$class}");
+		}
+		return $rm->invoke(is_object($object) ? $object : null, ...$args);
 	}
 
 	// =========================================================================

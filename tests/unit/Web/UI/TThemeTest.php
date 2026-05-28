@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../../PradoUnitRequires.php';
+
 use Prado\Web\UI\TTheme;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\WebControls\TLabel;
@@ -32,12 +34,8 @@ class TThemeTest extends PHPUnit\Framework\TestCase
 	private function _createSkin($controlClass, $skinId, array $properties)
 	{
 		$skinId = $skinId ?? 0;
-		$ref = new ReflectionClass(TTheme::class);
-		$theme = $ref->newInstanceWithoutConstructor();
-		
-		$skinsProp = $ref->getProperty('_skins');
-		$skinsProp->setAccessible(true);
-		
+		$theme = PradoUnit::reflectionClass(TTheme::class)->newInstanceWithoutConstructor();
+
 		$skins = [];
 		if (!isset($skins[$controlClass])) {
 			$skins[$controlClass] = [];
@@ -46,20 +44,11 @@ class TThemeTest extends PHPUnit\Framework\TestCase
 			$skins[$controlClass][$skinId] = [];
 		}
 		$skins[$controlClass][$skinId] = array_merge($skins[$controlClass][$skinId], $properties);
-		$skinsProp->setValue($theme, $skins);
-		
-		$nameProp = $ref->getProperty('_name');
-		$nameProp->setAccessible(true);
-		$nameProp->setValue($theme, 'testtheme');
-		
-		$urlProp = $ref->getProperty('_themeUrl');
-		$urlProp->setAccessible(true);
-		$urlProp->setValue($theme, '/themes/testtheme');
-		
-		$pathProp = $ref->getProperty('_themePath');
-		$pathProp->setAccessible(true);
-		$pathProp->setValue($theme, $this->_themePath);
-		
+		PradoUnit::setProp($theme, '_skins', $skins);
+		PradoUnit::setProp($theme, '_name', 'testtheme');
+		PradoUnit::setProp($theme, '_themeUrl', '/themes/testtheme');
+		PradoUnit::setProp($theme, '_themePath', $this->_themePath);
+
 		return $theme;
 	}
 
@@ -494,16 +483,10 @@ class TThemeTest extends PHPUnit\Framework\TestCase
 
 	public function testApplySkin_EmptySkinArray_ReturnsFalse()
 	{
-		$ref = new ReflectionClass(TTheme::class);
-		$theme = $ref->newInstanceWithoutConstructor();
-		
-		$skinsProp = $ref->getProperty('_skins');
-		$skinsProp->setAccessible(true);
-		$skinsProp->setValue($theme, []);
-		
-		$nameProp = $ref->getProperty('_name');
-		$nameProp->setAccessible(true);
-		$nameProp->setValue($theme, 'testtheme');
+		$theme = PradoUnit::reflectionClass(TTheme::class)->newInstanceWithoutConstructor();
+
+		PradoUnit::setProp($theme, '_skins', []);
+		PradoUnit::setProp($theme, '_name', 'testtheme');
 		
 		$label = new TLabel();
 		$this->assertFalse($theme->applySkin($label));
@@ -555,12 +538,9 @@ class TThemeTest extends PHPUnit\Framework\TestCase
 
 	public function testApplySkin_MultipleSkinIds_SameControl()
 	{
-		$ref = new ReflectionClass(TTheme::class);
-		$theme = $ref->newInstanceWithoutConstructor();
-		
-		$skinsProp = $ref->getProperty('_skins');
-		$skinsProp->setAccessible(true);
-		$skinsProp->setValue($theme, [
+		$theme = PradoUnit::reflectionClass(TTheme::class)->newInstanceWithoutConstructor();
+
+		PradoUnit::setProp($theme, '_skins', [
 			TLabel::class => [
 				0 => [
 					'text' => [
@@ -578,11 +558,8 @@ class TThemeTest extends PHPUnit\Framework\TestCase
 				],
 			],
 		]);
-		
-		$nameProp = $ref->getProperty('_name');
-		$nameProp->setAccessible(true);
-		$nameProp->setValue($theme, 'testtheme');
-		
+		PradoUnit::setProp($theme, '_name', 'testtheme');
+
 		$label = new TLabel();
 		$label->setSkinID('special');
 		$this->assertTrue($theme->applySkin($label));

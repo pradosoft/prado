@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../../../PradoUnitRequires.php';
+
 use Prado\Web\UI\TControl;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\TTemplate;
@@ -2361,7 +2363,7 @@ class TStyleTest extends TestCase
 
 	private function newTemplateUnvalidated(string $html): TTemplate
 	{
-		$ref = new \ReflectionClass(TTemplate::class);
+		$ref = PradoUnit::reflectionClass(TTemplate::class);
 		$tplObj = $ref->newInstanceWithoutConstructor();
 		$props = [
 			'_sourceTemplate' => true,
@@ -2373,17 +2375,11 @@ class TStyleTest extends TestCase
 			'_hashCode' => md5($html),
 		];
 		foreach ($props as $name => $val) {
-			$p = $ref->getProperty($name);
-			$p->setAccessible(true);
-			$p->setValue($tplObj, $val);
+			PradoUnit::setProp($tplObj, $name, $val);
 		}
 		$ref->getParentClass()->getParentClass()->getConstructor()->invoke($tplObj);
-		$parse = $ref->getMethod('parse');
-		$parse->setAccessible(true);
-		$parse->invoke($tplObj, $html);
-		$c = $ref->getProperty('_content');
-		$c->setAccessible(true);
-		$c->setValue($tplObj, null);
+		PradoUnit::invoke($tplObj, 'parse', $html);
+		PradoUnit::setProp($tplObj, '_content', null);
 		return $tplObj;
 	}
 

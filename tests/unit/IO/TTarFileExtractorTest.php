@@ -1,5 +1,6 @@
 <?php
 
+require_once __DIR__ . '/../PradoUnitRequires.php';
 
 use PHPUnit\Framework\TestCase;
 use Prado\IO\TTarFileExtractor;
@@ -757,12 +758,9 @@ class TTarFileExtractorTest extends TestCase
 		$extractor = new TTarFileExtractor('/dev/null');
 		$extractor->setExceptionClass('\RuntimeException');
 
-		$method = new \ReflectionMethod($extractor, '_error');
-		$method->setAccessible(true);
-
 		$this->expectException(\RuntimeException::class);
 		$this->expectExceptionMessage('test error message');
-		$method->invoke($extractor, 'test error message');
+		PradoUnit::invoke($extractor, '_error', 'test error message');
 	}
 
 	public function testErrorFallsBackToExceptionForUnknownClass()
@@ -770,12 +768,9 @@ class TTarFileExtractorTest extends TestCase
 		$extractor = new TTarFileExtractor('/dev/null');
 		$extractor->setExceptionClass('\NoSuchClassDefinedAnywhere');
 
-		$method = new \ReflectionMethod($extractor, '_error');
-		$method->setAccessible(true);
-
 		$this->expectException(\Exception::class);
 		$this->expectExceptionMessage('fallback message');
-		$method->invoke($extractor, 'fallback message');
+		PradoUnit::invoke($extractor, '_error', 'fallback message');
 	}
 
 	public function testErrorFallsBackToExceptionForEmptyClass()
@@ -783,24 +778,18 @@ class TTarFileExtractorTest extends TestCase
 		$extractor = new TTarFileExtractor('/dev/null');
 		$extractor->setExceptionClass('');
 
-		$method = new \ReflectionMethod($extractor, '_error');
-		$method->setAccessible(true);
-
 		$this->expectException(\Exception::class);
 		$this->expectExceptionMessage('empty class fallback');
-		$method->invoke($extractor, 'empty class fallback');
+		PradoUnit::invoke($extractor, '_error', 'empty class fallback');
 	}
 
 	public function testErrorDefaultClassIsException()
 	{
 		$extractor = new TTarFileExtractor('/dev/null');
 
-		$method = new \ReflectionMethod($extractor, '_error');
-		$method->setAccessible(true);
-
 		$this->expectException(\Exception::class);
 		$this->expectExceptionMessage('default exception');
-		$method->invoke($extractor, 'default exception');
+		PradoUnit::invoke($extractor, '_error', 'default exception');
 	}
 
 	// =========================================================================
@@ -810,9 +799,7 @@ class TTarFileExtractorTest extends TestCase
 	private function normalizePath(string $path): ?string
 	{
 		$extractor = new TTarFileExtractor('/dev/null');
-		$method = new \ReflectionMethod($extractor, '_normalizePath');
-		$method->setAccessible(true);
-		return $method->invoke($extractor, $path);
+		return PradoUnit::invoke($extractor, '_normalizePath', $path);
 	}
 
 	/**
@@ -919,9 +906,7 @@ class TTarFileExtractorTest extends TestCase
 		$extractor = new TTarFileExtractor('/dev/null');
 		$extractor->setConflictMode($mode);
 
-		$fn = new \ReflectionMethod($extractor, 'getConflictModeFunction');
-		$fn->setAccessible(true);
-		$callable = $fn->invoke($extractor);
+		$callable = PradoUnit::invoke($extractor, 'getConflictModeFunction');
 
 		$this->assertIsArray($callable);
 		$this->assertSame($extractor, $callable[0]);
@@ -936,9 +921,7 @@ class TTarFileExtractorTest extends TestCase
 		};
 		$extractor->setConflictMode($userCallable);
 
-		$fn = new \ReflectionMethod($extractor, 'getConflictModeFunction');
-		$fn->setAccessible(true);
-		$callable = $fn->invoke($extractor);
+		$callable = PradoUnit::invoke($extractor, 'getConflictModeFunction');
 
 		$this->assertInstanceOf(\Closure::class, $callable);
 	}
@@ -948,9 +931,7 @@ class TTarFileExtractorTest extends TestCase
 		$extractor = new TTarFileExtractor('/dev/null');
 		$extractor->setConflictMode(999); // not a valid CONFLICT_* constant, not callable
 
-		$fn = new \ReflectionMethod($extractor, 'getConflictModeFunction');
-		$fn->setAccessible(true);
-		$callable = $fn->invoke($extractor);
+		$callable = PradoUnit::invoke($extractor, 'getConflictModeFunction');
 
 		$this->assertIsArray($callable);
 		$this->assertSame('resolveConflictOverwriteExisting', $callable[1]);
