@@ -207,6 +207,59 @@ class PradoUnitTest extends PHPUnit\Framework\TestCase
 	}
 
 	// -----------------------------------------------------------------------
+	// getProp / setProp — static mode (class-string argument)
+	// -----------------------------------------------------------------------
+
+	public function testGetPropStaticReadsPrivateAncestorField()
+	{
+		$this->assertSame(10, PradoUnit::getProp(PradoUnitStaticTestChild::class, '_baseStaticPrivate'));
+	}
+
+	public function testGetPropStaticReadsProtectedField()
+	{
+		$this->assertSame('base', PradoUnit::getProp(PradoUnitStaticTestChild::class, '_baseStaticProtected'));
+	}
+
+	public function testGetPropStaticReadsChildPrivateField()
+	{
+		$this->assertSame(2.5, PradoUnit::getProp(PradoUnitStaticTestChild::class, '_childStaticPrivate'));
+	}
+
+	public function testGetPropStaticThrowsForMissingProperty()
+	{
+		$this->expectException(\ReflectionException::class);
+		PradoUnit::getProp(PradoUnitStaticTestChild::class, 'doesNotExist');
+	}
+
+	public function testSetPropStaticWritesPrivateAncestorField()
+	{
+		$original = PradoUnit::getProp(PradoUnitStaticTestChild::class, '_baseStaticPrivate');
+		try {
+			PradoUnit::setProp(PradoUnitStaticTestChild::class, '_baseStaticPrivate', 99);
+			$this->assertSame(99, PradoUnit::getProp(PradoUnitStaticTestChild::class, '_baseStaticPrivate'));
+		} finally {
+			PradoUnit::setProp(PradoUnitStaticTestChild::class, '_baseStaticPrivate', $original);
+		}
+	}
+
+	public function testSetPropStaticWritesChildPrivateField()
+	{
+		$original = PradoUnit::getProp(PradoUnitStaticTestChild::class, '_childStaticPrivate');
+		try {
+			PradoUnit::setProp(PradoUnitStaticTestChild::class, '_childStaticPrivate', 6.28);
+			$this->assertSame(6.28, PradoUnit::getProp(PradoUnitStaticTestChild::class, '_childStaticPrivate'));
+		} finally {
+			PradoUnit::setProp(PradoUnitStaticTestChild::class, '_childStaticPrivate', $original);
+		}
+	}
+
+	public function testSetPropStaticThrowsForMissingProperty()
+	{
+		$this->expectException(\ReflectionException::class);
+		PradoUnit::setProp(PradoUnitStaticTestChild::class, 'doesNotExist', 'value');
+	}
+
+	// -----------------------------------------------------------------------
 	// snapshot / restore round-trip on a real TApplication
 	// -----------------------------------------------------------------------
 

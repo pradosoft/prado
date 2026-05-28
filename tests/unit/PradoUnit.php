@@ -278,13 +278,20 @@ class PradoUnit {
 	 * The full class hierarchy is searched so private ancestor properties are
 	 * accessible without knowing their declaring class.
 	 *
-	 * @param object $object The object to read from.
+	 * When `$object` is a class-string the method operates in static mode,
+	 * equivalent to calling {@see getStaticProp()}.
+	 *
+	 * @param object|class-string $object The object to read from, or a class name
+	 *   for static properties.
 	 * @param string $name   Property name (without `$`).
 	 * @return mixed The current property value.
-	 * @throws \ReflectionException if the property does not exist on the object.
+	 * @throws \ReflectionException if the property does not exist on the object or class.
 	 */
-	public static function getProp(object $object, string $name): mixed
+	public static function getProp(object|string $object, string $name): mixed
 	{
+		if (is_string($object)) {
+			return static::getStaticProp($object, $name);
+		}
 		$props = static::reflectionProperties($object, [$name]);
 		if (!isset($props[$name])) {
 			throw new \ReflectionException("Property $name not found on " . get_class($object));
@@ -298,13 +305,21 @@ class PradoUnit {
 	 * The full class hierarchy is searched so private ancestor properties are
 	 * writable without knowing their declaring class.
 	 *
-	 * @param object $object The object to write to.
+	 * When `$object` is a class-string the method operates in static mode,
+	 * equivalent to calling {@see setStaticProp()}.
+	 *
+	 * @param object|class-string $object The object to write to, or a class name
+	 *   for static properties.
 	 * @param string $name   Property name (without `$`).
 	 * @param mixed  $value  The value to assign.
-	 * @throws \ReflectionException if the property does not exist on the object.
+	 * @throws \ReflectionException if the property does not exist on the object or class.
 	 */
-	public static function setProp(object $object, string $name, mixed $value): void
+	public static function setProp(object|string $object, string $name, mixed $value): void
 	{
+		if (is_string($object)) {
+			static::setStaticProp($object, $name, $value);
+			return;
+		}
 		$props = static::reflectionProperties($object, [$name]);
 		if (!isset($props[$name])) {
 			throw new \ReflectionException("Property $name not found on " . get_class($object));
