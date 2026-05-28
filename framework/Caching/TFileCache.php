@@ -58,12 +58,28 @@ use Prado\TPropertyValue;
  * $object2 = $cache->get('object');
  * ```
  *
- * TFileCache may be configured in application configuration file as follows
+ * **XML configuration** (`application.xml`):
  * ```xml
  * <module id="cache" class="Prado\Caching\TFileCache"
  *         Directory="Application.runtime.cache"
  *         DefaultTtl="3600"
  *         MaximumSize="104857600" />
+ * ```
+ *
+ * **PHP configuration** (`application.php`):
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'cache' => [
+ *             'class' => 'Prado\Caching\TFileCache',
+ *             'properties' => [
+ *                 'Directory'  => 'Application.runtime.cache',
+ *                 'DefaultTtl' => '3600',
+ *                 'MaximumSize' => '104857600',
+ *             ],
+ *         ],
+ *     ],
+ * ];
  * ```
  *
  * @author Brad Anderson <belisoful@icloud.com>

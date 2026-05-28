@@ -92,7 +92,7 @@ use Prado\TPropertyValue;
  * {@see \Prado\Exceptions\TInvalidDataValueException} rather than writing the
  * entry and evicting everything else.
  *
- * Configure in `application.xml`:
+ * **XML configuration** (`application.xml`):
  * ```xml
  * <module id="cache" class="Prado\Caching\TMemoryCache"
  *         BackingCacheId="fileCache"
@@ -105,10 +105,49 @@ use Prado\TPropertyValue;
  *         PrimaryCache="false" />
  * ```
  *
+ * **PHP configuration** (`application.php`):
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'cache' => [
+ *             'class' => 'Prado\Caching\TMemoryCache',
+ *             'properties' => [
+ *                 'BackingCacheId' => 'fileCache',
+ *                 'MaximumSize'    => '4194304',
+ *                 'MergePolicy'    => 'Replace',
+ *             ],
+ *         ],
+ *         'fileCache' => [
+ *             'class' => 'Prado\Caching\TFileCache',
+ *             'properties' => [
+ *                 'Directory'    => 'Application.runtime.cache',
+ *                 'PrimaryCache' => 'false',
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
+ *
  * Or with a file backing and no external module:
+ *
+ * XML:
  * ```xml
  * <module id="cache" class="Prado\Caching\TMemoryCache"
  *         BackingFile="Application.runtime.memory-cache" />
+ * ```
+ *
+ * PHP:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'cache' => [
+ *             'class' => 'Prado\Caching\TMemoryCache',
+ *             'properties' => [
+ *                 'BackingFile' => 'Application.runtime.memory-cache',
+ *             ],
+ *         ],
+ *     ],
+ * ];
  * ```
  *
  * @author Brad Anderson <belisoful@icloud.com>
@@ -208,7 +247,24 @@ class TMemoryCache extends TCache implements IModuleDependency
 	 */
 	private array $_accessTimes = [];
 
-	// --------------------------------------------------------------- constructor
+	// --------------------------------------------------------------- lifecycle
+
+	/**
+	 * Declares the backing cache module as a required dependency so that
+	 * {@see \Prado\TApplication} initializes it before this module, guaranteeing
+	 * that {@see load()} can resolve the backing module during {@see init()}.
+	 * Returns `null` when no {@see getBackingCacheId BackingCacheId} has been set.
+	 *
+	 * @param bool $isPreInit `true` when collecting for the dyPreInit pass,
+	 *   `false` when collecting for the init() pass (default).
+	 *   TMemoryCache needs its backing cache in all phases.
+	 * @return null|array|string dependency list; an empty string when no
+	 *   {@see getBackingCacheId BackingCacheId} has been configured
+	 */
+	public function getModuleDependencies(bool $isPreInit = false): null|string|array
+	{
+		return $this->getBackingCacheId();
+	}
 
 	/**
 	 * Seeds {@see getBackingCacheKey BackingCacheKey} from {@see DEFAULT_BACKING_CACHE_KEY}
@@ -221,6 +277,41 @@ class TMemoryCache extends TCache implements IModuleDependency
 		$this->setBackingCacheKeyDirect(static::DEFAULT_BACKING_CACHE_KEY);
 		$this->setMergePolicyDirect(static::DEFAULT_MERGE_POLICY);
 		parent::__construct();
+	}
+
+	/**
+	 * Initializes the module. Refines the {@see getBackingCacheKey BackingCacheKey}
+	 * set by {@see __construct()} by appending `'.<moduleId>'` when the key is still
+	 * at its {@see DEFAULT_BACKING_CACHE_KEY default} and a module ID is available,
+	 * then loads the in-memory store from the backing store and registers
+	 * {@see handleSaveState()} as a handler for the application's `OnSaveState`
+	 * event so that the store is persisted automatically at the end of each request.
+	 *
+	 * @param null|\Prado\Xml\TXmlElement $config module configuration
+	 */
+	public function init($config)
+	{
+		if ($this->getBackingCacheKeyDirect() === static::DEFAULT_BACKING_CACHE_KEY) {
+			$id = $this->getID() ?? '';
+			if ($id !== '') {
+				$this->setBackingCacheKeyDirect(static::DEFAULT_BACKING_CACHE_KEY . '.' . $id);
+			}
+		}
+		$this->load();
+		$this->getApplication()->attachEventHandler('OnSaveState', [$this, 'handleSaveState'], 5);
+		parent::init($config);
+	}
+
+	/**
+	 * Persists the in-memory store when the application raises its `OnSaveState`
+	 * event. This handler is registered automatically during {@see init()}.
+	 *
+	 * @param mixed $sender the event sender (the application instance)
+	 * @param mixed $param the event parameter
+	 */
+	public function handleSaveState(mixed $sender, mixed $param): void
+	{
+		$this->save();
 	}
 
 	// --------------------------------------------------------------- accessors (store)
@@ -296,60 +387,6 @@ class TMemoryCache extends TCache implements IModuleDependency
 	protected function clearStoreEntry(string $key): void
 	{
 		unset($this->_store[$key]);
-	}
-
-	// --------------------------------------------------------------- lifecycle
-
-	/**
-	 * Declares the backing cache module as a required dependency so that
-	 * {@see \Prado\TApplication} initializes it before this module, guaranteeing
-	 * that {@see load()} can resolve the backing module during {@see init()}.
-	 * Returns `null` when no {@see getBackingCacheId BackingCacheId} has been set.
-	 *
-	 * @param bool $isPreInit `true` when collecting for the dyPreInit pass,
-	 *   `false` when collecting for the init() pass (default).
-	 *   TMemoryCache needs its backing cache in all phases.
-	 * @return null|array|string dependency list; an empty string when no
-	 *   {@see getBackingCacheId BackingCacheId} has been configured
-	 */
-	public function getModuleDependencies(bool $isPreInit = false): null|string|array
-	{
-		return $this->getBackingCacheId();
-	}
-
-	/**
-	 * Initializes the module. Refines the {@see getBackingCacheKey BackingCacheKey}
-	 * set by {@see __construct()} by appending `'.<moduleId>'` when the key is still
-	 * at its {@see DEFAULT_BACKING_CACHE_KEY default} and a module ID is available,
-	 * then loads the in-memory store from the backing store and registers
-	 * {@see handleSaveState()} as a handler for the application's `OnSaveState`
-	 * event so that the store is persisted automatically at the end of each request.
-	 *
-	 * @param null|\Prado\Xml\TXmlElement $config module configuration
-	 */
-	public function init($config)
-	{
-		if ($this->getBackingCacheKeyDirect() === static::DEFAULT_BACKING_CACHE_KEY) {
-			$id = $this->getID() ?? '';
-			if ($id !== '') {
-				$this->setBackingCacheKeyDirect(static::DEFAULT_BACKING_CACHE_KEY . '.' . $id);
-			}
-		}
-		$this->load();
-		$this->getApplication()->attachEventHandler('OnSaveState', [$this, 'handleSaveState'], 5);
-		parent::init($config);
-	}
-
-	/**
-	 * Persists the in-memory store when the application raises its `OnSaveState`
-	 * event. This handler is registered automatically during {@see init()}.
-	 *
-	 * @param mixed $sender the event sender (the application instance)
-	 * @param mixed $param the event parameter
-	 */
-	public function handleSaveState(mixed $sender, mixed $param): void
-	{
-		$this->save();
 	}
 
 	// --------------------------------------------------------------- load / save
