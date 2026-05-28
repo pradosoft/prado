@@ -1,266 +1,70 @@
 /*! PRADO main js file | github.com/pradosoft/prado */
 
 /*
- * Polyfill for ECMAScript5's bind() function.
- * ----------
- * Adds compatible .bind() function; needed for Internet Explorer < 9
- * Source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind
+ * Prado.Class — minimal class factory backed by native ES classes.
+ *
+ * Usage:
+ *   const A = Prado.Class({ initialize() { ... }, foo() { ... } });
+ *   const B = Prado.Class(A, { initialize($super, opts) { $super(opts); ... } });
+ *   new B(options);
+ *
+ * Properties named `initialize` run as the constructor. Methods whose first
+ * parameter is `$super` receive a bound reference to the parent's same-named
+ * method as their first argument (low-pro-style super injection, retained
+ * for backward compatibility with existing Prado controls).
+ *
+ * Also aliased as `jQuery.klass` for compatibility with the 4.x call sites.
  */
+(() => {
+  const SUPER_RE = /^[\s(]*(?:function[^(]*|[A-Za-z_$][\w$]*)\(\s*\$super\b/;
+  const wantsSuper = (fn) => typeof fn === 'function' && SUPER_RE.test(Function.prototype.toString.call(fn));
 
-if (!Function.prototype.bind) {
-  Function.prototype.bind = function (oThis) {
-    if (typeof this !== "function") {
-      // closest thing possible to the ECMAScript 5 internal IsCallable function
-      throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
-    }
-
-    var aArgs = Array.prototype.slice.call(arguments, 1),
-        fToBind = this,
-        fNOP = function () {},
-        fBound = function () {
-          return fToBind.apply(this instanceof fNOP && oThis
-                                 ? this
-                                 : oThis,
-                               aArgs.concat(Array.prototype.slice.call(arguments)));
+  const installMethods = (klass, source) => {
+    const parentProto = klass.superclass && klass.superclass.prototype;
+    for (const name of Object.keys(source)) {
+      const value = source[name];
+      if (parentProto && wantsSuper(value)) {
+        const method = value;
+        klass.prototype[name] = function (...args) {
+          const $super = parentProto[name].bind(this);
+          return method.call(this, $super, ...args);
         };
-
-    fNOP.prototype = this.prototype;
-    fBound.prototype = new fNOP();
-
-    return fBound;
-  };
-}
-
-/*
- * Low Pro JQ
- * ----------
- *
- * Author: Dan Webb (dan@danwebb.net)
- * GIT: github.com:danwrong/low-pro-for-jquery.git
- * Download: http://github.com/danwrong/low-pro-for-jquery/tree/master/src/lowpro.jquery.js?raw=true
- *
- * A jQuery port of the Low Pro behavior framework that was originally written for Prototype.
- *
- * Prado actually uses it as a base to emulate OOP subclassing, inheritance and contructor events.
- * The "behaviour" and the "Remote" bits are not used and have been commented out.
- */
-
-(function($) {
-
-  var addMethods = function(source) {
-    var ancestor   = this.superclass && this.superclass.prototype;
-    var properties = $.keys(source);
-
-    if (!$.keys({ toString: true }).length) properties.push("toString", "valueOf");
-
-    for (var i = 0, length = properties.length; i < length; i++) {
-      var property = properties[i], value = source[property];
-      if (ancestor && $.isFunction(value) && $.argumentNames(value)[0] == "$super") {
-
-        var method = value, value = $.extend($.wrap((function(m) {
-          return function() { return ancestor[m].apply(this, arguments) };
-        })(property), method), {
-          valueOf:  function() { return method },
-          toString: function() { return method.toString() }
-        });
+      } else {
+        klass.prototype[name] = value;
       }
-      this.prototype[property] = value;
     }
-
-    return this;
   };
 
-  $.extend({
-    keys: function(obj) {
-      var keys = [];
-      for (var key in obj) keys.push(key);
-      return keys;
-    },
+  const Class = (...args) => {
+    let parent = null;
+    if (typeof args[0] === 'function') parent = args.shift();
 
-    argumentNames: function(func) {
-      var names = func.toString().match(/^[\s\(]*function[^(]*\((.*?)\)/)[1].split(/, ?/);
-      return names.length == 1 && !names[0] ? [] : names;
-    },
+    // Function constructor (not `class` keyword) so the prototype slot stays
+    // writable — existing controls (ajax3.js, colorpicker.js) do wholesale
+    // `Class.prototype = {...}` assignment and rely on that.
+    const klass = function (...ctorArgs) {
+      this.initialize(...ctorArgs);
+    };
 
-    bind: function(func, scope) {
-      return function() {
-        return func.apply(scope, $.makeArray(arguments));
-      };
-    },
-
-    wrap: function(func, wrapper) {
-      var __method = func;
-      return function() {
-        return wrapper.apply(this, [$.bind(__method, this)].concat($.makeArray(arguments)));
-      };
-    },
-
-    klass: function() {
-      var parent = null, properties = $.makeArray(arguments);
-      if ($.isFunction(properties[0])) parent = properties.shift();
-
-      var klass = function() {
-        this.initialize.apply(this, arguments);
-      };
-
-      klass.superclass = parent;
-      klass.subclasses = [];
-      klass.addMethods = addMethods;
-
-      if (parent) {
-        var subclass = function() { };
-        subclass.prototype = parent.prototype;
-        klass.prototype = new subclass;
-        parent.subclasses.push(klass);
-      }
-
-      for (var i = 0; i < properties.length; i++)
-        klass.addMethods(properties[i]);
-
-      if (!klass.prototype.initialize)
-        klass.prototype.initialize = function() {};
-
+    if (parent) {
+      klass.prototype = Object.create(parent.prototype);
       klass.prototype.constructor = klass;
+    }
+    klass.superclass = parent;
+    klass.subclasses = [];
+    if (parent) (parent.subclasses ||= []).push(klass);
 
-      return klass;
-    },
-    delegate: function(rules) {
-      return function(e) {
-        var target = $(e.target), parent = null;
-        for (var selector in rules) {
-          if (target.is(selector) || ((parent = target.parents(selector)) && parent.length > 0)) {
-            return rules[selector].apply(this, [parent || target].concat($.makeArray(arguments)));
-          }
-          parent = null;
-        }
-      };
-    }
-  });
-/*
-  var bindEvents = function(instance) {
-    for (var member in instance) {
-      if (member.match(/^on(.+)/) && typeof instance[member] == 'function') {
-        instance.element.live(RegExp.$1, {'behavior': instance}, instance[member]);
-      }
-    }
+    for (const props of args) installMethods(klass, props);
+
+    if (!klass.prototype.initialize) klass.prototype.initialize = function () {};
+    return klass;
   };
 
-  var behaviorWrapper = function(behavior) {
-    return $.klass(behavior, {
-      initialize: function($super, element, args) {
-        this.element = element;
-        if ($super) $super.apply(this, args);
-      },
-      trigger: function(eventType, extraParameters) {
-        var parameters = [this].concat(extraParameters);
-        this.element.trigger(eventType, parameters);
-      }
-    });
-  };
-
-  var attachBehavior = function(el, behavior, args) {
-      var wrapper = behaviorWrapper(behavior);
-      var instance = new wrapper(el, args);
-
-      bindEvents(instance);
-
-      if (!behavior.instances) behavior.instances = [];
-
-      behavior.instances.push(instance);
-
-      return instance;
-  };
-
-
-  $.fn.extend({
-    attach: function() {
-      var args = $.makeArray(arguments), behavior = args.shift();
-      attachBehavior(this, behavior, args);
-      return this;
-    },
-    delegate: function(type, rules) {
-      return this.bind(type, $.delegate(rules));
-    },
-    attached: function(behavior) {
-      var instances = [];
-
-      if (!behavior.instances) return instances;
-
-      this.each(function(i, element) {
-        $.each(behavior.instances, function(i, instance) {
-          if (instance.element.get(0) == element) instances.push(instance);
-        });
-      });
-
-      return instances;
-    },
-    firstAttached: function(behavior) {
-      return this.attached(behavior)[0];
-    }
-  });
-
-  Remote = $.klass({
-    initialize: function(options) {
-      if (this.element.attr('nodeName') == 'FORM') this.element.attach(Remote.Form, options);
-      else this.element.attach(Remote.Link, options);
-    }
-  });
-
-  Remote.Base = $.klass({
-    initialize : function(options) {
-      this.options = $.extend(true, {}, options || {});
-    },
-    _makeRequest : function(options) {
-      $.ajax(options);
-      return false;
-    }
-  });
-
-  Remote.Link = $.klass(Remote.Base, {
-    onclick: function(e) {
-      var options = $.extend({
-        url: $(this).attr('href'),
-        type: 'GET'
-      }, this.options);
-      return e.data.behavior._makeRequest(e.data.behavior.options);
-    }
-  });
-
-  Remote.Form = $.klass(Remote.Base, {
-    onclick: function(e) {
-      var target = e.target;
-
-      if ($.inArray(target.nodeName.toLowerCase(), ['input', 'button']) >= 0 && target.type.match(/submit|image/))
-        e.data.behavior._submitButton = target;
-    },
-    onsubmit: function(e) {
-      var elm = $(this), data = elm.serializeArray();
-
-      if (e.data.behavior._submitButton) data.push({
-        name: e.data.behavior._submitButton.name,
-        value: e.data.behavior._submitButton.value
-      });
-
-      var options = $.extend({
-        url : elm.attr('action'),
-        type : elm.attr('method') || 'GET',
-        data : data
-      }, e.data.behavior.options);
-
-      e.data.behavior._makeRequest(options);
-
-      return false;
-    }
-  });
-
-  $.ajaxSetup({
-    beforeSend: function(xhr) {
-      if (!this.dataType)
-        xhr.setRequestHeader("Accept", "text/javascript, text/html, application/xml, text/xml, *\/*");
-    }
-  });
-*/
-})(jQuery);
+  // Public API. Prado namespace doesn't exist yet at this point in the file,
+  // so attach to globalThis and re-export onto Prado after it's defined below.
+  globalThis.__PradoClass = Class;
+  if (typeof jQuery !== 'undefined') jQuery.klass = Class;
+})();
 
 
 /**
@@ -279,8 +83,17 @@ var Prado =
 	 * Registry for Prado components
 	 * @var Registry
 	 */
-	Registry: {}
+	Registry: {},
+
+	/**
+	 * Class factory — native ES class with $super injection support.
+	 * Returns a class that calls initialize(...) from its constructor.
+	 * @var Class
+	 * @since 4.4.0
+	 */
+	Class: globalThis.__PradoClass
 };
+delete globalThis.__PradoClass;
 
 Prado.RequestManager =
 {
@@ -288,6 +101,17 @@ Prado.RequestManager =
 
 	FIELD_POSTBACK_PARAMETER : 'PRADO_POSTBACK_PARAMETER'
 };
+
+// Bridge jQuery's ajaxComplete event to a native 'prado:ajaxComplete' event
+// on document. Controls that need to react to AJAX completion (THtmlArea,
+// THtmlArea5, etc.) listen to the native event so they don't depend on
+// jQuery directly. When ajax3.js moves off $.ajax (step 4c), it will
+// dispatch the native event directly and this bridge will be removed.
+if (typeof jQuery !== 'undefined') {
+	jQuery(document).on('ajaxComplete', () => {
+		document.dispatchEvent(new CustomEvent('prado:ajaxComplete'));
+	});
+}
 /**
  * Performs a PostBack using javascript.
  * @function Prado.PostBack
@@ -302,28 +126,25 @@ Prado.RequestManager =
  * @... {string} EventTarget - Id of element that triggered PostBack
  * @... {string} EventParameter - EventParameter for PostBack
  */
-Prado.PostBack = jQuery.klass(
+Prado.PostBack = Prado.Class(
 {
 	options : {},
 
-	initialize: function(options, event)
-	{
-		jQuery.extend(this.options, options || {});
+	initialize(options, event) {
+		Object.assign(this.options, options || {});
 		this.event = event;
 		this.doPostBack();
 	},
 
-	getForm : function()
-	{
-		return jQuery("#" + this.options['FormID']).get(0);
+	getForm() {
+		return document.getElementById(this.options['FormID']);
 	},
 
-	doPostBack : function()
-	{
-		var form = this.getForm();
+	doPostBack() {
+		const form = this.getForm();
 		if(this.options['CausesValidation'] && typeof(Prado.Validation) != "undefined")
 		{
-			if(!Prado.Validation.validate(this.options['FormID'], this.options['ValidationGroup'], jQuery("#" + this.options['ID'])))
+			if(!Prado.Validation.validate(this.options['FormID'], this.options['ValidationGroup'], document.getElementById(this.options['ID'])))
 				return this.event.preventDefault();
 		}
 
@@ -332,10 +153,10 @@ Prado.PostBack = jQuery.klass(
 
 		if(this.options['TrackFocus'])
 		{
-			var lastFocus = jQuery('#PRADO_LASTFOCUS');
+			const lastFocus = document.getElementById('PRADO_LASTFOCUS');
 			if(lastFocus)
 			{
-				var active = document.activeElement; //where did this come from
+				const active = document.activeElement;
 				if(active)
 					lastFocus.value = active.id;
 				else
@@ -343,7 +164,7 @@ Prado.PostBack = jQuery.klass(
 			}
 		}
 
-		var input=null;
+		let input=null;
 		if(this.options.EventTarget)
 		{
 			input = document.createElement("input");
@@ -361,7 +182,14 @@ Prado.PostBack = jQuery.klass(
 			form.appendChild(input);
 		}
 
-		jQuery(form).trigger('submit');
+		if (!form) return;
+		// Match jQuery $(form).trigger('submit'): fire a cancellable submit event
+		// so handlers can preventDefault, then call form.submit() (which skips
+		// HTML5 constraint validation — important because Prado does its own
+		// validation in JS and many emitted forms don't carry HTML5 constraints
+		// that would silently abort form.requestSubmit()).
+		const evt = new Event('submit', { bubbles: true, cancelable: true });
+		if (form.dispatchEvent(evt)) form.submit();
 	}
 });
 
@@ -372,15 +200,17 @@ Prado.PostBack = jQuery.klass(
 Prado.Element =
 {
 	/**
-	 * Executes a jQuery method on a particular element.
+	 * Executes a jQuery method on a particular element. Retained as a
+	 * passthrough for PHP-side controls that emit calls like
+	 * Prado.Element.j('foo', 'fadeIn', [200]). Requires jQuery to be
+	 * loaded at the page level.
 	 * @function ?
 	 * @param {string} element - Element id
 	 * @param {string} method - method name
 	 * @param {array} value - method parameters
 	 */
-	j: function(element, method, params)
-	{
-		var obj=jQuery("#" + element);
+	j(element, method, params) {
+		const obj=jQuery(`#${element}`);
 		obj[method].apply(obj, params);
 	},
 
@@ -392,14 +222,13 @@ Prado.Element =
 	 * @param {array|boolean|string} value - Values that should be selected
 	 * @param {int} total - Number of elements
 	 */
-	select : function(element, method, value, total)
-	{
-		var el = jQuery("#" + element).get(0);
+	select(element, method, value, total) {
+		const el = document.getElementById(element);
 		if(!el) return;
-		var selection = Prado.Element.Selection;
+		const selection = Prado.Element.Selection;
 		if(typeof(selection[method]) == "function")
 		{
-			var control = selection.isSelectable(el) ? [el] : selection.getListElements(element,total);
+			const control = selection.isSelectable(el) ? [el] : selection.getListElements(element,total);
 			selection[method](control, value);
 		}
 	},
@@ -411,33 +240,32 @@ Prado.Element =
 	 * @param {string} attribute - Name of attribute
 	 * @param {string} value - Value of attribute
 	 */
-	setAttribute : function(element, attribute, value)
-	{
-		var el = jQuery("#" + element);
+	setAttribute(element, attribute, value) {
+		const el = document.getElementById(element);
 		if(!el) return;
 		// "disabled" is for <button>, <fieldset>, <input>, <optgroup>, <option>, <select>, <textarea>
 		// "readonly is for <input>, <textarea>
 		// global presence attributes: hidden, inert, popover
 		// removed 'href' and 'multiple' was a hack - they use removeAttribute now
 		if((attribute == "disabled" || attribute == "readonly" || attribute == "hidden" || attribute == "inert" || attribute == "popover") && value==false)
-			el.removeAttr(attribute);
+			el.removeAttribute(attribute);
 		else if(attribute.match(/^on/i)) //event methods
 		{
 			try
 			{
-				eval("(func = function(event){"+value+"})");
-				el.get(0)[attribute] = func;
+				eval(`(func = function(event){${value}})`);
+				el[attribute] = func;
 			}
 			catch(e)
 			{
 				debugger;
-				throw "Error in evaluating '"+value+"' for attribute "+attribute+" for element "+element;
+				throw `Error in evaluating '${value}' for attribute ${attribute} for element ${element}`;
 			}
 		}
 		else
-			el.attr(attribute, value);
+			el.setAttribute(attribute, value);
 	},
-	
+
 	/**
 	 * Removes an attribute of a DOM element.
 	 * @function ?
@@ -445,35 +273,34 @@ Prado.Element =
 	 * @param {string} attribute - Name of attribute
 	 * @since 4.3.3
 	 */
-	removeAttribute : function(element, attribute)
-	{
-		var el = jQuery("#" + element);
+	removeAttribute(element, attribute) {
+		const el = document.getElementById(element);
 		if(!el) return;
-		el.removeAttr(attribute);
+		el.removeAttribute(attribute);
 	},
 
-	scrollTo : function(element, options)
-	{
-		var op = {
-			duration : 500,
-			offset : 50
+	scrollTo(element, options) {
+		const op = { offset : 50, ...(options || {}) };
+		const el = document.getElementById(element);
+		if (!el) return;
+		const top = el.getBoundingClientRect().top + window.pageYOffset - op.offset;
+		window.scrollTo({ top, behavior: 'smooth' });
+	},
+
+	focus(element) {
+		const doFocus = () => {
+			const el = document.getElementById(element);
+			if (el) el.focus();
 		};
-		jQuery.extend(op, options || {});
-		jQuery('html, body').animate({
-			scrollTop: jQuery("#"+element).offset().top - op.offset
-		}, op.duration);
-	},
-
-	focus : function(element)
-	{
-		if(jQuery.active > 0)
-		{
-			setTimeout(function(){
-				jQuery("#"+element).focus();
-			}, 100);
-		} else {
-			jQuery("#"+element).focus();
-		}
+		// If a callback request is in flight, defer briefly so we focus the
+		// post-update DOM. Prado.CallbackRequest tracks in-flight requests
+		// in its requestQueue (see ajax3.js).
+		const pending = (typeof Prado !== 'undefined'
+			&& Prado.CallbackRequest
+			&& Prado.CallbackRequest.requestQueue
+			&& Prado.CallbackRequest.requestQueue.length) > 0;
+		if (pending) setTimeout(doFocus, 100);
+		else doFocus();
 	},
 
 	/**
@@ -483,18 +310,17 @@ Prado.Element =
 	 * @param {array[]} options - Array of options, each an array of structure
 	 *   [ "optionText" , "optionValue" , "optionGroup" ]
 	 */
-	setOptions : function(element, options)
-	{
-		var el = jQuery("#" + element).get(0);
-		var previousGroup = null;
-		var optGroup=null;
+	setOptions(element, options) {
+		const el = document.getElementById(element);
+		const previousGroup = null;
+		const optGroup=null;
 		if(el && el.tagName.toLowerCase() == "select")
 		{
 			while(el.childNodes.length > 0)
 				el.removeChild(el.lastChild);
 
-			var optDom = Prado.Element.createOptions(options);
-			for(var i = 0; i < optDom.length; i++)
+			const optDom = Prado.Element.createOptions(options);
+			for(let i = 0; i < optDom.length; i++)
 				el.appendChild(optDom[i]);
 		}
 	},
@@ -506,17 +332,16 @@ Prado.Element =
 	 *   [ "optionText" , "optionValue" , "optionGroup" ]
 	 * @returns Array of option DOM elements
 	 */
-	createOptions : function(options)
-	{
-		var previousGroup = null;
-		var optgroup=null;
-		var result = [];
-		for(var i = 0; i<options.length; i++)
+	createOptions(options) {
+		let previousGroup = null;
+		let optgroup=null;
+		const result = [];
+		for(let i = 0; i<options.length; i++)
 		{
-			var option = options[i];
+			const option = options[i];
 			if(option.length > 2)
 			{
-				var group = option[2];
+				const group = option[2];
 				if(group!=previousGroup)
 				{
 					if(previousGroup!=null && optgroup!=null)
@@ -530,7 +355,7 @@ Prado.Element =
 					previousGroup = group;
 				}
 			}
-			var opt = document.createElement('option');
+			const opt = document.createElement('option');
 			opt.text = option[0];
 			opt.innerHTML = option[0];
 			opt.value = option[1];
@@ -554,18 +379,43 @@ Prado.Element =
 	 * @param {optional string} boundary - Boundary of new content
 	 * @param {optional boolean} self - Whether to replace itself or just the inner content
 	 */
-	replace : function(element, content, boundary, self)
-	{
+	replace(element, content, boundary, self) {
 		if(boundary)
 		{
-			var result = this.extractContent(boundary);
+			const result = this.extractContent(boundary);
 			if(result != null)
 				content = result;
 		}
+		const el = document.getElementById(element);
+		if(!el) return;
 		if(self)
-		  jQuery('#'+element).replaceWith(content);
+		  el.outerHTML = content;
 		else
-		  jQuery('#'+element).html(content);
+		  el.innerHTML = content;
+		// innerHTML / outerHTML parse <script> tags but the HTML spec marks
+		// them as already-executed, so the browser refuses to run them. jQuery's
+		// .html() / .replaceWith() worked around this by re-creating script
+		// nodes. Mirror that so Prado callback responses that embed inline
+		// JavaScript continue to execute.
+		const container = self ? el.parentNode : el;
+		if (container) Prado.Element.executeScripts(container);
+	},
+
+	/**
+	 * Re-evaluate every <script> element under `root`. Used after
+	 * Prado.Element.replace() to mimic jQuery .html() / .replaceWith()
+	 * behavior, which executes inline scripts injected via innerHTML.
+	 * @function ?
+	 * @param {element} root - DOM subtree to scan
+	 */
+	executeScripts(root) {
+		const scripts = root.querySelectorAll('script');
+		for (const oldScript of scripts) {
+			const fresh = document.createElement('script');
+			for (const attr of oldScript.attributes) fresh.setAttribute(attr.name, attr.value);
+			fresh.text = oldScript.textContent;
+			oldScript.parentNode.replaceChild(fresh, oldScript);
+		}
 	},
 
 	/**
@@ -573,15 +423,14 @@ Prado.Element =
 	 * @function ?
 	 * @param {string} boundary - Boundary containing the javascript code
 	 */
-	appendScriptBlock : function(boundary)
-	{
-		var content = this.extractContent(boundary);
+	appendScriptBlock(boundary) {
+		const content = this.extractContent(boundary);
 		if(content == null)
 			return;
 
-		var el   = document.createElement("script");
+		const el   = document.createElement("script");
 		el.type  = "text/javascript";
-		el.id    = 'inline_' + boundary;
+		el.id    = `inline_${boundary}`;
 		el.text  = content;
 
 		(document.getElementsByTagName('head')[0] || document.documentElement).appendChild(el);
@@ -594,23 +443,24 @@ Prado.Element =
 	 * @param {string} content - String containing the script
 	 * @param {string} boundary - Boundary containing the script
 	 */
-	evaluateScript : function(content, boundary)
-	{
+	evaluateScript(content, boundary) {
 		if(boundary)
 		{
-			var result = this.extractContent(boundary);
+			const result = this.extractContent(boundary);
 			if(result != null)
 				content = result;
 		}
 
 		try
 		{
-			jQuery.globalEval(content);
+			// Evaluate in global scope (jQuery.globalEval equivalent).
+			// The indirect (0, eval) call forces script to run as global code.
+			(0, eval)(content);
 		}
 		catch(e)
 		{
 			if(typeof(Logger) != "undefined")
-				Logger.error('Error during evaluation of script "'+content+'"');
+				Logger.error(`Error during evaluation of script "${content}"`);
 			else
 				debugger;
 			throw e;
@@ -630,8 +480,7 @@ Prado.Element.Selection =
 	 * @param {element} el - DOM elemet
 	 * @returns true if element is selectable
 	 */
-	isSelectable : function(el)
-	{
+	isSelectable(el) {
 		if(el && el.type)
 		{
 			switch(el.type.toLowerCase())
@@ -654,8 +503,7 @@ Prado.Element.Selection =
 	 * @param {boolean} value - New value of checked attribute
 	 * @returns New value of checked attribute
 	 */
-	inputValue : function(el, value)
-	{
+	inputValue(el, value) {
 		switch(el.type.toLowerCase())
 		{
 			case 'checkbox':
@@ -672,18 +520,15 @@ Prado.Element.Selection =
 	 * @param {element[]} elements - Array of selectable DOM elements
 	 * @param {boolean|string} value - Value of options that should be selected or boolean value of selection status
 	 */
-	selectValue : function(elements, value)
-	{
-		jQuery.each(elements, function(idx, el)
-		{
-			jQuery.each(el.options, function(idx, option)
-			{
+	selectValue(elements, value) {
+		for (const el of elements) {
+			for (const option of el.options) {
 				if(typeof(value) == "boolean")
 					option.selected = value;
 				else if(option.value == value)
 					option.selected = true;
-			});
-		})
+			}
+		}
 	},
 
 	/**
@@ -692,13 +537,8 @@ Prado.Element.Selection =
 	 * @param {element[]} elements - Array of selectable DOM elements
 	 * @param {string[]} value - Array of values to select
 	 */
-	selectValues : function(elements, values)
-	{
-		var selection = this;
-		jQuery.each(values, function(idx, value)
-		{
-			selection.selectValue(elements,value);
-		})
+	selectValues(elements, values) {
+		for (const value of values) this.selectValue(elements, value);
 	},
 
 	/**
@@ -707,21 +547,19 @@ Prado.Element.Selection =
 	 * @param {element[]} elements - Array of selectable DOM elements
 	 * @param {int} index - Index of option to select
 	 */
-	selectIndex : function(elements, index)
-	{
-		jQuery.each(elements, function(idx, el)
-		{
+	selectIndex(elements, index) {
+		for (const el of elements) {
 			if(el.type.toLowerCase() == 'select-one')
 				el.selectedIndex = index;
 			else
 			{
-				for(var i = 0; i<el.length; i++)
+				for(let i = 0; i<el.length; i++)
 				{
 					if(i == index)
 						el.options[i].selected = true;
 				}
 			}
-		})
+		}
 	},
 
 	/**
@@ -729,18 +567,11 @@ Prado.Element.Selection =
 	 * @function ?
 	 * @param {element[]} elements - Array of selectable DOM elements
 	 */
-	selectAll : function(elements)
-	{
-		jQuery.each(elements, function(idx, el)
-		{
+	selectAll(elements) {
+		for (const el of elements) {
 			if(el.type.toLowerCase() != 'select-one')
-			{
-				jQuery.each(el.options, function(idx, option)
-				{
-					option.selected = true;
-				})
-			}
-		})
+				for (const option of el.options) option.selected = true;
+		}
 	},
 
 	/**
@@ -748,18 +579,11 @@ Prado.Element.Selection =
 	 * @function ?
 	 * @param {element[]} elements - Array of selectable DOM elements
 	 */
-	selectInvert : function(elements)
-	{
-		jQuery.each(elements, function(idx, el)
-		{
+	selectInvert(elements) {
+		for (const el of elements) {
 			if(el.type.toLowerCase() != 'select-one')
-			{
-				jQuery.each(el.options, function(idx, option)
-				{
-					option.selected = !option.selected;
-				})
-			}
-		})
+				for (const option of el.options) option.selected = !option.selected;
+		}
 	},
 
 	/**
@@ -768,13 +592,8 @@ Prado.Element.Selection =
 	 * @param {element[]} elements - Array of selectable DOM elements
 	 * @param {int[]} indices - Array of option indices to select
 	 */
-	selectIndices : function(elements, indices)
-	{
-		var selection = this;
-		jQuery.each(indices, function(idx, index)
-		{
-			selection.selectIndex(elements,index);
-		})
+	selectIndices(elements, indices) {
+		for (const index of indices) this.selectIndex(elements, index);
 	},
 
 	/**
@@ -782,12 +601,8 @@ Prado.Element.Selection =
 	 * @function ?
 	 * @param {element[]} elements - Array of selectable DOM elements
 	 */
-	selectClear : function(elements)
-	{
-		jQuery.each(elements, function(idx, el)
-		{
-			el.selectedIndex = -1;
-		})
+	selectClear(elements) {
+		for (const el of elements) el.selectedIndex = -1;
 	},
 
 	/**
@@ -797,13 +612,12 @@ Prado.Element.Selection =
 	 * @param {int} total - Number of list elements to return
 	 * @returns Array of list DOM elements
 	 */
-	getListElements : function(element, total)
-	{
-		var elements = new Array();
-		var el;
-		for(var i = 0; i < total; i++)
+	getListElements(element, total) {
+		const elements = new Array();
+		let el;
+		for(let i = 0; i < total; i++)
 		{
-			el = jQuery("#"+element+"_c"+i).get(0);
+			el = document.getElementById(`${element}_c${i}`);
 			if(el)
 				elements.push(el);
 		}
@@ -819,15 +633,13 @@ Prado.Element.Selection =
 	 * @param {boolean|String} value - Value that should be checked or boolean value of checked status
 	 *
 	 */
-	checkValue : function(elements, value)
-	{
-		jQuery.each(elements, function(idx, el)
-		{
+	checkValue(elements, value) {
+		for (const el of elements) {
 			if(typeof(value) == "boolean")
 				el.checked = value;
 			else if(el.value == value)
 				el.checked = true;
-		});
+		}
 	},
 
 	/**
@@ -837,13 +649,8 @@ Prado.Element.Selection =
 	 * @param {string[]} values - Values that should be checked
 	 *
 	 */
-	checkValues : function(elements, values)
-	{
-		var selection = this;
-		jQuery(values).each(function(idx, value)
-		{
-			selection.checkValue(elements, value);
-		})
+	checkValues(elements, values) {
+		for (const value of values) this.checkValue(elements, value);
 	},
 
 	/**
@@ -852,9 +659,8 @@ Prado.Element.Selection =
 	 * @param {element[]} elements - Array of checkable DOM elements
 	 * @param {int} index - Index of element to set checked
 	 */
-	checkIndex : function(elements, index)
-	{
-		for(var i = 0; i<elements.length; i++)
+	checkIndex(elements, index) {
+		for(let i = 0; i<elements.length; i++)
 		{
 			if(i == index)
 				elements[i].checked = true;
@@ -867,13 +673,8 @@ Prado.Element.Selection =
 	 * @param {element[]} elements - Array of selectable DOM elements
 	 * @param {int[]} indices - Array of list indices to set checked
 	 */
-	checkIndices : function(elements, indices)
-	{
-		var selection = this;
-		jQuery.each(indices, function(idx, index)
-		{
-			selection.checkIndex(elements, index);
-		})
+	checkIndices(elements, indices) {
+		for (const index of indices) this.checkIndex(elements, index);
 	},
 
 	/**
@@ -881,12 +682,8 @@ Prado.Element.Selection =
 	 * @function ?
 	 * @param {element[]} elements - Array of checkable DOM elements
 	 */
-	checkClear : function(elements)
-	{
-		jQuery.each(elements, function(idx, el)
-		{
-			el.checked = false;
-		});
+	checkClear(elements) {
+		for (const el of elements) el.checked = false;
 	},
 
 	/**
@@ -894,12 +691,8 @@ Prado.Element.Selection =
 	 * @function ?
 	 * @param {element[]} elements - Array of checkable DOM elements
 	 */
-	checkAll : function(elements)
-	{
-		jQuery.each(elements, function(idx, el)
-		{
-			el.checked = true;
-		})
+	checkAll(elements) {
+		for (const el of elements) el.checked = true;
 	},
 
 	/**
@@ -907,16 +700,12 @@ Prado.Element.Selection =
 	 * @function ?
 	 * @param {element[]} elements - Array of selectable DOM elements
 	 */
-	checkInvert : function(elements)
-	{
-		jQuery.each(elements, function(idx, el)
-		{
-			el.checked = !el.checked;
-		})
+	checkInvert(elements) {
+		for (const el of elements) el.checked = !el.checked;
 	}
 };
 
-jQuery.extend(String.prototype, {
+Object.assign(String.prototype, {
 
 	/**
 	 * Add padding to string
@@ -926,10 +715,10 @@ jQuery.extend(String.prototype, {
 	 * @param {string} chr - Character(s) to pad
 	 * @returns Padded string
 	 */
-	pad : function(side, len, chr) {
+	pad(side, len, chr) {
 		if (!chr) chr = ' ';
-		var s = this;
-		var left = side.toLowerCase()=='left';
+		let s = this;
+		const left = side.toLowerCase()=='left';
 		while (s.length<len) s = left? chr + s : s + chr;
 		return s;
 	},
@@ -941,7 +730,7 @@ jQuery.extend(String.prototype, {
 	 * @param {string} chr - Character(s) to pad
 	 * @returns Padded string
 	 */
-	padLeft : function(len, chr) {
+	padLeft(len, chr) {
 		return this.pad('left',len,chr);
 	},
 
@@ -952,7 +741,7 @@ jQuery.extend(String.prototype, {
 	 * @param {string} chr - Character(s) to pad
 	 * @returns Padded string
 	 */
-	padRight : function(len, chr) {
+	padRight(len, chr) {
 		return this.pad('right',len,chr);
 	},
 
@@ -962,7 +751,7 @@ jQuery.extend(String.prototype, {
 	 * @param {int} len - Minimum string length.
 	 * @returns Padded string
 	 */
-	zerofill : function(len) {
+	zerofill(len) {
 		return this.padLeft(len,'0');
 	},
 
@@ -971,7 +760,7 @@ jQuery.extend(String.prototype, {
 	 * @function {string} ?
 	 * @returns Trimmed string
 	 */
-	trim : function() {
+	trim() {
 		return this.replace(/^\s+|\s+$/g,'');
 	},
 
@@ -980,7 +769,7 @@ jQuery.extend(String.prototype, {
 	 * @function {string} ?
 	 * @returns Trimmed string
 	 */
-	trimLeft : function() {
+	trimLeft() {
 		return this.replace(/^\s+/,'');
 	},
 
@@ -989,7 +778,7 @@ jQuery.extend(String.prototype, {
 	 * @function {string} ?
 	 * @returns Trimmed string
 	 */
-	trimRight : function() {
+	trimRight() {
 		return this.replace(/\s+$/,'');
 	},
 
@@ -1002,15 +791,13 @@ jQuery.extend(String.prototype, {
 	 * @function {function} ?
 	 * @returns Reference to the corresponding function
 	 */
-	toFunction : function()
-	{
-		var commands = this.split(/\./);
-		var command = window;
-		jQuery(commands).each(function(idx, action)
-		{
+	toFunction() {
+		const commands = this.split(/\./);
+		let command = window;
+		for (const action of commands) {
 			if(command[new String(action)])
 				command=command[new String(action)];
-		});
+		}
 		if(typeof(command) == "function")
 			return command;
 		else
@@ -1018,7 +805,7 @@ jQuery.extend(String.prototype, {
 			if(typeof Logger != "undefined")
 				Logger.error("Missing function", this);
 
-			throw new Error	("Missing function '"+this+"'");
+			throw new Error	(`Missing function '${this}'`);
 		}
 	},
 
@@ -1027,12 +814,11 @@ jQuery.extend(String.prototype, {
 	 * @function {int} ?
 	 * @returns Integer, null if string does not represent an integer.
 	 */
-	toInteger : function()
-	{
-		var exp = /^\s*[-\+]?\d+\s*$/;
+	toInteger() {
+		const exp = /^\s*[-\+]?\d+\s*$/;
 		if (this.match(exp) == null)
 			return null;
-		var num = parseInt(this, 10);
+		const num = parseInt(this, 10);
 		return (isNaN(num) ? null : num);
 	},
 
@@ -1043,12 +829,11 @@ jQuery.extend(String.prototype, {
 	 * @param {string} decimalchar - Decimal character, defaults to "."
 	 * @returns Double, null if string does not represent a float value
 	 */
-	toDouble : function(decimalchar)
-	{
+	toDouble(decimalchar) {
 		if(this.length <= 0) return null;
 		decimalchar = decimalchar || ".";
-		var exp = new RegExp("^\\s*([-\\+])?(\\d+)?(\\" + decimalchar + "(\\d+))?\\s*$");
-		var m = this.match(exp);
+		const exp = new RegExp(`^\\s*([-\\+])?(\\d+)?(\\${decimalchar}(\\d+))?\\s*$`);
+		const m = this.match(exp);
 
 		if (m == null)
 			return null;
@@ -1056,8 +841,8 @@ jQuery.extend(String.prototype, {
 		m[2] = m[2] || "0";
 		m[4] = m[4] || "0";
 
-		var cleanInput = m[1] + (m[2].length>0 ? m[2] : "0") + "." + m[4];
-		var num = parseFloat(cleanInput);
+		const cleanInput = `${m[1] + (m[2].length>0 ? m[2] : "0")}.${m[4]}`;
+		const num = parseFloat(cleanInput);
 		return (isNaN(num) ? null : num);
 	},
 
@@ -1073,25 +858,22 @@ jQuery.extend(String.prototype, {
 	 * @param {string} decimalchar - Decimal character, defaults to "."
 	 * @returns Double, null if string does not represent a currency value
 	 */
-	toCurrency : function(groupchar, digits, decimalchar)
-	{
+	toCurrency(groupchar, digits, decimalchar) {
 		groupchar = groupchar || ",";
 		decimalchar = decimalchar || ".";
 		digits = typeof(digits) == "undefined" ? 2 : digits;
 
-		var exp = new RegExp("^\\s*([-\\+])?(((\\d+)\\" + groupchar + ")*)(\\d+)"
-			+ ((digits > 0) ? "(\\" + decimalchar + "(\\d{1," + digits + "}))?" : "")
-			+ "\\s*$");
-		var m = this.match(exp);
+		const exp = new RegExp(`^\\s*([-\\+])?(((\\d+)\\${groupchar})*)(\\d+)${(digits > 0) ? `(\\${decimalchar}(\\d{1,${digits}}))?` : ""}\\s*$`);
+		const m = this.match(exp);
 		if (m == null)
 			return null;
 		m[1] = m[1] || "";
 		m[2] = m[2] || "";
-		var intermed = m[2] + m[5] ;
-		var cleanInput = m[1] + intermed.replace(
-				new RegExp("(\\" + groupchar + ")", "g"), "")
-								+ ((digits > 0) ? "." + m[7] : "");
-		var num = parseFloat(cleanInput);
+		const intermed = m[2] + m[5];
+		const cleanInput = m[1] + intermed.replace(
+				new RegExp(`(\\${groupchar})`, "g"), "")
+								+ ((digits > 0) ? `.${m[7]}` : "");
+		const num = parseFloat(cleanInput);
 		return (isNaN(num) ? null : num);
 	},
 	
@@ -1101,12 +883,12 @@ jQuery.extend(String.prototype, {
 	 * @returns string with 'px' at the end
 	 * @since 4.2.0
 	 */
-	px : function() {
-		return this.endsWith('px') ? this : this + 'px';
+	px() {
+		return this.endsWith('px') ? this : `${this}px`;
 	}
 });
 
-jQuery.extend(Number.prototype,
+Object.assign(Number.prototype,
 {
 	/**
 	 * Appends 'px' at the end of the number.
@@ -1114,12 +896,12 @@ jQuery.extend(Number.prototype,
 	 * @returns string with number plus 'px' at the end
 	 * @since 4.2.0
 	 */
-	px : function() {
-		return this + 'px';
+	px() {
+		return `${this}px`;
 	}
 });
 
-jQuery.extend(Date.prototype,
+Object.assign(Date.prototype,
 {
 	/**
 	 * SimpleFormat
@@ -1128,10 +910,9 @@ jQuery.extend(Date.prototype,
 	 * @param {string} data - TODO
 	 * @returns TODO
 	 */
-	SimpleFormat: function(format, data)
-	{
+	SimpleFormat(format, data) {
 		data = data || {};
-		var bits = new Array();
+		const bits = new Array();
 		bits['d'] = this.getDate();
 		bits['dd'] = String(this.getDate()).zerofill(2);
 
@@ -1141,17 +922,17 @@ jQuery.extend(Date.prototype,
 			bits['MMM'] = data.AbbreviatedMonthNames[this.getMonth()];
 		if(data.MonthNames)
 			bits['MMMM'] = data.MonthNames[this.getMonth()];
-		var yearStr = "" + this.getFullYear();
-		yearStr = (yearStr.length == 2) ? '19' + yearStr: yearStr;
+		let yearStr = `${this.getFullYear()}`;
+		yearStr = (yearStr.length == 2) ? `19${yearStr}`: yearStr;
 		bits['yyyy'] = yearStr;
 		bits['yy'] = bits['yyyy'].toString().substr(2,2);
 
 		// do some funky regexs to replace the format string
 		// with the real values
-		var frm = new String(format);
-		for (var sect in bits)
+		let frm = new String(format);
+		for (const sect in bits)
 		{
-			var reg = new RegExp("\\b"+sect+"\\b" ,"g");
+			const reg = new RegExp(`\\b${sect}\\b` ,"g");
 			frm = frm.replace(reg, bits[sect]);
 		}
 		return frm;
@@ -1162,16 +943,15 @@ jQuery.extend(Date.prototype,
 	 * @function {string} ?
 	 * @returns TODO
 	 */
-	toISODate : function()
-	{
-		var y = this.getFullYear();
-		var m = String(this.getMonth() + 1).zerofill(2);
-		var d = String(this.getDate()).zerofill(2);
+	toISODate() {
+		const y = this.getFullYear();
+		const m = String(this.getMonth() + 1).zerofill(2);
+		const d = String(this.getDate()).zerofill(2);
 		return String(y) + String(m) + String(d);
 	}
 });
 
-jQuery.extend(Date,
+Object.assign(Date,
 {
 	/**
 	 * SimpleParse
@@ -1180,46 +960,43 @@ jQuery.extend(Date,
 	 * @param {string} data - TODO
 	 * @returns TODO
 	 */
-	SimpleParse: function(value, format)
-	{
-		var val=String(value);
+	SimpleParse(value, format) {
+		const val=String(value);
 		format=String(format);
 
 		if(val.length <= 0) return null;
 
 		if(format.length <= 0) return new Date(value);
 
-		var isInteger = function (val)
-		{
-			var digits="1234567890";
-			for (var i=0; i < val.length; i++)
+		const isInteger = val => {
+			const digits="1234567890";
+			for (let i=0; i < val.length; i++)
 			{
 				if (digits.indexOf(val.charAt(i))==-1) { return false; }
 			}
 			return true;
 		};
 
-		var getInt = function(str,i,minlength,maxlength)
-		{
-			for (var x=maxlength; x>=minlength; x--)
+		const getInt = (str, i, minlength, maxlength) => {
+			for (let x=maxlength; x>=minlength; x--)
 			{
-				var token=str.substring(i,i+x);
+				const token=str.substring(i,i+x);
 				if (token.length < minlength) { return null; }
 				if (isInteger(token)) { return token; }
 			}
 			return null;
 		};
 
-		var i_val=0;
-		var i_format=0;
-		var c="";
-		var token="";
-		var token2="";
-		var x,y;
-		var now=new Date();
-		var year=now.getFullYear();
-		var month=now.getMonth()+1;
-		var date=1;
+		let i_val=0;
+		let i_format=0;
+		let c="";
+		let token="";
+		const token2="";
+		let x, y;
+		const now=new Date();
+		let year=now.getFullYear();
+		let month=now.getMonth()+1;
+		let date=1;
 
 		while (i_format < format.length)
 		{
@@ -1284,7 +1061,7 @@ jQuery.extend(Date,
 			if (date > 30) { return null; }
 		}
 
-		var newdate=new Date(year,month-1,date, 0, 0, 0);
+		const newdate = new Date(year,month-1,date, 0, 0, 0);
 		return newdate;
 	}
 });
