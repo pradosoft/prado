@@ -129,9 +129,9 @@ Prado.WebUI.TJuiAutoComplete = Prado.Class(Prado.WebUI.TActiveTextBox,
 	getUpdatedChoices(request, callback) {
         const lastTerm = this.extractLastTerm(request.term);
 		const params = new Array(lastTerm, "__TJuiAutoComplete_onSuggest__");
-		const options = Object.assign(this.options, {
-			'autocompleteCallback' : callback
-		});
+		// Stash the autocomplete-widget callback on this.options so onComplete
+		// can invoke it after the server round-trip resolves.
+		Object.assign(this.options, { autocompleteCallback: callback });
 		Prado.Callback(this.options.EventTarget, params, this.onComplete.bind(this), this.options);
 	},
 

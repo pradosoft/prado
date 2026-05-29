@@ -45,6 +45,7 @@ Prado.WebUI.Control = Prado.Class({
 			return value;
 		}
 		else
+			// eslint-disable-next-line no-debugger
 			debugger; // invoke debugger - this should never happen
 	},
 
@@ -118,6 +119,7 @@ Prado.WebUI.Control = Prado.Class({
 		if (idx!=-1)
 			this.observers.splice(idx, 1);
 		else
+			// eslint-disable-next-line no-debugger
 			debugger; // shouldn't happen
 
 		if (target) target.removeEventListener(eventName, handler);
@@ -131,9 +133,12 @@ Prado.WebUI.Control = Prado.Class({
 	 * @return int unique ID that can be used to cancel the scheduled execution
 	 */
 	setTimeout(func, delay) {
+		// Accept a code string (Prado-emitted client script may pass JS source
+		// here); evaluate it lazily in the timeout callback.
 		if (typeof func !== 'function')
 		{
 			const expr = func;
+			// eslint-disable-next-line no-eval
 			func = () => eval(expr)
 		};
 		let obj = this;
@@ -160,8 +165,10 @@ Prado.WebUI.Control = Prado.Class({
 	 * @return int unique ID that can be used to cancel the interval (see clearInterval() method)
 	 */
 	setInterval(func, delay) {
+		// Same code-string fallback as setTimeout above.
 		if (typeof func !== 'function') {
 			const expr = func;
+			// eslint-disable-next-line no-eval
 			func = () => { eval(expr); };
 		}
 		const obj = this;
@@ -213,6 +220,7 @@ Prado.WebUI.Control = Prado.Class({
 				}
 			}
 		else
+			// eslint-disable-next-line no-debugger
 			debugger; // shouldn't happen
 
 		this.deregister();
@@ -228,6 +236,7 @@ Prado.WebUI.PostBackControl = Prado.Class(Prado.WebUI.Control, {
 		this._elementOnClick = null;
 
 		if (!this.element)
+			// eslint-disable-next-line no-debugger
 			debugger; // element not found
 		else
 			{
@@ -244,11 +253,11 @@ Prado.WebUI.PostBackControl = Prado.Class(Prado.WebUI.Control, {
 	elementClicked(options, event) {
 		const src = event.target;
 		let doPostBack = true;
-		var onclicked = null;
+		let onclicked = null;
 
 		if(this._elementOnClick)
 		{
-			var onclicked = this._elementOnClick(event);
+			onclicked = this._elementOnClick(event);
 			if(typeof(onclicked) == "boolean")
 				doPostBack = onclicked;
 		}
@@ -328,7 +337,7 @@ Prado.WebUI.TImageButton = Prado.Class(Prado.WebUI.PostBackControl,
 	 * @param event DOM click event.
 	 * @param array image button options.
 	 */
-	removeXYInput(options, event) {
+	removeXYInput(_options, _event) {
 		const id = this.element.id;
 		const ex = document.getElementById(`${id}_x`);
 		const ey = document.getElementById(`${id}_y`);
@@ -463,7 +472,8 @@ Prado.WebUI.TTextHighlighter = Prado.Class(Prado.WebUI.Control,
 			btn.style.margin = '5px';
 			btn.style.right = '0';
 
-			const clipboard = new ClipboardJS(btn);
+			// Constructed for its side effect (binding clipboard behavior to btn).
+			new ClipboardJS(btn);
 		}
 
 		hljs.configure({

@@ -38,7 +38,7 @@ Prado.WebUI.TTabPanel = Prado.Class(Prado.WebUI.Control,
 		}
 	},
 
-	elementClicked(viewID, event) {
+	elementClicked(viewID, _event) {
 		const length = this.views.length;
 		for(let i = 0; i<length; i++)
 		{

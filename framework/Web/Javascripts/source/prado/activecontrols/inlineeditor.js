@@ -50,7 +50,7 @@ Prado.WebUI.TInPlaceTextBox = Prado.Class(Prado.WebUI.Control,
     	return false;
 	},
 
-	exitEditMode(evt) {
+	exitEditMode(_evt) {
 		this.isEditing = false;
 		this.isSaving = false;
 		this.editField.disabled = false;
@@ -157,7 +157,7 @@ Prado.WebUI.TInPlaceTextBox = Prado.Class(Prado.WebUI.Control,
 			this.options.onEnterEditMode(this,null);
 	},
 
-	onTextBoxBlur(e) {
+	onTextBoxBlur(_e) {
 		const text = this.element.innerHTML;
 		if(this.options.AutoPostBack && text != this.editField.value)
 		{

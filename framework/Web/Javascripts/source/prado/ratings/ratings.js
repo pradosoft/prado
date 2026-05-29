@@ -36,7 +36,7 @@ Prado.WebUI.TRatingList = Prado.Class(Prado.WebUI.Control,
 		this.setReadOnly(this.readOnly);
 	},
 
-	hover(index, ev) {
+	hover(index, _ev) {
 		if(this.readOnly==true) return;
 
 		for(let i = 0; i<this.radios.length; i++)
@@ -52,7 +52,7 @@ Prado.WebUI.TRatingList = Prado.Class(Prado.WebUI.Control,
 		this.showCaption(this.getIndexCaption(index));
 	},
 
-	recover(index, ev) {
+	recover(_index, _ev) {
 		if(this.readOnly==true) return;
 		this.showRating(this.rating);
 		this.showCaption(this.options.caption);

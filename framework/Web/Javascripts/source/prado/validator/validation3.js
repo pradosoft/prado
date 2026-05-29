@@ -1097,7 +1097,7 @@ Prado.WebUI.TBaseValidator = Prado.Class(Prado.WebUI.Control,
 					return value;
 				else
 				{
-					var value = Date.SimpleParse(string, this.options.DateFormat);
+					value = Date.SimpleParse(string, this.options.DateFormat);
 					if(value && typeof(value.getTime) == "function")
 						return value.getTime();
 					else
@@ -1154,6 +1154,7 @@ Prado.WebUI.TBaseValidator = Prado.Class(Prado.WebUI.Control,
 			case 'TRadioButton':
 				if(this.options.GroupName)
 					return this.getRadioButtonGroupValue();
+				// falls through
 			case 'TReCaptcha2':
  			default:
 	 			return control.value;
@@ -1247,22 +1248,24 @@ Prado.WebUI.TBaseValidator = Prado.Class(Prado.WebUI.Control,
 	 * @return Array of list control option DOM elements.
 	 */
 	getListElements() {
+		// Locals hoisted to the top of the function body so each switch arm
+		// can assign without retriggering no-redeclare across cases.
+		var elements, element, type;
 		switch(this.options.ControlType)
 		{
 			case 'TCheckBoxList':
 			case 'TRadioButtonList':
-				var elements = [];
+				elements = [];
 				for(let i = 0; i < this.options.TotalItems; i++)
 				{
-					var element = document.getElementById(`${this.options.ControlToValidate}_c${i}`);
+					element = document.getElementById(`${this.options.ControlToValidate}_c${i}`);
 					if(this.isCheckBoxType(element))
 						elements.push(element);
 				}
 				return elements;
 			case 'TListBox':
-				var elements = [];
-				var element = document.getElementById(this.options.ControlToValidate);
-				var type;
+				elements = [];
+				element = document.getElementById(this.options.ControlToValidate);
 				if(element && (type = element.type.toLowerCase()))
 				{
 					if(type == "select-one" || type == "select-multiple")
@@ -1382,10 +1385,11 @@ Prado.WebUI.TCompareValidator = Prado.Class(Prado.WebUI.TBaseValidator,
 
     	const comparee = document.getElementById(this.options.ControlToCompare);
 
+		let compareTo;
 		if(comparee)
-			var compareTo = this.getValidationValue(comparee);
+			compareTo = this.getValidationValue(comparee);
 		else
-			var compareTo = this.options.ValueToCompare || "";
+			compareTo = this.options.ValueToCompare || "";
 
 	    const isValid =  this.compare(value, compareTo);
 
@@ -1597,16 +1601,17 @@ Prado.WebUI.TRangeValidator = Prado.Class(Prado.WebUI.TBaseValidator,
 		if(typeof(this.options.DataType) == "undefined")
 			this.options.DataType = "String";
 
+		let min, max;
 		if(this.options.DataType != "StringLength")
 		{
-			var min = this.convert(this.options.DataType, this.options.MinValue || null);
-			var max = this.convert(this.options.DataType, this.options.MaxValue || null);
+			min = this.convert(this.options.DataType, this.options.MinValue || null);
+			max = this.convert(this.options.DataType, this.options.MaxValue || null);
 			value = this.convert(this.options.DataType, value);
 		}
 		else
 		{
-			var min = this.options.MinValue || 0;
-			var max = this.options.MaxValue || Number.POSITIVE_INFINITY;
+			min = this.options.MinValue || 0;
+			max = this.options.MaxValue || Number.POSITIVE_INFINITY;
 			value = value.length;
 		}
 
@@ -1918,7 +1923,7 @@ TReCaptcha2_onloadCallback = () => {
 Prado.WebUI.TReCaptcha2 = Prado.Class(Prado.WebUI.Control,
 {
     onInit(options) {
-        for (key in options) { this[key] = options[key]; }
+        for (const key in options) { this[key] = options[key]; }
         this.options['callback'] = this.callback.bind(this);
         this.options['expired-callback'] = this.callbackExpired.bind(this);
 

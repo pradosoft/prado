@@ -5,13 +5,19 @@
  * This clas is mainly based on Scriptaculous Slider control (http://script.aculo.us)
  */
 
-// Compute viewport-relative offset of an element (jQuery.fn.offset equivalent).
+/**
+ * Compute viewport-relative offset of an element (jQuery.fn.offset equivalent).
+ * @since 4.4.0
+ */
 const _sliderOffset = (el) => {
 	const rect = el.getBoundingClientRect();
 	return { top: rect.top + window.pageYOffset, left: rect.left + window.pageXOffset };
 };
 
-// Visibility check (jQuery's :visible filter equivalent).
+/**
+ * Visibility check (jQuery's :visible filter equivalent).
+ * @since 4.4.0
+ */
 const _sliderVisible = (el) =>
 	!!(el && (el.offsetWidth || el.offsetHeight || el.getClientRects().length));
 
@@ -175,18 +181,19 @@ Prado.WebUI.TSlider = Prado.Class(Prado.WebUI.PostBackControl,
 				const handle = event.target;
 				const pointer  = [event.pageX, event.pageY];
 				const track = handle;
+				let offsets;
 				if(track==this.track) {
-					var offsets  = _sliderOffset(this.track);
+					offsets = _sliderOffset(this.track);
 					this.event = event;
 					this.setValue(this.translateToValue(
 						(this.isVertical() ? pointer[1]-offsets['top'] : pointer[0]-offsets['left'])-(this.handleLength/2)
 					));
-					var offsets  = _sliderOffset(this.handle);
+					offsets = _sliderOffset(this.handle);
 					this.offsetX = (pointer[0] - offsets['left']);
 					this.offsetY = (pointer[1] - offsets['top']);
 				} else {
 					this.updateStyles();
-					var offsets  = _sliderOffset(this.handle);
+					offsets = _sliderOffset(this.handle);
 					this.offsetX = (pointer[0] - offsets['left']);
 					this.offsetY = (pointer[1] - offsets['top']);
 				}
@@ -223,7 +230,7 @@ Prado.WebUI.TSlider = Prado.Class(Prado.WebUI.PostBackControl,
 		this.dragging = false;
 	},
 
-	finishDrag(event, success) {
+	finishDrag(_event, _success) {
 		this.active = false;
 		this.dragging = false;
 		this.updateFinished();

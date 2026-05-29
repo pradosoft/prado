@@ -32,15 +32,16 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 		Prado.Registry[options.ID] = this;
 
 		//which element to trigger to show the calendar
+		let triggerEvent;
 		if(this.options.Trigger)
 		{
 			this.trigger = document.getElementById(this.options.Trigger);
-			var triggerEvent = this.options.TriggerEvent || "click";
+			triggerEvent = this.options.TriggerEvent || "click";
 		}
 		else
 		{
 			this.trigger  = this.control;
-			var triggerEvent = this.options.TriggerEvent || "focus";
+			triggerEvent = this.options.TriggerEvent || "focus";
 		}
 
 		// Popup position
@@ -127,8 +128,8 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 		tr.appendChild(td);
 		this._monthSelect = document.createElement("select");
 		this._monthSelect.className = "months";
-	    for (var i = 0 ; i < this.MonthNames.length ; i++) {
-	        var opt = document.createElement("option");
+	    for (let i = 0 ; i < this.MonthNames.length ; i++) {
+	        const opt = document.createElement("option");
 	        opt.innerHTML = this.MonthNames[i];
 	        opt.value = i;
 	        if (i == this.selectedDate.getMonth()) {
@@ -146,8 +147,8 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 		td.className = "labelContainer";
 		tr.appendChild(td);
 		this._yearSelect = document.createElement("select");
-		for(var i=this.FromYear; i <= this.UpToYear; ++i) {
-			var opt = document.createElement("option");
+		for(let i = this.FromYear; i <= this.UpToYear; ++i) {
+			const opt = document.createElement("option");
 			opt.innerHTML = i;
 			opt.value = i;
 			if (i == this.selectedDate.getFullYear()) {
@@ -185,7 +186,7 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 		tr = document.createElement("tr");
 		thead.appendChild(tr);
 
-		for(i=0; i < 7; ++i) {
+		for(let i = 0; i < 7; ++i) {
 			td = document.createElement("th");
 			text = document.createTextNode(this.ShortWeekDayNames[(i+this.FirstDayOfWeek)%7]);
 			td.appendChild(text);
@@ -440,7 +441,9 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 			const day = Prado.WebUI.TDatePicker.getDayListControl(this.control);
 			const month = Prado.WebUI.TDatePicker.getMonthListControl(this.control);
 			const year = Prado.WebUI.TDatePicker.getYearListControl(this.control);
-			var date = this.selectedDate;
+			// Reassigns the `date` parameter; in DropDownList mode we always
+			// take the picker's currently-selected date as the source of truth.
+			date = this.selectedDate;
 			if(day)
 			{
 				day.selectedIndex = date.getDate()-1;
@@ -530,13 +533,13 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 		if(this.options.InputMode == "TextBox")
 			return this.control.offsetHeight;
 
-		var control = Prado.WebUI.TDatePicker.getDayListControl(this.control);
+		let control = Prado.WebUI.TDatePicker.getDayListControl(this.control);
 		if(control) return control.offsetHeight;
 
-		var control = Prado.WebUI.TDatePicker.getMonthListControl(this.control);
+		control = Prado.WebUI.TDatePicker.getMonthListControl(this.control);
 		if(control) return control.offsetHeight;
 
-		var control = Prado.WebUI.TDatePicker.getYearListControl(this.control);
+		control = Prado.WebUI.TDatePicker.getYearListControl(this.control);
 		if(control) return control.offsetHeight;
 		return 0;
 	},
@@ -652,7 +655,9 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 			d1 = new Date(d1.getFullYear(), d1.getMonth(), d1.getDate()+1);
 		}
 
-		const lastDateIndex = index;
+		// Index of the last in-month date slot. Currently unused but kept
+		// available for any future "last filled cell" computations.
+		const _lastDateIndex = index;
 
 	    while(index < 42) {
 			this.dateSlot[index].value = -1;
@@ -677,7 +682,7 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 
 		let options = this._monthSelect.options;
 		const m = this.selectedDate.getMonth();
-		for(var i=0; i < options.length; ++i) {
+		for(let i = 0; i < options.length; ++i) {
 			options[i].selected = false;
 			if (options[i].value == m) {
 				options[i].selected = true;
@@ -686,7 +691,7 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 
 		options = this._yearSelect.options;
 		const year = this.selectedDate.getFullYear();
-		for(var i=0; i < options.length; ++i) {
+		for(let i = 0; i < options.length; ++i) {
 			options[i].selected = false;
 			if (options[i].value == year) {
 				options[i].selected = true;
@@ -702,20 +707,16 @@ Object.assign(Prado.WebUI.TDatePicker,
 	 * @return Date the date from drop down list options.
 	 */
 	getDropDownDate(control) {
-		const now=new Date();
-		var year=now.getFullYear();
-		var month=now.getMonth();
-		var day=1;
-
+		const now = new Date();
 		const month_list = Prado.WebUI.TDatePicker.getMonthListControl(control);
 	 	const day_list = Prado.WebUI.TDatePicker.getDayListControl(control);
 	 	const year_list = Prado.WebUI.TDatePicker.getYearListControl(control);
 
-		var day = day_list ? day_list.value : 1;
-		var month = month_list ? month_list.value : now.getMonth();
-		var year = year_list ? year_list.value : now.getFullYear();
+		const day   = day_list   ? day_list.value   : 1;
+		const month = month_list ? month_list.value : now.getMonth();
+		const year  = year_list  ? year_list.value  : now.getFullYear();
 
-		return new Date(year,month,day, 0, 0, 0);
+		return new Date(year, month, day, 0, 0, 0);
 	},
 
 	getYearListControl(control) {

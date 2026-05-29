@@ -47,7 +47,7 @@ Prado.WebUI.THtmlArea5 = Prado.Class(Prado.WebUI.Control,
 		}
 	},
 
-	ajaxresponder(request) {
+	ajaxresponder(_request) {
 		this.checkInstance();
 	},
 

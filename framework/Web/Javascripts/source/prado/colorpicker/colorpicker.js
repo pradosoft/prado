@@ -1,6 +1,9 @@
 /*! PRADO TColorPicker javascript file | github.com/pradosoft/prado */
 
-// Compute viewport-relative offset of an element (jQuery.fn.offset equivalent).
+/**
+ * Compute viewport-relative offset of an element (jQuery.fn.offset equivalent).
+ * @since 4.4.0
+ */
 const _cpOffset = (el) => {
 	const rect = el.getBoundingClientRect();
 	return { top: rect.top + window.pageYOffset, left: rect.left + window.pageXOffset };
@@ -74,7 +77,6 @@ Rico.Color.prototype = {
    },
 
    isBright() {
-      const hsb = this.asHSB();
       return this.asHSB().b > 0.5;
    },
 
@@ -282,12 +284,12 @@ Prado.WebUI.TColorPicker = Prado.Class(Prado.WebUI.Control, {
 		Prado.Registry[options.ID] = this;
 	},
 
-	updatePicker(e) {
+	updatePicker(_e) {
 		const color = Rico.Color.createFromHex(this.input.value);
 		this.button.style.backgroundColor = color.toString();
 	},
 
-	buttonOnClick(event) {
+	buttonOnClick(_event) {
 		const mode = this.options['Mode'];
 		if(this.element == null)
 		{
@@ -330,7 +332,7 @@ Prado.WebUI.TColorPicker = Prado.Class(Prado.WebUI.Control, {
 		}
 	},
 
-	hide(event) {
+	hide(_event) {
 		if(this.showing)
 		{
 			this.element.style.display = "none";
@@ -368,22 +370,16 @@ Prado.WebUI.TColorPicker = Prado.Class(Prado.WebUI.Control, {
 	},
 
 	getBasicPickerContainer(pickerID, palette) {
-		let div;
-		let table;
-		let tbody;
-		let tr;
-		let td;
-
 		// main div
-		div = document.createElement("div");
+		let div = document.createElement("div");
 		div.className = `${this.options['ClassName']} BasicColorPicker`;
 		div.id = `${pickerID}_picker`;
 
-		table = document.createElement("table");
+		const table = document.createElement("table");
 		table.className = `basic_colors palette_${palette}`;
 		div.appendChild(table);
 
-		tbody = document.createElement("tbody");
+		const tbody = document.createElement("tbody");
 		table.appendChild(tbody);
 
 		const colors = Prado.WebUI.TColorPicker.palettes[palette];
@@ -466,7 +462,8 @@ Prado.WebUI.TColorPicker = Prado.Class(Prado.WebUI.Control, {
 
 		this.inputs = inputs;
 
-		const images = Prado.WebUI.TColorPicker.UIImages;
+		// images currently unused but kept for any UIImages-driven theming.
+		const _images = Prado.WebUI.TColorPicker.UIImages;
 
 		this.inputs['currentColor'] = document.createElement("span");
 		this.inputs['currentColor'].className='currentColor';
@@ -479,10 +476,10 @@ Prado.WebUI.TColorPicker = Prado.Class(Prado.WebUI.Control, {
 		let tbody = document.createElement("tbody");
 		inputsTable.appendChild(tbody);
 
-		var tr = document.createElement("tr");
+		let tr = document.createElement("tr");
 		tbody.appendChild(tr);
 
-		var td= document.createElement("td");
+		let td = document.createElement("td");
 		tr.appendChild(td);
 		td.className='currentcolor';
 		td.colSpan=2;
@@ -516,32 +513,32 @@ Prado.WebUI.TColorPicker = Prado.Class(Prado.WebUI.Control, {
 		tbody=document.createElement("tbody");
 		pickerTable.appendChild(tbody);
 
-		var tr = document.createElement("tr");
+		tr = document.createElement("tr");
 		tr.className='selection';
 		tbody.appendChild(tr);
 
-		var td= document.createElement("td");
+		td = document.createElement("td");
 		tr.appendChild(td);
 		td.className='colors';
 		td.appendChild(UIimages['selector']);
 		td.appendChild(UIimages['background']);
 
-		var td= document.createElement("td");
+		td = document.createElement("td");
 		tr.appendChild(td);
 		td.className='hue';
 		td.appendChild(UIimages['slider']);
 		td.appendChild(UIimages['hue']);
 
-		var td= document.createElement("td");
+		td = document.createElement("td");
 		tr.appendChild(td);
 		td.className='inputs';
 		td.appendChild(inputsTable);
 
-		var tr = document.createElement("tr");
+		tr = document.createElement("tr");
 		tr.className='options';
 		tbody.appendChild(tr);
 
-		var td= document.createElement("td");
+		td = document.createElement("td");
 		tr.appendChild(td);
 		td.colSpan=3;
 		td.appendChild(this.buttons['OK']);
@@ -558,13 +555,13 @@ Prado.WebUI.TColorPicker = Prado.Class(Prado.WebUI.Control, {
 		const tr = document.createElement("tr");
 		tbody.appendChild(tr);
 
-		var td= document.createElement("td");
+		let td = document.createElement("td");
 		if(className!==undefined && className!==null)
 			td.className=className;
 		tr.appendChild(td);
 		td.appendChild(document.createTextNode(label1));
 
-		var td= document.createElement("td");
+		td = document.createElement("td");
 		if(className!==undefined && className!==null)
 			td.className=className;
 		tr.appendChild(td);
@@ -711,27 +708,30 @@ Prado.WebUI.TColorPicker = Prado.Class(Prado.WebUI.Control, {
 	},
 
 	onInputChanged(ev, type) {
-		if(this.isMouseDownOnColor || isMouseDownOnHue)
+		if(this.isMouseDownOnColor || this.isMouseDownOnHue)
 			return;
 
-
+		// All locals are var-declared at the top of the function body so each
+		// switch arm can assign without retriggering no-redeclare on the
+		// fall-through-style `case "H": case "S":` heads.
+		var h, s, b, r, g, color;
 		switch(type)
 		{
 			case "H": case "S": case "V":
-				var h = this.truncate(this.inputs.H.value,0,360)/360;
-				var s = this.truncate(this.inputs.S.value,0,100)/100;
-				var b = this.truncate(this.inputs.V.value,0,100)/100;
-				var color = new Rico.Color();
+				h = this.truncate(this.inputs.H.value,0,360)/360;
+				s = this.truncate(this.inputs.S.value,0,100)/100;
+				b = this.truncate(this.inputs.V.value,0,100)/100;
+				color = new Rico.Color();
 				color.rgb = Rico.Color.HSBtoRGB(h,s,b);
 				return this.setColor(color,true);
 			case "R": case "G": case "B":
-				var r = this.truncate(this.inputs.R.value,0,255);///255;
-				var g = this.truncate(this.inputs.G.value,0,255);///255;
-				var b = this.truncate(this.inputs.B.value,0,255);///255;
-				var color = new Rico.Color(r,g,b);
+				r = this.truncate(this.inputs.R.value,0,255);///255;
+				g = this.truncate(this.inputs.G.value,0,255);///255;
+				b = this.truncate(this.inputs.B.value,0,255);///255;
+				color = new Rico.Color(r,g,b);
 				return this.setColor(color,true);
 			case "HEX":
-				var color = Rico.Color.createFromHex(this.inputs.HEX.value);
+				color = Rico.Color.createFromHex(this.inputs.HEX.value);
 				return this.setColor(color,true);
 		}
 	},
@@ -747,7 +747,8 @@ Prado.WebUI.TColorPicker = Prado.Class(Prado.WebUI.Control, {
 		this.inputs.B.value = color.rgb.b;
 		this.inputs.HEX.value = color.asHex().substring(1).toUpperCase();
 
-		const images = Prado.WebUI.TColorPicker.UIImages;
+		// images currently unused but kept for any UIImages-driven theming.
+		const _images = Prado.WebUI.TColorPicker.UIImages;
 
 		if(color.isBright())
 			this.inputs.selector.classList.remove('target_white');

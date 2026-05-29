@@ -178,6 +178,7 @@ Prado.CallbackRequestManager =
  *   - file inputs
  *   - submit/button/image/reset inputs
  *   - unchecked checkboxes and radios
+ * @since 4.4.0
  */
 Prado.CallbackRequest_serializePageInputs = function() {
 	const out = [];
@@ -379,7 +380,6 @@ Prado.CallbackRequest = Prado.Class(Prado.PostBack,
 
 		if(this.options.PostInputs != false)
 		{
-			const form = this.getForm();
 			// Serialize every form-bearing input on the page (matches the legacy
 			// behavior of jQuery('input, select, textarea').serialize() which
 			// ignored form boundaries) plus the extra `data` object.
@@ -427,7 +427,7 @@ Prado.CallbackRequest = Prado.Class(Prado.PostBack,
 		return null;
 	},
 
-	errorHandler(request, textStatus, errorThrown) {
+	errorHandler(request, textStatus) {
 		let log;
 		this.data = request.responseText;
 
@@ -518,15 +518,15 @@ Prado.CallbackRequest = Prado.Class(Prado.PostBack,
 		if (redirectUrl)
 				document.location.href = redirectUrl;
 
-		this.outputDebug(this, data);
+		this.outputDebug();
 
 		try {
-			this.updatePageState(this, data);
-			this.checkHiddenFields(this, data);
+			this.updatePageState();
+			this.checkHiddenFields();
 			const obj = this;
-			this.loadAssets(this, data, () => {
+			this.loadAssets(() => {
                 try {
-                    obj.dispatchActions(obj, data);
+                    obj.dispatchActions();
                 } catch (e) {
                     obj.exceptionHandler(e);
                 }
@@ -541,10 +541,10 @@ Prado.CallbackRequest = Prado.Class(Prado.PostBack,
 	/**
 	 * Updates the page state. It will update only if EnablePageStateUpdate is true.
 	 */
-	updatePageState(request, datain) {
+	updatePageState() {
 		let log;
 		const pagestate = document.getElementById(Prado.CallbackRequestManager.FIELD_CALLBACK_PAGESTATE);
-		const enabled = request.options.EnablePageStateUpdate;
+		const enabled = this.options.EnablePageStateUpdate;
 		const aborted = false; //typeof(self.currentRequest) == 'undefined' || self.currentRequest == null;
 		if(enabled && !aborted && pagestate)
 		{
@@ -580,7 +580,7 @@ Prado.CallbackRequest = Prado.Class(Prado.PostBack,
 		}
 	},
 
-	checkHiddenFields(request, datain) {
+	checkHiddenFields() {
 		let log, json;
 		const data = this.extractContent(Prado.CallbackRequestManager.HIDDENFIELDLIST_HEADER);
 		if (typeof(data) == "string" && data.length > 0)
@@ -600,7 +600,7 @@ Prado.CallbackRequest = Prado.Class(Prado.PostBack,
 	/*
 	 * Checks which assets are used by the response and ensures they're loaded
 	 */
-	loadAssets(request, datain, callback) {
+	loadAssets(callback) {
 		/*
 
 		  ! This is the callback-based loader for stylesheets, which loads them one-by-one, and
@@ -620,17 +620,17 @@ Prado.CallbackRequest = Prado.Class(Prado.PostBack,
 
 		*/
 
-		this.loadStyleSheetsCode(request,datain);
+		this.loadStyleSheetsCode();
 
-		this.loadStyleSheetsAsync(request,datain);
+		this.loadStyleSheetsAsync();
 
-		this.loadScripts(request,datain,callback);
+		this.loadScripts(callback);
 	},
 
 	/*
 	 * Checks which scripts are used by the response and ensures they're loaded
 	 */
-	loadScripts(request, datain, callback) {
+	loadScripts(callback) {
 		let log, json;
 		const data = this.extractContent(Prado.CallbackRequestManager.SCRIPTLIST_HEADER);
 		if (!this.ScriptsToLoad) this.ScriptsToLoad = new Array();
@@ -680,7 +680,7 @@ Prado.CallbackRequest = Prado.Class(Prado.PostBack,
 			}
 	},
 
-	loadStyleSheetsCode(request, datain) {
+	loadStyleSheetsCode() {
 		let log, json;
 		const data = this.extractContent(Prado.CallbackRequestManager.STYLESHEET_HEADER);
 		if (typeof(data) == "string" && data.length > 0)
@@ -698,7 +698,7 @@ Prado.CallbackRequest = Prado.Class(Prado.PostBack,
 		}
 	},
 
-	loadStyleSheetsAsync(request, datain) {
+	loadStyleSheetsAsync() {
 		let log, json;
 		const data = this.extractContent(Prado.CallbackRequestManager.STYLESHEETLIST_HEADER);
 		if (typeof(data) == "string" && data.length > 0)
@@ -716,7 +716,7 @@ Prado.CallbackRequest = Prado.Class(Prado.PostBack,
 		}
 	},
 
-	loadStyleSheets(request, datain, callback) {
+	loadStyleSheets(callback) {
 		let log, json;
 		const data = this.extractContent(Prado.CallbackRequestManager.STYLESHEETLIST_HEADER);
 		if (!this.StyleSheetsToLoad) this.StyleSheetsToLoad = new Array();
@@ -767,7 +767,7 @@ Prado.CallbackRequest = Prado.Class(Prado.PostBack,
 	/**
 	 * Dispatch callback response actions.
 	 */
-	dispatchActions(request, datain) {
+	dispatchActions() {
 		let log, json;
 		const data = this.extractContent(Prado.CallbackRequestManager.ACTION_HEADER);
 		if (typeof(data) == "string" && data.length > 0)
@@ -779,9 +779,9 @@ Prado.CallbackRequest = Prado.Class(Prado.PostBack,
 					log.warn(`Invalid action:${data}`);
 			} else {
 				const that = this;
-				json.forEach((item, idx) => {
+				for (const item of json) {
 					that.__run(that, item);
-				});
+				}
 			}
 		}
 	},
@@ -789,7 +789,7 @@ Prado.CallbackRequest = Prado.Class(Prado.PostBack,
 	/**
 	 * Output callback response debug.
 	 */
-	outputDebug(request, datain) {
+	outputDebug() {
 		let log, json;
 		const data = this.extractContent(Prado.CallbackRequestManager.DEBUG_HEADER);
 		if (typeof(data) == "string" && data.length > 0 && (log = this.getLogger()))

@@ -60,7 +60,7 @@ Prado.WebUI.THtmlArea = Prado.Class(Prado.WebUI.Control,
 		Prado.WebUI.THtmlArea.tinyMCELoadState = 255;
 		let wrapper;
 		while(Prado.WebUI.THtmlArea.pendingRegistrations.length>0)
-			if (wrapper = Prado.Registry[Prado.WebUI.THtmlArea.pendingRegistrations.pop()])
+			if ((wrapper = Prado.Registry[Prado.WebUI.THtmlArea.pendingRegistrations.pop()]))
 				wrapper.initInstance();
 	},
 
@@ -97,7 +97,7 @@ Prado.WebUI.THtmlArea = Prado.Class(Prado.WebUI.Control,
 		}
 	},
 
-	ajaxresponder(request) {
+	ajaxresponder(_request) {
 		this.checkInstance();
 	},
 
@@ -115,7 +115,7 @@ Prado.WebUI.THtmlArea = Prado.Class(Prado.WebUI.Control,
 			tinyMCE.execCommand('mceRemoveControl', false, this.ID);
 			ta.value = curtext;
 		}
-		catch (e)
+		catch (_e)
 		{
 			// suppress error here in case editor can't be properly removed
 			// (happens when <textarea> has been removed from DOM tree without deinitialzing the tinyMCE editor first)

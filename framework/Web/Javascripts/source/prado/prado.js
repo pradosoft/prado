@@ -253,12 +253,14 @@ Prado.Element =
 		{
 			try
 			{
-				eval(`(func = function(event){${value}})`);
-				el[attribute] = func;
+				// Compile the server-emitted handler body as a function of
+				// `event` and assign it to the DOM property (onclick/onchange/etc.).
+				// `new Function` keeps the closure scope local instead of leaking
+				// a global the way `eval` would.
+				el[attribute] = new Function('event', value);
 			}
-			catch(e)
+			catch(_e)
 			{
-				debugger;
 				throw `Error in evaluating '${value}' for attribute ${attribute} for element ${element}`;
 			}
 		}
@@ -312,8 +314,6 @@ Prado.Element =
 	 */
 	setOptions(element, options) {
 		const el = document.getElementById(element);
-		const previousGroup = null;
-		const optGroup=null;
 		if(el && el.tagName.toLowerCase() == "select")
 		{
 			while(el.childNodes.length > 0)
@@ -407,6 +407,7 @@ Prado.Element =
 	 * behavior, which executes inline scripts injected via innerHTML.
 	 * @function ?
 	 * @param {element} root - DOM subtree to scan
+	 * @since 4.4.0
 	 */
 	executeScripts(root) {
 		const scripts = root.querySelectorAll('script');
@@ -455,14 +456,13 @@ Prado.Element =
 		{
 			// Evaluate in global scope (jQuery.globalEval equivalent).
 			// The indirect (0, eval) call forces script to run as global code.
+			// eslint-disable-next-line no-eval
 			(0, eval)(content);
 		}
 		catch(e)
 		{
 			if(typeof(Logger) != "undefined")
 				Logger.error(`Error during evaluation of script "${content}"`);
-			else
-				debugger;
 			throw e;
 		}
 	}
@@ -815,7 +815,7 @@ Object.assign(String.prototype, {
 	 * @returns Integer, null if string does not represent an integer.
 	 */
 	toInteger() {
-		const exp = /^\s*[-\+]?\d+\s*$/;
+		const exp = /^\s*[-+]?\d+\s*$/;
 		if (this.match(exp) == null)
 			return null;
 		const num = parseInt(this, 10);
@@ -991,7 +991,6 @@ Object.assign(Date,
 		let i_format=0;
 		let c="";
 		let token="";
-		const token2="";
 		let x, y;
 		const now=new Date();
 		let year=now.getFullYear();

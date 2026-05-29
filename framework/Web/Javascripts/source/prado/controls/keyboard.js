@@ -45,7 +45,7 @@ Prado.WebUI.TKeyboard = Prado.Class(Prado.WebUI.Control,
 
 	createElement(tagName, attributes, parent) {
         const tagElement = document.createElement(tagName);
-        if (this.isObject(attributes)) for (attribute in attributes) tagElement[attribute] = attributes[attribute];
+        if (this.isObject(attributes)) for (const attribute in attributes) tagElement[attribute] = attributes[attribute];
         if (this.isObject(parent)) parent.appendChild(tagElement);
         return tagElement;
     },
@@ -78,8 +78,9 @@ Prado.WebUI.TKeyboard = Prado.Class(Prado.WebUI.Control,
             {
                 const split = this.keys[line][key].split(' ');
                 const tagKey = this.createElement('div', {className: `Key ${split[2]}`}, tagLine);
-                const tagKey1 = this.createElement('div', {className: 'Key1', innerHTML: split[0], keyboard: this, onmouseover: this.onmouseover, onmouseout: this.onmouseout, onmousedown: this.onmousedown, onmouseup: this.onmouseup}, tagKey);
-                const tagKey2 = this.createElement('div', {className: 'Key2', innerHTML: split[1], keyboard: this, onmouseover: this.onmouseover, onmouseout: this.onmouseout, onmousedown: this.onmousedown, onmouseup: this.onmouseup}, tagKey);
+                // tagKey1/tagKey2 are appended to tagKey for their side effect.
+                this.createElement('div', {className: 'Key1', innerHTML: split[0], keyboard: this, onmouseover: this.onmouseover, onmouseout: this.onmouseout, onmousedown: this.onmousedown, onmouseup: this.onmouseup}, tagKey);
+                this.createElement('div', {className: 'Key2', innerHTML: split[1], keyboard: this, onmouseover: this.onmouseover, onmouseout: this.onmouseout, onmousedown: this.onmousedown, onmouseup: this.onmouseup}, tagKey);
             }
         }
     },

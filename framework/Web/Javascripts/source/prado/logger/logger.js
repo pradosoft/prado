@@ -101,7 +101,7 @@ var Cookie = {
 				var name = unescape(cookies[i].match(/^\s*([^=]+)/m)[1])
 				var value = unescape(cookies[i].match(/=(.*$)/m)[1])
 			}
-			catch (e) {
+			catch (_e) {
 				continue
 			}
 
@@ -364,7 +364,7 @@ LogConsole = Prado.Class({
 		try {
 			new RegExp(pattern)
 		}
-		catch (e) {
+		catch (_e) {
 			return
 		}
 
@@ -401,7 +401,7 @@ LogConsole = Prado.Class({
 		this.output(logEntry.message, style)
 	},
 
-	clear(e) {
+	clear(_e) {
 		this.outputElement.innerHTML = ""
 	},
 
@@ -418,6 +418,8 @@ LogConsole = Prado.Class({
 	      	var consoleOutput = "";
 
 	      	try {
+				// Console REPL — eval is the whole point.
+				// eslint-disable-next-line no-eval
 	        	consoleOutput = eval(this.inputElement.value)
 	      	}
 	      	catch (e) {
@@ -473,7 +475,7 @@ function inspect(o)
 
 	 try {
             var ostring = (`${o}`);
-        } catch (e) {
+        } catch (_e) {
             return `[${typeof(o)}]`;
         }
 
@@ -557,7 +559,9 @@ Array.prototype.contains = function(object) {
 	return false
 };
 
-// Helper Alias for simple logging
+// Helper Alias for simple logging. Used by PHP-emitted client scripts and
+// external consumers, hence the global declaration.
+// eslint-disable-next-line no-unused-vars
 var puts = function() {return Logger.log(arguments[0], arguments[1])};
 
 /*************************************
@@ -597,14 +601,16 @@ Prado.Inspector =
 
 	parseJS(obj) {
 		let name;
+		// Resolve a dotted path like "Prado.Registry.foo" to the live object.
+		// eslint-disable-next-line no-eval
 		if(typeof obj == "string") {  name = obj; obj = eval(obj); }
-		win= typeof obj == 'undefined' ? window : obj;
+		const win = typeof obj == 'undefined' ? window : obj;
 		this.displaying = name ? name : win.toString();
-		for(js in win) {
+		for(const js in win) {
 			try {
 				if(win[js] && js.toString().indexOf("Inspector")==-1 && (`${win[js]}`).indexOf("[native code]")==-1) {
 
-					t=typeof(win[js]);
+					const t = typeof(win[js]);
 					if(!this.objs[t.toString()]) {
 						this.types[this.types.length]=t;
 						this.objs[t]={};
@@ -613,10 +619,10 @@ Prado.Inspector =
 					this.nameList[t].push(js);
 					this.objs[t][js] = this.format(`${win[js]}`);
 				}
-			} catch(err) { }
+			} catch(_err) { /* ignore properties whose enumeration throws (e.g. cross-origin) */ }
 		}
 
-		for(i=0;i<this.types.length;i++)
+		for(let i = 0; i<this.types.length; i++)
 			this.nameList[this.types[i]].sort();
 	},
 
@@ -648,15 +654,15 @@ Prado.Inspector =
 	},
 
 	buildTree() {
-		mHTML = `<div>Inspecting ${this.buildInspectionLevel()}</div>`;
+		let mHTML = `<div>Inspecting ${this.buildInspectionLevel()}</div>`;
 		mHTML +="<ul class=\"topLevel\">";
 		this.types.sort();
 		let so_objIndex=0;
-		for(i=0;i<this.types.length;i++)
+		for(let i = 0; i<this.types.length; i++)
 		{
 			mHTML+=`<li style="cursor:pointer;" onclick="Prado.Inspector.show('ul${i}');Prado.Inspector.changeSpan('sp${i}')"><span id="sp${i}">[+]</span><b>${this.types[i]}</b> (${this.nameList[this.types[i]].length})</li><ul style="display:none;" id="ul${i}">`;
 			this.hidden[`ul${i}`]=0;
-			for(e=0;e<this.nameList[this.types[i]].length;e++)
+			for(let e = 0; e<this.nameList[this.types[i]].length; e++)
 			{
 				const prop = this.nameList[this.types[i]][e];
 				const value = this.objs[this.types[i]][prop];
@@ -679,7 +685,7 @@ Prado.Inspector =
 	},
 
 	handleKeyEvent(e) {
-		keyCode=document.all?window.event.keyCode:e.keyCode;
+		const keyCode = document.all ? window.event.keyCode : e.keyCode;
 		if(keyCode==27) {
 			this.cleanUp();
 		}
@@ -702,9 +708,9 @@ Prado.Inspector =
 	inspect(obj) {
 		if(this.disabled)return alert("Sorry, this only works in Mozilla and Firefox currently.");
 		this.cleanUp();
-		mObj=this.d.body.appendChild(this.d.createElement("div"));
+		const mObj = this.d.body.appendChild(this.d.createElement("div"));
 		mObj.id="so_mContainer";
-		sObj=this.d.body.appendChild(this.d.createElement("style"));
+		const sObj = this.d.body.appendChild(this.d.createElement("style"));
 		sObj.id="so_mStyle";
 		sObj.type="text/css";
 		sObj.innerHTML = this.style;
@@ -714,7 +720,7 @@ Prado.Inspector =
 		this.parseJS(obj);
 		this.buildTree();
 
-		cObj=mObj.appendChild(this.d.createElement("div"));
+		const cObj = mObj.appendChild(this.d.createElement("div"));
 		cObj.className="credits";
 		cObj.innerHTML = "<b>[esc] to <a href=\"javascript:Prado.Inspector.cleanUp();\">close</a></b><br />Javascript Object Tree V2.0.";
 
@@ -732,12 +738,16 @@ Prado.Inspector =
 			"#so_mContainer .credits a { font:9px verdana; font-weight:bold; color:#004465; text-decoration:none; background-color:transparent; }"
 };
 
-//similar function to var_dump in PHP, brings up the javascript object tree UI.
+// Similar function to var_dump in PHP, brings up the javascript object tree UI.
+// Called from PHP-emitted client scripts and from the dev console, hence the
+// global declaration despite no in-file consumer.
+// eslint-disable-next-line no-unused-vars
 function var_dump(obj)
 {
 	Prado.Inspector.inspect(obj);
 }
 
-//similar function to print_r for PHP
+// Similar function to print_r for PHP. External consumers only.
+// eslint-disable-next-line no-unused-vars
 var print_r = inspect;
 

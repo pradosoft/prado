@@ -14,9 +14,12 @@
  * http://creativecommons.org/licenses/by-sa/3.0/us/
  */
 
-// Small native height-animation helper. Animates element height between two
-// values using requestAnimationFrame; calls done() on completion. Used where
-// the accordion previously called jQuery.fn.animate({height}, duration[, cb]).
+/**
+ * Small native height-animation helper. Animates element height between two
+ * values using requestAnimationFrame; calls done() on completion. Used where
+ * the accordion previously called jQuery.fn.animate({height}, duration[, cb]).
+ * @since 4.4.0
+ */
 const _accAnimateHeight = (el, from, to, duration, done) => {
 	if (!duration || duration <= 0) {
 		el.style.height = `${to}px`;
@@ -79,7 +82,7 @@ Prado.WebUI.TAccordion = Prado.Class(Prado.WebUI.Control,
 		}
 	},
 
-	elementClicked(viewID, event) {
+	elementClicked(viewID, _event) {
 		let i = 0;
 		for(const index in this.options.Views)
 		{
