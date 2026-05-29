@@ -331,6 +331,7 @@ return [
 'TApplicationSignals' => 'Prado\Util\Behaviors\TApplicationSignals',
 'TBehaviorParameterLoader' => 'Prado\Util\Behaviors\TBehaviorParameterLoader',
 'TCaptureForkLog' => 'Prado\Util\Behaviors\TCaptureForkLog',
+'TEventLoggingBehavior' => 'Prado\Util\Behaviors\TEventLoggingBehavior',
 'TForkable' => 'Prado\Util\Behaviors\TForkable',
 'TGlobalClassAware' => 'Prado\Util\Behaviors\TGlobalClassAware',
 'TMapLazyLoadBehavior' => 'Prado\Util\Behaviors\TMapLazyLoadBehavior',
