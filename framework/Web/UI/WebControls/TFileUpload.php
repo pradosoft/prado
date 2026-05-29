@@ -12,6 +12,7 @@
 namespace Prado\Web\UI\WebControls;
 
 use Prado\TPropertyValue;
+use Prado\Web\TMediaType;
 
 /**
  * TFileUpload class
@@ -109,9 +110,9 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 		parent::onPreRender($param);
 		if (($form = $this->getPage()->getForm()) !== null) {
 			if ($this->getPage()->getIsCallback()) {
-				$this->getPage()->getCallbackClient()->setAttribute($form, 'enctype', 'multipart/form-data');
+				$this->getPage()->getCallbackClient()->setAttribute($form, 'enctype', TMediaType::MULTIPART);
 			} else {
-				$form->setEnctype('multipart/form-data');
+				$form->setEnctype(TMediaType::MULTIPART);
 			}
 		}
 		$this->getPage()->getClientScript()->registerHiddenField('MAX_FILE_SIZE', $this->getMaxFileSize());

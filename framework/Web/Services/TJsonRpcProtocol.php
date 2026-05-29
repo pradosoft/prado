@@ -11,6 +11,7 @@ namespace Prado\Web\Services;
 
 use Prado\Exceptions\THttpException;
 use Prado\Web\THttpResponse;
+use Prado\Web\TMediaType;
 use Prado\Web\Javascripts\TJavaScript;
 
 /**
@@ -126,7 +127,7 @@ class TJsonRpcProtocol extends TRpcProtocol
 	 */
 	public function createResponseHeaders($response)
 	{
-		$response->setContentType('application/json');
+		$response->setContentType(TMediaType::JSON);
 		$response->setCharset('UTF-8');
 	}
 

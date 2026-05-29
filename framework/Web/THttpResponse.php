@@ -90,7 +90,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 {
 	use TInitializedTrait;
 
-	public const DEFAULT_CONTENTTYPE = 'text/html';
+	public const DEFAULT_CONTENTTYPE = TMediaType::HTML;
 	public const DEFAULT_CHARSET = 'UTF-8';
 
 	/**
@@ -387,20 +387,20 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	public function writeFile($fileName, $content = null, $mimeType = null, $headers = null, $forceDownload = true, $clientFileName = null, $fileSize = null)
 	{
 		static $defaultMimeTypes = [
-			'css' => 'text/css',
-			'gif' => 'image/gif',
-			'png' => 'image/png',
-			'jpg' => 'image/jpeg',
-			'jpeg' => 'image/jpeg',
-			'htm' => 'text/html',
-			'html' => 'text/html',
-			'js' => 'text/javascript',
-			'pdf' => 'application/pdf',
-			'xls' => 'application/vnd.ms-excel',
+			'css' => TMediaType::CSS,
+			'gif' => TMediaType::GIF,
+			'png' => TMediaType::PNG,
+			'jpg' => TMediaType::JPEG,
+			'jpeg' => TMediaType::JPEG,
+			'htm' => TMediaType::HTML,
+			'html' => TMediaType::HTML,
+			'js' => TMediaType::JAVASCRIPT,
+			'pdf' => TMediaType::PDF,
+			'xls' => TMediaType::XLS,
 		];
 
 		if ($mimeType === null) {
-			$mimeType = 'text/plain';
+			$mimeType = TMediaType::PLAIN;
 			if (function_exists('mime_content_type')) {
 				$mimeType = mime_content_type($fileName);
 			} elseif (($ext = strrchr($fileName, '.')) !== false) {
