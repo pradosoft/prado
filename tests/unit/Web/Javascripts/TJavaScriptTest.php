@@ -8,6 +8,8 @@
  * @author Brad Anderson <belisoful@icloud.com>
  */
 
+require_once __DIR__ . '/../../PradoUnitRequires.php';
+
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\Javascripts\TJavaScriptAsset;
 use Prado\Web\Javascripts\TJavaScriptLiteral;
@@ -20,7 +22,7 @@ class TJavaScriptTest extends PHPUnit\Framework\TestCase
 	// -----------------------------------------------------------------------
 
 	private const REMOTE = 'https://cdn.example.com/script.js';
-	private const LOCAL  = '/js/local.js';
+	private const LOCAL = '/js/local.js';
 
 	protected function setUp(): void
 	{
@@ -37,10 +39,7 @@ class TJavaScriptTest extends PHPUnit\Framework\TestCase
 	/** Clears the static integrity registry between tests. */
 	private function resetScriptIntegrity(): void
 	{
-		$ref  = new ReflectionClass(TJavaScript::class);
-		$prop = $ref->getProperty('_scriptIntegrity');
-		$prop->setAccessible(true);
-		$prop->setValue(null, []);
+		PradoUnit::setStaticProp(TJavaScript::class, '_scriptIntegrity', []);
 	}
 
 	// -----------------------------------------------------------------------
@@ -414,7 +413,7 @@ class TJavaScriptTest extends PHPUnit\Framework\TestCase
 
 	public function testRenderScriptFileWithAssetDelegatesToAsset(): void
 	{
-		$asset  = new TJavaScriptAsset(self::REMOTE);
+		$asset = new TJavaScriptAsset(self::REMOTE);
 		$output = TJavaScript::renderScriptFile($asset);
 		$this->assertStringContainsString('src="' . self::REMOTE . '"', $output);
 	}
@@ -482,7 +481,7 @@ class TJavaScriptTest extends PHPUnit\Framework\TestCase
 
 	public function testRenderScriptFilesWithMixedStringAndAssets(): void
 	{
-		$asset  = new TJavaScriptAsset('https://cdn.example.com/b.js');
+		$asset = new TJavaScriptAsset('https://cdn.example.com/b.js');
 		$output = TJavaScript::renderScriptFiles([
 			'https://cdn.example.com/a.js',
 			$asset,
@@ -646,7 +645,7 @@ class TJavaScriptTest extends PHPUnit\Framework\TestCase
 	public function testQuoteJsLiteralIdempotentOnExistingLiteral(): void
 	{
 		$literal = new TJavaScriptLiteral('function(){}');
-		$result  = TJavaScript::quoteJsLiteral($literal);
+		$result = TJavaScript::quoteJsLiteral($literal);
 		$this->assertSame($literal, $result);
 	}
 
@@ -776,9 +775,9 @@ class TJavaScriptTest extends PHPUnit\Framework\TestCase
 
 	public function testEncodeObjectUsesGetObjectVars(): void
 	{
-		$obj      = new \stdClass();
+		$obj = new \stdClass();
 		$obj->key = 'val';
-		$result   = TJavaScript::encode($obj);
+		$result = TJavaScript::encode($obj);
 		$this->assertStringContainsString("'key'", $result);
 		$this->assertStringContainsString('"val"', $result);
 	}
@@ -855,8 +854,8 @@ class TJavaScriptTest extends PHPUnit\Framework\TestCase
 
 	public function testJsonEncodeDecodeRoundtrip(): void
 	{
-		$data    = ['key' => 'value', 'num' => 42, 'flag' => true];
-		$json    = TJavaScript::jsonEncode($data);
+		$data = ['key' => 'value', 'num' => 42, 'flag' => true];
+		$json = TJavaScript::jsonEncode($data);
 		$decoded = TJavaScript::jsonDecode($json, true);
 		$this->assertSame($data, $decoded);
 	}
@@ -881,7 +880,7 @@ class TJavaScriptTest extends PHPUnit\Framework\TestCase
 
 	public function testJsonDecodeAssocTrue(): void
 	{
-		$json   = '{"a":1}';
+		$json = '{"a":1}';
 		$result = TJavaScript::jsonDecode($json, true);
 		$this->assertIsArray($result);
 		$this->assertSame(1, $result['a']);
@@ -889,10 +888,139 @@ class TJavaScriptTest extends PHPUnit\Framework\TestCase
 
 	public function testJsonDecodeAssocFalseReturnsObject(): void
 	{
-		$json   = '{"a":1}';
+		$json = '{"a":1}';
 		$result = TJavaScript::jsonDecode($json, false);
 		$this->assertIsObject($result);
 		$this->assertSame(1, $result->a);
+	}
+
+	// -----------------------------------------------------------------------
+	// jsonEncode — globalization charset handling
+	// -----------------------------------------------------------------------
+
+	/**
+	 * Temporarily swaps the application's globalization module for the
+	 * duration of a callback. Passing `null` detaches it — `setGlobalization`
+	 * itself only accepts a TGlobalization, so the swap goes through the
+	 * private `_globalization` property via {@see PradoUnit::setProp()}.
+	 * @param ?string $charset
+	 * @param callable $fn
+	 */
+	private function withGlobalizationCharset(?string $charset, callable $fn): mixed
+	{
+		$app = Prado::getApplication();
+		$original = PradoUnit::getProp($app, '_globalization');
+		try {
+			if ($charset === null) {
+				PradoUnit::setProp($app, '_globalization', null);
+			} else {
+				$g = new \Prado\I18N\TGlobalization();
+				$g->setCharset($charset);
+				PradoUnit::setProp($app, '_globalization', $g);
+			}
+			return $fn();
+		} finally {
+			PradoUnit::setProp($app, '_globalization', $original);
+		}
+	}
+
+	public function testJsonEncodeSkipsTranscodingWhenCharsetIsNotIconvName(): void
+	{
+		// Regression for the Windows CI failure: 'fr' is a locale code, not an
+		// iconv encoding. jsonEncode used to call iconv('fr', ...) → warning →
+		// TPhpErrorException. With the guard, the charset is recognised as not
+		// being an iconv encoding and the value passes through unchanged.
+		$this->withGlobalizationCharset('fr', function () {
+			$json = TJavaScript::jsonEncode(['status' => 404, 'title' => 'Not Found']);
+			$this->assertJson($json);
+			$this->assertSame(
+				['status' => 404, 'title' => 'Not Found'],
+				json_decode($json, true)
+			);
+		});
+	}
+
+	public function testJsonEncodeSkipsTranscodingForEmptyCharset(): void
+	{
+		$this->withGlobalizationCharset('', function () {
+			$json = TJavaScript::jsonEncode(['ok' => true]);
+			$this->assertSame('{"ok":true}', $json);
+		});
+	}
+
+	public function testJsonEncodeWithUtf8CharsetSkipsConversion(): void
+	{
+		$this->withGlobalizationCharset('UTF-8', function () {
+			// json_encode escapes non-ASCII by default; decode-and-compare to
+			// keep the test independent of the escaping flag.
+			$json = TJavaScript::jsonEncode(['n' => 'naïve']);
+			$this->assertSame(['n' => 'naïve'], json_decode($json, true));
+		});
+	}
+
+	public function testJsonEncodeTranscodesStringsForValidIconvCharset(): void
+	{
+		// 'Café' encoded in ISO-8859-1 (Latin-1).
+		$latin1 = "Caf" . chr(0xE9);
+		$this->withGlobalizationCharset('ISO-8859-1', function () use ($latin1) {
+			$json = TJavaScript::jsonEncode(['name' => $latin1]);
+			$this->assertSame(['name' => 'Café'], json_decode($json, true));
+		});
+	}
+
+	public function testJsonEncodeTranscodesNestedArrayStrings(): void
+	{
+		$latin1 = chr(0xE9); // é in Latin-1
+		$this->withGlobalizationCharset('ISO-8859-1', function () use ($latin1) {
+			$json = TJavaScript::jsonEncode(['a' => ['b' => $latin1]]);
+			$this->assertSame(['a' => ['b' => 'é']], json_decode($json, true));
+		});
+	}
+
+	public function testJsonEncodeTranscodesStdClassProperties(): void
+	{
+		// New: convertToUtf8 used to skip objects entirely; it now recurses
+		// through stdClass-shaped values too.
+		$latin1 = chr(0xE9);
+		$this->withGlobalizationCharset('ISO-8859-1', function () use ($latin1) {
+			$obj = new \stdClass();
+			$obj->label = $latin1;
+			$json = TJavaScript::jsonEncode($obj);
+			$decoded = json_decode($json, true);
+			$this->assertSame('é', $decoded['label']);
+		});
+	}
+
+	public function testJsonEncodeNonStdClassObjectsPassThrough(): void
+	{
+		// Objects of arbitrary classes are not transcoded — json_encode's own
+		// rules apply. Verify the call still succeeds when globalization is
+		// in a non-UTF-8 (but valid) mode.
+		$this->withGlobalizationCharset('ISO-8859-1', function () {
+			$obj = new class () {
+				public string $field = 'plain';
+			};
+			$json = TJavaScript::jsonEncode($obj);
+			$this->assertJson($json);
+			$decoded = json_decode($json, true);
+			$this->assertSame('plain', $decoded['field']);
+		});
+	}
+
+	public function testJsonEncodeWithoutGlobalizationStaysQuiet(): void
+	{
+		// When no globalization module is attached, the charset path is not
+		// consulted at all — the result is identical to a vanilla json_encode.
+		$this->withGlobalizationCharset(null, function () {
+			$this->assertSame('{"x":1}', TJavaScript::jsonEncode(['x' => 1]));
+		});
+	}
+
+	public function testJsonDecodeAcceptsStringTypeStrictly(): void
+	{
+		// Sanity check that the tightened signature still round-trips the
+		// canonical happy path used by callers across the framework.
+		$this->assertSame(['k' => 'v'], TJavaScript::jsonDecode('{"k":"v"}', true));
 	}
 
 	// -----------------------------------------------------------------------
@@ -924,7 +1052,7 @@ class TJavaScriptTest extends PHPUnit\Framework\TestCase
 
 	public function testJSMinRemovesUnnecessaryWhitespace(): void
 	{
-		$input    = "function hello() {\n    return 1;\n}";
+		$input = "function hello() {\n    return 1;\n}";
 		$minified = TJavaScript::JSMin($input);
 		$this->assertStringContainsString('function hello()', $minified);
 		$this->assertStringContainsString('return 1', $minified);
@@ -933,7 +1061,7 @@ class TJavaScriptTest extends PHPUnit\Framework\TestCase
 
 	public function testJSMinRemovesSingleLineComments(): void
 	{
-		$input    = "// this is a comment\nvar x = 1;";
+		$input = "// this is a comment\nvar x = 1;";
 		$minified = TJavaScript::JSMin($input);
 		$this->assertStringNotContainsString('this is a comment', $minified);
 		$this->assertStringContainsString('x=1', $minified);
@@ -941,7 +1069,7 @@ class TJavaScriptTest extends PHPUnit\Framework\TestCase
 
 	public function testJSMinRemovesMultiLineComments(): void
 	{
-		$input    = "/* block comment */\nvar y = 2;";
+		$input = "/* block comment */\nvar y = 2;";
 		$minified = TJavaScript::JSMin($input);
 		$this->assertStringNotContainsString('block comment', $minified);
 		$this->assertStringContainsString('y=2', $minified);
@@ -1007,8 +1135,8 @@ class TJavaScriptTest extends PHPUnit\Framework\TestCase
 		// TJavaScriptString encodes its value with HTML-safe hex escaping via
 		// json_encode + JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_TAG.
 		// The output must differ from a plain json_encode (which would keep < literally).
-		$str          = new TJavaScriptString('<b>');
-		$result       = $str->toJavaScriptLiteral();
+		$str = new TJavaScriptString('<b>');
+		$result = $str->toJavaScriptLiteral();
 		$plainEncoded = json_encode('<b>');
 		$this->assertNotSame($plainEncoded, $result);
 	}
