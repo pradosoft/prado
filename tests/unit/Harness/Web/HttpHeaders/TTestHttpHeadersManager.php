@@ -1,10 +1,11 @@
 <?php
 
 /**
- * TTestableHttpHeadersManager — shared test double for HttpHeaders tests.
+ * TTestHttpHeadersManager — shared test double for HttpHeaders tests.
  *
- * Included via require_once from THttpHeadersManagerTest.php and
- * THttpHeaderCspIntegrationTest.php.
+ * Auto-loaded by {@see PradoUnitRequires}; no explicit `require_once` is
+ * needed from individual test files.  Used by `THttpHeadersManagerTest`,
+ * `THttpHeaderCspIntegrationTest`, and the response-headers integration test.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  */
@@ -13,12 +14,12 @@ use Prado\TApplication;
 use Prado\Web\HttpHeaders\THttpHeadersManager;
 
 /**
- * Intercepts sendHeaders() so tests can inspect emitted header strings
- * without touching the live HTTP stack. Exposes all protected helpers as
- * public methods so the manager can be exercised without a full TApplication
- * lifecycle.
+ * Intercepts {@see THttpHeadersManager::sendHeaders()} so tests can inspect
+ * emitted header strings without touching the live HTTP stack.  Exposes the
+ * protected helpers as public methods so the manager can be exercised
+ * without a full {@see TApplication} lifecycle.
  */
-class TTestableHttpHeadersManager extends THttpHeadersManager
+class TTestHttpHeadersManager extends THttpHeadersManager
 {
 	/** @var string[] Headers captured by the overridden sendHeaders(). */
 	public array $sentHeaders = [];
@@ -27,9 +28,10 @@ class TTestableHttpHeadersManager extends THttpHeadersManager
 	public int $sendCount = 0;
 
 	/**
-	 * Base URL returned by {@see buildReporterUrl()}. The service ID is appended
-	 * as a path segment so callers that verify the service ID appears in the URL
-	 * (e.g. integration tests for literal ReportingServiceId) still work correctly.
+	 * Base URL returned by {@see buildReporterUrl()}.  The service ID is
+	 * appended as a path segment so callers that verify the service ID
+	 * appears in the URL (e.g. integration tests for literal
+	 * ReportingServiceId) still work correctly.
 	 */
 	public string $fakeReporterUrl = 'https://example.com/csp-report';
 

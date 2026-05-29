@@ -5,7 +5,7 @@
  *
  * Unit tests for {@see \Prado\Web\HttpHeaders\THttpHeadersManager}.
  *
- * The {@see TTestableHttpHeadersManager} subclass defined below intercepts
+ * The {@see TTestHttpHeadersManager} subclass defined below intercepts
  * {@see sendHeaders()} so tests can inspect emitted header strings without
  * touching the live HTTP stack.  It also exposes protected helpers as public
  * methods so the manager can be exercised without a full {@see TApplication}
@@ -32,10 +32,10 @@ use Prado\Web\Services\TCspReportingService;
 use Prado\Web\THttpHeaderName;
 
 // ---------------------------------------------------------------------------
-// Shared test double
+// Shared test double + PradoUnit harness (auto-loads TTestHttpHeadersManager)
 // ---------------------------------------------------------------------------
 
-require_once __DIR__ . '/TTestableHttpHeadersManager.php';
+require_once __DIR__ . '/../../PradoUnitRequires.php';
 
 // ---------------------------------------------------------------------------
 // Minimal header stub — no app needed
@@ -101,7 +101,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testDefaultReportingEndpointName()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		self::assertSame(
 			THttpHeadersManager::DEFAULT_REPORTING_SERVICE_NAME,
 			$m->getReportingEndpointName()
@@ -110,7 +110,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testDefaultReportingServiceId()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		self::assertSame(
 			THttpHeadersManager::DEFAULT_REPORTING_SERVICE_ID,
 			$m->getReportingServiceId()
@@ -119,37 +119,37 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testDefaultReportOnlyIsNull()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		self::assertNull($m->getReportOnly());
 	}
 
 	public function testDefaultReportingServiceModeIsAuto()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		self::assertSame('Auto', $m->getReportingServiceMode());
 	}
 
 	public function testDefaultMappingClass()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		self::assertSame(THttpHeader::class, $m->getDefaultMappingClass());
 	}
 
 	public function testDefaultHeaderClass()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		self::assertSame(THttpHeader::class, $m->getDefaultHeaderClass());
 	}
 
 	public function testDefaultMappingClassAliasesDefaultHeaderClass()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		self::assertSame($m->getDefaultHeaderClass(), $m->getDefaultMappingClass());
 	}
 
 	public function testSetDefaultHeaderClassPersists()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setDefaultHeaderClass(THttpHeaderContentType::class);
 		self::assertSame(THttpHeaderContentType::class, $m->getDefaultHeaderClass());
 		self::assertSame(THttpHeaderContentType::class, $m->getDefaultMappingClass());
@@ -161,7 +161,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testDefaultNameClassMapContainsExpectedEntries()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$map = $m->publicGetDefaultNameClassMap();
 
 		self::assertArrayHasKey(THttpHeaderName::ContentType, $map);
@@ -182,7 +182,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testGetNameClassMapLazilyPopulatesFromDefaults()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		// Before any call, internal map is empty.
 		self::assertEmpty($m->publicGetNameClassMapDirect());
 		// After getNameClassMap(), defaults are populated — keys are lowercase.
@@ -193,7 +193,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testEnsureNameClassMapIsIdempotent()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->ensureNameClassMap();
 		$first = $m->getNameClassMap();
 		$m->ensureNameClassMap();
@@ -206,7 +206,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 		// A subclass whose getDefaultNameClassMap() returns [] must not trigger
 		// re-initialization on every ensureNameClassMap() call. The bool flag
 		// (not empty()) must guard the initialization.
-		$m = new class extends TTestableHttpHeadersManager {
+		$m = new class extends TTestHttpHeadersManager {
 			protected function getDefaultNameClassMap(): array { return []; }
 		};
 		$m->ensureNameClassMap();
@@ -219,7 +219,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testAddNameClassMapMergesEntries()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->addNameClassMap(['X-Custom' => THttpHeader::class]);
 		$map = $m->getNameClassMap();
 		// Keys are stored lowercase.
@@ -231,7 +231,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testAddNameClassMapOverridesExistingEntry()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->addNameClassMap([THttpHeaderName::StrictTransportSecurity => THttpHeader::class]);
 		$map = $m->getNameClassMap();
 		self::assertSame(THttpHeader::class, $map[strtolower(THttpHeaderName::StrictTransportSecurity)]);
@@ -239,7 +239,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testRegisterHeaderClassAddsEntry()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->registerHeaderClass('X-Test', THttpHeader::class);
 		$map = $m->getNameClassMap();
 		// Keys are stored lowercase.
@@ -249,7 +249,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testNameClassMapKeysAreNormalizedToLowercase()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		// Default map entries (from THttpHeaderName constants) are lowercased on storage.
 		$map = $m->getNameClassMap();
 		foreach (array_keys($map) as $key) {
@@ -259,7 +259,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testRegisterHeaderClassWithDifferentCasingDoesNotCreateDuplicates()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->registerHeaderClass('X-Dupe', THttpHeader::class);
 		$m->registerHeaderClass('x-dupe', TStubHeader::class);  // different casing, same header
 		$map = $m->getNameClassMap();
@@ -277,7 +277,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testAddHeaderAppendsToList()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$h = new TStubHeader();
 		$m->addHeader($h);
 		self::assertCount(1, $m->getHeaders());
@@ -286,7 +286,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testAddHeaderSetsManagerOnHeader()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$h = new TStubHeader();
 		$m->addHeader($h);
 		self::assertSame($m, $h->getManager());
@@ -294,7 +294,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testAddHeaderAcceptsHeaderAlreadyOwnedBySameManager()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$h = new TStubHeader();
 		$h->setManager($m);
 		// Must not throw.
@@ -306,7 +306,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 	{
 		// Adding the same instance twice must not create a duplicate entry;
 		// duplicate lines would be sent for replacing headers.
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$h = new TStubHeader();
 		$m->addHeader($h);
 		$m->addHeader($h);
@@ -315,8 +315,8 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testAddHeaderThrowsWhenHeaderBelongsToDifferentManager()
 	{
-		$m1 = new TTestableHttpHeadersManager();
-		$m2 = new TTestableHttpHeadersManager();
+		$m1 = new TTestHttpHeadersManager();
+		$m2 = new TTestHttpHeadersManager();
 		$h = new TStubHeader();
 		$h->setManager($m1);
 
@@ -326,7 +326,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testHasHeaderReturnsTrueForAddedHeader()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$h = new TStubHeader();
 		$m->addHeader($h);
 		self::assertTrue($m->hasHeader('X-Stub'));
@@ -334,7 +334,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testHasHeaderIsCaseInsensitive()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$h = new TStubHeader();
 		$m->addHeader($h);
 		self::assertTrue($m->hasHeader('x-stub'));
@@ -343,13 +343,13 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testHasHeaderReturnsFalseWhenNotPresent()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		self::assertFalse($m->hasHeader('X-Stub'));
 	}
 
 	public function testHasHeaderByClass()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$h = new TStubHeader();
 		$m->addHeader($h);
 		self::assertTrue($m->hasHeader(TStubHeader::class));
@@ -358,7 +358,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testRemoveHeaderByInstanceReturnsTrueAndRemovesIt()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$h = new TStubHeader();
 		$m->addHeader($h);
 		$result = $m->removeHeader($h);
@@ -368,7 +368,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testRemoveHeaderByNameRemovesAllMatchingHeaders()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$h1 = new TStubHeader();
 		$h2 = new TStubHeader();
 		$m->addHeader($h1);
@@ -380,7 +380,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testRemoveHeaderByNameLeavesOtherHeadersIntact()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$h1 = new TStubHeader();
 		$h2 = new TStubHeader();
 		$other = new TStubHeader();
@@ -397,13 +397,13 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testRemoveHeaderReturnsFalseWhenNotFound()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		self::assertFalse($m->removeHeader('X-Missing'));
 	}
 
 	public function testRemoveHeaderByNameIsCaseInsensitive()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$h = new TStubHeader();
 		$m->addHeader($h);
 		self::assertTrue($m->removeHeader('x-stub'));
@@ -416,7 +416,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testGetHeaderByNameReturnsFirstMatch()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$h1 = new TStubHeader();
 		$h2 = new TStubHeader();
 		$m->addHeader($h1);
@@ -426,13 +426,13 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testGetHeaderByNameReturnsNullWhenMissing()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		self::assertNull($m->getHeaderByName('X-Missing'));
 	}
 
 	public function testGetHeaderByNameIsCaseInsensitive()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$h = new TStubHeader();
 		$m->addHeader($h);
 		self::assertSame($h, $m->getHeaderByName('x-stub'));
@@ -440,7 +440,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testGetHeadersByNameReturnsAllMatches()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$h1 = new TStubHeader();
 		$h2 = new TStubHeader();
 		$other = new TStubHeader();
@@ -456,13 +456,13 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testGetHeadersByNameReturnsEmptyArrayWhenMissing()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		self::assertSame([], $m->getHeadersByName('X-Missing'));
 	}
 
 	public function testGetHeadersByClassReturnsMatchingInstances()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$h1 = new TStubHeader();
 		$ct = new THttpHeaderContentType();
 		$h2 = new TStubHeader();
@@ -477,7 +477,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testGetHeadersByClassReturnsEmptyWhenNoneMatch()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		self::assertSame([], $m->getHeadersByClass(THttpHeaderHsts::class));
 	}
 
@@ -487,42 +487,42 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testSetReportingServiceModeAcceptsFalse()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(false);
 		self::assertFalse($m->getReportingServiceMode());
 	}
 
 	public function testSetReportingServiceModeAcceptsTrue()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(true);
 		self::assertTrue($m->getReportingServiceMode());
 	}
 
 	public function testSetReportingServiceModeAcceptsAutoString()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode('auto');
 		self::assertSame('Auto', $m->getReportingServiceMode());
 	}
 
 	public function testSetReportingServiceModeAutoIsCaseInsensitive()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode('AUTO');
 		self::assertSame('Auto', $m->getReportingServiceMode());
 	}
 
 	public function testSetReportingServiceModeStringTrueCoercedToTrue()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode('true');
 		self::assertTrue($m->getReportingServiceMode());
 	}
 
 	public function testSetReportingServiceModeStringFalseCoercedToFalse()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(true);
 		$m->setReportingServiceMode('false');
 		self::assertFalse($m->getReportingServiceMode());
@@ -530,7 +530,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testSetReportOnlyAcceptsTrue(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportOnly(false);
 		$m->setReportOnly(true);
 		self::assertTrue($m->getReportOnly());
@@ -538,28 +538,28 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testSetReportOnlyAcceptsFalse(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportOnly(false);
 		self::assertFalse($m->getReportOnly());
 	}
 
 	public function testSetReportOnlyStringTrueCoercedToTrue(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportOnly('true');
 		self::assertTrue($m->getReportOnly());
 	}
 
 	public function testSetReportOnlyStringFalseCoercedToFalse(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportOnly('false');
 		self::assertFalse($m->getReportOnly());
 	}
 
 	public function testSetReportOnlyNullRestoresAutoState(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportOnly(true);
 		$m->setReportOnly(null);
 		self::assertNull($m->getReportOnly());
@@ -567,7 +567,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testSetReportOnlyAutoStringRestoresAutoState(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportOnly(true);
 		$m->setReportOnly('auto');
 		self::assertNull($m->getReportOnly());
@@ -575,7 +575,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testSetReportOnlyAutoStringCaseInsensitive(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportOnly(true);
 		$m->setReportOnly('AUTO');
 		self::assertNull($m->getReportOnly());
@@ -587,14 +587,14 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testResolveReportOnlyReturnsTrueWhenExplicitlyTrue(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportOnly(true);
 		self::assertTrue($m->publicResolveReportOnly());
 	}
 
 	public function testResolveReportOnlyReturnsFalseWhenExplicitlyFalse(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportOnly(false);
 		self::assertFalse($m->publicResolveReportOnly());
 	}
@@ -602,7 +602,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 	public function testResolveReportOnlyReturnsTrueInDebugMode(): void
 	{
 		// Auto (null) + Debug mode → true.
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		self::assertNull($m->getReportOnly(), 'pre-condition: default is Auto');
 		$original = self::$app->getMode();
 		self::$app->setMode(TApplicationMode::Debug);
@@ -617,7 +617,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testResolveReportOnlyReturnsFalseInNormalMode(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$original = self::$app->getMode();
 		self::$app->setMode(TApplicationMode::Normal);
 		try {
@@ -631,7 +631,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testResolveReportOnlyReturnsFalseInPerformanceMode(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$original = self::$app->getMode();
 		self::$app->setMode(TApplicationMode::Performance);
 		try {
@@ -645,14 +645,14 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testSetReportingServiceIdPersists()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceId('my-service');
 		self::assertSame('my-service', $m->getReportingServiceId());
 	}
 
 	public function testSetReportingServiceIdAutoIsCaseInsensitive()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceId('AUTO');
 		self::assertSame('Auto', $m->getReportingServiceId());
 
@@ -662,7 +662,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testSetReportingEndpointNamePersists()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingEndpointName('my-endpoint');
 		self::assertSame('my-endpoint', $m->getReportingEndpointName());
 	}
@@ -673,7 +673,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testLoadDefaultHeadersAddsContentTypeWhenAbsent()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		self::assertFalse($m->hasHeader(THttpHeaderName::ContentType));
 		$m->publicLoadDefaultHeaders();
 		self::assertTrue($m->hasHeader(THttpHeaderName::ContentType));
@@ -681,7 +681,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testLoadDefaultHeadersDoesNotAddContentTypeWhenAlreadyPresent()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$ct = new THttpHeaderContentType();
 		$m->addHeader($ct);
 		$m->publicLoadDefaultHeaders();
@@ -695,7 +695,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testInitNullRunsFullPipelineAndAddsDefaultContentTypeHeader(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setId('test-init-null-manager');
 		// Must not throw; null → normalizeConfig → [] → loadHeaderClasses(noop) →
 		// loadHeaders(noop) → loadDefaultHeaders (adds Content-Type) →
@@ -716,20 +716,20 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testNormalizeConfigReturnsArrayAsIs(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$input = ['headers' => [['properties' => ['HeaderName' => 'X-Foo']]]];
 		self::assertSame($input, $m->publicNormalizeConfig($input));
 	}
 
 	public function testNormalizeConfigReturnsEmptyArrayForNull(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		self::assertSame([], $m->publicNormalizeConfig(null));
 	}
 
 	public function testNormalizeConfigReturnsEmptyArrayForScalar(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		self::assertSame([], $m->publicNormalizeConfig('raw-string'));
 	}
 
@@ -741,7 +741,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 			. '<headerclass name="X-Custom" class="' . TStubHeader::class . '" />'
 			. '</module>'
 		);
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$result = $m->publicNormalizeConfig($doc);
 		self::assertArrayHasKey('headerclasses', $result);
 		self::assertArrayHasKey('headers', $result);
@@ -759,7 +759,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 			. '<headerclass name="X-Beta"  class="' . THttpHeader::class . '" />'
 			. '</module>'
 		);
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$result = $m->publicConfigToArray($doc);
 
 		self::assertCount(2, $result['headerclasses']);
@@ -777,7 +777,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 			. '<header HeaderName="X-Custom" HeaderValue="val" />'
 			. '</module>'
 		);
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$result = $m->publicConfigToArray($doc);
 
 		self::assertCount(1, $result['headers']);
@@ -798,7 +798,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 			. '<header class="' . TStubHeader::class . '" HeaderValue="max-age=31536000" />'
 			. '</module>'
 		);
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$result = $m->publicConfigToArray($doc);
 
 		$entry = $result['headers'][0];
@@ -810,7 +810,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 	{
 		$doc = new \Prado\Xml\TXmlDocument();
 		$doc->loadFromString('<module></module>');
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$result = $m->publicConfigToArray($doc);
 
 		self::assertSame([], $result['headerclasses']);
@@ -829,7 +829,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 			. '<header HeaderName="X-Custom" HeaderValue="val" />'
 			. '</module>'
 		);
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->publicLoadHeaders($doc);
 
 		self::assertCount(1, $m->getHeaders());
@@ -846,7 +846,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 			. '<header HeaderName="' . THttpHeaderName::StrictTransportSecurity . '" HeaderValue="max-age=31536000" />'
 			. '</module>'
 		);
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->publicLoadHeaders($doc);
 
 		self::assertInstanceOf(THttpHeaderHsts::class, $m->getHeaders()[0]);
@@ -862,7 +862,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 			. '</header>'
 			. '</module>'
 		);
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->publicLoadHeaders($doc);
 
 		self::assertCount(1, $m->getHeaders());
@@ -881,7 +881,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 			. '<header HeaderName="X-Content-Type-Options" HeaderValue="nosniff" />'
 			. '</module>'
 		);
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->publicLoadHeaders($doc);
 
 		self::assertCount(2, $m->getHeaders());
@@ -895,7 +895,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testLoadHeaderClassesWithNullIsNoop(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$before = $m->getNameClassMap();
 		$m->publicLoadHeaderClasses(null);
 		self::assertSame($before, $m->getNameClassMap());
@@ -903,7 +903,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testLoadHeaderClassesWithEmptyArrayIsNoop(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$before = $m->getNameClassMap();
 		$m->publicLoadHeaderClasses([]);
 		self::assertSame($before, $m->getNameClassMap());
@@ -911,7 +911,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testLoadHeaderClassesSingleEntryRegistered(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->publicLoadHeaderClasses([
 			'headerclasses' => [
 				['name' => 'X-Custom', 'class' => TStubHeader::class],
@@ -922,7 +922,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testLoadHeaderClassesMultipleEntriesRegistered(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->publicLoadHeaderClasses([
 			'headerclasses' => [
 				['name' => 'X-Alpha', 'class' => TStubHeader::class],
@@ -936,7 +936,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testLoadHeaderClassesOverridesExistingEntry(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		// HSTS is in the default map; override it with the stub.
 		$m->publicLoadHeaderClasses([
 			'headerclasses' => [
@@ -948,7 +948,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testLoadHeaderClassesThrowsWhenNameMissing(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$this->expectException(TConfigurationException::class);
 		$m->publicLoadHeaderClasses([
 			'headerclasses' => [
@@ -959,7 +959,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testLoadHeaderClassesThrowsWhenClassMissing(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$this->expectException(TConfigurationException::class);
 		$m->publicLoadHeaderClasses([
 			'headerclasses' => [
@@ -973,7 +973,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 		// Verifies the init() call order: loadHeaderClasses() runs before loadHeaders(),
 		// so a class registered via 'headerclasses' is available for auto-promotion
 		// when the 'headers' list is processed.
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->publicLoadHeaderClasses([
 			'headerclasses' => [
 				['name' => 'X-Stub', 'class' => TStubHeader::class],
@@ -994,7 +994,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testLoadHeaderClassesXmlNullIsNoop(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$before = $m->getNameClassMap();
 		$m->publicLoadHeaderClasses(null);
 		self::assertSame($before, $m->getNameClassMap());
@@ -1004,7 +1004,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 	{
 		$doc = new \Prado\Xml\TXmlDocument();
 		$doc->loadFromString('<module><headerclass name="X-Custom" class="' . TStubHeader::class . '" /></module>');
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->publicLoadHeaderClasses($doc);
 		self::assertSame(TStubHeader::class, $m->getNameClassMap()['x-custom']);
 	}
@@ -1018,7 +1018,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 			'<headerclass name="X-Beta"  class="' . THttpHeader::class . '" />' .
 			'</module>'
 		);
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->publicLoadHeaderClasses($doc);
 		$map = $m->getNameClassMap();
 		self::assertSame(TStubHeader::class, $map['x-alpha']);
@@ -1029,7 +1029,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 	{
 		$doc = new \Prado\Xml\TXmlDocument();
 		$doc->loadFromString('<module><headerclass class="' . TStubHeader::class . '" /></module>');
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$this->expectException(TConfigurationException::class);
 		$m->publicLoadHeaderClasses($doc);
 	}
@@ -1038,7 +1038,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 	{
 		$doc = new \Prado\Xml\TXmlDocument();
 		$doc->loadFromString('<module><headerclass name="X-Custom" /></module>');
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$this->expectException(TConfigurationException::class);
 		$m->publicLoadHeaderClasses($doc);
 	}
@@ -1049,21 +1049,21 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testLoadHeadersWithNullIsNoop()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->publicLoadHeaders(null);
 		self::assertCount(0, $m->getHeaders());
 	}
 
 	public function testLoadHeadersWithEmptyArrayIsNoop()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->publicLoadHeaders([]);
 		self::assertCount(0, $m->getHeaders());
 	}
 
 	public function testLoadHeadersCreatesPlainTHttpHeader()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->publicLoadHeaders([
 			'headers' => [
 				['properties' => ['HeaderName' => 'X-Custom', 'HeaderValue' => 'val']],
@@ -1078,7 +1078,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testLoadHeadersPromotesHstsViaNameClassMap()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->publicLoadHeaders([
 			'headers' => [
 				[
@@ -1095,7 +1095,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testLoadHeadersPromotesContentTypeViaNameClassMap()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->publicLoadHeaders([
 			'headers' => [
 				[
@@ -1112,7 +1112,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 	{
 		// The name→class map lookup must be case-insensitive, consistent with all
 		// other header-name comparisons in the manager.
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->publicLoadHeaders([
 			'headers' => [
 				[
@@ -1129,7 +1129,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testLoadHeadersWithExplicitClassDoesNotPromote()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		// TStubHeader is not the default mapping class, so specifying it explicitly
 		// must bypass the name→class promotion logic and leave the instance as-is.
 		// TStubHeader has no setHeaderName(), so only HeaderValue is passed.
@@ -1150,7 +1150,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testLoadHeadersThrowsOnNonHeaderClass()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$this->expectException(TConfigurationException::class);
 		$m->publicLoadHeaders([
 			'headers' => [
@@ -1161,7 +1161,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testLoadHeadersCallsInitOnEachHeader()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		// Register TStubHeader in the name→class map so it can be promoted.
 		$m->registerHeaderClass('X-Stub', TStubHeader::class);
 		$m->publicLoadHeaders([
@@ -1182,7 +1182,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testInitCompleteCallsInitCompleteOnAllHeaders()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$h1 = new TStubHeader();
 		$h2 = new TStubHeader();
 		$m->addHeader($h1);
@@ -1198,7 +1198,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testFinalizeHeadersCallsFinalizeOnAllHeaders()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		// ReportingServiceMode=false so finalizeReporterService is a no-op.
 		$h1 = new TStubHeader();
 		$h2 = new TStubHeader();
@@ -1215,20 +1215,20 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testGetIsHandledDefaultsFalse(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		self::assertFalse($m->getIsHandled());
 	}
 
 	public function testSetIsHandledTrue(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setIsHandled(true);
 		self::assertTrue($m->getIsHandled());
 	}
 
 	public function testSetIsHandledFalse(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setIsHandled(true);
 		$m->setIsHandled(false);
 		self::assertFalse($m->getIsHandled());
@@ -1236,14 +1236,14 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testSetIsHandledTrueString(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setIsHandled('true');
 		self::assertTrue($m->getIsHandled());
 	}
 
 	public function testSetIsHandledFalseString(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setIsHandled('true');
 		$m->setIsHandled('false');
 		self::assertFalse($m->getIsHandled());
@@ -1251,7 +1251,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testSetIsHandledOneString(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setIsHandled('1');
 		self::assertTrue($m->getIsHandled());
 	}
@@ -1262,7 +1262,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testEnsureHeadersSentSendsOnce(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$h = new TStubHeader();
 		$m->addHeader($h);
 		$m->ensureHeadersSent();
@@ -1271,7 +1271,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testEnsureHeadersSentIsIdempotent(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$h = new TStubHeader();
 		$m->addHeader($h);
 		$m->ensureHeadersSent();
@@ -1282,7 +1282,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testEnsureHeadersSentEmitsHeaderStrings(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$h = new TStubHeader();
 		$m->addHeader($h);
 		$m->ensureHeadersSent();
@@ -1291,7 +1291,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testEnsureHeadersSentIsNoopWhenIsHandledTrue(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->addHeader(new TStubHeader());
 		$m->setIsHandled(true);
 		$m->ensureHeadersSent();
@@ -1303,7 +1303,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testEnsureHeadersSentSendsAfterIsHandledResetToFalse(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->addHeader(new TStubHeader());
 		$m->setIsHandled(true);
 		$m->ensureHeadersSent();
@@ -1319,7 +1319,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 	{
 		// IsHandled suppresses the pipeline; HeadersSent tracks internal pipeline completion.
 		// The two flags are independent — setting IsHandled must not touch HeadersSent.
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		self::assertFalse($m->getHeadersSent());
 		$m->setIsHandled(true);
 		self::assertFalse($m->getHeadersSent());
@@ -1331,7 +1331,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testensureReportingServiceRegisteredIsNoopWhenModeFalse()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(false);
 		// Must not throw even without a real TApplication.
 		$m->ensureReportingServiceRegistered();
@@ -1344,7 +1344,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testensureReportingServiceRegisteredIsNoopWhenAutoAndServiceAlreadyExists()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(true);
 		$m->setReportOnly(false);
 		$m->setId('headers');
@@ -1374,7 +1374,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 		// When Auto mode finds an existing TCspReportingService, it must update
 		// ReportingServiceId to the found service's actual registered ID so that
 		// finalizeReporterService() can use it directly without a second class scan.
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(true);
 		$m->setReportOnly(false);
 		$m->setId('headers');
@@ -1399,7 +1399,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testensureReportingServiceRegisteredRegistersServiceWhenAutoAndNoneExists()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(true);
 		$m->setReportOnly(false);
 		$m->setId('headers');
@@ -1426,7 +1426,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testensureReportingServiceRegisteredUsesLiteralServiceId()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(true);
 		$m->setReportOnly(false);
 		$m->setReportingServiceId('my-csp-service');
@@ -1452,7 +1452,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testensureReportingServiceRegisteredIsNoopWhenLiteralIdAlreadyRegistered()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(true);
 		$m->setReportOnly(false);
 		$m->setReportingServiceId('my-csp-service');
@@ -1481,7 +1481,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 		// When the literal ReportingServiceId is already registered but points to a
 		// class that is NOT a TCspReportingService subclass, ensureReportingServiceRegistered()
 		// must emit a WARNING-level log entry and still return without throwing.
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(true);
 		$m->setReportOnly(false);
 		$m->setReportingServiceId('wrong-class-service');
@@ -1523,7 +1523,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 	{
 		// ReportingServiceMode='Auto' must register the service when none exists and
 		// ReportOnly resolves to true (Debug mode makes the app auto-report-only).
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode('Auto');
 		$m->setId('headers');
 
@@ -1552,7 +1552,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 	{
 		// The entry stored in the service registry must carry AutoRegistered=true
 		// as an init-property so the service knows it was auto-created.
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(true);
 		$m->setReportOnly(false);
 		$m->setId('headers');
@@ -1580,7 +1580,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 	{
 		// ReportingServiceMode='Auto' string — if the service already exists, no second
 		// entry must be added.
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode('Auto');
 		$m->setId('headers');
 
@@ -1610,7 +1610,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 	{
 		// mode=false with no TCspReportingService in the registry — no sentinel
 		// replacement and no Reporting-Endpoints header must be added.
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(false);
 
 		$ref = new ReflectionProperty(TApplication::class, '_services');
@@ -1632,7 +1632,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 	{
 		// mode=false + TCspReportingService already registered → REPORT_URI sentinel
 		// in a CSP header must still be replaced with the real reporter URL.
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(false);
 		$m->fakeReporterUrl = 'https://example.com/csp-report';
 
@@ -1671,7 +1671,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 	{
 		// mode=false + TCspReportingService already registered → REPORT_URI sentinel
 		// in a Reporting-Endpoints header must still be replaced with the real URL.
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(false);
 		$m->fakeReporterUrl = 'https://example.com/csp-report';
 
@@ -1709,7 +1709,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 	{
 		// mode=false must never inject report-to, convert report-only, or create a
 		// Reporting-Endpoints header — even when a TCspReportingService is registered.
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(false);
 		$m->fakeReporterUrl = 'https://example.com/csp-report';
 
@@ -1747,7 +1747,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testFinalizeReporterServiceAddsReportingEndpointsHeaderWhenNonePresent(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(true);
 		$m->setReportOnly(false);
 		$m->fakeReporterUrl = 'https://example.com/csp-report';
@@ -1763,7 +1763,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testFinalizeReporterServiceDeclaresEndpointWithCorrectUrl(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(true);
 		$m->setReportOnly(false);
 		$m->fakeReporterUrl = 'https://example.com/csp-report';
@@ -1783,7 +1783,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testFinalizeReporterServiceUsesExistingReportingEndpointsHeader(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(true);
 		$m->setReportOnly(false);
 		$m->fakeReporterUrl = 'https://example.com/csp-report';
@@ -1805,7 +1805,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testFinalizeReporterServiceDoesNotAddEndpointWhenAlreadyDeclared(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(true);
 		$m->setReportOnly(false);
 		$m->fakeReporterUrl = 'https://example.com/csp-report';
@@ -1832,7 +1832,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testFinalizeReporterServiceInjectsReportToIntoCspHeader(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(true);
 		$m->setReportOnly(false);
 		$m->fakeReporterUrl = 'https://example.com/csp-report';
@@ -1853,7 +1853,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testFinalizeReporterServiceDoesNotOverwriteExistingReportTo(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(true);
 		$m->setReportOnly(false);
 		$m->fakeReporterUrl = 'https://example.com/csp-report';
@@ -1872,7 +1872,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testFinalizeReporterServiceInjectsReportToIntoAllCspHeaders(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(true);
 		$m->setReportOnly(false);
 		$m->fakeReporterUrl = 'https://example.com/csp-report';
@@ -1896,7 +1896,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testFinalizeReporterServiceAutoModeConvertsEnforcingCspToReportOnly(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(true);
 		$m->setReportOnly(true);
 		$m->fakeReporterUrl = 'https://example.com/csp-report';
@@ -1915,7 +1915,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testFinalizeReporterServiceAutoModeDoesNotChangeAlreadyReportOnlyCsp(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(true);
 		$m->setReportOnly(true);
 		$m->fakeReporterUrl = 'https://example.com/csp-report';
@@ -1936,7 +1936,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 	{
 		// ReportingServiceMode=true + ReportOnly=false must inject report-to but must NOT
 		// convert enforcing headers to report-only.
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(true);
 		$m->setReportOnly(false);
 		$m->fakeReporterUrl = 'https://example.com/csp-report';
@@ -1962,8 +1962,8 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 	{
 		// When a CSP has the REPORT_URI sentinel, finalize must replace it with
 		// the actual reporter URL. Use a literal service ID to control the exact URL
-		// (TTestableHttpHeadersManager::buildReporterUrl appends serviceId as a path segment).
-		$m = new TTestableHttpHeadersManager();
+		// (TTestHttpHeadersManager::buildReporterUrl appends serviceId as a path segment).
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(true);
 		$m->setReportOnly(false);
 		$m->setReportingServiceId('my-reporter');
@@ -1986,7 +1986,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 	public function testFinalizeReporterServiceDoesNotOverwriteDeveloperReportUri(): void
 	{
 		// A developer-supplied report-uri (not the sentinel) must not be touched.
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(true);
 		$m->setReportOnly(false);
 		$m->fakeReporterUrl = 'https://example.com/csp-report';
@@ -2010,7 +2010,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 		// In Auto/Auto mode, the presence of the REPORT_URI sentinel must be enough
 		// to trigger wiring even when there is no report-to directive.
 		// ServiceMode and ServiceId are both 'Auto' by default.
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->fakeReporterUrl = 'https://example.com/csp-report';
 
 		$csp = new THttpHeaderCsp();
@@ -2042,7 +2042,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 		// When ReportingServiceId is set to a literal (not 'Auto'), that literal ID
 		// must be forwarded to buildReporterUrl — and must therefore appear in the
 		// resulting endpoint URL (the fake doubles-up serviceId as a path segment).
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(true);
 		$m->setReportOnly(false);
 		$m->setReportingServiceId('my-custom-reporter');
@@ -2063,7 +2063,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testValidateCoepCoopPairIsNoOpWhenNeitherPresent(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$logger = Prado::getLogger();
 		$logger->deleteLogs();
 		$m->publicValidateCoepCoopPair();
@@ -2073,7 +2073,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testValidateCoepCoopPairIsNoOpWhenBothPresent(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$coep = new TStubHeader();
 		$coep->name = THttpHeaderName::CrossOriginEmbedderPolicy;
 		$coop = new TStubHeader();
@@ -2089,7 +2089,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testValidateCoepCoopPairWarnsWhenCoepPresentWithoutCoop(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$coep = new TStubHeader();
 		$coep->name = THttpHeaderName::CrossOriginEmbedderPolicy;
 		$m->addHeader($coep);
@@ -2103,7 +2103,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testValidateCoepCoopPairWarnsWhenCoopPresentWithoutCoep(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$coop = new TStubHeader();
 		$coop->name = THttpHeaderName::CrossOriginOpenerPolicy;
 		$m->addHeader($coop);
@@ -2121,14 +2121,14 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testValidateFrameAncestorsXFrameOptionsIsNoOpWhenNoCsp(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->publicValidateFrameAncestorsXFrameOptions();
 		$this->addToAssertionCount(1);
 	}
 
 	public function testValidateFrameAncestorsXFrameOptionsIsNoOpWhenXFrameOptionsPresent(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$xfo = new TStubHeader();
 		$xfo->name = THttpHeaderName::XFrameOptions;
 		$m->addHeader($xfo);
@@ -2143,7 +2143,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testValidateFrameAncestorsXFrameOptionsWarnsWhenFrameAncestorsWithoutXfo(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$csp = new THttpHeaderCsp();
 		$csp->addPolicy(TCspDirective::FrameAncestors, "'none'");
 		$m->addHeader($csp);
@@ -2159,7 +2159,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testValidateFrameAncestorsXFrameOptionsIsNoOpWhenCspHasNoFrameAncestors(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$csp = new THttpHeaderCsp();
 		$csp->addPolicy(TCspDirective::DefaultSrc, "'self'");
 		$m->addHeader($csp);
@@ -2175,7 +2175,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testValidateHeadersIsCalledByFinalizeHeaders(): void
 	{
-		$m = new class extends TTestableHttpHeadersManager {
+		$m = new class extends TTestHttpHeadersManager {
 			public bool $validated = false;
 			protected function validateHeaders(): void
 			{
@@ -2191,7 +2191,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 		// Validation runs after per-header finalizeHeader() so it sees the final
 		// header state (e.g. sandbox already stripped, report-to already injected).
 		$order = [];
-		$m = new class ($order) extends TTestableHttpHeadersManager {
+		$m = new class ($order) extends TTestHttpHeadersManager {
 			public function __construct(public array &$log) { parent::__construct(); }
 			protected function validateHeaders(): void { $this->log[] = 'validate'; }
 		};
@@ -2215,7 +2215,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 		// The union type bool|string|null coerces integer to string in PHP 8+
 		// (string is preferred over bool in the coercion order), so 0 → "0" and
 		// 1 → "1". TPropertyValue::ensureBoolean("0") → false, ensureBoolean("1") → true.
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportOnly(0);
 		self::assertFalse($m->getReportOnly());
 
@@ -2231,7 +2231,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 	{
 		// When getApplication() returns null (no TApplication in context),
 		// resolveReportOnly() must short-circuit and return false.
-		$m = new class extends TTestableHttpHeadersManager {
+		$m = new class extends TTestHttpHeadersManager {
 			public function getApplication()
 			{
 				return null;
@@ -2250,7 +2250,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 		// Mode=Auto (default), serviceId=Auto (default), no CSP headers and
 		// resolveReportOnly()=false (Normal app mode) → early return with no
 		// Reporting-Endpoints header added.
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$original = self::$app->getMode();
 		self::$app->setMode(\Prado\TApplicationMode::Normal);
 		try {
@@ -2273,7 +2273,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 		// When mode='Auto', reportOnly=false, and no TCspReportingService is registered,
 		// ensureReportingServiceRegistered() must neither register a new service nor
 		// change ReportingServiceId from 'Auto'.
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportOnly(false);
 
 		$ref = new \ReflectionProperty(TApplication::class, '_services');
@@ -2303,7 +2303,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 		// loadDefaultHeaders() guards with hasHeader(); a second call must not add
 		// a second Content-Type header. Tested via the public wrapper to avoid
 		// triggering the event-handler attachment that init() performs.
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->publicLoadDefaultHeaders();
 		$m->publicLoadDefaultHeaders();
 		self::assertCount(1, $m->getHeadersByClass(THttpHeaderContentType::class),
@@ -2318,7 +2318,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 	{
 		// An endpoint registered with a blank URL stores the REPORT_URI sentinel;
 		// finalizeReporterService() must replace it with the live reporter URL.
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(true);
 		$m->setReportOnly(false);
 		$m->setReportingServiceId('my-reporter');
@@ -2345,7 +2345,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 	public function testFinalizeReporterServiceDoesNotOverwriteRealEndpointUrl(): void
 	{
 		// An endpoint with a real URL must be left untouched.
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(true);
 		$m->setReportOnly(false);
 		$m->setReportingServiceId('my-reporter');
@@ -2369,7 +2369,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 	{
 		// In Auto/Auto mode (no CSP headers, no reportOnly), a REPORT_URI sentinel
 		// in a Reporting-Endpoints header must itself trigger wiring.
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->fakeReporterUrl = 'https://example.com/csp-report';
 		$original = self::$app->getMode();
 		self::$app->setMode(\Prado\TApplicationMode::Normal);
@@ -2392,7 +2392,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 	{
 		// One real URL endpoint and one sentinel endpoint in the same header;
 		// only the sentinel must be replaced.
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(true);
 		$m->setReportOnly(false);
 		$m->setReportingServiceId('my-reporter');
@@ -2448,14 +2448,14 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testSetReportOnlyDirectStoresTrueValue(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->publicSetReportOnlyDirect(true);
 		self::assertTrue($m->publicGetReportOnlyDirect());
 	}
 
 	public function testSetReportOnlyDirectStoresFalseValue(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->publicSetReportOnlyDirect(true);
 		$m->publicSetReportOnlyDirect(false);
 		self::assertFalse($m->publicGetReportOnlyDirect());
@@ -2463,7 +2463,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testSetReportOnlyDirectStoresNullRestoringAutoState(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->publicSetReportOnlyDirect(true);
 		$m->publicSetReportOnlyDirect(null);
 		self::assertNull($m->publicGetReportOnlyDirect(),
@@ -2472,7 +2472,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testGetReportOnlyDirectMatchesGetReportOnly(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportOnly(true);
 		self::assertSame($m->getReportOnly(), $m->publicGetReportOnlyDirect(),
 			'getReportOnlyDirect() must return the same value as getReportOnly()');
@@ -2484,7 +2484,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testRemoveHeaderByInstanceReturnsFalseWhenNotInList(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$h = new TStubHeader();
 		// NOT added to $m.
 		self::assertFalse($m->removeHeader($h),
@@ -2497,7 +2497,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testHasHeaderByParentClassReturnsTrueForSubclassInstance(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$h = new TStubHeader();
 		$m->addHeader($h);
 		self::assertTrue($m->hasHeader(THttpHeaderBase::class),
@@ -2506,7 +2506,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testGetHeadersByClassReturnsSubclassInstancesForParentClass(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$h1 = new TStubHeader();
 		$h2 = new THttpHeader();
 		$m->addHeader($h1);
@@ -2522,7 +2522,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testGetHeadersByNameIsCaseInsensitive(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$h = new TStubHeader();
 		$h->name = 'X-Stub';
 		$m->addHeader($h);
@@ -2541,7 +2541,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testSetHeadersDirectReplacesBackingList(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$h1 = new TStubHeader();
 		$h2 = new TStubHeader();
 		$m->addHeader($h1);
@@ -2559,7 +2559,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testEnsureNameClassMapDoesNotDoubleMergeDefaultsOnRepeatedCalls(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->ensureNameClassMap();
 		$mapAfterFirst = $m->getNameClassMap();
 		$m->ensureNameClassMap();
@@ -2574,7 +2574,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testLoadHeadersDoesNotPromoteWhenNameNotInMap(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->publicLoadHeaders([
 			'headers' => [['properties' => ['HeaderName' => 'X-Unknown-Header', 'HeaderValue' => 'v']]],
 		]);
@@ -2586,7 +2586,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testLoadHeadersWithNoHeaderNamePropertyDoesNotCrash(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->publicLoadHeaders([
 			'headers' => [['class' => TStubHeader::class, 'properties' => []]],
 		]);
@@ -2601,7 +2601,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testRemoveHeaderByNameReindexesBackingArray(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$h1 = new TStubHeader();
 		$h1->name = 'X-One';
 		$h2 = new TStubHeader();
@@ -2626,7 +2626,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testEnsureHeadersSentSetsHeadersSentToTrue(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(false);
 		self::assertFalse($m->getHeadersSent(), 'pre-condition: not sent yet');
 		$m->ensureHeadersSent();
@@ -2641,7 +2641,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 	public function testFinalizeHeadersCallsReporterServiceBeforePerHeaderFinalize(): void
 	{
 		$order = [];
-		$m = new class ($order) extends TTestableHttpHeadersManager {
+		$m = new class ($order) extends TTestHttpHeadersManager {
 			public function __construct(public array &$log) { parent::__construct(); }
 			protected function finalizeReporterService(): void { $this->log[] = 'reporter'; }
 		};
@@ -2662,7 +2662,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 	public function testValidateHeadersCallsBothSubValidators(): void
 	{
 		$called = [];
-		$m = new class ($called) extends TTestableHttpHeadersManager {
+		$m = new class ($called) extends TTestHttpHeadersManager {
 			public function __construct(public array &$log) { parent::__construct(); }
 			protected function validateCoepCoopPair(): void { $this->log[] = 'coep'; }
 			protected function validateFrameAncestorsXFrameOptions(): void { $this->log[] = 'frame'; }
@@ -2678,7 +2678,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testHeadersSentDoesNotAffectIsHandledFlag(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(false);
 		$m->ensureHeadersSent();
 		self::assertTrue($m->getHeadersSent(), 'pre-condition: headers sent');
@@ -2688,7 +2688,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testIsHandledSuppressesHeadersSent(): void
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setIsHandled(true);
 		$m->ensureHeadersSent();
 		self::assertFalse($m->getHeadersSent(),
@@ -2704,7 +2704,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 	{
 		// serviceId is already set to a literal (not 'Auto') — the safety-net
 		// class-scan branch is skipped and the literal is forwarded to buildReporterUrl.
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		// Leave mode as 'Auto' but set a concrete service ID.
 		$m->setReportingServiceId('explicit-reporter');
 		$m->fakeReporterUrl = 'https://example.com/csp-report';
