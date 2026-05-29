@@ -11,45 +11,55 @@
 namespace Prado;
 
 /**
- * ICoercible interface.
+ * ICoercible interface
  *
- * ICoercible lets a class participate in {@see \Prado\TPropertyValue::coerceToType}
- * as a self-constructing target for a typed property's union member.  When the
- * coercion chain reaches a union member that implements this interface,
- * {@see coerceFromValue()} is given the incoming value and may return either a
- * fully-constructed instance of the class or `null` to decline.
+ * ICoercible lets any class act as a self-constructing target inside
+ * {@see \Prado\TPropertyValue::coerceToType}'s coercion chain.  When that
+ * chain reaches a non-builtin union member implementing this interface,
+ * `TPropertyValue` first checks whether `$value` already is an instance of
+ * the member and, if so, returns it untouched; otherwise it calls
+ * {@see coerceFromValue()}, which constructs and returns an instance from a
+ * richer input form — a config array, a parsed string, an int code — or
+ * returns `null` to decline.  The two halves of that contract — when to
+ * decline and how decliners coexist in a union — are detailed below.
  *
  * ## Declining vs. throwing
  *
- * `coerceFromValue()` returns `null` to decline an input it cannot interpret;
- * the coercion chain then tries the next union member.  A returned `null` is
- * *not* a failure — it is the contract for "this is not my input."  Throw a
- * {@see \Prado\Exceptions\TInvalidDataValueException} only when the input is
- * shape-recognized but semantically broken (for example, the right array keys
- * but values out of range).  Never let a foreign exception escape.
+ * A `null` return is not failure; it tells the chain "this is not my input"
+ * and lets the next union member have a turn.  That is how a `TPoint|string`
+ * property, or a union of several coercibles, can share one setter without
+ * fighting over inputs.  An implementation should throw
+ * {@see \Prado\Exceptions\TInvalidDataValueException} only when an input is
+ * shape-recognized but semantically broken — the right array keys with
+ * out-of-range values, a parseable string whose numbers are nonsensical —
+ * and should never let an unrelated exception escape.
  *
  * ## Union member ordering
  *
- * Inside a union type the implementers are tried in PHP reflection order (the
- * declaration order on the property).  The first non-`null` result wins, so a
- * class can be placed earlier in the union to claim ambiguous inputs ahead of
- * later members.  Classes that also implement {@see \Prado\IEnumerable},
- * `\UnitEnum`, or `\BackedEnum` are tried *before* the enum-name validation
- * step, so a coercer can override pure name matching when it has a richer
- * understanding of the input.
+ * When several coercibles share a union, they are tried in PHP reflection
+ * (declaration) order, and the first identity match or non-`null` factory
+ * return wins.  Placing a class earlier in the union therefore lets it claim
+ * ambiguous inputs ahead of later members.  The pass runs *before* enum-name
+ * validation, so a class that also implements {@see \Prado\IEnumerable},
+ * `\UnitEnum`, or `\BackedEnum` can override pure name matching with richer
+ * logic when it has it.
  *
  * ## Example
  *
  * ```php
  * class TPoint implements \Prado\ICoercible
  * {
- *     public function __construct(int $x, int $y) {}
+ *     public int $x;
+ *     public int $y;
+ *
+ *     public function __construct(int $x, int $y)
+ *     {
+ *         $this->x = $x;
+ *         $this->y = $y;
+ *     }
  *
  *     public static function coerceFromValue(mixed $value): ?static
  *     {
- *         if ($value instanceof static) {
- *             return $value;
- *         }
  *         if (is_array($value) && isset($value['x'], $value['y'])) {
  *             return new static((int) $value['x'], (int) $value['y']);
  *         }
@@ -60,7 +70,8 @@ namespace Prado;
  *     }
  * }
  *
- * // Property typed as `TPoint|string` accepts '3,4', ['x'=>3,'y'=>4], or a TPoint.
+ * // A property typed `TPoint|string` accepts '3,4', ['x'=>3,'y'=>4], or a
+ * // TPoint instance (identity pass-through, no factory call).
  * ```
  *
  * @author Brad Anderson <belisoful@icloud.com>
@@ -70,17 +81,13 @@ interface ICoercible
 {
 	/**
 	 * Constructs an instance of the implementing class from `$value`, or
-	 * returns `null` to decline.
+	 * returns `null` to decline so the coercion chain can try the next union
+	 * member.  See the class docblock for the decline-vs-throw contract.
 	 *
-	 * Returning `null` lets {@see \Prado\TPropertyValue::coerceToType} fall
-	 * through to the next union member.  Throw
-	 * {@see \Prado\Exceptions\TInvalidDataValueException} only for inputs that
-	 * are recognized but semantically invalid (range, parse, etc.); never
-	 * leak unrelated exceptions.
-	 *
-	 * Implementations should accept an instance of `static` as a pass-through
-	 * so a property of this type accepts both freshly-coerced inputs and
-	 * already-constructed instances uniformly.
+	 * Because {@see \Prado\TPropertyValue} short-circuits the identity
+	 * pass-through before invoking this method, `$value` is guaranteed not
+	 * to be an instance of the implementing class — no `instanceof static`
+	 * guard is needed.
 	 *
 	 * @param mixed $value the incoming value to coerce.
 	 * @return ?static an instance of the implementing class on success, or
