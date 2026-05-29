@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<resource pattern="xml-users" class="DoStyleResource" />
+	<resource pattern="xml-users/{id}" class="DoStyleResource" parameters.id="\d+" />
+</resources>

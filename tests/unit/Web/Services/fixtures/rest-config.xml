@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rest>
+	<resource pattern="cfg-users" class="DoStyleResource" />
+	<group prefix="v2/" enabled="true">
+		<resource pattern="things" class="DoStyleResource" />
+	</group>
+	<group prefix="debug/" enabled="Debug">
+		<resource pattern="dump" class="DoStyleResource" />
+	</group>
+	<group prefix="ext/" groupfile="RestFixtures.rest-php" />
+</rest>
