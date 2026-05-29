@@ -22,6 +22,8 @@ if (!class_exists('TTestableHttpHeadersManager', false)) {
 	require_once __DIR__ . '/HttpHeaders/TTestableHttpHeadersManager.php';
 }
 
+require_once __DIR__ . '/../Harness/Traits/TOutputBufferRestorationTrait.php';
+
 /**
  * Integration tests for the THttpResponse ↔ THttpHeadersManager wiring.
  *
@@ -30,6 +32,10 @@ if (!class_exists('TTestableHttpHeadersManager', false)) {
  */
 class THttpResponseHeadersManagerIntegrationTest extends PHPUnit\Framework\TestCase
 {
+	use TOutputBufferRestorationTrait {
+		setUpBeforeClass as outputSetup;
+	}
+
 	private static TApplication $app;
 
 	// =========================================================================
@@ -38,7 +44,31 @@ class THttpResponseHeadersManagerIntegrationTest extends PHPUnit\Framework\TestC
 
 	public static function setUpBeforeClass(): void
 	{
+		// Trait alias runs the eager THttpResponse init + OB balance; this
+		// override only needs to resolve the local $app reference.
+		static::outputSetup();
 		self::$app = Prado::getApplication();
+	}
+
+	/**
+	 * Records the entry-time OB depth.  Defensive only — the framework's
+	 * one-shot buffer is already closed in {@see setUpBeforeClass()}, so no
+	 * test in this class is currently expected to leave the OB level higher
+	 * than it entered.  The hook is kept as a safety net in case a future
+	 * test invokes a code path that opens a buffer mid-test.
+	 */
+	protected function setUp(): void
+	{
+		$this->saveOutputBufferLevel();
+	}
+
+	/**
+	 * Restores the OB depth captured in {@see setUp()}, discarding any
+	 * buffers opened during the test.  See {@see setUp()} for context.
+	 */
+	protected function tearDown(): void
+	{
+		$this->restoreOutputBufferLevel();
 	}
 
 	// =========================================================================
