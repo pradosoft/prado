@@ -15,6 +15,7 @@ use Prado\IO\HttpClient\THttpClientResponse;
 use Prado\IO\HttpClient\THttpClient;
 use Prado\TApplicationComponent;
 use Prado\TPropertyValue;
+use Prado\Web\THttpHeaderName;
 
 /**
  * TRestClient class
@@ -288,8 +289,8 @@ abstract class TRestClient extends TApplicationComponent
 		if (is_string($body)) {
 			return $body;
 		}
-		if (!$this->hasHeaderCaseInsensitive($headers, 'Content-Type')) {
-			$headers['Content-Type'] = 'application/json';
+		if (!$this->hasHeaderCaseInsensitive($headers, THttpHeaderName::ContentType)) {
+			$headers[THttpHeaderName::ContentType] = 'application/json';
 		}
 		return (string) json_encode($body);
 	}

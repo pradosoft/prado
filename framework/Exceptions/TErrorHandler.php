@@ -13,6 +13,7 @@ namespace Prado\Exceptions;
 use Prado\TApplicationMode;
 use Prado\Prado;
 use Prado\TComponentReflection;
+use Prado\Web\THttpHeaderName;
 
 /**
  * TErrorHandler class
@@ -275,7 +276,7 @@ class TErrorHandler extends \Prado\TModule
 				$response->clear();
 			}
 			if (!$this->headersSent()) {
-				$header = 'Content-Type: text/html; charset=UTF-8';
+				$header = THttpHeaderName::ContentType . ': text/html; charset=UTF-8';
 				$response = $this->getResponse();
 				if ($response) {
 					$response->appendHeader($header);
