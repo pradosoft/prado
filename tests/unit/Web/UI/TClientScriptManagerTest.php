@@ -635,7 +635,7 @@ class TClientScriptManagerTest extends PHPUnit\Framework\TestCase
 		$this->_cs->renderHeadScriptFiles($writer);
 		$output = $writer->flush();
 
-		$this->assertStringContainsString('async ', $output);
+		$this->assertStringContainsString(' async', $output);
 		$this->assertStringContainsString('src="http://example.com/script1.js"', $output);
 	}
 

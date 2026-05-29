@@ -14,10 +14,39 @@ use Prado\Web\THttpUtility;
 use Prado\Prado;
 
 /**
- * TJavaScript class.
+ * TJavaScript class
  *
- * TJavaScript is a utility class containing commonly-used javascript-related
- * functions.
+ * Static utility class for rendering `<script>` tags and encoding PHP values
+ * as JavaScript. Manages two pieces of per-request state shared across all
+ * render helpers:
+ *
+ * - **CSP nonce** ({@see getScriptNonce()}/{@see setScriptNonce()}) — a raw
+ *   nonce string that, when set, is automatically emitted as a `nonce="…"`
+ *   attribute on every `<script>` tag rendered by this class. Set by
+ *   {@see \Prado\Web\HttpHeaders\THttpHeaderCsp::init()} when a nonce-bearing
+ *   CSP is active.
+ *
+ * - **SRI integrity registry** ({@see setScriptIntegrity()}/{@see getScriptIntegrity()}) —
+ *   a URL-keyed map of Subresource Integrity strings. URLs are normalized before
+ *   storage so protocol-relative variants, redundant default ports, mixed-case
+ *   schemes/hosts, and fragment suffixes all resolve to the same key.
+ *   {@see renderScriptFile()} automatically emits `integrity` and
+ *   `crossorigin="anonymous"` attributes for registered remote URLs.
+ *
+ * **Rendering helpers:**
+ * - {@see renderScriptHeader()} / {@see renderScriptFooter()} — open/close
+ *   an inline `<script>` block with CDATA wrapping.
+ * - {@see renderScriptBlock()} — convenience wrapper for a single inline block.
+ * - {@see renderScriptBlocks()} — wraps multiple inline blocks in one tag.
+ * - {@see renderScriptBlocksCallback()} — emits raw script content without a tag.
+ * - {@see renderScriptFile()} / {@see renderScriptFiles()} — emit `<script src>` tags.
+ *
+ * **Encoding helpers:**
+ * - {@see encode()} — encodes a PHP value as a JavaScript literal.
+ * - {@see quoteString()} — JSON-encodes a string with HTML-safe hex escaping.
+ * - {@see quoteJsLiteral()} / {@see isJsLiteral()} — wrap or detect raw JavaScript.
+ * - {@see jsonEncode()} / {@see jsonDecode()} — thin wrappers around `json_encode` / `json_decode`.
+ * - {@see JSMin()} — minifies a JavaScript source string.
  *
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
  * @since 3.0
@@ -25,11 +54,199 @@ use Prado\Prado;
 class TJavaScript
 {
 	/**
-	 * Renders a list of javascript files
-	 * @param array $files URLs to the javascript files
-	 * @return string rendering result
+	 * @var ?string Per-request CSP nonce to be injected into inline script tags.
+	 * Set by {@see \Prado\Web\HttpHeaders\THttpHeaderCsp::init()} when a CSP policy referencing a nonce is active.
+	 * Null means no CSP nonce is in use and no nonce attribute is emitted.
+	 * @since 4.4.0
 	 */
-	public static function renderScriptFiles($files)
+	private static $_scriptNonce;
+
+	/**
+	 * @var array<string,string> Registry of URL → full SRI integrity string (e.g. `sha384-…`).
+	 * Populated via {@see setScriptIntegrity()} and consumed by {@see renderScriptFile()}
+	 * for plain-URL assets that are not {@see TJavaScriptAsset} objects.
+	 * @since 4.4.0
+	 */
+	private static $_scriptIntegrity = [];
+
+	/**
+	 * Returns the per-request CSP nonce currently registered with this class,
+	 * or `null` when no nonce is active.
+	 *
+	 * A non-null value is automatically included as a `nonce="…"` attribute on
+	 * every `<script>` tag rendered by {@see renderScriptHeader()} and
+	 * {@see renderScriptFile()}. `null` means CSP nonce enforcement is not in
+	 * use for this request and the attribute is omitted.
+	 *
+	 * @return ?string raw nonce value (no `nonce-` prefix), or `null`
+	 * @since 4.4.0
+	 */
+	public static function getScriptNonce(): ?string
+	{
+		return self::$_scriptNonce;
+	}
+
+	/**
+	 * Registers a per-request CSP nonce to be emitted on every `<script>` tag
+	 * rendered by this class for the duration of the current request.
+	 *
+	 * Once set, {@see renderScriptHeader()} and {@see renderScriptFile()} will
+	 * automatically include `nonce="$nonce"` so that inline scripts and external
+	 * script files are permitted by a `Content-Security-Policy` header that
+	 * carries a matching `'nonce-…'` source expression.
+	 *
+	 * This is called automatically by
+	 * {@see \Prado\Web\HttpHeaders\THttpHeaderCsp::init()} when a nonce-bearing
+	 * CSP is configured. Pass `null` to clear a previously registered nonce and
+	 * suppress the attribute on subsequent renders.
+	 *
+	 * @param ?string $nonce raw nonce value (without the `nonce-` prefix), or `null` to clear
+	 * @since 4.4.0
+	 */
+	public static function setScriptNonce(?string $nonce): void
+	{
+		self::$_scriptNonce = $nonce;
+	}
+
+	/**
+	 * Returns `true` when an SRI integrity value has been registered for the
+	 * given script URL via {@see setScriptIntegrity()}, `false` otherwise.
+	 *
+	 * The URL is normalized via {@see THttpUtility::normalizeIntegrityUrl()} before
+	 * the lookup, so protocol-relative URLs, redundant default ports, mixed-case
+	 * schemes/hosts, and fragment suffixes all resolve to the same registry entry
+	 * as their canonical equivalents.
+	 *
+	 * @param string $url script URL to check; normalized before the lookup
+	 * @return bool `true` if an SRI string is registered for the normalized URL
+	 * @since 4.4.0
+	 */
+	public static function hasScriptIntegrity(string $url): bool
+	{
+		return isset(self::$_scriptIntegrity[THttpUtility::normalizeIntegrityUrl($url)]);
+	}
+
+	/**
+	 * Returns the registered SRI integrity string for the given script URL, or
+	 * `null` when no value has been registered via {@see setScriptIntegrity()}.
+	 *
+	 * The URL is normalized via {@see THttpUtility::normalizeIntegrityUrl()} before
+	 * the lookup, so protocol-relative URLs, redundant default ports, mixed-case
+	 * schemes/hosts, and fragment suffixes all resolve to the same registry entry
+	 * as their canonical equivalents.
+	 *
+	 * @param string $url script URL to look up; normalized before the lookup
+	 * @return ?string fully-formed `algo-digest` SRI string (e.g. `sha384-…`), or `null`
+	 * @since 4.4.0
+	 */
+	public static function getScriptIntegrity(string $url): ?string
+	{
+		return self::$_scriptIntegrity[THttpUtility::normalizeIntegrityUrl($url)] ?? null;
+	}
+
+	/**
+	 * Registers or clears a Subresource Integrity (SRI) value for a script URL.
+	 *
+	 * The URL is normalized via {@see THttpUtility::normalizeIntegrityUrl()} before
+	 * storage, so syntactically different but equivalent URLs (protocol-relative,
+	 * redundant default port, mixed-case scheme/host, fragment suffix) all share
+	 * the same registry entry.
+	 *
+	 * Pass `null` as `$hash` to remove any previously registered value; subsequent
+	 * calls to {@see renderScriptFile()} will then emit no `integrity` attribute
+	 * for that URL.
+	 *
+	 * `$hash` may be a bare base64 digest (e.g. `"AAAA…"`) or a fully-formed SRI
+	 * string (e.g. `"sha384-AAAA…"`). In the bare-digest case `$hashMethod` supplies
+	 * the algorithm prefix; when a fully-formed string is passed `$hashMethod` is
+	 * ignored. Once registered, {@see renderScriptFile()} automatically emits the
+	 * `integrity` and `crossorigin="anonymous"` attributes for matching remote URLs.
+	 *
+	 * @param string  $url        script URL; normalized before storage
+	 * @param ?string $hash       fully-formed `algo-digest` SRI string, bare base64
+	 *   digest, or `null` to clear
+	 * @param string  $hashMethod algorithm prefix prepended to a bare digest
+	 *   (default `'sha384'`); ignored when `$hash` is already fully-formed or `null`
+	 * @since 4.4.0
+	 */
+	public static function setScriptIntegrity(string $url, ?string $hash, string $hashMethod = 'sha384'): void
+	{
+		$key = THttpUtility::normalizeIntegrityUrl($url);
+		if ($hash === null) {
+			unset(self::$_scriptIntegrity[$key]);
+			return;
+		}
+		if (str_contains($hash, '-')) {
+			self::$_scriptIntegrity[$key] = $hash;
+		} else {
+			self::$_scriptIntegrity[$key] = $hashMethod . '-' . $hash;
+		}
+	}
+
+	/**
+	 * Renders the opening `<script>` tag and CDATA prologue for an inline
+	 * JavaScript block.
+	 *
+	 * The returned string has the form:
+	 * ```html
+	 * <script[ attr="value"…]>
+	 * /*<![CDATA[*\/ 	// < - this is the C comment start and end
+	 *
+	 * ```
+	 * The `/*<![CDATA[*\/` comment lets XHTML parsers treat the body as opaque
+	 * character data while remaining valid JavaScript in HTML mode.
+	 *
+	 * When a CSP nonce has been registered via {@see setScriptNonce()}, a
+	 * `nonce="…"` attribute is included automatically so the browser permits the
+	 * inline block under a strict `Content-Security-Policy`. Any additional
+	 * attributes passed in `$attributes` are merged in; a caller-supplied `nonce`
+	 * key takes precedence over the registered nonce.
+	 *
+	 * Must be paired with {@see renderScriptFooter()} to close the block.
+	 *
+	 * @param array $attributes additional HTML attributes for the `<script>` tag;
+	 *   keys are attribute names, values follow the {@see THttpUtility::buildHtmlAttributes()}
+	 *   convention (`null`/`false` omits, `true` emits a boolean attribute)
+	 * @return string opening `<script>` tag followed by the CDATA prologue
+	 * @since 4.4.0
+	 */
+	public static function renderScriptHeader(array $attributes = []): string
+	{
+		$attributes['nonce'] ??= self::getScriptNonce();
+		$attrs = THttpUtility::buildHtmlAttributes($attributes);
+		return '<script' . ($attrs !== '' ? ' ' . $attrs : '') . ">\n/*<![CDATA[*/\n";
+	}
+
+	/**
+	 * Renders the closing CDATA epilogue and `</script>` tag for an inline
+	 * JavaScript block opened by {@see renderScriptHeader()}.
+	 *
+	 * The returned string has the form:
+	 * ```
+	 *
+	 * /*]]>*\/		// < - this is the C comment start and end
+	 * </script>
+	 *
+	 * ```
+	 * The `/*]]>*\/` comment closes the CDATA section opened by the prologue in
+	 * {@see renderScriptHeader()}, keeping the combined block valid in both HTML
+	 * and XHTML contexts.
+	 *
+	 * @return string CDATA epilogue followed by the closing `</script>` tag
+	 * @since 4.4.0
+	 */
+	public static function renderScriptFooter(): string
+	{
+		return "\n/*]]>*/\n</script>\n";
+	}
+
+	/**
+	 * Renders a `<script src>` tag for each URL or {@see TJavaScriptAsset} in
+	 * `$files` and returns the concatenated result.
+	 * @param array<string|TJavaScriptAsset> $files URLs or asset objects to render
+	 * @return string concatenated rendering of all script tags
+	 */
+	public static function renderScriptFiles($files): string
 	{
 		$str = '';
 		foreach ($files as $file) {
@@ -39,38 +256,61 @@ class TJavaScript
 	}
 
 	/**
-	 * Renders a javascript file
+	 * Renders a javascript file.
+	 * When a CSP nonce has been registered via {@see setScriptNonce()}, the
+	 * emitted `<script>` tag will include a `nonce` attribute so the browser
+	 * permits the script under a strict Content-Security-Policy.
+	 *
+	 * For plain-URL assets (not {@see TJavaScriptAsset} objects), if an SRI hash has
+	 * been registered for the URL via {@see setScriptIntegrity()} and the URL is not
+	 * local (per {@see THttpUtility::isLocalUrl()}), the `integrity` and
+	 * `crossorigin="anonymous"` attributes are also emitted.
+	 *
 	 * @param \Prado\Web\Javascripts\TJavaScriptAsset|string $asset URL to the javascript file or TJavaScriptAsset
 	 * @return string rendering result
 	 */
-	public static function renderScriptFile($asset)
+	public static function renderScriptFile($asset): string
 	{
-		if (is_object($asset) && ($asset instanceof TJavaScriptAsset)) {
+		if ($asset instanceof TJavaScriptAsset) {
 			return $asset->__toString() . "\n";
 		}
-		return '<script src="' . THttpUtility::htmlEncode($asset) . "\"></script>\n";
+		$url = (string) $asset;
+		$integrity = null;
+		if (!THttpUtility::isLocalUrl($url)) {
+			$integrity = self::getScriptIntegrity($url);
+		}
+		$attrs = THttpUtility::buildHtmlAttributes([
+			'src' => $url,
+			'nonce' => self::getScriptNonce(),
+			'integrity' => $integrity,
+			'crossorigin' => $integrity !== null ? 'anonymous' : null,
+		]);
+		return '<script' . ($attrs !== '' ? ' ' . $attrs : '') . "></script>\n";
 	}
 
 	/**
-	 * Renders a list of javascript blocks
-	 * @param array $scripts javascript blocks
-	 * @return string rendering result
+	 * Wraps a list of JavaScript snippets in a single `<script>` tag with CDATA
+	 * delimiters. Returns an empty string when `$scripts` is empty.
+	 * @param array $scripts raw JavaScript snippets to concatenate
+	 * @return string the wrapped script block, or `''` when empty
 	 */
-	public static function renderScriptBlocks($scripts)
+	public static function renderScriptBlocks($scripts): string
 	{
 		if (count($scripts)) {
-			return "<script>\n/*<![CDATA[*/\n" . implode("\n", $scripts) . "\n/*]]>*/\n</script>\n";
+			return self::renderScriptHeader() . implode("\n", $scripts) . self::renderScriptFooter();
 		} else {
 			return '';
 		}
 	}
 
 	/**
-	 * Renders a list of javascript code
-	 * @param array $scripts javascript blocks
-	 * @return string rendering result
+	 * Concatenates a list of JavaScript snippets without wrapping them in a
+	 * `<script>` tag. Intended for callback responses where the browser already
+	 * handles the script context. Returns an empty string when `$scripts` is empty.
+	 * @param array $scripts raw JavaScript snippets to concatenate
+	 * @return string newline-joined snippets with a trailing newline, or `''` when empty
 	 */
-	public static function renderScriptBlocksCallback($scripts)
+	public static function renderScriptBlocksCallback($scripts): string
 	{
 		if (count($scripts)) {
 			return implode("\n", $scripts) . "\n";
@@ -80,33 +320,35 @@ class TJavaScript
 	}
 
 	/**
-	 * Renders javascript block
-	 * @param string $script javascript block
-	 * @return string rendering result
+	 * Wraps a single JavaScript snippet in a `<script>` tag with CDATA delimiters.
+	 * @param string $script raw JavaScript snippet
+	 * @return string the wrapped script block
 	 */
-	public static function renderScriptBlock($script)
+	public static function renderScriptBlock($script): string
 	{
-		return "<script>\n/*<![CDATA[*/\n{$script}\n/*]]>*/\n</script>\n";
+		return self::renderScriptHeader() . $script . self::renderScriptFooter();
 	}
 
 	/**
-	 * Quotes a javascript string.
-	 * After processing, the string is safely enclosed within a pair of
-	 * quotation marks and can serve as a javascript string.
-	 * @param string $js string to be quoted
-	 * @return string the quoted string
+	 * JSON-encodes a string with HTML-safe hex escaping for `"`, `'`, and `<`/`>`.
+	 * The result is wrapped in double quotes and is safe to embed directly in
+	 * HTML attributes or JavaScript string literals.
+	 * @param string $js string to encode
+	 * @return string JSON-encoded string with hex-escaped HTML-special characters
 	 */
-	public static function quoteString($js)
+	public static function quoteString($js): string
 	{
 		return self::jsonEncode($js, JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_TAG);
 	}
 
 	/**
-	 * @param mixed $js
-	 * @return TJavaScriptLiteral Marks a string as a javascript function. Once marke, the string is considered as a
-	 * raw javascript function that is not supposed to be encoded by {@see encode}
+	 * Wraps `$js` in a {@see TJavaScriptLiteral} so that {@see encode()} treats
+	 * it as a raw JavaScript expression rather than a value to be encoded.
+	 * When `$js` has already been wrapped, it is returned unchanged.
+	 * @param mixed $js value or string to mark as a raw JavaScript literal
+	 * @return TJavaScriptLiteral the literal wrapper
 	 */
-	public static function quoteJsLiteral($js)
+	public static function quoteJsLiteral($js): TJavaScriptLiteral
 	{
 		if ($js instanceof TJavaScriptLiteral) {
 			return $js;
@@ -116,37 +358,49 @@ class TJavaScript
 	}
 
 	/**
-	 * @param mixed $js
-	 * @return bool true if the parameter is marked as a javascript function, i.e. if it's considered as a
-	 * raw javascript function that is not supposed to be encoded by {@see encode}
+	 * Returns `true` when `$js` is a {@see TJavaScriptLiteral} instance and will
+	 * therefore be passed through by {@see encode()} without re-encoding.
+	 * @param mixed $js value to test
+	 * @return bool `true` when `$js` is a {@see TJavaScriptLiteral}
 	 */
-	public static function isJsLiteral($js)
+	public static function isJsLiteral($js): bool
 	{
 		return ($js instanceof TJavaScriptLiteral);
 	}
 
 	/**
-	 * Encodes a PHP variable into javascript representation.
+	 * Encodes a PHP value as its JavaScript literal equivalent.
 	 *
-	 * Example:
+	 * Type mapping:
+	 * - `string` → JSON-encoded with HTML-safe hex escaping (via {@see quoteString()})
+	 * - `bool` → `'true'` or `'false'`
+	 * - `int` → decimal string
+	 * - `float` → decimal string; `INF` / `-INF` map to
+	 *   `Number.POSITIVE_INFINITY` / `Number.NEGATIVE_INFINITY`; the decimal
+	 *   separator is normalized to `.` when the current locale uses another character
+	 * - `null` → `'null'`
+	 * - Sequential array (`0…n-1` keys) → `[…]`
+	 * - Associative array → `{'key':value,…}`
+	 * - {@see TJavaScriptLiteral} → raw literal string (not re-encoded)
+	 * - Other object → encoded as its public properties via `get_object_vars()`
+	 * - Empty-string elements in arrays are silently skipped unless
+	 *   `$encodeEmptyStrings` is `true`
+	 *
+	 * For complex data structures use {@see jsonEncode()} / {@see jsonDecode()} instead.
+	 *
 	 * ```php
-	 * $options['onLoading'] = "doit";
-	 * $options['onComplete'] = "more";
-	 * echo TJavaScript::encode($options);
-	 * //expects the following javascript code
+	 * TJavaScript::encode(['onLoading' => 'doit', 'onComplete' => 'more']);
 	 * // {'onLoading':'doit','onComplete':'more'}
 	 * ```
 	 *
-	 * For higher complexity data structures use {@see jsonEncode} and {@see jsonDecode}
-	 * to serialize and unserialize.
-	 *
-	 * @param mixed $value PHP variable to be encoded
-	 * @param bool $toMap whether the output is a map or a list.
+	 * @param mixed $value PHP value to encode
+	 * @param bool $toMap unused; retained for backward compatibility
+	 * @param bool $encodeEmptyStrings when `true`, empty-string elements are included
+	 *   in encoded arrays; defaults to `false` for backward compatibility
+	 * @return string JavaScript literal representation
 	 * @since 3.1.5
-	 * @param bool $encodeEmptyStrings wether to encode empty strings too. Default to false for BC.
-	 * @return string the encoded string
 	 */
-	public static function encode($value, $toMap = true, $encodeEmptyStrings = false)
+	public static function encode($value, $toMap = true, $encodeEmptyStrings = false): string
 	{
 		if (is_string($value)) {
 			return self::quoteString($value);
@@ -181,10 +435,8 @@ class TJavaScript
 			switch ($value) {
 				case -INF:
 					return 'Number.NEGATIVE_INFINITY';
-					break;
 				case INF:
 					return 'Number.POSITIVE_INFINITY';
-					break;
 				default:
 					$locale = localeConv();
 					if ($locale['decimal_point'] == '.') {
@@ -192,7 +444,6 @@ class TJavaScript
 					} else {
 						return str_replace($locale['decimal_point'], '.', "$value");
 					}
-					break;
 			}
 		} elseif (is_object($value)) {
 			if ($value instanceof TJavaScriptLiteral) {
@@ -206,14 +457,17 @@ class TJavaScript
 			return '';
 		}
 	}
+
 	/**
-	 * Encodes a PHP variable into javascript string.
-	 * This method invokes json_encode to perform the encoding.
-	 * @param mixed $value variable to be encoded
-	 * @param mixed $options
-	 * @return string encoded string
+	 * Encodes a PHP value as a JSON string via `json_encode`.
+	 * When a globalization module is active and its charset is not UTF-8, string
+	 * values are converted to UTF-8 before encoding.
+	 * @param mixed $value value to encode
+	 * @param int $options `json_encode` option flags
+	 * @throws \JsonException on encoding failure
+	 * @return string JSON-encoded string
 	 */
-	public static function jsonEncode($value, $options = 0)
+	public static function jsonEncode($value, $options = 0): string
 	{
 		if (($g = Prado::getApplication()->getGlobalization(false)) !== null &&
 			strtoupper($enc = $g->getCharset()) != 'UTF-8') {
@@ -224,9 +478,10 @@ class TJavaScript
 	}
 
 	/**
-	 * Encodes an string or the content of an array to UTF8
-	 * @param array|mixed|string $value
-	 * @param string $sourceEncoding
+	 * Recursively converts string values in `$value` from `$sourceEncoding` to
+	 * UTF-8 in place.
+	 * @param array|string $value value to convert; modified in place
+	 * @param string $sourceEncoding source character encoding, e.g. `'ISO-8859-1'`
 	 */
 	private static function convertToUtf8(&$value, $sourceEncoding)
 	{
@@ -240,25 +495,24 @@ class TJavaScript
 	}
 
 	/**
-	 * Decodes a javascript string into PHP variable.
-	 * This method invokes json_decode to perform the decoding.
-	 * @param string $value string to be decoded
-	 * @param bool $assoc whether to convert returned objects to associative arrays
-	 * @param int $depth recursion depth
-	 * @return mixed decoded variable
+	 * Decodes a JSON string into a PHP value via `json_decode`.
+	 * @param string $value JSON string to decode
+	 * @param bool $assoc when `true`, JSON objects are decoded as associative arrays
+	 * @param int $depth maximum recursion depth
+	 * @throws \JsonException on decoding failure
+	 * @return mixed decoded PHP value
 	 */
-	public static function jsonDecode($value, $assoc = false, $depth = 512)
+	public static function jsonDecode($value, $assoc = false, $depth = 512): mixed
 	{
 		return json_decode($value, $assoc, $depth, JSON_THROW_ON_ERROR);
 	}
 
 	/**
-	 * Minimize the size of a javascript script.
-	 * This method is based on Douglas Crockford's JSMin.
-	 * @param string $code code that you want to minimzie
-	 * @return string minimized version of the code
+	 * Minifies a JavaScript source string using Douglas Crockford's JSMin algorithm.
+	 * @param string $code JavaScript source to minify
+	 * @return string minified JavaScript
 	 */
-	public static function JSMin($code)
+	public static function JSMin($code): string
 	{
 		return \JSMin\JSMin::minify($code);
 	}

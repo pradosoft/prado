@@ -30,7 +30,7 @@ use Prado\Exceptions\TInvalidDataTypeException;
  * validation javascript function to the page template.
  * The function should have the following signature:
  * ```php
- * <script><!--
+ * <com:TClientScript><!--
  * function ValidationFunctionName(sender, parameter)
  * {
  *    // if(parameter == ...)
@@ -38,7 +38,7 @@ use Prado\Exceptions\TInvalidDataTypeException;
  *    // else
  *    //    return false;
  * }
- * --></script>
+ * --></com:TClientScript>
  * ```
  * Use the {@see setClientValidationFunction ClientValidationFunction} property
  * to specify the name of the client-side validation script function associated

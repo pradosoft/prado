@@ -1194,8 +1194,8 @@ class TApplication extends TComponent implements ISingleton
 	 * {@see getRegisteredServiceByClass()} / {@see getRegisteredServicesByClass()}.
 	 *
 	 * ```php
-	 * $app->registerService('csp-reporter', TCspReporterService::class);
-	 * $app->registerService('csp-reporter', TCspReporterService::class, ['AutoRegistered' => true]);
+	 * $app->registerService('csp-reporting', TCspReportingService::class);
+	 * $app->registerService('csp-reporting', TCspReportingService::class, ['AutoRegistered' => true]);
 	 * ```
 	 *
 	 * @param string $id service ID to register; any existing entry under the same ID is overwritten.

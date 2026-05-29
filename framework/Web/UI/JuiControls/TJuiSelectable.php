@@ -28,10 +28,10 @@ use Prado\Web\UI\WebControls\TRepeater;
  * Items can be selected by clicking on them, individually or in a group.
  *
  * ```php
- * <style>
+ * <com:TStyleSheet>
  * .ui-selecting { background: #FECA40; }
  * .ui-selected { background: #F39814; color: white; }
- * </style>
+ * </com:TStyleSheet>
  * <com:TJuiSelectable ID="repeater1" />
  * ```
  *
