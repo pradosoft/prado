@@ -255,6 +255,7 @@ return [
 'Translation' => 'Prado\I18N\Translation',
 'TTranslate' => 'Prado\I18N\TTranslate',
 'TTranslateParameter' => 'Prado\I18N\TTranslateParameter',
+'ICoercible' => 'Prado\ICoercible',
 'IDataRenderer' => 'Prado\IDataRenderer',
 'IEnumerable' => 'Prado\IEnumerable',
 'IEventCycleParameter' => 'Prado\IEventCycleParameter',

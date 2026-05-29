@@ -1102,7 +1102,7 @@ class TComponent
 			$object = $this->getSubProperty(substr($path, 0, $pos));
 			$property = substr($path, $pos + 1);
 		}
-		$object->$property = $value;
+		TPropertyValue::applyProperty($object, $property, $value);
 	}
 
 	/**

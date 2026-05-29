@@ -20,6 +20,7 @@ component_no_class_provided_nor_late_binding = Adding or Removing Class Behavior
 
 propertyvalue_enumvalue_invalid			= Value '{0}' is a not valid enumeration value ({1}).
 propertyvalue_invalid_hex_color			= Value '{0}' is a not valid hex color value.  eg. "#112233"
+propertyvalue_invalid_array_literal		= Value '{0}' is not a valid array literal.
 
 eventhandler_lost_weak_ref				= TEventHandler cannot invoke the event handler because the callable object WeakReference was lost.
 eventhandler_no_set_handler				= TEventHandler cannot set the event handler, index "{0}".
