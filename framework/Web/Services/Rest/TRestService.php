@@ -13,7 +13,6 @@ namespace Prado\Web\Services\Rest;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TIOException;
 use Prado\Prado;
-use Prado\TApplication;
 use Prado\TApplicationMode;
 use Prado\TPropertyValue;
 use Prado\Web\Javascripts\TJavaScript;
@@ -315,11 +314,12 @@ class TRestService extends \Prado\TService
 			return;
 		}
 
-		if ($this->getApplication()->getConfigurationType() === TApplication::CONFIG_TYPE_PHP) {
-			$phpConfig = is_array($config) ? $config : [];
-		} else {
-			/** @var \Prado\Xml\TXmlElement $config */
+		if ($config instanceof \Prado\Xml\TXmlElement) {
 			$phpConfig = $this->xmlConfigToArray($config);
+		} elseif (is_array($config)) {
+			$phpConfig = $config;
+		} else {
+			return;
 		}
 
 		// Merge an external configfile (if any) ahead of inline entries.
