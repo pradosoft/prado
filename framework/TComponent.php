@@ -1359,7 +1359,8 @@ class TComponent
 			try {
 				$this->getEventHandlers($name)->remove($handler, $priority);
 				return true;
-			} catch (\Exception $e) {
+			} catch (TInvalidDataValueException $e) {
+				// The handler is not attached at the given priority; nothing to detach.
 			}
 		}
 		return false;
