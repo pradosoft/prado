@@ -489,8 +489,8 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 					"VALUES (data.itemkey, data.value, data.expire)";
 			}
 			$command = $db->createCommand($sql);
-			$command->bindValue(':key', $key, \PDO::PARAM_STR);
-			$command->bindValue(':value', serialize($value), \PDO::PARAM_LOB);
+			$command->bindValue(':key', $key, $db::PARAM_STR);
+			$command->bindValue(':value', serialize($value), $db::PARAM_LOB);
 
 			try {
 				$command->execute();
@@ -535,9 +535,10 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 		}
 		$expire = ($expire <= 0) ? 0 : time() + $expire;
 		$sql = "INSERT INTO {$this->_cacheTable} (itemkey,value,expire) VALUES(:key,:value,$expire)";
-		$command = $this->getDbConnection()->createCommand($sql);
-		$command->bindValue(':key', $key, \PDO::PARAM_STR);
-		$command->bindValue(':value', serialize($value), \PDO::PARAM_LOB);
+		$db = $this->getDbConnection();
+		$command = $db->createCommand($sql);
+		$command->bindValue(':key', $key, $db::PARAM_STR);
+		$command->bindValue(':value', serialize($value), $db::PARAM_LOB);
 
 		try {
 			$command->execute();
@@ -565,8 +566,9 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 			$this->initializeCache();
 		}
 
-		$command = $this->getDbConnection()->createCommand("DELETE FROM {$this->_cacheTable} WHERE itemkey=:key");
-		$command->bindValue(':key', $key, \PDO::PARAM_STR);
+		$db = $this->getDbConnection();
+		$command = $db->createCommand("DELETE FROM {$this->_cacheTable} WHERE itemkey=:key");
+		$command->bindValue(':key', $key, $db::PARAM_STR);
 		try {
 			$command->execute();
 			return true;
