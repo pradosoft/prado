@@ -15,7 +15,6 @@ use Prado\Exceptions\TIOException;
 use Prado\Prado;
 use Prado\TApplicationMode;
 use Prado\TPropertyValue;
-use Prado\Web\Javascripts\TJavaScript;
 use Prado\Xml\TXmlDocument;
 
 /**
@@ -901,7 +900,7 @@ class TRestService extends \Prado\TService
 		if ($data !== null) {
 			$response->setContentType('application/json');
 			$response->setCharset('UTF-8');
-			$response->write(TJavaScript::jsonEncode($data));
+			$response->write(json_encode($data, JSON_THROW_ON_ERROR));
 		}
 	}
 
@@ -915,7 +914,7 @@ class TRestService extends \Prado\TService
 		$response->setStatusCode($e->getStatusCode());
 		$response->setContentType('application/json');
 		$response->setCharset('UTF-8');
-		$response->write(TJavaScript::jsonEncode($e->toArray()));
+		$response->write(json_encode($e->toArray(), JSON_THROW_ON_ERROR));
 	}
 
 	// ── CORS ───────────────────────────────────────────────────────────────────
