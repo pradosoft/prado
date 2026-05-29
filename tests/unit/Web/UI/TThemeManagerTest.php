@@ -1,7 +1,5 @@
 <?php
 
-require_once __DIR__ . '/../../PradoUnitRequires.php';
-
 use Prado\Prado;
 use Prado\Web\UI\TThemeManager;
 use Prado\Web\UI\TTheme;

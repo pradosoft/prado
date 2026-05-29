@@ -1,7 +1,5 @@
 <?php
 
-require_once __DIR__ . '/../../PradoUnitRequires.php';
-
 use Prado\Collections\TMap;
 use Prado\IO\TTextWriter;
 use Prado\Prado;

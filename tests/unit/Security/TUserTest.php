@@ -6,8 +6,6 @@ use Prado\Security\TUserManager;
 use Prado\Util\TBehavior;
 use Prado\Xml\TXmlDocument;
 
-require_once __DIR__ . '/../PradoUnitRequires.php';
-
 class TUserBehavior extends TBehavior {
 	public function dyDefaultRoles($defaultRoles, $callchain){
 		$defaultRoles[] = "DefaultRole";

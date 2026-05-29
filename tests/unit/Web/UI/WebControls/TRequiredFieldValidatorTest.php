@@ -1,6 +1,5 @@
 <?php
 
-require_once __DIR__ . '/../../../PradoUnitRequires.php';
 
 use Prado\Web\UI\WebControls\TRequiredFieldValidator;
 use Prado\Web\UI\WebControls\TTextBox;

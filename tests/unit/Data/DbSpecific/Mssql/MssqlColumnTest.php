@@ -1,7 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/../../../PradoUnit.php');
-
 use Prado\Data\Common\Mssql\TMssqlMetaData;
 use Prado\Data\Common\TDbTableColumn;
 use Prado\Data\DataGateway\TTableGateway;

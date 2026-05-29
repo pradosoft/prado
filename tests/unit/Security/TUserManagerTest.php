@@ -7,8 +7,6 @@ use Prado\Prado;
 use Prado\Security\TUserManager;
 use Prado\Xml\TXmlDocument;
 
-require_once __DIR__ . '/../PradoUnitRequires.php';
-
 class TUserManagerTest extends PHPUnit\Framework\TestCase
 {
 	protected ?TTestApplication $app = null;

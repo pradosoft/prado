@@ -3,9 +3,6 @@
 use Prado\Web\Behaviors\TRequestConnectionUpgrade;
 use Prado\Web\THttpRequestParameter;
 
-require_once __DIR__ . '/../../PradoUnitRequires.php';
-
-
 class TRequestConnectionUpgradeTest extends PHPUnit\Framework\TestCase
 {
 	protected ?TTestApplication $app = null;

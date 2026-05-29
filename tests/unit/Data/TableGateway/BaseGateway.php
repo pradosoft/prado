@@ -1,6 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/../../PradoUnit.php');
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
 

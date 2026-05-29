@@ -7,8 +7,6 @@ use Prado\Web\Services\TPageConfiguration;
 use Prado\Security\TUserManager;
 use Prado\Util\TDbParameterModule;
 
-require_once __DIR__ . '/../../PradoUnitRequires.php';
-
 class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
 {
 	protected ?TTestApplication $app = null;

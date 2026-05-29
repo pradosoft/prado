@@ -1,7 +1,5 @@
 <?php
 
-require_once __DIR__ . '/../../PradoUnitRequires.php';
-
 use Prado\Web\UI\TModuleView;
 use Prado\Web\UI\TCompositeControl;
 use Prado\Web\UI\TTemplate;

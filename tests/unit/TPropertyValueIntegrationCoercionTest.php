@@ -14,7 +14,6 @@ use Prado\Web\UI\TControl;
 use Prado\Web\UI\TTemplate;
 use Prado\Xml\TXmlDocument;
 
-require_once __DIR__ . '/PradoUnitRequires.php';
 
 // ════════════════════════════════════════════════════════════════════════
 // Backed enum shared by all fixture classes

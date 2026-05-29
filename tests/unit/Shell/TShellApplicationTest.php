@@ -8,8 +8,6 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-require_once __DIR__ . '/../PradoUnitRequires.php';
-
 use Prado\Caching\ICache;
 use Prado\Data\ActiveRecord\TActiveRecordConfig;
 use Prado\Prado;

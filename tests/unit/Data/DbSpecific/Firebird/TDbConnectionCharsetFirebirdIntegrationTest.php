@@ -1,7 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/../../../PradoUnit.php');
-
 use Prado\Exceptions\TDbException;
 use Prado\Data\TDbConnection;
 use Prado\TApplication;

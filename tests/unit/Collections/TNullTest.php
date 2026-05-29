@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TNullTest class file.
  *
@@ -7,15 +8,10 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-namespace Prado\Tests\Collections;
-
-require_once __DIR__ . '/../PradoUnitRequires.php';
-
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\ISingleton;
 use Prado\Collections\TNull;
 use PHPUnit\Framework\TestCase;
-use PradoUnit;
 
 /**
  * TNullTest

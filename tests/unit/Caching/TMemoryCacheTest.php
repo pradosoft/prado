@@ -8,8 +8,6 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-require_once __DIR__ . '/../PradoUnitRequires.php';
-
 use Prado\Caching\ICacheSize;
 use Prado\Caching\TCache;
 use Prado\Caching\TMemoryCache;

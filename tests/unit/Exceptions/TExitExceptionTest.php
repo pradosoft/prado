@@ -6,8 +6,6 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-require_once __DIR__ . '/../PradoUnitRequires.php';
-
 use Prado\Exceptions\TExitException;
 use Prado\Exceptions\TSystemException;
 use Prado\Exceptions\TException;

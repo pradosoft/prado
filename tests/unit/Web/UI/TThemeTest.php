@@ -1,7 +1,5 @@
 <?php
 
-require_once __DIR__ . '/../../PradoUnitRequires.php';
-
 use Prado\Web\UI\TTheme;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\WebControls\TLabel;

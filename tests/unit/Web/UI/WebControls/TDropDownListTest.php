@@ -1,7 +1,5 @@
 <?php
 
-require_once __DIR__ . '/../../../PradoUnitRequires.php';
-
 use Prado\Web\UI\WebControls\TDropDownList;
 use Prado\Web\UI\WebControls\TListItem;
 use Prado\Web\UI\THtmlWriter;

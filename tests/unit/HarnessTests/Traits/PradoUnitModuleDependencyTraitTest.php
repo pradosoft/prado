@@ -8,8 +8,6 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-require_once __DIR__ . '/../../PradoUnitRequires.php';
-
 /**
  * Tests for {@see PradoUnitModuleDependencyTrait}.
  *
@@ -18,7 +16,6 @@ require_once __DIR__ . '/../../PradoUnitRequires.php';
  * guard) and the assertion (equivalence across forms, mismatch surfaces as
  * an AssertionFailedError, custom failure messages).
  *
- * @package System
  */
 class PradoUnitModuleDependencyTraitTest extends PHPUnit\Framework\TestCase
 {

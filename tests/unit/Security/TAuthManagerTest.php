@@ -1,7 +1,5 @@
 <?php
 
-require_once __DIR__ . '/../PradoUnitRequires.php';
-
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Security\TAuthManager;

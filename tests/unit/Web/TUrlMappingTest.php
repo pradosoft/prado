@@ -1,7 +1,5 @@
 <?php
 
-require_once __DIR__ . '/../PradoUnitRequires.php';
-
 use Prado\Web\THttpRequest;
 use Prado\Web\THttpRequestUrlFormat;
 use Prado\Web\TUrlMapping;
