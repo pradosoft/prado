@@ -186,15 +186,28 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 	}
 
 	/**
-	 * Removes entries from the flat list `_d` whose `WeakReference` has lost
-	 * its referent, following the two-pass snapshot-identify + identity-remove
-	 * scrubbing contract documented on {@see TWeakCollectionTrait}.
+	 * Removes from `_d` every entry whose `WeakReference` has lost its referent.
 	 *
-	 * Class-specific behaviour: `_d` is a 0-indexed list of entries (bare
-	 * `WeakReference` or `TEventHandler`); `_c` and `_eventHandlerCount` are
-	 * recomputed from `_d`'s current state after the second pass so any
-	 * destructor-time {@see insertAt} / {@see removeAt} calls are reflected
-	 * in the counters.
+	 * **Re-entrancy strategy — snapshot identify, identity-based remove.**
+	 * PHP's cyclic garbage collector can fire between any two opcodes and invoke
+	 * object destructors mid-loop (e.g. `TComponent::__destruct` → `unlisten` →
+	 * `remove`). The scrub runs in two phases to keep destructor-time list
+	 * mutations correct without dropping them:
+	 *
+	 *  - **Pass 1 — Identify.** A `foreach` over `_d` iterates a CoW snapshot
+	 *    of the array, so destructor-triggered mutations cannot disturb the
+	 *    iteration. Every stale `WeakReference` is recorded by
+	 *    `spl_object_id($weakRef)` — the `WeakReference` object itself is
+	 *    still alive, only its referent has been GC'd.
+	 *
+	 *  - **Pass 2 — Remove.** A second walk operates on `_d`'s *current*
+	 *    state and splices out only entries whose `WeakReference` is in the
+	 *    stale set. Live items inserted by destructors during Pass 1 are
+	 *    not in the stale set and are therefore preserved.
+	 *
+	 * `_c` is recomputed from `_d`'s current state because destructor-time
+	 * inserts/removes via {@see insertAt}/{@see removeAt} may have already
+	 * shifted it.
 	 */
 	protected function scrubWeakReferences(): void
 	{
