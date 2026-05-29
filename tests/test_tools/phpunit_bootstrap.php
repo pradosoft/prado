@@ -8,6 +8,12 @@
 
 require_once(__DIR__ . '/../../vendor/autoload.php');
 require_once(__DIR__ . '/../../framework/Prado.php');
+require_once(__DIR__ . '/../unit/PradoUnit.php');
+
+// Capture the process-global baseline (superglobals, cwd, timezone,
+// error_reporting, include_path) BEFORE the bootstrap TApplication runs and
+// mutates any of it. Tests can restore via PradoUnit::restoreInitialState().
+PradoUnit::captureInitialState();
 
 //  Use the test app at 'Security/app'
 $relativeAppPath = '/../unit/Security/app';
