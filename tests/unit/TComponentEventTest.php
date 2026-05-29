@@ -246,4 +246,25 @@ class TComponentEventTest extends TComponentTestBase
 		$this->component->detachEventHandler('onBehaviorEvent', 'foopre', 5);
 		$this->assertEquals(3, $list->getCount());
 	}
+
+	public function testDetachEventHandlerReturnAndErrorHandling()
+	{
+		// No handlers attached at all: nothing to detach, returns false.
+		$this->assertFalse($this->component->detachEventHandler('OnMyEvent', 'foo'));
+
+		$this->component->attachEventHandler('OnMyEvent', 'foo');
+
+		// Detaching a handler that is not attached swallows the
+		// 'list_item_inexistent' TInvalidDataValueException and returns false.
+		$this->assertFalse($this->component->detachEventHandler('OnMyEvent', 'notattached'));
+		$this->assertEquals(1, $this->component->getEventHandlers('OnMyEvent')->getCount());
+
+		// Detaching an attached handler succeeds and returns true.
+		$this->assertTrue($this->component->detachEventHandler('OnMyEvent', 'foo'));
+		$this->assertEquals(0, $this->component->getEventHandlers('OnMyEvent')->getCount());
+
+		// Only the 'list_item_inexistent' TInvalidDataValueException is swallowed;
+		// any other exception from remove() (e.g. a read-only 'list_readonly'
+		// TInvalidOperationException) propagates rather than being masked as false.
+	}
 }
