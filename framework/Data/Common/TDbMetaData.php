@@ -44,7 +44,7 @@ use Prado\Prado;
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
  */
-abstract class TDbMetaData extends \Prado\TComponent implements IDataMetaData
+abstract class TDbMetaData extends \Prado\TComponent implements IDbMetaData
 {
 	private $_tableInfoCache = [];
 	private $_connection;
@@ -144,8 +144,23 @@ abstract class TDbMetaData extends \Prado\TComponent implements IDataMetaData
 	}
 
 	/**
+	 * Invalidates one or all cached {@see TDbTableInfo} entries.  Call after
+	 * a DDL change so the next {@see getTableInfo} rebuilds from live schema.
+	 * @param ?string $tableName table name to evict; null clears the entire cache.
+	 * @since 4.3.3
+	 */
+	public function clearTableInfo(?string $tableName = null): void
+	{
+		if ($tableName === null) {
+			$this->_tableInfoCache = [];
+		} else {
+			unset($this->_tableInfoCache[$tableName]);
+		}
+	}
+
+	/**
 	 * Creates a command builder for a given table name.
-	 * @param null|string $tableName table name.
+	 * @param ?string $tableName table name.
 	 * @return TDbCommandBuilder command builder instance for the given table.
 	 */
 	public function createCommandBuilder($tableName = null)

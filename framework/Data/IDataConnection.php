@@ -10,6 +10,8 @@
 
 namespace Prado\Data;
 
+use Prado\Data\Common\IDataMetaData;
+
 /**
  * IDataConnection interface
  *
@@ -26,6 +28,18 @@ namespace Prado\Data;
  */
 interface IDataConnection
 {
+	/**
+	 * Parameter-type tokens for {@see IDataCommand::bindValue} and
+	 * {@see IDataCommand::bindParameter}.  Defaults match `PDO::PARAM_*`; drivers
+	 * may override.  Reference via `$conn::PARAM_INT` for runtime polymorphism.
+	 * @since 4.3.3
+	 */
+	public const PARAM_NULL = 0;
+	public const PARAM_INT = 1;
+	public const PARAM_STR = 2;
+	public const PARAM_LOB = 3;
+	public const PARAM_BOOL = 5;
+
 	/**
 	 * @return string the driver name (e.g. 'mysql', 'pgsql', 'sqlite').
 	 */
@@ -44,53 +58,59 @@ interface IDataConnection
 	public function setActive($value);
 
 	/**
-	 * Creates a command for execution against this connection.
-	 *
-	 * For SQL connections ({@see TDbConnection}), $query is a SQL string.
-	 *
-	 * @param mixed $query the query specification (SQL string or equivalent).
-	 * @return IDataCommand the new command object.
+	 * Creates a command for execution.  `$query` is a SQL string for SQL drivers,
+	 * a driver-specific query value for non-SQL drivers.
+	 * @param mixed $query the query specification.
+	 * @return IDataCommand the new command.
 	 */
 	public function createCommand($query);
 
 	/**
-	 * Begins a new transaction.
-	 *
-	 * Each call allocates a **new** {@see IDataTransaction} object.  Any
-	 * previously returned transaction object is superseded: calling
-	 * {@see IDataTransaction::beginTransaction()} on it will throw because it is
-	 * no longer the connection's current transaction.
-	 *
-	 * Throws an exception if a transaction is already active. Commit or roll back
-	 * the current transaction before starting a new one.
-	 *
-	 * To reuse the same transaction object for sequential work units without
-	 * allocating a new one, call {@see IDataTransaction::beginTransaction()}
-	 * directly on the returned object after commit or rollback.
-	 *
-	 * @return IDataTransaction the transaction object for the new work unit.
+	 * Begins a new transaction.  Each call allocates a new {@see IDataTransaction}
+	 * and supersedes any prior one.  Throws if a transaction is already active.
+	 * @return IDataTransaction the transaction for the new work unit.
 	 */
 	public function beginTransaction();
 
 	/**
-	 * Returns the currently active transaction, or null if none is open.
-	 * If a transaction is not active (as in, the transaction has been completed),
-	 * then this returns null.
-	 *
-	 * @return null|IDataTransaction the active transaction, or null.
+	 * @return null|IDataTransaction the active transaction, or null if none is open.
 	 */
 	public function getCurrentTransaction();
 
 	/**
-	 * Returns the ID of the last inserted row or sequence value.
-	 *
-	 * For SQL drivers this wraps {@see \PDO::lastInsertId()}.
-	 *
-	 * @param string $sequenceName name of the sequence object (required for
-	 *   PostgreSQL, IBM DB2, Oracle, and Firebird; ignored for MySQL and SQLite).
-	 * @return string the last insert ID as a string.
+	 * Returns the last transaction allocated by {@see beginTransaction}, active or
+	 * not.  Used by reuse-pattern subclasses to detect supersession before
+	 * reactivating a completed transaction.
+	 * @return null|IDataTransaction the last transaction, or null if none was ever begun.
+	 */
+	public function getLastTransaction(): ?IDataTransaction;
+
+	/**
+	 * Commits the currently active transaction.  No-op (returns false) when no
+	 * transaction is active.
+	 * @return ?bool true on commit, false if none was active.
+	 */
+	public function commit(): ?bool;
+
+	/**
+	 * Rolls back the currently active transaction.  No-op (returns false) when
+	 * no transaction is active.
+	 * @return ?bool true on rollback, false if none was active.
+	 */
+	public function rollback(): ?bool;
+
+	/**
+	 * Returns the ID of the last inserted row or sequence value.  Wraps
+	 * `PDO::lastInsertId()` for SQL/PDO drivers.
+	 * @param string $sequenceName name of the sequence object (required by some DBMS).
+	 * @return string the last insert ID, or empty string if the concept does not apply.
 	 */
 	public function getLastInsertID($sequenceName = '');
+
+	/**
+	 * @return IDataMetaData the metadata helper for schema introspection.
+	 */
+	public function getDbMetaData();
 
 	/**
 	 * Returns the DSN / connection string used to open this connection.

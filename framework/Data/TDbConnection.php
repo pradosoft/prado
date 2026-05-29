@@ -112,6 +112,16 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	 */
 	public const DEFAULT_TRANSACTION_CLASS = \Prado\Data\TDbTransaction::class;
 
+	/**
+	 * PDO bindings for the {@see IDataConnection} parameter-type tokens.
+	 * @since 4.3.3
+	 */
+	public const PARAM_NULL = PDO::PARAM_NULL;
+	public const PARAM_INT = PDO::PARAM_INT;
+	public const PARAM_STR = PDO::PARAM_STR;
+	public const PARAM_LOB = PDO::PARAM_LOB;
+	public const PARAM_BOOL = PDO::PARAM_BOOL;
+
 	private $_dsn = '';
 	private $_username = '';
 	private $_password = '';
@@ -704,6 +714,57 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 		} else {
 			throw new TDbException('dbconnection_connection_inactive');
 		}
+	}
+
+	/**
+	 * Returns the last transaction allocated by {@see beginTransaction},
+	 * active or not.  Used by reuse-pattern subclasses to detect supersession.
+	 * @return ?IDataTransaction the last transaction, or null if none was ever begun.
+	 * @since 4.3.3
+	 */
+	public function getLastTransaction(): ?IDataTransaction
+	{
+		return $this->_transaction;
+	}
+
+	/**
+	 * Commits the currently active transaction.  Issues `PDO::commit()` and
+	 * deactivates the transaction object.
+	 * @return ?bool true on commit, false if no active transaction, null if connection inactive.
+	 * @since 4.3.3
+	 */
+	public function commit(): ?bool
+	{
+		if (!$this->getActive()) {
+			return null;
+		}
+		$txn = $this->_transaction;
+		if ($txn === null || !$txn->getActive()) {
+			return false;
+		}
+		$this->_pdo->commit();
+		$txn->deactivate();
+		return true;
+	}
+
+	/**
+	 * Rolls back the currently active transaction.  Issues `PDO::rollBack()`
+	 * and deactivates the transaction object.
+	 * @return ?bool true on rollback, false if no active transaction, null if connection inactive.
+	 * @since 4.3.3
+	 */
+	public function rollback(): ?bool
+	{
+		if (!$this->getActive()) {
+			return null;
+		}
+		$txn = $this->_transaction;
+		if ($txn === null || !$txn->getActive()) {
+			return false;
+		}
+		$this->_pdo->rollBack();
+		$txn->deactivate();
+		return true;
 	}
 
 	/**

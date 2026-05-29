@@ -36,7 +36,10 @@ interface IDataTableInfo
 
 	/**
 	 * Returns all columns defined on this table, keyed by column name.
-	 * @return \Prado\Collections\TMap map of column name to column metadata object.
+	 * Each column object implements {@see IDataColumn} (SQL drivers return
+	 * {@see TDbTableColumn} subclasses, which additionally implement
+	 * {@see IDbColumn}).
+	 * @return \Prado\Collections\TMap map of column name to {@see IDataColumn}.
 	 */
 	public function getColumns();
 

@@ -10,9 +10,10 @@
 
 namespace Prado\Data\Common;
 
-use PDO;
 use Traversable;
 use Prado\Data\TDbCommand;
+use Prado\Data\TDbConnection;
+use Prado\Data\Common\IDataCommandBuilder;
 
 /**
  * TDbCommandBuilder provides basic methods to create query commands for tables
@@ -21,7 +22,7 @@ use Prado\Data\TDbCommand;
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
  */
-class TDbCommandBuilder extends \Prado\TComponent implements IDataCommandBuilder
+class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 {
 	private $_connection;
 	private $_tableInfo;
@@ -469,9 +470,9 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDataCommandBuilder
 		foreach ($values as $name => $value) {
 			$column = $this->getTableInfo()->getColumn($name);
 			if ($value === null && $column->getAllowNull()) {
-				$command->bindValue(':' . $name, null, PDO::PARAM_NULL);
+				$command->bindValue(':' . $name, null, $this->_connection::PARAM_NULL);
 			} else {
-				$command->bindValue(':' . $name, $value, $column->getPdoType());
+				$command->bindValue(':' . $name, $value, $column->getParamType());
 			}
 		}
 	}
@@ -485,29 +486,41 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDataCommandBuilder
 		if ($this->hasIntegerKey($values)) {
 			$values = array_values($values);
 			for ($i = 0, $max = count($values); $i < $max; $i++) {
-				$command->bindValue($i + 1, $values[$i], $this->getPdoType($values[$i]));
+				$command->bindValue($i + 1, $values[$i], static::getParamType($values[$i]));
 			}
 		} else {
 			foreach ($values as $name => $value) {
 				$prop = $name[0] === ':' ? $name : ':' . $name;
-				$command->bindValue($prop, $value, $this->getPdoType($value));
+				$command->bindValue($prop, $value, static::getParamType($value));
 			}
 		}
 	}
 
 	/**
-	 * @param mixed $value PHP value
-	 * @return null|int PDO parameter types.
+	 * Maps a PHP value's runtime type to a {@see TDbConnection} `PARAM_*` token.
+	 * @param mixed $value PHP value.
+	 * @return null|int the bind-parameter token, or null if no mapping.
+	 * @since 4.3.3
+	 */
+	public static function getParamType($value)
+	{
+		switch (gettype($value)) {
+			case 'boolean': return TDbConnection::PARAM_BOOL;
+			case 'integer': return TDbConnection::PARAM_INT;
+			case 'string': return TDbConnection::PARAM_STR;
+			case 'NULL': return TDbConnection::PARAM_NULL;
+		}
+		return null;
+	}
+
+	/**
+	 * @param mixed $value PHP value.
+	 * @return null|int the PDO `PARAM_*` integer, or null if no mapping.
+	 * @deprecated 4.3.3 — use {@see getParamType}.
 	 */
 	public static function getPdoType($value)
 	{
-		switch (gettype($value)) {
-			case 'boolean': return PDO::PARAM_BOOL;
-			case 'integer': return PDO::PARAM_INT;
-			case 'string': return PDO::PARAM_STR;
-			case 'NULL': return PDO::PARAM_NULL;
-		}
-		return null;
+		return static::getParamType($value);
 	}
 
 	/**

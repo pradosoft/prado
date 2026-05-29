@@ -11,6 +11,7 @@
 namespace Prado\Data\Common;
 
 use Prado\Collections\TMap;
+use Prado\Data\Common\IDataTableInfo;
 use Prado\Exceptions\TDbException;
 use Prado\Prado;
 
@@ -81,19 +82,15 @@ class TDbTableInfo extends \Prado\TComponent implements IDataTableInfo
 	}
 
 	/**
-	 * Returns the schema (owner/namespace) name for database engines that support
-	 * schemas.  Returns null for schema-less engines (SQLite, Firebird).
-	 *
-	 * The concrete class must implement {@see IDbHasSchema} for a non-null value
-	 * to be returned; this prevents schema-less drivers from accidentally exposing
-	 * a stored value if one were ever written to the info array.
-	 *
-	 * @return ?string schema name, or null if the engine does not support schemas.
+	 * Returns the schema (owner/namespace) name.  Returns null unless the
+	 * concrete class implements {@see IDataHasSchema} (so schema-less drivers
+	 * like SQLite/Firebird never expose a value).
+	 * @return ?string schema name, or null if the engine has no schemas.
 	 * @since 4.3.3
 	 */
 	public function getSchemaName(): ?string
 	{
-		return $this instanceof IDbHasSchema ? $this->getInfo('SchemaName') : null;
+		return $this instanceof IDataHasSchema ? $this->getInfo('SchemaName') : null;
 	}
 
 	/**

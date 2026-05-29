@@ -10,7 +10,7 @@
 
 namespace Prado\Data\Common;
 
-use PDO;
+use Prado\Data\TDbConnection;
 
 /**
  * TDbTableColumn class describes the column meta data of the schema for a database table.
@@ -18,7 +18,7 @@ use PDO;
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
  */
-class TDbTableColumn extends \Prado\TComponent
+class TDbTableColumn extends \Prado\TComponent implements IDbColumn
 {
 	public const UNDEFINED_VALUE = INF; //use infinity for undefined value
 
@@ -63,16 +63,28 @@ class TDbTableColumn extends \Prado\TComponent
 	}
 
 	/**
-	 * @return int PDO bind param/value types, default returns string.
+	 * Returns the column's bind-parameter token, mapped from {@see getPHPType}
+	 * to a {@see TDbConnection} `PARAM_*` constant.  Defaults to `PARAM_STR`.
+	 * @return int the bind-parameter token.
+	 * @since 4.3.3
+	 */
+	public function getParamType()
+	{
+		switch ($this->getPHPType()) {
+			case 'boolean': return TDbConnection::PARAM_BOOL;
+			case 'integer': return TDbConnection::PARAM_INT;
+			case 'string': return TDbConnection::PARAM_STR;
+		}
+		return TDbConnection::PARAM_STR;
+	}
+
+	/**
+	 * @return int the PDO `PARAM_*` integer.
+	 * @deprecated 4.3.3 — use {@see getParamType}.
 	 */
 	public function getPdoType()
 	{
-		switch ($this->getPHPType()) {
-			case 'boolean': return PDO::PARAM_BOOL;
-			case 'integer': return PDO::PARAM_INT;
-			case 'string': return PDO::PARAM_STR;
-		}
-		return PDO::PARAM_STR;
+		return $this->getParamType();
 	}
 
 	/**

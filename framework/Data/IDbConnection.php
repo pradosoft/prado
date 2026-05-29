@@ -13,15 +13,11 @@ namespace Prado\Data;
 /**
  * IDbConnection interface
  *
- * IDbConnection extends {@see IDataConnection} with PDO-specific access,
- * providing direct access to the underlying {@see \PDO} instance.
- *
- * This interface is implemented by {@see TDbConnection} and should be used
- * as the type hint wherever code needs to call PDO-specific methods directly
- * (e.g. `getPdoInstance()->lastInsertId()`, `getPdoInstance()->prepare()`).
- *
- * Code that does not require PDO access should use {@see IDataConnection}
- * so that non-PDO driver implementations remain compatible.
+ * Discovery marker for connections that expose the raw PDO escape hatch via
+ * {@see getPdoInstance}.  Use this interface (or `instanceof`) when code needs
+ * the raw `\PDO` handle for an operation the framework does not abstract
+ * (e.g. driver-specific attribute tuning, LOB streaming).  Implemented by
+ * {@see TDbConnection}.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3
@@ -29,11 +25,7 @@ namespace Prado\Data;
 interface IDbConnection extends IDataConnection
 {
 	/**
-	 * Returns the underlying PDO instance for this connection.
-	 *
-	 * Returns null if the connection has not been opened yet.
-	 *
-	 * @return null|\PDO the PDO instance, or null if not yet connected.
+	 * @return null|\PDO the underlying PDO instance, or null if not yet connected.
 	 */
 	public function getPdoInstance();
 }
