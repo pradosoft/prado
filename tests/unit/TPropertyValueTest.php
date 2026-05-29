@@ -124,11 +124,12 @@ class TPropertyValueTestCodeEnum implements IEnumerable
 
 /**
  * Fixture: a plain ICoercible class.  Accepts:
- * - an existing instance (pass-through),
  * - a "x,y" string (regex-parsed),
  * - an ['x' => …, 'y' => …] array.
  * Declines everything else by returning null.  Used as the canonical ICoercible
- * exercise for both the single-class path and the union path.
+ * exercise for both the single-class path and the union path.  Note: identity
+ * pass-through is handled by the call site, so coerceFromValue() never sees a
+ * Point instance.
  */
 class TPropertyValueTestPoint implements ICoercible
 {
@@ -138,9 +139,6 @@ class TPropertyValueTestPoint implements ICoercible
 
 	public static function coerceFromValue(mixed $value): ?static
 	{
-		if ($value instanceof static) {
-			return $value;
-		}
 		if (is_array($value) && isset($value['x'], $value['y'])) {
 			return new static((int) $value['x'], (int) $value['y']);
 		}
@@ -163,13 +161,23 @@ class TPropertyValueTestRange implements ICoercible
 
 	public static function coerceFromValue(mixed $value): ?static
 	{
-		if ($value instanceof static) {
-			return $value;
-		}
 		if (is_string($value) && preg_match('/^(-?\d+)-(-?\d+)$/', $value, $m)) {
 			return new static((int) $m[1], (int) $m[2]);
 		}
 		return null;
+	}
+}
+
+/**
+ * Fixture: an ICoercible whose coerceFromValue() ALWAYS throws if invoked.
+ * Used to prove that the call site's identity pass-through truly short-circuits
+ * before the factory runs — an instance input must not reach the factory at all.
+ */
+class TPropertyValueTestNeverCalled implements ICoercible
+{
+	public static function coerceFromValue(mixed $value): ?static
+	{
+		throw new \LogicException('coerceFromValue() must not be invoked for an identity pass-through.');
 	}
 }
 
@@ -4018,6 +4026,7 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		self::assertTrue(is_a(TPropertyValueTestPickyCoercer::class,       ICoercible::class, true));
 		self::assertTrue(is_a(TPropertyValueTestCoercibleEnum::class,      ICoercible::class, true));
 		self::assertTrue(is_a(TPropertyValueTestCoercibleDirection::class, ICoercible::class, true));
+		self::assertTrue(is_a(TPropertyValueTestNeverCalled::class,        ICoercible::class, true));
 		// Composite fixture also implements IEnumerable.
 		self::assertTrue(is_a(TPropertyValueTestCoercibleDirection::class, IEnumerable::class, true));
 	}
@@ -4048,6 +4057,17 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 	{
 		$t = $this->typeOf(fn(TPropertyValueTestPoint $x) => $x);
 		$existing = new TPropertyValueTestPoint(7, 8);
+		self::assertSame($existing, TPropertyValue::coerceToType($existing, $t));
+	}
+
+	public function testICoercible_singleClass_identityShortCircuitSkipsFactory(): void
+	{
+		// The TPropertyValueTestNeverCalled fixture's coerceFromValue() throws
+		// LogicException if invoked.  An instance input must short-circuit on
+		// the call site's instanceof check and return without entering the
+		// factory at all — assertSame proves it (no exception thrown).
+		$t = $this->typeOf(fn(TPropertyValueTestNeverCalled $x) => $x);
+		$existing = new TPropertyValueTestNeverCalled();
 		self::assertSame($existing, TPropertyValue::coerceToType($existing, $t));
 	}
 
@@ -4172,13 +4192,23 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		self::assertFalse(TPropertyValue::coerceToType(false, $t));
 	}
 
-	public function testICoercibleUnion_existingInstance_passesThroughNativeStep(): void
+	public function testICoercibleUnion_existingInstance_passesThroughStep2(): void
 	{
-		// Step 4 already short-circuits typed objects ahead of stringification;
-		// ICoercible's pass-through (`instanceof static`) also handles it for
-		// the single-class path.  Both routes agree on the same outcome.
+		// Step 2 (ICoercible) holds the identity pass-through check itself
+		// — `$value instanceof $member` is consulted before coerceFromValue
+		// is invoked.  Step 4 (native object short-circuit) would also accept
+		// the instance, but step 2 always claims it first.
 		$existing = new TPropertyValueTestPoint(5, 6);
 		$t = $this->typeOf(fn(TPropertyValueTestPoint|string $x) => $x);
+		self::assertSame($existing, TPropertyValue::coerceToType($existing, $t));
+	}
+
+	public function testICoercibleUnion_identityShortCircuitSkipsFactory(): void
+	{
+		// Union with a throwing fixture proves the call-site short-circuit:
+		// an instance input must not enter coerceFromValue() even on the union path.
+		$existing = new TPropertyValueTestNeverCalled();
+		$t = $this->typeOf(fn(TPropertyValueTestNeverCalled|string $x) => $x);
 		self::assertSame($existing, TPropertyValue::coerceToType($existing, $t));
 	}
 

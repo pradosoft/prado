@@ -1392,8 +1392,9 @@ class TPropertyValue
 	 * Resolution order parallels {@see _coerceUnionType()}:
 	 *
 	 * 1. **ICoercible** — when `$className` implements {@see \Prado\ICoercible},
-	 *    `coerceFromValue($value)` runs first.  A non-`null` return wins; a
-	 *    `null` return continues to the enum paths below.
+	 *    an existing instance of the class passes through unchanged; otherwise
+	 *    `coerceFromValue($value)` runs and a non-`null` return wins.  A `null`
+	 *    return continues to the enum paths below.
 	 * 2. **BackedEnum + int** — `tryFrom($value)` resolves an int input to
 	 *    its backing value's case.
 	 * 3. **String + enum** — {@see _tryMatchEnum()} performs a case-insensitive
@@ -1410,6 +1411,9 @@ class TPropertyValue
 	private static function _coerceToClass(mixed $value, string $className): mixed
 	{
 		if (is_a($className, ICoercible::class, true)) {
+			if ($value instanceof $className) {
+				return $value;
+			}
 			$coerced = $className::coerceFromValue($value);
 			if ($coerced !== null) {
 				return $coerced;
@@ -1505,12 +1509,10 @@ class TPropertyValue
 	 * selects the most appropriate type:
 	 *
 	 * 1. `null` / empty string → `null` (when `null` is in the union)
-	 * 2. **ICoercible** — each non-builtin union member implementing
-	 *    {@see \Prado\ICoercible} is given a chance via its
-	 *    `coerceFromValue()` factory; members are tried in declaration order
-	 *    and the first non-`null` result wins.  Runs before enum validation
-	 *    so a class that both validates names *and* coerces richer inputs
-	 *    can stake its claim first.
+	 * 2. **ICoercible** — non-builtin union members implementing
+	 *    {@see \Prado\ICoercible} are tried in declaration order; an existing
+	 *    instance passes through, otherwise `coerceFromValue()` runs and the
+	 *    first non-`null` result wins.
 	 * 3. Enumerable validation — for string `$value`, case-insensitive
 	 *    constant-name lookup via {@see _tryMatchEnum()} against each
 	 *    enum-like (UnitEnum / IEnumerable) union member; the first match
@@ -1561,19 +1563,18 @@ class TPropertyValue
 			return self::coerceToType($value, $nonNull[0]);
 		}
 
-		// 2. ICoercible.  Each non-builtin union member that implements
-		// {@see \Prado\ICoercible} gets a chance to coerce the value via its
-		// `coerceFromValue()` factory.  Members are tried in PHP reflection
-		// (declaration) order; the first non-`null` result wins.  Runs before
-		// enum validation so an IEnumerable / UnitEnum class that also
-		// implements ICoercible can claim inputs richer than pure name
-		// matching.
+		// 2. ICoercible.  Each non-builtin {@see ICoercible} member, in
+		// declaration order, claims an identity match or the first non-`null`
+		// `coerceFromValue()` return.
 		foreach ($nonNull as $t) {
 			if ($t->isBuiltin()) {
 				continue;
 			}
 			$n = $t->getName();
 			if (is_a($n, ICoercible::class, true)) {
+				if ($value instanceof $n) {
+					return $value;
+				}
 				$coerced = $n::coerceFromValue($value);
 				if ($coerced !== null) {
 					return $coerced;
