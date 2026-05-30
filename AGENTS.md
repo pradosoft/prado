@@ -6,6 +6,8 @@
 - **All Unit Tests**: `vendor/bin/phpunit --testsuite unit` - runs all unit tests
 - **Playwright Functional Tests**: `composer functest` (Chromium) / `composer functionaltest` (all browsers) — PHP server starts automatically
 - **Test Filter**: `vendor/bin/phpunit --testsuite unit --filter <test function, class, or directory>`
+- **Javascript eslint **: `npm run lint:fix`
+- **Javascript vitest Unit Tests**: `npm run test`
 
 ### Linting and Code Analysis
 - **PHPStan Analysis**: `vendor/bin/phpstan analyse framework/ --memory-limit=512M`
@@ -37,8 +39,9 @@
 - Enumerated Constants: `PascalCase` (eg. `DeepSkyBlue`)
 - Class properties: `_camelCase` (eg. `_propertyOfClass`, `_styleFieldNames`)
 - Namespace: `Prado\{Module}` (eg. `Prado\Web\UI\TControl`)
-- MasterClass and Template file extension: ".tpl"
-- Web Page template file extensions: ".page" with ".php" backing
+- Web Page template file extensions: `.page` with `.php` backing
+- MasterClass and Template file extension: `.tpl` with `.php` backing
+- Prado TControl template tag prefix: `<com:` (eg. `<com:TMain />`)
 
 ### Documentation Standards
 - All public methods must have PHPDoc comments with:
@@ -52,8 +55,25 @@
 - Inline comments should start with `//`
 - Use `?` for single nullable types and in doc blocks
 - **`@since` tag** — use the next release version when adding new methods or classes; omit the method tag when it matches the class tag
-- All comments and documentation must be: **Present Perfect tense**, **American English**, clear, thorough, and technical
-- Method Doc Blocks should be **tight**, and have at minimum one sentence in the description.
+- Method Doc Blocks must be **tight**, and have at minimum one sentence in the description.
+- Documentation additions/changes/removals should be integrated into the whole, at each level (of detail).
+
+### Documentation Style (enforced)
+
+Docblocks are technical documentation written with direct technical statements.
+Language: American English
+Qualities of the writing: clear, thorough, easy to comprehend, not verbose (brevity)
+Tense: Clear Present Simple or Present Perfect - tune for ease of comprehension
+_Banned constructions_:
+- **Antithesis / "not merely X — it Ys"**: no "does not just X, it Ys", "is not a Y, it's a Z",
+  "rather than X, it Ys". State what it does, once.
+- **Em-dash dramatic asides** used for emphasis or reveal ("— and that's the point", "— never stronger").
+  Use a period or plain clause.
+- **Editorializing / filler** is unnecessary. 
+- **Rule-of-three rhetorical lists** and build-up sentences. One fact per sentence.
+
+Prefer: subject–verb–object declaratives, tables and bullet lists of `condition → result` where appropriate.
+Docblocks describe; it is not persuasive writing.
 
 ### Error Handling
 - Use try/catch blocks for operations that can fail
@@ -161,13 +181,21 @@ Prado.WebUI.TActiveButton = jQuery.klass(Prado.WebUI.CallbackControl, { /* overr
 ```
 All instances self-register in `Prado.Registry[controlId]` on construction and are cleaned up via `deinitialize()`.
 
-## Testing Guidelines
+## Testing
 - The testing platforms are "phpunit", "vitest", and "playwright"
 - All new code must include unit tests
 - Unit test functions must comprehensively assert both typical and edge cases
 - Maximal code coverage is required
 - Test error conditions and exception handling
-- Use PradoUnit infrastructure for access to protected and private object methods/properties.
+- Use `tests/unit/PradoUnit` infrastructure for (bootstrapped in phpunit):
+  - access to an object's protected/private properties
+  - invoking protected/private methods
+  - restore global variables to their initial state
+  - save and restore all of an object's properties
+  - automatically is included in the bootstrap
+  - includes everything in `tests/unit/Harness/` automatically (bootstrap)
+  - `Harness` is where test classes of Prado framework classes are located for general use
+  - Traits for unit test classes are in `Harness/Traits/`
 - Use mock objects only where appropriate, and check PradoUnit for a common solution first.
 - Functional tests should verify complete user workflows
 - Tests should be isolated from each other (no shared state)
@@ -243,7 +271,7 @@ All instances self-register in `Prado.Registry[controlId]` on construction and a
 │   │   ├── THttpResponse.php
 │   │   ├── THttpSession.php
 │   │   ├── TUrlManager.php     # Manages the mapping of URLS
-│   │   ├── TUrlMapping.php     # A specific url mapping 
+│   │   ├── TUrlMapping.php     # A specific url mapping
 │   │   └── UI/                 # Base Page UI directory
 │   │       ├── ActiveControls/    # JUI Controls
 │   │       ├── JuiControls/    # JUI Controls
@@ -268,9 +296,12 @@ All instances self-register in `Prado.Registry[controlId]` on construction and a
 ├── bin/                        # The Command Line Executable `prado-cli`
 ├── tests/                      # Test files
 │   ├── initdb_*.sql            # Database initialization files
+│   ├── harness/                # Functional test harness
+│   ├── js/                     # vitest js unit tests
 │   ├── playwright/             # Functional tests
 │   ├── test_tools/             # phpunit bootstrap and utilities
 │   └── unit/                   # phpunit tests for './framework/' classes
+│       └── PradoUnit.php       # Unit Test Helper
 ├── CLAUDE.md                   # The Memory file for the directory
 ├── composer.json               # Package configuration
 ├── HISTORY.md                  # Version History of important changes
