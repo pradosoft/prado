@@ -25,7 +25,9 @@ vendor/bin/phpunit --testsuite unit
 # Run tests for a specific class, function, or directory
 vendor/bin/phpunit --testsuite unit --filter <test function, class, or directory>
 
-# javascript commands and database commands in composer.json scripts section.
+# javascript commands
+composer jsfix           # js code style fix
+composer jstest          # vitest unit test
 
 # Generate API documentation
 composer gendoc
@@ -111,8 +113,9 @@ TApplication
 | Enumerated Constants | `PascalCase` | `DeepSkyBlue` |
 | Class properties| `_camelCase` | `_propertyOfClass`, `_styleFieldNames` |
 | Namespaces | `Prado\{Module}` | `Prado\Web\UI\TControl` |
-| MasterClass and Template files | `.tpl` | `MyPortlet.tpl` |
 | Web Page templates | `.page` with `.php` backing | `Home.page`, `Home.php` |
+| MasterClass and Template files | `.tpl` with `.php` backing | `MyPortlet.tpl`, `MyPortlet.php` |
+| TControl tag prefix |  `<com:` | `<com:TMain />` |
 
 ## Important Rules
 
@@ -123,13 +126,27 @@ TApplication
 - **`@since` tag** — use the next release version (`4.4.0`) when adding new methods or classes; omit the method tag when it matches the class tag.
 - **Uniform Access Principal - Self Encapsulation** is required; for an example see framework/TApplication.php
 - **Extract Method → Predicate/Guard Clause (Fowler) is suggested
-- All comments and documentation must be: **Present Perfect tense**, **American English**, clear, thorough, and technical
-- Method Doc Blocks should be **tight**, and have at minimum one sentence in the description.
-- The per directory "<dir_path>/CLAUDE.md" is found at "agents/<dir_path>/INDEX.md" to keep the framework uncluttered. 
+- Method Doc Blocks must be **tight**, and have at minimum one sentence in the description.
+- Documentation additions/changes/removals should be integrated into the whole, at each level (of detail).
+- The per directory "<dir_path>/CLAUDE.md" is found at "agents/<dir_path>/INDEX.md" to keep the framework uncluttered.
 
 ## Test Bootstrap
 
-Tests require a running `TApplication`. The bootstrap (`tests/test_tools/phpunit_bootstrap.php`) instantiates one from `tests/test_tools/Security/app/`. Database tests need MySQL/PostgreSQL initialized from `tests/initdb_mysql.sql` / `tests/initdb_pgsql.sql`.
+Tests require a running `TApplication`. 
+The bootstrap (`tests/test_tools/phpunit_bootstrap.php`) instantiates one from `tests/test_tools/Security/app/`; it may change through the unit tests.
+Database tests need MySQL/PostgreSQL initialized from `tests/initdb_mysql.sql` / `tests/initdb_pgsql.sql`.
+
+## Testing
+
+- Use `tests/unit/PradoUnit` infrastructure for (bootstrapped in phpunit):
+  - access to an object's protected/private properties
+  - invoking protected/private methods
+  - restore global variables to their initial state
+  - save and restore all of an object's properties
+  - automatically is included in the bootstrap
+  - includes everything in `tests/unit/Harness/` automatically (bootstrap)
+  - `Harness` is where test classes of Prado framework classes are located for general use
+  - Traits for unit test classes are in `Harness/Traits/`
 
 ## Code Style
 
@@ -139,6 +156,23 @@ Tests require a running `TApplication`. The bootstrap (`tests/test_tools/phpunit
 - PSR-12 enforced via php-cs-fixer
 - Use `?` for single nullable types and in doc blocks
 
+### Documentation Style (enforced)
+
+Docblocks are technical documentation written with direct technical statements.
+Language: American English
+Qualities of the writing: clear, thorough, easy to comprehend, not verbose (brevity)
+Tense: Clear Present Simple or Present Perfect - tune for ease of comprehension
+_Banned constructions_:
+- **Antithesis / "not merely X — it Ys"**: no "does not just X, it Ys", "is not a Y, it's a Z",
+  "rather than X, it Ys". State what it does, once.
+- **Em-dash dramatic asides** used for emphasis or reveal ("— and that's the point", "— never stronger").
+  Use a period or plain clause.
+- **Editorializing / filler** is unnecessary. 
+- **Rule-of-three rhetorical lists** and build-up sentences. One fact per sentence.
+
+Prefer: subject–verb–object declaratives, tables and bullet lists of `condition → result` where appropriate.
+Docblocks describe; it is not persuasive writing.
+
 ## Working Knowledge (`agents/`)
 
 Working Knowledge (`agents/`)
@@ -147,7 +181,7 @@ Working Knowledge (`agents/`)
 
 ## Anti-Patterns (Required Safeguards)
 
-- **Never** run `git clone/checkout/mv/restore/rm/branch/add/commit/merge/rebase/reset/pull/push/fetch` without developer approval first.
+- **Never** run `git clone/mv/restore/rm/add/commit/merge/rebase/reset/pull/push/fetch` without developer approval first.
 - **Never** run `rm` on any path without developer approval first.
 - **Never** remove `composer --dev` dependencies.
 - **Never** erase or overwrite files during unit testing — the file changes being tested must be preserved.
