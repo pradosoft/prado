@@ -29,7 +29,7 @@ use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\Services\TCspReportingService;
 use Prado\Web\Services\TCspViolationParameter;
 
-require_once __DIR__ . '/TTestableHttpHeadersManager.php';
+require_once __DIR__ . '/../../PradoUnitRequires.php';
 
 class THttpHeaderCspIntegrationTest extends PHPUnit\Framework\TestCase
 {
@@ -71,8 +71,8 @@ class THttpHeaderCspIntegrationTest extends PHPUnit\Framework\TestCase
 	private function makeManagerWithCsp(
 		string $defaultSrcValue = "'self'",
 		bool $reportOnly = false
-	): TTestableHttpHeadersManager {
-		$manager = new TTestableHttpHeadersManager();
+	): TTestHttpHeadersManager {
+		$manager = new TTestHttpHeadersManager();
 		$manager->publicLoadHeaders([
 			'headers' => [
 				[
@@ -95,7 +95,7 @@ class THttpHeaderCspIntegrationTest extends PHPUnit\Framework\TestCase
 	{
 		// CSP declares report-to "csp-endpoint" but no Reporting-Endpoints header
 		// is present → finalizeHeader() must not throw, but must complete normally.
-		$manager = new TTestableHttpHeadersManager();
+		$manager = new TTestHttpHeadersManager();
 		$manager->publicLoadHeaders([
 			'headers' => [
 				[
@@ -125,7 +125,7 @@ class THttpHeaderCspIntegrationTest extends PHPUnit\Framework\TestCase
 	{
 		// When a matching Reporting-Endpoints header is also configured, the
 		// cross-validation must be satisfied and both headers must be emitted.
-		$manager = new TTestableHttpHeadersManager();
+		$manager = new TTestHttpHeadersManager();
 		$manager->publicLoadHeaders([
 			'headers' => [
 				[
@@ -375,7 +375,7 @@ class THttpHeaderCspIntegrationTest extends PHPUnit\Framework\TestCase
 	{
 		$restore = $this->injectService();
 		try {
-			$manager = new TTestableHttpHeadersManager();
+			$manager = new TTestHttpHeadersManager();
 			$manager->publicLoadHeaders([
 				'headers' => [
 					[
@@ -408,7 +408,7 @@ class THttpHeaderCspIntegrationTest extends PHPUnit\Framework\TestCase
 		try {
 			$endpointName = 'prado-csp-reporter'; // default ReportingEndpointName
 
-			$manager = new TTestableHttpHeadersManager();
+			$manager = new TTestHttpHeadersManager();
 			$manager->publicLoadHeaders([
 				'headers' => [
 					[
@@ -453,7 +453,7 @@ class THttpHeaderCspIntegrationTest extends PHPUnit\Framework\TestCase
 	{
 		$restore = $this->injectService();
 		try {
-			$manager = new TTestableHttpHeadersManager();
+			$manager = new TTestHttpHeadersManager();
 			$manager->publicLoadHeaders([
 				'headers' => [
 					[
@@ -569,7 +569,7 @@ class THttpHeaderCspIntegrationTest extends PHPUnit\Framework\TestCase
 	{
 		$restore = $this->injectService();
 		try {
-			$manager = new TTestableHttpHeadersManager();
+			$manager = new TTestHttpHeadersManager();
 			$manager->publicLoadHeaders([
 				'headers' => [
 					[
@@ -605,7 +605,7 @@ class THttpHeaderCspIntegrationTest extends PHPUnit\Framework\TestCase
 	{
 		$restore = $this->injectService();
 		try {
-			$manager = new TTestableHttpHeadersManager();
+			$manager = new TTestHttpHeadersManager();
 			$manager->publicLoadHeaders([
 				'headers' => [[
 					'class'    => THttpHeaderCsp::class,
@@ -635,7 +635,7 @@ class THttpHeaderCspIntegrationTest extends PHPUnit\Framework\TestCase
 	{
 		$restore = $this->injectService();
 		try {
-			$manager = new TTestableHttpHeadersManager();
+			$manager = new TTestHttpHeadersManager();
 			$manager->publicLoadHeaders([
 				'headers' => [[
 					'class'    => THttpHeaderCsp::class,
@@ -664,7 +664,7 @@ class THttpHeaderCspIntegrationTest extends PHPUnit\Framework\TestCase
 		// Auto ReportingServiceMode wiring even when resolveReportOnly() is false.
 		$restore = $this->injectService();
 		try {
-			$manager = new TTestableHttpHeadersManager();
+			$manager = new TTestHttpHeadersManager();
 			$manager->publicLoadHeaders([
 				'headers' => [[
 					'class'    => THttpHeaderCsp::class,
@@ -691,7 +691,7 @@ class THttpHeaderCspIntegrationTest extends PHPUnit\Framework\TestCase
 	{
 		$restore = $this->injectService();
 		try {
-			$manager = new TTestableHttpHeadersManager();
+			$manager = new TTestHttpHeadersManager();
 			$manager->publicLoadHeaders([
 				'headers' => [[
 					'class'    => THttpHeaderCsp::class,
@@ -723,7 +723,7 @@ class THttpHeaderCspIntegrationTest extends PHPUnit\Framework\TestCase
 	public function testReportingEndpointsHeaderValueFormat()
 	{
 		// Manually configured Reporting-Endpoints must emit the RFC 8941 format.
-		$manager = new TTestableHttpHeadersManager();
+		$manager = new TTestHttpHeadersManager();
 		$manager->publicLoadHeaders([
 			'headers' => [
 				[
@@ -755,7 +755,7 @@ class THttpHeaderCspIntegrationTest extends PHPUnit\Framework\TestCase
 
 	public function testCspNonceIsReplacedInEmittedHeader()
 	{
-		$manager = new TTestableHttpHeadersManager();
+		$manager = new TTestHttpHeadersManager();
 		$manager->publicLoadHeaders([
 			'headers' => [
 				[
@@ -799,7 +799,7 @@ class THttpHeaderCspIntegrationTest extends PHPUnit\Framework\TestCase
 	{
 		$restore = $this->injectService();
 		try {
-			$manager = new TTestableHttpHeadersManager();
+			$manager = new TTestHttpHeadersManager();
 			$manager->setReportingServiceMode(true);
 			$manager->setReportOnly(false);
 			$manager->setReportingEndpointName('prado-csp');
@@ -851,7 +851,7 @@ class THttpHeaderCspIntegrationTest extends PHPUnit\Framework\TestCase
 
 	public function testReportingModeTrueAutoRegistersServiceInAppRegistry()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(true);
 		$m->setReportOnly(false);
 		$m->setId('headers');
@@ -875,7 +875,7 @@ class THttpHeaderCspIntegrationTest extends PHPUnit\Framework\TestCase
 
 	public function testReportingModeAutoAutoRegistersServiceInAppRegistry()
 	{
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode('Auto');
 		// ReportOnly=true (default) triggers registration in Auto mode.
 		$m->setId('headers');
@@ -901,7 +901,7 @@ class THttpHeaderCspIntegrationTest extends PHPUnit\Framework\TestCase
 	{
 		// The registered entry's init-properties must include AutoRegistered=true
 		// so the service knows it was created by the manager, not the developer.
-		$m = new TTestableHttpHeadersManager();
+		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(true);
 		$m->setReportOnly(false);
 		$m->setId('headers');

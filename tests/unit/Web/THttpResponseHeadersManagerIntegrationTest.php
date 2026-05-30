@@ -17,10 +17,9 @@ use Prado\Web\HttpHeaders\THttpHeadersManager;
 use Prado\Web\HttpHeaders\TCspDirective;
 use Prado\Web\THttpResponse;
 
-// Load the shared test double if it has not been loaded yet.
-if (!class_exists('TTestableHttpHeadersManager', false)) {
-	require_once __DIR__ . '/HttpHeaders/TTestableHttpHeadersManager.php';
-}
+// PradoUnitRequires walks tests/unit/Harness/ recursively and loads
+// TTestHttpHeadersManager + TOutputBufferRestorationTrait automatically.
+require_once __DIR__ . '/../PradoUnitRequires.php';
 
 /**
  * Integration tests for the THttpResponse ↔ THttpHeadersManager wiring.
@@ -30,6 +29,10 @@ if (!class_exists('TTestableHttpHeadersManager', false)) {
  */
 class THttpResponseHeadersManagerIntegrationTest extends PHPUnit\Framework\TestCase
 {
+	use TOutputBufferRestorationTrait {
+		setUpBeforeClass as outputSetup;
+	}
+
 	private static TApplication $app;
 
 	// =========================================================================
@@ -38,7 +41,31 @@ class THttpResponseHeadersManagerIntegrationTest extends PHPUnit\Framework\TestC
 
 	public static function setUpBeforeClass(): void
 	{
+		// Trait alias runs the eager THttpResponse init + OB balance; this
+		// override only needs to resolve the local $app reference.
+		static::outputSetup();
 		self::$app = Prado::getApplication();
+	}
+
+	/**
+	 * Records the entry-time OB depth.  Defensive only — the framework's
+	 * one-shot buffer is already closed in {@see setUpBeforeClass()}, so no
+	 * test in this class is currently expected to leave the OB level higher
+	 * than it entered.  The hook is kept as a safety net in case a future
+	 * test invokes a code path that opens a buffer mid-test.
+	 */
+	protected function setUp(): void
+	{
+		$this->saveOutputBufferLevel();
+	}
+
+	/**
+	 * Restores the OB depth captured in {@see setUp()}, discarding any
+	 * buffers opened during the test.  See {@see setUp()} for context.
+	 */
+	protected function tearDown(): void
+	{
+		$this->restoreOutputBufferLevel();
 	}
 
 	// =========================================================================
@@ -46,13 +73,13 @@ class THttpResponseHeadersManagerIntegrationTest extends PHPUnit\Framework\TestC
 	// =========================================================================
 
 	/**
-	 * Registers a {@see TTestableHttpHeadersManager} instance with the
+	 * Registers a {@see TTestHttpHeadersManager} instance with the
 	 * application under the supplied module ID so that
 	 * {@see TApplication::getModule()} can resolve it.
-	 * @param TTestableHttpHeadersManager $manager manager instance to register.
+	 * @param TTestHttpHeadersManager $manager manager instance to register.
 	 * @param string $id module ID to register under.
 	 */
-	private function registerManager(TTestableHttpHeadersManager $manager, string $id): void
+	private function registerManager(TTestHttpHeadersManager $manager, string $id): void
 	{
 		self::$app->setModule($id, $manager);
 	}
@@ -203,13 +230,13 @@ class THttpResponseHeadersManagerIntegrationTest extends PHPUnit\Framework\TestC
 	}
 
 	/**
-	 * When a {@see TTestableHttpHeadersManager} is registered under the
+	 * When a {@see TTestHttpHeadersManager} is registered under the
 	 * configured ID, {@see getHeadersManagerModule()} returns that exact instance.
 	 */
 	public function testGetHeadersManagerModuleReturnsRegisteredManager(): void
 	{
 		$moduleId = 'test-hm-001';
-		$manager = new TTestableHttpHeadersManager();
+		$manager = new TTestHttpHeadersManager();
 		$this->registerManager($manager, $moduleId);
 
 		$response = $this->freshResponse();
@@ -237,7 +264,7 @@ class THttpResponseHeadersManagerIntegrationTest extends PHPUnit\Framework\TestC
 	public function testEnsureHeadersSentCallsManagerEnsureHeadersSent(): void
 	{
 		$moduleId = 'test-hm-send-001';
-		$manager = new TTestableHttpHeadersManager();
+		$manager = new TTestHttpHeadersManager();
 		$manager->setReportingServiceMode(false);
 		$this->registerManager($manager, $moduleId);
 
@@ -262,7 +289,7 @@ class THttpResponseHeadersManagerIntegrationTest extends PHPUnit\Framework\TestC
 	public function testManagerSendIsIdempotent(): void
 	{
 		$moduleId = 'test-hm-idempotent-001';
-		$manager = new TTestableHttpHeadersManager();
+		$manager = new TTestHttpHeadersManager();
 		$manager->setReportingServiceMode(false);
 		$this->registerManager($manager, $moduleId);
 
@@ -285,12 +312,12 @@ class THttpResponseHeadersManagerIntegrationTest extends PHPUnit\Framework\TestC
 
 	/**
 	 * Headers added to the manager before {@see ensureHeadersSent()} are captured
-	 * in the manager's {@see TTestableHttpHeadersManager::$sentHeaders} array.
+	 * in the manager's {@see TTestHttpHeadersManager::$sentHeaders} array.
 	 */
 	public function testManagerHeadersAreCapturedAfterEnsureHeadersSent(): void
 	{
 		$moduleId = 'test-hm-capture-001';
-		$manager = new TTestableHttpHeadersManager();
+		$manager = new TTestHttpHeadersManager();
 		$manager->setReportingServiceMode(false);
 
 		$header = new THttpHeader();
@@ -329,7 +356,7 @@ class THttpResponseHeadersManagerIntegrationTest extends PHPUnit\Framework\TestC
 	public function testEmptyHeadersManagerIdSkipsManagerCall(): void
 	{
 		$moduleId = 'test-hm-skip-001';
-		$manager = new TTestableHttpHeadersManager();
+		$manager = new TTestHttpHeadersManager();
 		$manager->setReportingServiceMode(false);
 		$this->registerManager($manager, $moduleId);
 
@@ -356,7 +383,7 @@ class THttpResponseHeadersManagerIntegrationTest extends PHPUnit\Framework\TestC
 	public function testManagerIsHandledPreventsManagerSendViaResponse(): void
 	{
 		$moduleId = 'test-hm-handled-001';
-		$manager = new TTestableHttpHeadersManager();
+		$manager = new TTestHttpHeadersManager();
 		$manager->setReportingServiceMode(false);
 		$manager->setIsHandled(true);
 		$this->registerManager($manager, $moduleId);
