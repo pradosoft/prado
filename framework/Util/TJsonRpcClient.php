@@ -9,6 +9,8 @@
 
 namespace Prado\Util;
 
+use Prado\Web\TMediaType;
+
 /**
  * TJsonRpcClient class
  *
@@ -40,7 +42,7 @@ class TJsonRpcClient extends TRpcClient
 	public function __call($method, $parameters)
 	{
 		// send request
-		$_response = $this->performRequest($this->getServerUrl(), $this->encodeRequest($method, $parameters), 'application/json');
+		$_response = $this->performRequest($this->getServerUrl(), $this->encodeRequest($method, $parameters), TMediaType::JSON);
 
 		// skip response handling if the request was just a notification request
 		if ($this->getIsNotification()) {

@@ -13,6 +13,7 @@ namespace Prado\Web\Services;
 use Prado\Prado;
 use Prado\TService;
 use Prado\Util\TLogger;
+use Prado\Web\THttpHeaderName;
 use Prado\Web\TMediaType;
 
 /**
@@ -176,7 +177,7 @@ class TCspReportingService extends TService
 
 		if ($request->getRequestType() !== 'POST') {
 			$response->setStatusCode(405);
-			$response->appendHeader('Allow: POST');
+			$response->appendHeader(THttpHeaderName::Allow . ': POST');
 			return;
 		}
 

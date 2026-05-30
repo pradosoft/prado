@@ -18,6 +18,7 @@ use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Util\Traits\TInitializedTrait;
 use Prado\Web\HttpHeaders\THttpHeadersManager;
+use Prado\Web\THttpHeaderName;
 
 /**
  * THttpResponse class
@@ -89,7 +90,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 {
 	use TInitializedTrait;
 
-	public const DEFAULT_CONTENTTYPE = 'text/html';
+	public const DEFAULT_CONTENTTYPE = TMediaType::HTML;
 	public const DEFAULT_CHARSET = 'UTF-8';
 
 	/**
@@ -386,20 +387,20 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	public function writeFile($fileName, $content = null, $mimeType = null, $headers = null, $forceDownload = true, $clientFileName = null, $fileSize = null)
 	{
 		static $defaultMimeTypes = [
-			'css' => 'text/css',
-			'gif' => 'image/gif',
-			'png' => 'image/png',
-			'jpg' => 'image/jpeg',
-			'jpeg' => 'image/jpeg',
-			'htm' => 'text/html',
-			'html' => 'text/html',
-			'js' => 'text/javascript',
-			'pdf' => 'application/pdf',
-			'xls' => 'application/vnd.ms-excel',
+			'css' => TMediaType::CSS,
+			'gif' => TMediaType::GIF,
+			'png' => TMediaType::PNG,
+			'jpg' => TMediaType::JPEG,
+			'jpeg' => TMediaType::JPEG,
+			'htm' => TMediaType::HTML,
+			'html' => TMediaType::HTML,
+			'js' => TMediaType::JAVASCRIPT,
+			'pdf' => TMediaType::PDF,
+			'xls' => TMediaType::XLS,
 		];
 
 		if ($mimeType === null) {
-			$mimeType = 'text/plain';
+			$mimeType = TMediaType::PLAIN;
 			if (function_exists('mime_content_type')) {
 				$mimeType = mime_content_type($fileName);
 			} elseif (($ext = strrchr($fileName, '.')) !== false) {
@@ -426,15 +427,15 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 				$this->appendHeader($h);
 			}
 		} else {
-			$this->appendHeader('Pragma: public');
-			$this->appendHeader('Expires: 0');
-			$this->appendHeader('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-			$this->appendHeader("Content-Type: $mimeType");
+			$this->appendHeader(THttpHeaderName::Pragma . ': public');
+			$this->appendHeader(THttpHeaderName::Expires . ': 0');
+			$this->appendHeader(THttpHeaderName::CacheControl . ': must-revalidate, post-check=0, pre-check=0');
+			$this->appendHeader(THttpHeaderName::ContentType . ': ' . $mimeType);
 			$this->_contentTypeHeaderSent = true;
 		}
 
-		$this->appendHeader('Content-Length: ' . $fileSize);
-		$this->appendHeader("Content-Disposition: " . ($forceDownload ? 'attachment' : 'inline') . "; filename=\"$clientFileName\"");
+		$this->appendHeader(THttpHeaderName::ContentLength . ': ' . $fileSize);
+		$this->appendHeader(THttpHeaderName::ContentDisposition . ': ' . ($forceDownload ? 'attachment' : 'inline') . "; filename=\"$clientFileName\"");
 		$this->appendHeader('Content-Transfer-Encoding: binary');
 		if ($content === null) {
 			$this->appendFile($fileName);
@@ -489,12 +490,12 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 						: 302
 					]);
 			}
-			$this->appendHeader('Location: ' . str_replace('&amp;', '&', $url), true, $this->_status);
+			$this->appendHeader(THttpHeaderName::Location . ': ' . str_replace('&amp;', '&', $url), true, $this->_status);
 		} else {
 			if ($isIIS) {
 				$this->appendHeader('HTTP/1.1 302 ' . self::$HTTP_STATUS_CODES[302]);
 			}
-			$this->appendHeader('Location: ' . str_replace('&amp;', '&', $url));
+			$this->appendHeader(THttpHeaderName::Location . ': ' . str_replace('&amp;', '&', $url));
 		}
 
 		if (!$this->getApplication()->getRequestCompleted()) {
@@ -608,7 +609,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 		$contentType = $this->_contentType === null ? self::DEFAULT_CONTENTTYPE : $this->_contentType;
 		$charset = $this->getCharset();
 		if ($charset === false) {
-			$this->appendHeader('Content-Type: ' . $contentType);
+			$this->appendHeader(THttpHeaderName::ContentType . ': ' . $contentType);
 			return;
 		}
 
@@ -619,7 +620,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 		if ($charset === '') {
 			$charset = self::DEFAULT_CHARSET;
 		}
-		$this->appendHeader('Content-Type: ' . $contentType . ';charset=' . $charset);
+		$this->appendHeader(THttpHeaderName::ContentType . ': ' . $contentType . ';charset=' . $charset);
 
 		$this->_contentTypeHeaderSent = true;
 	}

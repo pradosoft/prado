@@ -15,6 +15,7 @@ use Prado\Prado;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\THttpException;
 use Prado\Web\Javascripts\TJavaScript;
+use Prado\Web\TMediaType;
 use Prado\Xml\TXmlElement;
 
 /**
@@ -156,7 +157,7 @@ class TJsonService extends \Prado\TService
 		//send content if not null
 		if (($content = $service->getJsonContent()) !== null) {
 			$response = $this->getResponse();
-			$response->setContentType('application/json');
+			$response->setContentType(TMediaType::JSON);
 			$response->setCharset('UTF-8');
 			//send content
 			$response->write(TJavaScript::jsonEncode($content));

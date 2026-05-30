@@ -9,6 +9,8 @@
 
 namespace Prado\Util;
 
+use Prado\Web\TMediaType;
+
 /**
  * TXmlRpcClient class
  *
@@ -38,7 +40,7 @@ class TXmlRpcClient extends TRpcClient
 	public function __call($method, $parameters)
 	{
 		// send request
-		$_response = $this->performRequest($this->getServerUrl(), $this->encodeRequest($method, $parameters), 'text/xml');
+		$_response = $this->performRequest($this->getServerUrl(), $this->encodeRequest($method, $parameters), TMediaType::XML_TEXT);
 
 		// skip response handling if the request was just a notification request
 		if ($this->getIsNotification()) {

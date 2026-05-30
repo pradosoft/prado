@@ -12,6 +12,7 @@ namespace Prado\Web\Services;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\THttpException;
 use Prado\Prado;
+use Prado\Web\TMediaType;
 use Prado\Xml\TXmlElement;
 
 /**
@@ -72,8 +73,8 @@ class TRpcService extends \Prado\TService
 	 * @var array containing mimetype to protocol handler mappings
 	 */
 	protected $protocolHandlers = [
-		'application/json' => 'TJsonRpcProtocol',
-		'text/xml' => 'TXmlRpcProtocol',
+		TMediaType::JSON => 'TJsonRpcProtocol',
+		TMediaType::XML_TEXT => 'TXmlRpcProtocol',
 	];
 
 	/**

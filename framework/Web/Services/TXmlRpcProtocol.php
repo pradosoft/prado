@@ -10,6 +10,7 @@
 namespace Prado\Web\Services;
 
 use Prado\Exceptions\THttpException;
+use Prado\Web\TMediaType;
 
 /**
  * TXmlRpcProtocol class
@@ -98,7 +99,7 @@ class TXmlRpcProtocol extends TRpcProtocol
 	 */
 	public function createResponseHeaders($response)
 	{
-		$response->setContentType('text/xml');
+		$response->setContentType(TMediaType::XML_TEXT);
 		$response->setCharset('UTF-8');
 	}
 

@@ -10,6 +10,8 @@
 
 namespace Prado\Web\UI\WebControls\assets;
 
+use Prado\Web\THttpHeaderName;
+
 define('THEME_OPAQUE_BACKGROUND', 0x0001);
 define('THEME_NOISY_BACKGROUND', 0x0002);
 define('THEME_HAS_GRID', 0x0004);
@@ -119,7 +121,7 @@ function displayToken($token, $fontSize, $theme)
 		imagecolordeallocate($image, $color);
 	}
 
-	header('Content-Type: image/png');
+	header(THttpHeaderName::ContentType . ': image/png');
 	imagepng($image);
 	imagedestroy($image);
 }

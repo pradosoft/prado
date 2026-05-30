@@ -15,6 +15,7 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\THttpException;
 use Prado\Prado;
 use Prado\TApplication;
+use Prado\Web\TMediaType;
 use Prado\Xml\TXmlDocument;
 
 /**
@@ -272,7 +273,7 @@ class TSoapService extends \Prado\TService
 	{
 		Prado::trace("Running SOAP service", TSoapService::class);
 		$server = $this->createServer();
-		$this->getResponse()->setContentType('text/xml');
+		$this->getResponse()->setContentType(TMediaType::XML_TEXT);
 		$this->getResponse()->setCharset($server->getEncoding());
 		if ($this->getIsWsdlRequest()) {
 			// server WSDL file

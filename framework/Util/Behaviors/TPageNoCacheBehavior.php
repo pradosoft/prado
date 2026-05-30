@@ -11,6 +11,7 @@
 namespace Prado\Util\Behaviors;
 
 use Prado\TPropertyValue;
+use Prado\Web\THttpHeaderName;
 use Prado\Web\UI\WebControls\TMetaTag;
 
 /**
@@ -53,30 +54,30 @@ class TPageNoCacheBehavior extends \Prado\Util\TBehavior
 			if ($this->_checkMetaNoCache) {
 				foreach ($metatags as $meta) {
 					$httpEquiv = strtolower($meta->getHttpEquiv());
-					if ($httpEquiv == 'expires') {
+					if ($httpEquiv == strtolower(THttpHeaderName::Expires)) {
 						$hasExpires = true;
-					} elseif ($httpEquiv == 'pragma') {
+					} elseif ($httpEquiv == strtolower(THttpHeaderName::Pragma)) {
 						$hasPragma = true;
-					} elseif ($httpEquiv == 'cache-control') {
+					} elseif ($httpEquiv == strtolower(THttpHeaderName::CacheControl)) {
 						$hasCacheControl = true;
 					}
 				}
 			}
 			if (!$hasExpires) {
 				$meta = new TMetaTag();
-				$meta->setHttpEquiv('Expires');
+				$meta->setHttpEquiv(THttpHeaderName::Expires);
 				$meta->setContent('Fri, Jan 01 1900 00:00:00 GMT');
 				$metatags->add($meta);
 			}
 			if (!$hasPragma) {
 				$meta = new TMetaTag();
-				$meta->setHttpEquiv('Pragma');
+				$meta->setHttpEquiv(THttpHeaderName::Pragma);
 				$meta->setContent('no-cache');
 				$metatags->add($meta);
 			}
 			if (!$hasCacheControl) {
 				$meta = new TMetaTag();
-				$meta->setHttpEquiv('Cache-Control');
+				$meta->setHttpEquiv(THttpHeaderName::CacheControl);
 				$meta->setContent('no-cache');
 				$metatags->add($meta);
 			}
