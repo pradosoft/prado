@@ -1,6 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/../../PradoUnit.php');
 use Prado\Data\SqlMap\TSqlMapManager;
 use Prado\Data\TDbConnection;
 use Prado\Prado;

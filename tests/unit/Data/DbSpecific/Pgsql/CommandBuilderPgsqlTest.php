@@ -2,8 +2,6 @@
 
 use Prado\Data\Common\Pgsql\TPgsqlMetaData;
 
-require_once(__DIR__ . '/../../../PradoUnit.php');
-
 class CommandBuilderPgsqlTest extends PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;

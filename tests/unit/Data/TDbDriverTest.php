@@ -1,7 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/../PradoUnit.php');
-
 use Prado\Data\TDataCharset;
 use Prado\Data\TDbColumnCaseMode;
 use Prado\Data\TDbDriver;

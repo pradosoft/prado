@@ -1,6 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/../../PradoUnit.php');
 require_once(__DIR__ . '/records/Blogs.php');
 
 class ActiveRecordMySql5Test extends PHPUnit\Framework\TestCase

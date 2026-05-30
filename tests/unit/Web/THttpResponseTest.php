@@ -4,8 +4,6 @@ use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Web\THttpResponse;
 
-require_once __DIR__ . '/../PradoUnitRequires.php';
-
 class TTestHttpResponse extends THttpResponse {
 	public $headers = [];
 

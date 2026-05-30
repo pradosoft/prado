@@ -1,6 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/../../PradoUnit.php');
 require_once(__DIR__ . '/records/UserRecord.php');
 
 class UserRecordTest extends PHPUnit\Framework\TestCase

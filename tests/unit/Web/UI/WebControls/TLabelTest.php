@@ -1,7 +1,5 @@
 <?php
 
-require_once __DIR__ . '/../../../PradoUnitRequires.php';
-
 use Prado\Web\UI\WebControls\TLabel;
 use Prado\Web\UI\WebControls\TTextBox;
 use Prado\Web\UI\THtmlWriter;

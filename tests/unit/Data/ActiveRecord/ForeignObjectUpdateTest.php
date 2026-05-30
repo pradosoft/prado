@@ -1,7 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/../../PradoUnit.php');
-
 class BaseFkRecord extends TActiveRecord
 {
 	use PradoUnitDataConnectionTrait;

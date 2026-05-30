@@ -7,8 +7,6 @@ use Prado\Web\TUrlMappingPattern;
 use Prado\Web\TUrlMappingPatternSecureConnection;
 use Prado\Collections\TAttributeCollection;
 
-require_once __DIR__ . '/../PradoUnitRequires.php';
-
 /**
  * Test class for TUrlMappingPattern.
  *

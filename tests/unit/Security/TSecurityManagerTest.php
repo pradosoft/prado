@@ -4,8 +4,6 @@ use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TNotSupportedException;
 use Prado\Security\TSecurityManager;
 
-require_once __DIR__ . '/../PradoUnitRequires.php';
-
 class TCustomTestSecurityManager extends TSecurityManager
 {
 	public function publicGenerateRandomKey()

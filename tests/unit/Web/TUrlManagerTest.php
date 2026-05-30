@@ -4,8 +4,6 @@ use Prado\Web\THttpRequest;
 use Prado\Web\THttpRequestUrlFormat;
 use Prado\Web\TUrlManager;
 
-require_once __DIR__ . '/../PradoUnitRequires.php';
-
 /**
  * Test class for TUrlManager.
  */

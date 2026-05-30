@@ -1,7 +1,5 @@
 <?php
 
-require_once __DIR__ . '/../PradoUnitRequires.php';
-
 use Prado\Data\TDbColumnCaseMode;
 use Prado\Data\TDbCommand;
 use Prado\Data\TDbConnection;

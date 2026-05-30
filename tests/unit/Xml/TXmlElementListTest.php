@@ -9,8 +9,6 @@ NOTE TO AGENTS:
 - TXmlElement::getElements() must be used to properly access TXmlElementList.
 */
 
-require_once __DIR__ . '/../PradoUnitRequires.php';
-
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Xml\TXmlElement;
 use Prado\Xml\TXmlElementList;

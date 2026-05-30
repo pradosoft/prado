@@ -6,8 +6,6 @@ use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
 use Prado\Web\TAssetManager;
 
-require_once __DIR__ . '/../PradoUnitRequires.php';
-
 class TAssetManagerTest extends PHPUnit\Framework\TestCase
 {
 	protected ?TTestApplication $app = null;

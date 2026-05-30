@@ -11,8 +11,6 @@ use Prado\Web\TUrlManager;
 use Prado\Web\TUrlMapping;
 use Prado\Xml\TXmlDocument;
 
-require_once __DIR__ . '/../PradoUnitRequires.php';
-
 class THttpRequestTest extends PHPUnit\Framework\TestCase
 {
 	protected ?TTestApplication $app = null;
