@@ -515,7 +515,8 @@ class Prado
 	 */
 	public static function method_visible($object_or_class, string $method): bool
 	{
-		$reflection = TComponentReflection::getReflectionMethodByType($object_or_class, $method);
+		$className = is_object($object_or_class) ? $object_or_class::class : $object_or_class;
+		$reflection = TComponentReflection::getReflectionMethodByType($className, $method);
 		if ($reflection !== null) {
 			$trace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS, 3);
 			if (empty($trace[2]) || empty($trace[1]['object']) || empty($trace[2]['object']) || $trace[1]['object'] !== $trace[2]['object']) {
