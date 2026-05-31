@@ -1,4 +1,4 @@
-# Upgrading Instructions for PRADO Framework v4.3.3
+# Upgrading Instructions for PRADO Framework v4.4.0
 
 ### !!!IMPORTANT!!!
 
@@ -7,9 +7,13 @@ if you want to upgrade from version A to version C and there is
 version B between A and C, you need to following the instructions
 for both A and B.
 
+Upgrading from v4.3.3
+---------------------
+- TPropertyValue::ensureEnum normalizes the case of the enum constant name.
+
 Upgrading from v4.3.2
 ---------------------
-- Prado\TEventParameter adds a second constructor $readOnly
+- Prado\TEventParameter adds a second constructor $readOnly.
 
 Upgrading from v4.2.2
 ---------------------
