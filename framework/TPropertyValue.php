@@ -162,21 +162,21 @@ class TPropertyValue
 	 * callers can opt out of defaults without an unexplained literal.
 	 * @since 4.4.0
 	 */
-	public const FILTER_NONE = 0;
+	public const OPT_NONE = 0;
 
 	/**
 	 * {@see ensureArrayOfType()} flag — trims string elements after
-	 * coercion, before {@see FILTER_EMPTY}.  No effect on non-strings.
+	 * coercion, before {@see OPT_EMPTY}.  No effect on non-strings.
 	 * @since 4.4.0
 	 */
-	public const AOT_TRIM = (1 << 0);
+	public const OPT_TRIM = (1 << 0);
 
 	/**
 	 * {@see ensureArrayOfType()} flag — `strtolower` on string elements
-	 * after {@see AOT_TRIM}.  No effect on non-strings.
+	 * after {@see OPT_TRIM}.  No effect on non-strings.
 	 * @since 4.4.0
 	 */
-	public const AOT_LOWERCASE = (1 << 1);
+	public const OPT_LOWERCASE = (1 << 1);
 
 	/**
 	 * Emptiness flag — matches `null`.  Used by {@see ensureNullIf()} (drops
@@ -184,7 +184,7 @@ class TPropertyValue
 	 * the array path the test is short-circuited before coercion runs.
 	 * @since 4.4.0
 	 */
-	public const FILTER_NULL = (1 << 2);
+	public const OPT_EMPTY_NULL = (1 << 2);
 
 	/**
 	 * Emptiness flag — matches `false`.  In {@see ensureArrayOfType()} the
@@ -193,7 +193,7 @@ class TPropertyValue
 	 * `'false'` or numeric `0` that TYPE_BOOL turns into real false).
 	 * @since 4.4.0
 	 */
-	public const FILTER_FALSE = (1 << 3);
+	public const OPT_EMPTY_FALSE = (1 << 3);
 
 	/**
 	 * Emptiness flag — matches a string whose trimmed value is `''`.
@@ -201,18 +201,18 @@ class TPropertyValue
 	 * values bypass this check.
 	 * @since 4.4.0
 	 */
-	public const FILTER_BLANK = (1 << 4);
+	public const OPT_EMPTY_BLANK = (1 << 4);
 
 	/**
-	 * Emptiness composite — the union of {@see FILTER_NULL},
-	 * {@see FILTER_FALSE}, and {@see FILTER_BLANK}.  Matches PHP `empty()`'s
+	 * Emptiness composite — the union of {@see OPT_EMPTY_NULL},
+	 * {@see OPT_EMPTY_FALSE}, and {@see OPT_EMPTY_BLANK}.  Matches PHP `empty()`'s
 	 * sense for the three values that show up most often in normalization
 	 * pipelines: `null`, `false`, `''` (or whitespace-only).
 	 * @since 4.4.0
 	 */
-	public const FILTER_EMPTY = self::FILTER_NULL
-		| self::FILTER_FALSE
-		| self::FILTER_BLANK;
+	public const OPT_EMPTY = self::OPT_EMPTY_NULL
+		| self::OPT_EMPTY_FALSE
+		| self::OPT_EMPTY_BLANK;
 
 	/**
 	 * Step-11 fallback order for {@see _coerceUnionType}: non-null union members are tried in this
@@ -376,45 +376,45 @@ class TPropertyValue
 	 * Stricter and more selective than {@see ensureNullIfEmpty()}, which
 	 * fires for every value PHP `empty()` considers empty (including `0`,
 	 * `'0'`, `[]`).  This method only tests for the three specific shapes
-	 * the {@see FILTER_NULL}, {@see FILTER_FALSE}, {@see FILTER_BLANK} flags
+	 * the {@see OPT_EMPTY_NULL}, {@see OPT_EMPTY_FALSE}, {@see OPT_EMPTY_BLANK} flags
 	 * select; `0` and `'0'` survive unless the caller pairs them with a
 	 * preliminary coercion.
 	 *
 	 * ```php
-	 * // Defaults: FILTER_EMPTY — null / false / '' or whitespace-only.
+	 * // Defaults: OPT_EMPTY — null / false / '' or whitespace-only.
 	 * TPropertyValue::ensureNullIf('');         // null
 	 * TPropertyValue::ensureNullIf('   ');      // null  (whitespace-only)
 	 * TPropertyValue::ensureNullIf(null);       // null
 	 * TPropertyValue::ensureNullIf(false);      // null
-	 * TPropertyValue::ensureNullIf(0);          // 0     (not selected by FILTER_EMPTY)
+	 * TPropertyValue::ensureNullIf(0);          // 0     (not selected by OPT_EMPTY)
 	 * TPropertyValue::ensureNullIf('0');        // '0'   (not blank)
 	 * TPropertyValue::ensureNullIf('hello');    // 'hello'
 	 *
 	 * // Selective: nulls only.
-	 * TPropertyValue::ensureNullIf(false, TPropertyValue::FILTER_NULL);  // false (kept)
+	 * TPropertyValue::ensureNullIf(false, TPropertyValue::OPT_EMPTY_NULL);  // false (kept)
 	 *
 	 * // Selective: blanks only (catches '' and whitespace).
-	 * TPropertyValue::ensureNullIf(null,  TPropertyValue::FILTER_BLANK); // null kept as null
-	 * TPropertyValue::ensureNullIf('  ',  TPropertyValue::FILTER_BLANK); // null
+	 * TPropertyValue::ensureNullIf(null,  TPropertyValue::OPT_EMPTY_BLANK); // null kept as null
+	 * TPropertyValue::ensureNullIf('  ',  TPropertyValue::OPT_EMPTY_BLANK); // null
 	 * ```
 	 *
 	 * @param mixed $value the value to test.
-	 * @param int $flags any combination of {@see FILTER_NULL},
-	 *   {@see FILTER_FALSE}, {@see FILTER_BLANK}, {@see FILTER_EMPTY}.
-	 *   Defaults to {@see FILTER_EMPTY}.
+	 * @param int $flags any combination of {@see OPT_EMPTY_NULL},
+	 *   {@see OPT_EMPTY_FALSE}, {@see OPT_EMPTY_BLANK}, {@see OPT_EMPTY}.
+	 *   Defaults to {@see OPT_EMPTY}.
 	 * @return mixed the original value, or `null` when it matches one of
 	 *   the selected emptiness flags.
 	 * @since 4.4.0
 	 */
-	public static function ensureNullIf(mixed $value, int $flags = self::FILTER_EMPTY): mixed
+	public static function ensureNullIf(mixed $value, int $flags = self::OPT_EMPTY): mixed
 	{
-		if (($flags & static::FILTER_NULL) !== 0 && $value === null) {
+		if (($flags & static::OPT_EMPTY_NULL) !== 0 && $value === null) {
 			return null;
 		}
-		if (($flags & static::FILTER_FALSE) !== 0 && $value === false) {
+		if (($flags & static::OPT_EMPTY_FALSE) !== 0 && $value === false) {
 			return null;
 		}
-		if (($flags & static::FILTER_BLANK) !== 0 && is_string($value) && trim($value) === '') {
+		if (($flags & static::OPT_EMPTY_BLANK) !== 0 && is_string($value) && trim($value) === '') {
 			return null;
 		}
 		return $value;
@@ -882,25 +882,25 @@ class TPropertyValue
 	 *
 	 * The flag pipeline runs in fixed order:
 	 *
-	 * 1. {@see FILTER_NULL} — discards `null` inputs before coercion.
+	 * 1. {@see OPT_EMPTY_NULL} — discards `null` inputs before coercion.
 	 *    A post-coercion check is unnecessary because typed coercion turns
 	 *    `null` into `''` / `0` / `false`.
-	 * 2. {@see FILTER_FALSE} — discards `false` both before and after
+	 * 2. {@see OPT_EMPTY_FALSE} — discards `false` both before and after
 	 *    coercion.  Pre-coercion catches literal `false` before
 	 *    `TYPE_INT` turns it into `0`; post-coercion catches a coerced
 	 *    `'false'` / `0` from `TYPE_BOOL`.
-	 * 3. {@see FILTER_BLANK} — discards `''` strings after the trim
-	 *    below.  Pair with {@see AOT_TRIM} to drop whitespace-only
+	 * 3. {@see OPT_EMPTY_BLANK} — discards `''` strings after the trim
+	 *    below.  Pair with {@see OPT_TRIM} to drop whitespace-only
 	 *    entries.  Non-string elements bypass this filter.
 	 *
-	 * {@see FILTER_EMPTY} is the union of the three filter flags
+	 * {@see OPT_EMPTY} is the union of the three filter flags
 	 * above, matching PHP `empty()` for `null`, `false`, and `''`.
 	 *
 	 * Coercion and string transforms run between the filter passes:
 	 *
 	 * 4. *(coercion to `$type`)*
-	 * 5. {@see AOT_TRIM}      — trims string elements.
-	 * 6. {@see AOT_LOWERCASE} — `strtolower` on string elements.
+	 * 5. {@see OPT_TRIM}      — trims string elements.
+	 * 6. {@see OPT_LOWERCASE} — `strtolower` on string elements.
 	 *
 	 * Key handling:
 	 *
@@ -919,11 +919,11 @@ class TPropertyValue
 	 * TPropertyValue::ensureArrayOfType(
 	 *     ['  Admin ', '', '  EDITOR '],
 	 *     TPropertyValue::TYPE_STRING,
-	 *     TPropertyValue::AOT_TRIM | TPropertyValue::AOT_LOWERCASE | TPropertyValue::FILTER_BLANK,
+	 *     TPropertyValue::OPT_TRIM | TPropertyValue::OPT_LOWERCASE | TPropertyValue::OPT_EMPTY_BLANK,
 	 * );  // ['admin', 'editor']
 	 *
 	 * // Int coercion — literal `false` dropped before becoming `0`.
-	 * TPropertyValue::ensureArrayOfType([1, false, 2], TPropertyValue::TYPE_INT, TPropertyValue::FILTER_FALSE);
+	 * TPropertyValue::ensureArrayOfType([1, false, 2], TPropertyValue::TYPE_INT, TPropertyValue::OPT_EMPTY_FALSE);
 	 * // [1, 2]
 	 *
 	 * // String keys preserved, numeric repacked.
@@ -936,19 +936,19 @@ class TPropertyValue
 	 * TPropertyValue::ensureArrayOfType(
 	 *     ['  x ', null, ''],
 	 *     TPropertyValue::TYPE_STRING,
-	 *     TPropertyValue::FILTER_NONE,
+	 *     TPropertyValue::OPT_NONE,
 	 * );  // ['  x ', '', '']  (null became '' via ensureString, nothing dropped)
 	 * ```
 	 *
 	 * @param mixed $value the value to normalize.
 	 * @param string $type one of the `TYPE_*` constants or a class name; each
 	 *   element of the resulting array is coerced to this type.
-	 * @param int $flags zero or more of {@see AOT_TRIM},
-	 *   {@see AOT_LOWERCASE}, {@see FILTER_NULL},
-	 *   {@see FILTER_FALSE}, {@see FILTER_BLANK},
-	 *   {@see FILTER_EMPTY} combined with `|`.  Defaults to
-	 *   `AOT_TRIM | FILTER_EMPTY` (trim strings; drop nulls,
-	 *   falses, and post-trim blanks).  Pass {@see FILTER_NONE} for raw
+	 * @param int $flags zero or more of {@see OPT_TRIM},
+	 *   {@see OPT_LOWERCASE}, {@see OPT_EMPTY_NULL},
+	 *   {@see OPT_EMPTY_FALSE}, {@see OPT_EMPTY_BLANK},
+	 *   {@see OPT_EMPTY} combined with `|`.  Defaults to
+	 *   `OPT_TRIM | OPT_EMPTY` (trim strings; drop nulls,
+	 *   falses, and post-trim blanks).  Pass {@see OPT_NONE} for raw
 	 *   pass-through.
 	 * @return array the normalized array.
 	 * @since 4.4.0
@@ -956,21 +956,17 @@ class TPropertyValue
 	public static function ensureArrayOfType(
 		mixed $value,
 		string $type,
-		int $flags = self::AOT_TRIM | self::FILTER_EMPTY,
+		int $flags = self::OPT_TRIM | self::OPT_EMPTY,
 	): array {
-		$trim = ($flags & static::AOT_TRIM) !== 0;
-		$lowercase = ($flags & static::AOT_LOWERCASE) !== 0;
-		$filterNull = ($flags & static::FILTER_NULL) !== 0;
-		$filterFalse = ($flags & static::FILTER_FALSE) !== 0;
-		$filterBlank = ($flags & static::FILTER_BLANK) !== 0;
+		$trim = ($flags & static::OPT_TRIM) !== 0;
+		$lowercase = ($flags & static::OPT_LOWERCASE) !== 0;
+		$filterNull = ($flags & static::OPT_EMPTY_NULL) !== 0;
+		$filterFalse = ($flags & static::OPT_EMPTY_FALSE) !== 0;
+		$filterBlank = ($flags & static::OPT_EMPTY_BLANK) !== 0;
 
 		$out = [];
 		foreach (static::ensureArray($value) as $key => $item) {
-			// 1. Pre-coercion short-circuits.  Nulls are dropped before
-			// typed coercion turns them into '' / 0 / false.  Literal
-			// false is also dropped here so it doesn't survive TYPE_INT
-			// (false → 0) or TYPE_STRING (false → '') as a stray zero
-			// or empty.
+			// 1. Pre-coercion filters.
 			if ($filterNull && $item === null) {
 				continue;
 			}
@@ -978,7 +974,7 @@ class TPropertyValue
 				continue;
 			}
 
-			// 2. Coerce to target type.
+			// 2. Coerce.
 			$item = match ($type) {
 				static::TYPE_STRING => static::ensureString($item),
 				static::TYPE_INT => static::ensureInteger($item),
@@ -990,17 +986,12 @@ class TPropertyValue
 				default => self::_coerceToClass($item, $type),
 			};
 
-			// 3. Filter false AGAIN after coercion — catches the common
-			// TYPE_BOOL case where a string `'false'` or numeric `0`
-			// coerces into bool false (the pre-coercion pass only sees
-			// literal `false`).
+			// 3. Post-coercion false filter (catches coerced false).
 			if ($filterFalse && $item === false) {
 				continue;
 			}
 
-			// 4. String-only pipeline: trim, lowercase, then blank filter.
-			// All three are no-ops for non-string items, so they live inside
-			// the same is_string branch — saves a comparison per non-string.
+			// 4. String-only: trim, lowercase, blank filter.
 			if (is_string($item)) {
 				if ($trim) {
 					$item = trim($item);
@@ -1008,8 +999,6 @@ class TPropertyValue
 				if ($lowercase) {
 					$item = strtolower($item);
 				}
-				// Trim-aware blank check catches '' AND whitespace-only,
-				// regardless of whether AOT_TRIM mutated the element first.
 				if ($filterBlank && trim($item) === '') {
 					continue;
 				}

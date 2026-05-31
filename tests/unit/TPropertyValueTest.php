@@ -1216,7 +1216,7 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 
 	public function testEnsureArrayOfType_defaults_trimAndFilterEmptyAndNull(): void
 	{
-		// Default flags = AOT_TRIM | FILTER_EMPTY (composite of NULL,
+		// Default flags = OPT_TRIM | OPT_EMPTY (composite of NULL,
 		// FALSE, BLANK).  Strings trimmed, post-trim empties dropped,
 		// nulls and falses short-circuited.
 		self::assertSame(
@@ -1235,25 +1235,25 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 
 	public function testEnsureArrayOfType_filterNone_rawPassThrough(): void
 	{
-		// FILTER_NONE (= 0) is the shared opt-out for raw pass-through;
+		// OPT_NONE (= 0) is the shared opt-out for raw pass-through;
 		// nothing is trimmed, lowercased, or filtered.
 		self::assertSame(
 			['Reader', '  User  ', ''],
 			TPropertyValue::ensureArrayOfType(
 				['Reader', '  User  ', ''],
 				TPropertyValue::TYPE_STRING,
-				TPropertyValue::FILTER_NONE
+				TPropertyValue::OPT_NONE
 			)
 		);
 		// And confirms the constant is literally 0 so bare `0` still works.
-		self::assertSame(0, TPropertyValue::FILTER_NONE);
+		self::assertSame(0, TPropertyValue::OPT_NONE);
 	}
 
 	public function testEnsureArrayOfType_trimFlag_trimsStringElements(): void
 	{
 		self::assertSame(
 			['Reader', 'User', ''],
-			TPropertyValue::ensureArrayOfType(['  Reader  ', 'User', '   '], TPropertyValue::TYPE_STRING, TPropertyValue::AOT_TRIM)
+			TPropertyValue::ensureArrayOfType(['  Reader  ', 'User', '   '], TPropertyValue::TYPE_STRING, TPropertyValue::OPT_TRIM)
 		);
 	}
 
@@ -1261,7 +1261,7 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 	{
 		self::assertSame(
 			['admin', 'editor'],
-			TPropertyValue::ensureArrayOfType(['Admin', 'EDITOR'], TPropertyValue::TYPE_STRING, TPropertyValue::AOT_LOWERCASE)
+			TPropertyValue::ensureArrayOfType(['Admin', 'EDITOR'], TPropertyValue::TYPE_STRING, TPropertyValue::OPT_LOWERCASE)
 		);
 	}
 
@@ -1270,24 +1270,24 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		// Output is packed (0, 1, …) — filter-induced gaps don't carry meaning.
 		self::assertSame(
 			['Reader', 'User'],
-			TPropertyValue::ensureArrayOfType(['Reader', '', 'User'], TPropertyValue::TYPE_STRING, TPropertyValue::FILTER_BLANK)
+			TPropertyValue::ensureArrayOfType(['Reader', '', 'User'], TPropertyValue::TYPE_STRING, TPropertyValue::OPT_EMPTY_BLANK)
 		);
 	}
 
 	public function testEnsureArrayOfType_filterNull_dropsNullElements(): void
 	{
-		// FILTER_NULL short-circuits null inputs at the top of the loop,
+		// OPT_EMPTY_NULL short-circuits null inputs at the top of the loop,
 		// before coercion runs; the type parameter is irrelevant for the
 		// nulls themselves.  Output is packed.
 		self::assertSame(
 			['a', 'b'],
-			TPropertyValue::ensureArrayOfType(['a', null, 'b'], TPropertyValue::TYPE_MIXED, TPropertyValue::FILTER_NULL)
+			TPropertyValue::ensureArrayOfType(['a', null, 'b'], TPropertyValue::TYPE_MIXED, TPropertyValue::OPT_EMPTY_NULL)
 		);
 	}
 
 	public function testEnsureArrayOfType_filterNull_shortCircuitsBeforeCoercion(): void
 	{
-		// If FILTER_NULL didn't short-circuit, ensureString(null) would
+		// If OPT_EMPTY_NULL didn't short-circuit, ensureString(null) would
 		// turn null into '' and the null entry would survive (as ''); the
 		// assertion confirms nulls are dropped at the top of the loop,
 		// before the string coercion runs.
@@ -1296,28 +1296,28 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 			TPropertyValue::ensureArrayOfType(
 				['a', null, 'b'],
 				TPropertyValue::TYPE_STRING,
-				TPropertyValue::FILTER_NULL
+				TPropertyValue::OPT_EMPTY_NULL
 			)
 		);
 	}
 
 	public function testEnsureArrayOfType_filterFalse_dropsFalseElements(): void
 	{
-		// FILTER_FALSE short-circuits like FILTER_NULL — false
+		// OPT_EMPTY_FALSE short-circuits like OPT_EMPTY_NULL — false
 		// inputs are dropped before coercion runs.
 		self::assertSame(
 			['a', 'b'],
 			TPropertyValue::ensureArrayOfType(
 				['a', false, 'b'],
 				TPropertyValue::TYPE_MIXED,
-				TPropertyValue::FILTER_FALSE
+				TPropertyValue::OPT_EMPTY_FALSE
 			)
 		);
 	}
 
 	public function testEnsureArrayOfType_filterFalse_catchesCoercedFalse(): void
 	{
-		// FILTER_FALSE runs AFTER coercion so it catches a string
+		// OPT_EMPTY_FALSE runs AFTER coercion so it catches a string
 		// `'false'` (or other falsy input) once ensureBoolean has turned
 		// it into a real bool false.  A pre-coercion check would only
 		// have dropped the literal `false`, leaving the coerced ones.
@@ -1326,7 +1326,7 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 			TPropertyValue::ensureArrayOfType(
 				['true', 'false', '1'],
 				TPropertyValue::TYPE_BOOL,
-				TPropertyValue::FILTER_FALSE
+				TPropertyValue::OPT_EMPTY_FALSE
 			)
 		);
 	}
@@ -1340,7 +1340,7 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 			TPropertyValue::ensureArrayOfType(
 				[true, false, 'false', true],
 				TPropertyValue::TYPE_BOOL,
-				TPropertyValue::FILTER_FALSE
+				TPropertyValue::OPT_EMPTY_FALSE
 			)
 		);
 	}
@@ -1356,7 +1356,7 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 			TPropertyValue::ensureArrayOfType(
 				[1, false, 2, 3],
 				TPropertyValue::TYPE_INT,
-				TPropertyValue::FILTER_FALSE
+				TPropertyValue::OPT_EMPTY_FALSE
 			)
 		);
 	}
@@ -1371,22 +1371,22 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 			TPropertyValue::ensureArrayOfType(
 				['a', false, 'b'],
 				TPropertyValue::TYPE_STRING,
-				TPropertyValue::FILTER_FALSE
+				TPropertyValue::OPT_EMPTY_FALSE
 			)
 		);
 	}
 
 	public function testEnsureArrayOfType_filterEmpty_compositeDropsNullFalseAndEmpty(): void
 	{
-		// FILTER_EMPTY is the composite of FILTER_NULL,
-		// FILTER_FALSE, FILTER_BLANK — a single flag drops
+		// OPT_EMPTY is the composite of OPT_EMPTY_NULL,
+		// OPT_EMPTY_FALSE, OPT_EMPTY_BLANK — a single flag drops
 		// all three of the most common "empty"-like values.
 		self::assertSame(
 			['a', 'b'],
 			TPropertyValue::ensureArrayOfType(
 				['a', null, false, '', 'b'],
 				TPropertyValue::TYPE_MIXED,
-				TPropertyValue::FILTER_EMPTY
+				TPropertyValue::OPT_EMPTY
 			)
 		);
 	}
@@ -1394,18 +1394,18 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 	public function testEnsureArrayOfType_filterEmpty_compositeBitsMatchPrimitiveFlags(): void
 	{
 		// Each primitive bit is set inside the composite, so testing the
-		// individual filter flags via bitwise & against FILTER_EMPTY
+		// individual filter flags via bitwise & against OPT_EMPTY
 		// returns the same bit pattern as the primitive constant itself.
-		self::assertNotSame(0, TPropertyValue::FILTER_EMPTY & TPropertyValue::FILTER_NULL);
-		self::assertNotSame(0, TPropertyValue::FILTER_EMPTY & TPropertyValue::FILTER_FALSE);
-		self::assertNotSame(0, TPropertyValue::FILTER_EMPTY & TPropertyValue::FILTER_BLANK);
+		self::assertNotSame(0, TPropertyValue::OPT_EMPTY & TPropertyValue::OPT_EMPTY_NULL);
+		self::assertNotSame(0, TPropertyValue::OPT_EMPTY & TPropertyValue::OPT_EMPTY_FALSE);
+		self::assertNotSame(0, TPropertyValue::OPT_EMPTY & TPropertyValue::OPT_EMPTY_BLANK);
 	}
 
 	public function testEnsureArrayOfType_trimThenFilterEmpty_dropsWhitespaceOnly(): void
 	{
-		// Combined: AOT_TRIM first, then FILTER_BLANK catches
+		// Combined: OPT_TRIM first, then OPT_EMPTY_BLANK catches
 		// the post-trim '' (was '   ' before trim).
-		$flags = TPropertyValue::AOT_TRIM | TPropertyValue::FILTER_BLANK;
+		$flags = TPropertyValue::OPT_TRIM | TPropertyValue::OPT_EMPTY_BLANK;
 		self::assertSame(
 			['Reader', 'User'],
 			TPropertyValue::ensureArrayOfType(['  Reader  ', '   ', 'User'], TPropertyValue::TYPE_STRING, $flags)
@@ -1415,9 +1415,9 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 	public function testEnsureArrayOfType_trimLowercaseFilterEmpty_full_normalization(): void
 	{
 		// All three string-shaping flags compose: trim → lowercase → filter.
-		$flags = TPropertyValue::AOT_TRIM
-			| TPropertyValue::AOT_LOWERCASE
-			| TPropertyValue::FILTER_BLANK;
+		$flags = TPropertyValue::OPT_TRIM
+			| TPropertyValue::OPT_LOWERCASE
+			| TPropertyValue::OPT_EMPTY_BLANK;
 		self::assertSame(
 			['admin', 'editor'],
 			TPropertyValue::ensureArrayOfType(['  Admin  ', '', 'EDITOR'], TPropertyValue::TYPE_STRING, $flags)
@@ -1438,16 +1438,16 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 
 	public function testEnsureArrayOfType_boolType_coercesViaEnsureBoolean(): void
 	{
-		// Pass FILTER_NONE so the test isolates bool coercion — the default
-		// FILTER_EMPTY composite includes FILTER_FALSE, which would drop the
-		// coerced `'false'` post-coercion.  See the FILTER_FALSE-specific
+		// Pass OPT_NONE so the test isolates bool coercion — the default
+		// OPT_EMPTY composite includes OPT_EMPTY_FALSE, which would drop the
+		// coerced `'false'` post-coercion.  See the OPT_EMPTY_FALSE-specific
 		// tests for that behavior.
 		self::assertSame(
 			[true, false, true],
 			TPropertyValue::ensureArrayOfType(
 				['true', 'false', '1'],
 				TPropertyValue::TYPE_BOOL,
-				TPropertyValue::FILTER_NONE
+				TPropertyValue::OPT_NONE
 			)
 		);
 	}
@@ -1461,7 +1461,7 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 			TPropertyValue::ensureArrayOfType(
 				['  Admin  ', 42, null, '  EDITOR  '],
 				TPropertyValue::TYPE_MIXED,
-				TPropertyValue::AOT_TRIM | TPropertyValue::AOT_LOWERCASE
+				TPropertyValue::OPT_TRIM | TPropertyValue::OPT_LOWERCASE
 			)
 		);
 	}
@@ -1476,7 +1476,7 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 			TPropertyValue::ensureArrayOfType(
 				['a' => 'Reader', 'b' => '', 'c' => 'User'],
 				TPropertyValue::TYPE_STRING,
-				TPropertyValue::FILTER_BLANK
+				TPropertyValue::OPT_EMPTY_BLANK
 			)
 		);
 		// All-string-key input: every entry preserved as-is (no filters fire).
@@ -1499,7 +1499,7 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 			TPropertyValue::ensureArrayOfType(
 				[0 => 'Reader', 'name' => 'Alice', 5 => 'User', 8 => ''],
 				TPropertyValue::TYPE_STRING,
-				TPropertyValue::FILTER_BLANK
+				TPropertyValue::OPT_EMPTY_BLANK
 			)
 		);
 	}
@@ -1510,11 +1510,11 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 	{
 		self::assertSame(
 			[1.5, 2.5, 3.0],
-			TPropertyValue::ensureArrayOfType('1.5, 2.5, 3', TPropertyValue::TYPE_FLOAT, TPropertyValue::FILTER_NONE)
+			TPropertyValue::ensureArrayOfType('1.5, 2.5, 3', TPropertyValue::TYPE_FLOAT, TPropertyValue::OPT_NONE)
 		);
 		self::assertSame(
 			[1.5, 2.5, 3.0],
-			TPropertyValue::ensureArrayOfType(['1.5', '2.5', '3'], TPropertyValue::TYPE_FLOAT, TPropertyValue::FILTER_NONE)
+			TPropertyValue::ensureArrayOfType(['1.5', '2.5', '3'], TPropertyValue::TYPE_FLOAT, TPropertyValue::OPT_NONE)
 		);
 	}
 
@@ -1524,7 +1524,7 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		// array survives as-is and a CSV string becomes a sub-list.
 		self::assertSame(
 			[[1, 2], ['a', 'b']],
-			TPropertyValue::ensureArrayOfType([[1, 2], 'a, b'], TPropertyValue::TYPE_ARRAY, TPropertyValue::FILTER_NONE)
+			TPropertyValue::ensureArrayOfType([[1, 2], 'a, b'], TPropertyValue::TYPE_ARRAY, TPropertyValue::OPT_NONE)
 		);
 	}
 
@@ -1532,13 +1532,13 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 	{
 		self::assertSame(
 			[[1, 2]],
-			TPropertyValue::ensureArrayOfType([[1, 2]], TPropertyValue::TYPE_ITERABLE, TPropertyValue::FILTER_NONE)
+			TPropertyValue::ensureArrayOfType([[1, 2]], TPropertyValue::TYPE_ITERABLE, TPropertyValue::OPT_NONE)
 		);
 	}
 
 	public function testEnsureArrayOfType_objectType_eachElementWrappedAsStdClass(): void
 	{
-		$result = TPropertyValue::ensureArrayOfType(['hello', 42], TPropertyValue::TYPE_OBJECT, TPropertyValue::FILTER_NONE);
+		$result = TPropertyValue::ensureArrayOfType(['hello', 42], TPropertyValue::TYPE_OBJECT, TPropertyValue::OPT_NONE);
 		self::assertCount(2, $result);
 		self::assertInstanceOf(\stdClass::class, $result[0]);
 		self::assertInstanceOf(\stdClass::class, $result[1]);
@@ -1551,7 +1551,7 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		// TYPE_NULL is a pass-through alongside TYPE_MIXED.
 		self::assertSame(
 			['a', 42, true, null],
-			TPropertyValue::ensureArrayOfType(['a', 42, true, null], TPropertyValue::TYPE_NULL, TPropertyValue::FILTER_NONE)
+			TPropertyValue::ensureArrayOfType(['a', 42, true, null], TPropertyValue::TYPE_NULL, TPropertyValue::OPT_NONE)
 		);
 	}
 
@@ -1564,7 +1564,7 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 			TPropertyValue::ensureArrayOfType(
 				['red', 'green', 'blue'],
 				\stdClass::class,
-				TPropertyValue::FILTER_NONE
+				TPropertyValue::OPT_NONE
 			)
 		);
 	}
@@ -1578,7 +1578,7 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 			TPropertyValue::ensureArrayOfType(
 				['Red', 'blue'],
 				TPropertyValueTestColor::class,
-				TPropertyValue::FILTER_NONE
+				TPropertyValue::OPT_NONE
 			)
 		);
 	}
@@ -1594,37 +1594,37 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 	public function testEnsureArrayOfType_scalarNonStringInput_wrapsAsSingleElement(): void
 	{
 		// Non-string scalars flow through (array) cast → [scalar].
-		self::assertSame([42],     TPropertyValue::ensureArrayOfType(42,    TPropertyValue::TYPE_INT, TPropertyValue::FILTER_NONE));
-		self::assertSame([1.5],    TPropertyValue::ensureArrayOfType(1.5,   TPropertyValue::TYPE_FLOAT, TPropertyValue::FILTER_NONE));
-		self::assertSame([true],   TPropertyValue::ensureArrayOfType(true,  TPropertyValue::TYPE_BOOL, TPropertyValue::FILTER_NONE));
+		self::assertSame([42],     TPropertyValue::ensureArrayOfType(42,    TPropertyValue::TYPE_INT, TPropertyValue::OPT_NONE));
+		self::assertSame([1.5],    TPropertyValue::ensureArrayOfType(1.5,   TPropertyValue::TYPE_FLOAT, TPropertyValue::OPT_NONE));
+		self::assertSame([true],   TPropertyValue::ensureArrayOfType(true,  TPropertyValue::TYPE_BOOL, TPropertyValue::OPT_NONE));
 	}
 
 	// ── Flag combinations not exercised individually ───────────────────────
 
 	public function testEnsureArrayOfType_lowercaseWithoutTrim_preservesWhitespace(): void
 	{
-		// AOT_LOWERCASE on its own lowercases but doesn't trim — surrounding
+		// OPT_LOWERCASE on its own lowercases but doesn't trim — surrounding
 		// whitespace survives.
 		self::assertSame(
 			['  admin  ', 'editor'],
 			TPropertyValue::ensureArrayOfType(
 				['  Admin  ', 'EDITOR'],
 				TPropertyValue::TYPE_STRING,
-				TPropertyValue::AOT_LOWERCASE
+				TPropertyValue::OPT_LOWERCASE
 			)
 		);
 	}
 
 	public function testEnsureArrayOfType_trimWithoutFilterBlank_keepsTrimmedEmptyString(): void
 	{
-		// AOT_TRIM mutates '   ' to '' but no FILTER_BLANK is set, so the
+		// OPT_TRIM mutates '   ' to '' but no OPT_EMPTY_BLANK is set, so the
 		// empty string survives in the output.
 		self::assertSame(
 			['Reader', '', 'User'],
 			TPropertyValue::ensureArrayOfType(
 				['  Reader  ', '   ', 'User'],
 				TPropertyValue::TYPE_STRING,
-				TPropertyValue::AOT_TRIM
+				TPropertyValue::OPT_TRIM
 			)
 		);
 	}
@@ -1632,7 +1632,7 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 	public function testEnsureArrayOfType_partialCompositeNullAndFalseOnly_blankSurvives(): void
 	{
 		// Subset of the composite: drops null and false, keeps ''.
-		$flags = TPropertyValue::FILTER_NULL | TPropertyValue::FILTER_FALSE;
+		$flags = TPropertyValue::OPT_EMPTY_NULL | TPropertyValue::OPT_EMPTY_FALSE;
 		self::assertSame(
 			['a', '', 'b'],
 			TPropertyValue::ensureArrayOfType(
@@ -1645,12 +1645,12 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 
 	public function testEnsureArrayOfType_allFlagsTogether_kitchenSink(): void
 	{
-		// AOT_TRIM | AOT_LOWERCASE | FILTER_EMPTY composite — every flag
+		// OPT_TRIM | OPT_LOWERCASE | OPT_EMPTY composite — every flag
 		// active.  Mixed-type input exercises both string-only transforms
 		// and non-string pass-through.
-		$flags = TPropertyValue::AOT_TRIM
-			| TPropertyValue::AOT_LOWERCASE
-			| TPropertyValue::FILTER_EMPTY;
+		$flags = TPropertyValue::OPT_TRIM
+			| TPropertyValue::OPT_LOWERCASE
+			| TPropertyValue::OPT_EMPTY;
 		self::assertSame(
 			['admin', 42, 'editor'],
 			TPropertyValue::ensureArrayOfType(
@@ -1671,7 +1671,7 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 			TPropertyValue::ensureArrayOfType(
 				[3 => 'Reader', 7 => 'User'],
 				TPropertyValue::TYPE_STRING,
-				TPropertyValue::FILTER_NONE
+				TPropertyValue::OPT_NONE
 			)
 		);
 	}
@@ -1683,7 +1683,7 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		$input = ['10' => 'a', '20' => 'b'];
 		self::assertSame(
 			['a', 'b'],
-			TPropertyValue::ensureArrayOfType($input, TPropertyValue::TYPE_STRING, TPropertyValue::FILTER_NONE)
+			TPropertyValue::ensureArrayOfType($input, TPropertyValue::TYPE_STRING, TPropertyValue::OPT_NONE)
 		);
 	}
 
@@ -1691,7 +1691,7 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 
 	public function testEnsureArrayOfType_blankFilterAfterTrim_strictPipelineOrder(): void
 	{
-		// AOT_TRIM mutates '  hello  ' → 'hello' first; FILTER_BLANK then
+		// OPT_TRIM mutates '  hello  ' → 'hello' first; OPT_EMPTY_BLANK then
 		// tests 'hello' === '' → keep.  If the order were inverted (filter
 		// before trim), 'hello' would never reach the trim step.
 		self::assertSame(
@@ -1699,21 +1699,21 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 			TPropertyValue::ensureArrayOfType(
 				['  hello  '],
 				TPropertyValue::TYPE_STRING,
-				TPropertyValue::AOT_TRIM | TPropertyValue::FILTER_BLANK
+				TPropertyValue::OPT_TRIM | TPropertyValue::OPT_EMPTY_BLANK
 			)
 		);
 	}
 
 	public function testEnsureArrayOfType_intCoercionWithFilterBlank_noopForNonStrings(): void
 	{
-		// FILTER_BLANK is string-only; with TYPE_INT it has no effect since
+		// OPT_EMPTY_BLANK is string-only; with TYPE_INT it has no effect since
 		// coerced elements are ints.  Confirms the is_string branch gate.
 		self::assertSame(
 			[1, 0, 2],
 			TPropertyValue::ensureArrayOfType(
 				['1', '', '2'],
 				TPropertyValue::TYPE_INT,
-				TPropertyValue::FILTER_BLANK
+				TPropertyValue::OPT_EMPTY_BLANK
 			)
 		);
 	}
@@ -2583,9 +2583,9 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 	// ensureNullIf — selective emptiness via FILTER_* flags
 	// ════════════════════════════════════════════════════════════════════════
 
-	public function testEnsureNullIf_defaults_FILTER_EMPTY(): void
+	public function testEnsureNullIf_defaults_OPT_EMPTY(): void
 	{
-		// Defaults to FILTER_EMPTY — drops null, false, '' and whitespace-only.
+		// Defaults to OPT_EMPTY — drops null, false, '' and whitespace-only.
 		self::assertNull(TPropertyValue::ensureNullIf(null));
 		self::assertNull(TPropertyValue::ensureNullIf(false));
 		self::assertNull(TPropertyValue::ensureNullIf(''));
@@ -2600,39 +2600,39 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 
 	public function testEnsureNullIf_filterNullOnly(): void
 	{
-		// FILTER_NULL is the only flag set — false and '' survive.
-		self::assertNull(TPropertyValue::ensureNullIf(null,  TPropertyValue::FILTER_NULL));
-		self::assertFalse(TPropertyValue::ensureNullIf(false, TPropertyValue::FILTER_NULL));
-		self::assertSame('', TPropertyValue::ensureNullIf('',  TPropertyValue::FILTER_NULL));
+		// OPT_EMPTY_NULL is the only flag set — false and '' survive.
+		self::assertNull(TPropertyValue::ensureNullIf(null,  TPropertyValue::OPT_EMPTY_NULL));
+		self::assertFalse(TPropertyValue::ensureNullIf(false, TPropertyValue::OPT_EMPTY_NULL));
+		self::assertSame('', TPropertyValue::ensureNullIf('',  TPropertyValue::OPT_EMPTY_NULL));
 	}
 
 	public function testEnsureNullIf_filterFalseOnly(): void
 	{
-		// FILTER_FALSE is the only flag set — null and '' survive (input null
+		// OPT_EMPTY_FALSE is the only flag set — null and '' survive (input null
 		// happens to equal output null, so distinguish via false specifically).
-		self::assertNull(TPropertyValue::ensureNullIf(false, TPropertyValue::FILTER_FALSE));
+		self::assertNull(TPropertyValue::ensureNullIf(false, TPropertyValue::OPT_EMPTY_FALSE));
 		// Non-false survivors:
-		self::assertSame(0,       TPropertyValue::ensureNullIf(0,       TPropertyValue::FILTER_FALSE));
-		self::assertSame('false', TPropertyValue::ensureNullIf('false', TPropertyValue::FILTER_FALSE));
-		self::assertSame('',      TPropertyValue::ensureNullIf('',      TPropertyValue::FILTER_FALSE));
+		self::assertSame(0,       TPropertyValue::ensureNullIf(0,       TPropertyValue::OPT_EMPTY_FALSE));
+		self::assertSame('false', TPropertyValue::ensureNullIf('false', TPropertyValue::OPT_EMPTY_FALSE));
+		self::assertSame('',      TPropertyValue::ensureNullIf('',      TPropertyValue::OPT_EMPTY_FALSE));
 	}
 
 	public function testEnsureNullIf_filterBlankOnly_catchesWhitespaceOnly(): void
 	{
-		// FILTER_BLANK uses trim() so whitespace-only and '' both null out.
-		self::assertNull(TPropertyValue::ensureNullIf('',    TPropertyValue::FILTER_BLANK));
-		self::assertNull(TPropertyValue::ensureNullIf('   ', TPropertyValue::FILTER_BLANK));
-		self::assertNull(TPropertyValue::ensureNullIf("\t\n", TPropertyValue::FILTER_BLANK));
+		// OPT_EMPTY_BLANK uses trim() so whitespace-only and '' both null out.
+		self::assertNull(TPropertyValue::ensureNullIf('',    TPropertyValue::OPT_EMPTY_BLANK));
+		self::assertNull(TPropertyValue::ensureNullIf('   ', TPropertyValue::OPT_EMPTY_BLANK));
+		self::assertNull(TPropertyValue::ensureNullIf("\t\n", TPropertyValue::OPT_EMPTY_BLANK));
 		// Non-string survives.
-		self::assertSame(false, TPropertyValue::ensureNullIf(false, TPropertyValue::FILTER_BLANK));
-		self::assertSame(0,     TPropertyValue::ensureNullIf(0,     TPropertyValue::FILTER_BLANK));
+		self::assertSame(false, TPropertyValue::ensureNullIf(false, TPropertyValue::OPT_EMPTY_BLANK));
+		self::assertSame(0,     TPropertyValue::ensureNullIf(0,     TPropertyValue::OPT_EMPTY_BLANK));
 		// String with content survives.
-		self::assertSame(' hello ', TPropertyValue::ensureNullIf(' hello ', TPropertyValue::FILTER_BLANK));
+		self::assertSame(' hello ', TPropertyValue::ensureNullIf(' hello ', TPropertyValue::OPT_EMPTY_BLANK));
 	}
 
 	public function testEnsureNullIf_combinedFlags(): void
 	{
-		$nullOrBlank = TPropertyValue::FILTER_NULL | TPropertyValue::FILTER_BLANK;
+		$nullOrBlank = TPropertyValue::OPT_EMPTY_NULL | TPropertyValue::OPT_EMPTY_BLANK;
 		self::assertNull(TPropertyValue::ensureNullIf(null, $nullOrBlank));
 		self::assertNull(TPropertyValue::ensureNullIf('',   $nullOrBlank));
 		self::assertFalse(TPropertyValue::ensureNullIf(false, $nullOrBlank));   // false not selected
@@ -2640,10 +2640,10 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 
 	public function testEnsureNullIf_filterEmptyIsCompositeOfThree(): void
 	{
-		// FILTER_EMPTY === FILTER_NULL | FILTER_FALSE | FILTER_BLANK.
+		// OPT_EMPTY === OPT_EMPTY_NULL | OPT_EMPTY_FALSE | OPT_EMPTY_BLANK.
 		self::assertSame(
-			TPropertyValue::FILTER_NULL | TPropertyValue::FILTER_FALSE | TPropertyValue::FILTER_BLANK,
-			TPropertyValue::FILTER_EMPTY
+			TPropertyValue::OPT_EMPTY_NULL | TPropertyValue::OPT_EMPTY_FALSE | TPropertyValue::OPT_EMPTY_BLANK,
+			TPropertyValue::OPT_EMPTY
 		);
 	}
 
