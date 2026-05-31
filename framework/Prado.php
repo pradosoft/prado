@@ -515,10 +515,6 @@ class Prado
 	 */
 	public static function method_visible($object_or_class, string $method): bool
 	{
-		// Route through TComponentReflection's cached lookup instead of
-		// constructing a fresh \ReflectionMethod per call; returns null
-		// when the method does not exist, replacing the prior method_exists
-		// check in one step.
 		$reflection = TComponentReflection::getReflectionMethodByType($object_or_class, $method);
 		if ($reflection !== null) {
 			$trace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS, 3);
