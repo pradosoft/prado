@@ -1210,6 +1210,520 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		}
 	}
 
+	// ════════════════════════════════════════════════════════════════════════
+	// ensureArrayOfType — type coercion + trim/lowercase/filter flags
+	// ════════════════════════════════════════════════════════════════════════
+
+	public function testEnsureArrayOfType_defaults_trimAndFilterEmptyAndNull(): void
+	{
+		// Default flags = AOT_TRIM | FILTER_EMPTY (composite of NULL,
+		// FALSE, BLANK).  Strings trimmed, post-trim empties dropped,
+		// nulls and falses short-circuited.
+		self::assertSame(
+			['Reader', 'User'],
+			TPropertyValue::ensureArrayOfType('Reader, User', TPropertyValue::TYPE_STRING)
+		);
+		self::assertSame(
+			['Reader', 'User'],
+			TPropertyValue::ensureArrayOfType(['Reader', '  User  ', ''], TPropertyValue::TYPE_STRING)
+		);
+		self::assertSame(
+			['a', 'b'],
+			TPropertyValue::ensureArrayOfType(['a', null, '  ', 'b'], TPropertyValue::TYPE_STRING)
+		);
+	}
+
+	public function testEnsureArrayOfType_filterNone_rawPassThrough(): void
+	{
+		// FILTER_NONE (= 0) is the shared opt-out for raw pass-through;
+		// nothing is trimmed, lowercased, or filtered.
+		self::assertSame(
+			['Reader', '  User  ', ''],
+			TPropertyValue::ensureArrayOfType(
+				['Reader', '  User  ', ''],
+				TPropertyValue::TYPE_STRING,
+				TPropertyValue::FILTER_NONE
+			)
+		);
+		// And confirms the constant is literally 0 so bare `0` still works.
+		self::assertSame(0, TPropertyValue::FILTER_NONE);
+	}
+
+	public function testEnsureArrayOfType_trimFlag_trimsStringElements(): void
+	{
+		self::assertSame(
+			['Reader', 'User', ''],
+			TPropertyValue::ensureArrayOfType(['  Reader  ', 'User', '   '], TPropertyValue::TYPE_STRING, TPropertyValue::AOT_TRIM)
+		);
+	}
+
+	public function testEnsureArrayOfType_lowercaseFlag_strtolowersStringElements(): void
+	{
+		self::assertSame(
+			['admin', 'editor'],
+			TPropertyValue::ensureArrayOfType(['Admin', 'EDITOR'], TPropertyValue::TYPE_STRING, TPropertyValue::AOT_LOWERCASE)
+		);
+	}
+
+	public function testEnsureArrayOfType_filterEmpty_dropsEmptyStrings(): void
+	{
+		// Output is packed (0, 1, …) — filter-induced gaps don't carry meaning.
+		self::assertSame(
+			['Reader', 'User'],
+			TPropertyValue::ensureArrayOfType(['Reader', '', 'User'], TPropertyValue::TYPE_STRING, TPropertyValue::FILTER_BLANK)
+		);
+	}
+
+	public function testEnsureArrayOfType_filterNull_dropsNullElements(): void
+	{
+		// FILTER_NULL short-circuits null inputs at the top of the loop,
+		// before coercion runs; the type parameter is irrelevant for the
+		// nulls themselves.  Output is packed.
+		self::assertSame(
+			['a', 'b'],
+			TPropertyValue::ensureArrayOfType(['a', null, 'b'], TPropertyValue::TYPE_MIXED, TPropertyValue::FILTER_NULL)
+		);
+	}
+
+	public function testEnsureArrayOfType_filterNull_shortCircuitsBeforeCoercion(): void
+	{
+		// If FILTER_NULL didn't short-circuit, ensureString(null) would
+		// turn null into '' and the null entry would survive (as ''); the
+		// assertion confirms nulls are dropped at the top of the loop,
+		// before the string coercion runs.
+		self::assertSame(
+			['a', 'b'],
+			TPropertyValue::ensureArrayOfType(
+				['a', null, 'b'],
+				TPropertyValue::TYPE_STRING,
+				TPropertyValue::FILTER_NULL
+			)
+		);
+	}
+
+	public function testEnsureArrayOfType_filterFalse_dropsFalseElements(): void
+	{
+		// FILTER_FALSE short-circuits like FILTER_NULL — false
+		// inputs are dropped before coercion runs.
+		self::assertSame(
+			['a', 'b'],
+			TPropertyValue::ensureArrayOfType(
+				['a', false, 'b'],
+				TPropertyValue::TYPE_MIXED,
+				TPropertyValue::FILTER_FALSE
+			)
+		);
+	}
+
+	public function testEnsureArrayOfType_filterFalse_catchesCoercedFalse(): void
+	{
+		// FILTER_FALSE runs AFTER coercion so it catches a string
+		// `'false'` (or other falsy input) once ensureBoolean has turned
+		// it into a real bool false.  A pre-coercion check would only
+		// have dropped the literal `false`, leaving the coerced ones.
+		self::assertSame(
+			[true, true],
+			TPropertyValue::ensureArrayOfType(
+				['true', 'false', '1'],
+				TPropertyValue::TYPE_BOOL,
+				TPropertyValue::FILTER_FALSE
+			)
+		);
+	}
+
+	public function testEnsureArrayOfType_filterFalse_literalAndCoercedBothCaught(): void
+	{
+		// Mixed input where some entries are literal `false` and others
+		// coerce to false; both kinds get dropped.
+		self::assertSame(
+			[true, true],
+			TPropertyValue::ensureArrayOfType(
+				[true, false, 'false', true],
+				TPropertyValue::TYPE_BOOL,
+				TPropertyValue::FILTER_FALSE
+			)
+		);
+	}
+
+	public function testEnsureArrayOfType_filterFalse_intCoercion_catchesLiteralBeforeItBecomesZero(): void
+	{
+		// Without a pre-coercion pass, literal `false` would coerce to
+		// `0` and 0 !== false strictly, so post-coercion alone would
+		// keep it as a stray zero.  The pre-coercion check catches it
+		// first.
+		self::assertSame(
+			[1, 2, 3],
+			TPropertyValue::ensureArrayOfType(
+				[1, false, 2, 3],
+				TPropertyValue::TYPE_INT,
+				TPropertyValue::FILTER_FALSE
+			)
+		);
+	}
+
+	public function testEnsureArrayOfType_filterFalse_stringCoercion_catchesLiteralBeforeItBecomesBlank(): void
+	{
+		// Same logic for TYPE_STRING — literal `false` would coerce to
+		// `''` and the post-coercion false check wouldn't match.  The
+		// pre-coercion pass catches the literal first.
+		self::assertSame(
+			['a', 'b'],
+			TPropertyValue::ensureArrayOfType(
+				['a', false, 'b'],
+				TPropertyValue::TYPE_STRING,
+				TPropertyValue::FILTER_FALSE
+			)
+		);
+	}
+
+	public function testEnsureArrayOfType_filterEmpty_compositeDropsNullFalseAndEmpty(): void
+	{
+		// FILTER_EMPTY is the composite of FILTER_NULL,
+		// FILTER_FALSE, FILTER_BLANK — a single flag drops
+		// all three of the most common "empty"-like values.
+		self::assertSame(
+			['a', 'b'],
+			TPropertyValue::ensureArrayOfType(
+				['a', null, false, '', 'b'],
+				TPropertyValue::TYPE_MIXED,
+				TPropertyValue::FILTER_EMPTY
+			)
+		);
+	}
+
+	public function testEnsureArrayOfType_filterEmpty_compositeBitsMatchPrimitiveFlags(): void
+	{
+		// Each primitive bit is set inside the composite, so testing the
+		// individual filter flags via bitwise & against FILTER_EMPTY
+		// returns the same bit pattern as the primitive constant itself.
+		self::assertNotSame(0, TPropertyValue::FILTER_EMPTY & TPropertyValue::FILTER_NULL);
+		self::assertNotSame(0, TPropertyValue::FILTER_EMPTY & TPropertyValue::FILTER_FALSE);
+		self::assertNotSame(0, TPropertyValue::FILTER_EMPTY & TPropertyValue::FILTER_BLANK);
+	}
+
+	public function testEnsureArrayOfType_trimThenFilterEmpty_dropsWhitespaceOnly(): void
+	{
+		// Combined: AOT_TRIM first, then FILTER_BLANK catches
+		// the post-trim '' (was '   ' before trim).
+		$flags = TPropertyValue::AOT_TRIM | TPropertyValue::FILTER_BLANK;
+		self::assertSame(
+			['Reader', 'User'],
+			TPropertyValue::ensureArrayOfType(['  Reader  ', '   ', 'User'], TPropertyValue::TYPE_STRING, $flags)
+		);
+	}
+
+	public function testEnsureArrayOfType_trimLowercaseFilterEmpty_full_normalization(): void
+	{
+		// All three string-shaping flags compose: trim → lowercase → filter.
+		$flags = TPropertyValue::AOT_TRIM
+			| TPropertyValue::AOT_LOWERCASE
+			| TPropertyValue::FILTER_BLANK;
+		self::assertSame(
+			['admin', 'editor'],
+			TPropertyValue::ensureArrayOfType(['  Admin  ', '', 'EDITOR'], TPropertyValue::TYPE_STRING, $flags)
+		);
+	}
+
+	public function testEnsureArrayOfType_intType_coercesEachElement(): void
+	{
+		self::assertSame(
+			[1, 2, 3, 4],
+			TPropertyValue::ensureArrayOfType('1, 2, 3, 4', TPropertyValue::TYPE_INT)
+		);
+		self::assertSame(
+			[1, 2, 3],
+			TPropertyValue::ensureArrayOfType(['1', '2', '3'], TPropertyValue::TYPE_INT)
+		);
+	}
+
+	public function testEnsureArrayOfType_boolType_coercesViaEnsureBoolean(): void
+	{
+		// Pass FILTER_NONE so the test isolates bool coercion — the default
+		// FILTER_EMPTY composite includes FILTER_FALSE, which would drop the
+		// coerced `'false'` post-coercion.  See the FILTER_FALSE-specific
+		// tests for that behavior.
+		self::assertSame(
+			[true, false, true],
+			TPropertyValue::ensureArrayOfType(
+				['true', 'false', '1'],
+				TPropertyValue::TYPE_BOOL,
+				TPropertyValue::FILTER_NONE
+			)
+		);
+	}
+
+	public function testEnsureArrayOfType_mixedTypeWithFlags_stringTransformsOnly(): void
+	{
+		// Trim/lowercase apply only to string elements; non-strings pass through
+		// unchanged.
+		self::assertSame(
+			[0 => 'admin', 1 => 42, 2 => null, 3 => 'editor'],
+			TPropertyValue::ensureArrayOfType(
+				['  Admin  ', 42, null, '  EDITOR  '],
+				TPropertyValue::TYPE_MIXED,
+				TPropertyValue::AOT_TRIM | TPropertyValue::AOT_LOWERCASE
+			)
+		);
+	}
+
+	public function testEnsureArrayOfType_stringKeysPreserved_numericKeysPacked(): void
+	{
+		// String keys are deliberate (associative); they survive verbatim.
+		// Numeric keys are positional; surviving numeric entries repack to
+		// a contiguous 0..N-1 sequence.
+		self::assertSame(
+			['a' => 'Reader', 'c' => 'User'],
+			TPropertyValue::ensureArrayOfType(
+				['a' => 'Reader', 'b' => '', 'c' => 'User'],
+				TPropertyValue::TYPE_STRING,
+				TPropertyValue::FILTER_BLANK
+			)
+		);
+		// All-string-key input: every entry preserved as-is (no filters fire).
+		self::assertSame(
+			['a' => 'Reader', 'b' => 'User'],
+			TPropertyValue::ensureArrayOfType(
+				['a' => 'Reader', 'b' => 'User'],
+				TPropertyValue::TYPE_STRING
+			)
+		);
+	}
+
+	public function testEnsureArrayOfType_mixedKeys_associativeKeptPositionalRepacked(): void
+	{
+		// Input has both string and numeric keys interleaved; filter drops
+		// one of each.  String 'name' stays, numeric entries renumber from
+		// 0 in their surviving order.
+		self::assertSame(
+			[0 => 'Reader', 'name' => 'Alice', 1 => 'User'],
+			TPropertyValue::ensureArrayOfType(
+				[0 => 'Reader', 'name' => 'Alice', 5 => 'User', 8 => ''],
+				TPropertyValue::TYPE_STRING,
+				TPropertyValue::FILTER_BLANK
+			)
+		);
+	}
+
+	// ── Type coverage — types not exercised elsewhere ──────────────────────
+
+	public function testEnsureArrayOfType_floatType_coercesEachElement(): void
+	{
+		self::assertSame(
+			[1.5, 2.5, 3.0],
+			TPropertyValue::ensureArrayOfType('1.5, 2.5, 3', TPropertyValue::TYPE_FLOAT, TPropertyValue::FILTER_NONE)
+		);
+		self::assertSame(
+			[1.5, 2.5, 3.0],
+			TPropertyValue::ensureArrayOfType(['1.5', '2.5', '3'], TPropertyValue::TYPE_FLOAT, TPropertyValue::FILTER_NONE)
+		);
+	}
+
+	public function testEnsureArrayOfType_arrayType_eachElementCoercedToArray(): void
+	{
+		// TYPE_ARRAY routes each element through ensureArray, so a nested
+		// array survives as-is and a CSV string becomes a sub-list.
+		self::assertSame(
+			[[1, 2], ['a', 'b']],
+			TPropertyValue::ensureArrayOfType([[1, 2], 'a, b'], TPropertyValue::TYPE_ARRAY, TPropertyValue::FILTER_NONE)
+		);
+	}
+
+	public function testEnsureArrayOfType_iterableType_behavesLikeArrayType(): void
+	{
+		self::assertSame(
+			[[1, 2]],
+			TPropertyValue::ensureArrayOfType([[1, 2]], TPropertyValue::TYPE_ITERABLE, TPropertyValue::FILTER_NONE)
+		);
+	}
+
+	public function testEnsureArrayOfType_objectType_eachElementWrappedAsStdClass(): void
+	{
+		$result = TPropertyValue::ensureArrayOfType(['hello', 42], TPropertyValue::TYPE_OBJECT, TPropertyValue::FILTER_NONE);
+		self::assertCount(2, $result);
+		self::assertInstanceOf(\stdClass::class, $result[0]);
+		self::assertInstanceOf(\stdClass::class, $result[1]);
+		self::assertSame('hello', $result[0]->scalar);
+		self::assertSame(42,      $result[1]->scalar);
+	}
+
+	public function testEnsureArrayOfType_nullType_passesElementsThrough(): void
+	{
+		// TYPE_NULL is a pass-through alongside TYPE_MIXED.
+		self::assertSame(
+			['a', 42, true, null],
+			TPropertyValue::ensureArrayOfType(['a', 42, true, null], TPropertyValue::TYPE_NULL, TPropertyValue::FILTER_NONE)
+		);
+	}
+
+	public function testEnsureArrayOfType_classNameType_routesThroughCoerceToClass(): void
+	{
+		// A class-name $type that DOESN'T match anything _coerceToClass
+		// can handle (plain stdClass) leaves each element unchanged.
+		self::assertSame(
+			['red', 'green', 'blue'],
+			TPropertyValue::ensureArrayOfType(
+				['red', 'green', 'blue'],
+				\stdClass::class,
+				TPropertyValue::FILTER_NONE
+			)
+		);
+	}
+
+	public function testEnsureArrayOfType_classNameType_backedEnumCoercion(): void
+	{
+		// Each element string is case-insensitively matched against
+		// TPropertyValueTestColor::cases() via _coerceToClass.
+		self::assertSame(
+			[TPropertyValueTestColor::Red, TPropertyValueTestColor::Blue],
+			TPropertyValue::ensureArrayOfType(
+				['Red', 'blue'],
+				TPropertyValueTestColor::class,
+				TPropertyValue::FILTER_NONE
+			)
+		);
+	}
+
+	// ── Input-shape coverage — non-array, non-string inputs ────────────────
+
+	public function testEnsureArrayOfType_nullInput_yieldsEmptyArray(): void
+	{
+		// ensureArray((array)null) === []
+		self::assertSame([], TPropertyValue::ensureArrayOfType(null, TPropertyValue::TYPE_STRING));
+	}
+
+	public function testEnsureArrayOfType_scalarNonStringInput_wrapsAsSingleElement(): void
+	{
+		// Non-string scalars flow through (array) cast → [scalar].
+		self::assertSame([42],     TPropertyValue::ensureArrayOfType(42,    TPropertyValue::TYPE_INT, TPropertyValue::FILTER_NONE));
+		self::assertSame([1.5],    TPropertyValue::ensureArrayOfType(1.5,   TPropertyValue::TYPE_FLOAT, TPropertyValue::FILTER_NONE));
+		self::assertSame([true],   TPropertyValue::ensureArrayOfType(true,  TPropertyValue::TYPE_BOOL, TPropertyValue::FILTER_NONE));
+	}
+
+	// ── Flag combinations not exercised individually ───────────────────────
+
+	public function testEnsureArrayOfType_lowercaseWithoutTrim_preservesWhitespace(): void
+	{
+		// AOT_LOWERCASE on its own lowercases but doesn't trim — surrounding
+		// whitespace survives.
+		self::assertSame(
+			['  admin  ', 'editor'],
+			TPropertyValue::ensureArrayOfType(
+				['  Admin  ', 'EDITOR'],
+				TPropertyValue::TYPE_STRING,
+				TPropertyValue::AOT_LOWERCASE
+			)
+		);
+	}
+
+	public function testEnsureArrayOfType_trimWithoutFilterBlank_keepsTrimmedEmptyString(): void
+	{
+		// AOT_TRIM mutates '   ' to '' but no FILTER_BLANK is set, so the
+		// empty string survives in the output.
+		self::assertSame(
+			['Reader', '', 'User'],
+			TPropertyValue::ensureArrayOfType(
+				['  Reader  ', '   ', 'User'],
+				TPropertyValue::TYPE_STRING,
+				TPropertyValue::AOT_TRIM
+			)
+		);
+	}
+
+	public function testEnsureArrayOfType_partialCompositeNullAndFalseOnly_blankSurvives(): void
+	{
+		// Subset of the composite: drops null and false, keeps ''.
+		$flags = TPropertyValue::FILTER_NULL | TPropertyValue::FILTER_FALSE;
+		self::assertSame(
+			['a', '', 'b'],
+			TPropertyValue::ensureArrayOfType(
+				['a', null, false, '', 'b'],
+				TPropertyValue::TYPE_MIXED,
+				$flags
+			)
+		);
+	}
+
+	public function testEnsureArrayOfType_allFlagsTogether_kitchenSink(): void
+	{
+		// AOT_TRIM | AOT_LOWERCASE | FILTER_EMPTY composite — every flag
+		// active.  Mixed-type input exercises both string-only transforms
+		// and non-string pass-through.
+		$flags = TPropertyValue::AOT_TRIM
+			| TPropertyValue::AOT_LOWERCASE
+			| TPropertyValue::FILTER_EMPTY;
+		self::assertSame(
+			['admin', 42, 'editor'],
+			TPropertyValue::ensureArrayOfType(
+				['  ADMIN  ', null, false, 42, '', '  EDITOR  ', '   '],
+				TPropertyValue::TYPE_MIXED,
+				$flags
+			)
+		);
+	}
+
+	// ── Key-handling edge cases ────────────────────────────────────────────
+
+	public function testEnsureArrayOfType_sparseNumericKeys_repackContiguously(): void
+	{
+		// Input has non-contiguous numeric keys; output should be 0..N-1.
+		self::assertSame(
+			['Reader', 'User'],
+			TPropertyValue::ensureArrayOfType(
+				[3 => 'Reader', 7 => 'User'],
+				TPropertyValue::TYPE_STRING,
+				TPropertyValue::FILTER_NONE
+			)
+		);
+	}
+
+	public function testEnsureArrayOfType_numericLookingStringKey_treatedAsNumericByPhp(): void
+	{
+		// PHP auto-converts '10' to int 10 at array-literal time, so this
+		// is a numeric-keyed entry and gets repacked.
+		$input = ['10' => 'a', '20' => 'b'];
+		self::assertSame(
+			['a', 'b'],
+			TPropertyValue::ensureArrayOfType($input, TPropertyValue::TYPE_STRING, TPropertyValue::FILTER_NONE)
+		);
+	}
+
+	// ── Pipeline ordering verification ─────────────────────────────────────
+
+	public function testEnsureArrayOfType_blankFilterAfterTrim_strictPipelineOrder(): void
+	{
+		// AOT_TRIM mutates '  hello  ' → 'hello' first; FILTER_BLANK then
+		// tests 'hello' === '' → keep.  If the order were inverted (filter
+		// before trim), 'hello' would never reach the trim step.
+		self::assertSame(
+			['hello'],
+			TPropertyValue::ensureArrayOfType(
+				['  hello  '],
+				TPropertyValue::TYPE_STRING,
+				TPropertyValue::AOT_TRIM | TPropertyValue::FILTER_BLANK
+			)
+		);
+	}
+
+	public function testEnsureArrayOfType_intCoercionWithFilterBlank_noopForNonStrings(): void
+	{
+		// FILTER_BLANK is string-only; with TYPE_INT it has no effect since
+		// coerced elements are ints.  Confirms the is_string branch gate.
+		self::assertSame(
+			[1, 0, 2],
+			TPropertyValue::ensureArrayOfType(
+				['1', '', '2'],
+				TPropertyValue::TYPE_INT,
+				TPropertyValue::FILTER_BLANK
+			)
+		);
+	}
+
+	public function testEnsureArrayOfType_emptyInputYieldsEmptyArray(): void
+	{
+		self::assertSame([], TPropertyValue::ensureArrayOfType('', TPropertyValue::TYPE_STRING));
+		self::assertSame([], TPropertyValue::ensureArrayOfType([], TPropertyValue::TYPE_STRING));
+	}
+
 	public function testEnsureArrayStrictGrammarRejectsBareWord()
 	{
 		// Bare-word strings have been silently fallen back to single element.
@@ -2063,6 +2577,74 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		self::assertSame(['trailing'], TPropertyValue::ensureEnum(['trailing'], $cls, 'leading', ['trailing']));
 		// And the leading scalar is still findable.
 		self::assertSame('leading', TPropertyValue::ensureEnum('leading', $cls, 'leading', ['trailing']));
+	}
+
+	// ════════════════════════════════════════════════════════════════════════
+	// ensureNullIf — selective emptiness via FILTER_* flags
+	// ════════════════════════════════════════════════════════════════════════
+
+	public function testEnsureNullIf_defaults_FILTER_EMPTY(): void
+	{
+		// Defaults to FILTER_EMPTY — drops null, false, '' and whitespace-only.
+		self::assertNull(TPropertyValue::ensureNullIf(null));
+		self::assertNull(TPropertyValue::ensureNullIf(false));
+		self::assertNull(TPropertyValue::ensureNullIf(''));
+		self::assertNull(TPropertyValue::ensureNullIf('   '));
+		// Surviving values — distinct from ensureNullIfEmpty(), which would
+		// drop these as PHP empty().
+		self::assertSame(0, TPropertyValue::ensureNullIf(0));
+		self::assertSame('0', TPropertyValue::ensureNullIf('0'));
+		self::assertSame([], TPropertyValue::ensureNullIf([]));
+		self::assertSame('hello', TPropertyValue::ensureNullIf('hello'));
+	}
+
+	public function testEnsureNullIf_filterNullOnly(): void
+	{
+		// FILTER_NULL is the only flag set — false and '' survive.
+		self::assertNull(TPropertyValue::ensureNullIf(null,  TPropertyValue::FILTER_NULL));
+		self::assertFalse(TPropertyValue::ensureNullIf(false, TPropertyValue::FILTER_NULL));
+		self::assertSame('', TPropertyValue::ensureNullIf('',  TPropertyValue::FILTER_NULL));
+	}
+
+	public function testEnsureNullIf_filterFalseOnly(): void
+	{
+		// FILTER_FALSE is the only flag set — null and '' survive (input null
+		// happens to equal output null, so distinguish via false specifically).
+		self::assertNull(TPropertyValue::ensureNullIf(false, TPropertyValue::FILTER_FALSE));
+		// Non-false survivors:
+		self::assertSame(0,       TPropertyValue::ensureNullIf(0,       TPropertyValue::FILTER_FALSE));
+		self::assertSame('false', TPropertyValue::ensureNullIf('false', TPropertyValue::FILTER_FALSE));
+		self::assertSame('',      TPropertyValue::ensureNullIf('',      TPropertyValue::FILTER_FALSE));
+	}
+
+	public function testEnsureNullIf_filterBlankOnly_catchesWhitespaceOnly(): void
+	{
+		// FILTER_BLANK uses trim() so whitespace-only and '' both null out.
+		self::assertNull(TPropertyValue::ensureNullIf('',    TPropertyValue::FILTER_BLANK));
+		self::assertNull(TPropertyValue::ensureNullIf('   ', TPropertyValue::FILTER_BLANK));
+		self::assertNull(TPropertyValue::ensureNullIf("\t\n", TPropertyValue::FILTER_BLANK));
+		// Non-string survives.
+		self::assertSame(false, TPropertyValue::ensureNullIf(false, TPropertyValue::FILTER_BLANK));
+		self::assertSame(0,     TPropertyValue::ensureNullIf(0,     TPropertyValue::FILTER_BLANK));
+		// String with content survives.
+		self::assertSame(' hello ', TPropertyValue::ensureNullIf(' hello ', TPropertyValue::FILTER_BLANK));
+	}
+
+	public function testEnsureNullIf_combinedFlags(): void
+	{
+		$nullOrBlank = TPropertyValue::FILTER_NULL | TPropertyValue::FILTER_BLANK;
+		self::assertNull(TPropertyValue::ensureNullIf(null, $nullOrBlank));
+		self::assertNull(TPropertyValue::ensureNullIf('',   $nullOrBlank));
+		self::assertFalse(TPropertyValue::ensureNullIf(false, $nullOrBlank));   // false not selected
+	}
+
+	public function testEnsureNullIf_filterEmptyIsCompositeOfThree(): void
+	{
+		// FILTER_EMPTY === FILTER_NULL | FILTER_FALSE | FILTER_BLANK.
+		self::assertSame(
+			TPropertyValue::FILTER_NULL | TPropertyValue::FILTER_FALSE | TPropertyValue::FILTER_BLANK,
+			TPropertyValue::FILTER_EMPTY
+		);
 	}
 
 	public function testEnsureNullIfEmpty()

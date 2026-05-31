@@ -156,6 +156,65 @@ class TPropertyValue
 	public const ARRAY_STRICT_ERRORS = (1 << 2);
 
 	/**
+	 * No-op bitmask — shared zero across {@see ensureNullIf()} (no
+	 * filters apply, value returned unchanged) and {@see ensureArrayOfType()}
+	 * (no transforms, no filters; coercion only).  Named alias for `0` so
+	 * callers can opt out of defaults without an unexplained literal.
+	 * @since 4.4.0
+	 */
+	public const FILTER_NONE = 0;
+
+	/**
+	 * {@see ensureArrayOfType()} flag — trims string elements after
+	 * coercion, before {@see FILTER_EMPTY}.  No effect on non-strings.
+	 * @since 4.4.0
+	 */
+	public const AOT_TRIM = (1 << 0);
+
+	/**
+	 * {@see ensureArrayOfType()} flag — `strtolower` on string elements
+	 * after {@see AOT_TRIM}.  No effect on non-strings.
+	 * @since 4.4.0
+	 */
+	public const AOT_LOWERCASE = (1 << 1);
+
+	/**
+	 * Emptiness flag — matches `null`.  Used by {@see ensureNullIf()} (drops
+	 * to `null`) and {@see ensureArrayOfType()} (drops the element).  In
+	 * the array path the test is short-circuited before coercion runs.
+	 * @since 4.4.0
+	 */
+	public const FILTER_NULL = (1 << 2);
+
+	/**
+	 * Emptiness flag — matches `false`.  In {@see ensureArrayOfType()} the
+	 * test runs both before coercion (catches literal `false` before
+	 * TYPE_INT turns it into `0`) and after coercion (catches a string
+	 * `'false'` or numeric `0` that TYPE_BOOL turns into real false).
+	 * @since 4.4.0
+	 */
+	public const FILTER_FALSE = (1 << 3);
+
+	/**
+	 * Emptiness flag — matches a string whose trimmed value is `''`.
+	 * Catches both literal `''` and whitespace-only strings; non-string
+	 * values bypass this check.
+	 * @since 4.4.0
+	 */
+	public const FILTER_BLANK = (1 << 4);
+
+	/**
+	 * Emptiness composite — the union of {@see FILTER_NULL},
+	 * {@see FILTER_FALSE}, and {@see FILTER_BLANK}.  Matches PHP `empty()`'s
+	 * sense for the three values that show up most often in normalization
+	 * pipelines: `null`, `false`, `''` (or whitespace-only).
+	 * @since 4.4.0
+	 */
+	public const FILTER_EMPTY = self::FILTER_NULL
+		| self::FILTER_FALSE
+		| self::FILTER_BLANK;
+
+	/**
 	 * Step-11 fallback order for {@see _coerceUnionType}: non-null union members are tried in this
 	 * sequence — int → float → string → bool → aggregate/catch-all — so resolution is deterministic
 	 * regardless of reflection order.  `null` is absent; step 1 handles it before any fallback.
@@ -180,13 +239,24 @@ class TPropertyValue
 	 * comparison) returns `true`; everything else — including `'false'`, `'yes'`, `'no'`,
 	 * `'on'`, `'off'`, `'0.0'`, `'0e0'` — returns `false`.
 	 * Non-strings: PHP's `(bool)` cast is applied directly.
+	 *
+	 * ```php
+	 * TPropertyValue::ensureBoolean('true');   // true (case-insensitive)
+	 * TPropertyValue::ensureBoolean('TRUE');   // true
+	 * TPropertyValue::ensureBoolean('1');      // true   (numeric != 0)
+	 * TPropertyValue::ensureBoolean('false');  // false  (only 'true' recognized as string)
+	 * TPropertyValue::ensureBoolean('yes');    // false
+	 * TPropertyValue::ensureBoolean(0);        // false  (PHP (bool) cast)
+	 * TPropertyValue::ensureBoolean([1, 2]);   // true   (non-empty array)
+	 * ```
+	 *
 	 * @param mixed $value the value to be converted.
 	 * @return bool
 	 */
 	public static function ensureBoolean($value): bool
 	{
 		if (is_string($value)) {
-			return strcasecmp($value, self::BOOL_TRUE) === 0 || (is_numeric($value) && $value != 0);
+			return strcasecmp($value, static::BOOL_TRUE) === 0 || (is_numeric($value) && $value != 0);
 		} else {
 			return (bool) $value;
 		}
@@ -199,6 +269,16 @@ class TPropertyValue
 	 * as-is (pass-through) because it carries an opaque JavaScript expression that must not
 	 * be re-encoded; callers that consume it as a plain string rely on its `__toString` cast.
 	 * All other values are cast via `(string)`.
+	 *
+	 * ```php
+	 * TPropertyValue::ensureString(true);     // 'true'   (not '1')
+	 * TPropertyValue::ensureString(false);    // 'false'  (not '')
+	 * TPropertyValue::ensureString(42);       // '42'
+	 * TPropertyValue::ensureString(1.5);      // '1.5'
+	 * TPropertyValue::ensureString(null);     // ''
+	 * TPropertyValue::ensureString(new TJavaScriptLiteral('alert(1)')); // pass-through, not stringified
+	 * ```
+	 *
 	 * @param mixed $value the value to be converted.
 	 * @return string|\Stringable
 	 */
@@ -208,14 +288,23 @@ class TPropertyValue
 			return $value;
 		}
 		if (is_bool($value)) {
-			return $value ? self::BOOL_TRUE : self::BOOL_FALSE;
+			return $value ? static::BOOL_TRUE : static::BOOL_FALSE;
 		} else {
 			return (string) $value;
 		}
 	}
 
 	/**
-	 * Converts a value to integer type.
+	 * Converts a value to integer type via PHP's `(int)` cast.
+	 *
+	 * ```php
+	 * TPropertyValue::ensureInteger('42');    // 42
+	 * TPropertyValue::ensureInteger('3.7');   // 3       (truncation)
+	 * TPropertyValue::ensureInteger('abc');   // 0
+	 * TPropertyValue::ensureInteger(true);    // 1
+	 * TPropertyValue::ensureInteger(null);    // 0
+	 * ```
+	 *
 	 * @param mixed $value the value to be converted.
 	 * @return int
 	 */
@@ -225,7 +314,15 @@ class TPropertyValue
 	}
 
 	/**
-	 * Converts a value to float type.
+	 * Converts a value to float type via PHP's `(float)` cast.
+	 *
+	 * ```php
+	 * TPropertyValue::ensureFloat('1.5');     // 1.5
+	 * TPropertyValue::ensureFloat('1e3');     // 1000.0
+	 * TPropertyValue::ensureFloat('abc');     // 0.0
+	 * TPropertyValue::ensureFloat(true);      // 1.0
+	 * ```
+	 *
 	 * @param mixed $value the value to be converted.
 	 * @return float
 	 */
@@ -235,7 +332,14 @@ class TPropertyValue
 	}
 
 	/**
-	 * Converts a value to object type.
+	 * Converts a value to object type via PHP's `(object)` cast.
+	 *
+	 * ```php
+	 * TPropertyValue::ensureObject(['a' => 1, 'b' => 2]); // stdClass { a: 1, b: 2 }
+	 * TPropertyValue::ensureObject('hello');               // stdClass { scalar: 'hello' }
+	 * TPropertyValue::ensureObject($existingObj);          // pass-through
+	 * ```
+	 *
 	 * @param mixed $value the value to be converted.
 	 * @return object
 	 */
@@ -245,13 +349,75 @@ class TPropertyValue
 	}
 
 	/**
-	 * Converts the value to 'null' if the given value is empty
+	 * Converts the value to `null` if the given value is empty (per PHP `empty()`).
+	 *
+	 * ```php
+	 * TPropertyValue::ensureNullIfEmpty('');        // null
+	 * TPropertyValue::ensureNullIfEmpty('0');       // null   (PHP empty() drops '0')
+	 * TPropertyValue::ensureNullIfEmpty(0);         // null
+	 * TPropertyValue::ensureNullIfEmpty([]);        // null
+	 * TPropertyValue::ensureNullIfEmpty(false);     // null
+	 * TPropertyValue::ensureNullIfEmpty('hello');   // 'hello'
+	 * TPropertyValue::ensureNullIfEmpty(42);        // 42
+	 * ```
+	 *
 	 * @param mixed $value value to be converted
 	 * @return mixed input or NULL if input is empty
 	 */
 	public static function ensureNullIfEmpty($value): mixed
 	{
 		return empty($value) ? null : $value;
+	}
+
+	/**
+	 * Converts the value to `null` when it matches any of the selected
+	 * emptiness flags; otherwise returns the value unchanged.
+	 *
+	 * Stricter and more selective than {@see ensureNullIfEmpty()}, which
+	 * fires for every value PHP `empty()` considers empty (including `0`,
+	 * `'0'`, `[]`).  This method only tests for the three specific shapes
+	 * the {@see FILTER_NULL}, {@see FILTER_FALSE}, {@see FILTER_BLANK} flags
+	 * select; `0` and `'0'` survive unless the caller pairs them with a
+	 * preliminary coercion.
+	 *
+	 * ```php
+	 * // Defaults: FILTER_EMPTY — null / false / '' or whitespace-only.
+	 * TPropertyValue::ensureNullIf('');         // null
+	 * TPropertyValue::ensureNullIf('   ');      // null  (whitespace-only)
+	 * TPropertyValue::ensureNullIf(null);       // null
+	 * TPropertyValue::ensureNullIf(false);      // null
+	 * TPropertyValue::ensureNullIf(0);          // 0     (not selected by FILTER_EMPTY)
+	 * TPropertyValue::ensureNullIf('0');        // '0'   (not blank)
+	 * TPropertyValue::ensureNullIf('hello');    // 'hello'
+	 *
+	 * // Selective: nulls only.
+	 * TPropertyValue::ensureNullIf(false, TPropertyValue::FILTER_NULL);  // false (kept)
+	 *
+	 * // Selective: blanks only (catches '' and whitespace).
+	 * TPropertyValue::ensureNullIf(null,  TPropertyValue::FILTER_BLANK); // null kept as null
+	 * TPropertyValue::ensureNullIf('  ',  TPropertyValue::FILTER_BLANK); // null
+	 * ```
+	 *
+	 * @param mixed $value the value to test.
+	 * @param int $flags any combination of {@see FILTER_NULL},
+	 *   {@see FILTER_FALSE}, {@see FILTER_BLANK}, {@see FILTER_EMPTY}.
+	 *   Defaults to {@see FILTER_EMPTY}.
+	 * @return mixed the original value, or `null` when it matches one of
+	 *   the selected emptiness flags.
+	 * @since 4.4.0
+	 */
+	public static function ensureNullIf(mixed $value, int $flags = self::FILTER_EMPTY): mixed
+	{
+		if (($flags & static::FILTER_NULL) !== 0 && $value === null) {
+			return null;
+		}
+		if (($flags & static::FILTER_FALSE) !== 0 && $value === false) {
+			return null;
+		}
+		if (($flags & static::FILTER_BLANK) !== 0 && is_string($value) && trim($value) === '') {
+			return null;
+		}
+		return $value;
 	}
 
 	/**
@@ -262,6 +428,26 @@ class TPropertyValue
 	 * In instance (A), $green is treated as a boolean flag for whether to convert
 	 * any web colors to their # hex color.  When red, green, or blue colors are specified
 	 * they are assumed to be bound [0...255], inclusive.
+	 *
+	 * ```php
+	 * // A — hex / web color string
+	 * TPropertyValue::ensureHexColor('#3366ff');                  // '#3366FF'
+	 * TPropertyValue::ensureHexColor('DeepSkyBlue');              // '#00BFFF'
+	 *
+	 * // B — 0x00RRGGBB encoded int
+	 * TPropertyValue::ensureHexColor(0x336699);                   // '#336699'
+	 *
+	 * // C — (red, green, blue) triple
+	 * TPropertyValue::ensureHexColor(51, 102, 255);               // '#3366FF'
+	 *
+	 * // D — array, numeric or named keys
+	 * TPropertyValue::ensureHexColor([51, 102, 255]);             // '#3366FF'
+	 * TPropertyValue::ensureHexColor(['red' => 51, 'green' => 102, 'blue' => 255]);
+	 *
+	 * // Values are clamped to 0..255
+	 * TPropertyValue::ensureHexColor(-5, 999, 100);               // '#00FF64'
+	 * ```
+	 *
 	 * @param null|array|float|int|string $value String Web Color name or Hex Color (eg. '#336699'),
 	 *   array of [$r, $g, $b] or ['red' => $red, 'green' => $green, 'blue' => $blue], or
 	 *   int color (0x00RRGGBB [$blue is null]), or int red [0..255] when $blue is not null.
@@ -275,9 +461,9 @@ class TPropertyValue
 	public static function ensureHexColor(array|float|int|null|string $value, bool|float|int $green = true, float|int|null $blue = null): string
 	{
 		if (is_array($value)) {
-			$blue = array_key_exists(self::COLOR_BLUE, $value) ? $value[self::COLOR_BLUE] : (array_key_exists(2, $value) ? $value[2] : null);
-			$green = array_key_exists(self::COLOR_GREEN, $value) ? $value[self::COLOR_GREEN] : (array_key_exists(1, $value) ? $value[1] : true);
-			$value = array_key_exists(self::COLOR_RED, $value) ? $value[self::COLOR_RED] : (array_key_exists(0, $value) ? $value[0] : null);
+			$blue = array_key_exists(static::COLOR_BLUE, $value) ? $value[static::COLOR_BLUE] : (array_key_exists(2, $value) ? $value[2] : null);
+			$green = array_key_exists(static::COLOR_GREEN, $value) ? $value[static::COLOR_GREEN] : (array_key_exists(1, $value) ? $value[1] : true);
+			$value = array_key_exists(static::COLOR_RED, $value) ? $value[static::COLOR_RED] : (array_key_exists(0, $value) ? $value[0] : null);
 		}
 		if (is_numeric($value)) {
 			$value = (int) $value;
@@ -295,7 +481,7 @@ class TPropertyValue
 						 str_pad(dechex(max(0, min($blue, 255))), 2, '0', STR_PAD_LEFT)
 			);
 		}
-		$value = self::ensureString($value);
+		$value = static::ensureString($value);
 		$len = strlen($value);
 		if ($green && $len > 0 && $value[0] !== '#') {
 			$hex = TWebColor::valueOfConstant($value, false);
@@ -348,6 +534,20 @@ class TPropertyValue
 	 *
 	 * `$enums` also accepts an instance whose class is used.  The reflection
 	 * cache is shared across calls.
+	 *
+	 * ```php
+	 * // Class form — canonical NAME returned (any casing accepted).
+	 * TPropertyValue::ensureEnum('alpha', MyEnum::class);   // 'Alpha'
+	 * TPropertyValue::ensureEnum(MyEnum::Beta, MyEnum::class); // 'Beta' (instance → name)
+	 *
+	 * // Class + extras — sentinel pass-through after class miss.
+	 * TPropertyValue::ensureEnum(null, MyEnum::class, null, false);   // null
+	 * TPropertyValue::ensureEnum('Auto', MyEnum::class, ['Auto']);    // 'Auto'
+	 *
+	 * // Value list — strict-equality membership.
+	 * TPropertyValue::ensureEnum('b', ['a', 'b', 'c']);     // 'b'
+	 * TPropertyValue::ensureEnum('b', 'a', 'b', 'c');       // 'b'
+	 * ```
 	 *
 	 * @param mixed $value the value to be validated.
 	 * @param mixed $enums class name, instance, array of values, or first
@@ -450,6 +650,18 @@ class TPropertyValue
 	 *
 	 * Unlike {@see ensureEnum()}'s extras (which accept either variadic or
 	 * array shapes), this parameter is always a single array.
+	 *
+	 * ```php
+	 * // Class constant — case-insensitive name → declared VALUE.
+	 * TPropertyValue::ensureEnumValue('alpha', MyEnum::class);    // 'a'  (for const Alpha = 'a')
+	 * TPropertyValue::ensureEnumValue(MyEnum::Beta, MyEnum::class); // 'b' (instance → value)
+	 *
+	 * // String-keyed extras — alias map.
+	 * TPropertyValue::ensureEnumValue('auto', MyEnum::class, ['Auto' => 0]); // 0
+	 *
+	 * // Int-keyed extras — strict-equality sentinel list.
+	 * TPropertyValue::ensureEnumValue(null, MyEnum::class, [null, false]);  // null
+	 * ```
 	 *
 	 * @param mixed $value constant name to look up (case-insensitive), an
 	 *   enum instance of `$enums` to unwrap, or a sentinel covered by an
@@ -600,6 +812,27 @@ class TPropertyValue
 	 * The parser is regex-driven — no `eval()` — and the empty string always
 	 * returns the empty array.
 	 *
+	 * ```php
+	 * // Loose grammar (default) — bare element lists auto-wrap.
+	 * TPropertyValue::ensureArray('red, green, blue');   // ['red', 'green', 'blue']
+	 * TPropertyValue::ensureArray('[1, 2, 3]');          // [1, 2, 3]
+	 * TPropertyValue::ensureArray('(a, b => 2)');        // ['a', 'b' => 2]
+	 * TPropertyValue::ensureArray('1_000.5');            // [1000.5]
+	 * TPropertyValue::ensureArray('');                   // []
+	 *
+	 * // Native array — pass-through via (array) cast.
+	 * TPropertyValue::ensureArray(['x' => 1]);           // ['x' => 1]
+	 *
+	 * // Strict grammar — bracketed literals only, no auto-wrap.
+	 * $strict = TPropertyValue::ARRAY_STRICT_GRAMMAR;
+	 * TPropertyValue::ensureArray('[1, 2]', $strict);    // [1, 2]
+	 * TPropertyValue::ensureArray('1, 2', $strict);      // ['1, 2'] (silent fallback)
+	 *
+	 * // Strict + errors — silent fallback becomes an exception.
+	 * TPropertyValue::ensureArray('1, 2', $strict | TPropertyValue::ARRAY_STRICT_ERRORS);
+	 * // throws TInvalidDataValueException
+	 * ```
+	 *
 	 * @param mixed $value the value to be converted.
 	 * @param int $flags zero or more of {@see ARRAY_STRICT_GRAMMAR},
 	 *   {@see ARRAY_STRICT_ERRORS} combined with `|`.  Defaults to `0`
@@ -618,8 +851,8 @@ class TPropertyValue
 		if ($len === 0) {
 			return [];
 		}
-		$strict = ($flags & self::ARRAY_STRICT_GRAMMAR) !== 0;
-		$allowBareParen = $strict && ($flags & self::ARRAY_STRICT_GRAMMAR_ALLOW_BARE_PAREN) !== 0;
+		$strict = ($flags & static::ARRAY_STRICT_GRAMMAR) !== 0;
+		$allowBareParen = $strict && ($flags & static::ARRAY_STRICT_GRAMMAR_ALLOW_BARE_PAREN) !== 0;
 		$parsed = self::_parseArrayLiteral($value, $strict, $allowBareParen);
 		if ($parsed === null && !$strict) {
 			$parsed = self::_parseArrayLiteral('(' . $value . ')', false, false);
@@ -627,10 +860,168 @@ class TPropertyValue
 		if ($parsed !== null) {
 			return $parsed;
 		}
-		if (($flags & self::ARRAY_STRICT_ERRORS) !== 0) {
+		if (($flags & static::ARRAY_STRICT_ERRORS) !== 0) {
 			throw new TInvalidDataValueException('propertyvalue_invalid_array_literal', $value);
 		}
 		return [$value];
+	}
+
+	/**
+	 * Normalizes a value into an array whose elements are coerced to the
+	 * specified type, with optional per-element transforms and filters.
+	 *
+	 * Input flows through {@see ensureArray()} (CSV string, `[a,b,c]`
+	 * literal, and native array all resolve to the same flat list), then
+	 * each element is coerced to `$type`:
+	 *
+	 * - Built-in `TYPE_*` constants (`'string'`, `'int'`, `'float'`, `'bool'`,
+	 *   `'array'`, `'object'`) delegate to the matching `ensure*` helper.
+	 * - `'mixed'` and `'null'` pass through unchanged.
+	 * - Any other value is treated as a class name and coerced via
+	 *   {@see _coerceToClass()} (BackedEnum, IEnumerable, ICoercible, …).
+	 *
+	 * The flag pipeline runs in fixed order:
+	 *
+	 * 1. {@see FILTER_NULL} — discards `null` inputs before coercion.
+	 *    A post-coercion check is unnecessary because typed coercion turns
+	 *    `null` into `''` / `0` / `false`.
+	 * 2. {@see FILTER_FALSE} — discards `false` both before and after
+	 *    coercion.  Pre-coercion catches literal `false` before
+	 *    `TYPE_INT` turns it into `0`; post-coercion catches a coerced
+	 *    `'false'` / `0` from `TYPE_BOOL`.
+	 * 3. {@see FILTER_BLANK} — discards `''` strings after the trim
+	 *    below.  Pair with {@see AOT_TRIM} to drop whitespace-only
+	 *    entries.  Non-string elements bypass this filter.
+	 *
+	 * {@see FILTER_EMPTY} is the union of the three filter flags
+	 * above, matching PHP `empty()` for `null`, `false`, and `''`.
+	 *
+	 * Coercion and string transforms run between the filter passes:
+	 *
+	 * 4. *(coercion to `$type`)*
+	 * 5. {@see AOT_TRIM}      — trims string elements.
+	 * 6. {@see AOT_LOWERCASE} — `strtolower` on string elements.
+	 *
+	 * Key handling:
+	 *
+	 * - String (associative) keys are preserved verbatim.
+	 * - Numeric keys repack to a contiguous `0..N-1` sequence with no
+	 *   filter-induced gaps.
+	 * - Mixed inputs keep associative entries in place and renumber
+	 *   the rest.
+	 *
+	 * ```php
+	 * // Default flags: trim + filter empty composite.
+	 * TPropertyValue::ensureArrayOfType('Reader, , User', TPropertyValue::TYPE_STRING);
+	 * // ['Reader', 'User']
+	 *
+	 * // String + trim + lowercase + filter blank.
+	 * TPropertyValue::ensureArrayOfType(
+	 *     ['  Admin ', '', '  EDITOR '],
+	 *     TPropertyValue::TYPE_STRING,
+	 *     TPropertyValue::AOT_TRIM | TPropertyValue::AOT_LOWERCASE | TPropertyValue::FILTER_BLANK,
+	 * );  // ['admin', 'editor']
+	 *
+	 * // Int coercion — literal `false` dropped before becoming `0`.
+	 * TPropertyValue::ensureArrayOfType([1, false, 2], TPropertyValue::TYPE_INT, TPropertyValue::FILTER_FALSE);
+	 * // [1, 2]
+	 *
+	 * // String keys preserved, numeric repacked.
+	 * TPropertyValue::ensureArrayOfType(
+	 *     [0 => 'a', 'name' => 'Alice', 5 => '', 8 => 'b'],
+	 *     TPropertyValue::TYPE_STRING,
+	 * );  // [0 => 'a', 'name' => 'Alice', 1 => 'b']
+	 *
+	 * // Raw pass-through.
+	 * TPropertyValue::ensureArrayOfType(
+	 *     ['  x ', null, ''],
+	 *     TPropertyValue::TYPE_STRING,
+	 *     TPropertyValue::FILTER_NONE,
+	 * );  // ['  x ', '', '']  (null became '' via ensureString, nothing dropped)
+	 * ```
+	 *
+	 * @param mixed $value the value to normalize.
+	 * @param string $type one of the `TYPE_*` constants or a class name; each
+	 *   element of the resulting array is coerced to this type.
+	 * @param int $flags zero or more of {@see AOT_TRIM},
+	 *   {@see AOT_LOWERCASE}, {@see FILTER_NULL},
+	 *   {@see FILTER_FALSE}, {@see FILTER_BLANK},
+	 *   {@see FILTER_EMPTY} combined with `|`.  Defaults to
+	 *   `AOT_TRIM | FILTER_EMPTY` (trim strings; drop nulls,
+	 *   falses, and post-trim blanks).  Pass {@see FILTER_NONE} for raw
+	 *   pass-through.
+	 * @return array the normalized array.
+	 * @since 4.4.0
+	 */
+	public static function ensureArrayOfType(
+		mixed $value,
+		string $type,
+		int $flags = self::AOT_TRIM | self::FILTER_EMPTY,
+	): array {
+		$trim = ($flags & static::AOT_TRIM) !== 0;
+		$lowercase = ($flags & static::AOT_LOWERCASE) !== 0;
+		$filterNull = ($flags & static::FILTER_NULL) !== 0;
+		$filterFalse = ($flags & static::FILTER_FALSE) !== 0;
+		$filterBlank = ($flags & static::FILTER_BLANK) !== 0;
+
+		$out = [];
+		foreach (static::ensureArray($value) as $key => $item) {
+			// 1. Pre-coercion short-circuits.  Nulls are dropped before
+			// typed coercion turns them into '' / 0 / false.  Literal
+			// false is also dropped here so it doesn't survive TYPE_INT
+			// (false → 0) or TYPE_STRING (false → '') as a stray zero
+			// or empty.
+			if ($filterNull && $item === null) {
+				continue;
+			}
+			if ($filterFalse && $item === false) {
+				continue;
+			}
+
+			// 2. Coerce to target type.
+			$item = match ($type) {
+				static::TYPE_STRING => static::ensureString($item),
+				static::TYPE_INT => static::ensureInteger($item),
+				static::TYPE_FLOAT => static::ensureFloat($item),
+				static::TYPE_BOOL => static::ensureBoolean($item),
+				static::TYPE_ARRAY, static::TYPE_ITERABLE => static::ensureArray($item),
+				static::TYPE_OBJECT => static::ensureObject($item),
+				static::TYPE_MIXED, static::TYPE_NULL => $item,
+				default => self::_coerceToClass($item, $type),
+			};
+
+			// 3. Filter false AGAIN after coercion — catches the common
+			// TYPE_BOOL case where a string `'false'` or numeric `0`
+			// coerces into bool false (the pre-coercion pass only sees
+			// literal `false`).
+			if ($filterFalse && $item === false) {
+				continue;
+			}
+
+			// 4. String-only pipeline: trim, lowercase, then blank filter.
+			// All three are no-ops for non-string items, so they live inside
+			// the same is_string branch — saves a comparison per non-string.
+			if (is_string($item)) {
+				if ($trim) {
+					$item = trim($item);
+				}
+				if ($lowercase) {
+					$item = strtolower($item);
+				}
+				// Trim-aware blank check catches '' AND whitespace-only,
+				// regardless of whether AOT_TRIM mutated the element first.
+				if ($filterBlank && trim($item) === '') {
+					continue;
+				}
+			}
+
+			if (!is_int($key)) {
+				$out[$key] = $item;
+			} else {
+				$out[] = $item;
+			}
+		}
+		return $out;
 	}
 
 	/**
@@ -1299,7 +1690,7 @@ class TPropertyValue
 		if (method_exists($object, $setter)
 			|| ($object instanceof TComponent && ($object->hasMethod($setter) || $object->getBehaviorsEnabled()))
 		) {
-			self::coerceForSetter($object, $setter, $value);
+			static::coerceForSetter($object, $setter, $value);
 		}
 		// Goes through __set() — preserves event/behavior/JS-prefix logic
 		$object->$property = $value;
@@ -1328,7 +1719,7 @@ class TPropertyValue
 	{
 		$ref = TComponentReflection::getReflectionMethodByType($classOrObject, $method);
 		$type = $ref !== null ? ($ref->getParameters()[0] ?? null)?->getType() : null;
-		$value = self::coerceToType($value, $type);
+		$value = static::coerceToType($value, $type);
 	}
 
 	/**
@@ -1367,13 +1758,13 @@ class TPropertyValue
 				return null;
 			}
 			return match ($type->getName()) {
-				self::TYPE_BOOL => self::ensureBoolean($value),
-				self::TYPE_INT => self::ensureInteger($value),
-				self::TYPE_FLOAT => self::ensureFloat($value),
-				self::TYPE_STRING => self::ensureString($value),
-				self::TYPE_ARRAY, self::TYPE_ITERABLE => self::ensureArray($value),
-				self::TYPE_OBJECT => self::ensureObject($value),
-				self::TYPE_MIXED, self::TYPE_NULL => $value,
+				static::TYPE_BOOL => static::ensureBoolean($value),
+				static::TYPE_INT => static::ensureInteger($value),
+				static::TYPE_FLOAT => static::ensureFloat($value),
+				static::TYPE_STRING => static::ensureString($value),
+				static::TYPE_ARRAY, static::TYPE_ITERABLE => static::ensureArray($value),
+				static::TYPE_OBJECT => static::ensureObject($value),
+				static::TYPE_MIXED, static::TYPE_NULL => $value,
 				default => self::_coerceToClass($value, $type->getName()),
 			};
 		}
@@ -1552,15 +1943,15 @@ class TPropertyValue
 		$typeMap = array_combine($names, $named);
 
 		// 1. Null handling
-		$allowsNull = in_array(self::TYPE_NULL, $names, true);
+		$allowsNull = in_array(static::TYPE_NULL, $names, true);
 		if ($value === null || ($allowsNull && $value === '')) {
 			return null;
 		}
 
 		// Optimization: single non-null type — delegate directly
-		$nonNull = array_values(array_filter($named, fn (\ReflectionNamedType $t) => $t->getName() !== self::TYPE_NULL));
+		$nonNull = array_values(array_filter($named, fn (\ReflectionNamedType $t) => $t->getName() !== static::TYPE_NULL));
 		if (count($nonNull) === 1) {
-			return self::coerceToType($value, $nonNull[0]);
+			return static::coerceToType($value, $nonNull[0]);
 		}
 
 		// 2. ICoercible.  Each non-builtin {@see ICoercible} member, in
@@ -1605,17 +1996,17 @@ class TPropertyValue
 		if (!is_string($value)) {
 			if (is_array($value)) {
 				// Prefer array over iterable when both are present.
-				if (isset($typeMap[self::TYPE_ARRAY])) {
-					return self::coerceToType($value, $typeMap[self::TYPE_ARRAY]);
+				if (isset($typeMap[static::TYPE_ARRAY])) {
+					return static::coerceToType($value, $typeMap[static::TYPE_ARRAY]);
 				}
-				if (isset($typeMap[self::TYPE_ITERABLE])) {
-					return self::coerceToType($value, $typeMap[self::TYPE_ITERABLE]);
+				if (isset($typeMap[static::TYPE_ITERABLE])) {
+					return static::coerceToType($value, $typeMap[static::TYPE_ITERABLE]);
 				}
 			} elseif (is_object($value)) {
 				foreach ($nonNull as $t) {
 					$n = $t->getName();
 					if (!$t->isBuiltin() && $value instanceof $n) {
-						return self::coerceToType($value, $t);
+						return static::coerceToType($value, $t);
 					}
 				}
 			}
@@ -1625,8 +2016,8 @@ class TPropertyValue
 		// (bool, int, float) are coerced via {@see ensureString()}.
 		// Step 4 has already claimed any array or typed object with a
 		// native union match.
-		if (in_array(self::TYPE_STRING, $names, true)) {
-			return is_string($value) ? $value : self::ensureString($value);
+		if (in_array(static::TYPE_STRING, $names, true)) {
+			return is_string($value) ? $value : static::ensureString($value);
 		}
 
 		// 6. Native-type short-circuit: only reached when string is NOT in the union.
@@ -1637,36 +2028,36 @@ class TPropertyValue
 			foreach ($nonNull as $t) {
 				$n = $t->getName();
 				if (
-					(is_bool($value) && $n === self::TYPE_BOOL) ||
-					(is_int($value) && $n === self::TYPE_INT) ||
-					(is_float($value) && $n === self::TYPE_FLOAT) ||
+					(is_bool($value) && $n === static::TYPE_BOOL) ||
+					(is_int($value) && $n === static::TYPE_INT) ||
+					(is_float($value) && $n === static::TYPE_FLOAT) ||
 					(is_object($value) && !$t->isBuiltin() && $value instanceof $n)
 				) {
-					return self::coerceToType($value, $t);
+					return static::coerceToType($value, $t);
 				}
 			}
 			// Pass B — PHP non-strict widening when the native type is absent from the union
 			if (is_bool($value)) {
 				// bool widens to int first, then float (PHP non-strict: true=1, false=0)
-				foreach ([self::TYPE_INT, self::TYPE_FLOAT] as $target) {
+				foreach ([static::TYPE_INT, static::TYPE_FLOAT] as $target) {
 					if (isset($typeMap[$target])) {
-						return self::coerceToType($value, $typeMap[$target]);
+						return static::coerceToType($value, $typeMap[$target]);
 					}
 				}
 			} elseif (is_int($value)) {
 				// int widens to float (lossless promotion)
-				if (isset($typeMap[self::TYPE_FLOAT])) {
-					return self::coerceToType($value, $typeMap[self::TYPE_FLOAT]);
+				if (isset($typeMap[static::TYPE_FLOAT])) {
+					return static::coerceToType($value, $typeMap[static::TYPE_FLOAT]);
 				}
 			}
 			// No match — convert to string and continue with shape heuristics
 		}
 
-		$strValue = is_string($value) ? $value : self::ensureString($value);
-		$hasArray = in_array(self::TYPE_ARRAY, $names, true) || in_array(self::TYPE_ITERABLE, $names, true);
-		$hasBool = in_array(self::TYPE_BOOL, $names, true);
-		$hasInt = in_array(self::TYPE_INT, $names, true);
-		$hasFloat = in_array(self::TYPE_FLOAT, $names, true);
+		$strValue = is_string($value) ? $value : static::ensureString($value);
+		$hasArray = in_array(static::TYPE_ARRAY, $names, true) || in_array(static::TYPE_ITERABLE, $names, true);
+		$hasBool = in_array(static::TYPE_BOOL, $names, true);
+		$hasInt = in_array(static::TYPE_INT, $names, true);
+		$hasFloat = in_array(static::TYPE_FLOAT, $names, true);
 
 		// 7. Array notation — unambiguous regardless of other types present.
 		// Three delimiter forms are accepted: the Prado `(...)` convention,
@@ -1679,13 +2070,13 @@ class TPropertyValue
 					|| ($trimmed[0] === '[' && $trimmed[$tlen - 1] === ']')
 					|| ($trimmed[$tlen - 1] === ')' && stripos($trimmed, 'array') === 0))
 			) {
-				return self::ensureArray($strValue);
+				return static::ensureArray($strValue);
 			}
 		}
 
 		// 8. Boolean literals — 'true'/'false' only, not generic truthy strings
-		if ($hasBool && in_array(strtolower($strValue), [self::BOOL_TRUE, self::BOOL_FALSE], true)) {
-			return self::ensureBoolean($strValue);
+		if ($hasBool && in_array(strtolower($strValue), [static::BOOL_TRUE, static::BOOL_FALSE], true)) {
+			return static::ensureBoolean($strValue);
 		}
 
 		// 9. Numeric shape
@@ -1743,6 +2134,6 @@ class TPropertyValue
 			$bi = array_search($b->getName(), self::TYPE_COERCE_ORDER, true);
 			return ($ai === false ? $max : $ai) <=> ($bi === false ? $max : $bi);
 		});
-		return self::coerceToType($strValue, $fallback[0]);
+		return static::coerceToType($strValue, $fallback[0]);
 	}
 }
