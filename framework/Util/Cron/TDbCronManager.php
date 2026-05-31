@@ -11,7 +11,6 @@
 namespace Prado\Util\Cron;
 
 use Exception;
-use PDO;
 use Prado\Security\Permissions\TPermissionEvent;
 use Prado\Security\Permissions\TUserOwnerRule;
 use Prado\Data\TDataSourceConfig;
@@ -362,14 +361,15 @@ class TDbCronManager extends TCronModule implements IDbModule
 					"(name, schedule, task, moduleid, username, options, processcount, lastexectime, active)" .
 					" VALUES (:name, :schedule, :task, :mid, :username, :options, :count, :time, NULL)"
 			);
-			$cmd->bindValue(":name", $task->getName(), PDO::PARAM_STR);
-			$cmd->bindValue(":task", $task->getTask(), PDO::PARAM_STR);
-			$cmd->bindValue(":schedule", $task->getSchedule(), PDO::PARAM_STR);
-			$cmd->bindValue(":mid", $task->getModuleId(), PDO::PARAM_STR);
-			$cmd->bindValue(":username", $username, PDO::PARAM_STR);
-			$cmd->bindValue(":options", serialize($task), PDO::PARAM_STR);
-			$cmd->bindValue(":count", $task->getProcessCount(), PDO::PARAM_INT);
-			$cmd->bindValue(":time", (int) microtime(true), PDO::PARAM_STR);
+			$connection = $cmd->getConnection();
+			$cmd->bindValue(":name", $task->getName(), $connection::PARAM_STR);
+			$cmd->bindValue(":task", $task->getTask(), $connection::PARAM_STR);
+			$cmd->bindValue(":schedule", $task->getSchedule(), $connection::PARAM_STR);
+			$cmd->bindValue(":mid", $task->getModuleId(), $connection::PARAM_STR);
+			$cmd->bindValue(":username", $username, $connection::PARAM_STR);
+			$cmd->bindValue(":options", serialize($task), $connection::PARAM_STR);
+			$cmd->bindValue(":count", $task->getProcessCount(), $connection::PARAM_INT);
+			$cmd->bindValue(":time", (int) microtime(true), $connection::PARAM_STR);
 			$cmd->execute();
 			$logid = $this->getDbConnection()->getLastInsertID();
 		}
@@ -388,10 +388,10 @@ class TDbCronManager extends TCronModule implements IDbModule
 		$cmd = $this->getDbConnection()->createCommand(
 			"UPDATE {$this->_tableName} SET processcount=:count, lastexectime=:time, options=:task WHERE name=:name AND active IS NOT NULL"
 		);
-		$cmd->bindValue(":count", $count, PDO::PARAM_STR);
-		$cmd->bindValue(":time", $time, PDO::PARAM_STR);
-		$cmd->bindValue(":task", serialize($task), PDO::PARAM_STR);
-		$cmd->bindValue(":name", $task->getName(), PDO::PARAM_STR);
+		$cmd->bindValue(":count", $count, $cmd->getConnection()::PARAM_STR);
+		$cmd->bindValue(":time", $time, $cmd->getConnection()::PARAM_STR);
+		$cmd->bindValue(":task", serialize($task), $cmd->getConnection()::PARAM_STR);
+		$cmd->bindValue(":name", $task->getName(), $cmd->getConnection()::PARAM_STR);
 		$cmd->execute();
 	}
 
@@ -534,7 +534,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 		$cmd = $this->getDbConnection()->createCommand(
 			"SELECT * FROM {$this->_tableName} WHERE name=:name AND active IS NOT NULL LIMIT 1"
 		);
-		$cmd->bindValue(":name", $taskName, PDO::PARAM_STR);
+		$cmd->bindValue(":name", $taskName, $cmd->getConnection()::PARAM_STR);
 
 		$result = $cmd->queryRow();
 
@@ -594,15 +594,15 @@ class TDbCronManager extends TCronModule implements IDbModule
 				"(name, schedule, task, moduleid, username, options, lastexectime, processcount, active)" .
 				" VALUES (:name, :schedule, :task, :mid, :username, :options, :time, :count, :active)"
 		);
-		$cmd->bindValue(":name", $name, PDO::PARAM_STR);
-		$cmd->bindValue(":schedule", $schedule = $task->getSchedule(), PDO::PARAM_STR);
-		$cmd->bindValue(":task", $taskExec = $task->getTask(), PDO::PARAM_STR);
-		$cmd->bindValue(":mid", $mid = $task->getModuleId(), PDO::PARAM_STR);
-		$cmd->bindValue(":username", $username = $task->getUserName(), PDO::PARAM_STR);
-		$cmd->bindValue(":options", $serial = serialize($task), PDO::PARAM_STR);
-		$cmd->bindValue(":time", $time = $task->getLastExecTime(), PDO::PARAM_STR);
-		$cmd->bindValue(":count", $count = $task->getProcessCount(), PDO::PARAM_INT);
-		$cmd->bindValue(":active", $active = (isset($this->_configTasks[$name]) ? '0' : '1'), PDO::PARAM_INT);
+		$cmd->bindValue(":name", $name, $cmd->getConnection()::PARAM_STR);
+		$cmd->bindValue(":schedule", $schedule = $task->getSchedule(), $cmd->getConnection()::PARAM_STR);
+		$cmd->bindValue(":task", $taskExec = $task->getTask(), $cmd->getConnection()::PARAM_STR);
+		$cmd->bindValue(":mid", $mid = $task->getModuleId(), $cmd->getConnection()::PARAM_STR);
+		$cmd->bindValue(":username", $username = $task->getUserName(), $cmd->getConnection()::PARAM_STR);
+		$cmd->bindValue(":options", $serial = serialize($task), $cmd->getConnection()::PARAM_STR);
+		$cmd->bindValue(":time", $time = $task->getLastExecTime(), $cmd->getConnection()::PARAM_STR);
+		$cmd->bindValue(":count", $count = $task->getProcessCount(), $cmd->getConnection()::PARAM_INT);
+		$cmd->bindValue(":active", $active = (isset($this->_configTasks[$name]) ? '0' : '1'), $cmd->getConnection()::PARAM_INT);
 		$cmd->execute();
 
 		if ($this->_tasks !== null && !isset($this->_configTasks[$name])) {
@@ -663,14 +663,14 @@ class TDbCronManager extends TCronModule implements IDbModule
 		$cmd = $this->getDbConnection()->createCommand(
 			"UPDATE {$this->_tableName} SET schedule=:schedule, task=:task, moduleid=:mid, username=:username, options=:options, processcount=:count, lastexectime=:time WHERE name=:name AND active IS NOT NULL"
 		);
-		$cmd->bindValue(":schedule", $schedule, PDO::PARAM_STR);
-		$cmd->bindValue(":task", $taskExec = $task->getTask(), PDO::PARAM_STR);
-		$cmd->bindValue(":mid", $mid = $task->getModuleId(), PDO::PARAM_STR);
-		$cmd->bindValue(":username", $username = $task->getUserName(), PDO::PARAM_STR);
-		$cmd->bindValue(":options", $serial = serialize($task), PDO::PARAM_STR);
-		$cmd->bindValue(":count", $count = $task->getProcessCount(), PDO::PARAM_STR);
-		$cmd->bindValue(":time", $time = $task->getLastExecTime(), PDO::PARAM_STR);
-		$cmd->bindValue(":name", $name, PDO::PARAM_STR);
+		$cmd->bindValue(":schedule", $schedule, $cmd->getConnection()::PARAM_STR);
+		$cmd->bindValue(":task", $taskExec = $task->getTask(), $cmd->getConnection()::PARAM_STR);
+		$cmd->bindValue(":mid", $mid = $task->getModuleId(), $cmd->getConnection()::PARAM_STR);
+		$cmd->bindValue(":username", $username = $task->getUserName(), $cmd->getConnection()::PARAM_STR);
+		$cmd->bindValue(":options", $serial = serialize($task), $cmd->getConnection()::PARAM_STR);
+		$cmd->bindValue(":count", $count = $task->getProcessCount(), $cmd->getConnection()::PARAM_STR);
+		$cmd->bindValue(":time", $time = $task->getLastExecTime(), $cmd->getConnection()::PARAM_STR);
+		$cmd->bindValue(":name", $name, $cmd->getConnection()::PARAM_STR);
 		$cmd->execute();
 
 		if ($this->_tasks !== null) {
@@ -733,7 +733,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 		$cmd = $this->getDbConnection()->createCommand(
 			"DELETE FROM {$this->_tableName} WHERE name=:name AND active IS NOT NULL"
 		);
-		$cmd->bindValue(":name", $name, PDO::PARAM_STR);
+		$cmd->bindValue(":name", $name, $cmd->getConnection()::PARAM_STR);
 		$cmd->execute();
 
 		// Remove task to list of tasks
@@ -757,7 +757,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 		$cmd = $db->createCommand(
 			"SELECT COUNT(*) AS count FROM {$this->_tableName} WHERE name=:name AND active IS NOT NULL"
 		);
-		$cmd->bindParameter(":name", $name, PDO::PARAM_STR);
+		$cmd->bindParameter(":name", $name, $cmd->getConnection()::PARAM_STR);
 		return $cmd->queryScalar() > 0;
 	}
 
@@ -777,12 +777,12 @@ class TDbCronManager extends TCronModule implements IDbModule
 			"SELECT COUNT(*) FROM {$this->_tableName} WHERE active IS NULL AND lastexectime <= :time"
 		);
 		$time = time() - $seconds;
-		$cmd->bindParameter(":time", $time, PDO::PARAM_STR);
+		$cmd->bindParameter(":time", $time, $cmd->getConnection()::PARAM_STR);
 		$count = $cmd->queryScalar();
 		$cmd = $this->getDbConnection()->createCommand(
 			"DELETE FROM {$this->_tableName} WHERE active IS NULL AND lastexectime <= :time"
 		);
-		$cmd->bindParameter(":time", $time, PDO::PARAM_STR);
+		$cmd->bindParameter(":time", $time, $cmd->getConnection()::PARAM_STR);
 		$cmd->execute();
 
 		return $count;
@@ -803,7 +803,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 		$cmd = $this->getDbConnection()->createCommand(
 			"DELETE FROM {$this->_tableName} WHERE active IS NULL AND tabuid = :uid"
 		);
-		$cmd->bindParameter(":uid", $taskUID, PDO::PARAM_INT);
+		$cmd->bindParameter(":uid", $taskUID, $cmd->getConnection()::PARAM_INT);
 		$cmd->execute();
 	}
 
@@ -827,7 +827,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 			"SELECT COUNT(*) AS count FROM {$this->_tableName} WHERE {$where}active IS NULL"
 		);
 		if (is_string($name)) {
-			$cmd->bindParameter(":name", $name, PDO::PARAM_STR);
+			$cmd->bindParameter(":name", $name, $cmd->getConnection()::PARAM_STR);
 		}
 		return (int) $cmd->queryScalar();
 	}
@@ -875,7 +875,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 			"SELECT * FROM {$this->_tableName} WHERE {$where}active IS NULL{$orderby}{$limit}"
 		);
 		if (is_string($name)) {
-			$cmd->bindParameter(":name", $name, PDO::PARAM_STR);
+			$cmd->bindParameter(":name", $name, $cmd->getConnection()::PARAM_STR);
 		}
 		$results = $cmd->query();
 		return $results->readAll();

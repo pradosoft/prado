@@ -13,7 +13,7 @@ namespace Prado\Data\Common\Pgsql;
 /**
  * Loads the base TDbTableInfo class and TPgsqlTableColumn class.
  */
-use Prado\Data\Common\IDbHasSchema;
+use Prado\Data\Common\IDataHasSchema;
 use Prado\Data\Common\TDbTableInfo;
 use Prado\Prado;
 
@@ -23,7 +23,7 @@ use Prado\Prado;
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
  */
-class TPgsqlTableInfo extends TDbTableInfo implements IDbHasSchema
+class TPgsqlTableInfo extends TDbTableInfo implements IDataHasSchema
 {
 	/**
 	 * @return string full name of the table, database dependent.

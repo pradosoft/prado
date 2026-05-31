@@ -1,5 +1,8 @@
 <?php
 
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Exceptions\TInvalidOperationException;
+use Prado\TComponent;
 use Prado\Util\Behaviors\TApplicationSignals;
 use Prado\Util\TSignalsDispatcher;
 

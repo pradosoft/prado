@@ -10,101 +10,17 @@
 
 namespace Prado\Data;
 
-use Prado\Exceptions\TDbException;
-use Prado\Prado;
-use Prado\TPropertyValue;
-
 /**
  * TDbTransaction class.
  *
- * TDbTransaction represents a DB transaction.
- * It is usually created by calling {@see \Prado\Data\TDbConnection::beginTransaction}.
- *
- * The following code is a common scenario of using transactions:
- * ```php
- * try
- * {
- *    $transaction=$connection->beginTransaction();
- *    $connection->createCommand($sql1)->execute();
- *    $connection->createCommand($sql2)->execute();
- *    //.... other SQL executions
- *    $transaction->commit();
- * }
- * catch(Exception $e)
- * {
- *    $transaction->rollBack();
- * }
- * ```
+ * SQL/PDO transaction token, paired with {@see TDbConnection}.  Behaviorally
+ * identical to its parent {@see TDataTransaction}; retained as a discovery
+ * marker for code that type-hints the PDO-backed transaction.  Created by
+ * {@see TDbConnection::beginTransaction}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
-class TDbTransaction extends \Prado\TComponent implements IDataTransaction
+class TDbTransaction extends TDataTransaction
 {
-	private $_connection;
-	private $_active;
-
-	/**
-	 * Constructor.
-	 * @param \Prado\Data\TDbConnection $connection the connection associated with this transaction
-	 * @see TDbConnection::beginTransaction
-	 */
-	public function __construct(TDbConnection $connection)
-	{
-		$this->_connection = $connection;
-		$this->setActive(true);
-		parent::__construct();
-	}
-
-	/**
-	 * Commits a transaction.
-	 * @throws TDbException if the transaction or the DB connection is not active.
-	 */
-	public function commit()
-	{
-		if ($this->_active && $this->_connection->getActive()) {
-			$this->_connection->getPdoInstance()->commit();
-			$this->_active = false;
-		} else {
-			throw new TDbException('dbtransaction_transaction_inactive');
-		}
-	}
-
-	/**
-	 * Rolls back a transaction.
-	 * @throws TDbException if the transaction or the DB connection is not active.
-	 */
-	public function rollback()
-	{
-		if ($this->_active && $this->_connection->getActive()) {
-			$this->_connection->getPdoInstance()->rollBack();
-			$this->_active = false;
-		} else {
-			throw new TDbException('dbtransaction_transaction_inactive');
-		}
-	}
-
-	/**
-	 * @return \Prado\Data\TDbConnection the DB connection for this transaction
-	 */
-	public function getConnection()
-	{
-		return $this->_connection;
-	}
-
-	/**
-	 * @return bool whether this transaction is active
-	 */
-	public function getActive()
-	{
-		return $this->_active;
-	}
-
-	/**
-	 * @param bool $value whether this transaction is active
-	 */
-	protected function setActive($value)
-	{
-		$this->_active = TPropertyValue::ensureBoolean($value);
-	}
 }

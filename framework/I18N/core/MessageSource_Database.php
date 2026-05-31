@@ -16,7 +16,6 @@
 
 namespace Prado\I18N\core;
 
-use PDO;
 use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbPropertiesTrait;
 use Prado\Exceptions\TConfigurationException;
@@ -88,7 +87,7 @@ class MessageSource_Database extends MessageSource
 					AND c.name = :variant
 				ORDER BY id ASC'
 		);
-		$command->bindParameter(':variant', $variant, PDO::PARAM_STR);
+		$command->bindParameter(':variant', $variant, $command->getConnection()::PARAM_STR);
 		$dataReader = $command->query();
 
 		$result = [];
@@ -111,7 +110,7 @@ class MessageSource_Database extends MessageSource
 		$command = $this->getDbConnection()->createCommand(
 			'SELECT date_modified FROM catalogue WHERE name = :source'
 		);
-		$command->bindParameter(':source', $source, PDO::PARAM_STR);
+		$command->bindParameter(':source', $source, $command->getConnection()::PARAM_STR);
 		$result = $command->queryScalar();
 		return $result ? $result : 0;
 	}
@@ -128,7 +127,7 @@ class MessageSource_Database extends MessageSource
 		$command = $this->getDbConnection()->createCommand(
 			'SELECT COUNT(*) FROM catalogue WHERE name = :variant'
 		);
-		$command->bindParameter(':variant', $variant, PDO::PARAM_STR);
+		$command->bindParameter(':variant', $variant, $command->getConnection()::PARAM_STR);
 		return $command->queryScalar() == 1;
 	}
 
@@ -170,7 +169,8 @@ class MessageSource_Database extends MessageSource
 		$command = $this->getDbConnection()->createCommand(
 			'SELECT cat_id FROM catalogue WHERE name = :variant'
 		);
-		$command->bindParameter(':variant', $variant, PDO::PARAM_STR);
+		$connection = $command->getConnection();
+		$command->bindParameter(':variant', $variant, $connection::PARAM_STR);
 		$cat_id = $command->queryScalar();
 
 		if ($cat_id === null) {
@@ -180,7 +180,7 @@ class MessageSource_Database extends MessageSource
 		$command = $this->getDbConnection()->createCommand(
 			'SELECT COUNT(msg_id) FROM trans_unit WHERE cat_id = :catid '
 		);
-		$command->bindParameter(':catid', $cat_id, PDO::PARAM_INT);
+		$command->bindParameter(':catid', $cat_id, $connection::PARAM_INT);
 		$count = $command->queryScalar();
 
 		return [$cat_id, $variant, $count];
@@ -198,8 +198,9 @@ class MessageSource_Database extends MessageSource
 		$command = $this->getDbConnection()->createCommand(
 			'UPDATE catalogue SET date_modified = :moddate WHERE cat_id = :catid'
 		);
-		$command->bindParameter(':moddate', $time, PDO::PARAM_INT);
-		$command->bindParameter(':catid', $cat_id, PDO::PARAM_INT);
+		$connection = $command->getConnection();
+		$command->bindParameter(':moddate', $time, $connection::PARAM_INT);
+		$command->bindParameter(':catid', $cat_id, $connection::PARAM_INT);
 		$result = $command->execute();
 
 		if (!empty($this->cache)) {
@@ -242,16 +243,17 @@ class MessageSource_Database extends MessageSource
 		$command = $this->getDbConnection()->createCommand(
 			'INSERT INTO trans_unit (cat_id,id,source,date_added) VALUES (:catid,:id,:source,:dateadded)'
 		);
-		$command->bindParameter(':catid', $cat_id, PDO::PARAM_INT);
-		$command->bindParameter(':id', $count, PDO::PARAM_INT);
-		$command->bindParameter(':dateadded', $time, PDO::PARAM_INT);
+		$connection = $command->getConnection();
+		$command->bindParameter(':catid', $cat_id, $connection::PARAM_INT);
+		$command->bindParameter(':id', $count, $connection::PARAM_INT);
+		$command->bindParameter(':dateadded', $time, $connection::PARAM_INT);
 		foreach ($messages as $message) {
 			if (empty($message)) {
 				continue;
 			}
 			$count++;
 			$inserted++;
-			$command->bindParameter(':source', $message, PDO::PARAM_STR);
+			$command->bindParameter(':source', $message, $connection::PARAM_STR);
 			$command->execute();
 		}
 		if ($inserted > 0) {
@@ -279,8 +281,9 @@ class MessageSource_Database extends MessageSource
 		$command = $this->getDbConnection()->createCommand(
 			'DELETE FROM trans_unit WHERE cat_id = :catid AND source = :message'
 		);
-		$command->bindParameter(':catid', $cat_id, PDO::PARAM_INT);
-		$command->bindParameter(':message', $message, PDO::PARAM_STR);
+		$connection = $command->getConnection();
+		$command->bindParameter(':catid', $cat_id, $connection::PARAM_INT);
+		$command->bindParameter(':message', $message, $connection::PARAM_STR);
 
 		return ($command->execute() == 1) ? $this->updateCatalogueTime($cat_id, $variant) : false;
 	}
@@ -307,11 +310,12 @@ class MessageSource_Database extends MessageSource
 			'UPDATE trans_unit SET target = :target, comments = :comments, date_modified = :datemod
 					WHERE cat_id = :catid AND source = :source'
 		);
-		$command->bindParameter(':target', $target, PDO::PARAM_STR);
-		$command->bindParameter(':comments', $comments, PDO::PARAM_STR);
-		$command->bindParameter(':datemod', $time, PDO::PARAM_INT);
-		$command->bindParameter(':catid', $cat_id, PDO::PARAM_INT);
-		$command->bindParameter(':source', $text, PDO::PARAM_STR);
+		$connection = $command->getConnection();
+		$command->bindParameter(':target', $target, $connection::PARAM_STR);
+		$command->bindParameter(':comments', $comments, $connection::PARAM_STR);
+		$command->bindParameter(':datemod', $time, $connection::PARAM_INT);
+		$command->bindParameter(':catid', $cat_id, $connection::PARAM_INT);
+		$command->bindParameter(':source', $text, $connection::PARAM_STR);
 
 		return ($command->execute() == 1) ? $this->updateCatalogueTime($cat_id, $variant) : false;
 	}
