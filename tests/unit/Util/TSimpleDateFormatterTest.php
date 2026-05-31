@@ -648,7 +648,9 @@ class TSimpleDateFormatterTest extends PHPUnit\Framework\TestCase
 		$this->formatter->setPattern('MM');
 		$currentYear = date('Y');
 		$result = $this->formatter->parse('04', true);
-		$expected = "$currentYear-04" . date('-d');
+		$daysInApril = (int) date('t', mktime(0, 0, 0, 4, 1, (int) $currentYear));
+		$expectedDay = sprintf('%02d', min((int) date('d'), $daysInApril));
+		$expected = "$currentYear-04-$expectedDay";
 		$this->assertSame($expected, date('Y-m-d', $result));
 	}
 
