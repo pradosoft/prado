@@ -819,7 +819,70 @@ class PradoBaseTest extends PHPUnit\Framework\TestCase
 		$instance->testMethodVisibleFromClassA($this, $instance);
 		$instance->testMethodVisibleFromClassB($this, $instance);
 	}
-	
+
+	/**
+	 * Regression: {@see \Prado\Prado::method_visible()} scopes its reflection
+	 * lookup to the class hierarchy.  When an instance is supplied,
+	 * {@see \Prado\TComponentReflection::getReflectionMethodByType()} also
+	 * walks the object's enabled behaviors and recurses through
+	 * `method_visible()` for each behavior method.  Passing the class name
+	 * skips that walk.
+	 *
+	 * Without the class-name guard, the call below returns `true` for a
+	 * method that lives on a sub-behavior, which then causes
+	 * `new \ReflectionMethod($behavior, $method)` to throw because the
+	 * behavior class does not declare the method.  Restoring the object
+	 * argument reintroduces the failure observed in
+	 * `TComponentPropertyTest::testHasMethod` at the sub-behavior assertion.
+	 * @since 4.4.0
+	 */
+	public function testMethodVisible_doesNotWalkBehaviorChain()
+	{
+		require_once __DIR__ . '/TComponentTestFixtures.php';
+
+		$component = new NewComponent();
+		$behavior = new BehaviorTestBehavior();
+		$subBehavior = new FooFooClassBehavior();
+
+		// Sanity: the sub-behavior class itself declares faafaaEverMore.
+		$this->assertTrue(Prado::method_visible($subBehavior, 'faafaaEverMore'));
+		// Sanity: the outer behavior class does not declare it.
+		$this->assertFalse(Prado::method_visible($behavior, 'faafaaEverMore'));
+		// Sanity: a fresh component class does not declare it.
+		$this->assertFalse(Prado::method_visible($component, 'faafaaEverMore'));
+
+		// Attach the behavior to the component and the sub-behavior to the behavior.
+		$component->attachBehavior('inner', $behavior);
+		$behavior->attachBehavior('SubBehavior', $subBehavior);
+
+		// Both must remain false after attachment: method_visible reports
+		// only on the class hierarchy, not on attached behaviors.
+		$this->assertFalse(
+			Prado::method_visible($component, 'faafaaEverMore'),
+			'method_visible(component, ...) must not discover sub-behavior methods'
+		);
+		$this->assertFalse(
+			Prado::method_visible($behavior, 'faafaaEverMore'),
+			'method_visible(behavior, ...) must not discover sub-behavior methods'
+		);
+
+		// And the class-name form is identical to the object form.
+		$this->assertFalse(Prado::method_visible(NewComponent::class, 'faafaaEverMore'));
+		$this->assertFalse(Prado::method_visible(BehaviorTestBehavior::class, 'faafaaEverMore'));
+		$this->assertTrue(Prado::method_visible(FooFooClassBehavior::class, 'faafaaEverMore'));
+
+		// hasMethod composes one behavior layer on top of method_visible.
+		// The component sees the behavior's own method; the sub-behavior
+		// method is NOT visible through the component (only one layer).
+		$this->assertTrue($component->hasMethod('getExcitement'));
+		$this->assertFalse(
+			$component->hasMethod('faafaaEverMore'),
+			'hasMethod must not throw and must report false for sub-behavior methods'
+		);
+		// The intermediate behavior, however, exposes its own sub-behavior method.
+		$this->assertTrue($behavior->hasMethod('faafaaEverMore'));
+	}
+
 	public function testCallingObject()
 	{
 		// Create a new object that calls Prado::callingObject()
