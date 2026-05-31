@@ -17,25 +17,43 @@ Internationalization and localization system. [TGlobalization](./TGlobalization.
 Register in `application.xml`:
 
 ```xml
-<module id="globalization" class="Prado\I18N\TGlobalization"
-        Culture="en_US" Charset="UTF-8"
-        DefaultCulture="en_US" DefaultCharset="UTF-8" />
+<modules>
+    <module id="globalization" class="Prado\I18N\TGlobalization"
+            Culture="en_US" Charset="UTF-8"
+            DefaultCulture="en_US" DefaultCharset="UTF-8" />
+</modules>
+```
+
+**PHP equivalent:**
+```php
+return [
+    'modules' => [
+        'i18n' => [
+            'class' => 'Prado\I18N\TGlobalization',
+            'properties' => ['DefaultCulture' => 'en_US', 'Charset' => 'UTF-8'],
+        ],
+    ],
+];
 ```
 
 Or with auto-detection from `Accept-Language` header:
 ```xml
-<module id="globalization" class="Prado\I18N\TGlobalizationAutoDetect"
-        DefaultCulture="en_US" />
+<modules>
+    <module id="globalization" class="Prado\I18N\TGlobalizationAutoDetect"
+            DefaultCulture="en_US" />
+</modules>
 ```
 
 ### Key Properties
 
 | Property | Description |
 |----------|-------------|
-| `Culture` | Current locale (RFC 4646 tag, e.g. `'en_US'`, `'zh_CN'`) |
+| `Culture` | Current locale (POSIX form, e.g. `'en_US'`, `'zh_CN'`); BCP 47 hyphens normalized to underscores on set |
 | `Charset` | Current charset (default `'UTF-8'`) |
-| `DefaultCulture` | Fallback locale when translation missing |
-| `TranslateDefaultCulture` | If `false`, skip translation when culture == DefaultCulture |
+| `DefaultCulture` | Fallback locale (default `'en'`); BCP 47 hyphens normalized on set |
+| `DefaultCharset` | Fallback charset (default `'UTF-8'`) |
+| `TranslateDefaultCulture` | If `false`, `getTranslationConfiguration()` returns `null` when culture equals DefaultCulture, skipping translation lookup |
+| `IsCultureRTL` | Read/write: whether the current culture is right-to-left; cached; reset when `Culture` changes |
 
 ### Access
 
@@ -165,5 +183,8 @@ $source = MessageSource::factory('gettext', '/app/locale');
 ## Gotchas
 
 - `TGlobalization` must be initialized before any translation call (module init order matters).
+- **POSIX vs BCP 47** — PRADO uses underscore separators (`en_US`) internally. Incoming BCP 47 hyphen-separated values (`en-US`) are normalized by `setCulture()` and `setDefaultCulture()`. See `CultureInfo` docs for the full picture.
 - Culture string must exactly match an ICU locale; invalid tags silently fall back to default.
 - `TChoiceFormat` plural rules vary significantly by language — always test with boundary values (0, 1, 2, 11, 100).
+- `getCultureVariants()` returns an array from most-specific to least-specific; used internally for localized file resolution.
+- `getLocalizedResource($file, $culture)` returns a prioritized list of candidate file paths; callers must check existence themselves.

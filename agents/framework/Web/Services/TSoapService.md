@@ -17,7 +17,10 @@ TSoapService processes SOAP requests for a PRADO application. It requires PHP SO
 - Configurable through XML or PHP configuration formats
 
 ## Configuration
-### XML Format
+
+Registered as a service (`<services>` tag, not `<modules>`).
+
+**application.xml:**
 ```xml
 <services>
   <service id="soap" class="Prado\Web\Services\TSoapService">
@@ -26,16 +29,13 @@ TSoapService processes SOAP requests for a PRADO application. It requires PHP SO
 </services>
 ```
 
-### PHP Format
+**PHP equivalent:**
 ```php
-'services' => array(
-  'soap' => array(
-    'class' => 'Prado\Web\Services\TSoapService'
-    'properties' => array(
-      'provider' => 'MyStockQuote'
-    )
-  )
-)
+return [
+    'services' => [
+        'soap' => ['class' => 'Prado\Web\Services\TSoapService'],
+    ],
+];
 ```
 
 ## Methods

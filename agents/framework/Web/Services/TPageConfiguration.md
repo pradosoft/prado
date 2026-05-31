@@ -26,5 +26,5 @@ TPageConfiguration represents the merged configuration for a page, loaded from p
 
 ## See Also
 
-- [TPageService](../TPageService.md) - Uses TPageConfiguration for page setup
+- [TPageService](TPageService.md) - Uses TPageConfiguration for page setup
 - [TAuthorizationRule](../../Security/TAuthorizationRule.md) - Authorization rules

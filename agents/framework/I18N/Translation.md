@@ -1,7 +1,7 @@
 # I18N/Translation
 
 ### Directories
-[framework](./INDEX.md) / [I18N](./I18N/INDEX.md) / **`Translation`**
+[framework](../INDEX.md) / [I18N](INDEX.md) / **`Translation`**
 
 **Location:** `framework/I18N/Translation.php`
 **Namespace:** `Prado\I18N`

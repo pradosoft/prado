@@ -59,12 +59,14 @@ $logger->getLogCount();                                 // total entries stored
 Register as a module; each `<route>` child defines a log destination:
 
 ```xml
-<module id="log" class="Prado\Util\TLogRouter">
-    <route class="Prado\Util\TFileLogRoute"
-           Levels="Warning|Error" File="protected/runtime/app.log" />
-    <route class="Prado\Util\TBrowserLogRoute"
-           Levels="Debug|Info|Warning|Error" />
-</module>
+<modules>
+    <module id="log" class="Prado\Util\TLogRouter">
+        <route class="Prado\Util\TFileLogRoute"
+               Levels="Warning|Error" File="protected/runtime/app.log" />
+        <route class="Prado\Util\TBrowserLogRoute"
+               Levels="Debug|Info|Warning|Error" />
+    </module>
+</modules>
 ```
 
 ## Built-in Log Routes

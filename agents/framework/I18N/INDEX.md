@@ -3,7 +3,7 @@
 This file provides guidance to Agents when working with code in this repository.
 
 ### Directories
-[framework](./INDEX.md) / **`I18N/INDEX.md`**
+[framework](../INDEX.md) / **`I18N`**
 
 | Directory | Purpose |
 |---|---|
@@ -38,7 +38,9 @@ Internationalization and localization for the Prado framework. Covers culture-aw
 
 - **[`TTranslateParameter`](TTranslateParameter.md)** — Named parameter `<Key>=<Value>` for use inside `<com:TTranslate>`.
 
-- **[`TI18NControl`](TI18NControl.md)** — Base for I18N-aware PRADO controls.
+- **[`TI18NControl`](TI18NControl.md)** — Base for I18N-aware PRADO controls. Thin wrapper around `TI18NControlTrait`.
+
+- **[`TI18NControlTrait`](TI18NControlTrait.md)** — Trait providing `Culture` and `Charset` properties with hierarchical fallback to application globalization settings. Extracted so non-`TI18NControl` subclasses can reuse the same logic. @since 4.3.3
 
 - **[`Translation`](Translation.md)** — Static helper for programmatic translation access outside templates.
 

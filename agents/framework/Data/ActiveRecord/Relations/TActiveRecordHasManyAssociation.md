@@ -72,7 +72,7 @@ Returns two arrays: source keys and foreign keys from the association table.
 
 ### `getAssociationTable()`
 
-Returns the [`TDbTableInfo`](../Common/TDbTableInfo.md) for the association/junction table.
+Returns the [`TDbTableInfo`](../../Common/TDbTableInfo.md) for the association/junction table.
 
 ### `updateAssociatedRecords()`
 

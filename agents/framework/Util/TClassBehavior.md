@@ -15,7 +15,7 @@ Contrast with `[TBehavior](TBehavior.md)` (stateful, one owner).
 
 ## Multiple Owners
 
-Owners are tracked in a `[TWeakList](../Collections/TWeakList.md)` (`_owners`), preventing strong references that would block GC. Handler-installation state is tracked per-owner in a `WeakMap` (PHP 8+) or array (PHP 7 fallback).
+Owners are tracked in a `[TWeakList](../Collections/TWeakList.md)` (`_owners`), preventing strong references that would block GC. Handler-installation state is tracked per-owner in a `WeakMap` (PHP 8+) or array fallback (pre-8).
 
 ## TComponent's Role
 

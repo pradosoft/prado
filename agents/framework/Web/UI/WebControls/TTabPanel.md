@@ -12,7 +12,7 @@ Tabbed panel control. Renders a `<div>` container with tab headers and content p
 
 JavaScript: `controls/tabpanel.js` (published via `TAssetManager`).
 
-Extends `[TWebControl](./TWebControl.md)`, implements `[IPostBackDataHandler](./IPostBackDataHandler.md)`.
+Extends `[TWebControl](./TWebControl.md)`, implements `[IPostBackDataHandler](../IPostBackDataHandler.md)`.
 
 ## Key Properties
 

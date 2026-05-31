@@ -1,7 +1,7 @@
 # Util/IDbModule
 
 ### Directories
-[framework](./INDEX.md) / [Util](./Util/INDEX.md) / **`IDbModule`**
+[framework](../INDEX.md) / [Util](INDEX.md) / **`IDbModule`**
 
 **Location:** `framework/Util/IDbModule.php`
 **Namespace:** `Prado\Util`

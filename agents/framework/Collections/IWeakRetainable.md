@@ -1,7 +1,7 @@
 # Collections/IWeakRetainable
 
 ### Directories
-[framework](./INDEX.md) / [Collections](./Collections/INDEX.md) / **`IWeakRetainable`**
+[framework](../INDEX.md) / [Collections](INDEX.md) / **`IWeakRetainable`**
 
 **Location:** `framework/Collections/IWeakRetainable.php`
 **Namespace:** `Prado\Collections`

@@ -4,7 +4,7 @@ This file provides guidance to Agents when working with code in this repository.
 
 ### Directories
 
-[framework](./INDEX.md) / [Data](./Data/INDEX.md) / [ActiveRecord](./Data/ActiveRecord/INDEX.md) / [Scaffold](./Data/ActiveRecord/Scaffold/INDEX.md) / [InputBuilder](./Data/ActiveRecord/Scaffold/InputBuilder/INDEX.md) / **`InputBuilder/INDEX.md`**
+[framework](../../../../INDEX.md) / [Data](../../../INDEX.md) / [ActiveRecord](../../INDEX.md) / [Scaffold](../INDEX.md) / **`InputBuilder`**
 
 | Directory | Purpose |
 |---|---|
@@ -16,7 +16,9 @@ Driver-specific input control builders for the Active Record scaffold UI. Each c
 
 ## Classes
 
-- **`TScaffoldInputBase`** — Abstract base. Declares the interface: `createInputControl($column)` returns a `TControl` instance appropriate for the column type. Also handles common attributes (required, max-length).
+- **[`IScaffoldInput`](./IScaffoldInput.md)** — Interface for scaffold input builders. Implemented by `TScaffoldInputBase` and all driver subclasses. Third-party drivers register a class name implementing this interface via the `fxActiveRecordScaffoldInputClass` event.
+
+- **`TScaffoldInputBase`** — Base class implementing `IScaffoldInput`. Static factory `createInputBuilder($record)` selects the correct driver subclass; for unknown drivers raises `fxActiveRecordScaffoldInputClass` on the connection. Subclasses override `createControl()` and `getControlValue()`.
 
 - **`TScaffoldInputCommon`** — Shared logic used across all driver-specific builders: maps generic SQL types (`varchar`, `int`, `bool`, `date`, `text`, etc.) to Prado controls. Extended by each driver subclass.
 
@@ -32,6 +34,7 @@ Driver-specific input control builders for the Active Record scaffold UI. Each c
 
 ## Patterns & Gotchas
 
-- The correct subclass is selected automatically based on the database driver detected by `TDbMetaData::createMetaData()`.
-- Override `createInputControl()` in a subclass to customise scaffold inputs for a specific column or type.
+- The correct subclass is selected automatically by `TScaffoldInputBase::createInputBuilder($record)` based on the PDO driver name. For unknown drivers the `fxActiveRecordScaffoldInputClass` event fires; the first handler returning a class name wins.
+- Subclasses must override `createControl()` to build the input and `getControlValue()` to read back the submitted value.
+- The primary input control must use the ID `IScaffoldInput::DEFAULT_ID` (`'scaffold_input'`); without it, no label is generated.
 - Column metadata is provided as a `TDbTableColumn` (driver-specific subclass); check `getDbType()` for the raw SQL type string.

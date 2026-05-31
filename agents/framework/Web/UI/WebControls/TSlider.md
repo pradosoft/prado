@@ -28,4 +28,4 @@ TSlider displays a slider for numeric input. It consists of a track defining the
 
 - [TSliderClientScript](./TSliderClientScript.md)
 - [TSliderDirection](./TSliderDirection.md)
-- [IDataRenderer](./IDataRenderer.md)
+- [IDataRenderer](../../../IDataRenderer.md)

@@ -21,6 +21,29 @@ use Prado\TPropertyValue;
  *
  * Database connection and TSqlMapManager configuration.
  *
+ * ```xml
+ * <modules>
+ *     <module id="sqlmap" class="Prado\Data\SqlMap\TSqlMapConfig"
+ *         ConnectionID="db" ConfigFile="Application.Config.sqlmap" EnableCache="true" />
+ * </modules>
+ * ```
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'sqlmap' => [
+ *             'class' => 'Prado\Data\SqlMap\TSqlMapConfig',
+ *             'properties' => [
+ *                 'ConnectionID' => 'db',
+ *                 'ConfigFile' => 'Application.Config.sqlmap',
+ *                 'EnableCache' => 'true',
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
+ *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
  */

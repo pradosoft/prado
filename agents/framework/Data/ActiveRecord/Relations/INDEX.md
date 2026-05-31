@@ -4,7 +4,7 @@ This file provides guidance to Agents when working with code in this repository.
 
 ### Directories
 
-[framework](./INDEX.md) / [Data](./Data/INDEX.md) / [ActiveRecord](./Data/ActiveRecord/INDEX.md) / [Relations](./Data/ActiveRecord/Relations/INDEX.md) / **`Relations/INDEX.md`**
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [ActiveRecord](../INDEX.md) / **`Relations`**
 
 | Directory | Purpose |
 |---|---|

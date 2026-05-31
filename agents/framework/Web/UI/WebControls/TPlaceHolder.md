@@ -16,4 +16,4 @@ TPlaceHolder reserves a place in a template where static texts or controls may b
 
 ## See Also
 
-- [TControl](./TControl.md)
+- [TControl](../TControl.md)

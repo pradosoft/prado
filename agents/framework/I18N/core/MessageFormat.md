@@ -1,7 +1,7 @@
 # I18N/core/MessageFormat
 
 ### Directories
-[framework](./INDEX.md) / [I18N](./I18N/INDEX.md) / [core](./I18N/core/INDEX.md) / **`MessageFormat`**
+[framework](../../INDEX.md) / [I18N](../INDEX.md) / [core](INDEX.md) / **`MessageFormat`**
 
 **Location:** `framework/I18N/core/MessageFormat.php`
 **Namespace:** `Prado\I18N\core`

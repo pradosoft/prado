@@ -16,8 +16,8 @@ THttpResponseAdapter allows the base HTTP response class to change behavior with
 - `flushContent($continueBuffering)` - Invoked when the response flushes content and headers
 - `httpRedirect($url)` - Invoked when redirecting to another page
 - `createNewHtmlWriter($type, $writer)` - Creates a new HtmlWriter instance
-- `setResponseData($data)` - Throws [TInvalidOperationException](../../Exceptions/TInvalidOperationException.md) (unavailable by default)
-- `getResponseData()` - Throws [TInvalidOperationException](../../Exceptions/TInvalidOperationException.md) (unavailable by default)
+- `setResponseData($data)` - Throws [TInvalidOperationException](../Exceptions/TInvalidOperationException.md) (unavailable by default)
+- `getResponseData()` - Throws [TInvalidOperationException](../Exceptions/TInvalidOperationException.md) (unavailable by default)
 
 ## See Also
 

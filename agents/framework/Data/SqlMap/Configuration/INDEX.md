@@ -4,7 +4,7 @@ This file provides guidance to Agents when working with code in this repository.
 
 ### Directories
 
-[framework](./INDEX.md) / [Data](./Data/INDEX.md) / [SqlMap](./Data/SqlMap/INDEX.md) / [Configuration](./Data/SqlMap/Configuration/INDEX.md) / **`Configuration/INDEX.md`**
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / **`Configuration`**
 
 | Directory | Purpose |
 |---|---|

@@ -16,6 +16,28 @@ Application services handle different types of HTTP responses. Registered in `ap
 
 The primary service for template-based web pages.
 
+### Configuration
+
+**application.xml:**
+```xml
+<services>
+  <service id="page" class="Prado\Web\Services\TPageService"
+           BasePath="pages" DefaultPage="Home" />
+</services>
+```
+
+**PHP equivalent:**
+```php
+return [
+    'services' => [
+        'page' => [
+            'class' => 'Prado\Web\Services\TPageService',
+            'properties' => ['BasePath' => 'pages', 'DefaultPage' => 'Home'],
+        ],
+    ],
+];
+```
+
 ### Activation
 
 Activated when the URL contains no special service parameter, or when `ServiceID` matches the page service. Default `ServiceID` is `'page'`.
@@ -60,9 +82,11 @@ Rules apply to all pages in that directory and subdirectories. `TPageConfigurati
 Returns JSON responses from named handler classes.
 
 ```xml
-<module id="json" class="Prado\Web\Services\TJsonService">
-    <json id="api" class="MyJsonHandler" />
-</module>
+<modules>
+    <module id="json" class="Prado\Web\Services\TJsonService">
+        <json id="api" class="MyJsonHandler" />
+    </module>
+</modules>
 ```
 
 Handler class must implement a method returning the response data; `TJsonService` serializes it.
@@ -74,7 +98,9 @@ Handler class must implement a method returning the response data; `TJsonService
 Generic RPC framework supporting JSON-RPC and XML-RPC:
 
 ```xml
-<module id="rpc" class="Prado\Web\Services\TRpcService" />
+<modules>
+    <module id="rpc" class="Prado\Web\Services\TRpcService" />
+</modules>
 ```
 
 Architecture:
@@ -89,9 +115,11 @@ Architecture:
 SOAP service with auto-generated WSDL.
 
 ```xml
-<module id="soap" class="Prado\Web\Services\TSoapService">
-    <soap id="api" class="MySoapProvider" />
-</module>
+<modules>
+    <module id="soap" class="Prado\Web\Services\TSoapService">
+        <soap id="api" class="MySoapProvider" />
+    </module>
+</modules>
 ```
 
 Provider class uses `@soapmethod` PHPDoc annotation with typed `@param` and `@return` for WSDL generation. Requires PHP `soap` extension.
@@ -103,9 +131,11 @@ Provider class uses `@soapmethod` PHPDoc annotation with typed `@param` and `@re
 RSS/Atom feed generation:
 
 ```xml
-<module id="feed" class="Prado\Web\Services\TFeedService">
-    <feed id="blog" class="MyFeedProvider" />
-</module>
+<modules>
+    <module id="feed" class="Prado\Web\Services\TFeedService">
+        <feed id="blog" class="MyFeedProvider" />
+    </module>
+</modules>
 ```
 
 ---

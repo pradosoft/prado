@@ -8,7 +8,7 @@
 **Namespace:** `Prado\Data\DataGateway`
 
 ## Overview
-`TDataGatewayCommand` is the command builder and executor for [`TTableGateway`](./TTableGateway.md) and [`TActiveRecordGateway`](../ActiveRecord/TActiveRecordGateway.md).
+`TDataGatewayCommand` is the command builder and executor for [`TTableGateway`](../TTableGateway.md) and [`TActiveRecordGateway`](../ActiveRecord/TActiveRecordGateway.md).
 
 ## Events
 
@@ -17,6 +17,6 @@
 
 ## See Also
 
-- [TTableGateway](./TTableGateway.md) - Table gateway
+- [TTableGateway](../TTableGateway.md) - Table gateway
 - [TDataGatewayEventParameter](./TDataGatewayEventParameter.md) - Event parameter
 - [TSqlCriteria](./TSqlCriteria.md) - Query criteria

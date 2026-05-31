@@ -23,4 +23,4 @@ TShellCronLogBehavior is a behavior that enables cron logging to the shell. It w
 ## See Also
 
 - [TShellCronAction](TShellCronAction.md)
-- [TCronModule](../TCronModule.md)
+- [TCronModule](TCronModule.md)

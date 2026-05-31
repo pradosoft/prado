@@ -42,11 +42,22 @@ use Prado\Xml\TXmlElement;
  *
  * ```xml
  * <service id="rpc" class="Prado\Web\Services\TRpcService">
- * 	 <rpcapi id="customers" class="Application.Api.CustomersApi" />
- *   <modules>
- *     <!--  register any module needed by the service here -->
- *   </modules>
+ *     <rpcapi id="customers" class="Application.Api.CustomersApi" />
  * </service>
+ * ```
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'services' => [
+ *         'rpc' => [
+ *             'class' => 'Prado\Web\Services\TRpcService',
+ *             'apis' => [
+ *                 'customers' => ['class' => 'Application\Api\CustomersApi'],
+ *             ],
+ *         ],
+ *     ],
+ * ];
  * ```
  *
  * An api can be registered adding a proper <rpcapi ..> definition inside the service

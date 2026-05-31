@@ -8,7 +8,10 @@
 **Namespace:** `Prado\Web\UI`
 
 ## Overview
-Base class for all Prado UI components (~57KB). Manages the control tree, IDs, visibility, viewstate, databinding, and the control lifecycle.
+Base class for all Prado UI components (~57KB). Manages the control tree, IDs, visibility, viewstate, databinding, the control lifecycle, and render-output filtering.
+
+**Implements:** `IAdapterControl`, `IFilterRenderable`, `IBindable`
+**Uses trait:** `TFilterRenderableTrait`
 
 ### Control Tree
 
@@ -90,6 +93,38 @@ protected function onUnload($param) {}      // cleanup
 public function render($writer) {}          // produce HTML output
 ```
 
+### Adapter Support (`getAdapterControl`)
+
+When `TControl::setAdapter($adapter)` is called, lifecycle dispatching routes through the adapter instead of calling the control's own methods. The `getAdapterControl()` helper returns `$this` when no adapter is set, or the attached [TControlAdapter](./TControlAdapter.md) otherwise. All lifecycle stages (`onInit`, `onLoad`, `onPreRender`, `onUnload`, `render`, `loadState`, `saveState`, `createChildControls`) are dispatched via this pointer.
+
+Both `TControl` and `TControlAdapter` implement [IAdapterControl](./IAdapterControl.md).
+
+### Render-Output Filtering (`onRenderFilter`)
+
+After `renderControl` finishes rendering a control, it raises the `onRenderFilter` event and passes the captured HTML through registered handlers before writing to the page output. Implement [IFilterRenderable](./IFilterRenderable.md) (already done by `TControl` itself) and attach handlers:
+
+```php
+$control->onRenderFilter[] = function ($sender, \Prado\Web\UI\TRenderFilterParameter $param) {
+    // String-based: modify HTML directly
+    $param->setFilterText(strtoupper($param->getFilterText()));
+
+    // Or DOM-based: parse into DOMDocument
+    $dom = $param->getFilterDOM(); // DOMDocument|false
+    if ($dom !== false) {
+        $param->walkElements(function (\DOMElement $el, $p) {
+            if ($el->tagName === 'img' && !$el->hasAttribute('alt')) {
+                $el->setAttribute('alt', '');
+            }
+        });
+    }
+    // DOM → HTML serialisation is automatic
+};
+```
+
+The filter lifecycle is zero-cost when no handlers are registered (no buffer allocation).
+
+See [TRenderFilterParameter](./TRenderFilterParameter.md) and [TFilterRenderableTrait](./Traits/TFilterRenderableTrait.md).
+
 ---
 
 ## TPage
@@ -101,7 +136,7 @@ Root control and page container. Accessed via `$this->getPage()` from any contro
 - **Form postback processing** — coordinates `IPostBackDataHandler` and `IPostBackEventHandler` controls.
 - **Validators** — `$page->getValidators($group)` returns the validator collection.
 - **Theme/skin application** — `TThemeManager` applies skin files to controls on `onPreInit`.
-- **Page state** — serialized, HMAC-signed (via [TSecurityManager](../Security/TSecurityManager.md)), optionally encrypted and compressed.
+- **Page state** — serialized, HMAC-signed (via [TSecurityManager](../../Security/TSecurityManager.md)), optionally encrypted and compressed.
 - **`TClientScriptManager`** — accessed via `$page->getClientScript()`.
 
 ### Key Properties
@@ -208,7 +243,7 @@ $cs->registerScriptFile('mykey', '/path/to/script.js');
 - **Auto-generated IDs change** — adding/removing controls shifts `ctl0`/`ctl1` IDs. Always set explicit IDs for controls referenced in JS.
 - **INamingContainer prefix** — client IDs include the naming container prefix: `container_childId`. Use `$control->ClientID` in templates.
 - **Viewstate size** — set `EnableViewState=false` on read-only/static controls to reduce page weight.
-- **Page state signing** — [TSecurityManager](../Security/TSecurityManager.md) must be configured; set an explicit `ValidationKey` in production.
+- **Page state signing** — [TSecurityManager](../../Security/TSecurityManager.md) must be configured; set an explicit `ValidationKey` in production.
 - **Template caching** — `.tpl` files parsed once and cached. In `Performance` mode, changes won't be picked up without clearing the runtime cache.
 
 (End of file - total 209 lines)

@@ -22,7 +22,7 @@ TPage is the base class for all web pages in PRADO framework. It extends [TTempl
 ## Core Properties
 - `Form` ([TForm](./TForm.md)): Main form instance for the page
 - `Head` ([THead](./WebControls/THead.md)): Page header element
-- `Validators` ([TList](../Collections/TList.md)): Collection of registered validators
+- `Validators` ([TList](../../Collections/TList.md)): Collection of registered validators
 - `Theme` ([TTheme](./TTheme.md)): Page theme for styling
 - `StyleSheet` ([TTheme](./TTheme.md)): Page stylesheet theme
 - `ClientScript` ([TClientScriptManager](./TClientScriptManager.md)): Manages client-side scripts

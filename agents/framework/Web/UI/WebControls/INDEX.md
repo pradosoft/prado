@@ -1,7 +1,7 @@
 # Web/UI/WebControls/INDEX.md
 
 ### Directories
-[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / **`WebControls/INDEX.md`**
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / **`WebControls`**
 
 ## Purpose
 
@@ -10,6 +10,8 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 ## Base Classes
 
 - **[`TWebControl`](TWebControl.md)** — Base for all WebControls. Adds HTML attribute management (style, CSS class, AccessKey, TabIndex, ToolTip, etc.) and standard HTML rendering helpers. Extends `TControl`.
+
+- **[`TI18NWebControl`](TI18NWebControl.md)** — Extends `TWebControl` with `TI18NControlTrait`, adding `Culture` and `Charset` properties for I18N-aware controls. @since 4.3.3
 
 - **[`TWebControlDecorator`](TWebControlDecorator.md)** — Injects additional HTML before/after a WebControl's rendered output without subclassing.
 
@@ -90,6 +92,21 @@ All validators extend `TBaseValidator`. Shared properties: `ControlToValidate`, 
 | `TEmailAddressValidator` | Valid email format |
 | `TDataTypeValidator` | Value is correct data type (integer, date, etc.) |
 | `TValidationSummary` | Displays all errors in a group; `DisplayMode` (List/BulletList/SingleParagraph) |
+
+## Semantic HTML5 Controls (@since 4.3.3)
+
+All extend [THtmlElement](./THtmlElement.md). Each wraps the named HTML5 element with full `TWebControl` attribute support. The `TagName` property can be overridden via a theme or template.
+
+| Class | Default Tag | HTML5 Semantic Meaning |
+|---|---|---|
+| [`TArticle`](TArticle.md) | `article` | Self-contained composition (blog post, news article) |
+| [`TAside`](TAside.md) | `aside` | Tangentially related content; sidebar |
+| [`TFooter`](TFooter.md) | `footer` | Footer of nearest sectioning ancestor |
+| [`THeader`](THeader.md) | `header` | Introductory content or navigational links |
+| [`TMain`](TMain.md) | `main` | Dominant page content; one per document |
+| [`TMark`](TMark.md) | `mark` | Highlighted or marked text |
+| [`TNav`](TNav.md) | `nav` | Navigation links section |
+| [`TSection`](TSection.md) | `section` | Generic thematic document section |
 
 ## Rich Text & Special Controls
 

@@ -1,7 +1,7 @@
 # Security/Permissions/IPermissions
 
 ### Directories
-[framework](./INDEX.md) / [Security](./Security/INDEX.md) / [Permissions](./Security/Permissions/INDEX.md) / **`IPermissions`**
+[framework](../../INDEX.md) / [Security](../INDEX.md) / [Permissions](INDEX.md) / **`IPermissions`**
 
 **Location:** `framework/Security/Permissions/IPermissions.php`
 **Namespace:** `Prado\Security\Permissions`

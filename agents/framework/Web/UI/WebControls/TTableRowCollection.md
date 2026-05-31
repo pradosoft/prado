@@ -18,4 +18,4 @@ TTableRowCollection maintains a list of rows belonging to a table. It extends TC
 
 - [TTableRow](./TTableRow.md)
 - [TTable](./TTable.md)
-- [TControlCollection](./TControlCollection.md)
+- [TControlCollection](../TControlCollection.md)

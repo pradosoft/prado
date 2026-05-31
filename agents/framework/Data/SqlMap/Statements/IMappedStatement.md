@@ -1,7 +1,7 @@
 # Data/SqlMap/Statements/IMappedStatement
 
 ### Directories
-[framework](./INDEX.md) / [Data](./Data/INDEX.md) / [SqlMap](./Data/SqlMap/INDEX.md) / [Statements](./Data/SqlMap/Statements/INDEX.md) / **`IMappedStatement`**
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [Statements](INDEX.md) / **`IMappedStatement`**
 
 `Prado\Data\SqlMap\Statements\IMappedStatement`
 

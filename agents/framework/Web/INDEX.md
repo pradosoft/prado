@@ -1,7 +1,7 @@
 # Web/INDEX.md
 
 ### Directories
-[framework](./INDEX.md) / **`Web/INDEX.md`**
+[framework](../INDEX.md) / **`Web`**
 
 ## Purpose
 
@@ -18,21 +18,21 @@ HTTP layer, URL routing, asset management, session handling, and all web UI comp
 
 ## Top-Level Classes
 
-- **[THttpRequest](Web/THttpRequest.md)** — Encapsulates the incoming HTTP request. Implements `ArrayAccess`/`IteratorAggregate` for unified GET+POST access. Manages URL parsing, path-info extraction, service routing, and cookie access. Lazily loads `TUrlManager`. Properties: `RequestType`, `Url`, `ServerPort`, `IsSecureConnection`, `PathInfo`.
+- **[THttpRequest](THttpRequest.md)** — Encapsulates the incoming HTTP request. Implements `ArrayAccess`/`IteratorAggregate` for unified GET+POST access. Manages URL parsing, path-info extraction, service routing, and cookie access. Lazily loads `TUrlManager`. Properties: `RequestType`, `Url`, `ServerPort`, `IsSecureConnection`, `PathInfo`.
 
-- **[THttpResponse](Web/THttpResponse.md)** — HTTP response output. Manages status codes, headers, cookies, content type, charset, output buffering, file downloads (`writeFile()`), and redirects. Extended by `THttpResponseAdapter` for callback/AJAX responses.
+- **[THttpResponse](THttpResponse.md)** — HTTP response output. Manages status codes, headers, cookies, content type, charset, output buffering, file downloads (`writeFile()`), and redirects. Extended by `THttpResponseAdapter` for callback/AJAX responses.
 
-- **[THttpSession](Web/THttpSession.md)** — PHP session wrapper implementing `ArrayAccess`. Properties: `AutoStart`, `SessionName`, `CookieMode`, `GCProbability`. Supports custom storage via `THttpSessionHandler`. Cookie attributes: `HttpOnly`, `SameSite`.
+- **[THttpSession](THttpSession.md)** — PHP session wrapper implementing `ArrayAccess`. Properties: `AutoStart`, `SessionName`, `CookieMode`, `GCProbability`. Supports custom storage via `THttpSessionHandler`. Cookie attributes: `HttpOnly`, `SameSite`.
 
-- **[TAssetManager](Web/TAssetManager.md)** — Publishes private `framework/` and application assets to a web-accessible `assets/` directory. Uses timestamp-based caching. Handles recursive directory publishing and TAR extraction. Access via `$app->getAssetManager()`.
+- **[TAssetManager](TAssetManager.md)** — Publishes private `framework/` and application assets to a web-accessible `assets/` directory. Uses timestamp-based caching. Handles recursive directory publishing and TAR extraction. Access via `$app->getAssetManager()`.
 
-- **[TUrlManager](Web/TUrlManager.md)** — Base URL manager. Constructs URLs in `Get`, `Path`, and `HiddenPath` formats. Parses incoming URLs into GET variables.
+- **[TUrlManager](TUrlManager.md)** — Base URL manager. Constructs URLs in `Get`, `Path`, and `HiddenPath` formats. Parses incoming URLs into GET variables.
 
-- **[TUrlMapping](Web/TUrlMapping.md)** — Advanced SEF (Search Engine Friendly) URL routing. Defines regex-based patterns (`TUrlMappingPattern`) with named parameter extraction and optional secure-connection enforcement.
+- **[TUrlMapping](TUrlMapping.md)** — Advanced SEF (Search Engine Friendly) URL routing. Defines regex-based patterns (`TUrlMappingPattern`) with named parameter extraction and optional secure-connection enforcement.
 
-- **[TUri](Web/TUri.md)** — URI parsing and construction (scheme, host, port, path, query string).
+- **[TUri](TUri.md)** — URI parsing and construction (scheme, host, port, path, query string).
 
-- **[THttpCookie](Web/THttpCookie.md)** / **[THttpCookieCollection](Web/THttpCookieCollection.md)** — Cookie objects with `Domain`, `Path`, `ExpireTime`, `HttpOnly`, `SameSite` attributes.
+- **[THttpCookie](THttpCookie.md)** / **[THttpCookieCollection](THttpCookieCollection.md)** — Cookie objects with `Domain`, `Path`, `ExpireTime`, `HttpOnly`, `SameSite` attributes.
 
 ## Key Patterns
 

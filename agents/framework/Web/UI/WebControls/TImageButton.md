@@ -27,4 +27,4 @@ TImageButton creates an image button on a Web page for submitting data. It can b
 
 - [TImage](./TImage.md)
 - [TImageClickEventParameter](./TImageClickEventParameter.md)
-- [IPostBackEventHandler](./IPostBackEventHandler.md)
+- [IPostBackEventHandler](../IPostBackEventHandler.md)

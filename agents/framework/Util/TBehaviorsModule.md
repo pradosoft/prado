@@ -11,23 +11,39 @@
 `[TModule](../TModule.md)` that loads behavior configuration from `application.xml` and attaches behaviors to application components.
 
 ```xml
-<module id="behaviors" class="Prado\Util\TBehaviorsModule">
-    <!-- Attach behavior to a specific component: -->
-    <behavior name="noCache"
-              class="Prado\Util\Behaviors\TPageNoCacheBehavior"
-              AttachTo="Page" />
+<modules>
+    <module id="behaviors" class="Prado\Util\TBehaviorsModule">
+        <!-- Attach behavior to a specific component: -->
+        <behavior name="noCache"
+                  class="Prado\Util\Behaviors\TPageNoCacheBehavior"
+                  AttachTo="Page" />
 
-    <!-- Attach class-wide behavior: -->
-    <behavior name="audit"
-              class="MyApp\AuditBehavior"
-              AttachToClass="MyApp\Models\PostRecord" />
+        <!-- Attach class-wide behavior: -->
+        <behavior name="audit"
+                  class="MyApp\AuditBehavior"
+                  AttachToClass="MyApp\Models\PostRecord" />
 
-    <!-- Priority (lower = earlier): -->
-    <behavior name="signals"
-              class="Prado\Util\Behaviors\TApplicationSignals"
-              AttachTo="Application"
-              Priority="5" />
-</module>
+        <!-- Priority (lower = earlier): -->
+        <behavior name="signals"
+                  class="Prado\Util\Behaviors\TApplicationSignals"
+                  AttachTo="Application"
+                  Priority="5" />
+    </module>
+</modules>
+```
+
+**PHP equivalent:**
+```php
+return [
+    'modules' => [
+        'behaviors' => [
+            'class' => 'Prado\Util\TBehaviorsModule',
+            'behaviors' => [
+                ['name' => 'myBehavior', 'class' => 'MyApp\MyBehavior', 'attachto' => 'Application'],
+            ],
+        ],
+    ],
+];
 ```
 
 Behaviors can also be attached programmatically:

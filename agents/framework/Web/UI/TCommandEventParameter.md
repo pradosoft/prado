@@ -19,6 +19,6 @@ TCommandEventParameter encapsulates parameter data for Command events on button 
 
 - [TControl](./TControl.md)
 - [TButton](./WebControls/TButton.md)
-- [TEventParameter](../Prado/TEventParameter.md)
+- [TEventParameter](../../TEventParameter.md)
 
 (End of file - total 19 lines)

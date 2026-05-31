@@ -16,7 +16,7 @@ Cron-style scheduled task engine. `TCronModule` manages task registration and ex
 system crontab (every minute)
     → prado-cli cron
         → [TShellCronAction](TShellCronAction.md)::run()
-            → [TCronModule](../TCronModule.md)::processPendingTasks()
+            → [TCronModule](TCronModule.md)::processPendingTasks()
                 → evaluates each task's [TTimeScheduler](TTimeScheduler.md)
                 → runs due tasks
 ```
@@ -26,12 +26,29 @@ system crontab (every minute)
 Register in `application.xml`:
 
 ```xml
-<module id="cron" class="Prado\Util\Cron\TCronModule">
-    <task name="cleanup" class="MyCleanupTask" Schedule="0 2 * * *" />
-    <task name="report"  class="Prado\Util\Cron\TCronMethodTask"
-          ModuleClass="reporting" MethodName="sendDailyReport"
-          Schedule="30 8 * * 1-5" />
-</module>
+<modules>
+    <module id="cron" class="Prado\Util\Cron\TCronModule">
+        <task name="cleanup" class="MyCleanupTask" Schedule="0 2 * * *" />
+        <task name="report"  class="Prado\Util\Cron\TCronMethodTask"
+              ModuleClass="reporting" MethodName="sendDailyReport"
+              Schedule="30 8 * * 1-5" />
+    </module>
+</modules>
+```
+
+**PHP equivalent:**
+```php
+return [
+    'modules' => [
+        'cron' => [
+            'class' => 'Prado\Util\Cron\TCronModule',
+            'properties' => ['DefaultUserName' => 'cron'],
+            'tasks' => [
+                ['name' => 'cleanup', 'task' => 'MyApp\CleanupTask', 'schedule' => '0 2 * * *'],
+            ],
+        ],
+    ],
+];
 ```
 
 ### Key Methods
@@ -41,11 +58,14 @@ $cron = $app->getModule('cron');
 $cron->addTask($task);                    // register a TCronTask dynamically
 $cron->processPendingTasks();             // check and run due tasks
 $cron->getTaskInfos();                    // array of TCronTaskInfo
+
+// Filtered lookup — returns array<string, T> keyed by task name (@template):
+$cron->getTasksByType(TDbCronCleanLogTask::class);
 ```
 
 ### fxGetCronTaskInfos
 
-`[TCronModule](../TCronModule.md)` fires global event `fxGetCronTaskInfos` during init. Modules can respond with an array of `[TCronTaskInfo](TCronTaskInfo.md)` to auto-register their own maintenance tasks (e.g., `TDbCache` registers a cleanup task this way).
+`[TCronModule](TCronModule.md)` fires global event `fxGetCronTaskInfos` during init. Modules can respond with an array of `[TCronTaskInfo](TCronTaskInfo.md)` to auto-register their own maintenance tasks (e.g., `TDbCache` registers a cleanup task this way).
 
 ```php
 public function fxGetCronTaskInfos($sender, $param): array
@@ -54,21 +74,25 @@ public function fxGetCronTaskInfos($sender, $param): array
 }
 ```
 
-## TDbCronModule
+## TDbCronManager
 
-Extends `TCronModule` with database storage for tasks and execution logs.
+Extends `TCronModule` with database storage for tasks and execution logs. `TDbCronModule` is a deprecated alias for `TDbCronManager` (since 4.3.3).
 
 ```xml
-<module id="cron" class="Prado\Util\Cron\TDbCronModule"
-        ConnectionID="db" />
+<modules>
+    <module id="cron" class="Prado\Util\Cron\TDbCronManager"
+            ConnectionID="db" />
+</modules>
 ```
 
 Additional features:
-- Dynamic task registration (tasks persisted to DB)
-- Execution logging with start/end times and output
-- Failed-task retry logic
+- Dynamic task CRUD (tasks persisted to DB)
+- Execution logging with timestamps and output
+- Runtime task queue (`addRuntimeTask` / `executeRuntimeTasks` on `onEndRequest`)
 - `[TDbCronCleanLogTask](TDbCronCleanLogTask.md)` — pre-built task to purge old log entries
-- CLI: `prado-cli db-cron` for managing DB-backed tasks
+- Permission-gated CLI: `prado-cli db-cron` for managing DB-backed tasks
+
+See [`TDbCronManager`](TDbCronManager.md) for full documentation.
 
 ## TCronTask (Abstract Base)
 
@@ -136,9 +160,11 @@ php prado-cli.php /path/to/app cron
 # List tasks and their schedules:
 php prado-cli.php /path/to/app cron list
 
-# Manage DB cron tasks:
-php prado-cli.php /path/to/app db-cron list
+# Manage DB cron tasks (TDbCronManager):
+php prado-cli.php /path/to/app db-cron tasks
 php prado-cli.php /path/to/app db-cron run <taskname>
+php prado-cli.php /path/to/app db-cron add <name> <task-id> <schedule>
+php prado-cli.php /path/to/app db-cron remove <name>
 ```
 
 ## Patterns & Gotchas

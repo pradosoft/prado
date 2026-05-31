@@ -8,30 +8,48 @@
 **Namespace:** `Prado\Util`
 
 ## Overview
-`TLogRouter` is a `[TModule](TModule.md)` that manages multiple `[TLogRoute](TLogRoute.md)` instances. It acts as the bridge between the `[TLogger](TLogger.md)` (which accumulates log entries in memory) and the output destinations (files, database, email, browser panel, etc.).
+`TLogRouter` is a `[TModule](../TModule.md)` that manages multiple `[TLogRoute](TLogRoute.md)` instances. It acts as the bridge between the `[TLogger](TLogger.md)` (which accumulates log entries in memory) and the output destinations (files, database, email, browser panel, etc.).
 
 On `init()`, it attaches to `[TLogger](TLogger.md)::onFlushLogs` so it receives logs whenever the logger flushes (end-of-request or manual flush).
 
 ## Configuration
 
 ```xml
-<module id="log" class="Prado\Util\TLogRouter">
-    <route class="Prado\Util\TFileLogRoute"
-           Levels="Warning|Error"
-           File="protected/runtime/app.log" />
-    <route class="Prado\Util\TBrowserLogRoute"
-           Levels="Debug|Info|Warning|Error" />
-    <route class="Prado\Util\TEmailLogRoute"
-           Levels="Fatal"
-           SentTo="admin@example.com" />
-</module>
+<modules>
+    <module id="log" class="Prado\Util\TLogRouter">
+        <route class="Prado\Util\TFileLogRoute"
+               Levels="Warning|Error"
+               File="protected/runtime/app.log" />
+        <route class="Prado\Util\TBrowserLogRoute"
+               Levels="Debug|Info|Warning|Error" />
+        <route class="Prado\Util\TEmailLogRoute"
+               Levels="Fatal"
+               SentTo="admin@example.com" />
+    </module>
+</modules>
+```
+
+**PHP equivalent:**
+```php
+return [
+    'modules' => [
+        'log' => [
+            'class' => 'Prado\Util\TLogRouter',
+            'routes' => [
+                ['class' => 'Prado\Util\TFileLogRoute', 'properties' => ['Levels' => 'error,warning']],
+            ],
+        ],
+    ],
+];
 ```
 
 Alternatively, routes can be loaded from an external file:
 
 ```xml
-<module id="log" class="Prado\Util\TLogRouter"
-        ConfigFile="Application.Config.LogConfig" />
+<modules>
+    <module id="log" class="Prado\Util\TLogRouter"
+            ConfigFile="Application.Config.LogConfig" />
+</modules>
 ```
 
 ## Key Properties

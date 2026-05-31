@@ -29,8 +29,7 @@ class ActiveRecordSqlMapTest extends BaseCase
 		parent::setUpBeforeClass();
 		self::initSqlMap();
 		TActiveRecordManager::getInstance()->setDbConnection(self::getConnection());
-
-		//$this->initScript('account-init.sql');
+		self::initScript('account-init.sql');
 	}
 
 	public function testLoadWithSqlMap_SaveWithActiveRecord()
