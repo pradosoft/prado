@@ -3,7 +3,7 @@
 This file provides guidance to Agents when working with code in this repository.
 
 ### Directories
-[framework](./INDEX.md) / **`Data/INDEX.md`**
+[framework](../INDEX.md) / **`Data`**
 
 | Directory | Purpose |
 |---|---|
@@ -32,13 +32,29 @@ Database access layer for the Prado framework. Provides a PDO wrapper plus three
 
 - **[`TDbNullConversionMode`](TDbNullConversionMode.md)** — Enum: `Preserved`, `EmptyStringToNull`, `NullToEmptyString`.
 
+- **[`TDbPropertiesTrait`](TDbPropertiesTrait.md)** (@since 4.3.3) — Reusable trait for classes that own a database connection. Manages `ConnectionID`, `DbConnection`, SQLite auto-creation, `deactivateDbConnection()`, and cached `TTableGateway` instances. Used by `TDataSourceConfig`.
+
+- **[`IDataConnection`](IDataConnection.md)** (@since 4.3.3) — Interface for a data-store connection. Implemented by `TDbConnection`. Defines driver name, active state, command creation, transaction management, and common PDO helpers (`getLastInsertID`, `quoteString`, `getColumnCase`, `getAttribute`, etc.).
+
+- **[`IDbConnection`](IDbConnection.md)** (@since 4.3.3) — Extends `IDataConnection` with `getPdoInstance()` for direct PDO access. Implemented by `TDbConnection`. Use `IDataConnection` for driver-agnostic code; use `IDbConnection` only when raw PDO access is required.
+
+- **[`IDataCommand`](IDataCommand.md)** (@since 4.3.3) — Interface for a data-store command. Implemented by `TDbCommand`. Includes `bindValue()` and `bindParameter()` for parameter binding.
+
+- **[`IDataReader`](IDataReader.md)** (@since 4.3.3) — Interface for a forward-only data result reader. Implemented by `TDbDataReader`.
+
+- **[`IDataTransaction`](IDataTransaction.md)** (@since 4.3.3) — Interface for a data-store transaction. Implemented by `TDbTransaction`.
+
+- **[`TDbDriver`](TDbDriver.md)** (@since 4.3.3) — Static enumeration of all PDO driver name strings (`DRIVER_MYSQL`, `DRIVER_PGSQL`, `DRIVER_SQLITE`, etc.) and non-PDO PHP extension aliases (`EXTENSION_MYSQLI`, `EXTENSION_MSSQL`). Replaces all raw string literals throughout the framework; extends `TEnumerable`.
+
+- **[`TDataCharset`](TDataCharset.md)** (@since 4.3.3) — Static enumeration of IANA charset names (`UTF8`, `Latin1`, `Win1250`, etc.) for use with `TDbConnection::setCharset()`. Extends `TEnumerable`.
+
 ## Subdirectories
 
 ### `ActiveRecord/` — Stateful ORM
 
 Domain objects that represent database rows. Each class maps to one table.
 
-- **[`TActiveRecord`](ActiveRecord/TActiveRecord.md)** — Base class. Define `const TABLENAME` and optionally `const COLUMN_MAPPING`. Key methods:
+- **[`TActiveRecord`](TActiveRecord.md)** — Base class. Define `const TABLENAME` and optionally `const COLUMN_MAPPING`. Key methods:
   - Finders: `findByPk()`, `findAll()`, `findBySql()`, `findAllBySql()`, `count()`
   - Persistence: `save()`, `insert()`, `update()`, `delete()`
   - Relations: `hasMany()`, `belongsTo()`, `hasOne()`, `manyMany()` — lazily loaded
@@ -70,7 +86,7 @@ Separates SQL from code via external XML mapping files.
 
 ### `Common/` — Driver-Specific Implementations
 
-Subdirs: `Mssql/`, `Mysql/`, `Oracle/`, `Pgsql/`, `Sqlite/`
+Subdirs: `Firebird/`, `Ibm/`, `Mssql/`, `Mysql/`, `Oracle/`, `Pgsql/`, `Sqlite/`
 
 Each subdir contains four classes: `T{Driver}MetaData`, `T{Driver}CommandBuilder`, `T{Driver}TableInfo`, `T{Driver}TableColumn`.
 
@@ -83,7 +99,7 @@ Each subdir contains four classes: `T{Driver}MetaData`, `T{Driver}CommandBuilder
 
 - **Always use parameter binding** — never interpolate user input into SQL strings.
 - **Choose the right pattern:**
-  - [`TActiveRecord`](ActiveRecord/TActiveRecord.md) for stateful ORM with lazy relationships.
+  - [`TActiveRecord`](TActiveRecord.md) for stateful ORM with lazy relationships.
   - [`TTableGateway`](TTableGateway.md) for lightweight stateless access.
   - `TSqlMap` when you need full SQL control via external XML.
 - **DSN format:** `mysql:host=localhost;dbname=mydb` (standard PDO DSN).

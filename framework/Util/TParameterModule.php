@@ -40,11 +40,29 @@ use Prado\Xml\TXmlElement;
  * In addition, any content enclosed within the module tag is also treated
  * as parameters, e.g.,
  * ```xml
- * <module class="Prado\Util\TParameterModule">
- *   <parameter id="param1" value="paramValue1" />
- *   <parameter id="param2" Property1="Value1" Property2="Value2" ... />
- *   <parameter id="param3" Class="MyDataObject" Property1="Value1" Property2="Value2" ... />
- * </module>
+ * <modules>
+ *     <module id="params" class="Prado\Util\TParameterModule">
+ *         <parameter id="param1" value="paramValue1" />
+ *         <parameter id="param2" Property1="Value1" Property2="Value2" />
+ *         <parameter id="param3" Class="MyDataObject" Property1="Value1" />
+ *     </module>
+ * </modules>
+ * ```
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'params' => [
+ *             'class' => 'Prado\Util\TParameterModule',
+ *             'properties' => ['ParameterFile' => 'Application.Config.params'],
+ *         ],
+ *     ],
+ *     'parameters' => [
+ *         'param1' => 'paramValue1',
+ *         'param3' => ['class' => 'MyDataObject', 'properties' => ['Property1' => 'Value1']],
+ *     ],
+ * ];
  * ```
  *
  * If a parameter is defined both in the external file and within the module

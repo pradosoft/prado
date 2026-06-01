@@ -23,13 +23,15 @@ use Prado\Xml\TXmlDocument;
  * TUserManager manages a static list of users {@see \Prado\Security\TUser}.
  * XML configuration style:
  * ```xml
- * <module id="users" class="Prado\Security\TUserManager" PasswordMode="Clear">
- *   <user name="Joe" password="demo" />
- *   <user name="John" password="demo" />
- *   <user name="Jerry" password="demo" roles="Writer,Administrator" />
- *   <role name="Administrator" users="John" />
- *   <role name="Writer" users="Joe,John" />
- * </module>
+ * <modules>
+ *     <module id="users" class="Prado\Security\TUserManager" PasswordMode="Clear">
+ *         <user name="Joe" password="demo" />
+ *         <user name="John" password="demo" />
+ *         <user name="Jerry" password="demo" roles="Writer,Administrator" />
+ *         <role name="Administrator" users="John" />
+ *         <role name="Writer" users="Joe,John" />
+ *     </module>
+ * </modules>
  * ```
  *
  * PHP configuration style:

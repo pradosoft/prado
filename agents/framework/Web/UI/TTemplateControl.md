@@ -54,7 +54,7 @@ TTemplateControl is the base class for all controls that use templates in PRADO 
 ### Template Inheritance
 - `applyMasterTemplate()`: Applies master template to current template
 - `instantiateIn($control)`: Instantiates control within parent control
-- `createChildControls()`: Creates child controls from template
+- `createChildControls()`: Creates child controls from template; calls `$tpl->instantiateIn($this)` then `parent::createChildControls()` to chain through `TCompositeControl`.
 - `applyTemplate()`: Applies template to control
 
 ### Template Caching

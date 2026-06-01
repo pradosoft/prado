@@ -745,7 +745,16 @@ class TSimpleDateFormatter
 
 		$year = ($year === null) ? (int) date('Y') : (int) $year;
 		$month = ($month === null) ? ($defaultToCurrentTime ? (int) date('m') : 1) : (int) $month;
-		$day = ($day === null) ? ($defaultToCurrentTime ? (int) date('d') : 1) : (int) $day;
+		if ($day === null) {
+			if ($defaultToCurrentTime) {
+				$daysInMonth = (int) date('t', mktime(0, 0, 0, $month, 1, $year));
+				$day = min((int) date('d'), $daysInMonth);
+			} else {
+				$day = 1;
+			}
+		} else {
+			$day = (int) $day;
+		}
 
 		if (!checkdate($month, $day, $year)) {
 			return null;

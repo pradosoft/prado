@@ -20,6 +20,29 @@ use Prado\Web\UI\ActiveControls\TActivePageAdapter;
  *
  * {@see http://www.getfirebug.com/ FireBug Website}
  *
+ * Configured as a route inside {@see \Prado\Util\TLogRouter}:
+ * ```xml
+ * <modules>
+ *     <module id="log" class="Prado\Util\TLogRouter">
+ *         <route class="Prado\Util\TFirebugLogRoute" Levels="warning,error" />
+ *     </module>
+ * </modules>
+ * ```
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'log' => [
+ *             'class' => 'Prado\Util\TLogRouter',
+ *             'routes' => [
+ *                 ['class' => 'Prado\Util\TFirebugLogRoute', 'properties' => ['Levels' => 'warning,error']],
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
+ *
  * @author Enrico Stahn <mail@enricostahn.com>, Christophe Boulain <Christophe.Boulain@gmail.com>
  * @since 3.1.2
  * @method \Prado\Web\Services\TPageService getService()

@@ -123,6 +123,6 @@ $checkBox->onCheckedChanged = function($sender, $param) {
 };
 
 // Render
-$writer = new [THtmlWriter](./THtmlWriter.md)();
+$writer = new [THtmlWriter](../THtmlWriter.md)();
 $checkBox->render($writer);
 ```

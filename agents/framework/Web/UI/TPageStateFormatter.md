@@ -19,6 +19,6 @@ TPageStateFormatter is a utility class that serializes and unserializes page sta
 
 - [TPage](./TPage.md)
 - [TCachePageStatePersister](./TCachePageStatePersister.md)
-- [TSecurityManager](../Security/TSecurityManager.md)
+- [TSecurityManager](../../Security/TSecurityManager.md)
 
 (End of file - total 19 lines)

@@ -21,6 +21,6 @@ THead displays a head element on a page, rendering the page title, base URL, sho
 
 ## See Also
 
-- [TPage](./TPage.md)
+- [TPage](../TPage.md)
 - [TMetaTag](./TMetaTag.md)
 - [TMetaTagCollection](./TMetaTagCollection.md)

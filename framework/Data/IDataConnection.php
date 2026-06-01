@@ -10,6 +10,8 @@
 
 namespace Prado\Data;
 
+use Prado\Data\Common\IDataMetaData;
+
 /**
  * IDataConnection interface
  *

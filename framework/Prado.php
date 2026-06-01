@@ -109,7 +109,7 @@ class Prado
 	 */
 	public static function getVersion(): string
 	{
-		return '4.3.2';
+		return '4.3.3';
 	}
 
 	/**
@@ -411,7 +411,6 @@ class Prado
 	 * If the namespace corresponds to a directory, the directory will be appended
 	 * to the include path. If the namespace corresponds to a file, it will be included (include_once).
 	 * @param string $namespace namespace to be used
-	 * @throws TInvalidDataValueException if the namespace is invalid
 	 * @return ?string The resolved PHP fully-qualified class, interface, or trait name when the
 	 *   namespace identifies a loadable class. Returns a string ending in '\' when a directory
 	 *   namespace is successfully registered (e.g. 'Prado\Web\UI\'). Returns null when the
@@ -429,6 +428,14 @@ class Prado
 		if (class_exists($namespace, false) ||
 			interface_exists($namespace, false) ||
 			trait_exists($namespace, false)) {
+			if (($shortPos = strrpos($namespace, '\\')) !== false) {
+				$shortName = substr($namespace, $shortPos + 1);
+				if (!class_exists($shortName, false) &&
+					!interface_exists($shortName, false) &&
+					!trait_exists($shortName, false)) {
+					class_alias($namespace, $shortName);
+				}
+			}
 			return $namespace;
 		}
 
@@ -515,9 +522,10 @@ class Prado
 	 */
 	public static function method_visible($object_or_class, string $method): bool
 	{
-		if (method_exists($object_or_class, $method)) {
+		$className = is_object($object_or_class) ? $object_or_class::class : $object_or_class;
+		$reflection = TComponentReflection::getReflectionMethodByType($className, $method);
+		if ($reflection !== null) {
 			$trace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS, 3);
-			$reflection = new \ReflectionMethod($object_or_class, $method);
 			if (empty($trace[2]) || empty($trace[1]['object']) || empty($trace[2]['object']) || $trace[1]['object'] !== $trace[2]['object']) {
 				return $reflection->isPublic();
 			} elseif ($reflection->isPrivate()) {

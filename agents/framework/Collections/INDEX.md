@@ -3,7 +3,7 @@
 This file provides guidance to Agents when working with code in this repository.
 
 ### Directories
-[framework](./INDEX.md) / **`Collections/INDEX.md`**
+[framework](../INDEX.md) / **`Collections`**
 
 ## Purpose
 
@@ -33,11 +33,21 @@ Data structure implementations for the Prado framework. All collections extend [
 
 ### Weak Reference Collections
 
-- **[`TWeakList`](TWeakList.md)** — [`TList`](TList.md) backed by weak references; dead entries are automatically removed.
+- **[`TWeakList`](TWeakList.md)** — [`TList`](TList.md) backed by weak references; dead entries are automatically removed. Arrays are recursively weakened.
+
+- **[`TWeakMap`](TWeakMap.md)** — [`TMap`](TMap.md) backed by weak references. Object values are wrapped in `WeakReference`; `Closure` and `IWeakRetainable` values are stored directly. Two modes: `DiscardInvalid = true` (dead entries silently removed, default for mutable maps) or `false` (dead entries return `null`, default for read-only maps). @since 4.3.3
+
+- **[`TWeakCallableCollection`](TWeakCallableCollection.md)** — [`TPriorityList`](TPriorityList.md) of weak callables. Backing store for component and global event handler lists. Hard-codes `AutoGlobalListen = false` to prevent recursion.
 
 - **[`IWeakCollection`](IWeakCollection.md)**, **[`IWeakRetainable`](IWeakRetainable.md)** — Contracts for weak-reference collections.
 
 - **[`ICollectionFilter`](ICollectionFilter.md)** — Converts items on input/output (used to wrap/unwrap `WeakReference` objects).
+
+- **[`TWeakCollectionTrait`](TWeakCollectionTrait.md)** — Shared WeakMap bookkeeping used by all three weak collections. Provides `isScrubbing()`/`setScrubbing()` re-entrancy guard (added 4.3.3).
+
+### Event Parameters
+
+- **[`TCollectionItemChangeParameter`](TCollectionItemChangeParameter.md)** — Event parameter reporting a single key→value change in a collection. Carries `key`, `value`, `oldValue`, and a `flags` bitmask (`IS_DEFAULT`, `IS_NEW`, `IS_UNSET`). All fields accessible via both typed getters and array-access. @since 4.3.3
 
 ### Specialized Collections
 

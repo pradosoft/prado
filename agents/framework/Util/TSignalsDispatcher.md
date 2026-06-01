@@ -10,7 +10,7 @@
 ## Overview
 Singleton POSIX signal dispatcher. Translates OS signals into PRADO global (`fx*`) events so application code can react to `SIGTERM`, `SIGINT`, `SIGCHLD`, `SIGALRM`, and others without using `pcntl_signal()` directly.
 
-Implements `[ISingleton](../I18N/TGlobalization.md)`. Requires the PHP `pcntl` extension.
+Implements `ISingleton`. Requires the PHP `pcntl` extension.
 
 ## Singleton
 

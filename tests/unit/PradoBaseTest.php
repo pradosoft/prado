@@ -306,14 +306,12 @@ class PradoBaseTest extends PHPUnit\Framework\TestCase
 
 	public function testUsingNamespace()
 	{
-		$this->assertFalse(class_exists(self::CLASS_FQN, false));
 		Prado::using(self::CLASS_FQN);
 		$this->assertTrue(class_exists(self::CLASS_FQN, false));
 	}
 
 	public function testUsingInterface()
 	{
-		$this->assertFalse(interface_exists(self::INTERFACE_SHORT_NAME, false));
 		Prado::using(self::INTERFACE_FQN);
 		$this->assertTrue(interface_exists(self::INTERFACE_SHORT_NAME, false));
 	}
@@ -435,14 +433,17 @@ class PradoBaseTest extends PHPUnit\Framework\TestCase
 	}
 
 	/**
-	 * Short class name in classMap → resolved PHP FQN returned.
-	 * 'TApplication' maps to 'Prado\TApplication' via classMap.
+	 * Short class name in classMap → a usable class name string returned.
+	 * 'TApplication' maps to 'Prado\TApplication' via classMap, but when the global
+	 * alias has already been registered (e.g. by the bootstrap), using() returns the
+	 * short alias name from its early-return path instead of the PHP FQN. Either
+	 * form is a valid, usable PHP class name for the same class.
 	 */
 	public function testUsingClass_withShortClassName_returnsPhpFqn(): void
 	{
 		$result = Prado::usingClass('TApplication');
 		$this->assertIsString($result);
-		$this->assertSame(\Prado\TApplication::class, $result);
+		$this->assertTrue(is_a($result, \Prado\TApplication::class, true), 'Result must resolve to TApplication');
 	}
 
 	/**
@@ -457,14 +458,16 @@ class PradoBaseTest extends PHPUnit\Framework\TestCase
 	}
 
 	/**
-	 * Short trait name in classMap → resolved PHP FQN returned.
-	 * 'TInitializedTrait' maps to 'Prado\Util\Traits\TInitializedTrait' via classMap.
+	 * Short trait name in classMap → a usable trait name string returned.
+	 * 'TInitializedTrait' maps to 'Prado\Util\Traits\TInitializedTrait' via classMap,
+	 * but when the global alias has already been registered, using() returns the short
+	 * alias name from its early-return path. Either form resolves to the same trait.
 	 */
 	public function testUsingClass_withShortTraitName_returnsPhpFqn(): void
 	{
 		$result = Prado::usingClass('TInitializedTrait');
 		$this->assertIsString($result);
-		$this->assertSame(\Prado\Util\Traits\TInitializedTrait::class, $result);
+		$this->assertTrue(trait_exists($result, false), 'Result must resolve to an existing trait');
 	}
 
 	/**
@@ -816,7 +819,70 @@ class PradoBaseTest extends PHPUnit\Framework\TestCase
 		$instance->testMethodVisibleFromClassA($this, $instance);
 		$instance->testMethodVisibleFromClassB($this, $instance);
 	}
-	
+
+	/**
+	 * Regression: {@see \Prado\Prado::method_visible()} scopes its reflection
+	 * lookup to the class hierarchy.  When an instance is supplied,
+	 * {@see \Prado\TComponentReflection::getReflectionMethodByType()} also
+	 * walks the object's enabled behaviors and recurses through
+	 * `method_visible()` for each behavior method.  Passing the class name
+	 * skips that walk.
+	 *
+	 * Without the class-name guard, the call below returns `true` for a
+	 * method that lives on a sub-behavior, which then causes
+	 * `new \ReflectionMethod($behavior, $method)` to throw because the
+	 * behavior class does not declare the method.  Restoring the object
+	 * argument reintroduces the failure observed in
+	 * `TComponentPropertyTest::testHasMethod` at the sub-behavior assertion.
+	 * @since 4.4.0
+	 */
+	public function testMethodVisible_doesNotWalkBehaviorChain()
+	{
+		require_once __DIR__ . '/TComponentTestFixtures.php';
+
+		$component = new NewComponent();
+		$behavior = new BehaviorTestBehavior();
+		$subBehavior = new FooFooClassBehavior();
+
+		// Sanity: the sub-behavior class itself declares faafaaEverMore.
+		$this->assertTrue(Prado::method_visible($subBehavior, 'faafaaEverMore'));
+		// Sanity: the outer behavior class does not declare it.
+		$this->assertFalse(Prado::method_visible($behavior, 'faafaaEverMore'));
+		// Sanity: a fresh component class does not declare it.
+		$this->assertFalse(Prado::method_visible($component, 'faafaaEverMore'));
+
+		// Attach the behavior to the component and the sub-behavior to the behavior.
+		$component->attachBehavior('inner', $behavior);
+		$behavior->attachBehavior('SubBehavior', $subBehavior);
+
+		// Both must remain false after attachment: method_visible reports
+		// only on the class hierarchy, not on attached behaviors.
+		$this->assertFalse(
+			Prado::method_visible($component, 'faafaaEverMore'),
+			'method_visible(component, ...) must not discover sub-behavior methods'
+		);
+		$this->assertFalse(
+			Prado::method_visible($behavior, 'faafaaEverMore'),
+			'method_visible(behavior, ...) must not discover sub-behavior methods'
+		);
+
+		// And the class-name form is identical to the object form.
+		$this->assertFalse(Prado::method_visible(NewComponent::class, 'faafaaEverMore'));
+		$this->assertFalse(Prado::method_visible(BehaviorTestBehavior::class, 'faafaaEverMore'));
+		$this->assertTrue(Prado::method_visible(FooFooClassBehavior::class, 'faafaaEverMore'));
+
+		// hasMethod composes one behavior layer on top of method_visible.
+		// The component sees the behavior's own method; the sub-behavior
+		// method is NOT visible through the component (only one layer).
+		$this->assertTrue($component->hasMethod('getExcitement'));
+		$this->assertFalse(
+			$component->hasMethod('faafaaEverMore'),
+			'hasMethod must not throw and must report false for sub-behavior methods'
+		);
+		// The intermediate behavior, however, exposes its own sub-behavior method.
+		$this->assertTrue($behavior->hasMethod('faafaaEverMore'));
+	}
+
 	public function testCallingObject()
 	{
 		// Create a new object that calls Prado::callingObject()
@@ -1111,5 +1177,262 @@ class PradoBaseTest extends PHPUnit\Framework\TestCase
 	{
 		$this->assertInstanceOf(self::CLASS_FQN, $obj = Prado::createComponent(['class' =>self::CLASS_FQN, 'text' => 'my Title...']));
 		$this->assertEquals('my Title...', $obj->getText());
+	}
+
+	// -------------------------------------------------------------------------
+	// Prado::getVersion()
+	// -------------------------------------------------------------------------
+
+	/**
+	 * getVersion() returns a semantic-version string of the form X.Y.Z.
+	 */
+	public function testGetVersion(): void
+	{
+		$version = Prado::getVersion();
+		$this->assertIsString($version);
+		$this->assertMatchesRegularExpression('/^\d+\.\d+\.\d+$/', $version);
+	}
+
+	// -------------------------------------------------------------------------
+	// Prado::getFrameworkPath()
+	// -------------------------------------------------------------------------
+
+	/**
+	 * getFrameworkPath() returns PRADO_DIR — a readable, existing directory.
+	 */
+	public function testGetFrameworkPath(): void
+	{
+		$path = Prado::getFrameworkPath();
+		$this->assertIsString($path);
+		$this->assertSame(PRADO_DIR, $path);
+		$this->assertDirectoryExists($path);
+	}
+
+	// -------------------------------------------------------------------------
+	// Prado::getDefaultPermissions() / getDefaultDirPermissions() / getDefaultFilePermissions()
+	// -------------------------------------------------------------------------
+
+	/**
+	 * getDefaultPermissions() returns PRADO_CHMOD (0o777).
+	 * @deprecated since 4.2.2
+	 */
+	public function testGetDefaultPermissions(): void
+	{
+		$this->assertSame(PRADO_CHMOD, Prado::getDefaultPermissions());
+		$this->assertSame(0o777, Prado::getDefaultPermissions());
+	}
+
+	/**
+	 * getDefaultDirPermissions() returns PRADO_DIR_CHMOD (0o755).
+	 */
+	public function testGetDefaultDirPermissions(): void
+	{
+		$this->assertSame(PRADO_DIR_CHMOD, Prado::getDefaultDirPermissions());
+		$this->assertSame(0o755, Prado::getDefaultDirPermissions());
+	}
+
+	/**
+	 * getDefaultFilePermissions() returns PRADO_FILE_CHMOD (0o644).
+	 */
+	public function testGetDefaultFilePermissions(): void
+	{
+		$this->assertSame(PRADO_FILE_CHMOD, Prado::getDefaultFilePermissions());
+		$this->assertSame(0o644, Prado::getDefaultFilePermissions());
+	}
+
+	// -------------------------------------------------------------------------
+	// Prado::getApplication()
+	// -------------------------------------------------------------------------
+
+	/**
+	 * getApplication() returns the bootstrapped TApplication singleton.
+	 */
+	public function testGetApplication(): void
+	{
+		$app = Prado::getApplication();
+		$this->assertInstanceOf(\Prado\TApplication::class, $app);
+	}
+
+	// -------------------------------------------------------------------------
+	// Prado::getPathOfAlias()
+	// -------------------------------------------------------------------------
+
+	/**
+	 * getPathOfAlias() with the built-in 'Prado' alias returns PRADO_DIR.
+	 */
+	public function testGetPathOfAlias_withPradoAlias(): void
+	{
+		$this->assertSame(PRADO_DIR, Prado::getPathOfAlias('Prado'));
+	}
+
+	/**
+	 * getPathOfAlias() with the built-in 'Vendor' alias returns PRADO_VENDORDIR.
+	 */
+	public function testGetPathOfAlias_withVendorAlias(): void
+	{
+		$this->assertSame(PRADO_VENDORDIR, Prado::getPathOfAlias('Vendor'));
+	}
+
+	/**
+	 * getPathOfAlias() with an unknown alias returns null.
+	 */
+	public function testGetPathOfAlias_withUnknownAlias(): void
+	{
+		$this->assertNull(Prado::getPathOfAlias('NonExistentAliasXYZ99999'));
+	}
+
+	// -------------------------------------------------------------------------
+	// Prado::setPathOfAlias()
+	// -------------------------------------------------------------------------
+
+	/**
+	 * setPathOfAlias() registers a new alias; getPathOfAlias() retrieves its realpath.
+	 */
+	public function testSetPathOfAlias_newAlias(): void
+	{
+		$alias = 'PradoTestAlias' . uniqid();
+		Prado::setPathOfAlias($alias, PRADO_DIR);
+		$this->assertSame(realpath(PRADO_DIR), Prado::getPathOfAlias($alias));
+	}
+
+	/**
+	 * setPathOfAlias() throws TInvalidDataValueException when the alias name contains a dot.
+	 */
+	public function testSetPathOfAlias_dottedName_throwsException(): void
+	{
+		$this->expectException(\Prado\Exceptions\TInvalidDataValueException::class);
+		Prado::setPathOfAlias('my.alias', PRADO_DIR);
+	}
+
+	/**
+	 * setPathOfAlias() throws TInvalidDataValueException when the path does not exist.
+	 */
+	public function testSetPathOfAlias_invalidPath_throwsException(): void
+	{
+		$this->expectException(\Prado\Exceptions\TInvalidDataValueException::class);
+		Prado::setPathOfAlias('ValidAliasName', '/nonexistent/path/xyz99999/does/not/exist');
+	}
+
+	// -------------------------------------------------------------------------
+	// Prado::getPathOfNamespace()
+	// -------------------------------------------------------------------------
+
+	/**
+	 * getPathOfNamespace() resolves a class namespace to its .php file path.
+	 */
+	public function testGetPathOfNamespace_withKnownClass(): void
+	{
+		$path = Prado::getPathOfNamespace('Prado\TApplication', '.php');
+		$this->assertIsString($path);
+		$this->assertStringEndsWith('TApplication.php', $path);
+		$this->assertFileExists($path);
+	}
+
+	/**
+	 * getPathOfNamespace() resolves a directory namespace ('*') to a directory path.
+	 */
+	public function testGetPathOfNamespace_withDirectoryNamespace(): void
+	{
+		$path = Prado::getPathOfNamespace('Prado\Web\UI\*');
+		$this->assertIsString($path);
+		$this->assertDirectoryExists($path);
+	}
+
+	/**
+	 * getPathOfNamespace() returns null when the leading alias is not registered.
+	 */
+	public function testGetPathOfNamespace_withUnknownAlias(): void
+	{
+		$path = Prado::getPathOfNamespace('NonExistentAliasXYZ99999\SomeClass', '.php');
+		$this->assertNull($path);
+	}
+
+	// -------------------------------------------------------------------------
+	// Prado::varDump()
+	// -------------------------------------------------------------------------
+
+	/**
+	 * varDump() returns a non-empty string representation of any value.
+	 */
+	public function testVarDump_returnsStringRepresentation(): void
+	{
+		$result = Prado::varDump(['key' => 'value']);
+		$this->assertIsString($result);
+		$this->assertNotEmpty($result);
+	}
+
+	/**
+	 * varDump() with null contains 'null' in the output.
+	 */
+	public function testVarDump_withNull(): void
+	{
+		$result = Prado::varDump(null);
+		$this->assertIsString($result);
+		$this->assertStringContainsStringIgnoringCase('null', $result);
+	}
+
+	// -------------------------------------------------------------------------
+	// Prado::localize()
+	// -------------------------------------------------------------------------
+
+	/**
+	 * localize() substitutes named parameters via strtr() when no globalization
+	 * handler is configured (the no-translation fast path exercised by the test bootstrap).
+	 */
+	public function testLocalize_withNoGlobalization_substitutesParameters(): void
+	{
+		$result = Prado::localize('Hello {name}!', ['name' => 'World']);
+		$this->assertSame('Hello World!', $result);
+	}
+
+	/**
+	 * localize() returns the original text unchanged when no parameters are given.
+	 */
+	public function testLocalize_withNoParameters_returnsOriginalText(): void
+	{
+		$result = Prado::localize('Plain text message');
+		$this->assertSame('Plain text message', $result);
+	}
+
+	// -------------------------------------------------------------------------
+	// Prado::poweredByPrado()
+	// -------------------------------------------------------------------------
+
+	/**
+	 * poweredByPrado() returns an HTML anchor string referencing the PRADO project.
+	 *
+	 * The test bootstrap's TAssetManager has no web-accessible base path, so this
+	 * test nulls the application temporarily (safe because PRADO_TEST_RUN bypasses
+	 * the singleton guard) to exercise the no-AssetManager fallback URL path.
+	 */
+	public function testPoweredByPrado_returnsHtmlAnchor(): void
+	{
+		$app = Prado::getApplication();
+		Prado::setApplication(null);
+		try {
+			$result = Prado::poweredByPrado();
+		} finally {
+			Prado::setApplication($app);
+		}
+		$this->assertIsString($result);
+		$this->assertStringContainsString('<a', $result);
+		$this->assertStringContainsString('pradosoft', $result);
+	}
+
+	/**
+	 * poweredByPrado() with logoType=1 includes 'powered2' in the image URL.
+	 */
+	public function testPoweredByPrado_withLogoType1_usesPowered2Image(): void
+	{
+		$app = Prado::getApplication();
+		Prado::setApplication(null);
+		try {
+			$result = Prado::poweredByPrado(1);
+		} finally {
+			Prado::setApplication($app);
+		}
+		$this->assertIsString($result);
+		$this->assertStringContainsString('<a', $result);
+		$this->assertStringContainsString('powered2', $result);
 	}
 }

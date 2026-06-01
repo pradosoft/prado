@@ -27,5 +27,5 @@ TCronTask is the abstract base class for all cron tasks. Subclasses must impleme
 
 ## See Also
 
-- [TCronModule](../TCronModule.md)
+- [TCronModule](TCronModule.md)
 - [TTimeScheduler](TTimeScheduler.md)

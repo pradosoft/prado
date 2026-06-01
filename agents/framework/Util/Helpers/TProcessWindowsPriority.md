@@ -23,5 +23,5 @@ Enum for Windows process priority levels.
 
 ## See Also
 
-- `[TProcessHelper](../TProcessHelper.md)` - Process utilities
+- `[TProcessHelper](TProcessHelper.md)` - Process utilities
 - `[TProcessWindowsPriorityName](TProcessWindowsPriorityName.md)` - Priority name mappings

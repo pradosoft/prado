@@ -1,7 +1,7 @@
 # Shell/Actions/INDEX.md
 
 ### Directories
-[framework](./INDEX.md) / [Shell](./Shell/INDEX.md) / **`Actions/INDEX.md`**
+[framework](../../INDEX.md) / [Shell](../INDEX.md) / **`Actions`**
 
 ## Purpose
 
@@ -13,7 +13,7 @@ Built-in CLI action handlers for the Prado shell (`php protected/index.php`). Ea
   - `generate <table> <output>` — generate AR class for a single table with optional `--soap` and `--overwrite` flags.
   - `generate-all <output>` — generate AR classes for all tables with optional `--prefix`, `--suffix`, `--soap`, `--overwrite`.
 
-- **[`TDbParameterAction`](TDbParameterAction.md)** — Action `param`. Manages [`TDbParameterModule`](../Util/TDbParameterModule.md) parameters (key/value store backed by a database).
+- **[`TDbParameterAction`](TDbParameterAction.md)** — Action `param`. Manages [`TDbParameterModule`](../../Util/TDbParameterModule.md) parameters (key/value store backed by a database).
   - Subcommands for listing, getting, setting, and deleting application parameters.
 
 - **[`TFlushCachesAction`](TFlushCachesAction.md)** — Action `cache`. Clears application cache modules implementing `ICache`.

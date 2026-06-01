@@ -39,12 +39,33 @@ use Prado\Xml\TXmlElement;
  * Since it is derived from {@see \Prado\Web\TUrlManager}, it should be configured globally
  * in the application configuration like the following,
  * ```xml
- *  <module id="request" class="THttpRequest" UrlManager="friendly-url" />
- *  <module id="friendly-url" class="Prado\Web.TUrlMapping" EnableCustomUrl="true">
- *    <url ServiceParameter="Posts.ViewPost" pattern="post/{id}/" parameters.id="\d+" />
- *    <url ServiceParameter="Posts.ListPost" pattern="archive/{time}/" parameters.time="\d{6}" />
- *    <url ServiceParameter="Posts.ListPost" pattern="category/{cat}/" parameters.cat="\d+" />
- *  </module>
+ * <modules>
+ *     <module id="request" class="Prado\Web\THttpRequest" UrlManager="friendly-url" />
+ *     <module id="friendly-url" class="Prado\Web\TUrlMapping" EnableCustomUrl="true">
+ *         <url ServiceParameter="Posts.ViewPost" pattern="post/{id}/" parameters.id="\d+" />
+ *         <url ServiceParameter="Posts.ListPost" pattern="archive/{time}/" parameters.time="\d{6}" />
+ *     </module>
+ * </modules>
+ * ```
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'request' => [
+ *             'class' => 'Prado\Web\THttpRequest',
+ *             'properties' => ['UrlManager' => 'friendly-url'],
+ *         ],
+ *         'friendly-url' => [
+ *             'class' => 'Prado\Web\TUrlMapping',
+ *             'properties' => ['EnableCustomUrl' => 'true'],
+ *             'urls' => [
+ *                 ['ServiceParameter' => 'Posts.ViewPost', 'Pattern' => 'post/{id}/', 'parameters.id' => '\d+'],
+ *                 ['ServiceParameter' => 'Posts.ListPost', 'Pattern' => 'archive/{time}/', 'parameters.time' => '\d{6}'],
+ *             ],
+ *         ],
+ *     ],
+ * ];
  * ```
  *
  * In the above, each <tt>&lt;url&gt;</tt> element specifies a URL pattern represented

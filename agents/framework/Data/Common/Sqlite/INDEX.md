@@ -4,7 +4,7 @@ This file provides guidance to Agents when working with code in this repository.
 
 ### Directories
 
-[framework](./INDEX.md) / [Data](./Data/INDEX.md) / [Common](./Data/Common/INDEX.md) / [Sqlite](./Data/Common/Sqlite/INDEX.md) / **`Sqlite/INDEX.md`**
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [Common](../INDEX.md) / **`Sqlite`**
 
 | Directory | Purpose |
 |---|---|

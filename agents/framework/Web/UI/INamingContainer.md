@@ -1,7 +1,7 @@
 # Web/UI/INamingContainer
 
 ### Directories
-[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / **`INamingContainer`**
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [UI](INDEX.md) / **`INamingContainer`**
 
 **Location:** `framework/Web/UI/INamingContainer.php`
 **Namespace:** `Prado\Web\UI`

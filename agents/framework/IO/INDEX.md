@@ -1,7 +1,7 @@
 # IO/INDEX.md
 
 ### Directories
-[framework](./INDEX.md) / **`IO/INDEX.md`**
+[framework](../INDEX.md) / **`IO`**
 
 ## Purpose
 

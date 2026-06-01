@@ -17,27 +17,27 @@ TFeedService provides feed content (RSS/Atom) to end-users. It manages a set of 
 - Implements standard feed retrieval pattern
 
 ## Configuration
-### XML Format
+
+Registered as a service (`<services>` tag, not `<modules>`).
+
+**application.xml:**
 ```xml
-<service id="feed" class="Prado\Web\Services\TFeedService">
-  <feed id="ch1" class="Path\To\FeedClass1" />
-  <feed id="ch2" class="Path\To\FeedClass2" />
-  <feed id="ch3" class="Path\To\FeedClass3" />
-</service>
+<services>
+  <service id="feed" class="Prado\Web\Services\TFeedService">
+    <feed id="ch1" class="Path\To\FeedClass1" />
+    <feed id="ch2" class="Path\To\FeedClass2" />
+    <feed id="ch3" class="Path\To\FeedClass3" />
+  </service>
+</services>
 ```
 
-### PHP Format
+**PHP equivalent:**
 ```php
-array(
-  'feed' => array(
-    'ch1' => array(
-      'class' => 'Path\To\FeedClass1',
-      'properties' => array(
-        ...
-      ),
-    ),
-  ),
-)
+return [
+    'services' => [
+        'feed' => ['class' => 'Prado\Web\Services\TFeedService'],
+    ],
+];
 ```
 
 ## Methods

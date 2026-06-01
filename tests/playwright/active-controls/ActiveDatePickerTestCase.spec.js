@@ -11,10 +11,10 @@ function localPhpDate(fmt, ts = null) {
     .replace('m', pad(d.getMonth() + 1))
     .replace('d', pad(d.getDate()))
     .replace('Y', d.getFullYear())
-    .replace('F', d.toLocaleString('en-US', { month: 'long' }))
     .replace('n', d.getMonth() + 1)
     .replace('j', d.getDate())
-    .replace('t', new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate());
+    .replace('t', new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate())
+    .replace('F', d.toLocaleString('en-US', { month: 'long' }));
 }
 
 function phpDate(fmt, ts = null) {
@@ -24,10 +24,10 @@ function phpDate(fmt, ts = null) {
     .replace('m', pad(d.getUTCMonth() + 1))
     .replace('d', pad(d.getUTCDate()))
     .replace('Y', d.getUTCFullYear())
-    .replace('F', d.toLocaleString('en-US', { month: 'long', timeZone: 'UTC' }))
     .replace('n', d.getUTCMonth() + 1)
     .replace('j', d.getUTCDate())
-    .replace('t', new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate());
+    .replace('t', new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate())
+    .replace('F', d.toLocaleString('en-US', { month: 'long', timeZone: 'UTC' }));
 }
 
 test('ActiveDatePickerTestCase', async ({ page }) => {

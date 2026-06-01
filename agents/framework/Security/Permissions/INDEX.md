@@ -1,7 +1,7 @@
 # Security/Permissions/INDEX.md
 
 ### Directories
-[framework](./INDEX.md) / [Security](./Security/INDEX.md) / **`Permissions/INDEX.md`**
+[framework](../../INDEX.md) / [Security](../INDEX.md) / **`Permissions`**
 
 ## Purpose
 
@@ -15,20 +15,22 @@ Advanced RBAC (Role-Based Access Control) with named permissions, role hierarchi
 
 ### Manager
 
-- **`TPermissionsManager`** — [`TModule`](TModule.md) subclass; the central permissions registry. Key capabilities:
+- **`TPermissionsManager`** — [`TModule`](../../TModule.md) subclass; the central permissions registry. Key capabilities:
   - Manages a **role hierarchy** (roles containing other roles/permissions, recursively resolved).
-  - Manages **named permissions**, each with a set of [`TAuthorizationRule`](TAuthorizationRule.md) objects.
+  - Manages **named permissions**, each with a set of [`TAuthorizationRule`](../TAuthorizationRule.md) objects.
   - Auto-attaches [`TPermissionsBehavior`](TPermissionsBehavior.md) to every class implementing `IPermissions` via the `fxAttachClassBehavior` global event.
-  - Properties: `DefaultRoles` (roles automatically assigned to all users), `SuperRoles` (roles that bypass all permission checks), `PermissionsFile`, `DbParameter` (module ID for dynamic roles/permissions from [`TDbParameterModule`](TDbParameterModule.md)).
+  - Properties: `DefaultRoles` (roles automatically assigned to all users), `SuperRoles` (roles that bypass all permission checks), `PermissionsFile`, `DbParameter` (module ID for dynamic roles/permissions from [`TDbParameterModule`](../../Util/TDbParameterModule.md)).
   - Configure in `application.xml`:
     ```xml
-    <module id="permissions" class="Prado\Security\Permissions\TPermissionsManager"
-            DefaultRoles="Default" SuperRoles="Administrator">
-        <role name="author" children="post_new,post_read,post_update" />
-        <role name="Editor" children="author,post_delete,post_publish" />
-       <permissionrule name="post_delete" action="deny" users="*" roles="author" verb="*" IPs="" />
-    </module>
-    ```
+<modules>
+        <module id="permissions" class="Prado\Security\Permissions\TPermissionsManager"
+                DefaultRoles="Default" SuperRoles="Administrator">
+            <role name="author" children="post_new,post_read,post_update" />
+            <role name="Editor" children="author,post_delete,post_publish" />
+           <permissionrule name="post_delete" action="deny" users="*" roles="author" verb="*" IPs="" />
+        </module>
+</modules>
+```
 
 - **`TPermissionsManagerPropertyTrait`** — Shared trait providing the `PermissionsManager` property accessor used by controls and behaviors that need a reference to [`TPermissionsManager`](TPermissionsManager.md).
 
@@ -44,7 +46,7 @@ Advanced RBAC (Role-Based Access Control) with named permissions, role hierarchi
 
 - **`TPermissionEvent`** — Defines one permission: `PermissionName`, `Description`, `Events` (array of `dy*` event names that trigger the permission check). Returned from [`IPermissions::getPermissions()`](IPermissions.md).
 
-- **`TUserOwnerRule`** — Special [`TAuthorizationRule`](TAuthorizationRule.md) subclass: grants access only if the current user "owns" the object being acted on. The ownership check is delegated to a configurable callback or a `dyIsOwner` dynamic event.
+- **`TUserOwnerRule`** — Special [`TAuthorizationRule`](../TAuthorizationRule.md) subclass: grants access only if the current user "owns" the object being acted on. The ownership check is delegated to a configurable callback or a `dyIsOwner` dynamic event.
 
 ## Permission Naming Convention
 
@@ -56,4 +58,4 @@ Use dot (or snake) notation: `module.resource.action` — e.g., `blog.post.edit`
 - **`DefaultRoles`** are merged into every user's role list at check time; they do not modify the user object.
 - **`TPermissionsManager` must be registered after `TAuthManager`** in `application.xml` if both are used — auth state must be established before permission checks run.
 - **Role hierarchy is recursive** — a role `editor` which contains `commenter` means `editor` users also pass `commenter` permission checks. Avoid circular role definitions.
-- **Dynamic role loading from [`TDbParameterModule`](TDbParameterModule.md)** — roles stored in the database are merged at runtime; changes take effect on the next request.
+- **Dynamic role loading from [`TDbParameterModule`](../../Util/TDbParameterModule.md)** — roles stored in the database are merged at runtime; changes take effect on the next request.

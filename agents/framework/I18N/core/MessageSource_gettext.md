@@ -1,7 +1,7 @@
 # I18N/core/MessageSource_gettext
 
 ### Directories
-[framework](./INDEX.md) / [I18N](./I18N/INDEX.md) / [core](./I18N/core/INDEX.md) / **`MessageSource_gettext`**
+[framework](../../INDEX.md) / [I18N](../INDEX.md) / [core](INDEX.md) / **`MessageSource_gettext`**
 
 **Location:** `framework/I18N/core/MessageSource_gettext.php`
 **Namespace:** `Prado\I18N\core`

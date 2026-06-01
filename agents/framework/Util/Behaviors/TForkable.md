@@ -12,8 +12,8 @@ This behavior attaches the owner component's `fxPrepareForFork` and `fxRestoreAf
 
 ## Key Properties/Methods
 
-- `attachEventHandlers([TComponent](../TComponent.md) $component)` - Attaches `fxPrepareForFork` and `fxRestoreAfterFork` handlers if the component has these methods
-- `detachEventHandlers([TComponent](../TComponent.md) $component)` - Detaches the fork event handlers
+- `attachEventHandlers([TComponent](../../TComponent.md) $component)` - Attaches `fxPrepareForFork` and `fxRestoreAfterFork` handlers if the component has these methods
+- `detachEventHandlers([TComponent](../../TComponent.md) $component)` - Detaches the fork event handlers
 
 ## See Also
 

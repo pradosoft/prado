@@ -21,11 +21,25 @@ Inherits from [`TDataSourceConfig`](../TDataSourceConfig.md).
 ## Configuration Example
 
 ```xml
-<module id="sqlmap" 
-    class="Prado\Data\SqlMap\TSqlMapConfig"
-    ConnectionID="db"
-    ConfigFile="application.config.sqlmap"
-    EnableCache="true" />
+<modules>
+    <module id="sqlmap" 
+        class="Prado\Data\SqlMap\TSqlMapConfig"
+        ConnectionID="db"
+        ConfigFile="application.config.sqlmap"
+        EnableCache="true" />
+</modules>
+```
+
+**PHP equivalent:**
+```php
+return [
+    'modules' => [
+        'sqlmap' => [
+            'class' => 'Prado\Data\SqlMap\TSqlMapConfig',
+            'properties' => ['ConnectionID' => 'db'],
+        ],
+    ],
+];
 ```
 
 ## Key Properties

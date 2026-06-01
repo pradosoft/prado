@@ -66,15 +66,31 @@ use Prado\Xml\TXmlElement;
  * default cache module. It can be accessed via {@see \Prado\TApplication::getCache()}.
  *
  * TRedisCache may be configured in application configuration file as follows
- * ```php
- * <module id="cache" class="Prado\Caching\TRedisCache" Host="localhost" Port="6379" />
+ * ```xml
+ * <modules>
+ *     <module id="cache" class="Prado\Caching\TRedisCache" Host="localhost" Port="6379" />
+ * </modules>
  * ```
  * or
- * ```php
- * <module id="cache" class="Prado\Caching\TRedisCache" Socket="var/run/redis/redis.sock" Index="2" />
+ * ```xml
+ * <modules>
+ *     <module id="cache" class="Prado\Caching\TRedisCache" Socket="/var/run/redis/redis.sock" Index="2" />
+ * </modules>
  * ```
  * where {@see setHost Host} and {@see setPort Port} or {@see setSocket Socket} are configurable properties
  * of TRedisCache.
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'cache' => [
+ *             'class' => 'Prado\Caching\TRedisCache',
+ *             'properties' => ['Host' => 'localhost', 'Port' => '6379'],
+ *         ],
+ *     ],
+ * ];
+ * ```
  *
  * @author Jens Klaer <kj.landwehr.software@gmail.com>
  * @author LANDWEHR Computer und Software GmbH

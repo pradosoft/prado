@@ -21,6 +21,18 @@
 </modules>
 ```
 
+**PHP equivalent:**
+```php
+return [
+    'modules' => [
+        'ar' => [
+            'class' => 'Prado\Data\ActiveRecord\TActiveRecordConfig',
+            'properties' => ['ConnectionID' => 'db'],
+        ],
+    ],
+];
+```
+
 ## Properties
 
 - `ConnectionID` - Database connection module ID

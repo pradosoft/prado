@@ -8,7 +8,7 @@
 **Namespace:** `Prado\Security\Permissions`
 
 ## Overview
-`TPermissionsManager` is the central RBAC (Role-Based Access Control) module for Prado. It manages:
+`TPermissionsManager` is the central RBAC (Role-Based Access Control) module for Prado. Configuration properties are read-only after `init()` completes. It manages:
 
 - A **role hierarchy** (roles with recursive child roles/permissions).
 - **Named permissions**, each with an ordered set of [TAuthorizationRule](../TAuthorizationRule.md) objects.
@@ -137,21 +137,23 @@ public function getPermissions(TPermissionsManager $manager): TPermissionEvent[]
 ## Configuration (XML)
 
 ```xml
-<module id="permissions"
-    class="Prado\Security\Permissions\TPermissionsManager"
-    DefaultRoles="Default"
-    SuperRoles="Administrator">
+<modules>
+    <module id="permissions"
+        class="Prado\Security\Permissions\TPermissionsManager"
+        DefaultRoles="Default"
+        SuperRoles="Administrator">
 
-    <!-- Role hierarchy -->
-    <role name="Editor" children="author,commenter" />
-    <role name="Default" children="register_user,blog_read_posts" />
+        <!-- Role hierarchy -->
+        <role name="Editor" children="author,commenter" />
+        <role name="Default" children="register_user,blog_read_posts" />
 
-    <!-- Permission rules (first-match wins within each permission's sorted list) -->
-    <permissionrule name="blog_edit"   action="allow" roles="Editor" />
-    <permissionrule name="register_user" action="allow" users="?" />
-    <permissionrule name="blog_*"      action="allow" users="admin" />
-    <permissionrule name="*"           action="deny"  priority="1000" />
-</module>
+        <!-- Permission rules (first-match wins within each permission's sorted list) -->
+        <permissionrule name="blog_edit"   action="allow" roles="Editor" />
+        <permissionrule name="register_user" action="allow" users="?" />
+        <permissionrule name="blog_*"      action="allow" users="admin" />
+        <permissionrule name="*"           action="deny"  priority="1000" />
+    </module>
+</modules>
 ```
 
 PHP format:

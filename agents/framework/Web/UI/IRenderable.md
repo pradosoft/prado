@@ -1,7 +1,7 @@
 # Web/UI/IRenderable
 
 ### Directories
-[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / **`IRenderable`**
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [UI](INDEX.md) / **`IRenderable`**
 
 **Location:** `framework/Web/UI/IRenderable.php`
 **Namespace:** `Prado\Web\UI`

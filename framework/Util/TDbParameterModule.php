@@ -38,9 +38,30 @@ use Prado\Util\Traits\TInitializedTrait;
  *
  * The following will load the options from a WordPress Database:
  * ```xml
- *		<module id="dbparams" class="Prado\Util\TDbParameterModule"
- * ConnectionID="DB" KeyField="option_name" ValueField="option_value" TableName="wp_options" Serializer="php"
- * autoLoadField="autoload" autoLoadValue="'yes'" autoLoadValueFalse="'no'"/>
+ * <modules>
+ *     <module id="dbparams" class="Prado\Util\TDbParameterModule"
+ *         ConnectionID="db" KeyField="option_name" ValueField="option_value"
+ *         TableName="wp_options" Serializer="php"
+ *         AutoLoadField="autoload" AutoLoadValue="'yes'" AutoLoadValueFalse="'no'" />
+ * </modules>
+ * ```
+ *
+ * PHP configuration style:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'dbparams' => [
+ *             'class' => 'Prado\Util\TDbParameterModule',
+ *             'properties' => [
+ *                 'ConnectionID' => 'db',
+ *                 'KeyField' => 'option_name',
+ *                 'ValueField' => 'option_value',
+ *                 'TableName' => 'wp_options',
+ *                 'Serializer' => 'php',
+ *             ],
+ *         ],
+ *     ],
+ * ];
  * ```
  *
  * This allows for setting and removal of application parameters

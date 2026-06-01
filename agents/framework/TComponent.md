@@ -44,6 +44,17 @@ $component->detachEventHandler('OnClick', [$this, 'handleClick']);
 - `TComponent::RAISE_EVENT_BROADCAST` — raise even if no handlers.
 - `TComponent::RAISE_EVENT_GLOBAL` — propagate as `fx*` global event too.
 
+**Event parameter lifecycle** — if `$param` implements [`IEventCycleParameter`](./IEventCycleParameter.md) (or `isa(IEventCycleParameter::class)` for behavior-wrapped objects), `raiseEvent` automatically:
+1. Calls `$param->setEventName($name)` (resets `ParameterChanged`).
+2. Calls `$param->preRaiseEvent(...)` before any handlers run.
+3. Calls `$param->postRaiseEvent(...)` after all handlers complete.
+
+**Dynamic events dispatched by `raiseEvent`:**
+- `dyPreRaiseEvent($name, $sender, $param, $responsetype, $postfunction)` — before handlers.
+- `dyIntraRaiseEventTestHandler($handler, $sender, $param, $name)` — return `false` to skip a handler.
+- `dyIntraRaiseEventPostHandler($name, $sender, $param, $handler, $response)` — after each handler.
+- `dyPostRaiseEvent($responses, $name, $sender, $param, $responsetype, $postfunction)` — after all handlers.
+
 ### `fx*` — Global Events (static, application-wide)
 Handlers stored in static `$_ue` per event name. Any listening object receives them.
 
@@ -81,9 +92,10 @@ $component->attachBehavior('myBehavior', new MyBehavior());
 $component->detachBehavior('myBehavior');
 $component->enableBehavior('myBehavior');
 $component->disableBehavior('myBehavior');
-$component->getBehaviors();          // TPriorityMap of all behaviors
+$component->getBehaviors();                      // array<string, IBaseBehavior> of all behaviors
+$component->getBehaviors(MyBehavior::class);     // array<string, MyBehavior> filtered by class (@template)
 $component->getBehavior('myBehavior');
-$component->asa('MyBehavior');       // returns behavior by class name
+$component->asa('MyBehavior');       // returns behavior by class name (typed: asa(T::class): ?T)
 $component->isa('MyBehavior');       // true if class is or has behavior of that class
 ```
 
@@ -110,6 +122,12 @@ All existing + future instances of `MyClass` receive the behavior. Cannot attach
 TComponent::RAISE_EVENT_BROADCAST   // flag: raise even without handlers
 TComponent::RAISE_EVENT_GLOBAL      // flag: also raise as global fx event
 ```
+
+## Other Notable Methods
+
+- **`getClassHierarchy(bool $lowercase = false): string[]`** — returns class name + all parent class, trait, and interface names. Result is cached statically per class/lowercase combination; cache now correctly handles both lowercase and non-lowercase variants independently.
+- **`evaluateStatements(string $statements): string`** — evals PHP code, captures output. Calls `ob_end_clean()` in both the success and exception paths, preventing output buffer leaks on eval errors.
+- **`__isset($name)`** / **`__call`** — both check `isset($this->_e[...])` and `isset($this->_m)` before accessing them, guarding against uninitialized state during construction or deserialization.
 
 ## Patterns & Gotchas
 
