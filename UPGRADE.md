@@ -1,4 +1,4 @@
-# Upgrading Instructions for PRADO Framework v4.3.3
+# Upgrading Instructions for PRADO Framework v4.4.0
 
 ### !!!IMPORTANT!!!
 
@@ -6,6 +6,10 @@ The following upgrading instructions are cumulative. That is,
 if you want to upgrade from version A to version C and there is
 version B between A and C, you need to following the instructions
 for both A and B.
+
+Upgrading from v4.3.3
+---------------------
+- TReCaptcha2::getResponse changed to TReCaptcha2::getCaptchaResponse - no longer overrides TApplicationComponent::getResponse (#1132)
 
 Upgrading from v4.3.2
 ---------------------
