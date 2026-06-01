@@ -156,27 +156,62 @@ class TPropertyValue
 	public const ARRAY_STRICT_ERRORS = (1 << 2);
 
 	/**
-	 * No-op bitmask — shared zero across {@see ensureNullIf()} (no
-	 * filters apply, value returned unchanged) and {@see ensureArrayOfType()}
-	 * (no transforms, no filters; coercion only).  Named alias for `0` so
-	 * callers can opt out of defaults without an unexplained literal.
+	 * No-op bitmask (= `0`) — opt out of defaults in {@see ensureNullIf()}
+	 * and {@see ensureArrayOfType()}.  The array form still coerces to
+	 * `$type`; no other processing runs.
 	 * @since 4.4.0
 	 */
-	public const OPT_NONE = 0;
+	public const FILTER_NONE = 0;
 
 	/**
-	 * {@see ensureArrayOfType()} flag — trims string elements after
-	 * coercion, before {@see OPT_EMPTY}.  No effect on non-strings.
+	 * String mutator flag — `trim()` array keys.  {@see ensureArrayOfType()}
+	 * only; applied to string keys before they are written to the output array.
+	 * Non-strings unaffected.
 	 * @since 4.4.0
 	 */
-	public const OPT_TRIM = (1 << 0);
+	public const FILTER_TRIM_KEY = (1 << 0);
 
 	/**
-	 * {@see ensureArrayOfType()} flag — `strtolower` on string elements
-	 * after {@see OPT_TRIM}.  No effect on non-strings.
+	 * `trim()` string values.  Used by {@see ensureNullIf()} (pre-emptiness)
+	 * and {@see ensureArrayOfType()} (pre-{@see FILTER_BLANK}).  Non-strings
+	 * unaffected.
 	 * @since 4.4.0
 	 */
-	public const OPT_LOWERCASE = (1 << 1);
+	public const FILTER_TRIM_VALUE = (1 << 1);
+
+	/**
+	 * Composite of {@see FILTER_TRIM_KEY} | {@see FILTER_TRIM_VALUE}.
+	 * Trims both axes in {@see ensureArrayOfType()}; only `_VALUE` fires
+	 * in {@see ensureNullIf()}.
+	 * @since 4.4.0
+	 */
+	public const FILTER_TRIM = self::FILTER_TRIM_KEY
+		| self::FILTER_TRIM_VALUE;
+
+	/**
+	 * `strtolower()` string array keys ({@see ensureArrayOfType()} only).
+	 * Applied after {@see FILTER_TRIM_KEY}; useful for case-insensitive
+	 * lookup indexes.  Integer keys unaffected.
+	 * @since 4.4.0
+	 */
+	public const FILTER_LOWERCASE_KEY = (1 << 2);
+
+	/**
+	 * String mutator flag — `strtolower()` the value, applied after
+	 * {@see FILTER_TRIM_VALUE}.  Used by {@see ensureNullIf()} and
+	 * {@see ensureArrayOfType()}.  No effect on non-strings.
+	 * @since 4.4.0
+	 */
+	public const FILTER_LOWERCASE_VALUE = (1 << 3);
+
+	/**
+	 * Composite of {@see FILTER_LOWERCASE_KEY} | {@see FILTER_LOWERCASE_VALUE}.
+	 * Lowercases both axes in {@see ensureArrayOfType()}; only `_VALUE`
+	 * fires in {@see ensureNullIf()}.
+	 * @since 4.4.0
+	 */
+	public const FILTER_LOWERCASE = self::FILTER_LOWERCASE_KEY
+		| self::FILTER_LOWERCASE_VALUE;
 
 	/**
 	 * Emptiness flag — matches `null`.  Used by {@see ensureNullIf()} (drops
@@ -184,16 +219,15 @@ class TPropertyValue
 	 * the array path the test is short-circuited before coercion runs.
 	 * @since 4.4.0
 	 */
-	public const OPT_EMPTY_NULL = (1 << 2);
+	public const FILTER_NULL = (1 << 4);
 
 	/**
-	 * Emptiness flag — matches `false`.  In {@see ensureArrayOfType()} the
-	 * test runs both before coercion (catches literal `false` before
-	 * TYPE_INT turns it into `0`) and after coercion (catches a string
-	 * `'false'` or numeric `0` that TYPE_BOOL turns into real false).
+	 * Emptiness flag — matches `false`.  In {@see ensureArrayOfType()}
+	 * runs pre- AND post-coercion: catches literal `false` before it
+	 * coerces to `0`/`''`, and catches a coerced `false` from TYPE_BOOL.
 	 * @since 4.4.0
 	 */
-	public const OPT_EMPTY_FALSE = (1 << 3);
+	public const FILTER_FALSE = (1 << 5);
 
 	/**
 	 * Emptiness flag — matches a string whose trimmed value is `''`.
@@ -201,18 +235,48 @@ class TPropertyValue
 	 * values bypass this check.
 	 * @since 4.4.0
 	 */
-	public const OPT_EMPTY_BLANK = (1 << 4);
+	public const FILTER_BLANK = (1 << 6);
 
 	/**
-	 * Emptiness composite — the union of {@see OPT_EMPTY_NULL},
-	 * {@see OPT_EMPTY_FALSE}, and {@see OPT_EMPTY_BLANK}.  Matches PHP `empty()`'s
-	 * sense for the three values that show up most often in normalization
-	 * pipelines: `null`, `false`, `''` (or whitespace-only).
+	 * Renumbers integer keys `0..N-1` in enumeration order in
+	 * {@see ensureArrayOfType()} (`array_merge()` convention).  Without
+	 * it, integer keys stay literal and filter-induced gaps persist.
+	 * No effect in {@see ensureNullIf()}.
 	 * @since 4.4.0
 	 */
-	public const OPT_EMPTY = self::OPT_EMPTY_NULL
-		| self::OPT_EMPTY_FALSE
-		| self::OPT_EMPTY_BLANK;
+	public const FILTER_COMPACT_KEY = (1 << 7);
+
+	/**
+	 * Composite of {@see FILTER_NULL} | {@see FILTER_FALSE} | {@see FILTER_BLANK}.
+	 * Drops `null`, `false`, and blank/whitespace-only strings — the
+	 * three values most often considered "empty" in normalization.
+	 * @since 4.4.0
+	 */
+	public const FILTER_EMPTY = self::FILTER_NULL
+		| self::FILTER_FALSE
+		| self::FILTER_BLANK;
+
+	/**
+	 * Default flags for {@see ensureNullIf()} — trim and lowercase the
+	 * value, then drop null / false / blank.  Suited for a single optional
+	 * module attribute.
+	 * @since 4.4.0
+	 */
+	public const DEFAULT_NULL_IF = self::FILTER_TRIM_VALUE
+		| self::FILTER_LOWERCASE_VALUE
+		| self::FILTER_EMPTY;
+
+	/**
+	 * Default flags for {@see ensureArrayOfType()} — trim and lowercase
+	 * keys and values, drop null / false / blank entries, and compact
+	 * integer keys to `0..N-1` so any filter-induced gaps close.  Suited
+	 * for a module's role / option / attribute list.
+	 * @since 4.4.0
+	 */
+	public const DEFAULT_ARRAY_OF_TYPE = self::FILTER_TRIM
+		| self::FILTER_LOWERCASE
+		| self::FILTER_EMPTY
+		| self::FILTER_COMPACT_KEY;
 
 	/**
 	 * Step-11 fallback order for {@see _coerceUnionType}: non-null union members are tried in this
@@ -376,46 +440,94 @@ class TPropertyValue
 	 * Stricter and more selective than {@see ensureNullIfEmpty()}, which
 	 * fires for every value PHP `empty()` considers empty (including `0`,
 	 * `'0'`, `[]`).  This method only tests for the three specific shapes
-	 * the {@see OPT_EMPTY_NULL}, {@see OPT_EMPTY_FALSE}, {@see OPT_EMPTY_BLANK} flags
+	 * the {@see FILTER_NULL}, {@see FILTER_FALSE}, {@see FILTER_BLANK} flags
 	 * select; `0` and `'0'` survive unless the caller pairs them with a
 	 * preliminary coercion.
 	 *
 	 * ```php
-	 * // Defaults: OPT_EMPTY — null / false / '' or whitespace-only.
+	 * // Defaults: DEFAULT_NULL_IF — trim + lowercase, then drop null / false / blank.
 	 * TPropertyValue::ensureNullIf('');         // null
 	 * TPropertyValue::ensureNullIf('   ');      // null  (whitespace-only)
 	 * TPropertyValue::ensureNullIf(null);       // null
 	 * TPropertyValue::ensureNullIf(false);      // null
-	 * TPropertyValue::ensureNullIf(0);          // 0     (not selected by OPT_EMPTY)
+	 * TPropertyValue::ensureNullIf(0);          // 0     (not selected by FILTER_EMPTY)
 	 * TPropertyValue::ensureNullIf('0');        // '0'   (not blank)
 	 * TPropertyValue::ensureNullIf('hello');    // 'hello'
+	 * TPropertyValue::ensureNullIf('  HELLO  ');// 'hello' (trim + lowercase)
 	 *
 	 * // Selective: nulls only.
-	 * TPropertyValue::ensureNullIf(false, TPropertyValue::OPT_EMPTY_NULL);  // false (kept)
+	 * TPropertyValue::ensureNullIf(false, TPropertyValue::FILTER_NULL);  // false and '' (kept)
+	 *
+	 * // Selective: false only.
+	 * TPropertyValue::ensureNullIf(false, TPropertyValue::FILTER_FALSE);  // null and '' (kept)
 	 *
 	 * // Selective: blanks only (catches '' and whitespace).
-	 * TPropertyValue::ensureNullIf(null,  TPropertyValue::OPT_EMPTY_BLANK); // null kept as null
-	 * TPropertyValue::ensureNullIf('  ',  TPropertyValue::OPT_EMPTY_BLANK); // null
+	 * TPropertyValue::ensureNullIf(null,  TPropertyValue::FILTER_BLANK); // null kept as null
+	 * TPropertyValue::ensureNullIf('  ',  TPropertyValue::FILTER_BLANK); // null
+	 *
+	 * // String mutators: applied before the emptiness checks; the mutated
+	 * // form is returned when the value survives.
+	 * TPropertyValue::ensureNullIf(' Hi ', TPropertyValue::FILTER_TRIM);                          // 'Hi'
+	 * TPropertyValue::ensureNullIf('HELLO', TPropertyValue::FILTER_LOWERCASE);                    // 'hello'
+	 * TPropertyValue::ensureNullIf(' HELLO ', TPropertyValue::FILTER_TRIM | TPropertyValue::FILTER_LOWERCASE); // 'hello'
+	 * TPropertyValue::ensureNullIf(' ', TPropertyValue::FILTER_TRIM | TPropertyValue::FILTER_BLANK);     // null
 	 * ```
 	 *
+	 * Pipeline (in execution order):
+	 *
+	 * 1. {@see FILTER_NULL}  — short-circuit drop when `$value === null`.
+	 * 2. {@see FILTER_FALSE} — short-circuit drop when `$value === false`.
+	 * 3. String processing (only when `$value` is a string):
+	 *    a. {@see FILTER_TRIM_VALUE}      → `trim()` the value.
+	 *    b. {@see FILTER_BLANK}           → drop when the (possibly-trimmed)
+	 *       value is `''` (or whitespace-only when TRIM was not set).
+	 *    c. {@see FILTER_LOWERCASE_VALUE} → `strtolower()` the surviving value.
+	 *
+	 * Blank runs between trim and lowercase because lowercase does not
+	 * affect emptiness; the order saves a `strtolower()` call on values
+	 * that get dropped.
+	 *
+	 * Key-axis flags are accepted for symmetry with {@see ensureArrayOfType()}
+	 * but have no effect — ensureNullIf operates on a single value with no
+	 * key.  The unprefixed composites still fire because they include the
+	 * `_VALUE` bit:
+	 *
+	 * - `FILTER_TRIM_KEY`        → no effect.
+	 * - `FILTER_LOWERCASE_KEY`   → no effect.
+	 * - `FILTER_TRIM`            → fires via its `_VALUE` bit only.
+	 * - `FILTER_LOWERCASE`       → fires via its `_VALUE` bit only.
+	 *
 	 * @param mixed $value the value to test.
-	 * @param int $flags any combination of {@see OPT_EMPTY_NULL},
-	 *   {@see OPT_EMPTY_FALSE}, {@see OPT_EMPTY_BLANK}, {@see OPT_EMPTY}.
-	 *   Defaults to {@see OPT_EMPTY}.
-	 * @return mixed the original value, or `null` when it matches one of
-	 *   the selected emptiness flags.
+	 * @param int $flags any combination of {@see FILTER_TRIM_VALUE},
+	 *   {@see FILTER_LOWERCASE_VALUE}, {@see FILTER_NULL}, {@see FILTER_FALSE},
+	 *   {@see FILTER_BLANK}, {@see FILTER_EMPTY} combined with `|`.  The
+	 *   composites {@see FILTER_TRIM} and {@see FILTER_LOWERCASE} also work
+	 *   (their `_VALUE` bit fires; their `_KEY` bit is inert here).  Defaults
+	 *   to {@see DEFAULT_NULL_IF} (trim + lowercase the value, drop empties).
+	 * @return mixed the (possibly-mutated) value, or `null` when it matches one
+	 *   of the selected emptiness flags.
 	 * @since 4.4.0
 	 */
-	public static function ensureNullIf(mixed $value, int $flags = self::OPT_EMPTY): mixed
+	public static function ensureNullIf(mixed $value, int $flags = self::DEFAULT_NULL_IF): mixed
 	{
-		if (($flags & static::OPT_EMPTY_NULL) !== 0 && $value === null) {
+		if (($flags & static::FILTER_NULL) !== 0 && $value === null) {
 			return null;
 		}
-		if (($flags & static::OPT_EMPTY_FALSE) !== 0 && $value === false) {
+		if (($flags & static::FILTER_FALSE) !== 0 && $value === false) {
 			return null;
 		}
-		if (($flags & static::OPT_EMPTY_BLANK) !== 0 && is_string($value) && trim($value) === '') {
-			return null;
+		if (is_string($value)) {
+			if (($flags & static::FILTER_TRIM_VALUE) !== 0) {
+				$value = trim($value);
+				if (($flags & static::FILTER_BLANK) !== 0 && $value === '') {
+					return null;
+				}
+			} elseif (($flags & static::FILTER_BLANK) !== 0 && trim($value) === '') {
+				return null;
+			}
+			if (($flags & static::FILTER_LOWERCASE_VALUE) !== 0) {
+				$value = strtolower($value);
+			}
 		}
 		return $value;
 	}
@@ -880,89 +992,176 @@ class TPropertyValue
 	 * - Any other value is treated as a class name and coerced via
 	 *   {@see _coerceToClass()} (BackedEnum, IEnumerable, ICoercible, …).
 	 *
-	 * The flag pipeline runs in fixed order:
+	 * Flag effects:
 	 *
-	 * 1. {@see OPT_EMPTY_NULL} — discards `null` inputs before coercion.
-	 *    A post-coercion check is unnecessary because typed coercion turns
+	 * 1. Key mutators (apply to string keys only).
+	 *    - `FILTER_TRIM_KEY`        → `trim()` the key.
+	 *    - `FILTER_LOWERCASE_KEY`   → `strtolower()` the key.
+	 * 2. Value mutators (apply to string items only).
+	 *    - `FILTER_TRIM_VALUE`      → `trim()` the item.
+	 *    - `FILTER_LOWERCASE_VALUE` → `strtolower()` the item.
+	 * 3. Emptiness filters (drop the entry).
+	 *    - `FILTER_NULL`  → item is `null`.
+	 *    - `FILTER_FALSE` → item is `false`.
+	 *    - `FILTER_BLANK` → string item whose `trim()` is `''`.
+	 * 4. Integer-key compaction.
+	 *    - `FILTER_COMPACT_KEY` → renumber integer keys `0..N-1` in
+	 *      enumeration order (`array_merge()` convention).
+	 *
+	 * Composites:
+	 *
+	 * - {@see FILTER_EMPTY}     = `FILTER_NULL | FILTER_FALSE | FILTER_BLANK`.
+	 * - {@see FILTER_TRIM}      = `FILTER_TRIM_KEY | FILTER_TRIM_VALUE`.
+	 * - {@see FILTER_LOWERCASE} = `FILTER_LOWERCASE_KEY | FILTER_LOWERCASE_VALUE`.
+	 *
+	 * See the detailed pipeline below for the exact execution order
+	 * (pre-coerce, coerce, post-coerce, mutators, filters, key write).
+	 *
+	 * The pipeline runs in fixed order:
+	 *
+	 * 1. {@see FILTER_NULL}            — drops `null` items before coercion.
+	 *    A post-coercion pass is unnecessary because typed coercion turns
 	 *    `null` into `''` / `0` / `false`.
-	 * 2. {@see OPT_EMPTY_FALSE} — discards `false` both before and after
-	 *    coercion.  Pre-coercion catches literal `false` before
-	 *    `TYPE_INT` turns it into `0`; post-coercion catches a coerced
-	 *    `'false'` / `0` from `TYPE_BOOL`.
-	 * 3. {@see OPT_EMPTY_BLANK} — discards `''` strings after the trim
-	 *    below.  Pair with {@see OPT_TRIM} to drop whitespace-only
-	 *    entries.  Non-string elements bypass this filter.
-	 *
-	 * {@see OPT_EMPTY} is the union of the three filter flags
-	 * above, matching PHP `empty()` for `null`, `false`, and `''`.
-	 *
-	 * Coercion and string transforms run between the filter passes:
-	 *
+	 * 2. {@see FILTER_FALSE} (pre)     — drops literal `false` items before
+	 *    coercion.  Catches `false` before `TYPE_INT` turns it into `0`
+	 *    or `TYPE_STRING` turns it into `''`.
+	 * 3. String processing (pre, when `$item` is a string):
+	 *    {@see FILTER_TRIM_VALUE}, {@see FILTER_LOWERCASE_VALUE},
+	 *    {@see FILTER_BLANK}.  Trim and lowercase in that order, then
+	 *    drop if the result trims to `''`.  Short-circuits blanks before
+	 *    coercion runs (e.g. `'   '` never reaches `ensureInteger`).
 	 * 4. *(coercion to `$type`)*
-	 * 5. {@see OPT_TRIM}      — trims string elements.
-	 * 6. {@see OPT_LOWERCASE} — `strtolower` on string elements.
+	 * 5. {@see FILTER_FALSE} (post)    — drops items that coerced to `false`,
+	 *    such as `'false'` / `0` under `TYPE_BOOL`.
+	 * 6. String processing (post, when `$item` is a string AND step 3 did
+	 *    not run).  Same trim / lowercase / blank-filter logic as step 3,
+	 *    gated so it only runs when coercion newly produced a string
+	 *    (e.g. `null` → `''` under `TYPE_STRING`).
+	 * 7. {@see FILTER_TRIM_KEY}        — `trim()` string keys.
+	 * 8. {@see FILTER_LOWERCASE_KEY}   — `strtolower()` string keys.
+	 * 9. Write to output: `$out[$key]` for string keys and (by default)
+	 *    integer keys; `$out[]` for integer keys when {@see FILTER_COMPACT_KEY}
+	 *    is set.
+	 *
 	 *
 	 * Key handling:
 	 *
-	 * - String (associative) keys are preserved verbatim.
-	 * - Numeric keys repack to a contiguous `0..N-1` sequence with no
-	 *   filter-induced gaps.
-	 * - Mixed inputs keep associative entries in place and renumber
-	 *   the rest.
+	 * - String keys flow through the `_KEY` mutators (steps 8-9) before
+	 *   being written to the output array.
+	 * - Integer keys bypass the `_KEY` mutators.  By default they
+	 *   preserve their literal value, so sparse input keys stay sparse
+	 *   and dropped entries leave gaps.  With {@see FILTER_COMPACT_KEY}
+	 *   they renumber in place via `$out[]` (PHP `array_merge()` convention).
+	 * - Mixed inputs keep associative entries at their enumerated
+	 *   position; integer entries either preserve their literal key
+	 *   (no `FILTER_COMPACT_KEY`) or renumber alongside string keys
+	 *   in enumeration order (with `FILTER_COMPACT_KEY`).
+	 * - A numeric-string key (`'5'`) is auto-cast to `int` by PHP at
+	 *   assignment time, so it follows the integer-key rules above.
 	 *
 	 * ```php
-	 * // Default flags: trim + filter empty composite.
+	 * // Default flags: DEFAULT_ARRAY_OF_TYPE — trim + lowercase + filter empty
+	 * // + compact integer keys.
 	 * TPropertyValue::ensureArrayOfType('Reader, , User', TPropertyValue::TYPE_STRING);
-	 * // ['Reader', 'User']
+	 * // ['reader', 'user']
 	 *
 	 * // String + trim + lowercase + filter blank.
 	 * TPropertyValue::ensureArrayOfType(
 	 *     ['  Admin ', '', '  EDITOR '],
 	 *     TPropertyValue::TYPE_STRING,
-	 *     TPropertyValue::OPT_TRIM | TPropertyValue::OPT_LOWERCASE | TPropertyValue::OPT_EMPTY_BLANK,
+	 *     TPropertyValue::FILTER_TRIM | TPropertyValue::FILTER_LOWERCASE | TPropertyValue::FILTER_BLANK,
 	 * );  // ['admin', 'editor']
 	 *
 	 * // Int coercion — literal `false` dropped before becoming `0`.
-	 * TPropertyValue::ensureArrayOfType([1, false, 2], TPropertyValue::TYPE_INT, TPropertyValue::OPT_EMPTY_FALSE);
+	 * TPropertyValue::ensureArrayOfType([1, false, '2'], TPropertyValue::TYPE_INT, TPropertyValue::FILTER_FALSE);
 	 * // [1, 2]
 	 *
-	 * // String keys preserved, numeric repacked.
+	 * // String key kept in place; integer keys preserved verbatim because
+	 * // FILTER_COMPACT_KEY is not in the flag set.  Filtering the blank
+	 * // entry leaves a gap (key 5 disappears, key 8 stays at 8).
 	 * TPropertyValue::ensureArrayOfType(
 	 *     [0 => 'a', 'name' => 'Alice', 5 => '', 8 => 'b'],
 	 *     TPropertyValue::TYPE_STRING,
-	 * );  // [0 => 'a', 'name' => 'Alice', 1 => 'b']
+	 *     TPropertyValue::FILTER_TRIM_VALUE | TPropertyValue::FILTER_BLANK,
+	 * );  // [0 => 'a', 'name' => 'Alice', 8 => 'b']
+	 *
+	 * // Key normalization — case-insensitive lookup index.
+	 * TPropertyValue::ensureArrayOfType(
+	 *     ['  Admin  ' => 'a', 'EDITOR' => 'b'],
+	 *     TPropertyValue::TYPE_STRING,
+	 *     TPropertyValue::FILTER_TRIM_KEY | TPropertyValue::FILTER_LOWERCASE_KEY,
+	 * );  // ['admin' => 'a', 'editor' => 'b']
+	 *
+	 * // Composites apply to both axes.
+	 * TPropertyValue::ensureArrayOfType(
+	 *     [' Admin ' => '  ALICE  '],
+	 *     TPropertyValue::TYPE_STRING,
+	 *     TPropertyValue::FILTER_TRIM | TPropertyValue::FILTER_LOWERCASE,
+	 * );  // ['admin' => 'alice']
+	 *
+	 * // Compact integer keys — renumber in place per array_merge() convention.
+	 * TPropertyValue::ensureArrayOfType(
+	 *     [5 => 'Reader', 'name' => 'Alice', 8 => 'Admin', 12 => 'Editor'],
+	 *     TPropertyValue::TYPE_STRING,
+	 *     TPropertyValue::FILTER_TRIM_VALUE | TPropertyValue::FILTER_COMPACT_KEY,
+	 * );  // [0 => 'Reader', 'name' => 'Alice', 1 => 'Admin', 2 => 'Editor']
+	 *
+	 * // Without FILTER_COMPACT_KEY — integer keys preserved verbatim.
+	 * TPropertyValue::ensureArrayOfType(
+	 *     [5 => 'Reader', 8 => 'Admin'],
+	 *     TPropertyValue::TYPE_STRING,
+	 *     TPropertyValue::FILTER_TRIM_VALUE,
+	 * );  // [5 => 'Reader', 8 => 'Admin']
 	 *
 	 * // Raw pass-through.
 	 * TPropertyValue::ensureArrayOfType(
 	 *     ['  x ', null, ''],
 	 *     TPropertyValue::TYPE_STRING,
-	 *     TPropertyValue::OPT_NONE,
+	 *     TPropertyValue::FILTER_NONE,
 	 * );  // ['  x ', '', '']  (null became '' via ensureString, nothing dropped)
 	 * ```
 	 *
 	 * @param mixed $value the value to normalize.
 	 * @param string $type one of the `TYPE_*` constants or a class name; each
 	 *   element of the resulting array is coerced to this type.
-	 * @param int $flags zero or more of {@see OPT_TRIM},
-	 *   {@see OPT_LOWERCASE}, {@see OPT_EMPTY_NULL},
-	 *   {@see OPT_EMPTY_FALSE}, {@see OPT_EMPTY_BLANK},
-	 *   {@see OPT_EMPTY} combined with `|`.  Defaults to
-	 *   `OPT_TRIM | OPT_EMPTY` (trim strings; drop nulls,
-	 *   falses, and post-trim blanks).  Pass {@see OPT_NONE} for raw
-	 *   pass-through.
+	 * @param int $flags zero or more of {@see FILTER_TRIM_KEY},
+	 *   {@see FILTER_TRIM_VALUE}, {@see FILTER_TRIM},
+	 *   {@see FILTER_LOWERCASE_KEY}, {@see FILTER_LOWERCASE_VALUE},
+	 *   {@see FILTER_LOWERCASE}, {@see FILTER_NULL}, {@see FILTER_FALSE},
+	 *   {@see FILTER_BLANK}, {@see FILTER_EMPTY}, {@see FILTER_COMPACT_KEY}
+	 *   combined with `|`.  Defaults to {@see DEFAULT_ARRAY_OF_TYPE} (trim
+	 *   and lowercase both axes, drop empties, compact integer keys).  Pass
+	 *   {@see FILTER_NONE} for raw pass-through.
 	 * @return array the normalized array.
 	 * @since 4.4.0
 	 */
 	public static function ensureArrayOfType(
 		mixed $value,
 		string $type,
-		int $flags = self::OPT_TRIM | self::OPT_EMPTY,
+		int $flags = self::DEFAULT_ARRAY_OF_TYPE,
 	): array {
-		$trim = ($flags & static::OPT_TRIM) !== 0;
-		$lowercase = ($flags & static::OPT_LOWERCASE) !== 0;
-		$filterNull = ($flags & static::OPT_EMPTY_NULL) !== 0;
-		$filterFalse = ($flags & static::OPT_EMPTY_FALSE) !== 0;
-		$filterBlank = ($flags & static::OPT_EMPTY_BLANK) !== 0;
+		$trimKey = ($flags & static::FILTER_TRIM_KEY) !== 0;
+		$trimValue = ($flags & static::FILTER_TRIM_VALUE) !== 0;
+		$lowercaseKey = ($flags & static::FILTER_LOWERCASE_KEY) !== 0;
+		$lowercaseValue = ($flags & static::FILTER_LOWERCASE_VALUE) !== 0;
+		$filterNull = ($flags & static::FILTER_NULL) !== 0;
+		$filterFalse = ($flags & static::FILTER_FALSE) !== 0;
+		$filterBlank = ($flags & static::FILTER_BLANK) !== 0;
+		$compactKey = ($flags & static::FILTER_COMPACT_KEY) !== 0;
+
+		// String value processing: trim, lowercase, blank filter.  Returns true on blank-drop.
+		$processString = function (string &$item) use ($trimValue, $lowercaseValue, $filterBlank): bool {
+			if ($trimValue) {
+				$item = trim($item);
+			}
+			if ($lowercaseValue) {
+				$item = strtolower($item);
+			}
+			if ($filterBlank && trim($item) === '') {
+				return true;
+			}
+			return false;
+		};
 
 		$out = [];
 		foreach (static::ensureArray($value) as $key => $item) {
@@ -974,7 +1173,16 @@ class TPropertyValue
 				continue;
 			}
 
-			// 2. Coerce.
+			// 2. Pre-coercion string processing (short-circuits blanks before coercion).
+			$stringProcessed = false;
+			if (is_string($item)) {
+				if ($processString($item)) {
+					continue;
+				}
+				$stringProcessed = true;
+			}
+
+			// 3. Coerce.
 			$item = match ($type) {
 				static::TYPE_STRING => static::ensureString($item),
 				static::TYPE_INT => static::ensureInteger($item),
@@ -986,25 +1194,28 @@ class TPropertyValue
 				default => self::_coerceToClass($item, $type),
 			};
 
-			// 3. Post-coercion false filter (catches coerced false).
+			// 4. Post-coercion false filter (catches coerced false).
 			if ($filterFalse && $item === false) {
 				continue;
 			}
 
-			// 4. String-only: trim, lowercase, blank filter.
-			if (is_string($item)) {
-				if ($trim) {
-					$item = trim($item);
-				}
-				if ($lowercase) {
-					$item = strtolower($item);
-				}
-				if ($filterBlank && trim($item) === '') {
+			// 5. Post-coercion string processing (skipped when the pre-pass already ran).
+			if (is_string($item) && !$stringProcessed) {
+				if ($processString($item)) {
 					continue;
 				}
 			}
 
-			if (!is_int($key)) {
+			// 6. Key write: _KEY mutators on string keys; integer keys preserve their literal value or compact via $out[].
+			if (!$compactKey || !is_int($key)) {
+				if (is_string($key)) {
+					if ($trimKey) {
+						$key = trim($key);
+					}
+					if ($lowercaseKey) {
+						$key = strtolower($key);
+					}
+				}
 				$out[$key] = $item;
 			} else {
 				$out[] = $item;
