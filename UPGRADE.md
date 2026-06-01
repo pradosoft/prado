@@ -9,11 +9,12 @@ for both A and B.
 
 Upgrading from v4.3.3
 ---------------------
+- TPropertyValue::ensureEnum normalizes the case of the enum constant name.
 - TReCaptcha2::getResponse changed to TReCaptcha2::getCaptchaResponse - no longer overrides TApplicationComponent::getResponse (#1132)
 
 Upgrading from v4.3.2
 ---------------------
-- Prado\TEventParameter adds a second constructor $readOnly
+- Prado\TEventParameter adds a second constructor $readOnly.
 
 Upgrading from v4.2.2
 ---------------------
