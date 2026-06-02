@@ -53,7 +53,9 @@ class TTestSerializingCacheTest extends PHPUnit\Framework\TestCase
 
 	public function testEncodeDecodeRoundTrips(): void
 	{
-		$cache = $this->newCache();
+		// Encoding is frozen after init(), so use an un-initialized cache to vary it.
+		$cache = new TTestSerializingCache();
+		$cache->setPrimaryCache(false);
 
 		$cache->setEncoding(TSerializingCache::ENCODING_BASE64);
 		$this->assertSame(base64_encode('raw'), $cache->pubEncode('raw'));
