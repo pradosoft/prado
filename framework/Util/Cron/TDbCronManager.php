@@ -459,7 +459,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 	public function addRuntimeTask($task)
 	{
 		if ($this->_runtimeTasks === null) {
-			Prado::getApplication()->attachEventHandler('onEndRequest', [$this, 'executeRuntimeTasks']);
+			$this->getApplication()->attachEventHandler('onEndRequest', [$this, 'executeRuntimeTasks']);
 			$this->_runtimeTasks = [];
 		}
 		$this->_runtimeTasks[$task->getName()] = $task;
@@ -488,7 +488,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 		unset($this->_runtimeTasks[$name]);
 		if (!$this->_runtimeTasks) {
 			$this->_runtimeTasks = null;
-			Prado::getApplication()->detachEventHandler('onEndRequest', [$this, 'executeRuntimeTasks']);
+			$this->getApplication()->detachEventHandler('onEndRequest', [$this, 'executeRuntimeTasks']);
 		}
 	}
 
@@ -501,7 +501,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 			return;
 		}
 		$this->_runtimeTasks = null;
-		Prado::getApplication()->detachEventHandler('onEndRequest', [$this, 'executeRuntimeTasks']);
+		$this->getApplication()->detachEventHandler('onEndRequest', [$this, 'executeRuntimeTasks']);
 	}
 
 	/**

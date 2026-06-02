@@ -222,7 +222,7 @@ class TPageService extends \Prado\TService
 				$condition = $this->evaluateExpression($condition);
 			}
 			if ($condition) {
-				if (($path = Prado::getPathOfNamespace($filePath, Prado::getApplication()->getConfigurationFileExt())) === null || !is_file($path)) {
+				if (($path = Prado::getPathOfNamespace($filePath, $this->getApplication()->getConfigurationFileExt())) === null || !is_file($path)) {
 					throw new TConfigurationException('pageservice_includefile_invalid', $filePath);
 				}
 				$c = new TPageConfiguration($pagePath);
@@ -325,7 +325,7 @@ class TPageService extends \Prado\TService
 	 */
 	public function getTemplateManager()
 	{
-		return Prado::getApplication()->getTemplateManager();
+		return $this->getApplication()->getTemplateManager();
 	}
 
 	/**
@@ -334,7 +334,7 @@ class TPageService extends \Prado\TService
 	 */
 	public function setTemplateManager(TTemplateManager $value)
 	{
-		Prado::getApplication()->setTemplateManager($value);
+		$this->getApplication()->setTemplateManager($value);
 	}
 
 	/**
@@ -343,7 +343,7 @@ class TPageService extends \Prado\TService
 	 */
 	public function getThemeManager()
 	{
-		return Prado::getApplication()->getThemeManager();
+		return $this->getApplication()->getThemeManager();
 	}
 
 	/**
@@ -352,7 +352,7 @@ class TPageService extends \Prado\TService
 	 */
 	public function setThemeManager(TThemeManager $value)
 	{
-		Prado::getApplication()->setThemeManager($value);
+		$this->getApplication()->setThemeManager($value);
 	}
 
 	/**

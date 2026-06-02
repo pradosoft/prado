@@ -198,8 +198,8 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	{
 		parent::onInit($sender);
 
-		if (!Prado::getApplication()->getCache()) {
-			if (!Prado::getApplication()->getSecurityManager()) {
+		if (!$this->getApplication()->getCache()) {
+			if (!$this->getApplication()->getSecurityManager()) {
 				throw new Exception('TActiveFileUpload needs either an application level cache or a security manager to work securely');
 			}
 		}
@@ -246,11 +246,11 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 
 	protected function pushParamsAndGetToken(TActiveFileUploadCallbackParams $params)
 	{
-		if ($cache = Prado::getApplication()->getCache()) {
+		if ($cache = $this->getApplication()->getCache()) {
 			// this is the most secure method, file info can't be forged from client side, no matter what
 			$token = md5('TActiveFileUpload::Params::' . $this->getClientID() . '::' . rand(1000 * 1000, 9999 * 1000));
 			$cache->set($token, serialize($params), 5 * 60); // expire in 5 minutes - the callback should arrive back in seconds, actually
-		} elseif ($mgr = Prado::getApplication()->getSecurityManager()) {
+		} elseif ($mgr = $this->getApplication()->getSecurityManager()) {
 			// this is a less secure method, file info can be still forged from client side, but only if attacker knows the secret application key
 			$token = urlencode(base64_encode($mgr->encrypt(serialize($params))));
 		} else {
@@ -262,12 +262,12 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 
 	protected function popParamsByToken($token)
 	{
-		if ($cache = Prado::getApplication()->getCache()) {
+		if ($cache = $this->getApplication()->getCache()) {
 			$v = $cache->get($token);
 			assert($v != '');
 			$cache->delete($token); // remove it from cache so it can't be used again and won't take up space either
 			$params = unserialize($v);
-		} elseif ($mgr = Prado::getApplication()->getSecurityManager()) {
+		} elseif ($mgr = $this->getApplication()->getSecurityManager()) {
 			$v = $mgr->decrypt(base64_decode(urldecode($token)));
 			$params = unserialize($v);
 		} else {

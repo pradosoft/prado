@@ -392,7 +392,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	 */
 	public function getLogPrefix(array $log): string
 	{
-		if (($app = Prado::getApplication()) === null) {
+		if (($app = $this->getApplication()) === null) {
 			if ($ip = $_SERVER['REMOTE_ADDR'] ?? null) {
 				$result = '[' . $ip . ']';
 				if ($this->_prefix !== null) {

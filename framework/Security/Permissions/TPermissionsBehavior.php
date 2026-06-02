@@ -123,7 +123,7 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 
 		$event = strtolower($method);
 		/** @var TUserPermissionsBehavior $user */
-		$user = Prado::getApplication()->getUser();
+		$user = $this->getApplication()->getUser();
 		if (isset($this->_permissionEvents[$event]) && $user) {
 			$can = true;
 			$extra = array_slice($args, -1)[0] ?? null;
@@ -160,7 +160,7 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 	 */
 	public function dyLogPermissionFailed($permission, $action, $callchain)
 	{
-		$app = Prado::getApplication();
+		$app = $this->getApplication();
 		$user = $app->getUser();
 		$name = '(undefined)';
 		if ($user) {

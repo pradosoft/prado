@@ -49,7 +49,7 @@ class TSafeHtml extends \Prado\Web\UI\TControl
 	{
 		$config = $this->getViewState('Config', null);
 		if ($config === null) {
-			$path = Prado::getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . 'htmlpurifier';
+			$path = $this->getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . 'htmlpurifier';
 			if (!is_dir($path)) {
 				if (@mkdir($path) === false) {
 					throw new TConfigurationException(
