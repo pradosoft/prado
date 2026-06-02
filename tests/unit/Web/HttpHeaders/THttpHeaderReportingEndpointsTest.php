@@ -768,11 +768,8 @@ class THttpHeaderReportingEndpointsTest extends PHPUnit\Framework\TestCase
 			. '</header>'
 		);
 
-		$ref = new \ReflectionMethod(THttpHeaderReportingEndpoints::class, 'configToArray');
-		$ref->setAccessible(true);
-
 		$re     = new THttpHeaderReportingEndpoints();
-		$result = $ref->invoke($re, $doc);
+		$result = PradoUnit::invoke($re, 'configToArray', $doc);
 
 		self::assertArrayHasKey('endpoints', $result);
 		self::assertCount(2, $result['endpoints']);
@@ -792,11 +789,8 @@ class THttpHeaderReportingEndpointsTest extends PHPUnit\Framework\TestCase
 		$doc = new \Prado\Xml\TXmlDocument();
 		$doc->loadFromString('<header></header>');
 
-		$ref = new \ReflectionMethod(THttpHeaderReportingEndpoints::class, 'configToArray');
-		$ref->setAccessible(true);
-
 		$re     = new THttpHeaderReportingEndpoints();
-		$result = $ref->invoke($re, $doc);
+		$result = PradoUnit::invoke($re, 'configToArray', $doc);
 
 		self::assertSame(['endpoints' => []], $result,
 			'configToArray() must return [\'endpoints\' => []] when there are no child elements');

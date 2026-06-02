@@ -29,7 +29,9 @@ use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\Services\TCspReportingService;
 use Prado\Web\Services\TCspViolationParameter;
 
-require_once __DIR__ . '/../../PradoUnitRequires.php';
+// Bootstrap loads PradoUnit, which transitively autoloads everything under
+// tests/unit/Harness/ — TTestHttpHeadersManager and friends are available
+// without an explicit require_once here.
 
 class THttpHeaderCspIntegrationTest extends PHPUnit\Framework\TestCase
 {
@@ -56,14 +58,12 @@ class THttpHeaderCspIntegrationTest extends PHPUnit\Framework\TestCase
 	 * return a callable that restores the original state. */
 	private function injectService(string $id = TCspReportingService::SERVICE_ID): callable
 	{
-		$ref = new ReflectionProperty(TApplication::class, '_services');
-		$ref->setAccessible(true);
-		$before = $ref->getValue(self::$app);
-		$ref->setValue(self::$app, array_merge($before, [
+		$before = PradoUnit::getProp(self::$app, '_services');
+		PradoUnit::setProp(self::$app, '_services', array_merge($before, [
 			$id => [TCspReportingService::class, [], null],
 		]));
-		return function () use ($ref, $before) {
-			$ref->setValue(self::$app, $before);
+		return function () use ($before) {
+			PradoUnit::setProp(self::$app, '_services', $before);
 		};
 	}
 
@@ -856,20 +856,18 @@ class THttpHeaderCspIntegrationTest extends PHPUnit\Framework\TestCase
 		$m->setReportOnly(false);
 		$m->setId('headers');
 
-		$ref = new ReflectionProperty(TApplication::class, '_services');
-		$ref->setAccessible(true);
-		$before = $ref->getValue(self::$app);
+		$before = PradoUnit::getProp(self::$app, '_services');
 		$without = array_filter($before, fn ($s) => ($s[0] ?? null) !== TCspReportingService::class);
-		$ref->setValue(self::$app, $without);
+		PradoUnit::setProp(self::$app, '_services', $without);
 
 		try {
 			$m->ensureReportingServiceRegistered(self::$app, null);
-			$services = $ref->getValue(self::$app);
+			$services = PradoUnit::getProp(self::$app, '_services');
 			$byClass = array_filter($services, fn ($s) => ($s[0] ?? null) === TCspReportingService::class);
 			self::assertNotEmpty($byClass,
 				'ReportingServiceMode=true must register TCspReportingService in the app registry');
 		} finally {
-			$ref->setValue(self::$app, $before);
+			PradoUnit::setProp(self::$app, '_services', $before);
 		}
 	}
 
@@ -880,20 +878,18 @@ class THttpHeaderCspIntegrationTest extends PHPUnit\Framework\TestCase
 		// ReportOnly=true (default) triggers registration in Auto mode.
 		$m->setId('headers');
 
-		$ref = new ReflectionProperty(TApplication::class, '_services');
-		$ref->setAccessible(true);
-		$before = $ref->getValue(self::$app);
+		$before = PradoUnit::getProp(self::$app, '_services');
 		$without = array_filter($before, fn ($s) => ($s[0] ?? null) !== TCspReportingService::class);
-		$ref->setValue(self::$app, $without);
+		PradoUnit::setProp(self::$app, '_services', $without);
 
 		try {
 			$m->ensureReportingServiceRegistered(self::$app, null);
-			$services = $ref->getValue(self::$app);
+			$services = PradoUnit::getProp(self::$app, '_services');
 			$byClass = array_filter($services, fn ($s) => ($s[0] ?? null) === TCspReportingService::class);
 			self::assertNotEmpty($byClass,
 				'ReportingServiceMode=Auto + ReportOnly=true must register TCspReportingService in the app registry');
 		} finally {
-			$ref->setValue(self::$app, $before);
+			PradoUnit::setProp(self::$app, '_services', $before);
 		}
 	}
 
@@ -906,22 +902,20 @@ class THttpHeaderCspIntegrationTest extends PHPUnit\Framework\TestCase
 		$m->setReportOnly(false);
 		$m->setId('headers');
 
-		$ref = new ReflectionProperty(TApplication::class, '_services');
-		$ref->setAccessible(true);
-		$before = $ref->getValue(self::$app);
+		$before = PradoUnit::getProp(self::$app, '_services');
 		$without = array_filter($before, fn ($s) => ($s[0] ?? null) !== TCspReportingService::class);
-		$ref->setValue(self::$app, $without);
+		PradoUnit::setProp(self::$app, '_services', $without);
 
 		try {
 			$m->ensureReportingServiceRegistered(self::$app, null);
-			$services = $ref->getValue(self::$app);
+			$services = PradoUnit::getProp(self::$app, '_services');
 			// Registry format: [$class, $initProperties, $configElement]
 			$entry = $services[TCspReportingService::SERVICE_ID] ?? null;
 			self::assertNotNull($entry, 'Service entry must be registered');
 			self::assertTrue($entry[1]['AutoRegistered'] ?? false,
 				'Auto-registered service entry must carry AutoRegistered=true as an init-property');
 		} finally {
-			$ref->setValue(self::$app, $before);
+			PradoUnit::setProp(self::$app, '_services', $before);
 		}
 	}
 

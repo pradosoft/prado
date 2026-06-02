@@ -339,12 +339,10 @@ class THttpHeaderContentTypeTest extends PHPUnit\Framework\TestCase
 	{
 		// Temporarily remove any active globalization so the DEFAULT_CHARSET
 		// hard-fallback path is exercised regardless of the test environment.
-		$ref      = new ReflectionProperty(TApplication::class, '_globalization');
-		$ref->setAccessible(true);
 		$app      = Prado::getApplication();
-		$original = $app !== null ? $ref->getValue($app) : null;
+		$original = $app !== null ? PradoUnit::getProp($app, '_globalization') : null;
 		if ($app !== null) {
-			$ref->setValue($app, null);
+			PradoUnit::setProp($app, '_globalization', null);
 		}
 
 		try {
@@ -354,7 +352,7 @@ class THttpHeaderContentTypeTest extends PHPUnit\Framework\TestCase
 			self::assertSame(THttpResponse::DEFAULT_CHARSET, $ct->getCharset());
 		} finally {
 			if ($app !== null) {
-				$ref->setValue($app, $original);
+				PradoUnit::setProp($app, '_globalization', $original);
 			}
 		}
 	}
@@ -371,12 +369,10 @@ class THttpHeaderContentTypeTest extends PHPUnit\Framework\TestCase
 	public function testFinalizeHeaderProducesCorrectHeaderValue(): void
 	{
 		// Temporarily remove any active globalization so DEFAULT_CHARSET is used.
-		$ref      = new ReflectionProperty(TApplication::class, '_globalization');
-		$ref->setAccessible(true);
 		$app      = Prado::getApplication();
-		$original = $app !== null ? $ref->getValue($app) : null;
+		$original = $app !== null ? PradoUnit::getProp($app, '_globalization') : null;
 		if ($app !== null) {
-			$ref->setValue($app, null);
+			PradoUnit::setProp($app, '_globalization', null);
 		}
 
 		try {
@@ -388,7 +384,7 @@ class THttpHeaderContentTypeTest extends PHPUnit\Framework\TestCase
 			);
 		} finally {
 			if ($app !== null) {
-				$ref->setValue($app, $original);
+				PradoUnit::setProp($app, '_globalization', $original);
 			}
 		}
 	}
@@ -404,12 +400,10 @@ class THttpHeaderContentTypeTest extends PHPUnit\Framework\TestCase
 	{
 		// finalizeHeader() must re-resolve after the charset has been cleared.
 		// Temporarily remove any active globalization so DEFAULT_CHARSET is used.
-		$ref      = new ReflectionProperty(TApplication::class, '_globalization');
-		$ref->setAccessible(true);
 		$app      = Prado::getApplication();
-		$original = $app !== null ? $ref->getValue($app) : null;
+		$original = $app !== null ? PradoUnit::getProp($app, '_globalization') : null;
 		if ($app !== null) {
-			$ref->setValue($app, null);
+			PradoUnit::setProp($app, '_globalization', null);
 		}
 
 		try {
@@ -420,7 +414,7 @@ class THttpHeaderContentTypeTest extends PHPUnit\Framework\TestCase
 			self::assertSame(THttpResponse::DEFAULT_CHARSET, $ct->getCharset());
 		} finally {
 			if ($app !== null) {
-				$ref->setValue($app, $original);
+				PradoUnit::setProp($app, '_globalization', $original);
 			}
 		}
 	}
@@ -434,14 +428,12 @@ class THttpHeaderContentTypeTest extends PHPUnit\Framework\TestCase
 			$this->markTestSkipped('No TApplication available in this test environment.');
 		}
 
-		// Inject a TGlobalization stub via reflection.
+		// Inject a TGlobalization stub via PradoUnit helpers.
 		$glob = new TGlobalization();
 		$glob->setCharset('ISO-8859-1');
 
-		$ref = new ReflectionProperty(TApplication::class, '_globalization');
-		$ref->setAccessible(true);
-		$original = $ref->getValue($app);
-		$ref->setValue($app, $glob);
+		$original = PradoUnit::getProp($app, '_globalization');
+		PradoUnit::setProp($app, '_globalization', $glob);
 
 		try {
 			$ct = new THttpHeaderContentType();
@@ -450,7 +442,7 @@ class THttpHeaderContentTypeTest extends PHPUnit\Framework\TestCase
 			self::assertSame('ISO-8859-1', $ct->getCharset(),
 				'finalizeHeader() must use the globalization charset when available');
 		} finally {
-			$ref->setValue($app, $original);
+			PradoUnit::setProp($app, '_globalization', $original);
 		}
 	}
 
@@ -466,10 +458,8 @@ class THttpHeaderContentTypeTest extends PHPUnit\Framework\TestCase
 		$glob = new TGlobalization();
 		$glob->setCharset(''); // empty → must be skipped
 
-		$ref = new ReflectionProperty(TApplication::class, '_globalization');
-		$ref->setAccessible(true);
-		$original = $ref->getValue($app);
-		$ref->setValue($app, $glob);
+		$original = PradoUnit::getProp($app, '_globalization');
+		PradoUnit::setProp($app, '_globalization', $glob);
 
 		try {
 			$ct = new THttpHeaderContentType();
@@ -477,7 +467,7 @@ class THttpHeaderContentTypeTest extends PHPUnit\Framework\TestCase
 			self::assertSame(THttpResponse::DEFAULT_CHARSET, $ct->getCharset(),
 				'Empty globalization charset must fall through to DEFAULT_CHARSET');
 		} finally {
-			$ref->setValue($app, $original);
+			PradoUnit::setProp($app, '_globalization', $original);
 		}
 	}
 

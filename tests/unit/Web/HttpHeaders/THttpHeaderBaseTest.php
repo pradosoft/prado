@@ -8,57 +8,11 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-use Prado\Web\HttpHeaders\THttpHeaderBase;
 use Prado\Web\HttpHeaders\THttpHeadersManager;
 use Prado\Web\THttpHeaderName;
 
-// ---------------------------------------------------------------------------
-// Concrete stub — satisfies the abstract contract; captures header() calls.
-// ---------------------------------------------------------------------------
-
-class TConcreteHeader extends THttpHeaderBase
-{
-	public string $name = 'X-Test';
-	public string $value = 'test-value';
-
-	/** @var list<array{header:string,replace:bool,response_code:int}> */
-	public array $capturedHeaderCalls = [];
-
-	public function getHeaderName(): string
-	{
-		return $this->name;
-	}
-
-	public function getHeaderValue(): string
-	{
-		return $this->value;
-	}
-
-	public function setHeaderValue($value): void
-	{
-		$this->value = (string) $value;
-	}
-
-	protected function header(string $header, bool $replace = true, int $response_code = 0): void
-	{
-		$this->capturedHeaderCalls[] = compact('header', 'replace', 'response_code');
-	}
-}
-
-// ---------------------------------------------------------------------------
-// Minimal response stub — duck-typed; no TApplication needed.
-// ---------------------------------------------------------------------------
-
-class TResponseStub
-{
-	/** @var list<array{header:string,replace:bool}> */
-	public array $capturedCalls = [];
-
-	public function appendHeader(string $header, bool $replace): void
-	{
-		$this->capturedCalls[] = compact('header', 'replace');
-	}
-}
+// Test doubles {@see TConcreteHeader} and {@see TResponseStub} live in
+// tests/unit/Harness/Web/HttpHeaders/ and are auto-loaded by the bootstrap.
 
 // ---------------------------------------------------------------------------
 // Tests
@@ -374,27 +328,20 @@ class THttpHeaderBaseTest extends PHPUnit\Framework\TestCase
 
 	public function testConfigToArrayBaseReturnsEmptyArrayForAnyXml(): void
 	{
-		// Expose the protected method via reflection.
-		$ref = new \ReflectionMethod(TConcreteHeader::class, 'configToArray');
-		$ref->setAccessible(true);
-
 		$xml = new \Prado\Xml\TXmlElement('header');
 		// Add a child element to confirm the base impl ignores child nodes.
 		$child = new \Prado\Xml\TXmlElement('policy');
 		$child->setAttribute('Name', 'default-src');
 		$xml->getElements()->add($child);
 
-		$result = $ref->invoke($this->h, $xml);
+		$result = PradoUnit::invoke($this->h, 'configToArray', $xml);
 		self::assertSame([], $result);
 	}
 
 	public function testConfigToArrayBaseReturnsEmptyArrayForEmptyXml(): void
 	{
-		$ref = new \ReflectionMethod(TConcreteHeader::class, 'configToArray');
-		$ref->setAccessible(true);
-
-		$xml = new \Prado\Xml\TXmlElement('config');
-		$result = $ref->invoke($this->h, $xml);
+		$xml    = new \Prado\Xml\TXmlElement('config');
+		$result = PradoUnit::invoke($this->h, 'configToArray', $xml);
 		self::assertSame([], $result);
 	}
 
@@ -423,10 +370,7 @@ class THttpHeaderBaseTest extends PHPUnit\Framework\TestCase
 	public function testNormalizeConfigReturnsEmptyArrayForArbitraryScalar(): void
 	{
 		// Any non-array, non-TXmlElement, non-null value must normalize to [].
-		$ref = new \ReflectionMethod(TConcreteHeader::class, 'normalizeConfig');
-		$ref->setAccessible(true);
-
-		self::assertSame([], $ref->invoke($this->h, 42));
+		self::assertSame([], PradoUnit::invoke($this->h, 'normalizeConfig', 42));
 	}
 
 	// =========================================================================
