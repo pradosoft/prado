@@ -45,6 +45,10 @@
     const klass = function (...ctorArgs) {
       this.initialize(...ctorArgs);
     };
+    // Marker the jQuery.fn.trigger bridge (below) uses to identify
+    // Prado-managed elements. More robust than checking constructor.name,
+    // which would break on minification or a future `class` keyword move.
+    klass.isPradoClass = true;
 
     if (parent) {
       klass.prototype = Object.create(parent.prototype);
@@ -57,6 +61,24 @@
     for (const props of args) installMethods(klass, props);
 
     if (!klass.prototype.initialize) klass.prototype.initialize = function () {};
+
+    // Native event-dispatch helper. New 4.4 code calls `this.trigger('foo')`
+    // instead of `jQuery(this.element).trigger('foo')` to fire an event
+    // without depending on jQuery. Uses CustomEvent so a `detail` payload is
+    // delivered to listeners. Sub-classes may override.
+    // @since 4.4.0
+    if (!klass.prototype.trigger) {
+      klass.prototype.trigger = function (eventName, detail) {
+        const el = this.element;
+        if (!el || !el.dispatchEvent || !eventName) return;
+        el.dispatchEvent(new CustomEvent(eventName, {
+          bubbles: true,
+          cancelable: true,
+          detail,
+        }));
+      };
+    }
+
     return klass;
   };
 
@@ -102,15 +124,106 @@ Prado.RequestManager =
 	FIELD_POSTBACK_PARAMETER : 'PRADO_POSTBACK_PARAMETER'
 };
 
-// Bridge jQuery's ajaxComplete event to a native 'prado:ajaxComplete' event
-// on document. Controls that need to react to AJAX completion (THtmlArea,
-// THtmlArea5, etc.) listen to the native event so they don't depend on
-// jQuery directly. When ajax3.js moves off $.ajax (step 4c), it will
-// dispatch the native event directly and this bridge will be removed.
+// jQuery compatibility bridges. Both are installed only when jQuery is
+// available on the page; when the jQuery quarantine plan ships, this whole
+// block moves into the jQuery-loading package only.
 if (typeof jQuery !== 'undefined') {
+	// Bridge jQuery's ajaxComplete event to a native 'prado:ajaxComplete'
+	// event on document. Controls that need to react to AJAX completion
+	// (THtmlArea, THtmlArea5, etc.) listen to the native event so they
+	// don't depend on jQuery directly. When ajax3.js moves off $.ajax
+	// (step 4c), it will dispatch the native event directly and this
+	// bridge will be removed.
 	jQuery(document).on('ajaxComplete', () => {
 		document.dispatchEvent(new CustomEvent('prado:ajaxComplete'));
 	});
+
+	/**
+	 * Bridge `jQuery(el).trigger(name)` to native `dispatchEvent` for
+	 * Prado-managed elements. Pre-4.4 controls registered handlers through
+	 * the jQuery event bus and fired them with `jQuery(el).trigger('name')`.
+	 * The framework's `observe` now uses native `addEventListener`, and
+	 * jQuery `.trigger()` does not reach native listeners (see
+	 * https://github.com/jquery/jquery/issues/2476), so pre-4.4 calls
+	 * become no-ops without this bridge.
+	 *
+	 * Behavior:
+	 *   - Elements not registered in `Prado.Registry` keep the original
+	 *     jQuery `.trigger()` semantics. No regression for pure-jQuery
+	 *     controls.
+	 *   - Klass-registered elements receive `el.dispatchEvent(CustomEvent)`.
+	 *     This reaches both native `addEventListener` handlers AND any
+	 *     jQuery-bound handlers (because jQuery itself attaches via
+	 *     `addEventListener` under the hood).
+	 *   - Forms get `el.submit()` after the event so they actually submit.
+	 *     `<input type="submit">` / `<button>` clicks call `el.click()` so
+	 *     the browser performs the default activation behavior (submit,
+	 *     toggle, navigate). Synthetic events alone do not fire defaults.
+	 *
+	 * @since 4.4.0
+	 */
+	const originalTrigger = jQuery.fn.trigger;
+	jQuery.fn.trigger = function (type, extraParameters) {
+		const isEventObject = type && typeof type === 'object';
+		const eventType = isEventObject ? type.type : type;
+
+		// Partition the wrapper into Prado-managed (klass) and non-klass
+		// elements. We only deviate from jQuery's behavior for klass
+		// elements; everything else goes through jQuery's own trigger
+		// pipeline exactly as before.
+		const $klass = this.filter(function () {
+			const reg = this.id && Prado.Registry[this.id];
+			return !!(reg && reg.constructor && reg.constructor.isPradoClass);
+		});
+		const $rest = this.not($klass);
+
+		// Klass path: dispatch native events, with the right activation
+		// special-cases so default behavior (form submit, focus, click)
+		// still happens.
+		$klass.each(function () {
+			const el = this;
+			if (!el.dispatchEvent || !eventType) return;
+
+			// Form submit: dispatchEvent does not submit. Match
+			// jQuery .trigger('submit') by firing the cancellable event
+			// then calling native submit() if not preventDefault'd.
+			if (eventType === 'submit' && el.tagName === 'FORM') {
+				const evt = new Event('submit', { bubbles: true, cancelable: true });
+				if (el.dispatchEvent(evt)) el.submit();
+				return;
+			}
+
+			// Activation events: jQuery .trigger('click') / 'focus' /
+			// 'blur' invoke the native method, which fires the real
+			// event AND runs the default action (form submission for
+			// submit buttons, focus state changes, etc.). dispatchEvent
+			// skips defaults because synthetic events have
+			// isTrusted === false.
+			if (
+				(eventType === 'click' || eventType === 'focus' || eventType === 'blur')
+				&& typeof el[eventType] === 'function'
+			) {
+				el[eventType]();
+				return;
+			}
+
+			const nativeEvent = (isEventObject && type instanceof Event)
+				? type
+				: new CustomEvent(eventType, {
+					bubbles: true,
+					cancelable: true,
+					detail: extraParameters,
+				});
+			el.dispatchEvent(nativeEvent);
+		});
+
+		// Non-klass path: one delegation to jQuery's original trigger on
+		// the remaining subset. Preserves all of jQuery's specialized
+		// event hooks (event.special.X) and per-event-type defaults.
+		if ($rest.length) originalTrigger.call($rest, type, extraParameters);
+
+		return this;
+	};
 }
 /**
  * Performs a PostBack using javascript.

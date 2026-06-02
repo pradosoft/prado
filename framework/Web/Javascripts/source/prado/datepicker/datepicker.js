@@ -441,8 +441,8 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 			const day = Prado.WebUI.TDatePicker.getDayListControl(this.control);
 			const month = Prado.WebUI.TDatePicker.getMonthListControl(this.control);
 			const year = Prado.WebUI.TDatePicker.getYearListControl(this.control);
-			// Reassigns the `date` parameter; in DropDownList mode we always
-			// take the picker's currently-selected date as the source of truth.
+			// Reassign the `date` parameter; in DropDownList mode the picker's
+			// currently-selected date is the source of truth.
 			date = this.selectedDate;
 			if(day)
 			{
@@ -549,24 +549,35 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 
 		if(!this.showing)
 		{
-			// Position relative to the offsetParent (native equivalent of
-			// jQuery `$(control).offset() - $(control).offsetParent().offset()`).
-			const top = this.control.offsetTop;
+			// Position the calendar relative to the input's offsetParent.
+			// `el.offsetTop`/`offsetLeft` is the native equivalent of
+			// jQuery's `$(control).offset() - $(control).offsetParent().offset()`
+			// and is unaffected by document scroll or body margin (which broke
+			// the previous jQuery-based math on pages with a non-zero body
+			// margin — the calendar would render slightly *above* the input,
+			// and the next test action would hit a calendar cell instead of
+			// the following input).
+			const top  = this.control.offsetTop;
 			const left = this.control.offsetLeft;
 
 			if(this.positionMode=='Top')
 			{
 				this._calDiv.style.display = 'block';
 				// _calDiv must be visible to get its offsetHeight
-				this._calDiv.style.top = `${top - this._calDiv.offsetHeight}px`;
+				this._calDiv.style.top  = `${top - this._calDiv.offsetHeight}px`;
 				this._calDiv.style.left = `${left}px`;
 			} else {
-				this._calDiv.style.top = `${top + this.getDatePickerOffsetHeight() - 1}px`;
+				this._calDiv.style.top  = `${top + this.getDatePickerOffsetHeight() - 1}px`;
 				this._calDiv.style.left = `${left}px`;
 				this._calDiv.style.display = 'block';
 			}
 
-			this.documentClickEvent = this.hideOnClick.bind(this);
+			// `jQuery.bind(fn, this)` was a low-pro shim helper removed in step 3
+			// of the JS modernization. Use the native Function.prototype.bind.
+			// Without these, the document-body click handler was never attached
+			// and the calendar never closed on outside clicks — leaving the
+			// calendar overlay intercepting subsequent test actions.
+			this.documentClickEvent   = this.hideOnClick.bind(this);
 			this.documentKeyDownEvent = this.keyPressed.bind(this);
 			this.observe(document.body, "click", this.documentClickEvent);
 			const date = this.getDateFromInput();
@@ -594,7 +605,7 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 		let within = false;
 		do
 		{
-			within = within || (el.className && el.classList && el.classList.contains(`TDatePicker_${this.CalendarStyle}`));
+			within = within || (el.className && el.classList.contains(`TDatePicker_${this.CalendarStyle}`));
 			within = within || el == this.trigger;
 			within = within || el == this.control;
 			if(within) break;
@@ -655,8 +666,8 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 			d1 = new Date(d1.getFullYear(), d1.getMonth(), d1.getDate()+1);
 		}
 
-		// Index of the last in-month date slot. Currently unused but kept
-		// available for any future "last filled cell" computations.
+		// Index of the last in-month date slot; kept available for any future
+		// "last filled cell" computations but currently unused.
 		const _lastDateIndex = index;
 
 	    while(index < 42) {

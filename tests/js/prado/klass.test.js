@@ -5,6 +5,13 @@
  * The factory backs every PRADO control. This file verifies the inheritance
  * chain and the $super call mechanism (retained from the original low-pro
  * shim for backward compatibility with existing controls).
+ *
+ * The internal low-pro helpers `$.argumentNames`, `$.bind`, `$.wrap`,
+ * `$.delegate` were removed in step 3 of the JS modernization (see the
+ * `Prado.Class` factory rewrite). They were private helpers that backed
+ * the old klass implementation and were never part of the public API;
+ * tests for them lived here only because the shim was vendored verbatim
+ * from low-pro-for-jquery. They are intentionally not tested.
  */
 
 import '../adapters/prado-core.js'; // side-effect: loads prado.js + jQuery extensions

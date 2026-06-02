@@ -147,6 +147,9 @@ describe('Prado.PostBack.doPostBack', () => {
 
 		// 3rd arg is the trigger element via document.getElementById(options.ID);
 		// null is expected when no fixture element with that id exists.
+		// (Pre-PR #1154, Prado.PostBack passed a jQuery wrapper here, which
+		// matched expect.anything(); the de-jQuery rewrite returns a raw DOM
+		// element or null.)
 		expect(validate).toHaveBeenCalledWith('testForm', undefined, null);
 		expect(submits).toHaveLength(1);
 	});
