@@ -108,7 +108,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 	/**
 	 * @param bool $value whether subdirectories are included in the dependency check.
 	 */
-	public function setRecursiveCheck(bool $value): void
+	public function setRecursiveCheck($value): void
 	{
 		$this->_recursiveCheck = TPropertyValue::ensureBoolean($value);
 		if ($this->getDirectoryDirect() !== null) {
@@ -133,7 +133,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 	 * under the tracked directory.
 	 * @param int $value the depth limit.
 	 */
-	public function setRecursiveLevel(int $value): void
+	public function setRecursiveLevel($value): void
 	{
 		$this->_recursiveLevel = TPropertyValue::ensureInteger($value);
 		if ($this->getDirectoryDirect() !== null) {
