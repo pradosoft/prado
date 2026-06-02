@@ -11,7 +11,6 @@
 namespace Prado\Shell;
 
 use Prado\Exceptions\TExitException;
-use Prado\Prado;
 
 /**
  * TShellLoginBehavior class.
@@ -54,7 +53,7 @@ class TShellLoginBehavior extends \Prado\Util\TBehavior
 	public function attach($owner)
 	{
 		parent::attach($owner);
-		if (($app = Prado::getApplication()) instanceof \Prado\Shell\TShellApplication) {
+		if (($app = $this->getApplication()) instanceof \Prado\Shell\TShellApplication) {
 			$app->registerOption('user', [$this, 'setUsername'], 'Application login User name', '=<user>');
 			$app->registerOptionAlias('u', 'user');
 			$app->registerOption('password', [$this, 'setPassword'], 'Application login Password', '=<password>');
@@ -86,7 +85,7 @@ class TShellLoginBehavior extends \Prado\Util\TBehavior
 	 */
 	public function shellApplicationLogin($sender, $param)
 	{
-		$app = Prado::getApplication();
+		$app = $this->getApplication();
 		if (php_sapi_name() !== 'cli' || !($app instanceof \Prado\Shell\TShellApplication) || !$this->getEnabled()) {
 			return;
 		}

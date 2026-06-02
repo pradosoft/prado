@@ -202,7 +202,7 @@ class TSoapService extends \Prado\TService
 	 */
 	public function setConfigFile($value)
 	{
-		$configFile = Prado::getPathOfNamespace($value, Prado::getApplication()->getConfigurationFileExt());
+		$configFile = Prado::getPathOfNamespace($value, $this->getApplication()->getConfigurationFileExt());
 		if ($configFile === null) {
 			throw new TConfigurationException('soapservice_configfile_invalid', $value);
 		}

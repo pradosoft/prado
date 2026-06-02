@@ -107,7 +107,7 @@ class TThemeManager extends \Prado\TModule
 	 */
 	public function init($config)
 	{
-		Prado::getApplication()->setThemeManager($this);
+		$this->getApplication()?->setThemeManager($this);
 		parent::init($config);
 		$this->markInitialized();
 	}

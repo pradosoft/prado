@@ -100,7 +100,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 			}
 		}
 
-		$appParams = Prado::getApplication()->getParameters();
+		$appParams = $this->getApplication()->getParameters();
 		if (($value = $appParams->itemAt($this->_parameter)) !== null || $this->getValidNullValue()) {
 			if ($this->_localize && $value && is_string($value)) {
 				$value = Prado::localize($value);
@@ -134,7 +134,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 			} else {
 				$this->_paramBehavior = new TMapRouteBehavior($this->_parameter, [$owner, 'set' . $this->_property]);
 			}
-			$appParams = Prado::getApplication()->getParameters();
+			$appParams = $this->getApplication()->getParameters();
 			$appParams->attachBehavior($this->_routeBehaviorName, $this->_paramBehavior);
 		}
 	}
@@ -149,7 +149,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 		if ($enabled == true && !$this->_paramBehavior) {
 			$this->attachParamMapRoute();
 		} elseif ($enabled == false && $this->_paramBehavior) {
-			Prado::getApplication()->getParameters()->detachBehavior($this->_routeBehaviorName);
+			$this->getApplication()->getParameters()->detachBehavior($this->_routeBehaviorName);
 			$this->_paramBehavior = null;
 		}
 		parent::setEnabled($enabled);
@@ -162,7 +162,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	public function detach($owner)
 	{
 		if ($this->_paramBehavior) {
-			Prado::getApplication()->getParameters()->detachBehavior($this->_routeBehaviorName);
+			$this->getApplication()->getParameters()->detachBehavior($this->_routeBehaviorName);
 			$this->_routeBehaviorName = null;
 		}
 		parent::detach($owner);

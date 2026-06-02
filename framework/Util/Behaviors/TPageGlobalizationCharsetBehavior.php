@@ -10,7 +10,6 @@
 
 namespace Prado\Util\Behaviors;
 
-use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\UI\WebControls\TMetaTag;
 
@@ -57,7 +56,7 @@ class TPageGlobalizationCharsetBehavior extends \Prado\Util\TBehavior
 			}
 			if (!$hasCharset) {
 				$charset = 'utf-8';
-				if ($globalization = Prado::getApplication()->getGlobalization()) {
+				if ($globalization = $this->getApplication()->getGlobalization()) {
 					$charset = $globalization->getCharset();
 				}
 				$meta = new TMetaTag();
