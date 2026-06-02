@@ -32,53 +32,12 @@ use Prado\Web\Services\TCspReportingService;
 use Prado\Web\THttpHeaderName;
 
 // ---------------------------------------------------------------------------
-// Shared test double + PradoUnit harness (auto-loads TTestHttpHeadersManager)
+// Bootstrap auto-loads PradoUnit + everything under tests/unit/Harness/,
+// including TTestHttpHeadersManager. No explicit require_once needed.
 // ---------------------------------------------------------------------------
 
-require_once __DIR__ . '/../../PradoUnitRequires.php';
-
-// ---------------------------------------------------------------------------
-// Minimal header stub — no app needed
-// ---------------------------------------------------------------------------
-
-class TStubHeader extends THttpHeaderBase
-{
-	public string $name = 'X-Stub';
-	public string $value = 'stub-value';
-	public int $initCallCount = 0;
-	public int $initCompleteCallCount = 0;
-	public int $finalizeCallCount = 0;
-
-	public function getHeaderName(): string
-	{
-		return $this->name;
-	}
-
-	public function getHeaderValue(): string
-	{
-		return $this->value;
-	}
-
-	public function setHeaderValue($value): void
-	{
-		$this->value = (string) $value;
-	}
-
-	public function init($config): void
-	{
-		$this->initCallCount++;
-	}
-
-	public function initComplete(): void
-	{
-		$this->initCompleteCallCount++;
-	}
-
-	public function finalizeHeader(): void
-	{
-		$this->finalizeCallCount++;
-	}
-}
+// Test double {@see TStubHeader} lives in tests/unit/Harness/Web/HttpHeaders/
+// and is auto-loaded by the bootstrap.
 
 // ---------------------------------------------------------------------------
 // Tests
@@ -1350,22 +1309,20 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 		$m->setId('headers');
 
 		// Inject the service directly into the app registry.
-		$ref = new ReflectionProperty(TApplication::class, '_services');
-		$ref->setAccessible(true);
-		$before = $ref->getValue(self::$app);
-		$ref->setValue(self::$app, array_merge($before, [
+		$before = PradoUnit::getProp(self::$app, '_services');
+		PradoUnit::setProp(self::$app, '_services', array_merge($before, [
 			TCspReportingService::SERVICE_ID => [TCspReportingService::class, [], null],
 		]));
 
 		try {
 			// Should not register another one.
 			$m->ensureReportingServiceRegistered(self::$app, null);
-			$services = $ref->getValue(self::$app);
+			$services = PradoUnit::getProp(self::$app, '_services');
 			// Service count must not have grown beyond one entry for this class.
 			$byClass = array_filter($services, fn ($s) => ($s[0] ?? null) === TCspReportingService::class);
 			self::assertCount(1, $byClass, 'Existing service must not be duplicated');
 		} finally {
-			$ref->setValue(self::$app, $before);
+			PradoUnit::setProp(self::$app, '_services', $before);
 		}
 	}
 
@@ -1379,12 +1336,10 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 		$m->setReportOnly(false);
 		$m->setId('headers');
 
-		$ref = new ReflectionProperty(TApplication::class, '_services');
-		$ref->setAccessible(true);
-		$before = $ref->getValue(self::$app);
+		$before = PradoUnit::getProp(self::$app, '_services');
 		// Remove any pre-existing TCspReportingService so 'custom-csp-reporter' is the only match.
 		$without = array_filter($before, fn ($s) => ($s[0] ?? null) !== TCspReportingService::class);
-		$ref->setValue(self::$app, array_merge($without, [
+		PradoUnit::setProp(self::$app, '_services', array_merge($without, [
 			'custom-csp-reporter' => [TCspReportingService::class, [], null],
 		]));
 
@@ -1393,7 +1348,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 			self::assertSame('custom-csp-reporter', $m->getReportingServiceId(),
 				'Auto mode must adopt the existing service ID, not keep "Auto"');
 		} finally {
-			$ref->setValue(self::$app, $before);
+			PradoUnit::setProp(self::$app, '_services', $before);
 		}
 	}
 
@@ -1404,23 +1359,21 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 		$m->setReportOnly(false);
 		$m->setId('headers');
 
-		$ref = new ReflectionProperty(TApplication::class, '_services');
-		$ref->setAccessible(true);
-		$before = $ref->getValue(self::$app);
+		$before = PradoUnit::getProp(self::$app, '_services');
 		// Ensure no TCspReportingService exists.
 		$without = array_filter($before, fn ($s) => ($s[0] ?? null) !== TCspReportingService::class);
-		$ref->setValue(self::$app, $without);
+		PradoUnit::setProp(self::$app, '_services', $without);
 
 		try {
 			$m->ensureReportingServiceRegistered(self::$app, null);
-			$services = $ref->getValue(self::$app);
+			$services = PradoUnit::getProp(self::$app, '_services');
 			$byClass = array_filter($services, fn ($s) => ($s[0] ?? null) === TCspReportingService::class);
 			self::assertNotEmpty($byClass, 'A TCspReportingService entry must be registered');
 			// ID must have been adopted so it is no longer the 'Auto' sentinel.
 			self::assertSame(TCspReportingService::SERVICE_ID, $m->getReportingServiceId(),
 				'Auto mode must adopt the default service ID after creating a new service');
 		} finally {
-			$ref->setValue(self::$app, $before);
+			PradoUnit::setProp(self::$app, '_services', $before);
 		}
 	}
 
@@ -1432,21 +1385,19 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 		$m->setReportingServiceId('my-csp-service');
 		$m->setId('headers');
 
-		$ref = new ReflectionProperty(TApplication::class, '_services');
-		$ref->setAccessible(true);
-		$before = $ref->getValue(self::$app);
+		$before = PradoUnit::getProp(self::$app, '_services');
 		// Ensure no entry with that ID exists.
 		$without = $before;
 		unset($without['my-csp-service']);
-		$ref->setValue(self::$app, $without);
+		PradoUnit::setProp(self::$app, '_services', $without);
 
 		try {
 			$m->ensureReportingServiceRegistered(self::$app, null);
-			$services = $ref->getValue(self::$app);
+			$services = PradoUnit::getProp(self::$app, '_services');
 			self::assertArrayHasKey('my-csp-service', $services,
 				'Service must be registered under the literal ID');
 		} finally {
-			$ref->setValue(self::$app, $before);
+			PradoUnit::setProp(self::$app, '_services', $before);
 		}
 	}
 
@@ -1458,21 +1409,19 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 		$m->setReportingServiceId('my-csp-service');
 		$m->setId('headers');
 
-		$ref = new ReflectionProperty(TApplication::class, '_services');
-		$ref->setAccessible(true);
-		$before = $ref->getValue(self::$app);
+		$before = PradoUnit::getProp(self::$app, '_services');
 		$withService = array_merge($before, [
 			'my-csp-service' => [TCspReportingService::class, [], null],
 		]);
-		$ref->setValue(self::$app, $withService);
+		PradoUnit::setProp(self::$app, '_services', $withService);
 
 		try {
 			$m->ensureReportingServiceRegistered(self::$app, null);
-			$services = $ref->getValue(self::$app);
+			$services = PradoUnit::getProp(self::$app, '_services');
 			// Count of 'my-csp-service' entries — must be exactly 1.
 			self::assertArrayHasKey('my-csp-service', $services);
 		} finally {
-			$ref->setValue(self::$app, $before);
+			PradoUnit::setProp(self::$app, '_services', $before);
 		}
 	}
 
@@ -1487,14 +1436,12 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 		$m->setReportingServiceId('wrong-class-service');
 		$m->setId('headers');
 
-		$ref = new ReflectionProperty(TApplication::class, '_services');
-		$ref->setAccessible(true);
-		$before = $ref->getValue(self::$app);
+		$before = PradoUnit::getProp(self::$app, '_services');
 		// Register something that is definitely NOT a TCspReportingService subclass.
 		$withService = array_merge($before, [
 			'wrong-class-service' => [THttpHeadersManager::class, [], null],
 		]);
-		$ref->setValue(self::$app, $withService);
+		PradoUnit::setProp(self::$app, '_services', $withService);
 
 		$logger = Prado::getLogger();
 		$logger->deleteLogs();
@@ -1514,7 +1461,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 			self::assertTrue($found,
 				'A WARNING log entry mentioning the mismatched service ID must be emitted');
 		} finally {
-			$ref->setValue(self::$app, $before);
+			PradoUnit::setProp(self::$app, '_services', $before);
 			$logger->deleteLogs();
 		}
 	}
@@ -1527,23 +1474,21 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 		$m->setReportingServiceMode('Auto');
 		$m->setId('headers');
 
-		$ref = new ReflectionProperty(TApplication::class, '_services');
-		$ref->setAccessible(true);
-		$before = $ref->getValue(self::$app);
+		$before = PradoUnit::getProp(self::$app, '_services');
 		$without = array_filter($before, fn ($s) => ($s[0] ?? null) !== TCspReportingService::class);
 
 		$originalMode = self::$app->getMode();
 		self::$app->setMode(TApplicationMode::Debug);
-		$ref->setValue(self::$app, $without);
+		PradoUnit::setProp(self::$app, '_services', $without);
 
 		try {
 			$m->ensureReportingServiceRegistered(self::$app, null);
-			$services = $ref->getValue(self::$app);
+			$services = PradoUnit::getProp(self::$app, '_services');
 			$byClass = array_filter($services, fn ($s) => ($s[0] ?? null) === TCspReportingService::class);
 			self::assertNotEmpty($byClass,
 				'ReportingServiceMode=Auto must register a TCspReportingService when none exists in Debug mode');
 		} finally {
-			$ref->setValue(self::$app, $before);
+			PradoUnit::setProp(self::$app, '_services', $before);
 			self::$app->setMode($originalMode);
 		}
 	}
@@ -1557,22 +1502,20 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 		$m->setReportOnly(false);
 		$m->setId('headers');
 
-		$ref = new ReflectionProperty(TApplication::class, '_services');
-		$ref->setAccessible(true);
-		$before = $ref->getValue(self::$app);
+		$before = PradoUnit::getProp(self::$app, '_services');
 		$without = array_filter($before, fn ($s) => ($s[0] ?? null) !== TCspReportingService::class);
-		$ref->setValue(self::$app, $without);
+		PradoUnit::setProp(self::$app, '_services', $without);
 
 		try {
 			$m->ensureReportingServiceRegistered(self::$app, null);
-			$services = $ref->getValue(self::$app);
+			$services = PradoUnit::getProp(self::$app, '_services');
 			$entry = $services[TCspReportingService::SERVICE_ID] ?? null;
 			self::assertNotNull($entry, 'Service entry must exist');
 			// Registry entry is [$class, $initProperties, $configElement].
 			self::assertTrue($entry[1]['AutoRegistered'] ?? false,
 				'Auto-registered service must have AutoRegistered=true in its init-properties');
 		} finally {
-			$ref->setValue(self::$app, $before);
+			PradoUnit::setProp(self::$app, '_services', $before);
 		}
 	}
 
@@ -1584,21 +1527,19 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 		$m->setReportingServiceMode('Auto');
 		$m->setId('headers');
 
-		$ref = new ReflectionProperty(TApplication::class, '_services');
-		$ref->setAccessible(true);
-		$before = $ref->getValue(self::$app);
-		$ref->setValue(self::$app, array_merge($before, [
+		$before = PradoUnit::getProp(self::$app, '_services');
+		PradoUnit::setProp(self::$app, '_services', array_merge($before, [
 			TCspReportingService::SERVICE_ID => [TCspReportingService::class, [], null],
 		]));
 
 		try {
 			$m->ensureReportingServiceRegistered(self::$app, null);
-			$services = $ref->getValue(self::$app);
+			$services = PradoUnit::getProp(self::$app, '_services');
 			$byClass = array_filter($services, fn ($s) => ($s[0] ?? null) === TCspReportingService::class);
 			self::assertCount(1, $byClass,
 				'ReportingServiceMode=Auto must not register a duplicate service');
 		} finally {
-			$ref->setValue(self::$app, $before);
+			PradoUnit::setProp(self::$app, '_services', $before);
 		}
 	}
 
@@ -1613,18 +1554,16 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode(false);
 
-		$ref = new ReflectionProperty(TApplication::class, '_services');
-		$ref->setAccessible(true);
-		$before = $ref->getValue(self::$app);
+		$before = PradoUnit::getProp(self::$app, '_services');
 		// Ensure no TCspReportingService is registered for this test.
 		$without = array_filter($before, fn ($s) => ($s[0] ?? null) !== TCspReportingService::class);
-		$ref->setValue(self::$app, $without);
+		PradoUnit::setProp(self::$app, '_services', $without);
 
 		try {
 			$m->publicFinalizeReporterService();
 			self::assertCount(0, $m->getHeadersByClass(THttpHeaderReportingEndpoints::class));
 		} finally {
-			$ref->setValue(self::$app, $before);
+			PradoUnit::setProp(self::$app, '_services', $before);
 		}
 	}
 
@@ -1644,11 +1583,9 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 		self::assertTrue($csp->hasReportUriPlaceholder(), 'pre-condition: sentinel must be stored');
 
-		$ref = new ReflectionProperty(TApplication::class, '_services');
-		$ref->setAccessible(true);
-		$before = $ref->getValue(self::$app);
+		$before = PradoUnit::getProp(self::$app, '_services');
 		$without = array_filter($before, fn ($s) => ($s[0] ?? null) !== TCspReportingService::class);
-		$ref->setValue(self::$app, array_merge($without, [
+		PradoUnit::setProp(self::$app, '_services', array_merge($without, [
 			'my-reporter' => [TCspReportingService::class, [], null],
 		]));
 
@@ -1663,7 +1600,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 				'report-uri value must contain the reporter URL'
 			);
 		} finally {
-			$ref->setValue(self::$app, $before);
+			PradoUnit::setProp(self::$app, '_services', $before);
 		}
 	}
 
@@ -1682,11 +1619,9 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 
 		self::assertTrue($re->hasReportUriPlaceholder(), 'pre-condition: sentinel must be stored');
 
-		$ref = new ReflectionProperty(TApplication::class, '_services');
-		$ref->setAccessible(true);
-		$before = $ref->getValue(self::$app);
+		$before = PradoUnit::getProp(self::$app, '_services');
 		$without = array_filter($before, fn ($s) => ($s[0] ?? null) !== TCspReportingService::class);
-		$ref->setValue(self::$app, array_merge($without, [
+		PradoUnit::setProp(self::$app, '_services', array_merge($without, [
 			'my-reporter' => [TCspReportingService::class, [], null],
 		]));
 
@@ -1701,7 +1636,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 				'Endpoint URL must contain the reporter URL after replacement'
 			);
 		} finally {
-			$ref->setValue(self::$app, $before);
+			PradoUnit::setProp(self::$app, '_services', $before);
 		}
 	}
 
@@ -1719,11 +1654,9 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 		$csp->setPolicy(TCspDirective::DefaultSrc, "'self'");
 		// No report-uri sentinel, no report-to.
 
-		$ref = new ReflectionProperty(TApplication::class, '_services');
-		$ref->setAccessible(true);
-		$before = $ref->getValue(self::$app);
+		$before = PradoUnit::getProp(self::$app, '_services');
 		$without = array_filter($before, fn ($s) => ($s[0] ?? null) !== TCspReportingService::class);
-		$ref->setValue(self::$app, array_merge($without, [
+		PradoUnit::setProp(self::$app, '_services', array_merge($without, [
 			'my-reporter' => [TCspReportingService::class, [], null],
 		]));
 
@@ -1737,7 +1670,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 			self::assertFalse($csp->getReportOnly(),
 				'mode=false must not convert an enforcing CSP to report-only');
 		} finally {
-			$ref->setValue(self::$app, $before);
+			PradoUnit::setProp(self::$app, '_services', $before);
 		}
 	}
 
@@ -2276,12 +2209,10 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 		$m = new TTestHttpHeadersManager();
 		$m->setReportOnly(false);
 
-		$ref = new \ReflectionProperty(TApplication::class, '_services');
-		$ref->setAccessible(true);
-		$before = $ref->getValue(self::$app);
+		$before = PradoUnit::getProp(self::$app, '_services');
 		$without = array_filter($before, fn ($s) => ($s[0] ?? null) !== TCspReportingService::class);
 		try {
-			$ref->setValue(self::$app, $without);
+			PradoUnit::setProp(self::$app, '_services', $without);
 			$m->ensureReportingServiceRegistered();
 			self::assertNull(
 				self::$app->getRegisteredServiceByClass(TCspReportingService::class),
@@ -2290,7 +2221,7 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 			self::assertSame('Auto', $m->getReportingServiceId(),
 				'ReportingServiceId must remain "Auto" when no service was found and none was registered');
 		} finally {
-			$ref->setValue(self::$app, $before);
+			PradoUnit::setProp(self::$app, '_services', $before);
 		}
 	}
 

@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { GENERIC_BASE_URL } from '../../helpers.js';
 
-const BASE_URL = GENERIC_BASE_URL + 'HttpHeaders/web/index.php';
+const BASE_URL = GENERIC_BASE_URL + 'HttpHeaders/index.php';
 const HEADERS_PAGE = BASE_URL + '?page=HeadersPage';
 const CSP_PAGE = BASE_URL + '?page=CspPage';
 

@@ -812,10 +812,8 @@ class THttpHeaderCspTest extends PHPUnit\Framework\TestCase
 		$re = new THttpHeaderReportingEndpoints();
 		$re->addEndpoint('csp-ep', 'https://example.com/csp');
 
-		// Wire both headers to the same manager via reflection so getHeaders() sees them.
-		$ref = new ReflectionProperty(THttpHeadersManager::class, '_headers');
-		$ref->setAccessible(true);
-		$ref->setValue($manager, [$this->csp, $re]);
+		// Wire both headers to the same manager so getHeaders() sees them.
+		PradoUnit::setProp($manager, '_headers', [$this->csp, $re]);
 
 		$this->csp->setManager($manager);
 		$this->csp->addPolicy(TCspDirective::DefaultSrc, "'self'");
@@ -1477,9 +1475,7 @@ class THttpHeaderCspTest extends PHPUnit\Framework\TestCase
 		$re2 = new THttpHeaderReportingEndpoints();
 		$re2->addEndpoint('csp-ep', 'https://example.com/csp');
 
-		$ref = new ReflectionProperty(THttpHeadersManager::class, '_headers');
-		$ref->setAccessible(true);
-		$ref->setValue($manager, [$this->csp, $re1, $re2]);
+		PradoUnit::setProp($manager, '_headers', [$this->csp, $re1, $re2]);
 
 		$this->csp->setManager($manager);
 		$this->csp->addPolicy(TCspDirective::DefaultSrc, "'self'");
