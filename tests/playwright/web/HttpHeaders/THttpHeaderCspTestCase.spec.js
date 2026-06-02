@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { GENERIC_BASE_URL } from '../../helpers.js';
 
-const BASE_URL = GENERIC_BASE_URL + 'HttpHeaders/web/index.php';
+const BASE_URL = GENERIC_BASE_URL + 'HttpHeaders/index.php';
 const CSP_PAGE = BASE_URL + '?page=CspPage';
 
 /**
@@ -174,7 +174,7 @@ test.describe('THttpHeaderCspTestCase', () => {
 		// Make a fetch from the page's JS context — connect-src 'none' must block it.
 		const fetchResult = await page.evaluate(async () => {
 			try {
-				await fetch('/tests/harness/HttpHeaders/web/index.php?page=Home');
+				await fetch('/tests/harness/HttpHeaders/index.php?page=Home');
 				return 'fetched';
 			} catch (e) {
 				return 'blocked';

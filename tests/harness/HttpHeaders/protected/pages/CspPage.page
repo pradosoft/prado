@@ -28,7 +28,7 @@
 <script id="fetch-script" nonce="<%= $this->Nonce %>">
 (function () {
   var el = document.getElementById('fetch-result');
-  fetch('/tests/harness/HttpHeaders/web/index.php?page=Home&_ping=1')
+  fetch('/tests/harness/HttpHeaders/index.php?page=Home&_ping=1')
     .then(function () { el.textContent = 'fetched'; })
     .catch(function () { el.textContent = 'blocked'; });
 }());

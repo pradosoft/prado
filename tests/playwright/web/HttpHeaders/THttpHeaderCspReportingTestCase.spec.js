@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { GENERIC_BASE_URL } from '../../helpers.js';
 
-const BASE_URL        = GENERIC_BASE_URL + 'HttpHeaders/web/index.php';
+const BASE_URL        = GENERIC_BASE_URL + 'HttpHeaders/index.php';
 const CSP_REPORT_PAGE = BASE_URL + '?page=CspReportPage';
 
 /**
@@ -17,7 +17,7 @@ const CSP_REPORT_PAGE = BASE_URL + '?page=CspReportPage';
  * POST → stores the raw body; responds 204.
  * GET  → returns stored bodies as JSON array of strings; clears the store.
  */
-const COLLECTOR_PHP = GENERIC_BASE_URL + 'HttpHeaders/web/csp-collector.php';
+const COLLECTOR_PHP = GENERIC_BASE_URL + 'HttpHeaders/csp-collector.php';
 
 /**
  * Placeholder endpoint used only in header-value assertions (tests 1, 5, 6, 7).
