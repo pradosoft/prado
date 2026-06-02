@@ -16,7 +16,7 @@ use Psr\Http\Message\UriInterface;
 /**
  * TResourceUri class
  *
- * Represent an immutable, general-purpose PSR-7 {@see UriInterface} (RFC 3986) — a
+ * Represents an immutable, general-purpose PSR-7 {@see UriInterface} (RFC 3986) — a
  * Uniform *Resource* Identifier for any resource the IO layer addresses: files
  * (`file://`), in-process streams (`php://`), wrapped streams (`compress.zlib://`),
  * and sockets (`tcp://`, `udp://`, `unix://`), not just HTTP.  The short name TUri

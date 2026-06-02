@@ -16,9 +16,9 @@ use Prado\IO\TResourceUri;
 /**
  * TUri class
  *
- * Represent a URI. Given a URI
+ * Represents a URI. Given a URI
  * http://joe:whatever@example.com:8080/path/to/script.php?param=value#anchor
- * it has been decomposed as follows,
+ * it is decomposed as follows:
  * - scheme: http
  * - host: example.com
  * - port: 8080
