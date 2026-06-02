@@ -19,6 +19,7 @@ return [
 'TCache' => 'Prado\Caching\TCache',
 'TCacheDependency' => 'Prado\Caching\TCacheDependency',
 'TCacheDependencyList' => 'Prado\Caching\TCacheDependencyList',
+'TCacheFileTrait' => 'Prado\Caching\TCacheFileTrait',
 'TCacheSizeTrait' => 'Prado\Caching\TCacheSizeTrait',
 'TChainedCacheDependency' => 'Prado\Caching\TChainedCacheDependency',
 'TDbCache' => 'Prado\Caching\TDbCache',
