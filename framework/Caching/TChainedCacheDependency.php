@@ -10,6 +10,8 @@
 
 namespace Prado\Caching;
 
+use Prado\Prado;
+
 /**
  * TChainedCacheDependency class
  *
@@ -37,7 +39,7 @@ class TChainedCacheDependency extends TCacheDependency
 	 */
 	protected function newCacheDependencyList(): TCacheDependencyList
 	{
-		return new TCacheDependencyList();
+		return Prado::createComponent(TCacheDependencyList::class);
 	}
 
 	/**
