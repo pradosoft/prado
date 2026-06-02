@@ -47,7 +47,7 @@ use Prado\Xml\TXmlElement;
  * be specified by the number of seconds. A expiration time 0 represents never expire.
  *
  * By definition, cache does not ensure the existence of a value
- * even if it never expires. Cache is not meant to be an persistent storage.
+ * even if it never expires. Cache is not meant to be a persistent storage.
  *
  * Also note, there is no security measure to protected data in redis cache.
  * All data in redis cache can be accessed by any process running in the system.
@@ -56,7 +56,7 @@ use Prado\Xml\TXmlElement;
  *
  * Some usage examples of TRedisCache are as follows,
  * ```php
- * $cache=new TRedisCache;  // TRedisache may also be loaded as a Prado application module
+ * $cache=new TRedisCache;  // TRedisCache may also be loaded as a Prado application module
  * $cache->init(null);
  * $cache->add('object',$object);
  * $object2=$cache->get('object');
@@ -153,7 +153,7 @@ class TRedisCache extends TCache
 	private $_index = 0;
 
 	/**
-	 * @todo
+	 * @return bool whether the `redis` extension is loaded and the `\Redis` class exists.
 	 */
 	public static function getIsAvailable(): bool
 	{
