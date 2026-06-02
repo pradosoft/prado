@@ -22,7 +22,7 @@ use Prado\Exceptions\TConfigurationException;
  * consensus algorithm to manage a highly-available replicated log.
  *
  * By definition, cache does not ensure the existence of a value
- * even if it never expires. Cache is not meant to be an persistent storage.
+ * even if it never expires. Cache is not meant to be a persistent storage.
  *
  * To use this module, an etcd instance must be running and reachable on the host
  * specified by {@see setHost} and the port specified by {@see setPort} which
