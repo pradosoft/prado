@@ -33,16 +33,16 @@ use Psr\Http\Message\UriInterface;
  */
 class TResourceUri extends TComponent implements UriInterface
 {
-	private const	CHAR_UNRESERVED = 'A-Za-z0-9_\-\.~';
-	private const	CHAR_SUBDELIMS = '!\$&\'\(\)\*\+,;=';
+	private const CHAR_UNRESERVED = 'A-Za-z0-9_\-\.~';
+	private const CHAR_SUBDELIMS = '!\$&\'\(\)\*\+,;=';
 
-	private string	$_scheme	= '';
-	private string	$_userInfo	= '';
-	private string	$_host		= '';
-	private ?int	$_port		= null;
-	private string	$_path		= '';
-	private string	$_query		= '';
-	private string	$_fragment	= '';
+	private string $_scheme = '';
+	private string $_userInfo = '';
+	private string $_host = '';
+	private ?int $_port = null;
+	private string $_path = '';
+	private string $_query = '';
+	private string $_fragment = '';
 
 	/**
 	 * Parse the given URI string into its components.

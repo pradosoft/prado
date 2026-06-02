@@ -20,10 +20,11 @@ use Prado\TEnumerable;
  * the authority (per PSR-7).  Each constant maps an upper-cased scheme name to its
  * port; look one up for a scheme string with {@see forScheme()}.
  *
- * The set covers web/transfer, mail, directory/realtime, the databases Prado
- * connects to (MySQL, PostgreSQL, Firebird, MS SQL via sqlsrv/mssql/dblib, IBM DB2
- * via ibm, Oracle via oci), messaging/infra brokers, and local AI inference
- * (Ollama on 11434).
+ * The set covers web/transfer, mail, directory/realtime, the PDO driver names
+ * Prado connects through (mysql, pgsql, sqlsrv/mssql/dblib, oci, firebird, ibm)
+ * along with their common connection-URL aliases (postgres, oracle, db2),
+ * NoSQL/cache stores (mongodb, redis, memcached), messaging/infra brokers, and
+ * local AI inference (Ollama on 11434).
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
@@ -69,19 +70,23 @@ class TUriDefaultPort extends TEnumerable
 	public const TFTP = 69;
 	public const NTP = 123;
 
-	// databases (the drivers Prado connects to via PDO)
+	// databases — PDO driver names (Prado TDbConnection DSN prefixes; sqlite has no port)
 	public const MYSQL = 3306;
 	public const PGSQL = 5432;
-	public const POSTGRES = 5432;
-	public const POSTGRESQL = 5432;
-	public const FIREBIRD = 3050;
-	public const MSSQL = 1433;
 	public const SQLSRV = 1433;
+	public const MSSQL = 1433;
 	public const DBLIB = 1433;
 	public const OCI = 1521;
-	public const ORACLE = 1521;
+	public const FIREBIRD = 3050;
 	public const IBM = 50000;
+
+	// databases — common connection-URL scheme aliases - not PDO driver names
+	public const POSTGRES = 5432;
+	public const POSTGRESQL = 5432;
+	public const ORACLE = 1521;
 	public const DB2 = 50000;
+
+	// NoSQL / cache data stores
 	public const MONGODB = 27017;
 	public const REDIS = 6379;
 	public const REDISS = 6379;
