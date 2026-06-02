@@ -30,6 +30,7 @@ use Prado\TEnumerable;
 class TUriScheme extends TEnumerable
 {
 	// web & transfer
+	public const FILE = 'file';
 	public const HTTP = 'http';
 	public const HTTPS = 'https';
 	public const WS = 'ws';
@@ -38,7 +39,6 @@ class TUriScheme extends TEnumerable
 	public const FTPS = 'ftps';
 	public const SFTP = 'sftp';
 	public const SSH = 'ssh';
-	public const FILE = 'file';
 	public const DATA = 'data';
 
 	// version control
