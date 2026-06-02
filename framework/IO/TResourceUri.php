@@ -72,7 +72,7 @@ class TResourceUri extends TComponent implements UriInterface
 	 * exception by overriding {@see createParseException()} rather than re-parsing.
 	 * @param string $uri The URI to parse.
 	 * @throws \Throwable When the URI cannot be parsed (see {@see createParseException()}).
-	 * @return array The {@see parse_url()} components.
+	 * @return array<string, int|string> The {@see parse_url()} components.
 	 */
 	protected function parseUri(string $uri): array
 	{
@@ -456,7 +456,8 @@ class TResourceUri extends TComponent implements UriInterface
 	}
 
 	/**
-	 * Normalize a host to lower case.
+	 * Normalize a host to lower case.  The host is otherwise taken as given — it is
+	 * not percent-encoded or validated (IPv6 literals keep their brackets).
 	 * @param string $host The raw host.
 	 * @return string The lower-cased host.
 	 */

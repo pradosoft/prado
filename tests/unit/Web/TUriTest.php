@@ -151,4 +151,34 @@ class TUriTest extends PHPUnit\Framework\TestCase
 		self::expectException(\InvalidArgumentException::class);
 		(new TUri('http://h/'))->withPort(70000);
 	}
+
+	public function testUserPasswordEmptyWhenNoUserInfo()
+	{
+		$u = new TUri('http://host/path');
+		self::assertSame('', $u->getUser());
+		self::assertSame('', $u->getPassword());
+	}
+
+	public function testGetPasswordDecodesEncodedColon()
+	{
+		// password 'a:b' encodes to 'a%3Ab'; getPassword() splits on the first ':' and decodes.
+		$u = (new TUri('http://h/'))->withUserInfo('user', 'a:b');
+		self::assertSame('user', $u->getUser());
+		self::assertSame('a:b', $u->getPassword());
+	}
+
+	public function testGetUserWithoutPassword()
+	{
+		$u = new TUri('http://bob@host/');
+		self::assertSame('bob', $u->getUser());
+		self::assertSame('', $u->getPassword());
+	}
+
+	public function testGetUriAlwaysEqualsToString()
+	{
+		foreach (['http://h/p', 'https://u:p@h:8443/x?q=1#f', 'mailto:a@b.test'] as $s) {
+			$u = new TUri($s);
+			self::assertSame((string) $u, $u->getUri());
+		}
+	}
 }

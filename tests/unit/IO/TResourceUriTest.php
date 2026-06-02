@@ -173,11 +173,88 @@ class TResourceUriTest extends PHPUnit\Framework\TestCase
 		$u = new \Prado\Web\TUri('http://h.example:8080/p?q=1');
 		self::assertInstanceOf(UriInterface::class, $u);
 		self::assertInstanceOf(TResourceUri::class, $u);
-		// inherited PSR-7 machinery works:
 		self::assertSame('h.example:8080', $u->getAuthority());
 		self::assertSame('https://h.example:8080/p?q=1', (string) $u->withScheme('https'));
-		// legacy accessors preserved (no default-port suppression, raw values):
-		self::assertSame(8080, $u->getPort());
-		self::assertSame('http://h.example:8080/p?q=1', $u->getUri());
+		self::assertSame(8080, $u->getPort());                          // non-default port reported
+		self::assertSame('http://h.example:8080/p?q=1', $u->getUri());  // recomposed
+	}
+
+	public function testAuthorityEmptyWhenHostEmpty()
+	{
+		// PSR-7: authority is host-keyed; with no host it is '' (user-info/port not rendered).
+		$u = (new TResourceUri('http://u:p@h/'))->withHost('');
+		self::assertSame('', $u->getAuthority());
+		self::assertSame('u:p', $u->getUserInfo(), 'user-info is retained on the object');
+		self::assertSame('http:/', (string) $u);
+	}
+
+	public function testPortReturnedWhenNoScheme()
+	{
+		// No scheme → no default resolvable → the explicit port is reported as-is.
+		self::assertSame(8080, (new TResourceUri('//h:8080/'))->getPort());
+		self::assertSame(80, (new TResourceUri('//h:80/'))->getPort());
+	}
+
+	public function testDoubleSlashPathCollapsedWithoutAuthority()
+	{
+		// Guards against authority injection: a '//...' path with no authority renders
+		// with a single leading slash and reparses with an empty host.
+		$u = (new TResourceUri(''))->withScheme('http')->withPath('//evil.example/x');
+		self::assertSame('http:/evil.example/x', (string) $u);
+		self::assertSame('', (new TResourceUri((string) $u))->getHost());
+	}
+
+	public function testWithUserInfoEmptyUserClears()
+	{
+		$u = (new TResourceUri('http://bob:pw@h/'))->withUserInfo('', 'ignored');
+		self::assertSame('', $u->getUserInfo());
+		self::assertSame('h', $u->getAuthority());
+	}
+
+	public function testUserInfoEncodedColonInPassword()
+	{
+		$u = (new TResourceUri('http://h/'))->withUserInfo('u', 'a:b');
+		self::assertSame('u:a%3Ab', $u->getUserInfo());
+	}
+
+	public function testWithUserInfoNoOpReturnsSameInstance()
+	{
+		$u = new TResourceUri('http://bob:pw@h/');
+		self::assertSame($u, $u->withUserInfo('bob', 'pw'));
+	}
+
+	public function testWithPortNullRemoves()
+	{
+		$u = (new TResourceUri('http://h:8080/'))->withPort(null);
+		self::assertNull($u->getPort());
+		self::assertSame('http://h/', (string) $u);
+	}
+
+	public function testWithSchemeFlipsDefaultPortSuppression()
+	{
+		// 443 is non-default for http (reported) but default for https (suppressed).
+		$u = new TResourceUri('http://h:443/');
+		self::assertSame(443, $u->getPort());
+		self::assertNull($u->withScheme('https')->getPort());
+	}
+
+	public function testRelativeAndEmptyRefsRoundTrip()
+	{
+		foreach (['', '?x=1', '#f', 'rootless/path', '/abs/path'] as $ref) {
+			self::assertSame($ref, (string) new TResourceUri($ref), "round-trip: '{$ref}'");
+		}
+	}
+
+	public function testWithHostIPv6()
+	{
+		$u = (new TResourceUri('http://h/'))->withHost('[FE80::1]');
+		self::assertSame('[fe80::1]', $u->getHost());
+		self::assertSame('http://[fe80::1]/', (string) $u);
+	}
+
+	public function testUppercasePercentEncodingPreserved()
+	{
+		// PSR-7 does not require pct-hex case normalization; existing triplets are kept verbatim.
+		self::assertSame('/a%2Fb', (new TResourceUri('http://h/a%2Fb'))->getPath());
 	}
 }
