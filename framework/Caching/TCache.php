@@ -220,6 +220,31 @@ abstract class TCache extends TModule implements ICache, \ArrayAccess
 		return sha1($token);
 	}
 
+	/**
+	 * Returns the current Unix timestamp. Wraps the global {@see \time()} as a single
+	 * overridable seam so that subclasses and test doubles can control clock behavior
+	 * without modifying real system time.
+	 * @return int the current Unix timestamp in seconds
+	 * @since 4.4.0
+	 */
+	protected function time(): int
+	{
+		return \time();
+	}
+
+	/**
+	 * Returns the current Unix timestamp with microsecond resolution. Wraps the global
+	 * {@see \microtime()} as a single overridable seam so that subclasses and test
+	 * doubles can control sub-second clock behavior (e.g. for ordering
+	 * least-recently-used entries) without modifying real system time.
+	 * @return float the current Unix timestamp in seconds, with a fractional part
+	 * @since 4.4.0
+	 */
+	protected function microtime(): float
+	{
+		return \microtime(true);
+	}
+
 	// =========================================================================
 	// ICache implementation
 	// =========================================================================
