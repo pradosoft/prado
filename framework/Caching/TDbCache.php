@@ -387,6 +387,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 	 */
 	public function setConnectionString($value)
 	{
+		$this->assertUninitialized('ConnectionString');
 		$this->_connectionString = $value;
 	}
 
@@ -403,6 +404,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 	 */
 	public function setUsername($value)
 	{
+		$this->assertUninitialized('Username');
 		$this->_username = $value;
 	}
 
@@ -419,6 +421,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 	 */
 	public function setPassword(#[\SensitiveParameter] $value)
 	{
+		$this->assertUninitialized('Password');
 		$this->_password = $value;
 	}
 
@@ -452,6 +455,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 	 */
 	public function setCacheTableName($value)
 	{
+		$this->assertUninitialized('CacheTableName');
 		$this->_cacheTable = $value;
 	}
 
@@ -470,6 +474,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 	 */
 	public function setAutoCreateCacheTable($value)
 	{
+		$this->assertUninitialized('AutoCreateCacheTable');
 		$this->_autoCreate = TPropertyValue::ensureBoolean($value);
 	}
 

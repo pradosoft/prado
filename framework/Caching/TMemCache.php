@@ -333,6 +333,7 @@ class TMemCache extends TCache
 	 */
 	public function setOptions($value)
 	{
+		$this->assertUninitialized('Options');
 		if (!$this->getIsInitialized()) {
 			throw new TInvalidOperationException('memcache_not_initialized');
 		}
@@ -352,6 +353,7 @@ class TMemCache extends TCache
 	 */
 	public function setPersistentID($value)
 	{
+		$this->assertUninitialized('PersistentID');
 		$this->_persistentid = TPropertyValue::ensureString($value);
 	}
 
@@ -362,6 +364,7 @@ class TMemCache extends TCache
 	 */
 	public function setUseMemcached($value)
 	{
+		$this->assertUninitialized('UseMemcached');
 		if ($this->getIsInitialized() || TPropertyValue::ensureBoolean($value) === false) {
 			throw new TInvalidOperationException('initialized_property_unchangeable', 'UseMemcached');
 		}

@@ -123,6 +123,7 @@ class TEtcdCache extends TSerializingCache
 	 */
 	public function setHost($value)
 	{
+		$this->assertUninitialized('Host');
 		$this->_host = TPropertyValue::ensureString($value);
 	}
 
@@ -141,6 +142,7 @@ class TEtcdCache extends TSerializingCache
 	 */
 	public function setPort($value)
 	{
+		$this->assertUninitialized('Port');
 		$this->_port = TPropertyValue::ensureInteger($value);
 	}
 
@@ -157,6 +159,7 @@ class TEtcdCache extends TSerializingCache
 	 */
 	public function setDir($value)
 	{
+		$this->assertUninitialized('Dir');
 		$this->_dir = TPropertyValue::ensureString($value);
 	}
 
