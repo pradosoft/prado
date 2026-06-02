@@ -65,7 +65,9 @@ class TFileCacheDependency extends TCacheDependency
 	}
 
 	/**
-	 * @todo
+	 * Re-captures the tracked file's current modification time as the baseline. Call this
+	 * after intentionally modifying the file so the next {@see getHasChanged()} compares
+	 * against the refreshed timestamp.
 	 * @since 4.4.0
 	 */
 	public function updateTimestamp()
