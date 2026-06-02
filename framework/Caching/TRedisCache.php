@@ -229,7 +229,7 @@ class TRedisCache extends TCache
 	/**
 	 * @return string the host name of the redis cache server
 	 */
-	public function getHost(): string
+	public function getHost()
 	{
 		return $this->_host;
 	}
@@ -238,7 +238,7 @@ class TRedisCache extends TCache
 	 * @param string $value the host name of the redis cache server
 	 * @throws TInvalidOperationException if the module is already initialized
 	 */
-	public function setHost(string $value)
+	public function setHost($value)
 	{
 		$this->assertUninitialized('Host');
 		$this->_host = $value;
@@ -247,7 +247,7 @@ class TRedisCache extends TCache
 	/**
 	 * @return int the port number of the redis cache server
 	 */
-	public function getPort(): int
+	public function getPort()
 	{
 		return $this->_port;
 	}
@@ -265,7 +265,7 @@ class TRedisCache extends TCache
 	/**
 	 * @return string the unix socket of the redis cache server
 	 */
-	public function getSocket(): string
+	public function getSocket()
 	{
 		return $this->_socket;
 	}
@@ -283,7 +283,7 @@ class TRedisCache extends TCache
 	/**
 	 * @return int the database index to use. Defaults to 0.
 	 */
-	public function getIndex(): int
+	public function getIndex()
 	{
 		return $this->_index;
 	}
@@ -302,7 +302,7 @@ class TRedisCache extends TCache
 	 * @param string $key a unique key identifying the cached value
 	 * @return mixed the stored value on a hit, or `false` on a miss or expiry.
 	 */
-	protected function getValue(string $key): mixed
+	protected function getValue($key)
 	{
 		return $this->getCacheDirect()->get($key);
 	}
@@ -313,7 +313,7 @@ class TRedisCache extends TCache
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
-	protected function setValue(string $key, mixed $value, int $expire): bool
+	protected function setValue($key, $value, $expire)
 	{
 		$options = $expire === 0 ? [] : ['ex' => $expire];
 		return $this->getCacheDirect()->set($key, $value, $options);
@@ -325,7 +325,7 @@ class TRedisCache extends TCache
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
-	protected function addValue(string $key, mixed $value, int $expire): bool
+	protected function addValue($key, $value, $expire)
 	{
 		$options = $expire === 0 ? ['nx'] : ['nx', 'ex' => $expire];
 		return $this->getCacheDirect()->set($key, $value, $options);
@@ -335,7 +335,7 @@ class TRedisCache extends TCache
 	 * @param string $key the key of the value to be deleted
 	 * @return bool true if no error happens during deletion
 	 */
-	protected function deleteValue(string $key): bool
+	protected function deleteValue($key)
 	{
 		$this->getCacheDirect()->delete($key);
 		return true;
@@ -344,8 +344,8 @@ class TRedisCache extends TCache
 	/**
 	 * Flushes the currently selected Redis database only.
 	 */
-	public function flush(): void
+	public function flush()
 	{
-		$this->getCacheDirect()->flushDB();
+		return $this->getCacheDirect()->flushDB();
 	}
 }

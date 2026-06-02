@@ -126,7 +126,7 @@ abstract class TCache extends TModule implements ICache, \ArrayAccess
 	 * Called during {@see init()}; may also be called by behaviors or subclasses.
 	 * @since 4.4.0
 	 */
-	protected function setAppCache(): void
+	protected function setAppCache()
 	{
 		$this->getApplication()?->setCache($this);
 	}
@@ -140,7 +140,7 @@ abstract class TCache extends TModule implements ICache, \ArrayAccess
 	 * A primary cache is used by PRADO core framework to cache data such as
 	 * parsed templates, themes, etc.
 	 */
-	public function getPrimaryCache(): bool
+	public function getPrimaryCache()
 	{
 		return $this->_primary;
 	}
@@ -148,7 +148,7 @@ abstract class TCache extends TModule implements ICache, \ArrayAccess
 	/**
 	 * @param bool $value whether this cache module is used as primary/system cache. Defaults to true.
 	 */
-	public function setPrimaryCache(bool $value): void
+	public function setPrimaryCache($value)
 	{
 		$this->_primary = TPropertyValue::ensureBoolean($value);
 	}
@@ -157,7 +157,7 @@ abstract class TCache extends TModule implements ICache, \ArrayAccess
 	 * @return string a unique prefix for the keys of cached values.
 	 * If it is not explicitly set, it will take the value of {@see \Prado\TApplication::getUniqueID}.
 	 */
-	public function getKeyPrefix(): string
+	public function getKeyPrefix()
 	{
 		return $this->getKeyPrefixDirect() ?? '';
 	}
@@ -165,7 +165,7 @@ abstract class TCache extends TModule implements ICache, \ArrayAccess
 	/**
 	 * @param string $value a unique prefix for the keys of cached values
 	 */
-	public function setKeyPrefix(string $value): void
+	public function setKeyPrefix($value)
 	{
 		$this->setKeyPrefixDirect($value);
 	}
@@ -193,7 +193,7 @@ abstract class TCache extends TModule implements ICache, \ArrayAccess
 	 * @param string $key a key identifying a value to be cached
 	 * @return string a key generated from the provided key which ensures the uniqueness across applications
 	 */
-	protected function generateUniqueKey(string $key): string
+	protected function generateUniqueKey($key)
 	{
 		return $this->hashToken($this->generateToken($key));
 	}
@@ -229,7 +229,7 @@ abstract class TCache extends TModule implements ICache, \ArrayAccess
 	 * @param string $id a key identifying the cached value
 	 * @return mixed the value stored in cache, false if the value is not in the cache or expired.
 	 */
-	public function get(string $id): mixed
+	public function get($id)
 	{
 		if (($data = $this->getValue($this->generateUniqueKey($id))) !== false) {
 			if (!is_array($data)) {
@@ -254,7 +254,7 @@ abstract class TCache extends TModule implements ICache, \ArrayAccess
 	 * @param ?ICacheDependency $dependency dependency of the cached item. If the dependency changes, the item is labeled invalid.
 	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
-	public function set(string $id, mixed $value, int $expire = 0, ?ICacheDependency $dependency = null): bool
+	public function set($id, $value, $expire = 0, $dependency = null)
 	{
 		if (empty($value) && $expire === 0) {
 			return $this->delete($id);
@@ -273,7 +273,7 @@ abstract class TCache extends TModule implements ICache, \ArrayAccess
 	 * @param ICacheDependency $dependency dependency of the cached item. If the dependency changes, the item is labeled invalid.
 	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
-	public function add(string $id, mixed $value, int $expire = 0, $dependency = null): bool
+	public function add($id, $value, $expire = 0, $dependency = null)
 	{
 		if (empty($value) && $expire === 0) {
 			return false;
@@ -287,7 +287,7 @@ abstract class TCache extends TModule implements ICache, \ArrayAccess
 	 * @param string $id the key of the value to be deleted
 	 * @return bool if no error happens during deletion
 	 */
-	public function delete(string $id): bool
+	public function delete($id)
 	{
 		return $this->deleteValue($this->generateUniqueKey($id));
 	}
@@ -297,7 +297,7 @@ abstract class TCache extends TModule implements ICache, \ArrayAccess
 	 * Be careful of performing this operation if the cache is shared by multiple applications.
 	 * @throws TNotSupportedException if this method is not overridden by child classes
 	 */
-	public function flush(): void
+	public function flush()
 	{
 		throw new TNotSupportedException('cache_flush_unsupported');
 	}
@@ -320,7 +320,7 @@ abstract class TCache extends TModule implements ICache, \ArrayAccess
 	 * @param string $key a unique key identifying the cached value
 	 * @return false|mixed the stored value on a hit, or `false` on a miss or expiry.
 	 */
-	abstract protected function getValue(string $key): mixed;
+	abstract protected function getValue($key);
 
 	/**
 	 * Stores a value identified by a key in cache.
@@ -332,7 +332,7 @@ abstract class TCache extends TModule implements ICache, \ArrayAccess
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
-	abstract protected function setValue(string $key, mixed $value, int $expire): bool;
+	abstract protected function setValue($key, $value, $expire);
 
 	/**
 	 * Stores a value identified by a key into cache if the cache does not contain this key.
@@ -344,14 +344,14 @@ abstract class TCache extends TModule implements ICache, \ArrayAccess
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
-	abstract protected function addValue(string $key, mixed $value, int $expire): bool;
+	abstract protected function addValue($key, $value, $expire);
 
 	/**
 	 * Deletes a value with the specified key from cache.
 	 * @param string $key the key of the value to be deleted
 	 * @return bool true if no error happens during deletion
 	 */
-	abstract protected function deleteValue(string $key): bool;
+	abstract protected function deleteValue($key);
 
 	// =========================================================================
 	// \ArrayAccess

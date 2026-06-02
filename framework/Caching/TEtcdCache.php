@@ -206,7 +206,7 @@ class TEtcdCache extends TSerializingCache
 	 * @param string $key the key of the value to be deleted
 	 * @return bool true if no error happens during deletion
 	 */
-	protected function deleteValue(string $key): bool
+	protected function deleteValue($key)
 	{
 		$this->request('DELETE', $this->getDir() . '/' . $key);
 		return true;
@@ -215,9 +215,10 @@ class TEtcdCache extends TSerializingCache
 	/**
 	 * Deletes all values from cache.
 	 */
-	public function flush(): void
+	public function flush()
 	{
 		$this->request('DELETE', $this->getDir() . '?recursive=true');
+		return true;
 	}
 
 	/**

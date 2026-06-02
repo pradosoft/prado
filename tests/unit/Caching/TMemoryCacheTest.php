@@ -218,6 +218,11 @@ class StubBackingCache extends TCache
 {
 	private array $_data = [];
 
+	public static function getIsAvailable(): bool
+	{
+		return true;
+	}
+
 	public function init($config): void
 	{
 		parent::init($config);
@@ -1431,7 +1436,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 		$cache->init(null);
 
 		$key = 'my_key';
-		$this->assertSame(md5('pfx_' . $key), $cache->pubGenerateUniqueKey($key));
+		$this->assertSame(sha1('pfx_' . $key), $cache->pubGenerateUniqueKey($key));
 	}
 
 	public function testGenerateUniqueKeyWithHashDisabled(): void
@@ -1472,7 +1477,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 		$cache->init(null);
 
 		$key = 'my_key';
-		$this->assertSame(md5('pfx_' . $key), $cache->pubGenerateUniqueKey($key),
+		$this->assertSame(sha1('pfx_' . $key), $cache->pubGenerateUniqueKey($key),
 			'In Normal mode with HashKeys=null, keys must be hashed.');
 	}
 
@@ -1486,7 +1491,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 		$cache->init(null);
 
 		$key = 'my_key';
-		$this->assertSame(md5('pfx_' . $key), $cache->pubGenerateUniqueKey($key),
+		$this->assertSame(sha1('pfx_' . $key), $cache->pubGenerateUniqueKey($key),
 			'In Performance mode with HashKeys=null, keys must be hashed.');
 	}
 

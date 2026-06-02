@@ -31,7 +31,7 @@ interface ICache
 	 * @param string $id a key identifying the cached value
 	 * @return false|mixed the value stored in cache, false if the value is not in the cache or expired.
 	 */
-	public function get(string $id): mixed;
+	public function get($id);
 
 	/**
 	 * Stores a value identified by a key into cache.
@@ -44,7 +44,7 @@ interface ICache
 	 * @param ?ICacheDependency $dependency dependency of the cached item. If the dependency changes, the item is labeled invalid.
 	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
-	public function set(string $id, mixed $value, int $expire = 0, ?ICacheDependency $dependency = null): bool;
+	public function set($id, $value, $expire = 0, $dependency = null);
 
 	/**
 	 * Stores a value identified by a key into cache if the cache does not contain this key.
@@ -55,18 +55,18 @@ interface ICache
 	 * @param ?ICacheDependency $dependency dependency of the cached item. If the dependency changes, the item is labeled invalid.
 	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
-	public function add(string $id, mixed $value, int $expire = 0, ?ICacheDependency $dependency = null): bool;
+	public function add($id, $value, $expire = 0, $dependency = null);
 
 	/**
 	 * Deletes a value with the specified key from cache
 	 * @param string $id the key of the value to be deleted
 	 * @return bool if no error happens during deletion
 	 */
-	public function delete(string $id): bool;
+	public function delete($id);
 
 	/**
 	 * Deletes all values from cache.
 	 * Be careful of performing this operation if the cache is shared by multiple applications.
 	 */
-	public function flush(): void;
+	public function flush();
 }

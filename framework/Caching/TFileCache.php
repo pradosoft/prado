@@ -129,6 +129,15 @@ class TFileCache extends TCache implements ICacheSize
 	}
 
 	/**
+	 * @return bool always true; file-based caching has no external dependency.
+	 * @since 4.4.0
+	 */
+	public static function getIsAvailable(): bool
+	{
+		return true;
+	}
+
+	/**
 	 * Initializes the cache module. When no {@see getDirectory Directory} has been
 	 * set, a `filecache/` subdirectory under the application runtime path is used
 	 * and created if necessary. Throws when the directory is not writable.

@@ -217,7 +217,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 	 * @throws TConfigurationException if any error happens during creating database or cache table.
 	 * @since 3.1.5
 	 */
-	protected function initializeCache(bool $force = false)
+	protected function initializeCache($force = false)
 	{
 		if ($this->getIsCacheInitialized() && !$force) {
 			return;
@@ -275,7 +275,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 	 * @param bool $force override {@see \Prado\Caching\TDbCache::setFlushInterval() FlushInterval} and force deletion of expired items
 	 * @since 3.1.5
 	 */
-	public function flushCacheExpired(bool $force = false)
+	public function flushCacheExpired($force = false)
 	{
 		$interval = $this->getFlushInterval();
 		if (!$force && $interval === 0) {
@@ -311,7 +311,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 	 * @return int Interval in sec expired items will be removed from cache. Default to 60
 	 * @since 3.1.5
 	 */
-	public function getFlushInterval(): int
+	public function getFlushInterval()
 	{
 		return $this->_flushInterval;
 	}
@@ -325,7 +325,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 	 * @param int $value Interval in sec
 	 * @since 3.1.5
 	 */
-	public function setFlushInterval(int $value)
+	public function setFlushInterval($value)
 	{
 		$this->_flushInterval = $value;
 	}
@@ -368,7 +368,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 	 * @return string the SQLite database filename within the PRADO runtime path.
 	 * @since 4.3.3
 	 */
-	protected function getSqliteDatabaseName(): string
+	protected function getSqliteDatabaseName()
 	{
 		return 'sqlite3.cache';
 	}
@@ -376,7 +376,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 	/**
 	 * @return string The Data Source Name, or DSN, contains the information required to connect to the database.
 	 */
-	public function getConnectionString(): string
+	public function getConnectionString()
 	{
 		return $this->_connectionString;
 	}
@@ -385,7 +385,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 	 * @param string $value The Data Source Name, or DSN, contains the information required to connect to the database.
 	 * @see http://www.php.net/manual/en/function.pdo-construct.php
 	 */
-	public function setConnectionString(string $value)
+	public function setConnectionString($value)
 	{
 		$this->_connectionString = $value;
 	}
@@ -393,7 +393,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 	/**
 	 * @return string the username for establishing DB connection. Defaults to empty string.
 	 */
-	public function getUsername(): string
+	public function getUsername()
 	{
 		return $this->_username;
 	}
@@ -401,7 +401,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 	/**
 	 * @param string $value the username for establishing DB connection
 	 */
-	public function setUsername(string $value)
+	public function setUsername($value)
 	{
 		$this->_username = $value;
 	}
@@ -417,7 +417,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 	/**
 	 * @param string $value the password for establishing DB connection
 	 */
-	public function setPassword(#[\SensitiveParameter] string $value)
+	public function setPassword(#[\SensitiveParameter] $value)
 	{
 		$this->_password = $value;
 	}
@@ -450,7 +450,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 	 * @param string $value the name of the DB table to store cache content
 	 * @see setAutoCreateCacheTable
 	 */
-	public function setCacheTableName(string $value)
+	public function setCacheTableName($value)
 	{
 		$this->_cacheTable = $value;
 	}
@@ -468,7 +468,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 	 * @param bool $value whether the cache DB table should be automatically created if not exists.
 	 * @see setCacheTableName
 	 */
-	public function setAutoCreateCacheTable(bool $value)
+	public function setAutoCreateCacheTable($value)
 	{
 		$this->_autoCreate = TPropertyValue::ensureBoolean($value);
 	}
@@ -590,7 +590,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 	 * @param string $key the key of the value to be deleted
 	 * @return bool true if no error happens during deletion
 	 */
-	protected function deleteValue(string $key): bool
+	protected function deleteValue($key)
 	{
 		if (!$this->getIsCacheInitialized()) {
 			$this->initializeCache();
@@ -611,7 +611,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 	/**
 	 * Deletes all values from cache.
 	 */
-	public function flush(): void
+	public function flush()
 	{
 		if (!$this->getIsCacheInitialized()) {
 			$this->initializeCache();
@@ -623,8 +623,11 @@ class TDbCache extends TSerializingCache implements IDbModule
 			try {
 				$this->initializeCache(true);
 				$command->execute();
+				return true;
 			} catch (\Exception $e) {
+				return false;
 			}
 		}
+		return true;
 	}
 }

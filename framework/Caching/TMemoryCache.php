@@ -280,6 +280,15 @@ class TMemoryCache extends TCache implements IModuleDependency, ICacheSize
 	}
 
 	/**
+	 * @return bool always true; the in-memory store has no external dependency.
+	 * @since 4.4.0
+	 */
+	public static function getIsAvailable(): bool
+	{
+		return true;
+	}
+
+	/**
 	 * Initializes the module. Refines the {@see getBackingCacheKey BackingCacheKey}
 	 * set by {@see __construct()} by appending `'.<moduleId>'` when the key is still
 	 * at its {@see DEFAULT_BACKING_CACHE_KEY default} and a module ID is available,

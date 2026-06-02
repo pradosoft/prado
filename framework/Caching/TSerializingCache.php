@@ -156,7 +156,7 @@ abstract class TSerializingCache extends TCache
 	 * @param string $key a unique key identifying the cached value.
 	 * @return false|mixed the stored value, or `false` on a miss or expiry.
 	 */
-	final protected function getValue(string $key): mixed
+	final protected function getValue($key)
 	{
 		$raw = $this->getSerializedValue($key);
 		return $raw === false ? false : $this->unserializeValue($raw);
@@ -169,7 +169,7 @@ abstract class TSerializingCache extends TCache
 	 * @param int $expire the number of seconds until expiry; 0 means never expire.
 	 * @return bool `true` on success.
 	 */
-	final protected function setValue(string $key, mixed $value, int $expire): bool
+	final protected function setValue($key, $value, $expire)
 	{
 		return $this->setSerializedValue($key, $this->serializeValue($value), $expire);
 	}
@@ -181,7 +181,7 @@ abstract class TSerializingCache extends TCache
 	 * @param int $expire the number of seconds until expiry; 0 means never expire.
 	 * @return bool `true` on success.
 	 */
-	final protected function addValue(string $key, mixed $value, int $expire): bool
+	final protected function addValue($key, $value, $expire)
 	{
 		return $this->addSerializedValue($key, $this->serializeValue($value), $expire);
 	}

@@ -29,11 +29,11 @@ class ShellTestCacheModule extends TModule implements ICache
 {
 	public function init($config) {}
 	public static function getIsAvailable(): bool { return true; }
-	public function get(string $id): mixed { return false; }
-	public function set(string $id, mixed $value, int $expire = 0, ?\Prado\Caching\ICacheDependency $dependency = null): bool { return true; }
-	public function add(string $id, mixed $value, int $expire = 0, ?\Prado\Caching\ICacheDependency $dependency = null): bool { return true; }
-	public function delete(string $id): bool { return true; }
-	public function flush(): void {}
+	public function get($id) { return false; }
+	public function set($id, $value, $expire = 0, $dependency = null) { return true; }
+	public function add($id, $value, $expire = 0, $dependency = null) { return true; }
+	public function delete($id) { return true; }
+	public function flush() { return true; }
 }
 
 /**
