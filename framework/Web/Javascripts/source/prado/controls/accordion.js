@@ -14,61 +14,80 @@
  * http://creativecommons.org/licenses/by-sa/3.0/us/
  */
 
-Prado.WebUI.TAccordion = jQuery.klass(Prado.WebUI.Control,
+/**
+ * Small native height-animation helper. Animates element height between two
+ * values using requestAnimationFrame; calls done() on completion. Used where
+ * the accordion previously called jQuery.fn.animate({height}, duration[, cb]).
+ * @since 4.4.0
+ */
+const _accAnimateHeight = (el, from, to, duration, done) => {
+	if (!duration || duration <= 0) {
+		el.style.height = `${to}px`;
+		if (done) done();
+		return;
+	}
+	const start = performance.now();
+	const step = (now) => {
+		const t = Math.min(1, (now - start) / duration);
+		el.style.height = `${from + (to - from) * t}px`;
+		if (t < 1) requestAnimationFrame(step);
+		else if (done) done();
+	};
+	requestAnimationFrame(step);
+};
+
+Prado.WebUI.TAccordion = Prado.Class(Prado.WebUI.Control,
 {
-    	onInit : function(options)
-	{
-		this.accordion = jQuery('#'+options.ID).get(0);
-		this.options = options;
-		this.hiddenField = jQuery('#'+options.ID+'_1').get(0);
+    	onInit(options) {
+            this.accordion = document.getElementById(options.ID);
+            this.options = options;
+            this.hiddenField = document.getElementById(`${options.ID}_1`);
 
-		if (this.options.maxHeight)
+            if (this.options.maxHeight)
+            {
+                this.maxHeight = this.options.maxHeight;
+            } else {
+                this.maxHeight = 0;
+                this.checkMaxHeight();
+            }
+
+            this.currentView = null;
+            this.oldView = null;
+
+            let i = 0;
+            for(const view in this.options.Views)
+            {
+                const header = document.getElementById(`${view}_0`);
+                if(header)
+                {
+                    this.observe(header, "click", this.elementClicked.bind(this, view));
+                    if(this.hiddenField.value == i)
+                    {
+                        this.currentView = view;
+                        const cur = document.getElementById(this.currentView);
+                        if(cur && cur.offsetHeight != this.maxHeight)
+                            cur.style.height = `${this.maxHeight}px`;
+                    }
+                }
+                i++;
+            }
+        },
+
+	checkMaxHeight() {
+		for(const viewID in this.options.Views)
 		{
-			this.maxHeight = this.options.maxHeight;
-		} else {
-			this.maxHeight = 0;
-			this.checkMaxHeight();
-		}
-
-		this.currentView = null;
-		this.oldView = null;
-
-		var i = 0;
-		for(var view in this.options.Views)
-		{
-			var header = jQuery('#'+view+'_0').get(0);
-			if(header)
-			{
-				this.observe(header, "click", jQuery.proxy(this.elementClicked,this,view));
-				if(this.hiddenField.value == i)
-				{
-					this.currentView = view;
-					if(jQuery('#'+this.currentView).height() != this.maxHeight)
-						jQuery('#'+this.currentView).css({height: this.maxHeight+"px"});
-				}
-			}
-			i++;
+			const view = document.getElementById(viewID);
+			if(view && view.offsetHeight > this.maxHeight)
+ 				this.maxHeight = view.offsetHeight;
 		}
 	},
 
-	checkMaxHeight: function()
-	{
-		for(var viewID in this.options.Views)
+	elementClicked(viewID, _event) {
+		let i = 0;
+		for(const index in this.options.Views)
 		{
-			var view = jQuery('#'+viewID);
-			if(view.height() > this.maxHeight)
- 				this.maxHeight = view.height();
-		}
-	},
-
-	elementClicked : function(viewID, event)
-	{
-		var i = 0;
-		for(var index in this.options.Views)
-		{
-			if (jQuery('#'+index).get(0))
+			if (document.getElementById(index))
 			{
-				var header = jQuery('#'+index+'_0').get(0);
 				if(index == viewID)
 				{
 					this.oldView = this.currentView;
@@ -81,35 +100,41 @@ Prado.WebUI.TAccordion = jQuery.klass(Prado.WebUI.Control,
 		}
 		if(this.oldView != this.currentView)
 		{
+			const cur = document.getElementById(this.currentView);
+			const old = document.getElementById(this.oldView);
+			const oldHdr = document.getElementById(`${this.oldView}_0`);
+			const curHdr = document.getElementById(`${this.currentView}_0`);
 			if(this.options.Duration > 0)
 			{
 				this.animate();
 			} else {
-				jQuery('#'+this.currentView).css({ height: this.maxHeight+"px" });
-				jQuery('#'+this.currentView).show();
-				jQuery('#'+this.oldView).hide();
+				if (cur) {
+					cur.style.height = `${this.maxHeight}px`;
+					cur.style.display = '';
+				}
+				if (old) old.style.display = 'none';
 
-				jQuery('#'+this.oldView+'_0').removeClass().addClass(this.options.HeaderCssClass);
-				jQuery('#'+this.currentView+'_0').removeClass().addClass(this.options.ActiveHeaderCssClass);
+				if (oldHdr) { oldHdr.className = ''; oldHdr.classList.add(this.options.HeaderCssClass); }
+				if (curHdr) { curHdr.className = ''; curHdr.classList.add(this.options.ActiveHeaderCssClass); }
 			}
 		}
 	},
 
-	animate: function() {
-		jQuery('#'+this.oldView+'_0').removeClass().addClass(this.options.HeaderCssClass);
-		jQuery('#'+this.currentView+'_0').removeClass().addClass(this.options.ActiveHeaderCssClass);
+	animate() {
+		const oldHdr = document.getElementById(`${this.oldView}_0`);
+		const curHdr = document.getElementById(`${this.currentView}_0`);
+		if (oldHdr) { oldHdr.className = ''; oldHdr.classList.add(this.options.HeaderCssClass); }
+		if (curHdr) { curHdr.className = ''; curHdr.classList.add(this.options.ActiveHeaderCssClass); }
 
-		jQuery('#'+this.oldView).animate(
-			{height: 0},
-			this.options.Duration,
-			function() {
-				jQuery(this).hide()
-			}
-		);
-		jQuery('#'+this.currentView).css({height: 0}).show().animate(
-			{height: this.maxHeight+'px'},
-			this.options.Duration
-		);
+		const old = document.getElementById(this.oldView);
+		const cur = document.getElementById(this.currentView);
+		if (old) {
+			_accAnimateHeight(old, old.offsetHeight, 0, this.options.Duration, () => { old.style.display = 'none'; });
+		}
+		if (cur) {
+			cur.style.height = '0px';
+			cur.style.display = '';
+			_accAnimateHeight(cur, 0, this.maxHeight, this.options.Duration);
+		}
 	}
 });
-

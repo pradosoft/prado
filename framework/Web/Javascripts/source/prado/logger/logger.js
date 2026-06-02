@@ -15,39 +15,39 @@ Use it all you want. Just remember to give me some credit :)
 // Custom Event
 // ------------
 
-CustomEvent = jQuery.klass({
-  initialize : function() {
+CustomEvent = Prado.Class({
+  initialize() {
   	this.listeners = []
   },
 
-	addListener : function(method) {
+	addListener(method) {
 		this.listeners.push(method)
 	},
 
-	removeListener : function(method) {
-		var foundIndexes = this._findListenerIndexes(method)
+	removeListener(method) {
+		const foundIndexes = this._findListenerIndexes(method);
 
-		for(var i = 0; i < foundIndexes.length; i++) {
+		for(let i = 0; i < foundIndexes.length; i++) {
 			this.listeners.splice(foundIndexes[i], 1)
 		}
 	},
 
-	dispatch : function(handler) {
-		for(var i = 0; i < this.listeners.length; i++) {
+	dispatch(handler) {
+		for(let i = 0; i < this.listeners.length; i++) {
 			try {
 				this.listeners[i](handler)
 			}
 			catch (e) {
-				alert("Could not run the listener " + this.listeners[i] + ". " + e)
+				alert(`Could not run the listener ${this.listeners[i]}. ${e}`)
 			}
 		}
 	},
 
 	// Private Methods
 	// ---------------
-	_findListenerIndexes : function(method) {
-		var indexes = []
-		for(var i = 0; i < this.listeners.length; i++) {
+	_findListenerIndexes(method) {
+		const indexes = [];
+		for(let i = 0; i < this.listeners.length; i++) {
 			if (this.listeners[i] == method) {
 				indexes.push(i)
 			}
@@ -62,53 +62,53 @@ CustomEvent = jQuery.klass({
 // ------
 
 var Cookie = {
-	set : function(name, value, expirationInDays, path) {
-		var cookie = escape(name) + "=" + escape(value)
+	set(name, value, expirationInDays, path) {
+		let cookie = `${escape(name)}=${escape(value)}`;
 
 		if (expirationInDays) {
-			var date = new Date()
+			const date = new Date();
 			date.setDate(date.getDate() + expirationInDays)
-			cookie += "; expires=" + date.toGMTString()
+			cookie += `; expires=${date.toGMTString()}`
 		}
 
 		if (path) {
-			cookie += ";path=" + path
+			cookie += `;path=${path}`
 		}
 
 		document.cookie = cookie
 
 		if (value && (expirationInDays == undefined || expirationInDays > 0) && !this.get(name)) {
-			Logger.error("Cookie (" + name + ") was not set correctly... The value was " + value.toString().length + " charachters long (This may be over the cookie limit)");
+			Logger.error(`Cookie (${name}) was not set correctly... The value was ${value.toString().length} charachters long (This may be over the cookie limit)`);
 		}
 	},
 
-	get : function(name) {
-		var pattern = "(^|;)\\s*" + escape(name) + "=([^;]+)"
+	get(name) {
+		const pattern = `(^|;)\\s*${escape(name)}=([^;]+)`;
 
-		var m = document.cookie.match(pattern)
+		const m = document.cookie.match(pattern);
 		if (m && m[2]) {
 			return unescape(m[2])
 		}
 		else return null
 	},
 
-	getAll : function() {
-		var cookies = document.cookie.split(';')
-		var cookieArray = []
+	getAll() {
+		const cookies = document.cookie.split(';');
+		const cookieArray = [];
 
-		for (var i = 0; i < cookies.length; i++) {
+		for (let i = 0; i < cookies.length; i++) {
 			try {
 				var name = unescape(cookies[i].match(/^\s*([^=]+)/m)[1])
 				var value = unescape(cookies[i].match(/=(.*$)/m)[1])
 			}
-			catch (e) {
+			catch (_e) {
 				continue
 			}
 
-			cookieArray.push({name : name, value : value})
+			cookieArray.push({name, value})
 
 			if (cookieArray[name] != undefined) {
-				Logger.waring("Trying to retrieve cookie named(" + name + "). There appears to be another property with this name though.");
+				Logger.waring(`Trying to retrieve cookie named(${name}). There appears to be another property with this name though.`);
 			}
 
 			cookieArray[name] = value
@@ -117,14 +117,14 @@ var Cookie = {
 		return cookieArray
 	},
 
-	clear : function(name) {
+	clear(name) {
 		this.set(name, "", -1)
 	},
 
-	clearAll : function() {
-		var cookies = this.getAll()
+	clearAll() {
+		const cookies = this.getAll();
 
-		for(var i = 0; i < cookies.length; i++) {
+		for(let i = 0; i < cookies.length; i++) {
 			this.clear(cookies[i].name)
 		}
 
@@ -143,51 +143,51 @@ Logger = {
 
 
 	// Logger output
-  log : function(message, tag) {
-	  var logEntry = new LogEntry(message, tag || "info")
+  log(message, tag) {
+	  const logEntry = new LogEntry(message, tag || "info");
 		this.logEntries.push(logEntry)
 		this.onupdate.dispatch(logEntry)
 	},
 
-	info : function(message) {
+	info(message) {
 		this.log(message, 'info')
 		if(typeof(console) != "undefined")
 			console.info(message);
 	},
 
-	debug : function(message) {
+	debug(message) {
 		this.log(message, 'debug')
 		if(typeof(console) != "undefined")
 			console.debug(message);
 	},
 
-	warn : function(message) {
+	warn(message) {
 	  this.log(message, 'warning')
 		if(typeof(console) != "undefined")
 			console.warn(message);
 	},
 
-	error : function(message, error) {
-	  this.log(message + ": \n" + error, 'error')
+	error(message, error) {
+	  this.log(`${message}: \n${error}`, 'error')
 		if(typeof(console) != "undefined")
-			console.error(message + ": \n" + error);
+			console.error(`${message}: \n${error}`);
 
 	},
 
-	clear : function () {
+	clear() {
 		this.logEntries = []
 		this.onclear.dispatch()
 	}
 };
 
-LogEntry = jQuery.klass({
-    initialize : function(message, tag) {
+LogEntry = Prado.Class({
+    initialize(message, tag) {
       this.message = message
       this.tag = tag
     }
 });
 
-LogConsole = jQuery.klass({
+LogConsole = Prado.Class({
 
   // Properties
   // ----------
@@ -199,14 +199,14 @@ LogConsole = jQuery.klass({
   // Methods
   // -------
 
-  initialize : function(toggleKey) {
+  initialize(toggleKey) {
     this.outputCount = 0
     this.tagPattern = Cookie.get('tagPattern') || ".*"
 
   	// I hate writing javascript in HTML... but what's a better alternative
     this.logElement = document.createElement('div')
     document.body.appendChild(this.logElement)
-    jQuery(this.logElement).hide();
+    this.logElement.style.display = 'none';
 
 	this.logElement.style.position = "absolute"
     this.logElement.style.left = '0px'
@@ -246,8 +246,8 @@ LogConsole = jQuery.klass({
     this.tagFilterElement.value = this.tagPattern
     this.tagFilterElement.setAttribute('autocomplete', 'off') // So Firefox doesn't flip out
 
-    jQuery(this.tagFilterElement).on('keyup', this.updateTags.bind(this));
-    jQuery(this.tagFilterElement).on('click', function() {this.tagFilterElement.select()}.bind(this));
+    this.tagFilterElement.addEventListener('keyup', this.updateTags.bind(this));
+    this.tagFilterElement.addEventListener('click', () => {this.tagFilterElement.select()});
 
     // Add outputElement
     this.outputElement = document.createElement('div')
@@ -270,8 +270,8 @@ LogConsole = jQuery.klass({
     this.inputElement.value = 'Type command here'
     this.inputElement.setAttribute('autocomplete', 'off') // So Firefox doesn't flip out
 
-    jQuery(this.inputElement).on('keyup', this.handleInput.bind(this));
-    jQuery(this.inputElement).on('click', function() {this.inputElement.select()}.bind(this));
+    this.inputElement.addEventListener('keyup', this.handleInput.bind(this));
+    this.inputElement.addEventListener('click', () => {this.inputElement.select()});
 
 	if(document.all && !window.opera)
 	{
@@ -282,9 +282,8 @@ LogConsole = jQuery.klass({
 		this.logElement.style.position="fixed";
 		this.logElement.style.bottom="0px";
 	}
-	var self=this;
-	jQuery(document).on('keydown', function(e)
-	{
+	const self=this;
+	document.addEventListener('keydown', e => {
 		if((e.altKey==true) && e.keyCode == toggleKey ) //Alt+J | Ctrl+J
 			self.toggle();
 	});
@@ -294,16 +293,16 @@ LogConsole = jQuery.klass({
     Logger.onclear.addListener(this.clear.bind(this))
 
     // Preload log element with the log entries that have been entered
-		for (var i = 0; i < Logger.logEntries.length; i++) {
+		for (let i = 0; i < Logger.logEntries.length; i++) {
   		this.logUpdate(Logger.logEntries[i])
   	}
 
   	// Feed all errors into the logger (For some unknown reason I can only get this to work
   	// with an inline event declaration)
-  	jQuery(window).on('error', function(msg, url, lineNumber) {Logger.error("Error in (" + (url || location) + ") on line "+lineNumber+"", msg)});
+  	window.addEventListener('error', e => {Logger.error(`Error in (${e.filename || location}) on line ${e.lineno}`, e.message)});
 
     // Allow acess key link
-    var accessElement = document.createElement('span')
+    const accessElement = document.createElement('span');
     accessElement.innerHTML = '<button style="position:absolute;top:-100px" onclick="javascript:logConsole.toggle()" accesskey="d"></button>'
   	document.body.appendChild(accessElement)
 
@@ -312,7 +311,7 @@ LogConsole = jQuery.klass({
 		}
 	},
 
-	toggle : function() {
+	toggle() {
 	  if (this.logElement.style.display == 'none') {
 		  this.show();
 		}
@@ -321,8 +320,8 @@ LogConsole = jQuery.klass({
 		}
 	},
 
-	show : function() {
-	  jQuery(this.logElement).show();
+	show() {
+	  this.logElement.style.display = '';
 	  this.outputElement.scrollTop = this.outputElement.scrollHeight // Scroll to bottom when toggled
 	  if(document.all && !window.opera)
 		  this.repositionWindow();
@@ -331,15 +330,15 @@ LogConsole = jQuery.klass({
  	  this.hidden = false;
 	},
 
-	hide : function() {
+	hide() {
 	  this.hidden = true;
-	  jQuery(this.logElement).hide();
+	  this.logElement.style.display = 'none';
 	  Cookie.set('ConsoleVisible', 'false');
 	},
 
-	output : function(message, style) {
+	output(message, style) {
 			// If we are at the bottom of the window, then keep scrolling with the output
-			var shouldScroll = (this.outputElement.scrollTop + (2 * this.outputElement.clientHeight)) >= this.outputElement.scrollHeight
+			const shouldScroll = (this.outputElement.scrollTop + (2 * this.outputElement.clientHeight)) >= this.outputElement.scrollHeight;
 
 			this.outputCount++
 	  	style = (style ? style += ';' : '')
@@ -350,22 +349,22 @@ LogConsole = jQuery.klass({
 	  	message = message || "undefined"
 	  	message = message.toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
-	  	this.outputElement.innerHTML += "<pre style='" + style + "'>" + message + "</pre>"
+	  	this.outputElement.innerHTML += `<pre style='${style}'>${message}</pre>`
 
 	  	if (shouldScroll) {
 				this.outputElement.scrollTop = this.outputElement.scrollHeight
 			}
 	},
 
-	updateTags : function() {
-		var pattern = this.tagFilterElement.value
+	updateTags() {
+		const pattern = this.tagFilterElement.value;
 
 		if (this.tagPattern == pattern) return
 
 		try {
 			new RegExp(pattern)
 		}
-		catch (e) {
+		catch (_e) {
 			return
 		}
 
@@ -376,23 +375,23 @@ LogConsole = jQuery.klass({
 
 		// Go through each log entry again
 		this.outputCount = 0;
-		for (var i = 0; i < Logger.logEntries.length; i++) {
+		for (let i = 0; i < Logger.logEntries.length; i++) {
   		this.logUpdate(Logger.logEntries[i])
   	}
 	},
 
-	repositionWindow : function() {
-		var offset = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
-		var pageHeight = self.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
-		this.logElement.style.top = (offset + pageHeight - Element.getHeight(this.logElement)) + "px"
+	repositionWindow() {
+		const offset = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+		const pageHeight = self.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+		this.logElement.style.top = `${offset + pageHeight - Element.getHeight(this.logElement)}px`
 	},
 
 	// Event Handlers
 	// --------------
 
-	logUpdate : function(logEntry) {
+	logUpdate(logEntry) {
 		if (logEntry.tag.search(new RegExp(this.tagPattern, 'igm')) == -1) return
-		var style = ''
+		let style = '';
 	  if (logEntry.tag.search(/error/) != -1) style += 'color:red'
 	  else if (logEntry.tag.search(/warning/) != -1) style += 'color:orange'
 	  else if (logEntry.tag.search(/debug/) != -1) style += 'color:green'
@@ -402,13 +401,13 @@ LogConsole = jQuery.klass({
 		this.output(logEntry.message, style)
 	},
 
-	clear : function(e) {
+	clear(_e) {
 		this.outputElement.innerHTML = ""
 	},
 
-	handleInput : function(e) {
+	handleInput(e) {
 		if (e.keyCode == 13 ) {
-	  	var command = this.inputElement.value
+	  	const command = this.inputElement.value;
 
 	  	switch(command) {
 	    	case "clear":
@@ -416,13 +415,15 @@ LogConsole = jQuery.klass({
 	      		break
 
 	    	default:
-	      	var consoleOutput = ""
+	      	var consoleOutput = "";
 
 	      	try {
+				// Console REPL — eval is the whole point.
+				// eslint-disable-next-line no-eval
 	        	consoleOutput = eval(this.inputElement.value)
 	      	}
 	      	catch (e) {
-	        	Logger.error("Problem parsing input <" + command + ">", e)
+	        	Logger.error(`Problem parsing input <${command}>`, e)
 	        	break
 					}
 
@@ -463,49 +464,46 @@ LogConsole = jQuery.klass({
 // -------------------------
 function inspect(o)
 {
-	var objtype = typeof(o);
+	const objtype = typeof(o);
 	if (objtype == "undefined") {
 		return "undefined";
 	} else if (objtype == "number" || objtype == "boolean") {
-		return o + "";
+		return `${o}`;
 	} else if (o === null) {
 		return "null";
 	}
 
 	 try {
-            var ostring = (o + "");
-        } catch (e) {
-            return "[" + typeof(o) + "]";
+            var ostring = (`${o}`);
+        } catch (_e) {
+            return `[${typeof(o)}]`;
         }
 
 	if (typeof(o) == "function")
 	{
             o = ostring.replace(/^\s+/, "");
-            var idx = o.indexOf("{");
+            const idx = o.indexOf("{");
             if (idx != -1) {
-                o = o.substr(0, idx) + "{...}";
+                o = `${o.substr(0, idx)}{...}`;
             }
 			return o;
        }
 
-	var reprString = function (o)
-	{
-		return ('"' + o.replace(/(["\\])/g, '\\$1') + '"'
-			).replace(/[\f]/g, "\\f"
-			).replace(/[\b]/g, "\\b"
-			).replace(/[\n]/g, "\\n"
-			).replace(/[\t]/g, "\\t"
-			).replace(/[\r]/g, "\\r");
-	};
+	const reprString = o => (`"${o.replace(/(["\\])/g, '\\$1')}"`
+        ).replace(/[\f]/g, "\\f"
+        ).replace(/[\b]/g, "\\b"
+        ).replace(/[\n]/g, "\\n"
+        ).replace(/[\t]/g, "\\t"
+        ).replace(/[\r]/g, "\\r");
 
 	if (objtype == "string") {
 		return reprString(o);
 	}
 	// recurse
-	var me = arguments.callee;
+	const me = arguments.callee;
 	// short-circuit for objects that support "json" serialization
 	// if they return "self" then just pass-through...
-	var newObj;
+	let newObj;
 	if (typeof(o.__json__) == "function") {
 		newObj = o.__json__();
 		if (o !== newObj) {
@@ -521,22 +519,22 @@ function inspect(o)
 	// array
 	if (objtype != "function" && typeof(o.length) == "number") {
 		var res = [];
-		for (var i = 0; i < o.length; i++) {
+		for (let i = 0; i < o.length; i++) {
 			var val = me(o[i]);
 			if (typeof(val) != "string") {
 				val = "undefined";
 			}
 			res.push(val);
 		}
-		return "[" + res.join(", ") + "]";
+		return `[${res.join(", ")}]`;
 	}
 
 	// generic object code path
 	res = [];
-	for (var k in o) {
-		var useKey;
+	for (const k in o) {
+		let useKey;
 		if (typeof(k) == "number") {
-			useKey = '"' + k + '"';
+			useKey = `"${k}"`;
 		} else if (typeof(k) == "string") {
 			useKey = reprString(k);
 		} else {
@@ -548,20 +546,22 @@ function inspect(o)
 			// skip non-serializable values
 			continue;
 		}
-		res.push(useKey + ":" + val);
+		res.push(`${useKey}:${val}`);
 	}
-	return "{" + res.join(", ") + "}";
+	return `{${res.join(", ")}}`;
 };
 
 Array.prototype.contains = function(object) {
-	for(var i = 0; i < this.length; i++) {
+	for(let i = 0; i < this.length; i++) {
 		if (object == this[i]) return true
 	}
 
 	return false
 };
 
-// Helper Alias for simple logging
+// Helper Alias for simple logging. Used by PHP-emitted client scripts and
+// external consumers, hence the global declaration.
+// eslint-disable-next-line no-unused-vars
 var puts = function() {return Logger.log(arguments[0], arguments[1])};
 
 /*************************************
@@ -592,44 +592,46 @@ Prado.Inspector =
 	displaying : '',
 	nameList : new Array(),
 
-	format : function(str) {
+	format(str) {
 		if(typeof(str) != "string") return str;
 		str=str.replace(/</g,"&lt;");
 		str=str.replace(/>/g,"&gt;");
 		return str;
 	},
 
-	parseJS : function(obj) {
-		var name;
+	parseJS(obj) {
+		let name;
+		// Resolve a dotted path like "Prado.Registry.foo" to the live object.
+		// eslint-disable-next-line no-eval
 		if(typeof obj == "string") {  name = obj; obj = eval(obj); }
-		win= typeof obj == 'undefined' ? window : obj;
+		const win = typeof obj == 'undefined' ? window : obj;
 		this.displaying = name ? name : win.toString();
-		for(js in win) {
+		for(const js in win) {
 			try {
-				if(win[js] && js.toString().indexOf("Inspector")==-1 && (win[js]+"").indexOf("[native code]")==-1) {
+				if(win[js] && js.toString().indexOf("Inspector")==-1 && (`${win[js]}`).indexOf("[native code]")==-1) {
 
-					t=typeof(win[js]);
+					const t = typeof(win[js]);
 					if(!this.objs[t.toString()]) {
 						this.types[this.types.length]=t;
 						this.objs[t]={};
 						this.nameList[t] = new Array();
 					}
 					this.nameList[t].push(js);
-					this.objs[t][js] = this.format(win[js]+"");
+					this.objs[t][js] = this.format(`${win[js]}`);
 				}
-			} catch(err) { }
+			} catch(_err) { /* ignore properties whose enumeration throws (e.g. cross-origin) */ }
 		}
 
-		for(i=0;i<this.types.length;i++)
+		for(let i = 0; i<this.types.length; i++)
 			this.nameList[this.types[i]].sort();
 	},
 
-	show : function(objID) {
+	show(objID) {
 		this.d.getElementById(objID).style.display=this.hidden[objID]?"none":"block";
 		this.hidden[objID]=this.hidden[objID]?0:1;
 	},
 
-	changeSpan : function(spanID) {
+	changeSpan(spanID) {
 		if(this.d.getElementById(spanID).innerHTML.indexOf("+")>-1){
 			this.d.getElementById(spanID).innerHTML="[-]";
 		} else {
@@ -637,44 +639,43 @@ Prado.Inspector =
 		}
 	},
 
-	buildInspectionLevel : function()
-	{
-		var display = this.displaying;
-		var list = display.split(".");
-		var links = ["<a href=\"javascript:var_dump()\">[object Window]</a>"];
-		var name = '';
+	buildInspectionLevel() {
+		const display = this.displaying;
+		const list = display.split(".");
+		const links = ["<a href=\"javascript:var_dump()\">[object Window]</a>"];
+		let name = '';
 		if(display.indexOf("[object ") >= 0) return links.join(".");
-		for(var i = 0; i < list.length; i++)
+		for(let i = 0; i < list.length; i++)
 		{
 			name += (name.length ? "." : "") + list[i];
-			links[i+1] = "<a href=\"javascript:var_dump('"+name+"')\">"+list[i]+"</a>";
+			links[i+1] = `<a href="javascript:var_dump('${name}')">${list[i]}</a>`;
 		}
 		return links.join(".");
 	},
 
-	buildTree : function() {
-		mHTML = "<div>Inspecting "+this.buildInspectionLevel()+"</div>";
+	buildTree() {
+		let mHTML = `<div>Inspecting ${this.buildInspectionLevel()}</div>`;
 		mHTML +="<ul class=\"topLevel\">";
 		this.types.sort();
-		var so_objIndex=0;
-		for(i=0;i<this.types.length;i++)
+		let so_objIndex=0;
+		for(let i = 0; i<this.types.length; i++)
 		{
-			mHTML+="<li style=\"cursor:pointer;\" onclick=\"Prado.Inspector.show('ul"+i+"');Prado.Inspector.changeSpan('sp" + i + "')\"><span id=\"sp" + i + "\">[+]</span><b>" + this.types[i] + "</b> (" + this.nameList[this.types[i]].length + ")</li><ul style=\"display:none;\" id=\"ul"+i+"\">";
-			this.hidden["ul"+i]=0;
-			for(e=0;e<this.nameList[this.types[i]].length;e++)
+			mHTML+=`<li style="cursor:pointer;" onclick="Prado.Inspector.show('ul${i}');Prado.Inspector.changeSpan('sp${i}')"><span id="sp${i}">[+]</span><b>${this.types[i]}</b> (${this.nameList[this.types[i]].length})</li><ul style="display:none;" id="ul${i}">`;
+			this.hidden[`ul${i}`]=0;
+			for(let e = 0; e<this.nameList[this.types[i]].length; e++)
 			{
-				var prop = this.nameList[this.types[i]][e];
-				var value = this.objs[this.types[i]][prop]
-				var more = "";
+				const prop = this.nameList[this.types[i]][e];
+				const value = this.objs[this.types[i]][prop];
+				let more = "";
 				if(value.indexOf("[object ") >= 0 && /^[a-zA-Z_]/.test(prop))
 				{
 					if(this.displaying.indexOf("[object ") < 0)
-						more = " <a href=\"javascript:var_dump('"+this.displaying+"."+prop+"')\"><b>more</b></a>";
+						more = ` <a href="javascript:var_dump('${this.displaying}.${prop}')"><b>more</b></a>`;
 					else if(this.displaying.indexOf("[object Window]") >= 0)
-						more = " <a href=\"javascript:var_dump('"+prop+"')\"><b>more</b></a>";
+						more = ` <a href="javascript:var_dump('${prop}')"><b>more</b></a>`;
 				}
-				mHTML+="<li style=\"cursor:pointer;\" onclick=\"Prado.Inspector.show('mul" + so_objIndex + "');Prado.Inspector.changeSpan('sk" + so_objIndex + "')\"><span id=\"sk" + so_objIndex + "\">[+]</span>" + prop + "</li><ul id=\"mul" + so_objIndex + "\" style=\"display:none;\"><li style=\"list-style-type:none;\"><pre>" + value + more + "</pre></li></ul>";
-				this.hidden["mul"+so_objIndex]=0;
+				mHTML+=`<li style="cursor:pointer;" onclick="Prado.Inspector.show('mul${so_objIndex}');Prado.Inspector.changeSpan('sk${so_objIndex}')"><span id="sk${so_objIndex}">[+]</span>${prop}</li><ul id="mul${so_objIndex}" style="display:none;"><li style="list-style-type:none;"><pre>${value}${more}</pre></li></ul>`;
+				this.hidden[`mul${so_objIndex}`]=0;
 				so_objIndex++;
 			}
 			mHTML+="</ul>";
@@ -683,20 +684,19 @@ Prado.Inspector =
 		this.d.getElementById("so_mContainer").innerHTML =mHTML;
 	},
 
-	handleKeyEvent : function(e) {
-		keyCode=document.all?window.event.keyCode:e.keyCode;
+	handleKeyEvent(e) {
+		const keyCode = document.all ? window.event.keyCode : e.keyCode;
 		if(keyCode==27) {
 			this.cleanUp();
 		}
 	},
 
-	cleanUp : function()
-	{
+	cleanUp() {
 		if(this.d.getElementById("so_mContainer"))
 		{
 			this.d.body.removeChild(this.d.getElementById("so_mContainer"));
 			this.d.body.removeChild(this.d.getElementById("so_mStyle"));
-			jQuery(this.d).unbind("keydown", this.dKeyDownEvent);
+			this.d.removeEventListener("keydown", this.dKeyDownEvent);
 			this.types = new Array();
 			this.objs = new Array();
 			this.hidden = new Array();
@@ -705,23 +705,22 @@ Prado.Inspector =
 
 	disabled : document.all && !this.opera,
 
-	inspect : function(obj)
-	{
+	inspect(obj) {
 		if(this.disabled)return alert("Sorry, this only works in Mozilla and Firefox currently.");
 		this.cleanUp();
-		mObj=this.d.body.appendChild(this.d.createElement("div"));
+		const mObj = this.d.body.appendChild(this.d.createElement("div"));
 		mObj.id="so_mContainer";
-		sObj=this.d.body.appendChild(this.d.createElement("style"));
+		const sObj = this.d.body.appendChild(this.d.createElement("style"));
 		sObj.id="so_mStyle";
 		sObj.type="text/css";
 		sObj.innerHTML = this.style;
 		this.dKeyDownEvent = this.handleKeyEvent.bind(this);
-		jQuery(this.d).on("keydown", this.dKeyDownEvent);
+		this.d.addEventListener("keydown", this.dKeyDownEvent);
 
 		this.parseJS(obj);
 		this.buildTree();
 
-		cObj=mObj.appendChild(this.d.createElement("div"));
+		const cObj = mObj.appendChild(this.d.createElement("div"));
 		cObj.className="credits";
 		cObj.innerHTML = "<b>[esc] to <a href=\"javascript:Prado.Inspector.cleanUp();\">close</a></b><br />Javascript Object Tree V2.0.";
 
@@ -739,12 +738,16 @@ Prado.Inspector =
 			"#so_mContainer .credits a { font:9px verdana; font-weight:bold; color:#004465; text-decoration:none; background-color:transparent; }"
 };
 
-//similar function to var_dump in PHP, brings up the javascript object tree UI.
+// Similar function to var_dump in PHP, brings up the javascript object tree UI.
+// Called from PHP-emitted client scripts and from the dev console, hence the
+// global declaration despite no in-file consumer.
+// eslint-disable-next-line no-unused-vars
 function var_dump(obj)
 {
 	Prado.Inspector.inspect(obj);
 }
 
-//similar function to print_r for PHP
+// Similar function to print_r for PHP. External consumers only.
+// eslint-disable-next-line no-unused-vars
 var print_r = inspect;
 

@@ -336,7 +336,7 @@ describe('TTabPanel tab click via DOM event', () => {
 		}
 		const options = buildDOM(['tab0', 'tab1'], 0, null, { AutoSwitch: true });
 		new TTabPanel(options);
-		global.jQuery('#tab1_0').trigger('mouseenter');
+		document.getElementById('tab1_0').dispatchEvent(new Event('mouseenter', { bubbles: true }));
 		expect(global.jQuery('#tab1').css('display')).not.toBe('none');
 		expect(global.jQuery('#tab0').css('display')).toBe('none');
 	});

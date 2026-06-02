@@ -1,14 +1,13 @@
 /*! PRADO controls javascript file | github.com/pradosoft/prado */
 
-Prado.WebUI = jQuery.klass();
+Prado.WebUI = Prado.Class();
 
-Prado.WebUI.Control = jQuery.klass({
+Prado.WebUI.Control = Prado.Class({
 
-	initialize : function(options)
-	{
+	initialize(options) {
 	    this.registered = false;
 		this.ID = options.ID;
-		this.element = jQuery("#" + this.ID).get(0);
+		this.element = document.getElementById(this.ID);
 		this.observers = new Array();
 		this.intervals = new Array();
 
@@ -30,24 +29,23 @@ Prado.WebUI.Control = jQuery.klass({
 	 * Registers the control wrapper in the Prado client side control registry
 	 * @param array control wrapper options
 	 */
-	register : function(options)
-	{
+	register(options) {
 		return Prado.Registry[options.ID] = this;
 	},
 
 	/**
 	 * De-registers the control wrapper in the Prado client side control registry
 	 */
-	deregister : function()
-	{
+	deregister() {
 		// extra check so we don't ever deregister another wrapper
-		var value = Prado.Registry[this.ID];
+		const value = Prado.Registry[this.ID];
 		if (value===this)
 		{
 			delete Prado.Registry[this.ID];
 			return value;
 		}
 		else
+			// eslint-disable-next-line no-debugger
 			debugger; // invoke debugger - this should never happen
 	},
 
@@ -56,8 +54,7 @@ Prado.WebUI.Control = jQuery.klass({
 	 * @param object reference to the old wrapper
 	 * @param array control wrapper options
 	 */
-	replace : function(oldwrapper, options)
-	{
+	replace(oldwrapper, options) {
 		// if there's some advanced state management in the wrapper going on, then
 		// this method could be used either to copy the current state of the control
 		// from the old wrapper to this new one (which then could live on, while the old
@@ -79,39 +76,34 @@ Prado.WebUI.Control = jQuery.klass({
 
 	/**
 	 * Registers an event observer which will be automatically disposed of when the wrapper
-	 * is deregistered
-	 * @param element DOM element reference or id to attach the event handler to
+	 * is deregistered.
+	 * @param element DOM element reference or id string to attach the event handler to
 	 * @param string event name to observe
-         * @param handler event handler function
+	 * @param handler event handler function
 	 */
-	observe: function(element, eventName, handler, options)
-	{
-		var e = { _element: element, _eventName: eventName, _handler: handler };
-		this.observers.push(e);
-		return jQuery(e._element).bind(e._eventName, options, e._handler);
+	observe(element, eventName, handler) {
+		const target = (typeof element === 'string') ? document.getElementById(element) : element;
+		if (!target) return;
+		this.observers.push({ _element: target, _eventName: eventName, _handler: handler });
+		target.addEventListener(eventName, handler);
 	},
 
 	/**
 	 * Checks whether an event observer is installed and returns its index
 	 * @param element DOM element reference or id the event handler was attached to
 	 * @param string event name observed
-         * @param handler event handler function
-	 * @result int false if the event handler is not installed, or 1-based index when installed
+	 * @param handler event handler function
+	 * @result int -1 if not installed, otherwise the index in observers
 	 */
-	findObserver: function(element, eventName, handler)
-	{
-		var e = { _element: element, _eventName: eventName, _handler: handler };
-		var idx = -1;
-		for(var i=0;i<this.observers.length;i++)
+	findObserver(element, eventName, handler) {
+		const target = (typeof element === 'string') ? document.getElementById(element) : element;
+		for(let i=0;i<this.observers.length;i++)
 		{
-			var o = this.observers[i];
-			if ((o._element===element) && (o._eventName===eventName) && (o._handler===handler))
-			{
-				idx = i;
-				break;
-			}
+			const o = this.observers[i];
+			if ((o._element===target) && (o._eventName===eventName) && (o._handler===handler))
+				return i;
 		}
-		return idx;
+		return -1;
 	},
 
 
@@ -119,17 +111,18 @@ Prado.WebUI.Control = jQuery.klass({
 	 * Degisters an event observer from the list of automatically disposed handlers
 	 * @param element DOM element reference or id the event handler was attached to
 	 * @param string event name observed
-         * @param handler event handler function
+	 * @param handler event handler function
 	 */
-	stopObserving: function(element, eventName, handler)
-	{
-		var idx = this.findObserver(element,eventName,handler);
+	stopObserving(element, eventName, handler) {
+		const idx = this.findObserver(element, eventName, handler);
+		const target = (typeof element === 'string') ? document.getElementById(element) : element;
 		if (idx!=-1)
 			this.observers.splice(idx, 1);
 		else
+			// eslint-disable-next-line no-debugger
 			debugger; // shouldn't happen
 
-		return jQuery(element).unbind(eventName, handler);
+		if (target) target.removeEventListener(eventName, handler);
 	},
 
 	/**
@@ -139,15 +132,17 @@ Prado.WebUI.Control = jQuery.klass({
 	 * @param int number of milliseconds to wait before executing
 	 * @return int unique ID that can be used to cancel the scheduled execution
 	 */
-	setTimeout: function(func, delay)
-	{
-		if (!jQuery.isFunction(func))
+	setTimeout(func, delay) {
+		// Accept a code string (Prado-emitted client script may pass JS source
+		// here); evaluate it lazily in the timeout callback.
+		if (typeof func !== 'function')
 		{
-			var expr = func;
-			func = function() { return eval(expr); }
+			const expr = func;
+			// eslint-disable-next-line no-eval
+			func = () => eval(expr)
 		};
-		var obj = this;
-		return window.setTimeout(function() {
+		let obj = this;
+		return window.setTimeout(() => {
 			if (!obj.isLingering())
 				func();
 			obj = null;
@@ -158,8 +153,7 @@ Prado.WebUI.Control = jQuery.klass({
 	 * Cancels a previously scheduled code snippet or function
 	 * @param int unique ID returned by setTimeout()
 	 */
-	clearTimeout: function(timeoutid)
-	{
+	clearTimeout(timeoutid) {
 		return window.clearTimeout(timeoutid);
 	},
 
@@ -170,11 +164,15 @@ Prado.WebUI.Control = jQuery.klass({
 	 * @param int number of milliseconds to wait before executing
 	 * @return int unique ID that can be used to cancel the interval (see clearInterval() method)
 	 */
-	setInterval: function(func, delay)
-	{
-		if (!jQuery.isFunction(func)) func = function() { eval(func); };
-		var obj = this;
-		var h = window.setInterval(function() {
+	setInterval(func, delay) {
+		// Same code-string fallback as setTimeout above.
+		if (typeof func !== 'function') {
+			const expr = func;
+			// eslint-disable-next-line no-eval
+			func = () => { eval(expr); };
+		}
+		const obj = this;
+		const h = window.setInterval(() => {
 			if (!obj.isLingering())
 				func();
 		},delay);
@@ -186,18 +184,17 @@ Prado.WebUI.Control = jQuery.klass({
 	 * Deregisters a snipper or function previously registered with setInterval()
 	 * @param int unique ID of interval (returned by setInterval() previously)
 	 */
-	clearInterval: function(intervalid)
-	{
+	clearInterval(intervalid) {
 		window.clearInterval(intervalid);
-		this.intervals.splice( jQuery.inArray(intervalid, this.intervals), 1 );
+		const idx = this.intervals.indexOf(intervalid);
+		if (idx !== -1) this.intervals.splice(idx, 1);
 	},
 
 	/**
 	 * Tells whether this is a wrapper that has already been deregistered and is lingering
 	 * @return bool true if object
 	 */
-	isLingering: function()
-	{
+	isLingering() {
 		return !this.registered;
 	},
 
@@ -205,8 +202,7 @@ Prado.WebUI.Control = jQuery.klass({
 	 * Deinitializes the control wrapper by calling the onDone method and the deregistering it
 	 * @param array control wrapper options
 	 */
-	deinitialize : function()
-	{
+	deinitialize() {
 		if (this.registered)
 			{
 				if(this.onDone)
@@ -219,11 +215,12 @@ Prado.WebUI.Control = jQuery.klass({
 				// automatically deregister all installed observers
 				while (this.observers.length>0)
 				{
-					var e = this.observers.pop();
-					jQuery(e._element).unbind(e._eventName, e._handler);
+					const e = this.observers.pop();
+					if (e._element) e._element.removeEventListener(e._eventName, e._handler);
 				}
 			}
 		else
+			// eslint-disable-next-line no-debugger
 			debugger; // shouldn't happen
 
 		this.deregister();
@@ -233,13 +230,13 @@ Prado.WebUI.Control = jQuery.klass({
 
 });
 
-Prado.WebUI.PostBackControl = jQuery.klass(Prado.WebUI.Control, {
+Prado.WebUI.PostBackControl = Prado.Class(Prado.WebUI.Control, {
 
-	onInit : function(options)
-	{
+	onInit(options) {
 		this._elementOnClick = null;
 
 		if (!this.element)
+			// eslint-disable-next-line no-debugger
 			debugger; // element not found
 		else
 			{
@@ -249,23 +246,22 @@ Prado.WebUI.PostBackControl = jQuery.klass(Prado.WebUI.Control, {
 					this._elementOnClick = this.element.onclick.bind(this.element);
 					this.element.onclick = null;
 				}
-				this.observe(this.element, "click", jQuery.proxy(this.elementClicked,this,options));
+				this.observe(this.element, "click", this.elementClicked.bind(this, options));
 			}
 	},
 
-	elementClicked : function(options, event)
-	{
-		var src = event.target;
-		var doPostBack = true;
-		var onclicked = null;
+	elementClicked(options, event) {
+		const src = event.target;
+		let doPostBack = true;
+		let onclicked = null;
 
 		if(this._elementOnClick)
 		{
-			var onclicked = this._elementOnClick(event);
+			onclicked = this._elementOnClick(event);
 			if(typeof(onclicked) == "boolean")
 				doPostBack = onclicked;
 		}
-		if(doPostBack && !jQuery(src).is(':disabled'))
+		if(doPostBack && !src.disabled)
 			this.onPostBack(options,event);
 		if(typeof(onclicked) == "boolean" && !onclicked)
 		{
@@ -275,31 +271,29 @@ Prado.WebUI.PostBackControl = jQuery.klass(Prado.WebUI.Control, {
 		}
 	},
 
-	onPostBack : function(options, event)
-	{
+	onPostBack(options, event) {
 		new Prado.PostBack(options, event);
 	}
 
 });
 
-Prado.WebUI.TButton = jQuery.klass(Prado.WebUI.PostBackControl);
-Prado.WebUI.TLinkButton = jQuery.klass(Prado.WebUI.PostBackControl);
-Prado.WebUI.TCheckBox = jQuery.klass(Prado.WebUI.PostBackControl);
-Prado.WebUI.TBulletedList = jQuery.klass(Prado.WebUI.PostBackControl);
-Prado.WebUI.TImageMap = jQuery.klass(Prado.WebUI.PostBackControl);
+Prado.WebUI.TButton = Prado.Class(Prado.WebUI.PostBackControl);
+Prado.WebUI.TLinkButton = Prado.Class(Prado.WebUI.PostBackControl);
+Prado.WebUI.TCheckBox = Prado.Class(Prado.WebUI.PostBackControl);
+Prado.WebUI.TBulletedList = Prado.Class(Prado.WebUI.PostBackControl);
+Prado.WebUI.TImageMap = Prado.Class(Prado.WebUI.PostBackControl);
 
 /**
  * TImageButton client-side behaviour. With validation, Firefox needs
  * to capture the x,y point of the clicked image in hidden form fields.
  */
-Prado.WebUI.TImageButton = jQuery.klass(Prado.WebUI.PostBackControl,
+Prado.WebUI.TImageButton = Prado.Class(Prado.WebUI.PostBackControl,
 {
 	/**
 	 * Override parent onPostBack function, tried to add hidden forms
 	 * inputs to capture x,y clicked point.
 	 */
-	onPostBack : function(options, event)
-	{
+	onPostBack(options, event) {
 		this.addXYInput(options, event);
 		new Prado.PostBack(options, event);
 		this.removeXYInput(options, event);
@@ -310,30 +304,30 @@ Prado.WebUI.TImageButton = jQuery.klass(Prado.WebUI.PostBackControl,
 	 * @param event DOM click event.
 	 * @param array image button options.
 	 */
-	addXYInput : function(options, event)
-	{
-		var imagePos = jQuery(this.element).offset();
-		var clickedPos = [event.clientX, event.clientY];
-		var x = clickedPos[0]-imagePos['left']+1;
-		var y = clickedPos[1]-imagePos['top']+1;
+	addXYInput(options, event) {
+		const rect = this.element.getBoundingClientRect();
+		const imagePos = { top: rect.top + window.pageYOffset, left: rect.left + window.pageXOffset };
+		const clickedPos = [event.clientX, event.clientY];
+		let x = clickedPos[0]-imagePos['left']+1;
+		let y = clickedPos[1]-imagePos['top']+1;
 		x = x < 0 ? 0 : x;
 		y = y < 0 ? 0 : y;
-		var id = this.element.id;
-		var name = options['EventTarget'];
-		var form = this.element.form || jQuery('#PRADO_PAGESTATE').get(0).form;
+		const id = this.element.id;
+		const name = options['EventTarget'];
+		const form = this.element.form || document.getElementById('PRADO_PAGESTATE').form;
 
-		var input=null;
+		let input=null;
 		input = document.createElement("input");
 		input.setAttribute("type", "hidden");
-		input.setAttribute("id", id+"_x");
-		input.setAttribute("name", name+"_x");
+		input.setAttribute("id", `${id}_x`);
+		input.setAttribute("name", `${name}_x`);
 		input.setAttribute("value", x);
 		form.appendChild(input);
 
 		input = document.createElement("input");
 		input.setAttribute("type", "hidden");
-		input.setAttribute("id", id+"_y");
-		input.setAttribute("name", name+"_y");
+		input.setAttribute("id", `${id}_y`);
+		input.setAttribute("name", `${name}_y`);
 		input.setAttribute("value", y);
 		form.appendChild(input);
 	},
@@ -343,11 +337,12 @@ Prado.WebUI.TImageButton = jQuery.klass(Prado.WebUI.PostBackControl,
 	 * @param event DOM click event.
 	 * @param array image button options.
 	 */
-	removeXYInput : function(options, event)
-	{
-		var id = this.element.id;
-		jQuery('#'+id+'_x').remove();
-		jQuery('#'+id+'_y').remove();
+	removeXYInput(_options, _event) {
+		const id = this.element.id;
+		const ex = document.getElementById(`${id}_x`);
+		const ey = document.getElementById(`${id}_y`);
+		if (ex) ex.remove();
+		if (ey) ey.remove();
 	}
 });
 
@@ -355,11 +350,10 @@ Prado.WebUI.TImageButton = jQuery.klass(Prado.WebUI.PostBackControl,
 /**
  * Radio button, only initialize if not already checked.
  */
-Prado.WebUI.TRadioButton = jQuery.klass(Prado.WebUI.PostBackControl,
+Prado.WebUI.TRadioButton = Prado.Class(Prado.WebUI.PostBackControl,
 {
-	initialize : function($super, options)
-	{
-		this.element = jQuery("#" + options['ID']).get(0);
+	initialize($super, options) {
+		this.element = document.getElementById(options['ID']);
 		if(this.element)
 		{
 			if(!this.element.checked)
@@ -369,39 +363,36 @@ Prado.WebUI.TRadioButton = jQuery.klass(Prado.WebUI.PostBackControl,
 });
 
 
-Prado.WebUI.TTextBox = jQuery.klass(Prado.WebUI.PostBackControl,
+Prado.WebUI.TTextBox = Prado.Class(Prado.WebUI.PostBackControl,
 {
-	onInit : function(options)
-	{
+	onInit(options) {
 		this.options=options;
 		if(this.options['TextMode'] != 'MultiLine')
 			this.observe(this.element, "keydown", this.handleReturnKey.bind(this));
 		if(this.options['AutoPostBack']==true)
-			this.observe(this.element, "change", jQuery.proxy(this.doPostback,this,options));
+			this.observe(this.element, "change", this.doPostback.bind(this, options));
 	},
 
-	doPostback : function(options, event)
-	{
+	doPostback(options, event) {
 		new Prado.PostBack(options, event);
 	},
 
-	handleReturnKey : function(e)
-	{
+	handleReturnKey(e) {
 		 if(e.keyCode == 13) // KEY_RETURN
         {
-			var target = e.target;
+			const target = e.target;
 			if(target)
 			{
 				if(this.options['AutoPostBack']==true)
 				{
-					jQuery(target).trigger( "change" );
+					target.dispatchEvent(new Event('change', { bubbles: true }));
 					e.stopPropagation();
 				}
 				else
 				{
 					if(this.options['CausesValidation'] && typeof(Prado.Validation) != "undefined")
 					{
-						if(!Prado.Validation.validate(this.options['FormID'], this.options['ValidationGroup'], jQuery(this.options['ID'])))
+						if(!Prado.Validation.validate(this.options['FormID'], this.options['ValidationGroup'], document.getElementById(this.options['ID'])))
 							return e.stopPropagation();
 					}
 				}
@@ -410,124 +401,123 @@ Prado.WebUI.TTextBox = jQuery.klass(Prado.WebUI.PostBackControl,
 	}
 });
 
-Prado.WebUI.TListControl = jQuery.klass(Prado.WebUI.PostBackControl,
+Prado.WebUI.TListControl = Prado.Class(Prado.WebUI.PostBackControl,
 {
-	onInit : function(options)
-	{
-			this.observe(this.element, "change", jQuery.proxy(this.doPostback,this,options));
+	onInit(options) {
+			this.observe(this.element, "change", this.doPostback.bind(this, options));
 	},
 
-	doPostback : function(options, event)
-	{
+	doPostback(options, event) {
 		new Prado.PostBack(options, event);
 	}
 });
 
-Prado.WebUI.TListBox = jQuery.klass(Prado.WebUI.TListControl);
-Prado.WebUI.TDropDownList = jQuery.klass(Prado.WebUI.TListControl);
+Prado.WebUI.TListBox = Prado.Class(Prado.WebUI.TListControl);
+Prado.WebUI.TDropDownList = Prado.Class(Prado.WebUI.TListControl);
 
-Prado.WebUI.DefaultButton = jQuery.klass(Prado.WebUI.Control,
+Prado.WebUI.DefaultButton = Prado.Class(Prado.WebUI.Control,
 {
-	onInit : function(options)
-	{
+	onInit(options) {
 		this.options = options;
-		this.observe(jQuery('#'+options['Panel']), "keydown", jQuery.proxy(this.triggerEvent,this));
+		this.observe(document.getElementById(options['Panel']), "keydown", this.triggerEvent.bind(this));
 	},
 
-	triggerEvent : function(ev)
-	{
-		var enterPressed = ev.keyCode == 13;
-		var isTextArea = ev.target.tagName.toLowerCase() == "textarea";
-		var isHyperLink = ev.target.tagName.toLowerCase() == "a" && ev.target.hasAttribute("href");
-		var isValidButton = ev.target.tagName.toLowerCase() == "input" &&  ev.target.type.toLowerCase() == "submit";
+	triggerEvent(ev) {
+		const enterPressed = ev.keyCode == 13;
+		const isTextArea = ev.target.tagName.toLowerCase() == "textarea";
+		const isHyperLink = ev.target.tagName.toLowerCase() == "a" && ev.target.hasAttribute("href");
+		const isValidButton = ev.target.tagName.toLowerCase() == "input" &&  ev.target.type.toLowerCase() == "submit";
 
 		if(enterPressed && !isTextArea && !isValidButton && !isHyperLink)
 		{
-			var defaultButton = jQuery('#'+this.options['Target']);
+			const defaultButton = document.getElementById(this.options['Target']);
 			if(defaultButton)
 			{
 				this.triggered = true;
-				defaultButton.trigger(this.options['Event']);
+				// For a click on a form control, call the native .click() method
+				// (rather than dispatching a synthetic Event) so the browser
+				// runs the default activation behavior — including submitting
+				// the form when the target is <input type=submit> / <button>.
+				// A synthetic Event(click) does not trigger form submission.
+				const evtName = this.options['Event'];
+				if (evtName === 'click' && typeof defaultButton.click === 'function')
+					defaultButton.click();
+				else
+					defaultButton.dispatchEvent(new Event(evtName, { bubbles: true }));
 				ev.preventDefault();
 			}
 		}
 	}
 });
 
-Prado.WebUI.TTextHighlighter = jQuery.klass(Prado.WebUI.Control,
+Prado.WebUI.TTextHighlighter = Prado.Class(Prado.WebUI.Control,
 {
-	onInit : function(options)
-	{
+	onInit(options) {
 		this.options = options;
 
-		var code = jQuery('#'+this.options.ID+'_code');
-		var btn;
+		const code = document.getElementById(`${this.options.ID}_code`);
+		const host = document.getElementById(this.options.ID);
+		let btn;
 
 		if(this.options.copycode)
 		{
-			jQuery('#'+this.options.ID).css({
-				'position': 'relative'
-			});
-			btn = jQuery('<input type="button">')
-				.addClass("copycode")
-				.val('Copy code')
-				.attr({
-					'id': '#'+this.options.ID+'_copy',
-					'data-clipboard-text': code.text()
-				})
-				.css({
-					'position': 'absolute',
-					'margin': '5px',
-					'right': '0'
-					});
+			if (host) host.style.position = 'relative';
+			btn = document.createElement('input');
+			btn.type = 'button';
+			btn.className = 'copycode';
+			btn.value = 'Copy code';
+			btn.id = `${this.options.ID}_copy`;
+			btn.setAttribute('data-clipboard-text', code.textContent);
+			btn.style.position = 'absolute';
+			btn.style.margin = '5px';
+			btn.style.right = '0';
 
-			var clipboard = new ClipboardJS(jQuery(btn).get(0));
+			// Constructed for its side effect (binding clipboard behavior to btn).
+			new ClipboardJS(btn);
 		}
 
 		hljs.configure({
 			tabReplace: options.tabsize || '    '
 		})
-		hljs.highlightBlock(code.get(0));
+		hljs.highlightBlock(code);
 
 		if(this.options.linenum) {
-			hljs.lineNumbersBlock(code.get(0));
+			hljs.lineNumbersBlock(code);
 		}
 
-		if(this.options.copycode)
+		if(this.options.copycode && host)
 		{
-			btn.prependTo('#'+this.options.ID);
+			host.insertBefore(btn, host.firstChild);
 		}
 	}
 });
 
 
-Prado.WebUI.TCheckBoxList = jQuery.klass(Prado.WebUI.Control,
+Prado.WebUI.TCheckBoxList = Prado.Class(Prado.WebUI.Control,
 {
-	onInit : function(options)
-	{
-		for(var i = 0; i<options.ItemCount; i++)
+	onInit(options) {
+		for(let i = 0; i<options.ItemCount; i++)
 		{
-			var checkBoxOptions = jQuery.extend({}, options,
-			{
-				ID : options.ID+"_c"+i,
-				EventTarget : options.ListName+"$c"+i
-			});
+			const checkBoxOptions = {
+				...options,
+				ID : `${options.ID}_c${i}`,
+				EventTarget : `${options.ListName}$c${i}`
+			};
 			new Prado.WebUI.TCheckBox(checkBoxOptions);
 		}
 	}
 });
 
-Prado.WebUI.TRadioButtonList = jQuery.klass(Prado.WebUI.Control,
+Prado.WebUI.TRadioButtonList = Prado.Class(Prado.WebUI.Control,
 {
-	onInit : function(options)
-	{
-		for(var i = 0; i<options.ItemCount; i++)
+	onInit(options) {
+		for(let i = 0; i<options.ItemCount; i++)
 		{
-			var radioButtonOptions = jQuery.extend({}, options,
-			{
-				ID : options.ID+"_c"+i,
-				EventTarget : options.ListName+"$c"+i
-			});
+			const radioButtonOptions = {
+				...options,
+				ID : `${options.ID}_c${i}`,
+				EventTarget : `${options.ListName}$c${i}`
+			};
 			new Prado.WebUI.TRadioButton(radioButtonOptions);
 		}
 	}

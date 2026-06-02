@@ -1008,7 +1008,7 @@ describe('Prado.WebUI.TListControl', () => {
 		// spy on the Prado.PostBack constructor that doPostback delegates to.
 		const spy = vi.spyOn(global.Prado, 'PostBack').mockImplementation(function () {});
 		new TListControl(postBackOptions('tlc2'));
-		jQuery(el).trigger('change');
+		el.dispatchEvent(new Event('change', { bubbles: true }));
 		expect(spy).toHaveBeenCalledTimes(1);
 		spy.mockRestore();
 	});
@@ -1059,7 +1059,7 @@ describe('Prado.WebUI.TDropDownList', () => {
 		// Same pre-binding issue as TListControl: spy on Prado.PostBack.
 		const spy = vi.spyOn(global.Prado, 'PostBack').mockImplementation(function () {});
 		new TDropDownList(postBackOptions('tddl2'));
-		jQuery(el).trigger('change');
+		el.dispatchEvent(new Event('change', { bubbles: true }));
 		expect(spy).toHaveBeenCalledTimes(1);
 		spy.mockRestore();
 	});

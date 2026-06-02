@@ -1,60 +1,64 @@
 /*! PRADO TTabPanel javascript file | github.com/pradosoft/prado */
 
-Prado.WebUI.TTabPanel = jQuery.klass(Prado.WebUI.Control,
+Prado.WebUI.TTabPanel = Prado.Class(Prado.WebUI.Control,
 {
-	onInit : function(options)
-	{
+	onInit(options) {
 		this.views = options.Views;
 		this.viewsvis = options.ViewsVis;
-		this.hiddenField = jQuery("#"+options.ID+'_1').get(0);
+		this.hiddenField = document.getElementById(`${options.ID}_1`);
 		this.activeCssClass = options.ActiveCssClass;
 		this.normalCssClass = options.NormalCssClass;
-		var length = options.Views.length;
-		for(var i = 0; i<length; i++)
+		const length = options.Views.length;
+		for(let i = 0; i<length; i++)
 		{
-			var item = options.Views[i];
-			var element = jQuery("#"+item+'_0').get(0);
+			const item = options.Views[i];
+			const element = document.getElementById(`${item}_0`);
 			if (element && options.ViewsVis[i])
 			{
-				this.observe(element, "click", jQuery.proxy(this.elementClicked,this,item));
+				this.observe(element, "click", this.elementClicked.bind(this, item));
 				if (options.AutoSwitch)
-					this.observe(element, "mouseenter", jQuery.proxy(this.elementClicked,this,item));
+					this.observe(element, "mouseenter", this.elementClicked.bind(this, item));
 			}
 
 			if(element)
 			{
-				var view = jQuery("#"+options.Views[i]).get(0);
+				const view = document.getElementById(options.Views[i]);
 				if (view)
 					if(this.hiddenField.value == i)
 					{
-						jQuery(element).addClass(this.activeCssClass).removeClass(this.normalCssClass);
-						jQuery(view).show();
+						element.classList.add(this.activeCssClass);
+						element.classList.remove(this.normalCssClass);
+						view.style.display = '';
 					} else {
-						jQuery(element).addClass(this.normalCssClass).removeClass(this.activeCssClass);
-						jQuery(view).hide();
+						element.classList.add(this.normalCssClass);
+						element.classList.remove(this.activeCssClass);
+						view.style.display = 'none';
 					}
 			}
 		}
 	},
 
-	elementClicked : function(viewID, event)
-	{
-		var length = this.views.length;
-		for(var i = 0; i<length; i++)
+	elementClicked(viewID, _event) {
+		const length = this.views.length;
+		for(let i = 0; i<length; i++)
 		{
-			var item = this.views[i];
-			if (jQuery("#"+item))
+			const item = this.views[i];
+			const tab = document.getElementById(`${item}_0`);
+			const view = document.getElementById(item);
+			if (tab && view)
 			{
 				if(item == viewID)
 				{
-					jQuery("#"+item+'_0').removeClass(this.normalCssClass).addClass(this.activeCssClass);
-					jQuery("#"+item).show();
+					tab.classList.remove(this.normalCssClass);
+					tab.classList.add(this.activeCssClass);
+					view.style.display = '';
 					this.hiddenField.value=i;
 				}
 				else
 				{
-					jQuery("#"+item+'_0').removeClass(this.activeCssClass).addClass(this.normalCssClass);
-					jQuery("#"+item).hide();
+					tab.classList.remove(this.activeCssClass);
+					tab.classList.add(this.normalCssClass);
+					view.style.display = 'none';
 				}
 			}
 		}

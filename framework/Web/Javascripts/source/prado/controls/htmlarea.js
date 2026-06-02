@@ -8,23 +8,20 @@
  *
 */
 
-Prado.WebUI.THtmlArea = jQuery.klass(Prado.WebUI.Control,
+Prado.WebUI.THtmlArea = Prado.Class(Prado.WebUI.Control,
 {
-	initialize: function($super, options)
-	{
+	initialize($super, options) {
 		options.ID = options.EditorOptions.elements;
 		$super(options);
 	},
 
-    onInit : function(options)
-	{
+    onInit(options) {
 		this.options = options;
 		this.registerAjaxHook();
 		this.registerInstance();
 	},
 
-	registerInstance: function()
-	{
+	registerInstance() {
 		if (typeof tinyMCE_GZ == 'undefined')
 			{
 				if (typeof tinyMCE == 'undefined')
@@ -59,29 +56,25 @@ Prado.WebUI.THtmlArea = jQuery.klass(Prado.WebUI.Control,
 				}
 	},
 
-	compressedScriptsLoaded: function()
-	{
+	compressedScriptsLoaded() {
 		Prado.WebUI.THtmlArea.tinyMCELoadState = 255;
-		var wrapper;
+		let wrapper;
 		while(Prado.WebUI.THtmlArea.pendingRegistrations.length>0)
-			if (wrapper = Prado.Registry[Prado.WebUI.THtmlArea.pendingRegistrations.pop()])
+			if ((wrapper = Prado.Registry[Prado.WebUI.THtmlArea.pendingRegistrations.pop()]))
 				wrapper.initInstance();
 	},
 
-	initInstance: function()
-	{
+	initInstance() {
 		tinyMCE.init(this.options.EditorOptions);
 	},
 
-	checkInstance: function()
-	{
+	checkInstance() {
 		if (!document.getElementById(this.ID))
 			this.deinitialize();
 	},
 
-	removePreviousInstance: function()
-	{
-		for(var i=0;i<tinyMCE.editors.length;i++)
+	removePreviousInstance() {
+		for(let i=0;i<tinyMCE.editors.length;i++)
 			if (tinyMCE.editors[i].id==this.ID)
 			{
 				tinyMCE.editors.splice(i,1); // ugly hack, but works
@@ -91,37 +84,38 @@ Prado.WebUI.THtmlArea = jQuery.klass(Prado.WebUI.Control,
 			}
 	},
 
-	registerAjaxHook: function()
-	{
-		jQuery(document).on('ajaxComplete', this.ajaxresponder.bind(this));
+	registerAjaxHook() {
+		this._ajaxHandler = this.ajaxresponder.bind(this);
+		document.addEventListener('prado:ajaxComplete', this._ajaxHandler);
 	},
 
 
-	deRegisterAjaxHook: function()
-	{
-		jQuery(document).off('ajaxComplete', this.ajaxresponder.bind(this));
+	deRegisterAjaxHook() {
+		if (this._ajaxHandler) {
+			document.removeEventListener('prado:ajaxComplete', this._ajaxHandler);
+			this._ajaxHandler = null;
+		}
 	},
 
-	ajaxresponder: function(request)
-	{
+	ajaxresponder(_request) {
 		this.checkInstance();
 	},
 
-	onDone: function()
-	{
+	onDone() {
 		// check for previous tinyMCE registration, and try to remove it gracefully first
-		var prev = tinyMCE.get(this.ID);
+		const prev = tinyMCE.get(this.ID);
 		if (prev)
 		try
 		{
 			tinyMCE.execCommand('mceFocus', false, this.ID);
 			// when removed, tinyMCE restores its content to the textarea. If the textarea content has been
 			// updated in this same callback, it will be overwritten with the old content. Workaround this.
-			var curtext = jQuery('#'+this.ID).get(0).value;
+			const ta = document.getElementById(this.ID);
+			const curtext = ta.value;
 			tinyMCE.execCommand('mceRemoveControl', false, this.ID);
-			jQuery('#'+this.ID).get(0).value = curtext;
+			ta.value = curtext;
 		}
-		catch (e)
+		catch (_e)
 		{
 			// suppress error here in case editor can't be properly removed
 			// (happens when <textarea> has been removed from DOM tree without deinitialzing the tinyMCE editor first)
@@ -133,10 +127,8 @@ Prado.WebUI.THtmlArea = jQuery.klass(Prado.WebUI.Control,
 	}
 });
 
-jQuery.extend(Prado.WebUI.THtmlArea,
+Object.assign(Prado.WebUI.THtmlArea,
 {
 	pendingRegistrations : [],
 	tinyMCELoadState : 0
 });
-
-

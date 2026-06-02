@@ -1,22 +1,21 @@
 /*! PRADO TInPlaceTextBox javascript file | github.com/pradosoft/prado */
 
-Prado.WebUI.TInPlaceTextBox = jQuery.klass(Prado.WebUI.Control,
+Prado.WebUI.TInPlaceTextBox = Prado.Class(Prado.WebUI.Control,
 {
-	onInit : function(options)
-	{
+	onInit(options) {
 
 		this.isSaving = false;
 		this.isEditing = false;
 		this.editField = null;
 		this.readOnly = options.ReadOnly;
 
-		this.options = jQuery.extend(
+		this.options = Object.assign(
 		{
 			LoadTextFromSource : false,
 			TextMode : 'SingleLine'
 
 		}, options || {});
-		this.element = jQuery('#'+this.options.ID).get(0);
+		this.element = document.getElementById(this.options.ID);
 		Prado.WebUI.TInPlaceTextBox.register(this);
 		this.createEditorInput();
 		this.initializeListeners();
@@ -25,20 +24,18 @@ Prado.WebUI.TInPlaceTextBox = jQuery.klass(Prado.WebUI.Control,
 	/**
 	 * Initialize the listeners.
 	 */
-	initializeListeners : function()
-	{
+	initializeListeners() {
 		this.onclickListener = this.enterEditMode.bind(this);
 		this.observe(this.element, 'click', this.onclickListener);
 		if (this.options.ExternalControl)
-			this.observe(jQuery('#'+this.options.ExternalControl).get(0), 'click', this.onclickListener);
+			this.observe(document.getElementById(this.options.ExternalControl), 'click', this.onclickListener);
 	},
 
 	/**
 	 * Changes the panel to an editable input.
 	 * @param {Event} evt event source
 	 */
-	enterEditMode :  function(evt)
-	{
+	enterEditMode(evt) {
 	    if (this.isSaving || this.isEditing || this.readOnly) return;
 	    this.isEditing = true;
 		this.onEnterEditMode();
@@ -47,14 +44,13 @@ Prado.WebUI.TInPlaceTextBox = jQuery.klass(Prado.WebUI.Control,
 		this.editField.disabled = false;
 		if(this.options.LoadTextOnEdit)
 			this.loadExternalText();
-		jQuery(this.editField).focus();
+		this.editField.focus();
 		if (evt)
 			evt.preventDefault();
     	return false;
 	},
 
-	exitEditMode : function(evt)
-	{
+	exitEditMode(_evt) {
 		this.isEditing = false;
 		this.isSaving = false;
 		this.editField.disabled = false;
@@ -62,35 +58,31 @@ Prado.WebUI.TInPlaceTextBox = jQuery.klass(Prado.WebUI.Control,
 		this.showLabel();
 	},
 
-	showTextBox : function()
-	{
-		jQuery(this.element).hide();
-		jQuery(this.editField).show();
+	showTextBox() {
+		this.element.style.display = 'none';
+		this.editField.style.display = '';
 	},
 
-	showLabel : function()
-	{
-		jQuery(this.element).show();
-		jQuery(this.editField).hide();
+	showLabel() {
+		this.element.style.display = '';
+		this.editField.style.display = 'none';
 	},
 
 	/**
 	 * Create the edit input field.
 	 */
-	createEditorInput : function()
-	{
+	createEditorInput() {
 		if(this.editField == null)
 			this.createTextBox();
 
 		this.editField.value = this.getText();
 	},
 
-	loadExternalText : function()
-	{
+	loadExternalText() {
 		this.editField.disabled = true;
 		this.onLoadingText();
-		var options = new Array('__InlineEditor_loadExternalText__', this.getText());
-		var request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
+		const options = new Array('__InlineEditor_loadExternalText__', this.getText());
+		const request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
 		request.setCausesValidation(false);
 		request.setCallbackParameter(options);
 		request.options.onSuccess = this.onloadExternalTextSuccess.bind(this);
@@ -101,10 +93,9 @@ Prado.WebUI.TInPlaceTextBox = jQuery.klass(Prado.WebUI.Control,
 	/**
 	 * Create a new input textbox or textarea
 	 */
-	createTextBox : function()
-	{
-		var cssClass= this.element.className || '';
-		var inputName = this.options.EventTarget;
+	createTextBox() {
+		const cssClass= this.element.className || '';
+		const inputName = this.options.EventTarget;
 
 		if(this.options.TextMode == 'SingleLine')
 		{
@@ -134,14 +125,13 @@ Prado.WebUI.TInPlaceTextBox = jQuery.klass(Prado.WebUI.Control,
 		//handle return key within single line textbox
 		if(this.options.TextMode == 'SingleLine')
 		{
-			this.observe(this.editField, "keydown", function(e)
-			{
+			this.observe(this.editField, "keydown", e => {
 				 if(e.keyCode == 13) //KEY_RETURN
 		        {
-					var target = e.target;
+					const target = e.target;
 					if(target)
 					{
-						jQuery(target).trigger("blur");
+						target.blur();
 						e.preventDefault();
 					}
 				}
@@ -155,23 +145,20 @@ Prado.WebUI.TInPlaceTextBox = jQuery.klass(Prado.WebUI.Control,
 	/**
 	 * @return {String} panel inner html text.
 	 */
-	getText: function()
-	{
+	getText() {
     	return this.element.innerHTML;
   	},
 
 	/**
 	 * Edit mode entered, calls optional event handlers.
 	 */
-	onEnterEditMode : function()
-	{
+	onEnterEditMode() {
 		if(typeof(this.options.onEnterEditMode) == "function")
 			this.options.onEnterEditMode(this,null);
 	},
 
-	onTextBoxBlur : function(e)
-	{
-		var text = this.element.innerHTML;
+	onTextBoxBlur(_e) {
+		const text = this.element.innerHTML;
 		if(this.options.AutoPostBack && text != this.editField.value)
 		{
 			if(this.isEditing)
@@ -186,8 +173,7 @@ Prado.WebUI.TInPlaceTextBox = jQuery.klass(Prado.WebUI.Control,
 		}
 	},
 
-	onKeyPressed : function(e)
-	{
+	onKeyPressed(e) {
 		if (e.keyCode == 27) //KEY_ESC
 		{
 			this.editField.value = this.getText();
@@ -204,9 +190,8 @@ Prado.WebUI.TInPlaceTextBox = jQuery.klass(Prado.WebUI.Control,
 	 * When the text input value has changed.
 	 * @param {String} original text
 	 */
-	onTextChanged : function(text)
-	{
-		var request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
+	onTextChanged(text) {
+		const request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
 		request.setCallbackParameter(text);
 		request.options.onSuccess = this.onTextChangedSuccess.bind(this);
 		request.options.onFailure = this.onTextChangedFailure.bind(this);
@@ -220,23 +205,20 @@ Prado.WebUI.TInPlaceTextBox = jQuery.klass(Prado.WebUI.Control,
 	/**
 	 * When loading external text.
 	 */
-	onLoadingText : function()
-	{
+	onLoadingText() {
 		//Logger.info("on loading text");
 	},
 
-	onloadExternalTextSuccess : function(request, parameter)
-	{
+	onloadExternalTextSuccess(request, parameter) {
 		this.isEditing = true;
 		this.editField.disabled = false;
 		this.editField.value = this.getText();
-		jQuery(this.editField).focus();
+		this.editField.focus();
 		if(typeof(this.options.onSuccess)=="function")
 			this.options.onSuccess(request, parameter);
 	},
 
-	onloadExternalTextFailure : function(request, parameter)
-	{
+	onloadExternalTextFailure(request, parameter) {
 		this.isSaving = false;
 		this.isEditing = false;
 		this.showLabel();
@@ -249,8 +231,7 @@ Prado.WebUI.TInPlaceTextBox = jQuery.klass(Prado.WebUI.Control,
 	 * @param {Object} sender
 	 * @param {Object} parameter
 	 */
-	onTextChangedSuccess : function(sender, parameter)
-	{
+	onTextChangedSuccess(sender, parameter) {
 		this.isSaving = false;
 		this.isEditing = false;
 		if(this.options.AutoHide)
@@ -261,8 +242,7 @@ Prado.WebUI.TInPlaceTextBox = jQuery.klass(Prado.WebUI.Control,
 			this.options.onSuccess(sender,parameter);
 	},
 
-	onTextChangedFailure : function(sender, parameter)
-	{
+	onTextChangedFailure(sender, parameter) {
 		this.editField.disabled = false;
 		this.isSaving = false;
 		this.isEditing = false;
@@ -272,20 +252,18 @@ Prado.WebUI.TInPlaceTextBox = jQuery.klass(Prado.WebUI.Control,
 });
 
 
-jQuery.extend(Prado.WebUI.TInPlaceTextBox,
+Object.assign(Prado.WebUI.TInPlaceTextBox,
 {
 	//class methods
 
 	textboxes : {},
 
-	register : function(obj)
-	{
+	register(obj) {
 		Prado.WebUI.TInPlaceTextBox.textboxes[obj.options.TextBoxID] = obj;
 	},
 
-	setDisplayTextBox : function(id,value)
-	{
-		var textbox = Prado.WebUI.TInPlaceTextBox.textboxes[id];
+	setDisplayTextBox(id, value) {
+		const textbox = Prado.WebUI.TInPlaceTextBox.textboxes[id];
 		if(textbox)
 		{
 			if(value)
@@ -297,9 +275,8 @@ jQuery.extend(Prado.WebUI.TInPlaceTextBox,
 		}
 	},
 
-	setReadOnly : function(id, value)
-	{
-		var textbox = Prado.WebUI.TInPlaceTextBox.textboxes[id];
+	setReadOnly(id, value) {
+		const textbox = Prado.WebUI.TInPlaceTextBox.textboxes[id];
 		if (textbox)
 		{
 			textbox.readOnly=value;

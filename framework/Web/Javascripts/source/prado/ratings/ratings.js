@@ -1,31 +1,30 @@
 /*! PRADO TRatingList javascript file | github.com/pradosoft/prado */
 
-Prado.WebUI.TRatingList = jQuery.klass(Prado.WebUI.Control,
+Prado.WebUI.TRatingList = Prado.Class(Prado.WebUI.Control,
 {
 	selectedIndex : -1,
 	rating: -1,
 	readOnly : false,
 
-	onInit : function(options)
-	{
-		var cap = $('#'+options.CaptionID).get(0);
-		this.options = jQuery.extend(
-		{
-			caption : cap ? cap.innerHTML : ''
-		}, options || {});
+	onInit(options) {
+		const cap = document.getElementById(options.CaptionID);
+		this.options = Object.assign({}, { caption : cap ? cap.innerHTML : '' }, options || {});
 
 		this.radios = [];
+		this._handlers = [];
 
-		$('#'+options.ID).addClass(options.Style);
-		for(var i = 0; i<options.ItemCount; i++)
+		const root = document.getElementById(options.ID);
+		if (root) root.classList.add(options.Style);
+		for(let i = 0; i<options.ItemCount; i++)
 		{
-			var radio = $('#'+options.ID+"_c"+i).get(0);
-			var td = radio.parentNode.parentNode;
+			const radio = document.getElementById(`${options.ID}_c${i}`);
+			if (!radio) continue;
+			const td = radio.parentNode.parentNode;
 
-			if(radio && td.tagName.toLowerCase()=='td')
+			if(td.tagName.toLowerCase()=='td')
 			{
 				this.radios.push(radio);
-				$(td).addClass("rating");
+				td.classList.add("rating");
 			}
 		}
 
@@ -37,32 +36,29 @@ Prado.WebUI.TRatingList = jQuery.klass(Prado.WebUI.Control,
 		this.setReadOnly(this.readOnly);
 	},
 
-	hover : function(index, ev)
-	{
+	hover(index, _ev) {
 		if(this.readOnly==true) return;
 
-		for(var i = 0; i<this.radios.length; i++)
+		for(let i = 0; i<this.radios.length; i++)
 		{
-			var node = this.radios[i].parentNode.parentNode;
+			const node = this.radios[i].parentNode.parentNode;
 			if(i <= index)
-				$(node).addClass('rating_hover');
+				node.classList.add('rating_hover');
 			else
-				$(node).removeClass('rating_hover');
-			$(node).removeClass("rating_selected");
-			$(node).removeClass("rating_half");
+				node.classList.remove('rating_hover');
+			node.classList.remove("rating_selected");
+			node.classList.remove("rating_half");
 		}
 		this.showCaption(this.getIndexCaption(index));
 	},
 
-	recover : function(index, ev)
-	{
+	recover(_index, _ev) {
 		if(this.readOnly==true) return;
 		this.showRating(this.rating);
 		this.showCaption(this.options.caption);
 	},
 
-	click : function(index, ev)
-	{
+	click(index, ev) {
 		if(this.readOnly==true) return;
 		this.selectedIndex = index;
 		this.setRating(index+1);
@@ -72,91 +68,94 @@ Prado.WebUI.TRatingList = jQuery.klass(Prado.WebUI.Control,
 		}
 	},
 
-	dispatchRequest : function(ev)
-	{
-		var requestOptions =jQuery.extend({}, this.options,
+	dispatchRequest(ev) {
+		const requestOptions = Object.assign({}, this.options,
 		{
-			ID : this.options.ID+"_c"+this.selectedIndex,
-			EventTarget : this.options.ListName+"$c"+this.selectedIndex
+			ID : `${this.options.ID}_c${this.selectedIndex}`,
+			EventTarget : `${this.options.ListName}$c${this.selectedIndex}`
 		});
 		new Prado.PostBack(requestOptions, ev);
  	},
 
-	setRating : function(value)
-	{
+	setRating(value) {
 		this.rating = value;
-		var base = Math.floor(value-1);
-		var remainder = value - base-1;
-		var halfMax = this.options.HalfRating["1"];
-		var index = remainder > halfMax ? base+1 : base;
-		for(var i = 0; i<this.radios.length; i++)
+		const base = Math.floor(value-1);
+		const remainder = value - base-1;
+		const halfMax = this.options.HalfRating["1"];
+		const index = remainder > halfMax ? base+1 : base;
+		for(let i = 0; i<this.radios.length; i++)
 			this.radios[i].checked = (i == index);
 
-		var caption = this.getIndexCaption(index);
+		const caption = this.getIndexCaption(index);
 		this.setCaption(caption);
 		this.showCaption(caption);
 
 		this.showRating(this.rating);
 	},
 
-	showRating: function(value)
-	{
-		var base = Math.floor(value-1);
-		var remainder = value - base-1;
-		var halfMin = this.options.HalfRating["0"];
-		var halfMax = this.options.HalfRating["1"];
-		var index = remainder > halfMax ? base+1 : base;
-		var hasHalf = remainder >= halfMin && remainder <= halfMax;
-		for(var i = 0; i<this.radios.length; i++)
+	showRating(value) {
+		const base = Math.floor(value-1);
+		const remainder = value - base-1;
+		const halfMin = this.options.HalfRating["0"];
+		const halfMax = this.options.HalfRating["1"];
+		const index = remainder > halfMax ? base+1 : base;
+		const hasHalf = remainder >= halfMin && remainder <= halfMax;
+		for(let i = 0; i<this.radios.length; i++)
 		{
-			var node = this.radios[i].parentNode.parentNode;
+			const node = this.radios[i].parentNode.parentNode;
 			if(i <= index)
-				$(node).addClass('rating_selected');
+				node.classList.add('rating_selected');
 			else
-				$(node).removeClass('rating_selected');
+				node.classList.remove('rating_selected');
 
 			if(i==index+1 && hasHalf)
-				$(node).addClass("rating_half");
+				node.classList.add("rating_half");
 			else
-				$(node).removeClass("rating_half");
-			$(node).removeClass("rating_hover");
+				node.classList.remove("rating_half");
+			node.classList.remove("rating_hover");
 		}
 	},
 
-	getIndexCaption : function(index)
-	{
+	getIndexCaption(index) {
 		return index > -1 ? this.radios[index].value : this.options.caption;
 	},
 
-	showCaption : function(value)
-	{
-		$('#'+this.options.CaptionID).html(value);
-		$('#'+this.options.ID).attr( "title", value);
+	showCaption(value) {
+		const cap = document.getElementById(this.options.CaptionID);
+		if (cap) cap.innerHTML = value;
+		const root = document.getElementById(this.options.ID);
+		if (root) root.setAttribute('title', value);
 	},
 
-	setCaption : function(value)
-	{
+	setCaption(value) {
 		this.options.caption = value;
 		this.showCaption(value);
 	},
 
-	setReadOnly : function(value)
-	{
+	setReadOnly(value) {
 		this.readOnly = value;
-		for(var i = 0; i<this.radios.length; i++)
+		for(let i = 0; i<this.radios.length; i++)
 		{
-			var node = this.radios[i].parentNode.parentNode;
+			const node = this.radios[i].parentNode.parentNode;
+			let h = this._handlers[i];
+			if (!h) {
+				h = this._handlers[i] = {
+					hover:   this.hover.bind(this, i),
+					recover: this.recover.bind(this, i),
+					click:   this.click.bind(this, i),
+				};
+			}
 			if(value)
 			{
-				$(node).addClass('rating_disabled');
-				$(node).off('mouseover', jQuery.proxy(this.hover, this, i));
-				$(node).off('mouseout', jQuery.proxy(this.recover, this, i));
-				$(node).off('click', jQuery.proxy(this.click, this, i));
+				node.classList.add('rating_disabled');
+				node.removeEventListener('mouseover', h.hover);
+				node.removeEventListener('mouseout',  h.recover);
+				node.removeEventListener('click',     h.click);
 			} else {
-				$(node).removeClass('rating_disabled');
-				$(node).on('mouseover', jQuery.proxy(this.hover, this, i));
-				$(node).on('mouseout', jQuery.proxy(this.recover, this, i));
-				$(node).on('click', jQuery.proxy(this.click, this, i));
+				node.classList.remove('rating_disabled');
+				node.addEventListener('mouseover', h.hover);
+				node.addEventListener('mouseout',  h.recover);
+				node.addEventListener('click',     h.click);
 			}
 		}
 
@@ -164,16 +163,15 @@ Prado.WebUI.TRatingList = jQuery.klass(Prado.WebUI.Control,
 	}
 });
 
-Prado.WebUI.TActiveRatingList = jQuery.klass(Prado.WebUI.TRatingList,
+Prado.WebUI.TActiveRatingList = Prado.Class(Prado.WebUI.TRatingList,
 {
-	dispatchRequest : function(ev)
-	{
-		var requestOptions =jQuery.extend({}, this.options,
+	dispatchRequest(ev) {
+		const requestOptions = Object.assign({}, this.options,
 		{
-			ID : this.options.ID+"_c"+this.selectedIndex,
-			EventTarget : this.options.ListName+"$c"+this.selectedIndex
+			ID : `${this.options.ID}_c${this.selectedIndex}`,
+			EventTarget : `${this.options.ListName}$c${this.selectedIndex}`
 		});
-		var request = new Prado.CallbackRequest(requestOptions.EventTarget, requestOptions);
+		const request = new Prado.CallbackRequest(requestOptions.EventTarget, requestOptions);
 		if(request.dispatch()==false)
 			ev.preventDefault();
 	}

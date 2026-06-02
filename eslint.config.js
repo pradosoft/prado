@@ -7,8 +7,9 @@ export default [
 		files: ['framework/Web/Javascripts/source/**/*.js'],
 
 		languageOptions: {
-			// Current source targets ES5+ with some ES6 idioms.
-			ecmaVersion: 2015,
+			// Source targets ES2022. Browsers: Chrome 94+, Firefox 93+, Safari 15+
+			// (the same baseline jQuery 3.7 supports).
+			ecmaVersion: 2022,
 
 			// Scripts are concatenated / loaded as <script> tags — not modules.
 			// When ESM conversion happens, change this to 'module'.
@@ -25,11 +26,28 @@ export default [
 				// Logger is declared/initialised by prado.js — must be writable.
 				Logger:      'writable',
 				tinyMCE:     'readonly', // optional TinyMCE editor
+				tinyMCE_GZ:  'readonly', // optional TinyMCE gzip-compressor (htmlarea.js)
 				grecaptcha:  'readonly', // optional reCAPTCHA
 				// Rico is defined by colorpicker.js (bundled copy of ricoColor.js).
 				Rico:        'writable',
 				// CustomEvent is polyfilled by prado.js for older browsers.
 				CustomEvent: 'writable',
+
+				// Third-party libraries Prado integrates with via PHP-emitted scripts.
+				hljs:        'readonly', // highlight.js — TTextHighlighter
+				ClipboardJS: 'readonly', // clipboard.js — TTextHighlighter copy-code
+
+				// reCAPTCHA v2 loader callback. Defined in validation3.js, called
+				// asynchronously by Google's loader script.
+				TReCaptcha2_onloadCallback: 'writable',
+
+				// logger.js public exports — defined in logger.js, used by
+				// PHP-emitted client scripts and dev consoles.
+				LogEntry:    'writable',
+				LogConsole:  'writable',
+				puts:        'writable',
+				print_r:     'writable',
+				var_dump:    'writable',
 			},
 		},
 
@@ -44,8 +62,14 @@ export default [
 			// Warn so we can track and eliminate instances over time.
 			'no-eval': 'warn',
 
-			// Some variables are declared but used only conditionally.
-			'no-unused-vars': 'warn',
+			// Some variables are declared but used only conditionally. Allow
+			// `_`-prefixed args/locals to be intentionally unused (e.g. event
+			// handlers that ignore the event object).
+			'no-unused-vars': ['warn', {
+				argsIgnorePattern: '^_',
+				varsIgnorePattern: '^_',
+				caughtErrorsIgnorePattern: '^_',
+			}],
 
 			// Loose equality is used intentionally in several places (value == false, etc.).
 			'eqeqeq': 'off',
@@ -56,7 +80,11 @@ export default [
 			'no-undef': 'warn',
 
 			// var-in-switch-case redeclarations are common in the legacy code; warn only.
-			'no-redeclare': 'warn',
+			// `builtinGlobals: false` lets the file that DEFINES a global
+			// (e.g. logger.js defining puts/var_dump/print_r, prado.js
+			// defining Prado) keep its `var foo = …` declaration without
+			// being flagged as a redeclaration of the globals listed above.
+			'no-redeclare': ['warn', { builtinGlobals: false }],
 
 			// debugger statements remaining in legacy code; warn so they appear in
 			// the lint report but do not block CI.
