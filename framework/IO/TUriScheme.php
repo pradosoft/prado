@@ -33,13 +33,13 @@ class TUriScheme extends TEnumerable
 	public const FILE = 'file';
 	public const HTTP = 'http';
 	public const HTTPS = 'https';
+	public const DATA = 'data';
 	public const WS = 'ws';
 	public const WSS = 'wss';
 	public const FTP = 'ftp';
 	public const FTPS = 'ftps';
 	public const SFTP = 'sftp';
 	public const SSH = 'ssh';
-	public const DATA = 'data';
 
 	// version control
 	public const GIT = 'git';
