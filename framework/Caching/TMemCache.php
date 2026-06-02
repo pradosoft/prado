@@ -41,7 +41,7 @@ use Prado\Xml\TXmlElement;
  * or a UNIX timestamp. A expiration time 0 represents never expire.
  *
  * By definition, cache does not ensure the existence of a value
- * even if it never expires. Cache is not meant to be an persistent storage.
+ * even if it never expires. Cache is not meant to be a persistent storage.
  *
  * Also note, there is no security measure to protected data in memcache.
  * All data in memcache can be accessed by any process running in the system.
@@ -141,7 +141,7 @@ class TMemCache extends TCache
 	private $_persistentid;
 
 	/**
-	 * @todo
+	 * @return bool whether the `memcached` extension is loaded.
 	 */
 	public static function getIsAvailable(): bool
 	{
