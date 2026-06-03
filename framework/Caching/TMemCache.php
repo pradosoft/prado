@@ -142,6 +142,7 @@ class TMemCache extends TCache
 
 	/**
 	 * @return bool whether the `memcached` extension is loaded.
+	 * @since 4.4.0
 	 */
 	public static function getIsAvailable(): bool
 	{

@@ -59,6 +59,7 @@ class TAPCCache extends TCache
 {
 	/**
 	 * @return bool whether APCu is loaded, enabled, and (for CLI) `apc.enable_cli` is on.
+	 * @since 4.4.0
 	 */
 	public static function getIsAvailable(): bool
 	{

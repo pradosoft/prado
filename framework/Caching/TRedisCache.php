@@ -154,6 +154,7 @@ class TRedisCache extends TCache
 
 	/**
 	 * @return bool whether the `redis` extension is loaded and the `\Redis` class exists.
+	 * @since 4.4.0
 	 */
 	public static function getIsAvailable(): bool
 	{

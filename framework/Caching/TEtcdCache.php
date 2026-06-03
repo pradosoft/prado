@@ -88,6 +88,7 @@ class TEtcdCache extends TSerializingCache
 
 	/**
 	 * @return bool whether the cURL extension is loaded.
+	 * @since 4.4.0
 	 */
 	public static function getIsAvailable(): bool
 	{
@@ -166,6 +167,7 @@ class TEtcdCache extends TSerializingCache
 	/**
 	 * @param string $key a unique key identifying the cached value
 	 * @return false|string the serialized value on a hit, or `false` on a miss or expiry.
+	 * @since 4.4.0
 	 */
 	protected function getSerializedValue(string $key): false|string
 	{
@@ -178,6 +180,7 @@ class TEtcdCache extends TSerializingCache
 	 * @param string $value the serialized value to store
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return bool true if the value is successfully stored into cache, false otherwise
+	 * @since 4.4.0
 	 */
 	protected function setSerializedValue(string $key, string $value, int $expire): bool
 	{
@@ -194,6 +197,7 @@ class TEtcdCache extends TSerializingCache
 	 * @param string $value the serialized value to store
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return bool true if the value is successfully stored into cache, false otherwise
+	 * @since 4.4.0
 	 */
 	protected function addSerializedValue(string $key, string $value, int $expire): bool
 	{

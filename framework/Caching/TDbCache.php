@@ -147,6 +147,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 
 	/**
 	 * @return bool whether the PDO extension is loaded.
+	 * @since 4.4.0
 	 */
 	public static function getIsAvailable(): bool
 	{
@@ -155,6 +156,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 
 	/**
 	 * @return bool whether the cache table has been verified or created for this request.
+	 * @since 4.4.0
 	 */
 	protected function getIsCacheInitialized(): bool
 	{
@@ -163,6 +165,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 
 	/**
 	 * @param bool $value whether the cache table has been verified or created for this request.
+	 * @since 4.4.0
 	 */
 	protected function setIsCacheInitialized(bool $value): void
 	{
@@ -481,6 +484,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 	/**
 	 * @param string $key a unique key identifying the cached value
 	 * @return false|string the serialized value on a hit, or `false` on a miss or expiry.
+	 * @since 4.4.0
 	 */
 	protected function getSerializedValue(string $key): false|string
 	{
@@ -503,6 +507,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 	 * @param string $value the serialized value to store
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return bool true if the value is successfully stored into cache, false otherwise
+	 * @since 4.4.0
 	 */
 	protected function setSerializedValue(string $key, string $value, int $expire): bool
 	{
@@ -565,6 +570,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 	 * @param string $value the serialized value to store
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return bool true if the value is successfully stored into cache, false otherwise
+	 * @since 4.4.0
 	 */
 	protected function addSerializedValue(string $key, string $value, int $expire): bool
 	{
