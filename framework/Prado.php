@@ -524,16 +524,19 @@ class Prado
 	{
 		$className = is_object($object_or_class) ? $object_or_class::class : $object_or_class;
 		$reflection = TComponentReflection::getReflectionMethodByType($className, $method);
-		if ($reflection !== null) {
-			$trace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS, 3);
-			if (empty($trace[2]) || empty($trace[1]['object']) || empty($trace[2]['object']) || $trace[1]['object'] !== $trace[2]['object']) {
-				return $reflection->isPublic();
-			} elseif ($reflection->isPrivate()) {
-				return $trace[2]['class'] === $reflection->class;
-			}
+		if ($reflection === null) {
+			return false;
+		}
+		if ($reflection->isPublic()) {
 			return true;
 		}
-		return false;
+		$trace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS, 3);
+		if (empty($trace[2]) || empty($trace[1]['object']) || empty($trace[2]['object']) || $trace[1]['object'] !== $trace[2]['object']) {
+			return false;
+		} elseif ($reflection->isPrivate()) {
+			return $trace[2]['class'] === $reflection->class;
+		}
+		return true;
 	}
 
 	/**
