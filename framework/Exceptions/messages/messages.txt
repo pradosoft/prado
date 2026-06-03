@@ -162,6 +162,13 @@ filecache_hash_token_path_separator		= TFileCache.hashToken must not return a va
 
 memorycache_backing_file_directory_not_found	= TMemoryCache.BackingFile directory does not exist for path '{0}'.
 
+serializingcache_type_invalid = TSerializingCache.SerializationType '{0}' is invalid. Valid values are 'PHP' and 'JSON'.
+serializingcache_encoding_invalid = TSerializingCache.Encoding '{0}' is invalid. Valid values are 'None', 'Base64' and 'Hex'.
+serializingcache_securitymanager_invalid = TSerializingCache.SecurityManager '{0}' is invalid. It must be a TSecurityManager module id or a TSecurityManager instance.
+serializingcache_json_encode_failed = TSerializingCache failed to JSON-encode the value: {0}.
+directorycachedependency_directory_invalid = TDirectoryCacheDependency.Directory {0} does not refer to a valid directory.
+cachedependencylist_cachedependency_required = Only objects implementing ICacheDependency can be added into TCacheDependencyList.
+
 errorhandler_errortemplatepath_invalid	= TErrorHandler.ErrorTemplatePath '{0}' is invalid. Make sure it is in namespace form and points to a valid directory containing error template files.
 
 pageservice_page_unknown				= Page '{0}' Not Found
@@ -543,10 +550,6 @@ dbtablegateway_pk_value_count_mismatch	= Composite key value count mismatch in f
 dbtablegateway_mismatch_args_exception	= TTableGateway finder method '{0}' expects {1} parameters but found only {2} parameters instead.
 dbtablegateway_mismatch_column_name		= In dynamic __call() method '{0}', no matching columns were found, valid columns for table '{2}' are '{1}'.
 dbtablegateway_invalid_table_info		= Table must be a string or an instance of TDbTableInfo.
-
-serializingcache_type_invalid = TSerializingCache.SerializationType '{0}' is invalid. Valid values are 'PHP' and 'JSON'.
-directorycachedependency_directory_invalid = TDirectoryCacheDependency.Directory {0} does not refer to a valid directory.
-cachedependencylist_cachedependency_required = Only objects implementing ICacheDependency can be added into TCacheDependencyList.
 
 soapservice_configfile_invalid			= TSoapService.ConfigFile '{0}' does not exist. Note, it has to be specified in a namespace format and the file extension must be '.xml' or '.php'.
 soapservice_request_invalid				= SOAP server '{0}' not found.
