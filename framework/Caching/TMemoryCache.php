@@ -247,14 +247,9 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 	private ?bool $_hashKeys = null;
 
 	/**
-	 * @var bool Whether each value is serialized before it is stored in memory.
-	 *   When `false` *(default)* the live value is stored by reference: this is fast
-	 *   and can hold non-serializable values (closures, resources), but a stored
-	 *   object is shared with the caller — mutating it after {@see set()}, or mutating
-	 *   the result of {@see get()}, changes the cached entry. When `true` the value is
-	 *   serialized on {@see set()} and unserialized on {@see get()}, so each entry is an
-	 *   independent copy (matching every other {@see TCache} backend). Set this at
-	 *   configuration time, before any entries are stored.
+	 * @var bool Whether each value is serialized before being stored. `false` *(default)*
+	 *   stores the live value by reference; `true` stores an independent serialized copy.
+	 *   See the "Value isolation" section in the class docblock.
 	 */
 	private bool $_serializeValues = false;
 
