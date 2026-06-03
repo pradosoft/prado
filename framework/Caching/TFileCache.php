@@ -308,10 +308,9 @@ class TFileCache extends TSerializingCache implements ICacheSize
 
 
 	/**
-	 * Retrieves the stored serialized payload for a unique key. When
-	 * {@see getMaximumSize MaximumSize} is active, a successful read calls
-	 * {@see touch()} on the cache file to update its `mtime`, which is used by
-	 * {@see evictToFitMaximumSize()} to order files for LRU eviction.
+	 * Retrieves the stored serialized payload for a unique key, using the file's
+	 * first-line expiry header as the authoritative liveness check; an expired entry is
+	 * deleted and reported as a miss.
 	 *
 	 * @param string $key the unique key
 	 * @return false|string the stored serialized payload, or false if the entry is
@@ -622,11 +621,11 @@ class TFileCache extends TSerializingCache implements ICacheSize
 	}
 
 	/**
-	 * Evicts the least recently used cache files — determined by file `mtime`,
-	 * which is updated on every successful {@see getValue} via {@see touch()} — one
-	 * at a time until the total on-disk size is at or below
-	 * {@see getMaximumSize MaximumSize}. After all evictions the running size total
-	 * and fingerprint are updated.
+	 * Evicts cache files in soonest-to-expire order, read from each file's `mtime`
+	 * (which mirrors the absolute expiry), one at a time until the total on-disk size is
+	 * at or below {@see getMaximumSize MaximumSize}. Never-expiring entries
+	 * ({@see NEVER_EXPIRES_MTIME}) sort last and are evicted only when nothing else
+	 * remains. After all evictions the running size total and fingerprint are updated.
 	 */
 	protected function evictToFitMaximumSize(): void
 	{

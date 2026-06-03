@@ -654,8 +654,9 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 	// ------------------------- shared store access (both modes) -------------------------
 
 	/**
-	 * Reads the stored payload for a key, enforcing TTL and refreshing the LRU access
-	 * time. The payload is opaque: it is the live value in non-serializing mode and the
+	 * Reads the stored payload for a key, enforcing TTL and, when
+	 * {@see getMaximumSize MaximumSize} is active, refreshing the LRU access time.
+	 * The payload is opaque: it is the live value in non-serializing mode and the
 	 * serialized string in serializing mode. Expired entries are removed on access; when
 	 * {@see getMaximumSize MaximumSize} is active the running size total is decremented.
 	 * @param string $key the unique key

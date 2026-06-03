@@ -333,7 +333,7 @@ class TMemCache extends TCache
 	 */
 	public function setOptions($value)
 	{
-		$this->assertUninitialized('Options');
+		// Applies to the live Memcached instance, so it is a post-init runtime operation.
 		if (!$this->getIsInitialized()) {
 			throw new TInvalidOperationException('memcache_not_initialized');
 		}
@@ -364,7 +364,6 @@ class TMemCache extends TCache
 	 */
 	public function setUseMemcached($value)
 	{
-		$this->assertUninitialized('UseMemcached');
 		if ($this->getIsInitialized() || TPropertyValue::ensureBoolean($value) === false) {
 			throw new TInvalidOperationException('initialized_property_unchangeable', 'UseMemcached');
 		}

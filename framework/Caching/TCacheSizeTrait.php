@@ -11,7 +11,11 @@
 namespace Prado\Caching;
 
 /**
- * TCacheSizeTrait provides a byte-cap and **Least Recently Used** eviction for cache modules.
+ * TCacheSizeTrait trait
+ *
+ * TCacheSizeTrait provides a byte-cap with size-driven eviction for cache modules. The
+ * eviction order is chosen by the implementing class in {@see evictToFitMaximumSize()}
+ * (for example least-recently-used or soonest-to-expire).
  *
  * Implementing classes must also implement {@see ICacheSize}, which defines the public
  * size-management contract and the {@see ICacheSize::SIZE_NOT_COMPUTED} sentinel constant.
