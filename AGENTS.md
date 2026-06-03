@@ -54,16 +54,16 @@
   - `@method` for dynamic events with prefix 'dy-'; which are called (on "$this->dy-") but not defined.
 - Inline comments should start with `//`
 - Use `?` for single nullable types and in doc blocks
-- **`@since` tag** — use the next release version when adding new methods or classes; omit the method tag when it matches the class tag
+- **`@since` tag** — use the next release version when adding new methods or classes; exception: omit the method tag when it matches the class tag
 - Method Doc Blocks must be **tight**, and have at minimum one sentence in the description.
 - Documentation additions/changes/removals should be integrated into the whole, at each level (of detail).
 
 ### Documentation Style (enforced)
 
 Docblocks are technical documentation written with direct technical statements.
-Language: American English
-Qualities of the writing: clear, thorough, easy to comprehend, not verbose (brevity)
-Tense: Clear Present Simple or Present Perfect - tune for ease of comprehension
+Language and National Variety: English - American
+Qualities of the writing: clear, thorough, easy to comprehend, not verbose (brevity), timeless/always was, integrated, wholistic
+Tense: Present - tune for ease of comprehension
 _Banned constructions_:
 - **Antithesis / "not merely X — it Ys"**: no "does not just X, it Ys", "is not a Y, it's a Z",
   "rather than X, it Ys". State what it does, once.
@@ -73,7 +73,7 @@ _Banned constructions_:
 - **Rule-of-three rhetorical lists** and build-up sentences. One fact per sentence.
 
 Prefer: subject–verb–object declaratives, tables and bullet lists of `condition → result` where appropriate.
-Docblocks describe; it is not persuasive writing.
+Docblocks inform and describe; it is not persuasive writing.
 
 ### Error Handling
 - Use try/catch blocks for operations that can fail

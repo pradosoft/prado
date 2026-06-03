@@ -159,9 +159,9 @@ Database tests need MySQL/PostgreSQL initialized from `tests/initdb_mysql.sql` /
 ### Documentation Style (enforced)
 
 Docblocks are technical documentation written with direct technical statements.
-Language: American English
-Qualities of the writing: clear, thorough, easy to comprehend, not verbose (brevity)
-Tense: Clear Present Simple or Present Perfect - tune for ease of comprehension
+Language and National Variety: English - American
+Qualities of the writing: clear, thorough, easy to comprehend, not verbose (brevity), timeless/always was, integrated, wholistic
+Tense: Present - tune for ease of comprehension
 _Banned constructions_:
 - **Antithesis / "not merely X — it Ys"**: no "does not just X, it Ys", "is not a Y, it's a Z",
   "rather than X, it Ys". State what it does, once.
@@ -171,7 +171,7 @@ _Banned constructions_:
 - **Rule-of-three rhetorical lists** and build-up sentences. One fact per sentence.
 
 Prefer: subject–verb–object declaratives, tables and bullet lists of `condition → result` where appropriate.
-Docblocks describe; it is not persuasive writing.
+Docblocks inform and describe; it is not persuasive writing.
 
 ## Working Knowledge (`agents/`)
 
