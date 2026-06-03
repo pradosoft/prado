@@ -88,7 +88,7 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 	/**
 	 * This processes behavior configuration elements.  This is usually called before
 	 * attach. This is only needed for complex behavior configurations.
-	 * @param array|\Prado\Xml\TXmlElement $config The innards to the behavior
+	 * @param null|array|\Prado\Xml\TXmlElement $config The innards to the behavior
 	 *   configuration.
 	 */
 	public function init($config)
