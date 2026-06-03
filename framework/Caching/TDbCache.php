@@ -177,7 +177,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 	 * This method is required by the IModule interface.
 	 * attach {@see \Prado\Caching\TDbCache::doInitializeCache()} to TApplication.OnLoadStateComplete event
 	 * attach {@see \Prado\Caching\TDbCache::doFlushCacheExpired()} to TApplication.OnSaveState event
-	 * @param \Prado\Xml\TXmlElement $config configuration for this module, can be null
+	 * @param null|array|\Prado\Xml\TXmlElement $config configuration for this module, can be null
 	 */
 	public function init($config)
 	{

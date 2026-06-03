@@ -109,6 +109,9 @@ class TFileCache extends TSerializingCache implements ICacheSize
 	/** Sentinel `mtime` marking a never-expiring entry; non-zero and `>= 2` to avoid stray `0`/`1` mtimes. */
 	public const NEVER_EXPIRES_MTIME = 3;
 
+	/** Default interval in seconds between automatic expired-file sweeps. */
+	public const DEFAULT_FLUSH_INTERVAL = 60;
+
 	/** @var string Absolute path to the cache directory; empty until configured. */
 	private string $_dir = '';
 
@@ -119,7 +122,7 @@ class TFileCache extends TSerializingCache implements ICacheSize
 	private string $_tempFilePrefix = '';
 
 	/** @var int Interval in seconds between automatic expired-file sweeps; 0 disables them. */
-	private int $_flushInterval = 60;
+	private int $_flushInterval = self::DEFAULT_FLUSH_INTERVAL;
 
 	// ---------------------------------------------------------------- lifecycle
 
@@ -140,6 +143,7 @@ class TFileCache extends TSerializingCache implements ICacheSize
 		}
 		$this->setDefaultTtl($defaultTtl);
 		$this->setTempFilePrefix(static::CACHE_FILE_PREFIX);
+		$this->setFlushInterval(static::DEFAULT_FLUSH_INTERVAL);
 	}
 
 	/**
@@ -815,7 +819,7 @@ class TFileCache extends TSerializingCache implements ICacheSize
 		if ($this->getTempFilePrefixDirect() === static::CACHE_FILE_PREFIX) {
 			$exprops[] = "\0" . __CLASS__ . "\0_tempFilePrefix";
 		}
-		if ($this->getFlushIntervalDirect() === 60) {
+		if ($this->getFlushIntervalDirect() === static::DEFAULT_FLUSH_INTERVAL) {
 			$exprops[] = "\0" . __CLASS__ . "\0_flushInterval";
 		}
 	}

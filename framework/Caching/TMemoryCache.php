@@ -72,17 +72,18 @@ use Prado\TPropertyValue;
  *
  * ## Value isolation ({@see getSerializeValues SerializeValues})
  *
- * By default ({@see getSerializeValues SerializeValues}`= false`) the live value is
- * stored by reference. This is the fastest option and is the only Prado cache that can
- * hold non-serializable values (closures, resources). The trade-off is that a stored
- * object is shared with the caller: mutating it after {@see set()}, or mutating the
- * object returned by {@see get()}, also changes the cached entry. Set
- * `SerializeValues="true"` to store each entry through the {@see TSerializingCache}
- * pipeline — serialized on {@see set()} and deserialized on {@see get()} — so that each
- * entry is an independent copy, matching every other {@see TCache} backend. In that mode
+ * By default ({@see getSerializeValues SerializeValues}`= false`) each value is stored
+ * as-is, without serialization. Objects, closures, and resources are kept as the same
+ * instance and shared with the caller: mutating a stored object after {@see set()}, or
+ * mutating the object returned by {@see get()}, also changes the cached entry. Scalars
+ * and arrays follow PHP copy-on-write semantics and behave as independent copies. This
+ * is the fastest mode and the only Prado cache that can hold non-serializable values.
+ * Set `SerializeValues="true"` to store each entry through the {@see TSerializingCache}
+ * pipeline, serialized on {@see set()} and deserialized on {@see get()}, so that every
+ * entry is an independent copy matching every other {@see TCache} backend. In that mode
  * the inherited {@see getSerializationType SerializationType}, {@see getEncrypt Encrypt},
- * and {@see getEncoding Encoding} settings apply; in reference mode they are ignored.
- * Both modes share the same in-memory store via {@see readStore()} / {@see writeStore()}.
+ * and {@see getEncoding Encoding} settings apply; they are ignored when values are stored
+ * as-is. Both modes share the same in-memory store via {@see readStore()} / {@see writeStore()}.
  *
  * ## Key hashing
  *

@@ -102,7 +102,7 @@ abstract class TSerializingCache extends TCache
 	 * format-defining properties ({@see setSerializationType SerializationType},
 	 * {@see setEncrypt Encrypt}, {@see setEncoding Encoding},
 	 * {@see setSecurityManager SecurityManager}) can no longer be changed.
-	 * @param mixed $config module configuration.
+	 * @param null|array|\Prado\Xml\TXmlElement $config module configuration.
 	 */
 	public function init($config)
 	{

@@ -109,7 +109,7 @@ abstract class TCache extends TModule implements ICache, \ArrayAccess
 	 * Initializes the cache module.
 	 * This method initializes the cache key prefix and registers the cache module
 	 * with the application if the cache is primary.
-	 * @param \Prado\Xml\TXmlElement $config the module configuration
+	 * @param null|array|\Prado\Xml\TXmlElement $config the module configuration
 	 */
 	public function init($config)
 	{
