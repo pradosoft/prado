@@ -403,6 +403,14 @@ class TComponent
 	protected $_m;
 
 	/**
+	 * @var array<string, IBaseBehavior[]> behaviors responding to a method, keyed by
+	 *   lowercased method name and in priority order.  Populated by
+	 *   {@see getBehaviorsWithMethod} and cleared when a behavior is attached or detached.
+	 * @since 4.4.0
+	 */
+	private array $_bm = [];
+
+	/**
 	 * @var array static global class behaviors, these behaviors are added upon instantiation of a class
 	 */
 	private static $_um = [];
@@ -557,7 +565,7 @@ class TComponent
 	public function __destruct()
 	{
 		$this->clearBehaviors();
-		if ($this->_listeningenabled) {
+		if ($this->getListeningToGlobalEvents()) {
 			$this->unlisten();
 		}
 	}
@@ -637,7 +645,7 @@ class TComponent
 	 */
 	public function listen()
 	{
-		if ($this->_listeningenabled) {
+		if ($this->getListeningToGlobalEvents()) {
 			return;
 		}
 
@@ -676,7 +684,7 @@ class TComponent
 	 */
 	public function unlisten()
 	{
-		if (!$this->_listeningenabled) {
+		if (!$this->getListeningToGlobalEvents()) {
 			return;
 		}
 
@@ -858,12 +866,12 @@ class TComponent
 				self::$_ue[$name] = new TWeakCallableCollection();
 			}
 			return self::$_ue[$name];
-		} elseif ($this->getBehaviorsEnabled()) {
+		} elseif ($this->_m !== null && $this->getBehaviorsEnabled()) {
 			// getting a behavior property/event (handler list)
 			$name = strtolower($name);
 			if (isset($this->_m[$name])) {
 				return $this->_m[$name];
-			} elseif ($this->_m !== null) {
+			} else {
 				foreach ($this->_m->toArray() as $behavior) {
 					if ($behavior->getEnabled() && (property_exists($behavior, $name) || $behavior->canGetProperty($name) || $behavior->hasEvent($name))) {
 						return $behavior->$name;
@@ -1169,19 +1177,56 @@ class TComponent
 			return null;
 		}
 		$classArgs = $callchain = null;
-		foreach ($this->_m->toArray() as $behavior) {
-			if ($behavior->getEnabled() && (Prado::method_visible($behavior, $method) || ($behavior instanceof IDynamicMethods))) {
-				if ($classArgs === null) {
-					$classArgs = $args;
-					array_unshift($classArgs, $this);
-				}
-				if (!$callchain) {
-					$callchain = new TCallChain($method);
-				}
-				$callchain->addCall([$behavior, $method], ($behavior instanceof IClassBehavior) ? $classArgs : $args);
+		foreach ($this->getBehaviorsWithMethod($method) as $behavior) {
+			if (!$behavior->getEnabled()) {
+				continue;
 			}
+			if ($classArgs === null) {
+				$classArgs = $args;
+				array_unshift($classArgs, $this);
+			}
+			if (!$callchain) {
+				$callchain = new TCallChain($method);
+			}
+			$callchain->addCall([$behavior, $method], ($behavior instanceof IClassBehavior) ? $classArgs : $args);
 		}
 		return $callchain;
+	}
+
+	/**
+	 * Returns the behaviors responding to a method, in priority order.  A behavior responds
+	 * when the method is visible on it or it implements {@see \Prado\Util\IDynamicMethods}.
+	 * Enabled state is excluded, so callers filter on
+	 * {@see \Prado\Util\IBaseBehavior::getEnabled}.  Results are memoized in {@see $_bm}.
+	 * @param string $method the method name resolved against the behaviors.
+	 * @return IBaseBehavior[] the responding behaviors, possibly empty.
+	 * @since 4.4.0
+	 */
+	protected function getBehaviorsWithMethod(string $method): array
+	{
+		$key = strtolower($method);
+		if (isset($this->_bm[$key])) {
+			return $this->_bm[$key];
+		}
+		$behaviors = [];
+		if ($this->_m !== null) {
+			foreach ($this->_m->toArray() as $behavior) {
+				if (Prado::method_visible($behavior, $method) || ($behavior instanceof IDynamicMethods)) {
+					$behaviors[] = $behavior;
+				}
+			}
+		}
+		return $this->_bm[$key] = $behaviors;
+	}
+
+	/**
+	 * Flushes the behavior method-resolution cache held in {@see $_bm}.  Called when the
+	 * set of attached behaviors changes so {@see getBehaviorsWithMethod} re-resolves.
+	 * @since 4.4.0
+	 */
+	protected function flushBehaviorMethodCache(): void
+	{
+		$this->_bm = [];
 	}
 
 	/**
@@ -2036,6 +2081,7 @@ class TComponent
 			$name = $this->_m->getNextIntegerKey();
 		}
 		$this->_m->add($name, $behavior, $priority);
+		$this->flushBehaviorMethodCache();
 		$behavior->setName($name);
 		$behavior->attach($this);
 		$this->callBehaviorsMethod('dyAttachBehavior', $return, $name, $behavior);
@@ -2068,6 +2114,7 @@ class TComponent
 			$this->callBehaviorsMethod('dyDetachBehavior', $return, $name, $behavior);
 			$behavior->detach($this);
 			$this->_m->remove($name, $priority);
+			$this->flushBehaviorMethodCache();
 			return $behavior;
 		}
 		return null;
@@ -2089,7 +2136,7 @@ class TComponent
 	 */
 	public function enableBehaviors()
 	{
-		if (!$this->_behaviorsenabled) {
+		if (!$this->getBehaviorsEnabled()) {
 			$this->_behaviorsenabled = true;
 			$this->callBehaviorsMethod('dyEnableBehaviors', $return);
 		}
@@ -2111,7 +2158,7 @@ class TComponent
 	 */
 	public function disableBehaviors()
 	{
-		if ($this->_behaviorsenabled) {
+		if ($this->getBehaviorsEnabled()) {
 			$callchain = $this->getCallChain('dyDisableBehaviors');
 			$this->_behaviorsenabled = false;
 			if ($callchain) { // normal dynamic events won't work because behaviors are disabled.
@@ -2219,13 +2266,14 @@ class TComponent
 	 */
 	protected function _getZappableSleepProps(&$exprops)
 	{
-		if ($this->_listeningenabled === false) {
+		if ($this->getListeningToGlobalEvents() === false) {
 			$exprops[] = "\0*\0_listeningenabled";
 		}
-		if ($this->_behaviorsenabled === true) {
+		if ($this->getBehaviorsEnabled() === true) {
 			$exprops[] = "\0*\0_behaviorsenabled";
 		}
 		$exprops[] = "\0*\0_e";
+		$exprops[] = "\0" . __CLASS__ . "\0_bm";
 		if ($this->_m === null) {
 			$exprops[] = "\0*\0_m";
 		}
