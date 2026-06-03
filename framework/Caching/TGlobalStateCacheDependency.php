@@ -11,6 +11,7 @@
 namespace Prado\Caching;
 
 use Prado\Prado;
+use Prado\TPropertyValue;
 
 /**
  * TGlobalStateCacheDependency class
@@ -71,9 +72,9 @@ class TGlobalStateCacheDependency extends TCacheDependency
 	 * @param string $value the name of the global state to track.
 	 * @see \Prado\TApplication::setGlobalState()
 	 */
-	public function setStateName(string $value): void
+	public function setStateName($value)
 	{
-		$this->setStateNameDirect($value);
+		$this->setStateNameDirect(TPropertyValue::ensureString($value));
 		$this->updateStateValue();
 	}
 

@@ -205,7 +205,7 @@ class TFileCache extends TSerializingCache implements ICacheSize
 	/**
 	 * @return string the absolute path to the cache directory
 	 */
-	public function getDirectory(): string
+	public function getDirectory()
 	{
 		return $this->getDirectoryDirect();
 	}
@@ -219,7 +219,7 @@ class TFileCache extends TSerializingCache implements ICacheSize
 	 * @throws TConfigurationException when the value is empty, or when the
 	 *   directory does not exist and cannot be created
 	 */
-	public function setDirectory($value): void
+	public function setDirectory($value)
 	{
 		$this->assertUninitialized('Directory');
 		$value = TPropertyValue::ensureString($value);
@@ -255,7 +255,7 @@ class TFileCache extends TSerializingCache implements ICacheSize
 	/**
 	 * @return int the default TTL in seconds; 0 means entries never expire
 	 */
-	public function getDefaultTtl(): int
+	public function getDefaultTtl()
 	{
 		return $this->getDefaultTtlDirect();
 	}
@@ -263,7 +263,7 @@ class TFileCache extends TSerializingCache implements ICacheSize
 	/**
 	 * @param int $value the default TTL in seconds; values below zero are clamped to 0
 	 */
-	public function setDefaultTtl($value): void
+	public function setDefaultTtl($value)
 	{
 		$this->setDefaultTtlDirect(max(0, TPropertyValue::ensureInteger($value)));
 	}
@@ -287,7 +287,7 @@ class TFileCache extends TSerializingCache implements ICacheSize
 	/**
 	 * @return string the filename prefix used when creating atomic temporary write files
 	 */
-	public function getTempFilePrefix(): string
+	public function getTempFilePrefix()
 	{
 		return $this->getTempFilePrefixDirect();
 	}
@@ -299,7 +299,7 @@ class TFileCache extends TSerializingCache implements ICacheSize
 	 *
 	 * @param string $value the filename prefix (e.g. `.my-cache-`)
 	 */
-	public function setTempFilePrefix($value): void
+	public function setTempFilePrefix($value)
 	{
 		$this->setTempFilePrefixDirect(TPropertyValue::ensureString($value));
 	}
@@ -472,7 +472,7 @@ class TFileCache extends TSerializingCache implements ICacheSize
 	 * @return int interval in seconds between automatic expired-file sweeps. `0` disables
 	 *   the automatic sweep (e.g. when flushing externally via the cron task). Defaults to 60.
 	 */
-	public function getFlushInterval(): int
+	public function getFlushInterval()
 	{
 		return $this->getFlushIntervalDirect();
 	}
@@ -482,7 +482,7 @@ class TFileCache extends TSerializingCache implements ICacheSize
 	 * automatic sweep and rely on the {@see fxGetCronTaskInfos cron task} instead.
 	 * @param int $value the interval in seconds; values below zero are clamped to 0.
 	 */
-	public function setFlushInterval($value): void
+	public function setFlushInterval($value)
 	{
 		$this->setFlushIntervalDirect(max(0, TPropertyValue::ensureInteger($value)));
 	}

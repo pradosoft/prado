@@ -46,7 +46,7 @@ interface ICacheSize
 	 *
 	 * @param int|string $value the maximum total size; 0 means unlimited
 	 */
-	public function setMaximumSize(int|string $value): void;
+	public function setMaximumSize($value);
 
 	/**
 	 * Returns the current total byte size of all cached entries.

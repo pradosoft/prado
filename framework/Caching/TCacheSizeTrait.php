@@ -10,6 +10,8 @@
 
 namespace Prado\Caching;
 
+use Prado\TPropertyValue;
+
 /**
  * TCacheSizeTrait trait
  *
@@ -289,8 +291,9 @@ trait TCacheSizeTrait
 	 *
 	 * @param int|string $value the maximum total size; 0 means unlimited
 	 */
-	public function setMaximumSize(int|string $value): void
+	public function setMaximumSize($value)
 	{
+		$value = is_int($value) ? $value : TPropertyValue::ensureString($value);
 		$this->setMaximumSizeDirect(max(0, static::parseSizeString($value)));
 		$this->enforceMaximumSize();
 	}
@@ -315,8 +318,8 @@ trait TCacheSizeTrait
 	 */
 	protected static function parseSizeString(int|string $value): int
 	{
-		if (is_int($value)) {
-			return $value;
+		if (is_numeric($value)) {
+			return (int) $value;
 		}
 		$value = trim($value);
 		if (!preg_match('/^(\d+)\s*([KMGTP]?)B?$/i', $value, $m)) {

@@ -130,7 +130,7 @@ abstract class TSerializingCache extends TCache
 	 * @param string $value one of `'PHP'` or `'JSON'`.
 	 * @throws TInvalidDataValueException if the value is not a recognized type.
 	 */
-	public function setSerializationType($value): void
+	public function setSerializationType($value)
 	{
 		$this->assertUninitialized('SerializationType');
 		$value = TPropertyValue::ensureString($value);
@@ -161,7 +161,7 @@ abstract class TSerializingCache extends TCache
 	/**
 	 * @param mixed $value whether to encrypt the serialized payload.
 	 */
-	public function setEncrypt($value): void
+	public function setEncrypt($value)
 	{
 		$this->assertUninitialized('Encrypt');
 		$this->setEncryptDirect(TPropertyValue::ensureBoolean($value));
@@ -190,7 +190,7 @@ abstract class TSerializingCache extends TCache
 	 * @param string $value one of `'None'`, `'Base64'`, or `'Hex'`.
 	 * @throws TInvalidDataValueException if the value is not a recognized encoding.
 	 */
-	public function setEncoding($value): void
+	public function setEncoding($value)
 	{
 		$this->assertUninitialized('Encoding');
 		$value = TPropertyValue::ensureString($value);
@@ -239,7 +239,7 @@ abstract class TSerializingCache extends TCache
 	 * @param string|TSecurityManager $value the security manager module id or instance.
 	 * @throws TConfigurationException if the value is neither a string nor a {@see TSecurityManager}.
 	 */
-	public function setSecurityManager($value): void
+	public function setSecurityManager($value)
 	{
 		$this->assertUninitialized('SecurityManager');
 		if (!is_string($value) && !($value instanceof TSecurityManager)) {

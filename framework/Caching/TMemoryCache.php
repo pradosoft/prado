@@ -884,7 +884,7 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 	/**
 	 * @return string the module ID of the backing cache; empty when not configured
 	 */
-	public function getBackingCacheId(): string
+	public function getBackingCacheId()
 	{
 		return $this->getBackingCacheIdDirect();
 	}
@@ -897,7 +897,7 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 	 *
 	 * @param string $value the module ID of a registered {@see TCache} module
 	 */
-	public function setBackingCacheId($value): void
+	public function setBackingCacheId($value)
 	{
 		$this->assertUninitialized('BackingCacheId');
 		$this->setBackingCacheIdDirect(TPropertyValue::ensureString($value));
@@ -922,7 +922,7 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 	/**
 	 * @return string the absolute path of the backing file; empty when not configured
 	 */
-	public function getBackingFile(): string
+	public function getBackingFile()
 	{
 		return $this->getBackingFileDirect();
 	}
@@ -937,7 +937,7 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 	 * @param string $value the file path for the backing store
 	 * @throws TConfigurationException when the parent directory does not exist
 	 */
-	public function setBackingFile($value): void
+	public function setBackingFile($value)
 	{
 		$this->assertUninitialized('BackingFile');
 		$value = TPropertyValue::ensureString($value);
@@ -978,7 +978,7 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 	 *
 	 * @return string the backing cache key
 	 */
-	public function getBackingCacheKey(): string
+	public function getBackingCacheKey()
 	{
 		return $this->getBackingCacheKeyDirect();
 	}
@@ -990,7 +990,7 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 	 *
 	 * @param string $value the cache key string
 	 */
-	public function setBackingCacheKey($value): void
+	public function setBackingCacheKey($value)
 	{
 		$this->assertUninitialized('BackingCacheKey');
 		$this->setBackingCacheKeyDirect(TPropertyValue::ensureString($value));
@@ -1016,7 +1016,7 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 	 * @return string the active merge policy; one of {@see MERGE} or {@see REPLACE}.
 	 *   Defaults to {@see DEFAULT_MERGE_POLICY}.
 	 */
-	public function getMergePolicy(): string
+	public function getMergePolicy()
 	{
 		return $this->getMergePolicyDirect();
 	}
@@ -1032,7 +1032,7 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 	 * @param string $value one of {@see MERGE} (`'Merge'`) or {@see REPLACE} (`'Replace'`)
 	 * @throws \Prado\Exceptions\TInvalidDataValueException when the value is not a valid policy name
 	 */
-	public function setMergePolicy($value): void
+	public function setMergePolicy($value)
 	{
 		$this->assertUninitialized('MergePolicy');
 		$this->setMergePolicyDirect(TPropertyValue::ensureEnum($value, [self::MERGE, self::REPLACE]));
@@ -1066,7 +1066,7 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 	 *
 	 * @return ?bool the current HashKeys setting
 	 */
-	public function getHashKeys(): ?bool
+	public function getHashKeys()
 	{
 		return $this->getHashKeysDirect();
 	}
@@ -1079,7 +1079,7 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 	 *
 	 * @param mixed $value `true`, `false`, or `null` (also accepts string equivalents)
 	 */
-	public function setHashKeys($value): void
+	public function setHashKeys($value)
 	{
 		$this->assertUninitialized('HashKeys');
 		if (is_string($value)) {
@@ -1116,7 +1116,7 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 	 * @return bool whether each value is serialized before being stored in memory.
 	 *   Defaults to `false`. See {@see $_serializeValues} for the trade-offs.
 	 */
-	public function getSerializeValues(): bool
+	public function getSerializeValues()
 	{
 		return $this->getSerializeValuesDirect();
 	}
@@ -1129,7 +1129,7 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 	 * before any entries are stored.
 	 * @param mixed $value whether to serialize stored values.
 	 */
-	public function setSerializeValues($value): void
+	public function setSerializeValues($value)
 	{
 		$this->assertUninitialized('SerializeValues');
 		$this->setSerializeValuesDirect(TPropertyValue::ensureBoolean($value));
@@ -1159,7 +1159,7 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 	 *   with the backing store. {@see save()} skips the backing write when this
 	 *   returns false.
 	 */
-	public function getChanged(): bool
+	public function getChanged()
 	{
 		return $this->getChangedDirect();
 	}

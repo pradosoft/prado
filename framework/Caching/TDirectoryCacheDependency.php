@@ -87,8 +87,9 @@ class TDirectoryCacheDependency extends TCacheDependency
 	 * @param string $directory path to the directory.
 	 * @throws TInvalidDataValueException if the path does not exist or is not a directory.
 	 */
-	public function setDirectory(string $directory): void
+	public function setDirectory($directory)
 	{
+		$directory = TPropertyValue::ensureString($directory);
 		if (($path = realpath($directory)) === false || !is_dir($path)) {
 			throw new TInvalidDataValueException('directorycachedependency_directory_invalid', $directory);
 		}
@@ -108,7 +109,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 	/**
 	 * @param bool $value whether subdirectories are included in the dependency check.
 	 */
-	public function setRecursiveCheck($value): void
+	public function setRecursiveCheck($value)
 	{
 		$this->_recursiveCheck = TPropertyValue::ensureBoolean($value);
 		if ($this->getDirectoryDirect() !== null) {
@@ -133,7 +134,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 	 * under the tracked directory.
 	 * @param int $value the depth limit.
 	 */
-	public function setRecursiveLevel($value): void
+	public function setRecursiveLevel($value)
 	{
 		$this->_recursiveLevel = TPropertyValue::ensureInteger($value);
 		if ($this->getDirectoryDirect() !== null) {
