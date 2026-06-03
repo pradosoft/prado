@@ -13,188 +13,8 @@ use Prado\Caching\TCache;
 use Prado\Caching\TFileCache;
 use Prado\Exceptions\TConfigurationException;
 use Prado\TApplication;
+use Prado\Util\Cron\TCronTaskInfo;
 
-// ── Helper class ───────────────────────────────────────────────────────────────
-
-/**
- * Exposes protected internals and overrides now() for clock-controlled TTL tests.
- * Using this subclass eliminates all sleep() calls from the test suite, making
- * expiry tests instant and deterministic.
- */
-class TFileCacheTestAccessor extends TFileCache
-{
-	/** @var int|null when set, now() returns this value instead of time() */
-	public ?int $fakeNow = null;
-
-	/**
-	 * @var callable|null when set, hashToken() delegates to this callable instead
-	 *   of the default sha1 implementation. Allows tests to inject a bad hashToken
-	 *   after init() has already succeeded with the normal implementation.
-	 */
-	public $hashTokenCallback = null;
-
-	protected function now(): int
-	{
-		return $this->fakeNow ?? parent::now();
-	}
-
-	protected function hashToken(string $token): string
-	{
-		return $this->hashTokenCallback !== null
-			? ($this->hashTokenCallback)($token)
-			: parent::hashToken($token);
-	}
-
-	public function pubNow(): int
-	{
-		return $this->now();
-	}
-
-	public function pubGenerateUniqueKey(string $key): string
-	{
-		return $this->generateUniqueKey($key);
-	}
-
-	public function pubHashToken(string $token): string
-	{
-		return $this->hashToken($token);
-	}
-
-	public function pubPathFor(string $key): string
-	{
-		return $this->pathFor($key);
-	}
-
-	public function pubSerialize(mixed $value): string
-	{
-		return $this->serialize($value);
-	}
-
-	public function pubUnserialize(string $value): mixed
-	{
-		return $this->unserialize($value);
-	}
-
-	public function pubGetContents(string $filePath): string|false
-	{
-		return $this->getContents($filePath);
-	}
-
-	public function pubPutContents(string $filePath, string $data): int|false
-	{
-		return $this->putContents($filePath, $data);
-	}
-
-	public function pubUnlink(string $filePath): bool
-	{
-		return $this->unlink($filePath);
-	}
-
-	public function pubRename(string $srcFilePath, string $destFilePath): bool
-	{
-		return $this->rename($srcFilePath, $destFilePath);
-	}
-
-	public function pubChmod(string $filePath, int $mode): bool
-	{
-		return $this->chmod($filePath, $mode);
-	}
-
-	public function pubTempnam(string $dir, string $prefix): string|false
-	{
-		return $this->tempnam($dir, $prefix);
-	}
-
-	public function pubGetTempFilePrefixDirect(): string
-	{
-		return $this->getTempFilePrefixDirect();
-	}
-
-	public function pubIsFile(string $path): bool
-	{
-		return $this->isFile($path);
-	}
-
-	public function pubTouch(string $filePath): bool
-	{
-		return $this->touch($filePath);
-	}
-
-	public function pubComputeSizeFingerprint(): string
-	{
-		return $this->computeSizeFingerprint();
-	}
-
-	public function pubComputeCurrentSize(): int
-	{
-		return $this->computeCurrentSize();
-	}
-
-	public function pubGetMaximumSizeDirect(): int
-	{
-		return $this->getMaximumSizeDirect();
-	}
-
-	public function pubGetCurrentSizeDirect(): int
-	{
-		return $this->getCurrentSizeDirect();
-	}
-
-	public function pubSetCurrentSizeDirect(int $value): void
-	{
-		$this->setCurrentSizeDirect($value);
-	}
-
-	public function pubGetSizeFingerprintDirect(): string
-	{
-		return $this->getSizeFingerprintDirect();
-	}
-
-	public function pubSetSizeFingerprintDirect(string $value): void
-	{
-		$this->setSizeFingerprintDirect($value);
-	}
-}
-
-// ── Fixture: identity hashToken subclass ───────────────────────────────────────
-
-/**
- * A TFileCache subclass whose hashToken() returns its input unchanged.
- * Used to verify that init() rejects an identity hashToken() implementation.
- */
-class TFileCacheIdentityHash extends TFileCache
-{
-	protected function hashToken(string $token): string
-	{
-		return $token;
-	}
-}
-
-/**
- * A TFileCache subclass whose hashToken() returns a value containing a
- * forward-slash path separator.
- * Used to verify that init() rejects unsafe hashToken() implementations.
- */
-class TFileCacheSlashHash extends TFileCache
-{
-	protected function hashToken(string $token): string
-	{
-		return 'sub/dir/' . sha1($token);
-	}
-}
-
-/**
- * A TFileCache subclass whose hashToken() returns a value containing a
- * backslash path separator.
- * Used to verify that init() rejects unsafe hashToken() implementations.
- */
-class TFileCacheBackslashHash extends TFileCache
-{
-	protected function hashToken(string $token): string
-	{
-		return 'sub\\dir\\' . sha1($token);
-	}
-}
 
 // ── Test class ─────────────────────────────────────────────────────────────────
 
@@ -214,8 +34,8 @@ class TFileCacheTest extends PHPUnit\Framework\TestCase
 {
 	private static string $cacheDir;
 
-	/** @var TFileCacheTestAccessor */
-	private TFileCacheTestAccessor $cache;
+	/** @var TTestFileCache */
+	private TTestFileCache $cache;
 
 	private ?TApplication $app = null;
 
@@ -243,7 +63,7 @@ class TFileCacheTest extends PHPUnit\Framework\TestCase
 		$basePath = __DIR__ . '/mockapp';
 		$this->app = new TApplication($basePath);
 
-		$this->cache = new TFileCacheTestAccessor(self::$cacheDir);
+		$this->cache = new TTestFileCache(self::$cacheDir);
 		$this->cache->setPrimaryCache(false);
 		$this->cache->init(null);
 	}
@@ -301,7 +121,7 @@ class TFileCacheTest extends PHPUnit\Framework\TestCase
 
 	public function testConstructWithDefaultTtlSetsDefaultTtl(): void
 	{
-		$cache = new TFileCacheTestAccessor(self::$cacheDir, 300);
+		$cache = new TTestFileCache(self::$cacheDir, 300);
 		$this->assertSame(300, $cache->getDefaultTtl());
 	}
 
@@ -310,8 +130,9 @@ class TFileCacheTest extends PHPUnit\Framework\TestCase
 	public function testGetSetDirectory(): void
 	{
 		$newDir = self::$cacheDir . DIRECTORY_SEPARATOR . 'subdir';
-		$this->cache->setDirectory($newDir);
-		$this->assertSame(realpath($newDir) ?: $newDir, $this->cache->getDirectory());
+		$cache = new TTestFileCache(); // un-initialized: Directory is still settable
+		$cache->setDirectory($newDir);
+		$this->assertSame(realpath($newDir) ?: $newDir, $cache->getDirectory());
 		// Directory should have been created.
 		$this->assertDirectoryExists($newDir);
 		@rmdir($newDir);
@@ -322,7 +143,7 @@ class TFileCacheTest extends PHPUnit\Framework\TestCase
 		$newDir = self::$cacheDir . DIRECTORY_SEPARATOR . 'autocreated_' . uniqid();
 		$this->assertDirectoryDoesNotExist($newDir);
 
-		$this->cache->setDirectory($newDir);
+		(new TTestFileCache())->setDirectory($newDir);
 
 		$this->assertDirectoryExists($newDir);
 		@rmdir($newDir);
@@ -333,7 +154,7 @@ class TFileCacheTest extends PHPUnit\Framework\TestCase
 		$newDir = self::$cacheDir . DIRECTORY_SEPARATOR . 'level1' . DIRECTORY_SEPARATOR . 'level2';
 		$this->assertDirectoryDoesNotExist($newDir);
 
-		$this->cache->setDirectory($newDir);
+		(new TTestFileCache())->setDirectory($newDir);
 
 		$this->assertDirectoryExists($newDir);
 		@rmdir($newDir);
@@ -343,7 +164,14 @@ class TFileCacheTest extends PHPUnit\Framework\TestCase
 	public function testSetDirectoryThrowsOnEmptyString(): void
 	{
 		$this->expectException(TConfigurationException::class);
-		$this->cache->setDirectory('');
+		(new TTestFileCache())->setDirectory('');
+	}
+
+	public function testDirectoryCannotChangeAfterInit(): void
+	{
+		// The cache from setUp() is already initialized → Directory is frozen.
+		$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
+		$this->cache->setDirectory(self::$cacheDir . DIRECTORY_SEPARATOR . 'late');
 	}
 
 	// ── DefaultTtl property ───────────────────────────────────────────────────
@@ -370,14 +198,14 @@ class TFileCacheTest extends PHPUnit\Framework\TestCase
 
 	public function testDefaultTempFilePrefixMatchesCacheFilePrefixConstant(): void
 	{
-		$cache = new TFileCacheTestAccessor();
+		$cache = new TTestFileCache();
 		// The constructor seeds TempFilePrefix from static::CACHE_FILE_PREFIX.
 		$this->assertSame(TFileCache::CACHE_FILE_PREFIX, $cache->getTempFilePrefix());
 	}
 
 	public function testDefaultTempFilePrefixIsSetViaDirectAccessor(): void
 	{
-		$cache = new TFileCacheTestAccessor();
+		$cache = new TTestFileCache();
 		$this->assertSame(TFileCache::CACHE_FILE_PREFIX, $cache->pubGetTempFilePrefixDirect());
 	}
 
@@ -404,7 +232,7 @@ class TFileCacheTest extends PHPUnit\Framework\TestCase
 		$basePath = __DIR__ . '/mockapp';
 		$app = new TApplication($basePath);
 
-		$cache = new TFileCacheTestAccessor();
+		$cache = new TTestFileCache();
 		$cache->setPrimaryCache(false);
 		$cache->init(null);
 
@@ -429,7 +257,7 @@ class TFileCacheTest extends PHPUnit\Framework\TestCase
 		try {
 			// setDirectory succeeds because the directory already exists.
 			// init() must throw because the directory is not writable.
-			$cache = new TFileCacheTestAccessor($unwritable);
+			$cache = new TTestFileCache($unwritable);
 			$cache->setPrimaryCache(false);
 			$this->expectException(TConfigurationException::class);
 			$cache->init(null);
@@ -441,24 +269,27 @@ class TFileCacheTest extends PHPUnit\Framework\TestCase
 
 	public function testInitThrowsWhenHashTokenReturnsInputUnchanged(): void
 	{
-		$cache = new TFileCacheIdentityHash(self::$cacheDir);
+		$cache = new TTestFileCache(self::$cacheDir);
 		$cache->setPrimaryCache(false);
+		$cache->hashTokenCallback = static fn (string $token): string => $token; // identity
 		$this->expectException(TConfigurationException::class);
 		$cache->init(null);
 	}
 
 	public function testInitThrowsWhenHashTokenContainsForwardSlash(): void
 	{
-		$cache = new TFileCacheSlashHash(self::$cacheDir);
+		$cache = new TTestFileCache(self::$cacheDir);
 		$cache->setPrimaryCache(false);
+		$cache->hashTokenCallback = static fn (string $token): string => 'sub/dir/' . sha1($token);
 		$this->expectException(TConfigurationException::class);
 		$cache->init(null);
 	}
 
 	public function testInitThrowsWhenHashTokenContainsBackslash(): void
 	{
-		$cache = new TFileCacheBackslashHash(self::$cacheDir);
+		$cache = new TTestFileCache(self::$cacheDir);
 		$cache->setPrimaryCache(false);
+		$cache->hashTokenCallback = static fn (string $token): string => 'sub\\dir\\' . sha1($token);
 		$this->expectException(TConfigurationException::class);
 		$cache->init(null);
 	}
@@ -644,7 +475,7 @@ class TFileCacheTest extends PHPUnit\Framework\TestCase
 		$emptyDir = self::$cacheDir . DIRECTORY_SEPARATOR . 'empty_' . uniqid();
 		mkdir($emptyDir, 0o755, true);
 
-		$cache = new TFileCacheTestAccessor($emptyDir);
+		$cache = new TTestFileCache($emptyDir);
 		$cache->setPrimaryCache(false);
 		$cache->init(null);
 
@@ -659,7 +490,7 @@ class TFileCacheTest extends PHPUnit\Framework\TestCase
 		$ghostDir = self::$cacheDir . DIRECTORY_SEPARATOR . 'ghost_' . uniqid();
 		mkdir($ghostDir, 0o755, true);
 
-		$cache = new TFileCacheTestAccessor($ghostDir);
+		$cache = new TTestFileCache($ghostDir);
 		$cache->setPrimaryCache(false);
 		$cache->init(null);
 
@@ -708,13 +539,13 @@ class TFileCacheTest extends PHPUnit\Framework\TestCase
 		$this->assertFalse($this->cache->get($key));
 	}
 
-	public function testGetReturnsFalseWhenSerializedArrayMissingKeys(): void
+	public function testGetReturnsFalseWhenFileHasNoExpiryHeader(): void
 	{
 		$key = 'corrupt_keys';
 		$this->cache->set($key, 'val');
 
-		// Write a valid serialized array but without the required CACHE_VALUE
-		// and CACHE_EXPIRED keys.
+		// Write content with no expiry-header newline; getSerializedValue() treats
+		// it as malformed and returns a miss.
 		$filePath = $this->cache->pubPathFor($this->cache->pubGenerateUniqueKey($key));
 		file_put_contents($filePath, serialize(['x' => 1, 'y' => 2]));
 
@@ -854,7 +685,7 @@ class TFileCacheTest extends PHPUnit\Framework\TestCase
 	public function testNowReturnsAnIntegerCloseToCurrentTime(): void
 	{
 		$before = time();
-		$result = $this->cache->pubNow();
+		$result = $this->cache->pubTime();
 		$after = time();
 
 		$this->assertGreaterThanOrEqual($before, $result);
@@ -864,7 +695,7 @@ class TFileCacheTest extends PHPUnit\Framework\TestCase
 	public function testFakeNowOverridesNow(): void
 	{
 		$this->cache->fakeNow = 42;
-		$this->assertSame(42, $this->cache->pubNow());
+		$this->assertSame(42, $this->cache->pubTime());
 	}
 
 	// ── Protected helpers: isFile() ───────────────────────────────────────────
@@ -902,23 +733,6 @@ class TFileCacheTest extends PHPUnit\Framework\TestCase
 		$this->assertStringStartsWith($this->cache->getDirectory(), $path);
 
 		@unlink($path);
-	}
-
-	// ── Protected helpers: serialize() / unserialize() ───────────────────────
-
-	public function testSerializeProducesStringUnserializableBackToOriginal(): void
-	{
-		$original = ['key' => 'value', 'nested' => [1, 2, 3]];
-		$serialized = $this->cache->pubSerialize($original);
-
-		$this->assertIsString($serialized);
-		$this->assertSame($original, $this->cache->pubUnserialize($serialized));
-	}
-
-	public function testUnserializeReturnsFalseOnInvalidInput(): void
-	{
-		$result = $this->cache->pubUnserialize('this is not serialized data');
-		$this->assertFalse($result);
 	}
 
 	// ── Protected helpers: getContents() / putContents() ─────────────────────
@@ -1028,7 +842,7 @@ class TFileCacheTest extends PHPUnit\Framework\TestCase
 		// init() runs with the default sha1 hashToken and succeeds.
 		// The callback is then swapped in so that generateUniqueKey() receives an
 		// identity function, exercising the per-call guard independently of init().
-		$cache = new TFileCacheTestAccessor(self::$cacheDir);
+		$cache = new TTestFileCache(self::$cacheDir);
 		$cache->setPrimaryCache(false);
 		$cache->init(null);
 
@@ -1043,7 +857,7 @@ class TFileCacheTest extends PHPUnit\Framework\TestCase
 		// init() runs with the default sha1 hashToken and succeeds.
 		// The callback is then swapped in to inject a "/" separator, exercising
 		// the per-call path-traversal guard independently of init().
-		$cache = new TFileCacheTestAccessor(self::$cacheDir);
+		$cache = new TTestFileCache(self::$cacheDir);
 		$cache->setPrimaryCache(false);
 		$cache->init(null);
 
@@ -1172,7 +986,7 @@ class TFileCacheTest extends PHPUnit\Framework\TestCase
 
 	public function testFileCacheMaximumSizeDefaultsToZero(): void
 	{
-		$cache = new TFileCacheTestAccessor();
+		$cache = new TTestFileCache();
 		$this->assertSame(0, $cache->getMaximumSize(),
 			'MaximumSize must default to 0 (unlimited).');
 	}
@@ -1210,7 +1024,7 @@ class TFileCacheTest extends PHPUnit\Framework\TestCase
 	{
 		// MaximumSize is 0 by default; size tracking is inactive, sentinel stays SIZE_NOT_COMPUTED.
 		// Access the raw field directly to confirm it has never been set.
-		$cache = new TFileCacheTestAccessor();
+		$cache = new TTestFileCache();
 		$this->assertSame(TFileCache::SIZE_NOT_COMPUTED, $cache->pubGetCurrentSizeDirect(),
 			'Initial _currentSize must be SIZE_NOT_COMPUTED when MaximumSize is 0.');
 	}
@@ -1325,45 +1139,42 @@ class TFileCacheTest extends PHPUnit\Framework\TestCase
 			'isOverCapacity() must return false when the cache is well under the limit.');
 	}
 
-	public function testGetValueWithMaximumSizeActivePromotesEntryInLruOrder(): void
+	public function testEvictionRemovesSoonestToExpireFirst(): void
 	{
-		// Write entry A, then B.  Both are the same size so the LRU tiebreak is mtime.
+		// mtime mirrors the absolute expiry, so eviction orders by expiry.
 		$payload = str_repeat('g', 200);
-		$this->cache->set('a', $payload);
+		$this->cache->set('soon', $payload, 10);      // expires sooner
+		$this->cache->set('later', $payload, 100_000); // expires much later
 
-		// Backdate A's cache file so it appears older than B before any reads.
-		$keyA = $this->cache->pubGenerateUniqueKey('a');
-		$fileA = $this->cache->pubPathFor($keyA);
-		touch($fileA, time() - 20);
-		clearstatcache(true, $fileA);
+		$oneEntrySize = (int) @filesize(
+			$this->cache->pubPathFor($this->cache->pubGenerateUniqueKey('soon'))
+		);
+		$this->assertGreaterThan(0, $oneEntrySize);
 
-		$this->cache->set('b', $payload);
-
-		// Backdate B too, so it also appears old.
-		$keyB = $this->cache->pubGenerateUniqueKey('b');
-		$fileB = $this->cache->pubPathFor($keyB);
-		touch($fileB, time() - 10);
-		clearstatcache(true, $fileB);
-
-		// READ entry A with MaximumSize active — getValue() must call touch() to
-		// refresh A's mtime, promoting it above B in the LRU order.
-		$this->cache->setMaximumSize(99999);
-		$this->assertSame($payload, $this->cache->get('a'),
-			'Entry A must still be present after enabling MaximumSize.');
-
-		// Now set a limit small enough to force one eviction.
-		$oneEntrySize = (int) @filesize($fileA);
-		if ($oneEntrySize <= 0) {
-			$this->markTestSkipped('Could not determine cache file size for LRU promotion test.');
-		}
+		// A limit fitting ~one entry forces eviction of the soonest-to-expire entry.
 		$this->cache->setMaximumSize($oneEntrySize + 50);
 
-		// B was not read after being backdated, so its mtime is older than A's (which
-		// was refreshed by the touch() in getValue()). B must be the eviction victim.
-		$this->assertFalse($this->cache->get('b'),
-			'Entry B must have been evicted: it has the oldest mtime after A was read.');
-		$this->assertSame($payload, $this->cache->get('a'),
-			'Entry A must survive: getValue() promoted it via touch().');
+		$this->assertFalse($this->cache->get('soon'),
+			'The soonest-to-expire entry must be evicted first.');
+		$this->assertSame($payload, $this->cache->get('later'),
+			'The later-expiring entry must survive.');
+	}
+
+	public function testNeverExpiringEntryIsEvictedLast(): void
+	{
+		$payload = str_repeat('g', 200);
+		$this->cache->set('forever', $payload);   // DefaultTtl 0 → never expires (mtime 0)
+		$this->cache->set('soon', $payload, 10);  // expires soon
+
+		$oneEntrySize = (int) @filesize(
+			$this->cache->pubPathFor($this->cache->pubGenerateUniqueKey('soon'))
+		);
+		$this->cache->setMaximumSize($oneEntrySize + 50);
+
+		$this->assertFalse($this->cache->get('soon'),
+			'The expiring entry is evicted before the never-expiring one.');
+		$this->assertSame($payload, $this->cache->get('forever'),
+			'A never-expiring entry is evicted last.');
 	}
 
 	// ── TCacheSizeTrait — oversized item rejection ────────────────────────────────
@@ -1377,10 +1188,8 @@ class TFileCacheTest extends PHPUnit\Framework\TestCase
 
 	public function testSetValueDoesNotWriteFileWhenItemExceedsMaximumSize(): void
 	{
-		// TCache::set() passes [$value, $dependency] as a raw PHP array to writeEntry().
-		// writeEntry() wraps it in ['value' => $tcacheArray, 'expired' => 0] and serializes.
-		// serialize(['value' => ['ok', null], 'expired' => 0]) ≈ 61 bytes.
-		// serialize(['value' => [str_repeat('x',100), null], 'expired' => 0]) ≈ 161 bytes.
+		// The on-disk entry is "<expireAt>\n<serialized [$value,$dependency]>".
+		// For 'ok' that is well under 100 bytes; for a 100-char string it exceeds 100.
 		// MaximumSize=100 fits 'ok' but rejects the 100-char string.
 		$this->cache->setMaximumSize(100);
 		$this->cache->set('small', 'ok');
@@ -1397,16 +1206,15 @@ class TFileCacheTest extends PHPUnit\Framework\TestCase
 
 	public function testSetValueAllowsItemExactlyAtMaximumSize(): void
 	{
-		// assertItemFitsMaximumSize uses strict >, so an item whose serialized size
+		// assertItemFitsMaximumSize uses strict >, so an item whose on-disk size
 		// equals MaximumSize exactly must succeed (not throw).
-		// TCache::set() passes [$value, $dependency] as a raw PHP array to setValue(),
-		// which in turn passes it to writeEntry(). writeEntry() wraps that array in
-		// ['value' => $tcacheArray, 'expired' => $expiry] and serializes the whole
-		// structure. Reproduce that exact layout to compute the true on-disk size.
+		// TCache::set() passes [$value, $dependency] to TSerializingCache::setValue(),
+		// which serializes it and hands the string to TFileCache::setSerializedValue().
+		// The on-disk content is "<expireAt>\n<serialized payload>" (expireAt=0 when
+		// DefaultTtl=0). Reproduce that exact layout to compute the true on-disk size.
 		$value = 'x';
 		$tcacheArray = [$value, null]; // the [$value, $dependency] pair TCache builds
-		$entry = ['value' => $tcacheArray, 'expired' => 0]; // DefaultTtl=0 → expiry=0
-		$exactSize = strlen(serialize($entry));
+		$exactSize = strlen('0' . "\n" . serialize($tcacheArray));
 		$this->cache->setMaximumSize($exactSize);
 		$this->assertTrue($this->cache->set('exact', $value),
 			'set() must succeed when the serialized size equals MaximumSize exactly (strict > check).');
@@ -1420,5 +1228,151 @@ class TFileCacheTest extends PHPUnit\Framework\TestCase
 		$this->assertSame(0, $this->cache->getMaximumSize());
 		$this->assertTrue($this->cache->set('large', str_repeat('x', 10_000)),
 			'set() must succeed for any payload when MaximumSize is 0 (unlimited).');
+	}
+
+	// ── Expired-file flushing / cron task ─────────────────────────────────────
+
+	public function testFlushIntervalDefaultsTo60(): void
+	{
+		$this->assertSame(60, $this->cache->getFlushInterval());
+	}
+
+	public function testSetFlushIntervalClampsNegativeToZero(): void
+	{
+		$this->cache->setFlushInterval(-5);
+		$this->assertSame(0, $this->cache->getFlushInterval());
+		$this->cache->setFlushInterval(120);
+		$this->assertSame(120, $this->cache->getFlushInterval());
+	}
+
+	public function testFlushCacheExpiredForceRemovesOnlyExpiredFiles(): void
+	{
+		$this->cache->fakeNow = 1_000_000;
+		$this->cache->set('live', 'v');       // DefaultTtl 0 → never expires
+		$this->cache->set('exp', 'v', 10);    // expires at 1_000_010
+
+		$liveFile = $this->cache->pubPathFor($this->cache->pubGenerateUniqueKey('live'));
+		$expFile  = $this->cache->pubPathFor($this->cache->pubGenerateUniqueKey('exp'));
+		$this->assertTrue($this->cache->pubIsFile($liveFile));
+		$this->assertTrue($this->cache->pubIsFile($expFile));
+
+		$this->cache->fakeNow = 1_000_011; // past the expiry
+		$this->cache->flushCacheExpired(true);
+
+		$this->assertFalse($this->cache->pubIsFile($expFile), 'Expired file must be swept.');
+		$this->assertTrue($this->cache->pubIsFile($liveFile), 'Never-expiring file must remain.');
+	}
+
+	public function testFlushCacheExpiredWithZeroIntervalSkipsWhenNotForced(): void
+	{
+		$this->cache->setFlushInterval(0);
+		$this->cache->fakeNow = 1_000_000;
+		$this->cache->set('exp', 'v', 10);
+		$expFile = $this->cache->pubPathFor($this->cache->pubGenerateUniqueKey('exp'));
+
+		$this->cache->fakeNow = 1_000_011;
+		$this->cache->flushCacheExpired(false); // interval 0 + not forced → no sweep
+
+		$this->assertTrue($this->cache->pubIsFile($expFile),
+			'With FlushInterval=0 and no force, the expired file must not be swept.');
+	}
+
+	public function testFxGetCronTaskInfosReturnsFileCacheTask(): void
+	{
+		$info = $this->cache->fxGetCronTaskInfos(null, null);
+		$this->assertInstanceOf(TCronTaskInfo::class, $info);
+		$this->assertSame('filecacheflush', $info->getName());
+	}
+
+	public function testDoFlushCacheExpiredHonorsInterval(): void
+	{
+		// With the default 60s interval and no recorded prior flush, doFlushCacheExpired()
+		// performs the sweep on first call.
+		$this->cache->fakeNow = 2_000_000;
+		$this->cache->set('exp', 'v', 10);
+		$expFile = $this->cache->pubPathFor($this->cache->pubGenerateUniqueKey('exp'));
+
+		$this->cache->fakeNow = 2_000_100; // past expiry and past the 60s interval
+		$this->cache->doFlushCacheExpired();
+		$this->assertFalse($this->cache->pubIsFile($expFile));
+	}
+
+	// ── Expiry mirrored into mtime ────────────────────────────────────────────
+
+	public function testWriteMirrorsExpiryIntoMtime(): void
+	{
+		$this->cache->fakeNow = 1_500_000;
+		$this->cache->set('exp', 'v', 30); // expires at 1_500_030
+		$file = $this->cache->pubPathFor($this->cache->pubGenerateUniqueKey('exp'));
+		clearstatcache(true, $file);
+		$this->assertSame(1_500_030, filemtime($file), 'mtime mirrors the absolute expiry.');
+
+		$this->cache->set('forever', 'v'); // DefaultTtl 0 → never expires
+		$fileF = $this->cache->pubPathFor($this->cache->pubGenerateUniqueKey('forever'));
+		clearstatcache(true, $fileF);
+		$this->assertSame(TFileCache::NEVER_EXPIRES_MTIME, filemtime($fileF),
+			'A never-expiring entry stamps the sentinel mtime, not 0.');
+	}
+
+	public function testFlushCacheExpiredUsesMtimeWithoutReadingContents(): void
+	{
+		// Store a never-expiring entry (its header says expire=0), then mark it expired
+		// via mtime only. The sweep deletes it from filesystem metadata alone.
+		$this->cache->set('k', 'v');
+		$file = $this->cache->pubPathFor($this->cache->pubGenerateUniqueKey('k'));
+		touch($file, time() - 100); // past mtime
+		clearstatcache(true, $file);
+
+		$this->cache->flushCacheExpired(true);
+		$this->assertFalse($this->cache->pubIsFile($file),
+			'The sweep removes a file with a past mtime regardless of its stored header.');
+	}
+
+	public function testStrayEpochMtimeFileIsSweptButRealNeverExpireSurvives(): void
+	{
+		// A legitimately never-expiring entry uses the sentinel mtime and survives.
+		$this->cache->set('forever', 'v');
+		$foreverFile = $this->cache->pubPathFor($this->cache->pubGenerateUniqueKey('forever'));
+
+		// A stray .cache file left at mtime 1 (e.g. a boolean-true modification time) is
+		// NOT mistaken for never-expiring — the sentinel is >= 2 specifically to avoid that.
+		$stray = $this->cache->getDirectory() . DIRECTORY_SEPARATOR . 'stray.cache';
+		file_put_contents($stray, "0\nx");
+		touch($stray, 1);
+		clearstatcache(true, $stray);
+
+		$this->cache->flushCacheExpired(true);
+
+		$this->assertFalse($this->cache->pubIsFile($stray),
+			'A stray epoch/bool-true mtime file must be swept.');
+		$this->assertTrue($this->cache->pubIsFile($foreverFile),
+			'A real never-expiring entry (sentinel mtime) must survive.');
+	}
+
+	// ── On-disk format ────────────────────────────────────────────────────────
+
+	public function testOnDiskFormatIsExpiryHeaderThenSerializedPayload(): void
+	{
+		$this->cache->fakeNow = 1_500_000;
+		$this->cache->set('fmt', 'the-value', 30); // expires at 1_500_030
+
+		$raw = $this->cache->pubGetContents(
+			$this->cache->pubPathFor($this->cache->pubGenerateUniqueKey('fmt'))
+		);
+		$this->assertIsString($raw);
+		$pos = strpos($raw, "\n");
+		$this->assertNotFalse($pos, 'File must contain an expiry-header newline.');
+		$this->assertSame('1500030', substr($raw, 0, $pos), 'First line is the absolute expiry timestamp.');
+		// Remainder is the base-class serialized [value, dependency] payload.
+		$this->assertSame(serialize(['the-value', null]), substr($raw, $pos + 1));
+	}
+
+	public function testOnDiskFormatNeverExpiresStoresZeroHeader(): void
+	{
+		$this->cache->set('forever', 'v'); // DefaultTtl 0 → never expires
+		$raw = $this->cache->pubGetContents(
+			$this->cache->pubPathFor($this->cache->pubGenerateUniqueKey('forever'))
+		);
+		$this->assertStringStartsWith("0\n", $raw, 'A never-expiring entry stores a 0 expiry header.');
 	}
 }
