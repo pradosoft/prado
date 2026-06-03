@@ -1784,4 +1784,30 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 		$this->assertSame($secret, $cache->get('k'),
 			'Encrypted serializing mode must round-trip the original value.');
 	}
+
+	// ── Config props frozen after init ──────────────────────────────────────────
+
+	/**
+	 * @dataProvider frozenSetterProvider
+	 */
+	public function testConfigPropertiesCannotChangeAfterInit(string $setter, mixed $value): void
+	{
+		$cache = new TTestMemoryCache();
+		$cache->setPrimaryCache(false);
+		$cache->init(null);
+		$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
+		$cache->$setter($value);
+	}
+
+	public static function frozenSetterProvider(): array
+	{
+		return [
+			'BackingCacheId'  => ['setBackingCacheId', 'someModule'],
+			'BackingFile'     => ['setBackingFile', '/tmp/x.cache'],
+			'BackingCacheKey' => ['setBackingCacheKey', 'k'],
+			'MergePolicy'     => ['setMergePolicy', 'all'],
+			'HashKeys'        => ['setHashKeys', true],
+			'SerializeValues' => ['setSerializeValues', true],
+		];
+	}
 }

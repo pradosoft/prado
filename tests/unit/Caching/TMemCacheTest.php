@@ -104,4 +104,35 @@ class TMemCacheTest extends PHPUnit\Framework\TestCase
 		$cache2->init(null);
 		self::assertEquals('persistentvalue', $cache2->get('persistentkey'));
 	}
+
+	public function testHostCannotChangeAfterInit()
+	{
+		$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
+		self::$cache->setHost('other.host');
+	}
+
+	public function testPortCannotChangeAfterInit()
+	{
+		$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
+		self::$cache->setPort(11212);
+	}
+
+	public function testPersistentIdCannotChangeAfterInit()
+	{
+		$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
+		self::$cache->setPersistentID('other');
+	}
+
+	public function testSetUseMemcachedThrowsAfterInit()
+	{
+		$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
+		self::$cache->setUseMemcached(true);
+	}
+
+	public function testSetOptionsBeforeInitThrows()
+	{
+		$fresh = new TMemCache();
+		$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
+		$fresh->setOptions([Memcached::OPT_PREFIX_KEY => 'widgets']);
+	}
 }

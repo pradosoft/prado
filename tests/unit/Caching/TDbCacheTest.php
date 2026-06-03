@@ -681,4 +681,25 @@ class TDbCacheTest extends PHPUnit\Framework\TestCase
 		$result = $this->_cache->get($key);
 		$this->assertEquals('after_delete', $result);
 	}
+
+	/**
+	 * @dataProvider frozenSetterProvider
+	 */
+	public function testConfigPropertiesCannotChangeAfterInit($setter, $value)
+	{
+		$this->_cache->init(null);
+		$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
+		$this->_cache->$setter($value);
+	}
+
+	public static function frozenSetterProvider(): array
+	{
+		return [
+			'ConnectionString'     => ['setConnectionString', 'sqlite::memory:'],
+			'Username'             => ['setUsername', 'user'],
+			'Password'             => ['setPassword', 'pw'],
+			'CacheTableName'       => ['setCacheTableName', 'othertable'],
+			'AutoCreateCacheTable' => ['setAutoCreateCacheTable', false],
+		];
+	}
 }

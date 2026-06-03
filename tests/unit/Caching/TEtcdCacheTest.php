@@ -64,4 +64,27 @@ class TEtcdCacheTest extends PHPUnit\Framework\TestCase
 		$cache->fakeNow = 4242;
 		$this->assertSame(4242, $cache->pubTime());
 	}
+
+	/**
+	 * @dataProvider frozenSetterProvider
+	 */
+	public function testConfigPropertiesCannotChangeAfterInit(string $setter, mixed $value): void
+	{
+		if (!TEtcdCache::getIsAvailable()) {
+			$this->markTestSkipped('cURL required to initialize TEtcdCache.');
+		}
+		$cache = $this->newCache();
+		$cache->init(null);
+		$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
+		$cache->$setter($value);
+	}
+
+	public static function frozenSetterProvider(): array
+	{
+		return [
+			'Host' => ['setHost', 'other.host'],
+			'Port' => ['setPort', 9999],
+			'Dir'  => ['setDir', 'otherdir'],
+		];
+	}
 }

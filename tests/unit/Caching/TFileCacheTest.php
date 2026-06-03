@@ -1297,6 +1297,29 @@ class TFileCacheTest extends PHPUnit\Framework\TestCase
 		$this->assertFalse($this->cache->pubIsFile($expFile));
 	}
 
+	public function testFlushCacheExpiredThrottlesWithinInterval(): void
+	{
+		$this->cache->setFlushInterval(60);
+		// First non-forced flush records the global-state timestamp.
+		$this->cache->fakeNow = 3_000_000;
+		$this->cache->flushCacheExpired(false);
+
+		// An entry expires shortly after; a second non-forced flush within the
+		// interval is throttled and must not sweep it.
+		$this->cache->set('exp', 'v', 10); // expires at 3_000_010
+		$expFile = $this->cache->pubPathFor($this->cache->pubGenerateUniqueKey('exp'));
+		$this->cache->fakeNow = 3_000_030; // past expiry, < 60s since the recorded flush
+		$this->cache->flushCacheExpired(false);
+		$this->assertTrue($this->cache->pubIsFile($expFile),
+			'A non-forced flush within FlushInterval must be throttled.');
+
+		// Once the interval elapses, the next non-forced flush sweeps.
+		$this->cache->fakeNow = 3_000_061; // > 60s since the recorded flush
+		$this->cache->flushCacheExpired(false);
+		$this->assertFalse($this->cache->pubIsFile($expFile),
+			'After FlushInterval elapses, the expired file is swept.');
+	}
+
 	// ── Expiry mirrored into mtime ────────────────────────────────────────────
 
 	public function testWriteMirrorsExpiryIntoMtime(): void
