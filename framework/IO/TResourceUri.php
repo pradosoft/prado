@@ -202,11 +202,11 @@ class TResourceUri extends TComponent implements UriInterface
 	 */
 	public function getAuthority(): string
 	{
-		$host = $this->getHostDirect();
+		$host = $this->getHost();
 		if ($host === '') {
 			return '';
 		}
-		$userInfo = $this->getUserInfoDirect();
+		$userInfo = $this->getUserInfo();
 		if ($userInfo !== '') {
 			$host = $userInfo . '@' . $host;
 		}
@@ -246,7 +246,7 @@ class TResourceUri extends TComponent implements UriInterface
 		if ($port === null) {
 			return null;
 		}
-		if (TUriDefaultPort::forScheme($this->getSchemeDirect()) === $port) {
+		if (TUriDefaultPort::forScheme($this->getScheme()) === $port) {
 			return null;
 		}
 		return $port;
@@ -404,9 +404,9 @@ class TResourceUri extends TComponent implements UriInterface
 	 */
 	public function __toString(): string
 	{
-		$scheme = $this->getSchemeDirect();
+		$scheme = $this->getScheme();
 		$authority = $this->getAuthority();
-		$path = $this->getPathDirect();
+		$path = $this->getPath();
 
 		$uri = '';
 		if ($scheme !== '') {
@@ -425,10 +425,10 @@ class TResourceUri extends TComponent implements UriInterface
 			$path = '/' . ltrim($path, '/');
 		}
 		$uri .= $path;
-		if (($query = $this->getQueryDirect()) !== '') {
+		if (($query = $this->getQuery()) !== '') {
 			$uri .= '?' . $query;
 		}
-		if (($fragment = $this->getFragmentDirect()) !== '') {
+		if (($fragment = $this->getFragment()) !== '') {
 			$uri .= '#' . $fragment;
 		}
 		return $uri;
