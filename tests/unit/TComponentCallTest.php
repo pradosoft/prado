@@ -166,4 +166,34 @@ class TComponentCallTest extends TComponentTestBase
 
 		unset($this->tearDownScripts[$behaviorName]);
 	}
+
+	/**
+	 * IOwnerVisibleMethods restricts the __callStatic class-behavior path.  A class
+	 * behavior attached as an instance that hides its methods makes its static method
+	 * unreachable through the owner class, while an unrestricted one resolves normally.
+	 */
+	public function testCallStatic_classBehaviorOwnerVisibility()
+	{
+		$behaviorName = 'aHiddenStaticMethodBehavior';
+		NewComponent::attachClassBehavior($behaviorName, new NewComponentStaticHiddenClassBehavior());
+		$this->tearDownScripts[$behaviorName] = function () use ($behaviorName) { NewComponent::detachClassBehavior($behaviorName); };
+
+		try {
+			NewComponent::aStaticMethod(3);
+			self::fail("failed to raise TUnknownMethodException for an owner-hidden static class-behavior method.");
+		} catch (TUnknownMethodException $e) {
+		}
+
+		NewComponent::detachClassBehavior($behaviorName);
+		unset($this->tearDownScripts[$behaviorName]);
+
+		// An unrestricted class behavior still resolves its static method.
+		NewComponent::attachClassBehavior($behaviorName, new NewComponentStaticClassBehavior());
+		$this->tearDownScripts[$behaviorName] = function () use ($behaviorName) { NewComponent::detachClassBehavior($behaviorName); };
+
+		self::assertEquals(9, NewComponent::aStaticMethod(3));
+
+		NewComponent::detachClassBehavior($behaviorName);
+		unset($this->tearDownScripts[$behaviorName]);
+	}
 }

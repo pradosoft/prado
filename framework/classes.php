@@ -366,6 +366,7 @@ return [
 'IDynamicMethods' => 'Prado\Util\IDynamicMethods',
 'IInstanceCheck' => 'Prado\Util\IInstanceCheck',
 'IOutputLogRoute' => 'Prado\Util\IOutputLogRoute',
+'IOwnerVisibleMethods' => 'Prado\Util\IOwnerVisibleMethods',
 'IPluginModule' => 'Prado\Util\IPluginModule',
 'TRational' => 'Prado\Util\Math\TRational',
 'TURational' => 'Prado\Util\Math\TURational',
