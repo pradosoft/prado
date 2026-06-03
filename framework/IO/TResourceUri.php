@@ -45,7 +45,7 @@ class TResourceUri extends TComponent implements UriInterface
 	private string $_fragment = '';
 
 	/**
-	 * Parse the given URI string into its components.
+	 * Parses the given URI string into its components.
 	 * @param string $uri The URI to represent ('' for an empty URI).
 	 * @throws \InvalidArgumentException When the URI cannot be parsed.
 	 */
@@ -68,7 +68,7 @@ class TResourceUri extends TComponent implements UriInterface
 	}
 
 	/**
-	 * Parse a URI string into its components.  Subclasses customize the failure
+	 * Parses a URI string into its components.  Subclasses customize the failure
 	 * exception by overriding {@see createParseException()} rather than re-parsing.
 	 * @param string $uri The URI to parse.
 	 * @throws \Throwable When the URI cannot be parsed (see {@see createParseException()}).
@@ -84,7 +84,7 @@ class TResourceUri extends TComponent implements UriInterface
 	}
 
 	/**
-	 * Build the exception thrown when a URI cannot be parsed.  Override to throw a
+	 * Builds the exception thrown when a URI cannot be parsed.  Override to throw a
 	 * domain-specific exception (see {@see \Prado\Web\TUri}).
 	 * @param string $uri The offending URI.
 	 * @return \Throwable The exception to throw.
@@ -98,85 +98,85 @@ class TResourceUri extends TComponent implements UriInterface
 	// ─── Protected raw accessors (self-encapsulation for subclasses) ─────────
 	//
 
-	/** @return string Return the raw scheme. */
+	/** @return string Returns the raw scheme. */
 	protected function getSchemeDirect(): string
 	{
 		return $this->_scheme;
 	}
 
-	/** @param string $value Set the raw scheme (already normalized). */
+	/** @param string $value Sets the raw scheme (already normalized). */
 	protected function setSchemeDirect(string $value): void
 	{
 		$this->_scheme = $value;
 	}
 
-	/** @return string Return the raw user-info. */
+	/** @return string Returns the raw user-info. */
 	protected function getUserInfoDirect(): string
 	{
 		return $this->_userInfo;
 	}
 
-	/** @param string $value Set the raw user-info (`user[:pass]`, already encoded). */
+	/** @param string $value Sets the raw user-info (`user[:pass]`, already encoded). */
 	protected function setUserInfoDirect(string $value): void
 	{
 		$this->_userInfo = $value;
 	}
 
-	/** @return string Return the raw host. */
+	/** @return string Returns the raw host. */
 	protected function getHostDirect(): string
 	{
 		return $this->_host;
 	}
 
-	/** @param string $value Set the raw host (already normalized). */
+	/** @param string $value Sets the raw host (already normalized). */
 	protected function setHostDirect(string $value): void
 	{
 		$this->_host = $value;
 	}
 
-	/** @return ?int Return the raw port, with no default-port suppression. */
+	/** @return ?int Returns the raw port, with no default-port suppression. */
 	protected function getPortDirect(): ?int
 	{
 		return $this->_port;
 	}
 
-	/** @param ?int $value Set the raw port (already validated). */
+	/** @param ?int $value Sets the raw port (already validated). */
 	protected function setPortDirect(?int $value): void
 	{
 		$this->_port = $value;
 	}
 
-	/** @return string Return the raw path. */
+	/** @return string Returns the raw path. */
 	protected function getPathDirect(): string
 	{
 		return $this->_path;
 	}
 
-	/** @param string $value Set the raw path (already encoded). */
+	/** @param string $value Sets the raw path (already encoded). */
 	protected function setPathDirect(string $value): void
 	{
 		$this->_path = $value;
 	}
 
-	/** @return string Return the raw query. */
+	/** @return string Returns the raw query. */
 	protected function getQueryDirect(): string
 	{
 		return $this->_query;
 	}
 
-	/** @param string $value Set the raw query (already encoded). */
+	/** @param string $value Sets the raw query (already encoded). */
 	protected function setQueryDirect(string $value): void
 	{
 		$this->_query = $value;
 	}
 
-	/** @return string Return the raw fragment. */
+	/** @return string Returns the raw fragment. */
 	protected function getFragmentDirect(): string
 	{
 		return $this->_fragment;
 	}
 
-	/** @param string $value Set the raw fragment (already encoded). */
+	/** @param string $value Sets the raw fragment (already encoded). */
 	protected function setFragmentDirect(string $value): void
 	{
 		$this->_fragment = $value;
@@ -187,7 +187,7 @@ class TResourceUri extends TComponent implements UriInterface
 	//
 
 	/**
-	 * Retrieve the scheme component of the URI (lower-cased, '' when absent).
+	 * Retrieves the scheme component of the URI (lower-cased, '' when absent).
 	 * @return string The scheme.
 	 */
 	public function getScheme(): string
@@ -196,7 +196,7 @@ class TResourceUri extends TComponent implements UriInterface
 	}
 
 	/**
-	 * Retrieve the authority component (`[user-info@]host[:port]`), with the
+	 * Retrieves the authority component (`[user-info@]host[:port]`), with the
 	 * default port for the scheme suppressed.
 	 * @return string The authority, or '' when no host is present.
 	 */
@@ -218,7 +218,7 @@ class TResourceUri extends TComponent implements UriInterface
 	}
 
 	/**
-	 * Retrieve the user-information component (percent-encoded).
+	 * Retrieves the user-information component (percent-encoded).
 	 * @return string The user-info, or '' when absent.
 	 */
 	public function getUserInfo(): string
@@ -227,7 +227,7 @@ class TResourceUri extends TComponent implements UriInterface
 	}
 
 	/**
-	 * Retrieve the host component (lower-cased).
+	 * Retrieves the host component (lower-cased).
 	 * @return string The host, or '' when absent.
 	 */
 	public function getHost(): string
@@ -236,7 +236,7 @@ class TResourceUri extends TComponent implements UriInterface
 	}
 
 	/**
-	 * Retrieve the port component, returning null when it is absent or equal to
+	 * Retrieves the port component, returning null when it is absent or equal to
 	 * the default port for the current scheme.
 	 * @return ?int The port, or null.
 	 */
@@ -253,7 +253,7 @@ class TResourceUri extends TComponent implements UriInterface
 	}
 
 	/**
-	 * Retrieve the path component (percent-encoded).
+	 * Retrieves the path component (percent-encoded).
 	 * @return string The path.
 	 */
 	public function getPath(): string
@@ -262,7 +262,7 @@ class TResourceUri extends TComponent implements UriInterface
 	}
 
 	/**
-	 * Retrieve the query string (percent-encoded, without the leading '?').
+	 * Retrieves the query string (percent-encoded, without the leading '?').
 	 * @return string The query.
 	 */
 	public function getQuery(): string
@@ -271,7 +271,7 @@ class TResourceUri extends TComponent implements UriInterface
 	}
 
 	/**
-	 * Retrieve the fragment (percent-encoded, without the leading '#').
+	 * Retrieves the fragment (percent-encoded, without the leading '#').
 	 * @return string The fragment.
 	 */
 	public function getFragment(): string
@@ -284,7 +284,7 @@ class TResourceUri extends TComponent implements UriInterface
 	//
 
 	/**
-	 * Return an instance with the specified scheme.
+	 * Returns an instance with the specified scheme.
 	 * @param string $scheme The scheme ('' removes it).
 	 * @throws \InvalidArgumentException When the scheme is invalid.
 	 * @return UriInterface The new instance (or the same one when unchanged).
@@ -301,7 +301,7 @@ class TResourceUri extends TComponent implements UriInterface
 	}
 
 	/**
-	 * Return an instance with the specified user information.
+	 * Returns an instance with the specified user information.
 	 * @param string $user The user name ('' removes the user-info).
 	 * @param ?string $password The password, or null.
 	 * @return UriInterface The new instance (or the same one when unchanged).
@@ -318,7 +318,7 @@ class TResourceUri extends TComponent implements UriInterface
 	}
 
 	/**
-	 * Return an instance with the specified host.
+	 * Returns an instance with the specified host.
 	 * @param string $host The host ('' removes it).
 	 * @return UriInterface The new instance (or the same one when unchanged).
 	 */
@@ -334,7 +334,7 @@ class TResourceUri extends TComponent implements UriInterface
 	}
 
 	/**
-	 * Return an instance with the specified port.
+	 * Returns an instance with the specified port.
 	 * @param ?int $port The port (null removes it).
 	 * @throws \InvalidArgumentException When the port is out of range.
 	 * @return UriInterface The new instance (or the same one when unchanged).
@@ -351,7 +351,7 @@ class TResourceUri extends TComponent implements UriInterface
 	}
 
 	/**
-	 * Return an instance with the specified path.
+	 * Returns an instance with the specified path.
 	 * @param string $path The path (percent-encoded as needed).
 	 * @return UriInterface The new instance (or the same one when unchanged).
 	 */
@@ -367,7 +367,7 @@ class TResourceUri extends TComponent implements UriInterface
 	}
 
 	/**
-	 * Return an instance with the specified query string.
+	 * Returns an instance with the specified query string.
 	 * @param string $query The query (percent-encoded as needed).
 	 * @return UriInterface The new instance (or the same one when unchanged).
 	 */
@@ -383,7 +383,7 @@ class TResourceUri extends TComponent implements UriInterface
 	}
 
 	/**
-	 * Return an instance with the specified fragment.
+	 * Returns an instance with the specified fragment.
 	 * @param string $fragment The fragment (percent-encoded as needed).
 	 * @return UriInterface The new instance (or the same one when unchanged).
 	 */
@@ -399,7 +399,7 @@ class TResourceUri extends TComponent implements UriInterface
 	}
 
 	/**
-	 * Return the string representation of the URI, recomposed from its components.
+	 * Returns the string representation of the URI, recomposed from its components.
 	 * @return string The URI reference.
 	 */
 	public function __toString(): string
@@ -439,7 +439,7 @@ class TResourceUri extends TComponent implements UriInterface
 	//
 
 	/**
-	 * Normalize a scheme: lower-case it, strip any trailing ':' or '://', and
+	 * Normalizes a scheme: lower-case it, strip any trailing ':' or '://', and
 	 * validate it against RFC 3986 (`ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )`).
 	 * @param string $scheme The raw scheme ('' removes the scheme).
 	 * @throws \InvalidArgumentException When the scheme is syntactically invalid.
@@ -456,7 +456,7 @@ class TResourceUri extends TComponent implements UriInterface
 	}
 
 	/**
-	 * Normalize a host to lower case.  The host is otherwise taken as given — it is
+	 * Normalizes a host to lower case.  The host is otherwise taken as given — it is
 	 * not percent-encoded or validated (IPv6 literals keep their brackets).
 	 * @param string $host The raw host.
 	 * @return string The lower-cased host.
@@ -467,7 +467,7 @@ class TResourceUri extends TComponent implements UriInterface
 	}
 
 	/**
-	 * Validate a port against the 0..65535 range.
+	 * Validates a port against the 0..65535 range.
 	 * @param int $port The port to validate.
 	 * @throws \InvalidArgumentException When the port is outside 0..65535.
 	 * @return int The validated port.
@@ -481,7 +481,7 @@ class TResourceUri extends TComponent implements UriInterface
 	}
 
 	/**
-	 * Build a percent-encoded user-info string from its components (RFC 3986
+	 * Builds a percent-encoded user-info string from its components (RFC 3986
 	 * §3.2.1: unreserved / sub-delims / pct), preserving the ':' separator.
 	 * @param string $user The user ('' yields empty user-info).
 	 * @param ?string $password The password, or null.
@@ -500,7 +500,7 @@ class TResourceUri extends TComponent implements UriInterface
 	}
 
 	/**
-	 * Percent-encode the disallowed characters of a single user-info component.
+	 * Percent-encodes the disallowed characters of a single user-info component.
 	 * @param string $component A user-info component (user or password).
 	 * @return string The encoded component.
 	 */
@@ -514,7 +514,7 @@ class TResourceUri extends TComponent implements UriInterface
 	}
 
 	/**
-	 * Percent-encode a path, leaving already-encoded triplets and allowed
+	 * Percent-encodes a path, leaving already-encoded triplets and allowed
 	 * characters (including '/' and ':@') intact.
 	 * @param string $path The raw path.
 	 * @return string The encoded path.
@@ -529,7 +529,7 @@ class TResourceUri extends TComponent implements UriInterface
 	}
 
 	/**
-	 * Percent-encode a query or fragment, leaving allowed characters (including
+	 * Percent-encodes a query or fragment, leaving allowed characters (including
 	 * '/?:@') and existing triplets intact.
 	 * @param string $value The raw query or fragment.
 	 * @return string The encoded value.

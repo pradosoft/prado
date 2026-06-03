@@ -28,32 +28,28 @@ use Prado\IO\TResourceUri;
  * - query: param=value
  * - fragment: anchor
  *
- * As of 4.4.0, TUri is the Prado-specific PSR-7 URI: it has extended
+ * As of 4.4.0, TUri is the Prado-specific PSR-7 URI: it extends
  * {@see \Prado\IO\TResourceUri} and is fully PSR-7
- * {@see \Psr\Http\Message\UriInterface} compliant (scheme and host normalized to
- * lower case, default ports suppressed, path/query/fragment percent-encoded).  As
- * before, it has remained immutable: change a component with the inherited `with*`
- * clone-methods.
+ * {@see \Psr\Http\Message\UriInterface} compliant (scheme and host normalize to
+ * lower case, default ports suppressed, path/query/fragment percent-encoded).
+ * Change a component with the inherited `with*` clone-methods.
  *
  * It has retained three Prado conveniences over the bare interface: {@see getUri()}
  * returns the recomposed URI string, and {@see getUser()}/{@see getPassword()}
  * expose the (decoded) user and password separately, complementing the PSR-7
  * {@see getUserInfo()}.
  *
- * BACKWARD-COMPATIBILITY NOTE (4.4.0): the legacy accessors now follow PSR-7
- * normalization.  In particular {@see getPort()} returns null (PSR-7 `?int`) when
- * the port is absent or equals the scheme default (it formerly returned the raw
- * port/empty string), and {@see getScheme()}/{@see getHost()}/{@see getPath()}/
- * {@see getQuery()}/{@see getFragment()} return normalized values.
+ * BACKWARD-COMPATIBILITY NOTE (4.4.0): the legacy accessors now return PSR-7
+ * normalized values; {@see getPort()} returns null when the port is absent or
+ * matches the scheme default (it formerly returned the raw port or empty string).
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
 class TUri extends TResourceUri
 {
-
 	/**
-	 * Throw the Prado-conventional exception when a URI cannot be parsed.
+	 * Throws the Prado-conventional exception when a URI cannot be parsed.
 	 * @param string $uri The offending URI.
 	 * @return \Throwable The exception to throw.
 	 */
@@ -63,7 +59,7 @@ class TUri extends TResourceUri
 	}
 
 	/**
-	 * Return the recomposed URI string (alias of {@see __toString()}).
+	 * Returns the recomposed URI string (alias of {@see __toString()}).
 	 * @return string the URI
 	 */
 	public function getUri()
@@ -72,7 +68,7 @@ class TUri extends TResourceUri
 	}
 
 	/**
-	 * Return the decoded user component, complementing {@see getUserInfo()}.
+	 * Returns the decoded user component, complementing {@see getUserInfo()}.
 	 * @return string username of the URI
 	 */
 	public function getUser()
@@ -83,7 +79,7 @@ class TUri extends TResourceUri
 	}
 
 	/**
-	 * Return the decoded password component, complementing {@see getUserInfo()}.
+	 * Returns the decoded password component, complementing {@see getUserInfo()}.
 	 * @return string password of the URI
 	 */
 	public function getPassword()
