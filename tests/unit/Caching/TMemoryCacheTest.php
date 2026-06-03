@@ -15,257 +15,6 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\TApplication;
 use Prado\TApplicationMode;
 
-// ── Helpers ────────────────────────────────────────────────────────────────────
-
-/**
- * Exposes protected internals and overrides now() for clock-controlled TTL tests.
- */
-class TMemoryCacheTestAccessor extends TMemoryCache
-{
-	/** @var int|null when set, now() returns this value instead of time() */
-	public ?int $fakeNow = null;
-
-	protected function now(): int
-	{
-		return $this->fakeNow ?? parent::now();
-	}
-
-	public function pubNow(): int
-	{
-		return $this->now();
-	}
-
-	public function pubGetValue(string $key): mixed
-	{
-		return $this->getValue($key);
-	}
-
-	public function pubSetValue(string $key, mixed $value, int $expire): bool
-	{
-		return $this->setValue($key, $value, $expire);
-	}
-
-	public function pubAddValue(string $key, mixed $value, int $expire): bool
-	{
-		return $this->addValue($key, $value, $expire);
-	}
-
-	public function pubDeleteValue(string $key): bool
-	{
-		return $this->deleteValue($key);
-	}
-
-	public function pubLoad(): bool
-	{
-		return $this->load();
-	}
-
-	public function pubSave(): bool
-	{
-		return $this->save();
-	}
-
-	public function pubLoadFromBacking(): ?array
-	{
-		return $this->loadFromBacking();
-	}
-
-	public function pubSaveToBacking(array $store): bool
-	{
-		return $this->saveToBacking($store);
-	}
-
-	public function pubGenerateUniqueKey(string $key): string
-	{
-		return $this->generateUniqueKey($key);
-	}
-
-	public function pubGetStore(): array
-	{
-		return $this->getStoreDirect();
-	}
-
-	public function &pubGetStoreRef(): array
-	{
-		return $this->getStoreDirect();
-	}
-
-	public function pubComputeSizeFingerprint(): string
-	{
-		return $this->computeSizeFingerprint();
-	}
-
-	public function pubComputeCurrentSize(): int
-	{
-		return $this->computeCurrentSize();
-	}
-
-	public function pubEvictToFitMaximumSize(): void
-	{
-		$this->evictToFitMaximumSize();
-	}
-
-	public function pubValidateSizeCache(): void
-	{
-		$this->validateSizeCache();
-	}
-
-	public function pubGetMaximumSizeDirect(): int
-	{
-		return $this->getMaximumSizeDirect();
-	}
-
-	public function pubGetCurrentSizeDirect(): int
-	{
-		return $this->getCurrentSizeDirect();
-	}
-
-	public function pubSetCurrentSizeDirect(int $value): void
-	{
-		$this->setCurrentSizeDirect($value);
-	}
-
-	public function pubGetSizeFingerprintDirect(): string
-	{
-		return $this->getSizeFingerprintDirect();
-	}
-
-	public function pubSetSizeFingerprintDirect(string $value): void
-	{
-		$this->setSizeFingerprintDirect($value);
-	}
-
-	public function pubSetStore(array $value): void
-	{
-		$this->setStoreDirect($value);
-	}
-
-	public function pubGetStoreEntry(string $key): ?array
-	{
-		return $this->getStoreEntry($key);
-	}
-
-	public function pubHasStoreEntry(string $key): bool
-	{
-		return $this->hasStoreEntry($key);
-	}
-
-	public function pubSetStoreEntry(string $key, array $entry): void
-	{
-		$this->setStoreEntry($key, $entry);
-	}
-
-	public function pubClearStoreEntry(string $key): void
-	{
-		$this->clearStoreEntry($key);
-	}
-
-	public function pubGetChanged(): bool
-	{
-		return $this->getChanged();
-	}
-
-	public function pubGetHashKeys(): ?bool
-	{
-		return $this->getHashKeys();
-	}
-
-	public function pubSerialize(mixed $value): string
-	{
-		return $this->serialize($value);
-	}
-
-	public function pubUnserialize(string $data): mixed
-	{
-		return $this->unserialize($data);
-	}
-
-	public function pubGetContents(string $filePath): string|false
-	{
-		return $this->getContents($filePath);
-	}
-
-	public function pubPutContents(string $filePath, string $data): int|false
-	{
-		return $this->putContents($filePath, $data);
-	}
-}
-
-/**
- * A TMemoryCache subclass that overrides DEFAULT_BACKING_CACHE_KEY to verify
- * that the constructor seeds _backingCacheKey via late static binding.
- */
-class TMemoryCacheCustomKeyAccessor extends TMemoryCacheTestAccessor
-{
-	public const DEFAULT_BACKING_CACHE_KEY = 'custom.key';
-}
-
-/**
- * A TMemoryCache subclass that overrides DEFAULT_MERGE_POLICY to verify
- * that the constructor seeds _mergePolicy via late static binding.
- */
-class TMemoryCacheCustomMergePolicyAccessor extends TMemoryCacheTestAccessor
-{
-	public const DEFAULT_MERGE_POLICY = TMemoryCache::REPLACE;
-}
-
-/**
- * A minimal in-memory TCache stub used as a backing cache module in tests.
- * Stores data in a plain PHP array so tests do not depend on TFileCache or
- * any external service.
- */
-class StubBackingCache extends TCache
-{
-	private array $_data = [];
-
-	public static function getIsAvailable(): bool
-	{
-		return true;
-	}
-
-	public function init($config): void
-	{
-		parent::init($config);
-	}
-
-	protected function getValue($key)
-	{
-		return $this->_data[$key] ?? false;
-	}
-
-	protected function setValue($key, $value, $expire)
-	{
-		$this->_data[$key] = $value;
-		return true;
-	}
-
-	protected function addValue($key, $value, $expire)
-	{
-		if (array_key_exists($key, $this->_data)) {
-			return false;
-		}
-		$this->_data[$key] = $value;
-		return true;
-	}
-
-	protected function deleteValue($key)
-	{
-		unset($this->_data[$key]);
-		return true;
-	}
-
-	public function flush()
-	{
-		$this->_data = [];
-		return true;
-	}
-
-	/** Direct access for test assertions. */
-	public function getRawData(): array
-	{
-		return $this->_data;
-	}
-}
 
 // ── Test class ─────────────────────────────────────────────────────────────────
 
@@ -288,8 +37,8 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 
 	private ?TApplication $app = null;
 
-	/** @var TMemoryCacheTestAccessor */
-	private TMemoryCacheTestAccessor $cache;
+	/** @var TTestMemoryCache */
+	private TTestMemoryCache $cache;
 
 	public static function setUpBeforeClass(): void
 	{
@@ -314,7 +63,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 		$basePath = __DIR__ . '/mockapp';
 		$this->app = new TApplication($basePath);
 
-		$this->cache = new TMemoryCacheTestAccessor();
+		$this->cache = new TTestMemoryCache();
 		$this->cache->setPrimaryCache(false);
 		$this->cache->init(null);
 	}
@@ -328,12 +77,13 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 	// ── helpers ─────────────────────────────────────────────────────────────────
 
 	/**
-	 * Creates and initializes a StubBackingCache, registers it with the
-	 * application as a non-primary module, and returns it.
+	 * Creates and initializes a {@see TTestCache} (an array-backed cache used here as the
+	 * backing module), registers it with the application as a non-primary module, and
+	 * returns it. Its public `$store` is inspected directly to assert backing contents.
 	 */
-	private function makeBackingCache(string $moduleId = 'backingCache'): StubBackingCache
+	private function makeBackingCache(string $moduleId = 'backingCache'): TTestCache
 	{
-		$backing = new StubBackingCache();
+		$backing = new TTestCache();
 		$backing->setID($moduleId);
 		$backing->setPrimaryCache(false);
 		$backing->init(null);
@@ -342,11 +92,11 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 	}
 
 	/**
-	 * Creates a TMemoryCacheTestAccessor wired to the given backing cache module.
+	 * Creates a TTestMemoryCache wired to the given backing cache module.
 	 */
-	private function makeCacheWithBacking(string $moduleId = 'backingCache'): TMemoryCacheTestAccessor
+	private function makeCacheWithBacking(string $moduleId = 'backingCache'): TTestMemoryCache
 	{
-		$cache = new TMemoryCacheTestAccessor();
+		$cache = new TTestMemoryCache();
 		$cache->setID('memcache');
 		$cache->setPrimaryCache(false);
 		$cache->setBackingCacheId($moduleId);
@@ -399,7 +149,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 
 	public function testGetModuleDependenciesReturnsIdWhenBackingCacheIdSet(): void
 	{
-		$cache = new TMemoryCacheTestAccessor();
+		$cache = new TTestMemoryCache();
 		$cache->setBackingCacheId('fileCache');
 
 		self::assertModuleDependency('fileCache', $cache->getModuleDependencies());
@@ -407,7 +157,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 
 	public function testGetModuleDependenciesSameForBothPhases(): void
 	{
-		$cache = new TMemoryCacheTestAccessor();
+		$cache = new TTestMemoryCache();
 		$cache->setBackingCacheId('someModule');
 
 		self::assertModuleDependency(
@@ -420,7 +170,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 
 	public function testInitSetsDefaultBackingCacheKeyFromModuleId(): void
 	{
-		$cache = new TMemoryCacheTestAccessor();
+		$cache = new TTestMemoryCache();
 		$cache->setID('myCache');
 		$cache->setPrimaryCache(false);
 		$cache->init(null);
@@ -430,7 +180,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 
 	public function testInitSetsDefaultBackingCacheKeyWhenNoId(): void
 	{
-		$cache = new TMemoryCacheTestAccessor();
+		$cache = new TTestMemoryCache();
 		$cache->setPrimaryCache(false);
 		$cache->init(null);
 
@@ -439,7 +189,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 
 	public function testExplicitBackingCacheKeyIsPreservedByInit(): void
 	{
-		$cache = new TMemoryCacheTestAccessor();
+		$cache = new TTestMemoryCache();
 		$cache->setPrimaryCache(false);
 		$cache->setBackingCacheKey('my-custom-key');
 		$cache->init(null);
@@ -675,7 +425,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 	public function testNowReturnsIntegerCloseToCurrentTime(): void
 	{
 		$before = time();
-		$result = $this->cache->pubNow();
+		$result = $this->cache->pubTime();
 		$after = time();
 
 		$this->assertGreaterThanOrEqual($before, $result);
@@ -685,14 +435,14 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 	public function testFakeNowOverridesNow(): void
 	{
 		$this->cache->fakeNow = 42;
-		$this->assertSame(42, $this->cache->pubNow());
+		$this->assertSame(42, $this->cache->pubTime());
 	}
 
 	// ── BackingCacheId property ───────────────────────────────────────────────
 
 	public function testGetSetBackingCacheId(): void
 	{
-		$cache = new TMemoryCacheTestAccessor();
+		$cache = new TTestMemoryCache();
 		$cache->setBackingCacheId('someModule');
 		$this->assertSame('someModule', $cache->getBackingCacheId());
 	}
@@ -707,8 +457,9 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 	public function testGetSetBackingFile(): void
 	{
 		$file = self::$tempDir . DIRECTORY_SEPARATOR . 'test.cache';
-		$this->cache->setBackingFile($file);
-		$this->assertSame($file, $this->cache->getBackingFile());
+		$cache = new TTestMemoryCache();
+		$cache->setBackingFile($file);
+		$this->assertSame($file, $cache->getBackingFile());
 	}
 
 	public function testBackingFileDefaultsToEmpty(): void
@@ -719,23 +470,25 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 	public function testSetBackingFileToEmptyStringClearsIt(): void
 	{
 		$file = self::$tempDir . DIRECTORY_SEPARATOR . 'test.cache';
-		$this->cache->setBackingFile($file);
-		$this->cache->setBackingFile('');
-		$this->assertSame('', $this->cache->getBackingFile());
+		$cache = new TTestMemoryCache();
+		$cache->setBackingFile($file);
+		$cache->setBackingFile('');
+		$this->assertSame('', $cache->getBackingFile());
 	}
 
 	public function testSetBackingFileThrowsWhenDirectoryDoesNotExist(): void
 	{
 		$this->expectException(TConfigurationException::class);
-		$this->cache->setBackingFile('/nonexistent/dir/cache.dat');
+		(new TTestMemoryCache())->setBackingFile('/nonexistent/dir/cache.dat');
 	}
 
 	// ── BackingCacheKey property ──────────────────────────────────────────────
 
 	public function testGetSetBackingCacheKey(): void
 	{
-		$this->cache->setBackingCacheKey('my-store-key');
-		$this->assertSame('my-store-key', $this->cache->getBackingCacheKey());
+		$cache = new TTestMemoryCache();
+		$cache->setBackingCacheKey('my-store-key');
+		$this->assertSame('my-store-key', $cache->getBackingCacheKey());
 	}
 
 	// ── MergePolicy property ──────────────────────────────────────────────────
@@ -747,20 +500,22 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 
 	public function testSetMergePolicyAcceptsReplace(): void
 	{
-		$this->cache->setMergePolicy(TMemoryCache::REPLACE);
-		$this->assertSame(TMemoryCache::REPLACE, $this->cache->getMergePolicy());
+		$cache = new TTestMemoryCache();
+		$cache->setMergePolicy(TMemoryCache::REPLACE);
+		$this->assertSame(TMemoryCache::REPLACE, $cache->getMergePolicy());
 	}
 
 	public function testSetMergePolicyAcceptsMerge(): void
 	{
-		$this->cache->setMergePolicy(TMemoryCache::MERGE);
-		$this->assertSame(TMemoryCache::MERGE, $this->cache->getMergePolicy());
+		$cache = new TTestMemoryCache();
+		$cache->setMergePolicy(TMemoryCache::MERGE);
+		$this->assertSame(TMemoryCache::MERGE, $cache->getMergePolicy());
 	}
 
 	public function testSetMergePolicyThrowsOnInvalidValue(): void
 	{
 		$this->expectException(\Prado\Exceptions\TInvalidDataValueException::class);
-		$this->cache->setMergePolicy('invalid-policy');
+		(new TTestMemoryCache())->setMergePolicy('invalid-policy');
 	}
 
 	// ── Changed (dirty) flag ─────────────────────────────────────────────────
@@ -817,7 +572,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 	public function testChangedRemainsWhenSaveFails(): void
 	{
 		// Back cache is not registered → saveToBacking returns false.
-		$cache = new TMemoryCacheTestAccessor();
+		$cache = new TTestMemoryCache();
 		$cache->setPrimaryCache(false);
 		$cache->setBackingCacheId('nonexistent');
 		$cache->init(null);
@@ -844,7 +599,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 		// Store is clean after init() load (nothing in backing, no data written).
 		$this->assertFalse($cache->pubGetChanged());
 		$cache->save(); // must be a no-op
-		$this->assertEmpty($backing->getRawData(),
+		$this->assertEmpty($backing->store,
 			'Backing cache must remain empty when save() is called with no changes.');
 	}
 
@@ -884,7 +639,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 		$backing = $this->makeBackingCache();
 
 		// Pre-seed the backing cache with a store snapshot.
-		$seed = new TMemoryCacheTestAccessor();
+		$seed = new TTestMemoryCache();
 		$seed->setID('memcache');
 		$seed->setPrimaryCache(false);
 		$seed->setBackingCacheId('backingCache');
@@ -893,7 +648,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 		$seed->save();
 
 		// Fresh instance must pick up the seeded data.
-		$fresh = new TMemoryCacheTestAccessor();
+		$fresh = new TTestMemoryCache();
 		$fresh->setID('memcache');
 		$fresh->setPrimaryCache(false);
 		$fresh->setBackingCacheId('backingCache');
@@ -905,7 +660,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 	public function testLoadReturnsFalseWhenBackingCacheModuleHasNoData(): void
 	{
 		$this->makeBackingCache();
-		$cache = new TMemoryCacheTestAccessor();
+		$cache = new TTestMemoryCache();
 		$cache->setID('memcache');
 		$cache->setPrimaryCache(false);
 		$cache->setBackingCacheId('backingCache');
@@ -917,7 +672,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 
 	public function testSaveReturnsFalseWhenBackingModuleNotFound(): void
 	{
-		$cache = new TMemoryCacheTestAccessor();
+		$cache = new TTestMemoryCache();
 		$cache->setPrimaryCache(false);
 		$cache->setBackingCacheId('nonexistent');
 		$cache->init(null);
@@ -931,7 +686,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 	{
 		$file = self::$tempDir . DIRECTORY_SEPARATOR . 'roundtrip_' . uniqid() . '.dat';
 
-		$cache = new TMemoryCacheTestAccessor();
+		$cache = new TTestMemoryCache();
 		$cache->setPrimaryCache(false);
 		$cache->setBackingFile($file);
 		$cache->init(null);
@@ -939,7 +694,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($cache->save());
 
 		// Second instance reads from file.
-		$cache2 = new TMemoryCacheTestAccessor();
+		$cache2 = new TTestMemoryCache();
 		$cache2->setPrimaryCache(false);
 		$cache2->setBackingFile($file);
 		$cache2->init(null);
@@ -950,7 +705,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 
 	public function testLoadReturnsFalseWhenBackingFileIsMissing(): void
 	{
-		$cache = new TMemoryCacheTestAccessor();
+		$cache = new TTestMemoryCache();
 		$cache->setPrimaryCache(false);
 		$cache->setBackingFile(self::$tempDir . DIRECTORY_SEPARATOR . 'no_such_file_' . uniqid() . '.dat');
 		$cache->init(null);
@@ -963,7 +718,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 		$file = self::$tempDir . DIRECTORY_SEPARATOR . 'garbage_' . uniqid() . '.dat';
 		file_put_contents($file, 'THIS IS NOT VALID SERIALIZED DATA');
 
-		$cache = new TMemoryCacheTestAccessor();
+		$cache = new TTestMemoryCache();
 		$cache->setPrimaryCache(false);
 		$cache->setBackingFile($file);
 		$cache->init(null);
@@ -981,7 +736,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 
 		$file = self::$tempDir . DIRECTORY_SEPARATOR . 'not_used_' . uniqid() . '.dat';
 
-		$cache = new TMemoryCacheTestAccessor();
+		$cache = new TTestMemoryCache();
 		$cache->setID('memcache');
 		$cache->setPrimaryCache(false);
 		$cache->setBackingCacheId('backingCache');
@@ -994,7 +749,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 		$this->assertFileDoesNotExist($file);
 
 		// Reload — data comes from module, not file.
-		$cache2 = new TMemoryCacheTestAccessor();
+		$cache2 = new TTestMemoryCache();
 		$cache2->setID('memcache');
 		$cache2->setPrimaryCache(false);
 		$cache2->setBackingCacheId('backingCache');
@@ -1017,7 +772,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 
 		// Fresh instance already has 'shared' in memory from init() load.
 		// Simulate a manual second load after writing 'shared' locally.
-		$cache = new TMemoryCacheTestAccessor();
+		$cache = new TTestMemoryCache();
 		$cache->setID('memcache');
 		$cache->setPrimaryCache(false);
 		$cache->setBackingCacheId('backingCache');
@@ -1046,7 +801,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 		$seed->set('key', 'backing-value');
 		$seed->save();
 
-		$cache = new TMemoryCacheTestAccessor();
+		$cache = new TTestMemoryCache();
 		$cache->setID('memcache');
 		$cache->setPrimaryCache(false);
 		$cache->setBackingCacheId('backingCache');
@@ -1075,7 +830,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 		$cache->handleSaveState($this->app, null);
 
 		// Verify the backing cache now contains the store.
-		$raw = $backing->getRawData();
+		$raw = $backing->store;
 		$this->assertNotEmpty($raw, 'Backing cache must contain data after handleSaveState().');
 
 		// Reload into a fresh instance to confirm round-trip.
@@ -1382,54 +1137,61 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 
 	public function testSetHashKeysToTrue(): void
 	{
-		$this->cache->setHashKeys(true);
-		$this->assertTrue($this->cache->getHashKeys());
+		$cache = new TTestMemoryCache();
+		$cache->setHashKeys(true);
+		$this->assertTrue($cache->getHashKeys());
 	}
 
 	public function testSetHashKeysToFalse(): void
 	{
-		$this->cache->setHashKeys(false);
-		$this->assertFalse($this->cache->getHashKeys());
+		$cache = new TTestMemoryCache();
+		$cache->setHashKeys(false);
+		$this->assertFalse($cache->getHashKeys());
 	}
 
 	public function testSetHashKeysToNullResetsToAuto(): void
 	{
-		$this->cache->setHashKeys(true);
-		$this->cache->setHashKeys(null);
-		$this->assertNull($this->cache->getHashKeys());
+		$cache = new TTestMemoryCache();
+		$cache->setHashKeys(true);
+		$cache->setHashKeys(null);
+		$this->assertNull($cache->getHashKeys());
 	}
 
 	public function testSetHashKeysFromStringTrue(): void
 	{
-		$this->cache->setHashKeys('true');
-		$this->assertTrue($this->cache->getHashKeys());
+		$cache = new TTestMemoryCache();
+		$cache->setHashKeys('true');
+		$this->assertTrue($cache->getHashKeys());
 	}
 
 	public function testSetHashKeysFromStringFalse(): void
 	{
-		$this->cache->setHashKeys('false');
-		$this->assertFalse($this->cache->getHashKeys());
+		$cache = new TTestMemoryCache();
+		$cache->setHashKeys('false');
+		$this->assertFalse($cache->getHashKeys());
 	}
 
 	public function testSetHashKeysFromStringNull(): void
 	{
-		$this->cache->setHashKeys(true);
-		$this->cache->setHashKeys('null');
-		$this->assertNull($this->cache->getHashKeys());
+		$cache = new TTestMemoryCache();
+		$cache->setHashKeys(true);
+		$cache->setHashKeys('null');
+		$this->assertNull($cache->getHashKeys());
 	}
 
 	public function testSetHashKeysFromEmptyString(): void
 	{
-		$this->cache->setHashKeys(true);
-		$this->cache->setHashKeys('');
-		$this->assertNull($this->cache->getHashKeys());
+		$cache = new TTestMemoryCache();
+		$cache->setHashKeys(true);
+		$cache->setHashKeys('');
+		$this->assertNull($cache->getHashKeys());
 	}
 
 	// ── generateUniqueKey (hash on/off/auto) ──────────────────────────────────
 
 	public function testGenerateUniqueKeyWithHashEnabled(): void
 	{
-		$cache = new TMemoryCacheTestAccessor();
+		$cache = new TTestMemoryCache();
 		$cache->setKeyPrefix('pfx_');
 		$cache->setPrimaryCache(false);
 		$cache->setHashKeys(true);
@@ -1441,7 +1203,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 
 	public function testGenerateUniqueKeyWithHashDisabled(): void
 	{
-		$cache = new TMemoryCacheTestAccessor();
+		$cache = new TTestMemoryCache();
 		$cache->setKeyPrefix('pfx_');
 		$cache->setPrimaryCache(false);
 		$cache->setHashKeys(false);
@@ -1456,7 +1218,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 		// TApplication defaults to Debug mode — hash must be off.
 		$this->assertSame(TApplicationMode::Debug, $this->app->getMode());
 
-		$cache = new TMemoryCacheTestAccessor();
+		$cache = new TTestMemoryCache();
 		$cache->setKeyPrefix('pfx_');
 		$cache->setPrimaryCache(false);
 		// HashKeys is null (auto).
@@ -1471,7 +1233,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 	{
 		$this->app->setMode(TApplicationMode::Normal);
 
-		$cache = new TMemoryCacheTestAccessor();
+		$cache = new TTestMemoryCache();
 		$cache->setKeyPrefix('pfx_');
 		$cache->setPrimaryCache(false);
 		$cache->init(null);
@@ -1485,7 +1247,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 	{
 		$this->app->setMode(TApplicationMode::Performance);
 
-		$cache = new TMemoryCacheTestAccessor();
+		$cache = new TTestMemoryCache();
 		$cache->setKeyPrefix('pfx_');
 		$cache->setPrimaryCache(false);
 		$cache->init(null);
@@ -1499,7 +1261,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 	{
 		// true and false are non-default — they must survive serialization.
 		foreach ([true, false] as $setting) {
-			$cache = new TMemoryCacheTestAccessor();
+			$cache = new TTestMemoryCache();
 			$cache->setPrimaryCache(false);
 			$cache->setHashKeys($setting);
 			$cache->init(null);
@@ -1529,7 +1291,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 
 	public function testConstructSetsBackingCacheKeyToDefaultConstant(): void
 	{
-		$cache = new TMemoryCacheTestAccessor();
+		$cache = new TTestMemoryCache();
 		$this->assertSame(
 			TMemoryCache::DEFAULT_BACKING_CACHE_KEY,
 			$cache->getBackingCacheKey(),
@@ -1539,7 +1301,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 
 	public function testSubclassCanOverrideDefaultBackingCacheKey(): void
 	{
-		$cache = new TMemoryCacheCustomKeyAccessor();
+		$cache = new TTestMemoryCacheCustomKey();
 		$this->assertSame(
 			'custom.key',
 			$cache->getBackingCacheKey(),
@@ -1556,7 +1318,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 
 	public function testConstructSetsMergePolicyToDefaultConstant(): void
 	{
-		$cache = new TMemoryCacheTestAccessor();
+		$cache = new TTestMemoryCache();
 		$this->assertSame(
 			TMemoryCache::DEFAULT_MERGE_POLICY,
 			$cache->getMergePolicy(),
@@ -1566,7 +1328,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 
 	public function testSubclassCanOverrideDefaultMergePolicy(): void
 	{
-		$cache = new TMemoryCacheCustomMergePolicyAccessor();
+		$cache = new TTestMemoryCacheCustomMergePolicy();
 		$this->assertSame(
 			TMemoryCache::REPLACE,
 			$cache->getMergePolicy(),
@@ -1578,7 +1340,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 
 	public function testGetModuleDependenciesUsesIsPreInitParameter(): void
 	{
-		$cache = new TMemoryCacheTestAccessor();
+		$cache = new TTestMemoryCache();
 		$cache->setBackingCacheId('someId');
 
 		// TMemoryCache does not differentiate by phase — both calls must return
@@ -1608,7 +1370,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 
 	public function testMaximumSizeDefaultsToZero(): void
 	{
-		$cache = new TMemoryCacheTestAccessor();
+		$cache = new TTestMemoryCache();
 		$this->assertSame(0, $cache->getMaximumSize(),
 			'MaximumSize must default to 0 (unlimited).');
 	}
@@ -1694,7 +1456,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 
 	public function testGetCurrentSizeReturnsSizeNotComputedWhenInactiveAndNoMaximumSize(): void
 	{
-		$cache = new TMemoryCacheTestAccessor();
+		$cache = new TTestMemoryCache();
 		$cache->setPrimaryCache(false);
 		$cache->init(null);
 		// MaximumSize is 0 by default; size tracking is inactive, sentinel stays SIZE_NOT_COMPUTED.
@@ -1940,5 +1702,86 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 		$this->assertSame(0, $this->cache->getMaximumSize());
 		$this->assertTrue($this->cache->set('large', str_repeat('x', 1_000_000)),
 			'set() must succeed for any payload when MaximumSize is 0 (unlimited).');
+	}
+
+	// ── SerializeValues ───────────────────────────────────────────────────────
+
+	public function testSerializeValuesDefaultsToFalse(): void
+	{
+		$this->assertFalse($this->cache->getSerializeValues());
+	}
+
+	public function testReferenceStorageSharesObjectByDefault(): void
+	{
+		$obj = new \stdClass();
+		$obj->n = 1;
+		$this->cache->set('k', $obj);
+		$obj->n = 2; // mutate the original after storing
+
+		$got = $this->cache->get('k');
+		$this->assertSame($obj, $got, 'With SerializeValues=false, get() returns the same instance.');
+		$this->assertSame(2, $got->n, 'A mutation to the stored object is visible through the cache.');
+	}
+
+	public function testSerializeValuesIsolatesStoredObject(): void
+	{
+		$cache = new TTestMemoryCache();
+		$cache->setPrimaryCache(false);
+		$cache->setSerializeValues(true);
+		$cache->init(null);
+
+		$obj = new \stdClass();
+		$obj->n = 1;
+		$cache->set('k', $obj);
+		$obj->n = 2; // mutate the original after storing
+
+		$got = $cache->get('k');
+		$this->assertNotSame($obj, $got, 'With SerializeValues=true, get() returns an independent copy.');
+		$this->assertSame(1, $got->n, 'The cached copy is unaffected by later mutation of the original.');
+	}
+
+	public function testSerializeValuesRoundTripsScalarsAndArrays(): void
+	{
+		$cache = new TTestMemoryCache();
+		$cache->setPrimaryCache(false);
+		$cache->setSerializeValues(true);
+		$cache->init(null);
+
+		$cache->set('k', ['a' => 1, 'b' => [2, 3]]);
+		$this->assertSame(['a' => 1, 'b' => [2, 3]], $cache->get('k'));
+	}
+
+	public function testNonSerializableValueAllowedWhenNotSerializingAndNoMaxSize(): void
+	{
+		// With SerializeValues=false and MaximumSize=0, no serialize() is performed for
+		// storage or size measurement, so a closure (which serialize() cannot handle) caches.
+		$fn = static fn (): int => 42;
+		$this->assertTrue($this->cache->set('fn', $fn));
+		$this->assertSame($fn, $this->cache->get('fn'));
+	}
+
+	public function testSerializeValuesIsATSerializingCache(): void
+	{
+		$this->assertInstanceOf(\Prado\Caching\TSerializingCache::class, $this->cache);
+	}
+
+	public function testSerializeValuesWithEncryptionRoundTrips(): void
+	{
+		// Serializing mode flows through the TSerializingCache pipeline, so the inherited
+		// Encrypt/Encoding options apply.
+		if (!extension_loaded('openssl')) {
+			$this->markTestSkipped('openssl extension required for encryption.');
+		}
+		$cache = new TTestMemoryCache();
+		$cache->setPrimaryCache(false);
+		$cache->setSerializeValues(true);
+		$cache->setEncrypt(true);
+		$cache->setEncoding(TMemoryCache::ENCODING_BASE64);
+		$cache->init(null);
+
+		$secret = 'in-memory-top-secret';
+		$cache->set('k', $secret);
+		$this->assertSame($secret, $cache->get('k'),
+			'Encrypted serializing mode must round-trip the original value.');
 	}
 }

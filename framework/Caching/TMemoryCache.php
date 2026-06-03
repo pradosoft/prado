@@ -20,7 +20,7 @@ use Prado\TPropertyValue;
 /**
  * TMemoryCache class.
  *
- * TMemoryCache is an in-process, in-memory {@see TCache} application module.
+ * TMemoryCache is an in-process, in-memory {@see TSerializingCache} application module.
  * All cache entries are held in a plain PHP array for the lifetime of the current
  * process. Data is never shared across processes or requests unless it is
  * explicitly persisted through a backing store.
@@ -69,6 +69,20 @@ use Prado\TPropertyValue;
  *
  * {@see ICacheDependency} objects are supported and serialized together with
  * each value, consistent with the behavior of every other {@see TCache} subclass.
+ *
+ * ## Value isolation ({@see getSerializeValues SerializeValues})
+ *
+ * By default ({@see getSerializeValues SerializeValues}`= false`) the live value is
+ * stored by reference. This is the fastest option and is the only Prado cache that can
+ * hold non-serializable values (closures, resources). The trade-off is that a stored
+ * object is shared with the caller: mutating it after {@see set()}, or mutating the
+ * object returned by {@see get()}, also changes the cached entry. Set
+ * `SerializeValues="true"` to store each entry through the {@see TSerializingCache}
+ * pipeline — serialized on {@see set()} and deserialized on {@see get()} — so that each
+ * entry is an independent copy, matching every other {@see TCache} backend. In that mode
+ * the inherited {@see getSerializationType SerializationType}, {@see getEncrypt Encrypt},
+ * and {@see getEncoding Encoding} settings apply; in reference mode they are ignored.
+ * Both modes share the same in-memory store via {@see readStore()} / {@see writeStore()}.
  *
  * ## Key hashing
  *
@@ -153,9 +167,10 @@ use Prado\TPropertyValue;
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
  */
-class TMemoryCache extends TCache implements IModuleDependency, ICacheSize
+class TMemoryCache extends TSerializingCache implements IModuleDependency, ICacheSize
 {
 	use TCacheSizeTrait;
+	use TCacheFileTrait;
 
 	/** Merge policy: backing fills in only the keys absent from memory. */
 	public const MERGE = 'Merge';
@@ -232,6 +247,18 @@ class TMemoryCache extends TCache implements IModuleDependency, ICacheSize
 	private ?bool $_hashKeys = null;
 
 	/**
+	 * @var bool Whether each value is serialized before it is stored in memory.
+	 *   When `false` *(default)* the live value is stored by reference: this is fast
+	 *   and can hold non-serializable values (closures, resources), but a stored
+	 *   object is shared with the caller — mutating it after {@see set()}, or mutating
+	 *   the result of {@see get()}, changes the cached entry. When `true` the value is
+	 *   serialized on {@see set()} and unserialized on {@see get()}, so each entry is an
+	 *   independent copy (matching every other {@see TCache} backend). Set this at
+	 *   configuration time, before any entries are stored.
+	 */
+	private bool $_serializeValues = false;
+
+	/**
 	 * @var array<string, int> Per-key byte size of the serialized STORE_DATA payload,
 	 *   maintained incrementally by {@see setValue()} and {@see deleteValue()}.
 	 *   Rebuilt from scratch by {@see computeCurrentSize()} on a fingerprint mismatch.
@@ -239,7 +266,7 @@ class TMemoryCache extends TCache implements IModuleDependency, ICacheSize
 	private array $_entrySizes = [];
 
 	/**
-	 * @var array<string, float> Per-key last-access timestamp from `microtime(true)`,
+	 * @var array<string, float> Per-key last-access timestamp from `$this->microtime()`,
 	 *   used to determine eviction order in {@see evictToFitMaximumSize()}.
 	 *   Entries loaded without an explicit access record are assigned `0.0` (oldest
 	 *   possible) by {@see computeCurrentSize()} so they are evicted first.
@@ -281,7 +308,6 @@ class TMemoryCache extends TCache implements IModuleDependency, ICacheSize
 
 	/**
 	 * @return bool always true; the in-memory store has no external dependency.
-	 * @since 4.4.0
 	 */
 	public static function getIsAvailable(): bool
 	{
@@ -296,7 +322,7 @@ class TMemoryCache extends TCache implements IModuleDependency, ICacheSize
 	 * {@see handleSaveState()} as a handler for the application's `OnSaveState`
 	 * event so that the store is persisted automatically at the end of each request.
 	 *
-	 * @param null|\Prado\Xml\TXmlElement $config module configuration
+	 * @param null|array|\Prado\Xml\TXmlElement $config module configuration
 	 */
 	public function init($config)
 	{
@@ -514,7 +540,7 @@ class TMemoryCache extends TCache implements IModuleDependency, ICacheSize
 		}
 		$file = $this->getBackingFileDirect();
 		if ($file !== '') {
-			return $this->putContents($file, $this->serialize($store)) !== false;
+			return $this->putContents($file, $this->serialize($store), true) !== false;
 		}
 		return false;
 	}
@@ -543,22 +569,111 @@ class TMemoryCache extends TCache implements IModuleDependency, ICacheSize
 	// --------------------------------------------------------------- ICache impl
 
 	/**
-	 * Retrieves a value from the in-memory store by its unique key. Expired entries
-	 * are removed from the store on access; when {@see getMaximumSize MaximumSize}
-	 * is active the running size total is decremented accordingly. Access time is
-	 * updated on every live hit so that LRU eviction remains accurate.
+	 * Retrieves a value by its unique key. In serializing mode
+	 * ({@see getSerializeValues SerializeValues}`= true`) the value is read and
+	 * deserialized through {@see TSerializingCache::getValue()}; otherwise the live
+	 * value is read directly from the store via {@see readStore()}.
 	 *
 	 * @param string $key the unique key produced by {@see \Prado\Caching\TCache::generateUniqueKey()}
-	 * @return false|mixed the stored payload, or false when the key is absent or expired
+	 * @return false|mixed the stored value, or false when the key is absent or expired
 	 */
 	protected function getValue($key)
+	{
+		return $this->getSerializeValues() ? parent::getValue($key) : $this->readStore($key);
+	}
+
+	/**
+	 * Stores a value under the given unique key, overwriting any existing entry. In
+	 * serializing mode the value is serialized through {@see TSerializingCache::setValue()};
+	 * otherwise the live value is written directly via {@see writeStore()}.
+	 *
+	 * @param string $key the unique key
+	 * @param mixed $value the value to store
+	 * @param int $expire TTL in seconds; 0 means never expire
+	 * @return bool true on success
+	 */
+	protected function setValue($key, $value, $expire)
+	{
+		return $this->getSerializeValues()
+			? parent::setValue($key, $value, $expire)
+			: $this->writeStore($key, $value, (int) $expire);
+	}
+
+	/**
+	 * Stores a value only when no live entry already exists under the key. In serializing
+	 * mode the value is serialized through {@see TSerializingCache::addValue()}; otherwise
+	 * the live value is written directly via {@see addStore()}.
+	 *
+	 * @param string $key the unique key
+	 * @param mixed $value the value to store
+	 * @param int $expire TTL in seconds; 0 means never expire
+	 * @return bool true when the entry was stored; false when a live entry already existed
+	 */
+	protected function addValue($key, $value, $expire)
+	{
+		return $this->getSerializeValues()
+			? parent::addValue($key, $value, $expire)
+			: $this->addStore($key, $value, (int) $expire);
+	}
+
+	// ------------------------- TSerializingCache contract (serializing mode) -------------------------
+
+	/**
+	 * Reads the raw serialized payload for a key. Used by {@see TSerializingCache} in
+	 * serializing mode; delegates to the shared {@see readStore()}.
+	 * @param string $key the unique key
+	 * @return false|string the serialized payload, or false when absent or expired
+	 */
+	protected function getSerializedValue(string $key): false|string
+	{
+		$raw = $this->readStore($key);
+		return $raw === false ? false : (string) $raw;
+	}
+
+	/**
+	 * Writes a serialized payload. Used by {@see TSerializingCache} in serializing mode;
+	 * delegates to the shared {@see writeStore()}.
+	 * @param string $key the unique key
+	 * @param string $value the serialized payload
+	 * @param int $expire TTL in seconds; 0 means never expire
+	 * @return bool true on success
+	 */
+	protected function setSerializedValue(string $key, string $value, int $expire): bool
+	{
+		return $this->writeStore($key, $value, $expire);
+	}
+
+	/**
+	 * Writes a serialized payload only when the key is absent. Used by {@see TSerializingCache}
+	 * in serializing mode; delegates to the shared {@see addStore()}.
+	 * @param string $key the unique key
+	 * @param string $value the serialized payload
+	 * @param int $expire TTL in seconds; 0 means never expire
+	 * @return bool true when stored; false when the key already existed
+	 */
+	protected function addSerializedValue(string $key, string $value, int $expire): bool
+	{
+		return $this->addStore($key, $value, $expire);
+	}
+
+	// ------------------------- shared store access (both modes) -------------------------
+
+	/**
+	 * Reads the stored payload for a key, enforcing TTL and refreshing the LRU access
+	 * time. The payload is opaque: it is the live value in non-serializing mode and the
+	 * serialized string in serializing mode. Expired entries are removed on access; when
+	 * {@see getMaximumSize MaximumSize} is active the running size total is decremented.
+	 * @param string $key the unique key
+	 * @return false|mixed the stored payload, or false when the key is absent or expired
+	 */
+	protected function readStore(string $key): mixed
 	{
 		if (!$this->hasStoreEntry($key)) {
 			return false;
 		}
 		$entry = $this->getStoreEntry($key);
 		$expire = (int) $entry[static::STORE_EXPIRE];
-		if ($expire > 0 && $expire <= $this->now()) {
+		if ($expire > 0 && $expire <= $this->time()) {
 			if ($this->getMaximumSizeDirect() > 0) {
 				$size = $this->_entrySizes[$key] ?? 0;
 				$current = $this->getCurrentSizeDirect();
@@ -574,41 +689,44 @@ class TMemoryCache extends TCache implements IModuleDependency, ICacheSize
 			return false;
 		}
 		if ($this->getMaximumSizeDirect() > 0) {
-			$this->_accessTimes[$key] = microtime(true);
+			$this->_accessTimes[$key] = $this->microtime();
 		}
 		return $entry[static::STORE_DATA];
 	}
 
 	/**
-	 * Stores a value under the given unique key, overwriting any existing entry.
-	 * When {@see getMaximumSize MaximumSize} is active, the serialized size of the
-	 * entry is checked before the write — an oversized item is rejected rather than
-	 * written and immediately evicted. After the write the running size total is
-	 * updated incrementally and {@see enforceMaximumSize()} is called to evict LRU
-	 * entries when the cache has exceeded its limit.
-	 *
+	 * Writes a payload to the store with the given TTL, overwriting any existing entry.
+	 * The payload is opaque (the live value or a serialized string). When
+	 * {@see getMaximumSize MaximumSize} is active the payload size is checked before the
+	 * write — an oversized item is rejected rather than written and immediately evicted —
+	 * then the running size total is updated and {@see enforceMaximumSize()} evicts LRU
+	 * entries as needed.
 	 * @param string $key the unique key
-	 * @param mixed $value the payload to store (contains the value and its dependency)
+	 * @param mixed $payload the payload to store
 	 * @param int $expire TTL in seconds; 0 means never expire
-	 * @throws \Prado\Exceptions\TInvalidDataValueException when MaximumSize is active
-	 *   and the serialized entry exceeds it
-	 * @return true
+	 * @throws \Prado\Exceptions\TInvalidDataValueException when MaximumSize is active and
+	 *   the payload exceeds it
+	 * @return bool true on success
 	 */
-	protected function setValue($key, $value, $expire)
+	protected function writeStore(string $key, mixed $payload, int $expire): bool
 	{
-		$newSize = strlen(is_string($value) ? $value : serialize($value));
-		$this->assertItemFitsMaximumSize($newSize);
-		$oldSize = $this->_entrySizes[$key] ?? 0;
-		$this->_entrySizes[$key] = $newSize;
+		$oldSize = 0;
+		$newSize = 0;
+		if ($this->getMaximumSizeDirect() > 0) {
+			$newSize = strlen(is_string($payload) ? $payload : serialize($payload));
+			$this->assertItemFitsMaximumSize($newSize);
+			$oldSize = $this->_entrySizes[$key] ?? 0;
+			$this->_entrySizes[$key] = $newSize;
+		}
 
 		$this->setStoreEntry($key, [
-			static::STORE_DATA => $value,
-			static::STORE_EXPIRE => (int) $expire > 0 ? $this->now() + (int) $expire : 0,
+			static::STORE_DATA => $payload,
+			static::STORE_EXPIRE => $expire > 0 ? $this->time() + $expire : 0,
 		]);
 		$this->setChangedDirect(true);
 
 		if ($this->getMaximumSizeDirect() > 0) {
-			$this->_accessTimes[$key] = microtime(true);
+			$this->_accessTimes[$key] = $this->microtime();
 			$current = $this->getCurrentSizeDirect();
 			if ($current >= 0) {
 				$this->setCurrentSizeDirect($current - $oldSize + $newSize);
@@ -621,19 +739,18 @@ class TMemoryCache extends TCache implements IModuleDependency, ICacheSize
 	}
 
 	/**
-	 * Stores a value only when no live entry already exists under the given key.
-	 *
+	 * Writes a payload to the store only when the key is absent.
 	 * @param string $key the unique key
-	 * @param mixed $value the payload to store
+	 * @param mixed $payload the payload to store
 	 * @param int $expire TTL in seconds; 0 means never expire
-	 * @return bool true when the entry was stored; false when a live entry already existed
+	 * @return bool true when stored; false when an entry already existed
 	 */
-	protected function addValue($key, $value, $expire)
+	protected function addStore(string $key, mixed $payload, int $expire): bool
 	{
-		if ($this->getValue($key) !== false) {
+		if ($this->readStore($key) !== false) {
 			return false;
 		}
-		return $this->setValue($key, $value, $expire);
+		return $this->writeStore($key, $payload, $expire);
 	}
 
 	/**
@@ -786,6 +903,7 @@ class TMemoryCache extends TCache implements IModuleDependency, ICacheSize
 	 */
 	public function setBackingCacheId($value): void
 	{
+		$this->assertUninitialized('BackingCacheId');
 		$this->setBackingCacheIdDirect(TPropertyValue::ensureString($value));
 	}
 
@@ -825,6 +943,7 @@ class TMemoryCache extends TCache implements IModuleDependency, ICacheSize
 	 */
 	public function setBackingFile($value): void
 	{
+		$this->assertUninitialized('BackingFile');
 		$value = TPropertyValue::ensureString($value);
 		if ($value === '') {
 			$this->setBackingFileDirect('');
@@ -877,6 +996,7 @@ class TMemoryCache extends TCache implements IModuleDependency, ICacheSize
 	 */
 	public function setBackingCacheKey($value): void
 	{
+		$this->assertUninitialized('BackingCacheKey');
 		$this->setBackingCacheKeyDirect(TPropertyValue::ensureString($value));
 	}
 
@@ -918,6 +1038,7 @@ class TMemoryCache extends TCache implements IModuleDependency, ICacheSize
 	 */
 	public function setMergePolicy($value): void
 	{
+		$this->assertUninitialized('MergePolicy');
 		$this->setMergePolicyDirect(TPropertyValue::ensureEnum($value, [self::MERGE, self::REPLACE]));
 	}
 
@@ -964,6 +1085,7 @@ class TMemoryCache extends TCache implements IModuleDependency, ICacheSize
 	 */
 	public function setHashKeys($value): void
 	{
+		$this->assertUninitialized('HashKeys');
 		if (is_string($value)) {
 			if ($value === '' || strcasecmp($value, 'null') === 0) {
 				$value = null;
@@ -974,6 +1096,47 @@ class TMemoryCache extends TCache implements IModuleDependency, ICacheSize
 			$value = (bool) $value;
 		}
 		$this->setHashKeysDirect($value);
+	}
+
+	// --------------------------------------------------------------- accessors (SerializeValues)
+
+	/**
+	 * @return bool the raw SerializeValues field value
+	 */
+	protected function getSerializeValuesDirect(): bool
+	{
+		return $this->_serializeValues;
+	}
+
+	/**
+	 * @param bool $value the SerializeValues flag to store directly
+	 */
+	protected function setSerializeValuesDirect(bool $value): void
+	{
+		$this->_serializeValues = $value;
+	}
+
+	/**
+	 * @return bool whether each value is serialized before being stored in memory.
+	 *   Defaults to `false`. See {@see $_serializeValues} for the trade-offs.
+	 */
+	public function getSerializeValues(): bool
+	{
+		return $this->getSerializeValuesDirect();
+	}
+
+	/**
+	 * Sets whether each value is serialized before being stored in memory. Enabling this
+	 * gives each entry independent-copy semantics (a stored or retrieved object can no
+	 * longer be mutated through a shared reference); disabling it stores the live value
+	 * by reference, which is faster and can hold non-serializable values. Configure this
+	 * before any entries are stored.
+	 * @param mixed $value whether to serialize stored values.
+	 */
+	public function setSerializeValues($value): void
+	{
+		$this->assertUninitialized('SerializeValues');
+		$this->setSerializeValuesDirect(TPropertyValue::ensureBoolean($value));
 	}
 
 	// --------------------------------------------------------------- accessors (Changed)
@@ -1008,17 +1171,6 @@ class TMemoryCache extends TCache implements IModuleDependency, ICacheSize
 	// --------------------------------------------------------------- helpers
 
 	/**
-	 * Returns the current Unix timestamp. Extracted to allow subclasses and
-	 * test doubles to control clock behavior without modifying real system time.
-	 *
-	 * @return int the current Unix timestamp in seconds
-	 */
-	protected function now(): int
-	{
-		return time();
-	}
-
-	/**
 	 * Serializes a store snapshot to a string for file-based persistence.
 	 * Override to substitute a different serialization format.
 	 *
@@ -1040,31 +1192,6 @@ class TMemoryCache extends TCache implements IModuleDependency, ICacheSize
 	protected function unserialize(string $data): mixed
 	{
 		return @unserialize($data);
-	}
-
-	/**
-	 * Reads and returns the entire contents of a file.
-	 * Returns false when the file cannot be read.
-	 *
-	 * @param string $filePath the path of the file to read
-	 * @return false|string the file contents, or false on failure
-	 */
-	protected function getContents(string $filePath): string|false
-	{
-		return @file_get_contents($filePath);
-	}
-
-	/**
-	 * Writes data to a file with exclusive locking, replacing its current contents.
-	 * Returns false when the file cannot be written.
-	 *
-	 * @param string $filePath the path of the file to write
-	 * @param string $data the data to write
-	 * @return false|int the number of bytes written, or false on failure
-	 */
-	protected function putContents(string $filePath, string $data): int|false
-	{
-		return @file_put_contents($filePath, $data, LOCK_EX);
 	}
 
 	// --------------------------------------- serialization / cloning

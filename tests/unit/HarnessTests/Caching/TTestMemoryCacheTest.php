@@ -93,11 +93,15 @@ class TTestMemoryCacheTest extends PHPUnit\Framework\TestCase
 	{
 		$file = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'prado_ttestmem_backing_' . getmypid() . '.bin';
 		@unlink($file);
-		$this->cache->setBackingFile($file);
+		// BackingFile is frozen after init(), so configure a fresh cache before init().
+		$cache = new TTestMemoryCache();
+		$cache->setPrimaryCache(false);
+		$cache->setBackingFile($file);
+		$cache->init(null);
 
 		$store = ['k' => ['data' => 'v', 'expire' => 0]];
-		$this->assertTrue($this->cache->pubSaveToBacking($store));
-		$this->assertSame($store, $this->cache->pubLoadFromBacking());
+		$this->assertTrue($cache->pubSaveToBacking($store));
+		$this->assertSame($store, $cache->pubLoadFromBacking());
 		@unlink($file);
 	}
 
