@@ -80,6 +80,6 @@ class TAPCCacheTest extends PHPUnit\Framework\TestCase
 	public function testFlush()
 	{
 		$this->testSetAndGet();
-		self::$cache->flush();
+		self::assertEquals(true, self::$cache->flush());
 	}
 }
