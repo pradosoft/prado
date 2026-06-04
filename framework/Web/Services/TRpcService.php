@@ -134,7 +134,7 @@ class TRpcService extends \Prado\TService
 
 	/**
 	 * Initializes the service
-	 * @param \Prado\Xml\TXmlElement $config containing the module configuration
+	 * @param null|array|\Prado\Xml\TXmlElement $config containing the module configuration
 	 */
 	public function init($config)
 	{

@@ -83,7 +83,7 @@ class TPluginModule extends \Prado\TModule implements IPluginModule
 	/**
 	 * initializes the plugin module, looks for a Pages directory and adds a new {@see \Prado\Util\TBehavior}
 	 * to help TPageService find any plugin module pages
-	 * @param array $config this is the manifest for the plugin module
+	 * @param null|array|\Prado\Xml\TXmlElement $config this is the manifest for the plugin module
 	 */
 	public function init($config)
 	{

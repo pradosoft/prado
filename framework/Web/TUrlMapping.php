@@ -133,7 +133,7 @@ class TUrlMapping extends TUrlManager implements IModuleDependency
 	/**
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
-	 * @param mixed $config configuration for this module, can be null
+	 * @param null|array|\Prado\Xml\TXmlElement $config configuration for this module, can be null
 	 * @throws TConfigurationException if module is configured in the global scope.
 	 */
 	public function init($config)

@@ -159,7 +159,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * Initializes the module.
 	 * This method is required by IModule.
 	 * If AutoStart is true, the session will be started.
-	 * @param \Prado\Xml\TXmlElement $config module configuration
+	 * @param null|array|\Prado\Xml\TXmlElement $config module configuration
 	 */
 	public function init($config)
 	{

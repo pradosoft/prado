@@ -113,7 +113,7 @@ class TGlobalization extends \Prado\TModule
 	 * You should override this method if you want a different way of
 	 * setting the Culture and/or Charset for your application.
 	 * If you override this method, call parent::init($xml) first.
-	 * @param mixed $config application configuration
+	 * @param null|array|\Prado\Xml\TXmlElement $config application configuration
 	 */
 	public function init($config)
 	{

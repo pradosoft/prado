@@ -85,7 +85,7 @@ class TEmailLogRoute extends TLogRoute
 
 	/**
 	 * Initializes the route.
-	 * @param \Prado\Xml\TXmlElement $config configurations specified in {@see \Prado\Util\TLogRouter}.
+	 * @param null|array|\Prado\Xml\TXmlElement $config configurations specified in {@see \Prado\Util\TLogRouter}.
 	 * @throws TConfigurationException if {@see getSentFrom SentFrom} is empty and
 	 *   'sendmail_from' in php.ini is also empty.
 	 */

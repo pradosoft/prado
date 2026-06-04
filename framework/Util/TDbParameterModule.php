@@ -178,7 +178,7 @@ class TDbParameterModule extends TDbModule implements IPermissions, IModuleDepen
 
 	/**
 	 * Initializes the module by loading parameters.
-	 * @param mixed $config content enclosed within the module tag
+	 * @param null|array|\Prado\Xml\TXmlElement $config content enclosed within the module tag
 	 */
 	public function init($config)
 	{

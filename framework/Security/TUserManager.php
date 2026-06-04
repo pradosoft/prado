@@ -103,7 +103,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
 	 * It loads user/role information from the module configuration.
-	 * @param mixed $config module configuration
+	 * @param null|array|\Prado\Xml\TXmlElement $config module configuration
 	 */
 	public function init($config)
 	{
