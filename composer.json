@@ -60,7 +60,9 @@
 		"phpunit/phpunit" : "^10",
 		"php-webdriver/webdriver": "^1",
 		"phpdocumentor/shim": "^3",
-		"pradosoft/prado-phpdoc-template": "*"
+		"pradosoft/prado-phpdoc-template": "*",
+		"friendsofphp/php-cs-fixer": "^3.95",
+		"phpstan/phpstan": "^2.1"
 	},
 	"suggest" : {
 		"ext-apcu" : "Enables the use of TAPCCache as a cache handler",
@@ -97,8 +99,6 @@
 	},
     "scripts": {
 		"devtools": [
-			"composer require --dev friendsofphp/php-cs-fixer",
-			"composer require --dev phpstan/phpstan",
 			"npm install",
 			"npm run playwright:install",
 			"@setup-demos"
