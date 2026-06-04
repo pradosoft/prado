@@ -193,7 +193,7 @@ class TAssetManager extends \Prado\TModule
 	/**
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
-	 * @param null|array|\Prado\Xml\TXmlElement $config module configuration
+	 * @param \Prado\Xml\TXmlElement $config module configuration
 	 */
 	public function init($config)
 	{
@@ -215,7 +215,7 @@ class TAssetManager extends \Prado\TModule
 	/**
 	 * Registers this module as the application asset manager when an application is available.
 	 * Called during {@see init()}; may also be called by behaviors or subclasses.
-	 * @since 4.4.0
+	 * @since 4.3.3
 	 */
 	protected function setAppAssetManager()
 	{
@@ -239,11 +239,10 @@ class TAssetManager extends \Prado\TModule
 	public function setBasePath($value)
 	{
 		$this->assertUninitialized('BasePath');
-		$basePath = Prado::getPathOfNamespace($value);
-		if ($basePath === null || !is_dir($basePath) || !is_writable($basePath)) {
+		$this->_basePath = Prado::getPathOfNamespace($value);
+		if ($this->_basePath === null || !is_dir($this->_basePath) || !is_writable($this->_basePath)) {
 			throw new TInvalidDataValueException('assetmanager_basepath_invalid', $value);
 		}
-		$this->_basePath = $basePath;
 	}
 
 	/**
@@ -657,10 +656,11 @@ class TAssetManager extends \Prado\TModule
 			return;
 		}
 
+		$forceCopy = $options['forceCopy'] ?? $this->getForceCopy();
+
 		if ($this->getLinkAssets()) {
 			if (!is_file($dstFile) && !is_link($dstFile)) {
 				try {
-					@unlink($dstFile);
 					@symlink($src, $dstFile);
 				} catch (\Throwable $e) {
 					if (!is_file($dstFile) && !is_link($dstFile)) {
@@ -668,7 +668,7 @@ class TAssetManager extends \Prado\TModule
 					}
 				}
 			}
-		} elseif (@filemtime($dstFile) < @filemtime($src)) {
+		} elseif ($forceCopy || @filemtime($dstFile) < @filemtime($src)) {
 			Prado::trace("Publishing file $src to $dstFile", TAssetManager::class);
 			@copy($src, $dstFile);
 			$fileMode = $this->getFileMode();
@@ -735,7 +735,6 @@ class TAssetManager extends \Prado\TModule
 						if ($linkAssets) {
 							if (!is_link($dstPath)) {
 								try {
-									@unlink($dstPath);
 									@symlink($srcPath, $dstPath);
 								} catch (\Throwable $e) {
 									if (!is_file($dstPath) && !is_link($dstPath)) {
@@ -806,8 +805,8 @@ class TAssetManager extends \Prado\TModule
 	/**
 	 * Returns the actual URL for the specified asset.
 	 * @param string $asset the asset path.
-	 * @param string $sourcePath the source path of the asset bundle
-	 * @return string the actual URL for the asset.
+	 * @param ?string $sourcePath the source path of the asset bundle
+	 * @return ?string the actual URL for the asset, or null when no mapping matches.
 	 * @since 4.3.3
 	 */
 	public function resolveAsset($asset, $sourcePath = null)
@@ -815,13 +814,9 @@ class TAssetManager extends \Prado\TModule
 		if (isset($this->_assetMap[$asset])) {
 			return $this->_assetMap[$asset];
 		}
-		if ($sourcePath !== null) {
-			$assetWithSource = $sourcePath . '/' . $asset;
-		} else {
-			$assetWithSource = $asset;
-		}
+		$assetWithSource = $sourcePath !== null ? $sourcePath . '/' . $asset : $asset;
 
-		$n = strlen($asset);
+		$n = strlen($assetWithSource);
 		foreach ($this->_assetMap as $from => $to) {
 			$n2 = strlen($from);
 			if ($n2 <= $n && substr_compare($assetWithSource, $from, -$n2, $n2) === 0) {
