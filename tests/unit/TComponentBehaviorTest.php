@@ -987,4 +987,216 @@ class TComponentBehaviorTest extends TComponentTestBase
 
 		$this->component->detachBehavior('fooUnknownB');
 	}
+
+	/**
+	 * A behavior implementing IOwnerVisibleMethods restricts which of its methods
+	 * the owner may call.  Declared methods are reachable; undeclared ones are not.
+	 */
+	public function testOwnerVisibleMethods_restrictsInstanceBehavior(): void
+	{
+		$this->component->attachBehavior('ownerVisible', new OwnerVisibleMethodsBehavior());
+
+		$this->assertTrue($this->component->hasMethod('visibleMethod'));
+		$this->assertFalse($this->component->hasMethod('hiddenMethod'));
+		$this->assertEquals('visible', $this->component->visibleMethod());
+
+		try {
+			$this->component->hiddenMethod();
+			$this->fail('TUnknownMethodException not raised for an owner-hidden behavior method');
+		} catch (TUnknownMethodException $e) {
+		}
+
+		$this->component->detachBehavior('ownerVisible');
+	}
+
+	/**
+	 * IOwnerVisibleMethods also restricts class behaviors, and accepts the single
+	 * string shorthand for the visible method name.
+	 */
+	public function testOwnerVisibleMethods_restrictsClassBehavior(): void
+	{
+		$this->component->attachBehavior('ownerVisibleClass', new OwnerVisibleMethodsClassBehavior());
+
+		$this->assertTrue($this->component->hasMethod('visibleClassMethod'));
+		$this->assertFalse($this->component->hasMethod('hiddenClassMethod'));
+		$this->assertEquals('visibleClass', $this->component->visibleClassMethod());
+
+		try {
+			$this->component->hiddenClassMethod();
+			$this->fail('TUnknownMethodException not raised for an owner-hidden class behavior method');
+		} catch (TUnknownMethodException $e) {
+		}
+
+		$this->component->detachBehavior('ownerVisibleClass');
+	}
+
+	/**
+	 * The behavior-method resolution caches ($_cm, $_bv) hold live behavior object
+	 * references and spl_object_id keys, so they must be excluded from serialization.
+	 * After a populate-then-round-trip the caches reset and the owner restriction
+	 * still holds against the reattached behavior, not a stale serialized copy.
+	 */
+	public function testOwnerVisibleMethods_cachesExcludedFromSerialization(): void
+	{
+		$this->component->attachBehavior('ownerVisibleSerial', new OwnerVisibleMethodsBehavior());
+
+		// Populate both caches: $_cm (method resolution) and $_bv (owner-visible set).
+		$this->assertEquals('visible', $this->component->visibleMethod());
+		$this->assertFalse($this->component->hasMethod('hiddenMethod'));
+		$this->assertNotEmpty(PradoUnit::getProp($this->component, '_cm'));
+		$this->assertNotEmpty(PradoUnit::getProp($this->component, '_bv'));
+
+		$restored = unserialize(serialize($this->component));
+
+		// The caches are rebuilt lazily, never carried across serialization.
+		$this->assertSame([], PradoUnit::getProp($restored, '_cm'));
+		$this->assertSame([], PradoUnit::getProp($restored, '_bv'));
+
+		// The restriction still applies through the reattached behavior.
+		$this->assertTrue($restored->hasMethod('visibleMethod'));
+		$this->assertFalse($restored->hasMethod('hiddenMethod'));
+		$this->assertEquals('visible', $restored->visibleMethod());
+
+		try {
+			$restored->hiddenMethod();
+			$this->fail('TUnknownMethodException not raised for an owner-hidden behavior method after unserialize');
+		} catch (TUnknownMethodException $e) {
+		}
+
+		$this->component->detachBehavior('ownerVisibleSerial');
+	}
+
+	/**
+	 * The default TBaseBehavior returns null from getOwnerVisibleMethods, placing
+	 * no restriction so every public behavior method remains visible to the owner.
+	 */
+	public function testOwnerVisibleMethods_nullPlacesNoRestriction(): void
+	{
+		$foo = new FooBehavior();
+		$this->assertNull($foo->getOwnerVisibleMethods());
+
+		$this->component->attachBehavior('fooNoRestriction', $foo);
+		$this->assertTrue($this->component->hasMethod('faaEverMore'));
+		$this->assertTrue($this->component->faaEverMore(true, true));
+
+		$this->component->detachBehavior('fooNoRestriction');
+	}
+
+	/**
+	 * An empty array from getOwnerVisibleMethods hides every behavior method from the
+	 * owner.  This is the 5.0 opt-in default expressed explicitly.
+	 */
+	public function testOwnerVisibleMethods_emptyArrayHidesAllMethods(): void
+	{
+		$this->component->attachBehavior('hiddenAll', new OwnerHiddenAllBehavior());
+
+		$this->assertFalse($this->component->hasMethod('visibleMethod'));
+
+		try {
+			$this->component->visibleMethod();
+			$this->fail('TUnknownMethodException not raised when all behavior methods are hidden');
+		} catch (TUnknownMethodException $e) {
+		}
+
+		$this->component->detachBehavior('hiddenAll');
+	}
+
+	/**
+	 * dy dynamic events are the behavior-to-owner protocol and bypass owner-method
+	 * visibility.  A behavior hiding all methods still receives its dy events.
+	 */
+	public function testOwnerVisibleMethods_dyEventBypassesRestriction(): void
+	{
+		$behavior = new OwnerHiddenAllBehavior();
+		$this->component->attachBehavior('hiddenAllDy', $behavior);
+
+		// The normal method is hidden ...
+		$this->assertFalse($this->component->hasMethod('visibleMethod'));
+		// ... but the dy event still reaches the behavior.
+		$this->assertEquals('bbb', $this->component->dyTextFilter('aaa'));
+		$this->assertTrue($behavior->isDyCalled());
+
+		$this->component->detachBehavior('hiddenAllDy');
+	}
+
+	/**
+	 * Enabled state is excluded from the $_cm cache and re-checked on each dispatch.
+	 * Disabling an attached behavior hides its visible method without flushing the
+	 * cache; re-enabling restores it.  This guards the cache design where only the
+	 * structural resolution is memoized.
+	 */
+	public function testOwnerVisibleMethods_enabledCheckedLiveNotCached(): void
+	{
+		$this->component->attachBehavior('ownerVisibleLive', new OwnerVisibleMethodsBehavior());
+
+		// Populate the $_cm cache for visibleMethod.
+		$this->assertEquals('visible', $this->component->visibleMethod());
+		$this->assertNotEmpty(PradoUnit::getProp($this->component, '_cm'));
+
+		$this->component->disableBehavior('ownerVisibleLive');
+
+		// The cache still holds the candidate (disable does not flush) ...
+		$this->assertNotEmpty(PradoUnit::getProp($this->component, '_cm'));
+		// ... but the live getEnabled() check hides the method.
+		$this->assertFalse($this->component->hasMethod('visibleMethod'));
+		try {
+			$this->component->visibleMethod();
+			$this->fail('TUnknownMethodException not raised for a disabled behavior method');
+		} catch (TUnknownMethodException $e) {
+		}
+
+		$this->component->enableBehavior('ownerVisibleLive');
+		$this->assertTrue($this->component->hasMethod('visibleMethod'));
+		$this->assertEquals('visible', $this->component->visibleMethod());
+
+		$this->component->detachBehavior('ownerVisibleLive');
+	}
+
+	/**
+	 * Detaching a behavior flushes $_cm so a previously resolved owner method no
+	 * longer resolves.
+	 */
+	public function testOwnerVisibleMethods_cacheFlushedOnDetach(): void
+	{
+		$this->component->attachBehavior('ownerVisibleFlush', new OwnerVisibleMethodsBehavior());
+
+		$this->assertEquals('visible', $this->component->visibleMethod());
+		$this->assertNotEmpty(PradoUnit::getProp($this->component, '_cm'));
+
+		$this->component->detachBehavior('ownerVisibleFlush');
+
+		$this->assertSame([], PradoUnit::getProp($this->component, '_cm'));
+		$this->assertFalse($this->component->hasMethod('visibleMethod'));
+	}
+
+	/**
+	 * Declared visible method names match case-insensitively, the names being
+	 * normalized to a lowercased lookup set.
+	 */
+	public function testOwnerVisibleMethods_matchingIsCaseInsensitive(): void
+	{
+		$this->component->attachBehavior('ownerVisibleCase', new OwnerVisibleMethodsBehavior());
+
+		$this->assertTrue($this->component->hasMethod('VISIBLEMETHOD'));
+		$this->assertEquals('visible', $this->component->VisibleMethod());
+
+		$this->component->detachBehavior('ownerVisibleCase');
+	}
+
+	/**
+	 * A subclass composes its visible methods with the parent result via parent::,
+	 * so both the inherited and the added methods are visible to the owner.
+	 */
+	public function testOwnerVisibleMethods_overrideComposesWithParent(): void
+	{
+		$this->component->attachBehavior('ownerVisibleComposed', new OwnerVisibleComposedBehavior());
+
+		$this->assertTrue($this->component->hasMethod('visibleMethod'));
+		$this->assertTrue($this->component->hasMethod('anotherVisibleMethod'));
+		$this->assertFalse($this->component->hasMethod('hiddenMethod'));
+		$this->assertEquals('visible', $this->component->visibleMethod());
+		$this->assertEquals('another', $this->component->anotherVisibleMethod());
+
+		$this->component->detachBehavior('ownerVisibleComposed');
+	}
 }
