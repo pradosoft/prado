@@ -331,14 +331,11 @@ abstract class TSerializingCache extends TCache
 	 */
 	protected function decode(string $data): false|string
 	{
-		switch ($this->getEncoding()) {
-			case self::ENCODING_BASE64:
-				return base64_decode($data, true);
-			case self::ENCODING_HEX:
-				return (strlen($data) % 2 === 0 && ctype_xdigit($data)) ? hex2bin($data) : false;
-			default:
-				return $data;
-		}
+		return match ($this->getEncoding()) {
+			self::ENCODING_BASE64 => base64_decode($data, true),
+			self::ENCODING_HEX => (strlen($data) % 2 === 0 && ctype_xdigit($data)) ? hex2bin($data) : false,
+			default => $data,
+		};
 	}
 
 	// =========================================================================
