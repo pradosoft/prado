@@ -99,6 +99,7 @@
 	},
     "scripts": {
 		"devtools": [
+			"composer update",
 			"npm install",
 			"npm run playwright:install",
 			"@setup-demos"
