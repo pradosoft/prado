@@ -17,7 +17,7 @@ use Prado\TEnumerable;
  *
  * Enumerate the common URI scheme names (RFC 3986), each constant mapping to its
  * lower-case scheme string.  Use the constants for typed, typo-proof scheme tests
- * instead of magic strings — for example `$uri->getScheme() === TUriScheme::HTTPS`.
+ * instead of magic strings, for example `$uri->getScheme() === TUriScheme::HTTPS`.
  *
  * URI schemes are an open set, so this is a convenience list of well-known schemes,
  * not an exhaustive or enforced one; {@see \Prado\IO\TResourceUri} accepts any
