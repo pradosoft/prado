@@ -54,7 +54,7 @@ use Prado\Web\THttpHeaderName;
  * @see THttpHeaderName::ContentDisposition
  * @see THttpHeadersManager
  */
-class THttpHeaderContentDisposition extends THttpHeaderBase
+class THttpHeaderContentDisposition extends TBaseHttpHeader
 {
 	/**
 	 * @var ?TContentDisposition the wrapped value object; lazy-initialised on first access.

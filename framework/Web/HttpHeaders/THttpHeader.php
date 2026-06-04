@@ -26,7 +26,7 @@ use Prado\TPropertyValue;
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @since 4.4.0
  */
-class THttpHeader extends THttpHeaderBase
+class THttpHeader extends TBaseHttpHeader
 {
 	/**
 	 * @var string Header name.

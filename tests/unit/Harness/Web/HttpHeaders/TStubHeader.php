@@ -10,9 +10,9 @@
  * @author Brad Anderson <belisoful@icloud.com>
  */
 
-use Prado\Web\HttpHeaders\THttpHeaderBase;
+use Prado\Web\HttpHeaders\TBaseHttpHeader;
 
-class TStubHeader extends THttpHeaderBase
+class TStubHeader extends TBaseHttpHeader
 {
 	public string $name = 'X-Stub';
 	public string $value = 'stub-value';

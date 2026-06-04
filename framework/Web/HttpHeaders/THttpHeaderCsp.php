@@ -74,7 +74,7 @@ use Prado\Xml\TXmlElement;
  * @link https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP
  * @link https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy
  */
-class THttpHeaderCsp extends THttpHeaderBase
+class THttpHeaderCsp extends TBaseHttpHeader
 {
 	/**
 	 * @var array<string,string>|string directive name => value map, or a raw

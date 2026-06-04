@@ -62,7 +62,7 @@ use Prado\Xml\TXmlElement;
  *   {@see TCspDirective::ReportTo} directive must exactly match a name declared
  *   in a {@see THttpHeaderReportingEndpoints} header. {@see THttpHeaderCsp}
  *   validates this just before headers are sent (in
- *   {@see THttpHeaderBase::finalizeHeader()}) so headers added via the CRUD
+ *   {@see TBaseHttpHeader::finalizeHeader()}) so headers added via the CRUD
  *   API after `init()` are included in the check.
  * - **COEP ↔ COOP** — `Cross-Origin-Embedder-Policy` and
  *   `Cross-Origin-Opener-Policy` must both be set to achieve cross-origin
@@ -75,15 +75,15 @@ use Prado\Xml\TXmlElement;
  * **Multi-value headers.** HTTP allows the same header name to appear more than
  * once (e.g. `Set-Cookie`, `Link`). Add multiple header instances with the same
  * name to the list via {@see addHeader()}, and override
- * {@see THttpHeaderBase::getReplace()} to return `false` on those headers so
+ * {@see TBaseHttpHeader::getReplace()} to return `false` on those headers so
  * each one is sent as a separate line rather than replacing the previous one.
  *
  * **Send pipeline.** When {@see ensureHeadersSent()} fires, three phases run in order:
  * (1) {@see finalizeReporterService()} wires the CSP reporter — or, when
  * {@see setReportingServiceMode() ReportingServiceMode} is `false` and a
  * {@see TCspReportingService} is already registered, resolves any
- * {@see THttpHeaderBase::REPORT_URI} sentinels without triggering auto-wiring;
- * (2) each header's {@see THttpHeaderBase::finalizeHeader()} runs; (3)
+ * {@see TBaseHttpHeader::REPORT_URI} sentinels without triggering auto-wiring;
+ * (2) each header's {@see TBaseHttpHeader::finalizeHeader()} runs; (3)
  * {@see validateHeaders()} performs cross-header relationship checks and logs warnings.
  *
  * **Subclass extension.** {@see buildHeader()} is `protected` and may be overridden
@@ -148,7 +148,7 @@ class THttpHeadersManager extends TModule
 	public const DEFAULT_REPORTING_SERVICE_MODE = 'Auto';
 
 	/**
-	 * @var THttpHeaderBase[] list of headers in configuration / insertion order.
+	 * @var TBaseHttpHeader[] list of headers in configuration / insertion order.
 	 */
 	private array $_headers = [];
 
@@ -284,7 +284,7 @@ class THttpHeadersManager extends TModule
 	}
 
 	/**
-	 * Has called {@see THttpHeaderBase::initComplete()} on every header in insertion order.
+	 * Has called {@see TBaseHttpHeader::initComplete()} on every header in insertion order.
 	 * Override to add post-load validation or setup.
 	 * @return void
 	 */
@@ -454,7 +454,7 @@ class THttpHeadersManager extends TModule
 	 * Has set a single header-name → class entry in the registry.
 	 * The key is stored lowercase — matching is always case-insensitive.
 	 * @param string $headerName header name (any casing)
-	 * @param string $class fully-qualified class name extending {@see THttpHeaderBase}
+	 * @param string $class fully-qualified class name extending {@see TBaseHttpHeader}
 	 * @return void
 	 */
 	protected function setNameClassMap(string $headerName, string $class): void
@@ -465,7 +465,7 @@ class THttpHeadersManager extends TModule
 	/**
 	 * Has registered a single header name → class association in the registry.
 	 * @param string $headerName canonical header name (e.g. `'X-My-Header'`)
-	 * @param string $class fully-qualified class name extending {@see THttpHeaderBase}
+	 * @param string $class fully-qualified class name extending {@see TBaseHttpHeader}
 	 * @return void
 	 */
 	public function registerHeaderClass(string $headerName, string $class): void
@@ -480,7 +480,7 @@ class THttpHeadersManager extends TModule
 
 	/**
 	 * Returns all loaded headers in insertion order.
-	 * @return THttpHeaderBase[]
+	 * @return TBaseHttpHeader[]
 	 */
 	public function getHeaders(): array
 	{
@@ -489,10 +489,10 @@ class THttpHeadersManager extends TModule
 
 	/**
 	 * Has appended `$header` to the backing list without duplicate or manager checks.
-	 * @param THttpHeaderBase $header
+	 * @param TBaseHttpHeader $header
 	 * @return void
 	 */
-	protected function addHeaderDirect(THttpHeaderBase $header): void
+	protected function addHeaderDirect(TBaseHttpHeader $header): void
 	{
 		$this->_headers[] = $header;
 	}
@@ -509,7 +509,7 @@ class THttpHeadersManager extends TModule
 
 	/**
 	 * Has replaced the entire backing list with `$headers`.
-	 * @param THttpHeaderBase[] $headers
+	 * @param TBaseHttpHeader[] $headers
 	 * @return void
 	 */
 	protected function setHeadersDirect(array $headers): void
@@ -520,11 +520,11 @@ class THttpHeadersManager extends TModule
 	/**
 	 * Has appended `$header` to the list and set its manager to `$this`.
 	 * Adding the same instance a second time is a no-op.
-	 * @param THttpHeaderBase $header
+	 * @param TBaseHttpHeader $header
 	 * @throws TInvalidOperationException if the header already belongs to a different manager
 	 * @return void
 	 */
-	public function addHeader(THttpHeaderBase $header): void
+	public function addHeader(TBaseHttpHeader $header): void
 	{
 		$existing = $header->getManager();
 		if ($existing !== null && $existing !== $this) {
@@ -548,15 +548,15 @@ class THttpHeadersManager extends TModule
 	 * - **String (name)** — removes *all* headers whose name matches
 	 *   case-insensitively. For replacing (singleton) headers there is at most
 	 *   one entry; for non-replacing multi-value headers such as `Set-Cookie`
-	 *   or `Link` ({@see THttpHeaderBase::getReplace()} returns `false`) there
+	 *   or `Link` ({@see TBaseHttpHeader::getReplace()} returns `false`) there
 	 *   may be several, and all are removed.
 	 *
-	 * @param string|THttpHeaderBase $header instance or header name string
+	 * @param string|TBaseHttpHeader $header instance or header name string
 	 * @return bool `true` if at least one header was removed, `false` if none matched
 	 */
-	public function removeHeader(THttpHeaderBase|string $header): bool
+	public function removeHeader(TBaseHttpHeader|string $header): bool
 	{
-		if ($header instanceof THttpHeaderBase) {
+		if ($header instanceof TBaseHttpHeader) {
 			foreach ($this->getHeaders() as $i => $h) {
 				if ($h === $header) {
 					$this->removeHeaderDirect($i);
@@ -595,9 +595,9 @@ class THttpHeadersManager extends TModule
 	 * Returns the first header whose name matches (case-insensitive), or `null`.
 	 * Use {@see getHeadersByName()} for multi-value headers such as `Set-Cookie`.
 	 * @param string $name header name (e.g. `'Strict-Transport-Security'`)
-	 * @return ?THttpHeaderBase
+	 * @return ?TBaseHttpHeader
 	 */
-	public function getHeaderByName(string $name): ?THttpHeaderBase
+	public function getHeaderByName(string $name): ?TBaseHttpHeader
 	{
 		foreach ($this->getHeaders() as $header) {
 			if (strcasecmp($header->getHeaderName(), $name) === 0) {
@@ -615,7 +615,7 @@ class THttpHeadersManager extends TModule
 	 * Returns an empty array when no header with that name is loaded.
 	 *
 	 * @param string $name header name (e.g. `'Set-Cookie'`)
-	 * @return THttpHeaderBase[]
+	 * @return TBaseHttpHeader[]
 	 */
 	public function getHeadersByName(string $name): array
 	{
@@ -627,7 +627,7 @@ class THttpHeadersManager extends TModule
 
 	/**
 	 * Returns all loaded headers that are instances of the given class.
-	 * @template T of THttpHeaderBase
+	 * @template T of TBaseHttpHeader
 	 * @param class-string<T> $class fully-qualified class name
 	 * @return T[]
 	 */
@@ -732,7 +732,7 @@ class THttpHeadersManager extends TModule
 	 * - **`true`** — always registers a service and injects `Reporting-Endpoints` /
 	 *   `report-to` into every {@see THttpHeaderCsp} that lacks them.
 	 * - **`false`** — hands off; no registration or header modification. Any
-	 *   {@see THttpHeaderBase::REPORT_URI} sentinels are still resolved if a
+	 *   {@see TBaseHttpHeader::REPORT_URI} sentinels are still resolved if a
 	 *   {@see TCspReportingService} is already registered.
 	 *
 	 * Service identity is controlled by {@see setReportingServiceId() ReportingServiceId};
@@ -818,7 +818,7 @@ class THttpHeadersManager extends TModule
 	 *
 	 * Each `<header>` entry carries `'properties'` (non-`class` attributes, PascalCase
 	 * keys preserved), optional `'class'`, and `'config'` (the raw {@see TXmlElement}
-	 * forwarded to {@see THttpHeaderBase::init()}).
+	 * forwarded to {@see TBaseHttpHeader::init()}).
 	 *
 	 * @param TXmlElement $config raw XML element passed to {@see init()}.
 	 * @return array PHP array ready for {@see loadHeaderClasses()} and {@see loadHeaders()}.
@@ -893,7 +893,7 @@ class THttpHeadersManager extends TModule
 
 	/**
 	 * Has set the default class used when no `class` attribute is specified in a
-	 * header config entry. Must extend {@see THttpHeaderBase}.
+	 * header config entry. Must extend {@see TBaseHttpHeader}.
 	 * @param string $class fully-qualified class name
 	 */
 	public function setDefaultHeaderClass(string $class): void
@@ -926,7 +926,7 @@ class THttpHeadersManager extends TModule
 	 * Each entry supports `'class'`, `'properties'`, and `'config'` keys;
 	 * see {@see buildHeader()} for promotion and init details.
 	 * @param array $config normalized configuration array.
-	 * @throws TConfigurationException if a specified class does not extend {@see THttpHeaderBase}.
+	 * @throws TConfigurationException if a specified class does not extend {@see TBaseHttpHeader}.
 	 * @return void
 	 */
 	protected function loadHeaders(array $config): void
@@ -945,19 +945,19 @@ class THttpHeadersManager extends TModule
 
 	/**
 	 * Has created a header of `$class`, applied `$properties`, registered it via
-	 * {@see addHeader()}, and called {@see THttpHeaderBase::init()} with `$config`.
+	 * {@see addHeader()}, and called {@see TBaseHttpHeader::init()} with `$config`.
 	 *
 	 * When `$class` is the {@see getDefaultHeaderClass() default class} and `$properties`
 	 * supplies a `HeaderName`, the {@see getNameClassMap() name→class registry} is
 	 * consulted and the header is promoted to its typed class automatically (e.g.
 	 * `HeaderName="Content-Security-Policy"` → {@see THttpHeaderCsp}).
 	 *
-	 * @param string $class class name; must extend {@see THttpHeaderBase}.
+	 * @param string $class class name; must extend {@see TBaseHttpHeader}.
 	 * @param iterable $properties name-value pairs forwarded to
-	 *   {@see THttpHeaderBase::setSubproperty()}.
+	 *   {@see TBaseHttpHeader::setSubproperty()}.
 	 * @param array|\Prado\Xml\TXmlElement $config raw config node forwarded to
-	 *   {@see THttpHeaderBase::init()}.
-	 * @throws TConfigurationException if `$class` does not extend {@see THttpHeaderBase}.
+	 *   {@see TBaseHttpHeader::init()}.
+	 * @throws TConfigurationException if `$class` does not extend {@see TBaseHttpHeader}.
 	 * @return void
 	 */
 	protected function buildHeader(string $class, $properties, $config): void
@@ -979,7 +979,7 @@ class THttpHeadersManager extends TModule
 		}
 
 		$header = Prado::createComponent($class);
-		if (!($header instanceof THttpHeaderBase)) {
+		if (!($header instanceof TBaseHttpHeader)) {
 			throw new TConfigurationException('httpheadersmanager_header_required');
 		}
 		foreach ($properties as $name => $value) {
@@ -1064,7 +1064,7 @@ class THttpHeadersManager extends TModule
 
 	/**
 	 * Has run the three-phase finalization pipeline: {@see finalizeReporterService()},
-	 * then per-header {@see THttpHeaderBase::finalizeHeader()}, then
+	 * then per-header {@see TBaseHttpHeader::finalizeHeader()}, then
 	 * {@see validateHeaders()} for cross-header relationship checks.
 	 * Override to add manager-level pre-send logic.
 	 * @return void
@@ -1149,7 +1149,7 @@ class THttpHeadersManager extends TModule
 	}
 
 	/**
-	 * Has emitted each header via {@see THttpHeaderBase::sendHeader()}.
+	 * Has emitted each header via {@see TBaseHttpHeader::sendHeader()}.
 	 * Override to wrap or instrument the emission loop.
 	 * @return void
 	 */
@@ -1176,7 +1176,7 @@ class THttpHeadersManager extends TModule
 	 * {@see getReportOnly() ReportOnly} resolves `true` — downgraded enforcing CSP
 	 * headers to `Content-Security-Policy-Report-Only`.
 	 *
-	 * When mode is `false`, has resolved any {@see THttpHeaderBase::REPORT_URI}
+	 * When mode is `false`, has resolved any {@see TBaseHttpHeader::REPORT_URI}
 	 * sentinels in CSP and `Reporting-Endpoints` headers if a {@see TCspReportingService}
 	 * is already registered, without triggering service registration or header injection.
 	 */

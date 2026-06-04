@@ -1,7 +1,7 @@
 <?php
 
 /**
- * THttpHeaderBaseTest
+ * TBaseHttpHeaderTest
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
@@ -19,13 +19,13 @@ use Prado\Web\THttpHeaderName;
 // ---------------------------------------------------------------------------
 
 /**
- * Tests for {@see THttpHeaderBase}.
+ * Tests for {@see TBaseHttpHeader}.
  *
  * Uses {@see TConcreteHeader} as a minimal concrete subclass that overrides
- * the protected {@see THttpHeaderBase::header()} seam to capture calls
+ * the protected {@see TBaseHttpHeader::header()} seam to capture calls
  * without touching the live HTTP stack.
  */
-class THttpHeaderBaseTest extends PHPUnit\Framework\TestCase
+class TBaseHttpHeaderTest extends PHPUnit\Framework\TestCase
 {
 	private TConcreteHeader $h;
 
@@ -379,24 +379,24 @@ class THttpHeaderBaseTest extends PHPUnit\Framework\TestCase
 
 	public function testReportUriConstantValueOnBase(): void
 	{
-		// The sentinel lives on THttpHeaderBase so that all subclasses share a
+		// The sentinel lives on TBaseHttpHeader so that all subclasses share a
 		// single canonical string without duplication.
-		self::assertSame('REPORT_URI', THttpHeaderBase::REPORT_URI);
+		self::assertSame('REPORT_URI', TBaseHttpHeader::REPORT_URI);
 	}
 
 	public function testReportUriConstantAccessibleViaSubclassNames(): void
 	{
 		// PHP constant inheritance: both subclasses resolve to the same constant
-		// defined on THttpHeaderBase; no call-site changes are needed.
+		// defined on TBaseHttpHeader; no call-site changes are needed.
 		self::assertSame(
-			THttpHeaderBase::REPORT_URI,
+			TBaseHttpHeader::REPORT_URI,
 			\Prado\Web\HttpHeaders\THttpHeaderCsp::REPORT_URI,
-			'THttpHeaderCsp::REPORT_URI must resolve to THttpHeaderBase::REPORT_URI via inheritance'
+			'THttpHeaderCsp::REPORT_URI must resolve to TBaseHttpHeader::REPORT_URI via inheritance'
 		);
 		self::assertSame(
-			THttpHeaderBase::REPORT_URI,
+			TBaseHttpHeader::REPORT_URI,
 			\Prado\Web\HttpHeaders\THttpHeaderReportingEndpoints::REPORT_URI,
-			'THttpHeaderReportingEndpoints::REPORT_URI must resolve to THttpHeaderBase::REPORT_URI via inheritance'
+			'THttpHeaderReportingEndpoints::REPORT_URI must resolve to TBaseHttpHeader::REPORT_URI via inheritance'
 		);
 	}
 

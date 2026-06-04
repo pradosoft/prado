@@ -46,7 +46,7 @@ use Prado\Web\TMediaType;
  * @see THttpResponse::sendContentTypeHeader()
  * @see THttpHeadersManager
  */
-class THttpHeaderContentType extends THttpHeaderBase
+class THttpHeaderContentType extends TBaseHttpHeader
 {
 	/**
 	 * @var ?TMediaType the media type object; lazy-initialised on first access.

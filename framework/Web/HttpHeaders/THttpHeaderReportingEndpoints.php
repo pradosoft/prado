@@ -72,7 +72,7 @@ use Prado\Xml\TXmlElement;
  * @see TCspDirective::ReportTo for the CSP directive that references endpoint names.
  * @see TCspDirective::ReportUri for the deprecated CSP fallback directive.
  */
-class THttpHeaderReportingEndpoints extends THttpHeaderBase
+class THttpHeaderReportingEndpoints extends TBaseHttpHeader
 {
 	/**
 	 * @var array<string, string> endpoint name => URL map.

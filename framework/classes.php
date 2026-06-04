@@ -419,7 +419,7 @@ return [
 'TCspDirective' => 'Prado\Web\HttpHeaders\TCspDirective',
 'THeaderParametersTrait' => 'Prado\Web\HttpHeaders\THeaderParametersTrait',
 'THttpHeader' => 'Prado\Web\HttpHeaders\THttpHeader',
-'THttpHeaderBase' => 'Prado\Web\HttpHeaders\THttpHeaderBase',
+'TBaseHttpHeader' => 'Prado\Web\HttpHeaders\TBaseHttpHeader',
 'THttpHeaderContentDisposition' => 'Prado\Web\HttpHeaders\THttpHeaderContentDisposition',
 'THttpHeaderContentType' => 'Prado\Web\HttpHeaders\THttpHeaderContentType',
 'THttpHeaderCsp' => 'Prado\Web\HttpHeaders\THttpHeaderCsp',
