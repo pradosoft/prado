@@ -566,7 +566,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 		self::assertTrue(is_file($publishedFile));
 	}
 
-	public function testHiddenDirectoriesExcluded()
+	public function testHiddenDirectoriesPublished()
 	{
 		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
@@ -579,8 +579,8 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 		$hasHiddenFile = file_exists($publishedDir . '/.hidden');
 		$hasHiddenDir = is_dir($publishedDir . '/.hiddenDir');
 
-		self::assertFalse($hasHiddenFile);
-		self::assertFalse($hasHiddenDir);
+		self::assertTrue($hasHiddenFile);
+		self::assertTrue($hasHiddenDir);
 	}
 
 	public function testEmptyPatterns()
@@ -1176,7 +1176,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 		$publishedUrl = $manager->publishFilePath($dirToPublish);
 		$publishedDir = self::$assetDir . $publishedUrl;
 
-		self::assertFalse(file_exists($publishedDir . '/.hidden'));
+		self::assertTrue(file_exists($publishedDir . '/.hidden'));
 	}
 
 	public function testMultiplePatternsWithGlob()
@@ -1263,5 +1263,143 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 		$publishedUrl = $manager->publishFilePath($fileToPublish);
 
 		self::assertStringContainsString('?=', $publishedUrl);
+	}
+
+	/**
+	 * The contents of a dot-prefixed directory are published recursively now
+	 * that the blanket dotfile exclusion has been removed.
+	 */
+	public function testHiddenDirectoryContentsPublished()
+	{
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->init(null);
+
+		$dirToPublish = __DIR__ . '/data/testassets';
+		$publishedDir = self::$assetDir . $manager->publishFilePath($dirToPublish);
+
+		self::assertTrue(is_file($publishedDir . '/.hiddenDir/secret.txt'));
+	}
+
+	/**
+	 * Files and directories listed in PATH_COPY_EXCEPTIONS remain excluded even
+	 * though general dotfiles are now published.
+	 */
+	public function testPathCopyExceptionsExcluded()
+	{
+		$src = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'tassetmgr_exceptions_' . getmypid();
+		$this->removeDirectory($src);
+		mkdir($src, Prado::getDefaultDirPermissions(), true);
+		file_put_contents($src . DIRECTORY_SEPARATOR . 'keep.js', 'keep');
+		foreach (TAssetManager::PATH_COPY_EXCEPTIONS as $exception) {
+			mkdir($src . DIRECTORY_SEPARATOR . $exception);
+			file_put_contents($src . DIRECTORY_SEPARATOR . $exception . DIRECTORY_SEPARATOR . 'inside.txt', 'secret');
+		}
+
+		try {
+			$manager = $this->newAssetManager();
+			$manager->setBaseUrl('/');
+			$manager->init(null);
+			$publishedDir = self::$assetDir . $manager->publishFilePath($src);
+
+			self::assertTrue(is_file($publishedDir . DIRECTORY_SEPARATOR . 'keep.js'));
+			foreach (TAssetManager::PATH_COPY_EXCEPTIONS as $exception) {
+				self::assertFalse(file_exists($publishedDir . DIRECTORY_SEPARATOR . $exception), "$exception must be excluded");
+			}
+		} finally {
+			$this->removeDirectory($src);
+		}
+	}
+
+	/**
+	 * With forceCopy, a stale single-file symlink is unlinked and recreated so
+	 * it points back at the source.
+	 */
+	public function testForceCopyRefreshesSymlink()
+	{
+		$source = __DIR__ . '/data/pradoheader.gif';
+		$other = __DIR__ . '/data/testassets/js/app.js';
+
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->setLinkAssets(true);
+		$manager->init(null);
+		$manager->publishFilePath($source);
+		$publishedFile = $manager->getPublishedPath($source);
+		self::assertTrue(is_link($publishedFile));
+
+		// Point the published symlink at the wrong target.
+		unlink($publishedFile);
+		symlink($other, $publishedFile);
+		self::assertEquals(realpath($other), realpath($publishedFile));
+
+		$manager2 = $this->newAssetManager();
+		$manager2->setBaseUrl('/');
+		$manager2->setLinkAssets(true);
+		$manager2->setForceCopy(true);
+		$manager2->init(null);
+		$manager2->publishFilePath($source);
+
+		self::assertEquals(realpath($source), realpath($publishedFile));
+	}
+
+	/**
+	 * Without forceCopy, an existing single-file symlink is left untouched even
+	 * when it points at the wrong target.
+	 */
+	public function testSymlinkNotRefreshedWithoutForceCopy()
+	{
+		$source = __DIR__ . '/data/pradoheader.gif';
+		$other = __DIR__ . '/data/testassets/js/app.js';
+
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->setLinkAssets(true);
+		$manager->init(null);
+		$manager->publishFilePath($source);
+		$publishedFile = $manager->getPublishedPath($source);
+
+		unlink($publishedFile);
+		symlink($other, $publishedFile);
+
+		$manager2 = $this->newAssetManager();
+		$manager2->setBaseUrl('/');
+		$manager2->setLinkAssets(true);
+		$manager2->init(null);
+		$manager2->publishFilePath($source);
+
+		self::assertEquals(realpath($other), realpath($publishedFile));
+	}
+
+	/**
+	 * With forceCopy, a stale symlink inside a published directory is unlinked
+	 * and recreated to point back at the source file.
+	 */
+	public function testForceCopyRefreshesSymlinkInDirectory()
+	{
+		$dir = __DIR__ . '/data/testassets';
+		$other = __DIR__ . '/data/pradoheader.gif';
+
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->setLinkAssets(true);
+		$manager->init(null);
+		$manager->publishFilePath($dir);
+		$publishedDir = self::$assetDir . $manager->getPublishedUrl($dir);
+		$linkedFile = $publishedDir . '/js/app.js';
+		self::assertTrue(is_link($linkedFile));
+
+		unlink($linkedFile);
+		symlink($other, $linkedFile);
+		self::assertEquals(realpath($other), realpath($linkedFile));
+
+		$manager2 = $this->newAssetManager();
+		$manager2->setBaseUrl('/');
+		$manager2->setLinkAssets(true);
+		$manager2->setForceCopy(true);
+		$manager2->init(null);
+		$manager2->publishFilePath($dir);
+
+		self::assertEquals(realpath($dir . '/js/app.js'), realpath($linkedFile));
 	}
 }

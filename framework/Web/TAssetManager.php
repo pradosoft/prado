@@ -159,8 +159,6 @@ class TAssetManager extends \Prado\TModule
 	private $_basePath;
 	/** @var string base URL for accessing the publishing directory. */
 	private $_baseUrl;
-	/** @var bool whether to use timestamp checking to ensure files are published with up-to-date versions. */
-	private $_checkTimestamp = false;
 	/** @var array published assets */
 	private $_published = [];
 	/** @var bool whether to use symbolic link to publish asset files. */
@@ -660,6 +658,9 @@ class TAssetManager extends \Prado\TModule
 		$forceCopy = $options['forceCopy'] ?? $this->getForceCopy();
 
 		if ($this->getLinkAssets()) {
+			if ($forceCopy && (is_file($dstFile) || is_link($dstFile))) {
+				@unlink($dstFile);
+			}
 			if (!is_file($dstFile) && !is_link($dstFile)) {
 				try {
 					@symlink($src, $dstFile);
@@ -716,7 +717,7 @@ class TAssetManager extends \Prado\TModule
 		}
 		if ($folder = @opendir($src)) {
 			while ($file = @readdir($folder)) {
-				if ((strlen($file) > 0 && $file[0] === '.') || in_array($file, self::PATH_COPY_EXCEPTIONS)) {
+				if ($file === '.' || $file === '..' || in_array($file, self::PATH_COPY_EXCEPTIONS)) {
 					continue;
 				}
 				$srcPath = $src . DIRECTORY_SEPARATOR . $file;
@@ -734,6 +735,9 @@ class TAssetManager extends \Prado\TModule
 					$shouldCopy = $forceCopy || !is_file($dstPath) || @filemtime($dstPath) < @filemtime($srcPath);
 					if ($shouldCopy) {
 						if ($linkAssets) {
+							if ($forceCopy && (is_file($dstPath) || is_link($dstPath))) {
+								@unlink($dstPath);
+							}
 							if (!is_link($dstPath)) {
 								try {
 									@symlink($srcPath, $dstPath);
