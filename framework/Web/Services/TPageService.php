@@ -175,7 +175,7 @@ class TPageService extends \Prado\TService
 	/**
 	 * Initializes the service.
 	 * This method is required by IService interface and is invoked by application.
-	 * @param \Prado\Xml\TXmlElement $config service configuration
+	 * @param null|array|\Prado\Xml\TXmlElement $config service configuration
 	 */
 	public function init($config)
 	{

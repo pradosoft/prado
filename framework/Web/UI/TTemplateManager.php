@@ -91,12 +91,22 @@ class TTemplateManager extends \Prado\TModule
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
 	 * It starts output buffer if it is enabled.
-	 * @param \Prado\Xml\TXmlElement $config module configuration
+	 * @param null|array|\Prado\Xml\TXmlElement $config module configuration
 	 */
 	public function init($config)
 	{
-		$this->getApplication()?->setTemplateManager($this);
+		$this->setAppTemplateManager();
 		parent::init($config);
+	}
+
+	/**
+	 * Registers this module as the application template manager when an application is available.
+	 * Called during {@see init()}; may also be called by behaviors or subclasses.
+	 * @since 4.4.0
+	 */
+	protected function setAppTemplateManager()
+	{
+		$this->getApplication()?->setTemplateManager($this);
 	}
 
 	/**

@@ -22,7 +22,9 @@ interface IModule
 {
 	/**
 	 * Initializes the module.
-	 * @param \Prado\Xml\TXmlElement $config the configuration for the module
+	 * @param null|array|\Prado\Xml\TXmlElement $config the configuration for the module,
+	 *   `TXmlElement` for XML configuration, `array` for PHP configuration, and null
+	 *   when invoked without configuration.
 	 */
 	public function init($config);
 	/**

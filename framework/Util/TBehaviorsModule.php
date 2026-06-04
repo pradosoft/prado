@@ -107,7 +107,7 @@ class TBehaviorsModule extends \Prado\TModule
 	 * Initializes the module by loading behaviors.  If there are page behaviors, this
 	 * attaches behaviors to TPage through TApplication::onBeginRequest and then
 	 * TPageService::onPreRunPage.
-	 * @param \Prado\Xml\TXmlElement $config configuration for this module, can be null
+	 * @param null|array|\Prado\Xml\TXmlElement $config configuration for this module, can be null
 	 */
 	public function init($config)
 	{

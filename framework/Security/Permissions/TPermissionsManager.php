@@ -248,7 +248,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	}
 
 	/**
-	 * @param array|TXmlElement $config the application configuration
+	 * @param null|array|TXmlElement $config the application configuration
 	 */
 	public function init($config)
 	{

@@ -52,7 +52,7 @@ class TCacheHttpSession extends THttpSession implements IModuleDependency
 	 * Initializes the module.
 	 * This method is required by IModule.
 	 * It reads the CacheModule property.
-	 * @param \Prado\Xml\TXmlElement $config module configuration
+	 * @param null|array|\Prado\Xml\TXmlElement $config module configuration
 	 */
 	public function init($config)
 	{

@@ -146,7 +146,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 
 	/**
 	 * Initializes the route.
-	 * @param \Prado\Xml\TXmlElement $config configurations specified in {@see \Prado\Util\TLogRouter}.
+	 * @param null|array|\Prado\Xml\TXmlElement $config configurations specified in {@see \Prado\Util\TLogRouter}.
 	 */
 	public function init($config)
 	{

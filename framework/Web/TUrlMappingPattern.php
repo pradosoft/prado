@@ -193,7 +193,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 
 	/**
 	 * Initializes the pattern.
-	 * @param \Prado\Xml\TXmlElement $config configuration for this module.
+	 * @param null|array|\Prado\Xml\TXmlElement $config configuration for this module.
 	 * @throws TConfigurationException if service parameter is not specified
 	 */
 	public function init($config)
