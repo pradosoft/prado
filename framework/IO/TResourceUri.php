@@ -16,17 +16,18 @@ use Psr\Http\Message\UriInterface;
 /**
  * TResourceUri class
  *
- * Represents an immutable, general-purpose PSR-7 {@see UriInterface} (RFC 3986) — a
- * Uniform *Resource* Identifier for any resource the IO layer addresses: files
+ * Represents an immutable, general-purpose PSR-7 {@see UriInterface} (RFC 3986), a
+ * Uniform Resource Identifier for any resource the IO layer addresses: files
  * (`file://`), in-process streams (`php://`), wrapped streams (`compress.zlib://`),
- * and sockets (`tcp://`, `udp://`, `unix://`), not just HTTP.  The short name TUri
- * is taken by {@see \Prado\Web\TUri}, which has extended this class as the
+ * and sockets (`tcp://`, `udp://`, `unix://`).  The short name TUri
+ * is taken by {@see \Prado\Web\TUri}, which extends this class as the
  * Prado-specific PSR-7 URI.
  *
  * Instances are immutable: every `with*` method returns a clone with one
- * component changed and never mutates the receiver.  Normalize the scheme and host
- * to lower case, suppress default ports from the authority, percent-encode
- * user-info/path/query/fragment, and avoid double-encoding existing triplets.
+ * component changed and never mutates the receiver.  The scheme and host are
+ * normalized to lower case, default ports are suppressed from the authority,
+ * the user-info, path, query, and fragment are percent-encoded, and existing
+ * triplets are not double-encoded.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
@@ -456,7 +457,7 @@ class TResourceUri extends TComponent implements UriInterface
 	}
 
 	/**
-	 * Normalizes a host to lower case.  The host is otherwise taken as given — it is
+	 * Normalizes a host to lower case.  The host is otherwise taken as given; it is
 	 * not percent-encoded or validated (IPv6 literals keep their brackets).
 	 * @param string $host The raw host.
 	 * @return string The lower-cased host.

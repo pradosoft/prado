@@ -559,6 +559,13 @@ dbtablegateway_mismatch_args_exception	= TTableGateway finder method '{0}' expec
 dbtablegateway_mismatch_column_name		= In dynamic __call() method '{0}', no matching columns were found, valid columns for table '{2}' are '{1}'.
 dbtablegateway_invalid_table_info		= Table must be a string or an instance of TDbTableInfo.
 
+resource_not_a_resource					= Expected an open PHP resource but got '{0}'.
+stream_open_failed						= Unable to open stream '{0}' with mode '{1}'.
+streamresourcewrapper_unusable_stream	= The stream is neither readable nor writable and cannot be exposed as a resource.
+
+httpclient_transport_error				= HTTP client transport error (code {0}): {1}
+httpclient_http_error					= HTTP error response with status {0}.
+
 soapservice_configfile_invalid			= TSoapService.ConfigFile '{0}' does not exist. Note, it has to be specified in a namespace format and the file extension must be '.xml' or '.php'.
 soapservice_request_invalid				= SOAP server '{0}' not found.
 soapservice_server_invalid				= TSoapService SOAP server class '{0}' is invalid. It must be TSoapServer or a subclass.
