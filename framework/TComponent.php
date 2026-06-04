@@ -1095,30 +1095,44 @@ class TComponent
 
 	/**
 	 * Evaluates a property path.
-	 * A property path is a sequence of property names concatenated by '.' character.
-	 * For example, 'Parent.Page' refers to the 'Page' property of the component's
-	 * 'Parent' property value (which should be a component also).
-	 * When a property is not defined by an object, this also loops through all
-	 * active behaviors of the object.
+	 * A path is a sequence of names, each introduced by a '.' or '@' separator;
+	 * the first name has an implied '.'.  A '.' reads the named property; a '@'
+	 * reads the named behavior via {@see asa}.  An undefined property throws, while
+	 * an unattached '@' behavior yields null, matching {@see asa}.
+	 * Examples: 'Parent.Page' is the 'Page' of this component's 'Parent';
+	 * '@cache.Expire' is the 'Expire' of the behavior 'cache'; '@outer@inner' is
+	 * the behavior 'inner' on the behavior 'outer'.
 	 * @param string $path property path
-	 * @return mixed the property path value
+	 * @return mixed the value at the property path
 	 */
 	public function getSubProperty($path)
 	{
 		$object = $this;
-		foreach (explode('.', $path) as $property) {
-			$object = $object->$property;
+		$len = strlen($path);
+		$start = 0;
+		$separator = '.'; // the first name is read as a property
+		// A leading '@' makes the first name a behavior instead.
+		if ($len && $path[0] === '@') {
+			$separator = '@';
+			$start = 1;
+		}
+		while ($start <= $len) {
+			$nameLen = strcspn($path, '.@', $start);
+			$name = substr($path, $start, $nameLen);
+			$object = ($separator === '@') ? $object->asa($name) : $object->$name;
+			$next = $start + $nameLen;
+			$separator = $path[$next] ?? '.';
+			$start = $next + 1;
 		}
 		return $object;
 	}
 
 	/**
 	 * Sets a value to a property path.
-	 * A property path is a sequence of property names concatenated by '.' character.
-	 * For example, 'Parent.Page' refers to the 'Page' property of the component's
-	 * 'Parent' property value (which should be a component also).
-	 * When a property is not defined by an object, this also loops through all
-	 * active behaviors of the object.
+	 * The path uses the same '.' and '@' grammar as {@see getSubProperty}.  The
+	 * last '.' splits off the property name to set; the preceding path resolves
+	 * via {@see getSubProperty}, so it may walk behaviors, e.g. '@cache.Expire'
+	 * sets the 'Expire' of the behavior named 'cache'.
 	 * @param string $path property path
 	 * @param mixed $value the property path value
 	 */
