@@ -22,7 +22,7 @@ use Prado\TApplicationMode;
 use Prado\Util\TLogger;
 use Prado\Web\HttpHeaders\TCspDirective;
 use Prado\Web\HttpHeaders\THttpHeader;
-use Prado\Web\HttpHeaders\THttpHeaderBase;
+use Prado\Web\HttpHeaders\TBaseHttpHeader;
 use Prado\Web\HttpHeaders\THttpHeaderContentType;
 use Prado\Web\HttpHeaders\THttpHeaderCsp;
 use Prado\Web\HttpHeaders\THttpHeaderHsts;
@@ -2431,8 +2431,8 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 		$m = new TTestHttpHeadersManager();
 		$h = new TStubHeader();
 		$m->addHeader($h);
-		self::assertTrue($m->hasHeader(THttpHeaderBase::class),
-			'hasHeader(THttpHeaderBase::class) must return true when a subclass instance is present');
+		self::assertTrue($m->hasHeader(TBaseHttpHeader::class),
+			'hasHeader(TBaseHttpHeader::class) must return true when a subclass instance is present');
 	}
 
 	public function testGetHeadersByClassReturnsSubclassInstancesForParentClass(): void
@@ -2442,9 +2442,9 @@ class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
 		$h2 = new THttpHeader();
 		$m->addHeader($h1);
 		$m->addHeader($h2);
-		$result = $m->getHeadersByClass(THttpHeaderBase::class);
+		$result = $m->getHeadersByClass(TBaseHttpHeader::class);
 		self::assertCount(2, $result,
-			'getHeadersByClass(THttpHeaderBase::class) must return all headers (both are subclasses)');
+			'getHeadersByClass(TBaseHttpHeader::class) must return all headers (both are subclasses)');
 	}
 
 	// -----------------------------------------------------------------------

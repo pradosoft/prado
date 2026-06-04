@@ -11,7 +11,7 @@
 use Prado\Web\HttpHeaders\THttpHeaderReportingEndpoints;
 use Prado\Web\THttpHeaderName;
 
-// NOTE: REPORT_URI is defined on THttpHeaderBase and inherited by all header subclasses.
+// NOTE: REPORT_URI is defined on TBaseHttpHeader and inherited by all header subclasses.
 // THttpHeaderReportingEndpoints::REPORT_URI resolves to 'REPORT_URI' via inheritance.
 // A blank endpoint URL is normalized to this sentinel at storage time (addEndpoint()).
 // THttpHeadersManager::finalizeReporterService() replaces it with the live reporter URL.
@@ -675,17 +675,17 @@ class THttpHeaderReportingEndpointsTest extends PHPUnit\Framework\TestCase
 	}
 
 	// -----------------------------------------------------------------------
-	// REPORT_URI constant — inheritance from THttpHeaderBase
+	// REPORT_URI constant — inheritance from TBaseHttpHeader
 	// -----------------------------------------------------------------------
 
 	public function testReportUriConstantIsInheritedFromBase(): void
 	{
 		// THttpHeaderReportingEndpoints::REPORT_URI resolves via the inheritance
-		// chain to THttpHeaderBase::REPORT_URI; the values must be identical.
+		// chain to TBaseHttpHeader::REPORT_URI; the values must be identical.
 		self::assertSame(
-			\Prado\Web\HttpHeaders\THttpHeaderBase::REPORT_URI,
+			\Prado\Web\HttpHeaders\TBaseHttpHeader::REPORT_URI,
 			THttpHeaderReportingEndpoints::REPORT_URI,
-			'THttpHeaderReportingEndpoints::REPORT_URI must be the constant inherited from THttpHeaderBase'
+			'THttpHeaderReportingEndpoints::REPORT_URI must be the constant inherited from TBaseHttpHeader'
 		);
 	}
 

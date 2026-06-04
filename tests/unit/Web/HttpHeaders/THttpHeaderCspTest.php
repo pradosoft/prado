@@ -48,7 +48,7 @@ class THttpHeaderCspTest extends PHPUnit\Framework\TestCase
 	}
 
 	// =========================================================================
-	// REPORT_URI constant — own value and inheritance from THttpHeaderBase
+	// REPORT_URI constant — own value and inheritance from TBaseHttpHeader
 	// =========================================================================
 
 	public function testReportUriConstantValue(): void
@@ -59,11 +59,11 @@ class THttpHeaderCspTest extends PHPUnit\Framework\TestCase
 	public function testReportUriConstantIsInheritedFromBase(): void
 	{
 		// THttpHeaderCsp::REPORT_URI resolves via the inheritance chain to
-		// THttpHeaderBase::REPORT_URI; the values must be identical.
+		// TBaseHttpHeader::REPORT_URI; the values must be identical.
 		self::assertSame(
-			\Prado\Web\HttpHeaders\THttpHeaderBase::REPORT_URI,
+			\Prado\Web\HttpHeaders\TBaseHttpHeader::REPORT_URI,
 			THttpHeaderCsp::REPORT_URI,
-			'THttpHeaderCsp::REPORT_URI must be the constant inherited from THttpHeaderBase'
+			'THttpHeaderCsp::REPORT_URI must be the constant inherited from TBaseHttpHeader'
 		);
 	}
 
@@ -1047,7 +1047,7 @@ class THttpHeaderCspTest extends PHPUnit\Framework\TestCase
 	}
 
 	// =========================================================================
-	// __toString — inherited from THttpHeaderBase
+	// __toString — inherited from TBaseHttpHeader
 	// =========================================================================
 
 	public function testToStringEnforcingFormat(): void

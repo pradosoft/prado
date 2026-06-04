@@ -16,7 +16,7 @@ use Prado\Web\THttpHeaderName;
  *
  * Covers name, value, replace override, auto-detection delegation, string
  * coercion, and the {@see THttpHeader::__toString()} rendering inherited from
- * {@see \Prado\Web\HttpHeaders\THttpHeaderBase}.
+ * {@see \Prado\Web\HttpHeaders\TBaseHttpHeader}.
  */
 class THttpHeaderTest extends PHPUnit\Framework\TestCase
 {
@@ -263,7 +263,7 @@ class THttpHeaderTest extends PHPUnit\Framework\TestCase
 	}
 
 	// =========================================================================
-	// __toString — inherited from THttpHeaderBase
+	// __toString — inherited from TBaseHttpHeader
 	// =========================================================================
 
 	public function testToStringReturnsNameColonSpaceValue(): void

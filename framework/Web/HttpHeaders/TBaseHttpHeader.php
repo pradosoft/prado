@@ -1,7 +1,7 @@
 <?php
 
 /**
- * THttpHeaderBase class file
+ * TBaseHttpHeader class file
  *
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
@@ -14,9 +14,9 @@ use Prado\Web\THttpHeaderName;
 use Prado\Xml\TXmlElement;
 
 /**
- * THttpHeaderBase class
+ * TBaseHttpHeader class
  *
- * THttpHeaderBase is the abstract base for all typed HTTP header classes in the
+ * TBaseHttpHeader is the abstract base for all typed HTTP header classes in the
  * HttpHeaders family. It owns the manager reference, the send/replace logic, and
  * the three lifecycle hooks ({@see init()}, {@see initComplete()},
  * {@see finalizeHeader()}) that subclasses override to build their header value.
@@ -24,7 +24,7 @@ use Prado\Xml\TXmlElement;
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
  */
-abstract class THttpHeaderBase extends \Prado\TComponent
+abstract class TBaseHttpHeader extends \Prado\TComponent
 {
 	/**
 	 * Placeholder replaced at send time with the reporter URL from
