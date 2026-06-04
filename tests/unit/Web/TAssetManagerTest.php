@@ -295,6 +295,64 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 		self::assertEqualsWithDelta(time(), $newMtime, 2);
 	}
 
+	/**
+	 * Regression: forceCopy must re-copy a single published file even when the
+	 * destination is newer than the source. Previously forceCopy was ignored
+	 * for single files (copyFile only checked the modification time).
+	 */
+	public function testForceCopyOverwritesNewerSingleFile()
+	{
+		$source = __DIR__ . '/data/pradoheader.gif';
+
+		// First publish (plain copy).
+		$manager1 = $this->newAssetManager();
+		$manager1->setBaseUrl('/');
+		$manager1->init(null);
+		$manager1->publishFilePath($source);
+		$publishedFile = $manager1->getPublishedPath($source);
+		self::assertTrue(is_file($publishedFile));
+
+		// Corrupt the published copy and make it newer than the source.
+		file_put_contents($publishedFile, 'corrupted');
+		touch($publishedFile, time() + 10);
+		self::assertNotEquals(file_get_contents($source), file_get_contents($publishedFile));
+
+		// A fresh manager with forceCopy must restore the source content
+		// despite the destination being newer.
+		$manager2 = $this->newAssetManager();
+		$manager2->setBaseUrl('/');
+		$manager2->setForceCopy(true);
+		$manager2->init(null);
+		$manager2->publishFilePath($source);
+
+		self::assertEquals(file_get_contents($source), file_get_contents($publishedFile));
+	}
+
+	/**
+	 * Counterpart to the forceCopy regression: without forceCopy, a single
+	 * published file that is newer than the source is left untouched.
+	 */
+	public function testSingleFileNotOverwrittenWhenNewerWithoutForceCopy()
+	{
+		$source = __DIR__ . '/data/pradoheader.gif';
+
+		$manager1 = $this->newAssetManager();
+		$manager1->setBaseUrl('/');
+		$manager1->init(null);
+		$manager1->publishFilePath($source);
+		$publishedFile = $manager1->getPublishedPath($source);
+
+		file_put_contents($publishedFile, 'corrupted');
+		touch($publishedFile, time() + 10);
+
+		$manager2 = $this->newAssetManager();
+		$manager2->setBaseUrl('/');
+		$manager2->init(null);
+		$manager2->publishFilePath($source);
+
+		self::assertEquals('corrupted', file_get_contents($publishedFile));
+	}
+
 	public function testAppendTimestampTrue()
 	{
 		$manager = $this->newAssetManager();
@@ -811,6 +869,25 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 		$resolved = $manager->resolveAsset('jquery.min.js', 'js');
 		self::assertEquals('/js/jquery.min.js', $resolved);
+	}
+
+	/**
+	 * Regression: the suffix-match must be bounded by the length of the
+	 * source-qualified asset, not the bare asset. A map key longer than the
+	 * bare asset but shorter than "sourcePath/asset" was previously skipped.
+	 */
+	public function testResolveAssetSuffixMatchKeyLongerThanAsset()
+	{
+		$manager = $this->newAssetManager();
+		$manager->setAssetMap([
+			'lib/app.min.js' => '/dist/app.js'
+		]);
+		$manager->init(null);
+
+		// asset = 'app.min.js' (10), key = 'lib/app.min.js' (14),
+		// assetWithSource = 'js/lib/app.min.js' (17): key must still match.
+		$resolved = $manager->resolveAsset('app.min.js', 'js/lib');
+		self::assertEquals('/dist/app.js', $resolved);
 	}
 
 	public function testGetPublished()
