@@ -10,6 +10,7 @@
 
 namespace Prado\Web\Javascripts;
 
+use Prado\Exceptions\TConfigurationException;
 use Prado\Web\THttpUtility;
 use Prado\Prado;
 
@@ -68,6 +69,45 @@ class TJavaScript
 	 * @since 4.4.0
 	 */
 	private static $_scriptIntegrity = [];
+
+	/**
+	 * @var bool When `true`, rendering a remote `<script src>` that has no registered
+	 * SRI value throws a {@see TConfigurationException} instead of emitting a tag with
+	 * no `integrity` attribute. Defaults to `false`. Toggled via
+	 * {@see setRequireScriptIntegrity()}, typically from
+	 * {@see \Prado\Web\TIntegrityManager}.
+	 * @since 4.4.0
+	 */
+	private static $_requireScriptIntegrity = false;
+
+	/**
+	 * Returns whether remote scripts are required to carry a registered SRI value.
+	 * @return bool `true` when {@see renderScriptFile()} and {@see TJavaScriptAsset::__toString()}
+	 *   throw for a remote URL without a registered integrity, `false` when they
+	 *   render the tag without the attribute
+	 * @since 4.4.0
+	 */
+	public static function getRequireScriptIntegrity(): bool
+	{
+		return self::$_requireScriptIntegrity;
+	}
+
+	/**
+	 * Sets whether remote scripts must carry a registered SRI value to be rendered.
+	 *
+	 * When enabled, {@see renderScriptFile()} and {@see TJavaScriptAsset::__toString()}
+	 * throw a {@see TConfigurationException} for any remote URL (per
+	 * {@see THttpUtility::isLocalUrl()}) that has no integrity available, instead of
+	 * emitting a `<script>` tag that a strict `Content-Security-Policy` would block.
+	 * Local URLs and assets that explicitly suppress integrity are unaffected.
+	 *
+	 * @param bool $value `true` to enforce, `false` (default) to render leniently
+	 * @since 4.4.0
+	 */
+	public static function setRequireScriptIntegrity(bool $value): void
+	{
+		self::$_requireScriptIntegrity = $value;
+	}
 
 	/**
 	 * Returns the per-request CSP nonce currently registered with this class,
@@ -278,6 +318,9 @@ class TJavaScript
 		$integrity = null;
 		if (!THttpUtility::isLocalUrl($url)) {
 			$integrity = self::getScriptIntegrity($url);
+			if ($integrity === null && self::$_requireScriptIntegrity) {
+				throw new TConfigurationException('javascript_script_integrity_required', $url);
+			}
 		}
 		$attrs = THttpUtility::buildHtmlAttributes([
 			'src' => $url,

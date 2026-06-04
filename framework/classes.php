@@ -447,6 +447,7 @@ return [
 'TAssetManager' => 'Prado\Web\TAssetManager',
 'TCacheHttpSession' => 'Prado\Web\TCacheHttpSession',
 'TContentDisposition' => 'Prado\Web\TContentDisposition',
+'TIntegrityManager' => 'Prado\Web\TIntegrityManager',
 'THttpCookie' => 'Prado\Web\THttpCookie',
 'THttpCookieCollection' => 'Prado\Web\THttpCookieCollection',
 'THttpCookieSameSite' => 'Prado\Web\THttpCookieSameSite',

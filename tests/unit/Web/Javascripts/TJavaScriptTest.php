@@ -10,6 +10,7 @@
 
 require_once __DIR__ . '/../../PradoUnitRequires.php';
 
+use Prado\Exceptions\TConfigurationException;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\Javascripts\TJavaScriptAsset;
 use Prado\Web\Javascripts\TJavaScriptLiteral;
@@ -27,12 +28,14 @@ class TJavaScriptTest extends PHPUnit\Framework\TestCase
 	protected function setUp(): void
 	{
 		TJavaScript::setScriptNonce(null);
+		TJavaScript::setRequireScriptIntegrity(false);
 		$this->resetScriptIntegrity();
 	}
 
 	protected function tearDown(): void
 	{
 		TJavaScript::setScriptNonce(null);
+		TJavaScript::setRequireScriptIntegrity(false);
 		$this->resetScriptIntegrity();
 	}
 
@@ -405,6 +408,52 @@ class TJavaScriptTest extends PHPUnit\Framework\TestCase
 		$output = TJavaScript::renderScriptFile(self::LOCAL);
 		$this->assertStringNotContainsString('integrity', $output);
 		$this->assertStringNotContainsString('crossorigin', $output);
+	}
+
+	// -----------------------------------------------------------------------
+	// getRequireScriptIntegrity / setRequireScriptIntegrity
+	// -----------------------------------------------------------------------
+
+	public function testRequireScriptIntegrityDefaultsToFalse(): void
+	{
+		$this->assertFalse(TJavaScript::getRequireScriptIntegrity());
+	}
+
+	public function testSetAndGetRequireScriptIntegrity(): void
+	{
+		TJavaScript::setRequireScriptIntegrity(true);
+		$this->assertTrue(TJavaScript::getRequireScriptIntegrity());
+	}
+
+	/**
+	 * With enforcement on, a remote URL lacking a registered integrity must throw.
+	 */
+	public function testRenderScriptFileRemoteWithoutIntegrityThrowsWhenRequired(): void
+	{
+		TJavaScript::setRequireScriptIntegrity(true);
+		$this->expectException(TConfigurationException::class);
+		TJavaScript::renderScriptFile(self::REMOTE);
+	}
+
+	/**
+	 * With enforcement on, a remote URL that has a registered integrity renders.
+	 */
+	public function testRenderScriptFileRemoteWithIntegrityRendersWhenRequired(): void
+	{
+		TJavaScript::setRequireScriptIntegrity(true);
+		TJavaScript::setScriptIntegrity(self::REMOTE, 'sha384-HASH');
+		$output = TJavaScript::renderScriptFile(self::REMOTE);
+		$this->assertStringContainsString('integrity="sha384-HASH"', $output);
+	}
+
+	/**
+	 * Enforcement applies to remote URLs only; a local URL renders without throwing.
+	 */
+	public function testRenderScriptFileLocalWithoutIntegrityDoesNotThrowWhenRequired(): void
+	{
+		TJavaScript::setRequireScriptIntegrity(true);
+		$output = TJavaScript::renderScriptFile(self::LOCAL);
+		$this->assertStringContainsString('src="' . self::LOCAL . '"', $output);
 	}
 
 	// -----------------------------------------------------------------------
