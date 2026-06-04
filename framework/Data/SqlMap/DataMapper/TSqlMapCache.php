@@ -73,22 +73,25 @@ abstract class TSqlMapCache implements ICache
 	}
 
 	/**
-	 * @param mixed $id
-	 * @param mixed $value
-	 * @param mixed $expire
-	 * @param null|mixed $dependency
+	 * Stores a value identified by a key into cache if the cache does not contain this key.
+	 * Nothing will be done if the cache already contains the key.
+	 * @param string $id the key identifying the value to be cached
+	 * @param mixed $value the value to be cached
+	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
+	 * @param ?\Prado\Caching\ICacheDependency $dependency dependency of the cached item. If the dependency changes, the item is labeled invalid.
 	 * @throws TSqlMapException not implemented.
 	 */
-	public function add($id, $value, $expire = 0, $dependency = null): bool
+	public function add($id, $value, $expire = 0, $dependency = null)
 	{
 		throw new TSqlMapException('sqlmap_use_set_to_store_cache');
 	}
 
 	/**
-	 * @param mixed $key
-	 * @return bool true if no error happens during deletion.
+	 * Deletes a value with the specified key from cache
+	 * @param string $key the key of the value to be deleted
+	 * @return bool if no error happens during deletion
 	 */
-	public function delete($key): bool
+	public function delete($key)
 	{
 		$this->_cache->remove($key);
 		$this->_keyList->remove($key);
@@ -98,7 +101,7 @@ abstract class TSqlMapCache implements ICache
 	/**
 	 * Clears the cache.
 	 */
-	public function flush(): void
+	public function flush()
 	{
 		$this->_keyList->clear();
 		$this->_cache->clear();
