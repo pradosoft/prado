@@ -95,7 +95,7 @@ class TIntegrityManagerTest extends PHPUnit\Framework\TestCase
 		try {
 			$manager = new TIntegrityManager();
 			$manager->setIntegrityFile('App.integrity');
-			self::assertEquals($file, $manager->getIntegrityFile());
+			self::assertEquals(realpath($file), realpath($manager->getIntegrityFile()));
 			$manager->init($this->config(''));
 			self::assertEquals(self::HASH, $manager->getIntegrity(self::REMOTE));
 			self::assertEquals('sha512-CCCC', $manager->getIntegrity('https://cdn.example.com/lib2.js'));
