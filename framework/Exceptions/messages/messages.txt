@@ -142,6 +142,8 @@ sqlitecache_table_creation_failed		= TSqliteCache failed to create cache databas
 sqlitecache_dbfile_unchangeable			= TSqliteCache.DbFile cannot be modified after the module is initialized.
 sqlitecache_dbfile_invalid				= TSqliteCache.DbFile is invalid. Make sure it is in a proper namespace format.
 
+dbcache_unavailable						= TDbCache requires the PDO PHP extension.
+
 memcache_extension_required				= TMemCache requires memcache PHP extension.
 memcache_connection_failed				= TMemCache failed to connect to memcache server {0}:{1}.
 memcache_not_initialized				= Options cannot be set on TMemCache before the module is initialized.
@@ -159,6 +161,13 @@ filecache_hash_token_identity			= TFileCache.hashToken must transform its input;
 filecache_hash_token_path_separator		= TFileCache.hashToken must not return a value containing a path separator ("/" or "\"); the subclass implementation returned an unsafe hash.
 
 memorycache_backing_file_directory_not_found	= TMemoryCache.BackingFile directory does not exist for path '{0}'.
+
+serializingcache_type_invalid = TSerializingCache.SerializationType '{0}' is invalid. Valid values are 'PHP' and 'JSON'.
+serializingcache_encoding_invalid = TSerializingCache.Encoding '{0}' is invalid. Valid values are 'None', 'Base64' and 'Hex'.
+serializingcache_securitymanager_invalid = TSerializingCache.SecurityManager '{0}' is invalid. It must be a TSecurityManager module id or a TSecurityManager instance.
+serializingcache_json_encode_failed = TSerializingCache failed to JSON-encode the value: {0}.
+directorycachedependency_directory_invalid = TDirectoryCacheDependency.Directory {0} does not refer to a valid directory.
+cachedependencylist_cachedependency_required = Only objects implementing ICacheDependency can be added into TCacheDependencyList.
 
 errorhandler_errortemplatepath_invalid	= TErrorHandler.ErrorTemplatePath '{0}' is invalid. Make sure it is in namespace form and points to a valid directory containing error template files.
 
@@ -270,6 +279,14 @@ authorizationrulecollection_authorizationrule_required = TAuthorizationRuleColle
 
 usermanager_userfile_invalid			= TUserManager.UserFile '{0}' is not a valid file.
 usermanager_userfile_unchangeable		= TUserManager.UserFile cannot be modified. The user module has been initialized already.
+
+integritymanager_entry_invalid			= TIntegrityManager integrity entry for URL '{0}' requires a non-empty url and hash.
+integritymanager_algorithm_invalid		= TIntegrityManager algorithm '{0}' is not supported; use one of: {1}.
+integritymanager_file_unreadable		= TIntegrityManager cannot read file '{0}' to calculate its integrity.
+integritymanager_integrityfile_invalid		= TIntegrityManager.IntegrityFile '{0}' is not a valid file.
+integritymanager_integrityfile_unchangeable	= {1}.{0} cannot be modified. The integrity module has been initialized already.
+
+javascript_script_integrity_required		= No Subresource Integrity is registered for the remote script '{0}', but integrity is required.
 
 authmanager_usermanager_required		= TAuthManager.UserManager must be assigned a value.
 authmanager_usermanager_inexistent		= TAuthManager.UserManager '{0}' does not refer to an ID of application module.
@@ -541,9 +558,6 @@ dbtablegateway_pk_value_count_mismatch	= Composite key value count mismatch in f
 dbtablegateway_mismatch_args_exception	= TTableGateway finder method '{0}' expects {1} parameters but found only {2} parameters instead.
 dbtablegateway_mismatch_column_name		= In dynamic __call() method '{0}', no matching columns were found, valid columns for table '{2}' are '{1}'.
 dbtablegateway_invalid_table_info		= Table must be a string or an instance of TDbTableInfo.
-
-directorycachedependency_directory_invalid = TDirectoryCacheDependency.Directory {0} does not refer to a valid directory.
-cachedependencylist_cachedependency_required = Only objects implementing ICacheDependency can be added into TCacheDependencyList.
 
 resource_not_a_resource					= Expected an open PHP resource but got '{0}'.
 stream_open_failed						= Unable to open stream '{0}' with mode '{1}'.

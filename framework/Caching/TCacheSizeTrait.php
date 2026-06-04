@@ -10,8 +10,14 @@
 
 namespace Prado\Caching;
 
+use Prado\TPropertyValue;
+
 /**
- * TCacheSizeTrait provides a byte-cap and **Least Recently Used** eviction for cache modules.
+ * TCacheSizeTrait trait
+ *
+ * TCacheSizeTrait provides a byte-cap with size-driven eviction for cache modules. The
+ * eviction order is chosen by the implementing class in {@see evictToFitMaximumSize()}
+ * (for example least-recently-used or soonest-to-expire).
  *
  * Implementing classes must also implement {@see ICacheSize}, which defines the public
  * size-management contract and the {@see ICacheSize::SIZE_NOT_COMPUTED} sentinel constant.
@@ -285,8 +291,9 @@ trait TCacheSizeTrait
 	 *
 	 * @param int|string $value the maximum total size; 0 means unlimited
 	 */
-	public function setMaximumSize(int|string $value): void
+	public function setMaximumSize($value)
 	{
+		$value = is_int($value) ? $value : TPropertyValue::ensureString($value);
 		$this->setMaximumSizeDirect(max(0, static::parseSizeString($value)));
 		$this->enforceMaximumSize();
 	}
@@ -311,8 +318,8 @@ trait TCacheSizeTrait
 	 */
 	protected static function parseSizeString(int|string $value): int
 	{
-		if (is_int($value)) {
-			return $value;
+		if (is_numeric($value)) {
+			return (int) $value;
 		}
 		$value = trim($value);
 		if (!preg_match('/^(\d+)\s*([KMGTP]?)B?$/i', $value, $m)) {

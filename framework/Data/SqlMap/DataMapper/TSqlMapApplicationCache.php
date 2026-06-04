@@ -16,6 +16,8 @@ use Prado\Data\SqlMap\Configuration\TSqlMapCacheModel;
 use Prado\Prado;
 
 /**
+ * TSqlMapApplicationCache class
+ *
  * TSqlMapApplicationCache uses the default Prado application cache for
  * caching SqlMap results.
  *
@@ -33,6 +35,23 @@ class TSqlMapApplicationCache implements ICache
 	public function __construct($cacheModel = null)
 	{
 		$this->_cacheModel = $cacheModel;
+	}
+
+	/**
+	 * @return bool whether the application cache is available.
+	 * @since 4.4.0
+	 */
+	public static function getIsAvailable(): bool
+	{
+		return Prado::getApplication()?->getCache() !== null;
+	}
+
+	/**
+	 * @return ICache Application cache instance.
+	 */
+	protected function getCache()
+	{
+		return Prado::getApplication()->getCache();
 	}
 
 	/**
@@ -66,7 +85,64 @@ class TSqlMapApplicationCache implements ICache
 	}
 
 	/**
-	 * @param string $key item to be deleted.
+	 * Retrieves a value from cache with a specified key.
+	 * @param string $key a key identifying the cached value
+	 * @return false|mixed the value stored in cache, false if the value is not in the cache or expired.
+	 */
+	public function get($key)
+	{
+		$result = $this->getCache()->get($key);
+		if ($result === false) {
+			// if the key has not been found in cache (e.g expired), remove from keylist
+			$keyList = $this->getKeyList();
+			if ($keyList->contains($key)) {
+				$keyList->remove($key);
+				$this->setKeyList($keyList);
+			}
+		}
+		return $result === false ? null : $result;
+	}
+
+	/**
+	 * Stores a value identified by a key into cache.
+	 * If the cache already contains such a key, the existing value and
+	 * expiration time will be replaced with the new ones.
+	 *
+	 * @param string $key the key identifying the value to be cached
+	 * @param mixed $value the value to be cached
+	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
+	 * @param ?\Prado\Caching\ICacheDependency $dependency dependency of the cached item. If the dependency changes, the item is labeled invalid.
+	 * @return bool true if the value is successfully stored into cache, false otherwise
+	 */
+	public function set($key, $value, $expire = 0, $dependency = null)
+	{
+		$this->getCache()->set($key, $value, $expire, $dependency);
+		$keyList = $this->getKeyList();
+		if (!$keyList->contains($key)) {
+			$keyList->add($key);
+			$this->setKeyList($keyList);
+		}
+		return true;
+	}
+
+	/**
+	 * Stores a value identified by a key into cache if the cache does not contain this key.
+	 * Nothing will be done if the cache already contains the key.
+	 * @param string $id the key identifying the value to be cached
+	 * @param mixed $value the value to be cached
+	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
+	 * @param ?\Prado\Caching\ICacheDependency $dependency dependency of the cached item. If the dependency changes, the item is labeled invalid.
+	 * @throws TSqlMapException not implemented.
+	 */
+	public function add($id, $value, $expire = 0, $dependency = null)
+	{
+		throw new TSqlMapException('sqlmap_use_set_to_store_cache');
+	}
+
+	/**
+	 * Deletes a value with the specified key from cache
+	 * @param string $key the key of the value to be deleted
+	 * @return bool if no error happens during deletion
 	 */
 	public function delete($key)
 	{
@@ -89,61 +165,5 @@ class TSqlMapApplicationCache implements ICache
 		}
 		// Remove the old keylist
 		$cache->delete($this->getKeyListId());
-	}
-
-	/**
-	 * @param mixed $key
-	 * @return mixed Gets a cached object with the specified key.
-	 */
-	public function get($key)
-	{
-		$result = $this->getCache()->get($key);
-		if ($result === false) {
-			// if the key has not been found in cache (e.g expired), remove from keylist
-			$keyList = $this->getKeyList();
-			if ($keyList->contains($key)) {
-				$keyList->remove($key);
-				$this->setKeyList($keyList);
-			}
-		}
-		return $result === false ? null : $result;
-	}
-
-	/**
-	 * Stores a value identified by a key into cache.
-	 * @param string $key the key identifying the value to be cached
-	 * @param mixed $value the value to be cached
-	 * @param mixed $expire
-	 * @param null|mixed $dependency
-	 */
-	public function set($key, $value, $expire = 0, $dependency = null)
-	{
-		$this->getCache()->set($key, $value, $expire, $dependency);
-		$keyList = $this->getKeyList();
-		if (!$keyList->contains($key)) {
-			$keyList->add($key);
-			$this->setKeyList($keyList);
-		}
-		return true;
-	}
-
-	/**
-	 * @return ICache Application cache instance.
-	 */
-	protected function getCache()
-	{
-		return Prado::getApplication()->getCache();
-	}
-
-	/**
-	 * @param mixed $id
-	 * @param mixed $value
-	 * @param mixed $expire
-	 * @param null|mixed $dependency
-	 * @throws TSqlMapException not implemented.
-	 */
-	public function add($id, $value, $expire = 0, $dependency = null)
-	{
-		throw new TSqlMapException('sqlmap_use_set_to_store_cache');
 	}
 }

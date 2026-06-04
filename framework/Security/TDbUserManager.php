@@ -76,7 +76,7 @@ class TDbUserManager extends TDbModule implements IUserManager, IDbModule
 
 	/**
 	 * Initializes.
-	 * @param array|\Prado\Xml\TXmlElement $config module configuration
+	 * @param null|array|\Prado\Xml\TXmlElement $config module configuration
 	 */
 	public function init($config)
 	{

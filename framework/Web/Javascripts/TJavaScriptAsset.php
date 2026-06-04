@@ -10,6 +10,7 @@
 
 namespace Prado\Web\Javascripts;
 
+use Prado\Exceptions\TConfigurationException;
 use Prado\Web\THttpUtility;
 
 /**
@@ -74,6 +75,9 @@ class TJavaScriptAsset
 	 * a non-null value (either from the asset itself or the {@see TJavaScript}
 	 * registry). No trailing newline is appended; {@see TJavaScript::renderScriptFile()}
 	 * adds one when delegating here.
+	 * @throws TConfigurationException when {@see TJavaScript::getRequireScriptIntegrity()}
+	 *   is enabled and this is a remote URL with no integrity available and integrity
+	 *   has not been explicitly suppressed via {@see setIntegrity()}
 	 * @return string the rendered `<script>` tag without a trailing newline
 	 */
 	public function __toString(): string
@@ -82,6 +86,9 @@ class TJavaScriptAsset
 		$integrity = null;
 		if (!THttpUtility::isLocalUrl($url)) {
 			$integrity = $this->getIntegrity();
+			if ($integrity === null && $this->getIntegrityDirect() !== false && TJavaScript::getRequireScriptIntegrity()) {
+				throw new TConfigurationException('javascript_script_integrity_required', $url);
+			}
 		}
 		$attrs = THttpUtility::buildHtmlAttributes([
 			'src' => $url,

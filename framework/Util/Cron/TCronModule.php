@@ -149,7 +149,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	/**
 	 * Initializes the module.  Read the configuration, installs Shell Actions,
 	 * should Request cron be activated.
-	 * @param array|\Prado\Xml\TXmlElement $config
+	 * @param null|array|\Prado\Xml\TXmlElement $config
 	 * @throws TConfigurationException when the user manage doesn't exist or is invalid
 	 */
 	public function init($config)

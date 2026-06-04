@@ -193,7 +193,7 @@ class TAssetManager extends \Prado\TModule
 	/**
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
-	 * @param \Prado\Xml\TXmlElement $config module configuration
+	 * @param null|array|\Prado\Xml\TXmlElement $config module configuration
 	 */
 	public function init($config)
 	{
@@ -207,9 +207,19 @@ class TAssetManager extends \Prado\TModule
 		if ($this->_baseUrl === null) {
 			$this->_baseUrl = rtrim(dirname($application->getRequest()->getApplicationUrl()), '/\\') . '/' . self::DEFAULT_BASEPATH;
 		}
-		$application->setAssetManager($this);
+		$this->setAppAssetManager();
 		parent::init($config);
 		$this->markInitialized();
+	}
+
+	/**
+	 * Registers this module as the application asset manager when an application is available.
+	 * Called during {@see init()}; may also be called by behaviors or subclasses.
+	 * @since 4.4.0
+	 */
+	protected function setAppAssetManager()
+	{
+		$this->getApplication()?->setAssetManager($this);
 	}
 
 	/**

@@ -47,7 +47,7 @@ use Prado\Xml\TXmlElement;
  * be specified by the number of seconds. A expiration time 0 represents never expire.
  *
  * By definition, cache does not ensure the existence of a value
- * even if it never expires. Cache is not meant to be an persistent storage.
+ * even if it never expires. Cache is not meant to be a persistent storage.
  *
  * Also note, there is no security measure to protected data in redis cache.
  * All data in redis cache can be accessed by any process running in the system.
@@ -56,7 +56,7 @@ use Prado\Xml\TXmlElement;
  *
  * Some usage examples of TRedisCache are as follows,
  * ```php
- * $cache=new TRedisCache;  // TRedisache may also be loaded as a Prado application module
+ * $cache=new TRedisCache;  // TRedisCache may also be loaded as a Prado application module
  * $cache->init(null);
  * $cache->add('object',$object);
  * $object2=$cache->get('object');
@@ -65,20 +65,51 @@ use Prado\Xml\TXmlElement;
  * If loaded as module, TRedisCache will register itself with {@see \Prado\TApplication} as the
  * default cache module. It can be accessed via {@see \Prado\TApplication::getCache()}.
  *
- * TRedisCache may be configured in application configuration file as follows
+ * XML configuration style, TCP:
  * ```xml
  * <modules>
- *     <module id="cache" class="Prado\Caching\TRedisCache" Host="localhost" Port="6379" />
+ *   <module id="cache" class="Prado\Caching\TRedisCache" Host="localhost" Port="6379" />
  * </modules>
  * ```
- * or
+ *
+ * PHP configuration style, TCP:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'cache' => [
+ *             'class' => 'Prado\Caching\TRedisCache',
+ *             'properties' => [
+ *                 'Host' => 'localhost',
+ *                 'Port' => '6379',
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
+ *
+ * XML configuration style, Unix socket:
  * ```xml
  * <modules>
- *     <module id="cache" class="Prado\Caching\TRedisCache" Socket="/var/run/redis/redis.sock" Index="2" />
+ *   <module id="cache" class="Prado\Caching\TRedisCache" Socket="/var/run/redis/redis.sock" Index="2" />
  * </modules>
  * ```
- * where {@see setHost Host} and {@see setPort Port} or {@see setSocket Socket} are configurable properties
- * of TRedisCache.
+ *
+ * PHP configuration style, Unix socket:
+ * ```php
+ * return [
+ *     'modules' => [
+ *         'cache' => [
+ *             'class' => 'Prado\Caching\TRedisCache',
+ *             'properties' => [
+ *                 'Socket' => '/var/run/redis/redis.sock',
+ *                 'Index' => '2',
+ *             ],
+ *         ],
+ *     ],
+ * ];
+ * ```
+ * where {@see setHost Host} and {@see setPort Port} or {@see setSocket Socket} are configurable
+ * properties of TRedisCache.
  *
  * PHP configuration style:
  * ```php
@@ -101,7 +132,7 @@ class TRedisCache extends TCache
 	use TInitializedTrait;
 
 	/**
-	 * @var \Redis the Redis instance
+	 * @var ?\Redis the Redis instance
 	 */
 	private $_cache;
 	/**
@@ -113,7 +144,7 @@ class TRedisCache extends TCache
 	 */
 	private $_port = 6379;
 	/**
-	 * @var string the unix socket of the redis cache server.
+	 * @var ?string the unix socket of the redis cache server, or null to use TCP.
 	 */
 	private $_socket;
 	/**
@@ -122,13 +153,23 @@ class TRedisCache extends TCache
 	private $_index = 0;
 
 	/**
+	 * @return bool whether the `redis` extension is loaded and the `\Redis` class exists.
+	 * @since 4.4.0
+	 */
+	public static function getIsAvailable(): bool
+	{
+		return extension_loaded('redis') && class_exists('\Redis', false);
+	}
+
+	/**
 	 * Destructor.
 	 * Disconnect the redis cache server.
 	 */
 	public function __destruct()
 	{
-		if ($this->_cache instanceof \Redis) {
-			$this->_cache->close();
+		$cacheObject = $this->getCacheDirect();
+		if ($cacheObject instanceof \Redis) {
+			$cacheObject->close();
 		}
 		parent::__destruct();
 	}
@@ -136,33 +177,54 @@ class TRedisCache extends TCache
 	/**
 	 * Initializes this module.
 	 * This method is required by the IModule interface. It creates a Redis instance and connects to the redis server.
-	 * @param \Prado\Xml\TXmlElement $config configuration for this module, can be null
+	 * @param null|array|\Prado\Xml\TXmlElement $config configuration for this module, can be null
 	 * @throws TConfigurationException if php-redis extension is not installed or redis cache sever connection fails
 	 */
 	public function init($config)
 	{
-		if (!extension_loaded('redis') || !class_exists('\Redis', false)) {
+		if (!static::getIsAvailable()) {
 			throw new TConfigurationException('rediscache_extension_required');
 		}
-		$this->_cache = new \Redis();
+		$this->setCacheDirect($this->newRedis());
+		$cacheObject = $this->getCacheDirect();
 		if ($this->_socket !== null) {
-			$this->_cache->connect($this->_socket);
+			$cacheObject->connect($this->getSocket());
 		} else {
-			$this->_cache->connect($this->_host, $this->_port);
+			$cacheObject->connect($this->getHost(), $this->getPort());
 		}
-		$this->_cache->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
-		$this->_cache->select($this->_index);
+		$cacheObject->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
+		$cacheObject->select($this->getIndex());
 		parent::init($config);
 		$this->markInitialized();
 	}
 
 	/**
-	 * @param mixed $key
-	 * @return bool always true
+	 * Creates the Redis instance.
+	 * Override in a subclass to substitute a mock or alternative implementation.
+	 * @return \Redis the new Redis instance
+	 * @since 4.3.3
 	 */
-	public function valid($key)
+	protected function newRedis(): object
 	{
-		return true;
+		return new \Redis();
+	}
+
+	/**
+	 * @return ?\Redis the underlying Redis instance, or null before initialization
+	 * @since 4.3.3
+	 */
+	protected function getCacheDirect(): ?object
+	{
+		return $this->_cache;
+	}
+
+	/**
+	 * @param ?\Redis $value the underlying Redis instance
+	 * @since 4.3.3
+	 */
+	protected function setCacheDirect(?object $value): void
+	{
+		$this->_cache = $value;
 	}
 
 	/**
@@ -238,64 +300,53 @@ class TRedisCache extends TCache
 	}
 
 	/**
-	 * Retrieves a value from cache with a specified key.
-	 * This is the implementation of the method declared in the parent class.
 	 * @param string $key a unique key identifying the cached value
-	 * @return false|string the value stored in cache, false if the value is not in the cache or expired.
+	 * @return mixed the stored value on a hit, or `false` on a miss or expiry.
 	 */
 	protected function getValue($key)
 	{
-		return $this->_cache->get($key);
+		return $this->getCacheDirect()->get($key);
 	}
 
 	/**
-	 * Stores a value identified by a key in cache.
-	 * This is the implementation of the method declared in the parent class.
-	 *
 	 * @param string $key the key identifying the value to be cached
-	 * @param string $value the value to be cached
+	 * @param mixed $value the value to be cached
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
 	protected function setValue($key, $value, $expire)
 	{
 		$options = $expire === 0 ? [] : ['ex' => $expire];
-		return $this->_cache->set($key, $value, $options);
+		return $this->getCacheDirect()->set($key, $value, $options);
 	}
 
 	/**
-	 * Stores a value identified by a key into cache if the cache does not contain this key.
-	 * This is the implementation of the method declared in the parent class.
-	 *
 	 * @param string $key the key identifying the value to be cached
-	 * @param string $value the value to be cached
+	 * @param mixed $value the value to be cached
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
 	protected function addValue($key, $value, $expire)
 	{
 		$options = $expire === 0 ? ['nx'] : ['nx', 'ex' => $expire];
-		return $this->_cache->set($key, $value, $options);
+		return $this->getCacheDirect()->set($key, $value, $options);
 	}
 
 	/**
-	 * Deletes a value with the specified key from cache
-	 * This is the implementation of the method declared in the parent class.
 	 * @param string $key the key of the value to be deleted
-	 * @return bool if no error happens during deletion
+	 * @return bool true if no error happens during deletion
 	 */
 	protected function deleteValue($key)
 	{
-		$this->_cache->delete($key);
+		$this->getCacheDirect()->delete($key);
 		return true;
 	}
 
 	/**
-	 * Deletes all values from cache, only clearing the currently selected database.
-	 * @return bool if no error happens during flush
+	 * Flushes the currently selected Redis database only.
 	 */
 	public function flush()
 	{
-		return $this->_cache->flushDB();
+		return $this->getCacheDirect()->flushDB();
 	}
 }

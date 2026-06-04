@@ -161,7 +161,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 
 	/**
 	 * Initializes the module. Keeps track of the configured tasks different than db tasks.
-	 * @param array|\Prado\Xml\TXmlElement $config
+	 * @param null|array|\Prado\Xml\TXmlElement $config
 	 */
 	public function init($config)
 	{

@@ -8,6 +8,7 @@
  * @author Brad Anderson <belisoful@icloud.com>
  */
 
+use Prado\Exceptions\TConfigurationException;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\Javascripts\TJavaScriptAsset;
 
@@ -44,12 +45,52 @@ class TJavaScriptAssetTest extends PHPUnit\Framework\TestCase
 		// Clear global nonce and integrity registry so rendering is deterministic.
 		TJavaScript::setScriptNonce(null);
 		TJavaScript::setScriptIntegrity(self::REMOTE, null);
+		TJavaScript::setRequireScriptIntegrity(false);
 	}
 
 	protected function tearDown(): void
 	{
 		TJavaScript::setScriptNonce(null);
 		TJavaScript::setScriptIntegrity(self::REMOTE, null);
+		TJavaScript::setRequireScriptIntegrity(false);
+	}
+
+	// -----------------------------------------------------------------------
+	// RequireScriptIntegrity enforcement
+	// -----------------------------------------------------------------------
+
+	/**
+	 * With enforcement on, a remote asset lacking an integrity must throw on render.
+	 */
+	public function testRenderRemoteWithoutIntegrityThrowsWhenRequired(): void
+	{
+		TJavaScript::setRequireScriptIntegrity(true);
+		$this->expectException(TConfigurationException::class);
+		(new TJavaScriptAsset(self::REMOTE))->__toString();
+	}
+
+	/**
+	 * An asset that explicitly suppresses integrity via `setIntegrity(false)` must
+	 * render without throwing even when enforcement is on.
+	 */
+	public function testRenderRemoteWithSuppressedIntegrityDoesNotThrowWhenRequired(): void
+	{
+		TJavaScript::setRequireScriptIntegrity(true);
+		$asset = new TJavaScriptAsset(self::REMOTE);
+		$asset->setIntegrity(false);
+		$output = $asset->__toString();
+		$this->assertStringContainsString('src="' . self::REMOTE . '"', $output);
+		$this->assertStringNotContainsString('integrity', $output);
+	}
+
+	/**
+	 * A local asset is exempt from enforcement and renders without throwing.
+	 */
+	public function testRenderLocalWithoutIntegrityDoesNotThrowWhenRequired(): void
+	{
+		TJavaScript::setRequireScriptIntegrity(true);
+		$output = (new TJavaScriptAsset(self::LOCAL))->__toString();
+		$this->assertStringContainsString('src="' . self::LOCAL . '"', $output);
 	}
 
 	// -----------------------------------------------------------------------

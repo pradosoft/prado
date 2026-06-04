@@ -106,7 +106,7 @@ class TErrorHandler extends \Prado\TModule
 
 	/**
 	 * Initializes the module and registers it as the application error handler.
-	 * @param \Prado\Xml\TXmlElement $config module configuration
+	 * @param null|array|\Prado\Xml\TXmlElement $config module configuration
 	 */
 	public function init($config)
 	{

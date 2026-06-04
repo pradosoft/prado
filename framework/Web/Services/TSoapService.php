@@ -114,7 +114,7 @@ class TSoapService extends \Prado\TService
 	/**
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
-	 * @param \Prado\Xml\TXmlElement $config configuration for this module, can be null
+	 * @param null|array|\Prado\Xml\TXmlElement $config configuration for this module, can be null
 	 * @throws TConfigurationException if {@see getConfigFile ConfigFile} is invalid.
 	 */
 	public function init($config)

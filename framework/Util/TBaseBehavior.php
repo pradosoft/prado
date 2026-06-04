@@ -47,7 +47,7 @@ use Prado\TPropertyValue;
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.0
  */
-abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehavior
+abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehavior, IOwnerVisibleMethods
 {
 	use TPriorityPropertyTrait;
 
@@ -88,7 +88,7 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 	/**
 	 * This processes behavior configuration elements.  This is usually called before
 	 * attach. This is only needed for complex behavior configurations.
-	 * @param array|\Prado\Xml\TXmlElement $config The innards to the behavior
+	 * @param null|array|\Prado\Xml\TXmlElement $config The innards to the behavior
 	 *   configuration.
 	 */
 	public function init($config)
@@ -119,6 +119,18 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 	public function events()
 	{
 		return [];
+	}
+
+	/**
+	 * Declares which behavior methods are visible to the owner.  The base behavior
+	 * returns `null` for no restriction; see {@see \Prado\Util\IOwnerVisibleMethods}
+	 * for the supported return forms.
+	 * @return null|array|string the visible method names, or `null` for no restriction.
+	 * @since 4.4.0
+	 */
+	public function getOwnerVisibleMethods(): null|string|array
+	{
+		return null;
 	}
 
 	/**

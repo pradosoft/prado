@@ -49,6 +49,10 @@ class InMemoryCache implements ICache
 	public int $getCalls = 0;
 	public int $setCalls = 0;
 
+	public static function getIsAvailable(): bool
+	{
+		return true;
+	}
 	public function get($id)
 	{
 		$this->getCalls++;

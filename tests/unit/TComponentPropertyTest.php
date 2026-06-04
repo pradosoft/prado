@@ -414,6 +414,55 @@ class TComponentPropertyTest extends TComponentTestBase
 		$this->assertEquals('new object text', $this->component->getSubProperty('Object.Text'));
 	}
 
+	/**
+	 * The '@' separator reads an attached behavior via {@see TComponent::asa}.
+	 */
+	public function testGetSubPropertyBehaviorPath()
+	{
+		$behavior = new BehaviorTestBehavior();
+		$this->component->attachBehavior('beh', $behavior);
+
+		// A leading '@' resolves the first name as a behavior on this component.
+		$this->assertEquals('faa', $this->component->getSubProperty('@beh.Excitement'));
+
+		// Behavior name resolution is case-insensitive, like asa().
+		$this->assertEquals('faa', $this->component->getSubProperty('@BEH.Excitement'));
+
+		// '@' chains: a behavior attached to a behavior, with no '.' between.
+		$inner = new BehaviorTestBehavior();
+		$inner->setExcitement('deep');
+		$behavior->attachBehavior('sub', $inner);
+		$this->assertEquals('deep', $this->component->getSubProperty('@beh@sub.Excitement'));
+
+		// A '.' property hop into a '@' behavior hop.
+		$inner2 = new BehaviorTestBehavior();
+		$inner2->setExcitement('objbeh');
+		$this->component->getObject()->attachBehavior('ob', $inner2);
+		$this->assertEquals('objbeh', $this->component->getSubProperty('Object@ob.Excitement'));
+
+		// A missing behavior as the final name resolves to null (asa() miss).
+		$this->assertNull($this->component->getSubProperty('@missing'));
+	}
+
+	/**
+	 * setSubProperty resolves a '@' behavior prefix before writing the property.
+	 */
+	public function testSetSubPropertyBehaviorPath()
+	{
+		$behavior = new BehaviorTestBehavior();
+		$this->component->attachBehavior('beh', $behavior);
+
+		$this->component->setSubProperty('@beh.Excitement', 'set-on-behavior');
+		$this->assertEquals('set-on-behavior', $behavior->Excitement);
+		$this->assertEquals('set-on-behavior', $this->component->getSubProperty('@beh.Excitement'));
+
+		// Property hop then behavior hop, then write.
+		$inner = new BehaviorTestBehavior();
+		$this->component->getObject()->attachBehavior('ob', $inner);
+		$this->component->setSubProperty('Object@ob.Excitement', 'set-deep');
+		$this->assertEquals('set-deep', $inner->Excitement);
+	}
+
 	public function testHasMethod()
 	{
 		$behaviorTestBehaviorName = 'BehaviorTestBehaviorName';

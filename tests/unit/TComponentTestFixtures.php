@@ -155,6 +155,18 @@ class NewComponentStaticClassBehavior extends TClassBehavior
 	}
 }
 
+class NewComponentStaticHiddenClassBehavior extends TClassBehavior
+{
+	public static function aStaticMethod(int $value)
+	{
+		return $value * $value;
+	}
+	public function getOwnerVisibleMethods(): null|string|array
+	{
+		return [];
+	}
+}
+
 class NewComponentNoListen extends NewComponent
 {
 	// this object does _not_ auto install global listeners during construction
@@ -311,6 +323,68 @@ class FooFooBehavior extends FooBehavior
 	public function faafaaEverMore($laa, $sol)
 	{
 		return sqrt($laa * $laa + $sol * $sol);
+	}
+}
+class OwnerVisibleMethodsBehavior extends TBehavior
+{
+	public function visibleMethod()
+	{
+		return 'visible';
+	}
+	public function hiddenMethod()
+	{
+		return 'hidden';
+	}
+	public function getOwnerVisibleMethods(): null|string|array
+	{
+		return ['visibleMethod'];
+	}
+}
+class OwnerVisibleMethodsClassBehavior extends TClassBehavior
+{
+	public function visibleClassMethod($obj)
+	{
+		return 'visibleClass';
+	}
+	public function hiddenClassMethod($obj)
+	{
+		return 'hiddenClass';
+	}
+	public function getOwnerVisibleMethods(): null|string|array
+	{
+		return 'visibleClassMethod';
+	}
+}
+class OwnerHiddenAllBehavior extends TBehavior
+{
+	protected $_dyCalled = false;
+	public function visibleMethod()
+	{
+		return 'visible';
+	}
+	public function dyTextFilter($text, $callchain)
+	{
+		$this->_dyCalled = true;
+		return str_replace('a', 'b', $callchain->dyTextFilter($text));
+	}
+	public function isDyCalled()
+	{
+		return $this->_dyCalled;
+	}
+	public function getOwnerVisibleMethods(): null|string|array
+	{
+		return [];
+	}
+}
+class OwnerVisibleComposedBehavior extends OwnerVisibleMethodsBehavior
+{
+	public function anotherVisibleMethod()
+	{
+		return 'another';
+	}
+	public function getOwnerVisibleMethods(): null|string|array
+	{
+		return array_merge((array) parent::getOwnerVisibleMethods(), ['anotherVisibleMethod']);
 	}
 }
 class FooBehaviorWithEvents extends FooBehavior
