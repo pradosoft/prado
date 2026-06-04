@@ -13,15 +13,17 @@ namespace Prado\Caching;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TPropertyValue;
+use Prado\Util\Cron\TCronTaskInfo;
 
 /**
  * TFileCache class.
  *
- * TFileCache implements a file-based {@see TCache} application module. Each cache
- * entry is stored as a single file under the configured
+ * TFileCache implements a file-based {@see TSerializingCache} application module.
+ * Each cache entry is stored as a single file under the configured
  * {@see getDirectory Directory}, named by a SHA-1 hash of the internal key. The
- * file contains a serialized array with the absolute expiry timestamp and the
- * serialized payload.
+ * file contains the absolute expiry timestamp on the first line followed by the
+ * serialized payload produced by {@see TSerializingCache} (which may also be
+ * {@see getEncrypt encrypted} and {@see getEncoding encoded}).
  *
  * TFileCache requires no external extensions — it works on any PHP host with a
  * writable filesystem. For high-throughput deployments, prefer a shared-memory
@@ -42,10 +44,21 @@ use Prado\TPropertyValue;
  * **Maximum size**: when {@see getMaximumSize MaximumSize} is greater than `0`, the
  * module enforces a total on-disk byte limit measured by `filesize()` across all
  * `.cache` files in the directory. After every write the total is checked and the
- * least recently used files (by `mtime`, updated on each {@see TCache::get}) are
- * deleted one at a time until the directory fits within the limit, following the
- * algorithm used by Apple Foundation's `NSCache`. A value of `0` (the default)
- * means no size limit is enforced.
+ * files closest to expiry are deleted one at a time until the directory fits within the
+ * limit (never-expiring entries are evicted last). A value of `0` (the default) means no
+ * size limit is enforced.
+ *
+ * **Expiry in metadata**: each file's modification time (`mtime`) mirrors the entry's
+ * absolute expiry (never-expiring entries use the {@see NEVER_EXPIRES_MTIME} sentinel), so
+ * {@see flushCacheExpired()} and the size eviction read the expiry from `filemtime()`
+ * without opening any file. The file content still carries the expiry on its first line as
+ * the authoritative source for {@see TCache::get}.
+ *
+ * **Expired-file sweeps**: on every application `OnSaveState`, {@see flushCacheExpired()}
+ * deletes files whose TTL has passed, at most once per {@see getFlushInterval FlushInterval}
+ * seconds (default 60; set to `0` to disable the automatic sweep). The module also
+ * registers a cron task (`filecacheflush`) via the global `fxGetCronTaskInfos`
+ * event so the sweep can be scheduled externally — mirroring {@see \Prado\Caching\TDbCache}.
  *
  * If loaded, TFileCache will register itself with {@see \Prado\TApplication} as the
  * cache module. It can be accessed via {@see \Prado\TApplication::getCache()}.
@@ -85,18 +98,19 @@ use Prado\TPropertyValue;
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
  */
-class TFileCache extends TCache implements ICacheSize
+class TFileCache extends TSerializingCache implements ICacheSize
 {
 	use TCacheSizeTrait;
+	use TCacheFileTrait;
 
 	/** Default filename prefix for the atomic temporary write files. */
 	public const CACHE_FILE_PREFIX = '.prado-cache-';
 
-	/** Payload array key for the cached value. */
-	protected const CACHE_VALUE = 'value';
+	/** Sentinel `mtime` marking a never-expiring entry; non-zero and `>= 2` to avoid stray `0`/`1` mtimes. */
+	public const NEVER_EXPIRES_MTIME = 3;
 
-	/** Payload array key for the absolute expiry timestamp (Unix seconds; 0 = never expires). */
-	protected const CACHE_EXPIRED = 'expired';
+	/** Default interval in seconds between automatic expired-file sweeps. */
+	public const DEFAULT_FLUSH_INTERVAL = 60;
 
 	/** @var string Absolute path to the cache directory; empty until configured. */
 	private string $_dir = '';
@@ -106,6 +120,9 @@ class TFileCache extends TCache implements ICacheSize
 
 	/** @var string Filename prefix used when creating atomic temporary write files. */
 	private string $_tempFilePrefix = '';
+
+	/** @var int Interval in seconds between automatic expired-file sweeps; 0 disables them. */
+	private int $_flushInterval = self::DEFAULT_FLUSH_INTERVAL;
 
 	// ---------------------------------------------------------------- lifecycle
 
@@ -126,6 +143,15 @@ class TFileCache extends TCache implements ICacheSize
 		}
 		$this->setDefaultTtl($defaultTtl);
 		$this->setTempFilePrefix(static::CACHE_FILE_PREFIX);
+		$this->setFlushInterval(static::DEFAULT_FLUSH_INTERVAL);
+	}
+
+	/**
+	 * @return bool always true; file-based caching has no external dependency.
+	 */
+	public static function getIsAvailable(): bool
+	{
+		return true;
 	}
 
 	/**
@@ -133,7 +159,7 @@ class TFileCache extends TCache implements ICacheSize
 	 * set, a `filecache/` subdirectory under the application runtime path is used
 	 * and created if necessary. Throws when the directory is not writable.
 	 *
-	 * @param null|\Prado\Xml\TXmlElement $config module configuration
+	 * @param null|array|\Prado\Xml\TXmlElement $config module configuration
 	 * @throws TConfigurationException when the directory cannot be created or is
 	 *   not writable, or when the {@see hashToken} implementation does not properly
 	 *   hash its input (returns the token unchanged, or returns an unsafe value
@@ -158,6 +184,7 @@ class TFileCache extends TCache implements ICacheSize
 		if (strpbrk($hash, '/\\') !== false) {
 			throw new TConfigurationException('filecache_hash_token_path_separator');
 		}
+		$this->getApplication()?->attachEventHandler('OnSaveState', [$this, 'doFlushCacheExpired']);
 		parent::init($config);
 	}
 
@@ -182,7 +209,7 @@ class TFileCache extends TCache implements ICacheSize
 	/**
 	 * @return string the absolute path to the cache directory
 	 */
-	public function getDirectory(): string
+	public function getDirectory()
 	{
 		return $this->getDirectoryDirect();
 	}
@@ -196,8 +223,9 @@ class TFileCache extends TCache implements ICacheSize
 	 * @throws TConfigurationException when the value is empty, or when the
 	 *   directory does not exist and cannot be created
 	 */
-	public function setDirectory($value): void
+	public function setDirectory($value)
 	{
+		$this->assertUninitialized('Directory');
 		$value = TPropertyValue::ensureString($value);
 		if ($value === '') {
 			throw new TConfigurationException('filecache_directory_required');
@@ -231,7 +259,7 @@ class TFileCache extends TCache implements ICacheSize
 	/**
 	 * @return int the default TTL in seconds; 0 means entries never expire
 	 */
-	public function getDefaultTtl(): int
+	public function getDefaultTtl()
 	{
 		return $this->getDefaultTtlDirect();
 	}
@@ -239,7 +267,7 @@ class TFileCache extends TCache implements ICacheSize
 	/**
 	 * @param int $value the default TTL in seconds; values below zero are clamped to 0
 	 */
-	public function setDefaultTtl($value): void
+	public function setDefaultTtl($value)
 	{
 		$this->setDefaultTtlDirect(max(0, TPropertyValue::ensureInteger($value)));
 	}
@@ -263,7 +291,7 @@ class TFileCache extends TCache implements ICacheSize
 	/**
 	 * @return string the filename prefix used when creating atomic temporary write files
 	 */
-	public function getTempFilePrefix(): string
+	public function getTempFilePrefix()
 	{
 		return $this->getTempFilePrefixDirect();
 	}
@@ -275,7 +303,7 @@ class TFileCache extends TCache implements ICacheSize
 	 *
 	 * @param string $value the filename prefix (e.g. `.my-cache-`)
 	 */
-	public function setTempFilePrefix($value): void
+	public function setTempFilePrefix($value)
 	{
 		$this->setTempFilePrefixDirect(TPropertyValue::ensureString($value));
 	}
@@ -284,16 +312,15 @@ class TFileCache extends TCache implements ICacheSize
 
 
 	/**
-	 * Retrieves a stored entry by its TCache-generated unique key. When
-	 * {@see getMaximumSize MaximumSize} is active, a successful read calls
-	 * {@see touch()} on the cache file to update its `mtime`, which is used by
-	 * {@see evictToFitMaximumSize()} to order files for LRU eviction.
+	 * Retrieves the stored serialized payload for a unique key, using the file's
+	 * first-line expiry header as the authoritative liveness check; an expired entry is
+	 * deleted and reported as a miss.
 	 *
 	 * @param string $key the unique key
-	 * @return false|mixed the stored value, or false if the entry is missing,
-	 *   malformed, or expired
+	 * @return false|string the stored serialized payload, or false if the entry is
+	 *   missing, malformed, or expired
 	 */
-	protected function getValue($key)
+	protected function getSerializedValue(string $key): false|string
 	{
 		$file = $this->pathFor($key);
 		if (!$this->isFile($file)) {
@@ -303,50 +330,47 @@ class TFileCache extends TCache implements ICacheSize
 		if ($raw === false || $raw === '') {
 			return false;
 		}
-		$decoded = $this->unserialize($raw);
-		if (!is_array($decoded) || !array_key_exists(static::CACHE_EXPIRED, $decoded) || !array_key_exists(static::CACHE_VALUE, $decoded)) {
+		$pos = strpos($raw, "\n");
+		if ($pos === false) {
 			return false;
 		}
-		$expire = (int) $decoded[static::CACHE_EXPIRED];
-		if ($expire > 0 && $expire <= $this->now()) {
+		$expire = (int) substr($raw, 0, $pos);
+		if ($expire > 0 && $expire <= $this->time()) {
 			$this->unlink($file);
 			return false;
 		}
-		if ($this->getMaximumSizeDirect() > 0) {
-			$this->touch($file);
-		}
-		return $decoded[static::CACHE_VALUE];
+		return substr($raw, $pos + 1);
 	}
 
 	/**
-	 * Stores a value under the given unique key, overwriting any existing entry.
+	 * Stores a serialized payload under the given unique key, overwriting any existing entry.
 	 *
 	 * @param string $key the unique key
-	 * @param mixed $value the value to store
+	 * @param string $value the serialized payload to store
 	 * @param int $expire TTL in seconds; 0 falls back to {@see getDefaultTtl}
 	 * @return bool true on success
 	 */
-	protected function setValue($key, $value, $expire)
+	protected function setSerializedValue(string $key, string $value, int $expire): bool
 	{
-		return $this->writeEntry($key, $value, (int) $expire, false);
+		return $this->writeEntry($key, $value, $expire, false);
 	}
 
 	/**
-	 * Stores a value only when no live entry already exists under the key.
+	 * Stores a serialized payload only when no live entry already exists under the key.
 	 *
 	 * @param string $key the unique key
-	 * @param mixed $value the value to store
+	 * @param string $value the serialized payload to store
 	 * @param int $expire TTL in seconds; 0 falls back to {@see getDefaultTtl}
 	 * @return bool true when the entry was stored; false when a live entry
 	 *   already existed
 	 */
-	protected function addValue($key, $value, $expire)
+	protected function addSerializedValue(string $key, string $value, int $expire): bool
 	{
 		$file = $this->pathFor($key);
-		if ($this->isFile($file) && $this->getValue($key) !== false) {
+		if ($this->isFile($file) && $this->getSerializedValue($key) !== false) {
 			return false;
 		}
-		return $this->writeEntry($key, $value, (int) $expire, true);
+		return $this->writeEntry($key, $value, $expire, true);
 	}
 
 	/**
@@ -402,22 +426,19 @@ class TFileCache extends TCache implements ICacheSize
 	 * overwrites of existing files whose size may have changed.
 	 *
 	 * @param string $key the unique key
-	 * @param mixed $value the value to store
+	 * @param string $value the serialized payload to store
 	 * @param int $expire TTL in seconds; 0 falls back to {@see getDefaultTtl}
 	 * @param bool $exclusive when true, aborts if the final file already exists
-	 *   (used by {@see addValue} to prevent overwriting a live entry)
+	 *   (used by {@see addSerializedValue} to prevent overwriting a live entry)
 	 * @throws \Prado\Exceptions\TInvalidDataValueException when MaximumSize is active
-	 *   and the serialized entry exceeds it
+	 *   and the entry exceeds it
 	 * @return bool true on success
 	 */
-	protected function writeEntry(string $key, mixed $value, int $expire, bool $exclusive): bool
+	protected function writeEntry(string $key, string $value, int $expire, bool $exclusive): bool
 	{
 		$ttl = $expire > 0 ? $expire : $this->getDefaultTtl();
-		$entry = [
-			static::CACHE_VALUE => $value,
-			static::CACHE_EXPIRED => $ttl > 0 ? $this->now() + $ttl : 0,
-		];
-		$serialized = $this->serialize($entry);
+		$expireAt = $ttl > 0 ? $this->time() + $ttl : 0;
+		$serialized = $expireAt . "\n" . $value;
 		$this->assertItemFitsMaximumSize(strlen($serialized));
 		$file = $this->pathFor($key);
 		$tmpFile = $this->tempnam($this->getDirectory(), $this->getTempFilePrefix());
@@ -437,12 +458,125 @@ class TFileCache extends TCache implements ICacheSize
 			$this->unlink($tmpFile);
 			return false;
 		}
+		// Mirror the expiry into the file's mtime so the sweep and eviction can read it from
+		// filemtime() without opening the file. Never-expiring entries (header expiry 0) use
+		// the NEVER_EXPIRES_MTIME sentinel instead.
+		$this->touch($file, $expireAt > 0 ? $expireAt : static::NEVER_EXPIRES_MTIME);
 		if ($this->getMaximumSizeDirect() > 0) {
 			// Invalidate fingerprint so validateSizeCache() triggers a full recompute.
 			$this->setSizeFingerprintDirect('');
 			$this->enforceMaximumSize();
 		}
 		return true;
+	}
+
+	// ------------------------------------------------------------------ expired-file flushing
+
+	/**
+	 * @return int interval in seconds between automatic expired-file sweeps. `0` disables
+	 *   the automatic sweep (e.g. when flushing externally via the cron task). Defaults to 60.
+	 */
+	public function getFlushInterval()
+	{
+		return $this->getFlushIntervalDirect();
+	}
+
+	/**
+	 * Sets the interval between automatic expired-file sweeps. Set to `0` to disable the
+	 * automatic sweep and rely on the {@see fxGetCronTaskInfos cron task} instead.
+	 * @param int $value the interval in seconds; values below zero are clamped to 0.
+	 */
+	public function setFlushInterval($value)
+	{
+		$this->setFlushIntervalDirect(max(0, TPropertyValue::ensureInteger($value)));
+	}
+
+	/**
+	 * @return int the raw FlushInterval field value
+	 */
+	protected function getFlushIntervalDirect(): int
+	{
+		return $this->_flushInterval;
+	}
+
+	/**
+	 * @param int $value the interval in seconds to store directly
+	 */
+	protected function setFlushIntervalDirect(int $value): void
+	{
+		$this->_flushInterval = $value;
+	}
+
+	/**
+	 * Event listener for the application `OnSaveState` event; sweeps expired files subject
+	 * to {@see getFlushInterval FlushInterval}.
+	 */
+	public function doFlushCacheExpired(): void
+	{
+		$this->flushCacheExpired(false);
+	}
+
+	/**
+	 * Deletes expired cache files from the directory. When {@see getFlushInterval
+	 * FlushInterval} is `0` and `$force` is false, the sweep is skipped; otherwise it runs
+	 * at most once per interval, tracked through application global state.
+	 * @param bool $force when true, ignores the interval and sweeps immediately (the cron
+	 *   task uses this).
+	 */
+	public function flushCacheExpired($force = false): void
+	{
+		$interval = $this->getFlushInterval();
+		if (!$force && $interval === 0) {
+			return;
+		}
+		$key = 'TFileCache:' . $this->getDirectory() . ':flushed';
+		$now = $this->time();
+		$next = $interval + (int) $this->getApplication()->getGlobalState($key, 0);
+		if ($force || $next <= $now) {
+			Prado::trace(($force ? 'Force flush of expired files: ' : 'Flush expired files: ') . $this->getDirectory(), TFileCache::class);
+			$this->deleteExpiredFiles($now);
+			$this->getApplication()->setGlobalState($key, $now);
+		}
+	}
+
+	/**
+	 * Scans the cache directory and deletes every `.cache` file whose stored expiry has
+	 * passed. When {@see getMaximumSize MaximumSize} is active, the size fingerprint is
+	 * invalidated so the running total is recomputed on the next access.
+	 * @param int $now the reference timestamp for expiry comparison.
+	 */
+	protected function deleteExpiredFiles(int $now): void
+	{
+		$dir = $this->getDirectory();
+		if ($dir === '' || !is_dir($dir)) {
+			return;
+		}
+		clearstatcache();
+		$deleted = false;
+		foreach (glob($dir . DIRECTORY_SEPARATOR . '*.cache') ?: [] as $file) {
+			// The mtime mirrors the entry's absolute expiry, so the sweep reads it from
+			// filesystem metadata without opening the file. The NEVER_EXPIRES_MTIME sentinel
+			// is skipped; any other past mtime (including stray 0/1) is swept.
+			$expire = @filemtime($file);
+			if ($expire !== false && $expire !== static::NEVER_EXPIRES_MTIME && $expire <= $now && $this->unlink($file)) {
+				$deleted = true;
+			}
+		}
+		if ($deleted && $this->getMaximumSizeDirect() > 0) {
+			// Invalidate the fingerprint so the running size total recomputes on next use.
+			$this->setSizeFingerprintDirect('');
+		}
+	}
+
+	/**
+	 * Provides the cron task that clears out expired cache files, raised via the global
+	 * `fxGetCronTaskInfos` event.
+	 * @param object $sender the object raising fxGetCronTaskInfos.
+	 * @param mixed $param the parameter.
+	 */
+	public function fxGetCronTaskInfos($sender, $param)
+	{
+		return Prado::createComponent(TCronTaskInfo::class, 'filecacheflush', $this->getId() . '->flushCacheExpired(true)', $this, Prado::localize('FileCache Flush Expired Files'), Prado::localize('This manually clears out the expired files of TFileCache.'));
 	}
 
 	// ------------------------------------------------------------------ TCacheSizeTrait impl
@@ -491,11 +625,11 @@ class TFileCache extends TCache implements ICacheSize
 	}
 
 	/**
-	 * Evicts the least recently used cache files — determined by file `mtime`,
-	 * which is updated on every successful {@see getValue} via {@see touch()} — one
-	 * at a time until the total on-disk size is at or below
-	 * {@see getMaximumSize MaximumSize}. After all evictions the running size total
-	 * and fingerprint are updated.
+	 * Evicts cache files in soonest-to-expire order, read from each file's `mtime`
+	 * (which mirrors the absolute expiry), one at a time until the total on-disk size is
+	 * at or below {@see getMaximumSize MaximumSize}. Never-expiring entries
+	 * ({@see NEVER_EXPIRES_MTIME}) sort last and are evicted only when nothing else
+	 * remains. After all evictions the running size total and fingerprint are updated.
 	 */
 	protected function evictToFitMaximumSize(): void
 	{
@@ -509,11 +643,12 @@ class TFileCache extends TCache implements ICacheSize
 			$mtime = @filemtime($f);
 			$fsize = @filesize($f);
 			if ($mtime !== false && $fsize !== false) {
-				$files[$f] = ['mtime' => $mtime, 'size' => $fsize];
+				// mtime mirrors the absolute expiry; the never-expire sentinel sorts last.
+				$files[$f] = ['expire' => $mtime === static::NEVER_EXPIRES_MTIME ? PHP_INT_MAX : $mtime, 'size' => $fsize];
 			}
 		}
-		// Sort by mtime ascending so that the least recently accessed file comes first.
-		uasort($files, static fn ($a, $b): int => $a['mtime'] <=> $b['mtime']);
+		// Sort by expiry ascending so the soonest-to-expire file is evicted first.
+		uasort($files, static fn ($a, $b): int => $a['expire'] <=> $b['expire']);
 		$current = $this->getCurrentSizeDirect();
 		foreach ($files as $f => $info) {
 			if ($current <= $max) {
@@ -581,17 +716,6 @@ class TFileCache extends TCache implements ICacheSize
 	}
 
 	/**
-	 * Returns the current Unix timestamp. Extracted to allow subclasses and
-	 * test doubles to control clock behavior without modifying real system time.
-	 *
-	 * @return int the current Unix timestamp in seconds
-	 */
-	protected function now(): int
-	{
-		return time();
-	}
-
-	/**
 	 * Returns whether the given path refers to an existing regular file.
 	 * Extracted to allow subclasses and test doubles to intercept filesystem
 	 * existence checks.
@@ -615,58 +739,6 @@ class TFileCache extends TCache implements ICacheSize
 	protected function tempnam(string $dir, string $prefix): string|false
 	{
 		return @tempnam($dir, $prefix);
-	}
-
-	/**
-	 * Serializes a value to a string for storage in a cache file.
-	 *
-	 * @param mixed $value the value to serialize
-	 * @return string the serialized representation
-	 */
-	protected function serialize(mixed $value): string
-	{
-		return serialize($value);
-	}
-
-	/**
-	 * Unserializes a string produced by {@see serialize}.
-	 * Returns false when the string is not valid serialized data.
-	 *
-	 * @param string $value the serialized string to decode
-	 * @return mixed the unserialized value, or false on failure
-	 */
-	protected function unserialize(string $value): mixed
-	{
-		return @unserialize($value);
-	}
-
-	/**
-	 * Reads and returns the entire contents of a file.
-	 * Returns false when the file cannot be read.
-	 *
-	 * @param string $filePath the path of the file to read
-	 * @return false|string the file contents, or false on failure
-	 */
-	protected function getContents(string $filePath): string|false
-	{
-		return @file_get_contents($filePath);
-	}
-
-	/**
-	 * Writes data to a file, replacing its current contents.
-	 * Returns false when the file cannot be written.
-	 *
-	 * Note: this method does **not** use `LOCK_EX`. Write atomicity is instead
-	 * guaranteed by the `tempnam()` + `rename()` pattern in {@see writeEntry()},
-	 * so no exclusive lock is needed here.
-	 *
-	 * @param string $filePath the path of the file to write
-	 * @param string $data the data to write
-	 * @return false|int the number of bytes written, or false on failure
-	 */
-	protected function putContents(string $filePath, string $data): int|false
-	{
-		return @file_put_contents($filePath, $data);
 	}
 
 	/**
@@ -705,16 +777,21 @@ class TFileCache extends TCache implements ICacheSize
 	}
 
 	/**
-	 * Updates the access and modification time of a file to the current time.
-	 * Used by {@see getValue()} to refresh the `mtime` of cache files on every
-	 * read so that {@see evictToFitMaximumSize()} can order files by recency.
+	 * Sets a file's modification time. {@see writeEntry()} sets it to the entry's absolute
+	 * expiry (`0` for never-expire) so that {@see deleteExpiredFiles()} and
+	 * {@see evictToFitMaximumSize()} can read the expiry from `filemtime()` without opening
+	 * the file. The PHP stat cache for the path is cleared so the new mtime is seen
+	 * immediately within the same request.
 	 *
 	 * @param string $filePath the path of the file to touch
+	 * @param ?int $mtime the modification time to set; `null` uses the current time
 	 * @return bool true on success, false on failure
 	 */
-	protected function touch(string $filePath): bool
+	protected function touch(string $filePath, ?int $mtime = null): bool
 	{
-		return @touch($filePath);
+		$ok = $mtime === null ? @touch($filePath) : @touch($filePath, $mtime);
+		clearstatcache(true, $filePath);
+		return $ok;
 	}
 
 	// --------------------------------------- serialization / cloning
@@ -741,6 +818,9 @@ class TFileCache extends TCache implements ICacheSize
 		}
 		if ($this->getTempFilePrefixDirect() === static::CACHE_FILE_PREFIX) {
 			$exprops[] = "\0" . __CLASS__ . "\0_tempFilePrefix";
+		}
+		if ($this->getFlushIntervalDirect() === static::DEFAULT_FLUSH_INTERVAL) {
+			$exprops[] = "\0" . __CLASS__ . "\0_flushInterval";
 		}
 	}
 }

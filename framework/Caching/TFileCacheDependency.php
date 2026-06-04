@@ -11,7 +11,7 @@
 namespace Prado\Caching;
 
 /**
- * TFileCacheDependency class.
+ * TFileCacheDependency class
  *
  * TFileCacheDependency performs dependency checking based on the
  * last modification time of the file specified via {@see setFileName FileName}.
@@ -23,7 +23,9 @@ namespace Prado\Caching;
  */
 class TFileCacheDependency extends TCacheDependency
 {
+	/** @var string absolute path to the tracked file */
 	private $_fileName;
+	/** @var false|int last recorded modification time of the file */
 	private $_timestamp;
 
 	/**
@@ -46,11 +48,31 @@ class TFileCacheDependency extends TCacheDependency
 
 	/**
 	 * @param string $value the name of the file whose change is to be checked
+	 * @since 4.4.0
+	 */
+	protected function setFileNameDirect($value)
+	{
+		$this->_fileName = $value;
+	}
+
+	/**
+	 * @param string $value the name of the file whose change is to be checked
 	 */
 	public function setFileName($value)
 	{
-		$this->_fileName = $value;
-		$this->_timestamp = @filemtime($value);
+		$this->setFileNameDirect($value);
+		$this->updateTimestamp();
+	}
+
+	/**
+	 * Re-captures the tracked file's current modification time as the baseline. Call this
+	 * after intentionally modifying the file so the next {@see getHasChanged()} compares
+	 * against the refreshed timestamp.
+	 * @since 4.4.0
+	 */
+	public function updateTimestamp()
+	{
+		$this->setTimestamp(@filemtime($this->getFileName()));
 	}
 
 	/**
@@ -62,12 +84,19 @@ class TFileCacheDependency extends TCacheDependency
 	}
 
 	/**
-	 * Performs the actual dependency checking.
-	 * This method returns true if the last modification time of the file is changed.
-	 * @return bool whether the dependency is changed or not.
+	 * @since 4.4.0
+	 * @param mixed $value
 	 */
-	public function getHasChanged()
+	protected function setTimestamp($value): void
 	{
-		return @filemtime($this->_fileName) !== $this->_timestamp;
+		$this->_timestamp = $value;
+	}
+
+	/**
+	 * @return bool true if the file's last modification time has changed.
+	 */
+	public function getHasChanged(): bool
+	{
+		return @filemtime($this->getFileName()) !== $this->getTimestamp();
 	}
 }

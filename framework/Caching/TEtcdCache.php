@@ -22,7 +22,7 @@ use Prado\Exceptions\TConfigurationException;
  * consensus algorithm to manage a highly-available replicated log.
  *
  * By definition, cache does not ensure the existence of a value
- * even if it never expires. Cache is not meant to be an persistent storage.
+ * even if it never expires. Cache is not meant to be a persistent storage.
  *
  * To use this module, an etcd instance must be running and reachable on the host
  * specified by {@see setHost} and the port specified by {@see setPort} which
@@ -43,10 +43,10 @@ use Prado\Exceptions\TConfigurationException;
  * If loaded, TEtcdCache will register itself with {@see \Prado\TApplication} as the
  * cache module. It can be accessed via {@see \Prado\TApplication::getCache()}.
  *
- * TEtcdCache may be configured in application configuration file as follows
+ * XML configuration style:
  * ```xml
  * <modules>
- *     <module id="cache" class="Prado\Caching\TEtcdCache" Host="localhost" Port="2379" Dir="pradocache" />
+ *   <module id="cache" class="Prado\Caching\TEtcdCache" Host="localhost" Port="2379" Dir="pradocache" />
  * </modules>
  * ```
  *
@@ -56,7 +56,11 @@ use Prado\Exceptions\TConfigurationException;
  *     'modules' => [
  *         'cache' => [
  *             'class' => 'Prado\Caching\TEtcdCache',
- *             'properties' => ['Host' => 'localhost', 'Port' => '2379', 'Dir' => 'pradocache'],
+ *             'properties' => [
+ *                 'Host' => 'localhost',
+ *                 'Port' => '2379',
+ *                 'Dir' => 'pradocache',
+ *             ],
  *         ],
  *     ],
  * ];
@@ -65,32 +69,41 @@ use Prado\Exceptions\TConfigurationException;
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @since 4.0
  */
-class TEtcdCache extends TCache
+class TEtcdCache extends TSerializingCache
 {
 	/**
 	 * @var string the etcd host
 	 */
-	protected $_host = 'localhost';
+	private $_host = 'localhost';
 
 	/**
 	 * @var int the etcd port
 	 */
-	protected $_port = 2379;
+	private $_port = 2379;
 
 	/**
 	 * @var string the directory to store values in
 	 */
-	protected $_dir = 'pradocache';
+	private $_dir = 'pradocache';
+
+	/**
+	 * @return bool whether the cURL extension is loaded.
+	 * @since 4.4.0
+	 */
+	public static function getIsAvailable(): bool
+	{
+		return function_exists('curl_version');
+	}
 
 	/**
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
-	 * @param \Prado\Xml\TXmlElement $config configuration for this module, can be null
+	 * @param null|array|\Prado\Xml\TXmlElement $config configuration for this module, can be null
 	 * @throws TConfigurationException if cURL extension is not installed
 	 */
 	public function init($config)
 	{
-		if (!function_exists('curl_version')) {
+		if (!static::getIsAvailable()) {
 			throw new TConfigurationException('curl_extension_required');
 		}
 		parent::init($config);
@@ -111,6 +124,7 @@ class TEtcdCache extends TCache
 	 */
 	public function setHost($value)
 	{
+		$this->assertUninitialized('Host');
 		$this->_host = TPropertyValue::ensureString($value);
 	}
 
@@ -129,12 +143,12 @@ class TEtcdCache extends TCache
 	 */
 	public function setPort($value)
 	{
+		$this->assertUninitialized('Port');
 		$this->_port = TPropertyValue::ensureInteger($value);
 	}
 
 	/**
-	 * Sets the directory to store values in, defaults to 'pradocache'.
-	 * @return string the directory to store values in
+	 * @return string the directory to store values in. Defaults to 'pradocache'.
 	 */
 	public function getDir()
 	{
@@ -142,84 +156,75 @@ class TEtcdCache extends TCache
 	}
 
 	/**
-	 * Gets the directory to store values in.
 	 * @param string $value the directory to store values in
 	 */
 	public function setDir($value)
 	{
+		$this->assertUninitialized('Dir');
 		$this->_dir = TPropertyValue::ensureString($value);
 	}
 
 	/**
-	 * Retrieves a value from cache with a specified key.
-	 * This is the implementation of the method declared in the parent class.
 	 * @param string $key a unique key identifying the cached value
-	 * @return false|string the value stored in cache, false if the value is not in the cache or expired.
+	 * @return false|string the serialized value on a hit, or `false` on a miss or expiry.
+	 * @since 4.4.0
 	 */
-	protected function getValue($key)
+	protected function getSerializedValue(string $key): false|string
 	{
-		$result = $this->request('GET', $this->_dir . '/' . $key);
-		return property_exists($result, 'errorCode') ? false : unserialize($result->node->value);
+		$result = $this->request('GET', $this->getDir() . '/' . $key);
+		return property_exists($result, 'errorCode') ? false : $result->node->value;
 	}
 
 	/**
-	 * Stores a value identified by a key in cache.
-	 * This is the implementation of the method declared in the parent class.
-	 *
 	 * @param string $key the key identifying the value to be cached
-	 * @param string $value the value to be cached
+	 * @param string $value the serialized value to store
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return bool true if the value is successfully stored into cache, false otherwise
+	 * @since 4.4.0
 	 */
-	protected function setValue($key, $value, $expire)
+	protected function setSerializedValue(string $key, string $value, int $expire): bool
 	{
-		$value = ['value' => serialize($value)];
+		$params = ['value' => $value];
 		if ($expire > 0) {
-			$value['ttl'] = $expire;
+			$params['ttl'] = $expire;
 		}
-		$result = $this->request('PUT', $this->_dir . '/' . $key, $value);
+		$result = $this->request('PUT', $this->getDir() . '/' . $key, $params);
 		return !property_exists($result, 'errorCode');
 	}
 
 	/**
-	 * Stores a value identified by a key into cache if the cache does not contain this key.
-	 * This is the implementation of the method declared in the parent class.
-	 *
 	 * @param string $key the key identifying the value to be cached
-	 * @param string $value the value to be cached
+	 * @param string $value the serialized value to store
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return bool true if the value is successfully stored into cache, false otherwise
+	 * @since 4.4.0
 	 */
-	protected function addValue($key, $value, $expire)
+	protected function addSerializedValue(string $key, string $value, int $expire): bool
 	{
-		$value = ['value' => serialize($value), 'prevExist' => 'false'];
+		$params = ['value' => $value, 'prevExist' => 'false'];
 		if ($expire > 0) {
-			$value['ttl'] = $expire;
+			$params['ttl'] = $expire;
 		}
-		$result = $this->request('PUT', $this->_dir . '/' . $key, $value);
+		$result = $this->request('PUT', $this->getDir() . '/' . $key, $params);
 		return !property_exists($result, 'errorCode');
 	}
 
 	/**
-	 * Deletes a value with the specified key from cache
-	 * This is the implementation of the method declared in the parent class.
 	 * @param string $key the key of the value to be deleted
-	 * @return bool if no error happens during deletion
+	 * @return bool true if no error happens during deletion
 	 */
 	protected function deleteValue($key)
 	{
-		$this->request('DELETE', $this->_dir . '/' . $key);
+		$this->request('DELETE', $this->getDir() . '/' . $key);
 		return true;
 	}
 
 	/**
 	 * Deletes all values from cache.
-	 * Be careful of performing this operation if the cache is shared by multiple applications.
-	 * @return bool if no error happens during flush
 	 */
 	public function flush()
 	{
-		$this->request('DELETE', $this->_dir . '?recursive=true');
+		$this->request('DELETE', $this->getDir() . '?recursive=true');
 		return true;
 	}
 
@@ -235,7 +240,7 @@ class TEtcdCache extends TCache
 	 */
 	protected function request($method, $key, $value = [])
 	{
-		$curl = curl_init("http://{$this->_host}:{$this->_port}/v2/keys/{$key}");
+		$curl = curl_init("http://{$this->getHost()}:{$this->getPort()}/v2/keys/{$key}");
 		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
 		curl_setopt($curl, CURLOPT_HEADER, false);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);

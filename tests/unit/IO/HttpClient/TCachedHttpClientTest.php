@@ -15,6 +15,10 @@ class CachedClientTestCache implements \Prado\Caching\ICache
 	public int $setCalls = 0;
 	public int $deleteCalls = 0;
 
+	public static function getIsAvailable(): bool
+	{
+		return true;
+	}
 	public function get($id)
 	{
 		$this->getCalls++;

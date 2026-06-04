@@ -10,33 +10,29 @@
 
 namespace Prado\Caching;
 
+use Prado\TApplicationComponent;
+
 /**
- * TCacheDependency class.
+ * TCacheDependency class
  *
- * TCacheDependency is the base class implementing {@see \Prado\Caching\ICacheDependency} interface.
- * Descendant classes must implement {@see \Prado\Caching\ICacheDependency::getHasChanged()} to provide
- * actual dependency checking logic.
+ * TCacheDependency is the abstract base class for all cache dependency implementations.
+ * Subclasses must implement {@see \Prado\Caching\ICacheDependency::getHasChanged()} to provide
+ * the actual staleness-detection logic.
  *
- * The property value of {@see \Prado\Caching\ICacheDependency::getHasChanged() HasChanged} tells whether
- * the dependency is changed or not.
+ * Because dependency objects are often serialized so that they can persist across
+ * requests, subclasses that hold resource handles (database connections, file handles,
+ * and so on) must implement `__sleep()` and `__wakeup()` accordingly.
  *
- * You may disable the dependency checking by setting {@see setEnabled() Enabled}
- * to false.
- *
- * Note, since the dependency objects often need to be serialized so that
- * they can persist across requests, you may need to implement __sleep() and
- * __wakeup() if the dependency objects contain resource handles which are
- * not serializable.
- *
- * Currently, the following dependency classes are provided in the PRADO release:
- * - {@see \Prado\Caching\TFileCacheDependency}: checks whether a file is changed or not
- * - {@see \Prado\Caching\TDirectoryCacheDependency}: checks whether a directory is changed or not
- * - {@see \Prado\Caching\TGlobalStateCacheDependency}: checks whether a global state is changed or not
- * - {@see \Prado\Caching\TChainedCacheDependency}: checks whether any of a list of dependencies is changed or not
+ * The following dependency classes are included in PRADO:
+ * - {@see \Prado\Caching\TFileCacheDependency}: reports a change when a file's mtime changes.
+ * - {@see \Prado\Caching\TDirectoryCacheDependency}: reports a change when any file in a directory changes.
+ * - {@see \Prado\Caching\TGlobalStateCacheDependency}: reports a change when a global application state changes.
+ * - {@see \Prado\Caching\TApplicationStateCacheDependency}: reports a change when the application is not in performance mode.
+ * - {@see \Prado\Caching\TChainedCacheDependency}: reports a change when any dependency in a list has changed.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1.0
  */
-abstract class TCacheDependency extends \Prado\TComponent implements ICacheDependency
+abstract class TCacheDependency extends TApplicationComponent implements ICacheDependency
 {
 }

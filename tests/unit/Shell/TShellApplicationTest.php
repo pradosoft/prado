@@ -28,11 +28,12 @@ use Prado\TModule;
 class ShellTestCacheModule extends TModule implements ICache
 {
 	public function init($config) {}
+	public static function getIsAvailable(): bool { return true; }
 	public function get($id) { return false; }
 	public function set($id, $value, $expire = 0, $dependency = null) { return true; }
 	public function add($id, $value, $expire = 0, $dependency = null) { return true; }
 	public function delete($id) { return true; }
-	public function flush() {}
+	public function flush() { return true; }
 }
 
 /**

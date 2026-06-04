@@ -34,6 +34,11 @@ class TTestCacheStub implements ICache
 	/** @var mixed Value returned by get(); a Closure is invoked with the id; false models a miss. */
 	public mixed $getReturn = false;
 
+	public static function getIsAvailable(): bool
+	{
+		return true;
+	}
+
 	public function get($id)
 	{
 		$this->collectCall();
