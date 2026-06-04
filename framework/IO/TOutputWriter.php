@@ -24,6 +24,7 @@ namespace Prado\IO;
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0
+ * @deprecated 4.4.0
  */
 class TOutputWriter extends TTextWriter
 {
