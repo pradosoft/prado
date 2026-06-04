@@ -12,6 +12,8 @@ Upgrading from v4.3.3
 - TPropertyValue::ensureEnum normalizes the case of the enum constant name.
 - TReCaptcha2::getResponse changed to TReCaptcha2::getCaptchaResponse - no longer overrides TApplicationComponent::getResponse (#1132)
 - Prado JS dispatches `prado:ajaxComplete` event with jQuery.onAjaxComplete for non-dependence on jQuery. Use this event instead of the jQuery event.
+- `Prado\Web\TUri` is now a PSR-7 `UriInterface`: scheme/host are lower-cased, path/query/fragment are
+  percent-encoded, and `getPort()` returns `?int` (`null` when absent or scheme default).
 
 Upgrading from v4.3.2
 ---------------------
