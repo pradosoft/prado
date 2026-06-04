@@ -134,8 +134,8 @@ class TStream extends TResource implements StreamInterface
 
 	/**
 	 * Severs the resource and resets capability/filter state.
-	 * @see StreamInterface::detach()
 	 * @return mixed The detached resource, or null.
+	 * @see StreamInterface::detach()
 	 */
 	public function detach(): mixed
 	{
@@ -275,8 +275,8 @@ class TStream extends TResource implements StreamInterface
 
 	/**
 	 * Reads the whole stream to a string, swallowing throwables (PSR-7 1.x contract).
-	 * @see StreamInterface::__toString()
 	 * @return string The entire stream contents, or '' on any error.
+	 * @see StreamInterface::__toString()
 	 */
 	public function __toString(): string
 	{
@@ -301,8 +301,8 @@ class TStream extends TResource implements StreamInterface
 
 	/**
 	 * Returns the size of the stream in bytes.
-	 * @see StreamInterface::getSize()
 	 * @return ?int The size in bytes, or null when indeterminable.
+	 * @see StreamInterface::getSize()
 	 */
 	public function getSize(): ?int
 	{
@@ -324,9 +324,9 @@ class TStream extends TResource implements StreamInterface
 
 	/**
 	 * Returns the current position of the read/write pointer.
-	 * @see StreamInterface::tell()
 	 * @throws \RuntimeException When the position cannot be determined.
 	 * @return int The current position of the read/write pointer.
+	 * @see StreamInterface::tell()
 	 */
 	public function tell(): int
 	{
@@ -343,8 +343,8 @@ class TStream extends TResource implements StreamInterface
 
 	/**
 	 * Indicates whether the stream is at end of file.
-	 * @see StreamInterface::eof()
 	 * @return bool Whether the stream is at the end of file.
+	 * @see StreamInterface::eof()
 	 */
 	public function eof(): bool
 	{
@@ -354,8 +354,8 @@ class TStream extends TResource implements StreamInterface
 
 	/**
 	 * Indicates whether the stream is seekable.
-	 * @see StreamInterface::isSeekable()
 	 * @return bool Whether the stream is seekable.
+	 * @see StreamInterface::isSeekable()
 	 */
 	public function isSeekable(): bool
 	{
@@ -364,10 +364,10 @@ class TStream extends TResource implements StreamInterface
 
 	/**
 	 * Seeks to a position (PSR-7). Use {@see seekTo()} for the boolean result.
-	 * @see StreamInterface::seek()
 	 * @param int $offset The stream offset.
 	 * @param int $whence SEEK_SET, SEEK_CUR or SEEK_END.
 	 * @throws \RuntimeException When the stream is not seekable or the seek fails.
+	 * @see StreamInterface::seek()
 	 */
 	public function seek(int $offset, int $whence = SEEK_SET): void
 	{
@@ -402,8 +402,8 @@ class TStream extends TResource implements StreamInterface
 
 	/**
 	 * Seeks to the beginning of the stream (PSR-7).
-	 * @see StreamInterface::rewind()
 	 * @throws \RuntimeException When the stream is not seekable.
+	 * @see StreamInterface::rewind()
 	 */
 	public function rewind(): void
 	{
@@ -412,8 +412,8 @@ class TStream extends TResource implements StreamInterface
 
 	/**
 	 * Indicates whether the stream is writable.
-	 * @see StreamInterface::isWritable()
 	 * @return bool Whether the stream is writable.
+	 * @see StreamInterface::isWritable()
 	 */
 	public function isWritable(): bool
 	{
@@ -422,10 +422,10 @@ class TStream extends TResource implements StreamInterface
 
 	/**
 	 * Writes data to the stream.
-	 * @see StreamInterface::write()
 	 * @param string $string The bytes to write.
 	 * @throws \RuntimeException When the stream is not writable or the write fails.
 	 * @return int The number of bytes written.
+	 * @see StreamInterface::write()
 	 */
 	public function write(string $string): int
 	{
@@ -448,8 +448,8 @@ class TStream extends TResource implements StreamInterface
 
 	/**
 	 * Indicates whether the stream is readable.
-	 * @see StreamInterface::isReadable()
 	 * @return bool Whether the stream is readable.
+	 * @see StreamInterface::isReadable()
 	 */
 	public function isReadable(): bool
 	{
@@ -458,10 +458,10 @@ class TStream extends TResource implements StreamInterface
 
 	/**
 	 * Reads up to $length bytes from the stream.
-	 * @see StreamInterface::read()
 	 * @param int $length The maximum number of bytes to read.
 	 * @throws \RuntimeException When the stream is not readable or the read fails.
 	 * @return string The bytes read (may be shorter than $length, '' at EOF).
+	 * @see StreamInterface::read()
 	 */
 	public function read(int $length): string
 	{
@@ -492,9 +492,9 @@ class TStream extends TResource implements StreamInterface
 
 	/**
 	 * Returns the remaining contents of the stream from the current position.
-	 * @see StreamInterface::getContents()
 	 * @throws \RuntimeException When the stream is unreadable or the read fails.
 	 * @return string The remaining contents.
+	 * @see StreamInterface::getContents()
 	 */
 	public function getContents(): string
 	{
