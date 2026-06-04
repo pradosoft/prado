@@ -4,13 +4,17 @@ import { genericHelper } from '../helpers.js';
 function phpDate(fmt, ts = null) {
 	const d = ts !== null ? new Date(ts * 1000) : new Date();
 	const pad = n => String(n).padStart(2, '0');
-	return fmt
-		.replace('m', pad(d.getUTCMonth() + 1))
-		.replace('d', pad(d.getUTCDate()))
-		.replace('Y', String(d.getUTCFullYear()))
-		.replace('F', d.toLocaleString('en-US', { month: 'long', timeZone: 'UTC' }))
-		.replace('n', String(d.getUTCMonth() + 1))
-		.replace('j', String(d.getUTCDate()));
+	// Single-pass substitution so an already-inserted token value (e.g. the "n"
+	// in the month name "June") is not reprocessed by a later token replacement.
+	const map = {
+		m: pad(d.getUTCMonth() + 1),
+		d: pad(d.getUTCDate()),
+		Y: String(d.getUTCFullYear()),
+		F: d.toLocaleString('en-US', { month: 'long', timeZone: 'UTC' }),
+		n: String(d.getUTCMonth() + 1),
+		j: String(d.getUTCDate()),
+	};
+	return fmt.replace(/[mdYFnj]/g, ch => map[ch]);
 }
 function phpTime() { return Math.floor(Date.now() / 1000); }
 
