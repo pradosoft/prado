@@ -1,7 +1,7 @@
 <?php
 
 use Prado\Exceptions\TIOException;
-use Prado\IO\Behavior\TBinaryStreamBehavior;
+use Prado\IO\Behaviors\TBinaryStreamBehavior;
 use Prado\IO\TStream;
 use Prado\IO\TByteOrder;
 

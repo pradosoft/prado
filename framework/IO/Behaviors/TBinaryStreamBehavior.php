@@ -8,7 +8,7 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-namespace Prado\IO\Behavior;
+namespace Prado\IO\Behaviors;
 
 use Prado\Exceptions\TIOException;
 use Prado\IO\TByteOrder;

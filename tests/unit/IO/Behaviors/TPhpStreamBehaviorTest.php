@@ -1,7 +1,7 @@
 <?php
 
 use Prado\Exceptions\TIOException;
-use Prado\IO\Behavior\TPhpStreamBehavior;
+use Prado\IO\Behaviors\TPhpStreamBehavior;
 use Prado\IO\Stream\TBufferStream;
 use Prado\IO\TStream;
 
@@ -36,6 +36,30 @@ class TPhpStreamBehaviorTest extends PHPUnit\Framework\TestCase
 		$s->fwrite("hello\nworld\n");
 		$s->fseek(0);
 		self::assertSame('hel', $s->fgets(4));   // length includes the terminator slot
+		$s->close();
+	}
+
+	public function testFseekWhences()
+	{
+		$s = $this->attached();
+		$s->fwrite('0123456789');
+		$s->fseek(3);                            // SEEK_SET
+		self::assertSame(3, $s->ftell());
+		self::assertSame('3', $s->fread(1));
+		$s->fseek(2, SEEK_CUR);
+		self::assertSame('6', $s->fread(1));
+		$s->fseek(-1, SEEK_END);
+		self::assertSame('9', $s->fread(1));
+		$s->close();
+	}
+
+	public function testFgetsAtEofReturnsFalse()
+	{
+		$s = $this->attached();
+		$s->fwrite("only\n");
+		$s->fseek(0);
+		self::assertSame("only\n", $s->fgets());
+		self::assertFalse($s->fgets(), 'fgets at EOF returns false.');
 		$s->close();
 	}
 
