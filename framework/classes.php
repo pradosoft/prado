@@ -274,6 +274,8 @@ return [
 'IResource' => 'Prado\IO\IResource',
 'ITextWriter' => 'Prado\IO\ITextWriter',
 'TRestClient' => 'Prado\IO\Rest\TRestClient',
+'TBinaryStream' => 'Prado\IO\Stream\TBinaryStream',
+'TStreamDecorator' => 'Prado\IO\Stream\TStreamDecorator',
 'TByteOrder' => 'Prado\IO\TByteOrder',
 'TFileStream' => 'Prado\IO\TFileStream',
 'TFlushableStreamTrait' => 'Prado\IO\TFlushableStreamTrait',
