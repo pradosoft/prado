@@ -35,7 +35,7 @@ use Psr\Http\Message\StreamInterface;
  * The public surface is PSR-7 (read/write/seek/tell/eof/rewind/isReadable/isWritable/
  * isSeekable/getSize/getContents).  PSR getters double as Prado properties (getSize() →
  * ->Size, isReadable() → ->Readable).  PHP-name access aliases (fread/fwrite/fseek/
- * fgets/…) are provided by {@see \Prado\IO\Behavior\TPhpStreamBehavior} when attached.
+ * fgets/…) are provided by {@see \Prado\IO\Behaviors\TPhpStreamBehavior} when attached.
  *
  * Self-encapsulation (Uniform Access Principle): capability and filter state is
  * reached through accessors. The protected {@see getReadableDirect()} family are
