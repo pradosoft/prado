@@ -20,6 +20,7 @@ component_no_class_provided_nor_late_binding = Adding or Removing Class Behavior
 
 propertyvalue_enumvalue_invalid			= Value '{0}' is a not valid enumeration value ({1}).
 propertyvalue_invalid_hex_color			= Value '{0}' is a not valid hex color value.  eg. "#112233"
+propertyvalue_invalid_array_literal		= Value '{0}' is not a valid array literal.
 
 eventhandler_lost_weak_ref				= TEventHandler cannot invoke the event handler because the callable object WeakReference was lost.
 eventhandler_no_set_handler				= TEventHandler cannot set the event handler, index "{0}".
@@ -68,6 +69,9 @@ application_unavailable					= Application is unavailable at this time.
 application_service_unavailable			= Service '{0}' is unavailable at this time.
 application_moduleid_duplicated			= Application module ID '{0}' is not unique.
 application_runtimepath_failed			= Unable to create runtime path '{0}'. Make sure the parent directory exists and is writable by the Web process.
+application_module_required_dep_missing	= Module '{0}' has a required dependency on module '{1}', which is not registered with the application.
+application_module_dependency_cycle		= A dependency cycle was detected among the following modules: {0}.
+application_module_dependency_self_reference	= Module '{0}' declares itself as a dependency, which is never valid.
 
 appconfig_aliaspath_invalid				= Application configuration <alias id="{0}"> uses an invalid file path "{1}".
 appconfig_alias_invalid					= Application configuration <alias> element must have an "id" attribute and a "path" attribute.
@@ -101,6 +105,11 @@ httpcookiecollection_httpcookie_required = THttpCookieCollection can only accept
 
 httpresponse_file_inexistent			= THttpResponse cannot send file '{0}'. The file does not exist.
 httpresponse_responsedata_method_unavailable = THttpResponse: method '{0}' cannot be used without a proper adapter implementing it.
+httpresponse_headersmanager_inexist     = THttpResponse.HeadersManager '{0}' does not point to an existing module.
+httpresponse_headersmanager_invalid		= THttpResponse.HeadersManager '{0}' must point to a module extending from THttpHeadersManager.
+
+httpheadersmanager_header_required		= THttpHeadersManager can only contain THttpHeader or its child classes.
+httpheadersmanager_headerclass_missing	= THttpHeadersManager <headerclass> entry is missing a required 'name' or 'class' attribute.
 
 httpsession_sessionid_unchangeable		= THttpSession.SessionID cannot be modified after the session is started.
 httpsession_sessionname_unchangeable	= THttpSession.SessionName cannot be modified after the session is started.
@@ -133,6 +142,8 @@ sqlitecache_table_creation_failed		= TSqliteCache failed to create cache databas
 sqlitecache_dbfile_unchangeable			= TSqliteCache.DbFile cannot be modified after the module is initialized.
 sqlitecache_dbfile_invalid				= TSqliteCache.DbFile is invalid. Make sure it is in a proper namespace format.
 
+dbcache_unavailable						= TDbCache requires the PDO PHP extension.
+
 memcache_extension_required				= TMemCache requires memcache PHP extension.
 memcache_connection_failed				= TMemCache failed to connect to memcache server {0}:{1}.
 memcache_not_initialized				= Options cannot be set on TMemCache before the module is initialized.
@@ -140,6 +151,23 @@ memcache_not_initialized				= Options cannot be set on TMemCache before the modu
 apccache_extension_required				= TAPCCache requires APC PHP extension.
 apccache_extension_not_enabled			= TAPCCache need apc.enabled = 1 in php.ini in order to work.
 apccache_extension_not_enabled_cli		= TAPCCache need apc.enable_cli = 1 in php.ini in order to work with PHP from the command line.
+
+cachesize_item_exceeds_maximum_size			= Cache item is {0} bytes, which exceeds the configured MaximumSize of {1} bytes.
+
+filecache_directory_required			= TFileCache.Directory is required.
+filecache_directory_create_failed		= TFileCache cannot create cache directory '{0}'.
+filecache_directory_not_writable		= TFileCache cache directory '{0}' is not writable.
+filecache_hash_token_identity			= TFileCache.hashToken must transform its input; the subclass implementation returned the token unchanged.
+filecache_hash_token_path_separator		= TFileCache.hashToken must not return a value containing a path separator ("/" or "\"); the subclass implementation returned an unsafe hash.
+
+memorycache_backing_file_directory_not_found	= TMemoryCache.BackingFile directory does not exist for path '{0}'.
+
+serializingcache_type_invalid = TSerializingCache.SerializationType '{0}' is invalid. Valid values are 'PHP' and 'JSON'.
+serializingcache_encoding_invalid = TSerializingCache.Encoding '{0}' is invalid. Valid values are 'None', 'Base64' and 'Hex'.
+serializingcache_securitymanager_invalid = TSerializingCache.SecurityManager '{0}' is invalid. It must be a TSecurityManager module id or a TSecurityManager instance.
+serializingcache_json_encode_failed = TSerializingCache failed to JSON-encode the value: {0}.
+directorycachedependency_directory_invalid = TDirectoryCacheDependency.Directory {0} does not refer to a valid directory.
+cachedependencylist_cachedependency_required = Only objects implementing ICacheDependency can be added into TCacheDependencyList.
 
 errorhandler_errortemplatepath_invalid	= TErrorHandler.ErrorTemplatePath '{0}' is invalid. Make sure it is in namespace form and points to a valid directory containing error template files.
 
@@ -252,6 +280,14 @@ authorizationrulecollection_authorizationrule_required = TAuthorizationRuleColle
 usermanager_userfile_invalid			= TUserManager.UserFile '{0}' is not a valid file.
 usermanager_userfile_unchangeable		= TUserManager.UserFile cannot be modified. The user module has been initialized already.
 
+integritymanager_entry_invalid			= TIntegrityManager integrity entry for URL '{0}' requires a non-empty url and hash.
+integritymanager_algorithm_invalid		= TIntegrityManager algorithm '{0}' is not supported; use one of: {1}.
+integritymanager_file_unreadable		= TIntegrityManager cannot read file '{0}' to calculate its integrity.
+integritymanager_integrityfile_invalid		= TIntegrityManager.IntegrityFile '{0}' is not a valid file.
+integritymanager_integrityfile_unchangeable	= {1}.{0} cannot be modified. The integrity module has been initialized already.
+
+javascript_script_integrity_required		= No Subresource Integrity is registered for the remote script '{0}', but integrity is required.
+
 authmanager_usermanager_required		= TAuthManager.UserManager must be assigned a value.
 authmanager_usermanager_inexistent		= TAuthManager.UserManager '{0}' does not refer to an ID of application module.
 authmanager_usermanager_invalid			= TAuthManager.UserManager '{0}' does not refer to a valid TUserManager application module.
@@ -310,6 +346,9 @@ csmanager_pradoscript_invalid			= Unknown Prado script library name '{0}'.
 csmanager_pradoscript_notloaded			= Prado script library name '{0}' has not been loaded yet.
 csmanager_pradostyle_invalid			= Unknown Prado style library name '{0}'.
 csmanager_invalid_packages				= Unkownn packages '{1}' for javascript packages defined in '{0}'. Valid packages are '{2}'.
+
+httpclient_transport_error				= HTTP client transport error (code {0}): {1}
+httpclient_http_error						= HTTP error response with status {0}.
 
 contentplaceholder_id_required			= TContentPlaceHolder must have an ID.
 
@@ -520,8 +559,12 @@ dbtablegateway_mismatch_args_exception	= TTableGateway finder method '{0}' expec
 dbtablegateway_mismatch_column_name		= In dynamic __call() method '{0}', no matching columns were found, valid columns for table '{2}' are '{1}'.
 dbtablegateway_invalid_table_info		= Table must be a string or an instance of TDbTableInfo.
 
-directorycachedependency_directory_invalid = TDirectoryCacheDependency.Directory {0} does not refer to a valid directory.
-cachedependencylist_cachedependency_required = Only objects implementing ICacheDependency can be added into TCacheDependencyList.
+resource_not_a_resource					= Expected an open PHP resource but got '{0}'.
+stream_open_failed						= Unable to open stream '{0}' with mode '{1}'.
+streamresourcewrapper_unusable_stream	= The stream is neither readable nor writable and cannot be exposed as a resource.
+
+httpclient_transport_error				= HTTP client transport error (code {0}): {1}
+httpclient_http_error					= HTTP error response with status {0}.
 
 soapservice_configfile_invalid			= TSoapService.ConfigFile '{0}' does not exist. Note, it has to be specified in a namespace format and the file extension must be '.xml' or '.php'.
 soapservice_request_invalid				= SOAP server '{0}' not found.
