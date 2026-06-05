@@ -205,7 +205,71 @@ class TBitHelperTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(0xFC00, TBitHelper::floatToFp16(-INF), "TBitHelper::floatToFp16 0xFC00 is not converting negative infinity");
 		self::assertEquals(0x7E00, TBitHelper::floatToFp16(NAN), "TBitHelper::floatToFp16 0xFC01 is not converting Not-A-Number (NaN).");
 	}
-	
+
+	/**
+	 * Regression for the mantissa rounding-overflow (carry into the exponent). Values just below a
+	 * power-of-two boundary round their mantissa up to 2.0, which must increment the exponent rather
+	 * than leave a stray overflow bit in the mantissa field (which previously halved the magnitude).
+	 */
+	public function testFloatToFp16RoundingOverflow()
+	{
+		// Just below 0.5 / 0.125 fall on odd biased exponents where the lost carry halved the value.
+		self::assertEquals(0x3800, TBitHelper::floatToFp16(0.49999), "TBitHelper::floatToFp16 just below 0.5 must round up to 0.5, not 0.25");
+		self::assertEquals(0x3000, TBitHelper::floatToFp16(0.124999), "TBitHelper::floatToFp16 just below 0.125 must round up to 0.125, not 0.0625");
+		// Even biased exponents that worked by accident must keep working.
+		self::assertEquals(0x3C00, TBitHelper::floatToFp16(0.99999), "TBitHelper::floatToFp16 just below 1.0 must round up to 1.0");
+		self::assertEquals(0x3400, TBitHelper::floatToFp16(0.249999), "TBitHelper::floatToFp16 just below 0.25 must round up to 0.25");
+		// Exact boundaries are unchanged.
+		self::assertEquals(0x3800, TBitHelper::floatToFp16(0.5), "TBitHelper::floatToFp16 0.5");
+		self::assertEquals(0x3C00, TBitHelper::floatToFp16(1.0), "TBitHelper::floatToFp16 1.0");
+
+		// Round-trip sweep: every encode then decode stays within one fp16 ulp of the input.
+		for ($i = 1; $i <= 500; $i++) {
+			$value = ($i / 500.0) * 4.0;
+			$decoded = TBitHelper::fp16ToFloat(TBitHelper::floatToFp16($value));
+			$exponent = floor(log($value, 2));
+			$ulp = pow(2, $exponent - 10);
+			self::assertLessThanOrEqual($ulp, abs($decoded - $value), "TBitHelper fp16 round-trip of {$value} exceeds one ulp");
+		}
+	}
+
+	/**
+	 * Regression for the same mantissa rounding-overflow class of bug in the Fp8-e5m2 (range) format.
+	 */
+	public function testFloatToFp8RangeRoundingOverflow()
+	{
+		// 0x37 = 0.4375 (largest below 0.5); just below 0.5 must round up to 0x38 (0.5), not stay at 0x34.
+		self::assertEquals(0x38, TBitHelper::floatToFp8Range(0.49), "TBitHelper::floatToFp8Range just below 0.5 must round up to 0.5");
+		self::assertEquals(0x30, TBitHelper::floatToFp8Range(0.124), "TBitHelper::floatToFp8Range just below 0.125 must round up to 0.125");
+		self::assertEquals(0x3C, TBitHelper::floatToFp8Range(0.99), "TBitHelper::floatToFp8Range just below 1.0 must round up to 1.0");
+	}
+
+	/**
+	 * Without IEEE conformance there are no subnormals or infinities: exponent 0 and the maximum
+	 * exponent are normal numbers. The encoder must agree with the decoder so values round-trip and
+	 * out-of-range magnitudes saturate to the smallest and largest normal rather than underflowing
+	 * to a subnormal or clamping away the mantissa.
+	 */
+	public function testFloatToFpXXNonConformanceRoundTrip()
+	{
+		// A strided sweep of codes (plus the exponent edges) must survive decode then re-encode.
+		$codes = [0x0000, 0x0001, 0x0400, 0x7FFF, 0xFFFF];
+		for ($code = 0; $code < 65536; $code += 137) {
+			$codes[] = $code;
+		}
+		foreach ($codes as $code) {
+			$value = TBitHelper::fpXXToFloat($code, 5, 10, null, false);
+			self::assertEquals($code, TBitHelper::floatToFpXX($value, 5, 10, null, false), "TBitHelper non-conformant fp16 re-encode of code 0x" . dechex($code));
+		}
+		// The largest exponent is a normal number, so its mantissa is preserved (no clamp to Inf).
+		$big = TBitHelper::fpXXToFloat(0x7C46, 5, 10, null, false);
+		self::assertEquals(0x7C46, TBitHelper::floatToFpXX($big, 5, 10, null, false), "TBitHelper non-conformant fp16 keeps the mantissa at the maximum exponent");
+		// Magnitudes beyond the format saturate to the largest normal.
+		self::assertEquals(0x7FFF, TBitHelper::floatToFpXX(1e9, 5, 10, null, false), "TBitHelper non-conformant fp16 saturates large magnitudes to the largest normal");
+		// Magnitudes below the smallest normal saturate to the smallest normal (exponent 0, mantissa 0).
+		self::assertEquals(0x0000, TBitHelper::floatToFpXX(1e-9, 5, 10, null, false), "TBitHelper non-conformant fp16 saturates tiny magnitudes to the smallest normal");
+	}
+
 	public function testFloatToBf16()
 	{
 		self::assertEquals(0x0000, TBitHelper::floatToBf16(0), "TBitHelper::floatToBf16 0 is not converting to 0x0000; float zero is not half float zero");
