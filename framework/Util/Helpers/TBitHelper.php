@@ -321,18 +321,32 @@ class TBitHelper
 			$mantissa = 0;
 		} else {
 			$exponent = floor(log($value, 2)) + $exponentBias;
-			if ($exponent <= 0) {
-				$mantissa = round($value / pow(2, 1 - $exponentBias - $mantissaBits));
+			if ($IEEEConformance && $exponent <= 0) {
+				$mantissa = (int) round($value / pow(2, 1 - $exponentBias - $mantissaBits));
 				$exponent = 0;
-			} elseif ($exponent >= $exponentMaxValue) {
+			} elseif ($IEEEConformance && $exponent >= $exponentMaxValue) {
 				$exponent = $exponentMaxValue;
 				$mantissa = 0;
 			} else {
+				// Normal number. Without IEEE conformance there are no subnormals or
+				// infinities, so exponent 0 and $exponentMaxValue are normal exponents
+				// and the value saturates to the smallest and largest normal.
+				if ($exponent < 0) {
+					$exponent = 0;
+				} elseif ($exponent > $exponentMaxValue) {
+					$exponent = $exponentMaxValue;
+				}
 				$totalMantissaValues = (1 << $mantissaBits);
-				$mantissa = round(($value / pow(2, $exponent - $exponentBias) - 1.0) * $totalMantissaValues);
-				if ($mantissa === $totalMantissaValues) {
-					$exponent++;
+				$mantissa = (int) round(($value / pow(2, $exponent - $exponentBias) - 1.0) * $totalMantissaValues);
+				if ($mantissa < 0) {
 					$mantissa = 0;
+				} elseif ($mantissa >= $totalMantissaValues) {
+					if ($exponent >= $exponentMaxValue) {
+						$mantissa = $totalMantissaValues - 1;
+					} else {
+						$exponent++;
+						$mantissa = 0;
+					}
 				}
 			}
 		}
