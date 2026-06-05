@@ -143,6 +143,40 @@ use Prado\Util\Traits\TInitializedTrait;
  * ]);
  * ```
  *
+ * Pattern matching follows gitignore-style rules. A pattern without a slash matches
+ * the file name at any depth (`*.js` matches `js/app.js`). A pattern containing a
+ * slash is anchored to the path relative to the published root, and `*` does not
+ * cross directory separators (`js/*.js` matches `js/app.js` but not `js/sub/app.js`).
+ *
+ * ## Symlink Publishing Security
+ *
+ * Setting {@see setLinkAssets LinkAssets} to true publishes each asset as a symbolic
+ * link to its original source file instead of a copy. This carries security
+ * implications for the publishing directory.
+ *
+ * - A published link targets the source path relative to the link, so the link
+ *   resolves after the asset tree moves to a different absolute root and does not
+ *   embed the absolute source path. A client that reads the link, or a directory
+ *   index that resolves it, still learns the relative location of the source.
+ * - The web server must be configured to follow symbolic links to serve a linked
+ *   asset (Apache `Options +FollowSymLinks`, or the narrower `+SymLinksIfOwnerMatch`).
+ *   Enabling link following on the assets directory widens what the server serves
+ *   from there. A process that can write into the assets directory can plant a link
+ *   to any file the server may read, escaping the web root.
+ * - A linked asset shares the source file's content, modification time, and
+ *   permissions. A source file that is group or world readable remains so when
+ *   served. {@see setAppendTimestamp AppendTimestamp} reflects the source mtime.
+ * - There is no isolated copy. Editing the source changes the served asset
+ *   immediately; deleting the source leaves a dangling link that fails to serve.
+ * - Refreshing a stale link requires {@see setForceCopy ForceCopy}, which unlinks
+ *   and recreates the link. Without it an existing link is left in place.
+ * - A link whose source is deleted becomes a dangling link. {@see validateSymlinks}
+ *   checks one link or sweeps the publishing directory, removing the broken links.
+ *
+ * Use LinkAssets only when the source tree is trusted and the web server's symlink
+ * following is scoped to the assets directory. Prefer copy publishing for untrusted
+ * or mixed-content source directories.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
@@ -213,7 +247,7 @@ class TAssetManager extends \Prado\TModule
 	/**
 	 * Registers this module as the application asset manager when an application is available.
 	 * Called during {@see init()}; may also be called by behaviors or subclasses.
-	 * @since 4.4.0
+	 * @since 4.3.3
 	 */
 	protected function setAppAssetManager()
 	{
@@ -514,7 +548,9 @@ class TAssetManager extends \Prado\TModule
 	 * - forceCopy: bool, whether to copy even if the file already exists.
 	 * @throws TInvalidDataValueException if the file path to be published is
 	 * invalid
-	 * @return string an absolute URL to the published directory
+	 * @return string the absolute URL to the published file or directory. A file
+	 * URL carries the appended timestamp query when {@see setAppendTimestamp
+	 * AppendTimestamp} is enabled.
 	 */
 	public function publishFilePath($path, $checkTimestamp = false)
 	{
@@ -524,15 +560,17 @@ class TAssetManager extends \Prado\TModule
 			$checkTimestamp = $options['forceCopy'] ?? false;
 		}
 
-		if (isset($this->_published[$path])) {
-			return $this->_published[$path];
+		$cacheKey = $this->publishCacheKey($path, $options);
+		if (isset($this->_published[$cacheKey])) {
+			return $this->_published[$cacheKey];
 		} elseif (empty($path) || ($fullpath = realpath($path)) === false) {
 			throw new TInvalidDataValueException('assetmanager_filepath_invalid', $path);
 		} elseif (is_file($fullpath)) {
 			$dir = $this->hash(dirname($fullpath));
 			$fileName = basename($fullpath);
 			$dst = $this->_basePath . DIRECTORY_SEPARATOR . $dir;
-			if (!is_file($dst . DIRECTORY_SEPARATOR . $fileName) || $checkTimestamp || $this->getApplication()->getMode() !== TApplicationMode::Performance) {
+			$forceCopy = $options['forceCopy'] ?? $this->getForceCopy();
+			if (!is_file($dst . DIRECTORY_SEPARATOR . $fileName) || $checkTimestamp || $forceCopy || $this->getApplication()->getMode() !== TApplicationMode::Performance) {
 				$this->copyFile($fullpath, $dst, $options);
 			}
 			$publishedUrl = $this->_baseUrl . '/' . $dir . '/' . $fileName;
@@ -542,7 +580,7 @@ class TAssetManager extends \Prado\TModule
 					$publishedUrl .= '?' . $this->getTimestampVar() . '=' . $timestamp;
 				}
 			}
-			return $this->_published[$path] = $publishedUrl;
+			return $this->_published[$cacheKey] = $publishedUrl;
 		} else {
 			$dir = $this->hash($fullpath);
 			$forceCopy = $options['forceCopy'] ?? $this->getForceCopy();
@@ -550,8 +588,32 @@ class TAssetManager extends \Prado\TModule
 				Prado::trace("Publishing directory $fullpath", TAssetManager::class);
 				$this->copyDirectory($fullpath, $this->_basePath . DIRECTORY_SEPARATOR . $dir, $options);
 			}
-			return $this->_published[$path] = $this->_baseUrl . '/' . $dir;
+			return $this->_published[$cacheKey] = $this->_baseUrl . '/' . $dir;
 		}
+	}
+
+	/**
+	 * Builds the {@see $_published} cache key for a path and its publishing options.
+	 * With no options the key is the path itself, preserving prior cache behavior.
+	 * Distinct option sets receive distinct keys so that publishing the same path
+	 * with different options re-publishes instead of returning a stale URL. Object
+	 * options (closures, invokables) are keyed by object id within the request.
+	 * @param string $path the path being published
+	 * @param array $options publishing options
+	 * @return string the cache key
+	 * @since 4.3.3
+	 */
+	private function publishCacheKey($path, $options)
+	{
+		if (!$options) {
+			return $path;
+		}
+		$normalized = [];
+		foreach ($options as $key => $value) {
+			$normalized[$key] = is_object($value) ? 'object#' . spl_object_id($value) : $value;
+		}
+		ksort($normalized);
+		return $path . '#' . md5(serialize($normalized));
 	}
 
 	/**
@@ -570,6 +632,69 @@ class TAssetManager extends \Prado\TModule
 	protected function setPublished($values = [])
 	{
 		$this->_published = $values;
+	}
+
+	/**
+	 * Direct, unvalidated read accessor of the base publishing path for subclasses.
+	 * This bypasses the public {@see setBasePath()} validation and lets a subclass
+	 * reach the private state without re-declaring it. Self-Encapsulation per UAP.
+	 * @return string the base publishing path
+	 * @since 4.3.3
+	 */
+	protected function getBasePathDirect()
+	{
+		return $this->_basePath;
+	}
+
+	/**
+	 * Direct, unvalidated write accessor of the base publishing path for subclasses.
+	 * @param string $value the base publishing path
+	 * @since 4.3.3
+	 */
+	protected function setBasePathDirect($value): void
+	{
+		$this->_basePath = $value;
+	}
+
+	/**
+	 * Direct, unvalidated read accessor of the base publishing URL for subclasses.
+	 * @return string the base publishing URL
+	 * @since 4.3.3
+	 */
+	protected function getBaseUrlDirect()
+	{
+		return $this->_baseUrl;
+	}
+
+	/**
+	 * Direct, unvalidated write accessor of the base publishing URL for subclasses.
+	 * @param string $value the base publishing URL
+	 * @since 4.3.3
+	 */
+	protected function setBaseUrlDirect($value): void
+	{
+		$this->_baseUrl = $value;
+	}
+
+	/**
+	 * Direct read accessor of the published-asset map for subclasses. A subclass may
+	 * store a richer value shape here than the URL strings the base class stores.
+	 * @return array the published-asset map
+	 * @since 4.3.3
+	 */
+	protected function getPublishedDirect(): array
+	{
+		return $this->_published;
+	}
+
+	/**
+	 * Direct write accessor of the published-asset map for subclasses.
+	 * @param array $value the published-asset map
+	 * @since 4.3.3
+	 */
+	protected function setPublishedDirect(array $value): void
+	{
+		$this->_published = $value;
 	}
 
 	/**
@@ -607,8 +732,13 @@ class TAssetManager extends \Prado\TModule
 	}
 
 	/**
-	 * Generate a CRC32 hash for the directory path. Collisions are higher
-	 * than MD5 but generates a much smaller hash string.
+	 * Generates the asset sub-directory name for a path. CRC32 produces a much
+	 * smaller string than MD5 at the cost of a higher collision rate.
+	 * When a {@see setHashCallback HashCallback} is set, it produces the name
+	 * instead. Otherwise a file path is reduced to its directory, the framework
+	 * version is mixed in so an upgrade republishes, and {@see setLinkAssets
+	 * LinkAssets} contributes a discriminator so linked and copied assets occupy
+	 * distinct directories.
 	 * @param string $path string to be hashed (file or directory path).
 	 * @return string hashed string.
 	 */
@@ -635,24 +765,25 @@ class TAssetManager extends \Prado\TModule
 	 */
 	protected function copyFile($src, $dst, $options = [])
 	{
-		if (!is_dir($dst)) {
-			$dirMode = $this->getDirMode();
-			@mkdir($dst, $dirMode);
-			@chmod($dst, $dirMode);	// override umask on mkdir dirMode
-		}
-		$dstFile = $dst . DIRECTORY_SEPARATOR . basename($src);
-
-		$only = $options['only'] ?? $this->getOnly();
-		$except = $options['except'] ?? $this->getExcept();
+		$only = array_key_exists('only', $options) ? $options['only'] : $this->getOnly();
+		$except = array_key_exists('except', $options) ? $options['except'] : $this->getExcept();
 		$caseSensitive = $options['caseSensitive'] ?? $this->getCaseSensitive();
 
-		if (!$this->matchFilePattern($src, $only, $except, $caseSensitive)) {
+		if (!$this->matchFilePattern(basename($src), $only, $except, $caseSensitive)) {
 			return;
 		}
+
+		$dstFile = $dst . DIRECTORY_SEPARATOR . basename($src);
 
 		$beforeCopy = $options['beforeCopy'] ?? $this->getBeforeCopy();
 		if ($beforeCopy !== null && !call_user_func($beforeCopy, $src, $dstFile)) {
 			return;
+		}
+
+		if (!is_dir($dst)) {
+			$dirMode = $this->getDirMode();
+			@mkdir($dst, $dirMode);
+			@chmod($dst, $dirMode);	// override umask on mkdir dirMode
 		}
 
 		$forceCopy = $options['forceCopy'] ?? $this->getForceCopy();
@@ -663,7 +794,7 @@ class TAssetManager extends \Prado\TModule
 			}
 			if (!is_file($dstFile) && !is_link($dstFile)) {
 				try {
-					@symlink($src, $dstFile);
+					$this->symlink($this->relativeSymlinkTarget($src, $dstFile), $dstFile);
 				} catch (\Throwable $e) {
 					if (!is_file($dstFile) && !is_link($dstFile)) {
 						throw $e;
@@ -686,6 +817,97 @@ class TAssetManager extends \Prado\TModule
 	}
 
 	/**
+	 * Creates a symbolic link from a target to a link path. Warnings are suppressed;
+	 * the caller checks the resulting path and rethrows on a genuine failure. This
+	 * isolates the {@see symlink()} call so the link-failure recovery is testable.
+	 * @param string $target the source path the link points at, relative to the link
+	 * @param string $link the link path to create
+	 * @return bool whether the link was created
+	 * @since 4.3.3
+	 */
+	protected function symlink($target, $link)
+	{
+		return @symlink($target, $link);
+	}
+
+	/**
+	 * Computes the link target relative to the directory containing the link.
+	 * Published links are relative so the asset tree resolves after it moves to a
+	 * different absolute root and the link target does not embed the absolute source
+	 * path. When the two paths share no common root, such as different Windows drive
+	 * letters, the absolute target is returned because no relative link exists.
+	 * @param string $target the absolute source path the link points at
+	 * @param string $link the absolute link path being created
+	 * @return string the target to store in the link
+	 * @since 4.3.3
+	 */
+	protected function relativeSymlinkTarget($target, $link)
+	{
+		$sep = DIRECTORY_SEPARATOR;
+		$from = explode($sep, dirname($link));
+		$to = explode($sep, $target);
+		if (($from[0] ?? null) !== ($to[0] ?? null)) {
+			return $target;
+		}
+		$i = 0;
+		$max = min(count($from), count($to));
+		while ($i < $max && $from[$i] === $to[$i]) {
+			$i++;
+		}
+		$rel = array_merge(array_fill(0, count($from) - $i, '..'), array_slice($to, $i));
+		return $rel === [] ? '.' : implode($sep, $rel);
+	}
+
+	/**
+	 * Validates symlinks, optionally removing the broken ones. The result depends on
+	 * what the path is:
+	 * - symlink → bool: true when its target exists, false when broken.
+	 * - directory → int: the number of broken links found in the hierarchy.
+	 * - neither → null.
+	 *
+	 * A directory is scanned recursively. Directory symlinks are validated but not
+	 * descended into, so the walk stays within the asset tree and cannot loop.
+	 * Defaults to {@see getBasePath BasePath}.
+	 * @param ?string $path the link or directory to validate. Defaults to the
+	 * publishing root.
+	 * @param bool $remove whether to delete broken links. Defaults to true.
+	 * @return null|bool|int the validation result, by path kind described above
+	 * @since 4.3.3
+	 */
+	public function validateSymlinks($path = null, $remove = true)
+	{
+		$path ??= $this->_basePath;
+		if (is_link($path)) {
+			if (@file_exists($path)) {
+				return true;
+			}
+			if ($remove) {
+				@unlink($path);
+			}
+			return false;
+		}
+		if (!is_dir($path) || !($folder = @opendir($path))) {
+			return null;
+		}
+		$broken = 0;
+		while (($file = @readdir($folder)) !== false) {
+			if ($file === '.' || $file === '..') {
+				continue;
+			}
+			$full = $path . DIRECTORY_SEPARATOR . $file;
+			if (is_link($full)) {
+				if ($this->validateSymlinks($full, $remove) === false) {
+					$broken++;
+				}
+			} elseif (is_dir($full)) {
+				$broken += $this->validateSymlinks($full, $remove);
+			}
+		}
+		closedir($folder);
+		return $broken;
+	}
+
+	/**
 	 * Copies a directory recursively as another.
 	 * If the destination directory does not exist, it will be created.
 	 * File modification time is used to ensure the copied files are latest.
@@ -698,11 +920,35 @@ class TAssetManager extends \Prado\TModule
 	 * - beforeCopy: callable, a PHP callback that is called before copying each sub-directory or file.
 	 * - afterCopy: callable, a PHP callback that is called after a sub-directory or file is successfully copied.
 	 * - forceCopy: bool, whether to copy even if the file already exists.
+	 *
+	 * Patterns are matched against the path relative to the published root using
+	 * gitignore-style rules. The "except" patterns also prune whole sub-directories;
+	 * "only" filters files and never prunes a directory, so nested matching files
+	 * remain reachable. A sub-directory whose entire contents are filtered out is
+	 * removed rather than left empty, while a directory that is empty in the source
+	 * is preserved. Directory symlinks are followed once; a realpath already visited
+	 * is skipped so a symlink cycle cannot loop forever.
+	 * @param ?string $basePath @internal the root source directory against which
+	 * relative paths are computed for pattern matching. Defaults to $src on the
+	 * top-level call and is preserved across recursion.
+	 * @param array $visited @internal realpaths already entered, keyed by realpath,
+	 * used to break symlink cycles across recursion.
 	 */
-	public function copyDirectory($src, $dst, $options = [])
+	public function copyDirectory($src, $dst, $options = [], $basePath = null, &$visited = [])
 	{
-		$only = $options['only'] ?? $this->getOnly();
-		$except = $options['except'] ?? $this->getExcept();
+		$isRoot = $basePath === null;
+		if ($basePath === null) {
+			$basePath = $src;
+		}
+		$real = realpath($src);
+		if ($real !== false) {
+			if (isset($visited[$real])) {
+				return;
+			}
+			$visited[$real] = true;
+		}
+		$only = array_key_exists('only', $options) ? $options['only'] : $this->getOnly();
+		$except = array_key_exists('except', $options) ? $options['except'] : $this->getExcept();
 		$caseSensitive = $options['caseSensitive'] ?? $this->getCaseSensitive();
 		$beforeCopy = $options['beforeCopy'] ?? $this->getBeforeCopy();
 		$afterCopy = $options['afterCopy'] ?? $this->getAfterCopy();
@@ -715,16 +961,22 @@ class TAssetManager extends \Prado\TModule
 			@mkdir($dst, $dirMode);
 			@chmod($dst, $dirMode);	// override umask on mkdir dirMode
 		}
+		$srcHadEntries = false;
 		if ($folder = @opendir($src)) {
-			while ($file = @readdir($folder)) {
-				if ($file === '.' || $file === '..' || in_array($file, self::PATH_COPY_EXCEPTIONS)) {
+			while (($file = @readdir($folder)) !== false) {
+				if ($file === '.' || $file === '..') {
+					continue;
+				}
+				$srcHadEntries = true;
+				if (in_array($file, self::PATH_COPY_EXCEPTIONS)) {
 					continue;
 				}
 				$srcPath = $src . DIRECTORY_SEPARATOR . $file;
 				$dstPath = $dst . DIRECTORY_SEPARATOR . $file;
+				$relativePath = str_replace(DIRECTORY_SEPARATOR, '/', substr($srcPath, strlen($basePath) + 1));
 
 				if (is_file($srcPath)) {
-					if (!$this->matchFilePattern($srcPath, $only, $except, $caseSensitive)) {
+					if (!$this->matchFilePattern($relativePath, $only, $except, $caseSensitive)) {
 						continue;
 					}
 
@@ -740,7 +992,7 @@ class TAssetManager extends \Prado\TModule
 							}
 							if (!is_link($dstPath)) {
 								try {
-									@symlink($srcPath, $dstPath);
+									$this->symlink($this->relativeSymlinkTarget($srcPath, $dstPath), $dstPath);
 								} catch (\Throwable $e) {
 									if (!is_file($dstPath) && !is_link($dstPath)) {
 										throw $e;
@@ -759,18 +1011,29 @@ class TAssetManager extends \Prado\TModule
 						call_user_func($afterCopy, $srcPath, $dstPath);
 					}
 				} else {
-					$this->copyDirectory($srcPath, $dstPath, $options);
+					if ($except !== null && $this->matchesAnyPattern($relativePath, $except, $caseSensitive)) {
+						continue;
+					}
+					$this->copyDirectory($srcPath, $dstPath, $options, $basePath, $visited);
 				}
 			}
 			closedir($folder);
+			// A non-root directory whose source had entries but ended up empty has
+			// had all of its contents filtered out, so it is pruned. A directory
+			// that is genuinely empty in the source is kept.
+			if (!$isRoot && $srcHadEntries && is_dir($dst) && count(scandir($dst)) === 2) {
+				@rmdir($dst);
+			}
 		} else {
 			throw new TInvalidDataValueException('assetmanager_source_directory_invalid', $src);
 		}
 	}
 
 	/**
-	 * Checks if a file path matches the "only" or "except" patterns.
-	 * @param string $path the file path to check
+	 * Checks if a relative path matches the "only" or "except" patterns.
+	 * "except" is tested first; a match excludes the path. "only", when set,
+	 * requires a match for the path to be copied.
+	 * @param string $path the path relative to the published root, using "/" separators
 	 * @param null|array $only list of patterns to match if wanting to be copied
 	 * @param null|array $except list of patterns to match if wanting to be excluded
 	 * @param bool $caseSensitive whether the patterns are case sensitive
@@ -779,36 +1042,48 @@ class TAssetManager extends \Prado\TModule
 	 */
 	protected function matchFilePattern($path, $only, $except, $caseSensitive)
 	{
-		$filename = basename($path);
-
-		if ($except !== null) {
-			$fnFlags = $caseSensitive ? 0 : FNM_CASEFOLD;
-			foreach ($except as $pattern) {
-				if (fnmatch($pattern, $filename, $fnFlags)) {
-					return false;
-				}
-			}
+		if ($except !== null && $this->matchesAnyPattern($path, $except, $caseSensitive)) {
+			return false;
 		}
-
-		if ($only !== null) {
-			$matched = false;
-			$fnFlags = $caseSensitive ? 0 : FNM_CASEFOLD;
-			foreach ($only as $pattern) {
-				if (fnmatch($pattern, $filename, $fnFlags)) {
-					$matched = true;
-					break;
-				}
-			}
-			if (!$matched) {
-				return false;
-			}
+		if ($only !== null && !$this->matchesAnyPattern($path, $only, $caseSensitive)) {
+			return false;
 		}
-
 		return true;
 	}
 
 	/**
+	 * Tests a relative path against a list of gitignore-style glob patterns.
+	 * A pattern without a slash matches the file name at any depth. A pattern
+	 * containing a slash is anchored to the relative path, and `*` does not cross
+	 * directory separators. A leading slash on a pattern is ignored.
+	 * @param string $path the path relative to the published root, using "/" separators
+	 * @param array $patterns list of glob patterns
+	 * @param bool $caseSensitive whether the patterns are case sensitive
+	 * @return bool true if any pattern matches
+	 * @since 4.3.3
+	 */
+	protected function matchesAnyPattern($path, $patterns, $caseSensitive)
+	{
+		$fnFlags = $caseSensitive ? 0 : FNM_CASEFOLD;
+		$basename = basename($path);
+		foreach ($patterns as $pattern) {
+			if (strpos($pattern, '/') === false) {
+				if (fnmatch($pattern, $basename, $fnFlags)) {
+					return true;
+				}
+			} elseif (fnmatch(ltrim($pattern, '/'), $path, $fnFlags | FNM_PATHNAME)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Returns the actual URL for the specified asset.
+	 * An exact match on the asset key is returned first. Otherwise each map key is
+	 * tested as a path suffix of the source-qualified asset, where the match must
+	 * begin at a path boundary. The key "app.js" matches "lib/app.js" but not
+	 * "myapp.js".
 	 * @param string $asset the asset path.
 	 * @param ?string $sourcePath the source path of the asset bundle
 	 * @return ?string the actual URL for the asset, or null when no mapping matches.
@@ -824,7 +1099,8 @@ class TAssetManager extends \Prado\TModule
 		$n = strlen($assetWithSource);
 		foreach ($this->_assetMap as $from => $to) {
 			$n2 = strlen($from);
-			if ($n2 <= $n && substr_compare($assetWithSource, $from, -$n2, $n2) === 0) {
+			if ($n2 <= $n && substr_compare($assetWithSource, $from, -$n2, $n2) === 0
+				&& ($n2 === $n || $assetWithSource[$n - $n2 - 1] === '/')) {
 				return $to;
 			}
 		}
@@ -855,7 +1131,8 @@ class TAssetManager extends \Prado\TModule
 			$dst = $this->_basePath . DIRECTORY_SEPARATOR . $dir;
 			if (!is_file($dst . DIRECTORY_SEPARATOR . $fileName) || $checkTimestamp || $this->getApplication()->getMode() !== TApplicationMode::Performance) {
 				if (@filemtime($dst . DIRECTORY_SEPARATOR . $fileName) < @filemtime($fullpath)) {
-					$this->copyFile($fullpath, $dst);
+					// The checksum file is always published; instance only/except filters do not apply.
+					$this->copyFile($fullpath, $dst, ['only' => null, 'except' => null]);
 					$this->deployTarFile($tarfile, $dst);
 				}
 			}

@@ -3,12 +3,14 @@
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\Exceptions\TIOException;
 use Prado\Prado;
+use Prado\TApplication;
 use Prado\Web\TAssetManager;
 
 class TAssetManagerTest extends PHPUnit\Framework\TestCase
 {
-	protected ?TTestApplication $app = null;
+	public static $app = null;
 	public static $assetDir = null;
 
 	public static $class = null;
@@ -42,7 +44,9 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 		$_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en-US; rv:1.8.1.3) Gecko/20070309 Firefox/2.0.0.3';
 		$_SERVER['REMOTE_HOST'] = 'localhost';
 
-		$this->app = new TTestApplication(__DIR__ . '/app');
+		if (self::$app === null) {
+			self::$app = new TApplication(__DIR__ . '/app');
+		}
 
 		if (self::$assetDir === null) {
 			// Use DIRECTORY_SEPARATOR so the path matches what framework internals produce on all OSes.
@@ -88,12 +92,62 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	protected function tearDown(): void
 	{
-		if ($this->app !== null) {
-			$this->app->restoreApplication();
-			$this->app = null;
-		}
 		// Make some cleaning :)
 		$this->removeDirectory(self::$assetDir);
+	}
+
+	/**
+	 * Probes whether the platform can create a relative symbolic link that resolves,
+	 * which is what the LinkAssets tests require. On Windows this depends on the
+	 * process privilege and is frequently unavailable on CI runners.
+	 */
+	protected function symlinksSupported(): bool
+	{
+		$target = self::$assetDir . DIRECTORY_SEPARATOR . '__symprobe_target';
+		$link = self::$assetDir . DIRECTORY_SEPARATOR . '__symprobe_link';
+		// Cleanup is throwable-tolerant: the application error handler can turn even
+		// an unlink()/symlink() warning into an exception under '@'.
+		$cleanup = function ($p) {
+			try {
+				if (is_link($p) || file_exists($p)) {
+					@unlink($p);
+				}
+			} catch (\Throwable $e) {
+			}
+		};
+		$cleanup($link);
+		$cleanup($target);
+		$ok = false;
+		try {
+			@file_put_contents($target, 'probe');
+			$ok = @symlink('__symprobe_target', $link) && is_link($link) && file_exists($link);
+		} catch (\Throwable $e) {
+			$ok = false;
+		}
+		$cleanup($link);
+		$cleanup($target);
+		return $ok;
+	}
+
+	/**
+	 * Skips the calling test when relative symbolic links are not supported.
+	 */
+	protected function requireSymlinks(): void
+	{
+		if (!$this->symlinksSupported()) {
+			$this->markTestSkipped('Relative symbolic links are not supported on this platform.');
+		}
+	}
+
+	/**
+	 * Skips the calling test when the platform does not honor Unix file permission
+	 * modes (e.g. Windows), where chmod does not produce the asserted bits.
+	 */
+	protected function requireFileModes(): void
+	{
+		if (DIRECTORY_SEPARATOR === '\\') {
+			$this->markTestSkipped('Unix file permission modes are not supported on this platform.');
+		}
 	}
 
 	public function testInit()
@@ -103,7 +157,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 		$manager->init(null);
 
 		self::assertEquals(self::$assetDir, $manager->getBasePath());
-		self::assertEquals($manager, $this->app->getAssetManager());
+		self::assertEquals($manager, self::$app->getAssetManager());
 
 		// No, remove asset directory, and catch the exception
 		if (is_dir(self::$assetDir)) {
@@ -129,6 +183,14 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 		// Next, standard asset directory, should work
 
 		$manager->setBasePath('AssetAlias');
+		self::assertEquals(self::$assetDir, $manager->getBasePath());
+
+		// A failed set must not corrupt the previously valid base path.
+		try {
+			$manager->setBasePath('invalid');
+			self::fail('Expected TInvalidDataValueException not thrown');
+		} catch (TInvalidDataValueException $e) {
+		}
 		self::assertEquals(self::$assetDir, $manager->getBasePath());
 
 		// Finally, test to change after init
@@ -218,6 +280,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testLinkAssetsEnabled()
 	{
+		$this->requireSymlinks();
 		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setLinkAssets(true);
@@ -247,6 +310,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testLinkAssetsFallbackOnFailure()
 	{
+		$this->requireSymlinks();
 		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setLinkAssets(true);
@@ -1197,6 +1261,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testLinkAssetsHashDiffers()
 	{
+		$this->requireSymlinks();
 		$manager1 = $this->newAssetManager();
 		$manager1->setBaseUrl('/');
 		$manager1->setLinkAssets(false);
@@ -1317,6 +1382,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 	 */
 	public function testForceCopyRefreshesSymlink()
 	{
+		$this->requireSymlinks();
 		$source = __DIR__ . '/data/pradoheader.gif';
 		$other = __DIR__ . '/data/testassets/js/app.js';
 
@@ -1349,6 +1415,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 	 */
 	public function testSymlinkNotRefreshedWithoutForceCopy()
 	{
+		$this->requireSymlinks();
 		$source = __DIR__ . '/data/pradoheader.gif';
 		$other = __DIR__ . '/data/testassets/js/app.js';
 
@@ -1377,6 +1444,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 	 */
 	public function testForceCopyRefreshesSymlinkInDirectory()
 	{
+		$this->requireSymlinks();
 		$dir = __DIR__ . '/data/testassets';
 		$other = __DIR__ . '/data/pradoheader.gif';
 
@@ -1401,5 +1469,663 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 		$manager2->publishFilePath($dir);
 
 		self::assertEquals(realpath($dir . '/js/app.js'), realpath($linkedFile));
+	}
+
+	/**
+	 * An "only" pattern containing a slash is anchored to the path relative to the
+	 * published root. "js/*.js" matches js/app.js but not files in other directories.
+	 */
+	public function testOnlyAnchoredPathPattern()
+	{
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->setOnly(['js/*.js']);
+		$manager->init(null);
+
+		$dirToPublish = __DIR__ . '/data/testassets';
+		$publishedDir = self::$assetDir . $manager->publishFilePath($dirToPublish);
+
+		self::assertTrue(is_file($publishedDir . '/js/app.js'));
+		self::assertFalse(is_file($publishedDir . '/lib/vendor.js'));
+		self::assertFalse(is_file($publishedDir . '/subdir/nested.js'));
+	}
+
+	/**
+	 * An anchored "except" pattern excludes only the matching path, leaving the
+	 * same file name in other directories untouched.
+	 */
+	public function testExceptAnchoredPathPattern()
+	{
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->setExcept(['lib/vendor.js']);
+		$manager->init(null);
+
+		$dirToPublish = __DIR__ . '/data/testassets';
+		$publishedDir = self::$assetDir . $manager->publishFilePath($dirToPublish);
+
+		self::assertFalse(is_file($publishedDir . '/lib/vendor.js'));
+		self::assertTrue(is_file($publishedDir . '/subdir/nested.js'));
+		self::assertTrue(is_file($publishedDir . '/js/app.js'));
+	}
+
+	/**
+	 * An "except" pattern prunes a whole sub-directory by name; its contents are
+	 * never reached.
+	 */
+	public function testExceptPrunesDirectory()
+	{
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->setExcept(['subdir']);
+		$manager->init(null);
+
+		$dirToPublish = __DIR__ . '/data/testassets';
+		$publishedDir = self::$assetDir . $manager->publishFilePath($dirToPublish);
+
+		self::assertFalse(file_exists($publishedDir . '/subdir'));
+		self::assertFalse(is_file($publishedDir . '/subdir/nested.js'));
+		self::assertTrue(is_file($publishedDir . '/js/app.js'));
+	}
+
+	/**
+	 * A sub-directory whose entire contents are filtered out is removed rather than
+	 * left behind as an empty directory.
+	 */
+	public function testFilteredEmptyDirectoryIsPruned()
+	{
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->setExcept(['*.css']);
+		$manager->init(null);
+
+		$dirToPublish = __DIR__ . '/data/testassets';
+		$publishedDir = self::$assetDir . $manager->publishFilePath($dirToPublish);
+
+		// css/ held only style.css, which was excluded, so the directory is gone.
+		self::assertFalse(file_exists($publishedDir . '/css'));
+		self::assertTrue(is_file($publishedDir . '/js/app.js'));
+	}
+
+	/**
+	 * A directory that is empty in the source is preserved, since nothing was
+	 * filtered out of it.
+	 */
+	public function testGenuineEmptySourceDirectoryPreserved()
+	{
+		$src = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'tassetmgr_empty_' . getmypid();
+		$this->removeDirectory($src);
+		mkdir($src . DIRECTORY_SEPARATOR . 'emptydir', Prado::getDefaultDirPermissions(), true);
+		file_put_contents($src . DIRECTORY_SEPARATOR . 'keep.js', 'keep');
+
+		try {
+			$manager = $this->newAssetManager();
+			$manager->setBaseUrl('/');
+			$manager->setExcept(['*.css']);
+			$manager->init(null);
+			$publishedDir = self::$assetDir . $manager->publishFilePath($src);
+
+			self::assertTrue(is_dir($publishedDir . DIRECTORY_SEPARATOR . 'emptydir'));
+			self::assertTrue(is_file($publishedDir . DIRECTORY_SEPARATOR . 'keep.js'));
+		} finally {
+			$this->removeDirectory($src);
+		}
+	}
+
+	/**
+	 * An "only" pattern filters files but never prunes a directory, so matching
+	 * files nested in sub-directories remain reachable.
+	 */
+	public function testOnlyDoesNotPruneNestedFiles()
+	{
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->setOnly(['*.js']);
+		$manager->init(null);
+
+		$dirToPublish = __DIR__ . '/data/testassets';
+		$publishedDir = self::$assetDir . $manager->publishFilePath($dirToPublish);
+
+		self::assertTrue(is_file($publishedDir . '/js/app.js'));
+		self::assertTrue(is_file($publishedDir . '/lib/vendor.js'));
+		self::assertTrue(is_file($publishedDir . '/subdir/nested.js'));
+		self::assertFalse(is_file($publishedDir . '/css/style.css'));
+	}
+
+	/**
+	 * Publishing the same path twice with different options re-publishes rather than
+	 * returning the first call's cached URL, so the second option set takes effect.
+	 */
+	public function testPublishOptionsAffectCache()
+	{
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->init(null);
+
+		$source = __DIR__ . '/data/pradoheader.gif';
+		$publishedFile = $manager->getPublishedPath($source);
+
+		// First publish filters the file out; nothing is copied but the URL caches.
+		$manager->publishFilePath($source, ['only' => ['nomatch.gif']]);
+		self::assertFalse(is_file($publishedFile));
+
+		// A different option set must not return the cached URL; the file now copies.
+		$manager->publishFilePath($source, ['only' => ['*.gif']]);
+		self::assertTrue(is_file($publishedFile));
+	}
+
+	/**
+	 * Identical no-option publishes still hit the cache: the second call returns the
+	 * first call's URL unchanged.
+	 */
+	public function testPublishWithoutOptionsUsesCache()
+	{
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->init(null);
+
+		$source = __DIR__ . '/data/pradoheader.gif';
+		$first = $manager->publishFilePath($source);
+		$second = $manager->publishFilePath($source);
+
+		self::assertEquals($first, $second);
+	}
+
+	/**
+	 * Unlike a whole-directory symlink, Prado links files individually and applies
+	 * the "except" filter in link mode, so an excluded file is neither linked nor
+	 * copied into the published directory.
+	 */
+	public function testLinkAssetsAppliesExceptFilter()
+	{
+		$this->requireSymlinks();
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->setLinkAssets(true);
+		$manager->setExcept(['*.css']);
+		$manager->init(null);
+
+		$dirToPublish = __DIR__ . '/data/testassets';
+		$publishedDir = self::$assetDir . $manager->publishFilePath($dirToPublish);
+
+		self::assertFalse(file_exists($publishedDir . '/css/style.css'));
+		self::assertTrue(is_link($publishedDir . '/js/app.js'));
+	}
+
+	/**
+	 * A map key is matched as a suffix only at a path boundary. The key "app.js"
+	 * resolves "lib/app.js" but not "myapp.js".
+	 */
+	public function testResolveAssetSuffixRequiresPathBoundary()
+	{
+		$manager = $this->newAssetManager();
+		$manager->setAssetMap(['app.js' => '/mapped/app.js']);
+		$manager->init(null);
+
+		self::assertEquals('/mapped/app.js', $manager->resolveAsset('lib/app.js'));
+		self::assertEquals('/mapped/app.js', $manager->resolveAsset('app.js'));
+		self::assertNull($manager->resolveAsset('myapp.js'));
+	}
+
+	/**
+	 * The checksum file of a tar publish is copied regardless of an instance "only"
+	 * filter that would otherwise exclude it, so the tar still deploys.
+	 */
+	public function testPublishTarFileIgnoresOnlyExcept()
+	{
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->setOnly(['*.js']);
+		$manager->setExcept(['*.md5']);
+		$manager->init(null);
+
+		$tarFile = __DIR__ . '/data/aTarFile.tar';
+		$md5File = __DIR__ . '/data/aTarFile.md5';
+
+		$publishedDir = self::$assetDir . $manager->publishTarFile($tarFile, $md5File);
+
+		self::assertTrue(is_file($publishedDir . '/aTarFile.md5'));
+		self::assertTrue(is_file($publishedDir . '/pradoheader.gif'));
+	}
+
+	/**
+	 * A single file filtered out by "only" is not copied and leaves no empty
+	 * destination directory behind.
+	 */
+	public function testFilteredSingleFileLeavesNoEmptyDirectory()
+	{
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->init(null);
+
+		$source = __DIR__ . '/data/pradoheader.gif';
+		$manager->publishFilePath($source, ['only' => ['nomatch.gif']]);
+
+		$destDir = dirname($manager->getPublishedPath($source));
+		self::assertFalse(is_dir($destDir));
+	}
+
+	/**
+	 * A "caseSensitive" anchored path pattern respects case; switching it off makes
+	 * the same pattern match.
+	 */
+	public function testCaseSensitiveAnchoredPattern()
+	{
+		$dirToPublish = __DIR__ . '/data/testassets';
+
+		$sensitive = $this->newAssetManager();
+		$sensitive->setBaseUrl('/');
+		$sensitive->setCaseSensitive(true);
+		$sensitive->setOnly(['js/APP.JS']);
+		$sensitive->init(null);
+		$sensitiveDir = self::$assetDir . $sensitive->publishFilePath($dirToPublish);
+		self::assertFalse(is_file($sensitiveDir . '/js/app.js'));
+
+		$insensitive = $this->newAssetManager();
+		$insensitive->setBaseUrl('/');
+		$insensitive->setCaseSensitive(false);
+		$insensitive->setOnly(['js/APP.JS']);
+		$insensitive->init(null);
+		$insensitiveDir = self::$assetDir . $insensitive->publishFilePath($dirToPublish);
+		self::assertTrue(is_file($insensitiveDir . '/js/app.js'));
+	}
+
+	/**
+	 * A directory symlink that points back at an ancestor does not loop forever;
+	 * each real directory is entered once and the non-cyclic content publishes.
+	 */
+	public function testSymlinkCycleDoesNotRecurseInfinitely()
+	{
+		$this->requireSymlinks();
+		$base = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'tassetmgr_cycle_' . getmypid();
+		$this->removeDirectory($base);
+		mkdir($base . DIRECTORY_SEPARATOR . 'sub', Prado::getDefaultDirPermissions(), true);
+		file_put_contents($base . DIRECTORY_SEPARATOR . 'a.js', 'a');
+		file_put_contents($base . DIRECTORY_SEPARATOR . 'sub' . DIRECTORY_SEPARATOR . 'b.js', 'b');
+		// A symlink inside sub/ pointing back at the publish root forms a cycle.
+		symlink($base, $base . DIRECTORY_SEPARATOR . 'sub' . DIRECTORY_SEPARATOR . 'loop');
+
+		try {
+			$manager = $this->newAssetManager();
+			$manager->setBaseUrl('/');
+			$manager->init(null);
+			$publishedDir = self::$assetDir . $manager->publishFilePath($base);
+
+			self::assertTrue(is_file($publishedDir . '/a.js'));
+			self::assertTrue(is_file($publishedDir . '/sub/b.js'));
+			// The cycle target is entered once, so it is not recreated in the output.
+			self::assertFalse(file_exists($publishedDir . '/sub/loop'));
+		} finally {
+			// Remove the cycle link before recursive cleanup follows it.
+			@unlink($base . DIRECTORY_SEPARATOR . 'sub' . DIRECTORY_SEPARATOR . 'loop');
+			$this->removeDirectory($base);
+		}
+	}
+
+	/**
+	 * getPublished reflects a list installed through the protected setPublished,
+	 * which page-state restoration uses to seed already-published assets.
+	 */
+	public function testSetPublishedSeedsPublishedList()
+	{
+		$manager = new class () extends TAssetManager {
+			public function exposeSetPublished($values)
+			{
+				$this->setPublished($values);
+			}
+		};
+		$manager->exposeSetPublished(['/src/path' => '/assets/abc/file.js']);
+
+		self::assertEquals(['/src/path' => '/assets/abc/file.js'], $manager->getPublished());
+	}
+
+	/**
+	 * A beforeCopy that returns false cancels publishing of a single file.
+	 */
+	public function testBeforeCopyCancelsSingleFile()
+	{
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->init(null);
+
+		$source = __DIR__ . '/data/pradoheader.gif';
+		$manager->publishFilePath($source, ['beforeCopy' => function ($src, $dst) {
+			return false;
+		}]);
+
+		self::assertFalse(is_file($manager->getPublishedPath($source)));
+	}
+
+	/**
+	 * fileMode is applied to files copied during a directory publish.
+	 */
+	public function testFileModeOnDirectoryCopy()
+	{
+		$this->requireFileModes();
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->setFileMode(0644);
+		$manager->init(null);
+
+		$dirToPublish = __DIR__ . '/data/testassets';
+		$publishedDir = self::$assetDir . $manager->publishFilePath($dirToPublish);
+
+		self::assertEquals(0644, fileperms($publishedDir . '/js/app.js') & 0777);
+	}
+
+	/**
+	 * A second publish of the same tar returns the cached URL.
+	 */
+	public function testPublishTarFileReturnsCachedUrl()
+	{
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->init(null);
+
+		$tarFile = __DIR__ . '/data/aTarFile.tar';
+		$md5File = __DIR__ . '/data/aTarFile.md5';
+
+		$first = $manager->publishTarFile($tarFile, $md5File);
+		$second = $manager->publishTarFile($tarFile, $md5File);
+
+		self::assertEquals($first, $second);
+	}
+
+	/**
+	 * publishTarFile with a valid checksum but an invalid tar file throws.
+	 */
+	public function testPublishTarFileInvalidTarThrows()
+	{
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->init(null);
+
+		$md5File = __DIR__ . '/data/aTarFile.md5';
+
+		$this->expectException(TIOException::class);
+		$manager->publishTarFile(__DIR__ . '/data/does_not_exist.tar', $md5File);
+	}
+
+	/**
+	 * copyDirectory throws when the source directory cannot be opened.
+	 */
+	public function testCopyDirectoryInvalidSourceThrows()
+	{
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->init(null);
+
+		$this->expectException(TInvalidDataValueException::class);
+		$manager->copyDirectory(__DIR__ . '/data/no_such_directory', self::$assetDir . '/dst');
+	}
+
+	/**
+	 * When symlinking a single file fails and leaves no file or link, copyFile
+	 * rethrows the failure.
+	 */
+	public function testCopyFileSymlinkFailureRethrows()
+	{
+		$manager = new class () extends TAssetManager {
+			protected function symlink($target, $link)
+			{
+				throw new \RuntimeException('symlink failed');
+			}
+		};
+		$manager->setBaseUrl('/');
+		$manager->setLinkAssets(true);
+		$manager->init(null);
+
+		$this->expectException(\RuntimeException::class);
+		$manager->publishFilePath(__DIR__ . '/data/pradoheader.gif');
+	}
+
+	/**
+	 * When symlinking a file inside a directory publish fails and leaves no file
+	 * or link, copyDirectory rethrows the failure.
+	 */
+	public function testCopyDirectorySymlinkFailureRethrows()
+	{
+		$manager = new class () extends TAssetManager {
+			protected function symlink($target, $link)
+			{
+				throw new \RuntimeException('symlink failed');
+			}
+		};
+		$manager->setBaseUrl('/');
+		$manager->setLinkAssets(true);
+		$manager->init(null);
+
+		$this->expectException(\RuntimeException::class);
+		$manager->publishFilePath(__DIR__ . '/data/testassets');
+	}
+
+	/**
+	 * A file literally named "0" does not prematurely end directory iteration;
+	 * it and any files after it are still published.
+	 */
+	public function testZeroNamedFilePublished()
+	{
+		$base = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'tassetmgr_zero_' . getmypid();
+		$this->removeDirectory($base);
+		mkdir($base, Prado::getDefaultDirPermissions(), true);
+		file_put_contents($base . DIRECTORY_SEPARATOR . '0', 'zero');
+		file_put_contents($base . DIRECTORY_SEPARATOR . 'after.js', 'after');
+
+		try {
+			$manager = $this->newAssetManager();
+			$manager->setBaseUrl('/');
+			$manager->init(null);
+			$publishedDir = self::$assetDir . $manager->publishFilePath($base);
+
+			self::assertTrue(is_file($publishedDir . DIRECTORY_SEPARATOR . '0'));
+			self::assertTrue(is_file($publishedDir . DIRECTORY_SEPARATOR . 'after.js'));
+		} finally {
+			$this->removeDirectory($base);
+		}
+	}
+
+	/**
+	 * In Performance mode an instance forceCopy still re-copies an existing single
+	 * file. Without it the publish is skipped because the destination already exists.
+	 */
+	public function testSingleFileForceCopyInstancePropertyInPerformanceMode()
+	{
+		$source = __DIR__ . '/data/pradoheader.gif';
+		$previousMode = self::$app->getMode();
+
+		try {
+			$manager1 = $this->newAssetManager();
+			$manager1->setBaseUrl('/');
+			$manager1->init(null);
+			$manager1->publishFilePath($source);
+			$publishedFile = $manager1->getPublishedPath($source);
+
+			file_put_contents($publishedFile, 'corrupted');
+			touch($publishedFile, time() + 10);
+
+			self::$app->setMode('Performance');
+			$manager2 = $this->newAssetManager();
+			$manager2->setBaseUrl('/');
+			$manager2->setForceCopy(true);
+			$manager2->init(null);
+			$manager2->publishFilePath($source);
+
+			self::assertEquals(file_get_contents($source), file_get_contents($publishedFile));
+		} finally {
+			self::$app->setMode($previousMode);
+		}
+	}
+
+	/**
+	 * A published symlink stores a relative target yet still resolves to the source.
+	 */
+	public function testLinkAssetsAreRelative()
+	{
+		$this->requireSymlinks();
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->setLinkAssets(true);
+		$manager->init(null);
+
+		$source = __DIR__ . '/data/pradoheader.gif';
+		$manager->publishFilePath($source);
+		$publishedFile = $manager->getPublishedPath($source);
+
+		self::assertTrue(is_link($publishedFile));
+		$target = readlink($publishedFile);
+		self::assertNotEquals(DIRECTORY_SEPARATOR, substr($target, 0, 1));
+		self::assertStringStartsWith('..', $target);
+		self::assertEquals(realpath($source), realpath($publishedFile));
+	}
+
+	/**
+	 * validateSymlinks reports an intact link as valid (true) and leaves it in place.
+	 */
+	public function testValidateSymlinksIntactLink()
+	{
+		$this->requireSymlinks();
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->setLinkAssets(true);
+		$manager->init(null);
+
+		$source = __DIR__ . '/data/pradoheader.gif';
+		$manager->publishFilePath($source);
+		$publishedFile = $manager->getPublishedPath($source);
+
+		self::assertTrue($manager->validateSymlinks($publishedFile, true));
+		self::assertTrue(is_link($publishedFile));
+	}
+
+	/**
+	 * A path that is neither a link nor a directory yields null and is not touched.
+	 */
+	public function testValidateSymlinksNonLinkFile()
+	{
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->init(null);
+
+		$source = __DIR__ . '/data/pradoheader.gif';
+		$manager->publishFilePath($source);
+		$publishedFile = $manager->getPublishedPath($source);
+
+		self::assertNull($manager->validateSymlinks($publishedFile, true));
+		self::assertTrue(is_file($publishedFile));
+	}
+
+	/**
+	 * A broken link returns false; it is kept without remove and deleted with it.
+	 */
+	public function testValidateSymlinksBrokenLink()
+	{
+		$this->requireSymlinks();
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->init(null);
+
+		// Link to a real target, then delete the target to break it (portable:
+		// some platforms cannot create a symlink to a missing target).
+		$target = self::$assetDir . DIRECTORY_SEPARATOR . 'broken_target';
+		$link = self::$assetDir . DIRECTORY_SEPARATOR . 'broken_link';
+		file_put_contents($target, 'x');
+		symlink('broken_target', $link);
+		unlink($target);
+
+		self::assertFalse($manager->validateSymlinks($link, false));
+		self::assertTrue(is_link($link));
+
+		self::assertFalse($manager->validateSymlinks($link, true));
+		self::assertFalse(is_link($link));
+	}
+
+	/**
+	 * validateSymlinks sweeps the hierarchy, removing broken links and keeping intact
+	 * ones, and returns the count of broken links found.
+	 */
+	public function testValidateSymlinksSweepsHierarchy()
+	{
+		$this->requireSymlinks();
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->setLinkAssets(true);
+		$manager->init(null);
+
+		// An intact published link in its own hash directory.
+		$source = __DIR__ . '/data/pradoheader.gif';
+		$manager->publishFilePath($source);
+		$intact = $manager->getPublishedPath($source);
+
+		// Two broken links, one nested: link to real targets, then delete them.
+		$goneTop = self::$assetDir . DIRECTORY_SEPARATOR . 'gone1';
+		$brokenTop = self::$assetDir . DIRECTORY_SEPARATOR . 'broken_top';
+		file_put_contents($goneTop, 'x');
+		symlink('gone1', $brokenTop);
+		unlink($goneTop);
+		$nestedDir = self::$assetDir . DIRECTORY_SEPARATOR . 'nested';
+		mkdir($nestedDir, Prado::getDefaultDirPermissions());
+		$goneNested = $nestedDir . DIRECTORY_SEPARATOR . 'gone2';
+		$brokenNested = $nestedDir . DIRECTORY_SEPARATOR . 'broken_nested';
+		file_put_contents($goneNested, 'x');
+		symlink('gone2', $brokenNested);
+		unlink($goneNested);
+
+		$broken = $manager->validateSymlinks();
+
+		self::assertEquals(2, $broken);
+		self::assertFalse(is_link($brokenTop));
+		self::assertFalse(is_link($brokenNested));
+		self::assertTrue(is_link($intact));
+	}
+
+	/**
+	 * validateSymlinks with remove disabled counts broken links without deleting them.
+	 */
+	public function testValidateSymlinksCountOnly()
+	{
+		$this->requireSymlinks();
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->init(null);
+
+		// Link to a real target, then delete it to break the link (portable).
+		$gone = self::$assetDir . DIRECTORY_SEPARATOR . 'gone';
+		$broken = self::$assetDir . DIRECTORY_SEPARATOR . 'broken_count';
+		file_put_contents($gone, 'x');
+		symlink('gone', $broken);
+		unlink($gone);
+
+		self::assertEquals(1, $manager->validateSymlinks(null, false));
+		self::assertTrue(is_link($broken));
+	}
+
+	/**
+	 * When the target and link share no common root, the absolute target is kept
+	 * because no relative link can express the path.
+	 */
+	public function testRelativeSymlinkTargetDifferentRoots()
+	{
+		$manager = new class () extends TAssetManager {
+			public function exposeRelative($target, $link)
+			{
+				return $this->relativeSymlinkTarget($target, $link);
+			}
+		};
+
+		// A link path with no leading separator has a first segment that cannot
+		// match the absolute target's empty first segment.
+		self::assertEquals('/a/b.js', $manager->exposeRelative('/a/b.js', 'rel/dir/c.js'));
+	}
+
+	/**
+	 * validateSymlinks returns null when handed a path that is neither link nor dir.
+	 */
+	public function testValidateSymlinksOnNonDirectory()
+	{
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->init(null);
+
+		self::assertNull($manager->validateSymlinks(__DIR__ . '/data/pradoheader.gif', false));
 	}
 }
