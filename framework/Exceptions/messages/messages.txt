@@ -191,6 +191,13 @@ pageserviceconf_parameter_invalid		= <parameter> element must have an "id" attri
 pageserviceconf_page_invalid			= <page> element must have an "id" attribute in page directory configuration file '{0}'.
 pageserviceconf_includefile_required	= Page configuration <include> element must have a "file" attribute.
 
+restservice_pattern_required			= TRestService resource configuration requires a 'pattern' attribute.
+restservice_class_required				= TRestService resource configuration requires a 'class' attribute.
+restservice_resource_invalid			= TRestService resource class '{0}' must extend Prado\Web\Services\Rest\TRestResource.
+restservice_http_error					= HTTP {0} {1}
+restgroup_file_not_found				= TRestService group file '{0}' could not be found (tried .php and .xml extensions).
+restconfig_file_not_found				= TRestService config file '{0}' could not be found (tried .php and .xml extensions).
+
 basebehavior_cannot_setname_with_owner	= The TBaseBehavior.Name "{0}" cannot be changed (to "{1}") after the behavior is attached.
 basebehavior_sync_no_owner				= The TBaseBehavior "{0}" has no owner and cannot synchronize event handlers on a component without owners.
 basebehavior_sync_not_owner				= The TBaseBehavior "{0}" cannot synchronize event handlers on an object that is not the owner.
