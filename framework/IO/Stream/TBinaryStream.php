@@ -36,7 +36,7 @@ use Psr\Http\Message\StreamInterface;
  * ```
  *
  * It reads; writes forward to the inner stream. Typed writing is provided by
- * {@see \Prado\IO\Behavior\TBinaryStreamBehavior}.
+ * {@see \Prado\IO\Behaviors\TBinaryStreamBehavior}.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
