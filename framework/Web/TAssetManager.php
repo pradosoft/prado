@@ -603,7 +603,7 @@ class TAssetManager extends \Prado\TModule
 	 * @return string the cache key
 	 * @since 4.3.3
 	 */
-	private function publishCacheKey($path, $options)
+	protected function publishCacheKey($path, $options)
 	{
 		if (!$options) {
 			return $path;
