@@ -43,8 +43,7 @@ class TTestStreamTest extends PHPUnit\Framework\TestCase
 		$s = $this->readWriteSeekStream();
 		$this->assertTrue($s->rawSeekable(), 'The underlying handle is really seekable.');
 		$s->forceSeekable = false;
-		$this->assertFalse($s->getSeekable(), 'Property getter honors the override.');
-		$this->assertFalse($s->isSeekable(), 'PSR isSeekable() routes through the getter.');
+		$this->assertFalse($s->isSeekable(), 'PSR isSeekable() honors the override.');
 		$this->assertTrue($s->rawSeekable(), 'The raw stored flag is unchanged.');
 		$s->close();
 	}
@@ -67,7 +66,7 @@ class TTestStreamTest extends PHPUnit\Framework\TestCase
 		$this->assertSame(0, $s->writeCalls);
 		$this->assertSame(0, $s->readCalls);
 		$s->write('abc');
-		$s->seekTo(0);
+		$s->seek(0);
 		$s->read(3);
 		$this->assertSame(1, $s->writeCalls);
 		$this->assertSame(1, $s->readCalls);

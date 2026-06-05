@@ -264,6 +264,8 @@ return [
 'IEventParameter' => 'Prado\IEventParameter',
 'IModule' => 'Prado\IModule',
 'IModuleDependency' => 'Prado\IModuleDependency',
+'TBinaryStreamBehavior' => 'Prado\IO\Behaviors\TBinaryStreamBehavior',
+'TPhpStreamBehavior' => 'Prado\IO\Behaviors\TPhpStreamBehavior',
 'TCachedHttpClient' => 'Prado\IO\HttpClient\TCachedHttpClient',
 'TCurlHttpClient' => 'Prado\IO\HttpClient\TCurlHttpClient',
 'TFopenHttpClient' => 'Prado\IO\HttpClient\TFopenHttpClient',

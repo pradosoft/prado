@@ -14,14 +14,13 @@ use Prado\IO\TStream;
  * TTestStream is an instrumented {@see \Prado\IO\TStream} for unit tests.
  *
  * {@see TStream} is concrete, so most tests open it through {@see TTestIOHelper}.  This
- * harness exists to exercise the self-encapsulation seam: the public capability getters
- * {@see \Prado\IO\TStream::getReadable()}, {@see \Prado\IO\TStream::getWritable()}, and
- * {@see \Prado\IO\TStream::getSeekable()} are the single override points, and the public
+ * harness exists to exercise the self-encapsulation seam: the PSR-7 capability methods
+ * {@see \Prado\IO\TStream::isReadable()}, {@see \Prado\IO\TStream::isWritable()}, and
+ * {@see \Prado\IO\TStream::isSeekable()} are the single override points, and the public
  * operations ({@see \Prado\IO\TStream::read()}, {@see \Prado\IO\TStream::write()},
- * {@see \Prado\IO\TStream::seekTo()}) and the PSR-7 {@see \Prado\IO\TStream::isReadable()}
- * family all route through them.
+ * {@see \Prado\IO\TStream::seek()}) all route through them.
  *
- * The force flags override what each capability getter reports, independent of the
+ * The force flags override what each capability method reports, independent of the
  * underlying handle:
  *
  * - {@see $forceReadable}/{@see $forceWritable}/{@see $forceSeekable}, when not null,
@@ -38,13 +37,13 @@ use Prado\IO\TStream;
  */
 class TTestStream extends TStream
 {
-	/** @var ?bool When set, the value {@see getReadable()} reports; null uses the real flag. */
+	/** @var ?bool When set, the value {@see isReadable()} reports; null uses the real flag. */
 	public ?bool $forceReadable = null;
 
-	/** @var ?bool When set, the value {@see getWritable()} reports; null uses the real flag. */
+	/** @var ?bool When set, the value {@see isWritable()} reports; null uses the real flag. */
 	public ?bool $forceWritable = null;
 
-	/** @var ?bool When set, the value {@see getSeekable()} reports; null uses the real flag. */
+	/** @var ?bool When set, the value {@see isSeekable()} reports; null uses the real flag. */
 	public ?bool $forceSeekable = null;
 
 	/** @var int The number of times {@see read()} has run. */
@@ -57,27 +56,27 @@ class TTestStream extends TStream
 	 * Reports the readable capability, honoring {@see $forceReadable} when set.
 	 * @return bool Whether the stream is readable.
 	 */
-	public function getReadable(): bool
+	public function isReadable(): bool
 	{
-		return $this->forceReadable ?? parent::getReadable();
+		return $this->forceReadable ?? parent::isReadable();
 	}
 
 	/**
 	 * Reports the writable capability, honoring {@see $forceWritable} when set.
 	 * @return bool Whether the stream is writable.
 	 */
-	public function getWritable(): bool
+	public function isWritable(): bool
 	{
-		return $this->forceWritable ?? parent::getWritable();
+		return $this->forceWritable ?? parent::isWritable();
 	}
 
 	/**
 	 * Reports the seekable capability, honoring {@see $forceSeekable} when set.
 	 * @return bool Whether the stream is seekable.
 	 */
-	public function getSeekable(): bool
+	public function isSeekable(): bool
 	{
-		return $this->forceSeekable ?? parent::getSeekable();
+		return $this->forceSeekable ?? parent::isSeekable();
 	}
 
 	/**
@@ -108,7 +107,7 @@ class TTestStream extends TStream
 	 */
 	public function rawReadable(): bool
 	{
-		return parent::getReadable();
+		return parent::isReadable();
 	}
 
 	/**
@@ -117,7 +116,7 @@ class TTestStream extends TStream
 	 */
 	public function rawWritable(): bool
 	{
-		return parent::getWritable();
+		return parent::isWritable();
 	}
 
 	/**
@@ -126,6 +125,6 @@ class TTestStream extends TStream
 	 */
 	public function rawSeekable(): bool
 	{
-		return parent::getSeekable();
+		return parent::isSeekable();
 	}
 }
