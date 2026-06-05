@@ -21,7 +21,7 @@ use Prado\Util\Helpers\TBitHelper;
  * called network byte order).  A null byte order means "use the running machine's
  * order", resolved by {@see resolve()} / {@see native()}.
  *
- * {@see \Prado\IO\Behavior\TBinaryStreamBehavior} uses it to choose the
+ * {@see \Prado\IO\Behaviors\TBinaryStreamBehavior} uses it to choose the
  * {@see pack()}/{@see unpack()} format for multi-byte integers and floats.
  *
  * @author Brad Anderson <belisoful@icloud.com>
