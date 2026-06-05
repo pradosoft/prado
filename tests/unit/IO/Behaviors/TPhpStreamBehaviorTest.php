@@ -2,8 +2,9 @@
 
 use Prado\Exceptions\TIOException;
 use Prado\IO\Behaviors\TPhpStreamBehavior;
-use Prado\IO\Stream\TBufferStream;
 use Prado\IO\TStream;
+use Prado\TComponent;
+use Psr\Http\Message\StreamInterface;
 
 class TPhpStreamBehaviorTest extends PHPUnit\Framework\TestCase
 {
@@ -86,8 +87,8 @@ class TPhpStreamBehaviorTest extends PHPUnit\Framework\TestCase
 
 	public function testFseekNonSeekableReturnsFalse()
 	{
-		// A TBufferStream is a non-seekable FIFO; fseek must report failure, not throw.
-		$b = new TBufferStream();
+		// A non-seekable owner: fseek must report failure, not throw.
+		$b = new TNonSeekableStreamDouble();
 		$b->attachBehavior('php', new TPhpStreamBehavior());
 		$b->fwrite('data');
 		self::assertFalse($b->fseek(0));
@@ -97,7 +98,7 @@ class TPhpStreamBehaviorTest extends PHPUnit\Framework\TestCase
 	{
 		// Owner is a StreamInterface that is not resource-backed: PSR delegation works,
 		// but the raw-resource readers (fgets/fgetc) return false.
-		$b = new TBufferStream();
+		$b = new TNonSeekableStreamDouble();
 		$b->attachBehavior('php', new TPhpStreamBehavior());
 		self::assertSame(3, $b->fwrite('xyz'));
 		self::assertSame('xy', $b->fread(2));
@@ -114,9 +115,99 @@ class TPhpStreamBehaviorTest extends PHPUnit\Framework\TestCase
 
 	public function testNonStreamOwnerThrows()
 	{
-		$owner = new \Prado\TComponent();
+		$owner = new TComponent();
 		$owner->attachBehavior('php', new TPhpStreamBehavior());
 		self::expectException(TIOException::class);
 		$owner->fwrite('x');
+	}
+}
+
+/**
+ * Minimal non-seekable, non-resource StreamInterface owner for the behavior tests, so the
+ * suite stays self-contained (no dependency on the Stream/ batch).
+ */
+class TNonSeekableStreamDouble extends TComponent implements StreamInterface
+{
+	private string $_buffer = '';
+
+	private int $_pos = 0;
+
+	public function write(string $string): int
+	{
+		$this->_buffer .= $string;
+		return strlen($string);
+	}
+
+	public function read(int $length): string
+	{
+		$data = substr($this->_buffer, $this->_pos, $length);
+		$this->_pos += strlen($data);
+		return $data;
+	}
+
+	public function isSeekable(): bool
+	{
+		return false;
+	}
+
+	public function isReadable(): bool
+	{
+		return true;
+	}
+
+	public function isWritable(): bool
+	{
+		return true;
+	}
+
+	public function eof(): bool
+	{
+		return $this->_pos >= strlen($this->_buffer);
+	}
+
+	public function tell(): int
+	{
+		return $this->_pos;
+	}
+
+	public function getSize(): ?int
+	{
+		return strlen($this->_buffer);
+	}
+
+	public function getContents(): string
+	{
+		$data = substr($this->_buffer, $this->_pos);
+		$this->_pos = strlen($this->_buffer);
+		return $data;
+	}
+
+	public function __toString(): string
+	{
+		return $this->_buffer;
+	}
+
+	public function seek(int $offset, int $whence = SEEK_SET): void
+	{
+		throw new \RuntimeException('not seekable');
+	}
+
+	public function rewind(): void
+	{
+		throw new \RuntimeException('not seekable');
+	}
+
+	public function close(): void
+	{
+	}
+
+	public function detach()
+	{
+		return null;
+	}
+
+	public function getMetadata(?string $key = null): mixed
+	{
+		return $key === null ? [] : null;
 	}
 }
