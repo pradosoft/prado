@@ -35,7 +35,6 @@ use Prado\Util\TComposer;
  * lives in {@see TComposerTestTrait}; the {@see TTestCacheStub} cache stub
  * and the {@see TTestComposer} seam subclass live in the test Harness.
  *
- * @package System
  */
 class TComposerTest extends PHPUnit\Framework\TestCase
 {
@@ -367,6 +366,56 @@ class TComposerTest extends PHPUnit\Framework\TestCase
 		// extra is not an array, so the key cannot be indexed; the scalar is returned.
 		$this->seedExtraFixture();
 		$this->assertSame('a-string', TComposer::getExtra('acme/scalarextra', 'bootstrap'));
+	}
+
+	// =======================================================================
+	// getPradoExtra — extra.prado sub-array accessor
+	// =======================================================================
+
+	private function seedPradoExtraFixture(): void
+	{
+		PradoUnit::setStaticProp(TComposer::class, '_packages', [
+			'acme/nested' => ['name' => 'acme/nested',
+				'extra' => ['prado' => ['bootstrap' => 'Acme\\Module', 'config' => 'cfg.xml']]],
+			'acme/noprado' => ['name' => 'acme/noprado', 'extra' => ['bootstrap' => 'Legacy\\Module']],
+			'acme/noextra' => ['name' => 'acme/noextra'],
+		]);
+	}
+
+	public function testGetPradoExtra_nullKeyReturnsWholePradoArray(): void
+	{
+		$this->seedPradoExtraFixture();
+		$this->assertSame(
+			['bootstrap' => 'Acme\\Module', 'config' => 'cfg.xml'],
+			TComposer::getPradoExtra('acme/nested'),
+		);
+	}
+
+	public function testGetPradoExtra_namedKeyReturnsThatValue(): void
+	{
+		$this->seedPradoExtraFixture();
+		$this->assertSame('Acme\\Module', TComposer::getPradoExtra('acme/nested', 'bootstrap'));
+		$this->assertSame('cfg.xml', TComposer::getPradoExtra('acme/nested', 'config'));
+	}
+
+	public function testGetPradoExtra_absentKeyReturnsNull(): void
+	{
+		$this->seedPradoExtraFixture();
+		$this->assertNull(TComposer::getPradoExtra('acme/nested', 'missing'));
+	}
+
+	public function testGetPradoExtra_noPradoSubArrayReturnsNull(): void
+	{
+		// extra exists but has no `prado` sub-array — legacy keys are not read here.
+		$this->seedPradoExtraFixture();
+		$this->assertNull(TComposer::getPradoExtra('acme/noprado'));
+		$this->assertNull(TComposer::getPradoExtra('acme/noprado', 'bootstrap'));
+	}
+
+	public function testGetPradoExtra_missingPackageReturnsNull(): void
+	{
+		$this->seedPradoExtraFixture();
+		$this->assertNull(TComposer::getPradoExtra('ghost/missing', 'bootstrap'));
 	}
 
 	// =======================================================================
