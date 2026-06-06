@@ -17,11 +17,11 @@ use Prado\Util\Helpers\TBitHelper;
  * TByteOrder class.
  *
  * Enumerates the two byte orders (endianness) used when packing and unpacking
- * binary data: {@see LittleEndian} (Intel/x86, value 0) and {@see BigEndian}
- * (network/Motorola order, value 1).  A null byte order means "use the running
- * machine's order", resolved by {@see resolve()} / {@see native()}.
+ * binary data: {@see LittleEndian} (value 0) and {@see BigEndian} (value 1, also
+ * called network byte order).  A null byte order means "use the running machine's
+ * order", resolved by {@see resolve()} / {@see native()}.
  *
- * {@see \Prado\IO\Behavior\TBinaryStreamBehavior} uses it to choose the
+ * {@see \Prado\IO\Behaviors\TBinaryStreamBehavior} uses it to choose the
  * {@see pack()}/{@see unpack()} format for multi-byte integers and floats.
  *
  * @author Brad Anderson <belisoful@icloud.com>

@@ -32,17 +32,15 @@ use Psr\Http\Message\StreamInterface;
  * {@see fromMemory()}, {@see fromTemp()}, {@see fromString()},
  * {@see fromResource()}, and the {@see for()} coercion.
  *
- * Each operation has a PSR-7 name and a PHP alias:
- *  - PSR-7: read/write/seek/tell/eof/rewind/getSize/getContents.
- *  - PHP: {@see fread()}/{@see fwrite()}/{@see fseek()}/{@see ftell()}/
- *    {@see feof()}/{@see fgets()}/{@see fgetc()}/{@see fputs()}.
- * PSR getters are also Prado properties (getSize() → ->Size, getReadable() →
- * ->Readable).
+ * The public surface is PSR-7 (read/write/seek/tell/eof/rewind/isReadable/isWritable/
+ * isSeekable/getSize/getContents).  PSR getters double as Prado properties (getSize() →
+ * ->Size, isReadable() → ->Readable).  PHP-name access aliases (fread/fwrite/fseek/
+ * fgets/…) are provided by {@see \Prado\IO\Behaviors\TPhpStreamBehavior} when attached.
  *
  * Self-encapsulation (Uniform Access Principle): capability and filter state is
  * reached through accessors. The protected {@see getReadableDirect()} family are
- * the raw accessors, so subclasses (pipes, sockets) override the public capability
- * getters without disturbing internal logic.
+ * the raw accessors, so subclasses (pipes, sockets) override {@see isReadable()},
+ * {@see isWritable()}, and {@see isSeekable()} without disturbing internal logic.
  *
  * Native PHP stream filters attach through {@see appendFilter()},
  * {@see prependFilter()}, and {@see removeFilter()}; compression and transforms
@@ -59,7 +57,9 @@ use Psr\Http\Message\StreamInterface;
  * {@see \Prado\TComponent::callBehaviorsMethod()}):
  * @method string dyRead(string $data, int $length) Filters bytes just read.
  * @method int dyWrite(int $written, string $data) Filters the write byte-count.
- * @method bool dyPreSeek(bool $allow, int $offset, int $whence) Vetoes a seek before it runs; return false to deny.
+ * @method bool dyIsReadable(bool $readable) Vetoes the readable capability; return false to deny.
+ * @method bool dyIsWritable(bool $writable) Vetoes the writable capability; return false to deny.
+ * @method bool dyIsSeekable(bool $seekable) Vetoes the seekable capability; return false to deny.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
@@ -281,8 +281,12 @@ class TStream extends TResource implements StreamInterface
 	public function __toString(): string
 	{
 		try {
-			if ($this->getSeekable()) {
-				$this->seekTo(0);
+			if ($this->isSeekable()) {
+				try {
+					$this->seek(0);
+				} catch (\Throwable $e) {
+					// a behavior may forbid the seek; read from the current position
+				}
 			}
 			return $this->getContents();
 		} catch (\Throwable $e) {
@@ -353,17 +357,21 @@ class TStream extends TResource implements StreamInterface
 	}
 
 	/**
-	 * Indicates whether the stream is seekable.
+	 * Indicates whether the stream is seekable.  A {@see dyIsSeekable} behavior may veto
+	 * the capability, forcing it to false.
 	 * @return bool Whether the stream is seekable.
 	 * @see StreamInterface::isSeekable()
 	 */
 	public function isSeekable(): bool
 	{
-		return $this->getSeekable();
+		$seekable = $this->getSeekableDirect();
+		$this->callBehaviorsMethod('dyIsSeekable', $seekable, $seekable);
+		return (bool) $seekable;
 	}
 
 	/**
-	 * Seeks to a position (PSR-7). Use {@see seekTo()} for the boolean result.
+	 * Seeks to a position.  A non-seekable (or behavior-vetoed, see {@see isSeekable()})
+	 * or failed seek throws; a successful seek raises {@see onSeek}.
 	 * @param int $offset The stream offset.
 	 * @param int $whence SEEK_SET, SEEK_CUR or SEEK_END.
 	 * @throws \RuntimeException When the stream is not seekable or the seek fails.
@@ -371,33 +379,14 @@ class TStream extends TResource implements StreamInterface
 	 */
 	public function seek(int $offset, int $whence = SEEK_SET): void
 	{
-		if (!$this->seekTo($offset, $whence)) {
+		$resource = $this->getResourceDirect();
+		if (!$this->isSeekable() || !is_resource($resource)) {
+			throw new \RuntimeException('Cannot seek a non-seekable stream');
+		}
+		if (fseek($resource, $offset, $whence) !== 0) {
 			throw new \RuntimeException('Unable to seek to stream position ' . $offset);
 		}
-	}
-
-	/**
-	 * Seeks to a position, returning success (Prado-internal companion to {@see seek()}).
-	 * @param int $offset The stream offset.
-	 * @param int $whence SEEK_SET, SEEK_CUR or SEEK_END.
-	 * @return bool Whether the seek succeeded.
-	 */
-	public function seekTo(int $offset, int $whence = SEEK_SET): bool
-	{
-		$resource = $this->getResourceDirect();
-		if (!$this->getSeekable() || !is_resource($resource)) {
-			return false;
-		}
-		$allow = true;
-		$this->callBehaviorsMethod('dyPreSeek', $allow, $allow, $offset, $whence);
-		if ($allow === false) {
-			return false;
-		}
-		$result = fseek($resource, $offset, $whence) === 0;
-		if ($result) {
-			$this->onSeek($offset);
-		}
-		return $result;
+		$this->onSeek($offset);
 	}
 
 	/**
@@ -411,13 +400,16 @@ class TStream extends TResource implements StreamInterface
 	}
 
 	/**
-	 * Indicates whether the stream is writable.
+	 * Indicates whether the stream is writable.  A {@see dyIsWritable} behavior may veto
+	 * the capability, forcing it to false.
 	 * @return bool Whether the stream is writable.
 	 * @see StreamInterface::isWritable()
 	 */
 	public function isWritable(): bool
 	{
-		return $this->getWritable();
+		$writable = $this->getWritableDirect();
+		$this->callBehaviorsMethod('dyIsWritable', $writable, $writable);
+		return (bool) $writable;
 	}
 
 	/**
@@ -430,7 +422,7 @@ class TStream extends TResource implements StreamInterface
 	public function write(string $string): int
 	{
 		$resource = $this->getResourceDirect();
-		if (!$this->getWritable()) {
+		if (!$this->isWritable()) {
 			throw new \RuntimeException('Cannot write to a non-writable stream');
 		}
 		if (!is_resource($resource)) {
@@ -447,13 +439,16 @@ class TStream extends TResource implements StreamInterface
 	}
 
 	/**
-	 * Indicates whether the stream is readable.
+	 * Indicates whether the stream is readable.  A {@see dyIsReadable} behavior may veto
+	 * the capability, forcing it to false.
 	 * @return bool Whether the stream is readable.
 	 * @see StreamInterface::isReadable()
 	 */
 	public function isReadable(): bool
 	{
-		return $this->getReadable();
+		$readable = $this->getReadableDirect();
+		$this->callBehaviorsMethod('dyIsReadable', $readable, $readable);
+		return (bool) $readable;
 	}
 
 	/**
@@ -466,7 +461,7 @@ class TStream extends TResource implements StreamInterface
 	public function read(int $length): string
 	{
 		$resource = $this->getResourceDirect();
-		if (!$this->getReadable()) {
+		if (!$this->isReadable()) {
 			throw new \RuntimeException('Cannot read from a non-readable stream');
 		}
 		if (!is_resource($resource)) {
@@ -499,7 +494,7 @@ class TStream extends TResource implements StreamInterface
 	public function getContents(): string
 	{
 		$resource = $this->getResourceDirect();
-		if (!$this->getReadable()) {
+		if (!$this->isReadable()) {
 			throw new \RuntimeException('Cannot read from a non-readable stream');
 		}
 		if (!is_resource($resource)) {
@@ -514,35 +509,8 @@ class TStream extends TResource implements StreamInterface
 	}
 
 	//
-	// ─── Prado property accessors (capabilities) ─────────────────────────────
+	// ─── Prado property accessors ────────────────────────────────────────────
 	//
-
-	/**
-	 * Indicates whether the stream is readable (the ->Readable property).
-	 * @return bool Whether the stream is readable.
-	 */
-	public function getReadable(): bool
-	{
-		return $this->getReadableDirect();
-	}
-
-	/**
-	 * Indicates whether the stream is writable (the ->Writable property).
-	 * @return bool Whether the stream is writable.
-	 */
-	public function getWritable(): bool
-	{
-		return $this->getWritableDirect();
-	}
-
-	/**
-	 * Indicates whether the stream is seekable (the ->Seekable property).
-	 * @return bool Whether the stream is seekable.
-	 */
-	public function getSeekable(): bool
-	{
-		return $this->getSeekableDirect();
-	}
 
 	/**
 	 * Returns the stream URI (the ->URI property).
@@ -551,98 +519,6 @@ class TStream extends TResource implements StreamInterface
 	public function getURI(): ?string
 	{
 		return $this->getURIDirect();
-	}
-
-	//
-	// ─── PHP-name aliases ────────────────────────────────────────────────────
-	//
-
-	/**
-	 * Alias of {@see read()}.
-	 * @param int $length The maximum number of bytes to read.
-	 * @return string The bytes read.
-	 */
-	public function fread(int $length): string
-	{
-		return $this->read($length);
-	}
-
-	/**
-	 * Alias of {@see write()}.
-	 * @param string $data The bytes to write.
-	 * @return int The number of bytes written.
-	 */
-	public function fwrite(string $data): int
-	{
-		return $this->write($data);
-	}
-
-	/**
-	 * Alias of {@see write()} (matches PHP's {@see fputs()}).
-	 * @param string $data The bytes to write.
-	 * @return int The number of bytes written.
-	 */
-	public function fputs(string $data): int
-	{
-		return $this->write($data);
-	}
-
-	/**
-	 * Alias of {@see seekTo()} (returns success like a boolean {@see fseek()}).
-	 * @param int $offset The stream offset.
-	 * @param int $whence SEEK_SET, SEEK_CUR or SEEK_END.
-	 * @return bool Whether the seek succeeded.
-	 */
-	public function fseek(int $offset, int $whence = SEEK_SET): bool
-	{
-		return $this->seekTo($offset, $whence);
-	}
-
-	/**
-	 * Alias of {@see tell()}.
-	 * @return int The current position.
-	 */
-	public function ftell(): int
-	{
-		return $this->tell();
-	}
-
-	/**
-	 * Alias of {@see eof()}.
-	 * @return bool Whether the stream is at end of file.
-	 */
-	public function feof(): bool
-	{
-		return $this->eof();
-	}
-
-	/**
-	 * Reads a line from the stream (PHP {@see fgets()} semantics).  It reads the raw
-	 * handle directly, bypassing the {@see read()} capability check and dy behaviors.
-	 * @param ?int $length Max bytes to read (including newline); null reads to EOL.
-	 * @return false|string The line, or false at EOF/on error.
-	 */
-	public function fgets(?int $length = null): false|string
-	{
-		$resource = $this->getResourceDirect();
-		if (!is_resource($resource)) {
-			return false;
-		}
-		return $length === null ? fgets($resource) : fgets($resource, $length);
-	}
-
-	/**
-	 * Reads a single byte from the stream (PHP {@see fgetc()} semantics).  It reads the
-	 * raw handle directly, bypassing the {@see read()} capability check and dy behaviors.
-	 * @return false|string The byte read, or false at EOF.
-	 */
-	public function fgetc(): false|string
-	{
-		$resource = $this->getResourceDirect();
-		if (!is_resource($resource)) {
-			return false;
-		}
-		return fgetc($resource);
 	}
 
 	//
@@ -699,12 +575,20 @@ class TStream extends TResource implements StreamInterface
 	}
 
 	/**
-	 * Removes a previously appended/prepended filter ({@see stream_filter_remove()}).
-	 * @param mixed $filter The filter handle returned by append/prepend.
-	 * @return bool Whether the filter was removed.
+	 * Removes a previously appended/prepended filter ({@see stream_filter_remove()}), by
+	 * filter handle or by name.  A name removes the first attached filter that bears it.
+	 * @param resource|string $filter A filter handle from append/prepend, or a filter name.
+	 * @return bool Whether a filter was removed.
 	 */
 	public function removeFilter(mixed $filter): bool
 	{
+		if (is_string($filter)) {
+			$index = $this->getFilterIndex($filter);
+			if ($index === null) {
+				return false;
+			}
+			$filter = $this->getFiltersDirect()[$index]['filter'];
+		}
 		if (!is_resource($filter)) {
 			return false;
 		}
@@ -850,7 +734,7 @@ class TStream extends TResource implements StreamInterface
 		$stream = self::fromTemp();
 		if ($data !== '') {
 			$stream->write($data);
-			$stream->seekTo(0);
+			$stream->seek(0);
 		}
 		return $stream;
 	}

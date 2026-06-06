@@ -55,8 +55,6 @@ class TStreamTest extends PHPUnit\Framework\TestCase
 		self::assertTrue($r->isReadable());
 		self::assertFalse($r->isWritable());
 		self::assertTrue($r->isSeekable());
-		self::assertTrue($r->getReadable());
-		self::assertFalse($r->getWritable());
 		$r->close();
 
 		$rw = TStream::fromMemory('r+b');
@@ -150,22 +148,6 @@ class TStreamTest extends PHPUnit\Framework\TestCase
 		$empty = TStream::for(null);
 		self::assertSame(0, $empty->getSize());
 		$empty->close();
-	}
-
-	public function testPhpAliases()
-	{
-		$s = TStream::fromMemory();
-		self::assertSame(5, $s->fwrite('abcde'));
-		self::assertSame(2, $s->fputs('fg'));
-		self::assertTrue($s->fseek(0));
-		self::assertSame(0, $s->ftell());
-		self::assertSame('abc', $s->fread(3));
-		self::assertSame("defg", $s->fgets());
-		self::assertIsBool($s->feof());
-		$s->fseek(0);
-		self::assertFalse($s->feof(), 'Not at EOF right after seeking to start.');
-		self::assertSame('a', $s->fgetc());
-		$s->close();
 	}
 
 	public function testDetachLeavesResourceAndDisablesOps()
@@ -290,7 +272,6 @@ class TStreamTest extends PHPUnit\Framework\TestCase
 		// php://output is write-only and non-seekable.
 		$s = TStream::fromFile('php://output', 'wb');
 		self::assertFalse($s->isSeekable());
-		self::assertFalse($s->seekTo(0), 'seekTo returns false on a non-seekable stream.');
 		try {
 			$s->seek(0);
 			self::fail('seek() must throw on a non-seekable stream.');
@@ -306,7 +287,6 @@ class TStreamTest extends PHPUnit\Framework\TestCase
 		$s = TStream::fromResource($pipe, false);   // borrowed: harness pcloses it
 		self::assertTrue($s->isReadable());
 		self::assertFalse($s->isSeekable());
-		self::assertFalse($s->seekTo(0), 'seekTo returns false on a non-seekable stream.');
 		self::assertSame('streamed-bytes', $s->getContents());
 		$s->close();
 		TTestIOHelper::closeAny($pipe);
@@ -321,6 +301,30 @@ class TStreamTest extends PHPUnit\Framework\TestCase
 		self::assertFalse($s->removeFilter('not-a-resource'));
 		self::assertTrue($s->removeFilter($f));
 		self::assertCount(0, $s->getFilters());
+		$s->close();
+	}
+
+	public function testRemoveFilterByName()
+	{
+		$s = TStream::fromMemory();
+		$s->appendFilter('string.rot13', STREAM_FILTER_WRITE);
+		$s->appendFilter('string.tolower', STREAM_FILTER_WRITE);
+		self::assertCount(2, $s->getFilters());
+		self::assertTrue($s->removeFilter('string.rot13'), 'Removes a filter by name.');
+		self::assertSame(['string.tolower'], $s->getFilterNames());
+		self::assertFalse($s->removeFilter('string.rot13'), 'Removing an absent name returns false.');
+		$s->close();
+	}
+
+	public function testRemoveFilterByNameRemovesFirstMatch()
+	{
+		$s = TStream::fromMemory();
+		$s->appendFilter('string.rot13', STREAM_FILTER_WRITE);   // index 0 (front)
+		$keep = $s->appendFilter('string.rot13', STREAM_FILTER_WRITE);   // index 1
+		self::assertCount(2, $s->getFilters());
+		self::assertTrue($s->removeFilter('string.rot13'));
+		self::assertCount(1, $s->getFilters());
+		self::assertSame($keep, $s->getFilters()[0], 'The second same-named filter remains.');
 		$s->close();
 	}
 
@@ -412,13 +416,12 @@ class TStreamTest extends PHPUnit\Framework\TestCase
 
 	public function testCapabilityOverrideSeamGovernsSeek()
 	{
-		// A subclass override of getSeekable() must govern seek()/seekTo() even though
-		// the underlying handle is really seekable (the self-encapsulation seam).
+		// A subclass override of isSeekable() must govern seek() even though the
+		// underlying handle is really seekable (the self-encapsulation seam).
 		$s = new TTestStream(TTestIOHelper::memoryResource());
 		$s->write('payload');
 		$s->forceSeekable = false;
 		self::assertFalse($s->isSeekable());
-		self::assertFalse($s->seekTo(0), 'seekTo() honors the overridden capability.');
 		$this->expectException(\RuntimeException::class);
 		try {
 			$s->seek(0);
@@ -445,6 +448,30 @@ class TStreamTest extends PHPUnit\Framework\TestCase
 		} finally {
 			$s->close();
 		}
+	}
+
+	public function testCapabilityDyHooksVetoReadAndWrite()
+	{
+		// A behavior's dyIsReadable/dyIsWritable hooks force the capability false, so the
+		// PSR is*() methods report false and read()/write() throw.
+		$s = TStream::fromMemory();
+		$s->attachBehavior('noio', new TNoReadWriteBehavior());
+		self::assertFalse($s->isReadable());
+		self::assertFalse($s->isWritable());
+		self::assertTrue($s->isSeekable(), 'Other capabilities are unaffected.');
+
+		$threw = false;
+		try {
+			$s->write('x');
+		} catch (\RuntimeException $e) {
+			$threw = true;
+		}
+		self::assertTrue($threw, 'write() throws when the writable capability is vetoed.');
+
+		$s->detachBehavior('noio');
+		self::assertTrue($s->isReadable());
+		self::assertTrue($s->isWritable());
+		$s->close();
 	}
 }
 
@@ -475,5 +502,27 @@ class TDoubleWriteBehavior extends \Prado\Util\TBehavior
 			return $chain->dyWrite($written, $string);
 		}
 		return $written;
+	}
+}
+
+/**
+ * Behavior that vetoes the readable and writable capabilities, via the dyIs* hooks.
+ */
+class TNoReadWriteBehavior extends \Prado\Util\TBehavior
+{
+	public function dyIsReadable($readable, $chain = null)
+	{
+		if ($chain !== null) {
+			$chain->dyIsReadable($readable);
+		}
+		return false;
+	}
+
+	public function dyIsWritable($writable, $chain = null)
+	{
+		if ($chain !== null) {
+			$chain->dyIsWritable($writable);
+		}
+		return false;
 	}
 }
