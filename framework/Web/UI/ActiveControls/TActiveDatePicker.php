@@ -103,7 +103,7 @@ class TActiveDatePicker extends TDatePicker implements IActiveControl, ICallback
 		if ($this->getActiveControl()->canUpdateClientSide() && $this->getHasLoadedPostData()) {
 			$cb = $this->getPage()->getCallbackClient();
 			$cb->setValue($this, $value);
-			if ($this->getInputMode() == TDatePickerInputMode::DropDownList) {
+			if ($this->getDateInputMode() == TDatePickerInputMode::DropDownList) {
 				$dt = new \DateTime();
 				$dt->setTimeStamp($this->getTimeStampFromText());
 				$id = $this->getClientID();

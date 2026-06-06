@@ -14,6 +14,7 @@ Upgrading from v4.3.3
 - Prado JS dispatches `prado:ajaxComplete` event with jQuery.onAjaxComplete for non-dependence on jQuery. Use this event instead of the jQuery event.
 - `Prado\Web\TUri` is now a PSR-7 `UriInterface`: scheme/host are lower-cased, path/query/fragment are
   percent-encoded, and `getPort()` returns `?int` (`null` when absent or scheme default).
+- TDatePicker::InputMode changed to TDatePicker::DateInputMode - due to conflict with TWebControl::InputMode
 
 Upgrading from v4.3.2
 ---------------------

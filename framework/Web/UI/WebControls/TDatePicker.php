@@ -65,7 +65,7 @@ use Prado\I18N\core\CultureInfo;
  * for the date picker panel. <b>CalendarStyle</b> property sets the packages
  * styles available. E.g. <b>default</b>.
  *
- * The <b>InputMode</b> property can be set to "TextBox" or "DropDownList" with
+ * The <b>DateInputMode</b> property can be set to "TextBox" or "DropDownList" with
  * default as "TextBox".
  * In <b>DropDownList</b> mode, in addition to the popup date picker, three
  * drop down list (day, month and year) are presented to select the date .
@@ -152,21 +152,21 @@ class TDatePicker extends TTextBox
 	{
 		$this->setViewState('Culture', $value, '');
 	}
+	
+	/**
+	 * @return TDatePickerInputMode input method of date values. Defaults to TDatePickerInputMode::TextBox.
+	 */
+	public function getDateInputMode()
+	{
+		return $this->getViewState('DateInputMode', TDatePickerInputMode::TextBox);
+	}
 
 	/**
 	 * @param TDatePickerInputMode $value input method of date values
 	 */
-	public function setInputMode($value)
+	public function setDateInputMode($value)
 	{
-		$this->setViewState('InputMode', TPropertyValue::ensureEnum($value, TDatePickerInputMode::class), TDatePickerInputMode::TextBox);
-	}
-
-	/**
-	 * @return TDatePickerInputMode input method of date values. Defaults to TDatePickerInputMode::TextBox.
-	 */
-	public function getInputMode()
-	{
-		return $this->getViewState('InputMode', TDatePickerInputMode::TextBox);
+		$this->setViewState('DateInputMode', TPropertyValue::ensureEnum($value, TDatePickerInputMode::class), TDatePickerInputMode::TextBox);
 	}
 
 	/**
@@ -441,7 +441,7 @@ class TDatePicker extends TTextBox
 	 */
 	public function render($writer)
 	{
-		if ($this->getInputMode() == TDatePickerInputMode::TextBox) {
+		if ($this->getDateInputMode() == TDatePickerInputMode::TextBox) {
 			parent::render($writer);
 			$this->renderDatePickerButtons($writer);
 		} else {
@@ -472,7 +472,7 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * Loads user input data. Override parent implementation, when InputMode
+	 * Loads user input data. Override parent implementation, when DateInputMode
 	 * is DropDownList call getDateFromPostData to get date data.
 	 * This method is primarly used by framework developers.
 	 * @param string $key the key that can be used to retrieve data from the input data collection
@@ -481,7 +481,7 @@ class TDatePicker extends TTextBox
 	 */
 	public function loadPostData($key, $values)
 	{
-		if ($this->getInputMode() == TDatePickerInputMode::TextBox) {
+		if ($this->getDateInputMode() == TDatePickerInputMode::TextBox) {
 			return parent::loadPostData($key, $values);
 		}
 		$value = $this->getDateFromPostData($key, $values);
@@ -549,7 +549,7 @@ class TDatePicker extends TTextBox
 	protected function getDatePickerOptions()
 	{
 		$options['ID'] = $this->getClientID();
-		$options['InputMode'] = $this->getInputMode();
+		$options['InputMode'] = $this->getDateInputMode();
 		$options['Format'] = $this->getDateFormat();
 		$options['FirstDayOfWeek'] = $this->getFirstDayOfWeek();
 		if (($cssClass = $this->getCssClass()) !== '') {
