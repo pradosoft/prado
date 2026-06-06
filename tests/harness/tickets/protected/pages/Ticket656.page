@@ -1,6 +1,6 @@
 <com:TContent ID="Content">
 
-<com:TDatePicker Id="datePicker" InputMode="DropDownList"/>
+<com:TDatePicker Id="datePicker" DateInputMode="DropDownList"/>
 
 <com:TActiveLabel id="lblStatus"/>
 <com:TActiveButton id="btnUpdate" Text="Update" OnClick="updateLbl"/>

@@ -237,7 +237,7 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 		$value = $this->getRecordPropertyValue($column, $record);
 		$control = new TDatePicker();
 		$control->setFromYear(1900);
-		$control->setInputMode(TDatePickerInputMode::DropDownList);
+		$control->setDateInputMode(TDatePickerInputMode::DropDownList);
 		$control->setDateFormat('yyyy-MM-dd');
 		if (!empty($value)) {
 			$control->setDate(substr($value, 0, 10));

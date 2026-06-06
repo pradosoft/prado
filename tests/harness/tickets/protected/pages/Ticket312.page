@@ -2,7 +2,7 @@
 <com:TButton Text="Click me" />
 <com:TDatePicker
   ReadOnly="true"
-  InputMode="DropDownList"
+  DateInputMode="DropDownList"
   DateFormat="M/yyyy" />
 
 <com:TDatePicker
