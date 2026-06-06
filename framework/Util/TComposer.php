@@ -39,6 +39,12 @@ class TComposer extends \Prado\TComponent
 	public const COMPOSER_INSTALLED_CACHE = 'prado:composer:installedpackages';
 
 	/**
+	 * Name of the Composer `extra` sub-array that namespaces a package's Prado
+	 * settings, e.g. `extra.prado.bootstrap`.
+	 */
+	public const EXTRA_PRADO = 'prado';
+
+	/**
 	 * @var null|array<string, array> installed packages indexed by package name.
 	 */
 	private static $_packages;
@@ -145,6 +151,27 @@ class TComposer extends \Prado\TComponent
 			return $extra;
 		}
 		return $extra[$key] ?? null;
+	}
+
+	/**
+	 * Returns the Prado-namespaced Composer `extra` data of an installed package,
+	 * read from the {@see EXTRA_PRADO} (`extra.prado`) sub-array.
+	 *
+	 * When $key is null, the whole `extra.prado` array is returned. When $key is
+	 * given, the value of that single `extra.prado` field is returned.
+	 *
+	 * @param string $name the package name, for example `vendor/package`.
+	 * @param null|string $key the `extra.prado` field to read, or null for the whole array.
+	 * @return mixed the `extra.prado` array, the single field value, or null when the
+	 *   package, the `prado` sub-array, or the field is not present.
+	 */
+	public static function getPradoExtra(string $name, ?string $key = null): mixed
+	{
+		$prado = static::getExtra($name, static::EXTRA_PRADO);
+		if ($key === null || !is_array($prado)) {
+			return $prado;
+		}
+		return $prado[$key] ?? null;
 	}
 
 	/**
