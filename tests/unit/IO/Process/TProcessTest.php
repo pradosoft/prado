@@ -272,6 +272,9 @@ class TProcessTest extends PHPUnit\Framework\TestCase
 
 	public function testTerminateRecordsSignalExitCode()
 	{
+		if (PHP_OS_FAMILY === 'Windows') {
+			self::markTestSkipped('POSIX signal semantics (signaled/termsig) do not apply on Windows.');
+		}
 		$p = TProcess::open([PHP_BINARY, '-r', 'sleep(30);']);
 		self::assertTrue($p->terminate());   // SIGTERM (15)
 		$p->wait();
