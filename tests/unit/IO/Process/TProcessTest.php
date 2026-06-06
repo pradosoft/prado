@@ -45,6 +45,66 @@ class TProcessTest extends PHPUnit\Framework\TestCase
 		);
 	}
 
+	private function normalize(array $descriptors): array
+	{
+		$method = new ReflectionMethod(TProcess::class, 'normalizeDescriptors');
+		$method->setAccessible(true);
+		return $method->invoke(null, $descriptors);
+	}
+
+	public function testNormalizeStringShorthandsAndAutoFill()
+	{
+		// 'pipe'/'pty' shorthands resolve by fd; the missing fd 2 auto-defaults.
+		self::assertSame([
+			0 => ['pipe', 'r'],
+			1 => ['pty'],
+			2 => ['pipe', 'w'],
+		], $this->normalize([0 => 'pipe', 1 => 'pty']));
+	}
+
+	public function testNormalizeFilePathsAndModes()
+	{
+		$file = tempnam(sys_get_temp_dir(), 'norm');
+		try {
+			$out = $this->normalize([0 => $file, 1 => ['file', $file], 2 => ['pipe']]);
+			self::assertSame(['file', realpath($file), 'r'], $out[0], 'string path -> file, mode r for fd 0.');
+			self::assertSame(['file', realpath($file), 'w'], $out[1], "['file', path] fills mode w for fd 1.");
+			self::assertSame(['pipe', 'w'], $out[2], "['pipe'] fills mode w for fd 2.");
+		} finally {
+			@unlink($file);
+		}
+	}
+
+	public function testNormalizeNullDefaultsAndFalseOmits()
+	{
+		// null restores the fd default; false omits the fd (child inherits the parent's).
+		$out = $this->normalize([0 => null, 1 => false, 2 => 'pipe']);
+		self::assertSame(['pipe', 'r'], $out[0]);
+		self::assertArrayNotHasKey(1, $out, 'false omits the descriptor entirely.');
+		self::assertSame(['pipe', 'w'], $out[2]);
+	}
+
+	public function testNormalizeExtraFdShorthand()
+	{
+		$out = $this->normalize([3 => 'pipe']);
+		self::assertSame(['pipe', 'w'], $out[3], 'an extra fd defaults to a write pipe.');
+		self::assertArrayHasKey(0, $out, 'standard fds still auto-fill alongside extra fds.');
+	}
+
+	public function testFileRedirectShorthandEndToEnd()
+	{
+		$file = tempnam(sys_get_temp_dir(), 'redir');
+		try {
+			$p = TProcess::open([PHP_BINARY, '-r', 'echo "to-file";'], [1 => $file]);
+			$p->wait();
+			$p->close();
+			self::assertNull($p->getStdout(), 'a file redirect leaves no stdout pipe.');
+			self::assertSame('to-file', trim((string) file_get_contents($file)));
+		} finally {
+			@unlink($file);
+		}
+	}
+
 	public function testSubclassOverridesDefaultsAndOpenReturnsSubclass()
 	{
 		// Late static binding: a subclass's overridden constant flows through

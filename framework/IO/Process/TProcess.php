@@ -89,20 +89,25 @@ class TProcess extends TResource implements \ArrayAccess, \IteratorAggregate, \C
 	public static function defaultDescriptors(): array
 	{
 		return [
-			static::STDIN => static::DEFAULT_STDIN,
-			static::STDOUT => static::DEFAULT_STDOUT,
-			static::STDERR => static::DEFAULT_STDERR,
+			static::STDIN => static::defaultDescriptor(static::STDIN),
+			static::STDOUT => static::defaultDescriptor(static::STDOUT),
+			static::STDERR => static::defaultDescriptor(static::STDERR),
 		];
 	}
 
 	/**
 	 * Opens a child process with {@see proc_open()}.
 	 * @param array|string $command The command (array form avoids shell parsing).
-	 * @param ?array $descriptors Descriptor spec; null uses {@see defaultDescriptors()}.
-	 *   Values may be 'pipe'/'file' arrays, raw resources, or {@see IResource} streams
-	 *   (e.g. {@see TPipeStream}/{@see \Prado\IO\TFileStream}).  A foreign (non-IResource)
-	 *   PSR-7 {@see StreamInterface} is bridged with {@see TStream::asResource()} and may
-	 *   lack an OS file descriptor, so prefer a pipe/file spec or a Prado stream for it.
+	 * @param ?array $descriptors Descriptor spec by fd number; null uses {@see defaultDescriptors()}.
+	 *   Each value is normalized by {@see normalizeDescriptors()}: 'pipe' or ['pipe'] becomes a
+	 *   pipe with the fd's read/write mode; 'pty' becomes ['pty']; an existing file path or
+	 *   ['file', path] becomes a file redirect (mode 'r' for fd 0, 'a' for fd 2, 'w' otherwise);
+	 *   null restores the fd's default; false omits the fd so the child inherits the parent's.
+	 *   An {@see IResource} or PSR-7 {@see StreamInterface} (e.g. {@see TPipeStream}/
+	 *   {@see \Prado\IO\TFileStream}) is converted to its raw resource; a foreign PSR-7 stream is
+	 *   bridged with {@see TStream::asResource()} and may lack an OS file descriptor, so prefer a
+	 *   pipe/file spec or a Prado stream for it.  Standard fds 0/1/2 default when not set unless
+	 *   given as false.
 	 * @param ?string $cwd The working directory.
 	 * @param ?array $env The environment variables.
 	 * @param ?array $options proc_open options (e.g. ['bypass_shell' => true]).
@@ -133,29 +138,156 @@ class TProcess extends TResource implements \ArrayAccess, \IteratorAggregate, \C
 	}
 
 	/**
-	 * Converts descriptor specs that are IResource/StreamInterface into the raw
-	 * resources {@see proc_open()} expects, leaving array specs and resources as-is.
-	 * @param array $descriptors The descriptor specs.
+	 * Normalizes descriptor specs for {@see proc_open()}.  Each value is mapped through
+	 * {@see normalizeDescriptor()}; standard fds (0/1/2) fall back to their defaults when
+	 * not set, while a false value omits an fd so the child inherits the parent's.
+	 * @param array $descriptors The descriptor specs by fd number.
 	 * @throws TInvalidDataValueException When an IResource descriptor has no open handle.
-	 * @return array The normalized descriptors.
+	 * @return array The normalized descriptors, ordered by fd number.
 	 */
 	protected static function normalizeDescriptors(array $descriptors): array
 	{
 		$normalized = [];
+		$suppressed = [];
 		foreach ($descriptors as $fd => $spec) {
-			if ($spec instanceof IResource) {
-				$resource = $spec->getResource();
-				if (!is_resource($resource)) {
-					throw new TInvalidDataValueException('process_descriptor_unusable', $fd);
-				}
-				$normalized[$fd] = $resource;
-			} elseif ($spec instanceof StreamInterface) {
-				$normalized[$fd] = TStream::asResource($spec);
-			} else {
-				$normalized[$fd] = $spec;
+			$fd = (int) $fd;
+			if ($spec === false) {
+				$suppressed[$fd] = true;
+				continue;
+			}
+			$normalized[$fd] = static::normalizeDescriptor($fd, $spec);
+		}
+		foreach ([static::STDIN, static::STDOUT, static::STDERR] as $fd) {
+			if (!isset($normalized[$fd]) && !isset($suppressed[$fd])) {
+				$normalized[$fd] = static::defaultDescriptor($fd);
 			}
 		}
+		ksort($normalized);
 		return $normalized;
+	}
+
+	/**
+	 * Normalizes a single descriptor spec for {@see proc_open()}.
+	 *  - An {@see IResource} resolves to its raw resource (throws when closed).
+	 *  - A PSR-7 {@see StreamInterface} is bridged with {@see TStream::asResource()}.
+	 *  - A raw resource passes through unchanged.
+	 *  - null restores the fd's {@see defaultDescriptor()}.
+	 *  - A string is normalized by {@see normalizeStringDescriptor()} ('pipe'/'pty'/file path).
+	 *  - An array is normalized by {@see normalizeArrayDescriptor()} (fills the pipe/file mode).
+	 * @param int $fd The descriptor number.
+	 * @param mixed $spec The descriptor spec.
+	 * @throws TInvalidDataValueException When an IResource descriptor has no open handle.
+	 * @return mixed The normalized descriptor.
+	 */
+	protected static function normalizeDescriptor(int $fd, mixed $spec): mixed
+	{
+		if ($spec instanceof IResource) {
+			$resource = $spec->getResource();
+			if (!is_resource($resource)) {
+				throw new TInvalidDataValueException('process_descriptor_unusable', $fd);
+			}
+			return $resource;
+		}
+		if ($spec instanceof StreamInterface) {
+			return TStream::asResource($spec);
+		}
+		if (is_resource($spec)) {
+			return $spec;
+		}
+		if ($spec === null) {
+			return static::defaultDescriptor($fd);
+		}
+		if (is_string($spec)) {
+			return static::normalizeStringDescriptor($fd, $spec);
+		}
+		if (is_array($spec)) {
+			return static::normalizeArrayDescriptor($fd, $spec);
+		}
+		return $spec;
+	}
+
+	/**
+	 * Normalizes a string descriptor spec.  'pipe' becomes a pipe with the fd's read/write
+	 * mode, 'pty' becomes ['pty'], and any other string is a file path resolved with
+	 * {@see realpath()} when it exists and opened with the fd's {@see fileMode()}.
+	 * @param int $fd The descriptor number.
+	 * @param string $spec The string spec.
+	 * @return array The normalized descriptor array.
+	 */
+	protected static function normalizeStringDescriptor(int $fd, string $spec): array
+	{
+		if ($spec === 'pipe') {
+			return ['pipe', static::pipeMode($fd)];
+		}
+		if ($spec === 'pty') {
+			return ['pty'];
+		}
+		$path = realpath($spec);
+		return ['file', $path === false ? $spec : $path, static::fileMode($fd)];
+	}
+
+	/**
+	 * Normalizes an array descriptor spec, filling the mode when it is missing.  A bare
+	 * ['pipe'] gains the fd's read/write mode; a ['file', path] gains the fd's
+	 * {@see fileMode()} and resolves an existing path with {@see realpath()}.  Other arrays
+	 * (e.g. ['pty'], a complete ['pipe', mode] or ['file', path, mode]) pass through.
+	 * @param int $fd The descriptor number.
+	 * @param array $spec The array spec.
+	 * @return array The normalized descriptor array.
+	 */
+	protected static function normalizeArrayDescriptor(int $fd, array $spec): array
+	{
+		$type = $spec[0] ?? null;
+		if ($type === 'pipe' && !isset($spec[1])) {
+			return ['pipe', static::pipeMode($fd)];
+		}
+		if ($type === 'file') {
+			$path = (string) ($spec[1] ?? '');
+			$real = realpath($path);
+			return ['file', $real === false ? $path : $real, $spec[2] ?? static::fileMode($fd)];
+		}
+		return $spec;
+	}
+
+	/**
+	 * Returns the pipe mode for a descriptor: 'r' for stdin (fd 0), 'w' for any other fd.
+	 * @param int $fd The descriptor number.
+	 * @return string The pipe mode.
+	 */
+	protected static function pipeMode(int $fd): string
+	{
+		return $fd === static::STDIN ? 'r' : 'w';
+	}
+
+	/**
+	 * Returns the file mode for a descriptor: 'r' for stdin (fd 0), 'a' for stderr (fd 2),
+	 * 'w' for any other fd.
+	 * @param int $fd The descriptor number.
+	 * @return string The file mode.
+	 */
+	protected static function fileMode(int $fd): string
+	{
+		return match ($fd) {
+			static::STDIN => 'r',
+			static::STDERR => 'a',
+			default => 'w',
+		};
+	}
+
+	/**
+	 * Returns the default pipe descriptor for an fd: the stdin/stdout/stderr defaults for
+	 * fds 0/1/2, and a write pipe for any other fd.
+	 * @param int $fd The descriptor number.
+	 * @return array{0: string, 1: string} The default descriptor array.
+	 */
+	protected static function defaultDescriptor(int $fd): array
+	{
+		return match ($fd) {
+			static::STDIN => static::DEFAULT_STDIN,
+			static::STDOUT => static::DEFAULT_STDOUT,
+			static::STDERR => static::DEFAULT_STDERR,
+			default => ['pipe', static::pipeMode($fd)],
+		};
 	}
 
 	/**
