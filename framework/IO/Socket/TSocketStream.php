@@ -92,16 +92,17 @@ class TSocketStream extends TStream
 
 	/**
 	 * Creates a connected pair of sockets ({@see stream_socket_pair()}), useful for
-	 * in-process or parent/child (post-fork) communication.  The default domain is
-	 * STREAM_PF_UNIX; pass STREAM_PF_INET on Windows.
-	 * @param int $domain STREAM_PF_UNIX, STREAM_PF_INET or STREAM_PF_INET6.
+	 * in-process or parent/child (post-fork) communication.  A null domain selects
+	 * STREAM_PF_UNIX on POSIX and STREAM_PF_INET on Windows, which lacks Unix pairs.
+	 * @param ?int $domain STREAM_PF_UNIX, STREAM_PF_INET or STREAM_PF_INET6; null auto-selects.
 	 * @param int $type STREAM_SOCK_STREAM or STREAM_SOCK_DGRAM.
 	 * @param int $protocol The protocol (0 selects the default for the type).
 	 * @throws TSocketException When the pair cannot be created.
 	 * @return array{0: self, 1: self} The two connected sockets.
 	 */
-	public static function pair(int $domain = STREAM_PF_UNIX, int $type = STREAM_SOCK_STREAM, int $protocol = 0): array
+	public static function pair(?int $domain = null, int $type = STREAM_SOCK_STREAM, int $protocol = 0): array
 	{
+		$domain ??= (PHP_OS_FAMILY === 'Windows') ? STREAM_PF_INET : STREAM_PF_UNIX;
 		$pair = @stream_socket_pair($domain, $type, $protocol);
 		if ($pair === false) {
 			throw new TSocketException(0, 'Unable to create a socket pair');
