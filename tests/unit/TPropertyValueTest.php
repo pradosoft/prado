@@ -3176,6 +3176,99 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 	}
 
 	/**
+	 * Extras accept the variadic form as well as a single array, matching
+	 * ensureEnum().  A lone array argument is unwrapped to the extras list;
+	 * multiple arguments form the list directly.
+	 */
+	public function testEnsureEnumValue_extras_variadicForm(): void
+	{
+		$cls = TPropertyValueTestDirection::class;
+		// Variadic sentinels.
+		self::assertNull(TPropertyValue::ensureEnumValue(null,  $cls, null, false));
+		self::assertFalse(TPropertyValue::ensureEnumValue(false, $cls, null, false));
+		// Variadic int-keyed string — case-insensitive, returns the string itself.
+		self::assertSame('Auto', TPropertyValue::ensureEnumValue('AUTO', $cls, 'Auto'));
+		self::assertSame('Auto', TPropertyValue::ensureEnumValue('auto', $cls, 'Auto', null, false));
+		// Variadic and single-array forms are equivalent.
+		self::assertSame(
+			TPropertyValue::ensureEnumValue('Auto', $cls, 'Auto', 0),
+			TPropertyValue::ensureEnumValue('Auto', $cls, ['Auto', 0])
+		);
+		self::assertSame('auto', TPropertyValue::ensureEnumValue('Auto', $cls, ['Auto' => 'auto']));
+		// Single non-array variadic extra stays a one-element list (not unwrapped).
+		self::assertNull(TPropertyValue::ensureEnumValue(null, $cls, null));
+		// Class constants still resolve ahead of variadic extras.
+		self::assertSame('North', TPropertyValue::ensureEnumValue('north', $cls, 'Auto', null));
+	}
+
+	/**
+	 * An enum instance whose class differs from `$enums` does not pass through:
+	 * the `$value instanceof $className` guard fails, the non-string value skips
+	 * the constant lookup, and with no matching extra the call throws.  The error
+	 * names the value via {@see get_debug_type()} (the enum class name).
+	 */
+	public function testEnsureEnumValue_wrongClassEnumInstance_throws(): void
+	{
+		$dir = TPropertyValueTestDirection::class;
+		// Backed enum from a different class.
+		try {
+			TPropertyValue::ensureEnumValue(TPropertyValueTestColor::Red, $dir);
+			self::fail('Expected throw for a foreign backed-enum instance');
+		} catch (TInvalidDataValueException $e) {
+			self::assertStringContainsString('TPropertyValueTestColor', $e->getMessage());
+			self::assertStringContainsString('North', $e->getMessage());
+		}
+		// Non-backed enum from a different class.
+		try {
+			TPropertyValue::ensureEnumValue(TPropertyValueTestStatus::Active, $dir);
+			self::fail('Expected throw for a foreign unit-enum instance');
+		} catch (TInvalidDataValueException $e) {
+			self::assertStringContainsString('TPropertyValueTestStatus', $e->getMessage());
+		}
+	}
+
+	/**
+	 * With no reflectable class, extras act as the sole fallback table: a match
+	 * resolves, a miss throws with only the extras labels (no constant names).
+	 */
+	public function testEnsureEnumValue_nonExistentClass_extrasFallback(): void
+	{
+		$cls = 'TPropertyValueNonExistentClass99999XYZ';
+		self::assertSame('auto', TPropertyValue::ensureEnumValue('Auto', $cls, ['Auto' => 'auto']));
+		self::assertNull(TPropertyValue::ensureEnumValue(null, $cls, [null]));
+		try {
+			TPropertyValue::ensureEnumValue('Nope', $cls, ['Auto' => 'auto']);
+			self::fail('Expected throw when neither class nor extras match');
+		} catch (TInvalidDataValueException $e) {
+			$msg = $e->getMessage();
+			self::assertStringContainsString('Nope', $msg);
+			self::assertStringContainsString('Auto', $msg);
+		}
+	}
+
+	/**
+	 * A non-scalar `$value` that matches nothing is reported in the error via
+	 * {@see get_debug_type()} rather than being interpolated directly, so arrays
+	 * and objects surface as their type name.
+	 */
+	public function testEnsureEnumValue_nonScalarValue_errorUsesDebugType(): void
+	{
+		$cls = TPropertyValueTestDirection::class;
+		try {
+			TPropertyValue::ensureEnumValue(['x'], $cls);
+			self::fail('Expected throw for an array value');
+		} catch (TInvalidDataValueException $e) {
+			self::assertStringContainsString('array', $e->getMessage());
+		}
+		try {
+			TPropertyValue::ensureEnumValue(new \stdClass(), $cls);
+			self::fail('Expected throw for an object value');
+		} catch (TInvalidDataValueException $e) {
+			self::assertStringContainsString('stdClass', $e->getMessage());
+		}
+	}
+
+	/**
 	 * Strict-equality guarantee for int-keyed extras: a `false` sentinel must
 	 * not satisfy `0`, a `null` sentinel must not satisfy `false`, etc.
 	 * Symmetric to the same matrix on ensureEnum.

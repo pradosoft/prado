@@ -760,8 +760,9 @@ class TPropertyValue
 	 * - **Int-keyed non-string** (`null`, `false`, …) — strict-equality
 	 *   sentinel; the value is returned on match.
 	 *
-	 * Unlike {@see ensureEnum()}'s extras (which accept either variadic or
-	 * array shapes), this parameter is always a single array.
+	 * Like {@see ensureEnum()}'s extras, the entries are passed either
+	 * variadically or as a single array; a lone array argument is unwrapped to
+	 * the extras list.
 	 *
 	 * ```php
 	 * // Class constant — case-insensitive name → declared VALUE.
@@ -771,7 +772,8 @@ class TPropertyValue
 	 * // String-keyed extras — alias map.
 	 * TPropertyValue::ensureEnumValue('auto', MyEnum::class, ['Auto' => 0]); // 0
 	 *
-	 * // Int-keyed extras — strict-equality sentinel list.
+	 * // Int-keyed extras — strict-equality sentinel list (variadic or array).
+	 * TPropertyValue::ensureEnumValue(null, MyEnum::class, null, false);    // null
 	 * TPropertyValue::ensureEnumValue(null, MyEnum::class, [null, false]);  // null
 	 * ```
 	 *
@@ -780,16 +782,21 @@ class TPropertyValue
 	 *   int-keyed extras entry.
 	 * @param object|string $enums class name or instance whose class
 	 *   provides the constant table.
-	 * @param array $extras mixed alias map / sentinel list of additional
-	 *   virtual constants (shared shape with {@see ensureEnum()}).
+	 * @param mixed ...$extras mixed alias map / sentinel list of additional
+	 *   virtual constants; variadic or a single array, sharing the shape and
+	 *   semantics of {@see ensureEnum()}'s extras.
 	 * @throws TInvalidDataValueException when no class constant nor extras
 	 *   key matches.
 	 * @return mixed BackedEnum backing value, non-backed UnitEnum case, raw
 	 *   constant value, or the matching extras value.
 	 * @since 4.4.0
 	 */
-	public static function ensureEnumValue(mixed $value, string|object $enums, array $extras = []): mixed
+	public static function ensureEnumValue(mixed $value, string|object $enums, mixed ...$extras): mixed
 	{
+		// Normalize extras: accept either variadic args or a single array.
+		if (count($extras) === 1 && is_array($extras[0])) {
+			$extras = $extras[0];
+		}
 		$className = is_object($enums) ? $enums::class : $enums;
 		// Enum instance pass-through.
 		if ($value instanceof \UnitEnum && $value instanceof $className) {
