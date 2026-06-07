@@ -74,6 +74,14 @@ class TUriScheme extends TEnumerable
 	public const NTP = 'ntp';
 	public const TFTP = 'tftp';
 
+	// socket transports (PHP stream_socket_* / stream_get_transports)
+	public const TCP = 'tcp';
+	public const UDP = 'udp';
+	public const UNIX = 'unix';
+	public const UDG = 'udg';
+	public const SSL = 'ssl';
+	public const TLS = 'tls';
+
 	// identifiers
 	public const URN = 'urn';
 	public const BLOB = 'blob';
