@@ -544,6 +544,22 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 		return 0;
 	},
 
+	getPositioningParent(el) {
+		let parent = el.parentElement;
+
+		while (parent) {
+			const style = window.getComputedStyle(parent);
+
+			if (style.position !== 'static') {
+				return parent;
+			}
+
+			parent = parent.parentElement;
+		}
+
+		return document.body;
+	},
+
 	show() {
 		this.create();
 
@@ -557,8 +573,11 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 			// margin — the calendar would render slightly *above* the input,
 			// and the next test action would hit a calendar cell instead of
 			// the following input).
-			const top  = this.control.offsetTop;
-			const left = this.control.offsetLeft;
+			const rect = this.control.getBoundingClientRect();
+			const parentRect = this.getPositioningParent(this.control);
+			const win = this.control.ownerDocument.defaultView;
+			const top  = rect.top - parentRect.top + win.pageYOffset;
+			const left = rect.left - parentRect.left + win.pageXOffset;
 
 			if(this.positionMode=='Top')
 			{
