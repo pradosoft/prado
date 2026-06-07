@@ -1581,10 +1581,10 @@ describe('TDatePicker#getPositioningParent', () => {
 		delete global.Prado.Registry[id];
 	});
 
-	it('returns document.body when no positioned ancestor exists', () => {
+	it('returns null when no positioned ancestor exists', () => {
 		const el = document.createElement('div');
 		document.body.appendChild(el);
-		expect(picker.getPositioningParent(el)).toBe(document.body);
+		expect(picker.getPositioningParent(el)).toBeNull();
 		el.remove();
 	});
 
@@ -1630,10 +1630,10 @@ describe('TDatePicker#getPositioningParent', () => {
 		outer.remove();
 	});
 
-	it('returns document.body when element is a direct child of body', () => {
+	it('returns null when element is a direct child of body', () => {
 		const el = document.createElement('div');
 		document.body.appendChild(el);
-		expect(picker.getPositioningParent(el)).toBe(document.body);
+		expect(picker.getPositioningParent(el)).toBeNull();
 		el.remove();
 	});
 });
@@ -1683,8 +1683,8 @@ describe('TDatePicker#show — popup positioning', () => {
 		picker = new TDatePicker(makeOptions(id));
 		picker.show();
 
-		// top = rect.top - parentRect.top + pageYOffset = 150 - 100 + 0 = 50
-		// left = rect.left - parentRect.left + pageXOffset = 80 - 50 + 0 = 30
+		// top = rect.top - parentRect.top = 150 - 100 = 50
+		// left = rect.left - parentRect.left = 80 - 50 = 30
 		// (Bottom mode adds getDatePickerOffsetHeight() - 1, which in jsdom is -1)
 		const expectedLeft = 30;
 		expect(picker._calDiv.style.left).toBe(`${expectedLeft}px`);
@@ -1693,17 +1693,16 @@ describe('TDatePicker#show — popup positioning', () => {
 		container.getBoundingClientRect = origContainerRect;
 	});
 
-	it('positions relative to document.body when all ancestors are static', () => {
+	it('positions relative to the initial containing block when all ancestors are static', () => {
 		buildDOM(id);
 		picker = new TDatePicker(makeOptions(id));
 
 		const input = picker.control;
 		input.getBoundingClientRect = () => ({ top: 200, left: 40, bottom: 224, right: 160, width: 120, height: 24 });
-		document.body.getBoundingClientRect = () => ({ top: 0, left: 0, bottom: 0, right: 0, width: 0, height: 0 });
 
 		picker.show();
 
-		// left = 40 - 0 + 0 = 40
+		// No positioned ancestor → posParent = null → left = rect.left + pageXOffset = 40 + 0 = 40
 		expect(picker._calDiv.style.left).toBe('40px');
 	});
 });

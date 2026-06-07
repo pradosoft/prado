@@ -547,17 +547,17 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 	getPositioningParent(el) {
 		let parent = el.parentElement;
 
-		while (parent) {
+		while (parent && parent !== document.documentElement) {
 			const style = window.getComputedStyle(parent);
 
-			if (style.position !== 'static') {
+			if (style.position !== 'static' && style.position !== '') {
 				return parent;
 			}
 
 			parent = parent.parentElement;
 		}
 
-		return document.body;
+		return null;
 	},
 
 	show() {
@@ -565,19 +565,22 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 
 		if(!this.showing)
 		{
-			// Position the calendar relative to the input's offsetParent.
-			// `el.offsetTop`/`offsetLeft` is the native equivalent of
-			// jQuery's `$(control).offset() - $(control).offsetParent().offset()`
-			// and is unaffected by document scroll or body margin (which broke
-			// the previous jQuery-based math on pages with a non-zero body
-			// margin — the calendar would render slightly *above* the input,
-			// and the next test action would hit a calendar cell instead of
-			// the following input).
+			// Position the calendar relative to the input control.
+			// When a positioned ancestor exists, offset is relative to that ancestor's
+			// border box. When there is none, the calDiv is contained by the initial
+			// containing block (the viewport origin), so document-scroll offsets apply.
 			const rect = this.control.getBoundingClientRect();
-			const parentRect = this.getPositioningParent(this.control).getBoundingClientRect();
 			const win = this.control.ownerDocument.defaultView;
-			const top  = rect.top - parentRect.top + win.pageYOffset;
-			const left = rect.left - parentRect.left + win.pageXOffset;
+			const posParent = this.getPositioningParent(this.control);
+			let top, left;
+			if (posParent) {
+				const parentRect = posParent.getBoundingClientRect();
+				top  = rect.top  - parentRect.top;
+				left = rect.left - parentRect.left;
+			} else {
+				top  = rect.top  + win.pageYOffset;
+				left = rect.left + win.pageXOffset;
+			}
 
 			if(this.positionMode=='Top')
 			{
@@ -598,7 +601,13 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 			// calendar overlay intercepting subsequent test actions.
 			this.documentClickEvent   = this.hideOnClick.bind(this);
 			this.documentKeyDownEvent = this.keyPressed.bind(this);
-			this.observe(document.body, "click", this.documentClickEvent);
+			// Defer one tick so the click that triggered show() finishes
+			// propagating before hideOnClick starts listening.  Without this,
+			// a focus-triggered show() fires during mousedown; the calendar is
+			// then positioned at the cursor and intercepted by mouseup, the
+			// resulting click bubbles to body with a non-control target, and
+			// hideOnClick immediately closes the calendar.
+			setTimeout(() => this.observe(document.body, "click", this.documentClickEvent), 0);
 			const date = this.getDateFromInput();
 			if(date)
 			{
