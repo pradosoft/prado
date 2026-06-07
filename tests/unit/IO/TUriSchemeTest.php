@@ -2,6 +2,7 @@
 
 use Prado\IO\TUriScheme;
 use Prado\TEnumerable;
+use Prado\Util\Helpers\TProcessHelper;
 
 class TUriSchemeTest extends PHPUnit\Framework\TestCase
 {
@@ -28,11 +29,20 @@ class TUriSchemeTest extends PHPUnit\Framework\TestCase
 		self::assertSame('ssl', TUriScheme::SSL);
 		self::assertSame('tls', TUriScheme::TLS);
 
-		// tcp and udp are always available; unix/udg need POSIX and ssl/tls need OpenSSL,
-		// so only the universal pair is cross-checked against the runtime transport list.
+		// Cross-check each constant against the runtime transport list where its prerequisite
+		// holds: tcp/udp are universal, unix/udg need POSIX, ssl/tls need the OpenSSL extension.
 		$transports = stream_get_transports();
 		self::assertContains(TUriScheme::TCP, $transports);
 		self::assertContains(TUriScheme::UDP, $transports);
+
+		if (!TProcessHelper::isSystemWindows()) {
+			self::assertContains(TUriScheme::UNIX, $transports, 'unix transport on POSIX');
+			self::assertContains(TUriScheme::UDG, $transports, 'udg transport on POSIX');
+		}
+		if (extension_loaded('openssl')) {
+			self::assertContains(TUriScheme::SSL, $transports, 'ssl transport with OpenSSL');
+			self::assertContains(TUriScheme::TLS, $transports, 'tls transport with OpenSSL');
+		}
 	}
 
 	public function testUsableInSchemeComparison()
