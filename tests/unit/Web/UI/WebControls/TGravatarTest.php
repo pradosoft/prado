@@ -1,26 +1,18 @@
 <?php
 
 use Prado\Web\UI\WebControls\TGravatar;
-use Prado\Web\UI\THtmlWriter;
-use Prado\IO\TTextWriter;
 use Prado\Exceptions\TInvalidDataValueException;
 use PHPUnit\Framework\TestCase;
 
 class TGravatarTest extends TestCase
 {
+	use TWebControlRenderTrait;
+
 	private TGravatar $gravatar;
 
 	protected function setUp(): void
 	{
 		$this->gravatar = new TGravatar();
-	}
-
-	private function render($control)
-	{
-		$tw = new TTextWriter();
-		$writer = new THtmlWriter($tw);
-		$control->render($writer);
-		return $tw->flush();
 	}
 
 	// ================================================================================

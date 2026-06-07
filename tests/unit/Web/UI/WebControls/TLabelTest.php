@@ -9,13 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class TLabelTest extends TestCase
 {
-	private function render($control)
-	{
-		$tw = new TTextWriter();
-		$writer = new THtmlWriter($tw);
-		$control->render($writer);
-		return $tw->flush();
-	}
+	use TWebControlRenderTrait;
 
 	private function getTagName($label)
 	{
