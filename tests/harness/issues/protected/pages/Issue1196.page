@@ -1,0 +1,20 @@
+ <com:TContent ID="Content">
+<h1>Issue 1196 Test</h1>
+
+<p>Popup must appear directly below (or above) each input, not offset to an unrelated position on the page.</p>
+
+<h2>Default (no positioned parent)</h2>
+<div id="plain-wrap">
+	<com:TDatePicker ID="picker1" DateFormat="yyyy-MM-dd" Mode="Clickable" />
+</div>
+
+<h2>Inside a positioned container</h2>
+<div id="positioned-wrap" style="position:relative; margin-top:20px; padding:10px; border:1px solid #ccc;">
+	<com:TDatePicker ID="picker2" DateFormat="yyyy-MM-dd" Mode="Clickable" />
+</div>
+
+<h2>Button mode with pre-selected date</h2>
+<div id="button-wrap" style="position:relative; margin-top:20px;">
+	<com:TDatePicker ID="picker3" DateFormat="yyyy-MM-dd" Mode="Button" Date="2005-10-20" />
+</div>
+ </com:TContent>
