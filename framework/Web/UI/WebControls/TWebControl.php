@@ -554,11 +554,8 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function setTabIndex($value)
 	{
-		if ($value === null || $value === '') {
-			$this->setViewState('TabIndex', null, null);
-		} else {
-			$this->setViewState('TabIndex', TPropertyValue::ensureInteger($value), null);
-		}
+		$value = TPropertyValue::ensureNullIf($value, TPropertyValue::FILTER_NULL | TPropertyValue::FILTER_BLANK);
+		$this->setViewState('TabIndex', $value !== null ? TPropertyValue::ensureInteger($value) : null, null);
 	}
 
 	/**
@@ -685,9 +682,10 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function setContentEditable($value)
 	{
-		if ($value === null || $value === '') {
+		$value = TPropertyValue::ensureNullIf($value, TPropertyValue::FILTER_NULL | TPropertyValue::FILTER_BLANK | TPropertyValue::FILTER_TRIM | TPropertyValue::FILTER_LOWERCASE);
+		if ($value === null) {
 			$this->setViewState('ContentEditable', null, null);
-		} elseif (is_string($value) && strtolower(trim($value)) === 'plaintext-only') {
+		} elseif ($value === 'plaintext-only') {
 			$this->setViewState('ContentEditable', 'plaintext-only', null);
 		} else {
 			$this->setViewState('ContentEditable', TPropertyValue::ensureBoolean($value), null);
@@ -711,11 +709,8 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function setInputMode($value)
 	{
-		if ($value === null || $value === '') {
-			$this->setViewState('InputMode', null, null);
-		} else {
-			$this->setViewState('InputMode', TPropertyValue::ensureEnum($value, TWebInputMode::class), null);
-		}
+		$value = TPropertyValue::ensureNullIf($value, TPropertyValue::FILTER_NULL | TPropertyValue::FILTER_BLANK);
+		$this->setViewState('InputMode', $value !== null ? TPropertyValue::ensureEnum($value, TWebInputMode::class) : null, null);
 	}
 
 	/**
@@ -735,11 +730,8 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function setEnterKeyHint($value)
 	{
-		if ($value === null || $value === '') {
-			$this->setViewState('EnterKeyHint', null, null);
-		} else {
-			$this->setViewState('EnterKeyHint', TPropertyValue::ensureEnum($value, TEnterKeyHint::class), null);
-		}
+		$value = TPropertyValue::ensureNullIf($value, TPropertyValue::FILTER_NULL | TPropertyValue::FILTER_BLANK);
+		$this->setViewState('EnterKeyHint', $value !== null ? TPropertyValue::ensureEnum($value, TEnterKeyHint::class) : null, null);
 	}
 
 	/**
@@ -759,20 +751,14 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function setTranslate($value)
 	{
-		if ($value === null || $value === '') {
+		$value = TPropertyValue::ensureNullIf($value, TPropertyValue::FILTER_NULL | TPropertyValue::FILTER_BLANK | TPropertyValue::FILTER_TRIM | TPropertyValue::FILTER_LOWERCASE);
+		if ($value === null) {
 			$this->setViewState('Translate', null, null);
 			return;
 		}
-		if (is_string($value)) {
-			$lowerString = strtolower(trim($value));
-			if ($lowerString === 'yes') {
-				$this->setViewState('Translate', 'yes', null);
-				return;
-			}
-			if ($lowerString === 'no') {
-				$this->setViewState('Translate', 'no', null);
-				return;
-			}
+		if ($value === 'yes' || $value === 'no') {
+			$this->setViewState('Translate', $value, null);
+			return;
 		}
 		$this->setViewState('Translate', TPropertyValue::ensureBoolean($value) ? 'yes' : 'no', null);
 	}
