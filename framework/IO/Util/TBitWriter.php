@@ -21,16 +21,17 @@ use Prado\Util\Helpers\TBitHelper;
  * A field width runs from 0 to PHP_INT_SIZE * 8 bits.
  *
  * {@see writeBits()} writes only the low $numBits of the value: a wider value is truncated,
- * and a negative integer is written as its two's-complement low bits.  Bits accumulate in
- * the buffer and a byte is emitted once eight bits are pending, so a field may complete
- * earlier-buffered bits and leave its own remainder buffered.  Bit order, byte order, and
- * the float-conversion scaling come from {@see TBaseBitStream}; the writer honors them as
- * follows:
+ * and a negative integer is written as its two's-complement low bits.  Bits join the
+ * partial-byte buffer and every whole byte they complete is emitted, so a field may finish
+ * earlier-buffered bits and leave its own remainder (fewer than 8 bits) buffered.  A field
+ * written from a byte-aligned buffer takes a one-pass fast path that packs all its bytes at
+ * once.  Bit order, byte order, and the float-conversion scaling come from
+ * {@see TBaseBitStream}; the writer honors them as follows:
  *
  * | Configuration | Effect on a write |
  * |---------------|-------------------|
  * | LSBFirst      | Each completed byte is mirrored before it is written, so the field is emitted least-significant-bit first. Default is most-significant-bit first. |
- * | ByteOrder     | A whole-byte field (16/24/.../64 bits) is byte-reversed when the order is little-endian. |
+ * | ByteOrder     | A whole-byte field (8, 16, 24, ..., 64 bits) is byte-reversed when the order is little-endian. |
  * | FloatConvert  | A float field is scaled from a normalized [0, 1] value into its integer range before encoding. |
  *
  * {@see flush()} writes any trailing partial byte, zero-padding the unused low bits.  Those

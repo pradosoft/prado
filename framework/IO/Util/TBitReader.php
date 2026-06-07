@@ -28,7 +28,7 @@ use Prado\Util\Helpers\TBitHelper;
  * | Configuration | Effect on a read |
  * |---------------|------------------|
  * | LSBFirst      | Each source byte is mirrored, so the field reads least-significant-bit first. Default is most-significant-bit first. |
- * | ByteOrder     | A whole-byte field (16/24/.../64 bits) is byte-reversed when the order is little-endian. |
+ * | ByteOrder     | A whole-byte field (8, 16, 24, ..., 64 bits) is byte-reversed when the order is little-endian. |
  * | FloatConvert  | A float field is read from its integer range back to a normalized [0, 1] value. |
  *
  * {@see readBits()} returns false when the stream ends before the whole field is available;

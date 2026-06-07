@@ -18,16 +18,16 @@ use Psr\Http\Message\StreamInterface;
  * TBaseBitStream class.
  *
  * The shared base for bit-level access to a PSR-7 {@see StreamInterface}.  It carries the
- * underlying stream, the configuration the two directions read, the running bit position,
- * and the partial-byte buffer that lets a field cross byte boundaries.  {@see TBitReader}
- * adds bit decoding; {@see TBitWriter} adds bit encoding and flushing.
+ * underlying stream, the configuration both directions use, the running bit position, and
+ * the partial-byte buffer that lets a field cross byte boundaries.  {@see TBitReader} adds
+ * bit decoding; {@see TBitWriter} adds bit encoding and flushing.
  *
  * Configuration:
  *
  * | Property                            | Effect                                                                                          |
  * |-------------------------------------|-------------------------------------------------------------------------------------------------|
  * | {@see getLSBFirst() LSBFirst}       | When true, each byte is mirrored so bits are processed least-significant first.  Default false (most-significant first). |
- * | {@see getByteOrder() ByteOrder}     | The byte order of multi-byte (16/24/.../64-bit) fields, a {@see \Prado\IO\TByteOrder} constant; null follows the machine's native order.  Default {@see \Prado\IO\TByteOrder::BigEndian}. |
+ * | {@see getByteOrder() ByteOrder}     | The byte order of whole-byte (8, 16, 24, ..., 64-bit) fields, a {@see \Prado\IO\TByteOrder} constant; null follows the machine's native order.  Default {@see \Prado\IO\TByteOrder::BigEndian}. |
  * | {@see getFloatConvert() FloatConvert} | When true, a float field is scaled to and from the integer range of its width, mapping a normalized [0, 1] value onto 0..2**numBits-1.  Default false. |
  *
  * Bit order and byte order are independent.  LSBFirst flips the order of bits within each
@@ -53,7 +53,7 @@ abstract class TBaseBitStream extends TComponent
 	/** @var bool When true, each byte is bit-mirrored as it is read from or written to the stream, so fields are processed least-significant-bit first. Default false (most-significant-bit first). */
 	private bool $_lsbFirst = false;
 
-	/** @var ?int The byte order of multi-byte (16/32/64-bit) fields in the stream (a {@see TByteOrder} constant); null follows the machine's native order. Default {@see TByteOrder::BigEndian}. */
+	/** @var ?int The byte order of whole-byte (8, 16, 24, ..., 64-bit) fields in the stream (a {@see TByteOrder} constant); null follows the machine's native order. Default {@see TByteOrder::BigEndian}. */
 	private ?int $_byteOrder = TByteOrder::BigEndian;
 
 	/** @var bool Cached resolution of whether {@see getByteOrder() ByteOrder} is little-endian, recomputed by {@see setByteOrderDirect()}. Default false (matching the big-endian default). */
