@@ -3,19 +3,11 @@
 use Prado\Web\UI\WebControls\TI18NWebControl;
 use Prado\Web\UI\WebControls\TWebControl;
 use Prado\I18N\TI18NControlTrait;
-use Prado\Web\UI\THtmlWriter;
-use Prado\IO\TTextWriter;
 use PHPUnit\Framework\TestCase;
 
 class TI18NWebControlTest extends TestCase
 {
-	private function render($control)
-	{
-		$tw = new TTextWriter();
-		$writer = new THtmlWriter($tw);
-		$control->render($writer);
-		return $tw->flush();
-	}
+	use TWebControlRenderTrait;
 
 	public function testExtendsWebControl()
 	{

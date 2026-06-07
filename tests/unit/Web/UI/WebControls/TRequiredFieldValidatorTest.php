@@ -6,13 +6,13 @@ use Prado\Web\UI\WebControls\TTextBox;
 use Prado\Web\UI\WebControls\TDropDownList;
 use Prado\Web\UI\WebControls\TListItem;
 use Prado\Web\UI\WebControls\TRadioButton;
-use Prado\Web\UI\THtmlWriter;
-use Prado\IO\TTextWriter;
 use Prado\Exceptions\TConfigurationException;
 use PHPUnit\Framework\TestCase;
 
 class TRequiredFieldValidatorTest extends TestCase
 {
+	use TWebControlRenderTrait;
+
 	private function createPageWithControls()
 	{
 		$page = new \Prado\Web\UI\TPage();
@@ -29,14 +29,6 @@ class TRequiredFieldValidatorTest extends TestCase
 		$validator->setControlToValidate($target->getID());
 		$page->getControls()->add($validator);
 		return $validator;
-	}
-
-	private function render($control)
-	{
-		$tw = new TTextWriter();
-		$writer = new THtmlWriter($tw);
-		$control->render($writer);
-		return $tw->flush();
 	}
 
 	private function invokeEvaluateIsValid($validator)

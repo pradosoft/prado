@@ -2,19 +2,11 @@
 
 use Prado\Web\UI\WebControls\TAside;
 use Prado\Web\UI\WebControls\THtmlElement;
-use Prado\Web\UI\THtmlWriter;
-use Prado\IO\TTextWriter;
 use PHPUnit\Framework\TestCase;
 
 class TAsideTest extends TestCase
 {
-	private function render($control)
-	{
-		$tw = new TTextWriter();
-		$writer = new THtmlWriter($tw);
-		$control->render($writer);
-		return $tw->flush();
-	}
+	use TWebControlRenderTrait;
 
 	public function testTagName()
 	{
