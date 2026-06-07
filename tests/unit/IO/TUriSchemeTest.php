@@ -19,6 +19,22 @@ class TUriSchemeTest extends PHPUnit\Framework\TestCase
 		self::assertSame('php', TUriScheme::PHP);
 	}
 
+	public function testSocketTransportConstants()
+	{
+		self::assertSame('tcp', TUriScheme::TCP);
+		self::assertSame('udp', TUriScheme::UDP);
+		self::assertSame('unix', TUriScheme::UNIX);
+		self::assertSame('udg', TUriScheme::UDG);
+		self::assertSame('ssl', TUriScheme::SSL);
+		self::assertSame('tls', TUriScheme::TLS);
+
+		// tcp and udp are always available; unix/udg need POSIX and ssl/tls need OpenSSL,
+		// so only the universal pair is cross-checked against the runtime transport list.
+		$transports = stream_get_transports();
+		self::assertContains(TUriScheme::TCP, $transports);
+		self::assertContains(TUriScheme::UDP, $transports);
+	}
+
 	public function testUsableInSchemeComparison()
 	{
 		$scheme = (new \Prado\Web\TUri('https://host/path'))->getScheme();
