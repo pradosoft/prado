@@ -360,10 +360,9 @@ class TCallbackPageStateTrackerTest extends TestCase
 
 		$removes = $this->client->getCollectedCalls('removeAttribute');
 		$sets = $this->client->getCollectedCalls('setAttribute');
-		// disabled=false means removeAttribute('disabled') because diff===false triggers $diff===false check
-		// Actually the handler is: fn($diff) => $this->updatePresenceAttribute('disable', $diff === false)
-		// When Enabled goes true->false, diff=false, so isPresent = (false === false) = true → setAttribute('disable','disable')
+		// Enabled going true→false: diff=false, isPresent=(false===false)=true → setAttribute('disabled','disabled')
 		$this->assertNotEmpty($sets, 'setAttribute must be called when control is disabled');
-		$this->assertSame('disable', $sets[0][1]);
+		$this->assertSame('disabled', $sets[0][1]);
+		$this->assertSame('disabled', $sets[0][2]);
 	}
 }

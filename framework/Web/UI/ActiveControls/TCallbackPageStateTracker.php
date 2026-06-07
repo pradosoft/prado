@@ -74,7 +74,7 @@ class TCallbackPageStateTracker
 	{
 		$states = $this->getStatesToTrack();
 		$states['Visible'] = ['TScalarDiff', [$this, 'updateVisible']];
-		$states['Enabled'] = ['TScalarDiff', fn ($diff) => $this->updatePresenceAttribute('disable', $diff === false)];
+		$states['Enabled'] = ['TScalarDiff', fn ($diff) => $this->updatePresenceAttribute('disabled', $diff === false)];
 		$states['Attributes'] = ['TMapCollectionDiff', [$this, 'updateAttributes']];
 		$states['Style'] = ['TStyleDiff', [$this, 'updateStyle']];
 		$states['TabIndex'] = ['TScalarDiff', fn ($diff) => $this->updateAttribute('tabindex', $diff)];
