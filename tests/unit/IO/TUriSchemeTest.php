@@ -28,11 +28,11 @@ class TUriSchemeTest extends PHPUnit\Framework\TestCase
 		self::assertSame('ssl', TUriScheme::SSL);
 		self::assertSame('tls', TUriScheme::TLS);
 
-		// Each constant names a real PHP socket transport.
+		// tcp and udp are always available; unix/udg need POSIX and ssl/tls need OpenSSL,
+		// so only the universal pair is cross-checked against the runtime transport list.
 		$transports = stream_get_transports();
-		foreach ([TUriScheme::TCP, TUriScheme::UDP, TUriScheme::UNIX, TUriScheme::UDG, TUriScheme::SSL, TUriScheme::TLS] as $transport) {
-			self::assertContains($transport, $transports, "{$transport} is a PHP socket transport");
-		}
+		self::assertContains(TUriScheme::TCP, $transports);
+		self::assertContains(TUriScheme::UDP, $transports);
 	}
 
 	public function testUsableInSchemeComparison()
