@@ -235,6 +235,9 @@ parameterizebehavior_cannot_set_parameter_to_blank_after_attach = TParameterizeB
 processhelper_no_forking				= Process Forking is not supported.
 processhelper_no_signals				= Process signals cannot be sent on Windows.
 
+serializableclosure_no_decrypter		= TSerializableClosure cannot decrypt an encrypted closure payload without a configured decrypter.
+serializableclosure_decrypt_failed		= TSerializableClosure failed to decrypt an encrypted closure payload; the payload may be tampered or the key may have changed.
+
 appsignals_no_change					= TApplicationSignals::{0} cannot be changed after attaching.
 appsignals_not_a_dispatcher				= '{0}' is not a TSignalsDispatcher.
 

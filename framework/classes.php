@@ -435,6 +435,7 @@ return [
 'TRpcClientRequestException' => 'Prado\Util\TRpcClientRequestException',
 'TRpcClientResponseException' => 'Prado\Util\TRpcClientResponseException',
 'TRpcClientTypesEnumerable' => 'Prado\Util\TRpcClientTypesEnumerable',
+'TSerializableClosure' => 'Prado\Util\TSerializableClosure',
 'TSignalParameter' => 'Prado\Util\TSignalParameter',
 'TSignalsDispatcher' => 'Prado\Util\TSignalsDispatcher',
 'TSimpleDateFormatter' => 'Prado\Util\TSimpleDateFormatter',
