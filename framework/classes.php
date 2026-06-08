@@ -716,6 +716,7 @@ return [
 'TDatePickerMode' => 'Prado\Web\UI\WebControls\TDatePickerMode',
 'TDatePickerPositionMode' => 'Prado\Web\UI\WebControls\TDatePickerPositionMode',
 'TDisplayStyle' => 'Prado\Web\UI\WebControls\TDisplayStyle',
+'TDot' => 'Prado\Web\UI\WebControls\TDot',
 'TDropDownList' => 'Prado\Web\UI\WebControls\TDropDownList',
 'TDropDownListColumn' => 'Prado\Web\UI\WebControls\TDropDownListColumn',
 'TEditCommandColumn' => 'Prado\Web\UI\WebControls\TEditCommandColumn',
