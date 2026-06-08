@@ -900,7 +900,7 @@ class TDot extends TImage implements IPublishable
 	 * colors, shadows and borders. The "Inline" style renders this inside an <svg> element
 	 * built from the control's attributes.
 	 * @return string the inner SVG markup of the colored dot.
-	 * @author 3D SVG & 2D SVG - Brad Anderson <belisoful@icloud.com>  [public domain]
+	 * @author 3D SVG & 2D SVG - Brad Anderson <belisoful@icloud.com>  [CC0 - public domain]
 	 */
 	protected function generateInnerSVG()
 	{
