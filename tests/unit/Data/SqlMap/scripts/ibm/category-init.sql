@@ -1,3 +1,0 @@
-DELETE FROM Categories;
-DROP SEQUENCE categories_seq;
-CREATE SEQUENCE categories_seq START WITH 1 INCREMENT BY 1;
