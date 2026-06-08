@@ -357,7 +357,7 @@ content_id_required						= TContent must have an ID.
 controlcollection_control_required		= TControlList can only accept strings or TControl objects.
 
 webcontrol_accesskey_invalid			= {0}.AccessKey '{1}' is invalid. It must be a single character only.
-webcontrol_dir_invalid				= {0}.Dir '{1}' is invalid. Allowed values are 'ltr', 'rtl', and 'auto'.
+webcontrol_dir_invalid					= {0}.Dir '{1}' is invalid. Allowed values are 'ltr', 'rtl', and 'auto'.
 webcontrol_style_invalid				= {0}.Style must take string value only.
 
 listcontrol_selection_invalid			= {0} has an invalid selection that is set before performing databinding.
@@ -707,6 +707,8 @@ ratinglist_invalid_caption_id			= '{0}' is not a valid caption control for TRati
 accordion_activeviewid_invalid			= TAccordion.ActiveViewID has an invalid ID '{0}'.
 accordion_activeviewindex_invalid		= TAccordion.ActiveViewIndex has an invalid Index '{0}'.
 accordion_view_inexistent				= TAccordion cannot find the specified view.
+
+dot_bad_size							= TDot Size must be a positive integer but is '{0}'
 
 juidatepicker_settextmode_unsupported 	= TextMode of TJuiDatePicker cannot be changed.
 

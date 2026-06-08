@@ -454,6 +454,8 @@ return [
 'THttpHeaderHsts' => 'Prado\Web\HttpHeaders\THttpHeaderHsts',
 'THttpHeaderReportingEndpoints' => 'Prado\Web\HttpHeaders\THttpHeaderReportingEndpoints',
 'THttpHeadersManager' => 'Prado\Web\HttpHeaders\THttpHeadersManager',
+'IPublishable' => 'Prado\Web\IPublishable',
+'IPublishedCapture' => 'Prado\Web\IPublishedCapture',
 'TJavaScript' => 'Prado\Web\Javascripts\TJavaScript',
 'TJavaScriptAsset' => 'Prado\Web\Javascripts\TJavaScriptAsset',
 'TJavaScriptLiteral' => 'Prado\Web\Javascripts\TJavaScriptLiteral',
