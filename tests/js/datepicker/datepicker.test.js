@@ -1566,6 +1566,147 @@ describe('TDatePicker leap-year and boundary edge cases', () => {
 	});
 });
 
+// ─── getPositioningParent ─────────────────────────────────────────────────────
+
+describe('TDatePicker#getPositioningParent', () => {
+	let picker;
+	const id = nextId();
+
+	beforeEach(() => {
+		picker = makePicker(id);
+	});
+
+	afterEach(() => {
+		document.getElementById(`${id}_container`)?.remove();
+		delete global.Prado.Registry[id];
+	});
+
+	it('returns null when no positioned ancestor exists', () => {
+		const el = document.createElement('div');
+		document.body.appendChild(el);
+		expect(picker.getPositioningParent(el)).toBeNull();
+		el.remove();
+	});
+
+	it('returns the nearest ancestor with position:relative', () => {
+		const outer = document.createElement('div');
+		const inner = document.createElement('div');
+		const el    = document.createElement('span');
+		outer.appendChild(inner);
+		inner.appendChild(el);
+		inner.style.position = 'relative';
+		document.body.appendChild(outer);
+
+		expect(picker.getPositioningParent(el)).toBe(inner);
+
+		outer.remove();
+	});
+
+	it('returns the nearest ancestor with position:absolute', () => {
+		const wrapper = document.createElement('div');
+		const el      = document.createElement('span');
+		wrapper.appendChild(el);
+		wrapper.style.position = 'absolute';
+		document.body.appendChild(wrapper);
+
+		expect(picker.getPositioningParent(el)).toBe(wrapper);
+
+		wrapper.remove();
+	});
+
+	it('returns the nearest non-static ancestor when multiple non-static ancestors exist', () => {
+		// Both ancestors are positioned; the nearest one (inner) must win.
+		const outer = document.createElement('div');
+		const inner = document.createElement('div');
+		const el    = document.createElement('span');
+		outer.style.position = 'relative';
+		inner.style.position = 'absolute';
+		outer.appendChild(inner);
+		inner.appendChild(el);
+		document.body.appendChild(outer);
+
+		expect(picker.getPositioningParent(el)).toBe(inner);
+
+		outer.remove();
+	});
+
+	it('returns null when element is a direct child of body', () => {
+		const el = document.createElement('div');
+		document.body.appendChild(el);
+		expect(picker.getPositioningParent(el)).toBeNull();
+		el.remove();
+	});
+});
+
+// ─── show() popup positioning ─────────────────────────────────────────────────
+
+describe('TDatePicker#show — popup positioning', () => {
+	let picker;
+	const id = nextId();
+
+	afterEach(() => {
+		picker?.showing && picker.hide();
+		document.getElementById(`${id}_container`)?.remove();
+		delete global.Prado.Registry[id];
+	});
+
+	it('sets _calDiv.style.top and left to numeric-pixel values after show()', () => {
+		buildDOM(id);
+		picker = new TDatePicker(makeOptions(id));
+		picker.show();
+
+		const top  = picker._calDiv.style.top;
+		const left = picker._calDiv.style.left;
+		// Must be set to a CSS pixel value (e.g. "0px"), not empty or "NaNpx"
+		expect(top).toMatch(/^-?\d+(\.\d+)?px$/);
+		expect(left).toMatch(/^-?\d+(\.\d+)?px$/);
+	});
+
+	it('positions relative to a non-static positioning parent', () => {
+		// Build DOM with a positioned container
+		const container = document.createElement('div');
+		container.id = `${id}_container`;
+		container.style.position = 'relative';
+
+		const input = document.createElement('input');
+		input.type = 'text';
+		input.id = id;
+		container.appendChild(input);
+		document.body.appendChild(container);
+
+		// Stub getBoundingClientRect so the positioned parent has a non-zero offset
+		const origInputRect    = input.getBoundingClientRect.bind(input);
+		const origContainerRect = container.getBoundingClientRect.bind(container);
+		input.getBoundingClientRect     = () => ({ top: 150, left: 80, bottom: 174, right: 200, width: 120, height: 24 });
+		container.getBoundingClientRect = () => ({ top: 100, left: 50, bottom: 400, right: 500, width: 450, height: 300 });
+
+		picker = new TDatePicker(makeOptions(id));
+		picker.show();
+
+		// top = rect.top - parentRect.top = 150 - 100 = 50
+		// left = rect.left - parentRect.left = 80 - 50 = 30
+		// (Bottom mode adds getDatePickerOffsetHeight() - 1, which in jsdom is -1)
+		const expectedLeft = 30;
+		expect(picker._calDiv.style.left).toBe(`${expectedLeft}px`);
+
+		input.getBoundingClientRect     = origInputRect;
+		container.getBoundingClientRect = origContainerRect;
+	});
+
+	it('positions relative to the initial containing block when all ancestors are static', () => {
+		buildDOM(id);
+		picker = new TDatePicker(makeOptions(id));
+
+		const input = picker.control;
+		input.getBoundingClientRect = () => ({ top: 200, left: 40, bottom: 224, right: 160, width: 120, height: 24 });
+
+		picker.show();
+
+		// No positioned ancestor → posParent = null → left = rect.left + pageXOffset = 40 + 0 = 40
+		expect(picker._calDiv.style.left).toBe('40px');
+	});
+});
+
 // ─── Custom CalendarStyle className ──────────────────────────────────────────
 
 describe('TDatePicker CalendarStyle and ClassName options', () => {
