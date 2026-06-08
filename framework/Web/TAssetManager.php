@@ -778,8 +778,8 @@ class TAssetManager extends \Prado\TModule
 	/**
 	 * Resolves the published target of a virtual asset from its translated file path,
 	 * without writing anything. The virtual path's directory keys the hashed published
-	 * directory and its basename is the published file name; a trailing
-	 * DIRECTORY_SEPARATOR designates a directory.
+	 * directory and its basename is the published file name; a trailing slash
+	 * designates a directory.
 	 * @param IPublishable $asset the virtual asset to resolve.
 	 * @throws TInvalidDataValueException when the virtual file path is empty or invalid.
 	 * @return ?array null when publishing is cancelled (a null virtual file path);
@@ -795,8 +795,8 @@ class TAssetManager extends \Prado\TModule
 		if (empty($vpath)) {
 			throw new TInvalidDataValueException('assetmanager_filepath_invalid', $vpath);
 		}
-		$isDir = substr($vpath, -1) === DIRECTORY_SEPARATOR;
-		$vpath = rtrim($vpath, DIRECTORY_SEPARATOR);
+		$isDir = in_array(substr($vpath, -1), ['/', '\\'], true);
+		$vpath = rtrim($vpath, '/\\');
 		$fileName = basename($vpath);
 		return ['vpath' => $vpath, 'isDir' => $isDir, 'fileName' => $fileName]
 			+ $this->publishedLocation($vpath, $isDir, $fileName);

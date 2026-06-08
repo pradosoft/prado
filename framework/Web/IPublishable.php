@@ -31,7 +31,7 @@ interface IPublishable
 	/**
 	 * The virtual file path that determines where the content publishes: its
 	 * directory keys the published hash directory and its basename is the published
-	 * file name. A trailing DIRECTORY_SEPARATOR designates a directory.
+	 * file name. A trailing slash ("/") designates a directory.
 	 * @return null|false|string the virtual file path; null cancels publishing,
 	 *   false or an empty string is invalid.
 	 */
