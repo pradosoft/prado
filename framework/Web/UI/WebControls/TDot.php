@@ -560,11 +560,12 @@ class TDot extends TImage implements IPublishable
 	}
 
 	/**
-	 * The Publishing style of the dot.  "Embed" puts the SVG encoded as data into
-	 * the ImageURL.  "Publish" publishes the virtual SVG as an asset.  "Inline" renders
-	 * the SVG markup directly into the page instead of an <img> element.  "Auto" encodes
-	 * the SVG into the ImageURL during ApplicationMode::Debug and publishes the asset
-	 * when in ApplicationMode::Normal and ApplicationMode::Performance Mode.
+	 * The Publishing style of the dot:
+	 *    -"Auto" encodes the SVG into the ImageURL during ApplicationMode::Debug and
+	 *      publishes the asset in ApplicationMode::Normal and ApplicationMode::Performance.
+	 *    -"Embed" puts the SVG encoded as data into the ImageURL.
+	 *    -"Publish" publishes the virtual SVG as an asset.
+	 *    -"Inline" renders the SVG markup directly into the page instead of an <img> element.
 	 * @return string The publish style of the dot, default 'Auto'
 	 */
 	public function getPublishStyle()
@@ -573,7 +574,7 @@ class TDot extends TImage implements IPublishable
 	}
 
 	/**
-	 * Publish styles:
+	 * The Publishing style of the dot:
 	 *    -"Auto" for "Embed"s for Applications in Debug Mode, and "Publish"s for Normal and
 	 *		Performance mode.  This is the default.
 	 *    -"Embed" encodes the SVG as data into the Image URL.
