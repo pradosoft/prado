@@ -21,6 +21,13 @@ tests/unit/Data/db/
 # Composer stuff
 vendor/*
 
+# Agent Files are Per User - "agents/" is common
+**/AGENTS.md
+!/AGENTS.md
+
+**/CLAUDE.md
+!/CLAUDE.md
+
 #OSX
 .DS_Store
 /nbproject
