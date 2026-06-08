@@ -23,10 +23,213 @@ class TSecurityManagerTest extends PHPUnit\Framework\TestCase
 
 	protected function tearDown(): void
 	{
+		// init() configures the global serializable-closure signer/encrypter; reset so it does not leak.
+		\Prado\Util\TSerializableClosure::setSecretKey(null);
+		\Prado\Util\TSerializableClosure::setEncryptionUsing(null, null);
 		if ($this->app !== null) {
 			$this->app->restoreApplication();
 			$this->app = null;
 		}
+	}
+
+	public function testClosureSecretKeyDefaultsToValidationKey()
+	{
+		$sec = new TSecurityManager();
+		$sec->setValidationKey('known-validation-key');
+		self::assertSame('known-validation-key', $sec->getClosureSecretKey());
+	}
+
+	public function testClosureSecretKeyIsSettable()
+	{
+		$sec = new TSecurityManager();
+		$sec->setClosureSecretKey('my-custom-secret');
+		self::assertSame('my-custom-secret', $sec->getClosureSecretKey());
+		$sec->setClosureSecretKey(null); // restores default (the ValidationKey)
+		self::assertSame($sec->getValidationKey(), $sec->getClosureSecretKey());
+	}
+
+	public function testClosureSecretKeyEmptyStringRestoresDefault()
+	{
+		$sec = new TSecurityManager();
+		$sec->setValidationKey('the-validation-key');
+		$sec->setClosureSecretKey('my-custom-secret');
+		$sec->setClosureSecretKey(''); // empty string restores the default, never keys on an empty secret
+		self::assertSame('the-validation-key', $sec->getClosureSecretKey());
+	}
+
+	public function testClosureUnencryptedProperty()
+	{
+		$sec = new TSecurityManager();
+		self::assertNull($sec->getClosureUnencrypted()); // null = Auto (default)
+		$sec->setClosureUnencrypted(true);
+		self::assertTrue($sec->getClosureUnencrypted());
+		$sec->setClosureUnencrypted(false);
+		self::assertFalse($sec->getClosureUnencrypted());
+		$sec->setClosureUnencrypted(null);
+		self::assertNull($sec->getClosureUnencrypted());
+		$sec->setClosureUnencrypted('Auto'); // string alias for null
+		self::assertNull($sec->getClosureUnencrypted());
+		$sec->setClosureUnencrypted('Debug'); // alias for Auto: "unencrypted in Debug"
+		self::assertNull($sec->getClosureUnencrypted());
+	}
+
+	public function testGetShouldEncryptClosure()
+	{
+		$sec = new TSecurityManager();
+		$sec->init(null);
+
+		$this->app->setMode(\Prado\TApplicationMode::Debug);
+		self::assertFalse($sec->getShouldEncryptClosure()); // Auto + Debug = no encrypt
+
+		$this->app->setMode(\Prado\TApplicationMode::Normal);
+		self::assertTrue($sec->getShouldEncryptClosure()); // Auto + Normal = encrypt
+
+		$sec->setClosureUnencrypted(true); // unencrypted = never encrypt, overrides mode
+		self::assertFalse($sec->getShouldEncryptClosure());
+		$sec->setClosureUnencrypted(false); // not unencrypted = always encrypt, overrides mode
+		$this->app->setMode(\Prado\TApplicationMode::Debug);
+		self::assertTrue($sec->getShouldEncryptClosure());
+	}
+
+	public function testInitSignsClosuresWithHashedValidationKey()
+	{
+		$sec = new TSecurityManager();
+		$sec->setValidationKey('known-validation-key');
+		$sec->init(null); // Debug mode → signed, not encrypted
+		$signed = serialize(new \Prado\Util\TSerializableClosure(fn () => 7));
+		\Prado\Util\TSerializableClosure::setSecretKey(hash('sha512', 'known-validation-key'));
+		self::assertEquals(7, unserialize($signed)->getClosure()());
+	}
+
+	public function testInitDoesNotSignWithRawValidationKey()
+	{
+		$sec = new TSecurityManager();
+		$sec->setValidationKey('known-validation-key');
+		$sec->init(null);
+		$signed = serialize(new \Prado\Util\TSerializableClosure(fn () => 1));
+		\Prado\Util\TSerializableClosure::setSecretKey('known-validation-key');
+		self::expectException(\Laravel\SerializableClosure\Exceptions\InvalidSignatureException::class);
+		unserialize($signed);
+	}
+
+	public function testInitEncryptsClosuresInNonDebugMode()
+	{
+		$sec = new TSecurityManager();
+		$this->app->setMode(\Prado\TApplicationMode::Normal);
+		$sec->init(null); // Auto + Normal → encrypt
+		$serialized = serialize(new \Prado\Util\TSerializableClosure(fn () => 'topsecret'));
+		// The closure body is not readable in the payload.
+		self::assertStringContainsString(\Prado\Util\TSerializableClosure::ENCRYPTED_KEY, $serialized);
+		self::assertStringNotContainsString('topsecret', $serialized);
+		// And it round-trips through the configured decrypter.
+		self::assertEquals('topsecret', unserialize($serialized)->getClosure()());
+	}
+
+	public function testSetClosureUnencryptedCaseInsensitiveAliasesAndBooleanStrings()
+	{
+		$sec = new TSecurityManager();
+		// 'Auto'/'Debug' aliases are case-insensitive (the setter uses strcasecmp).
+		$sec->setClosureUnencrypted(true);
+		$sec->setClosureUnencrypted('auto');
+		self::assertNull($sec->getClosureUnencrypted());
+		$sec->setClosureUnencrypted(true);
+		$sec->setClosureUnencrypted('debug');
+		self::assertNull($sec->getClosureUnencrypted());
+		// Any other value is coerced through ensureBoolean.
+		$sec->setClosureUnencrypted('true');
+		self::assertTrue($sec->getClosureUnencrypted());
+		$sec->setClosureUnencrypted('1');
+		self::assertTrue($sec->getClosureUnencrypted());
+		$sec->setClosureUnencrypted('0');
+		self::assertFalse($sec->getClosureUnencrypted());
+		$sec->setClosureUnencrypted('false');
+		self::assertFalse($sec->getClosureUnencrypted());
+		// A non-alias mode string is not special-cased: it coerces to false (always encrypt).
+		$sec->setClosureUnencrypted('Normal');
+		self::assertFalse($sec->getClosureUnencrypted());
+	}
+
+	public function testGetShouldEncryptClosureAutoEncryptsOnlyInNormalOrPerformance()
+	{
+		$sec = new TSecurityManager();
+		// Auto (null) encrypts only in Normal or Performance — a running production application.
+		foreach ([\Prado\TApplicationMode::Normal, \Prado\TApplicationMode::Performance] as $mode) {
+			$this->app->setMode($mode);
+			self::assertTrue($sec->getShouldEncryptClosure(), "Auto should encrypt in {$mode}");
+		}
+		// Auto does not encrypt while developing (Debug) or when off.
+		foreach ([\Prado\TApplicationMode::Debug, \Prado\TApplicationMode::Off] as $mode) {
+			$this->app->setMode($mode);
+			self::assertFalse($sec->getShouldEncryptClosure(), "Auto should not encrypt in {$mode}");
+		}
+	}
+
+	public function testEncryptClosureDecryptClosureRoundTrip()
+	{
+		$sec = new TSecurityManager();
+		$sec->init(null);
+		$sec->setEncryptionKey('closure-enc-key');
+		$payload = 'serialized-closure-bytes';
+		try {
+			$encrypted = $sec->encryptClosure($payload);
+		} catch (TNotSupportedException $e) {
+			self::markTestSkipped('openssl extension not loaded');
+			return;
+		}
+		self::assertNotEquals($payload, $encrypted);
+		self::assertStringNotContainsString($payload, $encrypted);
+		self::assertSame($payload, $sec->decryptClosure($encrypted));
+	}
+
+	public function testInitSignsClosuresWithCustomSecretKey()
+	{
+		$sec = new TSecurityManager();
+		$sec->setValidationKey('the-validation-key');
+		$sec->setClosureSecretKey('the-closure-key');
+		$sec->init(null); // Debug → signed, not encrypted
+		$signed = serialize(new \Prado\Util\TSerializableClosure(fn () => 9));
+		// The signer uses the SHA-512 of the custom ClosureSecretKey, not the ValidationKey.
+		\Prado\Util\TSerializableClosure::setSecretKey(hash('sha512', 'the-closure-key'));
+		self::assertEquals(9, unserialize($signed)->getClosure()());
+	}
+
+	public function testInitDoesNotEncryptInDebugMode()
+	{
+		$sec = new TSecurityManager();
+		$this->app->setMode(\Prado\TApplicationMode::Debug);
+		$sec->init(null); // Auto + Debug → signed only, not encrypted
+		$serialized = serialize(new \Prado\Util\TSerializableClosure(fn () => 'plainbody'));
+		// The payload is not encrypted: no encrypted key and the closure source is readable.
+		self::assertStringNotContainsString(\Prado\Util\TSerializableClosure::ENCRYPTED_KEY, $serialized);
+		self::assertStringContainsString('plainbody', $serialized);
+		self::assertEquals('plainbody', unserialize($serialized)->getClosure()());
+	}
+
+	public function testExplicitClosureUnencryptedOverridesModeAtInit()
+	{
+		// Explicit unencrypted=true suppresses encryption even in a non-Debug mode.
+		$off = new TSecurityManager();
+		$this->app->setMode(\Prado\TApplicationMode::Normal);
+		$off->setClosureUnencrypted(true);
+		$off->init(null);
+		$plain = serialize(new \Prado\Util\TSerializableClosure(fn () => 'visibletext'));
+		self::assertStringNotContainsString(\Prado\Util\TSerializableClosure::ENCRYPTED_KEY, $plain);
+		self::assertStringContainsString('visibletext', $plain);
+
+		// Explicit unencrypted=false forces encryption even in Debug mode.
+		$on = new TSecurityManager();
+		$this->app->setMode(\Prado\TApplicationMode::Debug);
+		$on->setClosureUnencrypted(false);
+		$on->init(null);
+		try {
+			$enc = serialize(new \Prado\Util\TSerializableClosure(fn () => 'hiddentext'));
+		} catch (TNotSupportedException $e) {
+			self::markTestSkipped('openssl extension not loaded');
+			return;
+		}
+		self::assertStringContainsString(\Prado\Util\TSerializableClosure::ENCRYPTED_KEY, $enc);
+		self::assertStringNotContainsString('hiddentext', $enc);
+		self::assertEquals('hiddentext', unserialize($enc)->getClosure()());
 	}
 
 	public function testInit()
@@ -35,13 +238,13 @@ class TSecurityManagerTest extends PHPUnit\Framework\TestCase
 		$sec->init(null);
 		self::assertEquals($sec, $this->app->getSecurityManager());
 	}
-	
+
 	public function testGenerateRandomKey()
 	{
 		$sec = new TCustomTestSecurityManager();
 		$sec->init(null);
 		$randomKey = $sec->publicGenerateRandomKey();
-		
+
 		self::assertIsString($randomKey);
 		$this->assertSame(32, strlen($randomKey));
 	}
@@ -173,7 +376,7 @@ class TSecurityManagerTest extends PHPUnit\Framework\TestCase
 		// and a test without tampered data
 		self::assertFalse($sec->validateData('bad'));
 	}
-	
+
 	public function testSupportedHashAlgorithms()
 	{
 		$sec = new TSecurityManager();
@@ -184,7 +387,7 @@ class TSecurityManagerTest extends PHPUnit\Framework\TestCase
 		self::assertContains('md5', $algos);
 		self::assertContains('sha256', $algos);
 	}
-	
+
 	public function testSupportedCipherAlgorithms()
 	{
 		$sec = new TSecurityManager();

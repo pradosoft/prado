@@ -13,6 +13,7 @@ namespace Prado\Security;
 
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TNotSupportedException;
+use Prado\TApplicationMode;
 use Prado\TPropertyValue;
 
 /**
@@ -101,6 +102,8 @@ class TSecurityManager extends \Prado\TModule
 	private $_encryptionKeyAlgorithm = 'md5';
 	private $_useEncryptionHmac = false;	// @todo v4.4 change to true.
 	private $_mbstring;
+	private $_closureSecretKey;
+	private ?bool $_closureUnencrypted = null;
 
 	/**
 	 * Initializes the module.
@@ -110,6 +113,7 @@ class TSecurityManager extends \Prado\TModule
 	public function init($config)
 	{
 		$this->_mbstring = extension_loaded('mbstring');
+		$this->setupSerializableClosure();
 		$this->setAppSecurityManager();
 		parent::init($config);
 	}
@@ -122,6 +126,140 @@ class TSecurityManager extends \Prado\TModule
 	protected function setAppSecurityManager()
 	{
 		$this->getApplication()?->setSecurityManager($this);
+	}
+
+	/**
+	 * Resolves the closure protection properties — {@see getClosureSecretKey} and, when
+	 * {@see getShouldEncryptClosure}, the {@see encryptClosure}/{@see decryptClosure} encrypter — and
+	 * applies them through {@see configureSerializableClosure}. Called during {@see init()}; may also be
+	 * called by behaviors or subclasses.
+	 * @since 4.4.0
+	 */
+	protected function setupSerializableClosure()
+	{
+		$encrypt = $this->getShouldEncryptClosure();
+		$this->configureSerializableClosure(
+			hash('sha512', $this->getClosureSecretKey()),
+			$encrypt ? [$this, 'encryptClosure'] : null,
+			$encrypt ? [$this, 'decryptClosure'] : null
+		);
+	}
+
+	/**
+	 * Helper that applies serializable closure protection to {@see \Prado\Util\TSerializableClosure},
+	 * when the class is available: the HMAC signing secret, and an encrypter that makes stored closures
+	 * unreadable. {@see setupSerializableClosure} calls this during {@see init()} with the SHA-512 closure
+	 * signing secret and the encrypter; behaviors and subclasses may call it with their own values.
+	 * @param string $secretKey the closure HMAC signing secret
+	 * @param ?callable $encrypt encrypts a serialized payload, or null to disable encryption
+	 * @param ?callable $decrypt decrypts an encrypted payload, or null to disable encryption
+	 * @since 4.4.0
+	 */
+	protected function configureSerializableClosure($secretKey, $encrypt = null, $decrypt = null)
+	{
+		if (!class_exists(\Prado\Util\TSerializableClosure::class)) {
+			return;
+		}
+		\Prado\Util\TSerializableClosure::setSecretKey($secretKey);
+		\Prado\Util\TSerializableClosure::setEncryptionUsing($encrypt, $decrypt);
+	}
+
+	/**
+	 * The key used to HMAC-sign serializable closures. When not set, it defaults to (backs up to) the
+	 * {@see getValidationKey ValidationKey}. The signer is given the SHA-512 hash of this key (see
+	 * {@see setupSerializableClosure}), so neither the raw closure key nor the raw validation key is
+	 * ever the signing secret directly.
+	 * @return string the serializable closure key
+	 * @since 4.4.0
+	 */
+	public function getClosureSecretKey(): string
+	{
+		return $this->_closureSecretKey ?? $this->getValidationKey();
+	}
+
+	/**
+	 * @param ?string $value the serializable closure key; null or an empty string restores the default
+	 * (the ValidationKey), so the signer is never keyed on an empty secret
+	 * @since 4.4.0
+	 */
+	public function setClosureSecretKey($value)
+	{
+		$value = ($value === null) ? '' : TPropertyValue::ensureString($value);
+		$this->_closureSecretKey = ($value === '') ? null : $value;
+	}
+
+	/**
+	 * Whether serialized closures are left unencrypted so their code stays readable. `true` never
+	 * encrypts, `false` always encrypts, and `null` (the default, "Auto") leaves them unencrypted only
+	 * while developing — application mode {@see \Prado\TApplicationMode::Debug Debug} or
+	 * {@see \Prado\TApplicationMode::Off Off}, or with no application — and encrypts in
+	 * {@see \Prado\TApplicationMode::Normal Normal} and {@see \Prado\TApplicationMode::Performance
+	 * Performance}, so encryption is on by default in a running production application. The property is
+	 * named for the unencrypted state so the string alias {@see \Prado\TApplicationMode::Debug 'Debug'}
+	 * reads naturally: "unencrypted in Debug".
+	 * @return ?bool true, false, or null for Auto
+	 * @since 4.4.0
+	 */
+	public function getClosureUnencrypted(): ?bool
+	{
+		return $this->_closureUnencrypted;
+	}
+
+	/**
+	 * @param null|bool|string $value true, false, or null for the mode-aware default that leaves closures
+	 * unencrypted only in Debug or Off. Only the strings 'Auto' and 'Debug' (case-insensitive) are
+	 * aliases for null; any other value is coerced to bool via {@see \Prado\TPropertyValue::ensureBoolean}
+	 * (for example 'Normal' or 'Performance' become false, i.e. always encrypt).
+	 * @since 4.4.0
+	 */
+	public function setClosureUnencrypted($value)
+	{
+		if ($value === null || (is_string($value) && (strcasecmp($value, 'Auto') === 0 || strcasecmp($value, TApplicationMode::Debug) === 0))) {
+			$this->_closureUnencrypted = null;
+		} else {
+			$this->_closureUnencrypted = TPropertyValue::ensureBoolean($value);
+		}
+	}
+
+	/**
+	 * @return bool whether serialized closures should be encrypted given {@see getClosureUnencrypted}
+	 * and the application mode. When Auto (null), encrypts only when the application mode is Normal or
+	 * Performance, so a running production application is required to encrypt.
+	 * @since 4.4.0
+	 */
+	public function getShouldEncryptClosure(): bool
+	{
+		$unencrypted = $this->getClosureUnencrypted();
+		if ($unencrypted !== null) {
+			return !$unencrypted;
+		}
+		return in_array(
+			$this->getApplication()?->getMode(),
+			[TApplicationMode::Normal, TApplicationMode::Performance],
+			true
+		);
+	}
+
+	/**
+	 * Encrypts a serialized closure payload so it is not readable.
+	 * @param string $data the serialized closure payload
+	 * @return string the encrypted payload
+	 * @since 4.4.0
+	 */
+	public function encryptClosure($data)
+	{
+		return $this->encrypt($data);
+	}
+
+	/**
+	 * Decrypts an encrypted closure payload.
+	 * @param string $data the encrypted payload
+	 * @return false|string the serialized closure payload, or false on failure
+	 * @since 4.4.0
+	 */
+	public function decryptClosure($data)
+	{
+		return $this->decrypt($data);
 	}
 
 	/**
