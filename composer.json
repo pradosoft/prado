@@ -112,7 +112,8 @@
         "gendoc": "phpdoc --template=./vendor/pradosoft/prado-phpdoc-template",
 		"fix": "vendor/bin/php-cs-fixer fix",
 		"stan": "vendor/bin/phpstan analyse --memory-limit=512M",
-        "unittest": "vendor/bin/phpunit --testsuite unit",
+        "unittest": "vendor/bin/phpunit --testsuite unit,db-sqlite,db-mysql,db-pgsql",
+		"dbtest": "vendor/bin/phpunit --testsuite db-sqlite,db-mysql,db-firebird,db-pgsql",
 		"fulltest": [
 			"@fix",
 			"@stan",
