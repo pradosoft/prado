@@ -285,12 +285,135 @@ jobs:
         run: |
           # The runner image installs PostgreSQL but leaves the service disabled.
           # PGBIN, PGDATA, and PGPASSWORD (=root) are pre-set as machine env vars.
+          # Prepend trust rules so prado_unitest (created by initdb_pgsql.sql) can
+          # connect without a password — mirrors POSTGRES_HOST_AUTH_METHOD: trust
+          # used by the Linux service container.
+          $hba = "$env:PGDATA\pg_hba.conf"
+          $existing = Get-Content $hba -Raw
+          Set-Content $hba "host all all 127.0.0.1/32 trust`nhost all all ::1/128 trust`n$existing"
           & "$env:PGBIN\pg_ctl.exe" start -D $env:PGDATA -w
           & "$env:PGBIN\createdb.exe" -h 127.0.0.1 -U postgres prado_unitest
           & "$env:PGBIN\psql.exe" -h 127.0.0.1 -U postgres prado_unitest -f .\tests\initdb_pgsql.sql
 
       - name: Run Unit Tests
         run: composer unittest
+
+  db-sqlite:
+    name: Prado Data (SQLite)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP with SQLite extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ctype, dom, intl, json, mbstring, pdo_sqlite, openssl, pcre, spl, zlib
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Run SQLite tests
+        run: vendor/bin/phpunit --testsuite db-sqlite
+
+  db-mysql:
+    name: Prado Data (MySQL)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP with MySQL extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ctype, dom, intl, json, mbstring, pdo_mysql, openssl, pcre, spl, zlib
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Setup MySQL schema
+        run: |
+          sudo systemctl start mysql.service
+          mysql -uroot -proot < ./tests/initdb_mysql.sql
+
+      - name: Run MySQL tests
+        run: vendor/bin/phpunit --testsuite db-mysql
+
+  db-pgsql:
+    name: Prado Data (PostgreSQL)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP with PostgreSQL extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ctype, dom, intl, json, mbstring, pdo_pgsql, openssl, pcre, spl, zlib
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Setup PostgreSQL schema
+        run: |
+          createdb -h 127.0.0.1 -U postgres prado_unitest
+          psql -h 127.0.0.1 -U postgres -a -w prado_unitest -f ./tests/initdb_pgsql.sql
+        env:
+          PGPASSWORD: postgres
+
+      - name: Run PostgreSQL tests
+        run: vendor/bin/phpunit --testsuite db-pgsql
 
   db-sqlsrv:
     name: Prado Data (Microsoft SQL Server)
@@ -346,7 +469,7 @@ jobs:
           -i ./tests/initdb_mssql.sql
 
       - name: Run SQL Server tests
-        run: php vendor/bin/phpunit tests/unit/Data/DbSpecific/Mssql/
+        run: vendor/bin/phpunit --testsuite db-sqlsrv
 
   db-firebird:
     name: Prado Data (Firebird)
@@ -407,7 +530,7 @@ jobs:
           "
 
       - name: Run Firebird tests
-        run: php vendor/bin/phpunit tests/unit/Data/DbSpecific/Firebird/
+        run: vendor/bin/phpunit --testsuite db-firebird
 
   db-oracle:
     name: Prado Data (Oracle)
@@ -480,7 +603,7 @@ jobs:
             bash -c 'source ~/.bash_profile && sqlplus -S prado_unitest/prado_unitest@//localhost/FREEPDB1 @/tmp/initdb_oracle.sql'
 
       - name: Run Oracle tests
-        run: php vendor/bin/phpunit tests/unit/Data/DbSpecific/Oracle/
+        run: vendor/bin/phpunit --testsuite db-oracle
         env:
           ORACLE_SERVICE_NAME: FREEPDB1
 
@@ -536,7 +659,7 @@ jobs:
             su - db2inst1 -c "db2 connect to pradount && db2 -td@ -f /tmp/initdb.sql"
 
       - name: Run IBM DB2 tests
-        run: php vendor/bin/phpunit tests/unit/Data/DbSpecific/Ibm/
+        run: vendor/bin/phpunit --testsuite db-ibm
         env:
           DB2_USER: db2inst1
           DB2_PASSWORD: Prado_Unitest1

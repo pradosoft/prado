@@ -112,13 +112,23 @@
         "gendoc": "phpdoc --template=./vendor/pradosoft/prado-phpdoc-template",
 		"fix": "vendor/bin/php-cs-fixer fix",
 		"stan": "vendor/bin/phpstan analyse --memory-limit=512M",
-        "unittest": "vendor/bin/phpunit --testsuite unit",
+        "unittest": "vendor/bin/phpunit --testsuite unit,db-sqlite,db-mysql,db-pgsql",
 		"fulltest": [
 			"@fix",
 			"@stan",
 			"@unittest"
 		],
 		"stantest": "vendor/bin/phpunit --testsuite phpstan",
+
+		"dbtest": "vendor/bin/phpunit --testsuite db-sqlite,db-mysql,db-firebird,db-pgsql",
+		"db-sqlite": "vendor/bin/phpunit --testsuite db-sqlite",
+		"db-mysql": "vendor/bin/phpunit --testsuite db-mysql",
+		"db-pgsql": "vendor/bin/phpunit --testsuite db-pgsql",
+		"db-firebird": "vendor/bin/phpunit --testsuite db-firebird",
+		"db-sqlsrv": "vendor/bin/phpunit --testsuite db-sqlsrv",
+		"db-oracle": "vendor/bin/phpunit --testsuite db-oracle",
+		"db-ibm": "vendor/bin/phpunit --testsuite db-ibm",
+
 		"jslint": "npm run lint",
 		"jsfix": "npm run lint:fix",
 		"jstest": "npm run test",
