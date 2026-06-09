@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TDot class file.
  *
@@ -241,7 +242,7 @@ class TDot extends TImage implements IPublishable
 		'lavender' => ['#cacae0', '#f8f8ff'],  // #E6E6FA
 
 		//	Other Colors
-		'rebeccapurple' => ['#4e1b81', '#7e4bb1'] // #663399
+		'rebeccapurple' => ['#4e1b81', '#7e4bb1'], // #663399
 	];
 
 	/**
