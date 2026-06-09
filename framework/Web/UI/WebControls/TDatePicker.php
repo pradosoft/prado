@@ -152,7 +152,7 @@ class TDatePicker extends TTextBox
 	{
 		$this->setViewState('Culture', $value, '');
 	}
-	
+
 	/**
 	 * @return TDatePickerInputMode input method of date values. Defaults to TDatePickerInputMode::TextBox.
 	 */
