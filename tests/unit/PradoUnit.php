@@ -37,16 +37,14 @@ require_once __DIR__ . '/PradoUnitRequires.php';
  *   connection failures, classifying them with {@see processException()} into
  *   one of three known categories (no server, no database, no table).
  *
- * - **Error classification and deduplication** — {@see processException()} converts
- *   recognised database exceptions into human-readable strings and uses three static
- *   maps ({@see $dbConnectionException}, {@see $dbDatabaseException},
- *   {@see $dbTableException}) to suppress redundant error detail for the same driver
- *   across multiple test files.
+ * - **Error classification** — {@see processException()} converts recognised
+ *   database exceptions into a `[key, message]` pair.  Callers pass that pair to
+ *   {@see failFirstThenSkip()} so the first test that hits the condition fails and
+ *   every subsequent test sharing the same key is skipped.
  *
  * The environment variable `PRADO_UNITTEST_SKIP_DB=1` causes
- * {@see skipDatabaseTests()} to return `true` and appends a marker to the first
- * human-readable error string for each driver, signalling that the failure was
- * expected.
+ * {@see skipDatabaseTests()} to return `true` and appends a marker to the
+ * human-readable error message, signalling that the failure was expected.
  *
  * @todo generalize Exception groups.
  * @author Brad Anderson <belisoful@icloud.com>
@@ -731,29 +729,6 @@ class PradoUnit
 	// =========================================================================
 
 	/**
-	 * @var array<string, true> Drivers for which a "no connection" error has already
-	 *   been reported in full during this test run. Subsequent failures from the same
-	 *   driver produce a shorter "Duplicated … Error" string to keep test output
-	 *   readable. Keyed by the PDO driver name returned by
-	 *   {@see \Prado\Data\TDbConnection::getDriverName()}.
-	 */
-	public static $dbConnectionException = [];
-
-	/**
-	 * @var array<string, true> Drivers for which a "database not found" error has
-	 *   already been reported in full. Same deduplication scheme as
-	 *   {@see $dbConnectionException}.
-	 */
-	public static $dbDatabaseException = [];
-
-	/**
-	 * @var array<string, true> Drivers for which a "table not found" error has
-	 *   already been reported in full. Same deduplication scheme as
-	 *   {@see $dbConnectionException}.
-	 */
-	public static $dbTableException = [];
-
-	/**
 	 * Returns `true` when the `PRADO_UNITTEST_SKIP_DB` environment variable is set
 	 * to `'1'`.
 	 *
@@ -773,6 +748,132 @@ class PradoUnit
 	public static function skipDatabaseTests(): bool
 	{
 		return getenv('PRADO_UNITTEST_SKIP_DB') === '1';
+	}
+
+	/**
+	 * @var array<string, int> Keys for which a suite-failure has been emitted, mapped
+	 *   to the number of tests that triggered that key.  The first test fails; all
+	 *   subsequent tests sharing the same key are skipped.  The count includes the
+	 *   initial failure (count ≥ 1 means at least one failure was emitted).
+	 * @since 4.4.0
+	 */
+	public static array $suiteFailEmitted = [];
+
+	/**
+	 * Returns the suite-fail hit count for a key or exception, or the full map.
+	 *
+	 * - `null` — returns the entire `array<string, int>` map.
+	 * - `string` — returns the hit count for that exact key (0 if never triggered).
+	 * - `Throwable` — derives the key via {@see normalizeErrorKey()}, then returns the
+	 *   hit count for that derived key.
+	 *
+	 * Useful in unit tests to assert that a specific error was emitted exactly once:
+	 *
+	 * ```php
+	 * $this->assertSame(1, PradoUnit::getSuiteFailEmittedCount($exception));
+	 * ```
+	 *
+	 * @param null|string|\Throwable $key Error key or exception (passed to
+	 *   {@see normalizeErrorKey()}), or `null` for the full map.
+	 * @return array<string, int>|int
+	 * @since 4.4.0
+	 */
+	public static function getSuiteFailEmittedCount(string|\Throwable|null $key = null): array|int
+	{
+		if ($key === null) {
+			return static::$suiteFailEmitted;
+		}
+		if ($key !== null) {
+			$key = static::normalizeErrorKey($key);
+		}
+		return static::$suiteFailEmitted[$key] ?? 0;
+	}
+
+	/**
+	 * Normalizes a value into a stable deduplication key.
+	 *
+	 * - `string` — returned as-is.
+	 * - `TException` subclass — returns `getErrorCode()`, the `messages.txt` string key.
+	 * - All other `Throwable` — returns `class:message`; the class alone is not unique
+	 *   enough (e.g. two distinct `PDOException` errors share the same class), while the
+	 *   message captures the specific error and is stable across tests in the same run.
+	 *
+	 * @param string|\Throwable $key
+	 * @return string
+	 * @since 4.4.0
+	 */
+	public static function normalizeErrorKey(string|\Throwable $key): string
+	{
+		if (!$key instanceof \Throwable) {
+			return $key;
+		}
+		if (method_exists($key, 'getErrorCode')) {
+			return (string) $key->getErrorCode();
+		}
+		return get_class($key) . ':' . $key->getMessage();
+	}
+
+	/**
+	 * Emits one PHPUnit failure the first time a suite condition is unavailable, then
+	 * skips all subsequent tests that share the same deduplication key.
+	 *
+	 * Usage pattern in a DB-dependent base class:
+	 *
+	 * ```php
+	 * protected function setUp(): void
+	 * {
+	 *     PradoUnit::failFirstThenSkip($this, static::$unavailableKey, static::$unavailableCause);
+	 * }
+	 * ```
+	 *
+	 * Resolution order for the human-readable message:
+	 * 1. `$reason` — explicit override, takes precedence when non-null.
+	 * 2. `$exception->getMessage()` — used when `$reason` is null and `$exception` is set.
+	 * 3. `$errorKey` — last-resort fallback when neither of the above is available.
+	 *
+	 * When both `$errorKey` and `$exception` are `null` the method returns immediately
+	 * (condition satisfied, nothing to report).  When `$errorKey` is `null` but
+	 * `$exception` is not, the key is derived via {@see normalizeErrorKey()}.
+	 *
+	 * @param \PHPUnit\Framework\TestCase $test       The current test instance.
+	 * @param null|string                 $errorKey   Deduplication key that identifies the
+	 *   failure bucket (e.g. a PDO driver name, a feature flag, a `messages.txt` key).
+	 *   When `null`, derived from `$exception` via {@see normalizeErrorKey()} if present;
+	 *   when still `null` the method returns immediately.
+	 * @param null|\Throwable             $exception  The exception that triggered the
+	 *   condition, if any.  Provides `$errorKey` when none is given, and provides the
+	 *   human-readable message when no explicit `$reason` is supplied.
+	 * @param null|string                 $reason     Explicit human-readable description.
+	 *   Overrides `$exception->getMessage()` when non-null.
+	 * @since 4.4.0
+	 */
+	public static function failFirstThenSkip(
+		\PHPUnit\Framework\TestCase $test,
+		?string $errorKey,
+		?\Throwable $exception = null,
+		?string $reason = null
+	): void {
+		if ($errorKey === null && $exception !== null) {
+			$errorKey = static::normalizeErrorKey($exception);
+		}
+		if ($errorKey === null) {
+			return;
+		}
+		// When no explicit reason is given, derive the human-readable message from the
+		// exception.  For TException subclasses getMessage() returns the text that was
+		// looked up and formatted from messages.txt; for plain PHP exceptions it returns
+		// whatever string was passed to the constructor.
+		if ($reason === null && $exception !== null) {
+			$reason = $exception->getMessage();
+		}
+		$message = $reason ?? $errorKey;
+		$count = static::$suiteFailEmitted[$errorKey] ?? 0;
+		static::$suiteFailEmitted[$errorKey] = $count + 1;
+		if ($count === 0) {
+			$test->fail($message);
+		} else {
+			$test->markTestSkipped($message);
+		}
 	}
 
 	/**
@@ -807,8 +908,8 @@ class PradoUnit
 	 *
 	 * Returns early with a human-readable string when the `pdo_mysql` extension is
 	 * not loaded. Otherwise attempts to activate the connection; on failure delegates
-	 * to {@see processException()} which classifies the error into one of three
-	 * known categories and returns a string or the original exception.
+	 * to {@see processException()} which classifies the error into a `[key, message]` pair or returns the original
+	 * exception for unrecognised errors.
 	 *
 	 * When `$isActiveRecord` is `true` and the connection succeeds, the shared
 	 * `TActiveRecordManager` instance's `DbConnection` property is set to the new
@@ -818,10 +919,10 @@ class PradoUnit
 	 *   connects without selecting a specific database.
 	 * @param bool   $isActiveRecord When `true`, sets the connection on
 	 *   `TActiveRecordManager::getInstance()`.
-	 * @return \Exception|\Prado\Data\TDbConnection|string
-	 *   `TDbConnection` on success; a human-readable `string` for a known failure
+	 * @return array{0:string,1:string}|\Exception|\Prado\Data\TDbConnection
+	 *   `TDbConnection` on success; `[key, message]` for a recognised failure
 	 *   (extension missing, server unreachable, database not found, table absent);
-	 *   the original `\Exception` for any unrecognised error.
+	 *   the original `\Exception` for an unrecognised error.
 	 */
 	public static function setupMysqlConnection($database = '', $isActiveRecord = false)
 	{
@@ -829,7 +930,7 @@ class PradoUnit
 			$database = ';dbname=' . $database;
 		}
 		if (!extension_loaded('pdo_mysql')) {
-			return 'The pdo_mysql extension is not available.';
+			return ['extension:pdo_mysql', 'The pdo_mysql extension is not available.'];
 		}
 		$conn = new TDbConnection('mysql:host=localhost' . $database, 'prado_unitest', 'prado_unitest');
 		try {
@@ -856,7 +957,7 @@ class PradoUnit
 	 * @param string $database       Optional database/schema name.
 	 * @param bool   $isActiveRecord When `true`, sets the connection on
 	 *   `TActiveRecordManager::getInstance()`.
-	 * @return \Exception|\Prado\Data\TDbConnection|string
+	 * @return array{0:string,1:string}|\Exception|\Prado\Data\TDbConnection
 	 */
 	public static function setupPgsqlConnection($database = '', $isActiveRecord = false)
 	{
@@ -864,7 +965,7 @@ class PradoUnit
 			$database = ';dbname=' . $database;
 		}
 		if (!extension_loaded('pdo_pgsql')) {
-			return 'The pdo_pgsql extension is not available.';
+			return ['extension:pdo_pgsql', 'The pdo_pgsql extension is not available.'];
 		}
 		$cred = getenv('SCRUTINIZER') ? 'scrutinizer' : 'prado_unitest';
 		$conn = new TDbConnection('pgsql:host=localhost' . $database, $cred, $cred);
@@ -893,12 +994,12 @@ class PradoUnit
 	 *   file. Overrides the environment variable default when non-empty.
 	 * @param bool   $isActiveRecord When `true`, sets the connection on
 	 *   `TActiveRecordManager::getInstance()`.
-	 * @return \Exception|\Prado\Data\TDbConnection|string
+	 * @return array{0:string,1:string}|\Exception|\Prado\Data\TDbConnection
 	 */
 	public static function setupFirebirdConnection($database = '', $isActiveRecord = false)
 	{
 		if (!extension_loaded('pdo_firebird')) {
-			return 'The pdo_firebird extension is not available.';
+			return ['extension:pdo_firebird', 'The pdo_firebird extension is not available.'];
 		}
 		$dbPath = !empty($database) ? $database : (getenv('FIREBIRD_DB_PATH') ?: '/var/lib/firebird/data/prado_unitest.fdb');
 		$conn = new TDbConnection(
@@ -930,12 +1031,12 @@ class PradoUnit
 	 *   Pass an empty string (the default) for an in-memory database.
 	 * @param bool   $isActiveRecord When `true`, sets the connection on
 	 *   `TActiveRecordManager::getInstance()`.
-	 * @return \Exception|\Prado\Data\TDbConnection|string
+	 * @return array{0:string,1:string}|\Exception|\Prado\Data\TDbConnection
 	 */
 	public static function setupSqliteConnection($database = '', $isActiveRecord = false)
 	{
 		if (!extension_loaded('pdo_sqlite')) {
-			return 'The pdo_sqlite extension is not available.';
+			return ['extension:pdo_sqlite', 'The pdo_sqlite extension is not available.'];
 		}
 		$dsn = !empty($database) ? 'sqlite:' . $database : 'sqlite::memory:';
 		$conn = new TDbConnection($dsn, '', '');
@@ -962,12 +1063,12 @@ class PradoUnit
 	 * @param string $database       Optional database name appended as `;Database=<name>`.
 	 * @param bool   $isActiveRecord When `true`, sets the connection on
 	 *   `TActiveRecordManager::getInstance()`.
-	 * @return \Exception|\Prado\Data\TDbConnection|string
+	 * @return array{0:string,1:string}|\Exception|\Prado\Data\TDbConnection
 	 */
 	public static function setupMssqlConnection($database = '', $isActiveRecord = false)
 	{
 		if (!extension_loaded('pdo_sqlsrv')) {
-			return 'The pdo_sqlsrv extension is not available.';
+			return ['extension:pdo_sqlsrv', 'The pdo_sqlsrv extension is not available.'];
 		}
 		$dbParam = !empty($database) ? ';Database=' . $database : '';
 		$conn = new TDbConnection(
@@ -1000,12 +1101,12 @@ class PradoUnit
 	 *   environment variable default when non-empty.
 	 * @param bool   $isActiveRecord When `true`, sets the connection on
 	 *   `TActiveRecordManager::getInstance()`.
-	 * @return \Exception|\Prado\Data\TDbConnection|string
+	 * @return array{0:string,1:string}|\Exception|\Prado\Data\TDbConnection
 	 */
 	public static function setupOciConnection($database = '', $isActiveRecord = false)
 	{
 		if (!extension_loaded('pdo_oci')) {
-			return 'The pdo_oci extension is not available.';
+			return ['extension:pdo_oci', 'The pdo_oci extension is not available.'];
 		}
 		$serviceName = !empty($database) ? $database : (getenv('ORACLE_SERVICE_NAME') ?: 'FREEPDB1');
 		$conn = new TDbConnection(
@@ -1038,12 +1139,12 @@ class PradoUnit
 	 *   environment variable when non-empty.
 	 * @param bool   $isActiveRecord When `true`, sets the connection on
 	 *   `TActiveRecordManager::getInstance()`.
-	 * @return \Exception|\Prado\Data\TDbConnection|string
+	 * @return array{0:string,1:string}|\Exception|\Prado\Data\TDbConnection
 	 */
 	public static function setupIbmConnection($database = '', $isActiveRecord = false)
 	{
 		if (!extension_loaded('pdo_ibm')) {
-			return 'The pdo_ibm extension is not available.';
+			return ['extension:pdo_ibm', 'The pdo_ibm extension is not available.'];
 		}
 		$user = getenv('DB2_USER') ?: 'db2inst1';
 		$password = getenv('DB2_PASSWORD') ?: 'Prado_Unitest1';
@@ -1071,19 +1172,15 @@ class PradoUnit
 	 * Returns `null` when the table exists and is readable. On failure, delegates to
 	 * {@see processException()} which classifies the error:
 	 *
-	 * - If it matches the "table not found" pattern, returns a human-readable string
-	 *   (possibly a short "Duplicated …" string on repeated failures for the same
-	 *   driver).
+	 * - If it matches the "table not found" pattern, returns a `[key, message]` pair
+	 *   for the caller to pass to {@see failFirstThenSkip()}.
 	 * - If the exception is unrecognised, returns the original `\Exception`.
-	 *
-	 * Callers from {@see PradoUnitDataConnectionTrait::setUpConnection()} use the
-	 * return value to `markTestSkipped()` (string) or rethrow (exception), keeping
-	 * table-missing failures non-fatal and annotated.
 	 *
 	 * @param \Prado\Data\TDbConnection $conn      An active database connection.
 	 * @param string                    $tableName Unquoted table name to probe.
-	 * @return null|\Exception|string `null` on success; a human-readable `string` or
-	 *   `\Exception` on failure.
+	 * @return null|array{0:string,1:string}|\Exception `null` on success; a
+	 *   `[key, message]` pair for a recognised failure; the original `\Exception`
+	 *   for an unrecognised error.
 	 */
 	public static function checkForTable($conn, $tableName): mixed
 	{
@@ -1098,89 +1195,45 @@ class PradoUnit
 
 	/**
 	 * Classifies a database exception into one of three known failure categories
-	 * (no connection, no database, no table) and returns a human-readable string
-	 * describing the failure, or the original exception if it is unrecognised.
+	 * (no connection, no database, no table) and returns a `[key, message]` pair
+	 * for the caller to pass to {@see failFirstThenSkip()}.
 	 *
-	 * **Parameter mutation — intentional.**
-	 * `$e` is explicitly overwritten from the incoming `\Exception` object to a
-	 * `string` when the exception matches a known category. The caller receives
-	 * whichever form `$e` holds at the point of `return`. This is the designed
-	 * contract: callers can `return static::processException($e, $conn)` and
-	 * propagate either a descriptive string (recognised failure) or the raw
-	 * exception (unrecognised failure) without a separate branch.
+	 * The `key` is `"<driver>:connection"`, `"<driver>:database"`, or
+	 * `"<driver>:table"`.  {@see failFirstThenSkip()} uses that key to emit one
+	 * PHPUnit failure on the first occurrence and skip all subsequent tests sharing
+	 * the same condition.
 	 *
-	 * **Reference parameter — intentional.**
-	 * `$connection` is passed by reference so that a subclass or future override
-	 * can null or replace the connection handle in the caller's scope (e.g. to
-	 * release resources immediately on error). The current implementation only
-	 * reads `$connection->getDriverName()` and does not modify the variable, but
-	 * the reference is preserved by design to keep that door open without a
-	 * signature change.
+	 * When {@see skipDatabaseTests()} returns `true`, `(PRADO_UNITTEST_SKIP_DB=1)` is
+	 * appended to the message so the reader knows the failure was expected.
 	 *
-	 * **Per-driver deduplication across the test run.**
-	 * The three static arrays {@see $dbConnectionException}, {@see $dbDatabaseException},
-	 * and {@see $dbTableException} are indexed by driver name. The first time a
-	 * given driver produces a known error the full message (including the raw
-	 * exception text) is returned and the driver is recorded. Subsequent failures
-	 * from the same driver produce a shorter "Duplicated … Error" string instead,
-	 * keeping test output readable when dozens of test files all try the same
-	 * unavailable server.
+	 * Returns the original `\Exception` unchanged when it does not match any known
+	 * category; the caller should rethrow it.
 	 *
-	 * **`PRADO_UNITTEST_SKIP_DB=1` annotation.**
-	 * When {@see skipDatabaseTests()} returns `true` the string `(PRADO_UNITTEST_SKIP_DB=1)`
-	 * is appended to the first-occurrence message so the reader knows the failure
-	 * was expected and opted-in.
-	 *
-	 * @param \Exception $e          The caught exception. Overwritten in-place with a
-	 *   descriptive string when the exception matches a known DB-failure pattern;
-	 *   left as the original exception object when it does not match any category.
-	 * @param \Prado\Data\TDbConnection &$connection Connection whose
-	 *   {@see \Prado\Data\TDbConnection::getDriverName()} is used to key the
-	 *   per-driver deduplication tables. Passed by reference so callers or
-	 *   subclasses may null it on error without a signature change.
-	 * @return \Exception|string The (possibly overwritten) `$e`: a descriptive string
-	 *   for a recognised connection / database / table failure, or the original
-	 *   `\Exception` for any unrecognised error.
+	 * @param \Exception                $e          The caught exception.
+	 * @param \Prado\Data\TDbConnection $connection Connection whose driver name keys
+	 *   the error bucket.
+	 * @return array{0:string,1:string}|\Exception `[key, message]` for a recognised
+	 *   failure; the original `\Exception` for an unrecognised one.
 	 */
-	public static function processException($e, &$connection)
+	public static function processException($e, $connection): array|\Exception
 	{
 		$driver = $connection->getDriverName();
 		if (static::isNoConnection($e)) {
-			if (isset(static::$dbConnectionException[$driver])) {
-				$e = strtr("Duplicated Database Driver '{0}' Unavailable Error", ['{0}' => $driver]);
-			} else {
-				$msg = strtr("Database Driver '{0}' Unavailable Error:\n-----\n{1}", ['{0}' => $driver, '{1}' => $e->getMessage()]);
-				if (static::skipDatabaseTests()) {
-					$msg .= "\n(PRADO_UNITTEST_SKIP_DB=1)";
-				}
-				$e = $msg;
-				static::$dbConnectionException[$driver] = true;
-			}
+			$key = $driver . ':connection';
+			$msg = strtr("Database Driver '{0}' Unavailable Error:\n-----\n{1}", ['{0}' => $driver, '{1}' => $e->getMessage()]);
 		} elseif (static::isNoDatabase($e)) {
-			//TDbConnection failed to establish DB connection: SQLSTATE[HY000] [1049] Unknown database 'prado_unitest'
-			if (isset(static::$dbDatabaseException[$driver])) {
-				$e = strtr("Duplicated Database '{0}' Not Found Error (Connection OK)", ['{0}' => $driver]);
-			} else {
-				$msg = strtr("Database '{0}' Not Found Error (Connection OK):\n-----\n{1}", ['{0}' => $driver, '{1}' => $e->getMessage()]);
-				if (static::skipDatabaseTests()) {
-					$msg .= "\n(PRADO_UNITTEST_SKIP_DB=1)";
-				}
-				$e = $msg;
-				static::$dbDatabaseException[$driver] = true;
-			}
+			$key = $driver . ':database';
+			$msg = strtr("Database '{0}' Not Found Error (Connection OK):\n-----\n{1}", ['{0}' => $driver, '{1}' => $e->getMessage()]);
 		} elseif (static::isNoTable($e)) {
-			if (isset(static::$dbTableException[$driver])) {
-				$e = strtr("Duplicated Table Not Found Error (driver: '{0}')", ['{0}' => $driver]);
-			} else {
-				$msg = strtr("Table Not Found Error (driver: '{0}'):\n-----\n{1}", ['{0}' => $driver, '{1}' => $e->getMessage()]);
-				if (static::skipDatabaseTests()) {
-					$msg .= "\n(PRADO_UNITTEST_SKIP_DB=1)";
-				}
-				$e = $msg;
-				static::$dbTableException[$driver] = true;
-			}
+			$key = $driver . ':table';
+			$msg = strtr("Table Not Found Error (driver: '{0}'):\n-----\n{1}", ['{0}' => $driver, '{1}' => $e->getMessage()]);
+		} else {
+			return $e;
 		}
-		return $e;
+		if (static::skipDatabaseTests()) {
+			$msg .= "\n(PRADO_UNITTEST_SKIP_DB=1)";
+		}
+		return [$key, $msg];
 	}
 
 	/**

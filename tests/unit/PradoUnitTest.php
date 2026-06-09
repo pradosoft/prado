@@ -18,7 +18,10 @@ class PradoUnitTestBase
 	private int $_basePrivate = 10;
 	protected string $_baseProtected = 'base';
 
-	private function multiply(int $a, int $b): int { return $a * $b; }
+	private function multiply(int $a, int $b): int
+	{
+		return $a * $b;
+	}
 }
 
 /**
@@ -42,7 +45,10 @@ class PradoUnitStaticTestBase
 	private static int $_baseStaticPrivate = 10;
 	protected static string $_baseStaticProtected = 'base';
 
-	private static function add(int $a, int $b): int { return $a + $b; }
+	private static function add(int $a, int $b): int
+	{
+		return $a + $b;
+	}
 }
 
 /**
@@ -63,7 +69,6 @@ class PradoUnitStaticTestChild extends PradoUnitStaticTestBase
  * filtering, getProp/setProp for private ancestor fields, and the
  * ReflectionException path for missing properties.
  *
- * @package System
  */
 class PradoUnitTest extends PHPUnit\Framework\TestCase
 {
@@ -417,6 +422,9 @@ class PradoUnitTest extends PHPUnit\Framework\TestCase
 	/**
 	 * Temporarily override an env variable, run $callback, then restore the original
 	 * value (or unset it if it was not set before).
+	 * @param string $name
+	 * @param false|string $value
+	 * @param callable $callback
 	 */
 	private function withEnv(string $name, string|false $value, callable $callback): void
 	{
@@ -635,7 +643,7 @@ class PradoUnitTest extends PHPUnit\Framework\TestCase
 
 	public function testReflectionClass_cachesSameInstance(): void
 	{
-		$first  = PradoUnit::reflectionClass(PradoUnitTestChild::class);
+		$first = PradoUnit::reflectionClass(PradoUnitTestChild::class);
 		$second = PradoUnit::reflectionClass(PradoUnitTestChild::class);
 		$this->assertSame($first, $second);
 	}
@@ -669,7 +677,7 @@ class PradoUnitTest extends PHPUnit\Framework\TestCase
 
 	public function testReflectionMethod_cachesSameInstance(): void
 	{
-		$first  = PradoUnit::reflectionMethod(PradoUnit::class, 'reflectionClass');
+		$first = PradoUnit::reflectionMethod(PradoUnit::class, 'reflectionClass');
 		$second = PradoUnit::reflectionMethod(PradoUnit::class, 'reflectionClass');
 		$this->assertSame($first, $second);
 	}
@@ -740,7 +748,7 @@ class PradoUnitTest extends PHPUnit\Framework\TestCase
 
 	public function testReflectionProperty_cachesSameInstance(): void
 	{
-		$first  = PradoUnit::reflectionProperty(PradoUnitTestChild::class, '_basePrivate');
+		$first = PradoUnit::reflectionProperty(PradoUnitTestChild::class, '_basePrivate');
 		$second = PradoUnit::reflectionProperty(PradoUnitTestChild::class, '_basePrivate');
 		$this->assertSame($first, $second);
 	}
