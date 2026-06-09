@@ -285,6 +285,12 @@ jobs:
         run: |
           # The runner image installs PostgreSQL but leaves the service disabled.
           # PGBIN, PGDATA, and PGPASSWORD (=root) are pre-set as machine env vars.
+          # Prepend trust rules so prado_unitest (created by initdb_pgsql.sql) can
+          # connect without a password — mirrors POSTGRES_HOST_AUTH_METHOD: trust
+          # used by the Linux service container.
+          $hba = "$env:PGDATA\pg_hba.conf"
+          $existing = Get-Content $hba -Raw
+          Set-Content $hba "host all all 127.0.0.1/32 trust`nhost all all ::1/128 trust`n$existing"
           & "$env:PGBIN\pg_ctl.exe" start -D $env:PGDATA -w
           & "$env:PGBIN\createdb.exe" -h 127.0.0.1 -U postgres prado_unitest
           & "$env:PGBIN\psql.exe" -h 127.0.0.1 -U postgres prado_unitest -f .\tests\initdb_pgsql.sql
