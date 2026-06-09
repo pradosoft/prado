@@ -213,8 +213,8 @@ abstract class TSerializingCache extends TCache
 	 * Returns the security manager used for {@see getEncrypt encryption}. When the
 	 * property is the empty string (the default), the application security manager is
 	 * returned. When it is a module id, that module is resolved and validated.
-	 * @return TSecurityManager the resolved security manager.
 	 * @throws TConfigurationException if the configured module id does not resolve to a {@see TSecurityManager}.
+	 * @return TSecurityManager the resolved security manager.
 	 */
 	public function getSecurityManager(): TSecurityManager
 	{
