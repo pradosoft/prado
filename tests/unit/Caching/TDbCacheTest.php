@@ -3,7 +3,6 @@
 use Prado\Caching\TDbCache;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TConfigurationException;
-use Prado\TApplication;
 
 if (!defined('TEST_CACHE_DB_DIR')) {
 	define('TEST_CACHE_DB_DIR', __DIR__ . '/../Data/db');
@@ -25,7 +24,7 @@ class TDbCacheTest extends PHPUnit\Framework\TestCase
 		$this->_dbFile = $this->_dbDir . '/test_cache.db';
 		$this->_dbFiles = [$this->_dbFile];
 
-		$app = new TApplication(__DIR__ . '/../Data/SqlMap/app', false, TApplication::CONFIG_TYPE_PHP);
+		$app = new TTestApplication();
 		$app->setRuntimePath($this->_dbDir);
 
 		$this->_cache = new TDbCache();
