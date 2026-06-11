@@ -14,6 +14,7 @@ class TDbCacheTest extends PHPUnit\Framework\TestCase
 	private $_dbDir;
 	private $_dbFile;
 	private $_dbFiles = [];
+	private ?TTestApplication $_app = null;
 
 	protected function setUp(): void
 	{
@@ -24,8 +25,8 @@ class TDbCacheTest extends PHPUnit\Framework\TestCase
 		$this->_dbFile = $this->_dbDir . '/test_cache.db';
 		$this->_dbFiles = [$this->_dbFile];
 
-		$app = new TTestApplication();
-		$app->setRuntimePath($this->_dbDir);
+		$this->_app = new TTestApplication();
+		$this->_app->setRuntimePath($this->_dbDir);
 
 		$this->_cache = new TDbCache();
 		$this->_cache->setPrimaryCache(false);
@@ -41,6 +42,8 @@ class TDbCacheTest extends PHPUnit\Framework\TestCase
 		foreach($this->_dbFiles as $dbFile) {
 			@unlink($dbFile);
 		}
+		$this->_app?->restoreApplication();
+		$this->_app = null;
 	}
 
 	protected function initCache(): void
