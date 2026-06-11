@@ -21,20 +21,22 @@ class CommandBuilderMssqlTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals($expect, $sql);
 
 
+		// SQL Server 2012+ OFFSET/FETCH. A no-op ORDER BY is injected when the
+		// source query has none (OFFSET/FETCH requires an ORDER BY).
 		$sql = $builder->applyLimitOffset(self::$sql['simple'], 3, 2);
-		$expect = 'SELECT * FROM (SELECT TOP 3 * FROM (SELECT TOP 5 username, age FROM accounts) as [__inner top table__] ) as [__outer top table__] ';
+		$expect = 'SELECT username, age FROM accounts ORDER BY (SELECT NULL) OFFSET 2 ROWS FETCH NEXT 3 ROWS ONLY';
 		$this->assertEquals($expect, $sql);
 
 		$sql = $builder->applyLimitOffset(self::$sql['multiple'], 3, 2);
-		$expect = 'SELECT * FROM (SELECT TOP 3 * FROM (SELECT TOP 5 a.username, b.name from accounts a, table1 b where a.age = b.id1) as [__inner top table__] ) as [__outer top table__] ';
+		$expect = 'select a.username, b.name from accounts a, table1 b where a.age = b.id1 ORDER BY (SELECT NULL) OFFSET 2 ROWS FETCH NEXT 3 ROWS ONLY';
 		$this->assertEquals($sql, $expect);
 
 		$sql = $builder->applyLimitOffset(self::$sql['ordering'], 3, 2);
-		$expect = 'SELECT * FROM (SELECT TOP 3 * FROM (SELECT TOP 5 a.username, b.name, a.age from accounts a, table1 b where a.age = b.id1 order by age DESC, name) as [__inner top table__] ORDER BY age ASC, name DESC) as [__outer top table__] ORDER BY age DESC, name ASC';
+		$expect = 'select a.username, b.name, a.age from accounts a, table1 b where a.age = b.id1 order by age DESC, name OFFSET 2 ROWS FETCH NEXT 3 ROWS ONLY';
 		$this->assertEquals($sql, $expect);
 
 		$sql = $builder->applyLimitOffset(self::$sql['index'], 3, 2);
-		$expect = 'SELECT * FROM (SELECT TOP 3 * FROM (SELECT TOP 5 a.username, b.name, a.age from accounts a, table1 b where a.age = b.id1 ORDER BY 1 DESC, 2 ASC) as [__inner top table__] ORDER BY 1 ASC, 2 DESC) as [__outer top table__] ORDER BY 1 DESC, 2 ASC';
+		$expect = 'select a.username, b.name, a.age from accounts a, table1 b where a.age = b.id1 ORDER BY 1 DESC, 2 ASC OFFSET 2 ROWS FETCH NEXT 3 ROWS ONLY';
 		$this->assertEquals($expect, $sql);
 
 		//	$sql = $builder->applyLimitOffset(self::$sql['compute'], 3, 2);

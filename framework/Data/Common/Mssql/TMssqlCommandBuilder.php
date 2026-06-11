@@ -82,9 +82,23 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 		$limit = $limit !== null ? (int) $limit : -1;
 		$offset = $offset !== null ? (int) $offset : -1;
 		if ($limit > 0 && $offset <= 0) { //just limit
-			$sql = preg_replace('/^([\s(])*SELECT( DISTINCT)?(?!\s*TOP\s*\()/i', "\\1SELECT\\2 TOP $limit", $sql);
-		} elseif ($limit > 0 && $offset > 0) {
-			$sql = $this->rewriteLimitOffsetSql($sql, $limit, $offset);
+			return preg_replace('/^([\s(])*SELECT( DISTINCT)?(?!\s*TOP\s*\()/i', "\\1SELECT\\2 TOP $limit", $sql);
+		}
+		if ($offset > 0) {
+			// SQL Server 2012+ OFFSET/FETCH. Unlike the TOP-nesting rewrite, this
+			// does not re-project columns, so it works with arbitrary SQL including
+			// queries that alias their ORDER BY column (e.g. "Account_ID as ID").
+			// OFFSET/FETCH requires an ORDER BY; inject a stable no-op ordering
+			// when the query has none.
+			$result = rtrim($sql);
+			if (stripos($result, 'ORDER BY') === false) {
+				$result .= ' ORDER BY (SELECT NULL)';
+			}
+			$result .= ' OFFSET ' . $offset . ' ROWS';
+			if ($limit > 0) {
+				$result .= ' FETCH NEXT ' . $limit . ' ROWS ONLY';
+			}
+			return $result;
 		}
 		return $sql;
 	}
