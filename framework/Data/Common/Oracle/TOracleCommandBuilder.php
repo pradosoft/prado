@@ -85,17 +85,39 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 			return $sql;
 		}
 
+		// When called from SqlMap (e.g. queryForList with skip/max), no specific
+		// table is known so getTableInfo() returns an empty stub without a table
+		// name or columns.  In that case, use Oracle 12c+ OFFSET/FETCH NEXT
+		// syntax which handles arbitrary SQL without column or table metadata.
+		$tableInfo = $this->getTableInfo();
+		$tableName = $tableInfo !== null ? $tableInfo->getTableName() : null;
+		if ($tableInfo === null || $tableName === null || $tableName === '') {
+			$result = rtrim($sql);
+			$offset = (int) $offset;
+			$limit = (int) $limit;
+			if ($offset > 0) {
+				$result .= ' OFFSET ' . $offset . ' ROWS';
+			}
+			if ($limit > 0) {
+				$result .= ' FETCH NEXT ' . $limit . ' ROWS ONLY';
+			}
+			return $result;
+		}
+
 		$pradoNUMLIN = 'pradoNUMLIN';
 		$fieldsALIAS = 'xyz';
 
 		$nfimDaSQL = strlen($sql);
-		$nfimDoWhere = (strpos($sql, 'ORDER') !== false ? strpos($sql, 'ORDER') : $nfimDaSQL);
-		$niniDoSelect = strpos($sql, 'SELECT') + 6;
-		$nfimDoSelect = (strpos($sql, 'FROM') !== false ? strpos($sql, 'FROM') : $nfimDaSQL);
+		$nfimDoWhere = (stripos($sql, 'ORDER') !== false ? stripos($sql, 'ORDER') : $nfimDaSQL);
+		$selectPos = stripos($sql, 'SELECT');
+		$niniDoSelect = ($selectPos !== false ? $selectPos : 0) + 6;
+		$nfimDoSelect = (stripos($sql, 'FROM') !== false ? stripos($sql, 'FROM') : $nfimDaSQL);
 
 		$WhereInSubSelect = "";
-		if (strpos($sql, 'WHERE') !== false) {
-			$WhereInSubSelect = "WHERE " . substr($sql, strpos($sql, 'WHERE') + 5, $nfimDoWhere);
+		$wherePos = stripos($sql, 'WHERE');
+		if ($wherePos !== false) {
+			$whereStart = $wherePos + 5;
+			$WhereInSubSelect = "WHERE " . substr($sql, $whereStart, $nfimDoWhere - $whereStart);
 		}
 
 		$sORDERBY = '';
