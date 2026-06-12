@@ -10,6 +10,7 @@
 
 namespace Prado\Web\Services\Rest;
 
+use Prado\Exceptions\TConfigurationException;
 use Prado\TApplicationComponent;
 
 /**
@@ -450,6 +451,20 @@ abstract class TRestResource extends TApplicationComponent
 	}
 
 	/**
+	 * Returns the raw query-string parameters.
+	 *
+	 * Reads PHP's `$_GET` superglobal, which holds only true query-string
+	 * values — {@see \Prado\Web\THttpRequest::itemAt()} would also surface
+	 * routing parameters and form-`POST` fields. Extracted as a protected
+	 * seam so unit tests can override it.
+	 * @return array Query-string parameters keyed by name.
+	 */
+	protected function getQueryParams(): array
+	{
+		return $_GET;
+	}
+
+	/**
 	 * Returns a value from the request body first, then from the query string.
 	 * @param string $key Field name.
 	 * @param mixed $default Value to return when the key is absent.
@@ -461,26 +476,19 @@ abstract class TRestResource extends TApplicationComponent
 		if (array_key_exists($key, $body)) {
 			return $body[$key];
 		}
-		$request = $this->getRequest();
-		if ($request->contains($key)) {
-			return $request->itemAt($key);
-		}
-		return $default;
+		return $this->getQueryParams()[$key] ?? $default;
 	}
 
 	/**
 	 * Returns a value from the query string only.
+	 * Body fields, routing parameters, and form-`POST` values are excluded.
 	 * @param string $key Query parameter name.
 	 * @param mixed $default Value to return when the key is absent.
 	 * @return mixed
 	 */
 	public function query(string $key, mixed $default = null): mixed
 	{
-		$request = $this->getRequest();
-		if ($request->contains($key)) {
-			return $request->itemAt($key);
-		}
-		return $default;
+		return $this->getQueryParams()[$key] ?? $default;
 	}
 
 	/**
@@ -490,7 +498,7 @@ abstract class TRestResource extends TApplicationComponent
 	 */
 	public function hasInput(string $key): bool
 	{
-		return array_key_exists($key, $this->getBody()) || $this->getRequest()->contains($key);
+		return array_key_exists($key, $this->getBody()) || array_key_exists($key, $this->getQueryParams());
 	}
 
 	/**
@@ -649,9 +657,14 @@ abstract class TRestResource extends TApplicationComponent
 	 * - `max:N` — string: maximum length N; number: maximum value N
 	 * - `in:a,b,c` — value must be one of the comma-separated options
 	 *
+	 * Rule names outside this list raise a {@see TConfigurationException} so
+	 * that typos (e.g. `'requried'`) surface during development instead of
+	 * silently skipping validation.
+	 *
 	 * @param array $data Input data to validate (e.g., parsed request body).
 	 * @param array $rules Rule set keyed by field name.
 	 * @throws TRestException 422 when validation fails.
+	 * @throws TConfigurationException when a rule name is not recognized.
 	 * @return array Validated and type-coerced data containing only declared fields.
 	 */
 	protected function validate(array $data, array $rules): array
@@ -789,6 +802,9 @@ abstract class TRestResource extends TApplicationComponent
 							$fieldValid = false;
 						}
 						break;
+
+					default:
+						throw new TConfigurationException('restresource_rule_unknown', $ruleName, $field);
 				}
 			}
 
@@ -811,6 +827,7 @@ abstract class TRestResource extends TApplicationComponent
 	 * automatically.
 	 * @param array $rules Rule set keyed by field name.
 	 * @throws TRestException 422 when validation fails.
+	 * @throws TConfigurationException when a rule name is not recognized.
 	 * @return array Validated and type-coerced data.
 	 */
 	protected function validateBody(array $rules): array

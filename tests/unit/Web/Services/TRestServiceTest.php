@@ -476,11 +476,19 @@ class TRestServiceTest extends PHPUnit\Framework\TestCase
 		$this->assertSame('users/5', $result);
 	}
 
-	public function testGetApiPathWhenBasePathNotPresent(): void
+	public function testGetApiPathWhenBasePathNotPresentThrows404(): void
 	{
-		// PATH_INFO does not start with the base path — returned as-is (stripped of leading slash)
-		$result = $this->service->exposeGetApiPath('/other/path');
-		$this->assertSame('other/path', $result);
+		// PATH_INFO does not start with the base path — routes must not be
+		// reachable outside the configured prefix.
+		$this->expectException(TRestException::class);
+		$this->expectExceptionCode(404);
+		$this->service->exposeGetApiPath('/other/path');
+	}
+
+	public function testGetApiPathBareBasePathYieldsRootPath(): void
+	{
+		// '/api' (no trailing slash) addresses the service root, not a 404.
+		$this->assertSame('', $this->service->exposeGetApiPath('/api'));
 	}
 
 	// ── Property accessors ─────────────────────────────────────────────────────
@@ -997,6 +1005,18 @@ class TRestServiceTest extends PHPUnit\Framework\TestCase
 		$body = json_decode($r->body, true);
 		$this->assertSame(405, $body['status']);
 		$this->assertSame('Method Not Allowed', $body['title']);
+		// DoStyleResource declares doIndex/doStore/doDestroy — on a collection
+		// route every standard verb maps to one of those.
+		$this->assertSame('Allow: GET, HEAD, POST, PUT, PATCH, DELETE', $r->headerLine('Allow'));
+	}
+
+	public function testRunUnimplementedVerbReturns405WithAllowHeader(): void
+	{
+		// DoStyleResource has no doPatch — PATCH on an item route is rejected,
+		// and the Allow header lists what the resource does support.
+		$r = $this->runWith('PATCH', '/api/users/3');
+		$this->assertSame(405, $r->status);
+		$this->assertSame('Allow: GET, HEAD, POST, DELETE', $r->headerLine('Allow'));
 	}
 
 	public function testRunPathNotMatchedYields404Json(): void
@@ -1026,14 +1046,44 @@ class TRestServiceTest extends PHPUnit\Framework\TestCase
 		$this->assertSame('Vary: Origin', $r->headerLine('Vary'));
 	}
 
-	public function testRunCorsCredentialsReflectsRequestOrigin(): void
+	public function testRunCorsCredentialsWithExplicitOriginEmitsHeaders(): void
 	{
 		$this->service->setEnableCors(true);
 		$this->service->setAllowCredentials(true);
-		$_SERVER['HTTP_ORIGIN'] = 'https://app.example.org';
+		$this->service->setAllowOrigin('https://app.example.org');
 		$r = $this->runWith('GET', '/api/users');
 		$this->assertSame('Access-Control-Allow-Origin: https://app.example.org', $r->headerLine('Access-Control-Allow-Origin'));
 		$this->assertSame('Access-Control-Allow-Credentials: true', $r->headerLine('Access-Control-Allow-Credentials'));
+		$this->assertSame('Vary: Origin', $r->headerLine('Vary'));
+	}
+
+	public function testInitRejectsCorsCredentialsWithWildcardOrigin(): void
+	{
+		$s = new TRestServiceExposed();
+		$s->setEnableCors(true);
+		$s->setAllowCredentials(true);
+		$this->expectException(TConfigurationException::class);
+		$s->init(null);
+	}
+
+	public function testRunCorsCredentialsWithWildcardOriginYields500(): void
+	{
+		// sendCorsHeaders() re-validates so programmatic misconfiguration after
+		// init() surfaces as a 500 instead of reflecting arbitrary origins.
+		$this->service->setEnableCors(true);
+		$this->service->setAllowCredentials(true);
+		$r = $this->runWith('GET', '/api/users');
+		$this->assertSame(500, $r->status);
+	}
+
+	public function testRunRegularRequestOmitsPreflightOnlyHeaders(): void
+	{
+		$this->service->setEnableCors(true);
+		$r = $this->runWith('GET', '/api/users');
+		$this->assertNotNull($r->headerLine('Access-Control-Allow-Origin'));
+		$this->assertNull($r->headerLine('Access-Control-Allow-Methods'));
+		$this->assertNull($r->headerLine('Access-Control-Allow-Headers'));
+		$this->assertNull($r->headerLine('Access-Control-Max-Age'));
 	}
 
 	public function testRunCorsWildcardSkipsVaryHeader(): void
