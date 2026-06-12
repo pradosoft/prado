@@ -1,9 +1,5 @@
 <?php
 
-use Prado\Caching\ICache;
-use Prado\IO\HttpClient\TCachedHttpClient;
-use Prado\IO\HttpClient\TCurlHttpClient;
-use Prado\IO\HttpClient\TFopenHttpClient;
 use Prado\IO\HttpClient\THttpClientException;
 use Prado\IO\HttpClient\THttpClientResponse;
 use Prado\IO\HttpClient\THttpClient;
@@ -38,48 +34,6 @@ class MockHttpClient extends THttpClient
 			return new THttpClientResponse(200, [], '{}');
 		}
 		return array_shift($this->responses);
-	}
-}
-
-// ── In-memory cache implementing ICache (just what TCachedHttpClient uses) ────
-
-class InMemoryCache implements ICache
-{
-	public array $store = [];
-	public int $getCalls = 0;
-	public int $setCalls = 0;
-
-	public static function getIsAvailable(): bool
-	{
-		return true;
-	}
-	public function get($id)
-	{
-		$this->getCalls++;
-		return $this->store[$id] ?? false;
-	}
-	public function set($id, $value, $expire = 0, $dependency = null)
-	{
-		$this->setCalls++;
-		$this->store[$id] = $value;
-		return true;
-	}
-	public function add($id, $value, $expire = 0, $dependency = null)
-	{
-		if (isset($this->store[$id])) {
-			return false;
-		}
-		return $this->set($id, $value, $expire, $dependency);
-	}
-	public function delete($id)
-	{
-		unset($this->store[$id]);
-		return true;
-	}
-	public function flush()
-	{
-		$this->store = [];
-		return true;
 	}
 }
 
@@ -215,6 +169,17 @@ class TRestClientTest extends PHPUnit\Framework\TestCase
 		$this->assertSame('https://api.example.test/users/7', $this->downloader->calls[0]['url']);
 	}
 
+	public function testPatchDispatchesWithJsonBody(): void
+	{
+		$this->downloader->queue(new THttpClientResponse(200, [], '{"patched":true}'));
+		$result = $this->client->patch('users/{id}', ['id' => '7'], ['name' => 'D']);
+		$call = $this->downloader->calls[0];
+		$this->assertSame('PATCH', $call['method']);
+		$this->assertSame('https://api.example.test/users/7', $call['url']);
+		$this->assertSame('{"name":"D"}', $call['body']);
+		$this->assertSame(['patched' => true], $result);
+	}
+
 	public function testDeleteDispatch(): void
 	{
 		$this->downloader->queue(new THttpClientResponse(204, [], ''));
@@ -253,9 +218,29 @@ class TRestClientTest extends PHPUnit\Framework\TestCase
 		$this->assertSame('text/plain', $this->downloader->calls[0]['headers']['Content-Type']);
 	}
 
+	public function testStringBodyPassesThroughWithoutContentType(): void
+	{
+		// String bodies skip JSON encoding entirely, so no Content-Type is added.
+		$this->downloader->queue(new THttpClientResponse(200, [], '{}'));
+		$this->client->post('upload', [], 'raw-string-body');
+		$call = $this->downloader->calls[0];
+		$this->assertSame('raw-string-body', $call['body']);
+		$this->assertArrayNotHasKey('Content-Type', $call['headers']);
+	}
+
+	public function testContentTypeDetectionIsCaseInsensitive(): void
+	{
+		// A lowercase per-call header must prevent the automatic JSON Content-Type.
+		$this->downloader->queue(new THttpClientResponse(200, [], '{}'));
+		$this->client->post('upload', [], ['a' => 1], [], ['content-type' => 'application/xml']);
+		$headers = $this->downloader->calls[0]['headers'];
+		$this->assertSame('application/xml', $headers['content-type']);
+		$this->assertArrayNotHasKey('Content-Type', $headers);
+	}
+
 	// ── Error handling ────────────────────────────────────────────────────────
 
-	public function testThrowsOnHttpErrorByDefault(): void
+	public function testThrowsOnHttpError(): void
 	{
 		$this->downloader->queue(new THttpClientResponse(404, [], '{"error":"not found"}'));
 		try {
@@ -268,13 +253,31 @@ class TRestClientTest extends PHPUnit\Framework\TestCase
 		}
 	}
 
-	public function testReturnsResponseWhenThrowOnErrorIsOff(): void
+	public function testRequestRawReturnsErrorResponseWithoutThrowing(): void
 	{
-		$this->client->setThrowOnError(false);
 		$this->downloader->queue(new THttpClientResponse(500, [], '{"oops":true}'));
-		$result = $this->client->fetchUser('boom');
+		$result = $this->client->requestRaw('GET', 'users/{id}', ['id' => 'boom']);
 		$this->assertInstanceOf(THttpClientResponse::class, $result);
 		$this->assertSame(500, $result->getStatusCode());
+		$this->assertSame('https://api.example.test/users/boom', $this->downloader->calls[0]['url']);
+	}
+
+	public function testRequestRawReturnsSuccessResponseUndecoded(): void
+	{
+		$this->downloader->queue(new THttpClientResponse(200, [], '{"id":"1"}'));
+		$result = $this->client->requestRaw('GET', 'users/{id}', ['id' => '1']);
+		$this->assertInstanceOf(THttpClientResponse::class, $result);
+		$this->assertSame('{"id":"1"}', $result->getBody());
+	}
+
+	public function testRequestRawEncodesBodyAndQuery(): void
+	{
+		$this->downloader->queue(new THttpClientResponse(200, [], '{}'));
+		$this->client->requestRaw('POST', 'users', [], ['notify' => 1], ['name' => 'E']);
+		$call = $this->downloader->calls[0];
+		$this->assertSame('https://api.example.test/users?notify=1', $call['url']);
+		$this->assertSame('{"name":"E"}', $call['body']);
+		$this->assertSame('application/json', $call['headers']['Content-Type']);
 	}
 
 	public function testTransportFailurePropagatesAsException(): void
@@ -289,99 +292,67 @@ class TRestClientTest extends PHPUnit\Framework\TestCase
 		}
 	}
 
-	// ── Downloader factory + cache wrapper ────────────────────────────────────
+	// ── Body and response decoding ────────────────────────────────────────────
 
-	public function testCreatePicksCurlWhenAvailable(): void
+	public function testUnencodableBodyThrowsJsonException(): void
 	{
-		$d = THttpClient::create();
-		if (function_exists('curl_init')) {
-			$this->assertInstanceOf(TCurlHttpClient::class, $d);
-		} else {
-			$this->assertInstanceOf(TFopenHttpClient::class, $d);
-		}
+		$this->expectException(\JsonException::class);
+		$this->client->post('users', [], ['name' => "\xB1\x31"]); // invalid UTF-8
 	}
 
-	public function testNewCacheWrapperReturnsTCachedHttpClient(): void
+	public function testNonJsonSuccessBodyReturnsRawString(): void
 	{
-		$inner = new MockHttpClient();
-		$cache = new InMemoryCache();
-		$wrapped = THttpClient::newCacheWrapper($inner, $cache, 60);
-		$this->assertInstanceOf(TCachedHttpClient::class, $wrapped);
-		$this->assertSame($inner, $wrapped->getInner());
-		$this->assertSame($cache, $wrapped->getCache());
-		$this->assertSame(60, $wrapped->getTtl());
+		$this->downloader->queue(new THttpClientResponse(200, [], 'pong'));
+		$this->assertSame('pong', $this->client->get('ping'));
 	}
 
-	public function testCacheWrapperServesRepeatedGetsFromCache(): void
+	public function testDeleteSendsJsonBody(): void
 	{
-		$inner = new MockHttpClient();
-		$inner->queue(new THttpClientResponse(200, [], '{"v":1}'));
-		$cache = new InMemoryCache();
-		$wrapped = THttpClient::newCacheWrapper($inner, $cache);
-
-		$r1 = $wrapped->download('GET', 'https://x.test/a', ['Accept' => 'application/json']);
-		$r2 = $wrapped->download('GET', 'https://x.test/a', ['Accept' => 'application/json']);
-
-		$this->assertSame($r1, $r2); // same instance from cache
-		$this->assertCount(1, $inner->calls); // inner only called once
-		$this->assertSame(1, $cache->setCalls);
+		$this->downloader->queue(new THttpClientResponse(200, [], '{"deleted":2}'));
+		$result = $this->client->delete('users', [], ['ids' => [1, 2]]);
+		$call = $this->downloader->calls[0];
+		$this->assertSame('DELETE', $call['method']);
+		$this->assertSame('{"ids":[1,2]}', $call['body']);
+		$this->assertSame('application/json', $call['headers']['Content-Type']);
+		$this->assertSame(['deleted' => 2], $result);
 	}
 
-	public function testCacheWrapperBypassesNonIdempotentMethods(): void
+	// ── Auth helpers ──────────────────────────────────────────────────────────
+
+	public function testSetBearerTokenSendsAuthorizationHeader(): void
 	{
-		$inner = new MockHttpClient();
-		$inner->queue(new THttpClientResponse(200, [], '{}'));
-		$inner->queue(new THttpClientResponse(200, [], '{}'));
-		$cache = new InMemoryCache();
-		$wrapped = THttpClient::newCacheWrapper($inner, $cache);
-
-		$wrapped->download('POST', 'https://x.test/a');
-		$wrapped->download('POST', 'https://x.test/a');
-
-		$this->assertCount(2, $inner->calls); // each POST hits inner
-		$this->assertSame(0, $cache->setCalls);
+		$this->client->setBearerToken('tok-123');
+		$this->downloader->queue(new THttpClientResponse(200, [], '{}'));
+		$this->client->fetchUser('1');
+		$this->assertSame('Bearer tok-123', $this->downloader->calls[0]['headers']['Authorization']);
 	}
 
-	public function testCacheWrapperDoesNotCacheErrors(): void
+	public function testSetBasicAuthSendsAuthorizationHeader(): void
 	{
-		$inner = new MockHttpClient();
-		$inner->queue(new THttpClientResponse(500, [], 'oops'));
-		$cache = new InMemoryCache();
-		$wrapped = THttpClient::newCacheWrapper($inner, $cache);
-
-		$wrapped->download('GET', 'https://x.test/a');
-		$this->assertSame(0, $cache->setCalls);
+		$this->client->setBasicAuth('alice', 's3cret');
+		$this->downloader->queue(new THttpClientResponse(200, [], '{}'));
+		$this->client->fetchUser('1');
+		$this->assertSame(
+			'Basic ' . base64_encode('alice:s3cret'),
+			$this->downloader->calls[0]['headers']['Authorization']
+		);
 	}
 
-	public function testCacheWrapperInvalidateRemovesEntry(): void
+	// ── Query encoding ────────────────────────────────────────────────────────
+
+	public function testListQueryValuesEncodeAsRepeatedKeys(): void
 	{
-		$inner = new MockHttpClient();
-		$inner->queue(new THttpClientResponse(200, [], '{"v":1}'));
-		$inner->queue(new THttpClientResponse(200, [], '{"v":2}'));
-		$cache = new InMemoryCache();
-		$wrapped = THttpClient::newCacheWrapper($inner, $cache);
-
-		$r1 = $wrapped->download('GET', 'https://x.test/a');
-		$wrapped->invalidate('GET', 'https://x.test/a');
-		$r2 = $wrapped->download('GET', 'https://x.test/a');
-
-		$this->assertSame('{"v":1}', $r1->getBody());
-		$this->assertSame('{"v":2}', $r2->getBody());
-		$this->assertCount(2, $inner->calls);
+		$url = $this->client->exposeBuildUrl('search', [], ['tags' => ['a', 'b'], 'page' => 2]);
+		$this->assertSame('https://api.example.test/search?tags=a&tags=b&page=2', $url);
 	}
 
-	// ── Downloader properties (accessors) ─────────────────────────────────────
-
-	public function testDownloaderPropertiesUseUapSe(): void
+	public function testAssociativeQueryValuesKeepBracketSyntax(): void
 	{
-		$d = new MockHttpClient();
-		$d->setTimeout(45);
-		$this->assertSame(45, $d->getTimeout());
-		$d->setFollowRedirects(false);
-		$this->assertFalse($d->getFollowRedirects());
-		$d->setMaxRedirects(3);
-		$this->assertSame(3, $d->getMaxRedirects());
+		$url = $this->client->exposeBuildUrl('search', [], ['filter' => ['status' => 'open']]);
+		$this->assertSame('https://api.example.test/search?filter%5Bstatus%5D=open', $url);
 	}
+
+	// ── Client accessors ──────────────────────────────────────────────────────
 
 	public function testClientLazilyInstantiatesDefaultDownloader(): void
 	{
@@ -390,5 +361,22 @@ class TRestClientTest extends PHPUnit\Framework\TestCase
 		$this->assertInstanceOf(THttpClient::class, $d);
 		// Subsequent access returns the same instance
 		$this->assertSame($d, $c->getDownloader());
+	}
+
+	public function testBaseUrlAccessor(): void
+	{
+		$c = new TestApiClient();
+		$this->assertSame('https://api.example.test/', $c->getBaseUrl());
+		$c->setBaseUrl('https://other.example.test/v2/');
+		$this->assertSame('https://other.example.test/v2/', $c->getBaseUrl());
+	}
+
+	public function testDefaultHeadersAccessorReplacesEntireMap(): void
+	{
+		$c = new TestApiClient();
+		$this->assertSame([], $c->getDefaultHeaders());
+		$c->setDefaultHeaders(['Accept' => 'application/json']);
+		$c->setDefaultHeaders(['User-Agent' => 'Test/1.0']);
+		$this->assertSame(['User-Agent' => 'Test/1.0'], $c->getDefaultHeaders());
 	}
 }

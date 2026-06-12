@@ -14,7 +14,6 @@ use Prado\IO\HttpClient\THttpClientException;
 use Prado\IO\HttpClient\THttpClientResponse;
 use Prado\IO\HttpClient\THttpClient;
 use Prado\TApplicationComponent;
-use Prado\TPropertyValue;
 use Prado\Web\THttpHeaderName;
 use Prado\Web\TMediaType;
 
@@ -81,11 +80,12 @@ use Prado\Web\TMediaType;
  *
  * ## Error handling
  *
- * By default the client throws {@see THttpClientException} when the response
- * status falls outside 2xx. Set {@see setThrowOnError ThrowOnError} to
- * `false` to receive the raw {@see THttpClientResponse} instead and inspect
- * the status code yourself. Network-level failures (DNS, timeout) always
- * surface as exceptions because no response exists.
+ * The verb helpers throw {@see THttpClientException} when the response status
+ * falls outside 2xx. When the status code itself is part of the expected
+ * flow (e.g. probing for existence via 404), use {@see requestRaw()}, which
+ * returns the raw {@see THttpClientResponse} for any status without throwing.
+ * Network-level failures (DNS, timeout) always surface as exceptions because
+ * no response exists.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
@@ -110,23 +110,17 @@ abstract class TRestClient extends TApplicationComponent
 	 */
 	private array $_defaultHeaders = [];
 
-	/**
-	 * @var bool Whether 4xx/5xx responses raise a {@see THttpClientException}.
-	 *   Defaults to true.
-	 */
-	private bool $_throwOnError = true;
-
 	// ── Verb helpers ──────────────────────────────────────────────────────────
 
 	/**
 	 * Performs a `GET` request and returns the decoded JSON body.
 	 * @param string $path Path pattern, possibly containing `{name}` placeholders.
 	 * @param array<string,scalar> $pathParams Path-placeholder values keyed by name.
-	 * @param array<string,scalar> $query Query string parameters.
+	 * @param array<string,array|scalar> $query Query string parameters.
 	 * @param array<string,string> $headers Per-call headers; merged with defaults.
 	 * @throws THttpClientException on HTTP or transport error.
-	 * @return mixed Decoded JSON body, or raw {@see THttpClientResponse} when
-	 *   {@see setThrowOnError ThrowOnError} is false.
+	 * @return mixed Decoded JSON body; `null` for an empty body; the raw body
+	 *   string when the body is not valid JSON.
 	 */
 	public function get(string $path, array $pathParams = [], array $query = [], array $headers = []): mixed
 	{
@@ -138,10 +132,11 @@ abstract class TRestClient extends TApplicationComponent
 	 * @param string $path Path pattern.
 	 * @param array<string,scalar> $pathParams Path-placeholder values.
 	 * @param mixed $body Request body (JSON-encoded automatically when non-null).
-	 * @param array<string,scalar> $query Query string parameters.
+	 * @param array<string,array|scalar> $query Query string parameters.
 	 * @param array<string,string> $headers Per-call headers.
 	 * @throws THttpClientException on HTTP or transport error.
-	 * @return mixed Decoded JSON body or raw response (see {@see get()}).
+	 * @throws \JsonException when the body cannot be JSON-encoded.
+	 * @return mixed Decoded JSON body, `null`, or raw body string (see {@see get()}).
 	 */
 	public function post(string $path, array $pathParams = [], mixed $body = null, array $query = [], array $headers = []): mixed
 	{
@@ -153,10 +148,11 @@ abstract class TRestClient extends TApplicationComponent
 	 * @param string $path Path pattern.
 	 * @param array<string,scalar> $pathParams Path-placeholder values.
 	 * @param mixed $body Request body.
-	 * @param array<string,scalar> $query Query string parameters.
+	 * @param array<string,array|scalar> $query Query string parameters.
 	 * @param array<string,string> $headers Per-call headers.
 	 * @throws THttpClientException on HTTP or transport error.
-	 * @return mixed Decoded JSON body or raw response.
+	 * @throws \JsonException when the body cannot be JSON-encoded.
+	 * @return mixed Decoded JSON body, `null`, or raw body string (see {@see get()}).
 	 */
 	public function put(string $path, array $pathParams = [], mixed $body = null, array $query = [], array $headers = []): mixed
 	{
@@ -168,10 +164,11 @@ abstract class TRestClient extends TApplicationComponent
 	 * @param string $path Path pattern.
 	 * @param array<string,scalar> $pathParams Path-placeholder values.
 	 * @param mixed $body Request body.
-	 * @param array<string,scalar> $query Query string parameters.
+	 * @param array<string,array|scalar> $query Query string parameters.
 	 * @param array<string,string> $headers Per-call headers.
 	 * @throws THttpClientException on HTTP or transport error.
-	 * @return mixed Decoded JSON body or raw response.
+	 * @throws \JsonException when the body cannot be JSON-encoded.
+	 * @return mixed Decoded JSON body, `null`, or raw body string (see {@see get()}).
 	 */
 	public function patch(string $path, array $pathParams = [], mixed $body = null, array $query = [], array $headers = []): mixed
 	{
@@ -179,17 +176,21 @@ abstract class TRestClient extends TApplicationComponent
 	}
 
 	/**
-	 * Performs a `DELETE` request. See {@see get()} for parameter semantics.
+	 * Performs a `DELETE` request. See {@see post()} for parameter semantics.
+	 * The body is usually null; some APIs accept a `DELETE` body for bulk or
+	 * conditional deletes.
 	 * @param string $path Path pattern.
 	 * @param array<string,scalar> $pathParams Path-placeholder values.
-	 * @param array<string,scalar> $query Query string parameters.
+	 * @param mixed $body Request body.
+	 * @param array<string,array|scalar> $query Query string parameters.
 	 * @param array<string,string> $headers Per-call headers.
 	 * @throws THttpClientException on HTTP or transport error.
-	 * @return mixed Decoded JSON body or raw response.
+	 * @throws \JsonException when the body cannot be JSON-encoded.
+	 * @return mixed Decoded JSON body, `null`, or raw body string (see {@see get()}).
 	 */
-	public function delete(string $path, array $pathParams = [], array $query = [], array $headers = []): mixed
+	public function delete(string $path, array $pathParams = [], mixed $body = null, array $query = [], array $headers = []): mixed
 	{
-		return $this->request('DELETE', $path, $pathParams, $query, null, $headers);
+		return $this->request('DELETE', $path, $pathParams, $query, $body, $headers);
 	}
 
 	// ── Core request flow ─────────────────────────────────────────────────────
@@ -197,18 +198,18 @@ abstract class TRestClient extends TApplicationComponent
 	/**
 	 * Builds and executes an HTTP request, then resolves the response.
 	 *
-	 * The flow is: expand the path → merge headers → JSON-encode body →
-	 * delegate to the downloader → invoke {@see handleResponse()} to decode
-	 * or throw.
+	 * Delegates the transport work to {@see requestRaw()} and invokes
+	 * {@see handleResponse()} to decode the body or throw on HTTP error.
 	 *
 	 * @param string $method HTTP verb.
 	 * @param string $path Path pattern.
 	 * @param array<string,scalar> $pathParams Placeholder values.
-	 * @param array<string,scalar> $query Query string parameters.
+	 * @param array<string,array|scalar> $query Query string parameters.
 	 * @param mixed $body Request body (JSON-encoded when non-null).
 	 * @param array<string,string> $perCallHeaders Headers for this call only.
 	 * @throws THttpClientException on HTTP or transport error.
-	 * @return mixed Decoded body or raw response, per {@see handleResponse()}.
+	 * @throws \JsonException when the body cannot be JSON-encoded.
+	 * @return mixed Decoded body, per {@see handleResponse()}.
 	 */
 	protected function request(
 		string $method,
@@ -218,12 +219,41 @@ abstract class TRestClient extends TApplicationComponent
 		mixed $body,
 		array $perCallHeaders
 	): mixed {
+		return $this->handleResponse($this->requestRaw($method, $path, $pathParams, $query, $body, $perCallHeaders));
+	}
+
+	/**
+	 * Executes an HTTP request and returns the raw response for any status code.
+	 *
+	 * Unlike the verb helpers, this method has never thrown on 4xx/5xx
+	 * statuses — the caller inspects {@see THttpClientResponse::getStatusCode()
+	 * getStatusCode()} itself, which suits flows where an error status is an
+	 * expected outcome (e.g. probing for existence via 404). Network-level
+	 * failures still throw because no response exists.
+	 *
+	 * @param string $method HTTP verb.
+	 * @param string $path Path pattern, possibly containing `{name}` placeholders.
+	 * @param array<string,scalar> $pathParams Placeholder values keyed by name.
+	 * @param array<string,array|scalar> $query Query string parameters.
+	 * @param mixed $body Request body (JSON-encoded when non-null).
+	 * @param array<string,string> $headers Per-call headers; merged with defaults.
+	 * @throws THttpClientException on transport (network-level) failure.
+	 * @throws \JsonException when the body cannot be JSON-encoded.
+	 * @return THttpClientResponse Raw response, regardless of status code.
+	 */
+	public function requestRaw(
+		string $method,
+		string $path,
+		array $pathParams = [],
+		array $query = [],
+		mixed $body = null,
+		array $headers = []
+	): THttpClientResponse {
 		$url = $this->buildUrl($path, $pathParams, $query);
-		$headers = $this->mergeHeaders($perCallHeaders);
+		$headers = $this->mergeHeaders($headers);
 		$rawBody = $this->encodeBody($body, $headers);
 
-		$response = $this->getDownloader()->download($method, $url, $headers, $rawBody);
-		return $this->handleResponse($response);
+		return $this->getDownloader()->download($method, $url, $headers, $rawBody);
 	}
 
 	/**
@@ -232,11 +262,12 @@ abstract class TRestClient extends TApplicationComponent
 	 *
 	 * `{name}` placeholders in `$path` are replaced with URL-encoded values
 	 * from `$pathParams`. Any leftover entries in `$pathParams` are silently
-	 * ignored. `$query` is appended as a URL-encoded query string.
+	 * ignored. `$query` is appended as a URL-encoded query string built by
+	 * {@see buildQuery()}.
 	 *
 	 * @param string $path Path pattern.
 	 * @param array<string,scalar> $pathParams Placeholder values.
-	 * @param array<string,scalar> $query Query string parameters.
+	 * @param array<string,array|scalar> $query Query string parameters.
 	 * @return string Fully qualified URL.
 	 */
 	protected function buildUrl(string $path, array $pathParams, array $query): string
@@ -254,10 +285,37 @@ abstract class TRestClient extends TApplicationComponent
 
 		if ($query !== []) {
 			$separator = str_contains($url, '?') ? '&' : '?';
-			$url .= $separator . http_build_query($query);
+			$url .= $separator . $this->buildQuery($query);
 		}
 
 		return $url;
+	}
+
+	/**
+	 * Builds a URL-encoded query string from a parameter map.
+	 *
+	 * List-valued parameters are emitted as repeated keys (`tags=a&tags=b`),
+	 * which most REST APIs expect, instead of PHP's bracketed `tags[0]=a`
+	 * form. Associative-array values and scalars are encoded via
+	 * `http_build_query()` unchanged. Override this method when an API needs
+	 * a different array convention.
+	 *
+	 * @param array<string,array|scalar> $query Query string parameters.
+	 * @return string URL-encoded query string without a leading `?`.
+	 */
+	protected function buildQuery(array $query): string
+	{
+		$parts = [];
+		foreach ($query as $key => $value) {
+			if (is_array($value) && array_is_list($value)) {
+				foreach ($value as $item) {
+					$parts[] = http_build_query([$key => $item]);
+				}
+			} else {
+				$parts[] = http_build_query([$key => $value]);
+			}
+		}
+		return implode('&', $parts);
 	}
 
 	/**
@@ -280,6 +338,8 @@ abstract class TRestClient extends TApplicationComponent
 	 *
 	 * @param mixed $body Body value supplied by the caller.
 	 * @param array<string,string> &$headers Headers to augment.
+	 * @throws \JsonException when the body cannot be JSON-encoded (e.g.
+	 *   invalid UTF-8 strings or non-finite floats).
 	 * @return ?string Raw body string or null.
 	 */
 	protected function encodeBody(mixed $body, array &$headers): ?string
@@ -293,7 +353,7 @@ abstract class TRestClient extends TApplicationComponent
 		if (!$this->hasHeaderCaseInsensitive($headers, THttpHeaderName::ContentType)) {
 			$headers[THttpHeaderName::ContentType] = TMediaType::JSON;
 		}
-		return (string) json_encode($body);
+		return json_encode($body, JSON_THROW_ON_ERROR);
 	}
 
 	/**
@@ -313,26 +373,28 @@ abstract class TRestClient extends TApplicationComponent
 	}
 
 	/**
-	 * Decides what to return (or throw) given a downloader response.
+	 * Decodes a successful downloader response or throws on HTTP error.
 	 *
-	 * When {@see setThrowOnError ThrowOnError} is true, non-2xx responses are
-	 * converted to {@see THttpClientException}. Otherwise the raw response is
-	 * returned so the caller can inspect it. Successful responses are decoded
-	 * via {@see THttpClientResponse::getJson() getJson()}.
+	 * Non-2xx responses are converted to {@see THttpClientException}. An
+	 * empty body (e.g. `204 No Content`) decodes to `null`. A non-empty body
+	 * that is not valid JSON is returned as the raw body string so non-JSON
+	 * endpoints (plain text, HTML) are not silently lost.
 	 *
 	 * @param THttpClientResponse $response Response from the downloader.
-	 * @throws THttpClientException when ThrowOnError is true and the response is unsuccessful.
-	 * @return mixed Decoded body or the raw response.
+	 * @throws THttpClientException when the response status is outside 2xx.
+	 * @return mixed Decoded JSON value, raw body string, or null for an empty body.
 	 */
 	protected function handleResponse(THttpClientResponse $response): mixed
 	{
 		if (!$response->isSuccess()) {
-			if ($this->getThrowOnError()) {
-				throw THttpClientException::fromResponse($response);
-			}
-			return $response;
+			throw THttpClientException::fromResponse($response);
 		}
-		return $response->getJson(true, null);
+		if ($response->getBody() === '') {
+			return null;
+		}
+		$failed = new \stdClass();
+		$decoded = $response->getJson(true, $failed);
+		return $decoded === $failed ? $response->getBody() : $decoded;
 	}
 
 	// ── Direct accessors (UAP-SE) ─────────────────────────────────────────────
@@ -383,22 +445,6 @@ abstract class TRestClient extends TApplicationComponent
 	protected function setDefaultHeadersDirect(array $value): void
 	{
 		$this->_defaultHeaders = $value;
-	}
-
-	/**
-	 * @return bool Stored ThrowOnError flag.
-	 */
-	protected function getThrowOnErrorDirect(): bool
-	{
-		return $this->_throwOnError;
-	}
-
-	/**
-	 * @param bool $value ThrowOnError flag to store.
-	 */
-	protected function setThrowOnErrorDirect(bool $value): void
-	{
-		$this->_throwOnError = $value;
 	}
 
 	// ── Public accessors ──────────────────────────────────────────────────────
@@ -472,18 +518,21 @@ abstract class TRestClient extends TApplicationComponent
 	}
 
 	/**
-	 * @return bool Whether HTTP error responses raise an exception.
+	 * Sets the default `Authorization` header to an OAuth2-style bearer token.
+	 * @param string $token Bearer token, without the `Bearer ` prefix.
 	 */
-	public function getThrowOnError(): bool
+	public function setBearerToken(string $token): void
 	{
-		return $this->getThrowOnErrorDirect();
+		$this->setDefaultHeader(THttpHeaderName::Authorization, 'Bearer ' . $token);
 	}
 
 	/**
-	 * @param bool|string $value Whether HTTP errors should throw.
+	 * Sets the default `Authorization` header to HTTP Basic credentials.
+	 * @param string $username User name.
+	 * @param string $password Password.
 	 */
-	public function setThrowOnError($value): void
+	public function setBasicAuth(string $username, string $password): void
 	{
-		$this->setThrowOnErrorDirect(TPropertyValue::ensureBoolean($value));
+		$this->setDefaultHeader(THttpHeaderName::Authorization, 'Basic ' . base64_encode($username . ':' . $password));
 	}
 }

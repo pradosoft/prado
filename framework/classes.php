@@ -284,7 +284,7 @@ return [
 'TStreamDecorator' => 'Prado\IO\Stream\TStreamDecorator',
 'TSocketAddress' => 'Prado\IO\Socket\TSocketAddress',
 'TSocketServer' => 'Prado\IO\Socket\TSocketServer',
-'TSocketStream' => 'Prado\IO\Rest\TSocketStream',
+'TSocketStream' => 'Prado\IO\Socket\TSocketStream',
 'TByteOrder' => 'Prado\IO\TByteOrder',
 'TFileStream' => 'Prado\IO\TFileStream',
 'TFlushableStreamTrait' => 'Prado\IO\TFlushableStreamTrait',
