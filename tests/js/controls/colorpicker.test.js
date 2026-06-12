@@ -751,11 +751,37 @@ describe('TColorPicker.hideOnClick', () => {
 		expect(picker.showing).toBe(true);
 	});
 
-	it('does not hide when clicking inside the basic picker container', () => {
-		const cell = picker.element.querySelector('img') || picker.element.firstChild;
-		// element has class containing "BasicColorPicker" — must count as within
+	it('does not hide when clicking the basic picker container itself', () => {
+		// element class is "TColorPicker BasicColorPicker" — contains "ColorPicker"
 		picker.hideOnClick('Basic', { target: picker.element });
 		expect(picker.showing).toBe(true);
+	});
+
+	it('does not hide when clicking a child node inside the basic picker', () => {
+		// Walk up from a deep child — "ColorPicker" must match on an ancestor
+		const child = picker.element.querySelector('img') ?? picker.element.firstElementChild;
+		picker.hideOnClick('Basic', { target: child });
+		expect(picker.showing).toBe(true);
+	});
+
+	it('does not hide when clicking inside a Simple-mode (Tiny palette) picker', () => {
+		// PHP Simple mode sends Palette:"Tiny"; JS still uses getBasicPickerContainer
+		// and the container still has class "... BasicColorPicker"
+		const simpleEl = picker.getBasicPickerContainer(ID, 'Tiny');
+		picker.input.parentNode.appendChild(simpleEl);
+		const child = simpleEl.querySelector('img') ?? simpleEl.firstElementChild;
+		picker.hideOnClick('Basic', { target: child });
+		expect(picker.showing).toBe(true);
+		simpleEl.remove();
+	});
+
+	it('does not hide when clicking inside a Full picker container', () => {
+		const fullEl = picker.getFullPickerContainer(ID);
+		picker.input.parentNode.appendChild(fullEl);
+		// element class contains "FullColorPicker"
+		picker.hideOnClick('Full', { target: fullEl });
+		expect(picker.showing).toBe(true);
+		fullEl.remove();
 	});
 
 	it('is a no-op when not showing', () => {
