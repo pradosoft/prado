@@ -354,12 +354,12 @@ Prado.WebUI.TColorPicker = Prado.Class(Prado.WebUI.Control, {
 			this.hide(event,type);
 	},
 
-	hideOnClick(ev) {
+	hideOnClick(type, ev) {
 		if(!this.showing) return;
 		let el = ev.target;
 		let within = false;
 		do
-		{	within = within || String(el.className).indexOf('FullColorPicker') > -1
+		{	within = within || String(el.className).indexOf('ColorPicker') > -1
 			within = within || el == this.button;
 			within = within || el == this.input;
 			if(within) break;

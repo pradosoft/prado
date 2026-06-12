@@ -737,24 +737,31 @@ describe('TColorPicker.hideOnClick', () => {
 		const outside = document.createElement('div');
 		outside.className = 'outside';
 		document.body.appendChild(outside);
-		picker.hideOnClick({ target: outside });
+		picker.hideOnClick('Basic', { target: outside });
 		expect(picker.showing).toBe(false);
 	});
 
 	it('does not hide when the target is the input element', () => {
-		picker.hideOnClick({ target: picker.input });
+		picker.hideOnClick('Basic', { target: picker.input });
 		expect(picker.showing).toBe(true);
 	});
 
 	it('does not hide when the target is the button element', () => {
-		picker.hideOnClick({ target: picker.button });
+		picker.hideOnClick('Basic', { target: picker.button });
+		expect(picker.showing).toBe(true);
+	});
+
+	it('does not hide when clicking inside the basic picker container', () => {
+		const cell = picker.element.querySelector('img') || picker.element.firstChild;
+		// element has class containing "BasicColorPicker" — must count as within
+		picker.hideOnClick('Basic', { target: picker.element });
 		expect(picker.showing).toBe(true);
 	});
 
 	it('is a no-op when not showing', () => {
 		picker.showing = false;
 		const outside = document.createElement('div');
-		picker.hideOnClick({ target: outside });
+		picker.hideOnClick('Basic', { target: outside });
 		// just ensure no error thrown
 		expect(picker.showing).toBe(false);
 	});
