@@ -182,6 +182,8 @@ restservice_resource_invalid			= TRestService resource class '{0}' must extend P
 restservice_http_error					= HTTP {0} {1}
 restgroup_file_not_found				= TRestService group file '{0}' could not be found (tried .php and .xml extensions).
 restconfig_file_not_found				= TRestService config file '{0}' could not be found (tried .php and .xml extensions).
+restservice_cors_credentials_wildcard	= TRestService.AllowOrigin must be an explicit origin (not '*') when AllowCredentials is enabled.
+restresource_rule_unknown				= TRestResource validation rule '{0}' for field '{1}' is not recognized.
 
 basebehavior_cannot_setname_with_owner	= The TBaseBehavior.Name "{0}" cannot be changed (to "{1}") after the behavior is attached.
 basebehavior_sync_no_owner				= The TBaseBehavior "{0}" has no owner and cannot synchronize event handlers on a component without owners.
