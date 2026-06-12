@@ -33,6 +33,7 @@ use Prado\Xml\TXmlDocument;
  *  2. Strips {@see setBasePath BasePath} from `PATH_INFO` and matches the
  *     remainder against its compiled route table in declaration order; the
  *     first matching pattern wins, otherwise the service returns `404`.
+ *     Requests whose path lies outside `BasePath` also return `404`.
  *  3. Instantiates the matched {@see TRestResource} subclass, applies any
  *     extra XML attributes as object properties, and injects the captured
  *     path parameters.
@@ -189,14 +190,19 @@ use Prado\Xml\TXmlDocument;
  *
  * ## CORS
  *
- * When {@see setEnableCors EnableCors} is on, `Access-Control-*` headers are
- * added to every response and `OPTIONS` preflights are answered with
- * `204 No Content`. {@see setAllowOrigin AllowOrigin},
+ * When {@see setEnableCors EnableCors} is on, `Access-Control-Allow-Origin`
+ * (plus `Access-Control-Allow-Credentials` and `Vary: Origin` when
+ * applicable) is added to every response, and `OPTIONS` preflights are
+ * answered with `204 No Content` carrying the preflight-only headers
+ * `Access-Control-Allow-Methods`, `Access-Control-Allow-Headers`, and
+ * `Access-Control-Max-Age`. {@see setAllowOrigin AllowOrigin},
  * {@see setAllowMethods AllowMethods}, {@see setAllowHeaders AllowHeaders},
  * {@see setAllowCredentials AllowCredentials}, and {@see setMaxAge MaxAge}
- * control the emitted values. When credentials are allowed, the wildcard
- * `'*'` origin is automatically replaced with the request's `Origin` header
- * and a `Vary: Origin` response header is added.
+ * control the emitted values. Combining {@see setAllowCredentials
+ * AllowCredentials} with the wildcard `'*'` origin is rejected as a
+ * configuration error — reflecting arbitrary origins while allowing
+ * credentials would grant every website authenticated access to the API, so
+ * an explicit origin must be configured instead.
  *
  * ## Error responses
  *
@@ -275,14 +281,39 @@ class TRestService extends \Prado\TService
 	// ── Initialisation ─────────────────────────────────────────────────────────
 
 	/**
-	 * Initializes the service by compiling the resource route table.
+	 * Initializes the service by validating the CORS configuration and
+	 * compiling the resource route table.
 	 * @param mixed $config Service configuration element.
+	 * @throws TConfigurationException when CORS credentials are combined with
+	 *   the wildcard origin.
 	 */
 	public function init($config): void
 	{
 		$this->setExposeErrors($this->getApplication()->getMode() === TApplicationMode::Debug);
+		$this->assertValidCorsConfig();
 		$this->loadResources($config);
 		parent::init($config);
+	}
+
+	/**
+	 * Guards against the insecure combination of credentialed CORS and a
+	 * wildcard origin.
+	 *
+	 * Reflecting arbitrary request origins while sending
+	 * `Access-Control-Allow-Credentials: true` would let any website make
+	 * authenticated requests with the user's cookies, which the CORS
+	 * specification deliberately forbids. Called from {@see init()} for
+	 * fail-fast configuration errors and from {@see sendCorsHeaders()} to
+	 * cover properties changed programmatically after initialization.
+	 *
+	 * @throws TConfigurationException when EnableCors and AllowCredentials are
+	 *   both true while AllowOrigin is `'*'`.
+	 */
+	protected function assertValidCorsConfig(): void
+	{
+		if ($this->getEnableCors() && $this->getAllowCredentials() && $this->getAllowOrigin() === '*') {
+			throw new TConfigurationException('restservice_cors_credentials_wildcard');
+		}
 	}
 
 	/**
@@ -707,6 +738,10 @@ class TRestService extends \Prado\TService
 
 			$this->sendJsonResponse($result, $statusCode, $headers);
 		} catch (TRestException $e) {
+			if ($e->getStatusCode() === 405 && isset($resource, $resourceConfig)) {
+				// RFC 7231 §6.5.5: a 405 response must carry an Allow header.
+				$response->appendHeader('Allow: ' . implode(', ', $this->getAllowedVerbs($resource, $resourceConfig['isItem'])));
+			}
 			$this->sendErrorResponse($e);
 		} catch (\Prado\Exceptions\THttpException $e) {
 			$this->sendErrorResponse(new TRestException($e->getStatusCode(), '', $e->getMessage()));
@@ -735,21 +770,31 @@ class TRestService extends \Prado\TService
 	/**
 	 * Strips the configured BasePath prefix from a raw path-info string.
 	 *
-	 * Leading slashes are removed before comparison. When BasePath is empty or
-	 * the path does not start with it, the path is returned unchanged.
+	 * Leading slashes are removed before comparison. When BasePath is empty,
+	 * the path is returned unchanged. A path equal to BasePath without its
+	 * trailing slash resolves to the empty root path. A path outside BasePath
+	 * is rejected with `404` so routes are reachable only under the
+	 * configured prefix.
 	 *
 	 * @param string $pathInfo Raw path info (leading slash already stripped).
+	 * @throws TRestException 404 when the path lies outside BasePath.
 	 * @return string API-relative path, with no leading slash.
 	 */
 	protected function applyBasePath(string $pathInfo): string
 	{
 		$basePath = ltrim($this->getBasePath(), '/');
 
-		if ($basePath !== '' && str_starts_with($pathInfo, $basePath)) {
+		if ($basePath === '') {
+			return $pathInfo;
+		}
+		if (str_starts_with($pathInfo, $basePath)) {
 			return ltrim(substr($pathInfo, strlen($basePath)), '/');
 		}
+		if (rtrim($basePath, '/') === $pathInfo) {
+			return '';
+		}
 
-		return $pathInfo;
+		throw TRestException::notFound('The requested resource was not found.');
 	}
 
 	/**
@@ -834,6 +879,32 @@ class TRestService extends \Prado\TService
 			'DELETE' => 'doDestroy',
 			default => throw TRestException::methodNotAllowed("HTTP method {$verb} is not supported."),
 		};
+	}
+
+	/**
+	 * Returns the HTTP verbs the given resource supports for the matched route.
+	 *
+	 * A verb is supported when the resource subclass declares the convention
+	 * method that {@see resolveMethod()} maps it to. `OPTIONS` is appended
+	 * when CORS is enabled because the service answers preflights itself.
+	 * Used to populate the `Allow` header on `405` responses.
+	 *
+	 * @param TRestResource $resource Resource instance for the matched route.
+	 * @param bool $isItem True for item routes (last segment is a `{param}`).
+	 * @return string[] Supported verbs in canonical order.
+	 */
+	protected function getAllowedVerbs(TRestResource $resource, bool $isItem): array
+	{
+		$verbs = [];
+		foreach (['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE'] as $verb) {
+			if (method_exists($resource, $this->resolveMethod($verb, $isItem))) {
+				$verbs[] = $verb;
+			}
+		}
+		if ($this->getEnableCors()) {
+			$verbs[] = 'OPTIONS';
+		}
+		return $verbs;
 	}
 
 	/**
@@ -923,23 +994,23 @@ class TRestService extends \Prado\TService
 	 * Emits `Access-Control-*` headers for CORS support.
 	 *
 	 * Called at the top of {@see run()} when {@see getEnableCors()} is true.
-	 * Also handles reflection of the `Origin` header for credentialed requests.
+	 * The origin headers (`Access-Control-Allow-Origin`,
+	 * `Access-Control-Allow-Credentials`, `Vary: Origin`) are sent on every
+	 * response; the preflight-only headers (`Access-Control-Allow-Methods`,
+	 * `Access-Control-Allow-Headers`, `Access-Control-Max-Age`) are sent only
+	 * for `OPTIONS` requests because browsers ignore them elsewhere.
+	 *
+	 * @throws TConfigurationException when CORS credentials are combined with
+	 *   the wildcard origin (see {@see assertValidCorsConfig()}).
 	 */
 	protected function sendCorsHeaders(): void
 	{
+		$this->assertValidCorsConfig();
+
 		$response = $this->getResponse();
 		$origin = $this->getAllowOrigin();
 
-		// When AllowCredentials is true, the origin must be explicit (not '*')
-		if ($this->getAllowCredentials() && $origin === '*') {
-			$requestOrigin = $this->getRequest()->getHeaders()['Origin'] ?? ($_SERVER['HTTP_ORIGIN'] ?? null);
-			$origin = $requestOrigin ?? '*';
-		}
-
 		$response->appendHeader("Access-Control-Allow-Origin: {$origin}");
-		$response->appendHeader("Access-Control-Allow-Methods: {$this->getAllowMethods()}");
-		$response->appendHeader("Access-Control-Allow-Headers: {$this->getAllowHeaders()}");
-		$response->appendHeader("Access-Control-Max-Age: {$this->getMaxAge()}");
 
 		if ($this->getAllowCredentials()) {
 			$response->appendHeader('Access-Control-Allow-Credentials: true');
@@ -947,6 +1018,12 @@ class TRestService extends \Prado\TService
 
 		if ($origin !== '*') {
 			$response->appendHeader('Vary: Origin');
+		}
+
+		if (strtoupper($this->getRequest()->getRequestType() ?? '') === 'OPTIONS') {
+			$response->appendHeader("Access-Control-Allow-Methods: {$this->getAllowMethods()}");
+			$response->appendHeader("Access-Control-Allow-Headers: {$this->getAllowHeaders()}");
+			$response->appendHeader("Access-Control-Max-Age: {$this->getMaxAge()}");
 		}
 	}
 
@@ -1196,9 +1273,9 @@ class TRestService extends \Prado\TService
 	}
 
 	/**
-	 * When true, `Access-Control-Allow-Credentials: true` is sent and the
-	 * `AllowOrigin` wildcard `'*'` is automatically replaced with the actual
-	 * request `Origin` header.
+	 * When true, `Access-Control-Allow-Credentials: true` is sent. Requires
+	 * an explicit {@see setAllowOrigin AllowOrigin} — combining credentials
+	 * with the wildcard `'*'` origin raises a configuration error.
 	 * @param bool|string $value
 	 */
 	public function setAllowCredentials($value): void

@@ -1,5 +1,6 @@
 <?php
 
+use Prado\Exceptions\TConfigurationException;
 use Prado\Web\Services\Rest\TRestException;
 use Prado\Web\Services\Rest\TRestResource;
 
@@ -558,13 +559,12 @@ class TRestResourceTest extends PHPUnit\Framework\TestCase
 
 	public function testInputFallsBackToQueryString(): void
 	{
-		$request = Prado::getApplication()->getRequest();
-		$request->add('filter', 'active');
+		$_GET['filter'] = 'active';
 		try {
 			$r = $this->inputResource([]);
 			$this->assertSame('active', $r->callInput('filter'));
 		} finally {
-			$request->remove('filter');
+			unset($_GET['filter']);
 		}
 	}
 
@@ -574,15 +574,28 @@ class TRestResourceTest extends PHPUnit\Framework\TestCase
 		$this->assertSame('fallback', $r->callInput('missing', 'fallback'));
 	}
 
-	public function testQueryReadsFromRequestOnly(): void
+	public function testQueryReadsFromQueryStringOnly(): void
 	{
-		$request = Prado::getApplication()->getRequest();
-		$request->add('q', 'search');
+		$_GET['q'] = 'search';
 		try {
 			$r = $this->inputResource(['q' => 'from-body']);
 			$this->assertSame('search', $r->callQuery('q'));
 		} finally {
-			$request->remove('q');
+			unset($_GET['q']);
+		}
+	}
+
+	public function testQueryIgnoresNonQueryRequestParameters(): void
+	{
+		// Routing parameters and form-POST fields live in THttpRequest's merged
+		// map but are not query-string values — query() must not see them.
+		$request = Prado::getApplication()->getRequest();
+		$request->add('routed', 'value');
+		try {
+			$r = $this->inputResource([]);
+			$this->assertNull($r->callQuery('routed'));
+		} finally {
+			$request->remove('routed');
 		}
 	}
 
@@ -600,13 +613,12 @@ class TRestResourceTest extends PHPUnit\Framework\TestCase
 
 	public function testHasInputTrueForQuery(): void
 	{
-		$request = Prado::getApplication()->getRequest();
-		$request->add('z', '1');
+		$_GET['z'] = '1';
 		try {
 			$r = $this->inputResource([]);
 			$this->assertTrue($r->callHasInput('z'));
 		} finally {
-			$request->remove('z');
+			unset($_GET['z']);
 		}
 	}
 
@@ -721,6 +733,13 @@ class TRestResourceTest extends PHPUnit\Framework\TestCase
 			['name' => 'string']
 		);
 		$this->assertSame(['name' => 'Alice'], $result);
+	}
+
+	public function testValidateUnknownRuleThrowsConfigurationException(): void
+	{
+		// A typo in a rule name is a developer error, not a 422 for the client.
+		$this->expectException(TConfigurationException::class);
+		$this->validator()->v(['name' => 'Alice'], ['name' => 'requried|string']);
 	}
 
 	// ── Remaining exception helpers ────────────────────────────────────────────
