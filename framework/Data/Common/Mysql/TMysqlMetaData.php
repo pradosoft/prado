@@ -86,6 +86,11 @@ class TMysqlMetaData extends TDbMetaData
 	protected function createTableInfo($table)
 	{
 		[$schemaName, $tableName] = $this->getSchemaTableName($table);
+		// Resolve the table name to its actual stored case. On Linux, MySQL is
+		// case-sensitive for table names (lower_case_table_names=0), so a lookup
+		// for `accounts` must find the `Accounts` table.
+		$tableName = $this->resolveTableNameCase($schemaName, $tableName);
+		$table = $schemaName === null ? $tableName : $schemaName . '.' . $tableName;
 		$find = $schemaName === null ? "`{$tableName}`" : "`{$schemaName}`.`{$tableName}`";
 		$colCase = $this->getDbConnection()->getColumnCase();
 		if ($colCase != TDbColumnCaseMode::Preserved) {
@@ -218,6 +223,44 @@ class TMysqlMetaData extends TDbMetaData
 			}
 		}
 		return count($result) > 1 ? $result : [null, $result[0]];
+	}
+
+	/**
+	 * Resolves a table name to its actual stored case via information_schema.
+	 *
+	 * MySQL on Linux is case-sensitive for table names
+	 * (lower_case_table_names=0), so a metadata lookup using a different case
+	 * than the stored name (e.g. `accounts` for a table created as `Accounts`)
+	 * fails.  This performs a case-insensitive match and returns the real name.
+	 * The input name is returned unchanged when no match is found (the caller
+	 * then raises the usual "invalid table" error) or when the lookup fails.
+	 *
+	 * @param ?string $schemaName database name, null to use the connection default.
+	 * @param string $tableName the requested table name, possibly mis-cased.
+	 * @return string the actual stored table name, or the input when unresolved.
+	 * @since 4.4.0
+	 */
+	protected function resolveTableNameCase($schemaName, $tableName)
+	{
+		try {
+			$conn = $this->getDbConnection();
+			$conn->setActive(true);
+			if ($schemaName === null) {
+				$sql = 'SELECT TABLE_NAME FROM information_schema.TABLES'
+					. ' WHERE TABLE_SCHEMA = DATABASE() AND LOWER(TABLE_NAME) = LOWER(:t)';
+				$command = $conn->createCommand($sql);
+			} else {
+				$sql = 'SELECT TABLE_NAME FROM information_schema.TABLES'
+					. ' WHERE TABLE_SCHEMA = :s AND LOWER(TABLE_NAME) = LOWER(:t)';
+				$command = $conn->createCommand($sql);
+				$command->bindValue(':s', $schemaName);
+			}
+			$command->bindValue(':t', $tableName);
+			$actual = $command->queryScalar();
+		} catch (\Exception $e) {
+			return $tableName;
+		}
+		return ($actual === false || $actual === null) ? $tableName : (string) $actual;
 	}
 
 	/**
