@@ -1,6 +1,7 @@
 <?php
 
 use Prado\IO\ITextWriter;
+use Prado\IO\TTextWriter;
 use Prado\Web\THttpUtility;
 use Prado\Web\UI\THtmlWriter;
 use PHPUnit\Framework\TestCase;
@@ -51,10 +52,35 @@ class THtmlWriterTest extends TestCase
 	// Constructor and Writer Management
 	// ================================================================================
 
-	public function testConstructor()
+	public function testConstructorWithExplicitWriter()
 	{
 		$htmlWriter = new THtmlWriter($this->writer);
 		$this->assertSame($this->writer, $htmlWriter->getWriter());
+	}
+
+	public function testConstructorTrueCreatesInternalTTextWriter()
+	{
+		$htmlWriter = new THtmlWriter(true);
+		$this->assertInstanceOf(TTextWriter::class, $htmlWriter->getWriter());
+	}
+
+	public function testConstructorDefaultArgEqualsTrue()
+	{
+		$htmlWriter = new THtmlWriter();
+		$this->assertInstanceOf(TTextWriter::class, $htmlWriter->getWriter());
+	}
+
+	public function testConstructorNullSetsNoWriter()
+	{
+		$htmlWriter = new THtmlWriter(null);
+		$this->assertNull($htmlWriter->getWriter());
+	}
+
+	public function testConstructorTrueWriterIsUsable()
+	{
+		$htmlWriter = new THtmlWriter(true);
+		$htmlWriter->write('hello');
+		$this->assertSame('hello', $htmlWriter->flush());
 	}
 
 	public function testSetWriter()
@@ -66,79 +92,61 @@ class THtmlWriterTest extends TestCase
 		$this->assertSame($this->writer, $htmlWriter->getWriter());
 	}
 
+	public function testSetWriterReturnsThis()
+	{
+		$htmlWriter = new THtmlWriter(null);
+		$this->assertSame($htmlWriter, $htmlWriter->setWriter($this->writer));
+	}
+
+	public function testSetWriterReplacesExisting()
+	{
+		$htmlWriter = new THtmlWriter($this->writer);
+		$other = new TestWriter();
+		$htmlWriter->setWriter($other);
+		$this->assertSame($other, $htmlWriter->getWriter());
+	}
+
 	// ================================================================================
 	// Void Elements Static Methods
 	// ================================================================================
 
 	public function testGetVoidElementsReturnsArray()
 	{
-		$voidElements = THtmlWriter::getVoidElements();
-		$this->assertIsArray($voidElements);
+		$this->assertIsArray(THtmlWriter::getVoidElements());
 	}
 
-	public function testGetVoidElementsContainsStandardElements()
+	public function testGetVoidElementsContainsHtml5Elements()
 	{
 		$voidElements = THtmlWriter::getVoidElements();
-
-		$expected = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr'];
-		foreach ($expected as $element) {
-			$this->assertContains($element, $voidElements, "Void element '$element' should be in list");
+		foreach (['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr'] as $el) {
+			$this->assertContains($el, $voidElements, "'$el' must be in void elements");
 		}
 	}
 
-	public function testGetVoidElementsContainsLegacyElements()
+	public function testGetVoidElementsTotalCount()
 	{
-		$voidElements = THtmlWriter::getVoidElements();
+		$this->assertCount(13, THtmlWriter::getVoidElements());
+	}
 
-		$legacy = ['basefont', 'bgsound', 'frame', 'isindex'];
-		foreach ($legacy as $element) {
-			$this->assertContains($element, $voidElements, "Legacy element '$element' should be in list");
+	public function testIsVoidElementHtml5VoidElements()
+	{
+		foreach (['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr'] as $el) {
+			$this->assertTrue(THtmlWriter::isVoidElement($el), "'$el' must be void");
 		}
 	}
 
-	public function testGetVoidElementsReturnsAllElements()
+	public function testIsVoidElementLegacyElementsRemoved()
 	{
-		$voidElements = THtmlWriter::getVoidElements();
-		$this->assertCount(17, $voidElements, 'Should have 17 void elements');
-		$this->assertContains('br', $voidElements);
-		$this->assertContains('area', $voidElements);
-		$this->assertContains('basefont', $voidElements);
+		foreach (['basefont', 'bgsound', 'frame', 'isindex'] as $el) {
+			$this->assertFalse(THtmlWriter::isVoidElement($el), "Legacy '$el' is no longer a void element");
+		}
 	}
 
-	public function testIsVoidElementStandardVoidElement()
+	public function testIsVoidElementNonVoidElements()
 	{
-		$this->assertTrue(THtmlWriter::isVoidElement('br'));
-		$this->assertTrue(THtmlWriter::isVoidElement('img'));
-		$this->assertTrue(THtmlWriter::isVoidElement('input'));
-		$this->assertTrue(THtmlWriter::isVoidElement('meta'));
-		$this->assertTrue(THtmlWriter::isVoidElement('link'));
-		$this->assertTrue(THtmlWriter::isVoidElement('area'));
-		$this->assertTrue(THtmlWriter::isVoidElement('base'));
-		$this->assertTrue(THtmlWriter::isVoidElement('col'));
-		$this->assertTrue(THtmlWriter::isVoidElement('embed'));
-		$this->assertTrue(THtmlWriter::isVoidElement('hr'));
-		$this->assertTrue(THtmlWriter::isVoidElement('source'));
-		$this->assertTrue(THtmlWriter::isVoidElement('track'));
-		$this->assertTrue(THtmlWriter::isVoidElement('wbr'));
-	}
-
-	public function testIsVoidElementLegacyVoidElement()
-	{
-		$this->assertTrue(THtmlWriter::isVoidElement('basefont'));
-		$this->assertTrue(THtmlWriter::isVoidElement('bgsound'));
-		$this->assertTrue(THtmlWriter::isVoidElement('frame'));
-		$this->assertTrue(THtmlWriter::isVoidElement('isindex'));
-	}
-
-	public function testIsVoidElementNonVoidElement()
-	{
-		$this->assertFalse(THtmlWriter::isVoidElement('div'));
-		$this->assertFalse(THtmlWriter::isVoidElement('span'));
-		$this->assertFalse(THtmlWriter::isVoidElement('a'));
-		$this->assertFalse(THtmlWriter::isVoidElement('p'));
-		$this->assertFalse(THtmlWriter::isVoidElement('table'));
-		$this->assertFalse(THtmlWriter::isVoidElement('form'));
-		$this->assertFalse(THtmlWriter::isVoidElement('button'));
+		foreach (['div', 'span', 'a', 'p', 'table', 'form', 'button', 'script', 'style'] as $el) {
+			$this->assertFalse(THtmlWriter::isVoidElement($el), "'$el' must not be void");
+		}
 	}
 
 	public function testIsVoidElementCaseInsensitive()
@@ -146,70 +154,101 @@ class THtmlWriterTest extends TestCase
 		$this->assertTrue(THtmlWriter::isVoidElement('BR'));
 		$this->assertTrue(THtmlWriter::isVoidElement('Img'));
 		$this->assertTrue(THtmlWriter::isVoidElement('INPUT'));
-		$this->assertTrue(THtmlWriter::isVoidElement('Br'));
+		$this->assertFalse(THtmlWriter::isVoidElement('DIV'));
 	}
 
-	public function testIsVoidElementLowercaseNormalization()
+	public function testIsVoidElementUnknownReturnsFalse()
 	{
-		$this->assertTrue(THtmlWriter::isVoidElement('BR'));
-		$this->assertFalse(THtmlWriter::isVoidElement('DIV'));
+		$this->assertFalse(THtmlWriter::isVoidElement('custom'));
+		$this->assertFalse(THtmlWriter::isVoidElement('myelement'));
+		$this->assertFalse(THtmlWriter::isVoidElement(''));
 	}
 
 	// ================================================================================
 	// Attribute Methods
 	// ================================================================================
 
-	public function testAddAttributesHtmlEncodesValues()
-	{
-		$htmlWriter = new THtmlWriter($this->writer);
-		$htmlWriter->addAttributes(['name' => 'value', 'title' => 'Rock & Roll']);
-		$this->assertEquals('value', $this->getAttributes($htmlWriter)['name']);
-		$this->assertEquals(THttpUtility::htmlEncode('Rock & Roll'), $this->getAttributes($htmlWriter)['title']);
-	}
-
-	public function testAddAttributesPreservesWhitespaceInNames()
-	{
-		$htmlWriter = new THtmlWriter($this->writer);
-		$htmlWriter->addAttributes(['  name  ' => 'value']);
-		$this->assertArrayHasKey('  name  ', $this->getAttributes($htmlWriter));
-	}
-
-	public function testAddAttributesPreservesValueWhitespace()
-	{
-		$htmlWriter = new THtmlWriter($this->writer);
-		$htmlWriter->addAttributes(['name' => '  value  ']);
-		$this->assertEquals('  value  ', $this->getAttributes($htmlWriter)['name']);
-	}
-
 	public function testAddAttributeSingle()
 	{
 		$htmlWriter = new THtmlWriter($this->writer);
 		$htmlWriter->addAttribute('type', 'text');
-		$this->assertEquals('text', $this->getAttributes($htmlWriter)['type']);
+		$this->assertSame('text', $this->getAttributes($htmlWriter)['type']);
 	}
 
 	public function testAddAttributeHtmlEncodesValue()
 	{
 		$htmlWriter = new THtmlWriter($this->writer);
 		$htmlWriter->addAttribute('title', 'Rock & Roll');
-		$this->assertEquals(THttpUtility::htmlEncode('Rock & Roll'), $this->getAttributes($htmlWriter)['title']);
+		$this->assertSame(THttpUtility::htmlEncode('Rock & Roll'), $this->getAttributes($htmlWriter)['title']);
 	}
 
-	public function testAddAttributePreservesWhitespaceInName()
+	public function testAddAttributeDoubleQuoteEncoded()
 	{
 		$htmlWriter = new THtmlWriter($this->writer);
-		$htmlWriter->addAttribute('  type  ', 'text');
-		$this->assertArrayHasKey('  type  ', $this->getAttributes($htmlWriter));
+		$htmlWriter->addAttribute('title', 'Say "hi"');
+		$this->assertSame('Say &quot;hi&quot;', $this->getAttributes($htmlWriter)['title']);
 	}
 
-	public function testAddAttributeMultipleAddsToExisting()
+	public function testAddAttributeAmpersandNotEncoded()
+	{
+		// htmlEncode only encodes <, >, "; & is left as-is
+		$htmlWriter = new THtmlWriter($this->writer);
+		$htmlWriter->addAttribute('title', 'A&B');
+		$this->assertSame('A&B', $this->getAttributes($htmlWriter)['title']);
+	}
+
+	public function testAddAttributeOverwritesExisting()
+	{
+		$htmlWriter = new THtmlWriter($this->writer);
+		$htmlWriter->addAttribute('type', 'text');
+		$htmlWriter->addAttribute('type', 'password');
+		$this->assertSame('password', $this->getAttributes($htmlWriter)['type']);
+	}
+
+	public function testAddAttributeMultiple()
 	{
 		$htmlWriter = new THtmlWriter($this->writer);
 		$htmlWriter->addAttribute('name1', 'value1');
 		$htmlWriter->addAttribute('name2', 'value2');
 		$attrs = $this->getAttributes($htmlWriter);
-		$this->assertEquals('value1', $attrs['name1']);
-		$this->assertEquals('value2', $attrs['name2']);
+		$this->assertSame('value1', $attrs['name1']);
+		$this->assertSame('value2', $attrs['name2']);
+	}
+
+	public function testAddAttributeReturnsThis()
+	{
+		$htmlWriter = new THtmlWriter($this->writer);
+		$this->assertSame($htmlWriter, $htmlWriter->addAttribute('type', 'text'));
+	}
+
+	public function testAddAttributesHtmlEncodesValues()
+	{
+		$htmlWriter = new THtmlWriter($this->writer);
+		$htmlWriter->addAttributes(['name' => 'value', 'title' => 'A<B>C']);
+		$this->assertSame('value', $this->getAttributes($htmlWriter)['name']);
+		$this->assertSame(THttpUtility::htmlEncode('A<B>C'), $this->getAttributes($htmlWriter)['title']);
+	}
+
+	public function testAddAttributesOverwritesExisting()
+	{
+		$htmlWriter = new THtmlWriter($this->writer);
+		$htmlWriter->addAttribute('class', 'old');
+		$htmlWriter->addAttributes(['class' => 'new']);
+		$this->assertSame('new', $this->getAttributes($htmlWriter)['class']);
+	}
+
+	public function testAddAttributesEmptyArrayNoOp()
+	{
+		$htmlWriter = new THtmlWriter($this->writer);
+		$htmlWriter->addAttribute('id', 'x');
+		$htmlWriter->addAttributes([]);
+		$this->assertCount(1, $this->getAttributes($htmlWriter));
+	}
+
+	public function testAddAttributesReturnsThis()
+	{
+		$htmlWriter = new THtmlWriter($this->writer);
+		$this->assertSame($htmlWriter, $htmlWriter->addAttributes([]));
 	}
 
 	public function testRemoveAttribute()
@@ -224,57 +263,106 @@ class THtmlWriterTest extends TestCase
 		$this->assertArrayHasKey('value', $attrs);
 	}
 
-	public function testRemoveAttributePreservesWhitespace()
-	{
-		$htmlWriter = new THtmlWriter($this->writer);
-		$htmlWriter->addAttribute('type', 'text');
-		$htmlWriter->removeAttribute('  type  ');
-
-		$attrs = $this->getAttributes($htmlWriter);
-		$this->assertArrayHasKey('type', $attrs);
-	}
-
-	public function testRemoveAttributeNonExistentDoesNotThrow()
+	public function testRemoveAttributeNonExistentNoThrow()
 	{
 		$htmlWriter = new THtmlWriter($this->writer);
 		$htmlWriter->removeAttribute('non-existent');
-		$this->assertTrue(true);
+		$this->assertEmpty($this->getAttributes($htmlWriter));
+	}
+
+	public function testRemoveAttributeReturnsThis()
+	{
+		$htmlWriter = new THtmlWriter($this->writer);
+		$this->assertSame($htmlWriter, $htmlWriter->removeAttribute('x'));
+	}
+
+	public function testAddAndRemoveAttributeNameNormalization()
+	{
+		// htmlStrip does not strip whitespace — '  type  ' and 'type' are distinct keys
+		$htmlWriter = new THtmlWriter($this->writer);
+		$htmlWriter->addAttribute('type', 'text');
+		$htmlWriter->removeAttribute('  type  ');   // different key → 'type' still present
+		$this->assertArrayHasKey('type', $this->getAttributes($htmlWriter));
 	}
 
 	// ================================================================================
 	// Style Attribute Methods
 	// ================================================================================
 
-	public function testAddStyleAttributesHtmlEncodesValues()
-	{
-		$htmlWriter = new THtmlWriter($this->writer);
-		$htmlWriter->addStyleAttributes(['font-size' => '1em', 'color' => 'red & blue']);
-		$this->assertEquals('1em', $this->getStyles($htmlWriter)['font-size']);
-		$this->assertEquals(THttpUtility::htmlEncode('red & blue'), $this->getStyles($htmlWriter)['color']);
-	}
-
-	public function testAddStyleAttributesPreservesWhitespaceInNames()
-	{
-		$htmlWriter = new THtmlWriter($this->writer);
-		$htmlWriter->addStyleAttributes(['  font-size  ' => '1em']);
-		$this->assertArrayHasKey('  font-size  ', $this->getStyles($htmlWriter));
-	}
-
 	public function testAddStyleAttributeSingle()
 	{
 		$htmlWriter = new THtmlWriter($this->writer);
 		$htmlWriter->addStyleAttribute('font-size', '1em');
-		$this->assertEquals('1em', $this->getStyles($htmlWriter)['font-size']);
+		$this->assertSame('1em', $this->getStyles($htmlWriter)['font-size']);
 	}
 
-	public function testAddStyleAttributeMultipleAddsToExisting()
+	public function testAddStyleAttributeHtmlEncodesValue()
+	{
+		$htmlWriter = new THtmlWriter($this->writer);
+		$htmlWriter->addStyleAttribute('background', 'url("img.png")');
+		$this->assertSame('url(&quot;img.png&quot;)', $this->getStyles($htmlWriter)['background']);
+	}
+
+	public function testAddStyleAttributeAmpersandNotEncoded()
+	{
+		// htmlEncode leaves & untouched — same as attribute values
+		$htmlWriter = new THtmlWriter($this->writer);
+		$htmlWriter->addStyleAttribute('font-family', 'Arial & Helvetica');
+		$this->assertSame('Arial & Helvetica', $this->getStyles($htmlWriter)['font-family']);
+	}
+
+	public function testAddStyleAttributeOverwritesExisting()
+	{
+		$htmlWriter = new THtmlWriter($this->writer);
+		$htmlWriter->addStyleAttribute('color', 'red');
+		$htmlWriter->addStyleAttribute('color', 'blue');
+		$this->assertSame('blue', $this->getStyles($htmlWriter)['color']);
+	}
+
+	public function testAddStyleAttributeMultiple()
 	{
 		$htmlWriter = new THtmlWriter($this->writer);
 		$htmlWriter->addStyleAttribute('color', 'red');
 		$htmlWriter->addStyleAttribute('font-size', '1em');
 		$styles = $this->getStyles($htmlWriter);
-		$this->assertEquals('red', $styles['color']);
-		$this->assertEquals('1em', $styles['font-size']);
+		$this->assertSame('red', $styles['color']);
+		$this->assertSame('1em', $styles['font-size']);
+	}
+
+	public function testAddStyleAttributeReturnsThis()
+	{
+		$htmlWriter = new THtmlWriter($this->writer);
+		$this->assertSame($htmlWriter, $htmlWriter->addStyleAttribute('color', 'red'));
+	}
+
+	public function testAddStyleAttributesHtmlEncodesValues()
+	{
+		$htmlWriter = new THtmlWriter($this->writer);
+		$htmlWriter->addStyleAttributes(['font-size' => '1em', 'color' => 'red & blue']);
+		$this->assertSame('1em', $this->getStyles($htmlWriter)['font-size']);
+		$this->assertSame(THttpUtility::htmlEncode('red & blue'), $this->getStyles($htmlWriter)['color']);
+	}
+
+	public function testAddStyleAttributesOverwritesExisting()
+	{
+		$htmlWriter = new THtmlWriter($this->writer);
+		$htmlWriter->addStyleAttribute('color', 'red');
+		$htmlWriter->addStyleAttributes(['color' => 'green']);
+		$this->assertSame('green', $this->getStyles($htmlWriter)['color']);
+	}
+
+	public function testAddStyleAttributesEmptyArrayNoOp()
+	{
+		$htmlWriter = new THtmlWriter($this->writer);
+		$htmlWriter->addStyleAttribute('color', 'red');
+		$htmlWriter->addStyleAttributes([]);
+		$this->assertCount(1, $this->getStyles($htmlWriter));
+	}
+
+	public function testAddStyleAttributesReturnsThis()
+	{
+		$htmlWriter = new THtmlWriter($this->writer);
+		$this->assertSame($htmlWriter, $htmlWriter->addStyleAttributes([]));
 	}
 
 	public function testRemoveStyleAttribute()
@@ -289,21 +377,17 @@ class THtmlWriterTest extends TestCase
 		$this->assertArrayHasKey('color', $styles);
 	}
 
-	public function testRemoveStyleAttributePreservesWhitespace()
-	{
-		$htmlWriter = new THtmlWriter($this->writer);
-		$htmlWriter->addStyleAttribute('font-size', '1em');
-		$htmlWriter->removeStyleAttribute('  font-size  ');
-
-		$styles = $this->getStyles($htmlWriter);
-		$this->assertArrayHasKey('font-size', $styles);
-	}
-
-	public function testRemoveStyleAttributeNonExistentDoesNotThrow()
+	public function testRemoveStyleAttributeNonExistentNoThrow()
 	{
 		$htmlWriter = new THtmlWriter($this->writer);
 		$htmlWriter->removeStyleAttribute('non-existent');
-		$this->assertTrue(true);
+		$this->assertEmpty($this->getStyles($htmlWriter));
+	}
+
+	public function testRemoveStyleAttributeReturnsThis()
+	{
+		$htmlWriter = new THtmlWriter($this->writer);
+		$this->assertSame($htmlWriter, $htmlWriter->removeStyleAttribute('x'));
 	}
 
 	// ================================================================================
@@ -314,7 +398,7 @@ class THtmlWriterTest extends TestCase
 	{
 		$htmlWriter = new THtmlWriter($this->writer);
 		$htmlWriter->write('Hello');
-		$this->assertEquals('Hello', $this->writer->getStr());
+		$this->assertSame('Hello', $this->writer->getStr());
 	}
 
 	public function testWriteAppends()
@@ -322,29 +406,53 @@ class THtmlWriterTest extends TestCase
 		$htmlWriter = new THtmlWriter($this->writer);
 		$htmlWriter->write('Hello');
 		$htmlWriter->write(' World');
-		$this->assertEquals('Hello World', $this->writer->getStr());
+		$this->assertSame('Hello World', $this->writer->getStr());
+	}
+
+	public function testWriteReturnsThis()
+	{
+		$htmlWriter = new THtmlWriter($this->writer);
+		$this->assertSame($htmlWriter, $htmlWriter->write('x'));
 	}
 
 	public function testWriteLine()
 	{
 		$htmlWriter = new THtmlWriter($this->writer);
 		$htmlWriter->writeLine('Hello');
-		$this->assertEquals("Hello\n", $this->writer->getStr());
+		$this->assertSame("Hello\n", $this->writer->getStr());
 	}
 
 	public function testWriteLineEmpty()
 	{
 		$htmlWriter = new THtmlWriter($this->writer);
 		$htmlWriter->writeLine();
-		$this->assertEquals("\n", $this->writer->getStr());
+		$this->assertSame("\n", $this->writer->getStr());
+	}
+
+	public function testWriteLineReturnsThis()
+	{
+		$htmlWriter = new THtmlWriter($this->writer);
+		$this->assertSame($htmlWriter, $htmlWriter->writeLine());
+	}
+
+	public function testWriteBreak()
+	{
+		$htmlWriter = new THtmlWriter($this->writer);
+		$htmlWriter->writeBreak();
+		$this->assertSame('<br/>', $this->writer->getStr());
+	}
+
+	public function testWriteBreakReturnsThis()
+	{
+		$htmlWriter = new THtmlWriter($this->writer);
+		$this->assertSame($htmlWriter, $htmlWriter->writeBreak());
 	}
 
 	public function testFlushReturnsContent()
 	{
 		$htmlWriter = new THtmlWriter($this->writer);
 		$htmlWriter->write('Test Content');
-		$flushed = $htmlWriter->flush();
-		$this->assertEquals('Test Content', $flushed);
+		$this->assertSame('Test Content', $htmlWriter->flush());
 	}
 
 	public function testFlushClearsBuffer()
@@ -352,63 +460,57 @@ class THtmlWriterTest extends TestCase
 		$htmlWriter = new THtmlWriter($this->writer);
 		$htmlWriter->write('Test Content');
 		$htmlWriter->flush();
-		$this->assertEquals('', $this->writer->getStr());
+		$this->assertSame('', $this->writer->getStr());
 	}
 
-	public function testWriteBreak()
+	public function testFlushSecondCallReturnsEmpty()
 	{
 		$htmlWriter = new THtmlWriter($this->writer);
-		$htmlWriter->writeBreak();
-		$this->assertEquals('<br/>', $this->writer->getStr());
+		$htmlWriter->write('Test');
+		$htmlWriter->flush();
+		$this->assertSame('', $htmlWriter->flush());
 	}
 
 	// ================================================================================
-	// Render Begin Tag
+	// renderBeginTag
 	// ================================================================================
-
-	public function testRenderBeginTagVoidElement()
-	{
-		$htmlWriter = new THtmlWriter($this->writer);
-		$htmlWriter->addAttribute('type', 'text');
-		$htmlWriter->addAttribute('value', 'test');
-		$htmlWriter->renderBeginTag('input');
-
-		$output = $this->writer->flush();
-		$this->assertEquals('<input type="text" value="test" />', $output);
-	}
-
-	public function testRenderBeginTagVoidElementSelfCloses()
-	{
-		$htmlWriter = new THtmlWriter($this->writer);
-		$htmlWriter->renderBeginTag('br');
-		$output = $this->writer->flush();
-		$this->assertEquals('<br />', $output);
-	}
 
 	public function testRenderBeginTagNonVoidElement()
 	{
 		$htmlWriter = new THtmlWriter($this->writer);
 		$htmlWriter->addAttribute('class', 'myclass');
 		$htmlWriter->renderBeginTag('div');
-
-		$output = $this->writer->flush();
-		$this->assertEquals('<div class="myclass">', $output);
+		$this->assertSame('<div class="myclass">', $this->writer->flush());
 	}
 
-	public function testRenderBeginTagNoAttributesVoid()
-	{
-		$htmlWriter = new THtmlWriter($this->writer);
-		$htmlWriter->renderBeginTag('hr');
-		$output = $this->writer->flush();
-		$this->assertEquals('<hr />', $output);
-	}
-
-	public function testRenderBeginTagNoAttributesNonVoid()
+	public function testRenderBeginTagNoAttributes()
 	{
 		$htmlWriter = new THtmlWriter($this->writer);
 		$htmlWriter->renderBeginTag('span');
-		$output = $this->writer->flush();
-		$this->assertEquals('<span>', $output);
+		$this->assertSame('<span>', $this->writer->flush());
+	}
+
+	public function testRenderBeginTagVoidElementSelfCloses()
+	{
+		$htmlWriter = new THtmlWriter($this->writer);
+		$htmlWriter->renderBeginTag('br');
+		$this->assertSame('<br />', $this->writer->flush());
+	}
+
+	public function testRenderBeginTagVoidElementWithAttributes()
+	{
+		$htmlWriter = new THtmlWriter($this->writer);
+		$htmlWriter->addAttribute('type', 'text');
+		$htmlWriter->addAttribute('value', 'test');
+		$htmlWriter->renderBeginTag('input');
+		$this->assertSame('<input type="text" value="test" />', $this->writer->flush());
+	}
+
+	public function testRenderBeginTagVoidNoAttributes()
+	{
+		$htmlWriter = new THtmlWriter($this->writer);
+		$htmlWriter->renderBeginTag('hr');
+		$this->assertSame('<hr />', $this->writer->flush());
 	}
 
 	public function testRenderBeginTagWithStylesOnly()
@@ -417,9 +519,7 @@ class THtmlWriterTest extends TestCase
 		$htmlWriter->addStyleAttribute('color', 'red');
 		$htmlWriter->addStyleAttribute('font-size', '1em');
 		$htmlWriter->renderBeginTag('div');
-
-		$output = $this->writer->flush();
-		$this->assertEquals('<div style="color:red;font-size:1em;">', $output);
+		$this->assertSame('<div style="color:red;font-size:1em;">', $this->writer->flush());
 	}
 
 	public function testRenderBeginTagWithAttributesAndStyles()
@@ -428,20 +528,16 @@ class THtmlWriterTest extends TestCase
 		$htmlWriter->addAttribute('id', 'myid');
 		$htmlWriter->addStyleAttribute('color', 'blue');
 		$htmlWriter->renderBeginTag('p');
-
-		$output = $this->writer->flush();
-		$this->assertEquals('<p id="myid" style="color:blue;">', $output);
+		$this->assertSame('<p id="myid" style="color:blue;">', $this->writer->flush());
 	}
 
-	public function testRenderBeginTagVoidElementWithStyles()
+	public function testRenderBeginTagVoidWithStyles()
 	{
 		$htmlWriter = new THtmlWriter($this->writer);
 		$htmlWriter->addAttribute('src', 'image.png');
 		$htmlWriter->addStyleAttribute('border', '0');
 		$htmlWriter->renderBeginTag('img');
-
-		$output = $this->writer->flush();
-		$this->assertEquals('<img src="image.png" style="border:0;" />', $output);
+		$this->assertSame('<img src="image.png" style="border:0;" />', $this->writer->flush());
 	}
 
 	public function testRenderBeginTagClearsAttributesAndStyles()
@@ -450,7 +546,6 @@ class THtmlWriterTest extends TestCase
 		$htmlWriter->addAttribute('type', 'text');
 		$htmlWriter->addStyleAttribute('color', 'red');
 		$htmlWriter->renderBeginTag('input');
-
 		$this->assertEmpty($this->getAttributes($htmlWriter));
 		$this->assertEmpty($this->getStyles($htmlWriter));
 	}
@@ -459,8 +554,7 @@ class THtmlWriterTest extends TestCase
 	{
 		$htmlWriter = new THtmlWriter($this->writer);
 		$htmlWriter->renderBeginTag('IMG');
-		$output = $this->writer->flush();
-		$this->assertEquals('<IMG />', $output);
+		$this->assertSame('<IMG />', $this->writer->flush());
 	}
 
 	public function testRenderBeginTagMixedCaseVoidElement()
@@ -468,22 +562,79 @@ class THtmlWriterTest extends TestCase
 		$htmlWriter = new THtmlWriter($this->writer);
 		$htmlWriter->addAttribute('type', 'text');
 		$htmlWriter->renderBeginTag('INPUT');
-		$output = $this->writer->flush();
-		$this->assertEquals('<INPUT type="text" />', $output);
+		$this->assertSame('<INPUT type="text" />', $this->writer->flush());
 	}
 
-	public function testRenderBeginTagTracksOpenTags()
+	public function testRenderBeginTagPushesTagOntoStack()
 	{
 		$htmlWriter = new THtmlWriter($this->writer);
 		$htmlWriter->renderBeginTag('div');
 		$htmlWriter->renderBeginTag('span');
 		$htmlWriter->renderBeginTag('br');
+		$this->assertSame(['div', 'span', ''], $this->getOpenTags($htmlWriter));
+	}
 
-		$this->assertEquals(['div', 'span', ''], $this->getOpenTags($htmlWriter));
+	public function testRenderBeginTagAttributeHtmlEncoded()
+	{
+		$htmlWriter = new THtmlWriter($this->writer);
+		$htmlWriter->addAttribute('title', 'Quote: "test"');
+		$htmlWriter->renderBeginTag('span');
+		$this->assertSame('<span title="Quote: &quot;test&quot;">', $this->writer->flush());
+	}
+
+	public function testRenderBeginTagStyleAmpersandPreserved()
+	{
+		// htmlEncode leaves & untouched; only <, >, " are encoded
+		$htmlWriter = new THtmlWriter($this->writer);
+		$htmlWriter->addStyleAttribute('font-family', 'Arial & Helvetica');
+		$htmlWriter->renderBeginTag('div');
+		$this->assertSame('<div style="font-family:Arial & Helvetica;">', $this->writer->flush());
+	}
+
+	public function testRenderBeginTagCustomElement()
+	{
+		$htmlWriter = new THtmlWriter($this->writer);
+		$htmlWriter->renderBeginTag('custom-element');
+		$htmlWriter->write('Content');
+		$htmlWriter->renderEndTag();
+		$this->assertSame('<custom-element>Content</custom-element>', $this->writer->flush());
+	}
+
+	public function testRenderBeginTagEmptyAttributeName()
+	{
+		// Degenerate case: empty attribute name renders as ="value"
+		$htmlWriter = new THtmlWriter($this->writer);
+		$htmlWriter->addAttribute('', 'value');
+		$htmlWriter->renderBeginTag('div');
+		$this->assertSame('<div ="value">', $this->writer->flush());
+	}
+
+	public function testRenderBeginTagEmptyStyleName()
+	{
+		$htmlWriter = new THtmlWriter($this->writer);
+		$htmlWriter->addStyleAttribute('', 'value');
+		$htmlWriter->renderBeginTag('div');
+		$this->assertSame('<div style=":value;">', $this->writer->flush());
+	}
+
+	public function testRenderBeginTagUnicodeAttributeValue()
+	{
+		$htmlWriter = new THtmlWriter($this->writer);
+		$htmlWriter->addAttribute('data-name', "\xC3\xA9");
+		$htmlWriter->renderBeginTag('span');
+		$this->assertStringContainsString("\xC3\xA9", $this->writer->flush());
+	}
+
+	public function testRenderBeginTagDataAttribute()
+	{
+		$htmlWriter = new THtmlWriter($this->writer);
+		$htmlWriter->addAttribute('data-123', 'value');
+		$htmlWriter->renderBeginTag('div');
+		$this->assertSame('<div data-123="value">', $this->writer->flush());
 	}
 
 	// ================================================================================
-	// Render End Tag
+	// renderEndTag
 	// ================================================================================
 
 	public function testRenderEndTagNonVoidElement()
@@ -492,23 +643,19 @@ class THtmlWriterTest extends TestCase
 		$htmlWriter->renderBeginTag('div');
 		$htmlWriter->write('Content');
 		$htmlWriter->renderEndTag();
-
-		$output = $this->writer->flush();
-		$this->assertEquals('<div>Content</div>', $output);
+		$this->assertSame('<div>Content</div>', $this->writer->flush());
 	}
 
-	public function testRenderEndTagVoidElementDoesNotWrite()
+	public function testRenderEndTagVoidElementIsNoop()
 	{
 		$htmlWriter = new THtmlWriter($this->writer);
 		$htmlWriter->renderBeginTag('br');
 		$htmlWriter->renderEndTag();
 		$htmlWriter->write('after');
-
-		$output = $this->writer->flush();
-		$this->assertEquals('<br />after', $output);
+		$this->assertSame('<br />after', $this->writer->flush());
 	}
 
-	public function testRenderEndTagNestedElements()
+	public function testRenderEndTagNested()
 	{
 		$htmlWriter = new THtmlWriter($this->writer);
 		$htmlWriter->renderBeginTag('div');
@@ -516,41 +663,32 @@ class THtmlWriterTest extends TestCase
 		$htmlWriter->write('Inner');
 		$htmlWriter->renderEndTag();
 		$htmlWriter->renderEndTag();
-
-		$output = $this->writer->flush();
-		$this->assertEquals('<div><span>Inner</span></div>', $output);
+		$this->assertSame('<div><span>Inner</span></div>', $this->writer->flush());
 	}
 
-	public function testRenderEndTagMultipleVoidElementsDoNotClose()
-	{
-		$htmlWriter = new THtmlWriter($this->writer);
-		$htmlWriter->renderBeginTag('br');
-		$htmlWriter->renderBeginTag('hr');
-		$htmlWriter->renderBeginTag('img');
-		$htmlWriter->write('after');
-
-		$output = $this->writer->flush();
-		$this->assertEquals('<br /><hr /><img />after', $output);
-	}
-
-	public function testRenderEndTagWithContentBetween()
-	{
-		$htmlWriter = new THtmlWriter($this->writer);
-		$htmlWriter->renderBeginTag('p');
-		$htmlWriter->write('Some text');
-		$htmlWriter->renderEndTag();
-
-		$output = $this->writer->flush();
-		$this->assertEquals('<p>Some text</p>', $output);
-	}
-
-	public function testRenderEndTagEmptyStackDoesNothing()
+	public function testRenderEndTagEmptyStackIsNoop()
 	{
 		$htmlWriter = new THtmlWriter($this->writer);
 		$htmlWriter->renderEndTag();
+		$this->assertSame('', $this->writer->flush());
+	}
 
-		$output = $this->writer->flush();
-		$this->assertEquals('', $output);
+	public function testRenderEndTagExcessCallsAreNoop()
+	{
+		$htmlWriter = new THtmlWriter($this->writer);
+		$htmlWriter->renderBeginTag('div');
+		$htmlWriter->renderEndTag();
+		$htmlWriter->renderEndTag();  // stack is empty — no output
+		$this->assertSame('<div></div>', $this->writer->flush());
+	}
+
+	public function testRenderEndTagPopsOnlyMostRecent()
+	{
+		$htmlWriter = new THtmlWriter($this->writer);
+		$htmlWriter->renderBeginTag('div');
+		$htmlWriter->renderBeginTag('span');
+		$htmlWriter->renderEndTag();
+		$this->assertSame(['div'], $this->getOpenTags($htmlWriter));
 	}
 
 	// ================================================================================
@@ -560,66 +698,53 @@ class THtmlWriterTest extends TestCase
 	public function testFullRenderFormWithInputs()
 	{
 		$htmlWriter = new THtmlWriter($this->writer);
-
 		$htmlWriter->renderBeginTag('form');
 		$htmlWriter->renderBeginTag('input');
+		$htmlWriter->renderEndTag();
 		$htmlWriter->renderBeginTag('input');
 		$htmlWriter->renderEndTag();
 		$htmlWriter->renderEndTag();
-		$htmlWriter->renderEndTag();
-
-		$output = $this->writer->flush();
-		$this->assertEquals('<form><input /><input /></form>', $output);
+		$this->assertSame('<form><input /><input /></form>', $this->writer->flush());
 	}
 
 	public function testFullRenderStyledParagraph()
 	{
 		$htmlWriter = new THtmlWriter($this->writer);
-
 		$htmlWriter->addAttribute('class', 'highlight');
 		$htmlWriter->addStyleAttribute('background-color', 'yellow');
 		$htmlWriter->addStyleAttribute('padding', '10px');
 		$htmlWriter->renderBeginTag('p');
 		$htmlWriter->write('Important message');
 		$htmlWriter->renderEndTag();
-
-		$output = $this->writer->flush();
-		$this->assertEquals('<p class="highlight" style="background-color:yellow;padding:10px;">Important message</p>', $output);
+		$this->assertSame('<p class="highlight" style="background-color:yellow;padding:10px;">Important message</p>', $this->writer->flush());
 	}
 
-	public function testFullRenderImageWithAllAttributes()
+	public function testFullRenderImageAllAttributes()
 	{
 		$htmlWriter = new THtmlWriter($this->writer);
-
 		$htmlWriter->addAttribute('src', 'photo.jpg');
 		$htmlWriter->addAttribute('alt', 'A beautiful sunset');
 		$htmlWriter->addAttribute('width', '800');
 		$htmlWriter->addAttribute('height', '600');
 		$htmlWriter->addStyleAttribute('border', '1px solid black');
 		$htmlWriter->renderBeginTag('img');
-
-		$output = $this->writer->flush();
-		$this->assertEquals('<img src="photo.jpg" alt="A beautiful sunset" width="800" height="600" style="border:1px solid black;" />', $output);
+		$this->assertSame('<img src="photo.jpg" alt="A beautiful sunset" width="800" height="600" style="border:1px solid black;" />', $this->writer->flush());
 	}
 
 	public function testFullRenderAnchor()
 	{
 		$htmlWriter = new THtmlWriter($this->writer);
-
 		$htmlWriter->addAttribute('href', 'https://example.com');
 		$htmlWriter->addAttribute('target', '_blank');
 		$htmlWriter->renderBeginTag('a');
 		$htmlWriter->write('Click here');
 		$htmlWriter->renderEndTag();
-
-		$output = $this->writer->flush();
-		$this->assertEquals('<a href="https://example.com" target="_blank">Click here</a>', $output);
+		$this->assertSame('<a href="https://example.com" target="_blank">Click here</a>', $this->writer->flush());
 	}
 
 	public function testFullRenderUnorderedList()
 	{
 		$htmlWriter = new THtmlWriter($this->writer);
-
 		$htmlWriter->renderBeginTag('ul');
 		$htmlWriter->renderBeginTag('li');
 		$htmlWriter->write('Item 1');
@@ -628,15 +753,12 @@ class THtmlWriterTest extends TestCase
 		$htmlWriter->write('Item 2');
 		$htmlWriter->renderEndTag();
 		$htmlWriter->renderEndTag();
-
-		$output = $this->writer->flush();
-		$this->assertEquals('<ul><li>Item 1</li><li>Item 2</li></ul>', $output);
+		$this->assertSame('<ul><li>Item 1</li><li>Item 2</li></ul>', $this->writer->flush());
 	}
 
 	public function testFullRenderTable()
 	{
 		$htmlWriter = new THtmlWriter($this->writer);
-
 		$htmlWriter->renderBeginTag('table');
 		$htmlWriter->renderBeginTag('tr');
 		$htmlWriter->renderBeginTag('td');
@@ -644,138 +766,46 @@ class THtmlWriterTest extends TestCase
 		$htmlWriter->renderEndTag();
 		$htmlWriter->renderEndTag();
 		$htmlWriter->renderEndTag();
-
-		$output = $this->writer->flush();
-		$this->assertEquals('<table><tr><td>Cell 1</td></tr></table>', $output);
+		$this->assertSame('<table><tr><td>Cell 1</td></tr></table>', $this->writer->flush());
 	}
 
-	public function testFullRenderWithDoubleQuoteInAttribute()
+	public function testFullRenderDoubleQuoteInAttribute()
 	{
 		$htmlWriter = new THtmlWriter($this->writer);
-
 		$htmlWriter->addAttribute('title', 'Say: "Hello"');
 		$htmlWriter->renderBeginTag('span');
 		$htmlWriter->write('Content');
 		$htmlWriter->renderEndTag();
-
-		$output = $this->writer->flush();
-		$this->assertStringContainsString('title="Say: &quot;Hello&quot;"', $output);
+		$this->assertStringContainsString('title="Say: &quot;Hello&quot;"', $this->writer->flush());
 	}
 
-	public function testFullRenderWithAmpersandInContent()
+	public function testFullRenderAmpersandInWrittenContent()
 	{
+		// write() passes content as-is — no encoding
 		$htmlWriter = new THtmlWriter($this->writer);
-
 		$htmlWriter->renderBeginTag('span');
 		$htmlWriter->write('AT&T');
 		$htmlWriter->renderEndTag();
-
-		$output = $this->writer->flush();
-		$this->assertStringContainsString('AT&T', $output);
+		$this->assertStringContainsString('AT&T', $this->writer->flush());
 	}
 
 	public function testFullRenderVoidElementsOnly()
 	{
 		$htmlWriter = new THtmlWriter($this->writer);
-
 		$htmlWriter->renderBeginTag('br');
 		$htmlWriter->renderBeginTag('hr');
 		$htmlWriter->renderBeginTag('img');
-
-		$output = $this->writer->flush();
-		$this->assertEquals('<br /><hr /><img />', $output);
+		$this->assertSame('<br /><hr /><img />', $this->writer->flush());
 	}
 
-	// ================================================================================
-	// Edge Cases and Error Handling
-	// ================================================================================
-
-	public function testRenderBeginTagWithEmptyAttributeName()
+	public function testFullRenderInternalDefaultWriter()
 	{
-		$htmlWriter = new THtmlWriter($this->writer);
-		$htmlWriter->addAttribute('', 'value');
+		// Verify the auto-created TTextWriter round-trips correctly
+		$htmlWriter = new THtmlWriter(true);
 		$htmlWriter->renderBeginTag('div');
-
-		$output = $this->writer->flush();
-		$this->assertEquals('<div ="value">', $output);
-	}
-
-	public function testRenderBeginTagWithEmptyStyleName()
-	{
-		$htmlWriter = new THtmlWriter($this->writer);
-		$htmlWriter->addStyleAttribute('', 'value');
-		$htmlWriter->renderBeginTag('div');
-
-		$output = $this->writer->flush();
-		$this->assertEquals('<div style=":value;">', $output);
-	}
-
-	public function testRenderBeginTagSpecialCharsInAttribute()
-	{
-		$htmlWriter = new THtmlWriter($this->writer);
-		$htmlWriter->addAttribute('title', 'Quote: "test"');
-		$htmlWriter->renderBeginTag('span');
-
-		$output = $this->writer->flush();
-		$this->assertEquals('<span title="Quote: &quot;test&quot;">', $output);
-	}
-
-	public function testRenderBeginTagUnicodeContent()
-	{
-		$htmlWriter = new THtmlWriter($this->writer);
-		$htmlWriter->addAttribute('data-name', "\xC3\xA9");
-		$htmlWriter->renderBeginTag('span');
-
-		$output = $this->writer->flush();
-		$this->assertStringContainsString("\xC3\xA9", $output);
-	}
-
-	public function testRenderBeginTagNumericAttributeName()
-	{
-		$htmlWriter = new THtmlWriter($this->writer);
-		$htmlWriter->addAttribute('data-123', 'value');
-		$htmlWriter->renderBeginTag('div');
-
-		$output = $this->writer->flush();
-		$this->assertEquals('<div data-123="value">', $output);
-	}
-
-	public function testRenderBeginTagCustomElement()
-	{
-		$htmlWriter = new THtmlWriter($this->writer);
-		$htmlWriter->renderBeginTag('custom-element');
-		$htmlWriter->write('Content');
+		$htmlWriter->write('hello');
 		$htmlWriter->renderEndTag();
-
-		$output = $this->writer->flush();
-		$this->assertEquals('<custom-element>Content</custom-element>', $output);
-	}
-
-	public function testRenderBeginTagCustomElementNotVoid()
-	{
-		$htmlWriter = new THtmlWriter($this->writer);
-		$htmlWriter->addAttribute('type', 'custom');
-		$htmlWriter->renderBeginTag('custom-element');
-
-		$output = $this->writer->flush();
-		$this->assertEquals('<custom-element type="custom">', $output);
-	}
-
-	public function testIsVoidElementUnknownElement()
-	{
-		$this->assertFalse(THtmlWriter::isVoidElement('custom'));
-		$this->assertFalse(THtmlWriter::isVoidElement('myelement'));
-		$this->assertFalse(THtmlWriter::isVoidElement('x-vide'));
-	}
-
-	public function testRenderBeginTagStyleValueNotEncoded()
-	{
-		$htmlWriter = new THtmlWriter($this->writer);
-		$htmlWriter->addStyleAttribute('font-family', 'Arial & Helvetica');
-		$htmlWriter->renderBeginTag('div');
-
-		$output = $this->writer->flush();
-		$this->assertEquals('<div style="font-family:Arial & Helvetica;">', $output);
+		$this->assertSame('<div>hello</div>', $htmlWriter->flush());
 	}
 
 	// ================================================================================
@@ -796,5 +826,4 @@ class THtmlWriterTest extends TestCase
 	{
 		return PradoUnit::getProp($writer, '_openTags');
 	}
-	
 }
