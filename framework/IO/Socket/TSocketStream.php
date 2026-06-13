@@ -219,6 +219,29 @@ class TSocketStream extends TStream
 	}
 
 	/**
+	 * Returns the TLS crypto metadata negotiated on the connection (protocol, cipher, ALPN).
+	 * @return array The `crypto` block of the stream metadata, or [] when the connection is not encrypted.
+	 */
+	public function getCryptoMeta(): array
+	{
+		$crypto = $this->getMetadata('crypto');
+		return is_array($crypto) ? $crypto : [];
+	}
+
+	/**
+	 * Returns the ALPN protocol negotiated during the TLS handshake (e.g. 'h2', 'http/1.1').
+	 * A client confirms the server's choice and a server reads the client's; HTTP/2 over TLS
+	 * requires 'h2'.
+	 * @return ?string The negotiated ALPN protocol, or null when none was negotiated or the
+	 *   connection is not encrypted.
+	 */
+	public function getAlpnProtocol(): ?string
+	{
+		$alpn = $this->getCryptoMeta()['alpn_protocol'] ?? null;
+		return ($alpn === null || $alpn === '') ? null : $alpn;
+	}
+
+	/**
 	 * Shuts down reception and/or transmission on the socket.
 	 * @param int $how STREAM_SHUT_RD, STREAM_SHUT_WR or STREAM_SHUT_RDWR (default).
 	 * @return bool Whether the shutdown succeeded.

@@ -31,9 +31,11 @@ use Prado\IO\TResource;
  * server is closed.  A non-blocking accept is `accept(0)`.
  *
  * Accepted connections are tracked in {@see getConnections()} for the server's lifetime,
- * which makes broadcast, presence, and connection counts possible.  A connection is
- * removed from the registry when it closes, so close each connection (or it lingers,
- * since the registry holds a reference that keeps it from being collected).
+ * which makes broadcast, presence, and connection counts possible.  {@see addConnection()}
+ * folds an externally-created connection (an outbound dial or a server-to-server link) into the
+ * same registry, so a {@see select()} loop multiplexes it alongside accepted ones.  A connection
+ * is removed from the registry when it closes, so close each connection (or it lingers, since the
+ * registry holds a reference that keeps it from being collected).
  *
  * Events ('on' prefix).  Each is a real method taking a single mixed $param:
  *  - onAccept: raised with the accepted {@see TSocketStream}.
@@ -54,9 +56,9 @@ class TSocketServer extends TResource implements \IteratorAggregate
 	 * @param int $flags stream_socket_server flags. Default bind+listen.
 	 * @param mixed $context An optional stream context.
 	 * @throws TSocketException When the server cannot be created.
-	 * @return self The listening server.
+	 * @return static The listening server.
 	 */
-	public static function bind(string $uri, int $flags = STREAM_SERVER_BIND | STREAM_SERVER_LISTEN, mixed $context = null): self
+	public static function bind(string $uri, int $flags = STREAM_SERVER_BIND | STREAM_SERVER_LISTEN, mixed $context = null): static
 	{
 		$errno = 0;
 		$errstr = '';
@@ -65,7 +67,7 @@ class TSocketServer extends TResource implements \IteratorAggregate
 		if ($resource === false) {
 			throw new TSocketException($errno, $errstr !== '' ? $errstr : ('Unable to listen on ' . $uri));
 		}
-		$server = Prado::createComponent(self::class);
+		$server = Prado::createComponent(static::class);
 		$server->attachResource($resource, true);
 		return $server;
 	}
@@ -89,23 +91,49 @@ class TSocketServer extends TResource implements \IteratorAggregate
 		}
 		$stream = Prado::createComponent(TSocketStream::class);
 		$stream->attachResource($connection, true);
-		$this->trackConnection($stream);
+		$this->addConnection($stream);
 		$this->onAccept($stream);
 		return $stream;
 	}
 
 	/**
-	 * Registers an accepted connection and forwards its teardown to the server events.
-	 * @param TSocketStream $stream The accepted connection.
+	 * Tracks a connection in the registry and forwards its teardown to the server events.
+	 *
+	 * {@see accept()} tracks every connection it accepts.  Pass an externally-created connection —
+	 * an outbound dial, a server-to-server link, or any app-held {@see TSocketStream} — to fold it
+	 * into the same registry, so {@see getConnections()} reports it and a {@see select()} loop
+	 * multiplexes it alongside accepted connections.  The connection leaves the registry when it
+	 * closes.  Tracking the same connection twice is a no-op.
+	 *
+	 * The teardown handlers hold a {@see \WeakReference} to the server, not a strong one, so a
+	 * connection that is shared with or handed to another server (or otherwise outlives this one)
+	 * does not keep this server from being collected.  A handler whose server has been collected is
+	 * a no-op, which also covers the {@see TSocketStream} raising {@see onClientFinalize}/
+	 * {@see onClientClose} as it closes during its own garbage collection.
+	 * @param TSocketStream $stream The connection to track.
 	 */
-	private function trackConnection(TSocketStream $stream): void
+	public function addConnection(TSocketStream $stream): void
 	{
+		if (isset($this->getConnectionsDirect()[spl_object_id($stream)])) {
+			return;
+		}
 		$this->addConnectionDirect($stream);
 
-		$stream->attachEventHandler('onFinalize', fn ($sender, $param) => $this->onClientFinalize($sender));
-		$stream->attachEventHandler('onClose', function ($sender, $param): void {
-			$this->removeConnectionDirect($sender);
-			$this->onClientClose($sender);
+		// Static closures: they carry no bound $this, so the stream reaches the server only through
+		// the weak reference and never keeps it alive.
+		$self = \WeakReference::create($this);
+		$stream->attachEventHandler('onFinalize', static function ($sender, $param) use ($self): void {
+			$server = $self->get();
+			if ($server instanceof self) {
+				$server->onClientFinalize($sender);
+			}
+		});
+		$stream->attachEventHandler('onClose', static function ($sender, $param) use ($self): void {
+			$server = $self->get();
+			if ($server instanceof self) {
+				$server->removeConnectionDirect($sender);
+				$server->onClientClose($sender);
+			}
 		});
 	}
 

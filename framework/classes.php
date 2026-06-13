@@ -283,6 +283,7 @@ return [
 'TBinaryStream' => 'Prado\IO\Stream\TBinaryStream',
 'TStreamDecorator' => 'Prado\IO\Stream\TStreamDecorator',
 'TSocketAddress' => 'Prado\IO\Socket\TSocketAddress',
+'TSocketReactor' => 'Prado\IO\Socket\TSocketReactor',
 'TSocketServer' => 'Prado\IO\Socket\TSocketServer',
 'TSocketStream' => 'Prado\IO\Socket\TSocketStream',
 'TByteOrder' => 'Prado\IO\TByteOrder',

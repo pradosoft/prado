@@ -111,6 +111,50 @@ class TSocketServerTest extends PHPUnit\Framework\TestCase
 		$server->close();
 	}
 
+	public function testAddConnectionTracksAppHeldConnection()
+	{
+		$server = TSocketServer::bind('tcp://127.0.0.1:0');
+		$accepted = 0;
+		$server->attachEventHandler('onAccept', function () use (&$accepted): void {
+			$accepted++;
+		});
+
+		// A connection the server did not accept (here a socket pair stands in for an outbound dial).
+		[$appHeld, $peer] = TSocketStream::pair();
+		$server->addConnection($appHeld);
+		self::assertSame([$appHeld], $server->getConnections(), 'An app-held connection joins the registry.');
+		self::assertSame(0, $accepted, 'Adding a connection does not raise onAccept.');
+
+		$server->addConnection($appHeld);
+		self::assertSame(1, $server->getConnectionCount(), 'Tracking the same connection twice is a no-op.');
+
+		$appHeld->close();
+		self::assertSame(0, $server->getConnectionCount(), 'A closed app-held connection leaves the registry.');
+
+		$peer->close();
+		$server->close();
+	}
+
+	public function testAddConnectionDoesNotPinTheServer()
+	{
+		[$stream, $peer] = TSocketStream::pair();
+		$server = TSocketServer::bind('tcp://127.0.0.1:0');
+		$server->addConnection($stream);
+		self::assertSame(1, $server->getConnectionCount());
+
+		// The stream (held here and conceivably by another server) holds only a weak reference back.
+		$serverRef = \WeakReference::create($server);
+		$server->close();
+		unset($server);
+		gc_collect_cycles();
+		self::assertNull($serverRef->get(), 'A registered connection does not keep the server alive.');
+
+		// The orphaned connection still closes cleanly; its teardown handlers no-op now the server is gone.
+		$stream->close();
+		self::assertFalse($stream->isOpen());
+		$peer->close();
+	}
+
 	public function testRaisesClientLifecycleEvents()
 	{
 		$server = TSocketServer::bind('tcp://127.0.0.1:0');
