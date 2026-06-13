@@ -1435,4 +1435,22 @@ class PradoBaseTest extends PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('<a', $result);
 		$this->assertStringContainsString('powered2', $result);
 	}
+
+	public function testRegisterClassMap_mergesAndCoreWins(): void
+	{
+		$saved = Prado::$classMap;
+		try {
+			$coreKey = array_key_first($saved);
+			Prado::registerClassMap([
+				'TExtensionOnlyClass' => 'Vendor\\Ext\\TExtensionOnlyClass',
+				$coreKey => 'Vendor\\Ext\\ShouldNotWin',
+			]);
+			// New extension key is added.
+			$this->assertSame('Vendor\\Ext\\TExtensionOnlyClass', Prado::$classMap['TExtensionOnlyClass']);
+			// Existing core key is preserved (core wins).
+			$this->assertSame($saved[$coreKey], Prado::$classMap[$coreKey]);
+		} finally {
+			Prado::$classMap = $saved;
+		}
+	}
 }

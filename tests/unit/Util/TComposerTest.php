@@ -540,4 +540,17 @@ class TComposerTest extends PHPUnit\Framework\TestCase
 			'Default seam must contribute a file dependency per manifest'
 		);
 	}
+
+	public function testGetPackagePath_installedPackage_returnsAbsoluteDir(): void
+	{
+		// phpunit/phpunit is a dev dependency, reliably installed during tests.
+		$path = TComposer::getPackagePath('phpunit/phpunit');
+		$this->assertNotNull($path);
+		$this->assertDirectoryExists($path);
+	}
+
+	public function testGetPackagePath_unknownPackage_returnsNull(): void
+	{
+		$this->assertNull(TComposer::getPackagePath('no-such-vendor/no-such-package'));
+	}
 }

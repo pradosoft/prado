@@ -132,6 +132,18 @@ class Prado
 	}
 
 	/**
+	 * Merges a Prado3-namespace class map (short/dot name → PHP FQN) into the
+	 * autoloader's map, the way an extension joins its own `classes.php` with
+	 * Prado's. Existing entries win, so an extension cannot shadow a core class.
+	 * @param array $map the class map to merge, keyed by Prado3 namespace.
+	 * @since 4.4.0
+	 */
+	public static function registerClassMap(array $map): void
+	{
+		self::$classMap += $map;
+	}
+
+	/**
 	 * Initializes error handlers.
 	 * This method set error and exception handlers to be functions
 	 * defined in this class.
