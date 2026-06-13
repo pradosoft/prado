@@ -11,6 +11,7 @@
 namespace Prado\Util;
 
 use Composer\Autoload\ClassLoader;
+use Composer\InstalledVersions;
 use Prado\Caching\ICacheDependency;
 use Prado\Caching\TChainedCacheDependency;
 use Prado\Caching\TFileCacheDependency;
@@ -172,6 +173,25 @@ class TComposer extends \Prado\TComponent
 			return $prado;
 		}
 		return $prado[$key] ?? null;
+	}
+
+	/**
+	 * Returns the absolute filesystem path of an installed Composer package, the
+	 * base directory used to resolve package-relative file references.
+	 * @param string $name the package name, for example `vendor/package`.
+	 * @return null|string the absolute install path, or null when the package is
+	 *   not installed.
+	 */
+	public static function getPackagePath(string $name): ?string
+	{
+		if (!InstalledVersions::isInstalled($name)) {
+			return null;
+		}
+		$path = InstalledVersions::getInstallPath($name);
+		if ($path === null) {
+			return null;
+		}
+		return realpath($path) ?: $path;
 	}
 
 	/**
