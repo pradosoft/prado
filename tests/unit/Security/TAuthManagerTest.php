@@ -3,8 +3,126 @@
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Security\TAuthManager;
+use Prado\Security\TAuthorizationRule;
 use Prado\Security\TUserManager;
+use Prado\Util\TCallChain;
+use Prado\Web\THttpCookie;
+use Prado\Web\THttpResponse;
 use Prado\Xml\TXmlDocument;
+
+/**
+ * Response double that records cookie operations in memory instead of emitting
+ * `setcookie()` headers, which cannot run in the CLI test runner.
+ */
+class TTestAuthResponse extends THttpResponse
+{
+	/** @var list<string> URLs captured from httpRedirect() instead of emitting + exiting */
+	public array $redirects = [];
+
+	protected function responseSetCookie(string $name, ...$args): bool
+	{
+		return true;
+	}
+
+	public function httpRedirect($url)
+	{
+		$this->redirects[] = $url;
+	}
+}
+
+/**
+ * TAuthManager subclass that routes every session seam through an in-memory
+ * session ({@see TTestMemorySession}) and reports the SAPI as session-persistent,
+ * so the session-bound methods are exercisable in the CLI test runner.
+ */
+class TTestSessionAuthManager extends TAuthManager
+{
+	public TTestMemorySession $fakeSession;
+	public bool $persist = true;
+
+	public function __construct()
+	{
+		parent::__construct();
+		$this->fakeSession = new TTestMemorySession();
+	}
+
+	protected function requireSession()
+	{
+		return $this->fakeSession;
+	}
+
+	protected function getCanPersistSession()
+	{
+		return $this->persist;
+	}
+}
+
+/**
+ * Page-service double reporting a fixed requested page path, so the
+ * login-page branch of {@see TAuthManager::doAuthentication()} runs in CLI
+ * without a real page request.
+ */
+class TTestLoginPageService extends \Prado\Web\Services\TPageService
+{
+	public string $requestedPath = '';
+	public string $loginUrl = 'login-url';
+
+	public function getRequestedPagePath()
+	{
+		return $this->requestedPath;
+	}
+
+	public function constructUrl($pagePath, $getParams = null, $encodeAmpersand = true, $encodeGetItems = true)
+	{
+		return $this->loginUrl;
+	}
+}
+
+/**
+ * TAuthManager whose session module resolves to null, exercising the
+ * `requireSession()` guard.
+ */
+class TTestNoSessionAuthManager extends TAuthManager
+{
+	public function getSession()
+	{
+		return null;
+	}
+}
+
+/**
+ * Records invocations of the `dyHandleUnauthorized` seam raised by
+ * {@see TAuthManager::leave()}.
+ */
+class TTestUnauthorizedSeamBehavior extends \Prado\Util\TBehavior
+{
+	public int $called = 0;
+	public bool $handled = true;
+
+	public function dyHandleUnauthorized($handled, ?TCallChain $chain = null)
+	{
+		$this->called++;
+		$handled = $this->handled || $handled;
+		return $chain ? $chain->dyHandleUnauthorized($handled) : $handled;
+	}
+}
+
+/**
+ * Records invocations of the `dySkipSessionUpdate` seam raised by
+ * {@see TAuthManager::updateSessionUser()}.
+ */
+class TTestSkipSessionBehavior extends \Prado\Util\TBehavior
+{
+	public int $called = 0;
+	public bool $skip = true;
+
+	public function dySkipSessionUpdate($skip, $user, ?TCallChain $chain = null)
+	{
+		$this->called++;
+		$skip = $this->skip || $skip;
+		return $chain ? $chain->dySkipSessionUpdate($skip, $user) : $skip;
+	}
+}
 
 class TAuthManagerTest extends PHPUnit\Framework\TestCase
 {
@@ -50,6 +168,37 @@ class TAuthManagerTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(self::$usrMgr, $authManager->getUserManager());
 	}
 
+	public function testInitRejectsInexistentUserManager()
+	{
+		$authManager = new TAuthManager();
+		$authManager->setUserManager('no-such-module');
+		$caught = false;
+		try {
+			$authManager->init(null);
+		} catch (TConfigurationException $e) {
+			$caught = true;
+		}
+		self::assertTrue($caught, 'Expected TConfigurationException for an unresolved UserManager id');
+	}
+
+	public function testInitRejectsNonUserManagerModule()
+	{
+		// 'security' resolves to a TSecurityManager, which is not an IUserManager.
+		$security = new \Prado\Security\TSecurityManager();
+		$security->init(null);
+		self::$app->setModule('not-a-usermgr', $security);
+
+		$authManager = new TAuthManager();
+		$authManager->setUserManager('not-a-usermgr');
+		$caught = false;
+		try {
+			$authManager->init(null);
+		} catch (TConfigurationException $e) {
+			$caught = true;
+		}
+		self::assertTrue($caught, 'Expected TConfigurationException for a module that is not an IUserManager');
+	}
+
 	public function testUserManager()
 	{
 		$authManager = new TAuthManager();
@@ -65,6 +214,55 @@ class TAuthManagerTest extends PHPUnit\Framework\TestCase
 		}
 	}
 
+	public function testSetUserManagerRejectsInvalidType()
+	{
+		// Before init: a value that is neither a string id nor an IUserManager
+		// is rejected by the type guard (not the assertUninitialized guard).
+		$authManager = new TAuthManager();
+		$caught = false;
+		try {
+			$authManager->setUserManager(123);
+		} catch (TConfigurationException $e) {
+			$caught = true;
+		}
+		self::assertTrue($caught, 'setUserManager must reject a non-string, non-IUserManager value');
+	}
+
+	public function testSetUserManagerAcceptsInstance()
+	{
+		// A concrete IUserManager instance is stored as-is and survives init()
+		// without module-id resolution.
+		$authManager = new TAuthManager();
+		$authManager->setUserManager(self::$usrMgr);
+		$authManager->init(null);
+		self::assertSame(self::$usrMgr, $authManager->getUserManager());
+	}
+
+	public function testInitDefaultsReturnUrlVarName()
+	{
+		$authManager = new TAuthManager();
+		$authManager->setUserManager('users');
+		$authManager->init(null);
+		$expected = self::$app->getID() . ':' . TAuthManager::RETURN_URL_VAR;
+		self::assertEquals($expected, $authManager->getReturnUrlVarName());
+	}
+
+	public function testRequireSessionThrowsWithoutSessionModule()
+	{
+		// getReturnUrl() routes through requireSession(); with no session module
+		// the guard raises the configuration exception.
+		$authManager = new TTestNoSessionAuthManager();
+		$authManager->setUserManager('users');
+		$authManager->init(null);
+		$caught = false;
+		try {
+			$authManager->getReturnUrl();
+		} catch (TConfigurationException $e) {
+			$caught = true;
+		}
+		self::assertTrue($caught, 'requireSession() must throw when no session module is available');
+	}
+
 	public function testLoginPage()
 	{
 		$authManager = new TAuthManager();
@@ -74,31 +272,35 @@ class TAuthManagerTest extends PHPUnit\Framework\TestCase
 		self::assertEquals('LoginPage', $authManager->getLoginPage());
 	}
 
-	public function _testDoAuthentication()
+	public function testDoAuthenticationSetsSkipAuthorizationOnLoginPage()
 	{
 		/*
-		 * doAuthentication() is the application-level OnAuthentication event handler.
-		 * It delegates entirely to onAuthenticate(), whose logic is:
-		 *
-		 *   1. Opens the HTTP session via $session->open() — requires session_start(),
-		 *      which emits a Set-Cookie header that cannot be sent from CLI.
-		 *   2. Reads the serialised TUser state from the session store.
-		 *   3. If AllowAutoLogin is set and the user is a guest, falls back to the
-		 *      auto-login cookie (THttpCookie / THttpRequest — HTTP-only objects).
-		 *   4. Applies authentication-expiry logic and raises OnAuthExpire if needed.
-		 *   5. Sets the resolved TUser on the application via setUser().
-		 *
-		 * Additionally, when the currently-requested page is the configured LoginPage,
-		 * doAuthentication() sets $_skipAuthorization = true so that doAuthorization()
-		 * does not redirect the user back to the login page in a loop.
-		 *
-		 * None of this can be exercised in a CLI unit test without a real HTTP session.
-		 *
-		 * Full coverage is provided by the Playwright functional test:
-		 *   tests/playwright/security/TAuthManagerTestCase.spec.js
-		 *   — tests 1–6 cover guest state, session restore, and authenticated access.
-		 *   — test 14 covers auto-login cookie restore after session loss.
+		 * doAuthentication() delegates to onAuthenticate() and then, when the
+		 * requested page is the configured LoginPage, sets $_skipAuthorization so
+		 * doAuthorization() does not redirect the login page back to itself.
+		 * The onAuthenticate() side runs through the in-memory session seam; a
+		 * page-service double supplies the requested path.
 		 */
+		$auth = $this->makeSessionAuth();
+		$auth->setLoginPage('Pages.Login');
+
+		$savedService = self::$app->getService();
+		$service = new TTestLoginPageService();
+		self::$app->setService($service);
+		try {
+			// Requested page differs from LoginPage: authorization is not skipped.
+			$service->requestedPath = 'Pages.Home';
+			$auth->doAuthentication(null, null);
+			self::assertFalse(PradoUnit::getProp($auth, '_skipAuthorization'));
+
+			// Requested page IS the LoginPage: authorization is skipped.
+			$service->requestedPath = 'Pages.Login';
+			$auth->doAuthentication(null, null);
+			self::assertTrue(PradoUnit::getProp($auth, '_skipAuthorization'));
+		} finally {
+			self::$app->setService($savedService);
+			self::$usrMgr->setPasswordMode('MD5');
+		}
 	}
 
 	public function testDoAuthorization()
@@ -138,28 +340,106 @@ class TAuthManagerTest extends PHPUnit\Framework\TestCase
 		self::assertFalse($fired, 'onAuthorize must not fire when _skipAuthorization is true');
 	}
 
-	public function _testLeave()
+	public function testLeaveRedirectsToLoginPageOn401()
 	{
 		/*
-		 * leave() is the application-level OnEndRequest event handler.
-		 * Its behaviour:
-		 *
-		 *   1. Reads $application->getResponse()->getStatusCode().
-		 *   2. If the code is 401 and the active service is a TPageService, it stores
-		 *      the current request URI as the ReturnUrl in the session, then calls
-		 *      $response->redirect($loginUrl) — which emits a Location header.
-		 *
-		 * Emitting HTTP headers from CLI is not possible (headers_sent() is already
-		 * true in the PHPUnit runner), so this method cannot be meaningfully unit-tested.
-		 *
-		 * Full coverage is provided by the Playwright functional test:
-		 *   tests/playwright/security/TAuthManagerTestCase.spec.js
-		 *   — test  2: guest accesses Members page → 401 → redirect to Login.
-		 *   — test  3: guest accesses Admin-only page → 401 → redirect to Login.
-		 *   — test  8: authenticated non-admin accesses Admin page → 401 → redirect.
-		 *   — test 10: ReturnUrl is preserved across the redirect so the user lands
-		 *               on the originally-requested page after successful login.
+		 * leave() on a 401, with no behavior suppressing it and a TPageService
+		 * active, stores the request URI as the ReturnUrl and redirects to the
+		 * login page. A response double captures the redirect URL (instead of
+		 * emitting a Location header and exiting) and a page-service double
+		 * supplies the login URL.
 		 */
+		$obLevel = ob_get_level();
+		$authManager = new TAuthManager();
+		$authManager->setUserManager('users');
+		$authManager->init(null);
+		$authManager->setLoginPage('Pages.Login');
+
+		$savedResponse = self::$app->getResponse();
+		$savedService = self::$app->getService();
+		$response = new TTestAuthResponse();
+		self::$app->setResponse($response);
+		$service = new TTestLoginPageService();
+		$service->loginUrl = '/login';
+		self::$app->setService($service);
+		try {
+			$response->setStatusCode(401);
+			$authManager->leave(null, null);
+
+			self::assertSame(['/login'], $response->redirects);
+			// The originally-requested URI is preserved for post-login return.
+			self::assertEquals(self::$app->getRequest()->getRequestUri(), $authManager->getReturnUrl());
+		} finally {
+			self::$app->setService($savedService);
+			self::$app->setResponse($savedResponse);
+			while (ob_get_level() > $obLevel) {
+				ob_end_clean();
+			}
+		}
+	}
+
+	public function testLeaveDoesNotRedirectWithoutPageService()
+	{
+		// 401, not suppressed, but the active service is not a TPageService:
+		// leave() does nothing (no redirect, no ReturnUrl write).
+		$authManager = new TAuthManager();
+		$authManager->setUserManager('users');
+		$authManager->init(null);
+
+		$savedResponse = self::$app->getResponse();
+		$savedService = self::$app->getService();
+		$response = new TTestAuthResponse();
+		self::$app->setResponse($response);
+		self::$app->setService(null);
+		try {
+			$response->setStatusCode(401);
+			$authManager->leave(null, null);
+			self::assertSame([], $response->redirects);
+		} finally {
+			self::$app->setService($savedService);
+			self::$app->setResponse($savedResponse);
+		}
+	}
+
+	public function testLeaveDyHandleUnauthorized()
+	{
+		/*
+		 * leave() consults the dyHandleUnauthorized seam before redirecting a
+		 * 401 response to the login page.  A behavior returning true (e.g.,
+		 * THttpAuthBehavior after sending WWW-Authenticate challenge headers)
+		 * suppresses the redirect.  The redirect itself requires a TPageService
+		 * and is covered by the Playwright functional test.
+		 */
+		$authManager = new TAuthManager();
+		$authManager->setUserManager('users');
+		$authManager->init(null);
+
+		$behavior = new TTestUnauthorizedSeamBehavior();
+		$authManager->attachBehavior('unauthorized-seam', $behavior);
+
+		// The lazily-created response opens an output buffer; capture the depth
+		// so the buffers can be cleaned up at the end of the test.
+		$obLevel = ob_get_level();
+
+		// Non-401 response: the seam is not consulted.
+		$authManager->leave(null, null);
+		self::assertEquals(0, $behavior->called);
+
+		// 401 response: the seam is consulted; true suppresses the redirect.
+		self::$app->getResponse()->setStatusCode(401);
+		$authManager->leave(null, null);
+		self::assertEquals(1, $behavior->called);
+
+		// Seam returning false falls through to the redirect path, which is a
+		// no-op without a TPageService.
+		$behavior->handled = false;
+		$authManager->leave(null, null);
+		self::assertEquals(2, $behavior->called);
+
+		self::$app->getResponse()->setStatusCode(200);
+		while (ob_get_level() > $obLevel) {
+			ob_end_clean();
+		}
 	}
 
 	public function testReturnUrlVarName()
@@ -214,55 +494,9 @@ class TAuthManagerTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(0, $authManager->getAuthExpire());
 	}
 
-	public function _testOnAuthenticate()
-	{
-		/*
-		 * onAuthenticate() is the core implementation of the authentication flow,
-		 * called by doAuthentication() on every request:
-		 *
-		 *   1. Calls $session->open() (session_start()) — requires HTTP to send the
-		 *      session cookie; impossible in the CLI PHPUnit runner.
-		 *   2. Reads $session->itemAt($userKey) and deserialises the stored TUser.
-		 *   3. Checks AllowAutoLogin: if set and the user is a guest, attempts to
-		 *      restore the user from an auto-login THttpCookie.
-		 *   4. Checks AuthExpire: if the session timestamp is past expiry, calls
-		 *      onAuthExpire() which in turn calls logout() → session->destroy().
-		 *   5. Calls $application->setUser() with the resolved user.
-		 *   6. Raises the OnAuthenticate event so any attached handler can do further
-		 *      authentication work (e.g., OAuth token refresh).
-		 *
-		 * All six steps require live HTTP session state and cannot be replicated in
-		 * a CLI unit test.
-		 *
-		 * Full coverage is provided by the Playwright functional test:
-		 *   tests/playwright/security/TAuthManagerTestCase.spec.js
-		 *   — tests 1–6 verify guest detection, session restore, and authenticated
-		 *     access across multiple requests (each request re-runs onAuthenticate).
-		 *   — test 14 verifies the auto-login cookie fallback after session loss.
-		 */
-	}
-
-	public function _testOnAuthExpire()
-	{
-		/*
-		 * onAuthExpire() is called by onAuthenticate() when the 'AuthExpireTime'
-		 * session value exists and has passed.  Its behaviour:
-		 *
-		 *   1. Calls logout() — which calls $session->destroy().  Session destruction
-		 *      requires an active HTTP session that cannot be started in CLI.
-		 *   2. Raises the OnAuthExpire event so attached handlers can react (e.g.,
-		 *      display an "your session has expired" message).
-		 *
-		 * Because step 1 is a hard dependency on a live session, this method cannot
-		 * be unit-tested in CLI.  The event-raise behaviour (step 2) would only be
-		 * reachable after a successful logout, which has the same dependency.
-		 *
-		 * The authentication-expiry path is an edge-case variation of the session-
-		 * restore flow and is covered end-to-end by the Playwright functional test:
-		 *   tests/playwright/security/TAuthManagerTestCase.spec.js
-		 *   — test 9 covers logout (the operation onAuthExpire triggers internally).
-		 */
-	}
+	// onAuthenticate() and onAuthExpire() are exercised through the in-memory
+	// session seam in the "session-seam-backed paths" section below
+	// (testOnAuthenticate*, testOnAuthExpireLogsOutAndRaisesEvent).
 
 	public function testOnAuthorize()
 	{
@@ -309,6 +543,73 @@ class TAuthManagerTest extends PHPUnit\Framework\TestCase
 		}
 	}
 
+	public function testOnAuthorizeDenyPath()
+	{
+		/*
+		 * The deny branch of onAuthorize(): when the authorization rules reject
+		 * the current user, the response status is set to 401 and the request
+		 * is flagged complete.  Exercised here by injecting a deny-everyone rule
+		 * into the application's rule collection.
+		 */
+		$authManager = new TAuthManager();
+		$authManager->setUserManager('users');
+		$authManager->init(null);
+
+		self::$app->setUser(self::$usrMgr->getUser(null));
+		PradoUnit::setProp(self::$app, '_requestCompleted', false);
+		self::$app->getResponse()->setStatusCode(200);
+
+		$rules = self::$app->getAuthorizationRules();
+		$rules->add(new TAuthorizationRule('deny', '*'));
+
+		$obLevel = ob_get_level();
+		try {
+			$authManager->onAuthorize(null);
+			self::assertEquals(401, self::$app->getResponse()->getStatusCode());
+			self::assertTrue(self::$app->getRequestCompleted());
+		} finally {
+			$rules->clear();
+			self::$app->getResponse()->setStatusCode(200);
+			PradoUnit::setProp(self::$app, '_requestCompleted', false);
+			while (ob_get_level() > $obLevel) {
+				ob_end_clean();
+			}
+		}
+	}
+
+	public function testLoginWritesRememberMeCookie()
+	{
+		/*
+		 * login() with $expire > 0 writes a remember-me cookie to the response:
+		 * a THttpCookie keyed by getUserKey(), carrying the serialized auth token
+		 * from the user manager.  The session-write side is a CLI no-op (see
+		 * testUpdateSessionUser); the cookie side runs fully in CLI.
+		 */
+		$authManager = new TAuthManager();
+		$authManager->setUserManager('users');
+		$authManager->init(null);
+		$authManager->setAllowAutoLogin(true);
+
+		// Swap in a fresh response so the added cookie does not leak into the
+		// shared application response; restore it afterward.
+		$savedResponse = self::$app->getResponse();
+		$response = new TTestAuthResponse();
+		self::$app->setResponse($response);
+
+		self::$usrMgr->setPasswordMode('Clear');
+		try {
+			self::assertTrue($authManager->login('Joe', 'demo', 3600));
+
+			$cookie = $response->getCookies()->itemAt($authManager->getUserKey());
+			self::assertInstanceOf(THttpCookie::class, $cookie);
+			self::assertNotEquals('', $cookie->getValue());
+			self::assertGreaterThan(time(), $cookie->getExpire());
+		} finally {
+			self::$usrMgr->setPasswordMode('MD5');
+			self::$app->setResponse($savedResponse);
+		}
+	}
+
 	public function testUserKey()
 	{
 		$authManager = new TAuthManager();
@@ -330,6 +631,11 @@ class TAuthManagerTest extends PHPUnit\Framework\TestCase
 		 * In the CLI PHPUnit runner, php_sapi_name() === 'cli', so the method is
 		 * a deliberate no-op.  The guard exists precisely because session_start() /
 		 * session_regenerate_id() cannot run without an HTTP session.
+		 *
+		 * The dySkipSessionUpdate seam (consulted after the CLI guard, before the
+		 * session write) is covered through the session seam in
+		 * testUpdateSessionUserConsultsDySkipSessionUpdate, which forces a
+		 * persistable SAPI so the seam is reachable.
 		 *
 		 * The real session-write path — including ID regeneration and its effects on
 		 * subsequent requests — is covered by the Playwright functional test:
@@ -422,28 +728,269 @@ class TAuthManagerTest extends PHPUnit\Framework\TestCase
 		self::$usrMgr->setPasswordMode('MD5');
 	}
 
-	public function _testLogout()
+	// logout() is exercised through the in-memory session seam below
+	// (testLogoutDestroysSession, testLogoutClearsAutoLoginCookie).
+
+	// ---------------------------------------------------------------- session-seam-backed paths
+	//
+	// These exercise the session-bound methods through TTestSessionAuthManager,
+	// whose overridable session seams route to an in-memory session, so the
+	// flows previously deferred to Playwright run in the CLI runner.
+
+	protected function makeSessionAuth(): TTestSessionAuthManager
+	{
+		$auth = new TTestSessionAuthManager();
+		$auth->setUserManager('users');
+		$auth->init(null);
+		self::$usrMgr->setPasswordMode('Clear');
+		return $auth;
+	}
+
+	public function testOnAuthenticateGuestWhenNoSessionState()
+	{
+		$auth = $this->makeSessionAuth();
+		try {
+			$auth->setAuthExpire(3600);
+			$auth->onAuthenticate(null);
+
+			self::assertTrue($auth->fakeSession->opened, 'onAuthenticate must open the session');
+			self::assertTrue(self::$app->getUser()->getIsGuest());
+			// A guest's expiration time is still stamped for the next request.
+			self::assertGreaterThan(time(), $auth->fakeSession->data[TAuthManager::AUTH_EXPIRE_TIME]);
+		} finally {
+			self::$usrMgr->setPasswordMode('MD5');
+		}
+	}
+
+	public function testOnAuthenticateRestoresUserFromSession()
+	{
+		$auth = $this->makeSessionAuth();
+		try {
+			// Pre-store a serialized non-guest user under the user key.
+			$auth->fakeSession->data[$auth->getUserKey()] = self::$usrMgr->getUser('Joe')->saveToString();
+
+			$captured = null;
+			$auth->onAuthenticate[] = function ($sender, $param) use (&$captured) {
+				$captured = [$sender, $param];
+			};
+			$auth->onAuthenticate('the-param');
+
+			self::assertEquals('joe', self::$app->getUser()->getName());
+			self::assertFalse(self::$app->getUser()->getIsGuest());
+			// The OnAuthenticate event receives the manager as sender and the
+			// pass-through param (not the application).
+			self::assertSame($auth, $captured[0]);
+			self::assertSame('the-param', $captured[1]);
+		} finally {
+			self::$usrMgr->setPasswordMode('MD5');
+		}
+	}
+
+	public function testOnAuthenticateExpiresStaleAuth()
+	{
+		$auth = $this->makeSessionAuth();
+		try {
+			$auth->setAuthExpire(3600);
+			$auth->fakeSession->data[$auth->getUserKey()] = self::$usrMgr->getUser('Joe')->saveToString();
+			$auth->fakeSession->data[TAuthManager::AUTH_EXPIRE_TIME] = time() - 100;
+
+			$expired = false;
+			$auth->onAuthExpire[] = function () use (&$expired) {
+				$expired = true;
+			};
+			$auth->onAuthenticate(null);
+
+			// Expiry triggers onAuthExpire → logout: session destroyed, user a guest.
+			self::assertTrue($expired, 'OnAuthExpire must fire for stale authentication');
+			self::assertTrue($auth->fakeSession->destroyed);
+			self::assertTrue(self::$app->getUser()->getIsGuest());
+		} finally {
+			self::$usrMgr->setPasswordMode('MD5');
+		}
+	}
+
+	public function testUpdateSessionUserWritePath()
+	{
+		$auth = $this->makeSessionAuth();
+		try {
+			$joe = self::$usrMgr->getUser('Joe');
+			$auth->updateSessionUser($joe);
+
+			self::assertEquals($joe->saveToString(), $auth->fakeSession->data[$auth->getUserKey()]);
+			self::assertTrue($auth->fakeSession->regenerated, 'session id must be regenerated to prevent fixation');
+		} finally {
+			self::$usrMgr->setPasswordMode('MD5');
+		}
+	}
+
+	public function testUpdateSessionUserSkipsGuest()
+	{
+		$auth = $this->makeSessionAuth();
+		try {
+			$auth->updateSessionUser(self::$usrMgr->getUser(null));
+			self::assertArrayNotHasKey($auth->getUserKey(), $auth->fakeSession->data);
+			self::assertFalse($auth->fakeSession->regenerated);
+		} finally {
+			self::$usrMgr->setPasswordMode('MD5');
+		}
+	}
+
+	public function testUpdateSessionUserSkippedWhenNotPersistable()
+	{
+		$auth = $this->makeSessionAuth();
+		try {
+			$auth->persist = false;	// simulate CLI / non-persistent SAPI
+			$auth->updateSessionUser(self::$usrMgr->getUser('Joe'));
+			self::assertArrayNotHasKey($auth->getUserKey(), $auth->fakeSession->data);
+		} finally {
+			self::$usrMgr->setPasswordMode('MD5');
+		}
+	}
+
+	public function testUpdateSessionUserConsultsDySkipSessionUpdate()
 	{
 		/*
-		 * logout() performs three actions:
-		 *
-		 *   1. Raises the OnLogout event with the current TUser as parameter
-		 *      (the OnLogout event itself is tested in testOnLogout below).
-		 *   2. Marks the application user as a guest (setIsGuest(true)).
-		 *   3. Calls $session->destroy() — which requires an active HTTP session.
-		 *      session_destroy() is a no-op or throws when called without a prior
-		 *      session_start(), and session_start() cannot run in CLI without
-		 *      emitting headers.
-		 *   4. If AllowAutoLogin is set, adds a cleared cookie to the response to
-		 *      remove the auto-login cookie from the browser.
-		 *
-		 * Steps 3 and 4 require live HTTP session and response objects.
-		 *
-		 * Full coverage is provided by the Playwright functional test:
-		 *   tests/playwright/security/TAuthManagerTestCase.spec.js
-		 *   — test  9: logout clears the session and reverts the user to Guest.
-		 *   — test 17: logout after auto-login removes the remember-me cookie.
+		 * updateSessionUser() consults the dySkipSessionUpdate seam before the
+		 * session write: an attached behavior returning true suppresses both the
+		 * write and the id regeneration; returning false lets the write proceed.
 		 */
+		$auth = $this->makeSessionAuth();
+		$behavior = new TTestSkipSessionBehavior();
+		$auth->attachBehavior('skip-seam', $behavior);
+		try {
+			$joe = self::$usrMgr->getUser('Joe');
+
+			// Behavior returns true → the seam is consulted and the write is skipped.
+			$behavior->skip = true;
+			$auth->updateSessionUser($joe);
+			self::assertEquals(1, $behavior->called);
+			self::assertArrayNotHasKey($auth->getUserKey(), $auth->fakeSession->data);
+			self::assertFalse($auth->fakeSession->regenerated);
+
+			// Behavior returns false → the write proceeds.
+			$behavior->skip = false;
+			$auth->updateSessionUser($joe);
+			self::assertEquals($joe->saveToString(), $auth->fakeSession->data[$auth->getUserKey()]);
+			self::assertTrue($auth->fakeSession->regenerated);
+		} finally {
+			self::$usrMgr->setPasswordMode('MD5');
+		}
+	}
+
+	public function testLogoutDestroysSession()
+	{
+		$auth = $this->makeSessionAuth();
+		try {
+			self::$app->setUser(self::$usrMgr->getUser('Joe'));
+			$auth->fakeSession->data[$auth->getUserKey()] = 'stored';
+
+			$auth->logout();
+
+			self::assertTrue($auth->fakeSession->destroyed);
+			self::assertTrue(self::$app->getUser()->getIsGuest());
+		} finally {
+			self::$usrMgr->setPasswordMode('MD5');
+		}
+	}
+
+	public function testLogoutClearsAutoLoginCookie()
+	{
+		$auth = $this->makeSessionAuth();
+		$savedResponse = self::$app->getResponse();
+		$response = new TTestAuthResponse();
+		self::$app->setResponse($response);
+		try {
+			$auth->setAllowAutoLogin(true);
+			self::$app->setUser(self::$usrMgr->getUser('Joe'));
+
+			$auth->logout();
+
+			// A cleared cookie under the user key is queued to erase the
+			// remember-me cookie from the browser.
+			$cookie = $response->getCookies()->itemAt($auth->getUserKey());
+			self::assertInstanceOf(THttpCookie::class, $cookie);
+			self::assertEquals('', $cookie->getValue());
+		} finally {
+			self::$app->setResponse($savedResponse);
+			self::$usrMgr->setPasswordMode('MD5');
+		}
+	}
+
+	public function testOnAuthExpireLogsOutAndRaisesEvent()
+	{
+		$auth = $this->makeSessionAuth();
+		try {
+			self::$app->setUser(self::$usrMgr->getUser('Joe'));
+			$auth->fakeSession->data[$auth->getUserKey()] = 'stored';
+
+			$fired = false;
+			$auth->onAuthExpire[] = function ($sender, $param) use (&$fired) {
+				$fired = true;
+			};
+			$auth->onAuthExpire(null);
+
+			// onAuthExpire logs the user out, then raises the OnAuthExpire event.
+			self::assertTrue($auth->fakeSession->destroyed);
+			self::assertTrue(self::$app->getUser()->getIsGuest());
+			self::assertTrue($fired, 'OnAuthExpire event must fire');
+		} finally {
+			self::$usrMgr->setPasswordMode('MD5');
+		}
+	}
+
+	public function testOnAuthenticateRestoresFromAutoLoginCookie()
+	{
+		$auth = $this->makeSessionAuth();
+		$savedResponse = self::$app->getResponse();
+		self::$app->setResponse(new TTestAuthResponse());
+		try {
+			$auth->setAllowAutoLogin(true);
+
+			// Build a valid auth cookie for Joe and place it in the request under
+			// the user key; the session is empty, so the cookie path runs.
+			self::$app->setUser(self::$usrMgr->getUser('Joe'));
+			$authCookie = new THttpCookie($auth->getUserKey(), '');
+			self::$usrMgr->saveUserToCookie($authCookie);
+			self::$app->getRequest()->getCookies()->add($authCookie);
+			self::$app->setUser(self::$usrMgr->getUser(null));
+
+			$auth->onAuthenticate(null);
+
+			self::assertEquals('joe', self::$app->getUser()->getName());
+			self::assertFalse(self::$app->getUser()->getIsGuest());
+			// Cookie restore writes the user back to the session.
+			self::assertArrayHasKey($auth->getUserKey(), $auth->fakeSession->data);
+		} finally {
+			self::$app->getRequest()->getCookies()->clear();
+			self::$app->setResponse($savedResponse);
+			self::$usrMgr->setPasswordMode('MD5');
+		}
+	}
+
+	public function testOnAuthenticateIgnoresInvalidAutoLoginCookie()
+	{
+		$auth = $this->makeSessionAuth();
+		$savedResponse = self::$app->getResponse();
+		self::$app->setResponse(new TTestAuthResponse());
+		try {
+			$auth->setAllowAutoLogin(true);
+
+			// A well-formed [username, token] cookie whose token does not match
+			// the computed auth token: getUserFromCookie() returns null and the
+			// user stays a guest.
+			$badCookie = new THttpCookie($auth->getUserKey(), serialize(['joe', 'wrong-token']));
+			self::$app->getRequest()->getCookies()->add($badCookie);
+			self::$app->setUser(self::$usrMgr->getUser(null));
+
+			$auth->onAuthenticate(null);
+
+			self::assertTrue(self::$app->getUser()->getIsGuest());
+			self::assertArrayNotHasKey($auth->getUserKey(), $auth->fakeSession->data);
+		} finally {
+			self::$app->getRequest()->getCookies()->clear();
+			self::$app->setResponse($savedResponse);
+			self::$usrMgr->setPasswordMode('MD5');
+		}
 	}
 
 	protected $_handled = 0;

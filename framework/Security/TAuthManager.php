@@ -34,6 +34,14 @@ use Prado\Web\THttpCookie;
  * feature will cause that {@see setAuthExpire AuthExpire} has no effect
  * since the user will be logged in again on authentication expiration.
  *
+ * Attached behaviors may intercept the following dynamic (`dy-`) events:
+ * - `dyHandleUnauthorized(bool $handled): bool` — Called in {@see leave()} when
+ *   the response status is 401. Return `true` to suppress the login-page
+ *   redirect (e.g., a behavior that has already sent `WWW-Authenticate` headers).
+ * - `dySkipSessionUpdate(bool $skip, IUser $user): bool` — Called in
+ *   {@see updateSessionUser()} before writing the user to the session. Return
+ *   `true` to skip the session write (e.g., a stateless HTTP-auth behavior).
+ *
  * XML configuration style:
  * ```xml
  * <modules>
@@ -77,6 +85,8 @@ use Prado\Web\THttpCookie;
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
+ * @method bool dyHandleUnauthorized(bool $handled) Behaviors return `true` to suppress the login-page redirect when the response is 401.
+ * @method bool dySkipSessionUpdate(bool $skip, IUser $user) Behaviors return `true` to skip writing the user to the session.
  */
 class TAuthManager extends \Prado\TModule
 {
@@ -86,6 +96,11 @@ class TAuthManager extends \Prado\TModule
 	 * GET variable name for return url
 	 */
 	public const RETURN_URL_VAR = 'ReturnUrl';
+	/**
+	 * Session key under which the authentication expiration timestamp is stored.
+	 * @since 4.4.0
+	 */
+	public const AUTH_EXPIRE_TIME = 'AuthExpireTime';
 	/**
 	 * @var IUserManager user manager instance
 	 */
@@ -114,6 +129,10 @@ class TAuthManager extends \Prado\TModule
 	 * @var int authentication expiration time in seconds. Defaults to zero (no expiration)
 	 */
 	private $_authExpire = 0;
+
+	// =========================================================================
+	// Initialization
+	// =========================================================================
 
 	/**
 	 * Initializes this module.
@@ -145,6 +164,10 @@ class TAuthManager extends \Prado\TModule
 		parent::init($config);
 		$this->markInitialized();
 	}
+
+	// =========================================================================
+	// Property Getters and Setters
+	// =========================================================================
 
 	/**
 	 * @return IUserManager user manager instance
@@ -187,58 +210,6 @@ class TAuthManager extends \Prado\TModule
 	}
 
 	/**
-	 * Performs authentication.
-	 * This is the event handler attached to application's Authentication event.
-	 * Do not call this method directly.
-	 * @param mixed $sender sender of the Authentication event
-	 * @param mixed $param event parameter
-	 */
-	public function doAuthentication($sender, $param)
-	{
-		$this->onAuthenticate($param);
-
-		$service = $this->getService();
-		if (($service instanceof TPageService) && $service->getRequestedPagePath() === $this->getLoginPage()) {
-			$this->_skipAuthorization = true;
-		}
-	}
-
-	/**
-	 * Performs authorization.
-	 * This is the event handler attached to application's Authorization event.
-	 * Do not call this method directly.
-	 * @param mixed $sender sender of the Authorization event
-	 * @param mixed $param event parameter
-	 */
-	public function doAuthorization($sender, $param)
-	{
-		if (!$this->_skipAuthorization) {
-			$this->onAuthorize($param);
-		}
-	}
-
-	/**
-	 * Performs login redirect if authorization fails.
-	 * This is the event handler attached to application's EndRequest event.
-	 * Do not call this method directly.
-	 * @param mixed $sender sender of the event
-	 * @param mixed $param event parameter
-	 */
-	public function leave($sender, $param)
-	{
-		$application = $this->getApplication();
-		if ($application->getResponse()->getStatusCode() === 401) {
-			$service = $application->getService();
-			if ($service instanceof TPageService) {
-				$returnUrl = $application->getRequest()->getRequestUri();
-				$this->setReturnUrl($returnUrl);
-				$url = $service->constructUrl($this->getLoginPage());
-				$application->getResponse()->redirect($url);
-			}
-		}
-	}
-
-	/**
 	 * @return string the name of the session variable storing return URL. It defaults to 'AppID:ReturnUrl'
 	 */
 	public function getReturnUrlVarName()
@@ -259,7 +230,7 @@ class TAuthManager extends \Prado\TModule
 	 */
 	public function getReturnUrl()
 	{
-		return $this->getSession()->itemAt($this->getReturnUrlVarName());
+		return $this->requireSession()->itemAt($this->getReturnUrlVarName());
 	}
 
 	/**
@@ -268,7 +239,7 @@ class TAuthManager extends \Prado\TModule
 	 */
 	public function setReturnUrl($value)
 	{
-		$this->getSession()->add($this->getReturnUrlVarName(), $value);
+		$this->requireSession()->add($this->getReturnUrlVarName(), $value);
 	}
 
 	/**
@@ -308,10 +279,100 @@ class TAuthManager extends \Prado\TModule
 	}
 
 	/**
+	 * @return string a unique variable name for storing user session/cookie data
+	 * @since 3.1.1
+	 */
+	public function getUserKey()
+	{
+		if ($this->_userKey === null) {
+			$this->_userKey = $this->generateUserKey();
+		}
+		return $this->_userKey;
+	}
+
+	/**
+	 * @return string a key used to store user information in session
+	 * @since 3.1.1
+	 */
+	protected function generateUserKey()
+	{
+		return md5($this->getApplication()->getUniqueID() . 'prado:user');
+	}
+
+	// =========================================================================
+	// Application Lifecycle Event Handlers
+	// =========================================================================
+
+	/**
+	 * Performs authentication.
+	 * This is the event handler attached to application's Authentication event.
+	 * Do not call this method directly.
+	 * @param mixed $sender sender of the Authentication event
+	 * @param mixed $param event parameter
+	 */
+	public function doAuthentication($sender, $param)
+	{
+		$this->onAuthenticate($param);
+
+		$service = $this->getService();
+		if (($service instanceof TPageService) && $service->getRequestedPagePath() === $this->getLoginPage()) {
+			$this->_skipAuthorization = true;
+		}
+	}
+
+	/**
+	 * Performs authorization.
+	 * This is the event handler attached to application's Authorization event.
+	 * Do not call this method directly.
+	 * @param mixed $sender sender of the Authorization event
+	 * @param mixed $param event parameter
+	 */
+	public function doAuthorization($sender, $param)
+	{
+		if (!$this->_skipAuthorization) {
+			$this->onAuthorize($param);
+		}
+	}
+
+	/**
+	 * Performs login redirect if authorization fails.
+	 * This is the event handler attached to application's EndRequest event.
+	 * Do not call this method directly.
+	 *
+	 * Attached behaviors may suppress the redirect by returning `true` from
+	 * their `dyHandleUnauthorized` handler (e.g., when a behavior has already
+	 * sent RFC 7235 `WWW-Authenticate` challenge headers and the 401 should
+	 * stand as-is rather than becoming a login-page redirect).
+	 * @param mixed $sender sender of the event
+	 * @param mixed $param event parameter
+	 */
+	public function leave($sender, $param)
+	{
+		$application = $this->getApplication();
+		if ($application->getResponse()->getStatusCode() === 401) {
+			if ($this->dyHandleUnauthorized(false)) {
+				return;
+			}
+			$service = $application->getService();
+			if ($service instanceof TPageService) {
+				$returnUrl = $application->getRequest()->getRequestUri();
+				$this->setReturnUrl($returnUrl);
+				$url = $service->constructUrl($this->getLoginPage());
+				$application->getResponse()->redirect($url);
+			}
+		}
+	}
+
+	// =========================================================================
+	// Authentication and Authorization
+	// =========================================================================
+
+	/**
 	 * Performs the real authentication work.
-	 * An OnAuthenticate event will be raised if there is any handler attached to it.
-	 * If the application already has a non-null user, it will return without further authentication.
-	 * Otherwise, user information will be restored from session data.
+	 * User information is restored from session data, falling back to the
+	 * auto-login cookie when {@see getAllowAutoLogin AllowAutoLogin} is enabled
+	 * and the session yields a guest or expired user. An OnAuthenticate event
+	 * is raised afterward if any handler is attached to it.
 	 * @param mixed $param parameter to be passed to OnAuthenticate event
 	 * @throws TConfigurationException if session module does not exist.
 	 */
@@ -320,16 +381,13 @@ class TAuthManager extends \Prado\TModule
 		$application = $this->getApplication();
 
 		// restoring user info from session
-		if (($session = $application->getSession()) === null) {
-			throw new TConfigurationException('authmanager_session_required');
-		}
-		$session->open();
-		$sessionInfo = $session->itemAt($this->getUserKey());
+		$this->openSession();
+		$sessionInfo = $this->loadUserState();
 		$user = $this->_userManager->getUser(null)->loadFromString($sessionInfo);
 
 		// check for authentication expiration
 		$isAuthExpired = $this->_authExpire > 0 && !$user->getIsGuest() &&
-		($expiretime = $session->itemAt('AuthExpireTime')) && $expiretime < time();
+		($expiretime = $this->getAuthExpireTime()) && $expiretime < time();
 
 		// try authenticating through cookie if possible
 		if ($this->getAllowAutoLogin() && ($user->getIsGuest() || $isAuthExpired)) {
@@ -350,12 +408,12 @@ class TAuthManager extends \Prado\TModule
 		if ($isAuthExpired) {
 			$this->onAuthExpire($param);
 		} else {
-			$session->add('AuthExpireTime', time() + $this->_authExpire);
+			$this->setAuthExpireTime(time() + $this->_authExpire);
 		}
 
 		// event handler gets a chance to do further auth work
 		if ($this->hasEventHandler('OnAuthenticate')) {
-			$this->raiseEvent('OnAuthenticate', $this, $application);
+			$this->raiseEvent('OnAuthenticate', $this, $param);
 		}
 	}
 
@@ -392,40 +450,21 @@ class TAuthManager extends \Prado\TModule
 	}
 
 	/**
-	 * @return string a unique variable name for storing user session/cookie data
-	 * @since 3.1.1
-	 */
-	public function getUserKey()
-	{
-		if ($this->_userKey === null) {
-			$this->_userKey = $this->generateUserKey();
-		}
-		return $this->_userKey;
-	}
-
-	/**
-	 * @return string a key used to store user information in session
-	 * @since 3.1.1
-	 */
-	protected function generateUserKey()
-	{
-		return md5($this->getApplication()->getUniqueID() . 'prado:user');
-	}
-
-	/**
 	 * Updates the user data stored in session.
+	 *
+	 * Attached behaviors may suppress the write by returning `true` from their
+	 * `dySkipSessionUpdate` handler. Stateless HTTP-auth behaviors use this to
+	 * avoid opening and writing the session on every request.
 	 * @param IUser $user user object
 	 * @throws TConfigurationException if session module is not loaded.
 	 */
 	public function updateSessionUser($user)
 	{
-		if (php_sapi_name() !== 'cli' && !$user->getIsGuest()) {
-			if (($session = $this->getSession()) === null) {
-				throw new TConfigurationException('authmanager_session_required');
-			} else {
-				$session->add($this->getUserKey(), $user->saveToString());
-				$session->regenerate(true);
+		if ($this->getCanPersistSession() && !$user->getIsGuest()) {
+			if ($this->dySkipSessionUpdate(false, $user)) {
+				return;
 			}
+			$this->saveUserState($user);
 		}
 	}
 
@@ -488,16 +527,112 @@ class TAuthManager extends \Prado\TModule
 	public function logout()
 	{
 		$this->onLogout($this->getApplication()->getUser());
-		if (($session = $this->getSession()) === null) {
-			throw new TConfigurationException('authmanager_session_required');
-		}
+		$this->requireSession();
 		$this->getApplication()->getUser()->setIsGuest(true);
-		$session->destroy();
+		$this->destroySession();
 		if ($this->getAllowAutoLogin()) {
 			$cookie = new THttpCookie($this->getUserKey(), '');
 			$this->getResponse()->getCookies()->add($cookie);
 		}
 	}
+
+	// =========================================================================
+	// Session Encapsulation
+	// =========================================================================
+
+	/**
+	 * Returns the session module, throwing when none is configured.
+	 * Every session operation in this class routes through this accessor so the
+	 * session interaction is encapsulated behind one overridable seam.
+	 * @throws TConfigurationException if no session module is available.
+	 * @return \Prado\Web\THttpSession the application session module.
+	 * @since 4.4.0
+	 */
+	protected function requireSession()
+	{
+		if (($session = $this->getSession()) === null) {
+			throw new TConfigurationException('authmanager_session_required');
+		}
+		return $session;
+	}
+
+	/**
+	 * Opens the session for reading and writing.
+	 * @throws TConfigurationException if no session module is available.
+	 * @since 4.4.0
+	 */
+	protected function openSession()
+	{
+		$this->requireSession()->open();
+	}
+
+	/**
+	 * Reads the serialized user state stored under {@see getUserKey()}.
+	 * @return mixed the stored user-state string, or null when absent.
+	 * @since 4.4.0
+	 */
+	protected function loadUserState()
+	{
+		return $this->requireSession()->itemAt($this->getUserKey());
+	}
+
+	/**
+	 * Writes the serialized user state under {@see getUserKey()} and regenerates
+	 * the session id to prevent session fixation.
+	 * @param IUser $user the user whose state is stored.
+	 * @since 4.4.0
+	 */
+	protected function saveUserState($user)
+	{
+		$session = $this->requireSession();
+		$session->add($this->getUserKey(), $user->saveToString());
+		$session->regenerate(true);
+	}
+
+	/**
+	 * @return mixed the stored authentication expiration timestamp, or null.
+	 * @since 4.4.0
+	 */
+	protected function getAuthExpireTime()
+	{
+		return $this->requireSession()->itemAt(static::AUTH_EXPIRE_TIME);
+	}
+
+	/**
+	 * Stores the authentication expiration timestamp in the session.
+	 * @param int $time the Unix timestamp at which authentication expires.
+	 * @since 4.4.0
+	 */
+	protected function setAuthExpireTime($time)
+	{
+		$this->requireSession()->add(static::AUTH_EXPIRE_TIME, $time);
+	}
+
+	/**
+	 * Destroys the session, ending the authenticated session.
+	 * @throws TConfigurationException if no session module is available.
+	 * @since 4.4.0
+	 */
+	protected function destroySession()
+	{
+		$this->requireSession()->destroy();
+	}
+
+	/**
+	 * Whether the current SAPI persists sessions across requests. Returns false
+	 * under CLI, where {@see updateSessionUser()} skips the session write because
+	 * `session_start()` / `session_regenerate_id()` cannot run.
+	 * @return bool whether session writes are meaningful in this SAPI.
+	 * @since 4.4.0
+	 */
+	protected function getCanPersistSession()
+	{
+		return php_sapi_name() !== 'cli';
+	}
+
+	// =========================================================================
+	// Events
+	// =========================================================================
 
 	/**
 	 * onLogin event is raised when a user logs in
