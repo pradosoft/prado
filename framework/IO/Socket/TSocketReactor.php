@@ -59,6 +59,10 @@ class TSocketReactor extends TComponent
 	/** @var bool Whether {@see run()} is looping. */
 	private bool $_running = false;
 
+	// =========================================================================
+	// Source Registration
+	// =========================================================================
+
 	/**
 	 * Registers a source with the loop.  Re-registering the same source replaces its callbacks.
 	 * @param IResource $source The server or connection to watch.
@@ -144,6 +148,10 @@ class TSocketReactor extends TComponent
 		});
 	}
 
+	// =========================================================================
+	// Timers
+	// =========================================================================
+
 	/**
 	 * Schedules a one-shot callback at an absolute time.
 	 * @param float $when The {@see microtime()} timestamp to fire at.
@@ -165,7 +173,7 @@ class TSocketReactor extends TComponent
 	 */
 	public function after(float $delay, callable $callback): int
 	{
-		return $this->scheduleAt(microtime(true) + $delay, $callback);
+		return $this->scheduleAt($this->microtime() + $delay, $callback);
 	}
 
 	/**
@@ -177,7 +185,7 @@ class TSocketReactor extends TComponent
 	public function every(float $interval, callable $callback): int
 	{
 		$id = $this->_nextTimerId++;
-		$this->_timers[$id] = ['when' => microtime(true) + $interval, 'interval' => $interval, 'callback' => $callback];
+		$this->_timers[$id] = ['when' => $this->microtime() + $interval, 'interval' => $interval, 'callback' => $callback];
 		return $id;
 	}
 
@@ -189,6 +197,10 @@ class TSocketReactor extends TComponent
 	{
 		unset($this->_timers[$id]);
 	}
+
+	// =========================================================================
+	// Event Loop
+	// =========================================================================
 
 	/**
 	 * Runs one iteration: waits for readiness up to the timeout (or the next timer, whichever is
@@ -227,7 +239,7 @@ class TSocketReactor extends TComponent
 		} else {
 			// Nothing to select on; honor the delay so pending timers still fire on schedule.
 			if ($delay !== null && $delay > 0) {
-				usleep((int) ($delay * 1000000));
+				$this->sleep($delay);
 			}
 			$count = 0;
 		}
@@ -268,6 +280,10 @@ class TSocketReactor extends TComponent
 		return $this->_running;
 	}
 
+	// =========================================================================
+	// Internals
+	// =========================================================================
+
 	/**
 	 * Dispatches ready sources to a callback slot, skipping any unregistered by a prior callback.
 	 * @param array<int, IResource> $ready The ready sources, keyed by object id.
@@ -303,7 +319,7 @@ class TSocketReactor extends TComponent
 		if ($this->_timers === []) {
 			return;
 		}
-		$now = microtime(true);
+		$now = $this->microtime();
 		foreach ($this->_timers as $id => $timer) {
 			if ($timer['when'] > $now || !isset($this->_timers[$id])) {
 				continue;
@@ -333,7 +349,7 @@ class TSocketReactor extends TComponent
 		if ($deadline === null) {
 			return $timeout;
 		}
-		$timerDelay = max(0.0, $deadline - microtime(true));
+		$timerDelay = max(0.0, $deadline - $this->microtime());
 		return $timeout === null ? $timerDelay : min($timeout, $timerDelay);
 	}
 
@@ -354,5 +370,25 @@ class TSocketReactor extends TComponent
 			$microseconds -= 1000000;
 		}
 		return [$seconds, $microseconds];
+	}
+
+	/**
+	 * Returns the current time in seconds, the clock the {@see Timers timers} run on.  Encapsulated
+	 * so a subclass or test can drive the loop with a fixed or simulated clock.
+	 * @return float The current time in seconds ({@see microtime()}).
+	 */
+	protected function microtime(): float
+	{
+		return microtime(true);
+	}
+
+	/**
+	 * Waits a fraction of a second when the loop has no sources to {@see select()} on, so pending
+	 * timers still fire on schedule.  Encapsulated so a subclass or test can wait without sleeping.
+	 * @param float $seconds The seconds to wait.
+	 */
+	protected function sleep(float $seconds): void
+	{
+		usleep((int) ($seconds * 1000000));
 	}
 }

@@ -34,6 +34,10 @@ use Prado\IO\TStream;
  */
 class TSocketStream extends TStream
 {
+	// =========================================================================
+	// Socket Setup
+	// =========================================================================
+
 	/**
 	 * Connects a client socket with {@see stream_socket_client()}.
 	 * @param string $uri The endpoint, e.g. 'tcp://127.0.0.1:80', 'tls://host:443',
@@ -114,6 +118,10 @@ class TSocketStream extends TStream
 		return [$first, $second];
 	}
 
+	// =========================================================================
+	// Addresses
+	// =========================================================================
+
 	/**
 	 * Returns the remote (peer) address.
 	 * @return ?TSocketAddress The remote (peer) address, or null when unavailable.
@@ -146,6 +154,10 @@ class TSocketStream extends TStream
 		$name = @stream_socket_get_name($resource, $remote);
 		return ($name === false || $name === '') ? null : TSocketAddress::parse($name);
 	}
+
+	// =========================================================================
+	// Datagram and Out-of-Band I/O
+	// =========================================================================
 
 	/**
 	 * Receives data, optionally with flags and the peer address (connectionless).
@@ -201,6 +213,10 @@ class TSocketStream extends TStream
 		return $this->sendTo($data, STREAM_OOB);
 	}
 
+	// =========================================================================
+	// TLS
+	// =========================================================================
+
 	/**
 	 * Turns encryption on or off ({@see stream_socket_enable_crypto()}).
 	 * @param bool $enable Whether to enable (true) or disable (false) crypto.
@@ -241,6 +257,10 @@ class TSocketStream extends TStream
 		return ($alpn === null || $alpn === '') ? null : $alpn;
 	}
 
+	// =========================================================================
+	// Shutdown
+	// =========================================================================
+
 	/**
 	 * Shuts down reception and/or transmission on the socket.
 	 * @param int $how STREAM_SHUT_RD, STREAM_SHUT_WR or STREAM_SHUT_RDWR (default).
@@ -258,6 +278,10 @@ class TSocketStream extends TStream
 		}
 		return $result;
 	}
+
+	// =========================================================================
+	// Transport Availability
+	// =========================================================================
 
 	/**
 	 * Lists the transports available in this PHP build.
@@ -277,6 +301,10 @@ class TSocketStream extends TStream
 	{
 		return in_array($transport, stream_get_transports(), true);
 	}
+
+	// =========================================================================
+	// Events
+	// =========================================================================
 
 	/**
 	 * Raised after a connection is established.

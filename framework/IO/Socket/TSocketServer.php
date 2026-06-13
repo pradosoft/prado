@@ -50,6 +50,10 @@ class TSocketServer extends TResource implements \IteratorAggregate
 	/** @var array<int, TSocketStream> The active accepted connections, keyed by object id. */
 	private array $_connections = [];
 
+	// =========================================================================
+	// Server Setup
+	// =========================================================================
+
 	/**
 	 * Creates a listening server socket.
 	 * @param string $uri The bind endpoint, e.g. 'tcp://0.0.0.0:8080', 'unix:///tmp/app.sock'.
@@ -71,6 +75,10 @@ class TSocketServer extends TResource implements \IteratorAggregate
 		$server->attachResource($resource, true);
 		return $server;
 	}
+
+	// =========================================================================
+	// Accepting Connections
+	// =========================================================================
 
 	/**
 	 * Accepts the next incoming connection.
@@ -137,12 +145,29 @@ class TSocketServer extends TResource implements \IteratorAggregate
 		});
 	}
 
+	// =========================================================================
+	// Lifecycle and Iteration
+	// =========================================================================
+
 	/**
 	 * Closes the listening socket.  Use {@see closeStream()} for the boolean result.
 	 */
 	public function close(): void
 	{
 		$this->closeStream();
+	}
+
+	/**
+	 * Releases the tracked connections while the server is still valid.  Freeing them here, rather
+	 * than when the engine tears the property down, keeps a still-open connection's
+	 * {@see addConnection() onClose handler} from reentering and mutating the registry of a server
+	 * whose destruction has already begun — a use-after-free that crashes PHP 8.1, where a
+	 * {@see \WeakReference} still resolves to an object during its destruction.
+	 */
+	public function __destruct()
+	{
+		$this->_connections = [];
+		parent::__destruct();
 	}
 
 	/**
@@ -169,6 +194,10 @@ class TSocketServer extends TResource implements \IteratorAggregate
 			}
 		}
 	}
+
+	// =========================================================================
+	// Local Address
+	// =========================================================================
 
 	/**
 	 * Returns the local (bound) address.
@@ -201,6 +230,10 @@ class TSocketServer extends TResource implements \IteratorAggregate
 	{
 		return $this->getLocalAddress()?->getHost();
 	}
+
+	// =========================================================================
+	// Readiness Multiplexing
+	// =========================================================================
 
 	/**
 	 * Waits for readiness across sets of streams ({@see stream_select()} wrapper).
@@ -252,6 +285,10 @@ class TSocketServer extends TResource implements \IteratorAggregate
 		return $count;
 	}
 
+	// =========================================================================
+	// Connection Registry
+	// =========================================================================
+
 	/**
 	 * Returns the raw connection registry, keyed by object id.
 	 * @return array<int, TSocketStream> The raw connection registry.
@@ -297,6 +334,10 @@ class TSocketServer extends TResource implements \IteratorAggregate
 		return count($this->getConnectionsDirect());
 	}
 
+	// =========================================================================
+	// Events
+	// =========================================================================
+
 	/**
 	 * Raised when a connection is accepted.
 	 * @param mixed $param The accepted TSocketStream.
@@ -323,6 +364,10 @@ class TSocketServer extends TResource implements \IteratorAggregate
 	{
 		$this->raiseEvent('onClientClose', $this, $param);
 	}
+
+	// =========================================================================
+	// Serialization
+	// =========================================================================
 
 	/**
 	 * Excludes the non-serializable connection registry from {@see \Prado\TComponent::__sleep()}.

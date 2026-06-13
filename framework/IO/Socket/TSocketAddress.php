@@ -39,6 +39,10 @@ class TSocketAddress extends TComponent
 	/** @var ?string The path (unix/udg sockets), or null. */
 	private ?string $_path;
 
+	// =========================================================================
+	// Construction and Parsing
+	// =========================================================================
+
 	/**
 	 * Builds a socket address from its components.
 	 * @param ?string $scheme The transport scheme.
@@ -106,9 +110,9 @@ class TSocketAddress extends TComponent
 		);
 	}
 
-	//
-	// ─── Self-encapsulated raw accessors ─────────────────────────────────────
-	//
+	// =========================================================================
+	// Self-Encapsulated Accessors
+	// =========================================================================
 
 	/**
 	 * Returns the raw transport scheme.
@@ -182,9 +186,9 @@ class TSocketAddress extends TComponent
 		$this->_path = $value;
 	}
 
-	//
-	// ─── Prado property accessors ────────────────────────────────────────────
-	//
+	// =========================================================================
+	// Properties
+	// =========================================================================
 
 	/**
 	 * Returns the transport scheme.
@@ -221,6 +225,10 @@ class TSocketAddress extends TComponent
 	{
 		return $this->getPathDirect();
 	}
+
+	// =========================================================================
+	// Conversion
+	// =========================================================================
 
 	/**
 	 * Returns the address as a {@see TResourceUri} (the ->Uri property).
