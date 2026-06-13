@@ -1210,6 +1210,68 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		}
 	}
 
+	// ── ensureArray: ARRAY_SKIP_EMPTY ────────────────────────────────────────
+	//
+	// ARRAY_SKIP_EMPTY has accepted and dropped empty elements (leading,
+	// consecutive, and trailing commas) at every nesting depth.
+
+	public function testEnsureArraySkipEmptyDropsEmptyElements(): void
+	{
+		$skip = TPropertyValue::ARRAY_SKIP_EMPTY;
+		// Without the flag a doubled comma fails the parse — single-element fallback.
+		self::assertSame(['a, , b'], TPropertyValue::ensureArray('a, , b'));
+		// With the flag the empty slots are dropped.
+		self::assertSame(['a', 'b'], TPropertyValue::ensureArray('a, , b', $skip));
+		self::assertSame(['a', 'b'], TPropertyValue::ensureArray(', a,, b,', $skip));
+		self::assertSame([1, 2], TPropertyValue::ensureArray('[1,, 2]', $skip));
+		// Nested depth.
+		self::assertSame([[1, 2], 3], TPropertyValue::ensureArray('[[1,, 2],, 3]', $skip));
+		// Only empty slots — empty array.
+		self::assertSame([], TPropertyValue::ensureArray('[,,]', $skip));
+		// Composes with strict grammar.
+		self::assertSame([1, 2], TPropertyValue::ensureArray('[1,, 2]', $skip | TPropertyValue::ARRAY_STRICT_GRAMMAR));
+	}
+
+	public function testEnsureArraySkipEmptyDoesNotAffectNormalInput(): void
+	{
+		$skip = TPropertyValue::ARRAY_SKIP_EMPTY;
+		self::assertSame(['red', 'green', 'blue'], TPropertyValue::ensureArray('red, green, blue', $skip));
+		self::assertSame(['a' => 1, 'b' => 2], TPropertyValue::ensureArray('[a => 1, b => 2]', $skip));
+		self::assertSame([], TPropertyValue::ensureArray('', $skip));
+	}
+
+	// ── ensureArrayOfType: ARRAY_* flag forwarding ───────────────────────────
+	//
+	// ensureArrayOfType has forwarded the ARRAY_* bits of $flags to its
+	// internal ensureArray() call, so one $flags value controls both the
+	// parse and the element pipeline.
+
+	public function testEnsureArrayOfTypeForwardsArrayFlags(): void
+	{
+		// ARRAY_SKIP_EMPTY composes with the default pipeline flags.
+		self::assertSame(
+			['digest', 'basic'],
+			TPropertyValue::ensureArrayOfType(
+				'Digest, , Basic,',
+				TPropertyValue::TYPE_STRING,
+				TPropertyValue::DEFAULT_ARRAY_OF_TYPE | TPropertyValue::ARRAY_SKIP_EMPTY,
+			),
+		);
+		// ARRAY_STRICT_ERRORS propagates: an unparsable input throws instead
+		// of silently wrapping.
+		try {
+			TPropertyValue::ensureArrayOfType(
+				'1, 2',
+				TPropertyValue::TYPE_INT,
+				TPropertyValue::DEFAULT_ARRAY_OF_TYPE
+					| TPropertyValue::ARRAY_STRICT_GRAMMAR
+					| TPropertyValue::ARRAY_STRICT_ERRORS,
+			);
+			self::fail('Expected TInvalidDataValueException for unbracketed input under strict+errors');
+		} catch (TInvalidDataValueException $e) {
+		}
+	}
+
 	// ════════════════════════════════════════════════════════════════════════
 	// ensureArrayOfType — type coercion + trim/lowercase/filter flags
 	// ════════════════════════════════════════════════════════════════════════

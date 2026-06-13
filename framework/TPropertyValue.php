@@ -136,9 +136,12 @@ class TPropertyValue
 	/**
 	 * Flag for {@see ensureArray()} that has restricted the parser to PHP-literal grammar:
 	 * `[...]` or `array(...)` only — no bare `(...)`, no unquoted strings, no legacy octal, no auto-wrap.
+	 * The `ARRAY_*` flags occupy bits above the `FILTER_*` flags so that
+	 * {@see ensureArrayOfType()} accepts both families in one `$flags` value
+	 * and forwards the `ARRAY_*` bits to its internal {@see ensureArray()} call.
 	 * @since 4.4.0
 	 */
-	public const ARRAY_STRICT_GRAMMAR = (1 << 0);
+	public const ARRAY_STRICT_GRAMMAR = (1 << 8);
 
 	/**
 	 * Flag for {@see ensureArray()} that has extended {@see ARRAY_STRICT_GRAMMAR} to also accept
@@ -146,14 +149,33 @@ class TPropertyValue
 	 * {@see ARRAY_STRICT_GRAMMAR}.
 	 * @since 4.4.0
 	 */
-	public const ARRAY_STRICT_GRAMMAR_ALLOW_BARE_PAREN = (1 << 1);
+	public const ARRAY_STRICT_GRAMMAR_ALLOW_BARE_PAREN = (1 << 9);
 
 	/**
 	 * Flag for {@see ensureArray()} that has converted a parse failure from the silent
 	 * single-element wrap into a thrown {@see TInvalidDataValueException}.
 	 * @since 4.4.0
 	 */
-	public const ARRAY_STRICT_ERRORS = (1 << 2);
+	public const ARRAY_STRICT_ERRORS = (1 << 10);
+
+	/**
+	 * Flag for {@see ensureArray()} that has accepted and dropped empty elements
+	 * in an element list, so `'a, , b'` and `[1,, 2]` have parsed to two-element
+	 * arrays instead of failing.  Leading and consecutive commas are tolerated
+	 * at every nesting depth.  Useful for hand-typed CSV configuration values.
+	 * @since 4.4.0
+	 */
+	public const ARRAY_SKIP_EMPTY = (1 << 11);
+
+	/**
+	 * Bitmask of every `ARRAY_*` flag — the bits {@see ensureArrayOfType()}
+	 * forwards to {@see ensureArray()}.
+	 * @since 4.4.0
+	 */
+	public const ARRAY_FLAGS = self::ARRAY_STRICT_GRAMMAR
+		| self::ARRAY_STRICT_GRAMMAR_ALLOW_BARE_PAREN
+		| self::ARRAY_STRICT_ERRORS
+		| self::ARRAY_SKIP_EMPTY;
 
 	/**
 	 * No-op bitmask (= `0`) — opt out of defaults in {@see ensureNullIf()}
@@ -902,7 +924,7 @@ class TPropertyValue
 	 * Converts a value to an array, parsing strings as PHP-style array literals.
 	 *
 	 * Non-string values are cast via PHP's `(array)` coercion.  String values
-	 * are parsed as PHP array literals.  Two flag bits control the behavior:
+	 * are parsed as PHP array literals.  Three flag bits control the behavior:
 	 *
 	 * - {@see ARRAY_STRICT_GRAMMAR} — restricts the parser to the PHP-literal
 	 *   grammar (`[...]` short syntax or `array(...)` keyword form, no bare
@@ -911,6 +933,9 @@ class TPropertyValue
 	 * - {@see ARRAY_STRICT_ERRORS} — converts the silent single-element
 	 *   fallback into a thrown {@see TInvalidDataValueException}.  Composable
 	 *   with the grammar flag.
+	 * - {@see ARRAY_SKIP_EMPTY} — accepts and drops empty elements, so
+	 *   `'a, , b'` parses to `['a', 'b']` instead of falling back to a
+	 *   single-element wrap.  Composable with both flags above.
 	 *
 	 * With `$flags === 0` (the default) the loose grammar applies: a trimmed
 	 * string that begins with `(` or `[` is parsed in place; anything else is
@@ -954,8 +979,8 @@ class TPropertyValue
 	 *
 	 * @param mixed $value the value to be converted.
 	 * @param int $flags zero or more of {@see ARRAY_STRICT_GRAMMAR},
-	 *   {@see ARRAY_STRICT_ERRORS} combined with `|`.  Defaults to `0`
-	 *   (loose grammar, silent fallback).
+	 *   {@see ARRAY_STRICT_ERRORS}, {@see ARRAY_SKIP_EMPTY} combined with `|`.
+	 *   Defaults to `0` (loose grammar, silent fallback, empty elements rejected).
 	 * @throws TInvalidDataValueException when {@see ARRAY_STRICT_ERRORS} is
 	 *   set and the input does not parse.
 	 * @return array
@@ -972,9 +997,10 @@ class TPropertyValue
 		}
 		$strict = ($flags & static::ARRAY_STRICT_GRAMMAR) !== 0;
 		$allowBareParen = $strict && ($flags & static::ARRAY_STRICT_GRAMMAR_ALLOW_BARE_PAREN) !== 0;
-		$parsed = self::_parseArrayLiteral($value, $strict, $allowBareParen);
+		$skipEmpty = ($flags & static::ARRAY_SKIP_EMPTY) !== 0;
+		$parsed = self::_parseArrayLiteral($value, $strict, $allowBareParen, $skipEmpty);
 		if ($parsed === null && !$strict) {
-			$parsed = self::_parseArrayLiteral('(' . $value . ')', false, false);
+			$parsed = self::_parseArrayLiteral('(' . $value . ')', false, false, $skipEmpty);
 		}
 		if ($parsed !== null) {
 			return $parsed;
@@ -990,8 +1016,11 @@ class TPropertyValue
 	 * specified type, with optional per-element transforms and filters.
 	 *
 	 * Input flows through {@see ensureArray()} (CSV string, `[a,b,c]`
-	 * literal, and native array all resolve to the same flat list), then
-	 * each element is coerced to `$type`:
+	 * literal, and native array all resolve to the same flat list); any
+	 * `ARRAY_*` bits in `$flags` ({@see ARRAY_STRICT_GRAMMAR},
+	 * {@see ARRAY_STRICT_ERRORS}, {@see ARRAY_SKIP_EMPTY}, …) are forwarded
+	 * to that call, so one `$flags` value controls both the parse and the
+	 * element pipeline.  Each element is then coerced to `$type`:
 	 *
 	 * - Built-in `TYPE_*` constants (`'string'`, `'int'`, `'float'`, `'bool'`,
 	 *   `'array'`, `'object'`) delegate to the matching `ensure*` helper.
@@ -1135,7 +1164,8 @@ class TPropertyValue
 	 *   {@see FILTER_TRIM_VALUE}, {@see FILTER_TRIM},
 	 *   {@see FILTER_LOWERCASE_KEY}, {@see FILTER_LOWERCASE_VALUE},
 	 *   {@see FILTER_LOWERCASE}, {@see FILTER_NULL}, {@see FILTER_FALSE},
-	 *   {@see FILTER_BLANK}, {@see FILTER_EMPTY}, {@see FILTER_COMPACT_KEY}
+	 *   {@see FILTER_BLANK}, {@see FILTER_EMPTY}, {@see FILTER_COMPACT_KEY},
+	 *   and any `ARRAY_*` parse flag (forwarded to {@see ensureArray()}),
 	 *   combined with `|`.  Defaults to {@see DEFAULT_ARRAY_OF_TYPE} (trim
 	 *   and lowercase both axes, drop empties, compact integer keys).  Pass
 	 *   {@see FILTER_NONE} for raw pass-through.
@@ -1171,7 +1201,7 @@ class TPropertyValue
 		};
 
 		$out = [];
-		foreach (static::ensureArray($value) as $key => $item) {
+		foreach (static::ensureArray($value, $flags & static::ARRAY_FLAGS) as $key => $item) {
 			// 1. Pre-coercion filters.
 			if ($filterNull && $item === null) {
 				continue;
@@ -1414,10 +1444,13 @@ class TPropertyValue
 	 *   {@see ARRAY_LITERAL_PATTERN_STRICT_WITH_PAREN} so the Prado `(...)` form
 	 *   is accepted alongside `[...]` and `array(...)`.  Has no effect when
 	 *   `$strict` is `false` because the loose grammar already accepts `(...)`.
+	 * @param bool $skipEmpty when `true`, the element-list grammar accepts empty
+	 *   elements (leading, consecutive, and trailing commas) and the extraction
+	 *   pass drops them, at every nesting depth.
 	 * @return ?array the parsed array, or `null` on syntax error.
 	 * @since 4.4.0
 	 */
-	private static function _parseArrayLiteral(string $s, bool $strict = false, bool $allowBareParen = false): ?array
+	private static function _parseArrayLiteral(string $s, bool $strict = false, bool $allowBareParen = false, bool $skipEmpty = false): ?array
 	{
 		if ($strict) {
 			$pattern = $allowBareParen
@@ -1425,6 +1458,15 @@ class TPropertyValue
 				: self::ARRAY_LITERAL_PATTERN_STRICT;
 		} else {
 			$pattern = self::ARRAY_LITERAL_PATTERN;
+		}
+		if ($skipEmpty) {
+			// Relax the element-list rule so elements may be absent between
+			// commas; the extraction pass skips the resulting empty slots.
+			$pattern = preg_replace(
+				'/\(\?<elist>.*/',
+				'(?<elist>  (?&elem)? (?: (?&ws) , (?&ws) (?&elem)? )* )',
+				$pattern
+			);
 		}
 		if (!preg_match($pattern, $s)) {
 			return null;
@@ -1435,7 +1477,7 @@ class TPropertyValue
 		// top level; the helper has advanced `$pos` past the keyword when
 		// present so {@see _consumeArray()} has found `(` directly.
 		self::_skipArrayKeyword($s, $pos);
-		return self::_consumeArray($s, $pos, $strict);
+		return self::_consumeArray($s, $pos, $strict, $skipEmpty);
 	}
 
 	/**
@@ -1496,10 +1538,12 @@ class TPropertyValue
 	 * @param bool $strict propagated to nested {@see _consumeValue()} /
 	 *   {@see _consumeKey()} calls so they have skipped the bare-word
 	 *   fallback under strict grammar.
+	 * @param bool $skipEmpty when `true`, empty elements (leading and
+	 *   consecutive commas) are consumed and dropped instead of misparsing.
 	 * @return array the parsed array.
 	 * @since 4.4.0
 	 */
-	private static function _consumeArray(string $s, int &$pos, bool $strict = false): array
+	private static function _consumeArray(string $s, int &$pos, bool $strict = false, bool $skipEmpty = false): array
 	{
 		$len = strlen($s);
 		$close = $s[$pos] === '(' ? ')' : ']';
@@ -1512,19 +1556,25 @@ class TPropertyValue
 		// drift turning into an infinite loop on PHP 8.x's out-of-bounds
 		// string access returning the empty string.
 		while ($pos < $len && $s[$pos] !== $close) {
+			if ($skipEmpty && $s[$pos] === ',') {
+				// Empty element slot — consume the comma and move on.
+				$pos++;
+				self::_skipWs($s, $pos);
+				continue;
+			}
 			$saved = $pos;
 			$key = self::_consumeKey($s, $pos, $strict);
 			self::_skipWs($s, $pos);
 			if ($key !== null && isset($s[$pos + 1]) && $s[$pos] === '=' && $s[$pos + 1] === '>') {
 				$pos += 2;
 				self::_skipWs($s, $pos);
-				$result[$key] = self::_consumeValue($s, $pos, $strict);
+				$result[$key] = self::_consumeValue($s, $pos, $strict, $skipEmpty);
 				if (is_int($key) && $key >= $nextAutoKey) {
 					$nextAutoKey = $key + 1;
 				}
 			} else {
 				$pos = $saved;
-				$result[$nextAutoKey++] = self::_consumeValue($s, $pos, $strict);
+				$result[$nextAutoKey++] = self::_consumeValue($s, $pos, $strict, $skipEmpty);
 			}
 			self::_skipWs($s, $pos);
 			if ($pos < $len && $s[$pos] === ',') {
@@ -1546,14 +1596,16 @@ class TPropertyValue
 	 * @param bool $strict propagated to {@see _consumeArray()} and
 	 *   {@see _consumeScalar()} so the bare-word fallback has been disabled
 	 *   under strict grammar.
+	 * @param bool $skipEmpty propagated to nested {@see _consumeArray()} calls
+	 *   so empty elements are dropped at every depth.
 	 * @return mixed the parsed value.
 	 * @since 4.4.0
 	 */
-	private static function _consumeValue(string $s, int &$pos, bool $strict = false): mixed
+	private static function _consumeValue(string $s, int &$pos, bool $strict = false, bool $skipEmpty = false): mixed
 	{
 		$c = $s[$pos];
 		if ($c === '(' || $c === '[') {
-			return self::_consumeArray($s, $pos, $strict);
+			return self::_consumeArray($s, $pos, $strict, $skipEmpty);
 		}
 		// The `array(...)` keyword form has been recognized at every depth in
 		// both grammars; the helper has advanced `$pos` past `array` and the
@@ -1565,7 +1617,7 @@ class TPropertyValue
 			$saved = $pos;
 			self::_skipArrayKeyword($s, $pos);
 			if ($pos !== $saved) {
-				return self::_consumeArray($s, $pos, $strict);
+				return self::_consumeArray($s, $pos, $strict, $skipEmpty);
 			}
 		}
 		return self::_consumeScalar($s, $pos, $strict);
