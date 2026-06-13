@@ -136,12 +136,13 @@ class TPropertyValue
 	/**
 	 * Flag for {@see ensureArray()} that has restricted the parser to PHP-literal grammar:
 	 * `[...]` or `array(...)` only — no bare `(...)`, no unquoted strings, no legacy octal, no auto-wrap.
-	 * The `ARRAY_*` flags occupy bits above the `FILTER_*` flags so that
-	 * {@see ensureArrayOfType()} accepts both families in one `$flags` value
+	 * The `ARRAY_*` flags occupy the low bits and the `FILTER_*` flags the bits
+	 * above them, keeping the two families disjoint so that
+	 * {@see ensureArrayOfType()} accepts both in one `$flags` value
 	 * and forwards the `ARRAY_*` bits to its internal {@see ensureArray()} call.
 	 * @since 4.4.0
 	 */
-	public const ARRAY_STRICT_GRAMMAR = (1 << 8);
+	public const ARRAY_STRICT_GRAMMAR = (1 << 0);
 
 	/**
 	 * Flag for {@see ensureArray()} that has extended {@see ARRAY_STRICT_GRAMMAR} to also accept
@@ -149,14 +150,14 @@ class TPropertyValue
 	 * {@see ARRAY_STRICT_GRAMMAR}.
 	 * @since 4.4.0
 	 */
-	public const ARRAY_STRICT_GRAMMAR_ALLOW_BARE_PAREN = (1 << 9);
+	public const ARRAY_STRICT_GRAMMAR_ALLOW_BARE_PAREN = (1 << 1);
 
 	/**
 	 * Flag for {@see ensureArray()} that has converted a parse failure from the silent
 	 * single-element wrap into a thrown {@see TInvalidDataValueException}.
 	 * @since 4.4.0
 	 */
-	public const ARRAY_STRICT_ERRORS = (1 << 10);
+	public const ARRAY_STRICT_ERRORS = (1 << 2);
 
 	/**
 	 * Flag for {@see ensureArray()} that has accepted and dropped empty elements
@@ -165,7 +166,7 @@ class TPropertyValue
 	 * at every nesting depth.  Useful for hand-typed CSV configuration values.
 	 * @since 4.4.0
 	 */
-	public const ARRAY_SKIP_EMPTY = (1 << 11);
+	public const ARRAY_SKIP_EMPTY = (1 << 3);
 
 	/**
 	 * Bitmask of every `ARRAY_*` flag — the bits {@see ensureArrayOfType()}
@@ -191,7 +192,7 @@ class TPropertyValue
 	 * Non-strings unaffected.
 	 * @since 4.4.0
 	 */
-	public const FILTER_TRIM_KEY = (1 << 0);
+	public const FILTER_TRIM_KEY = (1 << 4);
 
 	/**
 	 * `trim()` string values.  Used by {@see ensureNullIf()} (pre-emptiness)
@@ -199,7 +200,7 @@ class TPropertyValue
 	 * unaffected.
 	 * @since 4.4.0
 	 */
-	public const FILTER_TRIM_VALUE = (1 << 1);
+	public const FILTER_TRIM_VALUE = (1 << 5);
 
 	/**
 	 * Composite of {@see FILTER_TRIM_KEY} | {@see FILTER_TRIM_VALUE}.
@@ -216,7 +217,7 @@ class TPropertyValue
 	 * lookup indexes.  Integer keys unaffected.
 	 * @since 4.4.0
 	 */
-	public const FILTER_LOWERCASE_KEY = (1 << 2);
+	public const FILTER_LOWERCASE_KEY = (1 << 6);
 
 	/**
 	 * String mutator flag — `strtolower()` the value, applied after
@@ -224,7 +225,7 @@ class TPropertyValue
 	 * {@see ensureArrayOfType()}.  No effect on non-strings.
 	 * @since 4.4.0
 	 */
-	public const FILTER_LOWERCASE_VALUE = (1 << 3);
+	public const FILTER_LOWERCASE_VALUE = (1 << 7);
 
 	/**
 	 * Composite of {@see FILTER_LOWERCASE_KEY} | {@see FILTER_LOWERCASE_VALUE}.
@@ -241,7 +242,7 @@ class TPropertyValue
 	 * the array path the test is short-circuited before coercion runs.
 	 * @since 4.4.0
 	 */
-	public const FILTER_NULL = (1 << 4);
+	public const FILTER_NULL = (1 << 8);
 
 	/**
 	 * Emptiness flag — matches `false`.  In {@see ensureArrayOfType()}
@@ -249,7 +250,7 @@ class TPropertyValue
 	 * coerces to `0`/`''`, and catches a coerced `false` from TYPE_BOOL.
 	 * @since 4.4.0
 	 */
-	public const FILTER_FALSE = (1 << 5);
+	public const FILTER_FALSE = (1 << 9);
 
 	/**
 	 * Emptiness flag — matches a string whose trimmed value is `''`.
@@ -257,7 +258,7 @@ class TPropertyValue
 	 * values bypass this check.
 	 * @since 4.4.0
 	 */
-	public const FILTER_BLANK = (1 << 6);
+	public const FILTER_BLANK = (1 << 10);
 
 	/**
 	 * Renumbers integer keys `0..N-1` in enumeration order in
@@ -266,7 +267,7 @@ class TPropertyValue
 	 * No effect in {@see ensureNullIf()}.
 	 * @since 4.4.0
 	 */
-	public const FILTER_COMPACT_KEY = (1 << 7);
+	public const FILTER_COMPACT_KEY = (1 << 11);
 
 	/**
 	 * Composite of {@see FILTER_NULL} | {@see FILTER_FALSE} | {@see FILTER_BLANK}.
