@@ -28,6 +28,51 @@ class TSocketReactorTest extends PHPUnit\Framework\TestCase
 		$server->close();
 	}
 
+	public function testRegisterServerAcceptsAndRegistersConnections()
+	{
+		$server = TSocketServer::bind('tcp://127.0.0.1:0');
+		$reactor = new TSocketReactor();
+		$messages = [];
+		$reactor->registerServer($server, function ($conn) use (&$messages) {
+			$data = $conn->read(1024);
+			if ($data !== '') {
+				$messages[] = $data;
+			}
+		});
+		self::assertSame(1, $reactor->getSourceCount(), 'Only the listener is registered up front.');
+
+		$client = TSocketStream::connect('tcp://127.0.0.1:' . $server->getPort(), 1.0);
+		$reactor->tick(1.0);                 // listener readable -> accept -> register the connection
+		self::assertSame(2, $reactor->getSourceCount(), 'The accepted connection joins the loop.');
+
+		$client->write('hello');
+		$reactor->tick(1.0);                 // connection readable -> $onData
+		self::assertSame(['hello'], $messages, 'registerServer() wires accept and per-connection reads in one call.');
+
+		$client->close();
+		$server->close();
+	}
+
+	public function testUnregisterServerStopsAccepting()
+	{
+		$server = TSocketServer::bind('tcp://127.0.0.1:0');
+		$reactor = new TSocketReactor();
+		$reactor->registerServer($server, fn () => null);
+		self::assertSame(1, $reactor->getSourceCount());
+
+		$reactor->unregister($server);
+		self::assertFalse($reactor->isRegistered($server), 'The listener leaves the loop.');
+		self::assertSame(0, $reactor->getSourceCount());
+
+		// The listener is no longer watched, so a connecting client is not accepted into the loop.
+		$client = TSocketStream::connect('tcp://127.0.0.1:' . $server->getPort(), 1.0);
+		$reactor->tick(0.1);
+		self::assertSame(0, $reactor->getSourceCount(), 'After unregister, nothing is accepted into the loop.');
+
+		$client->close();
+		$server->close();
+	}
+
 	public function testReadableConnectionDispatchesData()
 	{
 		[$a, $b] = TSocketStream::pair();

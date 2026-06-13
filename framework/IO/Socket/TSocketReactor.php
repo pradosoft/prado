@@ -123,6 +123,28 @@ class TSocketReactor extends TComponent
 	}
 
 	/**
+	 * Watches a listening server and folds its accepted connections into the loop, so the
+	 * accept-then-register path is one call.  This is sugar over {@see register()}: the server is set
+	 * non-blocking and registered with a readable callback that {@see TSocketServer::accept() accepts}
+	 * each pending connection, sets it non-blocking, and registers it with $onData as its readable
+	 * callback.  Nothing is attached to the server, so {@see unregister()} undoes it by removing the
+	 * listener.
+	 * @param TSocketServer $server The listening server.
+	 * @param callable $onData Called with each accepted connection when it has bytes to read.
+	 */
+	public function registerServer(TSocketServer $server, callable $onData): void
+	{
+		$server->setBlocking(false);
+		$this->register($server, onReadable: function () use ($server, $onData): void {
+			$connection = $server->accept(0.0);
+			if ($connection !== null) {
+				$connection->setBlocking(false);
+				$this->register($connection, onReadable: $onData);
+			}
+		});
+	}
+
+	/**
 	 * Schedules a one-shot callback at an absolute time.
 	 * @param float $when The {@see microtime()} timestamp to fire at.
 	 * @param callable $callback The callback to run.
