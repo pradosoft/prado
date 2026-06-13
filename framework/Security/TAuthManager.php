@@ -142,19 +142,19 @@ class TAuthManager extends \Prado\TModule
 	 */
 	public function init($config)
 	{
-		if ($this->_userManager === null) {
+		if ($this->getUserManager() === null) {
 			throw new TConfigurationException('authmanager_usermanager_required');
 		}
-		if ($this->_returnUrlVarName === null) {
-			$this->_returnUrlVarName = $this->getApplication()->getID() . ':' . self::RETURN_URL_VAR;
+		if ($this->getReturnUrlVarName() === null) {
+			$this->setReturnUrlVarName($this->getApplication()->getID() . ':' . self::RETURN_URL_VAR);
 		}
 		$application = $this->getApplication();
-		if (is_string($this->_userManager)) {
-			if (($users = $application->getModule($this->_userManager)) === null) {
-				throw new TConfigurationException('authmanager_usermanager_inexistent', $this->_userManager);
+		if (is_string($this->getUserManager())) {
+			if (($users = $application->getModule($this->getUserManager())) === null) {
+				throw new TConfigurationException('authmanager_usermanager_inexistent', $this->getUserManager());
 			}
 			if (!($users instanceof IUserManager)) {
-				throw new TConfigurationException('authmanager_usermanager_invalid', $this->_userManager);
+				throw new TConfigurationException('authmanager_usermanager_invalid', $this->getUserManager());
 			}
 			$this->_userManager = $users;
 		}
@@ -299,6 +299,25 @@ class TAuthManager extends \Prado\TModule
 		return md5($this->getApplication()->getUniqueID() . 'prado:user');
 	}
 
+	/**
+	 * @return bool whether authorization is skipped for the current request, set
+	 *   by {@see doAuthentication()} when the requested page is the login page.
+	 * @since 4.4.0
+	 */
+	protected function getSkipAuthorization(): bool
+	{
+		return $this->_skipAuthorization;
+	}
+
+	/**
+	 * @param bool $value whether to skip authorization for the current request.
+	 * @since 4.4.0
+	 */
+	protected function setSkipAuthorization(bool $value)
+	{
+		$this->_skipAuthorization = $value;
+	}
+
 	// =========================================================================
 	// Application Lifecycle Event Handlers
 	// =========================================================================
@@ -316,7 +335,7 @@ class TAuthManager extends \Prado\TModule
 
 		$service = $this->getService();
 		if (($service instanceof TPageService) && $service->getRequestedPagePath() === $this->getLoginPage()) {
-			$this->_skipAuthorization = true;
+			$this->setSkipAuthorization(true);
 		}
 	}
 
@@ -329,7 +348,7 @@ class TAuthManager extends \Prado\TModule
 	 */
 	public function doAuthorization($sender, $param)
 	{
-		if (!$this->_skipAuthorization) {
+		if (!$this->getSkipAuthorization()) {
 			$this->onAuthorize($param);
 		}
 	}
@@ -383,17 +402,17 @@ class TAuthManager extends \Prado\TModule
 		// restoring user info from session
 		$this->openSession();
 		$sessionInfo = $this->loadUserState();
-		$user = $this->_userManager->getUser(null)->loadFromString($sessionInfo);
+		$user = $this->getUserManager()->getUser(null)->loadFromString($sessionInfo);
 
 		// check for authentication expiration
-		$isAuthExpired = $this->_authExpire > 0 && !$user->getIsGuest() &&
+		$isAuthExpired = $this->getAuthExpire() > 0 && !$user->getIsGuest() &&
 		($expiretime = $this->getAuthExpireTime()) && $expiretime < time();
 
 		// try authenticating through cookie if possible
 		if ($this->getAllowAutoLogin() && ($user->getIsGuest() || $isAuthExpired)) {
 			$cookie = $this->getRequest()->getCookies()->itemAt($this->getUserKey());
 			if ($cookie instanceof THttpCookie) {
-				if (($user2 = $this->_userManager->getUserFromCookie($cookie)) !== null) {
+				if (($user2 = $this->getUserManager()->getUserFromCookie($cookie)) !== null) {
 					$user = $user2;
 					$this->updateSessionUser($user);
 					// user is restored from cookie, auth may not expire
@@ -408,7 +427,7 @@ class TAuthManager extends \Prado\TModule
 		if ($isAuthExpired) {
 			$this->onAuthExpire($param);
 		} else {
-			$this->setAuthExpireTime(time() + $this->_authExpire);
+			$this->setAuthExpireTime(time() + $this->getAuthExpire());
 		}
 
 		// event handler gets a chance to do further auth work
@@ -476,7 +495,7 @@ class TAuthManager extends \Prado\TModule
 	 */
 	public function switchUser($username)
 	{
-		if (($user = $this->_userManager->getUser($username)) === null) {
+		if (($user = $this->getUserManager()->getUser($username)) === null) {
 			return false;
 		}
 		$this->updateSessionUser($user);
@@ -497,8 +516,8 @@ class TAuthManager extends \Prado\TModule
 	 */
 	public function login($username, #[\SensitiveParameter] $password, $expire = 0)
 	{
-		if ($this->_userManager->validateUser($username, $password)) {
-			if (($user = $this->_userManager->getUser($username)) === null) {
+		if ($this->getUserManager()->validateUser($username, $password)) {
+			if (($user = $this->getUserManager()->getUser($username)) === null) {
 				return false;
 			}
 			$this->updateSessionUser($user);
@@ -507,7 +526,7 @@ class TAuthManager extends \Prado\TModule
 			if ($expire > 0) {
 				$cookie = new THttpCookie($this->getUserKey(), '');
 				$cookie->setExpire(time() + $expire);
-				$this->_userManager->saveUserToCookie($cookie);
+				$this->getUserManager()->saveUserToCookie($cookie);
 				$this->getResponse()->getCookies()->add($cookie);
 			}
 			$this->onLogin($user);
