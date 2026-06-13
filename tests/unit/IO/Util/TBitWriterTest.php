@@ -184,6 +184,78 @@ class TBitWriterTest extends PHPUnit\Framework\TestCase
 		}
 	}
 
+	public function testBigEndianByteOrderIsNoOp()
+	{
+		$s = TStream::fromMemory();
+		$w = new TBitWriter($s);
+		$w->setByteOrder(TByteOrder::BigEndian);
+		$w->writeBits(0x0102, 16);
+		$w->flush();
+		self::assertSame("\x01\x02", $this->dump($s), 'Big-endian leaves the bytes in order.');
+	}
+
+	public function testLittleEndianFlipsWholeByteWidths()
+	{
+		// 24-bit exercises packBytes' 3-byte arm; the wider widths need a 64-bit build.
+		$cases = [[24, 0xAABBCC, "\xCC\xBB\xAA"]];
+		if (PHP_INT_SIZE >= 8) {
+			$cases[] = [40, 0x123456789A, "\x9A\x78\x56\x34\x12"];
+			$cases[] = [48, 0x123456789ABC, "\xBC\x9A\x78\x56\x34\x12"];
+			$cases[] = [56, 0x123456789ABCDE, "\xDE\xBC\x9A\x78\x56\x34\x12"];
+		}
+		foreach ($cases as [$width, $value, $expected]) {
+			$s = TStream::fromMemory();
+			$w = new TBitWriter($s);
+			$w->setByteOrder(TByteOrder::LittleEndian);
+			$w->writeBits($value, $width);
+			$w->flush();
+			self::assertSame($expected, $this->dump($s), "{$width}-bit little-endian");
+		}
+	}
+
+	public function testByteOrderIgnoredForNonByteWidths()
+	{
+		$s = TStream::fromMemory();
+		$w = new TBitWriter($s);
+		$w->setByteOrder(TByteOrder::LittleEndian);
+		$w->writeBits(0xABC, 12);                 // not a whole-byte width: no reversal
+		$w->flush();
+		self::assertSame("\xAB\xC0", $this->dump($s));
+	}
+
+	public function testFloat8RoundTrip()
+	{
+		$s = TStream::fromMemory();
+		$w = new TBitWriter($s);
+		$w->writeBits(0.5, 8, TBitFieldFormat::Float);
+		$w->flush();
+		self::assertSame(1, strlen($this->dump($s)), 'An 8-bit float is one byte.');
+		$r = new TBitReader(TStream::fromString($this->dump($s)));
+		self::assertEqualsWithDelta(0.5, $r->readBits(8, TBitFieldFormat::Float), 1e-6);
+	}
+
+	public function testFloat64RoundTrip()
+	{
+		if (PHP_INT_SIZE < 8) {
+			self::markTestSkipped('64-bit floats require a 64-bit PHP build.');
+		}
+		$s = TStream::fromMemory();
+		$w = new TBitWriter($s);
+		$w->writeBits(0.5, 64, TBitFieldFormat::Float);
+		$w->flush();
+		$r = new TBitReader(TStream::fromString($this->dump($s)));
+		self::assertSame(0.5, $r->readBits(64, TBitFieldFormat::Float));
+	}
+
+	public function testWideFieldOn32BitPhpThrows()
+	{
+		if (PHP_INT_SIZE >= 8) {
+			self::markTestSkipped('Requires a 32-bit PHP build (where 33-64 bit fields are rejected).');
+		}
+		self::expectException(TInvalidDataValueException::class);
+		(new TBitWriter(TStream::fromMemory()))->writeBits(0, 40);
+	}
+
 	public function testWritesWideFieldAcrossAPartialBuffer()
 	{
 		// 4 pending bits then a 60-bit field exercises the batched emit after a partial byte.

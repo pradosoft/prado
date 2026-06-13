@@ -183,6 +183,46 @@ class TBitReaderTest extends PHPUnit\Framework\TestCase
 		self::assertSame(0x123456789ABCDE, $this->reader("\x12\x34\x56\x78\x9A\xBC\xDE")->readBits(56));
 	}
 
+	public function testReadsWholeByteWidthsViaFastPath()
+	{
+		// Byte-aligned whole-byte reads take the fast path (no consume loop).
+		self::assertSame(0xAB, $this->reader("\xAB")->readBits(8));
+		self::assertSame(0xAABBCC, $this->reader("\xAA\xBB\xCC")->readBits(24));
+	}
+
+	public function testLittleEndianFlipsWideWholeByteWidths()
+	{
+		if (PHP_INT_SIZE < 8) {
+			self::markTestSkipped('Fields wider than 32 bits require a 64-bit PHP build.');
+		}
+		foreach ([
+			[40, "\x12\x34\x56\x78\x9A", 0x9A78563412],
+			[48, "\x12\x34\x56\x78\x9A\xBC", 0xBC9A78563412],
+			[56, "\x12\x34\x56\x78\x9A\xBC\xDE", 0xDEBC9A78563412],
+		] as [$width, $bytes, $expected]) {
+			$r = $this->reader($bytes);
+			$r->setByteOrder(TByteOrder::LittleEndian);
+			self::assertSame($expected, $r->readBits($width), "{$width}-bit little-endian");
+		}
+	}
+
+	public function testLSBFirstWholeByteWidth()
+	{
+		// Each byte is mirrored: 0xAA->0x55, 0xBB->0xDD, 0xCC->0x33.
+		$r = $this->reader("\xAA\xBB\xCC");
+		$r->setLSBFirst(true);
+		self::assertSame(0x55DD33, $r->readBits(24));
+	}
+
+	public function testWideFieldOn32BitPhpThrows()
+	{
+		if (PHP_INT_SIZE >= 8) {
+			self::markTestSkipped('Requires a 32-bit PHP build (where 33-64 bit fields are rejected).');
+		}
+		self::expectException(TInvalidDataValueException::class);
+		$this->reader("\x00\x00\x00\x00\x00")->readBits(40);
+	}
+
 	public function testReadsWideFieldAcrossAPartialBuffer()
 	{
 		// A 4-bit read leaves 4 bits buffered, then a 56-bit read spans the leftover plus a

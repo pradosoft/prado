@@ -34,6 +34,10 @@ use Prado\IO\TStream;
  */
 class TSocketStream extends TStream
 {
+	// =========================================================================
+	// Socket Setup
+	// =========================================================================
+
 	/**
 	 * Connects a client socket with {@see stream_socket_client()}.
 	 * @param string $uri The endpoint, e.g. 'tcp://127.0.0.1:80', 'tls://host:443',
@@ -114,6 +118,10 @@ class TSocketStream extends TStream
 		return [$first, $second];
 	}
 
+	// =========================================================================
+	// Addresses
+	// =========================================================================
+
 	/**
 	 * Returns the remote (peer) address.
 	 * @return ?TSocketAddress The remote (peer) address, or null when unavailable.
@@ -146,6 +154,10 @@ class TSocketStream extends TStream
 		$name = @stream_socket_get_name($resource, $remote);
 		return ($name === false || $name === '') ? null : TSocketAddress::parse($name);
 	}
+
+	// =========================================================================
+	// Datagram and Out-of-Band I/O
+	// =========================================================================
 
 	/**
 	 * Receives data, optionally with flags and the peer address (connectionless).
@@ -201,6 +213,10 @@ class TSocketStream extends TStream
 		return $this->sendTo($data, STREAM_OOB);
 	}
 
+	// =========================================================================
+	// TLS
+	// =========================================================================
+
 	/**
 	 * Turns encryption on or off ({@see stream_socket_enable_crypto()}).
 	 * @param bool $enable Whether to enable (true) or disable (false) crypto.
@@ -217,6 +233,33 @@ class TSocketStream extends TStream
 			? stream_socket_enable_crypto($resource, $enable)
 			: stream_socket_enable_crypto($resource, $enable, $method);
 	}
+
+	/**
+	 * Returns the TLS crypto metadata negotiated on the connection (protocol, cipher, ALPN).
+	 * @return array The `crypto` block of the stream metadata, or [] when the connection is not encrypted.
+	 */
+	public function getCryptoMeta(): array
+	{
+		$crypto = $this->getMetadata('crypto');
+		return is_array($crypto) ? $crypto : [];
+	}
+
+	/**
+	 * Returns the ALPN protocol negotiated during the TLS handshake (e.g. 'h2', 'http/1.1').
+	 * A client confirms the server's choice and a server reads the client's; HTTP/2 over TLS
+	 * requires 'h2'.
+	 * @return ?string The negotiated ALPN protocol, or null when none was negotiated or the
+	 *   connection is not encrypted.
+	 */
+	public function getAlpnProtocol(): ?string
+	{
+		$alpn = $this->getCryptoMeta()['alpn_protocol'] ?? null;
+		return ($alpn === null || $alpn === '') ? null : $alpn;
+	}
+
+	// =========================================================================
+	// Shutdown
+	// =========================================================================
 
 	/**
 	 * Shuts down reception and/or transmission on the socket.
@@ -236,6 +279,10 @@ class TSocketStream extends TStream
 		return $result;
 	}
 
+	// =========================================================================
+	// Transport Availability
+	// =========================================================================
+
 	/**
 	 * Lists the transports available in this PHP build.
 	 * @return array The transports available in this PHP build ({@see stream_get_transports()}).
@@ -254,6 +301,10 @@ class TSocketStream extends TStream
 	{
 		return in_array($transport, stream_get_transports(), true);
 	}
+
+	// =========================================================================
+	// Events
+	// =========================================================================
 
 	/**
 	 * Raised after a connection is established.
