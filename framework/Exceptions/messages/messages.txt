@@ -670,6 +670,9 @@ dbcron_connectionid_invalid				= TDbCronManager.ConnectionID '{0}' is not a TDat
 
 timescheduler_invalid_string			= TTimeScheduler could not parse the schedule element '{0}'
 
+time_invalid_datetime					= TTime DateTime must be a DateTimeInterface, DateInterval, string, or numeric value; {0} given.
+time_invalid_text_format				= TTime TextFormat '{0}' is not a TTimeFormat constant name or ICU datetime pattern.
+
 rational_bad_offset						= "{0}" is not a valid property accessor of TRational.
 
 bithelper_bad_fp_format					= TBitHelper cannot work with '{0}' exponent bits, '{1}' mantissa bits, '{2}' exponent bias, in a {3} bit PHP environment.
