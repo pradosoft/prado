@@ -302,6 +302,17 @@ class TPropertyValue
 		| self::FILTER_COMPACT_KEY;
 
 	/**
+	 * Default flags for parsing a configuration-supplied list via
+	 * {@see ensureArrayOfType()}: {@see DEFAULT_ARRAY_OF_TYPE} plus
+	 * {@see ARRAY_SKIP_EMPTY}, so hand-typed values tolerate empty elements
+	 * (leading, doubled, or trailing commas) at parse time.  Use this for any
+	 * property setter that accepts a comma list from XML/PHP configuration.
+	 * @since 4.4.0
+	 */
+	public const CONFIG_ARRAY_OF_TYPE = self::DEFAULT_ARRAY_OF_TYPE
+		| self::ARRAY_SKIP_EMPTY;
+
+	/**
 	 * Step-11 fallback order for {@see _coerceUnionType}: non-null union members are tried in this
 	 * sequence — int → float → string → bool → aggregate/catch-all — so resolution is deterministic
 	 * regardless of reflection order.  `null` is absent; step 1 handles it before any fallback.
