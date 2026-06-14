@@ -855,6 +855,8 @@ return [
 'TTextBoxMode' => 'Prado\Web\UI\WebControls\TTextBoxMode',
 'TTextHighlighter' => 'Prado\Web\UI\WebControls\TTextHighlighter',
 'TTextProcessor' => 'Prado\Web\UI\WebControls\TTextProcessor',
+'TTime' => 'Prado\Web\UI\WebControls\TTime',
+'TTimeFormat' => 'Prado\Web\UI\WebControls\TTimeFormat',
 'TValidationCompareOperator' => 'Prado\Web\UI\WebControls\TValidationCompareOperator',
 'TValidationDataType' => 'Prado\Web\UI\WebControls\TValidationDataType',
 'TValidationSummary' => 'Prado\Web\UI\WebControls\TValidationSummary',
