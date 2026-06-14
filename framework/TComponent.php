@@ -1133,6 +1133,10 @@ class TComponent
 	 * last '.' splits off the property name to set; the preceding path resolves
 	 * via {@see getSubProperty}, so it may walk behaviors, e.g. '@cache.Expire'
 	 * sets the 'Expire' of the behavior named 'cache'.
+	 *
+	 * A path that terminates in an '@' behavior hop (the segment after the last
+	 * '.' contains an '@', e.g. '@cache' or 'a@cache') addresses a behavior, not a
+	 * settable property, so the call is a no-op.
 	 * @param string $path property path
 	 * @param mixed $value the property path value
 	 */
@@ -1145,7 +1149,111 @@ class TComponent
 			$object = $this->getSubProperty(substr($path, 0, $pos));
 			$property = substr($path, $pos + 1);
 		}
+		if (strpos($property, '@') !== false) {
+			return; // the path terminates in an '@' behavior hop — nothing to set
+		}
 		TPropertyValue::applyProperty($object, $property, $value);
+	}
+
+	/**
+	 * Sets a map of property paths in structural order, so a parent path is always
+	 * applied before any path nested beneath it. The map is `path => value`, each
+	 * path using the '.'/'@' grammar of {@see setSubProperty}.
+	 *
+	 * Application order is a pre-order walk of the path tree: a node's own
+	 * properties precede its descendants; at each node the '@' behavior subtree
+	 * (the inner pattern) precedes the '.' subproperty subtree (the outer pattern);
+	 * paths that share neither separator nor name at a position keep their
+	 * declaration order. This guarantees the object reached by a deeper path
+	 * (`object.inner.child.prop` or `object@behavior@inner.prop`) is already set
+	 * before the deeper write resolves through it.
+	 * @param array $properties the `path => value` map to apply.
+	 * @since 4.4.0
+	 */
+	public function setSubProperties(array $properties): void
+	{
+		if (count($properties) > 1) {
+			$properties = self::sortPropertyPaths($properties);
+		}
+		foreach ($properties as $path => $value) {
+			$this->setSubProperty($path, $value);
+		}
+	}
+
+	/**
+	 * Splits a property path into ordered `[separator, name]` segments. The first
+	 * segment's separator is '.' unless the path opens with '@'; each later
+	 * segment carries the '.' or '@' that introduces it.
+	 * @param string $path the property path.
+	 * @return array<int,array{0:string,1:string}> the path segments in order.
+	 * @since 4.4.0
+	 */
+	protected static function tokenizePropertyPath(string $path): array
+	{
+		$segments = [];
+		$len = strlen($path);
+		$start = 0;
+		$sep = '.';
+		if ($len && $path[0] === '@') {
+			$sep = '@';
+			$start = 1;
+		}
+		while ($start <= $len) {
+			$nameLen = strcspn($path, '.@', $start);
+			$segments[] = [$sep, substr($path, $start, $nameLen)];
+			$next = $start + $nameLen;
+			$sep = $path[$next] ?? '.';
+			$start = $next + 1;
+		}
+		return $segments;
+	}
+
+	/**
+	 * Reorders a `path => value` map into the structural application order used by
+	 * {@see setSubProperties}. Each path is keyed by its segment sequence — every
+	 * segment contributing `[separatorRank, siblingOrdinal]` where '@' ranks
+	 * before '.' and the ordinal is the declaration order of that node among its
+	 * siblings — and the keys are compared lexicographically with a shorter
+	 * (ancestor) key sorting before the longer key that extends it.
+	 * @param array $properties the `path => value` map.
+	 * @return array the map reordered for application.
+	 * @since 4.4.0
+	 */
+	protected static function sortPropertyPaths(array $properties): array
+	{
+		$ordinals = [];   // nodeId => ordinal among its parent's children
+		$childCount = []; // parent nodeId => next ordinal
+		$entries = [];
+		foreach ($properties as $path => $value) {
+			$sortKey = [];
+			$prefix = '';
+			foreach (self::tokenizePropertyPath((string) $path) as [$sep, $name]) {
+				$nodeId = $prefix . "\0" . $sep . "\0" . $name;
+				if (!isset($ordinals[$nodeId])) {
+					$ordinals[$nodeId] = $childCount[$prefix] ?? 0;
+					$childCount[$prefix] = $ordinals[$nodeId] + 1;
+				}
+				$sortKey[] = [$sep === '@' ? 0 : 1, $ordinals[$nodeId]];
+				$prefix = $nodeId;
+			}
+			$entries[] = ['path' => $path, 'value' => $value, 'key' => $sortKey];
+		}
+		usort($entries, static function ($a, $b) {
+			$ka = $a['key'];
+			$kb = $b['key'];
+			$n = min(count($ka), count($kb));
+			for ($i = 0; $i < $n; $i++) {
+				if (($r = $ka[$i][0] <=> $kb[$i][0]) !== 0 || ($r = $ka[$i][1] <=> $kb[$i][1]) !== 0) {
+					return $r;
+				}
+			}
+			return count($ka) <=> count($kb); // ancestor (shorter) before descendant
+		});
+		$result = [];
+		foreach ($entries as $entry) {
+			$result[$entry['path']] = $entry['value'];
+		}
+		return $result;
 	}
 
 	/**
