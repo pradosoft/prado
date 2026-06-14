@@ -11,6 +11,8 @@
 namespace Prado\IO;
 
 use Prado\Exceptions\TIOException;
+use Prado\IO\Filter\TStreamFilter;
+use Prado\IO\Filter\TStreamFilterHandle;
 use Prado\Prado;
 use Psr\Http\Message\StreamInterface;
 
@@ -45,8 +47,8 @@ use Psr\Http\Message\StreamInterface;
  * Native PHP stream filters attach through {@see appendFilter()},
  * {@see prependFilter()}, and {@see removeFilter()}; compression and transforms
  * (such as zlib.inflate) apply as filters. Attached filters are inspected by name
- * or handle with {@see hasFilter()}, {@see getFilterIndex()}, {@see getFilters()},
- * and {@see getFilterNames()}.
+ * or handle with {@see hasFilter()}, {@see getFilterIndex()}, {@see getFilterHandle()},
+ * {@see getFilters()}, and {@see getFilterNames()}.
  *
  * Events ('on' prefix), in addition to those from {@see TResource}. Each is a real
  * method taking a single mixed $param:
@@ -81,8 +83,12 @@ class TStream extends TResource implements StreamInterface
 	/** @var ?string The stream URI from metadata, or null. */
 	private ?string $_uri = null;
 
-	/** @var array<int, array{name: string, filter: resource}> Attached filters, in stack order (front first). */
+	/** @var array<int, TStreamFilterHandle> Attached filter handles, in stack order (front first). */
 	private array $_filters = [];
+
+	// =========================================================================
+	// Resource Lifecycle
+	// =========================================================================
 
 	/**
 	 * Adopts an open stream resource and derives its capabilities from the mode.
@@ -157,9 +163,9 @@ class TStream extends TResource implements StreamInterface
 		$this->setURIDirect(null);
 	}
 
-	//
-	// ─── Self-encapsulated raw accessors ─────────────────────────────────────
-	//
+	// =========================================================================
+	// Self-encapsulated raw accessors
+	// =========================================================================
 
 	/**
 	 * Returns the raw readable flag.
@@ -252,8 +258,8 @@ class TStream extends TResource implements StreamInterface
 	}
 
 	/**
-	 * Returns the raw attached-filter list (name/handle entries, in stack order).
-	 * @return array<int, array{name: string, filter: resource}> The raw filter list.
+	 * Returns the raw attached-filter handles, in stack order (front first).
+	 * @return array<int, TStreamFilterHandle> The raw filter handles.
 	 */
 	protected function getFiltersDirect(): array
 	{
@@ -261,37 +267,34 @@ class TStream extends TResource implements StreamInterface
 	}
 
 	/**
-	 * Sets the raw attached-filter list.
-	 * @param array<int, array{name: string, filter: resource}> $value The raw filter list.
+	 * Sets the raw attached-filter handles.
+	 * @param array<int, TStreamFilterHandle> $value The raw filter handles.
 	 */
 	protected function setFiltersDirect(array $value): void
 	{
 		$this->_filters = $value;
 	}
 
-	//
-	// ─── PSR-7 StreamInterface ───────────────────────────────────────────────
-	//
+	// =========================================================================
+	// PSR-7 StreamInterface
+	// =========================================================================
 
 	/**
-	 * Reads the whole stream to a string, swallowing throwables (PSR-7 1.x contract).
-	 * @return string The entire stream contents, or '' on any error.
+	 * Reads the whole stream to a string from the beginning.  A read failure propagates, as in
+	 * Guzzle on PHP 7.4+; this deviates from PSR-7's "MUST NOT throw" for diagnosability.
+	 * @return string The entire stream contents.
 	 * @see StreamInterface::__toString()
 	 */
 	public function __toString(): string
 	{
-		try {
-			if ($this->isSeekable()) {
-				try {
-					$this->seek(0);
-				} catch (\Throwable $e) {
-					// a behavior may forbid the seek; read from the current position
-				}
+		if ($this->isSeekable()) {
+			try {
+				$this->seek(0);
+			} catch (\Throwable $e) {
+				// a behavior may forbid the seek; read from the current position
 			}
-			return $this->getContents();
-		} catch (\Throwable $e) {
-			return '';
 		}
+		return $this->getContents();
 	}
 
 	/**
@@ -508,9 +511,9 @@ class TStream extends TResource implements StreamInterface
 		return $contents;
 	}
 
-	//
-	// ─── Prado property accessors ────────────────────────────────────────────
-	//
+	// =========================================================================
+	// Prado property accessors
+	// =========================================================================
 
 	/**
 	 * Returns the stream URI (the ->URI property).
@@ -521,98 +524,149 @@ class TStream extends TResource implements StreamInterface
 		return $this->getURIDirect();
 	}
 
-	//
-	// ─── Stream filters (native PHP) ─────────────────────────────────────────
-	//
+	// =========================================================================
+	// Stream filters (native PHP)
+	// =========================================================================
 
 	/**
-	 * Appends a filter to this stream ({@see stream_filter_append()}).  The
-	 * returned handle is retained so it can be passed to {@see removeFilter()}.
-	 * @param string $name The registered filter name (e.g. 'zlib.inflate').
-	 * @param int $mode STREAM_FILTER_READ, STREAM_FILTER_WRITE or STREAM_FILTER_ALL.
-	 * @param mixed $params Optional parameters passed to the filter.
-	 * @return mixed The filter handle, or false on failure.
+	 * Resolves a filter argument to a registered name and a concrete mode.  A {@see TStreamFilter}
+	 * subclass class-string is registered once and replaced by its {@see TStreamFilter::getFilterName()},
+	 * and its mode defaults to {@see TStreamFilter::getDefaultMode()}.  A plain filter-name string
+	 * passes through unchanged, and its mode defaults to STREAM_FILTER_ALL.
+	 * @param string $name A registered filter name or a {@see TStreamFilter} subclass.
+	 * @param ?int $mode The requested mode, or null for the default.
+	 * @return array{0: string, 1: int} The resolved [name, mode].
 	 */
-	public function appendFilter(string $name, int $mode = STREAM_FILTER_ALL, mixed $params = null): mixed
+	protected function resolveFilter(string $name, ?int $mode): array
 	{
-		$resource = $this->getResourceDirect();
-		if (!is_resource($resource)) {
-			return false;
+		if (is_a($name, TStreamFilter::class, true)) {
+			$name::registerOnce();
+			$mode ??= $name::getDefaultMode();
+			$name = $name::getFilterName();
 		}
-		$filter = $params === null
-			? stream_filter_append($resource, $name, $mode)
-			: stream_filter_append($resource, $name, $mode, $params);
-		if ($filter !== false) {
-			$filters = $this->getFiltersDirect();
-			$filters[] = ['name' => $name, 'filter' => $filter];
-			$this->setFiltersDirect($filters);
-		}
-		return $filter;
+		return [$name, $mode ?? STREAM_FILTER_ALL];
 	}
 
 	/**
-	 * Prepends a filter to this stream ({@see stream_filter_prepend()}).
-	 * @param string $name The registered filter name.
-	 * @param int $mode STREAM_FILTER_READ, STREAM_FILTER_WRITE or STREAM_FILTER_ALL.
+	 * Prepends a filter to this stream ({@see stream_filter_prepend()}).  $name may be a
+	 * registered filter name or a {@see TStreamFilter} subclass class-string, which is
+	 * auto-registered and supplies its own default mode (see {@see resolveFilter()}).
+	 * @param string $name A registered filter name or a {@see TStreamFilter} subclass.
+	 * @param ?int $mode STREAM_FILTER_READ, STREAM_FILTER_WRITE or STREAM_FILTER_ALL; null uses the filter's default.
 	 * @param mixed $params Optional parameters passed to the filter.
-	 * @return mixed The filter handle, or false on failure.
+	 * @return mixed The {@see TStreamFilterHandle}, or false on failure.
 	 */
-	public function prependFilter(string $name, int $mode = STREAM_FILTER_ALL, mixed $params = null): mixed
+	public function prependFilter(string $name, ?int $mode = null, mixed $params = null): mixed
 	{
 		$resource = $this->getResourceDirect();
 		if (!is_resource($resource)) {
 			return false;
 		}
+		[$name, $mode] = $this->resolveFilter($name, $mode);
 		$filter = $params === null
 			? stream_filter_prepend($resource, $name, $mode)
 			: stream_filter_prepend($resource, $name, $mode, $params);
-		if ($filter !== false) {
-			$filters = $this->getFiltersDirect();
-			array_unshift($filters, ['name' => $name, 'filter' => $filter]);
-			$this->setFiltersDirect($filters);
+		if ($filter === false) {
+			return false;
 		}
-		return $filter;
+		$handle = Prado::createComponent(TStreamFilterHandle::class, $filter, $name, $this);
+		$filters = $this->getFiltersDirect();
+		array_unshift($filters, $handle);
+		$this->setFiltersDirect($filters);
+		return $handle;
 	}
 
 	/**
-	 * Removes a previously appended/prepended filter ({@see stream_filter_remove()}), by
-	 * filter handle or by name.  A name removes the first attached filter that bears it.
-	 * @param resource|string $filter A filter handle from append/prepend, or a filter name.
-	 * @return bool Whether a filter was removed.
+	 * Appends a filter to this stream ({@see stream_filter_append()}).  The returned handle is
+	 * retained so it can be passed to {@see removeFilter()}.  $name may be a registered filter
+	 * name or a {@see TStreamFilter} subclass class-string, which is auto-registered and
+	 * supplies its own default mode (see {@see resolveFilter()}).
+	 * @param string $name A registered filter name (e.g. 'zlib.inflate') or a {@see TStreamFilter} subclass.
+	 * @param ?int $mode STREAM_FILTER_READ, STREAM_FILTER_WRITE or STREAM_FILTER_ALL; null uses the filter's default.
+	 * @param mixed $params Optional parameters passed to the filter.
+	 * @return mixed The {@see TStreamFilterHandle}, or false on failure.
+	 */
+	public function appendFilter(string $name, ?int $mode = null, mixed $params = null): mixed
+	{
+		$resource = $this->getResourceDirect();
+		if (!is_resource($resource)) {
+			return false;
+		}
+		[$name, $mode] = $this->resolveFilter($name, $mode);
+		$filter = $params === null
+			? stream_filter_append($resource, $name, $mode)
+			: stream_filter_append($resource, $name, $mode, $params);
+		if ($filter === false) {
+			return false;
+		}
+		$handle = Prado::createComponent(TStreamFilterHandle::class, $filter, $name, $this);
+		$filters = $this->getFiltersDirect();
+		$filters[] = $handle;
+		$this->setFiltersDirect($filters);
+		return $handle;
+	}
+
+	/**
+	 * Removes an attached filter: detaches it ({@see stream_filter_remove()}) and untracks it.  This
+	 * is the source of truth for removal, paired with {@see appendFilter()}/{@see prependFilter()};
+	 * {@see TStreamFilterHandle::remove()} routes here.  The filter is identified by
+	 * {@see TStreamFilterHandle}, by name (the first filter that bears it), or by raw resource.
+	 * @param mixed $filter A {@see TStreamFilterHandle}, a filter name, or a raw filter resource.
+	 * @return bool Whether a live filter was detached.
 	 */
 	public function removeFilter(mixed $filter): bool
 	{
-		if (is_string($filter)) {
-			$index = $this->getFilterIndex($filter);
-			if ($index === null) {
-				return false;
-			}
-			$filter = $this->getFiltersDirect()[$index]['filter'];
-		}
-		if (!is_resource($filter)) {
+		$handle = $this->getFilterHandle($filter);
+		if ($handle === null) {
 			return false;
 		}
-		$result = stream_filter_remove($filter);
-		if ($result) {
-			$filters = $this->getFiltersDirect();
-			foreach ($filters as $key => $entry) {
-				if ($entry['filter'] === $filter) {
-					unset($filters[$key]);
-					break;
-				}
-			}
-			$this->setFiltersDirect(array_values($filters));
+		$resource = $handle->getResource();
+		$removed = is_resource($resource) && stream_filter_remove($resource);
+		$handle->markRemoved();
+		$this->forgetFilter($handle);
+		return $removed;
+	}
+
+	/**
+	 * Untracks a filter without detaching it, by {@see TStreamFilterHandle}, name, or raw
+	 * resource.  A filter that is not tracked here is ignored.  {@see removeFilter()} calls this
+	 * after detaching; called on its own it only untracks (for a filter detached by other means).
+	 * @param mixed $filter A {@see TStreamFilterHandle}, a filter name, or a raw filter resource.
+	 */
+	public function forgetFilter(mixed $filter): void
+	{
+		$handle = ($filter instanceof TStreamFilterHandle) ? $filter : $this->getFilterHandle($filter);
+		if ($handle === null) {
+			return;
 		}
-		return $result;
+		$filters = $this->getFiltersDirect();
+		foreach ($filters as $key => $tracked) {
+			if ($tracked === $handle) {
+				unset($filters[$key]);
+				break;
+			}
+		}
+		$this->setFiltersDirect(array_values($filters));
+	}
+
+	/**
+	 * Returns the tracked {@see TStreamFilterHandle} for a handle, name, or raw resource.
+	 * @param mixed $filter A {@see TStreamFilterHandle}, a filter name, or a raw filter resource.
+	 * @return ?TStreamFilterHandle The tracked handle, or null when not attached.
+	 */
+	public function getFilterHandle(mixed $filter): ?TStreamFilterHandle
+	{
+		$index = $this->getFilterIndex($filter);
+		return $index === null ? null : $this->getFiltersDirect()[$index];
 	}
 
 	/**
 	 * Returns the filter handles attached to this stream, in stack order (front first).
-	 * @return array<int, resource> The attached filter handles.
+	 * @return array<int, TStreamFilterHandle> The attached filter handles.
 	 */
 	public function getFilters(): array
 	{
-		return array_map(static fn (array $entry) => $entry['filter'], $this->getFiltersDirect());
+		return $this->getFiltersDirect();
 	}
 
 	/**
@@ -621,12 +675,12 @@ class TStream extends TResource implements StreamInterface
 	 */
 	public function getFilterNames(): array
 	{
-		return array_map(static fn (array $entry) => $entry['name'], $this->getFiltersDirect());
+		return array_map(static fn (TStreamFilterHandle $handle) => $handle->getName(), $this->getFiltersDirect());
 	}
 
 	/**
-	 * Indicates whether a filter is attached to this stream, by name or by handle.
-	 * @param resource|string $filter A filter name (e.g. 'zlib.inflate') or a handle from append/prepend.
+	 * Indicates whether a filter is attached to this stream, by handle, name, or raw resource.
+	 * @param mixed $filter A {@see TStreamFilterHandle}, a filter name, or a raw filter resource.
 	 * @return bool Whether a matching filter is attached.
 	 */
 	public function hasFilter(mixed $filter): bool
@@ -635,18 +689,22 @@ class TStream extends TResource implements StreamInterface
 	}
 
 	/**
-	 * Returns the stack position of a filter, by name or by handle.  Index 0 is the
-	 * front of the stack (the most-recently prepended); a name matches the first such
-	 * filter.  Distinct from the static {@see filterExists()}, which reports whether a
-	 * filter is registered in the process.
-	 * @param resource|string $filter A filter name or a handle from append/prepend.
+	 * Returns the stack position of a filter, by handle, name, or raw resource.  Index 0 is the
+	 * front of the stack (the most-recently prepended); a name matches the first such filter.
+	 * Distinct from the static {@see filterExists()}, which reports whether a filter is
+	 * registered in the process.
+	 * @param mixed $filter A {@see TStreamFilterHandle}, a filter name, or a raw filter resource.
 	 * @return ?int The 0-based position, or null when not attached.
 	 */
 	public function getFilterIndex(mixed $filter): ?int
 	{
-		$byName = is_string($filter);
-		foreach ($this->getFiltersDirect() as $index => $entry) {
-			if ($byName ? $entry['name'] === $filter : $entry['filter'] === $filter) {
+		foreach ($this->getFiltersDirect() as $index => $handle) {
+			$match = match (true) {
+				$filter instanceof TStreamFilterHandle => $handle === $filter,
+				is_string($filter) => $handle->getName() === $filter,
+				default => is_resource($filter) && $handle->getResource() === $filter,
+			};
+			if ($match) {
 				return $index;
 			}
 		}
@@ -672,9 +730,9 @@ class TStream extends TResource implements StreamInterface
 		return in_array($name, stream_get_filters(), true);
 	}
 
-	//
-	// ─── Named constructors & coercion ───────────────────────────────────────
-	//
+	// =========================================================================
+	// Named constructors & coercion
+	// =========================================================================
 
 	/**
 	 * Coerces a value into a TStream (or returns a StreamInterface unchanged).
@@ -715,11 +773,21 @@ class TStream extends TResource implements StreamInterface
 	 */
 	public static function fromFile(string $filename, string $mode = 'rb', bool $useIncludePath = false, mixed $context = null): self
 	{
-		$resource = $context === null
-			? @fopen($filename, $mode, $useIncludePath)
-			: @fopen($filename, $mode, $useIncludePath, $context);
+		// Capture the underlying open error (the reason: permission, missing file) like Guzzle's tryFopen.
+		$reason = '';
+		set_error_handler(static function (int $errno, string $errstr) use (&$reason): bool {
+			$reason = $errstr;
+			return true;
+		});
+		try {
+			$resource = $context === null
+				? fopen($filename, $mode, $useIncludePath)
+				: fopen($filename, $mode, $useIncludePath, $context);
+		} finally {
+			restore_error_handler();
+		}
 		if ($resource === false) {
-			throw new TIOException('stream_open_failed', $filename, $mode);
+			throw new TIOException('stream_open_failed', $filename, $mode, $reason);
 		}
 		return Prado::createComponent(self::class, $resource);
 	}
@@ -783,9 +851,9 @@ class TStream extends TResource implements StreamInterface
 		return TStreamResourceWrapper::getResource($stream);
 	}
 
-	//
-	// ─── Events ──────────────────────────────────────────────────────────────
-	//
+	// =========================================================================
+	// Events
+	// =========================================================================
 
 	/**
 	 * Raised at the first read that reaches end of file.
@@ -804,6 +872,10 @@ class TStream extends TResource implements StreamInterface
 	{
 		$this->raiseEvent('onSeek', $this, $param);
 	}
+
+	// =========================================================================
+	// Serialization
+	// =========================================================================
 
 	/**
 	 * Filter handles are PHP resources and cannot be serialized; the capability
