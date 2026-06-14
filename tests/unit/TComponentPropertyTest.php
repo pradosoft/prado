@@ -463,6 +463,64 @@ class TComponentPropertyTest extends TComponentTestBase
 		$this->assertEquals('set-deep', $inner->Excitement);
 	}
 
+	/**
+	 * A path terminating in an '@' behavior hop addresses a behavior, not a
+	 * settable property, so setSubProperty is a no-op.
+	 */
+	public function testSetSubPropertyTerminalAtIsNoop()
+	{
+		$this->component->setText('default');
+		$this->component->setSubProperty('Text@foo', 'changed'); // terminal '@' segment
+		$this->assertSame('default', $this->component->getText());
+		// Bare behavior address and a deeper behavior terminal also no-op.
+		$this->component->setSubProperty('@beh', 'x');
+		$this->component->setSubProperty('Object@ob', 'x');
+		$this->assertTrue(true); // no exception raised
+	}
+
+	public function testSetSubPropertiesAppliesAll()
+	{
+		$behavior = new BehaviorTestBehavior();
+		$this->component->attachBehavior('beh', $behavior);
+		$this->component->setSubProperties([
+			'Object.Text' => 'deep',
+			'Text' => 'top',
+			'@beh.Excitement' => 'e',
+		]);
+		$this->assertSame('top', $this->component->getText());
+		$this->assertSame('deep', $this->component->getObject()->getText());
+		$this->assertSame('e', $behavior->Excitement);
+	}
+
+	/**
+	 * sortPropertyPaths orders ancestors before descendants, '@' before '.' at a
+	 * divergence, and same-separator siblings in declaration order.
+	 */
+	public function testSortPropertyPathsStructuralOrder()
+	{
+		$sorted = PradoUnit::invoke($this->component, 'sortPropertyPaths', [
+			'a.b' => 1,
+			'a' => 2,
+			'c' => 3,
+			'a@x.p' => 4,
+			'a.b.c' => 5,
+		]);
+		$this->assertSame(['a', 'a@x.p', 'a.b', 'a.b.c', 'c'], array_keys($sorted));
+	}
+
+	public function testSortPropertyPathsPreservesSiblingDeclarationOrder()
+	{
+		$sorted = PradoUnit::invoke($this->component, 'sortPropertyPaths', [
+			'Width' => 1, 'Height' => 2, 'Color' => 3,
+		]);
+		$this->assertSame(['Width', 'Height', 'Color'], array_keys($sorted));
+
+		$reversed = PradoUnit::invoke($this->component, 'sortPropertyPaths', [
+			'Color' => 1, 'Height' => 2, 'Width' => 3,
+		]);
+		$this->assertSame(['Color', 'Height', 'Width'], array_keys($reversed));
+	}
+
 	public function testHasMethod()
 	{
 		$behaviorTestBehaviorName = 'BehaviorTestBehaviorName';
