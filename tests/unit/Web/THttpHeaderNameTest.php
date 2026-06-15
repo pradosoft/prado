@@ -519,6 +519,9 @@ class THttpHeaderNameTest extends PHPUnit\Framework\TestCase
 			'Retry-After', 'Link', 'Transfer-Encoding', 'Server-Timing',
 			// WebDAV
 			'DAV', 'Depth', 'Destination', 'If', 'Lock-Token', 'Overwrite', 'Timeout',
+			// Connection upgrade (WebSocket)
+			'Connection', 'Upgrade', 'Sec-WebSocket-Key', 'Sec-WebSocket-Accept',
+			'Sec-WebSocket-Version', 'Sec-WebSocket-Protocol', 'Sec-WebSocket-Extensions',
 			// Deprecated
 			'Accept-Charset', 'Feature-Policy', 'X-XSS-Protection', 'Pragma',
 		];

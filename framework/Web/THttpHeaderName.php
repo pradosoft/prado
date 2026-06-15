@@ -994,6 +994,87 @@ class THttpHeaderName extends \Prado\TEnumerable
 	public const Timeout = 'Timeout';
 
 	// =========================================================================
+	// Connection upgrade headers (WebSocket — RFC 6455 / RFC 8441)
+	// =========================================================================
+
+	/**
+	 * `Connection` — Lists hop-by-hop connection options. Carries `Upgrade`
+	 * to request a protocol switch (the WebSocket handshake).
+	 *
+	 * Example:
+	 * ```
+	 * Connection: Upgrade
+	 * ```
+	 */
+	public const Connection = 'Connection';
+
+	/**
+	 * `Upgrade` — Names the protocol the client wishes to switch to, paired
+	 * with `Connection: Upgrade`.
+	 *
+	 * Example:
+	 * ```
+	 * Upgrade: websocket
+	 * ```
+	 */
+	public const Upgrade = 'Upgrade';
+
+	/**
+	 * `Sec-WebSocket-Key` — The client's base64 nonce; the server hashes it
+	 * into `Sec-WebSocket-Accept` to confirm the handshake.
+	 *
+	 * Example:
+	 * ```
+	 * Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==
+	 * ```
+	 */
+	public const SecWebSocketKey = 'Sec-WebSocket-Key';
+
+	/**
+	 * `Sec-WebSocket-Accept` — The server's handshake confirmation, the
+	 * base64 SHA-1 of the client `Sec-WebSocket-Key` plus the RFC 6455 GUID.
+	 *
+	 * Example:
+	 * ```
+	 * Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=
+	 * ```
+	 */
+	public const SecWebSocketAccept = 'Sec-WebSocket-Accept';
+
+	/**
+	 * `Sec-WebSocket-Version` — The WebSocket protocol version offered by the
+	 * client; 13 for RFC 6455.
+	 *
+	 * Example:
+	 * ```
+	 * Sec-WebSocket-Version: 13
+	 * ```
+	 */
+	public const SecWebSocketVersion = 'Sec-WebSocket-Version';
+
+	/**
+	 * `Sec-WebSocket-Protocol` — The subprotocols the client offers, and the
+	 * single one the server selects.
+	 *
+	 * Example:
+	 * ```
+	 * Sec-WebSocket-Protocol: chat, superchat
+	 * ```
+	 */
+	public const SecWebSocketProtocol = 'Sec-WebSocket-Protocol';
+
+	/**
+	 * `Sec-WebSocket-Extensions` — The protocol extensions the client offers
+	 * and the server accepts (e.g. per-message compression).
+	 *
+	 * Example:
+	 * ```
+	 * Sec-WebSocket-Extensions: permessage-deflate
+	 * ```
+	 */
+	public const SecWebSocketExtensions = 'Sec-WebSocket-Extensions';
+
+	// =========================================================================
 	// Reporting headers
 	// =========================================================================
 
