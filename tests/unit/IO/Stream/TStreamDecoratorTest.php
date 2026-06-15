@@ -1,6 +1,5 @@
 <?php
 
-use Prado\IO\Stream\TStreamDecorator;
 use Prado\IO\TStream;
 use Psr\Http\Message\StreamInterface;
 
@@ -11,15 +10,15 @@ use Psr\Http\Message\StreamInterface;
  */
 class TStreamDecoratorTest extends PHPUnit\Framework\TestCase
 {
-	private function decorate(string $contents = 'hello world'): TConcreteDecorator
+	private function decorate(string $contents = 'hello world'): TTestStreamDecorator
 	{
-		return new TConcreteDecorator(TStream::fromString($contents));
+		return new TTestStreamDecorator(TStream::fromString($contents), null);
 	}
 
 	public function testIsStreamInterfaceAndExposesInner()
 	{
 		$inner = TStream::fromString('abc');
-		$d = new TConcreteDecorator($inner);
+		$d = new TTestStreamDecorator($inner);
 		self::assertInstanceOf(StreamInterface::class, $d);
 		self::assertSame($inner, $d->getStream());
 		$d->close();
@@ -55,7 +54,7 @@ class TStreamDecoratorTest extends PHPUnit\Framework\TestCase
 
 	public function testForwardsWrite()
 	{
-		$d = new TConcreteDecorator(TStream::fromMemory());
+		$d = new TTestStreamDecorator(TStream::fromMemory());
 		self::assertSame(3, $d->write('xyz'));
 		$d->rewind();
 		self::assertSame('xyz', $d->getContents());
@@ -82,7 +81,7 @@ class TStreamDecoratorTest extends PHPUnit\Framework\TestCase
 	public function testDetachForwardsAndLeavesInnerDetached()
 	{
 		$inner = TStream::fromString('x');
-		$d = new TConcreteDecorator($inner);
+		$d = new TTestStreamDecorator($inner);
 		$resource = $d->detach();
 		self::assertTrue(is_resource($resource));
 		self::assertNull($inner->detach(), 'The inner stream no longer holds the resource.');
@@ -92,7 +91,7 @@ class TStreamDecoratorTest extends PHPUnit\Framework\TestCase
 	public function testCloseForwardsToInner()
 	{
 		$inner = TStream::fromString('y');
-		$d = new TConcreteDecorator($inner);
+		$d = new TTestStreamDecorator($inner);
 		$d->close();
 		self::assertFalse($inner->isReadable(), 'Closing the decorator closes the inner stream.');
 	}
@@ -100,7 +99,7 @@ class TStreamDecoratorTest extends PHPUnit\Framework\TestCase
 	public function testLazyGetStreamOverrideIsHonored()
 	{
 		// A null-constructed decorator that builds its inner lazily via getStream().
-		$d = new TLazyTestDecorator();
+		$d = new TTestStreamDecorator(null, 'lazy-built');
 		self::assertSame(0, $d->builds);
 		self::assertSame('lazy', $d->read(4), 'Forwarding pulls the inner stream from the override.');
 		self::assertSame(1, $d->builds);
@@ -112,35 +111,8 @@ class TStreamDecoratorTest extends PHPUnit\Framework\TestCase
 	{
 		// Constructing with null without overriding getStream() is a programming error:
 		// the first forwarded call hits the uninitialized inner stream.
-		$d = new TConcreteDecorator();
+		$d = new TTestStreamDecorator();
 		$this->expectException(\Error::class);
 		$d->read(1);
-	}
-}
-
-/**
- * Bare concrete decorator that overrides nothing, to exercise the forwarding contract.
- */
-class TConcreteDecorator extends TStreamDecorator
-{
-}
-
-/**
- * Decorator constructed without an inner stream that builds it lazily on first access.
- */
-class TLazyTestDecorator extends TStreamDecorator
-{
-	public int $builds = 0;
-
-	private bool $_built = false;
-
-	public function getStream(): StreamInterface
-	{
-		if (!$this->_built) {
-			$this->setStreamDirect(TStream::fromString('lazy-built'));
-			$this->_built = true;
-			$this->builds++;
-		}
-		return $this->getStreamDirect();
 	}
 }
