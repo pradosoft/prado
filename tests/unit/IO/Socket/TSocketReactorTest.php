@@ -4,6 +4,25 @@ use Prado\IO\Socket\TSocketReactor;
 use Prado\IO\Socket\TSocketServer;
 use Prado\IO\Socket\TSocketStream;
 
+/**
+ * A reactor with a virtual clock: {@see microtime()} reads it and {@see sleep()} advances it, so
+ * timer tests are deterministic and free of wall-clock timing flakiness across platforms.
+ */
+class FakeClockReactor extends TSocketReactor
+{
+	public float $clock = 1000.0;
+
+	protected function microtime(): float
+	{
+		return $this->clock;
+	}
+
+	protected function sleep(float $seconds): void
+	{
+		$this->clock += $seconds;
+	}
+}
+
 class TSocketReactorTest extends PHPUnit\Framework\TestCase
 {
 	public function testListenerReadableDispatchesAccept()
@@ -117,26 +136,30 @@ class TSocketReactorTest extends PHPUnit\Framework\TestCase
 
 	public function testTimersFireAndRepeat()
 	{
-		$reactor = new TSocketReactor();
+		$reactor = new FakeClockReactor();   // a virtual clock makes timer firing deterministic on any platform
+
 		$fired = 0;
 		$reactor->after(0.02, function () use (&$fired) {
 			$fired++;
 		});
-		$reactor->tick(0.5);                 // delay shrinks to the timer (0.02s), then it fires
+		$reactor->clock += 0.02;             // reach the one-shot's deadline
+		$reactor->tick(0);
 		self::assertSame(1, $fired, 'A one-shot timer fires once.');
 
 		$ticks = 0;
 		$id = $reactor->every(0.01, function () use (&$ticks) {
 			$ticks++;
 		});
-		$reactor->tick(0.05);
-		$reactor->tick(0.05);
-		self::assertGreaterThanOrEqual(2, $ticks, 'A repeating timer fires each interval.');
+		$reactor->clock += 0.01;             // each interval boundary fires the repeating timer once
+		$reactor->tick(0);
+		$reactor->clock += 0.01;
+		$reactor->tick(0);
+		self::assertSame(2, $ticks, 'A repeating timer fires each interval.');
 
-		$before = $ticks;
 		$reactor->cancelTimer($id);
-		$reactor->tick(0.02);
-		self::assertSame($before, $ticks, 'A cancelled timer stops firing.');
+		$reactor->clock += 0.01;
+		$reactor->tick(0);
+		self::assertSame(2, $ticks, 'A cancelled timer stops firing.');
 	}
 
 	public function testRegisterUnregisterAndPruneOnClose()
