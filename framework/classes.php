@@ -308,7 +308,6 @@ return [
 'TStreamFilterHandle' => 'Prado\IO\Filter\TStreamFilterHandle',
 'TStreamFilterName' => 'Prado\IO\Filter\TStreamFilterName',
 'TStreamCodecFilter' => 'Prado\IO\Filter\TStreamCodecFilter',
-'TBufferedStreamFilter' => 'Prado\IO\Filter\TBufferedStreamFilter',
 'TStreamMetadataKey' => 'Prado\IO\TStreamMetadataKey',
 'TStreamNotificationCallback' => 'Prado\IO\TStreamNotificationCallback',
 'TStreamNotificationParameter' => 'Prado\IO\TStreamNotificationParameter',
