@@ -1,26 +1,26 @@
 <?php
 
 /**
- * TTestComposer class file.
+ * TTestComposerReflection class file.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-use Prado\Util\TComposer;
+use Prado\Util\TComposerReflection;
 
 /**
- * TTestComposer exposes the two filesystem seams of {@see \Prado\Util\TComposer}
+ * TTestComposerReflection exposes the two filesystem seams of {@see \Prado\Util\TComposerReflection}
  * for override in unit tests.
  *
  * The behavior is configurable through static properties so tests can inject
  * manifest data and suppress the file cache dependency without reading from
  * disk through these methods:
  *
- * - {@see TTestComposer::$manifestOverride} replaces the decoded manifest returned
+ * - {@see TTestComposerReflection::$manifestOverride} replaces the decoded manifest returned
  *   by {@see readManifest()}.
- * - {@see TTestComposer::$nullDependency} makes {@see newFileCacheDependency()} return
+ * - {@see TTestComposerReflection::$nullDependency} makes {@see newFileCacheDependency()} return
  *   null so no file dependency is added to the cache chain.
  *
  * {@see readFiles} and {@see dependencyFiles} record the files passed to each seam.
@@ -29,7 +29,7 @@ use Prado\Util\TComposer;
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
  */
-class TTestComposer extends TComposer
+class TTestComposerReflection extends TComposerReflection
 {
 	/** @var null|array when set, returned by readManifest() instead of reading the file. */
 	public static ?array $manifestOverride = null;

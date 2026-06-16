@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TComposerTestTraitTest class file.
+ * TComposerReflectionTestTraitTest class file.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
@@ -9,19 +9,19 @@
  */
 
 use Composer\Autoload\ClassLoader;
-use Prado\Util\TComposer;
+use Prado\Util\TComposerReflection;
 
 /**
- * Tests for {@see TComposerTestTrait}, the shared composer-test scaffolding.
+ * Tests for {@see TComposerReflectionTestTrait}, the shared composer-test scaffolding.
  *
  * The test class uses the trait under test, so its setUp/tearDown drive the
  * isolation and cleanup being verified.
  *
  * @package System.Harness.Traits
  */
-class TComposerTestTraitTest extends PHPUnit\Framework\TestCase
+class TComposerReflectionTestTraitTest extends PHPUnit\Framework\TestCase
 {
-	use TComposerTestTrait;
+	use TComposerReflectionTestTrait;
 
 	public function testMakeVendor_writesManifestAndRegistersLoader(): void
 	{
@@ -67,7 +67,7 @@ class TComposerTestTraitTest extends PHPUnit\Framework\TestCase
 	{
 		$this->makeVendor([['name' => 'trait/sub', 'version' => '1']]);
 
-		$packages = $this->invokeLoad(TTestComposer::class);
+		$packages = $this->invokeLoad(TTestComposerReflection::class);
 
 		$this->assertArrayHasKey('trait/sub', $packages);
 	}
@@ -86,6 +86,6 @@ class TComposerTestTraitTest extends PHPUnit\Framework\TestCase
 	public function testSetUp_clearsStaticPackageCache(): void
 	{
 		// setUp ran before this test and must have nulled the static cache.
-		$this->assertNull(PradoUnit::getStaticProp(TComposer::class, '_packages'));
+		$this->assertNull(PradoUnit::getStaticProp(TComposerReflection::class, '_packages'));
 	}
 }

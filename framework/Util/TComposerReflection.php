@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TComposer class file
+ * TComposerReflection class file
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
@@ -18,9 +18,9 @@ use Prado\Caching\TFileCacheDependency;
 use Prado\Prado;
 
 /**
- * TComposer class
+ * TComposerReflection class
  *
- * TComposer reads the Composer metadata of the project. It collects every installed
+ * TComposerReflection reads the Composer metadata of the project. It collects every installed
  * package from the `installed.json` manifest of each registered Composer vendor
  * directory and exposes the package data and the `extra` fields to the application.
  * A package's absolute install path is available via {@see getPackagePath()}, read
@@ -28,13 +28,13 @@ use Prado\Prado;
  *
  * The installed packages are read from the registered {@see \Composer\Autoload\ClassLoader}
  * loaders. The result is cached using the application cache, keyed by
- * {@see TComposer::COMPOSER_INSTALLED_CACHE}, with a file dependency on each
+ * {@see TComposerReflection::COMPOSER_INSTALLED_CACHE}, with a file dependency on each
  * `installed.json` so the cache invalidates when the installed packages change.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
  */
-class TComposer extends \Prado\TComponent
+class TComposerReflection extends \Prado\TComponent
 {
 	/**
 	 * The cache name for the installed Prado Composer packages.

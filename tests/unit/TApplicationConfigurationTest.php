@@ -12,7 +12,7 @@
  * Composer-extension resolution surface ({@see \Prado\TApplicationConfiguration::getComposerExtensionClass()}
  * and the captured `extra.prado` error-message and class-map files).
  *
- * Composer state is injected by seeding {@see \Prado\Util\TComposer}'s static
+ * Composer state is injected by seeding {@see \Prado\Util\TComposerReflection}'s static
  * `$_packages` cache; it and the Prado path aliases are restored in tearDown so no
  * test leaks process state.
  *
@@ -25,7 +25,7 @@ use Prado\Prado;
 use Prado\TApplication;
 use Prado\TApplicationConfiguration;
 use Prado\Exceptions\TConfigurationException;
-use Prado\Util\TComposer;
+use Prado\Util\TComposerReflection;
 use Prado\Xml\TXmlDocument;
 
 class TApplicationConfigurationTest extends PHPUnit\Framework\TestCase
@@ -42,14 +42,14 @@ class TApplicationConfigurationTest extends PHPUnit\Framework\TestCase
 		mkdir($this->tmpDir, 0o777, true);
 		$this->aliasSnapshot = PradoUnit::getStaticProp(Prado::class, '_aliases');
 		$this->usingSnapshot = PradoUnit::getStaticProp(Prado::class, '_usings');
-		$this->packagesSnapshot = PradoUnit::getStaticProp(TComposer::class, '_packages');
+		$this->packagesSnapshot = PradoUnit::getStaticProp(TComposerReflection::class, '_packages');
 	}
 
 	protected function tearDown(): void
 	{
 		PradoUnit::setStaticProp(Prado::class, '_aliases', $this->aliasSnapshot);
 		PradoUnit::setStaticProp(Prado::class, '_usings', $this->usingSnapshot);
-		PradoUnit::setStaticProp(TComposer::class, '_packages', $this->packagesSnapshot);
+		PradoUnit::setStaticProp(TComposerReflection::class, '_packages', $this->packagesSnapshot);
 		foreach ($this->createdFiles as $f) {
 			if (is_file($f)) {
 				unlink($f);
@@ -91,7 +91,7 @@ class TApplicationConfigurationTest extends PHPUnit\Framework\TestCase
 
 	private function seedPackages(array $packages): void
 	{
-		PradoUnit::setStaticProp(TComposer::class, '_packages', $packages);
+		PradoUnit::setStaticProp(TComposerReflection::class, '_packages', $packages);
 	}
 
 	private function removeTree(string $dir): void
@@ -837,7 +837,7 @@ class TApplicationConfigurationTest extends PHPUnit\Framework\TestCase
 		// the extension must be a real installed package; its extra.prado metadata is
 		// seeded into the in-memory cache that getInstalledPackages()/getPradoExtra() read.
 		$pkg = 'phpunit/phpunit';
-		$base = TComposer::getPackagePath($pkg);
+		$base = TComposerReflection::getPackagePath($pkg);
 		$this->seedPackages([
 			$pkg => [
 				'name' => $pkg,
@@ -862,7 +862,7 @@ class TApplicationConfigurationTest extends PHPUnit\Framework\TestCase
 		// The extension's module is never referenced in the configuration, yet its
 		// error-messages still load — module inclusion is a separate opt-in.
 		$pkg = 'phpunit/phpunit';
-		$base = TComposer::getPackagePath($pkg);
+		$base = TComposerReflection::getPackagePath($pkg);
 		$this->seedPackages([
 			$pkg => ['name' => $pkg, 'extra' => ['prado' => ['error-messages' => 'm.txt']]],
 		]);
@@ -930,7 +930,7 @@ class TApplicationConfigurationTest extends PHPUnit\Framework\TestCase
 		// The JSON file lives in the (real) package directory a test cannot write to;
 		// the getFileContents() seam supplies its content instead.
 		$pkg = 'phpunit/phpunit';
-		$base = TComposer::getPackagePath($pkg);
+		$base = TComposerReflection::getPackagePath($pkg);
 		$this->seedPackages([
 			$pkg => ['name' => $pkg, 'extra' => ['prado' => ['class-map' => [
 				'config/classes.json',         // numeric (list) key → JSON class-map file
@@ -955,7 +955,7 @@ class TApplicationConfigurationTest extends PHPUnit\Framework\TestCase
 		// A numeric-string key PHP does not fold to int ("08") still marks a file, not an
 		// inline class name — is_numeric() gates the file branch where is_int() would not.
 		$pkg = 'phpunit/phpunit';
-		$base = TComposer::getPackagePath($pkg);
+		$base = TComposerReflection::getPackagePath($pkg);
 		$this->seedPackages([
 			$pkg => ['name' => $pkg, 'extra' => ['prado' => ['class-map' => ['08' => 'config/classes.json']]]],
 		]);

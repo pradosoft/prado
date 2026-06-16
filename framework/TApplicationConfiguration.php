@@ -12,7 +12,7 @@ namespace Prado;
 
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
-use Prado\Util\TComposer;
+use Prado\Util\TComposerReflection;
 use Prado\Util\Traits\TModuleConfigurationFileTrait;
 use Prado\Xml\TXmlDocument;
 
@@ -152,7 +152,7 @@ use Prado\Xml\TXmlDocument;
  * module initializes.
  *
  * `error-messages` is a package-relative path (or array of paths) to message files, resolved
- * to absolute via {@see \Prado\Util\TComposer::getPackagePath()} and registered with
+ * to absolute via {@see \Prado\Util\TComposerReflection::getPackagePath()} and registered with
  * {@see \Prado\Exceptions\TException::addMessageFile()} (exposed by {@see getErrorMessages()}).
  *
  * `class-map` is data, never executed. A single value is treated as a one-element array; in
@@ -518,7 +518,7 @@ class TApplicationConfiguration extends \Prado\TApplicationComponent
 	 */
 	public function getComposerExtensionClass($name)
 	{
-		$class = TComposer::getPradoExtra($name, self::COMPOSER_EXTRA_CLASS);
+		$class = TComposerReflection::getPradoExtra($name, self::COMPOSER_EXTRA_CLASS);
 		if (!is_string($class)) {
 			$class = $this->getComposerExtensionClassLegacy($name);
 		}
@@ -535,7 +535,7 @@ class TApplicationConfiguration extends \Prado\TApplicationComponent
 	 */
 	protected function getComposerExtensionClassLegacy($name)
 	{
-		$class = TComposer::getExtra($name, self::COMPOSER_EXTRA_CLASS);
+		$class = TComposerReflection::getExtra($name, self::COMPOSER_EXTRA_CLASS);
 		return is_string($class) ? $class : null;
 	}
 
@@ -887,14 +887,14 @@ class TApplicationConfiguration extends \Prado\TApplicationComponent
 	 * Intended to run once for the top-level application configuration, so the
 	 * captured data is serialized with the configuration cache.
 	 * {@see TApplication::initApplication()} invalidates that cache when any Composer
-	 * `installed.json` changes (via {@see \Prado\Util\TComposer::getInstalledManifestsTime()}),
+	 * `installed.json` changes (via {@see \Prado\Util\TComposerReflection::getInstalledManifestsTime()}),
 	 * so installing, updating, or removing an extension is picked up on the next request.
 	 * @since 4.4.0
 	 */
 	public function captureComposerExtensions(): void
 	{
-		foreach (array_keys(TComposer::getInstalledPackages()) as $name) {
-			if (TComposer::getPradoExtra($name) !== null) {
+		foreach (array_keys(TComposerReflection::getInstalledPackages()) as $name) {
+			if (TComposerReflection::getPradoExtra($name) !== null) {
 				$this->captureComposerExtensionExtras($name);
 			}
 		}
@@ -903,7 +903,7 @@ class TApplicationConfiguration extends \Prado\TApplicationComponent
 	/**
 	 * Captures the `extra.prado` error-message files and class map a single Prado
 	 * Composer extension declares, resolving package-relative paths against the
-	 * package directory ({@see \Prado\Util\TComposer::getPackagePath()}). The
+	 * package directory ({@see \Prado\Util\TComposerReflection::getPackagePath()}). The
 	 * `error-messages` field is a path or array of paths, deduplicated to absolute
 	 * paths. The `class-map` field is a class name => PHP FQN map, a JSON file path,
 	 * or an array mixing both ({@see mergeClassMap()}, {@see readClassMapFile()}). A
@@ -913,11 +913,11 @@ class TApplicationConfiguration extends \Prado\TApplicationComponent
 	 */
 	protected function captureComposerExtensionExtras(string $name): void
 	{
-		$base = TComposer::getPackagePath($name);
+		$base = TComposerReflection::getPackagePath($name);
 		if ($base === null) {
 			return;
 		}
-		foreach ((array) (TComposer::getPradoExtra($name, self::COMPOSER_EXTRA_ERRORMESSAGES) ?? []) as $file) {
+		foreach ((array) (TComposerReflection::getPradoExtra($name, self::COMPOSER_EXTRA_ERRORMESSAGES) ?? []) as $file) {
 			if (is_string($file) && $file !== '') {
 				$path = $base . DIRECTORY_SEPARATOR . $file;
 				if (!in_array($path, $this->_errorMessages, true)) {
@@ -926,7 +926,7 @@ class TApplicationConfiguration extends \Prado\TApplicationComponent
 				}
 			}
 		}
-		foreach ((array) (TComposer::getPradoExtra($name, self::COMPOSER_EXTRA_CLASSMAP) ?? []) as $key => $value) {
+		foreach ((array) (TComposerReflection::getPradoExtra($name, self::COMPOSER_EXTRA_CLASSMAP) ?? []) as $key => $value) {
 			if (is_numeric($key)) {
 				if (is_string($value) && $value !== '') {
 					$this->mergeClassMap($this->readClassMapFile($base . DIRECTORY_SEPARATOR . $value));

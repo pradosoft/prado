@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TComposerTestTrait class file.
+ * TComposerReflectionTestTrait class file.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
@@ -10,28 +10,28 @@
 
 use Composer\Autoload\ClassLoader;
 use Prado\Prado;
-use Prado\Util\TComposer;
+use Prado\Util\TComposerReflection;
 
 /**
- * TComposerTestTrait provides the shared scaffolding for {@see \Prado\Util\TComposer}
+ * TComposerReflectionTestTrait provides the shared scaffolding for {@see \Prado\Util\TComposerReflection}
  * tests.
  *
  * The trait isolates process state so each test starts clean:
  *
  * - {@see setUp()} captures the application cache module and clears the static
  *   `$_packages` cache.
- * - {@see tearDown()} resets {@see TTestComposer}, restores the cache module and
+ * - {@see tearDown()} resets {@see TTestComposerReflection}, restores the cache module and
  *   static cache, then unregisters and deletes every temporary vendor directory
  *   created during the test.
  *
  * {@see makeVendor()} builds a temporary Composer vendor directory with an
  * `installed.json` manifest and registers a real {@see ClassLoader} for it, so
- * {@see TComposer::loadInstalledPackages} reads it like any installed dependency.
+ * {@see TComposerReflection::loadInstalledPackages} reads it like any installed dependency.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
  */
-trait TComposerTestTrait
+trait TComposerReflectionTestTrait
 {
 	/** @var mixed The application cache module captured before each test. */
 	private mixed $_cacheSnap = null;
@@ -43,15 +43,15 @@ trait TComposerTestTrait
 	{
 		// Capture and clear the static package cache so each test starts fresh.
 		$this->_cacheSnap = PradoUnit::getProp(Prado::getApplication(), '_cache');
-		PradoUnit::setStaticProp(TComposer::class, '_packages', null);
+		PradoUnit::setStaticProp(TComposerReflection::class, '_packages', null);
 		$this->_tempVendors = [];
 	}
 
 	protected function tearDown(): void
 	{
-		TTestComposer::reset();
+		TTestComposerReflection::reset();
 		// Restore the static cache and the application cache module.
-		PradoUnit::setStaticProp(TComposer::class, '_packages', null);
+		PradoUnit::setStaticProp(TComposerReflection::class, '_packages', null);
 		PradoUnit::setProp(Prado::getApplication(), '_cache', $this->_cacheSnap);
 
 		// Unregister and delete every temp vendor directory created by the test.
@@ -121,12 +121,12 @@ trait TComposerTestTrait
 	}
 
 	/**
-	 * Invokes the protected {@see TComposer::loadInstalledPackages} on the given class.
+	 * Invokes the protected {@see TComposerReflection::loadInstalledPackages} on the given class.
 	 *
-	 * @param class-string $class the class to invoke on (TComposer or a subclass).
+	 * @param class-string $class the class to invoke on (TComposerReflection or a subclass).
 	 * @return array the loaded packages.
 	 */
-	protected function invokeLoad(string $class = TComposer::class): array
+	protected function invokeLoad(string $class = TComposerReflection::class): array
 	{
 		return PradoUnit::invoke($class, 'loadInstalledPackages');
 	}

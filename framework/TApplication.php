@@ -21,7 +21,7 @@ use Prado\Security\TAuthorizationRuleCollection;
 use Prado\Security\TSecurityManager;
 use Prado\Web\{THttpRequest, THttpResponse, THttpSession};
 use Prado\Web\TAssetManager;
-use Prado\Util\TComposer;
+use Prado\Util\TComposerReflection;
 use Prado\Util\TLogger;
 use Prado\Web\Services\TPageService;
 use Prado\Web\UI\TTemplateManager;
@@ -2700,7 +2700,7 @@ class TApplication extends TComponent implements ISingleton
 			// changes (a package installed, updated, or removed), not just the config file.
 			if ($cacheFile === null
 					|| ($cacheTime = @filemtime($cacheFile)) < filemtime($configFile)
-					|| (($manifestsTime = TComposer::getInstalledManifestsTime()) !== null && $cacheTime < $manifestsTime)) {
+					|| (($manifestsTime = TComposerReflection::getInstalledManifestsTime()) !== null && $cacheTime < $manifestsTime)) {
 				$cn = $this->getApplicationConfigurationClass();
 				$config = new $cn();
 				$config->captureComposerExtensions();
