@@ -1453,4 +1453,65 @@ class PradoBaseTest extends PHPUnit\Framework\TestCase
 			Prado::$classMap = $saved;
 		}
 	}
+
+	public function testRegisterClassMap_emptyArrayIsNoOp(): void
+	{
+		$saved = Prado::$classMap;
+		try {
+			Prado::registerClassMap([]);
+			$this->assertSame($saved, Prado::$classMap);
+		} finally {
+			Prado::$classMap = $saved;
+		}
+	}
+
+	// -----------------------------------------------------------------------
+	// phpErrorHandler() — converts a reported PHP error into an exception
+	// -----------------------------------------------------------------------
+
+	public function testPhpErrorHandler_throwsWhenErrorIsReported(): void
+	{
+		$saved = error_reporting(E_ALL);
+		try {
+			$this->expectException(\Prado\Exceptions\TPhpErrorException::class);
+			Prado::phpErrorHandler(E_USER_WARNING, 'boom', __FILE__, __LINE__);
+		} finally {
+			error_reporting($saved);
+		}
+	}
+
+	public function testPhpErrorHandler_carriesMessageIntoException(): void
+	{
+		$saved = error_reporting(E_ALL);
+		try {
+			Prado::phpErrorHandler(E_USER_NOTICE, 'a-specific-message', __FILE__, __LINE__);
+			$this->fail('Expected TPhpErrorException');
+		} catch (\Prado\Exceptions\TPhpErrorException $e) {
+			$this->assertStringContainsString('a-specific-message', $e->getMessage());
+		} finally {
+			error_reporting($saved);
+		}
+	}
+
+	public function testPhpErrorHandler_returnsTrueWhenErrorIsSuppressed(): void
+	{
+		// With nothing reported, the level is not in the mask, so the handler
+		// swallows the error and returns true instead of throwing.
+		$saved = error_reporting(0);
+		try {
+			$this->assertTrue(Prado::phpErrorHandler(E_WARNING, 'ignored', __FILE__, __LINE__));
+		} finally {
+			error_reporting($saved);
+		}
+	}
+
+	// -----------------------------------------------------------------------
+	// autoload() — delegates to using()
+	// -----------------------------------------------------------------------
+
+	public function testAutoload_swallowsUnknownClassWithoutThrowing(): void
+	{
+		Prado::autoload('Prado\\NonExistent\\TFakeAutoloadXYZ123');
+		$this->assertFalse(class_exists('Prado\\NonExistent\\TFakeAutoloadXYZ123', false));
+	}
 }

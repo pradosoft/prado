@@ -279,6 +279,58 @@ class TComposerTest extends PHPUnit\Framework\TestCase
 	}
 
 	// =======================================================================
+	// getPackagePath — absolute package path
+	// =======================================================================
+
+	public function testGetPackagePath_returnsAbsolutePathForInstalledPackage(): void
+	{
+		// getPackagePath resolves through Composer's InstalledVersions runtime, so
+		// it reports the real on-disk location of an installed package.
+		$path = TComposer::getPackagePath('phpunit/phpunit');
+		$this->assertNotNull($path);
+		$this->assertDirectoryExists($path);
+		$this->assertSame(realpath(\Composer\InstalledVersions::getInstallPath('phpunit/phpunit')), $path);
+	}
+
+	public function testGetPackagePath_canonicalizesAwayRelativeSegments(): void
+	{
+		$path = TComposer::getPackagePath('phpunit/phpunit');
+		$this->assertStringNotContainsString(DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR, $path);
+	}
+
+	public function testGetPackagePath_nullWhenPackageNotInstalled(): void
+	{
+		$this->assertNull(TComposer::getPackagePath('ghost/definitely-not-installed-xyz'));
+	}
+
+	// =======================================================================
+	// getInstalledManifestsTime — newest installed.json mtime
+	// =======================================================================
+
+	public function testGetInstalledManifestsTime_isPositiveWithRealProject(): void
+	{
+		// The project's own vendor/composer/installed.json is always registered.
+		$this->assertGreaterThan(0, TComposer::getInstalledManifestsTime());
+	}
+
+	public function testGetInstalledManifestsTime_returnsNewestManifestMtime(): void
+	{
+		$vendorDir = $this->makeVendor([['name' => 'acme/x', 'version' => '1']]);
+		$future = time() + 100000;
+		touch($this->manifestPath($vendorDir), $future);
+
+		// The freshly-touched manifest is the newest across all registered loaders.
+		$this->assertSame($future, TComposer::getInstalledManifestsTime());
+	}
+
+	public function testGetInstalledManifestsTime_ignoresVendorWithoutManifest(): void
+	{
+		// A registered vendor with no installed.json must not break the scan.
+		$this->makeVendor([], null, false);
+		$this->assertGreaterThan(0, TComposer::getInstalledManifestsTime());
+	}
+
+	// =======================================================================
 	// getExtra — extra field accessor
 	// =======================================================================
 
@@ -539,18 +591,5 @@ class TComposerTest extends PHPUnit\Framework\TestCase
 			$dependency->getDependencies()->getCount(),
 			'Default seam must contribute a file dependency per manifest'
 		);
-	}
-
-	public function testGetPackagePath_installedPackage_returnsAbsoluteDir(): void
-	{
-		// phpunit/phpunit is a dev dependency, reliably installed during tests.
-		$path = TComposer::getPackagePath('phpunit/phpunit');
-		$this->assertNotNull($path);
-		$this->assertDirectoryExists($path);
-	}
-
-	public function testGetPackagePath_unknownPackage_returnsNull(): void
-	{
-		$this->assertNull(TComposer::getPackagePath('no-such-vendor/no-such-package'));
 	}
 }

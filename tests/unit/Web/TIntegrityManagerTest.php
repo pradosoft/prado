@@ -110,6 +110,7 @@ class TIntegrityManagerTest extends PHPUnit\Framework\TestCase
 		if (!is_writable(__DIR__)) {
 			self::markTestSkipped(__DIR__ . ' is not writable');
 		}
+		$priorConfigType = $this->app->getConfigurationType();
 		$this->app->setConfigurationType(TApplication::CONFIG_TYPE_PHP);
 		$file = __DIR__ . '/integrity.php';
 		file_put_contents($file, "<?php\nreturn ['integrities' => ["
@@ -123,6 +124,7 @@ class TIntegrityManagerTest extends PHPUnit\Framework\TestCase
 			self::assertEquals(self::HASH, $manager->getIntegrity(self::REMOTE));
 			self::assertEquals('sha512-CCCC', $manager->getIntegrity('https://cdn.example.com/lib2.js'));
 		} finally {
+			$this->app->setConfigurationType($priorConfigType);
 			unlink($file);
 			TJavaScript::setScriptIntegrity('https://cdn.example.com/lib2.js', null);
 		}

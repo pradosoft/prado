@@ -137,13 +137,13 @@ class TTemplateControl extends TCompositeControl
 	public function createChildControls()
 	{
 		if ($tpl = $this->getTemplate()) {
-			foreach ($tpl->getDirective() as $name => $value) {
-				if (is_string($value)) {
-					$this->setSubProperty($name, $value);
-				} else {
+			$directive = $tpl->getDirective();
+			foreach ($directive as $name => $value) {
+				if (!is_string($value)) {
 					throw new TConfigurationException('templatecontrol_directive_invalid', $this::class, $name);
 				}
 			}
+			$this->setSubProperties($directive);
 			$tpl->instantiateIn($this);
 		}
 		parent::createChildControls();

@@ -57,7 +57,6 @@ trait TModuleConfigurationFileTrait
 	 * @return null|array|TXmlDocument array for the PHP-form loader,
 	 *   `TXmlDocument` for the XML-form loader, `null` when the include
 	 *   returned a non-array (PHP path) so the caller can skip.
-	 * @since 4.4.0
 	 */
 	protected function readConfigurationFile(?string $type, string $fname): null|array|TXmlDocument
 	{

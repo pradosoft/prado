@@ -415,13 +415,11 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 			case self::CONFIG_VALUE:
 				$pos = strrpos($propName, '.');
 				$prop = substr($propName, $pos !== false ? $pos + 1 : 0);
-				if (strncasecmp($prop, 'js', 2) === 0) {
-					$jsValue = $propInfo[self::PROP_VALUE];
-					if ($jsValue && !($jsValue instanceof TJavaScriptLiteral)) {
-						$jsValue = new TJavaScriptLiteral($jsValue);
-					}
+				$value = $propInfo[self::PROP_VALUE];
+				if (strncasecmp($prop, 'js', 2) === 0 && $value && !($value instanceof TJavaScriptLiteral)) {
+					$value = new TJavaScriptLiteral($value);
 				}
-				$component->setSubProperty($propName, $propInfo[self::PROP_VALUE]);
+				$component->setSubProperty($propName, $value);
 				break;
 			case self::CONFIG_DATABIND:		// databinding
 				$component->bindProperty($propName, $propInfo[self::PROP_VALUE]);
