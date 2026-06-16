@@ -9,9 +9,11 @@
  */
 
 // No Namespace for unit tests, separate from the system.
-// All shared helpers are loaded via the central requires file.  The mutual
-// require_once reference is intentional and safe: PHP marks a file as included
-// before executing it, so the circular reference never recurses.
+// PradoUnit lives at tests/unit/ as a central jump-off point into the test
+// harness; the shared helpers themselves live under tests/unit/Harness/, and
+// the loader at tests/unit/PradoUnitRequires.php walks that hierarchy.
+// The mutual require_once reference is intentional and safe: PHP marks a file
+// as included before executing it, so the circular reference never recurses.
 require_once __DIR__ . '/PradoUnitRequires.php';
 
 /**
@@ -50,8 +52,132 @@ require_once __DIR__ . '/PradoUnitRequires.php';
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3
  */
+class PradoUnit
+{
+	// =========================================================================
+	// Reflection cache
+	// =========================================================================
+	//
+	// Tests reach for reflection constantly — snapshotting private state,
+	// invoking private methods, inspecting class hierarchies. Constructing a
+	// `\ReflectionClass`, `\ReflectionMethod`, or `\ReflectionProperty` is
+	// cheap individually but adds up across a 6 000-test suite. The framework
+	// itself caches `\ReflectionClass` in {@see \Prado\TComponentReflection::getReflectionClassByType()};
+	// the harness mirrors that pattern for all three reflection types.
+	//
+	// Cache keys are lowercased so case-insensitive class names share one
+	// cached object. Cache entries live for the process lifetime — classes
+	// cannot meaningfully change at runtime, so invalidation is unnecessary.
+	//
+	// Callers receive the cached instance as-is and must not mutate state on
+	// it (e.g. `setAccessible(false)`); PHP 8.1+ exposes private members
+	// without `setAccessible` so this is a non-issue in practice.
 
-class PradoUnit {
+	/** @var array<string, ?\ReflectionClass> Lowercased class name → cached ReflectionClass (or null when the class does not exist). */
+	private static array $_reflectionClassCache = [];
+
+	/** @var array<string, ?\ReflectionMethod> "{class}::{method}" lowercased → cached ReflectionMethod (or null when absent). */
+	private static array $_reflectionMethodCache = [];
+
+	/** @var array<string, ?\ReflectionProperty> "{class}::{property}" lowercased → cached ReflectionProperty (or null when absent at any level). */
+	private static array $_reflectionPropertyCache = [];
+
+	/**
+	 * Returns a cached {@see \ReflectionClass} for `$class`, or `null` when the
+	 * class does not exist.
+	 *
+	 * Accepts either a class-name string or an object instance (the instance's
+	 * class is reflected).
+	 *
+	 * @param object|string $class Class name or instance to reflect.
+	 * @return ?\ReflectionClass Cached instance, or `null` when reflection
+	 *   fails (e.g. unknown class).
+	 * @since 4.4.0
+	 */
+	public static function reflectionClass(string|object $class): ?\ReflectionClass
+	{
+		$name = is_object($class) ? $class::class : $class;
+		$key = strtolower($name);
+		if (!array_key_exists($key, self::$_reflectionClassCache)) {
+			try {
+				self::$_reflectionClassCache[$key] = new \ReflectionClass($name);
+			} catch (\ReflectionException) {
+				self::$_reflectionClassCache[$key] = null;
+			}
+		}
+		return self::$_reflectionClassCache[$key];
+	}
+
+	/**
+	 * Returns a cached {@see \ReflectionMethod} for `$class::$method`, or
+	 * `null` when the method does not exist.
+	 *
+	 * Resolves inherited methods through `ReflectionClass::getMethod()`. Cache
+	 * key includes the class name passed in (the resolved class of the looked-up
+	 * `ReflectionClass`), so two subclasses inheriting the same parent method
+	 * get distinct cache entries — but the underlying `ReflectionMethod` they
+	 * return refers to the same declared method.
+	 *
+	 * @param object|string $class  Class name or instance.
+	 * @param string        $method Method name.
+	 * @return ?\ReflectionMethod Cached instance, or `null` when the class or
+	 *   method does not exist.
+	 * @since 4.4.0
+	 */
+	public static function reflectionMethod(string|object $class, string $method): ?\ReflectionMethod
+	{
+		$rc = self::reflectionClass($class);
+		if ($rc === null) {
+			return null;
+		}
+		$key = strtolower($rc->getName() . '::' . $method);
+		if (!array_key_exists($key, self::$_reflectionMethodCache)) {
+			try {
+				self::$_reflectionMethodCache[$key] = $rc->getMethod($method);
+			} catch (\ReflectionException) {
+				self::$_reflectionMethodCache[$key] = null;
+			}
+		}
+		return self::$_reflectionMethodCache[$key];
+	}
+
+	/**
+	 * Returns a cached {@see \ReflectionProperty} for `$class::$property`, or
+	 * `null` when no property by that name is declared at any level of the
+	 * class hierarchy.
+	 *
+	 * Walks the full hierarchy so private properties declared in ancestor
+	 * classes are reachable — the standard `ReflectionClass::getProperty()`
+	 * cannot see ancestor `private` members from a subclass reflection.
+	 *
+	 * @param object|string $class    Class name or instance.
+	 * @param string        $property Property name (no `$` prefix).
+	 * @return ?\ReflectionProperty Cached instance, or `null` when the
+	 *   property is not declared at any level.
+	 * @since 4.4.0
+	 */
+	public static function reflectionProperty(string|object $class, string $property): ?\ReflectionProperty
+	{
+		$name = is_object($class) ? $class::class : $class;
+		$key = strtolower($name . '::' . $property);
+		if (array_key_exists($key, self::$_reflectionPropertyCache)) {
+			return self::$_reflectionPropertyCache[$key];
+		}
+		$rc = self::reflectionClass($name);
+		$found = null;
+		while ($rc !== null) {
+			$level = $rc->getName();
+			foreach ($rc->getProperties() as $rp) {
+				if ($rp->getName() === $property
+					&& $rp->getDeclaringClass()->getName() === $level) {
+					$found = $rp;
+					break 2;
+				}
+			}
+			$rc = $rc->getParentClass() ?: null;
+		}
+		return self::$_reflectionPropertyCache[$key] = $found;
+	}
 
 	// =========================================================================
 	// Object snapshot / restore
@@ -114,11 +240,11 @@ class PradoUnit {
 	 */
 	private static function reflectionProperties(object $object, array $filter = []): array
 	{
-		$props       = [];
+		$props = [];
 		$checkFilter = !empty($filter);
-		$class       = new \ReflectionClass($object);
+		$class = static::reflectionClass($object);
 
-		do {
+		while ($class !== null) {
 			$level = $class->getName();
 			foreach ($class->getProperties() as $rp) {
 				if ($rp->isStatic()) {
@@ -139,7 +265,8 @@ class PradoUnit {
 					$props[$name] = $rp;
 				}
 			}
-		} while ($class = $class->getParentClass());
+			$class = $class->getParentClass() ?: null;
+		}
 
 		return $props;
 	}
@@ -150,13 +277,20 @@ class PradoUnit {
 	 * The full class hierarchy is searched so private ancestor properties are
 	 * accessible without knowing their declaring class.
 	 *
-	 * @param object $object The object to read from.
+	 * When `$object` is a class-string the method operates in static mode,
+	 * equivalent to calling {@see getStaticProp()}.
+	 *
+	 * @param class-string|object $object The object to read from, or a class name
+	 *   for static properties.
 	 * @param string $name   Property name (without `$`).
+	 * @throws \ReflectionException if the property does not exist on the object or class.
 	 * @return mixed The current property value.
-	 * @throws \ReflectionException if the property does not exist on the object.
 	 */
-	public static function getProp(object $object, string $name): mixed
+	public static function getProp(object|string $object, string $name): mixed
 	{
+		if (is_string($object)) {
+			return static::getStaticProp($object, $name);
+		}
 		$props = static::reflectionProperties($object, [$name]);
 		if (!isset($props[$name])) {
 			throw new \ReflectionException("Property $name not found on " . get_class($object));
@@ -170,18 +304,73 @@ class PradoUnit {
 	 * The full class hierarchy is searched so private ancestor properties are
 	 * writable without knowing their declaring class.
 	 *
-	 * @param object $object The object to write to.
+	 * When `$object` is a class-string the method operates in static mode,
+	 * equivalent to calling {@see setStaticProp()}.
+	 *
+	 * @param class-string|object $object The object to write to, or a class name
+	 *   for static properties.
 	 * @param string $name   Property name (without `$`).
 	 * @param mixed  $value  The value to assign.
-	 * @throws \ReflectionException if the property does not exist on the object.
+	 * @throws \ReflectionException if the property does not exist on the object or class.
 	 */
-	public static function setProp(object $object, string $name, mixed $value): void
+	public static function setProp(object|string $object, string $name, mixed $value): void
 	{
+		if (is_string($object)) {
+			static::setStaticProp($object, $name, $value);
+			return;
+		}
 		$props = static::reflectionProperties($object, [$name]);
 		if (!isset($props[$name])) {
 			throw new \ReflectionException("Property $name not found on " . get_class($object));
 		}
 		$props[$name]->setValue($object, $value);
+	}
+
+	// =========================================================================
+	// Method invocation
+	// =========================================================================
+
+	/**
+	 * Invokes a named method on an object or class via reflection, bypassing
+	 * visibility (private / protected methods are callable).
+	 *
+	 * When `$object` is a class-string the method is invoked statically
+	 * (`ReflectionMethod::invoke(null, ...$args)`).
+	 *
+	 * ```php
+	 * // Instance method (private/protected):
+	 * $result = PradoUnit::invoke($component, 'evaluateIsValid');
+	 *
+	 * // Static method via class-string:
+	 * $hash = PradoUnit::invoke(TSecurityManager::class, 'generateSalt', 16);
+	 * ```
+	 *
+	 * **By-reference parameters**: variadic spread copies argument values, so
+	 * methods that declare pass-by-reference parameters (e.g. `function (&$out)`)
+	 * cannot be called through this helper — the reference is silently broken.
+	 * Use `PradoUnit::reflectionMethod()->invokeArgs()` directly for those cases:
+	 *
+	 * ```php
+	 * // sortManifest() declares its first parameter as &$manifest:
+	 * $rm = PradoUnit::reflectionMethod(TTarFileExtractor::class, 'sortManifest');
+	 * $rm->invokeArgs($extractor, [&$manifest]);
+	 * ```
+	 *
+	 * @param class-string|object $object The object to invoke on, or a class name
+	 *   for static methods.
+	 * @param string $method Method name.
+	 * @param mixed  ...$args Arguments forwarded to the method.
+	 * @throws \ReflectionException if the method does not exist.
+	 * @return mixed The return value of the invoked method.
+	 */
+	public static function invoke(object|string $object, string $method, mixed ...$args): mixed
+	{
+		$class = is_object($object) ? $object::class : $object;
+		$rm = static::reflectionMethod($class, $method);
+		if ($rm === null) {
+			throw new \ReflectionException("Method {$method} not found on {$class}");
+		}
+		return $rm->invoke(is_object($object) ? $object : null, ...$args);
 	}
 
 	// =========================================================================
@@ -243,8 +432,8 @@ class PradoUnit {
 	 *
 	 * @param class-string $class The class to read from.
 	 * @param string       $name  Property name (without `$`).
-	 * @return mixed The current property value.
 	 * @throws \ReflectionException if the property does not exist on the class.
+	 * @return mixed The current property value.
 	 */
 	public static function getStaticProp(string $class, string $name): mixed
 	{
@@ -292,9 +481,9 @@ class PradoUnit {
 	{
 		$props = [];
 		$checkFilter = !empty($filter);
-		$rc = new \ReflectionClass($class);
+		$rc = static::reflectionClass($class);
 
-		do {
+		while ($rc !== null) {
 			$level = $rc->getName();
 			foreach ($rc->getProperties(\ReflectionProperty::IS_STATIC) as $rp) {
 				if ($rp->getDeclaringClass()->getName() !== $level) {
@@ -308,9 +497,105 @@ class PradoUnit {
 					$props[$name] = $rp;
 				}
 			}
-		} while ($rc = $rc->getParentClass());
+			$rc = $rc->getParentClass() ?: null;
+		}
 
 		return $props;
+	}
+
+	// =========================================================================
+	// Session initial state — capture / restore
+	// =========================================================================
+	//
+	// Captured once near the top of {@see tests/test_tools/phpunit_bootstrap.php},
+	// before {@see \Prado\TApplication} is constructed, so the baseline reflects
+	// the process state PHPUnit handed us rather than any mutation a framework
+	// init may introduce. Tests that mutate superglobals, the working directory,
+	// the default timezone, the error-reporting bitmask, or the include_path
+	// can restore the baseline via {@see restoreInitialState()} — typically in
+	// tearDown() — without having to manually snapshot each global themselves.
+	//
+	// Coverage is deliberately narrow: only state that is process-global *and*
+	// commonly mutated by tests. Static class state is covered by
+	// {@see snapshotStatic()} / {@see restoreStatic()}; object state by
+	// {@see snapshot()} / {@see restore()}.
+
+	/**
+	 * @var array<string, mixed> Snapshot of process-global state captured by
+	 *   {@see captureInitialState()}. Empty until capture is called.
+	 */
+	private static array $_initialState = [];
+
+	/**
+	 * Captures the process-global baseline: superglobals (`$_SERVER`, `$_GET`,
+	 * `$_POST`, `$_REQUEST`, `$_COOKIE`, `$_FILES`, `$_ENV`), the current
+	 * working directory, the default timezone, the `error_reporting()` bitmask,
+	 * and the `include_path`. Subsequent calls overwrite the snapshot.
+	 *
+	 * Called from {@see tests/test_tools/phpunit_bootstrap.php} once per
+	 * test-runner session; tests can call it explicitly to re-baseline mid-suite.
+	 *
+	 * @since 4.4.0
+	 */
+	public static function captureInitialState(): void
+	{
+		self::$_initialState = [
+			'_SERVER' => $_SERVER,
+			'_GET' => $_GET,
+			'_POST' => $_POST,
+			'_REQUEST' => $_REQUEST,
+			'_COOKIE' => $_COOKIE,
+			'_FILES' => $_FILES,
+			'_ENV' => $_ENV,
+			'cwd' => getcwd(),
+			'timezone' => date_default_timezone_get(),
+			'error_reporting' => error_reporting(),
+			'include_path' => get_include_path(),
+		];
+	}
+
+	/**
+	 * Returns the captured baseline. With `$key === null`, returns the full
+	 * snapshot map; with a key, returns that slice or `null` when absent.
+	 * Returns an empty array when {@see captureInitialState()} has not run.
+	 *
+	 * @param ?string $key snapshot slice to read, or `null` for the whole map.
+	 * @return mixed snapshot map, single slice, or `null`.
+	 * @since 4.4.0
+	 */
+	public static function getInitialState(?string $key = null): mixed
+	{
+		if ($key === null) {
+			return self::$_initialState;
+		}
+		return self::$_initialState[$key] ?? null;
+	}
+
+	/**
+	 * Restores every slice captured by {@see captureInitialState()} back into
+	 * the live process. Safe to call when no snapshot has been taken — the
+	 * method is a no-op in that case so tearDown() can call it
+	 * unconditionally. `chdir()` failures are swallowed (the captured
+	 * directory may have been deleted).
+	 *
+	 * @since 4.4.0
+	 */
+	public static function restoreInitialState(): void
+	{
+		if (self::$_initialState === []) {
+			return;
+		}
+		$_SERVER = self::$_initialState['_SERVER'];
+		$_GET = self::$_initialState['_GET'];
+		$_POST = self::$_initialState['_POST'];
+		$_REQUEST = self::$_initialState['_REQUEST'];
+		$_COOKIE = self::$_initialState['_COOKIE'];
+		$_FILES = self::$_initialState['_FILES'];
+		$_ENV = self::$_initialState['_ENV'];
+		@chdir(self::$_initialState['cwd']);
+		date_default_timezone_set(self::$_initialState['timezone']);
+		error_reporting(self::$_initialState['error_reporting']);
+		set_include_path(self::$_initialState['include_path']);
 	}
 
 	// =========================================================================
@@ -369,7 +654,7 @@ class PradoUnit {
 	 * | `'Heroku CI'`             | `HEROKU_TEST_RUN_ID` is set           |
 	 * | `'CI'`                    | `CI` is set (generic fallback)        |
 	 *
-	 * @return string|null  CI environment name, or `null` when running locally.
+	 * @return null|string  CI environment name, or `null` when running locally.
 	 */
 	public static function getCIEnvironment(): ?string
 	{
@@ -469,6 +754,57 @@ class PradoUnit {
 	public static $dbTableException = [];
 
 	/**
+	 * @var array<string, true> DB drivers for which the single "unavailable" failure
+	 *   has already been emitted this run. After the first failure all subsequent
+	 *   tests for the same driver are skipped rather than failed again.
+	 *   Keyed by the driver identifier string (e.g. `'sqlite'`, `'mysql'`).
+	 * @since 4.4.0
+	 */
+	public static array $dbSuiteFailEmitted = [];
+
+	/**
+	 * Enforces the "fail once, skip the rest" policy for an unavailable DB suite.
+	 *
+	 * Call this from `TestCase::setUp()`. When `$reason` is non-null (the DB is
+	 * unavailable) the method inspects `$dbSuiteFailEmitted` for `$driver`:
+	 *
+	 * - **First call for the driver** — marks `$dbSuiteFailEmitted[$driver]` and
+	 *   calls `$test->fail($reason)`, emitting exactly one PHPUnit failure.
+	 * - **Subsequent calls for the same driver** — calls
+	 *   `$test->markTestSkipped($reason)`, suppressing further noise.
+	 * - **`$reason === null`** — returns immediately; the DB is available and the
+	 *   test should proceed normally.
+	 *
+	 * This keeps CI output readable: one actionable failure per unavailable driver,
+	 * not hundreds of identical errors.
+	 *
+	 * Usage in a `TestCase::setUp()`:
+	 * ```php
+	 * protected function setUp(): void
+	 * {
+	 *     PradoUnit::failFirstThenSkip($this, 'sqlite', static::$unavailableReason);
+	 * }
+	 * ```
+	 *
+	 * @param \PHPUnit\Framework\TestCase $test   The running test instance.
+	 * @param string                      $driver Driver key (e.g. `'sqlite'`, `'mysql'`).
+	 * @param string|null                 $reason Why the DB is unavailable, or `null` when available.
+	 * @since 4.4.0
+	 */
+	public static function failFirstThenSkip(\PHPUnit\Framework\TestCase $test, string $driver, ?string $reason): void
+	{
+		if ($reason === null) {
+			return;
+		}
+		if (!isset(static::$dbSuiteFailEmitted[$driver])) {
+			static::$dbSuiteFailEmitted[$driver] = true;
+			$test->fail($reason);
+		} else {
+			$test->markTestSkipped($reason);
+		}
+	}
+
+	/**
 	 * Returns `true` when the `PRADO_UNITTEST_SKIP_DB` environment variable is set
 	 * to `'1'`.
 	 *
@@ -533,7 +869,7 @@ class PradoUnit {
 	 *   connects without selecting a specific database.
 	 * @param bool   $isActiveRecord When `true`, sets the connection on
 	 *   `TActiveRecordManager::getInstance()`.
-	 * @return \Prado\Data\TDbConnection|string|\Exception
+	 * @return \Exception|\Prado\Data\TDbConnection|string
 	 *   `TDbConnection` on success; a human-readable `string` for a known failure
 	 *   (extension missing, server unreachable, database not found, table absent);
 	 *   the original `\Exception` for any unrecognised error.
@@ -546,13 +882,13 @@ class PradoUnit {
 		if (!extension_loaded('pdo_mysql')) {
 			return 'The pdo_mysql extension is not available.';
 		}
-		$conn = new TDbConnection('mysql:host=localhost'. $database, 'prado_unitest', 'prado_unitest');
+		$conn = new TDbConnection('mysql:host=localhost' . $database, 'prado_unitest', 'prado_unitest');
 		try {
 			$conn->setActive(true);
 			if ($isActiveRecord) {
 				TActiveRecordManager::getInstance()->setDbConnection($conn);
 			}
-		} catch(\Exception $e) {
+		} catch (\Exception $e) {
 			return static::processException($e, $conn);
 		}
 		return $conn;
@@ -571,7 +907,7 @@ class PradoUnit {
 	 * @param string $database       Optional database/schema name.
 	 * @param bool   $isActiveRecord When `true`, sets the connection on
 	 *   `TActiveRecordManager::getInstance()`.
-	 * @return \Prado\Data\TDbConnection|string|\Exception
+	 * @return \Exception|\Prado\Data\TDbConnection|string
 	 */
 	public static function setupPgsqlConnection($database = '', $isActiveRecord = false)
 	{
@@ -582,13 +918,13 @@ class PradoUnit {
 			return 'The pdo_pgsql extension is not available.';
 		}
 		$cred = getenv('SCRUTINIZER') ? 'scrutinizer' : 'prado_unitest';
-		$conn = new TDbConnection('pgsql:host=localhost'. $database, $cred, $cred);
+		$conn = new TDbConnection('pgsql:host=localhost' . $database, $cred, $cred);
 		try {
 			$conn->setActive(true);
 			if ($isActiveRecord) {
 				TActiveRecordManager::getInstance()->setDbConnection($conn);
 			}
-		} catch(\Exception $e) {
+		} catch (\Exception $e) {
 			return static::processException($e, $conn);
 		}
 		return $conn;
@@ -608,7 +944,7 @@ class PradoUnit {
 	 *   file. Overrides the environment variable default when non-empty.
 	 * @param bool   $isActiveRecord When `true`, sets the connection on
 	 *   `TActiveRecordManager::getInstance()`.
-	 * @return \Prado\Data\TDbConnection|string|\Exception
+	 * @return \Exception|\Prado\Data\TDbConnection|string
 	 */
 	public static function setupFirebirdConnection($database = '', $isActiveRecord = false)
 	{
@@ -626,7 +962,7 @@ class PradoUnit {
 			if ($isActiveRecord) {
 				TActiveRecordManager::getInstance()->setDbConnection($conn);
 			}
-		} catch(\Exception $e) {
+		} catch (\Exception $e) {
 			return static::processException($e, $conn);
 		}
 		return $conn;
@@ -645,7 +981,7 @@ class PradoUnit {
 	 *   Pass an empty string (the default) for an in-memory database.
 	 * @param bool   $isActiveRecord When `true`, sets the connection on
 	 *   `TActiveRecordManager::getInstance()`.
-	 * @return \Prado\Data\TDbConnection|string|\Exception
+	 * @return \Exception|\Prado\Data\TDbConnection|string
 	 */
 	public static function setupSqliteConnection($database = '', $isActiveRecord = false)
 	{
@@ -659,7 +995,7 @@ class PradoUnit {
 			if ($isActiveRecord) {
 				TActiveRecordManager::getInstance()->setDbConnection($conn);
 			}
-		} catch(\Exception $e) {
+		} catch (\Exception $e) {
 			return static::processException($e, $conn);
 		}
 		return $conn;
@@ -677,7 +1013,7 @@ class PradoUnit {
 	 * @param string $database       Optional database name appended as `;Database=<name>`.
 	 * @param bool   $isActiveRecord When `true`, sets the connection on
 	 *   `TActiveRecordManager::getInstance()`.
-	 * @return \Prado\Data\TDbConnection|string|\Exception
+	 * @return \Exception|\Prado\Data\TDbConnection|string
 	 */
 	public static function setupMssqlConnection($database = '', $isActiveRecord = false)
 	{
@@ -695,7 +1031,7 @@ class PradoUnit {
 			if ($isActiveRecord) {
 				TActiveRecordManager::getInstance()->setDbConnection($conn);
 			}
-		} catch(\Exception $e) {
+		} catch (\Exception $e) {
 			return static::processException($e, $conn);
 		}
 		return $conn;
@@ -715,7 +1051,7 @@ class PradoUnit {
 	 *   environment variable default when non-empty.
 	 * @param bool   $isActiveRecord When `true`, sets the connection on
 	 *   `TActiveRecordManager::getInstance()`.
-	 * @return \Prado\Data\TDbConnection|string|\Exception
+	 * @return \Exception|\Prado\Data\TDbConnection|string
 	 */
 	public static function setupOciConnection($database = '', $isActiveRecord = false)
 	{
@@ -733,7 +1069,7 @@ class PradoUnit {
 			if ($isActiveRecord) {
 				TActiveRecordManager::getInstance()->setDbConnection($conn);
 			}
-		} catch(\Exception $e) {
+		} catch (\Exception $e) {
 			return static::processException($e, $conn);
 		}
 		return $conn;
@@ -753,16 +1089,16 @@ class PradoUnit {
 	 *   environment variable when non-empty.
 	 * @param bool   $isActiveRecord When `true`, sets the connection on
 	 *   `TActiveRecordManager::getInstance()`.
-	 * @return \Prado\Data\TDbConnection|string|\Exception
+	 * @return \Exception|\Prado\Data\TDbConnection|string
 	 */
 	public static function setupIbmConnection($database = '', $isActiveRecord = false)
 	{
 		if (!extension_loaded('pdo_ibm')) {
 			return 'The pdo_ibm extension is not available.';
 		}
-		$user     = getenv('DB2_USER')     ?: 'db2inst1';
+		$user = getenv('DB2_USER') ?: 'db2inst1';
 		$password = getenv('DB2_PASSWORD') ?: 'Prado_Unitest1';
-		$dbname   = !empty($database) ? $database : (getenv('DB2_DATABASE') ?: 'pradount');
+		$dbname = !empty($database) ? $database : (getenv('DB2_DATABASE') ?: 'pradount');
 		$conn = new TDbConnection(
 			'ibm:DRIVER={IBM DB2 ODBC DRIVER};DATABASE=' . $dbname . ';HOSTNAME=localhost;PORT=50000;PROTOCOL=TCPIP',
 			$user,
@@ -773,7 +1109,7 @@ class PradoUnit {
 			if ($isActiveRecord) {
 				TActiveRecordManager::getInstance()->setDbConnection($conn);
 			}
-		} catch(\Exception $e) {
+		} catch (\Exception $e) {
 			return static::processException($e, $conn);
 		}
 		return $conn;
@@ -797,7 +1133,7 @@ class PradoUnit {
 	 *
 	 * @param \Prado\Data\TDbConnection $conn      An active database connection.
 	 * @param string                    $tableName Unquoted table name to probe.
-	 * @return string|\Exception|null `null` on success; a human-readable `string` or
+	 * @return null|\Exception|string `null` on success; a human-readable `string` or
 	 *   `\Exception` on failure.
 	 */
 	public static function checkForTable($conn, $tableName): mixed
