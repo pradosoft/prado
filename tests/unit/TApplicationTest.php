@@ -2368,7 +2368,7 @@ class AppConfigurationSpy extends \Prado\TApplicationConfiguration
 		self::$instanceCount++;
 	}
 
-	public function loadFromFile($fname): void {}
+	public function loadFromFile($fname, ?string $type = null): void {}
 
 	public function loadFromXml($dom, $configPath): void {}
 
@@ -2613,6 +2613,8 @@ class TApplicationConfigurationClassTest extends PHPUnit\Framework\TestCase
 			$outerConfig->method('getIsEmpty')->willReturn(false);
 			$outerConfig->method('getAliases')->willReturn([]);
 			$outerConfig->method('getUsings')->willReturn([]);
+			$outerConfig->method('getClassMap')->willReturn([]);
+			$outerConfig->method('getErrorMessages')->willReturn([]);
 			$outerConfig->method('getProperties')->willReturn([]);
 			$outerConfig->method('getServices')->willReturn([]);
 			$outerConfig->method('getParameters')->willReturn([]);
@@ -2647,6 +2649,8 @@ class TApplicationConfigurationClassTest extends PHPUnit\Framework\TestCase
 		$outerConfig->method('getIsEmpty')->willReturn(false);
 		$outerConfig->method('getAliases')->willReturn([]);
 		$outerConfig->method('getUsings')->willReturn([]);
+		$outerConfig->method('getClassMap')->willReturn([]);
+		$outerConfig->method('getErrorMessages')->willReturn([]);
 		$outerConfig->method('getProperties')->willReturn([]);
 		$outerConfig->method('getServices')->willReturn([]);
 		$outerConfig->method('getParameters')->willReturn([]);
@@ -2664,12 +2668,14 @@ class TApplicationConfigurationClassTest extends PHPUnit\Framework\TestCase
 	// -----------------------------------------------------------------------
 
 	/** Returns a minimal no-op config mock with the given properties map. */
-	private function minimalConfigMock(array $properties = [], array $externalConfigs = []): \Prado\TApplicationConfiguration
+	private function minimalConfigMock(array $properties = [], array $externalConfigs = [], array $classMapFiles = [], array $errorMessages = []): \Prado\TApplicationConfiguration
 	{
 		$config = $this->createMock(\Prado\TApplicationConfiguration::class);
 		$config->method('getIsEmpty')->willReturn(false);
 		$config->method('getAliases')->willReturn([]);
 		$config->method('getUsings')->willReturn([]);
+		$config->method('getClassMap')->willReturn($classMapFiles);
+		$config->method('getErrorMessages')->willReturn($errorMessages);
 		$config->method('getProperties')->willReturn($properties);
 		$config->method('getServices')->willReturn([]);
 		$config->method('getParameters')->willReturn([]);

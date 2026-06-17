@@ -149,9 +149,7 @@ class TParameterModule extends \Prado\TModule
 		foreach ($parameters as $id => $parameter) {
 			if (is_array($parameter)) {
 				$component = Prado::createComponent($parameter[0]);
-				foreach ($parameter[1] as $name => $value) {
-					$component->setSubProperty($name, $value);
-				}
+				$component->setSubProperties($parameter[1]);
 				$component->dyInit($parameter[2]);
 				$appParams->add($id, $component);
 			} else {

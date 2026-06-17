@@ -1,19 +1,19 @@
 <?php
 
 /**
- * TComposerTest class file.
+ * TComposerReflectionTest class file.
  *
- * Comprehensive coverage for {@see \Prado\Util\TComposer}, the dumb access layer over
+ * Comprehensive coverage for {@see \Prado\Util\TComposerReflection}, the dumb access layer over
  * the project's Composer metadata. Three surfaces are exercised:
  *
- *  - {@see TComposer::loadInstalledPackages} — the raw read across every
+ *  - {@see TComposerReflection::loadInstalledPackages} — the raw read across every
  *    registered {@see \Composer\Autoload\ClassLoader} vendor directory, the
  *    cache short-circuit / write-back, missing-file skipping, name keying, and
  *    malformed-JSON propagation. Driven with real ClassLoader registrations
  *    pointed at temporary vendor directories.
- *  - {@see TComposer::getInstalledPackages} / {@see TComposer::getPackage} —
+ *  - {@see TComposerReflection::getInstalledPackages} / {@see TComposerReflection::getPackage} —
  *    the lazy in-memory cache and single-package lookup.
- *  - {@see TComposer::getExtra} — the `extra` field accessor with and without a key.
+ *  - {@see TComposerReflection::getExtra} — the `extra` field accessor with and without a key.
  *
  * The static `$_packages` cache and the application cache module are snapshotted
  * in setUp and restored in tearDown so no test leaks process state.
@@ -24,7 +24,7 @@
  */
 
 use Prado\Prado;
-use Prado\Util\TComposer;
+use Prado\Util\TComposerReflection;
 
 // =============================================================================
 // Tests
@@ -32,13 +32,13 @@ use Prado\Util\TComposer;
 
 /**
  * The shared scaffolding (setUp/tearDown, temp-vendor builder, load invoker)
- * lives in {@see TComposerTestTrait}; the {@see TTestCacheStub} cache stub
- * and the {@see TTestComposer} seam subclass live in the test Harness.
+ * lives in {@see TComposerReflectionTestTrait}; the {@see TTestCacheStub} cache stub
+ * and the {@see TTestComposerReflection} seam subclass live in the test Harness.
  *
  */
-class TComposerTest extends PHPUnit\Framework\TestCase
+class TComposerReflectionTest extends PHPUnit\Framework\TestCase
 {
-	use TComposerTestTrait;
+	use TComposerReflectionTestTrait;
 
 	// =======================================================================
 	// loadInstalledPackages — raw read across registered loaders
@@ -163,7 +163,7 @@ class TComposerTest extends PHPUnit\Framework\TestCase
 
 		$this->assertSame($sentinel, $packages);
 		$this->assertArrayNotHasKey('ignored/pkg', $packages);
-		$this->assertSame([[TComposer::COMPOSER_INSTALLED_CACHE]], $cache->getCollectedCalls('get'));
+		$this->assertSame([[TComposerReflection::COMPOSER_INSTALLED_CACHE]], $cache->getCollectedCalls('get'));
 		$this->assertSame(0, $cache->getCollectedCallCount('set'), 'A cache hit must not write back');
 	}
 
@@ -180,7 +180,7 @@ class TComposerTest extends PHPUnit\Framework\TestCase
 		$this->assertSame(1, $cache->getCollectedCallCount('set'));
 		// set() args are recorded positionally: [id, value, expire, dependency].
 		[$id, $value, $expire, $dependency] = $cache->getCollectedCalls('set')[0];
-		$this->assertSame(TComposer::COMPOSER_INSTALLED_CACHE, $id);
+		$this->assertSame(TComposerReflection::COMPOSER_INSTALLED_CACHE, $id);
 		$this->assertSame($packages, $value);
 		$this->assertSame(0, $expire);
 		$this->assertInstanceOf(\Prado\Caching\TChainedCacheDependency::class, $dependency);
@@ -216,23 +216,23 @@ class TComposerTest extends PHPUnit\Framework\TestCase
 
 	public function testGetInstalledPackages_populatesStaticCacheOnFirstCall(): void
 	{
-		$this->assertNull(PradoUnit::getStaticProp(TComposer::class, '_packages'));
+		$this->assertNull(PradoUnit::getStaticProp(TComposerReflection::class, '_packages'));
 
-		$packages = TComposer::getInstalledPackages();
+		$packages = TComposerReflection::getInstalledPackages();
 
 		$this->assertIsArray($packages);
-		$this->assertSame($packages, PradoUnit::getStaticProp(TComposer::class, '_packages'));
+		$this->assertSame($packages, PradoUnit::getStaticProp(TComposerReflection::class, '_packages'));
 	}
 
 	public function testGetInstalledPackages_returnsSeededCacheWithoutReloading(): void
 	{
 		$seed = ['seed/pkg' => ['name' => 'seed/pkg', 'version' => '1']];
-		PradoUnit::setStaticProp(TComposer::class, '_packages', $seed);
+		PradoUnit::setStaticProp(TComposerReflection::class, '_packages', $seed);
 
 		// Register a loader whose package must NOT appear — the seeded cache wins.
 		$this->makeVendor([['name' => 'late/pkg', 'version' => '1']]);
 
-		$packages = TComposer::getInstalledPackages();
+		$packages = TComposerReflection::getInstalledPackages();
 
 		$this->assertSame($seed, $packages);
 		$this->assertArrayNotHasKey('late/pkg', $packages);
@@ -241,10 +241,10 @@ class TComposerTest extends PHPUnit\Framework\TestCase
 	public function testGetInstalledPackages_emptySeedIsNotReloaded(): void
 	{
 		// An empty array is a real (non-null) cache; it must not trigger reload.
-		PradoUnit::setStaticProp(TComposer::class, '_packages', []);
+		PradoUnit::setStaticProp(TComposerReflection::class, '_packages', []);
 		$this->makeVendor([['name' => 'should/skip', 'version' => '1']]);
 
-		$this->assertSame([], TComposer::getInstalledPackages());
+		$this->assertSame([], TComposerReflection::getInstalledPackages());
 	}
 
 	// =======================================================================
@@ -253,29 +253,81 @@ class TComposerTest extends PHPUnit\Framework\TestCase
 
 	public function testGetPackage_returnsManifestWhenPresent(): void
 	{
-		PradoUnit::setStaticProp(TComposer::class, '_packages', [
+		PradoUnit::setStaticProp(TComposerReflection::class, '_packages', [
 			'acme/widget' => ['name' => 'acme/widget', 'version' => '2.5'],
 		]);
 
 		$this->assertSame(
 			['name' => 'acme/widget', 'version' => '2.5'],
-			TComposer::getPackage('acme/widget')
+			TComposerReflection::getPackage('acme/widget')
 		);
 	}
 
 	public function testGetPackage_returnsNullWhenAbsent(): void
 	{
-		PradoUnit::setStaticProp(TComposer::class, '_packages', [
+		PradoUnit::setStaticProp(TComposerReflection::class, '_packages', [
 			'acme/widget' => ['name' => 'acme/widget'],
 		]);
 
-		$this->assertNull(TComposer::getPackage('ghost/missing'));
+		$this->assertNull(TComposerReflection::getPackage('ghost/missing'));
 	}
 
 	public function testGetPackage_returnsNullFromEmptyManifest(): void
 	{
-		PradoUnit::setStaticProp(TComposer::class, '_packages', []);
-		$this->assertNull(TComposer::getPackage('anything/at-all'));
+		PradoUnit::setStaticProp(TComposerReflection::class, '_packages', []);
+		$this->assertNull(TComposerReflection::getPackage('anything/at-all'));
+	}
+
+	// =======================================================================
+	// getPackagePath — absolute package path
+	// =======================================================================
+
+	public function testGetPackagePath_returnsAbsolutePathForInstalledPackage(): void
+	{
+		// getPackagePath resolves through Composer's InstalledVersions runtime, so
+		// it reports the real on-disk location of an installed package.
+		$path = TComposerReflection::getPackagePath('phpunit/phpunit');
+		$this->assertNotNull($path);
+		$this->assertDirectoryExists($path);
+		$this->assertSame(realpath(\Composer\InstalledVersions::getInstallPath('phpunit/phpunit')), $path);
+	}
+
+	public function testGetPackagePath_canonicalizesAwayRelativeSegments(): void
+	{
+		$path = TComposerReflection::getPackagePath('phpunit/phpunit');
+		$this->assertStringNotContainsString(DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR, $path);
+	}
+
+	public function testGetPackagePath_nullWhenPackageNotInstalled(): void
+	{
+		$this->assertNull(TComposerReflection::getPackagePath('ghost/definitely-not-installed-xyz'));
+	}
+
+	// =======================================================================
+	// getInstalledManifestsTime — newest installed.json mtime
+	// =======================================================================
+
+	public function testGetInstalledManifestsTime_isPositiveWithRealProject(): void
+	{
+		// The project's own vendor/composer/installed.json is always registered.
+		$this->assertGreaterThan(0, TComposerReflection::getInstalledManifestsTime());
+	}
+
+	public function testGetInstalledManifestsTime_returnsNewestManifestMtime(): void
+	{
+		$vendorDir = $this->makeVendor([['name' => 'acme/x', 'version' => '1']]);
+		$future = time() + 100000;
+		touch($this->manifestPath($vendorDir), $future);
+
+		// The freshly-touched manifest is the newest across all registered loaders.
+		$this->assertSame($future, TComposerReflection::getInstalledManifestsTime());
+	}
+
+	public function testGetInstalledManifestsTime_ignoresVendorWithoutManifest(): void
+	{
+		// A registered vendor with no installed.json must not break the scan.
+		$this->makeVendor([], null, false);
+		$this->assertGreaterThan(0, TComposerReflection::getInstalledManifestsTime());
 	}
 
 	// =======================================================================
@@ -284,7 +336,7 @@ class TComposerTest extends PHPUnit\Framework\TestCase
 
 	private function seedExtraFixture(): void
 	{
-		PradoUnit::setStaticProp(TComposer::class, '_packages', [
+		PradoUnit::setStaticProp(TComposerReflection::class, '_packages', [
 			'acme/full' => [
 				'name' => 'acme/full',
 				'extra' => [
@@ -308,64 +360,64 @@ class TComposerTest extends PHPUnit\Framework\TestCase
 				'setup' => 'Acme\\Setup',
 				'branch-alias' => ['dev-master' => '1.x-dev'],
 			],
-			TComposer::getExtra('acme/full')
+			TComposerReflection::getExtra('acme/full')
 		);
 	}
 
 	public function testGetExtra_namedKeyReturnsThatValue(): void
 	{
 		$this->seedExtraFixture();
-		$this->assertSame('Acme\\Bootstrap', TComposer::getExtra('acme/full', 'bootstrap'));
-		$this->assertSame('Acme\\Setup', TComposer::getExtra('acme/full', 'setup'));
+		$this->assertSame('Acme\\Bootstrap', TComposerReflection::getExtra('acme/full', 'bootstrap'));
+		$this->assertSame('Acme\\Setup', TComposerReflection::getExtra('acme/full', 'setup'));
 	}
 
 	public function testGetExtra_namedKeyReturnsNestedArrayValue(): void
 	{
 		$this->seedExtraFixture();
-		$this->assertSame(['dev-master' => '1.x-dev'], TComposer::getExtra('acme/full', 'branch-alias'));
+		$this->assertSame(['dev-master' => '1.x-dev'], TComposerReflection::getExtra('acme/full', 'branch-alias'));
 	}
 
 	public function testGetExtra_absentKeyReturnsNull(): void
 	{
 		$this->seedExtraFixture();
-		$this->assertNull(TComposer::getExtra('acme/full', 'does-not-exist'));
+		$this->assertNull(TComposerReflection::getExtra('acme/full', 'does-not-exist'));
 	}
 
 	public function testGetExtra_packageWithoutExtra_nullKeyReturnsNull(): void
 	{
 		$this->seedExtraFixture();
-		$this->assertNull(TComposer::getExtra('acme/noextra'));
+		$this->assertNull(TComposerReflection::getExtra('acme/noextra'));
 	}
 
 	public function testGetExtra_packageWithoutExtra_namedKeyReturnsNull(): void
 	{
 		$this->seedExtraFixture();
-		$this->assertNull(TComposer::getExtra('acme/noextra', 'bootstrap'));
+		$this->assertNull(TComposerReflection::getExtra('acme/noextra', 'bootstrap'));
 	}
 
 	public function testGetExtra_missingPackage_nullKeyReturnsNull(): void
 	{
 		$this->seedExtraFixture();
-		$this->assertNull(TComposer::getExtra('ghost/missing'));
+		$this->assertNull(TComposerReflection::getExtra('ghost/missing'));
 	}
 
 	public function testGetExtra_missingPackage_namedKeyReturnsNull(): void
 	{
 		$this->seedExtraFixture();
-		$this->assertNull(TComposer::getExtra('ghost/missing', 'bootstrap'));
+		$this->assertNull(TComposerReflection::getExtra('ghost/missing', 'bootstrap'));
 	}
 
 	public function testGetExtra_scalarExtra_nullKeyReturnsScalar(): void
 	{
 		$this->seedExtraFixture();
-		$this->assertSame('a-string', TComposer::getExtra('acme/scalarextra'));
+		$this->assertSame('a-string', TComposerReflection::getExtra('acme/scalarextra'));
 	}
 
 	public function testGetExtra_scalarExtra_namedKeyReturnsScalar(): void
 	{
 		// extra is not an array, so the key cannot be indexed; the scalar is returned.
 		$this->seedExtraFixture();
-		$this->assertSame('a-string', TComposer::getExtra('acme/scalarextra', 'bootstrap'));
+		$this->assertSame('a-string', TComposerReflection::getExtra('acme/scalarextra', 'bootstrap'));
 	}
 
 	// =======================================================================
@@ -374,7 +426,7 @@ class TComposerTest extends PHPUnit\Framework\TestCase
 
 	private function seedPradoExtraFixture(): void
 	{
-		PradoUnit::setStaticProp(TComposer::class, '_packages', [
+		PradoUnit::setStaticProp(TComposerReflection::class, '_packages', [
 			'acme/nested' => ['name' => 'acme/nested',
 				'extra' => ['prado' => ['bootstrap' => 'Acme\\Module', 'config' => 'cfg.xml']]],
 			'acme/noprado' => ['name' => 'acme/noprado', 'extra' => ['bootstrap' => 'Legacy\\Module']],
@@ -387,35 +439,35 @@ class TComposerTest extends PHPUnit\Framework\TestCase
 		$this->seedPradoExtraFixture();
 		$this->assertSame(
 			['bootstrap' => 'Acme\\Module', 'config' => 'cfg.xml'],
-			TComposer::getPradoExtra('acme/nested'),
+			TComposerReflection::getPradoExtra('acme/nested'),
 		);
 	}
 
 	public function testGetPradoExtra_namedKeyReturnsThatValue(): void
 	{
 		$this->seedPradoExtraFixture();
-		$this->assertSame('Acme\\Module', TComposer::getPradoExtra('acme/nested', 'bootstrap'));
-		$this->assertSame('cfg.xml', TComposer::getPradoExtra('acme/nested', 'config'));
+		$this->assertSame('Acme\\Module', TComposerReflection::getPradoExtra('acme/nested', 'bootstrap'));
+		$this->assertSame('cfg.xml', TComposerReflection::getPradoExtra('acme/nested', 'config'));
 	}
 
 	public function testGetPradoExtra_absentKeyReturnsNull(): void
 	{
 		$this->seedPradoExtraFixture();
-		$this->assertNull(TComposer::getPradoExtra('acme/nested', 'missing'));
+		$this->assertNull(TComposerReflection::getPradoExtra('acme/nested', 'missing'));
 	}
 
 	public function testGetPradoExtra_noPradoSubArrayReturnsNull(): void
 	{
 		// extra exists but has no `prado` sub-array — legacy keys are not read here.
 		$this->seedPradoExtraFixture();
-		$this->assertNull(TComposer::getPradoExtra('acme/noprado'));
-		$this->assertNull(TComposer::getPradoExtra('acme/noprado', 'bootstrap'));
+		$this->assertNull(TComposerReflection::getPradoExtra('acme/noprado'));
+		$this->assertNull(TComposerReflection::getPradoExtra('acme/noprado', 'bootstrap'));
 	}
 
 	public function testGetPradoExtra_missingPackageReturnsNull(): void
 	{
 		$this->seedPradoExtraFixture();
-		$this->assertNull(TComposer::getPradoExtra('ghost/missing', 'bootstrap'));
+		$this->assertNull(TComposerReflection::getPradoExtra('ghost/missing', 'bootstrap'));
 	}
 
 	// =======================================================================
@@ -424,20 +476,20 @@ class TComposerTest extends PHPUnit\Framework\TestCase
 
 	public function testFlush_clearsStaticCache(): void
 	{
-		PradoUnit::setStaticProp(TComposer::class, '_packages', ['x' => ['name' => 'x']]);
+		PradoUnit::setStaticProp(TComposerReflection::class, '_packages', ['x' => ['name' => 'x']]);
 
-		TComposer::flushInstalledPackages();
+		TComposerReflection::flushInstalledPackages();
 
-		$this->assertNull(PradoUnit::getStaticProp(TComposer::class, '_packages'));
+		$this->assertNull(PradoUnit::getStaticProp(TComposerReflection::class, '_packages'));
 	}
 
 	public function testFlush_forcesReloadOnNextGet(): void
 	{
-		PradoUnit::setStaticProp(TComposer::class, '_packages', ['stale/pkg' => ['name' => 'stale/pkg']]);
+		PradoUnit::setStaticProp(TComposerReflection::class, '_packages', ['stale/pkg' => ['name' => 'stale/pkg']]);
 		$this->makeVendor([['name' => 'reloaded/pkg', 'version' => '1']]);
 
-		TComposer::flushInstalledPackages();
-		$packages = TComposer::getInstalledPackages();
+		TComposerReflection::flushInstalledPackages();
+		$packages = TComposerReflection::getInstalledPackages();
 
 		$this->assertArrayNotHasKey('stale/pkg', $packages);
 		$this->assertArrayHasKey('reloaded/pkg', $packages);
@@ -451,7 +503,7 @@ class TComposerTest extends PHPUnit\Framework\TestCase
 	{
 		$file = $this->manifestPath($this->makeVendor([['name' => 'a/b', 'version' => '1']]));
 
-		$manifest = PradoUnit::invoke(TComposer::class, 'readManifest', $file);
+		$manifest = PradoUnit::invoke(TComposerReflection::class, 'readManifest', $file);
 
 		$this->assertSame([['name' => 'a/b', 'version' => '1']], $manifest['packages']);
 	}
@@ -461,7 +513,7 @@ class TComposerTest extends PHPUnit\Framework\TestCase
 		$file = $this->manifestPath($this->makeVendor([], '{ bad json'));
 
 		$this->expectException(\JsonException::class);
-		PradoUnit::invoke(TComposer::class, 'readManifest', $file);
+		PradoUnit::invoke(TComposerReflection::class, 'readManifest', $file);
 	}
 
 	// =======================================================================
@@ -472,7 +524,7 @@ class TComposerTest extends PHPUnit\Framework\TestCase
 	{
 		$file = $this->manifestPath($this->makeVendor([]));
 
-		$dep = PradoUnit::invoke(TComposer::class, 'newFileCacheDependency', $file);
+		$dep = PradoUnit::invoke(TComposerReflection::class, 'newFileCacheDependency', $file);
 
 		$this->assertInstanceOf(\Prado\Caching\TFileCacheDependency::class, $dep);
 	}
@@ -483,7 +535,7 @@ class TComposerTest extends PHPUnit\Framework\TestCase
 
 	private function invokeHarnessLoad(): array
 	{
-		return $this->invokeLoad(TTestComposer::class);
+		return $this->invokeLoad(TTestComposerReflection::class);
 	}
 
 	public function testSeam_readManifestOverrideReplacesParsing(): void
@@ -491,13 +543,13 @@ class TComposerTest extends PHPUnit\Framework\TestCase
 		// A real file must exist so the is_file gate passes; its content is
 		// ignored because the override supplies the manifest.
 		$this->makeVendor([['name' => 'on/disk', 'version' => 'x']]);
-		TTestComposer::$manifestOverride = ['packages' => [['name' => 'injected/pkg', 'version' => '7']]];
+		TTestComposerReflection::$manifestOverride = ['packages' => [['name' => 'injected/pkg', 'version' => '7']]];
 
 		$packages = $this->invokeHarnessLoad();
 
 		$this->assertArrayHasKey('injected/pkg', $packages);
 		$this->assertArrayNotHasKey('on/disk', $packages);
-		$this->assertNotEmpty(TTestComposer::$readFiles, 'readManifest seam must be invoked');
+		$this->assertNotEmpty(TTestComposerReflection::$readFiles, 'readManifest seam must be invoked');
 	}
 
 	public function testSeam_nullDependencyAddsNoFileDependency(): void
@@ -507,11 +559,11 @@ class TComposerTest extends PHPUnit\Framework\TestCase
 		Prado::getApplication()->setCache($cache);
 
 		$this->makeVendor([['name' => 'dep/none', 'version' => '1']]);
-		TTestComposer::$nullDependency = true;
+		TTestComposerReflection::$nullDependency = true;
 
 		$this->invokeHarnessLoad();
 
-		$this->assertNotEmpty(TTestComposer::$dependencyFiles, 'dependency seam must be consulted');
+		$this->assertNotEmpty(TTestComposerReflection::$dependencyFiles, 'dependency seam must be consulted');
 		$this->assertSame(1, $cache->getCollectedCallCount('set'));
 		$dependency = $cache->getCollectedCalls('set')[0][3];
 		$this->assertInstanceOf(\Prado\Caching\TChainedCacheDependency::class, $dependency);
@@ -539,18 +591,5 @@ class TComposerTest extends PHPUnit\Framework\TestCase
 			$dependency->getDependencies()->getCount(),
 			'Default seam must contribute a file dependency per manifest'
 		);
-	}
-
-	public function testGetPackagePath_installedPackage_returnsAbsoluteDir(): void
-	{
-		// phpunit/phpunit is a dev dependency, reliably installed during tests.
-		$path = TComposer::getPackagePath('phpunit/phpunit');
-		$this->assertNotNull($path);
-		$this->assertDirectoryExists($path);
-	}
-
-	public function testGetPackagePath_unknownPackage_returnsNull(): void
-	{
-		$this->assertNull(TComposer::getPackagePath('no-such-vendor/no-such-package'));
 	}
 }

@@ -17,7 +17,7 @@ use Prado\Caching\ICache;
  *
  * Every method records its call through {@see TCallCollectorTrait}, so tests
  * can assert cache short-circuit and write-back behavior (for example
- * {@see \Prado\Util\TComposer::loadInstalledPackages}) via
+ * {@see \Prado\Util\TComposerReflection::loadInstalledPackages}) via
  * {@see getCollectedCalls()} and {@see getCollectedCallCount()}.
  *
  * {@see $getReturn} controls the value returned by {@see get()}; `false` models a

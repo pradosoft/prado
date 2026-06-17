@@ -13,7 +13,7 @@ namespace Prado;
 use Prado\Caching\ICache;
 use Prado\Collections\TCollectionItemChangeParameter;
 use Prado\Collections\TMap;
-use Prado\Exceptions\{TConfigurationException, TExitException, THttpException};
+use Prado\Exceptions\{TConfigurationException, TException, TExitException, THttpException};
 use Prado\Exceptions\TErrorHandler;
 use Prado\I18N\TGlobalization;
 use Prado\Security\IUser;
@@ -21,6 +21,7 @@ use Prado\Security\TAuthorizationRuleCollection;
 use Prado\Security\TSecurityManager;
 use Prado\Web\{THttpRequest, THttpResponse, THttpSession};
 use Prado\Web\TAssetManager;
+use Prado\Util\TComposerReflection;
 use Prado\Util\TLogger;
 use Prado\Web\Services\TPageService;
 use Prado\Web\UI\TTemplateManager;
@@ -2201,12 +2202,9 @@ class TApplication extends TComponent implements ISingleton
 
 		Prado::trace("Loading module $id ({$moduleClass})", TApplication::class);
 		$module = Prado::createComponent($moduleClass);
-		foreach ($initProperties as $name => $value) {
-			if ($name === 'lazy') {
-				continue;
-			}
-			$module->setSubProperty($name, $value);
-		}
+		$moduleProperties = $initProperties;
+		unset($moduleProperties['lazy']);
+		$module->setSubProperties($moduleProperties);
 		$this->setModule($id, $module);
 		// keep the key to avoid reuse of the old module id
 		$this->setLazyModule($id, null);
@@ -2589,11 +2587,15 @@ class TApplication extends TComponent implements ISingleton
 			Prado::using($using);
 		}
 
+		// register extension class map (data, no code execution) and extra message files
+		Prado::registerClassMap($config->getClassMap());
+		foreach ($config->getErrorMessages() as $messageFile) {
+			TException::addMessageFile($messageFile);
+		}
+
 		// set application properties
 		if (!$withinService) {
-			foreach ($config->getProperties() as $name => $value) {
-				$this->setSubProperty($name, $value);
-			}
+			$this->setSubProperties($config->getProperties());
 		}
 
 		// load services, provide for modules
@@ -2609,9 +2611,7 @@ class TApplication extends TComponent implements ISingleton
 		foreach ($config->getParameters() as $id => $parameter) {
 			if (is_array($parameter)) {
 				$component = Prado::createComponent($parameter[0]);
-				foreach ($parameter[1] as $name => $value) {
-					$component->setSubProperty($name, $value);
-				}
+				$component->setSubProperties($parameter[1]);
 				$component->dyInit($parameter[2]);
 				$appParams->add($id, $component);
 			} else {
@@ -2695,9 +2695,15 @@ class TApplication extends TComponent implements ISingleton
 		$configFile = $this->getConfigurationFile();
 		if ($configFile !== null) {
 			$cacheFile = $this->getCacheFile();
-			if ($cacheFile === null || @filemtime($cacheFile) < filemtime($configFile)) {
+			// The cached config bakes in the installed extensions' error-message and
+			// class-map files, so it is also stale when any Composer installed.json
+			// changes (a package installed, updated, or removed), not just the config file.
+			if ($cacheFile === null
+					|| ($cacheTime = @filemtime($cacheFile)) < filemtime($configFile)
+					|| (($manifestsTime = TComposerReflection::getInstalledManifestsTime()) !== null && $cacheTime < $manifestsTime)) {
 				$cn = $this->getApplicationConfigurationClass();
 				$config = new $cn();
+				$config->captureComposerExtensions();
 				$config->loadFromFile($configFile);
 				if ($cacheFile !== null) {
 					file_put_contents($cacheFile, serialize($config), LOCK_EX);
@@ -2759,10 +2765,7 @@ class TApplication extends TComponent implements ISingleton
 		}
 		$service->setID($serviceID);
 		$this->setService($service);
-
-		foreach ($initProperties as $name => $value) {
-			$service->setSubProperty($name, $value);
-		}
+		$service->setSubProperties($initProperties);
 
 		if ($configElement !== null) {
 			$cn = $this->getApplicationConfigurationClass();

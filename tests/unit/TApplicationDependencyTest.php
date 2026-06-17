@@ -608,6 +608,8 @@ class TApplicationDependencyTest extends PHPUnit\Framework\TestCase
 		$cfg->method('getIsEmpty')->willReturn(false);
 		$cfg->method('getAliases')->willReturn([]);
 		$cfg->method('getUsings')->willReturn([]);
+		$cfg->method('getClassMap')->willReturn([]);
+		$cfg->method('getErrorMessages')->willReturn([]);
 		$cfg->method('getProperties')->willReturn([]);
 		$cfg->method('getServices')->willReturn([]);
 		$cfg->method('getParameters')->willReturn([]);

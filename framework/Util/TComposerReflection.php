@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TComposer class file
+ * TComposerReflection class file
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
@@ -18,21 +18,23 @@ use Prado\Caching\TFileCacheDependency;
 use Prado\Prado;
 
 /**
- * TComposer class
+ * TComposerReflection class
  *
- * TComposer reads the Composer metadata of the project. It collects every installed
+ * TComposerReflection reads the Composer metadata of the project. It collects every installed
  * package from the `installed.json` manifest of each registered Composer vendor
  * directory and exposes the package data and the `extra` fields to the application.
+ * A package's absolute install path is available via {@see getPackagePath()}, read
+ * from Composer's {@see \Composer\InstalledVersions} runtime.
  *
  * The installed packages are read from the registered {@see \Composer\Autoload\ClassLoader}
  * loaders. The result is cached using the application cache, keyed by
- * {@see TComposer::COMPOSER_INSTALLED_CACHE}, with a file dependency on each
+ * {@see TComposerReflection::COMPOSER_INSTALLED_CACHE}, with a file dependency on each
  * `installed.json` so the cache invalidates when the installed packages change.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
  */
-class TComposer extends \Prado\TComponent
+class TComposerReflection extends \Prado\TComponent
 {
 	/**
 	 * The cache name for the installed Prado Composer packages.
@@ -122,6 +124,28 @@ class TComposer extends \Prado\TComponent
 			self::$_packages = static::loadInstalledPackages();
 		}
 		return self::$_packages;
+	}
+
+	/**
+	 * Returns the latest modification time across the `installed.json` manifests of
+	 * every registered Composer vendor directory. Composer rewrites these files when
+	 * packages are installed, updated, or removed, so the value changes whenever the
+	 * set of installed packages (or any package's `extra` metadata) changes. Callers
+	 * use it to invalidate caches derived from the installed packages.
+	 * @return null|int the newest manifest modification time, or null when no
+	 *   manifest exists.
+	 * @since 4.4.0
+	 */
+	public static function getInstalledManifestsTime(): ?int
+	{
+		$time = null;
+		foreach (ClassLoader::getRegisteredLoaders() as $vendorDir => $loader) {
+			$file = $vendorDir . DIRECTORY_SEPARATOR . 'composer' . DIRECTORY_SEPARATOR . 'installed.json';
+			if (is_file($file) && ($mtime = filemtime($file)) !== false) {
+				$time = ($time === null) ? $mtime : max($time, $mtime);
+			}
+		}
+		return $time;
 	}
 
 	/**

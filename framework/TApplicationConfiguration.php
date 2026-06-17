@@ -10,48 +10,256 @@
 
 namespace Prado;
 
-use Composer\Autoload\ClassLoader;
-use Prado\Caching\TChainedCacheDependency;
-use Prado\Caching\TFileCacheDependency;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
+use Prado\Util\TComposerReflection;
+use Prado\Util\Traits\TModuleConfigurationFileTrait;
 use Prado\Xml\TXmlDocument;
 
 /**
- * TApplicationConfiguration class.
+ * TApplicationConfiguration class
  *
- * This class is used internally by TApplication to parse and represent application configuration.
+ * TApplicationConfiguration parses an application configuration file, either XML
+ * (`application.xml`) or PHP (an array returned from `application.php`), into a
+ * structured, cache-safe form that {@see TApplication::applyConfiguration()}
+ * consumes. Both formats describe the same logical sections:
+ *
+ * - **Application properties** are direct property assignments on
+ *   {@see TApplication} (for example `Mode`, `DefaultModule`).
+ * - **Paths** are `aliases` (named directory shortcuts resolved via
+ *   {@see \Prado\Prado::setPathOfAlias()}) and `using` namespaces forwarded to
+ *   {@see \Prado\Prado::using()}.
+ * - **Includes** are recursive include entries, optionally guarded by a `when`
+ *   expression evaluated against the live application.
+ * - **Error messages** are extra exception-message files declared by `<errorMessage>`
+ *   tags (XML), an `errormessages` key (PHP), or any installed Composer extension's
+ *   `extra.prado.error-messages` (system-wide). Their absolute paths are exposed via
+ *   {@see getErrorMessages()}.
+ * - **Class map** is the Prado3-namespace class map (class name => PHP FQN) declared
+ *   by any installed Composer extension's `extra.prado.class-map` (system-wide, data
+ *   only), exposed via {@see getClassMap()}.
+ * - **Modules** are declarative module registrations, instantiated in dependency
+ *   order during {@see TApplication::applyConfiguration()}. A module id that is a
+ *   Composer package name (`vendor/package`) resolves its class from the package's
+ *   bootstrap declaration via {@see getComposerExtensionClass()}.
+ * - **Services** are service-class registrations stored as three-element tuples
+ *   `[class, properties, configElement]`. The body (`configElement`) is held
+ *   lazily until {@see TApplication::startService()} resolves a request; at that
+ *   point a fresh `TApplicationConfiguration` parses the body and is applied
+ *   recursively with `$withinService = true`, letting the service declare its own
+ *   modules, parameters, and includes that do not affect the application until the
+ *   service runs.
+ * - **Parameters** are named values exposed via {@see TApplication::getParameters()},
+ *   either bare scalars or component-typed entries.
+ *
+ * ### XML configuration
+ *
+ * ```xml
+ * <application id="my-app" Mode="Performance">
+ *
+ *   <include file="Application.Common.shared-config" when="$this->getMode() == 'Performance'"/>
+ *
+ *   <paths>
+ *     <alias id="Common" path="../common"/>
+ *     <using namespace="Application.Common.*"/>
+ *   </paths>
+ *
+ *   <errorMessage file="Application.messages.app-messages"/>
+ *
+ *   <parameters>
+ *     <parameter id="SiteName" value="My Site"/>
+ *     <parameter id="Mailer" class="MyMailer" Host="smtp.example.com"/>
+ *   </parameters>
+ *
+ *   <modules>
+ *     <module id="cache" class="Prado\Caching\TFileCache" Directory="runtime/cache"/>
+ *   </modules>
+ *
+ *   <services>
+ *     <service id="page" class="Prado\Web\Services\TPageService" DefaultPage="Home">
+ *       <!-- The body below is held lazily until the "page" service starts. -->
+ *       <parameters>
+ *         <parameter id="PageTitle" value="My Site"/>
+ *       </parameters>
+ *       <modules>
+ *         <module id="pageThemes" class="Prado\Web\UI\TThemeManager"/>
+ *       </modules>
+ *     </service>
+ *   </services>
+ *
+ * </application>
+ * ```
+ *
+ * ### PHP configuration
+ *
+ * Equivalent shape returned from `application.php`. Top-level keys mirror the XML
+ * element names.
+ *
+ * ```php
+ * return [
+ *   'application' => ['Mode' => 'Performance'],
+ *
+ *   'includes' => [
+ *     ['file' => 'Application.Common.shared-config', 'when' => '$this->getMode() == "Performance"'],
+ *   ],
+ *
+ *   'paths' => [
+ *     'aliases' => ['Common' => '../common'],
+ *     'using'   => ['Application.Common.*'],
+ *   ],
+ *
+ *   'errormessages' => ['Application.messages.app-messages'],
+ *
+ *   'parameters' => [
+ *     'SiteName' => 'My Site',
+ *     'Mailer'   => ['class' => 'MyMailer', 'properties' => ['Host' => 'smtp.example.com']],
+ *   ],
+ *
+ *   'modules' => [
+ *     'cache' => ['class' => Prado\Caching\TFileCache::class,
+ *                 'properties' => ['Directory' => 'runtime/cache']],
+ *   ],
+ *
+ *   'services' => [
+ *     'page' => ['class' => Prado\Web\Services\TPageService::class,
+ *                'properties' => ['DefaultPage' => 'Home'],
+ *                // Held verbatim until the service starts, then parsed
+ *                // by a fresh TApplicationConfiguration:
+ *                'modules'    => [ ... ],
+ *                'parameters' => [ ... ]],
+ *   ],
+ * ];
+ * ```
+ *
+ * ### Composer extension packages
+ *
+ * An installed Composer package that declares an `extra.prado` section is a Prado
+ * extension. Its fields:
+ *
+ * | Field            | Value                                      | Effect |
+ * |------------------|--------------------------------------------|--------|
+ * | `bootstrap`      | bootstrap {@see \Prado\TModule} class name | Opt-in module by id |
+ * | `error-messages` | path or array of paths                     | System-wide message files |
+ * | `class-map`      | map, JSON file, or array of both           | System-wide class map (data) |
+ *
+ * `bootstrap` runs as a module only when `<module id="vendor/package"/>` appears in
+ * `<modules>`; {@see getComposerExtensionClass()} resolves the class, falling back to the
+ * legacy top-level `extra.bootstrap` ({@see getComposerExtensionClassLegacy()}, deprecated).
+ * Giving such a module an explicit `class` is an error, since the class comes from the package.
+ *
+ * `error-messages` and `class-map` load for every installed extension, independent of the
+ * bootstrap module, and {@see TApplication::applyConfiguration()} applies them before any
+ * module initializes.
+ *
+ * `error-messages` is a package-relative path (or array of paths) to message files, resolved
+ * to absolute via {@see \Prado\Util\TComposerReflection::getPackagePath()} and registered with
+ * {@see \Prado\Exceptions\TException::addMessageFile()} (exposed by {@see getErrorMessages()}).
+ *
+ * `class-map` is data, never executed. A single value is treated as a one-element array; in
+ * the array a non-numeric key is a Prado3 class name mapped to its PHP FQN, and a numeric key
+ * (a list entry) is a package-relative path to a JSON file holding such a map. The merged
+ * map is exposed via {@see getClassMap()} and registered with {@see \Prado\Prado::registerClassMap()};
+ * the first declaration of a class name wins.
+ *
+ * ```json
+ * {
+ *   "name": "acme/prado-extension",
+ *   "extra": {
+ *     "bootstrap":     "OldKeyIs\\Deprecated\\TBootstrapModule",
+ *     "prado": {
+ *       "bootstrap":      "Acme\\PradoExtension\\TBootstrapModule",
+ *       "error-messages": "messages/acme-messages.txt",
+ *       "class-map":      { "TAcmeWidget": "Acme\\Widget\\TAcmeWidget", "0": "config/more-classes.json" }
+ *     }
+ *   }
+ * }
+ * ```
+ *
+ * ```xml
+ * <!-- Using the extension's bootstrap module in the application configuration.
+ *      Its error-messages and class-map load system-wide even without this entry. -->
+ * <modules>
+ *   <module id="acme/prado-extension"/>
+ * </modules>
+ * ```
+ *
+ * ### How a parsed configuration is applied
+ *
+ * {@see TApplication::applyConfiguration()} consumes the parsed object in this
+ * order: path aliases and usings → class map ({@see \Prado\Prado::registerClassMap()})
+ * and error-message files ({@see \Prado\Exceptions\TException::addMessageFile()}) →
+ * application properties (skipped under `$withinService`) → service registrations →
+ * parameters → modules (instantiate → sort by {@see \Prado\Util\IModuleDependency}
+ * → `dyPreInit` → `init` → `dyPostInit`) → recursive includes. Services do not
+ * start here; each service's
+ * `configElement` is reparsed and applied via a fresh `TApplicationConfiguration`
+ * only when {@see TApplication::startService()} resolves a request.
+ *
+ * ### File I/O
+ *
+ * {@see loadFromFile()} delegates the actual read to {@see readConfigurationFile()},
+ * which subclasses override to add formats (JSON, YAML, in-memory test payloads).
+ * When the configuration type is `null`, the file extension picks PHP vs. XML.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>
+ * @author Brad Anderson <belisoful@icloud.com> Composer Bootstrap, error messages,
+ *		class maps
  * @since 3.0
  */
-class TApplicationConfiguration extends \Prado\TComponent
+class TApplicationConfiguration extends \Prado\TApplicationComponent
 {
+	use TModuleConfigurationFileTrait;
 	/**
-	 * The cache name for installed Prado composer packages
-	 */
-	public const COMPOSER_INSTALLED_CACHE = 'prado:composer:installedcache';
-	/**
-	 * Name of the Extra field to look for Prado Extension Class
+	 * Name of the Composer field naming a package's Prado bootstrap module class,
+	 * read from `extra.prado.bootstrap` (preferred) or the legacy `extra.bootstrap`.
 	 */
 	public const COMPOSER_EXTRA_CLASS = 'bootstrap';
 	/**
-	 * @var array list of application initial property values, indexed by property names
+	 * Name of the `extra.prado` field naming a package's exception message
+	 * file(s) (a string or array of paths relative to the package), registered
+	 * via {@see \Prado\Exceptions\TException::addMessageFile()}.
+	 * @since 4.4.0
 	 */
-	private $_properties = [];
+	public const COMPOSER_EXTRA_ERRORMESSAGES = 'error-messages';
 	/**
-	 * @var array list of namespaces to be used
+	 * Name of the `extra.prado` field carrying a package's Prado3-namespace class map
+	 * (data, never executed). The value is a class name => PHP FQN map, a package-relative
+	 * path to a JSON file holding such a map, or an array mixing both (string keys are
+	 * class names, integer keys are JSON file paths). Merged into the autoloader via
+	 * {@see \Prado\Prado::registerClassMap()}.
+	 * @since 4.4.0
 	 */
-	private $_usings = [];
+	public const COMPOSER_EXTRA_CLASSMAP = 'class-map';
+	/**
+	 * @var array list of included configurations
+	 */
+	private $_includes = [];
 	/**
 	 * @var array list of path aliases, indexed by alias names
 	 */
 	private $_aliases = [];
 	/**
-	 * @var array list of module configurations
+	 * @var array list of namespaces to be used
 	 */
-	private $_modules = [];
+	private $_usings = [];
+	/**
+	 * @var array<string, string> merged Prado3-namespace class map (class name =>
+	 *   PHP FQN) collected from installed extensions, applied via
+	 *   {@see \Prado\Prado::registerClassMap()} at apply time.
+	 * @since 4.4.0
+	 */
+	private $_classMap = [];
+	/**
+	 * @var string[] absolute paths of extra exception message files to register
+	 *   via {@see \Prado\Exceptions\TException::addMessageFile()} at apply time.
+	 * @since 4.4.0
+	 */
+	private $_errorMessages = [];
+	/**
+	 * @var array list of application initial property values, indexed by property names
+	 */
+	private $_properties = [];
 	/**
 	 * @var array list of service configurations
 	 */
@@ -61,32 +269,65 @@ class TApplicationConfiguration extends \Prado\TComponent
 	 */
 	private $_parameters = [];
 	/**
-	 * @var array list of included configurations
+	 * @var array list of module configurations
 	 */
-	private $_includes = [];
+	private $_modules = [];
 	/**
 	 * @var bool whether this configuration contains actual stuff
 	 */
 	private $_empty = true;
 	/**
-	 * @var array<string, string> name/id of the composer extension and class for extension
+	 * @var ?string configuration type used while parsing ({@see TApplication::CONFIG_TYPE_PHP}
+	 *   or {@see TApplication::CONFIG_TYPE_XML}); `null` defers to the application
+	 *   then to extension-based auto-detect.
+	 * @since 4.4.0
 	 */
-	private static $_composerPlugins;
+	private $_configurationType;
 
 	/**
-	 * Parses the application configuration file.
-	 * @param string $fname configuration file name
+	 * @return ?string the configuration type used while parsing, or `null` when
+	 *   not set (defers to the application then to extension auto-detect).
+	 * @since 4.4.0
+	 */
+	public function getConfigurationType(): ?string
+	{
+		return $this->_configurationType;
+	}
+
+	/**
+	 * Sets the configuration type used while parsing, the first fallback for a
+	 * `null` `$type` in {@see loadFromFile()}.
+	 * @param ?string $value the configuration type ({@see TApplication::CONFIG_TYPE_PHP}
+	 *   or {@see TApplication::CONFIG_TYPE_XML}), or `null` to defer.
+	 * @since 4.4.0
+	 */
+	public function setConfigurationType(?string $value): void
+	{
+		$this->_configurationType = $value;
+	}
+
+	/**
+	 * Parses the application configuration file. Delegates the raw read to
+	 * {@see readConfigurationFile()} and dispatches the result by shape:
+	 * `array` → {@see loadFromPhp()}, {@see TXmlDocument} → {@see loadFromXml()},
+	 * `null` → no-op.
+	 * @param string $fname configuration file name.
+	 * @param ?string $type configuration type ({@see TApplication::CONFIG_TYPE_PHP}
+	 *   or {@see TApplication::CONFIG_TYPE_XML}). When `null`, falls back to
+	 *   {@see getConfigurationType()}, then the active application's type, then
+	 *   extension-based auto-detect.
 	 * @throws TConfigurationException if there is any parsing error
 	 */
-	public function loadFromFile($fname)
+	public function loadFromFile($fname, ?string $type = null)
 	{
-		if (Prado::getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
-			$fcontent = include $fname;
-			$this->loadFromPhp($fcontent, dirname($fname));
-		} else {
-			$dom = new TXmlDocument();
-			$dom->loadFromFile($fname);
-			$this->loadFromXml($dom, dirname($fname));
+		$type ??= $this->getConfigurationType();
+		$type ??= $this->getApplication()?->getConfigurationType();
+		$content = $this->readConfigurationFile($type, $fname);
+
+		if ($content instanceof TXmlDocument) {
+			$this->loadFromXml($content, dirname($fname));
+		} elseif (is_array($content)) {
+			$this->loadFromPhp($content, dirname($fname));
 		}
 	}
 
@@ -130,7 +371,16 @@ class TApplicationConfiguration extends \Prado\TComponent
 		}
 
 		if (isset($config['includes']) && is_array($config['includes'])) {
-			$this->loadExternalXml($config['includes'], $configPath);
+			$this->loadExternalPhp($config['includes'], $configPath);
+		}
+
+		if (isset($config['errormessages'])) {
+			foreach ((array) $config['errormessages'] as $file) {
+				if (is_string($file) && $file !== '') {
+					$this->addErrorMessageFile($file, $configPath);
+					$this->_empty = false;
+				}
+			}
 		}
 	}
 
@@ -163,6 +413,13 @@ class TApplicationConfiguration extends \Prado\TComponent
 					break;
 				case 'include':
 					$this->loadExternalXml($element, $configPath);
+					break;
+				case 'errorMessage':
+					$file = $element->getAttribute('file');
+					if ($file !== null && $file !== '') {
+						$this->addErrorMessageFile($file, $configPath);
+						$this->_empty = false;
+					}
 					break;
 				default:
 					//throw new TConfigurationException('appconfig_tag_invalid',$element->getTagName());
@@ -251,56 +508,35 @@ class TApplicationConfiguration extends \Prado\TComponent
 	}
 
 	/**
-	 * Reads the Composer static RegisteredLoaders for their Vendor Directory. Reads the Vendor
-	 * Directory composer file 'installed.json' (accumulated extensions composer.json) for the project.
-	 * The ['extra']['bootstrap'] field is read for each extension, if it's there.
-	 * @return array<string, string> the extension name and bootstrap class.
-	 * @since 4.2.0
-	 */
-	protected function getComposerExtensionBootStraps()
-	{
-		if ($cache = Prado::getApplication()->getCache()) {
-			$plugins = $cache->get(self::COMPOSER_INSTALLED_CACHE);
-			if ($plugins !== null) {
-				return $plugins;
-			}
-		}
-		$dependencies = new TChainedCacheDependency();
-		$listDeps = $dependencies->getDependencies();
-		$plugins = [];
-		foreach (ClassLoader::getRegisteredLoaders() as $vendorDir => $loader) {
-			$file = $vendorDir . DIRECTORY_SEPARATOR . 'composer' . DIRECTORY_SEPARATOR . 'installed.json';
-			$manifests = json_decode(file_get_contents($file), true, 512, JSON_THROW_ON_ERROR);
-
-			// Loop through the installed packages
-			foreach ($manifests['packages'] as $package) {
-				$name = $package['name'];
-				if (isset($package['extra']) && isset($package['extra'][self::COMPOSER_EXTRA_CLASS])) {
-					$plugins[$name] = $package['extra'][self::COMPOSER_EXTRA_CLASS];
-					//$packagepath =  realpath($vendorDir . DIRECTORY_SEPARATOR . 'composer' . DIRECTORY_SEPARATOR . $package['install-path']);
-				}
-			}
-			$listDeps[] = new TFileCacheDependency($file);
-		}
-		if ($cache) {
-			$cache->set(self::COMPOSER_INSTALLED_CACHE, $plugins, null, $dependencies);
-		}
-		return $plugins;
-	}
-
-	/**
-	 * Given a module id as a composer package name, returns the extension bootstrap
-	 * {@see \Prado\TModule} class.
-	 * @param string $name the name of the Composer Extension.
-	 * @return null|string the bootstrap class of the Composer Extension.
+	 * Returns the bootstrap {@see \Prado\TModule} class a Composer package declares.
+	 * Read from `extra.prado.bootstrap` (preferred); falls back to the legacy
+	 * `extra.bootstrap` via {@see getComposerExtensionClassLegacy()}. Used to
+	 * resolve a module id that is a Composer package name (`vendor/package`).
+	 * @param string $name the Composer package name, for example `vendor/package`.
+	 * @return null|string the bootstrap class, or null when the package declares none.
 	 * @since 4.2.0
 	 */
 	public function getComposerExtensionClass($name)
 	{
-		if (self::$_composerPlugins === null) {
-			self::$_composerPlugins = $this->getComposerExtensionBootStraps();
+		$class = TComposerReflection::getPradoExtra($name, self::COMPOSER_EXTRA_CLASS);
+		if (!is_string($class)) {
+			$class = $this->getComposerExtensionClassLegacy($name);
 		}
-		return self::$_composerPlugins[$name] ?? null;
+		return is_string($class) ? $class : null;
+	}
+
+	/**
+	 * Returns the bootstrap class from the legacy un-nested `extra.bootstrap`
+	 * Composer field.
+	 * @param string $name the Composer package name, for example `vendor/package`.
+	 * @return null|string the bootstrap class, or null when the field is absent.
+	 * @deprecated 4.4.0 declare the bootstrap under `extra.prado.bootstrap` instead.
+	 * @since 4.4.0
+	 */
+	protected function getComposerExtensionClassLegacy($name)
+	{
+		$class = TComposerReflection::getExtra($name, self::COMPOSER_EXTRA_CLASS);
+		return is_string($class) ? $class : null;
 	}
 
 	/**
@@ -471,7 +707,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 	protected function loadExternalPhp($includeNode, $configPath)
 	{
 		foreach ($includeNode as $include) {
-			$when = isset($include['when']) ? true : false;
+			$when = $include['when'] ?? true;
 			if (!isset($include['file'])) {
 				throw new TConfigurationException('appconfig_includefile_required');
 			}
@@ -591,5 +827,163 @@ class TApplicationConfiguration extends \Prado\TComponent
 	public function getExternalConfigurations()
 	{
 		return $this->_includes;
+	}
+
+	/**
+	 * Returns the absolute paths of extra exception message files declared by the
+	 * configuration (`<errorMessage>` tags) and by every installed Composer extension
+	 * (`extra.prado.error-messages`, captured by {@see captureComposerExtensions()}).
+	 * {@see TApplication} registers each via
+	 * {@see \Prado\Exceptions\TException::addMessageFile()}.
+	 * @return string[] absolute message-file paths in declaration order.
+	 * @since 4.4.0
+	 */
+	public function getErrorMessages()
+	{
+		return $this->_errorMessages;
+	}
+
+	/**
+	 * Returns the merged Prado3-namespace class map declared by every installed
+	 * Composer extension (`extra.prado.class-map`, captured by
+	 * {@see captureComposerExtensions()}). {@see TApplication} merges it into the
+	 * autoloader via {@see \Prado\Prado::registerClassMap()}.
+	 * @return array<string, string> class name => PHP FQN, first declaration winning.
+	 * @since 4.4.0
+	 */
+	public function getClassMap()
+	{
+		return $this->_classMap;
+	}
+
+	/**
+	 * Adds an extra exception message file by namespace or path, resolved
+	 * relative to `$configPath` when not a Prado namespace. Deduplicated.
+	 * @param string $file the message file namespace or path.
+	 * @param string $configPath the configuration directory for relative paths.
+	 * @since 4.4.0
+	 */
+	protected function addErrorMessageFile(string $file, string $configPath): void
+	{
+		$path = Prado::getPathOfNamespace($file);
+		if ($path === null || !is_file($path)) {
+			$path = (preg_match('#^(?:[a-zA-Z]:)?[/\\\\]#', $file) ? $file : $configPath . DIRECTORY_SEPARATOR . $file);
+		}
+		if (!in_array($path, $this->_errorMessages, true)) {
+			$this->_errorMessages[] = $path;
+		}
+	}
+
+	/**
+	 * Captures the error-message files and class map of every installed Prado
+	 * Composer extension, independent of the application configuration. A package
+	 * is a Prado extension when it declares an `extra.prado` section. Each such
+	 * package's `extra.prado.error-messages` and `extra.prado.class-map` are recorded
+	 * for {@see TApplication::applyConfiguration()} to register before any module
+	 * initializes. The presence of an extension's bootstrap module in the
+	 * configuration is a separate opt-in for running that module; it does not
+	 * affect these system-wide entries.
+	 *
+	 * Intended to run once for the top-level application configuration, so the
+	 * captured data is serialized with the configuration cache.
+	 * {@see TApplication::initApplication()} invalidates that cache when any Composer
+	 * `installed.json` changes (via {@see \Prado\Util\TComposerReflection::getInstalledManifestsTime()}),
+	 * so installing, updating, or removing an extension is picked up on the next request.
+	 * @since 4.4.0
+	 */
+	public function captureComposerExtensions(): void
+	{
+		foreach (array_keys(TComposerReflection::getInstalledPackages()) as $name) {
+			if (TComposerReflection::getPradoExtra($name) !== null) {
+				$this->captureComposerExtensionExtras($name);
+			}
+		}
+	}
+
+	/**
+	 * Captures the `extra.prado` error-message files and class map a single Prado
+	 * Composer extension declares, resolving package-relative paths against the
+	 * package directory ({@see \Prado\Util\TComposerReflection::getPackagePath()}). The
+	 * `error-messages` field is a path or array of paths, deduplicated to absolute
+	 * paths. The `class-map` field is a class name => PHP FQN map, a JSON file path,
+	 * or an array mixing both ({@see mergeClassMap()}, {@see readClassMapFile()}). A
+	 * package that is not installed (no resolvable path) is skipped.
+	 * @param string $name the Composer package name (`vendor/package`).
+	 * @since 4.4.0
+	 */
+	protected function captureComposerExtensionExtras(string $name): void
+	{
+		$base = TComposerReflection::getPackagePath($name);
+		if ($base === null) {
+			return;
+		}
+		foreach ((array) (TComposerReflection::getPradoExtra($name, self::COMPOSER_EXTRA_ERRORMESSAGES) ?? []) as $file) {
+			if (is_string($file) && $file !== '') {
+				$path = $base . DIRECTORY_SEPARATOR . $file;
+				if (!in_array($path, $this->_errorMessages, true)) {
+					$this->_errorMessages[] = $path;
+					$this->_empty = false;
+				}
+			}
+		}
+		foreach ((array) (TComposerReflection::getPradoExtra($name, self::COMPOSER_EXTRA_CLASSMAP) ?? []) as $key => $value) {
+			if (is_numeric($key)) {
+				if (is_string($value) && $value !== '') {
+					$this->mergeClassMap($this->readClassMapFile($base . DIRECTORY_SEPARATOR . $value));
+				}
+			} elseif (is_string($value)) {
+				$this->mergeClassMap([$key => $value]);
+			}
+		}
+	}
+
+	/**
+	 * Merges class name => PHP FQN entries into the collected class map. Only
+	 * non-empty string keys and values are kept, and the first declaration of a
+	 * class name wins, so neither an extension file nor a later extension can shadow
+	 * an earlier mapping.
+	 * @param array $map the class name => PHP FQN entries to merge.
+	 * @since 4.4.0
+	 */
+	protected function mergeClassMap(array $map): void
+	{
+		foreach ($map as $class => $fqn) {
+			if (is_string($class) && $class !== '' && is_string($fqn) && $fqn !== '' && !isset($this->_classMap[$class])) {
+				$this->_classMap[$class] = $fqn;
+				$this->_empty = false;
+			}
+		}
+	}
+
+	/**
+	 * Reads a JSON class-map file into a class name => PHP FQN array. The file is
+	 * parsed as data with no code execution; a missing file or content that is not a
+	 * JSON object yields an empty map. Invalid entries are filtered by
+	 * {@see mergeClassMap()}.
+	 * @param string $path the absolute path to the JSON class-map file.
+	 * @return array the decoded class map, or an empty array.
+	 * @since 4.4.0
+	 */
+	protected function readClassMapFile(string $path): array
+	{
+		$contents = $this->getFileContents($path);
+		if (!is_string($contents)) {
+			return [];
+		}
+		$data = json_decode($contents, true);
+		return is_array($data) ? $data : [];
+	}
+
+	/**
+	 * Reads a file's contents, the seam isolating filesystem access from
+	 * {@see readClassMapFile()} so tests can supply class-map JSON without a file on
+	 * disk. A missing or unreadable file yields `false`.
+	 * @param string $path the absolute file path.
+	 * @return false|string the file contents, or `false` when the file is absent or unreadable.
+	 * @since 4.4.0
+	 */
+	protected function getFileContents(string $path): string|false
+	{
+		return is_file($path) ? file_get_contents($path) : false;
 	}
 }
