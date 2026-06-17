@@ -69,7 +69,7 @@ class TTestStreamDecorator extends TStreamDecorator
 				$this->_built = true;
 				$this->builds++;
 			}
-			return $this->getStreamDirect();
+			return parent::getStream();
 		}
 		return parent::getStream();
 	}

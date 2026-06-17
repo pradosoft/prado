@@ -304,6 +304,41 @@ class TStreamTest extends PHPUnit\Framework\TestCase
 		$s->close();
 	}
 
+	public function testAppendFilterByClassStringAutoRegisters()
+	{
+		// A TStreamFilter subclass class-string is registered once and uses its default mode.
+		$s = TStream::fromMemory();
+		$handle = $s->appendFilter(TStreamTestUpcaseFilter::class);   // default mode is WRITE
+		self::assertNotFalse($handle);
+		self::assertTrue(TStreamTestUpcaseFilter::isRegistered());
+		self::assertSame(['prado.test.stream.upcase'], $s->getFilterNames(), 'The registered name is tracked.');
+		$s->write('abc');
+		$s->seek(0);
+		self::assertSame('ABC', $s->getContents());
+		$s->close();
+	}
+
+	public function testPrependFilterByClassStringWithExplicitMode()
+	{
+		$s = TStream::fromMemory();
+		$handle = $s->prependFilter(TStreamTestUpcaseFilter::class, STREAM_FILTER_WRITE);
+		self::assertNotFalse($handle);
+		$s->write('xy');
+		$s->seek(0);
+		self::assertSame('XY', $s->getContents());
+		$s->close();
+	}
+
+	public function testAppendFilterByPlainNameStillWorks()
+	{
+		$s = TStream::fromMemory();
+		$s->appendFilter('string.rot13', STREAM_FILTER_WRITE);   // plain name, explicit mode
+		$s->write('hello');
+		$s->seek(0);
+		self::assertSame('uryyb', $s->getContents());
+		$s->close();
+	}
+
 	public function testRemoveFilterByName()
 	{
 		$s = TStream::fromMemory();
@@ -333,6 +368,22 @@ class TStreamTest extends PHPUnit\Framework\TestCase
 		$s = TStream::fromString('x');
 		$s->detach();
 		self::assertFalse($s->appendFilter('string.rot13'));
+	}
+
+	public function testRemoveFilterOnDetachedReturnsFalse()
+	{
+		$s = TStream::fromString('x');
+		$s->appendFilter('string.rot13', STREAM_FILTER_WRITE);
+		$s->detach();
+		self::assertFalse($s->removeFilter('string.rot13'), 'Removing a filter on a detached stream is a no-op.');
+	}
+
+	public function testFilterExistsIsExactMatchNotWildcard()
+	{
+		// stream_get_filters() lists the wildcard name 'zlib.*', not the concrete 'zlib.deflate'.
+		self::assertTrue(TStream::filterExists('string.rot13'), 'An exactly-registered name is found.');
+		self::assertFalse(TStream::filterExists('zlib.deflate'), 'A concrete name under the zlib.* wildcard is not an exact match.');
+		self::assertFalse(TStream::filterExists('definitely-not-a-filter'));
 	}
 
 	public function testFilterLookupByNameAndHandle()
@@ -524,5 +575,27 @@ class TNoReadWriteBehavior extends \Prado\Util\TBehavior
 			$chain->dyIsWritable($writable);
 		}
 		return false;
+	}
+}
+
+/**
+ * Upper-casing filter for exercising {@see TStream::appendFilter()} with a class-string.
+ */
+class TStreamTestUpcaseFilter extends \Prado\IO\Filter\TStreamFilter
+{
+	public static function getFilterName(): string
+	{
+		return 'prado.test.stream.upcase';
+	}
+
+	public static function getDefaultMode(): int
+	{
+		return STREAM_FILTER_WRITE;
+	}
+
+	protected function convert(object $bucket, bool $closing): int
+	{
+		$bucket->data = strtoupper($bucket->data);
+		return PSFS_PASS_ON;
 	}
 }

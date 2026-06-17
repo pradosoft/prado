@@ -29,8 +29,15 @@ use Psr\Http\Message\StreamInterface;
  */
 abstract class TStreamDecorator extends TComponent implements StreamInterface
 {
+	/** @var int The default chunk size used when draining the stream a piece at a time. */
+	public const CHUNK_SIZE = 8192;
+
 	/** @var StreamInterface The wrapped inner stream. */
 	private StreamInterface $_stream;
+
+	// =========================================================================
+	// Construction
+	// =========================================================================
 
 	/**
 	 * @param ?StreamInterface $stream The inner stream to decorate; null defers it to a
@@ -44,15 +51,17 @@ abstract class TStreamDecorator extends TComponent implements StreamInterface
 		parent::__construct();
 	}
 
-	//
-	// ─── Self-encapsulated raw accessors ─────────────────────────────────────
-	//
+	// =========================================================================
+	// Self-encapsulated raw accessors
+	// =========================================================================
 
 	/**
-	 * Returns the raw inner stream.
-	 * @return StreamInterface The raw inner stream.
+	 * Returns the inner stream.  Subclasses may override this to build it on first use.
+	 * Every forwarding method reads the inner stream through this accessor, so an
+	 * override is honored uniformly.
+	 * @return StreamInterface The wrapped inner stream.
 	 */
-	protected function getStreamDirect(): StreamInterface
+	public function getStream(): StreamInterface
 	{
 		return $this->_stream;
 	}
@@ -66,31 +75,21 @@ abstract class TStreamDecorator extends TComponent implements StreamInterface
 		$this->_stream = $value;
 	}
 
-	/**
-	 * Returns the inner stream.  Subclasses may override this to build it on first use.
-	 * Every forwarding method reads the inner stream through this accessor, so an
-	 * override is honored uniformly.
-	 * @return StreamInterface The wrapped inner stream.
-	 */
-	public function getStream(): StreamInterface
-	{
-		return $this->getStreamDirect();
-	}
+	// =========================================================================
+	// Stream Interface
+	// =========================================================================
 
 	/**
 	 * Reads the entire stream into a string from the beginning.
-	 * @return string The full stream contents, or '' when it cannot be read.
+	 * A read failure propagates.
+	 * @return string The full stream contents.
 	 */
 	public function __toString(): string
 	{
-		try {
-			if ($this->isSeekable()) {
-				$this->seek(0);
-			}
-			return $this->getContents();
-		} catch (\Throwable $e) {
-			return '';
+		if ($this->isSeekable()) {
+			$this->seek(0);
 		}
+		return $this->getContents();
 	}
 
 	/**
@@ -211,7 +210,7 @@ abstract class TStreamDecorator extends TComponent implements StreamInterface
 	{
 		$contents = '';
 		while (!$this->eof()) {
-			$chunk = $this->read(8192);
+			$chunk = $this->read(static::CHUNK_SIZE);
 			if ($chunk === '') {
 				break;
 			}

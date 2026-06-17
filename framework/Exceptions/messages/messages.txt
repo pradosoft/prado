@@ -564,8 +564,18 @@ dbtablegateway_mismatch_column_name		= In dynamic __call() method '{0}', no matc
 dbtablegateway_invalid_table_info		= Table must be a string or an instance of TDbTableInfo.
 
 resource_not_a_resource					= Expected an open PHP resource but got '{0}'.
-stream_open_failed						= Unable to open stream '{0}' with mode '{1}'.
+stream_open_failed						= Unable to open stream '{0}' with mode '{1}': {2}
 streamresourcewrapper_unusable_stream	= The stream is neither readable nor writable and cannot be exposed as a resource.
+streamfilter_already_registered			= Stream filter '{0}' is already registered.
+streamfilter_registration_failed		= Unable to register stream filter '{0}' for class '{1}'.
+streamwrapper_already_registered		= Stream wrapper protocol '{0}' is already registered.
+streamwrapper_registration_failed		= Unable to register stream wrapper protocol '{0}' for class '{1}'.
+bitreader_invalid_bits					= Cannot read {0} bits; the count must be between 0 and the platform integer width.
+bitreader_64bit_php_required			= Reading {0} bits requires a 64-bit PHP build.
+bitreader_invalid_float_bits			= Cannot read a {0}-bit float; only 8, 16, 32, or 64 bits are supported.
+bitwriter_invalid_bits					= Cannot write {0} bits; the count must be between 0 and the platform integer width.
+bitwriter_64bit_php_required			= Writing {0} bits requires a 64-bit PHP build.
+bitwriter_invalid_float_bits			= Cannot write a {0}-bit float; only 8, 16, 32, or 64 bits are supported.
 
 httpclient_transport_error				= HTTP client transport error (code {0}): {1}
 httpclient_http_error					= HTTP error response with status {0}.
@@ -662,6 +672,9 @@ cron_task_required						= Cron Task must have a task.
 cron_not_a_crontask						= Cron Task '{0}' is not a TCronTask.
 cron_additional_tasks_invalid			= '{0}' is not a valid additional cron task.
 crontask_no_module						= TCronTask could not find module '{0}'.
+
+socketservermodule_url_required			= TSocketServerModule requires a ServerUrl, or a positive Port to compose one.
+socketservermodule_serverclass_invalid	= TSocketServerModule SocketServerClass '{0}' is invalid. It must be TSocketServer or a subclass.
 dbcronclean_moduleid_is_null			= TDbCronCleanLogTask could not find the specified module '{0}'.
 dbcron_invalid_name						= TDbCronManager the task name '{0}' is invalid .
 dbcron_conflicting_task_names			= Configuration cron tasks conflict with DB cron tasks '{0}'.

@@ -45,24 +45,23 @@ trait HttpServerTestTrait
 			return;
 		}
 
-		$cmd = sprintf(
-			'%s -S 127.0.0.1:%d %s',
-			escapeshellarg(PHP_BINARY),
-			$port,
-			escapeshellarg($router)
-		);
 		$descriptors = [
 			0 => ['pipe', 'r'],
 			1 => ['pipe', 'w'],
 			2 => ['pipe', 'w'],
 		];
-		// On Windows, detach the child from the console so that proc_terminate()
-		// uses TerminateProcess() directly instead of broadcasting a CTRL_C_EVENT
-		// to the whole process group (which would hang the phpunit.bat runner).
-		$options = PHP_OS_FAMILY === 'Windows'
-			? ['bypass_shell' => true, 'create_no_window' => true]
-			: [];
-		$proc = proc_open($cmd, $descriptors, $pipes, null, null, $options ?: null);
+		if (PHP_OS_FAMILY === 'Windows') {
+			// On Windows, detach the child from the console so that proc_terminate()
+			// uses TerminateProcess() directly instead of broadcasting a CTRL_C_EVENT
+			// to the whole process group (which would hang the phpunit.bat runner).
+			$cmd = sprintf('%s -S 127.0.0.1:%d %s', escapeshellarg(PHP_BINARY), $port, escapeshellarg($router));
+			$proc = proc_open($cmd, $descriptors, $pipes, null, null, ['bypass_shell' => true, 'create_no_window' => true]);
+		} else {
+			// Spawn php directly via the array form: no `/bin/sh -c` wrapper, so proc_terminate()
+			// signals the server itself rather than a shell that may leave php orphaned (the orphan
+			// would survive teardown and could hang the CI runner until its job timeout).
+			$proc = proc_open([PHP_BINARY, '-S', "127.0.0.1:{$port}", $router], $descriptors, $pipes);
+		}
 		if (!is_resource($proc)) {
 			self::$serverSkipReason = 'proc_open() failed to start the test server.';
 			return;
@@ -105,9 +104,16 @@ trait HttpServerTestTrait
 			// Terminating first ensures the child process is dead (or dying)
 			// before we touch the pipes, so their read ends reach EOF quickly
 			// and fclose() returns without spinning.
-			$status = proc_get_status(self::$serverProc);
-			if (!empty($status['running'])) {
-				proc_terminate(self::$serverProc);
+			if (!empty(proc_get_status(self::$serverProc)['running'])) {
+				proc_terminate(self::$serverProc);   // SIGTERM
+				// Bounded wait, then SIGKILL: proc_close() blocks until the child exits, so a server
+				// that ignores SIGTERM would hang teardown (and the CI job) indefinitely.
+				for ($i = 0; $i < 20 && !empty(proc_get_status(self::$serverProc)['running']); $i++) {
+					usleep(50_000);
+				}
+				if (!empty(proc_get_status(self::$serverProc)['running'])) {
+					proc_terminate(self::$serverProc, 9);   // SIGKILL
+				}
 			}
 			foreach (self::$serverPipes as $pipe) {
 				if (is_resource($pipe)) {
