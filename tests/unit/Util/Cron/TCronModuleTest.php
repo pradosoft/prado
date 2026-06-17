@@ -183,8 +183,8 @@ class TCronModuleTest extends PHPUnit\Framework\TestCase
 			
 			self::assertNotNull($tasks);
 			self::assertEquals(5, count($tasks));
-			self::assertEquals('0 * * * *', $tasks['277f1f7']['schedule']);
-			self::assertEquals('TTestCronModuleTask', $tasks['277f1f7']['task']);
+			self::assertEquals('0 * * * *', $tasks['8a7106b']['schedule']);
+			self::assertEquals('TTestCronModuleTask', $tasks['8a7106b']['task']);
 			self::assertEquals('1 * * * *', $tasks['testTask1']['schedule']);
 			self::assertEquals('TTestCronModuleTask1', $tasks['testTask1']['task']);
 			self::assertEquals('value1', $tasks['testTask1']['propertya']);
@@ -220,8 +220,8 @@ class TCronModuleTest extends PHPUnit\Framework\TestCase
 			
 			self::assertNotNull($tasks);
 			self::assertEquals(5, count($tasks));
-			self::assertEquals('0 * * * *', $tasks['277f1f7']['schedule']);
-			self::assertEquals('TTestCronModuleTask', $tasks['277f1f7']['task']);
+			self::assertEquals('0 * * * *', $tasks['8a7106b']['schedule']);
+			self::assertEquals('TTestCronModuleTask', $tasks['8a7106b']['task']);
 			self::assertEquals('1 * * * *', $tasks['testTask1']['schedule']);
 			self::assertEquals('TTestCronModuleTask1', $tasks['testTask1']['task']);
 			self::assertEquals('value1', $tasks['testTask1']['propertya']);
@@ -248,8 +248,8 @@ class TCronModuleTest extends PHPUnit\Framework\TestCase
 			
 			self::assertNotNull($tasks);
 			self::assertEquals(5, count($tasks));
-			self::assertEquals('0 * * * *', $tasks['277f1f7']['schedule']);
-			self::assertEquals('TTestCronModuleTask', $tasks['277f1f7']['task']);
+			self::assertEquals('0 * * * *', $tasks['8a7106b']['schedule']);
+			self::assertEquals('TTestCronModuleTask', $tasks['8a7106b']['task']);
 			self::assertEquals('1 * * * *', $tasks['testTask1']['schedule']);
 			self::assertEquals('TTestCronModuleTask1', $tasks['testTask1']['task']);
 			self::assertEquals('value1', $tasks['testTask1']['propertya']);
@@ -277,8 +277,8 @@ class TCronModuleTest extends PHPUnit\Framework\TestCase
 			
 			self::assertNotNull($tasks);
 			self::assertEquals(5, count($tasks));
-			self::assertEquals('0 * * * *', $tasks['277f1f7']['schedule']);
-			self::assertEquals('TTestCronModuleTask', $tasks['277f1f7']['task']);
+			self::assertEquals('0 * * * *', $tasks['8a7106b']['schedule']);
+			self::assertEquals('TTestCronModuleTask', $tasks['8a7106b']['task']);
 			self::assertEquals('1 * * * *', $tasks['testTask1']['schedule']);
 			self::assertEquals('TTestCronModuleTask1', $tasks['testTask1']['task']);
 			self::assertEquals('value1', $tasks['testTask1']['propertya']);

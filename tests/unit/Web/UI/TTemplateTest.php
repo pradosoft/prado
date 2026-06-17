@@ -56,7 +56,7 @@ class TTemplateTest extends PHPUnit\Framework\TestCase
 			'_startingLine' => 0,
 			'_content' => $template,
 			'_attributevalidation' => false,
-			'_hashCode' => md5($template),
+			'_hashCode' => sha1($template),
 		];
 		foreach ($props as $name => $val) {
 			PradoUnit::setProp($tplObj, $name, $val);
@@ -102,7 +102,7 @@ class TTemplateTest extends PHPUnit\Framework\TestCase
 
 	public function testGetHashCode()
 	{
-		$this->assertEquals(md5('hello'), $this->newTemplate('hello')->getHashCode());
+		$this->assertEquals(sha1('hello'), $this->newTemplate('hello')->getHashCode());
 	}
 
 	public function testAttributeValidation()

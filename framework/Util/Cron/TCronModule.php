@@ -237,7 +237,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 			if (!($properties[self::NAME_KEY] ?? null)) {
 				$class = $properties[self::TASK_KEY] ?? '';
 				$schedule = $properties[self::SCHEDULE_KEY] ?? '';
-				$name = $properties[self::NAME_KEY] = substr(md5($schedule . $class), 0, 7);
+				$name = $properties[self::NAME_KEY] = substr(sha1($schedule . $class), 0, 7);
 			} else {
 				$name = $properties[self::NAME_KEY];
 			}

@@ -296,7 +296,7 @@ class TAuthManager extends \Prado\TModule
 	 */
 	protected function generateUserKey()
 	{
-		return md5($this->getApplication()->getUniqueID() . 'prado:user');
+		return sha1($this->getApplication()->getUniqueID() . 'prado:user');
 	}
 
 	/**

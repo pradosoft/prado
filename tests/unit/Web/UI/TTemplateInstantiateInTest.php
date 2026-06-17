@@ -254,7 +254,7 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 			'_startingLine' => 0,
 			'_content' => $template,
 			'_attributevalidation' => false,
-			'_hashCode' => md5($template),
+			'_hashCode' => sha1($template),
 		];
 		foreach ($props as $name => $val) {
 			PradoUnit::setProp($tplObj, $name, $val);
@@ -1540,8 +1540,8 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 		// TOutputCache has setCacheKeyPrefix() but no getter; read via reflection.
 		$prefix = PradoUnit::getProp($cache, '_keyPrefix');
 		$this->assertNotEmpty($prefix);
-		// TTemplate sets the prefix to $this->_hashCode . $tplKey; hashCode = md5 of the template string.
-		$this->assertStringStartsWith(md5($templateStr), $prefix);
+		// TTemplate sets the prefix to $this->_hashCode . $tplKey; hashCode = sha1 of the template string.
+		$this->assertStringStartsWith(sha1($templateStr), $prefix);
 	}
 
 	// -----------------------------------------------------------------------

@@ -893,7 +893,7 @@ class TAssetManager extends \Prado\TModule
 			$normalized[$key] = is_object($value) ? 'object#' . spl_object_id($value) : $value;
 		}
 		ksort($normalized);
-		return $path . '#' . md5(serialize($normalized));
+		return $path . '#' . sha1(serialize($normalized));
 	}
 
 	/**
@@ -1020,7 +1020,7 @@ class TAssetManager extends \Prado\TModule
 
 	/**
 	 * Generates the asset sub-directory name for a path. CRC32 produces a much
-	 * smaller string than MD5 at the cost of a higher collision rate.
+	 * smaller string than MD5/SHA1 at the cost of a higher collision rate.
 	 * When a {@see setHashCallback HashCallback} is set, it produces the name
 	 * instead. Otherwise a file path is reduced to its directory, the framework
 	 * version is mixed in so an upgrade republishes, and {@see setLinkAssets

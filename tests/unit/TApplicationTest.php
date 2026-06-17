@@ -222,11 +222,11 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 		$this->assertNotEmpty($uid);
 	}
 
-	public function testGetUniqueId_isMd5HashFormat(): void
+	public function testGetUniqueId_IsSha1HashFormat(): void
 	{
 		$uid = $this->_app->getUniqueID();
-		// md5 produces a 32-character hex string
-		$this->assertMatchesRegularExpression('/^[0-9a-f]{32}$/', $uid);
+		// sha1 produces a 40-character hex string
+		$this->assertMatchesRegularExpression('/^[0-9a-f]{40}$/', $uid);
 	}
 
 	public function testGetUniqueId_changesWhenRuntimePathChanges(): void
@@ -313,7 +313,7 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 
 		$this->_app->setRuntimePath($originalPath . '/variant');
 		$this->assertNotSame($originalUid, $this->_app->getUniqueID());
-		$this->assertSame(md5($originalPath . '/variant'), $this->_app->getUniqueID());
+		$this->assertSame(sha1($originalPath . '/variant'), $this->_app->getUniqueID());
 	}
 
 	public function testSetRuntimePath_updatesCacheFileWhenOneIsSet(): void
@@ -2027,11 +2027,11 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 	// generateAppUniqueId()
 	// -----------------------------------------------------------------------
 
-	public function testGenerateAppUniqueId_returnsMd5Format(): void
+	public function testGenerateAppUniqueId_returnsSha1Format(): void
 	{
 		$acc = $this->newAccessor();
 		$id  = $acc->pubGenerateAppUniqueId('/some/path');
-		$this->assertMatchesRegularExpression('/^[0-9a-f]{32}$/', $id);
+		$this->assertMatchesRegularExpression('/^[0-9a-f]{40}$/', $id);
 	}
 
 	public function testGenerateAppUniqueId_samTokenSameResult(): void
@@ -2052,11 +2052,11 @@ class TApplicationTest extends PHPUnit\Framework\TestCase
 		);
 	}
 
-	public function testGenerateAppUniqueId_matchesMd5OfToken(): void
+	public function testGenerateAppUniqueId_matchesSha1OfToken(): void
 	{
 		$acc   = $this->newAccessor();
 		$token = '/runtime/abc';
-		$this->assertSame(md5($token), $acc->pubGenerateAppUniqueId($token));
+		$this->assertSame(sha1($token), $acc->pubGenerateAppUniqueId($token));
 	}
 
 	// -----------------------------------------------------------------------
