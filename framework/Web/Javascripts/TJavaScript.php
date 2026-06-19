@@ -509,6 +509,8 @@ class TJavaScript
 	 * charset names an encoding `iconv` actually recognises. A misconfigured
 	 * charset (for example a locale code such as `'fr'`) is silently skipped
 	 * so the call still returns JSON instead of escalating to a runtime error.
+	 * Without a running application (e.g. in library or test contexts) the
+	 * value is encoded as-is.
 	 *
 	 * @param mixed $value value to encode
 	 * @param int $options `json_encode` option flags; `JSON_THROW_ON_ERROR`
@@ -518,7 +520,8 @@ class TJavaScript
 	 */
 	public static function jsonEncode(mixed $value, int $options = 0): string
 	{
-		if (($g = Prado::getApplication()->getGlobalization(false)) !== null) {
+		$app = Prado::getApplication();
+		if ($app !== null && ($g = $app->getGlobalization(false)) !== null) {
 			$enc = (string) $g->getCharset();
 			if ($enc !== '' && strtoupper($enc) !== 'UTF-8' && self::isKnownEncoding($enc)) {
 				self::convertToUtf8($value, $enc);
