@@ -1,7 +1,6 @@
 <?php
 
 use Prado\IO\Stream\IStreamDecoratorPooling;
-use Prado\IO\Stream\TBufferStream;
 use Prado\IO\Stream\TDeflateStream;
 use Prado\IO\Stream\TInflateStream;
 use Prado\IO\TStream;
@@ -51,7 +50,7 @@ class TDeflateStreamTest extends PHPUnit\Framework\TestCase
 
 	public function testTruncatedWithoutCloseDoesNotDecode()
 	{
-		$buffer = new TBufferStream();
+		$buffer = TStream::fromString('');
 		$gz = new TDeflateStream($buffer, ZLIB_ENCODING_GZIP);
 		$gz->write($this->plain);                 // no close(): the final block is never flushed
 		self::assertFalse(@gzdecode((string) $buffer), 'Output is incomplete until close() flushes the final block.');
@@ -59,7 +58,7 @@ class TDeflateStreamTest extends PHPUnit\Framework\TestCase
 
 	public function testWriteOnlyForwardStream()
 	{
-		$s = new TDeflateStream(new TBufferStream());
+		$s = new TDeflateStream(TStream::fromString(''));
 		self::assertTrue($s->isWritable());
 		self::assertFalse($s->isReadable());
 		self::assertFalse($s->isSeekable());
@@ -116,7 +115,7 @@ class TDeflateStreamTest extends PHPUnit\Framework\TestCase
 
 	public function testSyncFlushEmitsDecodableOutputMidStream()
 	{
-		$buffer = new TBufferStream();
+		$buffer = TStream::fromString('');
 		$s = new TDeflateStream($buffer, ZLIB_ENCODING_RAW);
 		$s->setSyncFlush(true);
 		$s->write('hello world');   // streaming mode: emitted and decodable without close()
@@ -127,7 +126,7 @@ class TDeflateStreamTest extends PHPUnit\Framework\TestCase
 
 	public function testReleaseUnbindsTheInnerStream()
 	{
-		$inner = new TBufferStream();
+		$inner = TStream::fromString('');
 		$s = new TDeflateStream($inner);
 		self::assertSame($inner, $s->release(), 'release() returns the inner stream.');
 
@@ -142,7 +141,7 @@ class TDeflateStreamTest extends PHPUnit\Framework\TestCase
 
 	public function testWriteEmptyStringAcceptsNothing()
 	{
-		$buffer = new TBufferStream();
+		$buffer = TStream::fromString('');
 		$s = new TDeflateStream($buffer);
 		self::assertSame(0, $s->write(''));
 		self::assertSame('', (string) $buffer, 'An empty write produces no output.');
@@ -161,7 +160,7 @@ class TDeflateStreamTest extends PHPUnit\Framework\TestCase
 
 	public function testWriteAfterCloseThrows()
 	{
-		$s = new TDeflateStream(new TBufferStream());
+		$s = new TDeflateStream(TStream::fromString(''));
 		$s->write('x');
 		$s->close();
 		$this->expectException(\RuntimeException::class);
@@ -195,15 +194,15 @@ class TDeflateStreamTest extends PHPUnit\Framework\TestCase
 
 	public function testToStringIsEmpty()
 	{
-		$s = new TDeflateStream(new TBufferStream());
+		$s = new TDeflateStream(TStream::fromString(''));
 		self::assertSame('', (string) $s);
 	}
 
 	public function testRecycleKeepsTheSyncFlushMode()
 	{
-		$s = new TDeflateStream(new TBufferStream());
+		$s = new TDeflateStream(TStream::fromString(''));
 		$s->setSyncFlush(true);
-		$s->recycle(new TBufferStream());
+		$s->recycle(TStream::fromString(''));
 		self::assertTrue($s->getSyncFlush(), 'recycle() keeps the configured SyncFlush mode.');
 	}
 }
