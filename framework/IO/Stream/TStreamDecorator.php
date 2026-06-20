@@ -32,8 +32,8 @@ abstract class TStreamDecorator extends TComponent implements StreamInterface
 	/** @var int The default chunk size used when draining the stream a piece at a time. */
 	public const CHUNK_SIZE = 8192;
 
-	/** @var StreamInterface The wrapped inner stream. */
-	private StreamInterface $_stream;
+	/** @var ?StreamInterface The wrapped inner stream, or null while unbound. */
+	private ?StreamInterface $_stream = null;
 
 	// =========================================================================
 	// Construction
@@ -63,6 +63,9 @@ abstract class TStreamDecorator extends TComponent implements StreamInterface
 	 */
 	public function getStream(): StreamInterface
 	{
+		if ($this->_stream === null) {
+			throw new \Error('The stream decorator has no inner stream');
+		}
 		return $this->_stream;
 	}
 
@@ -73,6 +76,19 @@ abstract class TStreamDecorator extends TComponent implements StreamInterface
 	protected function setStreamDirect(StreamInterface $value): void
 	{
 		$this->_stream = $value;
+	}
+
+	/**
+	 * Releases and returns the inner stream, leaving the decorator unbound.  A forwarding method then
+	 * throws until {@see setStreamDirect()} binds a new inner, so this is for tearing a decorator down
+	 * (e.g. parking it in a pool) rather than mid-use.
+	 * @return ?StreamInterface The released inner stream, or null when none was bound.
+	 */
+	protected function clearStreamDirect(): ?StreamInterface
+	{
+		$stream = $this->_stream;
+		$this->_stream = null;
+		return $stream;
 	}
 
 	// =========================================================================
