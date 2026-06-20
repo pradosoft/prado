@@ -615,8 +615,8 @@ class TAuthManagerTest extends PHPUnit\Framework\TestCase
 		$authManager = new TAuthManager();
 		$authManager->setUserManager('users');
 		$authManager->init(null);
-		$md5 = md5($authManager->getApplication()->getUniqueID() . 'prado:user');
-		self::assertEquals($md5, $authManager->getUserKey());
+		$sha1 = sha1($authManager->getApplication()->getUniqueID() . 'prado:user');
+		self::assertEquals($sha1, $authManager->getUserKey());
 	}
 
 	public function testUpdateSessionUser()

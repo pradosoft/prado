@@ -296,7 +296,7 @@ class TShellApplication extends \Prado\TApplication
 
 		// Level 2: stable temp directory keyed by the real base path.
 		$runtimePath = sys_get_temp_dir()
-			. DIRECTORY_SEPARATOR . 'prado-' . md5($basePath)
+			. DIRECTORY_SEPARATOR . 'prado-' . sha1($basePath)
 			. DIRECTORY_SEPARATOR . static::SHELL_RUNTIME_PATH;
 		if (!is_dir($runtimePath)) {
 			if (@mkdir($runtimePath, Prado::getDefaultDirPermissions(), true) === false) {

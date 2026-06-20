@@ -89,7 +89,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	/**
 	 * @var TUserManagerPasswordMode password mode
 	 */
-	private $_passwordMode = TUserManagerPasswordMode::MD5;
+	private $_passwordMode = TUserManagerPasswordMode::SHA1;
 	/**
 	 * @var bool whether the module has been initialized
 	 */
@@ -330,7 +330,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 			$data = unserialize($data);
 			if (is_array($data) && count($data) === 2) {
 				[$username, $token] = $data;
-				if (isset($this->_users[$username]) && $token === md5($username . $this->_users[$username])) {
+				if (isset($this->_users[$username]) && $token === sha1($username . $this->_users[$username])) {
 					return $this->getUser($username);
 				}
 			}
@@ -348,7 +348,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 		$user = $this->getApplication()->getUser();
 		$username = strtolower($user->getName());
 		if (isset($this->_users[$username])) {
-			$data = [$username, md5($username . $this->_users[$username])];
+			$data = [$username, sha1($username . $this->_users[$username])];
 			$cookie->setValue(serialize($data));
 		}
 	}

@@ -125,8 +125,8 @@ use Prado\Util\Traits\TReflectionClassTrait;
  *      {
  *          //parent method should be called to raise the event
  *          parent::OnInsert($param);
- *          $this->nounce = md5(time());
- *          $this->password = md5($this->password.$this->nounce);
+ *          $this->nounce = sha1(time());
+ *          $this->password = sha1($this->password . $this->nounce);
  *      }
  * }
  * ```

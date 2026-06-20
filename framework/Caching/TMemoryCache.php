@@ -88,7 +88,7 @@ use Prado\TPropertyValue;
  * ## Key hashing
  *
  * By default ({@see getHashKeys HashKeys}`= null`), cache keys are hashed with
- * MD5 in production modes ({@see TApplicationMode::Normal},
+ * SHA-1 in production modes ({@see TApplicationMode::Normal},
  * {@see TApplicationMode::Performance}) and left readable in
  * {@see TApplicationMode::Debug} mode, matching the typical developer workflow.
  * Set `HashKeys="true"` to force hashing in all modes, or `HashKeys="false"` to
@@ -547,7 +547,7 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 	 * Converts a raw application cache key into the internal storage key.
 	 *
 	 * When hashing is enabled (per {@see getHashKeys HashKeys}), delegates to
-	 * {@see TCache::generateUniqueKey()} which returns `md5(prefix . key)`.
+	 * {@see TCache::generateUniqueKey()} which returns `sha1(prefix . key)`.
 	 * When disabled, returns `prefix . key` verbatim for human-readable store keys.
 	 *
 	 * @param string $key the raw application key
@@ -799,7 +799,7 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 	/**
 	 * Computes a fingerprint of the current in-memory key set.
 	 *
-	 * The fingerprint is an MD5 hash of the null-separated sorted internal keys.
+	 * The fingerprint is a SHA-1 hash of the null-separated sorted internal keys.
 	 * It changes whenever a key is added or removed, allowing {@see validateSizeCache()}
 	 * to detect backing-store reloads and other out-of-band modifications.
 	 *
@@ -809,7 +809,7 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 	{
 		$keys = array_keys($this->getStoreDirect());
 		sort($keys);
-		return md5(implode("\0", $keys));
+		return sha1(implode("\0", $keys));
 	}
 
 	/**
@@ -1062,7 +1062,7 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 	 *
 	 * - `null` *(default)* — automatic: off in {@see TApplicationMode::Debug},
 	 *   on in {@see TApplicationMode::Normal} and {@see TApplicationMode::Performance}.
-	 * - `true` — always hash (MD5 via {@see TCache::generateUniqueKey()}).
+	 * - `true` — always hash (SHA-1 via {@see TCache::generateUniqueKey()}).
 	 * - `false` — never hash; the raw key (with prefix) is used as-is.
 	 *
 	 * @return ?bool the current HashKeys setting

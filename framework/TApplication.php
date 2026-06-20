@@ -1041,11 +1041,10 @@ class TApplication extends TComponent implements ISingleton
 	 * @param string $token the value to hash; normally the absolute runtime path.
 	 * @return string a unique ID derived from the token.
 	 * @since 4.3.3
-	 * @todo v4.4 change md5 to sha1
 	 */
 	protected function generateAppUniqueId(string $token): string
 	{
-		return md5($token);
+		return sha1($token);
 	}
 
 	/**
