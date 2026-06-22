@@ -10,6 +10,7 @@
 
 namespace Prado\IO\Rest;
 
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\IO\HttpClient\THttpClientException;
 use Prado\IO\HttpClient\THttpClientResponse;
 use Prado\IO\HttpClient\THttpClient;
@@ -265,6 +266,11 @@ abstract class TRestClient extends TApplicationComponent
 	 * ignored. `$query` is appended as a URL-encoded query string built by
 	 * {@see buildQuery()}.
 	 *
+	 * `$path` is treated as a trusted template owned by the subclass. Only the
+	 * placeholder values may be untrusted; they are URL-encoded. Do not build
+	 * `$path` itself from untrusted input, as it is joined to the base URL
+	 * without origin validation.
+	 *
 	 * @param string $path Path pattern.
 	 * @param array<string,scalar> $pathParams Placeholder values.
 	 * @param array<string,array|scalar> $query Query string parameters.
@@ -283,9 +289,10 @@ abstract class TRestClient extends TApplicationComponent
 
 		$url = rtrim($this->getBaseUrl(), '/') . '/' . ltrim((string) $expanded, '/');
 
-		if ($query !== []) {
+		$queryString = $this->buildQuery($query);
+		if ($queryString !== '') {
 			$separator = str_contains($url, '?') ? '&' : '?';
-			$url .= $separator . $this->buildQuery($query);
+			$url .= $separator . $queryString;
 		}
 
 		return $url;
@@ -300,6 +307,9 @@ abstract class TRestClient extends TApplicationComponent
 	 * `http_build_query()` unchanged. Override this method when an API needs
 	 * a different array convention.
 	 *
+	 * A `null` value and an empty list produce no output. Empty fragments are
+	 * skipped so the result never contains a dangling or doubled `&`.
+	 *
 	 * @param array<string,array|scalar> $query Query string parameters.
 	 * @return string URL-encoded query string without a leading `?`.
 	 */
@@ -307,12 +317,12 @@ abstract class TRestClient extends TApplicationComponent
 	{
 		$parts = [];
 		foreach ($query as $key => $value) {
-			if (is_array($value) && array_is_list($value)) {
-				foreach ($value as $item) {
-					$parts[] = http_build_query([$key => $item]);
+			$items = (is_array($value) && array_is_list($value)) ? $value : [$value];
+			foreach ($items as $item) {
+				$fragment = http_build_query([$key => $item]);
+				if ($fragment !== '') {
+					$parts[] = $fragment;
 				}
-			} else {
-				$parts[] = http_build_query([$key => $value]);
 			}
 		}
 		return implode('&', $parts);
@@ -320,12 +330,41 @@ abstract class TRestClient extends TApplicationComponent
 
 	/**
 	 * Merges default headers with per-call headers; per-call entries win.
+	 *
+	 * Each per-call name and value is validated by {@see assertHeaderSafe()} so
+	 * that a CR/LF in a caller-supplied header cannot inject or split the request.
+	 *
 	 * @param array<string,string> $perCall Per-call header map.
+	 * @throws TInvalidDataValueException when a per-call header name or value
+	 *   contains a CR/LF or the name is not a valid token.
 	 * @return array<string,string> Effective header map.
 	 */
 	protected function mergeHeaders(array $perCall): array
 	{
+		foreach ($perCall as $name => $value) {
+			$this->assertHeaderSafe((string) $name, (string) $value);
+		}
 		return array_merge($this->getDefaultHeaders(), $perCall);
+	}
+
+	/**
+	 * Validates that a header name and value are free of header-injection
+	 * characters.
+	 *
+	 * Rejects any value containing a carriage return or line feed, and any name
+	 * that is empty or contains a character outside the RFC 7230 `token`
+	 * grammar. Centralizes the boundary check so the client never forwards a
+	 * splittable header to the transport.
+	 *
+	 * @param string $name Header name.
+	 * @param string $value Header value.
+	 * @throws TInvalidDataValueException when the name or value is unsafe.
+	 */
+	protected function assertHeaderSafe(string $name, string $value): void
+	{
+		if ($name === '' || preg_match('/[^!#$%&\'*+\-.^_`|~0-9A-Za-z]/', $name) || preg_match('/[\r\n]/', $value)) {
+			throw new TInvalidDataValueException('restclient_invalid_header', $name);
+		}
 	}
 
 	/**
@@ -357,9 +396,11 @@ abstract class TRestClient extends TApplicationComponent
 	}
 
 	/**
+	 * Returns whether a header is present in the map, comparing names
+	 * case-insensitively.
 	 * @param array<string,string> $headers Header map.
 	 * @param string $name Header to look for (case-insensitive).
-	 * @return bool
+	 * @return bool Whether a header with that name exists.
 	 */
 	protected function hasHeaderCaseInsensitive(array $headers, string $name): bool
 	{
@@ -468,7 +509,7 @@ abstract class TRestClient extends TApplicationComponent
 
 	/**
 	 * Returns the active downloader, creating a default one on first access.
-	 * @return THttpClient
+	 * @return THttpClient The transport instance used for requests.
 	 */
 	public function getDownloader(): THttpClient
 	{
@@ -507,11 +548,17 @@ abstract class TRestClient extends TApplicationComponent
 
 	/**
 	 * Adds or overwrites a single default header.
+	 *
+	 * The name and value are validated by {@see assertHeaderSafe()} to prevent
+	 * header injection.
+	 *
 	 * @param string $name Header name.
 	 * @param string $value Header value.
+	 * @throws TInvalidDataValueException when the name or value is unsafe.
 	 */
 	public function setDefaultHeader(string $name, string $value): void
 	{
+		$this->assertHeaderSafe($name, $value);
 		$headers = $this->getDefaultHeadersDirect();
 		$headers[$name] = $value;
 		$this->setDefaultHeadersDirect($headers);
@@ -519,7 +566,13 @@ abstract class TRestClient extends TApplicationComponent
 
 	/**
 	 * Sets the default `Authorization` header to an OAuth2-style bearer token.
+	 *
+	 * The header is a default, so it is sent to whatever host {@see buildUrl()}
+	 * resolves for every request. Use one client instance per API origin so a
+	 * token is not disclosed to an unintended host.
+	 *
 	 * @param string $token Bearer token, without the `Bearer ` prefix.
+	 * @throws TInvalidDataValueException when the token contains a CR/LF.
 	 */
 	public function setBearerToken(string $token): void
 	{
@@ -528,11 +581,21 @@ abstract class TRestClient extends TApplicationComponent
 
 	/**
 	 * Sets the default `Authorization` header to HTTP Basic credentials.
-	 * @param string $username User name.
+	 *
+	 * The username must not contain a colon, which RFC 7617 reserves as the
+	 * credential separator. Like {@see setBearerToken()}, the resulting header
+	 * is sent to every host the client targets.
+	 *
+	 * @param string $username User name (must not contain `:`).
 	 * @param string $password Password.
+	 * @throws TInvalidDataValueException when the username contains a colon, or
+	 *   a credential contains a CR/LF.
 	 */
 	public function setBasicAuth(string $username, string $password): void
 	{
+		if (str_contains($username, ':')) {
+			throw new TInvalidDataValueException('restclient_basicauth_username_colon');
+		}
 		$this->setDefaultHeader(THttpHeaderName::Authorization, 'Basic ' . base64_encode($username . ':' . $password));
 	}
 }
