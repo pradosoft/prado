@@ -183,7 +183,10 @@ restservice_http_error					= HTTP {0} {1}
 restgroup_file_not_found				= TRestService group file '{0}' could not be found (tried .php and .xml extensions).
 restconfig_file_not_found				= TRestService config file '{0}' could not be found (tried .php and .xml extensions).
 restservice_cors_credentials_wildcard	= TRestService.AllowOrigin must be an explicit origin (not '*') when AllowCredentials is enabled.
+restservice_param_name_invalid			= TRestService route parameter name '{0}' in pattern '{1}' must match [A-Za-z_][A-Za-z0-9_]*.
+restservice_param_name_duplicate		= TRestService route pattern '{0}' uses a duplicate parameter name.
 restresource_rule_unknown				= TRestResource validation rule '{0}' for field '{1}' is not recognized.
+restresource_invalid_header				= TRestResource response header '{0}' has an invalid name or a value containing CR/LF.
 
 basebehavior_cannot_setname_with_owner	= The TBaseBehavior.Name "{0}" cannot be changed (to "{1}") after the behavior is attached.
 basebehavior_sync_no_owner				= The TBaseBehavior "{0}" has no owner and cannot synchronize event handlers on a component without owners.
