@@ -439,6 +439,7 @@ class TSocketServerModuleTest extends PHPUnit\Framework\TestCase
 		$createdSignals = TSignalsDispatcher::singleton(false) === null;
 		$module = new StopWithinLoopSocketServerModule();
 		$module->setEndpoint('tcp://127.0.0.1:0');
+		$wasListening = $module->getListeningToGlobalEvents();   // a module auto-listens to global events
 
 		try {
 			self::assertTrue($module->serve(), 'serve() ran.');
@@ -447,9 +448,30 @@ class TSocketServerModuleTest extends PHPUnit\Framework\TestCase
 			self::assertFalse($module->accepted->isOpen(), 'serve() closed the open connection on exit.');
 			self::assertFalse($module->loopServer->isListening(), 'serve() closed the listening server on exit.');
 			self::assertNull($module->getServer(), 'serve() clears the running server on exit.');
-			self::assertFalse($module->getListeningToGlobalEvents(), 'serve() unlistens from global events on exit.');
+			self::assertSame($wasListening, $module->getListeningToGlobalEvents(), 'serve() restores the prior global-event listening state on exit.');
 		} finally {
 			$module->clientRef?->close();
+			$module->unlisten();
+			if ($createdSignals) {
+				TSignalsDispatcher::singleton(false)?->detach();
+			}
+		}
+	}
+
+	public function testServeRestoresAModuleThatWasNotListening()
+	{
+		$createdSignals = TSignalsDispatcher::singleton(false) === null;
+		$module = new StopWithinLoopSocketServerModule();
+		$module->setEndpoint('tcp://127.0.0.1:0');
+		$module->unlisten();   // opt out of global events before serving
+		self::assertFalse($module->getListeningToGlobalEvents(), 'The module no longer listens.');
+
+		try {
+			self::assertTrue($module->serve(), 'serve() ran.');
+			self::assertFalse($module->getListeningToGlobalEvents(), 'serve() restores the not-listening state on exit.');
+		} finally {
+			$module->clientRef?->close();
+			$module->unlisten();
 			if ($createdSignals) {
 				TSignalsDispatcher::singleton(false)?->detach();
 			}

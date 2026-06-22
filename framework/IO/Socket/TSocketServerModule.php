@@ -257,12 +257,13 @@ class TSocketServerModule extends TModule implements IPermissions
 		$this->_stopping = false;
 		@set_time_limit(0);
 		$this->_server = $this->createServer();
-		// Translate SIGTERM/SIGINT into PRADO global events and listen for them, so a signal calls
-		// stop() and the loop unwinds gracefully rather than the process being killed mid-serve.
-		$signals = TSignalsDispatcher::hasSignals();
-		if ($signals) {
+		$listened = false;
+		if (TSignalsDispatcher::hasSignals()) {
 			TSignalsDispatcher::singleton();
-			$this->listen();
+			if (!$this->getListeningToGlobalEvents()) {
+				$this->listen();
+				$listened = true;
+			}
 		}
 		try {
 			$this->serveLoop($this->_server);
@@ -272,7 +273,7 @@ class TSocketServerModule extends TModule implements IPermissions
 			}
 			$this->_server->close();
 			$this->_server = null;
-			if ($signals) {
+			if ($listened) {
 				$this->unlisten();
 			}
 		}
