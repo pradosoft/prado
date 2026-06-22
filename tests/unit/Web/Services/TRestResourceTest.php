@@ -467,12 +467,14 @@ class TRestResourceTest extends PHPUnit\Framework\TestCase
 		}
 	}
 
-	public function testGetBodyJsonInvalidYieldsEmptyArray(): void
+	public function testGetBodyMalformedJsonThrows400(): void
 	{
 		$_SERVER['REQUEST_METHOD'] = 'POST';
 		$_SERVER['CONTENT_TYPE'] = 'application/json';
 		$r = $this->bodyResource('not json');
-		$this->assertSame([], $r->callGetBody());
+		$this->expectException(\Prado\Web\Services\Rest\TRestException::class);
+		$this->expectExceptionCode(400);
+		$r->callGetBody();
 	}
 
 	public function testGetBodyJsonEmptyBodyYieldsEmptyArray(): void
@@ -543,6 +545,14 @@ class TRestResourceTest extends PHPUnit\Framework\TestCase
 			public function callHasInput(string $k): bool
 			{
 				return $this->hasInput($k);
+			}
+			public function callOnly(array $keys): array
+			{
+				return $this->only($keys);
+			}
+			public function callExcept(array $keys): array
+			{
+				return $this->except($keys);
 			}
 		};
 		$ref = new ReflectionProperty(TRestResource::class, '_parsedBody');
@@ -955,5 +965,149 @@ class TRestResourceTest extends PHPUnit\Framework\TestCase
 			$this->assertArrayHasKey('email', $errors);
 			$this->assertArrayHasKey('age', $errors);
 		}
+	}
+
+	// ── in: rule scalar guard (bug regression) ─────────────────────────────────
+
+	public function testValidateInRuleRejectsArrayValueWithoutWarning(): void
+	{
+		// An array value must fail 'in' validation rather than emitting an
+		// "Array to string conversion" warning.
+		$this->expectException(TRestException::class);
+		$this->validator()->v(['role' => ['admin']], ['role' => 'in:admin,editor']);
+	}
+
+	public function testValidateInRuleAcceptsValidScalar(): void
+	{
+		$out = $this->validator()->v(['role' => 'admin'], ['role' => 'in:admin,editor']);
+		$this->assertSame(['role' => 'admin'], $out);
+	}
+
+	// ── validate() rule-as-array and presence/null branches ────────────────────
+
+	public function testValidateRuleSuppliedAsArray(): void
+	{
+		$out = $this->validator()->v(['n' => '5'], ['n' => ['required', 'integer']]);
+		$this->assertSame(['n' => 5], $out);
+	}
+
+	public function testValidateRequiredPresentButNullFails(): void
+	{
+		$this->expectException(TRestException::class);
+		$this->validator()->v(['name' => null], ['name' => 'required|string']);
+	}
+
+	public function testValidateNullableAbsentOmitsField(): void
+	{
+		$out = $this->validator()->v([], ['nickname' => 'nullable|string']);
+		$this->assertSame([], $out);
+	}
+
+	public function testValidateNullablePresentNullKeepsNull(): void
+	{
+		$out = $this->validator()->v(['nickname' => null], ['nickname' => 'nullable|string']);
+		$this->assertArrayHasKey('nickname', $out);
+		$this->assertNull($out['nickname']);
+	}
+
+	public function testValidateBooleanRuleCoercesValue(): void
+	{
+		$out = $this->validator()->v(['flag' => 'true'], ['flag' => 'boolean']);
+		$this->assertTrue($out['flag']);
+		$out2 = $this->validator()->v(['flag' => '0'], ['flag' => 'boolean']);
+		$this->assertFalse($out2['flag']);
+	}
+
+	// ── getBody() edge cases ───────────────────────────────────────────────────
+
+	public function testGetBodyValidJsonScalarYieldsEmptyArray(): void
+	{
+		$_SERVER['REQUEST_METHOD'] = 'POST';
+		$_SERVER['CONTENT_TYPE'] = 'application/json';
+		$r = $this->bodyResource('42');
+		$this->assertSame([], $r->callGetBody());
+	}
+
+	public function testGetBodyJsonListIsReturned(): void
+	{
+		$_SERVER['REQUEST_METHOD'] = 'POST';
+		$_SERVER['CONTENT_TYPE'] = 'application/json';
+		$r = $this->bodyResource('[1,2,3]');
+		$this->assertSame([1, 2, 3], $r->callGetBody());
+	}
+
+	public function testGetBodyGetVerbReturnsEmptyArray(): void
+	{
+		$_SERVER['REQUEST_METHOD'] = 'GET';
+		$r = $this->bodyResource('{"a":1}');
+		$this->assertSame([], $r->callGetBody());
+	}
+
+	// ── input()/hasInput() null-value branch ───────────────────────────────────
+
+	public function testInputReturnsExplicitNullBodyValue(): void
+	{
+		$r = $this->inputResource(['opt' => null]);
+		// array_key_exists path: present-but-null returns null, not the default.
+		$this->assertNull($r->callInput('opt', 'fallback'));
+	}
+
+	public function testHasInputTrueForNullBodyValue(): void
+	{
+		$r = $this->inputResource(['opt' => null]);
+		$this->assertTrue($r->callHasInput('opt'));
+	}
+
+	// ── only()/except() edge cases ─────────────────────────────────────────────
+
+	public function testOnlyAndExceptWithMissingAndEmptyKeys(): void
+	{
+		$r = $this->inputResource(['a' => 1, 'b' => 2]);
+		$this->assertSame(['a' => 1], $r->callOnly(['a', 'missing']));
+		$this->assertSame([], $r->callOnly([]));
+		$this->assertSame(['a' => 1, 'b' => 2], $r->callExcept([]));
+		$this->assertSame(['b' => 2], $r->callExcept(['a']));
+	}
+
+	// ── response header injection guard (security) ─────────────────────────────
+
+	public function testHeaderRejectsCrlfInValue(): void
+	{
+		$r = new class () extends TRestResource {
+			public function call(string $n, string $v): void
+			{
+				$this->header($n, $v);
+			}
+		};
+		$this->expectException(\Prado\Exceptions\TInvalidDataValueException::class);
+		$r->call('X-Test', "ok\r\nX-Injected: evil");
+	}
+
+	public function testHeaderRejectsInvalidName(): void
+	{
+		$r = new class () extends TRestResource {
+			public function call(string $n, string $v): void
+			{
+				$this->header($n, $v);
+			}
+		};
+		$this->expectException(\Prado\Exceptions\TInvalidDataValueException::class);
+		$r->call('Bad Name', 'value');
+	}
+
+	public function testHeaderReturnsSelfForFluency(): void
+	{
+		$r = new class () extends TRestResource {
+			public function call(): mixed
+			{
+				return $this->header('X-A', '1')->header('X-B', '2');
+			}
+			public function headers(): array
+			{
+				return $this->getResponseHeaders();
+			}
+		};
+		$this->assertSame($r, $r->call());
+		$this->assertSame(['X-A' => '1', 'X-B' => '2'], $r->headers());
 	}
 }

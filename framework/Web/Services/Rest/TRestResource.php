@@ -11,6 +11,7 @@
 namespace Prado\Web\Services\Rest;
 
 use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\TApplicationComponent;
 
 /**
@@ -360,6 +361,9 @@ abstract class TRestResource extends TApplicationComponent
 	 */
 	protected function addResponseHeader(string $name, string $value): void
 	{
+		if ($name === '' || preg_match('/[^!#$%&\'*+\-.^_`|~0-9A-Za-z]/', $name) || preg_match('/[\r\n]/', $value)) {
+			throw new TInvalidDataValueException('restresource_invalid_header', $name);
+		}
 		$headers = $this->getResponseHeadersDirect();
 		$headers[$name] = $value;
 		$this->setResponseHeadersDirect($headers);
@@ -399,12 +403,13 @@ abstract class TRestResource extends TApplicationComponent
 	/**
 	 * Returns the parsed request body.
 	 *
-	 * `Content-Type: application/json` requests decode the raw input stream.
-	 * Form-encoded `POST` requests return `$_POST` directly; form-encoded
-	 * `PUT` and `PATCH` requests parse `php://input` via `parse_str()` (PHP
-	 * does not populate `$_POST` for non-`POST` verbs). Other verbs and
-	 * invalid bodies return an empty array. The result is cached for the
-	 * lifetime of the resource.
+	 * `Content-Type: application/json` requests decode the raw input stream; a
+	 * non-empty body that is not valid JSON raises `400 Bad Request`. Form-encoded
+	 * `POST` requests return `$_POST` directly; form-encoded `PUT` and `PATCH`
+	 * requests parse `php://input` via `parse_str()` (PHP does not populate
+	 * `$_POST` for non-`POST` verbs). Other verbs return an empty array. The
+	 * result is cached for the lifetime of the resource.
+	 * @throws TRestException 400 when a JSON body is present but malformed.
 	 * @return array Parsed body data.
 	 */
 	public function getBody(): array
@@ -420,8 +425,15 @@ abstract class TRestResource extends TApplicationComponent
 			$contentType = $request->getContentType() ?? '';
 			if (str_contains($contentType, 'application/json')) {
 				$raw = $this->readRawRequestBody();
-				$decoded = json_decode($raw !== '' ? $raw : '[]', true);
-				$this->setParsedBodyDirect(is_array($decoded) ? $decoded : []);
+				if ($raw === '') {
+					$this->setParsedBodyDirect([]);
+				} else {
+					$decoded = json_decode($raw, true);
+					if (json_last_error() !== JSON_ERROR_NONE) {
+						throw TRestException::badRequest('Malformed JSON request body.');
+					}
+					$this->setParsedBodyDirect(is_array($decoded) ? $decoded : []);
+				}
 			} elseif ($verb === 'POST') {
 				$this->setParsedBodyDirect($_POST);
 			} else {
@@ -649,7 +661,7 @@ abstract class TRestResource extends TApplicationComponent
 	 * - `string` — value must be a string
 	 * - `integer` / `int` — value must be or cast to an integer
 	 * - `float` / `numeric` — value must be numeric
-	 * - `boolean` / `bool` — value must be boolean-ish (true/false/1/0/'1'/'0')
+	 * - `boolean` / `bool` — value must be boolean-ish (true/false/1/0/'1'/'0'/'true'/'false')
 	 * - `array` — value must be an array
 	 * - `email` — value must pass `FILTER_VALIDATE_EMAIL`
 	 * - `url` — value must pass `FILTER_VALIDATE_URL`
@@ -796,7 +808,7 @@ abstract class TRestResource extends TApplicationComponent
 
 					case 'in':
 						$allowed = array_map('trim', explode(',', $ruleParam ?? ''));
-						if (!in_array((string) $value, $allowed, true)) {
+						if (!is_scalar($value) || !in_array((string) $value, $allowed, true)) {
 							$list = implode(', ', $allowed);
 							$errors[$field][] = "The {$field} field must be one of: {$list}.";
 							$fieldValid = false;
