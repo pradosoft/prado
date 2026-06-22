@@ -1166,6 +1166,144 @@ class TRestServiceTest extends PHPUnit\Framework\TestCase
 		$body = json_decode($response->body, true);
 		$this->assertSame('User 42 not found.', $body['detail']);
 	}
+
+	// ── 422 / 429 end-to-end (HIGH regression) ─────────────────────────────────
+
+	public function testRunUnprocessableEntityEmits422JsonEnvelope(): void
+	{
+		// Regression: THttpResponse must know 422 so sendErrorResponse() does not
+		// raise a secondary exception; the validation envelope must reach the client.
+		$service = new TRestServiceExposed();
+		$service->setBasePath('api/');
+		$response = new CapturingResponse();
+		$service->setInjectedResponse($response);
+		$service->addResourceDirect('signup', ValidatingResource::class);
+		$_SERVER['REQUEST_METHOD'] = 'POST';
+		$this->forcePathInfo('/api/signup');
+		$service->run();
+
+		$this->assertSame(422, $response->status);
+		$body = json_decode($response->body, true);
+		$this->assertSame(422, $body['status']);
+		$this->assertSame('Unprocessable Entity', $body['title']);
+		$this->assertArrayHasKey('errors', $body);
+		$this->assertSame(['email' => ['required']], $body['errors']);
+	}
+
+	public function testRunTooManyRequestsEmits429(): void
+	{
+		$service = new TRestServiceExposed();
+		$service->setBasePath('api/');
+		$response = new CapturingResponse();
+		$service->setInjectedResponse($response);
+		$service->addResourceDirect('limited', RateLimitedResource::class);
+		$_SERVER['REQUEST_METHOD'] = 'GET';
+		$this->forcePathInfo('/api/limited');
+		$service->run();
+
+		$this->assertSame(429, $response->status);
+		$this->assertSame(429, json_decode($response->body, true)['status']);
+	}
+
+	// ── compilePattern parameter-name validation ───────────────────────────────
+
+	public function testCompilePatternRejectsInvalidParamName(): void
+	{
+		$this->expectException(TConfigurationException::class);
+		$this->service->exposeCompilePattern('users/{1bad}', []);
+	}
+
+	public function testCompilePatternRejectsDuplicateParamName(): void
+	{
+		$this->expectException(TConfigurationException::class);
+		$this->service->exposeCompilePattern('a/{id}/b/{id}', []);
+	}
+
+	// ── applyBasePath segment boundary ─────────────────────────────────────────
+
+	public function testGetApiPathRejectsPartialSegmentPrefix(): void
+	{
+		// BasePath "api" must not capture "apidocs/x"; it lies outside the base.
+		$s = new TRestServiceExposed();
+		$s->setBasePath('api');
+		$this->expectException(TRestException::class);
+		$this->expectExceptionCode(404);
+		$s->exposeGetApiPath('/apidocs/x');
+	}
+
+	public function testGetApiPathStripsExactSegment(): void
+	{
+		$s = new TRestServiceExposed();
+		$s->setBasePath('api');
+		$this->assertSame('users/1', $s->exposeGetApiPath('/api/users/1'));
+		$this->assertSame('', $s->exposeGetApiPath('/api'));
+	}
+
+	// ── enabled on individual resource ─────────────────────────────────────────
+
+	public function testRegisterResourceSkipsDisabledResource(): void
+	{
+		$this->service->exposeRegisterResource(['pattern' => 'x', 'class' => DoStyleResource::class, 'enabled' => 'false']);
+		$this->assertSame([], $this->service->getResources());
+	}
+
+	public function testRegisterResourceKeepsEnabledResource(): void
+	{
+		$this->service->exposeRegisterResource(['pattern' => 'x', 'class' => DoStyleResource::class, 'enabled' => 'true']);
+		$this->assertCount(1, $this->service->getResources());
+	}
+
+	// ── loadResources early returns ────────────────────────────────────────────
+
+	public function testLoadResourcesNullConfigIsNoOp(): void
+	{
+		$this->service->exposeLoadResources(null);
+		$this->assertSame([], $this->service->getResources());
+	}
+
+	public function testLoadResourcesNonArrayNonXmlConfigIsNoOp(): void
+	{
+		$this->service->exposeLoadResources('a string');
+		$this->assertSame([], $this->service->getResources());
+	}
+
+	// ── isEnabled edge cases ───────────────────────────────────────────────────
+
+	public function testIsEnabledDebugIgnoresSurroundingWhitespaceIsLiteral(): void
+	{
+		// ' Debug ' is not the literal 'Debug', so it falls through to boolean parsing.
+		$this->assertFalse($this->service->exposeIsEnabled(' Debug '));
+	}
+
+	public function testIsEnabledEmptyStringIsFalse(): void
+	{
+		$this->assertFalse($this->service->exposeIsEnabled(''));
+	}
+
+	// ── 405 Allow header ───────────────────────────────────────────────────────
+
+	public function testRun405EmitsAllowHeader(): void
+	{
+		// DoStyleResource implements doIndex/doShow/doStore/doDestroy but not doUpdate.
+		$r = $this->runWith('PUT', '/api/users/5');
+		$this->assertSame(405, $r->status);
+		$this->assertNotNull($r->headerLine('Allow'));
+	}
+
+	// ── CORS preflight emits the documented values ─────────────────────────────
+
+	public function testCorsPreflightEmitsMethodsHeadersAndMaxAge(): void
+	{
+		$this->service->setEnableCors(true);
+		$this->service->setAllowMethods('GET, POST');
+		$this->service->setAllowHeaders('Authorization');
+		$this->service->setMaxAge(120);
+		$r = $this->runWith('OPTIONS', '/api/users');
+		$this->assertSame(204, $r->status);
+		$this->assertSame('Access-Control-Allow-Methods: GET, POST', $r->headerLine('Access-Control-Allow-Methods'));
+		$this->assertSame('Access-Control-Allow-Headers: Authorization', $r->headerLine('Access-Control-Allow-Headers'));
+		$this->assertSame('Access-Control-Max-Age: 120', $r->headerLine('Access-Control-Max-Age'));
+	}
 }
 
 /** Resource whose doIndex throws a generic exception — used for 500 tests. */
@@ -1183,5 +1321,23 @@ class NotFoundingResource extends TRestResource
 	public function doShow(string $id): array
 	{
 		$this->notFound("User {$id} not found.");
+	}
+}
+
+/** Resource whose doStore raises a 422 validation fault. */
+class ValidatingResource extends TRestResource
+{
+	public function doStore(): array
+	{
+		$this->unprocessable(['email' => ['required']]);
+	}
+}
+
+/** Resource whose doIndex raises a 429. */
+class RateLimitedResource extends TRestResource
+{
+	public function doIndex(): array
+	{
+		$this->abort(429, 'Slow down.');
 	}
 }

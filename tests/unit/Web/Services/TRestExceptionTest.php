@@ -221,4 +221,94 @@ class TRestExceptionTest extends PHPUnit\Framework\TestCase
 		$this->assertSame('invalid', $arr['detail']);
 		$this->assertSame(['x' => ['bad']], $arr['errors']);
 	}
+
+	// ── Factory status-to-title mapping ────────────────────────────────────────
+
+	/**
+	 * @dataProvider factoryTitleProvider
+	 */
+	public function testFactoriesMapToExpectedStatusAndTitle(callable $factory, int $status, string $title): void
+	{
+		$e = $factory();
+		$this->assertSame($status, $e->getStatusCode());
+		$this->assertSame($title, $e->getTitle());
+	}
+
+	public static function factoryTitleProvider(): array
+	{
+		return [
+			'badRequest' => [fn () => TRestException::badRequest(), 400, 'Bad Request'],
+			'unauthorized' => [fn () => TRestException::unauthorized(), 401, 'Unauthorized'],
+			'forbidden' => [fn () => TRestException::forbidden(), 403, 'Forbidden'],
+			'notFound' => [fn () => TRestException::notFound(), 404, 'Not Found'],
+			'methodNotAllowed' => [fn () => TRestException::methodNotAllowed(), 405, 'Method Not Allowed'],
+			'conflict' => [fn () => TRestException::conflict(), 409, 'Conflict'],
+			'unsupportedMediaType' => [fn () => TRestException::unsupportedMediaType(), 415, 'Unsupported Media Type'],
+			'unprocessable' => [fn () => TRestException::unprocessable(), 422, 'Unprocessable Entity'],
+			'tooManyRequests' => [fn () => TRestException::tooManyRequests(), 429, 'Too Many Requests'],
+			'internalError' => [fn () => TRestException::internalError(), 500, 'Internal Server Error'],
+		];
+	}
+
+	public function testServiceUnavailableTitle(): void
+	{
+		$e = new TRestException(503);
+		$this->assertSame('Service Unavailable', $e->getTitle());
+	}
+
+	// ── toArray boundary: status + title only ──────────────────────────────────
+
+	public function testToArrayWithOnlyStatusAndTitleHasNoDetailOrErrors(): void
+	{
+		$arr = (new TRestException(404))->toArray();
+		$this->assertSame(['status' => 404, 'title' => 'Not Found'], $arr);
+	}
+
+	public function testUnprocessableWithDefaultEmptyErrorsOmitsErrorsKey(): void
+	{
+		$arr = TRestException::unprocessable()->toArray();
+		$this->assertArrayNotHasKey('errors', $arr);
+	}
+
+	// ── Unknown / boundary status codes ────────────────────────────────────────
+
+	public function testUnknownStatusCodeFallsBackToGenericTitle(): void
+	{
+		$e = new TRestException(499);
+		$this->assertSame('Error', $e->getTitle());
+		$this->assertSame(499, $e->getStatusCode());
+	}
+
+	public function testCodeEqualsStatusForMultipleCodes(): void
+	{
+		foreach ([400, 404, 422, 429, 500] as $code) {
+			$this->assertSame($code, (new TRestException($code))->getCode());
+		}
+	}
+
+	public function testWhitespaceOnlyTitleIsPreservedNotTreatedAsEmpty(): void
+	{
+		// Only an empty string triggers the reason-phrase fallback; ' ' is kept.
+		$e = new TRestException(404, ' ');
+		$this->assertSame(' ', $e->getTitle());
+	}
+
+	public function testUnicodeTitleAndDetailRoundTrip(): void
+	{
+		$e = new TRestException(400, 'Erreur héllo', 'détail café');
+		$arr = $e->toArray();
+		$this->assertSame('Erreur héllo', $arr['title']);
+		$this->assertSame('détail café', $arr['detail']);
+	}
+
+	public function testThrowabilityPropagatesMessageAndCode(): void
+	{
+		try {
+			throw TRestException::notFound('gone');
+		} catch (TRestException $e) {
+			$this->assertSame(404, $e->getStatusCode());
+			$this->assertSame(404, $e->getCode());
+			$this->assertSame('gone', $e->getDetail());
+		}
+	}
 }

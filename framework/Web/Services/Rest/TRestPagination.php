@@ -18,8 +18,9 @@ use Prado\Web\THttpRequest;
  * TRestPagination class.
  *
  * TRestPagination is a stateless pagination helper for REST API list endpoints.
- * It reads the `page` and `per_page` query parameters from the current request
- * and exposes SQL-friendly `offset` and `limit` values.
+ * It reads the `page` and `per_page` request parameters from the current request
+ * (via {@see \Prado\Web\THttpRequest::itemAt()}, which covers query-string, route,
+ * and form values) and exposes SQL-friendly `offset` and `limit` values.
  *
  * ## Usage in a TRestResource
  *
@@ -53,12 +54,12 @@ use Prado\Web\THttpRequest;
  * }
  * ```
  *
- * ## Query Parameters
+ * ## Request Parameters
  *
  * | Parameter  | Description | Default |
  * |------------|-------------|---------|
- * | `page`     | 1-based page number | 1 |
- * | `per_page` | Items per page (capped at `maxPerPage`) | 20 |
+ * | `page`     | 1-based page number (clamped to at least 1) | 1 |
+ * | `per_page` | Items per page (clamped to `[1, maxPerPage]`) | 20 |
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
@@ -99,14 +100,15 @@ class TRestPagination extends TApplicationComponent
 	/**
 	 * Creates a TRestPagination instance from the current HTTP request.
 	 *
-	 * Reads the `page` and `per_page` query parameters. The `per_page` value
-	 * is clamped to the range [1, $maxPerPage].
+	 * Reads the `page` and `per_page` request parameters. The `page` value is
+	 * clamped to at least 1, and `per_page` is clamped to the range
+	 * `[1, $maxPerPage]`.
 	 *
 	 * @param ?THttpRequest $request Request to read parameters from.
 	 *   Defaults to the application's current request.
 	 * @param int $defaultPerPage Default items-per-page when `per_page` is absent. Defaults to 20.
 	 * @param int $maxPerPage Maximum allowed per-page value. Defaults to 100.
-	 * @return self
+	 * @return self The pagination helper built from the request parameters.
 	 */
 	public static function fromRequest(?THttpRequest $request = null, int $defaultPerPage = 20, int $maxPerPage = 100): self
 	{
@@ -181,12 +183,15 @@ class TRestPagination extends TApplicationComponent
 	}
 
 	/**
-	 * Sets the current page number. Values below 1 are clamped to 1.
+	 * Sets the current page number. Values below 1 are clamped to 1, and the
+	 * value is capped so that {@see getOffset()} cannot overflow `PHP_INT_MAX`
+	 * for the current per-page size.
 	 * @param int $value 1-based page number.
 	 */
 	protected function setPage(int $value): void
 	{
-		$this->setPageDirect(max(1, $value));
+		$maxPage = intdiv(PHP_INT_MAX, max(1, $this->getPerPageDirect())) + 1;
+		$this->setPageDirect(min($maxPage, max(1, $value)));
 	}
 
 	/**
@@ -227,11 +232,17 @@ class TRestPagination extends TApplicationComponent
 
 	/**
 	 * Returns the SQL `OFFSET` value for the current page.
+	 *
+	 * The product is guarded against integer overflow: if `(page - 1) * perPage`
+	 * exceeds `PHP_INT_MAX` (which PHP would promote to a float), `PHP_INT_MAX`
+	 * is returned so the declared `int` return type holds.
+	 *
 	 * @return int Zero-based row offset.
 	 */
 	public function getOffset(): int
 	{
-		return ($this->getPage() - 1) * $this->getPerPage();
+		$offset = ($this->getPage() - 1) * $this->getPerPage();
+		return is_int($offset) ? $offset : PHP_INT_MAX;
 	}
 
 	/**
