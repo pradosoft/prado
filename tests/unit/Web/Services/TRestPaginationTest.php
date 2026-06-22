@@ -243,4 +243,132 @@ class TRestPaginationTest extends PHPUnit\Framework\TestCase
 		$this->assertNull($meta['to']);
 		$this->assertSame(1, $meta['last_page']);
 	}
+
+	// ── Integer-overflow guard (HIGH regression) ───────────────────────────────
+
+	public function testGetOffsetDoesNotOverflowForHugePage(): void
+	{
+		// A crafted page near PHP_INT_MAX must not promote the offset to a float
+		// and throw a TypeError on the int return.
+		$p = new TRestPagination(PHP_INT_MAX, 100, 100);
+		$offset = $p->getOffset();
+		$this->assertIsInt($offset);
+		$this->assertLessThanOrEqual(PHP_INT_MAX, $offset);
+	}
+
+	public function testFromRequestHugePageDoesNotCrash(): void
+	{
+		$request = Prado::getApplication()->getRequest();
+		$request->add('page', '99999999999999999999');
+		$p = TRestPagination::fromRequest($request);
+		$this->assertIsInt($p->getOffset());
+		$meta = $p->toMeta(1000); // must not throw
+		$this->assertIsInt($meta['last_page']);
+	}
+
+	// ── setMaxPerPage / clamping ───────────────────────────────────────────────
+
+	public function testConstructorClampsMaxPerPageToOne(): void
+	{
+		// maxPerPage below 1 clamps to 1, which then caps perPage at 1.
+		$p = new TRestPagination(1, 50, 0);
+		$this->assertSame(1, $p->getMaxPerPage());
+		$this->assertSame(1, $p->getPerPage());
+	}
+
+	// ── fromRequest edge cases ─────────────────────────────────────────────────
+
+	public function testFromRequestPerPageBelowOneClampsToOne(): void
+	{
+		$request = Prado::getApplication()->getRequest();
+		$request->add('per_page', '0');
+		$p = TRestPagination::fromRequest($request);
+		$this->assertSame(1, $p->getPerPage());
+
+		$request->add('per_page', '-10');
+		$p2 = TRestPagination::fromRequest($request);
+		$this->assertSame(1, $p2->getPerPage());
+	}
+
+	public function testFromRequestNonNumericParamsCoerceToFloor(): void
+	{
+		// (int) 'abc' === 0, then clamped to 1 for both page and per_page.
+		$request = Prado::getApplication()->getRequest();
+		$request->add('page', 'abc');
+		$request->add('per_page', 'xyz');
+		$p = TRestPagination::fromRequest($request);
+		$this->assertSame(1, $p->getPage());
+		$this->assertSame(1, $p->getPerPage());
+	}
+
+	public function testFromRequestEmptyStringParamsClampToOne(): void
+	{
+		// An empty string is present (not absent), so the default is bypassed:
+		// (int) '' === 0 → clamped to 1, rather than the documented default of 20.
+		$request = Prado::getApplication()->getRequest();
+		$request->add('page', '');
+		$request->add('per_page', '');
+		$p = TRestPagination::fromRequest($request, 20, 100);
+		$this->assertSame(1, $p->getPage());
+		$this->assertSame(1, $p->getPerPage());
+	}
+
+	public function testFromRequestNumericStringWithSuffixTruncates(): void
+	{
+		// (int) '15abc' === 15 and (int) '2.9' === 2 — PHP leading-numeric cast.
+		$request = Prado::getApplication()->getRequest();
+		$request->add('page', '2.9');
+		$request->add('per_page', '15abc');
+		$p = TRestPagination::fromRequest($request);
+		$this->assertSame(2, $p->getPage());
+		$this->assertSame(15, $p->getPerPage());
+	}
+
+	public function testFromRequestArrayParamCoercesToOne(): void
+	{
+		// An array-valued parameter casts to 1 (PHP (int)[...] === 1) and clamps.
+		$request = Prado::getApplication()->getRequest();
+		$request->add('page', ['x', 'y']);
+		$p = TRestPagination::fromRequest($request);
+		$this->assertSame(1, $p->getPage());
+	}
+
+	public function testFromRequestNullRequestReadsApplicationRequest(): void
+	{
+		$request = Prado::getApplication()->getRequest();
+		$request->add('page', '4');
+		$p = TRestPagination::fromRequest(null);
+		$this->assertSame(4, $p->getPage());
+	}
+
+	// ── toMeta out-of-range page ───────────────────────────────────────────────
+
+	public function testToMetaPageBeyondLastPageProducesFromBeyondTotal(): void
+	{
+		// page 10 of a 2-page set: from exceeds total and to is capped at total.
+		$p = new TRestPagination(10, 20);
+		$meta = $p->toMeta(30);
+		$this->assertSame(2, $meta['last_page']);
+		$this->assertSame(181, $meta['from']);
+		$this->assertSame(30, $meta['to']);
+	}
+
+	public function testToMetaLastPageRoundingBoundary(): void
+	{
+		$this->assertSame(4, (new TRestPagination(1, 10))->toMeta(31)['last_page']);
+		$this->assertSame(3, (new TRestPagination(1, 10))->toMeta(30)['last_page']);
+		$this->assertSame(3, (new TRestPagination(1, 10))->toMeta(29)['last_page']);
+	}
+
+	// ── Direct accessors exercised independently ───────────────────────────────
+
+	public function testAccessorsReflectConstructorValues(): void
+	{
+		$p = new TRestPagination(3, 25, 200);
+		$this->assertSame(3, $p->getPage());
+		$this->assertSame(25, $p->getPerPage());
+		$this->assertSame(25, $p->getLimit());
+		$this->assertSame(200, $p->getMaxPerPage());
+		$this->assertSame(50, $p->getOffset());
+	}
 }

@@ -55,7 +55,7 @@ use Prado\Xml\TXmlDocument;
  *
  * | Verb       | Collection route | Item route                  |
  * |------------|------------------|-----------------------------|
- * | GET / HEAD | `doIndex()`      | `doShow()` (body for HEAD)  |
+ * | GET / HEAD | `doIndex()`      | `doShow()` (HEAD omits body) |
  * | POST       | `doStore()`      | `doStore()`                 |
  * | PUT        | `doStore()`      | `doUpdate()`                |
  * | PATCH      | `doStore()`      | `doPatch()`                 |
@@ -285,7 +285,9 @@ class TRestService extends \Prado\TService
 	 * compiling the resource route table.
 	 * @param mixed $config Service configuration element.
 	 * @throws TConfigurationException when CORS credentials are combined with
-	 *   the wildcard origin.
+	 *   the wildcard origin, or a resource declaration is invalid (missing
+	 *   `pattern`/`class`, bad route parameter name, or non-resource class).
+	 * @throws TIOException when a referenced config or group file cannot be found.
 	 */
 	public function init($config): void
 	{
@@ -481,10 +483,16 @@ class TRestService extends \Prado\TService
 			throw new TConfigurationException('restservice_class_required');
 		}
 
+		// An individual resource may carry an `enabled` flag (boolean-ish, or the
+		// case-insensitive `'Debug'`), mirroring `<group>`; a disabled resource is skipped.
+		if (array_key_exists('enabled', $item) && !$this->isEnabled($item['enabled'])) {
+			return;
+		}
+
 		$pattern = $prefix . $item['pattern'];
 		$class = $item['class'];
 		$parameters = $item['parameters'] ?? [];
-		$properties = array_diff_key($item, array_flip(['pattern', 'class', 'parameters']));
+		$properties = array_diff_key($item, array_flip(['pattern', 'class', 'parameters', 'enabled']));
 
 		$this->addResource($pattern, $class, $parameters, $properties);
 	}
@@ -665,6 +673,17 @@ class TRestService extends \Prado\TService
 		preg_match_all('/\{([^}]+)\}/', $pattern, $matches);
 		$paramOrder = $matches[1];
 
+		// Fail fast on names that are not valid PCRE named-group identifiers, or on
+		// duplicates (PCRE rejects repeated group names, which would silently break routing).
+		foreach ($paramOrder as $paramName) {
+			if (!preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $paramName)) {
+				throw new TConfigurationException('restservice_param_name_invalid', $paramName, $pattern);
+			}
+		}
+		if (count($paramOrder) !== count(array_unique($paramOrder))) {
+			throw new TConfigurationException('restservice_param_name_duplicate', $pattern);
+		}
+
 		// Split pattern on {param} tokens, escape literal parts, rejoin with named captures
 		$literalParts = preg_split('/\{[^}]+\}/', $pattern);
 		$regexParts = [];
@@ -759,6 +778,7 @@ class TRestService extends \Prado\TService
 	 *
 	 * For example, if BasePath is `"api/"` and PATH_INFO is `/api/users/42`,
 	 * this method returns `"users/42"`.
+	 * @throws TRestException 404 when the path lies outside BasePath.
 	 * @return string Relative API path, with no leading slash.
 	 */
 	protected function getApiPath(): string
@@ -782,16 +802,17 @@ class TRestService extends \Prado\TService
 	 */
 	protected function applyBasePath(string $pathInfo): string
 	{
-		$basePath = ltrim($this->getBasePath(), '/');
+		$basePath = trim($this->getBasePath(), '/');
 
 		if ($basePath === '') {
 			return $pathInfo;
 		}
-		if (str_starts_with($pathInfo, $basePath)) {
-			return ltrim(substr($pathInfo, strlen($basePath)), '/');
-		}
-		if (rtrim($basePath, '/') === $pathInfo) {
+		if ($pathInfo === $basePath) {
 			return '';
+		}
+		// Match only on a segment boundary so BasePath "api" does not capture "apidocs/…".
+		if (str_starts_with($pathInfo, $basePath . '/')) {
+			return ltrim(substr($pathInfo, strlen($basePath) + 1), '/');
 		}
 
 		throw TRestException::notFound('The requested resource was not found.');
@@ -958,6 +979,7 @@ class TRestService extends \Prado\TService
 	 * @param mixed $data Response payload. Must be JSON-serializable.
 	 * @param int $statusCode HTTP status code. Defaults to 200.
 	 * @param array $headers Additional response headers as name => value pairs.
+	 * @throws \JsonException when the payload cannot be JSON-encoded.
 	 */
 	protected function sendJsonResponse(mixed $data, int $statusCode = 200, array $headers = []): void
 	{
@@ -978,11 +1000,14 @@ class TRestService extends \Prado\TService
 	/**
 	 * Serializes a TRestException to JSON and writes it to the HTTP response.
 	 * @param TRestException $e Exception to serialize.
+	 * @throws \JsonException when the error envelope cannot be JSON-encoded.
 	 */
 	protected function sendErrorResponse(TRestException $e): void
 	{
 		$response = $this->getResponse();
-		$response->setStatusCode($e->getStatusCode());
+		// Pass the reason phrase so THttpResponse emits the status even for codes
+		// it does not list, instead of raising a secondary exception.
+		$response->setStatusCode($e->getStatusCode(), $e->getTitle());
 		$response->setContentType('application/json');
 		$response->setCharset('UTF-8');
 		$response->write(json_encode($e->toArray(), JSON_THROW_ON_ERROR));
