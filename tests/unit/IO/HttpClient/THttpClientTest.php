@@ -107,6 +107,47 @@ class THttpClientTest extends PHPUnit\Framework\TestCase
 		$this->assertSame([], $this->client->exposeFormatHeaderLines([]));
 	}
 
+	public function testFormatHeaderLinesStripsCrlfFromValues(): void
+	{
+		// A request-splitting payload in a value collapses onto one line with the CR/LF removed.
+		$lines = $this->client->exposeFormatHeaderLines([
+			'Content-Type' => "application/json\r\nX-Injected: evil",
+		]);
+		$this->assertSame(['Content-Type: application/jsonX-Injected: evil'], $lines);
+	}
+
+	public function testFormatHeaderLinesStripsCrlfFromNames(): void
+	{
+		$lines = $this->client->exposeFormatHeaderLines([
+			"X-Test\r\nX-Injected" => 'value',
+		]);
+		$this->assertSame(['X-TestX-Injected: value'], $lines);
+	}
+
+	public function testFormatHeaderLinesStripsBareCrAndLf(): void
+	{
+		$lines = $this->client->exposeFormatHeaderLines([
+			'A' => "1\r2",   // a bare carriage return
+			'B' => "3\n4",   // a bare line feed
+		]);
+		$this->assertSame(['A: 12', 'B: 34'], $lines);
+	}
+
+	public function testFormatHeaderLinesNeverEmitsCrOrLf(): void
+	{
+		// No produced line may carry a CR or LF, so a second header cannot reach the wire.
+		$lines = $this->client->exposeFormatHeaderLines([
+			'Set-Cookie' => "a=1\r\nSet-Cookie: b=2",
+			"Bad\nName" => "x\ry",
+			'Normal' => 'ok',
+		]);
+		$this->assertCount(3, $lines, 'The split attempt does not add a header line.');
+		foreach ($lines as $line) {
+			$this->assertDoesNotMatchRegularExpression('/[\r\n]/', $line, 'A flattened header line must not contain CR or LF.');
+		}
+		$this->assertContains('Set-Cookie: a=1Set-Cookie: b=2', $lines, 'The injected header folds into the original line.');
+	}
+
 	// ── Property accessors ────────────────────────────────────────────────────
 
 	public function testTimeoutAccessor(): void

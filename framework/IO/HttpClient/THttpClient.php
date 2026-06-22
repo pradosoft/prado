@@ -263,6 +263,12 @@ abstract class THttpClient extends TApplicationComponent
 	/**
 	 * Flattens an associative header map into the `Name: value` lines that
 	 * both cURL and stream contexts expect.
+	 *
+	 * CR and LF characters are stripped from every name and value as a
+	 * last-resort guard against header injection / request splitting, so a
+	 * splittable header cannot reach the wire even if a caller bypasses
+	 * higher-level validation.
+	 *
 	 * @param array<string,string> $headers Header map.
 	 * @return string[] Flat list of `Name: value` strings.
 	 */
@@ -270,7 +276,7 @@ abstract class THttpClient extends TApplicationComponent
 	{
 		$out = [];
 		foreach ($headers as $name => $value) {
-			$out[] = $name . ': ' . $value;
+			$out[] = str_replace(["\r", "\n"], '', $name . ': ' . $value);
 		}
 		return $out;
 	}
