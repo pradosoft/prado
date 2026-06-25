@@ -1005,9 +1005,7 @@ class TRestService extends \Prado\TService
 	protected function sendErrorResponse(TRestException $e): void
 	{
 		$response = $this->getResponse();
-		// Pass the reason phrase so THttpResponse emits the status even for codes
-		// it does not list, instead of raising a secondary exception.
-		$response->setStatusCode($e->getStatusCode(), $e->getTitle());
+		$response->setStatusCode($e->getStatusCode());
 		$response->setContentType('application/json');
 		$response->setCharset('UTF-8');
 		$response->write(json_encode($e->toArray(), JSON_THROW_ON_ERROR));
