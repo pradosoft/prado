@@ -670,6 +670,13 @@ dbparametermodule_set_no_blank_key		= TDbParameterModule cannot set an empty key
 dbparametermodule_connectionid_invalid	= TDbParameterModule.ConnectionID '{0}' does not point to a valid TDataSourceConfig module.
 dbparametermodule_serializer_not_callable= TDbParameterModule Serializer is not a callable.
 
+processcrontask_no_command				= TProcessCronTask '{0}' has no Command to run.
+processcrontask_launch_failed			= TProcessCronTask failed to launch the process: '{0}'.
+processcrontask_write_failed			= TProcessCronTask could not write the pid file '{0}'.
+closurecrontask_no_closure				= TClosureCronTask '{0}' has no closure to run.
+closurecrontask_closure_required		= TClosureCronTask requires a Closure.
+closurecrontask_invalid_securitymanager	= TClosureCronTask SecurityManagerID '{0}' is not a TSecurityManager.
+closurecrontask_decrypt_failed			= TClosureCronTask '{0}' could not decrypt its closure payload.
 cronmethodtask_no_module				= TCronMethodTask could not find module '{0}'.
 cron_usermanager_nonexistent			= TCronModule could not find the UserManager of the name '{0}'.
 cron_usermanager_invalid				= The TCronModule UserManager '{0}' is not a TUserManager.
