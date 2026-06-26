@@ -76,6 +76,28 @@ class TestApiClient extends TRestClient
 	{
 		return $this->buildUrl($path, $params, $query);
 	}
+
+	public function exposeBuildQuery(array $query): string
+	{
+		return $this->buildQuery($query);
+	}
+
+	/** @return array{0: ?string, 1: array} [rawBody, augmentedHeaders] */
+	public function exposeEncodeBody(mixed $body, array $headers = []): array
+	{
+		$raw = $this->encodeBody($body, $headers);
+		return [$raw, $headers];
+	}
+
+	public function exposeHandleResponse(THttpClientResponse $response): mixed
+	{
+		return $this->handleResponse($response);
+	}
+
+	public function exposeMergeHeaders(array $perCall): array
+	{
+		return $this->mergeHeaders($perCall);
+	}
 }
 
 /**
@@ -128,8 +150,7 @@ class TRestClientTest extends PHPUnit\Framework\TestCase
 	public function testBuildUrlAppendsQueryWithExistingQueryString(): void
 	{
 		$url = $this->client->exposeBuildUrl('search?lang=en', [], ['q' => 'x']);
-		$this->assertStringContainsString('?lang=en', $url);
-		$this->assertStringContainsString('&q=x', $url);
+		$this->assertSame('https://api.example.test/search?lang=en&q=x', $url);
 	}
 
 	// ── Verb dispatch ─────────────────────────────────────────────────────────
@@ -378,5 +399,262 @@ class TRestClientTest extends PHPUnit\Framework\TestCase
 		$c->setDefaultHeaders(['Accept' => 'application/json']);
 		$c->setDefaultHeaders(['User-Agent' => 'Test/1.0']);
 		$this->assertSame(['User-Agent' => 'Test/1.0'], $c->getDefaultHeaders());
+	}
+
+	public function testSetDefaultHeaderAddsWithoutDroppingPrior(): void
+	{
+		$c = new TestApiClient();
+		$c->setDefaultHeader('Accept', 'application/json');
+		$c->setDefaultHeader('User-Agent', 'Test/1.0');
+		$this->assertSame(['Accept' => 'application/json', 'User-Agent' => 'Test/1.0'], $c->getDefaultHeaders());
+	}
+
+	public function testSetDownloaderInjectsAndGetterReturnsSameInstance(): void
+	{
+		$c = new TestApiClient();
+		$mock = new MockHttpClient();
+		$c->setDownloader($mock);
+		$this->assertSame($mock, $c->getDownloader());
+	}
+
+	// ── buildQuery edge cases ──────────────────────────────────────────────────
+
+	public function testBuildQueryEmptyMapReturnsEmptyString(): void
+	{
+		$this->assertSame('', $this->client->exposeBuildQuery([]));
+	}
+
+	public function testBuildQueryNullValueIsOmittedWithNoDanglingSeparator(): void
+	{
+		// A null scalar produces no fragment; the surviving keys must not be
+		// separated by a doubled or trailing '&'.
+		$this->assertSame('a=1&b=2', $this->client->exposeBuildQuery(['a' => 1, 'x' => null, 'b' => 2]));
+		$this->assertSame('', $this->client->exposeBuildQuery(['x' => null]));
+	}
+
+	public function testBuildQueryEmptyListIsOmitted(): void
+	{
+		$this->assertSame('keep=1', $this->client->exposeBuildQuery(['tags' => [], 'keep' => 1]));
+	}
+
+	public function testBuildQueryBooleanValuesEncodeAsOneAndZero(): void
+	{
+		$this->assertSame('active=1&inactive=0', $this->client->exposeBuildQuery(['active' => true, 'inactive' => false]));
+	}
+
+	public function testBuildQueryNestedListEmitsRepeatedKeys(): void
+	{
+		$this->assertSame('id=1&id=2&id=3', $this->client->exposeBuildQuery(['id' => [1, 2, 3]]));
+	}
+
+	public function testBuildUrlWithEmptyQueryAppendsNothing(): void
+	{
+		$this->assertSame('https://api.example.test/search', $this->client->exposeBuildUrl('search', [], []));
+		// A query whose only value is null must not append a bare '?'.
+		$this->assertSame('https://api.example.test/search', $this->client->exposeBuildUrl('search', [], ['x' => null]));
+	}
+
+	// ── buildUrl base-URL joining edge cases ───────────────────────────────────
+
+	public function testBuildUrlJoinsBaseWithoutTrailingSlash(): void
+	{
+		$c = new TestApiClient();
+		$c->setBaseUrl('https://h.test/api');
+		$this->assertSame('https://h.test/api/users', $c->exposeBuildUrl('users'));
+	}
+
+	public function testBuildUrlWithEmptyBaseProducesRootRelative(): void
+	{
+		$c = new TestApiClient();
+		$c->setBaseUrl('');
+		$this->assertSame('/users', $c->exposeBuildUrl('users'));
+	}
+
+	public function testBuildUrlWithEmptyPathYieldsBaseRoot(): void
+	{
+		$this->assertSame('https://api.example.test/', $this->client->exposeBuildUrl(''));
+	}
+
+	public function testBuildUrlWithLeadingSlashPathDoesNotDoubleSlash(): void
+	{
+		$this->assertSame('https://api.example.test/users', $this->client->exposeBuildUrl('/users'));
+	}
+
+	// ── buildUrl placeholder edge cases ────────────────────────────────────────
+
+	public function testBuildUrlPlaceholderZeroAndEmptyString(): void
+	{
+		$this->assertSame('https://api.example.test/users/0', $this->client->exposeBuildUrl('users/{id}', ['id' => 0]));
+		$this->assertSame('https://api.example.test/users/', $this->client->exposeBuildUrl('users/{id}', ['id' => '']));
+	}
+
+	public function testBuildUrlPlaceholderNullLeavesTokenIntact(): void
+	{
+		// isset() is false for null, so an explicit null does NOT substitute.
+		$this->assertSame('https://api.example.test/users/{id}', $this->client->exposeBuildUrl('users/{id}', ['id' => null]));
+	}
+
+	public function testBuildUrlDuplicatePlaceholderSubstitutesBoth(): void
+	{
+		$this->assertSame(
+			'https://api.example.test/a/7/b/7',
+			$this->client->exposeBuildUrl('a/{id}/b/{id}', ['id' => 7])
+		);
+	}
+
+	public function testBuildUrlMultibytePlaceholderIsEncoded(): void
+	{
+		$this->assertSame(
+			'https://api.example.test/u/caf%C3%A9',
+			$this->client->exposeBuildUrl('u/{name}', ['name' => 'café'])
+		);
+	}
+
+	// ── encodeBody edge cases ──────────────────────────────────────────────────
+
+	public function testEncodeBodyNullReturnsNullAndAddsNoContentType(): void
+	{
+		[$raw, $headers] = $this->client->exposeEncodeBody(null);
+		$this->assertNull($raw);
+		$this->assertArrayNotHasKey('Content-Type', $headers);
+	}
+
+	public function testEncodeBodyEmptyStringPassesThrough(): void
+	{
+		[$raw, $headers] = $this->client->exposeEncodeBody('');
+		$this->assertSame('', $raw);
+		$this->assertArrayNotHasKey('Content-Type', $headers);
+	}
+
+	public function testEncodeBodyEmptyArrayEncodesAsJsonObjectOrArray(): void
+	{
+		[$raw, $headers] = $this->client->exposeEncodeBody([]);
+		$this->assertSame('[]', $raw);
+		$this->assertSame('application/json', $headers['Content-Type']);
+	}
+
+	public function testEncodeBodyUppercaseExistingContentTypeIsNotOverwritten(): void
+	{
+		[$raw, $headers] = $this->client->exposeEncodeBody(['a' => 1], ['CONTENT-TYPE' => 'application/xml']);
+		$this->assertSame('{"a":1}', $raw);
+		$this->assertSame('application/xml', $headers['CONTENT-TYPE']);
+		$this->assertArrayNotHasKey('Content-Type', $headers);
+	}
+
+	// ── handleResponse edge cases ──────────────────────────────────────────────
+
+	public function testHandleResponseLiteralJsonNullDecodesToNull(): void
+	{
+		// A body of the four bytes "null" is valid JSON and must decode to null,
+		// not be mistaken for the raw-string fallback.
+		$this->assertNull($this->client->exposeHandleResponse(new THttpClientResponse(200, [], 'null')));
+	}
+
+	public function testHandleResponseScalarJsonBodiesDecode(): void
+	{
+		$this->assertFalse($this->client->exposeHandleResponse(new THttpClientResponse(200, [], 'false')));
+		$this->assertSame(0, $this->client->exposeHandleResponse(new THttpClientResponse(200, [], '0')));
+		$this->assertSame(42, $this->client->exposeHandleResponse(new THttpClientResponse(200, [], '42')));
+	}
+
+	public function testHandleResponseEmptyBodyReturnsNull(): void
+	{
+		$this->assertNull($this->client->exposeHandleResponse(new THttpClientResponse(204, [], '')));
+	}
+
+	public function testHandleResponseSuccessBoundary299Decodes(): void
+	{
+		$this->assertSame(['ok' => true], $this->client->exposeHandleResponse(new THttpClientResponse(299, [], '{"ok":true}')));
+	}
+
+	public function testHandleResponse300ThrowsAsError(): void
+	{
+		$this->expectException(THttpClientException::class);
+		$this->client->exposeHandleResponse(new THttpClientResponse(300, [], 'redirect'));
+	}
+
+	// ── mergeHeaders ────────────────────────────────────────────────────────────
+
+	public function testMergeHeadersPerCallWinsAndDefaultsSurvive(): void
+	{
+		$this->client->setDefaultHeader('Accept', 'application/json');
+		$this->client->setDefaultHeader('X-Keep', 'yes');
+		$merged = $this->client->exposeMergeHeaders(['Accept' => 'text/plain']);
+		$this->assertSame('text/plain', $merged['Accept']);
+		$this->assertSame('yes', $merged['X-Keep']);
+	}
+
+	// ── Header injection guards (HIGH) ─────────────────────────────────────────
+
+	public function testSetDefaultHeaderRejectsCrlfInValue(): void
+	{
+		$this->expectException(\Prado\Exceptions\TInvalidDataValueException::class);
+		$this->client->setDefaultHeader('X-Test', "ok\r\nX-Injected: evil");
+	}
+
+	public function testSetDefaultHeaderRejectsInvalidName(): void
+	{
+		$this->expectException(\Prado\Exceptions\TInvalidDataValueException::class);
+		$this->client->setDefaultHeader("Bad Name", 'value');
+	}
+
+	public function testPerCallHeaderWithCrlfIsRejected(): void
+	{
+		$this->expectException(\Prado\Exceptions\TInvalidDataValueException::class);
+		$this->client->get('users', [], [], ['X-Evil' => "a\r\nHost: evil"]);
+	}
+
+	public function testSetBearerTokenRejectsCrlf(): void
+	{
+		$this->expectException(\Prado\Exceptions\TInvalidDataValueException::class);
+		$this->client->setBearerToken("tok\r\nX-Injected: 1");
+	}
+
+	public function testSetBasicAuthRejectsColonInUsername(): void
+	{
+		$this->expectException(\Prado\Exceptions\TInvalidDataValueException::class);
+		$this->client->setBasicAuth('al:ice', 'pw');
+	}
+
+	public function testSetBasicAuthEmptyCredentialsEncode(): void
+	{
+		$this->client->setBasicAuth('', '');
+		$this->downloader->queue(new THttpClientResponse(200, [], '{}'));
+		$this->client->fetchUser('1');
+		$this->assertSame('Basic ' . base64_encode(':'), $this->downloader->calls[0]['headers']['Authorization']);
+	}
+
+	public function testBearerThenBasicAuthLastOneWins(): void
+	{
+		$this->client->setBearerToken('tok');
+		$this->client->setBasicAuth('u', 'p');
+		$this->downloader->queue(new THttpClientResponse(200, [], '{}'));
+		$this->client->fetchUser('1');
+		$this->assertSame('Basic ' . base64_encode('u:p'), $this->downloader->calls[0]['headers']['Authorization']);
+	}
+
+	// ── requestRaw default-argument paths ──────────────────────────────────────
+
+	public function testRequestRawMinimalArgsMergesDefaultsNoBody(): void
+	{
+		$this->client->setDefaultHeader('Accept', 'application/json');
+		$this->downloader->queue(new THttpClientResponse(200, [], '{}'));
+		$this->client->requestRaw('GET', 'ping');
+		$call = $this->downloader->calls[0];
+		$this->assertSame('https://api.example.test/ping', $call['url']);
+		$this->assertNull($call['body']);
+		$this->assertSame('application/json', $call['headers']['Accept']);
+	}
+
+	// ── Verb helpers carry both pathParams and body+query ──────────────────────
+
+	public function testPutCarriesPathParamsBodyAndQuery(): void
+	{
+		$this->downloader->queue(new THttpClientResponse(200, [], '{}'));
+		$this->client->put('users/{id}', ['id' => '5'], ['name' => 'Z'], ['notify' => 1]);
+		$call = $this->downloader->calls[0];
+		$this->assertSame('PUT', $call['method']);
+		$this->assertSame('https://api.example.test/users/5?notify=1', $call['url']);
+		$this->assertSame('{"name":"Z"}', $call['body']);
 	}
 }

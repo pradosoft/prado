@@ -136,6 +136,20 @@ class THttpResponseTest extends PHPUnit\Framework\TestCase
 		ob_end_flush();
 	}
 
+	public function testSetStatusCodeAcceptsModernCodesWithoutReason()
+	{
+		// Regression: 422 and 429 (and other IANA codes) must be known so that
+		// setStatusCode() supplies their reason phrase instead of throwing when
+		// no explicit reason is given (the path TRestService error responses use).
+		$response = new TTestHttpResponse();
+		$response->init(null);
+		foreach ([422, 429, 451, 428, 431, 507, 511] as $code) {
+			$response->setStatusCode($code);
+			self::assertEquals($code, $response->getStatusCode());
+		}
+		ob_end_flush();
+	}
+
 	public function testGetCookies()
 	{
 		$response = new TTestHttpResponse();
