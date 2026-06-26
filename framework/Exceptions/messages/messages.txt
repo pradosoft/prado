@@ -570,6 +570,11 @@ streamfilter_already_registered			= Stream filter '{0}' is already registered.
 streamfilter_registration_failed		= Unable to register stream filter '{0}' for class '{1}'.
 streamwrapper_already_registered		= Stream wrapper protocol '{0}' is already registered.
 streamwrapper_registration_failed		= Unable to register stream wrapper protocol '{0}' for class '{1}'.
+
+socketservermodule_endpoint_required	= TSocketServerModule requires an Endpoint, or a positive Port to compose one.
+socketservermodule_serverclass_invalid	= TSocketServerModule ServerClass '{0}' is invalid. It must be TSocketServer or a subclass.
+socketservermodule_scheme_not_stream	= TSocketServerModule cannot accept on the connectionless scheme '{0}'. Use a stream scheme such as tcp, tls, ssl, or unix.
+
 bitreader_invalid_bits					= Cannot read {0} bits; the count must be between 0 and the platform integer width.
 bitreader_64bit_php_required			= Reading {0} bits requires a 64-bit PHP build.
 bitreader_invalid_float_bits			= Cannot read a {0}-bit float; only 8, 16, 32, or 64 bits are supported.
@@ -673,8 +678,6 @@ cron_not_a_crontask						= Cron Task '{0}' is not a TCronTask.
 cron_additional_tasks_invalid			= '{0}' is not a valid additional cron task.
 crontask_no_module						= TCronTask could not find module '{0}'.
 
-socketservermodule_url_required			= TSocketServerModule requires a ServerUrl, or a positive Port to compose one.
-socketservermodule_serverclass_invalid	= TSocketServerModule SocketServerClass '{0}' is invalid. It must be TSocketServer or a subclass.
 dbcronclean_moduleid_is_null			= TDbCronCleanLogTask could not find the specified module '{0}'.
 dbcron_invalid_name						= TDbCronManager the task name '{0}' is invalid .
 dbcron_conflicting_task_names			= Configuration cron tasks conflict with DB cron tasks '{0}'.
