@@ -292,6 +292,7 @@ return [
 'TSocketStream' => 'Prado\IO\Socket\TSocketStream',
 'IStreamDecoratorPooling' => 'Prado\IO\Stream\IStreamDecoratorPooling',
 'TBinaryStream' => 'Prado\IO\Stream\TBinaryStream',
+'TBufferStream' => 'Prado\IO\Stream\TBufferStream',
 'TDeflateStream' => 'Prado\IO\Stream\TDeflateStream',
 'TInflateStream' => 'Prado\IO\Stream\TInflateStream',
 'TStreamDecorator' => 'Prado\IO\Stream\TStreamDecorator',
