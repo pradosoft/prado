@@ -17,16 +17,19 @@ use Psr\Http\Message\StreamInterface;
 /**
  * TBinaryStream class.
  *
- * A slim {@see TStreamDecorator} that reads typed binary fields from an inner stream:
- * {@see readInt32()}, {@see readUInt16()}, {@see readDouble()}, {@see readBytes()}, and
- * the rest.  It holds no buffer of its own; each field is read straight from the inner
- * stream, so throughput rests on that stream's native buffering (a resource-backed
- * {@see \Prado\IO\TStream} over a file or php://memory/temp reads through PHP's stream
- * buffer).
+ * A slim {@see TStreamDecorator} that reads and writes typed binary fields on an inner
+ * stream: {@see readInt32()}, {@see readUInt16()}, {@see readDouble()}, {@see readBytes()},
+ * and the matching {@see writeInt32()}, {@see writeUInt16()}, {@see writeDouble()},
+ * {@see writeBytes()}.  It holds no buffer of its own; each field moves straight through
+ * the inner stream, so throughput rests on that stream's native buffering (a
+ * resource-backed {@see \Prado\IO\TStream} over a file or php://memory/temp works through
+ * PHP's stream buffer).
  *
- * Multi-byte values are unpacked in machine order and byte-reversed when the requested
- * {@see TByteOrder} differs, with an optional per-call order overriding the configured
- * {@see getByteOrder() ByteOrder}.
+ * Multi-byte values are packed and unpacked in machine order and byte-reversed when the
+ * requested {@see TByteOrder} differs, with an optional per-call order overriding the
+ * configured {@see getByteOrder() ByteOrder}.  {@see readBytes()} and {@see writeBytes()}
+ * transfer exactly the requested count, so a typed field is never torn by a short read or
+ * write.
  *
  * ```php
  * $b = new TBinaryStream(TStream::fromFile('image.tif', 'rb'), TByteOrder::LittleEndian);
@@ -35,8 +38,9 @@ use Psr\Http\Message\StreamInterface;
  * $tag   = $b->readBytes(4);
  * ```
  *
- * It reads; writes forward to the inner stream. Typed writing is provided by
- * {@see \Prado\IO\Behaviors\TBinaryStreamBehavior}.
+ * {@see \Prado\IO\Behaviors\TBinaryStreamBehavior} adds the same typed surface to an
+ * existing stream as a behavior; the decorator calls its fields directly, without the
+ * behavior dispatch, which suits a hot parse or encode loop.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
@@ -197,5 +201,111 @@ class TBinaryStream extends TStreamDecorator
 	public function readDouble(?int $order = null): float
 	{
 		return (float) $this->readPacked(8, 'd', $order);
+	}
+
+	//
+	// ─── Typed writes ────────────────────────────────────────────────────────
+	//
+
+	/**
+	 * Writes all of the bytes, looping over short writes and throwing when the stream stops
+	 * accepting, so a typed field is never torn.
+	 * @param string $bytes The bytes to write.
+	 * @throws TIOException When the stream accepts fewer bytes than given.
+	 * @return int The number of bytes written.
+	 */
+	public function writeBytes(string $bytes): int
+	{
+		$length = strlen($bytes);
+		if ($length === 0) {
+			return 0;
+		}
+		$written = $this->write($bytes);
+		while ($written < $length) {
+			$count = $this->write(substr($bytes, $written));
+			if ($count <= 0) {
+				throw new TIOException('binarystream_short_write', $length, $written);
+			}
+			$written += $count;
+		}
+		return $written;
+	}
+
+	/**
+	 * Packs and writes a fixed-width value, byte-reversing when the requested order
+	 * differs from the machine order.
+	 * @param float|int $value The value to write.
+	 * @param int $bytes The packed width in bytes.
+	 * @param string $code The single-element {@see pack()} format code.
+	 * @param ?int $order The byte order, or null for the configured/machine default.
+	 * @return int The number of bytes written.
+	 */
+	private function writePacked(int|float $value, int $bytes, string $code, ?int $order): int
+	{
+		$data = pack($code, $value);
+		if ($bytes > 1 && TByteOrder::resolve($order ?? $this->getByteOrderDirect()) !== TByteOrder::native()) {
+			$data = strrev($data);
+		}
+		return $this->writeBytes($data);
+	}
+
+	/** Writes an unsigned 8-bit integer. @param int $value The value. @return int Bytes written. */
+	public function writeUInt8(int $value): int
+	{
+		return $this->writePacked($value, 1, 'C', null);
+	}
+
+	/** Writes a signed 8-bit integer. @param int $value The value. @return int Bytes written. */
+	public function writeInt8(int $value): int
+	{
+		return $this->writePacked($value, 1, 'c', null);
+	}
+
+	/** Writes an unsigned 16-bit integer. @param int $value The value. @param ?int $order The byte order. @return int Bytes written. */
+	public function writeUInt16(int $value, ?int $order = null): int
+	{
+		return $this->writePacked($value, 2, 'S', $order);
+	}
+
+	/** Writes a signed 16-bit integer. @param int $value The value. @param ?int $order The byte order. @return int Bytes written. */
+	public function writeInt16(int $value, ?int $order = null): int
+	{
+		return $this->writePacked($value, 2, 's', $order);
+	}
+
+	/** Writes an unsigned 32-bit integer. @param int $value The value. @param ?int $order The byte order. @return int Bytes written. */
+	public function writeUInt32(int $value, ?int $order = null): int
+	{
+		return $this->writePacked($value, 4, 'L', $order);
+	}
+
+	/** Writes a signed 32-bit integer. @param int $value The value. @param ?int $order The byte order. @return int Bytes written. */
+	public function writeInt32(int $value, ?int $order = null): int
+	{
+		return $this->writePacked($value, 4, 'l', $order);
+	}
+
+	/** Writes an unsigned 64-bit integer. @param int $value The value. @param ?int $order The byte order. @return int Bytes written. */
+	public function writeUInt64(int $value, ?int $order = null): int
+	{
+		return $this->writePacked($value, 8, 'Q', $order);
+	}
+
+	/** Writes a signed 64-bit integer. @param int $value The value. @param ?int $order The byte order. @return int Bytes written. */
+	public function writeInt64(int $value, ?int $order = null): int
+	{
+		return $this->writePacked($value, 8, 'q', $order);
+	}
+
+	/** Writes a 32-bit float. @param float $value The value. @param ?int $order The byte order. @return int Bytes written. */
+	public function writeFloat(float $value, ?int $order = null): int
+	{
+		return $this->writePacked($value, 4, 'f', $order);
+	}
+
+	/** Writes a 64-bit double. @param float $value The value. @param ?int $order The byte order. @return int Bytes written. */
+	public function writeDouble(float $value, ?int $order = null): int
+	{
+		return $this->writePacked($value, 8, 'd', $order);
 	}
 }
