@@ -749,6 +749,7 @@ juidatepicker_settextmode_unsupported 	= TextMode of TJuiDatePicker cannot be ch
 control_adapter_not_active				= BaseActiveControl property called on a non-active Control.
 
 figcaption_requires_figure_parent		= TFigureCaption '{0}' must be a direct child of a TFigure control.
+summary_requires_details_parent			= TSummary '{0}' must be a direct child of a TDetails control.
 
 gravatar_bad_default					= TGravatar DefaultImageStyle property value '{0}' is not supported
 gravatar_bad_size						= TGravatar Size is not between [1 .. 512] but is '{0}'

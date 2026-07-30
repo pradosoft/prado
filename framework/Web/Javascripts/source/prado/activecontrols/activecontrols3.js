@@ -392,3 +392,157 @@ Object.assign(Prado.WebUI.TValueTriggeredCallback,
 
 Prado.WebUI.TActiveTableCell = Prado.Class(Prado.WebUI.CallbackControl);
 Prado.WebUI.TActiveTableRow = Prado.Class(Prado.WebUI.CallbackControl);
+
+/**
+ * TActiveDetails control.
+ *
+ * Listens for the native `toggle` event on the `<details>` element and fires
+ * a callback with parameter `'open'` or `'close'` so the server can raise the
+ * corresponding OnOpen / OnClose event.
+ *
+ * Server-initiated changes go through setOpen(), which toggles the element
+ * without echoing a callback back to the server.
+ */
+Prado.WebUI.TActiveDetails = Prado.Class(Prado.WebUI.Control,
+{
+	onInit : function(options)
+	{
+		this.options = options;
+		this._suppressToggle = false;
+		this.observe(this.element, 'toggle', jQuery.proxy(this.onToggle, this, options));
+	},
+
+	/**
+	 * Opens or closes the details widget on behalf of the server, without
+	 * dispatching an open/close callback back to the server.
+	 */
+	setOpen : function(open)
+	{
+		open = !!open;
+		if (this.element.open !== open) {
+			this._suppressToggle = true;
+			this.element.open = open;
+		}
+	},
+
+	onToggle : function(options, event)
+	{
+		if (this._suppressToggle) {
+			this._suppressToggle = false;
+			return;
+		}
+		var param = this.element.open ? 'open' : 'close';
+		var mergedOptions = jQuery.extend({}, options, { CallbackParameter: param });
+		var request = new Prado.CallbackRequest(options.EventTarget, mergedOptions);
+		request.dispatch();
+	}
+});
+
+/**
+ * Server-side entry point: resolves the control instance by client ID and
+ * forwards to its setOpen() instance method.
+ */
+Prado.WebUI.TActiveDetails.setOpen = function(id, open)
+{
+	var control = Prado.Registry[id];
+	if (control && control.setOpen) {
+		control.setOpen(open);
+	}
+};
+
+/**
+ * TActiveDialog control.
+ *
+ * Listens for the native `close` event on the `<dialog>` element (fired when
+ * the dialog is dismissed) and also for an `open` attribute mutation so that
+ * opening via showModal() / show() is detected. Fires a callback with parameter
+ * `'open'` or `'close'` so the server can raise the corresponding OnOpen / OnClose event.
+ *
+ * Server-initiated changes go through setOpen(), which opens or closes the
+ * dialog without echoing a callback back to the server.
+ */
+Prado.WebUI.TActiveDialog = Prado.Class(Prado.WebUI.Control,
+{
+	onInit : function(options)
+	{
+		this.options = options;
+		this._suppressClose = false;
+		this.observe(this.element, 'close', jQuery.proxy(this.onDialogClose, this, options));
+
+		// Use a MutationObserver to detect programmatic open (showModal/show)
+		var self = this;
+		this._lastOpen = this.element.hasAttribute('open');
+		this._observer = new MutationObserver(function(mutations) {
+			mutations.forEach(function(mutation) {
+				if (mutation.attributeName === 'open') {
+					var isOpen = self.element.hasAttribute('open');
+					if (isOpen !== self._lastOpen) {
+						self._lastOpen = isOpen;
+						if (isOpen) {
+							self.dispatchCallback(options, 'open');
+						}
+					}
+				}
+			});
+		});
+		this._observer.observe(this.element, { attributes: true, attributeFilter: ['open'] });
+	},
+
+	/**
+	 * Opens or closes the dialog on behalf of the server, without dispatching
+	 * an open/close callback back to the server.
+	 */
+	setOpen : function(open)
+	{
+		if (open) {
+			if (!this.element.open) {
+				this._lastOpen = true;
+				this.element.show();
+			}
+		} else {
+			if (this.element.open) {
+				this._lastOpen = false;
+				this._suppressClose = true;
+				this.element.close();
+			}
+		}
+	},
+
+	onDialogClose : function(options, event)
+	{
+		if (this._suppressClose) {
+			this._suppressClose = false;
+			return;
+		}
+		this.dispatchCallback(options, 'close');
+	},
+
+	dispatchCallback : function(options, param)
+	{
+		var mergedOptions = jQuery.extend({}, options, { CallbackParameter: param });
+		var request = new Prado.CallbackRequest(options.EventTarget, mergedOptions);
+		request.dispatch();
+	},
+
+	onDone : function()
+	{
+		if (this._observer) {
+			this._observer.disconnect();
+			this._observer = null;
+		}
+		if (this.observing)
+			this.stopObserving();
+	}
+});
+
+/**
+ * Server-side entry point: resolves the control instance by client ID and
+ * forwards to its setOpen() instance method.
+ */
+Prado.WebUI.TActiveDialog.setOpen = function(id, open)
+{
+	var control = Prado.Registry[id];
+	if (control && control.setOpen) {
+		control.setOpen(open);
+	}
+};
