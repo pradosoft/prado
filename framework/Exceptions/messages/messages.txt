@@ -449,6 +449,9 @@ datafieldaccessor_data_invalid			= TDataFieldAccessor is trying to evaluate a fi
 datafieldaccessor_datafield_invalid		= TDataFieldAccessor is trying to evaluate data value of an unknown field '{0}': {1}.
 
 tablerowcollection_tablerow_required	= TTableRowCollection can only accept TTableRow objects.
+tablecolumncollection_tablecolumn_required	= TTableColumnCollection can only accept TTableColumn objects.
+tablecolumngroupcollection_group_required	= TTableColumnGroupCollection can only accept TTableColumnGroup objects.
+tablecolumn_span_invalid				= TTableColumn Span must be 1 or greater; {0} given.
 
 tablecellcollection_tablerow_required	= TTableCellCollection can only accept TTableCell objects.
 
