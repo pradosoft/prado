@@ -1,0 +1,11 @@
+<com:TContent ID="Content">
+	<h1>Active Progress Test Case</h1>
+
+	<com:TActiveProgress ID="progress1" Value="0.25" />
+	<com:TActiveProgress ID="progress2" />
+
+	<com:TActiveButton ID="button1" Text="Half" OnClick="set_half" />
+	<com:TActiveButton ID="button2" Text="Full Scale" OnClick="set_scale" />
+	<com:TActiveButton ID="button3" Text="Indeterminate" OnClick="set_indeterminate" />
+	<com:TActiveButton ID="button4" Text="Start Second" OnClick="start_second" />
+</com:TContent>
