@@ -30,11 +30,19 @@ use Prado\TPropertyValue;
  * {@see getRows Rows} property. Each {@see \Prado\Web\UI\WebControls\TTableRow} represents
  * an HTML table row.
  *
+ * The {@see getColumnGroups ColumnGroups} property holds
+ * {@see \Prado\Web\UI\WebControls\TTableColumnGroup} (`<colgroup>`) elements for
+ * column-scoped styling. Column groups render between the caption and the rows.
+ *
  * To populate the table {@see getRows Rows}, you may either use control template
  * or dynamically create {@see \Prado\Web\UI\WebControls\TTableRow} in code.
  * In template, do as follows to create the table rows and cells,
  * ```php
  *   <com:TTable>
+ *     <com:TTableColumnGroup>
+ *       <com:TTableColumn Width="8em" />
+ *       <com:TTableColumn Span="2" CssClass="numeric" />
+ *     </com:TTableColumnGroup>
  *     <com:TTableRow>
  *       <com:TTableCell Text="content" />
  *       <com:TTableCell Text="content" />
@@ -74,14 +82,17 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Adds object parsed from template to the control.
-	 * This method adds only {@see \Prado\Web\UI\WebControls\TTableRow} objects into the {@see getRows Rows} collection.
-	 * All other objects are ignored.
+	 * This method adds {@see \Prado\Web\UI\WebControls\TTableRow} objects into the {@see getRows Rows}
+	 * collection and {@see \Prado\Web\UI\WebControls\TTableColumnGroup} objects into the
+	 * {@see getColumnGroups ColumnGroups} collection. All other objects are ignored.
 	 * @param mixed $object object parsed from template
 	 */
 	public function addParsedObject($object)
 	{
 		if ($object instanceof TTableRow) {
 			$this->getRows()->add($object);
+		} elseif ($object instanceof TTableColumnGroup) {
+			$this->getColumnGroups()->add($object);
 		}
 	}
 
@@ -132,6 +143,20 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	public function getRows()
 	{
 		return $this->getControls();
+	}
+
+	/**
+	 * @return TTableColumnGroupCollection list of {@see \Prado\Web\UI\WebControls\TTableColumnGroup}
+	 *   (`<colgroup>`) elements rendered between the caption and the table rows
+	 * @since 4.4.0
+	 */
+	public function getColumnGroups()
+	{
+		if (($groups = $this->getViewState('ColumnGroups', null)) === null) {
+			$groups = new TTableColumnGroupCollection();
+			$this->setViewState('ColumnGroups', $groups);
+		}
+		return $groups;
 	}
 
 	/**
@@ -274,7 +299,8 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * Renders the openning tag for the table control which will render table caption if present.
+	 * Renders the openning tag for the table control which will render table caption
+	 * and column groups if present.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderBeginTag($writer)
@@ -287,6 +313,14 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 			$writer->renderBeginTag('caption');
 			$writer->write($caption);
 			$writer->renderEndTag();
+		}
+		$groups = $this->getViewState('ColumnGroups', null);
+		if ($groups !== null && $groups->getCount() > 0) {
+			$writer->writeLine();
+			foreach ($groups as $group) {
+				$group->render($writer);
+				$writer->writeLine();
+			}
 		}
 	}
 
