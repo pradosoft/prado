@@ -753,6 +753,9 @@ figcaption_requires_figure_parent		= TFigureCaption '{0}' must be a direct child
 gravatar_bad_default					= TGravatar DefaultImageStyle property value '{0}' is not supported
 gravatar_bad_size						= TGravatar Size is not between [1 .. 512] but is '{0}'
 
+progress_value_invalid					= TProgress Value must be 0 or greater; {0} given.
+progress_max_invalid					= TProgress Max must be greater than 0; {0} given.
+
 time_invalid_datetime					= TTime DateTime must be a DateTimeInterface, DateInterval, string, or numeric value; {0} given.
 time_invalid_text_format				= TTime TextFormat '{0}' is not a TTimeFormat constant name or ICU datetime pattern.
 
