@@ -580,6 +580,8 @@ streamfilter_already_registered			= Stream filter '{0}' is already registered.
 streamfilter_registration_failed		= Unable to register stream filter '{0}' for class '{1}'.
 streamwrapper_already_registered		= Stream wrapper protocol '{0}' is already registered.
 streamwrapper_registration_failed		= Unable to register stream wrapper protocol '{0}' for class '{1}'.
+reservedspace_invalid					= A reserved space requires a non-negative offset and a positive length; offset '{0}' and length '{1}' were given.
+reservedspace_access_denied				= The operation overlaps the reserved space at offset '{0}'.
 
 socketservermodule_endpoint_required	= TSocketServerModule requires an Endpoint, or a positive Port to compose one.
 socketservermodule_serverclass_invalid	= TSocketServerModule ServerClass '{0}' is invalid. It must be TSocketServer or a subclass.
