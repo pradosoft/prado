@@ -1,0 +1,14 @@
+<com:TContent ID="Content">
+	<h1>Active Dialog Test Case</h1>
+
+	<com:TActiveDialog ID="dialog1" OnOpen="dialog_opened" OnClose="dialog_closed">
+		<p>Dialog content.</p>
+		<button type="button" id="dismissBtn" onclick="this.closest('dialog').close()">Dismiss</button>
+	</com:TActiveDialog>
+
+	<p>Status: <com:TActiveLabel ID="label1" Text="waiting" /></p>
+
+	<com:TActiveButton ID="button1" Text="Server Open" OnClick="open_dialog" />
+	<com:TActiveButton ID="button2" Text="Server Close" OnClick="close_dialog" />
+	<button type="button" id="showBtn" onclick="document.querySelector('dialog').show()">Client Show</button>
+</com:TContent>
