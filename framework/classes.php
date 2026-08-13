@@ -267,6 +267,7 @@ return [
 'IModuleDependency' => 'Prado\IModuleDependency',
 'TBinaryStreamBehavior' => 'Prado\IO\Behaviors\TBinaryStreamBehavior',
 'TPhpStreamBehavior' => 'Prado\IO\Behaviors\TPhpStreamBehavior',
+'ICompressor' => 'Prado\IO\Compression\ICompressor',
 'TStreamFilter' => 'Prado\IO\Filter\TStreamFilter',
 'TStreamFilterHandle' => 'Prado\IO\Filter\TStreamFilterHandle',
 'TStreamFilterName' => 'Prado\IO\Filter\TStreamFilterName',
