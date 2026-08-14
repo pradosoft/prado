@@ -80,11 +80,12 @@ class TCliCompressorTest extends PHPUnit\Framework\TestCase
 		}
 	}
 
-	public function testPumpDoesNotDeadlockOnDataLargerThanAPipeBuffer()
+	public function testHandlesDataLargerThanAPipeBuffer()
 	{
 		$this->skipWithoutCat();
-		// 4 MB dwarfs the ~64 KB OS pipe buffer; a write-all-then-read pump would deadlock here.
+		// 4 MB dwarfs the ~64 KB OS pipe buffer; staging through temporary files transfers it
+		// without a deadlock and without stream_select, which is unreliable on Windows.
 		$data = random_bytes(4 * 1024 * 1024);
-		self::assertSame($data, CatCliCompressor::compress($data), 'The non-blocking pump streams past the pipe buffer.');
+		self::assertSame($data, CatCliCompressor::compress($data), 'A large transfer streams through the file-backed run.');
 	}
 }

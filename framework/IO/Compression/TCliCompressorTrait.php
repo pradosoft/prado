@@ -29,8 +29,9 @@ use Prado\Exceptions\TIOException;
  *
  * The command runs through {@see https://www.php.net/proc_open proc_open} with an argument
  * vector, so no shell parses the arguments and untrusted data cannot inject a command.  The
- * input and output stream through pipes with a non-blocking pump, so a payload larger than a
- * pipe buffer neither deadlocks nor stages to a temporary file.
+ * standard streams are staged through temporary files, so a large transfer never blocks on a
+ * full pipe buffer and the run does not depend on stream_select, which is unreliable for pipes
+ * on Windows.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
@@ -56,15 +57,6 @@ trait TCliCompressorTrait
 	 * @return string[] The argument vector after the command name.
 	 */
 	abstract protected static function decompressArgs(): array;
-
-	/**
-	 * Returns the bytes pumped to or from the command per pass.
-	 * @return int The chunk size in bytes.
-	 */
-	protected static function cliChunkSize(): int
-	{
-		return 65536;
-	}
 
 	/**
 	 * Returns whether the backing command is available on this system.
@@ -99,8 +91,11 @@ trait TCliCompressorTrait
 	}
 
 	/**
-	 * Runs the backing command with the given arguments, feeding the input to its standard
-	 * input and returning its standard output.
+	 * Runs the backing command with the given arguments, feeding the input on its standard
+	 * input and returning its standard output.  The three standard streams are staged through
+	 * temporary files rather than pipes, so a large transfer never blocks on a full pipe buffer
+	 * and the run does not depend on {@see https://www.php.net/stream_select stream_select},
+	 * which is unreliable for pipes on Windows.
 	 * @param string[] $args The argument vector after the command name.
 	 * @param string $input The bytes to feed to the command.
 	 * @throws TIOException When the command is missing, cannot start, or exits non-zero.
@@ -112,83 +107,40 @@ trait TCliCompressorTrait
 		if ($command === null) {
 			throw new TIOException('clicompressor_command_missing', static::NAME, implode("', '", static::commands()));
 		}
-		$descriptors = [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']];
-		$process = @proc_open([$command, ...$args], $descriptors, $pipes);
-		if (!is_resource($process)) {
-			throw new TIOException('clicompressor_process_failed', static::NAME, $command);
+		$stdin = self::cliTempFile();
+		$stdout = self::cliTempFile();
+		$stderr = self::cliTempFile();
+		try {
+			file_put_contents($stdin, $input);
+			$descriptors = [0 => ['file', $stdin, 'r'], 1 => ['file', $stdout, 'w'], 2 => ['file', $stderr, 'w']];
+			$process = @proc_open([$command, ...$args], $descriptors, $pipes);
+			if (!is_resource($process)) {
+				throw new TIOException('clicompressor_process_failed', static::NAME, $command);
+			}
+			$exit = proc_close($process);   // blocks until the command finishes; the file descriptors need no draining
+			if ($exit !== 0) {
+				throw new TIOException('clicompressor_command_failed', static::NAME, $command, $exit, trim((string) file_get_contents($stderr)));
+			}
+			return (string) file_get_contents($stdout);
+		} finally {
+			@unlink($stdin);
+			@unlink($stdout);
+			@unlink($stderr);
 		}
-		[$stdout, $stderr] = static::cliPump($pipes, $input);
-		$exit = proc_close($process);
-		if ($exit !== 0) {
-			throw new TIOException('clicompressor_command_failed', static::NAME, $command, $exit, trim($stderr));
-		}
-		return $stdout;
 	}
 
 	/**
-	 * Pumps the input to the command's standard input while draining its standard output and
-	 * error, so neither side blocks on a full pipe buffer.  Closes the input pipe once the
-	 * whole input is written, signaling end of input to the command.
-	 * @param array{0: resource, 1: resource, 2: resource} $pipes The command's standard pipes.
-	 * @param string $input The bytes to feed to the command.
-	 * @return array{0: string, 1: string} The standard output and standard error.
+	 * Creates a temporary file for staging one of the command's standard streams.
+	 * @throws TIOException When a temporary file cannot be created.
+	 * @return string The temporary file path.
 	 */
-	protected static function cliPump(array $pipes, string $input): array
+	private static function cliTempFile(): string
 	{
-		[$in, $out, $err] = $pipes;
-		stream_set_blocking($in, false);
-		stream_set_blocking($out, false);
-		stream_set_blocking($err, false);
-
-		$chunkSize = static::cliChunkSize();
-		$stdout = '';
-		$stderr = '';
-		$written = 0;
-		$length = strlen($input);
-		if ($length === 0) {
-			fclose($in);
-			$in = null;
+		$path = tempnam(sys_get_temp_dir(), 'prado_cli_');
+		if ($path === false) {
+			throw new TIOException('clicompressor_process_failed', static::NAME, 'tempnam');
 		}
-
-		while (true) {
-			$read = [];
-			if (!feof($out)) {
-				$read[] = $out;
-			}
-			if (!feof($err)) {
-				$read[] = $err;
-			}
-			$write = ($in !== null) ? [$in] : [];
-			if ($read === [] && $write === []) {
-				break;
-			}
-			$except = null;
-			if (@stream_select($read, $write, $except, null) === false) {
-				break;
-			}
-			foreach ($read as $stream) {
-				$chunk = fread($stream, $chunkSize);
-				if ($stream === $out) {
-					$stdout .= $chunk;
-				} else {
-					$stderr .= $chunk;
-				}
-			}
-			if ($write !== [] && $in !== null) {
-				$n = @fwrite($in, substr($input, $written, $chunkSize));
-				$written += ($n === false) ? 0 : $n;
-				if ($n === false || $n === 0 || $written >= $length) {
-					fclose($in);
-					$in = null;
-				}
-			}
-		}
-		if ($in !== null) {
-			fclose($in);
-		}
-		fclose($out);
-		fclose($err);
-		return [$stdout, $stderr];
+		return $path;
 	}
 
 	/**
