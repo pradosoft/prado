@@ -582,6 +582,15 @@ streamwrapper_already_registered		= Stream wrapper protocol '{0}' is already reg
 streamwrapper_registration_failed		= Unable to register stream wrapper protocol '{0}' for class '{1}'.
 reservedspace_invalid					= A reserved space requires a non-negative offset and a positive length; offset '{0}' and length '{1}' were given.
 reservedspace_access_denied				= The operation overlaps the reserved space at offset '{0}'.
+builtincompressor_extension_required	= The '{0}' compressor requires the '{1}' PHP extension.
+builtincompressor_compress_failed		= The '{0}' compressor failed to compress the data.
+builtincompressor_decompress_failed		= The '{0}' compressor failed to decompress the data; it may be corrupt or in another format.
+compression_method_unknown				= The compression method '{0}' is unknown or its extension is not available.
+compression_none_available				= No compression method is available in this PHP installation.
+compression_xz_unsupported				= xz/LZMA has no PHP extension; install belisoful/prado-compression for a native-or-CLI xz codec.
+clicompressor_command_missing			= The '{0}' compressor requires one of these system commands on the PATH: '{1}'.
+clicompressor_process_failed			= The '{0}' compressor could not start the '{1}' command.
+clicompressor_command_failed			= The '{0}' compressor command '{1}' exited with code {2}: {3}
 
 socketservermodule_endpoint_required	= TSocketServerModule requires an Endpoint, or a positive Port to compose one.
 socketservermodule_serverclass_invalid	= TSocketServerModule ServerClass '{0}' is invalid. It must be TSocketServer or a subclass.
