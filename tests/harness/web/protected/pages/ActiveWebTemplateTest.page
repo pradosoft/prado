@@ -1,0 +1,33 @@
+<com:TContent ID="Content">
+	<h1>Active Web Template Test Case</h1>
+
+	<com:TActiveWebTemplate ID="rowTemplate">
+		<div class="row"><span class="name">{{name}}</span><a class="link" href="/user/{{id}}">{{role}}</a><input class="typed" type="text" /></div>
+	</com:TActiveWebTemplate>
+
+	<div id="listBody"></div>
+
+	<com:TActiveButton ID="btnStamp" Text="Server Stamp" OnClick="server_stamp" />
+	<com:TActiveButton ID="btnRepeat" Text="Server Repeat" OnClick="server_repeat" />
+	<com:TActiveButton ID="btnUpdateAll" Text="Update All" OnClick="server_update_all" />
+	<com:TActiveButton ID="btnSetContent" Text="Set Content" OnClick="server_set_content" />
+
+	<!-- The UID is allocated on the client, so these send it as the callback
+	     parameter. TCallback delivers it as a TCallbackEventParameter. -->
+	<com:TCallback ID="cbUpdateFirst" OnCallback="server_update_first" />
+	<com:TCallback ID="cbRemoveFirst" OnCallback="server_remove_first" />
+
+	<button type="button" id="btnUpdateFirst" onclick="callWithFirstUid('<%= $this->cbUpdateFirst->UniqueID %>')">Update First</button>
+	<button type="button" id="btnRemoveFirst" onclick="callWithFirstUid('<%= $this->cbRemoveFirst->UniqueID %>')">Remove First</button>
+
+	<com:TClientScript>
+		// Reports the UID of the first stamped instance back to the server.
+		function firstUid() {
+			var node = document.querySelector('#listBody [data-prado-instance]');
+			return node ? node.getAttribute('data-prado-instance') : '';
+		}
+		function callWithFirstUid(target) {
+			Prado.Callback(target, firstUid());
+		}
+	</com:TClientScript>
+</com:TContent>

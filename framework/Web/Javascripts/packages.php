@@ -52,6 +52,10 @@ $packages = [
 		'prado/controls/tabpanel.js',
 	],
 
+	'webtemplate' => [
+		'prado/controls/webtemplate.js',
+	],
+
 	'activedatepicker' => [
 		'prado/activecontrols/activedatepicker.js',
 	],
@@ -122,6 +126,7 @@ $dependencies = [
 	'htmlarea5' => ['jquery', 'prado', 'htmlarea5', 'tinymce'],
 	'keyboard' => ['jquery', 'prado', 'keyboard'],
 	'slider' => ['jquery', 'prado', 'slider'],
+	'webtemplate' => ['jquery', 'prado', 'webtemplate'],
 	'inlineeditor' => ['jquery', 'prado', 'ajax', 'inlineeditor'],
 	'accordion' => ['jquery', 'prado', 'accordion'],
 	'ratings' => ['jquery', 'prado', 'ajax', 'ratings'],

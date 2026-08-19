@@ -1,0 +1,35 @@
+<com:TContent ID="Content">
+	<h1>Web Template Test Case</h1>
+
+	<com:TWebTemplate ID="rowTemplate">
+		<div class="row"><span class="name">{{name}}</span><a class="link" href="/user/{{id}}">{{role}}</a></div>
+	</com:TWebTemplate>
+
+	<div id="listBody"></div>
+	<div id="shadowHost"></div>
+
+	<!-- The button ids differ from the function names: inside a form, an inline
+	     handler resolves an identifier against the form's named elements first. -->
+	<button type="button" id="btnStampOne" onclick="stampOne()">Stamp One</button>
+	<button type="button" id="btnStampMany" onclick="stampMany()">Stamp Many</button>
+	<button type="button" id="btnStampShadow" onclick="stampShadow()">Stamp Shadow</button>
+
+	<com:TClientScript>
+		function templateWrapper() {
+			return Prado.WebUI.TWebTemplate.get('<%= $this->rowTemplate->ClientID %>');
+		}
+		function stampOne() {
+			templateWrapper().replaceContentOf('listBody', {name: 'Ada', role: 'Engineer', id: 7});
+		}
+		function stampMany() {
+			templateWrapper().repeatInto('listBody', [
+				{name: 'Ada', role: 'Engineer', id: 1},
+				{name: 'Grace', role: 'Admiral', id: 2},
+				{name: 'Alan', role: 'Logician', id: 3}
+			]);
+		}
+		function stampShadow() {
+			templateWrapper().attachShadowTo('shadowHost', {name: 'Shadowed', role: 'Inside', id: 9});
+		}
+	</com:TClientScript>
+</com:TContent>

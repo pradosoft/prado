@@ -1,0 +1,81 @@
+<com:TContent ID="Content">
+	<h1>Web Template DOM Test Case</h1>
+
+	<h2>Declarative shadow DOM</h2>
+	<div id="openHost">
+		<com:TWebTemplate ShadowRootMode="Open">
+			<style>.dsd { color: rgb(102, 51, 153); }</style>
+			<p class="dsd">open shadow content</p>
+		</com:TWebTemplate>
+	</div>
+	<div id="closedHost">
+		<com:TWebTemplate ShadowRootMode="Closed">
+			<p class="dsd">closed shadow content</p>
+		</com:TWebTemplate>
+	</div>
+
+	<h2>Table rows</h2>
+	<com:TWebTemplate ID="rowTpl">
+		<tr class="dataRow"><td class="cell">{{name}}</td><td class="qty">{{qty}}</td></tr>
+	</com:TWebTemplate>
+	<table id="tbl"><tbody id="tblBody"></tbody></table>
+
+	<h2>Multi-root instances</h2>
+	<com:TWebTemplate ID="pairTpl">
+		<dt class="term">{{term}}</dt><dd class="def">{{def}}</dd>
+	</com:TWebTemplate>
+	<dl id="dict"></dl>
+	<p>Last clicked: <span id="clickedTerm">none</span></p>
+
+	<h2>Insert positions, safety, untracked</h2>
+	<com:TWebTemplate ID="miscTpl">
+		<p class="misc"><span class="who">{{user.name}}</span>: <span class="what">{{value}}</span></p>
+	</com:TWebTemplate>
+	<div id="miscBody"><p id="anchor">anchor</p></div>
+
+	<com:TWebTemplate ID="untrackedTpl" TrackInstances="false">
+		<p class="untracked">{{v}}</p>
+	</com:TWebTemplate>
+	<div id="untrackedBody"></div>
+
+	<button type="button" id="btnRows" onclick="stampRows()">Stamp Rows</button>
+	<button type="button" id="btnPair" onclick="stampPair()">Stamp Pair</button>
+	<button type="button" id="btnPositions" onclick="stampPositions()">Stamp Positions</button>
+	<button type="button" id="btnXss" onclick="stampXss()">Stamp XSS</button>
+	<button type="button" id="btnUntracked" onclick="stampUntracked()">Stamp Untracked</button>
+
+	<com:TClientScript>
+		function wt(id) { return Prado.WebUI.TWebTemplate.get(id); }
+		function stampRows() {
+			wt('<%= $this->rowTpl->ClientID %>').repeatInto('tblBody', [
+				{name: 'Widget', qty: 3},
+				{name: 'Gadget', qty: 5}
+			]);
+		}
+		function stampPair() {
+			wt('<%= $this->pairTpl->ClientID %>').appendTo('dict', {term: 'HTML', def: 'markup'});
+		}
+		function stampPositions() {
+			var t = wt('<%= $this->miscTpl->ClientID %>');
+			t.insertBefore('anchor', {user: {name: 'Before'}, value: 'b'});
+			t.insertAfter('anchor', {user: {name: 'After'}, value: 'a'});
+			t.prependTo('miscBody', {user: {name: 'First'}, value: 'f'});
+		}
+		function stampXss() {
+			wt('<%= $this->miscTpl->ClientID %>').appendTo('miscBody', {
+				user: {name: 'Mallory'},
+				value: '<img src=x onerror="window.__xss=1">'
+			});
+		}
+		function stampUntracked() {
+			wt('<%= $this->untrackedTpl->ClientID %>').appendTo('untrackedBody', {v: 'plain'});
+		}
+		// Event delegation: any click inside the list resolves its instance
+		document.getElementById('dict').addEventListener('click', function (e) {
+			var instance = Prado.WebUI.TWebTemplate.instanceOf(e.target);
+			if (instance) {
+				document.getElementById('clickedTerm').textContent = instance.data.term;
+			}
+		});
+	</com:TClientScript>
+</com:TContent>
