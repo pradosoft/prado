@@ -267,6 +267,7 @@ return [
 'IModuleDependency' => 'Prado\IModuleDependency',
 'TBinaryStreamBehavior' => 'Prado\IO\Behaviors\TBinaryStreamBehavior',
 'TPhpStreamBehavior' => 'Prado\IO\Behaviors\TPhpStreamBehavior',
+'TStreamNoSeekBehavior' => 'Prado\IO\Behaviors\TStreamNoSeekBehavior',
 'ICompressor' => 'Prado\IO\Compression\ICompressor',
 'TBrotliCompressor' => 'Prado\IO\Compression\TBrotliCompressor',
 'TBuiltinCompressor' => 'Prado\IO\Compression\TBuiltinCompressor',
