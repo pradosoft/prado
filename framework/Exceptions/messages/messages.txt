@@ -582,6 +582,7 @@ streamwrapper_already_registered		= Stream wrapper protocol '{0}' is already reg
 streamwrapper_registration_failed		= Unable to register stream wrapper protocol '{0}' for class '{1}'.
 reservedspace_invalid					= A reserved space requires a non-negative offset and a positive length; offset '{0}' and length '{1}' were given.
 reservedspace_access_denied				= The operation overlaps the reserved space at offset '{0}'.
+multipartstream_element_invalid			= A TMultipartStream element requires a 'name' and 'contents'.
 builtincompressor_extension_required	= The '{0}' compressor requires the '{1}' PHP extension.
 builtincompressor_compress_failed		= The '{0}' compressor failed to compress the data.
 builtincompressor_decompress_failed		= The '{0}' compressor failed to decompress the data; it may be corrupt or in another format.
