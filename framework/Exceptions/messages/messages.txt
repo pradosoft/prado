@@ -775,6 +775,8 @@ progress_max_invalid					= TProgress Max must be greater than 0; {0} given.
 time_invalid_datetime					= TTime DateTime must be a DateTimeInterface, DateInterval, string, or numeric value; {0} given.
 time_invalid_text_format				= TTime TextFormat '{0}' is not a TTimeFormat constant name or ICU datetime pattern.
 
+webtemplate_invalid_child				= TWebTemplate '{0}' cannot contain '{1}': active, postback, and validator controls do not function inside inert template content. Use plain markup with {{...}} placeholders, or set ValidateContent="false".
+
 vardumper_not_array						= __debuginfo() must return an array.
 
 htmlpurifier_source_path_failed		    = Unable to create html purifier cache path '{0}'. Make sure the parent directory exists and is writable by the Web process.

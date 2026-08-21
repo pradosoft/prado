@@ -1,0 +1,36 @@
+<com:TContent ID="Content">
+	<h1>Web Template Panel Test Case</h1>
+
+	<h2>Case A: TWebTemplate inside a TActivePanel</h2>
+	<com:TActivePanel ID="panelA">
+		<com:TWebTemplate ID="tplA">
+			<div class="rowA"><span class="name">{{name}}</span><em class="gen">gen-<%= $this->Generation %></em></div>
+		</com:TWebTemplate>
+	</com:TActivePanel>
+	<div id="targetA"></div>
+	<com:TActiveButton ID="btnRefreshA" Text="Refresh Panel A" OnClick="refresh_a" />
+	<button type="button" id="btnStampA" onclick="stampA()">Stamp A</button>
+
+	<h2>Case B: TActiveButton inside TWebTemplate content</h2>
+	<%-- ValidateContent is disabled deliberately: this case documents the degraded
+	     behavior the validation exists to prevent. --%>
+	<com:TWebTemplate ID="tplB" ValidateContent="false">
+		<div class="rowB"><com:TActiveButton ID="innerButton" Text="Inner" OnClick="inner_clicked" /></div>
+	</com:TWebTemplate>
+	<div id="targetB"></div>
+	<com:TActiveLabel ID="innerStatus" Text="untouched" />
+	<button type="button" id="btnStampB" onclick="stampB()">Stamp B</button>
+
+	<com:TClientScript>
+		function tplWrapper(id) {
+			return Prado.WebUI.TWebTemplate.get(id);
+		}
+		function stampA() {
+			tplWrapper('<%= $this->tplA->ClientID %>').replaceContentOf('targetA', {name: 'Ada'});
+		}
+		function stampB() {
+			var w = tplWrapper('<%= $this->tplB->ClientID %>');
+			if (w) { w.replaceContentOf('targetB', {}); }
+		}
+	</com:TClientScript>
+</com:TContent>
