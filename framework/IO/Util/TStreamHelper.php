@@ -142,5 +142,4 @@ class TStreamHelper
 		}
 		return $line;
 	}
-
 }
