@@ -20,7 +20,7 @@ use Prado\Web\UI\WebControls\TImageButton;
  * callback request is initiated.
  *
  * The {@see onCallback OnCallback} event is raised during a callback request
- * and it is raise <b>after</b> the {@see onClick OnClick} event.
+ * and it is raised <b>after</b> the {@see onClick OnClick} event.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.1
@@ -129,6 +129,14 @@ class TActiveImageButton extends TImageButton implements IActiveControl, ICallba
 	 * {@see \Prado\Web\UI\TPage::validate} method first. It will raise
 	 * {@see onClick OnClick} event first and then the {@see onCallback OnCallback} event.
 	 * This method is mainly used by framework and control developers.
+	 *
+	 * {@see \Prado\Web\UI\WebControls\TImageButton::raisePostBackEvent() raisePostBackEvent()}
+	 * raises {@see onClick OnClick} with a
+	 * {@see \Prado\Web\UI\WebControls\TImageClickEventParameter} holding the click
+	 * coordinates, and {@see onCommand OnCommand} with the command properties of the
+	 * button. `$param` reaches {@see onCallback OnCallback} alone, so a handler reads the
+	 * client-supplied value from
+	 * {@see TCallbackEventParameter::getCallbackParameter CallbackParameter} there.
 	 * @param TCallbackEventParameter $param the event parameter
 	 */
 	public function raiseCallbackEvent($param)

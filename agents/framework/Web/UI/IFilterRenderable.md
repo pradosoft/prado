@@ -3,49 +3,46 @@
 ### Directories
 [framework](../../INDEX.md) / [Web](../INDEX.md) / [UI](./INDEX.md) / **`IFilterRenderable`**
 
-## Class Info
+## Interface Info
 **Location:** `framework/Web/UI/IFilterRenderable.php`
 **Namespace:** `Prado\Web\UI`
+**Extends:** `IRenderable`
+**Since:** 4.3.3
 
 ## Overview
-Interface that marks a control as supporting render-output filtering via the `onRenderFilter` event. Extends `IRenderable`.
 
-`TControl::renderControl` and `TControl::renderChildren` detect this interface and automatically handle the capture-and-restore lifecycle: when at least one `onRenderFilter` handler is registered, the writer's inner `ITextWriter` is swapped for a fresh buffer, `render()` runs into that buffer, and the captured HTML is then passed through `onRenderFilter` handlers before being written to the real output.
+Marks a control as supporting render-output filtering via the `onRenderFilter` event. `TControl::renderControl` and `TControl::renderChildren` detect this interface and automatically wrap the render call in a capture-and-restore filter lifecycle (`preRenderFilter` / `processRenderFilter`). Implement using [`TFilterRenderableTrait`](Traits/TFilterRenderableTrait.md).
 
-Implement using [TFilterRenderableTrait](./Traits/TFilterRenderableTrait.md).
-
-## Interface Methods
+## Methods
 
 | Method | Description |
 |---|---|
-| `hasEventHandler(string $name): bool` | Returns whether at least one handler is registered for the named event. Required so `TControl::preRenderFilter` can test `onRenderFilter` without assuming the object is a `TComponent`. |
-| `onRenderFilter(string $renderedText): string` | Raises the `onRenderFilter` event via a [TRenderFilterParameter](./TRenderFilterParameter.md), passing captured HTML through all registered handlers, and returns the (possibly modified) string. |
+| `hasEventHandler($name)` | Returns whether at least one handler is registered for the named event. Required so `TControl::preRenderFilter` can test the event without assuming a `TComponent` base. |
+| `onRenderFilter($output)` | Raises the `onRenderFilter` event, passes HTML through handlers via a [`TRenderFilterParameter`](TRenderFilterParameter.md), returns the (possibly modified) HTML string. |
 
-Inherits `render(THtmlWriter $writer)` from `IRenderable`.
+## Implementation
 
-## How to Implement
+Implement the interface by using [`TFilterRenderableTrait`](Traits/TFilterRenderableTrait.md), which provides `onRenderFilter`. `hasEventHandler` is satisfied by `TComponent`, which all practical implementors extend:
 
 ```php
-use Prado\Web\UI\IFilterRenderable;
-use Prado\Web\UI\Traits\TFilterRenderableTrait;
-
-class MyControl extends TCompositeControl implements IFilterRenderable
+class MyControl extends TComponent implements IFilterRenderable
 {
     use TFilterRenderableTrait;
-    // onRenderFilter() and hasEventHandler() are provided by the trait + TComponent
+
+    public function render($writer): void
+    {
+        $writer->write('<p>content</p>');
+    }
 }
 ```
 
-## Patterns & Gotchas
+`TControl` already implements `IFilterRenderable` — no extra work is needed for controls that extend it.
 
-- **No-op when no handlers** — `preRenderFilter` calls `hasEventHandler('onRenderFilter')` and returns `null` (no buffer swap) when the result is false. Zero overhead for controls without handlers.
-- **`TControl` itself implements this** — `TControl` implements `IFilterRenderable` via `TFilterRenderableTrait`, so all controls can receive `onRenderFilter` handlers out of the box.
-- **Non-`TControl` implementors** — `renderChildren` also checks `IFilterRenderable` on non-`TControl` children (plain `IRenderable` objects), applying the same lifecycle when they implement this interface.
+## Filter lifecycle
 
-## See Also
+When `TControl::renderChildren` encounters a non-`TControl` child that implements `IFilterRenderable`:
+1. `preRenderFilter($writer, $child)` — checks `$child->hasEventHandler('onRenderFilter')`. If true, swaps the writer's inner buffer and saves the original.
+2. `$child->render($writer)` — renders into the capture buffer.
+3. `processRenderFilter($writer, $oldWriter, $child)` — flushes the buffer, calls `$child->onRenderFilter($output)`, writes the result to the original writer, and restores it.
 
-- [TFilterRenderableTrait](./Traits/TFilterRenderableTrait.md)
-- [TRenderFilterParameter](./TRenderFilterParameter.md)
-- [TControl](./TControl.md)
-
-**@since 4.3.3**
+If no handler is registered, all three steps are no-ops and output goes directly to the writer.

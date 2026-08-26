@@ -39,6 +39,8 @@ import {
 	TValueTriggeredCallback,
 	TActiveTableCell,
 	TActiveTableRow,
+	TActiveDetails,
+	TActiveDialog,
 } from '../adapters/activecontrols.js';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -129,6 +131,8 @@ describe('Class definitions exist', () => {
 		['TValueTriggeredCallback', TValueTriggeredCallback],
 		['TActiveTableCell',        TActiveTableCell],
 		['TActiveTableRow',         TActiveTableRow],
+		['TActiveDetails',          TActiveDetails],
+		['TActiveDialog',           TActiveDialog],
 	])('%s is a function (constructor)', (_name, klass) => {
 		expect(typeof klass).toBe('function');
 	});
@@ -1028,5 +1032,323 @@ describe('TActiveTableRow', () => {
 		ctrl.onPostBack({ EventTarget: 'tr1' }, evt);
 		expect(dispatchMock).toHaveBeenCalled();
 		expect(evt.preventDefault).toHaveBeenCalled();
+	});
+});
+
+// ─── TActiveDetails ──────────────────────────────────────────────────────────
+
+/**
+ * jsdom reflects the `open` attribute of <details> but never fires the native
+ * `toggle` event of its own accord, so a toggle is dispatched by hand where a
+ * browser would raise one. The end-to-end behavior is covered by
+ * tests/playwright/active-controls/ActiveDetailsTestCase.spec.js.
+ */
+describe('TActiveDetails', () => {
+	let details;
+
+	/** Raise the `toggle` event the browser fires after `open` changes. */
+	function toggle(open) {
+		details.open = open;
+		details.dispatchEvent(new Event('toggle'));
+	}
+
+	beforeEach(() => {
+		clearRegistry();
+		details = document.createElement('details');
+		details.id = 'details1';
+		details.appendChild(document.createElement('summary'));
+		document.body.appendChild(details);
+	});
+
+	afterEach(() => {
+		restoreMocks();
+		details.remove();
+	});
+
+	it('registers itself in Prado.Registry on construction', () => {
+		new TActiveDetails({ ID: 'details1', EventTarget: 'details1' });
+		expect(Registry['details1']).toBeDefined();
+	});
+
+	it('dispatches a callback with CallbackParameter "open" when the user opens it', () => {
+		const { MockCtor, dispatchMock } = mockCallbackRequest();
+		new TActiveDetails({ ID: 'details1', EventTarget: 'details1' });
+
+		toggle(true);
+
+		expect(dispatchMock).toHaveBeenCalledTimes(1);
+		expect(MockCtor).toHaveBeenCalledWith(
+			'details1',
+			expect.objectContaining({ CallbackParameter: 'open' }),
+		);
+	});
+
+	it('dispatches a callback with CallbackParameter "close" when the user closes it', () => {
+		const { MockCtor, dispatchMock } = mockCallbackRequest();
+		new TActiveDetails({ ID: 'details1', EventTarget: 'details1' });
+		details.open = true;
+
+		toggle(false);
+
+		expect(dispatchMock).toHaveBeenCalledTimes(1);
+		expect(MockCtor).toHaveBeenCalledWith(
+			'details1',
+			expect.objectContaining({ CallbackParameter: 'close' }),
+		);
+	});
+
+	it('does not mutate the options object it was constructed with', () => {
+		const { MockCtor } = mockCallbackRequest();
+		const options = { ID: 'details1', EventTarget: 'details1' };
+		new TActiveDetails(options);
+
+		toggle(true);
+
+		expect(options.CallbackParameter).toBeUndefined();
+		expect(MockCtor.mock.calls[0][1]).not.toBe(options);
+	});
+
+	it('setOpen() opens the widget without echoing a callback to the server', () => {
+		const { dispatchMock } = mockCallbackRequest();
+		const ctrl = new TActiveDetails({ ID: 'details1', EventTarget: 'details1' });
+
+		ctrl.setOpen(true);
+		expect(details.open).toBe(true);
+		// the browser raises toggle for the change the server just made
+		details.dispatchEvent(new Event('toggle'));
+
+		expect(dispatchMock).not.toHaveBeenCalled();
+	});
+
+	it('setOpen() closes the widget without echoing a callback to the server', () => {
+		const { dispatchMock } = mockCallbackRequest();
+		const ctrl = new TActiveDetails({ ID: 'details1', EventTarget: 'details1' });
+		details.open = true;
+
+		ctrl.setOpen(false);
+		expect(details.open).toBe(false);
+		details.dispatchEvent(new Event('toggle'));
+
+		expect(dispatchMock).not.toHaveBeenCalled();
+	});
+
+	it('suppresses only the toggle raised by setOpen(), not the next user toggle', () => {
+		const { dispatchMock } = mockCallbackRequest();
+		const ctrl = new TActiveDetails({ ID: 'details1', EventTarget: 'details1' });
+
+		ctrl.setOpen(true);
+		details.dispatchEvent(new Event('toggle'));
+		expect(dispatchMock).not.toHaveBeenCalled();
+
+		toggle(false);
+		expect(dispatchMock).toHaveBeenCalledTimes(1);
+	});
+
+	it('setOpen() to the value already held arms no suppression', () => {
+		const { dispatchMock } = mockCallbackRequest();
+		const ctrl = new TActiveDetails({ ID: 'details1', EventTarget: 'details1' });
+
+		ctrl.setOpen(false); // already closed, nothing to do
+		toggle(true); // a genuine user toggle must still reach the server
+
+		expect(dispatchMock).toHaveBeenCalledTimes(1);
+	});
+
+	it('the static setOpen() forwards to the instance found in the Registry', () => {
+		mockCallbackRequest();
+		const ctrl = new TActiveDetails({ ID: 'details1', EventTarget: 'details1' });
+		const spy = vi.spyOn(ctrl, 'setOpen');
+
+		TActiveDetails.setOpen('details1', true);
+
+		expect(spy).toHaveBeenCalledWith(true);
+		expect(details.open).toBe(true);
+	});
+
+	it('the static setOpen() ignores an unknown id', () => {
+		expect(() => TActiveDetails.setOpen('no-such-control', true)).not.toThrow();
+	});
+});
+
+// ─── TActiveDialog ───────────────────────────────────────────────────────────
+
+/**
+ * jsdom reflects the `open` attribute of <dialog> but implements neither
+ * show() nor close(), so both are stubbed with the semantics a browser gives
+ * them: show() sets the attribute, close() clears it and fires `close`. The
+ * MutationObserver that detects a programmatic open delivers asynchronously,
+ * hence the awaited ticks. The end-to-end behavior is covered by
+ * tests/playwright/active-controls/ActiveDialogTestCase.spec.js.
+ */
+describe('TActiveDialog', () => {
+	let dialog;
+	let controls;
+
+	/** Let the MutationObserver deliver its queued records. */
+	const tick = () => new Promise((resolve) => setTimeout(resolve, 0));
+
+	/**
+	 * Build a control and remember it, so afterEach can disconnect its
+	 * MutationObserver. An observer left connected delivers its queued records
+	 * into a later test and dispatches through that test's mock.
+	 */
+	function makeDialog(options) {
+		const ctrl = new TActiveDialog(options ?? { ID: 'dialog1', EventTarget: 'dialog1' });
+		controls.push(ctrl);
+		return ctrl;
+	}
+
+	beforeEach(async () => {
+		clearRegistry();
+		controls = [];
+		dialog = document.createElement('dialog');
+		dialog.id = 'dialog1';
+		dialog.show = function () {
+			this.open = true;
+		};
+		dialog.close = function () {
+			this.open = false;
+			this.dispatchEvent(new Event('close'));
+		};
+		document.body.appendChild(dialog);
+
+		// The synchronous tests above never yield to the macrotask queue, so the
+		// timers their trigger controls left behind fire on the first awaited
+		// tick in this file. Drain them here, against a throwaway mock so no
+		// real request is attempted, and every test below counts only its own
+		// dispatches.
+		mockCallbackRequest();
+		await tick();
+		restoreMocks();
+	});
+
+	afterEach(() => {
+		controls.forEach((ctrl) => ctrl.onDone());
+		restoreMocks();
+		dialog.remove();
+	});
+
+	it('registers itself in Prado.Registry on construction', () => {
+		makeDialog();
+		expect(Registry['dialog1']).toBeDefined();
+	});
+
+	it('dispatches a callback with CallbackParameter "close" when the dialog is dismissed', () => {
+		const { MockCtor, dispatchMock } = mockCallbackRequest();
+		makeDialog();
+		dialog.open = true;
+
+		dialog.close();
+
+		expect(dispatchMock).toHaveBeenCalledTimes(1);
+		expect(MockCtor).toHaveBeenCalledWith(
+			'dialog1',
+			expect.objectContaining({ CallbackParameter: 'close' }),
+		);
+	});
+
+	it('dispatches a callback with CallbackParameter "open" when opened programmatically', async () => {
+		const { MockCtor, dispatchMock } = mockCallbackRequest();
+		makeDialog();
+
+		dialog.show(); // showModal()/show() called by page script, not by the server
+		await tick();
+
+		expect(dispatchMock).toHaveBeenCalledTimes(1);
+		expect(MockCtor).toHaveBeenCalledWith(
+			'dialog1',
+			expect.objectContaining({ CallbackParameter: 'open' }),
+		);
+	});
+
+	it('reports an open only once for a single attribute change', async () => {
+		const { dispatchMock } = mockCallbackRequest();
+		makeDialog();
+
+		dialog.show();
+		dialog.setAttribute('open', ''); // redundant write, state unchanged
+		await tick();
+
+		expect(dispatchMock).toHaveBeenCalledTimes(1);
+	});
+
+	it('setOpen(true) opens the dialog without echoing a callback to the server', async () => {
+		const { dispatchMock } = mockCallbackRequest();
+		const ctrl = makeDialog();
+
+		ctrl.setOpen(true);
+		await tick();
+
+		expect(dialog.open).toBe(true);
+		expect(dispatchMock).not.toHaveBeenCalled();
+	});
+
+	it('setOpen(false) closes the dialog without echoing a callback to the server', async () => {
+		const { dispatchMock } = mockCallbackRequest();
+		const ctrl = makeDialog();
+		ctrl.setOpen(true);
+		await tick();
+
+		ctrl.setOpen(false);
+		await tick();
+
+		expect(dialog.open).toBe(false);
+		expect(dispatchMock).not.toHaveBeenCalled();
+	});
+
+	it('suppresses only the close raised by setOpen(), not the next user dismissal', async () => {
+		const { dispatchMock } = mockCallbackRequest();
+		const ctrl = makeDialog();
+
+		ctrl.setOpen(true);
+		await tick();
+		ctrl.setOpen(false);
+		await tick();
+		expect(dispatchMock).not.toHaveBeenCalled();
+
+		dialog.show();
+		await tick();
+		dispatchMock.mockClear();
+		dialog.close(); // the user dismisses it
+		expect(dispatchMock).toHaveBeenCalledTimes(1);
+	});
+
+	it('does not mutate the options object it was constructed with', () => {
+		const { MockCtor } = mockCallbackRequest();
+		const options = { ID: 'dialog1', EventTarget: 'dialog1' };
+		makeDialog(options);
+		dialog.open = true;
+
+		dialog.close();
+
+		expect(options.CallbackParameter).toBeUndefined();
+		expect(MockCtor.mock.calls[0][1]).not.toBe(options);
+	});
+
+	it('onDone() disconnects the observer so a later open reports nothing', async () => {
+		const { dispatchMock } = mockCallbackRequest();
+		const ctrl = makeDialog();
+
+		ctrl.onDone();
+		dialog.show();
+		await tick();
+
+		expect(dispatchMock).not.toHaveBeenCalled();
+	});
+
+	it('the static setOpen() forwards to the instance found in the Registry', async () => {
+		mockCallbackRequest();
+		const ctrl = makeDialog();
+		const spy = vi.spyOn(ctrl, 'setOpen');
+
+		TActiveDialog.setOpen('dialog1', true);
+		await tick();
+
+		expect(spy).toHaveBeenCalledWith(true);
+		expect(dialog.open).toBe(true);
+	});
+
+	it('the static setOpen() ignores an unknown id', () => {
+		expect(() => TActiveDialog.setOpen('no-such-control', true)).not.toThrow();
 	});
 });

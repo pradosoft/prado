@@ -21,7 +21,7 @@ use Prado\TPropertyValue;
  * a <b>submit</b> button or a <b>command</b> button.
  *
  * A <b>command</b> button has a command name (specified by
- * the {@see setCommandName CommandName} property) and and a command parameter
+ * the {@see setCommandName CommandName} property) and a command parameter
  * (specified by {@see setCommandParameter CommandParameter} property)
  * associated with the button. This allows you to create multiple TLinkButton
  * components on a Web page and programmatically determine which one is clicked
@@ -30,9 +30,10 @@ use Prado\TPropertyValue;
  * when the command button is clicked. In the event handler, you can determine
  * the {@see setCommandName CommandName} property value and
  * the {@see setCommandParameter CommandParameter} property value
- * through the {@see TCommandParameter::getName Name} and
- * {@see TCommandParameter::getParameter Parameter} properties of the event
- * parameter which is of type {@see \Prado\Web\UI\TCommandEventParameter}.
+ * through the {@see \Prado\Web\UI\TCommandEventParameter::getCommandName CommandName}
+ * and {@see \Prado\Web\UI\TCommandEventParameter::getCommandParameter CommandParameter}
+ * properties of the event parameter which is of type
+ * {@see \Prado\Web\UI\TCommandEventParameter}.
  *
  * A <b>submit</b> button does not have a command name associated with the button
  * and clicking on it simply posts the Web page back to the server.
@@ -50,6 +51,11 @@ use Prado\TPropertyValue;
  * as the hyperlink text. If {@see setText Text} is empty, the body content
  * of TLinkButton will be displayed. Therefore, you can use TLinkButton
  * as an image button by enclosing an &lt;img&gt; tag as the body of TLinkButton.
+ *
+ * TLinkButton posts back through javascript. The anchor renders a no-op href
+ * and the postback script only when {@see setEnableClientScript EnableClientScript}
+ * is true, which is the default. Setting it to false renders a plain anchor
+ * that performs no postback.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -257,7 +263,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	}
 
 	/**
-	 * @return bool whether postback event trigger by this button will cause input validation
+	 * @return bool whether postback event trigger by this button will cause input validation, default is true
 	 */
 	public function getCausesValidation()
 	{
@@ -296,7 +302,11 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 * invoke the page's {@see \Prado\Web\UI\TPage::validate validate} method first.
 	 * It will raise {@see onClick OnClick} and {@see onCommand OnCommand} events.
 	 * This method is mainly used by framework and control developers.
-	 * @param \Prado\TEventParameter $param the event parameter
+	 *
+	 * `$param` is not used. A button click carries no payload, so
+	 * {@see onClick OnClick} is raised with null, while {@see onCommand OnCommand}
+	 * carries the command properties of the button.
+	 * @param \Prado\TEventParameter|string $param the event parameter
 	 */
 	public function raisePostBackEvent($param)
 	{
@@ -312,7 +322,9 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 * The method raises 'OnClick' event to fire up the event handlers.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handler can be invoked.
-	 * @param \Prado\TEventParameter $param event parameter to be passed to the event handlers
+	 * {@see raisePostBackEvent()} raises this event with null, in a postback and in
+	 * a callback alike, because a button click posts no payload of its own.
+	 * @param ?\Prado\TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onClick($param)
 	{

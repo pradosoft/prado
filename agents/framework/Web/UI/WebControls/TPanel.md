@@ -28,7 +28,7 @@ Properties fall into two groups: those stored directly on TPanel and those deleg
 
 | Property | Type | Default | Description |
 |---|---|---|---|
-| `DefaultButton` | string | `''` | ID path to the button that is "clicked" when the user presses Enter inside the panel. Resolved via `findControl()`. |
+| `DefaultButton` | string | `''` | ID path to the button that is "clicked" when the user presses Enter inside the panel. Resolved via `findControl()`; the control must implement `IButtonControl`. |
 | `GroupingText` | string | `''` | When non-empty, wraps the panel body in `<fieldset><legend>GroupingText</legend>...</fieldset>` inside the `<div>`. |
 
 **Style-delegated properties (via `TPanelStyle`):**
@@ -57,7 +57,8 @@ None beyond those inherited from `TWebControl`.
 
 ## Patterns & Gotchas
 
-- **`DefaultButton` resolution** — The button is located with `findControl($id)` at render time. If it cannot be found, a `TInvalidDataValueException` is thrown. The panel's client ID is also emitted as an HTML `id` attribute when `DefaultButton` is set (required by the JS handler).
+- **`DefaultButton` resolution** — The button is located with `findControl($id)` at render time. If it cannot be found, a `TInvalidDataValueException` is thrown. If it is found but does not implement `IButtonControl`, `registerDefaultButton()` returns silently and no default button behavior is registered. The panel's client ID is also emitted as an HTML `id` attribute when `DefaultButton` is set (required by the JS handler).
+- **Default button flag** — Registering a button sets its `IsDefaultButton`, which is what makes [TButton](./TButton.md) and [TLinkButton](./TLinkButton.md) render their postback javascript even when they would not otherwise need it.
 - **`GroupingText` and tag structure** — When `GroupingText` is set, the rendered HTML is `<div ...><fieldset><legend>text</legend>...children...</fieldset></div>`. The outer `<div>` is always present; the fieldset is nested inside it.
 - **Show/hide groups** — Set `Visible=false` to hide the entire panel and all its children at once. This is the most common use case.
 - **`Direction=RightToLeft`** — Applied by `TPanelStyle` as a CSS `direction` style. Useful for RTL languages.

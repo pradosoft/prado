@@ -20,18 +20,19 @@ use Prado\Web\UI\IPostBackEventHandler;
  * You can create either a <b>submit</b> button or a <b>command</b> button.
  *
  * A <b>command</b> button has a command name (specified by
- * the {@see setCommandName CommandName} property) and and a command parameter
+ * the {@see setCommandName CommandName} property) and a command parameter
  * (specified by {@see setCommandParameter CommandParameter} property)
- * associated with the button. This allows you to create multiple TLinkButton
+ * associated with the button. This allows you to create multiple TImageButton
  * components on a Web page and programmatically determine which one is clicked
  * with what parameter. You can provide an event handler for
  * {@see onCommand OnCommand} event to programmatically control the actions performed
  * when the command button is clicked. In the event handler, you can determine
  * the {@see setCommandName CommandName} property value and
  * the {@see setCommandParameter CommandParameter} property value
- * through the {@see TCommandParameter::getName Name} and
- * {@see TCommandParameter::getParameter Parameter} properties of the event
- * parameter which is of type {@see \Prado\Web\UI\TCommandEventParameter}.
+ * through the {@see \Prado\Web\UI\TCommandEventParameter::getCommandName CommandName}
+ * and {@see \Prado\Web\UI\TCommandEventParameter::getCommandParameter CommandParameter}
+ * properties of the event parameter which is of type
+ * {@see \Prado\Web\UI\TCommandEventParameter}.
  *
  * A <b>submit</b> button does not have a command name associated with the button
  * and clicking on it simply posts the Web page back to the server.
@@ -49,6 +50,11 @@ use Prado\Web\UI\IPostBackEventHandler;
  *
  * TImageButton displays the {@see setText Text} property as the hint text to the displayed image.
  *
+ * TImageButton extends {@see \Prado\Web\UI\WebControls\TImage} and renders an
+ * input tag of type image. The browser posts the click coordinates in two fields
+ * named after the control, which {@see loadPostData()} reads. The control therefore
+ * registers itself with the page through {@see \Prado\Web\UI\TPage::registerRequiresPostData()}.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
@@ -62,6 +68,9 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	 * @var int y coordinate that the image is being clicked at
 	 */
 	private $_y = 0;
+	/**
+	 * @var bool whether the image button has been clicked in this postback
+	 */
 	private $_dataChanged = false;
 
 	/**
@@ -113,7 +122,9 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 
 	/**
 	 * Renders the client-script code.
-	 * @param mixed $writer
+	 * The client ID is rendered and the button is registered with the client
+	 * script manager so that its postback javascript is generated.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function renderClientControlScript($writer)
 	{
@@ -186,10 +197,14 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 
 	/**
 	 * This method checks if the TImageButton is clicked and loads the coordinates of the clicking position.
-	 * This method is primarly used by framework developers.
+	 * A clicked button becomes the postback event target of the page when no other
+	 * target is registered. The button reports no data change, so
+	 * {@see raisePostDataChangedEvent()} is never invoked for it, while
+	 * {@see getDataChanged DataChanged} reports the click.
+	 * This method is primarily used by framework developers.
 	 * @param string $key the key that can be used to retrieve data from the input data collection
-	 * @param array $values the input data collection
-	 * @return bool whether the data of the component has been changed
+	 * @param array|\ArrayAccess $values the input data collection
+	 * @return bool false, the image button raises no post data changed event
 	 */
 	public function loadPostData($key, $values)
 	{
@@ -245,7 +260,11 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	 * invoke the page's {@see \Prado\Web\UI\TPage::validate validate} method first.
 	 * It will raise {@see onClick OnClick} and {@see onCommand OnCommand} events.
 	 * This method is mainly used by framework and control developers.
-	 * @param \Prado\TEventParameter $param the event parameter
+	 *
+	 * `$param` is not used. The coordinates carried by the
+	 * {@see \Prado\Web\UI\WebControls\TImageClickEventParameter} of
+	 * {@see onClick OnClick} come from the post data read by {@see loadPostData()}.
+	 * @param \Prado\TEventParameter|string $param the event parameter
 	 */
 	public function raisePostBackEvent($param)
 	{
