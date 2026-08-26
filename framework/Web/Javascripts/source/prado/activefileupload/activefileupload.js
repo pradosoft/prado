@@ -23,6 +23,8 @@ Prado.WebUI.TActiveFileUpload = Prado.Class(Prado.WebUI.Control,
 	fileChanged() {
 		// ie11 fix
 		if(this.input.value=='') return;
+		// let the validators of the file input block an invalid selection
+		if(!this.validateFiles()) return;
 		// show the upload indicator, and hide the complete and error indicators (if they areSn't already).
 		this.flag.value = '1';
 		this.complete.style.display = 'none';
@@ -45,6 +47,21 @@ Prado.WebUI.TActiveFileUpload = Prado.Class(Prado.WebUI.Control,
 		this.form.target = this.oldtargetID;
 		this.form.method = this.oldFormMethod;
 		this.form.enctype = this.oldFormEnctype;
+	},
+
+	/**
+	 * Run the validators attached to the file input before the upload starts.
+	 * Passes when causesValidation is off, the validation script is not loaded,
+	 * or the form has no validation manager.
+	 * @return {boolean} true when the selected files may upload.
+	 */
+	validateFiles() {
+		if(!this.options.causesValidation || typeof(Prado.Validation) == "undefined")
+			return true;
+		const manager = Prado.Validation.managers[this.options.formID];
+		if(!manager)
+			return true;
+		return manager.validateControl(this.options.inputID);
 	},
 
 	finishUpload(options) {

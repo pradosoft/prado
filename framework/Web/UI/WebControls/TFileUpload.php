@@ -44,6 +44,12 @@ use Prado\Web\TMediaType;
  * TFileUpload raises {@see onFileUpload OnFileUpload} event if one or more files are
  * uploaded (whether it succeeds or not).
  *
+ * Since Prado 4.4.0 the {@see setAccept Accept} property renders the HTML5 "accept"
+ * attribute to filter the file types offered in the browser file picker, the
+ * {@see setCapture Capture} property renders the "capture" attribute to select a
+ * mobile capture device, and a {@see \Prado\Web\UI\WebControls\TFileValidator}
+ * can validate the selected files.
+ *
  * @author Marcus Nyeholt <tanus@users.sourceforge.net>, Qiang Xue <qiang.xue@gmail.com>
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @since 3.0
@@ -93,6 +99,12 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 			$name .= '[]';
 			$writer->addAttribute('multiple', 'multiple');
 		}
+		if (($accept = $this->getAccept()) !== '') {
+			$writer->addAttribute('accept', $accept);
+		}
+		if (($capture = $this->getCapture()) !== '') {
+			$writer->addAttribute('capture', $capture);
+		}
 		$writer->addAttribute('name', $name);
 		$isEnabled = $this->getEnabled(true);
 		if (!$isEnabled && $this->getEnabled()) {  // in this case parent will not render 'disabled'
@@ -141,6 +153,52 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	public function setMaxFileSize($size)
 	{
 		$this->setViewState('MaxFileSize', TPropertyValue::ensureInteger($size), self::MAX_FILE_SIZE);
+	}
+
+	/**
+	 * @return string the accept attribute value listing the file types the file picker accepts. Defaults to ''.
+	 * @since 4.4.0
+	 */
+	public function getAccept()
+	{
+		return $this->getViewState('Accept', '');
+	}
+
+	/**
+	 * Sets the accept attribute of the file input. The value is a comma
+	 * separated list of file type specifiers: extensions with a leading dot
+	 * (".jpg"), MIME types ("image/png") or wildcard MIME types ("image/*").
+	 * The browser uses the value to filter the files offered in its file
+	 * picker. This is advisory; use a {@see \Prado\Web\UI\WebControls\TFileValidator}
+	 * to validate the selected files.
+	 * @param string $value comma separated list of accepted file type specifiers.
+	 * @since 4.4.0
+	 */
+	public function setAccept($value)
+	{
+		$this->setViewState('Accept', TPropertyValue::ensureString($value), '');
+	}
+
+	/**
+	 * @return string the capture attribute value selecting the capture device. Defaults to ''.
+	 * @since 4.4.0
+	 */
+	public function getCapture()
+	{
+		return $this->getViewState('Capture', '');
+	}
+
+	/**
+	 * Sets the capture attribute of the file input. The value "user" prefers the
+	 * user-facing camera or microphone and "environment" prefers the outward-facing
+	 * one. Mobile browsers then capture new media with that device in place of the
+	 * file picker. The attribute applies to media types listed in
+	 * {@see setAccept Accept} and desktop browsers ignore it.
+	 * @param string $value "user", "environment" or '' to render no capture attribute.
+	 */
+	public function setCapture($value)
+	{
+		$this->setViewState('Capture', TPropertyValue::ensureString($value), '');
 	}
 
 	/**

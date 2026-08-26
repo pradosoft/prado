@@ -1,0 +1,85 @@
+<com:TContent ID="Content">
+<h1>Prado FileValidator Tests</h1>
+<div>
+	<p>File of at most 100 bytes</p>
+	<div>
+		<com:TFileUpload ID="upload1" Capture="environment" />
+		<com:TFileValidator
+			ID="validator1"
+			ControlToValidate="upload1"
+			ErrorMessage="File too big"
+			MaxFileSize="100"
+			ControlCssClass="required" />
+	</div>
+
+	<p>jpg or png files only</p>
+	<div>
+		<com:TFileUpload ID="upload2" />
+		<com:TFileValidator
+			ID="validator2"
+			ControlToValidate="upload2"
+			ErrorMessage="Wrong type: {files}"
+			AllowedFileExtensions="jpg, png"
+			ControlCssClass="required" />
+	</div>
+
+	<p>At most 2 files</p>
+	<div>
+		<com:TFileUpload ID="upload3" Multiple="true" />
+		<com:TFileValidator
+			ID="validator3"
+			ControlToValidate="upload3"
+			ErrorMessage="Too many files"
+			MaxFileCount="2"
+			ControlCssClass="required" />
+	</div>
+
+	<p>Server side only, txt files only</p>
+	<div>
+		<com:TFileUpload ID="upload4" />
+		<com:TFileValidator
+			ID="validator4"
+			ControlToValidate="upload4"
+			ErrorMessage="Server rejected the file type"
+			AllowedFileExtensions="txt"
+			EnableClientScript="false"
+			ControlCssClass="required" />
+	</div>
+
+	<p>Accept derived restrictions</p>
+	<div>
+		<com:TFileUpload ID="upload5" Accept=".txt, image/png" />
+		<com:TFileValidator
+			ID="validator5"
+			ControlToValidate="upload5"
+			ErrorMessage="File does not match the accepted types"
+			ControlCssClass="required" />
+	</div>
+
+	<p>At most 150 bytes in total</p>
+	<div>
+		<com:TFileUpload ID="upload6" Multiple="true" />
+		<com:TFileValidator
+			ID="validator6"
+			ControlToValidate="upload6"
+			ErrorMessage="Files too large together"
+			TotalMaxFileSize="150"
+			ControlCssClass="required" />
+	</div>
+
+	<p>Server side content check, png only</p>
+	<div>
+		<com:TFileUpload ID="upload7" />
+		<com:TFileValidator
+			ID="validator7"
+			ControlToValidate="upload7"
+			ErrorMessage="File content does not match the extension"
+			AllowedFileExtensions="png"
+			CheckExtensionMimeType="true"
+			EnableClientScript="false"
+			ControlCssClass="required" />
+	</div>
+
+	<com:TButton ID="submit1" Text="Test" />
+</div>
+</com:TContent>

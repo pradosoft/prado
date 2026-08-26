@@ -1975,3 +1975,327 @@ Prado.WebUI.TReCaptcha2Validator = Prado.Class(Prado.WebUI.TBaseValidator,
         return(a != b);
     }
 });
+
+/**
+ * TFileValidator validates the files selected in a TFileUpload control
+ * through the HTML5 File API.
+ *
+ * <p>Each selected file is checked against the <tt>MinFileSize</tt>,
+ * <tt>MaxFileSize</tt>, <tt>AllowedFileExtensions</tt> and
+ * <tt>AllowedFileTypes</tt> options. The number of selected files is checked
+ * against <tt>MinFileCount</tt> and <tt>MaxFileCount</tt>. The
+ * <tt>{files}</tt> token of the error message is replaced with the names of
+ * the invalid files.</p>
+ *
+ * @class Prado.WebUI.TFileValidator
+ * @extends Prado.WebUI.TBaseValidator
+ */
+Prado.WebUI.TFileValidator = Prado.Class(Prado.WebUI.TBaseValidator,
+{
+	/**
+	 * Additional constructor options.
+	 * @constructor initialize
+	 * @param {object} options - Additional constructor options:
+	 * @... {int} MaxFileSize - Maximum file size in bytes, 0 for no limit.
+	 * @... {int} MinFileSize - Minimum file size in bytes, 0 for no minimum.
+	 * @... {int} TotalMaxFileSize - Maximum combined size of the files in bytes, 0 for no limit.
+	 * @... {int} MaxFileCount - Maximum number of files, 0 for no limit.
+	 * @... {int} MinFileCount - Minimum number of files, 0 for no minimum.
+	 * @... {string[]} AllowedFileExtensions - Allowed lower case file name extensions.
+	 * @... {string[]} AllowedFileTypes - Allowed lower case MIME types, "image/*" matches every subtype.
+	 * @... {boolean} MatchAnyType - True to accept a file matching any of the extension
+	 *   or MIME type lists, false to require a match in every non-empty list.
+	 */
+
+	/**
+	 * Evaluate validation state
+	 * @function {boolean} ?
+	 * @return True if every selected file satisfies the file restrictions.
+	 */
+	evaluateIsValid() {
+		this.invalidFiles = [];
+		const files = this.getFileList();
+		if(!files || files.length <= 0)
+			return true;
+		let valid = true;
+		if(this.options.MaxFileCount > 0 && files.length > this.options.MaxFileCount)
+			valid = false;
+		if(this.options.MinFileCount > 0 && files.length < this.options.MinFileCount)
+			valid = false;
+		if(this.options.TotalMaxFileSize > 0 && this.getTotalFileSize(files) > this.options.TotalMaxFileSize)
+			valid = false;
+		for(const file of files)
+		{
+			if(!this.isValidFile(file))
+			{
+				this.invalidFiles.push(file.name);
+				valid = false;
+			}
+		}
+		this.updateErrorMessage();
+		return valid;
+	},
+
+	/**
+	 * Get the files selected in the control to validate.
+	 * @function {FileList} ?
+	 * @return List of selected files, null if the File API is unavailable.
+	 */
+	getFileList() {
+		return this.control.files || null;
+	},
+
+	/**
+	 * Get the combined size of the selected files.
+	 * @function {int} ?
+	 * @param {FileList} files - Selected files.
+	 * @return Combined size of the files in bytes.
+	 */
+	getTotalFileSize(files) {
+		let total = 0;
+		for(const file of files)
+			total += file.size;
+		return total;
+	},
+
+	/**
+	 * Check one file against the file size and file type restrictions.
+	 * @function {boolean} ?
+	 * @param {File} file - Selected file to check.
+	 * @return True if the file satisfies the restrictions.
+	 */
+	isValidFile(file) {
+		if(this.options.MaxFileSize > 0 && file.size > this.options.MaxFileSize)
+			return false;
+		if(this.options.MinFileSize > 0 && file.size < this.options.MinFileSize)
+			return false;
+		return this.isValidFileType(file);
+	},
+
+	/**
+	 * Check the extension and MIME type of one file.
+	 * With <tt>MatchAnyType</tt> the file must match any of the extension or
+	 * MIME type lists, otherwise it must match every non-empty list.
+	 * @function {boolean} ?
+	 * @param {File} file - Selected file to check.
+	 * @return True if the file satisfies the type restrictions.
+	 */
+	isValidFileType(file) {
+		const extensions = this.options.AllowedFileExtensions || [];
+		const types = this.options.AllowedFileTypes || [];
+		if(extensions.length <= 0 && types.length <= 0)
+			return true;
+		const extensionValid = extensions.length > 0 && extensions.indexOf(this.getFileExtension(file)) != -1;
+		const typeValid = types.length > 0 && this.matchesAnyMimeType(file, types);
+		if(this.options.MatchAnyType)
+			return extensionValid || typeValid;
+		return (extensions.length <= 0 || extensionValid) && (types.length <= 0 || typeValid);
+	},
+
+	/**
+	 * Get the lower case file name extension of a file.
+	 * @function {string} ?
+	 * @param {File} file - Selected file.
+	 * @return Extension without the dot, empty string if the file name has no extension.
+	 */
+	getFileExtension(file) {
+		const index = file.name.lastIndexOf('.');
+		return index < 0 ? '' : file.name.substring(index + 1).toLowerCase();
+	},
+
+	/**
+	 * Check the MIME type of a file against a list of MIME type patterns.
+	 * @function {boolean} ?
+	 * @param {File} file - Selected file to check.
+	 * @param {string[]} types - Lower case MIME type patterns, "image/*" matches every subtype.
+	 * @return True if the file type matches any of the patterns.
+	 */
+	matchesAnyMimeType(file, types) {
+		const type = (file.type || '').toLowerCase();
+		for(const pattern of types)
+		{
+			if(pattern == '*' || pattern == '*/*')
+				return true;
+			if(pattern.substring(pattern.length - 2) == '/*')
+			{
+				if(type.substring(0, pattern.length - 1) == pattern.substring(0, pattern.length - 1))
+					return true;
+			}
+			else if(type == pattern)
+				return true;
+		}
+		return false;
+	},
+
+	/**
+	 * Get the error message with the {files} token replaced by the names of
+	 * the invalid files.
+	 * @function {string} ?
+	 * @return Validation error message.
+	 */
+	getErrorMessage() {
+		const message = this.options.ErrorMessage;
+		if(typeof(message) == "string" && message.indexOf('{files}') != -1)
+			return message.replace('{files}', (this.invalidFiles || []).join(', '));
+		return message;
+	},
+
+	/**
+	 * Update the validator message element when the error message uses the
+	 * {files} token.
+	 * @function ?
+	 */
+	updateErrorMessage() {
+		if(this.message && typeof(this.options.ErrorMessage) == "string" && this.options.ErrorMessage.indexOf('{files}') != -1)
+			this.message.textContent = this.getErrorMessage();
+	}
+});
+
+/**
+ * TImageValidator validates the image files selected in a TFileUpload control.
+ *
+ * <p>Every restriction of Prado.WebUI.TFileValidator applies, and each file
+ * must be a decodable image whose pixel dimensions satisfy the
+ * <tt>MinImageWidth</tt>, <tt>MaxImageWidth</tt>, <tt>MinImageHeight</tt> and
+ * <tt>MaxImageHeight</tt> options.</p>
+ *
+ * <p>Image decoding is asynchronous: the dimensions are read into a cache when
+ * the selection changes, and a file whose dimensions are not yet decoded
+ * passes the validation. The validator re-validates when the decoding
+ * completes. The server-side validation is authoritative.</p>
+ *
+ * @class Prado.WebUI.TImageValidator
+ * @extends Prado.WebUI.TFileValidator
+ */
+Prado.WebUI.TImageValidator = Prado.Class(Prado.WebUI.TFileValidator,
+{
+	/**
+	 * Additional constructor options.
+	 * @constructor initialize
+	 * @param {object} options - Additional constructor options:
+	 * @... {int} MinImageWidth - Minimum image width in pixels, 0 for no minimum.
+	 * @... {int} MaxImageWidth - Maximum image width in pixels, 0 for no limit.
+	 * @... {int} MinImageHeight - Minimum image height in pixels, 0 for no minimum.
+	 * @... {int} MaxImageHeight - Maximum image height in pixels, 0 for no limit.
+	 */
+
+	/**
+	 * Start decoding the image dimensions when the selection changes.
+	 * @function ?
+	 */
+	onInit() {
+		this._imageInfo = {};
+		if(this.control)
+		{
+			const validator = this;
+			this.observe(this.control, 'change', () => validator.preloadImageInfo());
+			this.preloadImageInfo();
+		}
+	},
+
+	/**
+	 * Get the cache key identifying a selected file.
+	 * @function {string} ?
+	 * @param {File} file - Selected file.
+	 * @return Cache key of the file.
+	 */
+	fileKey(file) {
+		return [file.name, file.size, file.lastModified].join('|');
+	},
+
+	/**
+	 * Check that the browser can decode selected files into images.
+	 * @function {boolean} ?
+	 * @return True if object URLs are available for image decoding.
+	 */
+	canReadImages() {
+		return typeof(URL) != "undefined" && typeof(URL.createObjectURL) == "function";
+	},
+
+	/**
+	 * Drop the stale dimension cache and decode the current selection.
+	 * @function ?
+	 */
+	preloadImageInfo() {
+		this._imageInfo = {};
+		const files = this.getFileList();
+		if(!files || !this.canReadImages())
+			return;
+		for(const file of files)
+			this.readImageInfo(file);
+	},
+
+	/**
+	 * Decode the dimensions of one file into the cache and re-validate on
+	 * completion.
+	 * @function ?
+	 * @param {File} file - Selected file to decode.
+	 */
+	readImageInfo(file) {
+		const key = this.fileKey(file);
+		if(this._imageInfo[key])
+			return;
+		const info = this._imageInfo[key] = { pending: true, notImage: false, width: 0, height: 0 };
+		const url = URL.createObjectURL(file);
+		const image = new Image();
+		const validator = this;
+		const done = function(notImage) {
+			URL.revokeObjectURL(url);
+			info.pending = false;
+			info.notImage = notImage;
+			info.width = image.naturalWidth || image.width;
+			info.height = image.naturalHeight || image.height;
+			validator.revalidate();
+		};
+		image.onload = () => done(false);
+		image.onerror = () => done(true);
+		image.src = url;
+	},
+
+	/**
+	 * Re-validate and update the summary after an asynchronous decode, once a
+	 * validation has displayed results.
+	 * @function ?
+	 */
+	revalidate() {
+		if(this.visible)
+		{
+			this.validate();
+			if(this.manager)
+				this.manager.updateSummary(this.group);
+		}
+	},
+
+	/**
+	 * Check one file against the parent restrictions and the image dimension
+	 * restrictions. A file with undecoded dimensions passes.
+	 * @function {boolean} ?
+	 * @param {File} file - Selected file to check.
+	 * @return True if the file satisfies the restrictions.
+	 */
+	isValidFile($super, file) {
+		if(!$super(file))
+			return false;
+		if(!this.canReadImages())
+			return true;
+		const info = this._imageInfo[this.fileKey(file)];
+		if(!info)
+		{
+			this.readImageInfo(file);
+			return true;
+		}
+		if(info.pending)
+			return true;
+		if(info.notImage)
+			return false;
+		if(this.options.MinImageWidth > 0 && info.width < this.options.MinImageWidth)
+			return false;
+		if(this.options.MaxImageWidth > 0 && info.width > this.options.MaxImageWidth)
+			return false;
+		if(this.options.MinImageHeight > 0 && info.height < this.options.MinImageHeight)
+			return false;
+		if(this.options.MaxImageHeight > 0 && info.height > this.options.MaxImageHeight)
+			return false;
+		return true;
+	}
+});

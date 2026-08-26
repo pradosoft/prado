@@ -54,6 +54,24 @@ use Prado\Web\Javascripts\TJavaScript;
  * {@see setMultiple Multiple} attribute to true. See the description of the parent class
  * {@see \Prado\Web\UI\WebControls\TFileUpload} for further details.
  *
+ * Since Prado 4.4.0 validators attached to the control, such as
+ * {@see \Prado\Web\UI\WebControls\TFileValidator} and
+ * {@see \Prado\Web\UI\WebControls\TImageValidator}, integrate with the upload when
+ * {@see setCausesValidation CausesValidation} is true (the default):
+ * - Client side, the validators of the control run before the upload starts and
+ *   an invalid selection skips the upload while the validators display their messages.
+ * - Server side, the page validates the {@see setValidationGroup ValidationGroup}
+ *   during the upload callback before {@see onFileUpload OnFileUpload} is raised.
+ *   The event handler checks {@see \Prado\Web\UI\TPage::getIsValid()} or the control's
+ *   {@see \Prado\Web\UI\WebControls\TFileUpload::getIsValid() IsValid} before saving the files.
+ *
+ * Validation happens during the upload callback. The selected files do not
+ * persist to a later postback: a successful upload clears the file input and the
+ * temporary files are removed when the callback ends. Validators evaluated on a
+ * later postback see an empty selection and succeed. Assign the control and its
+ * validators a dedicated {@see setValidationGroup ValidationGroup} to keep the
+ * upload callback from validating unrelated controls of the page.
+ *
  * @author Bradley Booms <Bradley.Booms@nsighttel.com>
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
@@ -183,6 +201,50 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	}
 
 	/**
+	 * @return bool whether the validators of the control run before the upload starts and
+	 * the page validates during the upload callback. Defaults to true.
+	 * @since 4.4.0
+	 */
+	public function getCausesValidation()
+	{
+		return $this->getViewState('CausesValidation', true);
+	}
+
+	/**
+	 * Sets whether the upload performs validation. When true, the client-side
+	 * validators of the control run before the upload starts and an invalid
+	 * selection skips the upload. Server side, the page validates the
+	 * {@see setValidationGroup ValidationGroup} during the upload callback
+	 * before {@see onFileUpload OnFileUpload} is raised.
+	 * @param bool $value whether the upload performs validation.
+	 * @since 4.4.0
+	 */
+	public function setCausesValidation($value)
+	{
+		$this->setViewState('CausesValidation', TPropertyValue::ensureBoolean($value), true);
+	}
+
+	/**
+	 * @return string the group of validators the page validates during the upload callback. Defaults to ''.
+	 * @since 4.4.0
+	 */
+	public function getValidationGroup()
+	{
+		return $this->getViewState('ValidationGroup', '');
+	}
+
+	/**
+	 * Sets the group of validators the page validates during the upload callback
+	 * when {@see setCausesValidation CausesValidation} is true.
+	 * @param string $value the validation group of the upload.
+	 * @since 4.4.0
+	 */
+	public function setValidationGroup($value)
+	{
+		$this->setViewState('ValidationGroup', TPropertyValue::ensureString($value), '');
+	}
+
+	/**
 	 * @return string A chuck of javascript that will need to be called if {{@see getAutoPostBack AutoPostBack} is set to false}
 	 */
 	public function getCallbackJavascript()
@@ -229,6 +291,10 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 				$_FILES[$key]['tmp_name'][$index] = $file['localName'];
 			}
 			$this->loadPostData($key, null);
+
+			if ($this->getCausesValidation()) {
+				$this->getPage()->validate($this->getValidationGroup());
+			}
 
 			$this->raiseEvent('OnFileUpload', $this, $param);
 		}
@@ -420,6 +486,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 		$options['completeID'] = $this->_success->getClientID();
 		$options['errorID'] = $this->_error->getClientID();
 		$options['autoPostBack'] = $this->getAutoPostBack();
+		$options['causesValidation'] = $this->getCausesValidation();
 		return $options;
 	}
 

@@ -91,6 +91,8 @@ All validators extend `TBaseValidator`. Shared properties: `ControlToValidate`, 
 | `TCustomValidator` | Custom server-side (and optional client-side) logic |
 | `TEmailAddressValidator` | Valid email format |
 | `TDataTypeValidator` | Value is correct data type (integer, date, etc.) |
+| `TFileValidator` | Files selected in a `TFileUpload`: size, count, extension, MIME type (@since 4.4.0) |
+| `TImageValidator` | Image files selected in a `TFileUpload`: TFileValidator checks plus pixel dimensions and a readable-image check (@since 4.4.0) |
 | `TValidationSummary` | Displays all errors in a group; `DisplayMode` (List/BulletList/SingleParagraph) |
 
 ## Semantic HTML5 Controls (@since 4.3.3)
