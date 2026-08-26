@@ -8,91 +8,105 @@
 **Namespace:** `Prado\Web\UI`
 **Extends:** `TEventParameter`
 **Implements:** `IEventCycleParameter`
+**Since:** 4.3.3
 
 ## Overview
-Event parameter for the `onRenderFilter` event raised by `TControl::renderControl`. It carries the captured rendered HTML and exposes two representations that can be switched between transparently:
 
-- **HTML string** — raw rendered markup, via `getFilterText()` / `setFilterText()` or array-access key `'html'` (`RENDER_FILTER_TEXT`).
-- **DOMDocument** — a parsed DOM tree, via `getFilterDOM()` / `setFilterDOM()` or array-access key `'dom'` (`RENDER_FILTER_DOM`).
-
-The parameter tracks which representation is *current* (authoritative) and lazily syncs between them.
+Event parameter for the `onRenderFilter` event raised by `TControl::renderControl`. Carries the rendered HTML and exposes two transparently-switchable representations — an HTML string and a `DOMDocument` — plus the libxml parse error list. All three are stored in the parent `TEventParameter` array under reserved keys.
 
 ## Constants
 
 | Constant | Value | Description |
 |---|---|---|
-| `RENDER_FILTER_TEXT` | `'html'` | Array-access key for the HTML string |
-| `RENDER_FILTER_DOM` | `'dom'` | Array-access key for the DOMDocument |
-| `RENDER_FILTER_ERRORS` | `'errors'` | Array-access key for libxml parse errors (`LibXMLError[]` or `null`) |
+| `RENDER_FILTER_TEXT` | `'html'` | Array key for the HTML string |
+| `RENDER_FILTER_DOM` | `'dom'` | Array key for the DOMDocument |
+| `RENDER_FILTER_ERRORS` | `'errors'` | Array key for the libxml error list |
 
-## Resource Switching
+## Resource switching
 
-| Action | Effect |
-|---|---|
-| `getFilterDOM()` | Parses HTML → DOM (if needed); makes DOM the current resource |
-| `getFilterText()` | Serialises DOM → HTML (if DOM is current); makes string the current resource |
-| `setFilterText($html)` | Sets string; discards DOM cache and parse errors; string becomes current |
-| `setFilterDOM($dom)` | Sets DOM; DOM becomes current |
+The parameter tracks which representation is *current*:
+- `getFilterDOM()` (or `$param['dom']`) → parses HTML into DOM, makes DOM current.
+- `getFilterText()` (or `$param['html']`) while DOM is current → serialises DOM back to HTML, makes string current.
+- `setFilterText()` / `setFilterDOM()` makes the set representation current and discards the other.
+- `postRaiseEvent` automatically serialises DOM → HTML after all handlers run, so `processRenderFilter` always receives a valid string.
 
 ## Key Methods
 
-- `getFilterText(): string` — Current HTML string (syncs from DOM first if needed).
-- `setFilterText(string $html): void` — Replaces the HTML string; discards any cached DOM.
-- `getFilterDOM(): DOMDocument|false` — Lazily parsed DOM; `false` on fatal libxml parse failure. Makes DOM current.
-- `setFilterDOM(DOMDocument $dom): void` — Replaces the DOM; makes DOM current.
-- `getFilterErrors(): ?array` — `LibXMLError[]` from the last parse, or `null` when no errors occurred.
-- `getHasFilterError(): bool` — `true` when the last parse captured at least one libxml error.
-- `walkElements(callable $callback, ?DOMNode $node = null, bool $recursive = true): void` — Depth-first traversal of every `DOMElement` in the document (or a subtree). Callback signature: `(DOMElement $el, TRenderFilterParameter $p, int $depth): void`. The visit list is snapshotted before the first callback fires, so DOM mutations during the walk do not affect which elements are visited.
-- `postRaiseEvent(...)` — `IEventCycleParameter` hook. Serialises DOM → HTML after all handlers run so `TControl::processRenderFilter` always receives a valid string.
+### HTML accessor
 
-## Array-Access Behaviour
+| Method | Description |
+|---|---|
+| `getFilterText(): string` | Current HTML (serialises from DOM first if DOM is current) |
+| `setFilterText(string $html): void` | Replace HTML; discard DOM and errors |
 
-```php
-$param[TRenderFilterParameter::RENDER_FILTER_TEXT]      // proxies getFilterText()
-$param[TRenderFilterParameter::RENDER_FILTER_DOM]       // proxies getFilterDOM()
-$param[TRenderFilterParameter::RENDER_FILTER_ERRORS]    // proxies getFilterErrors()
+### DOM accessor
 
-$param['html'] = '<p>new</p>';     // setFilterText()
-$param['dom']  = $domDocument;     // setFilterDOM()
-unset($param['html']);             // clears string to ''
-unset($param['dom']);              // commits DOM→HTML then discards DOM
-unset($param['errors']);           // clears stored parse errors
-```
+| Method | Description |
+|---|---|
+| `getFilterDOM(): DOMDocument\|false` | Parsed DOM (lazy parse on first call); `false` on fatal libxml failure |
+| `setFilterDOM(DOMDocument $dom): void` | Replace DOM; clear errors |
 
-## Usage Examples
+### Error accessors
+
+| Method | Description |
+|---|---|
+| `getFilterErrors(): ?array` | `LibXMLError[]` from the most recent parse, or `null` when no errors |
+| `getHasFilterError(): bool` | `true` when at least one libxml error was captured |
+
+### DOM walker
 
 ```php
-// String-based handler
-$control->onRenderFilter[] = function ($sender, TRenderFilterParameter $param) {
-    $param->setFilterText(strtoupper($param->getFilterText()));
-};
-
-// DOM-based handler — add missing alt attributes to all <img> elements
-$control->onRenderFilter[] = function ($sender, TRenderFilterParameter $param) {
-    $dom = $param->getFilterDOM(); // DOMDocument|false
-    if ($dom === false) {
-        return; // libxml could not parse the fragment
+$param->walkElements(function (\DOMElement $el, $param, int $depth) {
+    if ($el->tagName === 'img' && !$el->hasAttribute('alt')) {
+        $el->setAttribute('alt', '');
     }
-    $param->walkElements(function (\DOMElement $el, TRenderFilterParameter $p) {
-        if ($el->tagName === 'img' && !$el->hasAttribute('alt')) {
-            $el->setAttribute('alt', '');
-        }
-    });
-    // DOM → HTML serialisation is automatic via postRaiseEvent
-};
+});
 ```
 
-## Patterns & Gotchas
+`walkElements(callable, ?DOMNode $node = null, bool $recursive = true)` — depth-first traversal of every `DOMElement`. The visit list is snapshotted before the first callback, so DOM mutations during the walk do not affect which elements are visited.
 
-- **DOM parsed with `LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD`** — no `<html>/<head>/<body>` wrappers are added. The processing instruction `<?xml encoding="UTF-8">` is injected for correct encoding and then removed after parsing.
-- **`false` return from `getFilterDOM()`** — means libxml reported a fatal parse failure. The HTML string remains current and unmodified. Check `getFilterErrors()` for details.
-- **Parse errors are always retained** — even when parsing succeeded, libxml warnings/notices are captured. Only `null` means "no errors at all".
-- **`postRaiseEvent` serialises automatically** — handlers that work exclusively through the DOM API do not need to call `getFilterText()` themselves.
+## Array-access
 
-## See Also
+All three reserved keys are proxied through the getters/setters:
 
-- [IFilterRenderable](./IFilterRenderable.md)
-- [TFilterRenderableTrait](./Traits/TFilterRenderableTrait.md)
-- [TControl](./TControl.md)
+```php
+$param[TRenderFilterParameter::RENDER_FILTER_TEXT]           // → getFilterText()
+$param[TRenderFilterParameter::RENDER_FILTER_TEXT] = $html;  // → setFilterText()
+$param[TRenderFilterParameter::RENDER_FILTER_DOM]            // → getFilterDOM()
+$param[TRenderFilterParameter::RENDER_FILTER_DOM] = $dom;    // → setFilterDOM() (must be DOMDocument)
+$param[TRenderFilterParameter::RENDER_FILTER_ERRORS]         // → getFilterErrors() (null or array)
+$param[TRenderFilterParameter::RENDER_FILTER_ERRORS] = $v;   // no-op — errors are read-only
+unset($param[TRenderFilterParameter::RENDER_FILTER_ERRORS]); // clears errors → null
+```
 
-**@since 4.3.3**
+Extra keys (not one of the three reserved ones) pass through to the parent `TEventParameter` array and can be used for handler-to-handler state passing.
+
+## Error semantics
+
+`RENDER_FILTER_ERRORS` stores `null` when no errors have been captured (fresh instance, clean parse, or after `setFilterText`/`setFilterDOM`). A non-null value means the last parse produced at least one libxml error. Use `getHasFilterError()` as the canonical check.
+
+## Subclassing
+
+Override `htmlToDom(string $html): DOMDocument|false` to substitute a custom parser. Call `$this->storeErrors($errors)` inside the override to keep the errors slot consistent (it bypasses the public no-op on `offsetSet('errors', ...)`).
+
+## Typical handler
+
+```php
+$control->onRenderFilter[] = function ($sender, TRenderFilterParameter $param) {
+    // String API
+    $param->setFilterText(strtoupper($param->getFilterText()));
+
+    // DOM API
+    $dom = $param->getFilterDOM(); // DOMDocument|false
+    if ($dom !== false) {
+        $param->walkElements(function (\DOMElement $el, $p) {
+            if ($el->tagName === 'img' && !$el->hasAttribute('alt')) {
+                $el->setAttribute('alt', '');
+            }
+        });
+    }
+
+    // Extra state for a downstream handler
+    $param['processed-by'] = 'my-filter';
+};
+```

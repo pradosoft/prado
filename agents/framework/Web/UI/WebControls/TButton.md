@@ -19,7 +19,7 @@ TButton creates a clickable button control on the page. It is primarily used for
 - **Command Parameters**: Supports command name and parameter for distinguishing multiple buttons
 
 ## Core Properties
-- `ButtonTag` (TButtonTag): Tag name of button (Input, Button, or Reset)
+- `ButtonTag` (TButtonTag): Tag name of button (Input or Button)
 - `ButtonType` (TButtonType): Type of button (Submit, Button, or Reset)
 - `CommandName` (string): Command name for command events
 - `CommandParameter` (string): Command parameter for command events
@@ -27,7 +27,7 @@ TButton creates a clickable button control on the page. It is primarily used for
 - `ValidationGroup` (string): Validation group for restricting validation
 - `Text` (string): Button caption text
 - `EnableClientScript` (bool): Whether JavaScript is rendered for button
-- `UseSubmitBehavior` (bool): Whether to use submit behavior for postback
+- `IsDefaultButton` (bool): Set by a [TPanel](./TPanel.md) to make this the panel's default button
 
 ## Core Events
 - `OnClick`: Raised when button is clicked
@@ -39,28 +39,27 @@ TButton creates a clickable button control on the page. It is primarily used for
 - **Reset**: Resets form fields when clicked (clears input values)
 
 ## Button Tags
-- **Input**: Renders as `<input type="button/submit/reset">` (default)
-- **Button**: Renders as `<button type="button/submit/reset">` (HTML5)
-- **Reset**: Renders as `<input type="reset">`
+- **Input**: Renders as `<input type="button|submit|reset">` with `Text` in the value attribute (default)
+- **Button**: Renders as `<button type="button|submit|reset">` with `Text` as the body content (HTML5)
 
 ## Validation Integration
 - `CausesValidation` (boolean): Controls whether clicking button triggers validation
 - `ValidationGroup` (string): Restricts validation to specific group of validators
-- Validation occurs before postback if successful
+- On postback, `raisePostBackEvent()` runs the validators before raising `OnClick` and `OnCommand`
 
 ## Core Methods
 
 ### Event Handling
-- `raisePostBackEvent($sender, $param)`: Raises postback event on button click
-- `onClick($sender, $param)`: Raises OnClick event
-- `onCommand($sender, $param)`: Raises OnCommand event with command parameters
+- `raisePostBackEvent($param)`: Validates, then raises OnClick and OnCommand
+- `onClick($param)`: Raises OnClick event
+- `onCommand($param)`: Raises OnCommand event and bubbles it to the ancestors
 - `getCommandName()`: Gets command name for command event
 - `setCommandName($value)`: Sets command name for command event
 - `getCommandParameter()`: Gets command parameter for command event
 - `setCommandParameter($value)`: Sets command parameter for command event
 
 ### Button Configuration
-- `getButtonTag()`: Gets button tag type (Input, Button, or Reset)  
+- `getButtonTag()`: Gets button tag type (Input or Button)
 - `setButtonTag($value)`: Sets button tag type
 - `getButtonType()`: Gets button type (Submit, Button, or Reset)
 - `setButtonType($value)`: Sets button type
@@ -72,16 +71,16 @@ TButton creates a clickable button control on the page. It is primarily used for
 - `setEnableClientScript($value)`: Sets whether JavaScript is rendered
 
 ### Rendering
-- `getTagName()`: Gets HTML tag name for button
+- `getTagName()`: Gets HTML tag name for button, the lowercase of `ButtonTag`
 - `addAttributesToRender($writer)`: Adds button-specific attributes to HTML writer
-- `renderBeginTag($writer)`: Renders opening button tag  
-- `renderEndTag($writer)`: Renders closing button tag
-- `renderContents($writer)`: Renders button text content
-- `render($writer)`: Renders complete button HTML output
+- `renderContents($writer)`: Renders the body content, for the Button tag only
+- `renderClientControlScript($writer)`: Registers the postback javascript for the button
+- `getClientClassName()`: Returns `Prado.WebUI.TButton`
 
-### Validation
-- `validate()`: Validates button and associated controls
-- `getHasValidation()`: Checks if button has validation
+### Postback Behavior
+- `canCauseValidation()`: True when `CausesValidation` is set and the validation group holds a validator
+- `needPostBackScript()`: True when javascript is needed to post back
+- `getPostBackOptions()`: Postback options passed to the client script manager
 
 ## Usage Example
 ```php
@@ -99,11 +98,13 @@ $button->setCausesValidation(true);
 $button->setValidationGroup("FormValidation");
 
 // Handle events
-$button->onClick = function($sender, $param) {
+$button->attachEventHandler('OnClick', function($sender, $param) {
     // Handle button click
-};
-
-// Render
-$writer = new [THtmlWriter](../THtmlWriter.md)();
-$button->render($writer);
+});
 ```
+
+## See Also
+
+- [TLinkButton](./TLinkButton.md)
+- [TButtonType](./TButtonType.md) / [TButtonTag](./TButtonTag.md)
+- [TWebControl](./TWebControl.md)
