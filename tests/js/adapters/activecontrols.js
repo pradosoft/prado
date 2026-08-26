@@ -55,3 +55,7 @@ export const TValueTriggeredCallback  = global.Prado.WebUI.TValueTriggeredCallba
 // Table controls
 export const TActiveTableCell         = global.Prado.WebUI.TActiveTableCell;
 export const TActiveTableRow          = global.Prado.WebUI.TActiveTableRow;
+
+// Disclosure / dialog controls
+export const TActiveDetails           = global.Prado.WebUI.TActiveDetails;
+export const TActiveDialog            = global.Prado.WebUI.TActiveDialog;
