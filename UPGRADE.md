@@ -15,6 +15,9 @@ Upgrading from v4.3.3
 - `Prado\Web\TUri` is now a PSR-7 `UriInterface`: scheme/host are lower-cased, path/query/fragment are
   percent-encoded, and `getPort()` returns `?int` (`null` when absent or scheme default).
 - TDatePicker::InputMode changed to TDatePicker::DateInputMode - due to conflict with TWebControl::InputMode
+- TActiveFileUpload now validates by default: attached validators run client side before the upload starts, and the page
+  validates the ValidationGroup during the upload callback before OnFileUpload is raised. Set CausesValidation=false to
+  restore the previous behavior.
 
 Upgrading from v4.3.2
 ---------------------
