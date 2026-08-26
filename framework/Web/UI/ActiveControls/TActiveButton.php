@@ -20,7 +20,7 @@ use Prado\Web\UI\WebControls\TButtonTag;
  * callback request is initiated.
  *
  * The {@see onCallback OnCallback} event is raised during a callback request
- * and it is raise <b>after</b> the {@see onClick OnClick} event.
+ * and it is raised <b>after</b> the {@see onClick OnClick} event.
  *
  * When the {@see \Prado\Web\UI\ActiveControls\TBaseActiveCallbackControl::setEnableUpdate ActiveControl.EnableUpdate}
  * property is true, changing the {@see setText Text} property during callback request
@@ -66,6 +66,12 @@ class TActiveButton extends TButton implements IActiveControl, ICallbackEventHan
 	 * method first. It will raise {@see onClick OnClick} event first
 	 * and then the {@see onCallback OnCallback} event.
 	 * This method is mainly used by framework and control developers.
+	 *
+	 * {@see \Prado\Web\UI\WebControls\TButton::raisePostBackEvent() raisePostBackEvent()}
+	 * raises {@see onClick OnClick} with null and {@see onCommand OnCommand} with the
+	 * command properties of the button. `$param` reaches {@see onCallback OnCallback}
+	 * alone, so a handler reads the client-supplied value from
+	 * {@see TCallbackEventParameter::getCallbackParameter CallbackParameter} there.
 	 * @param TCallbackEventParameter $param the event parameter
 	 */
 	public function raiseCallbackEvent($param)

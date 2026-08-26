@@ -129,8 +129,11 @@ class TImageMap extends TImage implements \Prado\Web\UI\IPostBackEventHandler
 	/**
 	 * Raises the postback event.
 	 * This method is required by {@see \Prado\Web\UI\IPostBackEventHandler} interface.
+	 * {@see onClick OnClick} is raised for a hot spot whose mode is PostBack, after
+	 * the validators of the hot spot are invoked. A hot spot of any other mode
+	 * raises no event.
 	 * This method is mainly used by framework and control developers.
-	 * @param \Prado\TEventParameter $param the event parameter
+	 * @param string $param the index of the clicked hot spot
 	 */
 	public function raisePostBackEvent($param)
 	{

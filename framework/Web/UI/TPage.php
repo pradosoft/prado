@@ -28,6 +28,39 @@ use Prado\Web\UI\WebControls\THead;
 /**
  * TPage class
  *
+ * TPage is the root of the control tree serving a page request. It is created
+ * by {@see \Prado\Web\Services\TPageService}, which calls {@see run()} to
+ * execute the page life cycles. The life cycle taken depends on the request
+ * type: a normal request, a postback ({@see getIsPostBack IsPostBack}) or a
+ * callback ({@see getIsCallback IsCallback}). A callback delegates its event
+ * processing and its response rendering to {@see TActivePageAdapter}.
+ *
+ * A page contains at most one {@see TForm} and at most one
+ * {@see \Prado\Web\UI\WebControls\THead}. Controls that post back call
+ * {@see ensureRenderInForm()} while rendering to verify they are within the form.
+ *
+ * Post data is dispatched to the controls implementing
+ * {@see \Prado\Web\UI\IPostBackDataHandler} by {@see processPostData()}.
+ * The control named by the post data as the event target receives
+ * {@see \Prado\Web\UI\IPostBackEventHandler::raisePostBackEvent()}.
+ *
+ * The state of the page and its controls is written to the client through
+ * {@see getStatePersister StatePersister}. The state can be HMAC validated,
+ * encrypted, compressed and serialized with igbinary, controlled by
+ * {@see setEnableStateValidation EnableStateValidation},
+ * {@see setEnableStateEncryption EnableStateEncryption},
+ * {@see setEnableStateCompression EnableStateCompression} and
+ * {@see setEnableStateIGBinary EnableStateIGBinary}.
+ *
+ * Validators add themselves to {@see getValidators Validators}. {@see validate()}
+ * runs them, either all of them or those of a single validation group, and
+ * {@see getIsValid IsValid} reports the outcome.
+ *
+ * {@see setTheme Theme} and {@see setStyleSheetTheme StyleSheetTheme} apply skins
+ * to the controls of the page and contribute their stylesheet and javascript
+ * files. {@see getClientScript ClientScript} collects the client-side scripts,
+ * stylesheets and hidden fields to be rendered.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  * @method TActivePageAdapter getAdapter()
@@ -89,7 +122,7 @@ class TPage extends TTemplateControl
 	 */
 	private $_clientScript;
 	/**
-	 * @var TMap data post back by user
+	 * @var ?\Prado\Web\THttpRequest data post back by user, null if not a postback
 	 */
 	protected $_postData;
 	/**
@@ -203,6 +236,7 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Runs through the page lifecycles.
+	 * The life cycle run depends on the request type: normal, postback or callback.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
 	 */
 	public function run($writer)
@@ -319,9 +353,11 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * Sets Adapter to TActivePageAdapter and calls apter to process the
-	 * callback request.
-	 * @param mixed $writer
+	 * Sets the Adapter to a TActivePageAdapter and runs the callback life cycle.
+	 * The callback parameter is JSON decoded and the post data is decoded from
+	 * UTF-8 to the application charset. The adapter raises the callback event
+	 * and renders the callback response.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
 	 */
 	protected function processCallbackRequest($writer)
 	{
@@ -429,7 +465,7 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Callback parameter is decoded assuming JSON encoding.
-	 * @return string callback event parameter
+	 * @return mixed callback event parameter
 	 */
 	public function getCallbackEventParameter()
 	{
@@ -445,7 +481,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @return TForm the form on the page
+	 * @return ?TForm the form on the page, null if no form is registered yet
 	 */
 	public function getForm()
 	{
@@ -495,7 +531,7 @@ class TPage extends TTemplateControl
 	 * Performs input validation.
 	 * This method will invoke the registered validators to perform the actual validation.
 	 * If validation group is specified, only the validators in that group will be invoked.
-	 * @param string $validationGroup validation group. If null, all validators will perform validation.
+	 * @param ?string $validationGroup validation group. If null, all validators will perform validation.
 	 */
 	public function validate($validationGroup = null)
 	{
@@ -539,7 +575,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @return TTheme the theme used for the page. Defaults to null.
+	 * @return ?TTheme the theme used for the page. Defaults to null.
 	 */
 	public function getTheme()
 	{
@@ -560,7 +596,7 @@ class TPage extends TTemplateControl
 
 
 	/**
-	 * @return TTheme the stylesheet theme used for the page. Defaults to null.
+	 * @return ?TTheme the stylesheet theme used for the page. Defaults to null.
 	 */
 	public function getStyleSheetTheme()
 	{
@@ -678,8 +714,12 @@ class TPage extends TTemplateControl
 	 * This method is invoked right after {@see onPreRender OnPreRender} stage.
 	 * You may override this method to provide additional preparation for page rendering
 	 * that should be done after {@see onPreRender OnPreRender}.
+	 * The parent implementation registers the stylesheet and javascript files of
+	 * the {@see setTheme Theme} and the {@see setStyleSheetTheme StyleSheetTheme}
+	 * with the client script manager.
 	 * Remember to call the parent implementation to ensure OnPreRenderComplete event is raised.
 	 * @param mixed $param event parameter
+	 * @throws TConfigurationException if a THead is required by the registered client scripts and the page has none.
 	 */
 	public function onPreRenderComplete($param)
 	{
@@ -714,6 +754,7 @@ class TPage extends TTemplateControl
 	 * The media type is determined according to the following file name pattern:
 	 *        xxx.media-type.extension
 	 * For example, 'mystyle.print.css' means its media type is 'print'.
+	 * A theme overrides the outcome by handling the `dyCssMediaType` event.
 	 * @param string $url CSS URL
 	 * @param object $theme the theme being applied
 	 * @return string media type of the CSS file
@@ -804,7 +845,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * Saves page state from persistent storage.
+	 * Saves page state to persistent storage.
 	 */
 	protected function savePageState()
 	{
@@ -827,7 +868,7 @@ class TPage extends TTemplateControl
 	 * This method needs to be invoked if the control to load post data
 	 * may not have a post variable in some cases. For example, a checkbox,
 	 * if not checked, will not have a post value.
-	 * @param \Prado\Web\UI\TControl $control control registered for loading post data
+	 * @param \Prado\Web\UI\TControl|string $control control, or the unique ID of the control, registered for loading post data
 	 */
 	public function registerRequiresPostData($control)
 	{
@@ -885,7 +926,10 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Processes post data.
-	 * @param TMap $postData post data to be processed
+	 * Controls implementing {@see \Prado\Web\UI\IPostBackDataHandler} are given
+	 * their post data and are collected for {@see raiseChangedEvents()}. Data of
+	 * unknown controls is kept for the second invocation, after {@see onLoad OnLoad}.
+	 * @param \Prado\Web\THttpRequest|TMap $postData post data to be processed
 	 * @param bool $beforeLoad whether this method is invoked before {@see onLoad OnLoad}.
 	 */
 	protected function processPostData($postData, $beforeLoad)
@@ -947,7 +991,8 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * Raises PostBack event.
+	 * Raises PostBack event on the control registered as the postback event target.
+	 * When no control is registered, the page performs validation instead.
 	 */
 	protected function raisePostBackEvent()
 	{
@@ -968,6 +1013,7 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Ensures the control is rendered within a form.
+	 * The check is skipped during a callback request, where the form is not rendered.
 	 * @param \Prado\Web\UI\TControl $control the control to be rendered
 	 * @throws TConfigurationException if the control is outside of the form
 	 */
@@ -980,7 +1026,8 @@ class TPage extends TTemplateControl
 
 	/**
 	 * @internal This method is invoked by TForm at the beginning of its rendering
-	 * @param mixed $writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
+	 * @throws TConfigurationException if more than one form is rendered on the page.
 	 */
 	public function beginFormRender($writer)
 	{
@@ -993,8 +1040,8 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @internal This method is invoked by TForm  at the end of its rendering
-	 * @param mixed $writer
+	 * @internal This method is invoked by TForm at the end of its rendering
+	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
 	 */
 	public function endFormRender($writer)
 	{
@@ -1037,7 +1084,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @return THead page head, null if not available
+	 * @return ?THead page head, null if not available
 	 */
 	public function getHead()
 	{
@@ -1108,7 +1155,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @return string the state postback from client side
+	 * @return ?string the state postback from client side, null if not present
 	 */
 	public function getRequestClientState()
 	{
@@ -1132,6 +1179,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
+	 * @throws TInvalidDataTypeException if the persister class does not implement IPageStatePersister.
 	 * @return IPageStatePersister page state persister
 	 */
 	public function getStatePersister()
@@ -1260,7 +1308,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * Flushes output
+	 * Flushes the content rendered so far to the response.
 	 */
 	public function flushWriter()
 	{
