@@ -16,8 +16,14 @@ use Psr\Http\Message\StreamInterface;
  * TStreamHelper class.
  *
  * Static utilities over a PSR-7 {@see StreamInterface}, for operations the interface itself
- * does not provide: copying one stream into another, hashing a stream's contents, and reading
- * a single line.  They work on any StreamInterface, not just {@see \Prado\IO\TStream}.
+ * does not provide: copying a stream into a string or another stream, hashing a stream's
+ * contents, and reading a single line.  They work on any StreamInterface, not just
+ * {@see \Prado\IO\TStream}.
+ *
+ * The copies and the hash move {@see CHUNK_SIZE} bytes per pass, so a body larger than
+ * memory streams through without materializing.  Mapping a file name or extension to its
+ * media type is {@see \Prado\Web\TMediaType::mimeTypeFromFilename()}, with the media
+ * types themselves.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
@@ -28,11 +34,36 @@ class TStreamHelper
 	public const CHUNK_SIZE = 8192;
 
 	/**
+	 * Reads a stream from its current position into a string, optionally size-bounded.
+	 * @param StreamInterface $stream The stream to read.
+	 * @param int $maxLength The maximum number of bytes to read, or -1 for all remaining. Default -1.
+	 * @return string The bytes read.
+	 */
+	public static function copyToString(StreamInterface $stream, int $maxLength = -1): string
+	{
+		$buffer = '';
+		while (!$stream->eof()) {
+			$want = $maxLength === -1 ? static::CHUNK_SIZE : min(static::CHUNK_SIZE, $maxLength - strlen($buffer));
+			if ($want <= 0) {
+				break;
+			}
+			$chunk = $stream->read($want);
+			if ($chunk === '') {
+				break;
+			}
+			$buffer .= $chunk;
+		}
+		return $buffer;
+	}
+
+	/**
 	 * Copies bytes from one stream to another, reading from the source's current position and
-	 * writing at the destination's current position.
+	 * writing at the destination's current position.  Each chunk is written completely,
+	 * looping over short writes, so the destination never receives a torn copy.
 	 * @param StreamInterface $source The stream to read from.
 	 * @param StreamInterface $dest The stream to write to.
 	 * @param int $maxLength The maximum number of bytes to copy, or -1 for all remaining. Default -1.
+	 * @throws \RuntimeException When the destination stops accepting bytes mid-copy.
 	 * @return int The number of bytes copied.
 	 */
 	public static function copyToStream(StreamInterface $source, StreamInterface $dest, int $maxLength = -1): int
@@ -47,7 +78,16 @@ class TStreamHelper
 			if ($chunk === '') {
 				break;
 			}
-			$copied += $dest->write($chunk);
+			$offset = 0;
+			$length = strlen($chunk);
+			while ($offset < $length) {
+				$written = $dest->write($offset === 0 ? $chunk : substr($chunk, $offset));
+				if ($written <= 0) {
+					throw new \RuntimeException('copyToStream destination stopped accepting bytes at ' . ($copied + $offset));
+				}
+				$offset += $written;
+			}
+			$copied += $length;
 		}
 		return $copied;
 	}

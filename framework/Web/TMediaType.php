@@ -58,7 +58,8 @@ use Prado\Web\HttpHeaders\THeaderParametersTrait;
  *
  * *Application:* {@see JSON}, {@see JSON_LD}, {@see XML}, {@see XHTML},
  * {@see FORM}, {@see OCTET_STREAM}, {@see PDF}, {@see ZIP},
- * {@see GZIP}, {@see TAR}, {@see BZIP2}, {@see XZ}, {@see RTF}, {@see WASM}
+ * {@see GZIP}, {@see TAR}, {@see BZIP2}, {@see XZ}, {@see SEVEN_ZIP},
+ * {@see RAR}, {@see ZSTD}, {@see RTF}, {@see WASM}, {@see EPUB}
  *
  * *Multipart:* {@see MULTIPART}
  *
@@ -70,17 +71,27 @@ use Prado\Web\HttpHeaders\THeaderParametersTrait;
  * *CSP / Reporting API:* {@see CSP_REPORT}, {@see REPORTS_JSON}
  *
  * *Image:* {@see PNG}, {@see JPEG}, {@see GIF}, {@see WEBP}, {@see AVIF},
- * {@see SVG}, {@see ICON}, {@see BMP}, {@see TIFF}
+ * {@see SVG}, {@see ICON}, {@see BMP}, {@see TIFF}, {@see APNG}
  *
  * *Audio:* {@see AUDIO_MPEG}, {@see AUDIO_OGG}, {@see AUDIO_WAV},
- * {@see AUDIO_WEBM}, {@see AUDIO_AAC}
+ * {@see AUDIO_WEBM}, {@see AUDIO_AAC}, {@see AUDIO_FLAC}
  *
- * *Video:* {@see VIDEO_MP4}, {@see VIDEO_WEBM}, {@see VIDEO_OGG}
+ * *Video:* {@see VIDEO_MP4}, {@see VIDEO_WEBM}, {@see VIDEO_OGG},
+ * {@see VIDEO_MPEG}, {@see VIDEO_QUICKTIME}, {@see VIDEO_AVI}, {@see VIDEO_MATROSKA}
  *
- * *Font:* {@see WOFF}, {@see WOFF2}, {@see TTF}, {@see OTF}
+ * *Font:* {@see WOFF}, {@see WOFF2}, {@see TTF}, {@see OTF}, {@see EOT}
  *
  * *Defaults:* {@see DEFAULT_TYPE} (`'text'`), {@see DEFAULT_SUBTYPE} (`'html'`) —
  * override in a subclass to change the no-argument default.
+ *
+ * **File extension lookup.** {@see mimeTypeFromFilename()} and
+ * {@see mimeTypeFromExtension()} map a file name or extension to its media type
+ * string through {@see EXTENSION_MIME_TYPES}:
+ *
+ * ```php
+ * TMediaType::mimeTypeFromFilename('report.pdf');   // 'application/pdf'
+ * new TMediaType(TMediaType::mimeTypeFromExtension('json') ?? TMediaType::OCTET_STREAM);
+ * ```
  *
  * **ArrayAccess.** Parameters are also accessible via array syntax via
  * {@see THeaderParametersTrait}, making `TMediaType` a transparent pipe to
@@ -174,6 +185,15 @@ class TMediaType implements \ArrayAccess
 	/** `application/x-xz` — XZ/LZMA-compressed data (`.xz`, `.tar.xz`, `.txz`). */
 	public const XZ = 'application/x-xz';
 
+	/** `application/x-7z-compressed` — 7-Zip archive (`.7z`). */
+	public const SEVEN_ZIP = 'application/x-7z-compressed';
+
+	/** `application/vnd.rar` — RAR archive (`.rar`). */
+	public const RAR = 'application/vnd.rar';
+
+	/** `application/zstd` — Zstandard-compressed data (`.zst`, `.tar.zst`). */
+	public const ZSTD = 'application/zstd';
+
 	/** `application/ld+json` — JSON-LD structured data. */
 	public const JSON_LD = 'application/ld+json';
 
@@ -182,6 +202,9 @@ class TMediaType implements \ArrayAccess
 
 	/** `application/rtf` — Rich Text Format document. */
 	public const RTF = 'application/rtf';
+
+	/** `application/epub+zip` — EPUB electronic publication (`.epub`). */
+	public const EPUB = 'application/epub+zip';
 
 	// ---- Multipart ----
 
@@ -271,6 +294,9 @@ class TMediaType implements \ArrayAccess
 	/** `image/tiff` — TIFF image. */
 	public const TIFF = 'image/tiff';
 
+	/** `image/apng` — Animated Portable Network Graphics (`.apng`). */
+	public const APNG = 'image/apng';
+
 	// ---- Audio ----
 
 	/** `audio/mpeg` — MP3 and other MPEG audio. */
@@ -288,6 +314,9 @@ class TMediaType implements \ArrayAccess
 	/** `audio/aac` — AAC audio. */
 	public const AUDIO_AAC = 'audio/aac';
 
+	/** `audio/flac` — Free Lossless Audio Codec (`.flac`). */
+	public const AUDIO_FLAC = 'audio/flac';
+
 	// ---- Video ----
 
 	/** `video/mp4` — MP4 video. */
@@ -298,6 +327,18 @@ class TMediaType implements \ArrayAccess
 
 	/** `video/ogg` — Ogg video. */
 	public const VIDEO_OGG = 'video/ogg';
+
+	/** `video/mpeg` — MPEG-1/2 video (`.mpeg`, `.mpg`). */
+	public const VIDEO_MPEG = 'video/mpeg';
+
+	/** `video/quicktime` — QuickTime video (`.mov`). */
+	public const VIDEO_QUICKTIME = 'video/quicktime';
+
+	/** `video/x-msvideo` — Audio Video Interleave (`.avi`). */
+	public const VIDEO_AVI = 'video/x-msvideo';
+
+	/** `video/x-matroska` — Matroska multimedia container (`.mkv`). */
+	public const VIDEO_MATROSKA = 'video/x-matroska';
 
 	// ---- Font ----
 
@@ -312,6 +353,9 @@ class TMediaType implements \ArrayAccess
 
 	/** `font/otf` — OpenType font. */
 	public const OTF = 'font/otf';
+
+	/** `application/vnd.ms-fontobject` — Embedded OpenType font (`.eot`). */
+	public const EOT = 'application/vnd.ms-fontobject';
 
 	// ---- Defaults ----
 
@@ -328,6 +372,77 @@ class TMediaType implements \ArrayAccess
 	 * but must also supply a matching {@see DEFAULT_TYPE}.
 	 */
 	public const DEFAULT_SUBTYPE = 'html';
+
+	/**
+	 * The lowercased file extension to media type map, used by
+	 * {@see mimeTypeFromExtension()} and {@see mimeTypeFromFilename()}. Entries reference
+	 * the named constants above where one exists, so each media type string is defined once.
+	 * @var array<string, string>
+	 */
+	protected const EXTENSION_MIME_TYPES = [
+		'7z' => self::SEVEN_ZIP,
+		'aac' => self::AUDIO_AAC,
+		'apng' => self::APNG,
+		'avi' => self::VIDEO_AVI,
+		'avif' => self::AVIF,
+		'bmp' => self::BMP,
+		'bz2' => self::BZIP2,
+		'css' => self::CSS,
+		'csv' => self::CSV,
+		'doc' => self::DOC,
+		'docx' => self::DOCX,
+		'eot' => self::EOT,
+		'epub' => self::EPUB,
+		'flac' => self::AUDIO_FLAC,
+		'gif' => self::GIF,
+		'gz' => self::GZIP,
+		'htm' => self::HTML,
+		'html' => self::HTML,
+		'ico' => self::ICON,
+		'ics' => self::CALENDAR,
+		'jpeg' => self::JPEG,
+		'jpg' => self::JPEG,
+		'js' => self::JAVASCRIPT,
+		'json' => self::JSON,
+		'jsonld' => self::JSON_LD,
+		'md' => self::MARKDOWN,
+		'mjs' => self::JAVASCRIPT,
+		'mkv' => self::VIDEO_MATROSKA,
+		'mov' => self::VIDEO_QUICKTIME,
+		'mp3' => self::AUDIO_MPEG,
+		'mp4' => self::VIDEO_MP4,
+		'mpeg' => self::VIDEO_MPEG,
+		'oga' => self::AUDIO_OGG,
+		'ogg' => self::AUDIO_OGG,
+		'ogv' => self::VIDEO_OGG,
+		'otf' => self::OTF,
+		'pdf' => self::PDF,
+		'png' => self::PNG,
+		'ppt' => self::PPT,
+		'pptx' => self::PPTX,
+		'rar' => self::RAR,
+		'rtf' => self::RTF,
+		'svg' => self::SVG,
+		'tar' => self::TAR,
+		'tif' => self::TIFF,
+		'tiff' => self::TIFF,
+		'ttf' => self::TTF,
+		'txt' => self::PLAIN,
+		'wasm' => self::WASM,
+		'wav' => self::AUDIO_WAV,
+		'weba' => self::AUDIO_WEBM,
+		'webm' => self::VIDEO_WEBM,
+		'webp' => self::WEBP,
+		'woff' => self::WOFF,
+		'woff2' => self::WOFF2,
+		'xhtml' => self::XHTML,
+		'xls' => self::XLS,
+		'xlsx' => self::XLSX,
+		'xml' => self::XML,
+		'xz' => self::XZ,
+		'zip' => self::ZIP,
+		'zst' => self::ZSTD,
+	];
 
 	// =========================================================================
 	// Backing fields
@@ -378,6 +493,30 @@ class TMediaType implements \ArrayAccess
 		} else {
 			$this->setMimeType($mediaType);
 		}
+	}
+
+	// =========================================================================
+	// File extension lookup
+	// =========================================================================
+
+	/**
+	 * Maps a file name to its media type string by extension.
+	 * @param string $filename the file name or path.
+	 * @return ?string the media type string, or `null` when the extension is unknown.
+	 */
+	public static function mimeTypeFromFilename(string $filename): ?string
+	{
+		return static::mimeTypeFromExtension(pathinfo($filename, PATHINFO_EXTENSION));
+	}
+
+	/**
+	 * Maps a file extension to its media type string via {@see EXTENSION_MIME_TYPES}.
+	 * @param string $extension the extension, with or without a leading dot, any case.
+	 * @return ?string the media type string, or `null` when the extension is unknown.
+	 */
+	public static function mimeTypeFromExtension(string $extension): ?string
+	{
+		return static::EXTENSION_MIME_TYPES[strtolower(ltrim($extension, '.'))] ?? null;
 	}
 
 	// =========================================================================

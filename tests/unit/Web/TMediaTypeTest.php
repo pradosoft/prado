@@ -366,7 +366,7 @@ class TMediaTypeTest extends PHPUnit\Framework\TestCase
 	{
 		// A subclass that overrides both DEFAULT_TYPE and DEFAULT_SUBTYPE must have
 		// its constants picked up via static:: in the constructor.
-		$sub = new class extends TMediaType {
+		$sub = new class () extends TMediaType {
 			public const DEFAULT_TYPE = 'application';
 			public const DEFAULT_SUBTYPE = 'json';
 		};
@@ -378,7 +378,7 @@ class TMediaTypeTest extends PHPUnit\Framework\TestCase
 	public function testSubclassDefaultTypeOverrideAlone(): void
 	{
 		// Only DEFAULT_TYPE overridden — DEFAULT_SUBTYPE falls back to the base value.
-		$sub = new class extends TMediaType {
+		$sub = new class () extends TMediaType {
 			public const DEFAULT_TYPE = 'image';
 		};
 		$this->assertSame('image', $sub->getType());
@@ -388,7 +388,7 @@ class TMediaTypeTest extends PHPUnit\Framework\TestCase
 	public function testSubclassExplicitArgOverridesDefaults(): void
 	{
 		// When an explicit media type is passed, it must win over the subclass defaults.
-		$sub = new class('text/plain') extends TMediaType {
+		$sub = new class ('text/plain') extends TMediaType {
 			public const DEFAULT_TYPE = 'application';
 			public const DEFAULT_SUBTYPE = 'json';
 		};
@@ -398,7 +398,7 @@ class TMediaTypeTest extends PHPUnit\Framework\TestCase
 
 	public function testSubclassNoArgConstructorHasNoParameters(): void
 	{
-		$sub = new class extends TMediaType {
+		$sub = new class () extends TMediaType {
 			public const DEFAULT_TYPE = 'application';
 			public const DEFAULT_SUBTYPE = 'xml';
 		};
@@ -1438,5 +1438,91 @@ class TMediaTypeTest extends PHPUnit\Framework\TestCase
 		$mt = new TMediaType('text/html');
 		$mt['charset'] = 42;
 		$this->assertSame('42', $mt->getCharset());
+	}
+
+	// -----------------------------------------------------------------------
+	// File extension lookup
+	// -----------------------------------------------------------------------
+
+	public function testMimeTypeFromExtension(): void
+	{
+		$this->assertSame(TMediaType::PDF, TMediaType::mimeTypeFromExtension('pdf'));
+		$this->assertSame(TMediaType::JPEG, TMediaType::mimeTypeFromExtension('.JPG'), 'A leading dot and any case are accepted.');
+		$this->assertSame(TMediaType::GZIP, TMediaType::mimeTypeFromExtension('gz'));
+		$this->assertNull(TMediaType::mimeTypeFromExtension('nope'));
+		$this->assertNull(TMediaType::mimeTypeFromExtension(''));
+	}
+
+	public function testMimeTypeFromFilename(): void
+	{
+		$this->assertSame(TMediaType::HTML, TMediaType::mimeTypeFromFilename('/var/www/index.html'));
+		$this->assertSame(TMediaType::ZIP, TMediaType::mimeTypeFromFilename('archive.tar.zip'), 'The last extension decides.');
+		$this->assertNull(TMediaType::mimeTypeFromFilename('README'));
+	}
+
+	public function testExtensionLookupConstructsAMediaType(): void
+	{
+		$mt = new TMediaType(TMediaType::mimeTypeFromFilename('data.json'));
+		$this->assertSame('application', $mt->getType());
+		$this->assertSame('json', $mt->getSubtype());
+	}
+
+	// -----------------------------------------------------------------------
+	// Named constants — extension-lookup additions
+	// -----------------------------------------------------------------------
+
+	public function testConstantSevenZip(): void
+	{
+		$this->assertSame('application/x-7z-compressed', TMediaType::SEVEN_ZIP);
+	}
+
+	public function testConstantRar(): void
+	{
+		$this->assertSame('application/vnd.rar', TMediaType::RAR);
+	}
+
+	public function testConstantZstd(): void
+	{
+		$this->assertSame('application/zstd', TMediaType::ZSTD);
+	}
+
+	public function testConstantEpub(): void
+	{
+		$this->assertSame('application/epub+zip', TMediaType::EPUB);
+	}
+
+	public function testConstantApng(): void
+	{
+		$this->assertSame('image/apng', TMediaType::APNG);
+	}
+
+	public function testConstantAudioFlac(): void
+	{
+		$this->assertSame('audio/flac', TMediaType::AUDIO_FLAC);
+	}
+
+	public function testConstantVideoMpeg(): void
+	{
+		$this->assertSame('video/mpeg', TMediaType::VIDEO_MPEG);
+	}
+
+	public function testConstantVideoQuicktime(): void
+	{
+		$this->assertSame('video/quicktime', TMediaType::VIDEO_QUICKTIME);
+	}
+
+	public function testConstantVideoAvi(): void
+	{
+		$this->assertSame('video/x-msvideo', TMediaType::VIDEO_AVI);
+	}
+
+	public function testConstantVideoMatroska(): void
+	{
+		$this->assertSame('video/x-matroska', TMediaType::VIDEO_MATROSKA);
+	}
+
+	public function testConstantEot(): void
+	{
+		$this->assertSame('application/vnd.ms-fontobject', TMediaType::EOT);
 	}
 }
