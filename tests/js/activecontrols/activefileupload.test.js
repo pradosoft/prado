@@ -354,6 +354,79 @@ describe('TActiveFileUpload fileChanged', () => {
 	});
 });
 
+// ─── fileChanged validation gate ─────────────────────────────────────────────
+
+describe('TActiveFileUpload validation gate', () => {
+	let dom;
+
+	beforeEach(() => {
+		clearRegistry(); clearControls();
+		dom = buildDOM();
+	});
+
+	afterEach(() => {
+		restoreMocks();
+		destroyDOM(dom);
+		delete global.Prado.Validation;
+	});
+
+	function selectFile() {
+		Object.defineProperty(dom.fileInput, 'value', {
+			get: () => 'file.txt',
+			configurable: true,
+		});
+	}
+
+	function stubValidation(result) {
+		const validateControl = vi.fn().mockReturnValue(result);
+		global.Prado.Validation = { managers: { [IDS.formID]: { validateControl } } };
+		return validateControl;
+	}
+
+	it('skips the upload when a validator of the input fails', () => {
+		const validateControl = stubValidation(false);
+		const ctrl = new TActiveFileUpload({ ...IDS, causesValidation: true });
+		selectFile();
+		ctrl.fileChanged();
+		expect(validateControl).toHaveBeenCalledWith(IDS.inputID);
+		expect(dom.form.submit).not.toHaveBeenCalled();
+		expect(dom.flag.value).toBe('');
+	});
+
+	it('uploads when the validators of the input pass', () => {
+		const validateControl = stubValidation(true);
+		const ctrl = new TActiveFileUpload({ ...IDS, causesValidation: true });
+		selectFile();
+		ctrl.fileChanged();
+		expect(validateControl).toHaveBeenCalledWith(IDS.inputID);
+		expect(dom.form.submit).toHaveBeenCalled();
+	});
+
+	it('uploads without consulting validation when causesValidation is false', () => {
+		const validateControl = stubValidation(false);
+		const ctrl = new TActiveFileUpload({ ...IDS, causesValidation: false });
+		selectFile();
+		ctrl.fileChanged();
+		expect(validateControl).not.toHaveBeenCalled();
+		expect(dom.form.submit).toHaveBeenCalled();
+	});
+
+	it('uploads when the validation script is not loaded', () => {
+		const ctrl = new TActiveFileUpload({ ...IDS, causesValidation: true });
+		selectFile();
+		ctrl.fileChanged();
+		expect(dom.form.submit).toHaveBeenCalled();
+	});
+
+	it('uploads when the form has no validation manager', () => {
+		global.Prado.Validation = { managers: {} };
+		const ctrl = new TActiveFileUpload({ ...IDS, causesValidation: true });
+		selectFile();
+		ctrl.fileChanged();
+		expect(dom.form.submit).toHaveBeenCalled();
+	});
+});
+
 // ─── finishUpload ─────────────────────────────────────────────────────────────
 
 describe('TActiveFileUpload finishUpload', () => {
