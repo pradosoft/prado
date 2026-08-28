@@ -42,6 +42,8 @@ AJAX-enabled controls triggering server-side processing via XMLHttpRequest callb
 
 - **`TInPlaceDropDownList`** — Click-to-edit label over a hidden select; `OnLoadingItems` event.
 
+- **`TInPlaceListBox`** — Click-to-edit label over a hidden multi-select; joins selected texts with `SelectionSeparator`.
+
 - **`TActiveCustomValidator`** — Server-side validation via callback.
 
 - **`TTimeTriggeredCallback`** / **`TValueTriggeredCallback`** / **`TEventTriggeredCallback`** — Timer/poll/event-based callbacks.

@@ -24,4 +24,4 @@ Click-to-edit drop down list that displays as a label showing the selected item 
 
 ## See Also
 
-- [TInPlaceTextBox](./TInPlaceTextBox.md), [TActiveDropDownList](./TActiveDropDownList.md)
+- [TInPlaceTextBox](./TInPlaceTextBox.md), [TInPlaceListBox](./TInPlaceListBox.md), [TActiveDropDownList](./TActiveDropDownList.md)

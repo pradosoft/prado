@@ -439,12 +439,31 @@ describe('TInPlaceTextBox onTextChanged', () => {
 		expect(dispatchMock).toHaveBeenCalled();
 	});
 
-	it('sets isSaving to true and disables editField when dispatch returns true', () => {
-		mockCallbackRequest(true);
+	it('sets isSaving when dispatch does not return false', () => {
+		// dispatch() returns undefined on a dispatched request; the guard treats
+		// non-false as dispatched. The field is not disabled during the save
+		// (the request serializes the form lazily from the ajax queue).
+		const { instance } = mockCallbackRequest();
+		instance.dispatch.mockReturnValue(undefined);
 		const ctrl = new TInPlaceTextBox(makeOptions({ AutoPostBack: true }));
 		ctrl.onTextChanged('old');
 		expect(ctrl.isSaving).toBe(true);
-		expect(ctrl.editField.disabled).toBe(true);
+		expect(ctrl.editField.disabled).toBe(false);
+	});
+
+	it('does not dispatch a second save on re-blur while the first is in flight', () => {
+		// The field is not disabled during a save, so a re-blur must be blocked
+		// by the isSaving guard (mirroring the dropdown/listbox).
+		const { instance, dispatchMock } = mockCallbackRequest();
+		instance.dispatch.mockReturnValue(undefined);
+		const ctrl = new TInPlaceTextBox(makeOptions({ AutoPostBack: true }));
+		ctrl.enterEditMode(null);
+		ctrl.editField.value = 'first change';
+		ctrl.onTextBoxBlur({});          // save 1 dispatched, isSaving latches
+		expect(ctrl.isSaving).toBe(true);
+		ctrl.editField.value = 'second change';
+		ctrl.onTextBoxBlur({});          // in flight -> must not dispatch again
+		expect(dispatchMock).toHaveBeenCalledTimes(1);
 	});
 
 	it('does NOT set isSaving when dispatch returns false', () => {

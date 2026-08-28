@@ -149,10 +149,10 @@ describe('TInPlaceDropDownList edit mode', () => {
 		expect(select.style.display).not.toBe('none');
 	});
 
-	it('enterEditMode records the original value for revert', () => {
+	it('enterEditMode records the original selection for revert', () => {
 		const ctrl = new TInPlaceDropDownList(makeOptions());
 		ctrl.enterEditMode(null);
-		expect(ctrl.originalValue).toBe('0');
+		expect(ctrl.originalSelection).toBe('0');
 	});
 
 	it('enterEditMode is a no-op when readOnly', () => {
@@ -256,14 +256,29 @@ describe('TInPlaceDropDownList selection change', () => {
 		expect(dispatchMock).toHaveBeenCalled();
 	});
 
-	it('sets isSaving and disables the select while dispatching', () => {
+	it('sets isSaving while dispatching (the select is not disabled)', () => {
 		mockCallbackRequest(true);
 		const ctrl = new TInPlaceDropDownList(makeOptions());
 		ctrl.enterEditMode(null);
 		select.selectedIndex = 2;
 		ctrl.onSelectionChanged({});
 		expect(ctrl.isSaving).toBe(true);
-		expect(select.disabled).toBe(true);
+		// Not disabled: a queued request serializes the form after this returns.
+		expect(select.disabled).toBe(false);
+	});
+
+	it('sets isSaving when dispatch returns undefined (the real success value)', () => {
+		// Prado.CallbackRequest.dispatch() returns undefined on a dispatched
+		// request and false only on validation failure; the guard must treat
+		// undefined as dispatched.
+		const { instance } = mockCallbackRequest();
+		instance.dispatch.mockReturnValue(undefined);
+		const ctrl = new TInPlaceDropDownList(makeOptions());
+		ctrl.enterEditMode(null);
+		select.selectedIndex = 2;
+		ctrl.onSelectionChanged({});
+		expect(ctrl.isSaving).toBe(true);
+		expect(select.disabled).toBe(false);
 	});
 
 	it('does not dispatch when AutoPostBack is false', () => {
@@ -433,12 +448,12 @@ describe('TInPlaceDropDownList value changed handlers', () => {
 		expect(label.innerHTML).toBe('<b>Server</b>');
 	});
 
-	it('onValueChangedSuccess resets originalValue to the current selection', () => {
+	it('onValueChangedSuccess resets originalSelection to the current selection', () => {
 		const ctrl = new TInPlaceDropDownList(makeOptions());
 		ctrl.enterEditMode(null);
 		select.selectedIndex = 2;
 		ctrl.onValueChangedSuccess({}, null);
-		expect(ctrl.originalValue).toBe('2');
+		expect(ctrl.originalSelection).toBe('2');
 	});
 
 	it('onValueChangedSuccess hides the select when AutoHide is true', () => {
@@ -502,7 +517,7 @@ describe('TInPlaceDropDownList loadItems', () => {
 		expect(dispatchMock).not.toHaveBeenCalled();
 	});
 
-	it('onLoadItemsSuccess re-enables editing and refreshes originalValue', () => {
+	it('onLoadItemsSuccess re-enables editing and refreshes originalSelection', () => {
 		const ctrl = new TInPlaceDropDownList(makeOptions());
 		ctrl.enterEditMode(null);
 		select.disabled = true;
@@ -510,7 +525,7 @@ describe('TInPlaceDropDownList loadItems', () => {
 		ctrl.onLoadItemsSuccess({}, null);
 		expect(ctrl.isEditing).toBe(true);
 		expect(select.disabled).toBe(false);
-		expect(ctrl.originalValue).toBe('1');
+		expect(ctrl.originalSelection).toBe('1');
 	});
 
 	it('onLoadItemsFailure resets state and shows the label', () => {
@@ -638,7 +653,7 @@ describe('TInPlaceControlBase shared registry and DisplayEditor', () => {
 		expect(label.style.display).toBe('none');
 	});
 
-	it('DisplayEditor records originalValue so a later change posts correctly', () => {
+	it('DisplayEditor records originalSelection so a later change posts correctly', () => {
 		const { setCallbackParameterMock } = mockCallbackRequest();
 		const ctrl = new TInPlaceDropDownList(makeOptions({ DisplayEditor: true }));
 		select.selectedIndex = 2;

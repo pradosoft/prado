@@ -188,10 +188,15 @@ Prado.WebUI.TInPlaceControlBase = Prado.Class(Prado.WebUI.Control,
 		request.setCallbackParameter(parameter);
 		request.options.onSuccess = (sender, param) => this.onChangeSuccess(sender, param);
 		request.options.onFailure = (sender, param) => this.onChangeFailure(sender, param);
-		if(request.dispatch())
+		// CallbackRequest.dispatch() returns false only when validation blocks
+		// the request; on a dispatched request it returns undefined. Treat any
+		// non-false result as dispatched so the save is marked in flight. The
+		// field is not disabled here: the request serializes the form lazily
+		// from the ajax queue, so disabling now would drop the field's value
+		// from a POST that a queued request sends after this returns.
+		if(request.dispatch() !== false)
 		{
 			this.isSaving = true;
-			this.editField.disabled = true;
 		}
 	},
 
@@ -309,6 +314,27 @@ Object.assign(Prado.WebUI.TInPlaceControlBase,
 });
 
 
+/**
+ * Builds the backward compatible static block for an in-place control class:
+ * the aliased view of the shared registry plus delegators to the base class
+ * methods. Subclasses assign it and add only class-specific statics.
+ * @param {String} alias legacy registry property name for the class
+ * @return {Object} the static members to assign onto the class
+ */
+Prado.WebUI.TInPlaceControlBase.aliasStatics = function(alias) {
+	const base = Prado.WebUI.TInPlaceControlBase;
+	const statics = {
+		register(obj) { base.register(obj); },
+		setDisplayEditor(id, value) { base.setDisplayEditor(id, value); },
+		setReadOnly(id, value) { base.setReadOnly(id, value); },
+		setLabelText(id, value) { base.setLabelText(id, value); },
+		setEmptyDisplayText(id, value) { base.setEmptyDisplayText(id, value); }
+	};
+	statics[alias] = base.instances;
+	return statics;
+};
+
+
 Prado.WebUI.TInPlaceTextBox = Prado.Class(Prado.WebUI.TInPlaceControlBase,
 {
 	getDefaultOptions() {
@@ -416,7 +442,7 @@ Prado.WebUI.TInPlaceTextBox = Prado.Class(Prado.WebUI.TInPlaceControlBase,
 		const text = this.getText();
 		if(this.options.AutoPostBack && text != this.editField.value)
 		{
-			if(this.isEditing)
+			if(this.isEditing && !this.isSaving)
 				this.onTextChanged(text);
 		}
 		else
@@ -501,7 +527,7 @@ Prado.WebUI.TInPlaceTextBox = Prado.Class(Prado.WebUI.TInPlaceControlBase,
 });
 
 
-Object.assign(Prado.WebUI.TInPlaceTextBox,
+Object.assign(Prado.WebUI.TInPlaceTextBox, Prado.WebUI.TInPlaceControlBase.aliasStatics('textboxes'),
 {
 	//class methods
 
@@ -524,31 +550,9 @@ Object.assign(Prado.WebUI.TInPlaceTextBox,
 		Week: 'week'
 	},
 
-	// Backward compatible view of the shared registry.
-	textboxes : Prado.WebUI.TInPlaceControlBase.instances,
-
-	register(obj) {
-		Prado.WebUI.TInPlaceControlBase.register(obj);
-	},
-
-	setDisplayEditor(id, value) {
-		Prado.WebUI.TInPlaceControlBase.setDisplayEditor(id, value);
-	},
-
+	// Backward compatible alias of setDisplayEditor.
 	setDisplayTextBox(id, value) {
 		Prado.WebUI.TInPlaceControlBase.setDisplayEditor(id, value);
-	},
-
-	setReadOnly(id, value) {
-		Prado.WebUI.TInPlaceControlBase.setReadOnly(id, value);
-	},
-
-	setLabelText(id, value) {
-		Prado.WebUI.TInPlaceControlBase.setLabelText(id, value);
-	},
-
-	setEmptyDisplayText(id, value) {
-		Prado.WebUI.TInPlaceControlBase.setEmptyDisplayText(id, value);
 	}
 });
 
@@ -576,7 +580,7 @@ Prado.WebUI.TInPlaceDropDownList = Prado.Class(Prado.WebUI.TInPlaceControlBase,
 	},
 
 	onEnterEditMode($super) {
-		this.originalValue = this.editField.value;
+		this.originalSelection = this.captureSelection();
 		$super();
 	},
 
@@ -587,7 +591,7 @@ Prado.WebUI.TInPlaceDropDownList = Prado.Class(Prado.WebUI.TInPlaceControlBase,
 
 	loadItems() {
 		this.editField.disabled = true;
-		const options = ['__InlineEditor_loadItems__', this.editField.value];
+		const options = ['__InlineEditor_loadItems__', this.getEditSelection()];
 		const request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
 		request.setCausesValidation(false);
 		request.setCallbackParameter(options);
@@ -597,12 +601,34 @@ Prado.WebUI.TInPlaceDropDownList = Prado.Class(Prado.WebUI.TInPlaceControlBase,
 	},
 
 	/**
+	 * @return {mixed} the selection sent to the OnLoadingItems server handler.
+	 */
+	getEditSelection() {
+		return this.editField.value;
+	},
+
+	/**
 	 * @return {String} text of the selected option, empty when none is selected.
 	 */
 	getSelectedText() {
 		const index = this.editField.selectedIndex;
 		const option = index >= 0 ? this.editField.options[index] : null;
 		return option ? option.text : '';
+	},
+
+	/**
+	 * @return {mixed} snapshot of the current selection, for revert and dispatch.
+	 */
+	captureSelection() {
+		return this.editField.value;
+	},
+
+	/**
+	 * Restores a selection snapshot from captureSelection().
+	 * @param {mixed} selection snapshot to restore
+	 */
+	applySelection(selection) {
+		this.editField.value = selection;
 	},
 
 	isEditorEmpty() {
@@ -639,7 +665,7 @@ Prado.WebUI.TInPlaceDropDownList = Prado.Class(Prado.WebUI.TInPlaceControlBase,
 	onKeyPressed(e) {
 		if (e.keyCode == 27) //KEY_ESC
 		{
-			this.editField.value = this.originalValue;
+			this.applySelection(this.originalSelection);
 			this.refreshLabel();
 			this.isEditing = false;
 			if(this.options.AutoHide)
@@ -656,11 +682,11 @@ Prado.WebUI.TInPlaceDropDownList = Prado.Class(Prado.WebUI.TInPlaceControlBase,
 	 * When the selection has changed, posts the selection through a callback.
 	 */
 	onValueChanged() {
-		this.dispatchChange(this.originalValue);
+		this.dispatchChange(this.originalSelection);
 	},
 
 	onAfterSave() {
-		this.originalValue = this.editField.value;
+		this.originalSelection = this.captureSelection();
 	},
 
 	onChangeSuccess(sender, parameter) {
@@ -692,7 +718,7 @@ Prado.WebUI.TInPlaceDropDownList = Prado.Class(Prado.WebUI.TInPlaceControlBase,
 	onLoadItemsSuccess(request, parameter) {
 		this.isEditing = true;
 		this.editField.disabled = false;
-		this.originalValue = this.editField.value;
+		this.originalSelection = this.captureSelection();
 		this.editField.focus();
 		if(typeof(this.options.onSuccess)=="function")
 			this.options.onSuccess(request, parameter);
@@ -709,30 +735,119 @@ Prado.WebUI.TInPlaceDropDownList = Prado.Class(Prado.WebUI.TInPlaceControlBase,
 });
 
 
-Object.assign(Prado.WebUI.TInPlaceDropDownList,
+Object.assign(Prado.WebUI.TInPlaceDropDownList, Prado.WebUI.TInPlaceControlBase.aliasStatics('dropdowns'));
+
+
+/**
+ * In-place list box. The edit element is the server-rendered select
+ * identified by options.EditorID, which may allow multiple selection. The
+ * label shows the selected option texts joined by options.SelectionSeparator.
+ * @since 4.4.0
+ */
+Prado.WebUI.TInPlaceListBox = Prado.Class(Prado.WebUI.TInPlaceDropDownList,
 {
-	//class methods
-
-	// Backward compatible view of the shared registry.
-	dropdowns : Prado.WebUI.TInPlaceControlBase.instances,
-
-	register(obj) {
-		Prado.WebUI.TInPlaceControlBase.register(obj);
+	/**
+	 * Applies fn(option, index) to each selected option and returns the results.
+	 * @param {Function} fn mapping applied to each selected option
+	 * @return {Array} the mapped results
+	 */
+	mapSelectedOptions(fn) {
+		const result = [];
+		const options = this.editField.options;
+		for(let i = 0; i < options.length; i++)
+		{
+			if(options[i].selected)
+				result.push(fn(options[i], i));
+		}
+		return result;
 	},
 
-	setDisplayEditor(id, value) {
-		Prado.WebUI.TInPlaceControlBase.setDisplayEditor(id, value);
+	/**
+	 * @return {Array} values of the selected options, sent to OnLoadingItems so
+	 *   a multiple selection is fully reported (not just the first value).
+	 */
+	getEditSelection() {
+		return this.mapSelectedOptions(option => option.value);
 	},
 
-	setReadOnly(id, value) {
-		Prado.WebUI.TInPlaceControlBase.setReadOnly(id, value);
+	/**
+	 * @return {Array} texts of the selected options, empty texts skipped to
+	 *   match the server label.
+	 */
+	getSelectedTexts() {
+		return this.mapSelectedOptions(option => option.text).filter(text => text !== '');
 	},
 
-	setLabelText(id, value) {
-		Prado.WebUI.TInPlaceControlBase.setLabelText(id, value);
+	/**
+	 * @return {String} selected option texts joined by the separator. An empty
+	 *   separator is honored, matching the server.
+	 */
+	getSelectedText() {
+		const separator = this.options.SelectionSeparator ?? ', ';
+		return this.getSelectedTexts().join(separator);
 	},
 
-	setEmptyDisplayText(id, value) {
-		Prado.WebUI.TInPlaceControlBase.setEmptyDisplayText(id, value);
+	/**
+	 * The snapshot is the set of selected indices, so restore is exact even
+	 * when option values are duplicated.
+	 * @return {Array} indices of the selected options.
+	 */
+	captureSelection() {
+		return this.mapSelectedOptions((option, index) => index);
+	},
+
+	/**
+	 * Restores a selection snapshot, selecting exactly the given indices.
+	 * @param {Array} selection indices to select
+	 */
+	applySelection(selection) {
+		const set = new Set(selection);
+		const options = this.editField.options;
+		for(let i = 0; i < options.length; i++)
+			options[i].selected = set.has(i);
+	},
+
+	/**
+	 * @return {Boolean} whether the selection differs from the edit-start snapshot.
+	 */
+	selectionChanged() {
+		const now = this.captureSelection();
+		const original = this.originalSelection || [];
+		if(now.length !== original.length)
+			return true;
+		const set = new Set(original);
+		return now.some(index => !set.has(index));
+	},
+
+	/**
+	 * Multiple selection accumulates across clicks and commits on blur, so an
+	 * individual toggle does not post and collapse the editor. A single
+	 * selection list box commits on change like the drop down list.
+	 * @param {Event} event change event
+	 */
+	onSelectionChanged($super, event) {
+		if(this.editField.multiple)
+			return;
+		$super(event);
+	},
+
+	/**
+	 * On blur a multiple selection list box commits the accumulated selection.
+	 * A commit whose dispatch does not start (validation failed, or a request
+	 * is already in flight) leaves the editor open with the selection intact,
+	 * so the user can retry; the label is not touched.
+	 * @param {Event} e blur event
+	 */
+	onDropDownBlur($super, e) {
+		if(this.editField.multiple && this.isEditing && !this.isSaving
+			&& this.options.AutoPostBack && this.selectionChanged())
+		{
+			this.onValueChanged();
+			return;
+		}
+		$super(e);
 	}
 });
+
+
+Object.assign(Prado.WebUI.TInPlaceListBox, Prado.WebUI.TInPlaceControlBase.aliasStatics('listboxes'));
