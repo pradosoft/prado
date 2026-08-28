@@ -42,11 +42,16 @@ use Prado\Web\UI\WebControls\TWebControl;
  * Since 3.1.2, you can set the {@see setReadOnly ReadOnly} property to make
  * the control not editable. This property can be also changed on callback
  *
+ * Since 4.4.0, when the text is empty the label shows
+ * {@see setEmptyDisplayText EmptyDisplayText}, keeping the label clickable.
+ *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.1
  */
 class TInPlaceTextBox extends TActiveTextBox
 {
+	use TInPlaceControlTrait;
+
 	/**
 	 * Sets the auto post back to true by default.
 	 */
@@ -57,82 +62,47 @@ class TInPlaceTextBox extends TActiveTextBox
 	}
 
 	/**
+	 * Alias of {@see setAutoHideEditor AutoHideEditor}, the name shared by the
+	 * in-place control family.
 	 * @param bool $value true to hide the textbox after losing focus.
+	 * @deprecated 4.4.0 use {@see setAutoHideEditor AutoHideEditor}
 	 */
 	public function setAutoHideTextBox($value)
 	{
-		$this->setViewState('AutoHide', TPropertyValue::ensureBoolean($value), true);
+		$this->setAutoHideEditor($value);
 	}
 
 	/**
+	 * Alias of {@see getAutoHideEditor AutoHideEditor}, the name shared by the
+	 * in-place control family.
 	 * @return bool true will hide the textbox after losing focus.
+	 * @deprecated 4.4.0 use {@see getAutoHideEditor AutoHideEditor}
 	 */
 	public function getAutoHideTextBox()
 	{
-		return $this->getViewState('AutoHide', true);
+		return $this->getAutoHideEditor();
 	}
 
 	/**
+	 * Alias of {@see setDisplayEditor DisplayEditor}, the name shared by the
+	 * in-place control family.
 	 * @param bool $value true to display the edit textbox
+	 * @deprecated 4.4.0 use {@see setDisplayEditor DisplayEditor}
 	 */
 	public function setDisplayTextBox($value)
 	{
-		$value = TPropertyValue::ensureBoolean($value);
-		$this->setViewState('DisplayTextBox', $value, false);
-		if ($this->getActiveControl()->canUpdateClientSide()) {
-			$this->callClientFunction('setDisplayTextBox', $value);
-		}
+		$this->setDisplayEditor($value);
 	}
 
 	/**
+	 * Alias of {@see getDisplayEditor DisplayEditor}, the name shared by the
+	 * in-place control family.
 	 * @return bool true to display the edit textbox
+	 * @deprecated 4.4.0 use {@see getDisplayEditor DisplayEditor}
 	 */
 	public function getDisplayTextBox()
 	{
-		return $this->getViewState('DisplayTextBox', false);
-	}
-
-	/**
-	 * Calls the client-side static method for this control class.
-	 * @param string $func static method name
-	 * @param mixed $value method parmaeter
-	 */
-	protected function callClientFunction($func, $value)
-	{
-		$client = $this->getPage()->getCallbackClient();
-		$code = $this->getClientClassName() . '.' . $func;
-		$client->callClientFunction($code, [$this, $value]);
-	}
-
-	/**
-	 * @param string $value ID of the control that can trigger to edit the textbox
-	 */
-	public function setEditTriggerControlID($value)
-	{
-		$this->setViewState('EditTriggerControlID', $value);
-	}
-
-	/**
-	 * @return string ID of the control that can trigger to edit the textbox
-	 */
-	public function getEditTriggerControlID()
-	{
-		return $this->getViewState('EditTriggerControlID');
-	}
-
-	/**
-	 * @return string edit trigger control client ID.
-	 */
-	protected function getExternalControlID()
-	{
-		$extID = $this->getEditTriggerControlID();
-		if ($extID === null) {
-			return '';
-		}
-		if (($control = $this->findControl($extID)) !== null) {
-			return $control->getClientID();
-		}
-		return $extID;
+		return $this->getDisplayEditor();
 	}
 
 	/**
@@ -148,9 +118,8 @@ class TInPlaceTextBox extends TActiveTextBox
 
 		TTextBox::setText($value);
 		if ($this->getActiveControl()->canUpdateClientSide()) {
-			$client = $this->getPage()->getCallbackClient();
-			$client->update($this->getLabelClientID(), $value);
-			$client->setValue($this, $value);
+			$this->callClientFunction('setLabelText', $value);
+			$this->getPage()->getCallbackClient()->setValue($this, $value);
 		}
 	}
 
@@ -181,24 +150,19 @@ class TInPlaceTextBox extends TActiveTextBox
 	}
 
 	/**
-	 * Renders the body content of the label.
+	 * Renders the body content of the label. An empty text renders
+	 * {@see getEmptyDisplayText EmptyDisplayText} when set.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer for rendering
 	 */
 	public function renderContents($writer)
 	{
-		if (($text = $this->getText()) === '') {
-			parent::renderContents($writer);
-		} else {
+		if (($text = $this->getText()) !== '') {
 			$writer->write($text);
+		} elseif (($emptyText = $this->getEmptyDisplayText()) !== '') {
+			$writer->write($emptyText);
+		} else {
+			parent::renderContents($writer);
 		}
-	}
-
-	/**
-	 * @return string label client ID
-	 */
-	protected function getLabelClientID()
-	{
-		return $this->getClientID() . '__label';
 	}
 
 	/**
@@ -226,9 +190,12 @@ class TInPlaceTextBox extends TActiveTextBox
 		$options = parent::getPostBackOptions();
 		$options['ID'] = $this->getLabelClientID();
 		$options['TextBoxID'] = $this->getClientID();
+		$options['EditorID'] = $this->getClientID();
 		$options['ExternalControl'] = $this->getExternalControlID();
-		$options['AutoHide'] = $this->getAutoHideTextBox() == false ? '' : true;
+		$options['AutoHide'] = $this->getAutoHideEditor() == false ? '' : true;
 		$options['AutoPostBack'] = $this->getAutoPostBack() == false ? '' : true;
+		$options['EmptyDisplayText'] = $this->getEmptyDisplayText();
+		$options['DisplayEditor'] = $this->getDisplayEditor();
 		$options['Columns'] = $this->getColumns();
 		if ($this->getTextMode() === 'MultiLine') {
 			$options['Rows'] = $this->getRows();
@@ -274,29 +241,10 @@ class TInPlaceTextBox extends TActiveTextBox
 		//calls the TWebControl to avoid rendering other attribute normally render for a textbox.
 		TWebControl::addAttributesToRender($writer);
 		$writer->addAttribute('id', $this->getLabelClientID());
+		$this->renderEmptyDisplayAttribute($writer, $this->getText() === '');
 		$this->getActiveControl()->registerCallbackClientScript(
 			$this->getClientClassName(),
 			$this->getPostBackOptions()
 		);
-	}
-
-	/**
-	 * Registers CSS and JS.
-	 * This method is invoked right before the control rendering, if the control is visible.
-	 * @param mixed $param event parameter
-	 */
-	public function onPreRender($param)
-	{
-		parent::onPreRender($param);
-		$this->registerClientScript();
-	}
-
-	/**
-	 * Registers the relevant JavaScript.
-	 */
-	protected function registerClientScript()
-	{
-		$cs = $this->getPage()->getClientScript();
-		$cs->registerPradoScript('inlineeditor');
 	}
 }

@@ -610,6 +610,8 @@ return [
 'TCallbackResponseAdapter' => 'Prado\Web\UI\ActiveControls\TCallbackResponseAdapter',
 'TCallbackResponseWriter' => 'Prado\Web\UI\ActiveControls\TCallbackResponseWriter',
 'TEventTriggeredCallback' => 'Prado\Web\UI\ActiveControls\TEventTriggeredCallback',
+'TInPlaceControlTrait' => 'Prado\Web\UI\ActiveControls\TInPlaceControlTrait',
+'TInPlaceDropDownList' => 'Prado\Web\UI\ActiveControls\TInPlaceDropDownList',
 'TInPlaceTextBox' => 'Prado\Web\UI\ActiveControls\TInPlaceTextBox',
 'TInvalidCallbackException' => 'Prado\Web\UI\ActiveControls\TInvalidCallbackException',
 'TMapCollectionDiff' => 'Prado\Web\UI\ActiveControls\TMapCollectionDiff',

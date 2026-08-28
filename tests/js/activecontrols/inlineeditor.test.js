@@ -1,64 +1,11 @@
-/**
- * Tests for inlineeditor.js — Prado.WebUI.TInPlaceTextBox
- *
- * Source:
- *   framework/Web/Javascripts/source/prado/activecontrols/inlineeditor.js
- *
- * Strategy
- * --------
- * Each test sets up a minimal DOM: a label <span> (the display element) and,
- * after construction, the hidden <input> injected by createTextBox(). Network
- * calls are prevented by replacing Prado.CallbackRequest with a vi mock.
- *
- * ESM note: only tests/js/adapters/inlineeditor.js changes on ESM conversion.
- */
+import { TInPlaceTextBox, EMPTY_ATTRIBUTE, Registry } from '../adapters/inlineeditor.js';
+import { clearRegistry, clearMap, mockCallbackRequest, restoreMocks } from '../helpers/callbackMock.js';
 
-import { TInPlaceTextBox, Registry } from '../adapters/inlineeditor.js';
+// ─── Helpers ──────────────────────────────────────────────────────────
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-/** Remove all keys from Prado.Registry. */
-function clearRegistry() {
-	for (const k of Object.keys(global.Prado.Registry)) {
-		delete global.Prado.Registry[k];
-	}
-}
-
-/** Clear TInPlaceTextBox.textboxes between tests. */
+/** Clear the shared in-place control registry between tests. */
 function clearTextboxes() {
-	for (const k of Object.keys(TInPlaceTextBox.textboxes)) {
-		delete TInPlaceTextBox.textboxes[k];
-	}
-}
-
-/**
- * Mock Prado.CallbackRequest so that no XHR is ever made.
- * Uses a real constructor function (not an arrow) so `new` works.
- */
-function mockCallbackRequest(dispatchReturnValue = true) {
-	const dispatchMock              = vi.fn().mockReturnValue(dispatchReturnValue);
-	const setCallbackParameterMock  = vi.fn();
-	const setCausesValidationMock   = vi.fn();
-	const instance = {
-		dispatch:               dispatchMock,
-		setCallbackParameter:   setCallbackParameterMock,
-		setCausesValidation:    setCausesValidationMock,
-		options:                {},
-	};
-
-	const original = global.Prado.CallbackRequest;
-	const MockCtor = vi.fn(function () { return instance; });
-	MockCtor.__original = original;
-	global.Prado.CallbackRequest = MockCtor;
-
-	return { instance, dispatchMock, setCallbackParameterMock, setCausesValidationMock };
-}
-
-function restoreMocks() {
-	vi.restoreAllMocks();
-	if (global.Prado.CallbackRequest?.__original !== undefined) {
-		global.Prado.CallbackRequest = global.Prado.CallbackRequest.__original;
-	}
+	clearMap(TInPlaceTextBox.textboxes);
 }
 
 /** Standard options for TInPlaceTextBox construction. */
@@ -67,6 +14,7 @@ function makeOptions(overrides = {}) {
 		{
 			ID:          'lbl1',
 			TextBoxID:   'tb_lbl1',
+			EditorID:    'tb_lbl1',
 			EventTarget: 'lbl1',
 			TextMode:    'SingleLine',
 			ReadOnly:    false,
@@ -464,9 +412,6 @@ describe('TInPlaceTextBox onKeyPressed', () => {
 	});
 
 	it('does NOT call preventDefault on ENTER in MultiLine mode', () => {
-		clearRegistry(); clearTextboxes();
-		({ container } = buildDOM('lbl1'));
-		// Re-build container for MultiLine (avoid double-ID)
 		const ctrl = new TInPlaceTextBox(makeOptions({ TextMode: 'MultiLine' }));
 		const evt = { keyCode: 13, preventDefault: vi.fn() };
 		ctrl.onKeyPressed(evt);
@@ -716,6 +661,94 @@ describe('TInPlaceTextBox static helpers', () => {
 
 	it('setReadOnly is a no-op for unknown IDs', () => {
 		expect(() => TInPlaceTextBox.setReadOnly('unknown_id', true)).not.toThrow();
+	});
+});
+
+// ─── EmptyDisplayText option ─────────────────────────────────────────────────────────
+
+describe('TInPlaceTextBox EmptyDisplayText', () => {
+	let container, label;
+
+	beforeEach(() => {
+		clearRegistry(); clearTextboxes();
+		({ container, label } = buildDOM('lbl1', '(none)'));
+	});
+
+	afterEach(() => { restoreMocks(); container.remove(); });
+
+	it('getText reads the marked EmptyDisplayText placeholder as an empty string', () => {
+		label.setAttribute(EMPTY_ATTRIBUTE, '1');
+		const ctrl = new TInPlaceTextBox(makeOptions({ EmptyDisplayText: '(none)' }));
+		expect(ctrl.getText()).toBe('');
+	});
+
+	it('getText reads real text equal to EmptyDisplayText as that text', () => {
+		// No marker: the server rendered a value that happens to match EmptyDisplayText.
+		const ctrl = new TInPlaceTextBox(makeOptions({ EmptyDisplayText: '(none)' }));
+		expect(ctrl.getText()).toBe('(none)');
+	});
+
+	it('starts editing with an empty editField when the label shows EmptyDisplayText', () => {
+		label.setAttribute(EMPTY_ATTRIBUTE, '1');
+		const ctrl = new TInPlaceTextBox(makeOptions({ EmptyDisplayText: '(none)' }));
+		ctrl.enterEditMode(null);
+		expect(ctrl.editField.value).toBe('');
+	});
+
+	it('restores EmptyDisplayText in the label when blurring with an empty value', () => {
+		label.setAttribute(EMPTY_ATTRIBUTE, '1');
+		const ctrl = new TInPlaceTextBox(makeOptions({ EmptyDisplayText: '(none)', AutoPostBack: false }));
+		ctrl.enterEditMode(null);
+		ctrl.onTextBoxBlur({});
+		expect(label.innerHTML).toBe('(none)');
+		expect(ctrl.isShowingEmptyDisplayText()).toBe(true);
+	});
+
+	it('does not dispatch on blur when the empty value is unchanged (AutoPostBack)', () => {
+		label.setAttribute(EMPTY_ATTRIBUTE, '1');
+		const { dispatchMock } = mockCallbackRequest();
+		const ctrl = new TInPlaceTextBox(makeOptions({ EmptyDisplayText: '(none)', AutoPostBack: true }));
+		ctrl.enterEditMode(null);
+		ctrl.onTextBoxBlur({});
+		expect(dispatchMock).not.toHaveBeenCalled();
+		expect(label.innerHTML).toBe('(none)');
+	});
+
+	it('shows the typed value in the label after editing, clearing the marker', () => {
+		label.setAttribute(EMPTY_ATTRIBUTE, '1');
+		const ctrl = new TInPlaceTextBox(makeOptions({ EmptyDisplayText: '(none)', AutoPostBack: false }));
+		ctrl.enterEditMode(null);
+		ctrl.editField.value = 'Typed';
+		ctrl.onTextBoxBlur({});
+		expect(label.innerHTML).toBe('Typed');
+		expect(ctrl.isShowingEmptyDisplayText()).toBe(false);
+	});
+
+	it('onTextChangedSuccess shows EmptyDisplayText when the saved value is empty', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions({ EmptyDisplayText: '(none)' }));
+		ctrl.enterEditMode(null);
+		ctrl.editField.value = '';
+		ctrl.onTextChangedSuccess({}, null);
+		expect(label.innerHTML).toBe('(none)');
+		expect(ctrl.isShowingEmptyDisplayText()).toBe(true);
+	});
+
+	it('EmptyDisplayText containing markup survives a browser innerHTML round trip', () => {
+		// The marker, not a string compare, decides emptiness.
+		label.innerHTML = 'Tom &amp; Jerry';
+		label.setAttribute(EMPTY_ATTRIBUTE, '1');
+		const ctrl = new TInPlaceTextBox(makeOptions({ EmptyDisplayText: 'Tom & Jerry' }));
+		expect(ctrl.getText()).toBe('');
+		ctrl.enterEditMode(null);
+		expect(ctrl.editField.value).toBe('');
+	});
+
+	it('without EmptyDisplayText an empty value leaves the label empty (legacy behavior)', () => {
+		label.innerHTML = '';
+		const ctrl = new TInPlaceTextBox(makeOptions({ AutoPostBack: false }));
+		ctrl.enterEditMode(null);
+		ctrl.onTextBoxBlur({});
+		expect(label.innerHTML).toBe('');
 	});
 });
 
