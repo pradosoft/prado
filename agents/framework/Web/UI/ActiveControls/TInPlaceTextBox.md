@@ -20,6 +20,10 @@ Click-to-edit text box that displays as a label until clicked. When clicked, tra
 - `onLoadingText($param)` - Event raised to load text from server before editing
 - `getClientClassName()` - Returns `Prado.WebUI.TInPlaceTextBox`
 
+## Accessibility
+
+The label is rendered as an operable button (`role="button"`, `tabindex="0"`) with `aria-live="polite"`; Enter/Space enter edit mode, and focus returns to the label after an Enter/Escape/change commit. A read-only control renders the label as plain text (no button role). The editor takes its accessible name from `ToolTip` (sent as the `EditorLabel` option). Shared via `TInPlaceControlTrait::renderLabelAccessibilityAttributes` (PHP) and the base class in `inlineeditor.js` (JS).
+
 ## See Also
 
 - [TActiveTextBox](./TActiveTextBox.md), [TCallback](./TCallback.md), [TInPlaceDropDownList](./TInPlaceDropDownList.md)

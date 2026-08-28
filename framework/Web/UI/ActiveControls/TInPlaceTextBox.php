@@ -196,6 +196,7 @@ class TInPlaceTextBox extends TActiveTextBox
 		$options['AutoPostBack'] = $this->getAutoPostBack() == false ? '' : true;
 		$options['EmptyDisplayText'] = $this->getEmptyDisplayText();
 		$options['DisplayEditor'] = $this->getDisplayEditor();
+		$options['EditorLabel'] = $this->getToolTip();
 		$options['Columns'] = $this->getColumns();
 		if ($this->getTextMode() === 'MultiLine') {
 			$options['Rows'] = $this->getRows();
@@ -242,6 +243,7 @@ class TInPlaceTextBox extends TActiveTextBox
 		TWebControl::addAttributesToRender($writer);
 		$writer->addAttribute('id', $this->getLabelClientID());
 		$this->renderEmptyDisplayAttribute($writer, $this->getText() === '');
+		$this->renderLabelAccessibilityAttributes($writer, $this->getReadOnly());
 		$this->getActiveControl()->registerCallbackClientScript(
 			$this->getClientClassName(),
 			$this->getPostBackOptions()

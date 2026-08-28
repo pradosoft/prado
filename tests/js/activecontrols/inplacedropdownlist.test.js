@@ -281,6 +281,15 @@ describe('TInPlaceDropDownList selection change', () => {
 		expect(select.disabled).toBe(false);
 	});
 
+	it('flags focus-return to the label on a change commit', () => {
+		mockCallbackRequest();
+		const ctrl = new TInPlaceDropDownList(makeOptions());
+		ctrl.enterEditMode(null);
+		select.selectedIndex = 2;
+		ctrl.onSelectionChanged({});
+		expect(ctrl.returnFocusOnCollapse).toBe(true);
+	});
+
 	it('does not dispatch when AutoPostBack is false', () => {
 		const { dispatchMock } = mockCallbackRequest();
 		const ctrl = new TInPlaceDropDownList(makeOptions({ AutoPostBack: false }));

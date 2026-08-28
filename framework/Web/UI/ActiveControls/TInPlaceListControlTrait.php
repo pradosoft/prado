@@ -118,6 +118,7 @@ trait TInPlaceListControlTrait
 			$writer->addAttribute('title', $toolTip);
 		}
 		$this->renderEmptyDisplayAttribute($writer, $this->getSelectedItemText() === '');
+		$this->renderLabelAccessibilityAttributes($writer, $this->getReadOnly());
 		if ($this->getDisplayEditor()) {
 			$writer->addStyleAttribute('display', 'none');
 		}
@@ -161,6 +162,7 @@ trait TInPlaceListControlTrait
 		$options['AutoPostBack'] = $this->getAutoPostBack();
 		$options['EmptyDisplayText'] = $this->getEmptyDisplayText();
 		$options['DisplayEditor'] = $this->getDisplayEditor();
+		$options['EditorLabel'] = $this->getToolTip();
 
 		if ($this->hasEventHandler('OnLoadingItems')) {
 			$options['LoadItemsOnEdit'] = true;

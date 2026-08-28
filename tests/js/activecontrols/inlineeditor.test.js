@@ -771,6 +771,111 @@ describe('TInPlaceTextBox EmptyDisplayText', () => {
 	});
 });
 
+// ─── Accessibility ────────────────────────────────────────────────────────────
+
+describe('TInPlaceTextBox accessibility', () => {
+	let container, label;
+
+	beforeEach(() => {
+		clearRegistry(); clearTextboxes();
+		({ container, label } = buildDOM());
+	});
+
+	afterEach(() => { restoreMocks(); container.remove(); });
+
+	it('Enter on the label enters edit mode', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions());
+		const enter = vi.spyOn(ctrl, 'enterEditMode');
+		ctrl.onLabelKeyDown({ keyCode: 13, preventDefault() {} });
+		expect(enter).toHaveBeenCalled();
+	});
+
+	it('Space on the label enters edit mode', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions());
+		const enter = vi.spyOn(ctrl, 'enterEditMode');
+		ctrl.onLabelKeyDown({ keyCode: 32, preventDefault() {} });
+		expect(enter).toHaveBeenCalled();
+	});
+
+	it('other keys on the label do not enter edit mode', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions());
+		const enter = vi.spyOn(ctrl, 'enterEditMode');
+		ctrl.onLabelKeyDown({ keyCode: 65, preventDefault() {} }); // 'a'
+		expect(enter).not.toHaveBeenCalled();
+	});
+
+	it('names the editor from options.EditorLabel', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions({ EditorLabel: 'Favorite color' }));
+		expect(ctrl.editField.getAttribute('aria-label')).toBe('Favorite color');
+	});
+
+	it('does not set an aria-label when EditorLabel is absent', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions());
+		expect(ctrl.editField.getAttribute('aria-label')).toBeNull();
+	});
+
+	it('focusLabel focuses the label when it is shown', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions());
+		const focus = vi.spyOn(label, 'focus');
+		ctrl.focusLabel();
+		expect(focus).toHaveBeenCalled();
+	});
+
+	it('focusLabel is a no-op while the label is hidden (mid-edit)', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions());
+		label.style.display = 'none';
+		const focus = vi.spyOn(label, 'focus');
+		ctrl.focusLabel();
+		expect(focus).not.toHaveBeenCalled();
+	});
+
+	it('maybeReturnFocus focuses the label only after a keyboard-initiated collapse', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions());
+		const focus = vi.spyOn(ctrl, 'focusLabel');
+		ctrl.maybeReturnFocus();                 // no flag -> nothing
+		expect(focus).not.toHaveBeenCalled();
+		ctrl.returnFocusOnCollapse = true;
+		ctrl.maybeReturnFocus();                 // flag -> focus, and clears
+		expect(focus).toHaveBeenCalledTimes(1);
+		expect(ctrl.returnFocusOnCollapse).toBe(false);
+	});
+
+	it('Escape returns focus to the label', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions({ AutoHide: true }));
+		ctrl.enterEditMode(null);
+		const focus = vi.spyOn(ctrl, 'focusLabel');
+		ctrl.onKeyPressed({ keyCode: 27 });
+		expect(focus).toHaveBeenCalled();
+	});
+
+	it('updateLabelEditable removes the button role when read only', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions());
+		label.setAttribute('role', 'button');
+		label.setAttribute('tabindex', '0');
+		ctrl.readOnly = true;
+		ctrl.updateLabelEditable();
+		expect(label.hasAttribute('role')).toBe(false);
+		expect(label.hasAttribute('tabindex')).toBe(false);
+	});
+
+	it('updateLabelEditable restores the button role when editable again', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions());
+		ctrl.readOnly = false;
+		ctrl.updateLabelEditable();
+		expect(label.getAttribute('role')).toBe('button');
+		expect(label.getAttribute('tabindex')).toBe('0');
+	});
+
+	it('static setReadOnly keeps the label operability in sync', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions());
+		ctrl.readOnly = false;
+		ctrl.updateLabelEditable();
+		TInPlaceTextBox.setReadOnly('tb_lbl1', true);
+		expect(ctrl.readOnly).toBe(true);
+		expect(label.hasAttribute('role')).toBe(false);
+	});
+});
+
 // ─── ExternalControl option ───────────────────────────────────────────────────
 
 describe('TInPlaceTextBox ExternalControl', () => {

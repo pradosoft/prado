@@ -125,3 +125,35 @@ test('TInPlaceDropDownListTestCase: OnLoadingItems replaces items on edit', asyn
 	await expect(page.locator(`#${LAZY_LABEL}`)).toHaveText('Fresh B');
 	await expect(page.locator(`#${LAZY_SELECT}`)).toBeHidden();
 });
+
+
+/**
+ * Accessibility: the label is an operable button reachable and activatable
+ * from the keyboard, and focus returns to it after a commit collapses the
+ * editor.
+ */
+test('TInPlaceDropDownListTestCase: keyboard entry, commit, and focus return', async ({ page }) => {
+	const h = new PradoTestHelper(page, GENERIC_BASE_URL);
+	await h.url(PAGE_URL);
+
+	const label = page.locator(`#${LABEL}`);
+	await expect(label).toHaveAttribute('role', 'button');
+	await expect(label).toHaveAttribute('tabindex', '0');
+	await expect(label).toHaveAttribute('aria-live', 'polite');
+
+	// Reach the label with the keyboard and open the editor with Enter
+	await label.focus();
+	expect(await page.evaluate((id) => document.activeElement === document.getElementById(id), LABEL)).toBe(true);
+	await page.keyboard.press('Enter');
+	await expect(page.locator(`#${SELECT}`)).toBeVisible();
+	// Focus moved into the editor
+	expect(await page.evaluate((id) => document.activeElement === document.getElementById(id), SELECT)).toBe(true);
+
+	// Commit a change; the editor collapses and focus returns to the label
+	await page.locator(`#${SELECT}`).selectOption('green');
+	await h.waitForAjaxCalls();
+	await expect(page.locator(`#${STATUS}`)).toHaveText('changed: green');
+	await expect(label).toHaveText('Green');
+	await expect(page.locator(`#${SELECT}`)).toBeHidden();
+	expect(await page.evaluate((id) => document.activeElement === document.getElementById(id), LABEL)).toBe(true);
+});

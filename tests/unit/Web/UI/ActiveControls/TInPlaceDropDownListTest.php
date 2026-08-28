@@ -213,6 +213,33 @@ class TInPlaceDropDownListTest extends TestCase
 		$this->assertStringContainsString('title="click to edit"', $label);
 	}
 
+	public function testRenderLabelIsAnOperableButtonWhenEditable()
+	{
+		$control = new TInPlaceDropDownList();
+		$label = $this->renderLabel($control);
+		$this->assertStringContainsString('role="button"', $label);
+		$this->assertStringContainsString('tabindex="0"', $label);
+		$this->assertStringContainsString('aria-live="polite"', $label);
+	}
+
+	public function testRenderLabelIsPlainTextWhenReadOnly()
+	{
+		$control = new TInPlaceDropDownList();
+		$control->setReadOnly(true);
+		$label = $this->renderLabel($control);
+		$this->assertStringNotContainsString('role="button"', $label);
+		$this->assertStringNotContainsString('tabindex', $label);
+		$this->assertStringContainsString('aria-live="polite"', $label);
+	}
+
+	public function testPostBackOptionsCarryEditorLabelFromToolTip()
+	{
+		$control = new TInPlaceDropDownList();
+		$control->setToolTip('Pick a color');
+		$options = PradoUnit::invoke($control, 'getPostBackOptions');
+		$this->assertSame('Pick a color', $options['EditorLabel']);
+	}
+
 	// --- getPostBackOptions ---
 
 	public function testPostBackOptions()

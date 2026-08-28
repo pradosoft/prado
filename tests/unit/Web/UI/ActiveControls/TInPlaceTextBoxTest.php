@@ -99,6 +99,43 @@ class TInPlaceTextBoxTest extends TestCase
 		$this->assertSame($control->getClientID(), $options['TextBoxID']);
 	}
 
+	private function accessibilityAttributes(TInPlaceTextBox $control, bool $readOnly): string
+	{
+		$textWriter = new TTextWriter();
+		$writer = new THtmlWriter($textWriter);
+		PradoUnit::invoke($control, 'renderLabelAccessibilityAttributes', $writer, $readOnly);
+		$writer->renderBeginTag('span');
+		$writer->renderEndTag();
+		return $textWriter->flush();
+	}
+
+	public function testLabelIsAnOperableButtonWhenEditable()
+	{
+		$control = new TInPlaceTextBox();
+		$html = $this->accessibilityAttributes($control, false);
+		$this->assertStringContainsString('role="button"', $html);
+		$this->assertStringContainsString('tabindex="0"', $html);
+		$this->assertStringContainsString('aria-live="polite"', $html);
+	}
+
+	public function testReadOnlyLabelIsPlainTextWithoutButtonRole()
+	{
+		$control = new TInPlaceTextBox();
+		$html = $this->accessibilityAttributes($control, true);
+		$this->assertStringNotContainsString('role="button"', $html);
+		$this->assertStringNotContainsString('tabindex', $html);
+		// A read only value still announces programmatic changes.
+		$this->assertStringContainsString('aria-live="polite"', $html);
+	}
+
+	public function testPostBackOptionsCarryEditorLabelFromToolTip()
+	{
+		$control = new TInPlaceTextBox();
+		$control->setToolTip('Favorite color');
+		$options = PradoUnit::invoke($control, 'getPostBackOptions');
+		$this->assertSame('Favorite color', $options['EditorLabel']);
+	}
+
 	public function testEditTriggerControlID()
 	{
 		$control = new TInPlaceTextBox();

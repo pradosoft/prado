@@ -219,6 +219,16 @@ describe('TInPlaceListBox selection change', () => {
 
 	afterEach(() => { restoreMocks(); container.remove(); });
 
+	it('does not flag focus-return on a blur commit (the user moved focus away)', () => {
+		mockCallbackRequest();
+		const ctrl = new TInPlaceListBox(makeOptions());
+		ctrl.enterEditMode(null);
+		select.options[1].selected = true;
+		ctrl.onSelectionChanged({});   // multi: accumulates, no flag
+		ctrl.onDropDownBlur({});       // commits on blur
+		expect(ctrl.returnFocusOnCollapse).toBeFalsy();
+	});
+
 	it('does NOT dispatch on each option toggle (multi-select accumulates)', () => {
 		const { dispatchMock } = mockCallbackRequest();
 		const ctrl = new TInPlaceListBox(makeOptions());

@@ -179,6 +179,33 @@ class TInPlaceListBoxTest extends TestCase
 	}
 
 
+	public function testRenderLabelIsAnOperableButtonWhenEditable()
+	{
+		$control = $this->multiSelectListBox();
+		$label = $this->renderLabel($control);
+		$this->assertStringContainsString('role="button"', $label);
+		$this->assertStringContainsString('tabindex="0"', $label);
+		$this->assertStringContainsString('aria-live="polite"', $label);
+	}
+
+	public function testRenderLabelIsPlainTextWhenReadOnly()
+	{
+		$control = $this->multiSelectListBox();
+		$control->setReadOnly(true);
+		$label = $this->renderLabel($control);
+		$this->assertStringNotContainsString('role="button"', $label);
+		$this->assertStringNotContainsString('tabindex', $label);
+		$this->assertStringContainsString('aria-live="polite"', $label);
+	}
+
+	public function testPostBackOptionsCarryEditorLabelFromToolTip()
+	{
+		$control = $this->multiSelectListBox();
+		$control->setToolTip('Pick a color');
+		$options = PradoUnit::invoke($control, 'getPostBackOptions');
+		$this->assertSame('Pick a color', $options['EditorLabel']);
+	}
+
 	// --- getPostBackOptions ---
 
 	public function testPostBackOptions()

@@ -137,6 +137,24 @@ trait TInPlaceControlTrait
 	}
 
 	/**
+	 * Renders the accessibility attributes that make the label operable as an
+	 * edit trigger. A polite live region announces value changes; when editing
+	 * is allowed the label also carries a button role and a tab stop so it can
+	 * be reached and activated from the keyboard. A read only label stays plain
+	 * text.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer for rendering
+	 * @param bool $readOnly whether the control is read only
+	 */
+	protected function renderLabelAccessibilityAttributes($writer, $readOnly)
+	{
+		$writer->addAttribute('aria-live', 'polite');
+		if (!$readOnly) {
+			$writer->addAttribute('role', 'button');
+			$writer->addAttribute('tabindex', '0');
+		}
+	}
+
+	/**
 	 * @return string label client ID
 	 */
 	protected function getLabelClientID()

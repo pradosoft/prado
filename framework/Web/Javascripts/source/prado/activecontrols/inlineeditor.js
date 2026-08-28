@@ -20,9 +20,60 @@ Prado.WebUI.TInPlaceControlBase = Prado.Class(Prado.WebUI.Control,
 		this.element = document.getElementById(this.options.ID);
 		Prado.WebUI.TInPlaceControlBase.register(this);
 		this.createEditorInput();
+		this.nameEditor();
 		this.initializeListeners();
 		if(this.options.DisplayEditor)
 			this.enterEditMode(null, true);
+	},
+
+	/**
+	 * Gives the edit element an accessible name from options.EditorLabel so
+	 * assistive technology announces it, since the created input and the
+	 * server-rendered select otherwise have no associated label.
+	 */
+	nameEditor() {
+		if(this.editField && this.options.EditorLabel)
+			this.editField.setAttribute('aria-label', this.options.EditorLabel);
+	},
+
+	/**
+	 * Returns keyboard focus to the label when it is shown, so exiting the
+	 * editor by Enter or Escape does not drop focus to the document body.
+	 */
+	focusLabel() {
+		if(this.element && this.element.style.display !== 'none'
+			&& typeof this.element.focus === 'function')
+			this.element.focus();
+	},
+
+	/**
+	 * Focuses the label after a collapse that was requested from the keyboard.
+	 */
+	maybeReturnFocus() {
+		if(this.returnFocusOnCollapse)
+		{
+			this.returnFocusOnCollapse = false;
+			this.focusLabel();
+		}
+	},
+
+	/**
+	 * Adds or removes the button role and tab stop when the read only state
+	 * changes on a callback, keeping the label's keyboard operability in sync.
+	 */
+	updateLabelEditable() {
+		if(!this.element)
+			return;
+		if(this.readOnly)
+		{
+			this.element.removeAttribute('role');
+			this.element.removeAttribute('tabindex');
+		}
+		else
+		{
+			this.element.setAttribute('role', 'button');
+			this.element.setAttribute('tabindex', '0');
+		}
 	},
 
 	/**
@@ -45,8 +96,19 @@ Prado.WebUI.TInPlaceControlBase = Prado.Class(Prado.WebUI.Control,
 	initializeListeners() {
 		this.onclickListener = this.enterEditMode.bind(this);
 		this.observe(this.element, 'click', this.onclickListener);
+		this.onLabelKeyDownListener = this.onLabelKeyDown.bind(this);
+		this.observe(this.element, 'keydown', this.onLabelKeyDownListener);
 		if (this.options.ExternalControl)
 			this.observe(document.getElementById(this.options.ExternalControl), 'click', this.onclickListener);
+	},
+
+	/**
+	 * Enter or Space on the label enters edit mode, matching a button.
+	 * @param {Event} evt keydown event
+	 */
+	onLabelKeyDown(evt) {
+		if(evt.keyCode == 13 || evt.keyCode == 32) // Enter or Space
+			this.enterEditMode(evt);
 	},
 
 	/**
@@ -234,6 +296,7 @@ Prado.WebUI.TInPlaceControlBase = Prado.Class(Prado.WebUI.Control,
 			this.setLabelValue(parameter);
 		this.editField.disabled = false;
 		this.onAfterSave();
+		this.maybeReturnFocus();
 		if(typeof(this.options.onSuccess)=="function")
 			this.options.onSuccess(sender,parameter);
 	},
@@ -297,7 +360,10 @@ Object.assign(Prado.WebUI.TInPlaceControlBase,
 	setReadOnly(id, value) {
 		const control = Prado.WebUI.TInPlaceControlBase.get(id);
 		if(control)
+		{
 			control.readOnly = value;
+			control.updateLabelEditable();
+		}
 	},
 
 	setLabelText(id, value) {
@@ -427,6 +493,7 @@ Prado.WebUI.TInPlaceTextBox = Prado.Class(Prado.WebUI.TInPlaceControlBase,
 					const target = e.target;
 					if(target)
 					{
+						this.returnFocusOnCollapse = true;
 						target.blur();
 						e.preventDefault();
 					}
@@ -451,6 +518,7 @@ Prado.WebUI.TInPlaceTextBox = Prado.Class(Prado.WebUI.TInPlaceControlBase,
 			this.isEditing = false;
 			if(this.options.AutoHide)
 				this.showLabel();
+			this.maybeReturnFocus();
 		}
 	},
 
@@ -461,6 +529,7 @@ Prado.WebUI.TInPlaceTextBox = Prado.Class(Prado.WebUI.TInPlaceControlBase,
 			this.isEditing = false;
 			if(this.options.AutoHide)
 				this.showLabel();
+			this.focusLabel();
 		}
 		else if (e.keyCode == 13 // KEY_RETURN
 			&& this.options.TextMode != 'MultiLine')
@@ -646,7 +715,13 @@ Prado.WebUI.TInPlaceDropDownList = Prado.Class(Prado.WebUI.TInPlaceControlBase,
 	 */
 	onSelectionChanged(_event) {
 		if(this.options.AutoPostBack && this.isEditing && !this.isSaving)
+		{
+			// A change commit collapses the select, which held focus; return
+			// focus to the label. The multi-select list box commits on blur
+			// instead (the user has moved focus away) and does not set this.
+			this.returnFocusOnCollapse = true;
 			this.onValueChanged();
+		}
 	},
 
 	/**
@@ -660,6 +735,7 @@ Prado.WebUI.TInPlaceDropDownList = Prado.Class(Prado.WebUI.TInPlaceControlBase,
 		this.isEditing = false;
 		if(this.options.AutoHide)
 			this.showLabel();
+		this.maybeReturnFocus();
 	},
 
 	onKeyPressed(e) {
@@ -670,10 +746,12 @@ Prado.WebUI.TInPlaceDropDownList = Prado.Class(Prado.WebUI.TInPlaceControlBase,
 			this.isEditing = false;
 			if(this.options.AutoHide)
 				this.showLabel();
+			this.focusLabel();
 		}
 		else if (e.keyCode == 13) //KEY_RETURN
 		{
 			e.preventDefault();
+			this.returnFocusOnCollapse = true;
 			this.editField.blur();
 		}
 	},
