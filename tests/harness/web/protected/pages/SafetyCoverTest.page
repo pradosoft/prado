@@ -27,17 +27,6 @@
 	</com:TSafetyCover>
 	<div id="mouseoutResult"></div>
 
-	<%-- "active" (KeepOpenWhileActive) exercises the idle-reset: interaction resets
-	     the short AutoCloseDelay=1000, so sustained activity keeps it open, and it
-	     closes once idle. MouseOutTimeout is large so only inactivity closes it. --%>
-	<com:TSafetyCover ID="activeCover" KeepOpenWhileActive="true" OpenDelay="100" AutoCloseDelay="1000" MouseOutTimeout="30000" OverlayColor="rgb(200, 120, 0)" Width="80px" Height="60px">
-		<prop:OverlayTemplate>
-			<span class="unlock-hint">Unlock</span>
-		</prop:OverlayTemplate>
-		<button type="button" id="activeButton" onclick="clicked('activeResult')">Go</button>
-	</com:TSafetyCover>
-	<div id="activeResult"></div>
-
 	<com:TClientScript>
 		function clicked(id) {
 			document.getElementById(id).textContent = 'clicked';
