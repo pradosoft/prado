@@ -160,10 +160,11 @@ trait TDbPropertiesTrait
 	 * Creates the DB connection.
 	 *
 	 * If no ConnectionID is available, this will try to start a sqlite database
-	 * if the subclass has a name via getSqliteDatabaseName().
+	 * if the subclass has a name via getSqliteDatabaseName(). The sqlite database
+	 * lives in the application runtime path, so it needs an application.
 	 *
 	 * @param ?string $connectionID the module ID for TDataSourceConfig. If null, uses getConnectionID().
-	 * @throws TConfigurationException if module ID is invalid or empty without a Sqlite database.
+	 * @throws TConfigurationException if the module ID is invalid, or empty without a sqlite database in a runtime path.
 	 * @return IDataConnection the created DB connection
 	 */
 	protected function createDbConnection(?string $connectionID = null): IDataConnection
@@ -181,7 +182,7 @@ trait TDbPropertiesTrait
 			$app = Prado::getApplication();
 		}
 		if ($connectionID !== '') {
-			$conn = $app->getModule($connectionID);
+			$conn = $app?->getModule($connectionID);
 			if ($conn instanceof TDataSourceConfig) {
 				return $conn->getDbConnection();
 			} else {
@@ -195,9 +196,10 @@ trait TDbPropertiesTrait
 			if ($db = $this->getCustomDbConnection()) {
 				return $db;
 			}
-			if ($sqliteFile = $this->getSqliteDatabaseName()) {
+			$runtimePath = $app?->getRuntimePath();
+			if (($sqliteFile = $this->getSqliteDatabaseName()) && $runtimePath !== null) {
 				$db = new TDbConnection();
-				$dbFile = $app->getRuntimePath() . DIRECTORY_SEPARATOR . $sqliteFile;
+				$dbFile = $runtimePath . DIRECTORY_SEPARATOR . $sqliteFile;
 				$db->setConnectionString('sqlite:' . $dbFile);
 				return $db;
 			} else {
