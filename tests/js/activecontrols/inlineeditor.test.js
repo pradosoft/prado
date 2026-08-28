@@ -1,64 +1,11 @@
-/**
- * Tests for inlineeditor.js — Prado.WebUI.TInPlaceTextBox
- *
- * Source:
- *   framework/Web/Javascripts/source/prado/activecontrols/inlineeditor.js
- *
- * Strategy
- * --------
- * Each test sets up a minimal DOM: a label <span> (the display element) and,
- * after construction, the hidden <input> injected by createTextBox(). Network
- * calls are prevented by replacing Prado.CallbackRequest with a vi mock.
- *
- * ESM note: only tests/js/adapters/inlineeditor.js changes on ESM conversion.
- */
+import { TInPlaceTextBox, EMPTY_ATTRIBUTE, Registry } from '../adapters/inlineeditor.js';
+import { clearRegistry, clearMap, mockCallbackRequest, restoreMocks } from '../helpers/callbackMock.js';
 
-import { TInPlaceTextBox, Registry } from '../adapters/inlineeditor.js';
+// ─── Helpers ──────────────────────────────────────────────────────────
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-/** Remove all keys from Prado.Registry. */
-function clearRegistry() {
-	for (const k of Object.keys(global.Prado.Registry)) {
-		delete global.Prado.Registry[k];
-	}
-}
-
-/** Clear TInPlaceTextBox.textboxes between tests. */
+/** Clear the shared in-place control registry between tests. */
 function clearTextboxes() {
-	for (const k of Object.keys(TInPlaceTextBox.textboxes)) {
-		delete TInPlaceTextBox.textboxes[k];
-	}
-}
-
-/**
- * Mock Prado.CallbackRequest so that no XHR is ever made.
- * Uses a real constructor function (not an arrow) so `new` works.
- */
-function mockCallbackRequest(dispatchReturnValue = true) {
-	const dispatchMock              = vi.fn().mockReturnValue(dispatchReturnValue);
-	const setCallbackParameterMock  = vi.fn();
-	const setCausesValidationMock   = vi.fn();
-	const instance = {
-		dispatch:               dispatchMock,
-		setCallbackParameter:   setCallbackParameterMock,
-		setCausesValidation:    setCausesValidationMock,
-		options:                {},
-	};
-
-	const original = global.Prado.CallbackRequest;
-	const MockCtor = vi.fn(function () { return instance; });
-	MockCtor.__original = original;
-	global.Prado.CallbackRequest = MockCtor;
-
-	return { instance, dispatchMock, setCallbackParameterMock, setCausesValidationMock };
-}
-
-function restoreMocks() {
-	vi.restoreAllMocks();
-	if (global.Prado.CallbackRequest?.__original !== undefined) {
-		global.Prado.CallbackRequest = global.Prado.CallbackRequest.__original;
-	}
+	clearMap(TInPlaceTextBox.textboxes);
 }
 
 /** Standard options for TInPlaceTextBox construction. */
@@ -67,6 +14,7 @@ function makeOptions(overrides = {}) {
 		{
 			ID:          'lbl1',
 			TextBoxID:   'tb_lbl1',
+			EditorID:    'tb_lbl1',
 			EventTarget: 'lbl1',
 			TextMode:    'SingleLine',
 			ReadOnly:    false,
@@ -464,9 +412,6 @@ describe('TInPlaceTextBox onKeyPressed', () => {
 	});
 
 	it('does NOT call preventDefault on ENTER in MultiLine mode', () => {
-		clearRegistry(); clearTextboxes();
-		({ container } = buildDOM('lbl1'));
-		// Re-build container for MultiLine (avoid double-ID)
 		const ctrl = new TInPlaceTextBox(makeOptions({ TextMode: 'MultiLine' }));
 		const evt = { keyCode: 13, preventDefault: vi.fn() };
 		ctrl.onKeyPressed(evt);
@@ -494,12 +439,31 @@ describe('TInPlaceTextBox onTextChanged', () => {
 		expect(dispatchMock).toHaveBeenCalled();
 	});
 
-	it('sets isSaving to true and disables editField when dispatch returns true', () => {
-		mockCallbackRequest(true);
+	it('sets isSaving when dispatch does not return false', () => {
+		// dispatch() returns undefined on a dispatched request; the guard treats
+		// non-false as dispatched. The field is not disabled during the save
+		// (the request serializes the form lazily from the ajax queue).
+		const { instance } = mockCallbackRequest();
+		instance.dispatch.mockReturnValue(undefined);
 		const ctrl = new TInPlaceTextBox(makeOptions({ AutoPostBack: true }));
 		ctrl.onTextChanged('old');
 		expect(ctrl.isSaving).toBe(true);
-		expect(ctrl.editField.disabled).toBe(true);
+		expect(ctrl.editField.disabled).toBe(false);
+	});
+
+	it('does not dispatch a second save on re-blur while the first is in flight', () => {
+		// The field is not disabled during a save, so a re-blur must be blocked
+		// by the isSaving guard (mirroring the dropdown/listbox).
+		const { instance, dispatchMock } = mockCallbackRequest();
+		instance.dispatch.mockReturnValue(undefined);
+		const ctrl = new TInPlaceTextBox(makeOptions({ AutoPostBack: true }));
+		ctrl.enterEditMode(null);
+		ctrl.editField.value = 'first change';
+		ctrl.onTextBoxBlur({});          // save 1 dispatched, isSaving latches
+		expect(ctrl.isSaving).toBe(true);
+		ctrl.editField.value = 'second change';
+		ctrl.onTextBoxBlur({});          // in flight -> must not dispatch again
+		expect(dispatchMock).toHaveBeenCalledTimes(1);
 	});
 
 	it('does NOT set isSaving when dispatch returns false', () => {
@@ -716,6 +680,199 @@ describe('TInPlaceTextBox static helpers', () => {
 
 	it('setReadOnly is a no-op for unknown IDs', () => {
 		expect(() => TInPlaceTextBox.setReadOnly('unknown_id', true)).not.toThrow();
+	});
+});
+
+// ─── EmptyDisplayText option ─────────────────────────────────────────────────────────
+
+describe('TInPlaceTextBox EmptyDisplayText', () => {
+	let container, label;
+
+	beforeEach(() => {
+		clearRegistry(); clearTextboxes();
+		({ container, label } = buildDOM('lbl1', '(none)'));
+	});
+
+	afterEach(() => { restoreMocks(); container.remove(); });
+
+	it('getText reads the marked EmptyDisplayText placeholder as an empty string', () => {
+		label.setAttribute(EMPTY_ATTRIBUTE, '1');
+		const ctrl = new TInPlaceTextBox(makeOptions({ EmptyDisplayText: '(none)' }));
+		expect(ctrl.getText()).toBe('');
+	});
+
+	it('getText reads real text equal to EmptyDisplayText as that text', () => {
+		// No marker: the server rendered a value that happens to match EmptyDisplayText.
+		const ctrl = new TInPlaceTextBox(makeOptions({ EmptyDisplayText: '(none)' }));
+		expect(ctrl.getText()).toBe('(none)');
+	});
+
+	it('starts editing with an empty editField when the label shows EmptyDisplayText', () => {
+		label.setAttribute(EMPTY_ATTRIBUTE, '1');
+		const ctrl = new TInPlaceTextBox(makeOptions({ EmptyDisplayText: '(none)' }));
+		ctrl.enterEditMode(null);
+		expect(ctrl.editField.value).toBe('');
+	});
+
+	it('restores EmptyDisplayText in the label when blurring with an empty value', () => {
+		label.setAttribute(EMPTY_ATTRIBUTE, '1');
+		const ctrl = new TInPlaceTextBox(makeOptions({ EmptyDisplayText: '(none)', AutoPostBack: false }));
+		ctrl.enterEditMode(null);
+		ctrl.onTextBoxBlur({});
+		expect(label.innerHTML).toBe('(none)');
+		expect(ctrl.isShowingEmptyDisplayText()).toBe(true);
+	});
+
+	it('does not dispatch on blur when the empty value is unchanged (AutoPostBack)', () => {
+		label.setAttribute(EMPTY_ATTRIBUTE, '1');
+		const { dispatchMock } = mockCallbackRequest();
+		const ctrl = new TInPlaceTextBox(makeOptions({ EmptyDisplayText: '(none)', AutoPostBack: true }));
+		ctrl.enterEditMode(null);
+		ctrl.onTextBoxBlur({});
+		expect(dispatchMock).not.toHaveBeenCalled();
+		expect(label.innerHTML).toBe('(none)');
+	});
+
+	it('shows the typed value in the label after editing, clearing the marker', () => {
+		label.setAttribute(EMPTY_ATTRIBUTE, '1');
+		const ctrl = new TInPlaceTextBox(makeOptions({ EmptyDisplayText: '(none)', AutoPostBack: false }));
+		ctrl.enterEditMode(null);
+		ctrl.editField.value = 'Typed';
+		ctrl.onTextBoxBlur({});
+		expect(label.innerHTML).toBe('Typed');
+		expect(ctrl.isShowingEmptyDisplayText()).toBe(false);
+	});
+
+	it('onTextChangedSuccess shows EmptyDisplayText when the saved value is empty', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions({ EmptyDisplayText: '(none)' }));
+		ctrl.enterEditMode(null);
+		ctrl.editField.value = '';
+		ctrl.onTextChangedSuccess({}, null);
+		expect(label.innerHTML).toBe('(none)');
+		expect(ctrl.isShowingEmptyDisplayText()).toBe(true);
+	});
+
+	it('EmptyDisplayText containing markup survives a browser innerHTML round trip', () => {
+		// The marker, not a string compare, decides emptiness.
+		label.innerHTML = 'Tom &amp; Jerry';
+		label.setAttribute(EMPTY_ATTRIBUTE, '1');
+		const ctrl = new TInPlaceTextBox(makeOptions({ EmptyDisplayText: 'Tom & Jerry' }));
+		expect(ctrl.getText()).toBe('');
+		ctrl.enterEditMode(null);
+		expect(ctrl.editField.value).toBe('');
+	});
+
+	it('without EmptyDisplayText an empty value leaves the label empty (legacy behavior)', () => {
+		label.innerHTML = '';
+		const ctrl = new TInPlaceTextBox(makeOptions({ AutoPostBack: false }));
+		ctrl.enterEditMode(null);
+		ctrl.onTextBoxBlur({});
+		expect(label.innerHTML).toBe('');
+	});
+});
+
+// ─── Accessibility ────────────────────────────────────────────────────────────
+
+describe('TInPlaceTextBox accessibility', () => {
+	let container, label;
+
+	beforeEach(() => {
+		clearRegistry(); clearTextboxes();
+		({ container, label } = buildDOM());
+	});
+
+	afterEach(() => { restoreMocks(); container.remove(); });
+
+	it('Enter on the label enters edit mode', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions());
+		const enter = vi.spyOn(ctrl, 'enterEditMode');
+		ctrl.onLabelKeyDown({ keyCode: 13, preventDefault() {} });
+		expect(enter).toHaveBeenCalled();
+	});
+
+	it('Space on the label enters edit mode', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions());
+		const enter = vi.spyOn(ctrl, 'enterEditMode');
+		ctrl.onLabelKeyDown({ keyCode: 32, preventDefault() {} });
+		expect(enter).toHaveBeenCalled();
+	});
+
+	it('other keys on the label do not enter edit mode', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions());
+		const enter = vi.spyOn(ctrl, 'enterEditMode');
+		ctrl.onLabelKeyDown({ keyCode: 65, preventDefault() {} }); // 'a'
+		expect(enter).not.toHaveBeenCalled();
+	});
+
+	it('names the editor from options.EditorLabel', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions({ EditorLabel: 'Favorite color' }));
+		expect(ctrl.editField.getAttribute('aria-label')).toBe('Favorite color');
+	});
+
+	it('does not set an aria-label when EditorLabel is absent', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions());
+		expect(ctrl.editField.getAttribute('aria-label')).toBeNull();
+	});
+
+	it('focusLabel focuses the label when it is shown', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions());
+		const focus = vi.spyOn(label, 'focus');
+		ctrl.focusLabel();
+		expect(focus).toHaveBeenCalled();
+	});
+
+	it('focusLabel is a no-op while the label is hidden (mid-edit)', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions());
+		label.style.display = 'none';
+		const focus = vi.spyOn(label, 'focus');
+		ctrl.focusLabel();
+		expect(focus).not.toHaveBeenCalled();
+	});
+
+	it('maybeReturnFocus focuses the label only after a keyboard-initiated collapse', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions());
+		const focus = vi.spyOn(ctrl, 'focusLabel');
+		ctrl.maybeReturnFocus();                 // no flag -> nothing
+		expect(focus).not.toHaveBeenCalled();
+		ctrl.returnFocusOnCollapse = true;
+		ctrl.maybeReturnFocus();                 // flag -> focus, and clears
+		expect(focus).toHaveBeenCalledTimes(1);
+		expect(ctrl.returnFocusOnCollapse).toBe(false);
+	});
+
+	it('Escape returns focus to the label', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions({ AutoHide: true }));
+		ctrl.enterEditMode(null);
+		const focus = vi.spyOn(ctrl, 'focusLabel');
+		ctrl.onKeyPressed({ keyCode: 27 });
+		expect(focus).toHaveBeenCalled();
+	});
+
+	it('updateLabelEditable removes the button role when read only', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions());
+		label.setAttribute('role', 'button');
+		label.setAttribute('tabindex', '0');
+		ctrl.readOnly = true;
+		ctrl.updateLabelEditable();
+		expect(label.hasAttribute('role')).toBe(false);
+		expect(label.hasAttribute('tabindex')).toBe(false);
+	});
+
+	it('updateLabelEditable restores the button role when editable again', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions());
+		ctrl.readOnly = false;
+		ctrl.updateLabelEditable();
+		expect(label.getAttribute('role')).toBe('button');
+		expect(label.getAttribute('tabindex')).toBe('0');
+	});
+
+	it('static setReadOnly keeps the label operability in sync', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions());
+		ctrl.readOnly = false;
+		ctrl.updateLabelEditable();
+		TInPlaceTextBox.setReadOnly('tb_lbl1', true);
+		expect(ctrl.readOnly).toBe(true);
+		expect(label.hasAttribute('role')).toBe(false);
 	});
 });
 

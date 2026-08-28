@@ -69,6 +69,10 @@ AJAX-enabled controls for the Prado framework. ActiveControls trigger server-sid
 | `TActiveFileUpload` | TFileUpload | Async upload via hidden iframe; `OnFileUpload` event |
 | `TActiveDatePicker` | TDatePicker | Date picker with `OnDateChanged` callback |
 | `TInPlaceTextBox` | (custom) | Click-to-edit label; `LoadTextOnEdit` option |
+| `TInPlaceDropDownList` | TActiveDropDownList | Click-to-edit label over a hidden select; `OnLoadingItems` event |
+| `TInPlaceListBox` | TActiveListBox | Click-to-edit label over a hidden multi-select; joins selected texts with `SelectionSeparator` |
+| `TInPlaceControlTrait` | (trait) | Shared in-place surface: `AutoHideEditor`, `DisplayEditor`, `EditTriggerControlID`, `EmptyDisplayText`, label ID |
+| `TInPlaceListControlTrait` | (trait) | Shared select-based in-place surface for the drop down list and list box (label sync, rendering, callback options) |
 | `TActiveCustomValidator` | TCustomValidator | Server-side validation via callback |
 | `TTimeTriggeredCallback` | (no UI) | Timer-based callback; `Interval`, `StartTimerOnLoad` |
 | `TValueTriggeredCallback` | (no UI) | Polls a JS expression; fires callback when value changes |

@@ -113,7 +113,25 @@ var Prado =
 	 * @var Class
 	 * @since 4.4.0
 	 */
-	Class: globalThis.__PradoClass
+	Class: globalThis.__PradoClass,
+
+	/**
+	 * Html-encodes text for insertion into element inner html. Mirrors the
+	 * server-side THttpUtility::htmlEncode translation, and additionally
+	 * encodes the ampersand so a re-render of the same text is stable.
+	 * @param {String} text plain text
+	 * @return {String} encoded text
+	 * @since 4.4.0
+	 */
+	htmlEncode(text) {
+		if (text === null || text === undefined) return '';
+		return String(text)
+			.replace(/&/g, '&amp;')
+			.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;')
+			.replace(/"/g, '&quot;')
+			.replace(/'/g, '&#039;');
+	}
 };
 delete globalThis.__PradoClass;
 
