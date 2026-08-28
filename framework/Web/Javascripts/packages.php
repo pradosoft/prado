@@ -56,6 +56,10 @@ $packages = [
 		'prado/controls/webtemplate.js',
 	],
 
+	'safetycover' => [
+		'prado/controls/safetycover.js',
+	],
+
 	'activedatepicker' => [
 		'prado/activecontrols/activedatepicker.js',
 	],
@@ -127,6 +131,7 @@ $dependencies = [
 	'keyboard' => ['jquery', 'prado', 'keyboard'],
 	'slider' => ['jquery', 'prado', 'slider'],
 	'webtemplate' => ['jquery', 'prado', 'webtemplate'],
+	'safetycover' => ['jquery', 'prado', 'safetycover'],
 	'inlineeditor' => ['jquery', 'prado', 'ajax', 'inlineeditor'],
 	'accordion' => ['jquery', 'prado', 'accordion'],
 	'ratings' => ['jquery', 'prado', 'ajax', 'ratings'],
