@@ -6,9 +6,20 @@
 Prado.WebUI.CallbackControl = Prado.Class(Prado.WebUI.PostBackControl,
 {
 	onPostBack(options, event) {
-		const request = new Prado.CallbackRequest(options.EventTarget, options);
-		request.dispatch();
-		event.preventDefault();
+		// Deliberate fallback: when dispatch() throws — typically from a
+		// ClientSide hook — the element's default action is NOT prevented, so a
+		// submit button degrades to a full-page postback instead of dead-ending
+		// the click. The error is logged and rethrown; note the request reaches
+		// the server without whatever the failed hook was preparing.
+		try {
+			const request = new Prado.CallbackRequest(options.EventTarget, options);
+			request.dispatch();
+			event.preventDefault();
+		} catch (e) {
+			if (typeof Logger != "undefined")
+				Logger.error("Callback dispatch failed; falling back to the default action", e.message);
+			throw e;
+		}
 	}
 });
 
@@ -24,10 +35,19 @@ Prado.WebUI.TActiveLinkButton = Prado.Class(Prado.WebUI.CallbackControl);
 Prado.WebUI.TActiveImageButton = Prado.Class(Prado.WebUI.TImageButton,
 {
 	onPostBack(options, event) {
+		// Deliberate fallback, as in CallbackControl. On failure the coordinate
+		// inputs are left in the form on purpose: the fallback full-page submit
+		// needs them to carry the click position.
 		this.addXYInput(options, event);
-		const request = new Prado.CallbackRequest(options.EventTarget, options);
-		request.dispatch();
-		event.preventDefault();
+		try {
+			const request = new Prado.CallbackRequest(options.EventTarget, options);
+			request.dispatch();
+			event.preventDefault();
+		} catch (e) {
+			if (typeof Logger != "undefined")
+				Logger.error("Callback dispatch failed; falling back to the default action", e.message);
+			throw e;
+		}
 		this.removeXYInput(options, event);
 	}
 });

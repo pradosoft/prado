@@ -168,12 +168,50 @@ describe('TActiveButton', () => {
 		expect(dispatchMock).toHaveBeenCalled();
 	});
 
-	it('calls event.preventDefault() after dispatch', () => {
+	it('calls event.preventDefault()', () => {
 		mockCallbackRequest();
 		const ctrl = new TActiveButton({ ID: 'btn1', EventTarget: 'btn1' });
 		const evt = fakeEvent({ target: btn });
 		ctrl.onPostBack({ EventTarget: 'btn1' }, evt);
 		expect(evt.preventDefault).toHaveBeenCalled();
+	});
+
+	it('does not prevent the default when dispatch throws, so the postback fallback runs', () => {
+		// Deliberate v4.4 design: a throwing ClientSide hook degrades the click
+		// to a full-page postback rather than dead-ending it. The error is
+		// rethrown so it stays observable.
+		const { dispatchMock } = mockCallbackRequest();
+		dispatchMock.mockImplementation(() => {
+			throw new Error('ClientSide hook failed');
+		});
+		const ctrl = new TActiveButton({ ID: 'btn1', EventTarget: 'btn1' });
+		const evt = fakeEvent({ target: btn });
+		expect(() => ctrl.onPostBack({ EventTarget: 'btn1' }, evt)).toThrow('ClientSide hook failed');
+		expect(evt.preventDefault).not.toHaveBeenCalled();
+	});
+
+	it('logs the dispatch failure before rethrowing, when a Logger is present', () => {
+		// Skipping preventDefault() on a throw predates the fallback being
+		// deliberate, because it already sat after dispatch(). The log line is
+		// what the v4.4 try/catch adds, so it is what pins the change.
+		const { dispatchMock } = mockCallbackRequest();
+		dispatchMock.mockImplementation(() => {
+			throw new Error('ClientSide hook failed');
+		});
+		const errorMock = vi.fn();
+		global.Logger = { error: errorMock };
+
+		try {
+			const ctrl = new TActiveButton({ ID: 'btn1', EventTarget: 'btn1' });
+			const evt = fakeEvent({ target: btn });
+			expect(() => ctrl.onPostBack({ EventTarget: 'btn1' }, evt)).toThrow('ClientSide hook failed');
+			expect(errorMock).toHaveBeenCalledWith(
+				'Callback dispatch failed; falling back to the default action',
+				'ClientSide hook failed',
+			);
+		} finally {
+			delete global.Logger;
+		}
 	});
 });
 
@@ -276,6 +314,43 @@ describe('TActiveImageButton', () => {
 		ctrl.removeXYInput({ EventTarget: 'img1' }, evt);
 		expect(form.querySelector('#img1_x')).toBeNull();
 		expect(form.querySelector('#img1_y')).toBeNull();
+	});
+
+	it('leaves the default action and the x/y inputs in place when dispatch throws', () => {
+		// Deliberate v4.4 design: the fallback full-page submit proceeds and
+		// needs the coordinate inputs to carry the click position.
+		const { dispatchMock } = mockCallbackRequest();
+		dispatchMock.mockImplementation(() => {
+			throw new Error('ClientSide hook failed');
+		});
+		const ctrl = new TActiveImageButton({ ID: 'img1', EventTarget: 'img1' });
+		const evt = fakeEvent({ target: img, clientX: 5, clientY: 5 });
+
+		expect(() => ctrl.onPostBack({ EventTarget: 'img1' }, evt)).toThrow('ClientSide hook failed');
+		expect(evt.preventDefault).not.toHaveBeenCalled();
+		expect(form.querySelector('#img1_x')).not.toBeNull();
+		expect(form.querySelector('#img1_y')).not.toBeNull();
+	});
+
+	it('logs the dispatch failure before rethrowing, when a Logger is present', () => {
+		const { dispatchMock } = mockCallbackRequest();
+		dispatchMock.mockImplementation(() => {
+			throw new Error('ClientSide hook failed');
+		});
+		const errorMock = vi.fn();
+		global.Logger = { error: errorMock };
+
+		try {
+			const ctrl = new TActiveImageButton({ ID: 'img1', EventTarget: 'img1' });
+			const evt = fakeEvent({ target: img, clientX: 5, clientY: 5 });
+			expect(() => ctrl.onPostBack({ EventTarget: 'img1' }, evt)).toThrow('ClientSide hook failed');
+			expect(errorMock).toHaveBeenCalledWith(
+				'Callback dispatch failed; falling back to the default action',
+				'ClientSide hook failed',
+			);
+		} finally {
+			delete global.Logger;
+		}
 	});
 });
 
