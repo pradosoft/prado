@@ -269,6 +269,7 @@ return [
 'TPhpStreamBehavior' => 'Prado\IO\Behaviors\TPhpStreamBehavior',
 'TStreamNoSeekBehavior' => 'Prado\IO\Behaviors\TStreamNoSeekBehavior',
 'ICompressor' => 'Prado\IO\Compression\ICompressor',
+'IStreamCodec' => 'Prado\IO\Compression\IStreamCodec',
 'TBrotliCompressor' => 'Prado\IO\Compression\TBrotliCompressor',
 'TBuiltinCompressor' => 'Prado\IO\Compression\TBuiltinCompressor',
 'TBzip2Compressor' => 'Prado\IO\Compression\TBzip2Compressor',
