@@ -154,6 +154,18 @@ class TSafetyCoverTest extends TestCase
 		$this->assertSame(400, $control->getAnimationDuration());
 	}
 
+	public function testResetDelayDefaultZero()
+	{
+		$this->assertSame(0, $this->newControl()->getResetDelay());
+	}
+
+	public function testSetResetDelay()
+	{
+		$control = $this->newControl();
+		$control->setResetDelay('500');
+		$this->assertSame(500, $control->getResetDelay());
+	}
+
 	public function testCssUrlDefault()
 	{
 		$this->assertSame('default', $this->newControl()->getCssUrl());
@@ -607,12 +619,16 @@ class TSafetyCoverTest extends TestCase
 		$control->setOpenDelay(400);
 		$control->setAutoCloseDelay(9000);
 		$control->setMouseOutTimeout(1500);
+		$control->setAnimationDuration(300);
+		$control->setResetDelay(700);
 		$control->setKeepOpenWhileActive(true);
 		$options = PradoUnit::invoke($control, 'getClientOptions');
 		$this->assertSame('guard', $options['ID']);
 		$this->assertSame(400, $options['OpenDelay']);
 		$this->assertSame(9000, $options['AutoCloseDelay']);
 		$this->assertSame(1500, $options['MouseOutTimeout']);
+		$this->assertSame(300, $options['AnimationDuration']);
+		$this->assertSame(700, $options['ResetDelay']);
 		$this->assertTrue($options['KeepOpenWhileActive']);
 	}
 

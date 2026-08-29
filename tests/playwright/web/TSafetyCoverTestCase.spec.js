@@ -57,7 +57,7 @@ test('TSafetyCoverTestCase', async ({ page }) => {
 	await expect(page.locator(`#${auto}`).evaluate((el) => el.style.getPropertyValue('--safety-cover-animation-duration'))).resolves.toBe('250ms');
 
 	// ── OverlayColor renders on the visible face, not the transparent guard ──
-	await expect(page.locator(`#${auto}_face`)).toHaveCSS('background-color', 'rgb(0, 0, 255)');
+	await expect(page.locator(`#${auto}_face`)).toHaveCSS('background-color', 'rgba(0, 0, 255, 0.5)');
 	await expect(page.locator(`#${auto}_overlay`)).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
 
 	// ── The content isolates its stacking so a high-z-index descendant cannot

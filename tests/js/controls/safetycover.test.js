@@ -173,12 +173,66 @@ describe('close', () => {
 		expect(panel().classList.contains('safety-cover-pulsate')).toBe(false);
 	});
 
-	it('can open again after closing', () => {
+	it('can open again after the close cooldown', () => {
 		const wrapper = buildControl();
 		wrapper.open();
 		vi.advanceTimersByTime(800);
 		wrapper.close();
+		vi.advanceTimersByTime(250); // past the close animation cooldown (AnimationDuration)
 		wrapper.open();
+		vi.advanceTimersByTime(800);
+		expect(wrapper.isOpen()).toBe(true);
+	});
+});
+
+// ─── close cooldown (no reopen mid-animation) ────────────────────────────────
+
+describe('close cooldown', () => {
+	it('ignores a reopen during the close animation', () => {
+		const wrapper = buildControl();
+		wrapper.open();
+		vi.advanceTimersByTime(800);
+		wrapper.close();
+		wrapper.open(); // click during the close animation — must be ignored
+		vi.advanceTimersByTime(800);
+		expect(wrapper.isOpen()).toBe(false);
+	});
+
+	it('becomes reopenable once the close animation ends', () => {
+		const wrapper = buildControl();
+		wrapper.open();
+		vi.advanceTimersByTime(800);
+		wrapper.close();
+		vi.advanceTimersByTime(249); // still within the 250ms animation cooldown
+		wrapper.open();
+		vi.advanceTimersByTime(800);
+		expect(wrapper.isOpen()).toBe(false); // reopen was still ignored
+		vi.advanceTimersByTime(1); // cooldown elapses
+		wrapper.open();
+		vi.advanceTimersByTime(800);
+		expect(wrapper.isOpen()).toBe(true);
+	});
+
+	it('ResetDelay extends the cooldown past the animation', () => {
+		const wrapper = buildControl({ AnimationDuration: 250, ResetDelay: 500 });
+		wrapper.open();
+		vi.advanceTimersByTime(800);
+		wrapper.close();
+		vi.advanceTimersByTime(600); // past the animation but within animation+ResetDelay (750)
+		wrapper.open();
+		vi.advanceTimersByTime(800);
+		expect(wrapper.isOpen()).toBe(false); // still in cooldown
+		vi.advanceTimersByTime(200); // now past 750
+		wrapper.open();
+		vi.advanceTimersByTime(800);
+		expect(wrapper.isOpen()).toBe(true);
+	});
+
+	it('a cancelled pulse has no cooldown (open never completed)', () => {
+		const wrapper = buildControl();
+		wrapper.open();      // pulsing, not yet open
+		wrapper.close();     // cancel before it opened — no animation, no cooldown
+		wrapper.open();      // should start a fresh open immediately
 		vi.advanceTimersByTime(800);
 		expect(wrapper.isOpen()).toBe(true);
 	});

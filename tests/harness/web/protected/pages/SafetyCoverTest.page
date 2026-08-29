@@ -8,7 +8,7 @@
 	     "auto" (Collapse + Forward + OverlayFade) exercises the clip-path geometry,
 	     the logical direction (Forward → Right in left-to-right content), the
 	     independent fade axis, and the auto-close after AutoCloseDelay=3000. --%>
-	<com:TSafetyCover ID="autoCover" OverlayEffect="Collapse" OverlayDirection="Forward" OverlayFade="true" OpenDelay="200" AutoCloseDelay="3000" MouseOutTimeout="300" OverlayColor="rgb(0, 0, 255)" Width="60px" Height="50px">
+	<com:TSafetyCover ID="autoCover" OverlayEffect="Collapse" OverlayDirection="Forward" OverlayFade="true" OpenDelay="200" AutoCloseDelay="3000" MouseOutTimeout="300" OverlayColor="rgba(0, 0, 255, 0.5)" Width="60px" Height="50px">
 		<prop:OverlayTemplate>
 			<span class="unlock-hint">Unlock</span>
 		</prop:OverlayTemplate>
@@ -19,7 +19,7 @@
 	<%-- "mouseout" (Slide + Up, no fade) exercises the translate geometry and the
 	     mouse-out close. AutoCloseDelay is large so the auto-close never fires
 	     during the test; the mouse leaving the panel is what closes it. --%>
-	<com:TSafetyCover ID="mouseoutCover" OverlayEffect="Slide" OverlayDirection="Up" OpenDelay="200" AutoCloseDelay="30000" MouseOutTimeout="300" OverlayColor="rgb(0, 128, 0)" Width="60px" Height="50px">
+	<com:TSafetyCover ID="mouseoutCover" OverlayEffect="Slide" OverlayDirection="Up" OpenDelay="200" AutoCloseDelay="30000" MouseOutTimeout="300" OverlayColor="rgba(0, 128, 0, 0.5)" Width="60px" Height="50px">
 		<prop:OverlayTemplate>
 			<span class="unlock-hint">Unlock</span>
 		</prop:OverlayTemplate>

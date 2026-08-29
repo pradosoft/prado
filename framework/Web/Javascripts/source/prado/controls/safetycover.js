@@ -56,9 +56,11 @@ Prado.WebUI.TSafetyCover = Prado.Class(Prado.WebUI.Control,
 		this.content = document.getElementById(this.ID + '_content');
 		this.opened = false;
 		this.pulsing = false;
+		this.closing = false;
 		this.openTimer = null;
 		this.closeTimer = null;
 		this.mouseOutTimer = null;
+		this.resetTimer = null;
 		this.savedTabindex = null;
 		this.focusOnOpen = false;
 		this.contentGuarded = false;
@@ -115,6 +117,20 @@ Prado.WebUI.TSafetyCover = Prado.Class(Prado.WebUI.Control,
 	},
 
 	/**
+	 * @return int milliseconds the open and close animation takes
+	 */
+	getAnimationDuration() {
+		return this.options.AnimationDuration ?? 250;
+	},
+
+	/**
+	 * @return int milliseconds of cooldown after the close animation before reopen
+	 */
+	getResetDelay() {
+		return this.options.ResetDelay ?? 0;
+	},
+
+	/**
 	 * @return bool whether the content is open and reachable
 	 */
 	isOpen() {
@@ -147,7 +163,7 @@ Prado.WebUI.TSafetyCover = Prado.Class(Prado.WebUI.Control,
 	 * @param bool focusContentOnOpen whether to move focus into the content once open
 	 */
 	open(focusContentOnOpen) {
-		if (!this.ready || this.opened || this.pulsing) {
+		if (!this.ready || this.opened || this.pulsing || this.closing) {
 			return;
 		}
 		this.focusOnOpen = focusContentOnOpen === true;
@@ -176,12 +192,16 @@ Prado.WebUI.TSafetyCover = Prado.Class(Prado.WebUI.Control,
 	/**
 	 * Returns the overlay over the content, re-guards the content from keyboard
 	 * and assistive technology, and cancels the pending timers. Focus that was
-	 * inside the content returns to the guard.
+	 * inside the content returns to the guard. While an open cover closes, the
+	 * cover enters a "closing" cooldown spanning the close animation plus
+	 * `ResetDelay`, during which it ignores clicks and cannot reopen; a call while
+	 * already closing leaves that cooldown running.
 	 */
 	close() {
-		if (!this.ready) {
+		if (!this.ready || this.closing) {
 			return;
 		}
+		const wasOpen = this.opened;
 		this.clearTimers();
 		this.pulsing = false;
 		this.panel.classList.remove('safety-cover-pulsate');
@@ -195,6 +215,17 @@ Prado.WebUI.TSafetyCover = Prado.Class(Prado.WebUI.Control,
 		this.setContentGuarded(true);
 		if (focusInContent) {
 			this.overlay.focus();
+		}
+		// A cover that was actually open animates closed; ignore clicks until the
+		// animation (and any ResetDelay) completes, so a click cannot reopen it
+		// mid-animation. Cancelling a pulse that never opened has no animation and
+		// no cooldown.
+		if (wasOpen) {
+			this.closing = true;
+			this.resetTimer = setTimeout(() => {
+				this.resetTimer = null;
+				this.closing = false;
+			}, this.getAnimationDuration() + this.getResetDelay());
 		}
 	},
 
@@ -307,7 +338,7 @@ Prado.WebUI.TSafetyCover = Prado.Class(Prado.WebUI.Control,
 	 * Clears every pending timer.
 	 */
 	clearTimers() {
-		for (const name of ['openTimer', 'closeTimer', 'mouseOutTimer']) {
+		for (const name of ['openTimer', 'closeTimer', 'mouseOutTimer', 'resetTimer']) {
 			if (this[name]) {
 				clearTimeout(this[name]);
 				this[name] = null;
@@ -317,6 +348,7 @@ Prado.WebUI.TSafetyCover = Prado.Class(Prado.WebUI.Control,
 
 	onDone() {
 		this.clearTimers();
+		this.closing = false;
 		// Restore the content on teardown so a wrapper that later re-registers on
 		// the same DOM starts from an unguarded state; the fallback's tabindex save
 		// then reads the real originals, not an already-lowered value.

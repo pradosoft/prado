@@ -68,6 +68,9 @@ use Prado\Web\UI\TControl;
  *   close. Defaults to 1000.
  * - <b>AnimationDuration</b>, int — milliseconds the open and close animation of
  *   the face takes. Defaults to 250.
+ * - <b>ResetDelay</b>, int — extra milliseconds after the close animation ends
+ *   during which clicks stay ignored, a cooldown before the cover reopens.
+ *   Defaults to 0.
  * - <b>AccessibleLabel</b>, string — accessible-name override for the guard,
  *   rendered as its `aria-label`. Defaults to empty, which labels the guard from
  *   its visible face content instead.
@@ -414,6 +417,28 @@ class TSafetyCover extends TPanel
 	}
 
 	/**
+	 * @return int milliseconds after the cover finishes closing during which it
+	 *   ignores clicks before it can reopen. Defaults to 0.
+	 */
+	public function getResetDelay()
+	{
+		return $this->getViewState('ResetDelay', 0);
+	}
+
+	/**
+	 * Set the milliseconds of cooldown after the close animation during which the
+	 * cover ignores clicks and cannot reopen. The cover already ignores clicks for
+	 * the whole close animation ({@see getAnimationDuration AnimationDuration}); this
+	 * extends that window, so a click cannot reopen the cover the instant it lands
+	 * closed. Defaults to 0.
+	 * @param int $value milliseconds of post-close cooldown
+	 */
+	public function setResetDelay($value)
+	{
+		$this->setViewState('ResetDelay', TPropertyValue::ensureInteger($value), 0);
+	}
+
+	/**
 	 * @return int milliseconds after the pointer leaves the panel before the
 	 *   overlay returns. Defaults to 1000.
 	 */
@@ -553,6 +578,8 @@ class TSafetyCover extends TPanel
 			'OpenDelay' => $this->getOpenDelay(),
 			'AutoCloseDelay' => $this->getAutoCloseDelay(),
 			'MouseOutTimeout' => $this->getMouseOutTimeout(),
+			'AnimationDuration' => $this->getAnimationDuration(),
+			'ResetDelay' => $this->getResetDelay(),
 			'KeepOpenWhileActive' => $this->getKeepOpenWhileActive(),
 		];
 	}
