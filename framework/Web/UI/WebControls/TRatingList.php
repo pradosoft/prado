@@ -351,6 +351,12 @@ class TRatingList extends TRadioButtonList
 	public function render($writer)
 	{
 		$writer->addAttribute('id', $this->getClientID());
+		// TRadioButtonList supplies role="radiogroup" and the aria-label; the
+		// visually-hidden radios keep the group operable by keyboard and readable
+		// by assistive tech. A read-only rating additionally announces as such.
+		if ($this->getReadOnly()) {
+			$writer->addAttribute('aria-readonly', 'true');
+		}
 		$this->getPage()->getClientScript()->registerPostBackControl(
 			$this->getClientClassName(),
 			$this->getPostBackOptions()

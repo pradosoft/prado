@@ -240,6 +240,15 @@ class TInPlaceDropDownListTest extends TestCase
 		$this->assertSame('Pick a color', $options['EditorLabel']);
 	}
 
+	public function testEditorLabelDefaultsWhenToolTipIsEmpty()
+	{
+		// The editor must never be nameless; without a translation module
+		// Prado::localize() returns the English literal
+		$control = new TInPlaceDropDownList();
+		$options = PradoUnit::invoke($control, 'getPostBackOptions');
+		$this->assertSame('Edit value', $options['EditorLabel']);
+	}
+
 	// --- getPostBackOptions ---
 
 	public function testPostBackOptions()

@@ -63,8 +63,12 @@ const IDS = {
 	indicatorID: 'fup1_indicator',
 	completeID:  'fup1_complete',
 	errorID:     'fup1_error',
+	statusID:    'fup1_status',
 	targetID:    'fup1_iframe',
 	EventTarget: 'fup1',
+	uploadingText: 'Uploading file',
+	completeText:  'File upload complete',
+	errorText:     'File upload failed',
 };
 
 /** Build the DOM structure expected by TActiveFileUpload. */
@@ -99,6 +103,9 @@ function buildDOM() {
 	error.id            = IDS.errorID;
 	error.style.display = 'none';
 
+	const status        = document.createElement('span');
+	status.id           = IDS.statusID;
+
 	const iframe        = document.createElement('iframe');
 	iframe.id           = IDS.targetID;
 	iframe.name         = IDS.targetID;
@@ -109,6 +116,7 @@ function buildDOM() {
 	document.body.appendChild(indicator);
 	document.body.appendChild(complete);
 	document.body.appendChild(error);
+	document.body.appendChild(status);
 	document.body.appendChild(iframe);
 
 	// Also create a host div for the Control base class
@@ -116,14 +124,15 @@ function buildDOM() {
 	host.id = IDS.ID;
 	document.body.appendChild(host);
 
-	return { form, fileInput, flag, indicator, complete, error, iframe, host };
+	return { form, fileInput, flag, indicator, complete, error, status, iframe, host };
 }
 
-function destroyDOM({ form, indicator, complete, error, iframe, host }) {
+function destroyDOM({ form, indicator, complete, error, status, iframe, host }) {
 	form.remove();
 	indicator.remove();
 	complete.remove();
 	error.remove();
+	status.remove();
 	iframe.remove();
 	host.remove();
 }
@@ -646,5 +655,51 @@ describe('TActiveFileUpload errorCode pattern matching', () => {
 		} else {
 			expect(dom.error.style.display).toBe('');
 		}
+	});
+});
+
+// ─── accessibility: live-region announcements ─────────────────────────────────
+
+describe('TActiveFileUpload accessibility', () => {
+	let dom;
+
+	beforeEach(() => {
+		clearRegistry(); clearControls();
+		dom = buildDOM();
+	});
+
+	afterEach(() => {
+		restoreMocks();
+		destroyDOM(dom);
+	});
+
+	it('announces the uploading state when a file is selected', () => {
+		const ctrl = new TActiveFileUpload(IDS);
+		Object.defineProperty(dom.fileInput, 'value', {
+			get: () => 'C:\\fakepath\\file.txt',
+			configurable: true,
+		});
+		ctrl.fileChanged();
+		expect(dom.status.textContent).toBe('Uploading file');
+	});
+
+	it('announces completion on a successful finish', () => {
+		const ctrl = new TActiveFileUpload(IDS);
+		ctrl.finishoptions = { errorCode: '0' };
+		ctrl.finishCallBack(true);
+		expect(dom.status.textContent).toBe('File upload complete');
+	});
+
+	it('announces failure on an unsuccessful finish', () => {
+		const ctrl = new TActiveFileUpload(IDS);
+		ctrl.finishoptions = { errorCode: '1' };
+		ctrl.finishCallBack(false);
+		expect(dom.status.textContent).toBe('File upload failed');
+	});
+
+	it('announce() is a no-op without a status element', () => {
+		const ctrl = new TActiveFileUpload(IDS);
+		ctrl.status = null;
+		expect(() => ctrl.announce('x')).not.toThrow();
 	});
 });

@@ -389,6 +389,31 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	}
 
 	/**
+	 * @return string the ARIA role that groups the list items. Defaults to
+	 *   `group`; {@see TRadioButtonList} overrides it with `radiogroup`.
+	 * @since 4.4.0
+	 */
+	protected function getGroupRole(): string
+	{
+		return 'group';
+	}
+
+	/**
+	 * Adds the grouping ARIA attributes to the list container so assistive
+	 * technology announces the items as one named set. The accessible name comes
+	 * from {@see getToolTip ToolTip} when set.
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for rendering purpose.
+	 * @since 4.4.0
+	 */
+	protected function addGroupAttributesToRender($writer)
+	{
+		$writer->addAttribute('role', $this->getGroupRole());
+		if (($toolTip = $this->getToolTip()) !== '') {
+			$writer->addAttribute('aria-label', $toolTip);
+		}
+	}
+
+	/**
 	 * Renders the checkbox list control.
 	 * This method overrides the parent implementation.
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer for rendering purpose.
@@ -397,6 +422,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	{
 		if ($needSpan = $this->getSpanNeeded()) {
 			$writer->addAttribute('id', $this->getClientId());
+			$this->addGroupAttributesToRender($writer);
 			$writer->renderBeginTag('span');
 		}
 		if ($this->getItemCount() > 0) {
@@ -410,6 +436,9 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 			$this->setAccessKey('');
 			$this->setTabIndex(0);
 			$this->addAttributesToRender($writer);
+			if (!$needSpan) {
+				$this->addGroupAttributesToRender($writer);
+			}
 			$repeatInfo->renderRepeater($writer, $this);
 			$this->setAccessKey($accessKey);
 			$this->setTabIndex($tabIndex);

@@ -1,16 +1,46 @@
 <?xml version="1.0"?>
 <xliff version="1.0">
- <file source-language="EN" target-language="en" datatype="plaintext" original="messages" date="2006-08-01T12:08:27Z" product-name="messages">
+ <file source-language="EN" target-language="en" datatype="plaintext" original="messages" date="2026-08-30T02:28:37Z" product-name="messages">
   <body>
   
 <trans-unit id="1">
 <source>{field} is required.</source>
-<target>Lütfen '{field}' alanını doldurunuz.</target>
+<target>L&#xFC;tfen '{field}' alan&#x131;n&#x131; doldurunuz.</target>
 </trans-unit>
 
 <trans-unit id="2">
 <source>city</source>
-<target>Şehir</target>
+<target>&#x15E;ehir</target>
+</trans-unit>
+
+<trans-unit id="3">
+<source><![CDATA[Calendar]]></source>
+<target><![CDATA[]]></target>
+</trans-unit>
+
+<trans-unit id="4">
+<source><![CDATA[Month]]></source>
+<target><![CDATA[]]></target>
+</trans-unit>
+
+<trans-unit id="5">
+<source><![CDATA[Year]]></source>
+<target><![CDATA[]]></target>
+</trans-unit>
+
+<trans-unit id="6">
+<source><![CDATA[Previous month]]></source>
+<target><![CDATA[]]></target>
+</trans-unit>
+
+<trans-unit id="7">
+<source><![CDATA[Next month]]></source>
+<target><![CDATA[]]></target>
+</trans-unit>
+
+<trans-unit id="8">
+<source><![CDATA[Choose date]]></source>
+<target><![CDATA[]]></target>
 </trans-unit>
 </body>
  </file>

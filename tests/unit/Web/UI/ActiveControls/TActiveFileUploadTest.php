@@ -38,6 +38,34 @@ class TActiveFileUploadTest extends TestCase
 		$this->assertEquals('uploadGroup', $upload->getValidationGroup());
 	}
 
+	public function testStatusTextsDefaultToLocalizedEnglish()
+	{
+		// Without a translation module, Prado::localize() returns the literal
+		$upload = new TActiveFileUpload();
+		$this->assertSame('Uploading file', $upload->getUploadingText());
+		$this->assertSame('File upload complete', $upload->getCompleteText());
+		$this->assertSame('File upload failed', $upload->getErrorText());
+	}
+
+	public function testStatusTextsAcceptCustomValues()
+	{
+		$upload = new TActiveFileUpload();
+		$upload->setUploadingText('Wird hochgeladen');
+		$upload->setCompleteText('Hochladen abgeschlossen');
+		$upload->setErrorText('Hochladen fehlgeschlagen');
+		$this->assertSame('Wird hochgeladen', $upload->getUploadingText());
+		$this->assertSame('Hochladen abgeschlossen', $upload->getCompleteText());
+		$this->assertSame('Hochladen fehlgeschlagen', $upload->getErrorText());
+	}
+
+	public function testEmptyStatusTextRestoresTheDefault()
+	{
+		$upload = new TActiveFileUpload();
+		$upload->setUploadingText('Custom');
+		$upload->setUploadingText('');
+		$this->assertSame('Uploading file', $upload->getUploadingText());
+	}
+
 	public function testInheritsAcceptAndCapture()
 	{
 		$upload = new TActiveFileUpload();

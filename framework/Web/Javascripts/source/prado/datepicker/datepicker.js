@@ -11,6 +11,14 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 
 	ShortWeekDayNames : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
 
+	// Assistive-technology labels; the server sends translations through the
+	// options, which Object.assign lays over these English defaults.
+	CalendarLabel : "Calendar",
+	MonthLabel : "Month",
+	YearLabel : "Year",
+	PrevMonthLabel : "Previous month",
+	NextMonthLabel : "Next month",
+
 	Format : "yyyy-MM-dd",
 
 	FirstDayOfWeek : 1, // 0 for sunday
@@ -94,6 +102,14 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 		this._calDiv.className = `TDatePicker_${this.CalendarStyle} ${this.ClassName}`;
 		this._calDiv.style.display = "none";
 		this._calDiv.style.position = "absolute"
+		// The popup is a labeled dialog so assistive technology announces it when
+		// it opens; the input keeps focus and arrow keys navigate the dates.
+		this._calDiv.id = `${this.options.ID}_calendar`;
+		this._calDiv.setAttribute("role", "dialog");
+		this._calDiv.setAttribute("aria-modal", "false");
+		this._calDiv.setAttribute("aria-label", this.CalendarLabel);
+		if(this.trigger && this.trigger.setAttribute)
+			this.trigger.setAttribute("aria-controls", this._calDiv.id);
 
 		// header div
 		div = document.createElement("div");
@@ -116,6 +132,7 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 		previousMonth.className = "prevMonthButton button";
 		previousMonth.type = "button"
 		previousMonth.value = "<<";
+		previousMonth.setAttribute("aria-label", this.PrevMonthLabel);
 		td.appendChild(previousMonth);
 		tr.appendChild(td);
 
@@ -128,6 +145,7 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 		tr.appendChild(td);
 		this._monthSelect = document.createElement("select");
 		this._monthSelect.className = "months";
+		this._monthSelect.setAttribute("aria-label", this.MonthLabel);
 	    for (let i = 0 ; i < this.MonthNames.length ; i++) {
 	        const opt = document.createElement("option");
 	        opt.innerHTML = this.MonthNames[i];
@@ -147,6 +165,7 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 		td.className = "labelContainer";
 		tr.appendChild(td);
 		this._yearSelect = document.createElement("select");
+		this._yearSelect.setAttribute("aria-label", this.YearLabel);
 		for(let i = this.FromYear; i <= this.UpToYear; ++i) {
 			const opt = document.createElement("option");
 			opt.innerHTML = i;
@@ -164,6 +183,7 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 		nextMonth.className = "nextMonthButton button";
 		nextMonth.type = "button";
 		nextMonth.value = ">>";
+		nextMonth.setAttribute("aria-label", this.NextMonthLabel);
 		td.appendChild(nextMonth);
 		tr.appendChild(td);
 
@@ -179,6 +199,10 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 		table = document.createElement("table");
 		table.align="center";
 		table.className = "grid";
+		// role=grid gives the ths and tds their columnheader/gridcell roles
+		// implicitly; updateHeader() keeps the label at "MonthName Year".
+		table.setAttribute("role", "grid");
+		this._gridTable = table;
 
 	    div.appendChild(table);
 		const thead = document.createElement("thead");
@@ -191,6 +215,7 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 			text = document.createTextNode(this.ShortWeekDayNames[(i+this.FirstDayOfWeek)%7]);
 			td.appendChild(text);
 			td.className = "weekDayHead";
+			td.setAttribute("scope", "col");
 			tr.appendChild(td);
 		}
 
@@ -205,6 +230,7 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 		for(let day=0; day<7; ++day) {
 				td = document.createElement("td");
 				td.className = "calendarDate";
+				td.id = `${this.options.ID}_day${(week*7)+day}`;
 				text = document.createTextNode(String.fromCharCode(160));
 				td.appendChild(text);
 
@@ -233,6 +259,13 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 		const buttonText = today.SimpleFormat(this.Format,this);
 		todayButton.value = buttonText;
 		div.appendChild(todayButton);
+
+		// Visually-hidden live region: announces the date the arrow keys land
+		// on, since keyboard focus stays on the input while navigating.
+		this._liveRegion = document.createElement("div");
+		this._liveRegion.setAttribute("aria-live", "polite");
+		this._liveRegion.style.cssText = "position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap";
+		this._calDiv.appendChild(this._liveRegion);
 
 		this.control.parentNode.appendChild(this._calDiv);
 
@@ -616,6 +649,8 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 			}
 			this.observe(document,"keydown", this.documentKeyDownEvent);
 			this.showing = true;
+			if(this.trigger && this.trigger.setAttribute)
+				this.trigger.setAttribute("aria-expanded", "true");
 		}
 	},
 
@@ -651,6 +686,10 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 			this.showing = false;
 			this.stopObserving(document.body, "click", this.documentClickEvent);
 			this.stopObserving(document,"keydown", this.documentKeyDownEvent);
+			if(this.trigger && this.trigger.setAttribute)
+				this.trigger.setAttribute("aria-expanded", "false");
+			if(this.control && this.control.removeAttribute)
+				this.control.removeAttribute("aria-activedescendant");
 		}
 	},
 
@@ -669,11 +708,21 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 	    if (firstIndex < 0)
 	    	firstIndex += 7;
 
+		// Marks a padding cell before or after the month's dates: not a date,
+		// so assistive technology skips it.
+		const emptySlot = (slot) => {
+			slot.value = -1;
+			slot.data.data = String.fromCharCode(160);
+			const node = slot.data.parentNode;
+			node.className = "empty";
+			node.setAttribute("aria-hidden", "true");
+			node.removeAttribute("aria-selected");
+			node.removeAttribute("aria-current");
+		};
+
 		let index = 0;
 		while (index < firstIndex) {
-			this.dateSlot[index].value = -1;
-			this.dateSlot[index].data.data = String.fromCharCode(160);
-			this.dateSlot[index].data.parentNode.className = "empty";
+			emptySlot(this.dateSlot[index]);
 			index++;
 		}
 
@@ -683,13 +732,26 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 			slot.value = i;
 			slot.data.data = i;
 			slotNode.className = "date";
+			slotNode.removeAttribute("aria-hidden");
 			//slotNode.style.color = "";
 			if (d1.toISODate() == today) {
 				slotNode.className += " today";
+				slotNode.setAttribute("aria-current", "date");
+			} else {
+				slotNode.removeAttribute("aria-current");
 			}
 			if (d1.toISODate() == selected) {
 			//	slotNode.style.color = "blue";
 				slotNode.className += " selected";
+				slotNode.setAttribute("aria-selected", "true");
+				// The input keeps focus; point assistive tech at the active cell
+				// and announce the date it represents.
+				if(this.options.InputMode == "TextBox" && this.control && this.control.setAttribute)
+					this.control.setAttribute("aria-activedescendant", slotNode.id);
+				if(this._liveRegion)
+					this._liveRegion.textContent = `${this.MonthNames[date.getMonth()]} ${i}, ${date.getFullYear()}`;
+			} else {
+				slotNode.setAttribute("aria-selected", "false");
 			}
 			d1 = new Date(d1.getFullYear(), d1.getMonth(), d1.getDate()+1);
 		}
@@ -699,9 +761,7 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 		const _lastDateIndex = index;
 
 	    while(index < 42) {
-			this.dateSlot[index].value = -1;
-			this.dateSlot[index].data.data = String.fromCharCode(160);
-			this.dateSlot[index].data.parentNode.className = "empty";
+			emptySlot(this.dateSlot[index]);
 			++index;
 		}
 
@@ -718,6 +778,9 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 	},
 
 	updateHeader() {
+		if(this._gridTable)
+			this._gridTable.setAttribute("aria-label",
+				`${this.MonthNames[this.selectedDate.getMonth()]} ${this.selectedDate.getFullYear()}`);
 
 		let options = this._monthSelect.options;
 		const m = this.selectedDate.getMonth();

@@ -13,6 +13,7 @@ Prado.WebUI.TActiveFileUpload = Prado.Class(Prado.WebUI.Control,
 		this.indicator = document.getElementById(options.indicatorID);
 		this.complete = document.getElementById(options.completeID);
 		this.error = document.getElementById(options.errorID);
+		this.status = document.getElementById(options.statusID);
 
 		// set up events
 		if (options.autoPostBack){
@@ -30,6 +31,7 @@ Prado.WebUI.TActiveFileUpload = Prado.Class(Prado.WebUI.Control,
 		this.complete.style.display = 'none';
 		this.error.style.display = 'none';
 		this.indicator.style.display = '';
+		this.announce(this.options.uploadingText);
 
 		// set the form to submit in the iframe, submit it, and then reset it.
 		this.oldtargetID = this.form.target;
@@ -95,9 +97,17 @@ Prado.WebUI.TActiveFileUpload = Prado.Class(Prado.WebUI.Control,
 			if (/^[0[\],]+$/.test(this.finishoptions.errorCode) && success) {
 				this.complete.style.display = '';
 				this.input.value = '';
+				this.announce(this.options.completeText);
 			} else {
 				this.error.style.display = '';
+				this.announce(this.options.errorText);
 			}
+	},
+
+	/** Update the live region so assistive tech announces the upload state. */
+	announce(text) {
+		if (this.status && text)
+			this.status.textContent = text;
 	}
 
 });

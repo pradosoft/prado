@@ -136,6 +136,15 @@ class TInPlaceTextBoxTest extends TestCase
 		$this->assertSame('Favorite color', $options['EditorLabel']);
 	}
 
+	public function testEditorLabelDefaultsWhenToolTipIsEmpty()
+	{
+		// The editor must never be nameless; without a translation module
+		// Prado::localize() returns the English literal
+		$control = new TInPlaceTextBox();
+		$options = PradoUnit::invoke($control, 'getPostBackOptions');
+		$this->assertSame('Edit value', $options['EditorLabel']);
+	}
+
 	public function testEditTriggerControlID()
 	{
 		$control = new TInPlaceTextBox();

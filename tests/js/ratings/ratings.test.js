@@ -635,6 +635,99 @@ describe('TRatingList edge cases', () => {
 	});
 });
 
+// ─── TRatingList — accessibility ─────────────────────────────────────────────
+
+describe('TRatingList accessibility', () => {
+	let rl, cleanup;
+
+	beforeEach(() => {
+		const built = buildRatingDOM('rla', 5);
+		cleanup = built.cleanup;
+		rl = new TRatingList(built.options);
+	});
+
+	afterEach(() => cleanup());
+
+	it('labels each radio so it has an accessible name', () => {
+		rl.radios.forEach((radio, i) => {
+			expect(radio.getAttribute('aria-label')).toBe('Star ' + (i + 1));
+		});
+	});
+
+	it('falls back to the position when the radio value is empty', () => {
+		cleanup();
+		const built = buildRatingDOM('rlb', 3);
+		cleanup = built.cleanup;
+		// blank the values before init
+		for (let i = 0; i < 3; i++) {
+			document.getElementById('rlb_c' + i).value = '';
+		}
+		const r = new TRatingList(built.options);
+		expect(r.radios[2].getAttribute('aria-label')).toBe('3');
+	});
+
+	it('marks the decorative star cells aria-hidden', () => {
+		rl.radios.forEach((radio) => {
+			expect(radio.parentNode.parentNode.getAttribute('aria-hidden')).toBe('true');
+		});
+	});
+
+	it('does not put display:none on the radios (keeps them focusable)', () => {
+		// The control never sets inline display:none; hiding is CSS visually-hidden.
+		rl.radios.forEach((radio) => {
+			expect(radio.style.display).not.toBe('none');
+		});
+	});
+
+	it('a radio change (keyboard arrow) selects that rating', () => {
+		// simulate arrow-key selection: the browser checks the radio and fires change
+		rl.radios[3].checked = true;
+		rl.radios[3].dispatchEvent(new Event('change'));
+		expect(rl.selectedIndex).toBe(3);
+		expect(rl.rating).toBe(4);
+	});
+
+	it('a radio change dispatches a postback when AutoPostBack is on', () => {
+		cleanup();
+		const built = buildRatingDOM('rlc', 5, { AutoPostBack: true });
+		cleanup = built.cleanup;
+		const r = new TRatingList(built.options);
+		global.Prado.PostBack = vi.fn();
+		r.radios[1].checked = true;
+		r.radios[1].dispatchEvent(new Event('change'));
+		expect(global.Prado.PostBack).toHaveBeenCalled();
+		expect(global.Prado.PostBack.mock.calls[0][0].ID).toBe('rlc_c1');
+	});
+
+	it('focus previews the star and marks it, blur clears it', () => {
+		const td = rl.radios[2].parentNode.parentNode;
+		rl.radios[2].dispatchEvent(new Event('focus'));
+		expect(td.classList.contains('rating_focus')).toBe(true);
+		rl.radios[2].dispatchEvent(new Event('blur'));
+		expect(td.classList.contains('rating_focus')).toBe(false);
+	});
+
+	it('toggling read-only keeps the group aria-readonly in step', () => {
+		const root = document.getElementById('rla');
+		rl.setReadOnly(true);
+		expect(root.getAttribute('aria-readonly')).toBe('true');
+		rl.setReadOnly(false);
+		expect(root.hasAttribute('aria-readonly')).toBe(false);
+	});
+
+	it('read-only disables the radios and ignores keyboard changes', () => {
+		cleanup();
+		const built = buildRatingDOM('rld', 5, { ReadOnly: true });
+		cleanup = built.cleanup;
+		const r = new TRatingList(built.options);
+		r.radios.forEach((radio) => expect(radio.disabled).toBe(true));
+		// a stray change must not move the rating
+		const before = r.rating;
+		r.change(4, { preventDefault() {} });
+		expect(r.rating).toBe(before);
+	});
+});
+
 // ─── TActiveRatingList — class existence and inheritance ─────────────────────
 
 describe('TActiveRatingList', () => {
