@@ -1,0 +1,4 @@
+<com:TContent ID="Content">
+	<h1>ColorPicker Accessibility Test Case</h1>
+	<com:TColorPicker ID="basic" Text="#FFCC00" Mode="Basic" ToolTip="Pick a color" />
+</com:TContent>

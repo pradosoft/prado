@@ -278,7 +278,10 @@ Prado.WebUI.TColorPicker = Prado.Class(Prado.WebUI.Control, {
 		this.button = document.getElementById(`${options['ID']}_button`);
 		this._buttonOnClick = this.buttonOnClick.bind(this);
 		if(options['ShowColorPicker'])
+		{
 			this.observe(this.button, "click", this._buttonOnClick);
+			this.observe(this.button, "keydown", this.buttonKeyPressed.bind(this));
+		}
 		this.observe(this.input, "change", this.updatePicker.bind(this));
 
 		Prado.Registry[options.ID] = this;
@@ -289,6 +292,18 @@ Prado.WebUI.TColorPicker = Prado.Class(Prado.WebUI.Control, {
 		this.button.style.backgroundColor = color.toString();
 	},
 
+	/**
+	 * Enter or Space on the trigger button opens the color picker, matching the
+	 * behavior of a native button.
+	 */
+	buttonKeyPressed(event) {
+		if(event.keyCode == 13 || event.keyCode == 32)
+		{
+			event.preventDefault();
+			this.buttonOnClick(event);
+		}
+	},
+
 	buttonOnClick(_event) {
 		const mode = this.options['Mode'];
 		if(this.element == null)
@@ -297,6 +312,12 @@ Prado.WebUI.TColorPicker = Prado.Class(Prado.WebUI.Control, {
 			this.element = this[constructor](this.options['ID'], this.options['Palette'])
 			this.input.parentNode.appendChild(this.element);
 			this.element.style.display = "none";
+			// Expose the popup as a labeled dialog and make it focusable so
+			// focus can move into it when it opens.
+			this.element.setAttribute('role', 'dialog');
+			this.element.setAttribute('tabindex', '-1');
+			this.element.setAttribute('aria-label',
+				this.button.getAttribute('aria-label') || 'Color picker');
 
 			if(mode == "Full")
 				this.initializeFullPicker();
@@ -321,6 +342,7 @@ Prado.WebUI.TColorPicker = Prado.Class(Prado.WebUI.Control, {
 			this.observe(document.body, "click", this._documentClickEvent);
 			this.observe(document,"keydown", this._documentKeyDownEvent);
 			this.showing = true;
+			this.button.setAttribute('aria-expanded', 'true');
 
 			if(type == "Full")
 			{
@@ -329,6 +351,13 @@ Prado.WebUI.TColorPicker = Prado.Class(Prado.WebUI.Control, {
 				this.inputs.oldColor.style.backgroundColor = color.asHex();
 				this.setColor(color,true);
 			}
+
+			// Move focus into the dialog: the first palette cell for the basic
+			// grid, otherwise the dialog itself.
+			if(this.cells && this.cells.length > 0)
+				this.focusCell(this.activeCell || 0);
+			else
+				this.element.focus();
 		}
 	},
 
@@ -345,6 +374,10 @@ Prado.WebUI.TColorPicker = Prado.Class(Prado.WebUI.Control, {
 				this.stopObserving(document.body, "mousemove", this._onMouseMove);
 				this._observingMouseMove = false;
 			}
+
+			this.button.setAttribute('aria-expanded', 'false');
+			// Return focus to the trigger so keyboard users are not stranded.
+			this.button.focus();
 		}
 	},
 
@@ -384,9 +417,16 @@ Prado.WebUI.TColorPicker = Prado.Class(Prado.WebUI.Control, {
 
 		const colors = Prado.WebUI.TColorPicker.palettes[palette];
 		const pickerOnClick = this.cellOnClick.bind(this);
+		const cellKeyDown = this.cellKeyPressed.bind(this);
 		const obj=this;
+		// Palette cells form a keyboard-navigable grid with a single tab stop
+		// (roving tabindex); this.cells holds them in row-major order.
+		this.cells = [];
+		this.cellColumns = 0;
+		this.activeCell = 0;
 		for (const color of colors) {
 			const row = document.createElement("tr");
+			this.cellColumns = Math.max(this.cellColumns, color.length);
 			for (const c of color) {
 				const td = document.createElement("td");
 				const img = document.createElement("img");
@@ -394,7 +434,12 @@ Prado.WebUI.TColorPicker = Prado.Class(Prado.WebUI.Control, {
 				img.width=16;
 				img.height=16;
 				img.style.backgroundColor = `#${c}`;
+				img.setAttribute('role', 'button');
+				img.setAttribute('aria-label', `#${c}`);
+				img.setAttribute('tabindex', this.cells.length === 0 ? '0' : '-1');
+				img.pickerCellIndex = this.cells.length;
 				obj.observe(img,"click", pickerOnClick);
+				obj.observe(img,"keydown", cellKeyDown);
 				obj.observe(img,"mouseover", e => {
 					e.target.classList.add("pickerhover");
 				});
@@ -403,10 +448,49 @@ Prado.WebUI.TColorPicker = Prado.Class(Prado.WebUI.Control, {
 				});
 				td.appendChild(img);
 				row.appendChild(td);
+				this.cells.push(img);
 			}
 			table.childNodes[0].appendChild(row);
 		}
 		return div;
+	},
+
+	/**
+	 * Move the roving tab stop to the cell at index and focus it, clamped to the
+	 * available cells.
+	 */
+	focusCell(index) {
+		if(!this.cells || this.cells.length === 0)
+			return;
+		index = index < 0 ? 0 : (index >= this.cells.length ? this.cells.length - 1 : index);
+		for(let i = 0; i < this.cells.length; i++)
+			this.cells[i].setAttribute('tabindex', i === index ? '0' : '-1');
+		this.activeCell = index;
+		this.cells[index].focus();
+	},
+
+	/**
+	 * Keyboard grid navigation for the basic palette: arrows move between cells,
+	 * Home/End jump to the row ends, Enter/Space selects, and Escape closes.
+	 */
+	cellKeyPressed(event) {
+		const index = event.target.pickerCellIndex;
+		if(index === undefined)
+			return;
+		const cols = this.cellColumns;
+		const kc = event.keyCode;
+		let handled = true;
+		if(kc == 39)      this.focusCell(index + 1);          // Right
+		else if(kc == 37) this.focusCell(index - 1);          // Left
+		else if(kc == 40) this.focusCell(index + cols);       // Down
+		else if(kc == 38) this.focusCell(index - cols);       // Up
+		else if(kc == 36) this.focusCell(index - (index % cols)); // Home (row start)
+		else if(kc == 35) this.focusCell(index - (index % cols) + cols - 1); // End (row end)
+		else if(kc == 13 || kc == 32) this.cellOnClick(event); // Enter / Space
+		else if(kc == 27) this.hide(event);                    // Escape
+		else handled = false;
+		if(handled)
+			event.preventDefault();
 	},
 
 	cellOnClick(e) {

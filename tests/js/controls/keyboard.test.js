@@ -349,19 +349,23 @@ describe('TKeyboard forControl wiring', () => {
 		expect(kb.isShown()).toBe(true);
 	});
 
-	it('attaches onblur handler that hides when flagHover is false', () => {
+	it('onblur schedules a hide once focus has left and flagHover is false', async () => {
 		const kb = makeKeyboard({ AutoHide: true });
 		kb.tagKeyboard.style.visibility = 'visible';
 		kb.flagHover = false;
 		kb.forControl.onblur();
+		// The hide is deferred so focus can settle first.
+		expect(kb.isShown()).toBe(true);
+		await new Promise((r) => setTimeout(r, 0));
 		expect(kb.isShown()).toBe(false);
 	});
 
-	it('onblur does not hide when flagHover is true', () => {
+	it('onblur keeps the keyboard shown when flagHover is true', async () => {
 		const kb = makeKeyboard({ AutoHide: true });
 		kb.tagKeyboard.style.visibility = 'visible';
 		kb.flagHover = true;
 		kb.forControl.onblur();
+		await new Promise((r) => setTimeout(r, 0));
 		expect(kb.isShown()).toBe(true);
 	});
 });
@@ -427,5 +431,67 @@ describe('TKeyboard with no forControl', () => {
 				AutoHide: true,
 			});
 		}).not.toThrow();
+	});
+});
+
+// ─── accessibility ────────────────────────────────────────────────────────────
+//
+// The keyboard is a labeled group of buttons operable by keyboard: keys expose
+// role=button with a decoded aria-label, are in the tab order, and Enter/Space
+// types the key just like a mouse click.
+
+describe('TKeyboard accessibility', () => {
+	it('labels the keyboard container as a group', () => {
+		const kb = makeKeyboard({ Label: 'On-screen keyboard' });
+		expect(kb.tagKeyboard.getAttribute('role')).toBe('group');
+		expect(kb.tagKeyboard.getAttribute('aria-label')).toBe('On-screen keyboard');
+	});
+
+	it('exposes each key as a focusable button', () => {
+		const kb = makeKeyboard();
+		const key = kb.tagKeyboard.querySelector('.Key1');
+		expect(key.getAttribute('role')).toBe('button');
+		expect(key.getAttribute('tabindex')).toBe('0');
+	});
+
+	it('decodes HTML entities and names command keys in aria-label', () => {
+		const kb = makeKeyboard();
+		expect(kb.keyLabel('&gt;')).toBe('>');
+		expect(kb.keyLabel('&amp;')).toBe('&');
+		expect(kb.keyLabel('Bksp')).toBe('Backspace');
+		expect(kb.keyLabel('Caps')).toBe('Caps Lock');
+	});
+
+	it('types a character when Enter is pressed on a key', () => {
+		const kb = makeKeyboard();
+		kb.forControl.value = '';
+		kb.forControl.selectionStart = 0;
+		kb.forControl.selectionEnd = 0;
+		const el = kb.tagKeyboard.querySelector('.Key1');
+		el.innerHTML = 'a';
+		el.onkeydown.call(el, { keyCode: 13, preventDefault() {} });
+		expect(kb.forControl.value).toBe('a');
+	});
+
+	it('does not type on a non-activation key press', () => {
+		const kb = makeKeyboard();
+		kb.forControl.value = '';
+		kb.forControl.selectionStart = 0;
+		kb.forControl.selectionEnd = 0;
+		const el = kb.tagKeyboard.querySelector('.Key1');
+		el.innerHTML = 'a';
+		el.onkeydown.call(el, { keyCode: 65, preventDefault() {} });
+		expect(kb.forControl.value).toBe('');
+	});
+
+	it('keeps the keyboard shown when a key retains focus after blur', async () => {
+		const kb = makeKeyboard({ AutoHide: true });
+		kb.tagKeyboard.style.visibility = 'visible';
+		kb.flagHover = false;
+		const key = kb.tagKeyboard.querySelector('.Key1');
+		key.focus();
+		kb.forControl.onblur();
+		await new Promise((r) => setTimeout(r, 0));
+		expect(kb.isShown()).toBe(true);
 	});
 });

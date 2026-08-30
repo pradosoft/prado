@@ -1,0 +1,5 @@
+<com:TContent ID="Content">
+	<h1>Keyboard Accessibility Test Case</h1>
+	<com:TTextBox ID="field" />
+	<com:TKeyboard ID="kb" ForControl="field" AutoHide="false" />
+</com:TContent>

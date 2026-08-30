@@ -844,10 +844,17 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 			$this->_sideBarDataList->setDataSource($this->getWizardSteps());
 			$this->_sideBarDataList->setSelectedItemIndex($this->getActiveStepIndex());
 			$this->_sideBarDataList->dataBind();
-			if (($style = $this->getViewState('SideBarButtonStyle', null)) !== null) {
-				foreach ($this->_sideBarDataList->getItems() as $item) {
-					if (($button = $item->findControl('SideBarButton')) !== null) {
+			$style = $this->getViewState('SideBarButtonStyle', null);
+			$activeIndex = $this->getActiveStepIndex();
+			foreach ($this->_sideBarDataList->getItems() as $item) {
+				if (($button = $item->findControl('SideBarButton')) !== null) {
+					if ($style !== null) {
 						$button->getStyle()->mergeWith($style);
+					}
+					// Mark the current step so assistive technology announces
+					// which step is active within the wizard's side bar.
+					if ($button instanceof TWebControl && $item->getItemIndex() === $activeIndex) {
+						$button->setAttribute('aria-current', 'step');
 					}
 				}
 			}
