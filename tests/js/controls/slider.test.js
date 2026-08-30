@@ -45,11 +45,16 @@ function buildDOM(extra = {}) {
 	Object.defineProperty(track, 'offsetHeight', { configurable: true, value: 20 });
 	document.body.appendChild(track);
 
-	// Handle — 20px wide
+	// Handle — 20px wide; mirrors the server render's role=slider semantics
 	const handle = document.createElement('div');
 	handle.id = SLIDER_ID + '_handle';
 	handle.style.display = 'block';
 	handle.style.width = '20px';
+	handle.setAttribute('role', 'slider');
+	handle.setAttribute('aria-valuemin', '0');
+	handle.setAttribute('aria-valuemax', '100');
+	handle.setAttribute('aria-valuenow', '0');
+	handle.setAttribute('tabindex', '0');
 	Object.defineProperty(handle, 'offsetWidth', { configurable: true, value: 20 });
 	Object.defineProperty(handle, 'offsetHeight', { configurable: true, value: 20 });
 	document.body.appendChild(handle);
@@ -948,5 +953,83 @@ describe('TSlider vertical axis', () => {
 		s.handle.style.left = '';
 		s.setValue(50);
 		expect(s.handle.style.left).toBe('');
+	});
+});
+
+// ─── accessibility: keyboard + aria-valuenow ─────────────────────────────────
+
+describe('TSlider accessibility', () => {
+	afterEach(() => {
+		document.body.innerHTML = '';
+		if (global.Prado && global.Prado.Registry) global.Prado.Registry = {};
+	});
+
+	function handle() { return document.getElementById(SLIDER_ID + '_handle'); }
+	function key(kc) { return { keyCode: kc, preventDefault() {} }; }
+
+	it('ArrowRight/Up increases the value by one step and updates aria-valuenow', () => {
+		const s = makeSlider({ sliderValue: 50, step: 1 });
+		s.keyPressed(key(39));
+		expect(s.value).toBe(51);
+		expect(handle().getAttribute('aria-valuenow')).toBe('51');
+	});
+
+	it('ArrowLeft/Down decreases the value by one step', () => {
+		const s = makeSlider({ sliderValue: 50, step: 1 });
+		s.keyPressed(key(37));
+		expect(s.value).toBe(49);
+	});
+
+	it('PageUp/PageDown move by ten steps', () => {
+		const s = makeSlider({ sliderValue: 50, step: 1 });
+		s.keyPressed(key(33));
+		expect(s.value).toBe(60);
+		s.keyPressed(key(34));
+		expect(s.value).toBe(50);
+	});
+
+	it('Home and End jump to the range ends', () => {
+		const s = makeSlider({ sliderValue: 50, step: 1 });
+		s.keyPressed(key(36)); // Home
+		expect(s.value).toBe(0);
+		s.keyPressed(key(35)); // End
+		expect(s.value).toBe(100);
+	});
+
+	it('clamps at the range boundaries', () => {
+		const s = makeSlider({ sliderValue: 100, step: 1 });
+		s.keyPressed(key(39)); // Right past the max
+		expect(s.value).toBe(100);
+	});
+
+	it('the hidden field mirrors the keyboard-set value', () => {
+		const s = makeSlider({ sliderValue: 10, step: 5 });
+		s.keyPressed(key(39));
+		expect(s.hiddenField.value).toBe('15');
+	});
+
+	it('adds the step numerically even when options arrive as strings', () => {
+		// Regression: option values come from JSON as strings; string arithmetic
+		// would concatenate ("40"+"5") and clamp to the max.
+		const s = makeSlider({ sliderValue: 40, step: '5', range: ['0', '100'] });
+		s.keyPressed(key(39));
+		expect(s.value).toBe(45);
+	});
+
+	it('ignores keys while disabled', () => {
+		const s = makeSlider({ sliderValue: 50, step: 1 });
+		s.setDisabled();
+		s.keyPressed(key(39));
+		expect(s.value).toBe(50);
+	});
+
+	it('disabled toggles aria-disabled and the tab stop on the handle', () => {
+		const s = makeSlider({ sliderValue: 50 });
+		s.setDisabled();
+		expect(handle().getAttribute('aria-disabled')).toBe('true');
+		expect(handle().hasAttribute('tabindex')).toBe(false);
+		s.setEnabled();
+		expect(handle().hasAttribute('aria-disabled')).toBe(false);
+		expect(handle().getAttribute('tabindex')).toBe('0');
 	});
 });

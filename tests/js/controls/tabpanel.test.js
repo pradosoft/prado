@@ -39,14 +39,21 @@ function buildDOM(
 	hidden.value = String(active);
 	document.body.appendChild(hidden);
 
-	// View panels + tab headers
+	// View panels + tab headers (mirror the server render's ARIA tab pattern)
 	for (const vid of viewIDs) {
 		const panel = document.createElement('div');
 		panel.id = vid;
+		panel.setAttribute('role', 'tabpanel');
+		panel.setAttribute('aria-labelledby', vid + '_0');
 		document.body.appendChild(panel);
 
 		const header = document.createElement('div');
 		header.id = vid + '_0';
+		header.setAttribute('role', 'tab');
+		header.setAttribute('aria-controls', vid);
+		header.setAttribute('tabindex', vid === viewIDs[active] ? '0' : '-1');
+		header.setAttribute('aria-selected', vid === viewIDs[active] ? 'true' : 'false');
+		header.focus = () => {}; // jsdom focus no-op guard
 		document.body.appendChild(header);
 	}
 
@@ -451,5 +458,79 @@ describe('TTabPanel registry replacement', () => {
 			AutoSwitch: false,
 		});
 		expect(global.Prado.Registry['tabpanel']).toBe(second);
+	});
+});
+
+// ─── accessibility: aria state + keyboard navigation ─────────────────────────
+
+describe('TTabPanel accessibility', () => {
+	function build(active = 0, extra = {}) {
+		const opts = buildDOM(['tab0', 'tab1', 'tab2'], active, null, extra);
+		const panel = new TTabPanel(opts);
+		return { opts, panel };
+	}
+
+	afterEach(() => {
+		document.body.innerHTML = '';
+		if (global.Prado && global.Prado.Registry) global.Prado.Registry = {};
+	});
+
+	function tab(i) { return document.getElementById(`tab${i}_0`); }
+
+	it('sets aria-selected and roving tabindex from the active tab on init', () => {
+		build(1);
+		expect(tab(0).getAttribute('aria-selected')).toBe('false');
+		expect(tab(1).getAttribute('aria-selected')).toBe('true');
+		expect(tab(0).getAttribute('tabindex')).toBe('-1');
+		expect(tab(1).getAttribute('tabindex')).toBe('0');
+	});
+
+	it('moves the selected state when a tab is clicked', () => {
+		const { panel } = build(0);
+		panel.elementClicked('tab2', {});
+		expect(tab(2).getAttribute('aria-selected')).toBe('true');
+		expect(tab(2).getAttribute('tabindex')).toBe('0');
+		expect(tab(0).getAttribute('aria-selected')).toBe('false');
+		expect(tab(0).getAttribute('tabindex')).toBe('-1');
+	});
+
+	it('ArrowRight activates the next tab, wrapping at the end', () => {
+		const { panel } = build(0);
+		const prevent = () => {};
+		panel.keyPressed('tab0', { keyCode: 39, preventDefault: prevent });
+		expect(tab(1).getAttribute('aria-selected')).toBe('true');
+		panel.keyPressed('tab1', { keyCode: 39, preventDefault: prevent });
+		panel.keyPressed('tab2', { keyCode: 39, preventDefault: prevent });
+		expect(tab(0).getAttribute('aria-selected')).toBe('true'); // wrapped
+	});
+
+	it('ArrowLeft activates the previous tab', () => {
+		const { panel } = build(2);
+		panel.keyPressed('tab2', { keyCode: 37, preventDefault: () => {} });
+		expect(tab(1).getAttribute('aria-selected')).toBe('true');
+	});
+
+	it('Home and End jump to the first and last tab', () => {
+		const { panel } = build(1);
+		panel.keyPressed('tab1', { keyCode: 35, preventDefault: () => {} }); // End
+		expect(tab(2).getAttribute('aria-selected')).toBe('true');
+		panel.keyPressed('tab2', { keyCode: 36, preventDefault: () => {} }); // Home
+		expect(tab(0).getAttribute('aria-selected')).toBe('true');
+	});
+
+	it('ignores non-navigation keys', () => {
+		const { panel } = build(0);
+		let prevented = false;
+		panel.keyPressed('tab0', { keyCode: 65, preventDefault: () => { prevented = true; } });
+		expect(prevented).toBe(false);
+		expect(tab(0).getAttribute('aria-selected')).toBe('true');
+	});
+
+	it('skips hidden tabs when navigating', () => {
+		const opts = buildDOM(['tab0', 'tab1', 'tab2'], 0, [true, false, true]);
+		const panel = new TTabPanel(opts);
+		panel.keyPressed('tab0', { keyCode: 39, preventDefault: () => {} });
+		// tab1 is not visible, so the next visible tab is tab2
+		expect(tab(2).getAttribute('aria-selected')).toBe('true');
 	});
 });

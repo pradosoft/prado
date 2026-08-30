@@ -50,6 +50,12 @@ function buildDOM(viewIDs = ['v0', 'v1', 'v2'], active = 0, extra = {}) {
 
 		const header = document.createElement('div');
 		header.id = vid + '_0';
+		// Mirror the server render's disclosure-button ARIA
+		header.setAttribute('role', 'button');
+		header.setAttribute('aria-controls', vid);
+		header.setAttribute('tabindex', '0');
+		header.setAttribute('aria-expanded', vid === viewIDs[active] ? 'true' : 'false');
+		header.focus = () => {};
 		document.body.appendChild(header);
 
 		viewsObj[vid] = true;
@@ -470,5 +476,60 @@ describe('TAccordion registry replacement', () => {
 			ActiveHeaderCssClass: 'ah',
 		});
 		expect(global.Prado.Registry['accordion']).toBe(second);
+	});
+});
+
+// ─── accessibility: aria-expanded + keyboard ─────────────────────────────────
+
+describe('TAccordion accessibility', () => {
+	afterEach(() => {
+		document.body.innerHTML = '';
+		if (global.Prado && global.Prado.Registry) global.Prado.Registry = {};
+	});
+
+	function hdr(vid) { return document.getElementById(`${vid}_0`); }
+
+	it('reflects the open header with aria-expanded on init', () => {
+		makeAccordion(['a', 'b', 'c'], 1);
+		expect(hdr('a').getAttribute('aria-expanded')).toBe('false');
+		expect(hdr('b').getAttribute('aria-expanded')).toBe('true');
+	});
+
+	it('moves aria-expanded when another header is activated', () => {
+		const { accordion } = makeAccordion(['a', 'b', 'c'], 0);
+		accordion.elementClicked('c', {});
+		expect(hdr('c').getAttribute('aria-expanded')).toBe('true');
+		expect(hdr('a').getAttribute('aria-expanded')).toBe('false');
+	});
+
+	it('Enter and Space toggle the region open', () => {
+		const { accordion } = makeAccordion(['a', 'b', 'c'], 0);
+		accordion.keyPressed('b', { keyCode: 13, preventDefault: () => {} });
+		expect(hdr('b').getAttribute('aria-expanded')).toBe('true');
+		accordion.keyPressed('c', { keyCode: 32, preventDefault: () => {} });
+		expect(hdr('c').getAttribute('aria-expanded')).toBe('true');
+	});
+
+	it('arrow keys and Home/End move focus without toggling', () => {
+		const { accordion } = makeAccordion(['a', 'b', 'c'], 0);
+		let focused = null;
+		['a', 'b', 'c'].forEach((v) => { hdr(v).focus = () => { focused = v; }; });
+		accordion.keyPressed('a', { keyCode: 40, preventDefault: () => {} }); // Down
+		expect(focused).toBe('b');
+		accordion.keyPressed('a', { keyCode: 38, preventDefault: () => {} }); // Up wraps
+		expect(focused).toBe('c');
+		accordion.keyPressed('b', { keyCode: 35, preventDefault: () => {} }); // End
+		expect(focused).toBe('c');
+		accordion.keyPressed('c', { keyCode: 36, preventDefault: () => {} }); // Home
+		expect(focused).toBe('a');
+		// none of the moves changed the open region
+		expect(hdr('a').getAttribute('aria-expanded')).toBe('true');
+	});
+
+	it('ignores unrelated keys', () => {
+		const { accordion } = makeAccordion(['a', 'b'], 0);
+		let prevented = false;
+		accordion.keyPressed('a', { keyCode: 65, preventDefault: () => { prevented = true; } });
+		expect(prevented).toBe(false);
 	});
 });
