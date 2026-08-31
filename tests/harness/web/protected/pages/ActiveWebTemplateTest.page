@@ -12,6 +12,12 @@
 	<com:TActiveButton ID="btnUpdateAll" Text="Update All" OnClick="server_update_all" />
 	<com:TActiveButton ID="btnSetContent" Text="Set Content" OnClick="server_set_content" />
 
+	<!-- The ClientSide hook throws, so the callback dispatch fails and the click
+	     degrades to a full-page postback. It carries no OnClick handler: the
+	     fallback request re-renders the page and nothing is stamped. -->
+	<com:TActiveButton ID="btnThrowingHook" Text="Throwing Hook"
+		ClientSide.OnPreDispatch="throw new Error('deliberate hook failure');" />
+
 	<!-- The UID is allocated on the client, so these send it as the callback
 	     parameter. TCallback delivers it as a TCallbackEventParameter. -->
 	<com:TCallback ID="cbUpdateFirst" OnCallback="server_update_first" />
