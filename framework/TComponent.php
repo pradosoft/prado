@@ -1743,6 +1743,13 @@ class TComponent
 	 * {@see \Prado\IEventCycleParameter::postRaiseEvent} are called for pre- and
 	 * post-processing of the event lifecycle.
 	 *
+	 * If `$param` implements {@see \Prado\IEventStoppableParameter} and a handler
+	 * stops it (via {@see \Prado\IEventStoppableParameter::stopImmediatePropagation}), the
+	 * current handler completes and the remaining handlers are skipped. Response
+	 * post-processing still runs on the handlers that already ran. Under
+	 * {@see TEventResults::EVENT_RESULT_FEED_FORWARD}, the stop is read from the
+	 * forwarded value that becomes the current `$param`, not the original parameter.
+	 *
 	 * @param string $name the event name
 	 * @param mixed $sender the event sender object
 	 * @param \Prado\TEventParameter $param the event parameter
@@ -1788,6 +1795,7 @@ class TComponent
 			if ($responsetype & TEventResults::EVENT_REVERSE) {
 				$handlerArray = array_reverse($handlerArray);
 			}
+			$stoppable = $param instanceof IEventStoppableParameter;
 			foreach ($handlerArray as $handler) {
 				$this->callBehaviorsMethod('dyIntraRaiseEventTestHandler', $return, $handler, $sender, $param, $name);
 				if ($return === false) {
@@ -1847,6 +1855,12 @@ class TComponent
 
 				if ($response !== null && ($responsetype & TEventResults::EVENT_RESULT_FEED_FORWARD)) {
 					$param = $response;
+					// The forwarded value becomes the current parameter, so re-validate.
+					$stoppable = $param instanceof IEventStoppableParameter;
+				}
+
+				if ($stoppable && $param->getStopped()) {
+					break;
 				}
 			}
 		} elseif (strncasecmp($name, 'on', 2) === 0 && !$this->hasEvent($name)) {
