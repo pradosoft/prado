@@ -55,6 +55,81 @@ class TCallChainTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals([0, 0, 6, 9], $this->_order[8]);
 	}
 	
+	public function testStopped()
+	{
+		$chain = new TCallChain('dyMyMethod');
+		self::assertFalse($chain->getStopped());
+		$chain->setStopped(true);
+		self::assertTrue($chain->getStopped());
+		$chain->setStopped(false);
+		self::assertFalse($chain->getStopped());
+		$chain->stopImmediatePropagation();
+		self::assertTrue($chain->getStopped());
+	}
+
+	protected $_stopOrder = [];
+	public function testStopChain()
+	{
+		$chain = new TCallChain('dyMyMethod');
+
+		$chain->addCall([$this, 'myTestStopCallback1'], [1]);
+		$chain->addCall([$this, 'myTestStopCallback2'], [2]);
+		$chain->addCall([$this, 'myTestStopCallback3'], [3]);
+		$chain->call(0);
+
+		$this->assertEquals([1, 2], $this->_stopOrder);
+	}
+
+	public function myTestStopCallback1($param1, $callchain)
+	{
+		$this->_stopOrder[] = 1;
+		return $callchain->dyMyMethod($param1);
+	}
+
+	public function myTestStopCallback2($param1, $callchain)
+	{
+		$this->_stopOrder[] = 2;
+		$callchain->stopImmediatePropagation();
+		return $callchain->dyMyMethod($param1);
+	}
+
+	public function myTestStopCallback3($param1, $callchain)
+	{
+		$this->_stopOrder[] = 3;
+		return $callchain->dyMyMethod($param1);
+	}
+
+	protected $_filterOrder = [];
+	public function testStopFilterChain()
+	{
+		$chain = new TCallChain('dyMyMethod');
+
+		$chain->addCall([$this, 'myTestFilterCallback1'], [1]);
+		$chain->addCall([$this, 'myTestFilterCallback2'], [2]);
+		$chain->addCall([$this, 'myTestFilterCallback3'], [3]);
+		$chain->call(0);
+
+		// Handlers do not chain, so the loop would normally call all three; the
+		// second stops it, so the third is never reached.
+		$this->assertEquals([1, 2], $this->_filterOrder);
+	}
+
+	public function myTestFilterCallback1($param1, $callchain)
+	{
+		$this->_filterOrder[] = 1;
+	}
+
+	public function myTestFilterCallback2($param1, $callchain)
+	{
+		$this->_filterOrder[] = 2;
+		$callchain->setStopped(true);
+	}
+
+	public function myTestFilterCallback3($param1, $callchain)
+	{
+		$this->_filterOrder[] = 3;
+	}
+
 	public function myTestCallback1($param1, $param2, $param3, $callchain)
 	{
 		$args = func_get_args();

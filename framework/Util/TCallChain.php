@@ -33,6 +33,11 @@ class TCallChain extends TList implements IDynamicMethods
 	private $_method;
 
 	/**
+	 *	@var bool whether the chain has been stopped, ending the handler loop
+	 */
+	private bool $_stopped = false;
+
+	/**
 	 * This initializes the list and the name of the method to be called
 	 *	@param string $method the name of the function call
 	 */
@@ -92,11 +97,14 @@ class TCallChain extends TList implements IDynamicMethods
 	 * When there are no handlers or no handlers left, it returns the first parameter of the
 	 * argument list.
 	 *
+	 * A handler stops the chain by setting {@see setStopped Stopped} to true.  The handler
+	 * loop then ends and no further handlers are called.
+	 *
 	 * @param array $args The parameters to send the function chain.
 	 */
 	public function call(...$args)
 	{
-		if ($this->getCount() === 0) {
+		if ($this->_stopped || $this->getCount() === 0) {
 			return $args[0] ?? null;
 		}
 
@@ -114,11 +122,42 @@ class TCallChain extends TList implements IDynamicMethods
 				}
 				$handler[1][] = $this;
 				$result = call_user_func_array($handler[0], $handler[1]);
-			} while ($this->_iterator->valid());
+			} while (!$this->_stopped && $this->_iterator->valid());
 		} else {
 			$result = $args[0] ?? null;
 		}
 		return $result;
+	}
+
+
+	/**
+	 * @return bool whether the chain has been stopped. Defaults to false.
+	 * @since 4.4.0
+	 */
+	public function getStopped(): bool
+	{
+		return $this->_stopped;
+	}
+
+	/**
+	 * Sets whether the chain is stopped. When set to true from within a handler,
+	 * the handler loop ends and no further handlers in the chain are called.
+	 * @param bool $value whether to stop the chain.
+	 * @since 4.4.0
+	 */
+	public function setStopped(bool $value): void
+	{
+		$this->_stopped = $value;
+	}
+
+	/**
+	 * Stops the chain from within a handler by setting {@see setStopped Stopped} to true.
+	 * The handler loop ends and no further handlers in the chain are called.
+	 * @since 4.4.0
+	 */
+	public function stopImmediatePropagation(): void
+	{
+		$this->setStopped(true);
 	}
 
 
