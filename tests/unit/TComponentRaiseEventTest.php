@@ -299,6 +299,111 @@ class TComponentRaiseEventTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(2, $count);
 	}
 
+	public function testRaiseEventFeedForwardStopReadsForwardedValue()
+	{
+		$component = new NewComponent();
+		$order = [];
+
+		// This forwarded parameter is already stopped; setEventName only resets the
+		// original parameter, so the forwarded value keeps its stopped flag.
+		$forwarded = new \Prado\TEventParameter();
+		$forwarded->setStopped(true);
+
+		$component->attachEventHandler('OnMyEvent', function ($sender, $param) use (&$order, $forwarded) {
+			$order[] = 1;
+			return $forwarded;
+		});
+		$component->attachEventHandler('OnMyEvent', function ($sender, $param) use (&$order) {
+			$order[] = 2;
+		});
+
+		$param = new \Prado\TEventParameter();
+		$component->raiseEvent('OnMyEvent', $this, $param, TEventResults::EVENT_RESULT_FEED_FORWARD);
+
+		// The stop is read from the forwarded value (the current $param), not the
+		// original parameter, so the second handler is skipped.
+		$this->assertEquals([1], $order);
+		$this->assertFalse($param->getStopped());
+		$this->assertTrue($forwarded->getStopped());
+	}
+
+	public function testRaiseEventFeedForwardHandlerStopsForwardedParam()
+	{
+		$component = new NewComponent();
+		$order = [];
+
+		// Each handler returns the parameter it received, so the same stoppable
+		// object is fed forward through the chain.
+		$component->attachEventHandler('OnMyEvent', function ($sender, $param) use (&$order) {
+			$order[] = 1;
+			return $param;
+		});
+		$component->attachEventHandler('OnMyEvent', function ($sender, $param) use (&$order) {
+			$order[] = 2;
+			$param->stopImmediatePropagation();
+			return $param;
+		});
+		$component->attachEventHandler('OnMyEvent', function ($sender, $param) use (&$order) {
+			$order[] = 3;
+			return $param;
+		});
+
+		$param = new \Prado\TEventParameter();
+		$component->raiseEvent('OnMyEvent', $this, $param, TEventResults::EVENT_RESULT_FEED_FORWARD);
+
+		$this->assertEquals([1, 2], $order);
+		$this->assertTrue($param->getStopped());
+	}
+
+	public function testRaiseEventFeedForwardScalarResponseDoesNotStop()
+	{
+		$component = new NewComponent();
+		$count = 0;
+
+		// A scalar forwarded value has no stop flag, so the chain runs to the end.
+		$component->attachEventHandler('OnMyEvent', function () use (&$count) {
+			$count++;
+			return 'r1';
+		});
+		$component->attachEventHandler('OnMyEvent', function () use (&$count) {
+			$count++;
+			return 'r2';
+		});
+
+		$param = new \Prado\TEventParameter();
+		$component->raiseEvent('OnMyEvent', $this, $param, TEventResults::EVENT_RESULT_FEED_FORWARD);
+		$this->assertEquals(2, $count);
+	}
+
+	public function testRaiseEventStopWithResultAllResponseType()
+	{
+		$component = new NewComponent();
+		$order = [];
+
+		$component->attachEventHandler('OnMyEvent', function ($sender, $param) use (&$order) {
+			$order[] = 1;
+			return 'r1';
+		});
+		$component->attachEventHandler('OnMyEvent', function ($sender, $param) use (&$order) {
+			$order[] = 2;
+			$param->stopImmediatePropagation();
+			return 'r2';
+		});
+		$component->attachEventHandler('OnMyEvent', function ($sender, $param) use (&$order) {
+			$order[] = 3;
+			return 'r3';
+		});
+
+		$param = new \Prado\TEventParameter();
+		$responses = $component->raiseEvent('OnMyEvent', $this, $param, TEventResults::EVENT_RESULT_ALL);
+
+		// EVENT_RESULT_ALL records a per-handler structure; only the two that ran appear.
+		$this->assertEquals([1, 2], $order);
+		$this->assertCount(2, $responses);
+		$this->assertEquals('r1', $responses[0]['response']);
+		$this->assertEquals('r2', $responses[1]['response']);
+	}
+
 	public function testGlobalEventListenerInRaiseEvent()
 	{
 		//TODO Test the Global Event Listener

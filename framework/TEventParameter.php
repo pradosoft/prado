@@ -87,17 +87,28 @@ class TEventParameter extends \Prado\TComponent implements IEventParameter, IEve
 	}
 
 	/**
-	 * Setting the Event Name also resets the ParameterChanged back to false.
-	 * This method is called by {@see TComponent::raiseEvent} to set the EventName
-	 * before the event handlers are processed.
+	 * Setting the Event Name also resets the per-raise event properties through
+	 * {@see resetEventProperties}. This method is called by {@see TComponent::raiseEvent}
+	 * to set the EventName before the event handlers are processed.
 	 * @param string $value name of the event
 	 * @since 4.3.0
 	 */
 	public function setEventName(string $value)
 	{
 		$this->_eventName = $value;
+		$this->resetEventProperties();
+	}
+
+	/**
+	 * Resets the per-raise event properties to their defaults at the start of each
+	 * {@see TComponent::raiseEvent}: {@see resetParameterChanged ParameterChanged} back
+	 * to false and {@see setStopped Stopped} back to false.
+	 * @since 4.4.0
+	 */
+	public function resetEventProperties()
+	{
 		$this->resetParameterChanged();
-		$this->_stopped = false;
+		$this->setStopped(false);
 	}
 
 	/**

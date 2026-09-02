@@ -937,4 +937,17 @@ class TEventParameterTest extends TestCase
 		$param->setStopped(false);
 		$this->assertFalse($param->getStopped());
 	}
+
+	public function testResetEventPropertiesResetsChangedAndStopped()
+	{
+		$param = new TEventParameter();
+		$param->setParameterChanged(true);
+		$param->stopImmediatePropagation();
+		$this->assertTrue($param->getParameterChanged());
+		$this->assertTrue($param->getStopped());
+
+		$param->resetEventProperties();
+		$this->assertFalse($param->getParameterChanged());
+		$this->assertFalse($param->getStopped());
+	}
 }
