@@ -1743,6 +1743,11 @@ class TComponent
 	 * {@see \Prado\IEventCycleParameter::postRaiseEvent} are called for pre- and
 	 * post-processing of the event lifecycle.
 	 *
+	 * If `$param` implements {@see \Prado\IEventStoppableParameter} and a handler
+	 * stops it (via {@see \Prado\IEventStoppableParameter::stopImmediatePropagation}), the
+	 * current handler completes and the remaining handlers are skipped. Response
+	 * post-processing still runs on the handlers that already ran.
+	 *
 	 * @param string $name the event name
 	 * @param mixed $sender the event sender object
 	 * @param \Prado\TEventParameter $param the event parameter
@@ -1843,6 +1848,10 @@ class TComponent
 					$responses[] = ['sender' => $sender, 'param' => $param, 'response' => $response];
 				} else {
 					$responses[] = $response;
+				}
+
+				if ((($param instanceof TComponent && $param->isa(IEventStoppableParameter::class)) || $param instanceof IEventStoppableParameter) && $param->getStopped()) {
+					break;
 				}
 
 				if ($response !== null && ($responsetype & TEventResults::EVENT_RESULT_FEED_FORWARD)) {

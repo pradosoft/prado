@@ -883,4 +883,58 @@ class TEventParameterTest extends TestCase
 		$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
 		$param->offsetUnset('key');
 	}
+
+	// ================================================================================
+	// Stopped / stopImmediatePropagation Tests
+	// ================================================================================
+
+	public function testStoppedDefaultIsFalse()
+	{
+		$param = new TEventParameter();
+		$this->assertFalse($param->getStopped());
+	}
+
+	public function testImplementsIEventStoppableParameter()
+	{
+		$param = new TEventParameter();
+		$this->assertInstanceOf(\Prado\IEventStoppableParameter::class, $param);
+	}
+
+	public function testSetStopped()
+	{
+		$param = new TEventParameter();
+		$param->setStopped(true);
+		$this->assertTrue($param->getStopped());
+		$param->setStopped(false);
+		$this->assertFalse($param->getStopped());
+	}
+
+	public function testStopPropagationSetsStopped()
+	{
+		$param = new TEventParameter();
+		$param->stopImmediatePropagation();
+		$this->assertTrue($param->getStopped());
+	}
+
+	public function testSetEventNameResetsStopped()
+	{
+		$param = new TEventParameter();
+		$param->stopImmediatePropagation();
+		$this->assertTrue($param->getStopped());
+		// raiseEvent sets the event name at the start of each raise.
+		$param->setEventName('OnSomething');
+		$this->assertFalse($param->getStopped());
+	}
+
+	public function testSetStoppedIsNotGatedByReadOnly()
+	{
+		// A read-only parameter forbids data mutation but still allows stopping,
+		// which is control flow rather than parameter data.
+		$param = $this->makeExposed('value', true);
+		$this->assertTrue($param->getReadOnly());
+		$param->stopImmediatePropagation();
+		$this->assertTrue($param->getStopped());
+		$param->setStopped(false);
+		$this->assertFalse($param->getStopped());
+	}
 }

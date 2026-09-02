@@ -263,6 +263,7 @@ return [
 'IEnumerable' => 'Prado\IEnumerable',
 'IEventCycleParameter' => 'Prado\IEventCycleParameter',
 'IEventParameter' => 'Prado\IEventParameter',
+'IEventStoppableParameter' => 'Prado\IEventStoppableParameter',
 'IModule' => 'Prado\IModule',
 'IModuleDependency' => 'Prado\IModuleDependency',
 'TBinaryStreamBehavior' => 'Prado\IO\Behaviors\TBinaryStreamBehavior',

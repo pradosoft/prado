@@ -212,6 +212,93 @@ class TComponentRaiseEventTest extends PHPUnit\Framework\TestCase
 		return $param * 4;
 	}
 
+	public function testRaiseEventStopPropagationSkipsRemainingHandlers()
+	{
+		$component = new NewComponent();
+		$order = [];
+
+		$component->attachEventHandler('OnMyEvent', function ($sender, $param) use (&$order) {
+			$order[] = 1;
+			return 'r1';
+		});
+		$component->attachEventHandler('OnMyEvent', function ($sender, $param) use (&$order) {
+			$order[] = 2;
+			$param->stopImmediatePropagation();
+			return 'r2';
+		});
+		$component->attachEventHandler('OnMyEvent', function ($sender, $param) use (&$order) {
+			$order[] = 3;
+			return 'r3';
+		});
+
+		$param = new \Prado\TEventParameter();
+		$responses = $component->raiseEvent('OnMyEvent', $this, $param);
+
+		// The third handler is skipped once the second stops propagation.
+		$this->assertEquals([1, 2], $order);
+		$this->assertEquals(['r1', 'r2'], $responses);
+		$this->assertTrue($param->getStopped());
+	}
+
+	public function testRaiseEventStopResetsForEachRaise()
+	{
+		$component = new NewComponent();
+		$count = 0;
+		$component->attachEventHandler('OnMyEvent', function () use (&$count) {
+			$count++;
+		});
+		$component->attachEventHandler('OnMyEvent', function () use (&$count) {
+			$count++;
+		});
+
+		$param = new \Prado\TEventParameter();
+		// A stale stop flag must not carry into a fresh raise; setEventName clears it.
+		$param->setStopped(true);
+		$component->raiseEvent('OnMyEvent', $this, $param);
+
+		$this->assertEquals(2, $count);
+		$this->assertFalse($param->getStopped());
+	}
+
+	public function testRaiseEventStopPropagationHonorsReverseOrder()
+	{
+		$component = new NewComponent();
+		$order = [];
+
+		$component->attachEventHandler('OnMyEvent', function () use (&$order) {
+			$order[] = 1;
+		});
+		$component->attachEventHandler('OnMyEvent', function ($sender, $param) use (&$order) {
+			$order[] = 2;
+			$param->stopImmediatePropagation();
+		});
+		$component->attachEventHandler('OnMyEvent', function () use (&$order) {
+			$order[] = 3;
+		});
+
+		$param = new \Prado\TEventParameter();
+		$component->raiseEvent('OnMyEvent', $this, $param, TEventResults::EVENT_REVERSE);
+
+		// Reversed order is 3, 2, 1; handler 2 stops before handler 1 runs.
+		$this->assertEquals([3, 2], $order);
+	}
+
+	public function testRaiseEventNonStoppableParameterRunsAllHandlers()
+	{
+		$component = new NewComponent();
+		$count = 0;
+		$component->attachEventHandler('OnMyEvent', function () use (&$count) {
+			$count++;
+		});
+		$component->attachEventHandler('OnMyEvent', function () use (&$count) {
+			$count++;
+		});
+
+		// A null (non-stoppable) parameter is unaffected by the stop mechanism.
+		$component->raiseEvent('OnMyEvent', $this, null);
+		$this->assertEquals(2, $count);
+	}
+
 	public function testGlobalEventListenerInRaiseEvent()
 	{
 		//TODO Test the Global Event Listener
