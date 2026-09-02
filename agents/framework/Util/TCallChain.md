@@ -35,6 +35,8 @@ AOP-style call chain for `dy*` dynamic events. When a `[TComponent](../TComponen
 $chain = new TCallChain('dyMethodName');
 $chain->addCall($callable, $args);  // add a behavior+method pair
 $chain->call($method, $args);       // invoke the chain (usually via magic)
+$chain->setStopped(true);           // end the handler loop from within a behavior
+$chain->stopImmediatePropagation(); // same as setStopped(true)
 ```
 
 The `__call()` on `TCallChain` (via `[IDynamicMethods](IDynamicMethods.md)`) catches any `dy*` method call and routes it to `call()`, enabling the fluent chain syntax.
@@ -70,7 +72,8 @@ public function dyValidate($owner, $value, [TCallChain](TCallChain.md) $chain)
 ## Patterns & Gotchas
 
 - **Return value** — the final value returned from `raiseEvent()` is whatever the last-called behavior returns (or the initial return from the component if no chain handlers ran).
-- **Short-circuit** — returning without calling `$chain` stops propagation. Subsequent behaviors don't run.
+- **Short-circuit (filter)** — returning without calling `$chain` stops *this* branch, but the handler loop still calls the following behaviors so none is left uncalled ("does not act as a parameter filter").
+- **Stop the loop** — a handler calls `$chain->setStopped(true)` (property `Stopped`, bool, default false), or the equivalent `$chain->stopImmediatePropagation()`, to end the handler loop entirely. No further behaviors run, whether or not the handler also calls `$chain`. Once set, `call()` returns immediately.
 - **`TCallChain` extends `[TList](../Collections/TList.md)`** — all standard list operations are available, but the chain is consumed (single-pass iterator).
 - **`[IDynamicMethods](IDynamicMethods.md)` magic** — `__call()` on `TCallChain` catches `dy*` calls; do not confuse with regular method dispatch.
 - **Not reusable** — a `TCallChain` instance is built fresh for each `dy*` event raise.
