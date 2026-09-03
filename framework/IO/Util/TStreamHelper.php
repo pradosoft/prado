@@ -93,6 +93,45 @@ class TStreamHelper
 	}
 
 	/**
+	 * Copies an exact byte range of a seekable source stream to a destination.  The source is
+	 * seeked to $offset and exactly $length bytes are copied, in {@see CHUNK_SIZE} passes, so a
+	 * payload far larger than memory moves from one stream to another without materializing.  It
+	 * copies an exact count and throws when the source ends before $length bytes are read.
+	 * @param StreamInterface $source The seekable stream to read from.
+	 * @param int $offset The absolute byte offset in the source to start at.
+	 * @param int $length The number of bytes to copy.
+	 * @param StreamInterface $dest The stream to write to.
+	 * @throws \InvalidArgumentException When $length is negative.
+	 * @throws \RuntimeException When the source is not seekable, ends before the range does, or the destination stops accepting bytes.
+	 * @return int The number of bytes copied (equal to $length).
+	 */
+	public static function copyRange(StreamInterface $source, int $offset, int $length, StreamInterface $dest): int
+	{
+		if ($length < 0) {
+			throw new \InvalidArgumentException('copyRange length cannot be negative');
+		}
+		$source->seek($offset);
+		$copied = 0;
+		while ($copied < $length) {
+			$chunk = $source->read(min(static::CHUNK_SIZE, $length - $copied));
+			if ($chunk === '') {
+				throw new \RuntimeException('copyRange source ended after ' . $copied . ' of ' . $length . ' bytes');
+			}
+			$pos = 0;
+			$chunkLength = strlen($chunk);
+			while ($pos < $chunkLength) {
+				$written = $dest->write($pos === 0 ? $chunk : substr($chunk, $pos));
+				if ($written <= 0) {
+					throw new \RuntimeException('copyRange destination stopped accepting bytes at ' . ($copied + $pos));
+				}
+				$pos += $written;
+			}
+			$copied += $chunkLength;
+		}
+		return $copied;
+	}
+
+	/**
 	 * Hashes a stream's contents.  A seekable stream is hashed in full from the beginning and
 	 * its position restored; a non-seekable stream is hashed from its current position.
 	 * @param StreamInterface $stream The stream to hash.
