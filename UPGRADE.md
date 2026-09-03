@@ -9,13 +9,15 @@ for both A and B.
 
 Upgrading from v4.3.3
 ---------------------
-- TTabView tab captions for JavaScript-switching tabs (no NavigateUrl) are now rendered as plain
-  text on the `role="tab"` element instead of being wrapped in an `<a href="javascript://">` anchor.
-  This makes the tabs follow the WAI-ARIA tabs pattern and removes the fake `javascript://` URL, but
-  it is a breaking change for custom CSS that targeted the caption anchor. Update selectors that
-  targeted the anchor to target the tab element directly, e.g. `.tab-normal a` becomes `.tab-normal`,
-  `.tab-active a` becomes `.tab-active`, and `.tab-normal a:hover` becomes `.tab-normal:hover`. Tabs
-  that set NavigateUrl still render an `<a>`. The default `tabpanel.css` has been updated accordingly.
+- TTabView renders the captions of JavaScript-switching tabs (tabs without a NavigateUrl) as plain
+  text on the `role="tab"` element, so the tab bar follows the WAI-ARIA tabs pattern. The caption was
+  previously wrapped in an `<a href="javascript://">` anchor; that fake, no-op link has been removed
+  (it also violated strict Content-Security-Policy). Tabs that set NavigateUrl still render a real
+  `<a>`. This is a breaking change only for custom CSS that styled the caption through the anchor:
+  retarget those rules at the tab element itself — `.tab-normal a` becomes `.tab-normal`,
+  `.tab-active a` becomes `.tab-active`, and `.tab-normal a:hover` becomes `.tab-normal:hover`. The
+  bundled `tabpanel.css` has been updated accordingly and now also shows a visible `:focus-visible`
+  outline on the focused tab for keyboard users.
 - TPropertyValue::ensureEnum normalizes the case of the enum constant name.
 - TReCaptcha2::getResponse changed to TReCaptcha2::getCaptchaResponse - no longer overrides TApplicationComponent::getResponse (#1132)
 - Prado JS dispatches `prado:ajaxComplete` event with jQuery.onAjaxComplete for non-dependence on jQuery. Use this event instead of the jQuery event.
