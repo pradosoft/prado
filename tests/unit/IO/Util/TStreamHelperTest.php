@@ -37,6 +37,64 @@ class TStreamHelperTest extends PHPUnit\Framework\TestCase
 		self::assertSame('', $dst->getContents());
 	}
 
+	// ---- copyRange ------------------------------------------------------------
+
+	public function testCopyRangeCopiesAnExactWindow()
+	{
+		$src = TStream::fromString('HEADER' . 'PAYLOAD' . 'TRAILER');
+		$dst = TStream::fromMemory();
+		self::assertSame(7, TStreamHelper::copyRange($src, 6, 7, $dst));
+		$dst->rewind();
+		self::assertSame('PAYLOAD', $dst->getContents());
+	}
+
+	public function testCopyRangeSpansMultipleChunks()
+	{
+		$payload = random_bytes(3 * TStreamHelper::CHUNK_SIZE + 123);
+		$src = TStream::fromString('..' . $payload . '..');
+		$dst = TStream::fromMemory();
+		self::assertSame(strlen($payload), TStreamHelper::copyRange($src, 2, strlen($payload), $dst));
+		$dst->rewind();
+		self::assertSame($payload, $dst->getContents(), 'Every byte of a many-chunk range arrives in order.');
+	}
+
+	public function testCopyRangeCopiesNothingForAZeroLength()
+	{
+		$src = TStream::fromString('HEADER');
+		$dst = TStream::fromMemory();
+		self::assertSame(0, TStreamHelper::copyRange($src, 3, 0, $dst), 'A zero-length range copies zero bytes.');
+		$dst->rewind();
+		self::assertSame('', $dst->getContents());
+	}
+
+	public function testCopyRangeCopiesToTheSourceEnd()
+	{
+		$src = TStream::fromString('HEADER' . 'PAYLOAD');
+		$dst = TStream::fromMemory();
+		self::assertSame(7, TStreamHelper::copyRange($src, 6, 7, $dst), 'A range ending exactly at end of stream copies without throwing.');
+		$dst->rewind();
+		self::assertSame('PAYLOAD', $dst->getContents());
+	}
+
+	public function testCopyRangeRejectsANegativeLength()
+	{
+		$this->expectException(\InvalidArgumentException::class);
+		TStreamHelper::copyRange(TStream::fromString('abc'), 0, -1, TStream::fromMemory());
+	}
+
+	public function testCopyRangeThrowsWhenTheSourceEndsBeforeTheRange()
+	{
+		$this->expectException(\RuntimeException::class);
+		TStreamHelper::copyRange(TStream::fromString('short'), 0, 999, TStream::fromMemory());
+	}
+
+	public function testCopyRangeThrowsOnANonSeekableSource()
+	{
+		$pump = new TPumpStream(fn (int $n): string => str_repeat('x', $n));
+		$this->expectException(\RuntimeException::class);
+		TStreamHelper::copyRange($pump, 4, 4, TStream::fromMemory());
+	}
+
 	public function testHashMatchesNativeAndRestoresPosition()
 	{
 		$data = 'The quick brown fox';
