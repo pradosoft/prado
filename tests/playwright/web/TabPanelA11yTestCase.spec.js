@@ -18,6 +18,11 @@ test('TabPanelA11yTestCase', async ({ page }) => {
 
 	const tab1 = page.locator('#ctl0_Content_tab1_0');
 	const tab2 = page.locator('#ctl0_Content_tab2_0');
+
+	// JavaScript-switching tabs render the caption as plain text on the tab
+	// element (no anchor); the fake javascript:// link was removed.
+	await expect(tab1.locator('a')).toHaveCount(0);
+	await expect(tab1).toHaveText('Tab 1');
 	const panel1 = page.locator('#ctl0_Content_tab1');
 	const panel2 = page.locator('#ctl0_Content_tab2');
 

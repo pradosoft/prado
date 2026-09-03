@@ -49,23 +49,30 @@
 	padding:		10px;
 }
 
-.tab-active a
+.tab-active
 {
 	color: black;
 	text-decoration: none;
 	font-weight: bold;
 }
 
-.tab-normal a
+.tab-normal
 {
 	color: gray;
 	text-decoration: none;
 	font-weight: bold;
 }
 
-.tab-normal a:hover, .tab-normal a:focus
+.tab-normal:hover
 {
 	color: rgb(120,172,255);
 	text-decoration: none;
 	font-weight: bold;
+}
+
+/* Visible keyboard focus for the role="tab" elements. */
+.tab-normal:focus-visible, .tab-active:focus-visible
+{
+	outline: 2px solid rgb(120,172,255);
+	outline-offset: -2px;
 }
