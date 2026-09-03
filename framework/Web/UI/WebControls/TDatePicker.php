@@ -570,7 +570,7 @@ class TDatePicker extends TTextBox
 		}
 		$options['PositionMode'] = $this->getPositionMode();
 
-		$options = array_merge($options, $this->getCulturalOptions());
+		$options = array_merge($options, $this->getCulturalOptions(), $this->getAccessibleTextOptions());
 		if ($this->_clientScript !== null) {
 			$options = array_merge(
 				$options,
@@ -595,6 +595,32 @@ class TDatePicker extends TTextBox
 		$options['AbbreviatedMonthNames'] = $info->findInfo('calendar/gregorian/monthNames/format/abbreviated');
 		$options['ShortWeekDayNames'] = $info->findInfo('calendar/gregorian/dayNames/format/abbreviated');
 
+		return $options;
+	}
+
+	/**
+	 * Returns the calendar's assistive-technology labels that
+	 * {@see \Prado\Prado::localize()} translates to something other than the
+	 * client-side English defaults. Untranslated labels are omitted; the
+	 * JavaScript class supplies them.
+	 * @return array translated label options for the client-side calendar
+	 * @since 4.4.0
+	 */
+	protected function getAccessibleTextOptions()
+	{
+		$labels = [
+			'CalendarLabel' => 'Calendar',
+			'MonthLabel' => 'Month',
+			'YearLabel' => 'Year',
+			'PrevMonthLabel' => 'Previous month',
+			'NextMonthLabel' => 'Next month',
+		];
+		$options = [];
+		foreach ($labels as $key => $text) {
+			if (($localized = Prado::localize($text)) !== $text) {
+				$options[$key] = $localized;
+			}
+		}
 		return $options;
 	}
 
@@ -835,11 +861,27 @@ class TDatePicker extends TTextBox
 		$writer->addAttribute('type', 'button');
 		$writer->addAttribute('class', $this->getCssClass() . ' TDatePickerButton');
 		$writer->addAttribute('value', $this->getButtonText());
+		$writer->addAttribute('aria-label', $this->getTriggerAccessibleName());
+		$writer->addAttribute('aria-haspopup', 'dialog');
+		$writer->addAttribute('aria-expanded', 'false');
 		if (!$this->getEnabled(true)) {
 			$writer->addAttribute('disabled', 'disabled');
 		}
 		$writer->renderBeginTag("input");
 		$writer->renderEndTag();
+	}
+
+	/**
+	 * @return string the accessible name for the trigger that opens the calendar.
+	 *   Uses {@see getToolTip ToolTip} when set, otherwise 'Choose date' passed
+	 *   through {@see \Prado\Prado::localize()}. The visible
+	 *   {@see getButtonText ButtonText} (which defaults to "...") is not a useful
+	 *   name for assistive technology.
+	 * @since 4.4.0
+	 */
+	protected function getTriggerAccessibleName(): string
+	{
+		return $this->getToolTip() !== '' ? $this->getToolTip() : Prado::localize('Choose date');
 	}
 
 	/**
@@ -852,7 +894,9 @@ class TDatePicker extends TTextBox
 		$url = empty($url) ? $this->getAssetUrl('calendar.png') : $url;
 		$writer->addAttribute('id', $this->getDatePickerButtonID());
 		$writer->addAttribute('src', $url);
-		$writer->addAttribute('alt', ' ');
+		$writer->addAttribute('alt', $this->getTriggerAccessibleName());
+		$writer->addAttribute('aria-haspopup', 'dialog');
+		$writer->addAttribute('aria-expanded', 'false');
 		$writer->addAttribute('class', $this->getCssClass() . ' TDatePickerImageButton');
 		if (!$this->getEnabled(true)) {
 			$writer->addAttribute('disabled', 'disabled');

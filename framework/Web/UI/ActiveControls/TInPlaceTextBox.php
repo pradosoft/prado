@@ -196,7 +196,9 @@ class TInPlaceTextBox extends TActiveTextBox
 		$options['AutoPostBack'] = $this->getAutoPostBack() == false ? '' : true;
 		$options['EmptyDisplayText'] = $this->getEmptyDisplayText();
 		$options['DisplayEditor'] = $this->getDisplayEditor();
-		$options['EditorLabel'] = $this->getToolTip();
+		// The created text input has no associated label element; ToolTip names
+		// it, with a localized default so the editor is never nameless.
+		$options['EditorLabel'] = $this->getToolTip() !== '' ? $this->getToolTip() : Prado::localize('Edit value');
 		$options['Columns'] = $this->getColumns();
 		if ($this->getTextMode() === 'MultiLine') {
 			$options['Rows'] = $this->getRows();

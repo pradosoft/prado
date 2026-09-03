@@ -116,6 +116,7 @@ Docblocks inform and describe; it is not persuasive writing.
 - A full check consists of the 4 checks (in order): `php -l` compile, php-cs-fixer, phpstan, phpunit (all checks must pass successfully)
 - A full check must be done for code to be ready for git commit.
 - The per directory "<dir_path>/" information is found at "agents/<dir_path>/INDEX.md" to keep the framework uncluttered. 
+- All new and changed WebControls must be audited for accessibility at least once during development.
 - **The current version is 4.3.3. The next release version is 4.4.0**.
 
 ### ActiveControls JavaScript

@@ -227,6 +227,9 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 			}
 		}
 		$writer->addAttribute('id', $this->getClientID());
+		// The summary is an alert region so assistive technology announces the
+		// collected errors when validation fails.
+		$writer->addAttribute('role', 'alert');
 		parent::addAttributesToRender($writer);
 	}
 

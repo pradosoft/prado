@@ -295,6 +295,114 @@ describe('TRequiredFieldValidator', () => {
 	});
 });
 
+// ─── Validator ARIA wiring (aria-describedby / aria-invalid) ─────────────────
+//
+// A validator links its message to the validated control with aria-describedby
+// and toggles aria-invalid on the control as validity changes.  When several
+// validators share a control, aria-invalid only clears once the validator that
+// last marked it invalid passes (mirrors the CSS lastValidator ownership).
+
+describe('validator ARIA wiring', () => {
+	let form, input, span, span2;
+
+	beforeEach(() => {
+		form  = document.createElement('form');
+		form.id = 'ariaForm';
+
+		input = document.createElement('input');
+		input.id   = 'ariaInput';
+		input.type = 'text';
+
+		span  = document.createElement('span');
+		span.id = 'ariaValidator';
+
+		span2 = document.createElement('span');
+		span2.id = 'ariaValidator2';
+
+		form.appendChild(input);
+		form.appendChild(span);
+		form.appendChild(span2);
+		document.body.appendChild(form);
+
+		new ValidationManager({ FormID: 'ariaForm' });
+	});
+
+	afterEach(() => {
+		document.body.removeChild(form);
+		delete Validation.managers['ariaForm'];
+	});
+
+	function makeValidator(id) {
+		return new WebUI.TRequiredFieldValidator({
+			ID:               id,
+			FormID:           'ariaForm',
+			ControlToValidate:'ariaInput',
+			ErrorMessage:     '*',
+			Enabled:          true,
+		});
+	}
+
+	it('links the message to the control via aria-describedby on construction', () => {
+		makeValidator('ariaValidator');
+		expect(input.getAttribute('aria-describedby')).toBe('ariaValidator');
+	});
+
+	it('appends to an existing aria-describedby without duplicating', () => {
+		input.setAttribute('aria-describedby', 'existingHelp');
+		makeValidator('ariaValidator');
+		expect(input.getAttribute('aria-describedby')).toBe('existingHelp ariaValidator');
+		// A second construction with the same message id must not duplicate.
+		makeValidator('ariaValidator');
+		expect(input.getAttribute('aria-describedby')).toBe('existingHelp ariaValidator');
+	});
+
+	it('sets aria-invalid=true on the control when validation fails', () => {
+		const v = makeValidator('ariaValidator');
+		input.value = '';
+		v.validate();
+		expect(input.getAttribute('aria-invalid')).toBe('true');
+	});
+
+	it('clears aria-invalid to false when validation passes', () => {
+		const v = makeValidator('ariaValidator');
+		input.value = '';
+		v.validate();
+		expect(input.getAttribute('aria-invalid')).toBe('true');
+		input.value = 'ok';
+		v.validate();
+		expect(input.getAttribute('aria-invalid')).toBe('false');
+	});
+
+	it('keeps aria-invalid=true when a non-owning validator passes while the owner fails', () => {
+		// A required validator (owner of the invalid state) plus a datatype
+		// validator that treats an empty value as valid.
+		const required = makeValidator('ariaValidator');
+		const dataType = new WebUI.TDataTypeValidator({
+			ID:               'ariaValidator2',
+			FormID:           'ariaForm',
+			ControlToValidate:'ariaInput',
+			ErrorMessage:     '*',
+			Enabled:          true,
+			DataType:         'Integer',
+		});
+
+		input.value = '';
+		required.validate();   // fails: empty -> owner of aria-invalid
+		expect(input.getAttribute('aria-invalid')).toBe('true');
+
+		dataType.validate();   // passes: empty is a valid Integer field
+		// The datatype validator does not own the invalid state, so it must not
+		// clear the required validator's aria-invalid.
+		expect(input.getAttribute('aria-invalid')).toBe('true');
+
+		// Supplying a valid integer satisfies both: aria-invalid clears.
+		input.value = '42';
+		required.validate();
+		dataType.validate();
+		expect(input.getAttribute('aria-invalid')).toBe('false');
+	});
+});
+
 // ─── TDataTypeValidator — pure data-type validation ──────────────────────────
 
 describe('TDataTypeValidator', () => {

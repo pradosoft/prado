@@ -665,6 +665,90 @@ describe('TDatePicker#create — calendar DOM structure', () => {
 		expect(header).not.toBeNull();
 	});
 
+	it('_calDiv is a labeled dialog for assistive technology', () => {
+		expect(picker._calDiv.getAttribute('role')).toBe('dialog');
+		expect(picker._calDiv.getAttribute('aria-label')).toBe('Calendar');
+	});
+
+	it('toggles aria-expanded on the trigger as the calendar shows and hides', () => {
+		picker.show();
+		expect(picker.trigger.getAttribute('aria-expanded')).toBe('true');
+		picker.hide();
+		expect(picker.trigger.getAttribute('aria-expanded')).toBe('false');
+	});
+
+	it('links the trigger to the calendar via aria-controls', () => {
+		expect(picker._calDiv.id).toBe(`${picker.options.ID}_calendar`);
+		expect(picker.trigger.getAttribute('aria-controls')).toBe(picker._calDiv.id);
+	});
+
+	it('the date table is a grid labeled with the visible month and year', () => {
+		expect(picker._gridTable.getAttribute('role')).toBe('grid');
+		const expected = `${picker.MonthNames[picker.selectedDate.getMonth()]} ${picker.selectedDate.getFullYear()}`;
+		expect(picker._gridTable.getAttribute('aria-label')).toBe(expected);
+	});
+
+	it('weekday headers carry scope=col', () => {
+		const heads = picker._calDiv.querySelectorAll('th.weekDayHead');
+		expect(heads.length).toBe(7);
+		heads.forEach((th) => expect(th.getAttribute('scope')).toBe('col'));
+	});
+
+	it('marks the selected date aria-selected and today aria-current', () => {
+		const selected = picker._calDiv.querySelectorAll('td[aria-selected="true"]');
+		expect(selected.length).toBe(1);
+		expect(selected[0].classList.contains('selected')).toBe(true);
+		const current = picker._calDiv.querySelectorAll('td[aria-current="date"]');
+		expect(current.length).toBeLessThanOrEqual(1);
+	});
+
+	it('hides the padding cells from assistive technology', () => {
+		const empties = picker._calDiv.querySelectorAll('td.empty');
+		empties.forEach((td) => {
+			expect(td.getAttribute('aria-hidden')).toBe('true');
+			expect(td.hasAttribute('aria-selected')).toBe(false);
+		});
+	});
+
+	it('labels the month/year selects and the month step buttons', () => {
+		expect(picker._monthSelect.getAttribute('aria-label')).toBe('Month');
+		expect(picker._yearSelect.getAttribute('aria-label')).toBe('Year');
+		expect(picker._calDiv.querySelector('.prevMonthButton').getAttribute('aria-label')).toBe('Previous month');
+		expect(picker._calDiv.querySelector('.nextMonthButton').getAttribute('aria-label')).toBe('Next month');
+	});
+
+	it('server-sent translations override the label defaults', () => {
+		// The PHP side sends these options only when Prado::localize() changes them
+		const id = nextId();
+		buildDOM(id);
+		const localized = new TDatePicker(makeOptions(id, {
+			CalendarLabel: 'Kalender',
+			MonthLabel: 'Monat',
+			YearLabel: 'Jahr',
+			PrevMonthLabel: 'Voriger Monat',
+			NextMonthLabel: 'Nächster Monat',
+		}));
+		localized.create();
+		expect(localized._calDiv.getAttribute('aria-label')).toBe('Kalender');
+		expect(localized._monthSelect.getAttribute('aria-label')).toBe('Monat');
+		expect(localized._yearSelect.getAttribute('aria-label')).toBe('Jahr');
+		expect(localized._calDiv.querySelector('.prevMonthButton').getAttribute('aria-label')).toBe('Voriger Monat');
+		expect(localized._calDiv.querySelector('.nextMonthButton').getAttribute('aria-label')).toBe('Nächster Monat');
+		document.getElementById(`${id}_container`)?.remove();
+		delete global.Prado.Registry[id];
+	});
+
+	it('points aria-activedescendant at the selected cell and announces the date', () => {
+		picker.show();
+		picker.setSelectedDate(new Date(2020, 9, 20)); // Oct 20 2020
+		const cell = picker._calDiv.querySelector('td[aria-selected="true"]');
+		expect(cell.id).toMatch(new RegExp(`^${picker.options.ID}_day\\d+$`));
+		expect(picker.control.getAttribute('aria-activedescendant')).toBe(cell.id);
+		expect(picker._liveRegion.textContent).toBe('October 20, 2020');
+		picker.hide();
+		expect(picker.control.hasAttribute('aria-activedescendant')).toBe(false);
+	});
+
 	it('_calDiv has a calendarBody child', () => {
 		const body = picker._calDiv.querySelector('.calendarBody');
 		expect(body).not.toBeNull();

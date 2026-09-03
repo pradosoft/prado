@@ -10,6 +10,7 @@
 
 namespace Prado\Web\UI\ActiveControls;
 
+use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\THttpUtility;
 
@@ -162,7 +163,9 @@ trait TInPlaceListControlTrait
 		$options['AutoPostBack'] = $this->getAutoPostBack();
 		$options['EmptyDisplayText'] = $this->getEmptyDisplayText();
 		$options['DisplayEditor'] = $this->getDisplayEditor();
-		$options['EditorLabel'] = $this->getToolTip();
+		// The server-rendered select has no associated label element; ToolTip
+		// names it, with a localized default so the editor is never nameless.
+		$options['EditorLabel'] = $this->getToolTip() !== '' ? $this->getToolTip() : Prado::localize('Edit value');
 
 		if ($this->hasEventHandler('OnLoadingItems')) {
 			$options['LoadItemsOnEdit'] = true;

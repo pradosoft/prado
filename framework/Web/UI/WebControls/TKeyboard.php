@@ -12,6 +12,7 @@
 namespace Prado\Web\UI\WebControls;
 
 use Prado\Exceptions\TConfigurationException;
+use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\Javascripts\TJavaScript;
 
@@ -187,6 +188,7 @@ class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 		$options['ForControl'] = $target->getClientID();
 		$options['AutoHide'] = $this->getAutoHide();
 		$options['CssClass'] = $this->getKeyboardCssClass();
+		$options['Label'] = $this->getToolTip() !== '' ? $this->getToolTip() : Prado::localize('On-screen keyboard');
 
 		return $options;
 	}

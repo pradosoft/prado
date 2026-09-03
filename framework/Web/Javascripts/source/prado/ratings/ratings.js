@@ -23,8 +23,14 @@ Prado.WebUI.TRatingList = Prado.Class(Prado.WebUI.Control,
 
 			if(td.tagName.toLowerCase()=='td')
 			{
+				const index = this.radios.length;
 				this.radios.push(radio);
 				td.classList.add("rating");
+				// The star cell is decorative; the radio carries the semantics.
+				td.setAttribute('aria-hidden', 'true');
+				// Give the radio an accessible name even when its item text is empty.
+				if(!radio.getAttribute('aria-label'))
+					radio.setAttribute('aria-label', this.getIndexCaption(index) || String(index+1));
 			}
 		}
 
@@ -60,12 +66,42 @@ Prado.WebUI.TRatingList = Prado.Class(Prado.WebUI.Control,
 
 	click(index, ev) {
 		if(this.readOnly==true) return;
+		this.select(index, ev);
+	},
+
+	/**
+	 * Selects a rating. Shared by mouse clicks on a star cell and by the radio
+	 * `change` event that a keyboard arrow key triggers.
+	 */
+	select(index, ev) {
+		if(this.readOnly==true) return;
 		this.selectedIndex = index;
 		this.setRating(index+1);
 
 		if(this.options['AutoPostBack']==true){
 			this.dispatchRequest(ev);
 		}
+	},
+
+	/** Radio `change` (keyboard arrow key or programmatic check). */
+	change(index, ev) {
+		this.select(index, ev);
+	},
+
+	/** Radio gains keyboard focus: preview the rating and mark the focused star. */
+	focus(index, _ev) {
+		if(this.readOnly==true) return;
+		const node = this.radios[index].parentNode.parentNode;
+		node.classList.add('rating_focus');
+		this.hover(index, _ev);
+	},
+
+	/** Radio loses keyboard focus: clear the preview. */
+	blur(index, _ev) {
+		if(this.readOnly==true) return;
+		const node = this.radios[index].parentNode.parentNode;
+		node.classList.remove('rating_focus');
+		this.recover(index, _ev);
 	},
 
 	dispatchRequest(ev) {
@@ -134,28 +170,51 @@ Prado.WebUI.TRatingList = Prado.Class(Prado.WebUI.Control,
 
 	setReadOnly(value) {
 		this.readOnly = value;
+		// Keep the radiogroup's server-rendered aria-readonly in step when the
+		// state is toggled from a callback.
+		const root = document.getElementById(this.options.ID);
+		if (root) {
+			if (value)
+				root.setAttribute('aria-readonly', 'true');
+			else
+				root.removeAttribute('aria-readonly');
+		}
 		for(let i = 0; i<this.radios.length; i++)
 		{
-			const node = this.radios[i].parentNode.parentNode;
+			const radio = this.radios[i];
+			const node = radio.parentNode.parentNode;
 			let h = this._handlers[i];
 			if (!h) {
 				h = this._handlers[i] = {
 					hover:   this.hover.bind(this, i),
 					recover: this.recover.bind(this, i),
 					click:   this.click.bind(this, i),
+					change:  this.change.bind(this, i),
+					focus:   this.focus.bind(this, i),
+					blur:    this.blur.bind(this, i),
 				};
 			}
 			if(value)
 			{
 				node.classList.add('rating_disabled');
+				// Disabled radios leave the tab order but still announce the
+				// checked state, so a read-only rating stays readable.
+				radio.disabled = true;
 				node.removeEventListener('mouseover', h.hover);
 				node.removeEventListener('mouseout',  h.recover);
 				node.removeEventListener('click',     h.click);
+				radio.removeEventListener('change',   h.change);
+				radio.removeEventListener('focus',    h.focus);
+				radio.removeEventListener('blur',     h.blur);
 			} else {
 				node.classList.remove('rating_disabled');
+				radio.disabled = false;
 				node.addEventListener('mouseover', h.hover);
 				node.addEventListener('mouseout',  h.recover);
 				node.addEventListener('click',     h.click);
+				radio.addEventListener('change',   h.change);
+				radio.addEventListener('focus',    h.focus);
+				radio.addEventListener('blur',     h.blur);
 			}
 		}
 

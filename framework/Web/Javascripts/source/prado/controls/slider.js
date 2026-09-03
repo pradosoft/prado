@@ -59,6 +59,7 @@ Prado.WebUI.TSlider = Prado.Class(Prado.WebUI.PostBackControl,
 		// Initialize handle
 		this.setValue(parseFloat(slider.options.sliderValue));
 		this.observe (this.handle, "mousedown", this.eventMouseDown);
+		this.observe (this.handle, "keydown", this.keyPressed.bind(this));
 
 		this.observe (this.track, "mousedown", this.eventMouseDown);
 		if (this.progress) this.observe (this.progress, "mousedown", this.eventMouseDown);
@@ -95,9 +96,17 @@ Prado.WebUI.TSlider = Prado.Class(Prado.WebUI.PostBackControl,
 
 	setDisabled() {
 		this.disabled = true;
+		if (this.handle) {
+			this.handle.setAttribute('aria-disabled', 'true');
+			this.handle.removeAttribute('tabindex');
+		}
 	},
 	setEnabled() {
 		this.disabled = false;
+		if (this.handle) {
+			this.handle.removeAttribute('aria-disabled');
+			this.handle.setAttribute('tabindex', '0');
+		}
 	},
 	getNearestValue(value) {
 		if(this.allowedValues){
@@ -238,6 +247,8 @@ Prado.WebUI.TSlider = Prado.Class(Prado.WebUI.PostBackControl,
 
 	updateFinished() {
 		this.hiddenField.value=this.value;
+		if (this.handle && this.handle.setAttribute)
+			this.handle.setAttribute('aria-valuenow', this.value);
 		this.updateStyles();
 		if(this.initialized && this.options.onChange)
 			this.options.onChange(this.value, this);
@@ -245,6 +256,32 @@ Prado.WebUI.TSlider = Prado.Class(Prado.WebUI.PostBackControl,
 		if (this.options['AutoPostBack']==true)
 		{
 			this.hiddenField.dispatchEvent(new Event('change', { bubbles: true }));
+		}
+	},
+
+	/**
+	 * Keyboard control for the slider handle: arrow keys nudge the value by one
+	 * step, Page Up/Down by ten steps, and Home/End jump to the range ends.
+	 */
+	keyPressed(event) {
+		if (this.disabled) return;
+		const kc = event.keyCode;
+		// Coerce because option values arrive as strings; string arithmetic would
+		// concatenate rather than add.
+		const optStep = Number(this.options.step);
+		const step = (optStep > 0) ? optStep
+			: (Number(this.range[1]) - Number(this.range[0])) / 100 || 1;
+		let handled = true;
+		if (kc == 39 || kc == 38)      this.setValueBy(step);       // Right / Up
+		else if (kc == 37 || kc == 40) this.setValueBy(-step);      // Left / Down
+		else if (kc == 33)             this.setValueBy(step * 10);  // Page Up
+		else if (kc == 34)             this.setValueBy(-step * 10); // Page Down
+		else if (kc == 36)             this.setValue(Number(this.range[0])); // Home
+		else if (kc == 35)             this.setValue(Number(this.range[1])); // End
+		else handled = false;
+		if (handled) {
+			event.preventDefault();
+			this.updateFinished();
 		}
 	}
 

@@ -156,6 +156,9 @@ abstract class TBaseValidator extends TLabel implements IValidator
 			$writer->addStyleAttribute('visibility', 'hidden');
 		}
 		$writer->addAttribute('id', $this->getClientID());
+		// The message is an alert so assistive technology announces it when a
+		// failed validation makes it visible.
+		$writer->addAttribute('role', 'alert');
 		parent::addAttributesToRender($writer);
 		$this->renderClientControlScript($writer);
 	}

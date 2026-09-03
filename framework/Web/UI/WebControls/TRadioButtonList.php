@@ -86,4 +86,13 @@ class TRadioButtonList extends TCheckBoxList
 	{
 		return 'Prado.WebUI.TRadioButtonList';
 	}
+
+	/**
+	 * @return string the ARIA role that groups the radio items: `radiogroup`.
+	 * @since 4.4.0
+	 */
+	protected function getGroupRole(): string
+	{
+		return 'radiogroup';
+	}
 }

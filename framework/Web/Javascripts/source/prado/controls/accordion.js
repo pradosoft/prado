@@ -61,6 +61,7 @@ Prado.WebUI.TAccordion = Prado.Class(Prado.WebUI.Control,
                 if(header)
                 {
                     this.observe(header, "click", this.elementClicked.bind(this, view));
+                    this.observe(header, "keydown", this.keyPressed.bind(this, view));
                     if(this.hiddenField.value == i)
                     {
                         this.currentView = view;
@@ -114,17 +115,53 @@ Prado.WebUI.TAccordion = Prado.Class(Prado.WebUI.Control,
 				}
 				if (old) old.style.display = 'none';
 
-				if (oldHdr) { oldHdr.className = ''; oldHdr.classList.add(this.options.HeaderCssClass); }
-				if (curHdr) { curHdr.className = ''; curHdr.classList.add(this.options.ActiveHeaderCssClass); }
+				if (oldHdr) { oldHdr.className = ''; oldHdr.classList.add(this.options.HeaderCssClass); this.setExpanded(oldHdr, false); }
+				if (curHdr) { curHdr.className = ''; curHdr.classList.add(this.options.ActiveHeaderCssClass); this.setExpanded(curHdr, true); }
 			}
 		}
+	},
+
+	/** Reflects the open/closed state of a header for assistive technology. */
+	setExpanded(header, expanded) {
+		if (header && header.hasAttribute('role'))
+			header.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+	},
+
+	/**
+	 * Keyboard for the header buttons: Enter/Space toggles the region, the arrow
+	 * keys move between headers, and Home/End jump to the first or last.
+	 */
+	keyPressed(viewID, event) {
+		const kc = event.keyCode;
+		if (kc == 13 || kc == 32) { // Enter or Space
+			event.preventDefault();
+			this.elementClicked(viewID, event);
+			return;
+		}
+		if (kc < 35 || kc > 40) return; // not Home/End/arrows
+
+		const headers = [];
+		for (const view in this.options.Views) {
+			const h = document.getElementById(`${view}_0`);
+			if (h) headers.push(h);
+		}
+		let pos = headers.findIndex((h) => h.id == `${viewID}_0`);
+		if (pos === -1) return;
+
+		if (kc == 37 || kc == 38)      pos = (pos - 1 + headers.length) % headers.length;
+		else if (kc == 39 || kc == 40) pos = (pos + 1) % headers.length;
+		else if (kc == 36)             pos = 0;
+		else if (kc == 35)             pos = headers.length - 1;
+
+		event.preventDefault();
+		headers[pos].focus();
 	},
 
 	animate() {
 		const oldHdr = document.getElementById(`${this.oldView}_0`);
 		const curHdr = document.getElementById(`${this.currentView}_0`);
-		if (oldHdr) { oldHdr.className = ''; oldHdr.classList.add(this.options.HeaderCssClass); }
-		if (curHdr) { curHdr.className = ''; curHdr.classList.add(this.options.ActiveHeaderCssClass); }
+		if (oldHdr) { oldHdr.className = ''; oldHdr.classList.add(this.options.HeaderCssClass); this.setExpanded(oldHdr, false); }
+		if (curHdr) { curHdr.className = ''; curHdr.classList.add(this.options.ActiveHeaderCssClass); this.setExpanded(curHdr, true); }
 
 		const old = document.getElementById(this.oldView);
 		const cur = document.getElementById(this.currentView);

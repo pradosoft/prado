@@ -129,6 +129,7 @@ TApplication
 - Method Doc Blocks must be **tight**, and have at minimum one sentence in the description.
 - Documentation additions/changes/removals should be integrated into the whole, at each level (of detail).
 - The per directory "<dir_path>/CLAUDE.md" is found at "agents/<dir_path>/INDEX.md" to keep the framework uncluttered.
+- All new and changed WebControls must be audited for accessibility at least once during development.
 
 ## Test Bootstrap
 

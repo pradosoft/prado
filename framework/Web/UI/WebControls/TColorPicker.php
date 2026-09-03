@@ -10,6 +10,7 @@
 
 namespace Prado\Web\UI\WebControls;
 
+use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\Javascripts\TJavaScript;
 
@@ -217,7 +218,13 @@ class TColorPicker extends TTextBox
 		parent::renderEndTag($writer);
 
 		$color = $this->getText();
+		$interactive = $this->getShowColorPicker();
 		$writer->addAttribute('class', 'TColorPicker_button');
+		if (!$interactive) {
+			// A non-interactive button only mirrors the current color, so it is
+			// hidden from assistive technology.
+			$writer->addAttribute('aria-hidden', 'true');
+		}
 		$writer->renderBeginTag('span');
 
 		$writer->addAttribute('id', $this->getClientID() . '_button');
@@ -226,6 +233,17 @@ class TColorPicker extends TTextBox
 			$writer->addAttribute('style', "background-color:{$color};");
 		}
 		$writer->addAttribute('alt', '');
+		if ($interactive) {
+			// The trigger opens the color picker dialog and is operable by
+			// keyboard. The client script maintains aria-expanded as it opens
+			// and closes.
+			$writer->addAttribute('role', 'button');
+			$writer->addAttribute('tabindex', '0');
+			$writer->addAttribute('aria-haspopup', 'dialog');
+			$writer->addAttribute('aria-expanded', 'false');
+			$label = $this->getToolTip() !== '' ? $this->getToolTip() : Prado::localize('Choose color');
+			$writer->addAttribute('aria-label', $label);
+		}
 		$writer->renderBeginTag('img');
 		$writer->renderEndTag();
 		$writer->renderEndTag();

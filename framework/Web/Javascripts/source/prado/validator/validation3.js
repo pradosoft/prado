@@ -868,11 +868,51 @@ Prado.WebUI.TBaseValidator = Prado.Class(Prado.WebUI.Control,
 		{
 			this.group = options.ValidationGroup;
 
+			// Point the field's accessible description at this validator's
+			// message, so assistive technology reads the error with the field.
+			this.linkDescribedBy();
+
 			/**
 			 * ValidationManager of this validator
 			 * @var {ValidationManager} manager
 			 */
 			this.manager = Prado.Validation.addValidator(options.FormID, this);
+		}
+	},
+
+	/**
+	 * Adds this validator's message id to the aria-describedby of the control it
+	 * validates, keeping any existing tokens and avoiding duplicates.
+	 */
+	linkDescribedBy() {
+		if(!this.control || !this.message || !this.message.id)
+			return;
+		const existing = (this.control.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean);
+		if(existing.indexOf(this.message.id) === -1)
+		{
+			existing.push(this.message.id);
+			this.control.setAttribute('aria-describedby', existing.join(' '));
+		}
+	},
+
+	/**
+	 * Reflects the validity on the control's aria-invalid. Mirrors the CSS-class
+	 * ownership rule so a field failing several validators only clears when its
+	 * last-failing validator passes.
+	 */
+	updateControlAria(control, valid) {
+		if(valid)
+		{
+			if(control.lastAriaValidator == this.options.ID)
+			{
+				control.lastAriaValidator = null;
+				control.setAttribute('aria-invalid', 'false');
+			}
+		}
+		else
+		{
+			control.lastAriaValidator = this.options.ID;
+			control.setAttribute('aria-invalid', 'true');
 		}
 	},
 
@@ -916,7 +956,10 @@ Prado.WebUI.TBaseValidator = Prado.Class(Prado.WebUI.Control,
 			this.message.style.visibility = this.isValid ? "hidden" : "visible";
 		}
 		if(this.control)
+		{
 			this.updateControlCssClass(this.control, this.isValid);
+			this.updateControlAria(this.control, this.isValid);
+		}
 	},
 
 	/**

@@ -24,6 +24,7 @@ use Prado\Web\UI\WebControls\TFileUpload;
 use Prado\Web\UI\WebControls\THiddenField;
 use Prado\Web\UI\WebControls\TImage;
 use Prado\Web\UI\WebControls\TInlineFrame;
+use Prado\Web\UI\WebControls\TLabel;
 use Prado\Web\Javascripts\TJavaScript;
 
 /**
@@ -97,6 +98,11 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	 * @var TImage that shows a red X for incomplete upload.
 	 */
 	private $_error;
+	/**
+	 * @var TLabel visually-hidden live region announcing the upload state to
+	 *   assistive technology.
+	 */
+	private $_status;
 	/**
 	 * @var TInlineFrame used to submit the data in an "asynchronous" fashion.
 	 */
@@ -245,6 +251,72 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	}
 
 	/**
+	 * @return string the message announced to assistive technology, and the busy
+	 *   image alt text, while a file uploads. Defaults to 'Uploading file' passed
+	 *   through {@see \Prado\Prado::localize()}.
+	 * @since 4.4.0
+	 */
+	public function getUploadingText()
+	{
+		$text = $this->getViewState('UploadingText', '');
+		return $text !== '' ? $text : Prado::localize('Uploading file');
+	}
+
+	/**
+	 * @param string $value the uploading status message; empty string restores
+	 *   the localized default
+	 * @since 4.4.0
+	 */
+	public function setUploadingText($value)
+	{
+		$this->setViewState('UploadingText', TPropertyValue::ensureString($value), '');
+	}
+
+	/**
+	 * @return string the message announced to assistive technology, and the
+	 *   success image alt text, when an upload completes. Defaults to
+	 *   'File upload complete' passed through {@see \Prado\Prado::localize()}.
+	 * @since 4.4.0
+	 */
+	public function getCompleteText()
+	{
+		$text = $this->getViewState('CompleteText', '');
+		return $text !== '' ? $text : Prado::localize('File upload complete');
+	}
+
+	/**
+	 * @param string $value the completed status message; empty string restores
+	 *   the localized default
+	 * @since 4.4.0
+	 */
+	public function setCompleteText($value)
+	{
+		$this->setViewState('CompleteText', TPropertyValue::ensureString($value), '');
+	}
+
+	/**
+	 * @return string the message announced to assistive technology, and the error
+	 *   image alt text, when an upload fails. Defaults to 'File upload failed'
+	 *   passed through {@see \Prado\Prado::localize()}.
+	 * @since 4.4.0
+	 */
+	public function getErrorText()
+	{
+		$text = $this->getViewState('ErrorText', '');
+		return $text !== '' ? $text : Prado::localize('File upload failed');
+	}
+
+	/**
+	 * @param string $value the error status message; empty string restores the
+	 *   localized default
+	 * @since 4.4.0
+	 */
+	public function setErrorText($value)
+	{
+		$this->setViewState('ErrorText', TPropertyValue::ensureString($value), '');
+	}
+
+	/**
 	 * @return string A chuck of javascript that will need to be called if {{@see getAutoPostBack AutoPostBack} is set to false}
 	 */
 	public function getCallbackJavascript()
@@ -387,25 +459,41 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 		$this->_busy = new TImage();
 		$this->_busy->setID('Busy');
 		$this->_busy->setImageUrl($this->getAssetUrl('ActiveFileUploadIndicator.gif'));
+		$this->_busy->setAlternateText($this->getUploadingText());
 		$this->_busy->setStyle("display:none");
 		$this->getControls()->add($this->_busy);
 
 		$this->_success = new TImage();
 		$this->_success->setID('Success');
 		$this->_success->setImageUrl($this->getAssetUrl('ActiveFileUploadComplete.png'));
+		$this->_success->setAlternateText($this->getCompleteText());
 		$this->_success->setStyle("display:none");
 		$this->getControls()->add($this->_success);
 
 		$this->_error = new TImage();
 		$this->_error->setID('Error');
 		$this->_error->setImageUrl($this->getAssetUrl('ActiveFileUploadError.png'));
+		$this->_error->setAlternateText($this->getErrorText());
 		$this->_error->setStyle("display:none");
 		$this->getControls()->add($this->_error);
+
+		// Visually-hidden live region: assistive tech announces the upload state
+		// as the script updates this text at each transition.
+		$this->_status = new TLabel();
+		$this->_status->setID('Status');
+		$this->_status->getAttributes()->add('role', 'status');
+		$this->_status->getAttributes()->add('aria-live', 'polite');
+		$this->_status->setStyle('position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap');
+		$this->getControls()->add($this->_status);
 
 		$this->_target = new TInlineFrame();
 		$this->_target->setID('Target');
 		$this->_target->setFrameUrl('about:blank');
 		$this->_target->setStyle("width:0px; height:0px; border:none");
+		// The upload sink carries no content for the user; keep it out of the
+		// accessibility tree and the tab order.
+		$this->_target->getAttributes()->add('aria-hidden', 'true');
+		$this->_target->getAttributes()->add('tabindex', '-1');
 		$this->getControls()->add($this->_target);
 
 		parent::createChildControls();
@@ -485,6 +573,10 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 		$options['indicatorID'] = $this->_busy->getClientID();
 		$options['completeID'] = $this->_success->getClientID();
 		$options['errorID'] = $this->_error->getClientID();
+		$options['statusID'] = $this->_status->getClientID();
+		$options['uploadingText'] = $this->getUploadingText();
+		$options['completeText'] = $this->getCompleteText();
+		$options['errorText'] = $this->getErrorText();
 		$options['autoPostBack'] = $this->getAutoPostBack();
 		$options['causesValidation'] = $this->getCausesValidation();
 		return $options;

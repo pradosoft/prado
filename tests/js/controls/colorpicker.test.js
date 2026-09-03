@@ -792,3 +792,80 @@ describe('TColorPicker.hideOnClick', () => {
 		expect(picker.showing).toBe(false);
 	});
 });
+
+// ─── TColorPicker accessibility ──────────────────────────────────────────────
+//
+// The trigger button is exposed as a button, the popup as a labeled dialog,
+// and the basic palette is a keyboard-navigable grid with a single tab stop.
+
+describe('TColorPicker accessibility', () => {
+	const ID = 'cp-a11y-test';
+	let picker;
+
+	beforeEach(() => {
+		buildPickerDOM(ID);
+		picker = new TColorPicker({ ID, ShowColorPicker: true });
+	});
+
+	afterEach(() => {
+		cleanupPicker(ID);
+		document.body.innerHTML = '';
+	});
+
+	it('marks each palette cell as a button labeled with its colour', () => {
+		const div = picker.getBasicPickerContainer(ID, 'Small');
+		const cells = div.querySelectorAll('img');
+		expect(cells[0].getAttribute('role')).toBe('button');
+		expect(cells[0].getAttribute('aria-label')).toMatch(/^#/);
+		// Roving tabindex: only the first cell is a tab stop.
+		expect(cells[0].getAttribute('tabindex')).toBe('0');
+		expect(cells[1].getAttribute('tabindex')).toBe('-1');
+	});
+
+	it('focusCell moves the single tab stop to the given cell', () => {
+		picker.getBasicPickerContainer(ID, 'Small');
+		picker.focusCell(5);
+		expect(picker.activeCell).toBe(5);
+		expect(picker.cells[5].getAttribute('tabindex')).toBe('0');
+		expect(picker.cells[0].getAttribute('tabindex')).toBe('-1');
+	});
+
+	it('ArrowRight/ArrowDown move focus across and down the grid', () => {
+		picker.getBasicPickerContainer(ID, 'Small'); // 10 columns
+		const ev = (kc, i) => ({ keyCode: kc, target: picker.cells[i], preventDefault() {} });
+		picker.cellKeyPressed(ev(39, 0)); // Right from 0 -> 1
+		expect(picker.activeCell).toBe(1);
+		picker.cellKeyPressed(ev(40, 1)); // Down from 1 -> 11
+		expect(picker.activeCell).toBe(11);
+	});
+
+	it('Home/End jump to the ends of the current row', () => {
+		picker.getBasicPickerContainer(ID, 'Small'); // 10 columns
+		const ev = (kc, i) => ({ keyCode: kc, target: picker.cells[i], preventDefault() {} });
+		picker.cellKeyPressed(ev(35, 3)); // End of row 0 -> index 9
+		expect(picker.activeCell).toBe(9);
+		picker.cellKeyPressed(ev(36, 9)); // Home of row 0 -> index 0
+		expect(picker.activeCell).toBe(0);
+	});
+
+	it('exposes the popup as a labeled dialog and toggles aria-expanded', () => {
+		picker.buttonOnClick({});
+		expect(picker.element.getAttribute('role')).toBe('dialog');
+		expect(picker.element.getAttribute('aria-label')).toBeTruthy();
+		expect(picker.button.getAttribute('aria-expanded')).toBe('true');
+		picker.hide({});
+		expect(picker.button.getAttribute('aria-expanded')).toBe('false');
+	});
+
+	it('Escape from a palette cell closes the picker', () => {
+		picker.buttonOnClick({});
+		expect(picker.showing).toBe(true);
+		picker.cellKeyPressed({ keyCode: 27, target: picker.cells[0], preventDefault() {} });
+		expect(picker.showing).toBe(false);
+	});
+
+	it('Enter on the trigger button opens the picker', () => {
+		picker.buttonKeyPressed({ keyCode: 13, preventDefault() {} });
+		expect(picker.showing).toBe(true);
+	});
+});

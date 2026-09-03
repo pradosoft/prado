@@ -61,6 +61,13 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 		parent::addAttributesToRender($writer);
 
 		$writer->addAttribute('id', $this->getClientID());
+		// The view body is the panel controlled by its tab. Real navigation
+		// tabs (NavigateUrl) are plain links, not part of the tab pattern.
+		if ($this->getNavigateUrl() === '') {
+			$writer->addAttribute('role', 'tabpanel');
+			$writer->addAttribute('aria-labelledby', $this->getClientID() . '_0');
+			$writer->addAttribute('tabindex', '0');
+		}
 	}
 
 	/**
@@ -153,6 +160,15 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 		if ($this->getVisible(false) && $this->getPage()->getClientSupportsJavaScript()) {
 			$writer->addAttribute('id', $this->getClientID() . '_0');
 
+			// A JS-switching tab is the focusable `tab` for its panel; roving
+			// tabindex keeps only the selected tab in the sequential tab order.
+			if ($this->getNavigateUrl() === '') {
+				$writer->addAttribute('role', 'tab');
+				$writer->addAttribute('aria-selected', $this->getActive() ? 'true' : 'false');
+				$writer->addAttribute('aria-controls', $this->getClientID());
+				$writer->addAttribute('tabindex', $this->getActive() ? '0' : '-1');
+			}
+
 			$style = $this->getActive() ? $this->getParent()->getActiveTabStyle() : $this->getParent()->getTabStyle();
 			$style->addAttributesToRender($writer);
 
@@ -165,18 +181,20 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * Renders the content in the tab.
-	 * By default, a hyperlink is displayed.
+	 * Renders the content in the tab. A navigation tab ({@see setNavigateUrl
+	 * NavigateUrl}) renders a hyperlink; a JS-switching tab renders its caption
+	 * as text, so the `role="tab"` element itself is the only focusable control.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
 	 */
 	protected function renderTabContent($writer)
 	{
-		if (($url = $this->getNavigateUrl()) === '') {
-			$url = 'javascript://';
-		}
 		if (($caption = $this->getCaption()) === '') {
 			$caption = '&nbsp;';
 		}
-		$writer->write("<a href=\"{$url}\">{$caption}</a>");
+		if (($url = $this->getNavigateUrl()) === '') {
+			$writer->write($caption);
+		} else {
+			$writer->write("<a href=\"{$url}\">{$caption}</a>");
+		}
 	}
 }

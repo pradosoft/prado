@@ -500,11 +500,18 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 		$views = $this->getViews();
 		if ($views->getCount() > 0) {
 			$writer->writeLine();
-			// render tab bar
+			// render tab bar as a tablist so assistive technology groups the tabs
+			$writer->addAttribute('role', 'tablist');
+			if (($toolTip = $this->getToolTip()) !== '') {
+				$writer->addAttribute('aria-label', $toolTip);
+			}
+			$writer->renderBeginTag('div');
 			foreach ($views as $view) {
 				$view->renderTab($writer);
 				$writer->writeLine();
 			}
+			$writer->renderEndTag();
+			$writer->writeLine();
 			// render tab views
 			foreach ($views as $view) {
 				$view->renderControl($writer);

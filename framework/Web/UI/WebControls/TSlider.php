@@ -384,9 +384,23 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 
 		$writer->renderEndTag();
 
-		// Render the 'Handle'
+		// Render the 'Handle' as the focusable slider: it carries the value
+		// semantics and the keyboard adjusts it.
 		$writer->addAttribute('class', 'Handle');
 		$writer->addAttribute('id', $this->getClientID() . '_handle');
+		$writer->addAttribute('role', 'slider');
+		$writer->addAttribute('aria-valuemin', (string) $this->getMinValue());
+		$writer->addAttribute('aria-valuemax', (string) $this->getMaxValue());
+		$writer->addAttribute('aria-valuenow', (string) $this->getValue());
+		$writer->addAttribute('aria-orientation', $this->getDirection() == TSliderDirection::Horizontal ? 'horizontal' : 'vertical');
+		if (($toolTip = $this->getToolTip()) !== '') {
+			$writer->addAttribute('aria-label', $toolTip);
+		}
+		if ($this->getEnabled(true)) {
+			$writer->addAttribute('tabindex', '0');
+		} else {
+			$writer->addAttribute('aria-disabled', 'true');
+		}
 		$writer->renderBeginTag('div');
 		$writer->renderEndTag();
 	}
@@ -450,6 +464,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 		$options['maximum'] = $maxValue;
 		$options['minimum'] = $minValue;
 		$options['range'] = [$minValue, $maxValue];
+		$options['step'] = $this->getStepSize();
 		$options['sliderValue'] = $this->getValue();
 		$options['disabled'] = !$this->getEnabled();
 		$values = $this->getValues();

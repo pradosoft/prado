@@ -1,0 +1,15 @@
+<com:TContent ID="Content">
+	<h1>Accordion Accessibility Test Case</h1>
+
+	<com:TAccordion ID="acc" ToolTip="Frequently asked questions">
+		<com:TAccordionView ID="v1" Caption="First">
+			<p>First panel content.</p>
+		</com:TAccordionView>
+		<com:TAccordionView ID="v2" Caption="Second">
+			<p>Second panel content.</p>
+		</com:TAccordionView>
+		<com:TAccordionView ID="v3" Caption="Third">
+			<p>Third panel content.</p>
+		</com:TAccordionView>
+	</com:TAccordion>
+</com:TContent>

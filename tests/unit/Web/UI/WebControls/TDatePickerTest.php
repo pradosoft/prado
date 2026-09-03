@@ -405,4 +405,26 @@ class TDatePickerTest extends TestCase
 		$result = $picker->getValidationPropertyValue();
 		$this->assertEquals('not-a-date', $result);
 	}
+
+	public function testTriggerAccessibleNameDefaultsToLocalizedChooseDate()
+	{
+		// Without a translation module, Prado::localize() returns the literal
+		$picker = new TDatePicker();
+		$this->assertSame('Choose date', PradoUnit::invoke($picker, 'getTriggerAccessibleName'));
+	}
+
+	public function testTriggerAccessibleNamePrefersToolTip()
+	{
+		$picker = new TDatePicker();
+		$picker->setToolTip('Pick a delivery date');
+		$this->assertSame('Pick a delivery date', PradoUnit::invoke($picker, 'getTriggerAccessibleName'));
+	}
+
+	public function testAccessibleTextOptionsOmitUntranslatedLabels()
+	{
+		// The client-side class carries the English defaults; the server sends a
+		// label only when a translation changes it, which none does here
+		$picker = new TDatePicker();
+		$this->assertSame([], PradoUnit::invoke($picker, 'getAccessibleTextOptions'));
+	}
 }
