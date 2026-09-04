@@ -7,17 +7,28 @@
 **Location:** `framework/Util/Log/TPsrLogger.php`
 **Namespace:** `Prado\Util\Log`
 **Extends:** [`TComponent`](../../TComponent.md)
-**Implements:** `Psr\Log\LoggerInterface` (uses `Psr\Log\LoggerTrait`)
+**Implements:** `Psr\Log\LoggerInterface` (uses `Psr\Log\LoggerTrait`), `ISingleton`
 **Since:** 4.4.0
 
 ## Overview
 `TPsrLogger` adapts [`TLogger`](./TLogger.md) to the PSR-3 `LoggerInterface`. A library that accepts a PSR-3 logger writes into the application log through this class, and [`TLogRouter`](./TLogRouter.md) routes the entries with the rest of the application log. `TLogger` cannot implement PSR-3 directly because its `log()` parameter order and its integer bit-flag levels conflict with the PSR-3 signature.
 
 ```php
-$logger = new TPsrLogger();
+$logger = TPsrLogger::singleton();
 $logger->warning('Disk {disk} is at {percent}% capacity', ['disk' => '/dev/sda1', 'percent' => 92]);
 $library->setLogger($logger);
 ```
+
+## Singleton
+
+`TPsrLogger` implements `ISingleton`.
+
+| Method | Behavior |
+|---|---|
+| `static singleton(bool $create = true): ?TPsrLogger` | Returns the singleton adapter. With `$create` true it is created on first use as the called class, with a `null` `Logger` (follows `Prado::getLogger()`) and a `null` `Category`. With `$create` false it returns `null` when none exists. |
+| `static setSingleton(?TPsrLogger $instance): void` | Replaces the singleton; `null` discards it so the next `singleton()` creates a new one. |
+
+The singleton is the one to hand to libraries. Construct separate instances to bind a specific `TLogger` or a fixed category. As an `ISingleton`, undefined static calls on `TPsrLogger` are routed by `TComponent::__callStatic()` to the singleton's behaviors.
 
 ## Properties
 

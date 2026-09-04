@@ -37,7 +37,7 @@ Application logging for the Prado framework: the in-memory logger, the router mo
 
 ### PSR-3 adapters (since 4.4.0)
 
-- **[`TPsrLogger`](TPsrLogger.md)** — `Psr\Log\LoggerInterface` implementation writing into [`TLogger`](TLogger.md). Hand it to libraries that accept a PSR-3 logger. Maps PSR-3 level names to `TLogger` levels, interpolates `{key}` placeholders, and decodes the `CONTEXT_*` keys (`category`, `level`, `time`, `memory`, `pid`, `control`, `traces`, `exception`) into the entry.
+- **[`TPsrLogger`](TPsrLogger.md)** — `Psr\Log\LoggerInterface` implementation writing into [`TLogger`](TLogger.md). `TPsrLogger::singleton()` is the `ISingleton` adapter of the application logger; hand it to libraries that accept a PSR-3 logger. Maps PSR-3 level names to `TLogger` levels, interpolates `{key}` placeholders, and decodes the `CONTEXT_*` keys (`category`, `level`, `time`, `memory`, `pid`, `control`, `traces`, `exception`) into the entry.
 
 - **[`TPsrLogRoute`](TPsrLogRoute.md)** — Route forwarding the application log to an external PSR-3 logger. Rejects a `TPsrLogger` as its target because the entries would loop back into the same `TLogger`.
 

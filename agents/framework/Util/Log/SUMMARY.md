@@ -14,6 +14,6 @@ Application logging: in-memory `TLogger`, the `TLogRouter` module, `TLogRoute` o
 
 - **`TFileLogRoute`**, **`TDbLogRoute`**, **`TEmailLogRoute`**, **`TBrowserLogRoute`**, **`TFirebugLogRoute`**, **`TFirePhpLogRoute`**, **`TStdOutLogRoute`**, **`TSysLogRoute`** — Built-in routes to files, a database table, email, the page, Firebug, FirePHP, STDOUT, and syslog.
 
-- **`TPsrLogger`** — PSR-3 `LoggerInterface` writing into `TLogger`; `{key}` interpolation; context keys `category`, `control`, `exception`. Since 4.4.0.
+- **`TPsrLogger`** — PSR-3 `LoggerInterface` writing into `TLogger`; `ISingleton` via `singleton()`; `{key}` interpolation; context keys `category`, `control`, `exception`. Since 4.4.0.
 
 - **`TPsrLogRoute`** — Route forwarding the application log to an external PSR-3 logger; `Logger` accepts an instance, a module ID, or a class name. Since 4.4.0.
