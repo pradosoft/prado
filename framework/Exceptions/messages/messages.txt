@@ -419,6 +419,10 @@ syslogroute_log_failed					= TSysLogRout failed to write to SysLog().
 syslogroute_bad_flags					= TSysLogRoute.SysLogFlags are not valid, '{0}'.
 syslogroute_bad_facility				= TSysLogRoute.Facility is not valid, '{0}'.
 
+psrlogroute_logger_required				= TPsrLogRoute.Logger is required.
+psrlogroute_logger_invalid				= TPsrLogRoute.Logger '{0}' is not a module ID or class name of a Psr\Log\LoggerInterface.
+psrlogroute_logger_recursive			= TPsrLogRoute.Logger cannot be a TPsrLogger; it would log back into the same TLogger.
+
 repeatinfo_repeatcolumns_invalid		= TRepeatInfo.RepeatColumns must be no less than 0.
 
 basevalidator_controltovalidate_invalid = {0}.ControlToValidate is empty or contains an invalid control ID path.

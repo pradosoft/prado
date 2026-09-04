@@ -133,7 +133,7 @@ class THttpHeaderCsp extends TBaseHttpHeader
 			Prado::log(
 				'The CSP "sandbox" directive is silently ignored by browsers in'
 				. ' report-only mode and has been omitted from the header value.',
-				\Prado\Util\TLogger::WARNING,
+				\Prado\Util\Log\TLogger::WARNING,
 				static::class
 			);
 			$this->removePolicy(TCspDirective::Sandbox);
@@ -158,7 +158,7 @@ class THttpHeaderCsp extends TBaseHttpHeader
 				Prado::log(
 					'CSP report-to references endpoint "' . $name . '" which is not'
 					. ' declared in any Reporting-Endpoints header.',
-					\Prado\Util\TLogger::WARNING,
+					\Prado\Util\Log\TLogger::WARNING,
 					static::class
 				);
 			}

@@ -12,7 +12,7 @@ namespace Prado\Web\Services;
 
 use Prado\Prado;
 use Prado\TService;
-use Prado\Util\TLogger;
+use Prado\Util\Log\TLogger;
 use Prado\Web\THttpHeaderName;
 use Prado\Web\TMediaType;
 

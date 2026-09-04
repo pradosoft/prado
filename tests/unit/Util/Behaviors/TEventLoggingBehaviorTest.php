@@ -13,7 +13,7 @@ use Prado\TComponent;
 use Prado\TEventParameter;
 use Prado\Util\Behaviors\TEventLoggingBehavior;
 use Prado\Util\TBehavior;
-use Prado\Util\TLogger;
+use Prado\Util\Log\TLogger;
 
 // ── Helper classes ────────────────────────────────────────────────────────────
 

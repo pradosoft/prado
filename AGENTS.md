@@ -248,14 +248,13 @@ All instances self-register in `Prado.Registry[controlId]` on construction and a
 │   │   ├── Behaviors/          # Installable System Behaviors
 │   │   ├── Cron/               # Manages time based processes: TCronModule, TCronTask, TDbCronModule, TTimeScheduler
 │   │   ├── Helpers/            # TBitHelper, TProcessHelper
+│   │   ├── Log/                # TLogger, TLogRouter, TLogRoute subclasses, PSR-3 adapters
 │   │   ├── Math/               # Rational Numbers
 │   │   ├── TBaseBehavior.php   # Base Behavior class
 │   │   ├── TBehavior.php       # Base class for Regular Behaviors
 │   │   ├── TBehaviorsModule.php      # Module for loading Behaviors from Configuration
 │   │   ├── TCallChain.php      # Used by dynamic events to chain Behaviors' methods
 │   │   ├── TClassBehavior.php  # Base class for Class Behaviors
-│   │   ├── TLogger.php         # Logs messages as the app runs
-│   │   ├── TLogRouter.php      # Module for capturing logs
 │   │   ├── TParameterModule.php      # Module for loading parameters
 │   │   ├── TDbParameterModule.php    # Module for loading parameters
 │   │   ├── TPluginModule.php   # Base class for PRADO 4 Extensions (via composer)

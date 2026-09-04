@@ -17,7 +17,7 @@ use Prado\IO\Socket\TSocketStream;
 use Prado\Prado;
 use Prado\TComponent;
 use Prado\Util\Helpers\TProcessHelper;
-use Prado\Util\TLogger;
+use Prado\Util\Log\TLogger;
 use Prado\Util\TSignalsDispatcher;
 
 /**

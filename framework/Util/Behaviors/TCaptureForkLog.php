@@ -13,7 +13,7 @@ namespace Prado\Util\Behaviors;
 use Prado\Prado;
 use Prado\Util\{TBehavior, IBaseBehavior};
 use Prado\Util\TCallChain;
-use Prado\Util\TLogger;
+use Prado\Util\Log\TLogger;
 use Prado\Util\Helpers\TProcessHelper;
 
 /**

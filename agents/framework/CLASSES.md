@@ -1,6 +1,6 @@
 # PRADO Framework Classes
 
-**Total Classes: 775**
+**Total Classes: 777**
 
 This document lists all classes in the PRADO framework as defined in `classes.php`.
 
@@ -8,7 +8,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 | Directory | Classes | Interfaces | Total | Recursive |
 |-----------|---------|------------|-------|-----------|
-| [Prado](./INDEX.md) | 17 | 7 | 24 | 775 |
+| [Prado](./INDEX.md) | 17 | 7 | 24 | 777 |
 | [Prado\\Caching](./Caching/INDEX.md) | 11 | 2 | 13 | 13 |
 | [Prado\\Collections](./Collections/INDEX.md) | 27 | 7 | 34 | 34 |
 | [Prado\\Data](./Data/INDEX.md) | 10 | 5 | 15 | 136 |
@@ -40,10 +40,11 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 | [Prado\\Security\\Permissions](./Security/Permissions/INDEX.md) | 8 | 1 | 9 | 9 |
 | [Prado\\Shell](./Shell/INDEX.md) | 4 | 0 | 4 | 10 |
 | [Prado\\Shell\\Actions](./Shell/Actions/INDEX.md) | 6 | 0 | 6 | 6 |
-| [Prado\\Util](./Util/INDEX.md) | 34 | 8 | 42 | 76 |
+| [Prado\\Util](./Util/INDEX.md) | 23 | 7 | 30 | 78 |
 | [Prado\\Util\\Behaviors](./Util/Behaviors/INDEX.md) | 14 | 0 | 14 | 14 |
 | [Prado\\Util\\Cron](./Util/Cron/INDEX.md) | 11 | 0 | 11 | 11 |
 | [Prado\\Util\\Helpers](./Util/Helpers/INDEX.md) | 6 | 0 | 6 | 6 |
+| [Prado\\Util\\Log](./Util/Log/INDEX.md) | 13 | 1 | 14 | 14 |
 | [Prado\\Util\\Math](./Util/Math/INDEX.md) | 2 | 0 | 2 | 2 |
 | [Prado\\Util\\Traits](./Util/Traits/INDEX.md) | 2 | 0 | 2 | 2 |
 | [Prado\\Web](./Web/INDEX.md) | 21 | 0 | 21 | 418 |
@@ -626,9 +627,9 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Util](./Util/INDEX.md) - Classes: 34, Interfaces: 8, Total: 42, Recursive: 76
+## [Prado\Util](./Util/INDEX.md) - Classes: 23, Interfaces: 7, Total: 30, Recursive: 78
 
-### Interfaces (8)
+### Interfaces (7)
 
 - [IBaseBehavior](./Util/IBaseBehavior.md)
 - [IBehavior](./Util/IBehavior.md)
@@ -636,31 +637,21 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [IDbModule](./Util/IDbModule.md)
 - [IDynamicMethods](./Util/IDynamicMethods.md)
 - [IInstanceCheck](./Util/IInstanceCheck.md)
-- [IOutputLogRoute](./Util/IOutputLogRoute.md)
 - [IPluginModule](./Util/IPluginModule.md)
 
-### Classes (33)
+### Classes (22)
 
 - [TBaseBehavior](./Util/TBaseBehavior.md)
 - [TBehavior](./Util/TBehavior.md)
 - [TBehaviorsModule](./Util/TBehaviorsModule.md)
-- [TBrowserLogRoute](./Util/TBrowserLogRoute.md)
 - [TCallChain](./Util/TCallChain.md)
 - [TClassBehavior](./Util/TClassBehavior.md)
 - [TClassBehaviorEventParameter](./Util/TClassBehaviorEventParameter.md)
 - [TDataFieldAccessor](./Util/TDataFieldAccessor.md)
-- [TDbLogRoute](./Util/TDbLogRoute.md)
 - [TDbModule](./Util/TDbModule.md)
 - [TDbParameterModule](./Util/TDbParameterModule.md)
 - [TDbPluginModule](./Util/TDbPluginModule.md)
-- [TEmailLogRoute](./Util/TEmailLogRoute.md)
-- [TFileLogRoute](./Util/TFileLogRoute.md)
-- [TFirebugLogRoute](./Util/TFirebugLogRoute.md)
-- [TFirePhpLogRoute](./Util/TFirePhpLogRoute.md)
 - [TJsonRpcClient](./Util/TJsonRpcClient.md)
-- [TLogger](./Util/TLogger.md)
-- [TLogRoute](./Util/TLogRoute.md)
-- [TLogRouter](./Util/TLogRouter.md)
 - [TParameterModule](./Util/TParameterModule.md)
 - [TPluginModule](./Util/TPluginModule.md)
 - [TRpcClient](./Util/TRpcClient.md)
@@ -670,8 +661,6 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TSignalParameter](./Util/TSignalParameter.md)
 - [TSignalsDispatcher](./Util/TSignalsDispatcher.md)
 - [TSimpleDateFormatter](./Util/TSimpleDateFormatter.md)
-- [TStdOutLogRoute](./Util/TStdOutLogRoute.md)
-- [TSysLogRoute](./Util/TSysLogRoute.md)
 - [TUtf8Converter](./Util/TUtf8Converter.md)
 - [TVarDumper](./Util/TVarDumper.md)
 - [TXmlRpcClient](./Util/TXmlRpcClient.md)
@@ -727,6 +716,30 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TProcessHelper](./Util/Helpers/TProcessHelper.md)
 - [TProcessWindowsPriority](./Util/Helpers/TProcessWindowsPriority.md)
 - [TProcessWindowsPriorityName](./Util/Helpers/TProcessWindowsPriorityName.md)
+
+---
+
+## [Prado\Util\Log](./Util/Log/INDEX.md) - Classes: 13, Interfaces: 1, Total: 14, Recursive: 14
+
+### Interfaces (1)
+
+- [IOutputLogRoute](./Util/Log/IOutputLogRoute.md)
+
+### Classes (13)
+
+- [TBrowserLogRoute](./Util/Log/TBrowserLogRoute.md)
+- [TDbLogRoute](./Util/Log/TDbLogRoute.md)
+- [TEmailLogRoute](./Util/Log/TEmailLogRoute.md)
+- [TFileLogRoute](./Util/Log/TFileLogRoute.md)
+- [TFirebugLogRoute](./Util/Log/TFirebugLogRoute.md)
+- [TFirePhpLogRoute](./Util/Log/TFirePhpLogRoute.md)
+- [TLogger](./Util/Log/TLogger.md)
+- [TLogRoute](./Util/Log/TLogRoute.md)
+- [TLogRouter](./Util/Log/TLogRouter.md)
+- [TPsrLogger](./Util/Log/TPsrLogger.md)
+- [TPsrLogRoute](./Util/Log/TPsrLogRoute.md)
+- [TStdOutLogRoute](./Util/Log/TStdOutLogRoute.md)
+- [TSysLogRoute](./Util/Log/TSysLogRoute.md)
 
 ---
 

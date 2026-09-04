@@ -9,6 +9,10 @@ for both A and B.
 
 Upgrading from v4.3.3
 ---------------------
+- Logging classes moved from `Prado\Util` to `Prado\Util\Log` (`TLogger`, `TLogRouter`, `TLogRoute`, `IOutputLogRoute`, and
+  every `*LogRoute` class). The old fully-qualified names are not aliased. Update `use` statements, `instanceof`
+  checks, and configuration `class=` attributes that spell out `Prado\Util\TLogRouter` and the route classes.
+  Short class names in configuration (`class="TLogRouter"`) continue to resolve through `classes.php`.
 - TTabView renders the captions of JavaScript-switching tabs (tabs without a NavigateUrl) as plain
   text on the `role="tab"` element, so the tab bar follows the WAI-ARIA tabs pattern. The caption was
   previously wrapped in an `<a href="javascript://">` anchor; that fake, no-op link has been removed

@@ -59,7 +59,7 @@ class TRequestConnectionUpgrade extends \Prado\Util\TBehavior
 			return;
 		}
 		if (!isset($headers['upgrade'])) {
-			Prado::log("'Connection: Upgrade' without 'Upgrade' Header from " . $_SERVER['REMOTE_ADDR'], \Prado\Util\TLogger::NOTICE, static::class);
+			Prado::log("'Connection: Upgrade' without 'Upgrade' Header from " . $_SERVER['REMOTE_ADDR'], \Prado\Util\Log\TLogger::NOTICE, static::class);
 			return;
 		}
 		$upgrade = $headers['upgrade'];

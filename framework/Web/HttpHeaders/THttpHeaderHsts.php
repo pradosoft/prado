@@ -88,7 +88,7 @@ class THttpHeaderHsts extends THttpHeader
 				'THttpHeaderHsts: Preload=true requires IncludeSubDomains=true.'
 				. ' The preload directive will be rejected by browsers and the'
 				. ' hstspreload.org list.',
-				\Prado\Util\TLogger::WARNING,
+				\Prado\Util\Log\TLogger::WARNING,
 				static::class
 			);
 		}

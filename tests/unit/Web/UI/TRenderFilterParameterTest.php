@@ -1,7 +1,7 @@
 <?php
 
 use Prado\Prado;
-use Prado\Util\TLogger;
+use Prado\Util\Log\TLogger;
 use Prado\Web\UI\TRenderFilterParameter;
 use PHPUnit\Framework\TestCase;
 

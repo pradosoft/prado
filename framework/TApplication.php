@@ -22,7 +22,7 @@ use Prado\Security\TSecurityManager;
 use Prado\Web\{THttpRequest, THttpResponse, THttpSession};
 use Prado\Web\TAssetManager;
 use Prado\Util\TComposerReflection;
-use Prado\Util\TLogger;
+use Prado\Util\Log\TLogger;
 use Prado\Web\Services\TPageService;
 use Prado\Web\UI\TTemplateManager;
 use Prado\Web\UI\TThemeManager;
