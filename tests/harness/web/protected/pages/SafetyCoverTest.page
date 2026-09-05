@@ -1,0 +1,35 @@
+<com:TContent ID="Content">
+	<h1>Safety Cover Test Case</h1>
+
+	<%-- Two independent controls, each demonstrating ONE close path with a single
+	     open/close cycle. Keeping them separate means no control ever reopens, so
+	     each cycle reads cleanly.
+
+	     "auto" (Collapse + Forward + OverlayFade) exercises the clip-path geometry,
+	     the logical direction (Forward → Right in left-to-right content), the
+	     independent fade axis, and the auto-close after AutoCloseDelay=3000. --%>
+	<com:TSafetyCover ID="autoCover" OverlayEffect="Collapse" OverlayDirection="Forward" OverlayFade="true" OpenDelay="200" AutoCloseDelay="3000" MouseOutTimeout="300" OverlayColor="rgba(0, 0, 255, 0.5)" Width="60px" Height="50px">
+		<prop:OverlayTemplate>
+			<span class="unlock-hint">Unlock</span>
+		</prop:OverlayTemplate>
+		<button type="button" id="autoButton" onclick="clicked('autoResult')">Go</button>
+	</com:TSafetyCover>
+	<div id="autoResult"></div>
+
+	<%-- "mouseout" (Slide + Up, no fade) exercises the translate geometry and the
+	     mouse-out close. AutoCloseDelay is large so the auto-close never fires
+	     during the test; the mouse leaving the panel is what closes it. --%>
+	<com:TSafetyCover ID="mouseoutCover" OverlayEffect="Slide" OverlayDirection="Up" OpenDelay="200" AutoCloseDelay="30000" MouseOutTimeout="300" OverlayColor="rgba(0, 128, 0, 0.5)" Width="60px" Height="50px">
+		<prop:OverlayTemplate>
+			<span class="unlock-hint">Unlock</span>
+		</prop:OverlayTemplate>
+		<button type="button" id="mouseoutButton" onclick="clicked('mouseoutResult')">Go</button>
+	</com:TSafetyCover>
+	<div id="mouseoutResult"></div>
+
+	<com:TClientScript>
+		function clicked(id) {
+			document.getElementById(id).textContent = 'clicked';
+		}
+	</com:TClientScript>
+</com:TContent>

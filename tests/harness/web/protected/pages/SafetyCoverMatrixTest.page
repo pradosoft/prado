@@ -1,0 +1,28 @@
+<com:TContent ID="Content">
+	<h1>Safety Cover Matrix Test Case</h1>
+	<%-- Behavioral direction matrix: one Slide control per scenario. The test
+	     opens each and reads the computed transform to confirm the overlay moves
+	     toward the correct edge. AutoCloseDelay/MouseOutTimeout are huge so a
+	     control stays open once clicked. IDs encode: direction _ [handedness _] fadeN. --%>
+	<com:TSafetyCover ID="up_f0" OverlayEffect="Slide" OverlayDirection="Up" OpenDelay="50" AutoCloseDelay="999999" MouseOutTimeout="999999" Width="60px" Height="50px" ><prop:OverlayTemplate>x</prop:OverlayTemplate></com:TSafetyCover>
+	<com:TSafetyCover ID="up_f1" OverlayEffect="Slide" OverlayDirection="Up" OpenDelay="50" AutoCloseDelay="999999" MouseOutTimeout="999999" Width="60px" Height="50px" OverlayFade="true"><prop:OverlayTemplate>x</prop:OverlayTemplate></com:TSafetyCover>
+	<com:TSafetyCover ID="down_f0" OverlayEffect="Slide" OverlayDirection="Down" OpenDelay="50" AutoCloseDelay="999999" MouseOutTimeout="999999" Width="60px" Height="50px" ><prop:OverlayTemplate>x</prop:OverlayTemplate></com:TSafetyCover>
+	<com:TSafetyCover ID="down_f1" OverlayEffect="Slide" OverlayDirection="Down" OpenDelay="50" AutoCloseDelay="999999" MouseOutTimeout="999999" Width="60px" Height="50px" OverlayFade="true"><prop:OverlayTemplate>x</prop:OverlayTemplate></com:TSafetyCover>
+	<com:TSafetyCover ID="left_f0" OverlayEffect="Slide" OverlayDirection="Left" OpenDelay="50" AutoCloseDelay="999999" MouseOutTimeout="999999" Width="60px" Height="50px" ><prop:OverlayTemplate>x</prop:OverlayTemplate></com:TSafetyCover>
+	<com:TSafetyCover ID="left_f1" OverlayEffect="Slide" OverlayDirection="Left" OpenDelay="50" AutoCloseDelay="999999" MouseOutTimeout="999999" Width="60px" Height="50px" OverlayFade="true"><prop:OverlayTemplate>x</prop:OverlayTemplate></com:TSafetyCover>
+	<com:TSafetyCover ID="right_f0" OverlayEffect="Slide" OverlayDirection="Right" OpenDelay="50" AutoCloseDelay="999999" MouseOutTimeout="999999" Width="60px" Height="50px" ><prop:OverlayTemplate>x</prop:OverlayTemplate></com:TSafetyCover>
+	<com:TSafetyCover ID="right_f1" OverlayEffect="Slide" OverlayDirection="Right" OpenDelay="50" AutoCloseDelay="999999" MouseOutTimeout="999999" Width="60px" Height="50px" OverlayFade="true"><prop:OverlayTemplate>x</prop:OverlayTemplate></com:TSafetyCover>
+	<com:TSafetyCover ID="fwd_ltr_f0" OverlayEffect="Slide" OverlayDirection="Forward" OpenDelay="50" AutoCloseDelay="999999" MouseOutTimeout="999999" Width="60px" Height="50px" Direction="LeftToRight"><prop:OverlayTemplate>x</prop:OverlayTemplate></com:TSafetyCover>
+	<com:TSafetyCover ID="fwd_ltr_f1" OverlayEffect="Slide" OverlayDirection="Forward" OpenDelay="50" AutoCloseDelay="999999" MouseOutTimeout="999999" Width="60px" Height="50px" Direction="LeftToRight" OverlayFade="true"><prop:OverlayTemplate>x</prop:OverlayTemplate></com:TSafetyCover>
+	<com:TSafetyCover ID="bwd_ltr_f0" OverlayEffect="Slide" OverlayDirection="Backward" OpenDelay="50" AutoCloseDelay="999999" MouseOutTimeout="999999" Width="60px" Height="50px" Direction="LeftToRight"><prop:OverlayTemplate>x</prop:OverlayTemplate></com:TSafetyCover>
+	<com:TSafetyCover ID="bwd_ltr_f1" OverlayEffect="Slide" OverlayDirection="Backward" OpenDelay="50" AutoCloseDelay="999999" MouseOutTimeout="999999" Width="60px" Height="50px" Direction="LeftToRight" OverlayFade="true"><prop:OverlayTemplate>x</prop:OverlayTemplate></com:TSafetyCover>
+	<com:TSafetyCover ID="fwd_rtl_f0" OverlayEffect="Slide" OverlayDirection="Forward" OpenDelay="50" AutoCloseDelay="999999" MouseOutTimeout="999999" Width="60px" Height="50px" Direction="RightToLeft"><prop:OverlayTemplate>x</prop:OverlayTemplate></com:TSafetyCover>
+	<com:TSafetyCover ID="fwd_rtl_f1" OverlayEffect="Slide" OverlayDirection="Forward" OpenDelay="50" AutoCloseDelay="999999" MouseOutTimeout="999999" Width="60px" Height="50px" Direction="RightToLeft" OverlayFade="true"><prop:OverlayTemplate>x</prop:OverlayTemplate></com:TSafetyCover>
+	<com:TSafetyCover ID="bwd_rtl_f0" OverlayEffect="Slide" OverlayDirection="Backward" OpenDelay="50" AutoCloseDelay="999999" MouseOutTimeout="999999" Width="60px" Height="50px" Direction="RightToLeft"><prop:OverlayTemplate>x</prop:OverlayTemplate></com:TSafetyCover>
+	<com:TSafetyCover ID="bwd_rtl_f1" OverlayEffect="Slide" OverlayDirection="Backward" OpenDelay="50" AutoCloseDelay="999999" MouseOutTimeout="999999" Width="60px" Height="50px" Direction="RightToLeft" OverlayFade="true"><prop:OverlayTemplate>x</prop:OverlayTemplate></com:TSafetyCover>
+	<%-- Collapse (clip-path) and None (visibility/opacity) coverage. --%>
+	<com:TSafetyCover ID="collapse_up" OverlayEffect="Collapse" OverlayDirection="Up" OpenDelay="50" AutoCloseDelay="999999" MouseOutTimeout="999999" Width="60px" Height="50px"><prop:OverlayTemplate>x</prop:OverlayTemplate></com:TSafetyCover>
+	<com:TSafetyCover ID="collapse_right" OverlayEffect="Collapse" OverlayDirection="Right" OpenDelay="50" AutoCloseDelay="999999" MouseOutTimeout="999999" Width="60px" Height="50px"><prop:OverlayTemplate>x</prop:OverlayTemplate></com:TSafetyCover>
+	<com:TSafetyCover ID="none_plain" OverlayEffect="None" OpenDelay="50" AutoCloseDelay="999999" MouseOutTimeout="999999" Width="60px" Height="50px"><prop:OverlayTemplate>x</prop:OverlayTemplate></com:TSafetyCover>
+	<com:TSafetyCover ID="none_fade" OverlayEffect="None" OverlayFade="true" OpenDelay="50" AutoCloseDelay="999999" MouseOutTimeout="999999" Width="60px" Height="50px"><prop:OverlayTemplate>x</prop:OverlayTemplate></com:TSafetyCover>
+</com:TContent>

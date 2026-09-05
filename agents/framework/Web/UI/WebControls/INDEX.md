@@ -62,6 +62,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 |---|---|
 | `TMultiView` / `TView` | Shows one child `TView` at a time; `ActiveViewIndex` |
 | `TAccordion` | Animated expand/collapse panels; JS in `controls/accordion.js` |
+| `TSafetyCover` | Panel content behind a click-to-open overlay (slide/collapse/none, optional fade), guarding against accidental clicks; JS in `controls/safetycover.js` @since 4.4.0 |
 | `TTabPanel` | Tabbed views; JS in `controls/tabpanel.js` |
 | `TSlider` | Drag-and-drop range slider; JS in `controls/slider.js` |
 | `TColorPicker` | HSB color picker widget; JS in `colorpicker/colorpicker.js` |

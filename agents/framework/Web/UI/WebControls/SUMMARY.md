@@ -56,6 +56,8 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 - **`TAccordion`** / **`TTabPanel`** / **`TSlider`** / **`TColorPicker`** / **`TDatePicker`** / **`TKeyboard`** / **`TRatingList`** — Widget controls with JS implementations.
 
+- **`TSafetyCover`** — Panel content behind a click-to-open overlay (slide/collapse/none, optional fade), guarding against accidental clicks; JS in `controls/safetycover.js`. @since 4.4.0
+
 ### Data Controls
 
 - **`TDataGrid`** — Tabular display with paging/sorting/editing; column types: `TBoundColumn`, `TButtonColumn`, `TCheckBoxColumn`, `TDropDownListColumn`, `TTemplateColumn`.
