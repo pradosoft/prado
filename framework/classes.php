@@ -863,6 +863,8 @@ return [
 'TReCaptchaValidator' => 'Prado\Web\UI\WebControls\TReCaptchaValidator',
 'TRectangleHotSpot' => 'Prado\Web\UI\WebControls\TRectangleHotSpot',
 'TRegularExpressionValidator' => 'Prado\Web\UI\WebControls\TRegularExpressionValidator',
+'TRelativeTime' => 'Prado\Web\UI\WebControls\TRelativeTime',
+'TRelativeTimeMode' => 'Prado\Web\UI\WebControls\TRelativeTimeMode',
 'TRepeatDirection' => 'Prado\Web\UI\WebControls\TRepeatDirection',
 'TRepeater' => 'Prado\Web\UI\WebControls\TRepeater',
 'TRepeaterCommandEventParameter' => 'Prado\Web\UI\WebControls\TRepeaterCommandEventParameter',
