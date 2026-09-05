@@ -20,7 +20,7 @@ use Prado\Security\Permissions\IPermissions;
 use Prado\Security\Permissions\TPermissionEvent;
 use Prado\Shell\TShellApplication;
 use Prado\TPropertyValue;
-use Prado\Util\TLogger;
+use Prado\Util\Log\TLogger;
 use Prado\Util\Traits\TInitializedTrait;
 use Prado\Xml\TXmlElement;
 use Prado\Xml\TXmlDocument;

@@ -17,7 +17,7 @@ use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TPhpErrorException;
 use Prado\Exceptions\TPhpFatalErrorException;
-use Prado\Util\TLogger;
+use Prado\Util\Log\TLogger;
 use Prado\Util\TVarDumper;
 use Prado\I18N\Translation;
 
@@ -948,9 +948,9 @@ class Prado
 
 	/**
 	 * Logs a message.
-	 * Messages logged by this method may be retrieved via {@see \Prado\Util\TLogger::getLogs}
+	 * Messages logged by this method may be retrieved via {@see \Prado\Util\Log\TLogger::getLogs}
 	 * and may be recorded in different media, such as file, email, database, using
-	 * {@see \Prado\Util\TLogRouter}.
+	 * {@see \Prado\Util\Log\TLogRouter}.
 	 * @param string $msg message to be logged
 	 * @param int $level level of the message. Valid values include
 	 * TLogger::DEBUG, TLogger::INFO, TLogger::NOTICE, TLogger::WARNING,

@@ -1159,7 +1159,7 @@ class PradoBaseTest extends PHPUnit\Framework\TestCase
 	
 	public function testGetLogger()
 	{
-		$this->assertInstanceOf(\Prado\Util\TLogger::class, Prado::getLogger());
+		$this->assertInstanceOf(\Prado\Util\Log\TLogger::class, Prado::getLogger());
 	}
 
 	public function testCreateComponentWithNamespace()

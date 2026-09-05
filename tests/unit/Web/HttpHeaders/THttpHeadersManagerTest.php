@@ -19,7 +19,7 @@ use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
 use Prado\TApplication;
 use Prado\TApplicationMode;
-use Prado\Util\TLogger;
+use Prado\Util\Log\TLogger;
 use Prado\Web\HttpHeaders\TCspDirective;
 use Prado\Web\HttpHeaders\THttpHeader;
 use Prado\Web\HttpHeaders\TBaseHttpHeader;

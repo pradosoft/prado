@@ -14,7 +14,7 @@ use Prado\Prado;
 use Prado\TApplicationMode;
 use Prado\Util\IDynamicMethods;
 use Prado\Util\TBehavior;
-use Prado\Util\TLogger;
+use Prado\Util\Log\TLogger;
 
 /**
  * TPermissionsBehavior class.

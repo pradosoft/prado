@@ -10,6 +10,7 @@ This file provides guidance to Agents when working with code in this repository.
 | [Behaviors/](Behaviors/INDEX.md) | Pre-built installable behaviors (lazy loading, page behaviors, signals, etc.) |
 | [Cron/](Cron/INDEX.md) | Scheduled task engine: [`TCronModule`](Cron/TCronModule.md), [`TDbCronManager`](Cron/TDbCronManager.md), [`TTimeScheduler`](Cron/TTimeScheduler.md) |
 | [Helpers/](Helpers/INDEX.md) | Static utility classes: [`TArrayHelper`](Helpers/TArrayHelper.md), [`TBitHelper`](Helpers/TBitHelper.md), [`TProcessHelper`](Helpers/TProcessHelper.md) |
+| [Log/](Log/INDEX.md) | Logging: [`TLogger`](Log/TLogger.md), [`TLogRouter`](Log/TLogRouter.md), [`TLogRoute`](Log/TLogRoute.md) subclasses, PSR-3 adapters [`TPsrLogger`](Log/TPsrLogger.md) / [`TPsrLogRoute`](Log/TPsrLogRoute.md) |
 | [Math/](Math/INDEX.md) | [`TRational`](Math/TRational.md), [`TURational`](Math/TURational.md) — rational number arithmetic |
 | [Traits/](Traits/INDEX.md) | Reusable PHP traits: [`TConstantReflectionTrait`](Traits/TConstantReflectionTrait.md), [`TInitializedTrait`](Traits/TInitializedTrait.md) |
 
@@ -36,19 +37,7 @@ When a behavior registers event handlers in `attach()`, it **must** unregister t
 
 ## Logging
 
-- **[`TLogger`](TLogger.md)** — Core logger. Access via `Prado::getLogger()`. Methods: `log($message, $level, $category)`. Levels: `TLogger::DEBUG`, `INFO`, `NOTICE`, `WARNING`, `ERROR`, `ALERT`, `FATAL`. Profiling: `TLogger::PROFILE_BEGIN`, `PROFILE_END` pairs matched by category. Auto-flushes when log count exceeds `AutoFlush` threshold (default: 10000). Fires `onFlushLogs` event on flush.
-
-- **[`TLogRouter`](TLogRouter.md)** — Module that routes log entries to multiple [`TLogRoute`](TLogRoute.md) targets. Configured in `application.xml`.
-
-- **[`TLogRoute`](TLogRoute.md)** — Abstract base for log outputs. Subclass and implement `processLogs()`. Built-in routes:
-  - **[`TFileLogRoute`](TFileLogRoute.md)** — File output with rotation. Properties: `LogPath`, `LogFile`, `MaxFileSize` (512 KB default), `MaxLogFiles` (2 default).
-  - **[`TDbLogRoute`](TDbLogRoute.md)** — Database logging via `TDbPropertiesTrait`. Properties: `LogTableName`, `AutoCreateLogTable`, `RetainPeriod`, `ConnectionID`.
-  - **[`TEmailLogRoute`](TEmailLogRoute.md)** — Email alerts on error. Properties: `Emails`, `Subject`, `SentFrom`.
-  - **[`TBrowserLogRoute`](TBrowserLogRoute.md)** — Inline debug console rendered in the page. Properties: `CssClass`, `ColorizeDelta`, `AddPrefix`. Implements `IOutputLogRoute`.
-  - **[`TFirebugLogRoute`](TFirebugLogRoute.md)** — Logs to the Firebug browser extension console via inline `<script>` or JSON callback.
-  - **[`TFirePhpLogRoute`](TFirePhpLogRoute.md)** — Sends log entries over HTTP headers for FirePHP. Implements `IOutputLogRoute`. Property: `GroupLabel`.
-  - **[`TStdOutLogRoute`](TStdOutLogRoute.md)** — Writes log entries to stdout. Property: `OnlyDevServer`. @since 4.3.0
-  - **[`TSysLogRoute`](TSysLogRoute.md)** — Routes log entries to the OS syslog. Properties: `SysLogPrefix`, `SysLogFlags`, `Facility`. @since 4.3.0
+Logging lives in [Log/](Log/INDEX.md) since 4.4.0 (namespace `Prado\Util\Log`). Entry points: `Prado::log()` and `Prado::getLogger()` → [`TLogger`](Log/TLogger.md); the [`TLogRouter`](Log/TLogRouter.md) module dispatches to [`TLogRoute`](Log/TLogRoute.md) outputs; [`TPsrLogger`](Log/TPsrLogger.md) and [`TPsrLogRoute`](Log/TPsrLogRoute.md) bridge PSR-3 in both directions.
 
 ## Database Modules
 

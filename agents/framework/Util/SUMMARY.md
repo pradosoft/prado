@@ -14,11 +14,7 @@ Cross-cutting utilities: behavior/mixin system, logging, scheduled tasks, RPC cl
 
 - **`TCallChain`** — AOP-style method call chain for `dy*` dynamic events.
 
-- **`TLogger`** — Core logger; methods: `log($message, $level, $category)`; levels: `DEBUG`, `INFO`, `NOTICE`, `WARNING`, `ERROR`, `ALERT`, `FATAL`.
-
-- **`TLogRouter`** — Module that routes log entries to multiple `TLogRoute` targets.
-
-- **`TLogRoute`** — Abstract base for log outputs; subclass and implement `processLogs()`.
+- **Logging** — `TLogger`, `TLogRouter`, `TLogRoute` outputs, and the PSR-3 adapters `TPsrLogger` / `TPsrLogRoute` are in [Log/](Log/SUMMARY.md) (namespace `Prado\Util\Log`).
 
 - **`TParameterModule`** — Stores named configuration parameters.
 

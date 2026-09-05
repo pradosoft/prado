@@ -18,7 +18,7 @@ use Prado\Util\IBaseBehavior;
 use Prado\Util\IDynamicMethods;
 use Prado\Util\TBehavior;
 use Prado\Util\TCallChain;
-use Prado\Util\TLogger;
+use Prado\Util\Log\TLogger;
 
 /**
  * TEventLoggingBehavior class.
@@ -174,7 +174,7 @@ class TEventLoggingBehavior extends TBehavior implements IDynamicMethods
 	// ---------------------------------------------------------------- accessors
 
 	/**
-	 * @return int the PRADO {@see \Prado\Util\TLogger} log level
+	 * @return int the PRADO {@see \Prado\Util\Log\TLogger} log level
 	 */
 	public function getLevel(): int
 	{
@@ -182,7 +182,7 @@ class TEventLoggingBehavior extends TBehavior implements IDynamicMethods
 	}
 
 	/**
-	 * @param int|string $value a {@see \Prado\Util\TLogger} level constant
+	 * @param int|string $value a {@see \Prado\Util\Log\TLogger} level constant
 	 */
 	public function setLevel(int|string $value): void
 	{

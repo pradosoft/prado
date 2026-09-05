@@ -24,7 +24,7 @@ use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Util\IDbModule;
-use Prado\Util\TLogger;
+use Prado\Util\Log\TLogger;
 
 /**
  * TDbCronManager class.

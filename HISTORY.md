@@ -1,3 +1,6 @@
+## Version 4.4.0 - TBA
+ENH: Issue #1178 - Logging moved to `Prado\Util\Log` (`framework/Util/Log/`). PSR-3 support: `TPsrLogger` implements `Psr\Log\LoggerInterface` over `TLogger`; `TPsrLogRoute` forwards the application log to an external PSR-3 logger; adds the `psr/log` dependency. (belisoful)
+
 ## Version 4.3.3 - TBA
 
 ENH: Issues #1036, #1052, #1058, #1070, #1126 - Database layer: `TDbPropertiesTrait` unifies DB connection handling across modules; adds `IDataConnection`, `IDataCommand`, `IDataReader`, `IDataTransaction`, `IDataMetaData`, `IDataCommandBuilder`, `IDataTableInfo` interfaces for 3rd-party driver integration; IBM DB2 and Firebird metadata support; TDbDriver` PDO driver names, `TDataCharset` universal IANA charset names.

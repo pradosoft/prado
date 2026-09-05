@@ -354,7 +354,7 @@ class THttpHeadersManager extends TModule
 						'THttpHeadersManager: ReportingServiceId="' . $reportingServiceId
 						. '" is registered as ' . $entry[0] . ', which is not a'
 						. ' TCspReportingService subclass. CSP violation reports will not be received.',
-						\Prado\Util\TLogger::WARNING,
+						\Prado\Util\Log\TLogger::WARNING,
 						static::class
 					);
 				}
@@ -1109,7 +1109,7 @@ class THttpHeadersManager extends TModule
 				'Cross-Origin-Embedder-Policy is set without Cross-Origin-Opener-Policy.'
 				. ' Both headers are required together for cross-origin isolation'
 				. ' (SharedArrayBuffer, performance.measureUserAgentSpecificMemory(), etc.).',
-				\Prado\Util\TLogger::WARNING,
+				\Prado\Util\Log\TLogger::WARNING,
 				static::class
 			);
 		} elseif ($hasCoop && !$hasCoep) {
@@ -1117,7 +1117,7 @@ class THttpHeadersManager extends TModule
 				'Cross-Origin-Opener-Policy is set without Cross-Origin-Embedder-Policy.'
 				. ' Both headers are required together for cross-origin isolation'
 				. ' (SharedArrayBuffer, performance.measureUserAgentSpecificMemory(), etc.).',
-				\Prado\Util\TLogger::WARNING,
+				\Prado\Util\Log\TLogger::WARNING,
 				static::class
 			);
 		}
@@ -1140,7 +1140,7 @@ class THttpHeadersManager extends TModule
 				Prado::log(
 					'A CSP header declares frame-ancestors but no X-Frame-Options header is present.'
 					. ' Consider adding X-Frame-Options for older browser coverage.',
-					\Prado\Util\TLogger::DEBUG,
+					\Prado\Util\Log\TLogger::DEBUG,
 					static::class
 				);
 				return;
@@ -1260,7 +1260,7 @@ class THttpHeadersManager extends TModule
 
 		Prado::log(
 			'Prado CSP Reporter Service is active at: ' . $url,
-			\Prado\Util\TLogger::INFO,
+			\Prado\Util\Log\TLogger::INFO,
 			static::class
 		);
 
@@ -1292,7 +1292,7 @@ class THttpHeadersManager extends TModule
 					$csp->setReportOnly(true);
 					Prado::log(
 						'CSP ReportOnly mode: enforcing CSP converted to report-only.',
-						\Prado\Util\TLogger::INFO,
+						\Prado\Util\Log\TLogger::INFO,
 						static::class
 					);
 				}

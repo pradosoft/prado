@@ -14,7 +14,7 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Util\Helpers\TProcessHelper;
-use Prado\Util\TLogger;
+use Prado\Util\Log\TLogger;
 
 /**
  * TProcessCronTask class.
