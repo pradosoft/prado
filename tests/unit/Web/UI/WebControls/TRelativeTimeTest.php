@@ -323,7 +323,9 @@ class TRelativeTimeTest extends TestCase
 	{
 		$control = $this->makeAtOffset(-330);
 		$control->setMode(TRelativeTimeMode::Narrow);
-		$this->assertSame('5m ago', $this->renderContents($control));
+		// Newer CLDR renders the narrow minute relative pattern (5m ago). Older ICU has no
+		// narrow relative field and falls back to the short pattern (5 min. ago).
+		$this->assertContains($this->renderContents($control), ['5m ago', '5 min. ago']);
 	}
 
 	public function testRenderContentsFrench()
