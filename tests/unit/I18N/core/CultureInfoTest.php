@@ -262,6 +262,145 @@ class CultureInfoTest extends TestCase
 		$this->assertNull($noPerUnit);
 	}
 
+	public function testGetUnitPatternsLongDefault()
+	{
+		$culture = CultureInfo::getCultureInfo('en_US');
+
+		$patterns = $culture->getUnitPatterns(CultureInfoUnits::TYPE_DURATION_MINUTE);
+		$this->assertEquals('{0} minute', $patterns['one']);
+		$this->assertEquals('{0} minutes', $patterns['other']);
+	}
+
+	public function testGetUnitPatternsWidths()
+	{
+		$culture = CultureInfo::getCultureInfo('en_US');
+
+		$this->assertEquals('{0} min', $culture->getUnitPatterns(CultureInfoUnits::TYPE_DURATION_MINUTE, 'short')['one']);
+		$this->assertEquals('{0}m', $culture->getUnitPatterns(CultureInfoUnits::TYPE_DURATION_MINUTE, 'narrow')['one']);
+	}
+
+	public function testGetUnitPatternsOnlyPluralKeys()
+	{
+		$culture = CultureInfo::getCultureInfo('en_US');
+
+		$patterns = $culture->getUnitPatterns(CultureInfoUnits::TYPE_DURATION_MINUTE);
+		$this->assertEqualsCanonicalizing(['one', 'other'], array_keys($patterns));
+		$this->assertArrayNotHasKey('dnam', $patterns);
+		$this->assertArrayNotHasKey('per', $patterns);
+	}
+
+	public function testGetUnitPatternsPluralCategoriesForRussian()
+	{
+		$culture = CultureInfo::getCultureInfo('ru');
+
+		$patterns = $culture->getUnitPatterns(CultureInfoUnits::TYPE_DURATION_MINUTE);
+		$this->assertArrayHasKey('few', $patterns);
+		$this->assertArrayHasKey('many', $patterns);
+		$this->assertArrayHasKey('one', $patterns);
+		$this->assertArrayHasKey('other', $patterns);
+	}
+
+	public function testGetUnitPatternsNarrowFallsBackToShort()
+	{
+		$culture = CultureInfo::getCultureInfo('ru');
+
+		// Russian has no narrow duration units; the width falls back to short.
+		$narrow = $culture->getUnitPatterns(CultureInfoUnits::TYPE_DURATION_MINUTE, 'narrow');
+		$short = $culture->getUnitPatterns(CultureInfoUnits::TYPE_DURATION_MINUTE, 'short');
+		$this->assertNotEmpty($narrow);
+		$this->assertEquals($short, $narrow);
+	}
+
+	public function testGetUnitPatternsUnknownWidthDefaultsToLong()
+	{
+		$culture = CultureInfo::getCultureInfo('en_US');
+
+		$this->assertEquals(
+			$culture->getUnitPatterns(CultureInfoUnits::TYPE_DURATION_HOUR, 'long'),
+			$culture->getUnitPatterns(CultureInfoUnits::TYPE_DURATION_HOUR, 'bogus')
+		);
+	}
+
+	public function testGetUnitPatternsUnknownUnitReturnsEmpty()
+	{
+		$culture = CultureInfo::getCultureInfo('en_US');
+
+		$this->assertSame([], $culture->getUnitPatterns('duration-nonexistent'));
+	}
+
+	public function testGetRelativeTimePatternsLongDefault()
+	{
+		$patterns = CultureInfo::getCultureInfo('en_US')->getRelativeTimePatterns(CultureInfoUnits::TYPE_DURATION_MINUTE);
+
+		$this->assertEquals('{0} minute ago', $patterns['past']['one']);
+		$this->assertEquals('{0} minutes ago', $patterns['past']['other']);
+		$this->assertEquals('in {0} minute', $patterns['future']['one']);
+		$this->assertEquals('in {0} minutes', $patterns['future']['other']);
+	}
+
+	public function testGetRelativeTimePatternsWidths()
+	{
+		$culture = CultureInfo::getCultureInfo('en_US');
+
+		$this->assertEquals('{0} min. ago', $culture->getRelativeTimePatterns(CultureInfoUnits::TYPE_DURATION_MINUTE, 'short')['past']['other']);
+		$this->assertEquals('{0}m ago', $culture->getRelativeTimePatterns(CultureInfoUnits::TYPE_DURATION_MINUTE, 'narrow')['past']['other']);
+	}
+
+	public function testGetRelativeTimePatternsRussianCategoriesAndInflection()
+	{
+		$patterns = CultureInfo::getCultureInfo('ru')->getRelativeTimePatterns(CultureInfoUnits::TYPE_DURATION_MINUTE);
+
+		$this->assertArrayHasKey('few', $patterns['past']);
+		$this->assertArrayHasKey('many', $patterns['past']);
+		// The relative pattern inflects the unit (accusative), unlike the bare unit pattern.
+		$this->assertEquals('{0} минуту назад', $patterns['past']['one']);
+	}
+
+	public function testGetRelativeTimePatternsUnknownWidthDefaultsToLong()
+	{
+		$culture = CultureInfo::getCultureInfo('en_US');
+
+		$this->assertEquals(
+			$culture->getRelativeTimePatterns(CultureInfoUnits::TYPE_DURATION_HOUR, 'long'),
+			$culture->getRelativeTimePatterns(CultureInfoUnits::TYPE_DURATION_HOUR, 'bogus')
+		);
+	}
+
+	public function testGetRelativeTimePatternsUnknownUnitReturnsEmpty()
+	{
+		$this->assertSame([], CultureInfo::getCultureInfo('en_US')->getRelativeTimePatterns('duration-nonexistent'));
+	}
+
+	public function testSelectPluralCategoryEnglish()
+	{
+		$culture = CultureInfo::getCultureInfo('en_US');
+
+		$this->assertSame('one', $culture->selectPluralCategory(1));
+		$this->assertSame('other', $culture->selectPluralCategory(0));
+		$this->assertSame('other', $culture->selectPluralCategory(5));
+	}
+
+	public function testSelectPluralCategoryRussian()
+	{
+		$culture = CultureInfo::getCultureInfo('ru');
+
+		$this->assertSame('one', $culture->selectPluralCategory(1));
+		$this->assertSame('few', $culture->selectPluralCategory(2));
+		$this->assertSame('many', $culture->selectPluralCategory(5));
+		$this->assertSame('one', $culture->selectPluralCategory(21));
+	}
+
+	public function testSelectPluralCategoryArabicSixCategories()
+	{
+		$culture = CultureInfo::getCultureInfo('ar');
+
+		$this->assertSame('zero', $culture->selectPluralCategory(0));
+		$this->assertSame('two', $culture->selectPluralCategory(2));
+		$this->assertSame('few', $culture->selectPluralCategory(3));
+		$this->assertSame('many', $culture->selectPluralCategory(11));
+		$this->assertSame('other', $culture->selectPluralCategory(100));
+	}
+
 	public function testMissingEnglishNameReturnsCultureCode()
 	{
 		$culture = new CultureInfo('iw');
