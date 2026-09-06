@@ -415,6 +415,90 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 		}
 	}
 
+	public function testInstantiateInInitExpressionEvaluatesAtInstantiation()
+	{
+		$tpl = $this->newTemplate('<com:TLabel ID="lbl1" Text="<%! $this->getID() . \'-x\' %>" />');
+		$parent = $this->createControlWithPage();
+		$tpl->instantiateIn($parent);
+		$label = $parent->getControls()[0];
+		$this->assertInstanceOf(TLabel::class, $label);
+		$this->assertEquals('tplControl-x', $label->getText());
+		$this->assertNull(PradoUnit::getProp($label, '_rf')[TControl::RF_AUTO_BINDINGS] ?? null);
+	}
+
+	public function testInstantiateInExpressionDefersToPreRender()
+	{
+		$tpl = $this->newTemplate('<com:TLabel ID="lbl1" Text="<%= $this->getID() . \'-x\' %>" />');
+		$parent = $this->createControlWithPage();
+		$tpl->instantiateIn($parent);
+		$label = $parent->getControls()[0];
+		$this->assertEquals('', $label->getText());
+		PradoUnit::invoke($label, 'autoDataBindProperties');
+		$this->assertEquals('tplControl-x', $label->getText());
+	}
+
+	public function testInstantiateInInitExpressionMixedWithTextAndParameter()
+	{
+		$params = Prado::getApplication()->getParameters();
+		$params->add('TTemplateInstantiateInTestParam', 'World');
+		try {
+			$tpl = $this->newTemplate('<com:TLabel ID="lbl1" Text="Hello <%$ TTemplateInstantiateInTestParam %>, <%! strtoupper(\'now\') %>!" />');
+			$parent = $this->createControlWithPage();
+			$tpl->instantiateIn($parent);
+			$label = $parent->getControls()[0];
+			$this->assertEquals('Hello World, NOW!', $label->getText());
+		} finally {
+			$params->remove('TTemplateInstantiateInTestParam');
+		}
+	}
+
+	public function testInstantiateInInitExpressionOnSubProperty()
+	{
+		$tpl = $this->newTemplate('<com:TLabel ID="lbl1" Font.Size="<%! 10 + 2 %>" />');
+		$parent = $this->createControlWithPage();
+		$tpl->instantiateIn($parent);
+		$label = $parent->getControls()[0];
+		$this->assertEquals('12', $label->getFont()->getSize());
+	}
+
+	public function testInstantiateInExpressionOnIdSetsOnceAndDoesNotAutoBind()
+	{
+		$tpl = $this->newTemplate('<com:TLabel ID="<%= \'lbl\' . 8 %>" Text="Hi" />');
+		$parent = $this->createControlWithPage();
+		$tpl->instantiateIn($parent);
+		$label = $parent->getControls()[0];
+		$this->assertEquals('lbl8', $label->getID());
+		$this->assertSame($label, $parent->findControl('lbl8'));
+		PradoUnit::invoke($label, 'autoDataBindProperties');
+		$this->assertEquals('lbl8', $label->getID());
+	}
+
+	public function testInstantiateInParameterOnIdSetsOnce()
+	{
+		$params = Prado::getApplication()->getParameters();
+		$params->add('TTemplateInstantiateInTestIdParam', 'lbl9');
+		try {
+			$tpl = $this->newTemplate('<com:TLabel ID="<%$ TTemplateInstantiateInTestIdParam %>" Text="Hi" />');
+			$parent = $this->createControlWithPage();
+			$tpl->instantiateIn($parent);
+			$label = $parent->getControls()[0];
+			$this->assertEquals('lbl9', $label->getID());
+			$this->assertSame($label, $parent->findControl('lbl9'));
+		} finally {
+			$params->remove('TTemplateInstantiateInTestIdParam');
+		}
+	}
+
+	public function testInstantiateInInitExpressionOnId()
+	{
+		$tpl = $this->newTemplate('<com:TLabel ID="<%! \'lbl\' . 7 %>" Text="Hi" />');
+		$parent = $this->createControlWithPage();
+		$tpl->instantiateIn($parent);
+		$label = $parent->getControls()[0];
+		$this->assertEquals('lbl7', $label->getID());
+		$this->assertSame($label, $parent->findControl('lbl7'));
+	}
+
 	// -----------------------------------------------------------------------
 	// TComponent (non-control) instantiation
 	// -----------------------------------------------------------------------

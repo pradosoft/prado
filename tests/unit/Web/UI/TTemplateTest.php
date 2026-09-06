@@ -1095,6 +1095,66 @@ $this->assertArrayHasKey(TTemplate::TPL_PROPS, $item);
 		$this->assertEquals(TTemplate::CONFIG_DATABIND, $textProp[TTemplate::PROP_TYPE]);
 	}
 
+	public function testInitExpressionAttributeValueContent()
+	{
+		$tpl = $this->newTemplate('<com:TLabel ID="lbl1" Text="<%! $this->Title %>" />');
+		$component = $this->findComponent($tpl->getItems());
+		$textProp = $component[TTemplate::TPL_PROPS]['text'];
+		$this->assertEquals(TTemplate::CONFIG_INIT_EXPRESSION, $textProp[TTemplate::PROP_TYPE]);
+		$this->assertEquals('( $this->Title )', $textProp[TTemplate::PROP_VALUE]);
+	}
+
+	public function testMixedInitExpressionAndStaticText()
+	{
+		$tpl = $this->newTemplate('<com:TLabel ID="lbl1" Text="prefix<%! $this->Name %>suffix" />');
+		$component = $this->findComponent($tpl->getItems());
+		$textProp = $component[TTemplate::TPL_PROPS]['text'];
+		$this->assertEquals(TTemplate::CONFIG_INIT_EXPRESSION, $textProp[TTemplate::PROP_TYPE]);
+		$this->assertEquals("'prefix'.( \$this->Name ).'suffix'", $textProp[TTemplate::PROP_VALUE]);
+	}
+
+	public function testMixedInitExpressionAndExpressionIsInitExpression()
+	{
+		$tpl = $this->newTemplate('<com:TLabel ID="lbl1" Text="<%= $a %>-<%! $b %>" />');
+		$component = $this->findComponent($tpl->getItems());
+		$textProp = $component[TTemplate::TPL_PROPS]['text'];
+		$this->assertEquals(TTemplate::CONFIG_INIT_EXPRESSION, $textProp[TTemplate::PROP_TYPE]);
+		$this->assertEquals("( \$a ).'-'.( \$b )", $textProp[TTemplate::PROP_VALUE]);
+	}
+
+	public function testMixedInitExpressionAndDatabindIsDatabind()
+	{
+		$tpl = $this->newTemplate('<com:TLabel ID="lbl1" Text="<%! $a %><%# $b %>" />');
+		$component = $this->findComponent($tpl->getItems());
+		$textProp = $component[TTemplate::TPL_PROPS]['text'];
+		$this->assertEquals(TTemplate::CONFIG_DATABIND, $textProp[TTemplate::PROP_TYPE]);
+	}
+
+	public function testMixedInitExpressionAndLocalizationTag()
+	{
+		$tpl = $this->newTemplate('<com:TLabel ID="lbl1" Text="<%[ Hi ]%> <%! $this->Name %>" />');
+		$component = $this->findComponent($tpl->getItems());
+		$textProp = $component[TTemplate::TPL_PROPS]['text'];
+		$this->assertEquals(TTemplate::CONFIG_INIT_EXPRESSION, $textProp[TTemplate::PROP_TYPE]);
+		$this->assertStringContainsString("Prado::localize('Hi')", $textProp[TTemplate::PROP_VALUE]);
+	}
+
+	public function testInitExpressionAllowedOnIdAndSkinId()
+	{
+		$tpl = $this->newTemplate('<com:TLabel ID="<%! \'lbl\' . 1 %>" SkinID="<%! \'sk\' %>" />');
+		$component = $this->findComponent($tpl->getItems());
+		$this->assertEquals(TTemplate::CONFIG_INIT_EXPRESSION, $component[TTemplate::TPL_PROPS]['id'][TTemplate::PROP_TYPE]);
+		$this->assertEquals(TTemplate::CONFIG_INIT_EXPRESSION, $component[TTemplate::TPL_PROPS]['skinid'][TTemplate::PROP_TYPE]);
+	}
+
+	public function testInitExpressionTagInBodyIsLiteralText()
+	{
+		$tpl = $this->newTemplate('a<%! $this->Name %>b');
+		$items = $tpl->getItems();
+		$this->assertCount(1, $items);
+		$this->assertEquals('a<%! $this->Name %>b', array_values($items)[0][TTemplate::TPL_TYPE]);
+	}
+
 	public function testMixedDatabindAndExpressionInAttribute()
 	{
 		$tpl = $this->newTemplate('<com:TLabel ID="lbl1" Text="<%# $data %><%= $expr %>" />');

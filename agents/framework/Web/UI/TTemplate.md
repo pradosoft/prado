@@ -41,6 +41,7 @@ TTemplate implements PRADO template parsing logic. It represents a parsed PRADO 
 
 ### Expressions
 - `<%= PHP expression %>` - Outputs PHP expression result
+- `<%! PHP expression %>` - Attribute-only. Evaluated once at template instantiation; literal text in body content
 - `<%% PHP statements %>` - Executes PHP statements
 - `<%# PHP expression %>` - Data-bound expression, evaluated on `dataBind()`
 - `<%$ ParamName %>` - Application parameter
@@ -53,12 +54,14 @@ TTemplate implements PRADO template parsing logic. It represents a parsed PRADO 
 |---|---|
 | plain text | `CONFIG_VALUE` |
 | exactly one `<%~ %>`, `<%$ %>`, `<%[ ]%>` or `<%/ %>` tag (surrounding whitespace allowed) | typed `CONFIG_ASSET` / `CONFIG_PARAMETER` / `CONFIG_LOCALIZATION` / `CONFIG_EXPRESSION` |
-| text mixed with one or more `=`, `#`, `~`, `$`, `[`, `/` tags | `CONFIG_EXPRESSION` concatenating text and tag results; any `#` tag makes it `CONFIG_DATABIND` |
+| text mixed with one or more `=`, `!`, `#`, `~`, `$`, `[`, `/` tags | `CONFIG_EXPRESSION` concatenating text and tag results; any `#` tag makes it `CONFIG_DATABIND`; otherwise any `!` tag makes it `CONFIG_INIT_EXPRESSION` |
 
-- The typed single-tag check runs first. `ID` and `SkinID` validation depends on the typed result (`CONFIG_PARAMETER` is allowed, other tag types are not).
-- Mixed values are auto-bind expressions. `TControl::autoDataBindProperties()` evaluates them in `preRenderRecursive()` with the template control as `$this`, so a lone `<%[ ]%>` localizes at instantiation while `<%[ ]%><br>` localizes at pre-render.
+- The typed single-tag check runs first. `ID` and `SkinID` accept `CONFIG_VALUE`, `CONFIG_PARAMETER`, `CONFIG_EXPRESSION` and `CONFIG_INIT_EXPRESSION`; other tag types throw.
+- Mixed `CONFIG_EXPRESSION` values are auto-bind expressions. `TControl::autoDataBindProperties()` evaluates them in `preRenderRecursive()` with the template control as `$this`, so a lone `<%[ ]%>` localizes at instantiation while `<%[ ]%><br>` localizes at pre-render.
+- `CONFIG_INIT_EXPRESSION` values are evaluated by `configureProperty()` during `instantiateIn()` with the template control as `$this` and passed to the setter. Use `<%! %>` for properties read before PreRender: `ValidationGroup`, `CausesValidation`, input defaults that posted data must override, and properties a control reads in `onInit`/`onLoad`. The configured control is not yet attached to its parent when the expression runs. Properties that depend on `onLoad` state must stay `<%= %>`.
+- `ID` tag values (`=`, `!`, `$`) are evaluated in `instantiateIn()` before `registerObject()`, and the property is retyped to `CONFIG_VALUE` so `configureProperty()` sets the evaluated string instead of evaluating it a second time.
 - `<%% %>` statement tags are not recognized in attribute values and stay literal text.
-- Mixing `~`, `$`, `[`, `/` tags with text is supported since 4.4.0 (issue #450).
+- Mixing `~`, `$`, `[`, `/` tags with text and the `<%! %>` tag are supported since 4.4.0 (issue #450).
 
 ### Comments
 - `<!-- comments -->` - Regular HTML comments treated as text strings
@@ -116,9 +119,9 @@ These protected methods are part of the internal parsing pipeline. Subclasses ma
 - `attributeToMethodName(string $propName): string` — Converts attribute names with dashes to underscores for PHP method name lookup.
 - `packTemplate(int $parentIndex, string|array|TTemplate $type, ?array $attributes = null): array` — Creates a template item array with `TPL_PARENT_INDEX`, `TPL_TYPE`, and optionally `TPL_PROPS`.
 - `packProperty($type, string $propName, mixed $value): array` — Returns property info with `PROP_TYPE`, `PROP_NAME`, `PROP_VALUE` keys.
-- `propertyExpressionCharToType(string $strValue, string $propName): int` — Converts a template expression character (`=`, `%`, `#`, `$`) to a `CONFIG_*` constant.
+- `propertyExpressionCharToType(string $strValue, string $propName): int` — Converts a template expression character (`=`, `!`, `#`, `~`, `[`, `$`, `/`) to a `CONFIG_*` constant.
 - `parseExpression(string $tplType, string $literal): array` — Parses a `<%= %>` / `<%% %>` / `<%# %>` / `<%$ %>` / `<%~ %>` / `<%/ %>` / `<%[ ]%>` expression literal into `[TCompositeLiteral::TYPE_*, expression]`.
-- `parseAttributeTag(string $token): string` (@since 4.4.0) — Converts one complete tag inside a mixed attribute value to a PHP expression; `=`/`#` bodies pass through verbatim, other types go through `parseExpression()`.
+- `parseAttributeTag(string $token): string` (@since 4.4.0) — Converts one complete tag inside a mixed attribute value to a PHP expression; `=`/`!`/`#` bodies pass through verbatim, other types go through `parseExpression()`.
 - `optimizeTemplate(): array` — Combines consecutive strings/expressions/statements/bindings with the same parent into `TCompositeLiteral` objects for rendering efficiency.
 
 ## Usage Example
