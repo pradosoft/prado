@@ -1,5 +1,6 @@
 <?php
 
+use Prado\Prado;
 use Prado\TComponent;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataTypeException;
@@ -384,6 +385,34 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals('lbl1', $label->getID());
 		$this->assertCount(0, $label->getControls());
 		$this->assertSame($parent, $label->getParent());
+	}
+
+	public function testInstantiateInLocalizationTagMixedWithTextEvaluatesOnPreRender()
+	{
+		$tpl = $this->newTemplate('<com:TLabel ID="lbl1" Text="<%[ Please enter your email! ]%><br>" />');
+		$parent = $this->createControlWithPage();
+		$tpl->instantiateIn($parent);
+		$label = $parent->getControls()[0];
+		$this->assertInstanceOf(TLabel::class, $label);
+		$this->assertEquals('', $label->getText());
+		PradoUnit::invoke($label, 'autoDataBindProperties');
+		$this->assertEquals('Please enter your email!<br>', $label->getText());
+	}
+
+	public function testInstantiateInParameterTagMixedWithTextEvaluatesOnPreRender()
+	{
+		$params = Prado::getApplication()->getParameters();
+		$params->add('TTemplateInstantiateInTestParam', 'World');
+		try {
+			$tpl = $this->newTemplate('<com:TLabel ID="lbl1" Text="Hello <%$ TTemplateInstantiateInTestParam %>!" />');
+			$parent = $this->createControlWithPage();
+			$tpl->instantiateIn($parent);
+			$label = $parent->getControls()[0];
+			PradoUnit::invoke($label, 'autoDataBindProperties');
+			$this->assertEquals('Hello World!', $label->getText());
+		} finally {
+			$params->remove('TTemplateInstantiateInTestParam');
+		}
 	}
 
 	// -----------------------------------------------------------------------

@@ -39,7 +39,8 @@ use Prado\Web\Services\TPageService;
  * - directive: directive specifies the property values for the template owner.
  *   It is in the format of <%@ property name-value pairs %>;
  * - expressions: They are in the format of <%= PHP expression %> and
- *   <%% PHP statements %>
+ *   <%% PHP statements %>. Attribute values accept <%= %>, <%# %>, <%~ %>,
+ *   <%$ %>, <%[ ]%> and <%/ %> tags, alone or mixed with literal text.
  * - Template comments are formatted as  <!--- comments --->, which will be entirely
  *     stripped from the output.
  *
@@ -751,13 +752,36 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 
 	/**
 	 * Parses a single attribute value to determine its type.
+	 *
+	 * | Attribute value | Result |
+	 * |---|---|
+	 * | plain text | `CONFIG_VALUE` holding the text |
+	 * | exactly one `<%~ %>`, `<%$ %>`, `<%[ ]%>` or `<%/ %>` tag | the matching `CONFIG_*` type holding the tag body |
+	 * | text mixed with one or more `<%= %>`, `<%# %>`, `<%~ %>`, `<%$ %>`, `<%[ ]%>` or `<%/ %>` tags | `CONFIG_EXPRESSION` concatenating the text and the tag results |
+	 *
+	 * A `<%# %>` tag anywhere in a mixed value makes the result `CONFIG_DATABIND`.
+	 * `<%% %>` statement tags are not recognized in attribute values.
+	 * Mixing `~`, `$`, `[` and `/` tags with text is supported since 4.4.0.
 	 * @param string $propName property name from template
 	 * @param string $value raw attribute value to parse
 	 * @return array [PROP_TYPE, PROP_VALUE, PROP_NAME] packed property info
 	 */
 	protected function parseAttribute($propName, $value)
 	{
-		if (($n = preg_match_all('/<%[#=]' . self::PARSE_EXPRESSION_VALUE . '%>/msS', $value, $matches, PREG_OFFSET_CAPTURE)) > 0) {
+		if (preg_match('/\\s*(<%~' . self::PARSE_EXPRESSION_VALUE . '%>|' .
+							'<%\\$' . self::PARSE_EXPRESSION_VALUE . '%>|' .
+							'<%\\[' . self::PARSE_EXPRESSION_VALUE . '\\]%>|' .
+							'<%\/' . self::PARSE_EXPRESSION_VALUE . '%>)\\s*/msS', $value, $matches) && $matches[0] === $value) {
+			$strValue = $matches[1];
+			$propType = $this->propertyExpressionCharToType($strValue, $propName);
+			$endOffset = ($propType === self::CONFIG_LOCALIZATION) ? -1 : 0;
+			$strValue = trim(substr($strValue, 3, strlen($strValue) - 5 + $endOffset));
+			if ($propType === self::CONFIG_EXPRESSION) {
+				$strValue = "rtrim(dirname(\$this->getApplication()->getRequest()->getApplicationUrl()), '\/').'/$strValue'";
+			}
+			return $this->packProperty($propType, $propName, $strValue);
+		}
+		if (($n = preg_match_all('/<%[#=~$\\[\\/]' . self::PARSE_EXPRESSION_VALUE . '%>/msS', $value, $matches, PREG_OFFSET_CAPTURE)) > 0) {
 			$isDataBind = false;
 			$textStart = 0;
 			$expr = '';
@@ -772,7 +796,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 				if ($offset > $textStart) {
 					$expr .= ".'" . strtr(substr($value, $textStart, $offset - $textStart), ["'" => "\\'", "\\" => "\\\\"]) . "'";
 				}
-				$expr .= '.(' . substr($token, 3, $length - 5) . ')';
+				$expr .= '.(' . $this->parseAttributeTag($token) . ')';
 				$textStart = $offset + $length;
 			}
 			$length = strlen($value);
@@ -780,20 +804,26 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 				$expr .= ".'" . strtr(substr($value, $textStart, $length - $textStart), ["'" => "\\'", "\\" => "\\\\"]) . "'";
 			}
 			return $this->packProperty($isDataBind ? self::CONFIG_DATABIND : self::CONFIG_EXPRESSION, $propName, ltrim($expr, '.'));
-		} elseif (preg_match('/\\s*(<%~' . self::PARSE_EXPRESSION_VALUE . '%>|' .
-								   '<%\\$' . self::PARSE_EXPRESSION_VALUE . '%>|' .
-								   '<%\\[' . self::PARSE_EXPRESSION_VALUE . '\\]%>|' .
-								   '<%\/' . self::PARSE_EXPRESSION_VALUE . '%>)\\s*/msS', $value, $matches) && $matches[0] === $value) {
-			$strValue = $matches[1];
-			$propType = $this->propertyExpressionCharToType($strValue, $propName);
-			$endOffset = ($propType === self::CONFIG_LOCALIZATION) ? -1 : 0;
-			$strValue = trim(substr($strValue, 3, strlen($strValue) - 5 + $endOffset));
-			if ($propType === self::CONFIG_EXPRESSION) {
-				$strValue = "rtrim(dirname(\$this->getApplication()->getRequest()->getApplicationUrl()), '\/').'/$strValue'";
-			}
-			return $this->packProperty($propType, $propName, $strValue);
 		}
 		return $this->packProperty(self::CONFIG_VALUE, $propName, $value);
+	}
+
+	/**
+	 * Converts one template tag inside a mixed attribute value to a PHP expression.
+	 * `<%= %>` and `<%# %>` tags contribute their body verbatim.
+	 * `<%~ %>`, `<%$ %>`, `<%[ ]%>` and `<%/ %>` tags are converted by {@see parseExpression()}.
+	 * @param string $token complete tag including the `<%` and `%>` delimiters
+	 * @return string PHP expression evaluating to the tag value
+	 * @since 4.4.0
+	 */
+	protected function parseAttributeTag($token)
+	{
+		$tplType = $token[2];
+		$body = substr($token, 3, strlen($token) - 5);
+		if ($tplType === '=' || $tplType === '#') {
+			return $body;
+		}
+		return $this->parseExpression($tplType, trim($body))[1];
 	}
 
 	/**

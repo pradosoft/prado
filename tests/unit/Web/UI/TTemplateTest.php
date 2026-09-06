@@ -1674,6 +1674,119 @@ $this->assertArrayHasKey(TTemplate::TPL_PROPS, $item);
 		$this->assertStringContainsString('path/to/page', $result[TTemplate::PROP_VALUE]);
 	}
 
+	public function testParseAttributeLocalizationWithTrailingText()
+	{
+		$tplObj = PradoUnit::reflectionClass(TTemplate::class)->newInstanceWithoutConstructor();
+		$result = PradoUnit::invoke($tplObj, 'parseAttribute', 'Text', '<%[ Hello World ]%><br>');
+		$this->assertEquals(TTemplate::CONFIG_EXPRESSION, $result[TTemplate::PROP_TYPE]);
+		$this->assertEquals('Text', $result[TTemplate::PROP_NAME]);
+		$this->assertEquals("(Prado::localize('Hello World')).'<br>'", $result[TTemplate::PROP_VALUE]);
+	}
+
+	public function testParseAttributeLocalizationWithLeadingText()
+	{
+		$tplObj = PradoUnit::reflectionClass(TTemplate::class)->newInstanceWithoutConstructor();
+		$result = PradoUnit::invoke($tplObj, 'parseAttribute', 'Text', 'Note: <%[ Hello ]%>');
+		$this->assertEquals(TTemplate::CONFIG_EXPRESSION, $result[TTemplate::PROP_TYPE]);
+		$this->assertEquals("'Note: '.(Prado::localize('Hello'))", $result[TTemplate::PROP_VALUE]);
+	}
+
+	public function testParseAttributeLocalizationEscapesQuotes()
+	{
+		$tplObj = PradoUnit::reflectionClass(TTemplate::class)->newInstanceWithoutConstructor();
+		$result = PradoUnit::invoke($tplObj, 'parseAttribute', 'Text', "<%[ It's ]%> 'x'");
+		$this->assertEquals(TTemplate::CONFIG_EXPRESSION, $result[TTemplate::PROP_TYPE]);
+		$this->assertEquals("(Prado::localize('It\\'s')).' \\'x\\''", $result[TTemplate::PROP_VALUE]);
+	}
+
+	public function testParseAttributeMultipleLocalizationTags()
+	{
+		$tplObj = PradoUnit::reflectionClass(TTemplate::class)->newInstanceWithoutConstructor();
+		$result = PradoUnit::invoke($tplObj, 'parseAttribute', 'Text', '<%[ One ]%> <%[ Two ]%>');
+		$this->assertEquals(TTemplate::CONFIG_EXPRESSION, $result[TTemplate::PROP_TYPE]);
+		$this->assertEquals("(Prado::localize('One')).' '.(Prado::localize('Two'))", $result[TTemplate::PROP_VALUE]);
+	}
+
+	public function testParseAttributeParameterWithText()
+	{
+		$tplObj = PradoUnit::reflectionClass(TTemplate::class)->newInstanceWithoutConstructor();
+		$result = PradoUnit::invoke($tplObj, 'parseAttribute', 'Text', 'Hello <%$ AppParam %>!');
+		$this->assertEquals(TTemplate::CONFIG_EXPRESSION, $result[TTemplate::PROP_TYPE]);
+		$this->assertEquals("'Hello '.(\$this->getApplication()->getParameters()->itemAt('AppParam')).'!'", $result[TTemplate::PROP_VALUE]);
+	}
+
+	public function testParseAttributeAssetWithText()
+	{
+		$tplObj = PradoUnit::reflectionClass(TTemplate::class)->newInstanceWithoutConstructor();
+		PradoUnit::setProp($tplObj, '_contextPath', '/ctx');
+		$result = PradoUnit::invoke($tplObj, 'parseAttribute', 'ImageUrl', '<%~ images/logo.png %>?v=2');
+		$this->assertEquals(TTemplate::CONFIG_EXPRESSION, $result[TTemplate::PROP_TYPE]);
+		$this->assertEquals("(\$this->publishFilePath('/ctx/images/logo.png')).'?v=2'", $result[TTemplate::PROP_VALUE]);
+	}
+
+	public function testParseAttributeUrlWithText()
+	{
+		$tplObj = PradoUnit::reflectionClass(TTemplate::class)->newInstanceWithoutConstructor();
+		$result = PradoUnit::invoke($tplObj, 'parseAttribute', 'NavigateUrl', '<%/ path/to/page %>#top');
+		$this->assertEquals(TTemplate::CONFIG_EXPRESSION, $result[TTemplate::PROP_TYPE]);
+		$this->assertStringStartsWith("(rtrim(dirname(\$this->getApplication()->getRequest()->getApplicationUrl()), '\\/').'/path/to/page').'#top'", $result[TTemplate::PROP_VALUE]);
+	}
+
+	public function testParseAttributeMixedTagTypesWithExpression()
+	{
+		$tplObj = PradoUnit::reflectionClass(TTemplate::class)->newInstanceWithoutConstructor();
+		$result = PradoUnit::invoke($tplObj, 'parseAttribute', 'Text', 'A <%[ hi ]%> B <%= 2 %>');
+		$this->assertEquals(TTemplate::CONFIG_EXPRESSION, $result[TTemplate::PROP_TYPE]);
+		$this->assertEquals("'A '.(Prado::localize('hi')).' B '.( 2 )", $result[TTemplate::PROP_VALUE]);
+	}
+
+	public function testParseAttributeMixedTagTypesWithDatabind()
+	{
+		$tplObj = PradoUnit::reflectionClass(TTemplate::class)->newInstanceWithoutConstructor();
+		$result = PradoUnit::invoke($tplObj, 'parseAttribute', 'Text', '<%[ Total ]%>: <%# $this->Data %>');
+		$this->assertEquals(TTemplate::CONFIG_DATABIND, $result[TTemplate::PROP_TYPE]);
+		$this->assertEquals("(Prado::localize('Total')).': '.( \$this->Data )", $result[TTemplate::PROP_VALUE]);
+	}
+
+	public function testParseAttributeSingleTagWithSurroundingWhitespaceStaysTyped()
+	{
+		$tplObj = PradoUnit::reflectionClass(TTemplate::class)->newInstanceWithoutConstructor();
+		$result = PradoUnit::invoke($tplObj, 'parseAttribute', 'Text', '  <%[ Hello ]%>  ');
+		$this->assertEquals(TTemplate::CONFIG_LOCALIZATION, $result[TTemplate::PROP_TYPE]);
+		$this->assertEquals('Hello', $result[TTemplate::PROP_VALUE]);
+		$result = PradoUnit::invoke($tplObj, 'parseAttribute', 'Text', ' <%$ AppParam %> ');
+		$this->assertEquals(TTemplate::CONFIG_PARAMETER, $result[TTemplate::PROP_TYPE]);
+		$this->assertEquals('AppParam', $result[TTemplate::PROP_VALUE]);
+	}
+
+	public function testParseAttributeStatementTagStaysLiteral()
+	{
+		$tplObj = PradoUnit::reflectionClass(TTemplate::class)->newInstanceWithoutConstructor();
+		$result = PradoUnit::invoke($tplObj, 'parseAttribute', 'Text', 'a <%% echo 1; %> b');
+		$this->assertEquals(TTemplate::CONFIG_VALUE, $result[TTemplate::PROP_TYPE]);
+		$this->assertEquals('a <%% echo 1; %> b', $result[TTemplate::PROP_VALUE]);
+	}
+
+	public function testParseAttributeTag()
+	{
+		$tplObj = PradoUnit::reflectionClass(TTemplate::class)->newInstanceWithoutConstructor();
+		PradoUnit::setProp($tplObj, '_contextPath', '/ctx');
+		$this->assertEquals(' 1 + 1 ', PradoUnit::invoke($tplObj, 'parseAttributeTag', '<%= 1 + 1 %>'));
+		$this->assertEquals(' $this->Data ', PradoUnit::invoke($tplObj, 'parseAttributeTag', '<%# $this->Data %>'));
+		$this->assertEquals("Prado::localize('Hi')", PradoUnit::invoke($tplObj, 'parseAttributeTag', '<%[ Hi ]%>'));
+		$this->assertEquals("\$this->getApplication()->getParameters()->itemAt('P')", PradoUnit::invoke($tplObj, 'parseAttributeTag', '<%$ P %>'));
+		$this->assertEquals("\$this->publishFilePath('/ctx/a.png')", PradoUnit::invoke($tplObj, 'parseAttributeTag', '<%~ a.png %>'));
+		$this->assertStringContainsString("'/p'", PradoUnit::invoke($tplObj, 'parseAttributeTag', '<%/ p %>'));
+	}
+
+	public function testComponentAttributeLocalizationWithTextIsExpression()
+	{
+		$tpl = $this->newTemplate('<com:TLabel ID="lbl1" Text="<%[ Please enter your email! ]%><br>" />');
+		$textProp = $tpl->getItems()[0][TTemplate::TPL_PROPS]['text'];
+		$this->assertEquals(TTemplate::CONFIG_EXPRESSION, $textProp[TTemplate::PROP_TYPE]);
+		$this->assertEquals("(Prado::localize('Please enter your email!')).'<br>'", $textProp[TTemplate::PROP_VALUE]);
+	}
+
 	public function testParseAttributesEmpty()
 	{
 		$tplObj = PradoUnit::reflectionClass(TTemplate::class)->newInstanceWithoutConstructor();
