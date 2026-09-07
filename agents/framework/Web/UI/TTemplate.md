@@ -41,7 +41,7 @@ TTemplate implements PRADO template parsing logic. It represents a parsed PRADO 
 
 ### Expressions
 - `<%= PHP expression %>` - Outputs PHP expression result
-- `<%! PHP expression %>` - Attribute-only. Evaluated once at template instantiation; literal text in body content
+- `<%! PHP expression %>` - Attribute-only. Applied once at the start of the control's `initRecursive()` (`TControl::initBindProperty()`), or at instantiation for non-control components; literal text in body content
 - `<%% PHP statements %>` - Executes PHP statements
 - `<%# PHP expression %>` - Data-bound expression, evaluated on `dataBind()`
 - `<%$ ParamName %>` - Application parameter
@@ -58,7 +58,9 @@ TTemplate implements PRADO template parsing logic. It represents a parsed PRADO 
 
 - The typed single-tag check runs first. `ID` and `SkinID` accept `CONFIG_VALUE`, `CONFIG_PARAMETER`, `CONFIG_EXPRESSION` and `CONFIG_INIT_EXPRESSION`; other tag types throw.
 - Mixed `CONFIG_EXPRESSION` values are auto-bind expressions. `TControl::autoDataBindProperties()` evaluates them in `preRenderRecursive()` with the template control as `$this`, so a lone `<%[ ]%>` localizes at instantiation while `<%[ ]%><br>` localizes at pre-render.
-- `CONFIG_INIT_EXPRESSION` values are evaluated by `configureProperty()` during `instantiateIn()` with the template control as `$this` and passed to the setter. Use `<%! %>` for properties read before PreRender: `ValidationGroup`, `CausesValidation`, input defaults that posted data must override, and properties a control reads in `onInit`/`onLoad`. The configured control is not yet attached to its parent when the expression runs. Properties that depend on `onLoad` state must stay `<%= %>`.
+- `CONFIG_INIT_EXPRESSION` on a `TControl` calls `TControl::initBindProperty()`. `TControl::initDataBindProperties()` evaluates the stored expressions as the first step of `initRecursive()`, with the template control as `$this`, passes each result to `setSubProperty()`, and discards the bindings. This runs before the control's `createChildControls()`, before theme skins, before `onInit`, and before `loadPageState`/`processPostData`, so on postback viewstate and posted data override the init value. Late-added controls receive the same treatment through the lifecycle catch-up in `addedControl()`. Non-control `TComponent` targets have no lifecycle and are set by `configureProperty()` during `instantiateIn()`.
+- Visibility rule for `<%! %>`: every control in the template is discoverable by ID (`$this->SomeId`), with `Parent`, `Page`, `NamingContainer`, `ClientID` and `UniqueID` resolved. A later sibling's own `<%! %>` values are not yet applied, because its `initRecursive()` has not run. Use `<%! %>` for `ValidationGroup`, `CausesValidation`, input defaults that posted data must override, and properties a control reads in `createChildControls()`/`onInit`. Properties that depend on `onLoad` state or must be recomputed after viewstate loads stay `<%= %>`.
+- A property takes exactly one tag type. Declaring the same property twice throws `template_property_duplicated`; mixing tags in one value resolves to a single type with precedence `#` → `!` → `=`.
 - `ID` tag values (`=`, `!`, `$`) are evaluated in `instantiateIn()` before `registerObject()`, and the property is retyped to `CONFIG_VALUE` so `configureProperty()` sets the evaluated string instead of evaluating it a second time.
 - `<%% %>` statement tags are not recognized in attribute values and stay literal text.
 - Mixing `~`, `$`, `[`, `/` tags with text and the `<%! %>` tag are supported since 4.4.0 (issue #450).

@@ -75,6 +75,15 @@ $control->dataBind();              // evaluates <%# %> expressions
 $control->OnDataBinding->add([$this, 'handleBind']);  // event handler
 ```
 
+### Template Attribute Bindings (`_rf` slots)
+| Tag | Method | Slot | Applied |
+|---|---|---|---|
+| `<%# %>` | `bindProperty()` | `RF_DATA_BINDINGS` | `dataBind()` → `dataBindProperties()` |
+| `<%! %>` | `initBindProperty()` (4.4.0) | `RF_INIT_BINDINGS` | first line of `initRecursive()` → `initDataBindProperties()`, once, then discarded |
+| `<%= %>` | `autoBindProperty()` | `RF_AUTO_BINDINGS` | `preRenderRecursive()` → `autoDataBindProperties()` |
+
+The expression context for all three is the template control (`getTemplateControl()`), or the control itself when it has none.
+
 ### Control Lifecycle States
 
 ```
@@ -232,9 +241,10 @@ $cs->registerScriptFile('mykey', '/path/to/script.js');
 | `<com:ClassName ID="..." Prop="value">` | Instantiate a control |
 | `<prop:PropertyName>...</prop:PropertyName>` | Multi-line property value |
 | `<%@ Directive="value" %>` | Template directive (MasterClass, etc.) |
-| `<%= expression %>` | Output PHP expression (HTML-encoded) |
+| `<%= expression %>` | PHP expression; in attributes, applied at PreRender via `autoBindProperty()` |
+| `<%! expression %>` | Attribute-only; applied at the start of the control's `initRecursive()` (4.4.0) |
 | `<%# expression %>` | Databinding expression (evaluated on `dataBind()`) |
-| `<%-- comment --%>` | Template comment (stripped at parse time) |
+| `<!--- comment --->` | Template comment (stripped at parse time) |
 
 ---
 

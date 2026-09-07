@@ -41,12 +41,15 @@ use Prado\Web\Services\TPageService;
  * - expressions: They are in the format of <%= PHP expression %> and
  *   <%% PHP statements %>. Attribute values accept <%= %>, <%! %>, <%# %>, <%~ %>,
  *   <%$ %>, <%[ ]%> and <%/ %> tags, alone or mixed with literal text.
- *   <%! %> is an attribute-only tag. It evaluates its expression once, at template
- *   instantiation, and passes the result to the property setter. <%= %> on a
- *   {@see \Prado\Web\UI\TControl} defers evaluation to PreRender through
- *   {@see \Prado\Web\UI\TControl::autoBindProperty()}; <%! %> is for properties
- *   that must hold their value earlier, such as ValidationGroup or input defaults
- *   that posted data must override.
+ *   <%! %> is an attribute-only tag. On a {@see \Prado\Web\UI\TControl} it is
+ *   applied once at the start of the control's initRecursive() through
+ *   {@see \Prado\Web\UI\TControl::initBindProperty()}; on other components it is
+ *   evaluated at template instantiation. <%= %> on a TControl defers evaluation
+ *   to PreRender through {@see \Prado\Web\UI\TControl::autoBindProperty()}.
+ *   <%! %> is for properties that must hold their value before Init completes,
+ *   such as ValidationGroup or input defaults that posted data must override.
+ *   Every control in the template is discoverable by ID when a <%! %> expression
+ *   runs; a later sibling's own <%! %> values are not yet applied.
  * - Template comments are formatted as  <!--- comments --->, which will be entirely
  *     stripped from the output.
  *
@@ -106,7 +109,8 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	public const CONFIG_LOCALIZATION = 6;
 	public const CONFIG_TEMPLATE = 7;
 	/**
-	 * Attribute expression evaluated at template instantiation.
+	 * Attribute expression applied at the start of a control's Init, or at
+	 * template instantiation for non-control components.
 	 * @since 4.4.0
 	 */
 	public const CONFIG_INIT_EXPRESSION = 8;
@@ -445,8 +449,12 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 					$component->setSubProperty($propName, $this->_tplControl->evaluateExpression($propInfo[self::PROP_VALUE]));
 				}
 				break;
-			case self::CONFIG_INIT_EXPRESSION:		// expression evaluated at instantiation
-				$component->setSubProperty($propName, $this->_tplControl->evaluateExpression($propInfo[self::PROP_VALUE]));
+			case self::CONFIG_INIT_EXPRESSION:		// expression applied at Init, or now for non-controls
+				if ($component instanceof TControl) {
+					$component->initBindProperty($propName, $propInfo[self::PROP_VALUE]);
+				} else {
+					$component->setSubProperty($propName, $this->_tplControl->evaluateExpression($propInfo[self::PROP_VALUE]));
+				}
 				break;
 			case self::CONFIG_TEMPLATE:
 				$component->setSubProperty($propName, $propInfo[self::PROP_VALUE]);

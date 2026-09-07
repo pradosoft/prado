@@ -121,6 +121,21 @@ class TTemplateDashControl extends TControl
 	}
 }
 
+class TTemplateInstantiateInInitProbe extends TLabel
+{
+	public $textInInit;
+	public $textInCreateChildren;
+	public function createChildControls()
+	{
+		$this->textInCreateChildren = $this->getText();
+	}
+	public function onInit($param)
+	{
+		parent::onInit($param);
+		$this->textInInit = $this->getText();
+	}
+}
+
 class TTemplateInstantiateInTestComponent extends TComponent
 {
 	private $_customProp;
@@ -415,15 +430,87 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 		}
 	}
 
-	public function testInstantiateInInitExpressionEvaluatesAtInstantiation()
+	public function testInstantiateInInitExpressionRegistersInitBinding()
 	{
 		$tpl = $this->newTemplate('<com:TLabel ID="lbl1" Text="<%! $this->getID() . \'-x\' %>" />');
 		$parent = $this->createControlWithPage();
 		$tpl->instantiateIn($parent);
 		$label = $parent->getControls()[0];
 		$this->assertInstanceOf(TLabel::class, $label);
+		$this->assertEquals('', $label->getText());
+		$rf = PradoUnit::getProp($label, '_rf');
+		$this->assertArrayHasKey('Text', $rf[TControl::RF_INIT_BINDINGS]);
+		$this->assertArrayNotHasKey(TControl::RF_AUTO_BINDINGS, $rf);
+	}
+
+	public function testInstantiateInInitExpressionAppliedOnInitRecursiveAndDiscarded()
+	{
+		$tpl = $this->newTemplate('<com:TLabel ID="lbl1" Text="<%! $this->getID() . \'-x\' %>" />');
+		$parent = $this->createControlWithPage();
+		$tpl->instantiateIn($parent);
+		$label = $parent->getControls()[0];
+		PradoUnit::invoke($parent, 'initRecursive');
 		$this->assertEquals('tplControl-x', $label->getText());
-		$this->assertNull(PradoUnit::getProp($label, '_rf')[TControl::RF_AUTO_BINDINGS] ?? null);
+		$this->assertArrayNotHasKey(TControl::RF_INIT_BINDINGS, PradoUnit::getProp($label, '_rf'));
+	}
+
+	public function testInstantiateInInitExpressionVisibleInCreateChildControlsAndOnInit()
+	{
+		$tpl = $this->newTemplateUnvalidated('<com:TTemplateInstantiateInInitProbe ID="probe" Text="<%! \'early\' %>" />');
+		$parent = $this->createControlWithPage();
+		$tpl->instantiateIn($parent);
+		$probe = $parent->getControls()[0];
+		PradoUnit::invoke($parent, 'initRecursive');
+		$this->assertEquals('early', $probe->textInCreateChildren);
+		$this->assertEquals('early', $probe->textInInit);
+	}
+
+	public function testInstantiateInInitExpressionDiscoversLaterSiblingById()
+	{
+		$tpl = $this->newTemplate('<com:TLabel ID="first" Text="<%! $this->second->getID() . \'/\' . $this->second->getUniqueID() %>" /><com:TLabel ID="second" Text="static" />');
+		$parent = $this->createControlWithPage();
+		$tpl->instantiateIn($parent);
+		PradoUnit::invoke($parent, 'initRecursive');
+		$first = $parent->getControls()[0];
+		$this->assertEquals('second/second', $first->getText());
+	}
+
+	public function testInstantiateInInitExpressionDiscoversEarlierSiblingInitValue()
+	{
+		$tpl = $this->newTemplate('<com:TLabel ID="first" Text="<%! \'A\' %>" /><com:TLabel ID="second" Text="<%! $this->first->getText() . \'B\' %>" />');
+		$parent = $this->createControlWithPage();
+		$tpl->instantiateIn($parent);
+		PradoUnit::invoke($parent, 'initRecursive');
+		$this->assertEquals('AB', $parent->getControls()[1]->getText());
+	}
+
+	public function testInstantiateInInitExpressionLaterSiblingInitValueNotYetApplied()
+	{
+		$tpl = $this->newTemplate('<com:TLabel ID="first" Text="<%! \'[\' . $this->second->getText() . \']\' %>" /><com:TLabel ID="second" Text="<%! \'late\' %>" />');
+		$parent = $this->createControlWithPage();
+		$tpl->instantiateIn($parent);
+		PradoUnit::invoke($parent, 'initRecursive');
+		$this->assertEquals('[]', $parent->getControls()[0]->getText());
+		$this->assertEquals('late', $parent->getControls()[1]->getText());
+	}
+
+	public function testInstantiateInInitExpressionAppliedOnLateAddedControl()
+	{
+		$tpl = $this->newTemplate('<com:TLabel ID="lbl1" Text="<%! \'late-add\' %>" />');
+		$parent = $this->createControlWithPage();
+		PradoUnit::invoke($parent, 'initRecursive');
+		$tpl->instantiateIn($parent);
+		$this->assertEquals('late-add', $parent->getControls()[0]->getText());
+	}
+
+	public function testInstantiateInInitExpressionNonControlEvaluatesAtInstantiation()
+	{
+		$tpl = $this->newTemplateUnvalidated('<com:TTemplateInstantiateInTestComponent ID="c1" CustomProp="<%! strtoupper(\'now\') %>" />');
+		$tplControl = $this->createAcceptingControlWithPage();
+		$tpl->instantiateIn($tplControl);
+		$component = $tplControl->parsedObjects[0];
+		$this->assertInstanceOf(TTemplateInstantiateInTestComponent::class, $component);
+		$this->assertEquals('NOW', $component->getCustomProp());
 	}
 
 	public function testInstantiateInExpressionDefersToPreRender()
@@ -446,6 +533,8 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 			$parent = $this->createControlWithPage();
 			$tpl->instantiateIn($parent);
 			$label = $parent->getControls()[0];
+			$this->assertEquals('', $label->getText());
+			PradoUnit::invoke($parent, 'initRecursive');
 			$this->assertEquals('Hello World, NOW!', $label->getText());
 		} finally {
 			$params->remove('TTemplateInstantiateInTestParam');
@@ -458,6 +547,7 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 		$parent = $this->createControlWithPage();
 		$tpl->instantiateIn($parent);
 		$label = $parent->getControls()[0];
+		PradoUnit::invoke($parent, 'initRecursive');
 		$this->assertEquals('12', $label->getFont()->getSize());
 	}
 
