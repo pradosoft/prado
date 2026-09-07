@@ -182,9 +182,10 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	 */
 	private $_page;
 	/**
-	 * @var \Prado\Util\TPluginModule that the control share in their path
+	 * @var null|false|\Prado\Util\IPluginModule plugin module sharing the control's class path.
+	 * `false` means not yet searched; `null` means searched and none found.
 	 */
-	private $_pluginmodule;
+	private $_pluginmodule = false;
 	/**
 	 * @var \Prado\Web\UI\TControl naming container of the control
 	 */
@@ -402,7 +403,11 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	/**
 	 * Returns the module associated with the class path of the control.  This is for Composer
 	 * extensions adding their own Controls to access their associated Module.
-	 * @return ?mixed the module associated with this TControl
+	 * The search runs once per control instance and the result is cached.
+	 * PHPStan sees the result as `mixed` so callers can use their own plugin
+	 * module's methods without a cast.
+	 * @return ?\Prado\Util\IPluginModule the plugin module sharing the control's class path, or null
+	 * @phpstan-return mixed
 	 * @since 4.2.0
 	 */
 	public function getPluginModule()
