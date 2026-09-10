@@ -39,7 +39,17 @@ use Prado\Web\Services\TPageService;
  * - directive: directive specifies the property values for the template owner.
  *   It is in the format of <%@ property name-value pairs %>;
  * - expressions: They are in the format of <%= PHP expression %> and
- *   <%% PHP statements %>
+ *   <%% PHP statements %>. Attribute values accept <%= %>, <%! %>, <%# %>, <%~ %>,
+ *   <%$ %>, <%[ ]%> and <%/ %> tags, alone or mixed with literal text.
+ *   <%! %> is an attribute-only tag. On a {@see \Prado\Web\UI\TControl} it is
+ *   applied once at the start of the control's initRecursive() through
+ *   {@see \Prado\Web\UI\TControl::initBindProperty()}; on other components it is
+ *   evaluated at template instantiation. <%= %> on a TControl defers evaluation
+ *   to PreRender through {@see \Prado\Web\UI\TControl::autoBindProperty()}.
+ *   <%! %> is for properties that must hold their value before Init completes,
+ *   such as ValidationGroup or input defaults that posted data must override.
+ *   Every control in the template is discoverable by ID when a <%! %> expression
+ *   runs; a later sibling's own <%! %> values are not yet applied.
  * - Template comments are formatted as  <!--- comments --->, which will be entirely
  *     stripped from the output.
  *
@@ -98,6 +108,12 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	public const CONFIG_PARAMETER = 5;
 	public const CONFIG_LOCALIZATION = 6;
 	public const CONFIG_TEMPLATE = 7;
+	/**
+	 * Attribute expression applied at the start of a control's Init, or at
+	 * template instantiation for non-control components.
+	 * @since 4.4.0
+	 */
+	public const CONFIG_INIT_EXPRESSION = 8;
 
 	/** Template Info Keys */
 	public const TPL_PARENT_INDEX = 0;
@@ -273,6 +289,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 							default:
 								$properties['id'][self::PROP_VALUE] = $component->evaluateExpression($properties['id'][self::PROP_VALUE]);
 						}
+						$properties['id'][self::PROP_TYPE] = self::CONFIG_VALUE;
 						$tplControl->registerObject($properties['id'][self::PROP_VALUE], $component);
 					}
 					if (isset($properties['skinid'])) {
@@ -315,6 +332,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 								default:
 									$properties['id'][self::PROP_VALUE] = $component->evaluateExpression($properties['id'][self::PROP_VALUE]);
 							}
+							$properties['id'][self::PROP_TYPE] = self::CONFIG_VALUE;
 							$tplControl->registerObject($properties['id'][self::PROP_VALUE], $component);
 						}
 					}
@@ -427,6 +445,13 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 			case self::CONFIG_EXPRESSION:		// expression
 				if ($component instanceof TControl) {
 					$component->autoBindProperty($propName, $propInfo[self::PROP_VALUE]);
+				} else {
+					$component->setSubProperty($propName, $this->_tplControl->evaluateExpression($propInfo[self::PROP_VALUE]));
+				}
+				break;
+			case self::CONFIG_INIT_EXPRESSION:		// expression applied at Init, or now for non-controls
+				if ($component instanceof TControl) {
+					$component->initBindProperty($propName, $propInfo[self::PROP_VALUE]);
 				} else {
 					$component->setSubProperty($propName, $this->_tplControl->evaluateExpression($propInfo[self::PROP_VALUE]));
 				}
@@ -751,39 +776,27 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 
 	/**
 	 * Parses a single attribute value to determine its type.
+	 *
+	 * | Attribute value | Result |
+	 * |---|---|
+	 * | plain text | `CONFIG_VALUE` holding the text |
+	 * | exactly one `<%~ %>`, `<%$ %>`, `<%[ ]%>` or `<%/ %>` tag | the matching `CONFIG_*` type holding the tag body |
+	 * | text mixed with one or more `<%= %>`, `<%! %>`, `<%# %>`, `<%~ %>`, `<%$ %>`, `<%[ ]%>` or `<%/ %>` tags | `CONFIG_EXPRESSION` concatenating the text and the tag results |
+	 *
+	 * A `<%# %>` tag anywhere in a mixed value makes the result `CONFIG_DATABIND`.
+	 * Otherwise a `<%! %>` tag anywhere in a mixed value makes the result `CONFIG_INIT_EXPRESSION`.
+	 * `<%% %>` statement tags are not recognized in attribute values.
+	 * Mixing `~`, `$`, `[` and `/` tags with text and the `<%! %>` tag are supported since 4.4.0.
 	 * @param string $propName property name from template
 	 * @param string $value raw attribute value to parse
 	 * @return array [PROP_TYPE, PROP_VALUE, PROP_NAME] packed property info
 	 */
 	protected function parseAttribute($propName, $value)
 	{
-		if (($n = preg_match_all('/<%[#=]' . self::PARSE_EXPRESSION_VALUE . '%>/msS', $value, $matches, PREG_OFFSET_CAPTURE)) > 0) {
-			$isDataBind = false;
-			$textStart = 0;
-			$expr = '';
-			for ($i = 0; $i < $n; ++$i) {
-				$match = $matches[0][$i];
-				$token = $match[0];
-				$offset = $match[1];
-				$length = strlen($token);
-				if ($token[2] === '#') {
-					$isDataBind = true;
-				}
-				if ($offset > $textStart) {
-					$expr .= ".'" . strtr(substr($value, $textStart, $offset - $textStart), ["'" => "\\'", "\\" => "\\\\"]) . "'";
-				}
-				$expr .= '.(' . substr($token, 3, $length - 5) . ')';
-				$textStart = $offset + $length;
-			}
-			$length = strlen($value);
-			if ($length > $textStart) {
-				$expr .= ".'" . strtr(substr($value, $textStart, $length - $textStart), ["'" => "\\'", "\\" => "\\\\"]) . "'";
-			}
-			return $this->packProperty($isDataBind ? self::CONFIG_DATABIND : self::CONFIG_EXPRESSION, $propName, ltrim($expr, '.'));
-		} elseif (preg_match('/\\s*(<%~' . self::PARSE_EXPRESSION_VALUE . '%>|' .
-								   '<%\\$' . self::PARSE_EXPRESSION_VALUE . '%>|' .
-								   '<%\\[' . self::PARSE_EXPRESSION_VALUE . '\\]%>|' .
-								   '<%\/' . self::PARSE_EXPRESSION_VALUE . '%>)\\s*/msS', $value, $matches) && $matches[0] === $value) {
+		if (preg_match('/\\s*(<%~' . self::PARSE_EXPRESSION_VALUE . '%>|' .
+							'<%\\$' . self::PARSE_EXPRESSION_VALUE . '%>|' .
+							'<%\\[' . self::PARSE_EXPRESSION_VALUE . '\\]%>|' .
+							'<%\/' . self::PARSE_EXPRESSION_VALUE . '%>)\\s*/msS', $value, $matches) && $matches[0] === $value) {
 			$strValue = $matches[1];
 			$propType = $this->propertyExpressionCharToType($strValue, $propName);
 			$endOffset = ($propType === self::CONFIG_LOCALIZATION) ? -1 : 0;
@@ -793,7 +806,59 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 			}
 			return $this->packProperty($propType, $propName, $strValue);
 		}
+		if (($n = preg_match_all('/<%[#=!~$\\[\\/]' . self::PARSE_EXPRESSION_VALUE . '%>/msS', $value, $matches, PREG_OFFSET_CAPTURE)) > 0) {
+			$isDataBind = false;
+			$isInitExpression = false;
+			$textStart = 0;
+			$expr = '';
+			for ($i = 0; $i < $n; ++$i) {
+				$match = $matches[0][$i];
+				$token = $match[0];
+				$offset = $match[1];
+				$length = strlen($token);
+				if ($token[2] === '#') {
+					$isDataBind = true;
+				} elseif ($token[2] === '!') {
+					$isInitExpression = true;
+				}
+				if ($offset > $textStart) {
+					$expr .= ".'" . strtr(substr($value, $textStart, $offset - $textStart), ["'" => "\\'", "\\" => "\\\\"]) . "'";
+				}
+				$expr .= '.(' . $this->parseAttributeTag($token) . ')';
+				$textStart = $offset + $length;
+			}
+			$length = strlen($value);
+			if ($length > $textStart) {
+				$expr .= ".'" . strtr(substr($value, $textStart, $length - $textStart), ["'" => "\\'", "\\" => "\\\\"]) . "'";
+			}
+			if ($isDataBind) {
+				$propType = self::CONFIG_DATABIND;
+			} elseif ($isInitExpression) {
+				$propType = self::CONFIG_INIT_EXPRESSION;
+			} else {
+				$propType = self::CONFIG_EXPRESSION;
+			}
+			return $this->packProperty($propType, $propName, ltrim($expr, '.'));
+		}
 		return $this->packProperty(self::CONFIG_VALUE, $propName, $value);
+	}
+
+	/**
+	 * Converts one template tag inside a mixed attribute value to a PHP expression.
+	 * `<%= %>`, `<%! %>` and `<%# %>` tags contribute their body verbatim.
+	 * `<%~ %>`, `<%$ %>`, `<%[ ]%>` and `<%/ %>` tags are converted by {@see parseExpression()}.
+	 * @param string $token complete tag including the `<%` and `%>` delimiters
+	 * @return string PHP expression evaluating to the tag value
+	 * @since 4.4.0
+	 */
+	protected function parseAttributeTag($token)
+	{
+		$tplType = $token[2];
+		$body = substr($token, 3, strlen($token) - 5);
+		if ($tplType === '=' || $tplType === '!' || $tplType === '#') {
+			return $body;
+		}
+		return $this->parseExpression($tplType, trim($body))[1];
 	}
 
 	/**
@@ -821,6 +886,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	{
 		switch ($strValue[2]) {
 			case '=': return self::CONFIG_EXPRESSION;
+			case '!': return self::CONFIG_INIT_EXPRESSION;
 			case '#': return self::CONFIG_DATABIND;
 			case '~': return self::CONFIG_ASSET;
 			case '[': return self::CONFIG_LOCALIZATION;
@@ -893,7 +959,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 						} else {
 							throw new TConfigurationException('template_property_unknown', $type, $attrKey);
 						}
-					} elseif ($propInfo[self::PROP_TYPE] !== self::CONFIG_EXPRESSION && $propInfo[self::PROP_TYPE] !== self::CONFIG_PARAMETER && $propInfo[self::PROP_TYPE] !== self::CONFIG_VALUE) {
+					} elseif (!in_array($propInfo[self::PROP_TYPE], [self::CONFIG_EXPRESSION, self::CONFIG_INIT_EXPRESSION, self::CONFIG_PARAMETER, self::CONFIG_VALUE], true)) {
 						if (strcasecmp($attrKey, 'id') === 0) {
 							throw new TConfigurationException('template_controlid_invalid', $type);
 						} elseif (strcasecmp($attrKey, 'skinid') === 0) {

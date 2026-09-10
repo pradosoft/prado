@@ -163,6 +163,7 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	public const RF_NAMED_OBJECTS = 8;		// controls declared with ID on template
 	public const RF_ADAPTER = 9;			// adapter
 	public const RF_AUTO_BINDINGS = 10;		// auto data bindings
+	public const RF_INIT_BINDINGS = 11;		// init bindings, applied once at the start of initRecursive
 
 	/**
 	 * @var string control ID
@@ -181,9 +182,10 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	 */
 	private $_page;
 	/**
-	 * @var \Prado\Util\TPluginModule that the control share in their path
+	 * @var null|false|\Prado\Util\IPluginModule plugin module sharing the control's class path.
+	 * `false` means not yet searched; `null` means searched and none found.
 	 */
-	private $_pluginmodule;
+	private $_pluginmodule = false;
 	/**
 	 * @var \Prado\Web\UI\TControl naming container of the control
 	 */
@@ -401,7 +403,11 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	/**
 	 * Returns the module associated with the class path of the control.  This is for Composer
 	 * extensions adding their own Controls to access their associated Module.
-	 * @return ?mixed the module associated with this TControl
+	 * The search runs once per control instance and the result is cached.
+	 * PHPStan sees the result as `mixed` so callers can use their own plugin
+	 * module's methods without a cast.
+	 * @return ?\Prado\Util\IPluginModule the plugin module sharing the control's class path, or null
+	 * @phpstan-return mixed
 	 * @since 4.2.0
 	 */
 	public function getPluginModule()
@@ -988,6 +994,40 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	}
 
 	/**
+	 * Sets up a one-time binding between a property (or property path) and an expression.
+	 * The expression is evaluated once at the start of {@see initRecursive()} and the
+	 * result is passed to the property setter. This is the mechanism behind the
+	 * template `<%! %>` attribute tag. The binding runs before {@see onInit()},
+	 * before theme skins are applied, and before viewstate or postback data are loaded.
+	 * The context of the expression is the template control (or the control itself if it is a page).
+	 * @param string $name the property name, or property path
+	 * @param string $expression the expression
+	 * @since 4.4.0
+	 */
+	public function initBindProperty($name, $expression)
+	{
+		$this->_rf[self::RF_INIT_BINDINGS][$name] = $expression;
+	}
+
+	/**
+	 * Applies the init bindings of the control and discards them.
+	 * @since 4.4.0
+	 */
+	protected function initDataBindProperties()
+	{
+		if (isset($this->_rf[self::RF_INIT_BINDINGS])) {
+			if (($context = $this->getTemplateControl()) === null) {
+				$context = $this;
+			}
+			$bindings = $this->_rf[self::RF_INIT_BINDINGS];
+			unset($this->_rf[self::RF_INIT_BINDINGS]);
+			foreach ($bindings as $property => $expression) {
+				$this->setSubProperty($property, $context->evaluateExpression($expression));
+			}
+		}
+	}
+
+	/**
 	 * Auto databinding properties of the control.
 	 */
 	protected function autoDataBindProperties()
@@ -1375,11 +1415,14 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 
 	/**
 	 * Performs the Init step for the control and all its child controls.
+	 * Init bindings ({@see initBindProperty()}) are applied first, so
+	 * {@see createChildControls()} and {@see onInit()} see their values.
 	 * Only framework developers should use this method.
 	 * @param \Prado\Web\UI\TControl $namingContainer the naming container control
 	 */
 	protected function initRecursive($namingContainer = null)
 	{
+		$this->initDataBindProperties();
 		$this->ensureChildControls();
 		if ($this->getHasControls()) {
 			if ($this instanceof INamingContainer) {

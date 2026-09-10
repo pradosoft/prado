@@ -1,5 +1,7 @@
 ## Version 4.4.0 - TBA
+ENH: Issue #450 - TTemplate: attribute values mix `~`, `$`, `[`, `/` tags with literal text; new `<%! %>` attribute tag (`CONFIG_INIT_EXPRESSION`, `TControl::initBindProperty()`) applies at the start of the control's Init instead of PreRender, for properties such as `ValidationGroup` and input defaults. `ID` tag values are set once instead of being re-evaluated by `configureProperty()`. (belisoful)
 ENH: Issue #1178 - Logging moved to `Prado\Util\Log` (`framework/Util/Log/`). PSR-3 support: `TPsrLogger` implements `Psr\Log\LoggerInterface` over `TLogger`; `TPsrLogRoute` forwards the application log to an external PSR-3 logger; adds the `psr/log` dependency. (belisoful)
+BUG: `TControl::getPluginModule()` always returned `null` because the not-yet-searched sentinel was never set; `_pluginmodule` now starts as `false` so the plugin module search runs once per control. (belisoful)
 
 ## Version 4.3.3 - TBA
 
