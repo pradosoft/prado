@@ -17,6 +17,45 @@ class CultureInfoUnitsTest extends PHPUnit\Framework\TestCase
         // Test per unit pattern constant
         $this->assertEquals('per', Prado\I18N\core\CultureInfoUnits::UNIT_PER_UNIT_PATTERN);
     }
+
+    public function testPluralCategoryConstants()
+    {
+        $this->assertEquals('zero', Prado\I18N\core\CultureInfoUnits::UNIT_ZERO_PATTERN);
+        $this->assertEquals('two', Prado\I18N\core\CultureInfoUnits::UNIT_TWO_PATTERN);
+        $this->assertEquals('few', Prado\I18N\core\CultureInfoUnits::UNIT_FEW_PATTERN);
+        $this->assertEquals('many', Prado\I18N\core\CultureInfoUnits::UNIT_MANY_PATTERN);
+
+        // All CLDR plural categories, in CLDR order.
+        $this->assertSame(
+            ['zero', 'one', 'two', 'few', 'many', 'other'],
+            Prado\I18N\core\CultureInfoUnits::UNIT_PLURAL_PATTERNS
+        );
+    }
+
+    public function testWidthConstants()
+    {
+        $this->assertEquals('long', Prado\I18N\core\CultureInfoUnits::WIDTH_LONG);
+        $this->assertEquals('short', Prado\I18N\core\CultureInfoUnits::WIDTH_SHORT);
+        $this->assertEquals('narrow', Prado\I18N\core\CultureInfoUnits::WIDTH_NARROW);
+
+        // Ordered most specific first, for narrow → short → long fallback.
+        $this->assertSame(
+            ['narrow' => 'unitsNarrow', 'short' => 'unitsShort', 'long' => 'units'],
+            Prado\I18N\core\CultureInfoUnits::WIDTH_RESOURCE_KEYS
+        );
+    }
+
+    public function testRelativeTimeConstants()
+    {
+        $this->assertEquals('past', Prado\I18N\core\CultureInfoUnits::RELATIVE_PAST);
+        $this->assertEquals('future', Prado\I18N\core\CultureInfoUnits::RELATIVE_FUTURE);
+
+        // CLDR fields key suffixes, same fallback order as WIDTH_RESOURCE_KEYS.
+        $this->assertSame(
+            ['narrow' => '-narrow', 'short' => '-short', 'long' => ''],
+            Prado\I18N\core\CultureInfoUnits::WIDTH_FIELD_SUFFIXES
+        );
+    }
     
     public function testDigitalUnitTypes()
     {

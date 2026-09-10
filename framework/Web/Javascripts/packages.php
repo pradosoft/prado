@@ -44,6 +44,10 @@ $packages = [
 		'prado/controls/slider.js',
 	],
 
+	'relativetime' => [
+		'prado/controls/relativetime.js',
+	],
+
 	'keyboard' => [
 		'prado/controls/keyboard.js',
 	],
@@ -130,6 +134,7 @@ $dependencies = [
 	'htmlarea5' => ['jquery', 'prado', 'htmlarea5', 'tinymce'],
 	'keyboard' => ['jquery', 'prado', 'keyboard'],
 	'slider' => ['jquery', 'prado', 'slider'],
+	'relativetime' => ['jquery', 'prado', 'relativetime'],
 	'webtemplate' => ['jquery', 'prado', 'webtemplate'],
 	'safetycover' => ['jquery', 'prado', 'safetycover'],
 	'inlineeditor' => ['jquery', 'prado', 'ajax', 'inlineeditor'],

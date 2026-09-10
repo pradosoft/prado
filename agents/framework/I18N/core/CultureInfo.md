@@ -68,6 +68,9 @@ Static ICU data is cached in `self::$data` (shared across all instances, keyed b
 - `getUnit($unitType)` — Display name for a unit type string like `'digital-gigabyte'`. Hyphens are converted to `/` for ICU path traversal.
 - `formatUnit($number, $unitType)` — Returns localized `"{0} meters"` / `"{0} meter"` using plural form based on `$number == 1`.
 - `formatPerUnit($number, $unitType)` — Returns localized per-unit pattern (e.g., `"{0} per meter"`).
+- `getUnitPatterns($unitType, $width = 'long')` (4.4.0) — Raw `{0}` plural-category templates for a unit at a `CultureInfoUnits::WIDTH_*` width, keyed by `UNIT_PLURAL_PATTERNS` category (`few`/`many` for locales that need them); falls back narrow → short → long per `WIDTH_RESOURCE_KEYS`. Used by `TRelativeTime` to push localized patterns to the client.
+- `getRelativeTimePatterns($unitType, $width = 'long')` (4.4.0) — Direction-aware CLDR `fields` templates (`past`/`future` → plural category → `"{0} minutes ago"` / `"in {0} minutes"`), the data behind the browser `Intl.RelativeTimeFormat`; same width fallback. Used by `TRelativeTime` to render the relative text server-side.
+- `selectPluralCategory($number)` (4.4.0) — CLDR plural category (`zero`/`one`/`two`/`few`/`many`/`other`) via ICU `MessageFormatter` plural rules; falls back to `one`/`other` without intl.
 
 ## POSIX/BCP 47 Duality
 

@@ -69,6 +69,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 | `TDatePicker` | Popup calendar; JS in `datepicker/datepicker.js` |
 | `TKeyboard` | Virtual on-screen keyboard; JS in `controls/keyboard.js` |
 | `TRatingList` | Star/block rating; JS in `ratings/ratings.js` |
+| `TRelativeTime` | Live "time ago" in a `<time>` element; extends `TTime`; JS in `controls/relativetime.js` |
 
 ## Data Controls
 

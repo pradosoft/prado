@@ -691,4 +691,150 @@ class CultureInfo
 		// Replace {0} with the number
 		return str_replace('{0}', $this->formatNumber($number), $pattern);
 	}
+
+	/**
+	 * Get the localized plural patterns for a unit at a given width.
+	 *
+	 * The returned array holds only the CLDR plural-category patterns present for
+	 * the unit (a subset of {@see CultureInfoUnits::UNIT_PLURAL_PATTERNS}), each a
+	 * template with a `{0}` number placeholder. Display and derivation keys such as
+	 * `dnam`, `per`, `gender`, and `case` are excluded. Patterns are raw templates,
+	 * not number-substituted, so a client may select the plural category and
+	 * substitute the number itself.
+	 *
+	 * `$width` is a {@see CultureInfoUnits} `WIDTH_*` value (`long`, `short`, or
+	 * `narrow`). When a width has no data for the unit (for example, many locales omit
+	 * narrow duration units), it falls back to the next wider width in
+	 * {@see CultureInfoUnits::WIDTH_RESOURCE_KEYS} order: narrow → short → long.
+	 *
+	 * ```php
+	 * // en, minute, narrow
+	 * ['one' => '{0}m', 'other' => '{0}m']
+	 * // ru, minute, long
+	 * ['one' => '{0} минута', 'few' => '{0} минуты', 'many' => '{0} минут', 'other' => '{0} минуты']
+	 * ```
+	 *
+	 * @param string $unitType the unit type identifier (e.g. 'duration-minute')
+	 * @param string $width the unit width: 'long', 'short', or 'narrow'. Default 'long'.
+	 * @return array<string, string> plural-category patterns for the unit, or `[]` when none exist
+	 * @since 4.4.0
+	 */
+	public function getUnitPatterns($unitType, $width = CultureInfoUnits::WIDTH_LONG)
+	{
+		$widthKeys = CultureInfoUnits::WIDTH_RESOURCE_KEYS;
+		if (!isset($widthKeys[$width])) {
+			$width = CultureInfoUnits::WIDTH_LONG;
+		}
+
+		// Try the requested width, then fall back to each wider width in turn.
+		$fallback = false;
+		foreach ($widthKeys as $token => $resourceKey) {
+			if (!$fallback) {
+				if ($token !== $width) {
+					continue;
+				}
+				$fallback = true;
+			}
+
+			$unitData = $this->findInfo($resourceKey . '/' . str_replace('-', '/', $unitType), 'Units');
+			if (!is_array($unitData)) {
+				continue;
+			}
+
+			$patterns = [];
+			foreach (CultureInfoUnits::UNIT_PLURAL_PATTERNS as $category) {
+				if (isset($unitData[$category])) {
+					$patterns[$category] = $unitData[$category];
+				}
+			}
+			if ($patterns !== []) {
+				return $patterns;
+			}
+		}
+
+		return [];
+	}
+
+	/**
+	 * Get the localized relative-time patterns for a duration unit at a given width.
+	 *
+	 * The CLDR `fields` data supplies direction-aware patterns per plural category, each
+	 * a template with a `{0}` number placeholder, for example `{0} minutes ago` and
+	 * `in {0} minutes`. This is the data behind the browser `Intl.RelativeTimeFormat`, so
+	 * a server rendering matches a client rendering. `$width` follows the same fallback
+	 * as {@see getUnitPatterns()}: narrow → short → long.
+	 *
+	 * ```php
+	 * [
+	 *   'past'   => ['one' => '{0} minute ago', 'other' => '{0} minutes ago'],
+	 *   'future' => ['one' => 'in {0} minute',  'other' => 'in {0} minutes'],
+	 * ]
+	 * ```
+	 *
+	 * @param string $unitType the duration unit type identifier (e.g. 'duration-minute')
+	 * @param string $width a {@see CultureInfoUnits} `WIDTH_*` value. Default long.
+	 * @return array<string, array<string, string>> direction → plural-category patterns, or `[]` when none exist
+	 * @since 4.4.0
+	 */
+	public function getRelativeTimePatterns($unitType, $width = CultureInfoUnits::WIDTH_LONG)
+	{
+		$suffixes = CultureInfoUnits::WIDTH_FIELD_SUFFIXES;
+		if (!isset($suffixes[$width])) {
+			$width = CultureInfoUnits::WIDTH_LONG;
+		}
+		$field = preg_replace('/^duration-/', '', $unitType);
+		$directions = [CultureInfoUnits::RELATIVE_PAST, CultureInfoUnits::RELATIVE_FUTURE];
+
+		// Try the requested width, then fall back to each wider width in turn.
+		$fallback = false;
+		foreach ($suffixes as $token => $suffix) {
+			if (!$fallback) {
+				if ($token !== $width) {
+					continue;
+				}
+				$fallback = true;
+			}
+
+			$patterns = [];
+			foreach ($directions as $direction) {
+				foreach (CultureInfoUnits::UNIT_PLURAL_PATTERNS as $category) {
+					$pattern = $this->findInfo("fields/{$field}{$suffix}/relativeTime/{$direction}/{$category}");
+					if (is_string($pattern)) {
+						$patterns[$direction][$category] = $pattern;
+					}
+				}
+			}
+			if ($patterns !== []) {
+				return $patterns;
+			}
+		}
+
+		return [];
+	}
+
+	/**
+	 * Select the CLDR plural category for a number in this culture.
+	 *
+	 * Uses ICU plural rules through `MessageFormatter`, so languages with more than two
+	 * categories resolve correctly (for example Russian `few` and `many`). Without the
+	 * intl extension, `1` maps to `one` and every other number to `other`.
+	 *
+	 * @param float|int $number the number to classify
+	 * @return string a {@see CultureInfoUnits} plural pattern key: `zero`, `one`, `two`, `few`, `many`, or `other`
+	 * @since 4.4.0
+	 */
+	public function selectPluralCategory($number)
+	{
+		if (class_exists('MessageFormatter')) {
+			$cases = '';
+			foreach (CultureInfoUnits::UNIT_PLURAL_PATTERNS as $category) {
+				$cases .= " {$category}{{$category}}";
+			}
+			$category = \MessageFormatter::formatMessage($this->culture, '{0, plural,' . $cases . '}', [$number]);
+			if (is_string($category) && in_array($category, CultureInfoUnits::UNIT_PLURAL_PATTERNS, true)) {
+				return $category;
+			}
+		}
+		return ($number == 1) ? CultureInfoUnits::UNIT_ONE_PATTERN : CultureInfoUnits::UNIT_OTHER_PATTERN;
+	}
 }

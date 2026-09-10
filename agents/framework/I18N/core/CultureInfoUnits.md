@@ -70,9 +70,36 @@ And more: pressure, electric, energy, force, graphics, light, torque
 | Constant | Value | Usage |
 |----------|-------|-------|
 | `UNIT_DISPLAY_NAME` | `'dnam'` | Unit display name |
-| `UNIT_ONE_PATTERN` | `'one'` | Singular format |
-| `UNIT_OTHER_PATTERN` | `'other'` | Plural format |
+| `UNIT_ZERO_PATTERN` | `'zero'` | CLDR `zero` plural category (4.4.0) |
+| `UNIT_ONE_PATTERN` | `'one'` | CLDR `one` plural category (singular) |
+| `UNIT_TWO_PATTERN` | `'two'` | CLDR `two` plural category (4.4.0) |
+| `UNIT_FEW_PATTERN` | `'few'` | CLDR `few` plural category (4.4.0) |
+| `UNIT_MANY_PATTERN` | `'many'` | CLDR `many` plural category (4.4.0) |
+| `UNIT_OTHER_PATTERN` | `'other'` | CLDR `other` plural category (plural) |
+| `UNIT_PLURAL_PATTERNS` | `[zero, one, two, few, many, other]` | All plural categories, CLDR order (4.4.0) |
 | `UNIT_PER_UNIT_PATTERN` | `'per'` | "per" pattern |
+
+## Width Constants (since 4.4.0)
+
+CLDR unit widths. `WIDTH_RESOURCE_KEYS` maps each width to its ICU resource key, ordered
+for per-unit fallback (narrow → short → long) in `CultureInfo::getUnitPatterns()`.
+
+| Constant | Value | ICU key | Example |
+|----------|-------|---------|---------|
+| `WIDTH_LONG` | `'long'` | `units` | `5 minutes` |
+| `WIDTH_SHORT` | `'short'` | `unitsShort` | `5 min` |
+| `WIDTH_NARROW` | `'narrow'` | `unitsNarrow` | `5m` |
+| `WIDTH_RESOURCE_KEYS` | `[narrow => unitsNarrow, short => unitsShort, long => units]` | — | — |
+| `WIDTH_FIELD_SUFFIXES` | `[narrow => '-narrow', short => '-short', long => '']` | `fields/<unit><suffix>` | relative-time patterns |
+
+## Relative-Time Direction Constants (since 4.4.0)
+
+Keys of the `fields/<unit>/relativeTime` CLDR table, used by `CultureInfo::getRelativeTimePatterns()`.
+
+| Constant | Value | Example (en, minute) |
+|----------|-------|----------------------|
+| `RELATIVE_PAST` | `'past'` | `{0} minutes ago` |
+| `RELATIVE_FUTURE` | `'future'` | `in {0} minutes` |
 
 ## See Also
 
