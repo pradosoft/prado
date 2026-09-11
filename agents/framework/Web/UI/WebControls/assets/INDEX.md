@@ -69,7 +69,18 @@ Raster assets carry fixed colors and do not adapt: the slider handle PNGs, the
 rating star GIFs, and the color picker hue and target images.
 
 Functional coverage lives in `tests/playwright/web/ColorSchemeTestCase.spec.js`
-against the `ColorSchemeTest` harness page.
+against the `ColorSchemeTest` harness page. Those tests assert the contract, not
+the palette: that declaring nothing matches declaring light, that a dark
+operating system alone changes nothing, that every adapted color resolves
+differently under a dark declaration, that every adapting background darkens,
+and that each foreground clears its WCAG contrast minimum against its own
+background in both schemes. Changing a design value therefore does not break
+them, while a low-contrast or non-adapting value does.
+
+The two schemes are held to the same minimums and reach them with different
+ratios. Text and borders carry no direction rule: the active accordion bar is
+dark in both schemes, so its text is lighter in the light scheme, where the bar
+behind it is lighter. Only backgrounds are required to darken.
 
 ## Conventions
 

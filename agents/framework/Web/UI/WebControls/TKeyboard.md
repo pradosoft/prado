@@ -70,6 +70,6 @@ On `onPreRender`, the keyboard:
 
 ## Color Scheme
 
-The panel background, key face, key border, key text, and hover text and border adapt through `light-dark()`. The pressed-key red stays fixed in both schemes. The shipped stylesheet declares no `color-scheme` of its own, so an
+The panel background, key face, key border, key text, and hover text and border adapt through `light-dark()`. The pressed key paints white on its own red, so one value serves both schemes; that red is set so the text clears the WCAG text minimum while the chip stays 3:1 clear of an unpressed key face in either scheme. The shipped stylesheet declares no `color-scheme` of its own, so an
 application that declares none keeps the light rendering it already has. See
 [assets/INDEX.md](./assets/INDEX.md) for the contract.

@@ -15,7 +15,7 @@ div.Keyboard
     position: absolute;
     border: 1px solid #698977;
     background-color: #DDDDDD;
-    background-color: light-dark(#DDDDDD, #2a2a2a);
+    background-color: light-dark(#DDDDDD, #1d1d1d);
     z-index: 1000 !important;
     visibility: hidden;
     padding: 4px 4px 4px 4px;
@@ -42,10 +42,10 @@ div.Keyboard div.Key div.Key1,
 div.Keyboard div.Key div.Key2
 {
     overflow: hidden;
-    border: 1px solid #A5A5A5;
-    border-color: light-dark(#A5A5A5, #838383);
+    border: 1px solid #797979;
+    border-color: light-dark(#797979, #838383);
     background-color: #F7F7F7;
-    background-color: light-dark(#F7F7F7, #3a3a3a);
+    background-color: light-dark(#F7F7F7, #292929);
     font-family: Verdana, Arial, Helvetica, sans-serif;
     font-size: 11px;
     color: #556C5F;
@@ -60,16 +60,16 @@ div.Keyboard div.Key div.Key2
 
 div.Keyboard div.Key div.Hover
 {
-    color: #E02C03;
-    color: light-dark(#E02C03, #EE0000);
+    color: #d52a03;
+    color: light-dark(#d52a03, #FF5555);
     border-color: #E03510;
-    border-color: light-dark(#E03510, #EE0000);
+    border-color: light-dark(#E03510, #FF5555);
 }
 
 div.Keyboard div.Key div.Active
 {
     color: #FFFFFF;
-    background-color: #E0431D;
+    background-color: #d33f1b;
 }
 
 div.Keyboard.Shift div.Key div.Key1,

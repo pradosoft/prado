@@ -22,7 +22,8 @@
 	background:		rgb(234,242,255);
 	background:		light-dark(rgb(234,242,255), rgb(30,41,59));
 	border:			1px  solid;
-	border-color:	rgb(120,172,255);
+	border-color:	#4b6ca0;
+	border-color:	light-dark(#4b6ca0, rgb(120,172,255));
 	z-index:		1;
 	position:		relative;
 	top:			0;
@@ -37,7 +38,8 @@
 	font-family:	Verdana, Helvetica, Arial;
 	font-size:		12px;
 
-	border:			1px solid rgb(120,172,255);
+	border:			1px solid #4b6ca0;
+	border-color:	light-dark(#4b6ca0, rgb(120,172,255));
 	border-bottom:	0;
 	z-index:		3;
 	padding:		2px 6px 8px 6px;
@@ -49,7 +51,8 @@
 .tab-view
 {
 	clear:			both;
-	border:			1px solid rgb(120,172,255);
+	border:			1px solid #4b6ca0;
+	border-color:	light-dark(#4b6ca0, rgb(120,172,255));
 	z-index:		2;
 	position:		relative;
 	top:			-2px;
@@ -65,15 +68,16 @@
 
 .tab-normal
 {
-	color: gray;
-	color: light-dark(gray, #9aa6b2);
+	color: #6b6b6b;
+	color: light-dark(#6b6b6b, #9aa6b2);
 	text-decoration: none;
 	font-weight: bold;
 }
 
 .tab-normal:hover
 {
-	color: rgb(120,172,255);
+	color: #4b6ca0;
+	color: light-dark(#4b6ca0, rgb(120,172,255));
 	text-decoration: none;
 	font-weight: bold;
 }
@@ -81,6 +85,7 @@
 /* Visible keyboard focus for the role="tab" elements. */
 .tab-normal:focus-visible, .tab-active:focus-visible
 {
-	outline: 2px solid rgb(120,172,255);
+	outline: 2px solid #4b6ca0;
+	outline-color: light-dark(#4b6ca0, rgb(120,172,255));
 	outline-offset: -2px;
 }

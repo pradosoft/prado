@@ -14,8 +14,8 @@
 .TColorPicker
 {
 	background-color: Canvas;
-	border: 1px solid #919EA9;
-	border-color: light-dark(#919EA9, #646e78);
+	border: 1px solid #85919b;
+	border-color: light-dark(#85919b, #646e78);
 }
 
 .FullColorPicker
@@ -25,8 +25,8 @@
 
 .BasicColorPicker .basic_colors td img
 {
-	border: 1px solid #919EA9;
-	border-color: light-dark(#919EA9, #646e78);
+	border: 1px solid #85919b;
+	border-color: light-dark(#85919b, #646e78);
 }
 
 .BasicColorPicker .basic_colors .pickerhover
@@ -36,26 +36,26 @@
 
 .FullColorPicker .colors .colorpanel
 {
-	border: 1px solid #919EA9;
-	border-color: light-dark(#919EA9, #646e78);
+	border: 1px solid #85919b;
+	border-color: light-dark(#85919b, #646e78);
 }
 
 .FullColorPicker .hue .strip
 {
-	border: 1px solid #919EA9;
-	border-color: light-dark(#919EA9, #646e78);
+	border: 1px solid #85919b;
+	border-color: light-dark(#85919b, #646e78);
 }
 
 .FullColorPicker .inputs .currentcolor span
 {
-	border: 1px solid #919EA9;
-	border-color: light-dark(#919EA9, #646e78);
+	border: 1px solid #85919b;
+	border-color: light-dark(#85919b, #646e78);
 }
 
 .FullColorPicker .options td
 {
-	border-top: 1px solid #919EA9;
-	border-top-color: light-dark(#919EA9, #646e78);
+	border-top: 1px solid #85919b;
+	border-top-color: light-dark(#85919b, #646e78);
 }
 
 /** UI **/

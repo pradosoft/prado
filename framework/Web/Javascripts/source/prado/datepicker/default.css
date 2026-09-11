@@ -6,8 +6,8 @@
  */
 .TDatePicker_default
 {
-	border: 1px solid #919EA9;
-	border-color: light-dark(#919EA9, #646e78);
+	border: 1px solid #85919b;
+	border-color: light-dark(#85919b, #646e78);
 	background-color: Canvas;
 	text-align: center;
 	font-size: 11px;
@@ -23,8 +23,8 @@
 .TDatePickerImageButton
 {
 	padding: 2px;
-	border: 1px solid #919EA9;
-	border-color: light-dark(#919EA9, #646e78);
+	border: 1px solid #85919b;
+	border-color: light-dark(#85919b, #646e78);
 	vertical-align: top;
 	margin-left: 1px;
 }
@@ -96,8 +96,8 @@
 .TDatePicker_default .calendarFooter
 {
 	margin: 2px;
-	border-top: 1px solid #919EA9;
-	border-top-color: light-dark(#919EA9, #646e78);
+	border-top: 1px solid #85919b;
+	border-top-color: light-dark(#85919b, #646e78);
 	padding-top: 2px;
 }
 .TDatePicker_default .todayButton

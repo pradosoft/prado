@@ -24,11 +24,11 @@ div.accordion-header-active {
 	z-index: 10; position: relative; 
 	cursor: pointer;
 	background-color: #334477;
-	background-color: light-dark(#334477, #2b3a5c);
-	color: red; font-weight: bold;
-	color: light-dark(red, #EE0000);
-	border: 1px solid red;
-	border-color: light-dark(red, #EE0000);
+	background-color: light-dark(#334477, #1e2940);
+	color: #ff9d9d; font-weight: bold;
+	color: light-dark(#ff9d9d, #FF5555);
+	border: 1px solid #ff9d9d;
+	border-color: light-dark(#ff9d9d, #FF5555);
 }
 
 div.accordion-view {
