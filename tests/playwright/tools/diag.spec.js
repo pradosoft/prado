@@ -5,21 +5,25 @@ test('diag', async ({ page }) => {
 	const h = new PradoTestHelper(page, GENERIC_BASE_URL);
 	await h.url('web/index.php?page=ColorSchemeGalleryTest');
 	const info = await page.evaluate(() => {
-		const kb = document.querySelector('div.Keyboard');
-		const line = kb.querySelector('div.Line');
-		const keys = line.querySelectorAll('div.Key');
-		const cs = getComputedStyle(kb);
+		const gaps = (sliderSel) => {
+			const s = document.querySelector(sliderSel);
+			const t = s.querySelector('.Track');
+			const sr = s.getBoundingClientRect();
+			const tr = t.getBoundingClientRect();
+			const cs = getComputedStyle(s);
+			const bl = parseFloat(cs.borderLeftWidth), bt = parseFloat(cs.borderTopWidth);
+			const br = parseFloat(cs.borderRightWidth), bb = parseFloat(cs.borderBottomWidth);
+			return {
+				left: +(tr.left - (sr.left + bl)).toFixed(2),
+				right: +((sr.right - br) - tr.right).toFixed(2),
+				top: +(tr.top - (sr.top + bt)).toFixed(2),
+				bottom: +((sr.bottom - bb) - tr.bottom).toFixed(2),
+			};
+		};
 		return {
-			kbRect: kb.getBoundingClientRect().toJSON(),
-			kbPosition: cs.position,
-			kbVisibility: cs.visibility,
-			kbOverflow: cs.overflow,
-			lineRect: line.getBoundingClientRect().toJSON(),
-			lineCount: kb.querySelectorAll('div.Line').length,
-			keysInFirstLine: keys.length,
-			lastKeyRight: keys.length ? keys[keys.length - 1].getBoundingClientRect().right : null,
-			firstKeyLeft: keys.length ? keys[0].getBoundingClientRect().left : null,
+			horizontal: gaps('.HorizontalSlider'),
+			vertical: gaps('.VerticalSlider'),
 		};
 	});
-	console.log(JSON.stringify(info, null, 1));
+	console.log(JSON.stringify(info));
 });

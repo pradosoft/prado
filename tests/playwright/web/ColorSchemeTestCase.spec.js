@@ -44,6 +44,8 @@ const ADAPTING = [
 	['.tab-active', 'border-top-color'],
 	['.tab-view', 'border-top-color'],
 	['div.accordion-header', 'background-color'],
+	['div.accordion-header', 'color'],
+	['div.accordion-header', 'border-top-color'],
 	['div.accordion-header-active', 'background-color'],
 	['div.accordion-header-active', 'color'],
 	['div.accordion-header-active', 'border-top-color'],
@@ -54,6 +56,13 @@ const ADAPTING = [
 	['.Slider', 'background-color'],
 	['.Track', 'background-color'],
 ];
+
+// Backgrounds darken under a dark scheme, with one deliberate exception: the
+// active accordion bar signals selection by inverting against its scheme. It is
+// a dark bar carrying a light red in light mode, and a light bar carrying a dark
+// red in dark mode, because red and mid blue sit too close in luminance for a
+// bar in between to carry either.
+const BRIGHTENS_IN_DARK = new Set(['div.accordion-header-active@background-color']);
 
 // Foreground against a background, with the minimum each one owes. The fourth
 // entry names the element holding the background when it is not the same element:
@@ -191,11 +200,18 @@ test('ColorSchemeTestCase — declaring dark changes every adapting color', asyn
 	const unchanged = Object.keys(light).filter((key) => light[key] === dark[key]);
 	expect(unchanged, 'colors that failed to adapt to the dark scheme').toEqual([]);
 
-	// Every adapting background darkens. Text and borders carry no such invariant:
-	// the active accordion bar is dark in both schemes, so its text is lighter in
-	// the light scheme, where the bar behind it is lighter.
+	// Backgrounds move in a known direction, so a reversed light-dark() is caught.
+	// Text and borders carry no such invariant: a label follows whichever way its
+	// own bar went.
 	for (const [key, value] of Object.entries(dark)) {
-		if (key.endsWith('@background-color')) {
+		if (!key.endsWith('@background-color')) {
+			continue;
+		}
+		if (BRIGHTENS_IN_DARK.has(key)) {
+			expect(luminance(value), `${key} should brighten`).toBeGreaterThan(
+				luminance(light[key]),
+			);
+		} else {
 			expect(luminance(value), `${key} should darken`).toBeLessThan(luminance(light[key]));
 		}
 	}

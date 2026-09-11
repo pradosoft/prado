@@ -10,9 +10,11 @@
 	position: relative;
 	margin: 10px;
 	padding: 0;
-	background-color: Gainsboro;
-	background-color: light-dark(Gainsboro, #2e2e2e);
-	border: 1px outset;
+	background-color: #dddddd;
+	background-color: light-dark(#dddddd, #393939);
+	border: 1px solid;
+	border-color: #f5f5f5 #c5c5c5 #c5c5c5 #f5f5f5;
+	border-color: light-dark(#f5f5f5, #515151) light-dark(#c5c5c5, #212121) light-dark(#c5c5c5, #212121) light-dark(#f5f5f5, #515151);
 }
 
 /* Class for horizontal slider */
@@ -38,28 +40,12 @@
 	outline-style: none;
 	outline-width: 1px;
 	border-width: 1px;
+	inset: 4px;
+	border-color: lightBlue;
+	border-color: light-dark(lightBlue, #2a4d5e);
 	position: absolute;
 	background-color: lightBlue;
 	background-color: light-dark(lightBlue, #2a4d5e);
-}
-
-/* Horizontal Track */
-.HorizontalSlider .Track 
-{	
-	
-	height: 3px;
-	top: 5px;
-	width: 97%;
-	left: 1%;
-}
-
-/* Vertical Track */
-.VerticalSlider .Track
-{
-	height: 97%;
-	width: 3px;
-	left: 5px;
-	top: 1%;
 }
 
 /* Class for the progress indicator */
@@ -82,9 +68,16 @@
 
 /* Class for handle */
 .Handle {
-	border: 0px none;
+	box-sizing: border-box;
 	position: relative;
 	cursor: move;
+	border: 1px solid #6c6c6c;
+	border-color: light-dark(#6c6c6c, #141414);
+	border-radius: 3px;
+	background-color: #c2c2c2;
+	background-color: light-dark(#c2c2c2, #8c8c8c);
+	background-repeat: no-repeat;
+	background-position: center;
 }
 
 /* Horizontal slider handle */
@@ -92,7 +85,9 @@
 {
 	width: 31px;
 	height: 14px;
-	background: transparent url("TSliderHandleHorizontal.png") no-repeat scroll center;
+	background-image: repeating-linear-gradient(90deg, #818181 0 1px, transparent 1px 4px);
+	background-image: repeating-linear-gradient(90deg, light-dark(#818181, #555555) 0 1px, transparent 1px 4px);
+	background-size: 9px 6px;
 }
 
 /* Vertical slider handle */
@@ -100,5 +95,7 @@
 {
 	width: 14px;
 	height: 31px;
-	background: transparent url("TSliderHandleVertical.png") no-repeat scroll center;
+	background-image: repeating-linear-gradient(180deg, #818181 0 1px, transparent 1px 4px);
+	background-image: repeating-linear-gradient(180deg, light-dark(#818181, #555555) 0 1px, transparent 1px 4px);
+	background-size: 6px 9px;
 }

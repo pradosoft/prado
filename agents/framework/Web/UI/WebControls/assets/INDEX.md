@@ -18,8 +18,7 @@ Static assets (CSS, fonts, images) and the server-side CAPTCHA image generator u
 
 ### Images
 
-- **`TSlider/TSliderHandleHorizontal.png`** — Horizontal slider handle graphic.
-- **`TSlider/TSliderHandleVertical.png`** — Vertical slider handle graphic.
+- **`TSlider/TSliderHandleHorizontal.png`**, **`TSlider/TSliderHandleVertical.png`** — former slider handle graphics, no longer referenced. `TSlider.css` draws the handle in CSS so it can follow the declared color scheme.
 
 ### PHP (Server-Side Generation)
 
@@ -65,8 +64,10 @@ An application whose dark theme comes only from its own `prefers-color-scheme`
 media query leaves these controls light. Declaring `color-scheme` on the root
 connects it.
 
-Raster assets carry fixed colors and do not adapt: the slider handle PNGs, the
-rating star GIFs, and the color picker hue and target images.
+Raster assets carry fixed colors and cannot adapt, because `light-dark()` resolves
+colors and not images: the rating star GIFs, and the color picker hue and target
+images. The last of these is correct, since those images are color content rather
+than chrome. The slider handle was redrawn in CSS for this reason.
 
 Functional coverage lives in `tests/playwright/web/ColorSchemeTestCase.spec.js`
 against the `ColorSchemeTest` harness page. Those tests assert the contract, not
