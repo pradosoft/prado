@@ -803,4 +803,64 @@ class TUrlMappingPatternTest extends PHPUnit\Framework\TestCase
 
 		$this->assertEquals([], $result);
 	}
+
+	// ===== Verb Negation Tests =====
+
+	public function testGetPatternMatchesVerbNegationAllowsOtherVerbs()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$pattern->setServiceParameter('Test.Page');
+		$pattern->setPattern('test');
+		$pattern->setVerbs('!DELETE');
+
+		$this->assertNotEquals([], $pattern->getPatternMatches($this->createRequest('/test', 'GET')));
+		$this->assertNotEquals([], $pattern->getPatternMatches($this->createRequest('/test', 'POST')));
+		$this->assertEquals([], $pattern->getPatternMatches($this->createRequest('/test', 'DELETE')));
+	}
+
+	public function testGetPatternMatchesMultipleVerbNegations()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$pattern->setServiceParameter('Test.Page');
+		$pattern->setPattern('test');
+		$pattern->setVerbs('!PUT, ~DELETE');
+
+		$this->assertNotEquals([], $pattern->getPatternMatches($this->createRequest('/test', 'GET')));
+		$this->assertEquals([], $pattern->getPatternMatches($this->createRequest('/test', 'PUT')));
+		$this->assertEquals([], $pattern->getPatternMatches($this->createRequest('/test', 'DELETE')));
+	}
+
+	public function testGetPatternMatchesVerbInclusionAndNegation()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$pattern->setServiceParameter('Test.Page');
+		$pattern->setPattern('test');
+		$pattern->setVerbs('GET,POST,!POST');
+
+		$this->assertNotEquals([], $pattern->getPatternMatches($this->createRequest('/test', 'GET')));
+		$this->assertEquals([], $pattern->getPatternMatches($this->createRequest('/test', 'POST')));
+		$this->assertEquals([], $pattern->getPatternMatches($this->createRequest('/test', 'PUT')));
+	}
+
+	public function testGetPatternMatchesVerbIgnoresCase()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$pattern->setServiceParameter('Test.Page');
+		$pattern->setPattern('test');
+		$pattern->setVerbs('get');
+
+		$this->assertNotEquals([], $pattern->getPatternMatches($this->createRequest('/test', 'GET')));
+		$this->assertEquals([], $pattern->getPatternMatches($this->createRequest('/test', 'POST')));
+	}
+
+	public function testGetPatternMatchesVerbNegationIgnoresCase()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$pattern->setServiceParameter('Test.Page');
+		$pattern->setPattern('test');
+		$pattern->setVerbs('~delete');
+
+		$this->assertNotEquals([], $pattern->getPatternMatches($this->createRequest('/test', 'GET')));
+		$this->assertEquals([], $pattern->getPatternMatches($this->createRequest('/test', 'DELETE')));
+	}
 }

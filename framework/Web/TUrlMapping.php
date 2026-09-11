@@ -112,6 +112,9 @@ use Prado\Xml\TXmlElement;
  * - verbs="~GET" or verbs="!GET" - matches any request except GET requests
  * - verbs="~GET,!PUT" - multiple negative verbs can be matched
  *
+ * A list of negated verbs alone matches every method it does not exclude, and the
+ * comparison ignores case.
+ *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.0.5
  */

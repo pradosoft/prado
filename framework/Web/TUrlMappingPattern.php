@@ -145,6 +145,10 @@ use Prado\TPropertyValue;
  * - verbs="POST,PUT" - matches POST or PUT requests
  * - verbs="!DELETE" or verbs="~DELETE" - matches any request except DELETE requests
  * - verbs="!PUT, ~DELETE" - matches any request except PUT and DELETE
+ * - verbs="GET,!POST" - matches GET, the negation excludes POST from an inclusion list
+ *
+ * A list of negated verbs alone matches every method it does not exclude. A list holding
+ * both forms matches a method that is included and not excluded. The comparison ignores case.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.0.5
@@ -453,6 +457,48 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
+	 * Matches an HTTP method against the {@see getVerbs Verbs} of the pattern. A verb
+	 * prefixed with '!' or '~' excludes that method. The comparison ignores case.
+	 *
+	 * | Verbs | Matches |
+	 * |---|---|
+	 * | null | every method |
+	 * | only inclusions | a method in the list |
+	 * | only exclusions | a method that is not excluded |
+	 * | both | a method that is included and not excluded |
+	 *
+	 * @param string $verb the HTTP method of the request
+	 * @return bool whether the pattern matches the HTTP method
+	 * @since 4.4.0
+	 */
+	protected function matchesVerb(string $verb): bool
+	{
+		$verbs = $this->getVerbs();
+		if ($verbs === null) {
+			return true;
+		}
+		$included = [];
+		foreach ($verbs as $item) {
+			if (str_starts_with($item, '!') || str_starts_with($item, '~')) {
+				if (strcasecmp(substr($item, 1), $verb) === 0) {
+					return false;
+				}
+			} else {
+				$included[] = $item;
+			}
+		}
+		if (!$included) {
+			return true;
+		}
+		foreach ($included as $item) {
+			if (strcasecmp($item, $verb) === 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Returns the part of the URL that the pattern matches against. In the
 	 * {@see \Prado\Web\TUrlMappingPatternUrlMatchMode::Full Full} match mode the query
 	 * string is appended to the path, separated by a question mark.
@@ -525,12 +571,8 @@ class TUrlMappingPattern extends \Prado\TComponent
 	 */
 	public function getPatternMatches($request)
 	{
-		$verbs = $this->getVerbs();
-		if ($verbs !== null) {
-			$requestVerb = $request->getRequestType();
-			if (!in_array($requestVerb, $verbs) || in_array('!' . $requestVerb, $verbs) || in_array('~' . $requestVerb, $verbs)) {
-				return [];
-			}
+		if (!$this->matchesVerb((string) $request->getRequestType())) {
+			return [];
 		}
 
 		if ($this->_query && !$this->matchesQuery($this->getQueryItems())) {

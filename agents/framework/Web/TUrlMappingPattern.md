@@ -36,7 +36,16 @@ TUrlMappingPattern represents a pattern used to parse and construct URLs in PRAD
 
 ### Match Restriction
 - `UrlMatchMode` ([TUrlMappingPatternUrlMatchMode](./TUrlMappingPatternUrlMatchMode.md)): The part of the URL the pattern matches, `PathInfo` (default) or `Full`, since 4.4.0
-- `Verbs` (null|array|string): HTTP methods the pattern matches, comma separated, null (default) matches any, since 4.3.3
+- `Verbs` (null|array|string): HTTP methods the pattern matches, comma separated, `~` or `!` negates one, null (default) matches any, since 4.3.3
+
+| `Verbs` | Matches |
+|---|---|
+| null | Every method |
+| Only inclusions (`GET,POST`) | A method in the list |
+| Only exclusions (`!PUT,~DELETE`) | A method that is not excluded |
+| Both (`GET,!POST`) | A method that is included and not excluded |
+
+The comparison ignores case, so `verbs="get"` matches a GET request.
 
 ### URL Construct/Parse Options
 - `EnableCustomUrl` (bool): Whether to enable custom URL construction, defaults to true
@@ -109,6 +118,7 @@ Two ways match the query string of a request. Both are available since 4.4.0.
 - `getPatternParts()`: Splits the pattern into its path part and its query string part
 - `substituteParameters($pattern)`: Replaces the `{param}` placeholders of a pattern part with named groups
 - `matchesQuery($items)`: Matches GET variables against the `Query` constraints
+- `matchesVerb($verb)`: Matches an HTTP method against the `Verbs` of the pattern
 - `supportCustomUrl($getItems)`: Determines if pattern supports URL construction with given parameters
 
 ### URL Construction
