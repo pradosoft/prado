@@ -87,3 +87,9 @@ $picker->setText(string $v): void
 - **`ShowColorPicker=false`** — hides the swatch button entirely, leaving only the text input. The user must type hex values manually.
 - **No AutoPostBack** — color picker changes do not auto-submit. Use a submit button or call JavaScript to trigger form submission.
 - **`TWebColors`** — provides a mapping of CSS named colors to hex values. Use `TWebColors::colorValues()` to populate a predefined color list for users.
+
+## Color Scheme
+
+The panel background uses `Canvas` and its borders adapt through `light-dark()`. The hue strip and target images carry fixed colors, which is correct for color content. The shipped stylesheet declares no `color-scheme` of its own, so an
+application that declares none keeps the light rendering it already has. See
+[assets/INDEX.md](./assets/INDEX.md) for the contract.

@@ -29,3 +29,9 @@ TSlider displays a slider for numeric input. It consists of a track defining the
 - [TSliderClientScript](./TSliderClientScript.md)
 - [TSliderDirection](./TSliderDirection.md)
 - [IDataRenderer](../../../IDataRenderer.md)
+
+## Color Scheme
+
+The slider body and track backgrounds adapt through `light-dark()`. The progress fill stays red in both schemes. The handle PNGs carry fixed colors and do not adapt. The shipped stylesheet declares no `color-scheme` of its own, so an
+application that declares none keeps the light rendering it already has. See
+[assets/INDEX.md](./assets/INDEX.md) for the contract.

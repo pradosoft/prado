@@ -89,3 +89,9 @@ Override default styles by setting `CssUrl` to a custom stylesheet. Default CSS 
 - **`AutoSwitch=false`** — disables client-side tab switching; tab changes cause a postback. Useful when tab content requires server-side re-render.
 - **Tab headers are rendered as part of the same `<div>`** — not as `<ul>/<li>`. The JS manages visibility of the content panes.
 - **Custom CSS** — the `CssUrl` overrides the default asset CSS. The JS still expects the same class name convention unless you also override the client-side class name.
+
+## Color Scheme
+
+The inactive tab background and text adapt through `light-dark()`. The active tab uses `Canvas` and `CanvasText`, so it tracks the page into either scheme. The shipped stylesheet declares no `color-scheme` of its own, so an
+application that declares none keeps the light rendering it already has. See
+[assets/INDEX.md](./assets/INDEX.md) for the contract.

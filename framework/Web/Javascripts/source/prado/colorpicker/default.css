@@ -1,3 +1,9 @@
+/*
+ * Colors follow the color-scheme declared by the application; declaring none
+ * renders light, as before. Canvas and CanvasText resolve per scheme on their
+ * own. Each light-dark() line is preceded by its plain light value, which
+ * browsers without light-dark() support use instead.
+ */
 
 /** Colors **/
 
@@ -7,8 +13,9 @@
 
 .TColorPicker
 {
-	background-color: white;
+	background-color: Canvas;
 	border: 1px solid #919EA9;
+	border-color: light-dark(#919EA9, #646e78);
 }
 
 .FullColorPicker
@@ -19,38 +26,43 @@
 .BasicColorPicker .basic_colors td img
 {
 	border: 1px solid #919EA9;
+	border-color: light-dark(#919EA9, #646e78);
 }
 
 .BasicColorPicker .basic_colors .pickerhover
 {
-	border-color: white;
+	border-color: Canvas;
 }
 
 .FullColorPicker .colors .colorpanel
 {
 	border: 1px solid #919EA9;
+	border-color: light-dark(#919EA9, #646e78);
 }
 
 .FullColorPicker .hue .strip
 {
 	border: 1px solid #919EA9;
+	border-color: light-dark(#919EA9, #646e78);
 }
 
 .FullColorPicker .inputs .currentcolor span
 {
 	border: 1px solid #919EA9;
+	border-color: light-dark(#919EA9, #646e78);
 }
 
 .FullColorPicker .options td
 {
 	border-top: 1px solid #919EA9;
+	border-top-color: light-dark(#919EA9, #646e78);
 }
 
 /** UI **/
 .TColorPicker_button img
 {
 	border: 2px ridge ActiveBorder;
-	background-color: #fff;
+	background-color: Canvas;
 	padding: 1px;
 	height: 16px;
 	width: 16px;

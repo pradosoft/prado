@@ -36,6 +36,41 @@ Static assets (CSS, fonts, images) and the server-side CAPTCHA image generator u
 
 - **`verase.ttf`** — TrueType font used exclusively by `captcha.php` for CAPTCHA text rendering.
 
+## Color Scheme
+
+The shipped stylesheets follow the `color-scheme` the application declares. No
+Prado property selects the scheme, and no shipped stylesheet declares
+`color-scheme` of its own.
+
+| Application declares | Controls render |
+|---|---|
+| nothing | light, whatever the operating system prefers |
+| `color-scheme: light` | light |
+| `color-scheme: dark` | dark |
+| `color-scheme: light dark` | the scheme the operating system prefers, updating live |
+| a scheme on a container | that scheme inside the container only |
+
+Two mechanisms carry the colors.
+
+- `light-dark(light, dark)` supplies designed colors. The plain light value
+  precedes each call, so a browser without `light-dark()` support keeps the light
+  rendering. The function resolves against the used `color-scheme`, which
+  inherits, so a container darkens its own subtree without affecting the page.
+- `Canvas` and `CanvasText` supply chrome that tracks the page, such as the
+  active tab face, the date picker panel, and the color picker panel. These
+  system colors resolve per scheme on their own and also answer forced-colors
+  mode.
+
+An application whose dark theme comes only from its own `prefers-color-scheme`
+media query leaves these controls light. Declaring `color-scheme` on the root
+connects it.
+
+Raster assets carry fixed colors and do not adapt: the slider handle PNGs, the
+rating star GIFs, and the color picker hue and target images.
+
+Functional coverage lives in `tests/playwright/web/ColorSchemeTestCase.spec.js`
+against the `ColorSchemeTest` harness page.
+
 ## Conventions
 
 - CSS files here are **defaults** — override by supplying a custom stylesheet path to the control's `CssUrl` property.

@@ -67,3 +67,9 @@ On `onPreRender`, the keyboard:
 - **Custom CSS** — set `CssUrl` and `KeyboardCssClass` together when changing the appearance. The JS uses the CSS class name to identify and show/hide the keyboard element.
 - **Mobile devices** — native virtual keyboards are generally more appropriate on mobile. Consider hiding `TKeyboard` for mobile users (CSS media query or JS detection).
 - **`AutoHide=false`** — keyboard stays visible until the user explicitly dismisses it. Useful for kiosk-style applications.
+
+## Color Scheme
+
+The panel background, key face, key border, key text, and hover text and border adapt through `light-dark()`. The pressed-key red stays fixed in both schemes. The shipped stylesheet declares no `color-scheme` of its own, so an
+application that declares none keeps the light rendering it already has. See
+[assets/INDEX.md](./assets/INDEX.md) for the contract.

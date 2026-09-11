@@ -1,0 +1,48 @@
+<com:TContent ID="Content">
+	<h1>Color Scheme Test Case</h1>
+
+	<%-- Every control whose shipped stylesheet carries colors is hosted here, so
+	     one page exercises all of them. The page itself declares no color-scheme:
+	     that is the default an existing application presents, and the controls
+	     must render light under it. The test declares a scheme on the root, or on
+	     the #darkSubtree wrapper, to drive the adaptation. --%>
+
+	<h2>TTabPanel</h2>
+	<com:TTabPanel ID="tabs">
+		<com:TTabView ID="tab1" Caption="First">First panel.</com:TTabView>
+		<com:TTabView ID="tab2" Caption="Second">Second panel.</com:TTabView>
+	</com:TTabPanel>
+
+	<h2>TAccordion</h2>
+	<com:TAccordion ID="acc">
+		<com:TAccordionView ID="accv1" Caption="First">First panel.</com:TAccordionView>
+		<com:TAccordionView ID="accv2" Caption="Second">Second panel.</com:TAccordionView>
+	</com:TAccordion>
+
+	<h2>TSlider</h2>
+	<com:TSlider ID="slider" MinValue="0" MaxValue="100" StepSize="5" Value="40" />
+
+	<%-- The keyboard stays hidden, which is its default. Hidden is enough for a
+	     computed-style read and keeps the absolutely positioned panel from
+	     covering the controls below it. --%>
+	<h2>TKeyboard</h2>
+	<com:TTextBox ID="field" />
+	<com:TKeyboard ID="kb" ForControl="field" />
+
+	<h2>TDatePicker</h2>
+	<com:TDatePicker ID="date" Mode="ImageButton" />
+
+	<h2>TColorPicker</h2>
+	<com:TColorPicker ID="color" Text="#FFCC00" Mode="Basic" />
+
+	<%-- A container that declares dark on its own. Controls inside it must go
+	     dark while the rest of the page stays light, which is the per-subtree
+	     behavior a media query cannot provide. --%>
+	<h2>Dark subtree</h2>
+	<div id="darkSubtree" style="color-scheme: dark">
+		<com:TTabPanel ID="subtreeTabs">
+			<com:TTabView ID="subtab1" Caption="First">First panel.</com:TTabView>
+			<com:TTabView ID="subtab2" Caption="Second">Second panel.</com:TTabView>
+		</com:TTabPanel>
+	</div>
+</com:TContent>

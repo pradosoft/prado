@@ -123,3 +123,9 @@ Drop-down mode:
 - **`DropDownList` mode** — renders separate `<select>` elements for day, month, year. `InputMode=DropDownList` hides the text input; `InputMode=TextBox` shows text + drop-downs side by side.
 - **Timestamp vs formatted string** — `getTimeStamp()` returns a Unix timestamp; `getDate()` returns the formatted string. Prefer `getTimeStamp()` for database storage.
 - **Year range** — without `FromYear`/`UpToYear`, the calendar defaults to ±10 years from today. Set explicit ranges for registration forms.
+
+## Color Scheme
+
+The calendar panel background uses `Canvas`, and the panel border, button border, and hovered-day border adapt through `light-dark()`. The selected day stays white on blue in both schemes. The shipped stylesheet declares no `color-scheme` of its own, so an
+application that declares none keeps the light rendering it already has. See
+[assets/INDEX.md](./assets/INDEX.md) for the contract.

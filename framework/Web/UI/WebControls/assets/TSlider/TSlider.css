@@ -1,3 +1,9 @@
+/*
+ * Colors follow the color-scheme declared by the application; declaring none
+ * renders light, as before. Canvas and CanvasText resolve per scheme on their
+ * own. Each light-dark() line is preceded by its plain light value, which
+ * browsers without light-dark() support use instead.
+ */
 /* Base CSS Class for the slider */
 .Slider
 {
@@ -5,6 +11,7 @@
 	margin: 10px;
 	padding: 0;
 	background-color: Gainsboro;
+	background-color: light-dark(Gainsboro, #2e2e2e);
 	border: 1px outset;
 }
 
@@ -33,6 +40,7 @@
 	border-width: 1px;
 	position: absolute;
 	background-color: lightBlue;
+	background-color: light-dark(lightBlue, #2a4d5e);
 }
 
 /* Horizontal Track */

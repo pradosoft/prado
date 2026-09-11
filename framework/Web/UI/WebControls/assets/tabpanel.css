@@ -1,3 +1,9 @@
+/*
+ * Colors follow the color-scheme declared by the application; declaring none
+ * renders light, as before. Canvas and CanvasText resolve per scheme on their
+ * own. Each light-dark() line is preceded by its plain light value, which
+ * browsers without light-dark() support use instead.
+ */
 .tab-panel
 {
 	position: relative;
@@ -14,6 +20,7 @@
 	float:			left;
 	padding:		3px 6px 4px 6px;
 	background:		rgb(234,242,255);
+	background:		light-dark(rgb(234,242,255), rgb(30,41,59));
 	border:			1px  solid;
 	border-color:	rgb(120,172,255);
 	z-index:		1;
@@ -36,7 +43,7 @@
 	padding:		2px 6px 8px 6px;
 	margin:			1px -6px -2px 0px;
 	top:			-2px;
-	background:		white;
+	background:		Canvas;
 }
 
 .tab-view
@@ -51,7 +58,7 @@
 
 .tab-active
 {
-	color: black;
+	color: CanvasText;
 	text-decoration: none;
 	font-weight: bold;
 }
@@ -59,6 +66,7 @@
 .tab-normal
 {
 	color: gray;
+	color: light-dark(gray, #9aa6b2);
 	text-decoration: none;
 	font-weight: bold;
 }
