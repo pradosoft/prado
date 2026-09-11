@@ -1,0 +1,38 @@
+<com:TContent ID="Content">
+	<h1>Color Scheme Scaffold</h1>
+
+	<%-- The ActiveRecord scaffold stylesheet is on its own page because it styles
+	     body, which would change the type of every other sample. The markup mirrors
+	     what TScaffoldListView and TScaffoldEditView render. --%>
+	<com:TStyleSheet>
+		.shot { background-color: Canvas; color: CanvasText; padding: 16px; width: 420px; }
+		/* the scaffold's fields and labels float; contain them so the sample
+		   rows stack the way a real scaffold page does */
+		#shot-scaffold .item,
+		#shot-scaffold .item-header,
+		#shot-scaffold .edit-item { overflow: hidden; }
+	</com:TStyleSheet>
+
+	<div id="shot-scaffold" class="shot">
+		<div class="item-header">
+			<span class="field_0">#</span><span class="field">Title</span><span class="field">Author</span>
+		</div>
+		<div class="item">
+			<span class="field_0">1</span><span class="field">First row</span><span class="field">Ada</span>
+		</div>
+		<div class="item item_1">
+			<span class="field_0">2</span><span class="field">Striped row</span><span class="field">Grace</span>
+		</div>
+		<div class="pager">
+			<span>1</span><a href="#">2</a><a href="#" id="pagerLink">3</a>
+		</div>
+		<div class="edit-inputs">
+			<div class="edit-item">
+				<label>Title</label><input class="scaffold_input" value="Editable value" />
+			</div>
+			<div class="edit-item">
+				<label>Required</label><input class="scaffold_input required-input" value="Missing value" />
+			</div>
+		</div>
+	</div>
+</com:TContent>
