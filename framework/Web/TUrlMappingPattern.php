@@ -22,8 +22,9 @@ use Prado\TPropertyValue;
  * TUrlMappingPattern represents a pattern used to parse and construct URLs.
  * If the currently requested URL matches the pattern, it will alter
  * the THttpRequest parameters. If a constructUrl() call matches the pattern
- * parameters, the pattern will generate a valid URL. In both case, only the PATH_INFO
- * part of a URL is parsed/constructed using the pattern.
+ * parameters, the pattern will generate a valid URL. In both case, the PATH_INFO
+ * part of a URL is parsed/constructed using the pattern, and, in the
+ * {@see \Prado\Web\TUrlMappingPatternUrlMatchMode::Full Full} match mode, the query string as well.
  *
  * To specify the pattern, set the {@see setPattern Pattern} property.
  * {@see setPattern Pattern} takes a string expression with
@@ -111,6 +112,32 @@ use Prado\TPropertyValue;
  * (even through not supplied in the request) and equal to "detailed" or "summarized", depending on the friendly url matched.
  * The constants is practically a table-based validation and translation of specified, fixed-set parameter values.
  *
+ * Since 4.4.0 the pattern can match the query string of the URL as well. Set
+ * {@see setUrlMatchMode UrlMatchMode} to 'Full' and write the query string of the pattern
+ * after a question mark. For example
+ *
+ * <url ServiceParameter="Posts.EditPost" pattern="post/{id}?mode=edit" parameters.id="\d+" UrlMatchMode="Full" />
+ *
+ * This rule matches <tt>http://example.com/index.php/post/123?mode=edit</tt> and no other
+ * query string, since the whole query string must match the pattern. The query string of a
+ * request is matched in the order the variables are written in the URL.
+ *
+ * Since 4.4.0 you can also constrain single GET variables with the {@see getQuery Query}
+ * attribute collection, in the same way that {@see getParameters Parameters} constrains the
+ * parameters of the pattern. The order of the GET variables in the URL does not matter, and
+ * the variables stay out of the pattern. For example
+ *
+ * <url ServiceParameter="Posts.EditPost" pattern="post/{id}" parameters.id="\d+" query.mode="edit|preview" />
+ *
+ * This rule matches <tt>http://example.com/index.php/post/123?mode=edit</tt> and
+ * <tt>http://example.com/index.php/post/123?ref=list&mode=preview</tt>. It does not match a
+ * request without a "mode" GET variable, or one whose "mode" is not "edit" or "preview".
+ * The whole value of the GET variable must match the constraint.
+ *
+ * The two work together. A pattern in the 'Full' match mode with {@see getQuery Query}
+ * constraints matches a request only when both are satisfied. Since the pattern of a 'Full'
+ * match already pins the whole query string, the constraints only narrow the match further.
+ *
  * Since 4.3.3 you can also use HTTP verb matching. The Verbs property restricts a pattern to match only
  * specific HTTP methods (GET, POST, PUT, DELETE, etc.). Use a comma-separated list for multiple verbs.
  * Use the prefix '~' or '!' to negate a verb. For example:
@@ -174,6 +201,18 @@ class TUrlMappingPattern extends \Prado\TComponent
 	private $_verbs;
 
 	/**
+	 * @var TUrlMappingPatternUrlMatchMode the part of the URL matched by the pattern.
+	 * @since 4.4.0
+	 */
+	private $_urlMatchMode = TUrlMappingPatternUrlMatchMode::PathInfo;
+
+	/**
+	 * @var ?TAttributeCollection query string parameter regular expressions.
+	 * @since 4.4.0
+	 */
+	private $_query;
+
+	/**
 	 * Constructor.
 	 * @param TUrlManager $manager the URL manager instance
 	 */
@@ -207,11 +246,32 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * Substitute the parameter key value pairs as named groupings
-	 * in the regular expression matching pattern.
-	 * @return string regular expression pattern with parameter subsitution
+	 * Splits the {@see getPattern Pattern} into its path part and its query string part.
+	 * The query string part is the text after the first question mark, and exists only
+	 * in the {@see \Prado\Web\TUrlMappingPatternUrlMatchMode::Full Full} match mode.
+	 * @return array the path part and the query string part, the latter null when absent
+	 * @since 4.4.0
 	 */
-	protected function getParameterizedPattern()
+	protected function getPatternParts(): array
+	{
+		$pattern = (string) $this->getPattern();
+		if ($this->_urlMatchMode !== TUrlMappingPatternUrlMatchMode::Full) {
+			return [$pattern, null];
+		}
+		if (($pos = strpos($pattern, '?')) === false) {
+			return [$pattern, null];
+		}
+		return [substr($pattern, 0, $pos), substr($pattern, $pos + 1)];
+	}
+
+	/**
+	 * Substitutes the parameter key value pairs as named groupings in the given
+	 * part of the matching pattern, and escapes the slashes of the regular expression.
+	 * @param string $pattern part of the pattern to substitute
+	 * @return string regular expression fragment with parameter substitution
+	 * @since 4.4.0
+	 */
+	protected function substituteParameters(string $pattern): string
 	{
 		$params = [];
 		$values = [];
@@ -228,12 +288,26 @@ class TUrlMappingPattern extends \Prado\TComponent
 		}
 		$params[] = '/';
 		$values[] = '\\/';
-		$regexp = str_replace($params, $values, trim($this->getPattern(), '/') . '/');
-		if ($this->_urlFormat === THttpRequestUrlFormat::Get) {
-			$regexp = '/^' . $regexp . '$/u';
-		} else {
-			$regexp = '/^' . $regexp . '(?P<urlparams>.*)$/u';
+		return str_replace($params, $values, $pattern);
+	}
+
+	/**
+	 * Substitute the parameter key value pairs as named groupings
+	 * in the regular expression matching pattern.
+	 * @return string regular expression pattern with parameter subsitution
+	 */
+	protected function getParameterizedPattern()
+	{
+		[$path, $query] = $this->getPatternParts();
+		$regexp = $this->substituteParameters(trim($path, '/') . '/');
+		if ($this->_urlFormat !== THttpRequestUrlFormat::Get) {
+			// in the Full match mode the extra url parameters stop at the query string
+			$regexp .= '(?P<urlparams>' . ($this->_urlMatchMode === TUrlMappingPatternUrlMatchMode::Full ? '[^?]*' : '.*') . ')';
 		}
+		if ($query !== null) {
+			$regexp .= '\\?' . $this->substituteParameters($query);
+		}
+		$regexp = '/^' . $regexp . '$/u';
 
 		if (!$this->getCaseSensitive()) {
 			$regexp .= 'i';
@@ -355,6 +429,95 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
+	 * The query string constraints are regular expressions, keyed by GET variable name,
+	 * that the request GET variables must match for the pattern to match.
+	 * @return TAttributeCollection query string parameter key value pairs.
+	 * @since 4.4.0
+	 */
+	public function getQuery()
+	{
+		if (!$this->_query) {
+			$this->_query = new TAttributeCollection();
+			$this->_query->setCaseSensitive(true);
+		}
+		return $this->_query;
+	}
+
+	/**
+	 * @param TAttributeCollection $value new query string parameter key value pairs.
+	 * @since 4.4.0
+	 */
+	public function setQuery($value)
+	{
+		$this->_query = $value;
+	}
+
+	/**
+	 * Returns the part of the URL that the pattern matches against. In the
+	 * {@see \Prado\Web\TUrlMappingPatternUrlMatchMode::Full Full} match mode the query
+	 * string is appended to the path, separated by a question mark.
+	 * @param THttpRequest $request the request module
+	 * @param string $path the path info of the request, normalized for the matching in use
+	 * @return string the URL part to match the pattern against
+	 * @since 4.4.0
+	 */
+	protected function getMatchSubject($request, string $path): string
+	{
+		if ($this->_urlMatchMode !== TUrlMappingPatternUrlMatchMode::Full) {
+			return $path;
+		}
+		$query = (string) $request->getQueryString();
+		return ($query === '') ? $path : $path . '?' . $query;
+	}
+
+	/**
+	 * Returns the GET variables that the {@see getQuery Query} constraints apply to.
+	 * @return array the GET variables of the request
+	 * @since 4.4.0
+	 */
+	protected function getQueryItems(): array
+	{
+		return $_GET;
+	}
+
+	/**
+	 * Builds the regular expression of a {@see getQuery Query} constraint. The whole
+	 * value of the GET variable must match the constraint.
+	 * @param string $constraint the regular expression of the constraint
+	 * @return string the anchored regular expression
+	 * @since 4.4.0
+	 */
+	protected function getConstraintRegularExpression(string $constraint): string
+	{
+		$regexp = '/^(?:' . str_replace('/', '\\/', $constraint) . ')$/u';
+		if (!$this->getCaseSensitive()) {
+			$regexp .= 'i';
+		}
+		return $regexp;
+	}
+
+	/**
+	 * Matches the given GET variables against the {@see getQuery Query} constraints.
+	 * A missing variable, a variable that is not a scalar, and a variable whose value
+	 * does not match its constraint each fail the match.
+	 * @param array|\ArrayAccess $items the GET variables to match
+	 * @return bool whether every query constraint is satisfied
+	 * @since 4.4.0
+	 */
+	protected function matchesQuery($items): bool
+	{
+		foreach ($this->getQuery()->toArray() as $key => $value) {
+			if (!isset($items[$key]) || !is_scalar($items[$key])) {
+				return false;
+			}
+			if (!preg_match($this->getConstraintRegularExpression($value), (string) $items[$key])) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
 	 * Uses URL pattern (or full regular expression if available) to
 	 * match the given url path.
 	 * @param THttpRequest $request the request module
@@ -370,11 +533,15 @@ class TUrlMappingPattern extends \Prado\TComponent
 			}
 		}
 
+		if ($this->_query && !$this->matchesQuery($this->getQueryItems())) {
+			return [];
+		}
+
 		$matches = [];
 		if (($pattern = $this->getRegularExpression()) !== '') {
-			preg_match($pattern, $request->getPathInfo(), $matches);
+			preg_match($pattern, $this->getMatchSubject($request, $request->getPathInfo()), $matches);
 		} else {
-			preg_match($this->getParameterizedPattern(), trim($request->getPathInfo(), '/') . '/', $matches);
+			preg_match($this->getParameterizedPattern(), $this->getMatchSubject($request, trim($request->getPathInfo(), '/') . '/'), $matches);
 		}
 
 		if ($this->getIsWildCardPattern() && isset($matches[$this->_serviceID])) {
@@ -528,6 +695,28 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
+	 * @return TUrlMappingPatternUrlMatchMode the part of the URL matched by the pattern.
+	 *   Defaults to {@see \Prado\Web\TUrlMappingPatternUrlMatchMode::PathInfo PathInfo}.
+	 * @since 4.4.0
+	 */
+	public function getUrlMatchMode()
+	{
+		return $this->_urlMatchMode;
+	}
+
+	/**
+	 * Sets the part of the URL matched by the pattern. In the
+	 * {@see \Prado\Web\TUrlMappingPatternUrlMatchMode::Full Full} mode the text of the
+	 * pattern after the first question mark matches the query string of the request.
+	 * @param TUrlMappingPatternUrlMatchMode $value the part of the URL matched by the pattern.
+	 * @since 4.4.0
+	 */
+	public function setUrlMatchMode($value)
+	{
+		$this->_urlMatchMode = TPropertyValue::ensureEnum($value, TUrlMappingPatternUrlMatchMode::class);
+	}
+
+	/**
 	 * @param array $getItems list of GET items to be put in the constructed URL
 	 * @return bool whether this pattern IS the one for constructing the URL with the specified GET items.
 	 * @since 3.1.1
@@ -535,6 +724,9 @@ class TUrlMappingPattern extends \Prado\TComponent
 	public function supportCustomUrl($getItems)
 	{
 		if (!$this->_customUrl || $this->getPattern() === null) {
+			return false;
+		}
+		if ($this->_query && !$this->matchesQuery($getItems)) {
 			return false;
 		}
 		if ($this->_parameters) {
@@ -620,7 +812,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 					}
 				}
 			}
-			$url = $url . '?' . substr($url2, strlen($amp));
+			$url = $url . (strpos($url, '?') === false ? '?' : $amp) . substr($url2, strlen($amp));
 		}
 		return $this -> applySecureConnectionPrefix($url);
 	}
