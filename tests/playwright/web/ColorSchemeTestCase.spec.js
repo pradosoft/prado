@@ -58,13 +58,14 @@ const LIGHT = {
 	'div.Keyboard div.Key1@color': 'rgb(85, 108, 95)',
 };
 
-// The dark half of each light-dark() pair.
+// The dark half of each light-dark() pair. These mirror the shipped stylesheets;
+// changing a palette value in the CSS means changing it here in the same commit.
 const DARK = {
 	'.tab-normal@background-color': 'rgb(30, 41, 59)',
 	'.tab-normal@color': 'rgb(154, 166, 178)',
 	'div.accordion-header@background-color': 'rgb(61, 86, 117)',
 	'div.accordion-header-active@background-color': 'rgb(43, 58, 92)',
-	'div.accordion-header-active@color': 'rgb(255, 179, 173)',
+	'div.accordion-header-active@color': 'rgb(238, 0, 0)',
 	'.Slider@background-color': 'rgb(46, 46, 46)',
 	'.Track@background-color': 'rgb(42, 77, 94)',
 	'div.Keyboard@background-color': 'rgb(42, 42, 42)',
