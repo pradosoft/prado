@@ -19,7 +19,7 @@
 			font-family: -apple-system, "Segoe UI", Arial, sans-serif;
 		}
 		/* TTabPanel is width:100%, so the wrapper has to set the width */
-		#shot-tabpanel { width: 420px; }
+		#shot-tabpanel { width: 540px; }
 		/* TKeyboard is absolutely positioned and z-indexed over the page. For a
 		   still image put it back in flow so nothing overlaps it and the wrapper
 		   sizes to it. */
@@ -41,9 +41,10 @@
 	<div id="shot-tabpanel" class="shot">
 		<com:TTabPanel ID="tabs">
 			<com:TTabView ID="t1" Caption="Active">Active view content.</com:TTabView>
-			<com:TTabView ID="t2" Caption="Hovered">Second view.</com:TTabView>
-			<com:TTabView ID="t3" Caption="Focused">Third view.</com:TTabView>
-			<com:TTabView ID="t4" Caption="Normal">Fourth view.</com:TTabView>
+			<com:TTabView ID="t2" Caption="Normal">Second view.</com:TTabView>
+			<com:TTabView ID="t3" Caption="Hovered">Third view.</com:TTabView>
+			<com:TTabView ID="t4" Caption="Focused">Fourth view.</com:TTabView>
+			<com:TTabView ID="t5" Caption="Mouse down">Fifth view.</com:TTabView>
 		</com:TTabPanel>
 	</div>
 

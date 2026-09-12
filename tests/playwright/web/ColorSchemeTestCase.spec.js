@@ -37,6 +37,7 @@ const WCAG_NONTEXT = 3.0;
 // Structural, not a palette: these are the declarations under test.
 const ADAPTING = [
 	['.tab-normal', 'background-color'],
+	['.tab-normal', 'background-image'],
 	['.tab-normal', 'color'],
 	['.tab-active', 'background-color'],
 	['.tab-active', 'color'],

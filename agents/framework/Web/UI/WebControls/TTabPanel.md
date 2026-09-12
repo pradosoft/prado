@@ -92,6 +92,8 @@ Override default styles by setting `CssUrl` to a custom stylesheet. Default CSS 
 
 ## Color Scheme
 
-The inactive tab background and text adapt through `light-dark()`, as does the accent carrying the tab borders, the view border, the hovered tab text and the focus outline. The active tab uses `Canvas` and `CanvasText`, so it tracks the page into either scheme. The shipped stylesheet declares no `color-scheme` of its own, so an
+The inactive tab background and text adapt through `light-dark()`, as does the accent carrying the tab borders, the view border, the hovered tab text and the focus outline. The active tab uses `Canvas` and `CanvasText`, so it tracks the page into either scheme.
+
+Inactive tabs also carry a sheen for depth, a gradient that runs lighter at the top in light and darker at the top in dark. Each of its stops is a `light-dark()` pair, since one translucent overlay would run the same way in both schemes. Hover strengthens the near stop and backs the far one off; `:active` inverts the gradient and drops the tab a pixel. The selected tab stays flat, so it keeps reading as the one in front. The shipped stylesheet declares no `color-scheme` of its own, so an
 application that declares none keeps the light rendering it already has. See
 [assets/INDEX.md](./assets/INDEX.md) for the contract.

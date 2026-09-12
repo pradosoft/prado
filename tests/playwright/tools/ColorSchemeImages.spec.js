@@ -130,9 +130,10 @@ test.describe('color-scheme documentation images', () => {
 		await h.assertSourceContains('Color Scheme Gallery');
 		const forcePseudo = await pseudoForcer(context, page);
 
-		// Tabs: second tab hovered, third tab showing the focus outline.
-		await forcePseudo('#shot-tabpanel .tab-normal', 0, ['hover']);
-		await forcePseudo('#shot-tabpanel .tab-normal', 1, ['focus', 'focus-visible']);
+		// Tabs read left to right as active, normal, hovered, focused, mouse down.
+		await forcePseudo('#shot-tabpanel .tab-normal', 1, ['hover']);
+		await forcePseudo('#shot-tabpanel .tab-normal', 2, ['focus', 'focus-visible']);
+		await forcePseudo('#shot-tabpanel .tab-normal', 3, ['hover', 'active']);
 
 		// Keyboard: one key hovered, one key pressed.
 		await page.evaluate(() => {
@@ -145,14 +146,28 @@ test.describe('color-scheme documentation images', () => {
 		// check each one changed something before anything is captured.
 		const tabState = await page.evaluate(() => {
 			const tabs = [...document.querySelectorAll('#shot-tabpanel .tab-normal')];
+			const sheen = (t) => getComputedStyle(t).backgroundImage;
 			return {
-				hovered: getComputedStyle(tabs[0]).color,
-				plain: getComputedStyle(tabs[2]).color,
-				focusOutline: getComputedStyle(tabs[1]).outlineWidth,
+				plain: getComputedStyle(tabs[0]).color,
+				hovered: getComputedStyle(tabs[1]).color,
+				focusOutline: getComputedStyle(tabs[2]).outlineWidth,
+				plainSheen: sheen(tabs[0]),
+				hoverSheen: sheen(tabs[1]),
+				focusSheen: sheen(tabs[2]),
+				pressedSheen: sheen(tabs[3]),
 			};
 		});
 		expect(tabState.hovered, 'forced :hover did not recolor the tab').not.toBe(tabState.plain);
 		expect(tabState.focusOutline, 'forced :focus-visible drew no outline').not.toBe('0px');
+		expect(tabState.hoverSheen, 'forced :hover did not shift the sheen').not.toBe(
+			tabState.plainSheen,
+		);
+		expect(tabState.focusSheen, 'forced :focus-visible did not shift the sheen').not.toBe(
+			tabState.plainSheen,
+		);
+		expect(tabState.pressedSheen, 'forced :active did not shift the sheen').not.toBe(
+			tabState.hoverSheen,
+		);
 
 		const keyState = await page.evaluate(() => {
 			const keys = document.querySelectorAll('div.Keyboard div.Key div.Key1');
@@ -167,7 +182,7 @@ test.describe('color-scheme documentation images', () => {
 		expect(keyState.pressed, 'pressed key looks like a plain key').not.toBe(keyState.plainBg);
 
 		await captureGroup(page, composer, [
-			['tabpanel', 'TTabPanel — active, hovered, focused and normal tabs', '#shot-tabpanel'],
+			['tabpanel', 'TTabPanel — active, normal, hovered, focused and pressed tabs', '#shot-tabpanel'],
 			['accordion', 'TAccordion — active and normal headers', '#shot-accordion'],
 			['slider', 'TSlider — horizontal and vertical, track and progress', '#shot-slider'],
 			['keyboard', 'TKeyboard — normal, hovered and pressed keys', '#shot-keyboard'],
