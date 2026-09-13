@@ -330,4 +330,132 @@ class TUrlMappingTest extends PHPUnit\Framework\TestCase
 			$this->unregisterAppModule('url_map_test_request_c');
 		}
 	}
+
+	public function testParseUrlFullMatchModeWithQueryString()
+	{
+		$confstr = '<config><url ServiceParameter="Posts.EditPost" pattern="post/{id}?mode=edit" parameters.id="\d+" UrlMatchMode="Full"/></config>';
+		$config = new TXmlDocument('1.0', 'utf8');
+		$config->loadFromString($confstr);
+
+		$module = new TUrlMapping();
+		$module->init($config);
+
+		$request = new THttpRequest();
+		$_SERVER['PATH_INFO'] = '/post/123';
+		$_SERVER['QUERY_STRING'] = 'mode=edit';
+		$request->setUrlFormat(THttpRequestUrlFormat::Path);
+		$request->init(null);
+
+		$result = $module->parseUrl();
+		$this->assertEquals(['id' => '123', 'page' => 'Posts.EditPost'], $result);
+	}
+
+	public function testParseUrlFullMatchModeQueryStringMismatch()
+	{
+		$confstr = '<config><url ServiceParameter="Posts.EditPost" pattern="post/{id}?mode=edit" parameters.id="\d+" UrlMatchMode="Full"/></config>';
+		$config = new TXmlDocument('1.0', 'utf8');
+		$config->loadFromString($confstr);
+
+		$module = new TUrlMapping();
+		$module->init($config);
+
+		$request = new THttpRequest();
+		$_SERVER['PATH_INFO'] = '/post/123';
+		$_SERVER['QUERY_STRING'] = 'mode=view';
+		$request->setUrlFormat(THttpRequestUrlFormat::Path);
+		$request->init(null);
+
+		$this->assertNull($module->getMatchingPattern());
+		$module->parseUrl();
+		$this->assertNull($module->getMatchingPattern());
+	}
+
+	public function testParseUrlQueryConstraintSelectsPattern()
+	{
+		$confstr = '<config>' .
+			'<url ServiceParameter="Posts.EditPost" pattern="post/{id}" parameters.id="\d+" query.mode="edit"/>' .
+			'<url ServiceParameter="Posts.ViewPost" pattern="post/{id}" parameters.id="\d+"/>' .
+			'</config>';
+		$config = new TXmlDocument('1.0', 'utf8');
+		$config->loadFromString($confstr);
+
+		$module = new TUrlMapping();
+		$module->init($config);
+
+		$request = new THttpRequest();
+		$_SERVER['PATH_INFO'] = '/post/123';
+		$_SERVER['QUERY_STRING'] = 'ref=list&mode=edit';
+		$_GET = ['ref' => 'list', 'mode' => 'edit'];
+		$request->setUrlFormat(THttpRequestUrlFormat::Path);
+		$request->init(null);
+
+		$result = $module->parseUrl();
+		$this->assertEquals(['id' => '123', 'page' => 'Posts.EditPost'], $result);
+	}
+
+	public function testParseUrlQueryConstraintFallsThroughToNextPattern()
+	{
+		$confstr = '<config>' .
+			'<url ServiceParameter="Posts.EditPost" pattern="post/{id}" parameters.id="\d+" query.mode="edit"/>' .
+			'<url ServiceParameter="Posts.ViewPost" pattern="post/{id}" parameters.id="\d+"/>' .
+			'</config>';
+		$config = new TXmlDocument('1.0', 'utf8');
+		$config->loadFromString($confstr);
+
+		$module = new TUrlMapping();
+		$module->init($config);
+
+		$request = new THttpRequest();
+		$_SERVER['PATH_INFO'] = '/post/123';
+		$_SERVER['QUERY_STRING'] = '';
+		$_GET = [];
+		$request->setUrlFormat(THttpRequestUrlFormat::Path);
+		$request->init(null);
+
+		$result = $module->parseUrl();
+		$this->assertEquals(['id' => '123', 'page' => 'Posts.ViewPost'], $result);
+	}
+
+	public function testConstructUrlWithQueryStringInPattern()
+	{
+		$confstr = '<config><url ServiceParameter="Posts.EditPost" pattern="post/{id}?mode=edit" parameters.id="\d+" UrlMatchMode="Full"/></config>';
+		$config = new TXmlDocument('1.0', 'utf8');
+		$config->loadFromString($confstr);
+
+		$module = new TUrlMapping();
+		$module->setEnableCustomUrl(true);
+		$module->init($config);
+
+		$request = new THttpRequest();
+		$request->setUrlFormat(THttpRequestUrlFormat::Path);
+		$request->init(null);
+
+		$url = $module->constructUrl('page', 'Posts.EditPost', ['id' => '123'], false, true);
+		$this->assertEquals('/index.php/post/123?mode=edit', $url);
+
+		$url = $module->constructUrl('page', 'Posts.EditPost', ['id' => '123', 'ref' => 'list'], false, true);
+		$this->assertEquals('/index.php/post/123?mode=edit&ref=list', $url);
+	}
+
+	public function testConstructUrlWithQueryConstraint()
+	{
+		$confstr = '<config><url ServiceParameter="Posts.EditPost" pattern="post/{id}" parameters.id="\d+" query.mode="edit"/></config>';
+		$config = new TXmlDocument('1.0', 'utf8');
+		$config->loadFromString($confstr);
+
+		$module = new TUrlMapping();
+		$module->setEnableCustomUrl(true);
+		$module->init($config);
+
+		$request = new THttpRequest();
+		$request->setUrlFormat(THttpRequestUrlFormat::Path);
+		$request->init(null);
+
+		$url = $module->constructUrl('page', 'Posts.EditPost', ['id' => '123', 'mode' => 'edit'], false, true);
+		$this->assertEquals('/index.php/post/123?mode=edit', $url);
+
+		// the pattern is skipped, the URL falls back to the default format of the request
+		$url = $module->constructUrl('page', 'Posts.EditPost', ['id' => '123', 'mode' => 'view'], false, true);
+		$this->assertEquals('/index.php/page,Posts.EditPost/id,123/mode,view', $url);
+	}
 }

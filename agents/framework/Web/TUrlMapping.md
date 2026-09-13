@@ -12,6 +12,7 @@ TUrlMapping is a URL manager that allows PRADO to construct and recognize URLs b
 
 ## Key Features
 - Pattern-based URL matching for request parsing
+- Query string matching, by pattern or by GET variable constraint
 - Custom URL construction using defined patterns
 - External configuration file support (XML or PHP)
 - Wildcard pattern support for flexible matching
@@ -88,11 +89,20 @@ Can load patterns from external XML or PHP files using `setConfigFile()` method.
 - `UrlPrefix` (string): Prefix to be added to constructed URLs
 
 ## Pattern Matching Behavior
-1. **Exact Match**: Pattern matches the entire PATH_INFO exactly
+1. **Exact Match**: Pattern matches the entire PATH_INFO exactly, and the query string as well when `UrlMatchMode="Full"`
 2. **Parameter Extraction**: Extracts named parameters from match groups
 3. **Wildcard Support**: Supports `*` wildcard for dynamic parameters  
 4. **Order Priority**: First matching pattern is used (patterns defined first take precedence)
 5. **Fallback**: Falls back to parent [TUrlManager](./TUrlManager.md) implementation when no pattern matches
+
+A pattern is skipped when its `Verbs` exclude the HTTP method of the request, or when its
+`query` constraints are not satisfied by the GET variables. The next pattern is tried in
+both cases. See [TUrlMappingPattern](./TUrlMappingPattern.md) for the matching details.
+
+```xml
+<url ServiceParameter="Posts.EditPost" pattern="post/{id}?mode=edit" parameters.id="\d+" UrlMatchMode="Full" />
+<url ServiceParameter="Posts.EditPost" pattern="post/{id}" parameters.id="\d+" query.mode="edit|preview" />
+```
 
 ## Wildcard Patterns
 - Support `*` in service parameter to match multiple services

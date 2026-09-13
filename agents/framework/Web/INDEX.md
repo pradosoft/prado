@@ -28,7 +28,7 @@ HTTP layer, URL routing, asset management, session handling, and all web UI comp
 
 - **[TUrlManager](TUrlManager.md)** — Base URL manager. Constructs URLs in `Get`, `Path`, and `HiddenPath` formats. Parses incoming URLs into GET variables.
 
-- **[TUrlMapping](TUrlMapping.md)** — Advanced SEF (Search Engine Friendly) URL routing. Defines regex-based patterns (`TUrlMappingPattern`) with named parameter extraction and optional secure-connection enforcement.
+- **[TUrlMapping](TUrlMapping.md)** — Advanced SEF (Search Engine Friendly) URL routing. Defines regex-based patterns (`TUrlMappingPattern`) with named parameter extraction and optional secure-connection enforcement. Patterns match the PATH_INFO, and, through `UrlMatchMode` or `query` constraints, the query string.
 
 - **[TUri](TUri.md)** — URI parsing and construction (scheme, host, port, path, query string).
 

@@ -5,6 +5,7 @@ use Prado\Web\THttpRequestUrlFormat;
 use Prado\Web\TUrlManager;
 use Prado\Web\TUrlMappingPattern;
 use Prado\Web\TUrlMappingPatternSecureConnection;
+use Prado\Web\TUrlMappingPatternUrlMatchMode;
 use Prado\Collections\TAttributeCollection;
 
 /**
@@ -50,13 +51,20 @@ class TUrlMappingPatternTest extends PHPUnit\Framework\TestCase
 		$_SERVER['REQUEST_METHOD'] = 'GET';
 	}
 
-	private function createRequest($pathInfo = '', $method = 'GET')
+	private function createRequest($pathInfo = '', $method = 'GET', $queryString = '')
 	{
 		$_SERVER['PATH_INFO'] = $pathInfo;
 		$_SERVER['REQUEST_METHOD'] = $method;
+		$_SERVER['QUERY_STRING'] = $queryString;
+		$_GET = [];
+		if ($queryString !== '') {
+			parse_str($queryString, $_GET);
+		}
 		$request = new THttpRequest();
 		$request->setUrlFormat(THttpRequestUrlFormat::Path);
 		$request->init(null);
+		// init() forces the request method to GET when the script runs in command line
+		$_SERVER['REQUEST_METHOD'] = $method;
 		return $request;
 	}
 
@@ -471,5 +479,388 @@ class TUrlMappingPatternTest extends PHPUnit\Framework\TestCase
 		$pattern->setEnableCustomUrl(true);
 		
 		$this->assertFalse($pattern->supportCustomUrl(['type' => 'other']));
+	}
+
+	// ===== UrlMatchMode Tests =====
+
+	public function testGetSetUrlMatchMode()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$this->assertEquals(TUrlMappingPatternUrlMatchMode::PathInfo, $pattern->getUrlMatchMode());
+		$pattern->setUrlMatchMode(TUrlMappingPatternUrlMatchMode::Full);
+		$this->assertEquals(TUrlMappingPatternUrlMatchMode::Full, $pattern->getUrlMatchMode());
+	}
+
+	public function testSetUrlMatchModeInvalid()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$this->expectException(\Prado\Exceptions\TInvalidDataValueException::class);
+		$pattern->setUrlMatchMode('NotAMode');
+	}
+
+	public function testGetPatternMatchesPathInfoModeIgnoresQueryString()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$pattern->setServiceParameter('Test.Page');
+		$pattern->setPattern('test');
+
+		$request = $this->createRequest('/test', 'GET', 'mode=edit');
+		$result = $pattern->getPatternMatches($request);
+
+		$this->assertNotEquals([], $result);
+	}
+
+	public function testGetPatternMatchesFullModeLiteralQuery()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$pattern->setServiceParameter('Test.Page');
+		$pattern->setPattern('post/{id}?mode=edit');
+		$pattern->getParameters()->add('id', '\d+');
+		$pattern->setUrlMatchMode(TUrlMappingPatternUrlMatchMode::Full);
+
+		$request = $this->createRequest('/post/123', 'GET', 'mode=edit');
+		$result = $pattern->getPatternMatches($request);
+
+		$this->assertEquals('123', $result['id']);
+	}
+
+	public function testGetPatternMatchesFullModeQueryMismatch()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$pattern->setServiceParameter('Test.Page');
+		$pattern->setPattern('post/{id}?mode=edit');
+		$pattern->getParameters()->add('id', '\d+');
+		$pattern->setUrlMatchMode(TUrlMappingPatternUrlMatchMode::Full);
+
+		$request = $this->createRequest('/post/123', 'GET', 'mode=view');
+		$result = $pattern->getPatternMatches($request);
+
+		$this->assertEquals([], $result);
+	}
+
+	public function testGetPatternMatchesFullModeQueryParameter()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$pattern->setServiceParameter('Test.Page');
+		$pattern->setPattern('post/{id}?mode={mode}');
+		$pattern->getParameters()->add('id', '\d+');
+		$pattern->getParameters()->add('mode', 'edit|view');
+		$pattern->setUrlMatchMode(TUrlMappingPatternUrlMatchMode::Full);
+
+		$request = $this->createRequest('/post/123', 'GET', 'mode=view');
+		$result = $pattern->getPatternMatches($request);
+
+		$this->assertEquals('123', $result['id']);
+		$this->assertEquals('view', $result['mode']);
+	}
+
+	public function testGetPatternMatchesFullModeWithoutQueryString()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$pattern->setServiceParameter('Test.Page');
+		$pattern->setPattern('test');
+		$pattern->setUrlMatchMode(TUrlMappingPatternUrlMatchMode::Full);
+
+		$request = $this->createRequest('/test');
+		$result = $pattern->getPatternMatches($request);
+
+		$this->assertNotEquals([], $result);
+	}
+
+	public function testGetPatternMatchesFullModeRejectsUnexpectedQueryString()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$pattern->setServiceParameter('Test.Page');
+		$pattern->setPattern('test');
+		$pattern->setUrlMatchMode(TUrlMappingPatternUrlMatchMode::Full);
+
+		$request = $this->createRequest('/test', 'GET', 'mode=edit');
+		$result = $pattern->getPatternMatches($request);
+
+		$this->assertEquals([], $result);
+	}
+
+	public function testGetPatternMatchesFullModeWithPathUrlFormat()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$pattern->setServiceParameter('Test.Page');
+		$pattern->setPattern('test?mode=edit');
+		$pattern->setUrlFormat(THttpRequestUrlFormat::Path);
+		$pattern->setUrlMatchMode(TUrlMappingPatternUrlMatchMode::Full);
+
+		$request = $this->createRequest('/test/foo/bar', 'GET', 'mode=edit');
+		$result = $pattern->getPatternMatches($request);
+
+		$this->assertEquals('bar', $result['foo']);
+	}
+
+	public function testGetPatternMatchesFullModeRegularExpression()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$pattern->setServiceParameter('Test.Page');
+		$pattern->setPattern('post/{id}');
+		$pattern->setRegularExpression('/^\/post\/(?P<id>\d+)\?mode=edit$/u');
+		$pattern->setUrlMatchMode(TUrlMappingPatternUrlMatchMode::Full);
+
+		$request = $this->createRequest('/post/123', 'GET', 'mode=edit');
+		$result = $pattern->getPatternMatches($request);
+
+		$this->assertEquals('123', $result['id']);
+	}
+
+	public function testGetPatternMatchesFullModeCaseInsensitive()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$pattern->setServiceParameter('Test.Page');
+		$pattern->setPattern('post?mode=edit');
+		$pattern->setCaseSensitive(false);
+		$pattern->setUrlMatchMode(TUrlMappingPatternUrlMatchMode::Full);
+
+		$request = $this->createRequest('/Post', 'GET', 'mode=EDIT');
+		$result = $pattern->getPatternMatches($request);
+
+		$this->assertNotEquals([], $result);
+	}
+
+	// ===== Query Constraint Tests =====
+
+	public function testGetSetQuery()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$this->assertInstanceOf(TAttributeCollection::class, $pattern->getQuery());
+		$this->assertTrue($pattern->getQuery()->getCaseSensitive());
+
+		$collection = new TAttributeCollection();
+		$collection->add('mode', 'edit');
+		$pattern->setQuery($collection);
+		$this->assertSame($collection, $pattern->getQuery());
+	}
+
+	public function testGetPatternMatchesQueryConstraint()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$pattern->setServiceParameter('Test.Page');
+		$pattern->setPattern('post/{id}');
+		$pattern->getParameters()->add('id', '\d+');
+		$pattern->getQuery()->add('mode', 'edit|preview');
+
+		$request = $this->createRequest('/post/123', 'GET', 'mode=edit');
+		$result = $pattern->getPatternMatches($request);
+
+		$this->assertEquals('123', $result['id']);
+	}
+
+	public function testGetPatternMatchesQueryConstraintOrderIndependent()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$pattern->setServiceParameter('Test.Page');
+		$pattern->setPattern('post/{id}');
+		$pattern->getParameters()->add('id', '\d+');
+		$pattern->getQuery()->add('mode', 'edit|preview');
+
+		$request = $this->createRequest('/post/123', 'GET', 'ref=list&mode=preview');
+		$result = $pattern->getPatternMatches($request);
+
+		$this->assertEquals('123', $result['id']);
+	}
+
+	public function testGetPatternMatchesQueryConstraintMissingVariable()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$pattern->setServiceParameter('Test.Page');
+		$pattern->setPattern('post/{id}');
+		$pattern->getParameters()->add('id', '\d+');
+		$pattern->getQuery()->add('mode', 'edit|preview');
+
+		$request = $this->createRequest('/post/123');
+		$result = $pattern->getPatternMatches($request);
+
+		$this->assertEquals([], $result);
+	}
+
+	public function testGetPatternMatchesQueryConstraintValueMismatch()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$pattern->setServiceParameter('Test.Page');
+		$pattern->setPattern('post/{id}');
+		$pattern->getParameters()->add('id', '\d+');
+		$pattern->getQuery()->add('mode', 'edit|preview');
+
+		$request = $this->createRequest('/post/123', 'GET', 'mode=delete');
+		$result = $pattern->getPatternMatches($request);
+
+		$this->assertEquals([], $result);
+	}
+
+	public function testGetPatternMatchesQueryConstraintMatchesWholeValue()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$pattern->setServiceParameter('Test.Page');
+		$pattern->setPattern('post/{id}');
+		$pattern->getParameters()->add('id', '\d+');
+		$pattern->getQuery()->add('mode', 'edit');
+
+		$request = $this->createRequest('/post/123', 'GET', 'mode=editor');
+		$result = $pattern->getPatternMatches($request);
+
+		$this->assertEquals([], $result);
+	}
+
+	public function testGetPatternMatchesQueryConstraintArrayValue()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$pattern->setServiceParameter('Test.Page');
+		$pattern->setPattern('post/{id}');
+		$pattern->getParameters()->add('id', '\d+');
+		$pattern->getQuery()->add('mode', 'edit');
+
+		$request = $this->createRequest('/post/123', 'GET', 'mode[]=edit');
+		$result = $pattern->getPatternMatches($request);
+
+		$this->assertEquals([], $result);
+	}
+
+	public function testGetPatternMatchesQueryConstraintCaseInsensitive()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$pattern->setServiceParameter('Test.Page');
+		$pattern->setPattern('post/{id}');
+		$pattern->getParameters()->add('id', '\d+');
+		$pattern->getQuery()->add('mode', 'edit');
+		$pattern->setCaseSensitive(false);
+
+		$request = $this->createRequest('/post/123', 'GET', 'mode=EDIT');
+		$result = $pattern->getPatternMatches($request);
+
+		$this->assertEquals('123', $result['id']);
+	}
+
+	public function testSupportCustomUrlWithQueryConstraintMatch()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$pattern->setServiceParameter('Test.Page');
+		$pattern->setPattern('post/{id}');
+		$pattern->getParameters()->add('id', '\d+');
+		$pattern->getQuery()->add('mode', 'edit|preview');
+		$pattern->setEnableCustomUrl(true);
+
+		$this->assertTrue($pattern->supportCustomUrl(['id' => '123', 'mode' => 'edit']));
+	}
+
+	public function testSupportCustomUrlWithQueryConstraintMismatch()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$pattern->setServiceParameter('Test.Page');
+		$pattern->setPattern('post/{id}');
+		$pattern->getParameters()->add('id', '\d+');
+		$pattern->getQuery()->add('mode', 'edit|preview');
+		$pattern->setEnableCustomUrl(true);
+
+		$this->assertFalse($pattern->supportCustomUrl(['id' => '123', 'mode' => 'delete']));
+	}
+
+	public function testSupportCustomUrlWithQueryConstraintMissing()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$pattern->setServiceParameter('Test.Page');
+		$pattern->setPattern('post/{id}');
+		$pattern->getParameters()->add('id', '\d+');
+		$pattern->getQuery()->add('mode', 'edit|preview');
+		$pattern->setEnableCustomUrl(true);
+
+		$this->assertFalse($pattern->supportCustomUrl(['id' => '123']));
+	}
+
+	public function testGetPatternMatchesFullModeWithQueryConstraint()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$pattern->setServiceParameter('Test.Page');
+		$pattern->setPattern('post/{id}?mode={mode}');
+		$pattern->getParameters()->add('id', '\d+');
+		$pattern->getParameters()->add('mode', '\w+');
+		$pattern->getQuery()->add('mode', 'edit|preview');
+		$pattern->setUrlMatchMode(TUrlMappingPatternUrlMatchMode::Full);
+
+		$request = $this->createRequest('/post/123', 'GET', 'mode=preview');
+		$result = $pattern->getPatternMatches($request);
+
+		$this->assertEquals('123', $result['id']);
+	}
+
+	public function testGetPatternMatchesFullModeQueryConstraintNarrows()
+	{
+		// the pattern matches the query string, the constraint rejects the value
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$pattern->setServiceParameter('Test.Page');
+		$pattern->setPattern('post/{id}?mode={mode}');
+		$pattern->getParameters()->add('id', '\d+');
+		$pattern->getParameters()->add('mode', '\w+');
+		$pattern->getQuery()->add('mode', 'edit|preview');
+		$pattern->setUrlMatchMode(TUrlMappingPatternUrlMatchMode::Full);
+
+		$request = $this->createRequest('/post/123', 'GET', 'mode=delete');
+		$result = $pattern->getPatternMatches($request);
+
+		$this->assertEquals([], $result);
+	}
+
+	// ===== Verb Negation Tests =====
+
+	public function testGetPatternMatchesVerbNegationAllowsOtherVerbs()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$pattern->setServiceParameter('Test.Page');
+		$pattern->setPattern('test');
+		$pattern->setVerbs('!DELETE');
+
+		$this->assertNotEquals([], $pattern->getPatternMatches($this->createRequest('/test', 'GET')));
+		$this->assertNotEquals([], $pattern->getPatternMatches($this->createRequest('/test', 'POST')));
+		$this->assertEquals([], $pattern->getPatternMatches($this->createRequest('/test', 'DELETE')));
+	}
+
+	public function testGetPatternMatchesMultipleVerbNegations()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$pattern->setServiceParameter('Test.Page');
+		$pattern->setPattern('test');
+		$pattern->setVerbs('!PUT, ~DELETE');
+
+		$this->assertNotEquals([], $pattern->getPatternMatches($this->createRequest('/test', 'GET')));
+		$this->assertEquals([], $pattern->getPatternMatches($this->createRequest('/test', 'PUT')));
+		$this->assertEquals([], $pattern->getPatternMatches($this->createRequest('/test', 'DELETE')));
+	}
+
+	public function testGetPatternMatchesVerbInclusionAndNegation()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$pattern->setServiceParameter('Test.Page');
+		$pattern->setPattern('test');
+		$pattern->setVerbs('GET,POST,!POST');
+
+		$this->assertNotEquals([], $pattern->getPatternMatches($this->createRequest('/test', 'GET')));
+		$this->assertEquals([], $pattern->getPatternMatches($this->createRequest('/test', 'POST')));
+		$this->assertEquals([], $pattern->getPatternMatches($this->createRequest('/test', 'PUT')));
+	}
+
+	public function testGetPatternMatchesVerbIgnoresCase()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$pattern->setServiceParameter('Test.Page');
+		$pattern->setPattern('test');
+		$pattern->setVerbs('get');
+
+		$this->assertNotEquals([], $pattern->getPatternMatches($this->createRequest('/test', 'GET')));
+		$this->assertEquals([], $pattern->getPatternMatches($this->createRequest('/test', 'POST')));
+	}
+
+	public function testGetPatternMatchesVerbNegationIgnoresCase()
+	{
+		$pattern = new TUrlMappingPattern($this->urlManager);
+		$pattern->setServiceParameter('Test.Page');
+		$pattern->setPattern('test');
+		$pattern->setVerbs('~delete');
+
+		$this->assertNotEquals([], $pattern->getPatternMatches($this->createRequest('/test', 'GET')));
+		$this->assertEquals([], $pattern->getPatternMatches($this->createRequest('/test', 'DELETE')));
 	}
 }

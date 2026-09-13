@@ -544,6 +544,7 @@ return [
 'TUrlMapping' => 'Prado\Web\TUrlMapping',
 'TUrlMappingPattern' => 'Prado\Web\TUrlMappingPattern',
 'TUrlMappingPatternSecureConnection' => 'Prado\Web\TUrlMappingPatternSecureConnection',
+'TUrlMappingPatternUrlMatchMode' => 'Prado\Web\TUrlMappingPatternUrlMatchMode',
 'IActiveControl' => 'Prado\Web\UI\ActiveControls\IActiveControl',
 'ICallbackEventHandler' => 'Prado\Web\UI\ActiveControls\ICallbackEventHandler',
 'TActiveBoundColumn' => 'Prado\Web\UI\ActiveControls\TActiveBoundColumn',

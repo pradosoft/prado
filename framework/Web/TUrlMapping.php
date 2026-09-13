@@ -79,8 +79,11 @@ use Prado\Xml\TXmlElement;
  * the URL will be used. Cascaded mapping can be achieved by placing the URL mappings
  * in particular order. For example, placing the most specific mappings first.
  *
- * Only the PATH_INFO part of the URL is used to match the available patterns. The matching
+ * The PATH_INFO part of the URL is used to match the available patterns. The matching
  * is strict in the sense that the whole pattern must match the whole PATH_INFO of the URL.
+ * A pattern can also match the query string of the URL, see
+ * {@see \Prado\Web\TUrlMappingPattern::setUrlMatchMode UrlMatchMode} and
+ * {@see \Prado\Web\TUrlMappingPattern::getQuery Query}.
  *
  * From PRADO v3.1.1, TUrlMapping also provides support for constructing URLs according to
  * the specified pattern. You may enable this functionality by setting {@see setEnableCustomUrl EnableCustomUrl} to true.
@@ -91,6 +94,15 @@ use Prado\Xml\TXmlElement;
  * to constructUrl() and every parameter in the {@see getPattern Pattern} is found
  * in the GET variables.
  *
+ * Since PRADO 4.4.0, URL patterns can match the query string of the URL. A pattern with
+ * {@see \Prado\Web\TUrlMappingPattern::setUrlMatchMode UrlMatchMode} set to 'Full' matches
+ * the PATH_INFO and the query string, separated by a question mark. A pattern with
+ * {@see \Prado\Web\TUrlMappingPattern::getQuery Query} constraints matches only requests
+ * whose GET variables of the same names match those regular expressions.
+ * For example:
+ * - pattern="post/{id}?mode=edit" UrlMatchMode="Full" - matches <tt>post/5?mode=edit</tt> and nothing else
+ * - pattern="post/{id}" query.mode="edit|preview" - matches <tt>post/5?mode=edit</tt> whatever else the query string holds
+ *
  * Since PRADO 4.3.3, URL patterns support HTTP verb matching via the {@see \Prado\Web\TUrlMappingPattern::getVerbs Verbs} attribute.
  * This allows restricting URL patterns to specific HTTP methods (GET, POST, PUT, DELETE, etc.).
  * Use a comma-separated list for multiple verbs. Use the prefix '~' or '!' to negate a verb.
@@ -99,6 +111,9 @@ use Prado\Xml\TXmlElement;
  * - verbs="POST,PUT" - matches POST or PUT requests
  * - verbs="~GET" or verbs="!GET" - matches any request except GET requests
  * - verbs="~GET,!PUT" - multiple negative verbs can be matched
+ *
+ * A list of negated verbs alone matches every method it does not exclude, and the
+ * comparison ignores case.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.0.5
