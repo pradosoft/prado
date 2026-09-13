@@ -18,7 +18,9 @@ Inherits from `Prado\Web\UI\TTemplateControl`.
 
 `TScaffoldBase` is the base class for all scaffold views (`TScaffoldListView`, `TScaffoldEditView`, `TScaffoldListView`, `TScaffoldView`). It provides common properties and methods for scaffolding Active Record data.
 
-During the `OnPrRender` stage, the default CSS style file (`style.css`) is published and registered. To override the default style, provide your own stylesheet file explicitly.
+During the `OnPrRender` stage, the default CSS style file (`style.css`) is published and registered. To override the default style, provide your own stylesheet file explicitly. The colors in `style.css` follow the `color-scheme` the
+application declares, through `light-dark()` and the `Canvas` system color; see
+[WebControls/assets/INDEX.md](../../../Web/UI/WebControls/assets/INDEX.md).
 
 ## Key Properties
 

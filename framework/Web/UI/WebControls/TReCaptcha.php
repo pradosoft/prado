@@ -52,6 +52,7 @@ use Prado\Web\Javascripts\TJavaScriptLiteral;
  *
  * @author Bérczi Gábor <gabor.berczi@devworx.hu>
  * @since 3.2
+ * @todo remove, not an active endpoint from Google since 2010
  */
 class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\IValidatable
 {

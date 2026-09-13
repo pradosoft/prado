@@ -1,0 +1,116 @@
+/*
+ * EXPERIMENT — not part of the framework.
+ *
+ * Sheen for inactive TTabPanel tabs, shown at three intensities across the four
+ * states: selected, deselected, hover and mouse down. Nothing here touches
+ * framework/Web/UI/WebControls/assets/tabpanel.css.
+ *
+ * The gradient runs opposite ways per scheme, so each colour stop is a
+ * light-dark() pair rather than a plain translucent overlay:
+ *
+ *   light   lighter at the top, darker at the bottom
+ *   dark    darker at the top, lighter at the bottom
+ *
+ * The states shift that gradient rather than replace it:
+ *
+ *   deselected   the resting sheen, shading both ends and leaving the middle
+ *                alone: the label clears 4.5:1 on the plain tab by a hair, so
+ *                the stop that would reduce its contrast is kept below the
+ *                glyphs, which sit between 32% and 64% of the tab
+ *   hover        the highlight strengthens and the far end backs off, so the
+ *                tab reads as lit
+ *   focus        the same lit sheen as hover, so a keyboard user gets the
+ *                affordance a pointer user gets; the outline tells them apart
+ *   mouse down   a stop at the top fading to nothing by 30%, running the
+ *                opposite way to the resting sheen: light darkens at the top,
+ *                dark lightens at the top. The fade ends above the label, which
+ *                has no contrast headroom to give. It also drops a pixel
+ *   selected     left flat, so the front tab stays the flat one
+ *
+ * If an intensity is adopted, fold it into .tab-normal in tabpanel.css and
+ * delete this file with the TabDepthTest harness page.
+ */
+
+/* ------------------------------------------------------------------ none */
+/*
+ * The sheen now ships in tabpanel.css, so a flat reference has to opt out
+ * rather than simply leave the tabs alone.
+ */
+.sheen-none .tab-normal,
+.sheen-none .tab-normal:hover,
+.sheen-none .tab-normal:focus-visible,
+.sheen-none .tab-normal:active {
+	background-image: none;
+	top: 0;
+}
+
+/* ---------------------------------------------------------------- subtle */
+.sheen-subtle .tab-normal {
+	background-image:
+		linear-gradient(to bottom, light-dark(rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0)), rgba(255, 255, 255, 0) 45%, rgba(255, 255, 255, 0) 68%, light-dark(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.20))),
+		linear-gradient(to bottom, light-dark(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.30)), rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0) 68%, light-dark(rgba(0, 0, 0, 0.17), rgba(0, 0, 0, 0)));
+}
+
+.sheen-subtle .tab-normal:hover,
+.sheen-subtle .tab-normal:focus-visible {
+	background-image:
+		linear-gradient(to bottom, light-dark(rgba(255, 255, 255, 0.53), rgba(255, 255, 255, 0)), rgba(255, 255, 255, 0) 45%, rgba(255, 255, 255, 0) 68%, light-dark(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.34))),
+		linear-gradient(to bottom, light-dark(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.11)), rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0) 68%, light-dark(rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0)));
+}
+
+.sheen-subtle .tab-normal:active {
+	background-image:
+		linear-gradient(to bottom, light-dark(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.22)), rgba(255, 255, 255, 0) 30%),
+		linear-gradient(to bottom, light-dark(rgba(0, 0, 0, 0.20), rgba(0, 0, 0, 0)), rgba(0, 0, 0, 0) 30%);
+	top: 1px;
+}
+
+/* ---------------------------------------------------------------- medium */
+.sheen-medium .tab-normal {
+	background-image: linear-gradient(to bottom,
+		light-dark(rgba(255, 255, 255, 0.60), rgba(0, 0, 0, 0.52)),
+		light-dark(rgba(255, 255, 255, 0), rgba(0, 0, 0, 0)) 45%,
+		light-dark(rgba(0, 0, 0, 0), rgba(255, 255, 255, 0)) 68%,
+		light-dark(rgba(0, 0, 0, 0.30), rgba(255, 255, 255, 0.34)));
+}
+
+.sheen-medium .tab-normal:hover,
+.sheen-medium .tab-normal:focus-visible {
+	background-image: linear-gradient(to bottom,
+		light-dark(rgba(255, 255, 255, 0.85), rgba(0, 0, 0, 0.20)),
+		light-dark(rgba(255, 255, 255, 0), rgba(0, 0, 0, 0)) 45%,
+		light-dark(rgba(0, 0, 0, 0), rgba(255, 255, 255, 0)) 68%,
+		light-dark(rgba(0, 0, 0, 0.14), rgba(255, 255, 255, 0.58)));
+}
+
+.sheen-medium .tab-normal:active {
+	background-image: linear-gradient(to bottom,
+		light-dark(rgba(0, 0, 0, 0.28), rgba(255, 255, 255, 0.30)),
+		light-dark(rgba(0, 0, 0, 0), rgba(255, 255, 255, 0)) 30%);
+	top: 1px;
+}
+
+/* ---------------------------------------------------------------- strong */
+.sheen-strong .tab-normal {
+	background-image: linear-gradient(to bottom,
+		light-dark(rgba(255, 255, 255, 0.75), rgba(0, 0, 0, 0.64)),
+		light-dark(rgba(255, 255, 255, 0), rgba(0, 0, 0, 0)) 45%,
+		light-dark(rgba(0, 0, 0, 0), rgba(255, 255, 255, 0)) 68%,
+		light-dark(rgba(0, 0, 0, 0.38), rgba(255, 255, 255, 0.42)));
+}
+
+.sheen-strong .tab-normal:hover,
+.sheen-strong .tab-normal:focus-visible {
+	background-image: linear-gradient(to bottom,
+		light-dark(rgba(255, 255, 255, 1.00), rgba(0, 0, 0, 0.26)),
+		light-dark(rgba(255, 255, 255, 0), rgba(0, 0, 0, 0)) 45%,
+		light-dark(rgba(0, 0, 0, 0), rgba(255, 255, 255, 0)) 68%,
+		light-dark(rgba(0, 0, 0, 0.18), rgba(255, 255, 255, 0.70)));
+}
+
+.sheen-strong .tab-normal:active {
+	background-image: linear-gradient(to bottom,
+		light-dark(rgba(0, 0, 0, 0.36), rgba(255, 255, 255, 0.38)),
+		light-dark(rgba(0, 0, 0, 0), rgba(255, 255, 255, 0)) 30%);
+	top: 1px;
+}

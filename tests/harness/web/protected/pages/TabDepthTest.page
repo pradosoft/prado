@@ -1,0 +1,76 @@
+<com:TContent ID="Content">
+	<h1>Tab Depth Test</h1>
+
+	<%-- EXPERIMENT. Sheen at three intensities across the four tab states. The
+	     styles live in tests/harness/web/tab-depth.css, not in the framework
+	     stylesheet, so this can be dropped without touching TTabPanel.
+
+	     In each strip the tabs read left to right as selected, deselected,
+	     hover, focus, mouse down. The last three are forced through the
+	     DevTools protocol by the renderer, since a pointer and the keyboard
+	     can only be on one tab at a time. --%>
+	<com:TStyleSheet StyleSheetUrl="tab-depth.css" />
+
+	<com:TStyleSheet>
+		.shot {
+			display: inline-block;
+			background-color: Canvas;
+			color: CanvasText;
+			padding: 16px 16px 4px;
+			margin-top: 10px;
+			font-family: -apple-system, "Segoe UI", Arial, sans-serif;
+		}
+		.variant { width: 540px; overflow: auto; margin-bottom: 18px; }
+		.variant h3 {
+			font: 600 12px/1.8 -apple-system, "Segoe UI", Arial, sans-serif;
+			margin: 0 0 6px;
+			opacity: 0.75;
+		}
+	</com:TStyleSheet>
+
+	<div id="shot-depth" class="shot">
+		<div class="variant sheen-none">
+			<h3>Flat — sheen turned off, for reference</h3>
+			<com:TTabPanel ID="flat">
+				<com:TTabView ID="flat1" Caption="Selected">Panel content.</com:TTabView>
+				<com:TTabView ID="flat2" Caption="Deselected">Second.</com:TTabView>
+				<com:TTabView ID="flat3" Caption="Hover">Third.</com:TTabView>
+				<com:TTabView ID="flat4" Caption="Focus">Fourth.</com:TTabView>
+				<com:TTabView ID="flat5" Caption="Mouse down">Fifth.</com:TTabView>
+			</com:TTabPanel>
+		</div>
+
+		<div class="variant sheen-subtle">
+			<h3>1. Subtle</h3>
+			<com:TTabPanel ID="subtle">
+				<com:TTabView ID="subtle1" Caption="Selected">Panel content.</com:TTabView>
+				<com:TTabView ID="subtle2" Caption="Deselected">Second.</com:TTabView>
+				<com:TTabView ID="subtle3" Caption="Hover">Third.</com:TTabView>
+				<com:TTabView ID="subtle4" Caption="Focus">Fourth.</com:TTabView>
+				<com:TTabView ID="subtle5" Caption="Mouse down">Fifth.</com:TTabView>
+			</com:TTabPanel>
+		</div>
+
+		<div class="variant sheen-medium">
+			<h3>2. Medium</h3>
+			<com:TTabPanel ID="medium">
+				<com:TTabView ID="medium1" Caption="Selected">Panel content.</com:TTabView>
+				<com:TTabView ID="medium2" Caption="Deselected">Second.</com:TTabView>
+				<com:TTabView ID="medium3" Caption="Hover">Third.</com:TTabView>
+				<com:TTabView ID="medium4" Caption="Focus">Fourth.</com:TTabView>
+				<com:TTabView ID="medium5" Caption="Mouse down">Fifth.</com:TTabView>
+			</com:TTabPanel>
+		</div>
+
+		<div class="variant sheen-strong">
+			<h3>3. Strong</h3>
+			<com:TTabPanel ID="strong">
+				<com:TTabView ID="strong1" Caption="Selected">Panel content.</com:TTabView>
+				<com:TTabView ID="strong2" Caption="Deselected">Second.</com:TTabView>
+				<com:TTabView ID="strong3" Caption="Hover">Third.</com:TTabView>
+				<com:TTabView ID="strong4" Caption="Focus">Fourth.</com:TTabView>
+				<com:TTabView ID="strong5" Caption="Mouse down">Fifth.</com:TTabView>
+			</com:TTabPanel>
+		</div>
+	</div>
+</com:TContent>
