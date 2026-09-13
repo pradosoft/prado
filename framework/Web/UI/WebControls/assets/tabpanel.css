@@ -1,3 +1,9 @@
+/*
+ * Colors follow the color-scheme declared by the application; declaring none
+ * renders light, as before. Canvas and CanvasText resolve per scheme on their
+ * own. Each light-dark() line is preceded by its plain light value, which
+ * browsers without light-dark() support use instead.
+ */
 .tab-panel
 {
 	position: relative;
@@ -14,8 +20,25 @@
 	float:			left;
 	padding:		3px 6px 4px 6px;
 	background:		rgb(234,242,255);
+	background:		light-dark(rgb(234,242,255), rgb(30,41,59));
+	/*
+	 * The sheen is two layers, one white and one black, so every light-dark()
+	 * pair carries an alpha and nothing else: the ink at each peak is fixed and
+	 * the scheme decides how much of it lands. A light scheme lights the top and
+	 * shades the bottom; a dark scheme does the reverse. The ink is only ever
+	 * white or black, so a surface this file has never seen still gets a bevel.
+	 *
+	 * Both ends are shaded and the middle is left alone, because the label has no
+	 * contrast headroom: it clears 4.5:1 on the plain tab by a hair. The glyphs
+	 * occupy 32% to 64% of the tab, hence the 45% and 68% stops.
+	 */
+	background-image:	linear-gradient(to bottom, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0) 45%, rgba(255, 255, 255, 0) 68%, rgba(255, 255, 255, 0)),
+						linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0) 68%, rgba(0, 0, 0, 0.17));
+	background-image:	linear-gradient(to bottom, light-dark(rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0)), rgba(255, 255, 255, 0) 45%, rgba(255, 255, 255, 0) 68%, light-dark(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.20))),
+						linear-gradient(to bottom, light-dark(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.30)), rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0) 68%, light-dark(rgba(0, 0, 0, 0.17), rgba(0, 0, 0, 0)));
 	border:			1px  solid;
-	border-color:	rgb(120,172,255);
+	border-color:	#4b6ca0;
+	border-color:	light-dark(#4b6ca0, rgb(120,172,255));
 	z-index:		1;
 	position:		relative;
 	top:			0;
@@ -30,19 +53,21 @@
 	font-family:	Verdana, Helvetica, Arial;
 	font-size:		12px;
 
-	border:			1px solid rgb(120,172,255);
+	border:			1px solid #4b6ca0;
+	border-color:	light-dark(#4b6ca0, rgb(120,172,255));
 	border-bottom:	0;
 	z-index:		3;
 	padding:		2px 6px 8px 6px;
 	margin:			1px -6px -2px 0px;
 	top:			-2px;
-	background:		white;
+	background:		Canvas;
 }
 
 .tab-view
 {
 	clear:			both;
-	border:			1px solid rgb(120,172,255);
+	border:			1px solid #4b6ca0;
+	border-color:	light-dark(#4b6ca0, rgb(120,172,255));
 	z-index:		2;
 	position:		relative;
 	top:			-2px;
@@ -51,28 +76,56 @@
 
 .tab-active
 {
-	color: black;
+	color: CanvasText;
 	text-decoration: none;
 	font-weight: bold;
 }
 
 .tab-normal
 {
-	color: gray;
+	color: #6b6b6b;
+	color: light-dark(#6b6b6b, #9aa6b2);
 	text-decoration: none;
 	font-weight: bold;
 }
 
-.tab-normal:hover
+.tab-normal:hover,
+.tab-normal:focus-visible
 {
-	color: rgb(120,172,255);
+	color: #4b6ca0;
+	color: light-dark(#4b6ca0, rgb(120,172,255));
+	background-image:	linear-gradient(to bottom, rgba(255, 255, 255, 0.53), rgba(255, 255, 255, 0) 45%, rgba(255, 255, 255, 0) 68%, rgba(255, 255, 255, 0)),
+						linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0) 68%, rgba(0, 0, 0, 0.08));
+	background-image:	linear-gradient(to bottom, light-dark(rgba(255, 255, 255, 0.53), rgba(255, 255, 255, 0)), rgba(255, 255, 255, 0) 45%, rgba(255, 255, 255, 0) 68%, light-dark(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.34))),
+						linear-gradient(to bottom, light-dark(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.11)), rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0) 68%, light-dark(rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0)));
 	text-decoration: none;
 	font-weight: bold;
+}
+
+/*
+ * Pressed: a stop at the top fading to nothing, running the opposite way to the
+ * resting sheen. Light darkens at the top, dark lightens at the top, so each
+ * scheme reads as pushed in rather than lit. The tab also drops a pixel.
+ *
+ * The fade completes at 30%, above the label rather than behind it. Both label
+ * colours were picked to just clear 4.5:1 on the plain tab, 4.72 in light and
+ * 6.37 in dark, so an overlay carried down through the text drops it under the
+ * minimum: on a full-height ramp even 0.20 in light measures 3.42 behind the
+ * glyphs. Ending the ramp early keeps the shading and leaves the label alone.
+ */
+.tab-normal:active
+{
+	background-image:	linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0) 30%),
+						linear-gradient(to bottom, rgba(0, 0, 0, 0.20), rgba(0, 0, 0, 0) 30%);
+	background-image:	linear-gradient(to bottom, light-dark(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.22)), rgba(255, 255, 255, 0) 30%),
+						linear-gradient(to bottom, light-dark(rgba(0, 0, 0, 0.20), rgba(0, 0, 0, 0)), rgba(0, 0, 0, 0) 30%);
+	top: 1px;
 }
 
 /* Visible keyboard focus for the role="tab" elements. */
 .tab-normal:focus-visible, .tab-active:focus-visible
 {
-	outline: 2px solid rgb(120,172,255);
-	outline-offset: -2px;
+	outline: 3px solid #4b6ca0;
+	outline-color: light-dark(#4b6ca0, rgb(120,172,255));
+	outline-offset: -3px;
 }

@@ -36,6 +36,11 @@ Client-side JavaScript/CSS package registry and asset utilities for the Prado we
 
 ## JavaScript Source (`source/prado/`)
 
+The stylesheets beside these scripts, `datepicker/default.css` and
+`colorpicker/default.css`, follow the `color-scheme` the application declares,
+through `light-dark()` and the `Canvas` system color. See
+[WebControls/assets/INDEX.md](../UI/WebControls/assets/INDEX.md) for the contract.
+
 | Package | File(s) | Purpose |
 |---|---|---|
 | `prado` | `prado.js`, `controls/controls.js` | Framework core, jQuery OOP layer, behaviors, events |

@@ -1,3 +1,9 @@
+/*
+ * Colors follow the color-scheme declared by the application; declaring none
+ * renders light, as before. Canvas and CanvasText resolve per scheme on their
+ * own. Each light-dark() line is preceded by its plain light value, which
+ * browsers without light-dark() support use instead.
+ */
 /* $Id: style.css 1866 2007-04-14 05:02:29Z wei $ */
 body
 {
@@ -8,12 +14,14 @@ body
 {
 	display: block;
 	border-top: 1px solid #ccc;
+	border-top-color: light-dark(#ccc, #444);
 	padding: 1em;
 }
 
 .pager span, .pager a
 {
 	border: 1px solid #ccc;
+	border-color: light-dark(#ccc, #444);
 	padding: 0.3em 0.7em;
 	font-weight: bold;
 }
@@ -21,18 +29,21 @@ body
 .pager a
 {
 	background-color: #E0FFFF;
+	background-color: light-dark(#E0FFFF, #14323a);
 	border-color: #87CEFA;
+	border-color: light-dark(#87CEFA, #3d7f9e);
 }
 
 .pager a:hover
 {
-	background-color: White;
+	background-color: Canvas;
 }
 
 
 .item, .item-header
 {
 	border-top: 1px dashed #B0C4DE;
+	border-top-color: light-dark(#B0C4DE, #3f5b73);
 	padding: 0.5em;
 	clear: both;
 }
@@ -46,6 +57,7 @@ body
 .item_1
 {
 	background-color: #F0F8FF;
+	background-color: light-dark(#F0F8FF, #1b2430);
 }
 
 .field_0, .field
@@ -121,4 +133,5 @@ body
 {
 	border: 1px solid red;
 	background-color: #FFF5EE;
+	background-color: light-dark(#FFF5EE, #4a241e);
 }

@@ -150,6 +150,10 @@ Static assets published to the web by `TAssetManager`:
 
 Override default control styles by setting the control's `CssUrl` property to a custom stylesheet.
 
+The colors in these stylesheets follow the `color-scheme` the application
+declares, through `light-dark()` and the `Canvas`/`CanvasText` system colors. See
+[assets/INDEX.md](./assets/INDEX.md) for the contract.
+
 ## Gotchas
 
 - `TFileUpload` requires `enctype="multipart/form-data"` on the `TForm` — set `TForm.Enctype` property.
