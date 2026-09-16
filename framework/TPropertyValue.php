@@ -387,6 +387,8 @@ class TPropertyValue
 		}
 		if (is_bool($value)) {
 			return $value ? static::BOOL_TRUE : static::BOOL_FALSE;
+		} elseif(is_float($value) && is_nan($value)) {
+			return 'NAN';
 		} else {
 			return (string) $value;
 		}

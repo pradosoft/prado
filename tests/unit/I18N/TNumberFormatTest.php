@@ -816,6 +816,7 @@ class TNumberFormatTest extends TestCase
 	public function testRenderWritesToWriter()
 	{
 		$control = new TNumberFormat();
+		$control->setCulture('en_US');
 		$control->setPattern('#,##0.00');
 		$control->setValue(1234.56);
 		$output = $this->render($control);

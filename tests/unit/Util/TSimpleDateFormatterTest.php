@@ -9,6 +9,7 @@ class TSimpleDateFormatterTest extends PHPUnit\Framework\TestCase
 	protected function setUp(): void
 	{
 		$this->formatter = new TSimpleDateFormatter('yyyy-MM-dd');
+		$this->formatter->setCulture('en_US');
 	}
 
 	protected function tearDown(): void

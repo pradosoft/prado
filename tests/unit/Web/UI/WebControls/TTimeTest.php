@@ -313,6 +313,7 @@ class TTimeTest extends TestCase
 	public function testTextFormatTTimeFormatNameRendersFormattedDate()
 	{
 		$control = new TTime();
+		$control->setCulture('en_US');
 		$control->setDateTime(new \DateTimeImmutable('2024-06-15T00:00:00Z', new \DateTimeZone('UTC')));
 		$control->setTextFormat(TTimeFormat::Date);
 		$output = $this->renderContents($control);
@@ -654,6 +655,7 @@ class TTimeTest extends TestCase
 		];
 		foreach ($tzFormats as $fmt) {
 			$control = new TTime();
+			$control->setCulture('en_US');
 			$control->setDateTime($dt);
 			$control->setTextFormat($fmt);
 			$output = $this->renderContents($control);
@@ -681,6 +683,7 @@ class TTimeTest extends TestCase
 	{
 		// When IntlDateFormatter::format() returns false the ISO fallback is used
 		$control = new TTime();
+		$control->setCulture('en_US');
 		$dt = new \DateTimeImmutable('2024-06-15T10:30:45+00:00');
 		$control->setDateTime($dt);
 		// null $format resolves to getDateTimeTextFormat() (HtmlDateTime) → not the default branch
