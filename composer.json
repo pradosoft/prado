@@ -62,6 +62,7 @@
 		"laravel/serializable-closure": "^2.0"
 	},
 	"require-dev" : {
+		"ext-bcmath": "*",
 		"phpunit/phpunit" : "^10",
 		"php-webdriver/webdriver": "^1",
 		"phpdocumentor/shim": "^3",
