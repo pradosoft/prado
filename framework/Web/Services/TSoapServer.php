@@ -25,6 +25,39 @@ use Prado\Wsdl\WsdlGenerator;
  * It associates a SOAP provider class to the SoapServer object.
  * It also manages the URI for the SOAP service and WSDL.
  *
+ * {@see setWsdlStyle WsdlStyle} selects the style of a generated WSDL. The
+ * default, 'rpc', carries SOAP encoding, as WSDL 1.1 and SOAP 1.1 define it, and
+ * is what every earlier release produced. 'document' follows WS-I Basic Profile
+ * 1.1, which prohibits SOAP encoding, and is what an interoperable client
+ * expects. 'document' needs pradosoft/prado-wsdlgenerator 1.2 or later, and is
+ * refused where the installed generator predates it.
+ *
+ * XML configuration style:
+ * ```xml
+ *   <services>
+ *     <service id="soap" class="Prado\Web\Services\TSoapService">
+ *       <soap id="stockquote" provider="MyStockQuote" WsdlStyle="document" />
+ *     </service>
+ *   </services>
+ * ```
+ * PHP configuration style:
+ * ```php
+ *   'services' => [
+ *     'soap' => [
+ *       'class' => 'Prado\Web\Services\TSoapService',
+ *       'soap' => [
+ *         'stockquote' => [
+ *           'properties' => [
+ *             'provider' => 'MyStockQuote',
+ *             'wsdlstyle' => 'document',
+ *           ],
+ *         ],
+ *       ],
+ *     ],
+ *   ]
+ * ```
+ * The style has no effect when {@see setWsdlUri WsdlUri} names a WSDL to serve.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1
  * @method TSoapService getService()
@@ -32,6 +65,20 @@ use Prado\Wsdl\WsdlGenerator;
 class TSoapServer extends \Prado\TApplicationComponent
 {
 	public const WSDL_CACHE_PREFIX = 'wsdl.';
+
+	/**
+	 * Remote procedure calls with SOAP encoding, as WSDL 1.1 and SOAP 1.1 define
+	 * it. Every generator this package has depended on produces it.
+	 * @since 4.4.0
+	 */
+	public const WSDL_STYLE_RPC = 'rpc';
+
+	/**
+	 * Document style with literal encoding, following WS-I Basic Profile 1.1.
+	 * Needs pradosoft/prado-wsdlgenerator 1.2 or later.
+	 * @since 4.4.0
+	 */
+	public const WSDL_STYLE_DOCUMENT = 'document';
 
 	private $_id;
 	private $_provider;
@@ -43,6 +90,7 @@ class TSoapServer extends \Prado\TApplicationComponent
 	private $_classMap;
 	private $_persistent = false;
 	private $_wsdlUri = '';
+	private $_wsdlStyle = self::WSDL_STYLE_RPC;
 
 	private $_requestedMethod;
 
@@ -197,19 +245,61 @@ class TSoapServer extends \Prado\TApplicationComponent
 				throw new TConfigurationException('soapserver_provider_invalid', $provider);
 			}
 			if ($this->getApplication()->getMode() === TApplicationMode::Performance && ($cache = $this->getApplication()->getCache()) !== null) {
-				$wsdl = $cache->get(self::WSDL_CACHE_PREFIX . $providerClass);
+				// The style is part of the key, so a document is never served for
+				// a provider whose rpc document was cached, or the other way round.
+				$key = self::WSDL_CACHE_PREFIX . $this->getWsdlStyle() . '.' . $providerClass;
+				$wsdl = $cache->get($key);
 				if (is_string($wsdl)) {
 					return $wsdl;
 				}
-				$wsdl = WsdlGenerator::generate($providerClass, $this->getUri(), $this->getEncoding());
-				$cache->set(self::WSDL_CACHE_PREFIX . $providerClass, $wsdl);
+				$wsdl = $this->generateWsdl($providerClass);
+				$cache->set($key, $wsdl);
 				return $wsdl;
 			} else {
-				return WsdlGenerator::generate($providerClass, $this->getUri(), $this->getEncoding());
+				return $this->generateWsdl($providerClass);
 			}
 		} else {
 			return file_get_contents($this->_wsdlUri);
 		}
+	}
+
+	/**
+	 * Generates the WSDL of a provider in the style {@see getWsdlStyle WsdlStyle}
+	 * carries. The default style is passed to the generator the way it always was,
+	 * so a generator that predates {@see WSDL_STYLE_DOCUMENT} still serves it. Any
+	 * other style is refused rather than silently ignored, because a generator
+	 * that does not accept it discards the argument without complaint.
+	 * @param string $providerClass the resolved provider class
+	 * @throws TConfigurationException if the generator cannot produce the style
+	 * @return string the WSDL of the provider
+	 * @since 4.4.0
+	 */
+	protected function generateWsdl($providerClass)
+	{
+		$style = $this->getWsdlStyle();
+		if ($style === self::WSDL_STYLE_RPC) {
+			return WsdlGenerator::generate($providerClass, $this->getUri(), $this->getEncoding());
+		}
+		if (!$this->getGeneratorHasStyle()) {
+			throw new TConfigurationException('soapserver_wsdlstyle_unsupported', $style);
+		}
+		return WsdlGenerator::generate($providerClass, $this->getUri(), $this->getEncoding(), $style);
+	}
+
+	/**
+	 * Tells whether the installed generator takes a style. An extra argument to a
+	 * function that does not declare it is discarded by PHP, so the style has to
+	 * be looked for rather than assumed.
+	 * @return bool whether WsdlGenerator::generate() accepts a style
+	 * @since 4.4.0
+	 */
+	protected function getGeneratorHasStyle()
+	{
+		static $hasStyle = null;
+		if ($hasStyle === null) {
+			$hasStyle = (new \ReflectionMethod(WsdlGenerator::class, 'generate'))->getNumberOfParameters() >= 4;
+		}
+		return $hasStyle;
 	}
 
 	/**
@@ -230,6 +320,34 @@ class TSoapServer extends \Prado\TApplicationComponent
 	public function setWsdlUri($value)
 	{
 		$this->_wsdlUri = $value;
+	}
+
+	/**
+	 * Returns the style of a generated WSDL. The style has no effect when
+	 * {@see getWsdlUri WsdlUri} names a WSDL to serve.
+	 * @return string the style of a generated WSDL, 'rpc' or 'document'
+	 * @since 4.4.0
+	 */
+	public function getWsdlStyle()
+	{
+		return $this->_wsdlStyle;
+	}
+
+	/**
+	 * Sets the style of a generated WSDL. 'rpc' carries SOAP encoding, as WSDL 1.1
+	 * and SOAP 1.1 define it, and is the default. 'document' follows WS-I Basic
+	 * Profile 1.1, which prohibits SOAP encoding.
+	 * @param string $value the style of a generated WSDL, 'rpc' or 'document'
+	 * @throws TInvalidDataValueException if neither 'rpc' nor 'document'
+	 * @since 4.4.0
+	 */
+	public function setWsdlStyle($value)
+	{
+		if ($value !== self::WSDL_STYLE_RPC && $value !== self::WSDL_STYLE_DOCUMENT) {
+			throw new TInvalidDataValueException('soapserver_wsdlstyle_invalid', $value);
+		}
+
+		$this->_wsdlStyle = $value;
 	}
 
 	/**

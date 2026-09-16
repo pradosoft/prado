@@ -621,6 +621,8 @@ soapservice_serverid_duplicated			= SOAP server ID '{0}' is duplicated.
 soapserver_id_invalid					= Invalid SOAP server ID '{0}'. It should not end with '.wsdl'.
 soapserver_provider_invalid				= TSoapServer provider class '{0}' could not be resolved.
 soapserver_version_invalid				= Invalid SOAP version '{0}'. It must be either '1.1' or '1.2'.
+soapserver_wsdlstyle_invalid			= Invalid WSDL style '{0}'. It must be either 'rpc' or 'document'.
+soapserver_wsdlstyle_unsupported		= WSDL style '{0}' needs pradosoft/prado-wsdlgenerator 1.2 or later. The installed generator produces 'rpc' only.
 
 jsonservice_id_required				= TJsonService requires 'id' attribute in its JSON elements.
 jsonservice_response_type_invalid		= JSON class {0} is invalid. It should be TJsonResponse or extend from TJsonResponse.
