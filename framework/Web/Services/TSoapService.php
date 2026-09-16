@@ -11,6 +11,7 @@
 
 namespace Prado\Web\Services;
 
+use Prado\Collections\TAttributeCollection;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\THttpException;
 use Prado\Prado;
@@ -37,16 +38,21 @@ use Prado\Xml\TXmlDocument;
  *     </service>
  *   </services>
  * ```
- * PHP configuration style:
+ * PHP configuration style. Each key of the 'soap' array is a server id, and its
+ * 'properties' configure the server, not the service:
  * ```php
- *  'services' => array(
- *    'soap' => array(
- *     'class' => 'Prado\Web\Services\TSoapService'
- *     'properties' => array(
- *       'provider' => 'MyStockQuote'
- *	   )
- *    )
- *  )
+ *   'services' => [
+ *     'soap' => [
+ *       'class' => 'Prado\Web\Services\TSoapService',
+ *       'soap' => [
+ *         'stockquote' => [
+ *           'properties' => [
+ *             'provider' => 'MyStockQuote',
+ *           ],
+ *         ],
+ *       ],
+ *     ],
+ *   ]
  * ```
  *
  * The WSDL for the provider class "MyStockQuote" is generated based on special
@@ -77,16 +83,35 @@ use Prado\Xml\TXmlDocument;
  * in the <soap> element. For example, the "provider" attribute refers to
  * the {@see \Prado\Web\Services\TSoapServer::setProvider Provider} property of {@see \Prado\Web\Services\TSoapServer}.
  * The following configuration specifies that the SOAP server is persistent within
- * the user session (that means a MyStockQuote object will be stored in session)
- * ```php
+ * the user session (that means a MyStockQuote object will be stored in session),
+ * and that its WSDL follows WS-I Basic Profile 1.1:
+ * ```xml
  *   <services>
  *     <service id="soap" class="Prado\Web\Services\TSoapService">
- *       <soap id="stockquote" provider="MyStockQuote" SessionPersistent="true" />
+ *       <soap id="stockquote" provider="MyStockQuote" SessionPersistent="true" WsdlStyle="document" />
  *     </service>
  *   </services>
  * ```
+ * The same in PHP:
+ * ```php
+ *   'services' => [
+ *     'soap' => [
+ *       'class' => 'Prado\Web\Services\TSoapService',
+ *       'soap' => [
+ *         'stockquote' => [
+ *           'properties' => [
+ *             'provider' => 'MyStockQuote',
+ *             'sessionpersistent' => 'true',
+ *             'wsdlstyle' => 'document',
+ *           ],
+ *         ],
+ *       ],
+ *     ],
+ *   ]
+ * ```
  *
- * You may also use your own SOAP server class by specifying the "class" attribute of <soap>.
+ * You may also use your own SOAP server class: the "class" attribute of <soap>, or
+ * a 'class' key beside 'properties' in PHP.
  *
  * @author Knut Urdalen <knut.urdalen@gmail.com>
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -165,10 +190,16 @@ class TSoapService extends \Prado\TService
 	{
 		if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
 			if (is_array($config)) {
-				foreach ($config['soap'] as $id => $server) {
-					$properties = $server['properties'] ?? [];
+				foreach ($config['soap'] ?? [] as $id => $server) {
 					if (isset($this->_servers[$id])) {
 						throw new TConfigurationException('soapservice_serverid_duplicated', $id);
+					}
+					// The server is configured from a collection, the same one the
+					// attributes of a <soap> element produce, so that a class named
+					// beside the properties is found where the xml names it.
+					$properties = new TAttributeCollection($server['properties'] ?? []);
+					if (isset($server['class'])) {
+						$properties->add('class', $server['class']);
 					}
 					$this->_servers[$id] = $properties;
 				}
