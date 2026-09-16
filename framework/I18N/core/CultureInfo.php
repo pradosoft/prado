@@ -371,8 +371,7 @@ class CultureInfo
 		$lang = substr($this->culture, 0, 2);
 		$reg = substr($this->culture, 3, 2);
 		$language = $this->findInfo("Languages/{$lang}");
-		$region = $this->findInfo("Countries/{$reg}");
-		if ($region) {
+		if ($reg !== '' && $region = $this->findInfo("Countries/{$reg}")) {
 			return $language . ' (' . $region . ')';
 		} else {
 			return $language;

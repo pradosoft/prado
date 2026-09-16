@@ -35,6 +35,6 @@ test('Ticket656TestCase', async ({ page }) => {
 	await h.select(`${base}datePicker_year`, String(year));
 	await h.byId(`${base}btnUpdate`).click();
 	// mktime(0,0,0,10,20,year) in JS:
-	const ts = Math.floor(new Date(year, 9, 20, 0, 0, 0).getTime() / 1000);
+	const ts = Math.floor(Date.UTC(year, 9, 20, 0, 0, 0) / 1000);
 	await h.assertText(`${base}lblStatus`, phpDate('d-m-Y', ts));
 });
