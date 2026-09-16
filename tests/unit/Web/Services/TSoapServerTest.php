@@ -15,7 +15,6 @@
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Web\Services\TSoapServer;
-use Prado\Wsdl\Wsdl;
 
 /**
  * Provider reflected on by the generation tests.
@@ -49,6 +48,12 @@ class TTestSoapServer extends TSoapServer
 	{
 		return 'UTF-8';
 	}
+
+	/** Exposes the capability check, so a test can skip where the style is absent. */
+	public function hasGeneratorStyle(): bool
+	{
+		return $this->getGeneratorHasStyle();
+	}
 }
 
 /**
@@ -73,7 +78,7 @@ class TSoapServerTest extends PHPUnit\Framework\TestCase
 
 	public function testWsdlStyleDefaultsToRpc()
 	{
-		$this->assertSame(Wsdl::STYLE_RPC, $this->newServer()->getWsdlStyle());
+		$this->assertSame(TSoapServer::WSDL_STYLE_RPC, $this->newServer()->getWsdlStyle());
 		$this->assertSame('rpc', $this->newServer()->getWsdlStyle());
 	}
 
@@ -81,10 +86,10 @@ class TSoapServerTest extends PHPUnit\Framework\TestCase
 	{
 		$server = $this->newServer();
 
-		$server->setWsdlStyle(Wsdl::STYLE_DOCUMENT);
+		$server->setWsdlStyle(TSoapServer::WSDL_STYLE_DOCUMENT);
 		$this->assertSame('document', $server->getWsdlStyle());
 
-		$server->setWsdlStyle(Wsdl::STYLE_RPC);
+		$server->setWsdlStyle(TSoapServer::WSDL_STYLE_RPC);
 		$this->assertSame('rpc', $server->getWsdlStyle());
 	}
 
@@ -119,7 +124,10 @@ class TSoapServerTest extends PHPUnit\Framework\TestCase
 	public function testTheDocumentStyleGeneratesDocumentAndLiteral()
 	{
 		$server = $this->newServer();
-		$server->setWsdlStyle(Wsdl::STYLE_DOCUMENT);
+		if (!$server->hasGeneratorStyle()) {
+			$this->markTestSkipped('the installed prado-wsdlgenerator predates the document style');
+		}
+		$server->setWsdlStyle(TSoapServer::WSDL_STYLE_DOCUMENT);
 		$wsdl = $server->getWsdl();
 
 		$this->assertStringContainsString('style="document"', $wsdl);
@@ -168,7 +176,7 @@ class TSoapServerTest extends PHPUnit\Framework\TestCase
 		try {
 			$server = $this->newServer();
 			$server->setWsdlUri($file);
-			$server->setWsdlStyle(Wsdl::STYLE_DOCUMENT);
+			$server->setWsdlStyle(TSoapServer::WSDL_STYLE_DOCUMENT);
 
 			$this->assertSame('<definitions/>', $server->getWsdl());
 		} finally {

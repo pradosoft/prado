@@ -265,10 +265,11 @@ class TSoapServer extends \Prado\TApplicationComponent
 
 	/**
 	 * Generates the WSDL of a provider in the style {@see getWsdlStyle WsdlStyle}
-	 * carries. The default style is passed to the generator the way it always was,
-	 * so a generator that predates {@see WSDL_STYLE_DOCUMENT} still serves it. Any
-	 * other style is refused rather than silently ignored, because a generator
-	 * that does not accept it discards the argument without complaint.
+	 * carries. The style is an argument only where it is asked for, so the default
+	 * reaches the generator the way it always did and a generator that predates
+	 * {@see WSDL_STYLE_DOCUMENT} still serves it. Any other style is refused rather
+	 * than silently ignored, because a generator that does not accept it discards
+	 * the argument without complaint.
 	 * @param string $providerClass the resolved provider class
 	 * @throws TConfigurationException if the generator cannot produce the style
 	 * @return string the WSDL of the provider
@@ -276,14 +277,17 @@ class TSoapServer extends \Prado\TApplicationComponent
 	 */
 	protected function generateWsdl($providerClass)
 	{
+		$arguments = [$providerClass, $this->getUri(), $this->getEncoding()];
+
 		$style = $this->getWsdlStyle();
-		if ($style === self::WSDL_STYLE_RPC) {
-			return WsdlGenerator::generate($providerClass, $this->getUri(), $this->getEncoding());
+		if ($style !== self::WSDL_STYLE_RPC) {
+			if (!$this->getGeneratorHasStyle()) {
+				throw new TConfigurationException('soapserver_wsdlstyle_unsupported', $style);
+			}
+			$arguments[] = $style;
 		}
-		if (!$this->getGeneratorHasStyle()) {
-			throw new TConfigurationException('soapserver_wsdlstyle_unsupported', $style);
-		}
-		return WsdlGenerator::generate($providerClass, $this->getUri(), $this->getEncoding(), $style);
+
+		return WsdlGenerator::generate(...$arguments);
 	}
 
 	/**
