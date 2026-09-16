@@ -35,7 +35,7 @@ use Prado\Web\UI\WebControls\TDetails;
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
- * @method TActiveControlAdapter getAdapter()
+ * @method TActiveControlAdapter<\Prado\Web\UI\ActiveControls\TBaseActiveCallbackControl> getAdapter()
  */
 class TActiveDetails extends TDetails implements IActiveControl, ICallbackEventHandler
 {

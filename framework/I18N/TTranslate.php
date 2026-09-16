@@ -166,7 +166,7 @@ class TTranslate extends TI18NControl
 
 	/**
 	 * @param mixed $name
-	 * @return string parameter value, null if parameter does not exist
+	 * @return ?string parameter value, null if parameter does not exist
 	 */
 	public function getParameter($name)
 	{
@@ -189,7 +189,7 @@ class TTranslate extends TI18NControl
 	/**
 	 * Removes the named parameter.
 	 * @param string $name the name of the parameter to be removed.
-	 * @return string parameter value removed, null if parameter does not exist.
+	 * @return ?string parameter value removed, null if parameter does not exist.
 	 */
 	public function removeParameter($name)
 	{

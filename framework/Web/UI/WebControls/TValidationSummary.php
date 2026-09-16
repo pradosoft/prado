@@ -53,7 +53,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return TValidationSummaryDisplayStyle the style of displaying the error messages. Defaults to TValidationSummaryDisplayStyle::Fixed.
+	 * @return string|TValidationSummaryDisplayStyle the style of displaying the error messages. Defaults to TValidationSummaryDisplayStyle::Fixed.
 	 */
 	public function getDisplay()
 	{
@@ -61,7 +61,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param TValidationSummaryDisplayStyle $value the style of displaying the error messages
+	 * @param string|TValidationSummaryDisplayStyle $value the style of displaying the error messages
 	 */
 	public function setDisplay($value)
 	{

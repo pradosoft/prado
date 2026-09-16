@@ -229,7 +229,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 *
 	 * You can attach custom javascript code to each of these events
 	 *
-	 * @return TValidatorClientSide javascript validator event options.
+	 * @return \Prado\Web\UI\ActiveControls\TCallbackClientSide|TValidatorClientSide javascript validator event options.
 	 */
 	public function getClientSide()
 	{
@@ -350,7 +350,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * @return TValidatorDisplayStyle the style of displaying the error message. Defaults to TValidatorDisplayStyle::Fixed.
+	 * @return string|TValidatorDisplayStyle the style of displaying the error message. Defaults to TValidatorDisplayStyle::Fixed.
 	 */
 	public function getDisplay()
 	{
@@ -358,7 +358,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * @param TValidatorDisplayStyle $value the style of displaying the error message
+	 * @param string|TValidatorDisplayStyle $value the style of displaying the error message
 	 */
 	public function setDisplay($value)
 	{

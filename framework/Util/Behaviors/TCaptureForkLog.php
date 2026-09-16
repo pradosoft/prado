@@ -112,7 +112,7 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 		$domain = TProcessHelper::isSystemWindows() ? AF_INET : AF_UNIX;
 		if (!socket_create_pair($domain, SOCK_STREAM, 0, $this->_childConnection)) {
 			$this->_childConnection = null;
-			return;
+			return null;
 		}
 		$this->_childConnection[0] = socket_export_stream($this->_childConnection[0]);
 		$this->_childConnection[1] = socket_export_stream($this->_childConnection[1]);

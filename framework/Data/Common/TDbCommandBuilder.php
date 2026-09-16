@@ -438,7 +438,7 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDataCommandBuilder
 	 * Create a name-value or position-value if $position=true binding strings.
 	 * @param array $values data for binding.
 	 * @param bool $position true to bind as position values.
-	 * @return string update column names with corresponding binding substrings.
+	 * @return string[] update column names with corresponding binding substrings.
 	 */
 	protected function getColumnBindings($values, $position = false)
 	{

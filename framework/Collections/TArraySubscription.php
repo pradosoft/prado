@@ -71,7 +71,7 @@ class TArraySubscription
 	use TPriorityPropertyTrait;
 
 	/**
-	 * @var null|array|ArrayAccess The array reference or ArrayAccess being subscribed to.
+	 * @var null|array|ArrayAccess|WeakReference The array reference or ArrayAccess being subscribed to.
 	 */
 	private mixed $_array = null;
 

@@ -69,6 +69,7 @@ use Prado\TPropertyValue;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  * @method TTableStyle getStyle()
+ * @method TTableRowCollection getControls()
  */
 class TTable extends \Prado\Web\UI\WebControls\TWebControl
 {
@@ -176,7 +177,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return TTableCaptionAlign table caption alignment. Defaults to TTableCaptionAlign::NotSet.
+	 * @return string|TTableCaptionAlign table caption alignment. Defaults to TTableCaptionAlign::NotSet.
 	 */
 	public function getCaptionAlign()
 	{
@@ -184,7 +185,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param TTableCaptionAlign $value table caption alignment.
+	 * @param string|TTableCaptionAlign $value table caption alignment.
 	 */
 	public function setCaptionAlign($value)
 	{
@@ -236,7 +237,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return THorizontalAlign the horizontal alignment of the table content. Defaults to THorizontalAlign::NotSet.
+	 * @return string|THorizontalAlign the horizontal alignment of the table content. Defaults to THorizontalAlign::NotSet.
 	 */
 	public function getHorizontalAlign()
 	{
@@ -248,7 +249,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param THorizontalAlign $value the horizontal alignment of the table content.
+	 * @param string|THorizontalAlign $value the horizontal alignment of the table content.
 	 */
 	public function setHorizontalAlign($value)
 	{
@@ -256,7 +257,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return TTableGridLines the grid line setting of the table. Defaults to TTableGridLines::None.
+	 * @return string|TTableGridLines the grid line setting of the table. Defaults to TTableGridLines::None.
 	 * @deprecated use CSS to style the borders of individual elements
 	 */
 	public function getGridLines()
@@ -269,7 +270,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param TTableGridLines $value the grid line setting of the table
+	 * @param string|TTableGridLines $value the grid line setting of the table
 	 * @deprecated use CSS to style the borders of individual elements
 	 */
 	public function setGridLines($value)

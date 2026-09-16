@@ -41,7 +41,7 @@ use Prado\Web\UI\WebControls\TDialog;
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
- * @method TActiveControlAdapter getAdapter()
+ * @method TActiveControlAdapter<\Prado\Web\UI\ActiveControls\TBaseActiveCallbackControl> getAdapter()
  */
 class TActiveDialog extends TDialog implements IActiveControl, ICallbackEventHandler
 {

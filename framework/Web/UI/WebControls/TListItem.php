@@ -30,7 +30,7 @@ use Prado\TPropertyValue;
 class TListItem extends \Prado\TComponent
 {
 	/**
-	 * @var TMap list of custom attributes
+	 * @var TAttributeCollection list of custom attributes
 	 */
 	protected $_attributes;
 	/**

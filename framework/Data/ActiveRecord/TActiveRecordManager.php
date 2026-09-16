@@ -51,7 +51,7 @@ class TActiveRecordManager extends \Prado\TComponent
 	/**
 	 * Defaults to '{@see \Prado\Data\ActiveRecord\TActiveRecordInvalidFinderResult::Null Null}'
 	 *
-	 * @var TActiveRecordInvalidFinderResult
+	 * @var string|TActiveRecordInvalidFinderResult
 	 * @since 3.1.5
 	 */
 	private $_invalidFinderResult = TActiveRecordInvalidFinderResult::Null;
@@ -141,7 +141,7 @@ class TActiveRecordManager extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TActiveRecordInvalidFinderResult Defaults to '{@see \Prado\Data\ActiveRecord\TActiveRecordInvalidFinderResult::Null Null}'.
+	 * @return string|TActiveRecordInvalidFinderResult Defaults to '{@see \Prado\Data\ActiveRecord\TActiveRecordInvalidFinderResult::Null Null}'.
 	 * @since 3.1.5
 	 * @see setInvalidFinderResult
 	 */
@@ -152,7 +152,7 @@ class TActiveRecordManager extends \Prado\TComponent
 
 	/**
 	 * Define the way an active record finder react if an invalid magic-finder invoked
-	 * @param TActiveRecordInvalidFinderResult $value * @since 3.1.5
+	 * @param string|TActiveRecordInvalidFinderResult $value * @since 3.1.5
 	 * @see getInvalidFinderResult
 	 */
 	public function setInvalidFinderResult($value)

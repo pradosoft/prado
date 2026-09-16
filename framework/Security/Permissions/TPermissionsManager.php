@@ -216,7 +216,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	/** @var \Prado\Util\TDbParameterModule the database module providing runtime roles and rules */
 	private $_dbParameter;
 
-	/** @var numeric the priority of the module Rule, usually these are Allow User As Owner */
+	/** @var string default name of the parameter to load */
 	private $_parameter = 'configuration:TPermissionsManager:runtime';
 
 	/**
@@ -702,7 +702,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	/**
 	 * Gets the children for a specific role in the hierarchy.
 	 * @param string $role the role to return its children
-	 * @return null|string[] the children of a specific role.
+	 * @return null|array<string, string[]>|string[] the children of a specific role.
 	 */
 	public function getHierarchyRoleChildren($role)
 	{

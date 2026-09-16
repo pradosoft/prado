@@ -125,7 +125,7 @@ class TCache_Lite
 	 * better choice)
 	 * 'strlen' for a length only test (fastest)
 	 *
-	 * @var bool $_readControlType
+	 * @var string $_readControlType
 	 */
 	protected $_readControlType = 'crc32';
 
@@ -257,7 +257,7 @@ class TCache_Lite
 	 * @param string $group name of the cache group
 	 * @param bool $doNotTestCacheValidity if set to true, the cache
 	 * validity won't be tested
-	 * @return string data of the cache (or false if no cache available)
+	 * @return false|string data of the cache (or false if no cache available)
 	 * @access public
 	 */
 	public function get($id, $group = 'default', $doNotTestCacheValidity = false)
@@ -465,7 +465,7 @@ class TCache_Lite
 	/**
 	 * Read the cache file and return the content
 	 *
-	 * @return string content of the cache file
+	 * @return false|string content of the cache file
 	 * @access private
 	 */
 	protected function _read()

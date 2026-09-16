@@ -54,7 +54,7 @@ use Prado\Web\UI\ActiveControls\TActiveControlAdapter;
  *
  * @author Cristian Camilo Naranjo Valencia
  * @since 3.3.1
- * @method TActiveControlAdapter getAdapter()
+ * @method TActiveControlAdapter<\Prado\Web\UI\ActiveControls\TBaseActiveCallbackControl> getAdapter()
  */
 class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\ICallbackEventHandler, \Prado\Web\UI\IValidatable
 {
@@ -246,7 +246,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	/**
 	 * Returns the tabindex of the widget and challenge.
 	 * If other elements in your page use tabindex, it should be set to make user navigation easier.
-	 * @return string tab index
+	 * @return int tab index
 	 */
 	public function getTabIndex()
 	{

@@ -33,7 +33,7 @@ use Prado\TPropertyValue;
 class TDataGridItem extends TTableRow implements \Prado\Web\UI\INamingContainer
 {
 	/**
-	 * @var int index of the data item in the Items collection of datagrid
+	 * @var int|string index of the data item in the Items collection of datagrid
 	 */
 	private $_itemIndex = '';
 	/**
@@ -55,7 +55,7 @@ class TDataGridItem extends TTableRow implements \Prado\Web\UI\INamingContainer
 	 * Constructor.
 	 * @param int $itemIndex zero-based index of the item in the item collection of datagrid
 	 * @param int $dataSourceIndex
-	 * @param TListItemType $itemType item type
+	 * @param string|TListItemType $itemType item type
 	 */
 	public function __construct($itemIndex, $dataSourceIndex, $itemType)
 	{
@@ -71,7 +71,7 @@ class TDataGridItem extends TTableRow implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return TListItemType item type.
+	 * @return string|TListItemType item type.
 	 */
 	public function getItemType()
 	{
@@ -79,7 +79,7 @@ class TDataGridItem extends TTableRow implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @param TListItemType $value item type
+	 * @param string|TListItemType $value item type
 	 */
 	public function setItemType($value)
 	{

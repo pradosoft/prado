@@ -40,7 +40,7 @@ class TTemplateControl extends TCompositeControl
 	public const EXT_TEMPLATE = '.tpl';
 
 	/**
-	 * @var ITemplate the parsed template structure shared by the same control class
+	 * @var array<string, ITemplate> the parsed template structure shared by the same control class
 	 */
 	private static $_template = [];
 	/**
@@ -66,7 +66,7 @@ class TTemplateControl extends TCompositeControl
 
 	/**
 	 * Returns the template object associated with this control object.
-	 * @return null|TTemplate the parsed template, null if none
+	 * @return ?ITemplate the parsed template, null if none
 	 */
 	public function getTemplate()
 	{
@@ -100,7 +100,7 @@ class TTemplateControl extends TCompositeControl
 	public function getIsSourceTemplateControl()
 	{
 		if (($template = $this->getTemplate()) !== null) {
-			return $template->getIsSourceTemplate();
+			return method_exists($template, 'getIsSourceTemplate') && $template->getIsSourceTemplate();
 		} else {
 			return false;
 		}
@@ -112,7 +112,7 @@ class TTemplateControl extends TCompositeControl
 	public function getTemplateDirectory()
 	{
 		if (($template = $this->getTemplate()) !== null) {
-			return $template->getContextPath();
+			return method_exists($template, 'getContextPath') ? $template->getContextPath() : '';
 		} else {
 			return '';
 		}
@@ -137,7 +137,7 @@ class TTemplateControl extends TCompositeControl
 	public function createChildControls()
 	{
 		if ($tpl = $this->getTemplate()) {
-			$directive = $tpl->getDirective();
+			$directive = method_exists($tpl, 'getDirective') ? $tpl->getDirective() : [];
 			foreach ($directive as $name => $value) {
 				if (!is_string($value)) {
 					throw new TConfigurationException('templatecontrol_directive_invalid', $this::class, $name);

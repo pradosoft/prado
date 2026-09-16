@@ -23,7 +23,7 @@ use Prado\Exceptions\TInvalidOperationException;
 class TCompleteWizardStep extends TWizardStep
 {
 	/**
-	 * @return TWizardStepType the wizard step type. Always TWizardStepType::Complete.
+	 * @return string|TWizardStepType the wizard step type. Always TWizardStepType::Complete.
 	 */
 	public function getStepType()
 	{
@@ -31,7 +31,7 @@ class TCompleteWizardStep extends TWizardStep
 	}
 
 	/**
-	 * @param string $value the wizard step type.
+	 * @param string|TWizardStepType $value the wizard step type.
 	 * @throws TInvalidOperationException whenever this method is invoked.
 	 */
 	public function setStepType($value)

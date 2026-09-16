@@ -32,6 +32,7 @@ use Prado\TPropertyValue;
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.1
+ * @template TActiveControl of TBaseActiveControl = TBaseActiveControl
  * @method IActiveControl&\Prado\Web\UI\TControl getControl()
  */
 class TActiveControlAdapter extends TControlAdapter
@@ -41,7 +42,7 @@ class TActiveControlAdapter extends TControlAdapter
 	 */
 	private $_activeControlType;
 	/**
-	 * @var TBaseActiveCallbackControl|TBaseActiveControl base active control instance.
+	 * @var TActiveControl base active control instance.
 	 */
 	private $_baseActiveControl;
 	/**
@@ -104,7 +105,7 @@ class TActiveControlAdapter extends TControlAdapter
 	}
 
 	/**
-	 * @param TBaseActiveCallbackControl|TBaseActiveControl $control change base active control
+	 * @param TActiveControl $control change base active control
 	 */
 	public function setBaseActiveControl($control)
 	{
@@ -112,7 +113,7 @@ class TActiveControlAdapter extends TControlAdapter
 	}
 
 	/**
-	 * @return TBaseActiveCallbackControl|TBaseActiveControl Common active control options.
+	 * @return TActiveControl Common active control options.
 	 */
 	public function getBaseActiveControl()
 	{

@@ -49,7 +49,7 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 	 */
 	private $_verb = '*';
 	/**
-	 * @var string IP patterns
+	 * @var array IP patterns
 	 */
 	private $_ipRules = ['*'];
 	/**

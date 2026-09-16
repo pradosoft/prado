@@ -95,7 +95,7 @@ class THttpCookieCollection extends \Prado\Collections\TList
 	/**
 	 * Finds the cookie with the specified name.
 	 * @param string $name the name of the cookie to be looked for
-	 * @return THttpCookie the cookie, null if not found
+	 * @return ?THttpCookie the cookie, null if not found
 	 */
 	public function findCookieByName($name)
 	{

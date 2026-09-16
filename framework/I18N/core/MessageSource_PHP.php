@@ -60,7 +60,7 @@ class MessageSource_PHP extends MessageSource
 	/**
 	 * Load the messages from a PHP file.
 	 * @param string $filename PHP file.
-	 * @return array of messages.
+	 * @return array|false of messages.
 	 */
 	protected function &loadData($filename)
 	{
@@ -218,7 +218,7 @@ class MessageSource_PHP extends MessageSource
 	/**
 	 * Get the variant for a catalogue depending on the current culture.
 	 * @param string $catalogue
-	 * @return string the variant.
+	 * @return array|false array containing the variant and the source file
 	 * @see save()
 	 * @see update()
 	 * @see delete()
@@ -239,7 +239,7 @@ class MessageSource_PHP extends MessageSource
 	}
 
 	/**
-	 * @param string $php included php file
+	 * @param array $php included PHP catalogue data
 	 * @param string $filename destination file
 	 * @param string $variant catalogue variant
 	 */

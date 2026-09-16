@@ -91,7 +91,7 @@ abstract class TDbUser extends TUser
 	 * You then verify the token is valid and use the username to create a user instance.
 	 *
 	 * @param \Prado\Web\THttpCookie $cookie the cookie storing user authentication information
-	 * @return TDbUser the user instance generated based on the cookie auth data, null if the cookie does not have valid auth data.
+	 * @return ?TDbUser the user instance generated based on the cookie auth data, null if the cookie does not have valid auth data.
 	 * @see saveUserToCookie
 	 * @since 3.1.1
 	 */

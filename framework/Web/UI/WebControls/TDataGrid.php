@@ -166,7 +166,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 */
 	private $_columns;
 	/**
-	 * @var TDataGridColumnCollection automatically created column collection
+	 * @var ?TDataGridColumnCollection automatically created column collection
 	 */
 	private $_autoColumns;
 	/**
@@ -178,11 +178,11 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 */
 	private $_items;
 	/**
-	 * @var TDataGridItem header item
+	 * @var ?TDataGridItem header item
 	 */
 	private $_header;
 	/**
-	 * @var TDataGridItem footer item
+	 * @var ?TDataGridItem footer item
 	 */
 	private $_footer;
 	/**
@@ -437,7 +437,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return TTableCaptionAlign datagrid caption alignment. Defaults to TTableCaptionAlign::NotSet.
+	 * @return string|TTableCaptionAlign datagrid caption alignment. Defaults to TTableCaptionAlign::NotSet.
 	 */
 	public function getCaptionAlign()
 	{
@@ -445,7 +445,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @param TTableCaptionAlign $value datagrid caption alignment. Valid values include
+	 * @param string|TTableCaptionAlign $value datagrid caption alignment. Valid values include
 	 */
 	public function setCaptionAlign($value)
 	{
@@ -485,7 +485,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return TDataGridItem the selected item, null if no item is selected.
+	 * @return ?TDataGridItem the selected item, null if no item is selected.
 	 */
 	public function getSelectedItem()
 	{
@@ -539,7 +539,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return TDataGridItem the edit item
+	 * @return ?TDataGridItem the edit item
 	 */
 	public function getEditItem()
 	{
@@ -1111,7 +1111,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * Creates a datagrid item instance based on the item type and index.
 	 * @param int $itemIndex zero-based item index
 	 * @param mixed $dataSourceIndex
-	 * @param TListItemType $itemType item type
+	 * @param string|TListItemType $itemType item type
 	 * @return TDataGridItem created data list item
 	 */
 	protected function createItem($itemIndex, $dataSourceIndex, $itemType)
@@ -1340,7 +1340,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	/**
 	 * Automatically generates datagrid columns based on datasource schema
 	 * @param \Traversable $dataSource data source bound to the datagrid
-	 * @return TDataGridColumnCollection
+	 * @return ?TDataGridColumnCollection
 	 */
 	protected function createAutoColumns($dataSource)
 	{

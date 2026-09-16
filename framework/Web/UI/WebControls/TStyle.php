@@ -776,14 +776,17 @@ class TStyle extends \Prado\TComponent implements \ArrayAccess
 	 * to writing the CSS field named by {@see methodToAttributeName}(`$name`).
 	 * @param string $name property name (PascalCase or camelCase)
 	 * @param mixed $value value to set
+	 * @return void
 	 */
 	public function __set($name, $value)
 	{
 		if (Prado::method_visible($this, $setter = 'set' . $name)) {
-			return $this->$setter($value);
+			$this->$setter($value);
+			return;
 		}
 		$name = $this->methodToAttributeName($name);
-		return $this->setStyleField($name, $value);
+		$this->setStyleField($name, $value);
+		return;
 	}
 
 	/**

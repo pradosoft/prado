@@ -68,7 +68,8 @@ class TSocketServerAction extends TShellAction
 			$moduleClass = $this->getModuleClass();
 			$this->_module = null;
 			foreach ($app->getModulesByType($moduleClass, false) as $id => $m) {
-				if ($this->_module = $app->getModule($id)) {
+				if (($module = $app->getModule($id)) instanceof TSocketServerModule) {
+					$this->_module = $module;
 					break;
 				}
 			}

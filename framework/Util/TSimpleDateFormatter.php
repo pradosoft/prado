@@ -837,7 +837,7 @@ class TSimpleDateFormatter
 	 * @param int $i starting position.
 	 * @param int $minlength minimum length of integer.
 	 * @param int $maxlength maximum length of integer.
-	 * @return false|string integer string if found, false otherwise.
+	 * @return ?string integer string if found, null otherwise.
 	 */
 	private function getInteger($str, $i, $minlength, $maxlength)
 	{

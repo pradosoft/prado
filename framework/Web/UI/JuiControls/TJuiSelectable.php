@@ -206,7 +206,7 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 	}
 
 	/**
-	 * @var \Prado\Web\UI\ITemplate template for repeater items
+	 * @var TRepeater template for repeater items
 	 */
 	private $_repeater;
 

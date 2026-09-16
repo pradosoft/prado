@@ -69,7 +69,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	private static $_safeTextParser;
 	/**
-	 * @var string safe textbox content with javascript stripped off
+	 * @var ?string safe textbox content with javascript stripped off
 	 */
 	private $_safeText;
 	private $_dataChanged = false;
@@ -533,7 +533,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 * Returns the text content of the TTextBox control.
 	 * This method is required by {@see \Prado\IDataRenderer}.
 	 * It is the same as {@see getText()}.
-	 * @return string the text content of the TTextBox control.
+	 * @return mixed the text content of the TTextBox control as string.
 	 * @see getText
 	 * @since 3.1.0
 	 */
@@ -546,7 +546,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 * Sets the text content of the TTextBox control.
 	 * This method is required by {@see \Prado\IDataRenderer}.
 	 * It is the same as {@see setText()}.
-	 * @param string $value the text content of the TTextBox control.
+	 * @param mixed $value the text content of the TTextBox control as string.
 	 * @see setText
 	 * @since 3.1.0
 	 */
@@ -578,7 +578,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	}
 
 	/**
-	 * @return TTextBoxMode the behavior mode of the TTextBox component. Defaults to TTextBoxMode::SingleLine.
+	 * @return string|TTextBoxMode the behavior mode of the TTextBox component. Defaults to TTextBoxMode::SingleLine.
 	 */
 	public function getTextMode()
 	{
@@ -587,7 +587,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 
 	/**
 	 * Sets the behavior mode of the TTextBox component.
-	 * @param TTextBoxMode $value the text mode
+	 * @param string|TTextBoxMode $value the text mode
 	 * @throws TInvalidDataValueException if the input value is not a valid text mode.
 	 */
 	public function setTextMode($value)

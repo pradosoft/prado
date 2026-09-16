@@ -122,7 +122,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	private $_transaction;
 
 	/**
-	 * @var TDbMetaData
+	 * @var \Prado\Data\Common\IDataMetaData
 	 */
 	private $_dbMeta;
 
@@ -786,7 +786,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	}
 
 	/**
-	 * @return TDbMetaData
+	 * @return \Prado\Data\Common\IDataMetaData
 	 */
 	public function getDbMetaData()
 	{
@@ -797,7 +797,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	}
 
 	/**
-	 * @return TDbColumnCaseMode the case of the column names
+	 * @return string|TDbColumnCaseMode the case of the column names
 	 */
 	public function getColumnCase()
 	{
@@ -813,7 +813,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	}
 
 	/**
-	 * @param TDbColumnCaseMode $value the case of the column names
+	 * @param string|TDbColumnCaseMode $value the case of the column names
 	 */
 	public function setColumnCase($value)
 	{
@@ -832,7 +832,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	}
 
 	/**
-	 * @return TDbNullConversionMode how the null and empty strings are converted
+	 * @return string|TDbNullConversionMode how the null and empty strings are converted
 	 */
 	public function getNullConversion()
 	{
@@ -848,7 +848,7 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	}
 
 	/**
-	 * @param TDbNullConversionMode $value how the null and empty strings are converted
+	 * @param string|TDbNullConversionMode $value how the null and empty strings are converted
 	 */
 	public function setNullConversion($value)
 	{

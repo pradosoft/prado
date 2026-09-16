@@ -187,7 +187,7 @@ class TTableGateway extends \Prado\TComponent
 	 * Execute arbituary sql command with binding parameters.
 	 * @param string $sql SQL query string.
 	 * @param array $parameters binding parameters, positional or named.
-	 * @return array query results.
+	 * @return \Prado\Data\TDbDataReader query results.
 	 */
 	public function findBySql($sql, $parameters = [])
 	{

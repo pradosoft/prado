@@ -32,7 +32,7 @@ class TMysqlTableColumn extends TDbTableColumn
 
 	/**
 	 * Overrides parent implementation, returns PHP type from the db type.
-	 * @return bool derived PHP primitive type from the column db type.
+	 * @return string derived PHP primitive type from the column db type.
 	 */
 	public function getPHPType()
 	{

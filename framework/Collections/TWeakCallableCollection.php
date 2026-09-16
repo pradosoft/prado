@@ -178,7 +178,8 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	/**
 	 * This converts the $items array of callable with WeakReferences back into the
 	 * actual callable.
-	 * @param callable &$handler the $handler or $handler[0] may be a WeakReference
+	 * @param array|callable|WeakReference &$handler the handler or its receiver may be a WeakReference
+	 * @param-out null|array|callable|object $handler
 	 */
 	public static function filterItemForOutput(&$handler): void
 	{
@@ -201,6 +202,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	/**
 	 * Converts the $handler callable into a WeakReference version for storage
 	 * @param callable &$handler callable to convert into a WeakReference version
+	 * @param-out array|callable|WeakReference $handler
 	 * @param bool $validate whether or not to validate the input as a callable
 	 */
 	public static function filterItemForInput(&$handler, $validate = false): void

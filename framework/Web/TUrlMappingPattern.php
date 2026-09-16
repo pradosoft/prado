@@ -193,7 +193,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	private $_separator = '/';
 
 	/**
-	 * @var TUrlMappingPatternSecureConnection
+	 * @var string|TUrlMappingPatternSecureConnection
 	 * @since 3.2
 	 */
 	private $_secureConnection = TUrlMappingPatternSecureConnection::Automatic;
@@ -205,7 +205,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	private $_verbs;
 
 	/**
-	 * @var TUrlMappingPatternUrlMatchMode the part of the URL matched by the pattern.
+	 * @var string|TUrlMappingPatternUrlMatchMode the part of the URL matched by the pattern.
 	 * @since 4.4.0
 	 */
 	private $_urlMatchMode = TUrlMappingPatternUrlMatchMode::PathInfo;
@@ -689,7 +689,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TUrlMappingPatternSecureConnection the SecureConnection behavior. Defaults to {@see \Prado\Web\TUrlMappingPatternSecureConnection::Automatic Automatic}
+	 * @return string|TUrlMappingPatternSecureConnection the SecureConnection behavior. Defaults to {@see \Prado\Web\TUrlMappingPatternSecureConnection::Automatic Automatic}
 	 * @since 3.2
 	 */
 	public function getSecureConnection()
@@ -698,7 +698,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TUrlMappingPatternSecureConnection $value the SecureConnection behavior.
+	 * @param string|TUrlMappingPatternSecureConnection $value the SecureConnection behavior.
 	 * @since 3.2
 	 */
 	public function setSecureConnection($value)
@@ -737,7 +737,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TUrlMappingPatternUrlMatchMode the part of the URL matched by the pattern.
+	 * @return string|TUrlMappingPatternUrlMatchMode the part of the URL matched by the pattern.
 	 *   Defaults to {@see \Prado\Web\TUrlMappingPatternUrlMatchMode::PathInfo PathInfo}.
 	 * @since 4.4.0
 	 */
@@ -750,7 +750,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	 * Sets the part of the URL matched by the pattern. In the
 	 * {@see \Prado\Web\TUrlMappingPatternUrlMatchMode::Full Full} mode the text of the
 	 * pattern after the first question mark matches the query string of the request.
-	 * @param TUrlMappingPatternUrlMatchMode $value the part of the URL matched by the pattern.
+	 * @param string|TUrlMappingPatternUrlMatchMode $value the part of the URL matched by the pattern.
 	 * @since 4.4.0
 	 */
 	public function setUrlMatchMode($value)

@@ -95,7 +95,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return THorizontalAlign the horizontal alignment of the contents within the panel, defaults to THorizontalAlign::NotSet.
+	 * @return string|THorizontalAlign the horizontal alignment of the contents within the panel, defaults to THorizontalAlign::NotSet.
 	 */
 	public function getHorizontalAlign()
 	{
@@ -105,7 +105,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Sets the horizontal alignment of the contents within the panel.
 	 * Valid values include 'NotSet', 'Justify', 'Left', 'Right', 'Center'
-	 * @param THorizontalAlign $value the horizontal alignment
+	 * @param string|THorizontalAlign $value the horizontal alignment
 	 */
 	public function setHorizontalAlign($value)
 	{
@@ -130,7 +130,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return TContentDirection direction of the content in the panel. Defaults to TContentDirection::NotSet.
+	 * @return string|TContentDirection direction of the content in the panel. Defaults to TContentDirection::NotSet.
 	 */
 	public function getDirection()
 	{
@@ -138,7 +138,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param TContentDirection $value direction of the content in the panel.
+	 * @param string|TContentDirection $value direction of the content in the panel.
 	 * Valid values include 'NotSet', 'LeftToRight', 'RightToLeft'.
 	 */
 	public function setDirection($value)
@@ -185,7 +185,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return TScrollBars the visibility and position of scroll bars in a panel control, defaults to TScrollBars::None.
+	 * @return string|TScrollBars the visibility and position of scroll bars in a panel control, defaults to TScrollBars::None.
 	 */
 	public function getScrollBars()
 	{
@@ -193,7 +193,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param TScrollBars $value the visibility and position of scroll bars in a panel control.
+	 * @param string|TScrollBars $value the visibility and position of scroll bars in a panel control.
 	 * Valid values include None, Auto, Both, Horizontal and Vertical.
 	 */
 	public function setScrollBars($value)
