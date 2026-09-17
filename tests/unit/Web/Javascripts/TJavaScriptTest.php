@@ -8,15 +8,16 @@
  * @author Brad Anderson <belisoful@icloud.com>
  */
 
-require_once __DIR__ . '/../../PradoUnitRequires.php';
+namespace Prado\Test\Unit\Web\Javascripts;
 
 use Prado\Exceptions\TConfigurationException;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\Javascripts\TJavaScriptAsset;
 use Prado\Web\Javascripts\TJavaScriptLiteral;
 use Prado\Web\Javascripts\TJavaScriptString;
+use Prado\Test\Unit\PradoUnit;
 
-class TJavaScriptTest extends PHPUnit\Framework\TestCase
+class TJavaScriptTest extends \PHPUnit\Framework\TestCase
 {
 	// -----------------------------------------------------------------------
 	// Fixtures
@@ -957,7 +958,7 @@ class TJavaScriptTest extends PHPUnit\Framework\TestCase
 	 */
 	private function withGlobalizationCharset(?string $charset, callable $fn): mixed
 	{
-		$app = Prado::getApplication();
+		$app = \Prado::getApplication();
 		$original = PradoUnit::getProp($app, '_globalization');
 		try {
 			if ($charset === null) {

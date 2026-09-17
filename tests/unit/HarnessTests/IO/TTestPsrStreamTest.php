@@ -8,13 +8,16 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\HarnessTests\IO;
+
 use Psr\Http\Message\StreamInterface;
+use Prado\Test\Unit\Harness\IO\TTestPsrStream;
 
 /**
  * Tests for the {@see TTestPsrStream} harness, the dependency-free PSR-7 stream double.
  * Pins the StreamInterface contract that consumer tests rely on.
  */
-class TTestPsrStreamTest extends PHPUnit\Framework\TestCase
+class TTestPsrStreamTest extends \PHPUnit\Framework\TestCase
 {
 	public function testIsStreamInterface(): void
 	{

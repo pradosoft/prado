@@ -8,6 +8,10 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit;
+
+use Prado\Test\Unit\Harness\TTestApplication;
+
 /**
  * Base class for the hierarchy used in PradoUnit reflection tests.
  * Declares private and protected fields so they exercise ancestor-level
@@ -70,7 +74,7 @@ class PradoUnitStaticTestChild extends PradoUnitStaticTestBase
  * ReflectionException path for missing properties.
  *
  */
-class PradoUnitTest extends PHPUnit\Framework\TestCase
+class PradoUnitTest extends \PHPUnit\Framework\TestCase
 {
 	// -----------------------------------------------------------------------
 	// snapshot
@@ -274,7 +278,7 @@ class PradoUnitTest extends PHPUnit\Framework\TestCase
 
 	public function testSnapshotRestoreRoundTripOnRealApp()
 	{
-		$app = Prado::getApplication();
+		$app = \Prado::getApplication();
 		$originalMode = $app->getMode();
 
 		$snap = TTestApplication::snapshotApp($app, ['_mode']);

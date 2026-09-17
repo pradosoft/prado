@@ -1,6 +1,9 @@
 <?php
 
-require_once(__DIR__ . '/BaseCase.php');
+namespace Prado\Test\Unit\Data\SqlMap;
+
+use Prado\Test\Unit\Data\SqlMap\Domain\AccountBis;
+use Prado\Data\SqlMap\DataMapper\TPropertyAccess;
 
 class PropertyAccessTest extends BaseCase
 {

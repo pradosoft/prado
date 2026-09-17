@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/PradoUnitRequires.php';
+namespace Prado\Test\Unit;
 
 use Prado\Collections\TCollectionItemChangeParameter;
 use Prado\Exceptions\TConfigurationException;
@@ -8,15 +8,7 @@ use Prado\Prado;
 use Prado\TApplication;
 use Prado\TApplicationMode;
 use Prado\TModule;
-
-/**
- * A minimal concrete module for use in module-management tests.
- * TModule is abstract, so we need a concrete subclass.
- */
-class AppTestModule extends TModule
-{
-	public function init($config) {}
-}
+use Prado\Test\Unit\Harness\TTestApplication;
 
 /**
  * Exposes TApplication's protected methods as public wrappers for unit testing
@@ -102,7 +94,7 @@ class AppTestUser implements \Prado\Security\IUser
  *
  * @package System
  */
-class TApplicationTest extends PHPUnit\Framework\TestCase
+class TApplicationTest extends \PHPUnit\Framework\TestCase
 {
 	private TApplication $_app;
 
@@ -2459,7 +2451,7 @@ class InitConfigClassTestApp extends ConfigClassTestApp
  *
  * @package System
  */
-class TApplicationConfigurationClassTest extends PHPUnit\Framework\TestCase
+class TApplicationConfigurationClassTest extends \PHPUnit\Framework\TestCase
 {
 	// -----------------------------------------------------------------------
 	// Shared helpers

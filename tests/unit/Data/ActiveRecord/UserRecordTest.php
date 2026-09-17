@@ -1,8 +1,12 @@
 <?php
 
-require_once(__DIR__ . '/records/UserRecord.php');
+namespace Prado\Test\Unit\Data\ActiveRecord;
 
-class UserRecordTest extends PHPUnit\Framework\TestCase
+use Prado\Test\Unit\Data\ActiveRecord\Records\DepartmentRecord;
+use Prado\Test\Unit\Data\ActiveRecord\Records\UserRecord;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+
+class UserRecordTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 	

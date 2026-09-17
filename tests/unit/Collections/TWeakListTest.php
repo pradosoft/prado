@@ -1,10 +1,13 @@
 <?php
 
+namespace Prado\Test\Unit\Collections;
+
 use Prado\Collections\IWeakRetainable;
 use Prado\Collections\TWeakList;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\TEventHandler;
 
 class TWeakListUnit extends TWeakList
 {
@@ -609,10 +612,10 @@ class TWeakListTest extends TListTest
 		unset($this->item2);
 		try {
 			$closure = $this->list->itemAt(1);
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			self::fail("Closure was put under WeakReference when it shouldn't have been, resulting in:\n" . $e->getMessage());
 		}
-		self::assertInstanceOf(Closure::class, $closure);
+		self::assertInstanceOf(\Closure::class, $closure);
 	}
 	
 	public function testArrayAsItemTWeakList()

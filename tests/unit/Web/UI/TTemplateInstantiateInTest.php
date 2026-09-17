@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI;
+
 use Prado\Prado;
 use Prado\TComponent;
 use Prado\Exceptions\TConfigurationException;
@@ -13,6 +15,7 @@ use Prado\Web\UI\WebControls\TButton;
 use Prado\Web\UI\WebControls\TLabel;
 use Prado\Web\UI\WebControls\TOutputCache;
 use Prado\Web\UI\WebControls\TPanel;
+use Prado\Test\Unit\PradoUnit;
 
 class TTemplateMagicComponent extends TComponent
 {
@@ -240,7 +243,7 @@ class TTemplateInstantiateInRenderAcceptingControl extends TTemplateInstantiateI
 	}
 }
 
-class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
+class TTemplateInstantiateInTest extends \PHPUnit\Framework\TestCase
 {
 	private $_contextPath;
 
@@ -456,7 +459,7 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 
 	public function testInstantiateInInitExpressionVisibleInCreateChildControlsAndOnInit()
 	{
-		$tpl = $this->newTemplateUnvalidated('<com:TTemplateInstantiateInInitProbe ID="probe" Text="<%! \'early\' %>" />');
+		$tpl = $this->newTemplateUnvalidated('<com:Prado\Test\Unit\Web\UI\TTemplateInstantiateInInitProbe ID="probe" Text="<%! \'early\' %>" />');
 		$parent = $this->createControlWithPage();
 		$tpl->instantiateIn($parent);
 		$probe = $parent->getControls()[0];
@@ -505,7 +508,7 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 
 	public function testInstantiateInInitExpressionNonControlEvaluatesAtInstantiation()
 	{
-		$tpl = $this->newTemplateUnvalidated('<com:TTemplateInstantiateInTestComponent ID="c1" CustomProp="<%! strtoupper(\'now\') %>" />');
+		$tpl = $this->newTemplateUnvalidated('<com:Prado\Test\Unit\Web\UI\TTemplateInstantiateInTestComponent ID="c1" CustomProp="<%! strtoupper(\'now\') %>" />');
 		$tplControl = $this->createAcceptingControlWithPage();
 		$tpl->instantiateIn($tplControl);
 		$component = $tplControl->parsedObjects[0];
@@ -595,7 +598,7 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 
 	public function testInstantiateInTComponentNonControlViaAcceptingParent()
 	{
-		$tpl = $this->newTemplateUnvalidated('<com:TTemplateInstantiateInTestComponent ID="c1" />');
+		$tpl = $this->newTemplateUnvalidated('<com:Prado\Test\Unit\Web\UI\TTemplateInstantiateInTestComponent ID="c1" />');
 		$tplControl = $this->createAcceptingControlWithPage();
 		$tpl->instantiateIn($tplControl);
 		$this->assertCount(1, $tplControl->parsedObjects);
@@ -606,7 +609,7 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 
 	public function testInstantiateInTComponentDirectChildFailsInTControlCollection()
 	{
-		$tpl = $this->newTemplateUnvalidated('<com:TTemplateInstantiateInTestComponent ID="c1" />');
+		$tpl = $this->newTemplateUnvalidated('<com:Prado\Test\Unit\Web\UI\TTemplateInstantiateInTestComponent ID="c1" />');
 		$tplControl = $this->createControlWithPage();
 		$this->expectException(TInvalidDataTypeException::class);
 		$tpl->instantiateIn($tplControl);
@@ -854,8 +857,8 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 
 	public function testInstantiateInRegistersIdOnTComponentWithIdProperty()
 	{
-		Prado::using('TTemplateDashComponent');
-		$tpl = $this->newTemplateUnvalidated('<com:TTemplateDashComponent ID="c1" ForeColor="red" />');
+		Prado::using(TTemplateDashComponent::class);
+		$tpl = $this->newTemplateUnvalidated('<com:Prado\Test\Unit\Web\UI\TTemplateDashComponent ID="c1" ForeColor="red" />');
 		$tplControl = $this->createAcceptingControlWithPage();
 		$tpl->instantiateIn($tplControl);
 		$this->assertCount(1, $tplControl->parsedObjects);
@@ -868,7 +871,7 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 
 	public function testInstantiateInTComponentNoIdPropertyUnsetsId()
 	{
-		$tpl = $this->newTemplateUnvalidated('<com:TTemplateInstantiateInTestComponent ID="c1" />');
+		$tpl = $this->newTemplateUnvalidated('<com:Prado\Test\Unit\Web\UI\TTemplateInstantiateInTestComponent ID="c1" />');
 		$tplControl = $this->createAcceptingControlWithPage();
 		$tpl->instantiateIn($tplControl);
 		$this->assertCount(1, $tplControl->parsedObjects);
@@ -880,7 +883,7 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 
 	public function testInstantiateInTComponentIdNoIdPropertyWithCustomProp()
 	{
-		$tpl = $this->newTemplateUnvalidated('<com:TTemplateInstantiateInTestComponent ID="c1" CustomProp="val" />');
+		$tpl = $this->newTemplateUnvalidated('<com:Prado\Test\Unit\Web\UI\TTemplateInstantiateInTestComponent ID="c1" CustomProp="val" />');
 		$tplControl = $this->createAcceptingControlWithPage();
 		$tpl->instantiateIn($tplControl);
 		$this->assertCount(1, $tplControl->parsedObjects);
@@ -892,8 +895,8 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 
 	public function testInstantiateInTComponentNestedInAcceptingControl()
 	{
-		Prado::using('TTemplateInstantiateInAcceptingControl');
-		$tpl = $this->newTemplateUnvalidated('<com:TTemplateInstantiateInAcceptingControl ID="pnl1"><com:TTemplateInstantiateInTestComponent ID="c1" CustomProp="val" /></com:TTemplateInstantiateInAcceptingControl>');
+		Prado::using(TTemplateInstantiateInAcceptingControl::class);
+		$tpl = $this->newTemplateUnvalidated('<com:Prado\Test\Unit\Web\UI\TTemplateInstantiateInAcceptingControl ID="pnl1"><com:Prado\Test\Unit\Web\UI\TTemplateInstantiateInTestComponent ID="c1" CustomProp="val" /></com:Prado\Test\Unit\Web\UI\TTemplateInstantiateInAcceptingControl>');
 		$tplControl = $this->createControlWithPage();
 		$tpl->instantiateIn($tplControl);
 		$panel = $tplControl->getControls()[0];
@@ -1053,7 +1056,7 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 
 	public function testInstantiateInConfigureComponentValueViaAcceptingParent()
 	{
-		$tpl = $this->newTemplateUnvalidated('<com:TTemplateInstantiateInTestComponent ID="c1" CustomProp="val" />');
+		$tpl = $this->newTemplateUnvalidated('<com:Prado\Test\Unit\Web\UI\TTemplateInstantiateInTestComponent ID="c1" CustomProp="val" />');
 		$tplControl = $this->createAcceptingControlWithPage();
 		$tpl->instantiateIn($tplControl);
 		$this->assertCount(1, $tplControl->parsedObjects);
@@ -1078,7 +1081,7 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 
 	public function testInstantiateInConfigureComponentExpressionViaAcceptingParent()
 	{
-		$tpl = $this->newTemplateUnvalidated('<com:TTemplateInstantiateInTestComponent ID="c1" CustomProp="<%= "hello" %>" />');
+		$tpl = $this->newTemplateUnvalidated('<com:Prado\Test\Unit\Web\UI\TTemplateInstantiateInTestComponent ID="c1" CustomProp="<%= "hello" %>" />');
 		$tplControl = $this->createAcceptingControlWithPage();
 		$tpl->instantiateIn($tplControl);
 		$this->assertCount(1, $tplControl->parsedObjects);
@@ -1090,7 +1093,7 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 	{
 		// Use single-quoted string inside the expression to avoid breaking the attribute parser's
 		// double-quote boundary detection ("..." stops at the first inner double quote).
-		$tpl = $this->newTemplateUnvalidated('<com:TTemplateInstantiateInTestComponent ID="c1" CustomProp="<%= \'hello\' %>" />');
+		$tpl = $this->newTemplateUnvalidated('<com:Prado\Test\Unit\Web\UI\TTemplateInstantiateInTestComponent ID="c1" CustomProp="<%= \'hello\' %>" />');
 		$tplControl = $this->createAcceptingControlWithPage();
 		$tpl->instantiateIn($tplControl);
 		$this->assertCount(1, $tplControl->parsedObjects);
@@ -1139,7 +1142,7 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 
 	public function testInstantiateInConfigureComponentParameterViaAcceptingParent()
 	{
-		$tpl = $this->newTemplateUnvalidated('<com:TTemplateInstantiateInTestComponent ID="c1" CustomProp="<%$ SomeParam %>" />');
+		$tpl = $this->newTemplateUnvalidated('<com:Prado\Test\Unit\Web\UI\TTemplateInstantiateInTestComponent ID="c1" CustomProp="<%$ SomeParam %>" />');
 		$tplControl = $this->createAcceptingControlWithPage();
 		$tpl->instantiateIn($tplControl);
 		$this->assertCount(1, $tplControl->parsedObjects);
@@ -1157,7 +1160,7 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 
 	public function testInstantiateInConfigureComponentLocalizationViaAcceptingParent()
 	{
-		$tpl = $this->newTemplateUnvalidated('<com:TTemplateInstantiateInTestComponent ID="c1" CustomProp="<%[ Hello ]%>" />');
+		$tpl = $this->newTemplateUnvalidated('<com:Prado\Test\Unit\Web\UI\TTemplateInstantiateInTestComponent ID="c1" CustomProp="<%[ Hello ]%>" />');
 		$tplControl = $this->createAcceptingControlWithPage();
 		$tpl->instantiateIn($tplControl);
 		$this->assertCount(1, $tplControl->parsedObjects);
@@ -1165,7 +1168,7 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 
 	public function testInstantiateInConfigureComponentAssetParsedCorrectly()
 	{
-		$tpl = $this->newTemplateUnvalidated('<com:TTemplateInstantiateInTestComponent ID="c1" CustomProp="<%~ assets/img.png %>" />');
+		$tpl = $this->newTemplateUnvalidated('<com:Prado\Test\Unit\Web\UI\TTemplateInstantiateInTestComponent ID="c1" CustomProp="<%~ assets/img.png %>" />');
 		$items = $tpl->getItems();
 		$component = null;
 		foreach ($items as $item) {
@@ -1185,7 +1188,7 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 
 	public function testInstantiateInConfigureComponentTemplateParsedCorrectly()
 	{
-		$tpl = $this->newTemplateUnvalidated('<com:TTemplateInstantiateInTestComponent ID="c1" Template="content" />');
+		$tpl = $this->newTemplateUnvalidated('<com:Prado\Test\Unit\Web\UI\TTemplateInstantiateInTestComponent ID="c1" Template="content" />');
 		$items = $tpl->getItems();
 		$component = null;
 		foreach ($items as $item) {
@@ -1200,9 +1203,9 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 
 	public function testInstantiateInConfigureControlTemplateSetsNestedTemplate()
 	{
-		Prado::using('TTemplateInstantiateInTemplateControl');
+		Prado::using(TTemplateInstantiateInTemplateControl::class);
 		// 'itemtemplate' (all lowercase) triggers CONFIG_TEMPLATE on instantiation
-		$tpl = $this->newTemplateUnvalidated('<com:TTemplateInstantiateInTemplateControl ID="c1" Itemtemplate="inner content" />');
+		$tpl = $this->newTemplateUnvalidated('<com:Prado\Test\Unit\Web\UI\TTemplateInstantiateInTemplateControl ID="c1" Itemtemplate="inner content" />');
 		$tplControl = $this->createControlWithPage();
 		$tpl->instantiateIn($tplControl);
 		$this->assertCount(1, $tplControl->getControls());
@@ -1349,8 +1352,8 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 
 	public function testInstantiateInGroupSubPropertyWithDash()
 	{
-		Prado::using('TTemplateDashComponent');
-		$tpl = $this->newTemplateUnvalidated('<com:TTemplateDashComponent ID="c1"><prop:SubProp ForeColor="green" /></com:TTemplateDashComponent>');
+		Prado::using(TTemplateDashComponent::class);
+		$tpl = $this->newTemplateUnvalidated('<com:Prado\Test\Unit\Web\UI\TTemplateDashComponent ID="c1"><prop:SubProp ForeColor="green" /></com:Prado\Test\Unit\Web\UI\TTemplateDashComponent>');
 		$tplControl = $this->createAcceptingControlWithPage();
 		$tpl->instantiateIn($tplControl);
 		$this->assertCount(1, $tplControl->parsedObjects);
@@ -1415,8 +1418,8 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 
 	public function testInstantiateInPropertyTagWithDashInMagicComponent()
 	{
-		Prado::using('TTemplateMagicComponent');
-		$tpl = $this->newTemplateUnvalidated('<com:TTemplateMagicComponent ID="c1"><prop:Custom-Prop>value from tag</prop:Custom-Prop></com:TTemplateMagicComponent>');
+		Prado::using(TTemplateMagicComponent::class);
+		$tpl = $this->newTemplateUnvalidated('<com:Prado\Test\Unit\Web\UI\TTemplateMagicComponent ID="c1"><prop:Custom-Prop>value from tag</prop:Custom-Prop></com:Prado\Test\Unit\Web\UI\TTemplateMagicComponent>');
 		$tplControl = $this->createAcceptingControlWithPage();
 		$tpl->instantiateIn($tplControl);
 		$this->assertCount(1, $tplControl->parsedObjects);
@@ -1428,8 +1431,8 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 
 	public function testInstantiateInPropertyTagWithDashInMagicControl()
 	{
-		Prado::using('TTemplateMagicControl');
-		$tpl = $this->newTemplateUnvalidated('<com:TTemplateMagicControl ID="c1"><prop:data-value>123</prop:data-value></com:TTemplateMagicControl>');
+		Prado::using(TTemplateMagicControl::class);
+		$tpl = $this->newTemplateUnvalidated('<com:Prado\Test\Unit\Web\UI\TTemplateMagicControl ID="c1"><prop:data-value>123</prop:data-value></com:Prado\Test\Unit\Web\UI\TTemplateMagicControl>');
 		$tplControl = $this->createControlWithPage();
 		$tpl->instantiateIn($tplControl);
 		$this->assertCount(1, $tplControl->getControls());
@@ -1441,8 +1444,8 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 
 	public function testInstantiateInAttributeDashToUnderscoreOnMagicControl()
 	{
-		Prado::using('TTemplateMagicControl');
-		$tpl = $this->newTemplateUnvalidated('<com:TTemplateMagicControl ID="c1" data-toggle="dropdown" />');
+		Prado::using(TTemplateMagicControl::class);
+		$tpl = $this->newTemplateUnvalidated('<com:Prado\Test\Unit\Web\UI\TTemplateMagicControl ID="c1" data-toggle="dropdown" />');
 		$tplControl = $this->createControlWithPage();
 		$tpl->instantiateIn($tplControl);
 		$this->assertCount(1, $tplControl->getControls());
@@ -1454,8 +1457,8 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 
 	public function testInstantiateInCasePreservedPropertyOnDashControl()
 	{
-		Prado::using('TTemplateDashControl');
-		$tpl = $this->newTemplateUnvalidated('<com:TTemplateDashControl ID="c1" ForeColor="blue" />');
+		Prado::using(TTemplateDashControl::class);
+		$tpl = $this->newTemplateUnvalidated('<com:Prado\Test\Unit\Web\UI\TTemplateDashControl ID="c1" ForeColor="blue" />');
 		$tplControl = $this->createControlWithPage();
 		$tpl->instantiateIn($tplControl);
 		$this->assertCount(1, $tplControl->getControls());
@@ -1466,8 +1469,8 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 
 	public function testInstantiateInPropertyWithDashSetViaMagic()
 	{
-		Prado::using('TTemplateMagicControl');
-		$tpl = $this->newTemplateUnvalidated('<com:TTemplateMagicControl ID="c1" Custom-Prop="value" />');
+		Prado::using(TTemplateMagicControl::class);
+		$tpl = $this->newTemplateUnvalidated('<com:Prado\Test\Unit\Web\UI\TTemplateMagicControl ID="c1" Custom-Prop="value" />');
 		$tplControl = $this->createControlWithPage();
 		$tpl->instantiateIn($tplControl);
 		$this->assertCount(1, $tplControl->getControls());
@@ -1479,8 +1482,8 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 
 	public function testInstantiateInMagicComponentReceivesDashProperty()
 	{
-		Prado::using('TTemplateMagicComponent');
-		$tpl = $this->newTemplateUnvalidated('<com:TTemplateMagicComponent ID="c1" data-toggle="dropdown" />');
+		Prado::using(TTemplateMagicComponent::class);
+		$tpl = $this->newTemplateUnvalidated('<com:Prado\Test\Unit\Web\UI\TTemplateMagicComponent ID="c1" data-toggle="dropdown" />');
 		$tplControl = $this->createAcceptingControlWithPage();
 		$tpl->instantiateIn($tplControl);
 		$this->assertCount(1, $tplControl->parsedObjects);
@@ -1492,8 +1495,8 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 
 	public function testInstantiateInMagicComponentReceivesCasePreservedProperty()
 	{
-		Prado::using('TTemplateMagicComponent');
-		$tpl = $this->newTemplateUnvalidated('<com:TTemplateMagicComponent ID="c1" ThemeColor="blue" />');
+		Prado::using(TTemplateMagicComponent::class);
+		$tpl = $this->newTemplateUnvalidated('<com:Prado\Test\Unit\Web\UI\TTemplateMagicComponent ID="c1" ThemeColor="blue" />');
 		$tplControl = $this->createAcceptingControlWithPage();
 		$tpl->instantiateIn($tplControl);
 		$this->assertCount(1, $tplControl->parsedObjects);
@@ -1505,8 +1508,8 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 
 	public function testInstantiateInMagicControlReceivesDashProperty()
 	{
-		Prado::using('TTemplateMagicControl');
-		$tpl = $this->newTemplateUnvalidated('<com:TTemplateMagicControl ID="c1" data-toggle="modal" />');
+		Prado::using(TTemplateMagicControl::class);
+		$tpl = $this->newTemplateUnvalidated('<com:Prado\Test\Unit\Web\UI\TTemplateMagicControl ID="c1" data-toggle="modal" />');
 		$tplControl = $this->createControlWithPage();
 		$tpl->instantiateIn($tplControl);
 		$this->assertCount(1, $tplControl->getControls());
@@ -1518,8 +1521,8 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 
 	public function testInstantiateInMagicControlReceivesCasePreservedProperty()
 	{
-		Prado::using('TTemplateMagicControl');
-		$tpl = $this->newTemplateUnvalidated('<com:TTemplateMagicControl ID="c1" ThemeColor="purple" />');
+		Prado::using(TTemplateMagicControl::class);
+		$tpl = $this->newTemplateUnvalidated('<com:Prado\Test\Unit\Web\UI\TTemplateMagicControl ID="c1" ThemeColor="purple" />');
 		$tplControl = $this->createControlWithPage();
 		$tpl->instantiateIn($tplControl);
 		$this->assertCount(1, $tplControl->getControls());
@@ -1535,8 +1538,8 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 
 	public function testInstantiateInJsPropertyPrefixOnControl()
 	{
-		Prado::using('TTemplateInstantiateInJsControl');
-		$tpl = $this->newTemplateUnvalidated('<com:TTemplateInstantiateInJsControl ID="c1" JsClick="alert(1)" />');
+		Prado::using(TTemplateInstantiateInJsControl::class);
+		$tpl = $this->newTemplateUnvalidated('<com:Prado\Test\Unit\Web\UI\TTemplateInstantiateInJsControl ID="c1" JsClick="alert(1)" />');
 		$tplControl = $this->createControlWithPage();
 		$tpl->instantiateIn($tplControl);
 		$this->assertCount(1, $tplControl->getControls());
@@ -1547,8 +1550,8 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 
 	public function testInstantiateInJsPropertyPrefixEmptyValue()
 	{
-		Prado::using('TTemplateInstantiateInJsControl');
-		$tpl = $this->newTemplateUnvalidated('<com:TTemplateInstantiateInJsControl ID="c1" JsClick="" />');
+		Prado::using(TTemplateInstantiateInJsControl::class);
+		$tpl = $this->newTemplateUnvalidated('<com:Prado\Test\Unit\Web\UI\TTemplateInstantiateInJsControl ID="c1" JsClick="" />');
 		$tplControl = $this->createControlWithPage();
 		$tpl->instantiateIn($tplControl);
 		$this->assertCount(1, $tplControl->getControls());
@@ -1653,8 +1656,8 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 
 	public function testInstantiateInAllowChildControlsFalse()
 	{
-		Prado::using('TTemplateInstantiateInNoAllowChildControl');
-		$tpl = $this->newTemplateUnvalidated('<com:TTemplateInstantiateInNoAllowChildControl ID="outer"><com:TLabel ID="inner" Text="Hello" /></com:TTemplateInstantiateInNoAllowChildControl>');
+		Prado::using(TTemplateInstantiateInNoAllowChildControl::class);
+		$tpl = $this->newTemplateUnvalidated('<com:Prado\Test\Unit\Web\UI\TTemplateInstantiateInNoAllowChildControl ID="outer"><com:TLabel ID="inner" Text="Hello" /></com:Prado\Test\Unit\Web\UI\TTemplateInstantiateInNoAllowChildControl>');
 		$tplControl = $this->createControlWithPage();
 		$tpl->instantiateIn($tplControl);
 		$this->assertCount(1, $tplControl->getControls());
@@ -1665,7 +1668,7 @@ class TTemplateInstantiateInTest extends PHPUnit\Framework\TestCase
 
 	public function testInstantiateInTComponentNestedAddsToControlsArray()
 	{
-		$tpl = $this->newTemplateUnvalidated('<com:TTemplateInstantiateInAcceptingControl ID="pnl1"><com:TTemplateDashComponent ID="c1" ForeColor="red" /></com:TTemplateInstantiateInAcceptingControl>');
+		$tpl = $this->newTemplateUnvalidated('<com:Prado\Test\Unit\Web\UI\TTemplateInstantiateInAcceptingControl ID="pnl1"><com:Prado\Test\Unit\Web\UI\TTemplateDashComponent ID="c1" ForeColor="red" /></com:Prado\Test\Unit\Web\UI\TTemplateInstantiateInAcceptingControl>');
 		$tplControl = $this->createAcceptingControlWithPage();
 		$tpl->instantiateIn($tplControl);
 		$outer = $tplControl->parsedObjects[0];

@@ -1,9 +1,12 @@
 <?php
 
-require_once(__DIR__ . '/records/DepartmentRecord.php');
-require_once(__DIR__ . '/records/DepSections.php');
+namespace Prado\Test\Unit\Data\ActiveRecord;
 
-class DeleteByPkTest extends PHPUnit\Framework\TestCase
+use Prado\Test\Unit\Data\ActiveRecord\Records\DepSections;
+use Prado\Test\Unit\Data\ActiveRecord\Records\DepartmentRecord;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+
+class DeleteByPkTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 	

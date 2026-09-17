@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI\WebControls;
+
 use Prado\Web\UI\TControl;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\TTemplate;
@@ -10,6 +12,7 @@ use Prado\Web\UI\WebControls\TDisplayStyle;
 use Prado\Web\UI\THtmlWriter;
 use Prado\IO\TTextWriter;
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\PradoUnit;
 
 // ---------------------------------------------------------------------------
 // Fixture subclasses for Section 23 — DEFAULT_DISPLAY_STYLE subclass override

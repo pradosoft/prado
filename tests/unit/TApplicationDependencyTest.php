@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit;
+
 use Prado\TApplication;
 use Prado\TModule;
 
@@ -538,7 +540,7 @@ class TwoKeyValueDepModule extends \Prado\TModule implements \Prado\IModuleDepen
  *
  * @package System
  */
-class TApplicationDependencyTest extends PHPUnit\Framework\TestCase
+class TApplicationDependencyTest extends \PHPUnit\Framework\TestCase
 {
 	// -----------------------------------------------------------------------
 	// Shared helpers

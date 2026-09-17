@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Stream;
+
 use Prado\IO\Stream\TFnStreamMethod;
 use Psr\Http\Message\StreamInterface;
 
@@ -7,7 +9,7 @@ use Psr\Http\Message\StreamInterface;
  * Unit tests for {@see \Prado\IO\Stream\TFnStreamMethod}, the enumeration of PSR-7
  * {@see StreamInterface} method names used as {@see \Prado\IO\Stream\TFnStream} map keys.
  */
-class TFnStreamMethodTest extends PHPUnit\Framework\TestCase
+class TFnStreamMethodTest extends \PHPUnit\Framework\TestCase
 {
 	private function enumValues(): array
 	{

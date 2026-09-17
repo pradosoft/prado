@@ -8,9 +8,11 @@
  * @author Brad Anderson <belisoful@icloud.com>
  */
 
+namespace Prado\Test\Unit\Web\Services;
+
 use Prado\Web\Services\TCspViolationParameter;
 
-class TCspViolationParameterTest extends PHPUnit\Framework\TestCase
+class TCspViolationParameterTest extends \PHPUnit\Framework\TestCase
 {
 	// -----------------------------------------------------------------------
 	// Constants — shared field names (same key in both formats)

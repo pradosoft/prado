@@ -12,6 +12,8 @@
  * @author Brad Anderson <belisoful@icloud.com>
  */
 
+namespace Prado\Test\Unit\Web\Services;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Web\Services\TSoapServer;
@@ -31,6 +33,13 @@ class TTestSoapQuoteProvider
 	{
 		return 0.0;
 	}
+}
+
+// The generator writes the provider name into the WSDL namespace ('urn:<name>wsdl').
+// A namespaced name carries backslashes, which a URI cannot hold, so the tests serve
+// the provider under a global alias.
+if (!class_exists('TTestSoapQuoteProvider', false)) {
+	class_alias(TTestSoapQuoteProvider::class, 'TTestSoapQuoteProvider');
 }
 
 /**
@@ -67,12 +76,15 @@ class TTestSoapLegacyServer extends TTestSoapServer
 	}
 }
 
-class TSoapServerTest extends PHPUnit\Framework\TestCase
+class TSoapServerTest extends \PHPUnit\Framework\TestCase
 {
+	/** Global alias of {@see TTestSoapQuoteProvider}; its name is valid in a namespace URI. */
+	private const PROVIDER = 'TTestSoapQuoteProvider';
+
 	protected function newServer(): TTestSoapServer
 	{
 		$server = new TTestSoapServer();
-		$server->setProvider(TTestSoapQuoteProvider::class);
+		$server->setProvider(self::PROVIDER);
 		return $server;
 	}
 
@@ -143,7 +155,7 @@ class TSoapServerTest extends PHPUnit\Framework\TestCase
 	public function testADocumentStyleIsRefusedWhereTheGeneratorLacksIt()
 	{
 		$server = new TTestSoapLegacyServer();
-		$server->setProvider(TTestSoapQuoteProvider::class);
+		$server->setProvider(self::PROVIDER);
 		$server->setWsdlStyle(TSoapServer::WSDL_STYLE_DOCUMENT);
 
 		$this->expectException(TConfigurationException::class);
@@ -157,7 +169,7 @@ class TSoapServerTest extends PHPUnit\Framework\TestCase
 	public function testTheDefaultStyleGeneratesWhereTheGeneratorLacksTheStyle()
 	{
 		$server = new TTestSoapLegacyServer();
-		$server->setProvider(TTestSoapQuoteProvider::class);
+		$server->setProvider(self::PROVIDER);
 
 		$this->assertStringContainsString('style="rpc"', $server->getWsdl());
 	}

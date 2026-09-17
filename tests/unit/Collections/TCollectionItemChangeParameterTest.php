@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Collections;
+
 use Prado\Collections\TCollectionItemChangeParameter;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\TEventParameter;
@@ -86,7 +88,7 @@ class TCollectionItemChangeParameterTest extends TestCase
 
 	public function testImplementsArrayAccess()
 	{
-		$this->assertInstanceOf(ArrayAccess::class, new TCollectionItemChangeParameter());
+		$this->assertInstanceOf(\ArrayAccess::class, new TCollectionItemChangeParameter());
 	}
 
 	// =========================================================================
@@ -185,7 +187,7 @@ class TCollectionItemChangeParameterTest extends TestCase
 	public function testConstructorComplexValues()
 	{
 		$newVal = ['a' => 1];
-		$oldVal = new stdClass();
+		$oldVal = new \stdClass();
 		$param = new TCollectionItemChangeParameter('k', $newVal, $oldVal, 0);
 		$this->assertSame($newVal, $param->getValue());
 		$this->assertSame($oldVal, $param->getOldValue());
@@ -320,7 +322,7 @@ class TCollectionItemChangeParameterTest extends TestCase
 
 	public function testSetOldValueObject()
 	{
-		$obj = new stdClass();
+		$obj = new \stdClass();
 		$param = new TCollectionItemChangeParameter();
 		$param->setOldValue($obj);
 		$this->assertSame($obj, $param->getOldValue());

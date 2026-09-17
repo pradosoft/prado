@@ -3,12 +3,14 @@
 /**
  * TStubHeader — instrumented test double for THttpHeadersManager tests.
  *
- * Auto-loaded by {@see PradoUnitRequires}. Counts lifecycle calls
+ * Counts lifecycle calls
  * (`init` / `initComplete` / `finalizeHeader`) so tests can assert the
  * manager wires each header instance correctly.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  */
+
+namespace Prado\Test\Unit\Harness\Web\HttpHeaders;
 
 use Prado\Web\HttpHeaders\TBaseHttpHeader;
 

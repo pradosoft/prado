@@ -1,13 +1,16 @@
 <?php
 
+namespace Prado\Test\Unit\Web;
+
 use Prado\Web\THttpRequest;
 use Prado\Web\THttpRequestUrlFormat;
 use Prado\Web\TUrlManager;
+use Prado\Test\Unit\Harness\TTestApplication;
 
 /**
  * Test class for TUrlManager.
  */
-class TUrlManagerTest extends PHPUnit\Framework\TestCase
+class TUrlManagerTest extends \PHPUnit\Framework\TestCase
 {
 	protected ?TTestApplication $app = null;
 

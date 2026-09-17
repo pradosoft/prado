@@ -8,7 +8,10 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\HarnessTests\Caching;
+
 use Prado\Caching\TRedisCache;
+use Prado\Test\Unit\Harness\Caching\TTestRedisCache;
 
 /**
  * Tests for {@see TTestRedisCache}. The handle seam is verified with an injected dummy
@@ -17,7 +20,7 @@ use Prado\Caching\TRedisCache;
  *
  * @package System.Harness.Caching
  */
-class TTestRedisCacheTest extends PHPUnit\Framework\TestCase
+class TTestRedisCacheTest extends \PHPUnit\Framework\TestCase
 {
 	private function newCache(): TTestRedisCache
 	{

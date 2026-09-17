@@ -1,9 +1,12 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI\ActiveControls;
+
 use Prado\IO\TTextWriter;
 use Prado\Web\UI\ActiveControls\TInPlaceTextBox;
 use Prado\Web\UI\THtmlWriter;
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\PradoUnit;
 
 class TInPlaceTextBoxTest extends TestCase
 {

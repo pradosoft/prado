@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Compression;
+
 use Prado\IO\Compression\ICompressor;
 
 /** A trivial codec (byte-reversal) that only exists to exercise the ICompressor contract. */
@@ -16,7 +18,7 @@ class ReverseCompressor implements ICompressor
 	}
 }
 
-class ICompressorTest extends PHPUnit\Framework\TestCase
+class ICompressorTest extends \PHPUnit\Framework\TestCase
 {
 	public function testImplementationSatisfiesTheContract()
 	{

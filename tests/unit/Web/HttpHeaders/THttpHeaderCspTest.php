@@ -8,12 +8,15 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Web\HttpHeaders;
+
 use Prado\Web\HttpHeaders\TCspDirective;
 use Prado\Web\HttpHeaders\THttpHeaderCsp;
 use Prado\Web\HttpHeaders\THttpHeaderReportingEndpoints;
 use Prado\Web\HttpHeaders\THttpHeadersManager;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\THttpHeaderName;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * Unit tests for {@see THttpHeaderCsp}.
@@ -23,7 +26,7 @@ use Prado\Web\THttpHeaderName;
  * class directly: policy CRUD, header name/value rendering, NONCE
  * substitution, `setHeaderValue()` parsing, and the two lifecycle hooks.
  */
-class THttpHeaderCspTest extends PHPUnit\Framework\TestCase
+class THttpHeaderCspTest extends \PHPUnit\Framework\TestCase
 {
 	private THttpHeaderCsp $csp;
 

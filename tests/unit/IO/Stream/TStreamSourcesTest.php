@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Stream;
+
 use Prado\IO\Stream\TAppendStream;
 use Prado\IO\Stream\TBufferStream;
 use Prado\IO\Stream\TDroppingStream;
@@ -8,7 +10,7 @@ use Prado\IO\Stream\TLazyOpenStream;
 use Prado\IO\Stream\TPumpStream;
 use Prado\IO\TStream;
 
-class TStreamSourcesTest extends PHPUnit\Framework\TestCase
+class TStreamSourcesTest extends \PHPUnit\Framework\TestCase
 {
 	// ---- TFnStream ----
 

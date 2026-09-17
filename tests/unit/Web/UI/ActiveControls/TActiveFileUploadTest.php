@@ -1,6 +1,8 @@
 <?php
 
 
+namespace Prado\Test\Unit\Web\UI\ActiveControls;
+
 use Prado\Web\UI\ActiveControls\TActiveFileUpload;
 use PHPUnit\Framework\TestCase;
 

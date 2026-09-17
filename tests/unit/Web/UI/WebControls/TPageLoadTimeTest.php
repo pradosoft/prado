@@ -1,12 +1,14 @@
 <?php
 
 
+namespace Prado\Test\Unit\Web\UI\WebControls;
+
 use Prado\Web\UI\WebControls\TLabel;
 
 use Prado\IO\TTextWriter;
 use Prado\Web\UI\WebControls\TPageLoadTime;
 
-class TPageLoadTimeTest extends PHPUnit\Framework\TestCase
+class TPageLoadTimeTest extends \PHPUnit\Framework\TestCase
 {
 	public function testSecondSuffix()
 	{

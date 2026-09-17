@@ -113,6 +113,7 @@ TApplication
 | Enumerated Constants | `PascalCase` | `DeepSkyBlue` |
 | Class properties| `_camelCase` | `_propertyOfClass`, `_styleFieldNames` |
 | Namespaces | `Prado\{Module}` | `Prado\Web\UI\TControl` |
+| Unit test namespaces | `Prado\Test\Unit\{Directory}` | `Prado\Test\Unit\Web\UI\TControlTest` |
 | Web Page templates | `.page` with `.php` backing | `Home.page`, `Home.php` |
 | MasterClass and Template files | `.tpl` with `.php` backing | `MyPortlet.tpl`, `MyPortlet.php` |
 | TControl tag prefix |  `<com:` | `<com:TMain />` |
@@ -134,19 +135,25 @@ TApplication
 ## Test Bootstrap
 
 Tests require a running `TApplication`. 
-The bootstrap (`tests/test_tools/phpunit_bootstrap.php`) instantiates one from `tests/test_tools/Security/app/`; it may change through the unit tests.
+The bootstrap (`tests/test_tools/phpunit_bootstrap.php`) instantiates one from `tests/unit/Security/app/`; it may change through the unit tests.
 Database tests need MySQL/PostgreSQL initialized from `tests/initdb_mysql.sql` / `tests/initdb_pgsql.sql`.
 
 ## Testing
 
-- Use `tests/unit/PradoUnit` infrastructure for (bootstrapped in phpunit):
+- Unit test classes use the `Prado\Test\Unit\` namespace, autoloaded by Composer (`autoload-dev` PSR-4 → `tests/unit/`).
+  - The namespace follows the directory: `tests/unit/Web/UI/TControlTest.php` → `Prado\Test\Unit\Web\UI\TControlTest`.
+  - A class used by another file lives in its own file named after the class. Fixtures used only by one test file stay in that file.
+  - Directories holding classes use PascalCase, except where they mirror a lowercase framework namespace (`I18N/core`).
+  - Class names in strings, templates (`<com:…>`), and XML configuration are fully qualified; use `Foo::class` in PHP.
+  - Global-namespace fixtures (`Security/app/prado3stubs/`, `Exceptions/TErrorHandlerTestGlobalClass.php`) and `PHPStan/Fixtures/` are excluded from the classmap and are not autoloaded.
+  - Test classes are inside `Prado\*`: a default log category is the test class, and an ActiveRecord fixture needs `const TABLE`.
+  - Helper classes in their own file must not end in `Test`; phpunit collects `*Test.php` files as tests.
+- Use `Prado\Test\Unit\PradoUnit` infrastructure for:
   - access to an object's protected/private properties
   - invoking protected/private methods
   - restore global variables to their initial state
   - save and restore all of an object's properties
-  - automatically is included in the bootstrap
-  - includes everything in `tests/unit/Harness/` automatically (bootstrap)
-  - `Harness` is where test classes of Prado framework classes are located for general use
+  - `Harness/` (`Prado\Test\Unit\Harness\`) holds test classes designed for reuse across the Prado tests
   - Traits for unit test classes are in `Harness/Traits/`
 
 ## Code Style

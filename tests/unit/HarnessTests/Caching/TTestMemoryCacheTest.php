@@ -8,7 +8,12 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\HarnessTests\Caching;
+
 use Prado\Caching\TMemoryCache;
+use Prado\Test\Unit\Harness\Caching\TTestMemoryCache;
+use Prado\Test\Unit\Harness\Caching\TTestMemoryCacheCustomKey;
+use Prado\Test\Unit\Harness\Caching\TTestMemoryCacheCustomMergePolicy;
 
 /**
  * Tests for {@see TTestMemoryCache}, verifying the harness exposers for the store core,
@@ -16,7 +21,7 @@ use Prado\Caching\TMemoryCache;
  *
  * @package System.Harness.Caching
  */
-class TTestMemoryCacheTest extends PHPUnit\Framework\TestCase
+class TTestMemoryCacheTest extends \PHPUnit\Framework\TestCase
 {
 	private TTestMemoryCache $cache;
 

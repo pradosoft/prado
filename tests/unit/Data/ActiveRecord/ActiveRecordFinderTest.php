@@ -1,8 +1,11 @@
 <?php
 
-require_once(__DIR__ . '/records/DepartmentRecord.php');
+namespace Prado\Test\Unit\Data\ActiveRecord;
 
-class ActiveRecordFinderTest extends PHPUnit\Framework\TestCase
+use Prado\Test\Unit\Data\ActiveRecord\Records\DepartmentRecord;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+
+class ActiveRecordFinderTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 	

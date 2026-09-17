@@ -1,10 +1,12 @@
 <?php
 
+namespace Prado\Test\Unit\Util;
+
 use Prado\Util\TSerializableClosure;
 use Laravel\SerializableClosure\SerializableClosure;
 use Laravel\SerializableClosure\Exceptions\InvalidSignatureException;
 
-class TSerializableClosureTest extends PHPUnit\Framework\TestCase
+class TSerializableClosureTest extends \PHPUnit\Framework\TestCase
 {
 	protected function tearDown(): void
 	{

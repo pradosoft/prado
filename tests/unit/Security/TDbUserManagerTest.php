@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Security;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
@@ -7,6 +9,8 @@ use Prado\Security\TDbUser;
 use Prado\Security\TDbUserManager;
 use Prado\Security\TUser;
 use Prado\Web\THttpCookie;
+use Prado\Test\Unit\Harness\TTestApplication;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * Concrete {@see TDbUser} spy. Every seam records its invocation and returns a
@@ -59,7 +63,7 @@ class TTestNotADbUser extends \Prado\TComponent
 	}
 }
 
-class TDbUserManagerTest extends PHPUnit\Framework\TestCase
+class TDbUserManagerTest extends \PHPUnit\Framework\TestCase
 {
 	public static TTestApplication $app;
 

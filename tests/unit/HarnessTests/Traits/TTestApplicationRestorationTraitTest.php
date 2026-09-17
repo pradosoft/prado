@@ -8,9 +8,13 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\HarnessTests\Traits;
+
 use Prado\Prado;
 use Prado\TApplication;
 use Prado\TComponent;
+use Prado\Test\Unit\Harness\TTestApplication;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * Tests for {@see TTestApplicationRestorationTrait}.
@@ -28,7 +32,7 @@ use Prado\TComponent;
  *
  * @package System.Harness.Traits
  */
-class TTestApplicationRestorationTraitTest extends PHPUnit\Framework\TestCase
+class TTestApplicationRestorationTraitTest extends \PHPUnit\Framework\TestCase
 {
 	/** @var TApplication The bootstrap singleton captured before each test. */
 	private TApplication $_bootstrapApp;

@@ -1,11 +1,13 @@
 <?php
 
+namespace Prado\Test\Unit\Data;
+
 use Prado\Data\TDataCharset;
 use Prado\Data\TDbColumnCaseMode;
 use Prado\Data\TDbDriver;
 use Prado\Data\TDbNullConversionMode;
 
-class TDbDriverTest extends PHPUnit\Framework\TestCase
+class TDbDriverTest extends \PHPUnit\Framework\TestCase
 {
 	// -------  TDbDriver  -------
 
@@ -39,7 +41,7 @@ class TDbDriverTest extends PHPUnit\Framework\TestCase
 
 	public function test_driver_values_are_strings()
 	{
-		$ref = new ReflectionClass(TDbDriver::class);
+		$ref = new \ReflectionClass(TDbDriver::class);
 		foreach ($ref->getConstants() as $name => $value) {
 			$this->assertIsString($value, "Constant $name should be a string");
 		}
@@ -47,7 +49,7 @@ class TDbDriverTest extends PHPUnit\Framework\TestCase
 
 	public function test_driver_values_are_unique()
 	{
-		$ref = new ReflectionClass(TDbDriver::class);
+		$ref = new \ReflectionClass(TDbDriver::class);
 		$values = array_values($ref->getConstants());
 		$unique = array_unique($values);
 		$this->assertCount(count($values), $unique, 'All TDbDriver constant values should be unique');
@@ -55,7 +57,7 @@ class TDbDriverTest extends PHPUnit\Framework\TestCase
 
 	public function test_all_driver_constants_present()
 	{
-		$ref = new ReflectionClass(TDbDriver::class);
+		$ref = new \ReflectionClass(TDbDriver::class);
 		$values = array_values($ref->getConstants());
 		$this->assertContains('mysql', $values);
 		$this->assertContains('pgsql', $values);
@@ -112,7 +114,7 @@ class TDbDriverTest extends PHPUnit\Framework\TestCase
 
 	public function test_column_case_mode_all_values()
 	{
-		$ref = new ReflectionClass(TDbColumnCaseMode::class);
+		$ref = new \ReflectionClass(TDbColumnCaseMode::class);
 		$values = array_values($ref->getConstants());
 		$this->assertCount(3, $values);
 		$this->assertContains('Preserved', $values);
@@ -131,7 +133,7 @@ class TDbDriverTest extends PHPUnit\Framework\TestCase
 
 	public function test_null_conversion_mode_all_values()
 	{
-		$ref = new ReflectionClass(TDbNullConversionMode::class);
+		$ref = new \ReflectionClass(TDbNullConversionMode::class);
 		$values = array_values($ref->getConstants());
 		$this->assertCount(3, $values);
 		$this->assertContains('Preserved', $values);
@@ -159,7 +161,7 @@ class TDbDriverTest extends PHPUnit\Framework\TestCase
 
 	public function test_charset_all_values()
 	{
-		$ref = new ReflectionClass(TDataCharset::class);
+		$ref = new \ReflectionClass(TDataCharset::class);
 		$values = array_values($ref->getConstants());
 		$this->assertCount(12, $values);
 		$this->assertContains('UTF-8', $values);
@@ -181,7 +183,7 @@ class TDbDriverTest extends PHPUnit\Framework\TestCase
 
 	public function test_charset_values_are_iana_registered_names()
 	{
-		$ref = new ReflectionClass(TDataCharset::class);
+		$ref = new \ReflectionClass(TDataCharset::class);
 		foreach ($ref->getConstants() as $name => $charset) {
 			$this->assertMatchesRegularExpression(
 				'/^[A-Za-z0-9\-_]+$/',

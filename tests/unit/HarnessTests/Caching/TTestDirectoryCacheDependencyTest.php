@@ -8,7 +8,10 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\HarnessTests\Caching;
+
 use Prado\Caching\TDirectoryCacheDependency;
+use Prado\Test\Unit\Harness\Caching\TTestDirectoryCacheDependency;
 
 /**
  * Tests for {@see TTestDirectoryCacheDependency}: directory `*Direct` accessor,
@@ -16,7 +19,7 @@ use Prado\Caching\TDirectoryCacheDependency;
  *
  * @package System.Harness.Caching
  */
-class TTestDirectoryCacheDependencyTest extends PHPUnit\Framework\TestCase
+class TTestDirectoryCacheDependencyTest extends \PHPUnit\Framework\TestCase
 {
 	private string $dir;
 

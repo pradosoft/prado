@@ -1,9 +1,12 @@
 <?php
 
+namespace Prado\Test\Unit\Data\ActiveRecord;
+
 use Prado\Data\ActiveRecord\TActiveRecordConfig;
 use Prado\IModuleDependency;
+use Prado\Test\Unit\Harness\Traits\PradoUnitModuleDependencyTrait;
 
-class TActiveRecordConfigTest extends PHPUnit\Framework\TestCase
+class TActiveRecordConfigTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitModuleDependencyTrait;
 

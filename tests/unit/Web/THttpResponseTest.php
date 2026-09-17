@@ -1,8 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\Web;
+
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Web\THttpResponse;
+use Prado\Test\Unit\Harness\TTestApplication;
 
 class TTestHttpResponse extends THttpResponse {
 	public $headers = [];
@@ -31,7 +34,7 @@ class TTestHttpResponse extends THttpResponse {
 }
 
 
-class THttpResponseTest extends PHPUnit\Framework\TestCase
+class THttpResponseTest extends \PHPUnit\Framework\TestCase
 {
 	protected ?TTestApplication $app = null;
 

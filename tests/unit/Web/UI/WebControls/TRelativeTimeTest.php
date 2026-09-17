@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI\WebControls;
+
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Web\Services\TPageService;
 use Prado\Web\TAssetManager;
@@ -8,6 +10,7 @@ use Prado\Web\UI\WebControls\TRelativeTime;
 use Prado\Web\UI\WebControls\TRelativeTimeMode;
 use Prado\Web\UI\WebControls\TTime;
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\Harness\Traits\TWebControlRenderTrait;
 
 /**
  * Records whether the client script hook fired, without publishing assets, so the

@@ -8,7 +8,10 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\HarnessTests\Caching;
+
 use Prado\Caching\TMemCache;
+use Prado\Test\Unit\Harness\Caching\TTestMemCache;
 
 /**
  * Tests for {@see TTestMemCache}. The handle seam (getCacheDirect/setCacheDirect) is
@@ -17,7 +20,7 @@ use Prado\Caching\TMemCache;
  *
  * @package System.Harness.Caching
  */
-class TTestMemCacheTest extends PHPUnit\Framework\TestCase
+class TTestMemCacheTest extends \PHPUnit\Framework\TestCase
 {
 	private function newCache(): TTestMemCache
 	{

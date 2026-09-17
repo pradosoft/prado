@@ -1,9 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Util;
+
 use Prado\Exceptions\TIOException;
 use Prado\IO\Util\TStreamWrapper;
 
-class TStreamWrapperTest extends PHPUnit\Framework\TestCase
+class TStreamWrapperTest extends \PHPUnit\Framework\TestCase
 {
 	protected function setUp(): void
 	{

@@ -8,6 +8,8 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Util\Behaviors;
+
 use Prado\Prado;
 use Prado\TComponent;
 use Prado\TEventParameter;
@@ -100,7 +102,7 @@ class TEventLoggingBehaviorWithDelta extends TBehavior
  *
  * @package Prado\Tests\Unit\Util\Behaviors
  */
-class TEventLoggingBehaviorTest extends PHPUnit\Framework\TestCase
+class TEventLoggingBehaviorTest extends \PHPUnit\Framework\TestCase
 {
 	/** @var TEventLoggingBehaviorAccessor */
 	private TEventLoggingBehaviorAccessor $behavior;

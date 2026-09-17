@@ -1,6 +1,20 @@
 <?php
 
-require_once(__DIR__ . '/BaseCase.php');
+namespace Prado\Test\Unit\Data\SqlMap;
+
+use Prado\Test\Unit\Data\SqlMap\Domain\A;
+use Prado\Test\Unit\Data\SqlMap\Domain\Account;
+use Prado\Test\Unit\Data\SqlMap\Domain\AccountBis;
+use Prado\Test\Unit\Data\SqlMap\Domain\AccountCollection;
+use Prado\Test\Unit\Data\SqlMap\Domain\B;
+use Prado\Test\Unit\Data\SqlMap\Domain\C;
+use Prado\Test\Unit\Data\SqlMap\Domain\D;
+use Prado\Test\Unit\Data\SqlMap\Domain\E;
+use Prado\Test\Unit\Data\SqlMap\Domain\F;
+use Prado\Test\Unit\Data\SqlMap\Domain\LineItem;
+use Prado\Test\Unit\Data\SqlMap\Domain\LineItemCollection;
+use Prado\Test\Unit\Data\SqlMap\Domain\Order;
+use Prado\Test\Unit\Data\SqlMap\Domain\Other;
 
 class StatementTest extends BaseCase
 {
@@ -169,7 +183,7 @@ class StatementTest extends BaseCase
 		//list = self::$sqlmap->QueryForList("GetDynamicOrderedEmailAddressesViaResultMap", "Account_FirstName");
 
 		//$this->assertSame("Averel.Dalton@somewhere.com", $list[0]);
-		throw new PHPUnit\Framework\IncompleteTestError();
+		throw new \PHPUnit\Framework\IncompleteTestError();
 	}
 
 	// TODO: Test Execute QueryForList With ResultMap With Dynamic Element
@@ -186,7 +200,7 @@ class StatementTest extends BaseCase
 		//list = self::$sqlmap->QueryForList("GetAllAccountsViaResultMapWithDynamicElement", "=");
 
 		//$this->assertSame(0, $list->getCount());
-		throw new PHPUnit\Framework\IncompleteTestError();
+		throw new \PHPUnit\Framework\IncompleteTestError();
 	}
 
 
@@ -220,7 +234,7 @@ class StatementTest extends BaseCase
 		//$this->assertSame(enumClass.Day, Days.Mon);
 		//$this->assertSame(enumClass.Color, Colors.Blue);
 		//$this->assertSame(enumClass.Month, Months.September);*/
-		throw new PHPUnit\Framework\IncompleteTestError();
+		throw new \PHPUnit\Framework\IncompleteTestError();
 	}
 
 	#endregion
@@ -567,7 +581,7 @@ class StatementTest extends BaseCase
 		//$this->assertSame(3, $list[2]->getID());
 		//$this->assertSame(4, $list[3]->getID());
 		//$this->assertSame(5, $list[4]->getID());
-		throw new PHPUnit\Framework\IncompleteTestError();
+		throw new \PHPUnit\Framework\IncompleteTestError();
 	}
 
 	#endregion
@@ -1026,7 +1040,7 @@ class StatementTest extends BaseCase
 		string cacheStats = self::$sqlmap->GetDataCacheStats();
 
 		$this->assertNotNull(cacheStats);*/
-		throw new PHPUnit\Framework\IncompleteTestError();
+		throw new \PHPUnit\Framework\IncompleteTestError();
 	}
 
 	#endregion

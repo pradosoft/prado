@@ -8,6 +8,8 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit;
+
 /**
  * Stub that mimics a TException subclass by exposing getErrorCode().
  * Used to exercise the TException branch in normalizeErrorKey() without
@@ -39,7 +41,7 @@ class PradoUnitStubTException extends \RuntimeException
  * bleed across tests within this class or into the broader suite.
  *
  */
-class PradoUnitSuiteFailTest extends PHPUnit\Framework\TestCase
+class PradoUnitSuiteFailTest extends \PHPUnit\Framework\TestCase
 {
 	/** @var array<string, int> */
 	private array $_suiteFailEmittedSnap = [];

@@ -28,6 +28,8 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\IModule;
 use Prado\IModuleDependency;
@@ -35,6 +37,7 @@ use Prado\Prado;
 use Prado\TApplication;
 use Prado\TComponent;
 use Prado\TModule;
+use Prado\Test\Unit\Harness\TTestApplication;
 
 // =============================================================================
 // Fixtures
@@ -182,7 +185,7 @@ class AppBootstrapDepSpyModule extends AppBootstrapSpyModule implements IModuleD
  *
  * @package System
  */
-class TApplicationBootstrapTest extends PHPUnit\Framework\TestCase
+class TApplicationBootstrapTest extends \PHPUnit\Framework\TestCase
 {
 	private function newAccessor(string $class = TApplicationBootstrapAccessor::class): TApplicationBootstrapAccessor
 	{

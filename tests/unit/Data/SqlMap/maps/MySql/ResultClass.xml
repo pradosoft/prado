@@ -37,7 +37,7 @@
 		
 		<statement id="GetDate"
 					parameterClass="Int"
-					resultClass="TDateTime" >
+					resultClass="Prado\Test\Unit\Data\SqlMap\TDateTime" >
 			select '2003-02-15 8:15:00' as datetime from Orders where Order_ID  = #value#
 		</statement>
 		<statement id="GetDateWithoutResultClass"

@@ -1,6 +1,10 @@
 <?php
 
-require_once(__DIR__ . '/BaseCase.php');
+namespace Prado\Test\Unit\Data\SqlMap;
+
+use Prado\Test\Unit\Data\SqlMap\Domain\Account;
+use Prado\Data\SqlMap\Configuration\TSqlMapCacheKey;
+use Prado\Data\SqlMap\Configuration\TSqlMapCacheModel;
 
 class CacheTest extends BaseCase
 {

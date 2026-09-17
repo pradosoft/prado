@@ -1,9 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Stream;
+
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\IO\Stream\TMultipartStream;
 
-class TMultipartStreamTest extends PHPUnit\Framework\TestCase
+class TMultipartStreamTest extends \PHPUnit\Framework\TestCase
 {
 	public function testBuildsAFieldBody()
 	{

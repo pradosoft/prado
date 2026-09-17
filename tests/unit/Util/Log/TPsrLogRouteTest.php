@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Log;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TModule;
@@ -33,7 +35,7 @@ class TTestPsrLoggerModule extends TModule implements LoggerInterface
 	}
 }
 
-class TPsrLogRouteTest extends PHPUnit\Framework\TestCase
+class TPsrLogRouteTest extends \PHPUnit\Framework\TestCase
 {
 	private ?TLogger $logger = null;
 	private ?TPsrLogRoute $route = null;
@@ -92,7 +94,7 @@ class TPsrLogRouteTest extends PHPUnit\Framework\TestCase
 
 	public function testLoggerNotPsr(): void
 	{
-		$this->route->setLogger(stdClass::class);
+		$this->route->setLogger(\stdClass::class);
 		$this->expectException(TConfigurationException::class);
 		$this->route->getLogger();
 	}
@@ -122,7 +124,7 @@ class TPsrLogRouteTest extends PHPUnit\Framework\TestCase
 	public function testProcessLogs(): void
 	{
 		$this->route->setLogger($this->collector);
-		$exception = new RuntimeException('boom');
+		$exception = new \RuntimeException('boom');
 
 		$this->logger->log('first', TLogger::WARNING, 'Cat1', 'ctl1');
 		$this->logger->log($exception, TLogger::ERROR, 'Cat2');
@@ -194,7 +196,7 @@ class TPsrLogRouteTest extends PHPUnit\Framework\TestCase
 	{
 		$this->route->setLogger($this->collector);
 		$this->logger->setTraceLevel(1);
-		$exception = new RuntimeException('boom');
+		$exception = new \RuntimeException('boom');
 		$this->logger->log('plain', TLogger::WARNING, 'Cat1', 'ctl1');
 		$this->logger->log($exception, TLogger::FATAL, 'Cat2');
 		$source = $this->logger->getLogs();

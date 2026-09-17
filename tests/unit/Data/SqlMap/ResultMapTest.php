@@ -1,6 +1,12 @@
 <?php
 
-require_once(__DIR__ . '/BaseCase.php');
+namespace Prado\Test\Unit\Data\SqlMap;
+
+use Prado\Test\Unit\Data\SqlMap\Domain\Account;
+use Prado\Test\Unit\Data\SqlMap\Domain\LineItem;
+use Prado\Test\Unit\Data\SqlMap\Domain\LineItemCollection;
+use Prado\Test\Unit\Data\SqlMap\Domain\Order;
+use Prado\Collections\TList;
 
 class ResultMapTest extends BaseCase
 {

@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit;
+
 use PHPUnit\Framework\TestCase;
 use Prado\TComponent;
 use Prado\TComponentReflection;

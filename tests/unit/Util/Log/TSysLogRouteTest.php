@@ -1,12 +1,15 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Log;
+
 use Prado\Util\Log\TLogger;
 use Prado\Util\Log\TSysLogRoute;
+use Prado\Exceptions\TConfigurationException;
 
 class TTestSysLogRoute extends TSysLogRoute {
 }
 
-class TSysLogRouteTest extends PHPUnit\Framework\TestCase
+class TSysLogRouteTest extends \PHPUnit\Framework\TestCase
 {
 	protected function setUp(): void
 	{

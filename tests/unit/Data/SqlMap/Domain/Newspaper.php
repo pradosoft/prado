@@ -1,0 +1,17 @@
+<?php
+
+namespace Prado\Test\Unit\Data\SqlMap\Domain;
+
+class Newspaper extends Document
+{
+	private $_City = '';
+
+	public function getCity()
+	{
+		return $this->_City;
+	}
+	public function setCity($value)
+	{
+		$this->_City = $value;
+	}
+}

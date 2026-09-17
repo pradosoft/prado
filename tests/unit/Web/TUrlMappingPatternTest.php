@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web;
+
 use Prado\Web\THttpRequest;
 use Prado\Web\THttpRequestUrlFormat;
 use Prado\Web\TUrlManager;
@@ -7,13 +9,14 @@ use Prado\Web\TUrlMappingPattern;
 use Prado\Web\TUrlMappingPatternSecureConnection;
 use Prado\Web\TUrlMappingPatternUrlMatchMode;
 use Prado\Collections\TAttributeCollection;
+use Prado\Test\Unit\Harness\TTestApplication;
 
 /**
  * Test class for TUrlMappingPattern.
  *
  * @coversDefaultClass Prado\Web\TUrlMappingPattern
  */
-class TUrlMappingPatternTest extends PHPUnit\Framework\TestCase
+class TUrlMappingPatternTest extends \PHPUnit\Framework\TestCase
 {
 	protected ?TTestApplication $app = null;
 	private $urlManager;

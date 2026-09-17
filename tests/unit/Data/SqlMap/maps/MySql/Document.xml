@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?> 
 <sqlMap namespace="Document" >
-		<resultMap id="document" class="Document">
+		<resultMap id="document" class="Prado\Test\Unit\Data\SqlMap\Domain\Document">
 			<result property="Id"			column="Document_Id"/>
 			<result property="Title"			column="Document_Title"/>
 			<discriminator column="Document_Type" type="string"/> 
@@ -8,19 +8,19 @@
 			<subMap value="Newspaper" resultMapping="newspaper" />
 		</resultMap>
 		
-		<resultMap id="document-custom-handler" class="Document">
+		<resultMap id="document-custom-handler" class="Prado\Test\Unit\Data\SqlMap\Domain\Document">
 			<result property="Id"			column="Document_Id"/>
 			<result property="Title"		column="Document_Title"/>
-			<discriminator column="Document_Type"  typeHandler="CustomInheritance"/> 
+			<discriminator column="Document_Type"  typeHandler="Prado\Test\Unit\Data\SqlMap\CustomInheritance"/> 
 			<subMap value="Book" resultMapping="book" />
 			<subMap value="Newspaper" resultMapping="newspaper" />
 		</resultMap>
 		
-		<resultMap id="book" class="Book" extends="document">
+		<resultMap id="book" class="Prado\Test\Unit\Data\SqlMap\Domain\Book" extends="document">
 			<result property="PageNumber"		column="Document_PageNumber"/>
 		</resultMap>
 		
-		<resultMap id="newspaper" class="Newspaper"  extends="document">
+		<resultMap id="newspaper" class="Prado\Test\Unit\Data\SqlMap\Domain\Newspaper"  extends="document">
 			<result property="City"			column="Document_City"/>
 		</resultMap>
 		
@@ -34,7 +34,7 @@
 		</statement>
 		
 		<select id="GetTypedCollection"
-			listClass="DocumentCollection"
+			listClass="Prado\Test\Unit\Data\SqlMap\Domain\DocumentCollection"
 			resultMap="document">
 			select 
 				*

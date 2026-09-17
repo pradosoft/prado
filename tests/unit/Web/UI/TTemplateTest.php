@@ -1,10 +1,13 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TTemplateException;
 use Prado\TComponent;
 use Prado\Web\UI\TCompositeLiteral;
 use Prado\Web\UI\TTemplate;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * Helper: TComponent subclass that has only a getter — no setter — to test readonly validation.
@@ -17,7 +20,7 @@ class TTemplateTestReadonlyComponent extends TComponent
 	}
 }
 
-class TTemplateTest extends PHPUnit\Framework\TestCase
+class TTemplateTest extends \PHPUnit\Framework\TestCase
 {
 	private $_contextPath;
 	protected $obj;
@@ -1502,10 +1505,10 @@ $this->assertArrayHasKey(TTemplate::TPL_PROPS, $item);
 
 	public function testValidateAttributesTComponentReadonlyPropertyThrows()
 	{
-		Prado::using('TTemplateTestReadonlyComponent');
+		\Prado::using(TTemplateTestReadonlyComponent::class);
 		$this->expectException(TConfigurationException::class);
 		// ReadonlyProp has a getter but no setter on TTemplateTestReadonlyComponent
-		$this->newTemplate('<com:TTemplateTestReadonlyComponent ReadonlyProp="val" />');
+		$this->newTemplate('<com:Prado\Test\Unit\Web\UI\TTemplateTestReadonlyComponent ReadonlyProp="val" />');
 	}
 
 	public function testAttributeValidationOffSkipsChecks()

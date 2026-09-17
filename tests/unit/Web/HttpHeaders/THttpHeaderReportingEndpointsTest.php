@@ -8,15 +8,18 @@
  * @author Brad Anderson <belisoful@icloud.com>
  */
 
+namespace Prado\Test\Unit\Web\HttpHeaders;
+
 use Prado\Web\HttpHeaders\THttpHeaderReportingEndpoints;
 use Prado\Web\THttpHeaderName;
+use Prado\Test\Unit\PradoUnit;
 
 // NOTE: REPORT_URI is defined on TBaseHttpHeader and inherited by all header subclasses.
 // THttpHeaderReportingEndpoints::REPORT_URI resolves to 'REPORT_URI' via inheritance.
 // A blank endpoint URL is normalized to this sentinel at storage time (addEndpoint()).
 // THttpHeadersManager::finalizeReporterService() replaces it with the live reporter URL.
 
-class THttpHeaderReportingEndpointsTest extends PHPUnit\Framework\TestCase
+class THttpHeaderReportingEndpointsTest extends \PHPUnit\Framework\TestCase
 {
 	// -----------------------------------------------------------------------
 	// getHeaderName

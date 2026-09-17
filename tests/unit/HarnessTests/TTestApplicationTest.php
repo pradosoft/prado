@@ -8,12 +8,14 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-require_once __DIR__ . '/../PradoUnitRequires.php';
+namespace Prado\Test\Unit\HarnessTests;
 
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TApplication;
 use Prado\TApplicationMode;
+use Prado\Test\Unit\Harness\TTestApplication;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * Unit tests for {@see TTestApplication}.
@@ -28,7 +30,7 @@ use Prado\TApplicationMode;
  *
  * @package System
  */
-class TTestApplicationTest extends PHPUnit\Framework\TestCase
+class TTestApplicationTest extends \PHPUnit\Framework\TestCase
 {
 	/** @var TTestApplication The test application under test, created fresh each test. */
 	private TTestApplication $_app;

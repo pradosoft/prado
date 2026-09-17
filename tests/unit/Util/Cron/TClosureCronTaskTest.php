@@ -1,16 +1,18 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Cron;
+
 use Prado\Prado;
 use Prado\TApplicationMode;
 use Prado\Util\Cron\TClosureCronTask;
 use Prado\Util\Cron\TCronModule;
 use Prado\Exceptions\TConfigurationException;
 
-class TClosureCronTaskTest extends PHPUnit\Framework\TestCase
+class TClosureCronTaskTest extends \PHPUnit\Framework\TestCase
 {
 	public function testExecuteRunsClosure()
 	{
-		$flag = new stdClass();
+		$flag = new \stdClass();
 		$flag->v = null;
 		$task = new TClosureCronTask(function ($t, $cron) use ($flag) {
 			$flag->v = 'ran';
@@ -167,7 +169,7 @@ class TClosureCronTaskTest extends PHPUnit\Framework\TestCase
 		self::assertSame($task, $task->setData(['a' => 1, 'b' => 2])); // chainable
 		self::assertSame(['a' => 1, 'b' => 2], $task->getData());
 
-		$task->setData(new ArrayObject(['x' => 9])); // Traversable collected to array
+		$task->setData(new \ArrayObject(['x' => 9])); // Traversable collected to array
 		self::assertSame(['x' => 9], $task->getData());
 
 		$task->setData(null); // null clears

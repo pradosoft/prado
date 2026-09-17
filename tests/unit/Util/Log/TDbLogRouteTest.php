@@ -1,12 +1,15 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Log;
+
 use Prado\Util\Log\TLogger;
 use Prado\Util\Log\TSysLogRoute;
+use Prado\Util\Log\TDbLogRoute;
 
 class TTestDbLogRoute extends TDbLogRoute {
 }
 
-class TDbLogRouteTest extends PHPUnit\Framework\TestCase
+class TDbLogRouteTest extends \PHPUnit\Framework\TestCase
 {
 	protected function setUp(): void
 	{
@@ -86,13 +89,13 @@ class TDbLogRouteTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(2, $route->getDBLogCount(null, \Prado\TApplication::class));
 		$this->assertEquals(8, $route->getDBLogCount(null, '!'.\Prado\TApplication::class));
 		$this->assertEquals(8, $route->getDBLogCount(null, ['~'.\Prado\TApplication::class]));
-		$this->assertEquals(4, $route->getDBLogCount(null, 'Prado\\*, ~'.\Prado\TModule::class . ', '. TTestDbLogRoute::class));
+		$this->assertEquals(4, $route->getDBLogCount(null, 'Prado\\*, ~'.\Prado\TModule::class . ', ~' . self::class . ', '. TTestDbLogRoute::class));
 		
 		$this->assertEquals(7, $route->getDBLogCount(null, null, $firstTime));
 		$this->assertEquals(5, $route->getDBLogCount(null, null, null, $secondTime));
 		$this->assertEquals(2, $route->getDBLogCount(null, null, $firstTime, $secondTime));
-		$this->assertEquals(1, $route->getDBLogCount(null, 'Prado\\*', $firstTime, $secondTime));
-		$this->assertEquals(1, $route->getDBLogCount(TLogger::WARNING, 'Prado\\*', $firstTime, $secondTime));
+		$this->assertEquals(1, $route->getDBLogCount(null, 'Prado\\*, ~Prado\\Test\\*', $firstTime, $secondTime));
+		$this->assertEquals(1, $route->getDBLogCount(TLogger::WARNING, 'Prado\\*, ~Prado\\Test\\*', $firstTime, $secondTime));
 		
 		$this->assertEquals(1, count($route->getDBLogs(TLogger::WARNING)->readAll()));
 		$this->assertEquals(2, count($route->getDBLogs(TLogger::WARNING | TLogger::INFO)->readAll()));
@@ -101,13 +104,13 @@ class TDbLogRouteTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(2, count($route->getDBLogs(null, \Prado\TApplication::class)->readAll()));
 		$this->assertEquals(8, count($route->getDBLogs(null, '!'.\Prado\TApplication::class)->readAll()));
 		$this->assertEquals(8, count($route->getDBLogs(null, ['~'.\Prado\TApplication::class])->readAll()));
-		$this->assertEquals(4, count($route->getDBLogs(null, 'Prado\\*, ~'.\Prado\TModule::class . ', '. TTestDbLogRoute::class)->readAll()));
+		$this->assertEquals(4, count($route->getDBLogs(null, 'Prado\\*, ~'.\Prado\TModule::class . ', ~' . self::class . ', '. TTestDbLogRoute::class)->readAll()));
 		
 		$this->assertEquals(7, count($route->getDBLogs(null, null, $firstTime)->readAll()));
 		$this->assertEquals(5, count($route->getDBLogs(null, null, null, $secondTime)->readAll()));
 		$this->assertEquals(2, count($route->getDBLogs(null, null, $firstTime, $secondTime)->readAll()));
-		$this->assertEquals(1, count($route->getDBLogs(null, 'Prado\\*', $firstTime, $secondTime)->readAll()));
-		$this->assertEquals(1, count($route->getDBLogs(TLogger::WARNING, 'Prado\\*', $firstTime, $secondTime)->readAll()));
+		$this->assertEquals(1, count($route->getDBLogs(null, 'Prado\\*, ~Prado\\Test\\*', $firstTime, $secondTime)->readAll()));
+		$this->assertEquals(1, count($route->getDBLogs(TLogger::WARNING, 'Prado\\*, ~Prado\\Test\\*', $firstTime, $secondTime)->readAll()));
 		
 		$this->assertEquals(1, $route->deleteDBLog(null, \Prado\TModule::class));
 		$this->assertEquals(1, $route->deleteDBLog(null, null, $firstTime, $secondTime));

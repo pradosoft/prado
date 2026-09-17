@@ -1,12 +1,14 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Cron;
+
 use Prado\IO\TTextWriter;
 use Prado\TComponent;
 use Prado\Shell\TShellWriter;
 use Prado\Util\Cron\TShellCronLogBehavior;
 
 
-class TShellCronLogBehaviorTest extends PHPUnit\Framework\TestCase
+class TShellCronLogBehaviorTest extends \PHPUnit\Framework\TestCase
 {
 	protected $obj;
 	protected $writer;

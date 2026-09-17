@@ -8,8 +8,11 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\HarnessTests\Caching;
+
 use Prado\Caching\ICache;
 use Prado\Caching\TCache;
+use Prado\Test\Unit\Harness\Caching\TTestCache;
 
 /**
  * Tests for {@see TTestCache}, the array-backed {@see TCache} harness.
@@ -19,7 +22,7 @@ use Prado\Caching\TCache;
  *
  * @package System.Harness.Caching
  */
-class TTestCacheTest extends PHPUnit\Framework\TestCase
+class TTestCacheTest extends \PHPUnit\Framework\TestCase
 {
 	private function newCache(): TTestCache
 	{

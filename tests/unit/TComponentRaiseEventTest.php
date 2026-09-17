@@ -1,6 +1,8 @@
 <?php
 
-require_once __DIR__ . '/TComponentTestFixtures.php';
+namespace Prado\Test\Unit;
+
+require_once __DIR__ . '/TComponentTestFunctions.php';
 
 use Prado\Collections\TPriorityList;
 use Prado\Exceptions\TApplicationException;
@@ -17,7 +19,7 @@ use Prado\Util\TClassBehavior;
 /**
  * @package System
  */
-class TComponentRaiseEventTest extends PHPUnit\Framework\TestCase
+class TComponentRaiseEventTest extends \PHPUnit\Framework\TestCase
 {
 	protected $tearDownScripts = [];
 	protected $component;
@@ -111,13 +113,13 @@ class TComponentRaiseEventTest extends PHPUnit\Framework\TestCase
 		try {
 			$this->component->attachEventHandler('onBehaviorEvent', [$this->component, 'myEventHandler']);
 			$this->fail('exception not raised when getting event handlers for undefined event');
-		} catch (Prado\Exceptions\TInvalidOperationException $e) {
+		} catch (\Prado\Exceptions\TInvalidOperationException $e) {
 		}
 		$this->assertFalse($this->component->isEventHandled());
 		try {
 			$this->component->raiseEvent('onBehaviorEvent', $this, null);
 			$this->fail('exception not raised when getting event handlers for undefined event');
-		} catch (Prado\Exceptions\TInvalidOperationException $e) {
+		} catch (\Prado\Exceptions\TInvalidOperationException $e) {
 		}
 		$this->assertFalse($this->component->isEventHandled());
 
@@ -407,6 +409,6 @@ class TComponentRaiseEventTest extends PHPUnit\Framework\TestCase
 	public function testGlobalEventListenerInRaiseEvent()
 	{
 		//TODO Test the Global Event Listener
-		throw new PHPUnit\Framework\IncompleteTestError();
+		throw new \PHPUnit\Framework\IncompleteTestError();
 	}
 }

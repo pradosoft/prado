@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Socket;
+
 use Prado\IO\Socket\TSocketReactor;
 use Prado\IO\Socket\TSocketServer;
 use Prado\IO\Socket\TSocketStream;
@@ -23,7 +25,7 @@ class FakeClockReactor extends TSocketReactor
 	}
 }
 
-class TSocketReactorTest extends PHPUnit\Framework\TestCase
+class TSocketReactorTest extends \PHPUnit\Framework\TestCase
 {
 	public function testListenerReadableDispatchesAccept()
 	{

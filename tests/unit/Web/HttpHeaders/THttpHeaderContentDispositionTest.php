@@ -8,11 +8,13 @@
  * @author Brad Anderson <belisoful@icloud.com>
  */
 
+namespace Prado\Test\Unit\Web\HttpHeaders;
+
 use Prado\Web\HttpHeaders\THttpHeaderContentDisposition;
 use Prado\Web\TContentDisposition;
 use Prado\Web\THttpHeaderName;
 
-class THttpHeaderContentDispositionTest extends PHPUnit\Framework\TestCase
+class THttpHeaderContentDispositionTest extends \PHPUnit\Framework\TestCase
 {
 	// -----------------------------------------------------------------------
 	// getHeaderName

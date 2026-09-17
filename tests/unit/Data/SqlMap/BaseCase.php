@@ -1,11 +1,15 @@
 <?php
 
+namespace Prado\Test\Unit\Data\SqlMap;
+
 require_once(__DIR__ . '/common.php');
 
 use Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandler;
 use Prado\Data\SqlMap\TSqlMapManager;
+use Prado\Test\Unit\Data\SqlMap\Domain\Account;
+use Prado\Test\Unit\Data\SqlMap\Domain\Order;
 
-class BaseCase extends PHPUnit\Framework\TestCase
+class BaseCase extends \PHPUnit\Framework\TestCase
 {
 	protected static $sqlmap;
 	protected static $connection;
@@ -154,120 +158,5 @@ class BaseCase extends PHPUnit\Framework\TestCase
 		$this->assertSame("Victoria", $order["City"]);
 		$this->assertSame("BC", $order["Province"]);
 		$this->assertSame("C4B 4F4", $order["PostalCode"]);
-	}
-}
-
-class HundredsBool extends TSqlMapTypeHandler
-{
-	public function getResult($string)
-	{
-		$value = (int) $string;
-		if ($value == 100) {
-			return true;
-		}
-		if ($value == 200) {
-			return false;
-		}
-		//throw new Exception('unexpected value '.$value);
-	}
-
-	public function getParameter($parameter)
-	{
-		if ($parameter) {
-			return 100;
-		} else {
-			return 200;
-		}
-	}
-
-	public function createNewInstance($data = null)
-	{
-		throw new TDataMapperException('can not create');
-	}
-}
-
-class OuiNonBool extends TSqlMapTypeHandler
-{
-	const YES = "Oui";
-	const NO = "Non";
-
-	public function getResult($string)
-	{
-		if ($string === self::YES) {
-			return true;
-		}
-		if ($string === self::NO) {
-			return false;
-		}
-		//throw new Exception('unexpected value '.$string);
-	}
-
-	public function getParameter($parameter)
-	{
-		if ($parameter) {
-			return self::YES;
-		} else {
-			return self::NO;
-		}
-	}
-
-	public function createNewInstance($data = null)
-	{
-		throw new TDataMapperException('can not create');
-	}
-}
-
-class TDateTimeHandler extends TSqlMapTypeHandler
-{
-	public function getType()
-	{
-		return 'date';
-	}
-
-	public function getResult($string)
-	{
-		$time = new TDateTime($string);
-		return $time;
-	}
-
-	public function getParameter($parameter)
-	{
-		if ($parameter instanceof TDateTime) {
-			return $parameter->getTimestamp();
-		} else {
-			return $parameter;
-		}
-	}
-
-	public function createNewInstance($data = null)
-	{
-		return new TDateTime;
-	}
-}
-
-class TDateTime
-{
-	private $_datetime;
-
-	public function __construct($datetime = null)
-	{
-		if (null !== $datetime) {
-			$this->setDatetime($datetime);
-		}
-	}
-
-	public function getTimestamp()
-	{
-		return strtotime($this->getDatetime());
-	}
-
-	public function getDateTime()
-	{
-		return $this->_datetime;
-	}
-
-	public function setDateTime($value)
-	{
-		$this->_datetime = $value;
 	}
 }

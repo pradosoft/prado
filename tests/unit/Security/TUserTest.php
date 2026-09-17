@@ -1,10 +1,13 @@
 <?php
 
+namespace Prado\Test\Unit\Security;
+
 use Prado\Prado;
 use Prado\Security\TUser;
 use Prado\Security\TUserManager;
 use Prado\Util\TBehavior;
 use Prado\Xml\TXmlDocument;
+use Prado\Test\Unit\Harness\TTestApplication;
 
 class TUserBehavior extends TBehavior {
 	public function dyDefaultRoles($defaultRoles, $callchain){
@@ -19,7 +22,7 @@ class TUserBehavior extends TBehavior {
 	}
 }
 
-class TUserTest extends PHPUnit\Framework\TestCase
+class TUserTest extends \PHPUnit\Framework\TestCase
 {
 	protected ?TTestApplication $app = null;
 	public static $mgr = null;

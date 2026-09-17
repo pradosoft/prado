@@ -10,7 +10,7 @@
 
 	<!-- type handlers -->
 	<typeHandlers>
-		<typeHandler class="OuiNonBool" dbType="Varchar" />
+		<typeHandler class="Prado\Test\Unit\Data\SqlMap\OuiNonBool" dbType="Varchar" />
 	</typeHandlers>
 
 	<!-- sqlmap configurations -->

@@ -1,9 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\IO;
+
 use Prado\IO\TUriDefaultPort;
 use Prado\TEnumerable;
 
-class TUriDefaultPortTest extends PHPUnit\Framework\TestCase
+class TUriDefaultPortTest extends \PHPUnit\Framework\TestCase
 {
 	public function testIsEnumerable()
 	{

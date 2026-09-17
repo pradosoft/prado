@@ -24,6 +24,8 @@
 
 declare(strict_types=1);
 
+namespace Prado\Test\Unit\PHPStan;
+
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -55,13 +57,13 @@ class PHPStanExtensionsTest extends TestCase
 	/**
 	 * Run PHPStan on a fixture file and return the JSON-decoded result.
 	 *
-	 * @param string $fixtureFile  Basename of a file under tests/unit/PHPStan/fixtures/
+	 * @param string $fixtureFile  Basename of a file under tests/unit/PHPStan/Fixtures/
 	 * @param string|null $config  Path to a neon config (null → phpstan.neon.dist)
 	 * @return array{totals: array{errors: int, file_errors: int}, files: array<string,mixed>}
 	 */
 	private function runPhpStan(string $fixtureFile, ?string $config = null): array
 	{
-		$fixture = __DIR__ . '/fixtures/' . $fixtureFile;
+		$fixture = __DIR__ . '/Fixtures/' . $fixtureFile;
 		$phpstan = $this->projectRoot . '/vendor/bin/phpstan';
 		$configArg = $config !== null
 			? '--configuration=' . escapeshellarg($config)
@@ -102,7 +104,7 @@ class PHPStanExtensionsTest extends TestCase
 	 */
 	private function countFileErrors(array $result, string $fixtureFile): int
 	{
-		$fixturePath = realpath(__DIR__ . '/fixtures/' . $fixtureFile) ?: (__DIR__ . '/fixtures/' . $fixtureFile);
+		$fixturePath = realpath(__DIR__ . '/Fixtures/' . $fixtureFile) ?: (__DIR__ . '/Fixtures/' . $fixtureFile);
 		foreach ($result['files'] ?? [] as $path => $data) {
 			// PHPStan may use relative or absolute paths; match by realpath or basename.
 			$realPath = realpath($path) ?: $path;
@@ -124,7 +126,7 @@ class PHPStanExtensionsTest extends TestCase
 	 */
 	private function describeErrors(array $result, string $fixtureFile): string
 	{
-		$fixturePath = realpath(__DIR__ . '/fixtures/' . $fixtureFile) ?: (__DIR__ . '/fixtures/' . $fixtureFile);
+		$fixturePath = realpath(__DIR__ . '/Fixtures/' . $fixtureFile) ?: (__DIR__ . '/Fixtures/' . $fixtureFile);
 		foreach ($result['files'] ?? [] as $path => $data) {
 			$realPath = realpath($path) ?: $path;
 			if ($realPath !== $fixturePath && basename($path) !== $fixtureFile) {

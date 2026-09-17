@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Security;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Security\TAuthManager;
@@ -9,6 +11,9 @@ use Prado\Util\TCallChain;
 use Prado\Web\THttpCookie;
 use Prado\Web\THttpResponse;
 use Prado\Xml\TXmlDocument;
+use Prado\Test\Unit\Harness\TTestApplication;
+use Prado\Test\Unit\Harness\Web\TTestMemorySession;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * Response double that records cookie operations in memory instead of emitting
@@ -124,7 +129,7 @@ class TTestSkipSessionBehavior extends \Prado\Util\TBehavior
 	}
 }
 
-class TAuthManagerTest extends PHPUnit\Framework\TestCase
+class TAuthManagerTest extends \PHPUnit\Framework\TestCase
 {
 	public static TTestApplication $app;
 	public static TUserManager $usrMgr;

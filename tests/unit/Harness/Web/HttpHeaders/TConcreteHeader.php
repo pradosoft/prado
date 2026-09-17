@@ -3,13 +3,14 @@
 /**
  * TConcreteHeader — shared test double for TBaseHttpHeader tests.
  *
- * Auto-loaded by {@see PradoUnitRequires}; no explicit `require_once` is
- * needed from individual test files. Provides a minimal concrete subclass
+ * Provides a minimal concrete subclass
  * that overrides the protected {@see TBaseHttpHeader::header()} seam to
  * capture calls without touching the live HTTP stack.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  */
+
+namespace Prado\Test\Unit\Harness\Web\HttpHeaders;
 
 use Prado\Web\HttpHeaders\TBaseHttpHeader;
 

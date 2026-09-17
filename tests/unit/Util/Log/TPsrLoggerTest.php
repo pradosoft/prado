@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Log;
+
 use Prado\ISingleton;
 use Prado\Prado;
 use Prado\Util\Log\TLogger;
@@ -25,7 +27,7 @@ class TTestPsrLoggerStringable
 	}
 }
 
-class TPsrLoggerTest extends PHPUnit\Framework\TestCase
+class TPsrLoggerTest extends \PHPUnit\Framework\TestCase
 {
 	private ?TLogger $logger = null;
 	private ?TPsrLogger $psr = null;
@@ -142,8 +144,8 @@ class TPsrLoggerTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals('stringable', TPsrLogger::interpolate('{s}', ['s' => new TTestPsrLoggerStringable()]));
 		$this->assertEquals('{missing}', TPsrLogger::interpolate('{missing}', []));
 		$this->assertEquals('[1,"a"]', TPsrLogger::interpolate('{arr}', ['arr' => [1, 'a']]));
-		$this->assertEquals('[object stdClass]', TPsrLogger::interpolate('{obj}', ['obj' => new stdClass()]));
-		$date = new DateTimeImmutable('2026-09-03T12:00:00+00:00');
+		$this->assertEquals('[object stdClass]', TPsrLogger::interpolate('{obj}', ['obj' => new \stdClass()]));
+		$date = new \DateTimeImmutable('2026-09-03T12:00:00+00:00');
 		$this->assertEquals('2026-09-03T12:00:00+00:00', TPsrLogger::interpolate('{d}', ['d' => $date]));
 	}
 
@@ -202,7 +204,7 @@ class TPsrLoggerTest extends PHPUnit\Framework\TestCase
 
 	public function testLogContextException(): void
 	{
-		$exception = new RuntimeException('boom');
+		$exception = new \RuntimeException('boom');
 		$this->psr->error('failed', [TPsrLogger::CONTEXT_EXCEPTION => $exception]);
 		$this->psr->error('ignored', [TPsrLogger::CONTEXT_EXCEPTION => 'not a throwable']);
 		$this->psr->error('boom', [TPsrLogger::CONTEXT_EXCEPTION => $exception]);

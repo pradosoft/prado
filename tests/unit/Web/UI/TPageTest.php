@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI;
+
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\TPageStatePersister;
 use Prado\Web\UI\TSessionPageStatePersister;
@@ -13,8 +15,9 @@ use Prado\Collections\TStack;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Web\UI\ActiveControls\TCallbackClientScript;
+use Prado\Test\Unit\PradoUnit;
 
-class TPageTest extends PHPUnit\Framework\TestCase
+class TPageTest extends \PHPUnit\Framework\TestCase
 {
 	// -----------------------------------------------------------------------
 	// Construction and inheritance

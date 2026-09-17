@@ -8,8 +8,11 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Caching;
+
 use Prado\Caching\TRedisCache;
 use Prado\Exceptions\TConfigurationException;
+use Prado\Test\Unit\Harness\Caching\TTestRedisCache;
 
 /**
  * Unit tests for {@see TRedisCache}, via the {@see TTestRedisCache} harness. Connection
@@ -17,7 +20,7 @@ use Prado\Exceptions\TConfigurationException;
  * live operations are exercised only when the `redis` extension and a server are present
  * (otherwise skipped).
  */
-class TRedisCacheTest extends PHPUnit\Framework\TestCase
+class TRedisCacheTest extends \PHPUnit\Framework\TestCase
 {
 	private function newCache(): TTestRedisCache
 	{

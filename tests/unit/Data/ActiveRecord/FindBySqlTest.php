@@ -1,7 +1,11 @@
 <?php
 
-require_once(__DIR__ . '/records/DepartmentRecord.php');
-require_once(__DIR__ . '/records/UserRecord.php');
+namespace Prado\Test\Unit\Data\ActiveRecord;
+
+use Prado\Test\Unit\Data\ActiveRecord\Records\DepartmentRecord;
+use Prado\Test\Unit\Data\ActiveRecord\Records\UserRecord;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+use Prado\Data\ActiveRecord\TActiveRecord;
 
 class UserRecord2 extends UserRecord
 {
@@ -16,7 +20,7 @@ class SqlTest extends TActiveRecord
 	const TABLE = 'items';
 }
 
-class FindBySqlTest extends PHPUnit\Framework\TestCase
+class FindBySqlTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 	

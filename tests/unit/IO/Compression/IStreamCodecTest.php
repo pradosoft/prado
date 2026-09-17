@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Compression;
+
 use Prado\IO\Compression\ICompressor;
 use Prado\IO\Compression\IStreamCodec;
 use Prado\IO\Filter\TStreamCodecFilter;
@@ -72,7 +74,7 @@ class UpperPairFilter extends TStreamCodecFilter
 	}
 }
 
-class IStreamCodecTest extends PHPUnit\Framework\TestCase
+class IStreamCodecTest extends \PHPUnit\Framework\TestCase
 {
 	public function testTheContractShape()
 	{

@@ -8,9 +8,10 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-require_once __DIR__ . '/../Traits/TCallCollectorTrait.php';
+namespace Prado\Test\Unit\Harness\Caching;
 
 use Prado\Caching\ICache;
+use Prado\Test\Unit\Harness\Traits\TCallCollectorTrait;
 
 /**
  * TTestCacheStub is an in-memory recording {@see ICache} for unit tests.

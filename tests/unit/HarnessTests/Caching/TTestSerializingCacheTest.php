@@ -8,7 +8,10 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\HarnessTests\Caching;
+
 use Prado\Caching\TSerializingCache;
+use Prado\Test\Unit\Harness\Caching\TTestSerializingCache;
 
 /**
  * Tests for {@see TTestSerializingCache}, the array-backed {@see TSerializingCache} harness.
@@ -19,7 +22,7 @@ use Prado\Caching\TSerializingCache;
  *
  * @package System.Harness.Caching
  */
-class TTestSerializingCacheTest extends PHPUnit\Framework\TestCase
+class TTestSerializingCacheTest extends \PHPUnit\Framework\TestCase
 {
 	private function newCache(): TTestSerializingCache
 	{

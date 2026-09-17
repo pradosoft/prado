@@ -1,7 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\IO;
+
 use PHPUnit\Framework\TestCase;
 use Prado\IO\TTarFileExtractor;
+use Prado\Test\Unit\Harness\IO\TarTestHelper;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * Comprehensive tests for the tarPathInfoMap / tarPathMap API introduced in 4.3.3.

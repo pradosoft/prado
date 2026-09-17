@@ -1,12 +1,14 @@
 <?php
 
 
+namespace Prado\Test\Unit\Web\UI\WebControls;
+
 use Prado\IO\TTextWriter;
 use Prado\Prado;
 use Prado\Web\UI\THtmlWriter;
 use Prado\Web\UI\WebControls\TXmlTransform;
 
-class TXmlTransformTest extends PHPUnit\Framework\TestCase
+class TXmlTransformTest extends \PHPUnit\Framework\TestCase
 {
 	private $documentContent;
 	private $transformContent;

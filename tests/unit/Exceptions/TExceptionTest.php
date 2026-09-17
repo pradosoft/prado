@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Exceptions;
+
 use Prado\Exceptions\TException;
 use Prado\Exceptions\TConfigurationException;
 
@@ -7,7 +9,7 @@ use Prado\Exceptions\TConfigurationException;
  * Tests for TException behavior, including old/new style constructors,
  * translation of messages, placeholders, and exception chaining.
  */
-class TExceptionTest extends PHPUnit\Framework\TestCase
+class TExceptionTest extends \PHPUnit\Framework\TestCase
 {
     public function testOldStyleTranslationAndChaining()
     {

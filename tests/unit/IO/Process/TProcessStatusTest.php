@@ -1,8 +1,10 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Process;
+
 use Prado\IO\Process\TProcessStatus;
 
-class TProcessStatusTest extends PHPUnit\Framework\TestCase
+class TProcessStatusTest extends \PHPUnit\Framework\TestCase
 {
 	public function testReadsAllFieldsFromStatusArray()
 	{

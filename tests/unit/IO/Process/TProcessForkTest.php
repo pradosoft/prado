@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Process;
+
 use Prado\IO\Process\TProcessFork;
 use Prado\Util\Helpers\TProcessHelper;
 use Prado\Util\TSignalsDispatcher;
@@ -19,7 +21,7 @@ class AsyncByDefaultProcessFork extends TProcessFork
 	protected const DEFAULT_ASYNC = true;
 }
 
-class TProcessForkTest extends PHPUnit\Framework\TestCase
+class TProcessForkTest extends \PHPUnit\Framework\TestCase
 {
 	protected function setUp(): void
 	{

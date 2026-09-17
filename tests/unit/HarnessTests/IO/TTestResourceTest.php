@@ -8,8 +8,12 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\HarnessTests\IO;
+
 use Prado\IO\IResource;
 use Prado\IO\TResource;
+use Prado\Test\Unit\Harness\IO\TTestIOHelper;
+use Prado\Test\Unit\Harness\IO\TTestResource;
 
 /**
  * Tests for the {@see TTestResource} harness — the instantiable TResource used to
@@ -18,7 +22,7 @@ use Prado\IO\TResource;
  *
  * @package System.HarnessTests.IO
  */
-class TTestResourceTest extends PHPUnit\Framework\TestCase
+class TTestResourceTest extends \PHPUnit\Framework\TestCase
 {
 	public function testIsConcreteTResource(): void
 	{

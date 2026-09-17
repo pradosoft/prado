@@ -1,12 +1,14 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Stream;
+
 use Prado\Exceptions\TIOException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\IO\Stream\TReservedSpaceMode;
 use Prado\IO\Stream\TReservedSpaceStream;
 use Prado\IO\TStream;
 
-class TReservedSpaceStreamTest extends PHPUnit\Framework\TestCase
+class TReservedSpaceStreamTest extends \PHPUnit\Framework\TestCase
 {
 	private function reserved(string $data, array $spaces, string $mode = TReservedSpaceMode::Clip): TReservedSpaceStream
 	{

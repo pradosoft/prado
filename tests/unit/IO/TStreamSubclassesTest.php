@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\IO;
+
 use Prado\IO\TFileStream;
 use Prado\IO\TInputStream;
 use Prado\IO\TMemoryStream;
@@ -14,7 +16,7 @@ use Prado\IO\TTempStream;
  * Smoke tests for the concrete {@see \Prado\IO\TStream} subclasses: each fixes a URI,
  * a capability set, and a resource-ownership policy.
  */
-class TStreamSubclassesTest extends PHPUnit\Framework\TestCase
+class TStreamSubclassesTest extends \PHPUnit\Framework\TestCase
 {
 	public function testMemoryStreamRoundTrips()
 	{

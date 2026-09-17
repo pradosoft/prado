@@ -8,6 +8,8 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Shell;
+
 use Prado\Caching\ICache;
 use Prado\Data\ActiveRecord\TActiveRecordConfig;
 use Prado\Prado;
@@ -20,6 +22,7 @@ use Prado\Shell\TShellApplication;
 use Prado\Shell\TShellWriter;
 use Prado\TApplicationMode;
 use Prado\TModule;
+use Prado\Test\Unit\Harness\TTestShellApplication;
 
 /**
  * A minimal ICache+TModule stub used to verify that {@see TShellApplication::installShellActions()}
@@ -111,7 +114,7 @@ class ShellTestNoOptionAction extends \Prado\Shell\TShellAction
  *
  * @package System.Shell
  */
-class TShellApplicationTest extends PHPUnit\Framework\TestCase
+class TShellApplicationTest extends \PHPUnit\Framework\TestCase
 {
 	private TTestShellApplication $_app;
 

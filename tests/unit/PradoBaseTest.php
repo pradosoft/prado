@@ -1,6 +1,10 @@
 <?php
 
+namespace Prado\Test\Unit;
+
 use Prado\Prado;
+use Prado\TApplicationMode;
+use Prado\Util\Log\TLogger;
 
 class MethodVisibleTestClassA
 {
@@ -293,7 +297,7 @@ class MethodVisibleTestClassB extends MethodVisibleTestClassA
 /**
  * @package System
  */
-class PradoBaseTest extends PHPUnit\Framework\TestCase
+class PradoBaseTest extends \PHPUnit\Framework\TestCase
 {
 	const INTERFACE_FQN = 'Prado\\Web\\UI\\IValidatable';
 	const INTERFACE_SHORT_NAME = 'IValidatable';
@@ -838,7 +842,7 @@ class PradoBaseTest extends PHPUnit\Framework\TestCase
 	 */
 	public function testMethodVisible_doesNotWalkBehaviorChain()
 	{
-		require_once __DIR__ . '/TComponentTestFixtures.php';
+		require_once __DIR__ . '/TComponentTestFunctions.php';
 
 		$component = new NewComponent();
 		$behavior = new BehaviorTestBehavior();

@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit;
+
 use Prado\TModule;
 use Prado\Util\TBehavior;
 
@@ -135,7 +137,7 @@ class SpyInitBehavior extends TBehavior
 /**
  * Unit tests for TModule, focused on the dyFilterDependencies dy-event contract.
  */
-class TModuleTest extends PHPUnit\Framework\TestCase
+class TModuleTest extends \PHPUnit\Framework\TestCase
 {
 	// ── helpers ──────────────────────────────────────────────────────────────
 

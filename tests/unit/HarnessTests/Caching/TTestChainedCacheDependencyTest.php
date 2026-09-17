@@ -8,8 +8,11 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\HarnessTests\Caching;
+
 use Prado\Caching\TCacheDependencyList;
 use Prado\Caching\TChainedCacheDependency;
+use Prado\Test\Unit\Harness\Caching\TTestChainedCacheDependency;
 
 /**
  * Tests for {@see TTestChainedCacheDependency}: the dependency-list factory and `*Direct`
@@ -17,7 +20,7 @@ use Prado\Caching\TChainedCacheDependency;
  *
  * @package System.Harness.Caching
  */
-class TTestChainedCacheDependencyTest extends PHPUnit\Framework\TestCase
+class TTestChainedCacheDependencyTest extends \PHPUnit\Framework\TestCase
 {
 	public function testIsAChainedCacheDependency(): void
 	{

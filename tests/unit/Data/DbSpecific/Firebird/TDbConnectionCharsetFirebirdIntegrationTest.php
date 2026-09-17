@@ -1,8 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\Data\DbSpecific\Firebird;
+
 use Prado\Exceptions\TDbException;
 use Prado\Data\TDbConnection;
 use Prado\TApplication;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 
 /**
  * Integration tests for TDbConnection charset handling — Firebird.
@@ -25,7 +28,7 @@ use Prado\TApplication;
  * FIREBIRD_DB_PATH  Server-side path to the prado_unitest.fdb file.
  *                   Defaults to /var/lib/firebird/data/prado_unitest.fdb.
  */
-class TDbConnectionCharsetFirebirdIntegrationTest extends PHPUnit\Framework\TestCase
+class TDbConnectionCharsetFirebirdIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

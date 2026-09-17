@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI;
+
 use Prado\Prado;
 use Prado\Util\Log\TLogger;
 use Prado\Web\UI\TRenderFilterParameter;
@@ -15,7 +17,7 @@ use PHPUnit\Framework\TestCase;
  */
 class TRenderFilterParameterParseFail extends TRenderFilterParameter
 {
-	protected function htmlToDom(string $html): DOMDocument|false
+	protected function htmlToDom(string $html): \DOMDocument|false
 	{
 		$error = new \LibXMLError();
 		$error->level = LIBXML_ERR_FATAL;
@@ -167,7 +169,7 @@ class TRenderFilterParameterTest extends TestCase
 	public function testGetFilterDomReturnsDomDocument()
 	{
 		$p = $this->makeParam('<p>hello</p>');
-		$this->assertInstanceOf(DOMDocument::class, $p->getFilterDOM());
+		$this->assertInstanceOf(\DOMDocument::class, $p->getFilterDOM());
 	}
 
 	public function testGetFilterDomHasNoWrapperElements()
@@ -200,7 +202,7 @@ class TRenderFilterParameterTest extends TestCase
 	public function testSetFilterDomReplacesDom()
 	{
 		$p = $this->makeParam('<p>old</p>');
-		$new = new DOMDocument('1.0', 'UTF-8');
+		$new = new \DOMDocument('1.0', 'UTF-8');
 		$new->loadHTML('<html><body><span>new</span></body></html>');
 
 		$p->setFilterDOM($new);
@@ -210,7 +212,7 @@ class TRenderFilterParameterTest extends TestCase
 	public function testSetFilterDomMakesDomCurrent()
 	{
 		$p = $this->makeParam('<p>old</p>');
-		$new = new DOMDocument('1.0', 'UTF-8');
+		$new = new \DOMDocument('1.0', 'UTF-8');
 		$new->loadHTML('<html><body><span>injected</span></body></html>');
 		$p->setFilterDOM($new);
 
@@ -224,7 +226,7 @@ class TRenderFilterParameterTest extends TestCase
 	{
 		$p = $this->makeParam('');
 		$dom = $p->getFilterDOM();
-		$this->assertInstanceOf(DOMDocument::class, $dom);
+		$this->assertInstanceOf(\DOMDocument::class, $dom);
 		// Empty HTML produces a document with no child nodes
 		$this->assertSame(0, $dom->childNodes->length);
 	}
@@ -249,7 +251,7 @@ class TRenderFilterParameterTest extends TestCase
 		// return a usable DOMDocument rather than throwing.
 		$p = $this->makeParam('<p>unclosed <b>bold');
 		$dom = $p->getFilterDOM();
-		$this->assertInstanceOf(DOMDocument::class, $dom);
+		$this->assertInstanceOf(\DOMDocument::class, $dom);
 		// The content should be accessible via the DOM.
 		$this->assertGreaterThan(0, $dom->getElementsByTagName('b')->length);
 	}
@@ -373,7 +375,7 @@ class TRenderFilterParameterTest extends TestCase
 	{
 		$p = $this->makeParam('<div><p>a</p><span>b</span></div>');
 		$tags = [];
-		$p->walkElements(function (DOMElement $el) use (&$tags) {
+		$p->walkElements(function (\DOMElement $el) use (&$tags) {
 			$tags[] = $el->tagName;
 		});
 
@@ -390,7 +392,7 @@ class TRenderFilterParameterTest extends TestCase
 	{
 		$p = $this->makeParam('<div><p><strong>deep</strong></p></div>');
 		$order = [];
-		$p->walkElements(function (DOMElement $el) use (&$order) {
+		$p->walkElements(function (\DOMElement $el) use (&$order) {
 			$order[] = $el->tagName;
 		});
 
@@ -406,7 +408,7 @@ class TRenderFilterParameterTest extends TestCase
 	{
 		$p = $this->makeParam('<img src="test.png">');
 		$receivedParam = null;
-		$p->walkElements(function (DOMElement $el, $param) use (&$receivedParam) {
+		$p->walkElements(function (\DOMElement $el, $param) use (&$receivedParam) {
 			$receivedParam = $param;
 		});
 		$this->assertSame($p, $receivedParam);
@@ -415,7 +417,7 @@ class TRenderFilterParameterTest extends TestCase
 	public function testWalkElementsModifyDomInCallback()
 	{
 		$p = $this->makeParam('<img src="a.png"><img src="b.png">');
-		$p->walkElements(function (DOMElement $el, $param) {
+		$p->walkElements(function (\DOMElement $el, $param) {
 			if ($el->tagName === 'img' && !$el->hasAttribute('alt')) {
 				$el->setAttribute('alt', '');
 			}
@@ -427,7 +429,7 @@ class TRenderFilterParameterTest extends TestCase
 	public function testWalkElementsMakesDomCurrent()
 	{
 		$p = $this->makeParam('<p>text</p>');
-		$p->walkElements(function (DOMElement $el, $param) {
+		$p->walkElements(function (\DOMElement $el, $param) {
 			// no-op
 		});
 		// After walkElements, DOM should be current;
@@ -440,7 +442,7 @@ class TRenderFilterParameterTest extends TestCase
 	{
 		$p = $this->makeParam('');
 		$tags = [];
-		$p->walkElements(function (DOMElement $el, $param) use (&$tags) {
+		$p->walkElements(function (\DOMElement $el, $param) use (&$tags) {
 			$tags[] = $el->tagName;
 		});
 		$this->assertSame([], $tags, 'Empty HTML should produce no elements to walk');
@@ -451,7 +453,7 @@ class TRenderFilterParameterTest extends TestCase
 		// When getFilterDOM() returns false, walkElements must be a no-op.
 		$p = new TRenderFilterParameterParseFail('<p>x</p>');
 		$called = false;
-		$p->walkElements(function (DOMElement $el) use (&$called) {
+		$p->walkElements(function (\DOMElement $el) use (&$called) {
 			$called = true;
 		});
 		$this->assertFalse($called, 'walkElements must not invoke the callback when DOM parse fails');
@@ -461,7 +463,7 @@ class TRenderFilterParameterTest extends TestCase
 	{
 		$p = $this->makeParam('<div><p>nested</p></div><span>sibling</span>');
 		$tags = [];
-		$p->walkElements(function (DOMElement $el) use (&$tags) {
+		$p->walkElements(function (\DOMElement $el) use (&$tags) {
 			$tags[] = $el->tagName;
 		}, null, false);
 
@@ -474,7 +476,7 @@ class TRenderFilterParameterTest extends TestCase
 	{
 		$p = $this->makeParam('<div><p><strong>deep</strong></p></div>');
 		$depths = [];
-		$p->walkElements(function (DOMElement $el, $param, int $depth) use (&$depths) {
+		$p->walkElements(function (\DOMElement $el, $param, int $depth) use (&$depths) {
 			$depths[$el->tagName] = $depth;
 		});
 
@@ -490,7 +492,7 @@ class TRenderFilterParameterTest extends TestCase
 		$div = $dom->getElementsByTagName('div')->item(0);
 
 		$tags = [];
-		$p->walkElements(function (DOMElement $el) use (&$tags) {
+		$p->walkElements(function (\DOMElement $el) use (&$tags) {
 			$tags[] = $el->tagName;
 		}, $div, false);
 
@@ -506,7 +508,7 @@ class TRenderFilterParameterTest extends TestCase
 		$div = $dom->getElementsByTagName('div')->item(0);
 
 		$depths = [];
-		$p->walkElements(function (DOMElement $el, $param, int $depth) use (&$depths) {
+		$p->walkElements(function (\DOMElement $el, $param, int $depth) use (&$depths) {
 			$depths[$el->tagName] = $depth;
 		}, $div);
 
@@ -521,7 +523,7 @@ class TRenderFilterParameterTest extends TestCase
 		$div = $dom->getElementsByTagName('div')->item(0);
 
 		$tags = [];
-		$p->walkElements(function (DOMElement $el) use (&$tags) {
+		$p->walkElements(function (\DOMElement $el) use (&$tags) {
 			$tags[] = $el->tagName;
 		}, $div);
 
@@ -536,7 +538,7 @@ class TRenderFilterParameterTest extends TestCase
 		// during the walk must NOT appear in the visited set.
 		$p = $this->makeParam('<ul><li>a</li><li>b</li></ul>');
 		$tags = [];
-		$p->walkElements(function (DOMElement $el) use (&$tags, $p) {
+		$p->walkElements(function (\DOMElement $el) use (&$tags, $p) {
 			$tags[] = $el->tagName;
 			// When we visit the <ul>, append a new <li> child.
 			// With a full pre-snapshot the two original <li> children are already
@@ -558,15 +560,15 @@ class TRenderFilterParameterTest extends TestCase
 		// errors, and the removed element must still have been visited.
 		$p = $this->makeParam('<div><p id="a">a</p><p id="b">b</p></div>');
 		$visited = [];
-		$p->walkElements(function (DOMElement $el) use (&$visited) {
+		$p->walkElements(function (\DOMElement $el) use (&$visited) {
 			$visited[] = $el->getAttribute('id') ?: $el->tagName;
 			// When visiting the first <p>, remove the second one from the DOM.
 			if ($el->getAttribute('id') === 'a') {
 				$sibling = $el->nextSibling;
-				while ($sibling && !($sibling instanceof DOMElement)) {
+				while ($sibling && !($sibling instanceof \DOMElement)) {
 					$sibling = $sibling->nextSibling;
 				}
-				if ($sibling instanceof DOMElement) {
+				if ($sibling instanceof \DOMElement) {
 					$sibling->parentNode->removeChild($sibling);
 				}
 			}
@@ -651,7 +653,7 @@ class TRenderFilterParameterTest extends TestCase
 	{
 		$p = $this->makeParam('<p>test</p>');
 		$dom = $p[TRenderFilterParameter::RENDER_FILTER_DOM];
-		$this->assertInstanceOf(DOMDocument::class, $dom);
+		$this->assertInstanceOf(\DOMDocument::class, $dom);
 	}
 
 	public function testOffsetSetHtmlCallsSetFilterText()
@@ -664,7 +666,7 @@ class TRenderFilterParameterTest extends TestCase
 	public function testOffsetSetDomCallsSetFilterDom()
 	{
 		$p = $this->makeParam('<p>old</p>');
-		$dom = new DOMDocument('1.0', 'UTF-8');
+		$dom = new \DOMDocument('1.0', 'UTF-8');
 		$dom->loadHTML('<html><body><span>injected</span></body></html>');
 		$p[TRenderFilterParameter::RENDER_FILTER_DOM] = $dom;
 		$this->assertSame($dom, $p->getFilterDOM());
@@ -811,7 +813,7 @@ class TRenderFilterParameterTest extends TestCase
 		// setFilterDOM on a fresh param (no prior getFilterDOM call) must still
 		// make DOM current and serialise correctly on getFilterText.
 		$p = $this->makeParam('<p>old</p>');
-		$dom = new DOMDocument('1.0', 'UTF-8');
+		$dom = new \DOMDocument('1.0', 'UTF-8');
 		$dom->loadHTML('<html><body><em>fresh</em></body></html>');
 		$p->setFilterDOM($dom);
 		$this->assertStringContainsString('fresh', $p->getFilterText());
@@ -865,7 +867,7 @@ class TRenderFilterParameterTest extends TestCase
 		// Only DOMElement nodes are visited, not text nodes.
 		$p = $this->makeParam('plain text<p>element</p>');
 		$tags = [];
-		$p->walkElements(function (DOMElement $el) use (&$tags) {
+		$p->walkElements(function (\DOMElement $el) use (&$tags) {
 			$tags[] = $el->tagName;
 		});
 		$this->assertContains('p', $tags);
@@ -876,7 +878,7 @@ class TRenderFilterParameterTest extends TestCase
 	{
 		$p = $this->makeParam('<p>a</p><div>b</div><span>c</span>');
 		$tags = [];
-		$p->walkElements(function (DOMElement $el) use (&$tags) {
+		$p->walkElements(function (\DOMElement $el) use (&$tags) {
 			$tags[] = $el->tagName;
 		});
 		$this->assertContains('p', $tags);
@@ -958,7 +960,7 @@ class TRenderFilterParameterTest extends TestCase
 	{
 		$p = new TRenderFilterParameterParseFail('<p>bad</p>');
 		$p->getFilterDOM(); // populate errors
-		$dom = new DOMDocument('1.0', 'UTF-8');
+		$dom = new \DOMDocument('1.0', 'UTF-8');
 		$p->setFilterDOM($dom);
 		$this->assertNull($p->getFilterErrors());
 		$this->assertFalse($p->getHasFilterError());

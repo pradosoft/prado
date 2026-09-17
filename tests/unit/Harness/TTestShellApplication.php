@@ -8,11 +8,12 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-require_once __DIR__ . '/Traits/TTestApplicationRestorationTrait.php';
+namespace Prado\Test\Unit\Harness;
 
 use Prado\Prado;
 use Prado\Shell\TShellApplication;
 use Prado\Shell\TShellWriter;
+use Prado\Test\Unit\Harness\Traits\TTestApplicationRestorationTrait;
 
 /**
  * TTestShellApplication extends {@see TShellApplication} with test-friendly behaviour.

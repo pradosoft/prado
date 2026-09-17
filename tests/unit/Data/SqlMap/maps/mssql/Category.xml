@@ -2,7 +2,7 @@
 <sqlMap namespace="Category" >
 
 
-	<select id="GetCategory" parameterClass="Integer" resultClass="Category">
+	<select id="GetCategory" parameterClass="Integer" resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Category">
 		select
 		Category_ID as Id,
 		Category_Name as Name,
@@ -13,7 +13,7 @@
 	
 
 	<!-- Test for statement as insert -->
-	<statement id="InsertCategory" parameterClass="Category" resultClass="int">
+	<statement id="InsertCategory" parameterClass="Prado\Test\Unit\Data\SqlMap\Domain\Category" resultClass="int">
 		insert into Categories  
 			(Category_Name, Category_Guid) 
 		values 
@@ -39,7 +39,7 @@
 		select SCOPE_IDENTITY() as value
 	</statement>
 					
-	<insert id="InsertCategoryViaInsertStatement" parameterClass="Category" >
+	<insert id="InsertCategoryViaInsertStatement" parameterClass="Prado\Test\Unit\Data\SqlMap\Domain\Category" >
 		<selectKey property="Id" type="post" resultClass="int">
 			${selectKey}
 		</selectKey>			
@@ -49,7 +49,7 @@
 			(#Name#, #Guid:UniqueIdentifier#)
 	</insert><!--Guid for Oledb, UniqueIdentifier for SqlClient, Odbc -->
 	
-	<insert id="InsertCategoryWithProperties" parameterClass="Category" >
+	<insert id="InsertCategoryWithProperties" parameterClass="Prado\Test\Unit\Data\SqlMap\Domain\Category" >
 		<selectKey property="Id" type="post" resultClass="int">
 			${selectKey}
 		</selectKey>			
@@ -102,17 +102,17 @@
 		<generate table="Categories" by="Category_Id, Category_Name"/>
 	</delete>
 	
-	<select id="SelectByPKCategoryGenerate" resultClass="Category" parameterClass="Category" parameterMap="select-generate-params">
+	<select id="SelectByPKCategoryGenerate" resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Category" parameterClass="Prado\Test\Unit\Data\SqlMap\Domain\Category" parameterMap="select-generate-params">
 		<generate table="Categories" by="Category_Id"/> 
 	</select>
 	
-	<select id="SelectAllCategoryGenerate" resultClass="Category" parameterMap="select-generate-params">
+	<select id="SelectAllCategoryGenerate" resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Category" parameterMap="select-generate-params">
 		<generate table="Categories" /> 
 	</select>
 	
 	<statement id="DynamicGuid" 
-		resultClass="Category" 
-		parameterClass="Category">
+		resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Category" 
+		parameterClass="Prado\Test\Unit\Data\SqlMap\Domain\Category">
 		select
 		Category_ID as Id,
 		Category_Name as Name,

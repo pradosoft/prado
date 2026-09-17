@@ -1,12 +1,15 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Log;
+
 use Prado\Util\Log\TLogger;
 use Prado\Util\Log\TSysLogRoute;
+use Prado\Util\Log\TFileLogRoute;
 
 class TTestFileLogRoute extends TFileLogRoute {
 }
 
-class TFileLogRouteTest extends PHPUnit\Framework\TestCase
+class TFileLogRouteTest extends \PHPUnit\Framework\TestCase
 {
 	protected function setUp(): void
 	{

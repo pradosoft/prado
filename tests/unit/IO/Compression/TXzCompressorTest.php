@@ -1,11 +1,13 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Compression;
+
 use Prado\Exceptions\TNotSupportedException;
 use Prado\IO\Compression\ICompressor;
 use Prado\IO\Compression\TBuiltinCompressor;
 use Prado\IO\Compression\TXzCompressor;
 
-class TXzCompressorTest extends PHPUnit\Framework\TestCase
+class TXzCompressorTest extends \PHPUnit\Framework\TestCase
 {
 	public function testIsABuiltinCompressorStub()
 	{

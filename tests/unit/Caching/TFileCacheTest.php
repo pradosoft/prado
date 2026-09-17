@@ -8,12 +8,15 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Caching;
+
 use Prado\Caching\ICacheSize;
 use Prado\Caching\TCache;
 use Prado\Caching\TFileCache;
 use Prado\Exceptions\TConfigurationException;
 use Prado\TApplication;
 use Prado\Util\Cron\TCronTaskInfo;
+use Prado\Test\Unit\Harness\Caching\TTestFileCache;
 
 
 // ── Test class ─────────────────────────────────────────────────────────────────
@@ -30,7 +33,7 @@ use Prado\Util\Cron\TCronTaskInfo;
  *
  * @package Prado\Tests\Unit\Caching
  */
-class TFileCacheTest extends PHPUnit\Framework\TestCase
+class TFileCacheTest extends \PHPUnit\Framework\TestCase
 {
 	private static string $cacheDir;
 
@@ -311,11 +314,11 @@ class TFileCacheTest extends PHPUnit\Framework\TestCase
 
 	public function testSetAndGetObject(): void
 	{
-		$obj = new stdClass();
+		$obj = new \stdClass();
 		$obj->value = 42;
 		$this->cache->set('key_obj', $obj);
 		$retrieved = $this->cache->get('key_obj');
-		$this->assertInstanceOf(stdClass::class, $retrieved);
+		$this->assertInstanceOf(\stdClass::class, $retrieved);
 		$this->assertSame(42, $retrieved->value);
 	}
 

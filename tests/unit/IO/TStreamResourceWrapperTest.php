@@ -1,8 +1,12 @@
 <?php
 
+namespace Prado\Test\Unit\IO;
+
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\IO\TStream;
 use Prado\IO\TStreamResourceWrapper;
+use Prado\Test\Unit\Harness\IO\TTestIOHelper;
+use Prado\Test\Unit\Harness\IO\TTestPsrStream;
 
 /**
  * Unit tests for {@see \Prado\IO\TStreamResourceWrapper}, which exposes a PSR-7
@@ -12,7 +16,7 @@ use Prado\IO\TStreamResourceWrapper;
  * arbitrary StreamInterface, while {@see TTestIOHelper} supplies real {@see TStream}s
  * for the resource-API interop cases.
  */
-class TStreamResourceWrapperTest extends PHPUnit\Framework\TestCase
+class TStreamResourceWrapperTest extends \PHPUnit\Framework\TestCase
 {
 	protected function tearDown(): void
 	{

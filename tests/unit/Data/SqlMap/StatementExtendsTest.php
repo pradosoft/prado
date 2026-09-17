@@ -1,8 +1,10 @@
 <?php
 
+namespace Prado\Test\Unit\Data\SqlMap;
+
 use Prado\Data\SqlMap\TSqlMapConfig;
 
-class StatementExtendsTest extends PHPUnit\Framework\TestCase
+class StatementExtendsTest extends \PHPUnit\Framework\TestCase
 {
 	protected $testSqlMap;
 

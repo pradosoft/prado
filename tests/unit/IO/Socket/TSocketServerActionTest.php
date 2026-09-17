@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Socket;
+
 use Prado\IO\Socket\TSocketServerAction;
 use Prado\IO\Socket\TSocketServerModule;
 use Prado\IO\TTextWriter;
@@ -29,7 +31,7 @@ class CapturingTextWriter extends TTextWriter
 	}
 }
 
-class TSocketServerActionTest extends PHPUnit\Framework\TestCase
+class TSocketServerActionTest extends \PHPUnit\Framework\TestCase
 {
 	private TSocketServerAction $action;
 	private CapturingTextWriter $capture;

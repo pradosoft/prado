@@ -8,18 +8,21 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Caching;
+
 use Prado\Caching\TSerializingCache;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Security\TSecurityManager;
+use Prado\Test\Unit\Harness\Caching\TTestSerializingCache;
 
 /**
  * Tests for TSerializingCache serialization, encryption, encoding, and security-manager
  * resolution. Uses the {@see TTestSerializingCache} harness (an array-backed concrete
  * TSerializingCache that records raw payloads via {@see TTestSerializingCache::onlyStored()}).
  */
-class TSerializingCacheTest extends PHPUnit\Framework\TestCase
+class TSerializingCacheTest extends \PHPUnit\Framework\TestCase
 {
 	private function newCache(): TTestSerializingCache
 	{

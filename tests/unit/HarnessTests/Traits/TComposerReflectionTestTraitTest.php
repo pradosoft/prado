@@ -8,8 +8,13 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\HarnessTests\Traits;
+
 use Composer\Autoload\ClassLoader;
 use Prado\Util\TComposerReflection;
+use Prado\Test\Unit\Harness\Traits\TComposerReflectionTestTrait;
+use Prado\Test\Unit\Harness\Util\TTestComposerReflection;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * Tests for {@see TComposerReflectionTestTrait}, the shared composer-test scaffolding.
@@ -19,7 +24,7 @@ use Prado\Util\TComposerReflection;
  *
  * @package System.Harness.Traits
  */
-class TComposerReflectionTestTraitTest extends PHPUnit\Framework\TestCase
+class TComposerReflectionTestTraitTest extends \PHPUnit\Framework\TestCase
 {
 	use TComposerReflectionTestTrait;
 

@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit;
+
 use Prado\TComponent;
 use Prado\TModule;
 use Prado\TService;
@@ -543,7 +545,7 @@ class TCoercionTestService extends TService
  * - **Nested sub-property loop** — dot-notation paths iterated in a config loop,
  *   verifying that coercion at depth behaves identically to flat-path coercion.
  */
-class TComponentCoercionIntegrationTest extends PHPUnit\Framework\TestCase
+class TComponentCoercionIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 	// ════════════════════════════════════════════════════════════════════════
 	// applyProperty — direct

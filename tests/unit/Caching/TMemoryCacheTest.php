@@ -8,12 +8,19 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Caching;
+
 use Prado\Caching\ICacheSize;
 use Prado\Caching\TCache;
 use Prado\Caching\TMemoryCache;
 use Prado\Exceptions\TConfigurationException;
 use Prado\TApplication;
 use Prado\TApplicationMode;
+use Prado\Test\Unit\Harness\Caching\TTestCache;
+use Prado\Test\Unit\Harness\Caching\TTestMemoryCache;
+use Prado\Test\Unit\Harness\Caching\TTestMemoryCacheCustomKey;
+use Prado\Test\Unit\Harness\Caching\TTestMemoryCacheCustomMergePolicy;
+use Prado\Test\Unit\Harness\Traits\PradoUnitModuleDependencyTrait;
 
 
 // ── Test class ─────────────────────────────────────────────────────────────────
@@ -30,7 +37,7 @@ use Prado\TApplicationMode;
  *
  * @package Prado\Tests\Unit\Caching
  */
-class TMemoryCacheTest extends PHPUnit\Framework\TestCase
+class TMemoryCacheTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitModuleDependencyTrait;
 	private static string $tempDir;
@@ -214,11 +221,11 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 
 	public function testSetAndGetObject(): void
 	{
-		$obj = new stdClass();
+		$obj = new \stdClass();
 		$obj->x = 99;
 		$this->cache->set('obj_key', $obj);
 		$retrieved = $this->cache->get('obj_key');
-		$this->assertInstanceOf(stdClass::class, $retrieved);
+		$this->assertInstanceOf(\stdClass::class, $retrieved);
 		$this->assertSame(99, $retrieved->x);
 	}
 
@@ -1076,7 +1083,7 @@ class TMemoryCacheTest extends PHPUnit\Framework\TestCase
 			'null' => null,
 			'array' => [1, 'two', [3]],
 			'object' => (static function () {
-				$o = new stdClass();
+				$o = new \stdClass();
 				$o->x = 99;
 				return $o;
 			})(),

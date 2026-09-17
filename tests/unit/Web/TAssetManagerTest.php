@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
@@ -7,8 +9,9 @@ use Prado\Exceptions\TIOException;
 use Prado\Prado;
 use Prado\TApplication;
 use Prado\Web\TAssetManager;
+use Prado\Test\Unit\Harness\IO\TarTestHelper;
 
-class TAssetManagerTest extends PHPUnit\Framework\TestCase
+class TAssetManagerTest extends \PHPUnit\Framework\TestCase
 {
 	public static $app = null;
 	public static $assetDir = null;
@@ -60,10 +63,10 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 			if (is_writable(dirname(self::$assetDir))) {
 				mkdir(self::$assetDir, Prado::getDefaultDirPermissions()) ;
 			} else {
-				throw new Exception('Directory ' . dirname(self::$assetDir) . ' is not writable');
+				throw new \Exception('Directory ' . dirname(self::$assetDir) . ' is not writable');
 			}
 		} elseif (!is_dir(self::$assetDir)) {
-			throw new Exception(self::$assetDir . ' exists and is not a directory');
+			throw new \Exception(self::$assetDir . ' exists and is not a directory');
 		}
 		// Define an alias to asset directory
 		prado::setPathofAlias('AssetAlias', self::$assetDir);

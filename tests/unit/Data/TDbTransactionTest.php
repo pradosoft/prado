@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Data;
+
 use Prado\Data\TDbConnection;
 use Prado\TApplication;
 
@@ -7,7 +9,7 @@ if (!defined('TEST_DB_FILE')) {
 	define('TEST_DB_FILE', __DIR__ . '/db/test.db');
 }
 
-class TDbTransactionTest extends PHPUnit\Framework\TestCase
+class TDbTransactionTest extends \PHPUnit\Framework\TestCase
 {
 	private $_connection;
 
@@ -45,7 +47,7 @@ class TDbTransactionTest extends PHPUnit\Framework\TestCase
 			$this->_connection->createCommand($sql)->execute();
 			$this->fail('Expected exception not raised');
 			$transaction->commit();
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			$this->assertTrue($transaction->Active);
 			$transaction->rollBack();
 			$this->assertFalse($transaction->Active);
@@ -65,7 +67,7 @@ class TDbTransactionTest extends PHPUnit\Framework\TestCase
 			$this->assertTrue($transaction->Active);
 			$transaction->commit();
 			$this->assertFalse($transaction->Active);
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			$transaction->rollBack();
 			$this->fail('Unexpected exception');
 		}

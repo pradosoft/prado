@@ -1,8 +1,14 @@
 <?php
 
-require_once(__DIR__ . '/BaseCase.php');
+namespace Prado\Test\Unit\Data\SqlMap;
 
-class SqlMapCacheTest extends PHPUnit\Framework\TestCase
+use Prado\Data\SqlMap\DataMapper\TSqlMapFifoCache;
+use Prado\Data\SqlMap\DataMapper\TSqlMapLruCache;
+use Prado\Data\SqlMap\TSqlMapGateway;
+use Prado\Data\SqlMap\TSqlMapManager;
+use Prado\TComponent;
+
+class SqlMapCacheTest extends \PHPUnit\Framework\TestCase
 {
 	public function testFIFOCache()
 	{

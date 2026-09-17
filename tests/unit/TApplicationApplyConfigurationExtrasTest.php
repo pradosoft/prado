@@ -18,11 +18,13 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit;
+
 use Prado\Prado;
 use Prado\TApplication;
 use Prado\Exceptions\TException;
 
-class TApplicationApplyConfigurationExtrasTest extends PHPUnit\Framework\TestCase
+class TApplicationApplyConfigurationExtrasTest extends \PHPUnit\Framework\TestCase
 {
 	/** Builds a bare TApplication with the minimum state applyConfiguration() reads. */
 	private function bareApp(): TApplication

@@ -1,11 +1,13 @@
 <?php
 
+namespace Prado\Test\Unit\Exceptions;
+
 use Prado\Exceptions\TTemplateException;
 
 /**
  * Tests for TTemplateException basic accessors and edge handling.
  */
-class TTemplateExceptionTest extends PHPUnit\Framework\TestCase
+class TTemplateExceptionTest extends \PHPUnit\Framework\TestCase
 {
     public function testTemplateProperties()
     {

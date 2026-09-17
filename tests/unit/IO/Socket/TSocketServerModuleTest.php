@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Socket;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\IO\Socket\TSocketReactor;
 use Prado\IO\Socket\TSocketServer;
@@ -67,7 +69,7 @@ class StopWithinLoopSocketServerModule extends TSocketServerModule
 	}
 }
 
-class TSocketServerModuleTest extends PHPUnit\Framework\TestCase
+class TSocketServerModuleTest extends \PHPUnit\Framework\TestCase
 {
 	public function testSetSchemeRejectsDatagramSchemes()
 	{

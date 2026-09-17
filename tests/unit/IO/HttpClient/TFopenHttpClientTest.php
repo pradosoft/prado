@@ -1,9 +1,9 @@
 <?php
 
+namespace Prado\Test\Unit\IO\HttpClient;
+
 use Prado\IO\HttpClient\TFopenHttpClient;
 use Prado\IO\HttpClient\THttpClientException;
-
-require_once __DIR__ . '/HttpServerTestTrait.php';
 
 class ExposedFopenHttpClient extends TFopenHttpClient
 {
@@ -20,7 +20,7 @@ class ExposedFopenHttpClient extends TFopenHttpClient
  * against PHP's built-in test server; they are skipped automatically if the
  * server fails to start.
  */
-class TFopenHttpClientTest extends PHPUnit\Framework\TestCase
+class TFopenHttpClientTest extends \PHPUnit\Framework\TestCase
 {
 	use HttpServerTestTrait;
 

@@ -1,14 +1,18 @@
 <?php
 
+namespace Prado\Test\Unit\Caching;
+
 use Prado\Caching\TDbCache;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TConfigurationException;
+use Prado\Test\Unit\Harness\TTestApplication;
+use Prado\Test\Unit\PradoUnit;
 
 if (!defined('TEST_CACHE_DB_DIR')) {
 	define('TEST_CACHE_DB_DIR', __DIR__ . '/../Data/db');
 }
 
-class TDbCacheTest extends PHPUnit\Framework\TestCase
+class TDbCacheTest extends \PHPUnit\Framework\TestCase
 {
 	private $_cache;
 	private $_dbDir;
@@ -319,7 +323,7 @@ class TDbCacheTest extends PHPUnit\Framework\TestCase
 		$this->initCache();
 
 		$key = 'object_key';
-		$value = new stdClass();
+		$value = new \stdClass();
 		$value->prop1 = 'value1';
 		$value->prop2 = 123;
 

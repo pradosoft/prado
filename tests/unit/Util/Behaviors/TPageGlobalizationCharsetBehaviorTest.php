@@ -1,10 +1,14 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Behaviors;
+
 use Prado\I18N\TGlobalization;
 use Prado\Prado;
 use Prado\Util\Behaviors\TPageGlobalizationCharsetBehavior;
+use Prado\Web\UI\TPage;
+use Prado\Web\UI\WebControls\THead;
 
-class TPageGlobalizationCharsetBehaviorTest extends PHPUnit\Framework\TestCase
+class TPageGlobalizationCharsetBehaviorTest extends \PHPUnit\Framework\TestCase
 {
 	protected $obj;
 

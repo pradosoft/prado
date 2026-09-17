@@ -8,9 +8,11 @@
  * @author Brad Anderson <belisoful@icloud.com>
  */
 
+namespace Prado\Test\Unit\Web;
+
 use Prado\Web\TMediaType;
 
-class TMediaTypeTest extends PHPUnit\Framework\TestCase
+class TMediaTypeTest extends \PHPUnit\Framework\TestCase
 {
 	// -----------------------------------------------------------------------
 	// Named constants — value verification (in class declaration order)

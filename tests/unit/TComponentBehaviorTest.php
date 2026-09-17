@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/TComponentTestBase.php';
+namespace Prado\Test\Unit;
 
 use Prado\Exceptions\TApplicationException;
 use Prado\Exceptions\TInvalidDataTypeException;
@@ -253,14 +253,14 @@ class TComponentBehaviorTest extends TComponentTestBase
 
 	public function testIsA_with_IInstanceCheck()
 	{
-		$this->assertTrue($this->component->isa('NewComponent'));
+		$this->assertTrue($this->component->isa(NewComponent::class));
 		$this->assertFalse($this->component->isa(PreBarBehavior::class));
 
 		$this->component->attachBehavior('BarBehaviorName', $behavior = new BarBehavior);
 
 		$behavior->setInstanceReturn(null);
 
-		$this->assertTrue($this->component->isa('NewComponent'));
+		$this->assertTrue($this->component->isa(NewComponent::class));
 		$this->assertTrue($this->component->isa(PreBarBehavior::class));
 		$this->assertFalse($this->component->isa(FooBehavior::class));
 
@@ -383,7 +383,7 @@ class TComponentBehaviorTest extends TComponentTestBase
 		// Instance from string, replace first behavior.
 
 		$behavior->detached = 0;
-		$this->component->attachBehavior('FooBehavior', 'FooBehavior');
+		$this->component->attachBehavior('FooBehavior', FooBehavior::class);
 		$this->assertEquals(1, $behavior->detached,  "Attaching a behavior over an existing behavior did not call detach on the prior behavior.");
 
 		$this->component->detachBehavior('FooBehavior');
@@ -394,7 +394,7 @@ class TComponentBehaviorTest extends TComponentTestBase
 		$this->assertFalse($this->component->isa(BarBehavior::class));
 
 
-		$this->component->attachBehavior(strtoupper('FooBehavior'), 'FooBehavior');
+		$this->component->attachBehavior(strtoupper('FooBehavior'), FooBehavior::class);
 
 		$this->assertNotNull($this->component->asa(strtoupper('FooBehavior')));
 		$this->assertNotNull($this->component->asa('FooBehavior'));
@@ -411,7 +411,7 @@ class TComponentBehaviorTest extends TComponentTestBase
 		$this->assertFalse($this->component->isa(BarBehavior::class));
 
 		// Anonymous null named behavior
-		$this->component->attachBehavior(null, ['class' => 'FooBehavior', 'PropertyA'=>'anon_name_null']);
+		$this->component->attachBehavior(null, ['class' => FooBehavior::class, 'PropertyA'=>'anon_name_null']);
 
 		$this->assertNotNull($this->component->asa(0));
 		$this->assertTrue($this->component->isa(FooBehavior::class));
@@ -428,7 +428,7 @@ class TComponentBehaviorTest extends TComponentTestBase
 
 
 		// Anonymous number behavior
-		$this->component->attachBehavior(11, ['class' => 'FooBehavior', 'PropertyA'=>'anon_name']);
+		$this->component->attachBehavior(11, ['class' => FooBehavior::class, 'PropertyA'=>'anon_name']);
 
 		$this->assertNotNull($this->component->asa(1));
 		$this->assertTrue($this->component->isa(FooBehavior::class));

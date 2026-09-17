@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Collections;
+
 use Prado\Collections\IWeakRetainable;
 use Prado\Collections\TWeakMap;
 use Prado\Exceptions\TInvalidDataTypeException;
@@ -440,7 +442,7 @@ class TWeakMapTest extends TMapTest
 
 		// Closure must survive without any other strong reference
 		$retrieved = $this->map->itemAt('fn');
-		$this->assertInstanceOf(Closure::class, $retrieved);
+		$this->assertInstanceOf(\Closure::class, $retrieved);
 		$this->assertSame(42, $retrieved());
 
 		// Closure is not tracked in the WeakMap

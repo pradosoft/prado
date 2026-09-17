@@ -1,8 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI\WebControls;
+
 use Prado\Web\UI\WebControls\TSummary;
 use Prado\Web\UI\WebControls\TDetails;
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\Harness\Traits\TWebControlRenderTrait;
 
 class TSummaryTest extends TestCase
 {

@@ -8,6 +8,8 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Harness\IO;
+
 use Psr\Http\Message\StreamInterface;
 
 /**

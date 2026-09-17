@@ -1,8 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI\WebControls;
+
 use Prado\Web\UI\WebControls\TAside;
 use Prado\Web\UI\WebControls\THtmlElement;
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\Harness\Traits\TWebControlRenderTrait;
 
 class TAsideTest extends TestCase
 {

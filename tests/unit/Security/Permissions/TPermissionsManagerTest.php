@@ -1,13 +1,25 @@
 <?php
 
+namespace Prado\Test\Unit\Security\Permissions;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Security\Permissions\TPermissionsManager;
 use Prado\Web\Services\TPageConfiguration;
 use Prado\Security\TUserManager;
 use Prado\Util\TDbParameterModule;
+use Prado\Test\Unit\Harness\TTestApplication;
+use Prado\Prado;
+use Prado\Security\Permissions\TPermissionsBehavior;
+use Prado\Security\Permissions\TPermissionsConfigurationBehavior;
+use Prado\Security\Permissions\TUserOwnerRule;
+use Prado\Security\Permissions\TUserPermissionsBehavior;
+use Prado\Security\TAuthorizationRule;
+use Prado\Security\TAuthorizationRuleCollection;
+use Prado\Security\TUser;
+use Prado\Xml\TXmlDocument;
 
-class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
+class TPermissionsManagerTest extends \PHPUnit\Framework\TestCase
 {
 	protected ?TTestApplication $app = null;
 	protected $obj;
@@ -742,7 +754,7 @@ class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
 		self::assertEquals($dbparam, $this->obj->getDbParameter());
 		
 		try {
-			$this->obj->setDbParameter($v = new stdClass());
+			$this->obj->setDbParameter($v = new \stdClass());
 			self::fail('failed to throw TConfigurationException when parameter not string and not a TDbParameterModule');
 		} catch (TConfigurationException $e) {}
 		

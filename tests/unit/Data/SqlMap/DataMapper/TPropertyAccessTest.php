@@ -1,9 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\Data\SqlMap\DataMapper;
+
 use Prado\Exceptions\TPhpErrorException;
 use Prado\Data\SqlMap\DataMapper\TPropertyAccess;
 
-class TPropertyAccessTest extends PHPUnit\Framework\TestCase
+class TPropertyAccessTest extends \PHPUnit\Framework\TestCase
 {
 	public function testHasPublicVar()
 	{
@@ -66,10 +68,10 @@ class TPropertyAccessTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(1, TPropertyAccess::get($testobj, 'A'));
 		self::assertEquals(2, TPropertyAccess::get($testobj, 'B'));
 
-		self::expectException(Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
+		self::expectException(\Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
 		TPropertyAccess::get($testobj, 'c');
 
-		self::expectException(Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
+		self::expectException(\Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
 		TPropertyAccess::get($testobj, 'C');
 	}
 
@@ -98,7 +100,7 @@ class TPropertyAccessTest extends PHPUnit\Framework\TestCase
 		} catch(TPhpErrorException $e) {
 		}
 			
-		self::expectException(Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
+		self::expectException(\Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
 		TPropertyAccess::get($testobj, 'C');
 	}
 
@@ -198,10 +200,10 @@ class TPropertyAccessTest extends PHPUnit\Framework\TestCase
 		self::assertNull(TPropertyAccess::get($testobj, 'a.e.c'));
 		self::assertNull(TPropertyAccess::get($testobj, 'a.e.C'));
 
-		self::expectException(Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
+		self::expectException(\Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
 		TPropertyAccess::get($testobj, 'a.c.C');
 
-		self::expectException(Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
+		self::expectException(\Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
 		TPropertyAccess::get($testobj, 'a.d.C');
 	}
 }

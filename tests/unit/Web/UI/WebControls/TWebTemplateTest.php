@@ -1,8 +1,12 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI\WebControls;
+
 use Prado\Web\UI\WebControls\TShadowRootMode;
 use Prado\Web\UI\WebControls\TWebTemplate;
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\Harness\Traits\TWebControlRenderTrait;
+use Prado\Test\Unit\PradoUnit;
 
 class TWebTemplateTest extends TestCase
 {

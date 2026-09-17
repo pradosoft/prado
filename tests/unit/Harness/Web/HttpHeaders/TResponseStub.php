@@ -1,9 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\Harness\Web\HttpHeaders;
+
 /**
  * TResponseStub — minimal duck-typed THttpResponse stand-in for HttpHeaders tests.
  *
- * Auto-loaded by {@see PradoUnitRequires}. Captures `appendHeader()` calls
+ * Captures `appendHeader()` calls
  * without requiring a full {@see Prado\TApplication} lifecycle.
  *
  * @author Brad Anderson <belisoful@icloud.com>

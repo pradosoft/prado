@@ -1,11 +1,13 @@
 <?php
 
+namespace Prado\Test\Unit\IO;
+
 use Prado\IO\TStreamNotificationParameter;
 
 /**
  * Tests for the {@see \Prado\IO\TStreamNotificationParameter} event-parameter data holder.
  */
-class TStreamNotificationParameterTest extends PHPUnit\Framework\TestCase
+class TStreamNotificationParameterTest extends \PHPUnit\Framework\TestCase
 {
 	public function testIsAnEventParameter()
 	{

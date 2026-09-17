@@ -1,11 +1,13 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Compression;
+
 use Prado\Exceptions\TIOException;
 use Prado\IO\Compression\TCompression;
 use Prado\IO\Compression\TGzipCompressor;
 use Prado\IO\Compression\TZlibCompressor;
 
-class TCompressionTest extends PHPUnit\Framework\TestCase
+class TCompressionTest extends \PHPUnit\Framework\TestCase
 {
 	public function testKnownMethodsInPreferenceOrder()
 	{

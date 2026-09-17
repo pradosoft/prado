@@ -1,7 +1,12 @@
 <?php
 
+namespace Prado\Test\Unit\IO;
+
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\IO\IResource;
+use Prado\Test\Unit\Harness\IO\TTestIOEventLog;
+use Prado\Test\Unit\Harness\IO\TTestIOHelper;
+use Prado\Test\Unit\Harness\IO\TTestResource;
 
 /**
  * Unit tests for {@see \Prado\IO\TResource}, the abstract base of the IO layer.
@@ -10,7 +15,7 @@ use Prado\IO\IResource;
  * {@see TTestIOHelper} opens resources and scratch files, and {@see TTestIOEventLog} records
  * the lifecycle events.
  */
-class TResourceTest extends PHPUnit\Framework\TestCase
+class TResourceTest extends \PHPUnit\Framework\TestCase
 {
 	protected function tearDown(): void
 	{

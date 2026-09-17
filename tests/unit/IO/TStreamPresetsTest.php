@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\IO;
+
 use Prado\Exceptions\TIOException;
 use Prado\IO\TFileStream;
 use Prado\IO\TInputStream;
@@ -10,8 +12,9 @@ use Prado\IO\TStdInStream;
 use Prado\IO\TStdOutStream;
 use Prado\IO\TStream;
 use Prado\IO\TTempStream;
+use Prado\Test\Unit\Harness\IO\TTestIOHelper;
 
-class TStreamPresetsTest extends PHPUnit\Framework\TestCase
+class TStreamPresetsTest extends \PHPUnit\Framework\TestCase
 {
 	protected function tearDown(): void
 	{

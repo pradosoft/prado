@@ -1,13 +1,16 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Behaviors;
+
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\TComponent;
 use Prado\Prado;
 use Prado\Util\Behaviors\TMapLazyLoadBehavior;
 use Prado\Util\Helpers\TProcessHelper;
+use Prado\Util\Behaviors\TCaptureForkLog;
 
 
-class TCaptureForkLogTest extends PHPUnit\Framework\TestCase
+class TCaptureForkLogTest extends \PHPUnit\Framework\TestCase
 {
 
 	protected function setUp(): void

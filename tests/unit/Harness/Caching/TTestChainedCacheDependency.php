@@ -8,6 +8,8 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Harness\Caching;
+
 use Prado\Caching\TCacheDependencyList;
 use Prado\Caching\TChainedCacheDependency;
 

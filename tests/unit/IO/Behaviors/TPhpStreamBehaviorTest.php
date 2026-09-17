@@ -1,12 +1,14 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Behaviors;
+
 use Prado\Exceptions\TIOException;
 use Prado\IO\Behaviors\TPhpStreamBehavior;
 use Prado\IO\TStream;
 use Prado\TComponent;
 use Psr\Http\Message\StreamInterface;
 
-class TPhpStreamBehaviorTest extends PHPUnit\Framework\TestCase
+class TPhpStreamBehaviorTest extends \PHPUnit\Framework\TestCase
 {
 	private function attached(): TStream
 	{

@@ -1,11 +1,13 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Stream;
+
 use Prado\IO\Stream\IStreamDecoratorPooling;
 use Prado\IO\Stream\TDeflateStream;
 use Prado\IO\Stream\TInflateStream;
 use Prado\IO\TStream;
 
-class TInflateStreamTest extends PHPUnit\Framework\TestCase
+class TInflateStreamTest extends \PHPUnit\Framework\TestCase
 {
 	private string $plain = 'The quick brown fox. The quick brown fox. The quick brown fox.';
 

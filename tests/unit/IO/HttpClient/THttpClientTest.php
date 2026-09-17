@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\IO\HttpClient;
+
 use Prado\IO\HttpClient\TCachedHttpClient;
 use Prado\IO\HttpClient\TCurlHttpClient;
 use Prado\IO\HttpClient\TFopenHttpClient;
@@ -32,7 +34,7 @@ class TestableHttpClient extends THttpClient
 /**
  * Tests for THttpClient (abstract base) — factory, utilities, properties.
  */
-class THttpClientTest extends PHPUnit\Framework\TestCase
+class THttpClientTest extends \PHPUnit\Framework\TestCase
 {
 	private TestableHttpClient $client;
 

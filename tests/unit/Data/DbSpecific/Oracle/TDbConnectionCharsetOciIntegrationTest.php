@@ -1,7 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\Data\DbSpecific\Oracle;
+
 use Prado\Data\TDbConnection;
 use Prado\TApplication;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+use Prado\Exceptions\TDbException;
 
 /**
  * Integration tests for TDbConnection charset handling — Oracle (OCI).
@@ -21,7 +25,7 @@ use Prado\TApplication;
  * ---------------------
  * ORACLE_SERVICE_NAME  Oracle PDB service name (default: FREEPDB1).
  */
-class TDbConnectionCharsetOciIntegrationTest extends PHPUnit\Framework\TestCase
+class TDbConnectionCharsetOciIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

@@ -1,8 +1,12 @@
 <?php
 
-use Prado\Data\Common\Oracle\TOracleMetaData;
+namespace Prado\Test\Unit\Data\DbSpecific\Oracle;
 
-class OciColumnTest extends PHPUnit\Framework\TestCase
+use Prado\Data\Common\Oracle\TOracleMetaData;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+use Prado\Data\TDbConnection;
+
+class OciColumnTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

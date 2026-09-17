@@ -1,9 +1,12 @@
 <?php
 
+namespace Prado\Test\Unit;
+
 use Prado\Exceptions\THttpException;
 use Prado\Prado;
 use Prado\TApplication;
 use Prado\TService;
+use Prado\Test\Unit\Harness\TTestApplication;
 
 /**
  * Stub service classes used only within this test file.
@@ -68,7 +71,7 @@ class InitTrackingService extends TestBaseService
  *
  * @package System
  */
-class TApplicationServiceTest extends PHPUnit\Framework\TestCase
+class TApplicationServiceTest extends \PHPUnit\Framework\TestCase
 {
 	private TApplication $_app;
 	private array $_snap = [];

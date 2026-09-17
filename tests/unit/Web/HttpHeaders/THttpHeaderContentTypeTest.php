@@ -8,6 +8,8 @@
  * @author Brad Anderson <belisoful@icloud.com>
  */
 
+namespace Prado\Test\Unit\Web\HttpHeaders;
+
 use Prado\I18N\TGlobalization;
 use Prado\Prado;
 use Prado\TApplication;
@@ -15,8 +17,9 @@ use Prado\Web\HttpHeaders\THttpHeaderContentType;
 use Prado\Web\THttpHeaderName;
 use Prado\Web\THttpResponse;
 use Prado\Web\TMediaType;
+use Prado\Test\Unit\PradoUnit;
 
-class THttpHeaderContentTypeTest extends PHPUnit\Framework\TestCase
+class THttpHeaderContentTypeTest extends \PHPUnit\Framework\TestCase
 {
 	// -----------------------------------------------------------------------
 	// getHeaderName

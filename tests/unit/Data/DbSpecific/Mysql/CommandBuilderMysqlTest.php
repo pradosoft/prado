@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Data\DbSpecific\Mysql;
+
 use Prado\Data\Common\Mysql\TMysqlCommandBuilder;
 
 /**
@@ -10,7 +12,7 @@ use Prado\Data\Common\Mysql\TMysqlCommandBuilder;
  * so limit=0 emits LIMIT 0, offset=0 emits OFFSET 0, and offset-only emits just OFFSET n
  * (no LIMIT clause). This differs from SQLite which requires LIMIT -1 for offset-only.
  */
-class CommandBuilderMysqlTest extends PHPUnit\Framework\TestCase
+class CommandBuilderMysqlTest extends \PHPUnit\Framework\TestCase
 {
 	protected static string $sql = 'SELECT username, age FROM accounts';
 

@@ -1,9 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\Data\DbSpecific\Oracle;
+
 use Prado\Data\Common\Oracle\TOracleCommandBuilder;
 use Prado\Data\Common\Oracle\TOracleTableInfo;
 
-class CommandBuilderOracleTest extends PHPUnit\Framework\TestCase
+class CommandBuilderOracleTest extends \PHPUnit\Framework\TestCase
 {
 	/**
 	 * Creates a command builder with a minimal stub table info (no DB connection required).

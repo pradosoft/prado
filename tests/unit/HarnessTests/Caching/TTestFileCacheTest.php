@@ -8,8 +8,11 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\HarnessTests\Caching;
+
 use Prado\Caching\TFileCache;
 use Prado\Exceptions\TConfigurationException;
+use Prado\Test\Unit\Harness\Caching\TTestFileCache;
 
 /**
  * Tests for {@see TTestFileCache} (and the hash fixtures), verifying the harness exposers,
@@ -17,7 +20,7 @@ use Prado\Exceptions\TConfigurationException;
  *
  * @package System.Harness.Caching
  */
-class TTestFileCacheTest extends PHPUnit\Framework\TestCase
+class TTestFileCacheTest extends \PHPUnit\Framework\TestCase
 {
 	private string $dir;
 	private TTestFileCache $cache;

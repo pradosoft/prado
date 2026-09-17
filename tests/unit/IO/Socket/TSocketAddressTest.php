@@ -1,9 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Socket;
+
 use Prado\IO\Socket\TSocketAddress;
 use Prado\IO\TResourceUri;
 
-class TSocketAddressTest extends PHPUnit\Framework\TestCase
+class TSocketAddressTest extends \PHPUnit\Framework\TestCase
 {
 	public function testParseHostPort()
 	{

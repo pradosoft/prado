@@ -1,15 +1,29 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Cron;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Util\Cron\TDbCronModule;
 use Prado\Util\Cron\TCronMethodTask;
+use Prado\Util\Cron\TDbCronManager;
+use Prado\Test\Unit\PradoUnit;
 
 class TDbCronManagerTest extends TCronModuleTest
 {
 	protected function getTestClass()
 	{
 		return TDbCronManager::class;
+	}
+	
+	protected function setUp(): void
+	{
+		parent::setUp();
+		
+		// The cron table persists in a sqlite file across tests and runs; each test starts empty.
+		$cleaner = new TDbCronManager();
+		PradoUnit::invoke($cleaner, 'ensureTable');
+		$cleaner->getDbConnection()->createCommand('DELETE FROM ' . $cleaner->getTableName())->execute();
 	}
 	
 	protected function tearDown(): void
@@ -28,7 +42,7 @@ class TDbCronManagerTest extends TCronModuleTest
 	 */
 	public function testGetTaskInfos()
 	{
-		$task = new TTestCronFXTest();
+		$task = new TTestCronFXComponent();
 		
 		self::assertEquals('dyListen', $task->dyMethod);
 		$this->obj->setId('testCronModule100');
@@ -54,7 +68,7 @@ class TDbCronManagerTest extends TCronModuleTest
 	
 	public function validationData()
 	{
-		return ['name' => 'testTask1', 'schedule' => '* * * * *', 'task' => 'TTestCronModuleTask'];
+		return ['name' => 'testTask1', 'schedule' => '* * * * *', 'task' => TTestCronModuleTask::class];
 	}
 	
 	public function testValidateTask()
@@ -120,7 +134,7 @@ class TDbCronManagerTest extends TCronModuleTest
 		parent::testGetTasks();
 		
 		$jobs = [
-			['name' => 'testTask1', 'schedule' => '1 * 1 1 *', 'task' => 'TTestCronModuleTask', 'propertya' => 'value1', 'username' => 'admin', 'moduleid' => 'GT_module'],
+			['name' => 'testTask1', 'schedule' => '1 * 1 1 *', 'task' => TTestCronModuleTask::class, 'propertya' => 'value1', 'username' => 'admin', 'moduleid' => 'GT_module'],
 			['name' => 'testTask2', 'schedule' => '2 * 1 1 *', 'task' => 'CMT_UserManager3' . self::SEPARATOR . 'method1', 'username' => 'admin1']
 		];
 		
@@ -163,7 +177,7 @@ class TDbCronManagerTest extends TCronModuleTest
 		$tasks = $this->obj->getTasks();
 		
 		self::assertEquals(4, count($tasks));
-		self::assertInstanceOf('TTestCronModuleTask', $tasks['testTask1']);
+		self::assertInstanceOf(TTestCronModuleTask::class, $tasks['testTask1']);
 		self::assertEquals('1 * 1 1 *', $tasks['testTask1']->getSchedule());
 		self::assertEquals('testTask1', $tasks['testTask1']->getName());
 		self::assertEquals('admin', $tasks['testTask1']->getUserName());
@@ -178,7 +192,7 @@ class TDbCronManagerTest extends TCronModuleTest
 		// GetTasks returns DB tasks
 		self::assertEquals('3 * * * * 2020', $tasks['testTask3']->getSchedule());
 		self::assertEquals('testTask3', $tasks['testTask3']->getName());
-		self::assertInstanceOf('TTestCronModuleTask', $tasks['testTask3']);
+		self::assertInstanceOf(TTestCronModuleTask::class, $tasks['testTask3']);
 		self::assertEquals('4 * * * * 2020', $tasks['testTask4']->getSchedule());
 		self::assertEquals('testTask4', $tasks['testTask4']->getName());
 		self::assertInstanceOf(\Prado\Util\Cron\TCronMethodTask::class, $tasks['testTask4']);
@@ -201,7 +215,7 @@ class TDbCronManagerTest extends TCronModuleTest
 		self::assertTrue(microtime(true) - $tasks['testTask4']->getLastExecTime() < 2);
 		
 		$jobs2 = [
-			['name' => 'testTask1', 'schedule' => '1 * * * *', 'task' => 'TTestCronModuleTask', 'propertya' => 'value1', 'username' => 'admin', 'moduleid' => 'GT_module'],
+			['name' => 'testTask1', 'schedule' => '1 * * * *', 'task' => TTestCronModuleTask::class, 'propertya' => 'value1', 'username' => 'admin', 'moduleid' => 'GT_module'],
 			['name' => 'testTask2', 'schedule' => '2 * * * *', 'task' => 'CMT_UserManager3' . self::SEPARATOR . 'method1', 'username' => 'admin1'],
 			['name' => 'testTask3', 'schedule' => '3 * * * *', 'task' => 'CMT_UserManager3' . self::SEPARATOR . 'method2(true)'],
 			['name' => 'testTask4', 'schedule' => '4 * * * *', 'task' => 'CMT_UserManager3' . self::SEPARATOR . 'method3(86400)']
@@ -225,8 +239,8 @@ class TDbCronManagerTest extends TCronModuleTest
 	{
 		$this->obj->init(null);
 		$jobs = [
-			['name' => 'testTaskAA', 'schedule' => '* * * * * 2020', 'task' => 'TTestCronModuleTask'],
-			['name' => 'testTaskBB', 'schedule' => '* * * * * 2020', 'task' => 'TTestCronModuleTask', 'propertya' => 'value1'],
+			['name' => 'testTaskAA', 'schedule' => '* * * * * 2020', 'task' => TTestCronModuleTask::class],
+			['name' => 'testTaskBB', 'schedule' => '* * * * * 2020', 'task' => TTestCronModuleTask::class, 'propertya' => 'value1'],
 			['name' => 'testTaskCC', 'schedule' => '* * * * * 2020', 'task' => 'CMT_UserManager3' . self::SEPARATOR . 'method1'],
 			['name' => 'testTaskDD', 'schedule' => '* * * * * 2020', 'task' => 'CMT_UserManager3' . self::SEPARATOR . 'method2(true)'],
 			['name' => 'testTaskEE', 'schedule' => '* * * * * 2020', 'task' => 'CMT_UserManager3' . self::SEPARATOR . 'method3(86400)']
@@ -275,8 +289,8 @@ class TDbCronManagerTest extends TCronModuleTest
 		
 		// Test when db logging is off
 		$jobs = [
-			['name' => 'testTask1', 'schedule' => '* * * * * 2020', 'task' => 'TTestCronModuleTask'],
-			['name' => 'testTask2', 'schedule' => '* * * * * 2020', 'task' => 'TTestCronModuleTask', 'propertya' => 'value1'],
+			['name' => 'testTask1', 'schedule' => '* * * * * 2020', 'task' => TTestCronModuleTask::class],
+			['name' => 'testTask2', 'schedule' => '* * * * * 2020', 'task' => TTestCronModuleTask::class, 'propertya' => 'value1'],
 			['name' => 'testTask3', 'schedule' => '* * * * * 2020', 'task' => 'CMT_UserManager3' . self::SEPARATOR . 'method1'],
 			['name' => 'testTask4', 'schedule' => '* * * * * 2020', 'task' => 'CMT_UserManager3' . self::SEPARATOR . 'method2(true)'],
 			['name' => 'testTask5', 'schedule' => '* * * * * 2020', 'task' => 'CMT_UserManager3' . self::SEPARATOR . 'method3(86400)']
@@ -310,7 +324,7 @@ class TDbCronManagerTest extends TCronModuleTest
 	public function testExecuteRuntimeTasks()
 	{
 		$jobs = [
-			['name' => 'testTaskA', 'schedule' => '0 0 1 1 * 2099', 'task' => 'TTestCronModuleTask']
+			['name' => 'testTaskA', 'schedule' => '0 0 1 1 * 2099', 'task' => TTestCronModuleTask::class]
 		];
 		$this->obj->init($jobs);
 		$task1 = $this->obj->getTask('testTaskA');
@@ -345,7 +359,7 @@ class TDbCronManagerTest extends TCronModuleTest
 		// removeRuntimeTask
 		// clearRuntimeTasks
 		
-		$app = Prado::getApplication();
+		$app = \Prado::getApplication();
 		
 		$task = new TTestCronModuleTask();
 		$task->setName('runtimeTask1');
@@ -354,13 +368,14 @@ class TDbCronManagerTest extends TCronModuleTest
 		$task2->setName('runtimeTask2');
 		$task2->setSchedule('* * * * *');
 		
-		self::assertEquals(0, count($app->onEndRequest));
+		// Other components (e.g. the logger) may already listen on onEndRequest.
+		$handlers = count($app->onEndRequest);
 		self::assertNull($this->obj->getRuntimeTasks());
 		
 		$this->obj->addRuntimeTask($task);
-		self::assertEquals(1, count($app->onEndRequest));
+		self::assertEquals($handlers + 1, count($app->onEndRequest));
 		$this->obj->addRuntimeTask($task2);
-		self::assertEquals(1, count($app->onEndRequest));
+		self::assertEquals($handlers + 1, count($app->onEndRequest));
 		
 		$tasks = $this->obj->getRuntimeTasks();
 		self::assertEquals(2, count($tasks));
@@ -370,22 +385,22 @@ class TDbCronManagerTest extends TCronModuleTest
 		$this->obj->removeRuntimeTask($task);
 		
 		$tasks = $this->obj->getRuntimeTasks();
-		self::assertEquals(1, count($app->onEndRequest));
+		self::assertEquals($handlers + 1, count($app->onEndRequest));
 		self::assertEquals(1, count($tasks));
 		self::assertEquals($task2, $tasks['runtimeTask2']);
 		
 		$this->obj->removeRuntimeTask('runtimeTask2');
 		
-		self::assertEquals(0, count($app->onEndRequest));
+		self::assertEquals($handlers, count($app->onEndRequest));
 		self::assertNull($this->obj->getRuntimeTasks());
 		
 		$this->obj->addRuntimeTask($task);
 		$this->obj->addRuntimeTask($task2);
-		self::assertEquals(1, count($app->onEndRequest));
+		self::assertEquals($handlers + 1, count($app->onEndRequest));
 		self::assertEquals(2, count($this->obj->getRuntimeTasks()));
 		
 		$this->obj->clearRuntimeTasks();
-		self::assertEquals(0, count($app->onEndRequest));
+		self::assertEquals($handlers, count($app->onEndRequest));
 		self::assertNull($this->obj->getRuntimeTasks());
 		
 		//tell the object to filterStaleTasks.  This is for testing purposes only
@@ -408,7 +423,7 @@ class TDbCronManagerTest extends TCronModuleTest
 		$tasks['testTask4'] = $this->obj->getTask('testTask4', true, false);
 		
 		self::assertEquals(4, count($tasks));
-		self::assertEquals('TTestCronModuleTask', $tasks['testTask1']['task']);
+		self::assertEquals(TTestCronModuleTask::class, $tasks['testTask1']['task']);
 		self::assertEquals('1 * * * ?', $tasks['testTask1']['schedule']);
 		self::assertEquals('testTask1', $tasks['testTask1']['name']);
 		self::assertEquals('admin', $tasks['testTask1']['username']);
@@ -465,16 +480,16 @@ class TDbCronManagerTest extends TCronModuleTest
 		self::assertTrue(is_numeric($task['tabuid']));
 		self::assertEquals('testTask5', $task['name']);
 		self::assertEquals('5 * * * *', $task['schedule']);
-		self::assertEquals('TTestCronModuleTask', $task['task']);
+		self::assertEquals(TTestCronModuleTask::class, $task['task']);
 		self::assertNull($task['username']);
 		self::assertEquals(0, $task['processcount']);
 		self::assertTrue(abs(microtime(true) - $task['lastexectime']) < 2);
 		
 		$task = $this->obj->getTask('testTask5', true, true);
-		self::assertInstanceOf('TTestCronModuleTask', $task);
+		self::assertInstanceOf(TTestCronModuleTask::class, $task);
 		self::assertEquals('testTask5', $task->getName());
 		self::assertEquals('5 * * * *', $task->getSchedule());
-		self::assertEquals('TTestCronModuleTask', $task->getTask());
+		self::assertEquals(TTestCronModuleTask::class, $task->getTask());
 		self::assertNull($task->getUserName());
 		self::assertEquals(0, $task->getProcessCount());
 		self::assertTrue(abs(microtime(true) - $task->getLastExecTime()) < 2);
@@ -658,8 +673,8 @@ class TDbCronManagerTest extends TCronModuleTest
 	public function testGetCronLogCount()
 	{
 		$jobs = [
-			['name' => 'testTaskV', 'schedule' => '* * * * * 2020', 'task' => 'TTestCronModuleTask'],
-			['name' => 'testTaskW', 'schedule' => '* * * * * 2020', 'task' => 'TTestCronModuleTask', 'propertya' => 'value1'],
+			['name' => 'testTaskV', 'schedule' => '* * * * * 2020', 'task' => TTestCronModuleTask::class],
+			['name' => 'testTaskW', 'schedule' => '* * * * * 2020', 'task' => TTestCronModuleTask::class, 'propertya' => 'value1'],
 			['name' => 'testTaskX', 'schedule' => '* * * * * 2020', 'task' => 'CMT_UserManager3' . self::SEPARATOR . 'method1'],
 			['name' => 'testTaskY', 'schedule' => '* * * * * 2020', 'task' => 'CMT_UserManager3' . self::SEPARATOR . 'method2(true)'],
 			['name' => 'testTaskZ', 'schedule' => '* * * * * 2020', 'task' => 'CMT_UserManager3' . self::SEPARATOR . 'method3(86400)']

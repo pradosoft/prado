@@ -1,8 +1,10 @@
 <?php
 
+namespace Prado\Test\Unit\Web;
+
 use Prado\Web\THttpCookie;
 
-class THttpCookieTest extends PHPUnit\Framework\TestCase
+class THttpCookieTest extends \PHPUnit\Framework\TestCase
 {
 	public function testConstruct()
 	{

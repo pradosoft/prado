@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
@@ -7,8 +9,10 @@ use Prado\TApplication;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\TIntegrityManager;
 use Prado\Xml\TXmlDocument;
+use Prado\Test\Unit\Harness\TTestApplication;
+use Prado\Test\Unit\PradoUnit;
 
-class TIntegrityManagerTest extends PHPUnit\Framework\TestCase
+class TIntegrityManagerTest extends \PHPUnit\Framework\TestCase
 {
 	private const REMOTE = 'https://cdn.example.com/lib.js';
 	private const HASH = 'sha384-AAAA';

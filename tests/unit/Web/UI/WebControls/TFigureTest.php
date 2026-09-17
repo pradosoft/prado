@@ -1,9 +1,12 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI\WebControls;
+
 use Prado\Web\UI\WebControls\TFigure;
 use Prado\Web\UI\WebControls\TFigureCaption;
 use Prado\Web\UI\WebControls\TFigureCaptionOrder;
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\Harness\Traits\TWebControlRenderTrait;
 
 class TFigureTest extends TestCase
 {

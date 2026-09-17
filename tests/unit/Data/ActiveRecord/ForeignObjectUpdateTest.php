@@ -1,5 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\Data\ActiveRecord;
+
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+use Prado\Collections\TList;
+use Prado\Data\ActiveRecord\TActiveRecord;
+
 class BaseFkRecord extends TActiveRecord
 {
 	use PradoUnitDataConnectionTrait;
@@ -30,7 +36,7 @@ class TeamRecord extends BaseFkRecord
 
 	//define the $player member having has many relationship with PlayerRecord
 	public static $RELATIONS = [
-		'players' => [self::HAS_MANY, 'PlayerRecord'],
+		'players' => [self::HAS_MANY, PlayerRecord::class],
 	];
 
 	public static function finder($className = __CLASS__)
@@ -51,9 +57,9 @@ class PlayerRecord extends BaseFkRecord
 	public $profile;
 
 	public static $RELATIONS = [
-		'skills' => [self::MANY_TO_MANY, 'SkillRecord', 'player_skills'],
-		'team' => [self::BELONGS_TO, 'TeamRecord'],
-		'profile' => [self::HAS_ONE, 'ProfileRecord'],
+		'skills' => [self::MANY_TO_MANY, SkillRecord::class, 'player_skills'],
+		'team' => [self::BELONGS_TO, TeamRecord::class],
+		'profile' => [self::HAS_ONE, ProfileRecord::class],
 	];
 
 	public static function finder($className = __CLASS__)
@@ -88,7 +94,7 @@ class ProfileRecord extends BaseFkRecord
 	public $player;
 
 	public static $RELATIONS = [
-		'player' => [self::BELONGS_TO, 'PlayerRecord'],
+		'player' => [self::BELONGS_TO, PlayerRecord::class],
 	];
 
 	public static function finder($className = __CLASS__)
@@ -106,7 +112,7 @@ class SkillRecord extends BaseFkRecord
 	public $players = [];
 
 	public static $RELATIONS = [
-		'players' => [self::MANY_TO_MANY, 'PlayerRecord', 'player_skills'],
+		'players' => [self::MANY_TO_MANY, PlayerRecord::class, 'player_skills'],
 	];
 
 	public static function finder($className = __CLASS__)
@@ -115,7 +121,7 @@ class SkillRecord extends BaseFkRecord
 	}
 }
 
-class ForeignObjectUpdateTest extends PHPUnit\Framework\TestCase
+class ForeignObjectUpdateTest extends \PHPUnit\Framework\TestCase
 {
 	public function test_add_has_one()
 	{

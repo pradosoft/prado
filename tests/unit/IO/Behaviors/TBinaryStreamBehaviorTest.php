@@ -1,11 +1,14 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Behaviors;
+
 use Prado\Exceptions\TIOException;
 use Prado\IO\Behaviors\TBinaryStreamBehavior;
 use Prado\IO\TStream;
 use Prado\IO\TByteOrder;
+use Prado\Test\Unit\Harness\IO\TTestIOHelper;
 
-class TBinaryStreamBehaviorTest extends PHPUnit\Framework\TestCase
+class TBinaryStreamBehaviorTest extends \PHPUnit\Framework\TestCase
 {
 	private function stream(?int $order = null): TStream
 	{

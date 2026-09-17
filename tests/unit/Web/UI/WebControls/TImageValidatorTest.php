@@ -1,11 +1,14 @@
 <?php
 
 
+namespace Prado\Test\Unit\Web\UI\WebControls;
+
 use Prado\Web\UI\TForm;
 use Prado\Web\UI\WebControls\TFileUpload;
 use Prado\Web\UI\WebControls\TFileUploadItem;
 use Prado\Web\UI\WebControls\TImageValidator;
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\PradoUnit;
 
 class TImageValidatorTest extends TestCase
 {

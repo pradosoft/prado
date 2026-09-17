@@ -1,9 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\Web;
+
 use Prado\Web\THttpSession;
 use Prado\Web\THttpSessionCookieMode;
 
-class THttpSessionTest extends PHPUnit\Framework\TestCase
+class THttpSessionTest extends \PHPUnit\Framework\TestCase
 {
 	public function testInit()
 	{

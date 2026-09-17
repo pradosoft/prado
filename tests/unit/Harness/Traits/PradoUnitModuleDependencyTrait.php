@@ -8,7 +8,8 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-// No namespace — test infrastructure lives outside the Prado\ hierarchy.
+
+namespace Prado\Test\Unit\Harness\Traits;
 
 use Prado\TPropertyValue;
 

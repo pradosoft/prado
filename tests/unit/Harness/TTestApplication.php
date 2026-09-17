@@ -8,11 +8,13 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-require_once __DIR__ . '/Traits/TTestApplicationRestorationTrait.php';
+namespace Prado\Test\Unit\Harness;
 
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TApplication;
+use Prado\Test\Unit\Harness\Traits\TTestApplicationRestorationTrait;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * TTestApplication extends {@see TApplication} with test-friendly behaviour.

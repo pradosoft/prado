@@ -8,6 +8,8 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Web\UI\WebControls;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Web\Services\TPageService;
 use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
@@ -62,7 +64,7 @@ class SpyTReCaptcha2 extends TReCaptcha2
 // TReCaptcha2Test
 // ---------------------------------------------------------------------------
 
-class TReCaptcha2Test extends PHPUnit\Framework\TestCase
+class TReCaptcha2Test extends \PHPUnit\Framework\TestCase
 {
 	// -----------------------------------------------------------------------
 	// Helpers

@@ -1,9 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Stream;
+
 use Prado\IO\Stream\TBufferStream;
 use Psr\Http\Message\StreamInterface;
 
-class TBufferStreamTest extends PHPUnit\Framework\TestCase
+class TBufferStreamTest extends \PHPUnit\Framework\TestCase
 {
 	public function testIsAStreamInterface()
 	{

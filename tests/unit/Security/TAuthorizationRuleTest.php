@@ -1,9 +1,12 @@
 <?php
 
+namespace Prado\Test\Unit\Security;
+
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Security\TAuthorizationRule;
+use Prado\Security\TUser;
 
-class TAuthorizationRuleTest extends PHPUnit\Framework\TestCase
+class TAuthorizationRuleTest extends \PHPUnit\Framework\TestCase
 {
 	protected function setUp(): void
 	{

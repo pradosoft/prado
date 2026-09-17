@@ -11,6 +11,8 @@
  * @author Brad Anderson <belisoful@icloud.com>
  */
 
+namespace Prado\Test\Unit\Web\Services;
+
 use Prado\Web\Services\TSoapServer;
 use Prado\Web\Services\TSoapService;
 
@@ -38,20 +40,20 @@ class TTestSoapServiceServer extends TSoapServer
 {
 }
 
-class TSoapServiceTest extends PHPUnit\Framework\TestCase
+class TSoapServiceTest extends \PHPUnit\Framework\TestCase
 {
 	private string $configurationType;
 
 	protected function setUp(): void
 	{
-		$application = Prado\Prado::getApplication();
+		$application = \Prado\Prado::getApplication();
 		$this->configurationType = $application->getConfigurationType();
-		$application->setConfigurationType(Prado\TApplication::CONFIG_TYPE_PHP);
+		$application->setConfigurationType(\Prado\TApplication::CONFIG_TYPE_PHP);
 	}
 
 	protected function tearDown(): void
 	{
-		Prado\Prado::getApplication()->setConfigurationType($this->configurationType);
+		\Prado\Prado::getApplication()->setConfigurationType($this->configurationType);
 	}
 
 	/**
@@ -62,7 +64,7 @@ class TSoapServiceTest extends PHPUnit\Framework\TestCase
 	protected function buildServer(array $config, string $id): TSoapServer
 	{
 		$service = new TSoapService();
-		$reflection = new ReflectionClass(TSoapService::class);
+		$reflection = new \ReflectionClass(TSoapService::class);
 
 		$load = $reflection->getMethod('loadConfig');
 		$load->setAccessible(true);
@@ -108,21 +110,21 @@ class TSoapServiceTest extends PHPUnit\Framework\TestCase
 	public function testAPhpConfigurationWithoutAServerIsAccepted()
 	{
 		$service = new TSoapService();
-		$load = new ReflectionMethod(TSoapService::class, 'loadConfig');
+		$load = new \ReflectionMethod(TSoapService::class, 'loadConfig');
 		$load->setAccessible(true);
 		$load->invoke($service, ['other' => []]);
 
-		$servers = new ReflectionProperty(TSoapService::class, '_servers');
+		$servers = new \ReflectionProperty(TSoapService::class, '_servers');
 		$servers->setAccessible(true);
 		$this->assertSame([], $servers->getValue($service));
 	}
 
 	public function testADuplicatedServerIdIsRefused()
 	{
-		$this->expectException(Prado\Exceptions\TConfigurationException::class);
+		$this->expectException(\Prado\Exceptions\TConfigurationException::class);
 
 		$service = new TSoapService();
-		$load = new ReflectionMethod(TSoapService::class, 'loadConfig');
+		$load = new \ReflectionMethod(TSoapService::class, 'loadConfig');
 		$load->setAccessible(true);
 		$config = ['soap' => ['quote' => ['properties' => []]]];
 		$load->invoke($service, $config);

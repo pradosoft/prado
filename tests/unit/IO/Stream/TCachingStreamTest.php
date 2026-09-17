@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Stream;
+
 use Prado\IO\Stream\TCachingStream;
 use Psr\Http\Message\StreamInterface;
 
@@ -95,7 +97,7 @@ class TNonSeekableSource implements StreamInterface
 	}
 }
 
-class TCachingStreamTest extends PHPUnit\Framework\TestCase
+class TCachingStreamTest extends \PHPUnit\Framework\TestCase
 {
 	private function caching(string $data = 'abcdefghij'): TCachingStream
 	{

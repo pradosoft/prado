@@ -8,8 +8,8 @@
 	</properties>
 			
 	<typeHandlers>
-		<typeHandler dbType="Varchar" class="OuiNonBool"/>
-		<typeHandler dbType="date" class="TDateTimeHandler" />
+		<typeHandler dbType="Varchar" class="Prado\Test\Unit\Data\SqlMap\OuiNonBool"/>
+		<typeHandler dbType="date" class="Prado\Test\Unit\Data\SqlMap\TDateTimeHandler" />
 	</typeHandlers>
 	
 	<sqlMaps>

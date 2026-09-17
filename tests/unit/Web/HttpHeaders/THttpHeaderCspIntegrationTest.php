@@ -20,6 +20,8 @@
  * @author Brad Anderson <belisoful@icloud.com>
  */
 
+namespace Prado\Test\Unit\Web\HttpHeaders;
+
 use Prado\TApplication;
 use Prado\Web\HttpHeaders\TCspDirective;
 use Prado\Web\HttpHeaders\THttpHeaderCsp;
@@ -28,12 +30,14 @@ use Prado\Web\HttpHeaders\THttpHeadersManager;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\Services\TCspReportingService;
 use Prado\Web\Services\TCspViolationParameter;
+use Prado\Test\Unit\Harness\Web\HttpHeaders\TTestHttpHeadersManager;
+use Prado\Test\Unit\PradoUnit;
 
 // Bootstrap loads PradoUnit, which transitively autoloads everything under
 // tests/unit/Harness/ — TTestHttpHeadersManager and friends are available
 // without an explicit require_once here.
 
-class THttpHeaderCspIntegrationTest extends PHPUnit\Framework\TestCase
+class THttpHeaderCspIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 	public static ?TApplication $app = null;
 

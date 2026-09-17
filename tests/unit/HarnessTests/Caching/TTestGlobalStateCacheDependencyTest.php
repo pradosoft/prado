@@ -8,14 +8,17 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\HarnessTests\Caching;
+
 use Prado\Caching\TGlobalStateCacheDependency;
+use Prado\Test\Unit\Harness\Caching\TTestGlobalStateCacheDependency;
 
 /**
  * Tests for {@see TTestGlobalStateCacheDependency}: the state-name `*Direct` seams.
  *
  * @package System.Harness.Caching
  */
-class TTestGlobalStateCacheDependencyTest extends PHPUnit\Framework\TestCase
+class TTestGlobalStateCacheDependencyTest extends \PHPUnit\Framework\TestCase
 {
 	public function testIsAGlobalStateCacheDependency(): void
 	{

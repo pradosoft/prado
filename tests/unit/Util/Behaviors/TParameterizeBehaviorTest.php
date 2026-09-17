@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Behaviors;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
@@ -28,7 +30,7 @@ class TParameterizeObject extends TParameterizeObjectNoSet
  * This tests the TParameterizeBehavior class 
  */
  
-class TParameterizeBehaviorTest extends PHPUnit\Framework\TestCase
+class TParameterizeBehaviorTest extends \PHPUnit\Framework\TestCase
 {
 	protected $obj;
 

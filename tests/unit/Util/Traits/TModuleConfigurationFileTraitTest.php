@@ -8,6 +8,8 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Util\Traits;
+
 use Prado\TApplication;
 use Prado\Util\Traits\TModuleConfigurationFileTrait;
 use Prado\Xml\TXmlDocument;
@@ -28,7 +30,7 @@ class TModuleConfigurationFileTraitConsumer
 /**
  * Unit tests for {@see \Prado\Util\Traits\TModuleConfigurationFileTrait}.
  */
-class TModuleConfigurationFileTraitTest extends PHPUnit\Framework\TestCase
+class TModuleConfigurationFileTraitTest extends \PHPUnit\Framework\TestCase
 {
 	private TModuleConfigurationFileTraitConsumer $consumer;
 

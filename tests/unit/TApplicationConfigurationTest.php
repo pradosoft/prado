@@ -21,6 +21,8 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit;
+
 use Prado\Prado;
 use Prado\TApplication;
 use Prado\TApplicationConfiguration;
@@ -28,7 +30,7 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Util\TComposerReflection;
 use Prado\Xml\TXmlDocument;
 
-class TApplicationConfigurationTest extends PHPUnit\Framework\TestCase
+class TApplicationConfigurationTest extends \PHPUnit\Framework\TestCase
 {
 	private string $tmpDir;
 	private array $createdFiles = [];

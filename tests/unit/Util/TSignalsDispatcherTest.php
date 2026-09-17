@@ -1,23 +1,14 @@
 <?php
 
+namespace Prado\Test\Unit\Util;
+
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TExitException;
 use Prado\TEventSubscription;
 use Prado\Util\TSignalsDispatcher;
 use Prado\Util\TSignalParameter;
-
-class TTestSignalsDispatcher extends TSignalsDispatcher {
-	
-	public function setupAlarms($handler)
-	{
-		$now = time();
-		self::$_nextAlarmTime = $now - 1;
-		static::$_alarms[$now - 1] = [$handler];
-		static::$_alarms[$now] = [$handler];
-		static::$_alarms[$now + 2] = [$handler];
-		return $now;
-	}
-}
+use Prado\Collections\TWeakCallableCollection;
+use Prado\Util\Helpers\TProcessHelper;
 
 class TTestSignalInvokable {
 	public $data = null;
@@ -35,7 +26,7 @@ class TTestSignalInvokable {
 	}
 }
 
-class TSignalsDispatcherTest extends PHPUnit\Framework\TestCase
+class TSignalsDispatcherTest extends \PHPUnit\Framework\TestCase
 {
 	public $dispatcher = null;
 	protected function setUp(): void
@@ -588,4 +579,3 @@ class TSignalsDispatcherTest extends PHPUnit\Framework\TestCase
 	}
 	
 }
-
