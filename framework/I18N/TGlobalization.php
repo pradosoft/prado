@@ -150,7 +150,7 @@ class TGlobalization extends \Prado\TModule
 	}
 
 	/**
-	 * @return bool wether to translate from default culture
+	 * @return bool whether to translate from default culture
 	 */
 	public function getTranslateDefaultCulture()
 	{
@@ -158,7 +158,7 @@ class TGlobalization extends \Prado\TModule
 	}
 
 	/**
-	 * @param bool $value wether to translate from default culture
+	 * @param bool $value whether to translate from default culture
 	 */
 	public function setTranslateDefaultCulture($value)
 	{

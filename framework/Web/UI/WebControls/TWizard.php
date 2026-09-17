@@ -187,11 +187,12 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return ?TWizardStep the currently active wizard step
+	 * @return ?TWizardStep the currently active wizard step, null if none
 	 */
 	public function getActiveStep()
 	{
-		return $this->getWizardSteps()->itemAt($this->getActiveStepIndex());
+		$step = $this->getMultiView()->getActiveView();
+		return $step instanceof TWizardStep ? $step : null;
 	}
 
 	/**

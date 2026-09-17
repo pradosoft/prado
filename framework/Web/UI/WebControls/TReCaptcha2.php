@@ -101,7 +101,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	/**
 	 * Returns true if this control validated successfully.
 	 * Defaults to true.
-	 * @return bool wether this control validated successfully.
+	 * @return bool whether this control validated successfully.
 	 */
 	public function getIsValid()
 	{
@@ -109,7 +109,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	}
 
 	/**
-	 * @param bool $value wether this control is valid.
+	 * @param bool $value whether this control is valid.
 	 */
 	public function setIsValid($value)
 	{

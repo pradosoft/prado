@@ -270,7 +270,7 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	 * the control ID will take the precedence.
 	 *
 	 * @param string $name the property name or control ID
-	 * @return bool wether the control or property exists
+	 * @return bool whether the control or property exists
 	 * @see __get
 	 */
 	public function __isset($name)

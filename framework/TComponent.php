@@ -2056,8 +2056,11 @@ class TComponent
 			$behavior = Prado::createComponent($behavior);
 			$init = true;
 		}
-		if (!($behavior instanceof IBaseBehavior) || !($behavior instanceof TComponent)) {
+		if (!($behavior instanceof IBaseBehavior)) {
 			throw new TInvalidDataTypeException('component_not_a_behavior', $behavior::class);
+		}
+		if (!($behavior instanceof TComponent)) {
+			throw new TInvalidDataTypeException('object_not_a_component', $behavior::class);
 		}
 		if ($init) {
 			$behavior->init($config);

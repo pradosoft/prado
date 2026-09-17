@@ -1,5 +1,7 @@
 parameters:
-    phpVersion: 80500 # PHP 8.5
+    phpVersion:
+        min: 80400
+        max: 80500
     level: 3
     paths:
         - framework

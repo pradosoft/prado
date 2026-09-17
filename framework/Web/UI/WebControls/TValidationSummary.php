@@ -330,7 +330,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Checked if at least one validator failed.
-	 * @return bool wether validation failed
+	 * @return bool whether validation failed
 	 */
 	protected function getValidationFailed()
 	{

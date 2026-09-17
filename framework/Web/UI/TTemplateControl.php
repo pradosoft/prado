@@ -100,7 +100,7 @@ class TTemplateControl extends TCompositeControl
 	public function getIsSourceTemplateControl()
 	{
 		if (($template = $this->getTemplate()) !== null) {
-			return method_exists($template, 'getIsSourceTemplate') && $template->getIsSourceTemplate();
+			return $template->getIsSourceTemplate();
 		} else {
 			return false;
 		}
@@ -112,7 +112,7 @@ class TTemplateControl extends TCompositeControl
 	public function getTemplateDirectory()
 	{
 		if (($template = $this->getTemplate()) !== null) {
-			return method_exists($template, 'getContextPath') ? $template->getContextPath() : '';
+			return $template->getContextPath();
 		} else {
 			return '';
 		}
@@ -137,7 +137,7 @@ class TTemplateControl extends TCompositeControl
 	public function createChildControls()
 	{
 		if ($tpl = $this->getTemplate()) {
-			$directive = method_exists($tpl, 'getDirective') ? $tpl->getDirective() : [];
+			$directive = $tpl->getDirective();
 			foreach ($directive as $name => $value) {
 				if (!is_string($value)) {
 					throw new TConfigurationException('templatecontrol_directive_invalid', $this::class, $name);

@@ -43,7 +43,7 @@ class TTemplateControlInheritable extends TTemplateControl
 		if (null === ($_template = $this->getTemplate())) {
 			$this->doCreateChildControlsFor($this::class);
 		} else {
-			$_directive = method_exists($_template, 'getDirective') ? $_template->getDirective() : [];
+			$_directive = $_template->getDirective();
 			foreach ($_directive as $_name => $_value) {
 				if (!is_string($_value)) {
 					throw new TConfigurationException('templatecontrol_directive_invalid', $this::class, $_name);
@@ -82,7 +82,7 @@ class TTemplateControlInheritable extends TTemplateControl
 	public function doTemplateForClass($parentClass)
 	{
 		if (null !== ($_template = $this->getService()->getTemplateManager()->getTemplateByClassName($parentClass))) {
-			$_directive = method_exists($_template, 'getDirective') ? $_template->getDirective() : [];
+			$_directive = $_template->getDirective();
 			foreach ($_directive as $_name => $_value) {
 				if (!is_string($_value)) {
 					throw new TConfigurationException('templatecontrol_directive_invalid', $this::class, $_name);
@@ -105,11 +105,11 @@ class TTemplateControlInheritable extends TTemplateControl
 	public function getIsSourceTemplateControl()
 	{
 		if (null !== ($_template = $this->getTemplate())) {
-			return method_exists($_template, 'getIsSourceTemplate') && $_template->getIsSourceTemplate();
+			return $_template->getIsSourceTemplate();
 		}
 
 		return ($_template = $this->getService()->getTemplateManager()->getTemplateByClassName(get_parent_class($this)))
-			? method_exists($_template, 'getIsSourceTemplate') && $_template->getIsSourceTemplate()
+			? $_template->getIsSourceTemplate()
 			: false;
 	}
 }
