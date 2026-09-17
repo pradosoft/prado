@@ -39,6 +39,7 @@
 - Enumerated Constants: `PascalCase` (eg. `DeepSkyBlue`)
 - Class properties: `_camelCase` (eg. `_propertyOfClass`, `_styleFieldNames`)
 - Namespace: `Prado\{Module}` (eg. `Prado\Web\UI\TControl`)
+- Unit test namespace: `Prado\Test\Unit\{Directory}` mirroring `tests/unit/` (eg. `Prado\Test\Unit\Web\UI\TControlTest`)
 - Web Page template file extensions: `.page` with `.php` backing
 - MasterClass and Template file extension: `.tpl` with `.php` backing
 - Prado TControl template tag prefix: `<com:` (eg. `<com:TMain />`)
@@ -85,6 +86,7 @@ Docblocks inform and describe; it is not persuasive writing.
 
 ### Imports and Includes
 - Use PSR-4 autoloading - no manual includes required
+- Unit test classes autoload through the Composer `autoload-dev` PSR-4 mapping (`Prado\Test\Unit\` → `tests/unit/`); tests do not `require` class files
 - All framework classes are accessed via namespace prefixes
 - Third-party libraries are loaded via Composer
 - Use proper `use` statements for namespaces at the top of PHP files
@@ -188,14 +190,20 @@ All instances self-register in `Prado.Registry[controlId]` on construction and a
 - Unit test functions must comprehensively assert both typical and edge cases
 - Maximal code coverage is required
 - Test error conditions and exception handling
-- Use `tests/unit/PradoUnit` infrastructure for (bootstrapped in phpunit):
+- Unit test classes use the `Prado\Test\Unit\` namespace, autoloaded by Composer (`autoload-dev` PSR-4 → `tests/unit/`).
+  - The namespace follows the directory: `tests/unit/Web/UI/TControlTest.php` → `Prado\Test\Unit\Web\UI\TControlTest`.
+  - A class used by another file lives in its own file named after the class. Fixtures used only by one test file stay in that file.
+  - Directories holding classes use PascalCase, except where they mirror a lowercase framework namespace (`I18N/core`).
+  - Class names in strings, templates (`<com:…>`), and XML configuration are fully qualified; use `Foo::class` in PHP.
+  - Global-namespace fixtures (`Security/app/prado3stubs/`, `Exceptions/TErrorHandlerTestGlobalClass.php`) and `PHPStan/Fixtures/` are excluded from the classmap and are not autoloaded.
+  - Test classes are inside `Prado\*`: a default log category is the test class, and an ActiveRecord fixture needs `const TABLE`.
+  - Helper classes in their own file must not end in `Test`; phpunit collects `*Test.php` files as tests.
+- Use `Prado\Test\Unit\PradoUnit` infrastructure for:
   - access to an object's protected/private properties
   - invoking protected/private methods
   - restore global variables to their initial state
   - save and restore all of an object's properties
-  - automatically is included in the bootstrap
-  - includes everything in `tests/unit/Harness/` automatically (bootstrap)
-  - `Harness` is where test classes of Prado framework classes are located for general use
+  - `Harness/` (`Prado\Test\Unit\Harness\`) holds test classes designed for reuse across the Prado tests
   - Traits for unit test classes are in `Harness/Traits/`
 - Use mock objects only where appropriate, and check PradoUnit for a common solution first.
 - Functional tests should verify complete user workflows
@@ -300,7 +308,8 @@ All instances self-register in `Prado.Registry[controlId]` on construction and a
 │   ├── js/                     # vitest js unit tests
 │   ├── playwright/             # Functional tests
 │   ├── test_tools/             # phpunit bootstrap and utilities
-│   └── unit/                   # phpunit tests for './framework/' classes
+│   └── unit/                   # phpunit tests for './framework/' classes; namespace Prado\Test\Unit (autoload-dev PSR-4)
+│       ├── Harness/            # Reusable test classes and traits (Prado\Test\Unit\Harness)
 │       └── PradoUnit.php       # Unit Test Helper
 ├── CLAUDE.md                   # The Memory file for the directory
 ├── composer.json               # Package configuration
