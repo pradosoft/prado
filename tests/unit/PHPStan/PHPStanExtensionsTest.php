@@ -523,6 +523,48 @@ class PHPStanExtensionsTest extends TestCase
 	}
 
 	// -------------------------------------------------------------------------
+	// Virtual property spelling — canGetProperty() / canSetProperty() / hasMethod()
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Without the extensions, no guard narrows the virtual property, so every
+	 * access in the fixture is an undefined property.
+	 *
+	 * @group phpstan
+	 * @since 4.4.0
+	 */
+	public function testPropertyCase_FailsWithoutExtension(): void
+	{
+		$result = $this->runPhpStan('PropertyCaseFixture.php', $this->noExtensionsConfig());
+		$errors = $this->countFileErrors($result, 'PropertyCaseFixture.php');
+		$this->assertGreaterThan(
+			0,
+			$errors,
+			'Expected PHPStan errors for guarded virtual property access without the extensions.'
+		);
+	}
+
+	/**
+	 * PRADO writes a virtual property as `Title` in templates and in code, while
+	 * `title` reaches the same accessor.  PHPStan asks for the property with the
+	 * spelling written in the source, so a guard must narrow both spellings.
+	 *
+	 * @group phpstan
+	 * @since 4.4.0
+	 */
+	public function testPropertyCase_PassesWithExtension(): void
+	{
+		$result = $this->runPhpStan('PropertyCaseFixture.php');
+		$errors = $this->countFileErrors($result, 'PropertyCaseFixture.php');
+		$this->assertSame(
+			0,
+			$errors,
+			'Expected zero PHPStan errors for guarded virtual property access in either spelling.'
+				. $this->describeErrors($result, 'PropertyCaseFixture.php')
+		);
+	}
+
+	// -------------------------------------------------------------------------
 	// TComponentPropertiesReflectionExtension
 	// -------------------------------------------------------------------------
 

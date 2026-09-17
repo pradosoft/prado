@@ -43,9 +43,9 @@ services:
 - Method must be `isa`
 - Caller must resolve to an object type
 - First argument must resolve to one or more constant class-name strings known to the `ReflectionProvider`
-- Subject type must have **exactly one** object class name (see Intersection Subjects)
+- Subject type must have **exactly one** object class name (see Multi-Class Subjects)
 
-## Intersection Subjects
+## Multi-Class Subjects
 
 PHPStan's `MethodCallHandler::specifyTypes()` looks up method type-specifying extensions like this:
 
@@ -61,7 +61,7 @@ if (count($referencedClasses) === 1 && $this->reflectionProvider->hasClass($refe
 }
 ```
 
-An intersection type returns one class name per member, so `IService&TComponent` returns two and the lookup is skipped. `isMethodSupported()` is never called and this extension cannot narrow that subject, whatever it does internally.
+An intersection type returns one class name per member, so `IService&TComponent` returns two and the lookup is skipped. A union does the same: `TControl|TStyle` also returns two. `isMethodSupported()` is never called and this extension cannot narrow either subject, whatever it does internally.
 
 The narrowing for those subjects lives on the method instead:
 

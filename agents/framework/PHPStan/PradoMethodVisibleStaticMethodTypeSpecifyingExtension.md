@@ -41,6 +41,14 @@ Implements `StaticMethodTypeSpecifyingExtension` and `TypeSpecifierAwareExtensio
 - Second argument must be a single constant string (dynamic method names are not narrowed)
 - Context must be `true` (only narrows in the truthy branch)
 
+The first argument's type may name any number of classes. PHPStan finds a `StaticMethodTypeSpecifyingExtension` through the statically called class (`Prado`) and this extension narrows an **argument**, so the single-object-class-name rule that blocks `TComponent::hasMethod()` on an intersection or union subject does not apply here. This is the guard to reach for on an interface-typed subject:
+
+```php
+if ($service instanceof TComponent && Prado::method_visible($service, 'initialize')) {
+    $service->initialize('myId');   // narrows on IService&TComponent
+}
+```
+
 ## Usage
 
 Add to `phpstan.neon`:
