@@ -35,6 +35,13 @@ class TTestSoapQuoteProvider
 	}
 }
 
+// The generator writes the provider name into the WSDL namespace ('urn:<name>wsdl').
+// A namespaced name carries backslashes, which a URI cannot hold, so the tests serve
+// the provider under a global alias.
+if (!class_exists('TTestSoapQuoteProvider', false)) {
+	class_alias(TTestSoapQuoteProvider::class, 'TTestSoapQuoteProvider');
+}
+
 /**
  * Testable server: the URI and encoding are fixed, so generation needs no
  * request, and the provider class is resolved without configuration.
@@ -71,10 +78,13 @@ class TTestSoapLegacyServer extends TTestSoapServer
 
 class TSoapServerTest extends \PHPUnit\Framework\TestCase
 {
+	/** Global alias of {@see TTestSoapQuoteProvider}; its name is valid in a namespace URI. */
+	private const PROVIDER = 'TTestSoapQuoteProvider';
+
 	protected function newServer(): TTestSoapServer
 	{
 		$server = new TTestSoapServer();
-		$server->setProvider(TTestSoapQuoteProvider::class);
+		$server->setProvider(self::PROVIDER);
 		return $server;
 	}
 
@@ -145,7 +155,7 @@ class TSoapServerTest extends \PHPUnit\Framework\TestCase
 	public function testADocumentStyleIsRefusedWhereTheGeneratorLacksIt()
 	{
 		$server = new TTestSoapLegacyServer();
-		$server->setProvider(TTestSoapQuoteProvider::class);
+		$server->setProvider(self::PROVIDER);
 		$server->setWsdlStyle(TSoapServer::WSDL_STYLE_DOCUMENT);
 
 		$this->expectException(TConfigurationException::class);
@@ -159,7 +169,7 @@ class TSoapServerTest extends \PHPUnit\Framework\TestCase
 	public function testTheDefaultStyleGeneratesWhereTheGeneratorLacksTheStyle()
 	{
 		$server = new TTestSoapLegacyServer();
-		$server->setProvider(TTestSoapQuoteProvider::class);
+		$server->setProvider(self::PROVIDER);
 
 		$this->assertStringContainsString('style="rpc"', $server->getWsdl());
 	}

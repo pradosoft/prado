@@ -6,6 +6,8 @@ use Prado\Data\ActiveRecord\TActiveRecord;
 
 class Blogs extends TActiveRecord
 {
+	const TABLE = 'blogs';
+
 	public $blog_id;
 	public $blog_name;
 	public $blog_author;
