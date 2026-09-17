@@ -22,6 +22,11 @@
 			"role" : "Developer"
 		},
 		{
+			"name": "Brad Anderson",
+			"email": "belisoful@icloud.com",
+			"role" : "Developer"
+		},
+		{
 			"name": "Jens Klaer",
 			"email": "kj.landwehr.software@gmail.com",
 			"role" : "Developer"
