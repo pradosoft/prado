@@ -147,6 +147,30 @@ class PHPStanExtensionsTest extends TestCase
 		return '';
 	}
 
+	/**
+	 * Collect the PHPStan error messages reported for a fixture file.
+	 *
+	 * @param array<string,mixed> $result  Return value of runPhpStan()
+	 * @param string $fixtureFile          Basename of the fixture file
+	 * @return string[] The reported messages, in the order PHPStan reported them.
+	 * @since 4.4.0
+	 */
+	private function fileMessages(array $result, string $fixtureFile): array
+	{
+		$fixturePath = realpath(__DIR__ . '/Fixtures/' . $fixtureFile) ?: (__DIR__ . '/Fixtures/' . $fixtureFile);
+		foreach ($result['files'] ?? [] as $path => $data) {
+			$realPath = realpath($path) ?: $path;
+			if ($realPath !== $fixturePath && basename($path) !== $fixtureFile) {
+				continue;
+			}
+			return array_map(
+				static fn($message) => (string) ($message['message'] ?? ''),
+				$data['messages'] ?? []
+			);
+		}
+		return [];
+	}
+
 	/** Path to the "no extensions" config used for the negative pass. */
 	private function noExtensionsConfig(): string
 	{
@@ -272,18 +296,22 @@ class PHPStanExtensionsTest extends TestCase
 	// -------------------------------------------------------------------------
 
 	/**
-	 * Without the extension, isa() guards do not narrow the type.
+	 * isa() narrowing is carried by the assertion tag on TComponent::isa(), which
+	 * travels with the framework source.  The narrowing therefore applies with no
+	 * PRADO services configured at all.
 	 *
 	 * @group phpstan
+	 * @since 4.4.0
 	 */
-	public function testIsaExtension_FailsWithoutExtension(): void
+	public function testIsaExtension_NarrowsWithoutServicesConfig(): void
 	{
 		$result = $this->runPhpStan('IsaFixture.php', $this->noExtensionsConfig());
 		$errors = $this->countFileErrors($result, 'IsaFixture.php');
-		$this->assertGreaterThan(
+		$this->assertSame(
 			0,
 			$errors,
-			'Expected PHPStan errors for subclass-specific calls inside isa() guards without the extension.'
+			'Expected zero PHPStan errors for isa()-guarded subclass calls without the services block.'
+				. $this->describeErrors($result, 'IsaFixture.php')
 		);
 	}
 
@@ -310,21 +338,23 @@ class PHPStanExtensionsTest extends TestCase
 	// -------------------------------------------------------------------------
 
 	/**
-	 * Without the extension, isa() guards on interface class strings do not narrow
-	 * the type, so interface-method calls inside the guard produce errors.
+	 * Interface narrowing comes from the same assertion tag, so it also applies
+	 * with no PRADO services configured.
 	 *
 	 * This test isolates the interface case from the subclass case above.
 	 *
 	 * @group phpstan
+	 * @since 4.4.0
 	 */
-	public function testIsaExtensionInterface_FailsWithoutExtension(): void
+	public function testIsaExtensionInterface_NarrowsWithoutServicesConfig(): void
 	{
 		$result = $this->runPhpStan('IsaInterfaceFixture.php', $this->noExtensionsConfig());
 		$errors = $this->countFileErrors($result, 'IsaInterfaceFixture.php');
-		$this->assertGreaterThan(
+		$this->assertSame(
 			0,
 			$errors,
-			'Expected PHPStan errors for interface-method calls inside isa() guards without the extension.'
+			'Expected zero PHPStan errors for isa()-guarded interface-method calls without the services block.'
+				. $this->describeErrors($result, 'IsaInterfaceFixture.php')
 		);
 	}
 
@@ -343,6 +373,76 @@ class PHPStanExtensionsTest extends TestCase
 			$errors,
 			'Expected zero PHPStan errors for isa()-guarded interface-method calls with the extension.'
 				. $this->describeErrors($result, 'IsaInterfaceFixture.php')
+		);
+	}
+
+	// -------------------------------------------------------------------------
+	// TComponent::isa() — intersection subjects
+	// -------------------------------------------------------------------------
+
+	/**
+	 * PHPStan hands a method call to a MethodTypeSpecifyingExtension only when the
+	 * subject has exactly one object class name, so an intersection subject such as
+	 * `IService&TComponent` never reaches TComponentIsaTypeSpecifyingExtension.
+	 * The assertion tag on TComponent::isa() narrows those subjects instead.
+	 *
+	 * @group phpstan
+	 * @since 4.4.0
+	 */
+	public function testIsaIntersection_PassesWithExtension(): void
+	{
+		$result = $this->runPhpStan('IsaIntersectionFixture.php');
+		$errors = $this->countFileErrors($result, 'IsaIntersectionFixture.php');
+		$this->assertSame(
+			0,
+			$errors,
+			'Expected zero PHPStan errors for isa()-guarded calls on intersection-typed subjects.'
+				. $this->describeErrors($result, 'IsaIntersectionFixture.php')
+		);
+	}
+
+	/**
+	 * Intersection narrowing comes from the framework source, so it applies with no
+	 * PRADO services configured.
+	 *
+	 * @group phpstan
+	 * @since 4.4.0
+	 */
+	public function testIsaIntersection_NarrowsWithoutServicesConfig(): void
+	{
+		$result = $this->runPhpStan('IsaIntersectionFixture.php', $this->noExtensionsConfig());
+		$errors = $this->countFileErrors($result, 'IsaIntersectionFixture.php');
+		$this->assertSame(
+			0,
+			$errors,
+			'Expected zero PHPStan errors for isa()-guarded intersection calls without the services block.'
+				. $this->describeErrors($result, 'IsaIntersectionFixture.php')
+		);
+	}
+
+	/**
+	 * Zero errors alone cannot tell a correct narrowing from a permissive one, so
+	 * this fixture calls a method that exists nowhere.  PHPStan reports it against
+	 * the class the guard narrowed to, which pins the narrowing to the asserted
+	 * class.  Without the narrowing the same error names the intersection.
+	 *
+	 * @group phpstan
+	 * @since 4.4.0
+	 */
+	public function testIsaIntersection_NarrowsToTheAssertedClass(): void
+	{
+		$result = $this->runPhpStan('IsaIntersectionNegativeFixture.php');
+		$messages = $this->fileMessages($result, 'IsaIntersectionNegativeFixture.php');
+		$this->assertCount(
+			1,
+			$messages,
+			'Expected exactly one PHPStan error in IsaIntersectionNegativeFixture.php.'
+				. $this->describeErrors($result, 'IsaIntersectionNegativeFixture.php')
+		);
+		$this->assertStringContainsString(
+			'IsaNegativeFixtureComponent::thisMethodDoesNotExist()',
+			$messages[0],
+			'Expected the undefined-method error to name the class the isa() guard narrowed to.'
 		);
 	}
 
