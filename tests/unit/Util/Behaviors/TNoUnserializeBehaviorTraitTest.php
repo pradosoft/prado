@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Behaviors;
+
 use Prado\TComponent;
 use Prado\Util\TBehavior;
 use Prado\Util\Behaviors\TNoUnserializeBehaviorTrait;
@@ -16,7 +18,7 @@ class TTestDeprecatedBehaviorClass extends TTestNonDeprecatedBehaviorClass
 	use TNoUnserializeBehaviorTrait;
 }
 
-class TNoUnserializeBehaviorTraitTest extends PHPUnit\Framework\TestCase
+class TNoUnserializeBehaviorTraitTest extends \PHPUnit\Framework\TestCase
 {
 	protected function setUp(): void
 	{

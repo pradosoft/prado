@@ -1,7 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\Data\DbSpecific\Ibm;
+
 use Prado\Data\TDbConnection;
 use Prado\TApplication;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+use Prado\Exceptions\TDbException;
 
 /**
  * Integration tests for TDbConnection charset handling — IBM DB2 (ibm).
@@ -25,7 +29,7 @@ use Prado\TApplication;
  * DB2_PASSWORD  DB2 instance owner password (default: Prado_Unitest1).
  * DB2_DATABASE  DB2 database name           (default: pradount).
  */
-class TDbConnectionCharsetIbmIntegrationTest extends PHPUnit\Framework\TestCase
+class TDbConnectionCharsetIbmIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

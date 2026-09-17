@@ -1,9 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Filter;
+
 use Prado\IO\Filter\TStreamFilterName;
 use Prado\IO\TStream;
 
-class TStreamFilterNameTest extends PHPUnit\Framework\TestCase
+class TStreamFilterNameTest extends \PHPUnit\Framework\TestCase
 {
 	public function testConstantsMapToFilterNames()
 	{

@@ -1,11 +1,13 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Util;
+
 use Prado\IO\Stream\TFnStream;
 use Prado\IO\Stream\TPumpStream;
 use Prado\IO\TStream;
 use Prado\IO\Util\TStreamHelper;
 
-class TStreamHelperTest extends PHPUnit\Framework\TestCase
+class TStreamHelperTest extends \PHPUnit\Framework\TestCase
 {
 	public function testCopyToStreamCopiesAll()
 	{

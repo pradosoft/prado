@@ -1,11 +1,13 @@
 <?php
 
+namespace Prado\Test\Unit\IO\HttpClient;
+
 use Prado\IO\HttpClient\THttpClientResponse;
 
 /**
  * Tests for THttpClientResponse.
  */
-class THttpClientResponseTest extends PHPUnit\Framework\TestCase
+class THttpClientResponseTest extends \PHPUnit\Framework\TestCase
 {
 	public function testBasicAccessors(): void
 	{

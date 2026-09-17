@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\IO\HttpClient;
+
 /**
  * HttpServerTestTrait — boots PHP's built-in web server for integration tests.
  *
@@ -9,7 +11,7 @@
  *     public static function setUpBeforeClass(): void { self::startHttpServer(); }
  *     public static function tearDownAfterClass(): void { self::stopHttpServer(); }
  *
- * The server runs the router at fixtures/test-server.php. URLs are obtained via
+ * The server runs the router at Fixtures/test-server.php. URLs are obtained via
  * `self::url('/path')`. If the server fails to come up (e.g. the runner has no
  * permission to bind to a local port), tests are marked skipped automatically.
  *
@@ -38,7 +40,7 @@ trait HttpServerTestTrait
 			return;
 		}
 
-		$router = __DIR__ . '/fixtures/test-server.php';
+		$router = __DIR__ . '/Fixtures/test-server.php';
 		$port = self::findFreePort();
 		if ($port === 0) {
 			self::$serverSkipReason = 'Could not bind a free port for the test server.';

@@ -1,8 +1,12 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Log;
+
 use Prado\Util\Log\TLogger;
 use Prado\Util\Log\TLogRouter;
 use Prado\Util\Log\TBrowserLogRoute;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Util\Log\TLogRoute;
 
 class TTestLogRoute extends TLogRoute {
 	protected function processLogs(array $logs, bool $final, array $meta)
@@ -11,7 +15,7 @@ class TTestLogRoute extends TLogRoute {
 	}
 }
 
-class TLogRouteTest extends PHPUnit\Framework\TestCase
+class TLogRouteTest extends \PHPUnit\Framework\TestCase
 {
 	protected function setUp(): void
 	{

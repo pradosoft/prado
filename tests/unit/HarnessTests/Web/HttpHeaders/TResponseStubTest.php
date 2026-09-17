@@ -8,10 +8,14 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\HarnessTests\Web\HttpHeaders;
+
+use Prado\Test\Unit\Harness\Web\HttpHeaders\TResponseStub;
+
 /**
  * Tests for {@see TResponseStub}, the appendHeader-recording response stand-in.
  */
-class TResponseStubTest extends PHPUnit\Framework\TestCase
+class TResponseStubTest extends \PHPUnit\Framework\TestCase
 {
 	public function testCapturedCallsDefaultEmpty(): void
 	{

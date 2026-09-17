@@ -1,8 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI\WebControls;
+
 use Prado\Web\UI\WebControls\TTableColumn;
 use Prado\Web\UI\WebControls\TTableColumnGroup;
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\Harness\Traits\TWebControlRenderTrait;
 
 class TTableColumnTest extends TestCase
 {

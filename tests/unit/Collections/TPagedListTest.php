@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Collections;
+
 use Prado\Collections\TPagedList;
 use Prado\Collections\TPagedListFetchDataEventParameter;
 use Prado\Collections\TPagedListPageChangedEventParameter;
@@ -31,7 +33,7 @@ class MyPagedList extends TPagedList
 	}
 }
 
-class TPagedListTest extends PHPUnit\Framework\TestCase
+class TPagedListTest extends \PHPUnit\Framework\TestCase
 {
 	protected function setUp(): void
 	{

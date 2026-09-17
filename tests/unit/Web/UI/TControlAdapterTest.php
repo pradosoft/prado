@@ -1,10 +1,12 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI;
+
 use Prado\Web\UI\TControl;
 use Prado\Web\UI\TControlAdapter;
 use Prado\Web\UI\WebControls\TLabel;
 
-class TControlAdapterTest extends PHPUnit\Framework\TestCase
+class TControlAdapterTest extends \PHPUnit\Framework\TestCase
 {
 	public function testConstruct()
 	{

@@ -15,34 +15,34 @@
 		<result property="value" column="Order_CardNumber"/>
 	</resultMap>
 	<!--  -->
-	<resultMap id="order-with-lines-result" class="Order" 
+	<resultMap id="order-with-lines-result" class="Prado\Test\Unit\Data\SqlMap\Domain\Order" 
 							extends="lite-order-result-by-name" >
 		<result property="LineItemsList" lazyLoad="true" type="TList" column="Order_Id" select="GetLineItemsForOrder" />
 	</resultMap>
 
-	<resultMap id="order-with-lines-result-no-lazy-load" class="Order" 
+	<resultMap id="order-with-lines-result-no-lazy-load" class="Prado\Test\Unit\Data\SqlMap\Domain\Order" 
 							extends="lite-order-result-by-name" >
 		<result property="LineItemsList" type="TList" column="Order_Id" select="GetLineItemsForOrder" />
 	</resultMap>
 
-	<resultMap id="order-with-lines-result-statement-namespaces" class="Order" 
+	<resultMap id="order-with-lines-result-statement-namespaces" class="Prado\Test\Unit\Data\SqlMap\Domain\Order" 
 							extends="lite-order-result-by-name" >
 		<result property="LineItemsList" lazyLoad="true" type="TList" column="Order_Id" select="LineItem.GetLineItemsForOrder" />
 	</resultMap>
 			
-	<resultMap id="order-with-lines-collection" class="Order"
+	<resultMap id="order-with-lines-collection" class="Prado\Test\Unit\Data\SqlMap\Domain\Order"
 							extends="lite-order-result-by-name" >
 		<result property="LineItems" column="Order_Id" lazyLoad="true" 
 			select="GetLineItemsForOrderWithListClass" />
 	</resultMap>
 
-	<resultMap id="order-with-lines-collection-no-lazy-load" class="Order"
+	<resultMap id="order-with-lines-collection-no-lazy-load" class="Prado\Test\Unit\Data\SqlMap\Domain\Order"
 							extends="lite-order-result-by-name" >
 		<result property="LineItems" column="Order_Id" 
 			select="GetLineItemsForOrderWithListClass" />
 	</resultMap>
 
-	<resultMap id="order-with-lines-array" class="Order"
+	<resultMap id="order-with-lines-array" class="Prado\Test\Unit\Data\SqlMap\Domain\Order"
 							extends="lite-order-result-by-name">
 		<result property="LineItemsArray" column="Order_Id" select="GetLineItemsForOrder"/>
 	</resultMap>
@@ -59,7 +59,7 @@
 		<result property="PostalCode" type="string" column="Order_PostalCode"/>
 	</resultMap>
 
-	<resultMap id="lite-order-result-by-name" class="Order">
+	<resultMap id="lite-order-result-by-name" class="Prado\Test\Unit\Data\SqlMap\Domain\Order">
 		<result property="Id"         column="Order_Id"/>
 		<result property="Date"       type="date" column="Order_Date" nullValue="0001-01-01 00:00:00"/>
 		<result property="CardExpiry" column="Order_CardExpiry"/>
@@ -75,7 +75,7 @@
 		<result property="Date"       column="Order_Date" nullValue="0001-01-01 00:00:00"/>
 	</resultMap>		
 	
-	<resultMap id="order-with-types-result" class="Order">
+	<resultMap id="order-with-types-result" class="Prado\Test\Unit\Data\SqlMap\Domain\Order">
 		<result property="Id"         column="Order_Id"	/>
 		<result property="Date"       column="Order_Date"		type="date" />
 		<result property="CardExpiry" column="Order_CardExpiry" />
@@ -87,7 +87,7 @@
 		<result property="PostalCode" column="Order_PostalCode" />
 	</resultMap>
 	
-	<resultMap id="lite-order-result-by-index" class="Order">
+	<resultMap id="lite-order-result-by-index" class="Prado\Test\Unit\Data\SqlMap\Domain\Order">
 		<result property="Id"         column="Order_Id"			columnIndex="0"/>
 		<result property="Date"       column="Order_Date"		type="date" columnIndex="1" />
 		<result property="CardExpiry" column="Order_CardExpiry" columnIndex="2"/>
@@ -99,7 +99,7 @@
 		<result property="PostalCode" column="Order_PostalCode" columnIndex="8" />
 	</resultMap>
 	
-	<resultMap id="order-with-account-result" class="Order">
+	<resultMap id="order-with-account-result" class="Prado\Test\Unit\Data\SqlMap\Domain\Order">
 		<result property="Id"         column="Order_Id"/>
 		<result property="Date"       type="date" column="Order_Date"/>
 		<result property="CardExpiry" column="Order_CardExpiry"/>
@@ -112,7 +112,7 @@
 		<result property="Account"    column="Account_Id" select="GetAccountViaColumnName" />
 	</resultMap>
 	
-	<resultMap id="order-with-collection-result" class="Order">
+	<resultMap id="order-with-collection-result" class="Prado\Test\Unit\Data\SqlMap\Domain\Order">
 		<result property="Id"				column="Order_Id"/>
 		<result property="Date"				type="date" column="Order_Date"/>
 		<result property="CardExpiry"		column="Order_CardExpiry"/>
@@ -126,7 +126,7 @@
 		<result property="LineItems"		column="Order_Id" select="GetLineItemsForOrder" lazyLoad="false" />
 	</resultMap>
 	
-	<resultMap id="order-with-favourite-line-item" class="Order">
+	<resultMap id="order-with-favourite-line-item" class="Prado\Test\Unit\Data\SqlMap\Domain\Order">
 		<result property="Id"					column="Order_Id"/>
 		<result property="Date"					column="Order_Date"/>
 		<result property="CardExpiry"			column="Order_CardExpiry"/>
@@ -141,7 +141,7 @@
 				select="GetSpecificLineItem" />
 	</resultMap>
 	
-	<resultMap id="order-with-dyn-favourite-line-item" class="Order">
+	<resultMap id="order-with-dyn-favourite-line-item" class="Prado\Test\Unit\Data\SqlMap\Domain\Order">
 		<result property="Id"					column="Order_Id"/>
 		<result property="Date"					column="Order_Date"/>
 		<result property="CardExpiry"			column="Order_CardExpiry"/>
@@ -156,7 +156,7 @@
 					select="GetDynSpecificLineItem" />
 	</resultMap>
 	
-	<resultMap id="order-joined-favourite" class="Order">
+	<resultMap id="order-joined-favourite" class="Prado\Test\Unit\Data\SqlMap\Domain\Order">
 		<result property="Id"					column="Order_Id"/>
 		<result property="Date"					type="date" column="Order_Date"/>
 		<result property="CardExpiry"			column="Order_CardExpiry"/>
@@ -169,7 +169,7 @@
 		<result property="FavouriteLineItem"	resultMapping="LineItem" />
 	</resultMap>
 	
-	<resultMap id="order-joined-favourite2" class="Order">
+	<resultMap id="order-joined-favourite2" class="Prado\Test\Unit\Data\SqlMap\Domain\Order">
 		<result property="Id"					column="Order_Id"/>
 		<result property="Date"					type="date" column="Order_Date"/>
 		<result property="CardExpiry"			column="Order_CardExpiry"/>
@@ -185,7 +185,7 @@
 		<result property="FavouriteLineItem.Price" column="LineItem_Price"/>			
 	</resultMap>
 			
-	<resultMap id="order-joined-with-account" class="Order">
+	<resultMap id="order-joined-with-account" class="Prado\Test\Unit\Data\SqlMap\Domain\Order">
 		<result property="Id"         column="Order_Id"/>
 		<result property="Date"       type="date" column="Order_Date" nullValue="0001-01-01 00:00:00"/>
 		<result property="CardExpiry" column="Order_CardExpiry"/>
@@ -297,7 +297,7 @@
 
 	<statement id="GetOrderJoinedFavourite3"
 				parameterClass="Integer"
-				resultClass="Order" >
+				resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Order" >
 		select 
 			Orders.Order_Id as Id,
 			Order_Date as Date,

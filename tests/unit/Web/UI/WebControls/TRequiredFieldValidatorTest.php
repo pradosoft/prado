@@ -1,6 +1,8 @@
 <?php
 
 
+namespace Prado\Test\Unit\Web\UI\WebControls;
+
 use Prado\Web\UI\WebControls\TRequiredFieldValidator;
 use Prado\Web\UI\WebControls\TTextBox;
 use Prado\Web\UI\WebControls\TDropDownList;
@@ -8,6 +10,8 @@ use Prado\Web\UI\WebControls\TListItem;
 use Prado\Web\UI\WebControls\TRadioButton;
 use Prado\Exceptions\TConfigurationException;
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\Harness\Traits\TWebControlRenderTrait;
+use Prado\Test\Unit\PradoUnit;
 
 class TRequiredFieldValidatorTest extends TestCase
 {

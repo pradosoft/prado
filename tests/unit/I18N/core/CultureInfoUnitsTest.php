@@ -1,67 +1,69 @@
 <?php
 
+namespace Prado\Test\Unit\I18N\core;
+
 /**
  * Test class for CultureInfoUnits.
  */
-class CultureInfoUnitsTest extends PHPUnit\Framework\TestCase
+class CultureInfoUnitsTest extends \PHPUnit\Framework\TestCase
 {
     public function testConstants()
     {
         // Test display name constant
-        $this->assertEquals('dnam', Prado\I18N\core\CultureInfoUnits::UNIT_DISPLAY_NAME);
+        $this->assertEquals('dnam', \Prado\I18N\core\CultureInfoUnits::UNIT_DISPLAY_NAME);
         
         // Test unit pattern constants
-        $this->assertEquals('one', Prado\I18N\core\CultureInfoUnits::UNIT_ONE_PATTERN);
-        $this->assertEquals('other', Prado\I18N\core\CultureInfoUnits::UNIT_OTHER_PATTERN);
+        $this->assertEquals('one', \Prado\I18N\core\CultureInfoUnits::UNIT_ONE_PATTERN);
+        $this->assertEquals('other', \Prado\I18N\core\CultureInfoUnits::UNIT_OTHER_PATTERN);
         
         // Test per unit pattern constant
-        $this->assertEquals('per', Prado\I18N\core\CultureInfoUnits::UNIT_PER_UNIT_PATTERN);
+        $this->assertEquals('per', \Prado\I18N\core\CultureInfoUnits::UNIT_PER_UNIT_PATTERN);
     }
 
     public function testPluralCategoryConstants()
     {
-        $this->assertEquals('zero', Prado\I18N\core\CultureInfoUnits::UNIT_ZERO_PATTERN);
-        $this->assertEquals('two', Prado\I18N\core\CultureInfoUnits::UNIT_TWO_PATTERN);
-        $this->assertEquals('few', Prado\I18N\core\CultureInfoUnits::UNIT_FEW_PATTERN);
-        $this->assertEquals('many', Prado\I18N\core\CultureInfoUnits::UNIT_MANY_PATTERN);
+        $this->assertEquals('zero', \Prado\I18N\core\CultureInfoUnits::UNIT_ZERO_PATTERN);
+        $this->assertEquals('two', \Prado\I18N\core\CultureInfoUnits::UNIT_TWO_PATTERN);
+        $this->assertEquals('few', \Prado\I18N\core\CultureInfoUnits::UNIT_FEW_PATTERN);
+        $this->assertEquals('many', \Prado\I18N\core\CultureInfoUnits::UNIT_MANY_PATTERN);
 
         // All CLDR plural categories, in CLDR order.
         $this->assertSame(
             ['zero', 'one', 'two', 'few', 'many', 'other'],
-            Prado\I18N\core\CultureInfoUnits::UNIT_PLURAL_PATTERNS
+            \Prado\I18N\core\CultureInfoUnits::UNIT_PLURAL_PATTERNS
         );
     }
 
     public function testWidthConstants()
     {
-        $this->assertEquals('long', Prado\I18N\core\CultureInfoUnits::WIDTH_LONG);
-        $this->assertEquals('short', Prado\I18N\core\CultureInfoUnits::WIDTH_SHORT);
-        $this->assertEquals('narrow', Prado\I18N\core\CultureInfoUnits::WIDTH_NARROW);
+        $this->assertEquals('long', \Prado\I18N\core\CultureInfoUnits::WIDTH_LONG);
+        $this->assertEquals('short', \Prado\I18N\core\CultureInfoUnits::WIDTH_SHORT);
+        $this->assertEquals('narrow', \Prado\I18N\core\CultureInfoUnits::WIDTH_NARROW);
 
         // Ordered most specific first, for narrow → short → long fallback.
         $this->assertSame(
             ['narrow' => 'unitsNarrow', 'short' => 'unitsShort', 'long' => 'units'],
-            Prado\I18N\core\CultureInfoUnits::WIDTH_RESOURCE_KEYS
+            \Prado\I18N\core\CultureInfoUnits::WIDTH_RESOURCE_KEYS
         );
     }
 
     public function testRelativeTimeConstants()
     {
-        $this->assertEquals('past', Prado\I18N\core\CultureInfoUnits::RELATIVE_PAST);
-        $this->assertEquals('future', Prado\I18N\core\CultureInfoUnits::RELATIVE_FUTURE);
+        $this->assertEquals('past', \Prado\I18N\core\CultureInfoUnits::RELATIVE_PAST);
+        $this->assertEquals('future', \Prado\I18N\core\CultureInfoUnits::RELATIVE_FUTURE);
 
         // CLDR fields key suffixes, same fallback order as WIDTH_RESOURCE_KEYS.
         $this->assertSame(
             ['narrow' => '-narrow', 'short' => '-short', 'long' => ''],
-            Prado\I18N\core\CultureInfoUnits::WIDTH_FIELD_SUFFIXES
+            \Prado\I18N\core\CultureInfoUnits::WIDTH_FIELD_SUFFIXES
         );
     }
     
     public function testDigitalUnitTypes()
     {
         // Test bit types
-        $this->assertEquals('digital-bit', Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_BIT);
-        $this->assertEquals('digital-byte', Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_BYTE);
+        $this->assertEquals('digital-bit', \Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_BIT);
+        $this->assertEquals('digital-byte', \Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_BYTE);
         
         /*
         $this->assertEquals('digital-kibibit', Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_KIBIBIT);
@@ -89,98 +91,98 @@ class CultureInfoUnitsTest extends PHPUnit\Framework\TestCase
         */
         
         // Test marketing term bit types
-        $this->assertEquals('digital-kilobit', Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_KILOBIT);
-        $this->assertEquals('digital-megabit', Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_MEGABIT);
-        $this->assertEquals('digital-gigabit', Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_GIGABIT);
-        $this->assertEquals('digital-terabit', Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_TERABIT);
-        $this->assertEquals('digital-petabit', Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_PETABIT);
-        $this->assertEquals('digital-exabit', Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_EXABIT);
-        $this->assertEquals('digital-zettabit', Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_ZETTABIT);
-        $this->assertEquals('digital-yottabit', Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_YOTTABIT);
-        $this->assertEquals('digital-ronnabit', Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_RONNABIT);
-        $this->assertEquals('digital-quettabit', Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_QUETTABIT);
+        $this->assertEquals('digital-kilobit', \Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_KILOBIT);
+        $this->assertEquals('digital-megabit', \Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_MEGABIT);
+        $this->assertEquals('digital-gigabit', \Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_GIGABIT);
+        $this->assertEquals('digital-terabit', \Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_TERABIT);
+        $this->assertEquals('digital-petabit', \Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_PETABIT);
+        $this->assertEquals('digital-exabit', \Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_EXABIT);
+        $this->assertEquals('digital-zettabit', \Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_ZETTABIT);
+        $this->assertEquals('digital-yottabit', \Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_YOTTABIT);
+        $this->assertEquals('digital-ronnabit', \Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_RONNABIT);
+        $this->assertEquals('digital-quettabit', \Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_QUETTABIT);
         
         // Test marketing term byte types
-        $this->assertEquals('digital-kilobyte', Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_KILOBYTE);
-        $this->assertEquals('digital-megabyte', Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_MEGABYTE);
-        $this->assertEquals('digital-gigabyte', Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_GIGABYTE);
-        $this->assertEquals('digital-terabyte', Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_TERABYTE);
-        $this->assertEquals('digital-petabyte', Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_PETABYTE);
-        $this->assertEquals('digital-exabyte', Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_EXABYTE);
-        $this->assertEquals('digital-zettabyte', Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_ZETTABYTE);
-        $this->assertEquals('digital-yottabyte', Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_YOTTABYTE);
-        $this->assertEquals('digital-ronnabyte', Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_RONNABYTE);
-        $this->assertEquals('digital-quettabyte', Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_QUETTABYTE);
+        $this->assertEquals('digital-kilobyte', \Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_KILOBYTE);
+        $this->assertEquals('digital-megabyte', \Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_MEGABYTE);
+        $this->assertEquals('digital-gigabyte', \Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_GIGABYTE);
+        $this->assertEquals('digital-terabyte', \Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_TERABYTE);
+        $this->assertEquals('digital-petabyte', \Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_PETABYTE);
+        $this->assertEquals('digital-exabyte', \Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_EXABYTE);
+        $this->assertEquals('digital-zettabyte', \Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_ZETTABYTE);
+        $this->assertEquals('digital-yottabyte', \Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_YOTTABYTE);
+        $this->assertEquals('digital-ronnabyte', \Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_RONNABYTE);
+        $this->assertEquals('digital-quettabyte', \Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_QUETTABYTE);
     }
     
     public function testNonDigitalUnitTypes()
     {
         // Test length units
-        $this->assertEquals('length-meter', Prado\I18N\core\CultureInfoUnits::TYPE_LENGTH_METER);
-        $this->assertEquals('length-kilometer', Prado\I18N\core\CultureInfoUnits::TYPE_LENGTH_KILOMETER);
-        $this->assertEquals('length-foot', Prado\I18N\core\CultureInfoUnits::TYPE_LENGTH_FOOT);
-        $this->assertEquals('length-inch', Prado\I18N\core\CultureInfoUnits::TYPE_LENGTH_INCH);
+        $this->assertEquals('length-meter', \Prado\I18N\core\CultureInfoUnits::TYPE_LENGTH_METER);
+        $this->assertEquals('length-kilometer', \Prado\I18N\core\CultureInfoUnits::TYPE_LENGTH_KILOMETER);
+        $this->assertEquals('length-foot', \Prado\I18N\core\CultureInfoUnits::TYPE_LENGTH_FOOT);
+        $this->assertEquals('length-inch', \Prado\I18N\core\CultureInfoUnits::TYPE_LENGTH_INCH);
         
         // Test mass units
-        $this->assertEquals('mass-gram', Prado\I18N\core\CultureInfoUnits::TYPE_MASS_GRAM);
-        $this->assertEquals('mass-kilogram', Prado\I18N\core\CultureInfoUnits::TYPE_MASS_KILOGRAM);
-        $this->assertEquals('mass-pound', Prado\I18N\core\CultureInfoUnits::TYPE_MASS_POUND);
+        $this->assertEquals('mass-gram', \Prado\I18N\core\CultureInfoUnits::TYPE_MASS_GRAM);
+        $this->assertEquals('mass-kilogram', \Prado\I18N\core\CultureInfoUnits::TYPE_MASS_KILOGRAM);
+        $this->assertEquals('mass-pound', \Prado\I18N\core\CultureInfoUnits::TYPE_MASS_POUND);
         
         // Test duration units
-        $this->assertEquals('duration-second', Prado\I18N\core\CultureInfoUnits::TYPE_DURATION_SECOND);
-        $this->assertEquals('duration-minute', Prado\I18N\core\CultureInfoUnits::TYPE_DURATION_MINUTE);
-        $this->assertEquals('duration-hour', Prado\I18N\core\CultureInfoUnits::TYPE_DURATION_HOUR);
-        $this->assertEquals('duration-day', Prado\I18N\core\CultureInfoUnits::TYPE_DURATION_DAY);
-        $this->assertEquals('duration-nanosecond', Prado\I18N\core\CultureInfoUnits::TYPE_DURATION_NANOSECOND);
-        $this->assertEquals('duration-microsecond', Prado\I18N\core\CultureInfoUnits::TYPE_DURATION_MICROSECOND);
-        $this->assertEquals('duration-millisecond', Prado\I18N\core\CultureInfoUnits::TYPE_DURATION_MILLISECOND);
-        $this->assertEquals('duration-week', Prado\I18N\core\CultureInfoUnits::TYPE_DURATION_WEEK);
-        $this->assertEquals('duration-month', Prado\I18N\core\CultureInfoUnits::TYPE_DURATION_MONTH);
-        $this->assertEquals('duration-quarter', Prado\I18N\core\CultureInfoUnits::TYPE_DURATION_QUARTER);
-        $this->assertEquals('duration-year', Prado\I18N\core\CultureInfoUnits::TYPE_DURATION_YEAR);
-        $this->assertEquals('duration-decade', Prado\I18N\core\CultureInfoUnits::TYPE_DURATION_DECADE);
-        $this->assertEquals('duration-century', Prado\I18N\core\CultureInfoUnits::TYPE_DURATION_CENTURY);
+        $this->assertEquals('duration-second', \Prado\I18N\core\CultureInfoUnits::TYPE_DURATION_SECOND);
+        $this->assertEquals('duration-minute', \Prado\I18N\core\CultureInfoUnits::TYPE_DURATION_MINUTE);
+        $this->assertEquals('duration-hour', \Prado\I18N\core\CultureInfoUnits::TYPE_DURATION_HOUR);
+        $this->assertEquals('duration-day', \Prado\I18N\core\CultureInfoUnits::TYPE_DURATION_DAY);
+        $this->assertEquals('duration-nanosecond', \Prado\I18N\core\CultureInfoUnits::TYPE_DURATION_NANOSECOND);
+        $this->assertEquals('duration-microsecond', \Prado\I18N\core\CultureInfoUnits::TYPE_DURATION_MICROSECOND);
+        $this->assertEquals('duration-millisecond', \Prado\I18N\core\CultureInfoUnits::TYPE_DURATION_MILLISECOND);
+        $this->assertEquals('duration-week', \Prado\I18N\core\CultureInfoUnits::TYPE_DURATION_WEEK);
+        $this->assertEquals('duration-month', \Prado\I18N\core\CultureInfoUnits::TYPE_DURATION_MONTH);
+        $this->assertEquals('duration-quarter', \Prado\I18N\core\CultureInfoUnits::TYPE_DURATION_QUARTER);
+        $this->assertEquals('duration-year', \Prado\I18N\core\CultureInfoUnits::TYPE_DURATION_YEAR);
+        $this->assertEquals('duration-decade', \Prado\I18N\core\CultureInfoUnits::TYPE_DURATION_DECADE);
+        $this->assertEquals('duration-century', \Prado\I18N\core\CultureInfoUnits::TYPE_DURATION_CENTURY);
         
         // Test volume units
-        $this->assertEquals('volume-liter', Prado\I18N\core\CultureInfoUnits::TYPE_VOLUME_LITER);
-        $this->assertEquals('volume-gallon', Prado\I18N\core\CultureInfoUnits::TYPE_VOLUME_GALLON);
+        $this->assertEquals('volume-liter', \Prado\I18N\core\CultureInfoUnits::TYPE_VOLUME_LITER);
+        $this->assertEquals('volume-gallon', \Prado\I18N\core\CultureInfoUnits::TYPE_VOLUME_GALLON);
         
         // Test speed units
-        $this->assertEquals('speed-kilometer-per-hour', Prado\I18N\core\CultureInfoUnits::TYPE_SPEED_KM_H);
-        $this->assertEquals('speed-mile-per-hour', Prado\I18N\core\CultureInfoUnits::TYPE_SPEED_MPH);
+        $this->assertEquals('speed-kilometer-per-hour', \Prado\I18N\core\CultureInfoUnits::TYPE_SPEED_KM_H);
+        $this->assertEquals('speed-mile-per-hour', \Prado\I18N\core\CultureInfoUnits::TYPE_SPEED_MPH);
         
         // Test temperature units
-        $this->assertEquals('temperature-celsius', Prado\I18N\core\CultureInfoUnits::TYPE_TEMPERATURE_CELSIUS);
-        $this->assertEquals('temperature-fahrenheit', Prado\I18N\core\CultureInfoUnits::TYPE_TEMPERATURE_FAHRENHEIT);
+        $this->assertEquals('temperature-celsius', \Prado\I18N\core\CultureInfoUnits::TYPE_TEMPERATURE_CELSIUS);
+        $this->assertEquals('temperature-fahrenheit', \Prado\I18N\core\CultureInfoUnits::TYPE_TEMPERATURE_FAHRENHEIT);
         
         // Test concentration units
-        $this->assertEquals('concentr-permillion', Prado\I18N\core\CultureInfoUnits::TYPE_CONCENTRATION_PERMILLION);
-        $this->assertEquals('concentr-milligram-per-deciliter', Prado\I18N\core\CultureInfoUnits::TYPE_CONCENTRATION_MILLIGRAM_PER_DECILITER);
+        $this->assertEquals('concentr-permillion', \Prado\I18N\core\CultureInfoUnits::TYPE_CONCENTRATION_PERMILLION);
+        $this->assertEquals('concentr-milligram-per-deciliter', \Prado\I18N\core\CultureInfoUnits::TYPE_CONCENTRATION_MILLIGRAM_PER_DECILITER);
         
         // Test electric units
-        $this->assertEquals('electric-ampere', Prado\I18N\core\CultureInfoUnits::TYPE_ELECTRIC_AMPERE);
-        $this->assertEquals('electric-volt', Prado\I18N\core\CultureInfoUnits::TYPE_ELECTRIC_VOLT);
-        $this->assertEquals('electric-ohm', Prado\I18N\core\CultureInfoUnits::TYPE_ELECTRIC_OHM);
+        $this->assertEquals('electric-ampere', \Prado\I18N\core\CultureInfoUnits::TYPE_ELECTRIC_AMPERE);
+        $this->assertEquals('electric-volt', \Prado\I18N\core\CultureInfoUnits::TYPE_ELECTRIC_VOLT);
+        $this->assertEquals('electric-ohm', \Prado\I18N\core\CultureInfoUnits::TYPE_ELECTRIC_OHM);
         
         // Test energy units
-        $this->assertEquals('energy-joule', Prado\I18N\core\CultureInfoUnits::TYPE_ENERGY_JOULE);
-        $this->assertEquals('energy-kilowatt-hour', Prado\I18N\core\CultureInfoUnits::TYPE_ENERGY_KILOWATT_HOUR);
+        $this->assertEquals('energy-joule', \Prado\I18N\core\CultureInfoUnits::TYPE_ENERGY_JOULE);
+        $this->assertEquals('energy-kilowatt-hour', \Prado\I18N\core\CultureInfoUnits::TYPE_ENERGY_KILOWATT_HOUR);
         
         // Test force units
-        $this->assertEquals('force-newton', Prado\I18N\core\CultureInfoUnits::TYPE_FORCE_NEWTON);
+        $this->assertEquals('force-newton', \Prado\I18N\core\CultureInfoUnits::TYPE_FORCE_NEWTON);
         
         // Test graphics units
-        $this->assertEquals('graphics-dot-per-inch', Prado\I18N\core\CultureInfoUnits::TYPE_GRAPHICS_DPI);
-        $this->assertEquals('graphics-pixel', Prado\I18N\core\CultureInfoUnits::TYPE_GRAPHICS_PIXEL);
+        $this->assertEquals('graphics-dot-per-inch', \Prado\I18N\core\CultureInfoUnits::TYPE_GRAPHICS_DPI);
+        $this->assertEquals('graphics-pixel', \Prado\I18N\core\CultureInfoUnits::TYPE_GRAPHICS_PIXEL);
         
         // Test light units
-        $this->assertEquals('light-lux', Prado\I18N\core\CultureInfoUnits::TYPE_LIGHT_LUX);
+        $this->assertEquals('light-lux', \Prado\I18N\core\CultureInfoUnits::TYPE_LIGHT_LUX);
         
         // Test pressure units
-        $this->assertEquals('pressure-hectopascal', Prado\I18N\core\CultureInfoUnits::TYPE_PRESSURE_HECTOPASCAL);
-        $this->assertEquals('pressure-bar', Prado\I18N\core\CultureInfoUnits::TYPE_PRESSURE_BAR);
+        $this->assertEquals('pressure-hectopascal', \Prado\I18N\core\CultureInfoUnits::TYPE_PRESSURE_HECTOPASCAL);
+        $this->assertEquals('pressure-bar', \Prado\I18N\core\CultureInfoUnits::TYPE_PRESSURE_BAR);
         
         // Test torque units
-        $this->assertEquals('torque-newton-meter', Prado\I18N\core\CultureInfoUnits::TYPE_TORQUE_NEWTON_METER);
+        $this->assertEquals('torque-newton-meter', \Prado\I18N\core\CultureInfoUnits::TYPE_TORQUE_NEWTON_METER);
     }
 }

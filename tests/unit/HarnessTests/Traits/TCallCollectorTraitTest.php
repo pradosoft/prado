@@ -8,6 +8,10 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\HarnessTests\Traits;
+
+use Prado\Test\Unit\Harness\Traits\TCallCollectorTrait;
+
 /**
  * Test double that records every call via {@see TCallCollectorTrait}.
  */
@@ -38,7 +42,7 @@ class CallCollectorDouble
  *
  * @package System.Harness.Traits
  */
-class TCallCollectorTraitTest extends PHPUnit\Framework\TestCase
+class TCallCollectorTraitTest extends \PHPUnit\Framework\TestCase
 {
 	public function testRecordsCallingMethodNameAndArguments(): void
 	{

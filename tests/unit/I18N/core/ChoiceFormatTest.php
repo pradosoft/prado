@@ -1,8 +1,10 @@
 <?php
 
+namespace Prado\Test\Unit\I18N\core;
+
 use Prado\I18N\core\ChoiceFormat;
 
-class ChoiceFormatTest extends PHPUnit\Framework\TestCase
+class ChoiceFormatTest extends \PHPUnit\Framework\TestCase
 {
 	public function testChoices()
 	{

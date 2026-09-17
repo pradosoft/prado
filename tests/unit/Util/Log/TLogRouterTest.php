@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Log;
+
 use Prado\Util\Log\TLogger;
 use Prado\Util\Log\TLogRouter;
 use Prado\Util\Log\TBrowserLogRoute;
@@ -8,7 +10,7 @@ class TTestLogRouter extends TLogRouter {
 	
 }
 
-class TLogRouterTest extends PHPUnit\Framework\TestCase
+class TLogRouterTest extends \PHPUnit\Framework\TestCase
 {
 	protected function setUp(): void
 	{
@@ -60,7 +62,7 @@ class TLogRouterTest extends PHPUnit\Framework\TestCase
 	
 	public function testFlushCount()
 	{
-		$logger = Prado::getLogger();
+		$logger = \Prado::getLogger();
 		$this->assertEquals(1000, $logger->getFlushCount());
 		
 		$router = new TTestLogRouter();
@@ -75,7 +77,7 @@ class TLogRouterTest extends PHPUnit\Framework\TestCase
 	
 	public function testTraceLevel()
 	{
-		$logger = Prado::getLogger();
+		$logger = \Prado::getLogger();
 		$this->assertEquals(0, $logger->getTraceLevel());
 		
 		$router = new TTestLogRouter();

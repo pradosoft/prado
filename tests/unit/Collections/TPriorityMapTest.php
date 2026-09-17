@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Collections;
+
 use Prado\Collections\IPriorityItem;
 use Prado\Collections\TPriorityMap;
 use Prado\Collections\TPriorityList;
@@ -7,6 +9,8 @@ use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Util\IDynamicMethods;
 use Prado\Util\TBehavior;
+use Prado\Collections\IPriorityCapture;
+use Prado\Collections\IPriorityProperty;
 
 class TPriorityMapTest_MapItem extends TMapTest_MapItem
 {
@@ -305,7 +309,7 @@ class TPriorityMapTest extends TMapTest
 		$this->assertEquals(null, $this->map['key3']);
 		$this->map->attachBehavior(self::BEHAVIOR_NAME, $b = new TMapTestNoItemBehavior);
 		
-		$this->assertInstanceOf('TMapTest_MapItem', $this->map['key3']);
+		$this->assertInstanceOf(TMapTest_MapItem::class, $this->map['key3']);
 		
 		$this->map['key3'] = null;
 		

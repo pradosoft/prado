@@ -1,9 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Filter;
+
 use Prado\IO\Filter\TStreamCodecFilter;
 use Prado\IO\TStream;
 
-class TStreamCodecFilterTest extends PHPUnit\Framework\TestCase
+class TStreamCodecFilterTest extends \PHPUnit\Framework\TestCase
 {
 	public function testProcessTransformsEachChunk()
 	{

@@ -8,6 +8,8 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit;
+
 /**
  * Unit tests for the session-baseline capture surface on {@see PradoUnit}.
  *
@@ -20,7 +22,7 @@
  * any test, so every test in this file inherits a populated snapshot.
  *
  */
-class PradoUnitInitialStateTest extends PHPUnit\Framework\TestCase
+class PradoUnitInitialStateTest extends \PHPUnit\Framework\TestCase
 {
 	/** @var array<string, mixed> Bootstrap-captured baseline, stashed across each test. */
 	private array $_bootstrapSnapshot;

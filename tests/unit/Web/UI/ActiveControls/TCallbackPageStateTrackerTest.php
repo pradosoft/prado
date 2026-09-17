@@ -1,7 +1,10 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI\ActiveControls;
+
 use Prado\Web\UI\ActiveControls\TCallbackPageStateTracker;
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\Harness\Traits\TCallCollectorTrait;
 
 // ---------------------------------------------------------------------------
 // Test doubles

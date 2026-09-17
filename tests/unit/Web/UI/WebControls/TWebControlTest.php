@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI\WebControls;
+
 use Prado\Web\UI\WebControls\TWebControl;
 use Prado\Web\UI\WebControls\TWebControlDecorator;
 use Prado\Web\UI\WebControls\TWebInputMode;
@@ -10,6 +12,7 @@ use Prado\Web\UI\THtmlWriter;
 use Prado\IO\TTextWriter;
 use Prado\Exceptions\TInvalidDataValueException;
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\Harness\Traits\TWebControlRenderTrait;
 
 class TWebControlSubclass extends TWebControl
 {

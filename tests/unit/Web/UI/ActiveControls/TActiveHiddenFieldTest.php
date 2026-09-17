@@ -1,9 +1,11 @@
 <?php
 
 
+namespace Prado\Test\Unit\Web\UI\ActiveControls;
+
 use Prado\Web\UI\ActiveControls\TActiveHiddenField;
 
-class TActiveHiddenFieldTest extends PHPUnit\Framework\TestCase
+class TActiveHiddenFieldTest extends \PHPUnit\Framework\TestCase
 {
 	public function testSetValue()
 	{

@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Behaviors;
+
 use Prado\IO\Behaviors\TStreamNoSeekBehavior;
 use Prado\IO\TStream;
 use Prado\Util\TBehavior;
@@ -17,7 +19,7 @@ class TPermissiveSeekBehavior extends TBehavior
 	}
 }
 
-class TStreamNoSeekBehaviorTest extends PHPUnit\Framework\TestCase
+class TStreamNoSeekBehaviorTest extends \PHPUnit\Framework\TestCase
 {
 	private function stream(): TStream
 	{

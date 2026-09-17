@@ -1,8 +1,10 @@
 <?php
 
+namespace Prado\Test\Unit\Util;
+
 use Prado\Util\TSimpleDateFormatter;
 
-class TSimpleDateFormatterTest extends PHPUnit\Framework\TestCase
+class TSimpleDateFormatterTest extends \PHPUnit\Framework\TestCase
 {
 	private $formatter;
 
@@ -122,7 +124,7 @@ class TSimpleDateFormatterTest extends PHPUnit\Framework\TestCase
 	public function test_parse_object_throws_exception(): void
 	{
 		$this->expectException(\Prado\Exceptions\TInvalidDataValueException::class);
-		$this->formatter->parse(new stdClass());
+		$this->formatter->parse(new \stdClass());
 	}
 
 	public function test_format_year_yyyy_returns_four_digits(): void

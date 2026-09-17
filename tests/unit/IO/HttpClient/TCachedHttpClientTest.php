@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\IO\HttpClient;
+
 use Prado\IO\HttpClient\TCachedHttpClient;
 use Prado\IO\HttpClient\THttpClient;
 use Prado\IO\HttpClient\THttpClientResponse;
@@ -83,7 +85,7 @@ class ExposedCachedHttpClient extends TCachedHttpClient
 /**
  * Tests for TCachedHttpClient.
  */
-class TCachedHttpClientTest extends PHPUnit\Framework\TestCase
+class TCachedHttpClientTest extends \PHPUnit\Framework\TestCase
 {
 	private RecordingHttpClient $inner;
 	private CachedClientTestCache $cache;

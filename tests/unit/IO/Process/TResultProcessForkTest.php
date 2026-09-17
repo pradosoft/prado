@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Process;
+
 use Prado\IO\Process\TResultProcessFork;
 use Prado\IO\Socket\TSocketReactor;
 use Prado\Util\Helpers\TProcessHelper;
@@ -13,7 +15,7 @@ class FixedResultProcessFork extends TResultProcessFork
 	}
 }
 
-class TResultProcessForkTest extends PHPUnit\Framework\TestCase
+class TResultProcessForkTest extends \PHPUnit\Framework\TestCase
 {
 	protected function setUp(): void
 	{

@@ -1,13 +1,16 @@
 <?php
 
+namespace Prado\Test\Unit\HarnessTests\IO\Stream;
+
 use Prado\IO\Stream\TStreamDecorator;
 use Prado\IO\TStream;
 use Psr\Http\Message\StreamInterface;
+use Prado\Test\Unit\Harness\IO\Stream\TTestStreamDecorator;
 
 /**
  * Tests for the {@see TTestStreamDecorator} harness double itself.
  */
-class TTestStreamDecoratorTest extends PHPUnit\Framework\TestCase
+class TTestStreamDecoratorTest extends \PHPUnit\Framework\TestCase
 {
 	public function testIsAStreamDecorator()
 	{

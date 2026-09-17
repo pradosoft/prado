@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Security\Permissions;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Security\Permissions\TPermissionEvent;
@@ -8,7 +10,7 @@ use Prado\Security\TUserManager;
 use Prado\TApplication;
 use Prado\Xml\TXmlDocument;
 
-class TPermissionEventTest extends PHPUnit\Framework\TestCase
+class TPermissionEventTest extends \PHPUnit\Framework\TestCase
 {
 	public static $app = null;
 	public static $usrMgr = null;

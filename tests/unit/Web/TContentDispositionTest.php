@@ -8,9 +8,11 @@
  * @author Brad Anderson <belisoful@icloud.com>
  */
 
+namespace Prado\Test\Unit\Web;
+
 use Prado\Web\TContentDisposition;
 
-class TContentDispositionTest extends PHPUnit\Framework\TestCase
+class TContentDispositionTest extends \PHPUnit\Framework\TestCase
 {
 	// -----------------------------------------------------------------------
 	// Named constants

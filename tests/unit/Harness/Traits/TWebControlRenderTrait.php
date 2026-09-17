@@ -8,6 +8,8 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Harness\Traits;
+
 use Prado\Web\UI\THtmlWriter;
 use Prado\IO\TTextWriter;
 

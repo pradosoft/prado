@@ -1,9 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\IO;
+
 use Prado\IO\TResourceUri;
 use Psr\Http\Message\UriInterface;
 
-class TResourceUriTest extends PHPUnit\Framework\TestCase
+class TResourceUriTest extends \PHPUnit\Framework\TestCase
 {
 	public function testParseFullUri()
 	{

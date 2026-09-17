@@ -1,10 +1,15 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI\WebControls;
+
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\TApplicationMode;
 use Prado\Web\UI\WebControls\TDot;
+use Prado\Test\Unit\Harness\Traits\TWebControlRenderTrait;
+use Prado\TApplication;
+use Prado\Web\TAssetManager;
 
-class TDotTest extends PHPUnit\Framework\TestCase
+class TDotTest extends \PHPUnit\Framework\TestCase
 {
 	use TWebControlRenderTrait;
 
@@ -43,13 +48,13 @@ class TDotTest extends PHPUnit\Framework\TestCase
 			if (is_writable(dirname(self::$assetDir))) {
 				mkdir(self::$assetDir) ;
 			} else {
-				throw new Exception('Directory ' . dirname(self::$assetDir) . ' is not writable');
+				throw new \Exception('Directory ' . dirname(self::$assetDir) . ' is not writable');
 			}
 		} elseif (!is_dir(self::$assetDir)) {
-			throw new Exception(self::$assetDir . ' exists and is not a directory');
+			throw new \Exception(self::$assetDir . ' exists and is not a directory');
 		}
 		// Define an alias to asset directory
-		prado::setPathofAlias('AssetAlias', self::$assetDir);
+		\prado::setPathofAlias('AssetAlias', self::$assetDir);
 		
 		$this->obj = new TDot();
 	}
@@ -211,7 +216,7 @@ class TDotTest extends PHPUnit\Framework\TestCase
 		self::assertEquals('#B2A292', $this->obj->getHighlightColor());
 
 		// The cascade and cross-modulation tuning constants are defined.
-		$rc = new ReflectionClass(TDot::class);
+		$rc = new \ReflectionClass(TDot::class);
 		self::assertEqualsWithDelta(0.9633, $rc->getConstant('MAIN_DEPTH_SCALE'), 1e-9);
 		self::assertEqualsWithDelta(0.2312, $rc->getConstant('HSL_DEPTH_FRACTION'), 1e-9);
 		self::assertEqualsWithDelta(0.2157, $rc->getConstant('HSL_CHROMA_MOD'), 1e-9);
@@ -246,8 +251,8 @@ class TDotTest extends PHPUnit\Framework\TestCase
 	{
 		// The cascade's RGB<->HSL converters round-trip: rgbToHsl then hslToRgb returns the
 		// source (within rounding) across grays, primaries, and arbitrary colors.
-		$r2h = new ReflectionMethod(TDot::class, 'rgbToHsl');
-		$h2r = new ReflectionMethod(TDot::class, 'hslToRgb');
+		$r2h = new \ReflectionMethod(TDot::class, 'rgbToHsl');
+		$h2r = new \ReflectionMethod(TDot::class, 'hslToRgb');
 		$r2h->setAccessible(true);
 		$h2r->setAccessible(true);
 
@@ -264,7 +269,7 @@ class TDotTest extends PHPUnit\Framework\TestCase
 	{
 		// nudge() scales a channel change toward the channel extremes. setColor only ever
 		// passes true/false, so the null-default and taper branches are exercised here.
-		$nudge = new ReflectionMethod(TDot::class, 'nudge');
+		$nudge = new \ReflectionMethod(TDot::class, 'nudge');
 		$nudge->setAccessible(true);
 
 		// A null style follows the sign of the change: negative is top-exaggerated, positive bottom.

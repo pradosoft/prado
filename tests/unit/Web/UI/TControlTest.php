@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI;
+
 use Prado\IO\TTextWriter;
 use Prado\Prado;
 use Prado\Web\UI\IAdapterControl;
@@ -9,6 +11,8 @@ use Prado\Web\UI\THtmlWriter;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\TRenderFilterParameter;
 use Prado\Web\UI\WebControls\TLabel;
+use Prado\Test\Unit\Harness\TTestApplication;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * Exposes protected getAdapterControl() for white-box testing.
@@ -82,7 +86,7 @@ class TControlTestPluginControl extends TControl
 {
 }
 
-class TControlTest extends PHPUnit\Framework\TestCase
+class TControlTest extends \PHPUnit\Framework\TestCase
 {
 	public function testGetPluginModuleFindsModuleSharingClassPath()
 	{

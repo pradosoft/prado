@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI\ActiveControls;
+
 use Prado\IO\TTextWriter;
 use Prado\Web\UI\ActiveControls\IActiveControl;
 use Prado\Web\UI\ActiveControls\ICallbackEventHandler;
@@ -9,6 +11,7 @@ use Prado\Web\UI\ActiveControls\TInPlaceListBox;
 use Prado\Web\UI\THtmlWriter;
 use Prado\Web\UI\WebControls\TListSelectionMode;
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\PradoUnit;
 
 class TInPlaceListBoxTest extends TestCase
 {

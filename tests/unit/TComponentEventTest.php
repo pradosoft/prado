@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/TComponentTestBase.php';
+namespace Prado\Test\Unit;
 
 use Prado\Collections\TPriorityList;
 use Prado\Exceptions\TInvalidOperationException;

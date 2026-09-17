@@ -8,7 +8,10 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\HarnessTests\Caching;
+
 use Prado\Caching\TEtcdCache;
+use Prado\Test\Unit\Harness\Caching\TTestEtcdCache;
 
 /**
  * Tests for {@see TTestEtcdCache}. Verifies type and the clock seam; the serialized
@@ -17,7 +20,7 @@ use Prado\Caching\TEtcdCache;
  *
  * @package System.Harness.Caching
  */
-class TTestEtcdCacheTest extends PHPUnit\Framework\TestCase
+class TTestEtcdCacheTest extends \PHPUnit\Framework\TestCase
 {
 	private function newCache(): TTestEtcdCache
 	{

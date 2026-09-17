@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <sqlMap namespace="Other" >
 		
-	<resultMap id="other-result"  class="Other" >
+	<resultMap id="other-result"  class="Prado\Test\Unit\Data\SqlMap\Domain\Other" >
 		<result property="Int"		column="Other_Int"/>
 		<result property="Long"		column="Other_Long"/>
 		<result property="Bool"		column="Other_Bit"/>
-		<result property="Bool2"	column="Other_String" typeHandler="OuiNonBool"/>
+		<result property="Bool2"	column="Other_String" typeHandler="Prado\Test\Unit\Data\SqlMap\OuiNonBool"/>
 	</resultMap>
 
-	<resultMap id="other-result-V1"  class="Other" >
+	<resultMap id="other-result-V1"  class="Prado\Test\Unit\Data\SqlMap\Domain\Other" >
 		<result property="Int"		column="Other_Int"/>
 		<result property="Long"		column="Other_Long"/>
 		<result property="Bool"		column="Other_Bit"/>
 		<result property="Bool2"	column="Other_String" />
 	</resultMap>
 
-	<resultMap id="A-result"  class="A" >
+	<resultMap id="A-result"  class="Prado\Test\Unit\Data\SqlMap\Domain\A" >
 		<result property="Id"		column="A_ID"/>
 		<result property="Libelle"	column="A_Libelle"/>
 		<result property="B"		resultMapping="B-result"/>
@@ -23,29 +23,29 @@
 		<result property="F"		resultMapping="F-result"/>
 	</resultMap>
 		
-	<resultMap id="B-result"  class="B" >
+	<resultMap id="B-result"  class="Prado\Test\Unit\Data\SqlMap\Domain\B" >
 		<result property="Id"		column="B_ID"/>
 		<result property="Libelle"	column="B_Libelle"/>
 		<result property="C"		resultMapping="C-result"/>
 		<result property="D"		resultMapping="D-result"/>
 	</resultMap>
 			
-	<resultMap id="C-result"  class="C" >
+	<resultMap id="C-result"  class="Prado\Test\Unit\Data\SqlMap\Domain\C" >
 		<result property="Id"		column="C_ID"/>
 		<result property="Libelle"	column="C_Libelle"/>
 	</resultMap>
 	
-	<resultMap id="D-result"  class="D" >
+	<resultMap id="D-result"  class="Prado\Test\Unit\Data\SqlMap\Domain\D" >
 		<result property="Id"		column="D_ID"/>
 		<result property="Libelle"	column="D_Libelle"/>
 	</resultMap>
 
-	<resultMap id="E-result"  class="E" >
+	<resultMap id="E-result"  class="Prado\Test\Unit\Data\SqlMap\Domain\E" >
 		<result property="Id"		column="E_ID"/>
 		<result property="Libelle"	column="E_Libelle"/>
 	</resultMap>	
 
-	<resultMap id="F-result"  class="F" >
+	<resultMap id="F-result"  class="Prado\Test\Unit\Data\SqlMap\Domain\F" >
 		<result property="Id"		column="F_ID"/>
 		<result property="Libelle"	column="F_Libelle"/>
 	</resultMap>		
@@ -94,7 +94,7 @@
 	</statement>
 	
 	<statement id="DynamicSelectByBool" 
-		parameterClass="Other" 
+		parameterClass="Prado\Test\Unit\Data\SqlMap\Domain\Other" 
 		resultMap="other-result">
 		select
 			Other_Int,
@@ -106,7 +106,7 @@
 	</statement>
 
 	<statement id="InsertBool" 
-		parameterClass="Other">
+		parameterClass="Prado\Test\Unit\Data\SqlMap\Domain\Other">
 		Insert into Others
 			( Other_Int, Other_Long, Other_Bit, Other_String )
 		values
@@ -146,7 +146,7 @@
 	</statement>
 
 	<statement id="InsertInlineCustomTypeHandlerV1" 
-		parameterClass="Other">
+		parameterClass="Prado\Test\Unit\Data\SqlMap\Domain\Other">
 		Insert into Others
 			( Other_Int, Other_Long, Other_Bit, Other_String  )
 		values
@@ -154,17 +154,17 @@
 	</statement>
 	
 	<statement id="InsertInlineCustomTypeHandlerV2" 
-		parameterClass="Other">
+		parameterClass="Prado\Test\Unit\Data\SqlMap\Domain\Other">
 		Insert into Others
 			( Other_Int, Other_Long, Other_Bit, Other_String  )
 		values
-		( #Int#, #Long#, #Bool#, #Bool2,typeHandler=OuiNonBool#)
+		( #Int#, #Long#, #Bool#, #Bool2,typeHandler=Prado\Test\Unit\Data\SqlMap\OuiNonBool#)
 	</statement>			
 
 	<parameterMap id="other-insert-params">
 		<parameter property="Int" />
 		<parameter property="Long" />
 		<parameter property="Bool" />			
-		<parameter property="Bool2" typeHandler="OuiNonBool"/>
+		<parameter property="Bool2" typeHandler="Prado\Test\Unit\Data\SqlMap\OuiNonBool"/>
 	</parameterMap>
 </sqlMap>

@@ -1,11 +1,13 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Stream;
+
 use Prado\IO\Stream\IStreamDecoratorPooling;
 use Prado\IO\Stream\TDeflateStream;
 use Prado\IO\Stream\TInflateStream;
 use Prado\IO\TStream;
 
-class TDeflateStreamTest extends PHPUnit\Framework\TestCase
+class TDeflateStreamTest extends \PHPUnit\Framework\TestCase
 {
 	private string $plain = 'Compress me. Compress me. Compress me. Compress me. Compress me.';
 

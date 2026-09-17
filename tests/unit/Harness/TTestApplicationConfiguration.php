@@ -8,7 +8,10 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Harness;
+
 use Prado\TApplicationConfiguration;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * TTestApplicationConfiguration
@@ -25,8 +28,7 @@ use Prado\TApplicationConfiguration;
  * [2] => raw config element (TXmlElement, array, or null)
  * ```
  *
- * This class is auto-loaded by {@see PradoUnitRequires} — any test that includes
- * `PradoUnitRequires.php` has access to it without an explicit `require_once`.
+ * Composer autoloads this class through the `autoload-dev` PSR-4 mapping.
  *
  * Typical usage in a test:
  * ```php

@@ -1,10 +1,10 @@
 <?php
 
+namespace Prado\Test\Unit\IO\HttpClient;
+
 use Prado\IO\HttpClient\TStreamDownloader;
 use Prado\IO\HttpClient\THttpClientException;
 use Prado\IO\TStreamNotificationCallback;
-
-require_once __DIR__ . '/HttpServerTestTrait.php';
 
 /**
  * Tests for TStreamDownloader.
@@ -15,7 +15,7 @@ require_once __DIR__ . '/HttpServerTestTrait.php';
  * are exercised against PHP's built-in test server; file:// transfers exercise
  * the non-HTTP path that synthesizes a 200 response from a successful fopen.
  */
-class TStreamDownloaderTest extends PHPUnit\Framework\TestCase
+class TStreamDownloaderTest extends \PHPUnit\Framework\TestCase
 {
 	use HttpServerTestTrait;
 

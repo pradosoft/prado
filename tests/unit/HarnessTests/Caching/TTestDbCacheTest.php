@@ -8,7 +8,10 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\HarnessTests\Caching;
+
 use Prado\Caching\TDbCache;
+use Prado\Test\Unit\Harness\Caching\TTestDbCache;
 
 /**
  * Tests for {@see TTestDbCache}. Exercises the seams that need no live database
@@ -17,7 +20,7 @@ use Prado\Caching\TDbCache;
  *
  * @package System.Harness.Caching
  */
-class TTestDbCacheTest extends PHPUnit\Framework\TestCase
+class TTestDbCacheTest extends \PHPUnit\Framework\TestCase
 {
 	private function newCache(): TTestDbCache
 	{

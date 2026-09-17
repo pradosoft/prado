@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI;
+
 use Prado\Web\UI\TTheme;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\WebControls\TLabel;
@@ -8,8 +10,9 @@ use Prado\Web\UI\WebControls\TPanel;
 use Prado\Web\UI\TTemplate;
 use Prado\TApplication;
 use Prado\Prado;
+use Prado\Test\Unit\PradoUnit;
 
-class TThemeTest extends PHPUnit\Framework\TestCase
+class TThemeTest extends \PHPUnit\Framework\TestCase
 {
 	private $_themePath;
 	private $_app;

@@ -1,10 +1,12 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Behaviors;
+
 use Prado\TComponent;
 use Prado\Util\Behaviors\TGlobalClassAware;
 
 
-class TGlobalClassAwareTest extends PHPUnit\Framework\TestCase
+class TGlobalClassAwareTest extends \PHPUnit\Framework\TestCase
 {
 	protected $behavior;
 

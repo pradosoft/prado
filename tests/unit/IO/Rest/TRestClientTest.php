@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Rest;
+
 use Prado\IO\HttpClient\THttpClientException;
 use Prado\IO\HttpClient\THttpClientResponse;
 use Prado\IO\HttpClient\THttpClient;
@@ -103,7 +105,7 @@ class TestApiClient extends TRestClient
 /**
  * Tests for TRestClient.
  */
-class TRestClientTest extends PHPUnit\Framework\TestCase
+class TRestClientTest extends \PHPUnit\Framework\TestCase
 {
 	private TestApiClient $client;
 	private MockHttpClient $downloader;

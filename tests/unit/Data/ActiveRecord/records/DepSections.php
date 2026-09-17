@@ -1,5 +1,9 @@
 <?php
 
+namespace Prado\Test\Unit\Data\ActiveRecord\Records;
+
+use Prado\Data\ActiveRecord\TActiveRecord;
+
 class DepSections extends TActiveRecord
 {
 	public $department_id;

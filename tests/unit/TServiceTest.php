@@ -1,9 +1,12 @@
 <?php
 
+namespace Prado\Test\Unit;
+
 use PHPUnit\Framework\TestCase;
 use Prado\IService;
 use Prado\Prado;
 use Prado\TService;
+use Prado\Test\Unit\Harness\TTestApplication;
 
 /**
  * Minimal concrete service used as the primary subject under test.

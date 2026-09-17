@@ -1,6 +1,8 @@
 <?php
 
 
+namespace Prado\Test\Unit\Web\UI\WebControls;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Web\UI\TForm;
 use Prado\Web\UI\WebControls\TFileUpload;
@@ -8,6 +10,8 @@ use Prado\Web\UI\WebControls\TFileUploadItem;
 use Prado\Web\UI\WebControls\TFileValidator;
 use Prado\Web\UI\WebControls\TTextBox;
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\Harness\Traits\TWebControlRenderTrait;
+use Prado\Test\Unit\PradoUnit;
 
 class TFileValidatorTest extends TestCase
 {

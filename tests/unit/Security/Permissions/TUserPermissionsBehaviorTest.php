@@ -1,11 +1,16 @@
 <?php
 
+namespace Prado\Test\Unit\Security\Permissions;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Security\Permissions\TPermissionsManager;
 use Prado\Security\TUserManager;
+use Prado\Security\Permissions\TPermissionsBehavior;
+use Prado\Security\Permissions\TUserPermissionsBehavior;
+use Prado\Security\TUser;
 
-class TUserPermissionsBehaviorTest extends PHPUnit\Framework\TestCase
+class TUserPermissionsBehaviorTest extends \PHPUnit\Framework\TestCase
 {
 	protected $behavior;
 	
@@ -24,13 +29,13 @@ class TUserPermissionsBehaviorTest extends PHPUnit\Framework\TestCase
 	{
 		self::assertInstanceOf(TUserPermissionsBehavior::class, $this->behavior);
 		
-		$this->behavior = new TUserPermissionsBehavior($v = new stdClass());
+		$this->behavior = new TUserPermissionsBehavior($v = new \stdClass());
 		self::assertEquals($v, $this->behavior->getPermissionsManager());
 	}
 	
 	public function testManager()
 	{
-		$this->behavior->setPermissionsManager($v = new stdClass());
+		$this->behavior->setPermissionsManager($v = new \stdClass());
 		self::assertEquals($v, $this->behavior->getPermissionsManager());
 		$this->behavior->setPermissionsManager(\WeakReference::create($v));
 		self::assertEquals($v, $this->behavior->getPermissionsManager());

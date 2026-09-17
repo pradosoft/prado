@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Log;
+
 use Prado\Util\Log\TLogger;
 
 class TTestLogger extends TLogger {
@@ -10,7 +12,7 @@ class TTestLogger extends TLogger {
 	}
 }
 
-class TLoggerTest extends PHPUnit\Framework\TestCase
+class TLoggerTest extends \PHPUnit\Framework\TestCase
 {
 	protected function setUp(): void
 	{
@@ -116,7 +118,7 @@ class TLoggerTest extends PHPUnit\Framework\TestCase
 		$this->assertNull($logs[0][5]);
 		$this->assertNull($logs[0][6]);
 		$this->assertEquals(getmypid(), $logs[0][7]);
-		$this->assertTrue(Prado::getApplication()->onEndRequest->contains([$logger, 'onFlushLogs']));
+		$this->assertTrue(\Prado::getApplication()->onEndRequest->contains([$logger, 'onFlushLogs']));
 		$this->assertFalse($called);
 	
 		// Log another message with a control and check if it is added correctly
@@ -373,16 +375,16 @@ class TLoggerTest extends PHPUnit\Framework\TestCase
 		$logs = $logger->getLogs(null, 'Prado\\');
 		$this->assertEquals(0, count($logs));
 		
-		$logs = $logger->getLogs(null, ['Prado\\*']);
+		$logs = $logger->getLogs(null, ['Prado\\*', '~Prado\\Test\\*']);
 		$this->assertEquals(4, count($logs));
 		
-		$logs = $logger->getLogs(null, ['Prado\\*', '!Prado\\Web\\*']);
+		$logs = $logger->getLogs(null, ['Prado\\*', '!Prado\\Web\\*', '!Prado\\Test\\*']);
 		$this->assertEquals(3, count($logs));
 		$this->assertEquals(\Prado\TApplication::class, $logs[0][2]);
 		$this->assertEquals(\Prado\TApplication::class, $logs[1][2]);
 		$this->assertEquals(\Prado\TModule::class, $logs[2][2]);
 		
-		$logs = $logger->getLogs(null, ['Prado\\*', '~Prado\\Web\\*']);
+		$logs = $logger->getLogs(null, ['Prado\\*', '~Prado\\Web\\*', '~Prado\\Test\\*']);
 		$this->assertEquals(3, count($logs));
 		$this->assertEquals(\Prado\TApplication::class, $logs[0][2]);
 		$this->assertEquals(\Prado\TApplication::class, $logs[1][2]);

@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Data\DbCommon;
+
 use Prado\Data\Common\IDbHasSchema;
 use Prado\Data\Common\TDbCommandBuilder;
 use Prado\Data\Common\TDbTableColumn;
@@ -12,7 +14,7 @@ use Prado\Exceptions\TDbException;
  *
  * No database connection is required; columns are wired in manually.
  */
-class TDbTableInfoTest extends PHPUnit\Framework\TestCase
+class TDbTableInfoTest extends \PHPUnit\Framework\TestCase
 {
 	// -----------------------------------------------------------------------
 	// Helpers

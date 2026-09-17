@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Prado;
@@ -10,8 +12,9 @@ use Prado\Web\THttpRequestUrlFormat;
 use Prado\Web\TUrlManager;
 use Prado\Web\TUrlMapping;
 use Prado\Xml\TXmlDocument;
+use Prado\Test\Unit\Harness\TTestApplication;
 
-class THttpRequestTest extends PHPUnit\Framework\TestCase
+class THttpRequestTest extends \PHPUnit\Framework\TestCase
 {
 	protected ?TTestApplication $app = null;
 
@@ -244,7 +247,7 @@ class THttpRequestTest extends PHPUnit\Framework\TestCase
 				else
 					self::fail ('Exception raised : '.$e->getMessage());
 		}*/
-		throw new PHPUnit\Framework\IncompleteTestError();
+		throw new \PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testGetUserAgent()
@@ -289,7 +292,7 @@ class THttpRequestTest extends PHPUnit\Framework\TestCase
 		$acceptLanguages=array('fr', 'en-us','fr-fr','en');
 		self::assertEquals($acceptLanguages, $request->getUserLanguages());
 		*/
-		throw new PHPUnit\Framework\IncompleteTestError();
+		throw new \PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testSetEnableCookieValidation()

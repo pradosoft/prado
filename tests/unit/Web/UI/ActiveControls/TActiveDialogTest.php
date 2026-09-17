@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI\ActiveControls;
+
 use Prado\Web\UI\ActiveControls\TActiveDialog;
 use Prado\Web\UI\ActiveControls\IActiveControl;
 use Prado\Web\UI\ActiveControls\ICallbackEventHandler;
@@ -172,7 +174,7 @@ class TActiveDialogTest extends TestCase
 	public function testGetClientClassName()
 	{
 		$control = new TActiveDialog();
-		$ref = new ReflectionMethod($control, 'getClientClassName');
+		$ref = new \ReflectionMethod($control, 'getClientClassName');
 		$ref->setAccessible(true);
 		$this->assertEquals('Prado.WebUI.TActiveDialog', $ref->invoke($control));
 	}
@@ -182,7 +184,7 @@ class TActiveDialogTest extends TestCase
 	public function testGetPostBackOptionsContainsIdAndEventTarget()
 	{
 		$control = new TActiveDialog();
-		$ref = new ReflectionMethod($control, 'getPostBackOptions');
+		$ref = new \ReflectionMethod($control, 'getPostBackOptions');
 		$ref->setAccessible(true);
 		$options = $ref->invoke($control);
 		$this->assertArrayHasKey('ID', $options);

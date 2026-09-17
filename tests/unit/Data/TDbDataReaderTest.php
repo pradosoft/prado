@@ -1,8 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\Data;
+
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TDbException;
 use Prado\TApplication;
+use Prado\TComponent;
 
 if (!defined('TEST_DB_FILE')) {
 	define('TEST_DB_FILE', __DIR__ . '/db/test.db');
@@ -30,7 +33,7 @@ class FooRecord extends TComponent
 	}
 }
 
-class TDbDataReaderTest extends PHPUnit\Framework\TestCase
+class TDbDataReaderTest extends \PHPUnit\Framework\TestCase
 {
 	private $_connection;
 
@@ -81,7 +84,7 @@ class TDbDataReaderTest extends PHPUnit\Framework\TestCase
 	public function testReadObject()
 	{
 		$reader = $this->_connection->createCommand('SELECT * FROM foo')->query();
-		$object = $reader->readObject('FooRecord', ['object']);
+		$object = $reader->readObject(FooRecord::class, ['object']);
 		$this->assertEquals($object->id, '1');
 		$this->assertEquals($object->Name, 'my name');
 		$this->assertEquals($object->param, 'object');
@@ -112,14 +115,14 @@ class TDbDataReaderTest extends PHPUnit\Framework\TestCase
 		try {
 			$reader->read();
 			$this->fail('Expected exception is not raised');
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 		}
 	}
 
 	public function testRowCount()
 	{
 		// unable to test because SQLite doesn't support row count
-		throw new PHPUnit\Framework\IncompleteTestError();
+		throw new \PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testColumnCount()
@@ -154,12 +157,12 @@ class TDbDataReaderTest extends PHPUnit\Framework\TestCase
 	{
 		$reader = $this->_connection->createCommand('SELECT * FROM foo')->query();
 
-		$reader->FetchMode = PDO::FETCH_NUM;
+		$reader->FetchMode = \PDO::FETCH_NUM;
 		$row = $reader->read();
 		$this->assertFalse(isset($row['id']));
 		$this->assertTrue(isset($row[0]));
 
-		$reader->FetchMode = PDO::FETCH_ASSOC;
+		$reader->FetchMode = \PDO::FETCH_ASSOC;
 		$row = $reader->read();
 		$this->assertTrue(isset($row['id']));
 		$this->assertFalse(isset($row[0]));

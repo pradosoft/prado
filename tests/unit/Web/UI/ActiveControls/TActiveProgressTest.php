@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI\ActiveControls;
+
 use Prado\Web\UI\ActiveControls\IActiveControl;
 use Prado\Web\UI\ActiveControls\TActiveProgress;
 use Prado\Web\UI\WebControls\TProgress;

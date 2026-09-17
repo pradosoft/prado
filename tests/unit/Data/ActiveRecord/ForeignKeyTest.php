@@ -1,6 +1,9 @@
 <?php
 
-require_once(__DIR__ . '/records/ItemRecord.php');
+namespace Prado\Test\Unit\Data\ActiveRecord;
+
+use Prado\Data\ActiveRecord\TActiveRecord;
+use Prado\Data\TDbConnection;
 
 abstract class SqliteRecord extends TActiveRecord
 {
@@ -17,6 +20,8 @@ abstract class SqliteRecord extends TActiveRecord
 
 class Album extends SqliteRecord
 {
+	const TABLE = 'Album';
+
 	public $title;
 
 	public $Tracks = [];
@@ -25,9 +30,9 @@ class Album extends SqliteRecord
 	public $cover;
 
 	public static $RELATIONS = [
-		'Tracks' => [self::HAS_MANY, 'Track'],
-		'Artists' => [self::MANY_TO_MANY, 'Artist', 'album_artists'],
-		'cover' => [self::HAS_ONE, 'Cover']
+		'Tracks' => [self::HAS_MANY, Track::class],
+		'Artists' => [self::MANY_TO_MANY, Artist::class, 'album_artists'],
+		'cover' => [self::HAS_ONE, Cover::class]
 	];
 
 	public static function finder($class = __CLASS__)
@@ -38,12 +43,14 @@ class Album extends SqliteRecord
 
 class Artist extends SqliteRecord
 {
+	const TABLE = 'Artist';
+
 	public $name;
 
 	public $Albums = [];
 
 	public static $RELATIONS = [
-		'Albums' => [self::MANY_TO_MANY, 'Album', 'album_artists']
+		'Albums' => [self::MANY_TO_MANY, Album::class, 'album_artists']
 	];
 
 	public static function finder($class = __CLASS__)
@@ -54,6 +61,8 @@ class Artist extends SqliteRecord
 
 class Track extends SqliteRecord
 {
+	const TABLE = 'Track';
+
 	public $id;
 	public $song_name;
 	public $album_id; //FK -> Album.id
@@ -61,7 +70,7 @@ class Track extends SqliteRecord
 	public $Album;
 
 	public static $RELATIONS = [
-		'Album' => [self::BELONGS_TO, 'Album'],
+		'Album' => [self::BELONGS_TO, Album::class],
 	];
 
 	public static function finder($class = __CLASS__)
@@ -72,11 +81,13 @@ class Track extends SqliteRecord
 
 class Cover extends SqliteRecord
 {
+	const TABLE = 'Cover';
+
 	public $album;
 	public $content;
 }
 
-class ForeignKeyTest extends PHPUnit\Framework\TestCase
+class ForeignKeyTest extends \PHPUnit\Framework\TestCase
 {
 	public function test_has_many()
 	{

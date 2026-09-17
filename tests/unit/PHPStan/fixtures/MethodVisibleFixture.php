@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace PradoTests\PHPStan\Fixtures;
+namespace Prado\Test\Unit\PHPStan\Fixtures;
 
 use Prado\Prado;
 use Prado\TComponent;

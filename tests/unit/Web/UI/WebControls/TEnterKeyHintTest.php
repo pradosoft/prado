@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI\WebControls;
+
 use Prado\Web\UI\WebControls\TEnterKeyHint;
 use PHPUnit\Framework\TestCase;
 

@@ -1,10 +1,13 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI\ActiveControls;
+
 use Prado\Web\UI\ActiveControls\IActiveControl;
 use Prado\Web\UI\ActiveControls\TActiveWebTemplate;
 use Prado\Web\UI\WebControls\TPanel;
 use Prado\Web\UI\WebControls\TWebTemplate;
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\PradoUnit;
 
 class TActiveWebTemplateTest extends TestCase
 {

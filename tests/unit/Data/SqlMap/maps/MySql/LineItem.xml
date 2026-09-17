@@ -11,14 +11,14 @@
 			<result property="value"		column="LineItem_Price"/>
 		</resultMap>
 		
-		<resultMap id="LineItem" class="LineItem">
+		<resultMap id="LineItem" class="Prado\Test\Unit\Data\SqlMap\Domain\LineItem">
 			<result property="Id"			column="LineItem_Id"/>
 			<result property="Code"			column="LineItem_Code"/>
 			<result property="Quantity"		column="LineItem_Quantity"/>
 			<result property="Price"		column="LineItem_Price"/>
 		</resultMap>
 		
-		<resultMap id="LineItemWithNullReplacement" class="LineItem">
+		<resultMap id="LineItemWithNullReplacement" class="Prado\Test\Unit\Data\SqlMap\Domain\LineItem">
 			<result property="Id"			column="LineItem_Id"/>
 			<result property="Code"			column="LineItem_Code"/>
 			<result property="Quantity"		column="LineItem_Quantity"/>
@@ -39,7 +39,7 @@
 		<statement id="GetLineItemsForOrder"
 			parameterClass="int"
 			listClass="TList"
-			resultClass="LineItem">
+			resultClass="Prado\Test\Unit\Data\SqlMap\Domain\LineItem">
 			select
 				LineItem_ID as Id,
 				LineItem_Code as Code,
@@ -51,8 +51,8 @@
 
 		<statement id="GetLineItemsForOrderWithListClass"
 			parameterClass="int"
-			listClass="LineItemCollection"
-			resultClass="LineItem">
+			listClass="Prado\Test\Unit\Data\SqlMap\Domain\LineItemCollection"
+			resultClass="Prado\Test\Unit\Data\SqlMap\Domain\LineItem">
 			select
 				LineItem_ID as Id,
 				LineItem_Code as Code,
@@ -64,7 +64,7 @@
 
 		<statement id="GetSpecificLineItem"
 					parameterClass="array"
-					resultClass="LineItem">
+					resultClass="Prado\Test\Unit\Data\SqlMap\Domain\LineItem">
 			select
 				LineItem_ID as Id,
 				LineItem_Code as Code,
@@ -77,7 +77,7 @@
 		
 		<statement id="GetSpecificLineItemWithPicture"
 					parameterClass="array"
-					resultClass="LineItem">
+					resultClass="Prado\Test\Unit\Data\SqlMap\Domain\LineItem">
 			select
 				LineItem_ID as Id,
 				LineItem_Code as Code,
@@ -91,7 +91,7 @@
 		
 		<select id="GetDynSpecificLineItem"
 			parameterClass="array"
-			resultClass="LineItem">
+			resultClass="Prado\Test\Unit\Data\SqlMap\Domain\LineItem">
 			select
 				LineItem_ID as Id,
 				LineItem_Code as Code,
@@ -134,7 +134,7 @@
 			(?, ?, ?, ?, ?, ?);
 		</statement>
 		
-		<insert id="InsertLineItemPostKey" parameterClass="LineItem">
+		<insert id="InsertLineItemPostKey" parameterClass="Prado\Test\Unit\Data\SqlMap\Domain\LineItem">
 			insert into LineItems
 			(LineItem_ID, Order_ID, LineItem_Code, LineItem_Quantity, LineItem_Price)
 			values
@@ -144,7 +144,7 @@
 			</selectKey>
 		</insert>	
 		
-		 <insert id="InsertLineItemPreKey" parameterClass="LineItem">
+		 <insert id="InsertLineItemPreKey" parameterClass="Prado\Test\Unit\Data\SqlMap\Domain\LineItem">
 			<selectKey property="Id" type="pre" resultClass="int" >
 				select 99 from LineItems where LineItem_ID = 1 and Order_ID=1
 			</selectKey>
@@ -154,7 +154,7 @@
 			(#Id#, #Order.Id#, #Code#, #Quantity#, #Price, type=float#)
 		</insert>
   
-		<insert id="InsertLineItemNoKey" parameterClass="LineItem">
+		<insert id="InsertLineItemNoKey" parameterClass="Prado\Test\Unit\Data\SqlMap\Domain\LineItem">
 			insert into LineItems
 			(LineItem_ID, Order_ID, LineItem_Code, LineItem_Quantity, LineItem_Price)
 			values

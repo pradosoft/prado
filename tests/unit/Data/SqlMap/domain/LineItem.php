@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Data\SqlMap\Domain;
+
 class LineItem
 {
 	private $_ID = -1;

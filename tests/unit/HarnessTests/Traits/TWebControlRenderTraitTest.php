@@ -1,7 +1,10 @@
 <?php
 
+namespace Prado\Test\Unit\HarnessTests\Traits;
+
 use Prado\Web\UI\WebControls\TWebControl;
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\Harness\Traits\TWebControlRenderTrait;
 
 /**
  * Minimal TWebControl subclass with a fixed tag name for render testing.

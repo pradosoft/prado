@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Compression;
+
 use Prado\Exceptions\TIOException;
 use Prado\IO\Compression\ICompressor;
 use Prado\IO\Compression\TBrotliCompressor;
@@ -12,7 +14,7 @@ use Prado\IO\Compression\TZstdCompressor;
 use Prado\IO\Stream\TInflateStream;
 use Prado\IO\TStream;
 
-class TBuiltinCompressorTest extends PHPUnit\Framework\TestCase
+class TBuiltinCompressorTest extends \PHPUnit\Framework\TestCase
 {
 	/** @return array<string, array{0: class-string<TBuiltinCompressor>, 1: string, 2: ?int}> */
 	public static function codecProvider(): array

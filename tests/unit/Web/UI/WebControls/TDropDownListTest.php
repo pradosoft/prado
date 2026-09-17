@@ -1,11 +1,14 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI\WebControls;
+
 use Prado\Web\UI\WebControls\TDropDownList;
 use Prado\Web\UI\WebControls\TListItem;
 use Prado\Web\UI\THtmlWriter;
 use Prado\IO\TTextWriter;
 use Prado\Exceptions\TInvalidDataValueException;
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\PradoUnit;
 
 class TDropDownListTest extends TestCase
 {

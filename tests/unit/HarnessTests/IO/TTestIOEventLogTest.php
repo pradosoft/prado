@@ -8,6 +8,12 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\HarnessTests\IO;
+
+use Prado\Test\Unit\Harness\IO\TTestIOEventLog;
+use Prado\Test\Unit\Harness\IO\TTestIOHelper;
+use Prado\Test\Unit\Harness\IO\TTestResource;
+
 /**
  * Tests for the {@see TTestIOEventLog} harness — the recorder of IO 'on' events.  Pins the
  * sequence/count/parameter contract the TResource and TStream unit tests rely on to
@@ -15,7 +21,7 @@
  *
  * @package System.HarnessTests.IO
  */
-class TTestIOEventLogTest extends PHPUnit\Framework\TestCase
+class TTestIOEventLogTest extends \PHPUnit\Framework\TestCase
 {
 	public function testRecordsResourceLifecycleInOrder(): void
 	{

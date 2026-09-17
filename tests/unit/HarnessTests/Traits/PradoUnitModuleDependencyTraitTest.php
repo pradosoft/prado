@@ -8,6 +8,10 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\HarnessTests\Traits;
+
+use Prado\Test\Unit\Harness\Traits\PradoUnitModuleDependencyTrait;
+
 /**
  * Tests for {@see PradoUnitModuleDependencyTrait}.
  *
@@ -17,7 +21,7 @@
  * an AssertionFailedError, custom failure messages).
  *
  */
-class PradoUnitModuleDependencyTraitTest extends PHPUnit\Framework\TestCase
+class PradoUnitModuleDependencyTraitTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitModuleDependencyTrait;
 

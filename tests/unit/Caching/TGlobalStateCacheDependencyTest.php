@@ -8,7 +8,7 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-require_once __DIR__ . '/../PradoUnitRequires.php';
+namespace Prado\Test\Unit\Caching;
 
 use Prado\Caching\TGlobalStateCacheDependency;
 use Prado\Prado;
@@ -21,7 +21,7 @@ use Prado\Prado;
  * All global state keys used here are prefixed with `TGlobalStateCacheDependencyTest_`
  * to avoid collisions with other tests.
  */
-class TGlobalStateCacheDependencyTest extends PHPUnit\Framework\TestCase
+class TGlobalStateCacheDependencyTest extends \PHPUnit\Framework\TestCase
 {
 	private static string $_prefix = 'TGlobalStateCacheDependencyTest_';
 

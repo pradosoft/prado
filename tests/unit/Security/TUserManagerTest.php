@@ -1,13 +1,17 @@
 <?php
 
+namespace Prado\Test\Unit\Security;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
 use Prado\Security\TUserManager;
 use Prado\Xml\TXmlDocument;
+use Prado\Test\Unit\Harness\TTestApplication;
+use Prado\Security\TUserManagerPasswordMode;
 
-class TUserManagerTest extends PHPUnit\Framework\TestCase
+class TUserManagerTest extends \PHPUnit\Framework\TestCase
 {
 	protected ?TTestApplication $app = null;
 	public static $config = null;

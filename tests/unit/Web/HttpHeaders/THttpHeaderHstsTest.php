@@ -8,10 +8,12 @@
  * @author Brad Anderson <belisoful@icloud.com>
  */
 
+namespace Prado\Test\Unit\Web\HttpHeaders;
+
 use Prado\Web\HttpHeaders\THttpHeaderHsts;
 use Prado\Web\THttpHeaderName;
 
-class THttpHeaderHstsTest extends PHPUnit\Framework\TestCase
+class THttpHeaderHstsTest extends \PHPUnit\Framework\TestCase
 {
 	// -----------------------------------------------------------------------
 	// getHeaderName

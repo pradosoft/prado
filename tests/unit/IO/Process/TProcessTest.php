@@ -1,12 +1,14 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Process;
+
 use Prado\IO\Process\TPipeStream;
 use Prado\IO\Process\TProcess;
 use Prado\IO\Process\TProcessStatus;
 use Prado\IO\TStream;
 use Psr\Http\Message\StreamInterface;
 
-class TProcessTest extends PHPUnit\Framework\TestCase
+class TProcessTest extends \PHPUnit\Framework\TestCase
 {
 	public function testProcessReadStdout()
 	{
@@ -47,7 +49,7 @@ class TProcessTest extends PHPUnit\Framework\TestCase
 
 	private function normalize(array $descriptors): array
 	{
-		$method = new ReflectionMethod(TProcess::class, 'normalizeDescriptors');
+		$method = new \ReflectionMethod(TProcess::class, 'normalizeDescriptors');
 		$method->setAccessible(true);
 		return $method->invoke(null, $descriptors);
 	}

@@ -1,10 +1,13 @@
 <?php
 
+namespace Prado\Test\Unit\Data\DbSpecific\Sqlite;
+
 use Prado\Data\Common\Sqlite\TSqliteMetaData;
 use Prado\Data\Common\TDbTableColumn;
 use Prado\Data\TDbConnection;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 
-class SqliteColumnTest extends PHPUnit\Framework\TestCase
+class SqliteColumnTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

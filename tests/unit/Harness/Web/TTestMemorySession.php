@@ -8,6 +8,8 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Harness\Web;
+
 use Prado\Web\THttpSession;
 
 /**
@@ -17,7 +19,7 @@ use Prado\Web\THttpSession;
  * opened, destroyed, or regenerated, so session-bound code runs in the CLI
  * test runner without `session_start()` / `session_regenerate_id()`.
  *
- * Auto-loaded by {@see PradoUnitRequires}.
+ * Composer autoloads this class through the `autoload-dev` PSR-4 mapping.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  */

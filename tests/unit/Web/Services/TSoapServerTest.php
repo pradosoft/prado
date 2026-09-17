@@ -12,6 +12,8 @@
  * @author Brad Anderson <belisoful@icloud.com>
  */
 
+namespace Prado\Test\Unit\Web\Services;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Web\Services\TSoapServer;
@@ -67,7 +69,7 @@ class TTestSoapLegacyServer extends TTestSoapServer
 	}
 }
 
-class TSoapServerTest extends PHPUnit\Framework\TestCase
+class TSoapServerTest extends \PHPUnit\Framework\TestCase
 {
 	protected function newServer(): TTestSoapServer
 	{

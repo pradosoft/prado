@@ -475,7 +475,7 @@ class TJavaScript
 		} elseif (is_int($value)) {
 			return "$value";
 		} elseif (is_float($value)) {
-			if(is_nan($value)) {
+			if (is_nan($value)) {
 				return 'NAN';
 			}
 			switch ($value) {

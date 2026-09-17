@@ -1,10 +1,13 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI;
+
 use Prado\IO\ITextWriter;
 use Prado\IO\TTextWriter;
 use Prado\Web\THttpUtility;
 use Prado\Web\UI\THtmlWriter;
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\PradoUnit;
 
 class TestWriter implements ITextWriter
 {

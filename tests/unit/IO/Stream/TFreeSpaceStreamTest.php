@@ -1,9 +1,12 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Stream;
+
 use Prado\IO\Stream\TFreeSpaceStream;
 use Prado\IO\TStream;
+use Prado\Test\Unit\Harness\IO\TTestIOHelper;
 
-class TFreeSpaceStreamTest extends PHPUnit\Framework\TestCase
+class TFreeSpaceStreamTest extends \PHPUnit\Framework\TestCase
 {
 	public function testContiguousContents()
 	{

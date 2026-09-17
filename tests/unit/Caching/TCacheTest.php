@@ -8,10 +8,13 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Caching;
+
 use Prado\Caching\ICache;
 use Prado\Caching\ICacheDependency;
 use Prado\Exceptions\TConfigurationException;
 use Prado\TApplication;
+use Prado\Test\Unit\Harness\Caching\TTestCache;
 
 /**
  * Unit tests for the abstract {@see \Prado\Caching\TCache} base, exercised through the
@@ -19,7 +22,7 @@ use Prado\TApplication;
  * behavior (key prefixing/hashing, dependency wrapping, empty-value delete, ArrayAccess),
  * primary-cache registration, and the time()/microtime() clock seams.
  */
-class TCacheTest extends PHPUnit\Framework\TestCase
+class TCacheTest extends \PHPUnit\Framework\TestCase
 {
 	private TApplication $app;
 

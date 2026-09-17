@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Data\DbCommon;
+
 use Prado\Data\Common\TDbTableColumn;
 
 /**
@@ -8,7 +10,7 @@ use Prado\Data\Common\TDbTableColumn;
  * All behaviour tested here is implemented directly in TDbTableColumn; no
  * database connection is required.
  */
-class TDbTableColumnTest extends PHPUnit\Framework\TestCase
+class TDbTableColumnTest extends \PHPUnit\Framework\TestCase
 {
 	// -----------------------------------------------------------------------
 	// Constant
@@ -93,7 +95,7 @@ class TDbTableColumnTest extends PHPUnit\Framework\TestCase
 	public function test_get_pdo_type_returns_param_str_for_string_php_type()
 	{
 		$col = new TDbTableColumn([]);
-		$this->assertEquals(PDO::PARAM_STR, $col->getPdoType());
+		$this->assertEquals(\PDO::PARAM_STR, $col->getPdoType());
 	}
 
 	// -----------------------------------------------------------------------

@@ -1,10 +1,14 @@
 <?php
 
+namespace Prado\Test\Unit\Web;
+
 use Prado\Caching\TMemCache;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Web\TCacheHttpSession;
+use Prado\Test\Unit\Harness\TTestApplication;
+use Prado\Test\Unit\Harness\Traits\PradoUnitModuleDependencyTrait;
 
-class TCacheHttpSessionTest extends PHPUnit\Framework\TestCase
+class TCacheHttpSessionTest extends \PHPUnit\Framework\TestCase
 {
 	protected ?TTestApplication $app = null;
 	protected static $cache = null;
@@ -117,7 +121,7 @@ class TCacheHttpSessionTest extends PHPUnit\Framework\TestCase
  * TCacheHttpSessionTest::setUp() does not suppress these tests, which exercise
  * only configuration state and do not open a session.
  */
-class TCacheHttpSessionDependencyTest extends PHPUnit\Framework\TestCase
+class TCacheHttpSessionDependencyTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitModuleDependencyTrait;
 

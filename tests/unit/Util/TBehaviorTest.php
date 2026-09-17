@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Util;
+
 use Prado\Util\TBehavior;
 use Prado\TComponent;
 use Prado\Exceptions\TInvalidOperationException;
@@ -16,7 +18,7 @@ class TestCloneableBehavior extends TBehavior
     }
 }
 
-class TBehaviorTest extends PHPUnit\Framework\TestCase
+class TBehaviorTest extends \PHPUnit\Framework\TestCase
 {
     public function testAttachDetachBasic()
     {

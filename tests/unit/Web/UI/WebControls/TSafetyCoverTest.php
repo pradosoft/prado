@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI\WebControls;
+
 use Prado\Web\UI\ITemplate;
 use Prado\Web\UI\WebControls\TContentDirection;
 use Prado\Web\UI\WebControls\TSafetyCover;
@@ -8,6 +10,8 @@ use Prado\Web\UI\WebControls\TSafetyCoverEffect;
 use Prado\Web\UI\WebControls\TLabel;
 use Prado\Web\UI\WebControls\TPanel;
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\Harness\Traits\TWebControlRenderTrait;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * A minimal template that adds a marker string to its parent.

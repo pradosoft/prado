@@ -8,15 +8,18 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Caching;
+
 use Prado\Caching\TEtcdCache;
 use Prado\Exceptions\TConfigurationException;
+use Prado\Test\Unit\Harness\Caching\TTestEtcdCache;
 
 /**
  * Unit tests for {@see TEtcdCache}, via the {@see TTestEtcdCache} harness. Host/Port/Dir
  * properties and availability are tested without a server; the HTTP request path and the
  * serialized contract require a live etcd instance and are not exercised here.
  */
-class TEtcdCacheTest extends PHPUnit\Framework\TestCase
+class TEtcdCacheTest extends \PHPUnit\Framework\TestCase
 {
 	private function newCache(): TTestEtcdCache
 	{

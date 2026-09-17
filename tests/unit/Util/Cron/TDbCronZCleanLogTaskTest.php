@@ -1,10 +1,16 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Cron;
+
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Util\Cron\TCronModule;
 use Prado\Util\Cron\TCronTask;
 use Prado\Util\Cron\TDbCronModule;
 use Prado\Util\Cron\TDbCronCleanLogTask;
+use Prado\IO\TTextWriter;
+use Prado\Shell\TShellWriter;
+use Prado\Util\Cron\TDbCronManager;
+use Prado\Util\Cron\TShellCronLogBehavior;
 
 class TDbCronZCleanLogTaskTest extends TCronTaskTest
 {	

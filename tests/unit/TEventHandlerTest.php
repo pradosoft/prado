@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit;
+
 use Prado\Collections\IWeakRetainable;
 use Prado\Collections\TWeakCallableCollection;
 use Prado\Exceptions\TApplicationException;
@@ -45,7 +47,7 @@ class RetainableEventHandlerObject extends EventHandlerObject implements IWeakRe
 
 /**
  */
-class TEventHandlerTest extends PHPUnit\Framework\TestCase
+class TEventHandlerTest extends \PHPUnit\Framework\TestCase
 {
 	protected function setUp(): void
 	{
@@ -183,22 +185,22 @@ class TEventHandlerTest extends PHPUnit\Framework\TestCase
 	{
 		$handler = new TEventHandler($refHandler = new EventHandlerObject());
 		self::assertEquals($refHandler, $handler->getHandler());
-		self::assertInstanceOf(WeakReference::class, $handler->getHandler(true));
+		self::assertInstanceOf(\WeakReference::class, $handler->getHandler(true));
 			
 		$refHandler = null;
 		self::assertNull($handler->getHandler());
-		self::assertInstanceOf(WeakReference::class, $handler->getHandler(true));
+		self::assertInstanceOf(\WeakReference::class, $handler->getHandler(true));
 	}
 	
 	public function testGetHandler_ArrayObject()
 	{
 		$handler = new TEventHandler($refHandler = [$object = new EventHandlerObject(), 'myHandler']);
 		self::assertEquals($refHandler, $handler->getHandler());
-		self::assertInstanceOf(WeakReference::class, $handler->getHandler(true)[0]);
+		self::assertInstanceOf(\WeakReference::class, $handler->getHandler(true)[0]);
 		
 		$refHandler = $object = null;
 		self::assertNull($handler->getHandler());
-		self::assertInstanceOf(WeakReference::class, $handler->getHandler(true)[0]);
+		self::assertInstanceOf(\WeakReference::class, $handler->getHandler(true)[0]);
 	}
 	
 	public function testIsSameHandler()
@@ -217,20 +219,20 @@ class TEventHandlerTest extends PHPUnit\Framework\TestCase
 	{
 		$handler = new TEventHandler($refHandler = new EventHandlerObject());
 		self::assertEquals($refHandler, $handler->getHandlerObject());
-		self::assertInstanceOf(WeakReference::class, $handler->getHandlerObject(true));
+		self::assertInstanceOf(\WeakReference::class, $handler->getHandlerObject(true));
 		$refHandler = null;
 		self::assertNull($handler->getHandlerObject());
-		self::assertInstanceOf(WeakReference::class, $handler->getHandlerObject(true));
+		self::assertInstanceOf(\WeakReference::class, $handler->getHandlerObject(true));
 	}
 	
 	public function testGetHandlerObject_ArrayObject()
 	{
 		$handler = new TEventHandler($refHandler = [$object = new EventHandlerObject(), 'myHandler']);
 		self::assertEquals($object, $handler->getHandlerObject());
-		self::assertInstanceOf(WeakReference::class, $handler->getHandlerObject(true));
+		self::assertInstanceOf(\WeakReference::class, $handler->getHandlerObject(true));
 		$refHandler = $object = null;
 		self::assertNull($handler->getHandlerObject());
-		self::assertInstanceOf(WeakReference::class, $handler->getHandlerObject(true));
+		self::assertInstanceOf(\WeakReference::class, $handler->getHandlerObject(true));
 	}
 	
 	public function testGetHandlerObject_Closure()
@@ -239,8 +241,8 @@ class TEventHandlerTest extends PHPUnit\Framework\TestCase
 		self::assertEquals($refClosure, $handler->getHandlerObject());
 		self::assertEquals($refClosure, $handler->getHandlerObject(true));
 		$refClosure = null;
-		self::assertInstanceOf(Closure::class, $handler->getHandlerObject());
-		self::assertInstanceOf(Closure::class, $handler->getHandlerObject(true));
+		self::assertInstanceOf(\Closure::class, $handler->getHandlerObject());
+		self::assertInstanceOf(\Closure::class, $handler->getHandlerObject(true));
 	}
 	
 	public function testGetHandlerObject_Retainable()
@@ -260,16 +262,16 @@ class TEventHandlerTest extends PHPUnit\Framework\TestCase
 		$handler2 = new TEventHandler($handler1);
 		
 		self::assertEquals($object1, $handler1->getHandlerObject());
-		self::assertInstanceOf(WeakReference::class, $handler1->getHandlerObject(true));
+		self::assertInstanceOf(\WeakReference::class, $handler1->getHandlerObject(true));
 		self::assertEquals($object1, $handler2->getHandlerObject());
-		self::assertInstanceOf(WeakReference::class, $handler2->getHandlerObject(true));
+		self::assertInstanceOf(\WeakReference::class, $handler2->getHandlerObject(true));
 		
 		$refHandler = $object1 = null;
 		
 		self::assertNull($handler1->getHandlerObject());
-		self::assertInstanceOf(WeakReference::class, $handler1->getHandlerObject(true));
+		self::assertInstanceOf(\WeakReference::class, $handler1->getHandlerObject(true));
 		self::assertNull($handler2->getHandlerObject());
-		self::assertInstanceOf(WeakReference::class, $handler2->getHandlerObject(true));
+		self::assertInstanceOf(\WeakReference::class, $handler2->getHandlerObject(true));
 	}
 	
 	

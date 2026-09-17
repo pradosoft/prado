@@ -1,9 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\IO;
+
 use Prado\IO\TByteOrder;
 use Prado\TEnumerable;
 
-class TByteOrderTest extends PHPUnit\Framework\TestCase
+class TByteOrderTest extends \PHPUnit\Framework\TestCase
 {
 	public function testConstantsAndEnumerable()
 	{

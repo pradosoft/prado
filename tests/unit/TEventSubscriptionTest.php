@@ -1,7 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit;
+
 use Prado\TEventSubscription;
 use Prado\TComponent;
+use Prado\Collections\TMap;
+use Prado\Exceptions\TInvalidOperationException;
 
 
 class EventSubscriptionComponent extends TComponent
@@ -16,7 +20,7 @@ class TTestEventSubscription extends TEventSubscription
 }
 
 
-class TEventSubscriptionTest extends PHPUnit\Framework\TestCase
+class TEventSubscriptionTest extends \PHPUnit\Framework\TestCase
 {
 	public $component = null;
 	
@@ -75,7 +79,7 @@ class TEventSubscriptionTest extends PHPUnit\Framework\TestCase
 		$this->subscription = new $this->_baseClass();
 		
 		$this->subscription->setComponent($this->component);
-		self::assertInstanceOf(WeakReference::class, $this->subscription->getComponent(true));
+		self::assertInstanceOf(\WeakReference::class, $this->subscription->getComponent(true));
 	}
 
 	public function testCollection_Array()

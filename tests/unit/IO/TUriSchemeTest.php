@@ -1,10 +1,12 @@
 <?php
 
+namespace Prado\Test\Unit\IO;
+
 use Prado\IO\TUriScheme;
 use Prado\TEnumerable;
 use Prado\Util\Helpers\TProcessHelper;
 
-class TUriSchemeTest extends PHPUnit\Framework\TestCase
+class TUriSchemeTest extends \PHPUnit\Framework\TestCase
 {
 	public function testIsEnumerable()
 	{

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?> 
 <sqlMap namespace="Account" >
 	<select  id="DynamicAll"
-				parameterClass="Account"
-				resultClass="Account">
+				parameterClass="Prado\Test\Unit\Data\SqlMap\Domain\Account"
+				resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 			select
 			Account_ID			as Id,
 			Account_FirstName	as FirstName,
@@ -13,8 +13,8 @@
 	
 	<select id="DynamicWithExtend"
 			extends="DynamicAll"
-			parameterClass="Account"
-			resultClass="Account">
+			parameterClass="Prado\Test\Unit\Data\SqlMap\Domain\Account"
+			resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 		<dynamic prepend="WHERE" >
 		<isGreaterThan prepend="AND" property="Id" compareValue="0"  >
 			Account_ID = #Id#
@@ -44,8 +44,8 @@
 		
 	<!-- IBATISNET-114: remapResults -->
 	<statement  id="DynamicSqlOnColumnSelection" 
-				parameterClass="Account" 
-				resultClass="Account"
+				parameterClass="Prado\Test\Unit\Data\SqlMap\Domain\Account" 
+				resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Account"
 				remapResults="true">
 		SELECT
 		Account_ID as Id,
@@ -65,7 +65,7 @@
 
 	<statement id="DynamicIsEqual"
 			parameterClass="string"
-			resultClass="Account">
+			resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 		select
 		Account_ID			as Id,
 		Account_FirstName	as FirstName,
@@ -79,7 +79,7 @@
 	
 	<statement id="DynamicIsParameterPresent"
 			parameterClass="integer"
-			resultClass="Account">
+			resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 		select
 		Account_ID			as Id,
 		Account_FirstName	as FirstName,
@@ -93,7 +93,7 @@
 
 	<statement id="DynamicIsNotEmpty"
 				parameterClass="string"
-				resultClass="Account">
+				resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 		select
 		Account_ID			as Id,
 		Account_FirstName	as FirstName,
@@ -107,7 +107,7 @@
 
 	<statement id="DynamicIsGreater"
 				parameterClass="int"
-				resultClass="Account">
+				resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 		select
 		Account_ID			as Id,
 		Account_FirstName	as FirstName,
@@ -121,7 +121,7 @@
 
 	<statement id="DynamicIsGreaterEqual"
 				parameterClass="int"
-				resultClass="Account">
+				resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 		select
 		Account_ID			as Id,
 		Account_FirstName	as FirstName,
@@ -135,7 +135,7 @@
 
 	<statement id="DynamicIsLess"
 				parameterClass="int"
-				resultClass="Account">
+				resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 		select
 		Account_ID			as Id,
 		Account_FirstName	as FirstName,
@@ -149,7 +149,7 @@
 
 	<statement id="DynamicIsLessEqual"
 				parameterClass="int"
-				resultClass="Account">
+				resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 		select
 		Account_ID			as Id,
 		Account_FirstName	as FirstName,
@@ -163,7 +163,7 @@
 
 	<statement id="DynamicIsNotNull"
 				parameterClass="string"
-				resultClass="Account">
+				resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 		select
 		Account_ID			as Id,
 		Account_FirstName	as FirstName,
@@ -177,7 +177,7 @@
 
 	<statement id="DynamicIsPropertyAvailable"
 				parameterClass="string"
-				resultClass="Account">
+				resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 		select
 		Account_ID			as Id,
 		Account_FirstName	as FirstName,
@@ -192,7 +192,7 @@
 
 	<statement id="DynamicSubst"
 				parameterClass="map"
-				resultClass="Account">
+				resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 		<dynamic>
 		$statement$
 		</dynamic>
@@ -200,7 +200,7 @@
 
 	<statement id="DynamicIterate"
 				parameterClass="list"
-				resultClass="Account">
+				resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 		select
 		Account_ID			as Id,
 		Account_FirstName	as FirstName,
@@ -214,8 +214,8 @@
 	</statement>
 	
 	<statement id="DynamicIterate2"
-				parameterClass="Account"
-				resultClass="Account">
+				parameterClass="Prado\Test\Unit\Data\SqlMap\Domain\Account"
+				resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 		select
 		Account_ID			as Id,
 		Account_FirstName	as FirstName,
@@ -230,7 +230,7 @@
 	
 	 <statement id="MultiDynamicIterate"
 		 parameterClass="list"
-		 resultClass="Account">
+		 resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 		select
 		Account_ID			as Id,
 		Account_FirstName	as FirstName,
@@ -249,8 +249,8 @@
 
 
 	<statement id="DynamicQueryByExample"
-				parameterClass="Account"
-				resultClass="Account">
+				parameterClass="Prado\Test\Unit\Data\SqlMap\Domain\Account"
+				resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 		select
 		Account_ID			as Id,
 		Account_FirstName	as FirstName,
@@ -286,7 +286,7 @@
 
 	<statement id="DynamicIterateWithPrepend1"
 				parameterClass="list"
-				resultClass="Account">
+				resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 		select
 		Account_ID			as Id,
 		Account_FirstName	as FirstName,
@@ -303,7 +303,7 @@
 
 	<statement id="DynamicIterateWithPrepend2"
 				parameterClass="list"
-				resultClass="Account">
+				resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 		select
 		Account_ID			as Id,
 		Account_FirstName	as FirstName,
@@ -319,7 +319,7 @@
 
 	<statement id="DynamicIterateWithPrepend3"
 				parameterClass="list"
-				resultClass="Account">
+				resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 		select
 		Account_ID			as Id,
 		Account_FirstName	as FirstName,
@@ -336,8 +336,8 @@
 	</statement>
 
 	<statement id="DynamicWithPrepend"
-				parameterClass="Account"
-				resultClass="Account">
+				parameterClass="Prado\Test\Unit\Data\SqlMap\Domain\Account"
+				resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 		select
 		Account_ID			as Id,
 		Account_FirstName	as FirstName,
@@ -360,8 +360,8 @@
 	</statement>
 
 	<statement id="DynamicWithTwoDynamicElements"
-		 parameterClass="Account"
-		 resultClass="Account">
+		 parameterClass="Prado\Test\Unit\Data\SqlMap\Domain\Account"
+		 resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 		select
 		Account_ID			as Id,
 		Account_FirstName	as FirstName,
@@ -385,8 +385,8 @@
 
 	<statement id="ComplexDynamicStatement" 
 		cacheModel="account-cache" 
-		resultClass="Account" 
-		parameterClass="Account">
+		resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Account" 
+		parameterClass="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 		select
 		Account_ID			as Id,
 		Account_FirstName	as FirstName,
@@ -412,8 +412,8 @@
 	</statement>
 
 	<statement id="Jira-IBATISNET-11" 
-		resultClass="Account" 
-		parameterClass="Search">
+		resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Account" 
+		parameterClass="Prado\Test\Unit\Data\SqlMap\Domain\Search">
 		select
 		Account_ID			as Id,
 		Account_FirstName	as FirstName,

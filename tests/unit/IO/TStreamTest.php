@@ -1,8 +1,13 @@
 <?php
 
+namespace Prado\Test\Unit\IO;
+
 use Prado\Exceptions\TIOException;
 use Prado\IO\TStream;
 use Psr\Http\Message\StreamInterface;
+use Prado\Test\Unit\Harness\IO\TTestIOEventLog;
+use Prado\Test\Unit\Harness\IO\TTestIOHelper;
+use Prado\Test\Unit\Harness\IO\TTestStream;
 
 /**
  * Unit tests for {@see \Prado\IO\TStream}, the PSR-7 byte-stream wrapper.
@@ -12,7 +17,7 @@ use Psr\Http\Message\StreamInterface;
  * onEndOfFile events.  The named-constructor and coercion tests call {@see TStream}
  * directly, since those factories are themselves under test.
  */
-class TStreamTest extends PHPUnit\Framework\TestCase
+class TStreamTest extends \PHPUnit\Framework\TestCase
 {
 	protected function tearDown(): void
 	{

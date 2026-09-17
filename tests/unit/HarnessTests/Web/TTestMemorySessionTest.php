@@ -8,12 +8,15 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\HarnessTests\Web;
+
 use Prado\Web\THttpSession;
+use Prado\Test\Unit\Harness\Web\TTestMemorySession;
 
 /**
  * Tests for {@see TTestMemorySession}, the array-backed {@see THttpSession} fixture.
  */
-class TTestMemorySessionTest extends PHPUnit\Framework\TestCase
+class TTestMemorySessionTest extends \PHPUnit\Framework\TestCase
 {
 	private function newSession(): TTestMemorySession
 	{

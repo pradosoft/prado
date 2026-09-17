@@ -1,6 +1,10 @@
 <?php
 
-require_once(__DIR__ . '/BaseCase.php');
+namespace Prado\Test\Unit\Data\SqlMap;
+
+use Prado\Test\Unit\Data\SqlMap\Domain\Account;
+use Prado\Test\Unit\Data\SqlMap\Domain\Category;
+use Prado\Test\Unit\Data\SqlMap\Domain\Order;
 
 class ParameterMapTest extends BaseCase
 {
@@ -134,7 +138,7 @@ class ParameterMapTest extends BaseCase
 			$this->assertSame($category->getName(), $categoryRead->getName());
 			$this->assertSame('', $categoryRead->getGuidString());
 		} else {
-			throw new PHPUnit\Framework\IncompleteTestError();
+			throw new \PHPUnit\Framework\IncompleteTestError();
 		}
 	}
 

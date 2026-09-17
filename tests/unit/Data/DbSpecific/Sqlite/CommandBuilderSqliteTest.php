@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Data\DbSpecific\Sqlite;
+
 use Prado\Data\Common\Sqlite\TSqliteCommandBuilder;
 
 /**
@@ -14,7 +16,7 @@ use Prado\Data\Common\Sqlite\TSqliteCommandBuilder;
  * - zero/zero → no change (MySQL emits LIMIT 0 OFFSET 0)
  * - offset-only → LIMIT -1 OFFSET n (MySQL emits just OFFSET n)
  */
-class CommandBuilderSqliteTest extends PHPUnit\Framework\TestCase
+class CommandBuilderSqliteTest extends \PHPUnit\Framework\TestCase
 {
 	protected static string $sql = 'SELECT username, age FROM accounts';
 

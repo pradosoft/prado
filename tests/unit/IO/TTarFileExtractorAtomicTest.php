@@ -1,8 +1,11 @@
 <?php
 
 
+namespace Prado\Test\Unit\IO;
+
 use PHPUnit\Framework\TestCase;
 use Prado\IO\TTarFileExtractor;
+use Prado\Test\Unit\Harness\IO\TarTestHelper;
 
 /**
  * Atomic extraction tests for TTarFileExtractor introduced in 4.3.3.

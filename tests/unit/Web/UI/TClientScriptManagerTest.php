@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI;
+
 use Prado\Collections\TMap;
 use Prado\IO\TTextWriter;
 use Prado\Prado;
@@ -17,6 +19,7 @@ use Prado\Web\UI\ActiveControls\TBaseActiveCallbackControl;
 use Prado\Web\UI\ActiveControls\TCallbackClientSide;
 use Prado\Web\UI\TControl;
 use Prado\Web\UI\WebControls\TButton;
+use Prado\Test\Unit\PradoUnit;
 
 class TClientScriptManagerTestable extends TClientScriptManager
 {
@@ -193,7 +196,7 @@ function rrmdir($src) {
 	rmdir($src);
 }
 
-class TClientScriptManagerTest extends PHPUnit\Framework\TestCase
+class TClientScriptManagerTest extends \PHPUnit\Framework\TestCase
 {
 	public static $app;
 

@@ -8,6 +8,8 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Caching;
+
 use Prado\Caching\ICacheDependency;
 use Prado\Caching\TCacheDependencyList;
 use Prado\Exceptions\TInvalidDataTypeException;
@@ -15,7 +17,7 @@ use Prado\Exceptions\TInvalidDataTypeException;
 /**
  * Unit tests for {@see \Prado\Caching\TCacheDependencyList}.
  */
-class TCacheDependencyListTest extends PHPUnit\Framework\TestCase
+class TCacheDependencyListTest extends \PHPUnit\Framework\TestCase
 {
 	// -------------------------------------------------------------------------
 	// Helpers
@@ -62,7 +64,7 @@ class TCacheDependencyListTest extends PHPUnit\Framework\TestCase
 	{
 		$this->expectException(TInvalidDataTypeException::class);
 		$list = new TCacheDependencyList();
-		$list->add(new stdClass());
+		$list->add(new \stdClass());
 	}
 
 	public function testInsertAtValidPositionSucceeds(): void

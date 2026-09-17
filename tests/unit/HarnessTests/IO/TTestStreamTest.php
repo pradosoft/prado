@@ -8,8 +8,12 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\HarnessTests\IO;
+
 use Prado\IO\TStream;
 use Psr\Http\Message\StreamInterface;
+use Prado\Test\Unit\Harness\IO\TTestIOHelper;
+use Prado\Test\Unit\Harness\IO\TTestStream;
 
 /**
  * Tests for the {@see TTestStream} harness, the instrumented TStream used to exercise
@@ -17,7 +21,7 @@ use Psr\Http\Message\StreamInterface;
  * TStream unit tests depend on.
  *
  */
-class TTestStreamTest extends PHPUnit\Framework\TestCase
+class TTestStreamTest extends \PHPUnit\Framework\TestCase
 {
 	protected function tearDown(): void
 	{

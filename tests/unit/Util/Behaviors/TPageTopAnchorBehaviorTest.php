@@ -1,10 +1,12 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Behaviors;
+
 use Prado\Util\Behaviors\TPageTopAnchorBehavior;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\TForm;
 
-class TPageTopAnchorBehaviorTest extends PHPUnit\Framework\TestCase
+class TPageTopAnchorBehaviorTest extends \PHPUnit\Framework\TestCase
 {
 	protected $obj;
 

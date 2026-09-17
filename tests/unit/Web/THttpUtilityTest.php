@@ -8,6 +8,8 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Web;
+
 use Prado\Web\THttpUtility;
 
 /**
@@ -18,7 +20,7 @@ use Prado\Web\THttpUtility;
  * {@see THttpUtility::buildHtmlAttributes()}, {@see THttpUtility::isLocalUrl()},
  * and {@see THttpUtility::normalizeIntegrityUrl()}.
  */
-class THttpUtilityTest extends PHPUnit\Framework\TestCase
+class THttpUtilityTest extends \PHPUnit\Framework\TestCase
 {
 	// =========================================================================
 	// htmlEncode

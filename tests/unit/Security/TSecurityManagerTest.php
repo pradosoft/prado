@@ -1,8 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\Security;
+
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TNotSupportedException;
 use Prado\Security\TSecurityManager;
+use Prado\Test\Unit\Harness\TTestApplication;
 
 class TCustomTestSecurityManager extends TSecurityManager
 {
@@ -12,7 +15,7 @@ class TCustomTestSecurityManager extends TSecurityManager
 	}
 }
 
-class TSecurityManagerTest extends PHPUnit\Framework\TestCase
+class TSecurityManagerTest extends \PHPUnit\Framework\TestCase
 {
 	protected ?TTestApplication $app = null;
 

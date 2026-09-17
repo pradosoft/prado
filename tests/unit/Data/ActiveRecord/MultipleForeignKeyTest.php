@@ -1,5 +1,10 @@
 <?php
 
+namespace Prado\Test\Unit\Data\ActiveRecord;
+
+use Prado\Data\ActiveRecord\TActiveRecord;
+use Prado\Data\TDbConnection;
+
 abstract class MultipleFKSqliteRecord extends TActiveRecord
 {
 	protected static $conn;
@@ -25,6 +30,8 @@ abstract class MultipleFKSqliteRecord extends TActiveRecord
 
 class Table1 extends MultipleFKSqliteRecord
 {
+	const TABLE = 'Table1';
+
 	public $id;
 	public $field1;
 	public $fk1;
@@ -36,9 +43,9 @@ class Table1 extends MultipleFKSqliteRecord
 	public $object3;
 
 	public static $RELATIONS = [
-		'object1' => [self::BELONGS_TO, 'Table2', 'fk1'],
-		'object2' => [self::BELONGS_TO, 'Table2', 'fk2'],
-		'object3' => [self::BELONGS_TO, 'Table2', 'fk3'],
+		'object1' => [self::BELONGS_TO, Table2::class, 'fk1'],
+		'object2' => [self::BELONGS_TO, Table2::class, 'fk2'],
+		'object3' => [self::BELONGS_TO, Table2::class, 'fk3'],
 	];
 
 	public static function finder($class = __CLASS__)
@@ -52,6 +59,8 @@ class Table1 extends MultipleFKSqliteRecord
  */
 class Table2 extends MultipleFKSqliteRecord
 {
+	const TABLE = 'Table2';
+
 	public $id;
 	public $field1;
 
@@ -60,9 +69,9 @@ class Table2 extends MultipleFKSqliteRecord
 	public $state3;
 
 	public static $RELATIONS = [
-		'state1' => [self::HAS_MANY, 'Table1', 'fk1'],
-		'state2' => [self::HAS_MANY, 'Table1', 'fk2'],
-		'state3' => [self::HAS_ONE, 'Table1', 'fk3'],
+		'state1' => [self::HAS_MANY, Table1::class, 'fk1'],
+		'state2' => [self::HAS_MANY, Table1::class, 'fk2'],
+		'state3' => [self::HAS_ONE, Table1::class, 'fk3'],
 	];
 
 	public function setState1($obj)
@@ -96,6 +105,8 @@ class Table2 extends MultipleFKSqliteRecord
  */
 class CategoryX extends MultipleFKSqliteRecord
 {
+	const TABLE = 'CategoryX';
+
 	public $cat_id;
 	public $category_name;
 	public $parent_cat;
@@ -104,8 +115,8 @@ class CategoryX extends MultipleFKSqliteRecord
 	public $child_categories = [];
 
 	public static $RELATIONS = [
-		'parent_category' => [self::BELONGS_TO, 'CategoryX'],
-		'child_categories' => [self::HAS_MANY, 'CategoryX'],
+		'parent_category' => [self::BELONGS_TO, CategoryX::class],
+		'child_categories' => [self::HAS_MANY, CategoryX::class],
 	];
 
 	public static function finder($class = __CLASS__)
@@ -114,7 +125,7 @@ class CategoryX extends MultipleFKSqliteRecord
 	}
 }
 
-class MultipleForeignKeyTest extends PHPUnit\Framework\TestCase
+class MultipleForeignKeyTest extends \PHPUnit\Framework\TestCase
 {
 	public function testBelongsTo()
 	{

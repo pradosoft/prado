@@ -8,8 +8,10 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-// No Namespace for unit tests, separate from the system
-require_once('PradoUnitDataConnectionTrait.php');
+namespace Prado\Test\Unit\Harness\Traits;
+
+use Prado\Test\Unit\PradoUnit;
+use Prado\Data\TDbConnection;
 
 /**
  * PradoUnitDataConnectionTrait class

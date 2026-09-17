@@ -8,7 +8,7 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-require_once __DIR__ . '/TTestCacheClockTrait.php';
+namespace Prado\Test\Unit\Harness\Caching;
 
 use Prado\Caching\TMemCache;
 

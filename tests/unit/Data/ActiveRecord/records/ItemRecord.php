@@ -1,5 +1,10 @@
 <?php
 
+namespace Prado\Test\Unit\Data\ActiveRecord\Records;
+
+use Prado\Data\ActiveRecord\TActiveRecord;
+use Prado\Data\TDbConnection;
+
 class ItemRecord extends TActiveRecord
 {
 	const TABLE = 'items';
@@ -20,7 +25,7 @@ class ItemRecord extends TActiveRecord
 	public $related_item_id;
 
 	public static $RELATIONS = [
-		'related_items' => [self::MANY_TO_MANY, 'ItemRecord', 'related_items.related_item_id'],
+		'related_items' => [self::MANY_TO_MANY, ItemRecord::class, 'related_items.related_item_id'],
 	];
 
 	public function getDbConnection()

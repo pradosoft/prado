@@ -8,14 +8,17 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\HarnessTests\Caching;
+
 use Prado\Caching\ICache;
+use Prado\Test\Unit\Harness\Caching\TTestCacheStub;
 
 /**
  * Tests for {@see TTestCacheStub}, the recording {@see ICache} stub.
  *
  * @package System.Harness.Caching
  */
-class TTestCacheStubTest extends PHPUnit\Framework\TestCase
+class TTestCacheStubTest extends \PHPUnit\Framework\TestCase
 {
 	public function testImplementsICache(): void
 	{

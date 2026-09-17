@@ -8,6 +8,8 @@
  * @author Brad Anderson <belisoful@icloud.com>
  */
 
+namespace Prado\Test\Unit\Web\Javascripts;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\Javascripts\TJavaScriptAsset;
@@ -28,7 +30,7 @@ class TTestableJavaScriptAsset extends TJavaScriptAsset
 	}
 }
 
-class TJavaScriptAssetTest extends PHPUnit\Framework\TestCase
+class TJavaScriptAssetTest extends \PHPUnit\Framework\TestCase
 {
 	// -----------------------------------------------------------------------
 	// Fixtures

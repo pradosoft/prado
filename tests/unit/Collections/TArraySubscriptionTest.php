@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Collections;
+
 use Prado\Collections\TArraySubscription;
 use Prado\Collections\{TList, TMap, TPriorityList, TPriorityMap, TWeakCallableCollection, TWeakList};
 use Prado\TEventHandler;
@@ -28,7 +30,7 @@ class TTestArraySubscription extends TArraySubscription
 }
 
 
-class TArraySubscriptionTest extends PHPUnit\Framework\TestCase
+class TArraySubscriptionTest extends \PHPUnit\Framework\TestCase
 {
 	public $subscription = null;
 
@@ -173,10 +175,10 @@ class TArraySubscriptionTest extends PHPUnit\Framework\TestCase
 		$this->subscription->setArray($map);
 		
 		//   is a weak reference.
-		self::assertInstanceof(WeakReference::class, $this->subscription->getArray(true));
-		self::assertInstanceof(WeakReference::class, $value = &$this->subscription->getArray(true));
+		self::assertInstanceof(\WeakReference::class, $this->subscription->getArray(true));
+		self::assertInstanceof(\WeakReference::class, $value = &$this->subscription->getArray(true));
 		$value = null;
-		self::assertInstanceof(WeakReference::class, $this->subscription->getArray(true));
+		self::assertInstanceof(\WeakReference::class, $this->subscription->getArray(true));
 		
 		// normal is not a weak reference
 		self::assertInstanceof(TMap::class, $this->subscription->getArray());
@@ -186,7 +188,7 @@ class TArraySubscriptionTest extends PHPUnit\Framework\TestCase
 		
 		// deref weak reference drops the subscription array.
 		$map = null;
-		self::assertInstanceof(WeakReference::class, $this->subscription->getArray(true));
+		self::assertInstanceof(\WeakReference::class, $this->subscription->getArray(true));
 		self::assertNull($this->subscription->getArray());
 		
 		//error setArray changing array when subscribed.
@@ -247,7 +249,7 @@ class TArraySubscriptionTest extends PHPUnit\Framework\TestCase
 		$this->subscription->unsubscribe();
 		self::assertNull($this->subscription->getItem());
 		
-		$this->subscription->setItem($reference = new stdClass());
+		$this->subscription->setItem($reference = new \stdClass());
 		$reference->var = 3;
 		self::assertEquals($reference, $this->subscription->getItem(true));
 		
@@ -259,10 +261,10 @@ class TArraySubscriptionTest extends PHPUnit\Framework\TestCase
 		self::assertEquals($array, $this->subscription->getArray());
 		$this->subscription->setKey(null);
 		$this->subscription->subscribe(); // Test ICollectionFilter::filterItemForInput and filterItemForOutput
-		self::assertInstanceOf(WeakReference::class, $this->subscription->getItem(true));
+		self::assertInstanceOf(\WeakReference::class, $this->subscription->getItem(true));
 		self::assertEquals($reference, $this->subscription->getItem());
 		$this->subscription->unsubscribe();
-		self::assertInstanceOf(stdClass::class, $this->subscription->getItem(true));
+		self::assertInstanceOf(\stdClass::class, $this->subscription->getItem(true));
 		self::assertEquals($reference, $this->subscription->getItem());
 		
 		$array = [];
@@ -325,9 +327,9 @@ class TArraySubscriptionTest extends PHPUnit\Framework\TestCase
 	{
 		// Array does subscribe.
 		$list = new TWeakList();
-		$this->subscription = new $this->_baseClass($list, item: $reference = new stdClass());
+		$this->subscription = new $this->_baseClass($list, item: $reference = new \stdClass());
 		self::assertTrue($this->subscription->getIsSubscribed());
-		self::assertInstanceOf(WeakReference::class, $this->subscription->getItem(true));
+		self::assertInstanceOf(\WeakReference::class, $this->subscription->getItem(true));
 		self::assertEquals(0, $this->subscription->getKey());
 		self::assertEquals([$reference], $list->toArray());
 		self::assertTrue($this->subscription->unsubscribe());
@@ -335,7 +337,7 @@ class TArraySubscriptionTest extends PHPUnit\Framework\TestCase
 		self::assertEquals([], $list->toArray());
 			
 		// TWeakList filters item from weak reference filterItemForOutput
-		self::assertInstanceOf(stdClass::class, $this->subscription->getItem(true));
+		self::assertInstanceOf(\stdClass::class, $this->subscription->getItem(true));
 			
 		// double unsubscribe returns false
 		self::assertFalse($this->subscription->unsubscribe());
@@ -343,18 +345,18 @@ class TArraySubscriptionTest extends PHPUnit\Framework\TestCase
 		// filterItemForOutput when array = null.
 		self::assertTrue($this->subscription->subscribe());
 		self::assertEquals([$reference], $list->toArray());
-		self::assertInstanceOf(WeakReference::class, $this->subscription->getItem(true));
+		self::assertInstanceOf(\WeakReference::class, $this->subscription->getItem(true));
 		$list2 = $list;
 		$list = null;
 		self::assertEquals($list2, $this->subscription->getArray());
 		$list2 = null;
 		self::assertNull($this->subscription->getArray());
 		self::assertNull($this->subscription->unsubscribe());
-		self::assertInstanceOf(stdClass::class, $this->subscription->getItem(true));
+		self::assertInstanceOf(\stdClass::class, $this->subscription->getItem(true));
 		
 		// $array = string/null, return null.
 		$array = [];
-		$this->subscription = new $this->_baseClass($array, key: 'key', item: $reference = new stdClass());
+		$this->subscription = new $this->_baseClass($array, key: 'key', item: $reference = new \stdClass());
 		self::assertTrue($this->subscription->getIsSubscribed());
 		$array = 'not an array';
 		self::assertNull($this->subscription->unsubscribe());
@@ -557,7 +559,7 @@ class TArraySubscriptionTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(['5' => [$item1], '7' => [$item1], '10' => [$item2], '15' => [$item3]], $list->toPriorityArray());
 		self::assertFalse($this->subscription->getIsAssociative());
 		self::assertEquals(1, $this->subscription->getKey());
-		self::assertInstanceOf(WeakReference::class, $this->subscription->getItem(true));
+		self::assertInstanceOf(\WeakReference::class, $this->subscription->getItem(true));
 		self::assertTrue($this->subscription->unsubscribe());
 		self::assertEquals(null, $this->subscription->getKey());
 		self::assertInstanceOf(WeakCallableInvokee::class, $this->subscription->getItem(true));
@@ -592,7 +594,7 @@ class TArraySubscriptionTest extends PHPUnit\Framework\TestCase
 		self::assertEquals([$item1, $item2, $item3, $item1], $list->toArray());
 		self::assertFalse($this->subscription->getIsAssociative());
 		self::assertEquals(0, $this->subscription->getKey());
-		self::assertInstanceOf(WeakReference::class, $this->subscription->getItem(true));
+		self::assertInstanceOf(\WeakReference::class, $this->subscription->getItem(true));
 		self::assertTrue($this->subscription->unsubscribe());
 		self::assertEquals([$item2, $item3, $item1], $list->toArray());
 		self::assertEquals(null, $this->subscription->getKey());

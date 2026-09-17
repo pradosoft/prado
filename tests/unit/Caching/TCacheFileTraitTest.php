@@ -8,12 +8,16 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Caching;
+
+use Prado\Test\Unit\Harness\Caching\TTestFileCache;
+
 /**
  * Unit tests for {@see \Prado\Caching\TCacheFileTrait}, exercised through the
  * {@see TTestFileCache} harness (which uses the trait). Covers the filesystem read/write
  * seams, including the optional exclusive-lock write parameter.
  */
-class TCacheFileTraitTest extends PHPUnit\Framework\TestCase
+class TCacheFileTraitTest extends \PHPUnit\Framework\TestCase
 {
 	private string $dir;
 	private TTestFileCache $cache;

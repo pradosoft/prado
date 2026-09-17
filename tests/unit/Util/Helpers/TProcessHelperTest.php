@@ -1,12 +1,15 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Helpers;
+
 use Prado\Exceptions\TNotSupportedException;
 use Prado\Prado;
 use Prado\TEventSubscription;
 use Prado\Util\Helpers\TProcessHelper;
 use Prado\Util\TSignalsDispatcher;
+use Prado\Test\Unit\Util\TTestSignalsDispatcher;
 
-class TProcessHelperTest extends PHPUnit\Framework\TestCase
+class TProcessHelperTest extends \PHPUnit\Framework\TestCase
 {
 	public $dispatcher = null;
 	protected function setUp(): void

@@ -1,8 +1,10 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Helpers;
+
 use Prado\Util\Helpers\TArrayHelper;
 
-class TArrayHelperTest extends PHPUnit\Framework\TestCase
+class TArrayHelperTest extends \PHPUnit\Framework\TestCase
 {
 	public function testArray_is_list()
 	{

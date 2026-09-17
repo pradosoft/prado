@@ -8,14 +8,17 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Caching;
+
 use Prado\Caching\ICacheSize;
+use Prado\Test\Unit\Harness\Caching\TTestFileCache;
 
 /**
  * Unit tests for {@see \Prado\Caching\TCacheSizeTrait}, exercised through the
  * {@see TTestFileCache} harness (which uses the trait). Covers size-string parsing,
  * the MaximumSize property, over-capacity detection, and the running-size accessors.
  */
-class TCacheSizeTraitTest extends PHPUnit\Framework\TestCase
+class TCacheSizeTraitTest extends \PHPUnit\Framework\TestCase
 {
 	private string $dir;
 

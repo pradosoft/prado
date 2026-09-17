@@ -13,6 +13,8 @@
  * @author Brad Anderson <belisoful@icloud.com>
  */
 
+namespace Prado\Test\Unit\Web\Services;
+
 use Prado\TApplication;
 use Prado\Web\Services\TCspReportingService;
 use Prado\Web\Services\TCspViolationParameter;
@@ -122,7 +124,7 @@ class TestableCspReportingService extends TCspReportingService
 // Test class
 // ---------------------------------------------------------------------------
 
-class TCspReportingServiceTest extends PHPUnit\Framework\TestCase
+class TCspReportingServiceTest extends \PHPUnit\Framework\TestCase
 {
 	public static ?TApplication $app = null;
 

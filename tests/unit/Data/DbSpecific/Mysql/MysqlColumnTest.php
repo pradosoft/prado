@@ -1,8 +1,13 @@
 <?php
 
-use Prado\Data\Common\Mysql\TMysqlMetaData;
+namespace Prado\Test\Unit\Data\DbSpecific\Mysql;
 
-class MysqlColumnTest extends PHPUnit\Framework\TestCase
+use Prado\Data\Common\Mysql\TMysqlMetaData;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+use Prado\Data\Common\TDbTableColumn;
+use Prado\Data\TDbConnection;
+
+class MysqlColumnTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 	

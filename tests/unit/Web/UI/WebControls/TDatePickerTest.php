@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI\WebControls;
+
 use Prado\Exceptions\TNotSupportedException;
 use Prado\Web\UI\WebControls\TDatePicker;
 use Prado\Web\UI\WebControls\TDatePickerInputMode;
@@ -7,6 +9,7 @@ use Prado\Web\UI\WebControls\TDatePickerMode;
 use Prado\Web\UI\WebControls\TDatePickerPositionMode;
 use Prado\Web\UI\WebControls\TTextBox;
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\PradoUnit;
 
 class TDatePickerTest extends TestCase
 {

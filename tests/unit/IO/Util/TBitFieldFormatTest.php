@@ -1,12 +1,14 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Util;
+
 use Prado\IO\Util\TBitFieldFormat;
 use Prado\TEnumerable;
 
 /**
  * Unit tests for {@see \Prado\IO\Util\TBitFieldFormat}, the bit-field interpretation enum.
  */
-class TBitFieldFormatTest extends PHPUnit\Framework\TestCase
+class TBitFieldFormatTest extends \PHPUnit\Framework\TestCase
 {
 	public function testIsEnumerableWithExpectedValues()
 	{

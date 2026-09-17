@@ -11,21 +11,21 @@
 	</cacheModel> 
 	
 
-	<resultMap id="account-result"  class="Account" >
+	<resultMap id="account-result"  class="Prado\Test\Unit\Data\SqlMap\Domain\Account" >
 		<result property="Id"           column="Account_ID"/>
 		<result property="FirstName"    column="Account_FirstName"/>
 		<result property="LastName"     column="Account_LastName"/>
 		<result property="EmailAddress" column="Account_Email" nullValue="no_email@provided.com"/>
-		<result property="BannerOptions" column="Account_Banner_Option" dbType="Varchar" typeHandler="OuiNonBool"/>
-		<result property="CartOptions"	column="Account_Cart_Option" typeHandler="HundredsBool"/>			
+		<result property="BannerOptions" column="Account_Banner_Option" dbType="Varchar" typeHandler="Prado\Test\Unit\Data\SqlMap\OuiNonBool"/>
+		<result property="CartOptions"	column="Account_Cart_Option" typeHandler="Prado\Test\Unit\Data\SqlMap\HundredsBool"/>			
 	</resultMap>
-	<resultMap id="indexed-account-result" class="Account">
+	<resultMap id="indexed-account-result" class="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 		<result property="Id"           column="Account_ID"			columnIndex="0"/>
 		<result property="FirstName"    column="Account_FirstName"	columnIndex="1"/>
 		<result property="LastName"     column="Account_LastName"	columnIndex="2"/>
 		<result property="EmailAddress" column="Account_Email"		columnIndex="3"	nullValue="no_email@provided.com"/>
 	</resultMap>
-	<resultMap id="account-result-nullable-email" class="Account">
+	<resultMap id="account-result-nullable-email" class="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 		<result property="Id"           column="Account_ID"/>
 		<result property="FirstName"    column="Account_FirstName"/>
 		<result property="LastName"     column="Account_LastName"/>
@@ -172,7 +172,7 @@
 	</select>
 			
 	<select id="GetAllAccountsViaResultClass" 
-		resultClass="Account">
+		resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 		select
 		Account_ID as Id,
 		Account_FirstName as FirstName,
@@ -211,7 +211,7 @@
 	</select>
 
 	<select id="GetAccountViaResultClass" 
-		resultClass="Account">
+		resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 		<![CDATA[
 				select
 				Account_ID as Id,
@@ -324,7 +324,7 @@
 	
 	<select id="SimpleDynamicSubstitution"
 		 parameterClass="array"
-		 resultClass="Account">
+		 resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 		$statement$
 	</select>
 	
@@ -339,7 +339,7 @@
 	
 	<!-- Inline Parameters -->
 	<update id="UpdateAccountViaInlineParameters"
-		parameterClass="Account">
+		parameterClass="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 		update Accounts set
 		Account_FirstName = #FirstName#,
 		Account_LastName = #LastName#,
@@ -349,7 +349,7 @@
 	</update>
 
 	<insert id="InsertAccountViaInlineParameters"
-		parameterClass="Account" >
+		parameterClass="Prado\Test\Unit\Data\SqlMap\Domain\Account" >
 		insert into Accounts 
 			(Account_ID, Account_FirstName, Account_LastName, Account_Email) 
 		values 
@@ -358,7 +358,7 @@
 	</insert>
 
 	<insert id="InsertAccountNullableEmail"
-		parameterClass="Account" >
+		parameterClass="Prado\Test\Unit\Data\SqlMap\Domain\Account" >
 		insert into Accounts 
 			(Account_ID, Account_FirstName, Account_LastName, Account_Email) 
 		values 
@@ -372,7 +372,7 @@
 			( #Id#, #FirstName#, #LastName#, #EmailAddress, dbType=VarChar# )
 	</insert>
 
-	<delete id="DeleteAccount" parameterClass="Account">
+	<delete id="DeleteAccount" parameterClass="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 		delete from Accounts
 		where Account_ID = #Id, type=integer#
 		and Account_ID = #Id, type=integer#
@@ -408,7 +408,7 @@
 		where Account_ID between #lowID# and #hightID#
 	</select>
 
-	<select id="SelectAccountJIRA29" parameterClass="map" resultClass="Account">
+	<select id="SelectAccountJIRA29" parameterClass="map" resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 		select
 			Account_ID as Id,
 			Account_FirstName as FirstName,
@@ -420,7 +420,7 @@
 
 	<select id="SelectAccountJIRA29-2"
 			parameterClass="array"
-			resultClass="Account">
+			resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 		select
 			Account_ID as Id,
 			Account_FirstName as FirstName,
@@ -434,7 +434,7 @@
 	</select>	
 	
 	<select id="GetAccountWithRepeatingProperty"
-					parameterClass="Account" 
+					parameterClass="Prado\Test\Unit\Data\SqlMap\Domain\Account" 
 					resultMap="indexed-account-result">
 		select
 				Account_ID,
@@ -456,7 +456,7 @@
 	</select>	
 	
 	<!-- JIRA-110 -->
-	<select id="GetManyAccound" resultClass="Account">
+	<select id="GetManyAccound" resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 		<![CDATA[
 		SELECT 
 			Account_ID as Id,
@@ -467,7 +467,7 @@
 		]]>
 	</select>
 	
-	<select id="Get1Account" extends="GetManyAccound" resultClass="Account">WHERE Account_ID=1</select>
+	<select id="Get1Account" extends="GetManyAccound" resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Account">WHERE Account_ID=1</select>
 	
 	<statement id="GetAccounts" resultMap="account-result"> 
 		<![CDATA[SELECT * ]]> 
@@ -476,7 +476,7 @@
 	</statement> 
 	<!-- JIRA-110 -->
 
-	<insert id="InsertAccountDynamic" parameterClass="Account">
+	<insert id="InsertAccountDynamic" parameterClass="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 		INSERT INTO Accounts
 		(Account_ID, Account_FirstName, Account_LastName, Account_Email)
 		VALUES(#Id#, #FirstName#, #LastName#
@@ -501,7 +501,7 @@
 		ps_swap_email_address
 	</procedure>
 
-	<procedure id="GetAccountViaSP" parameterMap="select-params" resultClass="Account">
+	<procedure id="GetAccountViaSP" parameterMap="select-params" resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Account">
 		ps_SelectAccount
 	</procedure>
 
@@ -524,7 +524,7 @@
 		<parameter property="LastName" />			
 		<parameter property="EmailAddress" nullValue="no_email@provided.com"/>
 		<parameter property="BannerOptions"  dbType="Varchar" type="bool"/>
-		<parameter property="CartOptions"	column="Account_Cart_Option" typeHandler="HundredsBool"/>
+		<parameter property="CartOptions"	column="Account_Cart_Option" typeHandler="Prado\Test\Unit\Data\SqlMap\HundredsBool"/>
 	</parameterMap>
 	
 	<parameterMap id="update-params">
@@ -551,7 +551,7 @@
 					accounts.account_id = orders.account_id
 		</select>
 
-		<resultMap id="Account-with-Orders" class="AccountWithOrders" groupBy="Account_ID">
+		<resultMap id="Account-with-Orders" class="Prado\Test\Unit\Data\SqlMap\AccountWithOrders" groupBy="Account_ID">
 			<result property="Id"           column="Account_ID"/>
 			<result property="FirstName"    column="Account_FirstName"/>
 			<result property="LastName"     column="Account_LastName"/>
@@ -559,7 +559,7 @@
 			<result property="Orders" resultMapping="account-orders" />
 		</resultMap>
 
-		<resultMap id="account-orders" class="Order">
+		<resultMap id="account-orders" class="Prado\Test\Unit\Data\SqlMap\Domain\Order">
 			<result property="Id"         column="Order_Id"/>
 			<result property="Date"       type="date" column="Order_Date" nullValue="0001-01-01 00:00:00"/>
 			<result property="CardExpiry" column="Order_CardExpiry"/>

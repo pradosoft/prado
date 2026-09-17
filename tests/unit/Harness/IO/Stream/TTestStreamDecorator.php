@@ -8,6 +8,8 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Harness\IO\Stream;
+
 use Prado\IO\Stream\TStreamDecorator;
 use Prado\IO\TStream;
 use Psr\Http\Message\StreamInterface;

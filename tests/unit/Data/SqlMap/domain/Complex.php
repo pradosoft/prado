@@ -1,5 +1,9 @@
 <?php
 
+namespace Prado\Test\Unit\Data\SqlMap\Domain;
+
+use Prado\Collections\TMap;
+
 class Complex
 {
 	private $_map;

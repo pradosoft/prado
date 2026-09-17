@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI;
+
 use Prado\Web\UI\TModuleView;
 use Prado\Web\UI\TCompositeControl;
 use Prado\Web\UI\TTemplate;
@@ -9,6 +11,7 @@ use Prado\Prado;
 use Prado\TApplication;
 use Prado\TModule;
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\PradoUnit;
 
 class TTestModule extends TModule
 {

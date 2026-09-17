@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Harness\IO;
+
 /**
  * TarTestHelper — unified TAR archive builder for unit tests.
  *

@@ -6,7 +6,7 @@
 	</alias>
 	
 	
-		<select id="GetCategory" parameterClass="Integer" resultClass="Category">
+		<select id="GetCategory" parameterClass="Integer" resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Category">
 			select
 			Category_ID as Id,
 			Category_Name as Name,
@@ -24,7 +24,7 @@
 		
 		<!-- Test for statement as insert -->
 		<!-- Needs to be <insert> vs <statement> for MySql due to selectKey -->
-		<insert id="InsertCategory" parameterClass="Category">
+		<insert id="InsertCategory" parameterClass="Prado\Test\Unit\Data\SqlMap\Domain\Category">
 			<selectKey property="Id" type="post" resultClass="int">
 				select LAST_INSERT_ID() as value
             </selectKey>			
@@ -35,7 +35,7 @@
 		</insert>
 		
 		<!--  -->
-		<insert id="InsertCategoryViaInsertStatement" parameterClass="Category" >
+		<insert id="InsertCategoryViaInsertStatement" parameterClass="Prado\Test\Unit\Data\SqlMap\Domain\Category" >
 			<selectKey property="Id" type="post" resultClass="int">
 				select LAST_INSERT_ID() as value
             </selectKey>			
@@ -94,17 +94,17 @@
 			<generate table="Categories" by="Category_Id, Category_Name"/>
 		</delete>
 		
-		<select id="SelectByPKCategoryGenerate" resultClass="Category" parameterClass="Category" parameterMap="select-generate-params">
+		<select id="SelectByPKCategoryGenerate" resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Category" parameterClass="Prado\Test\Unit\Data\SqlMap\Domain\Category" parameterMap="select-generate-params">
 			<generate table="Categories" by="Category_Id"/> 
 		</select>
 		
-		<select id="SelectAllCategoryGenerate" resultClass="Category" parameterMap="select-generate-params">
+		<select id="SelectAllCategoryGenerate" resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Category" parameterMap="select-generate-params">
 			<generate table="Categories" /> 
 		</select>
 		
 		<statement id="DynamicGuid" 
-			resultClass="Category" 
-			parameterClass="Category">
+			resultClass="Prado\Test\Unit\Data\SqlMap\Domain\Category" 
+			parameterClass="Prado\Test\Unit\Data\SqlMap\Domain\Category">
 			select
 			Category_ID as Id,
 			Category_Name as Name,

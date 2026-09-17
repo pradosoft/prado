@@ -1,10 +1,12 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Filter;
+
 use Prado\IO\TStream;
 use Prado\IO\Filter\TStreamFilterHandle;
 use Prado\IO\Filter\TStreamFilter;
 
-class TStreamFilterHandleTest extends PHPUnit\Framework\TestCase
+class TStreamFilterHandleTest extends \PHPUnit\Framework\TestCase
 {
 	public function testHandleRemovesSelfAndUntracksOwner()
 	{

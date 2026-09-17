@@ -8,6 +8,8 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Collections;
+
 use Prado\Collections\TWeakCallableCollection;
 use Prado\Collections\TWeakList;
 use Prado\Collections\TWeakMap;
@@ -74,7 +76,7 @@ class WeakScrubReentryInjector extends TWeakCallableCollection
  *
  * @package System.Collections
  */
-class TWeakScrubReentrancyTest extends PHPUnit\Framework\TestCase
+class TWeakScrubReentrancyTest extends \PHPUnit\Framework\TestCase
 {
 	// -----------------------------------------------------------------------
 	// TWeakCallableCollection

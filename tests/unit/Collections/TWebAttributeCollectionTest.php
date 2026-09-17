@@ -1,9 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\Collections;
+
 use Prado\Collections\TMap;
 use Prado\Collections\TWebAttributeCollection;
 
-class TWebAttributeCollectionTest extends PHPUnit\Framework\TestCase
+class TWebAttributeCollectionTest extends \PHPUnit\Framework\TestCase
 {
 	protected $collection;
 

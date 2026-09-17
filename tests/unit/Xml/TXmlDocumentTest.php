@@ -1,10 +1,12 @@
 <?php
 
+namespace Prado\Test\Unit\Xml;
+
 use Prado\Exceptions\TIOException;
 use Prado\Xml\TXmlDocument;
 use Prado\Xml\TXmlElement;
 
-class TXmlDocumentTest extends PHPUnit\Framework\TestCase
+class TXmlDocumentTest extends \PHPUnit\Framework\TestCase
 {
 	public function testConstruct()
 	{

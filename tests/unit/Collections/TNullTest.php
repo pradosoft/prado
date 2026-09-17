@@ -8,10 +8,13 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Collections;
+
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\ISingleton;
 use Prado\Collections\TNull;
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * TNullTest

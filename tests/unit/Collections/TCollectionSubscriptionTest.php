@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Collections;
+
 use Prado\Collections\TCollectionSubscription;
 use Prado\Collections\TMap;
 
@@ -8,7 +10,7 @@ class TTestCollectionSubscription extends TCollectionSubscription
 }
 
 
-class TCollectionSubscriptionTest extends PHPUnit\Framework\TestCase
+class TCollectionSubscriptionTest extends \PHPUnit\Framework\TestCase
 {
 	public $subscription = null;
 

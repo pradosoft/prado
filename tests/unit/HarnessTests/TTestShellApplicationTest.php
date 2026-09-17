@@ -8,11 +8,15 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\HarnessTests;
+
 use Prado\Prado;
 use Prado\Shell\TShellApplication;
 use Prado\Shell\TShellWriter;
 use Prado\IO\TTextWriter;
 use Prado\TApplication;
+use Prado\Test\Unit\Harness\TTestShellApplication;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * Unit tests for {@see TTestShellApplication}.
@@ -24,7 +28,7 @@ use Prado\TApplication;
  *
  * @package System.Shell
  */
-class TTestShellApplicationTest extends PHPUnit\Framework\TestCase
+class TTestShellApplicationTest extends \PHPUnit\Framework\TestCase
 {
 	/** @var TTestShellApplication The helper under test, created fresh each test. */
 	private TTestShellApplication $_app;

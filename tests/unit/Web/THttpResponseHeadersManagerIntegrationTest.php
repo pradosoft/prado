@@ -8,6 +8,8 @@
  * when one is wired up via {@see THttpResponse::setHeadersManager()}.
  */
 
+namespace Prado\Test\Unit\Web;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TApplication;
@@ -16,10 +18,8 @@ use Prado\Web\HttpHeaders\THttpHeaderCsp;
 use Prado\Web\HttpHeaders\THttpHeadersManager;
 use Prado\Web\HttpHeaders\TCspDirective;
 use Prado\Web\THttpResponse;
-
-// PradoUnitRequires walks tests/unit/Harness/ recursively and loads
-// TTestHttpHeadersManager + TOutputBufferRestorationTrait automatically.
-require_once __DIR__ . '/../PradoUnitRequires.php';
+use Prado\Test\Unit\Harness\Traits\TOutputBufferRestorationTrait;
+use Prado\Test\Unit\Harness\Web\HttpHeaders\TTestHttpHeadersManager;
 
 /**
  * Integration tests for the THttpResponse ↔ THttpHeadersManager wiring.
@@ -27,7 +27,7 @@ require_once __DIR__ . '/../PradoUnitRequires.php';
  * Each test is self-contained: any state written to THttpResponse or TApplication
  * is restored in a `finally` block so that test-ordering does not matter.
  */
-class THttpResponseHeadersManagerIntegrationTest extends PHPUnit\Framework\TestCase
+class THttpResponseHeadersManagerIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 	use TOutputBufferRestorationTrait {
 		setUpBeforeClass as outputSetup;

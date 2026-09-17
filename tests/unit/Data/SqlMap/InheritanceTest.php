@@ -1,8 +1,11 @@
 <?php
 
-require_once(__DIR__ . '/BaseCase.php');
+namespace Prado\Test\Unit\Data\SqlMap;
 
 use Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandler;
+use Prado\Test\Unit\Data\SqlMap\Domain\Book;
+use Prado\Test\Unit\Data\SqlMap\Domain\Document;
+use Prado\Test\Unit\Data\SqlMap\Domain\Newspaper;
 
 class InheritanceTest extends BaseCase
 {
@@ -111,31 +114,5 @@ class InheritanceTest extends BaseCase
 		$this->assertEquals($id, $news->getId());
 		$this->assertEquals($title, $news->getTitle());
 		$this->assertEquals($city, $news->getCity());
-	}
-}
-
-
-class CustomInheritance extends TSqlMapTypeHandler
-{
-	public function getResult($type)
-	{
-		switch ($type) {
-			case 'Monograph': case 'Book':
-				return 'Book';
-			case 'Tabloid': case 'Broadsheet': case 'Newspaper':
-				return 'Newspaper';
-			default:
-				return 'Document';
-		}
-	}
-
-	public function getParameter($parameter)
-	{
-		throw new TDataMapperException('not implemented');
-	}
-
-	public function createNewInstance($data = null)
-	{
-		throw new TDataMapperException('can not create');
 	}
 }

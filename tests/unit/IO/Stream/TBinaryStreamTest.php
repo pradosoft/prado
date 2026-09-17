@@ -1,12 +1,15 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Stream;
+
 use Prado\Exceptions\TIOException;
 use Prado\IO\Stream\TBinaryStream;
 use Prado\IO\TByteOrder;
 use Prado\IO\TStream;
 use Psr\Http\Message\StreamInterface;
+use Prado\Test\Unit\Harness\IO\TTestIOHelper;
 
-class TBinaryStreamTest extends PHPUnit\Framework\TestCase
+class TBinaryStreamTest extends \PHPUnit\Framework\TestCase
 {
 	private function over(string $bytes, ?int $order = null): TBinaryStream
 	{

@@ -1,9 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Stream;
+
 use Prado\IO\Stream\TNoSeekStream;
 use Prado\IO\TStream;
 
-class TNoSeekStreamTest extends PHPUnit\Framework\TestCase
+class TNoSeekStreamTest extends \PHPUnit\Framework\TestCase
 {
 	public function testForwardsReadsButReportsNotSeekable()
 	{

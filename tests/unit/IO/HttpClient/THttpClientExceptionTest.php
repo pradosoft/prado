@@ -1,12 +1,14 @@
 <?php
 
+namespace Prado\Test\Unit\IO\HttpClient;
+
 use Prado\IO\HttpClient\THttpClientException;
 use Prado\IO\HttpClient\THttpClientResponse;
 
 /**
  * Tests for THttpClientException.
  */
-class THttpClientExceptionTest extends PHPUnit\Framework\TestCase
+class THttpClientExceptionTest extends \PHPUnit\Framework\TestCase
 {
 	public function testTransportFailureHasNullResponseAndZeroStatus(): void
 	{

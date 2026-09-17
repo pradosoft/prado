@@ -1,10 +1,12 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Socket;
+
 use Prado\IO\Socket\TSocketAddress;
 use Prado\IO\Socket\TSocketServer;
 use Prado\IO\Socket\TSocketStream;
 
-class TSocketServerTest extends PHPUnit\Framework\TestCase
+class TSocketServerTest extends \PHPUnit\Framework\TestCase
 {
 	public function testBindAndLocalAddressShortcuts()
 	{

@@ -8,6 +8,8 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Harness\Caching;
+
 /**
  * TTestCacheClockTrait provides a fakeable clock for {@see \Prado\Caching\TCache} harnesses.
  *

@@ -8,11 +8,17 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Web\HttpHeaders;
+
 use Prado\Web\HttpHeaders\THttpHeadersManager;
 use Prado\Web\THttpHeaderName;
+use Prado\Test\Unit\Harness\Web\HttpHeaders\TConcreteHeader;
+use Prado\Test\Unit\Harness\Web\HttpHeaders\TResponseStub;
+use Prado\Test\Unit\PradoUnit;
+use Prado\Web\HttpHeaders\TBaseHttpHeader;
 
 // Test doubles {@see TConcreteHeader} and {@see TResponseStub} live in
-// tests/unit/Harness/Web/HttpHeaders/ and are auto-loaded by the bootstrap.
+// tests/unit/Harness/Web/HttpHeaders/ and are autoloaded by Composer.
 
 // ---------------------------------------------------------------------------
 // Tests
@@ -25,7 +31,7 @@ use Prado\Web\THttpHeaderName;
  * the protected {@see TBaseHttpHeader::header()} seam to capture calls
  * without touching the live HTTP stack.
  */
-class TBaseHttpHeaderTest extends PHPUnit\Framework\TestCase
+class TBaseHttpHeaderTest extends \PHPUnit\Framework\TestCase
 {
 	private TConcreteHeader $h;
 

@@ -8,7 +8,10 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\HarnessTests\IO;
+
 use Prado\IO\TStream;
+use Prado\Test\Unit\Harness\IO\TTestIOHelper;
 
 /**
  * Tests for the {@see TTestIOHelper} harness — the resource/stream factories and
@@ -16,7 +19,7 @@ use Prado\IO\TStream;
  *
  * @package System.HarnessTests.IO
  */
-class TTestIOHelperTest extends PHPUnit\Framework\TestCase
+class TTestIOHelperTest extends \PHPUnit\Framework\TestCase
 {
 	protected function tearDown(): void
 	{

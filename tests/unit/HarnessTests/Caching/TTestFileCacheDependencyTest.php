@@ -8,14 +8,17 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\HarnessTests\Caching;
+
 use Prado\Caching\TFileCacheDependency;
+use Prado\Test\Unit\Harness\Caching\TTestFileCacheDependency;
 
 /**
  * Tests for {@see TTestFileCacheDependency}: the file-name and timestamp `*Direct` seams.
  *
  * @package System.Harness.Caching
  */
-class TTestFileCacheDependencyTest extends PHPUnit\Framework\TestCase
+class TTestFileCacheDependencyTest extends \PHPUnit\Framework\TestCase
 {
 	private string $file;
 

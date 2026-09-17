@@ -6,9 +6,12 @@
  * the right package in unit test and code coverage reports.
  */
 
+// Composer autoloads the framework (Prado\) and the unit-test classes
+// (Prado\Test\Unit\ via autoload-dev PSR-4).
 require_once(__DIR__ . '/../../vendor/autoload.php');
 require_once(__DIR__ . '/../../framework/Prado.php');
-require_once(__DIR__ . '/../unit/PradoUnit.php');
+
+use Prado\Test\Unit\PradoUnit;
 
 // Capture the process-global baseline (superglobals, cwd, timezone,
 // error_reporting, include_path) BEFORE the bootstrap TApplication runs and

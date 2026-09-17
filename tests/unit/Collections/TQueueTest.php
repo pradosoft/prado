@@ -1,10 +1,12 @@
 <?php
 
+namespace Prado\Test\Unit\Collections;
+
 use Prado\Collections\TQueue;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
 
-class TQueueTest extends PHPUnit\Framework\TestCase
+class TQueueTest extends \PHPUnit\Framework\TestCase
 {
 	protected function setUp(): void
 	{
@@ -39,7 +41,7 @@ class TQueueTest extends PHPUnit\Framework\TestCase
 	public function testCanNotCopyFromNonTraversableTypes()
 	{
 		$queue = new TQueue();
-		$data = new stdClass();
+		$data = new \stdClass();
 		self::expectException(TInvalidDataTypeException::class);
 		$queue->copyFrom($data);
 	}

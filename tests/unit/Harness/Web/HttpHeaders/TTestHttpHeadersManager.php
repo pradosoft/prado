@@ -3,12 +3,13 @@
 /**
  * TTestHttpHeadersManager — shared test double for HttpHeaders tests.
  *
- * Auto-loaded by {@see PradoUnitRequires}; no explicit `require_once` is
- * needed from individual test files.  Used by `THttpHeadersManagerTest`,
+ * Used by `THttpHeadersManagerTest`,
  * `THttpHeaderCspIntegrationTest`, and the response-headers integration test.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  */
+
+namespace Prado\Test\Unit\Harness\Web\HttpHeaders;
 
 use Prado\TApplication;
 use Prado\Web\HttpHeaders\THttpHeadersManager;

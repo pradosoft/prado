@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Data;
+
 use Prado\Caching\TDbCache;
 use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbConnection;
@@ -7,6 +9,7 @@ use Prado\Data\TDbPropertiesTrait;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TComponent;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * Minimal user of the trait.
@@ -69,7 +72,7 @@ class DbPropertiesTraitSqliteFixture extends TComponent
  * operator, so a missing application produces the same TConfigurationException
  * as an unknown module ID rather than an Error.
  */
-class TDbPropertiesTraitTest extends PHPUnit\Framework\TestCase
+class TDbPropertiesTraitTest extends \PHPUnit\Framework\TestCase
 {
 	/**
 	 * Runs $fn with no application registered and restores the application after.

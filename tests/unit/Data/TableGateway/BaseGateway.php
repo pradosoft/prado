@@ -1,9 +1,12 @@
 <?php
 
+namespace Prado\Test\Unit\Data\TableGateway;
+
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 
-class BaseGateway extends PHPUnit\Framework\TestCase
+class BaseGateway extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

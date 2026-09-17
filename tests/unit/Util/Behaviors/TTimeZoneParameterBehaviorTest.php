@@ -1,8 +1,11 @@
 <?php
 
-use Prado\Util\Behaviors\TTimeZoneParameterBehavior;
+namespace Prado\Test\Unit\Util\Behaviors;
 
-class TTimeZoneParameterBehaviorTest extends PHPUnit\Framework\TestCase
+use Prado\Util\Behaviors\TTimeZoneParameterBehavior;
+use Prado\Prado;
+
+class TTimeZoneParameterBehaviorTest extends \PHPUnit\Framework\TestCase
 {
 	protected $obj;
 

@@ -62,8 +62,6 @@
 		"laravel/serializable-closure": "^2.0"
 	},
 	"require-dev" : {
-		"ext-bcmath": "*",
-		"ext-bz2": "*",
 		"phpunit/phpunit" : "^10",
 		"php-webdriver/webdriver": "^1",
 		"phpdocumentor/shim": "^3",
@@ -96,6 +94,16 @@
             "Prado\\": "framework"
         }
     },
+	"autoload-dev": {
+		"psr-4": {
+			"Prado\\Test\\Unit\\": "tests/unit/"
+		},
+		"exclude-from-classmap": [
+			"tests/unit/PHPStan/Fixtures/",
+			"tests/unit/Security/app/prado3stubs/",
+			"tests/unit/Exceptions/TErrorHandlerTestGlobalClass.php"
+		]
+	},
     "config": {
         "platform": {
             "php": "8.1"

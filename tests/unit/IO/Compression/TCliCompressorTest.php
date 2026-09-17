@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Compression;
+
 use Prado\Exceptions\TIOException;
 use Prado\IO\Compression\ICompressor;
 use Prado\IO\Compression\TCliCompressor;
@@ -46,7 +48,7 @@ class MissingCliCompressor extends TCliCompressor
 	}
 }
 
-class TCliCompressorTest extends PHPUnit\Framework\TestCase
+class TCliCompressorTest extends \PHPUnit\Framework\TestCase
 {
 	private function skipWithoutCat(): void
 	{

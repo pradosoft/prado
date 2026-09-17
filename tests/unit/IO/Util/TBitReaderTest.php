@@ -1,12 +1,16 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Util;
+
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\IO\TByteOrder;
 use Prado\IO\TStream;
 use Prado\IO\Util\TBitReader;
 use Prado\IO\Util\TBitFieldFormat;
+use Prado\Test\Unit\Harness\IO\TTestIOHelper;
+use Prado\Test\Unit\Harness\IO\TTestStream;
 
-class TBitReaderTest extends PHPUnit\Framework\TestCase
+class TBitReaderTest extends \PHPUnit\Framework\TestCase
 {
 	private function reader(string $bytes): TBitReader
 	{

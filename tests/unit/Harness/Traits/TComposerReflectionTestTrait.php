@@ -8,9 +8,13 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Harness\Traits;
+
 use Composer\Autoload\ClassLoader;
 use Prado\Prado;
 use Prado\Util\TComposerReflection;
+use Prado\Test\Unit\Harness\Util\TTestComposerReflection;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * TComposerReflectionTestTrait provides the shared scaffolding for {@see \Prado\Util\TComposerReflection}

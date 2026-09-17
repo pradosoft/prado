@@ -8,6 +8,8 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Caching;
+
 use Prado\Caching\ICacheDependency;
 use Prado\Caching\TChainedCacheDependency;
 use Prado\Caching\TCacheDependencyList;
@@ -15,7 +17,7 @@ use Prado\Caching\TCacheDependencyList;
 /**
  * Unit tests for {@see \Prado\Caching\TChainedCacheDependency}.
  */
-class TChainedCacheDependencyTest extends PHPUnit\Framework\TestCase
+class TChainedCacheDependencyTest extends \PHPUnit\Framework\TestCase
 {
 	// -------------------------------------------------------------------------
 	// Helpers

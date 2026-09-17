@@ -8,8 +8,11 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Harness\Traits;
+
 use Prado\Prado;
 use Prado\TComponent;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * TTestApplicationRestorationTrait provides full global-state save/restore for

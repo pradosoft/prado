@@ -8,6 +8,10 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\HarnessTests\IO;
+
+use Prado\Test\Unit\Harness\IO\TarTestHelper;
+
 /**
  * Tests for {@see TarTestHelper}.
  *
@@ -19,7 +23,7 @@
  *
  * @package System.Harness.IO
  */
-class TarTestHelperTest extends PHPUnit\Framework\TestCase
+class TarTestHelperTest extends \PHPUnit\Framework\TestCase
 {
 	// -----------------------------------------------------------------------
 	// header() — block size, field encoding, checksum

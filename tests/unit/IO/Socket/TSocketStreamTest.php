@@ -1,12 +1,14 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Socket;
+
 use Prado\Exceptions\TSocketException;
 use Prado\IO\Socket\TSocketAddress;
 use Prado\IO\Socket\TSocketServer;
 use Prado\IO\Socket\TSocketStream;
 use Psr\Http\Message\StreamInterface;
 
-class TSocketStreamTest extends PHPUnit\Framework\TestCase
+class TSocketStreamTest extends \PHPUnit\Framework\TestCase
 {
 	public function testTransports()
 	{

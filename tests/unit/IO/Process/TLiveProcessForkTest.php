@@ -1,10 +1,12 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Process;
+
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\IO\Process\TLiveProcessFork;
 use Prado\Util\Helpers\TProcessHelper;
 
-class TLiveProcessForkTest extends PHPUnit\Framework\TestCase
+class TLiveProcessForkTest extends \PHPUnit\Framework\TestCase
 {
 	protected function setUp(): void
 	{

@@ -8,6 +8,8 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Web\HttpHeaders;
+
 use Prado\Web\HttpHeaders\THttpHeader;
 use Prado\Web\THttpHeaderName;
 
@@ -18,7 +20,7 @@ use Prado\Web\THttpHeaderName;
  * coercion, and the {@see THttpHeader::__toString()} rendering inherited from
  * {@see \Prado\Web\HttpHeaders\TBaseHttpHeader}.
  */
-class THttpHeaderTest extends PHPUnit\Framework\TestCase
+class THttpHeaderTest extends \PHPUnit\Framework\TestCase
 {
 	private THttpHeader $h;
 

@@ -8,7 +8,7 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-require_once __DIR__ . '/../PradoUnitRequires.php';
+namespace Prado\Test\Unit\Caching;
 
 use Prado\Caching\TApplicationStateCacheDependency;
 use Prado\Prado;
@@ -25,7 +25,7 @@ use Prado\TApplicationMode;
  * Each test saves the current application mode in setUp() and restores it in
  * tearDown() so this suite does not affect other tests.
  */
-class TApplicationStateCacheDependencyTest extends PHPUnit\Framework\TestCase
+class TApplicationStateCacheDependencyTest extends \PHPUnit\Framework\TestCase
 {
 	private string $_originalMode;
 

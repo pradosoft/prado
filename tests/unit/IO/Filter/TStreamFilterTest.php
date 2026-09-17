@@ -1,10 +1,12 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Filter;
+
 use Prado\Exceptions\TIOException;
 use Prado\IO\TStream;
 use Prado\IO\Filter\TStreamFilter;
 
-class TStreamFilterTest extends PHPUnit\Framework\TestCase
+class TStreamFilterTest extends \PHPUnit\Framework\TestCase
 {
 	protected function setUp(): void
 	{

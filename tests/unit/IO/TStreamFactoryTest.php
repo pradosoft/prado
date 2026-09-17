@@ -1,13 +1,16 @@
 <?php
 
+namespace Prado\Test\Unit\IO;
+
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\IO\TStream;
 use Prado\IO\TStreamFactory;
 use Prado\IO\TStreamResourceWrapper;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\StreamInterface;
+use Prado\Test\Unit\Harness\IO\TTestIOHelper;
 
-class TStreamFactoryTest extends PHPUnit\Framework\TestCase
+class TStreamFactoryTest extends \PHPUnit\Framework\TestCase
 {
 	private TStreamFactory $factory;
 

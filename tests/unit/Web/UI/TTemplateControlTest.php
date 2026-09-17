@@ -1,13 +1,16 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI;
+
 use Prado\Web\UI\TTemplateControl;
 use Prado\Web\UI\TTemplate;
 use Prado\Web\UI\ITemplate;
 use Prado\Web\UI\WebControls\TContent;
 use Prado\Web\UI\WebControls\TContentPlaceHolder;
 use Prado\Exceptions\TConfigurationException;
+use Prado\Test\Unit\PradoUnit;
 
-class TTemplateControlTest extends PHPUnit\Framework\TestCase
+class TTemplateControlTest extends \PHPUnit\Framework\TestCase
 {
 	// -----------------------------------------------------------------------
 	// Helpers — read private fields via Reflection

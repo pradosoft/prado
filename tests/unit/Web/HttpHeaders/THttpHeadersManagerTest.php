@@ -14,6 +14,8 @@
  * @author Brad Anderson <belisoful@icloud.com>
  */
 
+namespace Prado\Test\Unit\Web\HttpHeaders;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
@@ -30,6 +32,9 @@ use Prado\Web\HttpHeaders\THttpHeaderReportingEndpoints;
 use Prado\Web\HttpHeaders\THttpHeadersManager;
 use Prado\Web\Services\TCspReportingService;
 use Prado\Web\THttpHeaderName;
+use Prado\Test\Unit\Harness\Web\HttpHeaders\TStubHeader;
+use Prado\Test\Unit\Harness\Web\HttpHeaders\TTestHttpHeadersManager;
+use Prado\Test\Unit\PradoUnit;
 
 // ---------------------------------------------------------------------------
 // Bootstrap auto-loads PradoUnit + everything under tests/unit/Harness/,
@@ -37,13 +42,13 @@ use Prado\Web\THttpHeaderName;
 // ---------------------------------------------------------------------------
 
 // Test double {@see TStubHeader} lives in tests/unit/Harness/Web/HttpHeaders/
-// and is auto-loaded by the bootstrap.
+// and is autoloaded by Composer.
 
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
 
-class THttpHeadersManagerTest extends PHPUnit\Framework\TestCase
+class THttpHeadersManagerTest extends \PHPUnit\Framework\TestCase
 {
 	public static ?TApplication $app = null;
 

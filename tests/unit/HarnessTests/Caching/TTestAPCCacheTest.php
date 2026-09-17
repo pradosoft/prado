@@ -8,7 +8,10 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\HarnessTests\Caching;
+
 use Prado\Caching\TAPCCache;
+use Prado\Test\Unit\Harness\Caching\TTestAPCCache;
 
 /**
  * Tests for {@see TTestAPCCache}. Verifies type, the clock seam, and — only when the
@@ -16,7 +19,7 @@ use Prado\Caching\TAPCCache;
  *
  * @package System.Harness.Caching
  */
-class TTestAPCCacheTest extends PHPUnit\Framework\TestCase
+class TTestAPCCacheTest extends \PHPUnit\Framework\TestCase
 {
 	private function newCache(): TTestAPCCache
 	{

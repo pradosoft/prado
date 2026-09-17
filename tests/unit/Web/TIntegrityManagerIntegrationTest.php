@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web;
+
 use Prado\IO\TTextWriter;
 use Prado\Prado;
 use Prado\Web\Javascripts\TJavaScript;
@@ -15,7 +17,7 @@ use Prado\Xml\TXmlDocument;
  * it renders registered script files. Exercises the module → TJavaScript →
  * TClientScriptManager render path together, without a browser.
  */
-class TIntegrityManagerIntegrationTest extends PHPUnit\Framework\TestCase
+class TIntegrityManagerIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 	private const REMOTE = 'https://cdn.example.com/lib.js';
 	private const HASH = 'sha384-AAAABBBBCCCC';

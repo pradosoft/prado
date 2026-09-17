@@ -46,7 +46,7 @@ PHPUnit tests live in `tests/unit/PHPStan/PHPStanExtensionsTest.php`. Each exten
 1. **Without extension** (`phpstan-no-extensions.neon`) — verifies the fixture file DOES produce PHPStan errors.
 2. **With extension** (`phpstan.neon.dist`) — verifies the fixture file produces ZERO errors.
 
-Fixture files are in `tests/unit/PHPStan/fixtures/`:
+Fixture files are in `tests/unit/PHPStan/Fixtures/`:
 - `HasMethodFixture.php` — `TComponent::hasMethod()` guard patterns
 - `MethodVisibleFixture.php` — `Prado::method_visible()` guard patterns
 - `DynamicMethodsFixture.php` — `dy*` / `fx*` dynamic method calls

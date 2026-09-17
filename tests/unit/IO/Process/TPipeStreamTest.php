@@ -1,10 +1,12 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Process;
+
 use Prado\IO\Process\TPipeStream;
 use Prado\IO\Process\TProcess;
 use Psr\Http\Message\StreamInterface;
 
-class TPipeStreamTest extends PHPUnit\Framework\TestCase
+class TPipeStreamTest extends \PHPUnit\Framework\TestCase
 {
 	public function testPopenReadCapabilitiesAndOutput()
 	{

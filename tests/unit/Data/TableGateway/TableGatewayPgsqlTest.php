@@ -1,6 +1,10 @@
 <?php
 
-require_once(__DIR__ . '/BaseGateway.php');
+namespace Prado\Test\Unit\Data\TableGateway;
+
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+use Prado\Data\DataGateway\TTableGateway;
+use Prado\Data\TDbConnection;
 
 class TableGatewayPgsqlTest extends BaseGateway
 {

@@ -8,11 +8,14 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit;
+
 use Prado\Prado;
 use Prado\TApplicationConfiguration;
 use Prado\Web\UI\TControl;
 use Prado\Web\UI\TTemplate;
 use Prado\Xml\TXmlDocument;
+use Prado\Test\Unit\Harness\TTestApplicationConfiguration;
 
 // ════════════════════════════════════════════════════════════════════════
 // Backed enum shared by all fixture classes
@@ -367,7 +370,7 @@ function instantiateTemplateControl(string $tpl): TAppConfigTestControl
  * - *nullable*: `?string`, `?int`, `?BackedEnum`
  * - *union*: `int|float` with int-range, float, large-int overflow
  */
-class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
+class TPropertyValueIntegrationCoercionTest extends \PHPUnit\Framework\TestCase
 {
 	// ══════════════════════════════════════════════════════════════════════
 	// XML config → Module
@@ -379,7 +382,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 			<?xml version="1.0" encoding="utf-8"?>
 			<application>
 				<modules>
-					<module id="testmod" class="TAppConfigTestModule"
+					<module id="testmod" class="Prado\Test\Unit\TAppConfigTestModule"
 						BoolProp="true"
 						IntProp="42"
 						FloatProp="1.5"
@@ -406,7 +409,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 			<?xml version="1.0" encoding="utf-8"?>
 			<application>
 				<modules>
-					<module id="m" class="TAppConfigTestModule" BoolProp="false" />
+					<module id="m" class="Prado\Test\Unit\TAppConfigTestModule" BoolProp="false" />
 				</modules>
 			</application>
 			XML;
@@ -426,7 +429,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 				<?xml version="1.0" encoding="utf-8"?>
 				<application>
 					<modules>
-						<module id="m" class="TAppConfigTestModule" BoolProp="$s" />
+						<module id="m" class="Prado\Test\Unit\TAppConfigTestModule" BoolProp="$s" />
 					</modules>
 				</application>
 				XML;
@@ -442,7 +445,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 			<?xml version="1.0" encoding="utf-8"?>
 			<application>
 				<modules>
-					<module id="m" class="TAppConfigTestModule" IntProp="-7" />
+					<module id="m" class="Prado\Test\Unit\TAppConfigTestModule" IntProp="-7" />
 				</modules>
 			</application>
 			XML;
@@ -457,7 +460,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 			<?xml version="1.0" encoding="utf-8"?>
 			<application>
 				<modules>
-					<module id="m" class="TAppConfigTestModule" FloatProp="1.5e3" />
+					<module id="m" class="Prado\Test\Unit\TAppConfigTestModule" FloatProp="1.5e3" />
 				</modules>
 			</application>
 			XML;
@@ -472,7 +475,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 			<?xml version="1.0" encoding="utf-8"?>
 			<application>
 				<modules>
-					<module id="m" class="TAppConfigTestModule" ArrayProp="[1, 2, 3]" />
+					<module id="m" class="Prado\Test\Unit\TAppConfigTestModule" ArrayProp="[1, 2, 3]" />
 				</modules>
 			</application>
 			XML;
@@ -487,7 +490,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 			<?xml version="1.0" encoding="utf-8"?>
 			<application>
 				<modules>
-					<module id="m" class="TAppConfigTestModule" ArrayProp='("x" =&gt; 1, "y" =&gt; 2)' />
+					<module id="m" class="Prado\Test\Unit\TAppConfigTestModule" ArrayProp='("x" =&gt; 1, "y" =&gt; 2)' />
 				</modules>
 			</application>
 			XML;
@@ -502,7 +505,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 			<?xml version="1.0" encoding="utf-8"?>
 			<application>
 				<modules>
-					<module id="m" class="TAppConfigTestModule" ColorProp="red" />
+					<module id="m" class="Prado\Test\Unit\TAppConfigTestModule" ColorProp="red" />
 				</modules>
 			</application>
 			XML;
@@ -517,7 +520,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 			<?xml version="1.0" encoding="utf-8"?>
 			<application>
 				<modules>
-					<module id="m" class="TAppConfigTestModule" ColorProp="Blue" />
+					<module id="m" class="Prado\Test\Unit\TAppConfigTestModule" ColorProp="Blue" />
 				</modules>
 			</application>
 			XML;
@@ -534,7 +537,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 			<?xml version="1.0" encoding="utf-8"?>
 			<application>
 				<modules>
-					<module id="m" class="TAppConfigTestModule" NullableStringProp="" />
+					<module id="m" class="Prado\Test\Unit\TAppConfigTestModule" NullableStringProp="" />
 				</modules>
 			</application>
 			XML;
@@ -549,7 +552,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 			<?xml version="1.0" encoding="utf-8"?>
 			<application>
 				<modules>
-					<module id="m" class="TAppConfigTestModule" NullableStringProp="set" />
+					<module id="m" class="Prado\Test\Unit\TAppConfigTestModule" NullableStringProp="set" />
 				</modules>
 			</application>
 			XML;
@@ -564,7 +567,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 			<?xml version="1.0" encoding="utf-8"?>
 			<application>
 				<modules>
-					<module id="m" class="TAppConfigTestModule" NullableIntProp="" />
+					<module id="m" class="Prado\Test\Unit\TAppConfigTestModule" NullableIntProp="" />
 				</modules>
 			</application>
 			XML;
@@ -579,7 +582,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 			<?xml version="1.0" encoding="utf-8"?>
 			<application>
 				<modules>
-					<module id="m" class="TAppConfigTestModule" NullableIntProp="99" />
+					<module id="m" class="Prado\Test\Unit\TAppConfigTestModule" NullableIntProp="99" />
 				</modules>
 			</application>
 			XML;
@@ -594,7 +597,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 			<?xml version="1.0" encoding="utf-8"?>
 			<application>
 				<modules>
-					<module id="m" class="TAppConfigTestModule" NullableColorProp="" />
+					<module id="m" class="Prado\Test\Unit\TAppConfigTestModule" NullableColorProp="" />
 				</modules>
 			</application>
 			XML;
@@ -609,7 +612,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 			<?xml version="1.0" encoding="utf-8"?>
 			<application>
 				<modules>
-					<module id="m" class="TAppConfigTestModule" NullableColorProp="blue" />
+					<module id="m" class="Prado\Test\Unit\TAppConfigTestModule" NullableColorProp="blue" />
 				</modules>
 			</application>
 			XML;
@@ -626,7 +629,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 			<?xml version="1.0" encoding="utf-8"?>
 			<application>
 				<modules>
-					<module id="m" class="TAppConfigTestModule" IntOrFloat="7" />
+					<module id="m" class="Prado\Test\Unit\TAppConfigTestModule" IntOrFloat="7" />
 				</modules>
 			</application>
 			XML;
@@ -641,7 +644,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 			<?xml version="1.0" encoding="utf-8"?>
 			<application>
 				<modules>
-					<module id="m" class="TAppConfigTestModule" IntOrFloat="7.5" />
+					<module id="m" class="Prado\Test\Unit\TAppConfigTestModule" IntOrFloat="7.5" />
 				</modules>
 			</application>
 			XML;
@@ -657,7 +660,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 			<?xml version="1.0" encoding="utf-8"?>
 			<application>
 				<modules>
-					<module id="m" class="TAppConfigTestModule" IntOrFloat="$overMax" />
+					<module id="m" class="Prado\Test\Unit\TAppConfigTestModule" IntOrFloat="$overMax" />
 				</modules>
 			</application>
 			XML;
@@ -676,7 +679,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 		$phpConfig = [
 			'modules' => [
 				'testmod' => [
-					'class'      => 'TAppConfigTestModule',
+					'class'      => TAppConfigTestModule::class,
 					'properties' => [
 						'BoolProp'   => 'true',
 						'IntProp'    => '42',
@@ -708,7 +711,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 		$phpConfig = [
 			'modules' => [
 				'testmod' => [
-					'class'      => 'TAppConfigTestModule',
+					'class'      => TAppConfigTestModule::class,
 					'properties' => [
 						'BoolProp'  => true,           // native PHP bool
 						'IntProp'   => 99,             // native PHP int
@@ -733,7 +736,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 		foreach (['yes', 'no', 'on', 'off'] as $s) {
 			$phpConfig = [
 				'modules' => [
-					'm' => ['class' => 'TAppConfigTestModule', 'properties' => ['BoolProp' => $s]],
+					'm' => ['class' => TAppConfigTestModule::class, 'properties' => ['BoolProp' => $s]],
 				],
 			];
 			[$module] = applyPhpModuleConfig($phpConfig);
@@ -747,7 +750,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 	{
 		$phpConfig = [
 			'modules' => [
-				'm' => ['class' => 'TAppConfigTestModule', 'properties' => ['NullableStringProp' => '']],
+				'm' => ['class' => TAppConfigTestModule::class, 'properties' => ['NullableStringProp' => '']],
 			],
 		];
 		[$module] = applyPhpModuleConfig($phpConfig);
@@ -758,7 +761,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 	{
 		$phpConfig = [
 			'modules' => [
-				'm' => ['class' => 'TAppConfigTestModule', 'properties' => ['NullableStringProp' => null]],
+				'm' => ['class' => TAppConfigTestModule::class, 'properties' => ['NullableStringProp' => null]],
 			],
 		];
 		[$module] = applyPhpModuleConfig($phpConfig);
@@ -769,7 +772,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 	{
 		$phpConfig = [
 			'modules' => [
-				'm' => ['class' => 'TAppConfigTestModule', 'properties' => ['NullableIntProp' => '']],
+				'm' => ['class' => TAppConfigTestModule::class, 'properties' => ['NullableIntProp' => '']],
 			],
 		];
 		[$module] = applyPhpModuleConfig($phpConfig);
@@ -780,7 +783,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 	{
 		$phpConfig = [
 			'modules' => [
-				'm' => ['class' => 'TAppConfigTestModule', 'properties' => ['NullableIntProp' => '55']],
+				'm' => ['class' => TAppConfigTestModule::class, 'properties' => ['NullableIntProp' => '55']],
 			],
 		];
 		[$module] = applyPhpModuleConfig($phpConfig);
@@ -791,7 +794,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 	{
 		$phpConfig = [
 			'modules' => [
-				'm' => ['class' => 'TAppConfigTestModule', 'properties' => ['NullableColorProp' => '']],
+				'm' => ['class' => TAppConfigTestModule::class, 'properties' => ['NullableColorProp' => '']],
 			],
 		];
 		[$module] = applyPhpModuleConfig($phpConfig);
@@ -804,7 +807,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 	{
 		$phpConfig = [
 			'modules' => [
-				'm' => ['class' => 'TAppConfigTestModule', 'properties' => ['IntOrFloat' => '5']],
+				'm' => ['class' => TAppConfigTestModule::class, 'properties' => ['IntOrFloat' => '5']],
 			],
 		];
 		[$module] = applyPhpModuleConfig($phpConfig);
@@ -815,7 +818,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 	{
 		$phpConfig = [
 			'modules' => [
-				'm' => ['class' => 'TAppConfigTestModule', 'properties' => ['IntOrFloat' => '5.5']],
+				'm' => ['class' => TAppConfigTestModule::class, 'properties' => ['IntOrFloat' => '5.5']],
 			],
 		];
 		[$module] = applyPhpModuleConfig($phpConfig);
@@ -826,7 +829,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 	{
 		$phpConfig = [
 			'modules' => [
-				'm' => ['class' => 'TAppConfigTestModule', 'properties' => ['IntOrFloat' => 10]],
+				'm' => ['class' => TAppConfigTestModule::class, 'properties' => ['IntOrFloat' => 10]],
 			],
 		];
 		[$module] = applyPhpModuleConfig($phpConfig);
@@ -837,7 +840,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 	{
 		$phpConfig = [
 			'modules' => [
-				'm' => ['class' => 'TAppConfigTestModule', 'properties' => ['IntOrFloat' => 10.5]],
+				'm' => ['class' => TAppConfigTestModule::class, 'properties' => ['IntOrFloat' => 10.5]],
 			],
 		];
 		[$module] = applyPhpModuleConfig($phpConfig);
@@ -854,7 +857,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 			<?xml version="1.0" encoding="utf-8"?>
 			<application>
 				<services>
-					<service id="testsvc" class="TAppConfigTestService"
+					<service id="testsvc" class="Prado\Test\Unit\TAppConfigTestService"
 						BoolProp="true"
 						IntProp="10"
 						FloatProp="3.14"
@@ -882,7 +885,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 				<?xml version="1.0" encoding="utf-8"?>
 				<application>
 					<services>
-						<service id="s" class="TAppConfigTestService" BoolProp="$s" />
+						<service id="s" class="Prado\Test\Unit\TAppConfigTestService" BoolProp="$s" />
 					</services>
 				</application>
 				XML;
@@ -898,7 +901,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 			<?xml version="1.0" encoding="utf-8"?>
 			<application>
 				<services>
-					<service id="s" class="TAppConfigTestService" NullableStringProp="" />
+					<service id="s" class="Prado\Test\Unit\TAppConfigTestService" NullableStringProp="" />
 				</services>
 			</application>
 			XML;
@@ -913,7 +916,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 			<?xml version="1.0" encoding="utf-8"?>
 			<application>
 				<services>
-					<service id="s" class="TAppConfigTestService" NullableIntProp="77" />
+					<service id="s" class="Prado\Test\Unit\TAppConfigTestService" NullableIntProp="77" />
 				</services>
 			</application>
 			XML;
@@ -928,7 +931,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 			<?xml version="1.0" encoding="utf-8"?>
 			<application>
 				<services>
-					<service id="s" class="TAppConfigTestService" IntOrFloat="4" />
+					<service id="s" class="Prado\Test\Unit\TAppConfigTestService" IntOrFloat="4" />
 				</services>
 			</application>
 			XML;
@@ -943,7 +946,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 			<?xml version="1.0" encoding="utf-8"?>
 			<application>
 				<services>
-					<service id="s" class="TAppConfigTestService" IntOrFloat="4.5" />
+					<service id="s" class="Prado\Test\Unit\TAppConfigTestService" IntOrFloat="4.5" />
 				</services>
 			</application>
 			XML;
@@ -959,7 +962,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 			<?xml version="1.0" encoding="utf-8"?>
 			<application>
 				<services>
-					<service id="s" class="TAppConfigTestService" IntOrFloat="$overMax" />
+					<service id="s" class="Prado\Test\Unit\TAppConfigTestService" IntOrFloat="$overMax" />
 				</services>
 			</application>
 			XML;
@@ -977,7 +980,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 		$phpConfig = [
 			'services' => [
 				'testsvc' => [
-					'class'      => 'TAppConfigTestService',
+					'class'      => TAppConfigTestService::class,
 					'properties' => [
 						'BoolProp'   => 'false',
 						'IntProp'    => '3',
@@ -1004,7 +1007,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 		$phpConfig = [
 			'services' => [
 				'testsvc' => [
-					'class'      => 'TAppConfigTestService',
+					'class'      => TAppConfigTestService::class,
 					'properties' => [
 						'BoolProp'  => false,
 						'IntProp'   => 3,
@@ -1026,7 +1029,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 	{
 		$phpConfig = [
 			'services' => [
-				's' => ['class' => 'TAppConfigTestService', 'properties' => ['NullableStringProp' => '']],
+				's' => ['class' => TAppConfigTestService::class, 'properties' => ['NullableStringProp' => '']],
 			],
 		];
 		[$service] = applyPhpServiceConfig($phpConfig);
@@ -1037,7 +1040,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 	{
 		$phpConfig = [
 			'services' => [
-				's' => ['class' => 'TAppConfigTestService', 'properties' => ['NullableIntProp' => '11']],
+				's' => ['class' => TAppConfigTestService::class, 'properties' => ['NullableIntProp' => '11']],
 			],
 		];
 		[$service] = applyPhpServiceConfig($phpConfig);
@@ -1048,7 +1051,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 	{
 		$phpConfig = [
 			'services' => [
-				's' => ['class' => 'TAppConfigTestService', 'properties' => ['IntOrFloat' => '9']],
+				's' => ['class' => TAppConfigTestService::class, 'properties' => ['IntOrFloat' => '9']],
 			],
 		];
 		[$service] = applyPhpServiceConfig($phpConfig);
@@ -1059,7 +1062,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 	{
 		$phpConfig = [
 			'services' => [
-				's' => ['class' => 'TAppConfigTestService', 'properties' => ['IntOrFloat' => '9.9']],
+				's' => ['class' => TAppConfigTestService::class, 'properties' => ['IntOrFloat' => '9.9']],
 			],
 		];
 		[$service] = applyPhpServiceConfig($phpConfig);
@@ -1073,7 +1076,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 	public function testHarness_addModuleConfig_appliesViaNormalLoop(): void
 	{
 		$config = new TTestApplicationConfiguration();
-		$config->addModuleConfig('m', 'TAppConfigTestModule', [
+		$config->addModuleConfig('m', TAppConfigTestModule::class, [
 			'BoolProp'   => 'true',
 			'IntProp'    => '20',
 			'FloatProp'  => '0.5',
@@ -1099,7 +1102,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 	public function testHarness_addServiceConfig_appliesViaNormalLoop(): void
 	{
 		$config = new TTestApplicationConfiguration();
-		$config->addServiceConfig('svc', 'TAppConfigTestService', [
+		$config->addServiceConfig('svc', TAppConfigTestService::class, [
 			'BoolProp'  => 'false',
 			'IntProp'   => '7',
 			'ColorProp' => 'red',
@@ -1121,9 +1124,9 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 	public function testHarness_setModuleConfigs_replacesEntireMap(): void
 	{
 		$config = new TTestApplicationConfiguration();
-		$config->addModuleConfig('old', 'TAppConfigTestModule', ['IntProp' => '1']);
+		$config->addModuleConfig('old', TAppConfigTestModule::class, ['IntProp' => '1']);
 		$config->setModuleConfigs([
-			'new' => ['TAppConfigTestModule', ['IntProp' => '99'], null],
+			'new' => [TAppConfigTestModule::class, ['IntProp' => '99'], null],
 		]);
 
 		$modules = $config->getModules();
@@ -1134,7 +1137,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 	public function testHarness_nullable_injectedNull_staysNull(): void
 	{
 		$config = new TTestApplicationConfiguration();
-		$config->addModuleConfig('m', 'TAppConfigTestModule', [
+		$config->addModuleConfig('m', TAppConfigTestModule::class, [
 			'NullableStringProp' => null,
 			'NullableIntProp'    => null,
 		]);
@@ -1158,7 +1161,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 
 	public function testTemplate_control_singleTypes_allAttributesCoerced(): void
 	{
-		$tpl = '<com:TAppConfigTestControl'
+		$tpl = '<com:Prado\Test\Unit\TAppConfigTestControl'
 			. ' BoolProp="true"'
 			. ' IntProp="42"'
 			. ' FloatProp="1.5"'
@@ -1179,51 +1182,51 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 
 	public function testTemplate_control_boolProp_falseString(): void
 	{
-		$child = instantiateTemplateControl('<com:TAppConfigTestControl BoolProp="false" />');
+		$child = instantiateTemplateControl('<com:Prado\Test\Unit\TAppConfigTestControl BoolProp="false" />');
 		self::assertSame(false, $child->getBoolProp());
 	}
 
 	public function testTemplate_control_boolProp_yesNoOnOff_allFalse(): void
 	{
 		foreach (['yes', 'no', 'on', 'off'] as $s) {
-			$child = instantiateTemplateControl('<com:TAppConfigTestControl BoolProp="' . $s . '" />');
+			$child = instantiateTemplateControl('<com:Prado\Test\Unit\TAppConfigTestControl BoolProp="' . $s . '" />');
 			self::assertSame(false, $child->getBoolProp(), "Expected false for BoolProp='$s'");
 		}
 	}
 
 	public function testTemplate_control_intProp_negativeString(): void
 	{
-		$child = instantiateTemplateControl('<com:TAppConfigTestControl IntProp="-5" />');
+		$child = instantiateTemplateControl('<com:Prado\Test\Unit\TAppConfigTestControl IntProp="-5" />');
 		self::assertSame(-5, $child->getIntProp());
 	}
 
 	public function testTemplate_control_floatProp_scientificNotation(): void
 	{
-		$child = instantiateTemplateControl('<com:TAppConfigTestControl FloatProp="2e3" />');
+		$child = instantiateTemplateControl('<com:Prado\Test\Unit\TAppConfigTestControl FloatProp="2e3" />');
 		self::assertSame(2000.0, $child->getFloatProp());
 	}
 
 	public function testTemplate_control_arrayProp_bracketSyntax(): void
 	{
-		$child = instantiateTemplateControl('<com:TAppConfigTestControl ArrayProp="[10, 20, 30]" />');
+		$child = instantiateTemplateControl('<com:Prado\Test\Unit\TAppConfigTestControl ArrayProp="[10, 20, 30]" />');
 		self::assertSame([10, 20, 30], $child->getArrayProp());
 	}
 
 	public function testTemplate_control_arrayProp_bareWordList(): void
 	{
-		$child = instantiateTemplateControl('<com:TAppConfigTestControl ArrayProp="a, b, c" />');
+		$child = instantiateTemplateControl('<com:Prado\Test\Unit\TAppConfigTestControl ArrayProp="a, b, c" />');
 		self::assertSame(['a', 'b', 'c'], $child->getArrayProp());
 	}
 
 	public function testTemplate_control_colorProp_fromBackingValue(): void
 	{
-		$child = instantiateTemplateControl('<com:TAppConfigTestControl ColorProp="blue" />');
+		$child = instantiateTemplateControl('<com:Prado\Test\Unit\TAppConfigTestControl ColorProp="blue" />');
 		self::assertSame(TAppConfigTestColor::Blue, $child->getColorProp());
 	}
 
 	public function testTemplate_control_colorProp_fromCaseName(): void
 	{
-		$child = instantiateTemplateControl('<com:TAppConfigTestControl ColorProp="Red" />');
+		$child = instantiateTemplateControl('<com:Prado\Test\Unit\TAppConfigTestControl ColorProp="Red" />');
 		self::assertSame(TAppConfigTestColor::Red, $child->getColorProp());
 	}
 
@@ -1231,11 +1234,11 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 	{
 		foreach (TAppConfigTestColor::cases() as $case) {
 			// Via backing value
-			$child = instantiateTemplateControl('<com:TAppConfigTestControl ColorProp="' . $case->value . '" />');
+			$child = instantiateTemplateControl('<com:Prado\Test\Unit\TAppConfigTestControl ColorProp="' . $case->value . '" />');
 			self::assertSame($case, $child->getColorProp());
 
 			// Via case name
-			$child = instantiateTemplateControl('<com:TAppConfigTestControl ColorProp="' . $case->name . '" />');
+			$child = instantiateTemplateControl('<com:Prado\Test\Unit\TAppConfigTestControl ColorProp="' . $case->name . '" />');
 			self::assertSame($case, $child->getColorProp());
 		}
 	}
@@ -1244,37 +1247,37 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 
 	public function testTemplate_control_nullable_emptyAttributeBecomesNull(): void
 	{
-		$child = instantiateTemplateControl('<com:TAppConfigTestControl NullableStringProp="" />');
+		$child = instantiateTemplateControl('<com:Prado\Test\Unit\TAppConfigTestControl NullableStringProp="" />');
 		self::assertNull($child->getNullableStringProp());
 	}
 
 	public function testTemplate_control_nullable_nonEmptyPreserved(): void
 	{
-		$child = instantiateTemplateControl('<com:TAppConfigTestControl NullableStringProp="set" />');
+		$child = instantiateTemplateControl('<com:Prado\Test\Unit\TAppConfigTestControl NullableStringProp="set" />');
 		self::assertSame('set', $child->getNullableStringProp());
 	}
 
 	public function testTemplate_control_nullableInt_emptyAttributeBecomesNull(): void
 	{
-		$child = instantiateTemplateControl('<com:TAppConfigTestControl NullableIntProp="" />');
+		$child = instantiateTemplateControl('<com:Prado\Test\Unit\TAppConfigTestControl NullableIntProp="" />');
 		self::assertNull($child->getNullableIntProp());
 	}
 
 	public function testTemplate_control_nullableInt_numericStringBecomesInt(): void
 	{
-		$child = instantiateTemplateControl('<com:TAppConfigTestControl NullableIntProp="33" />');
+		$child = instantiateTemplateControl('<com:Prado\Test\Unit\TAppConfigTestControl NullableIntProp="33" />');
 		self::assertSame(33, $child->getNullableIntProp());
 	}
 
 	public function testTemplate_control_nullableColor_emptyAttributeBecomesNull(): void
 	{
-		$child = instantiateTemplateControl('<com:TAppConfigTestControl NullableColorProp="" />');
+		$child = instantiateTemplateControl('<com:Prado\Test\Unit\TAppConfigTestControl NullableColorProp="" />');
 		self::assertNull($child->getNullableColorProp());
 	}
 
 	public function testTemplate_control_nullableColor_backingValue(): void
 	{
-		$child = instantiateTemplateControl('<com:TAppConfigTestControl NullableColorProp="red" />');
+		$child = instantiateTemplateControl('<com:Prado\Test\Unit\TAppConfigTestControl NullableColorProp="red" />');
 		self::assertSame(TAppConfigTestColor::Red, $child->getNullableColorProp());
 	}
 
@@ -1282,26 +1285,26 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 
 	public function testTemplate_control_union_intString_picksInt(): void
 	{
-		$child = instantiateTemplateControl('<com:TAppConfigTestControl IntOrFloat="6" />');
+		$child = instantiateTemplateControl('<com:Prado\Test\Unit\TAppConfigTestControl IntOrFloat="6" />');
 		self::assertSame(6, $child->getIntOrFloat());
 	}
 
 	public function testTemplate_control_union_floatString_picksFloat(): void
 	{
-		$child = instantiateTemplateControl('<com:TAppConfigTestControl IntOrFloat="6.5" />');
+		$child = instantiateTemplateControl('<com:Prado\Test\Unit\TAppConfigTestControl IntOrFloat="6.5" />');
 		self::assertSame(6.5, $child->getIntOrFloat());
 	}
 
 	public function testTemplate_control_union_scientificNotation_picksFloat(): void
 	{
-		$child = instantiateTemplateControl('<com:TAppConfigTestControl IntOrFloat="1.5e2" />');
+		$child = instantiateTemplateControl('<com:Prado\Test\Unit\TAppConfigTestControl IntOrFloat="1.5e2" />');
 		self::assertSame(150.0, $child->getIntOrFloat());
 	}
 
 	public function testTemplate_control_union_overflowInt_promotesToFloat(): void
 	{
 		$overMax = bcadd((string) PHP_INT_MAX, '1');
-		$child   = instantiateTemplateControl('<com:TAppConfigTestControl IntOrFloat="' . $overMax . '" />');
+		$child   = instantiateTemplateControl('<com:Prado\Test\Unit\TAppConfigTestControl IntOrFloat="' . $overMax . '" />');
 		self::assertIsFloat($child->getIntOrFloat());
 		self::assertSame((float) $overMax, $child->getIntOrFloat());
 	}
@@ -1310,7 +1313,7 @@ class TPropertyValueIntegrationCoercionTest extends PHPUnit\Framework\TestCase
 
 	public function testTemplate_control_multipleAttributes_allCoercedTogether(): void
 	{
-		$tpl = '<com:TAppConfigTestControl'
+		$tpl = '<com:Prado\Test\Unit\TAppConfigTestControl'
 			. ' BoolProp="false"'
 			. ' IntProp="-3"'
 			. ' FloatProp="0.001"'

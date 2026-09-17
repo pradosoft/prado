@@ -1,13 +1,16 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI;
+
 use Prado\Prado;
 use Prado\Web\UI\TThemeManager;
 use Prado\Web\UI\TTheme;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\Test\Unit\PradoUnit;
 
-class TThemeManagerTest extends PHPUnit\Framework\TestCase
+class TThemeManagerTest extends \PHPUnit\Framework\TestCase
 {
 	/** @var string[] temp directories created during tests */
 	private array $_tmpDirs = [];

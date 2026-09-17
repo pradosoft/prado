@@ -1,11 +1,15 @@
 <?php
 
+namespace Prado\Test\Unit\Data\SqlMap;
+
 use Prado\Data\SqlMap\TSqlMapManager;
 use Prado\Data\TDbConnection;
 use Prado\Prado;
 use Prado\TApplication;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+use Prado\Data\Common\Mysql\TMysqlMetaData;
 
-class DynamicParameterTest extends PHPUnit\Framework\TestCase
+class DynamicParameterTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 	

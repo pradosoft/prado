@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/TComponentTestBase.php';
+namespace Prado\Test\Unit;
 
 use Prado\Exceptions\TUnknownMethodException;
 
@@ -46,7 +46,7 @@ class TComponentCallTest extends TComponentTestBase
 
 
 		// test object instance behaviors implemented through class-wide behaviors
-		$this->component->attachClassBehavior('FooFooBehaviorAsClass', 'FooFooBehavior');
+		$this->component->attachClassBehavior('FooFooBehaviorAsClass', FooFooBehavior::class);
 
 		$component = new NewComponent;
 

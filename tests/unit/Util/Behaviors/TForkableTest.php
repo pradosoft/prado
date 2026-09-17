@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Behaviors;
+
 use Prado\TComponent;
 use Prado\Util\Behaviors\TForkable;
 
@@ -33,7 +35,7 @@ class TTestForkableBehavior extends TComponent
 	}
 }
 
-class TForkableTest extends PHPUnit\Framework\TestCase
+class TForkableTest extends \PHPUnit\Framework\TestCase
 {
 	protected $behavior;
 

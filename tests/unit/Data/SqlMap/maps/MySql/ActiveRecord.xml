@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqlMap>
 
-	<select id="GetActiveRecordAccounts" resultClass="ActiveAccount">
+	<select id="GetActiveRecordAccounts" resultClass="Prado\Test\Unit\Data\SqlMap\ActiveAccount">
 			select
 			Account_Id,
 			Account_FirstName,

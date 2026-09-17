@@ -1,8 +1,10 @@
 <?php
 
+namespace Prado\Test\Unit\Web;
+
 use Prado\Web\THttpHeaderName;
 
-class THttpHeaderNameTest extends PHPUnit\Framework\TestCase
+class THttpHeaderNameTest extends \PHPUnit\Framework\TestCase
 {
 	// -----------------------------------------------------------------------
 	// Inheritance

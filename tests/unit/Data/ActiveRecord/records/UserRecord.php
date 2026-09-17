@@ -1,5 +1,10 @@
 <?php
 
+namespace Prado\Test\Unit\Data\ActiveRecord\Records;
+
+use Prado\Data\ActiveRecord\TActiveRecord;
+use Prado\TPropertyValue;
+
 class UserRecord extends TActiveRecord
 {
 	public $username;

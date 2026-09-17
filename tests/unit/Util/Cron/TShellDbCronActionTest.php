@@ -1,14 +1,18 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Cron;
+
 use Prado\IO\TTextWriter;
 use Prado\Shell\TShellWriter;
 use Prado\Prado;
 use Prado\Util\Cron\TShellCronAction;
 use Prado\Util\Cron\TCronModule;
 use Prado\Util\Cron\TDbCronModule;
+use Prado\Util\Cron\TDbCronManager;
+use Prado\Util\Cron\TShellDbCronAction;
 
 
-class TShellDbCronActionTest extends PHPUnit\Framework\TestCase
+class TShellDbCronActionTest extends \PHPUnit\Framework\TestCase
 {
 	protected $obj;
 	protected $writer;
@@ -54,7 +58,7 @@ class TShellDbCronActionTest extends PHPUnit\Framework\TestCase
 		self::assertTrue($this->obj->actionRun(['cron']));
 		self::assertEquals(1, preg_match("/TDbCronManager/", $text = $this->writer->flush()));
 		
-		$jobs = [['name' => 'testTaskA', 'schedule' => '1 2 3 4 ? 2020', 'task' => 'TTestCronModuleTask', 'username' => 'admin123', 'moduleid' => 'cronmodule99', 'propertya' => 'value1']];
+		$jobs = [['name' => 'testTaskA', 'schedule' => '1 2 3 4 ? 2020', 'task' => TTestCronModuleTask::class, 'username' => 'admin123', 'moduleid' => 'cronmodule99', 'propertya' => 'value1']];
 		$cronClass = $this->getTestCronClass();
 		$cron = new $cronClass();
 		$cron->setId('cronmodule88');
@@ -114,7 +118,7 @@ class TShellDbCronActionTest extends PHPUnit\Framework\TestCase
 			self::assertEquals(1, preg_match("/Clears the database of cron log items/i", $text));
 			
 			//Register & call again
-			$fxtest = new TTestCronFXTest();
+			$fxtest = new TTestCronFXComponent();
 			$fxtest->listen();
 			self::assertTrue($this->obj->actionIndex(['cron/index']));
 			$text = $this->writer->flush();

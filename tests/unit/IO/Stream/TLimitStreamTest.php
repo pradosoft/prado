@@ -1,9 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Stream;
+
 use Prado\IO\Stream\TLimitStream;
 use Prado\IO\TStream;
 
-class TLimitStreamTest extends PHPUnit\Framework\TestCase
+class TLimitStreamTest extends \PHPUnit\Framework\TestCase
 {
 	private function whole(): TStream
 	{

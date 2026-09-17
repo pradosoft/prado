@@ -1,16 +1,21 @@
 <?php
 
+namespace Prado\Test\Unit\Web;
+
 use Prado\Web\THttpRequest;
 use Prado\Web\THttpRequestUrlFormat;
 use Prado\Web\TUrlMapping;
 use Prado\Web\TUrlMappingPattern;
 use Prado\Web\TUrlManager;
 use Prado\Xml\TXmlDocument;
+use Prado\Test\Unit\Harness\TTestApplication;
+use Prado\Test\Unit\Harness\Traits\PradoUnitModuleDependencyTrait;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * Test class for TUrlMapping.
  */
-class TUrlMappingTest extends PHPUnit\Framework\TestCase
+class TUrlMappingTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitModuleDependencyTrait;
 

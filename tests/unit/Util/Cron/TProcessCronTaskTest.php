@@ -1,8 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Cron;
+
 use Prado\Util\Cron\TProcessCronTask;
 use Prado\Util\Helpers\TProcessHelper;
 use Prado\Exceptions\TConfigurationException;
+use Prado\Prado;
 
 /**
  * Test double: stubs the OS launch so no real process is spawned.
@@ -34,7 +37,7 @@ class TTestProcessCronTask extends TProcessCronTask
 	}
 }
 
-class TProcessCronTaskTest extends PHPUnit\Framework\TestCase
+class TProcessCronTaskTest extends \PHPUnit\Framework\TestCase
 {
 	private string $pidFile;
 

@@ -1,8 +1,10 @@
 <?php
 
+namespace Prado\Test\Unit\Web\HttpHeaders;
+
 use Prado\Web\HttpHeaders\TCspDirective;
 
-class TCspDirectiveTest extends PHPUnit\Framework\TestCase
+class TCspDirectiveTest extends \PHPUnit\Framework\TestCase
 {
 	// -----------------------------------------------------------------------
 	// Inheritance

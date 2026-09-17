@@ -1,8 +1,10 @@
 <?php
 
+namespace Prado\Test\Unit\Data\DbSpecific\Mssql;
+
 use Prado\Data\Common\Mssql\TMssqlCommandBuilder;
 
-class CommandBuilderMssqlTest extends PHPUnit\Framework\TestCase
+class CommandBuilderMssqlTest extends \PHPUnit\Framework\TestCase
 {
 	protected static $sql = [
 		'simple' => 'SELECT username, age FROM accounts',

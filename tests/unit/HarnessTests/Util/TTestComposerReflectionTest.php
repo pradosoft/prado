@@ -8,7 +8,12 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\HarnessTests\Util;
+
 use Prado\Util\TComposerReflection;
+use Prado\Test\Unit\Harness\Traits\TComposerReflectionTestTrait;
+use Prado\Test\Unit\Harness\Util\TTestComposerReflection;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * Tests for {@see TTestComposerReflection}, the seam subclass of {@see \Prado\Util\TComposerReflection}.
@@ -27,7 +32,7 @@ use Prado\Util\TComposerReflection;
  *
  * @package System.Harness
  */
-class TTestComposerReflectionTest extends PHPUnit\Framework\TestCase
+class TTestComposerReflectionTest extends \PHPUnit\Framework\TestCase
 {
 	use TComposerReflectionTestTrait;
 

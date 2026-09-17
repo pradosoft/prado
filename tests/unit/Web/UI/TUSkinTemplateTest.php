@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI;
+
 /**
  * TUSkinTemplateTest for testing TSkinTemplate
  * the reason for the odd naming is that it needs to be after TTemplateTest to extend the class.

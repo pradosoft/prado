@@ -1,9 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Helpers;
+
 use Prado\Util\Helpers\TBitHelper;
 use Prado\Exceptions\TInvalidDataValueException;
 
-class TBitHelperTest extends PHPUnit\Framework\TestCase
+class TBitHelperTest extends \PHPUnit\Framework\TestCase
 {
 	public function testHasLongLong()
 	{

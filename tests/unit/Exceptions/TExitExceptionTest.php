@@ -6,16 +6,19 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Exceptions;
+
 use Prado\Exceptions\TExitException;
 use Prado\Exceptions\TSystemException;
 use Prado\Exceptions\TException;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * Comprehensive tests for {@see TExitException}: exit code storage and edge values,
  * message translation, variadic placeholders, getErrorMessage(), setErrorCode(),
  * throw/catch, exception chaining (getPrevious()), and the full inheritance chain.
  */
-class TExitExceptionTest extends PHPUnit\Framework\TestCase
+class TExitExceptionTest extends \PHPUnit\Framework\TestCase
 {
 	// ── Construction and exit code ────────────────────────────────────────────
 

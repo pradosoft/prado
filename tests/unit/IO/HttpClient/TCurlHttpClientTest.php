@@ -1,9 +1,9 @@
 <?php
 
+namespace Prado\Test\Unit\IO\HttpClient;
+
 use Prado\IO\HttpClient\TCurlHttpClient;
 use Prado\IO\HttpClient\THttpClientException;
-
-require_once __DIR__ . '/HttpServerTestTrait.php';
 
 /**
  * Tests for TCurlHttpClient.
@@ -13,7 +13,7 @@ require_once __DIR__ . '/HttpServerTestTrait.php';
  *
  * @requires extension curl
  */
-class TCurlHttpClientTest extends PHPUnit\Framework\TestCase
+class TCurlHttpClientTest extends \PHPUnit\Framework\TestCase
 {
 	use HttpServerTestTrait;
 

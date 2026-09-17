@@ -1,10 +1,12 @@
 <?php
 
 
+namespace Prado\Test\Unit\Util;
+
 use Prado\Exceptions\TApplicationException;
 use Prado\Util\TCallChain;
 
-class TCallChainTest extends PHPUnit\Framework\TestCase
+class TCallChainTest extends \PHPUnit\Framework\TestCase
 {	
 	protected function setUp(): void
 	{

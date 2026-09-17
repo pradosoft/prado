@@ -1,9 +1,12 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI\WebControls;
+
 use Prado\Web\UI\WebControls\TTime;
 use Prado\Web\UI\WebControls\TTimeFormat;
 use Prado\Web\UI\WebControls\TI18NWebControl;
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\Harness\Traits\TWebControlRenderTrait;
 
 class TTimeTest extends TestCase
 {

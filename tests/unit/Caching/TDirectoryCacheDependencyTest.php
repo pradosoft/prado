@@ -8,6 +8,8 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Caching;
+
 use Prado\Caching\TDirectoryCacheDependency;
 use Prado\Caching\TCacheDependency;
 use Prado\Exceptions\TInvalidDataValueException;
@@ -19,7 +21,7 @@ use Prado\Exceptions\TInvalidDataValueException;
  * interfere with one another.  Directories and files created during a test
  * are cleaned up in `tearDown()`.
  */
-class TDirectoryCacheDependencyTest extends PHPUnit\Framework\TestCase
+class TDirectoryCacheDependencyTest extends \PHPUnit\Framework\TestCase
 {
 	private string $_tempBase;
 	private array $_createdPaths = [];

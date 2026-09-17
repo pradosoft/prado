@@ -1,14 +1,17 @@
 <?php
 
+namespace Prado\Test\Unit\IO\Stream;
+
 use Prado\IO\TStream;
 use Psr\Http\Message\StreamInterface;
+use Prado\Test\Unit\Harness\IO\Stream\TTestStreamDecorator;
 
 /**
  * Unit tests for {@see \Prado\IO\Stream\TStreamDecorator} via a bare concrete subclass.
  * The decorator's forwarding contract is verified here once; its concrete children
  * (TBinaryStream, TLimitStream, TCachingStream, …) only test what they override.
  */
-class TStreamDecoratorTest extends PHPUnit\Framework\TestCase
+class TStreamDecoratorTest extends \PHPUnit\Framework\TestCase
 {
 	private function decorate(string $contents = 'hello world'): TTestStreamDecorator
 	{

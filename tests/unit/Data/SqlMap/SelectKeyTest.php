@@ -1,6 +1,17 @@
 <?php
 
-require_once(__DIR__ . '/BaseCase.php');
+namespace Prado\Test\Unit\Data\SqlMap;
+
+use Prado\Test\Unit\Data\SqlMap\Domain\A;
+use Prado\Test\Unit\Data\SqlMap\Domain\Account;
+use Prado\Test\Unit\Data\SqlMap\Domain\B;
+use Prado\Test\Unit\Data\SqlMap\Domain\C;
+use Prado\Test\Unit\Data\SqlMap\Domain\D;
+use Prado\Test\Unit\Data\SqlMap\Domain\E;
+use Prado\Test\Unit\Data\SqlMap\Domain\F;
+use Prado\Test\Unit\Data\SqlMap\Domain\LineItem;
+use Prado\Test\Unit\Data\SqlMap\Domain\LineItemCollection;
+use Prado\Test\Unit\Data\SqlMap\Domain\Order;
 
 class SelectKeyTest extends BaseCase
 {
