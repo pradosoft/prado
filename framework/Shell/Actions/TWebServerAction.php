@@ -256,13 +256,12 @@ class TWebServerAction extends TShellAction
 
 	/**
 	 * Aliases for the properties to be set by parameter.  'i' is for 'interface'.
-	 * @return array<string, string> alias => property for the $actionID
+	 * @return array<int|string, string> alias => property for the $actionID
 	 */
 	public function optionAliases(): array
 	{
 		return ['a' => 'address', 'p' => 'port', 'w' => 'workers', '6' => 'ipv6', 'i' => 'all'];
 	}
-
 
 	/**
 	 * This runs the PHP Development Web Server.

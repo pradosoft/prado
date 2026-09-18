@@ -52,7 +52,7 @@ class THttpCookie extends \Prado\TComponent
 	 */
 	private $_httpOnly = false;
 	/**
-	 * @var THttpCookieSameSite SameSite prevents the browser from sending this cookie on cross-site requests.
+	 * @var string|THttpCookieSameSite SameSite prevents the browser from sending this cookie on cross-site requests.
 	 * @since 4.1.2
 	 */
 	private $_sameSite = THttpCookieSameSite::Lax;
@@ -182,7 +182,7 @@ class THttpCookie extends \Prado\TComponent
 	}
 
 	/**
-	 * @return THttpCookieSameSite SameSite policy for this cookie. Defaults to THttpCookieSameSite::None.
+	 * @return string|THttpCookieSameSite SameSite policy for this cookie. Defaults to THttpCookieSameSite::None.
 	 */
 	public function getSameSite()
 	{
@@ -190,7 +190,7 @@ class THttpCookie extends \Prado\TComponent
 	}
 
 	/**
-	 * @param THttpCookieSameSite $value SameSite policy for this cookie
+	 * @param string|THttpCookieSameSite $value SameSite policy for this cookie
 	 */
 	public function setSameSite($value)
 	{

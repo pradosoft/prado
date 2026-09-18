@@ -63,12 +63,12 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	protected $_localize;
 
 	/**
-	 * @var object {@see \Prado\Util\Behaviors\TMapRouteBehavior} that routes changes from the parameter to the property
+	 * @var ?object {@see \Prado\Util\Behaviors\TMapRouteBehavior} that routes changes from the parameter to the property
 	 */
 	private $_paramBehavior;
 
 	/**
-	 * @var string the name of the installed behavior.
+	 * @var ?string the name of the installed behavior.
 	 */
 	protected $_routeBehaviorName;
 
@@ -192,7 +192,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	}
 
 	/**
-	 * @return string Application parameter key to set the property.
+	 * @return bool Application parameter key to set the property.
 	 */
 	public function getValidNullValue()
 	{
@@ -243,7 +243,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	}
 
 	/**
-	 * @return string should the parameter or defaultValue be localized.
+	 * @return bool should the parameter or defaultValue be localized.
 	 */
 	public function getLocalize()
 	{

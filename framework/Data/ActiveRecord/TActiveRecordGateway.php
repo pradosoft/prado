@@ -243,7 +243,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 * Returns records matching the list of given primary keys.
 	 * @param TActiveRecord $record active record instance.
 	 * @param array $keys list of primary name value pairs
-	 * @return array matching data.
+	 * @return \Prado\Data\TDbDataReader matching data.
 	 */
 	public function findRecordsByPks(TActiveRecord $record, $keys)
 	{
@@ -269,7 +269,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 * Return record data from sql query.
 	 * @param TActiveRecord $record active record finder instance.
 	 * @param TActiveRecordCriteria $criteria sql query
-	 * @return array result.
+	 * @return \Prado\Data\TDbDataReader result.
 	 */
 	public function findRecordBySql(TActiveRecord $record, $criteria)
 	{

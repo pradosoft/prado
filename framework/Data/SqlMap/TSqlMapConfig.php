@@ -121,7 +121,7 @@ class TSqlMapConfig extends TDataSourceConfig
 
 	/**
 	 * Loads SqlMap manager from cache.
-	 * @return TSqlMapManager SqlMap manager intance if load was successful, null otherwise.
+	 * @return ?TSqlMapManager SqlMap manager intance if load was successful, null otherwise.
 	 */
 	protected function loadCachedSqlMapManager()
 	{

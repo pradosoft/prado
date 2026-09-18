@@ -74,10 +74,10 @@ class TPluginModule extends \Prado\TModule implements IPluginModule
 	/** @var string path of the plugin */
 	private $_pluginPath;
 
-	/** @var string path of the pages folder for the plugin*/
+	/** @var null|false|string path of the pages folder for the plugin*/
 	private $_pagesPath;
 
-	/** @var string relative pages path to $_pluginPath */
+	/** @var ?string relative pages path to $_pluginPath */
 	private $_relativePagesPath = self::PAGES_DIRECTORY;
 
 	/**

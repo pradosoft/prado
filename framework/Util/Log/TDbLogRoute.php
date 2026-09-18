@@ -266,7 +266,7 @@ class TDbLogRoute extends TLogRoute
 	 * @param ?float $maxTime All logs before this time are found
 	 * @param string $order The order statement.
 	 * @param string $limit The limit statement.
-	 * @return \Prado\Data\TDbDataReader the logs from the database.
+	 * @return \Prado\Data\IDataReader the logs from the database.
 	 * @since 4.3.0
 	 */
 	public function getDBLogs(?int $level = null, null|string|array $categories = null, ?float $minTime = null, ?float $maxTime = null, string $order = '', string $limit = '')

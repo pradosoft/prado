@@ -302,10 +302,12 @@ class TWebAttributeCollection extends TMap
 	public function __set($name, $value)
 	{
 		if (Prado::method_visible($this, $setter = 'set' . $name)) {
-			return $this->$setter($value);
+			$this->$setter($value);
+			return;
 		}
 		$name = $this->methodToAttributeName($name);
-		return $this->setAttribute($name, $value);
+		$this->setAttribute($name, $value);
+		return;
 	}
 
 	/**

@@ -501,7 +501,7 @@ Prado.ValidationManager.prototype =
 	 * without a group is updated.
 	 * @function ?
 	 * @param {optional string} group - ID of ValidationGroup
-	 * @param {boolean} refresh - Wether the summary should be refreshed
+	 * @param {boolean} refresh - Whether the summary should be refreshed
 	 */
 	updateSummary(group, refresh) {
 		const validators = this.getValidatorsWithError(group);
@@ -814,7 +814,7 @@ Prado.WebUI.TBaseValidator = Prado.Class(Prado.WebUI.Control,
 		options.OnError = options.OnError || Prototype.emptyFunction;
 	*/
 		/**
-		 * Wether the validator is enabled (default true)
+		 * Whether the validator is enabled (default true)
 		 * @var {boolean} enabled
 		 */
 		this.enabled = options.Enabled;
@@ -839,7 +839,7 @@ Prado.WebUI.TBaseValidator = Prado.Class(Prado.WebUI.Control,
 		 */
 		this.group = null;
 		/**
-		 * Wether a request was dispatched (default false)
+		 * Whether a request was dispatched (default false)
 		 * @var {boolean} requestDispatched
 		 */
 		this.requestDispatched = false;

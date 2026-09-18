@@ -527,7 +527,7 @@ class TSecurityManager extends \Prado\TModule
 	 * Validates if data is tampered.
 	 * @param string $data data to be validated. The data must be previously
 	 * generated using {@see hashData()}.
-	 * @return string the real data with HMAC stripped off. False if the data
+	 * @return false|string the real data with HMAC stripped off. False if the data
 	 * is tampered.
 	 */
 	public function validateData($data)

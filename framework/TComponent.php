@@ -399,7 +399,7 @@ class TComponent
 	protected $_behaviorsenabled = true;
 
 	/**
-	 * @var TPriorityMap list of object behaviors
+	 * @var ?TPriorityMap list of object behaviors
 	 */
 	protected $_m;
 
@@ -667,7 +667,7 @@ class TComponent
 	public function listen()
 	{
 		if ($this->getListeningToGlobalEvents()) {
-			return;
+			return null;
 		}
 
 		$fx = $this->getClassFxEvents($this);
@@ -706,7 +706,7 @@ class TComponent
 	public function unlisten()
 	{
 		if (!$this->getListeningToGlobalEvents()) {
-			return;
+			return null;
 		}
 
 		$fx = $this->getClassFxEvents($this);
@@ -918,6 +918,7 @@ class TComponent
 	 * @param string $name the property name or event name
 	 * @param mixed $value the property value or event handler
 	 * @throws TInvalidOperationException If the property is not defined or read-only.
+	 * @return void
 	 */
 	public function __set($name, $value)
 	{
@@ -925,14 +926,17 @@ class TComponent
 			if (strncasecmp($name, 'js', 2) === 0 && $value && !($value instanceof TJavaScriptLiteral)) {
 				$value = new TJavaScriptLiteral($value);
 			}
-			return $this->$setter($value);
+			$this->$setter($value);
+			return;
 		} elseif (Prado::method_visible($this, $jssetter = 'setjs' . $name)) {
 			if ($value && !($value instanceof TJavaScriptString)) {
 				$value = new TJavaScriptString($value);
 			}
-			return $this->$jssetter($value);
+			$this->$jssetter($value);
+			return;
 		} elseif ((strncasecmp($name, 'on', 2) === 0 && method_exists($this, $name)) || strncasecmp($name, 'fx', 2) === 0) {
-			return $this->attachEventHandler($name, $value);
+			$this->attachEventHandler($name, $value);
+			return;
 		} elseif ($this->_m !== null && $this->_m->getCount() > 0 && $this->getBehaviorsEnabled()) {
 			$sets = 0;
 			foreach ($this->_m->toArray() as $behavior) {
@@ -942,7 +946,7 @@ class TComponent
 				}
 			}
 			if ($sets) {
-				return $value;
+				return;
 			}
 		}
 
@@ -1822,7 +1826,8 @@ class TComponent
 					if (is_object($handler) || is_string($handler[0])) {
 						$response = call_user_func($handler, $sender, $param);
 					} else {
-						[$object, $method] = $handler;
+						$object = $handler[0];
+						$method = $handler[1];
 						if (($pos = strrpos($method, '.')) !== false) {
 							$object = $object->getSubProperty(substr($method, 0, $pos));
 							$method = substr($method, $pos + 1);
@@ -2054,6 +2059,9 @@ class TComponent
 		if (!($behavior instanceof IBaseBehavior)) {
 			throw new TInvalidDataTypeException('component_not_a_behavior', $behavior::class);
 		}
+		if (!($behavior instanceof TComponent)) {
+			throw new TInvalidDataTypeException('object_not_a_component', $behavior::class);
+		}
 		if ($init) {
 			$behavior->init($config);
 		}
@@ -2166,7 +2174,7 @@ class TComponent
 	 * an existing class or interface, this will return the first instanceof.
 	 * The name 'asa' stands for 'as a'.
 	 * @param string $behaviorname the behavior name or the class name of the behavior.
-	 * @return object the behavior object of name or class, or null if the behavior does not exist
+	 * @return ?object the behavior object of name or class, or null if the behavior does not exist
 	 * @since 3.2.3
 	 */
 	public function asa($behaviorname)

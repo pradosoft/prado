@@ -314,7 +314,7 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @return int current selected date from the date picker as timestamp, NULL if timestamp is not set previously.
+	 * @return ?int current selected date from the date picker as timestamp, NULL if timestamp is not set previously.
 	 */
 	public function getTimeStamp()
 	{
@@ -344,7 +344,7 @@ class TDatePicker extends TTextBox
 	 * Returns the timestamp selected by the user.
 	 * This method is required by {@see \Prado\IDataRenderer}.
 	 * It is the same as {@see getTimeStamp()}.
-	 * @return int the timestamp of the TDatePicker control.
+	 * @return ?int the timestamp of the TDatePicker control.
 	 * @see getTimeStamp
 	 * @since 3.1.2
 	 */
@@ -357,7 +357,7 @@ class TDatePicker extends TTextBox
 	 * Sets the timestamp represented by this control.
 	 * This method is required by {@see \Prado\IDataRenderer}.
 	 * It is the same as {@see setTimeStamp()}.
-	 * @param int $value the timestamp of the TDatePicker control.
+	 * @param float|int|string $value the timestamp of the TDatePicker control.
 	 * @see setTimeStamp
 	 * @since 3.1.2
 	 */
@@ -401,7 +401,7 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @return TDatePickerClientScript javascript validator event options.
+	 * @return \Prado\Web\UI\ActiveControls\TActiveDatePickerClientScript|TDatePickerClientScript javascript validator event options.
 	 */
 	protected function createClientScript()
 	{

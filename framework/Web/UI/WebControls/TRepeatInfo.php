@@ -37,7 +37,7 @@ class TRepeatInfo extends \Prado\TComponent
 	 */
 	private $_caption = '';
 	/**
-	 * @var TTableCaptionAlign alignment of the caption of the table used to organize the repeated items
+	 * @var string|TTableCaptionAlign alignment of the caption of the table used to organize the repeated items
 	 */
 	private $_captionAlign = TTableCaptionAlign::NotSet;
 	/**
@@ -45,11 +45,11 @@ class TRepeatInfo extends \Prado\TComponent
 	 */
 	private $_repeatColumns = 0;
 	/**
-	 * @var TRepeatDirection direction of the repetition
+	 * @var string|TRepeatDirection direction of the repetition
 	 */
 	private $_repeatDirection = TRepeatDirection::Vertical;
 	/**
-	 * @var TRepeatLayout layout of the repeated items
+	 * @var string|TRepeatLayout layout of the repeated items
 	 */
 	private $_repeatLayout = TRepeatLayout::Table;
 
@@ -70,7 +70,7 @@ class TRepeatInfo extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TTableCaptionAlign alignment of the caption of the table layout. Defaults to TTableCaptionAlign::NotSet.
+	 * @return string|TTableCaptionAlign alignment of the caption of the table layout. Defaults to TTableCaptionAlign::NotSet.
 	 */
 	public function getCaptionAlign()
 	{
@@ -78,7 +78,7 @@ class TRepeatInfo extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TTableCaptionAlign $value alignment of the caption of the table layout.
+	 * @param string|TTableCaptionAlign $value alignment of the caption of the table layout.
 	 */
 	public function setCaptionAlign($value)
 	{
@@ -105,7 +105,7 @@ class TRepeatInfo extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TRepeatDirection the direction of traversing the repeated items, defaults to TRepeatDirection::Vertical
+	 * @return string|TRepeatDirection the direction of traversing the repeated items, defaults to TRepeatDirection::Vertical
 	 */
 	public function getRepeatDirection()
 	{
@@ -113,7 +113,7 @@ class TRepeatInfo extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TRepeatDirection $value the direction of traversing the repeated items
+	 * @param string|TRepeatDirection $value the direction of traversing the repeated items
 	 */
 	public function setRepeatDirection($value)
 	{
@@ -121,7 +121,7 @@ class TRepeatInfo extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TRepeatLayout how the repeated items should be displayed, using table or using line breaks. Defaults to TRepeatLayout::Table.
+	 * @return string|TRepeatLayout how the repeated items should be displayed, using table or using line breaks. Defaults to TRepeatLayout::Table.
 	 */
 	public function getRepeatLayout()
 	{
@@ -129,7 +129,7 @@ class TRepeatInfo extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TRepeatLayout $value how the repeated items should be displayed, using table or using line breaks.
+	 * @param string|TRepeatLayout $value how the repeated items should be displayed, using table or using line breaks.
 	 */
 	public function setRepeatLayout($value)
 	{

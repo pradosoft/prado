@@ -42,16 +42,16 @@ class TBehaviorParameterLoader extends TComponent
 {
 	use TPriorityPropertyTrait;
 
-	/** @var string name of the behavior attaching to the owner */
+	/** @var ?string name of the behavior attaching to the owner */
 	private $_behaviorName;
 
-	/** @var string class of the behavior attaching to the owner */
+	/** @var ?string class of the behavior attaching to the owner */
 	private $_behaviorClass;
 
-	/** @var string what object to attach the behavior */
+	/** @var ?string what object to attach the behavior */
 	private $_attachto;
 
-	/** @var string what class to attach the behavior */
+	/** @var ?string what class to attach the behavior */
 	private $_attachtoclass;
 
 	/** @var array<string, string> additional properties to feed the behavior */
@@ -278,11 +278,13 @@ class TBehaviorParameterLoader extends TComponent
 	 * set Property then it stores the property to set on the behavior.
 	 * @param string $name name of the property being set.
 	 * @param string $value value of the property being set.
+	 * @return void
 	 */
 	public function __set($name, $value)
 	{
 		if (method_exists($this, $setter = 'set' . $name)) {
-			return $this->$setter($value);
+			$this->$setter($value);
+			return;
 		} else {
 			$this->_properties[$name] = $value;
 		}

@@ -544,7 +544,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 
 	/**
 	 * @param \Prado\Web\UI\THtmlWriter $html the writer responsible for rendering html content.
-	 * @return string content boundary.
+	 * @return ?string content boundary.
 	 */
 	private function getResponseContentBoundary($html)
 	{

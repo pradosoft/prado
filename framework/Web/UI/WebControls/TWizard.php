@@ -187,11 +187,12 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return TWizardStep the currently active wizard step
+	 * @return ?TWizardStep the currently active wizard step, null if none
 	 */
 	public function getActiveStep()
 	{
-		return $this->getMultiView()->getActiveView();
+		$step = $this->getMultiView()->getActiveView();
+		return $step instanceof TWizardStep ? $step : null;
 	}
 
 	/**
@@ -1004,7 +1005,8 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 
 	/**
 	 * Determines the type of the specified wizard step.
-	 * @param TWizardStep $wizardStep * @return TWizardStepType type of the step
+	 * @param TWizardStep $wizardStep
+	 * @return string|TWizardStepType type of the step
 	 */
 	protected function getStepType($wizardStep)
 	{

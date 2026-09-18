@@ -147,7 +147,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function setEnsureId($value)
 	{
-		$this->_ensureid |= TPropertyValue::ensureBoolean($value);
+		$this->_ensureid = $this->_ensureid || TPropertyValue::ensureBoolean($value);
 	}
 
 	/**

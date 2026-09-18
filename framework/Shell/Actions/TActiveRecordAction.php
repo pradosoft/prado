@@ -160,7 +160,7 @@ class TActiveRecordAction extends TShellAction
 
 	/**
 	 * gets the TActiveRecordConfig for the application
-	 * @return false|TActiveRecordConfig
+	 * @return null|\Prado\Data\ActiveRecord\TActiveRecordConfig
 	 */
 	protected function getActiveRecordConfig()
 	{

@@ -363,7 +363,7 @@ CHG: Updated prototype to 1.7.1 (ctrlaltca)
 BUG: Fixed an inconsistency in TRegularExpressionValidator
 ENH: Update TDraggable::revert property to accept "failure" value (Christophe)  
 CHG/ENH: Change behavior of THttpRequest::getBaseUrl() & THttpRequest::getAbsoluteApplicationUrl() to make it possible to force either http or https (Yves)  
-EHN: Add property SecureConnection to TUrlMappingPattern and related enum TUrlMappingPatternSecureConnection to make it possible to to define wether to use http or https on pattern level (Yves)  
+EHN: Add property SecureConnection to TUrlMappingPattern and related enum TUrlMappingPatternSecureConnection to make it possible to to define whether to use http or https on pattern level (Yves)  
 EHN: Add second parameter to THttpResponse::appendHeader whether the header should replace a previous similar header, or add a second header of the same type (Yves)  
 ENH: Add THttpSession::regenerate() to update the current session id with a newly generated one (Yves)  
 CHG: Remove TReflectionClass and all references since equals ReflectionClass (Yves)  

@@ -171,8 +171,11 @@ class TCronModule extends \Prado\TModule implements IPermissions
 		if ($this->_userManager === null) {
 			$users = $app->getModulesByType(\Prado\Security\IUserManager::class);
 			foreach ($users as $id => $module) {
-				$this->_userManager = $app->getModule($id);
-				break;
+				$userManager = $app->getModule($id);
+				if ($userManager instanceof IUserManager) {
+					$this->_userManager = $userManager;
+					break;
+				}
 			}
 		}
 		$this->_tasksInstanced = false;

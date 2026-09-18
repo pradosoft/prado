@@ -25,6 +25,7 @@ use Prado\Web\UI\WebControls\IListControlAdapter;
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.1
  * @method IActiveControl&\Prado\Web\UI\WebControls\TListControl getControl()
+ * @extends TActiveControlAdapter<TBaseActiveCallbackControl>
  */
 class TActiveListControlAdapter extends TActiveControlAdapter implements IListControlAdapter
 {

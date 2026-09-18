@@ -36,7 +36,7 @@ abstract class TStreamCodecFilter extends TStreamFilter
 	public function filter($in, $out, &$consumed, bool $closing): int
 	{
 		while ($bucket = stream_bucket_make_writeable($in)) {
-			$consumed += $bucket->datalen;
+			$consumed += (int) $bucket->datalen;
 			$data = $this->process($bucket->data);
 			if ($data !== '') {
 				stream_bucket_append($out, stream_bucket_new($this->stream, $data));

@@ -26,7 +26,7 @@ use Prado\Web\UI\ActiveControls\TActiveControlAdapter;
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @since 4.0
- * @method TActiveControlAdapter getAdapter()
+ * @method TActiveControlAdapter<\Prado\Web\UI\ActiveControls\TBaseActiveCallbackControl> getAdapter()
  */
 class TActiveHtmlArea extends THtmlArea implements IActiveControl, ICallbackEventHandler
 {

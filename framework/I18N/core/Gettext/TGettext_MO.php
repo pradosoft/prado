@@ -55,7 +55,7 @@ class TGettext_MO extends TGettext
 	 * file handle
 	 *
 	 * @access  private
-	 * @var     resource
+	 * @var     null|false|resource
 	 */
 	protected $_handle;
 

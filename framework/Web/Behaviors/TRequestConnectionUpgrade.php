@@ -48,19 +48,19 @@ class TRequestConnectionUpgrade extends \Prado\Util\TBehavior
 	{
 		$urlParams = $param->getParameter();
 		if (!is_array($urlParams)) {
-			return;
+			return null;
 		}
 		$headers = $request->getHeaders(CASE_LOWER);
 		if (!isset($headers['connection'])) {
-			return;
+			return null;
 		}
 		$connections = array_map('trim', explode(',', strtolower($headers['connection'])));
 		if (!in_array('upgrade', $connections)) {
-			return;
+			return null;
 		}
 		if (!isset($headers['upgrade'])) {
 			Prado::log("'Connection: Upgrade' without 'Upgrade' Header from " . $_SERVER['REMOTE_ADDR'], \Prado\Util\Log\TLogger::NOTICE, static::class);
-			return;
+			return null;
 		}
 		$upgrade = $headers['upgrade'];
 		if (is_array($upgrade)) {
