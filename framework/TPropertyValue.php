@@ -134,6 +134,27 @@ class TPropertyValue
 	public const BOOL_FALSE = 'false';
 
 	/**
+	 * The string representation of a PHP not-a-number float produced by {@see ensureString}
+	 * and recognized (case-insensitively, after trimming) by {@see ensureFloat}.
+	 * @since 4.4.0
+	 */
+	public const FLOAT_NAN = 'NAN';
+
+	/**
+	 * The string representation of PHP positive infinity produced by {@see ensureString}
+	 * and recognized (case-insensitively, after trimming) by {@see ensureFloat}.
+	 * @since 4.4.0
+	 */
+	public const FLOAT_INF = 'INF';
+
+	/**
+	 * The string representation of PHP negative infinity produced by {@see ensureString}
+	 * and recognized (case-insensitively, after trimming) by {@see ensureFloat}.
+	 * @since 4.4.0
+	 */
+	public const FLOAT_NEGATIVE_INF = '-INF';
+
+	/**
 	 * Flag for {@see ensureArray()} that has restricted the parser to PHP-literal grammar:
 	 * `[...]` or `array(...)` only — no bare `(...)`, no unquoted strings, no legacy octal, no auto-wrap.
 	 * The `ARRAY_*` flags occupy the low bits and the `FILTER_*` flags the bits
@@ -387,8 +408,8 @@ class TPropertyValue
 		}
 		if (is_bool($value)) {
 			return $value ? static::BOOL_TRUE : static::BOOL_FALSE;
-		} elseif(is_float($value) && is_nan($value)) {
-			return 'NAN';
+		} elseif (is_float($value) && is_nan($value)) {
+			return static::FLOAT_NAN;
 		} else {
 			return (string) $value;
 		}
@@ -416,11 +437,19 @@ class TPropertyValue
 	/**
 	 * Converts a value to float type via PHP's `(float)` cast.
 	 *
+	 * The `NAN`, `INF`, and `-INF` string forms produced by {@see ensureString} for the
+	 * corresponding non-finite floats are recognized (case-insensitively, after trimming)
+	 * and mapped back to those float values. PHP's `(float)` cast reads them as `0.0`, so
+	 * this recognition is required to round-trip `ensureFloat(ensureString($x))`.
+	 *
 	 * ```php
 	 * TPropertyValue::ensureFloat('1.5');     // 1.5
 	 * TPropertyValue::ensureFloat('1e3');     // 1000.0
 	 * TPropertyValue::ensureFloat('abc');     // 0.0
 	 * TPropertyValue::ensureFloat(true);      // 1.0
+	 * TPropertyValue::ensureFloat('NAN');     // NAN
+	 * TPropertyValue::ensureFloat('INF');     // INF
+	 * TPropertyValue::ensureFloat('-INF');    // -INF
 	 * ```
 	 *
 	 * @param mixed $value the value to be converted.
@@ -428,6 +457,16 @@ class TPropertyValue
 	 */
 	public static function ensureFloat($value): float
 	{
+		if (is_string($value)) {
+			$trimmed = trim($value);
+			if (strcasecmp($trimmed, static::FLOAT_NAN) === 0) {
+				return NAN;
+			} elseif (strcasecmp($trimmed, static::FLOAT_INF) === 0) {
+				return INF;
+			} elseif (strcasecmp($trimmed, static::FLOAT_NEGATIVE_INF) === 0) {
+				return -INF;
+			}
+		}
 		return (float) $value;
 	}
 
