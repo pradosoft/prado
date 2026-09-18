@@ -261,7 +261,6 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 			$parentControl = $tplControl;
 		}
 		if (($page = $tplControl->getPage()) === null && ($service = $this->getService()) !== null && $service instanceof TComponent && $service->isa(TPageService::class)) {
-			/** @var TPageService $service */
 			$page = $service->getRequestedPage();
 		}
 		$controls = [];
