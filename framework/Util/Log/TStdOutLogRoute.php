@@ -105,7 +105,7 @@ class TStdOutLogRoute extends TLogRoute
 	/**
 	 * Translates a PRADO log level attribute into one understood by syslog
 	 * @param int $level prado log level
-	 * @return int syslog priority
+	 * @return ?int syslog priority
 	 */
 	protected static function levelColor($level)
 	{

@@ -170,15 +170,15 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	 */
 	private $_id = '';
 	/**
-	 * @var string control unique ID
+	 * @var ?string control unique ID
 	 */
 	private $_uid;
 	/**
-	 * @var \Prado\Web\UI\TControl parent of the control
+	 * @var ?\Prado\Web\UI\TControl parent of the control
 	 */
 	private $_parent;
 	/**
-	 * @var TPage page that the control resides in
+	 * @var ?TPage page that the control resides in
 	 */
 	private $_page;
 	/**
@@ -187,11 +187,11 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	 */
 	private $_pluginmodule = false;
 	/**
-	 * @var \Prado\Web\UI\TControl naming container of the control
+	 * @var ?\Prado\Web\UI\TControl naming container of the control
 	 */
 	private $_namingContainer;
 	/**
-	 * @var TTemplateControl control whose template contains the control
+	 * @var ?TTemplateControl control whose template contains the control
 	 */
 	private $_tplControl;
 	/**
@@ -270,7 +270,7 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	 * the control ID will take the precedence.
 	 *
 	 * @param string $name the property name or control ID
-	 * @return bool wether the control or property exists
+	 * @return bool whether the control or property exists
 	 * @see __get
 	 */
 	public function __isset($name)
@@ -571,7 +571,7 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	 */
 	public function getIsSkinApplied()
 	{
-		return ($this->_flags & self::IS_SKIN_APPLIED);
+		return ($this->_flags & self::IS_SKIN_APPLIED) !== 0;
 	}
 
 	/**
@@ -758,7 +758,7 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 
 	/**
 	 * @param mixed $name
-	 * @return string attribute value, null if attribute does not exist
+	 * @return ?string attribute value, null if attribute does not exist
 	 */
 	public function getAttribute($name)
 	{
@@ -782,7 +782,7 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	/**
 	 * Removes the named attribute.
 	 * @param string $name the name of the attribute to be removed.
-	 * @return string attribute value removed, null if attribute does not exist.
+	 * @return ?string attribute value removed, null if attribute does not exist.
 	 */
 	public function removeAttribute($name)
 	{

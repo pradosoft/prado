@@ -64,7 +64,7 @@ class MessageSource_XLIFF extends MessageSource
 	/**
 	 * Load the messages from a XLIFF file.
 	 * @param string $filename XLIFF file.
-	 * @return array of messages.
+	 * @return array|false of messages.
 	 */
 	protected function &loadData($filename)
 	{
@@ -230,7 +230,7 @@ class MessageSource_XLIFF extends MessageSource
 	/**
 	 * Get the variant for a catalogue depending on the current culture.
 	 * @param string $catalogue
-	 * @return string the variant.
+	 * @return array|false the variant.
 	 * @see save()
 	 * @see update()
 	 * @see delete()

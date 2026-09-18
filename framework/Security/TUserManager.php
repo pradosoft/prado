@@ -87,7 +87,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	 */
 	private $_guestName = 'Guest';
 	/**
-	 * @var TUserManagerPasswordMode password mode
+	 * @var string|TUserManagerPasswordMode password mode
 	 */
 	private $_passwordMode = TUserManagerPasswordMode::SHA1;
 	/**
@@ -259,7 +259,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	}
 
 	/**
-	 * @return TUserManagerPasswordMode how password is stored, clear text, or MD5 or SHA1 hashed. Default to TUserManagerPasswordMode::MD5.
+	 * @return string|TUserManagerPasswordMode how password is stored, clear text, or MD5 or SHA1 hashed. Default to TUserManagerPasswordMode::MD5.
 	 */
 	public function getPasswordMode()
 	{
@@ -267,7 +267,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	}
 
 	/**
-	 * @param TUserManagerPasswordMode $value how password is stored, clear text, or MD5 or SHA1 hashed.
+	 * @param string|TUserManagerPasswordMode $value how password is stored, clear text, or MD5 or SHA1 hashed.
 	 */
 	public function setPasswordMode($value)
 	{
@@ -294,7 +294,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	/**
 	 * Returns a user instance given the user name.
 	 * @param null|string $username user name, null if it is a guest.
-	 * @return TUser the user instance, null if the specified username is not in the user database.
+	 * @return ?TUser the user instance, null if the specified username is not in the user database.
 	 */
 	public function getUser($username = null)
 	{
@@ -321,7 +321,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	/**
 	 * Returns a user instance according to auth data stored in a cookie.
 	 * @param \Prado\Web\THttpCookie $cookie the cookie storing user authentication information
-	 * @return TUser the user instance generated based on the cookie auth data, null if the cookie does not have valid auth data.
+	 * @return ?TUser the user instance generated based on the cookie auth data, null if the cookie does not have valid auth data.
 	 * @since 3.1.1
 	 */
 	public function getUserFromCookie($cookie)

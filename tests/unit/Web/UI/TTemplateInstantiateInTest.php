@@ -1413,7 +1413,7 @@ class TTemplateInstantiateInTest extends \PHPUnit\Framework\TestCase
 	}
 
 	// -----------------------------------------------------------------------
-	// Dash-to-underscore attribute name conversion
+	// Dashed attribute and property-tag names reach __set verbatim
 	// -----------------------------------------------------------------------
 
 	public function testInstantiateInPropertyTagWithDashInMagicComponent()
@@ -1425,8 +1425,8 @@ class TTemplateInstantiateInTest extends \PHPUnit\Framework\TestCase
 		$this->assertCount(1, $tplControl->parsedObjects);
 		$comp = $tplControl->parsedObjects[0];
 		$this->assertInstanceOf(TTemplateMagicComponent::class, $comp);
-		$this->assertArrayHasKey('Custom_Prop', $comp->receivedProperties);
-		$this->assertEquals('value from tag', $comp->receivedProperties['Custom_Prop']);
+		$this->assertArrayHasKey('Custom-Prop', $comp->receivedProperties);
+		$this->assertEquals('value from tag', $comp->receivedProperties['Custom-Prop']);
 	}
 
 	public function testInstantiateInPropertyTagWithDashInMagicControl()
@@ -1438,11 +1438,11 @@ class TTemplateInstantiateInTest extends \PHPUnit\Framework\TestCase
 		$this->assertCount(1, $tplControl->getControls());
 		$control = $tplControl->getControls()[0];
 		$this->assertInstanceOf(TTemplateMagicControl::class, $control);
-		$this->assertArrayHasKey('data_value', $control->receivedProperties);
-		$this->assertEquals('123', $control->receivedProperties['data_value']);
+		$this->assertArrayHasKey('data-value', $control->receivedProperties);
+		$this->assertEquals('123', $control->receivedProperties['data-value']);
 	}
 
-	public function testInstantiateInAttributeDashToUnderscoreOnMagicControl()
+	public function testInstantiateInDashedAttributeOnMagicControl()
 	{
 		Prado::using(TTemplateMagicControl::class);
 		$tpl = $this->newTemplateUnvalidated('<com:Prado\Test\Unit\Web\UI\TTemplateMagicControl ID="c1" data-toggle="dropdown" />');
@@ -1451,8 +1451,8 @@ class TTemplateInstantiateInTest extends \PHPUnit\Framework\TestCase
 		$this->assertCount(1, $tplControl->getControls());
 		$control = $tplControl->getControls()[0];
 		$this->assertInstanceOf(TTemplateMagicControl::class, $control);
-		$this->assertArrayHasKey('data_toggle', $control->receivedProperties);
-		$this->assertEquals('dropdown', $control->receivedProperties['data_toggle']);
+		$this->assertArrayHasKey('data-toggle', $control->receivedProperties);
+		$this->assertEquals('dropdown', $control->receivedProperties['data-toggle']);
 	}
 
 	public function testInstantiateInCasePreservedPropertyOnDashControl()
@@ -1476,8 +1476,8 @@ class TTemplateInstantiateInTest extends \PHPUnit\Framework\TestCase
 		$this->assertCount(1, $tplControl->getControls());
 		$control = $tplControl->getControls()[0];
 		$this->assertInstanceOf(TTemplateMagicControl::class, $control);
-		$this->assertArrayHasKey('Custom_Prop', $control->receivedProperties);
-		$this->assertEquals('value', $control->receivedProperties['Custom_Prop']);
+		$this->assertArrayHasKey('Custom-Prop', $control->receivedProperties);
+		$this->assertEquals('value', $control->receivedProperties['Custom-Prop']);
 	}
 
 	public function testInstantiateInMagicComponentReceivesDashProperty()
@@ -1489,8 +1489,8 @@ class TTemplateInstantiateInTest extends \PHPUnit\Framework\TestCase
 		$this->assertCount(1, $tplControl->parsedObjects);
 		$comp = $tplControl->parsedObjects[0];
 		$this->assertInstanceOf(TTemplateMagicComponent::class, $comp);
-		$this->assertArrayHasKey('data_toggle', $comp->receivedProperties);
-		$this->assertEquals('dropdown', $comp->receivedProperties['data_toggle']);
+		$this->assertArrayHasKey('data-toggle', $comp->receivedProperties);
+		$this->assertEquals('dropdown', $comp->receivedProperties['data-toggle']);
 	}
 
 	public function testInstantiateInMagicComponentReceivesCasePreservedProperty()
@@ -1515,8 +1515,8 @@ class TTemplateInstantiateInTest extends \PHPUnit\Framework\TestCase
 		$this->assertCount(1, $tplControl->getControls());
 		$control = $tplControl->getControls()[0];
 		$this->assertInstanceOf(TTemplateMagicControl::class, $control);
-		$this->assertArrayHasKey('data_toggle', $control->receivedProperties);
-		$this->assertEquals('modal', $control->receivedProperties['data_toggle']);
+		$this->assertArrayHasKey('data-toggle', $control->receivedProperties);
+		$this->assertEquals('modal', $control->receivedProperties['data-toggle']);
 	}
 
 	public function testInstantiateInMagicControlReceivesCasePreservedProperty()

@@ -112,7 +112,7 @@ class TTemplateManager extends \Prado\TModule
 	/**
 	 * Loads the template corresponding to the specified class name.
 	 * @param mixed $className
-	 * @return \Prado\Web\UI\TTemplate template for the class name, null if template doesn't exist.
+	 * @return ?ITemplate template for the class name, null if template doesn't exist.
 	 * @todo v4.4 normalize to "ByClass"?
 	 */
 	public function getTemplateByClassName($className)
@@ -127,7 +127,7 @@ class TTemplateManager extends \Prado\TModule
 	 * @param string $fileName The file path and name of the template.
 	 * @param string $tplClass, default null for the Default Template Class
 	 * @param string $culture culture string, null to use current application culture
-	 * @return \Prado\Web\UI\TTemplate or subclass template parsed from the specified file, null if the file doesn't exist.
+	 * @return ?ITemplate or subclass template parsed from the specified file, null if the file doesn't exist.
 	 */
 	public function getTemplateByFileName($fileName, $tplClass = null, $culture = null)
 	{

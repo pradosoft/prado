@@ -582,7 +582,66 @@ class TPropertyValueTest extends \PHPUnit\Framework\TestCase
 		// Large integer preserves value as float
 		self::assertSame((float) PHP_INT_MAX, TPropertyValue::ensureFloat(PHP_INT_MAX));
 	}
-	
+
+	/**
+	 * The non-finite float constants must match the strings ensureString() produces,
+	 * so that ensureFloat() recognizes them on the way back.
+	 */
+	public function testFloatStringConstants(): void
+	{
+		self::assertSame('NAN', TPropertyValue::FLOAT_NAN);
+		self::assertSame('INF', TPropertyValue::FLOAT_INF);
+		self::assertSame('-INF', TPropertyValue::FLOAT_NEGATIVE_INF);
+	}
+
+	public function testEnsureFloatNonFiniteStrings(): void
+	{
+		// Canonical forms produced by ensureString()
+		self::assertTrue(is_nan(TPropertyValue::ensureFloat('NAN')));
+
+		$inf = TPropertyValue::ensureFloat('INF');
+		self::assertTrue(is_infinite($inf));
+		self::assertGreaterThan(0.0, $inf);
+
+		$negInf = TPropertyValue::ensureFloat('-INF');
+		self::assertTrue(is_infinite($negInf));
+		self::assertLessThan(0.0, $negInf);
+
+		// Recognition is case-insensitive and trims surrounding whitespace
+		self::assertTrue(is_nan(TPropertyValue::ensureFloat('nan')));
+		self::assertTrue(is_infinite(TPropertyValue::ensureFloat('inf')));
+		self::assertTrue(is_infinite(TPropertyValue::ensureFloat('-inf')));
+		self::assertTrue(is_nan(TPropertyValue::ensureFloat("  NaN \t")));
+		self::assertSame(INF, TPropertyValue::ensureFloat('  Inf  '));
+		self::assertSame(-INF, TPropertyValue::ensureFloat("\n-Inf\n"));
+
+		// Non-canonical spellings still fall through to (float) and coerce to 0.0
+		self::assertSame(0.0, TPropertyValue::ensureFloat('infinity'));
+		self::assertSame(0.0, TPropertyValue::ensureFloat('+INF'));
+		self::assertSame(0.0, TPropertyValue::ensureFloat('not a number'));
+	}
+
+	/**
+	 * ensureFloat(ensureString($x)) must round-trip every non-finite float back
+	 * to an equivalent value.
+	 */
+	public function testEnsureFloatEnsureStringRoundTrip(): void
+	{
+		$nan = TPropertyValue::ensureFloat(TPropertyValue::ensureString(NAN));
+		self::assertTrue(is_nan($nan));
+
+		$inf = TPropertyValue::ensureFloat(TPropertyValue::ensureString(INF));
+		self::assertSame(INF, $inf);
+
+		$negInf = TPropertyValue::ensureFloat(TPropertyValue::ensureString(-INF));
+		self::assertSame(-INF, $negInf);
+
+		// Finite values keep round-tripping through the (float) path
+		foreach ([0.0, -1.5, 1.99999, 100.0, 0.0001, -0.5] as $value) {
+			self::assertSame($value, TPropertyValue::ensureFloat(TPropertyValue::ensureString($value)));
+		}
+	}
+
 	public function testEnsureArraySmoke(): void
 	{
 		// At-a-glance baseline for the most common shapes; the more specific

@@ -60,6 +60,7 @@ use Prado\Web\Javascripts\TJavaScript;
  *
  * @author Tomasz Wolny <tomasz.wolny@polecam.to.pl> and Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1.1
+ * @method TTabViewCollection getControls()
  */
 class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\IPostBackDataHandler
 {

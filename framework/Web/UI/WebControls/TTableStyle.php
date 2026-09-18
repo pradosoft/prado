@@ -23,27 +23,27 @@ use Prado\Exceptions\TInvalidDataValueException;
 class TTableStyle extends TStyle
 {
 	/**
-	 * @var TVerticalAlign the URL of the background image for the table
+	 * @var ?string the URL of the background image for the table
 	 */
 	protected $_backImageUrl;
 	/**
-	 * @var THorizontalAlign horizontal alignment of the contents within the table
+	 * @var ?THorizontalAlign horizontal alignment of the contents within the table
 	 */
 	protected $_horizontalAlign;
 	/**
-	 * @var int cellpadding of the table
+	 * @var ?int cellpadding of the table
 	 */
 	protected $_cellPadding;
 	/**
-	 * @var int cellspacing of the table
+	 * @var ?int cellspacing of the table
 	 */
 	protected $_cellSpacing;
 	/**
-	 * @var TTableGridLines grid line setting of the table
+	 * @var ?TTableGridLines grid line setting of the table
 	 */
 	protected $_gridLines;
 	/**
-	 * @var bool whether the table border should be collapsed
+	 * @var ?bool whether the table border should be collapsed
 	 */
 	protected $_borderCollapse;
 
@@ -212,7 +212,7 @@ class TTableStyle extends TStyle
 	}
 
 	/**
-	 * @return THorizontalAlign the horizontal alignment of the contents within the table, defaults to THorizontalAlign::NotSet.
+	 * @return string|THorizontalAlign the horizontal alignment of the contents within the table, defaults to THorizontalAlign::NotSet.
 	 */
 	public function getHorizontalAlign()
 	{
@@ -221,7 +221,7 @@ class TTableStyle extends TStyle
 
 	/**
 	 * Sets the horizontal alignment of the contents within the table.
-	 * @param THorizontalAlign $value the horizontal alignment
+	 * @param string|THorizontalAlign $value the horizontal alignment
 	 */
 	public function setHorizontalAlign($value)
 	{
@@ -275,7 +275,7 @@ class TTableStyle extends TStyle
 	}
 
 	/**
-	 * @return TTableGridLines the grid line setting of the table. Defaults to TTableGridLines::None.
+	 * @return string|TTableGridLines the grid line setting of the table. Defaults to TTableGridLines::None.
 	 * @deprecated use CSS to style the borders of individual elements
 	 */
 	public function getGridLines()
@@ -285,7 +285,7 @@ class TTableStyle extends TStyle
 
 	/**
 	 * Sets the grid line style of the table.
-	 * @param TTableGridLines $value the grid line setting of the table
+	 * @param string|TTableGridLines $value the grid line setting of the table
 	 * @deprecated use CSS to style the borders of individual elements
 	 */
 	public function setGridLines($value)

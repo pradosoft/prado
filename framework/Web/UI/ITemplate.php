@@ -18,6 +18,9 @@ namespace Prado\Web\UI;
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
+ * @method array getDirective() Returns the template directive settings.
+ * @method bool getIsSourceTemplate() Returns whether the template is a source template.
+ * @method string getContextPath() Returns the template context path.
  */
 interface ITemplate
 {

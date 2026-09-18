@@ -21,7 +21,7 @@ use Prado\Web\UI\WebControls\THiddenField;
  *
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>
  * @since 3.1
- * @method TActiveControlAdapter getAdapter()
+ * @method TActiveControlAdapter<\Prado\Web\UI\ActiveControls\TBaseActiveControl> getAdapter()
  */
 class TActiveHiddenField extends THiddenField implements IActiveControl
 {
@@ -37,19 +37,11 @@ class TActiveHiddenField extends THiddenField implements IActiveControl
 	}
 
 	/**
-	 * @return TBaseActiveCallbackControl standard callback control options.
+	 * @return TBaseActiveControl standard active control options.
 	 */
 	public function getActiveControl()
 	{
 		return $this->getAdapter()->getBaseActiveControl();
-	}
-
-	/**
-	 * @return TCallbackClientSide client side request options.
-	 */
-	public function getClientSide()
-	{
-		return $this->getActiveControl()->getClientSide();
 	}
 
 	/**

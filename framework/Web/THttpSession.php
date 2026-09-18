@@ -345,7 +345,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @return THttpSessionCookieMode how to use cookie to store session ID. Defaults to THttpSessionCookieMode::Allow.
+	 * @return string|THttpSessionCookieMode how to use cookie to store session ID. Defaults to THttpSessionCookieMode::Allow.
 	 */
 	public function getCookieMode()
 	{
@@ -359,7 +359,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @param THttpSessionCookieMode $value how to use cookie to store session ID
+	 * @param string|THttpSessionCookieMode $value how to use cookie to store session ID
 	 * @throws TInvalidOperationException if session is started already
 	 * @deprecated 4.3.1 Since PHP 8.4 disabling session.use_only_cookies
 	 * INI setting is deprecated; Only THttpSessionCookieMode::Only is supported.

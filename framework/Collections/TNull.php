@@ -80,7 +80,7 @@ class TNull implements ISingleton, \JsonSerializable, \Stringable
 	 *
 	 * Use {@see null()} or {@see singleton()} to obtain the shared instance.
 	 */
-	private function __construct()
+	final private function __construct()
 	{
 	}
 
@@ -102,7 +102,7 @@ class TNull implements ISingleton, \JsonSerializable, \Stringable
 	public static function singleton(bool $create = true): static
 	{
 		if (self::$null === null) {
-			self::$null = new self();
+			self::$null = new static();
 		}
 		return self::$null;
 	}

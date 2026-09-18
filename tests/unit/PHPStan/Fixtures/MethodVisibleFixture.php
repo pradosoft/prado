@@ -16,6 +16,15 @@ use Prado\Prado;
 use Prado\TComponent;
 
 /**
+ * An interface that does not extend TComponent, so `instanceof TComponent` on one
+ * of its instances produces an intersection type.
+ */
+interface MethodVisibleFixtureService
+{
+	public function serviceSpecificMethod(): string;
+}
+
+/**
  * Declares two optional methods that callers check via method_visible().
  */
 class MethodVisibleFixtureComponent extends TComponent
@@ -80,6 +89,22 @@ class MethodVisibleCaller extends TComponent
 		}
 		if ($this->hasMethod('setjsTitle')) {
 			$this->title = 'value'; // only get property should validate
+		}
+	}
+
+	/**
+	 * PHPStan hands a method call to a MethodTypeSpecifyingExtension only when the
+	 * subject has exactly one object class name, so `$service->hasMethod(...)`
+	 * cannot narrow a subject whose type is an intersection or a union.
+	 * Prado::method_visible() is a static method extension: it is found through the
+	 * `Prado` class and narrows one of its arguments, so the subject's class-name
+	 * count never enters into the lookup.  It is the guard to reach for on an
+	 * interface-typed subject.
+	 */
+	public function testMethodVisibleOnIntersection(?MethodVisibleFixtureService $service): void
+	{
+		if ($service !== null && $service instanceof TComponent && Prado::method_visible($service, 'initialize')) {
+			$service->initialize('myId');
 		}
 	}
 

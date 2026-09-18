@@ -14,6 +14,7 @@ component_expression_invalid			= Component '{0}' is evaluating an invalid expres
 component_statements_invalid			= Component '{0}' is evaluating invalid PHP statements '{1}' : {2}.
 component_class_behavior_defined		= Component '{0}' already has a class behavior of '{1}'.
 component_not_a_behavior				= Component '{0}' is being added as behavior is not a TBaseBehavior.
+object_not_a_component					= Object '{0}' is being added as behavior is not a TComponent.
 component_no_tcomponent_class_behaviors	= TComponent cannot have class behaviors attached due to recursion.
 component_tbehavior_cannot_attach_as_class_behavior	= IBehaviors cannot attach to multiple owners.  Pass a string or an array of IBehavior class and properties to instance on each owner.
 component_no_class_provided_nor_late_binding = Adding or Removing Class Behaviors must have PHP feature Late Static Binding or a class provided as a parameter
@@ -696,6 +697,9 @@ dbparametermodule_get_no_blank_key		= TDbParameterModule cannot get an empty key
 dbparametermodule_set_no_blank_key		= TDbParameterModule cannot set an empty key with a value.
 dbparametermodule_connectionid_invalid	= TDbParameterModule.ConnectionID '{0}' does not point to a valid TDataSourceConfig module.
 dbparametermodule_serializer_not_callable= TDbParameterModule Serializer is not a callable.
+
+clockawaretrait_invalid_clock_class		= Clock class '{0}' must implement Prado\Util\Clock\IClock.
+utcclock_timezone_fixed					= TUTCClock is fixed to UTC; use TTimezoneClock for another zone.
 
 processcrontask_no_command				= TProcessCronTask '{0}' has no Command to run.
 processcrontask_launch_failed			= TProcessCronTask failed to launch the process: '{0}'.

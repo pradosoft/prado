@@ -23,6 +23,7 @@ use Prado\TPropertyValue;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  * @method TTableItemStyle getStyle()
+ * @method TTableCellCollection getControls()
  */
 class TTableRow extends \Prado\Web\UI\WebControls\TWebControl
 {
@@ -120,7 +121,7 @@ class TTableRow extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return TTableRowSection location of a row in a table. Defaults to TTableRowSection::Body.
+	 * @return string|TTableRowSection location of a row in a table. Defaults to TTableRowSection::Body.
 	 */
 	public function getTableSection()
 	{
@@ -128,7 +129,7 @@ class TTableRow extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param TTableRowSection $value location of a row in a table.
+	 * @param string|TTableRowSection $value location of a row in a table.
 	 */
 	public function setTableSection($value)
 	{

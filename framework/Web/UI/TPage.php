@@ -208,7 +208,7 @@ class TPage extends TTemplateControl
 	 */
 	private $_enableJavaScript = true;
 	/**
-	 * @var THtmlWriter current html render writer
+	 * @var ?THtmlWriter current html render writer
 	 */
 	private $_writer;
 

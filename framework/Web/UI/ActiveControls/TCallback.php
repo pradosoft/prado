@@ -39,7 +39,7 @@ use Prado\Web\UI\TControl;
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.1
- * @method TActiveControlAdapter getAdapter()
+ * @method TActiveControlAdapter<\Prado\Web\UI\ActiveControls\TBaseActiveCallbackControl> getAdapter()
  */
 class TCallback extends TControl implements IActiveControl, ICallbackEventHandler
 {

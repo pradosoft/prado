@@ -5,7 +5,11 @@ namespace Prado\Test\Unit\Web\UI;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TTemplateException;
 use Prado\TComponent;
+use Prado\IO\TTextWriter;
 use Prado\Web\UI\TCompositeLiteral;
+use Prado\Web\UI\TControl;
+use Prado\Web\UI\THtmlWriter;
+use Prado\Web\UI\TPage;
 use Prado\Web\UI\TTemplate;
 use Prado\Test\Unit\PradoUnit;
 
@@ -75,6 +79,18 @@ class TTemplateTest extends \PHPUnit\Framework\TestCase
 		foreach ($items as $item) {
 			if (isset($item[TTemplate::TPL_PROPS])) {
 				return $item;
+			}
+		}
+		return null;
+	}
+
+	private function instantiateFirstControl(TTemplate $tpl)
+	{
+		$page = new TPage();
+		$tpl->instantiateIn($page);
+		foreach ($page->getControls() as $control) {
+			if ($control instanceof TControl) {
+				return $control;
 			}
 		}
 		return null;
@@ -959,13 +975,35 @@ $this->assertArrayHasKey(TTemplate::TPL_PROPS, $item);
 		$this->assertEquals('value', $prop[TTemplate::PROP_VALUE]);
 	}
 
-	public function testAttributeToMethodNameConvertsDashToUnderscore()
+	public function testAttributesSubPropertyPreservesDash()
 	{
-		$tpl = $this->newTemplate('');
-		$this->assertEquals('data_toggle', PradoUnit::invoke($tpl, 'attributeToMethodName', 'data-toggle'));
-		$this->assertEquals('Font_Size', PradoUnit::invoke($tpl, 'attributeToMethodName', 'Font-Size'));
-		$this->assertEquals('nocase', PradoUnit::invoke($tpl, 'attributeToMethodName', 'nocase'));
-		$this->assertEquals('multi_dash_name', PradoUnit::invoke($tpl, 'attributeToMethodName', 'multi-dash-name'));
+		// <com:TNav Attributes.aria-label="Primary" /> stores 'aria-label' verbatim.
+		$tpl = $this->newTemplate('<com:TNav ID="n1" Attributes.aria-label="Primary" Attributes.data-role="menu" />');
+		$nav = $this->instantiateFirstControl($tpl);
+		$attributes = $nav->getAttributes();
+		$this->assertEquals('Primary', $attributes->itemAt('aria-label'));
+		$this->assertEquals('menu', $attributes->itemAt('data-role'));
+		$this->assertFalse($attributes->contains('aria_label'));
+		$this->assertFalse($attributes->contains('data_role'));
+	}
+
+	public function testAttributesSubPropertyDashRendersVerbatim()
+	{
+		$tpl = $this->newTemplate('<com:TNav ID="n1" Attributes.aria-label="Primary" />');
+		$nav = $this->instantiateFirstControl($tpl);
+		$textWriter = new TTextWriter();
+		$nav->render(new THtmlWriter($textWriter));
+		$this->assertStringContainsString('aria-label="Primary"', $textWriter->flush());
+	}
+
+	public function testStyleSubPropertyPreservesDash()
+	{
+		// Dashed CSS names reach the style field of the same name.
+		$tpl = $this->newTemplate('<com:TPanel ID="p1" Style.font-size="14px" Style.--brand-color="#005fcc" Style.-webkit-transform="none" />');
+		$style = $this->instantiateFirstControl($tpl)->getStyle();
+		$this->assertEquals('14px', $style->getStyleField('font-size'));
+		$this->assertEquals('#005fcc', $style->getStyleField('--brand-color'));
+		$this->assertEquals('none', $style->getStyleField('-webkit-transform'));
 	}
 
 	public function testAttributeWithSingleQuotes()
@@ -1870,11 +1908,12 @@ $this->assertArrayHasKey(TTemplate::TPL_PROPS, $item);
 
 	public function testParseAttributesDirectiveWithDash()
 	{
+		// A directive keeps the case and the dashes of the name as written.
 		$tplObj = PradoUnit::reflectionClass(TTemplate::class)->newInstanceWithoutConstructor();
 		$result = PradoUnit::invoke($tplObj, 'parseAttributes', 'Master-Page="layout" Theme-Color="blue"', 0, true);
 		$this->assertCount(2, $result);
 
-		$this->assertEquals(['Master_Page' => 'layout', 'Theme_Color' => 'blue'], $result);
+		$this->assertEquals(['Master-Page' => 'layout', 'Theme-Color' => 'blue'], $result);
 	}
 
 	public function testTemplatePropertyTagEndingInTemplateCaseSensitive()

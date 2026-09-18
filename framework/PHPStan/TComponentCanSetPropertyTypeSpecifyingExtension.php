@@ -106,17 +106,22 @@ final class TComponentCanSetPropertyTypeSpecifyingExtension implements MethodTyp
 
 		// Narrow the object type so PHPStan knows:
 		//   1. The setter method set{Name}() exists (covers $obj->setName() calls).
-		//   2. The virtual property lcfirst($name) is writable (covers $obj->name = $v).
-		// HasPropertyType uses the lowercase-first form because PHPStan passes the
-		// property name exactly as written in source, and PRADO properties are
-		// conventionally accessed with a lowercase-first name (e.g. $obj->title = 'x').
+		//   2. The virtual property is writable (covers $obj->Name = $v).
+		// PHPStan asks for the property with the spelling written in the source, so
+		// both the given spelling and its lowercase-first form are registered:
+		// PRADO templates and code use `Title`, while `title` also reaches the same
+		// accessor because PHP method names are case-insensitive.
+		$types = [
+			$calledOnType,
+			new HasMethodType('set' . $propertyName),
+		];
+		foreach (array_unique([$propertyName, lcfirst($propertyName)]) as $spelling) {
+			$types[] = new HasPropertyType($spelling);
+		}
+
 		return $this->typeSpecifier->create(
 			$node->var,
-			new IntersectionType([
-				$calledOnType,
-				new HasMethodType('set' . $propertyName),
-				new HasPropertyType(lcfirst($propertyName)),
-			]),
+			new IntersectionType($types),
 			$context,
 			$scope
 		);

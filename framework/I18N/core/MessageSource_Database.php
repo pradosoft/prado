@@ -157,7 +157,7 @@ class MessageSource_Database extends MessageSource
 	/**
 	 * Retrive catalogue details, array($cat_id, $variant, $count).
 	 * @param string $catalogue
-	 * @return array catalogue details, array($cat_id, $variant, $count).
+	 * @return array|false catalogue details, array($cat_id, $variant, $count).
 	 */
 	private function getCatalogueDetails($catalogue = 'messages')
 	{
@@ -200,7 +200,7 @@ class MessageSource_Database extends MessageSource
 		);
 		$command->bindParameter(':moddate', $time, PDO::PARAM_INT);
 		$command->bindParameter(':catid', $cat_id, PDO::PARAM_INT);
-		$result = $command->execute();
+		$result = ($command->execute() > 0);
 
 		if (!empty($this->cache)) {
 			$this->cache->clean($variant, $this->culture);

@@ -59,41 +59,44 @@ class TPageStateFormatter
 	}
 
 	/**
+	 * Restores the state data from the string produced by {@see self::serialize()}.
+	 * A missing or empty state is treated as a corrupted state.
 	 * @param TPage $page
-	 * @param string $data serialized data
-	 * @return mixed unserialized state data, null if data is corrupted
+	 * @param ?string $data serialized data
+	 * @return mixed unserialized state data, null if the data is missing or corrupted
 	 */
 	public static function unserialize($page, $data)
 	{
-		$str = base64_decode($data);
-		if ($str === '') {
+		if ($data === null || $data === '') {
 			return null;
 		}
-		if ($str !== false) {
-			$sm = $page->getApplication()->getSecurityManager();
-			if ($page->getEnableStateEncryption()) {
-				$str = $sm->decrypt($str);
-			}
-			if ($page->getEnableStateCompression() && extension_loaded('zlib')) {
-				$str = @gzuncompress($str);
-			}
+		$str = base64_decode($data);
+		if ($str === '' || $str === false) {
+			return null;
+		}
+		$sm = $page->getApplication()->getSecurityManager();
+		if ($page->getEnableStateEncryption()) {
+			$str = $sm->decrypt($str);
+		}
+		if ($page->getEnableStateCompression() && extension_loaded('zlib')) {
+			$str = @gzuncompress($str);
+		}
 
-			if ($page->getEnableStateIGBinary() && extension_loaded('igbinary')) {
-				if ($page->getEnableStateValidation()) {
-					if (($str = $sm->validateData($str)) !== false) {
-						return igbinary_unserialize($str);
-					}
-				} else {
+		if ($page->getEnableStateIGBinary() && extension_loaded('igbinary')) {
+			if ($page->getEnableStateValidation()) {
+				if (($str = $sm->validateData($str)) !== false) {
 					return igbinary_unserialize($str);
 				}
 			} else {
-				if ($page->getEnableStateValidation()) {
-					if (($str = $sm->validateData($str)) !== false) {
-						return unserialize($str);
-					}
-				} else {
+				return igbinary_unserialize($str);
+			}
+		} else {
+			if ($page->getEnableStateValidation()) {
+				if (($str = $sm->validateData($str)) !== false) {
 					return unserialize($str);
 				}
+			} else {
+				return unserialize($str);
 			}
 		}
 		return null;

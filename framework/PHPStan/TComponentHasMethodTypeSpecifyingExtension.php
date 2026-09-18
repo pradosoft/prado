@@ -114,18 +114,12 @@ final class TComponentHasMethodTypeSpecifyingExtension implements MethodTypeSpec
 
 		// If the method follows the PRADO virtual-property convention
 		// (get{Name} / set{Name} / getjs{Name} / setjs{Name}), also narrow the
-		// virtual property so that $obj->name access inside the guard is accepted
+		// virtual property so that $obj->Name access inside the guard is accepted
 		// without a false "Access to an undefined property" error.
-		$lowerMethod = strtolower($methodName);
-		if (str_starts_with($lowerMethod, 'getjs') || str_starts_with($lowerMethod, 'setjs')) {
-			$propPart = substr($methodName, 5);
-			if ($propPart !== '') {
-				$types[] = new HasPropertyType(lcfirst($propPart));
-			}
-		} elseif (str_starts_with($lowerMethod, 'get') || str_starts_with($lowerMethod, 'set')) {
-			$propPart = substr($methodName, 3);
-			if ($propPart !== '') {
-				$types[] = new HasPropertyType(lcfirst($propPart));
+		$propertyName = $this->propertyNameFromAccessor($methodName);
+		if ($propertyName !== '') {
+			foreach (array_unique([$propertyName, lcfirst($propertyName)]) as $spelling) {
+				$types[] = new HasPropertyType($spelling);
 			}
 		}
 
@@ -135,5 +129,25 @@ final class TComponentHasMethodTypeSpecifyingExtension implements MethodTypeSpec
 			$context,
 			$scope
 		);
+	}
+
+	/**
+	 * Extracts the virtual property name from a PRADO accessor method name.
+	 *
+	 * @param string $methodName The method name to read the property name from.
+	 * @return string The property name, or an empty string when the method is not
+	 *   a `get{Name}`, `set{Name}`, `getjs{Name}` or `setjs{Name}` accessor.
+	 * @since 4.4.0
+	 */
+	private function propertyNameFromAccessor(string $methodName): string
+	{
+		$lowerMethod = strtolower($methodName);
+		if (str_starts_with($lowerMethod, 'getjs') || str_starts_with($lowerMethod, 'setjs')) {
+			return substr($methodName, 5);
+		}
+		if (str_starts_with($lowerMethod, 'get') || str_starts_with($lowerMethod, 'set')) {
+			return substr($methodName, 3);
+		}
+		return '';
 	}
 }

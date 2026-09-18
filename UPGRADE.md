@@ -9,6 +9,13 @@ for both A and B.
 
 Upgrading from v4.3.3
 ---------------------
+- TTemplate applies a template attribute name as written instead of replacing its dashes with underscores.
+  An `Attributes.<name>` subproperty now stores the hyphenated name it was given, so
+  `<com:TNav Attributes.aria-label="Primary" />` renders `aria-label="Primary"` where it previously rendered
+  `aria_label="Primary"`. Remove any code-behind workaround that set such attributes through
+  `getAttributes()->add()` only because the template form was wrong. `Style.<css-name>` is unaffected: an
+  underscore and the dash it stands for reach the same CSS field. The protected
+  `TTemplate::attributeToMethodName()` is removed; a subclass overriding it no longer changes any name.
 - Logging classes moved from `Prado\Util` to `Prado\Util\Log` (`TLogger`, `TLogRouter`, `TLogRoute`, `IOutputLogRoute`, and
   every `*LogRoute` class). The old fully-qualified names are not aliased. Update `use` statements, `instanceof`
   checks, and configuration `class=` attributes that spell out `Prado\Util\TLogRouter` and the route classes.

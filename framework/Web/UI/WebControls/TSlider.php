@@ -50,7 +50,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 {
 	public const MAX_STEPS = 200;
 	/*
-	 * @var boolean Wether the data has changed during postback
+	 * @var boolean Whether the data has changed during postback
 	 */
 	private $_dataChanged = false;
 	/**
@@ -143,7 +143,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return bool wether to display a progress indicator or not. Defaults to true.
+	 * @return bool whether to display a progress indicator or not. Defaults to true.
 	 */
 	public function getProgressIndicator()
 	{
@@ -151,7 +151,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param bool $value wether to display a progress indicator or not. Defaults to true.
+	 * @param bool $value whether to display a progress indicator or not. Defaults to true.
 	 */
 	public function setProgressIndicator($value)
 	{

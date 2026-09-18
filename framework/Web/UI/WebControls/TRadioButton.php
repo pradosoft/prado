@@ -63,7 +63,7 @@ class TRadioButton extends TCheckBox
 	 */
 	private $_previousUniqueID;
 	/**
-	 * @var string the name used to fetch radiobutton post data
+	 * @var ?string the name used to fetch radiobutton post data
 	 */
 	private $_uniqueGroupName;
 

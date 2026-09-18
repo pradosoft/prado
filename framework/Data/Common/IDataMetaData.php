@@ -40,6 +40,9 @@ use Prado\Data\IDataConnection;
  * {@see TIbmMetaData}, {@see TFirebirdMetaData}).
  *
  * @author Brad Anderson <belisoful@icloud.com>
+ * @method string quoteTableName(string $name) Quotes a table identifier.
+ * @method string quoteColumnName(string $name) Quotes a column identifier.
+ * @method string quoteColumnAlias(string $name) Quotes a column alias.
  * @since 4.3.3
  */
 interface IDataMetaData

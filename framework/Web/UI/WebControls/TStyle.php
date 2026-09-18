@@ -99,16 +99,15 @@ use Prado\TPropertyValue;
  * ## Style sub-property access (`Style.AttributeName`)
  *
  * Any CSS property that lacks a named convenience method can be set directly
- * from a template using dot-notation on the `Style` sub-property.  The
- * template engine converts hyphens to underscores before resolving the name,
- * which maps cleanly onto {@see methodToAttributeName}'s underscore→dash rule:
+ * from a template using dot-notation on the `Style` sub-property.  The CSS name
+ * is used as written, and {@see methodToAttributeName} resolves PascalCase and
+ * underscore spellings onto the same kebab-case field:
  *
  * ```xml
  * <!-- PascalCase → kebab-case via magic access -->
  * <com:TPanel Style.FontSize="14px" Style.LineHeight="1.5" />
  *
- * <!-- Hyphenated CSS name (hyphen becomes underscore in the attribute;
- *      methodToAttributeName restores the dash) -->
+ * <!-- Hyphenated CSS name -->
  * <com:TPanel Style.font-size="14px" Style.border-radius="4px" />
  *
  * <!-- Single leading dash — vendor prefix shorthand -->
@@ -119,15 +118,15 @@ use Prado\TPropertyValue;
  * ```
  *
  * The same forms work from PHP via {@see \Prado\TComponent::setSubProperty}
- * (which is exactly what the template engine calls internally).  The template
- * engine first runs `str_replace('-', '_', $attr)` on the attribute name, so
- * the PHP-equivalent calls use the already-converted names:
+ * (which is exactly what the template engine calls internally).  An underscore
+ * reaches the same field as the dash it stands for:
  * ```php
  * $panel->setSubProperty('Style.FontSize',           '14px');
- * $panel->setSubProperty('Style.font_size',          '14px');   // font-size → font_size
- * $panel->setSubProperty('Style._webkit_transform',  'translateX(10px)'); // -webkit-transform → _webkit_transform
- * $panel->setSubProperty('Style.__brand_color',      '#005fcc'); // --brand-color → __brand_color
- * $panel->setSubProperty('Style.__safari_transform', 'none');    // --safari-transform → __safari_transform
+ * $panel->setSubProperty('Style.font-size',          '14px');
+ * $panel->setSubProperty('Style.font_size',          '14px');   // font_size → font-size
+ * $panel->setSubProperty('Style.-webkit-transform',  'translateX(10px)');
+ * $panel->setSubProperty('Style.__brand_color',      '#005fcc'); // __brand_color → --brand-color
+ * $panel->setSubProperty('Style.--safari-transform', 'none');
  * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -777,14 +776,17 @@ class TStyle extends \Prado\TComponent implements \ArrayAccess
 	 * to writing the CSS field named by {@see methodToAttributeName}(`$name`).
 	 * @param string $name property name (PascalCase or camelCase)
 	 * @param mixed $value value to set
+	 * @return void
 	 */
 	public function __set($name, $value)
 	{
 		if (Prado::method_visible($this, $setter = 'set' . $name)) {
-			return $this->$setter($value);
+			$this->$setter($value);
+			return;
 		}
 		$name = $this->methodToAttributeName($name);
-		return $this->setStyleField($name, $value);
+		$this->setStyleField($name, $value);
+		return;
 	}
 
 	/**

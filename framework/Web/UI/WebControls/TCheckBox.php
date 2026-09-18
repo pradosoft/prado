@@ -134,14 +134,14 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	/**
 	 * Returns true if this control validated successfully.
 	 * Defaults to true.
-	 * @return bool wether this control validated successfully.
+	 * @return bool whether this control validated successfully.
 	 */
 	public function getIsValid()
 	{
 		return $this->_isValid;
 	}
 	/**
-	 * @param bool $value wether this control is valid.
+	 * @param bool $value whether this control is valid.
 	 */
 	public function setIsValid($value)
 	{
@@ -425,7 +425,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 * Check if we need a span tag to surround this control. The span tag will be created if
 	 * the Text property is set for this control.
 	 *
-	 * @return bool wether this control needs a surrounding span tag
+	 * @return bool whether this control needs a surrounding span tag
 	 */
 	protected function getSpanNeeded()
 	{

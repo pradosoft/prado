@@ -37,7 +37,19 @@ When a behavior registers event handlers in `attach()`, it **must** unregister t
 
 ## Logging
 
-Logging lives in [Log/](Log/INDEX.md) since 4.4.0 (namespace `Prado\Util\Log`). Entry points: `Prado::log()` and `Prado::getLogger()` → [`TLogger`](Log/TLogger.md); the [`TLogRouter`](Log/TLogRouter.md) module dispatches to [`TLogRoute`](Log/TLogRoute.md) outputs; [`TPsrLogger`](Log/TPsrLogger.md) and [`TPsrLogRoute`](Log/TPsrLogRoute.md) bridge PSR-3 in both directions.
+- **[`TLogger`](TLogger.md)** — Core logger. Access via `Prado::getLogger()`. Methods: `log($message, $level, $category)`. Levels: `TLogger::DEBUG`, `INFO`, `NOTICE`, `WARNING`, `ERROR`, `ALERT`, `FATAL`. Profiling: `TLogger::PROFILE_BEGIN`, `PROFILE_END` pairs matched by category. Auto-flushes when log count exceeds `AutoFlush` threshold (default: 10000). Fires `onFlushLogs` event on flush.
+
+- **[`TLogRouter`](TLogRouter.md)** — Module that routes log entries to multiple [`TLogRoute`](TLogRoute.md) targets. Configured in `application.xml`.
+
+- **[`TLogRoute`](TLogRoute.md)** — Abstract base for log outputs. Subclass and implement `processLogs()`. Built-in routes:
+  - **[`TFileLogRoute`](TFileLogRoute.md)** — File output with rotation. Properties: `LogPath`, `LogFile`, `MaxFileSize` (512 KB default), `MaxLogFiles` (2 default).
+  - **[`TDbLogRoute`](TDbLogRoute.md)** — Database logging via `TDbPropertiesTrait`. Properties: `LogTableName`, `AutoCreateLogTable`, `RetainPeriod`, `ConnectionID`.
+  - **[`TEmailLogRoute`](TEmailLogRoute.md)** — Email alerts on error. Properties: `Emails`, `Subject`, `SentFrom`.
+  - **[`TBrowserLogRoute`](TBrowserLogRoute.md)** — Inline debug console rendered in the page. Properties: `CssClass`, `ColorizeDelta`, `AddPrefix`. Implements `IOutputLogRoute`.
+  - **[`TFirebugLogRoute`](TFirebugLogRoute.md)** — Logs to the Firebug browser extension console via inline `<script>` or JSON callback.
+  - **[`TFirePhpLogRoute`](TFirePhpLogRoute.md)** — Sends log entries over HTTP headers for FirePHP. Implements `IOutputLogRoute`. Property: `GroupLabel`.
+  - **[`TStdOutLogRoute`](TStdOutLogRoute.md)** — Writes log entries to stdout. Property: `OnlyDevServer`. @since 4.3.0
+  - **[`TSysLogRoute`](TSysLogRoute.md)** — Routes log entries to the OS syslog. Properties: `SysLogPrefix`, `SysLogFlags`, `Facility`. @since 4.3.0
 
 ## Database Modules
 
@@ -67,6 +79,8 @@ Logging lives in [Log/](Log/INDEX.md) since 4.4.0 (namespace `Prado\Util\Log`). 
 - **[`TVarDumper`](TVarDumper.md)** — Human-readable variable dump for [`TComponent`](../TComponent.md) objects. Use instead of `var_dump()` for framework objects.
 - **[`TCallChain`](TCallChain.md)** — See Behavior System above.
 - **[`TDataFieldAccessor`](TDataFieldAccessor.md)** — Dot-notation property path accessor (e.g., `"User.Profile.Name"`).
+- **[`TSerializableClosure`](TSerializableClosure.md)** — Thin wrapper around `laravel/serializable-closure` letting a `\Closure` survive `serialize()`/`unserialize()` (e.g., a cron task handler). The application `TSecurityManager` configures HMAC signing on init (SHA-512 of `ClosureSecretKey`, which defaults to the validation key); unserialize runs `eval()`, so treat stored payloads as code.
+- **[`Clock/`](Clock/INDEX.md)** — PSR-20 clock abstractions (`Prado\Util\Clock`): the [`IClock`](Clock/IClock.md) contract (PSR `ClockInterface` + `time()`/`microtime()`/`timezone()`/`sleep()`); the real-time [`TNativeClock`](Clock/TNativeClock.md) (the safe default), the settable [`TMockClock`](Clock/TMockClock.md), the fixed-timezone [`TTimezoneClock`](Clock/TTimezoneClock.md) and UTC [`TUTCClock`](Clock/TUTCClock.md), the [`TClockDecorator`](Clock/TClockDecorator.md) (an `IClock` holding one) with its second-offset [`TOffsetClock`](Clock/TOffsetClock.md) and zone-expressing [`TTimezoneDecorator`](Clock/TTimezoneDecorator.md) transforms; the monotonic [`TMonotonicClock`](Clock/TMonotonicClock.md) (elapsed time via `\hrtime()`); plus the [`TClockTrait`](Clock/TClockTrait.md) (be a clock) / [`TClockAwareTrait`](Clock/TClockAwareTrait.md) (hold a clock) traits. Classes that *are* a time source implement `IClock` via `TClockTrait` (e.g. [`TCronModule`](Cron/TCronModule.md)). **Since 4.4.0.**
 - **[`TSignalsDispatcher`](TSignalsDispatcher.md)** — Singleton POSIX signal dispatcher. Translates OS signals into `fx*` global events. Special handling: `SIGCHLD` routes to per-PID handlers via `attachPidHandler()`; `SIGALRM` supports a time-based alarm queue (`alarm()` / `disarm()`). Prior handlers are saved and restored on `detach()`. Install via [`TApplicationSignals`](Behaviors/TApplicationSignals.md) behavior (preferred) or `TSignalsDispatcher::singleton()->attach()`.
 - **[`TSignalParameter`](TSignalParameter.md)** — Event parameter for signal events.
 - **[`TUtf8Converter`](TUtf8Converter.md)** — UTF-8 encoding conversions.

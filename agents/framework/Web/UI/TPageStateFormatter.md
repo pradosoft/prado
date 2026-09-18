@@ -13,7 +13,18 @@ TPageStateFormatter is a utility class that serializes and unserializes page sta
 ## Key Properties/Methods
 
 - `serialize($page, $data)` - Serializes state data with optional validation, compression, and encryption
-- `unserialize($page, $data)` - Unserializes state data, returning null if corrupted
+- `unserialize($page, $data)` - Unserializes state data, returning null if the state is missing or corrupted
+
+## Missing State
+
+`unserialize()` accepts a null or empty `$data` and returns null for it. `TPage::getRequestClientState()` returns null when the request carries no `PRADO_PAGESTATE` field, which happens on a postback that only carries `PRADO_POSTBACK_TARGET` (for example when stray markup closes the form before the hidden fields render). The state persisters turn the null return into `THttpException` 400 "page state corrupted".
+
+| `$data` | Result |
+|---|---|
+| null | null |
+| `''` | null |
+| base64 that decodes to `''` or fails | null |
+| valid state | the restored state data |
 
 ## See Also
 
@@ -21,4 +32,3 @@ TPageStateFormatter is a utility class that serializes and unserializes page sta
 - [TCachePageStatePersister](./TCachePageStatePersister.md)
 - [TSecurityManager](../../Security/TSecurityManager.md)
 
-(End of file - total 19 lines)

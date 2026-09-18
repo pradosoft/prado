@@ -271,7 +271,7 @@ class TDbParameterModule extends TDbModule implements IPermissions, IModuleDepen
 	public function attachTPageServiceHandler($sender, $param)
 	{
 		$service = $this->getService();
-		if ($service->hasEvent('onPreRunPage')) {
+		if ($service instanceof \Prado\TComponent && $service->hasEvent('onPreRunPage')) {
 			$service->attachEventHandler('onPreRunPage', [$this, 'attachParameterStorage'], 0);
 		}
 	}

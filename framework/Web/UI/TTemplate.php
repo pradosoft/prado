@@ -60,14 +60,16 @@ use Prado\Web\Services\TPageService;
  * will create and initialize all components specified in the template and
  * set their parent as $control.
  *
- * Attribute Name Transformations:
- * - Hyphens (dashes) in attribute names are converted to underscores for PHP method lookup.
- *   For example, `--webkit-toggle="modal"` becomes `set__webkit_toggle("modal")` or sets
- *   the `data_toggle` property via `__set()`. This allows HTML5 data attributes to map
- *   to PHP setter methods with underscores.
- * - Property and attribute names are matched case-insensitively for lookup, but the
- *   original case is preserved when calling setters or magic `__set()`. For subproperties
- *   like `Style.ForeColor`, the dot notation accesses the subproperty directly.
+ * Attribute Names:
+ * - Property and attribute names are matched case-insensitively for lookup. The original
+ *   case, and any dash, is preserved when the property is applied through a setter or a
+ *   magic `__set()`. For a subproperty such as `Style.ForeColor`, the dot notation
+ *   accesses the subproperty directly.
+ * - A dash carries through to the property path, so `Attributes.aria-label="Primary"`
+ *   stores the HTML attribute `aria-label` and renders it verbatim. `Style.font-size`,
+ *   `Style.-webkit-transform` and `Style.--brand-color` reach the CSS field of the same
+ *   name; {@see \Prado\Web\UI\WebControls\TStyle::methodToAttributeName()} also reads
+ *   an underscore as a dash, so `Style.font_size` reaches `font-size` as well.
  *
  * @note AGENTS: For visibility on screen, the code blocks below must remain dense.
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -127,7 +129,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 
 	/** @var array list of component tags and strings */
 	private $_tpl = [];
-	/** @var array list of directive settings */
+	/** @var ?array list of directive settings */
 	private $_directive = [];
 	/** @var string context path */
 	private $_contextPath;
@@ -135,7 +137,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	private $_tplFile;
 	/** @var int the line number that parsing starts from (internal use) */
 	private $_startingLine = 0;
-	/** @var string template content to be parsed */
+	/** @var ?string template content to be parsed */
 	private $_content;
 	/** @var bool tells whether the class and attributes should be validated before moving on	 */
 	private $_attributevalidation = true;
@@ -258,7 +260,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 		if ($parentControl === null) {
 			$parentControl = $tplControl;
 		}
-		if (($page = $tplControl->getPage()) === null && ($service = $this->getService()) !== null && $service->isa(TPageService::class)) {
+		if (($page = $tplControl->getPage()) === null && ($service = $this->getService()) !== null && $service instanceof TComponent && $service->isa(TPageService::class)) {
 			$page = $service->getRequestedPage();
 		}
 		$controls = [];
@@ -421,6 +423,11 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 
 	/**
 	 * Configures a simple property for a component.
+	 *
+	 * The property name is used as written in the template. A dash carries through
+	 * to the property path, so `Attributes.aria-label` reaches the attribute named
+	 * `aria-label` and `Style.font-size` the CSS field named `font-size`.
+	 *
 	 * Note: setSubProperty does set the Property on the component if there is no `.`.
 	 * @param \Prado\Web\UI\TControl $component component to be configured
 	 * @param string $attrKey property name
@@ -428,7 +435,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	 */
 	protected function configureProperty($component, $attrKey, $propInfo)
 	{
-		$propName = $this->attributeToMethodName($propInfo[self::PROP_NAME]);
+		$propName = $propInfo[self::PROP_NAME];
 		switch ($propInfo[self::PROP_TYPE]) {
 			case self::CONFIG_VALUE:
 				$pos = strrpos($propName, '.');
@@ -473,17 +480,6 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 				$propType = $propInfo[self::PROP_TYPE];
 				throw new TConfigurationException('template_tag_unexpected', $propName . " (tag-type: {$propType})", $propInfo[self::PROP_VALUE]);
 		}
-	}
-
-	/**
-	 * Converts attribute names with dashes to method name format.
-	 * @param string $propName property name with possible dashes
-	 * @return string property name with dashes replaced by underscores
-	 * @since 4.3.3
-	 */
-	protected function attributeToMethodName($propName)
-	{
-		return str_replace('-', '_', $propName);
 	}
 
 	/**
@@ -767,8 +763,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 			$directiveAttr = $attributes;
 			$attributes = [];
 			foreach ($directiveAttr as $attrKey => &$propInfo) {
-				$propName = $this->attributeToMethodName($propInfo[self::PROP_NAME]);
-				$attributes[$propName] = $propInfo[self::PROP_VALUE];
+				$attributes[$propInfo[self::PROP_NAME]] = $propInfo[self::PROP_VALUE];
 			}
 		}
 		return $attributes;

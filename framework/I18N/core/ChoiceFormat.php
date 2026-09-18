@@ -207,7 +207,7 @@ class ChoiceFormat
 	 * string that satisfied the set within the choices.
 	 * @param string $string the choices string.
 	 * @param float $number the number to test.
-	 * @return string the choosen string.
+	 * @return false|string the choosen string, or false if no result.
 	 */
 	public function format($string, $number)
 	{

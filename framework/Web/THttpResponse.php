@@ -868,13 +868,14 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 			return null;
 		}
 
-		$this->_headersManager = $this->getApplication()->getModule($headersManagerId);
-		if ($this->_headersManager === null) {
+		$headersManager = $this->getApplication()->getModule($headersManagerId);
+		if ($headersManager === null) {
 			throw new TConfigurationException('httpresponse_headersmanager_inexist', $headersManagerId);
 		}
-		if (!($this->_headersManager instanceof THttpHeadersManager)) {
+		if (!($headersManager instanceof THttpHeadersManager)) {
 			throw new TConfigurationException('httpresponse_headersmanager_invalid', $headersManagerId);
 		}
+		$this->_headersManager = $headersManager;
 
 		return $this->_headersManager;
 	}

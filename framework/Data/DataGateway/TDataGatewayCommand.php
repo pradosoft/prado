@@ -151,7 +151,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	}
 	/**
 	 * @param mixed $keys primary key value, or composite key values as array.
-	 * @return array matching record.
+	 * @return ?array matching record.
 	 */
 	public function findByPk($keys)
 	{
@@ -386,7 +386,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	 * @param string $method __call method name
 	 * @param string $condition criteria conditions
 	 * @param array $args method arguments
-	 * @return \Prado\Data\ActiveRecord\TActiveRecordCriteria criteria created from the method name and its arguments.
+	 * @return TSqlCriteria criteria created from the method name and its arguments.
 	 */
 	public function createCriteriaFromString($method, $condition, $args)
 	{

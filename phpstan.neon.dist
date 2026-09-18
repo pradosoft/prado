@@ -1,6 +1,8 @@
 parameters:
-    phpVersion: 80300 # PHP 8.3
-    level: 2
+    phpVersion:
+        min: 80100
+        max: 80500
+    level: 3
     paths:
         - framework
 services:

@@ -319,7 +319,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * Loads UrlManager instance from cache.
-	 * @return TUrlManager intance if load was successful, null otherwise.
+	 * @return ?TUrlManager intance if load was successful, null otherwise.
 	 */
 	protected function loadCachedUrlManager()
 	{
@@ -367,13 +367,14 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 					$this->_urlManager = new TUrlManager();
 					$this->_urlManager->init(null);
 				} else {
-					$this->_urlManager = $this->getApplication()->getModule($this->_urlManagerID);
-					if ($this->_urlManager === null) {
+					$urlManager = $this->getApplication()->getModule($this->_urlManagerID);
+					if ($urlManager === null) {
 						throw new TConfigurationException('httprequest_urlmanager_inexist', $this->_urlManagerID);
 					}
-					if (!($this->_urlManager instanceof TUrlManager)) {
+					if (!($urlManager instanceof TUrlManager)) {
 						throw new TConfigurationException('httprequest_urlmanager_invalid', $this->_urlManagerID);
 					}
+					$this->_urlManager = $urlManager;
 				}
 				$this->cacheUrlManager($this->_urlManager);
 			}
@@ -455,7 +456,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * @param bool $mimetypeOnly whether to return only the mimetype (default: true)
-	 * @return string content type (e.g. 'application/json' or 'text/html; encoding=gzip') or null if not specified
+	 * @return ?string content type (e.g. 'application/json' or 'text/html; encoding=gzip') or null if not specified
 	 */
 	public function getContentType($mimetypeOnly = true)
 	{

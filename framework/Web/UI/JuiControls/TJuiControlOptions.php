@@ -35,7 +35,7 @@ use Prado\Web\UI\TControl;
 class TJuiControlOptions
 {
 	/**
-	 * @var TMap map of javascript options.
+	 * @var array map of javascript options.
 	 */
 	protected $_options;
 	/**

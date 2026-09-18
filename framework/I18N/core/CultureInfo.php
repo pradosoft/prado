@@ -361,10 +361,10 @@ class CultureInfo
 	 * Gets the culture name in the language that the culture is set
 	 * to display. Returns
 	 * ```php
-	 * array('Language','Country');
+	 * 'Language (Country)';
 	 * ```
 	 * 'Country' is omitted if the culture is neutral.
-	 * @return array array with language and country as elements, localized.
+	 * @return string language and country as text, localized.
 	 */
 	public function getNativeName()
 	{
@@ -491,7 +491,7 @@ class CultureInfo
 	 * array(0 => 'hello', 1 => 'world');
 	 * ```
 	 * @param mixed $obj with single elements arrays
-	 * @return array simplified array.
+	 * @return array|bool|float|int|string simplified array.
 	 */
 	protected function simplify($obj)
 	{
@@ -609,7 +609,7 @@ class CultureInfo
 	/**
 	 * Get the display name for a specified unit.
 	 * @param string $unitType The unit type identifier (e.g. 'digital-gigabyte')
-	 * @return string The display name of the unit.
+	 * @return ?string The display name of the unit.
 	 * @since 4.3.3
 	 */
 	public function getUnit($unitType)
@@ -651,7 +651,7 @@ class CultureInfo
 	 * Format a number with a unit.
 	 * @param float $number The number to format
 	 * @param string $unitType The unit type identifier (e.g. 'digital-gigabyte')
-	 * @return string The formatted string with the number and unit.
+	 * @return ?string The formatted string with the number and unit.
 	 * @since 4.3.3
 	 */
 	public function formatUnit($number, $unitType)
@@ -674,7 +674,7 @@ class CultureInfo
 	 * Format a number with a per unit.
 	 * @param float $number The number to format
 	 * @param string $unitType The unit type identifier (e.g. 'digital-gigabyte')
-	 * @return string The formatted string with the number and per unit.
+	 * @return ?string The formatted string with the number and per unit.
 	 * @since 4.3.3
 	 */
 	public function formatPerUnit($number, $unitType)

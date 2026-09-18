@@ -119,7 +119,7 @@ class TCronTaskInfo extends \Prado\TComponent
 	}
 
 	/**
-	 * @return \Prado\TModule gets the module from the module id for the task
+	 * @return ?\Prado\TModule gets the module from the module id for the task
 	 */
 	public function getModule()
 	{
