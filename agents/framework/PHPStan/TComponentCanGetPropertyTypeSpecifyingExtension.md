@@ -31,11 +31,11 @@ Implements `MethodTypeSpecifyingExtension` and `TypeSpecifierAwareExtension`:
 
 - `getClass()` returns `TComponent::class` — extension applies only to `TComponent` and its subclasses.
 - `isMethodSupported()` activates when the method is `canGetProperty`, the first argument slot is present, and the context is `true()`.
-- `specifyTypes()` extracts the constant string property name from the first argument. It then narrows the caller's type to `OriginalType & HasMethodType('get' . $name) & HasPropertyType(lcfirst($name))`.
+- `specifyTypes()` extracts the constant string property name from the first argument. It then narrows the caller's type to `OriginalType & HasMethodType('get' . $name)` intersected with a `HasPropertyType` for **both** the given spelling and its lowercase-first form.
 
 The dual narrowing covers both PRADO access forms:
 1. **`$obj->getFoo()`** — covered by `HasMethodType('getFoo')`.
-2. **`$obj->foo`** — covered by `HasPropertyType('foo')` (lowercase-first, matching PRADO convention).
+2. **`$obj->Foo`** and **`$obj->foo`** — covered by `HasPropertyType('Foo')` and `HasPropertyType('foo')`. PHPStan asks for a property with the spelling written in the source, PRADO writes `Foo`, and `foo` reaches the same accessor because PHP method names are case-insensitive.
 
 ## Requirements
 
@@ -43,6 +43,7 @@ The dual narrowing covers both PRADO access forms:
 - Caller must resolve to an object type
 - First argument must be a single constant string (dynamic names are not narrowed)
 - Context must be `true`
+- Subject type must have **exactly one** object class name. PHPStan hands a method call to a `MethodTypeSpecifyingExtension` only in that case (`MethodCallHandler::specifyTypes()`), so an intersection (`IService&TComponent`) or a union (`TControl|TStyle`) subject never reaches this extension and `isMethodSupported()` is never called. Use [Prado::method_visible()](./PradoMethodVisibleStaticMethodTypeSpecifyingExtension.md) on those subjects; being a static method extension, it narrows an argument and is unaffected.
 
 ## Usage
 
