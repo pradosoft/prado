@@ -8,4 +8,4 @@ PHPStan static analysis extensions teaching PHPStan about Prado's dynamic method
 
 - **`DynamicMethodReflection`** — Implements PHPStan's `MethodReflection`; returns public, non-static visibility with `MixedType` return and variadic parameters.
 
-- **`TComponentIsaTypeSpecifyingExtension`** — PHPStan type-specifying extension for `TComponent::isa()`; narrows type when `isa()` returns `true`.
+- **`TComponentIsaTypeSpecifyingExtension`** — PHPStan type-specifying extension for `TComponent::isa()`; narrows type when `isa()` returns `true`. Only subjects with one object class name reach it; intersection subjects are narrowed by the `@phpstan-assert-if-true` tag on `TComponent::isa()`.

@@ -2203,8 +2203,14 @@ class TComponent
 	 * The behavior {@see \Prado\Util\IInstanceCheck} is to allow a behavior to have the host object
 	 * act as a completely different object.
 	 *
-	 * @param mixed|string $class class or string
+	 * Static analysis narrows $this to $class when this returns true, the same way
+	 * `instanceof` narrows.  The narrowing is carried by the assertion tag below so
+	 * it applies to every subject type, including intersection types.
+	 *
+	 * @template T of object
+	 * @param class-string<T>|T $class class or string
 	 * @return bool whether or not the object or a behavior is an instance of a particular class
+	 * @phpstan-assert-if-true T $this
 	 * @since 3.2.3
 	 */
 	public function isa($class)

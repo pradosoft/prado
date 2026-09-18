@@ -39,6 +39,14 @@ use Prado\TComponent;
  *
  * This class helps PHPStan understand the "isa" PRADO feature and validate
  * PRADO projects.
+ *
+ * PHPStan offers a method call to a MethodTypeSpecifyingExtension only when the
+ * subject has exactly one object class name.  A subject with an intersection type,
+ * such as `IService&TComponent`, has two, so it never reaches this extension.  Those
+ * subjects are narrowed by the `@phpstan-assert-if-true` tag on
+ * {@see \Prado\TComponent::isa()}, which PHPStan evaluates for every subject type.
+ * The tag ships with the framework and needs no configuration.
+ *
  * To use this class, add the following PHPStan configuration to a project:
  * ```neon
  * services:
