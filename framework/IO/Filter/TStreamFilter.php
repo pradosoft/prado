@@ -188,7 +188,7 @@ abstract class TStreamFilter extends \php_user_filter
 	{
 		$return = PSFS_PASS_ON;
 		while ($bucket = stream_bucket_make_writeable($in)) {
-			$length = $bucket->datalen;
+			$length = (int) $bucket->datalen;
 			$result = $this->convert($bucket, $closing);
 			if ($result === PSFS_ERR_FATAL) {
 				return PSFS_ERR_FATAL;

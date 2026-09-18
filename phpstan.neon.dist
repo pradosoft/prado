@@ -1,6 +1,6 @@
 parameters:
     phpVersion:
-        min: 80400
+        min: 80100
         max: 80500
     level: 3
     paths:
