@@ -74,7 +74,11 @@ class TAssetManagerTest extends \PHPUnit\Framework\TestCase
 		self::$class = $this->getTestClass();
 	}
 
-	private function removeDirectory($dir)
+	/**
+	 * Removes a directory and everything under it. Protected so that a subclass test
+	 * reusing these cases can clean up its own fixtures the same way.
+	 */
+	protected function removeDirectory($dir)
 	{
 		// Let's be sure $dir is a directory to avoir any error. Clear the cache !
 		clearstatcache();
@@ -346,9 +350,6 @@ class TAssetManagerTest extends \PHPUnit\Framework\TestCase
 	 */
 	public function testPublishTarFileExtractorOption()
 	{
-		if ($this->getTestClass() !== TAssetManager::class) {
-			$this->markTestSkipped('Tar extractor options are wired on the TAssetManager deployTarFile path.');
-		}
 		if (DIRECTORY_SEPARATOR === '\\') {
 			$this->markTestSkipped('File permission modes (chmod) are not honored on Windows NTFS.');
 		}
@@ -1060,26 +1061,60 @@ class TAssetManagerTest extends \PHPUnit\Framework\TestCase
 		self::assertArrayHasKey($fileToPublish, $published);
 	}
 
+	/**
+	 * A source that exists but has not been published yet still reports where it would go.
+	 */
 	public function testGetPublishedPathNotPublished()
 	{
 		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->init(null);
 
-		$path = $manager->getPublishedPath('/nonexistent/file.txt');
-		self::assertNotNull($path);
+		$path = $manager->getPublishedPath(__DIR__ . '/data/pradoheader.gif');
 		self::assertStringContainsString(self::$assetDir, $path);
+		self::assertFalse(is_file($path));   // reported, not published
+
+		$url = $manager->getPublishedUrl(__DIR__ . '/data/pradoheader.gif');
+		self::assertStringStartsWith('/', $url);
+		self::assertStringEndsWith('/pradoheader.gif', $url);
 	}
 
-	public function testGetPublishedUrlNotPublished()
+	/**
+	 * A path that does not exist cannot be resolved: realpath() yields nothing to hash, so
+	 * every missing path would otherwise collapse onto one bogus published directory.
+	 * Both accessors throw the same exception publish() throws.
+	 */
+	public function testGetPublishedPathNonexistentThrows()
 	{
 		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->init(null);
 
-		$url = $manager->getPublishedUrl('/nonexistent/file.txt');
-		self::assertNotNull($url);
-		self::assertStringStartsWith('/', $url);
+		$this->expectException(TInvalidDataValueException::class);
+		$manager->getPublishedPath('/nonexistent/file.txt');
+	}
+
+	public function testGetPublishedUrlNonexistentThrows()
+	{
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->init(null);
+
+		$this->expectException(TInvalidDataValueException::class);
+		$manager->getPublishedUrl('/nonexistent/file.txt');
+	}
+
+	/**
+	 * An empty path is invalid on the same terms as a missing one.
+	 */
+	public function testGetPublishedPathEmptyThrows()
+	{
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->init(null);
+
+		$this->expectException(TInvalidDataValueException::class);
+		$manager->getPublishedPath('');
 	}
 
 	public function testBeforeCopyWithDirectory()
@@ -2782,15 +2817,10 @@ class TAssetManagerTest extends \PHPUnit\Framework\TestCase
 	/**
 	 * An atomic directory publish writes a completion marker; the marker gates whether a
 	 * later publish trusts the directory (present) or re-copies the missing files (absent,
-	 * as after an interrupted copy). TPublishingManager publishes directories through its
-	 * own asset-model path, so this is scoped to TAssetManager.
+	 * as after an interrupted copy).
 	 */
 	public function testDirectoryCompletionMarkerGatesRepublish()
 	{
-		if ($this->getTestClass() !== TAssetManager::class) {
-			$this->markTestSkipped('Directory completion marker is on the TAssetManager publish path.');
-		}
-
 		$previousMode = self::$app->getMode();
 		try {
 			$manager = $this->newAssetManager();
@@ -2830,9 +2860,6 @@ class TAssetManagerTest extends \PHPUnit\Framework\TestCase
 	 */
 	public function testNonAtomicDirectoryHasNoMarker()
 	{
-		if ($this->getTestClass() !== TAssetManager::class) {
-			$this->markTestSkipped('Directory completion marker is on the TAssetManager publish path.');
-		}
 		$markerGlob = DIRECTORY_SEPARATOR . TAssetManager::DIRECTORY_COMPLETE_MARKER_PREFIX . '*';
 
 		// Via the Atomic property.
@@ -2862,10 +2889,6 @@ class TAssetManagerTest extends \PHPUnit\Framework\TestCase
 	 */
 	public function testCompletionMarkerNotCopiedFromSource()
 	{
-		if ($this->getTestClass() !== TAssetManager::class) {
-			$this->markTestSkipped('Directory completion marker is on the TAssetManager publish path.');
-		}
-
 		$src = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'tassetmgr_marker_' . getmypid();
 		$this->removeDirectory($src);
 		mkdir($src, Prado::getDefaultDirPermissions(), true);
@@ -2930,5 +2953,321 @@ class TAssetManagerTest extends \PHPUnit\Framework\TestCase
 		$directManager->init(null);
 		$directManager->publishFilePath($virtual);
 		self::assertEquals($directManager->getPublishedPath($virtual), $virtual->writtenTo);
+	}
+
+	/**
+	 * An asset manager whose deployTarFile() reports failure for the first $failures
+	 * extractions and then defers to the real extractor. A subclass test overrides this
+	 * to build the same behavior on its own class.
+	 * @param int $failures the number of extractions to fail before succeeding.
+	 * @since 4.4.0
+	 */
+	protected function newFailingTarAssetManager(int $failures)
+	{
+		$manager = new class () extends TAssetManager {
+			/** @var int extractions still to fail before the real extractor runs. */
+			public $failures = 0;
+			/** @var int how many times deployTarFile has been called. */
+			public $deployCalls = 0;
+			protected function deployTarFile($path, $destination, array $options = [])
+			{
+				$this->deployCalls++;
+				if ($this->failures > 0) {
+					$this->failures--;
+					return false;
+				}
+				return parent::deployTarFile($path, $destination, $options);
+			}
+		};
+		$manager->failures = $failures;
+		$manager->setBaseUrl('/');
+		$manager->init(null);
+		return $manager;
+	}
+
+	/**
+	 * A failed extraction throws and publishes no checksum file. The checksum is the
+	 * "already published" sentinel, so copying it ahead of the extraction would leave the
+	 * broken directory permanently newer than its source. The next publish extracts again
+	 * and succeeds.
+	 */
+	public function testPublishTarFileFailedExtractionRetriesOnNextPublish()
+	{
+		[$tarFile, $md5File] = $this->buildTarFixture();
+
+		$failing = $this->newFailingTarAssetManager(1);
+		$dir = self::$assetDir . DIRECTORY_SEPARATOR . basename($failing->getPublishedUrl($this->tarDir));
+
+		try {
+			$failing->publishTarFile($tarFile, $md5File);
+			self::fail('Expected TIOException not thrown');
+		} catch (TIOException $e) {
+		}
+		self::assertEquals(1, $failing->deployCalls);
+		self::assertFalse(is_file($dir . DIRECTORY_SEPARATOR . 'bundle.md5'));
+		self::assertEmpty(glob($dir . DIRECTORY_SEPARATOR . TAssetManager::DIRECTORY_COMPLETE_MARKER_PREFIX . '*'));   // no sentinel
+
+		// A later publish is not fooled by a sentinel, so the tar extracts.
+		$retry = $this->newFailingTarAssetManager(0);
+		$publishedDir = self::$assetDir . $retry->publishTarFile($tarFile, $md5File);
+		self::assertEquals(1, $retry->deployCalls);
+		self::assertTrue(is_file($publishedDir . '/style.css'));
+		self::assertTrue(is_file($publishedDir . '/sub/nested.txt'));
+		self::assertTrue(is_file($publishedDir . '/bundle.md5'));   // sentinel written after success
+	}
+
+	/**
+	 * A plain publish of the checksum file and a tar publish keyed by that same checksum
+	 * are cached under distinct keys, so neither call order returns the other's URL: the
+	 * file publish answers with the file, the tar publish with the extracted directory.
+	 */
+	public function testPublishTarFileCacheKeyDoesNotCollideWithFilePublish()
+	{
+		[$tarFile, $md5File] = $this->buildTarFixture();
+
+		// Tar first, then the checksum file as a plain file.
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->init(null);
+		$tarUrl = $manager->publishTarFile($tarFile, $md5File);
+		$fileUrl = $manager->publishFilePath($md5File);
+		self::assertStringEndsNotWith('/bundle.md5', $tarUrl);
+		self::assertStringEndsWith('/bundle.md5', $fileUrl);
+		self::assertEquals(dirname($fileUrl), $tarUrl);
+		self::assertTrue(is_dir(self::$assetDir . $tarUrl));
+		self::assertTrue(is_file(self::$assetDir . $tarUrl . '/style.css'));
+		// The cached entries stay apart on a repeat call.
+		self::assertEquals($tarUrl, $manager->publishTarFile($tarFile, $md5File));
+		self::assertEquals($fileUrl, $manager->publishFilePath($md5File));
+
+		$this->removeDirectory(self::$assetDir);
+		@mkdir(self::$assetDir);
+
+		// The opposite order returns the same two URLs and extracts the same contents.
+		$manager2 = $this->newAssetManager();
+		$manager2->setBaseUrl('/');
+		$manager2->init(null);
+		$fileUrl2 = $manager2->publishFilePath($md5File);
+		$tarUrl2 = $manager2->publishTarFile($tarFile, $md5File);
+		self::assertEquals($fileUrl, $fileUrl2);
+		self::assertEquals($tarUrl, $tarUrl2);
+		self::assertTrue(is_file(self::$assetDir . $tarUrl2 . '/style.css'));
+	}
+
+	/**
+	 * Publishing the checksum file on its own puts an identical copy where the tar publish
+	 * puts its own, and it is newer than the source. Only the completion marker, written by
+	 * the extraction, reports the tar as published, so the contents still extract.
+	 */
+	public function testPublishTarFileExtractsAfterChecksumPublishedAsFile()
+	{
+		[$tarFile, $md5File] = $this->buildTarFixture();
+
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->init(null);
+
+		// The checksum lands first, as a plain file publish, and is newer than its source.
+		$publishedDir = self::$assetDir . dirname($manager->publishFilePath($md5File));
+		self::assertTrue(is_file($publishedDir . '/bundle.md5'));
+		self::assertGreaterThanOrEqual(filemtime($md5File), filemtime($publishedDir . '/bundle.md5'));
+		self::assertFalse(is_file($publishedDir . '/style.css'));
+
+		// A copied checksum is not a sentinel: the tar extracts.
+		self::assertEquals(dirname($manager->publishFilePath($md5File)), $manager->publishTarFile($tarFile, $md5File));
+		self::assertTrue(is_file($publishedDir . '/style.css'));
+		self::assertTrue(is_file($publishedDir . '/app.js'));
+		self::assertTrue(is_file($publishedDir . '/sub/nested.txt'));
+	}
+
+	/**
+	 * The completion marker gates the extraction: present and newer than the checksum it
+	 * skips the tar, removed (as after an interrupted publish) it extracts again. The
+	 * marker is keyed by the checksum file path, so it is the tar's own.
+	 */
+	public function testPublishTarFileCompletionMarkerGatesExtraction()
+	{
+		[$tarFile, $md5File] = $this->buildTarFixture();
+
+		$manager = $this->newFailingTarAssetManager(0);
+		$publishedDir = self::$assetDir . $manager->publishTarFile($tarFile, $md5File);
+		$marker = $publishedDir . DIRECTORY_SEPARATOR
+			. TAssetManager::DIRECTORY_COMPLETE_MARKER_PREFIX . sha1(realpath($md5File));
+		self::assertTrue(is_file($marker));
+		self::assertEquals(1, $manager->deployCalls);
+
+		// Marker present: a later request trusts it and does not extract again.
+		$trusting = $this->newFailingTarAssetManager(0);
+		$trusting->publishTarFile($tarFile, $md5File);
+		self::assertEquals(0, $trusting->deployCalls);
+
+		// Marker absent: the tar extracts again, restoring a removed file.
+		@unlink($marker);
+		@unlink($publishedDir . '/style.css');
+		$resuming = $this->newFailingTarAssetManager(0);
+		$resuming->publishTarFile($tarFile, $md5File);
+		self::assertEquals(1, $resuming->deployCalls);
+		self::assertTrue(is_file($publishedDir . '/style.css'));
+		self::assertTrue(is_file($marker));
+	}
+
+	/**
+	 * The published cache keys a tar under its own namespaced entry, separate from the
+	 * plain-file entry for the same checksum path, and separate again per option set so a
+	 * later call with different options cannot read a stale entry.
+	 */
+	public function testPublishTarFileCacheKeysAreNamespaced()
+	{
+		[$tarFile, $md5File] = $this->buildTarFixture();
+
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->init(null);
+
+		$manager->publishTarFile($tarFile, $md5File);
+		$manager->publishFilePath($md5File);
+		$manager->publishTarFile($tarFile, $md5File, ['atomic' => false]);
+
+		$published = $manager->getPublished();
+		self::assertArrayHasKey($md5File, $published);        // the plain file keeps the bare path
+		self::assertStringEndsWith('/bundle.md5', $published[$md5File]);
+		self::assertCount(3, $published);                     // file, tar, tar with options
+		$tarKeys = array_values(array_filter(array_keys($published), fn ($key) => str_starts_with($key, 'tar:')));
+		self::assertCount(2, $tarKeys);                       // one per option set
+		self::assertEquals('tar:' . $md5File, $tarKeys[0]);   // no options: the bare namespaced path
+		self::assertStringStartsWith('tar:' . $md5File . '#', $tarKeys[1]);
+	}
+
+	/**
+	 * copyDirectory hands every file to copyDirectoryFile, after the excluded paths and
+	 * the completion markers are filtered out, so an override sees the published files and
+	 * nothing else.
+	 */
+	public function testCopyDirectoryFileReceivesEachFile()
+	{
+		$manager = new class () extends TAssetManager {
+			/** @var array<string, string> relative path => destination path, per file seen. */
+			public $seen = [];
+			protected function copyDirectoryFile(string $srcPath, string $dstPath, string $relativePath, array $options): void
+			{
+				$this->seen[$relativePath] = $dstPath;
+				parent::copyDirectoryFile($srcPath, $dstPath, $relativePath, $options);
+			}
+		};
+		$manager->setBaseUrl('/');
+		$manager->init(null);
+
+		$publishedDir = self::$assetDir . $manager->publishFilePath(__DIR__ . '/data/testassets');
+
+		self::assertArrayHasKey('js/app.js', $manager->seen);       // nested files too
+		self::assertArrayHasKey('.hidden', $manager->seen);
+		foreach ($manager->seen as $relativePath => $dstPath) {
+			self::assertStringNotContainsString('.svn', $relativePath);
+			self::assertStringStartsNotWith(TAssetManager::DIRECTORY_COMPLETE_MARKER_PREFIX, basename($relativePath));
+			self::assertTrue(is_file($dstPath), $relativePath . ' was copied');
+		}
+		self::assertTrue(is_dir($publishedDir));
+	}
+
+	/**
+	 * An override of copyDirectoryFile replaces the per-file publishing while the
+	 * directory walk, the exclusions, and the destination directories stay in place.
+	 */
+	public function testCopyDirectoryFileOverrideReplacesPerFilePublishing()
+	{
+		$manager = new class () extends TAssetManager {
+			/** @var int files handed over. */
+			public $count = 0;
+			protected function copyDirectoryFile(string $srcPath, string $dstPath, string $relativePath, array $options): void
+			{
+				$this->count++;
+				@file_put_contents($dstPath, 'replaced:' . $relativePath);
+			}
+		};
+		$manager->setBaseUrl('/');
+		$manager->init(null);
+
+		$publishedDir = self::$assetDir . $manager->publishFilePath(__DIR__ . '/data/testassets');
+
+		self::assertGreaterThan(0, $manager->count);
+		self::assertTrue(is_dir($publishedDir . '/js'));                       // the walk still built the tree
+		self::assertEquals('replaced:js/app.js', file_get_contents($publishedDir . '/js/app.js'));
+	}
+
+	/**
+	 * copyDirectoryFile honors the resolved options it is handed rather than the instance
+	 * properties, so a caller passing its own options gets those.
+	 */
+	public function testCopyDirectoryFileUsesSuppliedOptions()
+	{
+		$manager = $this->newAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->setOnly(['*.nomatch']);
+		$manager->init(null);
+
+		$src = __DIR__ . '/data/pradoheader.gif';
+		$dst = self::$assetDir . DIRECTORY_SEPARATOR . 'pradoheader.gif';
+		$copyFile = new \ReflectionMethod($manager, 'copyDirectoryFile');
+		$copyFile->setAccessible(true);
+
+		// The instance "only" would reject the file; the supplied options accept it.
+		$copyFile->invoke($manager, $src, $dst, 'pradoheader.gif', [
+			'only' => ['*.gif'],
+			'except' => null,
+			'caseSensitive' => true,
+			'beforeCopy' => null,
+			'afterCopy' => null,
+			'forceCopy' => false,
+			'linkAssets' => false,
+			'fileMode' => null,
+		]);
+		self::assertTrue(is_file($dst));
+
+		// An "only" that rejects the file leaves nothing behind.
+		@unlink($dst);
+		$copyFile->invoke($manager, $src, $dst, 'pradoheader.gif', ['only' => ['*.js'], 'except' => null]);
+		self::assertFalse(is_file($dst));
+	}
+
+	/**
+	 * virtualAssetPath supplies the path a virtual asset publishes under, so overriding it
+	 * relocates the asset without touching the target resolution.
+	 */
+	public function testVirtualAssetPathOverrideRelocatesAsset()
+	{
+		$virtual = new class () implements \Prado\Web\IPublishable {
+			public function getAssetFilePath()
+			{
+				return '/virtual/original.svg';
+			}
+			public function getAssetModificationDate()
+			{
+				return 0;
+			}
+			public function publish(string $dst): ?bool
+			{
+				return (bool) @file_put_contents($dst, '<svg/>');
+			}
+		};
+
+		$manager = new class () extends TAssetManager {
+			protected function virtualAssetPath(\Prado\Web\IPublishable $asset): ?string
+			{
+				return '/relocated/renamed.svg';
+			}
+		};
+		$manager->setBaseUrl('/');
+		$manager->init(null);
+
+		$url = $manager->publishFilePath($virtual);
+		self::assertStringEndsWith('/renamed.svg', $url);
+		self::assertStringEndsWith('renamed.svg', $manager->getPublishedPath($virtual));
+		self::assertTrue(is_file(self::$assetDir . $url));
+
+		// The relocated path, not the asset's own, keys the published directory.
+		$plain = $this->newAssetManager();
+		$plain->setBaseUrl('/');
+		$plain->init(null);
+		self::assertNotEquals($plain->getPublishedUrl($virtual), $url);
 	}
 }
