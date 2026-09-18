@@ -42,4 +42,6 @@ Cross-cutting utilities: behavior/mixin system, logging, scheduled tasks, RPC cl
 
 - **`TSimpleDateFormatter`** — Non-locale date formatting.
 
+- **`TSerializableClosure`** — Serializable `\Closure` wrapper (laravel/serializable-closure); HMAC-signable.
+
 - **`TClassBehaviorEventParameter`** — Event parameter when a class behavior is attached/detached.

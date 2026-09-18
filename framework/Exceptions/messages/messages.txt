@@ -697,6 +697,9 @@ dbparametermodule_set_no_blank_key		= TDbParameterModule cannot set an empty key
 dbparametermodule_connectionid_invalid	= TDbParameterModule.ConnectionID '{0}' does not point to a valid TDataSourceConfig module.
 dbparametermodule_serializer_not_callable= TDbParameterModule Serializer is not a callable.
 
+clockawaretrait_invalid_clock_class		= Clock class '{0}' must implement Prado\Util\Clock\IClock.
+utcclock_timezone_fixed					= TUTCClock is fixed to UTC; use TTimezoneClock for another zone.
+
 processcrontask_no_command				= TProcessCronTask '{0}' has no Command to run.
 processcrontask_launch_failed			= TProcessCronTask failed to launch the process: '{0}'.
 processcrontask_write_failed			= TProcessCronTask could not write the pid file '{0}'.
