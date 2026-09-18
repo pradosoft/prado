@@ -1135,7 +1135,6 @@ class THttpHeadersManager extends TModule
 			return;
 		}
 		foreach ($this->getHeadersByClass(THttpHeaderCsp::class) as $csp) {
-			/** @var THttpHeaderCsp $csp */
 			if ($csp->hasPolicy(TCspDirective::FrameAncestors)) {
 				Prado::log(
 					'A CSP header declares frame-ancestors but no X-Frame-Options header is present.'
