@@ -14,6 +14,7 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TNotSupportedException;
 use Prado\TModule;
 use Prado\TPropertyValue;
+use Prado\Util\Clock\TApplicationClockAwareTrait;
 
 /**
  * TCache class
@@ -84,6 +85,8 @@ use Prado\TPropertyValue;
  */
 abstract class TCache extends TModule implements ICache, \ArrayAccess
 {
+	use TApplicationClockAwareTrait;
+
 	public const DEFAULT_PREFIX = '';
 
 	/** @var ?string unique key prefix for cached values, or null before initialization */
@@ -225,7 +228,7 @@ abstract class TCache extends TModule implements ICache, \ArrayAccess
 	}
 
 	/**
-	 * Returns the current Unix timestamp. Wraps the global {@see \time()} as a single
+	 * Returns the current Unix timestamp. Reads the held {@see getClock() clock} as a single
 	 * overridable seam so that subclasses and test doubles can control clock behavior
 	 * without modifying real system time.
 	 * @return int the current Unix timestamp in seconds
@@ -233,12 +236,12 @@ abstract class TCache extends TModule implements ICache, \ArrayAccess
 	 */
 	protected function time(): int
 	{
-		return \time();
+		return $this->getClock()->time();
 	}
 
 	/**
-	 * Returns the current Unix timestamp with microsecond resolution. Wraps the global
-	 * {@see \microtime()} as a single overridable seam so that subclasses and test
+	 * Returns the current Unix timestamp with microsecond resolution. Reads the held
+	 * {@see getClock() clock} as a single overridable seam so that subclasses and test
 	 * doubles can control sub-second clock behavior (e.g. for ordering
 	 * least-recently-used entries) without modifying real system time.
 	 * @return float the current Unix timestamp in seconds, with a fractional part
@@ -246,7 +249,7 @@ abstract class TCache extends TModule implements ICache, \ArrayAccess
 	 */
 	protected function microtime(): float
 	{
-		return \microtime(true);
+		return $this->getClock()->microtime();
 	}
 
 	// =========================================================================

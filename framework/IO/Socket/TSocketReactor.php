@@ -12,6 +12,7 @@ namespace Prado\IO\Socket;
 
 use Prado\IO\IResource;
 use Prado\TComponent;
+use Prado\Util\Clock\TClockAwareTrait;
 
 /**
  * TSocketReactor class
@@ -44,6 +45,8 @@ use Prado\TComponent;
  */
 class TSocketReactor extends TComponent
 {
+	use TClockAwareTrait;
+
 	/** @var array<int, array{source: IResource, read: ?callable, write: ?callable, except: ?callable}> Registered sources, keyed by object id. */
 	private array $_sources = [];
 
@@ -373,22 +376,23 @@ class TSocketReactor extends TComponent
 	}
 
 	/**
-	 * Returns the current time in seconds, the clock the {@see Timers timers} run on.  Encapsulated
-	 * so a subclass or test can drive the loop with a fixed or simulated clock.
-	 * @return float The current time in seconds ({@see microtime()}).
+	 * Returns the current time in seconds, the clock the {@see Timers timers} run on.  Reads the held
+	 * {@see getClock() clock} so a subclass or test can drive the loop with a fixed or simulated clock.
+	 * @return float The current time in seconds ({@see \Prado\Util\Clock\IClock::microtime()}).
 	 */
 	protected function microtime(): float
 	{
-		return microtime(true);
+		return $this->getClock()->microtime();
 	}
 
 	/**
 	 * Waits a fraction of a second when the loop has no sources to {@see select()} on, so pending
-	 * timers still fire on schedule.  Encapsulated so a subclass or test can wait without sleeping.
+	 * timers still fire on schedule.  Delegates to the held {@see getClock() clock}, so a pinned clock
+	 * advances instead of blocking.
 	 * @param float $seconds The seconds to wait.
 	 */
 	protected function sleep(float $seconds): void
 	{
-		usleep((int) ($seconds * 1000000));
+		$this->getClock()->sleep($seconds);
 	}
 }

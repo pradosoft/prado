@@ -5,6 +5,7 @@ namespace Prado\Test\Unit\IO\Socket;
 use Prado\IO\Socket\TSocketReactor;
 use Prado\IO\Socket\TSocketServer;
 use Prado\IO\Socket\TSocketStream;
+use Prado\Util\Clock\TMockClock;
 
 /**
  * A reactor with a virtual clock: {@see microtime()} reads it and {@see sleep()} advances it, so
@@ -22,6 +23,23 @@ class FakeClockReactor extends TSocketReactor
 	protected function sleep(float $seconds): void
 	{
 		$this->clock += $seconds;
+	}
+}
+
+/**
+ * A reactor exposing the protected clock seams so the injected {@see \Prado\Util\Clock\IClock} can be
+ * observed directly.
+ */
+class ClockProbeReactor extends TSocketReactor
+{
+	public function probeMicrotime(): float
+	{
+		return $this->microtime();
+	}
+
+	public function probeSleep(float $seconds): void
+	{
+		$this->sleep($seconds);
 	}
 }
 
@@ -181,6 +199,38 @@ class TSocketReactorTest extends \PHPUnit\Framework\TestCase
 		$reactor->tick(0.01);                // pruneClosed drops the dead source
 		self::assertSame(0, $reactor->getSourceCount(), 'A closed source is pruned on the next tick.');
 		$b->close();
+	}
+
+	public function testMicrotimeAndSleepSeamsReadInjectedClock()
+	{
+		$clock = new TMockClock();
+		$clock->setMicrotime(2000.0);
+		$reactor = new ClockProbeReactor();
+		$reactor->setClock($clock);
+
+		self::assertSame(2000.0, $reactor->probeMicrotime(), 'microtime() reads the injected clock.');
+
+		$reactor->probeSleep(5.0);
+		self::assertSame(2005.0, $reactor->probeMicrotime(), 'sleep() advances the pinned clock instead of blocking.');
+	}
+
+	public function testInjectedClockDrivesTimers()
+	{
+		$clock = new TMockClock();
+		$clock->setMicrotime(1000.0);
+		$reactor = new TSocketReactor();
+		$reactor->setClock($clock);
+
+		$fired = 0;
+		$reactor->after(1.0, function () use (&$fired) {
+			$fired++;
+		});
+		$reactor->tick(0);
+		self::assertSame(0, $fired, 'The timer has not reached its deadline.');
+
+		$clock->setMicrotime(1001.0);   // advance the injected clock to the deadline
+		$reactor->tick(0);
+		self::assertSame(1, $fired, 'Advancing the injected clock fires the timer.');
 	}
 
 	public function testRunLoopsUntilStopped()
