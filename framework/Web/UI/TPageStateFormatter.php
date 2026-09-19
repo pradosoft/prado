@@ -10,6 +10,9 @@
 
 namespace Prado\Web\UI;
 
+use Prado\Exceptions\TIOException;
+use Prado\IO\Compression\TCompression;
+
 /**
  * TPageStateFormatter class.
  *
@@ -22,6 +25,12 @@ namespace Prado\Web\UI;
  * the state data from being tampered or viewed.
  * The private keys and hashing/encryption methods are determined by
  * {@see \Prado\TApplication::getSecurityManager() SecurityManager}.
+ *
+ * {@see \Prado\Web\UI\TPage::getEnableStateCompression() EnableStateCompression} compresses
+ * the state through {@see \Prado\IO\Compression\TCompression} under the content coding of
+ * {@see \Prado\Web\UI\TPage::getStateCompressionMethod() StateCompressionMethod}, so a page
+ * selects a codec such as `zstd` or `br` where the extension is installed. The coding
+ * carries no marker in the state, so the state is read back under the coding that wrote it.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1
@@ -49,9 +58,7 @@ class TPageStateFormatter
 				$str = serialize($data);
 			}
 		}
-		if ($page->getEnableStateCompression() && extension_loaded('zlib')) {
-			$str = gzcompress($str);
-		}
+		$str = static::compress($page, $str);
 		if ($page->getEnableStateEncryption()) {
 			$str = $sm->encrypt($str);
 		}
@@ -60,7 +67,8 @@ class TPageStateFormatter
 
 	/**
 	 * Restores the state data from the string produced by {@see self::serialize()}.
-	 * A missing or empty state is treated as a corrupted state.
+	 * A missing or empty state is treated as a corrupted state, as is a state that
+	 * fails to decrypt or to decompress.
 	 * @param TPage $page
 	 * @param ?string $data serialized data
 	 * @return mixed unserialized state data, null if the data is missing or corrupted
@@ -76,10 +84,12 @@ class TPageStateFormatter
 		}
 		$sm = $page->getApplication()->getSecurityManager();
 		if ($page->getEnableStateEncryption()) {
-			$str = $sm->decrypt($str);
+			if (($str = $sm->decrypt($str)) === false) {
+				return null;
+			}
 		}
-		if ($page->getEnableStateCompression() && extension_loaded('zlib')) {
-			$str = @gzuncompress($str);
+		if (($str = static::decompress($page, $str)) === false) {
+			return null;
 		}
 
 		if ($page->getEnableStateIGBinary() && extension_loaded('igbinary')) {
@@ -100,5 +110,44 @@ class TPageStateFormatter
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Compresses the state under the page's content coding. The state is returned
+	 * unchanged when the page disables compression or the coding's codec cannot run here.
+	 * @param TPage $page the page the state belongs to.
+	 * @param string $str the uncompressed state.
+	 * @return string the state, compressed when the page asks for it.
+	 * @since 4.4.0
+	 */
+	protected static function compress($page, string $str): string
+	{
+		$method = $page->getStateCompressionMethod();
+		if (!$page->getEnableStateCompression() || !TCompression::isAvailable($method)) {
+			return $str;
+		}
+		return TCompression::compress($str, $method);
+	}
+
+	/**
+	 * Decompresses the state under the page's content coding, the inverse of
+	 * {@see compress()}. A state that is corrupt, or written under another coding,
+	 * fails to decode and is reported as corrupted.
+	 * @param TPage $page the page the state belongs to.
+	 * @param string $str the compressed state.
+	 * @return false|string the decompressed state, or false when it cannot be decoded.
+	 * @since 4.4.0
+	 */
+	protected static function decompress($page, string $str): false|string
+	{
+		$method = $page->getStateCompressionMethod();
+		if (!$page->getEnableStateCompression() || !TCompression::isAvailable($method)) {
+			return $str;
+		}
+		try {
+			return TCompression::decompress($str, $method);
+		} catch (TIOException $e) {
+			return false;
+		}
 	}
 }

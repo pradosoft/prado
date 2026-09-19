@@ -34,6 +34,7 @@ TPage is the base class for all web pages in PRADO framework. It extends [TTempl
 - `EnableStateValidation` (bool): Whether page state should be HMAC validated
 - `EnableStateEncryption` (bool): Whether page state should be encrypted
 - `EnableStateCompression` (bool): Whether page state should be compressed
+- `StateCompressionMethod` (string): The content coding the page state is compressed with — `zstd`, `br`, `gzip` or `deflate`. Defaults to `deflate`. (4.4.0)
 - `EnableStateIGBinary` (bool): Whether page state uses the igbinary serializer when available
 - `ClientSupportsJavaScript` (bool): Whether client supports JavaScript
 - `Focus` (string|[TControl](./TControl.md)): Control or element to be focused on page load (write-only)
