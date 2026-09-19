@@ -2,6 +2,8 @@
 
 namespace Prado\Test\Unit\Web\UI;
 
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\IO\Compression\TCompression;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\TPageStateFormatter;
 
@@ -23,7 +25,9 @@ class TPageStateFormatterTest extends \PHPUnit\Framework\TestCase
 	}
 
 	/**
-	 * Run a callable with an error handler that records every PHP diagnostic.
+	 * Run a callable with an error handler that records the PHP diagnostics a PRADO
+	 * application would report. A diagnostic raised under the `@` operator is skipped,
+	 * matching the `error_reporting()` mask {@see \Prado\Prado::phpErrorHandler()} applies.
 	 * @param callable $callable the code under test
 	 * @return array [return value of the callable, list of recorded messages]
 	 */
@@ -31,7 +35,9 @@ class TPageStateFormatterTest extends \PHPUnit\Framework\TestCase
 	{
 		$errors = [];
 		set_error_handler(function ($severity, $message) use (&$errors) {
-			$errors[] = $message;
+			if (error_reporting() & $severity) {
+				$errors[] = $message;
+			}
 			return true;
 		});
 		try {
@@ -50,6 +56,17 @@ class TPageStateFormatterTest extends \PHPUnit\Framework\TestCase
 	{
 		if (!extension_loaded('igbinary')) {
 			$this->markTestSkipped('The igbinary extension is not loaded.');
+		}
+	}
+
+	/**
+	 * Skip a test when a content coding's codec cannot run here; the compression
+	 * branches guard on TCompression::isAvailable() and store the state uncompressed.
+	 */
+	private function requireCodec(string $method): void
+	{
+		if (!TCompression::isAvailable($method)) {
+			$this->markTestSkipped("The '$method' codec is not available.");
 		}
 	}
 
@@ -204,6 +221,109 @@ class TPageStateFormatterTest extends \PHPUnit\Framework\TestCase
 		$state = TPageStateFormatter::serialize($page, $data);
 
 		$this->assertEquals($data, TPageStateFormatter::unserialize($page, $state));
+	}
+
+	// -----------------------------------------------------------------------
+	// StateCompressionMethod
+	// -----------------------------------------------------------------------
+
+	public function testStateCompressionMethodDefaultsToDeflate(): void
+	{
+		$this->assertEquals('deflate', (new TPage())->getStateCompressionMethod());
+	}
+
+	public function testSetStateCompressionMethodLowercasesTheToken(): void
+	{
+		$page = $this->newPage();
+
+		$page->setStateCompressionMethod('GZIP');
+
+		$this->assertEquals('gzip', $page->getStateCompressionMethod());
+	}
+
+	public function testSetStateCompressionMethodRejectsAnUnknownCoding(): void
+	{
+		$page = $this->newPage();
+
+		$this->expectException(TInvalidDataValueException::class);
+		$page->setStateCompressionMethod('lzma');
+	}
+
+	public function testDefaultCompressionMethodProducesZlibData(): void
+	{
+		$this->requireCodec('deflate');
+		$page = $this->newPage();
+		$page->setEnableStateCompression(true);
+		$data = array_fill(0, 100, 'repeated value');
+
+		// 'deflate' is the zlib format, which is what gzcompress() wrote before the
+		// formatter routed compression through TCompression.
+		$state = TPageStateFormatter::serialize($page, $data);
+
+		$this->assertEquals(serialize($data), gzuncompress(base64_decode($state)));
+	}
+
+	public function testSerializeWithGzipMethodProducesGzipData(): void
+	{
+		$this->requireCodec('gzip');
+		$page = $this->newPage();
+		$page->setEnableStateCompression(true);
+		$page->setStateCompressionMethod('gzip');
+		$data = array_fill(0, 100, 'repeated value');
+
+		$state = TPageStateFormatter::serialize($page, $data);
+
+		$this->assertEquals(serialize($data), gzdecode(base64_decode($state)));
+	}
+
+	/**
+	 * @dataProvider methodProvider
+	 */
+	public function testRoundTripUnderEachContentCoding(string $method): void
+	{
+		$this->requireCodec($method);
+		$page = $this->newPage();
+		$page->setEnableStateCompression(true);
+		$page->setStateCompressionMethod($method);
+		$data = ['coding' => $method, 'body' => str_repeat('compress me ', 100)];
+
+		$state = TPageStateFormatter::serialize($page, $data);
+
+		$this->assertEquals($data, TPageStateFormatter::unserialize($page, $state));
+	}
+
+	public static function methodProvider(): array
+	{
+		return array_map(fn ($method) => [$method], TCompression::getMethods());
+	}
+
+	public function testUnserializeUnderAnotherCodingReturnsNull(): void
+	{
+		$this->requireCodec('deflate');
+		$this->requireCodec('gzip');
+		$page = $this->newPage();
+		$page->setEnableStateCompression(true);
+		$state = TPageStateFormatter::serialize($page, ['written' => 'as deflate']);
+
+		$page->setStateCompressionMethod('gzip');
+
+		[$result, $errors] = $this->captureErrors(fn () => TPageStateFormatter::unserialize($page, $state));
+		$this->assertNull($result, 'A state written under another coding is corrupted');
+		$this->assertSame([], $errors);
+	}
+
+	public function testUnserializeCorruptCompressedStateReturnsNull(): void
+	{
+		$this->requireCodec('deflate');
+		$page = $this->newPage();
+		$page->setEnableStateCompression(true);
+
+		[$result, $errors] = $this->captureErrors(
+			fn () => TPageStateFormatter::unserialize($page, base64_encode('not compressed data'))
+		);
+
+		$this->assertNull($result);
+		$this->assertSame([], $errors, 'A corrupt compressed state must not raise a PHP diagnostic');
 	}
 
 	// -----------------------------------------------------------------------
