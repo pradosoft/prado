@@ -12,6 +12,7 @@ PSR-20 clock abstractions: a single, overridable source of "now" so subsystems a
 - **[`IClock`](IClock.md)** — Prado's clock contract. Extends PSR-20 `Psr\Clock\ClockInterface` (so an `IClock` is usable anywhere a PSR clock is expected) and adds `time(): int`, `microtime(): float`, and `timezone(): \DateTimeZone` (consistent with `now()`, on a fast path), plus a clock-aware `sleep(float|int): void`.
 - **[`TClockTrait`](TClockTrait.md)** — default `IClock` implementation for a class that *is* a clock: `now()` (system time) + `time()`/`microtime()`/`timezone()` derived from it, and `sleep()` via `\usleep()`. The using class declares `implements IClock`.
 - **[`TClockAwareTrait`](TClockAwareTrait.md)** — for a class that *holds* a clock: `getClock()`/`setClock()` (an `IClock`), lazily creating the default via `createClock()` (the class named by the overridable `getClockClass()`, default `TNativeClock`). `createClock()` validates the class is an `IClock`.
+- **[`TApplicationClockAwareTrait`](TApplicationClockAwareTrait.md)** — extends `TClockAwareTrait` for request-scoped holders that share the one application "now": `getClock()` returns an explicit local clock, else the `Prado::getApplication()` clock read live, else a lazily created local `TNativeClock`. The app clock is read every call (not memoized), so setting it later still propagates; `setClock(null)` resumes following the app. `TApplication` itself holds the shared clock via `TClockAwareTrait` (`DEFAULT_CLOCK_CLASS` + `setClockClass()` config seam).
 
 ## Clocks
 
@@ -38,5 +39,5 @@ PSR-20 clock abstractions: a single, overridable source of "now" so subsystems a
 
 ## Conventions
 
-- Registered in `framework/classes.php` (`IClock`, `TClockAwareTrait`, `TClockDecorator`, `TClockTrait`, `TMockClock`, `TMonotonicClock`, `TNativeClock`, `TOffsetClock`, `TTimezoneClock`, `TTimezoneDecorator`, `TUTCClock`).
+- Registered in `framework/classes.php` (`IClock`, `TApplicationClockAwareTrait`, `TClockAwareTrait`, `TClockDecorator`, `TClockTrait`, `TMockClock`, `TMonotonicClock`, `TNativeClock`, `TOffsetClock`, `TTimezoneClock`, `TTimezoneDecorator`, `TUTCClock`).
 - `@since 4.4.0` for all members; requires the `psr/clock` composer dependency.

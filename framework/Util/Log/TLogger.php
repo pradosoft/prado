@@ -12,6 +12,7 @@ namespace Prado\Util\Log;
 
 use Prado\Prado;
 use Prado\TEventParameter;
+use Prado\Util\Clock\TApplicationClockAwareTrait;
 use Prado\Web\UI\TControl;
 
 /**
@@ -34,6 +35,8 @@ use Prado\Web\UI\TControl;
  */
 class TLogger extends \Prado\TComponent
 {
+	use TApplicationClockAwareTrait;
+
 	/**
 	 * Log levels.
 	 */
@@ -380,7 +383,7 @@ class TLogger extends \Prado\TComponent
 			}
 		}
 
-		return $this->addLog([$token, $level, $category, microtime(true), memory_get_usage(), $ctl, $traces, getmypid()]);
+		return $this->addLog([$token, $level, $category, $this->getClock()->microtime(), memory_get_usage(), $ctl, $traces, getmypid()]);
 	}
 
 

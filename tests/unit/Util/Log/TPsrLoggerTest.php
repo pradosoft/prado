@@ -4,6 +4,7 @@ namespace Prado\Test\Unit\Util\Log;
 
 use Prado\ISingleton;
 use Prado\Prado;
+use Prado\Util\Clock\TMockClock;
 use Prado\Util\Log\TLogger;
 use Prado\Util\Log\TPsrLogger;
 use Prado\Web\UI\TControl;
@@ -162,6 +163,24 @@ class TPsrLoggerTest extends \PHPUnit\Framework\TestCase
 		$this->psr->log(TLogger::PROFILE_BEGIN, 'token');
 		$logs = $this->logger->getLogs();
 		$this->assertEquals(TLogger::PROFILE_BEGIN, $logs[1][TLogger::LOG_LEVEL]);
+	}
+
+	public function testLogTimeReadsClockWhenAbsentFromContext(): void
+	{
+		$clock = new TMockClock();
+		$clock->setMicrotime(1_000_000.25);
+		$this->psr->setClock($clock);
+
+		// An entry context without a time makes TPsrLogger fill the timestamp from its own clock.
+		$this->psr->log(LogLevel::ERROR, 'no time given', [TPsrLogger::CONTEXT_PID => 4242]);
+		$logs = $this->logger->getLogs();
+		$this->assertSame(1_000_000.25, $logs[0][TLogger::LOG_TIME]);
+
+		// An explicit context time overrides the clock.
+		$this->logger->deleteLogs();
+		$this->psr->log(LogLevel::ERROR, 'explicit time', [TPsrLogger::CONTEXT_TIME => 42.5]);
+		$logs = $this->logger->getLogs();
+		$this->assertSame(42.5, $logs[0][TLogger::LOG_TIME]);
 	}
 
 	public function testLogInvalidLevel(): void

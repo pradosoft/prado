@@ -2,6 +2,7 @@
 
 namespace Prado\Test\Unit\Util\Log;
 
+use Prado\Util\Clock\TMockClock;
 use Prado\Util\Log\TLogger;
 
 class TTestLogger extends TLogger {
@@ -120,7 +121,16 @@ class TLoggerTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals(getmypid(), $logs[0][7]);
 		$this->assertTrue(\Prado::getApplication()->onEndRequest->contains([$logger, 'onFlushLogs']));
 		$this->assertFalse($called);
-	
+
+		// The log entry timestamp is read from the injected clock.
+		$logger->deleteLogs();
+		$clock = new TMockClock();
+		$clock->setMicrotime(1_234_567_890.5);
+		$logger->setClock($clock);
+		$logger->log('Timed message', TLogger::INFO);
+		$logs = $logger->getLogs();
+		$this->assertSame(1_234_567_890.5, $logs[0][TLogger::LOG_TIME]);
+
 		// Log another message with a control and check if it is added correctly
 		// Log a message with TraceLevel and check if it is added correctly
 		$logger->deleteLogs();

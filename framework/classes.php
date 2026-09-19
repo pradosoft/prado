@@ -426,6 +426,7 @@ return [
 'TParameterizeBehavior' => 'Prado\Util\Behaviors\TParameterizeBehavior',
 'TTimeZoneParameterBehavior' => 'Prado\Util\Behaviors\TTimeZoneParameterBehavior',
 'IClock' => 'Prado\Util\Clock\IClock',
+'TApplicationClockAwareTrait' => 'Prado\Util\Clock\TApplicationClockAwareTrait',
 'TClockAwareTrait' => 'Prado\Util\Clock\TClockAwareTrait',
 'TClockDecorator' => 'Prado\Util\Clock\TClockDecorator',
 'TClockTrait' => 'Prado\Util\Clock\TClockTrait',

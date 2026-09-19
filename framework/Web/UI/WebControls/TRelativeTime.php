@@ -11,11 +11,11 @@
 namespace Prado\Web\UI\WebControls;
 
 use DateInterval;
-use DateTimeImmutable;
 use DateTimeInterface;
 use Prado\I18N\core\CultureInfo;
 use Prado\I18N\core\CultureInfoUnits;
 use Prado\TPropertyValue;
+use Prado\Util\Clock\TApplicationClockAwareTrait;
 use Prado\Web\Javascripts\TJavaScript;
 
 /**
@@ -87,6 +87,8 @@ use Prado\Web\Javascripts\TJavaScript;
  */
 class TRelativeTime extends TTime
 {
+	use TApplicationClockAwareTrait;
+
 	/**
 	 * Duration unit types, ordered largest first, keyed by the identifier used both in the
 	 * client `UnitPatterns` map and the JavaScript timing table.
@@ -132,9 +134,9 @@ class TRelativeTime extends TTime
 			return $dateTime;
 		}
 		if ($dateTime instanceof DateInterval) {
-			return (new DateTimeImmutable())->sub($dateTime);
+			return $this->getClock()->now()->sub($dateTime);
 		}
-		return new DateTimeImmutable();
+		return $this->getClock()->now();
 	}
 
 	/**
@@ -209,7 +211,7 @@ class TRelativeTime extends TTime
 		$unitPatterns = $this->collectUnitPatterns();
 		$thresholds = $this->getPartialThresholds();
 
-		$delta = time() - $this->getOriginTimestamp();
+		$delta = $this->getClock()->time() - $this->getOriginTimestamp();
 		$isFuture = $delta < 0;
 		$remaining = abs($delta);
 
@@ -336,7 +338,7 @@ class TRelativeTime extends TTime
 	{
 		$options = [];
 		$options['ID'] = $this->getClientID();
-		$options['ServerTime'] = time();
+		$options['ServerTime'] = $this->getClock()->time();
 		$options['OriginTime'] = $this->getOriginTimestamp();
 		$options['UseServerTime'] = $this->getUseServerTime();
 		$options['Separator'] = $this->getSeparator();

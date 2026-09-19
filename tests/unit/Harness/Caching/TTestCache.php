@@ -19,8 +19,8 @@ use Prado\Caching\TCache;
  * `$store` array so the base-class behavior (key prefixing/hashing, dependency wrapping,
  * ArrayAccess, primary-cache registration) can be exercised directly. It also exposes the
  * protected encapsulation seams:
- * - the clock ({@see time()} / {@see microtime()}) is overridable via {@see $fakeNow} /
- *   {@see $fakeMicrotime} for deterministic expiry/LRU tests;
+ * - the clock is controlled via {@see setFakeNow FakeNow} / {@see setFakeMicrotime FakeMicrotime},
+ *   which install a {@see TTestCacheClock}, for deterministic expiry/LRU tests;
  * - {@see generateUniqueKey()}, {@see generateToken()}, {@see hashToken()},
  *   {@see getKeyPrefix()}, and {@see setAppCache()} are reachable through `pub*()` accessors.
  *
@@ -45,7 +45,7 @@ class TTestCache extends TCache
 			return false;
 		}
 		[$data, $expire] = $this->store[$key];
-		if ($expire > 0 && $expire <= $this->time()) {
+		if ($expire > 0 && $expire <= $this->getClock()->time()) {
 			unset($this->store[$key]);
 			return false;
 		}
@@ -54,7 +54,7 @@ class TTestCache extends TCache
 
 	protected function setValue($key, $value, $expire)
 	{
-		$this->store[$key] = [$value, (int) $expire > 0 ? $this->time() + (int) $expire : 0];
+		$this->store[$key] = [$value, (int) $expire > 0 ? $this->getClock()->time() + (int) $expire : 0];
 		return true;
 	}
 

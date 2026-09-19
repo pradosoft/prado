@@ -14,6 +14,7 @@ use Prado\Caching\ICache;
 use Prado\Caching\ICacheDependency;
 use Prado\Exceptions\TConfigurationException;
 use Prado\TApplication;
+use Prado\Util\Clock\TMockClock;
 use Prado\Test\Unit\Harness\Caching\TTestCache;
 
 /**
@@ -148,6 +149,37 @@ class TCacheTest extends \PHPUnit\Framework\TestCase
 
 		$cache->fakeMicrotime = 5.5;
 		$this->assertSame(5.5, $cache->pubMicrotime());
+	}
+
+	public function testInjectedClockDrivesTimeAndExpiry(): void
+	{
+		$clock = new TMockClock();
+		$clock->setTime(2_000_000);
+		$cache = $this->newCache();
+		$cache->setClock($clock);
+
+		$this->assertSame(2_000_000, $cache->pubTime());
+		$cache->set('k', 'v', 10);
+		$this->assertSame('v', $cache->get('k'));
+
+		$clock->setTime(2_000_010); // at expiry → expired (expire <= now)
+		$this->assertFalse($cache->get('k'), 'Advancing the injected clock expires the entry.');
+
+		$clock->setMicrotime(2_000_000.5);
+		$this->assertSame(2_000_000.5, $cache->pubMicrotime());
+	}
+
+	public function testFollowsApplicationClockLive(): void
+	{
+		$clock = new TMockClock();
+		$clock->setTime(3_000_000);
+		$this->app->setClock($clock);
+
+		$cache = $this->newCache(); // no explicit setClock → follows the application clock
+		$this->assertSame(3_000_000, $cache->pubTime());
+
+		$clock->setTime(3_000_100); // the application clock advances after the cache is constructed
+		$this->assertSame(3_000_100, $cache->pubTime(), 'The cache follows the application clock live.');
 	}
 
 	public function testPrimaryCacheRegistersAndDuplicateThrows(): void

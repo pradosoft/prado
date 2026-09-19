@@ -5,25 +5,7 @@ namespace Prado\Test\Unit\IO\Socket;
 use Prado\IO\Socket\TSocketReactor;
 use Prado\IO\Socket\TSocketServer;
 use Prado\IO\Socket\TSocketStream;
-
-/**
- * A reactor with a virtual clock: {@see microtime()} reads it and {@see sleep()} advances it, so
- * timer tests are deterministic and free of wall-clock timing flakiness across platforms.
- */
-class FakeClockReactor extends TSocketReactor
-{
-	public float $clock = 1000.0;
-
-	protected function microtime(): float
-	{
-		return $this->clock;
-	}
-
-	protected function sleep(float $seconds): void
-	{
-		$this->clock += $seconds;
-	}
-}
+use Prado\Util\Clock\TMockClock;
 
 class TSocketReactorTest extends \PHPUnit\Framework\TestCase
 {
@@ -138,28 +120,32 @@ class TSocketReactorTest extends \PHPUnit\Framework\TestCase
 
 	public function testTimersFireAndRepeat()
 	{
-		$reactor = new FakeClockReactor();   // a virtual clock makes timer firing deterministic on any platform
+		// A pinned clock makes timer firing deterministic on any platform; sleep() advances the pin.
+		$reactor = new TSocketReactor();
+		$clock = new TMockClock();
+		$clock->setMicrotime(1000.0);
+		$reactor->setClock($clock);
 
 		$fired = 0;
-		$reactor->after(0.02, function () use (&$fired) {
+		$reactor->after(2.0, function () use (&$fired) {
 			$fired++;
 		});
-		$reactor->clock += 0.02;             // reach the one-shot's deadline
+		$clock->sleep(2.0);                  // reach the one-shot's deadline
 		$reactor->tick(0);
 		self::assertSame(1, $fired, 'A one-shot timer fires once.');
 
 		$ticks = 0;
-		$id = $reactor->every(0.01, function () use (&$ticks) {
+		$id = $reactor->every(1.0, function () use (&$ticks) {
 			$ticks++;
 		});
-		$reactor->clock += 0.01;             // each interval boundary fires the repeating timer once
+		$clock->sleep(1.0);                  // each interval boundary fires the repeating timer once
 		$reactor->tick(0);
-		$reactor->clock += 0.01;
+		$clock->sleep(1.0);
 		$reactor->tick(0);
 		self::assertSame(2, $ticks, 'A repeating timer fires each interval.');
 
 		$reactor->cancelTimer($id);
-		$reactor->clock += 0.01;
+		$clock->sleep(1.0);
 		$reactor->tick(0);
 		self::assertSame(2, $ticks, 'A cancelled timer stops firing.');
 	}
@@ -181,6 +167,25 @@ class TSocketReactorTest extends \PHPUnit\Framework\TestCase
 		$reactor->tick(0.01);                // pruneClosed drops the dead source
 		self::assertSame(0, $reactor->getSourceCount(), 'A closed source is pruned on the next tick.');
 		$b->close();
+	}
+
+	public function testInjectedClockDrivesTimers()
+	{
+		$clock = new TMockClock();
+		$clock->setMicrotime(1000.0);
+		$reactor = new TSocketReactor();
+		$reactor->setClock($clock);
+
+		$fired = 0;
+		$reactor->after(1.0, function () use (&$fired) {
+			$fired++;
+		});
+		$reactor->tick(0);
+		self::assertSame(0, $fired, 'The timer has not reached its deadline.');
+
+		$clock->setMicrotime(1001.0);   // advance the injected clock to the deadline
+		$reactor->tick(0);
+		self::assertSame(1, $fired, 'Advancing the injected clock fires the timer.');
 	}
 
 	public function testRunLoopsUntilStopped()

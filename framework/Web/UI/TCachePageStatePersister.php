@@ -14,6 +14,7 @@ use Prado\Caching\ICache;
 use Prado\Prado;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\THttpException;
+use Prado\Util\Clock\TApplicationClockAwareTrait;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\TPropertyValue;
 
@@ -65,6 +66,8 @@ use Prado\TPropertyValue;
  */
 class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePersister
 {
+	use TApplicationClockAwareTrait;
+
 	private $_prefix = 'statepersister';
 	private $_page;
 	private $_cache;
@@ -181,9 +184,9 @@ class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePe
 	 */
 	public function save($data)
 	{
-		$timestamp = (string) microtime(true);
+		$timestamp = (string) $this->getClock()->microtime();
 		$key = $this->calculateKey($timestamp);
-		$this->getCache()->add($key, $data, $this->_timeout);
+		$this->getCache()->add($key, $data, $this->getCacheTimeout());
 		$this->_page->setClientState(TPageStateFormatter::serialize($this->_page, $timestamp));
 	}
 

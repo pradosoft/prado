@@ -14,6 +14,7 @@ use Prado\Caching\ICache;
 use Prado\Exceptions\TConfigurationException;
 use Prado\IO\TTextWriter;
 use Prado\Prado;
+use Prado\Util\Clock\TApplicationClockAwareTrait;
 use Prado\TPropertyValue;
 use Prado\Exceptions\TInvalidDataValueException;
 
@@ -74,6 +75,8 @@ use Prado\Exceptions\TInvalidDataValueException;
  */
 class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INamingContainer
 {
+	use TApplicationClockAwareTrait;
+
 	public const CACHE_ID_PREFIX = 'prado:outputcache';
 	private $_cacheModuleID = '';
 	private $_dataCached = false;
@@ -479,7 +482,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 			$stack->pop();
 
 			$content = $textwriter->flush();
-			$data = [$content, $this->_state, $this->_actions, time()];
+			$data = [$content, $this->_state, $this->_actions, $this->getClock()->time()];
 			$this->_cache->set($this->getCacheKey(), $data, $this->getDuration(), $this->getCacheDependency());
 		} else {
 			parent::render($writer);

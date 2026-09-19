@@ -14,6 +14,7 @@ use Prado\Exceptions\TIOException;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TApplicationMode;
+use Prado\Util\Clock\TApplicationClockAwareTrait;
 
 /**
  * TTheme class
@@ -51,6 +52,8 @@ use Prado\TApplicationMode;
  */
 class TTheme extends \Prado\TApplicationComponent implements ITheme
 {
+	use TApplicationClockAwareTrait;
+
 	/**
 	 * prefix for cache variable name used to store parsed themes
 	 */
@@ -177,7 +180,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 			$this->postProcessCssRTL();
 			$this->dyThemeProcess();
 			if ($cache !== null) {
-				$cache->set(self::THEME_CACHE_PREFIX . $themePath, [$this->_skins, $this->_cssFiles, $this->_jsFiles, time()]);
+				$cache->set(self::THEME_CACHE_PREFIX . $themePath, [$this->_skins, $this->_cssFiles, $this->_jsFiles, $this->getClock()->time()]);
 			}
 		}
 	}

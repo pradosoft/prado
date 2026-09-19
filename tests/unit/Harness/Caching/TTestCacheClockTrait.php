@@ -13,39 +13,70 @@ namespace Prado\Test\Unit\Harness\Caching;
 /**
  * TTestCacheClockTrait provides a fakeable clock for {@see \Prado\Caching\TCache} harnesses.
  *
- * It overrides the protected {@see \Prado\Caching\TCache::time()} /
- * {@see \Prado\Caching\TCache::microtime()} seams behind the public {@see $fakeNow} /
- * {@see $fakeMicrotime} fields so expiry and LRU behavior can be driven deterministically,
- * and exposes them via {@see pubTime()} / {@see pubMicrotime()}.
+ * Setting {@see setFakeNow FakeNow} or {@see setFakeMicrotime FakeMicrotime} installs a
+ * {@see TTestCacheClock} on the cache (through {@see \Prado\Util\Clock\TClockAwareTrait::setClock()}),
+ * so expiry and least-recently-used behavior run deterministically. The two knobs are independent, and
+ * {@see pubTime()} / {@see pubMicrotime()} expose what the cache reads through its clock.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
  */
 trait TTestCacheClockTrait
 {
-	/** @var ?int when set, {@see time()} returns this instead of the real clock */
-	public ?int $fakeNow = null;
+	/** @var ?TTestCacheClock the fake clock, installed on first use of a fake knob */
+	private ?TTestCacheClock $_fakeClock = null;
 
-	/** @var ?float when set, {@see microtime()} returns this instead of the real clock */
-	public ?float $fakeMicrotime = null;
-
-	protected function time(): int
+	/**
+	 * @return TTestCacheClock the fake clock, creating and installing it on first use.
+	 */
+	private function fakeCacheClock(): TTestCacheClock
 	{
-		return $this->fakeNow ?? parent::time();
+		if ($this->_fakeClock === null) {
+			$this->_fakeClock = new TTestCacheClock();
+			$this->setClock($this->_fakeClock);
+		}
+		return $this->_fakeClock;
 	}
 
-	protected function microtime(): float
+	/**
+	 * @param ?int $value the Unix timestamp {@see \Prado\Caching\TCache::time()} reads, or null for the real clock
+	 */
+	public function setFakeNow(?int $value): void
 	{
-		return $this->fakeMicrotime ?? parent::microtime();
+		$this->fakeCacheClock()->fakeNow = $value;
+	}
+
+	/**
+	 * @return ?int the pinned timestamp, or null when none is set
+	 */
+	public function getFakeNow(): ?int
+	{
+		return $this->_fakeClock?->fakeNow;
+	}
+
+	/**
+	 * @param ?float $value the timestamp with microseconds the cache reads, or null for the real clock
+	 */
+	public function setFakeMicrotime(?float $value): void
+	{
+		$this->fakeCacheClock()->fakeMicrotime = $value;
+	}
+
+	/**
+	 * @return ?float the pinned sub-second timestamp, or null when none is set
+	 */
+	public function getFakeMicrotime(): ?float
+	{
+		return $this->_fakeClock?->fakeMicrotime;
 	}
 
 	public function pubTime(): int
 	{
-		return $this->time();
+		return $this->getClock()->time();
 	}
 
 	public function pubMicrotime(): float
 	{
-		return $this->microtime();
+		return $this->getClock()->microtime();
 	}
 }

@@ -21,6 +21,7 @@ use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbPropertiesTrait;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
+use Prado\Util\Clock\TApplicationClockAwareTrait;
 
 /**
  * MessageSource_Database class.
@@ -33,6 +34,7 @@ use Prado\Prado;
 class MessageSource_Database extends MessageSource
 {
 	use TDbPropertiesTrait;
+	use TApplicationClockAwareTrait;
 
 	/**
 	 * Constructor.
@@ -194,7 +196,7 @@ class MessageSource_Database extends MessageSource
 	 */
 	private function updateCatalogueTime($cat_id, $variant)
 	{
-		$time = time();
+		$time = $this->getClock()->time();
 		$command = $this->getDbConnection()->createCommand(
 			'UPDATE catalogue SET date_modified = :moddate WHERE cat_id = :catid'
 		);
@@ -237,7 +239,7 @@ class MessageSource_Database extends MessageSource
 		}
 		$inserted = 0;
 
-		$time = time();
+		$time = $this->getClock()->time();
 
 		$command = $this->getDbConnection()->createCommand(
 			'INSERT INTO trans_unit (cat_id,id,source,date_added) VALUES (:catid,:id,:source,:dateadded)'
@@ -302,7 +304,7 @@ class MessageSource_Database extends MessageSource
 			return false;
 		}
 
-		$time = time();
+		$time = $this->getClock()->time();
 		$command = $this->getDbConnection()->createCommand(
 			'UPDATE trans_unit SET target = :target, comments = :comments, date_modified = :datemod
 					WHERE cat_id = :catid AND source = :source'

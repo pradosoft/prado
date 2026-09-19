@@ -17,6 +17,7 @@ use Prado\Exceptions\TPhpErrorException;
 use Prado\Prado;
 use Prado\TApplicationMode;
 use Prado\Web\Javascripts\TJavaScript;
+use Prado\Util\Clock\TApplicationClockAwareTrait;
 use Prado\Util\TVarDumper;
 
 /**
@@ -32,6 +33,8 @@ use Prado\Util\TVarDumper;
  */
 class TCallbackErrorHandler extends TErrorHandler
 {
+	use TApplicationClockAwareTrait;
+
 	/**
 	 * Displays the exceptions to the client-side TJavascriptLogger.
 	 * A HTTP 500 status code is sent and the stack trace is sent as JSON encoded.
@@ -109,7 +112,7 @@ class TCallbackErrorHandler extends TErrorHandler
 		$data['type'] = $exception::class;
 		$data['message'] = $exception->getMessage();
 		$data['version'] = $_SERVER['SERVER_SOFTWARE'] . ' ' . Prado::getVersion();
-		$data['time'] = @strftime('%Y-%m-%d %H:%M', time());
+		$data['time'] = date('Y-m-d H:i', $this->getClock()->time());
 		return $data;
 	}
 }

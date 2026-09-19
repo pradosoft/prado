@@ -13,6 +13,7 @@ namespace Prado\Web\UI\WebControls;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TPropertyValue;
+use Prado\Util\Clock\TApplicationClockAwareTrait;
 
 /**
  * TCaptcha class.
@@ -63,6 +64,8 @@ use Prado\TPropertyValue;
  */
 class TCaptcha extends TImage
 {
+	use TApplicationClockAwareTrait;
+
 	public const MIN_TOKEN_LENGTH = 2;
 	public const MAX_TOKEN_LENGTH = 40;
 	private $_privateKey;
@@ -254,7 +257,7 @@ class TCaptcha extends TImage
 	public function getIsTokenExpired()
 	{
 		if (($expiry = $this->getTokenExpiry()) > 0 && ($start = $this->getViewState('TokenGenerated', 0)) > 0) {
-			return $expiry + $start < time();
+			return $expiry + $start < $this->getClock()->time();
 		} else {
 			return false;
 		}
@@ -376,7 +379,7 @@ class TCaptcha extends TImage
 			$url .= '?options=' . urlencode($this->getTokenImageOptions());
 			$this->setImageUrl($url);
 
-			$this->setViewState('TokenGenerated', time());
+			$this->setViewState('TokenGenerated', $this->getClock()->time());
 		}
 	}
 

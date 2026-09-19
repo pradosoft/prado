@@ -13,6 +13,7 @@ namespace Prado\Security;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\TPropertyValue;
+use Prado\Util\Clock\TApplicationClockAwareTrait;
 use Prado\Util\Traits\TInitializedTrait;
 use Prado\Web\Services\TPageService;
 use Prado\Web\THttpCookie;
@@ -91,6 +92,7 @@ use Prado\Web\THttpCookie;
 class TAuthManager extends \Prado\TModule
 {
 	use TInitializedTrait;
+	use TApplicationClockAwareTrait;
 
 	/**
 	 * GET variable name for return url
@@ -406,7 +408,7 @@ class TAuthManager extends \Prado\TModule
 
 		// check for authentication expiration
 		$isAuthExpired = $this->getAuthExpire() > 0 && !$user->getIsGuest() &&
-		($expiretime = $this->getAuthExpireTime()) && $expiretime < time();
+		($expiretime = $this->getAuthExpireTime()) && $expiretime < $this->getClock()->time();
 
 		// try authenticating through cookie if possible
 		if ($this->getAllowAutoLogin() && ($user->getIsGuest() || $isAuthExpired)) {
@@ -427,7 +429,7 @@ class TAuthManager extends \Prado\TModule
 		if ($isAuthExpired) {
 			$this->onAuthExpire($param);
 		} else {
-			$this->setAuthExpireTime(time() + $this->getAuthExpire());
+			$this->setAuthExpireTime($this->getClock()->time() + $this->getAuthExpire());
 		}
 
 		// event handler gets a chance to do further auth work
@@ -525,7 +527,7 @@ class TAuthManager extends \Prado\TModule
 
 			if ($expire > 0) {
 				$cookie = new THttpCookie($this->getUserKey(), '');
-				$cookie->setExpire(time() + $expire);
+				$cookie->setExpire($this->getClock()->time() + $expire);
 				$this->getUserManager()->saveUserToCookie($cookie);
 				$this->getResponse()->getCookies()->add($cookie);
 			}

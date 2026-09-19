@@ -12,6 +12,7 @@ namespace Prado\IO\Socket;
 
 use Prado\IO\IResource;
 use Prado\TComponent;
+use Prado\Util\Clock\TClockAwareTrait;
 
 /**
  * TSocketReactor class
@@ -44,6 +45,8 @@ use Prado\TComponent;
  */
 class TSocketReactor extends TComponent
 {
+	use TClockAwareTrait;
+
 	/** @var array<int, array{source: IResource, read: ?callable, write: ?callable, except: ?callable}> Registered sources, keyed by object id. */
 	private array $_sources = [];
 
@@ -154,7 +157,7 @@ class TSocketReactor extends TComponent
 
 	/**
 	 * Schedules a one-shot callback at an absolute time.
-	 * @param float $when The {@see microtime()} timestamp to fire at.
+	 * @param float $when The {@see \Prado\Util\Clock\IClock::microtime()} timestamp to fire at.
 	 * @param callable $callback The callback to run.
 	 * @return int The timer id, for {@see cancelTimer()}.
 	 */
@@ -173,7 +176,7 @@ class TSocketReactor extends TComponent
 	 */
 	public function after(float $delay, callable $callback): int
 	{
-		return $this->scheduleAt($this->microtime() + $delay, $callback);
+		return $this->scheduleAt($this->getClock()->microtime() + $delay, $callback);
 	}
 
 	/**
@@ -185,7 +188,7 @@ class TSocketReactor extends TComponent
 	public function every(float $interval, callable $callback): int
 	{
 		$id = $this->_nextTimerId++;
-		$this->_timers[$id] = ['when' => $this->microtime() + $interval, 'interval' => $interval, 'callback' => $callback];
+		$this->_timers[$id] = ['when' => $this->getClock()->microtime() + $interval, 'interval' => $interval, 'callback' => $callback];
 		return $id;
 	}
 
@@ -239,7 +242,7 @@ class TSocketReactor extends TComponent
 		} else {
 			// Nothing to select on; honor the delay so pending timers still fire on schedule.
 			if ($delay !== null && $delay > 0) {
-				$this->sleep($delay);
+				$this->getClock()->sleep($delay);
 			}
 			$count = 0;
 		}
@@ -319,7 +322,7 @@ class TSocketReactor extends TComponent
 		if ($this->_timers === []) {
 			return;
 		}
-		$now = $this->microtime();
+		$now = $this->getClock()->microtime();
 		foreach ($this->_timers as $id => $timer) {
 			if ($timer['when'] > $now || !isset($this->_timers[$id])) {
 				continue;
@@ -349,7 +352,7 @@ class TSocketReactor extends TComponent
 		if ($deadline === null) {
 			return $timeout;
 		}
-		$timerDelay = max(0.0, $deadline - $this->microtime());
+		$timerDelay = max(0.0, $deadline - $this->getClock()->microtime());
 		return $timeout === null ? $timerDelay : min($timeout, $timerDelay);
 	}
 
@@ -370,25 +373,5 @@ class TSocketReactor extends TComponent
 			$microseconds -= 1000000;
 		}
 		return [$seconds, $microseconds];
-	}
-
-	/**
-	 * Returns the current time in seconds, the clock the {@see Timers timers} run on.  Encapsulated
-	 * so a subclass or test can drive the loop with a fixed or simulated clock.
-	 * @return float The current time in seconds ({@see microtime()}).
-	 */
-	protected function microtime(): float
-	{
-		return microtime(true);
-	}
-
-	/**
-	 * Waits a fraction of a second when the loop has no sources to {@see select()} on, so pending
-	 * timers still fire on schedule.  Encapsulated so a subclass or test can wait without sleeping.
-	 * @param float $seconds The seconds to wait.
-	 */
-	protected function sleep(float $seconds): void
-	{
-		usleep((int) ($seconds * 1000000));
 	}
 }

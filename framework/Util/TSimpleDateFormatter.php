@@ -12,6 +12,7 @@ namespace Prado\Util;
 
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\I18N\core\TIntlDateFormatterTrait;
+use Prado\Util\Clock\TApplicationClockAwareTrait;
 use Prado\Util\TUtf8Converter;
 
 /**
@@ -104,6 +105,7 @@ use Prado\Util\TUtf8Converter;
 class TSimpleDateFormatter
 {
 	use TIntlDateFormatterTrait;
+	use TApplicationClockAwareTrait;
 
 	/**
 	 * Formatting pattern.
@@ -469,10 +471,10 @@ class TSimpleDateFormatter
 			throw new TInvalidDataValueException('date_to_parse_must_be_string');
 		}
 		if (empty($this->pattern)) {
-			return microtime(true);
+			return $this->getClock()->microtime();
 		}
 		if ($this->length(trim($value)) < 1) {
-			return $defaultToCurrentTime ? time() : null;
+			return $defaultToCurrentTime ? $this->getClock()->time() : null;
 		}
 
 		$hasLocalizedMonth = preg_match('/M{3,4}/', $this->pattern) === 1;

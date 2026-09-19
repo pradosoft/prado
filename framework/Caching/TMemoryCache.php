@@ -262,7 +262,7 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 	private array $_entrySizes = [];
 
 	/**
-	 * @var array<string, float> Per-key last-access timestamp from `$this->microtime()`,
+	 * @var array<string, float> Per-key last-access timestamp from `$this->getClock()->microtime()`,
 	 *   used to determine eviction order in {@see evictToFitMaximumSize()}.
 	 *   Entries loaded without an explicit access record are assigned `0.0` (oldest
 	 *   possible) by {@see computeCurrentSize()} so they are evicted first.
@@ -670,7 +670,7 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 		}
 		$entry = $this->getStoreEntry($key);
 		$expire = (int) $entry[static::STORE_EXPIRE];
-		if ($expire > 0 && $expire <= $this->time()) {
+		if ($expire > 0 && $expire <= $this->getClock()->time()) {
 			if ($this->getMaximumSizeDirect() > 0) {
 				$size = $this->_entrySizes[$key] ?? 0;
 				$current = $this->getCurrentSizeDirect();
@@ -686,7 +686,7 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 			return false;
 		}
 		if ($this->getMaximumSizeDirect() > 0) {
-			$this->_accessTimes[$key] = $this->microtime();
+			$this->_accessTimes[$key] = $this->getClock()->microtime();
 		}
 		return $entry[static::STORE_DATA];
 	}
@@ -718,12 +718,12 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 
 		$this->setStoreEntry($key, [
 			static::STORE_DATA => $payload,
-			static::STORE_EXPIRE => $expire > 0 ? $this->time() + $expire : 0,
+			static::STORE_EXPIRE => $expire > 0 ? $this->getClock()->time() + $expire : 0,
 		]);
 		$this->setChangedDirect(true);
 
 		if ($this->getMaximumSizeDirect() > 0) {
-			$this->_accessTimes[$key] = $this->microtime();
+			$this->_accessTimes[$key] = $this->getClock()->microtime();
 			$current = $this->getCurrentSizeDirect();
 			if ($current >= 0) {
 				$this->setCurrentSizeDirect($current - $oldSize + $newSize);

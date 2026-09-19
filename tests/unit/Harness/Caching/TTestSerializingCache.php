@@ -21,7 +21,7 @@ use Prado\Caching\TSerializingCache;
  * serialize → encrypt → encode pipeline can be exercised and inspected directly.
  *
  * Exposed seams:
- * - clock ({@see time()} / {@see microtime()}) via {@see $fakeNow} / {@see $fakeMicrotime};
+ * - clock via {@see setFakeNow FakeNow} / {@see setFakeMicrotime FakeMicrotime} (a {@see TTestCacheClock});
  * - {@see serializeValue()}, {@see unserializeValue()}, {@see encode()}, {@see decode()},
  *   and {@see getSerializedValue()} through `pub*()` accessors;
  * - {@see onlyStored()} returns the single stored raw payload so a test can assert how
@@ -58,7 +58,7 @@ class TTestSerializingCache extends TSerializingCache
 			return false;
 		}
 		$expire = $this->expires[$key] ?? 0;
-		if ($expire > 0 && $expire <= $this->time()) {
+		if ($expire > 0 && $expire <= $this->getClock()->time()) {
 			unset($this->store[$key], $this->expires[$key]);
 			return false;
 		}
@@ -68,7 +68,7 @@ class TTestSerializingCache extends TSerializingCache
 	protected function setSerializedValue(string $key, string $value, int $expire): bool
 	{
 		$this->store[$key] = $value;
-		$this->expires[$key] = $expire > 0 ? $this->time() + $expire : 0;
+		$this->expires[$key] = $expire > 0 ? $this->getClock()->time() + $expire : 0;
 		return true;
 	}
 
