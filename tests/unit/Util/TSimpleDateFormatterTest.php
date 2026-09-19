@@ -2,6 +2,7 @@
 
 namespace Prado\Test\Unit\Util;
 
+use Prado\Util\Clock\TMockClock;
 use Prado\Util\TSimpleDateFormatter;
 
 class TSimpleDateFormatterTest extends \PHPUnit\Framework\TestCase
@@ -22,6 +23,25 @@ class TSimpleDateFormatterTest extends \PHPUnit\Framework\TestCase
 	public function test_instance_of_class(): void
 	{
 		$this->assertInstanceOf(TSimpleDateFormatter::class, $this->formatter);
+	}
+
+	public function testEmptyPatternReturnsClockMicrotime(): void
+	{
+		$f = new TSimpleDateFormatter('');
+		$clock = new TMockClock();
+		$clock->setMicrotime(1_000_000.5);
+		$f->setClock($clock);
+		$this->assertSame(1_000_000.5, $f->parseExact('2026-04-17'));
+		$this->assertSame(1_000_000, $f->parse('2026-04-17'));
+	}
+
+	public function testEmptyValueDefaultsToClockTime(): void
+	{
+		$clock = new TMockClock();
+		$clock->setTime(1_700_000_000);
+		$this->formatter->setClock($clock);
+		$this->assertSame(1_700_000_000, $this->formatter->parse(''));
+		$this->assertNull($this->formatter->parse('', false));
 	}
 
 	public function test_constructor_with_charset(): void

@@ -6,6 +6,7 @@ use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Web\Services\TPageService;
 use Prado\Web\TAssetManager;
 use Prado\Web\UI\TPage;
+use Prado\Util\Clock\TMockClock;
 use Prado\Web\UI\WebControls\TRelativeTime;
 use Prado\Web\UI\WebControls\TRelativeTimeMode;
 use Prado\Web\UI\WebControls\TTime;
@@ -236,6 +237,17 @@ class TRelativeTimeTest extends TestCase
 	public function testRenderContentsIsRelativePast()
 	{
 		$this->assertSame('5 minutes ago', $this->renderContents($this->makeAtOffset(-330)));
+	}
+
+	public function testRenderContentsUsesInjectedClock()
+	{
+		$control = new TRelativeTime();
+		$control->setCulture('en_US');
+		$clock = new TMockClock();
+		$clock->setTime(1_000_000);
+		$control->setClock($clock);
+		$control->setDateTime(1_000_000 - 330); // exactly 5.5 minutes before the pinned clock
+		$this->assertSame('5 minutes ago', $this->renderContents($control));
 	}
 
 	public function testDurationOnlyDropsPastDirection()
