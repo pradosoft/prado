@@ -18,6 +18,7 @@ use Prado\Exceptions\THttpException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\IO\Compression\TCompression;
 use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\Javascripts\TJavaScript;
@@ -49,7 +50,8 @@ use Prado\Web\UI\WebControls\THead;
  * encrypted, compressed and serialized with igbinary, controlled by
  * {@see setEnableStateValidation EnableStateValidation},
  * {@see setEnableStateEncryption EnableStateEncryption},
- * {@see setEnableStateCompression EnableStateCompression} and
+ * {@see setEnableStateCompression EnableStateCompression},
+ * {@see setStateCompressionMethod StateCompressionMethod} and
  * {@see setEnableStateIGBinary EnableStateIGBinary}.
  *
  * Validators add themselves to {@see getValidators Validators}. {@see validate()}
@@ -183,6 +185,11 @@ class TPage extends TTemplateControl
 	 * @since 4.1
 	 */
 	private $_enableStateIGBinary = true;
+	/**
+	 * @var string the content coding the page state is compressed with
+	 * @since 4.4.0
+	 */
+	private $_stateCompressionMethod = 'deflate';
 	/**
 	 * @var string page state persister class name
 	 */
@@ -1242,6 +1249,34 @@ class TPage extends TTemplateControl
 	public function setEnableStateCompression($value)
 	{
 		$this->_enableStateCompression = TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
+	 * The content coding {@see setEnableStateCompression EnableStateCompression} compresses
+	 * the page state with, one of the tokens of {@see \Prado\IO\Compression\TCompression}.
+	 * @return string the page state content coding. Defaults to 'deflate' (the zlib format).
+	 * @since 4.4.0
+	 */
+	public function getStateCompressionMethod()
+	{
+		return $this->_stateCompressionMethod;
+	}
+
+	/**
+	 * Sets the content coding the page state is compressed with. A page state written
+	 * under one coding is unreadable under another, so a change takes effect for the
+	 * states written after it and reads the states in flight as corrupted.
+	 * @param string $value the page state content coding: 'zstd', 'br', 'gzip' or 'deflate'.
+	 * @throws TInvalidDataValueException if the coding is not a known content coding.
+	 * @since 4.4.0
+	 */
+	public function setStateCompressionMethod($value)
+	{
+		$value = strtolower(TPropertyValue::ensureString($value));
+		if (TCompression::getCodec($value) === null) {
+			throw new TInvalidDataValueException('page_statecompressionmethod_invalid', $value, implode(', ', TCompression::getMethods()));
+		}
+		$this->_stateCompressionMethod = $value;
 	}
 
 	/**

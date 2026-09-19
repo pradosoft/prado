@@ -348,6 +348,7 @@ page_head_duplicated					= A page can contain at most one THead.
 page_head_required						= A THead control is needed in page template in order to render CSS and js in the HTML head section.
 page_statepersister_invalid				= Page state persister must implement IPageStatePersister interface.
 page_csmanagerclass_invalid				= ClientScriptManager class '{0}' must be an instance of TClientScriptManager.
+page_statecompressionmethod_invalid		= TPage.StateCompressionMethod '{0}' is not a known content coding. It must be one of: {1}.
 
 csmanager_pradoscript_invalid			= Unknown Prado script library name '{0}'.
 csmanager_pradoscript_notloaded			= Prado script library name '{0}' has not been loaded yet.
