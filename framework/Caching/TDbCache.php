@@ -242,7 +242,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 				$db->createCommand($sql)->queryScalar();
 
 				$this->_createCheck = true;
-				$this->getApplication()->setGlobalState($key, $this->time());
+				$this->getApplication()->setGlobalState($key, $this->getClock()->time());
 			}
 		} catch (\Exception $e) {
 			// DB table not exists
@@ -265,7 +265,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 				$db->createCommand($sql)->execute();
 
 				$this->_createCheck = true;
-				$this->getApplication()->setGlobalState($key, $this->time());
+				$this->getApplication()->setGlobalState($key, $this->getClock()->time());
 			} else {
 				throw new TConfigurationException('db_cachetable_inexistent', $cacheTable);
 			}
@@ -286,7 +286,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 		}
 		$cacheTable = $this->getCacheTableName();
 		$key = 'TDbCache:' . $cacheTable . ':flushed';
-		$now = $this->time();
+		$now = $this->getClock()->time();
 		$next = $interval + (int) $this->getApplication()->getGlobalState($key, 0);
 
 		if ($force || $next <= $now) {
@@ -492,7 +492,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 			$this->initializeCache();
 		}
 
-		$sql = 'SELECT value FROM ' . $this->getCacheTableName() . ' WHERE itemkey=\'' . $key . '\' AND (expire=0 OR expire>=' . $this->time() . ') ORDER BY expire DESC';
+		$sql = 'SELECT value FROM ' . $this->getCacheTableName() . ' WHERE itemkey=\'' . $key . '\' AND (expire=0 OR expire>=' . $this->getClock()->time() . ') ORDER BY expire DESC';
 		$command = $this->getDbConnection()->createCommand($sql);
 		try {
 			return $command->queryScalar();
@@ -517,7 +517,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 		$db = $this->getDbConnection();
 		$driver = $db->getDriverName();
 		if (in_array($driver, [TDbDriver::DRIVER_MYSQL, TDbDriver::EXTENSION_MYSQLI, TDbDriver::DRIVER_SQLITE, TDbDriver::DRIVER_IBM, TDbDriver::DRIVER_OCI, TDbDriver::DRIVER_SQLSRV, TDbDriver::EXTENSION_MSSQL, TDbDriver::DRIVER_DBLIB, TDbDriver::DRIVER_PGSQL])) {
-			$expire = ($expire <= 0) ? 0 : $this->time() + $expire;
+			$expire = ($expire <= 0) ? 0 : $this->getClock()->time() + $expire;
 			$cacheTable = $this->getCacheTableName();
 			if (in_array($driver, [TDbDriver::DRIVER_MYSQL, TDbDriver::EXTENSION_MYSQLI, TDbDriver::DRIVER_SQLITE])) {
 				$sql = "REPLACE INTO {$cacheTable} (itemkey,value,expire) VALUES (:key,:value,$expire)";
@@ -577,7 +577,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 		if (!$this->getIsCacheInitialized()) {
 			$this->initializeCache();
 		}
-		$expire = ($expire <= 0) ? 0 : $this->time() + $expire;
+		$expire = ($expire <= 0) ? 0 : $this->getClock()->time() + $expire;
 		$sql = "INSERT INTO {$this->getCacheTableName()} (itemkey,value,expire) VALUES(:key,:value,$expire)";
 		$command = $this->getDbConnection()->createCommand($sql);
 		$command->bindValue(':key', $key, \PDO::PARAM_STR);

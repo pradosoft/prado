@@ -335,7 +335,7 @@ class TFileCache extends TSerializingCache implements ICacheSize
 			return false;
 		}
 		$expire = (int) substr($raw, 0, $pos);
-		if ($expire > 0 && $expire <= $this->time()) {
+		if ($expire > 0 && $expire <= $this->getClock()->time()) {
 			$this->unlink($file);
 			return false;
 		}
@@ -437,7 +437,7 @@ class TFileCache extends TSerializingCache implements ICacheSize
 	protected function writeEntry(string $key, string $value, int $expire, bool $exclusive): bool
 	{
 		$ttl = $expire > 0 ? $expire : $this->getDefaultTtl();
-		$expireAt = $ttl > 0 ? $this->time() + $ttl : 0;
+		$expireAt = $ttl > 0 ? $this->getClock()->time() + $ttl : 0;
 		$serialized = $expireAt . "\n" . $value;
 		$this->assertItemFitsMaximumSize(strlen($serialized));
 		$file = $this->pathFor($key);
@@ -530,7 +530,7 @@ class TFileCache extends TSerializingCache implements ICacheSize
 			return;
 		}
 		$key = 'TFileCache:' . $this->getDirectory() . ':flushed';
-		$now = $this->time();
+		$now = $this->getClock()->time();
 		$next = $interval + (int) $this->getApplication()->getGlobalState($key, 0);
 		if ($force || $next <= $now) {
 			Prado::trace(($force ? 'Force flush of expired files: ' : 'Flush expired files: ') . $this->getDirectory(), TFileCache::class);
