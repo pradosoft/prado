@@ -18,6 +18,7 @@ use Prado\Data\TDbPropertiesTrait;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TLogException;
 use Prado\TPropertyValue;
+use Prado\Util\Clock\TApplicationClockAwareTrait;
 
 /**
  * TDbLogRoute class
@@ -97,6 +98,7 @@ use Prado\TPropertyValue;
 class TDbLogRoute extends TLogRoute
 {
 	use TDbPropertiesTrait;
+	use TApplicationClockAwareTrait;
 
 	/**
 	 * @var string name of the DB log table
@@ -162,7 +164,7 @@ class TDbLogRoute extends TLogRoute
 			}
 		}
 		if (!empty($seconds = $this->getRetainPeriod())) {
-			$this->deleteDbLog(null, null, null, microtime(true) - $seconds);
+			$this->deleteDbLog(null, null, null, $this->getClock()->microtime() - $seconds);
 		}
 	}
 

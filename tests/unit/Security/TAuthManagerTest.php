@@ -7,6 +7,7 @@ use Prado\Exceptions\TInvalidOperationException;
 use Prado\Security\TAuthManager;
 use Prado\Security\TAuthorizationRule;
 use Prado\Security\TUserManager;
+use Prado\Util\Clock\TMockClock;
 use Prado\Util\TCallChain;
 use Prado\Web\THttpCookie;
 use Prado\Web\THttpResponse;
@@ -809,6 +810,52 @@ class TAuthManagerTest extends \PHPUnit\Framework\TestCase
 			self::assertTrue($expired, 'OnAuthExpire must fire for stale authentication');
 			self::assertTrue($auth->fakeSession->destroyed);
 			self::assertTrue(self::$app->getUser()->getIsGuest());
+		} finally {
+			self::$usrMgr->setPasswordMode('MD5');
+		}
+	}
+
+	public function testAuthExpiryComparedAgainstInjectedClock()
+	{
+		$auth = $this->makeSessionAuth();
+		try {
+			$clock = new TMockClock();
+			$clock->setTime(2_000_000);
+			$auth->setClock($clock);
+			$auth->setAuthExpire(3600);
+			$auth->fakeSession->data[$auth->getUserKey()] = self::$usrMgr->getUser('Joe')->saveToString();
+
+			// Stamped one second before the pinned clock → expired.
+			$auth->fakeSession->data[TAuthManager::AUTH_EXPIRE_TIME] = 1_999_999;
+			$expired = false;
+			$auth->onAuthExpire[] = function () use (&$expired) {
+				$expired = true;
+			};
+			$auth->onAuthenticate(null);
+
+			self::assertTrue($expired, 'A stale expiry relative to the injected clock triggers OnAuthExpire.');
+			self::assertTrue(self::$app->getUser()->getIsGuest());
+		} finally {
+			self::$usrMgr->setPasswordMode('MD5');
+		}
+	}
+
+	public function testAuthExpiryRestampedFromInjectedClock()
+	{
+		$auth = $this->makeSessionAuth();
+		try {
+			$clock = new TMockClock();
+			$clock->setTime(2_000_000);
+			$auth->setClock($clock);
+			$auth->setAuthExpire(3600);
+			$auth->fakeSession->data[$auth->getUserKey()] = self::$usrMgr->getUser('Joe')->saveToString();
+
+			// Stamped in the future relative to the pinned clock → not expired, re-stamped.
+			$auth->fakeSession->data[TAuthManager::AUTH_EXPIRE_TIME] = 2_000_500;
+			$auth->onAuthenticate(null);
+
+			self::assertFalse(self::$app->getUser()->getIsGuest());
+			self::assertSame(2_000_000 + 3600, $auth->fakeSession->data[TAuthManager::AUTH_EXPIRE_TIME], 'Expiry is re-stamped from the injected clock.');
 		} finally {
 			self::$usrMgr->setPasswordMode('MD5');
 		}

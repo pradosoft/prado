@@ -12,6 +12,7 @@ namespace Prado\Util\Log;
 
 use Prado\ISingleton;
 use Prado\Prado;
+use Prado\Util\Clock\TApplicationClockAwareTrait;
 use Prado\Web\UI\TControl;
 use Psr\Log\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
@@ -74,6 +75,7 @@ use Psr\Log\LogLevel;
 class TPsrLogger extends \Prado\TComponent implements LoggerInterface, ISingleton
 {
 	use LoggerTrait;
+	use TApplicationClockAwareTrait;
 
 	/** Context key of the log category. */
 	public const CONTEXT_CATEGORY = 'category';
@@ -251,7 +253,7 @@ class TPsrLogger extends \Prado\TComponent implements LoggerInterface, ISingleto
 			$token,
 			$pradoLevel,
 			$category,
-			is_int($time) || is_float($time) ? (float) $time : microtime(true),
+			is_int($time) || is_float($time) ? (float) $time : $this->getClock()->microtime(),
 			is_int($memory) ? $memory : memory_get_usage(),
 			$control,
 			is_array($traces) ? $traces : null,
