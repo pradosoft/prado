@@ -13,6 +13,7 @@ namespace Prado\Web\UI;
 use Prado\TPropertyValue;
 use Prado\Exceptions\THttpException;
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Util\Clock\TApplicationClockAwareTrait;
 
 /**
  * TSessionPageStatePersister class
@@ -47,6 +48,8 @@ use Prado\Exceptions\TInvalidDataValueException;
  */
 class TSessionPageStatePersister extends \Prado\TComponent implements IPageStatePersister
 {
+	use TApplicationClockAwareTrait;
+
 	public const STATE_SESSION_KEY = 'PRADO_SESSION_PAGESTATE';
 	public const QUEUE_SESSION_KEY = 'PRADO_SESSION_STATEQUEUE';
 
@@ -98,7 +101,7 @@ class TSessionPageStatePersister extends \Prado\TComponent implements IPageState
 		$session = $this->_page->getSession();
 		$session->open();
 		$data = serialize($state);
-		$timestamp = (string) microtime(true);
+		$timestamp = (string) $this->getClock()->microtime();
 		$key = self::STATE_SESSION_KEY . $timestamp;
 		$session->add($key, $data);
 		if (($queue = $session->itemAt(self::QUEUE_SESSION_KEY)) === null) {

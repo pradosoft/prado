@@ -2,6 +2,7 @@
 
 namespace Prado\Test\Unit\Web\UI;
 
+use Prado\Util\Clock\TMockClock;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\TSessionPageStatePersister;
 use Prado\Web\UI\IPageStatePersister;
@@ -195,6 +196,25 @@ class TSessionPageStatePersisterTest extends \PHPUnit\Framework\TestCase
 		$stored = $session->itemAt($key);
 		$this->assertNotNull($stored);
 		$this->assertEquals($data, unserialize($stored));
+	}
+
+	public function testSaveKeyUsesInjectedClock(): void
+	{
+		$page = $this->newPage();
+		$session = $page->getSession();
+		$persister = new TSessionPageStatePersister();
+		$persister->setPage($page);
+
+		$clock = new TMockClock();
+		$clock->setMicrotime(1_000_000.5);
+		$persister->setClock($clock);
+
+		$persister->save(['x' => 1]);
+
+		$expectedKey = TSessionPageStatePersister::STATE_SESSION_KEY . (string) 1_000_000.5;
+		$queue = $session->itemAt(TSessionPageStatePersister::QUEUE_SESSION_KEY);
+		$this->assertSame($expectedKey, $queue[0], 'The state key is timestamped from the injected clock.');
+		$this->assertNotNull($session->itemAt($expectedKey));
 	}
 
 	public function testSaveSetsClientState(): void
