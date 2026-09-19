@@ -22,6 +22,8 @@ use Prado\Security\TSecurityManager;
 use Prado\Web\{THttpRequest, THttpResponse, THttpSession};
 use Prado\Web\TAssetManager;
 use Prado\Util\TComposerReflection;
+use Prado\Util\Clock\TClockAwareTrait;
+use Prado\Util\Clock\TNativeClock;
 use Prado\Util\Log\TLogger;
 use Prado\Web\Services\TPageService;
 use Prado\Web\UI\TTemplateManager;
@@ -127,6 +129,8 @@ use Prado\Xml\TXmlElement;
  */
 class TApplication extends TComponent implements ISingleton
 {
+	use TClockAwareTrait;
+
 	/**
 	 * Page service ID
 	 */
@@ -177,6 +181,11 @@ class TApplication extends TComponent implements ISingleton
 	 * @since 4.3.3
 	 */
 	public const DEFAULT_PAGE_SERVICE_CLASS = TPageService::class;
+	/**
+	 * Default clock class held by the application when none is configured or set.
+	 * @since 4.4.0
+	 */
+	public const DEFAULT_CLOCK_CLASS = TNativeClock::class;
 	/**
 	 * Key used within the dependency cache array to store sort results,
 	 * distinct from the integer spl_object_id keys used for per-instance data.
@@ -242,6 +251,11 @@ class TApplication extends TComponent implements ISingleton
 	 * @var string unique application ID
 	 */
 	private $_uniqueID;
+	/**
+	 * @var ?string the default clock class from configuration, or null for {@see DEFAULT_CLOCK_CLASS}
+	 * @since 4.4.0
+	 */
+	private ?string $_clockClass = null;
 	/**
 	 * @var bool whether the request is completed
 	 */
@@ -1127,6 +1141,28 @@ class TApplication extends TComponent implements ISingleton
 	public function setCache(ICache $cache)
 	{
 		$this->_cache = $cache;
+	}
+
+	/**
+	 * The default clock class {@see createClock} instantiates when no clock is set. Reads the
+	 * configured {@see setClockClass} value, defaulting to {@see DEFAULT_CLOCK_CLASS}.
+	 * @return string the clock class name; names an {@see \Prado\Util\Clock\IClock}
+	 * @since 4.4.0
+	 */
+	protected function getClockClass(): string
+	{
+		return $this->_clockClass ?? static::DEFAULT_CLOCK_CLASS;
+	}
+
+	/**
+	 * Sets the default clock class, settable in the application configuration. A clock instance passed
+	 * to {@see setClock} takes precedence over this class.
+	 * @param string $value the clock class name; must name an {@see \Prado\Util\Clock\IClock}
+	 * @since 4.4.0
+	 */
+	public function setClockClass(string $value): void
+	{
+		$this->_clockClass = $value;
 	}
 
 	// =========================================================================
