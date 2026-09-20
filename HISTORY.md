@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+CHG: `composer coverage` and `composer coverage-html` report code coverage, and `phpunit.xml` declares `framework/` as the coverage source. Each script sets `XDEBUG_MODE` through `@putenv`, so a run needs no environment of its own, and narrows with the phpunit `filter` and `coverage-filter` options passed after `--`. (belisoful)
 CHG: The tests, the unit tests, and the test harness classes carry the dev PSR-4 namespace `Prado\Test\Unit\`, mapped to `tests/unit/` through `composer.json` `autoload-dev`, so a harness class such as `PradoUnit` autoloads rather than being required by path. A project that consumes the harness outside this repository declares the same mapping or includes the file it needs. (belisoful)
 ENH: PHP 8.4 and PHP 8.5 join the tested versions. `TPropertyValue` and `TJavaScript` render `NAN` instead of coercing it, which PHP 8.5 warns on. (ctrlaltca)
 BUG: `TTemplate` replaced a dash in a template attribute name with an underscore, so `<com:TNav Attributes.aria-label="Primary" />` rendered `aria_label="Primary"`. The name is now applied as written. Removes `TTemplate::attributeToMethodName()`. (belisoful)
