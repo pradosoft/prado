@@ -34,6 +34,16 @@
   <logging>
     <testdoxHtml outputFile="./build/tests/index.html"/>
   </logging>
+  <!-- Coverage source. Inert until a run asks for coverage on the command line,
+       as `composer coverage` does. Narrow a run with the coverage-filter option. -->
+  <source>
+    <include>
+      <directory suffix=".php">./framework</directory>
+    </include>
+    <exclude>
+      <directory suffix=".php">./framework/PHPStan</directory>
+    </exclude>
+  </source>
   <extensions>
    <!-- <bootstrap class="Prado\Tests\PradoTestListener"/> -->
   </extensions>

@@ -25,6 +25,11 @@ vendor/bin/phpunit --testsuite unit
 # Run tests for a specific class, function, or directory
 vendor/bin/phpunit --testsuite unit --filter <test function, class, or directory>
 
+# Code coverage (phpunit.xml declares framework/ as the source; the script sets XDEBUG_MODE)
+composer coverage            # text summary
+composer coverage-html       # HTML report in build/coverage
+composer coverage -- --filter <class> --coverage-filter <path>   # narrow a run
+
 # javascript commands
 composer jsfix           # js code style fix
 composer jstest          # vitest unit test
@@ -46,7 +51,7 @@ Run these four checks **in order** — all must pass:
 3. `vendor/bin/phpstan analyse framework/ --memory-limit=512M`
 4. `vendor/bin/phpunit --testsuite unit`
 
-> **Never add or change phpunit command options** when unit testing — only run project unit tests as specified above. When testing a single class or cluster, only run tests for that class/directory.
+> **Never add or change phpunit command options** when unit testing — only run project unit tests as specified above. When testing a single class or cluster, only run tests for that class/directory. Measuring coverage is the exception: use the `composer coverage` scripts, narrowing a run with `--filter` and `--coverage-filter`.
 
 ## Architecture
 

@@ -136,6 +136,14 @@
 		"fix": "vendor/bin/php-cs-fixer fix",
 		"stan": "vendor/bin/phpstan analyse --memory-limit=512M",
         "unittest": "vendor/bin/phpunit --testsuite unit,db-sqlite,db-mysql,db-pgsql",
+		"coverage": [
+			"@putenv XDEBUG_MODE=coverage",
+			"vendor/bin/phpunit --testsuite unit --coverage-text"
+		],
+		"coverage-html": [
+			"@putenv XDEBUG_MODE=coverage",
+			"vendor/bin/phpunit --testsuite unit --coverage-html build/coverage"
+		],
 		"fulltest": [
 			"@fix",
 			"@stan",
