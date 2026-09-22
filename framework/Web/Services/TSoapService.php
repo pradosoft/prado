@@ -288,9 +288,7 @@ class TSoapService extends \Prado\TService
 		}
 		$server = new $className();
 		$server->setID($this->_serverID);
-		foreach ($properties as $name => $value) {
-			$server->setSubproperty($name, $value);
-		}
+		$server->setSubProperties($properties);
 		return $server;
 	}
 

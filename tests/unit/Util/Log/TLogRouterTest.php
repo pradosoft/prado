@@ -5,9 +5,20 @@ namespace Prado\Test\Unit\Util\Log;
 use Prado\Util\Log\TLogger;
 use Prado\Util\Log\TLogRouter;
 use Prado\Util\Log\TBrowserLogRoute;
+use Prado\Test\Unit\Harness\Traits\TNestedPathTrait;
+use Prado\Xml\TXmlDocument;
 
 class TTestLogRouter extends TLogRouter {
 	
+}
+
+/**
+ * A log route carrying a nested 'Cfg' property, to observe the order the
+ * router applies a route's configured properties in.
+ */
+class TNestedPathLogRoute extends TBrowserLogRoute
+{
+	use TNestedPathTrait;
 }
 
 class TLogRouterTest extends \PHPUnit\Framework\TestCase
@@ -30,6 +41,45 @@ class TLogRouterTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals(1, count($routes));
 	}
 	
+	/**
+	 * A route's configured properties apply parent path first, so a nested value
+	 * survives whatever order the configuration declares them in.
+	 */
+	public function testInitAppliesParentPathBeforeNestedPath()
+	{
+		foreach ([
+			['Cfg.Size' => 'child', 'Cfg' => 'value'],
+			['Cfg' => 'value', 'Cfg.Size' => 'child'],
+		] as $properties) {
+			$router = new TTestLogRouter();
+			$router->init(['routes' => [
+				['class' => TNestedPathLogRoute::class, 'properties' => $properties],
+			]]);
+			$routes = $router->getRoutes();
+			$this->assertEquals('child', $routes[0]->getCfg()->getSize(), 'declared: ' . implode(', ', array_keys($properties)));
+		}
+	}
+
+	/**
+	 * The XML branch orders a route's attributes the same way, and supplies a
+	 * TAttributeCollection rather than an array.
+	 */
+	public function testInitFromXmlAppliesParentPathBeforeNestedPath()
+	{
+		foreach ([
+			'Cfg.Size="child" Cfg="value"',
+			'Cfg="value" Cfg.Size="child"',
+		] as $attributes) {
+			$config = new TXmlDocument('1.0', 'utf8');
+			$config->loadFromString('<module><route class="' . TNestedPathLogRoute::class . '" ' . $attributes . '/></module>');
+
+			$router = new TTestLogRouter();
+			$router->init($config);
+			$routes = $router->getRoutes();
+			$this->assertEquals('child', $routes[0]->getCfg()->getSize(), "attributes: {$attributes}");
+		}
+	}
+
 	public function testAddRoute()
 	{
 		$router = new TTestLogRouter();

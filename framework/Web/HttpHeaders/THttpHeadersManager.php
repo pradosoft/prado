@@ -982,13 +982,12 @@ class THttpHeadersManager extends TModule
 		if (!($header instanceof TBaseHttpHeader)) {
 			throw new TConfigurationException('httpheadersmanager_header_required');
 		}
-		foreach ($properties as $name => $value) {
-			// Typed classes determine their own header name — skip HeaderName when promoted.
-			if ($promoted && $name === 'HeaderName') {
-				continue;
-			}
-			$header->setSubproperty($name, $value);
+		// Typed classes determine their own header name — skip HeaderName when promoted.
+		if ($promoted) {
+			$properties = is_array($properties) ? $properties : iterator_to_array($properties);
+			unset($properties['HeaderName']);
 		}
+		$header->setSubProperties($properties);
 		$this->addHeader($header);
 		$header->init($config);
 	}

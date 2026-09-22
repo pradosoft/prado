@@ -4,6 +4,7 @@ namespace Prado\Test\Unit;
 
 use Prado\Prado;
 use Prado\TApplicationMode;
+use Prado\Test\Unit\Harness\TNestedPathComponent;
 use Prado\Util\Log\TLogger;
 
 class MethodVisibleTestClassA
@@ -1181,6 +1182,23 @@ class PradoBaseTest extends \PHPUnit\Framework\TestCase
 	{
 		$this->assertInstanceOf(self::CLASS_FQN, $obj = Prado::createComponent(['class' =>self::CLASS_FQN, 'text' => 'my Title...']));
 		$this->assertEquals('my Title...', $obj->getText());
+	}
+
+	/**
+	 * createComponent() applies a parent path before any path nested beneath it,
+	 * so a nested write survives whatever order the array declares them in. This
+	 * is the funnel for every component built from a `['class' => ...]` array,
+	 * a behavior and a shell action among them.
+	 */
+	public function testCreateComponentArrayAppliesParentPathBeforeNestedPath()
+	{
+		foreach ([
+			['Cfg.Size' => 'child', 'Cfg' => 'value'],
+			['Cfg' => 'value', 'Cfg.Size' => 'child'],
+		] as $properties) {
+			$obj = Prado::createComponent(['class' => TNestedPathComponent::class] + $properties);
+			$this->assertEquals('child', $obj->getCfg()->getSize(), 'declared: ' . implode(', ', array_keys($properties)));
+		}
 	}
 
 	// -------------------------------------------------------------------------

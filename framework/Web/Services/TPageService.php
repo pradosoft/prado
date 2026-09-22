@@ -558,9 +558,7 @@ class TPageService extends \Prado\TService
 	 */
 	protected function runPage($page, $properties)
 	{
-		foreach ($properties as $name => $value) {
-			$page->setSubProperty($name, $value);
-		}
+		$page->setSubProperties($properties);
 		$this->onPreRunPage($page);
 		$page->run($this->getResponse()->createHtmlWriter());
 	}

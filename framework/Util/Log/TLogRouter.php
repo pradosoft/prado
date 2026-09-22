@@ -128,9 +128,7 @@ class TLogRouter extends \Prado\TModule
 					if (!($route instanceof TLogRoute)) {
 						throw new TConfigurationException('logrouter_routetype_invalid');
 					}
-					foreach ($properties as $name => $value) {
-						$route->setSubproperty($name, $value);
-					}
+					$route->setSubProperties($properties);
 					$this->addRoute($route, $route);
 				}
 			}
@@ -144,9 +142,7 @@ class TLogRouter extends \Prado\TModule
 				if (!($route instanceof TLogRoute)) {
 					throw new TConfigurationException('logrouter_routetype_invalid');
 				}
-				foreach ($properties as $name => $value) {
-					$route->setSubproperty($name, $value);
-				}
+				$route->setSubProperties($properties);
 				$this->addRoute($route, $routeConfig);
 			}
 		}

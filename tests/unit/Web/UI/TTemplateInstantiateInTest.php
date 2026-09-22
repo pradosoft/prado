@@ -15,6 +15,7 @@ use Prado\Web\UI\WebControls\TButton;
 use Prado\Web\UI\WebControls\TLabel;
 use Prado\Web\UI\WebControls\TOutputCache;
 use Prado\Web\UI\WebControls\TPanel;
+use Prado\Test\Unit\Harness\Web\UI\TNestedPathControl;
 use Prado\Test\Unit\PradoUnit;
 
 class TTemplateMagicComponent extends TComponent
@@ -1440,6 +1441,25 @@ class TTemplateInstantiateInTest extends \PHPUnit\Framework\TestCase
 		$this->assertInstanceOf(TTemplateMagicControl::class, $control);
 		$this->assertArrayHasKey('data-value', $control->receivedProperties);
 		$this->assertEquals('123', $control->receivedProperties['data-value']);
+	}
+
+	/**
+	 * A parent path is configured before any path nested beneath it, so a nested
+	 * write survives regardless of the order the attributes are declared in.
+	 */
+	public function testInstantiateInAppliesParentPathBeforeNestedPath()
+	{
+		class_exists(TNestedPathControl::class); // autoload it so the parser can reflect on it
+		foreach ([
+			'Cfg.Size="child" Cfg="value"',
+			'Cfg="value" Cfg.Size="child"',
+		] as $attributes) {
+			$tpl = $this->newTemplateUnvalidated('<com:Prado\Test\Unit\Harness\Web\UI\TNestedPathControl ID="c1" ' . $attributes . ' />');
+			$tplControl = $this->createControlWithPage();
+			$tpl->instantiateIn($tplControl);
+			$control = $tplControl->getControls()[0];
+			$this->assertEquals('child', $control->getCfg()->getSize(), "attributes: {$attributes}");
+		}
 	}
 
 	public function testInstantiateInDashedAttributeOnMagicControl()

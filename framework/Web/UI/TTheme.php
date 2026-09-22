@@ -265,7 +265,12 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 			$id = 0;
 		}
 		if (isset($this->_skins[$type][$id])) {
-			foreach ($this->_skins[$type][$id] as $name => $value) {
+			$skin = $this->_skins[$type][$id];
+			if (count($skin) > 1) {
+				// a parent path must be applied before any path nested beneath it
+				$skin = self::sortPropertyPaths($skin);
+			}
+			foreach ($skin as $name => $value) {
 				$propName = $value[TTemplate::PROP_NAME];
 				Prado::trace("Applying skin $propName to $type", \Prado\Web\UI\TThemeManager::class);
 				switch ($value[TTemplate::PROP_TYPE]) {

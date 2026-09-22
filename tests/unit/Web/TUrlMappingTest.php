@@ -10,7 +10,17 @@ use Prado\Web\TUrlManager;
 use Prado\Xml\TXmlDocument;
 use Prado\Test\Unit\Harness\TTestApplication;
 use Prado\Test\Unit\Harness\Traits\PradoUnitModuleDependencyTrait;
+use Prado\Test\Unit\Harness\Traits\TNestedPathTrait;
 use Prado\Test\Unit\PradoUnit;
+
+/**
+ * A mapping pattern carrying a nested 'Cfg' property, to observe the order the
+ * module applies a pattern's configured attributes in.
+ */
+class TNestedPathUrlMappingPattern extends TUrlMappingPattern
+{
+	use TNestedPathTrait;
+}
 
 /**
  * Test class for TUrlMapping.
@@ -49,6 +59,29 @@ class TUrlMappingTest extends \PHPUnit\Framework\TestCase
 		$_SERVER['PATH_INFO'] = '';
 		$_SERVER['QUERY_STRING'] = '';
 		$_SERVER['REQUEST_METHOD'] = 'GET';
+	}
+
+	/**
+	 * A pattern's configured attributes apply parent path first, so a nested
+	 * value survives whatever order the `<url>` element declares them in. The
+	 * XML branch supplies a TAttributeCollection rather than an array.
+	 */
+	public function testInitAppliesParentPathBeforeNestedPath()
+	{
+		foreach ([
+			'Cfg.Size="child" Cfg="value"',
+			'Cfg="value" Cfg.Size="child"',
+		] as $attributes) {
+			$confstr = '<config><url class="' . TNestedPathUrlMappingPattern::class . '" ServiceParameter="Posts.ViewPost" pattern="post/{id}/" parameters.id="\d+" ' . $attributes . '/></config>';
+			$config = new TXmlDocument('1.0', 'utf8');
+			$config->loadFromString($confstr);
+
+			$module = new TUrlMapping();
+			$module->init($config);
+
+			$patterns = PradoUnit::getProp($module, '_patterns');
+			$this->assertEquals('child', $patterns[0]->getCfg()->getSize(), "attributes: {$attributes}");
+		}
 	}
 
 	public function testParseUrlWithMatchingPattern()

@@ -12,6 +12,7 @@ use Prado\Web\UI\TPage;
 use Prado\Web\UI\TRenderFilterParameter;
 use Prado\Web\UI\WebControls\TLabel;
 use Prado\Test\Unit\Harness\TTestApplication;
+use Prado\Test\Unit\Harness\Web\UI\TNestedPathControl;
 use Prado\Test\Unit\PradoUnit;
 
 /**
@@ -415,6 +416,63 @@ class TControlTest extends \PHPUnit\Framework\TestCase
 		$label->autoBindProperty('Text', "'auto value'");
 		PradoUnit::invoke($label, 'autoDataBindProperties');
 		$this->assertEquals('auto value', $label->getText());
+	}
+
+	/**
+	 * All three binding slots write a parent path before any path nested beneath
+	 * it, so a nested binding survives whatever order the bindings were declared
+	 * in. Each expression still evaluates immediately before its own write.
+	 */
+	public function testBindingsApplyParentPathBeforeNestedPath()
+	{
+		$orders = [
+			['Cfg.Size' => "'child'", 'Cfg' => "'value'"],
+			['Cfg' => "'value'", 'Cfg.Size' => "'child'"],
+		];
+
+		// <%# %> — RF_DATA_BINDINGS, applied by dataBind()
+		foreach ($orders as $bindings) {
+			$control = new TNestedPathControl();
+			foreach ($bindings as $path => $expression) {
+				$control->bindProperty($path, $expression);
+			}
+			$control->dataBind();
+			$this->assertEquals('child', $control->getCfg()->getSize(), 'dataBind, declared: ' . implode(', ', array_keys($bindings)));
+		}
+
+		// <%! %> — RF_INIT_BINDINGS, applied once at the start of initRecursive()
+		foreach ($orders as $bindings) {
+			$control = new TNestedPathControl();
+			foreach ($bindings as $path => $expression) {
+				$control->initBindProperty($path, $expression);
+			}
+			PradoUnit::invoke($control, 'initDataBindProperties');
+			$this->assertEquals('child', $control->getCfg()->getSize(), 'initBind, declared: ' . implode(', ', array_keys($bindings)));
+		}
+
+		// <%= %> — RF_AUTO_BINDINGS, applied by preRenderRecursive()
+		foreach ($orders as $bindings) {
+			$control = new TNestedPathControl();
+			foreach ($bindings as $path => $expression) {
+				$control->autoBindProperty($path, $expression);
+			}
+			PradoUnit::invoke($control, 'autoDataBindProperties');
+			$this->assertEquals('child', $control->getCfg()->getSize(), 'autoBind, declared: ' . implode(', ', array_keys($bindings)));
+		}
+	}
+
+	/**
+	 * An expression is evaluated immediately before its own write, so a later
+	 * binding reads what an earlier binding wrote rather than the prior state.
+	 */
+	public function testBindingExpressionsEvaluateAgainstEarlierWrites()
+	{
+		$control = new TNestedPathControl();
+		$control->setID('probe');
+		$control->bindProperty('Cfg', "'value'");
+		$control->bindProperty('Cfg.Size', "'saw:' . \$this->getCfg()->getSize()");
+		$control->dataBind();
+		$this->assertEquals('saw:parent:value', $control->getCfg()->getSize());
 	}
 
 	public function testDataBind()
