@@ -2,6 +2,7 @@
 
 namespace Prado\Test\Unit;
 
+use Prado\Collections\TAttributeCollection;
 use Prado\Collections\TPriorityList;
 use Prado\Exceptions\TInvalidOperationException;
 
@@ -490,6 +491,20 @@ class TComponentPropertyTest extends TComponentTestBase
 		$this->assertSame('top', $this->component->getText());
 		$this->assertSame('deep', $this->component->getObject()->getText());
 		$this->assertSame('e', $behavior->Excitement);
+	}
+
+	/**
+	 * Configuration sources supply their attributes as a TMap, so a traversable
+	 * map applies the same way an array does, ancestors first.
+	 */
+	public function testSetSubPropertiesAcceptsTraversableMap()
+	{
+		$map = new TAttributeCollection();
+		$map->add('Object.Text', 'deep');
+		$map->add('Text', 'top');
+		$this->component->setSubProperties($map);
+		$this->assertSame('top', $this->component->getText());
+		$this->assertSame('deep', $this->component->getObject()->getText());
 	}
 
 	/**
