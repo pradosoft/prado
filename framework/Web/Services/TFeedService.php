@@ -133,12 +133,12 @@ class TFeedService extends \Prado\TService
 				}
 			}
 
-			// init feed properties
-			foreach ($properties as $name => $value) {
-				/** @var \Prado\TComponent $feed */
-				// @phpstan-ignore varTag.nativeType
-				$feed->setSubproperty($name, $value);
-			}
+			// init feed properties; the provider interface does not carry the
+			// property API, so the component behind it applies them
+			/** @var \Prado\TComponent $component */
+			// @phpstan-ignore varTag.nativeType
+			$component = $feed;
+			$component->setSubProperties($properties);
 			$feed->init($feedConfig);
 
 			$content = $feed->getFeedContent();

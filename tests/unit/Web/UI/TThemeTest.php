@@ -10,6 +10,7 @@ use Prado\Web\UI\WebControls\TPanel;
 use Prado\Web\UI\TTemplate;
 use Prado\TApplication;
 use Prado\Prado;
+use Prado\Test\Unit\Harness\Web\UI\TNestedPathControl;
 use Prado\Test\Unit\PradoUnit;
 
 class TThemeTest extends \PHPUnit\Framework\TestCase
@@ -144,6 +145,33 @@ class TThemeTest extends \PHPUnit\Framework\TestCase
 		$this->assertTrue($theme->applySkin($label));
 		$this->assertEquals('First', $label->getText());
 		$this->assertTrue($label->getFont()->getBold());
+	}
+
+	/**
+	 * A parent path is applied before any path nested beneath it, so a nested
+	 * skin value survives regardless of the order the skin declares them in.
+	 */
+	public function testApplySkin_AppliesParentPathBeforeNestedPath()
+	{
+		$cfg = [
+			TTemplate::PROP_TYPE => TTemplate::CONFIG_VALUE,
+			TTemplate::PROP_NAME => 'Cfg',
+			TTemplate::PROP_VALUE => 'value',
+		];
+		$cfgSize = [
+			TTemplate::PROP_TYPE => TTemplate::CONFIG_VALUE,
+			TTemplate::PROP_NAME => 'Cfg.Size',
+			TTemplate::PROP_VALUE => 'child',
+		];
+		foreach ([
+			['cfg.size' => $cfgSize, 'cfg' => $cfg],
+			['cfg' => $cfg, 'cfg.size' => $cfgSize],
+		] as $skin) {
+			$theme = $this->_createSkin(TNestedPathControl::class, 0, $skin);
+			$control = new TNestedPathControl();
+			$this->assertTrue($theme->applySkin($control));
+			$this->assertEquals('child', $control->getCfg()->getSize(), 'skin order: ' . implode(', ', array_keys($skin)));
+		}
 	}
 
 	public function testApplySkin_ConfigValue_WithSkinID()

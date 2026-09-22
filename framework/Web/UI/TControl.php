@@ -984,12 +984,30 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	{
 		Prado::trace("Data bind properties", TControl::class);
 		if (isset($this->_rf[self::RF_DATA_BINDINGS])) {
-			if (($context = $this->getTemplateControl()) === null) {
-				$context = $this;
-			}
-			foreach ($this->_rf[self::RF_DATA_BINDINGS] as $property => $expression) {
-				$this->setSubProperty($property, $context->evaluateExpression($expression));
-			}
+			$this->evaluateBoundProperties($this->_rf[self::RF_DATA_BINDINGS]);
+		}
+	}
+
+	/**
+	 * Evaluates a map of bound expressions and writes each result to its property
+	 * path. The paths are applied in the structural order of
+	 * {@see \Prado\TComponent::setSubProperties}, so a parent path is written
+	 * before any path nested beneath it; each expression is evaluated immediately
+	 * before its own write. The context of the expressions is the template control,
+	 * or the control itself when it has none.
+	 * @param array $bindings the `property path => expression` map to evaluate.
+	 * @since 4.4.0
+	 */
+	protected function evaluateBoundProperties(array $bindings): void
+	{
+		if (($context = $this->getTemplateControl()) === null) {
+			$context = $this;
+		}
+		if (count($bindings) > 1) {
+			$bindings = self::sortPropertyPaths($bindings);
+		}
+		foreach ($bindings as $property => $expression) {
+			$this->setSubProperty($property, $context->evaluateExpression($expression));
 		}
 	}
 
@@ -1016,14 +1034,9 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	protected function initDataBindProperties()
 	{
 		if (isset($this->_rf[self::RF_INIT_BINDINGS])) {
-			if (($context = $this->getTemplateControl()) === null) {
-				$context = $this;
-			}
 			$bindings = $this->_rf[self::RF_INIT_BINDINGS];
 			unset($this->_rf[self::RF_INIT_BINDINGS]);
-			foreach ($bindings as $property => $expression) {
-				$this->setSubProperty($property, $context->evaluateExpression($expression));
-			}
+			$this->evaluateBoundProperties($bindings);
 		}
 	}
 
@@ -1033,12 +1046,7 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	protected function autoDataBindProperties()
 	{
 		if (isset($this->_rf[self::RF_AUTO_BINDINGS])) {
-			if (($context = $this->getTemplateControl()) === null) {
-				$context = $this;
-			}
-			foreach ($this->_rf[self::RF_AUTO_BINDINGS] as $property => $expression) {
-				$this->setSubProperty($property, $context->evaluateExpression($expression));
-			}
+			$this->evaluateBoundProperties($this->_rf[self::RF_AUTO_BINDINGS]);
 		}
 	}
 

@@ -73,7 +73,7 @@ Each event receives a [TStreamNotificationParameter](./TStreamNotificationParame
 
 - **The `TStreamNotificationParameter` is reused** — the same object is mutated on each invocation. Do not hold a reference to it after the event handler returns; clone it if you need to preserve snapshot values.
 - **`Callbacks` fires after Prado events** — raw callables in `Callbacks` always receive the original PHP stream notification signature `($notification_code, $severity, $message, $message_code, $bytes_transferred, $bytes_max)`, not a `TStreamNotificationParameter`.
-- **`filterStreamContext()` merges `on*` keys from the options array directly onto the `TStreamNotificationCallback`** — it calls `setSubProperty($property, $value)`, so the keys must be valid properties or events on the callback instance.
+- **`filterStreamContext()` merges `on*` keys from the options array directly onto the `TStreamNotificationCallback`** — it collects the recognized keys and calls `setSubProperties()` with them, so the keys must be valid properties or events on the callback instance.
 - **MIME charset parsing** — the `onMimeType` handler splits on `;` and `=` to extract charset; only fires if the MIME type header contains a `;charset=` segment.
 - **`IsCompleted` and `IsFailure` are one-way flags** — once set to `true` they are never reset. Create a new instance per stream operation.
 - **Typical usage:**

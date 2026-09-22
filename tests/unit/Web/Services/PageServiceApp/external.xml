@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- An external page configuration, included by TPageService::applyConfiguration(). -->
+<configuration>
+  <pages>
+    <page id="Home" Title="From external" />
+  </pages>
+</configuration>

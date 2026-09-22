@@ -25,6 +25,7 @@ use Prado\Util\Log\TLogger;
 use Prado\Web\HttpHeaders\TCspDirective;
 use Prado\Web\HttpHeaders\THttpHeader;
 use Prado\Web\HttpHeaders\TBaseHttpHeader;
+use Prado\Test\Unit\Harness\Traits\TNestedPathTrait;
 use Prado\Web\HttpHeaders\THttpHeaderContentType;
 use Prado\Web\HttpHeaders\THttpHeaderCsp;
 use Prado\Web\HttpHeaders\THttpHeaderHsts;
@@ -47,6 +48,15 @@ use Prado\Test\Unit\PradoUnit;
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
+
+/**
+ * A header carrying a nested 'Cfg' property, to observe the order the manager
+ * applies a header's configured properties in.
+ */
+class TNestedPathHeader extends THttpHeader
+{
+	use TNestedPathTrait;
+}
 
 class THttpHeadersManagerTest extends \PHPUnit\Framework\TestCase
 {
@@ -654,6 +664,32 @@ class THttpHeadersManagerTest extends \PHPUnit\Framework\TestCase
 	}
 
 	// -----------------------------------------------------------------------
+	/**
+	 * A header's configured properties apply parent path first, so a nested value
+	 * survives whatever order the configuration declares them in.
+	 */
+	public function testLoadHeadersAppliesParentPathBeforeNestedPath(): void
+	{
+		foreach ([
+			['Cfg.Size' => 'child', 'Cfg' => 'value'],
+			['Cfg' => 'value', 'Cfg.Size' => 'child'],
+		] as $properties) {
+			$m = new TTestHttpHeadersManager();
+			$m->init(['headers' => [
+				['class' => TNestedPathHeader::class, 'properties' => $properties],
+			]]);
+			$built = null;
+			foreach ($m->getHeaders() as $header) {
+				if ($header instanceof TNestedPathHeader) {
+					$built = $header;
+					break;
+				}
+			}
+			self::assertNotNull($built);
+			self::assertSame('child', $built->getCfg()->getSize(), 'declared: ' . implode(', ', array_keys($properties)));
+		}
+	}
+
 	// init(null) — full pipeline smoke test
 	// -----------------------------------------------------------------------
 

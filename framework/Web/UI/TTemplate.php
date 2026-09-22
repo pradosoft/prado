@@ -277,6 +277,9 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 			if (isset($tplInfo[self::TPL_PROPS])) {	// is a component or control, b/c it has properties
 				$component = Prado::createComponent($tplInfo[self::TPL_TYPE]);
 				$properties = &$tplInfo[self::TPL_PROPS];
+				if (count($properties) > 1) {
+					$properties = self::sortPropertyPaths($properties);
+				}
 				if ($component instanceof TControl) {
 					if ($component instanceof \Prado\Web\UI\WebControls\TOutputCache) {
 						$component->setCacheKeyPrefix($this->_hashCode . $tplKey);

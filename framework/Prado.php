@@ -373,9 +373,7 @@ class Prado
 			$object = new $type();
 		}
 		if ($properties) {
-			foreach ($properties as $property => $value) {
-				$object->setSubProperty($property, $value);
-			}
+			$object->setSubProperties($properties);
 		}
 		return $object;
 	}

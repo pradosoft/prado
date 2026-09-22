@@ -328,9 +328,7 @@ class TUrlMapping extends TUrlManager implements IModuleDependency
 		if (!($pattern instanceof TUrlMappingPattern)) {
 			throw new TConfigurationException('urlmapping_urlmappingpattern_required');
 		}
-		foreach ($properties as $name => $value) {
-			$pattern->setSubproperty($name, $value);
-		}
+		$pattern->setSubProperties($properties);
 
 		if ($url instanceof TXmlElement) {
 			$text = $url -> getValue();

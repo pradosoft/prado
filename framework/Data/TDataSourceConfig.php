@@ -79,17 +79,11 @@ class TDataSourceConfig extends TModule
 	{
 		if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
 			if (isset($config['database']) && is_array($config['database'])) {
-				$db = $this->getDbConnection();
-				foreach ($config['database'] as $name => $value) {
-					$db->setSubProperty($name, $value);
-				}
+				$this->getDbConnection()->setSubProperties($config['database']);
 			}
 		} elseif ($config !== null) {
 			if ($prop = $config->getElementByTagName('database')) {
-				$db = $this->getDbConnection();
-				foreach ($prop->getAttributes() as $name => $value) {
-					$db->setSubproperty($name, $value);
-				}
+				$this->getDbConnection()->setSubProperties($prop->getAttributes());
 			}
 		}
 		parent::init($config);

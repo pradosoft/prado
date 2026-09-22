@@ -15,6 +15,7 @@ namespace Prado\Test\Unit\Web\Services;
 
 use Prado\Web\Services\TSoapServer;
 use Prado\Web\Services\TSoapService;
+use Prado\Test\Unit\Harness\Traits\TNestedPathTrait;
 
 /**
  * Provider named by the configurations under test.
@@ -38,6 +39,15 @@ class TTestSoapServiceProvider
  */
 class TTestSoapServiceServer extends TSoapServer
 {
+}
+
+/**
+ * A soap server carrying a nested 'Cfg' property, to observe the order the
+ * service applies a server's configured properties in.
+ */
+class TNestedPathSoapServer extends TSoapServer
+{
+	use TNestedPathTrait;
 }
 
 class TSoapServiceTest extends \PHPUnit\Framework\TestCase
@@ -95,6 +105,25 @@ class TSoapServiceTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame(TTestSoapServiceProvider::class, $server->getProvider());
 		$this->assertTrue($server->getSessionPersistent());
 		$this->assertSame('document', $server->getWsdlStyle());
+	}
+
+	/**
+	 * A server's configured properties apply parent path first, so a nested value
+	 * survives whatever order the configuration declares them in.
+	 */
+	public function testAConfigurationAppliesParentPathBeforeNestedPath()
+	{
+		foreach ([
+			['Cfg.Size' => 'child', 'Cfg' => 'value'],
+			['Cfg' => 'value', 'Cfg.Size' => 'child'],
+		] as $properties) {
+			$server = $this->buildServer(['soap' => ['quote' => [
+				'class' => TNestedPathSoapServer::class,
+				'properties' => ['provider' => TTestSoapServiceProvider::class] + $properties,
+			]]], 'quote');
+
+			$this->assertSame('child', $server->getCfg()->getSize(), 'declared: ' . implode(', ', array_keys($properties)));
+		}
 	}
 
 	public function testAPhpConfigurationHonorsTheServerClass()

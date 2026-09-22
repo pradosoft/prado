@@ -82,7 +82,7 @@ $control->OnDataBinding->add([$this, 'handleBind']);  // event handler
 | `<%! %>` | `initBindProperty()` (4.4.0) | `RF_INIT_BINDINGS` | first line of `initRecursive()` → `initDataBindProperties()`, once, then discarded |
 | `<%= %>` | `autoBindProperty()` | `RF_AUTO_BINDINGS` | `preRenderRecursive()` → `autoDataBindProperties()` |
 
-The expression context for all three is the template control (`getTemplateControl()`), or the control itself when it has none.
+All three slots are applied by `evaluateBoundProperties()` (4.4.0). The expression context is the template control (`getTemplateControl()`), or the control itself when it has none. Each expression is evaluated immediately before its own write, and the paths are written in the order of `TComponent::sortPropertyPaths()`, so a parent path resolves before any path nested beneath it.
 
 ### Control Lifecycle States
 

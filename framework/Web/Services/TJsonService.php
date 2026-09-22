@@ -149,9 +149,7 @@ class TJsonService extends \Prado\TService
 	protected function createJsonResponse($service, $properties, $config)
 	{
 		// init service properties
-		foreach ($properties as $name => $value) {
-			$service->setSubproperty($name, $value);
-		}
+		$service->setSubProperties($properties);
 		$service->init($config);
 
 		//send content if not null

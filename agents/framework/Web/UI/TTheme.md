@@ -49,6 +49,7 @@ All CSS files ending in `.*rtl.css` or `.*rtl.(media).css` are removed from the 
 
 ## Patterns & Gotchas
 
+- **A skin applies in property path order, not declaration order** — `applySkin()` passes the skin's attribute map through `TComponent::sortPropertyPaths()`, so `Style` is applied before `Style.Width` however the `.skin` file declares them. A skin cannot hand its map to `setSubProperties()` because it switches on a per-property `CONFIG_*` type.
 - **TSkinTemplate is used for skin files** — skin file parsing uses `TSkinTemplate` (which disables class/attribute validation), not `TTemplate`.
 - **Nested controls in skins are forbidden** — a skin entry with a non-`-1` parent index throws `TConfigurationException('theme_control_nested')`.
 - **Duplicate SkinIDs throw** — same class + SkinID combination in the same theme throws `TConfigurationException('theme_skinid_duplicated')`.

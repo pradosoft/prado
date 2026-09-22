@@ -1238,7 +1238,7 @@ class TApplication extends TComponent implements ISingleton
 	 * @param ?string $class fully-qualified class name of the service. Must be non-empty and must
 	 *   implement {@see IService}; a null or empty value throws {@see TConfigurationException}.
 	 * @param array $properties name → value map of initial properties applied to the service instance
-	 *   via {@see TComponent::setSubProperty()} before {@see TService::init()} is called.
+	 *   via {@see TComponent::setSubProperties()} before {@see TService::init()} is called.
 	 * @param null|array|TXmlElement $config optional extra configuration element passed to
 	 *   {@see TService::init()}. Pass `null` (the default) for no extra configuration.
 	 * @throws TConfigurationException if `$class` is empty, does not exist, or does not implement {@see IService}.
@@ -2599,7 +2599,7 @@ class TApplication extends TComponent implements ISingleton
 	 * 3. Services
 	 * 4. Parameters
 	 * 5. Modules — four phases:
-	 *    a. Instantiate all modules and apply configuration properties via {@see setSubProperty()}
+	 *    a. Instantiate all modules and apply configuration properties via {@see setSubProperties()}
 	 *    b. Sort by dependency (pre-init pass), then raise {@see TModule::dyPreInit()} in order
 	 *    c. Sort by dependency (init pass), then call {@see IModule::init()} in order
 	 *    d. Raise {@see TModule::dyPostInit()} in the same order as step c — no re-sort

@@ -1171,11 +1171,18 @@ class TComponent
 	 * declaration order. This guarantees the object reached by a deeper path
 	 * (`object.inner.child.prop` or `object@behavior@inner.prop`) is already set
 	 * before the deeper write resolves through it.
-	 * @param array $properties the `path => value` map to apply.
+	 *
+	 * Configuration sources hand their attributes over as a
+	 * {@see \Prado\Collections\TMap} rather than an array, so any traversable
+	 * `path => value` map is accepted and read into an array first.
+	 * @param array|\Traversable $properties the `path => value` map to apply.
 	 * @since 4.4.0
 	 */
-	public function setSubProperties(array $properties): void
+	public function setSubProperties(array|\Traversable $properties): void
 	{
+		if (!is_array($properties)) {
+			$properties = iterator_to_array($properties);
+		}
 		if (count($properties) > 1) {
 			$properties = self::sortPropertyPaths($properties);
 		}
