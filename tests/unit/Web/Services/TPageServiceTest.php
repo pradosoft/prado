@@ -144,6 +144,17 @@ class TPageServiceTest extends \PHPUnit\Framework\TestCase
 	}
 
 	/**
+	 * Builds a path below the fixture root with the platform's separator. Windows
+	 * normalizes a stored alias to backslashes, so a path compared against one is
+	 * built the same way.
+	 * @param string ...$segments the path segments below the fixture root.
+	 */
+	private function fixturePath(string ...$segments): string
+	{
+		return $this->_fixtureRoot . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $segments);
+	}
+
+	/**
 	 * Installs a fixture application, restoring any application a previous call
 	 * installed. Each TTestApplication snapshots the global state it finds, so
 	 * building a second one without restoring the first strands the first one's
@@ -201,7 +212,7 @@ class TPageServiceTest extends \PHPUnit\Framework\TestCase
 	public function testBasePathDefaultsToThePagesDirectory()
 	{
 		$service = $this->service();
-		$this->assertSame(realpath($this->_fixtureRoot . '/PageServiceApp/Pages'), $service->getBasePath());
+		$this->assertSame(realpath($this->fixturePath('PageServiceApp', 'Pages')), $service->getBasePath());
 	}
 
 	/**
@@ -213,7 +224,7 @@ class TPageServiceTest extends \PHPUnit\Framework\TestCase
 		// A case-insensitive filesystem resolves the 'Pages' default to this same
 		// directory, so the comparison ignores case.
 		$this->assertEqualsIgnoringCase(
-			realpath($this->_fixtureRoot . '/PageServiceFallbackApp/pages'),
+			realpath($this->fixturePath('PageServiceFallbackApp', 'pages')),
 			$service->getBasePath()
 		);
 	}
@@ -243,9 +254,9 @@ class TPageServiceTest extends \PHPUnit\Framework\TestCase
 	public function testSetBasePathAcceptsANamespace()
 	{
 		$service = $this->service();
-		Prado::setPathOfAlias('PageFixtures', $this->_fixtureRoot . '/PageServiceApp');
+		Prado::setPathOfAlias('PageFixtures', $this->fixturePath('PageServiceApp'));
 		$service->setBasePath('PageFixtures.Pages');
-		$this->assertSame(realpath($this->_fixtureRoot . '/PageServiceApp/Pages'), $service->getBasePath());
+		$this->assertSame(realpath($this->fixturePath('PageServiceApp', 'Pages')), $service->getBasePath());
 	}
 
 	/**
@@ -638,7 +649,7 @@ class TPageServiceTest extends \PHPUnit\Framework\TestCase
 	public function testCreatePageRefusesAnAdditionalPathOutsideTheApplication()
 	{
 		$service = $this->service('PageServiceApp', 'Missing');
-		Prado::setPathOfAlias('Application', $this->_fixtureRoot . '/PageServiceApp');
+		Prado::setPathOfAlias('Application', $this->fixturePath('PageServiceApp'));
 		$service->attachEventHandler('OnAdditionalPagePaths', function ($sender, $param) {
 			return '/somewhere/else/Missing';
 		});
@@ -652,9 +663,10 @@ class TPageServiceTest extends \PHPUnit\Framework\TestCase
 	public function testCreatePageAcceptsAnAdditionalPathInsideTheApplication()
 	{
 		$service = $this->service('PageServiceApp', 'Elsewhere');
-		Prado::setPathOfAlias('Application', $this->_fixtureRoot . '/PageServiceApp');
-		$service->attachEventHandler('OnAdditionalPagePaths', function ($sender, $param) {
-			return $this->_fixtureRoot . '/PageServiceApp/Pages/Home';
+		Prado::setPathOfAlias('Application', $this->fixturePath('PageServiceApp'));
+		$pages = realpath($this->fixturePath('PageServiceApp', 'Pages'));
+		$service->attachEventHandler('OnAdditionalPagePaths', function ($sender, $param) use ($pages) {
+			return $pages . DIRECTORY_SEPARATOR . 'Home';
 		});
 		$page = PradoUnit::invoke($service, 'createPage', 'Elsewhere');
 		$this->assertInstanceOf(TPage::class, $page);
@@ -753,7 +765,7 @@ class TPageServiceTest extends \PHPUnit\Framework\TestCase
 	public function testApplyConfigurationLoadsATrueExternalConfiguration()
 	{
 		$service = $this->service('PageServiceApp', 'Home');
-		Prado::setPathOfAlias('PageFixtures', $this->_fixtureRoot . '/PageServiceApp');
+		Prado::setPathOfAlias('PageFixtures', $this->fixturePath('PageServiceApp'));
 		$config = new TPageServiceStubConfiguration();
 		$config->externals = ['PageFixtures.external' => ['', true]];
 		PradoUnit::invoke($service, 'applyConfiguration', $config);
@@ -767,7 +779,7 @@ class TPageServiceTest extends \PHPUnit\Framework\TestCase
 	public function testApplyConfigurationEvaluatesATrueExternalCondition()
 	{
 		$service = $this->service('PageServiceApp', 'Home');
-		Prado::setPathOfAlias('PageFixtures', $this->_fixtureRoot . '/PageServiceApp');
+		Prado::setPathOfAlias('PageFixtures', $this->fixturePath('PageServiceApp'));
 		$config = new TPageServiceStubConfiguration();
 		$config->externals = ['PageFixtures.external' => ['', 'true']];
 		PradoUnit::invoke($service, 'applyConfiguration', $config);
