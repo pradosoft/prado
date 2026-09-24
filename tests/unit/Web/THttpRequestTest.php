@@ -270,6 +270,26 @@ class THttpRequestTest extends \PHPUnit\Framework\TestCase
 		self::assertEquals('localhost', $request->getUserHost());
 	}
 
+	public function testGetHeaders()
+	{
+		$request = new THttpRequest();
+		$headers = $request->getHeaders();
+		self::assertEquals('gzip,deflate', $headers['Accept-Encoding']);
+		self::assertEquals('localhost', $headers['Host']);
+		self::assertEquals('gzip,deflate', $request->getHeaders(CASE_LOWER)['accept-encoding']);
+		self::assertEquals('gzip,deflate', $request->getHeaders(CASE_UPPER)['ACCEPT-ENCODING']);
+	}
+
+	public function testGetHeader()
+	{
+		$request = new THttpRequest();
+		self::assertEquals('gzip,deflate', $request->getHeader('Accept-Encoding'));
+		self::assertEquals('gzip,deflate', $request->getHeader('accept-encoding'));
+		self::assertEquals('gzip,deflate', $request->getHeader('ACCEPT-ENCODING'));
+		self::assertNull($request->getHeader('X-Absent-Header'));
+		self::assertEquals('fallback', $request->getHeader('X-Absent-Header', 'fallback'));
+	}
+
 	public function testGetAcceptTypes()
 	{
 		$request = new THttpRequest();

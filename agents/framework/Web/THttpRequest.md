@@ -47,7 +47,8 @@ THttpRequest provides storage and access scheme for user requests sent via HTTP.
 - `getIsSecureConnection()`: Returns whether request is sent via secure channel (HTTPS)
 - `getPathInfo()`: Returns path part of request URL
 - `getQueryString()`: Returns query string part of request URL  
-- `getHeaders($case = null)`: Returns HTTP request headers
+- `getHeaders($case = null)`: Returns HTTP request headers, cached per module instance
+- `getHeader($name, $default = null)`: Returns one request header, matched without regard to case (@since 4.4.0)
 - `getRequestUri()`: Returns full request URI
 - `getBaseUrl($forceSecureConnection = null)`: Returns base URL (schema + hostname)
 - `getApplicationUrl()`: Returns entry script URL (w/o host part)

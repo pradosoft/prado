@@ -156,6 +156,12 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	private $_url;
 
 	/**
+	 * @var ?array the request headers, keyed by header name; null until first read
+	 * @since 4.4.0
+	 */
+	private $_headers;
+
+	/**
 	 * @var string module id
 	 */
 	private $_id;
@@ -509,26 +515,50 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getHeaders($case = null)
 	{
-		static $result;
-
-		if ($result === null && function_exists('apache_request_headers')) {
-			$result = apache_request_headers();
-		} elseif ($result === null) {
-			$result = [];
-			foreach ($_SERVER as $key => $value) {
-				if (strncasecmp($key, 'HTTP_', 5) !== 0) {
-					continue;
-				}
-				$key = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($key, 5)))));
-				$result[$key] = $value;
-			}
+		if ($this->_headers === null) {
+			$this->_headers = $this->parseHeaders();
 		}
 
 		if ($case !== null) {
-			return array_change_key_case($result, $case);
+			return array_change_key_case($this->_headers, $case);
 		}
 
-		return $result;
+		return $this->_headers;
+	}
+
+	/**
+	 * Reads the request headers from the SAPI, or from the `HTTP_*` entries of `$_SERVER`
+	 * when the SAPI does not provide them.  {@see getHeaders()} caches the result for the
+	 * life of the module.
+	 * @return array The request headers, keyed by header name.
+	 * @since 4.4.0
+	 */
+	protected function parseHeaders(): array
+	{
+		if (function_exists('apache_request_headers')) {
+			return apache_request_headers();
+		}
+		$headers = [];
+		foreach ($_SERVER as $key => $value) {
+			if (strncasecmp($key, 'HTTP_', 5) !== 0) {
+				continue;
+			}
+			$key = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($key, 5)))));
+			$headers[$key] = $value;
+		}
+		return $headers;
+	}
+
+	/**
+	 * Returns one request header, matched without regard to case.
+	 * @param string $name The header name.
+	 * @param ?string $default The value returned when the header is absent.
+	 * @return ?string The header value, or $default.
+	 * @since 4.4.0
+	 */
+	public function getHeader($name, $default = null)
+	{
+		return $this->getHeaders(CASE_LOWER)[strtolower((string) $name)] ?? $default;
 	}
 
 	/**
