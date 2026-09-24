@@ -18,7 +18,7 @@ Cache backends and dependency system providing unified `ICache` interface over m
 
 - **`TDbCache`** — PDO-backed persistent cache with auto-created `pradocache` table.
 
-- **`TEtcdCache`** — etcd distributed cache using HTTP v2 API via cURL.
+- **`TEtcdCache`** — etcd distributed cache using HTTP v2 API via `THttpClient`.
 
 - **`TFileCacheDependency`** — Invalidates when a file's `mtime` changes.
 

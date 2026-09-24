@@ -12,6 +12,10 @@ namespace Prado\Caching;
 
 use Prado\TPropertyValue;
 use Prado\Exceptions\TConfigurationException;
+use Prado\IO\HttpClient\THttpClient;
+use Prado\IO\HttpClient\THttpClientException;
+use Prado\Web\THttpHeaderName;
+use Prado\Web\TMediaType;
 
 /**
  * TEtcdCache class
@@ -29,8 +33,10 @@ use Prado\Exceptions\TConfigurationException;
  * default to 'localhost:2379'. All values are stored within a directory set by
  * {@see setDir} which defaults to 'pradocache'.
  *
- * TEtcdCache only supports etcd API v2 and uses cURL to fire the HTTP
- * GET/PUT/DELETE commands, thus the PHP cURL extension is also needed.
+ * TEtcdCache only supports etcd API v2. It sends the HTTP GET/PUT/DELETE
+ * commands through a {@see THttpClient}, which uses cURL when the extension is
+ * loaded and PHP stream wrappers (`allow_url_fopen`) otherwise. Set
+ * {@see setDownloader Downloader} to configure the transport, such as its Timeout.
  *
  * Some usage examples of TEtcdCache are as follows,
  * ```php
@@ -87,24 +93,29 @@ class TEtcdCache extends TSerializingCache
 	private $_dir = 'pradocache';
 
 	/**
-	 * @return bool whether the cURL extension is loaded.
+	 * @var ?THttpClient the transport for etcd requests, created on first use when null.
+	 */
+	private ?THttpClient $_downloader = null;
+
+	/**
+	 * @return bool whether an HTTP transport is available: the cURL extension or `allow_url_fopen`.
 	 * @since 4.4.0
 	 */
 	public static function getIsAvailable(): bool
 	{
-		return function_exists('curl_version');
+		return function_exists('curl_init') || filter_var(ini_get('allow_url_fopen'), FILTER_VALIDATE_BOOLEAN);
 	}
 
 	/**
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
 	 * @param null|array|\Prado\Xml\TXmlElement $config configuration for this module, can be null
-	 * @throws TConfigurationException if cURL extension is not installed
+	 * @throws TConfigurationException if neither cURL nor `allow_url_fopen` is available
 	 */
 	public function init($config)
 	{
 		if (!static::getIsAvailable()) {
-			throw new TConfigurationException('curl_extension_required');
+			throw new TConfigurationException('etcdcache_transport_required');
 		}
 		parent::init($config);
 	}
@@ -162,6 +173,41 @@ class TEtcdCache extends TSerializingCache
 	{
 		$this->assertUninitialized('Dir');
 		$this->_dir = TPropertyValue::ensureString($value);
+	}
+
+	/**
+	 * Returns the HTTP client for etcd requests, creating one with {@see createDownloader()} on first access.
+	 * @return THttpClient the transport for etcd requests.
+	 * @since 4.4.0
+	 */
+	public function getDownloader(): THttpClient
+	{
+		if ($this->_downloader === null) {
+			$this->_downloader = $this->createDownloader();
+		}
+		return $this->_downloader;
+	}
+
+	/**
+	 * Sets the HTTP client for etcd requests.
+	 * @param THttpClient $value the transport for etcd requests.
+	 * @since 4.4.0
+	 */
+	public function setDownloader(THttpClient $value): void
+	{
+		$this->_downloader = $value;
+	}
+
+	/**
+	 * Creates the default HTTP client from {@see THttpClient::create()} with redirects disabled.
+	 * @return THttpClient the default transport for etcd requests.
+	 * @since 4.4.0
+	 */
+	protected function createDownloader(): THttpClient
+	{
+		$client = THttpClient::create();
+		$client->setFollowRedirects(false);
+		return $client;
 	}
 
 	/**
@@ -229,26 +275,30 @@ class TEtcdCache extends TSerializingCache
 	}
 
 	/**
-	 * This method does the actual cURL request by generating the method specific
-	 * URL, setting the cURL options and adding additional request parameters.
-	 * The etcd always returns a JSON string which is decoded and returned to
-	 * the calling method.
+	 * Sends a request to the etcd v2 keys API and returns the decoded JSON response.
+	 * Parameters are sent as an `application/x-www-form-urlencoded` body.
+	 * A response body that is not a JSON object decodes to an object whose `errorCode`
+	 * is the HTTP status code, so callers treat it as an etcd error.
 	 * @param string $method the HTTP method for the request (GET,PUT,DELETE)
-	 * @param string $key the the key to perform the action on (includes the directory)
-	 * @param array $value the additional post data to send with the request
+	 * @param string $key the key to perform the action on (includes the directory)
+	 * @param array $value the additional form parameters to send with the request
+	 * @throws THttpClientException when the etcd instance cannot be reached
 	 * @return \stdClass the response from the etcd instance
 	 */
 	protected function request($method, $key, $value = [])
 	{
-		$curl = curl_init("http://{$this->getHost()}:{$this->getPort()}/v2/keys/{$key}");
-		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
-		curl_setopt($curl, CURLOPT_HEADER, false);
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($curl, CURLOPT_FOLLOWLOCATION, false);
-		curl_setopt($curl, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
-		curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($value));
-		$response = curl_exec($curl);
-		curl_close($curl);
-		return json_decode($response);
+		$headers = [];
+		$body = null;
+		if ($value !== []) {
+			$headers[THttpHeaderName::ContentType] = TMediaType::FORM;
+			$body = http_build_query($value);
+		}
+		$url = "http://{$this->getHost()}:{$this->getPort()}/v2/keys/{$key}";
+		$response = $this->getDownloader()->download($method, $url, $headers, $body);
+		$result = json_decode($response->getBody());
+		if (!($result instanceof \stdClass)) {
+			$result = (object) ['errorCode' => $response->getStatusCode(), 'message' => 'Invalid etcd response.'];
+		}
+		return $result;
 	}
 }

@@ -15,8 +15,7 @@ use Prado\Test\Unit\Harness\Caching\TTestEtcdCache;
 
 /**
  * Tests for {@see TTestEtcdCache}. Verifies type and the clock seam; the serialized
- * contract and {@see request()} require a live etcd service / cURL and are exercised by
- * the live TEtcdCacheTest.
+ * contract and {@see request()} are exercised by TEtcdCacheTest through a recording HTTP client.
  *
  * @package System.Harness.Caching
  */

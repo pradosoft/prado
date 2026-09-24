@@ -146,6 +146,8 @@ sqlitecache_dbfile_invalid				= TSqliteCache.DbFile is invalid. Make sure it is 
 
 dbcache_unavailable						= TDbCache requires the PDO PHP extension.
 
+etcdcache_transport_required			= TEtcdCache requires the cURL PHP extension or allow_url_fopen.
+
 memcache_extension_required				= TMemCache requires memcache PHP extension.
 memcache_connection_failed				= TMemCache failed to connect to memcache server {0}:{1}.
 memcache_not_initialized				= Options cannot be set on TMemCache before the module is initialized.
