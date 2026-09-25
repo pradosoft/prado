@@ -31,6 +31,7 @@ A cached page state is needed for as long as its page can still be posted back. 
 - `getSessionTimeout()` returns the session module's `Timeout` (`session.gc_maxlifetime`), else 0.
 - Both find modules through `getModulesByType()`. `TApplication::getSession()` would bootstrap a default session module as a side effect.
 - Both are protected so a subclass or test can supply the lifetimes.
+- `CacheTimeout` 0 has always meant "never expires" at the cache. `Fixed` passes it through silently, as before 4.4.0. Any other mode that falls all the way through to a `CacheTimeout` of 0 logs a `TLogger::WARNING` under the `TCachePageStatePersister` category, since a lifetime was asked for and the state is cached without one. It does not throw: 0 is an accepted value on the setter and the cache module.
 
 ## See Also
 

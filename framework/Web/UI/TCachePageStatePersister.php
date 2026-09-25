@@ -21,6 +21,7 @@ use Prado\IO\Compression\TCompressionConfig;
 use Prado\IO\Compression\TCompressionConfigTrait;
 use Prado\Security\TAuthManager;
 use Prado\TPropertyValue;
+use Prado\Util\Log\TLogger;
 use Prado\Web\THttpSession;
 
 /**
@@ -219,6 +220,9 @@ class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePe
 	 * Returns the lifetime, in seconds, of a page state saved now, resolved through
 	 * {@see getCacheTimeoutMode() CacheTimeoutMode}.  A source that does not apply falls
 	 * through to the next, and {@see getCacheTimeout() CacheTimeout} ends every chain.
+	 * A mode other than `Fixed` that falls all the way through to a `CacheTimeout` of 0
+	 * logs a warning, since the state is then cached without expiry where a lifetime was
+	 * asked for.
 	 * @return int the lifetime in seconds; 0 means the state never expires.
 	 * @since 4.4.0
 	 */
@@ -235,7 +239,11 @@ class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePe
 				return $timeout;
 			}
 		}
-		return $this->getCacheTimeout();
+		$timeout = $this->getCacheTimeout();
+		if ($timeout === 0 && $mode !== TCachePageStatePersisterTimeoutMode::Fixed) {
+			Prado::log("CacheTimeoutMode '{$mode}' found no lifetime and CacheTimeout is 0; the page state is cached without expiry.", TLogger::WARNING, TCachePageStatePersister::class);
+		}
+		return $timeout;
 	}
 
 	/**

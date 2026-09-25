@@ -3,6 +3,8 @@
 namespace Prado\Test\Unit\Web\UI;
 
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Prado;
+use Prado\Util\Log\TLogger;
 use Prado\Security\IUser;
 use Prado\Security\TAuthManager;
 use Prado\Test\Unit\Harness\TTestApplication;
@@ -152,6 +154,28 @@ class TCachePageStatePersisterTest extends \PHPUnit\Framework\TestCase
 	public function testCacheTimeoutEndsTheChainEvenWhenItIsZero()
 	{
 		self::assertEquals(0, $this->newPersister('Auto', 0, 0, 0)->getEffectiveCacheTimeout());
+	}
+
+	public function testFallingThroughToAZeroCacheTimeoutLogsAWarning()
+	{
+		Prado::getLogger()->deleteLogs(null, TCachePageStatePersister::class);
+
+		$this->newPersister('Auto', 0, 0, 0)->getEffectiveCacheTimeout();
+
+		$logs = Prado::getLogger()->getLogs(TLogger::WARNING, TCachePageStatePersister::class);
+		self::assertCount(1, $logs);
+		self::assertStringContainsString("CacheTimeoutMode 'Auto'", $logs[0][TLogger::LOG_MESSAGE]);
+		self::assertStringContainsString('without expiry', $logs[0][TLogger::LOG_MESSAGE]);
+	}
+
+	public function testAZeroCacheTimeoutIsQuietWhenItIsTheModeAskedFor()
+	{
+		Prado::getLogger()->deleteLogs(null, TCachePageStatePersister::class);
+
+		self::assertEquals(0, $this->newPersister('Fixed', 0, 0, 0)->getEffectiveCacheTimeout());
+		self::assertEquals(60, $this->newPersister('Auto', 60, 0, 0)->getEffectiveCacheTimeout(), 'a source applied; nothing to warn about');
+
+		self::assertCount(0, Prado::getLogger()->getLogs(TLogger::WARNING, TCachePageStatePersister::class));
 	}
 
 	// ---- The sources, against configured modules ----
