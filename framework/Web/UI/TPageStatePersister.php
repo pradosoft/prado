@@ -10,6 +10,9 @@
 
 namespace Prado\Web\UI;
 
+use Prado\IO\Compression\ICompressionConfigurable;
+use Prado\IO\Compression\TCompressionConfig;
+use Prado\IO\Compression\TCompressionConfigTrait;
 use Prado\Exceptions\THttpException;
 
 /**
@@ -26,9 +29,22 @@ use Prado\Exceptions\THttpException;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
-class TPageStatePersister extends \Prado\TComponent implements IPageStatePersister
+class TPageStatePersister extends \Prado\TComponent implements IPageStatePersister, ICompressionConfigurable
 {
+	use TCompressionConfigTrait;
+
 	private $_page;
+
+	/**
+	 * Returns the compression settings this persister starts from: page state compresses
+	 * by default, under the `deflate` coding and whatever its length.
+	 * @return TCompressionConfig a new compression configuration.
+	 * @since 4.4.0
+	 */
+	protected function newCompression(): TCompressionConfig
+	{
+		return new TPageStateCompressionConfig();
+	}
 
 	/**
 	 * @return TPage the page that this persister works for

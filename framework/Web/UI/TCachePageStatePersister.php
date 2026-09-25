@@ -16,7 +16,12 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\THttpException;
 use Prado\Util\Clock\TApplicationClockAwareTrait;
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\IO\Compression\ICompressionConfigurable;
+use Prado\IO\Compression\TCompressionConfig;
+use Prado\IO\Compression\TCompressionConfigTrait;
+use Prado\Security\TAuthManager;
 use Prado\TPropertyValue;
+use Prado\Web\THttpSession;
 
 /**
  * TCachePageStatePersister class
@@ -34,7 +39,9 @@ use Prado\TPropertyValue;
  * For example, one can use {@see \Prado\Caching\TDbCache}, {@see \Prado\Caching\TMemCache}, {@see \Prado\Caching\TAPCCache}, etc.
  *
  * TCachePageStatePersister uses {@see setCacheTimeout CacheTimeout} to limit the data
- * that stores in cache.
+ * that stores in cache.  {@see setCacheTimeoutMode CacheTimeoutMode} can take the
+ * lifetime from the session or the login instead, so a page state lasts as long as its
+ * page can still be posted back; see {@see TCachePageStatePersisterTimeoutMode}.
  *
  * Since server resource is often limited, be cautious if you plan to use TCachePageStatePersister
  * for high-traffic Web pages. You may consider using a small {@see setCacheTimeout CacheTimeout}.
@@ -47,7 +54,8 @@ use Prado\TPropertyValue;
  * ```xml
  *   <pages StatePersisterClass="Prado\Web\UI\TCachePageStatePersister"
  *          StatePersister.CacheModuleID="mycache"
- *          StatePersister.CacheTimeout="3600" />
+ *          StatePersister.CacheTimeout="3600"
+ *          StatePersister.CacheTimeoutMode="Auto" />
  * ```
  * Note in the above, we use StatePersister.CacheModuleID to configure the cache module ID
  * for the TCachePageStatePersister instance.
@@ -64,15 +72,51 @@ use Prado\TPropertyValue;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1.1
  */
-class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePersister
+class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePersister, ICompressionConfigurable
 {
 	use TApplicationClockAwareTrait;
+	use TCompressionConfigTrait;
+
+	/**
+	 * The {@see setCacheTimeoutMode CacheTimeoutMode} a persister starts with.  `Fixed`
+	 * keeps the lifetime at {@see getCacheTimeout() CacheTimeout}.
+	 * @since 4.4.0
+	 */
+	public const DEFAULT_CACHE_TIMEOUT_MODE = TCachePageStatePersisterTimeoutMode::Fixed;
 
 	private $_prefix = 'statepersister';
 	private $_page;
 	private $_cache;
 	private $_cacheModuleID = '';
 	private $_timeout = 1800;
+	/**
+	 * @var string where the lifetime of a cached page state comes from
+	 * @since 4.4.0
+	 */
+	private $_timeoutMode;
+
+	/**
+	 * Applies the `DEFAULT_` constants of the instantiated class, so a subclass that
+	 * redeclares one starts from its own value.
+	 * @since 4.4.0
+	 */
+	public function __construct()
+	{
+		$this->_timeoutMode = static::DEFAULT_CACHE_TIMEOUT_MODE;
+		parent::__construct();
+	}
+
+	/**
+	 * Returns the compression settings this persister starts from: the client token
+	 * compresses by default, under the `deflate` coding and whatever its length.  The
+	 * state kept in the cache is stored as is.
+	 * @return TCompressionConfig a new compression configuration.
+	 * @since 4.4.0
+	 */
+	protected function newCompression(): TCompressionConfig
+	{
+		return new TPageStateCompressionConfig();
+	}
 
 	/**
 	 * @return TPage the page that this persister works for
@@ -151,6 +195,101 @@ class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePe
 	}
 
 	/**
+	 * @return string where the lifetime of a cached page state comes from, a
+	 *   {@see TCachePageStatePersisterTimeoutMode} value. Defaults to {@see DEFAULT_CACHE_TIMEOUT_MODE}.
+	 * @since 4.4.0
+	 */
+	public function getCacheTimeoutMode()
+	{
+		return $this->_timeoutMode;
+	}
+
+	/**
+	 * @param string $value where the lifetime of a cached page state comes from:
+	 *   `Fixed`, `Session`, `Auth` or `Auto`.
+	 * @throws TInvalidDataValueException if the value is not a {@see TCachePageStatePersisterTimeoutMode}.
+	 * @since 4.4.0
+	 */
+	public function setCacheTimeoutMode($value)
+	{
+		$this->_timeoutMode = TPropertyValue::ensureEnum($value, TCachePageStatePersisterTimeoutMode::class);
+	}
+
+	/**
+	 * Returns the lifetime, in seconds, of a page state saved now, resolved through
+	 * {@see getCacheTimeoutMode() CacheTimeoutMode}.  A source that does not apply falls
+	 * through to the next, and {@see getCacheTimeout() CacheTimeout} ends every chain.
+	 * @return int the lifetime in seconds; 0 means the state never expires.
+	 * @since 4.4.0
+	 */
+	public function getEffectiveCacheTimeout(): int
+	{
+		$mode = $this->getCacheTimeoutMode();
+		if ($mode === TCachePageStatePersisterTimeoutMode::Auth || $mode === TCachePageStatePersisterTimeoutMode::Auto) {
+			if (($timeout = $this->getAuthTimeout()) > 0) {
+				return $timeout;
+			}
+		}
+		if ($mode === TCachePageStatePersisterTimeoutMode::Session || $mode === TCachePageStatePersisterTimeoutMode::Auto) {
+			if (($timeout = $this->getSessionTimeout()) > 0) {
+				return $timeout;
+			}
+		}
+		return $this->getCacheTimeout();
+	}
+
+	/**
+	 * Returns the login lifetime of the current user: the auth manager's `AuthExpire`,
+	 * when it is above 0, `AllowAutoLogin` is off, and the user is authenticated.
+	 * `AuthExpire` slides forward on each request, so a state saved now lasts as long as
+	 * the login does as of this request.
+	 * @return int the lifetime in seconds, or 0 when no login lifetime applies.
+	 * @since 4.4.0
+	 */
+	protected function getAuthTimeout(): int
+	{
+		$app = Prado::getApplication();
+		if (!$app || !($user = $app->getUser()) || $user->getIsGuest()) {
+			return 0;
+		}
+		$auth = $this->findModule(TAuthManager::class);
+		if (!($auth instanceof TAuthManager) || $auth->getAllowAutoLogin()) {
+			return 0;
+		}
+		return max(0, (int) $auth->getAuthExpire());
+	}
+
+	/**
+	 * Returns the session lifetime: the session module's `Timeout`.  The module is looked
+	 * up among those configured, so an application without one gains none.
+	 * @return int the lifetime in seconds, or 0 when there is no session module.
+	 * @since 4.4.0
+	 */
+	protected function getSessionTimeout(): int
+	{
+		$session = $this->findModule(THttpSession::class);
+		return ($session instanceof THttpSession) ? max(0, (int) $session->getTimeout()) : 0;
+	}
+
+	/**
+	 * Returns the first configured module of a type, loading it when it is lazy.
+	 * @param string $type the module class.
+	 * @return ?\Prado\IModule the module, or null when none is configured.
+	 * @since 4.4.0
+	 */
+	protected function findModule(string $type)
+	{
+		$app = Prado::getApplication();
+		if (!$app) {
+			return null;
+		}
+		foreach ($app->getModulesByType($type) as $id => $module) {
+			return $module ?? $app->getModule($id);
+		}
+		return null;
+	}
+
+	/**
 	 * @return string prefix of cache variable name to avoid conflict with other cache data. Defaults to 'statepersister'.
 	 */
 	public function getKeyPrefix()
@@ -186,7 +325,7 @@ class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePe
 	{
 		$timestamp = (string) $this->getClock()->microtime();
 		$key = $this->calculateKey($timestamp);
-		$this->getCache()->add($key, $data, $this->getCacheTimeout());
+		$this->getCache()->add($key, $data, $this->getEffectiveCacheTimeout());
 		$this->_page->setClientState(TPageStateFormatter::serialize($this->_page, $timestamp));
 	}
 

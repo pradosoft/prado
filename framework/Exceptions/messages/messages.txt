@@ -348,7 +348,6 @@ page_head_duplicated					= A page can contain at most one THead.
 page_head_required						= A THead control is needed in page template in order to render CSS and js in the HTML head section.
 page_statepersister_invalid				= Page state persister must implement IPageStatePersister interface.
 page_csmanagerclass_invalid				= ClientScriptManager class '{0}' must be an instance of TClientScriptManager.
-page_statecompressionmethod_invalid		= TPage.StateCompressionMethod '{0}' is not a known content coding. It must be one of: {1}.
 
 csmanager_pradoscript_invalid			= Unknown Prado script library name '{0}'.
 csmanager_pradoscript_notloaded			= Prado script library name '{0}' has not been loaded yet.
@@ -600,6 +599,7 @@ builtincompressor_compress_failed		= The '{0}' compressor failed to compress the
 builtincompressor_decompress_failed		= The '{0}' compressor failed to decompress the data; it may be corrupt or in another format.
 compression_method_unknown				= The compression method '{0}' is unknown or its extension is not available.
 compression_none_available				= No compression method is available in this PHP installation.
+compressionconfig_method_unknown		= TCompressionConfig.Method '{0}' is not a known content coding. The known codings are: {1}.
 compression_xz_unsupported				= xz/LZMA has no PHP extension; install belisoful/prado-compression for a native-or-CLI xz codec.
 clicompressor_command_missing			= The '{0}' compressor requires one of these system commands on the PATH: '{1}'.
 clicompressor_process_failed			= The '{0}' compressor could not start the '{1}' command.

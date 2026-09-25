@@ -11,7 +11,6 @@
 namespace Prado\Web\UI;
 
 use Prado\Exceptions\TIOException;
-use Prado\IO\Compression\TCompression;
 
 /**
  * TPageStateFormatter class.
@@ -26,11 +25,12 @@ use Prado\IO\Compression\TCompression;
  * The private keys and hashing/encryption methods are determined by
  * {@see \Prado\TApplication::getSecurityManager() SecurityManager}.
  *
- * {@see \Prado\Web\UI\TPage::getEnableStateCompression() EnableStateCompression} compresses
- * the state through {@see \Prado\IO\Compression\TCompression} under the content coding of
- * {@see \Prado\Web\UI\TPage::getStateCompressionMethod() StateCompressionMethod}, so a page
- * selects a codec such as `zstd` or `br` where the extension is installed. The coding
- * carries no marker in the state, so the state is read back under the coding that wrote it.
+ * The page's {@see \Prado\Web\UI\TPage::getStateCompression() StateCompression} compresses
+ * the state, so an application selects a codec such as `zstd` or `br` where the extension
+ * is installed.
+ * The coding carries no marker in the state, so the state is read back under the coding
+ * that wrote it: the setting names the coding for both directions, and its length
+ * threshold plays no part.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1
@@ -113,24 +113,26 @@ class TPageStateFormatter
 	}
 
 	/**
-	 * Compresses the state under the page's content coding. The state is returned
-	 * unchanged when the page disables compression or the coding's codec cannot run here.
+	 * Compresses the state under the page's state content coding. The state is returned
+	 * unchanged when compression is off or the coding's codec cannot run here.  The
+	 * length threshold plays no part: a state carries no marker naming its coding, so a
+	 * state that skipped compression could not be told from one that did not.
 	 * @param TPage $page the page the state belongs to.
 	 * @param string $str the uncompressed state.
-	 * @return string the state, compressed when the page asks for it.
+	 * @return string the state, compressed when the settings ask for it.
 	 * @since 4.4.0
 	 */
 	protected static function compress($page, string $str): string
 	{
-		$method = $page->getStateCompressionMethod();
-		if (!$page->getEnableStateCompression() || !TCompression::isAvailable($method)) {
+		$compression = $page->getStateCompression();
+		if (!$compression->getShouldCompress()) {
 			return $str;
 		}
-		return TCompression::compress($str, $method);
+		return $compression->compress($str);
 	}
 
 	/**
-	 * Decompresses the state under the page's content coding, the inverse of
+	 * Decompresses the state under the page's state content coding, the inverse of
 	 * {@see compress()}. A state that is corrupt, or written under another coding,
 	 * fails to decode and is reported as corrupted.
 	 * @param TPage $page the page the state belongs to.
@@ -140,12 +142,12 @@ class TPageStateFormatter
 	 */
 	protected static function decompress($page, string $str): false|string
 	{
-		$method = $page->getStateCompressionMethod();
-		if (!$page->getEnableStateCompression() || !TCompression::isAvailable($method)) {
+		$compression = $page->getStateCompression();
+		if (!$compression->getShouldCompress()) {
 			return $str;
 		}
 		try {
-			return TCompression::decompress($str, $method);
+			return $compression->decompress($str);
 		} catch (TIOException $e) {
 			return false;
 		}

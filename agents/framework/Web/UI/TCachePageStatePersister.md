@@ -15,10 +15,22 @@ TCachePageStatePersister implements page state persistence using a cache backend
 - `Page` - The page this persister works for
 - `CacheModuleID` - The ID of the cache module to use
 - `Cache` - The ICache instance being used
-- `CacheTimeout` - Seconds before cached state expires (default 1800)
+- `CacheTimeout` - Seconds before cached state expires (default 1800); the fallback at the end of every `CacheTimeoutMode` chain
+- `CacheTimeoutMode` - Where the lifetime of a state saved now comes from: `Fixed` (default), `Session`, `Auth` or `Auto`; see [TCachePageStatePersisterTimeoutMode](./TCachePageStatePersisterTimeoutMode.md) (4.4.0)
+- `EffectiveCacheTimeout` - The lifetime `save()` passes to the cache, resolved through `CacheTimeoutMode` (4.4.0)
 - `KeyPrefix` - Prefix for cache keys (default 'statepersister')
+- `Compression` - [TPageStateCompressionConfig](./TPageStateCompressionConfig.md) the client token is written under, from `TCompressionConfigTrait`; the cached state is stored as is (4.4.0)
 - `save($data)` - Saves state to cache
 - `load()` - Loads state from cache, throws THttpException if corrupted
+
+## Lifetime
+
+A cached page state is needed for as long as its page can still be posted back. A lifetime shorter than the user's login turns a postback into a 400 "page state corrupted". `save()` resolves the lifetime when it writes the entry, since `AuthExpire` slides forward on each request.
+
+- `getAuthTimeout()` returns `TAuthManager::AuthExpire` for an authenticated user when it is above 0 and `AllowAutoLogin` is off, else 0. `AuthExpire` 0 means "never"; passing it through would make every cached state permanent, so it falls through instead.
+- `getSessionTimeout()` returns the session module's `Timeout` (`session.gc_maxlifetime`), else 0.
+- Both find modules through `getModulesByType()`. `TApplication::getSession()` would bootstrap a default session module as a side effect.
+- Both are protected so a subclass or test can supply the lifetimes.
 
 ## See Also
 

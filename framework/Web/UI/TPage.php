@@ -18,7 +18,8 @@ use Prado\Exceptions\THttpException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
-use Prado\IO\Compression\TCompression;
+use Prado\IO\Compression\ICompressionConfigurable;
+use Prado\IO\Compression\TCompressionConfig;
 use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\Javascripts\TJavaScript;
@@ -50,9 +51,13 @@ use Prado\Web\UI\WebControls\THead;
  * encrypted, compressed and serialized with igbinary, controlled by
  * {@see setEnableStateValidation EnableStateValidation},
  * {@see setEnableStateEncryption EnableStateEncryption},
- * {@see setEnableStateCompression EnableStateCompression},
- * {@see setStateCompressionMethod StateCompressionMethod} and
- * {@see setEnableStateIGBinary EnableStateIGBinary}.
+ * {@see setEnableStateCompression EnableStateCompression} and
+ * {@see setEnableStateIGBinary EnableStateIGBinary}.  Compression is a storage concern:
+ * {@see getStateCompression() StateCompression} returns the settings of a persister that
+ * holds its own, through {@see \Prado\IO\Compression\ICompressionConfigurable}, and
+ * settings the page keeps for one that does not.
+ * {@see setEnableStateCompression EnableStateCompression} reads and writes their
+ * `Enabled`.
  *
  * Validators add themselves to {@see getValidators Validators}. {@see validate()}
  * runs them, either all of them or those of a single validation group, and
@@ -176,20 +181,10 @@ class TPage extends TTemplateControl
 	 */
 	private $_enableStateEncryption = false;
 	/**
-	 * @var bool whether page state should be compressed
-	 * @since 3.1.6
-	 */
-	private $_enableStateCompression = true;
-	/**
 	 * @var bool whether to use the igbinary serializer if available
 	 * @since 4.1
 	 */
 	private $_enableStateIGBinary = true;
-	/**
-	 * @var string the content coding the page state is compressed with
-	 * @since 4.4.0
-	 */
-	private $_stateCompressionMethod = 'deflate';
 	/**
 	 * @var string page state persister class name
 	 */
@@ -198,6 +193,13 @@ class TPage extends TTemplateControl
 	 * @var mixed page state persister
 	 */
 	private $_statePersister;
+	/**
+	 * @var ?TCompressionConfig compression settings the page holds: for a persister that
+	 *   holds none, and for the next persister when {@see setStatePersisterClass()}
+	 *   replaces the class
+	 * @since 4.4.0
+	 */
+	private $_stateCompression;
 	/**
 	 * @var TStack stack used to store currently active caching controls
 	 */
@@ -1178,27 +1180,63 @@ class TPage extends TTemplateControl
 	}
 
 	/**
+	 * Sets the class of the page state persister.  A persister already built under the
+	 * previous class is dropped and the {@see getStateCompression() StateCompression} in
+	 * effect is carried to its replacement, so state settings applied before this one are
+	 * not lost when a configuration names the class after them.
 	 * @param string $value class name of the page state persister.
 	 */
 	public function setStatePersisterClass($value)
 	{
+		if ($this->_statePersister !== null && $value !== $this->_statePersisterClass) {
+			$this->_stateCompression = $this->getStateCompression();
+			$this->_statePersister = null;
+		}
 		$this->_statePersisterClass = $value;
 	}
 
 	/**
+	 * Builds the persister on first read.  Compression settings the page holds pass to a
+	 * persister that implements {@see ICompressionConfigurable}; see
+	 * {@see getStateCompression() StateCompression}.
 	 * @throws TInvalidDataTypeException if the persister class does not implement IPageStatePersister.
 	 * @return IPageStatePersister page state persister
 	 */
 	public function getStatePersister()
 	{
 		if ($this->_statePersister === null) {
-			$this->_statePersister = Prado::createComponent($this->_statePersisterClass);
+			$this->_statePersister = Prado::createComponent($this->getStatePersisterClass());
 			if (!($this->_statePersister instanceof IPageStatePersister)) {
 				throw new TInvalidDataTypeException('page_statepersister_invalid');
 			}
 			$this->_statePersister->setPage($this);
+			if ($this->_stateCompression !== null && $this->_statePersister instanceof ICompressionConfigurable) {
+				$this->_statePersister->setCompression($this->_stateCompression);
+				$this->_stateCompression = null;
+			}
 		}
 		return $this->_statePersister;
+	}
+
+	/**
+	 * Returns the compression settings the page state is written and read under.  A
+	 * persister that implements {@see ICompressionConfigurable} holds them, reached as
+	 * `StatePersister.Compression`; the built-in persisters all do.  For any other
+	 * persister the page keeps a {@see TPageStateCompressionConfig}, so a persister
+	 * written before 4.4.0 compresses as it always has.
+	 * @return TCompressionConfig the page state compression settings.
+	 * @since 4.4.0
+	 */
+	public function getStateCompression(): TCompressionConfig
+	{
+		$persister = $this->getStatePersister();
+		if ($persister instanceof ICompressionConfigurable) {
+			return $persister->getCompression();
+		}
+		if ($this->_stateCompression === null) {
+			$this->_stateCompression = new TPageStateCompressionConfig();
+		}
+		return $this->_stateCompression;
 	}
 
 	/**
@@ -1234,49 +1272,27 @@ class TPage extends TTemplateControl
 	}
 
 	/**
+	 * Reads the `Enabled` of {@see getStateCompression() StateCompression}.  The coding,
+	 * its level, and the rest of {@see TPageStateCompressionConfig} are set there.
 	 * @return bool whether page state should be compressed. Defaults to true.
 	 * @since 3.1.6
 	 */
 	public function getEnableStateCompression()
 	{
-		return $this->_enableStateCompression;
+		return $this->getStateCompression()->getEnabled();
 	}
 
 	/**
+	 * Writes the `Enabled` of {@see getStateCompression() StateCompression}.  This reads
+	 * {@see getStatePersister() StatePersister}, which builds the persister when it does
+	 * not exist yet; {@see setStatePersisterClass()} carries the settings over when the
+	 * class changes afterwards.
 	 * @param bool $value whether page state should be compressed.
 	 * @since 3.1.6
 	 */
 	public function setEnableStateCompression($value)
 	{
-		$this->_enableStateCompression = TPropertyValue::ensureBoolean($value);
-	}
-
-	/**
-	 * The content coding {@see setEnableStateCompression EnableStateCompression} compresses
-	 * the page state with, one of the tokens of {@see \Prado\IO\Compression\TCompression}.
-	 * @return string the page state content coding. Defaults to 'deflate' (the zlib format).
-	 * @since 4.4.0
-	 */
-	public function getStateCompressionMethod()
-	{
-		return $this->_stateCompressionMethod;
-	}
-
-	/**
-	 * Sets the content coding the page state is compressed with. A page state written
-	 * under one coding is unreadable under another, so a change takes effect for the
-	 * states written after it and reads the states in flight as corrupted.
-	 * @param string $value the page state content coding: 'zstd', 'br', 'gzip' or 'deflate'.
-	 * @throws TInvalidDataValueException if the coding is not a known content coding.
-	 * @since 4.4.0
-	 */
-	public function setStateCompressionMethod($value)
-	{
-		$value = strtolower(TPropertyValue::ensureString($value));
-		if (TCompression::getCodec($value) === null) {
-			throw new TInvalidDataValueException('page_statecompressionmethod_invalid', $value, implode(', ', TCompression::getMethods()));
-		}
-		$this->_stateCompressionMethod = $value;
+		$this->getStateCompression()->setEnabled(TPropertyValue::ensureBoolean($value));
 	}
 
 	/**

@@ -13,6 +13,9 @@ namespace Prado\Web\UI;
 use Prado\TPropertyValue;
 use Prado\Exceptions\THttpException;
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\IO\Compression\ICompressionConfigurable;
+use Prado\IO\Compression\TCompressionConfig;
+use Prado\IO\Compression\TCompressionConfigTrait;
 use Prado\Util\Clock\TApplicationClockAwareTrait;
 
 /**
@@ -46,15 +49,28 @@ use Prado\Util\Clock\TApplicationClockAwareTrait;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1
  */
-class TSessionPageStatePersister extends \Prado\TComponent implements IPageStatePersister
+class TSessionPageStatePersister extends \Prado\TComponent implements IPageStatePersister, ICompressionConfigurable
 {
 	use TApplicationClockAwareTrait;
+	use TCompressionConfigTrait;
 
 	public const STATE_SESSION_KEY = 'PRADO_SESSION_PAGESTATE';
 	public const QUEUE_SESSION_KEY = 'PRADO_SESSION_STATEQUEUE';
 
 	private $_page;
 	private $_historySize = 10;
+
+	/**
+	 * Returns the compression settings this persister starts from: the client token
+	 * compresses by default, under the `deflate` coding and whatever its length.  The
+	 * state kept in the session is stored as is.
+	 * @return TCompressionConfig a new compression configuration.
+	 * @since 4.4.0
+	 */
+	protected function newCompression(): TCompressionConfig
+	{
+		return new TPageStateCompressionConfig();
+	}
 
 	/**
 	 * @return TPage the page that this persister works for
