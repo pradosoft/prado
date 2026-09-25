@@ -129,6 +129,7 @@ TApplication
 - **`if` statements** always use a block (`{}`), never a single-line body.
 - **Error codes** for PRADO exceptions are defined in `framework/Exceptions/messages/messages.txt` (English master); language variants are `messages-<lang>.txt` in the same directory.
 - **Backward compatibility** — all changes must be backward compatible for point releases. Minor releases can have breaking changes, but minimize the breaks.
+- **`HISTORY.md` entries** — an entry's length is proportional to the change's importance. A bug fix or a small or internal change is one short sentence; a major feature takes a few sentences naming its main classes and properties. Keep issue numbers, removed or renamed API, and UPGRADE.md pointers; implementation reasoning belongs in docblocks and `agents/`.
 - **`@since` tag** — use the next release version (`4.4.0`) when adding new methods or classes; omit the method tag when it matches the class tag.
 - **Uniform Access Principal - Self Encapsulation** is required; for an example see framework/TApplication.php
 - **Extract Method → Predicate/Guard Clause (Fowler) is suggested

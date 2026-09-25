@@ -6,6 +6,7 @@ use Prado\IO\HttpClient\TCachedHttpClient;
 use Prado\IO\HttpClient\TCurlHttpClient;
 use Prado\IO\HttpClient\TFopenHttpClient;
 use Prado\IO\HttpClient\THttpClient;
+use Prado\IO\HttpClient\THttpClientException;
 use Prado\IO\HttpClient\THttpClientResponse;
 
 /**
@@ -32,6 +33,33 @@ class TestableHttpClient extends THttpClient
 }
 
 /**
+ * A transport whose requirement is never met.
+ */
+class TUnavailableHttpClient extends TestableHttpClient
+{
+	public static function getIsAvailable(): bool
+	{
+		return false;
+	}
+}
+
+/**
+ * A factory whose only transport is unavailable.
+ */
+abstract class TNoTransportHttpClient extends THttpClient
+{
+	public const TRANSPORTS = [TUnavailableHttpClient::class];
+}
+
+/**
+ * A factory whose transport is the stub, which is always available.
+ */
+abstract class TStubTransportHttpClient extends THttpClient
+{
+	public const TRANSPORTS = [TUnavailableHttpClient::class, TestableHttpClient::class];
+}
+
+/**
  * Tests for THttpClient (abstract base) — factory, utilities, properties.
  */
 class THttpClientTest extends \PHPUnit\Framework\TestCase
@@ -45,14 +73,40 @@ class THttpClientTest extends \PHPUnit\Framework\TestCase
 
 	// ── Static factory ────────────────────────────────────────────────────────
 
-	public function testCreatePicksCurlWhenAvailable(): void
+	public function testTransportsReportTheirOwnRequirement(): void
 	{
-		$d = THttpClient::create();
-		if (function_exists('curl_init')) {
-			$this->assertInstanceOf(TCurlHttpClient::class, $d);
-		} else {
-			$this->assertInstanceOf(TFopenHttpClient::class, $d);
+		$this->assertTrue(TestableHttpClient::getIsAvailable(), 'a transport without a requirement is available');
+		$this->assertSame(function_exists('curl_init'), TCurlHttpClient::getIsAvailable());
+		$this->assertSame(filter_var(ini_get('allow_url_fopen'), FILTER_VALIDATE_BOOLEAN), TFopenHttpClient::getIsAvailable());
+	}
+
+	public function testCreatePicksTheFirstAvailableTransport(): void
+	{
+		if (!THttpClient::getHasAvailableTransport()) {
+			$this->markTestSkipped('No HTTP transport is available here.');
 		}
+		$d = THttpClient::create();
+		foreach (THttpClient::TRANSPORTS as $class) {
+			if ($class::getIsAvailable()) {
+				$this->assertInstanceOf($class, $d);
+				return;
+			}
+		}
+	}
+
+	public function testCreateSkipsAnUnavailableTransport(): void
+	{
+		$this->assertTrue(TStubTransportHttpClient::getHasAvailableTransport());
+		$this->assertInstanceOf(TestableHttpClient::class, TStubTransportHttpClient::create());
+		$this->assertNotInstanceOf(TUnavailableHttpClient::class, TStubTransportHttpClient::create());
+	}
+
+	public function testCreateThrowsWhenNoTransportIsAvailable(): void
+	{
+		$this->assertFalse(TNoTransportHttpClient::getHasAvailableTransport());
+		$this->expectException(THttpClientException::class);
+		$this->expectExceptionMessageMatches('/No HTTP transport is available/');
+		TNoTransportHttpClient::create();
 	}
 
 	public function testNewCacheWrapperWrapsAnyDownloader(): void

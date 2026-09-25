@@ -25,6 +25,14 @@ namespace Prado\IO\HttpClient;
 class TCurlHttpClient extends THttpClient
 {
 	/**
+	 * @return bool whether the cURL extension is loaded.
+	 */
+	public static function getIsAvailable(): bool
+	{
+		return function_exists('curl_init');
+	}
+
+	/**
 	 * Performs an HTTP request using cURL.
 	 *
 	 * @param string $method HTTP verb.

@@ -25,6 +25,16 @@ namespace Prado\IO\HttpClient;
 class TFopenHttpClient extends THttpClient
 {
 	/**
+	 * `ini_get()` returns the directive as a string, so `"Off"` is read through
+	 * `FILTER_VALIDATE_BOOLEAN` rather than cast.
+	 * @return bool whether `allow_url_fopen` is on.
+	 */
+	public static function getIsAvailable(): bool
+	{
+		return filter_var(ini_get('allow_url_fopen'), FILTER_VALIDATE_BOOLEAN);
+	}
+
+	/**
 	 * Performs an HTTP request using PHP stream wrappers.
 	 *
 	 * @param string $method HTTP verb.
