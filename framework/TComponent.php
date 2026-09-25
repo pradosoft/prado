@@ -2340,6 +2340,8 @@ class TComponent
 	 * This method will create the behavior object based on the given
 	 * configuration. After that, the behavior object will be initialized
 	 * by calling its {@see \Prado\Util\IBaseBehavior::attach} method.
+	 * When `attach` throws, the behavior is unregistered and, if it gained this
+	 * component as an owner, detached before the exception propagates.
 	 *
 	 * Already attached behaviors may implement the function:
 	 * ```php
@@ -2376,7 +2378,16 @@ class TComponent
 		$this->_m->add($name, $behavior, $priority);
 		$this->flushBehaviorMethodCache();
 		$behavior->setName($name);
-		$behavior->attach($this);
+		try {
+			$behavior->attach($this);
+		} catch (\Throwable $e) {
+			$this->_m->remove($name);
+			$this->flushBehaviorMethodCache();
+			if ($behavior->isOwner($this)) {
+				$behavior->detach($this);
+			}
+			throw $e;
+		}
 		$this->callBehaviorsMethod('dyAttachBehavior', $return, $name, $behavior);
 		return $behavior;
 	}
