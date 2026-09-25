@@ -6,8 +6,10 @@ use Prado\Exceptions\TApplicationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TUnknownMethodException;
+use Prado\TComponent;
 use Prado\Util\IDynamicMethods;
 use Prado\Util\IInstanceCheck;
+use Prado\Util\TBehavior;
 
 /**
  * Tests for TComponent instance-behavior management:
@@ -574,6 +576,99 @@ class TComponentBehaviorTest extends TComponentTestBase
 		$this->assertNull($this->component->asa($barBehaviorName));
 		$this->assertNull($this->component->asa($fooBarBehaviorName));
 		$this->assertNull($this->component->asa($preBarBehaviorName));
+	}
+
+	/**
+	 * A behavior whose attach() throws is unregistered, so the component never
+	 * detaches it and destroying the component raises nothing.
+	 */
+	public function testAttachBehavior_failedAttachUnregistersBehavior(): void
+	{
+		$component = new TComponent();
+		$component->attachBehavior('keep', $keep = new BarBehavior());
+		$this->assertTrue($component->hasMethod('moreFunction'));
+
+		try {
+			$component->attachBehavior('failing', new AttachFailingBehavior());
+			$this->fail('attachBehavior() did not propagate the attach() exception.');
+		} catch (TInvalidOperationException $e) {
+			$this->assertEquals(AttachFailingBehavior::MESSAGE, $e->getErrorCode());
+		}
+
+		$this->assertNull($component->asa('failing'));
+		$this->assertFalse($component->hasMethod('attachFailingMethod'));
+		$this->assertSame(['keep' => $keep], $component->getBehaviors());
+
+		$component->clearBehaviors();
+		$this->assertNull($keep->getOwner());
+	}
+
+	/**
+	 * Destroying a component after a failed attach() raises nothing.
+	 */
+	public function testAttachBehavior_failedAttachDestructsCleanly(): void
+	{
+		$component = new TComponent();
+		try {
+			$component->attachBehavior('failing', new AttachFailingBehavior());
+			$this->fail('attachBehavior() did not propagate the attach() exception.');
+		} catch (TInvalidOperationException $e) {
+		}
+		unset($e, $component);
+		$this->assertTrue(true);
+	}
+
+	/**
+	 * A behavior whose attach() throws after gaining the owner is detached and
+	 * unregistered, so it attaches again once the failure is resolved.
+	 */
+	public function testAttachBehavior_failedAttachAfterOwnerDetaches(): void
+	{
+		$component = new TComponent();
+		$behavior = new AttachFailingOwnedBehavior();
+
+		try {
+			$component->attachBehavior('failing', $behavior);
+			$this->fail('attachBehavior() did not propagate the attach() exception.');
+		} catch (TInvalidOperationException $e) {
+			$this->assertEquals(AttachFailingOwnedBehavior::MESSAGE, $e->getErrorCode());
+		}
+
+		$this->assertNull($component->asa('failing'));
+		$this->assertFalse($behavior->hasOwner());
+		$this->assertFalse($component->hasMethod('attachFailingMethod'));
+
+		$behavior->fail = false;
+		$this->assertSame($behavior, $component->attachBehavior('failing', $behavior));
+		$this->assertTrue($behavior->isOwner($component));
+		$this->assertTrue($component->attachFailingMethod());
+		unset($e, $component);
+		$this->assertFalse($behavior->hasOwner());
+	}
+
+	/**
+	 * A behavior owned by another component fails TBehavior::attach() with
+	 * behavior_has_owner and stays attached to its first owner only.
+	 */
+	public function testAttachBehavior_ownedBehaviorFailsWithoutDangling(): void
+	{
+		$owner = new TComponent();
+		$owner->attachBehavior('shared', $behavior = new BarBehavior());
+		$other = new TComponent();
+
+		try {
+			$other->attachBehavior('shared', $behavior);
+			$this->fail('attachBehavior() did not propagate behavior_has_owner.');
+		} catch (TInvalidOperationException $e) {
+			$this->assertEquals('behavior_has_owner', $e->getErrorCode());
+		}
+
+		$this->assertNull($other->asa('shared'));
+		$this->assertSame($owner, $behavior->getOwner());
+		unset($e, $other);
+		$this->assertSame($owner, $behavior->getOwner());
+		unset($owner);
+		$this->assertNull($behavior->getOwner());
 	}
 
 	public function testEnableDisableBehavior()
@@ -1198,5 +1293,46 @@ class TComponentBehaviorTest extends TComponentTestBase
 		$this->assertEquals('another', $this->component->anotherVisibleMethod());
 
 		$this->component->detachBehavior('ownerVisibleComposed');
+	}
+}
+
+/**
+ * Throws from attach() before gaining an owner, as an owner validation does.
+ */
+class AttachFailingBehavior extends TBehavior
+{
+	public const MESSAGE = 'attach_failing_behavior_rejected';
+
+	public function attachFailingMethod()
+	{
+		return true;
+	}
+
+	public function attach($owner)
+	{
+		throw new TInvalidOperationException(self::MESSAGE);
+	}
+}
+
+/**
+ * Throws from attach() after gaining an owner, as a configuration validation does.
+ */
+class AttachFailingOwnedBehavior extends TBehavior
+{
+	public const MESSAGE = 'attach_failing_owned_behavior_rejected';
+
+	public bool $fail = true;
+
+	public function attachFailingMethod()
+	{
+		return true;
+	}
+
+	public function attach($owner)
+	{
+		parent::attach($owner);
+		if ($this->fail) {
+			throw new TInvalidOperationException(self::MESSAGE);
+		}
 	}
 }
