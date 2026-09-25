@@ -137,6 +137,18 @@ class TMediaTypeTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame('application/rtf', TMediaType::RTF);
 	}
 
+	// ---- Application, obsolete tokens ----
+
+	public function testConstantJavascriptApplication(): void
+	{
+		$this->assertSame('application/javascript', TMediaType::JAVASCRIPT_APPLICATION);
+	}
+
+	public function testConstantJavascriptX(): void
+	{
+		$this->assertSame('application/x-javascript', TMediaType::JAVASCRIPT_X);
+	}
+
 	// ---- Multipart ----
 
 	public function testConstantMultipart(): void
@@ -244,6 +256,11 @@ class TMediaTypeTest extends \PHPUnit\Framework\TestCase
 	public function testConstantIcon(): void
 	{
 		$this->assertSame('image/x-icon', TMediaType::ICON);
+	}
+
+	public function testConstantIconMicrosoft(): void
+	{
+		$this->assertSame('image/vnd.microsoft.icon', TMediaType::ICON_MICROSOFT);
 	}
 
 	public function testConstantAvif(): void
@@ -1526,5 +1543,73 @@ class TMediaTypeTest extends \PHPUnit\Framework\TestCase
 	public function testConstantEot(): void
 	{
 		$this->assertSame('application/vnd.ms-fontobject', TMediaType::EOT);
+	}
+
+	// ---- Pattern matching ----
+
+	public static function patternMatchData(): array
+	{
+		return [
+			['text/html', 'text/html', true],
+			['text/html', 'text/plain', false],
+			['text/html', 'text/*', true],
+			['text/plain', 'text/*', true],
+			['text/html', 'application/*', false],
+			['application/json', 'application/json', true],
+			['application/ld+json', 'application/*+json', true],
+			['application/reports+json', 'application/*+json', true],
+			['application/json', 'application/*+json', false],
+			['application/xhtml+xml', 'application/*+xml', true],
+			['image/svg+xml', 'application/*+xml', false],
+			['image/png', '*', true],
+			['image/png', '*/*', true],
+			['image/png', 'text/*', false],
+			['TEXT/HTML', 'text/html', true],
+			['text/html', ' TEXT/HTML ', true],
+			['application/vnd.ms-excel', 'application/vnd.ms-excel', true],
+			['applicationXvnd.ms-excel', 'application/vnd.ms-excel', false],
+			['text/html', '', false],
+			['', '', true],
+		];
+	}
+
+	/**
+	 * @dataProvider patternMatchData
+	 */
+	public function testMatchesPattern(string $mediaType, string $pattern, bool $expected): void
+	{
+		$this->assertSame($expected, TMediaType::matchesPattern($mediaType, $pattern));
+	}
+
+	public function testMatchesPatternDoesNotCrossTheSlash(): void
+	{
+		$this->assertFalse(TMediaType::matchesPattern('application/json', 'text/*'));
+		$this->assertFalse(TMediaType::matchesPattern('text/html', '*'  . 'json'));
+	}
+
+	public function testMatchesAnyPattern(): void
+	{
+		$patterns = ['application/json', 'text/*', 'application/*+xml'];
+		$this->assertTrue(TMediaType::matchesAnyPattern('text/css', $patterns));
+		$this->assertTrue(TMediaType::matchesAnyPattern('application/json', $patterns));
+		$this->assertTrue(TMediaType::matchesAnyPattern('application/rss+xml', $patterns));
+		$this->assertFalse(TMediaType::matchesAnyPattern('image/png', $patterns));
+		$this->assertFalse(TMediaType::matchesAnyPattern('text/css', []));
+	}
+
+	public function testMatches(): void
+	{
+		$mediaType = new TMediaType('text/html; charset=UTF-8');
+		$this->assertTrue($mediaType->matches('text/html'));
+		$this->assertTrue($mediaType->matches('text/*'));
+		$this->assertFalse($mediaType->matches('application/json'));
+	}
+
+	public function testMatchesAList(): void
+	{
+		$mediaType = new TMediaType('application/ld+json');
+		$this->assertTrue($mediaType->matches(['text/*', 'application/*+json']));
+		$this->assertFalse($mediaType->matches(['text/*', 'application/json']));
+		$this->assertFalse($mediaType->matches([]));
 	}
 }

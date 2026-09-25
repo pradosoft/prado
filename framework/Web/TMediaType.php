@@ -61,6 +61,10 @@ use Prado\Web\HttpHeaders\THeaderParametersTrait;
  * {@see GZIP}, {@see TAR}, {@see BZIP2}, {@see XZ}, {@see SEVEN_ZIP},
  * {@see RAR}, {@see ZSTD}, {@see RTF}, {@see WASM}, {@see EPUB}
  *
+ * *Application, obsolete tokens:* {@see JAVASCRIPT_APPLICATION},
+ * {@see JAVASCRIPT_X} — superseded registrations, kept so an incoming header
+ * carrying one is recognized
+ *
  * *Multipart:* {@see MULTIPART}
  *
  * *Syndication / feeds:* {@see RSS}, {@see ATOM}, {@see RDF}
@@ -71,7 +75,8 @@ use Prado\Web\HttpHeaders\THeaderParametersTrait;
  * *CSP / Reporting API:* {@see CSP_REPORT}, {@see REPORTS_JSON}
  *
  * *Image:* {@see PNG}, {@see JPEG}, {@see GIF}, {@see WEBP}, {@see AVIF},
- * {@see SVG}, {@see ICON}, {@see BMP}, {@see TIFF}, {@see APNG}
+ * {@see SVG}, {@see ICON}, {@see ICON_MICROSOFT}, {@see BMP}, {@see TIFF},
+ * {@see APNG}
  *
  * *Audio:* {@see AUDIO_MPEG}, {@see AUDIO_OGG}, {@see AUDIO_WAV},
  * {@see AUDIO_WEBM}, {@see AUDIO_AAC}, {@see AUDIO_FLAC}
@@ -91,6 +96,16 @@ use Prado\Web\HttpHeaders\THeaderParametersTrait;
  * ```php
  * TMediaType::mimeTypeFromFilename('report.pdf');   // 'application/pdf'
  * new TMediaType(TMediaType::mimeTypeFromExtension('json') ?? TMediaType::OCTET_STREAM);
+ * ```
+ *
+ * **Pattern matching.** {@see matchesPattern()}, {@see matchesAnyPattern()} and the
+ * instance {@see matches()} test a media type against a pattern, where `*` stands for any
+ * run of characters within one part of the type:
+ *
+ * ```php
+ * TMediaType::matchesPattern('text/html', 'text/*');                 // true
+ * TMediaType::matchesPattern('application/ld+json', 'application/*+json');   // true
+ * (new TMediaType('text/css'))->matches(['text/*', 'application/json']);     // true
  * ```
  *
  * **ArrayAccess.** Parameters are also accessible via array syntax via
@@ -206,6 +221,25 @@ class TMediaType implements \ArrayAccess
 	/** `application/epub+zip` — EPUB electronic publication (`.epub`). */
 	public const EPUB = 'application/epub+zip';
 
+	// ---- Application, obsolete tokens ----
+	//
+	// These registrations are superseded. A value here is present so an incoming header
+	// carrying the older token is recognized, and so a response that must serve it names
+	// it rather than spelling the string out. New code sends the current token.
+
+	/**
+	 * `application/javascript` — JavaScript source file. **Obsolete:** RFC 9239 made
+	 * {@see JAVASCRIPT} the registration and marked this one obsolete. Servers and older
+	 * tooling still send it.
+	 */
+	public const JAVASCRIPT_APPLICATION = 'application/javascript';
+
+	/**
+	 * `application/x-javascript` — JavaScript source file. **Obsolete:** an unregistered
+	 * `x-` token that predates both {@see JAVASCRIPT} and {@see JAVASCRIPT_APPLICATION}.
+	 */
+	public const JAVASCRIPT_X = 'application/x-javascript';
+
 	// ---- Multipart ----
 
 	/** `multipart/form-data` — Multipart form upload (HTML forms with file input). */
@@ -282,8 +316,17 @@ class TMediaType implements \ArrayAccess
 	/** `image/svg+xml` — SVG vector image. */
 	public const SVG = 'image/svg+xml';
 
-	/** `image/x-icon` — Favicon / icon file. */
+	/**
+	 * `image/x-icon` — Favicon / icon file. An unregistered `x-` token, and the one
+	 * browsers send and accept; {@see ICON_MICROSOFT} is the IANA registration.
+	 */
 	public const ICON = 'image/x-icon';
+
+	/**
+	 * `image/vnd.microsoft.icon` — Favicon / icon file, the IANA registration for the
+	 * Microsoft ICO format. {@see ICON} is the token seen on the wire far more often.
+	 */
+	public const ICON_MICROSOFT = 'image/vnd.microsoft.icon';
 
 	/** `image/avif` — AVIF image (AV1 Image File Format). */
 	public const AVIF = 'image/avif';
@@ -517,6 +560,87 @@ class TMediaType implements \ArrayAccess
 	public static function mimeTypeFromExtension(string $extension): ?string
 	{
 		return static::EXTENSION_MIME_TYPES[strtolower(ltrim($extension, '.'))] ?? null;
+	}
+
+	// =========================================================================
+	// Pattern matching
+	// =========================================================================
+
+	/**
+	 * Matches a media type against a pattern, where `*` stands for any run of characters
+	 * within one part of the type.  A pattern is how a configuration names a family of
+	 * media types that no single token covers:
+	 *
+	 * | Pattern | Matches |
+	 * |---------|---------|
+	 * | `text/html` | that media type alone |
+	 * | `text/*` | every text subtype, {@see HTML} and {@see CSS} among them |
+	 * | `application/*+json` | every JSON-structured syntax, {@see JSON_LD} among them |
+	 * | `*` or `*` and `/*` | every media type |
+	 *
+	 * A `*` never crosses the `/`, so `text/*` does not match `application/json`.  Both
+	 * arguments are trimmed and lowercased, since a media type is case insensitive, and
+	 * every other character of the pattern is literal.
+	 *
+	 * The `type/*` and `*` + `/*` forms are the wildcards RFC 9110 §12.5.1 defines for an
+	 * `Accept` header; the structured-suffix form is the wider grammar a server
+	 * configuration uses, and carries no meaning in `Accept`.
+	 * @param string $mediaType the media type, without parameters.
+	 * @param string $pattern the media type pattern.
+	 * @return bool whether the media type matches the pattern.
+	 * @since 4.4.0
+	 */
+	public static function matchesPattern(string $mediaType, string $pattern): bool
+	{
+		$mediaType = strtolower(trim($mediaType));
+		$pattern = strtolower(trim($pattern));
+		if ($pattern === '*' || $pattern === '*/*') {
+			return true;
+		}
+		if (!str_contains($pattern, '*')) {
+			return $mediaType === $pattern;
+		}
+		return preg_match('/^' . str_replace('\\*', '[^\\/]*', preg_quote($pattern, '/')) . '$/', $mediaType) === 1;
+	}
+
+	/**
+	 * Matches a media type against a list of patterns, as {@see matchesPattern()} reads
+	 * one.  An empty list matches nothing, so a caller that treats no restriction as
+	 * "allow everything" checks for the empty list itself.
+	 * @param string $mediaType the media type, without parameters.
+	 * @param string[] $patterns the media type patterns.
+	 * @return bool whether the media type matches any of the patterns.
+	 * @since 4.4.0
+	 */
+	public static function matchesAnyPattern(string $mediaType, array $patterns): bool
+	{
+		foreach ($patterns as $pattern) {
+			if (static::matchesPattern($mediaType, (string) $pattern)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Matches this media type, its parameters left out, against a pattern or a list of
+	 * them, as {@see matchesPattern()} reads one.
+	 *
+	 * ```php
+	 * $mt = new TMediaType('text/html; charset=UTF-8');
+	 * $mt->matches('text/*');                        // true
+	 * $mt->matches(['application/json', 'text/*']);  // true
+	 * ```
+	 * @param array|string $pattern the media type pattern, or a list of them.
+	 * @return bool whether this media type matches.
+	 * @since 4.4.0
+	 */
+	public function matches(array|string $pattern): bool
+	{
+		if (is_array($pattern)) {
+			return static::matchesAnyPattern($this->getMimeType(), $pattern);
+		}
+		return static::matchesPattern($this->getMimeType(), $pattern);
 	}
 
 	// =========================================================================
