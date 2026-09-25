@@ -98,23 +98,26 @@ class TEtcdCache extends TSerializingCache
 	private ?THttpClient $_downloader = null;
 
 	/**
-	 * @return bool whether an HTTP transport is available: the cURL extension or `allow_url_fopen`.
+	 * @return bool whether {@see THttpClient::create()} has a transport to build, so the
+	 *   default {@see getDownloader() Downloader} can be created.
 	 * @since 4.4.0
 	 */
 	public static function getIsAvailable(): bool
 	{
-		return function_exists('curl_init') || filter_var(ini_get('allow_url_fopen'), FILTER_VALIDATE_BOOLEAN);
+		return THttpClient::getHasAvailableTransport();
 	}
 
 	/**
 	 * Initializes this module.
-	 * This method is required by the IModule interface.
+	 * This method is required by the IModule interface.  A configured
+	 * {@see setDownloader() Downloader} is taken as able to run; without one, the default
+	 * transport must be available.
 	 * @param null|array|\Prado\Xml\TXmlElement $config configuration for this module, can be null
-	 * @throws TConfigurationException if neither cURL nor `allow_url_fopen` is available
+	 * @throws TConfigurationException if no Downloader is set and no HTTP transport is available
 	 */
 	public function init($config)
 	{
-		if (!static::getIsAvailable()) {
+		if ($this->_downloader === null && !static::getIsAvailable()) {
 			throw new TConfigurationException('etcdcache_transport_required');
 		}
 		parent::init($config);

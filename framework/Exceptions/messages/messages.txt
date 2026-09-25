@@ -356,6 +356,7 @@ csmanager_invalid_packages				= Unkownn packages '{1}' for javascript packages d
 
 httpclient_transport_error				= HTTP client transport error (code {0}): {1}
 httpclient_http_error						= HTTP error response with status {0}.
+httpclient_transport_required			= No HTTP transport is available: the cURL extension is not loaded and allow_url_fopen is off.
 
 restclient_invalid_header				= TRestClient header '{0}' has an invalid name or a value containing CR/LF.
 restclient_basicauth_username_colon		= TRestClient Basic-auth username must not contain a colon (RFC 7617 credential separator).

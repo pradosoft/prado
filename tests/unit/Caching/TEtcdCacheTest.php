@@ -40,6 +40,17 @@ class TEtcdCacheTestHttpClient extends THttpClient
 }
 
 /**
+ * A cache on a PHP with no HTTP transport.
+ */
+class TTransportlessEtcdCache extends TTestEtcdCache
+{
+	public static function getIsAvailable(): bool
+	{
+		return false;
+	}
+}
+
+/**
  * Unit tests for {@see TEtcdCache}, via the {@see TTestEtcdCache} harness. The etcd v2
  * protocol is exercised through a recording {@see THttpClient}; no etcd server is needed.
  */
@@ -60,10 +71,9 @@ class TEtcdCacheTest extends \PHPUnit\Framework\TestCase
 		return $cache;
 	}
 
-	public function testIsAvailableReflectsTransport(): void
+	public function testIsAvailableAsksTheHttpClientForATransport(): void
 	{
-		$expected = function_exists('curl_init') || filter_var(ini_get('allow_url_fopen'), FILTER_VALIDATE_BOOLEAN);
-		$this->assertSame($expected, TEtcdCache::getIsAvailable());
+		$this->assertSame(THttpClient::getHasAvailableTransport(), TEtcdCache::getIsAvailable());
 	}
 
 	public function testDefaultDownloaderIsLazyAndDoesNotFollowRedirects(): void
@@ -202,13 +212,24 @@ class TEtcdCacheTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame('myapp', $cache->getDir());
 	}
 
-	public function testInitThrowsWhenCurlUnavailable(): void
+	public function testInitThrowsWithoutATransportOrADownloader(): void
 	{
-		if (TEtcdCache::getIsAvailable()) {
-			$this->markTestSkipped('An HTTP transport is present; cannot exercise the unavailable path.');
-		}
+		$cache = new TTransportlessEtcdCache();
+		$cache->setPrimaryCache(false);
+
 		$this->expectException(TConfigurationException::class);
-		$this->newCache()->init(null);
+		$cache->init(null);
+	}
+
+	public function testInitAcceptsAConfiguredDownloaderWithoutATransport(): void
+	{
+		$cache = new TTransportlessEtcdCache();
+		$cache->setPrimaryCache(false);
+		$cache->setDownloader($client = new TEtcdCacheTestHttpClient());
+
+		$cache->init(null);
+
+		$this->assertSame($client, $cache->getDownloader());
 	}
 
 	public function testFakeClockSeam(): void

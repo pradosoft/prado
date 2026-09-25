@@ -56,7 +56,7 @@ return [
 
 ## Requirements
 
-- An HTTP transport: the PHP cURL extension or `allow_url_fopen` (`getIsAvailable()`); otherwise `init()` throws `etcdcache_transport_required`.
+- An HTTP transport, unless a `Downloader` is set. `getIsAvailable()` asks `THttpClient::getHasAvailableTransport()`, which is true when any transport in `THttpClient::TRANSPORTS` reports itself available: `TCurlHttpClient` needs the cURL extension and `TFopenHttpClient` needs `allow_url_fopen`. Without one, `init()` throws `etcdcache_transport_required`.
 - etcd v2 server running
 
 ## Testing

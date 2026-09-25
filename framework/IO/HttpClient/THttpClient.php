@@ -30,10 +30,13 @@ use Prado\TPropertyValue;
  * ```php
  * $downloader = THttpClient::create();
  * ```
- * This returns {@see TCurlHttpClient} when the cURL extension is loaded, and
- * falls back to {@see TFopenHttpClient} (PHP stream wrappers) otherwise. Both
- * implementations honor the same set of properties — {@see setTimeout Timeout},
- * {@see setFollowRedirects FollowRedirects}, and
+ * This returns the first transport of {@see TRANSPORTS} whose
+ * {@see getIsAvailable()} is true: {@see TCurlHttpClient} when the cURL
+ * extension is loaded, and {@see TFopenHttpClient} (PHP stream wrappers) when
+ * `allow_url_fopen` is on. Each transport reports its own requirement, so a
+ * consumer asks {@see getHasAvailableTransport()} instead of testing for
+ * extensions itself. Both implementations honor the same set of properties —
+ * {@see setTimeout Timeout}, {@see setFollowRedirects FollowRedirects}, and
  * {@see setMaxRedirects MaxRedirects} — so callers do not need to know which
  * one they hold.
  *
@@ -64,6 +67,12 @@ use Prado\TPropertyValue;
  */
 abstract class THttpClient extends TApplicationComponent
 {
+	/**
+	 * The transports {@see create()} chooses from, in order of preference.
+	 * @var class-string<THttpClient>[]
+	 */
+	public const TRANSPORTS = [TCurlHttpClient::class, TFopenHttpClient::class];
+
 	/**
 	 * @var int Request timeout in seconds. Defaults to 30.
 	 */
@@ -107,20 +116,47 @@ abstract class THttpClient extends TApplicationComponent
 	// ── Static factories ───────────────────────────────────────────────────────
 
 	/**
-	 * Creates a downloader using the best available transport.
+	 * Reports whether this transport can run on the current PHP. A transport with a
+	 * requirement, such as an extension or an ini setting, overrides this; the base
+	 * answer is true.
+	 * @return bool whether this transport can run here.
+	 */
+	public static function getIsAvailable(): bool
+	{
+		return true;
+	}
+
+	/**
+	 * Reports whether {@see create()} can succeed: whether any transport of
+	 * {@see TRANSPORTS} is available.
+	 * @return bool whether an HTTP transport is available.
+	 */
+	public static function getHasAvailableTransport(): bool
+	{
+		foreach (static::TRANSPORTS as $class) {
+			if ($class::getIsAvailable()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Creates a downloader using the best available transport: the first of
+	 * {@see TRANSPORTS} whose {@see getIsAvailable()} is true. The chosen
+	 * implementation can be inspected, replaced, or wrapped after the fact.
 	 *
-	 * Returns a {@see TCurlHttpClient} when the cURL extension is loaded, and a
-	 * {@see TFopenHttpClient} otherwise. The chosen implementation can be
-	 * inspected, replaced, or wrapped after the fact.
-	 *
+	 * @throws THttpClientException when no transport is available.
 	 * @return THttpClient Concrete downloader instance.
 	 */
 	public static function create(): THttpClient
 	{
-		if (function_exists('curl_init')) {
-			return new TCurlHttpClient();
+		foreach (static::TRANSPORTS as $class) {
+			if ($class::getIsAvailable()) {
+				return new $class();
+			}
 		}
-		return new TFopenHttpClient();
+		throw new THttpClientException('httpclient_transport_required');
 	}
 
 	/**

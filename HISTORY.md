@@ -1,5 +1,5 @@
 ## Version 4.4.0 - TBA
-ENH: `TEtcdCache` sends its requests through a `THttpClient` (`Downloader`), so it works without cURL. (belisoful)
+ENH: `TEtcdCache` sends its requests through a `THttpClient` (`Downloader`), so it works without cURL. Each transport reports its own requirement through `getIsAvailable()`; `THttpClient::create()` picks the first available one and throws `httpclient_transport_required` when there is none. (belisoful)
 BUG: `TComponent::attachBehavior()` left a behavior registered when its `attach()` threw, so destroying the component threw `behavior_detach_without_owner` from `__destruct()`; the failed behavior is now unregistered, and detached when it gained the owner, before the exception propagates. (belisoful)
 CHG: `composer coverage` and `composer coverage-html` report code coverage, and `phpunit.xml` declares `framework/` as the coverage source. Each script sets `XDEBUG_MODE` through `@putenv`, so a run needs no environment of its own, and narrows with the phpunit `filter` and `coverage-filter` options passed after `--`. (belisoful)
 CHG: The unit tests and harness classes use the dev PSR-4 namespace `Prado\Test\Unit\` (`autoload-dev`), so a harness class such as `PradoUnit` autoloads. (belisoful)
