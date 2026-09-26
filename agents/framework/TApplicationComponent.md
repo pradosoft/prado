@@ -28,7 +28,7 @@ TApplicationComponent is the base class for all application-related components i
 - `getUser()`: Returns the current user instance, or null without an application
 
 ### Application Binding (@since 4.4.0)
-- `$_application` is set by `__construct()` from `Prado::getApplication()`, excluded from serialization, and re-bound by `__wakeup()`; `resolveApplication()` binds only when unbound
+- `$_application` is a `WeakReference` set by `__construct()` from `Prado::getApplication()`, excluded from serialization, and re-bound by `__wakeup()`; `resolveApplication()` binds only when unbound (`hasApplicationBinding()`), so a component never pins its application in memory and yields null once it is collected
 - `getApplicationDirect()` / `setApplicationDirect(?TApplication)`: the binding without resolution (protected)
 - `isCurrentApplication()`: whether the bound application is `Prado::getApplication()`
 - `makeCurrentApplication()`: makes the bound application current through `Prado::setApplication()`

@@ -29,17 +29,17 @@ use Prado\TPropertyValue;
  *
  * TMemoryCache supports two optional backing stores, tried in the order below:
  *
- * 1. **Backing cache module** ({@see getBackingCacheId BackingCacheId}) — any
+ * 1. **Persist cache module** ({@see getPersistCacheId PersistCacheId}) — any
  *    {@see TCache} module already registered with the application. The entire
  *    in-memory store is serialized and written under
- *    {@see getBackingCacheKey BackingCacheKey}.
+ *    {@see getPersistCacheKey PersistCacheKey}.
  *
  * 2. **Backing file** ({@see getBackingFile BackingFile}) — a file path;
  *    namespace-style paths (e.g. `Application.runtime.memory`) are resolved via
  *    {@see \Prado\Prado::getPathOfNamespace()}. The store is serialized to disk
  *    with exclusive locking.
  *
- * When both are configured the backing cache module takes precedence. When
+ * When both are configured the persist cache module takes precedence. When
  * neither is configured, {@see load()} and {@see save()} are no-ops and the
  * module behaves as a pure process-scoped cache with no persistence.
  *
@@ -110,7 +110,7 @@ use Prado\TPropertyValue;
  * **XML configuration** (`application.xml`):
  * ```xml
  * <module id="cache" class="Prado\Caching\TMemoryCache"
- *         BackingCacheId="fileCache"
+ *         PersistCacheId="fileCache"
  *         MaximumSize="4194304"
  *         MergePolicy="Replace" />
  *
@@ -127,7 +127,7 @@ use Prado\TPropertyValue;
  *         'cache' => [
  *             'class' => 'Prado\Caching\TMemoryCache',
  *             'properties' => [
- *                 'BackingCacheId' => 'fileCache',
+ *                 'PersistCacheId' => 'fileCache',
  *                 'MaximumSize'    => '4194304',
  *                 'MergePolicy'    => 'Replace',
  *             ],
@@ -188,10 +188,10 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 	/**
 	 * Default base key used to store the serialized in-memory store in the backing
 	 * cache module. Subclasses may override this constant to avoid key collisions
-	 * when multiple TMemoryCache subclasses share the same backing cache.
+	 * when multiple TMemoryCache subclasses share the same persist cache.
 	 * {@see init()} appends a dot-separated module ID when one is available.
 	 */
-	public const DEFAULT_BACKING_CACHE_KEY = 'prado.memory-cache';
+	public const DEFAULT_PERSIST_CACHE_KEY = 'prado.memory-cache';
 
 	/**
 	 * Default merge policy applied by {@see load()} when the backing store is imported
@@ -209,18 +209,18 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 	 */
 	private array $_store = [];
 
-	/** @var string Module ID of the backing cache; empty when not configured. */
-	private string $_backingCacheId = '';
+	/** @var string Module ID of the persist cache; empty when not configured. */
+	private string $_persistCacheId = '';
 
 	/** @var string File path for file-based backing; empty when not configured. */
 	private string $_backingFile = '';
 
 	/**
-	 * @var string Key used to read/write the serialized store in the backing cache.
-	 *   Initialized to {@see DEFAULT_BACKING_CACHE_KEY} in {@see __construct()};
+	 * @var string Key used to read/write the serialized store in the persist cache.
+	 *   Initialized to {@see DEFAULT_PERSIST_CACHE_KEY} in {@see __construct()};
 	 *   {@see init()} appends `'.<moduleId>'` when a module ID is available.
 	 */
-	private string $_backingCacheKey = '';
+	private string $_persistCacheKey = '';
 
 	/**
 	 * @var string Merge policy: one of {@see MERGE} or {@see REPLACE}. Initialized
@@ -273,31 +273,31 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 	// --------------------------------------------------------------- lifecycle
 
 	/**
-	 * Declares the backing cache module as a required dependency so that
+	 * Declares the persist cache module as a required dependency so that
 	 * {@see \Prado\TApplication} initializes it before this module, guaranteeing
 	 * that {@see load()} can resolve the backing module during {@see init()}.
-	 * Returns `null` when no {@see getBackingCacheId BackingCacheId} has been set.
+	 * Returns `null` when no {@see getPersistCacheId PersistCacheId} has been set.
 	 *
 	 * @param bool $isPreInit `true` when collecting for the dyPreInit pass,
 	 *   `false` when collecting for the init() pass (default).
-	 *   TMemoryCache needs its backing cache in all phases.
+	 *   TMemoryCache needs its persist cache in all phases.
 	 * @return null|array|string dependency list; an empty string when no
-	 *   {@see getBackingCacheId BackingCacheId} has been configured
+	 *   {@see getPersistCacheId PersistCacheId} has been configured
 	 */
 	public function getModuleDependencies(bool $isPreInit = false): null|string|array
 	{
-		return $this->getBackingCacheId();
+		return $this->getPersistCacheId();
 	}
 
 	/**
-	 * Seeds {@see getBackingCacheKey BackingCacheKey} from {@see DEFAULT_BACKING_CACHE_KEY}
+	 * Seeds {@see getPersistCacheKey PersistCacheKey} from {@see DEFAULT_PERSIST_CACHE_KEY}
 	 * and {@see getMergePolicy MergePolicy} from {@see DEFAULT_MERGE_POLICY} via late
 	 * static binding so that subclasses may override either constant to change the
 	 * defaults without overriding this method or {@see init()}.
 	 */
 	public function __construct()
 	{
-		$this->setBackingCacheKeyDirect(static::DEFAULT_BACKING_CACHE_KEY);
+		$this->setPersistCacheKeyDirect(static::DEFAULT_PERSIST_CACHE_KEY);
 		$this->setMergePolicyDirect(static::DEFAULT_MERGE_POLICY);
 		parent::__construct();
 	}
@@ -311,9 +311,9 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 	}
 
 	/**
-	 * Initializes the module. Refines the {@see getBackingCacheKey BackingCacheKey}
+	 * Initializes the module. Refines the {@see getPersistCacheKey PersistCacheKey}
 	 * set by {@see __construct()} by appending `'.<moduleId>'` when the key is still
-	 * at its {@see DEFAULT_BACKING_CACHE_KEY default} and a module ID is available,
+	 * at its {@see DEFAULT_PERSIST_CACHE_KEY default} and a module ID is available,
 	 * then loads the in-memory store from the backing store and registers
 	 * {@see handleSaveState()} as a handler for the application's `OnSaveState`
 	 * event so that the store is persisted automatically at the end of each request.
@@ -322,10 +322,10 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 	 */
 	public function init($config)
 	{
-		if ($this->getBackingCacheKeyDirect() === static::DEFAULT_BACKING_CACHE_KEY) {
+		if ($this->getPersistCacheKeyDirect() === static::DEFAULT_PERSIST_CACHE_KEY) {
 			$id = $this->getID() ?? '';
 			if ($id !== '') {
-				$this->setBackingCacheKeyDirect(static::DEFAULT_BACKING_CACHE_KEY . '.' . $id);
+				$this->setPersistCacheKeyDirect(static::DEFAULT_PERSIST_CACHE_KEY . '.' . $id);
 			}
 		}
 		$this->load();
@@ -484,18 +484,18 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 	/**
 	 * Reads the serialized store from the backing store and returns it as a
 	 * PHP array, or `null` when no backing is configured or the data cannot be
-	 * read. Backing cache module is preferred over the backing file.
+	 * read. Persist cache module is preferred over the backing file.
 	 *
 	 * @return ?array<string, array{data: mixed, expire: int}> the deserialized
 	 *   store, or null on failure
 	 */
 	protected function loadFromBacking(): ?array
 	{
-		$cacheId = $this->getBackingCacheId();
+		$cacheId = $this->getPersistCacheId();
 		if ($cacheId !== '') {
 			$cache = $this->getApplication()->getModule($cacheId);
 			if ($cache instanceof ICache) {
-				$raw = $cache->get($this->getBackingCacheKey());
+				$raw = $cache->get($this->getPersistCacheKey());
 				if ($raw !== false && is_array($raw)) {
 					return $raw;
 				}
@@ -516,7 +516,7 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 	}
 
 	/**
-	 * Writes the serialized store to the backing store. Backing cache module is
+	 * Writes the serialized store to the backing store. The persist cache module is
 	 * preferred over the backing file.
 	 *
 	 * @param array<string, array{data: mixed, expire: int}> $store the in-memory
@@ -526,11 +526,11 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 	 */
 	protected function saveToBacking(array $store): bool
 	{
-		$cacheId = $this->getBackingCacheId();
+		$cacheId = $this->getPersistCacheId();
 		if ($cacheId !== '') {
 			$cache = $this->getApplication()->getModule($cacheId);
 			if ($cache instanceof ICache) {
-				return $cache->set($this->getBackingCacheKey(), $store, 0);
+				return $cache->set($this->getPersistCacheKey(), $store, 0);
 			}
 			return false;
 		}
@@ -867,41 +867,41 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 	// --------------------------------------------------------------- accessors
 
 	/**
-	 * @return string the raw BackingCacheId field value; empty when not configured
+	 * @return string the raw PersistCacheId field value; empty when not configured
 	 */
-	protected function getBackingCacheIdDirect(): string
+	protected function getPersistCacheIdDirect(): string
 	{
-		return $this->_backingCacheId;
+		return $this->_persistCacheId;
 	}
 
 	/**
 	 * @param string $value the module ID to store directly
 	 */
-	protected function setBackingCacheIdDirect(string $value): void
+	protected function setPersistCacheIdDirect(string $value): void
 	{
-		$this->_backingCacheId = $value;
+		$this->_persistCacheId = $value;
 	}
 
 	/**
-	 * @return string the module ID of the backing cache; empty when not configured
+	 * @return string the module ID of the persist cache; empty when not configured
 	 */
-	public function getBackingCacheId()
+	public function getPersistCacheId()
 	{
-		return $this->getBackingCacheIdDirect();
+		return $this->getPersistCacheIdDirect();
 	}
 
 	/**
-	 * Sets the module ID of the backing {@see TCache} module used by
-	 * {@see load()} and {@see save()}.  When both {@see getBackingCacheId
-	 * BackingCacheId} and {@see getBackingFile BackingFile} are configured, the
+	 * Sets the module ID of the persist {@see TCache} module used by
+	 * {@see load()} and {@see save()}.  When both {@see getPersistCacheId
+	 * PersistCacheId} and {@see getBackingFile BackingFile} are configured, the
 	 * cache module takes precedence.
 	 *
 	 * @param string $value the module ID of a registered {@see TCache} module
 	 */
-	public function setBackingCacheId($value)
+	public function setPersistCacheId($value)
 	{
-		$this->assertUninitialized('BackingCacheId');
-		$this->setBackingCacheIdDirect(TPropertyValue::ensureString($value));
+		$this->assertUninitialized('PersistCacheId');
+		$this->setPersistCacheIdDirect(TPropertyValue::ensureString($value));
 	}
 
 	/**
@@ -930,7 +930,7 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 
 	/**
 	 * Sets the file path used by {@see load()} and {@see save()} when no
-	 * {@see getBackingCacheId BackingCacheId} is configured. The directory
+	 * {@see getPersistCacheId PersistCacheId} is configured. The directory
 	 * containing the file must already exist. Namespace-style paths
 	 * (e.g. `Application.runtime.memory`) are resolved via
 	 * {@see \Prado\Prado::getPathOfNamespace()}.
@@ -957,44 +957,44 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 	}
 
 	/**
-	 * @return string the raw BackingCacheKey field value
+	 * @return string the raw PersistCacheKey field value
 	 */
-	protected function getBackingCacheKeyDirect(): string
+	protected function getPersistCacheKeyDirect(): string
 	{
-		return $this->_backingCacheKey;
+		return $this->_persistCacheKey;
 	}
 
 	/**
-	 * @param string $value the backing cache key to store directly
+	 * @param string $value the persist cache key to store directly
 	 */
-	protected function setBackingCacheKeyDirect(string $value): void
+	protected function setPersistCacheKeyDirect(string $value): void
 	{
-		$this->_backingCacheKey = $value;
+		$this->_persistCacheKey = $value;
 	}
 
 	/**
 	 * Returns the key used to store the serialized cache store in the backing
-	 * cache module. Defaults to {@see DEFAULT_BACKING_CACHE_KEY}, optionally
+	 * cache module. Defaults to {@see DEFAULT_PERSIST_CACHE_KEY}, optionally
 	 * suffixed with `'.<moduleId>'` by {@see init()} when a module ID is available.
 	 *
-	 * @return string the backing cache key
+	 * @return string the persist cache key
 	 */
-	public function getBackingCacheKey()
+	public function getPersistCacheKey()
 	{
-		return $this->getBackingCacheKeyDirect();
+		return $this->getPersistCacheKeyDirect();
 	}
 
 	/**
 	 * Sets the key used to read and write the entire serialized in-memory store
-	 * within the backing cache module. Set this to avoid collisions when multiple
-	 * TMemoryCache modules share the same backing cache.
+	 * within the persist cache module. Set this to avoid collisions when multiple
+	 * TMemoryCache modules share the same persist cache.
 	 *
 	 * @param string $value the cache key string
 	 */
-	public function setBackingCacheKey($value)
+	public function setPersistCacheKey($value)
 	{
-		$this->assertUninitialized('BackingCacheKey');
-		$this->setBackingCacheKeyDirect(TPropertyValue::ensureString($value));
+		$this->assertUninitialized('PersistCacheKey');
+		$this->setPersistCacheKeyDirect(TPropertyValue::ensureString($value));
 	}
 
 	/**
@@ -1215,14 +1215,14 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 		if ($this->getMaximumSizeDirect() === 0) {
 			$exprops[] = "\0" . __CLASS__ . "\0_maximumSize";
 		}
-		if ($this->getBackingCacheIdDirect() === '') {
-			$exprops[] = "\0" . __CLASS__ . "\0_backingCacheId";
+		if ($this->getPersistCacheIdDirect() === '') {
+			$exprops[] = "\0" . __CLASS__ . "\0_persistCacheId";
 		}
 		if ($this->getBackingFileDirect() === '') {
 			$exprops[] = "\0" . __CLASS__ . "\0_backingFile";
 		}
-		if ($this->getBackingCacheKeyDirect() === static::DEFAULT_BACKING_CACHE_KEY) {
-			$exprops[] = "\0" . __CLASS__ . "\0_backingCacheKey";
+		if ($this->getPersistCacheKeyDirect() === static::DEFAULT_PERSIST_CACHE_KEY) {
+			$exprops[] = "\0" . __CLASS__ . "\0_persistCacheKey";
 		}
 		if ($this->getMergePolicyDirect() === static::DEFAULT_MERGE_POLICY) {
 			$exprops[] = "\0" . __CLASS__ . "\0_mergePolicy";

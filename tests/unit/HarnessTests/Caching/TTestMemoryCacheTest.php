@@ -130,7 +130,7 @@ class TTestMemoryCacheTest extends \PHPUnit\Framework\TestCase
 	public function testCustomConstantFixturesUseLateStaticBinding(): void
 	{
 		$ck = new TTestMemoryCacheCustomKey();
-		$this->assertStringStartsWith('custom.key', $ck->getBackingCacheKey());
+		$this->assertStringStartsWith('custom.key', $ck->getPersistCacheKey());
 
 		$mp = new TTestMemoryCacheCustomMergePolicy();
 		$this->assertSame(TMemoryCache::REPLACE, $mp->getMergePolicy());

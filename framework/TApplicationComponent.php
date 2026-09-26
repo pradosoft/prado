@@ -45,11 +45,14 @@ class TApplicationComponent extends \Prado\TComponent
 	public const FX_CACHE_FILE = 'fxevent.cache';
 
 	/**
-	 * @var ?TApplication the application that owns this component, bound at construction.
-	 *   Excluded from serialization; {@see __wakeup()} binds the current application.
+	 * @var ?\WeakReference<TApplication> the application that owns this component,
+	 *   bound at construction and held weakly. Null means unbound; a reference whose
+	 *   application was garbage collected stays bound and yields null, so the
+	 *   component does not rebind to another application. Excluded from
+	 *   serialization; {@see __wakeup()} binds the current application.
 	 * @since 4.4.0
 	 */
-	private ?TApplication $_application = null;
+	private ?\WeakReference $_application = null;
 
 	/**
 	 * Binds the current application and initializes global-event listening.
@@ -144,8 +147,9 @@ class TApplicationComponent extends \Prado\TComponent
 	/**
 	 * Returns the application that owns this component. A component without a
 	 * binding, such as one constructed before any application existed, binds the
-	 * current application through {@see resolveApplication()} first.
-	 * @return ?TApplication the owning application, or null when none is registered.
+	 * current application through {@see resolveApplication()} first. A bound
+	 * application that was garbage collected yields null.
+	 * @return ?TApplication the owning application, or null when none is available.
 	 */
 	public function getApplication()
 	{
@@ -155,33 +159,44 @@ class TApplicationComponent extends \Prado\TComponent
 
 	/**
 	 * Returns the bound application without resolving it.
-	 * @return ?TApplication the bound application, or null when unbound.
+	 * @return ?TApplication the bound application, or null when unbound or collected.
 	 * @since 4.4.0
 	 */
 	protected function getApplicationDirect(): ?TApplication
 	{
-		return $this->_application;
+		return $this->_application?->get();
 	}
 
 	/**
-	 * Binds an application, or clears the binding with null so that
-	 * {@see getApplication()} binds the current application on its next call.
+	 * Binds an application through a weak reference, or clears the binding with
+	 * null so that {@see getApplication()} binds the current application on its
+	 * next call.
 	 * @param ?TApplication $app the application to bind, or null to clear.
 	 * @since 4.4.0
 	 */
 	protected function setApplicationDirect(?TApplication $app): void
 	{
-		$this->_application = $app;
+		$this->_application = $app === null ? null : \WeakReference::create($app);
+	}
+
+	/**
+	 * Returns whether an application has been bound, whether or not it still exists.
+	 * @return bool whether the component is bound.
+	 * @since 4.4.0
+	 */
+	protected function hasApplicationBinding(): bool
+	{
+		return $this->_application !== null;
 	}
 
 	/**
 	 * Binds the current application when the component is unbound. A bound
-	 * component keeps its application.
+	 * component keeps its binding, even to a collected application.
 	 * @since 4.4.0
 	 */
 	protected function resolveApplication(): void
 	{
-		if ($this->getApplicationDirect() === null) {
+		if (!$this->hasApplicationBinding()) {
 			$this->setApplicationDirect(Prado::getApplication());
 		}
 	}

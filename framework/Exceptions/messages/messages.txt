@@ -759,6 +759,7 @@ datasource_dbconnection_invalid			= TDataSourceConfig.DbConnection '{0}' is inva
 datasourceproxy_backing_data_source_id_required	= TDataSourceConfigProxy.BackingDataSourceId is required.
 datasourceproxy_data_source_not_found	= TDataSourceConfigProxy.BackingDataSourceId '{0}' does not refer to an application module.
 datasourceproxy_invalid_data_source_type	= TDataSourceConfigProxy.BackingDataSourceId '{0}' must refer to a TDataSourceConfig module.
+datasourceproxy_database_not_allowed		= TDataSourceConfigProxy '{0}' cannot configure a database; configure it on the backing TDataSourceConfig module.
 distributeddatasource_child_required		= {0} requires one '{1}' child element at minimum.
 masterslavedbconnection_connection_exists	= {0}.{1} connection already exists.
 masterslavedbconnection_interface_required	= {0}.{1} requires an instance implementing {2} interface.

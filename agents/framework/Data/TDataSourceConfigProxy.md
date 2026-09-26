@@ -28,7 +28,7 @@ Transparent data source module whose `getDbConnection()` (and so `getDatabase()`
 ## Behavior
 
 - `getModuleDependencies()` returns the backing ID so the backing initializes first.
-- A `<database>` element on the proxy is applied by `TDataSourceConfig::init()` to the backing's connection, since `getDbConnection()` is the backing's.
+- A `<database>` element (or a `database` key in PHP configuration) on the proxy throws `datasourceproxy_database_not_allowed` at `init()`; the connection is configured on the backing module.
 
 ## See Also
 - [TDataSourceConfig](./TDataSourceConfig.md), [TModuleProxy](../TModuleProxy.md)

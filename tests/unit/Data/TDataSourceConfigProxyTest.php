@@ -25,6 +25,7 @@ use Prado\TEventParameter;
 use Prado\TModule;
 use Prado\Util\TBehavior;
 use Prado\Util\Log\TLogger;
+use Prado\Xml\TXmlDocument;
 
 // ── Helper classes ─────────────────────────────────────────────────────────────
 
@@ -303,6 +304,32 @@ class TDataSourceConfigProxyTest extends \PHPUnit\Framework\TestCase
 		} catch (TConfigurationException $e) {
 			$this->assertSame('datasourceproxy_backing_data_source_id_required', $e->getErrorCode());
 		}
+	}
+
+	public function testInitThrowsWhenXmlConfigCarriesDatabaseElement(): void
+	{
+		$config = new TXmlDocument('1.0', 'utf8');
+		$config->loadFromString('<module><database ConnectionString="sqlite::memory:" /></module>');
+		try {
+			$this->proxy->init($config);
+			$this->fail('Expected TConfigurationException was not thrown.');
+		} catch (TConfigurationException $e) {
+			$this->assertSame('datasourceproxy_database_not_allowed', $e->getErrorCode());
+		}
+	}
+
+	public function testInitThrowsWhenPhpConfigCarriesDatabaseKey(): void
+	{
+		$this->expectException(TConfigurationException::class);
+		$this->proxy->init(['database' => ['ConnectionString' => 'sqlite::memory:']]);
+	}
+
+	public function testInitAcceptsXmlConfigWithoutDatabaseElement(): void
+	{
+		$config = new TXmlDocument('1.0', 'utf8');
+		$config->loadFromString('<module />');
+		$this->proxy->init($config);
+		$this->assertSame('backingDs', $this->proxy->getBackingDataSourceId());
 	}
 
 	// ── getDataSource() — lazy resolution ────────────────────────────────────────

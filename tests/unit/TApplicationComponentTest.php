@@ -223,6 +223,26 @@ class TApplicationComponentTest extends TestCase
 		}
 	}
 
+	public function testCollectedApplicationStaysBoundAndYieldsNull(): void
+	{
+		$snap = PradoUnit::snapshotStatic(Prado::class, ['_application', '_applications']);
+		try {
+			$other = new TTestApplication();
+			$this->comp->pubSetApplicationDirect($other);
+			self::assertSame($other, $this->comp->pubGetApplicationDirect());
+
+			Prado::unregisterApplication($other);
+			unset($other);
+			gc_collect_cycles();
+
+			// The binding is weak: the application is gone and the component does not rebind.
+			self::assertNull($this->comp->pubGetApplicationDirect());
+			self::assertNull($this->comp->getApplication());
+		} finally {
+			PradoUnit::restoreStatic(Prado::class, $snap);
+		}
+	}
+
 	public function testSetApplicationDirectNull(): void
 	{
 		$this->comp->pubSetApplicationDirect(null);

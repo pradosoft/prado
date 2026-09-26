@@ -17,6 +17,7 @@ use Prado\Prado;
 use Prado\TComponent;
 use Prado\TComponentProxyTrait;
 use Prado\Util\Log\TLogger;
+use Prado\Xml\TXmlElement;
 
 /**
  * TDataSourceConfigProxy class.
@@ -35,7 +36,8 @@ use Prado\Util\Log\TLogger;
  * ## Transparency
  *
  * {@see getDbConnection()} returns the backing module's connection, so every
- * consumer of the proxy shares the backing connection. Other property reads and
+ * consumer of the proxy shares the backing connection; a `<database>` element on
+ * the proxy throws at {@see init()}. Other property reads and
  * writes, method calls, and events reach the backing through
  * {@see TComponentProxyTrait}, which wires the backing's public `on` events on
  * first resolution. `dy` and `fx` names are never forwarded.
@@ -81,16 +83,35 @@ class TDataSourceConfigProxy extends TDataSourceConfig implements IModuleDepende
 	}
 
 	/**
-	 * Initializes the proxy module.
+	 * Initializes the proxy module. The connection belongs to the backing module,
+	 * so a `<database>` element (or a `database` key in a PHP configuration) on
+	 * the proxy is rejected.
 	 * @param null|array|\Prado\Xml\TXmlElement $config module configuration
 	 * @throws TConfigurationException when {@see getBackingDataSourceId BackingDataSourceId} is empty
+	 * @throws TConfigurationException when the configuration carries a database element
 	 */
 	public function init($config)
 	{
 		if ($this->getBackingDataSourceId() === '') {
 			throw new TConfigurationException('datasourceproxy_backing_data_source_id_required');
 		}
+		if ($this->hasDatabaseConfig($config)) {
+			throw new TConfigurationException('datasourceproxy_database_not_allowed', $this->getID());
+		}
 		parent::init($config);
+	}
+
+	/**
+	 * Returns whether a module configuration carries a database element.
+	 * @param null|array|\Prado\Xml\TXmlElement $config module configuration
+	 * @return bool whether a `<database>` element or `database` key is present
+	 */
+	protected function hasDatabaseConfig($config): bool
+	{
+		if (is_array($config)) {
+			return isset($config['database']);
+		}
+		return $config instanceof TXmlElement && $config->getElementByTagName('database') !== null;
 	}
 
 	// ----------------------------------------------------------------- TComponentProxyTrait implementation
