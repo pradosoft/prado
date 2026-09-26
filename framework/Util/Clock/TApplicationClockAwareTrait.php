@@ -11,6 +11,7 @@
 namespace Prado\Util\Clock;
 
 use Prado\Prado;
+use Prado\TApplicationComponent;
 
 /**
  * TApplicationClockAwareTrait trait
@@ -60,7 +61,7 @@ trait TApplicationClockAwareTrait
 		if ($this->_clock !== null) {
 			return $this->_clock;
 		}
-		$application = Prado::getApplication();
+		$application = $this instanceof TApplicationComponent ? $this->getApplication() : Prado::getApplication();
 		if ($application !== null) {
 			return $application->getClock();
 		}

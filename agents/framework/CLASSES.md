@@ -8,7 +8,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 | Directory | Classes | Interfaces | Total | Recursive |
 |-----------|---------|------------|-------|-----------|
-| [Prado](./INDEX.md) | 20 | 8 | 28 | 783 |
+| [Prado](./INDEX.md) | 21 | 8 | 29 | 784 |
 | [Prado\\Caching](./Caching/INDEX.md) | 12 | 2 | 14 | 14 |
 | [Prado\\Collections](./Collections/INDEX.md) | 27 | 7 | 34 | 34 |
 | [Prado\\Data](./Data/INDEX.md) | 11 | 5 | 16 | 137 |
@@ -62,7 +62,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ## Class Listings
 
-## [Prado](./INDEX.md) - Classes: 20, Interfaces: 8, Total: 28, Recursive: 783
+## [Prado](./INDEX.md) - Classes: 21, Interfaces: 8, Total: 29, Recursive: 784
 
 ### Interfaces (8)
 
@@ -75,7 +75,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - ISingleton
 - IStatePersister
 
-### Classes (20)
+### Classes (21)
 
 - [Prado](./Prado.md)
 - PradoBase
@@ -83,6 +83,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TApplicationComponent](./TApplicationComponent.md)
 - [TApplicationConfiguration](./TApplicationConfiguration.md)
 - TApplicationMode
+- TApplicationMultipleMode
 - [TApplicationSignals](./Util/Behaviors/TApplicationSignals.md)
 - TApplicationStatePersister
 - [TComponent](./TComponent.md)

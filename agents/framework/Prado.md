@@ -40,8 +40,10 @@ PRADO_CHMOD        // legacy compat alias (0777)
 - `autoload(string $className): void` — Called by SPL autoloader; delegates to `using()`.
 
 ### Application Management
-- `setApplication(TApplication $app): void` — Stores the singleton. Called by `TApplication::__construct`.
-- `getApplication(): TApplication` — Returns the application singleton.
+- `setApplication(?TApplication $app): void` — Makes the application current and registers it in the pool; `null` clears the current application. A different instance throws in singleton mode unless `PRADO_TEST_RUN` is defined. Called by `TApplication::registerApplication()`.
+- `getApplication(?string $id = null): ?TApplication` — The current application, or the pool entry with that `UniqueID`.
+- `registerApplication()` / `unregisterApplication()` / `getApplications(): ?TWeakMap` / `hasApplication(?string $id)` (@since 4.4.0) — The pool of applications keyed by `UniqueID` and held weakly; unregistering the current application clears it.
+- `getMultipleApplications()` / `setMultipleApplications(bool)` (@since 4.4.0) — Whether several applications may be registered at once (default `false`). Disabling with more than one pooled application throws `prado_application_multiapp_disable_conflict`. `TApplication::registerApplication()` enables it per its `MultipleMode`.
 
 ### Path and Namespace Management
 - `getPathOfNamespace(string $namespace, string $ext = ''): ?string` — Converts a dotted namespace to a filesystem path.
@@ -75,4 +77,6 @@ Used internally (e.g., `TEventParameter::setReadOnly` uses `isCallingSelf()` to 
 | `$_aliases` | Path alias registry (`['Prado' => PRADO_DIR, 'Vendor' => PRADO_VENDORDIR, ...]`) |
 | `$_usings` | Namespaces already imported |
 | `$_logger` | Lazy `TLogger` instance |
-| `$_application` | Singleton `TApplication` |
+| `$_application` | The current `TApplication` |
+| `$_applications` | `TWeakMap` pool of registered applications keyed by `UniqueID` (@since 4.4.0) |
+| `$_multipleApplications` | Whether several applications may be registered (@since 4.4.0) |

@@ -34,9 +34,9 @@ This is the root source directory of the **Prado** PHP framework (PSR-4 namespac
   - Serialization: `__sleep()`, `__wakeup()`, `_getZappableSleepProps()`
   - Cloning: `__clone()` with `dyClone` dynamic event
 
-- **[`TApplication.php`](TApplication.md)** — Top-level service container. Manages modules, services, configuration, and the application lifecycle. Entry point for every request.
+- **[`TApplication.php`](TApplication.md)** — Top-level service container. Manages modules, services, configuration, and the application lifecycle. Entry point for every request. `MultipleMode` (`TApplicationMultipleMode.php`: `Auto`, `Multiple`, `Singleton`) decides how it joins the `Prado` application pool. @since 4.4.0
 
-- **[`TApplicationComponent.php`](TApplicationComponent.md)** — Base for application-aware components; provides `getApplication()`, `getService()`, `getRequest()`, `getResponse()`, `getSession()`, `getUser()`.
+- **[`TApplicationComponent.php`](TApplicationComponent.md)** — Base for application-aware components; binds the application current at construction (@since 4.4.0) and provides `getApplication()`, `getService()`, `getRequest()`, `getResponse()`, `getSession()`, `getUser()`.
 
 - **[`TApplicationConfiguration.php`](TApplicationConfiguration.md)** — Parses `application.xml` (or `application.php`); loads module/service/parameter definitions.
 

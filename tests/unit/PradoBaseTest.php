@@ -1536,4 +1536,870 @@ class PradoBaseTest extends \PHPUnit\Framework\TestCase
 		Prado::autoload('Prado\\NonExistent\\TFakeAutoloadXYZ123');
 		$this->assertFalse(class_exists('Prado\\NonExistent\\TFakeAutoloadXYZ123', false));
 	}
+
+	// -------------------------------------------------------------------------
+	// Prado::getMultipleApplications() / setMultipleApplications()
+	// -------------------------------------------------------------------------
+
+	/**
+	 * getMultipleApplications() returns false when the flag is explicitly false.
+	 * @since 4.4.0
+	 */
+	public function testGetMultipleApplications_returnsFalse_whenFlagIsFalse(): void
+	{
+		$snap = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_multipleApplications']);
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_multipleApplications', false);
+		try {
+			$this->assertFalse(Prado::getMultipleApplications());
+		} finally {
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snap);
+		}
+	}
+
+	/**
+	 * getMultipleApplications() returns true when the flag is explicitly true.
+	 * @since 4.4.0
+	 */
+	public function testGetMultipleApplications_returnsTrue_whenFlagIsTrue(): void
+	{
+		$snap = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_multipleApplications']);
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_multipleApplications', true);
+		try {
+			$this->assertTrue(Prado::getMultipleApplications());
+		} finally {
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snap);
+		}
+	}
+
+	/**
+	 * setMultipleApplications(true) makes getMultipleApplications() return true;
+	 * setMultipleApplications(false) makes it return false again when only one
+	 * application is registered.
+	 * @since 4.4.0
+	 */
+	public function testSetMultipleApplications_roundTrip(): void
+	{
+		$snap = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_multipleApplications', '_applications']);
+		try {
+			Prado::setMultipleApplications(true);
+			$this->assertTrue(Prado::getMultipleApplications());
+
+			// Only one app in the pool — disabling must succeed.
+			Prado::setMultipleApplications(false);
+			$this->assertFalse(Prado::getMultipleApplications());
+		} finally {
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snap);
+		}
+	}
+
+	/**
+	 * setMultipleApplications(false) throws when two or more entries exist in the pool
+	 * and the flag is currently true.  The pool is seeded directly (two different string
+	 * keys pointing to the same TApplication object) because all TApplication instances
+	 * sharing a runtime path have the same unique ID and cannot be registered twice via
+	 * registerApplication().
+	 * @since 4.4.0
+	 */
+	public function testSetMultipleApplications_throwsWhenDisablingWithMultipleAppsInPool(): void
+	{
+		$app = Prado::getApplication();
+		$snap = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_multipleApplications', '_applications']);
+		$pool = new \Prado\Collections\TWeakMap();
+		$pool->add($app->getUniqueID(), $app);
+		$pool->add('fake-second-app-id', $app); // second distinct key, count → 2
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_applications', $pool);
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_multipleApplications', true);
+		try {
+			$this->assertCount(2, Prado::getApplications());
+			$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
+			Prado::setMultipleApplications(false);
+		} finally {
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snap);
+		}
+	}
+
+	/**
+	 * setMultipleApplications(false) does NOT throw when going from false to false
+	 * (no transition), even if multiple entries happen to be in the pool.
+	 * @since 4.4.0
+	 */
+	public function testSetMultipleApplications_noThrow_whenAlreadyFalse(): void
+	{
+		$app = Prado::getApplication();
+		$snap = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_multipleApplications', '_applications']);
+		$pool = new \Prado\Collections\TWeakMap();
+		$pool->add($app->getUniqueID(), $app);
+		$pool->add('fake-second-app-id', $app);
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_applications', $pool);
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_multipleApplications', false);
+		try {
+			// false → false with multiple entries in pool must not throw.
+			Prado::setMultipleApplications(false);
+			$this->assertFalse(Prado::getMultipleApplications());
+		} finally {
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snap);
+		}
+	}
+
+	// -------------------------------------------------------------------------
+	// Prado::getApplications() — pool visibility
+	// -------------------------------------------------------------------------
+
+	/**
+	 * getApplications() returns null when the pool has never been initialized.
+	 * @since 4.4.0
+	 */
+	public function testGetApplications_isNull_whenPoolIsUninitialized(): void
+	{
+		$snap = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_applications']);
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_applications', null);
+		try {
+			$this->assertNull(Prado::getApplications());
+		} finally {
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snap);
+		}
+	}
+
+	/**
+	 * getApplications() returns a TWeakMap after at least one registration.
+	 * @since 4.4.0
+	 */
+	public function testGetApplications_returnsTWeakMap_afterRegistration(): void
+	{
+		$app = Prado::getApplication();
+		$snap = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_applications']);
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_applications', null);
+		try {
+			Prado::registerApplication($app);
+			$this->assertInstanceOf(\Prado\Collections\TWeakMap::class, Prado::getApplications());
+		} finally {
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snap);
+		}
+	}
+
+	// -------------------------------------------------------------------------
+	// Prado::registerApplication()
+	// -------------------------------------------------------------------------
+
+	/**
+	 * registerApplication() adds the instance to the pool keyed by its unique ID,
+	 * with the TApplication object as the (weakly-held) value.
+	 * @since 4.4.0
+	 */
+	public function testRegisterApplication_addsAppToPool_keyedByUniqueId(): void
+	{
+		$app = Prado::getApplication();
+		$snap = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_applications']);
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_applications', null);
+		try {
+			Prado::registerApplication($app);
+
+			$pool = Prado::getApplications();
+			$this->assertInstanceOf(\Prado\Collections\TWeakMap::class, $pool);
+			$this->assertCount(1, $pool);
+			$this->assertTrue($pool->contains($app->getUniqueID()));
+			$this->assertSame($app, $pool->itemAt($app->getUniqueID()));
+		} finally {
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snap);
+		}
+	}
+
+	/**
+	 * registerApplication() is idempotent: a second call with the same unique ID
+	 * leaves the pool count at 1 and does not replace the existing entry.
+	 * @since 4.4.0
+	 */
+	public function testRegisterApplication_idempotent(): void
+	{
+		$app = Prado::getApplication();
+		$snap = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_applications']);
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_applications', null);
+		try {
+			Prado::registerApplication($app);
+			$this->assertCount(1, Prado::getApplications());
+
+			Prado::registerApplication($app);
+
+			$this->assertCount(1, Prado::getApplications());
+			$this->assertSame($app, Prado::getApplications()->itemAt($app->getUniqueID()));
+		} finally {
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snap);
+		}
+	}
+
+	// -------------------------------------------------------------------------
+	// Prado::unregisterApplication()
+	// -------------------------------------------------------------------------
+
+	/**
+	 * unregisterApplication() removes the instance from the pool; the TWeakMap
+	 * object itself is retained (count drops to zero).
+	 * @since 4.4.0
+	 */
+	public function testUnregisterApplication_removesInstanceFromPool(): void
+	{
+		$app = Prado::getApplication();
+		$snap = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_applications', '_application']);
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_applications', null);
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_application', null);
+		try {
+			Prado::registerApplication($app);
+			$this->assertCount(1, Prado::getApplications());
+
+			Prado::unregisterApplication($app);
+
+			$pool = Prado::getApplications();
+			$this->assertNotNull($pool);
+			$this->assertCount(0, $pool);
+			$this->assertFalse($pool->contains($app->getUniqueID()));
+		} finally {
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snap);
+		}
+	}
+
+	/**
+	 * unregisterApplication() clears $_application when the removed instance is
+	 * also the current application.
+	 * @since 4.4.0
+	 */
+	public function testUnregisterApplication_clearsCurrent_whenUnregisteredAppIsCurrent(): void
+	{
+		$app = Prado::getApplication();
+		$snap = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_applications', '_application']);
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_applications', null);
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_application', $app);
+		try {
+			Prado::registerApplication($app);
+			$this->assertSame($app, Prado::getApplication());
+
+			Prado::unregisterApplication($app);
+
+			$this->assertNull(Prado::getApplication());
+		} finally {
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snap);
+		}
+	}
+
+	/**
+	 * unregisterApplication() does NOT clear $_application when the object identity
+	 * of the removed instance does not match $_application, even though both share the
+	 * same unique ID.  A pool entry is added directly with a fake key so that
+	 * unregisterApplication() removes a different key without touching $_application.
+	 * @since 4.4.0
+	 */
+	public function testUnregisterApplication_doesNotClearCurrent_whenDifferentAppIsUnregistered(): void
+	{
+		$currentApp = Prado::getApplication();
+		$snap = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_applications', '_application']);
+		$pool = new \Prado\Collections\TWeakMap();
+		$pool->add('other-app-id', $currentApp); // separate key for the "other" app
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_applications', $pool);
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_application', $currentApp);
+		try {
+			$otherApp = clone $currentApp;
+			// Point the fake key at the clone so unregister removes it by unique ID.
+			// Since clone shares the same getUniqueID(), we simulate a distinct entry by
+			// calling remove() directly — which is what unregisterApplication() does.
+			$pool->remove('other-app-id');
+			$pool->add('other-app-id', $otherApp);
+
+			// unregisterApplication uses $otherApp->getUniqueID() as the key.
+			// That equals $currentApp->getUniqueID(), so the test verifies that
+			// $_application (object identity) is NOT cleared even when the pool key matches.
+			Prado::unregisterApplication($otherApp);
+
+			// $_application must still point at $currentApp (different PHP object).
+			$this->assertSame($currentApp, Prado::getApplication());
+		} finally {
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snap);
+		}
+	}
+
+	// -------------------------------------------------------------------------
+	// Prado::setApplication() — null clearing and auto-registration
+	// -------------------------------------------------------------------------
+
+	/**
+	 * setApplication(null) clears the current application reference.
+	 * @since 4.4.0
+	 */
+	public function testSetApplication_withNull_clearsCurrent(): void
+	{
+		$app = Prado::getApplication();
+		$snap = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_application', '_applications']);
+		try {
+			Prado::setApplication(null);
+			$this->assertNull(Prado::getApplication());
+		} finally {
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snap);
+		}
+	}
+
+	/**
+	 * setApplication() called with the same instance that is already current is
+	 * idempotent: getApplication() still returns the same object.
+	 * @since 4.4.0
+	 */
+	public function testSetApplication_withCurrentApp_isIdempotent(): void
+	{
+		$app = Prado::getApplication();
+		$snap = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_application', '_applications']);
+		try {
+			Prado::setApplication($app);
+			$this->assertSame($app, Prado::getApplication());
+		} finally {
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snap);
+		}
+	}
+
+	/**
+	 * setApplication() with a non-null app auto-registers it in the applications pool,
+	 * keyed by the app's unique ID.
+	 * @since 4.4.0
+	 */
+	public function testSetApplication_autoRegistersAppInPool(): void
+	{
+		$app = Prado::getApplication();
+		$snap = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_application', '_applications']);
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_applications', null);
+		try {
+			Prado::setApplication($app);
+			$pool = Prado::getApplications();
+			$this->assertInstanceOf(\Prado\Collections\TWeakMap::class, $pool);
+			$this->assertTrue($pool->contains($app->getUniqueID()));
+			$this->assertSame($app, $pool->itemAt($app->getUniqueID()));
+		} finally {
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snap);
+		}
+	}
+
+	/**
+	 * In multiple-application mode, setApplication() accepts a different instance
+	 * without throwing and registers it in the pool under its unique ID.
+	 * @since 4.4.0
+	 */
+	public function testSetApplication_inMultiAppMode_acceptsDifferentInstance(): void
+	{
+		$currentApp = Prado::getApplication();
+		$snap = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_multipleApplications', '_application', '_applications']);
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_multipleApplications', true);
+		// Start with an empty pool so the clone (which shares uniqueID with $currentApp)
+		// is added as a fresh entry and pool->itemAt returns the clone, not the original.
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_applications', null);
+		try {
+			$otherApp = clone $currentApp;
+			Prado::setApplication($otherApp);
+			$this->assertSame($otherApp, Prado::getApplication());
+
+			$pool = Prado::getApplications();
+			$this->assertTrue($pool->contains($otherApp->getUniqueID()));
+			$this->assertSame($otherApp, $pool->itemAt($otherApp->getUniqueID()));
+		} finally {
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snap);
+		}
+	}
+
+	// -------------------------------------------------------------------------
+	// Prado::getApplication($id) — pool lookup by unique ID
+	// -------------------------------------------------------------------------
+
+	/**
+	 * getApplication(null) returns the current application (backward-compatible default).
+	 * @since 4.4.0
+	 */
+	public function testGetApplication_withNullId_returnsCurrentApplication(): void
+	{
+		$app = Prado::getApplication();
+		$this->assertSame($app, Prado::getApplication(null));
+	}
+
+	/**
+	 * getApplication($id) finds a registered application by its unique ID.
+	 * @since 4.4.0
+	 */
+	public function testGetApplication_withId_returnsMatchingAppFromPool(): void
+	{
+		$app = Prado::getApplication();
+		$snap = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_applications']);
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_applications', null);
+		try {
+			Prado::registerApplication($app);
+			$found = Prado::getApplication($app->getUniqueID());
+			$this->assertSame($app, $found);
+		} finally {
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snap);
+		}
+	}
+
+	/**
+	 * getApplication($id) returns null when the ID does not exist in the pool.
+	 * @since 4.4.0
+	 */
+	public function testGetApplication_withUnknownId_returnsNull(): void
+	{
+		$snap = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_applications']);
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_applications', null);
+		try {
+			$this->assertNull(Prado::getApplication('no-such-app-id'));
+		} finally {
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snap);
+		}
+	}
+
+	/**
+	 * getApplication($id) returns null when the pool itself is null (no apps ever
+	 * registered), without throwing.
+	 * @since 4.4.0
+	 */
+	public function testGetApplication_withId_andNullPool_returnsNull(): void
+	{
+		$snap = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_applications']);
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_applications', null);
+		try {
+			$this->assertNull(Prado::getApplication('any-id'));
+		} finally {
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snap);
+		}
+	}
+
+	// -------------------------------------------------------------------------
+	// TApplicationMultipleMode — enum constants
+	// -------------------------------------------------------------------------
+
+	/**
+	 * TApplicationMultipleMode defines Auto, Multiple, and Singleton string constants.
+	 * @since 4.4.0
+	 */
+	public function testTApplicationMultipleMode_constants(): void
+	{
+		$this->assertSame('Auto', \Prado\TApplicationMultipleMode::Auto);
+		$this->assertSame('Multiple', \Prado\TApplicationMultipleMode::Multiple);
+		$this->assertSame('Singleton', \Prado\TApplicationMultipleMode::Singleton);
+	}
+
+	/**
+	 * TApplicationMultipleMode is an IEnumerable with exactly three values.
+	 * @since 4.4.0
+	 */
+	public function testTApplicationMultipleMode_isEnumerable(): void
+	{
+		$this->assertInstanceOf(\Prado\IEnumerable::class, new \Prado\TApplicationMultipleMode());
+		$values = iterator_to_array(new \Prado\TApplicationMultipleMode());
+		$this->assertCount(3, $values);
+		$this->assertContains('Auto', $values);
+		$this->assertContains('Multiple', $values);
+		$this->assertContains('Singleton', $values);
+	}
+
+	// -------------------------------------------------------------------------
+	// TApplication::getMultipleMode() / setMultipleMode()
+	// -------------------------------------------------------------------------
+
+	/**
+	 * getMultipleMode() returns Auto by default.
+	 * @since 4.4.0
+	 */
+	public function testTApplication_getMultipleMode_defaultIsAuto(): void
+	{
+		$app = Prado::getApplication();
+		$this->assertSame(\Prado\TApplicationMultipleMode::Auto, $app->getMultipleMode());
+	}
+
+	/**
+	 * setMultipleMode('Auto') stores Auto.
+	 * @since 4.4.0
+	 */
+	public function testTApplication_setMultipleMode_enumAuto(): void
+	{
+		$app = Prado::getApplication();
+		$snapApp = PradoUnit::snapshot($app, ['_multipleMode']);
+		$snapPrado = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_multipleApplications']);
+		try {
+			$app->setMultipleMode(\Prado\TApplicationMultipleMode::Multiple);
+			$app->setMultipleMode(\Prado\TApplicationMultipleMode::Auto);
+			$this->assertSame(\Prado\TApplicationMultipleMode::Auto, $app->getMultipleMode());
+		} finally {
+			PradoUnit::restore($app, $snapApp);
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snapPrado);
+		}
+	}
+
+	/**
+	 * setMultipleMode('Multiple') stores Multiple and calls Prado::setMultipleApplications(true).
+	 * @since 4.4.0
+	 */
+	public function testTApplication_setMultipleMode_enumMultiple(): void
+	{
+		$app = Prado::getApplication();
+		$snapApp = PradoUnit::snapshot($app, ['_multipleMode']);
+		$snapPrado = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_multipleApplications']);
+		try {
+			$app->setMultipleMode(\Prado\TApplicationMultipleMode::Multiple);
+			$this->assertSame(\Prado\TApplicationMultipleMode::Multiple, $app->getMultipleMode());
+			$this->assertTrue(Prado::getMultipleApplications());
+		} finally {
+			PradoUnit::restore($app, $snapApp);
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snapPrado);
+		}
+	}
+
+	/**
+	 * setMultipleMode('Singleton') stores Singleton; throws if Prado is already in multi-app mode.
+	 * @since 4.4.0
+	 */
+	public function testTApplication_setMultipleMode_enumSingleton_throwsWhenMultiAppActive(): void
+	{
+		$app = Prado::getApplication();
+		$snapApp = PradoUnit::snapshot($app, ['_multipleMode']);
+		$snapPrado = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_multipleApplications']);
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_multipleApplications', true);
+		try {
+			$this->expectException(\Prado\Exceptions\TInvalidOperationException::class);
+			$app->setMultipleMode(\Prado\TApplicationMultipleMode::Singleton);
+		} finally {
+			PradoUnit::restore($app, $snapApp);
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snapPrado);
+		}
+	}
+
+	/**
+	 * setMultipleMode('Singleton') stores Singleton when Prado is NOT in multi-app mode.
+	 * @since 4.4.0
+	 */
+	public function testTApplication_setMultipleMode_enumSingleton_storesWhenSafe(): void
+	{
+		$app = Prado::getApplication();
+		$snapApp = PradoUnit::snapshot($app, ['_multipleMode']);
+		$snapPrado = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_multipleApplications']);
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_multipleApplications', false);
+		try {
+			$app->setMultipleMode(\Prado\TApplicationMultipleMode::Singleton);
+			$this->assertSame(\Prado\TApplicationMultipleMode::Singleton, $app->getMultipleMode());
+		} finally {
+			PradoUnit::restore($app, $snapApp);
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snapPrado);
+		}
+	}
+
+	/**
+	 * setMultipleMode(true) is backward-compatible: maps to Multiple.
+	 * @since 4.4.0
+	 */
+	public function testTApplication_setMultipleMode_legacyBoolTrue_mapsToMultiple(): void
+	{
+		$app = Prado::getApplication();
+		$snapApp = PradoUnit::snapshot($app, ['_multipleMode']);
+		$snapPrado = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_multipleApplications']);
+		try {
+			$app->setMultipleMode(true);
+			$this->assertSame(\Prado\TApplicationMultipleMode::Multiple, $app->getMultipleMode());
+		} finally {
+			PradoUnit::restore($app, $snapApp);
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snapPrado);
+		}
+	}
+
+	/**
+	 * setMultipleMode(false) is backward-compatible: maps to Singleton (no throw when Prado is not in multi-app mode).
+	 * @since 4.4.0
+	 */
+	public function testTApplication_setMultipleMode_legacyBoolFalse_mapsToSingleton(): void
+	{
+		$app = Prado::getApplication();
+		$snapApp = PradoUnit::snapshot($app, ['_multipleMode']);
+		$snapPrado = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_multipleApplications']);
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_multipleApplications', false);
+		try {
+			$app->setMultipleMode(false);
+			$this->assertSame(\Prado\TApplicationMultipleMode::Singleton, $app->getMultipleMode());
+		} finally {
+			PradoUnit::restore($app, $snapApp);
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snapPrado);
+		}
+	}
+
+	/**
+	 * setMultipleMode(null) maps to Auto.
+	 * @since 4.4.0
+	 */
+	public function testTApplication_setMultipleMode_null_mapsToAuto(): void
+	{
+		$app = Prado::getApplication();
+		$snapApp = PradoUnit::snapshot($app, ['_multipleMode']);
+		$snapPrado = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_multipleApplications']);
+		try {
+			$app->setMultipleMode(\Prado\TApplicationMultipleMode::Multiple);
+			$app->setMultipleMode(null);
+			$this->assertSame(\Prado\TApplicationMultipleMode::Auto, $app->getMultipleMode());
+		} finally {
+			PradoUnit::restore($app, $snapApp);
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snapPrado);
+		}
+	}
+
+	/**
+	 * setMultipleMode() is a no-op when the value is already the same mode.
+	 * @since 4.4.0
+	 */
+	public function testTApplication_setMultipleMode_noopOnSameValue(): void
+	{
+		$app = Prado::getApplication();
+		$snapApp = PradoUnit::snapshot($app, ['_multipleMode']);
+		$snapPrado = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_multipleApplications']);
+		try {
+			// Already Auto — setting Auto again must not flip Prado::_multipleApplications.
+			$app->setMultipleMode(\Prado\TApplicationMultipleMode::Auto);
+			$this->assertFalse(Prado::getMultipleApplications());
+		} finally {
+			PradoUnit::restore($app, $snapApp);
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snapPrado);
+		}
+	}
+
+	// -------------------------------------------------------------------------
+	// Prado::hasApplication()
+	// -------------------------------------------------------------------------
+
+	/**
+	 * hasApplication(null) returns false when no application is set.
+	 * @since 4.4.0
+	 */
+	public function testHasApplication_null_returnsFalse_whenNoCurrentApp(): void
+	{
+		$snap = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_application']);
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_application', null);
+		try {
+			$this->assertFalse(Prado::hasApplication());
+		} finally {
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snap);
+		}
+	}
+
+	/**
+	 * hasApplication(null) returns true when an application is set.
+	 * @since 4.4.0
+	 */
+	public function testHasApplication_null_returnsTrue_whenCurrentAppExists(): void
+	{
+		$this->assertNotNull(Prado::getApplication());
+		$this->assertTrue(Prado::hasApplication());
+	}
+
+	/**
+	 * hasApplication($id) returns false when the pool is null.
+	 * @since 4.4.0
+	 */
+	public function testHasApplication_id_returnsFalse_whenPoolIsNull(): void
+	{
+		$snap = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_applications']);
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_applications', null);
+		try {
+			$this->assertFalse(Prado::hasApplication('any-id'));
+		} finally {
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snap);
+		}
+	}
+
+	/**
+	 * hasApplication($id) returns false for an ID not in the pool.
+	 * @since 4.4.0
+	 */
+	public function testHasApplication_id_returnsFalse_whenIdNotInPool(): void
+	{
+		$snap = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_applications']);
+		try {
+			$this->assertFalse(Prado::hasApplication('nonexistent-id'));
+		} finally {
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snap);
+		}
+	}
+
+	/**
+	 * hasApplication($id) returns true for an ID that is in the pool.
+	 * @since 4.4.0
+	 */
+	public function testHasApplication_id_returnsTrue_whenIdExistsInPool(): void
+	{
+		$app = Prado::getApplication();
+		$this->assertTrue(Prado::hasApplication($app->getUniqueID()));
+	}
+
+	// -------------------------------------------------------------------------
+	// TApplication::resolveUniqueId()
+	// -------------------------------------------------------------------------
+
+	/** Helper: call the protected resolveUniqueId() method via reflection. */
+	private function callResolveUniqueId(\Prado\TApplication $app): void
+	{
+		$ref = new \ReflectionMethod($app, 'resolveUniqueId');
+		$ref->setAccessible(true);
+		$ref->invoke($app);
+	}
+
+	/**
+	 * resolveUniqueId() is a no-op when the pool is null.
+	 * @since 4.4.0
+	 */
+	public function testResolveUniqueId_noopWhenPoolIsNull(): void
+	{
+		$app = Prado::getApplication();
+		$origId = $app->getUniqueID();
+		$snapApp = PradoUnit::snapshot($app, ['_uniqueID']);
+		$snapPrado = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_applications']);
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_applications', null);
+		try {
+			$this->callResolveUniqueId($app);
+			$this->assertSame($origId, $app->getUniqueID());
+		} finally {
+			PradoUnit::restore($app, $snapApp);
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snapPrado);
+		}
+	}
+
+	/**
+	 * resolveUniqueId() is a no-op when the pool does not contain this app's ID.
+	 * @since 4.4.0
+	 */
+	public function testResolveUniqueId_noopWhenIdNotInPool(): void
+	{
+		$app = Prado::getApplication();
+		$origId = $app->getUniqueID();
+		$snapApp = PradoUnit::snapshot($app, ['_uniqueID']);
+		$snapPrado = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_applications']);
+		// Empty pool — no collision possible.
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_applications', new \Prado\Collections\TWeakMap());
+		try {
+			$this->callResolveUniqueId($app);
+			$this->assertSame($origId, $app->getUniqueID());
+		} finally {
+			PradoUnit::restore($app, $snapApp);
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snapPrado);
+		}
+	}
+
+	/**
+	 * resolveUniqueId() is a no-op when the pool entry for this ID belongs to $this.
+	 * @since 4.4.0
+	 */
+	public function testResolveUniqueId_noopWhenPoolEntryIsSelf(): void
+	{
+		$app = Prado::getApplication();
+		$origId = $app->getUniqueID();
+		$snapApp = PradoUnit::snapshot($app, ['_uniqueID']);
+		$snapPrado = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_applications']);
+		$pool = new \Prado\Collections\TWeakMap();
+		$pool->add($origId, $app); // Same app owns the slot.
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_applications', $pool);
+		try {
+			$this->callResolveUniqueId($app);
+			$this->assertSame($origId, $app->getUniqueID());
+		} finally {
+			PradoUnit::restore($app, $snapApp);
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snapPrado);
+		}
+	}
+
+	/**
+	 * resolveUniqueId() appends '-2' when the ID is taken by a different app.
+	 * @since 4.4.0
+	 */
+	public function testResolveUniqueId_appendsSuffix_onCollision(): void
+	{
+		$app = Prado::getApplication();
+		$origId = $app->getUniqueID();
+		$snapApp = PradoUnit::snapshot($app, ['_uniqueID']);
+		$snapPrado = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_applications']);
+		// Seed the pool: the slot for $origId is owned by a *different* object.
+		$pool = new \Prado\Collections\TWeakMap();
+		$other = clone $app; // Different object, same uniqueID value.
+		PradoUnit::setProp($other, '_uniqueID', $origId);
+		$pool->add($origId, $other);
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_applications', $pool);
+		try {
+			$this->callResolveUniqueId($app);
+			$this->assertSame($origId . '-2', $app->getUniqueID());
+		} finally {
+			PradoUnit::restore($app, $snapApp);
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snapPrado);
+		}
+	}
+
+	/**
+	 * resolveUniqueId() increments an existing suffix rather than double-suffixing.
+	 * @since 4.4.0
+	 */
+	public function testResolveUniqueId_incrementsExistingSuffix(): void
+	{
+		$app = Prado::getApplication();
+		$origId = $app->getUniqueID();
+		$suffixedId = $origId . '-2';
+		$snapApp = PradoUnit::snapshot($app, ['_uniqueID']);
+		$snapPrado = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_applications']);
+		// App's current ID is already suffixed, and that slot is taken.
+		PradoUnit::setProp($app, '_uniqueID', $suffixedId);
+		$pool = new \Prado\Collections\TWeakMap();
+		$other = clone $app;
+		PradoUnit::setProp($other, '_uniqueID', $suffixedId);
+		$pool->add($suffixedId, $other);
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_applications', $pool);
+		try {
+			$this->callResolveUniqueId($app);
+			$this->assertSame($origId . '-3', $app->getUniqueID());
+		} finally {
+			PradoUnit::restore($app, $snapApp);
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snapPrado);
+		}
+	}
+
+	/**
+	 * resolveUniqueId() skips already-occupied candidates until a free slot is found.
+	 * @since 4.4.0
+	 */
+	public function testResolveUniqueId_skipsOccupiedCandidates(): void
+	{
+		$app = Prado::getApplication();
+		$origId = $app->getUniqueID();
+		$snapApp = PradoUnit::snapshot($app, ['_uniqueID']);
+		$snapPrado = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_applications']);
+		// Occupy $origId, $origId-2, and $origId-3; expect $origId-4.
+		$pool = new \Prado\Collections\TWeakMap();
+		$other = clone $app;
+		$pool->add($origId, $other);
+		$pool->add($origId . '-2', $other);
+		$pool->add($origId . '-3', $other);
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_applications', $pool);
+		try {
+			$this->callResolveUniqueId($app);
+			$this->assertSame($origId . '-4', $app->getUniqueID());
+		} finally {
+			PradoUnit::restore($app, $snapApp);
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snapPrado);
+		}
+	}
+
+	/**
+	 * resolveUniqueId() preserves the separator style from the existing suffix.
+	 * @since 4.4.0
+	 */
+	public function testResolveUniqueId_preservesSeparatorStyle(): void
+	{
+		$app = Prado::getApplication();
+		$origId = $app->getUniqueID();
+		$suffixedId = $origId . '.2';
+		$snapApp = PradoUnit::snapshot($app, ['_uniqueID']);
+		$snapPrado = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_applications']);
+		PradoUnit::setProp($app, '_uniqueID', $suffixedId);
+		$pool = new \Prado\Collections\TWeakMap();
+		$other = clone $app;
+		PradoUnit::setProp($other, '_uniqueID', $suffixedId);
+		$pool->add($suffixedId, $other);
+		PradoUnit::setStaticProp(\Prado\Prado::class, '_applications', $pool);
+		try {
+			$this->callResolveUniqueId($app);
+			$this->assertSame($origId . '.3', $app->getUniqueID());
+		} finally {
+			PradoUnit::restore($app, $snapApp);
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snapPrado);
+		}
+	}
 }

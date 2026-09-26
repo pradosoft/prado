@@ -29,12 +29,60 @@ use Prado\TApplicationMode;
  * Besides, TApplicationComponent defines two shortcut methods for
  * publishing private files: {@see publishAsset} and {@see publishFilePath}.
  *
+ * A TApplicationComponent keeps a reference to the {@see TApplication} that is
+ * current when the component is constructed. With multiple applications
+ * ({@see Prado::getMultipleApplications()}), the component stays bound to its
+ * owning application after another application becomes the current one.
+ * {@see isCurrentApplication()} tests the binding and
+ * {@see makeCurrentApplication()} makes the owning application current.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ * @author Brad Anderson <belisoful@icloud.com>
  * @since 3.0
  */
 class TApplicationComponent extends \Prado\TComponent
 {
 	public const FX_CACHE_FILE = 'fxevent.cache';
+
+	/**
+	 * @var ?TApplication the application that owns this component, bound at construction.
+	 *   Excluded from serialization; {@see __wakeup()} binds the current application.
+	 * @since 4.4.0
+	 */
+	private ?TApplication $_application = null;
+
+	/**
+	 * Binds the current application and initializes global-event listening.
+	 * @since 4.4.0
+	 */
+	public function __construct()
+	{
+		$this->resolveApplication();
+		parent::__construct();
+	}
+
+	/**
+	 * Excludes the owning application from serialization so a serialized component
+	 * does not carry the {@see TApplication} object graph.
+	 * @param array $exprops by reference
+	 * @since 4.4.0
+	 */
+	protected function _getZappableSleepProps(&$exprops)
+	{
+		parent::_getZappableSleepProps($exprops);
+		$exprops[] = "\0" . __CLASS__ . "\0_application";
+	}
+
+	/**
+	 * Binds the current application after unserialization.
+	 * @since 4.4.0
+	 */
+	public function __wakeup()
+	{
+		$this->resolveApplication();
+		parent::__wakeup();
+	}
+
 	/**
 	 * TApplicationComponents auto listen to global events.
 	 *
@@ -94,51 +142,115 @@ class TApplicationComponent extends \Prado\TComponent
 	}
 
 	/**
-	 * @return \Prado\TApplication current application instance
+	 * Returns the application that owns this component. A component without a
+	 * binding, such as one constructed before any application existed, binds the
+	 * current application through {@see resolveApplication()} first.
+	 * @return ?TApplication the owning application, or null when none is registered.
 	 */
 	public function getApplication()
 	{
-		return Prado::getApplication();
+		$this->resolveApplication();
+		return $this->getApplicationDirect();
 	}
 
 	/**
-	 * @return ?IService the current service
+	 * Returns the bound application without resolving it.
+	 * @return ?TApplication the bound application, or null when unbound.
+	 * @since 4.4.0
+	 */
+	protected function getApplicationDirect(): ?TApplication
+	{
+		return $this->_application;
+	}
+
+	/**
+	 * Binds an application, or clears the binding with null so that
+	 * {@see getApplication()} binds the current application on its next call.
+	 * @param ?TApplication $app the application to bind, or null to clear.
+	 * @since 4.4.0
+	 */
+	protected function setApplicationDirect(?TApplication $app): void
+	{
+		$this->_application = $app;
+	}
+
+	/**
+	 * Binds the current application when the component is unbound. A bound
+	 * component keeps its application.
+	 * @since 4.4.0
+	 */
+	protected function resolveApplication(): void
+	{
+		if ($this->getApplicationDirect() === null) {
+			$this->setApplicationDirect(Prado::getApplication());
+		}
+	}
+
+	/**
+	 * Returns whether the bound application is the current application. An
+	 * unbound component returns false.
+	 * @return bool whether the bound application is {@see Prado::getApplication()}.
+	 * @since 4.4.0
+	 */
+	public function isCurrentApplication(): bool
+	{
+		$app = $this->getApplicationDirect();
+		return $app !== null && $app === Prado::getApplication();
+	}
+
+	/**
+	 * Makes the bound application the current application through
+	 * {@see Prado::setApplication()}. An unbound component does nothing.
+	 * @throws \Prado\Exceptions\TInvalidOperationException when a different
+	 *   application is current and multiple applications are not enabled.
+	 * @since 4.4.0
+	 */
+	public function makeCurrentApplication(): void
+	{
+		$app = $this->getApplicationDirect();
+		if ($app !== null && !$this->isCurrentApplication()) {
+			Prado::setApplication($app);
+		}
+	}
+
+	/**
+	 * @return ?IService the current service, or null when no application is available.
 	 */
 	public function getService()
 	{
-		return Prado::getApplication()->getService();
+		return $this->getApplication()?->getService();
 	}
 
 	/**
-	 * @return \Prado\Web\THttpRequest the current user request
+	 * @return ?\Prado\Web\THttpRequest the current user request, or null when no application is available.
 	 */
 	public function getRequest()
 	{
-		return Prado::getApplication()->getRequest();
+		return $this->getApplication()?->getRequest();
 	}
 
 	/**
-	 * @return \Prado\Web\THttpResponse the response
+	 * @return ?\Prado\Web\THttpResponse the response, or null when no application is available.
 	 */
 	public function getResponse()
 	{
-		return Prado::getApplication()->getResponse();
+		return $this->getApplication()?->getResponse();
 	}
 
 	/**
-	 * @return \Prado\Web\THttpSession user session
+	 * @return ?\Prado\Web\THttpSession the user session, or null when no application is available.
 	 */
 	public function getSession()
 	{
-		return Prado::getApplication()->getSession();
+		return $this->getApplication()?->getSession();
 	}
 
 	/**
-	 * @return \Prado\Security\IUser information about the current user
+	 * @return ?\Prado\Security\IUser the current user, or null when no application is available.
 	 */
 	public function getUser()
 	{
-		return Prado::getApplication()->getUser();
+		return $this->getApplication()?->getUser();
 	}
 
 	/**
@@ -173,6 +285,6 @@ class TApplicationComponent extends \Prado\TComponent
 	 */
 	public function publishFilePath($fullPath, $checkTimestamp = false)
 	{
-		return Prado::getApplication()->getAssetManager()->publishFilePath($fullPath, $checkTimestamp);
+		return $this->getApplication()?->getAssetManager()?->publishFilePath($fullPath, $checkTimestamp);
 	}
 }

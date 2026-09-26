@@ -1,4 +1,6 @@
 prado_application_singleton_required	= Prado.Application must only be set once.
+prado_application_multiapp_disable_conflict	= Prado.MultipleApplications cannot be disabled while {0} applications are registered.
+prado_application_multiapp_mode_conflict	= TApplication.MultipleMode cannot be Singleton while Prado.MultipleApplications is enabled.
 prado_component_unknown					= Unknown component type '{0}'. This may be caused by the following parsing error in the {0} class file: {1}
 prado_using_invalid						= '{0}' is not a valid namespace to be used. Make sure '.*' is appended if you want to use a namespace referring to a directory.
 prado_alias_redefined					= Alias '{0}' cannot be redefined.

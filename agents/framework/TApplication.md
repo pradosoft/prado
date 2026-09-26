@@ -57,7 +57,8 @@ run() → processRequest()
 |----------|-------------|
 | `Mode` | `TApplicationMode` enum value |
 | `RuntimePath` | Writable path for cache/session files (default: `protected/runtime`) |
-| `UniqueID` | Stable hash identifying this application; used for cache key prefixes |
+| `UniqueID` | Stable hash identifying this application; used for cache key prefixes. `resolveUniqueId()` appends `-2`, `-3`, ... when another pooled application holds the hash (@since 4.4.0) |
+| `MultipleMode` | `TApplicationMultipleMode`: `Auto` (default), `Multiple`, or `Singleton`; decides how `registerApplication()` joins the `Prado` application pool. A bool is shorthand (`true` = `Multiple`, `false` = `Singleton`). Setting `Singleton` while `Prado::getMultipleApplications()` is on throws (@since 4.4.0) |
 | `Parameters` | `TAttributeCollection` of application-wide config parameters |
 | `Modules` | Map of all registered modules |
 | `Services` | Map of registered services |
@@ -158,6 +159,18 @@ protected function newApplicationStatePersister(): IStatePersister
 // Creates the state persister used for GlobalState storage.
 // Override to use a different persistence backend.
 // Default: new TApplicationStatePersister()
+
+protected function registerApplication(): void            // @since 4.4.0 mode-aware
+// Runs after resolvePaths(): checks MultipleMode, enables Prado::MultipleApplications
+// when needed, calls resolveUniqueId(), then setPradoApplication(). Under PRADO_TEST_RUN
+// it only calls setPradoApplication().
+
+protected function setPradoApplication(): void            // @since 4.4.0
+// Prado::setApplication($this); override to wire another service locator.
+
+protected function getPageServiceIDDirect() / setPageServiceIDDirect()   // @since 4.4.0
+protected function getMultipleModeDirect() / setMultipleModeDirect()     // @since 4.4.0
+// Field access without the public setters' side effects.
 ```
 
 ## Patterns & Gotchas

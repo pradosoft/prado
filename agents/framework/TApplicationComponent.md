@@ -20,12 +20,19 @@ TApplicationComponent is the base class for all application-related components i
 ## Core Properties and Methods
 
 ### Application Integration
-- `getApplication()`: Returns the current application instance
-- `getService()`: Returns the current running service
-- `getRequest()`: Returns the current user request module
-- `getResponse()`: Returns the response module
-- `getSession()`: Returns the user session module
-- `getUser()`: Returns the current user instance
+- `getApplication()`: Returns the application bound at construction (@since 4.4.0), or binds and returns the current application when unbound; null when none exists
+- `getService()`: Returns the current running service, or null without an application
+- `getRequest()`: Returns the current user request module, or null without an application
+- `getResponse()`: Returns the response module, or null without an application
+- `getSession()`: Returns the user session module, or null without an application
+- `getUser()`: Returns the current user instance, or null without an application
+
+### Application Binding (@since 4.4.0)
+- `$_application` is set by `__construct()` from `Prado::getApplication()`, excluded from serialization, and re-bound by `__wakeup()`; `resolveApplication()` binds only when unbound
+- `getApplicationDirect()` / `setApplicationDirect(?TApplication)`: the binding without resolution (protected)
+- `isCurrentApplication()`: whether the bound application is `Prado::getApplication()`
+- `makeCurrentApplication()`: makes the bound application current through `Prado::setApplication()`
+- `TApplicationClockAwareTrait::getClock()` reads the bound application's clock on a `TApplicationComponent`
 
 ### Asset Management
 - `publishAsset()`: Publishes a private asset and returns its URL

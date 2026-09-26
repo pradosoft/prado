@@ -405,6 +405,7 @@ return [
 'TApplicationComponent' => 'Prado\TApplicationComponent',
 'TApplicationConfiguration' => 'Prado\TApplicationConfiguration',
 'TApplicationMode' => 'Prado\TApplicationMode',
+'TApplicationMultipleMode' => 'Prado\TApplicationMultipleMode',
 'TApplicationStatePersister' => 'Prado\TApplicationStatePersister',
 'TComponent' => 'Prado\TComponent',
 'TComponentProxy' => 'Prado\TComponentProxy',

@@ -32,4 +32,6 @@ Root source directory of the Prado PHP framework (PSR-4 namespace `Prado\`).
 
 - **`TComponentReflection`** — Introspection utilities for TComponent property/event metadata.
 
-- **`Prado`** — Static framework utility class: `Prado::getApplication()`, `Prado::getLogger()`, `Prado::getUser()`, `Prado::log()`, `Prado::setPathOfAlias()`, `Prado::getPathOfAlias()`, `Prado::using()`.
+- **`Prado`** — Static framework utility class: `Prado::getApplication()`, `Prado::getApplications()`, `Prado::getLogger()`, `Prado::getUser()`, `Prado::log()`, `Prado::setPathOfAlias()`, `Prado::getPathOfAlias()`, `Prado::using()`.
+
+- **`TApplicationMultipleMode`** — Enumerable of how a `TApplication` registers with the `Prado` application pool: `Auto`, `Multiple`, `Singleton`.

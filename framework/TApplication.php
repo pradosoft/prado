@@ -13,7 +13,7 @@ namespace Prado;
 use Prado\Caching\ICache;
 use Prado\Collections\TCollectionItemChangeParameter;
 use Prado\Collections\TMap;
-use Prado\Exceptions\{TConfigurationException, TException, TExitException, THttpException};
+use Prado\Exceptions\{TConfigurationException, TException, TExitException, THttpException, TInvalidOperationException};
 use Prado\Exceptions\TErrorHandler;
 use Prado\I18N\TGlobalization;
 use Prado\Security\IUser;
@@ -186,6 +186,11 @@ class TApplication extends TComponent implements ISingleton
 	 * @since 4.4.0
 	 */
 	public const DEFAULT_CLOCK_CLASS = TNativeClock::class;
+	/**
+	 * Default {@see TApplicationMultipleMode} of an application.
+	 * @since 4.4.0
+	 */
+	public const DEFAULT_MULTIPLE_MODE = TApplicationMultipleMode::Auto;
 	/**
 	 * Key used within the dependency cache array to store sort results,
 	 * distinct from the integer spl_object_id keys used for per-instance data.
@@ -382,6 +387,11 @@ class TApplication extends TComponent implements ISingleton
 	 * @var string Customizable page service ID
 	 */
 	private $_pageServiceID;
+	/**
+	 * @var string the {@see TApplicationMultipleMode} of this application.
+	 * @since 4.4.0
+	 */
+	private string $_multipleMode = '';
 
 	/**
 	 * @var int Bit field of TApplication internal state flags. Set via
@@ -416,11 +426,12 @@ class TApplication extends TComponent implements ISingleton
 			$configType = static::CONFIG_TYPE_XML;
 		}
 		$this->setMode(static::DEFAULT_APPLICATION_MODE);
-		$this->setPageServiceID(static::PAGE_SERVICE_ID);
+		$this->setPageServiceIDDirect(static::PAGE_SERVICE_ID);
+		$this->setMultipleModeDirect(static::DEFAULT_MULTIPLE_MODE);
 
-		$this->registerApplication();
 		$this->setConfigurationType($configType);
 		$this->resolvePaths($basePath);
+		$this->registerApplication();
 
 		if ($cacheConfig) {
 			$this->setCacheFile($this->buildCacheFilePath($this->getRuntimePath()));
@@ -448,14 +459,165 @@ class TApplication extends TComponent implements ISingleton
 	}
 
 	/**
-	 * Registers this instance as the primary PRADO application via {@see Prado::setApplication()}.
-	 * Called once from the constructor before any configuration is loaded.
-	 * Override in a subclass to redirect or suppress registration during testing.
+	 * Registers this instance in the {@see Prado} application pool and makes it the
+	 * current application. Called once from the constructor after {@see resolvePaths()}
+	 * and before any configuration is loaded. Override in a subclass to redirect or
+	 * suppress registration during testing.
+	 *
+	 * The {@see getMultipleMode MultipleMode} decides the registration:
+	 *
+	 * | Mode | Registration |
+	 * |------|--------------|
+	 * | `Multiple` | Enables {@see Prado::setMultipleApplications()} and joins the pool. |
+	 * | `Singleton` | Throws when a different application is already current. |
+	 * | `Auto` | The singleton when no application exists; enables multiple applications and joins the pool when another application is current. |
+	 *
+	 * {@see resolveUniqueId()} runs before registration so the unique ID does not
+	 * collide with a pool entry. When `PRADO_TEST_RUN` is defined the instance is
+	 * registered without the mode check and without renaming its unique ID.
+	 *
+	 * @throws \Prado\Exceptions\TInvalidOperationException when the mode is
+	 *   {@see TApplicationMultipleMode::Singleton} and another application is current.
 	 * @since 4.3.3
 	 */
-	protected function registerApplication()
+	protected function registerApplication(): void
+	{
+		if (defined('PRADO_TEST_RUN')) {
+			$this->setPradoApplication();
+			return;
+		}
+
+		$mode = $this->getMultipleMode();
+		$existing = Prado::getApplication();
+		$otherExists = $existing !== null && $existing !== $this;
+
+		if ($mode === TApplicationMultipleMode::Singleton && $otherExists) {
+			throw new TInvalidOperationException('prado_application_singleton_required');
+		}
+		if ($mode === TApplicationMultipleMode::Multiple || $otherExists) {
+			Prado::setMultipleApplications(true);
+		}
+
+		$this->resolveUniqueId();
+		$this->setPradoApplication();
+	}
+
+	/**
+	 * Renames this application's unique ID when a different application in the
+	 * {@see Prado} pool already holds it. The ID gains a numeric suffix, or its
+	 * existing `{sep}{n}` suffix (`-`, `.`, or `_`) is incremented, until the ID is
+	 * free: `a1b2c3d4`, `a1b2c3d4-2`, `a1b2c3d4-3`. Does nothing when the pool is
+	 * empty or the ID is held by this instance only.
+	 * @since 4.4.0
+	 */
+	protected function resolveUniqueId(): void
+	{
+		$pool = Prado::getApplications();
+		if ($pool === null) {
+			return;
+		}
+		$id = $this->getUniqueID();
+		if (!$pool->contains($id) || $pool->itemAt($id) === $this) {
+			return;
+		}
+		if (preg_match('/^(.*)([-._])(\d+)$/', $id, $m)) {
+			$base = $m[1];
+			$sep = $m[2];
+			$n = (int) $m[3];
+		} else {
+			$base = $id;
+			$sep = '-';
+			$n = 1;
+		}
+		do {
+			++$n;
+			$candidate = $base . $sep . $n;
+		} while ($pool->contains($candidate));
+		$this->setUniqueID($candidate);
+	}
+
+	/**
+	 * Makes this instance the current application through {@see Prado::setApplication()}.
+	 * A subclass overrides this step, for example to wire in another service locator,
+	 * without overriding {@see registerApplication()}.
+	 * @since 4.4.0
+	 */
+	protected function setPradoApplication(): void
 	{
 		Prado::setApplication($this);
+	}
+
+	/**
+	 * @return string the stored {@see TApplicationMultipleMode}.
+	 * @since 4.4.0
+	 */
+	protected function getMultipleModeDirect(): string
+	{
+		return $this->_multipleMode;
+	}
+
+	/**
+	 * Stores the multiple mode without the {@see setMultipleMode()} side effects.
+	 * @param string $value a {@see TApplicationMultipleMode} constant.
+	 * @since 4.4.0
+	 */
+	protected function setMultipleModeDirect(string $value): void
+	{
+		$this->_multipleMode = $value;
+	}
+
+	/**
+	 * @return string the {@see TApplicationMultipleMode} of this application;
+	 *   defaults to {@see DEFAULT_MULTIPLE_MODE}.
+	 * @since 4.4.0
+	 */
+	public function getMultipleMode(): string
+	{
+		return $this->getMultipleModeDirect();
+	}
+
+	/**
+	 * Sets the {@see TApplicationMultipleMode} of this application, from the
+	 * application configuration:
+	 * ```xml
+	 * <application MultipleMode="Auto">
+	 * ```
+	 * A boolean is a shorthand: `true` is `Multiple` and `false` is `Singleton`;
+	 * `null` and `''` are `Auto`. The registration itself happens in
+	 * {@see registerApplication()} at construction; a mode set afterwards applies
+	 * its {@see Prado} side effect at once:
+	 *
+	 * | Mode | Effect |
+	 * |------|--------|
+	 * | `Multiple` | Enables {@see Prado::setMultipleApplications()}. |
+	 * | `Singleton` | Throws when multiple applications are enabled. |
+	 * | `Auto` | None. |
+	 *
+	 * @param mixed $value a {@see TApplicationMultipleMode} constant, a bool, or null.
+	 * @throws \Prado\Exceptions\TInvalidDataValueException when the value is not a mode.
+	 * @throws \Prado\Exceptions\TInvalidOperationException when the mode is
+	 *   {@see TApplicationMultipleMode::Singleton} and multiple applications are enabled.
+	 * @since 4.4.0
+	 */
+	public function setMultipleMode($value): void
+	{
+		if ($value === null || $value === '') {
+			$mode = TApplicationMultipleMode::Auto;
+		} elseif (is_bool($value) || (is_string($value) && in_array(strtolower($value), ['true', 'false', '1', '0'], true))) {
+			$mode = TPropertyValue::ensureBoolean($value) ? TApplicationMultipleMode::Multiple : TApplicationMultipleMode::Singleton;
+		} else {
+			$mode = TPropertyValue::ensureEnum($value, TApplicationMultipleMode::class);
+		}
+		if ($this->getMultipleModeDirect() === $mode) {
+			return;
+		}
+		if ($mode === TApplicationMultipleMode::Singleton && Prado::getMultipleApplications()) {
+			throw new TInvalidOperationException('prado_application_multiapp_mode_conflict');
+		}
+		$this->setMultipleModeDirect($mode);
+		if ($mode === TApplicationMultipleMode::Multiple) {
+			Prado::setMultipleApplications(true);
+		}
 	}
 
 	/**
@@ -862,7 +1024,7 @@ class TApplication extends TComponent implements ISingleton
 	 */
 	public function getPageServiceID()
 	{
-		return $this->_pageServiceID;
+		return $this->getPageServiceIDDirect();
 	}
 
 	/**
@@ -875,12 +1037,34 @@ class TApplication extends TComponent implements ISingleton
 	 */
 	public function setPageServiceID($value)
 	{
-		$old = $this->_pageServiceID;
-		$this->_pageServiceID = $value;
-		if ($old !== $value && $this->hasRegisteredService($old) && !$this->hasRegisteredService($value)) {
-			$this->registerService($value, ...$this->getRegisteredService($old));
-			$this->unregisterService($old);
+		$old = $this->getPageServiceIDDirect();
+		if ($value !== $old) {
+			$this->setPageServiceIDDirect($value);
+			if ($this->hasRegisteredService($old) && !$this->hasRegisteredService($value)) {
+				$this->registerService($value, ...$this->getRegisteredService($old));
+				$this->unregisterService($old);
+			}
 		}
+	}
+
+	/**
+	 * @return string the stored page service ID.
+	 * @since 4.4.0
+	 */
+	protected function getPageServiceIDDirect(): string
+	{
+		return $this->_pageServiceID;
+	}
+
+	/**
+	 * Stores the page service ID without the service registry move that
+	 * {@see setPageServiceID()} performs.
+	 * @param string $value the page service ID.
+	 * @since 4.4.0
+	 */
+	protected function setPageServiceIDDirect(string $value): void
+	{
+		$this->_pageServiceID = $value;
 	}
 
 	/**
