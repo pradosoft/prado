@@ -42,6 +42,14 @@ This is the root source directory of the **Prado** PHP framework (PSR-4 namespac
 
 - **[`TModule.php`](TModule.md)** — Base for pluggable application modules registered in configuration.
 
+- **[`IProxy.php`](IProxy.md)** — Marker interface of the transparent proxies; every proxy uses [`TComponentProxyTrait`](TComponentProxyTrait.md) and exposes `getProxyBacking()`. @since 4.4.0
+
+- **[`TComponentProxyTrait.php`](TComponentProxyTrait.md)** — Shared proxy logic: forwards `__get`/`__set`/`__isset`/`__unset`/`__call` and `isa()` to a backing `TComponent`; `attachProxy()`/`detachProxy()` wire the backing's public `on*` events to handler collections the proxy owns. @since 4.4.0
+
+- **[`TComponentProxy.php`](TComponentProxy.md)** — `TComponent` proxy over a backing set through `BackingComponent`. @since 4.4.0
+
+- **[`TModuleProxy.php`](TModuleProxy.md)** — `TModule` proxy over the module named by `BackingComponentId`, declared as an `IModuleDependency`. Typed variants: [`TCacheProxy`](Caching/TCacheProxy.md), [`TDataSourceConfigProxy`](Data/TDataSourceConfigProxy.md). @since 4.4.0
+
 - **[`TService.php`](TService.md)** — Base for application services (page, JSON, RPC, SOAP, feed).
 
 - **[`TEventHandler.php`](TEventHandler.md)** — Invokable wrapper for event handlers; supports hierarchical invokable data.

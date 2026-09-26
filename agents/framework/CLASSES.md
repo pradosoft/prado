@@ -8,10 +8,10 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 | Directory | Classes | Interfaces | Total | Recursive |
 |-----------|---------|------------|-------|-----------|
-| [Prado](./INDEX.md) | 17 | 7 | 24 | 777 |
-| [Prado\\Caching](./Caching/INDEX.md) | 11 | 2 | 13 | 13 |
+| [Prado](./INDEX.md) | 20 | 8 | 28 | 783 |
+| [Prado\\Caching](./Caching/INDEX.md) | 12 | 2 | 14 | 14 |
 | [Prado\\Collections](./Collections/INDEX.md) | 27 | 7 | 34 | 34 |
-| [Prado\\Data](./Data/INDEX.md) | 10 | 5 | 15 | 136 |
+| [Prado\\Data](./Data/INDEX.md) | 11 | 5 | 16 | 137 |
 | [Prado\\Data\\ActiveRecord](./Data/ActiveRecord/INDEX.md) | 7 | 0 | 7 | 29 |
 | [Prado\\Data\\ActiveRecord\\Exceptions](./Data/ActiveRecord/Exceptions/INDEX.md) | 2 | 0 | 2 | 2 |
 | [Prado\\Data\\ActiveRecord\\Relations](./Data/ActiveRecord/Relations/INDEX.md) | 6 | 0 | 6 | 6 |
@@ -62,19 +62,20 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ## Class Listings
 
-## [Prado](./INDEX.md) - Classes: 17, Interfaces: 7, Total: 24, Recursive: 775
+## [Prado](./INDEX.md) - Classes: 20, Interfaces: 8, Total: 28, Recursive: 783
 
-### Interfaces (6)
+### Interfaces (8)
 
 - IDataRenderer
 - IEventCycleParameter
 - IEventParameter
 - IModule
+- [IProxy](./IProxy.md)
 - IService
 - ISingleton
 - IStatePersister
 
-### Classes (17)
+### Classes (20)
 
 - [Prado](./Prado.md)
 - PradoBase
@@ -85,6 +86,8 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TApplicationSignals](./Util/Behaviors/TApplicationSignals.md)
 - TApplicationStatePersister
 - [TComponent](./TComponent.md)
+- [TComponentProxy](./TComponentProxy.md)
+- [TComponentProxyTrait](./TComponentProxyTrait.md)
 - TComponentReflection
 - TEnumerable
 - [TEventHandler](./TEventHandler.md)
@@ -92,25 +95,27 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - TEventResults
 - [TEventSubscription](./TEventSubscription.md)
 - [TModule](./TModule.md)
+- [TModuleProxy](./TModuleProxy.md)
 - TPropertyValue
 - [TService](./TService.md)
 
 ---
 
-## [Prado\Caching](./Caching/INDEX.md) - Classes: 11, Interfaces: 2, Total: 13, Recursive: 13
+## [Prado\Caching](./Caching/INDEX.md) - Classes: 12, Interfaces: 2, Total: 14, Recursive: 14
 
 ### Interfaces (2)
 
 - [ICache](./Caching/ICache.md)
 - [ICacheDependency](./Caching/ICacheDependency.md)
 
-### Classes (11)
+### Classes (12)
 
 - [TAPCCache](./Caching/TAPCCache.md)
 - [TApplicationStateCacheDependency](./Caching/TApplicationStateCacheDependency.md)
 - [TCache](./Caching/TCache.md)
 - [TCacheDependency](./Caching/TCacheDependency.md)
 - [TCacheDependencyList](./Caching/TCacheDependencyList.md)
+- [TCacheProxy](./Caching/TCacheProxy.md)
 - [TChainedCacheDependency](./Caching/TChainedCacheDependency.md)
 - [TDbCache](./Caching/TDbCache.md)
 - [TDirectoryCacheDependency](./Caching/TDirectoryCacheDependency.md)
@@ -166,7 +171,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Data](./Data/INDEX.md) - Classes: 10, Interfaces: 5, Total: 15, Recursive: 136
+## [Prado\Data](./Data/INDEX.md) - Classes: 11, Interfaces: 5, Total: 16, Recursive: 137
 
 ### Interfaces (5)
 
@@ -176,10 +181,11 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - IDataTransaction
 - IDbConnection
 
-### Classes (10)
+### Classes (11)
 
 - TDataCharset
 - [TDataSourceConfig](./Data/TDataSourceConfig.md)
+- [TDataSourceConfigProxy](./Data/TDataSourceConfigProxy.md)
 - [TDbColumnCaseMode](./Data/TDbColumnCaseMode.md)
 - [TDbCommand](./Data/TDbCommand.md)
 - [TDbConnection](./Data/TDbConnection.md)

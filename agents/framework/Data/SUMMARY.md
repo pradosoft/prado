@@ -14,6 +14,8 @@ Database access layer providing PDO wrapper plus three complementary data-access
 
 - **`TDataSourceConfig`** — Configuration holder for connection pooling and datasource settings.
 
+- **`TDataSourceConfigProxy`** — Transparent data source module delegating its connection to the module named by `BackingDataSourceId`.
+
 - **`TDbColumnCaseMode`** — Enum: `Preserved`, `LowerCase`, `UpperCase`.
 
 - **`TDbNullConversionMode`** — Enum: `Preserved`, `EmptyStringToNull`, `NullToEmptyString`.

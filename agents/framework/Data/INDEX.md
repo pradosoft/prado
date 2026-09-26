@@ -28,6 +28,8 @@ Database access layer for the Prado framework. Provides a PDO wrapper plus three
 
 - **[`TDataSourceConfig`](TDataSourceConfig.md)** — Configuration holder for connection pooling and datasource settings.
 
+- **[`TDataSourceConfigProxy`](TDataSourceConfigProxy.md)** (@since 4.4.0) — Transparent `TDataSourceConfig` module whose `getDbConnection()` returns the connection of the module named by `BackingDataSourceId`; declares it as an `IModuleDependency`.
+
 - **[`TDbColumnCaseMode`](TDbColumnCaseMode.md)** — Enum: `Preserved`, `LowerCase`, `UpperCase`.
 
 - **[`TDbNullConversionMode`](TDbNullConversionMode.md)** — Enum: `Preserved`, `EmptyStringToNull`, `NullToEmptyString`.

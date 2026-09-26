@@ -14,6 +14,14 @@ Root source directory of the Prado PHP framework (PSR-4 namespace `Prado\`).
 
 - **`TModule`** — Base class for pluggable application modules registered in configuration.
 
+- **`IProxy`** — Marker interface of the transparent proxies.
+
+- **`TComponentProxyTrait`** — Forwards property, method, event, and `isa()` access to a backing `TComponent`; `attachProxy()` wires the backing's `on*` events.
+
+- **`TComponentProxy`** — Proxy over a `TComponent` set through `BackingComponent`.
+
+- **`TModuleProxy`** — Proxy module over the module named by `BackingComponentId`.
+
 - **`TService`** — Base class for application services (page, JSON, RPC, SOAP, feed).
 
 - **`TEventHandler`** — Invokable wrapper for event handlers; supports hierarchical invokable data.

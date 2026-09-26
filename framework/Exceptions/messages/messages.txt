@@ -6,6 +6,9 @@ prado_alias_invalid						= Alias '{0}' refers to an invalid path '{1}'. Only exi
 prado_aliasname_invalid					= Alias '{0}' contains invalid character '.'.
 
 component_property_undefined			= Component property '{0}.{1}' is not defined.
+componentproxy_backing_component_required	= TComponentProxy.BackingComponent is required.
+componentproxy_backing_component_id_required	= TModuleProxy.BackingComponentId is required.
+componentproxy_component_not_found		= TModuleProxy.BackingComponentId '{0}' does not refer to an application module.
 component_property_readonly				= Component property '{0}.{1}' is read-only.
 component_event_undefined				= Component event '{0}.{1}' is not defined.
 component_method_undefined              = Component method '{0}.{1}' is not defined.
@@ -137,6 +140,9 @@ assetmanager_tarfile_extract_failed		= TAssetManager failed to extract the tar f
 assetmanager_source_directory_invalid	= TAssetManager is copying an invalid directory '{0}'.
 
 cache_primary_duplicated				= At most one primary cache module is allowed. {0} is trying to register as another primary cache.
+cacheproxy_backing_cache_id_required	= TCacheProxy.BackingCacheId is required.
+cacheproxy_cache_not_found				= TCacheProxy.BackingCacheId '{0}' does not refer to an application module.
+cacheproxy_invalid_cache_type			= TCacheProxy.BackingCacheId '{0}' must refer to a TCache module.
 sqlitecache_extension_required			= TSqliteCache requires SQLite PHP extension.
 sqlitecache_dbfile_required				= TSqliteCache.DbFile is required.
 sqlitecache_connection_failed			= TSqliteCache database connection failed. {0}.
@@ -748,6 +754,9 @@ dbmetadata_not_meta_data				= Expected driver class {1} but got class {0}.
 dbmetadata_tableinfo_class_invalid		= TDbMetaData table info class '{0}' is a directory namespace, not a class.
 
 datasource_dbconnection_invalid			= TDataSourceConfig.DbConnection '{0}' is invalid. Please make sure it points to a valid application module.
+datasourceproxy_backing_data_source_id_required	= TDataSourceConfigProxy.BackingDataSourceId is required.
+datasourceproxy_data_source_not_found	= TDataSourceConfigProxy.BackingDataSourceId '{0}' does not refer to an application module.
+datasourceproxy_invalid_data_source_type	= TDataSourceConfigProxy.BackingDataSourceId '{0}' must refer to a TDataSourceConfig module.
 distributeddatasource_child_required		= {0} requires one '{1}' child element at minimum.
 masterslavedbconnection_connection_exists	= {0}.{1} connection already exists.
 masterslavedbconnection_interface_required	= {0}.{1} requires an instance implementing {2} interface.
