@@ -13,6 +13,7 @@ namespace Prado\Web\Services\Rest;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\TApplicationComponent;
+use Prado\Web\TMediaType;
 
 /**
  * TRestResource class
@@ -423,7 +424,7 @@ abstract class TRestResource extends TApplicationComponent
 
 		if (in_array($verb, ['POST', 'PUT', 'PATCH'], true)) {
 			$contentType = $request->getContentType() ?? '';
-			if (str_contains($contentType, 'application/json')) {
+			if (str_contains($contentType, TMediaType::JSON)) {
 				$raw = $this->readRawRequestBody();
 				if ($raw === '') {
 					$this->setParsedBodyDirect([]);

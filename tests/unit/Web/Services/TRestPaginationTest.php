@@ -1,11 +1,14 @@
 <?php
 
+namespace Prado\Test\Unit\Web\Services;
+
+use Prado\Prado;
 use Prado\Web\Services\Rest\TRestPagination;
 
 /**
  * Tests for TRestPagination.
  */
-class TRestPaginationTest extends PHPUnit\Framework\TestCase
+class TRestPaginationTest extends \PHPUnit\Framework\TestCase
 {
 	/** Keys touched by fromRequest tests — always restored in tearDown. */
 	private const PAGINATION_KEYS = ['page', 'per_page'];

@@ -1,7 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\Web\Services;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TIOException;
+use Prado\Prado;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Web\Services\Rest\TRestException;
 use Prado\Web\Services\Rest\TRestResource;
 use Prado\Web\Services\Rest\TRestService;
@@ -76,9 +80,7 @@ class TRestServiceExposed extends TRestService
 	public function getResources(): array
 	{
 		// matchRoute walks the table; we read it via reflection for assertions.
-		$ref = new ReflectionProperty(TRestService::class, '_resources');
-		$ref->setAccessible(true);
-		return $ref->getValue($this);
+		return PradoUnit::getProp($this, '_resources');
 	}
 
 	// ── Injection seam for run() lifecycle tests ──────────────────────────────
@@ -132,35 +134,6 @@ class CapturingResponse extends \Prado\Web\THttpResponse
 }
 
 // ── Resources used by dispatch / run tests ────────────────────────────────────
-
-class DoStyleResource extends TRestResource
-{
-	public static array $log = [];
-
-	public function doIndex(): array
-	{
-		self::$log[] = 'doIndex';
-		return ['list' => true];
-	}
-
-	public function doShow(string $id): array
-	{
-		self::$log[] = "doShow:{$id}";
-		return ['id' => $id];
-	}
-
-	public function doStore(): array
-	{
-		self::$log[] = 'doStore';
-		return $this->created(['created' => true]);
-	}
-
-	public function doDestroy(string $id): void
-	{
-		self::$log[] = "doDestroy:{$id}";
-		$this->noContent();
-	}
-}
 
 class DefaultParamResource extends TRestResource
 {
@@ -250,21 +223,18 @@ class ServiceTestNestedResource extends TRestResource
 /**
  * Tests for TRestService.
  */
-class TRestServiceTest extends PHPUnit\Framework\TestCase
+class TRestServiceTest extends \PHPUnit\Framework\TestCase
 {
 	private TRestServiceExposed $service;
 
-	/** Snapshot of $_SERVER taken before each test so mutations don't leak. */
-	private array $serverBackup = [];
+	/** @var array The shared request's cached PATH_INFO, which {@see forcePathInfo()} overwrites. */
+	private array $requestSnapshot = [];
 
 	protected function setUp(): void
 	{
 		ServiceTestResource::$log = [];
 		ServiceTestNestedResource::$log = [];
-
-		// Full snapshot — restore any key we touch (PATH_INFO, REQUEST_METHOD,
-		// CONTENT_TYPE) AND any key we don't, in case a future test adds more.
-		$this->serverBackup = $_SERVER;
+		$this->requestSnapshot = PradoUnit::snapshot(Prado::getApplication()->getRequest(), ['_pathInfo']);
 
 		$this->service = new TRestServiceExposed();
 		$this->service->setBasePath('api/');
@@ -274,7 +244,8 @@ class TRestServiceTest extends PHPUnit\Framework\TestCase
 
 	protected function tearDown(): void
 	{
-		$_SERVER = $this->serverBackup;
+		PradoUnit::restore(Prado::getApplication()->getRequest(), $this->requestSnapshot);
+		PradoUnit::restoreInitialState();
 	}
 
 	// ── compilePattern ─────────────────────────────────────────────────────────
@@ -581,17 +552,17 @@ class TRestServiceTest extends PHPUnit\Framework\TestCase
 
 	public function testXmlConfigSimpleResource(): void
 	{
-		$cfg = $this->xmlConfig('<service><resource pattern="users" class="DoStyleResource" /></service>');
+		$cfg = $this->xmlConfig('<service><resource pattern="users" class="' . DoStyleResource::class . '" /></service>');
 		$arr = $this->service->exposeXmlConfigToArray($cfg);
 		$this->assertCount(1, $arr['resources']);
 		$this->assertSame('users', $arr['resources'][0]['pattern']);
-		$this->assertSame('DoStyleResource', $arr['resources'][0]['class']);
+		$this->assertSame(DoStyleResource::class, $arr['resources'][0]['class']);
 	}
 
 	public function testXmlConfigResourceWithParameters(): void
 	{
 		$cfg = $this->xmlConfig(
-			'<service><resource pattern="users/{id}" class="DoStyleResource" parameters.id="\d+" /></service>'
+			'<service><resource pattern="users/{id}" class="' . DoStyleResource::class . '" parameters.id="\d+" /></service>'
 		);
 		$arr = $this->service->exposeXmlConfigToArray($cfg);
 		$this->assertSame(['id' => '\d+'], $arr['resources'][0]['parameters']);
@@ -600,8 +571,8 @@ class TRestServiceTest extends PHPUnit\Framework\TestCase
 	public function testXmlConfigGroupCollectsInlineResources(): void
 	{
 		$xml = '<service><group prefix="v1/" enabled="true">'
-			. '<resource pattern="users" class="DoStyleResource" />'
-			. '<resource pattern="users/{id}" class="DoStyleResource" parameters.id="\d+" />'
+			. '<resource pattern="users" class="' . DoStyleResource::class . '" />'
+			. '<resource pattern="users/{id}" class="' . DoStyleResource::class . '" parameters.id="\d+" />'
 			. '</group></service>';
 		$arr = $this->service->exposeXmlConfigToArray($this->xmlConfig($xml));
 		$this->assertCount(1, $arr['groups']);
@@ -614,7 +585,7 @@ class TRestServiceTest extends PHPUnit\Framework\TestCase
 	public function testLoadResourcesAppliesGroupPrefix(): void
 	{
 		$xml = '<service><group prefix="v1/">'
-			. '<resource pattern="users" class="DoStyleResource" />'
+			. '<resource pattern="users" class="' . DoStyleResource::class . '" />'
 			. '</group></service>';
 		$this->service->exposeLoadResources($this->xmlConfig($xml));
 		$entries = $this->service->getResources();
@@ -625,7 +596,7 @@ class TRestServiceTest extends PHPUnit\Framework\TestCase
 	public function testLoadResourcesSkipsDisabledGroup(): void
 	{
 		$xml = '<service><group prefix="v3/" enabled="false">'
-			. '<resource pattern="users" class="DoStyleResource" />'
+			. '<resource pattern="users" class="' . DoStyleResource::class . '" />'
 			. '</group></service>';
 		$this->service->exposeLoadResources($this->xmlConfig($xml));
 		$this->assertSame([], $this->service->getResources());
@@ -635,10 +606,10 @@ class TRestServiceTest extends PHPUnit\Framework\TestCase
 	{
 		$cfg = [
 			'resources' => [
-				['pattern' => 'a', 'class' => 'DoStyleResource'],
+				['pattern' => 'a', 'class' => DoStyleResource::class],
 			],
 			'groups' => [
-				['prefix' => 'v2/', 'resources' => [['pattern' => 'users', 'class' => 'DoStyleResource']]],
+				['prefix' => 'v2/', 'resources' => [['pattern' => 'users', 'class' => DoStyleResource::class]]],
 			],
 		];
 		// Force PHP config path by overriding configurationType — easier to just call
@@ -655,7 +626,7 @@ class TRestServiceTest extends PHPUnit\Framework\TestCase
 	public function testRegisterResourceThrowsWhenPatternMissing(): void
 	{
 		$this->expectException(TConfigurationException::class);
-		$this->service->exposeRegisterResource(['class' => 'DoStyleResource']);
+		$this->service->exposeRegisterResource(['class' => DoStyleResource::class]);
 	}
 
 	public function testRegisterResourceThrowsWhenClassMissing(): void
@@ -805,7 +776,7 @@ class TRestServiceTest extends PHPUnit\Framework\TestCase
 		$originalMode = $app->getMode();
 		try {
 			$xml = '<service><group prefix="dbg/" enabled="Debug">'
-				. '<resource pattern="x" class="DoStyleResource" />'
+				. '<resource pattern="x" class="' . DoStyleResource::class . '" />'
 				. '</group></service>';
 
 			// Debug mode → group active
@@ -828,7 +799,7 @@ class TRestServiceTest extends PHPUnit\Framework\TestCase
 
 	public function testXmlConfigCapturesConfigfileAttribute(): void
 	{
-		$cfg = $this->xmlConfig('<service configfile="App.config.rest"><resource pattern="x" class="DoStyleResource"/></service>');
+		$cfg = $this->xmlConfig('<service configfile="App.config.rest"><resource pattern="x" class="' . DoStyleResource::class . '"/></service>');
 		$arr = $this->service->exposeXmlConfigToArray($cfg);
 		$this->assertSame('App.config.rest', $arr['configfile']);
 		$this->assertCount(1, $arr['resources']); // inline entries still captured
@@ -860,7 +831,7 @@ class TRestServiceTest extends PHPUnit\Framework\TestCase
 	{
 		$this->withFixtureAlias(function () {
 			$xml = '<service configfile="RestFixtures.rest-config">'
-				. '<resource pattern="inline-extra" class="DoStyleResource" />'
+				. '<resource pattern="inline-extra" class="' . DoStyleResource::class . '" />'
 				. '</service>';
 			$s = new TRestServiceExposed();
 			$s->exposeLoadResources($this->xmlConfig($xml));
@@ -939,10 +910,7 @@ class TRestServiceTest extends PHPUnit\Framework\TestCase
 	 */
 	private function forcePathInfo(string $pathInfo): void
 	{
-		$request = Prado::getApplication()->getRequest();
-		$ref = new ReflectionProperty(\Prado\Web\THttpRequest::class, '_pathInfo');
-		$ref->setAccessible(true);
-		$ref->setValue($request, $pathInfo);
+		PradoUnit::setProp(Prado::getApplication()->getRequest(), '_pathInfo', $pathInfo);
 	}
 
 	private function runWith(string $verb, string $pathInfo, ?string $contentType = null): CapturingResponse

@@ -15,6 +15,9 @@ use Prado\Exceptions\TIOException;
 use Prado\Prado;
 use Prado\TApplicationMode;
 use Prado\TPropertyValue;
+use Prado\Util\Log\TLogger;
+use Prado\Web\THttpHeaderName;
+use Prado\Web\TMediaType;
 use Prado\Xml\TXmlDocument;
 
 /**
@@ -759,14 +762,14 @@ class TRestService extends \Prado\TService
 		} catch (TRestException $e) {
 			if ($e->getStatusCode() === 405 && isset($resource, $resourceConfig)) {
 				// RFC 7231 §6.5.5: a 405 response must carry an Allow header.
-				$response->appendHeader('Allow: ' . implode(', ', $this->getAllowedVerbs($resource, $resourceConfig['isItem'])));
+				$response->appendHeader(THttpHeaderName::Allow . ': ' . implode(', ', $this->getAllowedVerbs($resource, $resourceConfig['isItem'])));
 			}
 			$this->sendErrorResponse($e);
 		} catch (\Prado\Exceptions\THttpException $e) {
 			$this->sendErrorResponse(new TRestException($e->getStatusCode(), '', $e->getMessage()));
 		} catch (\Throwable $e) {
 			$detail = $this->getExposeErrors() ? $e->getMessage() : '';
-			Prado::log($e->getMessage(), \Prado\Util\TLogger::ERROR, self::class);
+			Prado::log($e->getMessage(), TLogger::ERROR, self::class);
 			$this->sendErrorResponse(new TRestException(500, '', $detail));
 		}
 	}
@@ -867,9 +870,7 @@ class TRestService extends \Prado\TService
 			throw new TConfigurationException('restservice_resource_invalid', $class);
 		}
 
-		foreach ($resourceConfig['properties'] as $name => $value) {
-			$resource->setSubproperty($name, $value);
-		}
+		$resource->setSubProperties($resourceConfig['properties']);
 
 		return $resource;
 	}
@@ -991,7 +992,7 @@ class TRestService extends \Prado\TService
 		}
 
 		if ($data !== null) {
-			$response->setContentType('application/json');
+			$response->setContentType(TMediaType::JSON);
 			$response->setCharset('UTF-8');
 			$response->write(json_encode($data, JSON_THROW_ON_ERROR));
 		}
@@ -1006,7 +1007,7 @@ class TRestService extends \Prado\TService
 	{
 		$response = $this->getResponse();
 		$response->setStatusCode($e->getStatusCode());
-		$response->setContentType('application/json');
+		$response->setContentType(TMediaType::JSON);
 		$response->setCharset('UTF-8');
 		$response->write(json_encode($e->toArray(), JSON_THROW_ON_ERROR));
 	}
@@ -1033,20 +1034,20 @@ class TRestService extends \Prado\TService
 		$response = $this->getResponse();
 		$origin = $this->getAllowOrigin();
 
-		$response->appendHeader("Access-Control-Allow-Origin: {$origin}");
+		$response->appendHeader(THttpHeaderName::AccessControlAllowOrigin . ': ' . $origin);
 
 		if ($this->getAllowCredentials()) {
-			$response->appendHeader('Access-Control-Allow-Credentials: true');
+			$response->appendHeader(THttpHeaderName::AccessControlAllowCredentials . ': true');
 		}
 
 		if ($origin !== '*') {
-			$response->appendHeader('Vary: Origin');
+			$response->appendHeader(THttpHeaderName::Vary . ': Origin');
 		}
 
 		if (strtoupper($this->getRequest()->getRequestType() ?? '') === 'OPTIONS') {
-			$response->appendHeader("Access-Control-Allow-Methods: {$this->getAllowMethods()}");
-			$response->appendHeader("Access-Control-Allow-Headers: {$this->getAllowHeaders()}");
-			$response->appendHeader("Access-Control-Max-Age: {$this->getMaxAge()}");
+			$response->appendHeader(THttpHeaderName::AccessControlAllowMethods . ': ' . $this->getAllowMethods());
+			$response->appendHeader(THttpHeaderName::AccessControlAllowHeaders . ': ' . $this->getAllowHeaders());
+			$response->appendHeader(THttpHeaderName::AccessControlMaxAge . ': ' . $this->getMaxAge());
 		}
 	}
 
