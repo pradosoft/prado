@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rest>
-	<resource pattern="xmlcfg-users" class="DoStyleResource" />
+	<resource pattern="xmlcfg-users" class="Prado\Test\Unit\Web\Services\DoStyleResource" />
 	<group prefix="v9/">
-		<resource pattern="things" class="DoStyleResource" />
+		<resource pattern="things" class="Prado\Test\Unit\Web\Services\DoStyleResource" />
 	</group>
 </rest>

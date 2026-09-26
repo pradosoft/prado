@@ -1,6 +1,10 @@
 <?php
 
+namespace Prado\Test\Unit\Web\Services;
+
 use Prado\Exceptions\TConfigurationException;
+use Prado\Prado;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Web\Services\Rest\TRestException;
 use Prado\Web\Services\Rest\TRestResource;
 
@@ -92,23 +96,19 @@ class TestAuthResource extends TRestResource
 /**
  * Tests for TRestResource.
  */
-class TRestResourceTest extends PHPUnit\Framework\TestCase
+class TRestResourceTest extends \PHPUnit\Framework\TestCase
 {
-	/** @var array Snapshot of $_SERVER taken before each test. */
-	private array $serverBackup = [];
-
 	protected function setUp(): void
 	{
 		// Trigger THttpRequest::init() now so it doesn't later overwrite
 		// the $_SERVER values our tests set up (init resets REQUEST_METHOD
 		// to 'GET' in CLI mode).
 		Prado::getApplication()->getRequest();
-		$this->serverBackup = $_SERVER;
 	}
 
 	protected function tearDown(): void
 	{
-		$_SERVER = $this->serverBackup;
+		PradoUnit::restoreInitialState();
 	}
 
 	private function makeResource(string $class, array $pathParams = []): TRestResource
@@ -172,10 +172,8 @@ class TRestResourceTest extends PHPUnit\Framework\TestCase
 		// Provide a valid body via input stream mock
 		$data = ['name' => 'Alice', 'age' => 30, 'email' => 'alice@example.com'];
 		// We simulate getBody() returning validated data by directly calling validateBody via store
-		// We must mock php://input — use a workaround: set _parsedBody via reflection
-		$ref = new ReflectionProperty(TRestResource::class, '_parsedBody');
-		$ref->setAccessible(true);
-		$ref->setValue($r, $data);
+		// php://input cannot be mocked here, so _parsedBody is set through PradoUnit
+		PradoUnit::setProp($r, '_parsedBody', $data);
 
 		$result = $r->store();
 		$this->assertSame(201, $r->getStatusCode());
@@ -220,10 +218,8 @@ class TRestResourceTest extends PHPUnit\Framework\TestCase
 		$r = $this->makeResource(TestReadOnlyResource::class);
 		$called = false;
 		try {
-			// Use reflection to call protected abort
-			$ref = new ReflectionMethod($r, 'abort');
-			$ref->setAccessible(true);
-			$ref->invoke($r, 409, 'Conflict detail');
+			// Call the protected abort() through PradoUnit
+			PradoUnit::invoke($r, 'abort', 409, 'Conflict detail');
 		} catch (TRestException $e) {
 			$called = true;
 			$this->assertSame(409, $e->getStatusCode());
@@ -262,9 +258,7 @@ class TRestResourceTest extends PHPUnit\Framework\TestCase
 	private function makeValidatingResource(array $body): TestCrudResource
 	{
 		$r = new TestCrudResource();
-		$ref = new ReflectionProperty(TRestResource::class, '_parsedBody');
-		$ref->setAccessible(true);
-		$ref->setValue($r, $body);
+		PradoUnit::setProp($r, '_parsedBody', $body);
 		return $r;
 	}
 
@@ -405,9 +399,7 @@ class TRestResourceTest extends PHPUnit\Framework\TestCase
 				return $this->only($keys);
 			}
 		};
-		$ref = new ReflectionProperty(TRestResource::class, '_parsedBody');
-		$ref->setAccessible(true);
-		$ref->setValue($r, ['a' => 1, 'b' => 2, 'c' => 3]);
+		PradoUnit::setProp($r, '_parsedBody', ['a' => 1, 'b' => 2, 'c' => 3]);
 
 		$result = $r->callOnly(['a', 'c']);
 		$this->assertSame(['a' => 1, 'c' => 3], $result);
@@ -421,9 +413,7 @@ class TRestResourceTest extends PHPUnit\Framework\TestCase
 				return $this->except($keys);
 			}
 		};
-		$ref = new ReflectionProperty(TRestResource::class, '_parsedBody');
-		$ref->setAccessible(true);
-		$ref->setValue($r, ['a' => 1, 'b' => 2, 'c' => 3]);
+		PradoUnit::setProp($r, '_parsedBody', ['a' => 1, 'b' => 2, 'c' => 3]);
 
 		$result = $r->callExcept(['b']);
 		$this->assertSame(['a' => 1, 'c' => 3], $result);
@@ -555,9 +545,7 @@ class TRestResourceTest extends PHPUnit\Framework\TestCase
 				return $this->except($keys);
 			}
 		};
-		$ref = new ReflectionProperty(TRestResource::class, '_parsedBody');
-		$ref->setAccessible(true);
-		$ref->setValue($r, $body);
+		PradoUnit::setProp($r, '_parsedBody', $body);
 		return $r;
 	}
 
@@ -821,7 +809,7 @@ class TRestResourceTest extends PHPUnit\Framework\TestCase
 	public function testCallUnknownMethodThrowsBadMethodCall(): void
 	{
 		$r = new TestReadOnlyResource();
-		$this->expectException(BadMethodCallException::class);
+		$this->expectException(\BadMethodCallException::class);
 		$r->somethingTotallyMadeUp();
 	}
 

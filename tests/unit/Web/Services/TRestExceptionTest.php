@@ -1,11 +1,13 @@
 <?php
 
+namespace Prado\Test\Unit\Web\Services;
+
 use Prado\Web\Services\Rest\TRestException;
 
 /**
  * Tests for TRestException.
  */
-class TRestExceptionTest extends PHPUnit\Framework\TestCase
+class TRestExceptionTest extends \PHPUnit\Framework\TestCase
 {
 	// ── Constructor and basic accessors ────────────────────────────────────────
 
