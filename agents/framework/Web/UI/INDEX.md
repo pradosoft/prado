@@ -77,6 +77,9 @@ Core UI component system for the Prado framework: the control hierarchy, templat
 | `IPageStatePersister` | Pluggable page state serialization strategy |
 | [`TPageStatePersister`](TPageStatePersister.md) | Default persister: serialises view-state into a hidden `__VIEWSTATE` form field |
 | [`TSessionPageStatePersister`](TSessionPageStatePersister.md) | Session-based persister: stores view-state in the PHP session with a FIFO history queue |
+| [`TPageStateCompressionConfig`](TPageStateCompressionConfig.md) | Page state compression settings, held by each built-in persister as `Compression`, or kept by `TPage` for a persister without them (4.4.0) |
+| [`TCachePageStatePersister`](TCachePageStatePersister.md) | Cache-based persister: stores view-state in a cache module, lifetime set by `CacheTimeoutMode` |
+| [`TCachePageStatePersisterTimeoutMode`](TCachePageStatePersisterTimeoutMode.md) | Where a cached page state's lifetime comes from: `Fixed`, `Session`, `Auth`, `Auto` (4.4.0) |
 
 ## Control Lifecycle (Page Request)
 

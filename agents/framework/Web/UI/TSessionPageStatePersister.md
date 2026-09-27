@@ -7,7 +7,7 @@
 **Location:** `framework/Web/UI/TSessionPageStatePersister.php`
 **Namespace:** `Prado\Web\UI`
 **Extends:** [`TComponent`](../../TComponent.md)
-**Implements:** `IPageStatePersister`
+**Implements:** `IPageStatePersister`, `Prado\IO\Compression\ICompressionConfigurable` (4.4.0)
 **Since:** 3.1
 
 ## Overview
@@ -26,6 +26,7 @@
 |----------|------|---------|-------------|
 | `Page` | [`TPage`](./TPage.md) | — | The page instance this persister works for. |
 | `HistorySize` | `int` | `10` | Maximum number of page-state snapshots retained in the session. Must be ≥ 1; throws `TInvalidDataValueException` otherwise. |
+| `Compression` | [`TPageStateCompressionConfig`](./TPageStateCompressionConfig.md) | enabled, `deflate` | The settings the client token is written under, from `TCompressionConfigTrait`. The snapshot in the session is stored as is (4.4.0). |
 
 ## Key Methods
 

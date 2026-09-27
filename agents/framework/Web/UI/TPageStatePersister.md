@@ -7,7 +7,7 @@
 **Location:** `framework/Web/UI/TPageStatePersister.php`
 **Namespace:** `Prado\Web\UI`
 **Extends:** [`TComponent`](../../TComponent.md)
-**Implements:** `IPageStatePersister`
+**Implements:** `IPageStatePersister`, `Prado\IO\Compression\ICompressionConfigurable` (4.4.0)
 **Since:** 3.0
 
 ## Overview
@@ -18,6 +18,7 @@
 | Property | Type | Description |
 |----------|------|-------------|
 | `Page` | [`TPage`](./TPage.md) | The page instance this persister works for. |
+| `Compression` | [`TPageStateCompressionConfig`](./TPageStateCompressionConfig.md) | The compression settings the state is written under, from `TCompressionConfigTrait`; `newCompression()` starts it enabled under `deflate`. The whole state travels in the hidden field, so this is the persister where compression pays (4.4.0). |
 
 ## Key Methods
 
