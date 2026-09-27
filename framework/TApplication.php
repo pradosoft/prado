@@ -1179,7 +1179,7 @@ class TApplication extends TComponent implements ISingleton
 	 * @return string the clock class name; names an {@see \Prado\Util\Clock\IClock}
 	 * @since 4.4.0
 	 */
-	protected function getClockClass(): string
+	public function getClockClass(): string
 	{
 		return $this->_clockClass ?? static::DEFAULT_CLOCK_CLASS;
 	}

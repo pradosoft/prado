@@ -1900,6 +1900,37 @@ class TApplicationTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame(\Prado\Web\Services\TPageService::class, TApplication::DEFAULT_PAGE_SERVICE_CLASS);
 	}
 
+	public function testClockClass_defaultsToConstant(): void
+	{
+		$this->assertSame(TApplication::DEFAULT_CLOCK_CLASS, $this->_app->getClockClass());
+		$this->assertTrue($this->_app->canGetProperty('ClockClass'));
+		$this->assertTrue($this->_app->canSetProperty('ClockClass'));
+	}
+
+	public function testClockClass_setCreatesThatClock(): void
+	{
+		$clock = $this->_app->getClock();
+		$this->_app->setClockClass(\Prado\Util\Clock\TMockClock::class);
+		$this->assertSame(\Prado\Util\Clock\TMockClock::class, $this->_app->getClockClass());
+		$this->_app->setClock(null);
+		$this->assertInstanceOf(\Prado\Util\Clock\TMockClock::class, $this->_app->getClock());
+		$this->_app->setClock($clock);
+	}
+
+	public function testClockClass_invalidClassThrows(): void
+	{
+		$clock = $this->_app->getClock();
+		$this->_app->setClockClass(\stdClass::class);
+		$this->_app->setClock(null);
+		try {
+			$this->expectException(TConfigurationException::class);
+			$this->_app->getClock();
+		} finally {
+			$this->_app->setClockClass(TApplication::DEFAULT_CLOCK_CLASS);
+			$this->_app->setClock($clock);
+		}
+	}
+
 	// -----------------------------------------------------------------------
 	// Subclass constant overrides
 	// -----------------------------------------------------------------------
