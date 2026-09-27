@@ -22,3 +22,4 @@ if ($module instanceof IProxy) {
 - [`TModuleProxy`](./TModuleProxy.md) — any module, by module ID.
 - [`TCacheProxy`](./Caching/TCacheProxy.md) — a `TCache` module, by module ID.
 - [`TDataSourceConfigProxy`](./Data/TDataSourceConfigProxy.md) — a `TDataSourceConfig` module, by module ID.
+- [`TAssetManagerProxy`](./Web/TAssetManagerProxy.md), [`TUrlManagerProxy`](./Web/TUrlManagerProxy.md), [`TSecurityManagerProxy`](./Security/TSecurityManagerProxy.md), [`TUserManagerProxy`](./Security/TUserManagerProxy.md), [`TGlobalizationProxy`](./I18N/TGlobalizationProxy.md), [`TLogRouterProxy`](./Util/Log/TLogRouterProxy.md), [`TPermissionsManagerProxy`](./Security/Permissions/TPermissionsManagerProxy.md) — the typed module proxies, by module ID.

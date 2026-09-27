@@ -32,6 +32,8 @@ Advanced RBAC (Role-Based Access Control) with named permissions, role hierarchi
 </modules>
 ```
 
+- **[`TPermissionsManagerProxy`](TPermissionsManagerProxy.md)** (@since 4.4.0) — Transparent `TPermissionsManager` module delegating every rule, role, and property operation to the manager named by `BackingPermissionsManagerId`; rejects its own rule configuration and `PermissionFile`, and loads no behaviors, so the backing stays the single registry.
+
 - **`TPermissionsManagerPropertyTrait`** — Shared trait providing the `PermissionsManager` property accessor used by controls and behaviors that need a reference to [`TPermissionsManager`](TPermissionsManager.md).
 
 ### Behaviors

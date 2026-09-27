@@ -26,7 +26,11 @@ HTTP layer, URL routing, asset management, session handling, and all web UI comp
 
 - **[TAssetManager](TAssetManager.md)** — Publishes private `framework/` and application assets to a web-accessible `assets/` directory. Uses timestamp-based caching. Handles recursive directory publishing and TAR extraction. Access via `$app->getAssetManager()`.
 
+- **[TAssetManagerProxy](TAssetManagerProxy.md)** (@since 4.4.0) — Transparent `TAssetManager` module over the manager named by `BackingAssetManagerId`; takes the application asset-manager slot without owning a directory.
+
 - **[TUrlManager](TUrlManager.md)** — Base URL manager. Constructs URLs in `Get`, `Path`, and `HiddenPath` formats. Parses incoming URLs into GET variables.
+
+- **[TUrlManagerProxy](TUrlManagerProxy.md)** (@since 4.4.0) — Transparent `TUrlManager` module whose `constructUrl()`/`parseUrl()` go to the manager named by `BackingUrlManagerId`.
 
 - **[TUrlMapping](TUrlMapping.md)** — Advanced SEF (Search Engine Friendly) URL routing. Defines regex-based patterns (`TUrlMappingPattern`) with named parameter extraction and optional secure-connection enforcement. Patterns match the PATH_INFO, and, through `UrlMatchMode` or `query` constraints, the query string.
 

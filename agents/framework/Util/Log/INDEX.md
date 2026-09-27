@@ -17,6 +17,8 @@ Application logging for the Prado framework: the in-memory logger, the router mo
 
 - **[`TLogRouter`](TLogRouter.md)** — Module that routes log entries to multiple [`TLogRoute`](TLogRoute.md) targets. Configured in `application.xml` with `<route>` children or a `ConfigFile`. Methods: `addRoute()`, `removeRoute()`, `getRoutes()`.
 
+- **[`TLogRouterProxy`](TLogRouterProxy.md)** (@since 4.4.0) — Transparent `TLogRouter` module delegating routes to the router named by `BackingLogRouterId`; owns no routes and attaches no second `collectLogs` handler.
+
 - **[`TLogRoute`](TLogRoute.md)** — Abstract base for log outputs. Subclass and implement `processLogs(array $logs, bool $final, array $meta)`. Properties: `Levels` (names or bit mask), `Categories`, `Enabled`, `ProcessInterval`, `PrefixCallback`, `DisplaySubSeconds`.
 
 - **[`IOutputLogRoute`](IOutputLogRoute.md)** — Marker interface for routes that write into the response output. Forces a final flush on every collection.

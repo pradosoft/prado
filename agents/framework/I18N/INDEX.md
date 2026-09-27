@@ -22,6 +22,8 @@ Internationalization and localization for the Prado framework. Covers culture-aw
 
 - **[`TGlobalizationAutoDetect`](TGlobalizationAutoDetect.md)** — Extends [`TGlobalization`](TGlobalization.md); auto-sets `Culture` from the HTTP `Accept-Language` header.
 
+- **[`TGlobalizationProxy`](TGlobalizationProxy.md)** (@since 4.4.0) — Transparent `TGlobalization` module delegating culture, charset, and translation lookups to the module named by `BackingGlobalizationId`; rejects its own `<translation>` configuration.
+
 ### Formatting
 
 - **[`TDateFormat`](TDateFormat.md)** — Localized date/time formatting and parsing. Methods: `format($date, $pattern, $culture)`, `parse($string, $pattern, $culture)`. Supports ICU-style pattern strings.

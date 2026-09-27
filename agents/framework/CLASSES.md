@@ -8,7 +8,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 | Directory | Classes | Interfaces | Total | Recursive |
 |-----------|---------|------------|-------|-----------|
-| [Prado](./INDEX.md) | 21 | 8 | 29 | 784 |
+| [Prado](./INDEX.md) | 21 | 8 | 29 | 791 |
 | [Prado\\Caching](./Caching/INDEX.md) | 12 | 2 | 14 | 14 |
 | [Prado\\Collections](./Collections/INDEX.md) | 27 | 7 | 34 | 34 |
 | [Prado\\Data](./Data/INDEX.md) | 11 | 5 | 16 | 137 |
@@ -31,23 +31,23 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 | [Prado\\Data\\SqlMap\\DataMapper](./Data/SqlMap/DataMapper/INDEX.md) | 16 | 0 | 16 | 16 |
 | [Prado\\Data\\SqlMap\\Statements](./Data/SqlMap/Statements/INDEX.md) | 15 | 1 | 16 | 16 |
 | [Prado\\Exceptions](./Exceptions/INDEX.md) | 22 | 0 | 22 | 22 |
-| [Prado\\I18N](./I18N/INDEX.md) | 9 | 0 | 9 | 24 |
+| [Prado\\I18N](./I18N/INDEX.md) | 10 | 0 | 10 | 25 |
 | [Prado\\I18N\\core](./I18N/core/INDEX.md) | 12 | 1 | 13 | 16 |
 | [Prado\\I18N\\core\\Gettext](./I18N/core/Gettext/INDEX.md) | 3 | 0 | 3 | 3 |
 | [Prado\IO](./IO/INDEX.md) | 6 | 1 | 7 | 7 |
 | [Prado\PHPStan](./PHPStan/INDEX.md) | 3 | 0 | 3 | 3 |
-| [Prado\Security](./Security/INDEX.md) | 10 | 2 | 12 | 21 |
-| [Prado\\Security\\Permissions](./Security/Permissions/INDEX.md) | 8 | 1 | 9 | 9 |
+| [Prado\Security](./Security/INDEX.md) | 12 | 2 | 14 | 24 |
+| [Prado\\Security\\Permissions](./Security/Permissions/INDEX.md) | 9 | 1 | 10 | 10 |
 | [Prado\\Shell](./Shell/INDEX.md) | 4 | 0 | 4 | 10 |
 | [Prado\\Shell\\Actions](./Shell/Actions/INDEX.md) | 6 | 0 | 6 | 6 |
-| [Prado\\Util](./Util/INDEX.md) | 23 | 7 | 30 | 78 |
+| [Prado\\Util](./Util/INDEX.md) | 23 | 7 | 30 | 79 |
 | [Prado\\Util\\Behaviors](./Util/Behaviors/INDEX.md) | 14 | 0 | 14 | 14 |
 | [Prado\\Util\\Cron](./Util/Cron/INDEX.md) | 11 | 0 | 11 | 11 |
 | [Prado\\Util\\Helpers](./Util/Helpers/INDEX.md) | 6 | 0 | 6 | 6 |
-| [Prado\\Util\\Log](./Util/Log/INDEX.md) | 13 | 1 | 14 | 14 |
+| [Prado\\Util\\Log](./Util/Log/INDEX.md) | 14 | 1 | 15 | 15 |
 | [Prado\\Util\\Math](./Util/Math/INDEX.md) | 2 | 0 | 2 | 2 |
 | [Prado\\Util\\Traits](./Util/Traits/INDEX.md) | 2 | 0 | 2 | 2 |
-| [Prado\\Web](./Web/INDEX.md) | 21 | 0 | 21 | 418 |
+| [Prado\\Web](./Web/INDEX.md) | 23 | 0 | 23 | 420 |
 | [Prado\\Web\\Behaviors](./Web/Behaviors/INDEX.md) | 1 | 0 | 1 | 1 |
 | [Prado\\Web\\Javascripts](./Web/Javascripts/INDEX.md) | 4 | 0 | 4 | 4 |
 | [Prado\\Web\\Services](./Web/Services/INDEX.md) | 14 | 1 | 15 | 15 |
@@ -62,7 +62,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ## Class Listings
 
-## [Prado](./INDEX.md) - Classes: 21, Interfaces: 8, Total: 29, Recursive: 784
+## [Prado](./INDEX.md) - Classes: 21, Interfaces: 8, Total: 29, Recursive: 791
 
 ### Interfaces (8)
 
@@ -491,7 +491,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\I18N](./I18N/INDEX.md) - Classes: 9, Interfaces: 0, Total: 9, Recursive: 24
+## [Prado\I18N](./I18N/INDEX.md) - Classes: 10, Interfaces: 0, Total: 10, Recursive: 25
 
 ### Classes (9)
 
@@ -499,6 +499,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TDateFormat](./I18N/TDateFormat.md)
 - [TGlobalization](./I18N/TGlobalization.md)
 - [TGlobalizationAutoDetect](./I18N/TGlobalizationAutoDetect.md)
+- [TGlobalizationProxy](./I18N/TGlobalizationProxy.md)
 - [TI18NControl](./I18N/TI18NControl.md)
 - [TNumberFormat](./I18N/TNumberFormat.md)
 - [Translation](./I18N/Translation.md)
@@ -569,7 +570,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Security](./Security/INDEX.md) - Classes: 10, Interfaces: 2, Total: 12, Recursive: 21
+## [Prado\Security](./Security/INDEX.md) - Classes: 12, Interfaces: 2, Total: 14, Recursive: 24
 
 ### Interfaces (2)
 
@@ -584,14 +585,16 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TDbUser](./Security/TDbUser.md)
 - [TDbUserManager](./Security/TDbUserManager.md)
 - [TSecurityManager](./Security/TSecurityManager.md)
+- [TSecurityManagerProxy](./Security/TSecurityManagerProxy.md)
 - TSecurityManagerValidationMode
 - [TUser](./Security/TUser.md)
 - [TUserManager](./Security/TUserManager.md)
+- [TUserManagerProxy](./Security/TUserManagerProxy.md)
 - [TUserManagerPasswordMode](./Security/TUserManagerPasswordMode.md)
 
 ---
 
-## [Prado\Security\Permissions](./Security/Permissions/INDEX.md) - Classes: 8, Interfaces: 1, Total: 9, Recursive: 9
+## [Prado\Security\Permissions](./Security/Permissions/INDEX.md) - Classes: 9, Interfaces: 1, Total: 10, Recursive: 10
 
 ### Interfaces (1)
 
@@ -604,6 +607,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TPermissionsBehavior](./Security/Permissions/TPermissionsBehavior.md)
 - [TPermissionsConfigurationBehavior](./Security/Permissions/TPermissionsConfigurationBehavior.md)
 - [TPermissionsManager](./Security/Permissions/TPermissionsManager.md)
+- [TPermissionsManagerProxy](./Security/Permissions/TPermissionsManagerProxy.md)
 - [TPermissionsManagerPropertyTrait](./Security/Permissions/TPermissionsManagerPropertyTrait.md)
 - [TUserOwnerRule](./Security/Permissions/TUserOwnerRule.md)
 - [TUserPermissionsBehavior](./Security/Permissions/TUserPermissionsBehavior.md)
@@ -634,7 +638,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Util](./Util/INDEX.md) - Classes: 23, Interfaces: 7, Total: 30, Recursive: 78
+## [Prado\Util](./Util/INDEX.md) - Classes: 23, Interfaces: 7, Total: 30, Recursive: 79
 
 ### Interfaces (7)
 
@@ -726,7 +730,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Util\Log](./Util/Log/INDEX.md) - Classes: 13, Interfaces: 1, Total: 14, Recursive: 14
+## [Prado\Util\Log](./Util/Log/INDEX.md) - Classes: 14, Interfaces: 1, Total: 15, Recursive: 15
 
 ### Interfaces (1)
 
@@ -743,6 +747,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TLogger](./Util/Log/TLogger.md)
 - [TLogRoute](./Util/Log/TLogRoute.md)
 - [TLogRouter](./Util/Log/TLogRouter.md)
+- [TLogRouterProxy](./Util/Log/TLogRouterProxy.md)
 - [TPsrLogger](./Util/Log/TPsrLogger.md)
 - [TPsrLogRoute](./Util/Log/TPsrLogRoute.md)
 - [TStdOutLogRoute](./Util/Log/TStdOutLogRoute.md)
@@ -768,11 +773,12 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Web](./Web/INDEX.md) - Classes: 21, Interfaces: 0, Total: 21, Recursive: 418
+## [Prado\Web](./Web/INDEX.md) - Classes: 23, Interfaces: 0, Total: 23, Recursive: 420
 
 ### Classes (20)
 
 - [TAssetManager](./Web/TAssetManager.md)
+- [TAssetManagerProxy](./Web/TAssetManagerProxy.md)
 - [TCacheHttpSession](./Web/TCacheHttpSession.md)
 - [THttpCookie](./Web/THttpCookie.md)
 - [THttpCookieCollection](./Web/THttpCookieCollection.md)
@@ -790,6 +796,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TSessionIterator](./Web/TSessionIterator.md)
 - [TUri](./Web/TUri.md)
 - [TUrlManager](./Web/TUrlManager.md)
+- [TUrlManagerProxy](./Web/TUrlManagerProxy.md)
 - [TUrlMapping](./Web/TUrlMapping.md)
 - [TUrlMappingPattern](./Web/TUrlMappingPattern.md)
 - [TUrlMappingPatternSecureConnection](./Web/TUrlMappingPatternSecureConnection.md)
