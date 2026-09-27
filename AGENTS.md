@@ -274,7 +274,7 @@ All instances self-register in `Prado.Registry[controlId]` on construction and a
 │   ├── Web/                    # Page templates directory
 │   │   ├── Behaviors/          # Behaviors changing Web/* objects
 │   │   ├── Javascript/         # Javascript classes: TJavaScript, TJavaScriptAsset, TJavaScriptLiteral, TJavaScriptString, "source/prado" (browser javascript for WebControls)
-│   │   ├── Services/           # TPageService, TJsonService, TFeedService, TRpcService, TSoapService
+│   │   ├── Services/           # TPageService, TJsonService, TFeedService, TSoapService
 │   │   ├── TAssetManager.php   # Manages Page Response Assets
 │   │   ├── THttpRequest.php
 │   │   ├── THttpResponse.php

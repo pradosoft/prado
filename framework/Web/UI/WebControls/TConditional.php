@@ -79,6 +79,7 @@ class TConditional extends \Prado\Web\UI\TControl
 		$condition = $this->getCondition();
 		$tplControl = $this->getTemplateControl();
 		if (!$tplControl) {
+			$this->_creatingChildren = false;
 			return;
 		}
 		try {

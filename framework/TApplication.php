@@ -83,8 +83,8 @@ use Prado\Xml\TXmlElement;
  * TApplication maintains a lifecycle with the following stages:
  * - [construct] : The application instance has been constructed.
  * - [initApplication] : Configuration has been loaded; modules and the requested service have been instantiated.
- * - onConfiguration : Configuration has been fully applied. The request has not yet been resolved and no service has been started.
- * - onInitComplete : The service has been initialized. For {@see Shell\TShellApplication}, argument processing is attached to this event.
+ * - onConfiguration : Configuration has been fully applied. The request has not yet been resolved and no service has been started. For {@see Shell\TShellApplication}, argument processing is attached to this event.
+ * - onInitComplete : The service has been initialized.
  * - [run] : The primary request lifecycle has begun.
  * - onBeginRequest : Application initialization has completed.
  * - onLoadState : State loading has begun.

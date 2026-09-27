@@ -736,8 +736,9 @@ class TStyle extends \Prado\TComponent implements \ArrayAccess
 	 * {@see methodToAttributeName}. Leading underscores in the suffix map to
 	 * leading dashes in the CSS name, so `get_WebkitTransform()` reads the
 	 * `-webkit-transform` field and `get__WebColor()` reads `--web-color`.
-	 * `set` calls require exactly one argument; any other prefix or wrong arity
-	 * falls through to the parent (which throws).
+	 * A `get`/`set` method a behavior contributes, `set` calls with other than one
+	 * argument, and any other prefix fall through to the parent, which dispatches to
+	 * the behaviors or throws.
 	 *
 	 * @param string $method method name
 	 * @param array $args arguments
@@ -746,14 +747,15 @@ class TStyle extends \Prado\TComponent implements \ArrayAccess
 	public function __call($method, $args)
 	{
 		$getset = substr($method, 0, 3);
-		if ($getset == 'get') {
+		if (($getset == 'get' || $getset == 'set') && !Prado::method_visible($this, $method)) {
 			$propname = $this->methodToAttributeName(substr($method, 3));
-			return $this->getStyleField($propname);
-		} elseif ($getset == 'set' && count($args) === 1) {
-			$propname = $this->methodToAttributeName(substr($method, 3));
-			return $this->setStyleField($propname, $args[0]);
+			if ($getset == 'get') {
+				return $this->getStyleField($propname);
+			} elseif (count($args) === 1) {
+				return $this->setStyleField($propname, $args[0]);
+			}
 		}
-		parent::__call($method, $args);
+		return parent::__call($method, $args);
 	}
 
 	/**
