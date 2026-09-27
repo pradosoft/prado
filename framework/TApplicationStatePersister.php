@@ -62,7 +62,7 @@ class TApplicationStatePersister extends \Prado\TModule implements IStatePersist
 	 */
 	protected function setAppApplicationStatePersister()
 	{
-		$this->getApplication()?->setApplicationStatePersister($this);
+		$this->findApplication()?->setApplicationStatePersister($this);
 	}
 
 	/**

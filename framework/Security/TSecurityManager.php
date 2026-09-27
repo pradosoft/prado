@@ -125,7 +125,7 @@ class TSecurityManager extends \Prado\TModule
 	 */
 	protected function setAppSecurityManager()
 	{
-		$this->getApplication()?->setSecurityManager($this);
+		$this->findApplication()?->setSecurityManager($this);
 	}
 
 	/**
@@ -234,7 +234,7 @@ class TSecurityManager extends \Prado\TModule
 			return !$unencrypted;
 		}
 		return in_array(
-			$this->getApplication()?->getMode(),
+			$this->findApplication()?->getMode(),
 			[TApplicationMode::Normal, TApplicationMode::Performance],
 			true
 		);

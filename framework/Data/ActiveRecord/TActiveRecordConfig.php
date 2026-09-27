@@ -129,7 +129,7 @@ class TActiveRecordConfig extends TDataSourceConfig implements IModuleDependency
 	{
 		parent::init($xml);
 		$manager = $this->getManager();
-		if ($this->getEnableCache() && ($cache = $this->getApplication()?->getCache())) {
+		if ($this->getEnableCache() && ($cache = $this->findApplication()?->getCache())) {
 			$manager->setCache($cache);
 		}
 		$manager->setDbConnection($this->getDbConnection());

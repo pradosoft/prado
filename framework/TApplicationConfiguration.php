@@ -321,7 +321,7 @@ class TApplicationConfiguration extends \Prado\TApplicationComponent
 	public function loadFromFile($fname, ?string $type = null)
 	{
 		$type ??= $this->getConfigurationType();
-		$type ??= $this->getApplication()?->getConfigurationType();
+		$type ??= $this->findApplication()?->getConfigurationType();
 		$content = $this->readConfigurationFile($type, $fname);
 
 		if ($content instanceof TXmlDocument) {

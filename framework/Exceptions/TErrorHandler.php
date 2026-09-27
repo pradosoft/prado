@@ -121,7 +121,7 @@ class TErrorHandler extends \Prado\TModule
 	 */
 	protected function setAppErrorHandler()
 	{
-		$this->getApplication()?->setErrorHandler($this);
+		$this->findApplication()?->setErrorHandler($this);
 	}
 
 	/**

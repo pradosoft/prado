@@ -20,12 +20,13 @@ TApplicationComponent is the base class for all application-related components i
 ## Core Properties and Methods
 
 ### Application Integration
-- `getApplication()`: Returns the application bound at construction (@since 4.4.0), or binds and returns the current application when unbound; null when none exists
-- `getService()`: Returns the current running service, or null without an application
-- `getRequest()`: Returns the current user request module, or null without an application
-- `getResponse()`: Returns the response module, or null without an application
-- `getSession()`: Returns the user session module, or null without an application
-- `getUser()`: Returns the current user instance, or null without an application
+- `getApplication()`: Returns the application bound at construction (@since 4.4.0), or binds and returns the current application when unbound; throws `applicationcomponent_application_required` (`TInvalidOperationException`) when none exists or the bound one was collected
+- `findApplication()` / `hasApplication()` (@since 4.4.0): the null-returning and boolean forms for a module that can run without an application
+- `getService()`: Returns the current running service (null when none has started)
+- `getRequest()`: Returns the current user request module
+- `getResponse()`: Returns the response module
+- `getSession()`: Returns the user session module (null when no session module is installed)
+- `getUser()`: Returns the current user instance
 
 ### Application Binding (@since 4.4.0)
 - `$_application` is a `WeakReference` set by `__construct()` from `Prado::getApplication()`, excluded from serialization, and re-bound by `__wakeup()`; `resolveApplication()` binds only when unbound (`hasApplicationBinding()`), so a component never pins its application in memory and yields null once it is collected

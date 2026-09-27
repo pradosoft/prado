@@ -12,6 +12,7 @@ namespace Prado\Test\Unit;
 
 use PHPUnit\Framework\TestCase;
 use Prado\Test\Unit\Harness\TTestApplication;
+use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
 use Prado\TApplication;
 use Prado\TApplicationComponent;
@@ -54,9 +55,9 @@ class TApplicationComponentTest_Concrete extends TApplicationComponent
  */
 class TApplicationComponentTest_NullApp extends TApplicationComponent
 {
-	public function getApplication(): ?TApplication
+	public function getApplication(): TApplication
 	{
-		return null;
+		throw new TInvalidOperationException('applicationcomponent_application_required', static::class);
 	}
 }
 
@@ -237,10 +238,33 @@ class TApplicationComponentTest extends TestCase
 
 			// The binding is weak: the application is gone and the component does not rebind.
 			self::assertNull($this->comp->pubGetApplicationDirect());
-			self::assertNull($this->comp->getApplication());
+			self::assertFalse($this->comp->hasApplication());
+			$this->expectException(TInvalidOperationException::class);
+			$this->comp->getApplication();
 		} finally {
 			PradoUnit::restoreStatic(Prado::class, $snap);
 		}
+	}
+
+	public function testFindApplicationAndHasApplicationWithoutAnApplication(): void
+	{
+		$snap = PradoUnit::snapshotStatic(Prado::class, ['_application']);
+		PradoUnit::setStaticProp(Prado::class, '_application', null);
+		try {
+			$comp = new TApplicationComponentTest_Concrete();
+			self::assertNull($comp->findApplication());
+			self::assertFalse($comp->hasApplication());
+			$this->expectException(TInvalidOperationException::class);
+			$comp->getApplication();
+		} finally {
+			PradoUnit::restoreStatic(Prado::class, $snap);
+		}
+	}
+
+	public function testFindApplicationReturnsTheBoundApplication(): void
+	{
+		self::assertSame(Prado::getApplication(), $this->comp->findApplication());
+		self::assertTrue($this->comp->hasApplication());
 	}
 
 	public function testSetApplicationDirectNull(): void
@@ -308,40 +332,46 @@ class TApplicationComponentTest extends TestCase
 	// Shortcut properties — null-app guard (nullsafe operator paths)
 	// ════════════════════════════════════════════════════════════════════════
 
-	public function testGetServiceReturnsNullWithNoApp(): void
+	public function testGetServiceThrowsWithNoApp(): void
 	{
-		self::assertNull((new TApplicationComponentTest_NullApp())->getService());
+		$this->expectException(TInvalidOperationException::class);
+		(new TApplicationComponentTest_NullApp())->getService();
 	}
 
-	public function testGetRequestReturnsNullWithNoApp(): void
+	public function testGetRequestThrowsWithNoApp(): void
 	{
-		self::assertNull((new TApplicationComponentTest_NullApp())->getRequest());
+		$this->expectException(TInvalidOperationException::class);
+		(new TApplicationComponentTest_NullApp())->getRequest();
 	}
 
-	public function testGetResponseReturnsNullWithNoApp(): void
+	public function testGetResponseThrowsWithNoApp(): void
 	{
-		self::assertNull((new TApplicationComponentTest_NullApp())->getResponse());
+		$this->expectException(TInvalidOperationException::class);
+		(new TApplicationComponentTest_NullApp())->getResponse();
 	}
 
-	public function testGetSessionReturnsNullWithNoApp(): void
+	public function testGetSessionThrowsWithNoApp(): void
 	{
-		self::assertNull((new TApplicationComponentTest_NullApp())->getSession());
+		$this->expectException(TInvalidOperationException::class);
+		(new TApplicationComponentTest_NullApp())->getSession();
 	}
 
-	public function testGetUserReturnsNullWithNoApp(): void
+	public function testGetUserThrowsWithNoApp(): void
 	{
-		self::assertNull((new TApplicationComponentTest_NullApp())->getUser());
+		$this->expectException(TInvalidOperationException::class);
+		(new TApplicationComponentTest_NullApp())->getUser();
 	}
 
 	// ════════════════════════════════════════════════════════════════════════
 	// publishFilePath
 	// ════════════════════════════════════════════════════════════════════════
 
-	public function testPublishFilePathReturnsNullWithNoApp(): void
+	public function testPublishFilePathThrowsWithNoApp(): void
 	{
 		// TApplicationComponentTest_NullApp::getApplication() returns null,
 		// so the nullsafe chain short-circuits to null.
-		self::assertNull((new TApplicationComponentTest_NullApp())->publishFilePath('/any/path'));
+		$this->expectException(TInvalidOperationException::class);
+		(new TApplicationComponentTest_NullApp())->publishFilePath('/any/path');
 	}
 
 	// ════════════════════════════════════════════════════════════════════════
@@ -379,12 +409,13 @@ class TApplicationComponentTest extends TestCase
 		self::assertSame('https://example.com/asset/logo.png', $result);
 	}
 
-	public function testPublishAssetReturnsNullWithNoApp(): void
+	public function testPublishAssetThrowsWithNoApp(): void
 	{
 		// publishAsset() calls $this->publishFilePath(), which in turn calls
 		// $this->getApplication()?->getAssetManager()?->publishFilePath(...).
 		// When getApplication() returns null the nullsafe chain short-circuits to null.
-		self::assertNull((new TApplicationComponentTest_NullApp())->publishAsset('foo.png'));
+		$this->expectException(TInvalidOperationException::class);
+		(new TApplicationComponentTest_NullApp())->publishAsset('foo.png');
 	}
 
 	// ════════════════════════════════════════════════════════════════════════

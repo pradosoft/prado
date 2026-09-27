@@ -10,6 +10,7 @@
 
 namespace Prado;
 
+use Prado\Exceptions\TInvalidOperationException;
 use Prado\TApplicationMode;
 
 /**
@@ -33,7 +34,8 @@ use Prado\TApplicationMode;
  * current when the component is constructed. With multiple applications
  * ({@see Prado::getMultipleApplications()}), the component stays bound to its
  * owning application after another application becomes the current one.
- * {@see isCurrentApplication()} tests the binding and
+ * {@see findApplication()} returns null instead of throwing without an application;
+ * {@see hasApplication()} and {@see isCurrentApplication()} test the binding and
  * {@see makeCurrentApplication()} makes the owning application current.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -107,7 +109,7 @@ class TApplicationComponent extends \Prado\TComponent
 		static $_classfxSize = 0;
 		static $_loaded = false;
 
-		$app = $this->getApplication();
+		$app = $this->findApplication();
 		$cacheFile = $mode = null;
 		if ($app) {
 			$cacheFile = $app->getRuntimePath() . DIRECTORY_SEPARATOR . self::FX_CACHE_FILE;
@@ -147,14 +149,43 @@ class TApplicationComponent extends \Prado\TComponent
 	/**
 	 * Returns the application that owns this component. A component without a
 	 * binding, such as one constructed before any application existed, binds the
-	 * current application through {@see resolveApplication()} first. A bound
-	 * application that was garbage collected yields null.
-	 * @return ?TApplication the owning application, or null when none is available.
+	 * current application through {@see resolveApplication()} first.
+	 * {@see hasApplication()} tests for an application without throwing.
+	 * @throws TInvalidOperationException when no application is bound or current,
+	 *   or the bound application was garbage collected.
+	 * @return TApplication the owning application.
 	 */
 	public function getApplication()
 	{
 		$this->resolveApplication();
+		$app = $this->getApplicationDirect();
+		if ($app === null) {
+			throw new TInvalidOperationException('applicationcomponent_application_required', $this::class);
+		}
+		return $app;
+	}
+
+	/**
+	 * Returns the owning application, or null when none is available, binding
+	 * the current application first when the component is unbound. A module that
+	 * can run without an application uses this form instead of {@see getApplication()}.
+	 * @return ?TApplication the owning application, or null.
+	 * @since 4.4.0
+	 */
+	public function findApplication(): ?TApplication
+	{
+		$this->resolveApplication();
 		return $this->getApplicationDirect();
+	}
+
+	/**
+	 * Returns whether {@see getApplication()} has an application to return.
+	 * @return bool whether an application is available.
+	 * @since 4.4.0
+	 */
+	public function hasApplication(): bool
+	{
+		return $this->findApplication() !== null;
 	}
 
 	/**
@@ -229,43 +260,48 @@ class TApplicationComponent extends \Prado\TComponent
 	}
 
 	/**
-	 * @return ?IService the current service, or null when no application is available.
+	 * @throws TInvalidOperationException when no application is available
+	 * @return ?IService the current service, or null when none has started
 	 */
 	public function getService()
 	{
-		return $this->getApplication()?->getService();
+		return $this->getApplication()->getService();
 	}
 
 	/**
-	 * @return ?\Prado\Web\THttpRequest the current user request, or null when no application is available.
+	 * @throws TInvalidOperationException when no application is available
+	 * @return \Prado\Web\THttpRequest the current user request
 	 */
 	public function getRequest()
 	{
-		return $this->getApplication()?->getRequest();
+		return $this->getApplication()->getRequest();
 	}
 
 	/**
-	 * @return ?\Prado\Web\THttpResponse the response, or null when no application is available.
+	 * @throws TInvalidOperationException when no application is available
+	 * @return \Prado\Web\THttpResponse the response
 	 */
 	public function getResponse()
 	{
-		return $this->getApplication()?->getResponse();
+		return $this->getApplication()->getResponse();
 	}
 
 	/**
-	 * @return ?\Prado\Web\THttpSession the user session, or null when no application is available.
+	 * @throws TInvalidOperationException when no application is available
+	 * @return ?\Prado\Web\THttpSession the user session, or null when no session module is installed
 	 */
 	public function getSession()
 	{
-		return $this->getApplication()?->getSession();
+		return $this->getApplication()->getSession();
 	}
 
 	/**
-	 * @return ?\Prado\Security\IUser the current user, or null when no application is available.
+	 * @throws TInvalidOperationException when no application is available
+	 * @return \Prado\Security\IUser the current user
 	 */
 	public function getUser()
 	{
-		return $this->getApplication()?->getUser();
+		return $this->getApplication()->getUser();
 	}
 
 	/**
@@ -300,6 +336,6 @@ class TApplicationComponent extends \Prado\TComponent
 	 */
 	public function publishFilePath($fullPath, $checkTimestamp = false)
 	{
-		return $this->getApplication()?->getAssetManager()?->publishFilePath($fullPath, $checkTimestamp);
+		return $this->getApplication()->getAssetManager()->publishFilePath($fullPath, $checkTimestamp);
 	}
 }

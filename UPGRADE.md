@@ -13,8 +13,10 @@ Upgrading from v4.3.3
   `getApplication()` returns that application instead of `Prado::getApplication()`. With one application
   the two are the same. Code that constructs components under one application and expects them to follow
   a later `Prado::setApplication()` calls `makeCurrentApplication()` on the component, or constructs it
-  under the intended application. `getService()`, `getRequest()`, `getResponse()`, `getSession()`,
-  `getUser()`, and `publishFilePath()` return null when no application exists instead of failing on null.
+  under the intended application. `getApplication()` throws `applicationcomponent_application_required`
+  when no application is bound or current (it previously returned null, and the shortcuts then failed on
+  null); `findApplication()` returns null and `hasApplication()` tests for one, for a module that can run
+  without an application.
 - `Prado::setApplication()` takes `?TApplication`; `null` clears the current application. A second,
   different application throws in the default singleton mode unless `Prado::setMultipleApplications(true)`
   or the constructing application's `MultipleMode` allows it.

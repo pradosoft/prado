@@ -146,7 +146,7 @@ class TGlobalization extends \Prado\TModule
 	 */
 	protected function setAppGlobalization()
 	{
-		$this->getApplication()?->setGlobalization($this);
+		$this->findApplication()?->setGlobalization($this);
 	}
 
 	/**

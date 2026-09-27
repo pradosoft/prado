@@ -213,7 +213,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	protected function setAppResponse()
 	{
-		$this->getApplication()?->setResponse($this);
+		$this->findApplication()?->setResponse($this);
 	}
 
 	/**

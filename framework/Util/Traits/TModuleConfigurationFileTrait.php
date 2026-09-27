@@ -28,7 +28,7 @@ use Prado\Xml\TXmlDocument;
  * `TXmlDocument` → XML loader) lives on the using class:
  *
  * ```php
- * $type    = $this->getApplication()?->getConfigurationType();
+ * $type    = $this->findApplication()?->getConfigurationType();
  * $content = $this->readConfigurationFile($type, $fname);
  * if ($content instanceof TXmlDocument) {
  *     $this->loadFromXml($content, dirname($fname));

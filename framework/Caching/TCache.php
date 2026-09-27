@@ -117,10 +117,10 @@ abstract class TCache extends TModule implements ICache, \ArrayAccess
 	public function init($config)
 	{
 		if ($this->getKeyPrefixDirect() === null) {
-			$this->setKeyPrefix($this->getApplication()?->getUniqueID() ?? '');
+			$this->setKeyPrefix($this->findApplication()?->getUniqueID() ?? '');
 		}
 		if ($this->getPrimaryCache()) {
-			if ($this->getApplication()?->getCache() !== null) {
+			if ($this->findApplication()?->getCache() !== null) {
 				throw new TConfigurationException('cache_primary_duplicated', static::class);
 			}
 			$this->setAppCache();
@@ -135,7 +135,7 @@ abstract class TCache extends TModule implements ICache, \ArrayAccess
 	 */
 	protected function setAppCache()
 	{
-		$this->getApplication()?->setCache($this);
+		$this->findApplication()?->setCache($this);
 	}
 
 	// =========================================================================

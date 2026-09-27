@@ -61,7 +61,7 @@ trait TApplicationClockAwareTrait
 		if ($this->_clock !== null) {
 			return $this->_clock;
 		}
-		$application = $this instanceof TApplicationComponent ? $this->getApplication() : Prado::getApplication();
+		$application = $this instanceof TApplicationComponent ? $this->findApplication() : Prado::getApplication();
 		if ($application !== null) {
 			return $application->getClock();
 		}
