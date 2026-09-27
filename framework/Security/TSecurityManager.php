@@ -107,6 +107,11 @@ class TSecurityManager extends \Prado\TModule
 	private $_cryptAlgorithm = 'aes-256-cbc';
 	private $_encryptionKeyAlgorithm = 'sha256';
 	private $_useEncryptionHmac = true;
+	/**
+	 * @var ?string the Content-Security-Policy nonce, generated on first {@see getCSPNonce}
+	 * @since 4.4.0
+	 */
+	private ?string $_cspNonce = null;
 	private $_closureSecretKey;
 	private ?bool $_closureUnencrypted = null;
 
@@ -674,15 +679,15 @@ class TSecurityManager extends \Prado\TModule
 	}
 
 	/**
-	 * Returns a per-request nonce value to be used in a Content-security-policy
+	 * Returns the nonce for a Content-Security-Policy, generated once per instance.
 	 * @return string nonce
+	 * @since 4.4.0
 	 */
 	public function getCSPNonce()
 	{
-		static $nonce;
-		if ($nonce === null) {
-			$nonce = $this->generateRandomKey();
+		if ($this->_cspNonce === null) {
+			$this->_cspNonce = $this->generateRandomKey();
 		}
-		return $nonce;
+		return $this->_cspNonce;
 	}
 }

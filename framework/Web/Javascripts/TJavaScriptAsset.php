@@ -40,12 +40,10 @@ class TJavaScriptAsset
 	public const DEFAULT_INTEGRITY_VALUE = null;
 
 	/** @var string URL of the JavaScript file. */
-	private string $_url;
+	protected string $_url;
 
 	/** @var bool Whether to add the `async` boolean attribute. */
-	private bool $_async;
-
-	//  @todo add text with CDATA interior when present.
+	protected bool $_async;
 
 	/**
 	 * @var null|false|string Subresource Integrity disposition:

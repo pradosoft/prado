@@ -6,6 +6,7 @@ use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TNotSupportedException;
 use Prado\Security\TSecurityManager;
 use Prado\Test\Unit\Harness\TTestApplication;
+use Prado\Test\Unit\PradoUnit;
 
 class TCustomTestSecurityManager extends TSecurityManager
 {
@@ -32,6 +33,10 @@ class TSecurityManagerTest extends \PHPUnit\Framework\TestCase
 		if ($this->app !== null) {
 			$this->app->restoreApplication();
 			$this->app = null;
+		}
+		// Re-apply the signer of the bootstrap application's security manager for the tests that follow.
+		if (($manager = \Prado\Prado::getApplication()?->getSecurityManager()) !== null) {
+			PradoUnit::invoke($manager, 'setupSerializableClosure');
 		}
 	}
 

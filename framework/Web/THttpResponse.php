@@ -1090,7 +1090,8 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * @return string the ID of the URL manager module
+	 * @return string the ID of the headers manager module
+	 * @since 4.4.0
 	 */
 	public function getHeadersManager()
 	{
@@ -1103,7 +1104,8 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 * You may specify a different module for headers managing tasks
 	 * by loading it as an application module and setting this property
 	 * with the module ID.
-	 * @param string $value the ID of the URL manager module
+	 * @param string $value the ID of the headers manager module
+	 * @since 4.4.0
 	 */
 	public function setHeadersManager($value)
 	{
@@ -1111,7 +1113,8 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * @return null|THttpHeadersManager the URL manager module
+	 * @return null|THttpHeadersManager the headers manager module
+	 * @since 4.4.0
 	 */
 	public function getHeadersManagerModule()
 	{

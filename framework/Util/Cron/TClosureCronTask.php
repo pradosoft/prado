@@ -20,7 +20,7 @@ use Prado\Util\TSerializableClosure;
  * TClosureCronTask class
  *
  * TClosureCronTask runs a PHP {@see \Closure} as a cron task. The closure receives the task and the
- * calling {@see TDbCronModule} as arguments:
+ * calling {@see TCronModule} as arguments:
  * ```php
  * $task = new TClosureCronTask(function (TClosureCronTask $task, TCronModule $cron) {
  *     // ... do work ...

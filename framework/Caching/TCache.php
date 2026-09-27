@@ -99,12 +99,16 @@ abstract class TCache extends TModule implements ICache, \ArrayAccess
 	// =========================================================================
 
 	/**
-	 * Seeds the cache key prefix with {@see DEFAULT_PREFIX} before construction completes.
+	 * Seeds the cache key prefix with a non-empty {@see DEFAULT_PREFIX} before construction
+	 * completes; an empty default leaves the prefix unset so {@see init} applies the
+	 * application unique ID.
 	 * @since 4.4.0
 	 */
 	public function __construct()
 	{
-		$this->setKeyPrefix(static::DEFAULT_PREFIX);
+		if (static::DEFAULT_PREFIX !== '') {
+			$this->setKeyPrefix(static::DEFAULT_PREFIX);
+		}
 		parent::__construct();
 	}
 
