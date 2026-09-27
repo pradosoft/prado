@@ -167,6 +167,18 @@ protected function registerApplication(): void            // @since 4.4.0 mode-a
 
 protected function setPradoApplication(): void            // @since 4.4.0
 // Prado::setApplication($this); override to wire another service locator.
+// run() calls makeCurrentApplication() first, so the running application is
+// Prado::getApplication() and singleton(); isCurrentApplication() reports it.
+
+protected function getResolvesUniqueIdCollisions(): bool  // @since 4.4.0
+// false under PRADO_TEST_RUN: Auto mode neither renames a colliding UniqueID nor
+// enables multiple applications; Singleton and Multiple keep their behavior.
+// setUniqueID() re-keys this application's pool entry; setRuntimePath() resolves
+// a collision after regenerating the ID.
+
+protected function removeProxiedModules(array $modules): array   // @since 4.4.0
+// getModulesByType() drops an IProxy module whose backing is also listed, so a
+// loop over all modules of a type reaches a proxied module once.
 
 protected function getPageServiceIDDirect() / setPageServiceIDDirect()   // @since 4.4.0
 protected function getMultipleModeDirect() / setMultipleModeDirect()     // @since 4.4.0

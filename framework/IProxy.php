@@ -14,9 +14,9 @@ namespace Prado;
  * IProxy interface
  *
  * IProxy marks every transparent-proxy class in the framework, so a consumer
- * can test for a proxy without knowing the concrete proxy type. Every
- * implementation uses {@see TComponentProxyTrait}, which supplies
- * `getProxyBacking()`:
+ * can test for a proxy without knowing the concrete proxy type, and exposes the
+ * component the proxy stands for through {@see getProxyBacking()}. Every
+ * implementation uses {@see TComponentProxyTrait}, which supplies the method:
  *
  * ```php
  * if ($module instanceof IProxy) {
@@ -35,4 +35,11 @@ namespace Prado;
  */
 interface IProxy
 {
+	/**
+	 * Returns the component the proxy forwards to, resolving it lazily when needed.
+	 * @throws \Prado\Exceptions\TConfigurationException when the backing is
+	 *   required but not configured or cannot be found
+	 * @return ?TComponent the backing component, or null when unavailable
+	 */
+	public function getProxyBacking(): ?TComponent;
 }

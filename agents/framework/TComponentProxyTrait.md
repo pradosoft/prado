@@ -26,11 +26,11 @@ Shared logic of every [`IProxy`](./IProxy.md) implementation. A class using the 
 | Method the backing `hasMethod()` (its behaviors included), except `dy*`/`fx*` | the backing |
 | Anything else | the proxy's behaviors through `TComponent`, else throws |
 
-Every dispatch reads `getProxyBackingDirect()` first; `getProxyBacking()` runs only when that is `null` and `canResolveProxyBacking()` is `true`. `isa($class)` is `true` for the proxy, its behaviors, or the backing.
+Every dispatch reads `getProxyBackingDirect()` first; `getProxyBacking()` runs only when that is `null` and `canResolveProxyBacking()` is `true`. `isa($class)` is `true` for the proxy, its behaviors, or the backing; an unresolvable backing counts as absent instead of throwing.
 
 ## Event forwarding
 
-`attachProxy()` reflects the public `on*` events of the backing class and of each enabled backing behavior (`TComponentReflection::getEvents()`, kept when `$backing->hasEvent()` agrees). For each event it keeps a `TWeakCallableCollection` in `$this->_e[$lname]` and registers a static forwarder closure on the backing event. The forwarder captures the collection, not the proxy, and calls the proxy's handlers in priority order with the backing as `$sender`; a stopped `IEventStoppableParameter` ends the loop. `detachProxy()` removes the forwarders and keeps the collections, so handlers survive a backing swap.
+`attachProxy()` reflects the public `on*` events of the backing class and of each enabled backing behavior (`TComponentReflection::getEvents()`, kept when `$backing->hasEvent()` agrees). For each event it keeps a `TWeakCallableCollection` in `$this->_e[$lname]` and registers a static forwarder closure on the backing event. The forwarder captures the collection, not the proxy, and calls the proxy's handlers in priority order with the backing as `$sender`; a stopped `IEventStoppableParameter` ends the loop. The forwarder runs outside the proxy's `raiseEvent()`, so the proxy's `fx` listeners, behavior `dy` hooks, and `IEventCycleParameter` calls fire for the backing's raise only. `detachProxy()` removes the forwarders (also for an event whose behavior left the backing) and keeps the collections, so handlers survive a backing swap.
 
 `hasEvent()` and `getEventHandlers()` recognize the wired events. `__clone()` drops the clone's backing and forwarder list without touching the original's forwarders.
 

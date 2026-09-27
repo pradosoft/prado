@@ -9,7 +9,7 @@
 **Type:** marker interface (@since 4.4.0)
 
 ## Overview
-Identifies a transparent proxy without naming its concrete type. Every implementation uses [`TComponentProxyTrait`](./TComponentProxyTrait.md), so `getProxyBacking()` returns the real component:
+Identifies a transparent proxy without naming its concrete type and declares `getProxyBacking(): ?TComponent`, the real component. Every implementation uses [`TComponentProxyTrait`](./TComponentProxyTrait.md), which supplies the method. `TApplication::getModulesByType()` uses it to list a proxied module once.
 
 ```php
 if ($module instanceof IProxy) {

@@ -733,6 +733,13 @@ class TModuleProxyTest extends \PHPUnit\Framework\TestCase
 		$this->assertFalse($proxy->isa(TModuleProxyBackingModule::class));
 	}
 
+	public function testIsaReturnsFalseWhenBackingModuleIsMissing(): void
+	{
+		$proxy = new TModuleProxyAccessor();
+		$proxy->setBackingComponentId('noSuchModule');
+		$this->assertFalse($proxy->isa(TModuleProxyBackingModule::class));
+	}
+
 	// ── Logging detail ───────────────────────────────────────────────────────────
 
 	public function testBackingComponentIdChangeLoggedAtWarningLevel(): void

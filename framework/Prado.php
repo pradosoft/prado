@@ -575,6 +575,9 @@ class Prado
 					!trait_exists($shortName, false)) {
 					class_alias($namespace, $shortName);
 				}
+			} elseif (array_key_exists($namespace, self::$classMap)) {
+				// A short name loaded as an alias resolves to its fully-qualified name.
+				return self::$classMap[$namespace];
 			}
 			return $namespace;
 		}

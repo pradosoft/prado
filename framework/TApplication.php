@@ -449,6 +449,8 @@ class TApplication extends TComponent implements ISingleton
 	/**
 	 * Returns the current Prado application.  This enables application behaviors to
 	 * be used for undefined static function calls via {@see TComponent::__callStatic}.
+	 * {@see run()} makes the running application current, so the static call and the
+	 * bound application of its components agree.
 	 * @param bool $create This is ignored and returns Prado::getApplication().
 	 * @return ?object The singleton instance of the class.
 	 * @since 4.3.0
@@ -456,6 +458,31 @@ class TApplication extends TComponent implements ISingleton
 	public static function singleton(bool $create = true): ?object
 	{
 		return Prado::getApplication();
+	}
+
+	/**
+	 * @return bool whether this application is {@see Prado::getApplication()}.
+	 * @since 4.4.0
+	 */
+	public function isCurrentApplication(): bool
+	{
+		return Prado::getApplication() === $this;
+	}
+
+	/**
+	 * Makes this application the current application through
+	 * {@see setPradoApplication()}. {@see run()} calls this first, so the
+	 * application that serves the request is the one {@see Prado::getApplication()}
+	 * and {@see TApplicationComponent::getApplication()} report.
+	 * @throws \Prado\Exceptions\TInvalidOperationException when a different
+	 *   application is current and multiple applications are not enabled.
+	 * @since 4.4.0
+	 */
+	public function makeCurrentApplication(): void
+	{
+		if (!$this->isCurrentApplication()) {
+			$this->setPradoApplication();
+		}
 	}
 
 	/**
@@ -473,8 +500,9 @@ class TApplication extends TComponent implements ISingleton
 	 * | `Auto` | The singleton when no application exists; enables multiple applications and joins the pool when another application is current. |
 	 *
 	 * {@see resolveUniqueId()} runs before registration so the unique ID does not
-	 * collide with a pool entry. When `PRADO_TEST_RUN` is defined the instance is
-	 * registered without the mode check and without renaming its unique ID.
+	 * collide with a pool entry. In a unit test run ({@see getResolvesUniqueIdCollisions()})
+	 * the `Auto` mode registers without renaming and without enabling multiple
+	 * applications; the explicit modes keep their behavior.
 	 *
 	 * @throws \Prado\Exceptions\TInvalidOperationException when the mode is
 	 *   {@see TApplicationMultipleMode::Singleton} and another application is current.
@@ -482,11 +510,6 @@ class TApplication extends TComponent implements ISingleton
 	 */
 	protected function registerApplication(): void
 	{
-		if (defined('PRADO_TEST_RUN')) {
-			$this->setPradoApplication();
-			return;
-		}
-
 		$mode = $this->getMultipleMode();
 		$existing = Prado::getApplication();
 		$otherExists = $existing !== null && $existing !== $this;
@@ -494,12 +517,28 @@ class TApplication extends TComponent implements ISingleton
 		if ($mode === TApplicationMultipleMode::Singleton && $otherExists) {
 			throw new TInvalidOperationException('prado_application_singleton_required');
 		}
-		if ($mode === TApplicationMultipleMode::Multiple || $otherExists) {
+		if ($mode === TApplicationMultipleMode::Multiple || ($otherExists && $this->getResolvesUniqueIdCollisions())) {
 			Prado::setMultipleApplications(true);
 		}
 
-		$this->resolveUniqueId();
+		if ($this->getResolvesUniqueIdCollisions()) {
+			$this->resolveUniqueId();
+		}
 		$this->setPradoApplication();
+	}
+
+	/**
+	 * Returns whether this application renames its unique ID on a pool collision
+	 * and, in the `Auto` mode, enables multiple applications for a second
+	 * instance. A unit test run (`PRADO_TEST_RUN`) constructs many applications
+	 * on one runtime path, so both are off there; an explicit `Singleton` or
+	 * `Multiple` mode is honored in every run.
+	 * @return bool whether collisions are resolved.
+	 * @since 4.4.0
+	 */
+	protected function getResolvesUniqueIdCollisions(): bool
+	{
+		return !defined('PRADO_TEST_RUN');
 	}
 
 	/**
@@ -767,6 +806,7 @@ class TApplication extends TComponent implements ISingleton
 	public function run()
 	{
 		try {
+			$this->makeCurrentApplication();
 			$this->initApplication();
 			$steps = $this->getSteps();
 			$n = count($steps);
@@ -1072,26 +1112,33 @@ class TApplication extends TComponent implements ISingleton
 	 * When no explicit ID has been set via {@see setUniqueID()}, the ID is computed
 	 * on demand by passing {@see getRuntimePath()} to {@see generateAppUniqueId()},
 	 * ensuring it reflects the current runtime path even when {@see setRuntimePath()}
-	 * is called after construction.
+	 * is called after construction. An application without a runtime path hashes
+	 * the empty string.
 	 * @return string an ID that uniquely identifies this Prado application.
 	 * @see generateAppUniqueId
 	 */
 	public function getUniqueID()
 	{
-		return $this->_uniqueID ?? $this->generateAppUniqueId($this->getRuntimePath());
+		return $this->_uniqueID ?? $this->generateAppUniqueId((string) $this->getRuntimePath());
 	}
 
 	/**
 	 * Sets an explicit unique ID for this application instance, overriding the value
 	 * that would otherwise be derived on demand by {@see getUniqueID()} via
 	 * {@see generateAppUniqueId()}. Called internally by {@see setRuntimePath()}
-	 * whenever the runtime path changes.
+	 * whenever the runtime path changes. An application registered in the
+	 * {@see Prado} pool under the old ID is re-keyed under the new one.
 	 * @param string $value a unique ID for this application instance.
 	 * @since 4.3.3
 	 */
 	protected function setUniqueID($value)
 	{
+		$old = $this->getUniqueID();
 		$this->_uniqueID = $value;
+		if ($old !== $value && Prado::getApplication($old) === $this) {
+			Prado::getApplications()->remove($old);
+			Prado::registerApplication($this);
+		}
 	}
 
 	/**
@@ -1217,7 +1264,8 @@ class TApplication extends TComponent implements ISingleton
 	/**
 	 * Sets the runtime path and synchronizes two derived values: rebuilds the config
 	 * cache file path (if caching is enabled) and regenerates the unique application
-	 * ID via {@see generateAppUniqueId()}. Use {@see setRuntimePathDirect()} to update
+	 * ID via {@see generateAppUniqueId()}, resolving a pool collision through
+	 * {@see resolveUniqueId()}. Use {@see setRuntimePathDirect()} to update
 	 * the path alone without these side effects.
 	 * @param string $value the directory storing cache data and application-level persistent data. (absolute path)
 	 * @see generateAppUniqueId
@@ -1230,6 +1278,9 @@ class TApplication extends TComponent implements ISingleton
 			$this->setCacheFile($this->buildCacheFilePath($value));
 		}
 		$this->setUniqueID($this->generateAppUniqueId($value));
+		if ($this->getResolvesUniqueIdCollisions()) {
+			$this->resolveUniqueId();
+		}
 	}
 
 	/**
@@ -1707,7 +1758,8 @@ class TApplication extends TComponent implements ISingleton
 	/**
 	 * Returns a list of application modules of a specific class.
 	 * Lazy Loading Modules are not loaded, and are null but have an ID Key.
-	 * When null modules are found, load them with {@see getModule}. eg.
+	 * When null modules are found, load them with {@see getModule}. A proxy module
+	 * whose backing is also of the type is left out ({@see removeProxiedModules()}). eg.
 	 * ```php
 	 *	foreach (Prado::getApplication()->getModulesByType(ICache::class) as $id => $module) {
 	 *		$module = (!$module) ? $app->getModule($id) : $module;
@@ -1749,7 +1801,33 @@ class TApplication extends TComponent implements ISingleton
 				$m[$id] = $module;
 			}
 		}
-		return $m;
+		return $this->removeProxiedModules($m);
+	}
+
+	/**
+	 * Removes each {@see IProxy} module whose backing module is also in the list,
+	 * so a consumer that operates on every module of a type reaches a proxied
+	 * module once. A proxy whose backing is not listed stays.
+	 * @param array<string, ?IModule> $modules the modules keyed by ID.
+	 * @return array<string, ?IModule> the modules without the proxies of listed modules.
+	 * @since 4.4.0
+	 */
+	protected function removeProxiedModules(array $modules): array
+	{
+		foreach ($modules as $id => $module) {
+			if (!($module instanceof IProxy)) {
+				continue;
+			}
+			try {
+				$backing = $module->getProxyBacking();
+			} catch (TConfigurationException) {
+				continue; // an unresolvable proxy is listed as itself
+			}
+			if ($backing !== null && in_array($backing, $modules, true)) {
+				unset($modules[$id]);
+			}
+		}
+		return $modules;
 	}
 
 	/**

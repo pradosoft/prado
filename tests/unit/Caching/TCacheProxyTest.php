@@ -563,6 +563,16 @@ class TCacheProxyTest extends \PHPUnit\Framework\TestCase
 		$this->assertNull($this->app->getCache());
 	}
 
+	public function testGetModulesByTypeListsBackingOnce(): void
+	{
+		$this->app->setModule('cacheProxy', $this->proxy);
+		$this->proxy->init(null);
+
+		$ids = array_keys($this->app->getModulesByType(ICache::class));
+		$this->assertContains('backingCache', $ids);
+		$this->assertNotContains('cacheProxy', $ids);
+	}
+
 	// ── KeyPrefix property (inherited from TCache) ───────────────────────────────
 
 	public function testKeyPrefixGetSet(): void

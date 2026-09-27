@@ -607,6 +607,20 @@ class TComponentProxyTest extends \PHPUnit\Framework\TestCase
 		);
 	}
 
+	public function testDetachProxyRemovesForwarderOfDetachedBehaviorEvent(): void
+	{
+		$this->backing->attachBehavior('testBehavior', new TComponentProxyBehaviorWithEvent());
+		$this->proxy->attachProxy();
+		$this->backing->detachBehavior('testBehavior');
+		$this->assertFalse($this->backing->hasEvent('OnBehaviorEvent'));
+
+		// The event is gone from the backing; detaching still clears the proxy's forwarder list.
+		$this->proxy->detachProxy();
+
+		$this->assertFalse($this->proxy->hasEvent('OnBehaviorEvent'));
+		$this->assertFalse($this->backing->hasEventHandler('OnBehaviorEvent'));
+	}
+
 	public function testHandlerRegisteredViaProxyFiresForBehaviorEvent(): void
 	{
 		$this->backing->attachBehavior('testBehavior', new TComponentProxyBehaviorWithEvent());

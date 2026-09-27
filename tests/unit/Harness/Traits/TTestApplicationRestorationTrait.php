@@ -94,7 +94,7 @@ trait TTestApplicationRestorationTrait
 	 * Snapshots the full static state of {@see Prado} and {@see TComponent}, then
 	 * registers `$this` as the PRADO application singleton.
 	 *
-	 * The snapshot is taken *before* `Prado::setApplication($this)` so that the
+	 * The snapshot is taken *before* `parent::registerApplication()` so that the
 	 * stored `$_application` value is the previous singleton — exactly what
 	 * {@see restoreApplication()} must put back. Every subsequent mutation made
 	 * by the constructor, by `run()`, or by any module loaded during the test is
@@ -104,7 +104,7 @@ trait TTestApplicationRestorationTrait
 	{
 		$this->_pradoSnapshot     = PradoUnit::snapshotStatic(Prado::class);
 		$this->_componentSnapshot = PradoUnit::snapshotStatic(TComponent::class);
-		Prado::setApplication($this);
+		parent::registerApplication();
 	}
 
 	/**

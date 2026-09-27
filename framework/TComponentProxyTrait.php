@@ -11,6 +11,7 @@
 namespace Prado;
 
 use Prado\Collections\TWeakCallableCollection;
+use Prado\Exceptions\TConfigurationException;
 
 /**
  * TComponentProxyTrait trait
@@ -198,6 +199,10 @@ trait TComponentProxyTrait
 	 * `$this->_e[$lname]`, and a forwarder closure registered on the backing event
 	 * calls those handlers, in priority order, with the backing as `$sender`. A
 	 * stopped {@see IEventStoppableParameter} ends the forwarded handler loop.
+	 * The forwarder calls the handlers directly, outside the proxy's
+	 * {@see TComponent::raiseEvent()}: the proxy's `fx` global listeners, its
+	 * behaviors' `dy` event hooks, and the {@see IEventCycleParameter} calls run
+	 * for the backing's raise only, so a backing event reaches them once.
 	 *
 	 * The proxy collection persists across backing swaps: {@see detachProxy()}
 	 * removes the forwarder and keeps the collection, and the next attachment
@@ -271,8 +276,9 @@ trait TComponentProxyTrait
 	}
 
 	/**
-	 * Removes every forwarder that {@see attachProxy()} registered on the backing.
-	 * The proxy's own handler collections are kept, so handlers registered on the
+	 * Removes every forwarder that {@see attachProxy()} registered on the backing,
+	 * including one for an event whose behavior has since left the backing. The
+	 * proxy's own handler collections are kept, so handlers registered on the
 	 * proxy survive a backing swap.
 	 */
 	public function detachProxy(): void
@@ -280,9 +286,7 @@ trait TComponentProxyTrait
 		$backing = $this->getProxyBackingDirect();
 		if ($backing !== null) {
 			foreach ($this->_proxyEventNames as [$name, $forwarder]) {
-				if ($backing->hasEvent($name)) {
-					$backing->detachEventHandler($name, $forwarder);
-				}
+				$backing->detachEventHandler($name, $forwarder);
 			}
 		}
 		$this->_proxyEventNames = [];
@@ -319,7 +323,8 @@ trait TComponentProxyTrait
 
 	/**
 	 * Returns whether the proxy, one of its behaviors, or the backing component is
-	 * an instance of `$class`. The backing is resolved lazily when possible.
+	 * an instance of `$class`. The backing is resolved lazily when possible; a
+	 * backing that cannot be resolved counts as absent, so a query never throws.
 	 * @param mixed|string $class class name or object to test against
 	 * @return bool whether this proxy or its backing is an instance of `$class`
 	 */
@@ -328,7 +333,11 @@ trait TComponentProxyTrait
 		if (parent::isa($class)) {
 			return true;
 		}
-		$backing = $this->resolveProxyBacking();
+		try {
+			$backing = $this->resolveProxyBacking();
+		} catch (TConfigurationException) {
+			return false;
+		}
 		return $backing !== null && $backing->isa($class);
 	}
 

@@ -2,7 +2,10 @@
 
 namespace Prado\Test\Unit;
 
+use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
+use Prado\TApplicationMultipleMode;
+use Prado\Test\Unit\Harness\TTestApplication;
 use Prado\TApplicationMode;
 use Prado\Test\Unit\Harness\TNestedPathComponent;
 use Prado\Util\Log\TLogger;
@@ -293,6 +296,18 @@ class MethodVisibleTestClassB extends MethodVisibleTestClassA
 		$tester->assertFalse($instance->isCallingSelfClassInA());
 		$tester->assertTrue($instance->isCallingSelfClassInB());
 	}
+}
+
+/** An application that registers in the Singleton mode. */
+class PradoBaseTestSingletonApplication extends TTestApplication
+{
+	public const DEFAULT_MULTIPLE_MODE = TApplicationMultipleMode::Singleton;
+}
+
+/** An application that registers in the Multiple mode. */
+class PradoBaseTestMultipleApplication extends TTestApplication
+{
+	public const DEFAULT_MULTIPLE_MODE = TApplicationMultipleMode::Multiple;
 }
 
 /**
@@ -1535,6 +1550,42 @@ class PradoBaseTest extends \PHPUnit\Framework\TestCase
 	{
 		Prado::autoload('Prado\\NonExistent\\TFakeAutoloadXYZ123');
 		$this->assertFalse(class_exists('Prado\\NonExistent\\TFakeAutoloadXYZ123', false));
+	}
+
+	// -------------------------------------------------------------------------
+	// TApplication::registerApplication() explicit modes
+	// -------------------------------------------------------------------------
+
+	/**
+	 * A Singleton-mode application throws when another application is current,
+	 * in a test run as well.
+	 */
+	public function testRegisterApplication_singletonMode_throwsWhenAnotherApplicationIsCurrent(): void
+	{
+		$snap = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_application', '_applications', '_multipleApplications']);
+		try {
+			$this->assertNotNull(Prado::getApplication());
+			$this->expectException(TInvalidOperationException::class);
+			new PradoBaseTestSingletonApplication();
+		} finally {
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snap);
+		}
+	}
+
+	/**
+	 * A Multiple-mode application enables multiple applications and becomes current.
+	 */
+	public function testRegisterApplication_multipleMode_enablesMultipleApplications(): void
+	{
+		$snap = PradoUnit::snapshotStatic(\Prado\Prado::class, ['_application', '_applications', '_multipleApplications']);
+		try {
+			PradoUnit::setStaticProp(\Prado\Prado::class, '_multipleApplications', false);
+			$app = new PradoBaseTestMultipleApplication();
+			$this->assertTrue(Prado::getMultipleApplications());
+			$this->assertSame($app, Prado::getApplication());
+		} finally {
+			PradoUnit::restoreStatic(\Prado\Prado::class, $snap);
+		}
 	}
 
 	// -------------------------------------------------------------------------
