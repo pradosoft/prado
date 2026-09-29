@@ -20,7 +20,6 @@ class TPreparedStatementFactory
 {
 	private $_statement;
 	private $_preparedStatement;
-	private $_parameterPrefix = 'param';
 	private $_commandText;
 
 	public function __construct($statement, $sqlString)

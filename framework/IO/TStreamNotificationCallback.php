@@ -185,7 +185,7 @@ class TStreamNotificationCallback extends \Prado\TComponent
 	{
 		$params = stream_context_get_params($context);
 
-		return $params[self::NOTIFICATION] ?? null;
+		return $params[self::NOTIFICATION];
 	}
 
 	/**

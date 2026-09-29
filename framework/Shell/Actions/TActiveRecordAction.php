@@ -109,7 +109,7 @@ class TActiveRecordAction extends TShellAction
 			$con->setActive(false);
 			foreach ($tables as $key => $table) {
 				$output = $args[1] . "." . $this->_prefix . ucfirst($table) . $this->_postfix;
-				if ($config !== false && $output !== false) {
+				if ($config !== false) {
 					$this->generate("generate " . $table . " " . $output . " " . $this->_soapall . " " . $this->_overwriteall);
 				}
 			}

@@ -227,6 +227,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 		}
 		$db = $this->getDbConnection();
 		$cacheTable = $this->getCacheTableName();
+		$autoCreateCacheTable = $this->getAutoCreateCacheTable();
 		try {
 			$key = 'TDbCache:' . $cacheTable . ':created';
 			if ($force) {
@@ -235,7 +236,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 				$this->_createCheck = $this->getApplication()->getGlobalState($key, 0);
 			}
 
-			if ($this->getAutoCreateCacheTable() && !$this->_createCheck) {
+			if ($autoCreateCacheTable && !$this->_createCheck) {
 				Prado::trace(($force ? 'Force initializing: ' : 'Initializing: ') . $this->getConnectionID() . ', ' . $cacheTable, TDbCache::class);
 
 				$sql = 'SELECT 1 FROM ' . $cacheTable . ' WHERE 0=1';
@@ -246,29 +247,25 @@ class TDbCache extends TSerializingCache implements IDbModule
 			}
 		} catch (\Exception $e) {
 			// DB table not exists
-			if ($this->getAutoCreateCacheTable()) {
-				Prado::trace('Autocreate: ' . $cacheTable, TDbCache::class);
+			Prado::trace('Autocreate: ' . $cacheTable, TDbCache::class);
 
-				$driver = $db->getDriverName();
-				if ($driver === TDbDriver::DRIVER_MYSQL) {
-					$blob = 'LONGBLOB';
-				} elseif ($driver === TDbDriver::DRIVER_PGSQL) {
-					$blob = 'BYTEA';
-				} else {
-					$blob = 'BLOB';
-				}
-
-				$sql = 'CREATE TABLE ' . $cacheTable . " (itemkey CHAR(128) PRIMARY KEY, value $blob, expire INTEGER)";
-				$db->createCommand($sql)->execute();
-
-				$sql = 'CREATE INDEX IX_expire ON ' . $cacheTable . ' (expire)';
-				$db->createCommand($sql)->execute();
-
-				$this->_createCheck = true;
-				$this->getApplication()->setGlobalState($key, $this->getClock()->time());
+			$driver = $db->getDriverName();
+			if ($driver === TDbDriver::DRIVER_MYSQL) {
+				$blob = 'LONGBLOB';
+			} elseif ($driver === TDbDriver::DRIVER_PGSQL) {
+				$blob = 'BYTEA';
 			} else {
-				throw new TConfigurationException('db_cachetable_inexistent', $cacheTable);
+				$blob = 'BLOB';
 			}
+
+			$sql = 'CREATE TABLE ' . $cacheTable . " (itemkey CHAR(128) PRIMARY KEY, value $blob, expire INTEGER)";
+			$db->createCommand($sql)->execute();
+
+			$sql = 'CREATE INDEX IX_expire ON ' . $cacheTable . ' (expire)';
+			$db->createCommand($sql)->execute();
+
+			$this->_createCheck = true;
+			$this->getApplication()->setGlobalState($key, $this->getClock()->time());
 		}
 		$this->setIsCacheInitialized(true);
 	}

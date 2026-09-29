@@ -127,7 +127,7 @@ class TScaffoldListView extends TScaffoldBase
 			}
 		}
 		$order = explode(' ', $this->_sort->getSelectedValue(), 2);
-		if (is_array($order) && count($order) === 2) {
+		if (count($order) === 2) {
 			$criteria->setOrdersBy($order);
 		}
 		return $criteria;
@@ -308,7 +308,7 @@ class TScaffoldListView extends TScaffoldBase
 	}
 
 	/**
-	 * @return TScaffoldEditView control for editing selected Active Record, null if EditViewID is not set.
+	 * @return ?TScaffoldEditView control for editing selected Active Record, null if EditViewID is not set.
 	 */
 	protected function getEditViewControl()
 	{
@@ -319,5 +319,6 @@ class TScaffoldListView extends TScaffoldBase
 			}
 			return $ctrl;
 		}
+		return null;
 	}
 }

@@ -66,7 +66,7 @@ class TMapRouteBehavior extends TBehavior
 	 * When there is a parameter, when the key is equal to the parameter,
 	 * this calls handler($value).
 	 * When parameter is null, this calls handler($key, $value).
-	 * @param string $key the key of the item being added
+	 * @param ?string $key the key of the item being added
 	 * @param mixed$value the value of the item being added
 	 * @param \Prado\Util\TCallChain $callchain of event handlers
 	 * @return mixed returns the argv[0], chained to all handlers
@@ -87,7 +87,7 @@ class TMapRouteBehavior extends TBehavior
 	 * When there is a parameter, when the key is equal to the parameter,
 	 * this calls handler(null).
 	 * When parameter is null, this calls handler($key, null).
-	 * @param string $key the key of the item being added
+	 * @param ?string $key the key of the item being added
 	 * @param mixed $value the value of the item being added
 	 * @param \Prado\Util\TCallChain $callchain of event handlers
 	 * @return mixed returns the argv[0], chained to all handlers

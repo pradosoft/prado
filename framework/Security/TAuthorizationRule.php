@@ -133,7 +133,7 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 			$ipRules = '*';
 		}
 		foreach (explode(',', $ipRules) as $ipRule) {
-			if ($ipRule !== null && ($ipRule = trim($ipRule)) !== '') {
+			if (($ipRule = trim($ipRule)) !== '') {
 				$this->_ipRules[] = $ipRule;
 			}
 		}

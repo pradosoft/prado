@@ -162,19 +162,19 @@ class TResultMap extends \Prado\TComponent
 	public function createInstanceOfResult($registry)
 	{
 		$handler = $registry->getTypeHandler($this->getClass());
-		try {
-			if ($handler !== null) {
-				return $handler->createNewInstance();
-			} else {
+		if ($handler !== null) {
+			return $handler->createNewInstance();
+		} else {
+			try {
 				return $registry->createInstanceOf($this->getClass());
+			} catch (TSqlMapException $e) {
+				throw new TSqlMapException(
+					'sqlmap_unable_to_create_new_instance',
+					$this->getClass(),
+					'null',
+					$this->getID()
+				);
 			}
-		} catch (TSqlMapException $e) {
-			throw new TSqlMapException(
-				'sqlmap_unable_to_create_new_instance',
-				$this->getClass(),
-				$handler ? $handler::class : 'null',
-				$this->getID()
-			);
 		}
 	}
 

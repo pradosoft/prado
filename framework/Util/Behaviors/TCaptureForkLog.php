@@ -134,11 +134,9 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 		}
 		$pid = $data['pid'];
 		if ($pid === -1) { //fail
-			if ($this->_childConnection) {
-				stream_socket_shutdown($this->_childConnection[0], STREAM_SHUT_RDWR);
-				stream_socket_shutdown($this->_childConnection[1], STREAM_SHUT_RDWR);
-				$this->_childConnection = null;
-			}
+			stream_socket_shutdown($this->_childConnection[0], STREAM_SHUT_RDWR);
+			stream_socket_shutdown($this->_childConnection[1], STREAM_SHUT_RDWR);
+			$this->_childConnection = null;
 		} elseif ($pid === 0) { // Child Process
 			$this->_parentConnections = [];
 			$this->_childConnection = $this->_childConnection[1];
@@ -214,7 +212,7 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 						} else {
 							$childLogs[$pid] = ['', 0, true];
 						}
-						if (isset($childLogs[$pid]) && strlen($childLogs[$pid][0]) >= $childLogs[$pid][1]) {
+							if (strlen($childLogs[$pid][0]) >= $childLogs[$pid][1]) {
 							if ($childLogs[$pid][2]) {
 								stream_socket_shutdown($socket, STREAM_SHUT_RDWR);
 								unset($this->_parentConnections[$pid]);

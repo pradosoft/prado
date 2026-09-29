@@ -278,7 +278,7 @@ class TProcessFork extends TComponent
 		} catch (\Throwable $e) {
 			$bytes = '';   // a read failure is treated as the child closing
 		}
-		if ($bytes !== '' && $bytes !== false) {
+		if ($bytes !== '') {
 			$this->consume($bytes);
 			return;
 		}

@@ -104,7 +104,6 @@ class TScaffoldView extends TScaffoldBase
 			default:
 				return $this->showListView($sender, $param);
 		}
-		return false;
 	}
 
 	/**

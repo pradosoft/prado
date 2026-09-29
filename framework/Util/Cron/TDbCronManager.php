@@ -136,7 +136,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 	private $_logCronTasks = true;
 
 	/** @var array[]|TCronTask[] the tasks created from the (parent) application configuration */
-	private $_configTasks;
+	private array $_configTasks = [];
 
 	/** @var bool are the tasks Initialized */
 	private $_tasksInitialized = false;
@@ -261,7 +261,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 		if ($initConfigTasks) {
 			$this->_configTasks = parent::ensureTasks();
 		}
-		return array_merge($this->_tasks, $this->_configTasks ?? []);
+		return array_merge($this->_tasks, $this->_configTasks);
 	}
 
 	/**

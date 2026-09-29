@@ -53,7 +53,7 @@ class DynamicMethodsClassReflectionExtension implements MethodsClassReflectionEx
 			return false;
 		}
 
-		return strncasecmp($methodName, 'dy', 2) === 0 || strncasecmp($methodName, 'fx', 2) === 0;
+		return strncasecmp($methodName, 'dy', 2) === 0;
 	}
 
 	/**

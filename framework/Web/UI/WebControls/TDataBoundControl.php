@@ -444,7 +444,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	{
 		$this->_initialized = true;
 		$isPostBack = $this->getPage()->getIsPostBack();
-		if (!$isPostBack || ($isPostBack && (!$this->getEnableViewState(true) || !$this->getIsDataBound()))) {
+		if (!$isPostBack || !$this->getEnableViewState(true) || !$this->getIsDataBound()) {
 			$this->setRequiresDataBinding(true);
 		}
 	}

@@ -441,12 +441,12 @@ class TDbLogRoute extends TLogRoute
 		if (!($value = TPropertyValue::ensureString($value))) {
 			$value = null;
 		}
-		$seconds = false;
-		if ($value && ($seconds = static::timespanToSeconds($value)) === false) {
+		$seconds = null;
+		if ($value && ($seconds = static::timespanToSeconds($value)) === null) {
 			throw new TConfigurationException('dblogroute_bad_retain_period', $value);
 		}
 
-		$this->_retainPeriod = ($seconds !== false) ? $seconds : $value;
+		$this->_retainPeriod = ($seconds !== null) ? $seconds : $value;
 
 		return $this;
 	}
@@ -458,9 +458,7 @@ class TDbLogRoute extends TLogRoute
 	 */
 	public static function timespanToSeconds(string $timespan): ?int
 	{
-		if (($interval = new \DateInterval($timespan)) === false) {
-			return null;
-		}
+		$interval = new \DateInterval($timespan);
 
 		$datetime1 = new \DateTime();
 		$datetime2 = clone $datetime1;

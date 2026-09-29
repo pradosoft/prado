@@ -119,7 +119,7 @@ class TPage extends TTemplateControl
 	/**
 	 * @var string page title set when Head is not in page yet
 	 */
-	private $_title;
+	private ?string $_title = null;
 	/**
 	 * @var TTheme page stylesheet theme
 	 */

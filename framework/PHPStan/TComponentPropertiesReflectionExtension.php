@@ -13,8 +13,12 @@ namespace Prado\PHPStan;
 
 use PHPStan\Analyser\OutOfClassScope;
 use PHPStan\Reflection\ClassReflection;
+use PHPStan\Reflection\ClassConstantReflection;
+use PHPStan\Reflection\ExtendedPropertyReflection;
 use PHPStan\Reflection\PropertiesClassReflectionExtension;
 use PHPStan\Reflection\PropertyReflection;
+use PHPStan\Rules\Constants\AlwaysUsedClassConstantsExtension;
+use PHPStan\Rules\Properties\ReadWritePropertiesExtension;
 use Prado\TComponent;
 
 /**
@@ -51,8 +55,55 @@ use Prado\TComponent;
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3
  */
-class TComponentPropertiesReflectionExtension implements PropertiesClassReflectionExtension
+class TComponentPropertiesReflectionExtension implements AlwaysUsedClassConstantsExtension, PropertiesClassReflectionExtension, ReadWritePropertiesExtension
 {
+	/**
+	 * Reports component properties as readable because templates and magic property
+	 * access can read declared properties outside ordinary PHP control flow.
+	 * @param ExtendedPropertyReflection $property
+	 * @param string $propertyName
+	 * @return bool
+	 */
+	public function isAlwaysRead(ExtendedPropertyReflection $property, string $propertyName): bool
+	{
+		return $property->getDeclaringClass()->is(TComponent::class);
+	}
+
+	/**
+	 * Reports component properties as writable because templates and magic property
+	 * access can populate declared properties outside ordinary PHP control flow.
+	 * @param ExtendedPropertyReflection $property
+	 * @param string $propertyName
+	 * @return bool
+	 */
+	public function isAlwaysWritten(ExtendedPropertyReflection $property, string $propertyName): bool
+	{
+		return $property->getDeclaringClass()->is(TComponent::class);
+	}
+
+	/**
+	 * Reports component properties as initialized when their values can be supplied
+	 * by template loading or magic property access.
+	 * @param ExtendedPropertyReflection $property
+	 * @param string $propertyName
+	 * @return bool
+	 */
+	public function isInitialized(ExtendedPropertyReflection $property, string $propertyName): bool
+	{
+		return $property->getDeclaringClass()->is(TComponent::class);
+	}
+
+	/**
+	 * Reports component constants as used because template parsing and component
+	 * configuration can resolve them dynamically.
+	 * @param ClassConstantReflection $constant
+	 * @return bool
+	 */
+	public function isAlwaysUsed(ClassConstantReflection $constant): bool
+	{
+		return $constant->getDeclaringClass()->is(TComponent::class);
+	}
+
 	/**
 	 * Returns true when the given class is a TComponent subclass that exposes a
 	 * virtual property named $propertyName via a getter or setter method.

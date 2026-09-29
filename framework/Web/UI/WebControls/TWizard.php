@@ -657,6 +657,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * This event is raised when a finish navigation button is clicked in the
 	 * current active step.
 	 * @param TWizardNavigationEventParameter $param event parameter
+	 * @phpstan-impure
 	 */
 	public function onCompleteButtonClick($param)
 	{
@@ -671,6 +672,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * This event is raised when a next navigation button is clicked in the
 	 * current active step.
 	 * @param TWizardNavigationEventParameter $param event parameter
+	 * @phpstan-impure
 	 */
 	public function onNextButtonClick($param)
 	{
@@ -682,6 +684,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * This event is raised when a previous navigation button is clicked in the
 	 * current active step.
 	 * @param TWizardNavigationEventParameter $param event parameter
+	 * @phpstan-impure
 	 */
 	public function onPreviousButtonClick($param)
 	{
@@ -692,6 +695,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * Raises <b>OnSideBarButtonClick</b> event.
 	 * This event is raised when a link button in the side bar is clicked.
 	 * @param TWizardNavigationEventParameter $param event parameter
+	 * @phpstan-impure
 	 */
 	public function onSideBarButtonClick($param)
 	{

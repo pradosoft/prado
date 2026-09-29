@@ -211,6 +211,7 @@ class TSocketReactor extends TComponent
 	 * socket has closed are pruned first.
 	 * @param ?float $timeout The maximum seconds to wait; null blocks until activity or a timer.
 	 * @return int The number of ready sources, or 0 on timeout or select error.
+	 * @phpstan-impure
 	 */
 	public function tick(?float $timeout = null): int
 	{

@@ -316,7 +316,7 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	}
 
 	/**
-	 * @return \Prado\Web\UI\TControl the parent of this control
+	 * @return ?\Prado\Web\UI\TControl the parent of this control
 	 */
 	public function getParent()
 	{
@@ -888,7 +888,7 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	public function getViewState($key, $defaultValue = null)
 	{
 		if (isset($this->_viewState[$key])) {
-			return $this->_viewState[$key] !== null ? $this->_viewState[$key] : $defaultValue;
+			return $this->_viewState[$key];
 		} elseif (isset($this->_tempState[$key])) {
 			if (is_object($this->_tempState[$key]) && $this->_trackViewState) {
 				$this->_viewState[$key] = $this->_tempState[$key];
@@ -1824,6 +1824,7 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	 * This method is invoked when control state is to be saved.
 	 * You can override this method to do last step state saving.
 	 * Parent implementation must be invoked.
+	 * @phpstan-impure
 	 */
 	public function saveState()
 	{
@@ -1833,6 +1834,7 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	 * This method is invoked right after the control has loaded its state.
 	 * You can override this method to initialize data from the control state.
 	 * Parent implementation must be invoked.
+	 * @phpstan-impure
 	 */
 	public function loadState()
 	{

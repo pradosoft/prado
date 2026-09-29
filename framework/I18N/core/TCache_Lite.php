@@ -354,7 +354,6 @@ class TCache_Lite
 		$this->_setFileName($id, $group);
 		if (!@unlink($this->_file)) {
 			throw new Exception('TCache_Lite: Unable to remove cache');
-			return false;
 		}
 		return true;
 	}
@@ -390,7 +389,6 @@ class TCache_Lite
 		}
 		if (!($dh = opendir($this->_cacheDir))) {
 			throw new Exception('TCache_Lite: Unable to open cache directory');
-			return false;
 		}
 		while ($file = readdir($dh)) {
 			if (($file != '.') && ($file != '..')) {
@@ -399,7 +397,6 @@ class TCache_Lite
 					if (strpos($file, $motif, 0)) {
 						if (!@unlink($file)) {
 							throw new Exception('Cache_Lite: Unable to remove cache');
-							return false;
 						}
 					}
 				}
@@ -498,7 +495,6 @@ class TCache_Lite
 			return $data;
 		}
 		throw new Exception('Cache_Lite: Unable to read cache');
-		return false;
 	}
 
 	/**
@@ -528,7 +524,6 @@ class TCache_Lite
 			return true;
 		}
 		throw new Exception('Cache_Lite: Unable to write cache');
-		return false;
 	}
 
 	/**
