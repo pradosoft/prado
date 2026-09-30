@@ -1,0 +1,12 @@
+<com:TContent ID="Content">
+	<h1>Active Table Row Test Case</h1>
+
+	<com:TTable ID="Table">
+		<com:TActiveTableRow ID="Row1" OnRowSelected="rowSelected">
+			<com:TActiveTableCell ID="Row1Cell1" OnCellSelected="cellSelected">Cell with a handler</com:TActiveTableCell>
+			<com:TActiveTableCell ID="Row1Cell2">Cell without a handler</com:TActiveTableCell>
+		</com:TActiveTableRow>
+	</com:TTable>
+
+	<com:TActiveLabel ID="Result" />
+</com:TContent>

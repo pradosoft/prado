@@ -35,10 +35,15 @@ Registered as a service (`<services>` tag, not `<modules>`).
 ```php
 return [
     'services' => [
-        'feed' => ['class' => 'Prado\Web\Services\TFeedService'],
+        'feed' => [
+            'class' => 'Prado\Web\Services\TFeedService',
+            'ch1' => ['class' => 'Path\To\FeedClass1', 'properties' => [...]],
+            'ch2' => ['class' => 'Path\To\FeedClass2'],
+        ],
     ],
 ];
 ```
+`init()` registers every key of the service entry as a feed, including `class`. Feeds sit beside the `class` key. A `?feed=class` request raises `jsonservice_class_required`.
 
 ## Methods
 

@@ -1108,6 +1108,62 @@ describe('TActiveTableRow', () => {
 		expect(dispatchMock).toHaveBeenCalled();
 		expect(evt.preventDefault).toHaveBeenCalled();
 	});
+
+	describe('click in a cell', () => {
+		let td, span;
+
+		beforeEach(() => {
+			td      = document.createElement('td');
+			td.id   = 'tr1c1';
+			span    = document.createElement('span');
+			td.appendChild(span);
+			tr.appendChild(td);
+		});
+
+		it('dispatches the row callback when the cell has no callback', () => {
+			const { dispatchMock } = mockCallbackRequest();
+			const ctrl = new TActiveTableRow({ ID: 'tr1', EventTarget: 'tr1' });
+			ctrl.onPostBack({ EventTarget: 'tr1' }, fakeEvent({ target: span }));
+			expect(dispatchMock).toHaveBeenCalledTimes(1);
+		});
+
+		it('leaves a click in a callback cell to the cell', () => {
+			const { dispatchMock } = mockCallbackRequest();
+			new TActiveTableCell({ ID: 'tr1c1', EventTarget: 'tr1c1' });
+			const ctrl = new TActiveTableRow({ ID: 'tr1', EventTarget: 'tr1' });
+			const evt  = fakeEvent({ target: span });
+			ctrl.onPostBack({ EventTarget: 'tr1' }, evt);
+			expect(dispatchMock).not.toHaveBeenCalled();
+			expect(evt.preventDefault).not.toHaveBeenCalled();
+		});
+
+		it('dispatches the row callback after the cell control deinitializes', () => {
+			const { dispatchMock } = mockCallbackRequest();
+			const cell = new TActiveTableCell({ ID: 'tr1c1', EventTarget: 'tr1c1' });
+			cell.deinitialize();
+			const ctrl = new TActiveTableRow({ ID: 'tr1', EventTarget: 'tr1' });
+			ctrl.onPostBack({ EventTarget: 'tr1' }, fakeEvent({ target: span }));
+			expect(dispatchMock).toHaveBeenCalledTimes(1);
+		});
+
+		it('dispatches one callback, the cell\'s, for one DOM click', () => {
+			const { MockCtor } = mockCallbackRequest();
+			new TActiveTableCell({ ID: 'tr1c1', EventTarget: 'tr1c1' });
+			new TActiveTableRow({ ID: 'tr1', EventTarget: 'tr1' });
+			span.click();
+			expect(MockCtor).toHaveBeenCalledTimes(1);
+			expect(MockCtor.mock.calls[0][0]).toBe('tr1c1');
+		});
+
+		it('dispatches one callback, the row\'s, for one DOM click on the row itself', () => {
+			const { MockCtor } = mockCallbackRequest();
+			new TActiveTableCell({ ID: 'tr1c1', EventTarget: 'tr1c1' });
+			new TActiveTableRow({ ID: 'tr1', EventTarget: 'tr1' });
+			tr.click();
+			expect(MockCtor).toHaveBeenCalledTimes(1);
+			expect(MockCtor.mock.calls[0][0]).toBe('tr1');
+		});
+	});
 });
 
 // ─── TActiveDetails ──────────────────────────────────────────────────────────

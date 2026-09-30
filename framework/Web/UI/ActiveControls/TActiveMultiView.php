@@ -26,7 +26,7 @@ use Prado\Web\UI\WebControls\TMultiView;
  * Please refer to the original documentation of the regular counterpart for usage.
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
- * @since 3.1.6
+ * @since 3.1.9
  * @method TActiveControlAdapter getAdapter()
  */
 class TActiveMultiView extends TMultiView implements IActiveControl

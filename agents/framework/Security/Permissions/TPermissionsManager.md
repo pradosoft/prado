@@ -188,6 +188,9 @@ PHP format:
 
 ## Patterns & Gotchas
 
+- **`<permissionrule>` elements are direct children of the module** — `loadPermissionsData()` reads rules with the default `TXmlElement::SEARCH_ELEMENT`. A `<permissionrule>` anywhere inside a `<role>` throws `permissions_role_rule_nested` so the rule is not silently dropped.
+- **Keys are case-insensitive** — both branches apply `array_change_key_case()`: the PHP branch to the top-level config (`roles`, `permissionrules`) and to each rule (`name`, `class`, `action`, `users`, `roles`, `verb`, `ips`, `priority`), the XML branch to each element's attributes.
+- **Every rule needs an `action`** — the loader passes `action ?? ''`, which `TAuthorizationRule::__construct()` rejects. This includes a rule naming a `class` such as [TUserOwnerRule](./TUserOwnerRule.md).
 - **`TPermissionsManager` must be registered after `TAuthManager`** in `application.xml` — auth state must be established before behavior attachment and permission checks can run.
 - **All permission and role names are normalized to lowercase** — `Blog_Edit` and `blog_edit` are the same.
 - **`SuperRoles` receive the `all` virtual role** — this makes them pass every permission check. Use only for true super-admin scenarios.
