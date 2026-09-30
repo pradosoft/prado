@@ -414,8 +414,8 @@ class TCacheProxyTest extends \PHPUnit\Framework\TestCase
 		$this->proxy->set('arr', [1, 2, 3]);
 		$this->assertSame([1, 2, 3], $this->proxy->get('arr'));
 
-		$this->proxy->set('obj', new stdClass());
-		$this->assertInstanceOf(stdClass::class, $this->proxy->get('obj'));
+		$this->proxy->set('obj', new \stdClass());
+		$this->assertInstanceOf(\stdClass::class, $this->proxy->get('obj'));
 	}
 
 	public function testSetEmptyValueWithZeroExpireDeletesEntry(): void
