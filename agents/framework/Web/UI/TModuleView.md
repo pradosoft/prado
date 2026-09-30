@@ -11,13 +11,13 @@
 ## Overview
 TModuleView conditionally shows its child controls only when a specified application module is present **and** an optional PHP condition expression evaluates to `true`. When the module is absent or the condition is false, the children are cleared and an optional `FallbackTemplate` is instantiated in their place.
 
-Without a `ModuleId` it behaves like [TConditional](./WebControls/TConditional.md), except that children are **not created at all** when inactive (rather than just hidden).
+Children are created only when the module is present. `Condition` is an additional gate evaluated once the module is present. Without a `ModuleId` there is no module, so the `FallbackTemplate` renders and the children are never created, regardless of `Condition`.
 
 ## Key Properties
 
 | Property | Type | Description |
 |---|---|---|
-| `ModuleId` | `string` | Application module ID to check. Empty = no module check. |
+| `ModuleId` | `string` | Application module ID to check. Empty = no module, so the view is inactive. |
 | `Condition` | `string` | PHP expression evaluated in the template control's context. Defaults to `'true'`. HTML entities are decoded before evaluation. |
 | `FallbackTemplate` | `?ITemplate` | Template instantiated when the view is inactive. Set via `<prop:FallbackTemplate>` in a template. |
 | `IsActive` | `bool` (read-only) | `true` if the module is present **and** `Condition` evaluates truthy. Lazily computed; reset when `ModuleId` or `Condition` changes. |

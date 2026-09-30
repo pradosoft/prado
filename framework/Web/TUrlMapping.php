@@ -60,8 +60,8 @@ use Prado\Xml\TXmlElement;
  *             'class' => 'Prado\Web\TUrlMapping',
  *             'properties' => ['EnableCustomUrl' => 'true'],
  *             'urls' => [
- *                 ['ServiceParameter' => 'Posts.ViewPost', 'Pattern' => 'post/{id}/', 'parameters.id' => '\d+'],
- *                 ['ServiceParameter' => 'Posts.ListPost', 'Pattern' => 'archive/{time}/', 'parameters.time' => '\d{6}'],
+ *                 ['properties' => ['ServiceParameter' => 'Posts.ViewPost', 'Pattern' => 'post/{id}/', 'parameters.id' => '\d+']],
+ *                 ['properties' => ['ServiceParameter' => 'Posts.ListPost', 'Pattern' => 'archive/{time}/', 'parameters.time' => '\d{6}']],
  *             ],
  *         ],
  *     ],
@@ -69,7 +69,8 @@ use Prado\Xml\TXmlElement;
  * ```
  *
  * In the above, each <tt>&lt;url&gt;</tt> element specifies a URL pattern represented
- * as a {@see \Prado\Web\TUrlMappingPattern} internally. You may create your own pattern classes
+ * as a {@see \Prado\Web\TUrlMappingPattern} internally. In PHP, each `urls` entry holds
+ * the pattern's property values under a `properties` key and an optional `class` key. You may create your own pattern classes
  * by extending {@see \Prado\Web\TUrlMappingPattern} and specifying the <tt>&lt;class&gt;</tt> attribute
  * in the element.
  *
