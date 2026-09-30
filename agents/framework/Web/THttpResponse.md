@@ -116,6 +116,23 @@ Class supports all standard HTTP status codes defined in RFC 2616 including:
 - Uses `appendLog()` method for error logging
 - Uses internal `ensureHeadersSent()` and `ensureContentTypeHeaderSent()` to manage header sending
 
+## Dynamic Events (@since 4.4.0)
+
+Behaviors extend the response through dynamic events. A notification ignores the chain's result. A filter uses the result in place of its first argument. A handled flag starts as `false`, and the method skips its own work when the chain returns `true`.
+
+| Event | Kind | Raised by | When |
+|---|---|---|---|
+| `dyFlushContent(bool $continueBuffering)` | notification | `flushContent()` | before any header is sent and before the buffer is flushed, so a behavior can transform the buffered body and add the headers that describe it |
+| `dyWriteFile(bool $handled, string $fileName, ?string $content, string $mimeType, ?array $headers, ?bool $forceDownload, string $clientFileName, int $fileSize): bool` | handled flag | `writeFile()` | before any header is sent, with the media type, client file name, and size resolved; `true` means a behavior sent the file and `writeFile()` sends nothing |
+| `dyRedirect(string $url): string` | filter | `redirect()` | before the adapter or `httpRedirect()` sends the URL, as given and before a relative URL gains the base URL; covers full-page and callback redirects |
+| `dySetCookie(THttpCookie $cookie, bool $remove): THttpCookie` | filter | `addCookie()`, `removeCookie()` | before the `Set-Cookie` header and before `addCookie()` hashes the value; `$remove` is true for a deletion |
+
+`dyWriteFile` hands a file to the web server: an `X-Sendfile` (Apache `mod_xsendfile`), `X-Accel-Redirect` (nginx), or `X-LiteSpeed-Location` behavior sends its own `Content-Type`, `Content-Disposition`, and handoff header, and the server serves the bytes, byte ranges, and conditional requests. It can also redirect to a signed CDN URL. A behavior that sends the file passes `true` along the chain (`$chain->dyWriteFile(true, …)`) so later behaviors still see the call; an observer passes the flag on unchanged and treats `true` as a response with no body to transform. With `$content` set there is no file to hand off, so a handoff behavior passes the call on. The handled-flag shape lets `TPermissionsBehavior` deny a download; the denied response is an empty 200 unless a behavior sets the status.
+
+`dyRedirect` is the place for an app-wide redirect allowlist; it runs in `redirect()` because `TCallbackResponseAdapter::httpRedirect()` never reaches `THttpResponse::httpRedirect()`. `dySetCookie` also runs for deletions because a browser only deletes a cookie whose deletion carries the same `Path`, `Domain`, and, for `__Secure-`/`__Host-` names, `Secure`. A filter may change the cookie it receives; that cookie is the one held by `getCookies()`.
+
+Response compression is left to the web server (`mod_deflate`, `mod_brotli`, nginx `gzip`) or to PHP's `zlib.output_compression`. Both run in C and stream.
+
 ## Usage Examples
 ### Basic Output 
 ```php
