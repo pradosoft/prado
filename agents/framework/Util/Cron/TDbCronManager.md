@@ -47,7 +47,7 @@ PHP style:
         'LogCronTasks' => 'true',
     ],
     'jobs' => [
-        ['Name' => 'dbcacheclean', 'Schedule' => '0 0 * * *', 'Task' => 'dbcache->flushCacheExpired(true)'],
+        ['name' => 'dbcacheclean', 'schedule' => '0 0 * * *', 'task' => 'dbcache->flushCacheExpired(true)'],
     ],
 ],
 ```

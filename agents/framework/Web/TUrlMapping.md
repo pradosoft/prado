@@ -50,7 +50,7 @@ return [
     'modules' => [
         'url' => [
             'class' => 'Prado\Web\TUrlMapping',
-            'patterns' => [
+            'urls' => [
                 ['class' => 'Prado\Web\TUrlMappingPattern', 'properties' => ['ServiceParameter' => 'Home', 'Pattern' => '/^home\//i']],
             ],
         ],

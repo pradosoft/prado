@@ -36,16 +36,22 @@ use Prado\Exceptions\THttpException;
  *
  * PHP configuration style:
  * ```php
- * array(
- *   'feed' => array(
- *	   'ch1' => array(
- *       'class' => 'Path\To\FeedClass1',
- *       'properties' => array(
- *          ...
- *        ),
- *   ),
- * )
+ * return [
+ *     'services' => [
+ *         'feed' => [
+ *             'class' => 'Prado\Web\Services\TFeedService',
+ *             'ch1' => [
+ *                 'class' => 'Path\To\FeedClass1',
+ *                 'properties' => [...],
+ *             ],
+ *             'ch2' => ['class' => 'Path\To\FeedClass2'],
+ *         ],
+ *     ],
+ * ];
  * ```
+ * where each feed is an entry of the service configuration, indexed by its ID,
+ * beside the service's `class` key. The service configuration holds only the
+ * `class` key and the feeds.
  *
  * The class attribute indicates which PHP class will provide the actual feed
  * content. Note, the class must implement {@see \Prado\Web\Services\IFeedContentProvider} interface.

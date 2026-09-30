@@ -52,45 +52,54 @@ use Prado\Xml\TXmlElement;
  *         <role name="Manager" children="editor, change_user_role_permission, cron_shell" />
  *         <role name="cron_shell" children="cron_add_task, cron_update_task, cron_remove_task" />
  *         <role name="cron" children="cron_shell, cron_manage_log, cron_add_task, cron_update_task, cron_remove_task" />
- *         <role name="Default" children="register_user, blog_read_posts, blog_comment">
- *             <permissionrule name="param_shell_permission" action="deny" users="*" roles="" verb="*" IPs="" />
- *             <permissionrule name="cron_shell" action="allow" users="*" roles="Developer,cron_shell,cron_manage_log" verb="*" IPs="" />
- *             <permissionrule name="register_user" action="allow" users="?" />
- *             <permissionrule name="register_user" action="allow" roles="Manager" />
- *             <permissionrule name="change_profile" action="deny" users="?" priority="0" />
- *             <permissionrule name="blog_update_posts" class="Prado\Security\Permissions\TUserOwnerRule" Priority="5" />
- *             <permissionrule name="cron" action="allow" users="admin, user1, user2" roles="*" verb="*" IPs="*"  />
- *             <permissionrule name="blog_*" action="allow" users="admin, user1, user2" roles="*" verb="*" IPs="*"  />
- *             <permissionrule name="*" action="deny" priority="1000" />
- *         </module>
+ *         <role name="Default" children="register_user, blog_read_posts, blog_comment" />
+ *         <permissionrule name="param_shell_permission" action="deny" users="*" roles="" verb="*" IPs="" />
+ *         <permissionrule name="cron_shell" action="allow" users="*" roles="Developer,cron_shell,cron_manage_log" verb="*" IPs="" />
+ *         <permissionrule name="register_user" action="allow" users="?" />
+ *         <permissionrule name="register_user" action="allow" roles="Manager" />
+ *         <permissionrule name="change_profile" action="deny" users="?" priority="0" />
+ *         <permissionrule name="blog_update_posts" class="Prado\Security\Permissions\TUserOwnerRule" action="allow" priority="5" />
+ *         <permissionrule name="cron" action="allow" users="admin, user1, user2" roles="*" verb="*" IPs="*" />
+ *         <permissionrule name="blog_*" action="allow" users="admin, user1, user2" roles="*" verb="*" IPs="*" />
+ *         <permissionrule name="*" action="deny" priority="1000" />
+ *     </module>
  * </modules>
  * ```
  *
  * and in PHP the same file would follow the following format, eg:
  * ```php
  * 'modules' => [
- * 'permissions' => ['class' => 'Prado\Security\Permissions\TPermissionsManager',
- * 		'properties' => ['DefaultRoles' => 'Default', 'SuperRoles' => "Administrator"],
- *		'roles' => [
- *			'Developer' => ['all', 'param_shell_permission', 'cron'],
- *			'Manager' => ['editor', 'change_user_role_permission', 'cron_shell'],
- *			'cron_shell' => ['cron_add_task', 'cron_update_task', 'cron_remove_task'],
- *			'cron' => ['cron_shell', 'cron_manage_log', 'cron_add_task', 'cron_update_task', 'cron_remove_task'],
- *			'Default' => ['register_user', 'blog_read_posts', 'blog_comment'],
- *		],
- * 		'permissionRules' => [
- *			[name => 'param_shell_permission', 'action' => 'deny', 'users' => '*', roles => '*', 'verb' => '*', 'IPs' =>''],
- *			[name => 'cron_shell', 'action' => 'allow', 'users' => 'Developer,cron_shell,cron_manage_log', roles => 'cron_shell', 'verb' => '*', 'IPs' =>''],
- *			[name => 'register_user', 'action' => 'allow', 'users' => '?'],
- *			[name => 'register_user', 'action' => 'allow', 'roles' => 'Manager'],
- *			[name => 'change_profile', 'action' => 'deny', 'users' => '?', 'priority' => '0'],
- *			[name => 'blog_update_posts', 'class' => 'Prado\Security\Permissions\TUserOwnerRule', 'priority' => '5'],
- *			[name => 'cron', 'action' => 'allow', 'users' => 'admin, user1, user2'],
- *			[name => 'blog_*', 'action' => 'allow', 'users' => 'admin, user1, user2'],
- *			[name => '*', 'action' => 'deny', 'priority' => 1000]
- *		]
- * ]
+ *     'permissions' => [
+ *         'class' => 'Prado\Security\Permissions\TPermissionsManager',
+ *         'properties' => ['DefaultRoles' => 'Default', 'SuperRoles' => 'Administrator'],
+ *         'roles' => [
+ *             'Developer' => ['all', 'param_shell_permission', 'cron'],
+ *             'Manager' => ['editor', 'change_user_role_permission', 'cron_shell'],
+ *             'cron_shell' => ['cron_add_task', 'cron_update_task', 'cron_remove_task'],
+ *             'cron' => ['cron_shell', 'cron_manage_log', 'cron_add_task', 'cron_update_task', 'cron_remove_task'],
+ *             'Default' => ['register_user', 'blog_read_posts', 'blog_comment'],
+ *         ],
+ *         'permissionrules' => [
+ *             ['name' => 'param_shell_permission', 'action' => 'deny', 'users' => '*', 'roles' => '', 'verb' => '*', 'ips' => ''],
+ *             ['name' => 'cron_shell', 'action' => 'allow', 'users' => '*', 'roles' => 'Developer,cron_shell,cron_manage_log', 'verb' => '*', 'ips' => ''],
+ *             ['name' => 'register_user', 'action' => 'allow', 'users' => '?'],
+ *             ['name' => 'register_user', 'action' => 'allow', 'roles' => 'Manager'],
+ *             ['name' => 'change_profile', 'action' => 'deny', 'users' => '?', 'priority' => '0'],
+ *             ['name' => 'blog_update_posts', 'class' => 'Prado\Security\Permissions\TUserOwnerRule', 'action' => 'allow', 'priority' => '5'],
+ *             ['name' => 'cron', 'action' => 'allow', 'users' => 'admin, user1, user2', 'roles' => '*', 'verb' => '*', 'ips' => '*'],
+ *             ['name' => 'blog_*', 'action' => 'allow', 'users' => 'admin, user1, user2', 'roles' => '*', 'verb' => '*', 'ips' => '*'],
+ *             ['name' => '*', 'action' => 'deny', 'priority' => '1000'],
+ *         ],
+ *     ],
+ * ],
  * ```
+ * XML attribute names are case-insensitive. PHP keys are lowercase: `roles`,
+ * `permissionrules`, and the rule keys `name`, `class`, `action`, `users`,
+ * `roles`, `verb`, `ips`, and `priority`. A key in another case is ignored.
+ * `<role>` and `<permissionrule>` elements are direct children of the module
+ * element. A `<permissionrule>` nested in a `<role>` is ignored. Every rule
+ * requires an `action` of "allow" or "deny", including a rule that names a
+ * `class`.
  *
  * In this example, "cron" is not a permission, but when used as a permission,
  * all children roles/permissions will receive the rule.  Permissions with children,

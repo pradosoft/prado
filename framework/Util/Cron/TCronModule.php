@@ -50,13 +50,16 @@ use Prado\Xml\TXmlDocument;
  *             'class' => 'Prado\Util\Cron\TCronModule',
  *             'properties' => ['DefaultUserName' => 'admin'],
  *             'jobs' => [
- *                 ['Name' => 'cronclean', 'Schedule' => '0 0 1 * * *', 'Task' => 'Prado\Util\Cron\TDbCronCleanLogTask', 'UserName' => 'cron'],
- *                 ['Schedule' => '0 * * * *', 'Task' => 'mymoduleid->taskmethod'],
+ *                 ['name' => 'cronclean', 'schedule' => '0 0 1 * * *', 'task' => 'Prado\Util\Cron\TDbCronCleanLogTask', 'username' => 'cron'],
+ *                 ['name' => 'dbcacheclean', 'schedule' => '* * * * *', 'task' => 'dbcache->flushCacheExpired(true)'],
+ *                 ['schedule' => '0 * * * *', 'task' => 'mymoduleid->taskmethod'],
  *             ],
  *         ],
  *     ],
  * ];
  * ```
+ * XML `<job>` attribute names are case-insensitive. PHP job keys are lowercase:
+ * `name`, `schedule`, `task`, and `username`.
  *
  * The schedule is formatted like a linux crontab schedule expression.
  * {@see TTimeSchedule} parses the schedule and supports 8 different

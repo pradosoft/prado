@@ -40,15 +40,22 @@ use Prado\Xml\TXmlElement;
  *
  * PHP configuration style:
  * ```php
- *  'services' => array(
- *    'get_article' => array(
- *     'class' => 'Path\To\JsonResponseClass1',
- *     'properties' => array(
- *       ...
- *	    )
- *    )
- *  )
+ * return [
+ *     'services' => [
+ *         'json' => [
+ *             'class' => 'Prado\Web\Services\TJsonService',
+ *             'json' => [
+ *                 'get_article' => [
+ *                     'class' => 'Path\To\JsonResponseClass1',
+ *                     'properties' => [...],
+ *                 ],
+ *                 'register_rating' => ['class' => 'Path\To\JsonResponseClass2'],
+ *             ],
+ *         ],
+ *     ],
+ * ];
  * ```
+ * where each JSON response is an entry of the service's `json` key, indexed by its ID.
  *
  * To retrieve the JSON content provided by "get_article", use the URL
  * ```

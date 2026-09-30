@@ -34,10 +34,17 @@ Registered as a service (`<services>` tag, not `<modules>`).
 ```php
 return [
     'services' => [
-        'json' => ['class' => 'Prado\Web\Services\TJsonService'],
+        'json' => [
+            'class' => 'Prado\Web\Services\TJsonService',
+            'json' => [
+                'get_article' => ['class' => 'Path\To\JsonResponseClass1'],
+                'register_rating' => ['class' => 'Path\To\JsonResponseClass2'],
+            ],
+        ],
     ],
 ];
 ```
+`loadJsonServices()` reads the responses from the service entry's `json` key. The key is required under PHP configuration.
 
 ## Methods
 
