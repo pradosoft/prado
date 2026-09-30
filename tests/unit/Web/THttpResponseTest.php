@@ -318,7 +318,7 @@ class THttpResponseTest extends \PHPUnit\Framework\TestCase
 		$response = new TTestHttpResponse();
 		$response->attachBehavior('guard', new TTestRedirectGuardBehavior());
 		$serverSoftware = $_SERVER['SERVER_SOFTWARE'] ?? null;
-		$_SERVER['SERVER_SOFTWARE'] = 'PHPUnit';
+		unset($_SERVER['SERVER_SOFTWARE']);
 
 		try {
 			$response->redirect('https://elsewhere.example/');

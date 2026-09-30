@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: `THttpResponse::httpRedirect()` threw a deprecation error when `$_SERVER['SERVER_SOFTWARE']` is unset, as in CLI runs. (belisoful)
 ENH: `THttpResponse` dynamic events for behaviors: `dyFlushContent`, `dyWriteFile` (a behavior can send the file itself), `dyRedirect`, and `dySetCookie`. (belisoful)
 ENH: Page state compression is configured on the state persister as `StatePersister.Compression.*` (`TPageStateCompressionConfig`), adding `zstd`, `br` and `gzip` beside the default `deflate`. `TPage::StateCompression` resolves the settings: the persister's own through `ICompressionConfigurable`, which the built-in persisters implement, or settings the page keeps for any other. `TCompressionConfig` and `TCompressionConfigTrait` give a component `Enabled`, `Method`, `Level` and `Threshold` settings. `TPage::EnableStateCompression` behaves as before, and earlier page states still read. (belisoful)
 ENH: `TCachePageStatePersister::CacheTimeoutMode` (`Fixed`, `Session`, `Auth`, `Auto`) takes a cached page state's lifetime from the session or the login instead of the fixed `CacheTimeout`. (belisoful)

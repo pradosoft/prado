@@ -507,7 +507,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 
 		// Under IIS, explicitly send an HTTP response including the status code
 		// this is handled automatically by PHP on Apache and others
-		$isIIS = (stripos($this->getRequest()->getServerSoftware(), "microsoft-iis") !== false);
+		$isIIS = (stripos((string) $this->getRequest()->getServerSoftware(), "microsoft-iis") !== false);
 		if ($url[0] === '/') {
 			$url = $this->getRequest()->getBaseUrl() . $url;
 		}
