@@ -4,7 +4,11 @@ namespace Prado\Test\Unit\Web;
 
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\Exceptions\TExitException;
+use Prado\Util\TBehavior;
+use Prado\Web\THttpCookie;
 use Prado\Web\THttpResponse;
+use Prado\Web\THttpResponseAdapter;
 use Prado\Test\Unit\Harness\TTestApplication;
 
 class TTestHttpResponse extends THttpResponse {
@@ -30,6 +34,64 @@ class TTestHttpResponse extends THttpResponse {
 			$this->cacheLimiter = $value;
 		}
 		return $this->cacheLimiter;
+	}
+
+	public $cookies = [];
+	protected function responseSetCookie(string $name, ...$args): bool
+	{
+		$this->cookies[] = [$name, ...$args];
+		return true;
+	}
+}
+
+class TTestRecordingResponseAdapter extends THttpResponseAdapter {
+	public $redirects = [];
+
+	public function httpRedirect($url)
+	{
+		$this->redirects[] = $url;
+	}
+}
+
+class TTestRedirectGuardBehavior extends TBehavior {
+	public function dyRedirect($url, $chain)
+	{
+		if (preg_match('#^[a-z][a-z0-9+.-]*:|^//#i', $url)) {
+			$url = '/';
+		}
+		return $chain->dyRedirect($url);
+	}
+}
+
+class TTestSendFileBehavior extends TBehavior {
+	public $calls = [];
+
+	public function dyWriteFile($handled, $fileName, $content, $mimeType, $headers, $forceDownload, $clientFileName, $fileSize, $chain)
+	{
+		$this->calls[] = func_get_args();
+		return $chain->dyWriteFile(true, $fileName, $content, $mimeType, $headers, $forceDownload, $clientFileName, $fileSize);
+	}
+}
+
+class TTestWriteFileObserverBehavior extends TBehavior {
+	public $flags = [];
+
+	public function dyWriteFile($handled, $fileName, $content, $mimeType, $headers, $forceDownload, $clientFileName, $fileSize, $chain)
+	{
+		$this->flags[] = $handled;
+		return $chain->dyWriteFile($handled, $fileName, $content, $mimeType, $headers, $forceDownload, $clientFileName, $fileSize);
+	}
+}
+
+class TTestCookiePolicyBehavior extends TBehavior {
+	public $removals = [];
+
+	public function dySetCookie($cookie, $remove, $chain)
+	{
+		$this->removals[] = $remove;
+		$cookie->setSecure(true);
+		$cookie->setSameSite('Strict');
+		return $chain->dySetCookie($cookie, $remove);
 	}
 }
 
@@ -189,6 +251,44 @@ class THttpResponseTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals($contents, $output);
 	}
 
+	public function testWriteFileHandledByBehaviorSendsNothing()
+	{
+		$response = new TTestHttpResponse();
+		$response->attachBehavior('sender', $sender = new TTestSendFileBehavior(), 5);
+		$response->attachBehavior('observer', $observer = new TTestWriteFileObserverBehavior(), 15);
+
+		ob_start();
+		try {
+			$response->writeFile('/path/to/report.txt', 'abc', 'text/plain', null, false, 'client.txt');
+		} finally {
+			$output = ob_get_clean();
+		}
+
+		$this->assertSame('', $output);
+		$this->assertSame([], $response->headers);
+		$this->assertCount(1, $sender->calls);
+		$this->assertSame([false, '/path/to/report.txt', 'abc', 'text/plain', null, false, 'client.txt', 3], array_slice($sender->calls[0], 0, 8));
+		$this->assertSame([true], $observer->flags);
+	}
+
+	public function testWriteFileUnhandledSendsContent()
+	{
+		$response = new TTestHttpResponse();
+		$response->attachBehavior('observer', $observer = new TTestWriteFileObserverBehavior());
+
+		ob_start();
+		try {
+			$response->writeFile('/path/to/report.txt', 'abc', 'text/plain');
+		} finally {
+			$output = ob_get_clean();
+		}
+
+		$this->assertSame('abc', $output);
+		$this->assertContains('Content-Length: 3', $response->headers);
+		$this->assertContains('Content-Disposition: attachment; filename="report.txt"', $response->headers);
+		$this->assertSame([false], $observer->flags);
+	}
+
 	public function testRedirect()
 	{
 		$response = new TTestHttpResponse();
@@ -197,6 +297,43 @@ class THttpResponseTest extends \PHPUnit\Framework\TestCase
 		$response->setStatusCode(302);
 		$this->assertEquals(302, $response->getStatusCode());
 		ob_end_clean();
+	}
+
+	public function testRedirectFiltersUrlThroughDyRedirect()
+	{
+		$response = new TTestHttpResponse();
+		$response->setAdapter($adapter = new TTestRecordingResponseAdapter($response));
+
+		$response->redirect('https://elsewhere.example/');
+		$response->attachBehavior('guard', new TTestRedirectGuardBehavior());
+		$response->redirect('https://elsewhere.example/');
+		$response->redirect('//elsewhere.example/');
+		$response->redirect('/local/page');
+
+		$this->assertEquals(['https://elsewhere.example/', '/', '/', '/local/page'], $adapter->redirects);
+	}
+
+	public function testRedirectWithoutAdapterSendsFilteredUrl()
+	{
+		$response = new TTestHttpResponse();
+		$response->attachBehavior('guard', new TTestRedirectGuardBehavior());
+		$serverSoftware = $_SERVER['SERVER_SOFTWARE'] ?? null;
+		unset($_SERVER['SERVER_SOFTWARE']);
+
+		try {
+			$response->redirect('https://elsewhere.example/');
+			$this->fail('redirect() must end the request.');
+		} catch (TExitException $e) {
+		} finally {
+			if ($serverSoftware === null) {
+				unset($_SERVER['SERVER_SOFTWARE']);
+			} else {
+				$_SERVER['SERVER_SOFTWARE'] = $serverSoftware;
+			}
+		}
+
+		$location = array_values(array_filter($response->headers, fn ($h) => stripos($h, 'Location:') === 0));
+		$this->assertEquals(['Location: ' . $this->app->getRequest()->getBaseUrl() . '/'], $location);
 	}
 
 	public function testReload()
@@ -231,12 +368,55 @@ class THttpResponseTest extends \PHPUnit\Framework\TestCase
 
 	public function testAddCookie()
 	{
-		$this->markTestSkipped('Test requires runInSeparateProcess for cookie handling');
+		$response = new TTestHttpResponse();
+		$cookie = new THttpCookie('name', 'value');
+
+		$response->addCookie($cookie);
+
+		$this->assertCount(1, $response->cookies);
+		[$name, $value, $options] = $response->cookies[0];
+		$this->assertEquals('name', $name);
+		$this->assertEquals($this->app->getRequest()->getEnableCookieValidation() ? $this->app->getSecurityManager()->hashData('value') : 'value', $value);
+		$this->assertEquals($cookie->getPhpOptions(), $options);
 	}
 
 	public function testRemoveCookie()
 	{
-		$this->markTestSkipped('Test requires runInSeparateProcess for cookie handling');
+		$response = new TTestHttpResponse();
+
+		$response->removeCookie(new THttpCookie('name', 'value'));
+
+		[$name, $value, $options] = $response->cookies[0];
+		$this->assertEquals('name', $name);
+		$this->assertNull($value);
+		$this->assertSame(0, $options['expires']);
+	}
+
+	public function testAddCookieFiltersThroughDySetCookie()
+	{
+		$response = new TTestHttpResponse();
+		$response->attachBehavior('policy', $policy = new TTestCookiePolicyBehavior());
+
+		$response->addCookie(new THttpCookie('name', 'value'));
+
+		$this->assertEquals([false], $policy->removals);
+		$options = $response->cookies[0][2];
+		$this->assertTrue($options['secure']);
+		$this->assertEquals('Strict', $options['samesite']);
+	}
+
+	public function testRemoveCookieFiltersThroughDySetCookie()
+	{
+		$response = new TTestHttpResponse();
+		$response->attachBehavior('policy', $policy = new TTestCookiePolicyBehavior());
+
+		$response->removeCookie(new THttpCookie('name', 'value'));
+
+		$this->assertEquals([true], $policy->removals);
+		$options = $response->cookies[0][2];
+		$this->assertTrue($options['secure']);
+		$this->assertEquals('Strict', $options['samesite']);
+		$this->assertSame(0, $options['expires']);
 	}
 
 	public function testSetHtmlWriterType()

@@ -83,8 +83,24 @@ use Prado\Web\THttpHeaderName;
  * This event handler will sent the 401 status code (Unauthorized) to the browser, with the WWW-Authenticate header field. This
  * will force the browser to ask for a username and a password.
  *
+ * Behaviors extend the response through dynamic events.  {@see flushContent()}
+ * raises `dyFlushContent` before any header is sent, so a behavior can transform the
+ * buffered body and add the headers that describe it.  {@see writeFile()} raises
+ * `dyWriteFile` with a handled flag before it sends any header.  A behavior that sends
+ * the file itself, such as through `X-Sendfile`, returns true and writeFile() sends
+ * nothing.  A behavior that only observes learns that the response declares its own
+ * `Content-Length`.  {@see redirect()} filters its URL through
+ * `dyRedirect`, so a behavior can restrict redirect targets for full-page and callback
+ * redirects alike.  {@see addCookie()} and {@see removeCookie()} filter the cookie through
+ * `dySetCookie`, so a behavior can apply one `Secure`, `HttpOnly`, and `SameSite` policy
+ * to every `Set-Cookie` header.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
+ * @method void dyFlushContent(bool $continueBuffering) Raised by {@see flushContent()} before any header is sent and before the buffer is flushed.
+ * @method bool dyWriteFile(bool $handled, string $fileName, ?string $content, string $mimeType, ?array $headers, ?bool $forceDownload, string $clientFileName, int $fileSize) Raised by {@see writeFile()} before any header is sent; returns true when a behavior sent the file.
+ * @method string dyRedirect(string $url) Filters the URL of {@see redirect()} before the adapter or {@see httpRedirect()} sends it.
+ * @method THttpCookie dySetCookie(THttpCookie $cookie, bool $remove) Filters the cookie of {@see addCookie()} and {@see removeCookie()} before its `Set-Cookie` header is sent.
  */
 class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 {
@@ -376,6 +392,13 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	/**
 	 * Sends a file back to user.
 	 * Make sure not to output anything else after calling this method.
+	 *
+	 * Before any header is sent, this raises `dyWriteFile` with a handled flag of false,
+	 * followed by the parameters with the media type, client file name, and size resolved.
+	 * When the chain returns true, a behavior has sent the file and this method sends
+	 * nothing.  A behavior that sends the file passes true along the chain, so later
+	 * behaviors still see the call; a behavior that only observes passes the flag on
+	 * unchanged.  A file handed to the web server needs `$content` to be null.
 	 * @param string $fileName file name
 	 * @param null|string $content content to be set. If null, the content will be read from the server file pointed to by $fileName.
 	 * @param null|string $mimeType mime type of the content.
@@ -422,6 +445,9 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 			$fileSize = ($content === null ? filesize($fileName) : strlen($content));
 		}
 
+		if ($this->dyWriteFile(false, $fileName, $content, $mimeType, $headers, $forceDownload, $clientFileName, $fileSize) === true) {
+			return;
+		}
 		$this->sendHttpHeader();
 		if (is_array($headers)) {
 			foreach ($headers as $h) {
@@ -448,11 +474,14 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	/**
 	 * Redirects the browser to the specified URL.
 	 * The current application will be terminated after this method is invoked.
+	 * The URL passes through the `dyRedirect` filter first, as given and before a relative
+	 * URL gains the base URL.
 	 * @param string $url URL to be redirected to. If the URL is a relative one, the base URL of
 	 * the current request will be inserted at the beginning.
 	 */
 	public function redirect($url)
 	{
+		$url = $this->dyRedirect($url);
 		if ($this->getHasAdapter()) {
 			$this->_adapter->httpRedirect($url);
 		} else {
@@ -478,7 +507,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 
 		// Under IIS, explicitly send an HTTP response including the status code
 		// this is handled automatically by PHP on Apache and others
-		$isIIS = (stripos($this->getRequest()->getServerSoftware(), "microsoft-iis") !== false);
+		$isIIS = (stripos((string) $this->getRequest()->getServerSoftware(), "microsoft-iis") !== false);
 		if ($url[0] === '/') {
 			$url = $this->getRequest()->getBaseUrl() . $url;
 		}
@@ -545,11 +574,13 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	/**
 	 * Outputs the buffered content, sends content-type and charset header.
 	 * This method is used internally. Please use {@see flush} instead.
+	 * Raises `dyFlushContent` before any header is sent.
 	 * @param bool $continueBuffering whether to continue buffering after flush if buffering was active
 	 */
 	public function flushContent($continueBuffering = true)
 	{
 		Prado::trace("Flushing output", THttpResponse::class);
+		$this->dyFlushContent($continueBuffering);
 		$this->ensureHeadersSent();
 		if ($this->_bufferOutput) {
 			// avoid forced send of http headers (ob_flush() does that) if there's no output yet
@@ -718,10 +749,12 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	/**
 	 * Sends a cookie.
 	 * Do not call this method directly. Operate with the result of {@see getCookies} instead.
+	 * The cookie passes through the `dySetCookie` filter before its value is hashed.
 	 * @param THttpCookie $cookie cook to be sent
 	 */
 	public function addCookie($cookie)
 	{
+		$cookie = $this->dySetCookie($cookie, false);
 		$request = $this->getRequest();
 		if ($request->getEnableCookieValidation()) {
 			$value = $this->getApplication()->getSecurityManager()->hashData($cookie->getValue());
@@ -739,10 +772,13 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	/**
 	 * Deletes a cookie.
 	 * Do not call this method directly. Operate with the result of {@see getCookies} instead.
+	 * The cookie passes through the `dySetCookie` filter first, so the deletion carries the
+	 * same `Path`, `Domain`, and `Secure` policy as the cookie it deletes.
 	 * @param THttpCookie $cookie cook to be deleted
 	 */
 	public function removeCookie($cookie)
 	{
+		$cookie = $this->dySetCookie($cookie, true);
 		$options = $cookie->getPhpOptions();
 		$options['expires'] = 0;
 		$this->responseSetCookie(
