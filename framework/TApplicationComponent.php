@@ -99,7 +99,10 @@ class TApplicationComponent extends \Prado\TComponent
 	}
 
 	/**
-	 * This caches the 'fx' events for PRADO classes in the application cache
+	 * This caches the 'fx' events for PRADO classes in the application cache.
+	 * A class already in the static cache returns without consulting the
+	 * application, so {@see \Prado\TComponent::unlisten()} from a destructor
+	 * does not reach an application that is being released.
 	 * @param object $class The object to get the 'fx' events.
 	 * @return string[] fx events from a specific class
 	 */
@@ -109,6 +112,10 @@ class TApplicationComponent extends \Prado\TComponent
 		static $_classfxSize = 0;
 		static $_loaded = false;
 
+		$className = $class::class;
+		if (array_key_exists($className, $_classfx)) {
+			return $_classfx[$className];
+		}
 		$app = $this->findApplication();
 		$cacheFile = $mode = null;
 		if ($app) {
@@ -119,11 +126,10 @@ class TApplicationComponent extends \Prado\TComponent
 					$_classfx = @unserialize($content) ?? [];
 					$_classfxSize = count($_classfx);
 				}
+				if (array_key_exists($className, $_classfx)) {
+					return $_classfx[$className];
+				}
 			}
-		}
-		$className = $class::class;
-		if (array_key_exists($className, $_classfx)) {
-			return $_classfx[$className];
 		}
 		$fx = parent::getClassFxEvents($class);
 		$_classfx[$className] = $fx;
@@ -189,13 +195,18 @@ class TApplicationComponent extends \Prado\TComponent
 	}
 
 	/**
-	 * Returns the bound application without resolving it.
-	 * @return ?TApplication the bound application, or null when unbound or collected.
+	 * Returns the bound application without resolving it. An application whose
+	 * {@see TApplication::__destruct()} has run counts as collected: on PHP before
+	 * 8.2.17 and 8.3.4 the weak reference still yields it while its properties are
+	 * being released, and a module destructor that used it would read freed memory.
+	 * @return ?TApplication the bound application, or null when unbound, collected,
+	 *   or destructed.
 	 * @since 4.4.0
 	 */
 	protected function getApplicationDirect(): ?TApplication
 	{
-		return $this->_application?->get();
+		$app = $this->_application?->get();
+		return $app === null || $app->getIsDestructed() ? null : $app;
 	}
 
 	/**

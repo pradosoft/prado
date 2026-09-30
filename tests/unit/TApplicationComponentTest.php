@@ -246,6 +246,25 @@ class TApplicationComponentTest extends TestCase
 		}
 	}
 
+	public function testDestructedApplicationStaysBoundAndYieldsNull(): void
+	{
+		$other = new TTestApplication();
+		try {
+			$this->comp->pubSetApplicationDirect($other);
+			self::assertSame($other, $this->comp->findApplication());
+
+			// A destructed application reads as collected even while PHP still holds the object.
+			$other->__destruct();
+			self::assertNull($this->comp->pubGetApplicationDirect());
+			self::assertNull($this->comp->findApplication());
+			self::assertFalse($this->comp->hasApplication());
+			$this->expectException(TInvalidOperationException::class);
+			$this->comp->getApplication();
+		} finally {
+			$other->restoreApplication();
+		}
+	}
+
 	public function testFindApplicationAndHasApplicationWithoutAnApplication(): void
 	{
 		$snap = PradoUnit::snapshotStatic(Prado::class, ['_application']);

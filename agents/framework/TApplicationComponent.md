@@ -30,7 +30,8 @@ TApplicationComponent is the base class for all application-related components i
 
 ### Application Binding (@since 4.4.0)
 - `$_application` is a `WeakReference` set by `__construct()` from `Prado::getApplication()`, excluded from serialization, and re-bound by `__wakeup()`; `resolveApplication()` binds only when unbound (`hasApplicationBinding()`), so a component never pins its application in memory and yields null once it is collected
-- `getApplicationDirect()` / `setApplicationDirect(?TApplication)`: the binding without resolution (protected)
+- `getApplicationDirect()` / `setApplicationDirect(?TApplication)`: the binding without resolution (protected); an application whose `__destruct()` has run (`TApplication::getIsDestructed()`) reads as null, because PHP before 8.2.17 and 8.3.4 still yields a weakly referenced object while its properties are being released (php/php-src GH-13612), and a module destructor using it would read freed memory
+- `getClassFxEvents()` returns a class already in its static cache before consulting the application, so `unlisten()` from a destructor does not touch an application that is being released
 - `isCurrentApplication()`: whether the bound application is `Prado::getApplication()`
 - `makeCurrentApplication()`: makes the bound application current through `Prado::setApplication()`
 - `TApplicationClockAwareTrait::getClock()` reads the bound application's clock on a `TApplicationComponent`

@@ -336,6 +336,18 @@ class TApplicationTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
+	public function testGetIsDestructed_isSetByTheDestructor(): void
+	{
+		$other = new TTestApplication();
+		try {
+			$this->assertFalse($other->getIsDestructed());
+			$other->__destruct();
+			$this->assertTrue($other->getIsDestructed());
+		} finally {
+			$other->restoreApplication();
+		}
+	}
+
 	public function testSetRuntimePath_updatesCacheFileWhenOneIsSet(): void
 	{
 		// Prime _cacheFile to a non-null value to activate the rebuild branch.

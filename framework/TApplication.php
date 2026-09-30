@@ -402,6 +402,13 @@ class TApplication extends TComponent implements ISingleton
 	private int $_stateFlags = 0;
 
 	/**
+	 * @var bool whether {@see __destruct()} has run. A component bound to a
+	 *   destructed application treats it as gone.
+	 * @since 4.4.0
+	 */
+	private bool $_isDestructed = false;
+
+	/**
 	 * Constructor.
 	 * Sets application base path and initializes the application singleton.
 	 * Application base path refers to the root directory storing application
@@ -467,6 +474,32 @@ class TApplication extends TComponent implements ISingleton
 	public function isCurrentApplication(): bool
 	{
 		return Prado::getApplication() === $this;
+	}
+
+	/**
+	 * Marks the application as destructed before its properties are released,
+	 * then runs the {@see \Prado\TComponent::__destruct()} cleanup. PHP releases
+	 * the modules after this method returns, and a module destructor may reach
+	 * the application through its weak binding while the application's own
+	 * properties are already freed. On PHP before 8.2.17 and 8.3.4 that weak
+	 * reference still yields the object (php/php-src GH-13612), so
+	 * {@see TApplicationComponent::findApplication()} checks {@see getIsDestructed()}
+	 * and treats the application as gone.
+	 * @since 4.4.0
+	 */
+	public function __destruct()
+	{
+		$this->_isDestructed = true;
+		parent::__destruct();
+	}
+
+	/**
+	 * @return bool whether {@see __destruct()} has run on this application.
+	 * @since 4.4.0
+	 */
+	public function getIsDestructed(): bool
+	{
+		return $this->_isDestructed;
 	}
 
 	/**

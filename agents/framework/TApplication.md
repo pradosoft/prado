@@ -169,6 +169,8 @@ protected function setPradoApplication(): void            // @since 4.4.0
 // Prado::setApplication($this); override to wire another service locator.
 // run() calls makeCurrentApplication() first, so the running application is
 // Prado::getApplication() and singleton(); isCurrentApplication() reports it.
+// __destruct() sets getIsDestructed() before PHP releases the modules, so a
+// TApplicationComponent bound to a destructed application yields null.
 
 protected function getResolvesUniqueIdCollisions(): bool  // @since 4.4.0
 // false under PRADO_TEST_RUN: Auto mode neither renames a colliding UniqueID nor
