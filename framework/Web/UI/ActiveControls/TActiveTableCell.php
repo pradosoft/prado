@@ -32,6 +32,7 @@ use Prado\Web\UI\WebControls\TTableRow;
  *
  * It will also bubble the {@see onCellSelected OnCellSelected} event up to it's parent
  * {@see \Prado\Web\UI\ActiveControls\TActiveTableRow} control which will fire up the event handlers if implemented.
+ * The row sends no callback of its own for that click, so its OnRowSelected is raised once.
  *
  * TActiveTableCell allows the client-side cell contents to be updated during a
  * callback response by getting a new writer, invoking the render method and flushing the

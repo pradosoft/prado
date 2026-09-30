@@ -411,7 +411,36 @@ Object.assign(Prado.WebUI.TValueTriggeredCallback,
 });
 
 Prado.WebUI.TActiveTableCell = Prado.Class(Prado.WebUI.CallbackControl);
-Prado.WebUI.TActiveTableRow = Prado.Class(Prado.WebUI.CallbackControl);
+
+/**
+ * TActiveTableRow control.
+ *
+ * A click in a cell of this row that dispatches its own TActiveTableCell
+ * callback dispatches no row callback. The server bubbles the cell's
+ * OnCellSelected to the row as OnRowSelected, so one click raises one callback.
+ */
+Prado.WebUI.TActiveTableRow = Prado.Class(Prado.WebUI.CallbackControl,
+{
+	onPostBack($super, options, event) {
+		if (this.isCellCallback(event))
+			return;
+		$super(options, event);
+	},
+
+	/**
+	 * @param event the click event
+	 * @return bool whether the click is in a cell of this row with its own registered callback
+	 */
+	isCellCallback(event) {
+		let cell = event.target;
+		while (cell && cell !== this.element && cell.parentElement !== this.element)
+			cell = cell.parentElement;
+		if (!cell || cell === this.element)
+			return false;
+		const control = Prado.Registry[cell.id];
+		return control instanceof Prado.WebUI.TActiveTableCell && control.registered;
+	}
+});
 
 /**
  * TActiveDetails control.
