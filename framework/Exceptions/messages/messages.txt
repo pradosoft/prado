@@ -309,6 +309,7 @@ permissions_duplicate_permission		= TPermissionsManager permission '{0}' is alre
 permissions_role_children_invalid		= TPermissionsManager configuration role '{0}' has invalid children '{1}'.
 permissions_rule_invalid				= TPermissionsManager configuration permission rule '{0}' has properties that is not an array.
 permissions_rules_require_name			= TPermissionsManager rules must have a permission "name" property.
+permissions_role_rule_nested			= TPermissionsManager configuration role '{0}' contains a <permissionrule>. Permission rules are direct children of the permissions configuration element.
 permissions_rule_class_invalid			= TPermissionsManager permission rule class '{0}' is a directory namespace, not a class.
 permissions_children_invalid			= TPermissionsManager.*RoleChildren children must be a string or array but is '{0}'.
 permissions_permissionfile_invalid		= TPermissionsManager.PermissionFile '{0}' is not a valid file.

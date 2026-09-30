@@ -93,13 +93,12 @@ use Prado\Xml\TXmlElement;
  *     ],
  * ],
  * ```
- * XML attribute names are case-insensitive. PHP keys are lowercase: `roles`,
- * `permissionrules`, and the rule keys `name`, `class`, `action`, `users`,
- * `roles`, `verb`, `ips`, and `priority`. A key in another case is ignored.
- * `<role>` and `<permissionrule>` elements are direct children of the module
- * element. A `<permissionrule>` nested in a `<role>` is ignored. Every rule
- * requires an `action` of "allow" or "deny", including a rule that names a
- * `class`.
+ * XML attribute names and PHP keys are case-insensitive. The PHP keys are
+ * `roles`, `permissionrules`, and the rule keys `name`, `class`, `action`,
+ * `users`, `roles`, `verb`, `ips`, and `priority`. `<role>` and `<permissionrule>`
+ * elements are direct children of the module element. A `<permissionrule>` inside
+ * a `<role>` throws a {@see \Prado\Exceptions\TConfigurationException}. Every rule
+ * requires an `action` of "allow" or "deny", including a rule that names a `class`.
  *
  * In this example, "cron" is not a permission, but when used as a permission,
  * all children roles/permissions will receive the rule.  Permissions with children,
@@ -363,7 +362,9 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 
 	/**
 	 * Loads the roles, children, and permission rules.
+	 * Keys and attribute names are case-insensitive in both PHP and XML configurations.
 	 * @param array|\Prado\Xml\TXmlElement $config configurations to parse
+	 * @throws TConfigurationException when a `<role>` contains a `<permissionrule>`.
 	 */
 	public function loadPermissionsData($config)
 	{
@@ -377,13 +378,18 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 			$roles = $config->getElementsByTagName('role');
 			$permissions = $config->getElementsByTagName('permissionrule');
 		} elseif (is_array($config)) {
+			$config = array_change_key_case($config);
 			$roles = $config['roles'] ?? [];
 			$permissions = $config['permissionrules'] ?? [];
 		}
 		foreach ($roles as $role => $properties) {
 			if ($isXml) {
-				$properties = array_change_key_case($properties->getAttributes()->toArray());
+				$element = $properties;
+				$properties = array_change_key_case($element->getAttributes()->toArray());
 				$role = $properties['name'] ?? '';
+				if ($element->getElementsByTagName('permissionrule', TXmlElement::SEARCH_DEPTH_FIRST)->getCount()) {
+					throw new TConfigurationException('permissions_role_rule_nested', $role);
+				}
 				$children = array_map('trim', explode(',', $properties['children'] ?? ''));
 			} else {
 				$children = $properties;
@@ -407,6 +413,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 				if (!is_array($properties)) {
 					throw new TConfigurationException('permissions_rule_invalid', $name);
 				}
+				$properties = array_change_key_case($properties);
 			}
 			if (is_numeric($name) && (!isset($properties[0]) || !$properties[0] instanceof TAuthorizationRule)) {
 				$name = strtolower($properties['name'] ?? '');

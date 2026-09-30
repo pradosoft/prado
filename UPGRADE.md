@@ -38,6 +38,11 @@ Upgrading from v4.3.3
 - TActiveFileUpload now validates by default: attached validators run client side before the upload starts, and the page
   validates the ValidationGroup during the upload callback before OnFileUpload is raised. Set CausesValidation=false to
   restore the previous behavior.
+- TPermissionsManager throws `permissions_role_rule_nested` when a `<permissionrule>` sits inside a `<role>`.
+  Such a rule was previously ignored. Move each `<permissionrule>` out of its `<role>` to be a direct child of
+  the module, permission file, or page `<permissions>` element, and review the rule, which now takes effect.
+  PHP configuration keys are case-insensitive, so a key such as `permissionRules` or `IPs` that previously
+  loaded nothing now loads.
 
 Upgrading from v4.3.2
 ---------------------
