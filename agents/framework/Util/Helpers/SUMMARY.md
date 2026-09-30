@@ -6,7 +6,7 @@ Static utility classes for common low-level operations; all classes contain only
 
 - **`TArrayHelper`** — Array utility methods: deep merging, flattening, and manipulation helpers beyond PHP's built-in array functions.
 
-- **`TBitHelper`** — Bitwise and numeric conversion utilities: color bit shifting, floating-point format conversions (FP16, BF16, FP8), bit mirroring, endian conversion, bit counting.
+- **`TBitHelper`** — Bitwise and numeric conversion utilities: color bit shifting, floating-point format conversions (FP16, BF16, FP8), bit mirroring, endian conversion, and exact platform-width bit counting.
 
 - **`TEscCharsetConverter`** — Character encoding conversion with escape/unescape sequence handling.
 

@@ -44,7 +44,6 @@ class TResultMap extends \Prado\TComponent
 	private $_extends;
 	private $_groupBy;
 	private $_discriminator;
-	private $_typeHandlers;
 	private $_ID;
 
 	/**

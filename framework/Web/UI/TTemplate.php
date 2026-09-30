@@ -80,15 +80,9 @@ use Prado\Web\Services\TPageService;
  */
 class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 {
-	private const PARSE_COMMENTS = '<!---.*?---!?>';
-
 	private const PARSE_SINGLE_QUOTED_VALUE = '\'.*?\'';
 	private const PARSE_DOUBLE_QUOTED_VALUE = '".*?"';
 	private const PARSE_EXPRESSION_VALUE = '.*?';
-
-	private const PARSE_CONTROL_NAME = '[\w\.\\\]+';
-	private const PARSE_PROP_NAME = '[\w\.\-]+';
-	private const PARSE_EQUALS = '\s*=\s*';
 
 	/**
 	 *  '<!---.*?---!?>' - template comments (stripped during parse)

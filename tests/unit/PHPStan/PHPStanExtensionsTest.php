@@ -109,7 +109,7 @@ class PHPStanExtensionsTest extends TestCase
 			// PHPStan may use relative or absolute paths; match by realpath or basename.
 			$realPath = realpath($path) ?: $path;
 			if ($realPath === $fixturePath || basename($path) === $fixtureFile) {
-				return (int) ($data['errors'] ?? 0);
+				return count($this->extensionRelevantMessages($data['messages'] ?? []));
 			}
 		}
 		return 0;
@@ -132,7 +132,7 @@ class PHPStanExtensionsTest extends TestCase
 			if ($realPath !== $fixturePath && basename($path) !== $fixtureFile) {
 				continue;
 			}
-			$messages = $data['messages'] ?? [];
+			$messages = $this->extensionRelevantMessages($data['messages'] ?? []);
 			if (empty($messages)) {
 				return '';
 			}
@@ -145,6 +145,33 @@ class PHPStanExtensionsTest extends TestCase
 			return implode("\n", $lines);
 		}
 		return '';
+	}
+
+	/**
+	 * Removes level-4 diagnostics caused by the fixture scaffolding itself.
+	 *
+	 * These tests verify whether an extension resolves dynamic methods and
+	 * properties. Redundant-condition, unused-expression, and backing-property
+	 * diagnostics do not describe that behavior.
+	 *
+	 * @param array<int,array<string,mixed>> $messages PHPStan messages.
+	 * @return array<int,array<string,mixed>> Messages relevant to the extension.
+	 * @since 4.4.0
+	 */
+	private function extensionRelevantMessages(array $messages): array
+	{
+		$fixtureDiagnostics = [
+			'expr.resultUnused',
+			'function.alreadyNarrowedType',
+			'method.alreadyNarrowedType',
+			'property.onlyWritten',
+			'staticMethod.alreadyNarrowedType',
+		];
+
+		return array_values(array_filter(
+			$messages,
+			static fn(array $message): bool => !in_array($message['identifier'] ?? '', $fixtureDiagnostics, true)
+		));
 	}
 
 	/**

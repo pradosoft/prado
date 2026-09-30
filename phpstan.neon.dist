@@ -6,9 +6,7 @@ parameters:
     treatPhpDocTypesAsCertain: false
     paths:
         - framework
-    ignoreErrors:
-        - '#Trait Prado\\Util\\Behaviors\\TNoUnserializeBehaviorTrait is used zero times and is not analysed\.#'
-        - '#Trait Prado\\Util\\Behaviors\\TNoUnserializeClassBehaviorTrait is used zero times and is not analysed\.#'
+        - tests/phpstan
 services:
     -
         class: Prado\PHPStan\DynamicMethodsClassReflectionExtension
@@ -18,8 +16,6 @@ services:
         class: Prado\PHPStan\TComponentPropertiesReflectionExtension
         tags:
             - phpstan.broker.propertiesClassReflectionExtension
-            - phpstan.constants.alwaysUsedClassConstantsExtension
-            - phpstan.properties.readWriteExtension
     -
         class: Prado\PHPStan\TComponentHasMethodTypeSpecifyingExtension
         tags:

@@ -72,6 +72,9 @@ class TRationalTest extends \PHPUnit\Framework\TestCase
 		$rational = new $class(['55.5']);
 		self::assertEquals(111, $rational->getNumerator());
 		self::assertEquals(2, $rational->getDenominator());
+
+		$rational = new $class([4294967296.0, 0.0]);
+		self::assertTrue(is_nan($rational->getValue()));
 	}
 	
 	public function testConstructSpecific()

@@ -185,7 +185,8 @@ class TStreamNotificationCallback extends \Prado\TComponent
 	{
 		$params = stream_context_get_params($context);
 
-		return $params[self::NOTIFICATION];
+		// @phpstan-ignore nullCoalesce.offset (PHP omits this key when no callback is configured.)
+		return $params[self::NOTIFICATION] ?? null;
 	}
 
 	/**

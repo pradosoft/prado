@@ -59,6 +59,10 @@ class HasMethodCaller extends TComponent
 		if ($component->hasMethod('setjsTitle')) {
 			$component->title = 'value'; // only get property should validate
 		}
+
+		if ($component->hasMethod('fxOptionalEvent')) {
+			$component->fxOptionalEvent('value');
+		}
 	}
 
 	/**

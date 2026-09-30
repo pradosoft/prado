@@ -93,7 +93,7 @@ abstract class MessageSource implements IMessageSource
 	 * The translation cache.
 	 * @var ?MessageCache
 	 */
-	protected $cache = null;
+	protected $cache;
 
 	protected $untranslated = [];
 

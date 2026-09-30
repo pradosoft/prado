@@ -23,7 +23,6 @@ use Prado\Util\TCallChain;
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.0
- * @phpstan-require-extends \Prado\Util\TBehavior
  */
 trait TNoUnserializeBehaviorTrait
 {

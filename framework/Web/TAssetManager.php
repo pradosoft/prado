@@ -1118,11 +1118,11 @@ class TAssetManager extends \Prado\TModule
 			if ($forceCopy && (is_file($dstFile) || is_link($dstFile))) {
 				@unlink($dstFile);
 			}
-						if (@lstat($dstFile) === false) {
+			if (!is_file($dstFile) && !is_link($dstFile)) {
 				try {
 					$this->symlink($this->relativeSymlinkTarget($src, $dstFile), $dstFile);
 				} catch (\Throwable $e) {
-					if (!is_file($dstFile) && !is_link($dstFile)) {
+					if (@lstat($dstFile) === false) {
 						throw $e;
 					}
 				}

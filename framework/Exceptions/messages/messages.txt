@@ -98,6 +98,7 @@ securitymanager_mcryptextension_initfailed = TSecurityManager failed to initiali
 
 uri_format_invalid						= '{0}' is not a valid URI.
 
+httprequest_browscap_required			= THttpRequest requires the browscap directive to be configured in php.ini.
 httprequest_separator_invalid			= THttpRequest.UrlParamSeparator can only contain a single character.
 httprequest_urlmanager_inexist			= THttpRequest.UrlManager '{0}' does not point to an existing module.
 httprequest_urlmanager_invalid			= THttpRequest.UrlManager '{0}' must point to a module extending from TUrlManager.

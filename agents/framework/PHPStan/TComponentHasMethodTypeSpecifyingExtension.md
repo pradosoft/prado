@@ -45,6 +45,7 @@ PHPStan asks for a property with the spelling written in the source. PRADO write
 - Method must be `hasMethod`
 - Caller must resolve to an object type
 - First argument must be a single constant string (dynamic names are not narrowed)
+- Names beginning with `fx` are left unnarrowed because their dynamic reflection support makes them callable without proving that a global-event handler is installed.
 - Context must be `true`
 - Subject type must have **exactly one** object class name. PHPStan hands a method call to a `MethodTypeSpecifyingExtension` only in that case (`MethodCallHandler::specifyTypes()`), so an intersection (`IService&TComponent`) or a union (`TControl|TStyle`) subject never reaches this extension and `isMethodSupported()` is never called. Use [Prado::method_visible()](./PradoMethodVisibleStaticMethodTypeSpecifyingExtension.md) on those subjects; being a static method extension, it narrows an argument and is unaffected.
 

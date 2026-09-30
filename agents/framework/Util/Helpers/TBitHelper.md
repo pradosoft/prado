@@ -37,7 +37,7 @@ Static utility class for bitwise and floating-point format conversions. Includes
 
 | Method | Description |
 |--------|-------------|
-| `bitCount(int $value): int` | Count bits needed to represent a number |
+| `bitCount(int $value): int` | Count bits needed to represent an integer exactly; negative values include the sign bit and `PHP_INT_MIN` uses the platform word size |
 | `colorBitShift(int $value, int $inBits, int $outBits)` | Shift color bits with replication |
 | `unsignedShift(int $value, int $bits)` | Right shift without sign replication |
 | `mirrorBits(int $value, int $nbit)` | Mirror arbitrary bit run |

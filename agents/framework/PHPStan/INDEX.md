@@ -24,7 +24,7 @@ Narrowing that PHPStan cannot route to an extension is carried by assertion tags
 
 - **[TComponentPropertyReflection](./TComponentPropertyReflection.md)** — Implements PHPStan's `PropertyReflection` for PRADO virtual properties. Stores optional getter and setter `MethodReflection` references. `isReadable()` is true when a getter exists; `isWritable()` is true when a setter exists. `canChangeTypeAfterAssignment()` returns `false` (method-hook semantics).
 
-- **[TComponentHasMethodTypeSpecifyingExtension](./TComponentHasMethodTypeSpecifyingExtension.md)** — PHPStan `MethodTypeSpecifyingExtension` for `TComponent::hasMethod()`. When `$obj->hasMethod('foo')` is true inside an `if`-block, narrows the type of `$obj` to `OriginalType & HasMethodType('foo')`, making the guarded call `$obj->foo()` valid. If the method name follows PRADO's `get{X}`/`set{X}`/`getjs{X}`/`setjs{X}` convention, also narrows the virtual property via `HasPropertyType`, under both the `X` and `x` spellings. Mirrors the behaviour of PHPStan's built-in `method_exists()` narrowing.
+- **[TComponentHasMethodTypeSpecifyingExtension](./TComponentHasMethodTypeSpecifyingExtension.md)** — PHPStan `MethodTypeSpecifyingExtension` for `TComponent::hasMethod()`. When `$obj->hasMethod('foo')` is true inside an `if`-block, narrows the type of `$obj` with `HasMethodType('foo')`, making the guarded call `$obj->foo()` valid. If the method name follows PRADO's `get{X}`/`set{X}`/`getjs{X}`/`setjs{X}` convention, it also narrows the virtual property via `HasPropertyType`, under both the `X` and `x` spellings. `fx*` names are excluded from this narrowing because the dynamic reflection extension already makes them callable without proving that a handler is installed.
 
 - **[TComponentCanGetPropertyTypeSpecifyingExtension](./TComponentCanGetPropertyTypeSpecifyingExtension.md)** — `MethodTypeSpecifyingExtension` for `TComponent::canGetProperty()`. When `$obj->canGetProperty('Foo')` is true, narrows `$obj` to have `HasMethodType('getFoo')` and a `HasPropertyType` for both the `Foo` and `foo` spellings, allowing `$obj->getFoo()`, `$obj->Foo` and `$obj->foo` inside the guarded block without errors.
 
@@ -41,6 +41,8 @@ All extensions are wired in `phpstan.neon.dist`. Tags used:
 - `phpstan.broker.propertiesClassReflectionExtension` — for virtual property extensions
 - `phpstan.typeSpecifier.methodTypeSpecifyingExtension` — for instance-method type narrowing
 - `phpstan.typeSpecifier.staticMethodTypeSpecifyingExtension` — for static-method type narrowing
+
+The level-4 configuration also analyzes `tests/phpstan/TraitUsage.php`, which supplies concrete users for the two no-unserialize behavior traits without global ignore rules.
 
 ## Tests
 

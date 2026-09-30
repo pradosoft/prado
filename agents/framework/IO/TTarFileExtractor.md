@@ -144,6 +144,9 @@ $skipped = $extractor->getSkippedFiles();  // entries not extracted
 
 ## Gotchas
 
+- Extraction cleanup catches every `Throwable`, so configured `Error` subclasses and runtime `TypeError` instances trigger the same staging cleanup and direct-extraction rollback as exceptions.
+- `_error()` has the native `never` return type. Code after a call is unreachable.
+
 - **LZMA requires CLI** — no PHP extension exists; `xzdec` or `xz` must be in `$PATH`.
 - **CLI fallback for gz/bz2** — if the PHP extension is absent, the corresponding CLI tool is tried. If neither is available, extraction fails.
 - **Strict mode default is `true`** — path traversal (Zip Slip) throws by default. Set `Strict=false` only if you control the archive source.

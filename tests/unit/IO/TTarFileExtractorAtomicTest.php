@@ -7,6 +7,10 @@ use PHPUnit\Framework\TestCase;
 use Prado\IO\TTarFileExtractor;
 use Prado\Test\Unit\Harness\IO\TarTestHelper;
 
+class TTarFileExtractorAtomicError extends \Error
+{
+}
+
 /**
  * Atomic extraction tests for TTarFileExtractor introduced in 4.3.3.
  *
@@ -1044,6 +1048,29 @@ class TTarFileExtractorAtomicTest extends TestCase
 			file_get_contents($this->extractDir . '/safe.txt'),
 			'Destination file must be unchanged when staging phase fails'
 		);
+	}
+
+	public function testAtomicThrowableCleansStagingAndLeavesDestinationUntouched(): void
+	{
+		$tarFile = $this->testDir . '/atomic_throwable.tar';
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('safe.txt', 'replacement'),
+			TarTestHelper::entry('device', '', '3'),
+		]);
+		file_put_contents($this->extractDir . '/safe.txt', 'original');
+
+		$extractor = $this->newExtractor($tarFile);
+		$extractor->setExceptionClass(TTarFileExtractorAtomicError::class);
+		$extractor->setStrict(true);
+
+		try {
+			$extractor->extract($this->extractDir);
+			self::fail('Expected the configured Error instance.');
+		} catch (TTarFileExtractorAtomicError) {
+		}
+
+		self::assertSame('original', file_get_contents($this->extractDir . '/safe.txt'));
+		self::assertSame([], glob($this->testDir . '/.tar_stage_*'));
 	}
 
 	public function testAtomicHardLinkPreservesSharedInode()

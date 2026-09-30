@@ -212,7 +212,7 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 						} else {
 							$childLogs[$pid] = ['', 0, true];
 						}
-							if (strlen($childLogs[$pid][0]) >= $childLogs[$pid][1]) {
+						if (strlen($childLogs[$pid][0]) >= $childLogs[$pid][1]) {
 							if ($childLogs[$pid][2]) {
 								stream_socket_shutdown($socket, STREAM_SHUT_RDWR);
 								unset($this->_parentConnections[$pid]);

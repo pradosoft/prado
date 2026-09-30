@@ -462,7 +462,6 @@ class TTimeScheduler extends \Prado\TComponent
 	{
 		$daysinmonth = $this->days_in_month($month, $year);
 		$domStar = false;
-		$dowStar = false;
 		$da = array_pad([], $daysinmonth + 1, null);
 		unset($da[0]);
 		$dwa = array_pad([], $daysinmonth + 1, null);
@@ -520,15 +519,7 @@ class TTimeScheduler extends \Prado\TComponent
 		}
 		$firstDatea = getdate(strtotime("$year-$month-01"));
 		foreach ($this->_attr[self::DAY_OF_WEEK] as $d) {
-			if ($d['dow'] === '*' || $d['dow'] === '?') {
-				$dowStar = $d['dow'] === '?' || $d['period'] == 1;
-				foreach ($dwa as $key => $value) {
-					$weekday = ($firstDatea['wday'] + $key - 1) % 7;
-					if ($weekday % $d['period'] == 0) {
-						$dwa[$key] = 1;
-					}
-				}
-			} elseif (is_numeric($d['dow'])) {
+			if (is_numeric($d['dow'])) {
 				//start at the first sunday on or before the 1st day of the month
 				for ($i = 1 - $firstDatea['wday']; $i <= $daysinmonth; $i += 7) {
 					for ($ii = $d['dow']; ($ii <= $d['end']) && ($ii < 7) && (($i + $ii) <= $daysinmonth); $ii += $d['period']) {
@@ -543,9 +534,7 @@ class TTimeScheduler extends \Prado\TComponent
 				}
 			}
 		}
-		if ($dowStar) {
-			return $da;
-		} elseif ($domStar) {
+		if ($domStar) {
 			return $dwa;
 		}
 		foreach ($da as $key => $value) {

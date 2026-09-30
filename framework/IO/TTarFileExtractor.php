@@ -2291,7 +2291,7 @@ class TTarFileExtractor
 				true,  // applyPermissions
 				$preWriteHook
 			);
-		} catch (\Exception $e) {
+		} catch (\Throwable $e) {
 			$v_result = false;
 			$v_exception = $e;
 		}
@@ -2429,7 +2429,7 @@ class TTarFileExtractor
 				self::CONFLICT_OVERWRITE,  // staging is always fresh
 				false                      // $applyPermissions: handled by _mergeStaging
 			);
-		} catch (\Exception $e) {
+		} catch (\Throwable $e) {
 			$v_result = false;
 			$v_exception = $e;
 		}
@@ -2453,7 +2453,7 @@ class TTarFileExtractor
 		$backups = [];
 		try {
 			$this->_mergeStaging($stagingDir, $p_destPath, $stagingManifest, $backups, $backupDir);
-		} catch (\Exception $e) {
+		} catch (\Throwable $e) {
 			// Restore overwritten files from backups, then clean up both dirs.
 			foreach ($backups as $origPath => $backupPath) {
 				if (file_exists($backupPath)) {
@@ -2777,7 +2777,7 @@ class TTarFileExtractor
 	 * @throws \Exception
 	 * @return never
 	 */
-	protected function _error($p_message)
+	protected function _error($p_message): never
 	{
 		$cls = $this->getExceptionClass();
 		if (!empty($cls) && $cls !== '\Exception' && $cls !== 'Exception') {
