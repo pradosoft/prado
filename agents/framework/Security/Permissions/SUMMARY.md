@@ -8,6 +8,8 @@ Advanced RBAC with named permissions, role hierarchies, dynamic event-level auth
 
 - **`TPermissionsManager`** — `TModule` subclass managing role hierarchy and named permissions; auto-attaches `TPermissionsBehavior` to `IPermissions` classes; properties: `DefaultRoles`, `SuperRoles`, `PermissionsFile`, `DbParameter`.
 
+- **`TPermissionsManagerProxy`** — Transparent permissions manager module delegating to the manager named by `BackingPermissionsManagerId`; owns no rules and attaches no behaviors of its own.
+
 - **`TPermissionsManagerPropertyTrait`** — Shared trait providing `PermissionsManager` property accessor.
 
 - **`TPermissionsBehavior`** — Class behavior automatically attached to `IPermissions` implementors; intercepts dynamic events and calls `TPermissionsManager::isPermissionAllowed()`.

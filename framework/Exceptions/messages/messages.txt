@@ -1,4 +1,6 @@
 prado_application_singleton_required	= Prado.Application must only be set once.
+prado_application_multiapp_disable_conflict	= Prado.MultipleApplications cannot be disabled while {0} applications are registered.
+prado_application_multiapp_mode_conflict	= TApplication.MultipleMode cannot be Singleton while Prado.MultipleApplications is enabled.
 prado_component_unknown					= Unknown component type '{0}'. This may be caused by the following parsing error in the {0} class file: {1}
 prado_using_invalid						= '{0}' is not a valid namespace to be used. Make sure '.*' is appended if you want to use a namespace referring to a directory.
 prado_alias_redefined					= Alias '{0}' cannot be redefined.
@@ -6,6 +8,10 @@ prado_alias_invalid						= Alias '{0}' refers to an invalid path '{1}'. Only exi
 prado_aliasname_invalid					= Alias '{0}' contains invalid character '.'.
 
 component_property_undefined			= Component property '{0}.{1}' is not defined.
+applicationcomponent_application_required	= {0} has no application: none is bound or current, or the bound application was released.
+componentproxy_backing_component_required	= TComponentProxy.BackingComponent is required.
+componentproxy_backing_component_id_required	= TModuleProxy.BackingComponentId is required.
+componentproxy_component_not_found		= TModuleProxy.BackingComponentId '{0}' does not refer to an application module.
 component_property_readonly				= Component property '{0}.{1}' is read-only.
 component_event_undefined				= Component event '{0}.{1}' is not defined.
 component_method_undefined              = Component method '{0}.{1}' is not defined.
@@ -95,12 +101,18 @@ securitymanager_validationkey_invalid	= TSecurityManager.ValidationKey must not 
 securitymanager_encryptionkey_invalid	= TSecurityManager.EncryptionKey must not be empty.
 securitymanager_mcryptextension_required = Mcrypt PHP extension is required in order to use TSecurityManager's encryption feature.
 securitymanager_mcryptextension_initfailed = TSecurityManager failed to initialize the mcrypt module.
+securitymanagerproxy_backing_security_manager_id_required	= TSecurityManagerProxy.BackingSecurityManagerId is required.
+securitymanagerproxy_security_manager_not_found		= TSecurityManagerProxy.BackingSecurityManagerId '{0}' does not refer to an application module.
+securitymanagerproxy_invalid_security_manager_type	= TSecurityManagerProxy.BackingSecurityManagerId '{0}' must refer to a TSecurityManager module.
 
 uri_format_invalid						= '{0}' is not a valid URI.
 
 httprequest_separator_invalid			= THttpRequest.UrlParamSeparator can only contain a single character.
 httprequest_urlmanager_inexist			= THttpRequest.UrlManager '{0}' does not point to an existing module.
 httprequest_urlmanager_invalid			= THttpRequest.UrlManager '{0}' must point to a module extending from TUrlManager.
+urlmanagerproxy_backing_url_manager_id_required	= TUrlManagerProxy.BackingUrlManagerId is required.
+urlmanagerproxy_url_manager_not_found			= TUrlManagerProxy.BackingUrlManagerId '{0}' does not refer to an application module.
+urlmanagerproxy_invalid_url_manager_type		= TUrlManagerProxy.BackingUrlManagerId '{0}' must refer to a TUrlManager module.
 
 httpcookiecollection_httpcookie_required = THttpCookieCollection can only accept THttpCookie objects.
 
@@ -135,8 +147,14 @@ assetmanager_tarchecksum_invalid		= TAssetManager is publishing a tar file with 
 assetmanager_tarfile_invalid			= TAssetManager is publishing an invalid tar file '{0}'.
 assetmanager_tarfile_extract_failed		= TAssetManager failed to extract the tar file '{0}'.
 assetmanager_source_directory_invalid	= TAssetManager is copying an invalid directory '{0}'.
+assetmanagerproxy_backing_asset_manager_id_required	= TAssetManagerProxy.BackingAssetManagerId is required.
+assetmanagerproxy_asset_manager_not_found			= TAssetManagerProxy.BackingAssetManagerId '{0}' does not refer to an application module.
+assetmanagerproxy_invalid_asset_manager_type		= TAssetManagerProxy.BackingAssetManagerId '{0}' must refer to a TAssetManager module.
 
 cache_primary_duplicated				= At most one primary cache module is allowed. {0} is trying to register as another primary cache.
+cacheproxy_backing_cache_id_required	= TCacheProxy.BackingCacheId is required.
+cacheproxy_cache_not_found				= TCacheProxy.BackingCacheId '{0}' does not refer to an application module.
+cacheproxy_invalid_cache_type			= TCacheProxy.BackingCacheId '{0}' must refer to a TCache module.
 sqlitecache_extension_required			= TSqliteCache requires SQLite PHP extension.
 sqlitecache_dbfile_required				= TSqliteCache.DbFile is required.
 sqlitecache_connection_failed			= TSqliteCache database connection failed. {0}.
@@ -286,6 +304,9 @@ authorizationrulecollection_authorizationrule_required = TAuthorizationRuleColle
 
 usermanager_userfile_invalid			= TUserManager.UserFile '{0}' is not a valid file.
 usermanager_userfile_unchangeable		= TUserManager.UserFile cannot be modified. The user module has been initialized already.
+usermanagerproxy_backing_user_manager_id_required	= TUserManagerProxy.BackingUserManagerId is required.
+usermanagerproxy_user_manager_not_found			= TUserManagerProxy.BackingUserManagerId '{0}' does not refer to an application module.
+usermanagerproxy_invalid_user_manager_type		= TUserManagerProxy.BackingUserManagerId '{0}' must refer to an IUserManager module.
 
 integritymanager_entry_invalid			= TIntegrityManager integrity entry for URL '{0}' requires a non-empty url and hash.
 integritymanager_algorithm_invalid		= TIntegrityManager algorithm '{0}' is not supported; use one of: {1}.
@@ -312,6 +333,10 @@ permissions_rules_require_name			= TPermissionsManager rules must have a permiss
 permissions_rule_class_invalid			= TPermissionsManager permission rule class '{0}' is a directory namespace, not a class.
 permissions_children_invalid			= TPermissionsManager.*RoleChildren children must be a string or array but is '{0}'.
 permissions_permissionfile_invalid		= TPermissionsManager.PermissionFile '{0}' is not a valid file.
+permissionsmanagerproxy_backing_permissions_manager_id_required	= TPermissionsManagerProxy.BackingPermissionsManagerId is required.
+permissionsmanagerproxy_permissions_manager_not_found	= TPermissionsManagerProxy.BackingPermissionsManagerId '{0}' does not refer to an application module.
+permissionsmanagerproxy_invalid_permissions_manager_type	= TPermissionsManagerProxy.BackingPermissionsManagerId '{0}' must refer to a TPermissionsManager module.
+permissionsmanagerproxy_rules_not_allowed	= TPermissionsManagerProxy '{0}' cannot configure roles, permission rules, or a PermissionFile; configure them on the backing TPermissionsManager module.
 
 thememanager_basepath_invalid			= TThemeManager.BasePath '{0}' is not a valid path alias. Make sure you have defined this alias in configuration and it points to a valid directory.
 thememanager_basepath_invalid2			= TThemeManager.BasePath '{0}' is not a valid directory.
@@ -407,6 +432,10 @@ radiobuttonlist_selectedindices_unsupported	= TRadioButtonList.SelectedIndices i
 logrouter_configfile_invalid			= TLogRouter.ConfigFile '{0}' does not exist.
 logrouter_routeclass_required			= Class attribute is required in <route> configuration.
 logrouter_routetype_required			= Log route must be an instance of TLogRoute or its derived class.
+logrouterproxy_backing_log_router_id_required	= TLogRouterProxy.BackingLogRouterId is required.
+logrouterproxy_log_router_not_found		= TLogRouterProxy.BackingLogRouterId '{0}' does not refer to an application module.
+logrouterproxy_invalid_log_router_type	= TLogRouterProxy.BackingLogRouterId '{0}' must refer to a TLogRouter module.
+logrouterproxy_routes_not_allowed		= TLogRouterProxy '{0}' cannot configure routes or a ConfigFile; configure them on the backing TLogRouter module.
 
 dblogroute_connectionid_invalid			= TDbLogRoute unable to create the Database Connection ID '{0}'.
 dblogroute_insert_failed				= TDbLogRoute unable to insert the log into the '{0}'.
@@ -526,6 +555,10 @@ clientscript_invalid_package_path		= Invalid PackagePath '{0}' for TClientScript
 tdatepicker_autopostback_unsupported	= '{0}' does not support AutoPostBack.
 globalization_cache_path_failed			= Unable to create translation message cache path '{0}'. Make sure the parent directory exists and is writable by the Web process.
 globalization_source_path_failed		= Unable to create translation message path '{0}'. Make sure the parent directory exists and is writable by the Web process.
+globalizationproxy_backing_globalization_id_required	= TGlobalizationProxy.BackingGlobalizationId is required.
+globalizationproxy_globalization_not_found	= TGlobalizationProxy.BackingGlobalizationId '{0}' does not refer to an application module.
+globalizationproxy_invalid_globalization_type	= TGlobalizationProxy.BackingGlobalizationId '{0}' must refer to a TGlobalization module.
+globalizationproxy_translation_not_allowed	= TGlobalizationProxy '{0}' cannot configure translation; configure it on the backing TGlobalization module.
 messagesource_connectionid_invalid      = MessageSource_Database.source '{0}' does not point to a valid TDataSourceConfig module.
 messagesource_connectionid_required     = ConnectionID in MessageSource_Database.source is required.
 
@@ -748,6 +781,10 @@ dbmetadata_not_meta_data				= Expected driver class {1} but got class {0}.
 dbmetadata_tableinfo_class_invalid		= TDbMetaData table info class '{0}' is a directory namespace, not a class.
 
 datasource_dbconnection_invalid			= TDataSourceConfig.DbConnection '{0}' is invalid. Please make sure it points to a valid application module.
+datasourceproxy_backing_data_source_id_required	= TDataSourceConfigProxy.BackingDataSourceId is required.
+datasourceproxy_data_source_not_found	= TDataSourceConfigProxy.BackingDataSourceId '{0}' does not refer to an application module.
+datasourceproxy_invalid_data_source_type	= TDataSourceConfigProxy.BackingDataSourceId '{0}' must refer to a TDataSourceConfig module.
+datasourceproxy_database_not_allowed		= TDataSourceConfigProxy '{0}' cannot configure a database; configure it on the backing TDataSourceConfig module.
 distributeddatasource_child_required		= {0} requires one '{1}' child element at minimum.
 masterslavedbconnection_connection_exists	= {0}.{1} connection already exists.
 masterslavedbconnection_interface_required	= {0}.{1} requires an instance implementing {2} interface.

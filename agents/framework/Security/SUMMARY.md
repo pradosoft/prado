@@ -12,6 +12,8 @@ Authentication, authorization, user management, and role-based access control (R
 
 - **`TUserManager`** — In-memory user store implementing `IUserManager`; supports configurable password hashing (`MD5`, `SHA1`, custom).
 
+- **`TUserManagerProxy`** — `IUserManager` proxy module delegating to the manager named by `BackingUserManagerId`.
+
 - **`TDbUserManager`** — Database-backed user manager; queries a factory subclass implementation of TDbUser.
 
 - **`TDbUser`** — Extends `TUser` with database persistence; implements database functions of TDbUserManager.
@@ -23,5 +25,7 @@ Authentication, authorization, user management, and role-based access control (R
 - **`TAuthorizationRuleCollection`** — Ordered collection of `TAuthorizationRule` objects; first matching rule wins.
 
 - **`TSecurityManager`** — Hash computation (`computeHash()`), encryption/decryption (`encrypt()`/`decrypt()`), HMAC token generation and validation.
+
+- **`TSecurityManagerProxy`** — Transparent security manager module delegating to the manager named by `BackingSecurityManagerId`.
 
 - **`TUserManagerPasswordMode`** — Enum: `Clear`, `MD5`, `SHA1`.

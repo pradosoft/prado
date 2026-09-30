@@ -29,9 +29,9 @@ use Prado\Test\Unit\Harness\Traits\PradoUnitModuleDependencyTrait;
  * TMemoryCacheTest class.
  *
  * Comprehensive unit tests for TMemoryCache: in-memory store, TTL expiry
- * (clock-controlled, no sleep()), backing cache module, backing file,
- * MergePolicy, BackingCacheKey, auto-save via OnSaveState, IModuleDependency,
- * DEFAULT_BACKING_CACHE_KEY and DEFAULT_MERGE_POLICY constants and late-static-binding constructor seeding,
+ * (clock-controlled, no sleep()), persist cache module, backing file,
+ * MergePolicy, PersistCacheKey, auto-save via OnSaveState, IModuleDependency,
+ * DEFAULT_PERSIST_CACHE_KEY and DEFAULT_MERGE_POLICY constants and late-static-binding constructor seeding,
  * TCacheSizeTrait integration (MaximumSize, getCurrentSize, isOverCapacity, LRU
  * eviction), serialization exclusions via _getZappableSleepProps, and edge cases.
  *
@@ -99,14 +99,14 @@ class TMemoryCacheTest extends \PHPUnit\Framework\TestCase
 	}
 
 	/**
-	 * Creates a TTestMemoryCache wired to the given backing cache module.
+	 * Creates a TTestMemoryCache wired to the given persist cache module.
 	 */
 	private function makeCacheWithBacking(string $moduleId = 'backingCache'): TTestMemoryCache
 	{
 		$cache = new TTestMemoryCache();
 		$cache->setID('memcache');
 		$cache->setPrimaryCache(false);
-		$cache->setBackingCacheId($moduleId);
+		$cache->setPersistCacheId($moduleId);
 		$cache->init(null);
 		return $cache;
 	}
@@ -149,15 +149,15 @@ class TMemoryCacheTest extends \PHPUnit\Framework\TestCase
 
 	// ── IModuleDependency ─────────────────────────────────────────────────────
 
-	public function testGetModuleDependenciesReturnsNullWhenNoBackingCacheId(): void
+	public function testGetModuleDependenciesReturnsNullWhenNoPersistCacheId(): void
 	{
 		self::assertModuleDependency(null, $this->cache->getModuleDependencies());
 	}
 
-	public function testGetModuleDependenciesReturnsIdWhenBackingCacheIdSet(): void
+	public function testGetModuleDependenciesReturnsIdWhenPersistCacheIdSet(): void
 	{
 		$cache = new TTestMemoryCache();
-		$cache->setBackingCacheId('fileCache');
+		$cache->setPersistCacheId('fileCache');
 
 		self::assertModuleDependency('fileCache', $cache->getModuleDependencies());
 	}
@@ -165,7 +165,7 @@ class TMemoryCacheTest extends \PHPUnit\Framework\TestCase
 	public function testGetModuleDependenciesSameForBothPhases(): void
 	{
 		$cache = new TTestMemoryCache();
-		$cache->setBackingCacheId('someModule');
+		$cache->setPersistCacheId('someModule');
 
 		self::assertModuleDependency(
 			$cache->getModuleDependencies(true),
@@ -175,33 +175,33 @@ class TMemoryCacheTest extends \PHPUnit\Framework\TestCase
 
 	// ── init() ────────────────────────────────────────────────────────────────
 
-	public function testInitSetsDefaultBackingCacheKeyFromModuleId(): void
+	public function testInitSetsDefaultPersistCacheKeyFromModuleId(): void
 	{
 		$cache = new TTestMemoryCache();
 		$cache->setID('myCache');
 		$cache->setPrimaryCache(false);
 		$cache->init(null);
 
-		$this->assertSame('prado.memory-cache.myCache', $cache->getBackingCacheKey());
+		$this->assertSame('prado.memory-cache.myCache', $cache->getPersistCacheKey());
 	}
 
-	public function testInitSetsDefaultBackingCacheKeyWhenNoId(): void
+	public function testInitSetsDefaultPersistCacheKeyWhenNoId(): void
 	{
 		$cache = new TTestMemoryCache();
 		$cache->setPrimaryCache(false);
 		$cache->init(null);
 
-		$this->assertSame('prado.memory-cache', $cache->getBackingCacheKey());
+		$this->assertSame('prado.memory-cache', $cache->getPersistCacheKey());
 	}
 
-	public function testExplicitBackingCacheKeyIsPreservedByInit(): void
+	public function testExplicitPersistCacheKeyIsPreservedByInit(): void
 	{
 		$cache = new TTestMemoryCache();
 		$cache->setPrimaryCache(false);
-		$cache->setBackingCacheKey('my-custom-key');
+		$cache->setPersistCacheKey('my-custom-key');
 		$cache->init(null);
 
-		$this->assertSame('my-custom-key', $cache->getBackingCacheKey());
+		$this->assertSame('my-custom-key', $cache->getPersistCacheKey());
 	}
 
 	// ── set() / get() ─────────────────────────────────────────────────────────
@@ -445,18 +445,18 @@ class TMemoryCacheTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame(42, $this->cache->pubTime());
 	}
 
-	// ── BackingCacheId property ───────────────────────────────────────────────
+	// ── PersistCacheId property ───────────────────────────────────────────────
 
-	public function testGetSetBackingCacheId(): void
+	public function testGetSetPersistCacheId(): void
 	{
 		$cache = new TTestMemoryCache();
-		$cache->setBackingCacheId('someModule');
-		$this->assertSame('someModule', $cache->getBackingCacheId());
+		$cache->setPersistCacheId('someModule');
+		$this->assertSame('someModule', $cache->getPersistCacheId());
 	}
 
-	public function testBackingCacheIdDefaultsToEmpty(): void
+	public function testPersistCacheIdDefaultsToEmpty(): void
 	{
-		$this->assertSame('', $this->cache->getBackingCacheId());
+		$this->assertSame('', $this->cache->getPersistCacheId());
 	}
 
 	// ── BackingFile property ──────────────────────────────────────────────────
@@ -489,13 +489,13 @@ class TMemoryCacheTest extends \PHPUnit\Framework\TestCase
 		(new TTestMemoryCache())->setBackingFile('/nonexistent/dir/cache.dat');
 	}
 
-	// ── BackingCacheKey property ──────────────────────────────────────────────
+	// ── PersistCacheKey property ──────────────────────────────────────────────
 
-	public function testGetSetBackingCacheKey(): void
+	public function testGetSetPersistCacheKey(): void
 	{
 		$cache = new TTestMemoryCache();
-		$cache->setBackingCacheKey('my-store-key');
-		$this->assertSame('my-store-key', $cache->getBackingCacheKey());
+		$cache->setPersistCacheKey('my-store-key');
+		$this->assertSame('my-store-key', $cache->getPersistCacheKey());
 	}
 
 	// ── MergePolicy property ──────────────────────────────────────────────────
@@ -581,7 +581,7 @@ class TMemoryCacheTest extends \PHPUnit\Framework\TestCase
 		// Back cache is not registered → saveToBacking returns false.
 		$cache = new TTestMemoryCache();
 		$cache->setPrimaryCache(false);
-		$cache->setBackingCacheId('nonexistent');
+		$cache->setPersistCacheId('nonexistent');
 		$cache->init(null);
 		$cache->set('k', 'v');
 		$cache->save(); // fails
@@ -624,7 +624,7 @@ class TMemoryCacheTest extends \PHPUnit\Framework\TestCase
 		$this->assertFalse($this->cache->load());
 	}
 
-	// ── save() / load() — backing cache module ────────────────────────────────
+	// ── save() / load() — persist cache module ────────────────────────────────
 
 	public function testSaveAndLoadRoundtripViaBakingCacheModule(): void
 	{
@@ -649,7 +649,7 @@ class TMemoryCacheTest extends \PHPUnit\Framework\TestCase
 		$seed = new TTestMemoryCache();
 		$seed->setID('memcache');
 		$seed->setPrimaryCache(false);
-		$seed->setBackingCacheId('backingCache');
+		$seed->setPersistCacheId('backingCache');
 		$seed->init(null);
 		$seed->set('seeded', 'value');
 		$seed->save();
@@ -658,7 +658,7 @@ class TMemoryCacheTest extends \PHPUnit\Framework\TestCase
 		$fresh = new TTestMemoryCache();
 		$fresh->setID('memcache');
 		$fresh->setPrimaryCache(false);
-		$fresh->setBackingCacheId('backingCache');
+		$fresh->setPersistCacheId('backingCache');
 		$fresh->init(null);
 
 		$this->assertSame('value', $fresh->get('seeded'));
@@ -670,7 +670,7 @@ class TMemoryCacheTest extends \PHPUnit\Framework\TestCase
 		$cache = new TTestMemoryCache();
 		$cache->setID('memcache');
 		$cache->setPrimaryCache(false);
-		$cache->setBackingCacheId('backingCache');
+		$cache->setPersistCacheId('backingCache');
 		$cache->init(null);
 
 		// Nothing was saved beforehand; backing cache has no entry.
@@ -681,7 +681,7 @@ class TMemoryCacheTest extends \PHPUnit\Framework\TestCase
 	{
 		$cache = new TTestMemoryCache();
 		$cache->setPrimaryCache(false);
-		$cache->setBackingCacheId('nonexistent');
+		$cache->setPersistCacheId('nonexistent');
 		$cache->init(null);
 		$cache->set('k', 'v');
 		$this->assertFalse($cache->save());
@@ -746,7 +746,7 @@ class TMemoryCacheTest extends \PHPUnit\Framework\TestCase
 		$cache = new TTestMemoryCache();
 		$cache->setID('memcache');
 		$cache->setPrimaryCache(false);
-		$cache->setBackingCacheId('backingCache');
+		$cache->setPersistCacheId('backingCache');
 		$cache->setBackingFile($file);
 		$cache->init(null);
 		$cache->set('source', 'from-module');
@@ -759,7 +759,7 @@ class TMemoryCacheTest extends \PHPUnit\Framework\TestCase
 		$cache2 = new TTestMemoryCache();
 		$cache2->setID('memcache');
 		$cache2->setPrimaryCache(false);
-		$cache2->setBackingCacheId('backingCache');
+		$cache2->setPersistCacheId('backingCache');
 		$cache2->setBackingFile($file);
 		$cache2->init(null);
 		$this->assertSame('from-module', $cache2->get('source'));
@@ -782,7 +782,7 @@ class TMemoryCacheTest extends \PHPUnit\Framework\TestCase
 		$cache = new TTestMemoryCache();
 		$cache->setID('memcache');
 		$cache->setPrimaryCache(false);
-		$cache->setBackingCacheId('backingCache');
+		$cache->setPersistCacheId('backingCache');
 		$cache->setMergePolicy(TMemoryCache::MERGE);
 		$cache->init(null);
 
@@ -811,7 +811,7 @@ class TMemoryCacheTest extends \PHPUnit\Framework\TestCase
 		$cache = new TTestMemoryCache();
 		$cache->setID('memcache');
 		$cache->setPrimaryCache(false);
-		$cache->setBackingCacheId('backingCache');
+		$cache->setPersistCacheId('backingCache');
 		$cache->setMergePolicy(TMemoryCache::REPLACE);
 		$cache->init(null);
 
@@ -1289,30 +1289,30 @@ class TMemoryCacheTest extends \PHPUnit\Framework\TestCase
 			'HashKeys=null must be zapped from the serialized payload.');
 	}
 
-	// ── DEFAULT_BACKING_CACHE_KEY constant ───────────────────────────────────────
+	// ── DEFAULT_PERSIST_CACHE_KEY constant ───────────────────────────────────────
 
-	public function testDefaultBackingCacheKeyConstantValue(): void
+	public function testDefaultPersistCacheKeyConstantValue(): void
 	{
-		$this->assertSame('prado.memory-cache', TMemoryCache::DEFAULT_BACKING_CACHE_KEY);
+		$this->assertSame('prado.memory-cache', TMemoryCache::DEFAULT_PERSIST_CACHE_KEY);
 	}
 
-	public function testConstructSetsBackingCacheKeyToDefaultConstant(): void
+	public function testConstructSetsPersistCacheKeyToDefaultConstant(): void
 	{
 		$cache = new TTestMemoryCache();
 		$this->assertSame(
-			TMemoryCache::DEFAULT_BACKING_CACHE_KEY,
-			$cache->getBackingCacheKey(),
-			'Constructor must seed _backingCacheKey from DEFAULT_BACKING_CACHE_KEY.'
+			TMemoryCache::DEFAULT_PERSIST_CACHE_KEY,
+			$cache->getPersistCacheKey(),
+			'Constructor must seed _persistCacheKey from DEFAULT_PERSIST_CACHE_KEY.'
 		);
 	}
 
-	public function testSubclassCanOverrideDefaultBackingCacheKey(): void
+	public function testSubclassCanOverrideDefaultPersistCacheKey(): void
 	{
 		$cache = new TTestMemoryCacheCustomKey();
 		$this->assertSame(
 			'custom.key',
-			$cache->getBackingCacheKey(),
-			'Subclass overriding DEFAULT_BACKING_CACHE_KEY must have its value used via late static binding.'
+			$cache->getPersistCacheKey(),
+			'Subclass overriding DEFAULT_PERSIST_CACHE_KEY must have its value used via late static binding.'
 		);
 	}
 
@@ -1348,7 +1348,7 @@ class TMemoryCacheTest extends \PHPUnit\Framework\TestCase
 	public function testGetModuleDependenciesUsesIsPreInitParameter(): void
 	{
 		$cache = new TTestMemoryCache();
-		$cache->setBackingCacheId('someId');
+		$cache->setPersistCacheId('someId');
 
 		// TMemoryCache does not differentiate by phase — both calls must return
 		// equivalent dependency declarations.
@@ -1809,9 +1809,9 @@ class TMemoryCacheTest extends \PHPUnit\Framework\TestCase
 	public static function frozenSetterProvider(): array
 	{
 		return [
-			'BackingCacheId'  => ['setBackingCacheId', 'someModule'],
+			'PersistCacheId'  => ['setPersistCacheId', 'someModule'],
 			'BackingFile'     => ['setBackingFile', '/tmp/x.cache'],
-			'BackingCacheKey' => ['setBackingCacheKey', 'k'],
+			'PersistCacheKey' => ['setPersistCacheKey', 'k'],
 			'MergePolicy'     => ['setMergePolicy', 'all'],
 			'HashKeys'        => ['setHashKeys', true],
 			'SerializeValues' => ['setSerializeValues', true],

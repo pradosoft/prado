@@ -38,6 +38,10 @@ Cache backends and dependency system providing unified `ICache` interface over m
 
 - **[`TEtcdCache`](TEtcdCache.md)** — etcd distributed cache using the HTTP v2 API via `THttpClient` (cURL or stream wrappers). Properties: `Host`, `Port` (default `2379`), `Dir` (etcd directory, default `'pradocache'`), `Downloader`. Values stored as JSON with optional TTL.
 
+## Proxy
+
+- **[`TCacheProxy`](TCacheProxy.md)** (@since 4.4.0) — Transparent `TCache` module over the cache named by `BackingCacheId`; `get()`/`set()`/`add()`/`delete()`/`flush()` call the backing's public methods (its key prefix applies, the proxy's does not). Declares the backing as an `IModuleDependency`; only one of the two may be `PrimaryCache`.
+
 ## Cache Dependencies
 
 - **[`TFileCacheDependency`](TFileCacheDependency.md)** — Invalidates when a file's `mtime` changes.

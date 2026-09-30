@@ -106,7 +106,7 @@ class TTemplateManager extends \Prado\TModule
 	 */
 	protected function setAppTemplateManager()
 	{
-		$this->getApplication()?->setTemplateManager($this);
+		$this->findApplication()?->setTemplateManager($this);
 	}
 
 	/**

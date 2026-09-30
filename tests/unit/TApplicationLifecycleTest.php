@@ -4,6 +4,7 @@ namespace Prado\Test\Unit;
 
 use Prado\Exceptions\TExitException;
 use Prado\Exceptions\THttpException;
+use Prado\Prado;
 use Prado\TApplicationMode;
 use Prado\Test\Unit\Harness\TTestApplication;
 
@@ -150,13 +151,24 @@ class TApplicationLifecycleTest extends \PHPUnit\Framework\TestCase
 		'onEndRequest',
 	];
 
+	/** @var ?\Prado\TApplication the application current before the test */
+	private $_priorApp;
+
 	protected function setUp(): void
 	{
+		$this->_priorApp = Prado::getApplication();
 		$ref = new \ReflectionClass(LifecycleTrackingApp::class);
 		$this->_app = $ref->newInstanceWithoutConstructor();
 
 		// setMode() writes to TApplication's private $_mode via the parent method.
 		$this->_app->setMode(TApplicationMode::Debug);
+	}
+
+	protected function tearDown(): void
+	{
+		// run() makes the stub the current application; put the prior one back.
+		Prado::unregisterApplication($this->_app);
+		Prado::setApplication($this->_priorApp);
 	}
 
 	// -----------------------------------------------------------------------

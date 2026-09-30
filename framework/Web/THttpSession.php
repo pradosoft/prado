@@ -178,7 +178,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	protected function setAppSession()
 	{
-		$this->getApplication()?->setSession($this);
+		$this->findApplication()?->setSession($this);
 	}
 
 	/**

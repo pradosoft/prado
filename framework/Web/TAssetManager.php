@@ -258,7 +258,7 @@ class TAssetManager extends \Prado\TModule
 	 */
 	protected function setAppAssetManager()
 	{
-		$this->getApplication()?->setAssetManager($this);
+		$this->findApplication()?->setAssetManager($this);
 	}
 
 	/**

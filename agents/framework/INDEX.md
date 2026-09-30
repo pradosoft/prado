@@ -34,13 +34,21 @@ This is the root source directory of the **Prado** PHP framework (PSR-4 namespac
   - Serialization: `__sleep()`, `__wakeup()`, `_getZappableSleepProps()`
   - Cloning: `__clone()` with `dyClone` dynamic event
 
-- **[`TApplication.php`](TApplication.md)** — Top-level service container. Manages modules, services, configuration, and the application lifecycle. Entry point for every request.
+- **[`TApplication.php`](TApplication.md)** — Top-level service container. Manages modules, services, configuration, and the application lifecycle. Entry point for every request. `MultipleMode` (`TApplicationMultipleMode.php`: `Auto`, `Multiple`, `Singleton`) decides how it joins the `Prado` application pool. @since 4.4.0
 
-- **[`TApplicationComponent.php`](TApplicationComponent.md)** — Base for application-aware components; provides `getApplication()`, `getService()`, `getRequest()`, `getResponse()`, `getSession()`, `getUser()`.
+- **[`TApplicationComponent.php`](TApplicationComponent.md)** — Base for application-aware components; binds the application current at construction (@since 4.4.0) and provides `getApplication()`, `getService()`, `getRequest()`, `getResponse()`, `getSession()`, `getUser()`.
 
 - **[`TApplicationConfiguration.php`](TApplicationConfiguration.md)** — Parses `application.xml` (or `application.php`); loads module/service/parameter definitions.
 
 - **[`TModule.php`](TModule.md)** — Base for pluggable application modules registered in configuration.
+
+- **[`IProxy.php`](IProxy.md)** — Marker interface of the transparent proxies; every proxy uses [`TComponentProxyTrait`](TComponentProxyTrait.md) and exposes `getProxyBacking()`. @since 4.4.0
+
+- **[`TComponentProxyTrait.php`](TComponentProxyTrait.md)** — Shared proxy logic: forwards `__get`/`__set`/`__isset`/`__unset`/`__call` and `isa()` to a backing `TComponent`; `attachProxy()`/`detachProxy()` wire the backing's public `on*` events to handler collections the proxy owns. @since 4.4.0
+
+- **[`TComponentProxy.php`](TComponentProxy.md)** — `TComponent` proxy over a backing set through `BackingComponent`. @since 4.4.0
+
+- **[`TModuleProxy.php`](TModuleProxy.md)** — `TModule` proxy over the module named by `BackingComponentId`, declared as an `IModuleDependency`. Typed variants: [`TCacheProxy`](Caching/TCacheProxy.md), [`TDataSourceConfigProxy`](Data/TDataSourceConfigProxy.md). @since 4.4.0
 
 - **[`TService.php`](TService.md)** — Base for application services (page, JSON, RPC, SOAP, feed).
 

@@ -10,6 +10,7 @@
 
 namespace Prado;
 
+use Prado\Exceptions\TInvalidOperationException;
 use Prado\TApplicationMode;
 
 /**
@@ -29,12 +30,64 @@ use Prado\TApplicationMode;
  * Besides, TApplicationComponent defines two shortcut methods for
  * publishing private files: {@see publishAsset} and {@see publishFilePath}.
  *
+ * A TApplicationComponent keeps a reference to the {@see TApplication} that is
+ * current when the component is constructed. With multiple applications
+ * ({@see Prado::getMultipleApplications()}), the component stays bound to its
+ * owning application after another application becomes the current one.
+ * {@see findApplication()} returns null instead of throwing without an application;
+ * {@see hasApplication()} and {@see isCurrentApplication()} test the binding and
+ * {@see makeCurrentApplication()} makes the owning application current.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ * @author Brad Anderson <belisoful@icloud.com>
  * @since 3.0
  */
 class TApplicationComponent extends \Prado\TComponent
 {
 	public const FX_CACHE_FILE = 'fxevent.cache';
+
+	/**
+	 * @var ?\WeakReference<TApplication> the application that owns this component,
+	 *   bound at construction and held weakly. Null means unbound; a reference whose
+	 *   application was garbage collected stays bound and yields null, so the
+	 *   component does not rebind to another application. Excluded from
+	 *   serialization; {@see __wakeup()} binds the current application.
+	 * @since 4.4.0
+	 */
+	private ?\WeakReference $_application = null;
+
+	/**
+	 * Binds the current application and initializes global-event listening.
+	 * @since 4.4.0
+	 */
+	public function __construct()
+	{
+		$this->resolveApplication();
+		parent::__construct();
+	}
+
+	/**
+	 * Excludes the owning application from serialization so a serialized component
+	 * does not carry the {@see TApplication} object graph.
+	 * @param array $exprops by reference
+	 * @since 4.4.0
+	 */
+	protected function _getZappableSleepProps(&$exprops)
+	{
+		parent::_getZappableSleepProps($exprops);
+		$exprops[] = "\0" . __CLASS__ . "\0_application";
+	}
+
+	/**
+	 * Binds the current application after unserialization.
+	 * @since 4.4.0
+	 */
+	public function __wakeup()
+	{
+		$this->resolveApplication();
+		parent::__wakeup();
+	}
+
 	/**
 	 * TApplicationComponents auto listen to global events.
 	 *
@@ -46,7 +99,10 @@ class TApplicationComponent extends \Prado\TComponent
 	}
 
 	/**
-	 * This caches the 'fx' events for PRADO classes in the application cache
+	 * This caches the 'fx' events for PRADO classes in the application cache.
+	 * A class already in the static cache returns without consulting the
+	 * application, so {@see \Prado\TComponent::unlisten()} from a destructor
+	 * does not reach an application that is being released.
 	 * @param object $class The object to get the 'fx' events.
 	 * @return string[] fx events from a specific class
 	 */
@@ -56,7 +112,11 @@ class TApplicationComponent extends \Prado\TComponent
 		static $_classfxSize = 0;
 		static $_loaded = false;
 
-		$app = $this->getApplication();
+		$className = $class::class;
+		if (array_key_exists($className, $_classfx)) {
+			return $_classfx[$className];
+		}
+		$app = $this->findApplication();
 		$cacheFile = $mode = null;
 		if ($app) {
 			$cacheFile = $app->getRuntimePath() . DIRECTORY_SEPARATOR . self::FX_CACHE_FILE;
@@ -66,11 +126,10 @@ class TApplicationComponent extends \Prado\TComponent
 					$_classfx = @unserialize($content) ?? [];
 					$_classfxSize = count($_classfx);
 				}
+				if (array_key_exists($className, $_classfx)) {
+					return $_classfx[$className];
+				}
 			}
-		}
-		$className = $class::class;
-		if (array_key_exists($className, $_classfx)) {
-			return $_classfx[$className];
 		}
 		$fx = parent::getClassFxEvents($class);
 		$_classfx[$className] = $fx;
@@ -94,51 +153,166 @@ class TApplicationComponent extends \Prado\TComponent
 	}
 
 	/**
-	 * @return \Prado\TApplication current application instance
+	 * Returns the application that owns this component. A component without a
+	 * binding, such as one constructed before any application existed, binds the
+	 * current application through {@see resolveApplication()} first.
+	 * {@see hasApplication()} tests for an application without throwing.
+	 * @throws TInvalidOperationException when no application is bound or current,
+	 *   or the bound application was garbage collected.
+	 * @return TApplication the owning application.
 	 */
 	public function getApplication()
 	{
-		return Prado::getApplication();
+		$this->resolveApplication();
+		$app = $this->getApplicationDirect();
+		if ($app === null) {
+			throw new TInvalidOperationException('applicationcomponent_application_required', $this::class);
+		}
+		return $app;
 	}
 
 	/**
-	 * @return ?IService the current service
+	 * Returns the owning application, or null when none is available, binding
+	 * the current application first when the component is unbound. A module that
+	 * can run without an application uses this form instead of {@see getApplication()}.
+	 * @return ?TApplication the owning application, or null.
+	 * @since 4.4.0
+	 */
+	public function findApplication(): ?TApplication
+	{
+		$this->resolveApplication();
+		return $this->getApplicationDirect();
+	}
+
+	/**
+	 * Returns whether {@see getApplication()} has an application to return.
+	 * @return bool whether an application is available.
+	 * @since 4.4.0
+	 */
+	public function hasApplication(): bool
+	{
+		return $this->findApplication() !== null;
+	}
+
+	/**
+	 * Returns the bound application without resolving it. An application whose
+	 * {@see TApplication::__destruct()} has run counts as collected: on PHP before
+	 * 8.2.17 and 8.3.4 the weak reference still yields it while its properties are
+	 * being released, and a module destructor that used it would read freed memory.
+	 * @return ?TApplication the bound application, or null when unbound, collected,
+	 *   or destructed.
+	 * @since 4.4.0
+	 */
+	protected function getApplicationDirect(): ?TApplication
+	{
+		$app = $this->_application?->get();
+		return $app === null || $app->getIsDestructed() ? null : $app;
+	}
+
+	/**
+	 * Binds an application through a weak reference, or clears the binding with
+	 * null so that {@see getApplication()} binds the current application on its
+	 * next call.
+	 * @param ?TApplication $app the application to bind, or null to clear.
+	 * @since 4.4.0
+	 */
+	protected function setApplicationDirect(?TApplication $app): void
+	{
+		$this->_application = $app === null ? null : \WeakReference::create($app);
+	}
+
+	/**
+	 * Returns whether an application has been bound, whether or not it still exists.
+	 * @return bool whether the component is bound.
+	 * @since 4.4.0
+	 */
+	protected function hasApplicationBinding(): bool
+	{
+		return $this->_application !== null;
+	}
+
+	/**
+	 * Binds the current application when the component is unbound. A bound
+	 * component keeps its binding, even to a collected application.
+	 * @since 4.4.0
+	 */
+	protected function resolveApplication(): void
+	{
+		if (!$this->hasApplicationBinding()) {
+			$this->setApplicationDirect(Prado::getApplication());
+		}
+	}
+
+	/**
+	 * Returns whether the bound application is the current application. An
+	 * unbound component returns false.
+	 * @return bool whether the bound application is {@see Prado::getApplication()}.
+	 * @since 4.4.0
+	 */
+	public function isCurrentApplication(): bool
+	{
+		$app = $this->getApplicationDirect();
+		return $app !== null && $app === Prado::getApplication();
+	}
+
+	/**
+	 * Makes the bound application the current application through
+	 * {@see Prado::setApplication()}. An unbound component does nothing.
+	 * @throws \Prado\Exceptions\TInvalidOperationException when a different
+	 *   application is current and multiple applications are not enabled.
+	 * @since 4.4.0
+	 */
+	public function makeCurrentApplication(): void
+	{
+		$app = $this->getApplicationDirect();
+		if ($app !== null && !$this->isCurrentApplication()) {
+			Prado::setApplication($app);
+		}
+	}
+
+	/**
+	 * @throws TInvalidOperationException when no application is available
+	 * @return ?IService the current service, or null when none has started
 	 */
 	public function getService()
 	{
-		return Prado::getApplication()->getService();
+		return $this->getApplication()->getService();
 	}
 
 	/**
+	 * @throws TInvalidOperationException when no application is available
 	 * @return \Prado\Web\THttpRequest the current user request
 	 */
 	public function getRequest()
 	{
-		return Prado::getApplication()->getRequest();
+		return $this->getApplication()->getRequest();
 	}
 
 	/**
+	 * @throws TInvalidOperationException when no application is available
 	 * @return \Prado\Web\THttpResponse the response
 	 */
 	public function getResponse()
 	{
-		return Prado::getApplication()->getResponse();
+		return $this->getApplication()->getResponse();
 	}
 
 	/**
-	 * @return \Prado\Web\THttpSession user session
+	 * @throws TInvalidOperationException when no application is available
+	 * @return ?\Prado\Web\THttpSession the user session, or null when no session module is installed
 	 */
 	public function getSession()
 	{
-		return Prado::getApplication()->getSession();
+		return $this->getApplication()->getSession();
 	}
 
 	/**
-	 * @return \Prado\Security\IUser information about the current user
+	 * @throws TInvalidOperationException when no application is available
+	 * @return \Prado\Security\IUser the current user
 	 */
 	public function getUser()
 	{
-		return Prado::getApplication()->getUser();
+		return $this->getApplication()->getUser();
 	}
 
 	/**
@@ -173,6 +347,6 @@ class TApplicationComponent extends \Prado\TComponent
 	 */
 	public function publishFilePath($fullPath, $checkTimestamp = false)
 	{
-		return Prado::getApplication()->getAssetManager()->publishFilePath($fullPath, $checkTimestamp);
+		return $this->getApplication()->getAssetManager()->publishFilePath($fullPath, $checkTimestamp);
 	}
 }

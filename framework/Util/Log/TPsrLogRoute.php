@@ -149,7 +149,7 @@ class TPsrLogRoute extends TLogRoute
 	 */
 	protected function resolveLogger(string $id): LoggerInterface
 	{
-		$logger = $this->getApplication()?->getModule($id);
+		$logger = $this->findApplication()?->getModule($id);
 		if ($logger === null) {
 			$class = Prado::usingClass($id);
 			if (is_string($class)) {

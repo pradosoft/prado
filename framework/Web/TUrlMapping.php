@@ -184,7 +184,7 @@ class TUrlMapping extends TUrlManager implements IModuleDependency
 	 */
 	public function getModuleDependencies(bool $isPreInit): null|string|array
 	{
-		return array_keys($this->getApplication()?->getModulesByType(THttpRequest::class));
+		return array_keys($this->findApplication()?->getModulesByType(THttpRequest::class));
 	}
 
 	/**
@@ -266,7 +266,7 @@ class TUrlMapping extends TUrlManager implements IModuleDependency
 	 */
 	public function setConfigFile($value)
 	{
-		$configFile = Prado::getPathOfNamespace($value, $this->getApplication()?->getConfigurationFileExt());
+		$configFile = Prado::getPathOfNamespace($value, $this->findApplication()?->getConfigurationFileExt());
 		if ($configFile === null) {
 			throw new TConfigurationException('urlmapping_configfile_invalid', $value);
 		}

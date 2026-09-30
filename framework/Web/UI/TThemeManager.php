@@ -119,7 +119,7 @@ class TThemeManager extends \Prado\TModule
 	 */
 	protected function setAppThemeManager()
 	{
-		$this->getApplication()?->setThemeManager($this);
+		$this->findApplication()?->setThemeManager($this);
 	}
 
 	/**

@@ -8,6 +8,8 @@ Internationalization and localization covering culture-aware date/number formatt
 
 - **`TGlobalizationAutoDetect`** — Extends `TGlobalization`; auto-sets `Culture` from HTTP `Accept-Language` header.
 
+- **`TGlobalizationProxy`** — Transparent globalization module delegating to the module named by `BackingGlobalizationId`.
+
 - **`TDateFormat`** — Localized date/time formatting and parsing; methods: `format($date, $pattern, $culture)`, `parse($string, $pattern, $culture)`.
 
 - **`TNumberFormat`** — Localized number formatting and parsing for currency, percentage, decimal patterns.

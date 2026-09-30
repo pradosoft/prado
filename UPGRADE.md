@@ -9,6 +9,17 @@ for both A and B.
 
 Upgrading from v4.3.3
 ---------------------
+- A `TApplicationComponent` is bound to the application that is current when it is constructed, and
+  `getApplication()` returns that application instead of `Prado::getApplication()`. With one application
+  the two are the same. Code that constructs components under one application and expects them to follow
+  a later `Prado::setApplication()` calls `makeCurrentApplication()` on the component, or constructs it
+  under the intended application. `getApplication()` throws `applicationcomponent_application_required`
+  when no application is bound or current (it previously returned null, and the shortcuts then failed on
+  null); `findApplication()` returns null and `hasApplication()` tests for one, for a module that can run
+  without an application.
+- `Prado::setApplication()` takes `?TApplication`; `null` clears the current application. A second,
+  different application throws in the default singleton mode unless `Prado::setMultipleApplications(true)`
+  or the constructing application's `MultipleMode` allows it.
 - TTemplate applies a template attribute name as written instead of replacing its dashes with underscores.
   An `Attributes.<name>` subproperty now stores the hyphenated name it was given, so
   `<com:TNav Attributes.aria-label="Primary" />` renders `aria-label="Primary"` where it previously rendered

@@ -13,6 +13,7 @@
 
 namespace Prado;
 
+use Prado\Collections\TWeakMap;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TPhpErrorException;
@@ -96,6 +97,19 @@ class Prado
 	 * @var null|TApplication the application instance
 	 */
 	private static $_application;
+	/**
+	 * @var bool whether several {@see TApplication} instances may be registered at once.
+	 *   Defaults to `false`, the singleton mode.
+	 * @since 4.4.0
+	 */
+	private static bool $_multipleApplications = false;
+	/**
+	 * @var ?TWeakMap<string,TApplication> the pool of registered applications keyed by
+	 *   {@see TApplication::getUniqueID()}, each held weakly. An entry leaves the pool
+	 *   when its application is garbage collected or {@see unregisterApplication()} removes it.
+	 * @since 4.4.0
+	 */
+	private static ?TWeakMap $_applications = null;
 	/**
 	 * @var null|TLogger logger instance
 	 */
@@ -248,28 +262,144 @@ class Prado
 	}
 
 	/**
-	 * Stores the application instance in the class static member.
-	 * This method helps implement a singleton pattern for TApplication.
-	 * Repeated invocation of this method or the application constructor
-	 * will cause the throw of an exception.
-	 * This method should only be used by framework developers.
-	 * @param TApplication $application the application instance
-	 * @throws TInvalidOperationException if this method is invoked twice or more.
+	 * Makes an application the current application and registers it in the pool
+	 * through {@see registerApplication()}. In singleton mode, the default, a
+	 * different instance throws unless `PRADO_TEST_RUN` is defined; with
+	 * {@see setMultipleApplications MultipleApplications} enabled the instance joins
+	 * the pool and becomes current. `null` clears the current application and keeps
+	 * the pool; {@see unregisterApplication()} removes an application from the pool.
+	 *
+	 * This method is for framework developers.
+	 *
+	 * @param ?TApplication $application the application instance, or null to clear.
+	 * @throws TInvalidOperationException when a different instance is set in singleton
+	 *   mode and `PRADO_TEST_RUN` is not defined.
+	 * @since 4.4.0 accepts null and multiple applications.
 	 */
-	public static function setApplication($application): void
+	public static function setApplication(?TApplication $application): void
 	{
-		if (self::$_application !== null && !defined('PRADO_TEST_RUN')) {
+		$priorApplication = self::getApplication();
+		if ($application !== null
+			&& $priorApplication !== null
+			&& $priorApplication !== $application
+			&& !self::getMultipleApplications()
+			&& !defined('PRADO_TEST_RUN')) {
 			throw new TInvalidOperationException('prado_application_singleton_required');
+		}
+		if ($application !== null) {
+			static::registerApplication($application);
 		}
 		self::$_application = $application;
 	}
 
 	/**
-	 * @return null|TApplication the application singleton, null if the singleton has not be created yet.
+	 * Returns the current application, or the pool application with a unique ID.
+	 * @param ?string $id a {@see TApplication::getUniqueID()} to look up in the pool,
+	 *   or null for the current application.
+	 * @return ?TApplication the application, or null when none is current or none
+	 *   holds the ID.
+	 * @since 4.4.0 accepts `$id`.
 	 */
-	public static function getApplication(): ?TApplication
+	public static function getApplication(?string $id = null): ?TApplication
 	{
+		if ($id !== null) {
+			return self::$_applications?->itemAt($id);
+		}
 		return self::$_application;
+	}
+
+	/**
+	 * Registers an application in the pool, keyed by {@see TApplication::getUniqueID()}
+	 * and held weakly, without making it current. {@see setApplication()} calls this;
+	 * a direct call pre-populates the pool. An application already in the pool under
+	 * its ID stays; another instance under the same ID replaces the entry.
+	 * @param TApplication $app the application to register.
+	 * @since 4.4.0
+	 */
+	public static function registerApplication(TApplication $app): void
+	{
+		if (self::$_applications === null) {
+			self::$_applications = new TWeakMap();
+		}
+		$id = $app->getUniqueID();
+		if (self::$_applications->itemAt($id) !== $app) {
+			self::$_applications->remove($id);
+			self::$_applications->add($id, $app);
+		}
+	}
+
+	/**
+	 * Removes an application from the pool. When it is the current application,
+	 * the current application becomes null.
+	 * @param TApplication $app the application to unregister.
+	 * @since 4.4.0
+	 */
+	public static function unregisterApplication(TApplication $app): void
+	{
+		if (self::$_applications !== null) {
+			self::$_applications->remove($app->getUniqueID());
+		}
+		if (self::$_application === $app) {
+			self::$_application = null;
+		}
+	}
+
+	/**
+	 * Returns the pool of registered applications, keyed by
+	 * {@see TApplication::getUniqueID()} and held weakly.
+	 * @return ?TWeakMap<string,TApplication> the pool, or null before any registration.
+	 * @since 4.4.0
+	 */
+	public static function getApplications(): ?TWeakMap
+	{
+		return self::$_applications;
+	}
+
+	/**
+	 * Returns whether an application is current, or whether the pool holds an
+	 * application with a unique ID.
+	 * @param ?string $id a {@see TApplication::getUniqueID()} to check in the pool,
+	 *   or null to check for a current application.
+	 * @return bool whether the application exists.
+	 * @since 4.4.0
+	 */
+	public static function hasApplication(?string $id = null): bool
+	{
+		if ($id === null) {
+			return self::$_application !== null;
+		}
+		return self::$_applications !== null && self::$_applications->contains($id);
+	}
+
+	/**
+	 * @return bool whether several applications may be registered at once.
+	 *   Defaults to `false`, the singleton mode.
+	 * @since 4.4.0
+	 */
+	public static function getMultipleApplications(): bool
+	{
+		return self::$_multipleApplications;
+	}
+
+	/**
+	 * Enables or disables multiple applications. When enabled, {@see setApplication()}
+	 * accepts a different instance and {@see getApplication()} returns the one set
+	 * last. {@see TApplication::registerApplication()} enables it for the
+	 * {@see TApplicationMultipleMode::Multiple} mode, and for the `Auto` mode when a
+	 * second application is constructed.
+	 * @param bool $value `true` to allow several applications, `false` for the singleton mode.
+	 * @throws TInvalidOperationException when disabling while the pool holds more than one application.
+	 * @since 4.4.0
+	 */
+	public static function setMultipleApplications(bool $value): void
+	{
+		if (!$value && self::$_multipleApplications) {
+			$count = self::$_applications?->getCount() ?? 0;
+			if ($count > 1) {
+				throw new TInvalidOperationException('prado_application_multiapp_disable_conflict', $count);
+			}
+		}
+		self::$_multipleApplications = $value;
 	}
 
 	/**
@@ -445,6 +575,9 @@ class Prado
 					!trait_exists($shortName, false)) {
 					class_alias($namespace, $shortName);
 				}
+			} elseif (array_key_exists($namespace, self::$classMap)) {
+				// A short name loaded as an alias resolves to its fully-qualified name.
+				return self::$classMap[$namespace];
 			}
 			return $namespace;
 		}

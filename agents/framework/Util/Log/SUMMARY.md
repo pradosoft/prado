@@ -8,6 +8,8 @@ Application logging: in-memory `TLogger`, the `TLogRouter` module, `TLogRoute` o
 
 - **`TLogRouter`** — Module that routes log entries to multiple `TLogRoute` targets; `addRoute()`, `removeRoute()`.
 
+- **`TLogRouterProxy`** — Transparent log router module delegating to the router named by `BackingLogRouterId`.
+
 - **`TLogRoute`** — Abstract base for log outputs; subclass and implement `processLogs()`; filters by `Levels` and `Categories`.
 
 - **`IOutputLogRoute`** — Marker interface for routes that write into the response output.

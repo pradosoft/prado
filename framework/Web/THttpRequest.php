@@ -239,7 +239,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	protected function setAppRequest()
 	{
-		$this->getApplication()?->setRequest($this);
+		$this->findApplication()?->setRequest($this);
 	}
 
 	/**

@@ -184,7 +184,7 @@ class TFileCache extends TSerializingCache implements ICacheSize
 		if (strpbrk($hash, '/\\') !== false) {
 			throw new TConfigurationException('filecache_hash_token_path_separator');
 		}
-		$this->getApplication()?->attachEventHandler('OnSaveState', [$this, 'doFlushCacheExpired']);
+		$this->findApplication()?->attachEventHandler('OnSaveState', [$this, 'doFlushCacheExpired']);
 		parent::init($config);
 	}
 

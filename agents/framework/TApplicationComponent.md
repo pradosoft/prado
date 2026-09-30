@@ -20,12 +20,21 @@ TApplicationComponent is the base class for all application-related components i
 ## Core Properties and Methods
 
 ### Application Integration
-- `getApplication()`: Returns the current application instance
-- `getService()`: Returns the current running service
+- `getApplication()`: Returns the application bound at construction (@since 4.4.0), or binds and returns the current application when unbound; throws `applicationcomponent_application_required` (`TInvalidOperationException`) when none exists or the bound one was collected
+- `findApplication()` / `hasApplication()` (@since 4.4.0): the null-returning and boolean forms for a module that can run without an application
+- `getService()`: Returns the current running service (null when none has started)
 - `getRequest()`: Returns the current user request module
 - `getResponse()`: Returns the response module
-- `getSession()`: Returns the user session module
+- `getSession()`: Returns the user session module (null when no session module is installed)
 - `getUser()`: Returns the current user instance
+
+### Application Binding (@since 4.4.0)
+- `$_application` is a `WeakReference` set by `__construct()` from `Prado::getApplication()`, excluded from serialization, and re-bound by `__wakeup()`; `resolveApplication()` binds only when unbound (`hasApplicationBinding()`), so a component never pins its application in memory and yields null once it is collected
+- `getApplicationDirect()` / `setApplicationDirect(?TApplication)`: the binding without resolution (protected); an application whose `__destruct()` has run (`TApplication::getIsDestructed()`) reads as null, because PHP before 8.2.17 and 8.3.4 still yields a weakly referenced object while its properties are being released (php/php-src GH-13612), and a module destructor using it would read freed memory
+- `getClassFxEvents()` returns a class already in its static cache before consulting the application, so `unlisten()` from a destructor does not touch an application that is being released
+- `isCurrentApplication()`: whether the bound application is `Prado::getApplication()`
+- `makeCurrentApplication()`: makes the bound application current through `Prado::setApplication()`
+- `TApplicationClockAwareTrait::getClock()` reads the bound application's clock on a `TApplicationComponent`
 
 ### Asset Management
 - `publishAsset()`: Publishes a private asset and returns its URL

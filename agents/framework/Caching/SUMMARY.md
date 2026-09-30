@@ -20,6 +20,8 @@ Cache backends and dependency system providing unified `ICache` interface over m
 
 - **`TEtcdCache`** — etcd distributed cache using HTTP v2 API via `THttpClient`.
 
+- **`TCacheProxy`** — Transparent cache module delegating every `ICache` operation to the cache named by `BackingCacheId`.
+
 - **`TFileCacheDependency`** — Invalidates when a file's `mtime` changes.
 
 - **`TDirectoryCacheDependency`** — Invalidates when any file in a directory changes; properties: `RecursiveCheck`, `RecursiveLevel`.

@@ -308,6 +308,46 @@ class TApplicationTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame(sha1($originalPath . '/variant'), $this->_app->getUniqueID());
 	}
 
+	public function testSetUniqueID_rekeysThePoolEntry(): void
+	{
+		Prado::registerApplication($this->_app);
+		$old = $this->_app->getUniqueID();
+		try {
+			PradoUnit::invoke($this->_app, 'setUniqueID', 'custom-unique-id');
+			$this->assertSame($this->_app, Prado::getApplication('custom-unique-id'));
+			$this->assertNull(Prado::getApplication($old));
+		} finally {
+			PradoUnit::invoke($this->_app, 'setUniqueID', $old);
+		}
+		$this->assertSame($this->_app, Prado::getApplication($old));
+	}
+
+	public function testMakeCurrentApplication_alignsPradoWithThisApplication(): void
+	{
+		$other = new TTestApplication();
+		try {
+			$this->assertSame($other, Prado::getApplication());
+			$this->assertFalse($this->_app->isCurrentApplication());
+			$this->_app->makeCurrentApplication();
+			$this->assertTrue($this->_app->isCurrentApplication());
+			$this->assertSame($this->_app, Prado::getApplication());
+		} finally {
+			$other->restoreApplication();
+		}
+	}
+
+	public function testGetIsDestructed_isSetByTheDestructor(): void
+	{
+		$other = new TTestApplication();
+		try {
+			$this->assertFalse($other->getIsDestructed());
+			$other->__destruct();
+			$this->assertTrue($other->getIsDestructed());
+		} finally {
+			$other->restoreApplication();
+		}
+	}
+
 	public function testSetRuntimePath_updatesCacheFileWhenOneIsSet(): void
 	{
 		// Prime _cacheFile to a non-null value to activate the rebuild branch.
