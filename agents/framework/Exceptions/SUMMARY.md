@@ -2,6 +2,8 @@
 
 Exception hierarchy and error display for the Prado framework with multilingual error messages.
 
+The English message catalog is the master. Removed error codes must also be removed from language variants.
+
 ## Classes
 
 - **`TException`** — Base exception class supporting old style (`throw new TException('error_code', $param1)`) and new style (`throw new TException($intCode, 'error_code', $param1)`); message parameters use `{0}`, `{1}` placeholders.

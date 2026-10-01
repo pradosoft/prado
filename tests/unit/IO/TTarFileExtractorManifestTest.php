@@ -1666,6 +1666,36 @@ class TTarFileExtractorManifestTest extends TestCase
 		$this->assertSame($map1, $map2);
 	}
 
+	public function testManifestScanClosesArchiveWhenErrorIsThrown(): void
+	{
+		$tarFile = $this->testDir . '/error.tar';
+		TarTestHelper::writeTar($tarFile, [TarTestHelper::entry('file.txt', 'content')]);
+
+		$extractor = new class ($tarFile) extends TTarFileExtractor {
+			protected function _extractList(
+				?string $p_destPath,
+				array &$p_manifest,
+				?array $p_file_list,
+				?string $p_remove_path_prefix,
+				mixed $conflictMode = null,
+				bool $applyPermissions = true,
+				?callable $preWriteHook = null
+			): bool {
+				throw new \Error('Manifest scan failed.');
+			}
+		};
+
+		try {
+			$extractor->getManifest();
+			self::fail('Expected the manifest scan Error.');
+		} catch (\Error $error) {
+			self::assertSame('Manifest scan failed.', $error->getMessage());
+		}
+
+		self::assertNull(PradoUnit::getProp($extractor, '_file'));
+		self::assertSame(TTarFileExtractor::COMPRESSION_NONE, PradoUnit::getProp($extractor, '_workingCompression'));
+	}
+
 	public function testContiguousFileTypeExtractedAsRegularFile()
 	{
 		// TYPE_CONTIGUOUS ('7') should be treated like a regular file.

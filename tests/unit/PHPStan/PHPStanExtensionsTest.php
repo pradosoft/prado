@@ -104,15 +104,7 @@ class PHPStanExtensionsTest extends TestCase
 	 */
 	private function countFileErrors(array $result, string $fixtureFile): int
 	{
-		$fixturePath = realpath(__DIR__ . '/Fixtures/' . $fixtureFile) ?: (__DIR__ . '/Fixtures/' . $fixtureFile);
-		foreach ($result['files'] ?? [] as $path => $data) {
-			// PHPStan may use relative or absolute paths; match by realpath or basename.
-			$realPath = realpath($path) ?: $path;
-			if ($realPath === $fixturePath || basename($path) === $fixtureFile) {
-				return count($this->extensionRelevantMessages($data['messages'] ?? []));
-			}
-		}
-		return 0;
+		return count($this->extensionRelevantMessages($this->fileMessages($result, $fixtureFile)));
 	}
 
 	/**
@@ -126,25 +118,17 @@ class PHPStanExtensionsTest extends TestCase
 	 */
 	private function describeErrors(array $result, string $fixtureFile): string
 	{
-		$fixturePath = realpath(__DIR__ . '/Fixtures/' . $fixtureFile) ?: (__DIR__ . '/Fixtures/' . $fixtureFile);
-		foreach ($result['files'] ?? [] as $path => $data) {
-			$realPath = realpath($path) ?: $path;
-			if ($realPath !== $fixturePath && basename($path) !== $fixtureFile) {
-				continue;
-			}
-			$messages = $this->extensionRelevantMessages($data['messages'] ?? []);
-			if (empty($messages)) {
-				return '';
-			}
-			$lines = ["\nPHPStan errors in {$fixtureFile}:"];
-			foreach ($messages as $msg) {
-				$line = $msg['line'] ?? '?';
-				$text = $msg['message'] ?? '(no message)';
-				$lines[] = "  line {$line}: {$text}";
-			}
-			return implode("\n", $lines);
+		$messages = $this->extensionRelevantMessages($this->fileMessages($result, $fixtureFile));
+		if (empty($messages)) {
+			return '';
 		}
-		return '';
+		$lines = ["\nPHPStan errors in {$fixtureFile}:"];
+		foreach ($messages as $msg) {
+			$line = $msg['line'] ?? '?';
+			$text = $msg['message'] ?? '(no message)';
+			$lines[] = "  line {$line}: {$text}";
+		}
+		return implode("\n", $lines);
 	}
 
 	/**
@@ -175,11 +159,11 @@ class PHPStanExtensionsTest extends TestCase
 	}
 
 	/**
-	 * Collect the PHPStan error messages reported for a fixture file.
+	 * Returns every PHPStan message reported for a fixture file, unfiltered.
 	 *
 	 * @param array<string,mixed> $result  Return value of runPhpStan()
 	 * @param string $fixtureFile          Basename of the fixture file
-	 * @return string[] The reported messages, in the order PHPStan reported them.
+	 * @return array<int,array<string,mixed>> PHPStan messages for the fixture.
 	 * @since 4.4.0
 	 */
 	private function fileMessages(array $result, string $fixtureFile): array
@@ -187,13 +171,9 @@ class PHPStanExtensionsTest extends TestCase
 		$fixturePath = realpath(__DIR__ . '/Fixtures/' . $fixtureFile) ?: (__DIR__ . '/Fixtures/' . $fixtureFile);
 		foreach ($result['files'] ?? [] as $path => $data) {
 			$realPath = realpath($path) ?: $path;
-			if ($realPath !== $fixturePath && basename($path) !== $fixtureFile) {
-				continue;
+			if ($realPath === $fixturePath || basename($path) === $fixtureFile) {
+				return $data['messages'] ?? [];
 			}
-			return array_map(
-				static fn($message) => (string) ($message['message'] ?? ''),
-				$data['messages'] ?? []
-			);
 		}
 		return [];
 	}
@@ -278,6 +258,37 @@ class PHPStanExtensionsTest extends TestCase
 			'Expected zero PHPStan errors for hasMethod()-guarded method calls with the extension.'
 				. $this->describeErrors($result, 'HasMethodFixture.php')
 		);
+	}
+
+	/**
+	 * Without the extensions PHPStan reports each guarded `fx` call as undefined.
+	 *
+	 * @group phpstan
+	 */
+	public function testHasMethodExtension_FxGuardFailsWithoutExtension(): void
+	{
+		$result = $this->runPhpStan('HasMethodFxFixture.php', $this->noExtensionsConfig());
+		$this->assertNotEmpty(
+			$this->fileMessages($result, 'HasMethodFxFixture.php'),
+			'Expected PHPStan to report the fx calls without the extensions.'
+		);
+	}
+
+	/**
+	 * A hasMethod() guard on an `fx` name is a real runtime check, so PHPStan must
+	 * not report it as always true. The fixture-diagnostic filter does not apply;
+	 * any message fails the test.
+	 *
+	 * @group phpstan
+	 */
+	public function testHasMethodExtension_FxGuardIsNotAlwaysTrue(): void
+	{
+		$result = $this->runPhpStan('HasMethodFxFixture.php');
+		$messages = array_map(
+			static fn(array $message): string => 'line ' . ($message['line'] ?? '?') . ': ' . ($message['message'] ?? ''),
+			$this->fileMessages($result, 'HasMethodFxFixture.php')
+		);
+		$this->assertSame([], $messages, 'Expected no PHPStan messages for hasMethod() guards on fx names.');
 	}
 
 	// -------------------------------------------------------------------------
@@ -459,7 +470,9 @@ class PHPStanExtensionsTest extends TestCase
 	public function testIsaIntersection_NarrowsToTheAssertedClass(): void
 	{
 		$result = $this->runPhpStan('IsaIntersectionNegativeFixture.php');
-		$messages = $this->fileMessages($result, 'IsaIntersectionNegativeFixture.php');
+		$messages = $this->extensionRelevantMessages(
+			$this->fileMessages($result, 'IsaIntersectionNegativeFixture.php')
+		);
 		$this->assertCount(
 			1,
 			$messages,
@@ -468,7 +481,7 @@ class PHPStanExtensionsTest extends TestCase
 		);
 		$this->assertStringContainsString(
 			'IsaNegativeFixtureComponent::thisMethodDoesNotExist()',
-			$messages[0],
+			(string) ($messages[0]['message'] ?? ''),
 			'Expected the undefined-method error to name the class the isa() guard narrowed to.'
 		);
 	}

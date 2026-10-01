@@ -144,7 +144,7 @@ $skipped = $extractor->getSkippedFiles();  // entries not extracted
 
 ## Gotchas
 
-- Extraction cleanup catches every `Throwable`, so configured `Error` subclasses and runtime `TypeError` instances trigger the same staging cleanup and direct-extraction rollback as exceptions.
+- Extraction cleanup handles every `Throwable`, so configured `Error` subclasses and runtime `TypeError` instances trigger the same staging cleanup and direct-extraction rollback as exceptions. Manifest scans close the active archive handle in a `finally` block.
 - `_error()` has the native `never` return type. Code after a call is unreachable.
 
 - **LZMA requires CLI** — no PHP extension exists; `xzdec` or `xz` must be in `$PATH`.

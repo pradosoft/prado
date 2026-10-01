@@ -12,7 +12,7 @@ Input/output utilities: text writer abstractions, archive extraction, and stream
 
 - **`TStdOutWriter`** — Writes to `STDOUT` stream (useful in CLI context).
 
-- **`TTarFileExtractor`** — Extracts TAR archives (local or remote `http://`/`ftp://` URLs); `extract($targetPath)` supports atomic staging or direct rollback, and cleanup handles every `Throwable`.
+- **`TTarFileExtractor`** — Extracts TAR archives (local or remote `http://`/`ftp://` URLs); `extract($targetPath)` supports atomic staging or direct rollback. Extraction and manifest-scan cleanup handle every `Throwable`.
 
 - **`TStreamNotificationCallback`** — Stream context notification handler for monitoring file downloads; context callback lookup returns `null` when the notification key is absent.
 

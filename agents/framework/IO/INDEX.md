@@ -23,7 +23,7 @@ All writers implement [ITextWriter](./ITextWriter.md).
 
 ### Archive
 
-- **[TTarFileExtractor](./TTarFileExtractor.md)** — Extracts TAR archives (local paths or remote `http://`/`ftp://` URLs). Remote archives are downloaded to a temp file first and cleaned up in `__destruct()`. Constructor takes the tar filename; call `extract($targetPath)` to unpack. `extractModify()` can rewrite extracted paths.
+- **[TTarFileExtractor](./TTarFileExtractor.md)** — Extracts TAR archives (local paths or remote `http://`/`ftp://` URLs). Remote archives are downloaded to a temp file first and cleaned up in `__destruct()`. Constructor takes the tar filename; call `extract($targetPath)` to unpack. `extractModify()` can rewrite extracted paths. Manifest scans close their archive handle for every `Throwable`.
 
 ### Stream Notifications
 

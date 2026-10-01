@@ -2,6 +2,8 @@
 
 Top-level entry points for SqlMap (iBATIS-style) SQL mapping framework; separates SQL from PHP code using external XML mapping files.
 
+Result-map object construction wraps type-handler failures with result-map context.
+
 ## Classes
 
 - **`TSqlMapManager`** — Central registry and runtime engine; obtain via `TSqlMapConfig` or construct directly; methods: `getDataMapper()`, `getDbConnection()`, `getMappedStatement($id)`, `getParameterMap($id)`, `getResultMap($id)`, `getCacheModel($id)`.

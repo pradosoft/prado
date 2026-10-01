@@ -52,7 +52,7 @@ Adds a `TResultProperty` to the result mapping.
 
 ### `createInstanceOfResult($registry)`
 
-Creates a new instance of the result class.
+Creates a new instance of the result class. It wraps `TSqlMapException` failures from registered type handlers and registry construction with result-map context.
 
 ### `resolveSubMap($registry, $row)`
 

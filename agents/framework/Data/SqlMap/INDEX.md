@@ -44,4 +44,5 @@ Top-level entry points for the SqlMap (iBATIS-style) SQL mapping framework. Sepa
 - **Always use `TSqlMapGateway`** for query execution — it provides transaction support, cache integration, and a clean API.
 - **`TSqlMapConfig`** auto-creates the `TSqlMapManager` and stores it in `TApplication` parameters under the module ID; retrieve with `Prado::getApplication()->getModule('sqlmap')->getClient()`.
 - Statement IDs are global within a `TSqlMapManager` instance; use dot-notation prefixes (`namespace.id`) for large projects.
+- `TResultMap` wraps type-handler construction failures with the result class, handler class, and map ID.
 - Transactions wrap multiple gateway calls; always `commitTransaction()` or `rollbackTransaction()` in a `try`/`finally` block.

@@ -1326,17 +1326,10 @@ class TTarFileExtractor
 			}
 
 			$extractionManifest = [];
-			$v_exception = null;
 			try {
 				$this->_extractList(null, $extractionManifest, null, null);
-			} catch (\Exception $e) {
-				$v_exception = $e;
-			}
-
-			$this->_close();
-
-			if ($v_exception !== null) {
-				throw $v_exception;
+			} finally {
+				$this->_close();
 			}
 
 			$this->_sortManifest($extractionManifest);

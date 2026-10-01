@@ -44,7 +44,7 @@ XML configuration parsing and in-memory object model for SqlMap mapped statement
 
 - **`TParameterProperty`** — One entry in a parameter map: property name, column name, type handler, jdbc type, null value.
 
-- **`TResultMap`** — Named result map: defines how a result row is mapped back to a PHP object or array. Supports inheritance (`extends`), discriminators, and nested result maps.
+- **`TResultMap`** — Named result map: defines how a result row is mapped back to a PHP object or array. Supports inheritance (`extends`), discriminators, and nested result maps. Instance-creation failures from type handlers are wrapped with result-map context.
 
 - **`TResultProperty`** — One column-to-property mapping in a result map: column name/index, property name, type handler, lazy-load setting, nested select statement.
 
