@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+CHG: The minimum PHP version is 8.2; PHP 8.1 leaves the tested versions. UPGRADE.md notes the requirement. (belisoful)
 BUG: `THttpResponse::httpRedirect()` threw a deprecation error when `$_SERVER['SERVER_SOFTWARE']` is unset, as in CLI runs. (belisoful)
 ENH: `THttpResponse` dynamic events for behaviors: `dyFlushContent`, `dyWriteFile` (a behavior can send the file itself), `dyRedirect`, and `dySetCookie`. (belisoful)
 BUG: A click in a `TActiveTableCell` with an `OnCellSelected` handler also sent its `TActiveTableRow`'s callback, so `OnRowSelected` ran twice; the row now leaves the click to the cell. (belisoful)
