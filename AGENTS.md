@@ -212,7 +212,7 @@ All instances self-register in `Prado.Registry[controlId]` on construction and a
 - phpunit DOES NOT have the cli option "--verbose"
 
 ## Development Environment
-- PHP 8.1 or higher required
+- PHP 8.2 or higher required
 - PHP extensions: ctype, dom, intl, json, pcre, spl (required)
 - Optional extensions for additional features: apcu, mbstring, openssl, pdo, soap, xsl, zlib
 - Composer for dependency management
