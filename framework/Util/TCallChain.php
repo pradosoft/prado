@@ -122,7 +122,7 @@ class TCallChain extends TList implements IDynamicMethods
 				}
 				$handler[1][] = $this;
 				$result = call_user_func_array($handler[0], $handler[1]);
-			} while (!$this->_stopped && $this->_iterator->valid());
+			} while (!$this->getStopped() && $this->_iterator->valid());
 		} else {
 			$result = $args[0] ?? null;
 		}
@@ -133,6 +133,7 @@ class TCallChain extends TList implements IDynamicMethods
 	/**
 	 * @return bool whether the chain has been stopped. Defaults to false.
 	 * @since 4.4.0
+	 * @phpstan-impure
 	 */
 	public function getStopped(): bool
 	{
@@ -189,6 +190,5 @@ class TCallChain extends TList implements IDynamicMethods
 		} else {
 			throw new TApplicationException('callchain_bad_dynamic_event', $method, $this->_method);
 		}
-		return null;
 	}
 }

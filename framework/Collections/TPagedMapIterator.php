@@ -23,7 +23,6 @@ namespace Prado\Collections;
  */
 class TPagedMapIterator implements \Iterator
 {
-	private $_map;
 	private $_startIndex;
 	private $_count;
 	private $_index;
@@ -37,7 +36,6 @@ class TPagedMapIterator implements \Iterator
 	 */
 	public function __construct(TMap $map, $startIndex, $count)
 	{
-		$this->_map = $map;
 		$this->_index = 0;
 		$this->_startIndex = $startIndex;
 		if ($startIndex + $count > $map->getCount()) {

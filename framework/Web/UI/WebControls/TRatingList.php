@@ -30,11 +30,6 @@ class TRatingList extends TRadioButtonList
 	public const SCRIPT_PATH = 'ratings';
 
 	/**
-	 * @var array list of published rating images.
-	 */
-	private $_ratingImages = [];
-
-	/**
 	 * Sets the default repeat direction to horizontal.
 	 */
 	public function __construct()
@@ -290,7 +285,7 @@ class TRatingList extends TRadioButtonList
 	{
 		parent::onPreRender($param);
 		$this->publishStyle($this->getRatingStyle());
-		$this->_ratingImages = $this->publishImages($this->getRatingStyle());
+		$this->publishImages($this->getRatingStyle());
 		$this->registerClientScript();
 	}
 

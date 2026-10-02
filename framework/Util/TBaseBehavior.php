@@ -63,7 +63,7 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 	 */
 	private $_retainDisabledHandlers = false;
 
-	/** @var null|array|false The cached events of the behavior, for Closures. */
+	/** @var array|false The cached events of the behavior, for Closures. */
 	private $_eventsLog = false;
 
 	/**

@@ -189,27 +189,16 @@ class TDataSize extends TLabel
 		}
 		switch ($magnitude) {
 			case 0: return CultureInfoUnits::TYPE_DIGITAL_BYTE;
-				break;
 			case 1: return CultureInfoUnits::TYPE_DIGITAL_KILOBYTE;
-				break;
 			case 2: return CultureInfoUnits::TYPE_DIGITAL_MEGABYTE;
-				break;
 			case 3: return CultureInfoUnits::TYPE_DIGITAL_GIGABYTE;
-				break;
 			case 4: return CultureInfoUnits::TYPE_DIGITAL_TERABYTE;
-				break;
 			case 5: return CultureInfoUnits::TYPE_DIGITAL_PETABYTE;
-				break;
 			case 6: return CultureInfoUnits::TYPE_DIGITAL_EXABYTE;
-				break;
 			case 7: return CultureInfoUnits::TYPE_DIGITAL_ZETTABYTE;
-				break;
 			case 8: return CultureInfoUnits::TYPE_DIGITAL_YOTTABYTE;
-				break;
 			case 9: return CultureInfoUnits::TYPE_DIGITAL_RONNABYTE;
-				break;
 			case 10: return CultureInfoUnits::TYPE_DIGITAL_QUETTABYTE;
-				break;
 		}
 		return null;
 	}

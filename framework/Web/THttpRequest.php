@@ -13,7 +13,6 @@ namespace Prado\Web;
 use Prado\Caching\TFileCacheDependency;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
-use Prado\Exceptions\TPhpErrorException;
 use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\TApplicationMode;
@@ -142,7 +141,6 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	private $_cookieOnly;
 	private $_urlFormat = THttpRequestUrlFormat::Get;
 	private $_resolveMethod = THttpRequestResolveMethod::ParameterOrder;
-	private $_services;
 	private $_requestResolved = false;
 	private $_enableCookieValidation = false;
 	private $_cgiFix = 0;
@@ -655,16 +653,16 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @return array user browser capabilities
+	 * @throws TConfigurationException if the browscap directive is not configured.
+	 * @return false|object user browser capabilities
 	 * @see get_browser
 	 */
 	public function getBrowser()
 	{
-		try {
-			return get_browser();
-		} catch (TPhpErrorException $e) {
+		if ((string) ini_get('browscap') === '') {
 			throw new TConfigurationException('httprequest_browscap_required');
 		}
+		return get_browser();
 	}
 
 	/**
@@ -818,6 +816,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 			$this->_cookieOnly = (int) ini_get('session.use_cookies') && (int) ini_get('session.use_only_cookies');
 		}
 		$url = $this->getUrlManagerModule()->constructUrl($serviceID, $serviceParam, $getItems, $encodeAmpersand, $encodeGetItems);
+		// @phpstan-ignore notEqual.alwaysTrue (The runtime SID value can be an empty string.)
 		if (PHP_VERSION_ID < 80400 && defined('SID') && SID != '' && !$this->_cookieOnly) {
 			return $url . (strpos($url, '?') === false ? '?' : ($encodeAmpersand ? '&amp;' : '&')) . SID;
 		} else {

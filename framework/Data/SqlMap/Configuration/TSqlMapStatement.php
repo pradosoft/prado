@@ -41,7 +41,6 @@ class TSqlMapStatement extends \Prado\TComponent
 	private $_cacheModelName;
 	private $_SQL;
 	private $_listClass;
-	private $_typeHandler;
 	private $_extendStatement;
 	private $_cache;
 	private $_ID;
@@ -331,9 +330,6 @@ class TSqlMapStatement extends \Prado\TComponent
 		}
 		if (!$this->_listClass) {
 			$exprops[] = "\0$cn\0_listClass";
-		}
-		if (!$this->_typeHandler) {
-			$exprops[] = "\0$cn\0_typeHandler";
 		}
 		if (!$this->_extendStatement) {
 			$exprops[] = "\0$cn\0_extendStatement";

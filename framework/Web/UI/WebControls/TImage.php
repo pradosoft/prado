@@ -53,6 +53,7 @@ class TImage extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	 * Renders the body content of the image.
 	 * Nothing to be rendered within image tags.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer for rendering
+	 * @phpstan-impure
 	 */
 	public function renderContents($writer)
 	{

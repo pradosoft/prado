@@ -91,9 +91,9 @@ class TBehaviorsModule extends \Prado\TModule
 	private $_behaviorBehaviors = [];
 
 	/**
-	 * @var array[] additional behaviors in a configuration format: array[], serialized php object, json object, string of xml
+	 * @var array|TXmlDocument additional behaviors in a configuration format: array[], serialized php object, json object, string of xml
 	 */
-	private $_additionalBehaviors;
+	private $_additionalBehaviors = [];
 
 	/**
 	 * Constructor.
@@ -254,7 +254,7 @@ class TBehaviorsModule extends \Prado\TModule
 	 */
 	public function getAdditionalBehaviors()
 	{
-		return $this->_additionalBehaviors ?? [];
+		return $this->_additionalBehaviors;
 	}
 
 	/**

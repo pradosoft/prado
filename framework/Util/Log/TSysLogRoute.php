@@ -11,7 +11,6 @@
 namespace Prado\Util\Log;
 
 use Prado\Exceptions\TConfigurationException;
-use Prado\Exceptions\TLogException;
 use Prado\Prado;
 use Prado\TPropertyValue;
 
@@ -77,18 +76,16 @@ class TSysLogRoute extends TLogRoute
 	private int $_facility = LOG_USER;
 
 	/**
+	 * Writes the logs to the system log.
 	 * @param array $logs list of log messages
 	 * @param bool $final is the final flush
 	 * @param array $meta the meta data for the logs.
-	 * @throws TLogException When failing to write to syslog.
 	 */
 	protected function processLogs(array $logs, bool $final, array $meta)
 	{
 		openlog($this->getSysLogPrefix(), $this->getSysLogFlags(), $this->getFacility());
 		foreach ($logs as $log) {
-			if (syslog($this->translateLogLevel($log[TLogger::LOG_LEVEL]), $this->formatLogMessage($log)) === false) {
-				throw new TLogException('syslogroute_log_failed');
-			}
+			syslog($this->translateLogLevel($log[TLogger::LOG_LEVEL]), $this->formatLogMessage($log));
 		}
 		closelog();
 	}

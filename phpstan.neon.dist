@@ -2,9 +2,11 @@ parameters:
     phpVersion:
         min: 80200
         max: 80500
-    level: 3
+    level: 4
+    treatPhpDocTypesAsCertain: false
     paths:
         - framework
+        - tests/phpstan
 services:
     -
         class: Prado\PHPStan\DynamicMethodsClassReflectionExtension

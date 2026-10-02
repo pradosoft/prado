@@ -752,6 +752,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * @param TResultProperty $property the result property to fill.
 	 * @param array $row a result set row retrieved from the database
 	 * @param object $resultObject the result object
+	 * @phpstan-impure
 	 */
 	protected function setObjectProperty($resultMap, $property, $row, &$resultObject)
 	{
@@ -870,7 +871,9 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		foreach ($resultMap->getColumns() as $property) {
 			$this->_IsRowDataFound = false;
 			$this->setObjectProperty($resultMap, $property, $row, $resultObject);
-			$dataFound = $dataFound || $this->_IsRowDataFound;
+			if ($this->_IsRowDataFound) {
+				$dataFound = true;
+			}
 		}
 		$this->_IsRowDataFound = $dataFound;
 		return $dataFound;

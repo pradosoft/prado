@@ -40,7 +40,6 @@ class TSqlMapCacheModel extends \Prado\TComponent
 	private $_requests = 0;
 	private $_id;
 	private $_implementation = TSqlMapCacheTypes::Basic;
-	private $_properties = [];
 	private $_flushInterval = 0;
 
 	private static $_cacheTypes = [];

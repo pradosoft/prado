@@ -309,7 +309,6 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 						break;
 					default:
 						throw new TConfigurationException('theme_tag_unexpected', $propName, $value[TTemplate::PROP_TYPE]);
-						break;
 				}
 			}
 			return true;

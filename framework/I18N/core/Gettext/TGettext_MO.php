@@ -102,6 +102,7 @@ class TGettext_MO extends TGettext
 	 * @access  private
 	 * @param   bool $bigendian  $bigendian
 	 * @return  int
+	 * @phpstan-impure
 	 */
 	public function _readInt($bigendian = false)
 	{

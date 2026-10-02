@@ -21,6 +21,7 @@ use PHPStan\Analyser\SpecifiedTypes;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\Accessory\HasMethodType;
 use PHPStan\Type\IntersectionType;
+use PHPStan\Type\ObjectWithoutClassType;
 use PHPStan\Type\StaticMethodTypeSpecifyingExtension;
 use Prado\Prado;
 
@@ -113,7 +114,7 @@ final class PradoMethodVisibleStaticMethodTypeSpecifyingExtension implements Sta
 		// method is visible and callable when the condition is true.
 		return $this->typeSpecifier->create(
 			$objectArg,
-			new IntersectionType([$objectType, new HasMethodType($methodName)]),
+			new IntersectionType([new ObjectWithoutClassType(), new HasMethodType($methodName)]),
 			$context,
 			$scope
 		);

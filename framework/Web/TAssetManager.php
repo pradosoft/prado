@@ -1062,7 +1062,7 @@ class TAssetManager extends \Prado\TModule
 		$pathToHash = is_file($path) ? dirname($path) : $path;
 		$hashComponents = $pathToHash . Prado::getVersion();
 		if ($this->getLinkAssets()) {
-			$hashComponents .= '|' . ($this->getLinkAssets() ? '1' : '0');
+			$hashComponents .= '|1';
 		}
 		return sprintf('%x', crc32($hashComponents));
 	}
@@ -1122,7 +1122,7 @@ class TAssetManager extends \Prado\TModule
 				try {
 					$this->symlink($this->relativeSymlinkTarget($src, $dstFile), $dstFile);
 				} catch (\Throwable $e) {
-					if (!is_file($dstFile) && !is_link($dstFile)) {
+					if (@lstat($dstFile) === false) {
 						throw $e;
 					}
 				}
@@ -1397,7 +1397,7 @@ class TAssetManager extends \Prado\TModule
 					try {
 						$this->symlink($this->relativeSymlinkTarget($srcPath, $dstPath), $dstPath);
 					} catch (\Throwable $e) {
-						if (!is_file($dstPath) && !is_link($dstPath)) {
+						if (@lstat($dstPath) === false) {
 							throw $e;
 						}
 					}

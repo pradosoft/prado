@@ -17,7 +17,6 @@ component_not_a_behavior				= Component '{0}' is being added as behavior is not 
 object_not_a_component					= Object '{0}' is being added as behavior is not a TComponent.
 component_no_tcomponent_class_behaviors	= TComponent cannot have class behaviors attached due to recursion.
 component_tbehavior_cannot_attach_as_class_behavior	= IBehaviors cannot attach to multiple owners.  Pass a string or an array of IBehavior class and properties to instance on each owner.
-component_no_class_provided_nor_late_binding = Adding or Removing Class Behaviors must have PHP feature Late Static Binding or a class provided as a parameter
 
 propertyvalue_enumvalue_invalid			= Value '{0}' is a not valid enumeration value ({1}).
 propertyvalue_invalid_hex_color			= Value '{0}' is a not valid hex color value.  eg. "#112233"
@@ -98,6 +97,7 @@ securitymanager_mcryptextension_initfailed = TSecurityManager failed to initiali
 
 uri_format_invalid						= '{0}' is not a valid URI.
 
+httprequest_browscap_required			= THttpRequest requires the browscap directive to be configured in php.ini.
 httprequest_separator_invalid			= THttpRequest.UrlParamSeparator can only contain a single character.
 httprequest_urlmanager_inexist			= THttpRequest.UrlManager '{0}' does not point to an existing module.
 httprequest_urlmanager_invalid			= THttpRequest.UrlManager '{0}' must point to a module extending from TUrlManager.
@@ -421,7 +421,6 @@ filelogroute_maxlogfiles_invalid		= TFileLogRoute.MaxLogFiles must be greater th
 emaillogroute_sentfrom_required			= TEmailLogRoute.SentFrom cannot be empty.
 emaillogroute_mail_failed				= TEmailLogRoute failed to log to send to '{0}'.
 
-syslogroute_log_failed					= TSysLogRout failed to write to SysLog().
 syslogroute_bad_flags					= TSysLogRoute.SysLogFlags are not valid, '{0}'.
 syslogroute_bad_facility				= TSysLogRoute.Facility is not valid, '{0}'.
 
@@ -695,8 +694,6 @@ cachepagestatepersister_timeout_invalid = TCachePageStatePersister.Timeout must 
 cachepagestatepersister_pagestate_corrupted = Page state is corrupted.
 
 conditional_condition_invalid			= TConditional.Condition '{0}' is not a valid PHP expression: {1}
-
-db_cachetable_inexistent				= TDbCache cannot find DB table '{0}' to store cached data.
 
 dbparametermodule_table_nonexistent		= TDbParameterModule cannot find DB table '{0}' to store parameter data.
 dbparametermodule_get_no_blank_key		= TDbParameterModule cannot get an empty key.

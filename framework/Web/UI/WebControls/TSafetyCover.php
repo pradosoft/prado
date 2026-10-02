@@ -153,17 +153,6 @@ use Prado\Web\UI\TControl;
  */
 class TSafetyCover extends TPanel
 {
-	/**
-	 * @var string[] the CSS classes the control manages on its root element; used
-	 *   to keep them out of the author {@see getCssClass CssClass} when combining
-	 */
-	private const FRAMEWORK_CLASSES = [
-		'safety-cover',
-		'safety-cover-slide', 'safety-cover-collapse', 'safety-cover-none',
-		'safety-cover-up', 'safety-cover-down', 'safety-cover-left', 'safety-cover-right',
-		'safety-cover-fade',
-	];
-
 	/** @var ?ITemplate template for the overlay content */
 	private ?ITemplate $_overlayTemplate = null;
 

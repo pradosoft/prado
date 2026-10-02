@@ -73,5 +73,6 @@ class TRequestConnectionUpgrade extends \Prado\Util\TBehavior
 			$param->setParameter($urlParams); // Forward results
 			return $urlParams;	 // return for use
 		}
+		return null;
 	}
 }

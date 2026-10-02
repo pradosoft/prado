@@ -306,7 +306,7 @@ class TProcess extends TResource implements \ArrayAccess, \IteratorAggregate, \C
 			return false;
 		}
 		$status = @proc_get_status($resource);
-		if (is_array($status) && !$status['running']) {
+		if (!$status['running']) {
 			$this->observeTermination($status);
 		}
 		$ret = proc_close($resource);

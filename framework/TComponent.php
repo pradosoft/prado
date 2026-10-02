@@ -2106,10 +2106,6 @@ class TComponent
 		if (!$class) {
 			$class = get_called_class();
 		}
-		if (!$class) {
-			throw new TInvalidOperationException('component_no_class_provided_nor_late_binding');
-		}
-
 		$class = strtolower($class);
 		if ($class === strtolower(TComponent::class)) {
 			throw new TInvalidOperationException('component_no_tcomponent_class_behaviors');
@@ -2154,10 +2150,6 @@ class TComponent
 		if (!$class) {
 			$class = get_called_class();
 		}
-		if (!$class) {
-			throw new TInvalidOperationException('component_no_class_provided_nor_late_binding');
-		}
-
 		$class = strtolower($class);
 		$name = strtolower($name);
 		if (empty(self::$_um[$class]) || !isset(self::$_um[$class][$name])) {

@@ -885,23 +885,18 @@ class TUrlMappingPattern extends \Prado\TComponent
 					return $url;
 				}
 				return $request -> getBaseUrl(true) . $url;
-				break;
 			case TUrlMappingPatternSecureConnection::DisableIfSecure:
 				if (!$isSecureConnection) {
 					return $url;
 				}
 				return $request -> getBaseUrl(false) . $url;
-				break;
 			case TUrlMappingPatternSecureConnection::Enable:
 				return $request -> getBaseUrl(true) . $url;
-				break;
 			case TUrlMappingPatternSecureConnection::Disable:
 				return $request -> getBaseUrl(false) . $url;
-				break;
 			case TUrlMappingPatternSecureConnection::Automatic:
 			default:
 				return $url;
-				break;
 		}
 	}
 }

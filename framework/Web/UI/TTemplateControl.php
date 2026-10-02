@@ -267,12 +267,12 @@ class TTemplateControl extends TCompositeControl
 			try {
 				if ($key != "RELATIONS") {
 					$control = $this->{$key};
-					if ($control instanceof TTextBox) {
+					if ($control instanceof TDatePicker) {
+						$control->setDate($arObj->{$key});
+					} elseif ($control instanceof TTextBox) {
 						$control->setText($arObj->{$key});
 					} elseif ($control instanceof TCheckBox) {
 						$control->setChecked((bool) $arObj->{$key});
-					} elseif ($control instanceof TDatePicker) {
-						$control->setDate($arObj->{$key});
 					}
 				} else {
 					foreach ($objAttrs["RELATIONS"] as $relKey => $relValues) {
@@ -315,12 +315,12 @@ class TTemplateControl extends TCompositeControl
 					break;
 				}
 				$control = $this->{$key};
-				if ($control instanceof TTextBox) {
+				if ($control instanceof TDatePicker) {
+					$arObj->{$key} = $control->getDate();
+				} elseif ($control instanceof TTextBox) {
 					$arObj->{$key} = $control->getText();
 				} elseif ($control instanceof TCheckBox) {
 					$arObj->{$key} = $control->getChecked();
-				} elseif ($control instanceof TDatePicker) {
-					$arObj->{$key} = $control->getDate();
 				}
 			} catch (\Exception $ex) {
 				if ($throwExceptions) {

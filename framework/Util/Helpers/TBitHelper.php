@@ -510,13 +510,12 @@ class TBitHelper
 	{
 		if ($value === 0) {
 			return 0;
-		} elseif ($value < 0) {	// Negative numbers need one more bit.
-			$value = (-$value) << 1;
-		}
-		if ($value < 0) {
+		} elseif ($value === PHP_INT_MIN) {
 			return PHP_INT_SIZE * 8;
+		} elseif ($value < 0) {
+			return strlen(decbin(-$value)) + 1;
 		}
-		return (int) ceil(log($value + 1, 2));
+		return strlen(decbin($value));
 	}
 
 	/**

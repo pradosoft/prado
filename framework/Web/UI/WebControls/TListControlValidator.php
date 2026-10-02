@@ -74,7 +74,7 @@ class TListControlValidator extends TBaseValidator
 	 */
 	public function getMinSelection()
 	{
-		return $this->getViewState('MinSelection', -1);
+		return TPropertyValue::ensureInteger($this->getViewState('MinSelection', -1));
 	}
 
 	/**
@@ -93,7 +93,7 @@ class TListControlValidator extends TBaseValidator
 	 */
 	public function getMaxSelection()
 	{
-		return $this->getViewState('MaxSelection', -1);
+		return TPropertyValue::ensureInteger($this->getViewState('MaxSelection', -1));
 	}
 
 	/**
@@ -153,15 +153,13 @@ class TListControlValidator extends TBaseValidator
 		$min = $this->getMinSelection();
 		$max = $this->getMaxSelection();
 
-		if ($min !== -1 && $max !== -1) {
-			return $exists && $count >= $min && $count <= $max;
-		} elseif ($min === -1 && $max !== -1) {
-			return $exists && $count <= $max;
-		} elseif ($min !== -1 && $max === -1) {
-			return $exists && $count >= $min;
-		} else {
-			return $exists;
+		if ($min !== -1 && $count < $min) {
+			return false;
 		}
+		if ($max !== -1 && $count > $max) {
+			return false;
+		}
+		return $exists;
 	}
 
 	/**

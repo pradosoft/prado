@@ -23,6 +23,7 @@ use PHPStan\Type\Accessory\HasMethodType;
 use PHPStan\Type\Accessory\HasPropertyType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\MethodTypeSpecifyingExtension;
+use PHPStan\Type\ObjectWithoutClassType;
 use Prado\TComponent;
 
 /**
@@ -106,11 +107,14 @@ final class TComponentHasMethodTypeSpecifyingExtension implements MethodTypeSpec
 		}
 
 		$methodName = $constantStrings[0]->getValue();
+		if (strncasecmp($methodName, 'fx', 2) === 0) {
+			return new SpecifiedTypes();
+		}
 
 		// Always narrow the object type with HasMethodType so PHPStan understands
 		// that the method exists on the object inside the if-block, matching
 		// the same narrowing behaviour as method_exists().
-		$types = [$calledOnType, new HasMethodType($methodName)];
+		$types = [new ObjectWithoutClassType(), new HasMethodType($methodName)];
 
 		// If the method follows the PRADO virtual-property convention
 		// (get{Name} / set{Name} / getjs{Name} / setjs{Name}), also narrow the

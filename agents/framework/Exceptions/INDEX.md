@@ -50,6 +50,7 @@ Exception hierarchy and error display for the Prado framework. Provides multilin
 - **Language variants:** `messages-<lang>.txt` (e.g., `messages-de.txt`, `messages-zh.txt`)
 - **Format:** `error_code=Human readable message with {0} placeholders`
 - **Adding new error codes:** Add to `messages.txt` first, then add translations as needed.
+- **Removing error codes:** Remove orphaned keys from the English master and every language variant that defines them.
 - **Display only:** The messages file content is for user display. The error code string is the canonical identifier in code.
 
 ## Gotchas
