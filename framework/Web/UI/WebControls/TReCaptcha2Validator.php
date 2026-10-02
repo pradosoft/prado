@@ -16,11 +16,11 @@ use Prado\Web\Javascripts\TJavaScript;
 /**
  * TReCaptcha2Validator class
  *
- * TReCaptcha2Validator validates a reCAPTCHA represented by a {@see \Prado\Web\UI\WebControls\TReCaptcha} control.
- * The input control fails validation if th user did not pass the humanity test.
+ * TReCaptcha2Validator validates a reCAPTCHA represented by a {@see \Prado\Web\UI\WebControls\TReCaptcha2} control.
+ * The control fails validation when Google's siteverify does not accept its response token.
  *
- * To use TReCaptcha2Validator, specify the {@see setCaptchaControl CaptchaControl}
- * to be the ID path of the {@see \Prado\Web\UI\WebControls\TReCaptcha} control.
+ * To use TReCaptcha2Validator, specify the {@see setControlToValidate ControlToValidate}
+ * to be the ID path of the {@see \Prado\Web\UI\WebControls\TReCaptcha2} control.
  *
  * @author Cristian Camilo Naranjo Valencia
  * @since 3.3.1
