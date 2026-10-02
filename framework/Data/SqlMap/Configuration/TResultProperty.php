@@ -58,11 +58,10 @@ class TResultProperty extends \Prado\TComponent
 	 *
 	 * The optional result map parameter is retained for backward compatibility.
 	 * @param ?TResultMap $resultMap legacy containing result map.
+	 * @phpstan-ignore constructor.unusedParameter (kept for callers that pass the containing result map)
 	 */
 	public function __construct($resultMap = null)
 	{
-		// Retain the legacy constructor parameter for backward compatibility.
-		unset($resultMap);
 		parent::__construct();
 	}
 
