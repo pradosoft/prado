@@ -95,7 +95,21 @@ All validators extend `TBaseValidator`. Shared properties: `ControlToValidate`, 
 | `TDataTypeValidator` | Value is correct data type (integer, date, etc.) |
 | `TFileValidator` | Files selected in a `TFileUpload`: size, count, extension, MIME type (@since 4.4.0) |
 | `TImageValidator` | Image files selected in a `TFileUpload`: TFileValidator checks plus pixel dimensions and a readable-image check (@since 4.4.0) |
+| `TCaptchaValidator` | Input matches a `TCaptcha` token; client checks only that the input is not empty |
+| `TProofOfWorkValidator` | A `TProofOfWork` solution is valid and unused; server only (@since 4.4.0) |
+| `TFormGuard` | The form itself: honeypot, signed fill time, rate limit; no `ControlToValidate`; server only (@since 4.4.0) |
 | `TValidationSummary` | Displays all errors in a group; `DisplayMode` (List/BulletList/SingleParagraph) |
+
+## Anti-Bot Controls
+
+Vision models read image CAPTCHAs, so these controls raise the cost of each automated submission instead. Single-use tokens and rate limits use the cache through `TCacheModuleIDTrait`.
+
+| Class | Purpose |
+|---|---|
+| [`TFormGuard`](./TFormGuard.md) | Validator: hidden honeypot, signed render stamp (`MinFillTime`/`MaxFillTime`), per-client `RateLimit`; `FailureReason` (@since 4.4.0) |
+| [`TProofOfWork`](./TProofOfWork.md) | Browser solves a signed single-use SHA-256 challenge in a Web Worker before the form posts; `role="status"`; needs a cache; JS in `controls/proofofwork.js` (@since 4.4.0) |
+| [`TCaptcha`](./TCaptcha.md) | Distorted-text image; HMAC-SHA256 tokens, single-use through the cache (`SingleUse`) |
+| [`TReCaptcha2`](./TReCaptcha2.md) | Google reCAPTCHA v2 widget |
 
 ## Semantic HTML5 Controls (@since 4.3.3)
 
@@ -145,7 +159,7 @@ Static assets published to the web by `TAssetManager`:
 
 - **CSS:** `accordion.css`, `tabpanel.css`, `keyboard.css`, `TSlider/TSlider.css` — default styles for the corresponding controls.
 - **Images:** `TSlider/TSliderHandleHorizontal.png`, `TSlider/TSliderHandleVertical.png`.
-- **`captcha.php`** — Server-side CAPTCHA image generator for `TCaptcha`. Supports themes: `opaque_bubble`, `noisy`, `grid`, `scribble`, `morph`, `shadowed`. Requires `verase.ttf` (bundled). Validates a private key before rendering.
+- **`captcha.php`** — Standalone CAPTCHA image script for `TCaptcha`, requested directly by the browser with no autoloader; references no framework class. Theme bits: opaque, noise, grid, scribble, morph, shadow. Verifies the HMAC-SHA256 signature of its options with the private key from `captcha_key.php`. Requires `verase.ttf` (bundled).
 - **`verase.ttf`** — TrueType font for CAPTCHA rendering.
 
 Override default control styles by setting the control's `CssUrl` property to a custom stylesheet.

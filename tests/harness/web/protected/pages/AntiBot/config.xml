@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<configuration>
+	<modules>
+		<module id="cache" class="Prado\Caching\TFileCache" />
+	</modules>
+</configuration>
