@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+CHG: TReCaptcha and TReCaptchaValidator are deprecated; Google retired reCAPTCHA v1, so they cannot validate. Use TReCaptcha2. (belisoful)
 BUG: `TReCaptcha2::validate()` accepted any non-empty response; it now verifies the token with Google's siteverify through `THttpClient` and fails closed. (belisoful)
 ENH: TProofOfWork and TProofOfWorkValidator make the browser solve a signed, single-use SHA-256 challenge in a Web Worker before a form posts, which raises the cost of automated submissions without a visual puzzle. `Complexity` sets the work and `StartMode` when solving starts; the control needs a cache. Validating callbacks wait for the solution through the new `Prado.CallbackRequestManager` send gates. (belisoful)
 ENH: TFormGuard rejects automated submissions with a hidden honeypot field, a signed render stamp checked against `MinFillTime` and `MaxFillTime`, and an optional per-client `RateLimit`; `FailureReason` reports the failed check. (belisoful)

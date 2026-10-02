@@ -1904,9 +1904,11 @@ Prado.WebUI.TCaptchaValidator = Prado.Class(Prado.WebUI.TBaseValidator,
 
 /**
  * TReCaptchaValidator client-side control.
+ * Deprecated with TReCaptcha (reCAPTCHA v1); use Prado.WebUI.TReCaptcha2Validator.
  *
  * @class Prado.WebUI.TReCaptchaValidator
  * @extends Prado.WebUI.TBaseValidator
+ * @deprecated 4.4.0
  */
 Prado.WebUI.TReCaptchaValidator = Prado.Class(Prado.WebUI.TBaseValidator,
 {

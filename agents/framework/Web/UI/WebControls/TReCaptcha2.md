@@ -8,7 +8,7 @@
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-TReCaptcha2 displays the Google reCAPTCHA v2 widget with callback support. It extends TActivePanel and supports AJAX callbacks. This is the modern replacement for TReCaptcha with better user experience and callback event handling.
+TReCaptcha2 displays the Google reCAPTCHA v2 widget with callback support. It extends TActivePanel and supports AJAX callbacks. It replaces the deprecated TReCaptcha (reCAPTCHA v1, retired by Google).
 
 **Verification (4.4.0):** `validate()` POSTs `secret`, `response`, and `remoteip` (the remote address, when known) to `VERIFY_URL` (`https://www.google.com/recaptcha/api/siteverify`) through `HttpClient` (`THttpClient::create()` by default: cURL, else PHP streams) and passes only on a JSON `"success": true`. It fails closed: an empty token or SecretKey sends nothing; a `THttpClientException` logs a warning; a non-2xx or unreadable answer fails. The result is kept for the request because Google accepts a token once (`timeout-or-duplicate`). `getVerifyResult()` exposes the decoded answer (`hostname`, `challenge_ts`, `error-codes`) for app-level checks such as the hostname. Before 4.4.0 any non-empty response passed.
 

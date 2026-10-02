@@ -6,6 +6,7 @@
 ## Class Info
 **Location:** `framework/Web/UI/WebControls/TReCaptcha.php`
 **Namespace:** `Prado\Web\UI\WebControls`
+**Deprecated:** 4.4.0. Google retired reCAPTCHA v1, including the `recaptcha_ajax.js` script and the `/recaptcha/api/verify` endpoint, so the control cannot validate. `onInit` logs a warning. Use [TReCaptcha2](./TReCaptcha2.md), or [TProofOfWork](./TProofOfWork.md) to avoid a third-party service.
 
 ## Overview
 TReCaptcha displays a reCAPTCHA widget (legacy API) that determines if input is entered by a real user. It requires public and private API keys from reCAPTCHA. Only one reCAPTCHA control per page is supported. Validation is performed server-side via the `validate()` method.

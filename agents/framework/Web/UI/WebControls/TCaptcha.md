@@ -42,4 +42,4 @@ Audited in 4.4.0. The image now has a default alt text that identifies its purpo
 - [TFormGuard](./TFormGuard.md)
 - [TProofOfWork](./TProofOfWork.md)
 - [TCacheModuleIDTrait](../../../Caching/TCacheModuleIDTrait.md)
-- [TReCaptcha](./TReCaptcha.md)
+- [TReCaptcha2](./TReCaptcha2.md)
