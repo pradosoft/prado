@@ -1839,8 +1839,8 @@ Prado.WebUI.TDataTypeValidator = Prado.Class(Prado.WebUI.TBaseValidator,
 });
 
 /**
- * TCaptchaValidator verifies if the input data is the same as
- * the token shown in the associated CAPTCHA control.
+ * TCaptchaValidator requires an input for the associated CAPTCHA control.
+ * The server compares the input with the token; the token never reaches the client.
  *
  * @class Prado.WebUI.TCaptchaValidator
  * @extends Prado.WebUI.TBaseValidator
@@ -1850,16 +1850,10 @@ Prado.WebUI.TCaptchaValidator = Prado.Class(Prado.WebUI.TBaseValidator,
 	/**
 	 * Evaluate validation state
 	 * @function {boolean} ?
-	 * @return True if value matches captcha text
+	 * @return True if the input is not empty
 	 */
 	evaluateIsValid() {
-		let a = this.getValidationValue();
-		let h = 0;
-		if (this.options.CaseSensitive==false)
-			a = a.toUpperCase();
-		for(let i = a.length-1; i >= 0; --i)
-			h += a.charCodeAt(i);
-		return h == this.options.TokenHash;
+		return this.getValidationValue().trim().length > 0;
 	},
 
 	crc32(str) {
@@ -1910,9 +1904,11 @@ Prado.WebUI.TCaptchaValidator = Prado.Class(Prado.WebUI.TBaseValidator,
 
 /**
  * TReCaptchaValidator client-side control.
+ * Deprecated with TReCaptcha (reCAPTCHA v1); use Prado.WebUI.TReCaptcha2Validator.
  *
  * @class Prado.WebUI.TReCaptchaValidator
  * @extends Prado.WebUI.TBaseValidator
+ * @deprecated 4.4.0
  */
 Prado.WebUI.TReCaptchaValidator = Prado.Class(Prado.WebUI.TBaseValidator,
 {

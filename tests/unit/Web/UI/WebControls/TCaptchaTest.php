@@ -3,6 +3,9 @@
 namespace Prado\Test\Unit\Web\UI\WebControls;
 
 use Prado\Exceptions\TConfigurationException;
+use Prado\Prado;
+use Prado\Test\Unit\Harness\Caching\TTestArrayCache;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Util\Clock\TMockClock;
 use Prado\Web\UI\WebControls\TCaptcha;
 
@@ -94,12 +97,29 @@ class TCaptchaTest extends \PHPUnit\Framework\TestCase
 	/** @var TestCaptcha[] captchas whose temp key files must be removed */
 	private array $_toClean = [];
 
+	/** The application's cache before the test. */
+	private mixed $_appCache = null;
+
 	protected function tearDown(): void
 	{
 		foreach ($this->_toClean as $captcha) {
 			$captcha->cleanupKeyFile();
 		}
 		$this->_toClean = [];
+		PradoUnit::setProp(Prado::getApplication(), '_cache', $this->_appCache);
+	}
+
+	protected function setUp(): void
+	{
+		$this->_appCache = PradoUnit::getProp(Prado::getApplication(), '_cache');
+	}
+
+	/** Installs an in-memory primary cache for the test. */
+	private function installCache(): TTestArrayCache
+	{
+		$cache = new TTestArrayCache();
+		PradoUnit::setProp(Prado::getApplication(), '_cache', $cache);
+		return $cache;
 	}
 
 	private function newCaptcha(): TestCaptcha
@@ -466,8 +486,10 @@ class TCaptchaTest extends \PHPUnit\Framework\TestCase
 		$encoded = $captcha->pubGetTokenImageOptions();
 		$decoded = base64_decode($encoded, true);
 		self::assertNotFalse($decoded);
-		// Payload is a 32-char md5 signature followed by the serialized options.
-		$options = unserialize(substr($decoded, 32));
+		// Payload is a 64-char HMAC-SHA256 signature followed by the serialized options.
+		$str = substr($decoded, 64);
+		self::assertSame(hash_hmac('sha256', $str, 'testprivatekey'), substr($decoded, 0, 64), 'The options are signed with the private key.');
+		$options = unserialize($str);
 		self::assertSame('fixedpublic', $options['publicKey']);
 		self::assertSame(5, $options['theme']);
 		self::assertSame(40, $options['fontSize']);
@@ -484,7 +506,7 @@ class TCaptchaTest extends \PHPUnit\Framework\TestCase
 		$captcha->setChangingTokenBackground(true);
 
 		$decoded = base64_decode($captcha->pubGetTokenImageOptions(), true);
-		$options = unserialize(substr($decoded, 32));
+		$options = unserialize(substr($decoded, 64));
 		self::assertSame(0, $options['randomSeed'], 'A changing background sends seed 0 so the image varies.');
 	}
 
@@ -558,6 +580,113 @@ class TCaptchaTest extends \PHPUnit\Framework\TestCase
 		self::assertSame(0, $captcha->pubGetViewState('TokenGenerated', 0), 'Expiry regenerates the token.');
 	}
 
+	public function testGenerateTokenUsesHmacSha256(): void
+	{
+		$captcha = $this->newCaptcha();
+		$alphabet = '234578adefhijmnrtABDEFGHJLMNRT';
+		$expected = substr($captcha->pubHash2string(hash_hmac('sha256', 'pub', 'priv'), $alphabet), 0, 8);
+		self::assertSame($expected, $captcha->pubGenerateToken('pub', 'priv', $alphabet, 8, true));
+	}
+
+	// -----------------------------------------------------------------------
+	// SingleUse
+	// -----------------------------------------------------------------------
+
+	public function testSingleUseDefaultAndSet(): void
+	{
+		$captcha = $this->newCaptcha();
+		self::assertTrue($captcha->getSingleUse());
+		$captcha->setSingleUse('false');
+		self::assertFalse($captcha->getSingleUse());
+	}
+
+	public function testValidateClaimsTokenSoReplayFails(): void
+	{
+		$cache = $this->installCache();
+		$first = $this->newCaptcha();
+		$first->setTokenExpiry(0);
+		$first->setMinTokenLength(6);
+		$first->setMaxTokenLength(6);
+		$first->setPublicKey('replayedpublic');
+		$token = $first->getToken();
+		self::assertTrue($first->validate($token));
+		self::assertTrue($first->validate($token), 'Repeated validation in the same request keeps the result.');
+		self::assertArrayHasKey(TCaptcha::CACHE_KEY_PREFIX . 'replayedpublic', $cache->values);
+
+		// A replayed page state carries the same public key in a later request.
+		$replay = $this->newCaptcha();
+		$replay->setTokenExpiry(0);
+		$replay->setMinTokenLength(6);
+		$replay->setMaxTokenLength(6);
+		$replay->setPublicKey('replayedpublic');
+		self::assertFalse($replay->validate($token), 'A claimed token fails in a later request.');
+		self::assertNotSame('replayedpublic', $replay->getPublicKey(), 'A replayed token is regenerated.');
+	}
+
+	public function testValidateWithoutSingleUseAllowsReplay(): void
+	{
+		$cache = $this->installCache();
+		foreach ([1, 2] as $request) {
+			$captcha = $this->newCaptcha();
+			$captcha->setTokenExpiry(0);
+			$captcha->setSingleUse(false);
+			$captcha->setPublicKey('reusedpublic');
+			self::assertTrue($captcha->validate($captcha->getToken()), "Request $request passes.");
+		}
+		self::assertSame([], $cache->values, 'Nothing is claimed.');
+	}
+
+	public function testValidateWithoutCachePassesAndClaimsNothing(): void
+	{
+		PradoUnit::setProp(Prado::getApplication(), '_cache', null);
+		$captcha = $this->newCaptcha();
+		$captcha->setTokenExpiry(0);
+		self::assertTrue($captcha->validate($captcha->getToken()), 'Without a cache, a solved token passes as before.');
+	}
+
+	public function testWrongTokenClaimsNothing(): void
+	{
+		$cache = $this->installCache();
+		$captcha = $this->newCaptcha();
+		$captcha->setTokenExpiry(0);
+		$captcha->fixedToken = 'aBcD';
+		self::assertFalse($captcha->validate('wrong'));
+		self::assertSame([], $cache->values);
+	}
+
+	public function testClaimLastsUntilTokenExpiry(): void
+	{
+		$cache = $this->installCache();
+		$clock = new TMockClock();
+		$clock->setTime(10_000);
+		$captcha = $this->newCaptcha();
+		$captcha->setClock($clock);
+		$captcha->setTokenExpiry(600);
+		$captcha->pubSetTokenGenerated(10_000 - 100);
+		$captcha->setPublicKey('expiringpublic');
+		self::assertTrue($captcha->validate($captcha->getToken()));
+		self::assertSame(500, $cache->expires[TCaptcha::CACHE_KEY_PREFIX . 'expiringpublic']);
+	}
+
+	public function testClaimLifetimeWithoutExpiry(): void
+	{
+		$captcha = $this->newCaptcha();
+		$captcha->setTokenExpiry(0);
+		self::assertSame(TCaptcha::SINGLE_USE_TTL, PradoUnit::invoke($captcha, 'getClaimLifetime'));
+	}
+
+	// -----------------------------------------------------------------------
+	// AlternateText
+	// -----------------------------------------------------------------------
+
+	public function testAlternateTextDefaultsToDescription(): void
+	{
+		$captcha = $this->newCaptcha();
+		self::assertSame('CAPTCHA image: type the characters shown', $captcha->getAlternateText());
+		$captcha->setAlternateText('Security code');
+		self::assertSame('Security code', $captcha->getAlternateText());
+	}
+
 	// -----------------------------------------------------------------------
 	// regenerateToken
 	// -----------------------------------------------------------------------
@@ -605,5 +734,160 @@ class TCaptchaTest extends \PHPUnit\Framework\TestCase
 		$path = $this->newCaptcha()->pubGetFontFile();
 		self::assertStringEndsWith('verase.ttf', $path);
 		self::assertFileExists($path);
+	}
+
+	// -----------------------------------------------------------------------
+	// Standalone captcha.php script
+	// -----------------------------------------------------------------------
+
+	public function testCaptchaScriptReferencesNoFrameworkClass(): void
+	{
+		$tokens = token_get_all(file_get_contents($this->newCaptcha()->pubGetCaptchaScriptFile()));
+		$inNamespace = false;
+		foreach ($tokens as $token) {
+			if (!is_array($token)) {
+				if ($token === ';') {
+					$inNamespace = false;
+				}
+				continue;
+			}
+			[$id, $text, $line] = $token;
+			if ($id === T_NAMESPACE) {
+				$inNamespace = true;
+				continue;
+			}
+			self::assertNotSame(T_USE, $id, "captcha.php imports a class on line $line; no autoloader runs for it.");
+			self::assertNotSame(T_DOUBLE_COLON, $id, "captcha.php references a class member on line $line.");
+			if (!$inNamespace) {
+				self::assertNotContains($id, [T_NAME_QUALIFIED, T_NAME_FULLY_QUALIFIED], "captcha.php references '$text' on line $line.");
+			}
+		}
+	}
+
+	public static function provideCaptchaScriptThemes(): array
+	{
+		return [
+			'plain' => [0],
+			'scribble' => [0x0008],
+			'all features' => [63],
+		];
+	}
+
+	/**
+	 * Runs a copy of captcha.php in a PHP process without the Prado autoloader, as a browser request does.
+	 * The runner turns every error, warning, and deprecation into stderr output and exit code 1.
+	 * @param TestCaptcha $captcha the captcha whose script, font, and key file are copied.
+	 * @param string $runnerBody the PHP code that sets $_GET and requires the script.
+	 * @param array $args the command line arguments of the runner.
+	 * @return array{0: string, 1: string, 2: int} stdout, stderr, and the exit code.
+	 */
+	private function runCaptchaScript(TestCaptcha $captcha, string $runnerBody, array $args): array
+	{
+		$dir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'pradocaptcha' . bin2hex(random_bytes(6));
+		mkdir($dir);
+		$files = [
+			'captcha.php' => file_get_contents($captcha->pubGetCaptchaScriptFile()),
+			'verase.ttf' => file_get_contents($captcha->pubGetFontFile()),
+			'captcha_key.php' => $captcha->keyFileContent,
+			'runner.php' => '<?php
+set_error_handler(function ($no, $msg, $file, $line) {
+	fwrite(STDERR, "$msg at $file:$line");
+	exit(1);
+});
+' . $runnerBody,
+		];
+		foreach ($files as $name => $content) {
+			file_put_contents($dir . DIRECTORY_SEPARATOR . $name, $content);
+		}
+		try {
+			$command = array_merge([PHP_BINARY, '-d', 'error_reporting=-1', '-d', 'display_errors=stderr', $dir . DIRECTORY_SEPARATOR . 'runner.php'], $args);
+			$process = proc_open($command, [1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes);
+			$stdout = stream_get_contents($pipes[1]);
+			$stderr = stream_get_contents($pipes[2]);
+			fclose($pipes[1]);
+			fclose($pipes[2]);
+			$exitCode = proc_close($process);
+		} finally {
+			foreach (array_keys($files) as $name) {
+				@unlink($dir . DIRECTORY_SEPARATOR . $name);
+			}
+			@rmdir($dir);
+		}
+		return [$stdout, $stderr, $exitCode];
+	}
+
+	private function requireScriptRunner(): void
+	{
+		if (!TCaptcha::checkRequirements() || !function_exists('proc_open')) {
+			self::markTestSkipped('Requires GD with FreeType and proc_open.');
+		}
+	}
+
+	/**
+	 * @dataProvider provideCaptchaScriptThemes
+	 * @param int $theme
+	 */
+	public function testCaptchaScriptRendersPngStandalone(int $theme): void
+	{
+		$this->requireScriptRunner();
+		$captcha = $this->newCaptcha();
+		$captcha->setPublicKey('fixedpublic');
+		$captcha->setTokenImageTheme($theme);
+		[$stdout, $stderr, $exitCode] = $this->runCaptchaScript($captcha, '$_GET["options"] = $argv[1];
+require __DIR__ . "/captcha.php";
+', [$captcha->pubGetTokenImageOptions()]);
+
+		self::assertSame('', $stderr, 'captcha.php raises no error, warning, or deprecation.');
+		self::assertSame(0, $exitCode);
+		self::assertStringStartsWith("\x89PNG\r\n\x1a\n", $stdout, 'captcha.php writes a PNG image.');
+	}
+
+	public function testCaptchaScriptDerivesTheControlsToken(): void
+	{
+		$this->requireScriptRunner();
+		$captcha = $this->newCaptcha();
+		$captcha->setPublicKey('fixedpublic');
+		$captcha->setMinTokenLength(12);
+		$captcha->setMaxTokenLength(12);
+		[$stdout, $stderr, $exitCode] = $this->runCaptchaScript($captcha, 'ob_start();
+require __DIR__ . "/captcha.php";
+ob_end_clean();
+echo \\Prado\\Web\\UI\\WebControls\\assets\\generateToken($argv[1], $privateKey, $argv[2], 12, true);
+', ['fixedpublic', $captcha->getTokenAlphabet()]);
+
+		self::assertSame('', $stderr);
+		self::assertSame(0, $exitCode);
+		self::assertSame($captcha->getToken(), $stdout, 'captcha.php draws the token TCaptcha validates.');
+	}
+
+	public function testCaptchaScriptRejectsAlteredOptions(): void
+	{
+		$this->requireScriptRunner();
+		$captcha = $this->newCaptcha();
+		$decoded = base64_decode($captcha->pubGetTokenImageOptions());
+		$altered = base64_encode(str_repeat('0', 64) . substr($decoded, 64));
+		[$stdout, $stderr, $exitCode] = $this->runCaptchaScript($captcha, '$_GET["options"] = $argv[1];
+require __DIR__ . "/captcha.php";
+echo "\n", $token;
+', [$altered]);
+
+		self::assertSame('', $stderr);
+		self::assertSame(0, $exitCode);
+		self::assertStringEndsWith("\nerror", $stdout, 'An altered signature draws the error token.');
+	}
+
+	public function testCaptchaScriptHidesErrors(): void
+	{
+		$this->requireScriptRunner();
+		$captcha = $this->newCaptcha();
+		// An array option makes base64_decode() throw a TypeError.
+		[$stdout, $stderr, $exitCode] = $this->runCaptchaScript($captcha, 'restore_error_handler();
+$_GET["options"] = ["x"];
+require __DIR__ . "/captcha.php";
+', []);
+
+		self::assertSame('', $stdout, 'No error text or image is written.');
+		self::assertSame('', $stderr, 'No error is displayed.');
+		self::assertSame(1, $exitCode);
 	}
 }

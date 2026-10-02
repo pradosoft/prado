@@ -22,14 +22,14 @@ Static assets (CSS, fonts, images) and the server-side CAPTCHA image generator u
 
 ### PHP (Server-Side Generation)
 
-- **`captcha.php`** — CAPTCHA image generator. Called directly via a published URL with Base64-encoded, private-key-validated options. Supports multiple visual themes:
-  - `opaque_bubble` — opaque background with bubble noise
-  - `noisy` — random dot noise
-  - `grid` — grid-line background
-  - `scribble` — scribbled line background
-  - `morph` — morphed/warped text
-  - `shadowed` — shadowed text
-  Requires `verase.ttf` for font rendering. Outputs `image/png` directly (no buffering).
+- **`captcha.php`** — CAPTCHA image generator. The browser requests the published copy directly, so no Prado autoloader runs: the script uses only PHP built-ins and references no framework class (a `use` of `THttpHeaderName` once made every image request fail). `?options=` is base64 of an HMAC-SHA256 signature (64 hex) followed by serialized options; it is checked with `hash_equals()` against the key in `captcha_key.php`, and a bad signature draws the token `error`. `generateToken()` and `hash2string()` match `TCaptcha`'s. `TCaptcha::TokenImageTheme` bits:
+  - `0x01` opaque background (else transparent)
+  - `0x02` noise
+  - `0x04` grid
+  - `0x08` scribbles (`imagepolygon()` 3-argument form)
+  - `0x10` morphed background
+  - `0x20` shadowed text
+  Requires `verase.ttf` for font rendering. Outputs `image/png` directly (no buffering). Errors are never displayed (`display_errors` off, an exception handler sends 500), because a stack trace prints the token. `TCaptchaTest` runs the script in a separate PHP process to keep it standalone.
 
 ### Fonts
 
@@ -86,5 +86,5 @@ behind it is lighter. Only backgrounds are required to darken.
 ## Conventions
 
 - CSS files here are **defaults** — override by supplying a custom stylesheet path to the control's `CssUrl` property.
-- `captcha.php` validates a private key before rendering; the key is set on the `TCaptcha` control and passed as part of the encoded options. Do not expose the private key in client-side code.
+- `captcha.php` verifies the options signature with the private key in `captcha_key.php`, which `TCaptcha::generatePrivateKeyFile()` writes beside the published script. The key never appears in the options or the page.
 - These assets are published by `TAssetManager`; the published URL (not the source path) is what gets embedded in page output.

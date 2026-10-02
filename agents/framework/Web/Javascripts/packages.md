@@ -39,6 +39,7 @@ This file defines the JavaScript package registry for PRADO. It declares all JS 
 | `inlineeditor` | `prado/activecontrols/inlineeditor.js` |
 | `activefileupload` | `prado/activefileupload/activefileupload.js` |
 | `activedatepicker` | `prado/activecontrols/activedatepicker.js` |
+| `proofofwork` | `prado/controls/proofofwork-solver.js`, `prado/controls/proofofwork.js` |
 
 ## Dependencies
 

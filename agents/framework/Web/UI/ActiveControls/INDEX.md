@@ -10,7 +10,7 @@ AJAX-enabled controls for the Prado framework. ActiveControls trigger server-sid
 ## How Callbacks Work
 
 1. User interacts with an ActiveControl (click, change, timer, etc.).
-2. JavaScript (`ajax3.js`) sends an `XMLHttpRequest` to the server with `X-PRADO-CALLBACK` headers identifying the target control and parameters.
+2. JavaScript (`ajax3.js`) sends an `XMLHttpRequest` to the server with `X-PRADO-CALLBACK` headers identifying the target control and parameters. `dispatch()` validates synchronously, then queues the request; the page inputs are serialized when the request leaves the queue. Send gates (`Prado.CallbackRequestManager.addSendGate(fn)`, @since 4.4.0) run first: a gate returns null, or a Promise that holds the request and those queued after it. Without a holding gate the send stays synchronous. [TProofOfWork](../WebControls/TProofOfWork.md) uses a gate to hold validating callbacks until its solution is written.
 3. [`TActivePageAdapter`](TActivePageAdapter.md) intercepts the request: runs the normal page lifecycle but routes to `raiseCallbackEvent()` instead of `raisePostBackEvent()`.
 4. The control's `raiseCallbackEvent()` handler executes server logic and optionally calls [`TCallbackClientScript`](TCallbackClientScript.md) methods to push DOM updates.
 5. Response is sent via `X-PRADO-*` headers (not HTML body):

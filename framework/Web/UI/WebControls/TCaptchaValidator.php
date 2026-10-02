@@ -16,10 +16,6 @@ use Prado\TPropertyValue;
 /**
  * TCaptchaValidator class
  *
- * Notice: while this class is easy to use and implement, it does not provide full security.
- * In fact, it's easy to bypass the checks reusing old, already-validated tokens (reply attack).
- * A better alternative is provided by {@see \Prado\Web\UI\WebControls\TReCaptchaValidator}.
- *
  * TCaptchaValidator validates user input against a CAPTCHA represented by
  * a {@see \Prado\Web\UI\WebControls\TCaptcha} control. The input control fails validation if its value
  * is not the same as the token displayed in CAPTCHA. Note, if the user does
@@ -93,35 +89,5 @@ class TCaptchaValidator extends TBaseValidator
 		} else {
 			return $control;
 		}
-	}
-
-	/**
-	 * Returns an array of javascript validator options.
-	 * @return array javascript validator options.
-	 */
-	protected function getClientScriptOptions()
-	{
-		$options = parent::getClientScriptOptions();
-		$control = $this->findCaptchaControl();
-		if ($control->getCaseSensitive()) {
-			$options['TokenHash'] = $this->generateTokenHash($control->getToken());
-			$options['CaseSensitive'] = true;
-		} else {
-			$options['TokenHash'] = $this->generateTokenHash(strtoupper($control->getToken()));
-			$options['CaseSensitive'] = false;
-		}
-		return $options;
-	}
-
-	/**
-	 * @param string $token
-	 * @return int hash
-	 */
-	private function generateTokenHash($token)
-	{
-		for ($h = 0, $i = strlen($token) - 1; $i >= 0; --$i) {
-			$h += ord($token[$i]);
-		}
-		return $h;
 	}
 }

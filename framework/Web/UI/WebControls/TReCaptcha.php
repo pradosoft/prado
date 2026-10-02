@@ -11,12 +11,18 @@
 namespace Prado\Web\UI\WebControls;
 
 use Prado\Exceptions\TConfigurationException;
+use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\Javascripts\TJavaScriptLiteral;
 
 /**
  * TReCaptcha class.
+ *
+ * TReCaptcha is deprecated. It uses reCAPTCHA v1, whose script and verify endpoint Google retired,
+ * so it cannot pass validation. It logs a warning when it initializes. Use
+ * {@see \Prado\Web\UI\WebControls\TReCaptcha2} with {@see \Prado\Web\UI\WebControls\TReCaptcha2Validator},
+ * or {@see \Prado\Web\UI\WebControls\TProofOfWork}, instead.
  *
  * TReCaptcha displays a reCAPTCHA (a token displayed as an image) that can be used
  * to determine if the input is entered by a real user instead of some program. It can
@@ -52,7 +58,7 @@ use Prado\Web\Javascripts\TJavaScriptLiteral;
  *
  * @author Bérczi Gábor <gabor.berczi@devworx.hu>
  * @since 3.2
- * @todo remove, not an active endpoint from Google since 2010
+ * @deprecated 4.4.0 reCAPTCHA v1 is retired; use TReCaptcha2 and TReCaptcha2Validator.
  */
 class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\IValidatable
 {
@@ -200,6 +206,17 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 * Checks for API keys
 	 * @param mixed $param event parameter
 	 */
+	/**
+	 * Logs that TReCaptcha is deprecated.
+	 * @param mixed $param event parameter
+	 * @since 4.4.0
+	 */
+	public function onInit($param)
+	{
+		parent::onInit($param);
+		Prado::warning('TReCaptcha is deprecated: reCAPTCHA v1 is retired and cannot validate. Use TReCaptcha2.', static::class);
+	}
+
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);

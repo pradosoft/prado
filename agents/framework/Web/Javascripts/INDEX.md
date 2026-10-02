@@ -58,6 +58,7 @@ through `light-dark()` and the `Canvas` system color. See
 | `slider` | `controls/slider.js` | Range slider |
 | `accordion` | `controls/accordion.js` | Expand/collapse panels |
 | `tabpanel` | `controls/tabpanel.js` | Tabbed interface |
+| `proofofwork` | `controls/proofofwork-solver.js`, `controls/proofofwork.js` | TProofOfWork client; the solver file is also its Web Worker script |
 
 External packages (jQuery, jQuery UI, TinyMCE, HighlightJS, Clipboard) are sourced from `bower_components` and declared in `packages.php`.
 

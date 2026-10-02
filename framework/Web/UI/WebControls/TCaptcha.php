@@ -10,6 +10,7 @@
 
 namespace Prado\Web\UI\WebControls;
 
+use Prado\Caching\TCacheModuleIDTrait;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TPropertyValue;
@@ -18,14 +19,25 @@ use Prado\Util\Clock\TApplicationClockAwareTrait;
 /**
  * TCaptcha class.
  *
- * Notice: while this class is easy to use and implement, it does not provide full security.
- * In fact, it's easy to bypass the checks reusing old, already-validated tokens (reply attack).
- * A better alternative is provided by {@see \Prado\Web\UI\WebControls\TReCaptcha}.
- *
  * TCaptcha displays a CAPTCHA (a token displayed as an image) that can be used
  * to determine if the input is entered by a real user instead of some program.
  *
- * Unlike other CAPTCHA scripts, TCaptcha does not need session or cookie.
+ * Current vision models read distorted text, so the image alone stops only simple bots.
+ * Pair it with {@see \Prado\Web\UI\WebControls\TFormGuard} and
+ * {@see \Prado\Web\UI\WebControls\TProofOfWork}, which raise the cost of each
+ * automated submission and need no image.
+ *
+ * TCaptcha does not need session or cookie.
+ *
+ * {@see setSingleUse SingleUse}, true by default, lets a solved token pass validation in one
+ * request only. The claim is stored in the cache named by {@see setCacheModuleID CacheModuleID},
+ * the application's primary cache by default, until the token expires. Without a cache, TCaptcha
+ * logs a warning and a solved token can be replayed until it expires. A page that validates the
+ * same token over several postbacks either validates once or sets SingleUse to false.
+ *
+ * The image's {@see getAlternateText AlternateText} defaults to a localized description of the
+ * CAPTCHA. The image has no audio or text alternative, so a form also offers another way to
+ * pass, such as {@see \Prado\Web\UI\WebControls\TProofOfWork}.
  *
  * The token (a string consisting of alphanumeric characters) displayed is automatically
  * generated and can be configured in several ways. To specify the length of characters
@@ -65,11 +77,18 @@ use Prado\Util\Clock\TApplicationClockAwareTrait;
 class TCaptcha extends TImage
 {
 	use TApplicationClockAwareTrait;
+	use TCacheModuleIDTrait;
 
 	public const MIN_TOKEN_LENGTH = 2;
 	public const MAX_TOKEN_LENGTH = 40;
+	/** Seconds a single-use claim lasts when tokens do not expire. */
+	public const SINGLE_USE_TTL = 604800;
+	/** Cache key prefix of single-use claims. */
+	public const CACHE_KEY_PREFIX = 'prado:captcha:';
 	private $_privateKey;
 	private $_validated = false;
+	/** @var ?string the public key claimed by this request. */
+	private ?string $_claimedKey = null;
 
 	/**
 	 * @return int the theme of the token image. Defaults to 0.
@@ -252,6 +271,36 @@ class TCaptcha extends TImage
 	}
 
 	/**
+	 * @return bool whether a solved token passes validation in one request only. Defaults to true.
+	 * @since 4.4.0
+	 */
+	public function getSingleUse()
+	{
+		return $this->getViewState('SingleUse', true);
+	}
+
+	/**
+	 * @param bool $value whether a solved token passes validation in one request only.
+	 * @since 4.4.0
+	 */
+	public function setSingleUse($value)
+	{
+		$this->setViewState('SingleUse', TPropertyValue::ensureBoolean($value), true);
+	}
+
+	/**
+	 * @return string the alternate text of the image. Defaults to a localized description of the CAPTCHA.
+	 * @since 4.4.0
+	 */
+	public function getAlternateText()
+	{
+		if (($text = parent::getAlternateText()) === '') {
+			$text = Prado::localize('CAPTCHA image: type the characters shown');
+		}
+		return $text;
+	}
+
+	/**
 	 * @return bool whether the currently generated token has expired.
 	 */
 	public function getIsTokenExpired()
@@ -300,9 +349,9 @@ class TCaptcha extends TImage
 			$minLength = $this->getMinTokenLength();
 			$maxLength = $this->getMaxTokenLength();
 			if ($minLength > $maxLength) {
-				$tokenLength = rand($maxLength, $minLength);
+				$tokenLength = random_int($maxLength, $minLength);
 			} elseif ($minLength < $maxLength) {
-				$tokenLength = rand($minLength, $maxLength);
+				$tokenLength = random_int($minLength, $maxLength);
 			} else {
 				$tokenLength = $minLength;
 			}
@@ -331,8 +380,10 @@ class TCaptcha extends TImage
 
 	/**
 	 * Validates a user input with the token.
+	 * A matching input also claims the token when {@see getSingleUse SingleUse} is true.
+	 * Repeated calls in the same request return the same result.
 	 * @param string $input user input
-	 * @return bool if the user input is not the same as the token.
+	 * @return bool whether the user input matches the token.
 	 */
 	public function validate($input)
 	{
@@ -345,7 +396,53 @@ class TCaptcha extends TImage
 			$this->regenerateToken();
 			return false;
 		}
-		return ($this->getToken() === ($this->getCaseSensitive() ? $input : strtoupper($input)));
+		$input = (string) $input;
+		if (!hash_equals($this->getToken(), $this->getCaseSensitive() ? $input : strtoupper($input))) {
+			return false;
+		}
+		return $this->claimToken();
+	}
+
+	/**
+	 * Claims the current token so a later request cannot pass with it.
+	 * A replayed token fails and is regenerated. Without a cache, the claim logs a warning and succeeds.
+	 * @return bool whether this request holds the claim.
+	 * @since 4.4.0
+	 */
+	protected function claimToken(): bool
+	{
+		if (!$this->getSingleUse()) {
+			return true;
+		}
+		$publicKey = $this->getPublicKey();
+		if ($this->_claimedKey === $publicKey) {
+			return true;
+		}
+		if (($cache = $this->resolveCacheModule(false)) === null) {
+			Prado::warning('TCaptcha.SingleUse needs a cache module; a solved token can be replayed until it expires.', static::class);
+			return true;
+		}
+		if (!$this->claimCacheKey($cache, self::CACHE_KEY_PREFIX . $publicKey, $this->getClaimLifetime())) {
+			$this->regenerateToken();
+			return false;
+		}
+		$this->_claimedKey = $publicKey;
+		return true;
+	}
+
+	/**
+	 * @return int the seconds a claim lasts: until the token expires, or {@see SINGLE_USE_TTL} when tokens do not expire.
+	 * @since 4.4.0
+	 */
+	protected function getClaimLifetime(): int
+	{
+		if (($expiry = $this->getTokenExpiry()) < 1) {
+			return self::SINGLE_USE_TTL;
+		}
+		if (($start = $this->getViewState('TokenGenerated', 0)) > 0) {
+			return $expiry + $start - $this->getClock()->time();
+		}
+		return $expiry;
 	}
 
 	/**
@@ -371,6 +468,10 @@ class TCaptcha extends TImage
 		parent::onPreRender($param);
 		if (!self::checkRequirements()) {
 			throw new TConfigurationException('captcha_imagettftext_required');
+		}
+		if ($this->_claimedKey !== null) {
+			$this->regenerateToken();
+			$this->_claimedKey = null;
 		}
 		if (!$this->getViewState('TokenGenerated', 0)) {
 			$manager = $this->getApplication()->getAssetManager();
@@ -405,7 +506,7 @@ class TCaptcha extends TImage
 		}
 		$options['randomSeed'] = $this->getChangingTokenBackground() ? 0 : $randomSeed;
 		$str = serialize($options);
-		return base64_encode(md5($privateKey . $str) . $str);
+		return base64_encode(hash_hmac('sha256', $str, $privateKey) . $str);
 	}
 
 	/**
@@ -466,7 +567,7 @@ class TCaptcha extends TImage
 	 */
 	protected function generateToken($publicKey, $privateKey, $alphabet, $tokenLength, $caseSensitive)
 	{
-		$token = substr($this->hash2string(md5($publicKey . $privateKey), $alphabet) . $this->hash2string(md5($privateKey . $publicKey), $alphabet), 0, $tokenLength);
+		$token = substr($this->hash2string(hash_hmac('sha256', $publicKey, $privateKey), $alphabet), 0, $tokenLength);
 		return $caseSensitive ? $token : strtoupper($token);
 	}
 

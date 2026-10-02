@@ -3,6 +3,11 @@
 /**
  * CAPTCHA generator script.
  *
+ * The browser requests this published asset directly, so no Prado autoloader runs.
+ * The script uses only PHP built-ins and references no framework class.
+ * Errors are never displayed because a stack trace would print the token.
+ * The token derivation and the options signature match {@see \Prado\Web\UI\WebControls\TCaptcha}.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
@@ -10,7 +15,13 @@
 
 namespace Prado\Web\UI\WebControls\assets;
 
-use Prado\Web\THttpHeaderName;
+ini_set('display_errors', '0');
+set_exception_handler(function ($e) {
+	if (!headers_sent()) {
+		http_response_code(500);
+	}
+	exit(1);
+});
 
 define('THEME_OPAQUE_BACKGROUND', 0x0001);
 define('THEME_NOISY_BACKGROUND', 0x0002);
@@ -29,11 +40,11 @@ $theme = 0;
 
 if (isset($_GET['options'])) {
 	$str = base64_decode($_GET['options']);
-	if (strlen($str) > 32) {
-		$hash = substr($str, 0, 32);
-		$str = substr($str, 32);
-		if (md5($privateKey . $str) === $hash) {
-			$options = unserialize($str);
+	if (strlen($str) > 64) {
+		$hash = substr($str, 0, 64);
+		$str = substr($str, 64);
+		if (hash_equals(hash_hmac('sha256', $str, $privateKey), $hash)) {
+			$options = unserialize($str, ['allowed_classes' => false]);
 			$publicKey = $options['publicKey'];
 			$tokenLength = $options['tokenLength'];
 			$caseSensitive = $options['caseSensitive'];
@@ -52,7 +63,7 @@ displayToken($token, $fontSize, $theme);
 
 function generateToken($publicKey, $privateKey, $alphabet, $tokenLength, $caseSensitive)
 {
-	$token = substr(hash2string(md5($publicKey . $privateKey), $alphabet) . hash2string(md5($privateKey . $publicKey), $alphabet), 0, $tokenLength);
+	$token = substr(hash2string(hash_hmac('sha256', $publicKey, $privateKey), $alphabet), 0, $tokenLength);
 	return $caseSensitive ? $token : strtoupper($token);
 }
 
@@ -121,9 +132,8 @@ function displayToken($token, $fontSize, $theme)
 		imagecolordeallocate($image, $color);
 	}
 
-	header(THttpHeaderName::ContentType . ': image/png');
+	header('Content-Type: image/png');
 	imagepng($image);
-	imagedestroy($image);
 }
 
 function addBackground($image, $width, $height, $opaque, $noisy, $hasGrid, $hasScribble, $morph)
@@ -198,7 +208,7 @@ function addScribble($image, $width, $height)
 			$points[] = rand(30, $height + 30);
 		}
 		imagesetthickness($image, rand(2, 6));
-		imagepolygon($image, $points, (int) (count($points) / 2), $color);
+		imagepolygon($image, $points, $color);
 		imagecolordeallocate($image, $color);
 	}
 }

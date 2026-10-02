@@ -26,6 +26,8 @@ Cache backends and dependency system providing unified `ICache` interface over m
 
 - **[`TCacheDependency`](TCacheDependency.md)** — Abstract base for all dependencies; extends [`TComponent`](../TComponent.md).
 
+- **[`TCacheModuleIDTrait`](TCacheModuleIDTrait.md)** — `CacheModuleID` property, `resolveCacheModule()`, and `claimCacheKey()` for single-use keys (@since 4.4.0). Used by TCaptcha, TFormGuard, and TProofOfWork.
+
 ## Storage Backends
 
 - **[`TAPCCache`](TAPCCache.md)** — APCu in-memory cache. Requires `apcu` PHP extension. Fast but single-server only; data lost on PHP-FPM restart. Wraps `apcu_fetch()`, `apcu_store()`, `apcu_add()`, `apcu_delete()`.
@@ -51,6 +53,6 @@ Cache backends and dependency system providing unified `ICache` interface over m
 
 - **Template Method pattern** — [`TCache`](TCache.md) defines the public API flow; subclasses only implement the four backend-specific protected methods.
 - **Serialisation** — Values and dependencies are serialised together before storage. Ensure all objects stored in cache are serialisable.
-- **`add()` vs `set()`** — `add()` is a conditional set (no-op if the key already exists); `set()` always overwrites.
+- **`add()` vs `set()`** — `add()` is a conditional set (no-op if the key already exists); `set()` always overwrites. `add()` is atomic on TAPCCache, TMemCache, TRedisCache, and TEtcdCache; TFileCache and TDbCache leave a race window. There is no increment.
 - **Key prefix** — Two apps sharing the same Memcached/Redis instance are isolated by default via the key prefix. Override `KeyPrefix` if intentional sharing is needed.
 - **`TDbCache` cleanup** — Expired entries are cleaned on a configurable interval (`FlushInterval`), not on every read. For aggressive cleanup, register the cron task explicitly.
