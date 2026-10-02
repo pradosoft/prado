@@ -3,14 +3,15 @@
 /**
  * CAPTCHA generator script.
  *
+ * The browser requests this published asset directly, so no Prado autoloader runs.
+ * The script uses only PHP built-ins and references no framework class.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
 namespace Prado\Web\UI\WebControls\assets;
-
-use Prado\Web\THttpHeaderName;
 
 define('THEME_OPAQUE_BACKGROUND', 0x0001);
 define('THEME_NOISY_BACKGROUND', 0x0002);
@@ -33,7 +34,7 @@ if (isset($_GET['options'])) {
 		$hash = substr($str, 0, 32);
 		$str = substr($str, 32);
 		if (md5($privateKey . $str) === $hash) {
-			$options = unserialize($str);
+			$options = unserialize($str, ['allowed_classes' => false]);
 			$publicKey = $options['publicKey'];
 			$tokenLength = $options['tokenLength'];
 			$caseSensitive = $options['caseSensitive'];
@@ -121,9 +122,8 @@ function displayToken($token, $fontSize, $theme)
 		imagecolordeallocate($image, $color);
 	}
 
-	header(THttpHeaderName::ContentType . ': image/png');
+	header('Content-Type: image/png');
 	imagepng($image);
-	imagedestroy($image);
 }
 
 function addBackground($image, $width, $height, $opaque, $noisy, $hasGrid, $hasScribble, $morph)
@@ -198,7 +198,7 @@ function addScribble($image, $width, $height)
 			$points[] = rand(30, $height + 30);
 		}
 		imagesetthickness($image, rand(2, 6));
-		imagepolygon($image, $points, (int) (count($points) / 2), $color);
+		imagepolygon($image, $points, $color);
 		imagecolordeallocate($image, $color);
 	}
 }

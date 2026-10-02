@@ -606,4 +606,94 @@ class TCaptchaTest extends \PHPUnit\Framework\TestCase
 		self::assertStringEndsWith('verase.ttf', $path);
 		self::assertFileExists($path);
 	}
+
+	// -----------------------------------------------------------------------
+	// Standalone captcha.php script
+	// -----------------------------------------------------------------------
+
+	public function testCaptchaScriptReferencesNoFrameworkClass(): void
+	{
+		$tokens = token_get_all(file_get_contents($this->newCaptcha()->pubGetCaptchaScriptFile()));
+		$inNamespace = false;
+		foreach ($tokens as $token) {
+			if (!is_array($token)) {
+				if ($token === ';') {
+					$inNamespace = false;
+				}
+				continue;
+			}
+			[$id, $text, $line] = $token;
+			if ($id === T_NAMESPACE) {
+				$inNamespace = true;
+				continue;
+			}
+			self::assertNotSame(T_USE, $id, "captcha.php imports a class on line $line; no autoloader runs for it.");
+			self::assertNotSame(T_DOUBLE_COLON, $id, "captcha.php references a class member on line $line.");
+			if (!$inNamespace) {
+				self::assertNotContains($id, [T_NAME_QUALIFIED, T_NAME_FULLY_QUALIFIED], "captcha.php references '$text' on line $line.");
+			}
+		}
+	}
+
+	public static function provideCaptchaScriptThemes(): array
+	{
+		return [
+			'plain' => [0],
+			'scribble' => [0x0008],
+			'all features' => [63],
+		];
+	}
+
+	/**
+	 * Runs the script in a PHP process without the Prado autoloader, as a browser request does.
+	 * @dataProvider provideCaptchaScriptThemes
+	 * @param int $theme
+	 */
+	public function testCaptchaScriptRendersPngStandalone(int $theme): void
+	{
+		if (!TCaptcha::checkRequirements() || !function_exists('proc_open')) {
+			self::markTestSkipped('Requires GD with FreeType and proc_open.');
+		}
+		$captcha = $this->newCaptcha();
+		$captcha->setPublicKey('fixedpublic');
+		$captcha->setTokenImageTheme($theme);
+		$options = $captcha->pubGetTokenImageOptions();
+
+		$dir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'pradocaptcha' . bin2hex(random_bytes(6));
+		mkdir($dir);
+		$files = [
+			'captcha.php' => file_get_contents($captcha->pubGetCaptchaScriptFile()),
+			'verase.ttf' => file_get_contents($captcha->pubGetFontFile()),
+			'captcha_key.php' => $captcha->keyFileContent,
+			'runner.php' => '<?php
+set_error_handler(function ($no, $msg, $file, $line) {
+	fwrite(STDERR, "$msg at $file:$line");
+	exit(1);
+});
+$_GET["options"] = $argv[1];
+require __DIR__ . "/captcha.php";
+',
+		];
+		foreach ($files as $name => $content) {
+			file_put_contents($dir . DIRECTORY_SEPARATOR . $name, $content);
+		}
+		try {
+			$command = [PHP_BINARY, '-d', 'error_reporting=-1', '-d', 'display_errors=stderr', $dir . DIRECTORY_SEPARATOR . 'runner.php', $options];
+			$process = proc_open($command, [1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes);
+			$stdout = stream_get_contents($pipes[1]);
+			$stderr = stream_get_contents($pipes[2]);
+			fclose($pipes[1]);
+			fclose($pipes[2]);
+			$exitCode = proc_close($process);
+		} finally {
+			foreach (array_keys($files) as $name) {
+				@unlink($dir . DIRECTORY_SEPARATOR . $name);
+			}
+			@rmdir($dir);
+		}
+
+		self::assertSame('', $stderr, 'captcha.php raises no error, warning, or deprecation.');
+		self::assertSame(0, $exitCode);
+		self::assertStringStartsWith("\x89PNG\r\n\x1a\n", $stdout, 'captcha.php writes a PNG image.');
+	}
 }
