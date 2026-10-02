@@ -5,5 +5,9 @@
 	<com:TProofOfWork ID="Work" Complexity="20000" />
 	<com:TProofOfWorkValidator ID="WorkValidator" ControlToValidate="Work" ErrorMessage="Verification failed." />
 	<com:TButton ID="Send" Text="Send" OnClick="sendClicked" />
+	<com:TActiveButton ID="Check" Text="Check" OnClick="checkClicked" />
+	<com:TActiveButton ID="Ping" Text="Ping" CausesValidation="false" OnClick="pingClicked" />
 	<p><com:TLabel ID="Result" /></p>
+	<p><com:TActiveLabel ID="CallbackResult" /></p>
+	<p><com:TActiveLabel ID="PingResult" /></p>
 </com:TContent>

@@ -22,8 +22,11 @@ let instances = [];
 function makeControl(extra = {}) {
 	const form = document.createElement('form');
 	form.id = 'form1';
+	const existing = document.getElementById('form1');
+	if (existing)
+		existing.remove();
 	form.innerHTML = `<input id="name" type="text"><div id="${ID}" role="status" aria-busy="false">`
-		+ `<span class="pow-status"></span><input type="hidden" id="${ID}_solution" name="${ID}" value=""></div>`;
+		+ `<span class="pow-status"></span><input type="hidden" id="${ID}_solution" name="${ID}" value="${(extra.FieldValue || '').replace(/"/g, '&quot;')}"></div>`;
 	document.body.appendChild(form);
 	form.submit = vi.fn();
 	const control = new TProofOfWork(Object.assign({
@@ -45,8 +48,12 @@ function submitEvent(form) {
 	return event;
 }
 
+beforeEach(() => {
+	global.Prado.CallbackRequestManager = { addSendGate: vi.fn(), removeSendGate: vi.fn() };
+});
+
 afterEach(() => {
-	for (const c of instances) c.deinitialize();
+	for (const c of instances) if (c.registered) c.deinitialize();
 	instances = [];
 	document.body.innerHTML = '';
 	for (const k of Object.keys(global.Prado.Registry)) delete global.Prado.Registry[k];
@@ -126,5 +133,51 @@ describe('TProofOfWork', () => {
 		expect(form.submit).not.toHaveBeenCalled();
 		expect(field.value).toBe('');
 		expect(region.querySelector('.pow-status').textContent).toBe('Failed');
+	});
+
+	it('registers a send gate and removes it when done', () => {
+		const { control } = makeControl();
+		expect(Prado.CallbackRequestManager.addSendGate).toHaveBeenCalledWith(control.gate);
+		control.deinitialize();
+		expect(Prado.CallbackRequestManager.removeSendGate).toHaveBeenCalledWith(control.gate);
+	});
+
+	it('holds a validating callback until solved', async () => {
+		const { control, field } = makeControl();
+		const hold = control.holdCallback({ options: { CausesValidation: true } });
+		expect(hold).toBeInstanceOf(Promise);
+		await expect(hold).resolves.toBe(true);
+		expect(JSON.parse(field.value).number).toBe(37);
+		expect(control.holdCallback({ options: { CausesValidation: true } })).toBeNull();
+	});
+
+	it('lets a callback without validation go', () => {
+		const { control } = makeControl();
+		expect(control.holdCallback({ options: { CausesValidation: false } })).toBeNull();
+		expect(control.promise).toBeNull();
+	});
+
+	it('keeps an unused solution when the server says KeepSolved', async () => {
+		const kept = '{"challenge":"old","salt":"s","signature":"g","number":1}';
+		const { control, field, region } = makeControl({ StartMode: 'Load', KeepSolved: true, FieldValue: kept });
+		expect(control.solved).toBe(true);
+		expect(field.value).toBe(kept);
+		expect(region.querySelector('.pow-status').textContent).toBe('Verified');
+		await expect(control.promise).resolves.toBe(true);
+	});
+
+	it('clears a used solution and solves the new challenge', async () => {
+		const { control, field } = makeControl({ StartMode: 'Load', KeepSolved: false, FieldValue: '{"number":1}' });
+		expect(control.solved).toBe(false);
+		await control.promise;
+		expect(JSON.parse(field.value).number).toBe(37);
+	});
+
+	it('does not write a solution after it is replaced', async () => {
+		const { control: first, field } = makeControl({ StartMode: 'Load' });
+		const pending = first.promise;
+		first.deinitialize();
+		await expect(pending).resolves.toBe(false);
+		expect(field.value).toBe('');
 	});
 });

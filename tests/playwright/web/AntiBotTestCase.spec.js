@@ -60,6 +60,38 @@ test('TProofOfWork: a submission before the solution is ready waits for it', asy
 	expect(after.y).toBe(before.y);
 });
 
+test('TProofOfWork: validating callbacks wait for a solution and each uses a new challenge', async ({ page }) => {
+	const h = new PradoTestHelper(page, GENERIC_BASE_URL);
+	await h.url(POW_URL);
+	const result = page.locator('#ctl0_Content_CallbackResult');
+	const field = page.locator('#ctl0_Content_Work_solution');
+
+	await page.locator('#ctl0_Content_Check').click();
+	await expect(result).toHaveText('Accepted #1');
+
+	const posted = page.waitForRequest((request) => request.method() === 'POST');
+	await page.locator('#ctl0_Content_Check').click();
+	const body = (await posted).postData();
+	await expect(result).toHaveText('Accepted #2');
+
+	// An unused solution survives a callback that does not validate.
+	await page.locator('#ctl0_Content_Name').focus();
+	await expect(page.locator('#ctl0_Content_Work')).toHaveText('Verified');
+	const unused = await field.inputValue();
+	expect(unused).not.toBe('');
+	await page.locator('#ctl0_Content_Ping').click();
+	await expect(page.locator('#ctl0_Content_PingResult')).toHaveText('Pong #1');
+	await expect(field).toHaveValue(unused);
+	await page.locator('#ctl0_Content_Check').click();
+	await expect(result).toHaveText('Accepted #3');
+
+	const replayed = await page.request.post(GENERIC_BASE_URL + POW_URL, {
+		headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+		data: body
+	});
+	expect(JSON.stringify(replayed.headers()) + (await replayed.text())).toContain('Rejected');
+});
+
 test('TFormGuard: rejects a fast submission and a filled honeypot, accepts a person', async ({ page }) => {
 	const h = new PradoTestHelper(page, GENERIC_BASE_URL);
 	const result = page.locator('#ctl0_Content_Result');

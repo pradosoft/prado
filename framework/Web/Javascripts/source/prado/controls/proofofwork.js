@@ -13,6 +13,11 @@
  * with form.requestSubmit() so the submit button's name and value are posted. A Prado
  * button can produce both events for one click; the held submissions resume once.
  *
+ * A callback that causes validation waits through a Prado.CallbackRequestManager send gate,
+ * which holds the queued request until the solution is written. Each callback response
+ * re-creates the control. KeepSolved, set when that callback did not validate the control,
+ * keeps the unused solution in the field; otherwise the control solves the new challenge.
+ *
  * The control element is a role="status" live region. Its text reports the progress.
  */
 Prado.WebUI.TProofOfWork = Prado.Class(Prado.WebUI.Control,
@@ -29,10 +34,20 @@ Prado.WebUI.TProofOfWork = Prado.Class(Prado.WebUI.Control,
 		this.pending = null;
 		this.waiting = false;
 		this.resuming = false;
+		this.gate = this.holdCallback.bind(this);
 		if (!this.form || !this.field)
 			return;
 
 		this.observe(this.form, 'submit', this.onSubmit.bind(this));
+		if (Prado.CallbackRequestManager)
+			Prado.CallbackRequestManager.addSendGate(this.gate);
+		if (this.options.KeepSolved && this.field.value) {
+			this.solved = true;
+			this.promise = Promise.resolve(true);
+			this.setStatus(this.options.VerifiedText, false);
+			return;
+		}
+		this.field.value = '';
 		if (this.options.StartMode === 'Load')
 			this.start();
 		else if (this.options.StartMode === 'Focus')
@@ -41,10 +56,29 @@ Prado.WebUI.TProofOfWork = Prado.Class(Prado.WebUI.Control,
 
 	onDone()
 	{
+		if (Prado.CallbackRequestManager)
+			Prado.CallbackRequestManager.removeSendGate(this.gate);
+		this.stopWorker();
+	},
+
+	stopWorker()
+	{
 		if (this.worker) {
 			this.worker.terminate();
 			this.worker = null;
 		}
+	},
+
+	/**
+	 * Send gate: holds a callback that causes validation until the solution is written.
+	 * @param {object} request the CallbackRequest
+	 * @return {?Promise<boolean>} the solving promise, or null to let the request go
+	 */
+	holdCallback(request)
+	{
+		if (this.solved || !request || !request.options || !request.options.CausesValidation)
+			return null;
+		return this.start();
 	},
 
 	/**
@@ -57,6 +91,8 @@ Prado.WebUI.TProofOfWork = Prado.Class(Prado.WebUI.Control,
 			this.setStatus(this.options.VerifyingText, true);
 			const challenge = this.options.Challenge;
 			this.promise = this.solve(challenge).then((number) => {
+				if (!this.registered)
+					return false;
 				if (number < 0)
 					throw new Error('No solution');
 				this.field.value = JSON.stringify({
@@ -69,7 +105,8 @@ Prado.WebUI.TProofOfWork = Prado.Class(Prado.WebUI.Control,
 				this.setStatus(this.options.VerifiedText, false);
 				return true;
 			}).catch(() => {
-				this.setStatus(this.options.FailedText, false);
+				if (this.registered)
+					this.setStatus(this.options.FailedText, false);
 				return false;
 			});
 		}
@@ -95,11 +132,11 @@ Prado.WebUI.TProofOfWork = Prado.Class(Prado.WebUI.Control,
 				return;
 			}
 			this.worker.onmessage = (event) => {
-				this.onDone();
+				this.stopWorker();
 				resolve(event.data.number);
 			};
 			this.worker.onerror = () => {
-				this.onDone();
+				this.stopWorker();
 				resolve(fallback());
 			};
 			this.worker.postMessage(message);

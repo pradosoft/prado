@@ -38,9 +38,10 @@ use Prado\Web\UI\IValidatable;
  * application's primary cache by default. TProofOfWork requires a cache and throws a
  * {@see \Prado\Exceptions\TConfigurationException} at render without one.
  *
- * {@see setStartMode StartMode} sets when solving starts; a submission before the solution is
- * ready waits for it. Callbacks are not held; a callback sent before the solution is ready fails
- * validation. A browser without JavaScript cannot pass and sees {@see getNoScriptText NoScriptText}.
+ * {@see setStartMode StartMode} sets when solving starts. A postback, or a callback that causes
+ * validation, waits for the solution. Each callback response sends a new challenge; when the
+ * callback did not validate this control, the client keeps its unused solution instead.
+ * A browser without JavaScript cannot pass and sees {@see getNoScriptText NoScriptText}.
  * A Content-Security-Policy needs 'self' in worker-src, or script-src when worker-src is absent;
  * when the worker is blocked, the page solves on the main thread.
  *
@@ -343,7 +344,8 @@ class TProofOfWork extends TWebControl implements IPostBackDataHandler, IValidat
 	}
 
 	/**
-	 * @return array the client options: the challenge, the start mode, the solver URL, and the status texts.
+	 * @return array the client options: the challenge, whether to keep an unused solution,
+	 *   the start mode, the solver URL, and the status texts.
 	 */
 	protected function getClientOptions(): array
 	{
@@ -351,12 +353,21 @@ class TProofOfWork extends TWebControl implements IPostBackDataHandler, IValidat
 		return [
 			'ID' => $this->getClientID(),
 			'Challenge' => $this->createChallenge(),
+			'KeepSolved' => $this->getKeepSolved(),
 			'StartMode' => $this->getStartMode(),
 			'WorkerUrl' => $cs->getPradoScriptAssetUrl() . self::SOLVER_SCRIPT,
 			'VerifyingText' => $this->getVerifyingText(),
 			'VerifiedText' => $this->getVerifiedText(),
 			'FailedText' => $this->getFailedText(),
 		];
+	}
+
+	/**
+	 * @return bool whether the client keeps its solution: true in a callback that did not validate this control.
+	 */
+	protected function getKeepSolved(): bool
+	{
+		return $this->getPage()->getIsCallback() && $this->_verified === null;
 	}
 
 	/**

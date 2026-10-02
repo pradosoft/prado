@@ -18,6 +18,19 @@ use Prado\Web\UI\WebControls\TProofOfWorkStartMode;
 use Prado\Web\UI\WebControls\TProofOfWorkValidator;
 use Prado\Web\UI\WebControls\TTextBox;
 
+/**
+ * TPage whose callback state a test sets.
+ */
+class TProofOfWorkTestPage extends TPage
+{
+	public bool $callback = false;
+
+	public function getIsCallback()
+	{
+		return $this->callback;
+	}
+}
+
 class TProofOfWorkTest extends \PHPUnit\Framework\TestCase
 {
 	use TWebControlRenderTrait;
@@ -44,9 +57,10 @@ class TProofOfWorkTest extends \PHPUnit\Framework\TestCase
 		PradoUnit::setProp(Prado::getApplication(), '_cache', $this->_appCache);
 	}
 
-	private function makeWork(string $id = 'Work'): TProofOfWork
+	private function makeWork(string $id = 'Work', bool $callback = false): TProofOfWork
 	{
-		$page = new TPage();
+		$page = new TProofOfWorkTestPage();
+		$page->callback = $callback;
 		$form = new TForm();
 		$page->getControls()->add($form);
 		$page->setForm($form);
@@ -272,6 +286,28 @@ class TProofOfWorkTest extends \PHPUnit\Framework\TestCase
 		$work = $this->makeWork();
 		$this->expectException(TConfigurationException::class);
 		$work->onPreRender(null);
+	}
+
+	// -----------------------------------------------------------------------
+	// Callbacks
+	// -----------------------------------------------------------------------
+
+	public function testFullPageRenderDoesNotKeepTheSolution(): void
+	{
+		self::assertFalse(PradoUnit::invoke($this->makeWork(), 'getKeepSolved'));
+	}
+
+	public function testCallbackWithoutValidationKeepsTheSolution(): void
+	{
+		self::assertTrue(PradoUnit::invoke($this->makeWork('Work', true), 'getKeepSolved'));
+	}
+
+	public function testCallbackThatValidatedSendsANewChallenge(): void
+	{
+		$work = $this->makeWork('Work', true);
+		$work->loadPostData($work->getUniqueID(), [$work->getUniqueID() => $this->solution($this->challenge($work))]);
+		self::assertTrue($work->validate());
+		self::assertFalse(PradoUnit::invoke($work, 'getKeepSolved'), 'The used solution is replaced.');
 	}
 
 	// -----------------------------------------------------------------------
