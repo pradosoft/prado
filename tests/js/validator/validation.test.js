@@ -72,6 +72,23 @@ describe('Prado.WebUI validator classes exist', () => {
 	});
 });
 
+// ─── TCaptchaValidator — the token stays on the server ───────────────────────
+
+describe('TCaptchaValidator.prototype.evaluateIsValid', () => {
+	function evaluate(value) {
+		return WebUI.TCaptchaValidator.prototype.evaluateIsValid.call({ getValidationValue: () => value });
+	}
+
+	it('requires an input', () => {
+		expect(evaluate('')).toBe(false);
+		expect(evaluate('   ')).toBe(false);
+	});
+
+	it('accepts any input for the server to compare', () => {
+		expect(evaluate('aBcD')).toBe(true);
+	});
+});
+
 // ─── TBaseValidator.convert — type conversion (pure logic, no DOM) ────────────
 //
 // convert() delegates to String.prototype.toInteger / toDouble / SimpleParse

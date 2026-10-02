@@ -44,6 +44,15 @@ Upgrading from v4.3.3
   the module, permission file, or page `<permissions>` element, and review the rule, which now takes effect.
   PHP configuration keys are case-insensitive, so a key such as `permissionRules` or `IPs` that previously
   loaded nothing now loads.
+- TCaptcha tokens are single-use by default: a solved token passes validation in one request, and a later postback
+  with the same page state fails. A page that validates the same token over several postbacks either validates once
+  or sets `SingleUse="false"`. The claim needs a cache: the primary cache, or the module named by
+  `TCaptcha.CacheModuleID`. Without one, TCaptcha logs a warning and a solved token passes as before.
+- TCaptcha derives tokens and signs the image options with HMAC-SHA256 instead of MD5. A page rendered before the
+  upgrade shows a token that no longer validates; the user receives a new one on the next postback. Republish
+  `captcha.php`, which the asset manager does when the framework version changes.
+- TCaptchaValidator no longer sends the client a hash of the token, which leaked the answer. Client-side validation
+  checks that the input is not empty; the server compares the token.
 
 Upgrading from v4.3.2
 ---------------------
