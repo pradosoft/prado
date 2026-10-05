@@ -80,7 +80,7 @@ Separates SQL from code via external XML mapping files.
 
 - **[`TSqlMapManager`](SqlMap/TSqlMapManager.md)** — Registry and manager; load via `TSqlMapConfig`.
 - **[`TSqlMapGateway`](SqlMap/TSqlMapGateway.md)** — Facade: `queryForObject()`, `queryForList()`, `queryForMap()`, `insert()`, `update()`, `delete()`.
-- **`Configuration/`** — XML parsing: `TSqlMapStatement`, `TParameterMap`, `TResultMap`, `TResultProperty`, cache models, dynamic SQL.
+- **`Configuration/`** — XML parsing: `TSqlMapStatement`, `TParameterMap`, `TResultMap`, `TResultProperty`, cache models, dynamic SQL. `TResultMap` adds context when type-handler construction fails.
 - **`DataMapper/`** — Runtime execution engine; paging support via `TSqlMapPagedList`.
 - **`Statements/`** — Statement type classes (Select, Insert, Update, Delete).
 

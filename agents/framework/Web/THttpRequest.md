@@ -62,6 +62,7 @@ THttpRequest provides storage and access scheme for user requests sent via HTTP.
 - `getUserHost()`: Returns user host name
 - `getAcceptTypes()`: Returns user browser accept types
 - `getUserLanguages()`: Returns list of user preferred languages
+- `getBrowser()`: Returns PHP browser capabilities and throws `TConfigurationException` when the `browscap` directive is not configured
 
 ### Cookie Handling
 - `getCookies()`: Returns [THttpCookieCollection](./THttpCookieCollection.md) of cookies sent by user

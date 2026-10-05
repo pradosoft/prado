@@ -111,6 +111,8 @@ A subclass overrides these instead of re-implementing the surrounding machinery:
 | `hash($path)` | the asset sub-directory name |
 | `symlink($target, $link)` | how a linked asset is created |
 
+Symlink publication retains the original existence guards. If a concurrent publisher creates any filesystem entry while `symlink()` reports failure, an `lstat()` check treats that entry as the completed publication; the original failure is rethrown only when the destination remains absent.
+
 `Prado\Test\Unit\Web\TAssetManagerTest` is written against `getTestClass()` and
 `newAssetManager()`, so a subclass test extends it and overrides those two methods to run the
 whole suite against the subclass.

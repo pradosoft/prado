@@ -229,25 +229,14 @@ class THttpRequestTest extends \PHPUnit\Framework\TestCase
 
 	public function testGetBrowser()
 	{
-		/*
-		// requires browscap configuration in php.ini
+		if ((string) ini_get('browscap') !== '') {
+			self::markTestSkipped('browscap is configured in php.ini');
+		}
+
 		$request = new THttpRequest();
-		$request->init(null);
-		// Reset UserAgent, because constructor of THttpRequest unset it if called from cli !
-		$_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en-US; rv:1.8.1.3) Gecko/20070309 Firefox/2.0.0.3';
-		try {
-			$browser=$request->getBrowser();
-			self::assertInstanceOf ('array', $browser);
-			self::assertEquals('Firefox', $browser['browser']);
-			self::assertEquals('2.0.0.3', $browser['version']);
-		} catch (TPhpErrorException $e) {
-				// If not supported, skip test
-				if (strstr($e->getMessage(),'browscap ini directive not set'))
-					self::markTestSkipped('browscap ini directive not set in php.ini');
-				else
-					self::fail ('Exception raised : '.$e->getMessage());
-		}*/
-		throw new \PHPUnit\Framework\IncompleteTestError();
+		$this->expectException(TConfigurationException::class);
+		$this->expectExceptionMessage('THttpRequest requires the browscap directive to be configured in php.ini.');
+		$request->getBrowser();
 	}
 
 	public function testGetUserAgent()

@@ -37,9 +37,6 @@ use Prado\Web\UI\WebControls\TButton;
  */
 class TScaffoldView extends TScaffoldBase
 {
-	private $_panForNewButton;
-	private $_panForSearch;
-
 	/**
 	 * Copy basic record details to the list/edit/search controls.
 	 * @param mixed $param
@@ -104,7 +101,6 @@ class TScaffoldView extends TScaffoldBase
 			default:
 				return $this->showListView($sender, $param);
 		}
-		return false;
 	}
 
 	/**
@@ -116,8 +112,8 @@ class TScaffoldView extends TScaffoldBase
 	{
 		$this->getListView()->setVisible(false);
 		$this->getEditView()->setVisible(true);
-		$this->_panForNewButton->setVisible(false);
-		$this->_panForSearch->setVisible(false);
+		$this->getRegisteredObject('_panForNewButton')->setVisible(false);
+		$this->getRegisteredObject('_panForSearch')->setVisible(false);
 		$this->getEditView()->getCancelButton()->setVisible(true);
 		$this->getEditView()->getClearButton()->setVisible(false);
 	}
@@ -131,8 +127,8 @@ class TScaffoldView extends TScaffoldBase
 	{
 		$this->getListView()->setVisible(true);
 		$this->getEditView()->setVisible(false);
-		$this->_panForNewButton->setVisible(true);
-		$this->_panForSearch->setVisible(true);
+		$this->getRegisteredObject('_panForNewButton')->setVisible(true);
+		$this->getRegisteredObject('_panForSearch')->setVisible(true);
 	}
 
 	/**

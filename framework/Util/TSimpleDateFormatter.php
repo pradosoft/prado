@@ -313,7 +313,7 @@ class TSimpleDateFormatter
 	private function applyCultureLocalization($result, $culture)
 	{
 		$hasLocalizedMonth = preg_match('/M{3,4}/', $this->pattern) === 1;
-		$hasLocalizedWeekday = strpos($this->pattern, 'EEEE') !== false || (strpos($this->pattern, 'E') !== false && strpos($this->pattern, 'EEEE') === false);
+		$hasLocalizedWeekday = strpos($this->pattern, 'E') !== false;
 
 		if ($hasLocalizedMonth) {
 			$monthNames = $this->getLocalizedMonthNames($culture, $this->getMonthPattern() === 'MMM' ? 'short' : 'full');
@@ -478,7 +478,7 @@ class TSimpleDateFormatter
 		}
 
 		$hasLocalizedMonth = preg_match('/M{3,4}/', $this->pattern) === 1;
-		$hasLocalizedWeekday = strpos($this->pattern, 'EEEE') !== false || (strpos($this->pattern, 'E') !== false && strpos($this->pattern, 'EEEE') === false);
+		$hasLocalizedWeekday = strpos($this->pattern, 'E') !== false;
 
 		if ($hasLocalizedMonth || $hasLocalizedWeekday) {
 			$culture = $this->getCulture() ?: 'en';
@@ -820,17 +820,6 @@ class TSimpleDateFormatter
 	private function substring($string, $start, $length)
 	{
 		return iconv_substr($string, $start, $length, $this->getCharset());
-	}
-
-	/**
-	 * Returns true if char at position equals a particular char.
-	 * @param mixed $string
-	 * @param mixed $pos
-	 * @param mixed $char
-	 */
-	private function charEqual($string, $pos, $char)
-	{
-		return $this->charAt($string, $pos) == $char;
 	}
 
 	/**

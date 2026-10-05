@@ -92,7 +92,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	/**
 	 * Controls for which the client-side validation3.js file needs to handle
 	 * them specially.
-	 * @var array list of control class names
+	 * @var array<class-string<\Prado\Web\UI\TControl>, string> list of control class names
 	 */
 	private static $_clientClass = [
 		// normal controls needing special handling to extract their values

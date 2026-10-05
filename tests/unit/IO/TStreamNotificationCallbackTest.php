@@ -253,6 +253,7 @@ class TStreamNotificationCallbackTest extends \PHPUnit\Framework\TestCase
 		$params = stream_context_get_params($context);
 		
 		self::assertFalse(array_key_exists('notification', $params));
+		self::assertNull(TStreamNotificationCallback::getContextNotificationCallback($context));
 		self::assertEquals($userAgent, $params['options']['http']['user_agent']);
 	}
 	

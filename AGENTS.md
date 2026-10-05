@@ -10,7 +10,7 @@
 - **Javascript vitest Unit Tests**: `npm run test`
 
 ### Linting and Code Analysis
-- **PHPStan Analysis**: `vendor/bin/phpstan analyse framework/ --memory-limit=512M`
+- **PHPStan Analysis**: `vendor/bin/phpstan analyse --memory-limit=1G`
 - **PHP CS Fixer (Dry-run)**: `vendor/bin/php-cs-fixer fix --dry-run framework/` (check)
 - **PHP CS Fixer (Fix)**: `vendor/bin/php-cs-fixer fix framework/` (apply fixes)
 

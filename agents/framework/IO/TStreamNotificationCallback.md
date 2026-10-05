@@ -44,7 +44,7 @@ The companion class [TStreamNotificationParameter](./TStreamNotificationParamete
   - If `$context` is callable: wraps in `stream_context_create(null, ['notification' => $context])`.
   - If `$context` is array: extracts `'notification'` key; detects any `on*` event keys (case-insensitive) and creates/wraps a `TStreamNotificationCallback` automatically; applies remaining keys as context options.
   - If `'notification'` is itself an array: treated as a component config array (must include `'class'`); created via `Prado::createComponent()`.
-- `static getContextNotificationCallback(mixed $context): mixed` — Extracts the `'notification'` param from an existing stream context resource via `stream_context_get_params()`.
+- `static getContextNotificationCallback(mixed $context): mixed` — Extracts the `'notification'` param from an existing stream context resource via `stream_context_get_params()` and returns `null` when the context has no notification callback.
 
 ### Instance
 

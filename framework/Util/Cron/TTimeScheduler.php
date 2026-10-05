@@ -462,7 +462,6 @@ class TTimeScheduler extends \Prado\TComponent
 	{
 		$daysinmonth = $this->days_in_month($month, $year);
 		$domStar = false;
-		$dowStar = false;
 		$da = array_pad([], $daysinmonth + 1, null);
 		unset($da[0]);
 		$dwa = array_pad([], $daysinmonth + 1, null);
@@ -535,9 +534,7 @@ class TTimeScheduler extends \Prado\TComponent
 				}
 			}
 		}
-		if ($dowStar) {
-			return $da;
-		} elseif ($domStar) {
+		if ($domStar) {
 			return $dwa;
 		}
 		foreach ($da as $key => $value) {

@@ -27,6 +27,7 @@ minute hour day month dayOfWeek year
 - Special shortcuts: `@yearly`, `@annually`, `@monthly`, `@weekly`, `@daily`, `@hourly`, `@midnight`
 - Unix timestamp: `@<timestamp>` for one-off tasks
 - Supports ranges (`1-5`), steps (`*/5`), lists (`1,3,5`), closest weekday (`15W`), last day (`L`), week number (`3#2`)
+- The parser normalizes a wildcard day-of-week to numeric day `0`; day matching therefore uses the numeric branch and does not perform a second wildcard check.
 
 ## See Also
 

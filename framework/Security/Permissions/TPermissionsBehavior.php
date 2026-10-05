@@ -81,7 +81,7 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 	private $_permissionEvents;
 
 	/** @var \Prado\Security\Permissions\TPermissionEvent[] */
-	private $_events;
+	private array $_events = [];
 
 	/**
 	 * @param \Prado\TComponent $owner the object being attached to
@@ -145,7 +145,7 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 	 */
 	public function getPermissionEvents()
 	{
-		return $this->_events ?? [];
+		return $this->_events;
 	}
 
 	/**

@@ -44,7 +44,6 @@ class TResultMap extends \Prado\TComponent
 	private $_extends;
 	private $_groupBy;
 	private $_discriminator;
-	private $_typeHandlers;
 	private $_ID;
 
 	/**
@@ -162,17 +161,18 @@ class TResultMap extends \Prado\TComponent
 	public function createInstanceOfResult($registry)
 	{
 		$handler = $registry->getTypeHandler($this->getClass());
+		$handlerClass = $handler !== null ? $handler::class : 'null';
 		try {
 			if ($handler !== null) {
 				return $handler->createNewInstance();
 			} else {
 				return $registry->createInstanceOf($this->getClass());
 			}
-		} catch (TSqlMapException $e) {
+		} catch (TSqlMapException) {
 			throw new TSqlMapException(
 				'sqlmap_unable_to_create_new_instance',
 				$this->getClass(),
-				$handler ? $handler::class : 'null',
+				$handlerClass,
 				$this->getID()
 			);
 		}

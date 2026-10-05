@@ -185,10 +185,6 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * @var ?TDataGridItem footer item
 	 */
 	private $_footer;
-	/**
-	 * @var TPagedDataSource paged data source object
-	 */
-	private $_pagedDataSource;
 	private $_topPager;
 	private $_bottomPager;
 	/**

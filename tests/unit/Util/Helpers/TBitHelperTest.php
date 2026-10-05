@@ -125,10 +125,14 @@ class TBitHelperTest extends \PHPUnit\Framework\TestCase
 		self::assertEquals(9, TBitHelper::bitCount(-128));
 		self::assertEquals(9, TBitHelper::bitCount(-255));
 			
-		self::assertEquals(PHP_INT_SIZE * 8, TBitHelper::bitCount(PHP_INT_MIN + 1));
 		self::assertEquals(PHP_INT_SIZE * 8 - 1, TBitHelper::bitCount(PHP_INT_MAX));
-		self::assertEquals(PHP_INT_SIZE * 8, TBitHelper::bitCount(PHP_INT_MIN / 2));
-		self::assertEquals(PHP_INT_SIZE * 8 - 1, TBitHelper::bitCount(PHP_INT_MIN / 2 + 1));
+		self::assertEquals(PHP_INT_SIZE * 8, TBitHelper::bitCount(PHP_INT_MIN));
+		self::assertEquals(PHP_INT_SIZE * 8, TBitHelper::bitCount(PHP_INT_MIN + 1));
+		for ($k = 1; $k < PHP_INT_SIZE * 8 - 1; $k++) {
+			self::assertEquals($k, TBitHelper::bitCount((1 << $k) - 1), "2^$k - 1");
+			self::assertEquals($k + 1, TBitHelper::bitCount(1 << $k), "2^$k");
+			self::assertEquals($k + 2, TBitHelper::bitCount(-(1 << $k)), "-2^$k");
+		}
 	}
 	
 	public function testColorBitShift()

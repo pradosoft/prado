@@ -250,7 +250,7 @@ class TApplication extends TComponent implements ISingleton
 	/**
 	 * @var string unique application ID
 	 */
-	private $_uniqueID;
+	private ?string $_uniqueID = null;
 	/**
 	 * @var ?string the default clock class from configuration, or null for {@see DEFAULT_CLOCK_CLASS}
 	 * @since 4.4.0
@@ -267,7 +267,7 @@ class TApplication extends TComponent implements ISingleton
 	/**
 	 * @var array available services and their configurations indexed by service IDs
 	 */
-	private $_services;
+	private array $_services = [];
 	/**
 	 * @var IService current service instance
 	 */
@@ -1331,7 +1331,7 @@ class TApplication extends TComponent implements ISingleton
 	 */
 	public function getRegisteredServices(): array
 	{
-		return $this->_services ?? [];
+		return $this->_services;
 	}
 
 	/**
@@ -2586,7 +2586,7 @@ class TApplication extends TComponent implements ISingleton
 			$current = $next;
 		}
 
-		$cycleStart = $visited[$current] ?? 0;
+		$cycleStart = $visited[$current];
 		$loop = array_slice($path, $cycleStart);
 		$loop[] = $current; // close the loop
 		return $loop;

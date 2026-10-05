@@ -147,6 +147,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	/**
 	 * Initializes the route.
 	 * @param null|array|\Prado\Xml\TXmlElement $config configurations specified in {@see \Prado\Util\Log\TLogRouter}.
+	 * @phpstan-impure
 	 */
 	public function init($config)
 	{
@@ -519,7 +520,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 				$profileLast[$profileToken] = $logs[$key];
 				$logs[$key][TLogger::LOG_MESSAGE] = 'Profile End: ' . $logs[$key][TLogger::LOG_MESSAGE];
 			}
-			if (is_numeric($logs[$key]['delta']) && ($this->_maxDelta === null || $logs[$key]['delta'] > $this->_maxDelta)) {
+			if (is_numeric($logs[$key]['delta']) && $logs[$key]['delta'] > $this->_maxDelta) {
 				$this->_maxDelta = $logs[$key]['delta'];
 			}
 		}

@@ -247,7 +247,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 		//need to register the validation manager is validation summary is alone.
 		$formID = $this->getPage()->getForm()->getClientID();
 		$scriptKey = "TBaseValidator:$formID";
-		if ($this->getEnableClientScript() && !$cs->isEndScriptRegistered($scriptKey)) {
+		if (!$cs->isEndScriptRegistered($scriptKey)) {
 			$manager['FormID'] = $formID;
 			$options = TJavaScript::encode($manager);
 			$cs->registerPradoScript('validator');

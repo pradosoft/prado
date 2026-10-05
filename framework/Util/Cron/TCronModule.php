@@ -146,8 +146,8 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	/** @var string the cli class to instance for CLI command line actions; this changes for TDbCronManager */
 	protected $_shellClass = \Prado\Util\Cron\TShellCronAction::class;
 
-	/** @var array[] any additional tasks to install from properties */
-	private $_additionalCronTasks;
+	/** @var array|TXmlDocument any additional tasks to install from properties */
+	private $_additionalCronTasks = [];
 
 	/**
 	 * Initializes the module.  Read the configuration, installs Shell Actions,
@@ -617,7 +617,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	{
 		$this->assertUninitialized('UserManager');
 		if (!is_string($provider) && !($provider instanceof IUserManager) && $provider !== null) {
-			throw new TConfigurationException('cron_usermanager_invalid', is_object($provider) ? $provider::class : $provider);
+			throw new TConfigurationException('cron_usermanager_invalid', get_debug_type($provider));
 		}
 		$this->_userManager = $provider;
 	}
@@ -682,7 +682,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	 */
 	public function getAdditionalCronTasks()
 	{
-		return $this->_additionalCronTasks ?? [];
+		return $this->_additionalCronTasks;
 	}
 
 	/**
@@ -713,6 +713,6 @@ class TCronModule extends \Prado\TModule implements IPermissions
 		if (!is_array($tasks) && !($tasks instanceof TXmlDocument) && $tasks !== null) {
 			throw new TInvalidDataTypeException('cron_additional_tasks_invalid', $tasks);
 		}
-		$this->_additionalCronTasks = $tasks;
+		$this->_additionalCronTasks = $tasks ?? [];
 	}
 }

@@ -40,7 +40,6 @@ class TParameterMap extends \Prado\TComponent
 	private $_extend;
 	private $_properties;
 	private $_propertyMap;
-	private $_extendMap;
 	private $_ID;
 
 	/**

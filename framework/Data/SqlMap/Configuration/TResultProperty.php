@@ -50,20 +50,18 @@ class TResultProperty extends \Prado\TComponent
 	private $_isLazyLoad = false;
 	private $_select;
 
-	private $_hostResultMapID = 'inplicit internal mapping';
-
 	public const LIST_TYPE = 0;
 	public const ARRAY_TYPE = 1;
 
 	/**
-	 * Gets the containing result map ID.
-	 * @param TResultMap $resultMap containing result map.
+	 * Initializes a result property.
+	 *
+	 * The optional result map parameter is retained for backward compatibility.
+	 * @param ?TResultMap $resultMap legacy containing result map.
+	 * @phpstan-ignore constructor.unusedParameter (kept for callers that pass the containing result map)
 	 */
 	public function __construct($resultMap = null)
 	{
-		if ($resultMap instanceof TResultMap) {
-			$this->_hostResultMapID = $resultMap->getID();
-		}
 		parent::__construct();
 	}
 

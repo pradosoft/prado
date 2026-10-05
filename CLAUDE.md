@@ -17,7 +17,7 @@ vendor/bin/php-cs-fixer fix --dry-run framework/
 vendor/bin/php-cs-fixer fix framework/
 
 # Static analysis
-vendor/bin/phpstan analyse framework/ --memory-limit=512M
+vendor/bin/phpstan analyse --memory-limit=1G
 
 # Run all unit tests
 vendor/bin/phpunit --testsuite unit
@@ -48,7 +48,7 @@ Run these four checks **in order** — all must pass:
 
 1. PHP compile check (`php -l`)
 2. `vendor/bin/php-cs-fixer fix --dry-run framework/`
-3. `vendor/bin/phpstan analyse framework/ --memory-limit=512M`
+3. `vendor/bin/phpstan analyse --memory-limit=1G`
 4. `vendor/bin/phpunit --testsuite unit`
 
 > **Never add or change phpunit command options** when unit testing — only run project unit tests as specified above. When testing a single class or cluster, only run tests for that class/directory. Measuring coverage is the exception: use the `composer coverage` scripts, narrowing a run with `--filter` and `--coverage-filter`.

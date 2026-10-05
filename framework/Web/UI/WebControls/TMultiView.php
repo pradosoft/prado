@@ -246,7 +246,7 @@ class TMultiView extends \Prado\Web\UI\TControl
 					} else {
 						throw new TInvalidDataValueException('multiview_viewid_invalid', $viewID);
 					}
-					break;
+					// no break
 				case self::CMD_SWITCHVIEWINDEX:
 					$index = TPropertyValue::ensureInteger($param->getCommandParameter());
 					$this->setActiveViewIndex($index);

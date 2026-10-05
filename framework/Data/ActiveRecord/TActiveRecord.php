@@ -371,24 +371,23 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 */
 	public function equals(TActiveRecord $record, $strict = false)
 	{
-		if ($record === null || $this::class !== $record::class) {
+		if ($this::class !== $record::class) {
 			return false;
 		}
 		$tableInfo = $this->getRecordTableInfo();
 		$pks = $tableInfo->getPrimaryKeys();
 		$properties = count($pks) > 0 ? $pks : $tableInfo->getColumns()->getKeys();
-		$equals = true;
 		foreach ($properties as $prop) {
 			if ($strict) {
-				$equals = $equals && $this->getColumnValue($prop) === $record->getColumnValue($prop);
+				$equals = $this->getColumnValue($prop) === $record->getColumnValue($prop);
 			} else {
-				$equals = $equals && $this->getColumnValue($prop) == $record->getColumnValue($prop);
+				$equals = $this->getColumnValue($prop) == $record->getColumnValue($prop);
 			}
 			if (!$equals) {
 				return false;
 			}
 		}
-		return $equals;
+		return true;
 	}
 
 	/**
