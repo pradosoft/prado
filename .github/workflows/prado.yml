@@ -61,6 +61,9 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --no-progress --prefer-dist --optimize-autoloader
 
+      - name: Run PHPStan extension tests
+        run: composer stantest
+
       - name: Validate code using phpstan
         run: phpstan analyse --error-format=checkstyle | cs2pr
 
