@@ -126,19 +126,77 @@ Prado.CallbackRequestManager =
 	// jQuery on an empty object, we are going to use this as our Queue
 	ajaxQueue : jQuery({}),
 
+	/**
+	 * Send gates: functions called with each queued CallbackRequest before its inputs are
+	 * serialized. A gate returns null to let the request go, or a Promise that holds the
+	 * request, and the requests queued after it, until the Promise settles.
+	 * @since 4.4.0
+	 */
+	sendGates : [],
+
+	/**
+	 * Adds a send gate.
+	 * @param {function} gate called with the CallbackRequest; returns null or a Promise
+	 * @since 4.4.0
+	 */
+	addSendGate(gate) {
+		if (!this.sendGates.includes(gate))
+			this.sendGates.push(gate);
+	},
+
+	/**
+	 * Removes a send gate.
+	 * @param {function} gate the gate added with addSendGate()
+	 * @since 4.4.0
+	 */
+	removeSendGate(gate) {
+		const index = this.sendGates.indexOf(gate);
+		if (index > -1)
+			this.sendGates.splice(index, 1);
+	},
+
+	/**
+	 * Calls each send gate for a request.
+	 * @param {object} request the CallbackRequest
+	 * @return {Promise[]} the Promises that hold the request; empty when none do
+	 * @since 4.4.0
+	 */
+	collectSendGates(request) {
+		const holds = [];
+		for (const gate of this.sendGates.slice()) {
+			const hold = gate(request);
+			if (hold && typeof hold.then === 'function')
+				holds.push(hold);
+		}
+		return holds;
+	},
+
 	ajax(ajaxOpts) {
         let jqXHR;
+        let aborted = false;
         const dfd = jQuery.Deferred();
         const promise = dfd.promise();
 
         // run the actual query
         function doRequest( next ) {
-			// Add request data just before send to have it actual
-			ajaxOpts.data = ajaxOpts.context.getParameters();
-			jqXHR = jQuery.ajax( ajaxOpts );
-			jqXHR.done( dfd.resolve )
-				.fail( dfd.reject )
-				.then( next, next );
+			const send = () => {
+				if (aborted) {
+					next();
+					return;
+				}
+				// Add request data just before send to have it actual
+				ajaxOpts.data = ajaxOpts.context.getParameters();
+				jqXHR = jQuery.ajax( ajaxOpts );
+				jqXHR.done( dfd.resolve )
+					.fail( dfd.reject )
+					.then( next, next );
+			};
+			// A gate that holds the request delays the send; with no hold the send is synchronous.
+			const holds = Prado.CallbackRequestManager.collectSendGates(ajaxOpts.context);
+			if (holds.length === 0)
+				send();
+			else
+				Promise.all(holds).then(send, send);
 		}
 
         // queue our ajax request
@@ -151,6 +209,7 @@ Prado.CallbackRequestManager =
 			if ( jqXHR ) {
 				return jqXHR.abort( statusText );
 			}
+			aborted = true;
 
 			// if there wasn't already a jqXHR we need to remove from queue
 			const queue = Prado.CallbackRequestManager.ajaxQueue.queue(), index = jQuery.inArray( doRequest, queue );

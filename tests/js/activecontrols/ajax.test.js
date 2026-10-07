@@ -216,3 +216,85 @@ describe('Prado.Callback', () => {
 		expect(typeof Callback).toBe('function');
 	});
 });
+
+// ─── Send gates ───────────────────────────────────────────────────────────────
+
+describe('Prado.CallbackRequestManager send gates', () => {
+	let ajaxSpy;
+
+	function fakeXhr() {
+		const xhr = { done: () => xhr, fail: () => xhr, then: (next) => { next(); return xhr; }, abort: vi.fn() };
+		return xhr;
+	}
+
+	function request(options = { CausesValidation: true }) {
+		return { options, getParameters: vi.fn(() => 'a=1') };
+	}
+
+	beforeEach(() => {
+		ajaxSpy = vi.spyOn(global.jQuery, 'ajax').mockImplementation(() => fakeXhr());
+	});
+
+	afterEach(() => {
+		ajaxSpy.mockRestore();
+		CallbackRequestManager.sendGates.length = 0;
+	});
+
+	it('sends synchronously without gates', () => {
+		const context = request();
+		CallbackRequestManager.ajax({ context });
+		expect(ajaxSpy).toHaveBeenCalledTimes(1);
+		expect(context.getParameters).toHaveBeenCalledTimes(1);
+	});
+
+	it('sends synchronously when every gate returns null', () => {
+		const gate = vi.fn(() => null);
+		CallbackRequestManager.addSendGate(gate);
+		const context = request();
+		CallbackRequestManager.ajax({ context });
+		expect(gate).toHaveBeenCalledWith(context);
+		expect(ajaxSpy).toHaveBeenCalledTimes(1);
+	});
+
+	it('holds the request and its inputs until the gate settles', async () => {
+		let release;
+		CallbackRequestManager.addSendGate(() => new Promise((resolve) => { release = resolve; }));
+		const context = request();
+		CallbackRequestManager.ajax({ context });
+		expect(ajaxSpy).not.toHaveBeenCalled();
+		expect(context.getParameters).not.toHaveBeenCalled();
+		release(true);
+		await Promise.resolve();
+		await Promise.resolve();
+		expect(context.getParameters).toHaveBeenCalledTimes(1);
+		expect(ajaxSpy).toHaveBeenCalledTimes(1);
+	});
+
+	it('sends after a gate rejects', async () => {
+		CallbackRequestManager.addSendGate(() => Promise.reject(new Error('x')));
+		CallbackRequestManager.ajax({ context: request() });
+		await Promise.resolve();
+		await Promise.resolve();
+		expect(ajaxSpy).toHaveBeenCalledTimes(1);
+	});
+
+	it('does not send a request aborted while held', async () => {
+		let release;
+		CallbackRequestManager.addSendGate(() => new Promise((resolve) => { release = resolve; }));
+		const held = CallbackRequestManager.ajax({ context: request() });
+		held.abort('stop');
+		release(true);
+		await Promise.resolve();
+		await Promise.resolve();
+		expect(ajaxSpy).not.toHaveBeenCalled();
+	});
+
+	it('adds a gate once and removes it', () => {
+		const gate = () => null;
+		CallbackRequestManager.addSendGate(gate);
+		CallbackRequestManager.addSendGate(gate);
+		expect(CallbackRequestManager.sendGates).toEqual([gate]);
+		CallbackRequestManager.removeSendGate(gate);
+		expect(CallbackRequestManager.sendGates).toEqual([]);
+	});
+});

@@ -16,6 +16,9 @@ use Prado\Web\Javascripts\TJavaScript;
 /**
  * TReCaptchaValidator class
  *
+ * TReCaptchaValidator is deprecated with {@see \Prado\Web\UI\WebControls\TReCaptcha}, whose reCAPTCHA v1
+ * service Google retired. Use {@see \Prado\Web\UI\WebControls\TReCaptcha2Validator} instead.
+ *
  * TReCaptchaValidator validates user input against a reCAPTCHA represented by
  * a {@see \Prado\Web\UI\WebControls\TReCaptcha} control. The input control fails validation if its value
  * is not the same as the token displayed in reCAPTCHA. Note, if the user does
@@ -26,6 +29,7 @@ use Prado\Web\Javascripts\TJavaScript;
  *
  * @author Bérczi Gábor <gabor.berczi@devworx.hu>
  * @since 3.2
+ * @deprecated 4.4.0 reCAPTCHA v1 is retired; use TReCaptcha2Validator.
  */
 class TReCaptchaValidator extends TBaseValidator
 {

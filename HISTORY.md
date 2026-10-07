@@ -1,4 +1,10 @@
 ## Version 4.4.0 - TBA
+CHG: TReCaptcha and TReCaptchaValidator are deprecated; Google retired reCAPTCHA v1, so they cannot validate. Use TReCaptcha2. (belisoful)
+BUG: `TReCaptcha2::validate()` accepted any non-empty response; it now verifies the token with Google's siteverify through `THttpClient` and fails closed. (belisoful)
+ENH: TProofOfWork and TProofOfWorkValidator make the browser solve a signed, single-use SHA-256 challenge in a Web Worker before a form posts, which raises the cost of automated submissions without a visual puzzle. `Complexity` sets the work and `StartMode` when solving starts; the control needs a cache. Validating callbacks wait for the solution through the new `Prado.CallbackRequestManager` send gates. (belisoful)
+ENH: TFormGuard rejects automated submissions with a hidden honeypot field, a signed render stamp checked against `MinFillTime` and `MaxFillTime`, and an optional per-client `RateLimit`; `FailureReason` reports the failed check. (belisoful)
+ENH: TCaptcha tokens are single-use through the cache (`SingleUse`, `CacheModuleID`), are derived and signed with HMAC-SHA256, and the image has a default `AlternateText`. TCaptchaValidator no longer sends a token hash to the client, and `captcha.php` never displays errors, which printed the token. `TCacheModuleIDTrait` resolves a component's cache. UPGRADE.md covers the changes. (belisoful)
+BUG: TCaptcha's published `captcha.php` image script failed without the Prado autoloader and used the `imagepolygon()` signature that PHP 8.1 deprecates. (belisoful)
 CHG: The minimum PHP version is 8.2; PHP 8.1 leaves the tested versions. UPGRADE.md notes the requirement. (belisoful)
 BUG: `THttpResponse::httpRedirect()` threw a deprecation error when `$_SERVER['SERVER_SOFTWARE']` is unset, as in CLI runs. (belisoful)
 ENH: `THttpResponse` dynamic events for behaviors: `dyFlushContent`, `dyWriteFile` (a behavior can send the file itself), `dyRedirect`, and `dySetCookie`. (belisoful)

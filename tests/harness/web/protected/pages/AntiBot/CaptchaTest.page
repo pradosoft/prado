@@ -1,0 +1,10 @@
+<com:TContent ID="Content">
+	<h1>Captcha Test</h1>
+	<com:TCaptcha ID="Captcha" TokenImageTheme="63" MinTokenLength="5" MaxTokenLength="5" />
+	<com:TLabel ForControl="Answer" Text="Characters" />
+	<com:TTextBox ID="Answer" />
+	<com:TCaptchaValidator ID="CaptchaValidator" CaptchaControl="Captcha" ControlToValidate="Answer" ErrorMessage="Wrong characters." />
+	<com:TButton ID="Send" Text="Send" OnClick="sendClicked" />
+	<p><com:TLabel ID="Result" /></p>
+	<p><com:TLabel ID="Token" /></p>
+</com:TContent>

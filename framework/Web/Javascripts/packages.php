@@ -48,6 +48,11 @@ $packages = [
 		'prado/controls/relativetime.js',
 	],
 
+	'proofofwork' => [
+		'prado/controls/proofofwork-solver.js',
+		'prado/controls/proofofwork.js',
+	],
+
 	'keyboard' => [
 		'prado/controls/keyboard.js',
 	],
@@ -135,6 +140,7 @@ $dependencies = [
 	'keyboard' => ['jquery', 'prado', 'keyboard'],
 	'slider' => ['jquery', 'prado', 'slider'],
 	'relativetime' => ['jquery', 'prado', 'relativetime'],
+	'proofofwork' => ['jquery', 'prado', 'proofofwork'],
 	'webtemplate' => ['jquery', 'prado', 'webtemplate'],
 	'safetycover' => ['jquery', 'prado', 'safetycover'],
 	'inlineeditor' => ['jquery', 'prado', 'ajax', 'inlineeditor'],

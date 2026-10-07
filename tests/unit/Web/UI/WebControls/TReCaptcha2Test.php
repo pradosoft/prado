@@ -11,6 +11,9 @@
 namespace Prado\Test\Unit\Web\UI\WebControls;
 
 use Prado\Exceptions\TConfigurationException;
+use Prado\IO\HttpClient\THttpClientException;
+use Prado\IO\HttpClient\THttpClientResponse;
+use Prado\Test\Unit\Harness\IO\TTestHttpClient;
 use Prado\Web\Services\TPageService;
 use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
 use Prado\Web\UI\TPage;
@@ -90,6 +93,7 @@ class TReCaptcha2Test extends \PHPUnit\Framework\TestCase
 	 * Runs $callable inside a try/finally that restores the application's service
 	 * after setting it to a fresh TPageService.  Required for tests that call
 	 * onPreRender() with both keys set (which reaches getClientScript()).
+	 * @param callable $callable
 	 */
 	private function withPageService(callable $callable): void
 	{
@@ -106,6 +110,10 @@ class TReCaptcha2Test extends \PHPUnit\Framework\TestCase
 	/**
 	 * Creates a minimal stdClass callback parameter that triggers the onCallback
 	 * path inside raiseCallbackEvent().
+	 * @param bool $onCallback
+	 * @param string $response
+	 * @param string $responseField
+	 * @param int $widgetId
 	 */
 	private function makeCallbackParam(
 		bool $onCallback = true,
@@ -124,6 +132,7 @@ class TReCaptcha2Test extends \PHPUnit\Framework\TestCase
 	/**
 	 * Creates a minimal stdClass callback parameter that triggers the
 	 * onCallbackExpired path inside raiseCallbackEvent().
+	 * @param bool $onCallbackExpired
 	 */
 	private function makeExpiredParam(bool $onCallbackExpired = true): \stdClass
 	{
@@ -136,6 +145,7 @@ class TReCaptcha2Test extends \PHPUnit\Framework\TestCase
 	 * Builds a TCallbackEventParameter whose getCallbackParameter() returns the
 	 * supplied value.  The response argument is null because raiseCallbackEvent()
 	 * only calls getCallbackParameter() on the event param.
+	 * @param mixed $callbackParameter
 	 */
 	private function makeEventParam(mixed $callbackParameter): TCallbackEventParameter
 	{
@@ -394,18 +404,107 @@ class TReCaptcha2Test extends \PHPUnit\Framework\TestCase
 		$this->assertFalse($captcha->validate());
 	}
 
-	public function testValidateReturnsTrueWhenValidationPropertyValueIsNonEmpty(): void
+	/**
+	 * Builds a spy with a secret key, a posted token, and a recording HTTP client.
+	 * @param ?THttpClientResponse $answer the siteverify answer; null leaves the client's default.
+	 * @param string $token
+	 * @return array{SpyTReCaptcha2, TTestHttpClient}
+	 */
+	private function makeVerifying(?THttpClientResponse $answer = null, string $token = '03ANYolqt_valid_token'): array
 	{
 		[$captcha] = $this->makeSpyWithPage();
-		$captcha->setSpyValidationValue('03ANYolqt_valid_token');
-		$this->assertTrue($captcha->validate());
+		$captcha->setSecretKey('secret-key');
+		$captcha->setSpyValidationValue($token);
+		$client = new TTestHttpClient();
+		if ($answer !== null) {
+			$client->responses[] = $answer;
+		}
+		$captcha->setHttpClient($client);
+		return [$captcha, $client];
 	}
 
-	public function testValidateReturnsTrueForArbitraryNonEmptyString(): void
+	private function answer(array $json, int $status = 200): THttpClientResponse
 	{
-		[$captcha] = $this->makeSpyWithPage();
-		$captcha->setSpyValidationValue('x');
+		return new THttpClientResponse($status, ['Content-Type' => 'application/json'], json_encode($json));
+	}
+
+	public function testValidatePostsTheTokenToSiteverify(): void
+	{
+		[$captcha, $client] = $this->makeVerifying($this->answer(['success' => true, 'hostname' => 'example.com']));
 		$this->assertTrue($captcha->validate());
+
+		$this->assertCount(1, $client->calls);
+		$call = $client->calls[0];
+		$this->assertSame('POST', $call['method']);
+		$this->assertSame(TReCaptcha2::VERIFY_URL, $call['url']);
+		$this->assertSame('application/x-www-form-urlencoded', $call['headers']['Content-Type']);
+		parse_str($call['body'], $fields);
+		$this->assertSame('secret-key', $fields['secret']);
+		$this->assertSame('03ANYolqt_valid_token', $fields['response']);
+		$this->assertSame((string) \Prado\Prado::getApplication()->getRequest()->getUserHostAddress(), $fields['remoteip'] ?? '');
+		$this->assertSame('example.com', $captcha->getVerifyResult()['hostname']);
+	}
+
+	public function testValidateFailsWhenGoogleRejectsTheToken(): void
+	{
+		[$captcha] = $this->makeVerifying($this->answer(['success' => false, 'error-codes' => ['invalid-input-response']]));
+		$this->assertFalse($captcha->validate());
+		$this->assertSame(['invalid-input-response'], $captcha->getVerifyResult()['error-codes']);
+	}
+
+	public function testValidateFailsWithoutAnExplicitSuccess(): void
+	{
+		[$captcha] = $this->makeVerifying($this->answer(['success' => 'true']));
+		$this->assertFalse($captcha->validate(), 'Only a JSON true passes.');
+	}
+
+	public function testValidateFailsOnAnHttpError(): void
+	{
+		[$captcha] = $this->makeVerifying($this->answer(['success' => true], 500));
+		$this->assertFalse($captcha->validate());
+		$this->assertNull($captcha->getVerifyResult());
+	}
+
+	public function testValidateFailsOnAnUnreadableAnswer(): void
+	{
+		[$captcha] = $this->makeVerifying(new THttpClientResponse(200, [], '<html>'));
+		$this->assertFalse($captcha->validate());
+	}
+
+	public function testValidateFailsWhenSiteverifyIsUnreachable(): void
+	{
+		[$captcha, $client] = $this->makeVerifying();
+		$client->throw = new THttpClientException('httpclient_transport_required');
+		$this->assertFalse($captcha->validate());
+	}
+
+	public function testValidateVerifiesOncePerRequest(): void
+	{
+		[$captcha, $client] = $this->makeVerifying($this->answer(['success' => true]));
+		$this->assertTrue($captcha->validate());
+		$this->assertTrue($captcha->validate());
+		$this->assertCount(1, $client->calls, 'Google accepts a token once, so the result is kept.');
+	}
+
+	public function testValidateSkipsTheRequestWithoutAToken(): void
+	{
+		[$captcha, $client] = $this->makeVerifying(null, '');
+		$this->assertFalse($captcha->validate());
+		$this->assertSame([], $client->calls);
+	}
+
+	public function testValidateSkipsTheRequestWithoutASecretKey(): void
+	{
+		[$captcha, $client] = $this->makeVerifying();
+		$captcha->setSecretKey('');
+		$this->assertFalse($captcha->validate());
+		$this->assertSame([], $client->calls);
+	}
+
+	public function testHttpClientDefaultsToCreate(): void
+	{
+		$captcha = new TReCaptcha2();
+		$this->assertInstanceOf(\Prado\IO\HttpClient\THttpClient::class, $captcha->getHttpClient());
 	}
 
 	// -----------------------------------------------------------------------

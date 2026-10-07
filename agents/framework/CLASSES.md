@@ -1,6 +1,6 @@
 # PRADO Framework Classes
 
-**Total Classes: 777**
+**Total Classes: 782**
 
 This document lists all classes in the PRADO framework as defined in `classes.php`.
 
@@ -8,7 +8,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 | Directory | Classes | Interfaces | Total | Recursive |
 |-----------|---------|------------|-------|-----------|
-| [Prado](./INDEX.md) | 17 | 7 | 24 | 777 |
+| [Prado](./INDEX.md) | 17 | 7 | 24 | 782 |
 | [Prado\\Caching](./Caching/INDEX.md) | 11 | 2 | 13 | 13 |
 | [Prado\\Collections](./Collections/INDEX.md) | 27 | 7 | 34 | 34 |
 | [Prado\\Data](./Data/INDEX.md) | 10 | 5 | 15 | 136 |
@@ -47,14 +47,14 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 | [Prado\\Util\\Log](./Util/Log/INDEX.md) | 13 | 1 | 14 | 14 |
 | [Prado\\Util\\Math](./Util/Math/INDEX.md) | 2 | 0 | 2 | 2 |
 | [Prado\\Util\\Traits](./Util/Traits/INDEX.md) | 2 | 0 | 2 | 2 |
-| [Prado\\Web](./Web/INDEX.md) | 21 | 0 | 21 | 418 |
+| [Prado\\Web](./Web/INDEX.md) | 21 | 0 | 21 | 423 |
 | [Prado\\Web\\Behaviors](./Web/Behaviors/INDEX.md) | 1 | 0 | 1 | 1 |
 | [Prado\\Web\\Javascripts](./Web/Javascripts/INDEX.md) | 4 | 0 | 4 | 4 |
 | [Prado\\Web\\Services](./Web/Services/INDEX.md) | 14 | 1 | 15 | 15 |
-| [Prado\\Web\\UI](./Web/UI/INDEX.md) | 28 | 15 | 43 | 361 |
+| [Prado\\Web\\UI](./Web/UI/INDEX.md) | 28 | 15 | 43 | 366 |
 | [Prado\\Web\\UI\\ActiveControls](./Web/UI/ActiveControls/INDEX.md) | 72 | 2 | 74 | 74 |
 | [Prado\\Web\\UI\\JuiControls](./Web/UI/JuiControls/INDEX.md) | 19 | 1 | 20 | 20 |
-| [Prado\\Web\\UI\\WebControls](./Web/UI/WebControls/INDEX.md) | 226 | 5 | 231 | 231 |
+| [Prado\\Web\\UI\\WebControls](./Web/UI/WebControls/INDEX.md) | 231 | 5 | 236 | 236 |
 | [Prado\\Web\\UI\\Traits](./Web/UI/Traits/INDEX.md) | 1 | 0 | 1 | 1 |
 | [Prado\\Xml](./Xml/INDEX.md) | 3 | 0 | 3 | 3 |
 
@@ -1000,7 +1000,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Web\UI\WebControls](./Web/UI/WebControls/INDEX.md) - Classes: 226, Interfaces: 5, Total: 231, Recursive: 231
+## [Prado\Web\UI\WebControls](./Web/UI/WebControls/INDEX.md) - Classes: 231, Interfaces: 5, Total: 236, Recursive: 236
 
 ### Interfaces (5)
 
@@ -1093,6 +1093,8 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TFlushOutput](./Web/UI/WebControls/TFlushOutput.md)
 - [TFont](./Web/UI/WebControls/TFont.md)
 - [TFooter](./Web/UI/WebControls/TFooter.md)
+- [TFormGuard](./Web/UI/WebControls/TFormGuard.md)
+- [TFormGuardFailure](./Web/UI/WebControls/TFormGuard.md)
 - [TGravatar](./Web/UI/WebControls/TGravatar.md)
 - [THead](./Web/UI/WebControls/THead.md)
 - [THeader1](./Web/UI/WebControls/THeader1.md)
@@ -1150,6 +1152,9 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TPanel](./Web/UI/WebControls/TPanel.md)
 - [TPanelStyle](./Web/UI/WebControls/TPanelStyle.md)
 - [TPlaceHolder](./Web/UI/WebControls/TPlaceHolder.md)
+- [TProofOfWork](./Web/UI/WebControls/TProofOfWork.md)
+- [TProofOfWorkStartMode](./Web/UI/WebControls/TProofOfWork.md)
+- [TProofOfWorkValidator](./Web/UI/WebControls/TProofOfWorkValidator.md)
 - [TPolygonHotSpot](./Web/UI/WebControls/TPolygonHotSpot.md)
 - [TRadioButton](./Web/UI/WebControls/TRadioButton.md)
 - [TRadioButtonItem](./Web/UI/WebControls/TRadioButtonItem.md)
@@ -1160,9 +1165,9 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TReadOnlyDataSource](./Web/UI/WebControls/TReadOnlyDataSource.md)
 - [TReadOnlyDataSourceView](./Web/UI/WebControls/TReadOnlyDataSourceView.md)
 - [TReCaptcha](./Web/UI/WebControls/TReCaptcha.md)
-- [TReCaptcha](./Web/UI/WebControls/TReCaptcha.md)2
-- [TReCaptcha](./Web/UI/WebControls/TReCaptcha.md)2Validator
-- [TReCaptcha](./Web/UI/WebControls/TReCaptcha.md)Validator
+- [TReCaptcha2](./Web/UI/WebControls/TReCaptcha2.md)
+- [TReCaptcha2Validator](./Web/UI/WebControls/TReCaptcha2Validator.md)
+- [TReCaptchaValidator](./Web/UI/WebControls/TReCaptchaValidator.md)
 - [TRectangleHotSpot](./Web/UI/WebControls/TRectangleHotSpot.md)
 - [TRegularExpressionValidator](./Web/UI/WebControls/TRegularExpressionValidator.md)
 - [TRepeatDirection](./Web/UI/WebControls/TRepeatDirection.md)

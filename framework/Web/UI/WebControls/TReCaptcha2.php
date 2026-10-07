@@ -10,6 +10,9 @@
 
 namespace Prado\Web\UI\WebControls;
 
+use Prado\IO\HttpClient\THttpClient;
+use Prado\IO\HttpClient\THttpClientException;
+use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Exceptions\TConfigurationException;
@@ -37,10 +40,15 @@ use Prado\Web\UI\ActiveControls\TActiveControlAdapter;
  *
  * Upon postback, user input can be validated by calling {@see validate()}.
  * The {@see \Prado\Web\UI\WebControls\TReCaptcha2Validator} control can also be used to do validation, which provides
- * server-side validation. Calling (@link validate()) will invalidate the token supplied, so all consecutive
- * calls to the method - without solving a new captcha - will return false. Therefore if implementing a multi-stage
- * input process, you must make sure that you call validate() only once, either at the end of the input process, or
- * you store the result till the end of the processing.
+ * server-side validation. {@see validate()} posts the response token, the {@see setSecretKey SecretKey}, and
+ * the client address to Google's siteverify endpoint ({@see VERIFY_URL}) and passes only when Google
+ * answers `"success": true`. A transport failure or an unreadable answer fails validation.
+ * {@see getVerifyResult()} returns Google's decoded answer, such as `hostname` and `error-codes`.
+ * The request goes through {@see getHttpClient HttpClient}, created by {@see THttpClient::create()} by default.
+ *
+ * Google accepts a token once, so calling {@see validate()} in a later request with the same token fails.
+ * Repeated calls in one request return the first result. A multi-stage input process validates once,
+ * either at the end of the input process, or stores the result until the end of the processing.
  *
  * The following template shows a typical use of TReCaptcha control:
  * ```php
@@ -59,7 +67,15 @@ use Prado\Web\UI\ActiveControls\TActiveControlAdapter;
 class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\ICallbackEventHandler, \Prado\Web\UI\IValidatable
 {
 	public const ChallengeFieldName = 'g-recaptcha-response';
+	/** Google's endpoint that verifies a response token. */
+	public const VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify';
 	private $_isValid = true;
+	/** @var ?THttpClient the client that posts to siteverify. */
+	private ?THttpClient $_httpClient = null;
+	/** @var ?bool the result of this request's verification. */
+	private ?bool $_verified = null;
+	/** @var ?array Google's decoded answer to this request's verification. */
+	private ?array $_verifyResult = null;
 
 	/**
 	 * Creates a new callback control, sets the adapter to
@@ -337,14 +353,72 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 		$cs->registerEndScript("grecaptcha:$id", $code);
 	}
 
+	/**
+	 * @throws THttpClientException when no HTTP transport is available.
+	 * @return THttpClient the client that posts to siteverify. Defaults to {@see THttpClient::create()}.
+	 * @since 4.4.0
+	 */
+	public function getHttpClient(): THttpClient
+	{
+		return $this->_httpClient ??= THttpClient::create();
+	}
+
+	/**
+	 * @param ?THttpClient $value the client that posts to siteverify; null restores the default.
+	 * @since 4.4.0
+	 */
+	public function setHttpClient(?THttpClient $value): void
+	{
+		$this->_httpClient = $value;
+	}
+
+	/**
+	 * @return ?array Google's decoded siteverify answer from this request, or null before verification or on failure.
+	 * @since 4.4.0
+	 */
+	public function getVerifyResult(): ?array
+	{
+		return $this->_verifyResult;
+	}
+
+	/**
+	 * Verifies the posted response token with Google's siteverify endpoint.
+	 * Repeated calls in the same request return the first result.
+	 * @return bool whether Google accepted the token.
+	 */
 	public function validate()
 	{
-		$value = $this->getValidationPropertyValue();
-		if ($value === null || empty($value)) {
+		if ($this->_verified === null) {
+			$this->_verified = $this->verifyResponse((string) $this->getValidationPropertyValue());
+		}
+		return $this->_verified;
+	}
+
+	/**
+	 * Posts a response token to siteverify. An empty token or SecretKey fails without a request.
+	 * A transport failure logs a warning and fails.
+	 * @param string $response the response token from the widget.
+	 * @return bool whether Google answered `"success": true`.
+	 * @since 4.4.0
+	 */
+	protected function verifyResponse(string $response): bool
+	{
+		if ($response === '' || ($secret = (string) $this->getSecretKey()) === '') {
 			return false;
 		}
-
-		return true;
+		$fields = ['secret' => $secret, 'response' => $response];
+		if (($address = (string) $this->getRequest()->getUserHostAddress()) !== '') {
+			$fields['remoteip'] = $address;
+		}
+		try {
+			$answer = $this->getHttpClient()->download('POST', self::VERIFY_URL, ['Content-Type' => 'application/x-www-form-urlencoded'], http_build_query($fields));
+		} catch (THttpClientException $e) {
+			Prado::warning('TReCaptcha2 could not reach siteverify: ' . $e->getMessage(), static::class);
+			return false;
+		}
+		$data = $answer->isSuccess() ? $answer->getJson(true, null) : null;
+		$this->_verifyResult = is_array($data) ? $data : null;
+		return ($data['success'] ?? false) === true;
 	}
 
 	/**
