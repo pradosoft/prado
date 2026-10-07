@@ -592,8 +592,13 @@ class TPageStateFormatterTest extends \PHPUnit\Framework\TestCase
 		$page->setEnableStateCompression(true);
 		$page->setEnableStateIGBinary(true);
 
+		// The middle byte lies in a cipher block that carries state.  The last byte does
+		// not always: when the compressed state fills whole blocks, the final block is
+		// PKCS7 padding only, and about 1 in 256 tampers still decrypts to valid padding,
+		// leaving the state intact.
 		$raw = base64_decode(TPageStateFormatter::serialize($page, ['all' => 'features']));
-		$raw[strlen($raw) - 1] = ($raw[strlen($raw) - 1] === 'A') ? 'B' : 'A';
+		$middle = intdiv(strlen($raw), 2);
+		$raw[$middle] = ($raw[$middle] === 'A') ? 'B' : 'A';
 
 		$this->assertNull(TPageStateFormatter::unserialize($page, base64_encode($raw)));
 	}
