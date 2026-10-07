@@ -1,0 +1,13 @@
+# Dependabot opens pull requests that bump outdated dependencies.
+# https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference
+version: 2
+updates:
+  # GitHub Actions in .github/workflows/; all bumps arrive in one weekly pull request.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
