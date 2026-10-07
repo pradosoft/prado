@@ -26,6 +26,7 @@ THttpResponse implements the mechanism for sending output to client users, manag
 - `CacheExpire` (int): TTL for cached session pages in minutes, defaults to 180
 - `CacheControl` (string): Cache control method for session pages
 - `StatusCode` (int): HTTP status code, defaults to 200
+- `AcceptRanges` (bool): Whether `writeFile()` serves byte ranges, defaults to true (@since 4.4.0)
 - `StatusReason` (string): Reason phrase for HTTP status code
 - `HtmlWriterType` (string): Type of HTML writer to be used, defaults to [THtmlWriter](UI/THtmlWriter.md)
 
@@ -61,6 +62,7 @@ return [
 - `flush($continueBuffering = true)`: Flushes response contents and headers
 - `flushContent($continueBuffering = true)`: Internal flush implementation
 - `appendFile(string $filename, bool $use_include_path = false, mixed $context = null): int|false`: Reads a file and writes it to the output buffer (@since 4.3.3)
+- `appendFileRange(string $filename, int $offset, int $length): int`: Streams a byte range of a file to `php://output` through `TStreamHelper::copyRange()` (@since 4.4.0)
 
 ### HTTP Status and Headers
 - `getStatusCode()`: Gets the current HTTP status code
@@ -78,7 +80,7 @@ return [
 - `setCookieValidation($value)`: Enables/disables cookie validation
 
 ### Content and File Handling
-- `writeFile($fileName, $content = null, $mimeType = null)`: Sends a file to client
+- `writeFile($fileName, $content = null, $mimeType = null, $headers = null, $forceDownload = true, $clientFileName = null, $fileSize = null)`: Sends a file or string to client; serves a byte range (see [Byte Ranges](#byte-ranges-since-440))
 - `redirect($url)`: Redirects browser to specified URL
 - `httpRedirect($url)`: Internal redirect implementation
 - `reload()`: Reloads the current page
@@ -130,6 +132,25 @@ Behaviors extend the response through dynamic events. A notification ignores the
 `dyWriteFile` hands a file to the web server: an `X-Sendfile` (Apache `mod_xsendfile`), `X-Accel-Redirect` (nginx), or `X-LiteSpeed-Location` behavior sends its own `Content-Type`, `Content-Disposition`, and handoff header, and the server serves the bytes, byte ranges, and conditional requests. It can also redirect to a signed CDN URL. A behavior that sends the file passes `true` along the chain (`$chain->dyWriteFile(true, …)`) so later behaviors still see the call; an observer passes the flag on unchanged and treats `true` as a response with no body to transform. With `$content` set there is no file to hand off, so a handoff behavior passes the call on. The handled-flag shape lets `TPermissionsBehavior` deny a download; the denied response is an empty 200 unless a behavior sets the status.
 
 `dyRedirect` is the place for an app-wide redirect allowlist; it runs in `redirect()` because `TCallbackResponseAdapter::httpRedirect()` never reaches `THttpResponse::httpRedirect()`. `dySetCookie` also runs for deletions because a browser only deletes a cookie whose deletion carries the same `Path`, `Domain`, and, for `__Secure-`/`__Host-` names, `Secure`. A filter may change the cookie it receives; that cookie is the one held by `getCookies()`.
+
+## Byte Ranges (@since 4.4.0)
+
+With `AcceptRanges` on (the default), `writeFile()` sends `Accept-Ranges: bytes` and, for a server file (`$content` null), `Last-Modified` from `filemtime()` unless `$headers` already has one. `resolveRequestRange()` then reads the request through [THttpHeaderRange](HttpHeaders/THttpHeaderRange.md):
+
+| Request | Response |
+|---|---|
+| no `Range`; method other than `GET`; status not 200 or status line already sent | `200`, full file |
+| `Range` invalid, unit other than `bytes`, or ranges leaving disjoint spans | `200`, full file (multipart/byteranges is not built) |
+| `If-Range` does not match the validator (`matchesIfRange()`) | `200`, full file |
+| satisfiable ranges that merge into one span (overlapping or adjoining; unsatisfiable ones dropped) | `206`, `Content-Range: bytes s-e/size`, `Content-Length` of the span |
+| no satisfiable range: all start at or past the end, `bytes=-0`, or any range of an empty body | `416`, `Content-Range: bytes */size`, `Content-Length: 0`, no `Content-Disposition`, no body |
+
+- **Validators**: `If-Range` with an entity tag matches only a strong `ETag` in `$headers` with the same string (weak tags never match). A date matches the `Last-Modified` sent (caller's or the file's) to the second. No validator → the range is ignored.
+- **Streaming**: the full file still goes through `appendFile()` (`readfile()`); a file range goes through `appendFileRange()` in 8 KiB chunks; a `$content` range is a `substr()`.
+- **Status**: `writeFile()` calls `setStatusCode(206|416)`, so `getStatusCode()` reflects the range result afterwards.
+- **`dyWriteFile` handoff** runs first; a handled call skips all of this and the web server serves ranges itself.
+- `AcceptRanges=false` reproduces the pre-4.4 headers exactly: no `Accept-Ranges`, no automatic `Last-Modified`, `Range` ignored.
+- **Disjoint ranges / multipart**: not built; a `dyWriteFile` handoff (`X-Sendfile`, `X-Accel-Redirect`) lets the web server serve them. Use case (large PDFs under Acrobat Fast Web View), reasons for deferral, and the implementation sketch: [multipart-byteranges](./multipart-byteranges.md).
 
 Response compression is left to the web server (`mod_deflate`, `mod_brotli`, nginx `gzip`) or to PHP's `zlib.output_compression`. Both run in C and stream.
 

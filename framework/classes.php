@@ -517,6 +517,7 @@ return [
 'THttpHeaderContentType' => 'Prado\Web\HttpHeaders\THttpHeaderContentType',
 'THttpHeaderCsp' => 'Prado\Web\HttpHeaders\THttpHeaderCsp',
 'THttpHeaderHsts' => 'Prado\Web\HttpHeaders\THttpHeaderHsts',
+'THttpHeaderRange' => 'Prado\Web\HttpHeaders\THttpHeaderRange',
 'THttpHeaderReportingEndpoints' => 'Prado\Web\HttpHeaders\THttpHeaderReportingEndpoints',
 'THttpHeadersManager' => 'Prado\Web\HttpHeaders\THttpHeadersManager',
 'IPublishable' => 'Prado\Web\IPublishable',
