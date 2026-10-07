@@ -55,7 +55,7 @@ jobs:
         uses: actions/cache@v6
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.json') }}
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install Composer dependencies
@@ -146,7 +146,7 @@ jobs:
         uses: actions/cache@v6
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.json') }}
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install Composer dependencies
@@ -194,7 +194,7 @@ jobs:
         uses: actions/cache@v6
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.json') }}
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install Composer dependencies
@@ -263,7 +263,7 @@ jobs:
         uses: actions/cache@v6
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.json') }}
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Disable phpdocumentor shim plugin (GPG key import fails on Windows)
@@ -323,7 +323,7 @@ jobs:
         uses: actions/cache@v6
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.json') }}
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install Composer dependencies
@@ -353,7 +353,7 @@ jobs:
         uses: actions/cache@v6
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.json') }}
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install Composer dependencies
@@ -403,7 +403,7 @@ jobs:
         uses: actions/cache@v6
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.json') }}
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install Composer dependencies
@@ -453,7 +453,7 @@ jobs:
         uses: actions/cache@v6
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.json') }}
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install Composer dependencies
@@ -510,7 +510,7 @@ jobs:
         uses: actions/cache@v6
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.json') }}
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install Composer dependencies
@@ -590,7 +590,7 @@ jobs:
         uses: actions/cache@v6
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.json') }}
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install Composer dependencies
@@ -650,7 +650,7 @@ jobs:
         uses: actions/cache@v6
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.json') }}
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install Composer dependencies
