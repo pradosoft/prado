@@ -49,6 +49,9 @@ use Prado\Web\THttpHeaderName;
  * | satisfiable ranges forming one span | `206 Partial Content` with `Content-Range` and the span |
  * | no range within the file | `416 Range Not Satisfiable` with a `Content-Range` giving the file size, and no body |
  *
+ * Disjoint ranges, such as those Acrobat requests to open a large PDF, are served by
+ * the web server when a `dyWriteFile` behavior hands it the file.
+ *
  * By default, THttpResponse is registered with {@see \Prado\TApplication} as the
  * response module. It can be accessed via {@see \Prado\TApplication::getResponse()}.
  *

@@ -46,7 +46,9 @@ use Prado\Web\THttpHeaderName;
  *
  * Unsatisfiable ranges are dropped before merging, so `bytes=0-9,5000-` on a
  * 1000-byte representation resolves to `[0, 9]`.  Ignoring disjoint ranges is
- * permitted by RFC 9110 §14.2, and avoids a `multipart/byteranges` body.
+ * permitted by RFC 9110 §14.2, and avoids a `multipart/byteranges` body.  A web
+ * server serves disjoint ranges when a `dyWriteFile` behavior of
+ * {@see \Prado\Web\THttpResponse} hands it the file.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0

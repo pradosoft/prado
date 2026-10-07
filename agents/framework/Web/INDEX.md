@@ -39,4 +39,5 @@ HTTP layer, URL routing, asset management, session handling, and all web UI comp
 - **Lazy TUrlManager init** — URL manager is loaded on first URL construction or request parse; don't assume it's available before `TApplication::onBeginRequest`.
 - **TAssetManager path publishing** — Publish a directory once; the manager caches decisions by timestamp. Call `$assetMgr->getPublishedPath($dir)` to get the public URL.
 - **THttpResponse buffering** — Output is buffered; call `flush()` to send to client. The page lifecycle does this automatically.
+- **Byte ranges** — `writeFile()` serves one merged span; disjoint ranges get the full file unless a `dyWriteFile` handoff lets the web server serve them. Multipart research and plan: [multipart-byteranges](multipart-byteranges.md).
 - **Session lazy start** — `THttpSession` does not start PHP's session until `open()` is called or a value is accessed. Set `AutoStart=true` in config to start eagerly.

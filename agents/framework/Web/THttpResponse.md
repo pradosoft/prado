@@ -150,6 +150,7 @@ With `AcceptRanges` on (the default), `writeFile()` sends `Accept-Ranges: bytes`
 - **Status**: `writeFile()` calls `setStatusCode(206|416)`, so `getStatusCode()` reflects the range result afterwards.
 - **`dyWriteFile` handoff** runs first; a handled call skips all of this and the web server serves ranges itself.
 - `AcceptRanges=false` reproduces the pre-4.4 headers exactly: no `Accept-Ranges`, no automatic `Last-Modified`, `Range` ignored.
+- **Disjoint ranges / multipart**: not built; a `dyWriteFile` handoff (`X-Sendfile`, `X-Accel-Redirect`) lets the web server serve them. Use case (large PDFs under Acrobat Fast Web View), reasons for deferral, and the implementation sketch: [multipart-byteranges](./multipart-byteranges.md).
 
 Response compression is left to the web server (`mod_deflate`, `mod_brotli`, nginx `gzip`) or to PHP's `zlib.output_compression`. Both run in C and stream.
 

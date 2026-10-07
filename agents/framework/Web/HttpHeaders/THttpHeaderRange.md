@@ -33,4 +33,4 @@ Parses the `Range` request header (RFC 9110 §14.2) into a unit and a list of `[
 ## Gotchas
 - Digit runs too large for `int` saturate at `PHP_INT_MAX` (`toPosition()`), so a huge last position clamps and a huge first position is unsatisfiable rather than overflowing.
 - An empty representation (`$size` 0) makes every range unsatisfiable.
-- Disjoint ranges resolve to `null`; `multipart/byteranges` is deliberately not built (CVE-2011-3192 exposure, rare clients such as Acrobat Fast Web View). Merging needs no multipart body, so it is the supported subset.
+- Disjoint ranges resolve to `null`; `multipart/byteranges` is not built yet. Merging needs no multipart body, so it is the supported subset. Research, the `dyWriteFile` handoff workaround, the Acrobat Fast Web View use case, and an implementation sketch (`resolveSpans()`) are in [multipart-byteranges](../multipart-byteranges.md).
