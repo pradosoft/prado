@@ -20,7 +20,7 @@ HTTP layer, URL routing, asset management, session handling, and all web UI comp
 
 - **[THttpRequest](THttpRequest.md)** — Encapsulates the incoming HTTP request. Implements `ArrayAccess`/`IteratorAggregate` for unified GET+POST access. Manages URL parsing, path-info extraction, service routing, and cookie access. Lazily loads `TUrlManager`. Properties: `RequestType`, `Url`, `ServerPort`, `IsSecureConnection`, `PathInfo`.
 
-- **[THttpResponse](THttpResponse.md)** — HTTP response output. Manages status codes, headers, cookies, content type, charset, output buffering, file downloads (`writeFile()`, with single byte-range `206`/`416` serving), and redirects. Extended by `THttpResponseAdapter` for callback/AJAX responses.
+- **[THttpResponse](THttpResponse.md)** — HTTP response output. Manages status codes, headers, cookies, content type, charset, output buffering, file downloads (`writeFile()`, with byte-range `206`/`416` serving; contiguous ranges merge), and redirects. Extended by `THttpResponseAdapter` for callback/AJAX responses.
 
 - **[THttpSession](THttpSession.md)** — PHP session wrapper implementing `ArrayAccess`. Properties: `AutoStart`, `SessionName`, `CookieMode`, `GCProbability`. Supports custom storage via `THttpSessionHandler`. Cookie attributes: `HttpOnly`, `SameSite`.
 

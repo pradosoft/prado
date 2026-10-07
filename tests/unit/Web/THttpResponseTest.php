@@ -429,6 +429,24 @@ class THttpResponseTest extends \PHPUnit\Framework\TestCase
 		});
 	}
 
+	public function testWriteFileMergesContiguousRanges()
+	{
+		$file = $this->rangeFile();
+		try {
+			$this->withRequest('GET', ['Range' => 'bytes=8-11,2-5,6-7'], function () use ($file) {
+				$response = new TTestHttpResponse();
+				$output = $this->captureWriteFile($response, $file, null, 'text/plain');
+
+				$this->assertSame('23456789ab', $output);
+				$this->assertSame(206, $response->getStatusCode());
+				$this->assertContains('Content-Range: bytes 2-11/20', $response->headers);
+				$this->assertContains('Content-Length: 10', $response->headers);
+			});
+		} finally {
+			unlink($file);
+		}
+	}
+
 	public function testWriteFileUnsatisfiableRangeSends416()
 	{
 		$file = $this->rangeFile();
@@ -451,7 +469,7 @@ class THttpResponseTest extends \PHPUnit\Framework\TestCase
 	public static function ignoredRangeProvider(): array
 	{
 		return [
-			'multiple ranges' => ['GET', ['Range' => 'bytes=0-1,5-6']],
+			'disjoint ranges' => ['GET', ['Range' => 'bytes=0-1,5-6']],
 			'invalid range' => ['GET', ['Range' => 'bytes=9-2']],
 			'other unit' => ['GET', ['Range' => 'items=0-1']],
 			'post' => ['POST', ['Range' => 'bytes=0-1']],

@@ -38,16 +38,16 @@ use Prado\Web\THttpHeaderName;
  * To redirect client browser to a new URL, use {@see redirect()}.
  * To send a file to client, use {@see writeFile()}.
  *
- * {@see writeFile()} serves a single byte range of the file to a `GET` request that
- * carries a `Range` header (RFC 9110 §14).  It sends `Accept-Ranges: bytes`, and a
+ * {@see writeFile()} serves one byte span of the file to a `GET` request that carries
+ * a `Range` header (RFC 9110 §14); ranges that overlap or adjoin merge into one span.  It sends `Accept-Ranges: bytes`, and a
  * `Last-Modified` header for a server file, so a client can resume a download or
  * seek in media.  {@see setAcceptRanges() AcceptRanges} turns range serving off.
  *
  * | Request | Response |
  * |---|---|
- * | no `Range`, an ignored `Range`, or an `If-Range` that does not match | `200` with the full file |
- * | a single satisfiable range | `206 Partial Content` with `Content-Range` and the range |
- * | a single range past the end of the file | `416 Range Not Satisfiable` with a `Content-Range` giving the file size, and no body |
+ * | no `Range`, an ignored `Range`, disjoint ranges, or an `If-Range` that does not match | `200` with the full file |
+ * | satisfiable ranges forming one span | `206 Partial Content` with `Content-Range` and the span |
+ * | no range within the file | `416 Range Not Satisfiable` with a `Content-Range` giving the file size, and no body |
  *
  * By default, THttpResponse is registered with {@see \Prado\TApplication} as the
  * response module. It can be accessed via {@see \Prado\TApplication::getResponse()}.
@@ -442,7 +442,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 * With {@see getAcceptRanges() AcceptRanges} on, this sends `Accept-Ranges: bytes`, and
 	 * for a server file a `Last-Modified` header unless `$headers` has one.  A `Range` request
 	 * header then selects the response, as {@see resolveRequestRange()} describes: `200` with
-	 * the full file, `206` with a single range, or `416` with no body.  An `ETag` or
+	 * the full file, `206` with one span, or `416` with no body.  An `ETag` or
 	 * `Last-Modified` in `$headers` is the validator an `If-Range` request header matches.
 	 * @param string $fileName file name
 	 * @param null|string $content content to be set. If null, the content will be read from the server file pointed to by $fileName.
@@ -565,7 +565,8 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 * - the status code is not 200 or the status line is already sent;
 	 * - the request method is not `GET` (RFC 9110 §14.2);
 	 * - an `If-Range` request header does not match the validator, per {@see matchesIfRange()};
-	 * - the header is invalid, has a unit other than `bytes`, or has more than one range.
+	 * - the header is invalid, has a unit other than `bytes`, or its ranges leave disjoint spans.
+	 * Ranges that overlap or adjoin merge into one span, per {@see THttpHeaderRange::resolve()}.
 	 * @param int $size The size of the representation in bytes.
 	 * @param ?string $etag The `ETag` sent with the representation, or null.
 	 * @param ?string $lastModified The `Last-Modified` date sent with the representation, or null.

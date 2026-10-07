@@ -17,8 +17,8 @@ use Prado\Web\THttpHeaderName;
  * THttpHeaderRange class
  *
  * THttpHeaderRange parses the `Range` request header (RFC 9110 §14.2) into its
- * unit and range set, and resolves a single byte range against a representation
- * size for {@see \Prado\Web\THttpResponse::writeFile()}.
+ * unit and range set, and resolves it to one byte span of a representation for
+ * {@see \Prado\Web\THttpResponse::writeFile()}.
  *
  * ```php
  * $range = new THttpHeaderRange();
@@ -39,12 +39,14 @@ use Prado\Web\THttpHeaderName;
  *
  * | Header | Result |
  * |---|---|
- * | invalid, a unit other than `bytes`, or more than one range | `null`, the full representation is sent |
- * | a single range within the representation | `[start, end]`, inclusive and clamped to the size |
- * | a single range outside the representation | `false`, the response is `416 Range Not Satisfiable` |
+ * | invalid, or a unit other than `bytes` | `null`, the full representation is sent |
+ * | ranges that overlap or adjoin into one span, such as `bytes=0-99,100-199` | `[start, end]`, inclusive and clamped to the size |
+ * | ranges that leave disjoint spans, such as `bytes=0-9,50-59` | `null`, the full representation is sent |
+ * | no range within the representation | `false`, the response is `416 Range Not Satisfiable` |
  *
- * Ignoring a multiple-range request is permitted by RFC 9110 §14.2, and avoids a
- * `multipart/byteranges` body.
+ * Unsatisfiable ranges are dropped before merging, so `bytes=0-9,5000-` on a
+ * 1000-byte representation resolves to `[0, 9]`.  Ignoring disjoint ranges is
+ * permitted by RFC 9110 §14.2, and avoids a `multipart/byteranges` body.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
@@ -157,27 +159,57 @@ class THttpHeaderRange extends TBaseHttpHeader
 	}
 
 	/**
-	 * Resolves the range against a representation size.  Only a single `bytes` range
-	 * resolves; any other valid or invalid value returns null.
+	 * Resolves the range set against a representation size.  Each range is clamped to the
+	 * size, unsatisfiable ranges are dropped, and the rest are merged where they overlap
+	 * or adjoin.  A set that merges into one span resolves to it; disjoint spans return
+	 * null, as do an invalid value and a unit other than `bytes`.
 	 * @param int $size The representation size in bytes.
 	 * @return null|array{0: int, 1: int}|false The inclusive `[start, end]` span, false when
-	 *   the range is unsatisfiable, or null when the header is to be ignored.
+	 *   no range is satisfiable, or null when the header is to be ignored.
 	 */
 	public function resolve(int $size): array|false|null
 	{
-		$ranges = $this->getRanges();
-		if ($this->getUnit() !== self::UNIT_BYTES || count($ranges) !== 1) {
+		if ($this->getUnit() !== self::UNIT_BYTES || !$this->getIsValid()) {
 			return null;
 		}
-		[$first, $last] = $ranges[0];
+		$spans = [];
+		foreach ($this->getRanges() as $range) {
+			if (($span = static::resolveSpan($range, $size)) !== null) {
+				$spans[] = $span;
+			}
+		}
+		if ($spans === []) {
+			return false;
+		}
+		sort($spans);
+		[$start, $end] = array_shift($spans);
+		foreach ($spans as [$nextStart, $nextEnd]) {
+			if ($nextStart > $end + 1) {
+				return null;
+			}
+			$end = max($end, $nextEnd);
+		}
+		return [$start, $end];
+	}
+
+	/**
+	 * Resolves one `[first, last]` pair against a representation size (RFC 9110 §14.1.2).
+	 * @param array{0: ?int, 1: ?int} $range The pair, as {@see getRanges()} holds it.
+	 * @param int $size The representation size in bytes.
+	 * @return null|array{0: int, 1: int} The inclusive `[start, end]` span clamped to the size,
+	 *   or null when the range is unsatisfiable.
+	 */
+	protected static function resolveSpan(array $range, int $size): ?array
+	{
+		[$first, $last] = $range;
 		if ($first === null) {
 			if ($last === 0 || $size <= 0) {
-				return false;
+				return null;
 			}
 			return [max(0, $size - $last), $size - 1];
 		}
 		if ($first >= $size) {
-			return false;
+			return null;
 		}
 		return [$first, ($last === null || $last >= $size) ? $size - 1 : $last];
 	}

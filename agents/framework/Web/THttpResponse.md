@@ -140,10 +140,10 @@ With `AcceptRanges` on (the default), `writeFile()` sends `Accept-Ranges: bytes`
 | Request | Response |
 |---|---|
 | no `Range`; method other than `GET`; status not 200 or status line already sent | `200`, full file |
-| `Range` invalid, unit other than `bytes`, or more than one range | `200`, full file (multipart/byteranges is not built) |
+| `Range` invalid, unit other than `bytes`, or ranges leaving disjoint spans | `200`, full file (multipart/byteranges is not built) |
 | `If-Range` does not match the validator (`matchesIfRange()`) | `200`, full file |
-| single satisfiable range | `206`, `Content-Range: bytes s-e/size`, `Content-Length` of the range |
-| single range starting at or past the end, `bytes=-0`, or any range of an empty body | `416`, `Content-Range: bytes */size`, `Content-Length: 0`, no `Content-Disposition`, no body |
+| satisfiable ranges that merge into one span (overlapping or adjoining; unsatisfiable ones dropped) | `206`, `Content-Range: bytes s-e/size`, `Content-Length` of the span |
+| no satisfiable range: all start at or past the end, `bytes=-0`, or any range of an empty body | `416`, `Content-Range: bytes */size`, `Content-Length: 0`, no `Content-Disposition`, no body |
 
 - **Validators**: `If-Range` with an entity tag matches only a strong `ETag` in `$headers` with the same string (weak tags never match). A date matches the `Last-Modified` sent (caller's or the file's) to the second. No validator → the range is ignored.
 - **Streaming**: the full file still goes through `appendFile()` (`readfile()`); a file range goes through `appendFileRange()` in 8 KiB chunks; a `$content` range is a `substr()`.
