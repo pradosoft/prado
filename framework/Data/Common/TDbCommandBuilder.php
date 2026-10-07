@@ -63,7 +63,7 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDataCommandBuilder
 	}
 
 	/**
-	 * @return TDbTableInfo table information.
+	 * @return ?TDbTableInfo table information, or null when none was given.
 	 */
 	public function getTableInfo()
 	{

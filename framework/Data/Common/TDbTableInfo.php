@@ -98,7 +98,8 @@ class TDbTableInfo extends \Prado\TComponent implements IDataTableInfo
 	}
 
 	/**
-	 * @return string name of the table this column belongs to.
+	 * @return ?string name of the table this column belongs to, or null for a table
+	 *   information stub without a table.
 	 */
 	public function getTableName()
 	{

@@ -89,9 +89,8 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 		// table is known so getTableInfo() returns an empty stub without a table
 		// name or columns.  In that case, use Oracle 12c+ OFFSET/FETCH NEXT
 		// syntax which handles arbitrary SQL without column or table metadata.
-		$tableInfo = $this->getTableInfo();
-		$tableName = $tableInfo !== null ? $tableInfo->getTableName() : null;
-		if ($tableInfo === null || $tableName === null || $tableName === '') {
+		$tableName = $this->getTableInfo()?->getTableName();
+		if ($tableName === null || $tableName === '') {
 			$result = rtrim($sql);
 			$offset = (int) $offset;
 			$limit = (int) $limit;

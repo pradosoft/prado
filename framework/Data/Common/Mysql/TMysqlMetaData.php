@@ -350,13 +350,14 @@ class TMysqlMetaData extends TDbMetaData
 
 	/**
 	 * Gets foreign relationship constraint keys and table name
-	 * @param string $schemaName database name
+	 * @param ?string $schemaName database name, or null for the current database
 	 * @param string $tableName table name
 	 * @return array foreign relationship table name and keys.
 	 */
 	protected function getForeignConstraints($schemaName, $tableName)
 	{
-		$andSchema = $schemaName !== null ? 'AND TABLE_SCHEMA LIKE :schema' : 'AND TABLE_SCHEMA LIKE DATABASE()';
+		$hasSchema = $schemaName !== null;
+		$andSchema = $hasSchema ? 'AND TABLE_SCHEMA LIKE :schema' : 'AND TABLE_SCHEMA LIKE DATABASE()';
 		$sql =
 <<<EOD
 	SELECT
@@ -374,7 +375,7 @@ class TMysqlMetaData extends TDbMetaData
 	EOD;
 		$command = $this->getDbConnection()->createCommand($sql);
 		$command->bindValue(':table', $tableName);
-		if ($schemaName !== null) {
+		if ($hasSchema) {
 			$command->bindValue(':schema', $schemaName);
 		}
 		$fkeys = [];
