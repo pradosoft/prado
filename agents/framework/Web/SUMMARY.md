@@ -6,7 +6,7 @@ HTTP layer, URL routing, asset management, session handling, and all web UI comp
 
 - **`THttpRequest`** — Encapsulates incoming HTTP request; implements `ArrayAccess`/`IteratorAggregate` for unified GET+POST access; `getBrowser()` requires the PHP `browscap` directive and reports a configuration exception when absent.
 
-- **`THttpResponse`** — HTTP response output; manages status codes, headers, cookies, content type, charset, output buffering, file downloads (`writeFile()`), redirects.
+- **`THttpResponse`** — HTTP response output; manages status codes, headers, cookies, content type, charset, output buffering, file downloads (`writeFile()`, with byte ranges), redirects.
 
 - **`THttpSession`** — PHP session wrapper implementing `ArrayAccess`; properties: `AutoStart`, `SessionName`, `CookieMode`, `GCProbability`; supports custom storage via `THttpSessionHandler`.
 

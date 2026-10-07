@@ -14,9 +14,13 @@ use Prado\Exceptions\TExitException;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\IO\TFileStream;
+use Prado\IO\TOutputStream;
+use Prado\IO\Util\TStreamHelper;
 use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Util\Traits\TInitializedTrait;
+use Prado\Web\HttpHeaders\THttpHeaderRange;
 use Prado\Web\HttpHeaders\THttpHeadersManager;
 use Prado\Web\THttpHeaderName;
 
@@ -33,6 +37,17 @@ use Prado\Web\THttpHeaderName;
  * To send cookies to client, use {@see getCookies()}.
  * To redirect client browser to a new URL, use {@see redirect()}.
  * To send a file to client, use {@see writeFile()}.
+ *
+ * {@see writeFile()} serves a single byte range of the file to a `GET` request that
+ * carries a `Range` header (RFC 9110 §14).  It sends `Accept-Ranges: bytes`, and a
+ * `Last-Modified` header for a server file, so a client can resume a download or
+ * seek in media.  {@see setAcceptRanges() AcceptRanges} turns range serving off.
+ *
+ * | Request | Response |
+ * |---|---|
+ * | no `Range`, an ignored `Range`, or an `If-Range` that does not match | `200` with the full file |
+ * | a single satisfiable range | `206 Partial Content` with `Content-Range` and the range |
+ * | a single range past the end of the file | `416 Range Not Satisfiable` with a `Content-Range` giving the file size, and no body |
  *
  * By default, THttpResponse is registered with {@see \Prado\TApplication} as the
  * response module. It can be accessed via {@see \Prado\TApplication::getResponse()}.
@@ -170,6 +185,10 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 * @var string the ID of the headers manager module
 	 */
 	private $_headersManagerID = '';
+	/**
+	 * @var bool whether {@see writeFile()} serves byte ranges
+	 */
+	private $_acceptRanges = true;
 
 	/**
 	 * Destructor.
@@ -320,6 +339,26 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
+	 * @return bool Whether {@see writeFile()} serves byte ranges, defaults to true.
+	 * @since 4.4.0
+	 */
+	public function getAcceptRanges()
+	{
+		return $this->_acceptRanges;
+	}
+
+	/**
+	 * Sets whether {@see writeFile()} serves byte ranges.  When false, writeFile() adds
+	 * neither `Accept-Ranges` nor `Last-Modified` and ignores a `Range` request header.
+	 * @param bool|string $value Whether to serve byte ranges.
+	 * @since 4.4.0
+	 */
+	public function setAcceptRanges($value)
+	{
+		$this->_acceptRanges = TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
 	 * @return int HTTP status code, defaults to 200
 	 */
 	public function getStatusCode()
@@ -399,6 +438,12 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 * nothing.  A behavior that sends the file passes true along the chain, so later
 	 * behaviors still see the call; a behavior that only observes passes the flag on
 	 * unchanged.  A file handed to the web server needs `$content` to be null.
+	 *
+	 * With {@see getAcceptRanges() AcceptRanges} on, this sends `Accept-Ranges: bytes`, and
+	 * for a server file a `Last-Modified` header unless `$headers` has one.  A `Range` request
+	 * header then selects the response, as {@see resolveRequestRange()} describes: `200` with
+	 * the full file, `206` with a single range, or `416` with no body.  An `ETag` or
+	 * `Last-Modified` in `$headers` is the validator an `If-Range` request header matches.
 	 * @param string $fileName file name
 	 * @param null|string $content content to be set. If null, the content will be read from the server file pointed to by $fileName.
 	 * @param null|string $mimeType mime type of the content.
@@ -448,6 +493,24 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 		if ($this->dyWriteFile(false, $fileName, $content, $mimeType, $headers, $forceDownload, $clientFileName, $fileSize) === true) {
 			return;
 		}
+
+		$range = null;
+		$lastModified = null;
+		$sendLastModified = false;
+		if ($this->getAcceptRanges()) {
+			$lastModified = static::findHeaderValue($headers, THttpHeaderName::LastModified);
+			if ($lastModified === null && $content === null) {
+				$lastModified = $this->getFileLastModified($fileName);
+				$sendLastModified = $lastModified !== null;
+			}
+			$range = $this->resolveRequestRange($fileSize, static::findHeaderValue($headers, THttpHeaderName::ETag), $lastModified);
+			if ($range === false) {
+				$this->setStatusCode(416);
+			} elseif ($range !== null) {
+				$this->setStatusCode(206);
+			}
+		}
+
 		$this->sendHttpHeader();
 		if (is_array($headers)) {
 			foreach ($headers as $h) {
@@ -461,14 +524,128 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 			$this->_contentTypeHeaderSent = true;
 		}
 
-		$this->appendHeader(THttpHeaderName::ContentLength . ': ' . $fileSize);
+		if ($this->getAcceptRanges()) {
+			$this->appendHeader(THttpHeaderName::AcceptRanges . ': ' . THttpHeaderRange::UNIT_BYTES);
+		}
+		if ($sendLastModified) {
+			$this->appendHeader(THttpHeaderName::LastModified . ': ' . $lastModified);
+		}
+
+		if ($range === false) {
+			$this->appendHeader(THttpHeaderName::ContentRange . ': ' . THttpHeaderRange::UNIT_BYTES . ' */' . $fileSize);
+			$this->appendHeader(THttpHeaderName::ContentLength . ': 0');
+			return;
+		}
+
+		$offset = 0;
+		$length = $fileSize;
+		if ($range !== null) {
+			[$offset, $end] = $range;
+			$length = $end - $offset + 1;
+			$this->appendHeader(THttpHeaderName::ContentRange . ': ' . THttpHeaderRange::UNIT_BYTES . ' ' . $offset . '-' . $end . '/' . $fileSize);
+		}
+
+		$this->appendHeader(THttpHeaderName::ContentLength . ': ' . $length);
 		$this->appendHeader(THttpHeaderName::ContentDisposition . ': ' . ($forceDownload ? 'attachment' : 'inline') . "; filename=\"$clientFileName\"");
 		$this->appendHeader('Content-Transfer-Encoding: binary');
 		if ($content === null) {
-			$this->appendFile($fileName);
+			if ($range === null) {
+				$this->appendFile($fileName);
+			} else {
+				$this->appendFileRange($fileName, $offset, $length);
+			}
 		} else {
-			echo $content;
+			echo $range === null ? $content : substr($content, $offset, $length);
 		}
+	}
+
+	/**
+	 * Resolves the `Range` request header of a `GET` request against the size being sent.
+	 * The header is ignored, and the full representation is sent, when:
+	 * - the status code is not 200 or the status line is already sent;
+	 * - the request method is not `GET` (RFC 9110 §14.2);
+	 * - an `If-Range` request header does not match the validator, per {@see matchesIfRange()};
+	 * - the header is invalid, has a unit other than `bytes`, or has more than one range.
+	 * @param int $size The size of the representation in bytes.
+	 * @param ?string $etag The `ETag` sent with the representation, or null.
+	 * @param ?string $lastModified The `Last-Modified` date sent with the representation, or null.
+	 * @return null|array{0: int, 1: int}|false The inclusive `[start, end]` span, false when the
+	 *   range is unsatisfiable, or null to send the full representation.
+	 * @since 4.4.0
+	 */
+	protected function resolveRequestRange(int $size, ?string $etag, ?string $lastModified): array|false|null
+	{
+		if ($this->getStatusCode() !== 200 || $this->_httpHeaderSent) {
+			return null;
+		}
+		$request = $this->getRequest();
+		if ($request === null || strcasecmp((string) $request->getRequestType(), 'GET') !== 0) {
+			return null;
+		}
+		$value = $request->getHeader(THttpHeaderName::Range);
+		if ($value === null) {
+			return null;
+		}
+		$ifRange = $request->getHeader(THttpHeaderName::IfRange);
+		if ($ifRange !== null && !$this->matchesIfRange($ifRange, $etag, $lastModified)) {
+			return null;
+		}
+		$range = new THttpHeaderRange();
+		$range->setHeaderValue($value);
+		return $range->resolve($size);
+	}
+
+	/**
+	 * Tests an `If-Range` request header against the representation's validator (RFC 9110
+	 * §13.1.5).  An entity tag matches a strong `ETag` that is the same string; a weak entity
+	 * tag never matches.  A date matches a `Last-Modified` date naming the same second.
+	 * @param string $ifRange The `If-Range` request header value.
+	 * @param ?string $etag The `ETag` sent with the representation, or null.
+	 * @param ?string $lastModified The `Last-Modified` date sent with the representation, or null.
+	 * @return bool Whether the range applies.
+	 * @since 4.4.0
+	 */
+	protected function matchesIfRange(string $ifRange, ?string $etag, ?string $lastModified): bool
+	{
+		$ifRange = trim($ifRange);
+		if (str_starts_with($ifRange, '"') || strncasecmp($ifRange, 'W/', 2) === 0) {
+			return $etag !== null && $ifRange[0] === '"' && $ifRange === $etag;
+		}
+		if ($lastModified === null) {
+			return false;
+		}
+		$since = strtotime($ifRange);
+		return $since !== false && $since === strtotime($lastModified);
+	}
+
+	/**
+	 * Formats the modification time of a server file as an HTTP date.
+	 * @param string $fileName The file name.
+	 * @return ?string The date, such as `Tue, 06 Oct 2026 14:00:00 GMT`, or null when it is unavailable.
+	 * @since 4.4.0
+	 */
+	protected function getFileLastModified(string $fileName): ?string
+	{
+		$time = @filemtime($fileName);
+		return $time === false ? null : gmdate('D, d M Y H:i:s', $time) . ' GMT';
+	}
+
+	/**
+	 * Finds the value of the first header line in a list that has the given name.
+	 * @param ?array $headers The header lines, such as `ETag: "abc"`, or null.
+	 * @param string $name The header name, matched without regard to case.
+	 * @return ?string The trimmed value, or null when no line has the name.
+	 * @since 4.4.0
+	 */
+	protected static function findHeaderValue(?array $headers, string $name): ?string
+	{
+		foreach ($headers ?? [] as $header) {
+			$parts = explode(':', (string) $header, 2);
+			if (count($parts) === 2 && strcasecmp(trim($parts[0]), $name) === 0) {
+				return trim($parts[1]);
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -730,6 +907,31 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	{
 		Prado::trace("Sending file '$filename'", static::class);
 		return readfile($filename, $use_include_path, $context);
+	}
+
+	/**
+	 * Writes a byte range of a file to the output buffer.  The bytes stream from the
+	 * file to `php://output` in chunks through {@see TStreamHelper::copyRange()}, so
+	 * a range larger than memory is sent without loading it.
+	 * @param string $filename The filename being read.
+	 * @param int $offset The byte offset of the range.
+	 * @param int $length The number of bytes to write.
+	 * @throws \Prado\Exceptions\TIOException When the file cannot be opened.
+	 * @throws \RuntimeException When the file ends before the range does.
+	 * @return int The number of bytes written.
+	 * @since 4.4.0
+	 */
+	public function appendFileRange(string $filename, int $offset, int $length): int
+	{
+		Prado::trace("Sending $length bytes at $offset of file '$filename'", static::class);
+		$source = new TFileStream($filename);
+		$output = new TOutputStream();
+		try {
+			return TStreamHelper::copyRange($source, $offset, $length, $output);
+		} finally {
+			$source->close();
+			$output->close();
+		}
 	}
 
 	/**
