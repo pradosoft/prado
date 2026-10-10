@@ -23,7 +23,8 @@ use stdClass;
  *
  * View states tracked by default:
  * - Scalar: Visible, Enabled, TabIndex, ToolTip, AccessKey, Translate, Lang, Dir,
- *   Hidden, SpellCheck, Draggable, ContentEditable, InputMode, EnterKeyHint, Inert, Popover
+ *   Hidden, SpellCheck, Draggable, ContentEditable, InputMode, EnterKeyHint, Inert, Popover,
+ *   Slot
  * - Map collections: Attributes, Style, Aria, Dataset
  *
  * Override {@see addStatesToTrack} in subclasses to register additional view states.
@@ -93,6 +94,7 @@ class TCallbackPageStateTracker
 		$states['EnterKeyHint'] = ['TScalarDiff', fn ($diff) => $this->updateAttribute('enterkeyhint', $diff)];
 		$states['Inert'] = ['TScalarDiff', fn ($diff) => $this->updateAttribute('inert', $diff)];
 		$states['Popover'] = ['TScalarDiff', fn ($diff) => $this->updateAttribute('popover', $diff)];
+		$states['Slot'] = ['TScalarDiff', fn ($diff) => $this->updateAttribute('slot', $diff)];
 
 		$states['Aria'] = ['TMapCollectionDiff', [$this, 'updateAttributes']];
 		$states['Dataset'] = ['TMapCollectionDiff', [$this, 'updateAttributes']];

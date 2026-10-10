@@ -149,7 +149,7 @@ class TCallbackPageStateTrackerTest extends TestCase
 			'TabIndex', 'ToolTip', 'AccessKey',
 			'Translate', 'Lang', 'Dir', 'Hidden', 'SpellCheck',
 			'Draggable', 'ContentEditable', 'InputMode', 'EnterKeyHint',
-			'Inert', 'Popover', 'Aria', 'Dataset',
+			'Inert', 'Popover', 'Slot', 'Aria', 'Dataset',
 		];
 		foreach ($expected as $key) {
 			$this->assertTrue($states->contains($key), "StatesToTrack must contain '$key'");

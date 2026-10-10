@@ -912,6 +912,7 @@ return [
 'TSlider' => 'Prado\Web\UI\WebControls\TSlider',
 'TSliderClientScript' => 'Prado\Web\UI\WebControls\TSliderClientScript',
 'TSliderDirection' => 'Prado\Web\UI\WebControls\TSliderDirection',
+'TSlot' => 'Prado\Web\UI\WebControls\TSlot',
 'TStatements' => 'Prado\Web\UI\WebControls\TStatements',
 'TStyle' => 'Prado\Web\UI\WebControls\TStyle',
 'TStyleSheet' => 'Prado\Web\UI\WebControls\TStyleSheet',

@@ -5,7 +5,8 @@ const PAGE_URL = 'web/index.php?page=WebTemplateDomTest';
 
 /**
  * Browser-engine behaviors of TWebTemplate that unit tests cannot prove:
- * declarative shadow DOM parsing, <tr> content stamped into a real table,
+ * declarative shadow DOM parsing, TSlot assignment and fallback content,
+ * <tr> content stamped into a real table,
  * multi-root instances, insert positions, instanceOf() event delegation,
  * markup-injection safety, and TrackInstances="false".
  */
@@ -44,6 +45,26 @@ test('TWebTemplateDomTestCase', async ({ page }) => {
 	});
 	expect(closed.shadowRoot).toBeNull();
 	expect(closed.templateRemains).toBe(false);
+
+	// ── Slots: a Slot="title" control fills the named TSlot, an unassigned
+	//    named slot shows its fallback, and unattributed children fill the
+	//    default slot ──
+	const slots = await page.evaluate(() => {
+		const root = document.getElementById('slotHost').shadowRoot;
+		const slot = (sel) => root.querySelector(sel);
+		const ids = (s) => s.assignedElements().map((el) => el.id);
+		return {
+			titleAssigned: ids(slot('slot[name="title"]')),
+			noteAssigned: ids(slot('slot[name="note"]')),
+			noteText: root.querySelector('.note').innerText.trim(),
+			defaultAssigned: ids(slot('slot:not([name])'))
+		};
+	});
+	expect(slots.titleAssigned).toEqual(['ctl0_Content_slotTitle']);
+	expect(slots.noteAssigned).toEqual([]);
+	expect(slots.noteText).toBe('No note');
+	expect(slots.defaultAssigned).toEqual(['slotBody']);
+	await expect(page.locator('#ctl0_Content_slotTitle')).toBeVisible();
 
 	// ── Fragment reads: getContent / find / findAll / clone against the live
 	//    inert fragment ──

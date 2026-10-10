@@ -76,6 +76,16 @@ use Prado\Web\UI\TControl;
  * `<template>` element from the document tree. No element remains to wrap, so
  * the client-side wrapper is not registered in that mode.
  *
+ * A {@see TSlot} inside the shadow content marks where the parent element's
+ * light DOM children render. A child assigns itself to a named slot through
+ * its `slot` attribute, which Prado web controls render from
+ * {@see TWebControl::getSlot TWebControl::Slot}. Children without a `slot`
+ * attribute fill the slot without a name.
+ *
+ * Page CSS styles a shadow element through its `part` attribute and the
+ * `::part()` selector; write `part` in plain markup, or as `Attributes.part`
+ * on a control.
+ *
  * ## Prado controls inside the content
  *
  * Template content is inert and lives outside the document. A child control
@@ -130,7 +140,9 @@ use Prado\Web\UI\TControl;
  *     <com:TWebTemplate ShadowRootMode="Open">
  *         <style>p { color: rebeccapurple; }</style>
  *         <p>Encapsulated content.</p>
+ *         <p><com:TSlot Name="note">No note.</com:TSlot></p>
  *     </com:TWebTemplate>
+ *     <com:TLabel Slot="note" Text="Rendered in the shadow paragraph." />
  * </div>
  * ```
  *
