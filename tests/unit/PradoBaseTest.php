@@ -1586,6 +1586,31 @@ class PradoBaseTest extends \PHPUnit\Framework\TestCase
 
 	#[RunInSeparateProcess]
 	#[PreserveGlobalState(false)]
+	public function testGetUserLanguages_emptyEntriesSkipped(): void
+	{
+		$_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'en, ,;q=0.9, fr;q=0.5,';
+		$this->assertSame(['en', 'fr'], Prado::getUserLanguages());
+	}
+
+	#[RunInSeparateProcess]
+	#[PreserveGlobalState(false)]
+	public function testGetUserLanguages_noLanguage_defaultsToEnglish(): void
+	{
+		$_SERVER['HTTP_ACCEPT_LANGUAGE'] = ' , ;q=0.5';
+		$this->assertSame(['en'], Prado::getUserLanguages());
+		$this->assertSame('en', Prado::getPreferredLanguage());
+	}
+
+	#[RunInSeparateProcess]
+	#[PreserveGlobalState(false)]
+	public function testGetUserLanguages_noHeader_defaultsToEnglish(): void
+	{
+		unset($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+		$this->assertSame(['en'], Prado::getUserLanguages());
+	}
+
+	#[RunInSeparateProcess]
+	#[PreserveGlobalState(false)]
 	public function testGetPreferredLanguage_nonAlphaLanguage_defaultsToEnglish(): void
 	{
 		$_SERVER['HTTP_ACCEPT_LANGUAGE'] = '*';
