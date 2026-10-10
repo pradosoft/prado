@@ -180,6 +180,26 @@ class TFeedServiceTest extends \PHPUnit\Framework\TestCase
 	}
 
 	/**
+	 * A PHP configuration skips the service `class` key and other scalar values.
+	 */
+	public function testPhpConfigurationSkipsTheServiceClass()
+	{
+		Prado::getApplication()->setConfigurationType(TApplication::CONFIG_TYPE_PHP);
+		$service = new TFeedService();
+		$service->init(['class' => TFeedService::class, 'a' => ['class' => TNestedPathFeedProvider::class]]);
+		$this->assertSame(['a'], array_keys(PradoUnit::getProp($service, '_feeds')));
+	}
+
+	/**
+	 * Requesting the service `class` key as a feed ID is a 404.
+	 */
+	public function testRunWithTheServiceClassKeyIsNotFound()
+	{
+		$this->expectException(THttpException::class);
+		$this->runPhp(['class' => TFeedService::class, 'a' => ['class' => TNestedPathFeedProvider::class]], 'class');
+	}
+
+	/**
 	 * A PHP configuration that is not an array registers nothing.
 	 */
 	public function testPhpConfigurationThatIsNotAnArrayRegistersNothing()
@@ -268,8 +288,12 @@ class TFeedServiceTest extends \PHPUnit\Framework\TestCase
 	 */
 	public function testRunFromPhpConfigurationWithoutAClassIsRefused()
 	{
-		$this->expectException(TConfigurationException::class);
-		$this->runPhp(['a' => ['properties' => []]], 'a');
+		try {
+			$this->runPhp(['a' => ['properties' => []]], 'a');
+			$this->fail('TConfigurationException was not raised.');
+		} catch (TConfigurationException $e) {
+			$this->assertSame('feedservice_class_required', $e->getErrorCode());
+		}
 	}
 
 	/**
@@ -277,8 +301,12 @@ class TFeedServiceTest extends \PHPUnit\Framework\TestCase
 	 */
 	public function testRunFromPhpConfigurationWithAnInvalidProviderIsRefused()
 	{
-		$this->expectException(TConfigurationException::class);
-		$this->runPhp(['a' => ['class' => TNotAFeedProvider::class]], 'a');
+		try {
+			$this->runPhp(['a' => ['class' => TNotAFeedProvider::class]], 'a');
+			$this->fail('TConfigurationException was not raised.');
+		} catch (TConfigurationException $e) {
+			$this->assertSame('feedservice_feedtype_invalid', $e->getErrorCode());
+		}
 	}
 
 	/**

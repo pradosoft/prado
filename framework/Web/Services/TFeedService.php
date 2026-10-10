@@ -75,6 +75,7 @@ class TFeedService extends \Prado\TService
 	/**
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
+	 * A PHP configuration registers each array entry as a feed and skips the `class` key and other scalar values.
 	 * @param null|array|\Prado\Xml\TXmlElement $config configuration for this module, can be null
 	 */
 	public function init($config)
@@ -82,7 +83,9 @@ class TFeedService extends \Prado\TService
 		if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
 			if (is_array($config)) {
 				foreach ($config as $id => $feed) {
-					$this->_feeds[$id] = $feed;
+					if (is_array($feed)) {
+						$this->_feeds[$id] = $feed;
+					}
 				}
 			}
 		} else {
@@ -122,10 +125,10 @@ class TFeedService extends \Prado\TService
 					if ($feed instanceof IFeedContentProvider) {
 						$properties = $feedConfig['properties'] ?? [];
 					} else {
-						throw new TConfigurationException('jsonservice_response_type_invalid', $id);
+						throw new TConfigurationException('feedservice_feedtype_invalid', $id);
 					}
 				} else {
-					throw new TConfigurationException('jsonservice_class_required', $id);
+					throw new TConfigurationException('feedservice_class_required', $id);
 				}
 			} else {
 				$properties = $feedConfig->getAttributes();
