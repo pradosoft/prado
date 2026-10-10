@@ -180,14 +180,25 @@ class TFeedServiceTest extends \PHPUnit\Framework\TestCase
 	}
 
 	/**
-	 * A PHP configuration skips the service `class` key and other scalar values.
+	 * A PHP configuration skips the service `class` key and values that are neither arrays nor strings.
 	 */
 	public function testPhpConfigurationSkipsTheServiceClass()
 	{
 		Prado::getApplication()->setConfigurationType(TApplication::CONFIG_TYPE_PHP);
 		$service = new TFeedService();
-		$service->init(['class' => TFeedService::class, 'a' => ['class' => TNestedPathFeedProvider::class]]);
+		$service->init(['class' => TFeedService::class, 'a' => ['class' => TNestedPathFeedProvider::class], 'b' => null, 'c' => 5]);
 		$this->assertSame(['a'], array_keys(PradoUnit::getProp($service, '_feeds')));
+	}
+
+	/**
+	 * A PHP string feed entry is the feed class.
+	 */
+	public function testPhpConfigurationStringFeedIsTheClass()
+	{
+		Prado::getApplication()->setConfigurationType(TApplication::CONFIG_TYPE_PHP);
+		$service = new TFeedService();
+		$service->init(['class' => TFeedService::class, 'a' => TNestedPathFeedProvider::class]);
+		$this->assertSame(['a' => ['class' => TNestedPathFeedProvider::class]], PradoUnit::getProp($service, '_feeds'));
 	}
 
 	/**
