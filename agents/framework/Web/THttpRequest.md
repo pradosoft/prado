@@ -43,7 +43,7 @@ THttpRequest provides storage and access scheme for user requests sent via HTTP.
 
 ### Request Information
 - `getRequestType()`: Returns request type (GET, POST, HEAD, PUT)
-- `getContentType($mimetypeOnly = true)`: Returns content type of request
+- `getContentType($mimetypeOnly = true)`: Returns the request content type; by default only the mimetype, without the `;` parameters
 - `getIsSecureConnection()`: Returns whether request is sent via secure channel (HTTPS)
 - `getPathInfo()`: Returns path part of request URL
 - `getQueryString()`: Returns query string part of request URL  
