@@ -82,6 +82,10 @@ use Prado\Web\UI\TControl;
  * {@see TWebControl::getSlot TWebControl::Slot}. Children without a `slot`
  * attribute fill the slot without a name.
  *
+ * Page CSS styles a shadow element through its `part` attribute and the
+ * `::part()` selector; write `part` in plain markup, or as `Attributes.part`
+ * on a control.
+ *
  * ## Prado controls inside the content
  *
  * Template content is inert and lives outside the document. A child control
