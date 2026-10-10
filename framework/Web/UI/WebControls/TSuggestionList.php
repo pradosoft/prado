@@ -46,6 +46,10 @@ use Prado\Web\THttpUtility;
  * {@see setAutoPostBack AutoPostBack} have no effect on rendering. The control
  * always renders its `id`, and renders outside of a form.
  *
+ * {@see \Prado\Web\UI\ActiveControls\TActiveSuggestionList} replaces the options
+ * during a callback, and {@see \Prado\Web\UI\ActiveControls\TActiveTextBox} updates
+ * the `list` attribute.
+ *
  * Template usage:
  * ```html
  * <com:TTextBox ID="City" SuggestionList="Cities" />
@@ -139,32 +143,52 @@ class TSuggestionList extends TListControl
 		}
 		$writer->writeLine();
 		foreach ($this->getItems() as $item) {
-			if ($item->getEnabled() && ($value = $item->getValue()) !== '') {
-				$this->renderOption($writer, $item, $value);
+			if (($option = $this->getOptionData($item)) !== null) {
+				$this->renderOption($writer, $option);
 			}
 		}
 	}
 
 	/**
-	 * Renders one item as an `<option>`.
-	 * @param \Prado\Web\UI\THtmlWriter $writer writer
-	 * @param TListItem $item the item to render
-	 * @param string $value the item value
+	 * Returns the `<option>` data of an item. The server render and the
+	 * callback update of {@see \Prado\Web\UI\ActiveControls\TActiveSuggestionList}
+	 * share this data.
+	 * @param TListItem $item the item
+	 * @return ?array `[value, label, attributes]`; the label is '' when it equals the
+	 *   value, and attributes exclude `Group`. Null when the item is disabled or has no value.
+	 * @since 4.4.0
 	 */
-	protected function renderOption($writer, $item, $value)
+	public function getOptionData($item): ?array
 	{
+		if (!$item->getEnabled() || ($value = $item->getValue()) === '') {
+			return null;
+		}
+		$attributes = [];
 		if ($item->getHasAttributes()) {
 			foreach ($item->getAttributes() as $name => $attribute) {
 				if (strcasecmp($name, 'group') !== 0) {
-					$writer->addAttribute($name, $attribute);
+					$attributes[$name] = $attribute;
 				}
 			}
 		}
+		$text = $item->getText();
+		return [$value, $text === $value ? '' : $text, $attributes];
+	}
+
+	/**
+	 * Renders one `<option>`.
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer
+	 * @param array $option the `[value, label, attributes]` from {@see getOptionData}
+	 */
+	protected function renderOption($writer, $option)
+	{
+		[$value, $label, $attributes] = $option;
+		foreach ($attributes as $name => $attribute) {
+			$writer->addAttribute($name, $attribute);
+		}
 		$writer->addAttribute('value', $value);
 		$writer->renderBeginTag('option');
-		if (($text = $item->getText()) !== $value) {
-			$writer->write(THttpUtility::htmlEncode($text));
-		}
+		$writer->write(THttpUtility::htmlEncode($label));
 		$writer->renderEndTag();
 		$writer->writeLine();
 	}

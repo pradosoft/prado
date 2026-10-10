@@ -190,7 +190,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 					break;
 			}
 
-			if ($textMode !== TTextBoxMode::Password && ($list = $this->getSuggestionListClientID()) !== '') {
+			if (($list = $this->getListAttributeValue()) !== '') {
 				$writer->addAttribute('list', $list);
 			}
 
@@ -403,14 +403,19 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	}
 
 	/**
-	 * Resolves {@see getSuggestionList SuggestionList} to the client ID of the list.
+	 * Resolves the `list` attribute value from {@see getSuggestionList SuggestionList}.
 	 * @throws TInvalidDataValueException if the suggestion list cannot be found
-	 * @return string the client ID of the list; '' when no list is set or the list is not visible
+	 * @return string the client ID of the list; '' when no list is set, the list is
+	 *   not visible, or the {@see getTextMode TextMode} is MultiLine or Password
 	 * @since 4.4.0
 	 */
-	protected function getSuggestionListClientID(): string
+	protected function getListAttributeValue(): string
 	{
 		if (($id = $this->getSuggestionList()) === '') {
+			return '';
+		}
+		$textMode = $this->getTextMode();
+		if ($textMode === TTextBoxMode::MultiLine || $textMode === TTextBoxMode::Password) {
 			return '';
 		}
 		if (($list = $this->findControl($id)) === null) {
