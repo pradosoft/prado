@@ -224,7 +224,8 @@ class Prado
 		if ($error &&
 			TPhpErrorException::isFatalError($error) &&
 			error_reporting() & $error['type']) {
-			self::exceptionHandler(new TPhpFatalErrorException($error['type'], $error['message'], $error['file'], $error['line']));
+			// exceptionHandler() exits the process.
+			self::exceptionHandler(new TPhpFatalErrorException($error['type'], $error['message'], $error['file'], $error['line'])); // @codeCoverageIgnore
 		}
 	}
 
@@ -236,8 +237,9 @@ class Prado
 	 * If the application or the module does not exist, it simply echoes the
 	 * exception.
 	 * @param \Throwable $exception exception that is not caught
+	 * @codeCoverageIgnore Exits the process.
 	 */
-	public static function exceptionHandler($exception): void
+	public static function exceptionHandler($exception): never
 	{
 		if (self::$_application !== null && ($errorHandler = self::$_application->getErrorHandler()) !== null) {
 			$errorHandler->handleError(null, $exception);
@@ -259,7 +261,8 @@ class Prado
 	public static function setApplication($application): void
 	{
 		if (self::$_application !== null && !defined('PRADO_TEST_RUN')) {
-			throw new TInvalidOperationException('prado_application_singleton_required');
+			// Tests define PRADO_TEST_RUN.
+			throw new TInvalidOperationException('prado_application_singleton_required'); // @codeCoverageIgnore
 		}
 		self::$_application = $application;
 	}
@@ -651,7 +654,8 @@ class Prado
 	public static function setPathOfAlias($alias, $path): void
 	{
 		if (isset(self::$_aliases[$alias]) && !defined('PRADO_TEST_RUN')) {
-			throw new TInvalidOperationException('prado_alias_redefined', $alias);
+			// Tests define PRADO_TEST_RUN.
+			throw new TInvalidOperationException('prado_alias_redefined', $alias); // @codeCoverageIgnore
 		} elseif (($rp = realpath($path)) !== false && is_dir($rp)) {
 			if (strpos($alias, '.') === false) {
 				self::$_aliases[$alias] = $rp;
@@ -668,14 +672,12 @@ class Prado
 	 * This method displays an error message together with the current call stack.
 	 * The application will exit after calling this method.
 	 * @param string $msg error message
+	 * @codeCoverageIgnore Exits the process.
 	 */
-	public static function fatalError($msg): void
+	public static function fatalError($msg): never
 	{
 		echo '<h1>Fatal Error</h1>';
 		echo '<p>' . $msg . '</p>';
-		if (!function_exists('debug_backtrace')) {
-			return;
-		}
 		echo '<h2>Debug Backtrace</h2>';
 		echo '<pre>';
 		$index = -1;
@@ -735,26 +737,24 @@ class Prado
 	 * The languages are returned as an array. Each array element
 	 * represents a single language preference. The languages are ordered
 	 * according to user preferences. The first language is the most preferred.
+	 * Empty language tags are skipped. The list is `['en']` when the
+	 * `Accept-Language` header is absent or names no language.
 	 * @return array<string> list of user preferred languages.
 	 */
 	public static function getUserLanguages(): array
 	{
 		static $languages = null;
 		if ($languages === null) {
-			if (!isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
-				$languages[0] = 'en';
-			} else {
-				$languages = [];
-				foreach (explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']) as $language) {
-					$array = explode(';q=', trim($language));
-					$languages[trim($array[0])] = isset($array[1]) ? (float) $array[1] : 1.0;
+			$languages = [];
+			foreach (explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '') as $language) {
+				$array = explode(';q=', trim($language));
+				if (($tag = trim($array[0])) === '') {
+					continue;
 				}
-				arsort($languages);
-				$languages = array_keys($languages);
-				if (count($languages) == 0) {
-					$languages[0] = 'en';
-				}
+				$languages[$tag] = isset($array[1]) ? (float) $array[1] : 1.0;
 			}
+			arsort($languages);
+			$languages = array_keys($languages) ?: ['en'];
 		}
 		return $languages;
 	}
