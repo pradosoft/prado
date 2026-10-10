@@ -22,7 +22,7 @@ Implements `IActiveControl` only; it raises no callback. Update it from another 
 | `onPreRender()` → `updateListItems()` | Guard `canUpdateClientSide()`; when changed, `TActiveListItemCollection::updateClientSide()` |
 | `TCallbackClientScript::setListItems()` | Delegates a `TSuggestionList` to `setSuggestionListItems()` |
 | `setSuggestionListItems()` | Builds `[value, label, attributes]` per item through `TSuggestionList::getOptionData()`; calls `Prado.Element.setDataListOptions` |
-| `Prado.Element.setDataListOptions` (`prado.js`) | `replaceChildren()` with new `<option>`s; label through `textContent`, never HTML; ignores non-datalist elements |
+| `Prado.Element.setDataListOptions` (`prado.js`) | `replaceChildren()` with new `<option>`s; label escapes `<` and `>` (as `THttpUtility::htmlEncode()` does) and is assigned to `innerHTML`, so entities decode as on the page and no element is created; ignores non-datalist elements |
 
 The prompt and `Group` of `setOptions` for `<select>` are not sent. Disabled and empty-value items are skipped, matching the server render.
 

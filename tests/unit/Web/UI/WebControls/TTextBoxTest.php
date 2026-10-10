@@ -3,6 +3,7 @@
 namespace Prado\Test\Unit\Web\UI\WebControls;
 
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Web\UI\ActiveControls\TActiveSuggestionList;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\WebControls\TSuggestionList;
 use Prado\Web\UI\WebControls\TTextBox;
@@ -15,14 +16,22 @@ class TTextBoxTest extends TestCase
 {
 	use TWebControlRenderTrait;
 
-	private function createPageWithTextBox(): array
+	public static function suggestionListClassProvider(): array
+	{
+		return [
+			'TSuggestionList' => [TSuggestionList::class],
+			'TActiveSuggestionList' => [TActiveSuggestionList::class],
+		];
+	}
+
+	private function createPageWithTextBox(string $listClass = TSuggestionList::class): array
 	{
 		$page = new TPage();
 		PradoUnit::setProp($page, '_inFormRender', true);
 		$textbox = new TTextBox();
 		$textbox->setID('City');
 		$textbox->setEnableClientScript(false);
-		$list = new TSuggestionList();
+		$list = new $listClass();
 		$list->setID('Cities');
 		$page->getControls()->add($textbox);
 		$page->getControls()->add($list);
@@ -51,16 +60,22 @@ class TTextBoxTest extends TestCase
 		$this->assertStringNotContainsString('list=', $this->render($textbox));
 	}
 
-	public function testListAttributeRendersClientId()
+	/**
+	 * @dataProvider suggestionListClassProvider
+	 */
+	public function testListAttributeRendersClientId(string $listClass)
 	{
-		[, $textbox, $list] = $this->createPageWithTextBox();
+		[, $textbox, $list] = $this->createPageWithTextBox($listClass);
 		$textbox->setSuggestionList('Cities');
 		$this->assertStringContainsString('list="' . $list->getClientID() . '"', $this->render($textbox));
 	}
 
-	public function testListAttributeRendersForInputModes()
+	/**
+	 * @dataProvider suggestionListClassProvider
+	 */
+	public function testListAttributeRendersForInputModes(string $listClass)
 	{
-		[, $textbox, $list] = $this->createPageWithTextBox();
+		[, $textbox, $list] = $this->createPageWithTextBox($listClass);
 		$textbox->setSuggestionList('Cities');
 		foreach ([TTextBoxMode::SingleLine, TTextBoxMode::Email, TTextBoxMode::Number, TTextBoxMode::Range, TTextBoxMode::Search, TTextBoxMode::Url] as $mode) {
 			$textbox->setTextMode($mode);
@@ -68,9 +83,12 @@ class TTextBoxTest extends TestCase
 		}
 	}
 
-	public function testNoListAttributeForPasswordAndMultiLine()
+	/**
+	 * @dataProvider suggestionListClassProvider
+	 */
+	public function testNoListAttributeForPasswordAndMultiLine(string $listClass)
 	{
-		[, $textbox] = $this->createPageWithTextBox();
+		[, $textbox] = $this->createPageWithTextBox($listClass);
 		$textbox->setSuggestionList('Cities');
 		foreach ([TTextBoxMode::Password, TTextBoxMode::MultiLine] as $mode) {
 			$textbox->setTextMode($mode);
@@ -78,9 +96,12 @@ class TTextBoxTest extends TestCase
 		}
 	}
 
-	public function testNoListAttributeWhenListNotVisible()
+	/**
+	 * @dataProvider suggestionListClassProvider
+	 */
+	public function testNoListAttributeWhenListNotVisible(string $listClass)
 	{
-		[, $textbox, $list] = $this->createPageWithTextBox();
+		[, $textbox, $list] = $this->createPageWithTextBox($listClass);
 		$textbox->setSuggestionList('Cities');
 		$list->setVisible(false);
 		$this->assertStringNotContainsString('list=', $this->render($textbox));

@@ -83,10 +83,17 @@ describe('Prado.Element.setDataListOptions', () => {
 		expect(el.children[0].textContent).toBe('');
 	});
 
-	it('sets the label as text, not HTML', () => {
+	it('escapes markup in the label, as the page render does', () => {
 		Element.setDataListOptions('test-datalist', [['P', '<img src=x onerror="window.__xss=1">', []]]);
 		expect(el.children[0].textContent).toBe('<img src=x onerror="window.__xss=1">');
 		expect(el.querySelector('img')).toBeNull();
+	});
+
+	it('decodes entities in the label, as the page render does', () => {
+		Element.setDataListOptions('test-datalist', [['cafe', 'Caf&eacute; &amp; Bar', []], ['lt', '&lt;i&gt;', []]]);
+		expect(el.children[0].textContent).toBe('Caf\u00e9 & Bar');
+		expect(el.children[1].textContent).toBe('<i>');
+		expect(el.children[1].children).toHaveLength(0);
 	});
 
 	it('sets the option attributes', () => {

@@ -58,6 +58,7 @@ test('TSuggestionListTestCase: data-bound items and a search input', async ({ pa
 		['Rome', ''],
 		['Berlin', ''],
 		['SF', 'San Francisco'],
+		['cafe', 'Caf\u00e9 & Bar'],
 	]);
 });
 
@@ -81,6 +82,70 @@ test('TSuggestionListTestCase: input is a labeled combobox', async ({ page }) =>
 	await h.url(PAGE_URL);
 
 	await expect(page.getByRole('combobox', { name: 'City' })).toHaveAttribute('id', `${BASE}city`);
+});
+
+/**
+ * Each text box class works with each list class on the page render.
+ */
+test('TSuggestionListTestCase: each text box class associates with each list class', async ({ page }) => {
+	const h = new PradoTestHelper(page, GENERIC_BASE_URL);
+	await h.url(PAGE_URL);
+
+	// TTextBox + TSuggestionList, TTextBox + TActiveSuggestionList,
+	// TActiveTextBox + TSuggestionList, TActiveTextBox + TActiveSuggestionList
+	for (const [input, list] of [
+		['city', 'cities'],
+		['plainActive', 'activeList'],
+		['activePlain', 'cities'],
+		['live', 'liveList'],
+	]) {
+		await h.assertAttribute(`${BASE}${input}@list`, `${BASE}${list}`);
+		expect(await associatedList(page, `${BASE}${input}`), input).toBe(`${BASE}${list}`);
+	}
+	expect(await datalistOptions(page, `${BASE}activeList`)).toEqual([
+		['Berlin', ''],
+		['Madrid', ''],
+	]);
+});
+
+/**
+ * A TTextBox keeps its association when its TActiveSuggestionList gains an
+ * item during a callback.
+ */
+test('TSuggestionListTestCase: TTextBox with a TActiveSuggestionList updated in a callback', async ({ page }) => {
+	const h = new PradoTestHelper(page, GENERIC_BASE_URL);
+	await h.url(PAGE_URL);
+
+	await h.click(`${BASE}btnAddActive`);
+	await h.waitForAjaxCalls();
+	await expect(page.locator(`#${STATUS}`)).toHaveText('active item added');
+	expect(await datalistOptions(page, `${BASE}activeList`)).toEqual([
+		['Berlin', ''],
+		['Madrid', ''],
+		['Vienna', ''],
+	]);
+	await h.assertAttribute(`${BASE}plainActive@list`, `${BASE}activeList`);
+	expect(await associatedList(page, `${BASE}plainActive`)).toBe(`${BASE}activeList`);
+});
+
+/**
+ * A TActiveTextBox with a TSuggestionList raises its callback and keeps the
+ * association; the list is unchanged.
+ */
+test('TSuggestionListTestCase: TActiveTextBox with a TSuggestionList across a callback', async ({ page }) => {
+	const h = new PradoTestHelper(page, GENERIC_BASE_URL);
+	await h.url(PAGE_URL);
+
+	await h.type(`${BASE}activePlain`, 'London');
+	await h.waitForAjaxCalls();
+	await expect(page.locator(`#${STATUS}`)).toHaveText('active plain: London');
+	await h.assertAttribute(`${BASE}activePlain@list`, `${BASE}cities`);
+	expect(await associatedList(page, `${BASE}activePlain`)).toBe(`${BASE}cities`);
+	expect(await datalistOptions(page, `${BASE}cities`)).toEqual([
+		['Paris', ''],
+		['London', ''],
+		['NYC', 'New York City'],
+	]);
 });
 
 /**
@@ -122,9 +187,9 @@ test('TSuggestionListTestCase: active list rebinds during a callback', async ({ 
 
 /**
  * An item added during a callback appends to the client options, and its label
- * is set as text, never parsed as HTML.
+ * escapes markup as the page render does, so it is never parsed as HTML.
  */
-test('TSuggestionListTestCase: items added in a callback, labels as text', async ({ page }) => {
+test('TSuggestionListTestCase: items added in a callback, markup escaped', async ({ page }) => {
 	const h = new PradoTestHelper(page, GENERIC_BASE_URL);
 	await h.url(PAGE_URL);
 
@@ -142,6 +207,23 @@ test('TSuggestionListTestCase: items added in a callback, labels as text', async
 	]);
 	await expect(page.locator(`#${BASE}liveList img`)).toHaveCount(0);
 	expect(await page.evaluate(() => window.__datalistXss)).toBeUndefined();
+});
+
+/**
+ * A label with entities shows the same after a callback as after the page
+ * render: the bound list renders it, and the active list receives it in a callback.
+ */
+test('TSuggestionListTestCase: callback label entities match the page render', async ({ page }) => {
+	const h = new PradoTestHelper(page, GENERIC_BASE_URL);
+	await h.url(PAGE_URL);
+
+	const rendered = (await datalistOptions(page, `${BASE}boundList`)).find(([value]) => value === 'cafe');
+	expect(rendered).toEqual(['cafe', 'Caf\u00e9 & Bar']);
+
+	await h.click(`${BASE}btnEntity`);
+	await h.waitForAjaxCalls();
+	await expect(page.locator(`#${STATUS}`)).toHaveText('entity added');
+	expect(await datalistOptions(page, `${BASE}liveList`)).toEqual([rendered]);
 });
 
 /**
@@ -190,5 +272,12 @@ test('TSuggestionListTestCase: postback keeps the items and posts the value', as
 		['Rome', ''],
 		['Berlin', ''],
 		['SF', 'San Francisco'],
+		['cafe', 'Caf\u00e9 & Bar'],
 	]);
+	expect(await datalistOptions(page, `${BASE}activeList`)).toEqual([
+		['Berlin', ''],
+		['Madrid', ''],
+	]);
+	expect(await associatedList(page, `${BASE}plainActive`)).toBe(`${BASE}activeList`);
+	expect(await associatedList(page, `${BASE}activePlain`)).toBe(`${BASE}cities`);
 });

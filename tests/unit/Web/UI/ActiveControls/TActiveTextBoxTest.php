@@ -7,18 +7,27 @@ use Prado\Test\Unit\PradoUnit;
 use Prado\Web\UI\ActiveControls\TActiveSuggestionList;
 use Prado\Web\UI\ActiveControls\TActiveTextBox;
 use Prado\Web\UI\TControl;
+use Prado\Web\UI\WebControls\TSuggestionList;
 use Prado\Web\UI\WebControls\TTextBoxMode;
 use PHPUnit\Framework\TestCase;
 
 class TActiveTextBoxTest extends TestCase
 {
-	private function createLoadedTextBox(bool $callback = true): array
+	public static function suggestionListClassProvider(): array
+	{
+		return [
+			'TSuggestionList' => [TSuggestionList::class],
+			'TActiveSuggestionList' => [TActiveSuggestionList::class],
+		];
+	}
+
+	private function createLoadedTextBox(bool $callback = true, string $listClass = TActiveSuggestionList::class): array
 	{
 		$page = new TTestCallbackPage();
 		$page->callback = $callback;
 		$textbox = new TActiveTextBox();
 		$textbox->setID('City');
-		$list = new TActiveSuggestionList();
+		$list = new $listClass();
 		$list->setID('Cities');
 		$page->getControls()->add($textbox);
 		$page->getControls()->add($list);
@@ -35,9 +44,12 @@ class TActiveTextBoxTest extends TestCase
 		$this->assertSame('Cities', $textbox->getSuggestionList());
 	}
 
-	public function testSetSuggestionListSetsClientAttribute()
+	/**
+	 * @dataProvider suggestionListClassProvider
+	 */
+	public function testSetSuggestionListSetsClientAttribute(string $listClass)
 	{
-		[$page, $textbox, $list] = $this->createLoadedTextBox();
+		[$page, $textbox, $list] = $this->createLoadedTextBox(true, $listClass);
 		$textbox->setSuggestionList('Cities');
 		$this->assertSame(
 			[['Prado.Element.setAttribute' => ['City', 'list', $list->getClientID()]]],
@@ -45,9 +57,12 @@ class TActiveTextBoxTest extends TestCase
 		);
 	}
 
-	public function testClearSuggestionListRemovesClientAttribute()
+	/**
+	 * @dataProvider suggestionListClassProvider
+	 */
+	public function testClearSuggestionListRemovesClientAttribute(string $listClass)
 	{
-		[$page, $textbox] = $this->createLoadedTextBox();
+		[$page, $textbox] = $this->createLoadedTextBox(true, $listClass);
 		$textbox->setSuggestionList('Cities');
 		$textbox->setSuggestionList('');
 		$this->assertSame(
@@ -56,15 +71,28 @@ class TActiveTextBoxTest extends TestCase
 		);
 	}
 
-	public function testPasswordModeRemovesClientAttribute()
+	/**
+	 * @dataProvider suggestionListClassProvider
+	 */
+	public function testPasswordModeRemovesClientAttribute(string $listClass)
 	{
-		[$page, $textbox] = $this->createLoadedTextBox();
+		[$page, $textbox] = $this->createLoadedTextBox(true, $listClass);
 		$textbox->setTextMode(TTextBoxMode::Password);
 		$textbox->setSuggestionList('Cities');
 		$this->assertSame(
 			[['Prado.Element.removeAttribute' => ['City', 'list']]],
 			$page->getClientFunctions()
 		);
+	}
+
+	/**
+	 * @dataProvider suggestionListClassProvider
+	 */
+	public function testListAttributeValueResolvesList(string $listClass)
+	{
+		[, $textbox, $list] = $this->createLoadedTextBox(false, $listClass);
+		$textbox->setSuggestionList('Cities');
+		$this->assertSame($list->getClientID(), PradoUnit::invoke($textbox, 'getListAttributeValue'));
 	}
 
 	public function testSameSuggestionListSendsNothing()

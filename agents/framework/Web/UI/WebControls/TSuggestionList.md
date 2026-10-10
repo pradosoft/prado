@@ -81,4 +81,4 @@ Extends [`TListControl`](./TListControl.md). No client script; [`TActiveSuggesti
 
 - Unit: `tests/unit/Web/UI/WebControls/TSuggestionListTest.php`, `TTextBoxTest.php`; `tests/unit/Web/UI/ActiveControls/TActiveSuggestionListTest.php`, `TActiveTextBoxTest.php`.
 - JS: `tests/js/prado/element.test.js` (`Prado.Element.setDataListOptions`).
-- Functional: `tests/playwright/web/TSuggestionListTestCase.spec.js` over `tests/harness/web/protected/pages/SuggestionListTest.page`. It checks the browser association through the `input.list` IDL attribute, which is null for a Password input or an unresolved id, plus the combobox role, callback rebinding, text-only labels, and postback restore.
+- Functional: `tests/playwright/web/TSuggestionListTestCase.spec.js` over `tests/harness/web/protected/pages/SuggestionListTest.page`. It checks the browser association through the `input.list` IDL attribute, which is null for a Password input or an unresolved id, plus the combobox role, callback rebinding, escaped markup and decoded entities in labels matching the page render, and postback restore.
