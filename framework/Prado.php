@@ -224,7 +224,8 @@ class Prado
 		if ($error &&
 			TPhpErrorException::isFatalError($error) &&
 			error_reporting() & $error['type']) {
-			self::exceptionHandler(new TPhpFatalErrorException($error['type'], $error['message'], $error['file'], $error['line']));
+			// exceptionHandler() exits the process.
+			self::exceptionHandler(new TPhpFatalErrorException($error['type'], $error['message'], $error['file'], $error['line'])); // @codeCoverageIgnore
 		}
 	}
 
@@ -236,6 +237,7 @@ class Prado
 	 * If the application or the module does not exist, it simply echoes the
 	 * exception.
 	 * @param \Throwable $exception exception that is not caught
+	 * @codeCoverageIgnore Exits the process.
 	 */
 	public static function exceptionHandler($exception): void
 	{
@@ -259,7 +261,8 @@ class Prado
 	public static function setApplication($application): void
 	{
 		if (self::$_application !== null && !defined('PRADO_TEST_RUN')) {
-			throw new TInvalidOperationException('prado_application_singleton_required');
+			// Tests define PRADO_TEST_RUN.
+			throw new TInvalidOperationException('prado_application_singleton_required'); // @codeCoverageIgnore
 		}
 		self::$_application = $application;
 	}
@@ -651,7 +654,8 @@ class Prado
 	public static function setPathOfAlias($alias, $path): void
 	{
 		if (isset(self::$_aliases[$alias]) && !defined('PRADO_TEST_RUN')) {
-			throw new TInvalidOperationException('prado_alias_redefined', $alias);
+			// Tests define PRADO_TEST_RUN.
+			throw new TInvalidOperationException('prado_alias_redefined', $alias); // @codeCoverageIgnore
 		} elseif (($rp = realpath($path)) !== false && is_dir($rp)) {
 			if (strpos($alias, '.') === false) {
 				self::$_aliases[$alias] = $rp;
@@ -668,6 +672,7 @@ class Prado
 	 * This method displays an error message together with the current call stack.
 	 * The application will exit after calling this method.
 	 * @param string $msg error message
+	 * @codeCoverageIgnore Exits the process.
 	 */
 	public static function fatalError($msg): void
 	{
@@ -751,9 +756,6 @@ class Prado
 				}
 				arsort($languages);
 				$languages = array_keys($languages);
-				if (count($languages) == 0) {
-					$languages[0] = 'en';
-				}
 			}
 		}
 		return $languages;

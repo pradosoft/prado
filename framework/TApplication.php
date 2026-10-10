@@ -637,6 +637,7 @@ class TApplication extends TComponent implements ISingleton
 	 * process termination (e.g. capture the code in tests instead of exiting).
 	 * @param int $exitCode exit status passed to the OS.
 	 * @since 4.3.3
+	 * @codeCoverageIgnore Exits the process.
 	 */
 	protected function exit(int $exitCode): void
 	{
@@ -2573,17 +2574,14 @@ class TApplication extends TComponent implements ISingleton
 		while (!isset($visited[$current])) {
 			$visited[$current] = count($path);
 			$path[] = $current;
-			$next = null;
+			// Every unsorted node has an unsorted dependency, so the walk
+			// reaches a visited node and the loop ends.
 			foreach ($depMap[$current] ?? [] as $depId) {
 				if (isset($inCycle[$depId])) {
-					$next = $depId;
+					$current = $depId;
 					break;
 				}
 			}
-			if ($next === null) {
-				break;
-			}
-			$current = $next;
 		}
 
 		$cycleStart = $visited[$current];
