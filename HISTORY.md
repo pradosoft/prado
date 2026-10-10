@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: `Prado::getUserLanguages()` returned an empty language for an empty `Accept-Language` entry; it skips them and falls back to `en`. `Prado::exceptionHandler()` and `fatalError()` return `never`. (belisoful)
 BUG: A PHP application configuration holding only `paths` or `parameters` was treated as empty and not applied. (belisoful)
 ENH: TSuggestionList renders the HTML5 `<datalist>` of values a TTextBox suggests through its new `SuggestionList` property. TActiveSuggestionList replaces its options during a callback, and TActiveTextBox updates the `list` attribute. (belisoful)
 BUG: `TPropertyValue::ensureArray()` misread a nested array element under the loose grammar and could loop forever on some inputs; `ARRAY_MAX_DEPTH` (64) limits nesting. (belisoful)
