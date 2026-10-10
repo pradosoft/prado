@@ -198,6 +198,7 @@ class TApplicationConfigurationTest extends \PHPUnit\Framework\TestCase
 		$aliases = $config->getAliases();
 		$this->assertSame(realpath($sub), $aliases['Rel']);
 		$this->assertSame(realpath($sub), $aliases['Abs']);
+		$this->assertFalse($config->getIsEmpty());
 	}
 
 	public function testLoadPathsPhp_usings(): void
@@ -205,6 +206,7 @@ class TApplicationConfigurationTest extends \PHPUnit\Framework\TestCase
 		$config = $this->config();
 		$config->loadFromPhp(['paths' => ['using' => ['App.Common.*', 'App.Pages.*']]], $this->tmpDir);
 		$this->assertSame(['App.Common.*', 'App.Pages.*'], $config->getUsings());
+		$this->assertFalse($config->getIsEmpty());
 	}
 
 	public function testLoadPathsPhp_invalidAliasPathThrows(): void
@@ -540,6 +542,7 @@ class TApplicationConfigurationTest extends \PHPUnit\Framework\TestCase
 		$config = $this->config();
 		$config->loadFromPhp(['parameters' => ['SiteName' => 'My Site']], $this->tmpDir);
 		$this->assertSame(['SiteName' => 'My Site'], $config->getParameters());
+		$this->assertFalse($config->getIsEmpty());
 	}
 
 	public function testLoadParametersPhp_componentTyped(): void
@@ -554,6 +557,7 @@ class TApplicationConfigurationTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame('TMailer', $type);
 		$this->assertSame(['Host' => 'smtp', 'id' => 'Mailer'], $properties);
 		$this->assertSame(['properties' => ['Host' => 'smtp']], $element);
+		$this->assertFalse($config->getIsEmpty());
 	}
 
 	public function testLoadParametersPhp_arrayWithoutClassIgnored(): void
@@ -562,6 +566,7 @@ class TApplicationConfigurationTest extends \PHPUnit\Framework\TestCase
 		// An array parameter without a class key is not a component definition; skipped.
 		$config->loadFromPhp(['parameters' => ['Bad' => ['no' => 'class']]], $this->tmpDir);
 		$this->assertSame([], $config->getParameters());
+		$this->assertTrue($config->getIsEmpty());
 	}
 
 	// =======================================================================

@@ -450,12 +450,14 @@ class TApplicationConfiguration extends \Prado\TApplicationComponent
 					throw new TConfigurationException('appconfig_alias_redefined', $id);
 				}
 				$this->_aliases[$id] = $p;
+				$this->_empty = false;
 			}
 		}
 
 		if (isset($pathsNode['using']) && is_array($pathsNode['using'])) {
 			foreach ($pathsNode['using'] as $namespace) {
 				$this->_usings[] = $namespace;
+				$this->_empty = false;
 			}
 		}
 	}
@@ -663,9 +665,11 @@ class TApplicationConfiguration extends \Prado\TApplicationComponent
 					$properties = $parameter['properties'] ?? [];
 					$properties['id'] = $id;
 					$this->_parameters[$id] = [$type, $properties, $parameter];
+					$this->_empty = false;
 				}
 			} else {
 				$this->_parameters[$id] = $parameter;
+				$this->_empty = false;
 			}
 		}
 	}
