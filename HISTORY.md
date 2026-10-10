@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: `Prado.Element.createOptions()` parsed callback list option text as HTML, so markup in a TActiveDropDownList or TActiveListBox item ran as HTML; it now escapes `<` and `>` as the page render does. (belisoful)
 ENH: `THttpResponse::writeFile()` serves a byte range (`206`, or `416` when unsatisfiable) for a `GET` `Range` request, merging ranges that overlap or adjoin, honoring `If-Range`, and sends `Accept-Ranges` and a file's `Last-Modified`. `THttpResponse::AcceptRanges` (default true) turns it off. `THttpHeaderRange` parses the `Range` header, and `appendFileRange()` streams the range through `TStreamHelper::copyRange()`. (belisoful)
 CHG: TReCaptcha and TReCaptchaValidator are deprecated; Google retired reCAPTCHA v1, so they cannot validate. Use TReCaptcha2. (belisoful)
 BUG: `TReCaptcha2::validate()` accepted any non-empty response; it now verifies the token with Google's siteverify through `THttpClient` and fails closed. (belisoful)
