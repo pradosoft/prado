@@ -2355,6 +2355,19 @@ class TApplicationDependencyTest extends \PHPUnit\Framework\TestCase
 			'behavior returning null must contribute no deps');
 	}
 
+	public function testCollectDeps_behaviorInvalidEntries_skipped(): void
+	{
+		// Entries that resolve to no dependency ID (an empty string, a non-string
+		// scalar, or a verbose array without an id) are skipped; valid ones remain.
+		$app    = $this->newAccessor();
+		$module = new TrackingModule();
+		$b      = new BehaviorVerboseDep();
+		$b->setDepsArray(['', 42, ['required' => false], ['id' => ''], 'db']);
+		$module->attachBehavior('verboseDep', $b);
+
+		$this->assertSame(['db'], $this->depIds($app->pubCollectDeps($module)));
+	}
+
 	// -----------------------------------------------------------------------
 	// collectModuleDependencies — behavior verbose array form
 	// -----------------------------------------------------------------------

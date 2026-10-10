@@ -164,6 +164,20 @@ class TComponentDynamicTest extends TComponentTestBase
 		$this->assertSame($levelBefore, ob_get_level(), 'ob_start() leaked after \Error in evaluateStatements()');
 	}
 
+	/**
+	 * Statements that return false are treated as invalid and close the output buffer.
+	 */
+	public function testEvaluateStatementsReturningFalseIsInvalid()
+	{
+		$levelBefore = ob_get_level();
+		try {
+			$this->component->evaluateStatements('echo "discarded"; return false;');
+			$this->fail('TInvalidOperationException not raised for statements returning false');
+		} catch (\Prado\Exceptions\TInvalidOperationException $e) {
+		}
+		$this->assertSame($levelBefore, ob_get_level());
+	}
+
 	public function testDynamicFunctionCall()
 	{
 		$this->assertEquals(' aa bb cc __ .. ++ || !! ?? ', $this->component->dyTextFilter(' aa bb cc __ .. ++ || !! ?? '));

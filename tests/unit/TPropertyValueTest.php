@@ -886,6 +886,20 @@ class TPropertyValueTest extends \PHPUnit\Framework\TestCase
 		self::assertSame([255 => 'a', 5 => 'b'], TPropertyValue::ensureArray('[0xFF => "a", 0b101 => "b"]'));
 	}
 
+	public function testEnsureArrayExplicitPlusSignIntegers()
+	{
+		// A leading '+' is stripped from integer values and integer keys.
+		self::assertSame([5, 9 => 'a', 10 => 255], TPropertyValue::ensureArray('[+5, +9 => "a", +0xFF]'));
+	}
+
+	public function testEnsureArrayNumbersFollowedByWhitespace()
+	{
+		// Whitespace between a number or keyword and the next delimiter still
+		// commits the literal at the element boundary.
+		self::assertSame([1, 2.5, true, 3], TPropertyValue::ensureArray("[1 , 2.5\t, true\n, 3 ]"));
+		self::assertSame([1, 2], TPropertyValue::ensureArray('[1 , 2 ]', TPropertyValue::ARRAY_STRICT_GRAMMAR));
+	}
+
 	public function testEnsureArrayMalformedUnderscoreBecomesBareWord()
 	{
 		// Underscores adjacent to a base prefix or another underscore are
@@ -5979,5 +5993,33 @@ class TPropertyValueTest extends \PHPUnit\Framework\TestCase
 		$t = $this->typeOf(fn(\stdClass|TPropertyValueTestPoint $x) => $x);
 		$got = TPropertyValue::coerceToType('7,7', $t);
 		self::assertInstanceOf(TPropertyValueTestPoint::class, $got);
+	}
+
+	// ════════════════════════════════════════════════════════════════════════
+	// Union — DNF type with a single named non-null member
+	// ════════════════════════════════════════════════════════════════════════
+
+	public function testCoerceUnion_dnfWithSingleNamedMember_delegatesToThatMember(): void
+	{
+		// (Countable&ArrayAccess)|int|null is a ReflectionUnionType whose only
+		// non-null ReflectionNamedType member is int, so coercion delegates to int.
+		$t = $this->typeOf(fn((\Countable&\ArrayAccess)|int|null $x) => $x);
+		self::assertInstanceOf(\ReflectionUnionType::class, $t);
+		self::assertSame(42, TPropertyValue::coerceToType('42', $t));
+		self::assertNull(TPropertyValue::coerceToType('', $t));
+	}
+
+	// ════════════════════════════════════════════════════════════════════════
+	// Union step 10 — stringified retry against a class member
+	// ════════════════════════════════════════════════════════════════════════
+
+	public function testCoerceUnion_step10_floatResolvesEnumViaStringRetry(): void
+	{
+		// A float has no native member in Priority|array.  The original float
+		// leaves the int-backed enum unchanged; the stringified '1' resolves
+		// via tryFrom() on the retry.
+		$t = $this->typeOf(fn(TPropertyValueTestPriority|array $x) => $x);
+		self::assertSame(TPropertyValueTestPriority::Low, TPropertyValue::coerceToType(1.0, $t));
+		self::assertSame(TPropertyValueTestPriority::High, TPropertyValue::coerceToType(2.0, $t));
 	}
 }
