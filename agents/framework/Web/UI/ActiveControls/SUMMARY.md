@@ -29,6 +29,7 @@ AJAX-enabled controls triggering server-side processing via XMLHttpRequest callb
 - **`TActiveCheckBoxList`** / **`TActiveRadioButtonList`** — Callback on any item check change.
 
 - **`TActiveTextBox`** / **`TActiveDropDownList`** / **`TActiveListBox`** — Callback on text change or selection change.
+- **`TActiveSuggestionList`** — `<datalist>` whose options update when items change in a callback.
 
 - **`TActivePanel`** — Container with `refresh()` method for server-side HTML update.
 

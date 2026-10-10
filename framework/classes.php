@@ -613,6 +613,7 @@ return [
 'TActiveRadioButtonList' => 'Prado\Web\UI\ActiveControls\TActiveRadioButtonList',
 'TActiveRatingList' => 'Prado\Web\UI\ActiveControls\TActiveRatingList',
 'TActiveRepeater' => 'Prado\Web\UI\ActiveControls\TActiveRepeater',
+'TActiveSuggestionList' => 'Prado\Web\UI\ActiveControls\TActiveSuggestionList',
 'TActiveTableCell' => 'Prado\Web\UI\ActiveControls\TActiveTableCell',
 'TActiveTableCellEventParameter' => 'Prado\Web\UI\ActiveControls\TActiveTableCellEventParameter',
 'TActiveTableRow' => 'Prado\Web\UI\ActiveControls\TActiveTableRow',

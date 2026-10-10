@@ -457,6 +457,29 @@ Prado.Element =
 	},
 
 	/**
+	 * Replaces the options of a datalist element. Labels are set as text, never as HTML.
+	 * @function ?
+	 * @param {string} element - Element id
+	 * @param {array[]} options - Array of options, each an array of structure
+	 *   [ "optionValue" , "optionLabel" , { attributeName: "attributeValue" } ];
+	 *   an empty label leaves the option without text
+	 */
+	setDataListOptions(element, options) {
+		const el = document.getElementById(element);
+		if(!el || el.tagName.toLowerCase() != "datalist")
+			return;
+		el.replaceChildren(...options.map(([value, label, attributes]) => {
+			const opt = document.createElement('option');
+			for(const [name, attribute] of Object.entries(attributes || {}))
+				opt.setAttribute(name, attribute);
+			opt.value = value;
+			if(label)
+				opt.textContent = label;
+			return opt;
+		}));
+	},
+
+	/**
 	 * Create opt-group options from an array of options.
 	 * @function {array} ?
 	 * @param {array[]} options - Array of options, each an array of structure

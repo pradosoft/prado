@@ -13,7 +13,7 @@ TSuggestionList renders the HTML5 `<datalist>` element: predefined values the br
 
 The name avoids `TDataList`, the templated repeater; PHP class names are case-insensitive.
 
-Extends [`TListControl`](./TListControl.md). No client script.
+Extends [`TListControl`](./TListControl.md). No client script; [`TActiveSuggestionList`](../ActiveControls/TActiveSuggestionList.md) is the active variant.
 
 ## Rendering
 
@@ -59,6 +59,12 @@ Extends [`TListControl`](./TListControl.md). No client script.
 - An invisible list (`getVisible(true)` false) renders no `list` attribute.
 - Any control can be the target; only its ClientID is used.
 
+## Active Variants
+
+- [`TActiveSuggestionList`](../ActiveControls/TActiveSuggestionList.md) replaces the client options when items change in a callback after OnLoad.
+- `TActiveTextBox::setSuggestionList()` sets or removes the client `list` attribute in a callback.
+- `getOptionData($item)` returns `[value, label, attributes]` or null; the server render and the callback update both use it, so they agree.
+
 ## Accessibility
 
 - Browsers expose the input as a combobox whose options are the suggestions; no ARIA is added.
@@ -69,4 +75,10 @@ Extends [`TListControl`](./TListControl.md). No client script.
 ## Gotchas
 
 - Prado's `Prado.WebUI.TTextBox` Enter-key handler only validates or raises `change`; it does not conflict with choosing a suggestion.
-- No active (callback) variant yet: items changed in a callback do not update the client.
+- Changing an existing item's properties does not mark the active list changed; replace the item or rebind.
+
+## Tests
+
+- Unit: `tests/unit/Web/UI/WebControls/TSuggestionListTest.php`, `TTextBoxTest.php`; `tests/unit/Web/UI/ActiveControls/TActiveSuggestionListTest.php`, `TActiveTextBoxTest.php`.
+- JS: `tests/js/prado/element.test.js` (`Prado.Element.setDataListOptions`).
+- Functional: `tests/playwright/web/TSuggestionListTestCase.spec.js` over `tests/harness/web/protected/pages/SuggestionListTest.page`. It checks the browser association through the `input.list` IDL attribute, which is null for a Password input or an unresolved id, plus the combobox role, callback rebinding, text-only labels, and postback restore.

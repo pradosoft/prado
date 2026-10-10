@@ -55,6 +55,62 @@ describe('Prado.Element.createOptions', () => {
 	});
 });
 
+// ─── Prado.Element.setDataListOptions ─────────────────────────────────────────
+
+describe('Prado.Element.setDataListOptions', () => {
+	let el;
+
+	beforeEach(() => {
+		el = document.createElement('datalist');
+		el.id = 'test-datalist';
+		el.innerHTML = '<option value="Old"></option>';
+		document.body.appendChild(el);
+	});
+
+	afterEach(() => {
+		document.body.removeChild(el);
+	});
+
+	it('replaces the existing options', () => {
+		Element.setDataListOptions('test-datalist', [['Paris', '', []], ['London', '', []]]);
+		expect(el.children).toHaveLength(2);
+		expect(el.children[0].value).toBe('Paris');
+		expect(el.children[1].value).toBe('London');
+	});
+
+	it('leaves an option without text when the label is empty', () => {
+		Element.setDataListOptions('test-datalist', [['Paris', '', []]]);
+		expect(el.children[0].textContent).toBe('');
+	});
+
+	it('sets the label as text, not HTML', () => {
+		Element.setDataListOptions('test-datalist', [['P', '<img src=x onerror="window.__xss=1">', []]]);
+		expect(el.children[0].textContent).toBe('<img src=x onerror="window.__xss=1">');
+		expect(el.querySelector('img')).toBeNull();
+	});
+
+	it('sets the option attributes', () => {
+		Element.setDataListOptions('test-datalist', [['Paris', 'Paris, France', { 'data-country': 'FR' }]]);
+		expect(el.children[0].getAttribute('data-country')).toBe('FR');
+		expect(el.children[0].textContent).toBe('Paris, France');
+	});
+
+	it('clears the options for an empty list', () => {
+		Element.setDataListOptions('test-datalist', []);
+		expect(el.children).toHaveLength(0);
+	});
+
+	it('ignores an element that is not a datalist', () => {
+		const select = document.createElement('select');
+		select.id = 'test-datalist-select';
+		select.innerHTML = '<option value="a">a</option>';
+		document.body.appendChild(select);
+		Element.setDataListOptions('test-datalist-select', [['b', '', []]]);
+		expect(select.children).toHaveLength(1);
+		document.body.removeChild(select);
+	});
+});
+
 // ─── Prado.Element.setAttribute ───────────────────────────────────────────────
 
 describe('Prado.Element.setAttribute', () => {
