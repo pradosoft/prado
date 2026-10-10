@@ -279,6 +279,16 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		return ['schedule' => '* * * * *', 'task' => TTestCronModuleTask::class];
 	}
 	
+	public function testInit_PhpJobKeysCaseInsensitive()
+	{
+		$this->obj->init(['jobs' => [
+			['Name' => 'mixedCase', 'Schedule' => '5 * * * *', 'Task' => TTestCronModuleTask::class, 'PropertyA' => 'value1'],
+		]]);
+
+		$tasks = $this->obj->getRawTasks();
+		self::assertEquals(['name' => 'mixedCase', 'schedule' => '5 * * * *', 'task' => TTestCronModuleTask::class, 'propertya' => 'value1'], $tasks['mixedCase']);
+	}
+
 	public function testValidateTask()
 	{
 		$properties = $this->validationData();

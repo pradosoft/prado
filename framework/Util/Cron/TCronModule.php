@@ -217,6 +217,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 
 	/**
 	 * This reads the configuration and stores the specified tasks, for lazy loading, until needed.
+	 * Job property keys are case-insensitive and stored in lowercase.
 	 * @param array|\Prado\Xml\TXmlElement $config the settings for cron
 	 * @throws TConfigurationException when a PHP configuration is not an array or two jobs have the same name.
 	 */
@@ -239,6 +240,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 				if (!is_array($properties)) {
 					throw new TConfigurationException('cron_task_as_array_required');
 				}
+				$properties = array_change_key_case($properties);
 			}
 			if (!($properties[self::NAME_KEY] ?? null)) {
 				$class = $properties[self::TASK_KEY] ?? '';
