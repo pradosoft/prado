@@ -8,7 +8,7 @@
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-TListControl is the base class for list controls like TListBox, TDropDownList, TCheckBoxList, and TRadioButtonList. It manages items, selections, data binding, and auto-postback behavior.
+TListControl is the base class for list controls like TListBox, TDropDownList, TCheckBoxList, TRadioButtonList, and [TSuggestionList](./TSuggestionList.md) (`<datalist>`, no selection). It manages items, selections, data binding, and auto-postback behavior.
 
 ## Key Properties/Methods
 

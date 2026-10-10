@@ -1,0 +1,55 @@
+<com:TContent ID="Content">
+	<h1>Suggestion List Test Case</h1>
+
+	<div>
+		<com:TLabel ForControl="city" Text="City" />
+		<com:TTextBox ID="city" SuggestionList="cities" />
+		<com:TSuggestionList ID="cities">
+			<com:TListItem Text="Paris" />
+			<com:TListItem Text="London" />
+			<com:TListItem Value="NYC" Text="New York City" />
+			<com:TListItem Text="Oslo" Enabled="false" />
+		</com:TSuggestionList>
+	</div>
+
+	<div>
+		<com:TLabel ForControl="bound" Text="Bound" />
+		<com:TTextBox ID="bound" TextMode="Search" SuggestionList="boundList" />
+		<com:TSuggestionList ID="boundList" />
+	</div>
+
+	<div>
+		<com:TLabel ForControl="secret" Text="Secret" />
+		<com:TTextBox ID="secret" TextMode="Password" SuggestionList="cities" />
+	</div>
+
+	<div>
+		<com:TLabel ForControl="live" Text="Live" />
+		<com:TActiveTextBox ID="live" AutoPostBack="true" SuggestionList="liveList" OnCallback="live_changed" />
+		<com:TActiveSuggestionList ID="liveList" />
+	</div>
+
+	<div>
+		<com:TLabel ForControl="plainActive" Text="Plain on active list" />
+		<com:TTextBox ID="plainActive" SuggestionList="activeList" />
+		<com:TActiveSuggestionList ID="activeList">
+			<com:TListItem Text="Berlin" />
+			<com:TListItem Text="Madrid" />
+		</com:TActiveSuggestionList>
+	</div>
+
+	<div>
+		<com:TLabel ForControl="activePlain" Text="Active on plain list" />
+		<com:TActiveTextBox ID="activePlain" AutoPostBack="true" SuggestionList="cities" OnCallback="active_plain_changed" />
+	</div>
+
+	<div>Status: <com:TActiveLabel ID="status" Text="none" /></div>
+
+	<com:TActiveButton ID="btnAdd" Text="Add Item" OnClick="add_item" />
+	<com:TActiveButton ID="btnMarkup" Text="Add Markup Item" OnClick="add_markup_item" />
+	<com:TActiveButton ID="btnAddActive" Text="Add To Active List" OnClick="add_active_item" />
+	<com:TActiveButton ID="btnEntity" Text="Add Entity Item" OnClick="add_entity_item" />
+	<com:TActiveButton ID="btnSwap" Text="Use Cities" OnClick="use_cities" />
+	<com:TActiveButton ID="btnDetach" Text="Detach List" OnClick="detach_list" />
+	<com:TButton ID="btnSubmit" Text="Submit" OnClick="submit" />
+</com:TContent>

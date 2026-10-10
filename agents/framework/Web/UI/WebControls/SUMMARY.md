@@ -18,11 +18,13 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 - **`TImageButton`** — `<input type="image">`; sends x,y coordinates.
 
-- **`TTextBox`** — `<input>` or `<textarea>`; properties: `TextMode`, `MaxLength`, `ReadOnly`, `AutoPostBack`.
+- **`TTextBox`** — `<input>` or `<textarea>`; properties: `TextMode`, `MaxLength`, `ReadOnly`, `AutoPostBack`, `SuggestionList`.
 
 - **`TCheckBox`** / **`TRadioButton`** — properties: `Checked`, `TextAlign`, `AutoPostBack`, `OnCheckedChanged`.
 
 - **`TDropDownList`** / **`TListBox`** — properties: `SelectedIndex`, `SelectedValue`, `Items`.
+
+- **`TSuggestionList`** — `<datalist>` of suggested values for a `TTextBox`; properties: `Items`, `DataSource`.
 
 - **`TCheckBoxList`** / **`TRadioButtonList`** — properties: `RepeatLayout`, `RepeatColumns`, `RepeatDirection`.
 

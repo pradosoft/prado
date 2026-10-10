@@ -13,10 +13,11 @@ Active control version of TTextBox that triggers callback on text changes when A
 ## Key Properties/Methods
 
 - `setText($value)` - Sets text with client-side update support
+- `setSuggestionList($value)` - Sets or removes the client-side `list` attribute during a callback (@since 4.4.0)
 - `raiseCallbackEvent($param)` - Raises callback event
 - `onCallback($param)` - Event raised when callback is requested
 - `getClientClassName()` - Returns `Prado.WebUI.TActiveTextBox`
 
 ## See Also
 
-- `TTextBox`, [ICallbackEventHandler](./ICallbackEventHandler.md), [TInPlaceTextBox](./TInPlaceTextBox.md)
+- `TTextBox`, [TActiveSuggestionList](./TActiveSuggestionList.md), [ICallbackEventHandler](./ICallbackEventHandler.md), [TInPlaceTextBox](./TInPlaceTextBox.md)

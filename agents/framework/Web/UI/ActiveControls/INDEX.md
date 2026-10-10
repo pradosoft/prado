@@ -59,9 +59,10 @@ AJAX-enabled controls for the Prado framework. ActiveControls trigger server-sid
 | `TActiveRadioButton` | TRadioButton | Callback on selection |
 | `TActiveCheckBoxList` | TCheckBoxList | Callback on any item check change |
 | `TActiveRadioButtonList` | TRadioButtonList | Callback on selection change |
-| `TActiveTextBox` | TTextBox | Callback on text change (with `AutoPostBack`) |
+| `TActiveTextBox` | TTextBox | Callback on text change (with `AutoPostBack`); updates `list` when `SuggestionList` changes |
 | `TActiveDropDownList` | TDropDownList | Callback on selection change |
 | `TActiveListBox` | TListBox | Callback on selection change |
+| [`TActiveSuggestionList`](TActiveSuggestionList.md) | TSuggestionList | Replaces the `<datalist>` options when items change in a callback; raises no callback (@since 4.4.0) |
 | `TActivePanel` | TPanel | Container with `refresh()` method for server-side HTML update |
 | `TActiveDataGrid` | TDataGrid | Data grid with callback paging/sorting/editing |
 | `TActiveDataList` | TDataList | Data list with callback editing |

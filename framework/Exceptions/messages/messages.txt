@@ -21,6 +21,7 @@ component_tbehavior_cannot_attach_as_class_behavior	= IBehaviors cannot attach t
 propertyvalue_enumvalue_invalid			= Value '{0}' is a not valid enumeration value ({1}).
 propertyvalue_invalid_hex_color			= Value '{0}' is a not valid hex color value.  eg. "#112233"
 propertyvalue_invalid_array_literal		= Value '{0}' is not a valid array literal.
+propertyvalue_array_too_deep			= Array literal nests deeper than {0} levels.
 
 eventhandler_lost_weak_ref				= TEventHandler cannot invoke the event handler because the callable object WeakReference was lost.
 eventhandler_no_set_handler				= TEventHandler cannot set the event handler, index "{0}".
@@ -379,6 +380,8 @@ listcontrol_expression_invalid			= {0} is evaluating an invalid expression '{1}'
 listcontrol_multiselect_unsupported		= {0} does not support multiselection.
 
 label_associatedcontrol_invalid			= TLabel.AssociatedControl '{0}' cannot be found.
+
+textbox_suggestionlist_invalid			= TTextBox.SuggestionList '{0}' cannot be found.
 
 hiddenfield_focus_unsupported			= THiddenField does not support setting input focus.
 hiddenfield_theming_unsupported			= THiddenField does not support theming.

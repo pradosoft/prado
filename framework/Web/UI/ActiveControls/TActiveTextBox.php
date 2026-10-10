@@ -23,7 +23,8 @@ use Prado\Web\UI\WebControls\TTextBox;
  * be changed during callback. When {@see setAutoPostBack AutoPostBack} property
  * is true, changes to the textbox contents will perform a callback request causing
  * {@see onTextChanged OnTextChanged} to be fired first followed by {@see onCallback OnCallback}
- * event.
+ * event. Setting {@see setSuggestionList SuggestionList} during a callback updates
+ * the client-side `list` attribute.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.1
@@ -71,6 +72,29 @@ class TActiveTextBox extends TTextBox implements IActiveControl, ICallbackEventH
 		parent::setText($value);
 		if ($this->getActiveControl()->canUpdateClientSide() && $this->getHasLoadedPostData()) {
 			$this->getPage()->getCallbackClient()->setValue($this, $value);
+		}
+	}
+
+	/**
+	 * Sets the ID of the {@see \Prado\Web\UI\WebControls\TSuggestionList} whose values the text box suggests.
+	 * On callback response, the client-side `list` attribute is set or removed.
+	 * @param string $value the suggestion list ID
+	 * @since 4.4.0
+	 */
+	public function setSuggestionList($value)
+	{
+		if (parent::getSuggestionList() === $value) {
+			return;
+		}
+
+		parent::setSuggestionList($value);
+		if ($this->getActiveControl()->canUpdateClientSide()) {
+			$client = $this->getPage()->getCallbackClient();
+			if (($list = $this->getListAttributeValue()) === '') {
+				$client->removeAttribute($this, 'list');
+			} else {
+				$client->setAttribute($this, 'list', $list);
+			}
 		}
 	}
 

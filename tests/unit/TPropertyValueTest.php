@@ -1054,6 +1054,48 @@ class TPropertyValueTest extends \PHPUnit\Framework\TestCase
 		self::assertSame(['[array(1)'], TPropertyValue::ensureArray('[array(1)'));
 	}
 
+	public function testEnsureArrayNestedArrayElementsInLooseGrammar()
+	{
+		// An element opening with `[`, `(`, or `array(` is a nested array,
+		// never a bare-word key.
+		self::assertSame([[1 => 2]], TPropertyValue::ensureArray('[[1=>2]]'));
+		self::assertSame(['x', ['a' => 1, 'b' => 2]], TPropertyValue::ensureArray('[x, [a => 1, b => 2]]'));
+		self::assertSame([[1 => 2]], TPropertyValue::ensureArray('[array(1=>2)]'));
+		self::assertSame([[1 => 2]], TPropertyValue::ensureArray('[[1=>2]]', TPropertyValue::ARRAY_SKIP_EMPTY));
+	}
+
+	public function testEnsureArrayInputsThatLoopedForeverParse()
+	{
+		self::assertSame([[1 => 2]], TPropertyValue::ensureArray('([1=>2])'));
+		self::assertSame([['a' => 'b']], TPropertyValue::ensureArray('[(a=>b)]'));
+		self::assertSame([[1 => 'x'], '.'], TPropertyValue::ensureArray('[1=>x],.'));
+		// A quoted string commits only at a value end; otherwise the span is
+		// read as bare words, as the validator reads it.
+		self::assertSame(['k' => "'a", "'" => 1], TPropertyValue::ensureArray("[k => 'a,' => 1]"));
+		self::assertSame(['"a" b'], TPropertyValue::ensureArray('["a" b]'));
+	}
+
+	public function testEnsureArrayMaxDepth()
+	{
+		$depth = TPropertyValue::ARRAY_MAX_DEPTH;
+		$deepest = str_repeat('[', $depth) . str_repeat(']', $depth);
+		$tooDeep = '[' . $deepest . ']';
+
+		$parsed = TPropertyValue::ensureArray($deepest);
+		for ($i = 1; $i < $depth; $i++) {
+			$parsed = $parsed[0];
+		}
+		self::assertSame([], $parsed);
+		self::assertSame([$tooDeep], TPropertyValue::ensureArray($tooDeep));
+
+		try {
+			TPropertyValue::ensureArray($tooDeep, TPropertyValue::ARRAY_STRICT_ERRORS);
+			self::fail('ensureArray() did not throw for a literal deeper than ARRAY_MAX_DEPTH.');
+		} catch (TInvalidDataValueException $e) {
+			self::assertSame('propertyvalue_array_too_deep', $e->getErrorCode());
+		}
+	}
+
 	// ── ensureArray: bare-word (unquoted string) elements ────────────────────
 	//
 	// Intentional divergence from PHP literal syntax: any token that doesn't
