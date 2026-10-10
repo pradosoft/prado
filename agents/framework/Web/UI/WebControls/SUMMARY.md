@@ -52,6 +52,10 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 - **`TTime`** — HTML5 `<time>` element; localized absolute date/time and duration formatting via `IntlDateFormatter`/`CultureInfo`; properties: `DateTime`, `DateTimeFormat`, `TextFormat`.
 
+- **`TWebTemplate`** — HTML5 `<template>`; client-side stamping with `{{...}}` placeholders, or a declarative shadow root through `ShadowRootMode` (`TShadowRootMode`); JS in `controls/webtemplate.js`.
+
+- **`TSlot`** — HTML5 `<slot>` inside a shadow root; `Name` selects the light DOM children whose `slot` attribute (`TWebControl::Slot`) matches; content is the fallback.
+
 - **`TRelativeTime`** — Live "time ago" (`<time>`); extends `TTime`; client-composed localized relative text via `CultureInfo::getUnitPatterns()` + `Intl.PluralRules`; JS in `controls/relativetime.js`.
 
 ### Layout & Multi-View Controls
