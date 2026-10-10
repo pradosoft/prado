@@ -459,8 +459,10 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
+	 * Returns the request body's content type.  By default the parameters after the
+	 * first `;` are stripped, so `text/html; charset=UTF-8` returns `text/html`.
 	 * @param bool $mimetypeOnly whether to return only the mimetype (default: true)
-	 * @return ?string content type (e.g. 'application/json' or 'text/html; encoding=gzip') or null if not specified
+	 * @return ?string content type (e.g. 'application/json' or 'text/html; charset=UTF-8') or null if not specified
 	 */
 	public function getContentType($mimetypeOnly = true)
 	{
@@ -468,8 +470,8 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 			return null;
 		}
 
-		if ($mimetypeOnly === true && ($_pos = strpos(';', $_SERVER['CONTENT_TYPE'])) !== false) {
-			return substr($_SERVER['CONTENT_TYPE'], 0, $_pos);
+		if ($mimetypeOnly === true && ($_pos = strpos($_SERVER['CONTENT_TYPE'], ';')) !== false) {
+			return rtrim(substr($_SERVER['CONTENT_TYPE'], 0, $_pos));
 		}
 
 		return $_SERVER['CONTENT_TYPE'];
