@@ -1,0 +1,9 @@
+<com:TContent ID="Content">
+	<h1>List Option Text Test Case</h1>
+
+	<com:TActiveDropDownList ID="list" />
+
+	<div>Status: <com:TActiveLabel ID="status" Text="none" /></div>
+
+	<com:TActiveButton ID="btnReload" Text="Reload Items" OnClick="reload_items" />
+</com:TContent>
