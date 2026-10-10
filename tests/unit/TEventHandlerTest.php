@@ -495,7 +495,7 @@ class TEventHandlerTest extends \PHPUnit\Framework\TestCase
 		self::assertNull($handler[2]);
 		
 		try {
-			$handler[3] = null;
+			unset($handler[3]);
 			self::fail("Failed to throw TInvalidDataValueException when improperly unset the handler [3].");
 		} catch(TInvalidDataValueException $e) {}
 	}
