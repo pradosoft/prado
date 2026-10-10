@@ -381,6 +381,8 @@ listcontrol_multiselect_unsupported		= {0} does not support multiselection.
 
 label_associatedcontrol_invalid			= TLabel.AssociatedControl '{0}' cannot be found.
 
+textbox_suggestionlist_invalid			= TTextBox.SuggestionList '{0}' cannot be found.
+
 hiddenfield_focus_unsupported			= THiddenField does not support setting input focus.
 hiddenfield_theming_unsupported			= THiddenField does not support theming.
 hiddenfield_skinid_unsupported			= THiddenField does not support control skin.

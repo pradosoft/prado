@@ -30,11 +30,12 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 | `TButton` | `<input type="submit">` or `<button>` | `ButtonType`, `ButtonTag`, `CausesValidation`, `ValidationGroup`, `OnClick`, `OnCommand` |
 | `TLinkButton` | `<a>` with postback | Same as TButton |
 | `TImageButton` | `<input type="image">` | Sends x,y coordinates; `OnClick` with `TImageClickEventParameter` |
-| `TTextBox` | `<input>` / `<textarea>` | `TextMode` (SingleLine/MultiLine/Password), `MaxLength`, `ReadOnly`, `AutoPostBack` |
+| `TTextBox` | `<input>` / `<textarea>` | `TextMode` (SingleLine/MultiLine/Password), `MaxLength`, `ReadOnly`, `AutoPostBack`, `SuggestionList` |
 | `TCheckBox` | `<input type="checkbox">` | `Checked`, `TextAlign`, `AutoPostBack`, `OnCheckedChanged` |
 | `TRadioButton` | `<input type="radio">` | `GroupName`, `Checked`, `AutoPostBack`, `OnCheckedChanged` |
 | `TDropDownList` | `<select>` | `SelectedIndex`, `SelectedValue`, `Items` (TListItemCollection), `AutoPostBack` |
 | `TListBox` | `<select multiple>` | `SelectionMode` (Single/Multiple), `Rows` |
+| [`TSuggestionList`](TSuggestionList.md) | `<datalist>` | Suggested values for a `TTextBox` through `TTextBox::SuggestionList`; `Items`, data binding (@since 4.4.0) |
 | `TCheckBoxList` | multiple `<input type="checkbox">` | `RepeatLayout`, `RepeatColumns`, `RepeatDirection` |
 | `TRadioButtonList` | multiple `<input type="radio">` | Same as TCheckBoxList |
 | `TFileUpload` | `<input type="file">` | `HasFile`, `FileName`, `FileSize`, `FileType`, `LocalName`; `SaveAs($path)` |

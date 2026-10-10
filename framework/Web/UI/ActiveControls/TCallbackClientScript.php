@@ -18,6 +18,7 @@ use Prado\Web\UI\THtmlWriter;
 use Prado\Web\UI\WebControls\TCheckBox;
 use Prado\Web\UI\WebControls\TCheckBoxList;
 use Prado\Web\UI\WebControls\TListControl;
+use Prado\Web\UI\WebControls\TSuggestionList;
 
 /**
  * TCallbackClientScript class.
@@ -265,11 +266,16 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 
 	/**
 	 * Sets the options of a select input element.
+	 * A {@see TSuggestionList} uses {@see setSuggestionListItems} instead.
 	 * @param \Prado\Web\UI\TControl $control control element or element id
 	 * @param array|TListControl $items a list of new options
 	 */
 	public function setListItems($control, $items)
 	{
+		if ($control instanceof TSuggestionList) {
+			$this->setSuggestionListItems($control, $items);
+			return;
+		}
 		$options = [];
 		if ($control instanceof TListControl) {
 			$promptText = $control->getPromptText();
@@ -292,6 +298,26 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 			}
 		}
 		$this->callClientFunction('Prado.Element.setOptions', [$control, $options]);
+	}
+
+	/**
+	 * Replaces the options of a `<datalist>` element.
+	 * Each option is the `[value, label, attributes]` of
+	 * {@see \Prado\Web\UI\WebControls\TSuggestionList::getOptionData}; items without
+	 * option data are skipped.
+	 * @param TSuggestionList $control the suggestion list
+	 * @param iterable $items the list items
+	 * @since 4.4.0
+	 */
+	public function setSuggestionListItems($control, $items)
+	{
+		$options = [];
+		foreach ($items as $item) {
+			if (($option = $control->getOptionData($item)) !== null) {
+				$options[] = $option;
+			}
+		}
+		$this->callClientFunction('Prado.Element.setDataListOptions', [$control, $options]);
 	}
 
 	/**

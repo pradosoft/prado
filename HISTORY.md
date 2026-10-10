@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+ENH: TSuggestionList renders the HTML5 `<datalist>` of values a TTextBox suggests through its new `SuggestionList` property. TActiveSuggestionList replaces its options during a callback, and TActiveTextBox updates the `list` attribute. (belisoful)
 BUG: `TPropertyValue::ensureArray()` misread a nested array element under the loose grammar and could loop forever on some inputs; `ARRAY_MAX_DEPTH` (64) limits nesting. (belisoful)
 BUG: `THttpRequest::getContentType()` returned the parameters with the mimetype; by default it now strips them, as documented. (belisoful)
 BUG: `Prado.Element.createOptions()` parsed callback list option text as HTML, so markup in a TActiveDropDownList or TActiveListBox item ran as HTML; it now escapes `<` and `>` as the page render does. (belisoful)
