@@ -190,6 +190,14 @@ class TPropertyValue
 	public const ARRAY_SKIP_EMPTY = (1 << 3);
 
 	/**
+	 * Maximum nesting depth of an array literal parsed by {@see ensureArray()}.
+	 * A deeper literal is a parse failure: it is wrapped as a single element, or
+	 * throws with {@see ARRAY_STRICT_ERRORS}.  Subclasses may override it.
+	 * @since 4.4.0
+	 */
+	public const ARRAY_MAX_DEPTH = 64;
+
+	/**
 	 * Bitmask of every `ARRAY_*` flag — the bits {@see ensureArrayOfType()}
 	 * forwards to {@see ensureArray()}.
 	 * @since 4.4.0
@@ -1007,7 +1015,8 @@ class TPropertyValue
 	 * `<com:TControl colors="red, green, blue"/>`.
 	 *
 	 * The parser is regex-driven — no `eval()` — and the empty string always
-	 * returns the empty array.
+	 * returns the empty array.  A literal nested deeper than {@see ARRAY_MAX_DEPTH}
+	 * does not parse.
 	 *
 	 * ```php
 	 * // Loose grammar (default) — bare element lists auto-wrap.
@@ -1035,7 +1044,7 @@ class TPropertyValue
 	 *   {@see ARRAY_STRICT_ERRORS}, {@see ARRAY_SKIP_EMPTY} combined with `|`.
 	 *   Defaults to `0` (loose grammar, silent fallback, empty elements rejected).
 	 * @throws TInvalidDataValueException when {@see ARRAY_STRICT_ERRORS} is
-	 *   set and the input does not parse.
+	 *   set and the input does not parse or nests deeper than {@see ARRAY_MAX_DEPTH}.
 	 * @return array
 	 */
 	public static function ensureArray($value, int $flags = 0): array
@@ -1051,14 +1060,22 @@ class TPropertyValue
 		$strict = ($flags & static::ARRAY_STRICT_GRAMMAR) !== 0;
 		$allowBareParen = $strict && ($flags & static::ARRAY_STRICT_GRAMMAR_ALLOW_BARE_PAREN) !== 0;
 		$skipEmpty = ($flags & static::ARRAY_SKIP_EMPTY) !== 0;
-		$parsed = self::_parseArrayLiteral($value, $strict, $allowBareParen, $skipEmpty);
-		if ($parsed === null && !$strict) {
-			$parsed = self::_parseArrayLiteral('(' . $value . ')', false, false, $skipEmpty);
+		$strictErrors = ($flags & static::ARRAY_STRICT_ERRORS) !== 0;
+		try {
+			$parsed = self::_parseArrayLiteral($value, $strict, $allowBareParen, $skipEmpty);
+			if ($parsed === null && !$strict) {
+				$parsed = self::_parseArrayLiteral('(' . $value . ')', false, false, $skipEmpty);
+			}
+		} catch (TInvalidDataValueException $e) {
+			if ($strictErrors) {
+				throw $e;
+			}
+			return [$value];
 		}
 		if ($parsed !== null) {
 			return $parsed;
 		}
-		if (($flags & static::ARRAY_STRICT_ERRORS) !== 0) {
+		if ($strictErrors) {
 			throw new TInvalidDataValueException('propertyvalue_invalid_array_literal', $value);
 		}
 		return [$value];
@@ -1500,6 +1517,8 @@ class TPropertyValue
 	 * @param bool $skipEmpty when `true`, the element-list grammar accepts empty
 	 *   elements (leading, consecutive, and trailing commas) and the extraction
 	 *   pass drops them, at every nesting depth.
+	 * @throws TInvalidDataValueException when the literal nests deeper than
+	 *   {@see ARRAY_MAX_DEPTH}.
 	 * @return ?array the parsed array, or `null` on syntax error.
 	 * @since 4.4.0
 	 */
@@ -1593,22 +1612,28 @@ class TPropertyValue
 	 *   fallback under strict grammar.
 	 * @param bool $skipEmpty when `true`, empty elements (leading and
 	 *   consecutive commas) are consumed and dropped instead of misparsing.
+	 * @param int $depth the nesting depth of this array; the top level is 1.
+	 * @throws TInvalidDataValueException when `$depth` exceeds {@see ARRAY_MAX_DEPTH},
+	 *   or when an element consumes no input.
 	 * @return array the parsed array.
 	 * @since 4.4.0
 	 */
-	private static function _consumeArray(string $s, int &$pos, bool $strict = false, bool $skipEmpty = false): array
+	private static function _consumeArray(string $s, int &$pos, bool $strict = false, bool $skipEmpty = false, int $depth = 1): array
 	{
+		if ($depth > static::ARRAY_MAX_DEPTH) {
+			throw new TInvalidDataValueException('propertyvalue_array_too_deep', static::ARRAY_MAX_DEPTH);
+		}
 		$len = strlen($s);
 		$close = $s[$pos] === '(' ? ')' : ']';
 		$pos++;
 		$result = [];
 		$nextAutoKey = 0;
 		self::_skipWs($s, $pos);
-		// The validator guarantees a matching close bracket exists; the
-		// `$pos < $len` guard has only protected against a validator-parser
-		// drift turning into an infinite loop on PHP 8.x's out-of-bounds
-		// string access returning the empty string.
+		// The validator guarantees a matching close bracket exists.  The
+		// `$pos < $len` guard and the progress check stop a validator-parser
+		// drift from looping forever.
 		while ($pos < $len && $s[$pos] !== $close) {
+			$start = $pos;
 			if ($skipEmpty && $s[$pos] === ',') {
 				// Empty element slot — consume the comma and move on.
 				$pos++;
@@ -1621,18 +1646,21 @@ class TPropertyValue
 			if ($key !== null && isset($s[$pos + 1]) && $s[$pos] === '=' && $s[$pos + 1] === '>') {
 				$pos += 2;
 				self::_skipWs($s, $pos);
-				$result[$key] = self::_consumeValue($s, $pos, $strict, $skipEmpty);
+				$result[$key] = self::_consumeValue($s, $pos, $strict, $skipEmpty, $depth);
 				if (is_int($key) && $key >= $nextAutoKey) {
 					$nextAutoKey = $key + 1;
 				}
 			} else {
 				$pos = $saved;
-				$result[$nextAutoKey++] = self::_consumeValue($s, $pos, $strict, $skipEmpty);
+				$result[$nextAutoKey++] = self::_consumeValue($s, $pos, $strict, $skipEmpty, $depth);
 			}
 			self::_skipWs($s, $pos);
 			if ($pos < $len && $s[$pos] === ',') {
 				$pos++;
 				self::_skipWs($s, $pos);
+			}
+			if ($pos === $start) {
+				throw new TInvalidDataValueException('propertyvalue_invalid_array_literal', $s);
 			}
 		}
 		if ($pos < $len) {
@@ -1651,14 +1679,15 @@ class TPropertyValue
 	 *   under strict grammar.
 	 * @param bool $skipEmpty propagated to nested {@see _consumeArray()} calls
 	 *   so empty elements are dropped at every depth.
+	 * @param int $depth the nesting depth of the array holding this value.
 	 * @return mixed the parsed value.
 	 * @since 4.4.0
 	 */
-	private static function _consumeValue(string $s, int &$pos, bool $strict = false, bool $skipEmpty = false): mixed
+	private static function _consumeValue(string $s, int &$pos, bool $strict = false, bool $skipEmpty = false, int $depth = 1): mixed
 	{
 		$c = $s[$pos];
 		if ($c === '(' || $c === '[') {
-			return self::_consumeArray($s, $pos, $strict, $skipEmpty);
+			return self::_consumeArray($s, $pos, $strict, $skipEmpty, $depth + 1);
 		}
 		// The `array(...)` keyword form has been recognized at every depth in
 		// both grammars; the helper has advanced `$pos` past `array` and the
@@ -1670,7 +1699,7 @@ class TPropertyValue
 			$saved = $pos;
 			self::_skipArrayKeyword($s, $pos);
 			if ($pos !== $saved) {
-				return self::_consumeArray($s, $pos, $strict, $skipEmpty);
+				return self::_consumeArray($s, $pos, $strict, $skipEmpty, $depth + 1);
 			}
 		}
 		return self::_consumeScalar($s, $pos, $strict);
@@ -1738,7 +1767,7 @@ class TPropertyValue
 	/**
 	 * Has consumed a scalar at `$pos` in priority order: quoted string, float,
 	 * int, reserved keyword (`null`/`true`/`false`), and — under loose grammar
-	 * only — bare-word string.  Each numeric or keyword candidate has had to
+	 * only — bare-word string.  Each string, numeric, or keyword candidate has had to
 	 * reach an element-end (top-level `,`, `=>`, `)`, `]`, or end of input)
 	 * to commit; otherwise the span has fallen through to the bare-word
 	 * fallback so that mistyped or suffixed tokens (`1abc`, `truely`, `0xZZ`)
@@ -1755,10 +1784,12 @@ class TPropertyValue
 	private static function _consumeScalar(string $s, int &$pos, bool $strict = false): null|bool|float|int|string
 	{
 		if ($s[$pos] === '"' || $s[$pos] === "'") {
+			$saved = $pos;
 			$str = self::_tryConsumeString($s, $pos);
-			if ($str !== null) {
+			if ($str !== null && self::_atElementEnd($s, $pos, false)) {
 				return $str;
 			}
+			$pos = $saved;
 		}
 		if (preg_match(self::FLOAT_LITERAL_PATTERN, $s, $m, 0, $pos)) {
 			$end = $pos + strlen($m[0]);
@@ -1908,8 +1939,9 @@ class TPropertyValue
 
 	/**
 	 * Has consumed a bare-word string at `$pos` — every character up to (but
-	 * not including) the next top-level delimiter (`,`, `=>`, `)`, `]`, or
-	 * end of input), with the trailing whitespace trimmed.  When `$pos` has
+	 * not including) the next `,`, `=`, `(`, `)`, `[`, `]`, or end of input,
+	 * with the trailing whitespace trimmed.  These are the characters the
+	 * bare-word grammar of {@see ARRAY_LITERAL_PATTERN} excludes.  When `$pos` has
 	 * already sat at a delimiter, no characters have been consumed and the
 	 * empty string has been returned so the caller can decide whether the
 	 * absence of a token has been an error.
@@ -1922,25 +1954,8 @@ class TPropertyValue
 	private static function _consumeBareWord(string $s, int &$pos): string
 	{
 		$len = strlen($s);
-		if ($pos >= $len) {
-			return '';
-		}
-		$c = $s[$pos];
-		if ($c === ',' || $c === ')' || $c === ']'
-			|| ($c === '=' && isset($s[$pos + 1]) && $s[$pos + 1] === '>')
-		) {
-			return '';
-		}
 		$start = $pos;
-		$pos++;
-		while ($pos < $len) {
-			$c = $s[$pos];
-			if ($c === ',' || $c === ')' || $c === ']') {
-				break;
-			}
-			if ($c === '=' && isset($s[$pos + 1]) && $s[$pos + 1] === '>') {
-				break;
-			}
+		while ($pos < $len && strpos(',()[]=', $s[$pos]) === false) {
 			$pos++;
 		}
 		return rtrim(substr($s, $start, $pos - $start));
@@ -1954,10 +1969,12 @@ class TPropertyValue
 	 *
 	 * @param string $s the source string.
 	 * @param int $pos the position to inspect (not advanced).
+	 * @param bool $allowArrow whether `=>` ends the element; `false` for a
+	 *   quoted string value, which the grammar never follows with `=>`.
 	 * @return bool whether `$pos` has been at an element boundary.
 	 * @since 4.4.0
 	 */
-	private static function _atElementEnd(string $s, int $pos): bool
+	private static function _atElementEnd(string $s, int $pos, bool $allowArrow = true): bool
 	{
 		$len = strlen($s);
 		while ($pos < $len && ($s[$pos] === ' ' || $s[$pos] === "\t"
@@ -1973,7 +1990,7 @@ class TPropertyValue
 		if ($c === ',' || $c === ')' || $c === ']') {
 			return true;
 		}
-		return $c === '=' && isset($s[$pos + 1]) && $s[$pos + 1] === '>';
+		return $allowArrow && $c === '=' && isset($s[$pos + 1]) && $s[$pos + 1] === '>';
 	}
 
 	// =========================================================================
