@@ -52,6 +52,7 @@ Implements: `IPostBackDataHandler`, `IValidatable`, `IDataRenderer`
 | `Wrap` | bool | `true` | Whether MultiLine text wraps. `false` adds `wrap="off"` (not XHTML-compatible) |
 | `PersistPassword` | bool | `false` | If true, the password value is re-sent to the browser on postback |
 | `AutoCompleteType` | TTextBoxAutoCompleteType | `None` | Browser autocomplete hint |
+| `SuggestionList` | string | `''` | ID of a [`TSuggestionList`](./TSuggestionList.md); renders `list` with its ClientID (@since 4.4.0) |
 | `EnableClientScript` | bool | `true` | Whether JS postback/event handling is registered |
 | `IsValid` | bool | `true` | Set by validators; readable after validation runs |
 
@@ -85,4 +86,5 @@ Implements: `IPostBackDataHandler`, `IValidatable`, `IDataRenderer`
 - **`AutoCompleteType`** with `Enabled`/`Disabled` — Also not XHTML-compatible.
 - **SafeText caching** — The HTMLPurifier result is cached in `$_safeText`. Calling `setText()` clears the cache. The HTMLPurifier instance is shared statically across all TTextBox instances.
 - **Client JS** — Registered only when `EnableClientScript=true`, the control is enabled, and either `AutoPostBack=true` or `TextMode=SingleLine`.
+- **`SuggestionList`** — Resolved with `findControl()` at render; a missing control throws `textbox_suggestionlist_invalid`. No `list` for `MultiLine` or `Password`, or when the list is not visible.
 - **`Columns` meaning differs by mode** — In SingleLine/Password it becomes the `size` attribute; in MultiLine it is the `cols` attribute with a 20-column fallback.

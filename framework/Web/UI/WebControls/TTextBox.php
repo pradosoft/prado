@@ -36,6 +36,8 @@ use Prado\Exceptions\TConfigurationException;
  * property to true. If you want to limit the user input to a specified number
  * of characters, set the {@see setMaxLength MaxLength} property.
  * To use AutoComplete feature, set the {@see setAutoCompleteType AutoCompleteType} property.
+ * To suggest predefined values, set the {@see setSuggestionList SuggestionList} property
+ * to the ID of a {@see \Prado\Web\UI\WebControls\TSuggestionList}.
  *
  * If {@see setAutoPostBack AutoPostBack} is set true, updating the text box
  * and then changing the focus out of it will cause postback action.
@@ -186,6 +188,10 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 					break;
 				case TTextBoxAutoCompleteType::None:
 					break;
+			}
+
+			if ($textMode !== TTextBoxMode::Password && ($list = $this->getSuggestionListClientID()) !== '') {
+				$writer->addAttribute('list', $list);
 			}
 
 			if (($cols = $this->getColumns()) > 0) {
@@ -372,6 +378,45 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	public function setAutoCompleteType($value)
 	{
 		$this->setViewState('AutoCompleteType', TPropertyValue::ensureEnum($value, TTextBoxAutoCompleteType::class), TTextBoxAutoCompleteType::None);
+	}
+
+	/**
+	 * @return string the ID of the {@see TSuggestionList} whose values the text box suggests.
+	 *   Defaults to '', no suggestions.
+	 * @since 4.4.0
+	 */
+	public function getSuggestionList()
+	{
+		return $this->getViewState('SuggestionList', '');
+	}
+
+	/**
+	 * Sets the ID of the {@see TSuggestionList} whose values the text box suggests.
+	 * The list must be locatable via {@see \Prado\Web\UI\TControl::findControl} using the ID.
+	 * The `list` attribute renders for every {@see setTextMode TextMode} except MultiLine and Password.
+	 * @param string $value the suggestion list ID
+	 * @since 4.4.0
+	 */
+	public function setSuggestionList($value)
+	{
+		$this->setViewState('SuggestionList', TPropertyValue::ensureString($value), '');
+	}
+
+	/**
+	 * Resolves {@see getSuggestionList SuggestionList} to the client ID of the list.
+	 * @throws TInvalidDataValueException if the suggestion list cannot be found
+	 * @return string the client ID of the list; '' when no list is set or the list is not visible
+	 * @since 4.4.0
+	 */
+	protected function getSuggestionListClientID(): string
+	{
+		if (($id = $this->getSuggestionList()) === '') {
+			return '';
+		}
+		if (($list = $this->findControl($id)) === null) {
+			throw new TInvalidDataValueException('textbox_suggestionlist_invalid', $id);
+		}
+		return $list->getVisible(true) ? $list->getClientID() : '';
 	}
 
 	/**

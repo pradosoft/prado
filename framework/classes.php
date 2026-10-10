@@ -914,6 +914,7 @@ return [
 'TStatements' => 'Prado\Web\UI\WebControls\TStatements',
 'TStyle' => 'Prado\Web\UI\WebControls\TStyle',
 'TStyleSheet' => 'Prado\Web\UI\WebControls\TStyleSheet',
+'TSuggestionList' => 'Prado\Web\UI\WebControls\TSuggestionList',
 'TSummary' => 'Prado\Web\UI\WebControls\TSummary',
 'TTable' => 'Prado\Web\UI\WebControls\TTable',
 'TTableCaptionAlign' => 'Prado\Web\UI\WebControls\TTableCaptionAlign',
