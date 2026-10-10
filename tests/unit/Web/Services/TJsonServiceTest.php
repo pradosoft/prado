@@ -152,6 +152,17 @@ class TJsonServiceTest extends \PHPUnit\Framework\TestCase
 	}
 
 	/**
+	 * A PHP configuration without a `json` key registers nothing.
+	 */
+	public function testPhpConfigurationWithoutJsonRegistersNothing()
+	{
+		Prado::getApplication()->setConfigurationType(TApplication::CONFIG_TYPE_PHP);
+		$service = new TJsonService();
+		$service->init(['class' => TJsonService::class]);
+		$this->assertSame([], PradoUnit::getProp($service, '_services'));
+	}
+
+	/**
 	 * An XML configuration registers each `<json>` element under its id attribute.
 	 */
 	public function testXmlConfigurationRegistersTheServices()
