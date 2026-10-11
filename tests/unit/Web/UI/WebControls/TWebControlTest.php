@@ -187,6 +187,7 @@ class TWebControlTest extends TestCase
 		$source->setDraggable(true);
 		$source->setInert(true);
 		$source->setPopover(true);
+		$source->setSlot('title');
 		$source->setContentEditable('plaintext-only');
 		$source->setInputMode(TWebInputMode::Email);
 		$source->setEnterKeyHint(TEnterKeyHint::Done);
@@ -205,6 +206,7 @@ class TWebControlTest extends TestCase
 		$this->assertTrue($target->getDraggable());
 		$this->assertTrue($target->getInert());
 		$this->assertTrue($target->getPopover());
+		$this->assertEquals('title', $target->getSlot());
 		$this->assertEquals('plaintext-only', $target->getContentEditable());
 		$this->assertEquals(TWebInputMode::Email, $target->getInputMode());
 		$this->assertEquals(TEnterKeyHint::Done, $target->getEnterKeyHint());
@@ -729,6 +731,31 @@ class TWebControlTest extends TestCase
 		$control = new TWebControl();
 		$control->setPopover(false);
 		$this->assertStringNotContainsString('popover', $this->render($control));
+	}
+
+	public function testSlotGetSet()
+	{
+		$control = new TWebControl();
+		$this->assertSame('', $control->getSlot());
+
+		$control->setSlot('  title ');
+		$this->assertSame('title', $control->getSlot());
+
+		$control->setSlot('');
+		$this->assertSame('', $control->getSlot());
+	}
+
+	public function testSlotRender()
+	{
+		$control = new TWebControl();
+		$control->setSlot('title');
+		$this->assertStringContainsString('slot="title"', $this->render($control));
+	}
+
+	public function testSlotEmptyNotRendered()
+	{
+		$control = new TWebControl();
+		$this->assertStringNotContainsString('slot', $this->render($control));
 	}
 
 	// ContentEditable Tests

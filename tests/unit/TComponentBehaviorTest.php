@@ -7,9 +7,11 @@ use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TUnknownMethodException;
 use Prado\TComponent;
+use Prado\Util\IBaseBehavior;
 use Prado\Util\IDynamicMethods;
 use Prado\Util\IInstanceCheck;
 use Prado\Util\TBehavior;
+use Prado\Util\TClassBehaviorEventParameter;
 
 /**
  * Tests for TComponent instance-behavior management:
@@ -1293,6 +1295,102 @@ class TComponentBehaviorTest extends TComponentTestBase
 		$this->assertEquals('another', $this->component->anotherVisibleMethod());
 
 		$this->component->detachBehavior('ownerVisibleComposed');
+	}
+
+	/**
+	 * A component without behaviors has no owner-callable behaviors for any method.
+	 */
+	public function testGetOwnerCallableBehaviors_noBehaviors(): void
+	{
+		$this->assertNull(PradoUnit::getProp($this->component, '_m'));
+		$this->assertSame([], PradoUnit::invoke($this->component, 'getOwnerCallableBehaviors', 'anyMethod'));
+	}
+
+	/**
+	 * An IBaseBehavior that is not a TComponent is rejected with TInvalidDataTypeException.
+	 */
+	public function testAttachBehavior_nonComponentBaseBehaviorThrows(): void
+	{
+		$behavior = new class () implements IBaseBehavior {
+			public function init($config)
+			{
+			}
+			public function attach($component)
+			{
+			}
+			public function detach($component)
+			{
+			}
+			public function getName(): ?string
+			{
+				return null;
+			}
+			public function setName($value)
+			{
+			}
+			public function getEnabled(): bool
+			{
+				return true;
+			}
+			public function setEnabled($value)
+			{
+			}
+			public function getOwners(): array
+			{
+				return [];
+			}
+			public function hasOwner(): bool
+			{
+				return false;
+			}
+			public function isOwner(object $component): bool
+			{
+				return false;
+			}
+			public function syncEventHandlers(?object $component = null, $attachOverride = 0)
+			{
+			}
+			public function getPriority()
+			{
+				return null;
+			}
+			public function setPriority($value)
+			{
+			}
+		};
+		try {
+			$this->component->attachBehavior('nonComponent', $behavior);
+			$this->fail('TInvalidDataTypeException not raised when attaching a non-TComponent IBaseBehavior');
+		} catch (TInvalidDataTypeException $e) {
+			$this->assertStringContainsString('object_not_a_component', $e->getErrorCode());
+		}
+		$this->assertNull($this->component->asa('nonComponent'));
+	}
+
+	/**
+	 * attachBehaviors() clones an IBehavior held by a TClassBehaviorEventParameter when
+	 * $cloneIBehavior is true, and detachBehaviors() detaches by the parameter's name.
+	 */
+	public function testAttachDetachBehaviors_classBehaviorEventParameter(): void
+	{
+		$behavior = new FooBehavior();
+		$param = new TClassBehaviorEventParameter(NewComponent::class, 'paramBehavior', $behavior, 5);
+
+		$this->component->attachBehaviors([$param], true);
+		$attached = $this->component->asa('paramBehavior');
+		$this->assertInstanceOf(FooBehavior::class, $attached);
+		$this->assertNotSame($behavior, $attached);
+		$this->assertFalse($behavior->hasOwner());
+
+		$this->component->detachBehaviors([$param]);
+		$this->assertNull($this->component->asa('paramBehavior'));
+
+		$this->component->attachBehaviors(['plainBehavior' => $behavior], true);
+		$attached = $this->component->asa('plainBehavior');
+		$this->assertInstanceOf(FooBehavior::class, $attached);
+		$this->assertNotSame($behavior, $attached);
+		$this->assertFalse($behavior->hasOwner());
+		$this->component->detachBehavior('plainBehavior');
 	}
 }
 

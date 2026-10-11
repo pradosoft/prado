@@ -1814,21 +1814,7 @@ class TComponent
 				}
 
 				if (is_string($handler)) {
-					if (($pos = strrpos($handler, '.')) !== false) {
-						$object = $this->getSubProperty(substr($handler, 0, $pos));
-						$method = substr($handler, $pos + 1);
-						if (Prado::method_visible($object, $method) || strncasecmp($method, 'dy', 2) === 0 || strncasecmp($method, 'fx', 2) === 0) {
-							if ($method == '__dycall') {
-								$response = $object->__dycall($name, [$sender, $param]);
-							} else {
-								$response = $object->$method($sender, $param);
-							}
-						} else {
-							throw new TInvalidDataValueException('component_eventhandler_invalid', $this::class, $name, $handler);
-						}
-					} else {
-						$response = call_user_func($handler, $sender, $param);
-					}
+					$response = call_user_func($handler, $sender, $param);
 				} elseif (is_callable($handler, true)) {
 					if (is_object($handler) || is_string($handler[0])) {
 						$response = call_user_func($handler, $sender, $param);
@@ -1850,7 +1836,8 @@ class TComponent
 						}
 					}
 				} else {
-					throw new TInvalidDataValueException('component_eventhandler_invalid', $this::class, $name, gettype($handler));
+					// Event handler collections accept only callables.
+					throw new TInvalidDataValueException('component_eventhandler_invalid', $this::class, $name, gettype($handler)); // @codeCoverageIgnore
 				}
 
 				$this->callBehaviorsMethod('dyIntraRaiseEventPostHandler', $return, $name, $sender, $param, $handler, $response);

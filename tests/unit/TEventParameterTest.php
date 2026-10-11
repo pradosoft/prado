@@ -753,6 +753,27 @@ class TEventParameterTest extends TestCase
 		$param->setReadOnly(true);
 	}
 
+	public function testSetReadOnlyThrowsWhenUnsetAndCalledExternally()
+	{
+		$param = new TEventParameter('value');
+		PradoUnit::setProp($param, '_readOnly', null);
+		try {
+			$param->setReadOnly(true);
+			$this->fail('setReadOnly() did not throw when called externally.');
+		} catch (\Prado\Exceptions\TInvalidOperationException $e) {
+			$this->assertEquals('eventparam_readonly_not_self', $e->getErrorCode());
+		}
+		$this->assertFalse($param->getReadOnly());
+	}
+
+	public function testPreAndPostRaiseEventAreNoOps()
+	{
+		$param = new TEventParameter('value');
+		$this->assertNull($param->preRaiseEvent('onEvent', $this, $param, null, null));
+		$this->assertNull($param->postRaiseEvent([], 'onEvent', $this, $param, null, null));
+		$this->assertSame('value', $param->getParameter());
+	}
+
 	public function testSetReadOnlyThrowsWhenAlreadySet()
 	{
 		// Use a subclass to expose setReadOnly as a second internal call

@@ -114,4 +114,26 @@ class TEventSubscriptionTest extends \PHPUnit\Framework\TestCase
 		$this->subscription->setCollection(new TMap());
 	}
 
+	public function testGetArray_UnknownEvent_ReturnsNull()
+	{
+		$this->subscription = new $this->_baseClass($this->component, 'onNoSuchEvent');
+		self::assertNull($this->subscription->getArray());
+	}
+
+	public function testSetComponentAndEvent_WhileSubscribed_Throws()
+	{
+		$this->subscription = new $this->_baseClass($this->component, 'onEvent', function ($sender, $param) {});
+		self::assertTrue($this->subscription->getIsSubscribed());
+
+		try {
+			$this->subscription->setComponent(new EventSubscriptionComponent());
+			self::fail('setComponent() did not throw while subscribed.');
+		} catch (TInvalidOperationException $e) {
+			self::assertEquals('eventsubscription_no_change', $e->getErrorCode());
+		}
+
+		self::expectException(TInvalidOperationException::class);
+		$this->subscription->setEvent('onEvent');
+	}
+
 }

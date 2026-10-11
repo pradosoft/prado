@@ -499,5 +499,17 @@ class TEventHandlerTest extends \PHPUnit\Framework\TestCase
 			self::fail("Failed to throw TInvalidDataValueException when improperly unset the handler [3].");
 		} catch(TInvalidDataValueException $e) {}
 	}
+
+	public function testOffsetGet_StrongHandlers()
+	{
+		$static = new TEventHandler([\DateTime::class, 'createFromFormat']);
+		self::assertSame(\DateTime::class, $static[0]);
+		self::assertSame('createFromFormat', $static[1]);
+
+		$closure = function ($sender, $param) {};
+		$handler = new TEventHandler($closure);
+		self::assertSame($closure, $handler[0]);
+		self::assertNull($handler[1]);
+	}
 	
 }
