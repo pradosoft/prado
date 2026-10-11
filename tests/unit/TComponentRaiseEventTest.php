@@ -7,9 +7,12 @@ require_once __DIR__ . '/TComponentTestFunctions.php';
 use Prado\Collections\TPriorityList;
 use Prado\Exceptions\TApplicationException;
 use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TUnknownMethodException;
+use Prado\IEventCycleParameter;
 use Prado\TComponent;
+use Prado\TEventParameter;
 use Prado\TEventResults;
 use Prado\Util\IDynamicMethods;
 use Prado\Util\IInstanceCheck;
@@ -406,9 +409,111 @@ class TComponentRaiseEventTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals('r2', $responses[1]['response']);
 	}
 
+	/**
+	 * A handler for which dyIntraRaiseEventTestHandler returns false is skipped.
+	 */
+	public function testRaiseEventSkipsHandlerRejectedByBehavior()
+	{
+		$component = new NewComponent();
+		$order = [];
+		$skipped = function () use (&$order) {
+			$order[] = 'skipped';
+			return 'skipped';
+		};
+		$component->attachEventHandler('OnMyEvent', $skipped);
+		$component->attachEventHandler('OnMyEvent', function () use (&$order) {
+			$order[] = 'run';
+			return 'run';
+		});
+		$component->attachBehavior('skipper', new TComponentRaiseEventSkipBehavior($skipped));
+
+		$this->assertEquals(['run'], $component->raiseEvent('OnMyEvent', $this, null));
+		$this->assertEquals(['run'], $order);
+		$component->detachBehavior('skipper');
+	}
+
+	/**
+	 * A string handler naming a static method is called with the sender and parameter.
+	 */
+	public function testRaiseEventStaticMethodStringHandler()
+	{
+		$component = new NewComponent();
+		$component->attachEventHandler('OnMyEvent', self::class . '::staticEventHandler');
+
+		$this->assertEquals(['static:handled'], $component->raiseEvent('OnMyEvent', $this, 'handled'));
+	}
+
+	public static function staticEventHandler($sender, $param)
+	{
+		return 'static:' . $param;
+	}
+
+	/**
+	 * An object handler whose method is not visible throws TInvalidDataValueException.
+	 */
+	public function testRaiseEventInvalidObjectMethodHandlerThrows()
+	{
+		$component = new NewComponent();
+		$component->attachEventHandler('OnMyEvent', [$this->component, 'undefinedEventHandler']);
+
+		try {
+			$component->raiseEvent('OnMyEvent', $this, null);
+			$this->fail('TInvalidDataValueException not raised for an undefined handler method');
+		} catch (TInvalidDataValueException $e) {
+		}
+	}
+
+	/**
+	 * An IEventCycleParameter is notified before and after the handlers run.
+	 */
+	public function testRaiseEventCycleParameter()
+	{
+		$component = new NewComponent();
+		$component->attachEventHandler('OnMyEvent', function ($sender, $param) {
+			$param->calls[] = 'handler';
+			return 'response';
+		});
+		$param = new class () extends TEventParameter implements IEventCycleParameter {
+			public array $calls = [];
+			public function preRaiseEvent($name, $sender, $param, $responsetype, $postfunction)
+			{
+				$this->calls[] = 'pre:' . $name;
+			}
+			public function postRaiseEvent($responses, $name, $sender, $param, $responsetype, $postfunction)
+			{
+				$this->calls[] = 'post:' . implode(',', $responses);
+			}
+		};
+
+		$this->assertEquals(['response'], $component->raiseEvent('OnMyEvent', $this, $param));
+		$this->assertEquals(['pre:onmyevent', 'handler', 'post:response'], $param->calls);
+	}
+
 	public function testGlobalEventListenerInRaiseEvent()
 	{
 		//TODO Test the Global Event Listener
 		throw new \PHPUnit\Framework\IncompleteTestError();
+	}
+}
+
+/**
+ * Rejects one handler through dyIntraRaiseEventTestHandler so raiseEvent skips it.
+ */
+class TComponentRaiseEventSkipBehavior extends TBehavior
+{
+	private $_skip;
+
+	public function __construct($skip)
+	{
+		$this->_skip = $skip;
+		parent::__construct();
+	}
+
+	public function dyIntraRaiseEventTestHandler($handler, $sender, $param, $name, $chain)
+	{
+		if ($handler === $this->_skip) {
+			return false;
+		}
+		return $chain->dyIntraRaiseEventTestHandler($handler, $sender, $param, $name);
 	}
 }

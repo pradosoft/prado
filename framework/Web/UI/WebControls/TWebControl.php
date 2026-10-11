@@ -64,6 +64,7 @@ use Prado\Collections\TWebAttributeCollection;
  * $control->setEnterKeyHint(TEnterKeyHint::Next);
  * $control->setTranslate('yes');
  * $control->setPopover(true);
+ * $control->setSlot('title');
  * ```
  *
  * ### ARIA Attributes
@@ -229,6 +230,9 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 		}
 		if ($attrToCopy & TWebControlAttribute::Popover) {
 			$this->setPopover($control->getPopover());
+		}
+		if ($attrToCopy & TWebControlAttribute::Slot) {
+			$this->setSlot($control->getSlot());
 		}
 		if ($attrToCopy & TWebControlAttribute::ARIA && $control->getHasAria()) {
 			$this->getAria()->copyFrom($control->getAria());
@@ -784,6 +788,30 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
+	 * @return string the name of the shadow tree slot this element is assigned
+	 *   to, or empty string if not set
+	 * @since 4.4.0
+	 */
+	public function getSlot()
+	{
+		return $this->getViewState('Slot', '');
+	}
+
+	/**
+	 * Sets the name of the shadow tree slot this element is assigned to. The
+	 * element renders in the {@see TSlot} of the same name inside its parent's
+	 * shadow root. An empty value omits the attribute, which assigns the element
+	 * to the default slot.
+	 *
+	 * @param string $value the slot name
+	 * @since 4.4.0
+	 */
+	public function setSlot($value)
+	{
+		$this->setViewState('Slot', trim(TPropertyValue::ensureString($value)), '');
+	}
+
+	/**
 	 * @return ?string ARIA role, null if not set
 	 * @since 4.4.0
 	 */
@@ -1070,6 +1098,9 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 		}
 		if ($this->getPopover()) {
 			$writer->addAttribute('popover', 'popover');
+		}
+		if (($slot = $this->getSlot()) !== '') {
+			$writer->addAttribute('slot', $slot);
 		}
 		if ($aria = $this->getViewState('Aria', null)) {
 			$aria->addAttributesToRender($writer);

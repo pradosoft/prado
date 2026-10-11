@@ -10,6 +10,7 @@ for both A and B.
 Upgrading from v4.3.3
 ---------------------
 - PHP 8.2 is now required. Applications running PHP 8.1 stay on Prado 4.3.
+- `Prado::exceptionHandler()` and `Prado::fatalError()` return `never`. A subclass overriding either must declare `never`.
 - TTemplate applies a template attribute name as written instead of replacing its dashes with underscores.
   An `Attributes.<name>` subproperty now stores the hyphenated name it was given, so
   `<com:TNav Attributes.aria-label="Primary" />` renders `aria-label="Primary"` where it previously rendered

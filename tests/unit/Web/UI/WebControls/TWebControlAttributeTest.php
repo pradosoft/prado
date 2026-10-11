@@ -36,6 +36,7 @@ class TWebControlAttributeTest extends TestCase
 			'EnterKeyHint'   => (1 << 17),
 			'Inert'          => (1 << 18),
 			'Popover'        => (1 << 19),
+			'Slot'           => (1 << 20),
 		];
 	}
 
