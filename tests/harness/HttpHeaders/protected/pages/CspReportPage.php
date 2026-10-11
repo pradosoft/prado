@@ -38,9 +38,11 @@ class CspReportPage extends TPage
 		switch ($action) {
 			case 'report-uri':
 				// Enforcing CSP with report-uri; inline scripts trigger a violation report.
+				// img-src 'self' keeps the browser's favicon fetch from adding a second report.
 				$csp = new THttpHeaderCsp();
 				$csp->setPolicy(TCspDirective::DefaultSrc, "'none'");
 				$csp->setPolicy(TCspDirective::ScriptSrc, "'self'");
+				$csp->setPolicy(TCspDirective::ImgSrc, "'self'");
 				$csp->setPolicy(
 					TCspDirective::ReportUri,
 					$endpoint !== '' ? $endpoint : 'https://csp-report.example.invalid/report'
@@ -54,6 +56,7 @@ class CspReportPage extends TPage
 				$csp->setReportOnly(true);
 				$csp->setPolicy(TCspDirective::DefaultSrc, "'none'");
 				$csp->setPolicy(TCspDirective::ScriptSrc, "'self'");
+				$csp->setPolicy(TCspDirective::ImgSrc, "'self'");
 				$csp->setPolicy(
 					TCspDirective::ReportUri,
 					$endpoint !== '' ? $endpoint : 'https://csp-report.example.invalid/report'
@@ -67,6 +70,7 @@ class CspReportPage extends TPage
 				$csp = new THttpHeaderCsp();
 				$csp->setPolicy(TCspDirective::DefaultSrc, "'none'");
 				$csp->setPolicy(TCspDirective::ScriptSrc, "'self'");
+				$csp->setPolicy(TCspDirective::ImgSrc, "'self'");
 				$csp->setPolicy(TCspDirective::ReportTo, 'csp-endpoint');
 				$manager->addHeader($csp);
 

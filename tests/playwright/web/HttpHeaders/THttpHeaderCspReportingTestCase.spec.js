@@ -26,30 +26,53 @@ const COLLECTOR_PHP = GENERIC_BASE_URL + 'HttpHeaders/csp-collector.php';
 const EXAMPLE_COLLECTOR = 'https://example.invalid/csp';
 
 /**
- * Polls the PHP collector until at least one CSP report body arrives or the
- * deadline passes.
+ * Polls the PHP collector until a CSP report body satisfying `accept` arrives
+ * or the deadline passes.
  *
  * Uses Playwright's `request` fixture (Node.js HTTP, not browser network) so
  * the call is not subject to the page's CSP and works regardless of browser.
  *
+ * Each GET drains the collector, so bodies from every poll are accumulated and
+ * tested in arrival order.  A browser may deliver several reports for one page
+ * (Firefox also reports a blocked favicon fetch), and their order is not
+ * guaranteed, so a test that needs a specific violation passes a predicate.
+ *
  * @param {import('@playwright/test').APIRequestContext} request
  * @param {string} token       Per-test unique isolation token.
  * @param {number} timeoutMs   Maximum wait in milliseconds.
- * @returns {Promise<string|null>}  First report body string, or null on timeout.
+ * @param {(body: string) => boolean} [accept]  Predicate on a report body; defaults to any body.
+ * @returns {Promise<string|null>}  First accepted report body string, or null on timeout.
  */
-async function pollCspCollector(request, token, timeoutMs = 12000) {
+async function pollCspCollector(request, token, timeoutMs = 12000, accept = () => true) {
 	const url      = `${COLLECTOR_PHP}?t=${token}`;
 	const deadline = Date.now() + timeoutMs;
 
 	while (Date.now() < deadline) {
 		const resp   = await request.get(url);
 		const bodies = await resp.json();
-		if (bodies.length > 0) {
-			return bodies[0];
+		const match  = bodies.find(accept);
+		if (match !== undefined) {
+			return match;
 		}
 		await new Promise((resolve) => setTimeout(resolve, 500));
 	}
 	return null;
+}
+
+/**
+ * Returns true when a report body names a script-src violation
+ * (`script-src` or the `script-src-elem` sub-directive).
+ *
+ * @param {string} body  Raw JSON report body.
+ * @returns {boolean}
+ */
+function isScriptSrcReport(body) {
+	try {
+		const directive = JSON.parse(body)['csp-report']?.['violated-directive'] ?? '';
+		return directive.includes('script-src');
+	} catch {
+		return false;
+	}
 }
 
 test.describe('THttpHeaderCspReportingTestCase', () => {
@@ -68,8 +91,10 @@ test.describe('THttpHeaderCspReportingTestCase', () => {
 	/**
 	 * 2. When a CSP violation occurs under report-uri mode, the browser sends
 	 *    a POST request containing a JSON csp-report body to the collector URL.
-	 *    Only the inline script is on the page; the violated-directive will be
-	 *    script-src (no other violating resources are present).
+	 *    The inline script violates script-src.  The page allows img-src 'self'
+	 *    so the browser's favicon fetch does not add a second violation, and the
+	 *    poll still selects the script-src report explicitly because report
+	 *    order is not guaranteed.
 	 *
 	 *    The PHP collector receives the POST directly from the browser's network
 	 *    stack, which is reliable across all browsers (Chromium, Firefox, WebKit).
@@ -85,14 +110,13 @@ test.describe('THttpHeaderCspReportingTestCase', () => {
 			{ waitUntil: 'networkidle' }
 		);
 
-		const capturedBody = await pollCspCollector(request, token, timeoutMs);
+		const capturedBody = await pollCspCollector(request, token, timeoutMs, isScriptSrcReport);
 
 		expect(capturedBody).not.toBeNull();
 
 		const report = JSON.parse(capturedBody);
 		expect(report['csp-report']).toBeTruthy();
 
-		// The only violation on this page is the inline script → script-src.
 		const violatedDirective = report['csp-report']['violated-directive'] ?? '';
 		expect(violatedDirective).toContain('script-src');
 	});
