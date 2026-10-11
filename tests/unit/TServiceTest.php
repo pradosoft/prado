@@ -155,6 +155,12 @@ class TServiceTest extends TestCase
 		$this->assertTrue($this->service->ranRun);
 	}
 
+	public function testBaseRunIsNoOp(): void
+	{
+		$service = new class () extends TService {};
+		$this->assertNull($service->run());
+	}
+
 	// =========================================================================
 	// getInstance() — core behaviour
 	// =========================================================================

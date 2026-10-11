@@ -14,6 +14,17 @@
 		</com:TWebTemplate>
 	</div>
 
+	<h2>Slots</h2>
+	<div id="slotHost">
+		<com:TWebTemplate ShadowRootMode="Open">
+			<h3><com:TSlot Name="title">Untitled</com:TSlot></h3>
+			<p class="note"><com:TSlot Name="note">No note</com:TSlot></p>
+			<div class="body"><com:TSlot>No body</com:TSlot></div>
+		</com:TWebTemplate>
+		<com:TLabel ID="slotTitle" Slot="title" Text="Report" />
+		<p id="slotBody">Body text</p>
+	</div>
+
 	<h2>Table rows</h2>
 	<com:TWebTemplate ID="rowTpl">
 		<tr class="dataRow"><td class="cell">{{name}}</td><td class="qty">{{qty}}</td></tr>

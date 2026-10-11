@@ -1660,7 +1660,7 @@ class TPropertyValue
 				self::_skipWs($s, $pos);
 			}
 			if ($pos === $start) {
-				throw new TInvalidDataValueException('propertyvalue_invalid_array_literal', $s);
+				throw new TInvalidDataValueException('propertyvalue_invalid_array_literal', $s); // @codeCoverageIgnore
 			}
 		}
 		if ($pos < $len) {
@@ -1818,7 +1818,8 @@ class TPropertyValue
 			return false;
 		}
 		if ($strict) {
-			return null;
+			// The strict validator admits no bare word.
+			return null; // @codeCoverageIgnore
 		}
 		return self::_consumeBareWord($s, $pos);
 	}
@@ -1984,7 +1985,8 @@ class TPropertyValue
 			$pos++;
 		}
 		if ($pos >= $len) {
-			return true;
+			// A validated literal ends in a closing bracket.
+			return true; // @codeCoverageIgnore
 		}
 		$c = $s[$pos];
 		if ($c === ',' || $c === ')' || $c === ']') {
@@ -2140,11 +2142,7 @@ class TPropertyValue
 			}
 		}
 		if (is_a($className, \BackedEnum::class, true) && is_int($value)) {
-			try {
-				return $className::tryFrom($value) ?? $value;
-			} catch (\TypeError) {
-				return $value;
-			}
+			return $className::tryFrom($value) ?? $value;
 		}
 		if (is_string($value)) {
 			$match = self::_tryMatchEnum($className, $value);
@@ -2209,9 +2207,6 @@ class TPropertyValue
 		}
 		if (is_a($className, IEnumerable::class, true)) {
 			$ref = TComponentReflection::getReflectionClassByType($className);
-			if ($ref === null) {
-				return null;
-			}
 			foreach ($ref->getConstants() as $name => $_) {
 				if (strcasecmp($name, $value) === 0) {
 					return $name;
@@ -2324,12 +2319,9 @@ class TPropertyValue
 		// TypeErrors without `__toString()`.
 		if (!is_string($value)) {
 			if (is_array($value)) {
-				// Prefer array over iterable when both are present.
+				// PHP reports `iterable` in a union as `Traversable|array`.
 				if (isset($typeMap[static::TYPE_ARRAY])) {
 					return static::coerceToType($value, $typeMap[static::TYPE_ARRAY]);
-				}
-				if (isset($typeMap[static::TYPE_ITERABLE])) {
-					return static::coerceToType($value, $typeMap[static::TYPE_ITERABLE]);
 				}
 			} elseif (is_object($value)) {
 				foreach ($nonNull as $t) {

@@ -91,4 +91,7 @@ class TWebControlAttribute extends \Prado\TEnumerable
 	/** The `popover` HTML attribute; enrolls the element in the Popover API. */
 	public const Popover = (1 << 19);
 
+	/** The `slot` HTML attribute; the name of the shadow tree slot the element is assigned to. */
+	public const Slot = (1 << 20);
+
 }

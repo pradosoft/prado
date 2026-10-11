@@ -5,6 +5,7 @@ namespace Prado\Test\Unit;
 use Prado\Collections\TAttributeCollection;
 use Prado\Collections\TPriorityList;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\Web\Javascripts\TJavaScriptString;
 
 /**
  * Tests for TComponent's property system: hasProperty(), canGetProperty(),
@@ -622,6 +623,48 @@ class TComponentPropertyTest extends TComponentTestBase
 
 		$this->assertFalse(isset($this->component->ColorAttribute));
 		$this->assertFalse(isset($this->component->JsColorAttribute));
+	}
+
+	/**
+	 * Calling getXxx()/setXxx() for a js property dispatches through __call to getjsXxx()/setjsXxx().
+	 * The setter wraps a non-empty value in TJavaScriptString and passes TJavaScriptString and
+	 * empty values through unchanged.
+	 */
+	public function testJavascriptPropertyMethodCalls()
+	{
+		$this->component->setColorAttribute("['#112233']");
+		$value = $this->component->getColorAttribute();
+		$this->assertInstanceOf(TJavaScriptString::class, $value);
+		$this->assertEquals("['#112233']", (string) $value);
+
+		$jsString = new TJavaScriptString('[1, 2]');
+		$this->component->setColorAttribute($jsString);
+		$this->assertSame($jsString, $this->component->getColorAttribute());
+
+		$this->component->setColorAttribute(null);
+		$this->assertNull($this->component->getColorAttribute());
+
+		try {
+			$this->component->setReadOnlyJsProperty('value');
+			$this->fail('TInvalidOperationException not raised when calling the setter of a read-only js property');
+		} catch (TInvalidOperationException $e) {
+		}
+	}
+
+	/**
+	 * Unsetting a read-only property throws when behaviors are attached but none is enabled.
+	 */
+	public function testUnsetReadOnlyPropertyWithDisabledBehaviors()
+	{
+		$behaviorName = 'BehaviorTestBehaviorName';
+		$this->component->attachBehavior($behaviorName, new BehaviorTestBehavior());
+		$this->component->disableBehavior($behaviorName);
+		try {
+			unset($this->component->ReadOnlyProperty);
+			$this->fail('TInvalidOperationException not raised when unsetting a read-only property');
+		} catch (TInvalidOperationException $e) {
+		}
+		$this->component->detachBehavior($behaviorName);
 	}
 
 	public function testProtectedSetter()
