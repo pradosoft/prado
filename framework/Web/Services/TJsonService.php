@@ -92,7 +92,7 @@ class TJsonService extends \Prado\TService
 	{
 		if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
 			if (is_array($config)) {
-				foreach ($config['json'] as $id => $json) {
+				foreach ($config['json'] ?? [] as $id => $json) {
 					$this->_services[$id] = $json;
 				}
 			}

@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: `TJsonService` raised an undefined array key warning for a PHP configuration without a `json` key. (belisoful)
 BUG: `TCronModule` and `TDbCronManager` rejected PHP configuration job keys not written in lowercase; they are now case-insensitive, as in XML. (belisoful)
 BUG: `Prado::getUserLanguages()` returned an empty language for an empty `Accept-Language` entry; it skips them and falls back to `en`. `Prado::exceptionHandler()` and `fatalError()` return `never`. (belisoful)
 BUG: The Playwright CSP report-uri test read the first report and failed on Firefox when the blocked favicon's `img-src` report arrived before the inline script's; the harness page allows `img-src 'self'` and the test selects the `script-src` report. (belisoful)
