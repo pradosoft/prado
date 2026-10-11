@@ -37,13 +37,20 @@ return [
     'services' => [
         'feed' => [
             'class' => 'Prado\Web\Services\TFeedService',
-            'ch1' => ['class' => 'Path\To\FeedClass1', 'properties' => [...]],
-            'ch2' => ['class' => 'Path\To\FeedClass2'],
+            'feeds' => [
+                'ch1' => ['class' => 'Path\To\FeedClass1', 'properties' => [...]],
+                'ch2' => ['class' => 'Path\To\FeedClass2'],
+                'ch3' => 'Path\To\FeedClass3',
+            ],
         ],
     ],
 ];
 ```
-`init()` registers every key of the service entry as a feed, including `class`. Feeds sit beside the `class` key. A `?feed=class` request raises `jsonservice_class_required`.
+`init()` registers each entry of `feeds`. A string entry is the feed class. `run()` validates the class: a missing class raises `feedservice_class_required`, and a class that is not an `IFeedContentProvider` raises `feedservice_feedtype_invalid`.
+
+**Deprecated 4.3 form:** feeds beside the `class` key. The private `loadLegacyPhpFeeds()` registers such an entry when its key is not reserved (`class`, `feeds`, `properties`, or a `TApplicationConfiguration` key: `application`, `errormessages`, `includes`, `modules`, `parameters`, `paths`, `services`) and its class implements `IFeedContentProvider`. Other entries are skipped without error. A feed under `feeds` takes precedence. Remove the method and its call in `init()` to drop the 4.3 form.
+
+An XML-configured service with a `null` configuration registers no feed.
 
 ## Methods
 

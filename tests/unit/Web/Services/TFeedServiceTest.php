@@ -118,7 +118,7 @@ class TFeedServiceTest extends \PHPUnit\Framework\TestCase
 
 	/**
 	 * Builds a service from a PHP configuration and runs it for the given ID.
-	 * @param array $feeds the feed definitions.
+	 * @param array $feeds the feed definitions, placed under the `feeds` key.
 	 * @param string $id the feed to request.
 	 */
 	private function runPhp(array $feeds, string $id): void
@@ -126,8 +126,21 @@ class TFeedServiceTest extends \PHPUnit\Framework\TestCase
 		Prado::getApplication()->setConfigurationType(TApplication::CONFIG_TYPE_PHP);
 		Prado::getApplication()->getRequest()->setServiceParameter($id);
 		$service = new TFeedService();
-		$service->init($feeds);
+		$service->init(['class' => TFeedService::class, 'feeds' => $feeds]);
 		$service->run();
+	}
+
+	/**
+	 * Initializes a service from a PHP configuration and returns its registered feeds.
+	 * @param mixed $config the service configuration.
+	 * @return array the registered feeds.
+	 */
+	private function phpFeeds(mixed $config): array
+	{
+		Prado::getApplication()->setConfigurationType(TApplication::CONFIG_TYPE_PHP);
+		$service = new TFeedService();
+		$service->init($config);
+		return PradoUnit::getProp($service, '_feeds');
 	}
 
 	/**
@@ -169,36 +182,97 @@ class TFeedServiceTest extends \PHPUnit\Framework\TestCase
 	// -------------------------------------------------------------------------
 
 	/**
-	 * A PHP configuration registers each feed under its ID.
+	 * A PHP configuration registers each entry of `feeds` under its ID.
 	 */
 	public function testPhpConfigurationRegistersTheFeeds()
 	{
-		Prado::getApplication()->setConfigurationType(TApplication::CONFIG_TYPE_PHP);
-		$service = new TFeedService();
-		$service->init(['a' => ['class' => TNestedPathFeedProvider::class]]);
-		$this->assertArrayHasKey('a', PradoUnit::getProp($service, '_feeds'));
+		$feeds = $this->phpFeeds(['class' => TFeedService::class, 'feeds' => ['a' => ['class' => TNestedPathFeedProvider::class]]]);
+		$this->assertSame(['a' => ['class' => TNestedPathFeedProvider::class]], $feeds);
 	}
 
 	/**
-	 * A PHP configuration skips the service `class` key and values that are neither arrays nor strings.
-	 */
-	public function testPhpConfigurationSkipsTheServiceClass()
-	{
-		Prado::getApplication()->setConfigurationType(TApplication::CONFIG_TYPE_PHP);
-		$service = new TFeedService();
-		$service->init(['class' => TFeedService::class, 'a' => ['class' => TNestedPathFeedProvider::class], 'b' => null, 'c' => 5]);
-		$this->assertSame(['a'], array_keys(PradoUnit::getProp($service, '_feeds')));
-	}
-
-	/**
-	 * A PHP string feed entry is the feed class.
+	 * A string entry of `feeds` is the feed class; values that are neither arrays nor strings are skipped.
 	 */
 	public function testPhpConfigurationStringFeedIsTheClass()
 	{
-		Prado::getApplication()->setConfigurationType(TApplication::CONFIG_TYPE_PHP);
-		$service = new TFeedService();
-		$service->init(['class' => TFeedService::class, 'a' => TNestedPathFeedProvider::class]);
-		$this->assertSame(['a' => ['class' => TNestedPathFeedProvider::class]], PradoUnit::getProp($service, '_feeds'));
+		$feeds = $this->phpFeeds(['feeds' => ['a' => TNestedPathFeedProvider::class, 'b' => null, 'c' => 5]]);
+		$this->assertSame(['a' => ['class' => TNestedPathFeedProvider::class]], $feeds);
+	}
+
+	/**
+	 * Entries of `feeds` register without checking their class; run() validates it.
+	 */
+	public function testPhpConfigurationFeedsAreNotFiltered()
+	{
+		$feeds = $this->phpFeeds(['feeds' => ['a' => ['properties' => []], 'b' => TNotAFeedProvider::class]]);
+		$this->assertSame(['a', 'b'], array_keys($feeds));
+	}
+
+	/**
+	 * A PHP configuration that is not an array registers nothing.
+	 */
+	public function testPhpConfigurationThatIsNotAnArrayRegistersNothing()
+	{
+		$this->assertSame([], $this->phpFeeds(null));
+	}
+
+	// -------------------------------------------------------------------------
+	// init() — 4.3 feeds beside the service class (deprecated)
+	// -------------------------------------------------------------------------
+
+	/**
+	 * A 4.3 feed beside the service `class` key registers when its class is a feed provider.
+	 */
+	public function testLegacyPhpConfigurationRegistersFeedProviders()
+	{
+		$feeds = $this->phpFeeds([
+			'class' => TFeedService::class,
+			'a' => ['class' => TNestedPathFeedProvider::class, 'properties' => ['Cfg' => 'value']],
+			'b' => TNestedPathFeedProvider::class,
+		]);
+		$this->assertSame([
+			'a' => ['class' => TNestedPathFeedProvider::class, 'properties' => ['Cfg' => 'value']],
+			'b' => ['class' => TNestedPathFeedProvider::class],
+		], $feeds);
+	}
+
+	/**
+	 * A 4.3 entry is skipped without error when its key is reserved or its class is not a feed provider.
+	 */
+	public function testLegacyPhpConfigurationSkipsReservedKeysAndOtherClasses()
+	{
+		$feeds = $this->phpFeeds([
+			'class' => TFeedService::class,
+			'properties' => ['class' => TNestedPathFeedProvider::class],
+			'parameters' => ['p' => 'v'],
+			'modules' => ['m' => ['class' => TNestedPathFeedProvider::class]],
+			'paths' => TNestedPathFeedProvider::class,
+			'includes' => [],
+			'application' => ['class' => TNestedPathFeedProvider::class],
+			'errormessages' => [],
+			'services' => [],
+			'noClass' => ['properties' => []],
+			'notProvider' => ['class' => TNotAFeedProvider::class],
+			'notProviderString' => TNotAFeedProvider::class,
+			'unknownClass' => 'No\\Such\\FeedClass',
+			'scalar' => 5,
+			'null' => null,
+		]);
+		$this->assertSame([], $feeds);
+	}
+
+	/**
+	 * A feed under `feeds` takes precedence over a 4.3 feed of the same ID.
+	 */
+	public function testLegacyPhpConfigurationDoesNotReplaceFeeds()
+	{
+		$feeds = $this->phpFeeds([
+			'feeds' => ['a' => ['class' => TNestedPathFeedProvider::class, 'properties' => ['Cfg' => 'new']]],
+			'a' => ['class' => TNestedPathFeedProvider::class, 'properties' => ['Cfg' => 'old']],
+			'b' => TNestedPathFeedProvider::class,
+		]);
+		$this->assertSame('new', $feeds['a']['properties']['Cfg']);
+		$this->assertSame(['class' => TNestedPathFeedProvider::class], $feeds['b']);
 	}
 
 	/**
@@ -207,18 +281,20 @@ class TFeedServiceTest extends \PHPUnit\Framework\TestCase
 	public function testRunWithTheServiceClassKeyIsNotFound()
 	{
 		$this->expectException(THttpException::class);
-		$this->runPhp(['class' => TFeedService::class, 'a' => ['class' => TNestedPathFeedProvider::class]], 'class');
+		$this->runPhp(['a' => ['class' => TNestedPathFeedProvider::class]], 'class');
 	}
 
 	/**
-	 * A PHP configuration that is not an array registers nothing.
+	 * Requesting a service-level configuration key as a feed ID is a 404.
 	 */
-	public function testPhpConfigurationThatIsNotAnArrayRegistersNothing()
+	public function testRunWithAServiceConfigurationKeyIsNotFound()
 	{
 		Prado::getApplication()->setConfigurationType(TApplication::CONFIG_TYPE_PHP);
+		Prado::getApplication()->getRequest()->setServiceParameter('modules');
 		$service = new TFeedService();
-		$service->init(null);
-		$this->assertSame([], PradoUnit::getProp($service, '_feeds'));
+		$service->init(['class' => TFeedService::class, 'modules' => ['m' => ['class' => TNestedPathFeedProvider::class]]]);
+		$this->expectException(THttpException::class);
+		$service->run();
 	}
 
 	/**
@@ -232,6 +308,17 @@ class TFeedServiceTest extends \PHPUnit\Framework\TestCase
 		$service = new TFeedService();
 		$service->init($config);
 		$this->assertArrayHasKey('a', PradoUnit::getProp($service, '_feeds'));
+	}
+
+	/**
+	 * An XML-configured service without a configuration element registers no feed.
+	 */
+	public function testXmlConfigurationThatIsNullRegistersNothing()
+	{
+		Prado::getApplication()->setConfigurationType(TApplication::CONFIG_TYPE_XML);
+		$service = new TFeedService();
+		$service->init(null);
+		$this->assertSame([], PradoUnit::getProp($service, '_feeds'));
 	}
 
 	/**
