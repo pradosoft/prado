@@ -45,13 +45,14 @@ use Prado\Exceptions\THttpException;
  *                 'properties' => [...],
  *             ],
  *             'ch2' => ['class' => 'Path\To\FeedClass2'],
+ *             'ch3' => 'Path\To\FeedClass3',
  *         ],
  *     ],
  * ];
  * ```
  * where each feed is an entry of the service configuration, indexed by its ID,
  * beside the service's `class` key. The service configuration holds only the
- * `class` key and the feeds.
+ * `class` key and the feeds. A string feed entry is the feed class, as "ch3" shows.
  *
  * The class attribute indicates which PHP class will provide the actual feed
  * content. Note, the class must implement {@see \Prado\Web\Services\IFeedContentProvider} interface.
@@ -75,6 +76,8 @@ class TFeedService extends \Prado\TService
 	/**
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
+	 * A PHP configuration skips the service `class` key, registers each array entry as a feed,
+	 * registers a string entry as the feed class, and skips other values.
 	 * @param null|array|\Prado\Xml\TXmlElement $config configuration for this module, can be null
 	 */
 	public function init($config)
@@ -82,7 +85,15 @@ class TFeedService extends \Prado\TService
 		if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
 			if (is_array($config)) {
 				foreach ($config as $id => $feed) {
-					$this->_feeds[$id] = $feed;
+					if ($id === 'class') {
+						continue;
+					}
+					if (is_string($feed)) {
+						$feed = ['class' => $feed];
+					}
+					if (is_array($feed)) {
+						$this->_feeds[$id] = $feed;
+					}
 				}
 			}
 		} else {
@@ -122,10 +133,10 @@ class TFeedService extends \Prado\TService
 					if ($feed instanceof IFeedContentProvider) {
 						$properties = $feedConfig['properties'] ?? [];
 					} else {
-						throw new TConfigurationException('jsonservice_response_type_invalid', $id);
+						throw new TConfigurationException('feedservice_feedtype_invalid', $id);
 					}
 				} else {
-					throw new TConfigurationException('jsonservice_class_required', $id);
+					throw new TConfigurationException('feedservice_class_required', $id);
 				}
 			} else {
 				$properties = $feedConfig->getAttributes();

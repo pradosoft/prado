@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: `TFeedService` registered the PHP configuration's `class` key as a feed, and its PHP branch of `run()` threw `jsonservice_*` errors; it now skips the `class` key, takes a string feed entry as the feed class, and throws `feedservice_class_required` and `feedservice_feedtype_invalid`. (belisoful)
 BUG: `TJsonService` raised an undefined array key warning for a PHP configuration without a `json` key. (belisoful)
 BUG: `TCronModule` and `TDbCronManager` rejected PHP configuration job keys not written in lowercase; they are now case-insensitive, as in XML. (belisoful)
 BUG: `Prado::getUserLanguages()` returned an empty language for an empty `Accept-Language` entry; it skips them and falls back to `en`. `Prado::exceptionHandler()` and `fatalError()` return `never`. (belisoful)
