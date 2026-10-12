@@ -15,6 +15,7 @@ use Prado\Prado;
 use Prado\TApplication;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\THttpException;
+use Prado\Xml\TXmlElement;
 
 /**
  * TFeedService class
@@ -40,19 +41,21 @@ use Prado\Exceptions\THttpException;
  *     'services' => [
  *         'feed' => [
  *             'class' => 'Prado\Web\Services\TFeedService',
- *             'ch1' => [
- *                 'class' => 'Path\To\FeedClass1',
- *                 'properties' => [...],
+ *             'feeds' => [
+ *                 'ch1' => [
+ *                     'class' => 'Path\To\FeedClass1',
+ *                     'properties' => [...],
+ *                 ],
+ *                 'ch2' => ['class' => 'Path\To\FeedClass2'],
+ *                 'ch3' => 'Path\To\FeedClass3',
  *             ],
- *             'ch2' => ['class' => 'Path\To\FeedClass2'],
- *             'ch3' => 'Path\To\FeedClass3',
  *         ],
  *     ],
  * ];
  * ```
- * where each feed is an entry of the service configuration, indexed by its ID,
- * beside the service's `class` key. The service configuration holds only the
- * `class` key and the feeds. A string feed entry is the feed class, as "ch3" shows.
+ * where each entry of `feeds` is a feed indexed by its ID. A string feed entry
+ * is the feed class, as "ch3" shows. A feed beside the `class` key, the 4.3
+ * form, is deprecated; see {@see loadLegacyPhpFeeds()}.
  *
  * The class attribute indicates which PHP class will provide the actual feed
  * content. Note, the class must implement {@see \Prado\Web\Services\IFeedContentProvider} interface.
@@ -76,18 +79,16 @@ class TFeedService extends \Prado\TService
 	/**
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
-	 * A PHP configuration skips the service `class` key, registers each array entry as a feed,
-	 * registers a string entry as the feed class, and skips other values.
+	 * A PHP configuration registers each array entry of `feeds` as a feed, registers a
+	 * string entry as the feed class, and skips other values. An XML configuration
+	 * registers each `<feed>` element. A `null` configuration registers no feed.
 	 * @param null|array|\Prado\Xml\TXmlElement $config configuration for this module, can be null
 	 */
 	public function init($config)
 	{
 		if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
 			if (is_array($config)) {
-				foreach ($config as $id => $feed) {
-					if ($id === 'class') {
-						continue;
-					}
+				foreach ($config['feeds'] ?? [] as $id => $feed) {
 					if (is_string($feed)) {
 						$feed = ['class' => $feed];
 					}
@@ -95,8 +96,9 @@ class TFeedService extends \Prado\TService
 						$this->_feeds[$id] = $feed;
 					}
 				}
+				$this->loadLegacyPhpFeeds($config);
 			}
-		} else {
+		} elseif ($config instanceof TXmlElement) {
 			foreach ($config->getElementsByTagName('feed') as $feed) {
 				if (($id = $feed->getAttributes()->remove('id')) !== null) {
 					$this->_feeds[$id] = $feed;
@@ -106,6 +108,32 @@ class TFeedService extends \Prado\TService
 			}
 		}
 		parent::init($config);
+	}
+
+	/**
+	 * Registers the feeds of a 4.3 PHP configuration, which places them beside the
+	 * service `class` key. An entry registers when:
+	 * - its key is not a reserved service or configuration key, and
+	 * - its class, the string entry or the array entry's `class`, implements {@see IFeedContentProvider}.
+	 *
+	 * Other entries are skipped without error. A feed under `feeds` takes precedence.
+	 * This method and its call in {@see init()} support the 4.3 form and are removed in a later release.
+	 * @param array $config the service configuration.
+	 * @deprecated since 4.4.0. Place feeds under the `feeds` key.
+	 */
+	private function loadLegacyPhpFeeds(array $config): void
+	{
+		static $reserved = ['class', 'feeds', 'properties', 'application', 'errormessages', 'includes', 'modules', 'parameters', 'paths', 'services'];
+		foreach ($config as $id => $feed) {
+			if (in_array($id, $reserved, true) || isset($this->_feeds[$id])) {
+				continue;
+			}
+			$class = is_array($feed) ? ($feed['class'] ?? null) : $feed;
+			if (!is_string($class) || !is_string($class = Prado::usingClass($class)) || !is_a($class, IFeedContentProvider::class, true)) {
+				continue;
+			}
+			$this->_feeds[$id] = is_array($feed) ? $feed : ['class' => $feed];
+		}
 	}
 
 	/**
