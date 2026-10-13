@@ -8,7 +8,7 @@
 **Namespace:** `Prado\Util\Behaviors`
 
 ## Overview
-This behavior captures logs from forked child processes and sends them back to the parent process. When `[TProcessHelper](../Helpers/TProcessHelper.md)::fork()` is called, this behavior creates socket pairs before the fork and routes child process logs to the parent. The parent receives logs when processing its own logs via `onCollectLogs`.
+This behavior captures logs from forked child processes and sends them back to the parent process. When `[TProcessHelper](../Helpers/TProcessHelper.md)::fork()` is called, this behavior creates socket pairs before the fork and routes child process logs to the parent. The parent receives logs when processing its own logs via `onCollectLogs`, whose handler is `collectLogsFromChildren()`. A final collection waits for every child's final logs; a non-final collection receives only the pending logs.
 
 ## Key Properties/Methods
 
@@ -17,7 +17,8 @@ This behavior captures logs from forked child processes and sends them back to t
 - `dyAttachBehavior($name, $behavior, [TCallChain](../TCallChain.md) $chain)` - Singleton enforcement for this behavior
 - `generateConnection(mixed $sender, mixed $param)` - Creates socket pair before fork
 - `configureForChildLogs(mixed $sender, array $data)` - Configures parent/child for log routing after fork
-- `receiveLogsFromChildren(?int $pid, bool $wait)` - Receives and merges logs from child processes
+- `collectLogsFromChildren(mixed $sender, mixed $final)` - `TLogger::onCollectLogs` handler; calls `receiveLogsFromChildren(null, (bool) $final)`
+- `receiveLogsFromChildren(?int $pid, bool $wait)` - Receives and merges logs from child processes; not an event handler
 - `sendLogsToParent($logger, $final)` - Sends logs from child to parent process
 
 ## See Also

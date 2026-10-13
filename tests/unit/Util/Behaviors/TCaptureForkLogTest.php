@@ -8,6 +8,8 @@ use Prado\Prado;
 use Prado\Util\Behaviors\TMapLazyLoadBehavior;
 use Prado\Util\Helpers\TProcessHelper;
 use Prado\Util\Behaviors\TCaptureForkLog;
+use Prado\Util\Log\TLogger;
+use Prado\Test\Unit\PradoUnit;
 
 
 class TCaptureForkLogTest extends \PHPUnit\Framework\TestCase
@@ -70,5 +72,66 @@ class TCaptureForkLogTest extends \PHPUnit\Framework\TestCase
 			self::assertEquals(12, count($logger->getLogs()));
 		}
 	}
-	
+
+	/**
+	 * Simulates the parent side of a fork for a child pid and returns the child's
+	 * end of the socket pair.
+	 */
+	protected function connectParent(TCaptureForkLog $behavior, int $pid): mixed
+	{
+		$behavior->generateConnection(null, null);
+		$connection = PradoUnit::getProp($behavior, '_childConnection');
+		if (!$connection) {
+			self::markTestSkipped('socket_create_pair is not available.');
+		}
+		$behavior->configureForChildLogs(null, ['pid' => $pid]);
+		return $connection[1];
+	}
+
+	/**
+	 * Writes a framed log message to the parent, as the child does.
+	 */
+	protected function writeChildLogs(mixed $childStream, array $logs, bool $final): void
+	{
+		$data = $logs ? serialize($logs) : '';
+		fwrite($childStream, pack('N', ($final ? 0x80000000 : 0) | strlen($data)) . $data);
+	}
+
+	public function testCollectLogsFromChildrenOnCollectLogs()
+	{
+		$logger = Prado::getLogger();
+		$logger->deleteLogs();
+		$behavior = new TCaptureForkLog();
+		$childPid = 999999;
+		$childStream = $this->connectParent($behavior, $childPid);
+		try {
+			self::assertTrue($logger->getEventHandlers('onCollectLogs')->contains([$behavior, 'collectLogsFromChildren']));
+
+			// Not final: receives the pending logs and keeps the connection.
+			$this->writeChildLogs($childStream, [['pending', TLogger::NOTICE, 'cat', microtime(true), 0, null, null, $childPid]], false);
+			$logger->onCollectLogs(false);
+			$logs = $logger->getLogs(pid: $childPid);
+			self::assertCount(1, $logs);
+			self::assertEquals('pending', $logs[0][0]);
+			self::assertArrayHasKey($childPid, PradoUnit::getProp($behavior, '_parentConnections'));
+
+			// Final: receives the last logs and closes the connection.
+			$this->writeChildLogs($childStream, [['final', TLogger::WARNING, 'cat', microtime(true), 0, null, null, $childPid]], true);
+			$logger->onCollectLogs(true);
+			$logs = $logger->getLogs(pid: $childPid);
+			self::assertCount(2, $logs);
+			self::assertEquals('final', $logs[1][0]);
+			self::assertEmpty(PradoUnit::getProp($behavior, '_parentConnections'));
+		} finally {
+			$logger->detachEventHandler('onCollectLogs', [$behavior, 'collectLogsFromChildren']);
+			$logger->deleteLogs();
+		}
+	}
+
+	public function testCollectLogsFromChildrenWithoutConnections()
+	{
+		$behavior = new TCaptureForkLog();
+		$behavior->collectLogsFromChildren(Prado::getLogger(), true);
+		self::assertEmpty(PradoUnit::getProp($behavior, '_parentConnections'));
+	}
 }

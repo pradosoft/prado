@@ -25,7 +25,8 @@ use Prado\Util\Helpers\TProcessHelper;
  * is raised before the fore and `fxRestoreAfterFork` after the fork.
  * On `fxPrepareForFork`, this class creates a socket pair.  On `fxRestoreAfterFork`,
  * The parent stores all child connections, and the child sends all log data to
- * the parent.  The parent receives logs when processing logs.
+ * the parent.  The parent receives logs on TLogger::onCollectLogs through
+ * {@see self::collectLogsFromChildren()}.
  *
  * Before sending logs, a child will receive any logs for its own child processes.
  * When sending the final logs from the child, the socket is closed and the parent
@@ -122,8 +123,8 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 	/**
 	 * The behavior call back for fxRestoreAfterFork that cleans the log and resets
 	 * the logger to send the log to the parent process.  The Parent process stores
-	 * the child stream and pid and installs the onEndRequest handler to receive the
-	 * logs from the children forks.
+	 * the child stream and pid and installs {@see self::collectLogsFromChildren()}
+	 * on TLogger::onCollectLogs to receive the logs from the children forks.
 	 * @param mixed $sender
 	 * @param array $data the
 	 */
@@ -157,10 +158,23 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 			$this->_childConnection = null;
 			if (!$this->_receiverInstalled) {
 				$logger = Prado::getLogger();
-				$logger->attachEventHandler('onCollectLogs', [$this, 'receiveLogsFromChildren'], $this->getPriority());
+				$logger->attachEventHandler('onCollectLogs', [$this, 'collectLogsFromChildren'], $this->getPriority());
 				$this->_receiverInstalled = true;
 			}
 		}
+	}
+
+	/**
+	 * The TLogger::onCollectLogs handler that receives the logs of all children.
+	 * A final collection waits for every child to send its final logs; otherwise
+	 * only the pending logs are received.
+	 * @param mixed $sender The TLogger raising onCollectLogs.
+	 * @param mixed $final Is this the final collection of the logs.
+	 * @since 4.4.0
+	 */
+	public function collectLogsFromChildren(mixed $sender, mixed $final)
+	{
+		$this->receiveLogsFromChildren(null, (bool) $final);
 	}
 
 	/**
