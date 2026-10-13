@@ -906,6 +906,7 @@ return [
 'TSafetyCoverDirection' => 'Prado\Web\UI\WebControls\TSafetyCoverDirection',
 'TSafetyCoverEffect' => 'Prado\Web\UI\WebControls\TSafetyCoverEffect',
 'TScrollBars' => 'Prado\Web\UI\WebControls\TScrollBars',
+'TSearch' => 'Prado\Web\UI\WebControls\TSearch',
 'TSection' => 'Prado\Web\UI\WebControls\TSection',
 'TServerValidateEventParameter' => 'Prado\Web\UI\WebControls\TServerValidateEventParameter',
 'TShadowRootMode' => 'Prado\Web\UI\WebControls\TShadowRootMode',
