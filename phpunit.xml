@@ -46,6 +46,8 @@
   </source>
   <extensions>
    <!-- <bootstrap class="Prado\Tests\PradoTestListener"/> -->
+    <!-- Kills a forked test child that returns into PHPUnit instead of exiting. -->
+    <bootstrap class="Prado\Test\Unit\Harness\TForkGuardExtension"/>
   </extensions>
   <php>
     <!-- selenium test cases can take up to 20 mins -->

@@ -574,6 +574,12 @@ class TProcess extends TResource implements \ArrayAccess, \IteratorAggregate, \C
 	 * Sends a signal to the process.  A string command is run through a shell, so the
 	 * signal reaches the shell rather than the child; use an array command (or `exec`) to
 	 * signal the process directly.
+	 *
+	 * Signal only a child that has started running.  On macOS with Zend signal handling, a
+	 * signal that reaches the child between fork and exec is re-raised with `getpid()`, which
+	 * can still return the parent's PID there, so the calling process receives the signal and
+	 * the child keeps running.  A signal sent right after {@see open()} hits that window; have
+	 * the child report ready (e.g. a line on stdout) and read it before signaling.
 	 * @param int $signal The signal number. Default SIGTERM (15).
 	 * @return bool Whether the signal was sent.
 	 */

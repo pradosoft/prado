@@ -47,13 +47,19 @@ class TCaptureForkLogTest extends \PHPUnit\Framework\TestCase
 		if ($pid === -1) {
 			self::fail("failed to fork.");
 		} elseif ($pid === 0) {
-			Prado::profileBegin('token2');
-			Prado::profileBegin('token3');
-			self::assertLessThan(1, Prado::profileEnd('token1'));
-			Prado::profileEnd('token2');
-			Prado::profileEnd('token4');
-			Prado::warning('child warning');
-			exit();
+			// The child always exits; a failed assertion must never return into PHPUnit.
+			try {
+				Prado::profileBegin('token2');
+				Prado::profileBegin('token3');
+				self::assertLessThan(1, Prado::profileEnd('token1'));
+				Prado::profileEnd('token2');
+				Prado::profileEnd('token4');
+				Prado::warning('child warning');
+				exit();
+			} catch (\Throwable $e) {
+				fwrite(STDERR, 'Forked log child failed: ' . $e->getMessage() . PHP_EOL);
+				exit(1);
+			}
 		} else {
 			$app = Prado::getApplication();
 			Prado::profileEnd('token2');

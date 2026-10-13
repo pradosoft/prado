@@ -88,7 +88,12 @@ class TProcessForkTest extends \PHPUnit\Framework\TestCase
 	{
 		$fork = TProcessFork::start();
 		if ($fork->getIsChild()) {
-			$fork->exit(7);   // container mode: the child controls its own exit; never returns
+			// Container mode: the child controls its own exit and must never return into PHPUnit.
+			try {
+				$fork->exit(7);
+			} catch (\Throwable $e) {
+				exit(1);
+			}
 		}
 		self::assertTrue($fork->getIsParent());
 		self::assertSame(7, $fork->wait());
@@ -164,9 +169,15 @@ class TProcessForkTest extends \PHPUnit\Framework\TestCase
 		$reactor = new \Prado\IO\Socket\TSocketReactor();
 		$fork = TProcessFork::start(channel: true);
 		if ($fork->getIsChild()) {
-			$fork->getChannel()->close();   // close the channel early, then keep working
-			usleep(800000);
-			exit(6);
+			// The child always exits; a throw (e.g. a signal converted to an exception during the
+			// sleep) must never return into PHPUnit.
+			try {
+				$fork->getChannel()->close();   // close the channel early, then keep working
+				usleep(800000);
+				exit(6);
+			} catch (\Throwable $e) {
+				exit(1);
+			}
 		}
 		$fork->register($reactor);
 
