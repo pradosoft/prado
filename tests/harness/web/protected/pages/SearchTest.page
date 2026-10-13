@@ -1,0 +1,16 @@
+<com:TContent ID="Content">
+	<h1>Search Test Case</h1>
+
+	<com:TSearch ID="site" Aria.label="Site">
+		<com:TLabel ForControl="query" Text="Search the site" />
+		<com:TTextBox ID="query" TextMode="Search" />
+		<com:TButton ID="btnSearch" Text="Go" OnClick="search" />
+	</com:TSearch>
+
+	<com:TSearch ID="filter" TagName="div" Aria.label="Products">
+		<com:TLabel ForControl="product" Text="Filter products" />
+		<com:TTextBox ID="product" TextMode="Search" />
+	</com:TSearch>
+
+	<div>Status: <com:TLabel ID="status" Text="none" /></div>
+</com:TContent>

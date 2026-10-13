@@ -10,6 +10,32 @@ use Psr\Http\Message\StreamInterface;
 
 class TProcessTest extends \PHPUnit\Framework\TestCase
 {
+	/**
+	 * Opens a PHP child that runs `$code` after it reports ready, and waits for that report.
+	 * A signal sent between fork and exec reaches a half-started child; terminating only a
+	 * child that is already running PHP code keeps the signal away from the runner.
+	 * @param string $code The PHP code the child runs once ready.
+	 * @return TProcess The running process.
+	 */
+	private function openRunning(string $code): TProcess
+	{
+		$p = TProcess::open([PHP_BINARY, '-r', 'echo "ready\n"; ' . $code]);
+		$pid = $p->getPid();
+		self::assertGreaterThan(0, $pid, 'The child has a PID.');
+		self::assertNotSame(getmypid(), $pid, 'The child PID is not the runner PID.');
+		$ready = '';
+		$deadline = microtime(true) + 10.0;
+		while (!str_contains($ready, "ready\n") && microtime(true) < $deadline) {
+			$chunk = $p->getStdout()->read(16);
+			if ($chunk === '') {
+				break;   // end of stream: the child exited before reporting ready
+			}
+			$ready .= $chunk;
+		}
+		self::assertStringContainsString("ready\n", $ready, 'The child started running PHP code.');
+		return $p;
+	}
+
 	public function testProcessReadStdout()
 	{
 		$p = TProcess::open([PHP_BINARY, '-r', 'echo "hello stdout";']);
@@ -142,7 +168,7 @@ class TProcessTest extends \PHPUnit\Framework\TestCase
 
 	public function testTerminate()
 	{
-		$p = TProcess::open([PHP_BINARY, '-r', 'sleep(30);']);
+		$p = $this->openRunning('sleep(30);');
 		self::assertTrue($p->getIsRunning());
 		self::assertTrue($p->terminate());
 		$p->wait();
@@ -277,7 +303,7 @@ class TProcessTest extends \PHPUnit\Framework\TestCase
 		if (PHP_OS_FAMILY === 'Windows') {
 			self::markTestSkipped('POSIX signal semantics (signaled/termsig) do not apply on Windows.');
 		}
-		$p = TProcess::open([PHP_BINARY, '-r', 'sleep(30);']);
+		$p = $this->openRunning('sleep(30);');
 		self::assertTrue($p->terminate());   // SIGTERM (15)
 		$p->wait();
 		$status = $p->getStatus();
@@ -289,7 +315,7 @@ class TProcessTest extends \PHPUnit\Framework\TestCase
 
 	public function testExitCodeNullWhileRunning()
 	{
-		$p = TProcess::open([PHP_BINARY, '-r', 'usleep(300000);']);
+		$p = $this->openRunning('usleep(300000);');
 		self::assertNull($p->getExitCode(), 'No exit code while running.');
 		$p->terminate();
 		$p->wait();
@@ -321,7 +347,7 @@ class TProcessTest extends \PHPUnit\Framework\TestCase
 
 	public function testWaitTimeoutReturnsMinusOne()
 	{
-		$p = TProcess::open([PHP_BINARY, '-r', 'usleep(500000);']);
+		$p = $this->openRunning('usleep(500000);');
 		self::assertSame(-1, $p->wait(1000, 20000), 'wait() returns -1 when the timeout elapses.');
 		self::assertTrue($p->getIsRunning(), 'Process still running after the timeout.');
 		$p->terminate();
