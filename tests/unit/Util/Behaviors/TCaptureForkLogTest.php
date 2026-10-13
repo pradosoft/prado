@@ -192,6 +192,50 @@ class TCaptureForkLogTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
+	public function testReceiveLogsFromChildrenKeepsPartialMessages()
+	{
+		$logger = Prado::getLogger();
+		$logger->deleteLogs();
+		$behavior = new TCaptureForkLog();
+		$childPid = 999999;
+		$childStream = $this->connectParent($behavior, $childPid);
+		try {
+			$first = serialize([['first', TLogger::NOTICE, 'cat', microtime(true), 0, null, null, $childPid]]);
+			$second = serialize([['second', TLogger::NOTICE, 'cat', microtime(true), 0, null, null, $childPid]]);
+			$secondMessage = pack('N', 0x80000000 | strlen($second)) . $second;
+
+			// A complete message and a split header of the next message.
+			fwrite($childStream, pack('N', strlen($first)) . $first . substr($secondMessage, 0, 2));
+			$behavior->receiveLogsFromChildren(null, false);
+			self::assertEquals(['first'], array_column($logger->getLogs(pid: $childPid), 0));
+			self::assertArrayHasKey($childPid, PradoUnit::getProp($behavior, '_parentConnections'));
+
+			fwrite($childStream, substr($secondMessage, 2));
+			$behavior->receiveLogsFromChildren(null, false);
+			self::assertEquals(['first', 'second'], array_column($logger->getLogs(pid: $childPid), 0));
+			self::assertEmpty(PradoUnit::getProp($behavior, '_parentConnections'));
+			self::assertEmpty(PradoUnit::getProp($behavior, '_receiveBuffers'));
+		} finally {
+			$logger->detachEventHandler('onCollectLogs', [$behavior, 'collectLogsFromChildren']);
+			$logger->deleteLogs();
+		}
+	}
+
+	public function testReceiveLogsFromChildrenClosesOnEndOfStream()
+	{
+		$logger = Prado::getLogger();
+		$behavior = new TCaptureForkLog();
+		$childPid = 999999;
+		$childStream = $this->connectParent($behavior, $childPid);
+		try {
+			fclose($childStream);
+			$behavior->receiveLogsFromChildren();
+			self::assertEmpty(PradoUnit::getProp($behavior, '_parentConnections'));
+		} finally {
+			$logger->detachEventHandler('onCollectLogs', [$behavior, 'collectLogsFromChildren']);
+		}
+	}
+
 	public function testCollectLogsFromChildrenWithoutConnections()
 	{
 		$behavior = new TCaptureForkLog();

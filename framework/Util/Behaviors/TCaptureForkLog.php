@@ -59,6 +59,9 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 	/** @var mixed The child connection to the parent */
 	protected mixed $_childConnection = null;
 
+	/** @var array The received bytes of an incomplete message, by child process ID. */
+	private array $_receiveBuffers = [];
+
 	/** @var ?array The socket pair of the pending fork, [parent end, child end]. */
 	private ?array $_forkConnection = null;
 
@@ -188,7 +191,8 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 	 * application TLogger.
 	 * @param ?int $pid The process ID to receive the logs from, default null for all.
 	 * @param bool $wait Wait for results until complete, default true.  When false,
-	 *   this will process the pending logs and not wait for further logs.
+	 *   this receives the messages already sent and keeps any partial message for
+	 *   the next call.
 	 */
 	public function receiveLogsFromChildren(?int $pid = null, bool $wait = true)
 	{
@@ -205,65 +209,65 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 
 		$completeLogs = [];
 		$write = $except = [];
-		$childLogs = [];
 		do {
 			$read = $connections;
-			if (stream_select($read, $write, $except, ($wait || count($childLogs)) ? 1 : 0, 0)) {
-				foreach ($read as $childPid => $socket) {
-					$data = fread($socket, 8192);
-					do {
-						$iterate = false;
-						if ($data !== false) {
-							if (array_key_exists($childPid, $childLogs)) {
-								$childLogs[$childPid][0] .= $data;
-							} else {
-								$length = substr($data, 0, 4);
-								if (strlen($length) >= 4) {
-									$length = unpack('N', $length)[1];
-									$final = ($length & 0x80000000) != 0;
-									$length &= 0x7FFFFFFF;
-									if ($length) {
-										$data = substr($data, 4);
-										$childLogs[$childPid] = [$data, abs($length), $final];
-									} else {
-										$childLogs[$childPid] = ['', 0, $final];
-									}
-								} else {
-									$childLogs[$childPid] = ['', 0, true];
-								}
-							}
-						} else {
-							$childLogs[$childPid] = ['', 0, true];
-						}
-						if (strlen($childLogs[$childPid][0]) >= $childLogs[$childPid][1]) {
-							if ($childLogs[$childPid][2]) {
-								stream_socket_shutdown($socket, STREAM_SHUT_RDWR);
-								unset($this->_parentConnections[$childPid]);
-								unset($connections[$childPid]);
-							}
-							if ($childLogs[$childPid][1]) {
-								$completeLogs[$childPid][] = substr($childLogs[$childPid][0], 0, $childLogs[$childPid][1]);
-							}
-							$data = substr($childLogs[$childPid][0], $childLogs[$childPid][1]);
-							unset($childLogs[$childPid]);
-							if (!strlen($data)) {
-								$data = false;
-							} else {
-								$iterate = true;
-							}
-						}
-
-					} while ($iterate);
+			if (!stream_select($read, $write, $except, $wait ? 1 : 0, 0)) {
+				if ($wait) {
+					continue;
+				}
+				break;
+			}
+			foreach ($read as $childPid => $socket) {
+				$data = fread($socket, 8192);
+				if ($data === false || $data === '') { // The child closed its connection.
+					$final = true;
+				} else {
+					$this->_receiveBuffers[$childPid] = ($this->_receiveBuffers[$childPid] ?? '') . $data;
+					$final = $this->extractChildLogs($childPid, $completeLogs);
+				}
+				if ($final) {
+					stream_socket_shutdown($socket, STREAM_SHUT_RDWR);
+					unset($this->_parentConnections[$childPid], $this->_receiveBuffers[$childPid], $connections[$childPid]);
 				}
 			}
-		} while (count($childLogs) || $wait && $connections);
+		} while ($connections);
 
 		if (!$completeLogs) {
 			return;
 		}
-		foreach (array_merge(...$completeLogs) as $logs) {
+		foreach ($completeLogs as $logs) {
 			Prado::getLogger()->mergeLogs(unserialize($logs));
 		}
+	}
+
+	/**
+	 * Moves each complete message of a child's receive buffer into $completeLogs.
+	 * A message is a 4 byte big-endian header and the serialized logs.  The header
+	 * holds the length of the logs in the low 31 bits and the final flag in the high bit.
+	 * An incomplete message stays in the buffer for the next read.
+	 * @param int $childPid The process ID of the child.
+	 * @param array $completeLogs The serialized logs of each complete message.
+	 * @return bool Is the final message of the child received.
+	 * @since 4.4.0
+	 */
+	protected function extractChildLogs(int $childPid, array &$completeLogs): bool
+	{
+		$buffer = $this->_receiveBuffers[$childPid];
+		$final = false;
+		while (!$final && strlen($buffer) >= 4) {
+			$header = unpack('N', $buffer)[1];
+			$length = $header & 0x7FFFFFFF;
+			if (strlen($buffer) < 4 + $length) {
+				break;
+			}
+			if ($length) {
+				$completeLogs[] = substr($buffer, 4, $length);
+			}
+			$buffer = substr($buffer, 4 + $length);
+			$final = ($header & 0x80000000) !== 0;
+		}
+		$this->_receiveBuffers[$childPid] = $buffer;
+		return $final;
 	}
 
 	/**
