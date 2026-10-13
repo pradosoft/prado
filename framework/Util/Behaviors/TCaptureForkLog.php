@@ -280,8 +280,9 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 	 * The TLogger::onFlushLogs handler of a child fork that sends its unlogged logs
 	 * to the parent process.  TLogger::onFlushLogs raises onCollectLogs first, so
 	 * the logs of this child's own children are already merged and sent with them.
-	 * A final call shuts down the connection to the parent.  A signal that interrupts
-	 * waiting on the connection retries the wait.
+	 * A final call shuts down the connection to the parent.  When the parent has
+	 * closed its end, the logs are dropped and the connection is released.  A signal
+	 * that interrupts waiting on the connection retries the wait.
 	 * @param mixed $logger The TLogger that raised the onFlushLogs event.
 	 * @param mixed $final Is this the last and final call.
 	 */
@@ -323,14 +324,16 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 		do {
 			$write = [$this->_childConnection];
 			if (@stream_select($read, $write, $except, 1, 0)) { // A signal interrupt retries.
-				$count = fwrite($this->_childConnection, $data);
+				$count = @fwrite($this->_childConnection, $data); // false when the parent closed.
 				if ($count > 0) {
 					$data = substr($data, $count);
 				}
 			}
 		} while ($count !== false && strlen($data) > 0);
 
-		if ($final) {
+		if ($count === false) {
+			$this->_childConnection = null;
+		} elseif ($final) {
 			stream_socket_shutdown($this->_childConnection, STREAM_SHUT_RDWR);
 			$this->_childConnection = null;
 		}

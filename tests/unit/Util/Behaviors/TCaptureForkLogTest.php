@@ -269,6 +269,28 @@ class TCaptureForkLogTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
+	public function testSendLogsToParentAfterParentCloses()
+	{
+		if (!function_exists('socket_create_pair')) {
+			$this->markTestSkipped('socket_create_pair is not available.');
+		}
+		$logger = Prado::getLogger();
+		$logger->deleteLogs();
+		$behavior = new TCaptureForkLog();
+		socket_create_pair(TProcessHelper::isSystemWindows() ? AF_INET : AF_UNIX, SOCK_STREAM, 0, $pair);
+		$parentStream = socket_export_stream($pair[0]);
+		PradoUnit::setProp($behavior, '_childConnection', socket_export_stream($pair[1]));
+		unset($pair);
+		fclose($parentStream);
+		try {
+			Prado::notice('child notice');
+			$behavior->sendLogsToParent($logger, false);
+			self::assertNull(PradoUnit::getProp($behavior, '_childConnection'));
+		} finally {
+			$logger->deleteLogs();
+		}
+	}
+
 	public function testCollectLogsFromChildrenWithoutConnections()
 	{
 		$behavior = new TCaptureForkLog();

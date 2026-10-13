@@ -15,6 +15,9 @@ A child replaces its `onFlushLogs` handlers with `sendLogsToParent()`. `TLogger:
 ### Wire format
 Each message is a 4-byte big-endian header and the serialized logs. The low 31 bits hold the length; the high bit marks the final message. The parent keeps a per-child receive buffer (`_receiveBuffers`), so a message split across reads, including its header, completes on a later read. End of stream on a connection closes it as final.
 
+### Signals and closed connections
+`stream_select()` and `fwrite()` are called with `@`, because Prado's error handler turns their warnings into exceptions. A signal (e.g. SIGCHLD) interrupts `stream_select()` with EINTR; both loops retry it as a timeout. When the parent has closed its end, the child's `fwrite()` fails with EPIPE; `sendLogsToParent()` drops the logs and releases `_childConnection`.
+
 ### Requirements
 Requires `pcntl` to fork and the `sockets` extension to capture. Without `socket_create_pair()`, `generateConnection()` creates no connection and nothing is captured (Windows CI has no `sockets`).
 
