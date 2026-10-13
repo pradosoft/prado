@@ -73,6 +73,41 @@ class TCaptureForkLogTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
+	public function testForkCapturesGrandchildLogs()
+	{
+		if (!TProcessHelper::isForkable()) {
+			$this->markTestSkipped('pcntl_fork is not available on this platform.');
+		}
+
+		$logger = Prado::getLogger();
+		$logger->deleteLogs();
+
+		$pid = TProcessHelper::fork(true);
+		if ($pid === -1) {
+			self::fail("failed to fork.");
+		} elseif ($pid === 0) {
+			try {
+				$grandchildPid = TProcessHelper::fork(true);
+				if ($grandchildPid === 0) {
+					Prado::warning('grandchild warning');
+				} elseif ($grandchildPid > 0) {
+					Prado::warning('child warning');
+				}
+			} finally {
+				exit(0);
+			}
+		}
+		try {
+			Prado::getApplication()->receiveLogsFromChildren($pid);
+			pcntl_waitpid($pid, $status);
+			$messages = array_column($logger->getLogs(), 0);
+			self::assertContains('child warning', $messages);
+			self::assertContains('grandchild warning', $messages);
+		} finally {
+			$logger->deleteLogs();
+		}
+	}
+
 	/**
 	 * Simulates the parent side of a fork for a child pid and returns the child's
 	 * end of the socket pair.
@@ -80,7 +115,7 @@ class TCaptureForkLogTest extends \PHPUnit\Framework\TestCase
 	protected function connectParent(TCaptureForkLog $behavior, int $pid): mixed
 	{
 		$behavior->generateConnection(null, null);
-		$connection = PradoUnit::getProp($behavior, '_childConnection');
+		$connection = PradoUnit::getProp($behavior, '_forkConnection');
 		if (!$connection) {
 			self::markTestSkipped('socket_create_pair is not available.');
 		}

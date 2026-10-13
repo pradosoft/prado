@@ -59,6 +59,9 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 	/** @var mixed The child connection to the parent */
 	protected mixed $_childConnection = null;
 
+	/** @var ?array The socket pair of the pending fork, [parent end, child end]. */
+	private ?array $_forkConnection = null;
+
 	/**
 	 * Installs {@see self::generateConnection()} on fxPrepareForFork and
 	 * {@see self::configureForChildLogs()} on fxRestoreAfterFork.
@@ -111,12 +114,11 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 	public function generateConnection(mixed $sender, mixed $param)
 	{
 		$domain = TProcessHelper::isSystemWindows() ? AF_INET : AF_UNIX;
-		if (!socket_create_pair($domain, SOCK_STREAM, 0, $this->_childConnection)) {
-			$this->_childConnection = null;
+		if (!socket_create_pair($domain, SOCK_STREAM, 0, $pair)) {
+			$this->_forkConnection = null;
 			return null;
 		}
-		$this->_childConnection[0] = socket_export_stream($this->_childConnection[0]);
-		$this->_childConnection[1] = socket_export_stream($this->_childConnection[1]);
+		$this->_forkConnection = [socket_export_stream($pair[0]), socket_export_stream($pair[1])];
 		return null;
 	}
 
@@ -130,17 +132,18 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 	 */
 	public function configureForChildLogs(mixed $sender, mixed $data)
 	{
-		if (!$this->_childConnection) {
+		if (!$this->_forkConnection) {
 			return;
 		}
+		$connection = $this->_forkConnection;
+		$this->_forkConnection = null;
 		$pid = $data['pid'];
 		if ($pid === -1) { //fail
-			stream_socket_shutdown($this->_childConnection[0], STREAM_SHUT_RDWR);
-			stream_socket_shutdown($this->_childConnection[1], STREAM_SHUT_RDWR);
-			$this->_childConnection = null;
+			stream_socket_shutdown($connection[0], STREAM_SHUT_RDWR);
+			stream_socket_shutdown($connection[1], STREAM_SHUT_RDWR);
 		} elseif ($pid === 0) { // Child Process
 			$this->_parentConnections = [];
-			$this->_childConnection = $this->_childConnection[1];
+			$this->_childConnection = $connection[1];
 			$logger = Prado::getLogger();
 			$logger->deleteLogs();
 			$logs = $logger->deleteProfileLogs();
@@ -152,10 +155,8 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 			$logger->mergeLogs($logs); // Profiler logs with child pid
 			$logger->getEventHandlers('onFlushLogs')->clear();
 			$logger->attachEventHandler('onFlushLogs', [$this, 'sendLogsToParent'], $this->getPriority());
-			$this->_receiverInstalled = true;
 		} else { // Parent Process
-			$this->_parentConnections[$pid] = $this->_childConnection[0];
-			$this->_childConnection = null;
+			$this->_parentConnections[$pid] = $connection[0];
 			if (!$this->_receiverInstalled) {
 				$logger = Prado::getLogger();
 				$logger->attachEventHandler('onCollectLogs', [$this, 'collectLogsFromChildren'], $this->getPriority());
@@ -258,9 +259,10 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 	}
 
 	/**
-	 * First, Receives any logs from the children.  If this instance is a child fork
-	 * then send the log to the parent process.  If the call is final then the connection
-	 * to the parent is shutdown.
+	 * The TLogger::onFlushLogs handler of a child fork that sends its unlogged logs
+	 * to the parent process.  TLogger::onFlushLogs raises onCollectLogs first, so
+	 * the logs of this child's own children are already merged and sent with them.
+	 * A final call shuts down the connection to the parent.
 	 * @param mixed $logger The TLogger that raised the onFlushLogs event.
 	 * @param mixed $final Is this the last and final call.
 	 */
