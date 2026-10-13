@@ -19,28 +19,30 @@ use Prado\Util\Helpers\TProcessHelper;
 /**
  * TCaptureForkLog class.
  *
- * This captures the log of a child fork and sends it back to the parent thread.
+ * TCaptureForkLog sends the logs of a forked child process to its parent process.
  *
- * When {@see \Prado\Util\TProcessHelper::fork()} is called, `fxPrepareForFork`
- * is raised before the fore and `fxRestoreAfterFork` after the fork.
- * On `fxPrepareForFork`, this class creates a socket pair.  On `fxRestoreAfterFork`,
- * The parent stores all child connections, and the child sends all log data to
- * the parent.  The parent receives logs on TLogger::onCollectLogs through
- * {@see self::collectLogsFromChildren()}.
+ * {@see \Prado\Util\Helpers\TProcessHelper::fork()} raises `fxPrepareForFork`
+ * before the fork and `fxRestoreAfterFork` after the fork.
+ * - On `fxPrepareForFork`, {@see self::generateConnection()} creates a socket pair.
+ * - On `fxRestoreAfterFork`, {@see self::configureForChildLogs()} gives the parent
+ *   end to the parent and the child end to the child.
  *
- * Before sending logs, a child will receive any logs for its own child processes.
- * When sending the final logs from the child, the socket is closed and the parent
- * is flagged to close the connection.
+ * The parent receives the child logs on TLogger::onCollectLogs through
+ * {@see self::collectLogsFromChildren()}.  The child replaces its TLogger::onFlushLogs
+ * handlers with {@see self::sendLogsToParent()}.  TLogger::onFlushLogs raises
+ * onCollectLogs first, so a child sends the logs of its own children with its own.
  *
- * When not the final processing of the logs, only the pending logs will be sent
- * and received before returning.  When Final, the parent will wait until all children
- * processes have returned their logs.
+ * | Collection | Child sends | Parent receives |
+ * |---|---|---|
+ * | Not final | its unlogged logs | the messages already sent |
+ * | Final | its last logs, then closes the connection | waits for the final message of every child |
  *
- * Due to this class adding logs during the flushing of the logs
+ * Capturing requires the sockets extension.  Without it, the child logs are not captured.
  *
- * Attach this behavior to the TApplication class or object.
+ * Attach this behavior to the TApplication class or object.  `TProcessHelper::fork(true)`
+ * attaches it to the application.
  * ```xml
- *		<behavior name="appSignals" AttachToClass="Prado\TApplication" class="Prado\Util\Behaviors\TApplicationSignals" PriorHandlerPriority="5" />
+ *		<behavior name="captureforklog" AttachToClass="Prado\TApplication" class="Prado\Util\Behaviors\TCaptureForkLog" />
  * ```
  *
  * @author Brad Anderson <belisoful@icloud.com>
@@ -77,7 +79,7 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 	}
 
 	/**
-	 *
+	 * Returns the priority of the behavior and its event handlers.
 	 * @return ?float The priority of the behavior, default -10 and not
 	 *   the normal "null".
 	 */
@@ -92,7 +94,7 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 	/**
 	 * This is the singleton behavior.  Only one instance of itself can be a behavior
 	 * of the owner.
-	 * @param string $name The name of teh behavior being added to the owner.
+	 * @param string $name The name of the behavior being added to the owner.
 	 * @param IBaseBehavior $behavior The behavior being added to the owner.
 	 * @param TCallChain $chain The chain of event handlers.
 	 */
@@ -123,7 +125,6 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 		}
 		$domain = TProcessHelper::isSystemWindows() ? AF_INET : AF_UNIX;
 		if (!socket_create_pair($domain, SOCK_STREAM, 0, $pair)) {
-			$this->_forkConnection = null;
 			return null;
 		}
 		$this->_forkConnection = [socket_export_stream($pair[0]), socket_export_stream($pair[1])];
@@ -131,12 +132,15 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 	}
 
 	/**
-	 * The behavior call back for fxRestoreAfterFork that cleans the log and resets
-	 * the logger to send the log to the parent process.  The Parent process stores
-	 * the child stream and pid and installs {@see self::collectLogsFromChildren()}
-	 * on TLogger::onCollectLogs to receive the logs from the children forks.
-	 * @param mixed $sender
-	 * @param array $data the
+	 * The behavior callback for fxRestoreAfterFork that routes the child logs to
+	 * the parent.
+	 * - Parent: stores the child connection by pid and installs
+	 *   {@see self::collectLogsFromChildren()} on TLogger::onCollectLogs.
+	 * - Child: deletes the inherited logs and replaces the TLogger::onFlushLogs
+	 *   handlers with {@see self::sendLogsToParent()}.
+	 * - Failed fork: shuts down the socket pair.
+	 * @param mixed $sender The TApplication doing the fork.
+	 * @param mixed $data The fxRestoreAfterFork data, with the fork result in 'pid'.
 	 */
 	public function configureForChildLogs(mixed $sender, mixed $data)
 	{
