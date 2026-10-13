@@ -46,6 +46,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 | Class | HTML | Key Properties |
 |---|---|---|
 | `TLabel` | `<label>` or `<span>` | `Text`, `For` (associated control ID), `AssociatedControlID` |
+| [`TOutput`](TOutput.md) | `<output>` | `Text` (encoded), `ForControl` (source control IDs); `status` live region (@since 4.4.0) |
 | `TImage` | `<img>` | `ImageUrl`, `AlternateText`, `ImageAlign` |
 | `THyperLink` | `<a>` | `NavigateUrl`, `Text`, `ImageUrl`, `Target` |
 | `TLiteral` | raw text | `Text` (not HTML-encoded), `Encode` |

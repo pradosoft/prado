@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+ENH: TOutput renders the HTML5 `<output>` result, a live region named by a TLabel, with `ForControl` for its source controls. TActiveOutput updates its text and `for` attribute during a callback. (belisoful)
 CHG: A PHP-configured `TFeedService` lists its feeds under a `feeds` key; the 4.3 form is deprecated, and an XML-configured service without a configuration no longer fails in `init()`. UPGRADE.md covers the change. (belisoful)
 BUG: `TFeedService` registered the PHP configuration's `class` key as a feed, and its PHP branch of `run()` threw `jsonservice_*` errors; it now skips the `class` key, takes a string feed entry as the feed class, and throws `feedservice_class_required` and `feedservice_feedtype_invalid`. (belisoful)
 BUG: `TJsonService` raised an undefined array key warning for a PHP configuration without a `json` key. (belisoful)
