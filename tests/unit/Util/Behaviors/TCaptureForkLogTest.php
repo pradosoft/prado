@@ -236,6 +236,39 @@ class TCaptureForkLogTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
+	public function testReceiveLogsFromChildrenRetriesAfterSignal()
+	{
+		if (!function_exists('pcntl_alarm')) {
+			$this->markTestSkipped('pcntl signals are not available on this platform.');
+		}
+		$logger = Prado::getLogger();
+		$logger->deleteLogs();
+		$behavior = new TCaptureForkLog();
+		$childPid = 999999;
+		$childStream = $this->connectParent($behavior, $childPid);
+		$async = pcntl_async_signals(true);
+		$priorHandler = pcntl_signal_get_handler(SIGALRM);
+		$interrupted = false;
+		// No restart, so the signal interrupts the waiting stream_select.
+		pcntl_signal(SIGALRM, function () use (&$interrupted, $childStream, $childPid) {
+			$interrupted = true;
+			$this->writeChildLogs($childStream, [['after signal', TLogger::NOTICE, 'cat', microtime(true), 0, null, null, $childPid]], true);
+		}, false);
+		try {
+			pcntl_alarm(1);
+			$behavior->receiveLogsFromChildren();
+			self::assertTrue($interrupted);
+			self::assertEquals(['after signal'], array_column($logger->getLogs(pid: $childPid), 0));
+			self::assertEmpty(PradoUnit::getProp($behavior, '_parentConnections'));
+		} finally {
+			pcntl_alarm(0);
+			pcntl_signal(SIGALRM, $priorHandler);
+			pcntl_async_signals($async);
+			$logger->detachEventHandler('onCollectLogs', [$behavior, 'collectLogsFromChildren']);
+			$logger->deleteLogs();
+		}
+	}
+
 	public function testCollectLogsFromChildrenWithoutConnections()
 	{
 		$behavior = new TCaptureForkLog();

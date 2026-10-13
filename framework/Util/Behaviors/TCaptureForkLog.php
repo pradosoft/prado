@@ -192,7 +192,8 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 
 	/**
 	 * Receives logs from children forked processes and merges the logs with the current
-	 * application TLogger.
+	 * application TLogger.  A signal that interrupts waiting on the connections
+	 * retries the wait.
 	 * @param ?int $pid The process ID to receive the logs from, default null for all.
 	 * @param bool $wait Wait for results until complete, default true.  When false,
 	 *   this receives the messages already sent and keeps any partial message for
@@ -215,7 +216,8 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 		$write = $except = [];
 		do {
 			$read = $connections;
-			if (!stream_select($read, $write, $except, $wait ? 1 : 0, 0)) {
+			// A signal interrupts stream_select with a warning and false; retry as a timeout.
+			if (!@stream_select($read, $write, $except, $wait ? 1 : 0, 0)) {
 				if ($wait) {
 					continue;
 				}
@@ -278,7 +280,8 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 	 * The TLogger::onFlushLogs handler of a child fork that sends its unlogged logs
 	 * to the parent process.  TLogger::onFlushLogs raises onCollectLogs first, so
 	 * the logs of this child's own children are already merged and sent with them.
-	 * A final call shuts down the connection to the parent.
+	 * A final call shuts down the connection to the parent.  A signal that interrupts
+	 * waiting on the connection retries the wait.
 	 * @param mixed $logger The TLogger that raised the onFlushLogs event.
 	 * @param mixed $final Is this the last and final call.
 	 */
@@ -319,7 +322,7 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 
 		do {
 			$write = [$this->_childConnection];
-			if (stream_select($read, $write, $except, 1, 0)) {
+			if (@stream_select($read, $write, $except, 1, 0)) { // A signal interrupt retries.
 				$count = fwrite($this->_childConnection, $data);
 				if ($count > 0) {
 					$data = substr($data, $count);
