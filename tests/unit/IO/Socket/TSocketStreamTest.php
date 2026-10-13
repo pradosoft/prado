@@ -126,8 +126,8 @@ class TSocketStreamTest extends \PHPUnit\Framework\TestCase
 			$client = TSocketStream::connect('tcp://127.0.0.1:' . $server->getPort(), 2.0);
 			$conn = $server->accept(2.0);
 
-			stream_context_set_option($client->getResource(), ['ssl' => ['alpn_protocols' => 'h2', 'verify_peer' => false, 'verify_peer_name' => false, 'peer_name' => 'localhost']]);
-			stream_context_set_option($conn->getResource(), ['ssl' => ['local_cert' => $pem, 'alpn_protocols' => 'h2,http/1.1', 'verify_peer' => false]]);
+			$this->setSslOptions($client->getResource(), ['alpn_protocols' => 'h2', 'verify_peer' => false, 'verify_peer_name' => false, 'peer_name' => 'localhost']);
+			$this->setSslOptions($conn->getResource(), ['local_cert' => $pem, 'alpn_protocols' => 'h2,http/1.1', 'verify_peer' => false]);
 			$client->setBlocking(false);
 			$conn->setBlocking(false);
 
@@ -154,6 +154,19 @@ class TSocketStreamTest extends \PHPUnit\Framework\TestCase
 			$server->close();
 		} finally {
 			@unlink($pem);
+		}
+	}
+
+	/**
+	 * Sets SSL context options one at a time; PHP 8.5 deprecates the array form of
+	 * stream_context_set_option(), and stream_context_set_options() needs PHP 8.3.
+	 * @param resource $resource the stream whose context is configured
+	 * @param array<string, mixed> $options SSL option name → value
+	 */
+	private function setSslOptions($resource, array $options): void
+	{
+		foreach ($options as $name => $value) {
+			stream_context_set_option($resource, 'ssl', $name, $value);
 		}
 	}
 

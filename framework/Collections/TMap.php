@@ -137,11 +137,12 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * Returns the item with the specified key.
 	 * This method is exactly the same as {@see offsetGet}.
-	 * @param mixed $key the key
+	 * @param mixed $key the key; null looks up the empty-string key, as PHP array keys do.
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */
 	public function itemAt($key)
 	{
+		$key ??= '';
 		return (isset($this->_d[$key]) || array_key_exists($key, $this->_d)) ? $this->_d[$key] : $this->dyNoItem(null, $key);
 	}
 
@@ -172,12 +173,13 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 
 	/**
 	 * Removes an item from the map by its key.
-	 * @param mixed $key the key of the item to be removed
+	 * @param mixed $key the key of the item to be removed; null removes the empty-string key.
 	 * @throws TInvalidOperationException if the map is read-only
 	 * @return mixed the removed value, null if no such key exists.
 	 */
 	public function remove($key)
 	{
+		$key ??= '';
 		if (!$this->_r) {
 			if (isset($this->_d[$key]) || array_key_exists($key, $this->_d)) {
 				$value = $this->_d[$key];
@@ -225,11 +227,12 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	}
 
 	/**
-	 * @param mixed $key the key
+	 * @param mixed $key the key; null looks up the empty-string key.
 	 * @return bool whether the map contains an item with the specified key
 	 */
 	public function contains($key): bool
 	{
+		$key ??= '';
 		return isset($this->_d[$key]) || array_key_exists($key, $this->_d);
 	}
 

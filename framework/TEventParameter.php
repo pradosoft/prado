@@ -283,6 +283,18 @@ class TEventParameter extends \Prado\TComponent implements IEventParameter, IEve
 	//	----- ArrayAccess -----
 
 	/**
+	 * Maps a null offset to the empty-string key when the parameter is a PHP array, as PHP array keys do.
+	 * An ArrayAccess parameter receives the offset unchanged.
+	 * @param mixed $offset the offset to normalize
+	 * @return mixed the offset for indexing the parameter
+	 * @since 4.4.0
+	 */
+	private function normalizeOffset(mixed $offset): mixed
+	{
+		return ($offset === null && is_array($this->_param)) ? '' : $offset;
+	}
+
+	/**
 	 * This method is required by the interface \ArrayAccess.
 	 * @param mixed $offset the offset to check on
 	 * @return bool if not an array, then false, otherwise check _param.
@@ -294,7 +306,7 @@ class TEventParameter extends \Prado\TComponent implements IEventParameter, IEve
 			return false;
 		}
 
-		return isset($this->_param[$offset]);
+		return isset($this->_param[$this->normalizeOffset($offset)]);
 	}
 
 	/**
@@ -311,7 +323,7 @@ class TEventParameter extends \Prado\TComponent implements IEventParameter, IEve
 			return null;
 		}
 
-		return $this->_param[$offset] ?? null;
+		return $this->_param[$this->normalizeOffset($offset)] ?? null;
 	}
 
 	/**
@@ -333,6 +345,7 @@ class TEventParameter extends \Prado\TComponent implements IEventParameter, IEve
 			return;
 		}
 
+		$offset = $this->normalizeOffset($offset);
 		$changed = true;
 		if (isset($this->_param[$offset])) {
 			$changed = ($item !== $this->_param[$offset]);
@@ -356,6 +369,7 @@ class TEventParameter extends \Prado\TComponent implements IEventParameter, IEve
 	public function offsetUnset($offset): void
 	{
 		$this->assertMutable();
+		$offset = $this->normalizeOffset($offset);
 		if (!$this->getParameterIsArray() || !isset($this->_param[$offset])) {
 			return;
 		}

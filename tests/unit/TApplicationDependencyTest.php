@@ -494,7 +494,8 @@ class TwoKeyValueDepModule extends \Prado\TModule implements \Prado\IModuleDepen
 
 	public function getModuleDependencies(bool $isPreInit = false): null|string|array
 	{
-		return [$this->_id1 => $this->_req1, $this->_id2 => $this->_req2];
+		// PHP 8.5 deprecates null array keys; `?? ''` applies the coercion earlier versions perform.
+		return [$this->_id1 ?? '' => $this->_req1, $this->_id2 ?? '' => $this->_req2];
 	}
 
 	public function getId1(): mixed { return $this->_id1; }
@@ -889,8 +890,8 @@ class TApplicationDependencyTest extends \PHPUnit\Framework\TestCase
 		// The resulting '' key must be silently skipped by the framework.
 		$app    = $this->newAccessor();
 		$module = new KeyValueDepModule();
-		// setDepsArray([null => true]) — PHP coerces null key to '' on assignment.
-		$module->setDepsArray([null => true]);
+		// PHP stores a null key as ''; PHP 8.5 deprecates the null form, so the fixture passes ''.
+		$module->setDepsArray(['' => true]);
 
 		$this->assertSame([], $app->pubCollectDeps($module),
 			'key-value entry whose key is null (coerced to empty string by PHP) must be silently ignored');

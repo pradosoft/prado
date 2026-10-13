@@ -148,7 +148,7 @@ class TBitWriter extends TBaseBitStream
 	 * Packs the low $bytes bytes of a value into a big-endian string, picking the fastest
 	 * {@see pack()} form per length: chr for 1, 'n' for 2, chr+'n' for 3, 'N' for 4, 'N'+chr
 	 * for 5, and a tail substring of 'J' for 6 to 8.  A run of 5 to 8 bytes occurs only on a
-	 * 64-bit build.  chr() masks to a byte on its own, so no explicit mask is needed.
+	 * 64-bit build.  Each chr() argument is masked to its low byte.
 	 * @param int $word The value whose low $bytes bytes are emitted.
 	 * @param int $bytes The number of bytes to emit, from 1 to PHP_INT_SIZE.
 	 * @return string The bytes, most-significant first.
@@ -156,11 +156,11 @@ class TBitWriter extends TBaseBitStream
 	private static function packBytes(int $word, int $bytes): string
 	{
 		return match ($bytes) {
-			1 => chr($word),
+			1 => chr($word & 0xFF),
 			2 => pack('n', $word),
-			3 => chr($word >> 16) . pack('n', $word),
+			3 => chr(($word >> 16) & 0xFF) . pack('n', $word),
 			4 => pack('N', $word),
-			5 => pack('N', $word >> 8) . chr($word),
+			5 => pack('N', $word >> 8) . chr($word & 0xFF),
 			6 => substr(pack('J', $word), 2),
 			7 => substr(pack('J', $word), 1),
 			default => pack('J', $word),

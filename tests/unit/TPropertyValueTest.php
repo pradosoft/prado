@@ -4299,7 +4299,6 @@ class TPropertyValueTest extends \PHPUnit\Framework\TestCase
 		// only on the first iterator access.
 		$mode = new \Prado\TApplicationMode();
 		$prop = new \ReflectionProperty(\Prado\TEnumerable::class, '_iterator_array');
-		$prop->setAccessible(true);
 		self::assertNull($prop->getValue($mode));
 		$mode->rewind(); // triggers lazy load
 		self::assertNotNull($prop->getValue($mode));

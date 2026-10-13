@@ -38,12 +38,12 @@ class TSqlMapTypeHandlerRegistry
 	}
 
 	/**
-	 * @param string $class type handler class name
-	 * @return null|TSqlMapTypeHandler type handler
+	 * @param ?string $class type handler class name
+	 * @return null|TSqlMapTypeHandler type handler, null when $class is null or unregistered
 	 */
 	public function getTypeHandler($class)
 	{
-		if (isset($this->_typeHandlers[$class])) {
+		if ($class !== null && isset($this->_typeHandlers[$class])) {
 			return $this->_typeHandlers[$class];
 		}
 		return null;

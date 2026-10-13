@@ -49,13 +49,13 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 
 	/**
 	 * Add a new node to the object tree graph.
-	 * @param string $parent parent node id
+	 * @param ?string $parent parent node id, null for a root node
 	 * @param string $node new node id
 	 * @param mixed $object node value
 	 */
 	public function add($parent, $node, $object = '')
 	{
-		if (isset($this->_entries[$parent]) && isset($this->_entries[$node])) {
+		if ($parent !== null && isset($this->_entries[$parent]) && isset($this->_entries[$node])) {
 			$this->_entries[$node] = $object;
 			return;
 		}

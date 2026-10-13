@@ -350,13 +350,13 @@ class TEventParameterTest extends TestCase
 
 	public function testOffsetGetWithNullKey()
 	{
-		$param = new TEventParameter([null => 'nullKey']);
+		$param = new TEventParameter(['' => 'nullKey']);
 		$this->assertEquals('nullKey', $param->offsetGet(null));
 	}
 
 	public function testOffsetExistsWithNullKey()
 	{
-		$param = new TEventParameter([null => 'nullKey']);
+		$param = new TEventParameter(['' => 'nullKey']);
 		$this->assertTrue($param->offsetExists(null));
 	}
 
@@ -387,7 +387,7 @@ class TEventParameterTest extends TestCase
 
 	public function testOffsetUnsetWithNullKey()
 	{
-		$param = new TEventParameter([null => 'nullValue', 'key1' => 'value1']);
+		$param = new TEventParameter(['' => 'nullValue', 'key1' => 'value1']);
 		$param->offsetUnset(null);
 		$this->assertFalse($param->offsetExists(null));
 		$this->assertTrue($param->offsetExists('key1'));
@@ -481,7 +481,7 @@ class TEventParameterTest extends TestCase
 		$param = new TEventParameter([
 			'string' => 'stringValue',
 			0 => 'zeroValue',
-			null => 'nullValue',
+			'' => 'nullValue',
 			'bool' => true,
 		]);
 

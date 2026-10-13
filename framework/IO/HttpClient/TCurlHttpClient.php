@@ -104,7 +104,8 @@ class TCurlHttpClient extends THttpClient
 
 			return new THttpClientResponse($statusCode, $responseHeaders, (string) $responseBody);
 		} finally {
-			curl_close($ch);
+			// Releasing the last reference frees the handle; curl_close() is a no-op since PHP 8.0.
+			unset($ch);
 		}
 	}
 }

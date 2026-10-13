@@ -95,7 +95,6 @@ class THttpResponseHeadersManagerIntegrationTest extends \PHPUnit\Framework\Test
 		// but internally we want to remove the key entirely to avoid a stale
 		// null entry that getModule() would treat as "load lazily".
 		$ref = new \ReflectionProperty(TApplication::class, '_modules');
-		$ref->setAccessible(true);
 		$modules = $ref->getValue(self::$app);
 		unset($modules[$id]);
 		$ref->setValue(self::$app, $modules);
@@ -119,7 +118,6 @@ class THttpResponseHeadersManagerIntegrationTest extends \PHPUnit\Framework\Test
 	private function clearManagerCache(THttpResponse $response): void
 	{
 		$ref = new \ReflectionProperty(THttpResponse::class, '_headersManager');
-		$ref->setAccessible(true);
 		$ref->setValue($response, null);
 	}
 

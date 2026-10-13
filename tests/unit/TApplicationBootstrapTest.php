@@ -307,7 +307,6 @@ class TApplicationBootstrapTest extends \PHPUnit\Framework\TestCase
 		// setStateFlag is protected; drive it via reflection so we test the
 		// helper itself, not through bootstrapDefaultModules.
 		$rm = new \ReflectionMethod(TApplication::class, 'setStateFlag');
-		$rm->setAccessible(true);
 		$rm->invoke($acc, TApplication::STATE_DEFAULT_MODULES_BOOTSTRAPPED);
 
 		$this->assertTrue($acc->hasStateFlag(TApplication::STATE_DEFAULT_MODULES_BOOTSTRAPPED));
@@ -318,7 +317,6 @@ class TApplicationBootstrapTest extends \PHPUnit\Framework\TestCase
 	{
 		$acc = $this->newAccessor();
 		$rm = new \ReflectionMethod(TApplication::class, 'setStateFlag');
-		$rm->setAccessible(true);
 
 		$rm->invoke($acc, TApplication::STATE_DEFAULT_MODULES_BOOTSTRAPPED, true);
 		$this->assertTrue($acc->hasStateFlag(TApplication::STATE_DEFAULT_MODULES_BOOTSTRAPPED));
@@ -332,7 +330,6 @@ class TApplicationBootstrapTest extends \PHPUnit\Framework\TestCase
 	{
 		$acc = $this->newAccessor();
 		$rm = new \ReflectionMethod(TApplication::class, 'setStateFlag');
-		$rm->setAccessible(true);
 
 		$rm->invoke($acc, TApplication::STATE_INITIALIZED);
 		$rm->invoke($acc, TApplication::STATE_INITIALIZED);
@@ -345,7 +342,6 @@ class TApplicationBootstrapTest extends \PHPUnit\Framework\TestCase
 	{
 		$acc = $this->newAccessor();
 		$rm = new \ReflectionMethod(TApplication::class, 'setStateFlag');
-		$rm->setAccessible(true);
 
 		$rm->invoke($acc, TApplication::STATE_DEFAULT_MODULES_BOOTSTRAPPED);
 		$rm->invoke($acc, TApplication::STATE_INITIALIZED);
@@ -362,7 +358,6 @@ class TApplicationBootstrapTest extends \PHPUnit\Framework\TestCase
 	{
 		$acc = $this->newAccessor();
 		$rm = new \ReflectionMethod(TApplication::class, 'setStateFlag');
-		$rm->setAccessible(true);
 
 		// Only set one of two bits.
 		$rm->invoke($acc, TApplication::STATE_DEFAULT_MODULES_BOOTSTRAPPED);
@@ -380,7 +375,6 @@ class TApplicationBootstrapTest extends \PHPUnit\Framework\TestCase
 	{
 		$acc = $this->newAccessor();
 		$rm = new \ReflectionMethod(TApplication::class, 'setStateFlag');
-		$rm->setAccessible(true);
 
 		$rm->invoke($acc, TApplication::STATE_DEFAULT_MODULES_BOOTSTRAPPED);
 		$rm->invoke($acc, TApplication::STATE_INITIALIZED);

@@ -253,8 +253,6 @@ class TDotTest extends \PHPUnit\Framework\TestCase
 		// source (within rounding) across grays, primaries, and arbitrary colors.
 		$r2h = new \ReflectionMethod(TDot::class, 'rgbToHsl');
 		$h2r = new \ReflectionMethod(TDot::class, 'hslToRgb');
-		$r2h->setAccessible(true);
-		$h2r->setAccessible(true);
 
 		foreach ([[0, 0, 0], [255, 255, 255], [128, 128, 128], [255, 0, 0], [0, 128, 0], [0, 0, 255], [153, 136, 119], [64, 200, 30]] as $rgb) {
 			[$h, $s, $l] = $r2h->invoke($this->obj, ...$rgb);
@@ -270,7 +268,6 @@ class TDotTest extends \PHPUnit\Framework\TestCase
 		// nudge() scales a channel change toward the channel extremes. setColor only ever
 		// passes true/false, so the null-default and taper branches are exercised here.
 		$nudge = new \ReflectionMethod(TDot::class, 'nudge');
-		$nudge->setAccessible(true);
 
 		// A null style follows the sign of the change: negative is top-exaggerated, positive bottom.
 		self::assertEquals(0, $nudge->invoke($this->obj, 0, -10, null));    // darken at the floor stays 0

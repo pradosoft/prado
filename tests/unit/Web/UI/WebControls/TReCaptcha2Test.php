@@ -603,7 +603,6 @@ class TReCaptcha2Test extends \PHPUnit\Framework\TestCase
 
 			// $_controlsRegisteredForPostData is protected; use reflection to inspect it.
 			$ref = new \ReflectionProperty(TPage::class, '_controlsRegisteredForPostData');
-			$ref->setAccessible(true);
 			$registered = $ref->getValue($page);
 			$fieldName = $captcha->getResponseFieldName();
 			$this->assertArrayHasKey($fieldName, $registered);
@@ -639,7 +638,6 @@ class TReCaptcha2Test extends \PHPUnit\Framework\TestCase
 			// verify the URL contains the correct language query parameter.
 			$cs = $captcha->getPage()->getClientScript();
 			$ref = new \ReflectionProperty(\Prado\Web\UI\TClientScriptManager::class, '_headScriptFiles');
-			$ref->setAccessible(true);
 			$headFiles = $ref->getValue($cs);
 			$asset = $headFiles['grecaptcha2'];
 			$this->assertStringContainsString('hl=pt', $asset->getUrl());

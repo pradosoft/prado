@@ -3208,7 +3208,6 @@ class TAssetManagerTest extends \PHPUnit\Framework\TestCase
 		$src = __DIR__ . '/data/pradoheader.gif';
 		$dst = self::$assetDir . DIRECTORY_SEPARATOR . 'pradoheader.gif';
 		$copyFile = new \ReflectionMethod($manager, 'copyDirectoryFile');
-		$copyFile->setAccessible(true);
 
 		// The instance "only" would reject the file; the supplied options accept it.
 		$copyFile->invoke($manager, $src, $dst, 'pradoheader.gif', [

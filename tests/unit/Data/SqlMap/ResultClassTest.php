@@ -24,7 +24,7 @@ class ResultClassTest extends BaseCase
 	 */
 	public function testBooleanWithoutResultClass()
 	{
-		$bit = (boolean) self::$sqlmap->queryForObject("GetBooleanWithoutResultClass", 1);
+		$bit = (bool) self::$sqlmap->queryForObject("GetBooleanWithoutResultClass", 1);
 		$this->assertSame(true, $bit);
 	}
 
@@ -202,7 +202,7 @@ class ResultClassTest extends BaseCase
 	public function testInt64WithoutResultClass()
 	{
 		$bigInt = self::$sqlmap->queryForObject("GetInt64WithoutResultClass", 1);
-		$this->assertEquals(9223372036854775800, (double) $bigInt);
+		$this->assertEquals(9223372036854775800, (float) $bigInt);
 	}
 
 	/**

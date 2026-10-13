@@ -43,8 +43,8 @@ class TStreamResourceWrapperTest extends \PHPUnit\Framework\TestCase
 	{
 		// fgetcsv only accepts a real resource; this is the wrapper's reason to exist.
 		$res = TStreamResourceWrapper::getResource(new TTestPsrStream("name,score\nAda,99\n"));
-		self::assertSame(['name', 'score'], fgetcsv($res));
-		self::assertSame(['Ada', '99'], fgetcsv($res));
+		self::assertSame(['name', 'score'], fgetcsv($res, escape: ''));
+		self::assertSame(['Ada', '99'], fgetcsv($res, escape: ''));
 		fclose($res);
 	}
 

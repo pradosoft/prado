@@ -53,6 +53,8 @@
     <!-- selenium test cases can take up to 20 mins -->
     <ini name="max_execution_time" value="1200"/>
     <ini name="memory_limit" value="1G"/>
+    <!-- Report every error and deprecation; CI's production php.ini excludes E_DEPRECATED. -->
+    <ini name="error_reporting" value="-1"/>
     <const name="PRADO_TEST_RUN" value="true"/>
     <!-- indicate Selenium test suite to start/stop Driver - - >
     <const name="SELENIUM_TESTSUITE_NAME" value="selenium"/> -->
