@@ -36,6 +36,8 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 - **`TLabel`** — `<label>` or `<span>`; properties: `Text`, `For`.
 
+- **`TOutput`** — `<output>` result of a calculation; a `status` live region; properties: `Text`, `ForControl`.
+
 - **`TImage`** — `<img>`; properties: `ImageUrl`, `AlternateText`.
 
 - **`THyperLink`** — `<a>`; properties: `NavigateUrl`, `Text`, `Target`.

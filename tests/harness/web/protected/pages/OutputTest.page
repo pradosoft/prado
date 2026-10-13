@@ -1,0 +1,32 @@
+<com:TContent ID="Content">
+	<h1>Output Test Case</h1>
+
+	<div>
+		<com:TLabel ForControl="price" Text="Price" />
+		<com:TActiveTextBox ID="price" Text="2" AutoPostBack="true" OnCallback="calculate" />
+		<com:TLabel ForControl="quantity" Text="Quantity" />
+		<com:TActiveTextBox ID="quantity" Text="3" AutoPostBack="true" OnCallback="calculate" />
+		<com:TLabel ForControl="total" Text="Total" />
+		<com:TActiveOutput ID="total" ForControl="price quantity" Text="6.00" />
+	</div>
+
+	<div>
+		<com:TLabel ForControl="note" Text="Note" />
+		<com:TOutput ID="note" ForControl="price, hidden" Text="Caf&eacute; &amp; Bar" />
+		<com:TTextBox ID="hidden" Visible="false" />
+	</div>
+
+	<div>
+		<com:TLabel ForControl="empty" Text="Empty" />
+		<com:TActiveOutput ID="empty" />
+	</div>
+
+	<div>Status: <com:TActiveLabel ID="status" Text="none" /></div>
+
+	<com:TActiveButton ID="btnMarkup" Text="Markup" OnClick="set_markup" />
+	<com:TActiveButton ID="btnEntity" Text="Entity" OnClick="set_entity" />
+	<com:TActiveButton ID="btnFill" Text="Fill" OnClick="fill_empty" />
+	<com:TActiveButton ID="btnPrice" Text="Price Only" OnClick="price_only" />
+	<com:TActiveButton ID="btnDetach" Text="Detach" OnClick="detach" />
+	<com:TButton ID="btnSubmit" Text="Submit" OnClick="submit" />
+</com:TContent>
