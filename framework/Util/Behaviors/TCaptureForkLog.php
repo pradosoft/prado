@@ -195,24 +195,27 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 		if (!$this->_parentConnections) {
 			return;
 		}
-		if ($pid && !isset($this->_parentConnections[$pid])) {
+		if ($pid === null) {
+			$connections = $this->_parentConnections;
+		} elseif (isset($this->_parentConnections[$pid])) {
+			$connections = [$pid => $this->_parentConnections[$pid]];
+		} else {
 			return;
 		}
 
 		$completeLogs = [];
 		$write = $except = [];
-		$connections = $this->_parentConnections;
 		$childLogs = [];
 		do {
 			$read = $connections;
 			if (stream_select($read, $write, $except, ($wait || count($childLogs)) ? 1 : 0, 0)) {
-				foreach ($read as $pid => $socket) {
+				foreach ($read as $childPid => $socket) {
 					$data = fread($socket, 8192);
 					do {
 						$iterate = false;
 						if ($data !== false) {
-							if (array_key_exists($pid, $childLogs)) {
-								$childLogs[$pid][0] .= $data;
+							if (array_key_exists($childPid, $childLogs)) {
+								$childLogs[$childPid][0] .= $data;
 							} else {
 								$length = substr($data, 0, 4);
 								if (strlen($length) >= 4) {
@@ -221,28 +224,28 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 									$length &= 0x7FFFFFFF;
 									if ($length) {
 										$data = substr($data, 4);
-										$childLogs[$pid] = [$data, abs($length), $final];
+										$childLogs[$childPid] = [$data, abs($length), $final];
 									} else {
-										$childLogs[$pid] = ['', 0, $final];
+										$childLogs[$childPid] = ['', 0, $final];
 									}
 								} else {
-									$childLogs[$pid] = ['', 0, true];
+									$childLogs[$childPid] = ['', 0, true];
 								}
 							}
 						} else {
-							$childLogs[$pid] = ['', 0, true];
+							$childLogs[$childPid] = ['', 0, true];
 						}
-						if (strlen($childLogs[$pid][0]) >= $childLogs[$pid][1]) {
-							if ($childLogs[$pid][2]) {
+						if (strlen($childLogs[$childPid][0]) >= $childLogs[$childPid][1]) {
+							if ($childLogs[$childPid][2]) {
 								stream_socket_shutdown($socket, STREAM_SHUT_RDWR);
-								unset($this->_parentConnections[$pid]);
-								unset($connections[$pid]);
+								unset($this->_parentConnections[$childPid]);
+								unset($connections[$childPid]);
 							}
-							if ($childLogs[$pid][1]) {
-								$completeLogs[$pid][] = substr($childLogs[$pid][0], 0, $childLogs[$pid][1]);
+							if ($childLogs[$childPid][1]) {
+								$completeLogs[$childPid][] = substr($childLogs[$childPid][0], 0, $childLogs[$childPid][1]);
 							}
-							$data = substr($childLogs[$pid][0], $childLogs[$pid][1]);
-							unset($childLogs[$pid]);
+							$data = substr($childLogs[$childPid][0], $childLogs[$childPid][1]);
+							unset($childLogs[$childPid]);
 							if (!strlen($data)) {
 								$data = false;
 							} else {
@@ -253,12 +256,12 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 					} while ($iterate);
 				}
 			}
-		} while (count($childLogs) || $wait && ($pid && isset($connections[$pid]) || $pid === null && $connections));
+		} while (count($childLogs) || $wait && $connections);
 
 		if (!$completeLogs) {
 			return;
 		}
-		foreach (array_merge(...$completeLogs) as $pid => $logs) {
+		foreach (array_merge(...$completeLogs) as $logs) {
 			Prado::getLogger()->mergeLogs(unserialize($logs));
 		}
 	}

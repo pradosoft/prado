@@ -163,6 +163,35 @@ class TCaptureForkLogTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
+	public function testReceiveLogsFromChildrenOfOnePid()
+	{
+		$logger = Prado::getLogger();
+		$logger->deleteLogs();
+		$behavior = new TCaptureForkLog();
+		$pidA = 999998;
+		$pidB = 999999;
+		$streamA = $this->connectParent($behavior, $pidA);
+		$streamB = $this->connectParent($behavior, $pidB);
+		try {
+			$this->writeChildLogs($streamB, [['child B', TLogger::NOTICE, 'cat', microtime(true), 0, null, null, $pidB]], false);
+			$this->writeChildLogs($streamA, [['child A', TLogger::NOTICE, 'cat', microtime(true), 0, null, null, $pidA]], true);
+
+			$behavior->receiveLogsFromChildren($pidA);
+
+			self::assertEquals(['child A'], array_column($logger->getLogs(pid: $pidA), 0));
+			self::assertEmpty($logger->getLogs(pid: $pidB));
+			$connections = PradoUnit::getProp($behavior, '_parentConnections');
+			self::assertArrayNotHasKey($pidA, $connections);
+			self::assertArrayHasKey($pidB, $connections);
+
+			$behavior->receiveLogsFromChildren($pidB, false);
+			self::assertEquals(['child B'], array_column($logger->getLogs(pid: $pidB), 0));
+		} finally {
+			$logger->detachEventHandler('onCollectLogs', [$behavior, 'collectLogsFromChildren']);
+			$logger->deleteLogs();
+		}
+	}
+
 	public function testCollectLogsFromChildrenWithoutConnections()
 	{
 		$behavior = new TCaptureForkLog();
