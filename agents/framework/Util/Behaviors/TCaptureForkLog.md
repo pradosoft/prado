@@ -15,6 +15,12 @@ A child replaces its `onFlushLogs` handlers with `sendLogsToParent()`. `TLogger:
 ### Wire format
 Each message is a 4-byte big-endian header and the serialized logs. The low 31 bits hold the length; the high bit marks the final message. The parent keeps a per-child receive buffer (`_receiveBuffers`), so a message split across reads, including its header, completes on a later read. End of stream on a connection closes it as final.
 
+### Spool file (no child blocking)
+A child never waits on the parent, so a parent blocked in `pcntl_waitpid()` (e.g. `TProcessFork::wait()` without a channel) cannot deadlock with it. The socket buffer is small (8 KB on macOS). `generateConnection()` names a spool file (`sys_get_temp_dir()/prado-forklog-<random>.bin`) before the fork; both processes know it.
+- Child: writes to the non-blocking connection until it is full, then appends the rest of the byte stream, and every later message, to the spool file (created with `xb`, mode `0o600`). The final call closes the spool file before shutting down the connection.
+- Parent: `closeChildConnection()` reads the spool file as the continuation of that child's stream when the connection closes, then deletes it. Spooled messages arrive when the child closes.
+- No spool file: the child falls back to `writeToParent()`, which waits on the parent. A failed write after spooling started is dropped, to keep the stream in order.
+
 ### Signals and closed connections
 `stream_select()` and `fwrite()` are called with `@`, because Prado's error handler turns their warnings into exceptions. A signal (e.g. SIGCHLD) interrupts `stream_select()` with EINTR; both loops retry it as a timeout. When the parent has closed its end, the child's `fwrite()` fails with EPIPE; `sendLogsToParent()` drops the logs and releases `_childConnection`.
 
@@ -31,7 +37,10 @@ Requires `pcntl` to fork and the `sockets` extension to capture. Without `socket
 - `collectLogsFromChildren(mixed $sender, mixed $final)` - `TLogger::onCollectLogs` handler; calls `receiveLogsFromChildren(null, (bool) $final)`
 - `receiveLogsFromChildren(?int $pid, bool $wait)` - Receives and merges logs from all children, or only `$pid`; not an event handler
 - `extractChildLogs(int $childPid, array &$completeLogs)` - Moves complete messages out of a child's receive buffer; returns whether the final message arrived
-- `sendLogsToParent($logger, $final)` - Child `onFlushLogs` handler; sends unlogged logs to the parent, closing the connection when final
+- `closeChildConnection(int $childPid, array &$completeLogs)` - Closes a child's connection and receives its spool file
+- `sendLogsToParent($logger, $final)` - Child `onFlushLogs` handler; sends unlogged logs to the parent without waiting, closing the connection when final
+- `spoolLogs(string $data)` - Appends bytes the connection did not take to the child's spool file
+- `writeToParent(string $data)` - Waiting write; fallback when the spool file cannot be written
 
 ## See Also
 

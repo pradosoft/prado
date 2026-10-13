@@ -291,6 +291,90 @@ class TCaptureForkLogTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
+	public function testSendLogsToParentSpoolsWhenConnectionIsFull()
+	{
+		if (!function_exists('socket_create_pair')) {
+			$this->markTestSkipped('socket_create_pair is not available.');
+		}
+		$logger = Prado::getLogger();
+		$logger->deleteLogs();
+		$parent = new TCaptureForkLog();
+		$child = new TCaptureForkLog();
+		$childPid = 999999;
+		$childStream = $this->connectParent($parent, $childPid);
+		$spoolFile = PradoUnit::getProp($parent, '_spoolFiles')[$childPid];
+		PradoUnit::setProp($child, '_childConnection', $childStream);
+		PradoUnit::setProp($child, '_spoolFile', $spoolFile);
+		$message = str_repeat('x', 1 << 20); // Larger than any socket buffer.
+		try {
+			// TLogger deletes the logs after each onFlushLogs.
+			Prado::warning($message, 'spool');
+			$child->sendLogsToParent($logger, false);
+			$logger->deleteLogs();
+			Prado::warning('after spool', 'spool');
+			$child->sendLogsToParent($logger, true);
+			$logger->deleteLogs();
+			self::assertFileExists($spoolFile);
+			self::assertNull(PradoUnit::getProp($child, '_childConnection'));
+
+			$parent->receiveLogsFromChildren($childPid);
+
+			$messages = array_column($logger->getLogs(categories: 'spool'), 0);
+			self::assertCount(2, $messages);
+			self::assertTrue($messages[0] === $message, 'The spooled message is incomplete.');
+			self::assertEquals('after spool', $messages[1]);
+			self::assertFileDoesNotExist($spoolFile);
+			self::assertEmpty(PradoUnit::getProp($parent, '_parentConnections'));
+		} finally {
+			$logger->detachEventHandler('onCollectLogs', [$parent, 'collectLogsFromChildren']);
+			$logger->deleteLogs();
+			if (is_file($spoolFile)) {
+				unlink($spoolFile);
+			}
+		}
+	}
+
+	public function testForkChildExitsWhileParentWaits()
+	{
+		if (!TProcessHelper::isForkable()) {
+			$this->markTestSkipped('pcntl_fork is not available on this platform.');
+		}
+
+		$logger = Prado::getLogger();
+		$logger->deleteLogs();
+		$message = str_repeat('x', 1 << 20); // Larger than any socket buffer.
+
+		$pid = TProcessHelper::fork(true);
+		if ($pid === -1) {
+			self::fail("failed to fork.");
+		} elseif ($pid === 0) {
+			try {
+				Prado::warning($message, 'spool');
+			} finally {
+				exit(0);
+			}
+		}
+		try {
+			// The parent waits on the child before it collects the logs.
+			$deadline = microtime(true) + 10;
+			while (($reaped = pcntl_waitpid($pid, $status, WNOHANG)) === 0 && microtime(true) < $deadline) {
+				usleep(10000);
+			}
+			self::assertEquals($pid, $reaped, 'The child blocked sending its logs.');
+
+			Prado::getApplication()->receiveLogsFromChildren($pid);
+			$messages = array_column($logger->getLogs(categories: 'spool'), 0);
+			self::assertCount(1, $messages);
+			self::assertTrue($messages[0] === $message, 'The spooled message is incomplete.');
+		} finally {
+			if (pcntl_waitpid($pid, $status, WNOHANG) === 0) {
+				posix_kill($pid, SIGKILL);
+				pcntl_waitpid($pid, $status);
+			}
+			$logger->deleteLogs();
+		}
+	}
+
 	public function testCollectLogsFromChildrenWithoutConnections()
 	{
 		$behavior = new TCaptureForkLog();

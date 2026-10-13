@@ -67,6 +67,18 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 	/** @var ?array The socket pair of the pending fork, [parent end, child end]. */
 	private ?array $_forkConnection = null;
 
+	/** @var ?string The spool file path of the pending fork. */
+	private ?string $_forkSpoolFile = null;
+
+	/** @var array The spool file path of each child, by child process ID. */
+	private array $_spoolFiles = [];
+
+	/** @var ?string The spool file path of this child. */
+	private ?string $_spoolFile = null;
+
+	/** @var mixed The open spool file of this child, once its connection is full. */
+	private mixed $_spoolHandle = null;
+
 	/**
 	 * Installs {@see self::generateConnection()} on fxPrepareForFork and
 	 * {@see self::configureForChildLogs()} on fxRestoreAfterFork.
@@ -109,8 +121,9 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 
 	/**
 	 * The behavior callback for fxPrepareForFork that creates a socket pair connection
-	 * between the parent process and child process before forking.  Without the
-	 * sockets extension, no connection is created and the child logs are not captured.
+	 * between the parent process and child process before forking, and names the
+	 * child's spool file.  Without the sockets extension, no connection is created
+	 * and the child logs are not captured.
 	 * @param mixed $sender The TApplication doing the fork.
 	 * @param mixed $param The parameter of fxPrepareForFork.
 	 * @return ?array Any data to be passed back to the restore function.
@@ -128,16 +141,18 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 			return null;
 		}
 		$this->_forkConnection = [socket_export_stream($pair[0]), socket_export_stream($pair[1])];
+		$this->_forkSpoolFile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'prado-forklog-' . bin2hex(random_bytes(8)) . '.bin';
 		return null;
 	}
 
 	/**
 	 * The behavior callback for fxRestoreAfterFork that routes the child logs to
 	 * the parent.
-	 * - Parent: stores the child connection by pid and installs
+	 * - Parent: stores the child connection and spool file by pid and installs
 	 *   {@see self::collectLogsFromChildren()} on TLogger::onCollectLogs.
-	 * - Child: deletes the inherited logs and replaces the TLogger::onFlushLogs
-	 *   handlers with {@see self::sendLogsToParent()}.
+	 * - Child: deletes the inherited logs, keeps the connection and spool file to
+	 *   the parent, and replaces the TLogger::onFlushLogs handlers with
+	 *   {@see self::sendLogsToParent()}.
 	 * - Failed fork: shuts down the socket pair.
 	 * @param mixed $sender The TApplication doing the fork.
 	 * @param mixed $data The fxRestoreAfterFork data, with the fork result in 'pid'.
@@ -148,14 +163,17 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 			return;
 		}
 		$connection = $this->_forkConnection;
-		$this->_forkConnection = null;
+		$spoolFile = $this->_forkSpoolFile;
+		$this->_forkConnection = $this->_forkSpoolFile = null;
 		$pid = $data['pid'];
 		if ($pid === -1) { //fail
 			stream_socket_shutdown($connection[0], STREAM_SHUT_RDWR);
 			stream_socket_shutdown($connection[1], STREAM_SHUT_RDWR);
 		} elseif ($pid === 0) { // Child Process
-			$this->_parentConnections = [];
+			$this->_parentConnections = $this->_spoolFiles = $this->_receiveBuffers = [];
 			$this->_childConnection = $connection[1];
+			$this->_spoolFile = $spoolFile;
+			$this->_spoolHandle = null;
 			$logger = Prado::getLogger();
 			$logger->deleteLogs();
 			$logs = $logger->deleteProfileLogs();
@@ -169,6 +187,7 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 			$logger->attachEventHandler('onFlushLogs', [$this, 'sendLogsToParent'], $this->getPriority());
 		} else { // Parent Process
 			$this->_parentConnections[$pid] = $connection[0];
+			$this->_spoolFiles[$pid] = $spoolFile;
 			if (!$this->_receiverInstalled) {
 				$logger = Prado::getLogger();
 				$logger->attachEventHandler('onCollectLogs', [$this, 'collectLogsFromChildren'], $this->getPriority());
@@ -232,8 +251,8 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 					$final = $this->extractChildLogs($childPid, $completeLogs);
 				}
 				if ($final) {
-					stream_socket_shutdown($socket, STREAM_SHUT_RDWR);
-					unset($this->_parentConnections[$childPid], $this->_receiveBuffers[$childPid], $connections[$childPid]);
+					$this->closeChildConnection($childPid, $completeLogs);
+					unset($connections[$childPid]);
 				}
 			}
 		} while ($connections);
@@ -244,6 +263,29 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 		foreach ($completeLogs as $logs) {
 			Prado::getLogger()->mergeLogs(unserialize($logs));
 		}
+	}
+
+	/**
+	 * Closes the connection to a child and receives the bytes the child spooled
+	 * after its connection was full.  The spool file continues the child's byte
+	 * stream, and is deleted after reading.
+	 * @param int $childPid The process ID of the child.
+	 * @param array $completeLogs The serialized logs of each complete message.
+	 * @since 4.4.0
+	 */
+	protected function closeChildConnection(int $childPid, array &$completeLogs): void
+	{
+		stream_socket_shutdown($this->_parentConnections[$childPid], STREAM_SHUT_RDWR);
+		$spoolFile = $this->_spoolFiles[$childPid] ?? null;
+		if ($spoolFile !== null && is_file($spoolFile)) {
+			$spooled = file_get_contents($spoolFile);
+			@unlink($spoolFile);
+			if ($spooled) {
+				$this->_receiveBuffers[$childPid] = ($this->_receiveBuffers[$childPid] ?? '') . $spooled;
+				$this->extractChildLogs($childPid, $completeLogs);
+			}
+		}
+		unset($this->_parentConnections[$childPid], $this->_spoolFiles[$childPid], $this->_receiveBuffers[$childPid]);
 	}
 
 	/**
@@ -281,8 +323,12 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 	 * to the parent process.  TLogger::onFlushLogs raises onCollectLogs first, so
 	 * the logs of this child's own children are already merged and sent with them.
 	 * A final call shuts down the connection to the parent.  When the parent has
-	 * closed its end, the logs are dropped and the connection is released.  A signal
-	 * that interrupts waiting on the connection retries the wait.
+	 * closed its end, the logs are dropped and the connection is released.
+	 *
+	 * Sending never waits on the parent, so a parent blocked in `pcntl_waitpid()`
+	 * cannot deadlock with this child.  The connection takes what fits in its buffer;
+	 * the rest of the byte stream, and every later message, goes to the spool file.
+	 * The parent reads the spool file when the connection closes.
 	 * @param mixed $logger The TLogger that raised the onFlushLogs event.
 	 * @param mixed $final Is this the last and final call.
 	 */
@@ -317,25 +363,76 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 			$data = '';
 		}
 
-		$data = pack('N', ($final ? 0x80000000 : 0) | ($length = strlen($data))) . $data;
-		$count = null;
-		$read = $except = [];
+		$data = pack('N', ($final ? 0x80000000 : 0) | strlen($data)) . $data;
 
-		do {
-			$write = [$this->_childConnection];
-			if (@stream_select($read, $write, $except, 1, 0)) { // A signal interrupt retries.
-				$count = @fwrite($this->_childConnection, $data); // false when the parent closed.
-				if ($count > 0) {
-					$data = substr($data, $count);
-				}
+		if ($this->_spoolHandle === null) {
+			stream_set_blocking($this->_childConnection, false);
+			$count = 0;
+			while ($data !== '' && ($count = @fwrite($this->_childConnection, $data)) > 0) {
+				$data = substr($data, $count);
 			}
-		} while ($count !== false && strlen($data) > 0);
+			if ($count === false) { // The parent closed its connection.
+				$this->_childConnection = null;
+				return;
+			}
+		}
+		// Without a spool file, wait on the parent.  A spool file already holds the
+		// stream's earlier bytes, so a failed spool write is dropped.
+		if ($data !== '' && !$this->spoolLogs($data) && $this->_spoolHandle === null) {
+			$this->writeToParent($data);
+		}
 
-		if ($count === false) {
-			$this->_childConnection = null;
-		} elseif ($final) {
-			stream_socket_shutdown($this->_childConnection, STREAM_SHUT_RDWR);
-			$this->_childConnection = null;
+		if ($final) {
+			if ($this->_spoolHandle !== null) {
+				fclose($this->_spoolHandle);
+				$this->_spoolHandle = null;
+			}
+			if ($this->_childConnection) {
+				stream_socket_shutdown($this->_childConnection, STREAM_SHUT_RDWR);
+				$this->_childConnection = null;
+			}
+		}
+	}
+
+	/**
+	 * Appends bytes of the child's stream to its spool file.  The spool file is
+	 * created on the first call, exclusively and readable only by the user.
+	 * @param string $data The bytes the connection did not take.
+	 * @return bool Are the bytes spooled.
+	 * @since 4.4.0
+	 */
+	protected function spoolLogs(string $data): bool
+	{
+		if ($this->_spoolHandle === null) {
+			if ($this->_spoolFile === null || !($handle = @fopen($this->_spoolFile, 'xb'))) {
+				return false;
+			}
+			@chmod($this->_spoolFile, 0o600);
+			$this->_spoolHandle = $handle;
+		}
+		return @fwrite($this->_spoolHandle, $data) === strlen($data);
+	}
+
+	/**
+	 * Writes the bytes to the parent and waits until the parent reads them.  This
+	 * is the fallback when the spool file cannot be written.
+	 * @param string $data The bytes to write.
+	 * @since 4.4.0
+	 */
+	protected function writeToParent(string $data): void
+	{
+		$read = $except = [];
+		while ($data !== '' && $this->_childConnection) {
+			$write = [$this->_childConnection];
+			if (!@stream_select($read, $write, $except, 1, 0)) { // A signal interrupt retries.
+				continue;
+			}
+			$count = @fwrite($this->_childConnection, $data);
+			if ($count === false) { // The parent closed its connection.
+				$this->_childConnection = null;
+			} else {
+				$data = substr($data, $count);
+			}
 		}
 	}
 }
