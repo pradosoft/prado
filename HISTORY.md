@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: `TCaptureForkLog` raised a TypeError on every log flush in a forking parent; `collectLogsFromChildren()` is the new `onCollectLogs` handler. A forking child lost its parent connection, `receiveLogsFromChildren($pid)` read every child, and a header split across reads closed the connection. A signal or a closed parent connection no longer throws, and a child no longer blocks on a parent waiting in `pcntl_waitpid()`; logs that do not fit the connection go to a spool file. Without the sockets extension, it captures nothing. (belisoful)
 ENH: TOutput renders the HTML5 `<output>` result, a live region named by a TLabel, with `ForControl` for its source controls. TActiveOutput updates its text and `for` attribute during a callback. (belisoful)
 ENH: TSearch renders the HTML5 `<search>` landmark; another TagName renders `role="search"`. (belisoful)
 CHG: A PHP-configured `TFeedService` lists its feeds under a `feeds` key; the 4.3 form is deprecated, and an XML-configured service without a configuration no longer fails in `init()`. UPGRADE.md covers the change. (belisoful)
