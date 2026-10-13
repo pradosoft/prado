@@ -104,7 +104,8 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 
 	/**
 	 * The behavior callback for fxPrepareForFork that creates a socket pair connection
-	 * between the parent process and child process before forking.
+	 * between the parent process and child process before forking.  Without the
+	 * sockets extension, no connection is created and the child logs are not captured.
 	 * @param mixed $sender The TApplication doing the fork.
 	 * @param mixed $param The parameter of fxPrepareForFork.
 	 * @return ?array Any data to be passed back to the restore function.
@@ -113,6 +114,10 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 	 */
 	public function generateConnection(mixed $sender, mixed $param)
 	{
+		$this->_forkConnection = null;
+		if (!function_exists('socket_create_pair')) {
+			return null;
+		}
 		$domain = TProcessHelper::isSystemWindows() ? AF_INET : AF_UNIX;
 		if (!socket_create_pair($domain, SOCK_STREAM, 0, $pair)) {
 			$this->_forkConnection = null;
