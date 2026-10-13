@@ -231,13 +231,20 @@ class TSocketServerModuleTest extends \PHPUnit\Framework\TestCase
 		$pid = TProcessHelper::fork();
 		if ($pid === 0) {
 			// Child: run the daemon, echoing each client's bytes, until a signal stops it.
-			$module = new TSocketServerModule();
-			$module->setEndpoint("tcp://127.0.0.1:{$port}");
-			$module->attachEventHandler('onClientData', function ($sender, $conn) {
-				$conn->write((string) $conn->read(65536));
-			});
-			$module->serve();
-			exit(0);
+			// The child always exits; a throw (e.g. the port was taken before bind) must never
+			// return into PHPUnit, which would run the rest of the suite as a duplicate process.
+			try {
+				$module = new TSocketServerModule();
+				$module->setEndpoint("tcp://127.0.0.1:{$port}");
+				$module->attachEventHandler('onClientData', function ($sender, $conn) {
+					$conn->write((string) $conn->read(65536));
+				});
+				$module->serve();
+				exit(0);
+			} catch (\Throwable $e) {
+				fwrite(STDERR, 'Forked server child failed: ' . $e->getMessage() . PHP_EOL);
+				exit(1);
+			}
 		}
 
 		self::assertGreaterThan(0, $pid, 'The server was forked.');

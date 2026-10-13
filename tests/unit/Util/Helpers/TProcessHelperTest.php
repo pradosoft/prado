@@ -75,8 +75,13 @@ class TProcessHelperTest extends \PHPUnit\Framework\TestCase
 		$pid = TProcessHelper::fork();
 			
 		if ($pid === 0) {
-			usleep(50_000); // time for isRunning by parent.  delay of start is usually enough.
-			exit();
+			// The child always exits; it must never return into PHPUnit.
+			try {
+				usleep(50_000); // time for isRunning by parent.  delay of start is usually enough.
+				exit();
+			} catch (\Throwable $e) {
+				exit(1);
+			}
 		} else if ($pid === -1) {
 			self::fail('Failed to fork with pid = -1');
 			return;
