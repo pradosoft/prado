@@ -11,6 +11,7 @@
 namespace Prado\Web\UI;
 
 use DOMDocument;
+use DOMDocumentType;
 use DOMElement;
 use DOMNode;
 use Prado\IEventCycleParameter;
@@ -47,6 +48,21 @@ use Prado\TEventParameter;
  * {@see \Prado\TEventParameter}. If DOM is the current resource when
  * {@see postRaiseEvent} is called, the DOM is automatically serialized to HTML so
  * that {@see TControl::processRenderFilter} always receives a valid string from {@see getFilterText}.
+ *
+ * ## Parsing
+ *
+ * The HTML parses in the context of the element that holds its first tag, so
+ * table rows, cells, and options parse as elements, leading text gets no `<p>`, and
+ * whitespace between top-level elements stays. A document or a `<head>` or
+ * `<body>` fragment parses as a document.
+ *
+ * | PHP | Parser |
+ * |---|---|
+ * | 8.4+ | The HTML5 parser (`Dom\HTMLDocument`); the nodes import into the `DOMDocument`. Attribute names `DOMDocument` rejects, such as `@click`, are kept. |
+ * | 8.2, 8.3 | libxml's HTML parser. `<script>` and `<style>` content, and `<svg>` and `<math>` elements, are placeholders in the DOM and return unchanged. |
+ *
+ * Both serialize with libxml. Entities decode to characters, and a self-closing
+ * SVG element gains an end tag.
  *
  * ## DOM element walker
  *
@@ -99,9 +115,30 @@ class TRenderFilterParameter extends TEventParameter implements IEventCycleParam
 	public const RENDER_FILTER_ERRORS = 'errors';
 
 	/**
+	 * The HTML namespace of HTML5 parser elements.
+	 */
+	private const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
+
+	/**
+	 * The HTML5 parser document class of PHP 8.4+. It is named by string so the
+	 * class resolves only when it exists.
+	 */
+	private const HTML5_DOCUMENT_CLASS = 'Dom\HTMLDocument';
+
+	/**
 	 * @var bool true when the DOM has been modified and the HTML string has not yet been re-synced
 	 */
 	private bool $_domCurrent = false;
+
+	/**
+	 * @var array<string, string> the markup and names the parse replaced, by placeholder
+	 */
+	private array $_rawMarkup = [];
+
+	/**
+	 * @var string the random part of the placeholders of the current parse
+	 */
+	private string $_nonce = '';
 
 	/**
 	 * Constructor.
@@ -438,54 +475,317 @@ class TRenderFilterParameter extends TEventParameter implements IEventCycleParam
 	}
 
 	// -------------------------------------------------------------------------
-	// Private helpers
+	// Parsing and serialization
 	// -------------------------------------------------------------------------
 
 	/**
 	 * Parses `$html` into a `DOMDocument` without wrapper elements.
 	 *
-	 * Uses `LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD`.  All libxml errors are
-	 * retained via {@see storeErrors} regardless of parse success.  Returns `false`
-	 * when `loadHTML` reports a fatal failure; the error details are also logged via
-	 * {@see Prado::warning}.
+	 * The fragment parses in the context of the element that holds its first tag
+	 * ({@see getFragmentContext}), so the parse adds no `<p>`, keeps the whitespace
+	 * between top-level elements, and keeps table rows, cells, and options. The
+	 * HTML5 parser of PHP 8.4+ (`Dom\HTMLDocument`) parses when
+	 * {@see getUseHtml5Parser} is true, and the nodes import into the `DOMDocument`;
+	 * otherwise libxml's HTML parser parses. All parse errors are retained via
+	 * {@see storeErrors}. Returns `false` when libxml reports a fatal failure; the
+	 * error details are also logged via {@see Prado::warning}.
 	 *
-	 * @param string $html raw HTML fragment
+	 * @param string $html raw HTML fragment or document
 	 * @return DOMDocument|false parsed document, or `false` on fatal parse failure
 	 */
 	protected function htmlToDom(string $html): DOMDocument|false
 	{
 		$dom = new DOMDocument('1.0', 'UTF-8');
-		if (trim($html) !== '') {
-			$saved = libxml_use_internal_errors(true);
-			$result = $dom->loadHTML(
-				'<?xml encoding="UTF-8">' . $html,
-				LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
+		$this->_rawMarkup = [];
+		$this->_nonce = bin2hex(random_bytes(4));
+		if (trim($html) === '') {
+			return $dom;
+		}
+		if ($this->getUseHtml5Parser()) {
+			return $this->parseHtml5($html, $dom);
+		}
+		return $this->parseLibxml($html, $dom);
+	}
+
+	/**
+	 * @return bool whether the HTML5 parser of PHP 8.4+ (`Dom\HTMLDocument`) parses the HTML
+	 */
+	protected function getUseHtml5Parser(): bool
+	{
+		return class_exists(self::HTML5_DOCUMENT_CLASS);
+	}
+
+	/**
+	 * Returns the element whose content model fits the first tag of `$html`.
+	 *
+	 * | First tag | Context |
+	 * |---|---|
+	 * | `<!DOCTYPE>`, `<html>` | `#document` (a whole document) |
+	 * | `<head>`, `<body>` | `html` |
+	 * | `<tr>` | `tbody` |
+	 * | `<td>`, `<th>` | `tr` |
+	 * | `<caption>`, `<colgroup>`, `<thead>`, `<tbody>`, `<tfoot>` | `table` |
+	 * | `<col>` | `colgroup` |
+	 * | `<option>`, `<optgroup>` | `select` |
+	 * | any other, or text | `body` |
+	 *
+	 * @param string $html raw HTML fragment or document
+	 * @return string the context element name, or `#document`
+	 */
+	protected function getFragmentContext(string $html): string
+	{
+		if (!preg_match('/^(?:\s|<!--.*?-->)*<(!doctype|[a-z][a-z0-9-]*)/is', $html, $match)) {
+			return 'body';
+		}
+		return match (strtolower($match[1])) {
+			'!doctype', 'html' => '#document',
+			'head', 'body' => 'html',
+			'tr' => 'tbody',
+			'td', 'th' => 'tr',
+			'caption', 'colgroup', 'thead', 'tbody', 'tfoot' => 'table',
+			'col' => 'colgroup',
+			'option', 'optgroup' => 'select',
+			default => 'body',
+		};
+	}
+
+	/**
+	 * Parses `$html` with libxml's HTML parser into `$dom`.
+	 *
+	 * The fragment parses inside its context element, which is then removed.
+	 * libxml's HTML4 parser ends `<script>` and `<style>` content at the first
+	 * `</`, and lowercases SVG and MathML names. In the DOM, a placeholder
+	 * holds the content of `<script>` and `<style>` and replaces each `<svg>` and
+	 * `<math>` element ({@see protectRawMarkup}); serialization restores them.
+	 * Handlers do not change that content.
+	 *
+	 * @param string $html raw HTML fragment or document
+	 * @param DOMDocument $dom the document to parse into
+	 * @return DOMDocument|false parsed document, or `false` on fatal parse failure
+	 */
+	private function parseLibxml(string $html, DOMDocument $dom): DOMDocument|false
+	{
+		$context = $this->getFragmentContext($html);
+		$html = $this->protectRawMarkup($html);
+		if ($context !== '#document') {
+			$html = '<' . $context . '>' . $html . '</' . $context . '>';
+		}
+		$saved = libxml_use_internal_errors(true);
+		$result = $dom->loadHTML(
+			'<?xml encoding="UTF-8">' . $html,
+			LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
+		);
+		$errors = libxml_get_errors();
+		libxml_clear_errors();
+		libxml_use_internal_errors($saved);
+		$this->storeErrors($errors);
+		if ($result === false) {
+			$details = implode('; ', array_values(array_filter(
+				array_map(fn ($e) => trim($e->message), $errors)
+			)));
+			Prado::warning(
+				'Failed to parse HTML fragment into DOM' . ($details !== '' ? ': ' . $details : '.'),
+				static::class
 			);
-			$errors = libxml_get_errors();
-			libxml_clear_errors();
-			libxml_use_internal_errors($saved);
-			$this->storeErrors($errors);
-			if ($result === false) {
-				$details = implode('; ', array_values(array_filter(
-					array_map(fn ($e) => trim($e->message), $errors)
-				)));
-				Prado::warning(
-					'Failed to parse HTML fragment into DOM' . ($details !== '' ? ': ' . $details : '.'),
-					static::class
-				);
-				return false;
+			return false;
+		}
+		foreach (iterator_to_array($dom->childNodes) as $node) {
+			if ($node->nodeType === XML_PI_NODE && $node->nodeName === 'xml') {
+				$dom->removeChild($node);
 			}
-			foreach (iterator_to_array($dom->childNodes) as $node) {
-				if ($node->nodeType === XML_PI_NODE && $node->nodeName === 'xml') {
-					$dom->removeChild($node);
-				}
+		}
+		if ($context !== '#document' && ($wrapper = $dom->firstChild) instanceof DOMElement) {
+			while ($wrapper->firstChild) {
+				$dom->insertBefore($wrapper->firstChild, $wrapper);
 			}
+			$dom->removeChild($wrapper);
 		}
 		return $dom;
 	}
 
 	/**
-	 * Serialises all child nodes of `$dom` to an HTML string.
+	 * Replaces `<script>` and `<style>` content, and `<svg>` and `<math>` elements,
+	 * with placeholder comments that {@see domToHtml} restores. Comments pass unchanged.
+	 *
+	 * @param string $html raw HTML
+	 * @return string the HTML with placeholders
+	 */
+	private function protectRawMarkup(string $html): string
+	{
+		$result = '';
+		$offset = 0;
+		while (preg_match('/<!--|<(script|style|svg|math)(?=[\s\/>])/i', $html, $match, PREG_OFFSET_CAPTURE, $offset)) {
+			$start = $match[0][1];
+			if ($match[0][0] === '<!--') {
+				$end = strpos($html, '-->', $start + 4);
+				$end = ($end === false) ? strlen($html) : $end + 3;
+				$result .= substr($html, $offset, $end - $offset);
+				$offset = $end;
+				continue;
+			}
+			$tag = strtolower($match[1][0]);
+			if ($tag === 'script' || $tag === 'style') {
+				if (($open = strpos($html, '>', $start)) === false) {
+					break;
+				}
+				$close = stripos($html, '</' . $tag, $open + 1);
+				$close = ($close === false) ? strlen($html) : $close;
+				$result .= substr($html, $offset, $open + 1 - $offset) . $this->rawMarkupToken(substr($html, $open + 1, $close - $open - 1));
+				$offset = $close;
+			} else {
+				$end = $this->findElementEnd($html, $tag, $start);
+				$result .= substr($html, $offset, $start - $offset) . $this->rawMarkupToken(substr($html, $start, $end - $start));
+				$offset = $end;
+			}
+		}
+		return $result . substr($html, $offset);
+	}
+
+	/**
+	 * Returns the offset after the end tag that closes the `$tag` element at `$start`,
+	 * counting nested elements of the same name.
+	 *
+	 * @param string $html raw HTML
+	 * @param string $tag the element name
+	 * @param int $start offset of the element's start tag
+	 * @return int offset after the end tag, or the length of `$html` when unclosed
+	 */
+	private function findElementEnd(string $html, string $tag, int $start): int
+	{
+		$depth = 0;
+		$offset = $start;
+		while (preg_match('/<(\/?)' . $tag . '(?=[\s\/>])[^>]*>/i', $html, $match, PREG_OFFSET_CAPTURE, $offset)) {
+			$offset = $match[0][1] + strlen($match[0][0]);
+			if ($match[1][0] === '/') {
+				if (--$depth <= 0) {
+					return $offset;
+				}
+			} elseif (!str_ends_with($match[0][0], '/>')) {
+				$depth++;
+			} elseif ($depth === 0) {
+				return $offset;
+			}
+		}
+		return strlen($html);
+	}
+
+	/**
+	 * Stores `$markup` for {@see domToHtml} to restore.
+	 *
+	 * @param string $markup the markup to keep
+	 * @return string the placeholder comment, or '' for empty markup
+	 */
+	private function rawMarkupToken(string $markup): string
+	{
+		if ($markup === '') {
+			return '';
+		}
+		$token = '<!--prado-raw-' . $this->_nonce . '-' . count($this->_rawMarkup) . '-->';
+		$this->_rawMarkup[$token] = $markup;
+		return $token;
+	}
+
+	/**
+	 * Parses `$html` with the HTML5 parser of PHP 8.4+ and imports the nodes into `$dom`.
+	 *
+	 * A fragment parses as the content of its context element. A document, or a
+	 * fragment starting with `<head>` or `<body>`, parses as a document; the
+	 * `<html>`, `<head>`, and `<body>` elements that `$html` has no start tag for
+	 * are left out and their content imports in their place.
+	 *
+	 * @param string $html raw HTML fragment or document
+	 * @param DOMDocument $dom the document to import into
+	 * @return DOMDocument the parsed document
+	 */
+	private function parseHtml5(string $html, DOMDocument $dom): DOMDocument
+	{
+		$context = $this->getFragmentContext($html);
+		$class = self::HTML5_DOCUMENT_CLASS;
+		$saved = libxml_use_internal_errors(true);
+		if ($context === '#document' || $context === 'html') {
+			$source = $class::createFromString($html, 0, 'UTF-8');
+			if ($context === '#document' && ($doctype = $source->doctype) !== null) {
+				$dom->appendChild($dom->implementation->createDocumentType($doctype->name, $doctype->publicId, $doctype->systemId));
+			}
+			$parent = $source;
+		} else {
+			$source = $class::createEmpty();
+			$parent = $source->createElement($context);
+			$source->appendChild($parent);
+			$parent->innerHTML = $html;
+		}
+		$errors = libxml_get_errors();
+		libxml_clear_errors();
+		libxml_use_internal_errors($saved);
+		$this->storeErrors($errors);
+		$this->importHtml5Children($parent, $dom, $dom, $html);
+		return $dom;
+	}
+
+	/**
+	 * Imports the children of an HTML5 node as children of `$target`.
+	 *
+	 * A `<template>` holds its content outside its child nodes; the content
+	 * parses again from the template's `innerHTML`.
+	 *
+	 * @param object $source the parent `Dom\Node` of the HTML5 document
+	 * @param DOMNode $target the node receiving the imported children
+	 * @param DOMDocument $dom the document owning the imported nodes
+	 * @param string $html the parsed HTML, to find the elements with a start tag
+	 */
+	private function importHtml5Children(object $source, DOMNode $target, DOMDocument $dom, string $html): void
+	{
+		if ($source->nodeType === XML_ELEMENT_NODE && $source->localName === 'template' && $source->namespaceURI === self::HTML_NAMESPACE) {
+			$class = self::HTML5_DOCUMENT_CLASS;
+			$content = $source->innerHTML;
+			$document = $class::createEmpty();
+			$source = $document->createElement($this->getFragmentContext($content));
+			$document->appendChild($source);
+			$source->innerHTML = $content;
+			$html = $content;
+		}
+		foreach ($source->childNodes as $child) {
+			if ($child->nodeType === XML_ELEMENT_NODE) {
+				if ($child->namespaceURI === self::HTML_NAMESPACE && in_array($child->localName, ['html', 'head', 'body'], true)
+						&& !preg_match('/<' . $child->localName . '[\s\/>]/i', $html)) {
+					$this->importHtml5Children($child, $target, $dom, $html);
+					continue;
+				}
+				$element = $dom->createElement($this->getXmlName($child->localName));
+				foreach ($child->attributes as $attribute) {
+					$element->setAttribute($this->getXmlName($attribute->name), $attribute->value);
+				}
+				$this->importHtml5Children($child, $element, $dom, $html);
+				$target->appendChild($element);
+			} elseif ($child->nodeType === XML_TEXT_NODE || $child->nodeType === XML_CDATA_SECTION_NODE) {
+				$target->appendChild($dom->createTextNode($child->data));
+			} elseif ($child->nodeType === XML_COMMENT_NODE) {
+				$target->appendChild($dom->createComment($child->data));
+			}
+		}
+	}
+
+	/**
+	 * Returns `$name` when it is a valid XML name; otherwise a placeholder name that
+	 * {@see domToHtml} restores. HTML allows names such as `@click` and `[prop]`
+	 * that `DOMDocument` rejects.
+	 *
+	 * @param string $name an element or attribute name
+	 * @return string the name, or its placeholder
+	 */
+	private function getXmlName(string $name): string
+	{
+		if (preg_match('/^[\p{L}_:][\p{L}\p{N}_:.\-]*$/u', $name)) {
+			return $name;
+		}
+		$alias = 'prado-name-' . $this->_nonce . '-' . count($this->_rawMarkup);
+		$this->_rawMarkup[$alias] = $name;
+		return $alias;
+	}
+
+	/**
+	 * Serializes all child nodes of `$dom` to an HTML string, restoring the markup
+	 * and names the parse replaced with placeholders.
 	 *
 	 * @param DOMDocument $dom
 	 * @return string
@@ -494,8 +794,15 @@ class TRenderFilterParameter extends TEventParameter implements IEventCycleParam
 	{
 		$html = '';
 		foreach ($dom->childNodes as $child) {
-			$html .= $dom->saveHTML($child);
+			if ($child instanceof DOMDocumentType) {
+				$html .= '<!DOCTYPE ' . $child->name
+					. ($child->publicId !== '' ? ' PUBLIC "' . $child->publicId . '"' : '')
+					. ($child->systemId !== '' ? ($child->publicId !== '' ? '' : ' SYSTEM') . ' "' . $child->systemId . '"' : '')
+					. '>';
+			} else {
+				$html .= $dom->saveHTML($child);
+			}
 		}
-		return $html;
+		return $this->_rawMarkup ? strtr($html, $this->_rawMarkup) : $html;
 	}
 }
