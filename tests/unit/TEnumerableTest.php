@@ -317,8 +317,7 @@ class TEnumerableTest extends \PHPUnit\Framework\TestCase
 		$value = $ref->getConstant($align);
 		self::assertEquals('Right', $value);
 
-		$value = $ref->getConstant('Center');
-		self::assertFalse($value);
+		self::assertFalse($ref->hasConstant('Center'));
 	}
 
 	public function testConstantOf()

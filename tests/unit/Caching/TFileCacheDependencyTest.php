@@ -210,7 +210,6 @@ class TFileCacheDependencyTest extends \PHPUnit\Framework\TestCase
 	private function callProtected(object $obj, string $method, array $args = []): mixed
 	{
 		$rm = new \ReflectionMethod($obj, $method);
-		$rm->setAccessible(true);
 		return $rm->invokeArgs($obj, $args);
 	}
 }

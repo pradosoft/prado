@@ -444,6 +444,8 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * THttpSession class for a configuration example.
 	 *
 	 * @param bool $value whether transparent sid support is enabled or not.
+	 * @deprecated 4.4.0 Since PHP 8.4 enabling the session.use_trans_sid INI setting is deprecated;
+	 * it also requires the deprecated {@see setCookieMode CookieMode} None or Allow.
 	 */
 	public function setUseTransparentSessionID($value)
 	{

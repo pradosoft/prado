@@ -152,6 +152,7 @@ class CultureInfo
 		if ($culture === null && ($app = Prado::getApplication()) && ($globalize = $app->getGlobalization(false))) {
 			$culture = $globalize->getCulture();
 		}
+		$culture ??= '';
 		if (isset(self::$cultureInfos[$culture])) {
 			return self::$cultureInfos[$culture];
 		}

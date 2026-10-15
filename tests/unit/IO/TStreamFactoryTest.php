@@ -92,7 +92,7 @@ class TStreamFactoryTest extends \PHPUnit\Framework\TestCase
 		// Mirrors the TStreamResourceWrapper docblock example.
 		$stream = TStream::fromString("name,score\nAda,99\n");
 		$resource = TStream::asResource($stream);
-		self::assertSame(['name', 'score'], fgetcsv($resource));
+		self::assertSame(['name', 'score'], fgetcsv($resource, escape: ''));
 		rewind($resource);
 		self::assertSame("name,score\nAda,99\n", stream_get_contents($resource));
 		fclose($resource);

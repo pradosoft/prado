@@ -39,7 +39,6 @@ class TRelativeTimeTest extends TestCase
 	private function invokeMethod(object $object, string $method, array $args = []): mixed
 	{
 		$rm = new \ReflectionMethod($object, $method);
-		$rm->setAccessible(true);
 		return $rm->invokeArgs($object, $args);
 	}
 

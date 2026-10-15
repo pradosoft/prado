@@ -137,6 +137,7 @@ class TPriorityMap extends TMap implements IPriorityCollection
 	 */
 	public function itemAt($key, $priority = false)
 	{
+		$key ??= '';
 		if ($priority === false) {
 			$this->flattenPriorities();
 			return array_key_exists($key, $this->_fd) ? $this->_fd[$key] : $this->dyNoItem(null, $key);
@@ -187,6 +188,7 @@ class TPriorityMap extends TMap implements IPriorityCollection
 	 */
 	public function priorityAt($key)
 	{
+		$key ??= '';
 		$this->sortPriorities();
 		foreach (array_keys($this->_d) as $priority) {
 			if (isset($this->_d[$priority][$key]) || array_key_exists($key, $this->_d[$priority])) {
@@ -266,6 +268,7 @@ class TPriorityMap extends TMap implements IPriorityCollection
 	 */
 	public function remove($key, $priority = false)
 	{
+		$key ??= '';
 		if (!$this->getReadOnly()) {
 			if ($priority === false) {
 				$this->sortPriorities();
@@ -325,6 +328,7 @@ class TPriorityMap extends TMap implements IPriorityCollection
 	 */
 	public function contains($key): bool
 	{
+		$key ??= '';
 		$this->flattenPriorities();
 		return isset($this->_fd[$key]) || array_key_exists($key, $this->_fd);
 	}

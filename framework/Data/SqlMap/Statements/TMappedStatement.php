@@ -677,7 +677,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	protected function getResultMapGroupKey($resultMap, $row)
 	{
 		$groupBy = $resultMap->getGroupBy();
-		if (isset($row[$groupBy])) {
+		if ($groupBy !== null && isset($row[$groupBy])) {
 			return $resultMap->getID() . $row[$groupBy];
 		} else {
 			return $resultMap->getID() . crc32(serialize($row));

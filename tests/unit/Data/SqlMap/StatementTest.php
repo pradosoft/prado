@@ -1099,8 +1099,8 @@ class StatementTest extends BaseCase
 		$this->assertNotNull($anOther);
 		$this->assertSame(99, (int) $anOther->getInt());
 		$this->assertSame(1966, (int) $anOther->getLong());
-		$this->assertSame(true, (boolean) $anOther->getBool());
-		$this->assertSame(false, (boolean) $anOther->getBool2());
+		$this->assertSame(true, (bool) $anOther->getBool());
+		$this->assertSame(false, (bool) $anOther->getBool2());
 	}
 
 	/**
@@ -1124,8 +1124,8 @@ class StatementTest extends BaseCase
 		$this->assertNotNull($anOther);
 		$this->assertSame(99, (int) $anOther->getInt());
 		$this->assertSame(1966, (int) $anOther->getLong());
-		$this->assertSame(true, (boolean) $anOther->getBool());
-		$this->assertSame(false, (boolean) $anOther->getBool2());
+		$this->assertSame(true, (bool) $anOther->getBool());
+		$this->assertSame(false, (bool) $anOther->getBool2());
 	}
 
 	/**
@@ -1149,8 +1149,8 @@ class StatementTest extends BaseCase
 		$this->assertNotNull($anOther);
 		$this->assertSame(99, (int) $anOther->getInt());
 		$this->assertSame(1966, (int) $anOther->getLong());
-		$this->assertSame(true, (boolean) $anOther->getBool());
-		$this->assertSame(false, (boolean) $anOther->getBool2());
+		$this->assertSame(true, (bool) $anOther->getBool());
+		$this->assertSame(false, (bool) $anOther->getBool2());
 	}
 	#endregion
 	/**/

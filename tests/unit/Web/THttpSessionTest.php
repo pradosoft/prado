@@ -236,6 +236,9 @@ class THttpSessionTest extends \PHPUnit\Framework\TestCase
 	 */
 	public function testSetUseTransparentSessionID()
 	{
+		if(PHP_VERSION_ID >= 80400) {
+			$this->markTestSkipped('Disabling session.use_only_cookies INI setting is deprecated on PHP => 8.4 ');
+		}
 		$session = new THttpSession();
 		$session->CookieMode = THttpSessionCookieMode::Allow;
 		$this->assertFalse($session->getUseTransparentSessionID());
