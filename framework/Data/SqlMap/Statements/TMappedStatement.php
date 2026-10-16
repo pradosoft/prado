@@ -783,7 +783,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 				}
 			} else {
 				$obj = $nested->createInstanceOfResult($this->getManager()->getTypeHandlers());
-				if ($this->fillPropertyWithResultMap($nested, $row, $obj) == false) {
+				if (!$this->fillPropertyWithResultMap($nested, $row, $obj)) {
 					$obj = null;
 				}
 				TPropertyAccess::set($resultObject, $key, $obj);

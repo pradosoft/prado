@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: `THttpResponse::setStatusCode()` missed a CR or LF at the start of a custom reason phrase. `TParameterizeBehavior` and `TTimeZoneParameterBehavior::setEnabled()` attached their parameter route for the string `'false'`. Other `== true` and `== false` comparisons are written as boolean tests. (belisoful)
 BUG: The `TRenderFilterParameter` DOM round trip altered markup: it wrapped leading text in `<p>`, dropped whitespace between top-level elements, cut `<script>` content at `</`, lowercased SVG names, and lost table rows and the doctype. Fragments now parse in the context of their first tag, with the HTML5 parser on PHP 8.4+. (belisoful)
 BUG: `TSessionPageStatePersister` unserialized its session snapshot unchecked; the snapshot carries a security manager HMAC and is validated before it is unserialized. (belisoful)
 BUG: `TPageStateFormatter` unserialized client page state without HMAC validation into any class; unvalidated state is restored with `allowed_classes` false, and igbinary serializes only validated state. UPGRADE.md covers the change. (belisoful)
