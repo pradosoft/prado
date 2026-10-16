@@ -3,8 +3,21 @@
 
 namespace Prado\Test\Unit\Web\UI\ActiveControls;
 
+use Prado\Prado;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Web\UI\ActiveControls\TActiveFileUpload;
+use Prado\Web\UI\ActiveControls\TActiveFileUploadCallbackParams;
 use PHPUnit\Framework\TestCase;
+
+class TActiveFileUploadTestWakeup
+{
+	public static bool $wokeUp = false;
+
+	public function __wakeup()
+	{
+		self::$wokeUp = true;
+	}
+}
 
 class TActiveFileUploadTest extends TestCase
 {
@@ -75,5 +88,29 @@ class TActiveFileUploadTest extends TestCase
 		$upload->setCapture('user');
 		$this->assertEquals('image/*', $upload->getAccept());
 		$this->assertEquals('user', $upload->getCapture());
+	}
+
+	public function testParamsTokenRoundTrip()
+	{
+		$upload = new TActiveFileUpload();
+		$params = new TActiveFileUploadCallbackParams();
+		$params->files[] = ['fileName' => 'a.txt', 'fileSize' => 3];
+		$token = PradoUnit::invoke($upload, 'pushParamsAndGetToken', $params);
+		$restored = PradoUnit::invoke($upload, 'popParamsByToken', $token);
+		$this->assertInstanceOf(TActiveFileUploadCallbackParams::class, $restored);
+		$this->assertSame($params->files, $restored->files);
+	}
+
+	public function testParamsTokenDoesNotInstantiateOtherClasses()
+	{
+		$upload = new TActiveFileUpload();
+		$sm = Prado::getApplication()->getSecurityManager();
+		$token = urlencode(base64_encode($sm->encrypt(serialize(new TActiveFileUploadTestWakeup()))));
+		TActiveFileUploadTestWakeup::$wokeUp = false;
+		try {
+			PradoUnit::invoke($upload, 'popParamsByToken', $token);
+		} catch (\AssertionError $e) {
+		}
+		$this->assertFalse(TActiveFileUploadTestWakeup::$wokeUp);
 	}
 }
