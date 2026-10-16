@@ -48,6 +48,10 @@ $gw = $object->getTableGateway('users', false); // skip cache, get fresh instanc
 | `getConnectionInvalidExceptionKey()` | `'dbproperties_connectionid_invalid'` | Error message key for invalid module ID. |
 | `getConnectionRequiredExceptionKey()` | `'dbproperties_property_required'` | Error message key when no connection is available. |
 
+## Identifier Validation
+
+`ensureSqlIdentifier(string $value, string $property): string` (4.4.0) validates a configured table or column name before a using class writes it into SQL. An identifier is one to three `.`-separated parts; each part is a plain name (`[A-Za-z_][A-Za-z0-9_$]*`) or a name quoted with back-ticks, double quotes, or square brackets that does not contain its closing quote. Anything else throws `TInvalidDataValueException` (`dbproperties_identifier_invalid`).
+
 ## Connection Resolution Order
 
 When `getDbConnection()` is first called (and `$_conn` is null), `createDbConnection()` resolves the connection as follows:

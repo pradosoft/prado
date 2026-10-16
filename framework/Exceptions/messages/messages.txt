@@ -556,6 +556,7 @@ tactivecustomvalidator_clientfunction_unsupported = {0} does not support client 
 
 dbproperties_connectionid_invalid		= {1}.ConnectionID '{0}' does not identify a valid TDataSourceConfig module.
 dbproperties_property_required			= {1}.{0} is a required property.
+dbproperties_identifier_invalid			= {1}.{0} '{2}' is not a valid SQL identifier.
 
 dbconnection_open_failed				= TDbConnection failed to establish DB connection: {0}
 dbconnection_connection_inactive		= TDbConnection is inactive.
