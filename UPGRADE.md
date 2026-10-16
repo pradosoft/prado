@@ -10,6 +10,9 @@ for both A and B.
 Upgrading from v4.3.3
 ---------------------
 - PHP 8.2 is now required. Applications running PHP 8.1 stay on Prado 4.3.
+- `TSecurityManager::UseEncryptionHmac` defaults to `true`; it was `false`. `decrypt()` reads data with or without the
+  HMAC, so existing encrypted data still decrypts. Prado versions before 4.3.3 cannot decrypt the new output; an
+  application sharing encrypted data with them sets `UseEncryptionHmac="false"`.
 - A page with `EnableStateValidation="false"` restores its state without objects; an object in the state becomes
   `__PHP_Incomplete_Class`. Such a page enables validation (the default) or uses a server-side persister such as
   `TSessionPageStatePersister`. igbinary serializes only validated state.
