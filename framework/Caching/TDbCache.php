@@ -489,8 +489,9 @@ class TDbCache extends TSerializingCache implements IDbModule
 			$this->initializeCache();
 		}
 
-		$sql = 'SELECT value FROM ' . $this->getCacheTableName() . ' WHERE itemkey=\'' . $key . '\' AND (expire=0 OR expire>=' . $this->getClock()->time() . ') ORDER BY expire DESC';
+		$sql = 'SELECT value FROM ' . $this->getCacheTableName() . ' WHERE itemkey=:key AND (expire=0 OR expire>=' . $this->getClock()->time() . ') ORDER BY expire DESC';
 		$command = $this->getDbConnection()->createCommand($sql);
+		$command->bindValue(':key', $key, \PDO::PARAM_STR);
 		try {
 			return $command->queryScalar();
 		} catch (\Exception $e) {

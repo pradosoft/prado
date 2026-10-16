@@ -404,10 +404,10 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 			$v = $cache->get($token);
 			assert($v != '');
 			$cache->delete($token); // remove it from cache so it can't be used again and won't take up space either
-			$params = unserialize($v);
+			$params = unserialize($v, ['allowed_classes' => [TActiveFileUploadCallbackParams::class]]);
 		} elseif ($mgr = $this->getApplication()->getSecurityManager()) {
 			$v = $mgr->decrypt(base64_decode(urldecode($token)));
-			$params = unserialize($v);
+			$params = unserialize($v, ['allowed_classes' => [TActiveFileUploadCallbackParams::class]]);
 		} else {
 			throw new Exception('TActiveFileUpload needs either an application level cache or a security manager to work securely');
 		}
