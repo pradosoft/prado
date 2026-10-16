@@ -10,6 +10,9 @@ for both A and B.
 Upgrading from v4.3.3
 ---------------------
 - PHP 8.2 is now required. Applications running PHP 8.1 stay on Prado 4.3.
+- `TSecurityManager::EncryptionKeyAlgorithm` defaults to `sha256`; it was `md5`. Data encrypted under the old
+  default, such as auto-login cookies and encrypted page state, no longer decrypts. Set
+  `EncryptionKeyAlgorithm="md5"` on the security manager module to keep reading it.
 - A PHP-configured `TFeedService` lists its feeds under a `feeds` key. Feeds beside the service `class` key still load when their class implements `IFeedContentProvider`; that form is deprecated.
 - `Prado::exceptionHandler()` and `Prado::fatalError()` return `never`. A subclass overriding either must declare `never`.
 - TTemplate applies a template attribute name as written instead of replacing its dashes with underscores.

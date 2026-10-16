@@ -38,9 +38,9 @@ use Prado\TPropertyValue;
  * To encrypt and decrypt data, call {@see encrypt()} and {@see decrypt()}
  * respectively. The encryption algorithm can be set by {@see setCryptAlgorithm CryptAlgorithm}.
  * The algorithm used to hash the encryption key can be set by
- * {@see setEncryptionKeyAlgorithm EncryptionKeyAlgorithm}. By default this is `md5` for
- * backward compatibility. It is highly recommended that EncryptionKeyAlgorithm be set to,
- * at least, `sha1` or `sha256`.
+ * {@see setEncryptionKeyAlgorithm EncryptionKeyAlgorithm}, which defaults to `sha256`.
+ * Prado 4.3 defaulted to `md5`; setting EncryptionKeyAlgorithm to `md5` decrypts data
+ * encrypted under that default.
  *
  * Optionally, {@see setUseEncryptionHmac UseEncryptionHmac} (default `false`) enables
  * authenticated encryption: {@see encrypt()} prepends a raw HMAC (keyed on
@@ -99,7 +99,7 @@ class TSecurityManager extends \Prado\TModule
 	private $_encryptionKey;
 	private $_hashAlgorithm = 'sha256';
 	private $_cryptAlgorithm = 'aes-256-cbc';
-	private $_encryptionKeyAlgorithm = 'md5';
+	private $_encryptionKeyAlgorithm = 'sha256';
 	private $_useEncryptionHmac = false;	// @todo v4.4 change to true.
 	private $_mbstring;
 	private $_closureSecretKey;
@@ -356,7 +356,7 @@ class TSecurityManager extends \Prado\TModule
 	}
 
 	/**
-	 * @return string Hashing algorithm used to hash {@see getEncryptionKey} during {@see encrypt()} and {@see decrypt()}. Defaults to 'md5'.
+	 * @return string Hashing algorithm used to hash {@see getEncryptionKey} during {@see encrypt()} and {@see decrypt()}. Defaults to 'sha256'.
 	 * @since 4.3.3
 	 */
 	public function getEncryptionKeyAlgorithm()
