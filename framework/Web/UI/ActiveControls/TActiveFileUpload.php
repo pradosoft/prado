@@ -404,10 +404,10 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 			$v = $cache->get($token);
 			assert($v != '');
 			$cache->delete($token); // remove it from cache so it can't be used again and won't take up space either
-			$params = unserialize($v);
+			$params = unserialize($v, ['allowed_classes' => [TActiveFileUploadCallbackParams::class]]);
 		} elseif ($mgr = $this->getApplication()->getSecurityManager()) {
 			$v = $mgr->decrypt(base64_decode(urldecode($token)));
-			$params = unserialize($v);
+			$params = unserialize($v, ['allowed_classes' => [TActiveFileUploadCallbackParams::class]]);
 		} else {
 			throw new Exception('TActiveFileUpload needs either an application level cache or a security manager to work securely');
 		}
@@ -436,8 +436,8 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 			}
 
 			echo TJavaScript::renderScriptBlock("Options = new Object();
-				Options.clientID = '{$_GET['TActiveFileUpload_InputId']}';
-				Options.targetID = '{$_GET['TActiveFileUpload_TargetId']}';
+				Options.clientID = " . TJavaScript::quoteString($_GET['TActiveFileUpload_InputId']) . ";
+				Options.targetID = " . TJavaScript::quoteString($_GET['TActiveFileUpload_TargetId']) . ";
 				Options.errorCode = '" . (int) !$this->getHasAllFiles() . "';
 				Options.callbackToken = '{$this->pushParamsAndGetToken($params)}';
 				Options.fileName = '" . TJavaScript::jsonEncode($this->getMultiple() ? array_column($params->files, 'fileName') : $this->getFileName(), JSON_HEX_APOS) . "';

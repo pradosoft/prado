@@ -406,7 +406,7 @@ class TSecurityManagerTest extends \PHPUnit\Framework\TestCase
 		$sec = new TSecurityManager();
 		$sec->init(null);
 
-		self::assertEquals('md5', $sec->getEncryptionKeyAlgorithm());
+		self::assertEquals('sha256', $sec->getEncryptionKeyAlgorithm());
 
 		$sec->setEncryptionKeyAlgorithm('sha1');
 		self::assertEquals('sha1', $sec->getEncryptionKeyAlgorithm());
