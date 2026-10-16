@@ -76,7 +76,7 @@ Active rows (`active IS NOT NULL`) are task definitions; rows with `active IS NU
 | Property | Default | Description |
 |----------|---------|-------------|
 | `ConnectionID` | — | ID of `TDataSourceConfig` module; frozen after `init()` |
-| `TableName` | `'crontabs'` | DB table for tasks and logs; frozen after `init()` |
+| `TableName` | `'crontabs'` | DB table for tasks and logs; an SQL identifier (4.4.0); frozen after `init()` |
 | `AutoCreateCronTable` | `true` | Create table automatically if absent; frozen after `init()` |
 | `LogCronTasks` | `true` | Insert a log row per task execution |
 

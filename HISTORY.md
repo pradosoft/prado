@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: `TDbCache.CacheTableName`, `TDbLogRoute.LogTableName`, and `TDbCronManager.TableName` are written into SQL; their setters reject a name that is not an SQL identifier. (belisoful)
 BUG: `TDbParameterModule` wrote `AutoLoadValue` into its load query; it is now bound, and the table and field properties must be SQL identifiers (`TDbPropertiesTrait::ensureSqlIdentifier()`). (belisoful)
 BUG: The `TRenderFilterParameter` DOM round trip altered markup: it wrapped leading text in `<p>`, dropped whitespace between top-level elements, cut `<script>` content at `</`, lowercased SVG names, and lost table rows and the doctype. Fragments now parse in the context of their first tag, with the HTML5 parser on PHP 8.4+. (belisoful)
 BUG: `TSessionPageStatePersister` unserialized its session snapshot unchecked; the snapshot carries a security manager HMAC and is validated before it is unserialized. (belisoful)

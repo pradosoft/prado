@@ -381,13 +381,14 @@ class TDbLogRoute extends TLogRoute
 	 * and you want to create the DB table manually by yourself,
 	 * you need to make sure the DB table is of the following structure:
 	 * (key CHAR(128) PRIMARY KEY, value BLOB, expire INT)
-	 * @param string $value the name of the DB table to store log content
+	 * @param string $value the name of the DB table to store log content, an SQL identifier
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the name is not an SQL identifier
 	 * @return static The current object.
 	 * @see setAutoCreateLogTable
 	 */
 	public function setLogTableName($value): static
 	{
-		$this->_logTable = $value;
+		$this->_logTable = $this->ensureSqlIdentifier(TPropertyValue::ensureString($value), 'LogTableName');
 
 		return $this;
 	}

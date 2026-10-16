@@ -20,7 +20,7 @@
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `LogTableName` | `string` | `'pradolog'` | Database table that receives log rows. |
+| `LogTableName` | `string` | `'pradolog'` | Database table that receives log rows. Must be an SQL identifier (4.4.0). |
 | `AutoCreateLogTable` | `bool` | `true` | Creates the table automatically on `init()` if it does not exist. |
 | `RetainPeriod` | `?float` | `null` | Seconds to retain; older rows are purged on each flush. Accepts ISO 8601 duration strings (e.g. `'PT1H'`). |
 | `ConnectionID` | `string` | — | ID of a `TDataSourceConfig` module; defaults to an in-app SQLite3 `sqlite3.log` file. |

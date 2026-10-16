@@ -5,6 +5,7 @@ namespace Prado\Test\Unit\Util\Log;
 use Prado\Util\Log\TLogger;
 use Prado\Util\Log\TSysLogRoute;
 use Prado\Util\Log\TDbLogRoute;
+use Prado\Exceptions\TInvalidDataValueException;
 
 class TTestDbLogRoute extends TDbLogRoute {
 }
@@ -122,6 +123,15 @@ class TDbLogRouteTest extends \PHPUnit\Framework\TestCase
 		$route->collectLogs($logger, true); // all and the "new" (but delayed) are deleted
 		$this->assertEquals(0, $route->getDBLogCount());
 		
+	}
+
+	public function testLogTableNameRejectsSql()
+	{
+		$route = new TDbLogRoute();
+		$route->setLogTableName('main.pradolog');
+		$this->assertEquals('main.pradolog', $route->getLogTableName());
+		$this->expectException(TInvalidDataValueException::class);
+		$route->setLogTableName('pradolog; DROP TABLE users');
 	}
 }
 
