@@ -392,6 +392,7 @@ class TWeakMap extends TMap implements IWeakCollection, ICollectionFilter
 	 */
 	public function itemAt($key)
 	{
+		$key ??= '';
 		$this->scrubWeakReferences();
 
 		if (!isset($this->_d[$key]) && !array_key_exists($key, $this->_d)) {
@@ -462,6 +463,7 @@ class TWeakMap extends TMap implements IWeakCollection, ICollectionFilter
 	 */
 	public function remove($key)
 	{
+		$key ??= '';
 		if ($this->getReadOnly()) {
 			throw new TInvalidOperationException('map_readonly', $this::class);
 		}

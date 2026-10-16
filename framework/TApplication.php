@@ -1491,12 +1491,12 @@ class TApplication extends TComponent implements ISingleton
 	 * is loaded recursively via a nested `getModule()` call before `init()` runs),
 	 * {@see IModule::init()}, and {@see TModule::dyPostInit()}.
 	 *
-	 * @param string $id module ID
-	 * @return ?TModule the module with the specified ID, null if not found
+	 * @param ?string $id module ID
+	 * @return ?TModule the module with the specified ID, null if not found or `$id` is null
 	 */
 	public function getModule($id)
 	{
-		if (!array_key_exists($id, $this->_modules)) {
+		if ($id === null || !array_key_exists($id, $this->_modules)) {
 			return null;
 		}
 

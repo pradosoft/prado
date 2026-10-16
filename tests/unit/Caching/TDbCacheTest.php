@@ -558,6 +558,18 @@ class TDbCacheTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals($value, $result);
 	}
 
+	public function testSerializedValueBindsKey()
+	{
+		$this->initCache();
+
+		$key = "quote'key";
+		$this->assertTrue(PradoUnit::invoke($this->_cache, 'setSerializedValue', $key, 'stored', 0));
+		$this->assertSame('stored', PradoUnit::invoke($this->_cache, 'getSerializedValue', $key));
+
+		$this->assertTrue(PradoUnit::invoke($this->_cache, 'setSerializedValue', 'other', 'secret', 0));
+		$this->assertFalse(PradoUnit::invoke($this->_cache, 'getSerializedValue', "x' OR itemkey='other"));
+	}
+
 	public function testSpecialCharactersInValue()
 	{
 		$this->initCache();

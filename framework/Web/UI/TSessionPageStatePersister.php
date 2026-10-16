@@ -29,6 +29,10 @@ use Prado\Util\Clock\TApplicationClockAwareTrait;
  * mainly to preserve the precious server storage. The number is specified
  * by {@see setHistorySize HistorySize}, which defaults to 10.
  *
+ * Each stored state is prefixed with an HMAC from the application
+ * {@see \Prado\Security\TSecurityManager::hashData() security manager}.  A state
+ * altered in session storage fails validation and is not unserialized.
+ *
  * There are a couple of ways to use TSessionPageStatePersister.
  * One can override the page's {@see \Prado\Web\UI\TPage::getStatePersister()} method and
  * create a TSessionPageStatePersister instance there.
@@ -116,7 +120,7 @@ class TSessionPageStatePersister extends \Prado\TComponent implements IPageState
 	{
 		$session = $this->_page->getSession();
 		$session->open();
-		$data = serialize($state);
+		$data = $this->_page->getApplication()->getSecurityManager()->hashData(serialize($state));
 		$timestamp = (string) $this->getClock()->microtime();
 		$key = self::STATE_SESSION_KEY . $timestamp;
 		$session->add($key, $data);
@@ -143,7 +147,7 @@ class TSessionPageStatePersister extends \Prado\TComponent implements IPageState
 			$session = $this->_page->getSession();
 			$session->open();
 			$key = self::STATE_SESSION_KEY . $timestamp;
-			if (($data = $session->itemAt($key)) !== null) {
+			if (($data = $session->itemAt($key)) !== null && ($data = $this->_page->getApplication()->getSecurityManager()->validateData($data)) !== false) {
 				return unserialize($data);
 			}
 		}

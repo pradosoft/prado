@@ -621,8 +621,10 @@ class TAuthManagerTest extends \PHPUnit\Framework\TestCase
 		$authManager = new TAuthManager();
 		$authManager->setUserManager('users');
 		$authManager->init(null);
-		$sha1 = sha1($authManager->getApplication()->getUniqueID() . 'prado:user');
-		self::assertEquals($sha1, $authManager->getUserKey());
+		$securityManager = $authManager->getApplication()->getSecurityManager();
+		$hmac = hash_hmac($securityManager->getHashAlgorithm(), $authManager->getApplication()->getUniqueID() . 'prado:user', $securityManager->getValidationKey());
+		self::assertEquals($hmac, $authManager->getUserKey());
+		self::assertNotEquals(sha1($authManager->getApplication()->getUniqueID() . 'prado:user'), $authManager->getUserKey());
 	}
 
 	public function testUpdateSessionUser()

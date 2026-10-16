@@ -76,7 +76,6 @@ class TProcessTest extends \PHPUnit\Framework\TestCase
 	private function normalize(array $descriptors): array
 	{
 		$method = new \ReflectionMethod(TProcess::class, 'normalizeDescriptors');
-		$method->setAccessible(true);
 		return $method->invoke(null, $descriptors);
 	}
 

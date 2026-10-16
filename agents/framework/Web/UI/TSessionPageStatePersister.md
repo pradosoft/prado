@@ -32,8 +32,8 @@
 
 | Method | Description |
 |--------|-------------|
-| `save(mixed $state): void` | Serialises `$state`, writes it to the session under a unique key, and updates the FIFO queue, evicting the oldest snapshot when `HistorySize` is exceeded. |
-| `load(): mixed` | Reads the state snapshot for the current request token from the session and returns the deserialised state. Throws `THttpException` if the state is corrupted. |
+| `save(mixed $state): void` | Serialises `$state`, prefixes it with the security manager's `hashData()` HMAC (4.4.0), writes it to the session under a unique key, and updates the FIFO queue, evicting the oldest snapshot when `HistorySize` is exceeded. |
+| `load(): mixed` | Reads the state snapshot for the current request token from the session, validates its HMAC, and returns the deserialised state. Throws `THttpException` (400) if the snapshot is missing or fails validation. |
 
 ## See Also
 

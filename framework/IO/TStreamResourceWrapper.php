@@ -41,7 +41,7 @@ use Psr\Http\Message\StreamInterface;
  * $stream   = TStream::fromString("name,score\nAda,99\n");
  * $resource = TStream::asResource($stream);   // native resource backed by $stream
  *
- * $header = fgetcsv($resource);                // ['name', 'score'] from a resource-only API
+ * $header = fgetcsv($resource, escape: '');    // ['name', 'score'] from a resource-only API
  * rewind($resource);
  * $body = stream_get_contents($resource);
  * fclose($resource);                           // frees the resource view; $stream stays open

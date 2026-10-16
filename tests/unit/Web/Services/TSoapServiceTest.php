@@ -77,15 +77,12 @@ class TSoapServiceTest extends \PHPUnit\Framework\TestCase
 		$reflection = new \ReflectionClass(TSoapService::class);
 
 		$load = $reflection->getMethod('loadConfig');
-		$load->setAccessible(true);
 		$load->invoke($service, $config);
 
 		$serverID = $reflection->getProperty('_serverID');
-		$serverID->setAccessible(true);
 		$serverID->setValue($service, $id);
 
 		$create = $reflection->getMethod('createServer');
-		$create->setAccessible(true);
 		return $create->invoke($service);
 	}
 
@@ -140,11 +137,9 @@ class TSoapServiceTest extends \PHPUnit\Framework\TestCase
 	{
 		$service = new TSoapService();
 		$load = new \ReflectionMethod(TSoapService::class, 'loadConfig');
-		$load->setAccessible(true);
 		$load->invoke($service, ['other' => []]);
 
 		$servers = new \ReflectionProperty(TSoapService::class, '_servers');
-		$servers->setAccessible(true);
 		$this->assertSame([], $servers->getValue($service));
 	}
 
@@ -154,7 +149,6 @@ class TSoapServiceTest extends \PHPUnit\Framework\TestCase
 
 		$service = new TSoapService();
 		$load = new \ReflectionMethod(TSoapService::class, 'loadConfig');
-		$load->setAccessible(true);
 		$config = ['soap' => ['quote' => ['properties' => []]]];
 		$load->invoke($service, $config);
 		$load->invoke($service, $config);

@@ -175,7 +175,6 @@ class TActiveDialogTest extends TestCase
 	{
 		$control = new TActiveDialog();
 		$ref = new \ReflectionMethod($control, 'getClientClassName');
-		$ref->setAccessible(true);
 		$this->assertEquals('Prado.WebUI.TActiveDialog', $ref->invoke($control));
 	}
 
@@ -185,7 +184,6 @@ class TActiveDialogTest extends TestCase
 	{
 		$control = new TActiveDialog();
 		$ref = new \ReflectionMethod($control, 'getPostBackOptions');
-		$ref->setAccessible(true);
 		$options = $ref->invoke($control);
 		$this->assertArrayHasKey('ID', $options);
 		$this->assertArrayHasKey('EventTarget', $options);

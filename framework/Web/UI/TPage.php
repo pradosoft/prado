@@ -1240,6 +1240,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
+	 * Unvalidated page state is restored without its objects, since the client controls it.
 	 * @return bool whether page state should be HMAC validated. Defaults to true.
 	 */
 	public function getEnableStateValidation()
@@ -1296,6 +1297,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
+	 * igbinary serializes only HMAC validated state; see {@see getEnableStateValidation()}.
 	 * @return bool whether page state should be serialized using igbinary if available. Defaults to true.
 	 * @since 4.1
 	 */
