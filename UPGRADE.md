@@ -10,6 +10,15 @@ for both A and B.
 Upgrading from v4.3.3
 ---------------------
 - PHP 8.2 is now required. Applications running PHP 8.1 stay on Prado 4.3.
+- A page with `EnableStateValidation="false"` restores its state without objects; an object in the state becomes
+  `__PHP_Incomplete_Class`. Such a page enables validation (the default) or uses a server-side persister such as
+  `TSessionPageStatePersister`. igbinary serializes only validated state.
+- `TAuthManager::getUserKey()`, the session variable and auto-login cookie name, is an HMAC keyed by the
+  security manager's `ValidationKey`; it was a SHA-1 of the application ID. Users are signed out once after the
+  upgrade, and existing auto-login cookies are ignored. Keep `ValidationKey` stable across servers and deployments.
+- `TSecurityManager::EncryptionKeyAlgorithm` defaults to `sha256`; it was `md5`. Data encrypted under the old
+  default, such as auto-login cookies and encrypted page state, no longer decrypts. Set
+  `EncryptionKeyAlgorithm="md5"` on the security manager module to keep reading it.
 - A PHP-configured `TFeedService` lists its feeds under a `feeds` key. Feeds beside the service `class` key still load when their class implements `IFeedContentProvider`; that form is deprecated.
 - `Prado::exceptionHandler()` and `Prado::fatalError()` return `never`. A subclass overriding either must declare `never`.
 - TTemplate applies a template attribute name as written instead of replacing its dashes with underscores.

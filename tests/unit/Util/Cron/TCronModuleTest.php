@@ -55,6 +55,9 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 {
 	protected $obj;
 	protected $baseClass;
+
+	/** @var false|string the TERM environment variable before the test. */
+	private $_term;
 	
 	public const SEPARATOR = '->';
 	
@@ -65,6 +68,10 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 	
 	protected function setUp(): void
 	{
+		// An unset TERM (CI) detects a crontab shell, where processPendingTasks stops at a minute boundary.
+		$this->_term = getenv('TERM');
+		putenv('TERM=xterm');
+
 		$this->baseClass = $this->getTestClass();
 		
 		$this->obj = new $this->baseClass();
@@ -82,6 +89,8 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		
 		Prado::getApplication()->setGlobalState(TCronModule::LAST_CRON_TIME, null);
 		Prado::getApplication()->setGlobalState(TCronModule::TASKS_INFO, null);
+
+		putenv($this->_term === false ? 'TERM' : 'TERM=' . $this->_term);
 	}
 
 	public function testConstruct()
