@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: `TActiveFileUpload` wrote the `TActiveFileUpload_TargetId` and `TActiveFileUpload_InputId` request values into its script unencoded; they are now quoted with `TJavaScript::quoteString()`. (belisoful)
 BUG: `TActiveFileUpload` unserialized its callback token without a class restriction; only `TActiveFileUploadCallbackParams` is allowed. (belisoful)
 BUG: `TDbCache` concatenated the cache key into its read query; the key is now a bound parameter. (belisoful)
 BUG: PHP 8.5 deprecations, which Prado raises as errors: null array keys in `TMap`, `TPriorityMap`, `TEventParameter`, `TApplication::getModule()`, SqlMap and behavior loading, plus `curl_close()`, multi-byte `ord()`, and out-of-range `chr()`. A null map key looks up the empty-string key, as before. The unit tests and the Playwright server report every deprecation regardless of php.ini. (belisoful)
