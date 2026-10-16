@@ -50,7 +50,7 @@ return [
 | `EncryptionKey` | auto-generated | Key for encrypt/decrypt; persisted in global state when auto-generated |
 | `HashAlgorithm` | `sha256` | Hash algorithm for HMAC (any value from `hash_hmac_algos()`) |
 | `CryptAlgorithm` | `aes-256-cbc` | OpenSSL cipher algorithm |
-| `EncryptionKeyAlgorithm` | `md5` | Algorithm used to hash `EncryptionKey` before passing to OpenSSL. Upgrade to `sha256` for new deployments. @since 4.3.3 |
+| `EncryptionKeyAlgorithm` | `sha256` | Algorithm used to hash `EncryptionKey` before passing to OpenSSL. Prado 4.3 defaulted to `md5`. @since 4.3.3 |
 | `UseEncryptionHmac` | `false` | When `true`, `encrypt()` prepends an HMAC over `[IV][ciphertext]` to enable authenticated encryption. `decrypt()` always probes for an HMAC header regardless of this flag. @since 4.3.3 |
 
 ## Key Methods
@@ -82,7 +82,7 @@ This dual-path design means ciphertext produced before or after enabling `UseEnc
 ## Gotchas
 
 - **OpenSSL required** — `encrypt()` and `decrypt()` throw `TNotSupportedException` if the `openssl` extension is absent.
-- **`EncryptionKeyAlgorithm` defaults to `md5`** for backward compatibility. New deployments should set it to `sha256` or stronger.
+- **`EncryptionKeyAlgorithm` defaults to `sha256`** since 4.4.0. Set it to `md5` to decrypt data encrypted under the Prado 4.3 default.
 - **`UseEncryptionHmac` defaults to `false`** for backward compatibility. New deployments should enable it.
 - **Empty keys are rejected** — `setValidationKey('')` and `setEncryptionKey('')` throw `TInvalidDataValueException`.
 - **mbstring** — when the `mbstring` extension is present, binary-safe `mb_strlen`/`mb_substr` with `'8bit'` encoding are used internally to avoid multibyte-string splitting errors.
