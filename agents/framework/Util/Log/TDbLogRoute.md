@@ -30,7 +30,7 @@
 | Method | Description |
 |--------|-------------|
 | `getDBLogCount(?int $level, ..., ?float $minTime, ?float $maxTime): int` | Returns the count of stored log rows matching the given criteria. |
-| `getDBLogs(...): TDbDataReader` | Returns a result set of log rows matching criteria. |
+| `getDBLogs(...): TDbDataReader` | Returns a result set of log rows matching criteria. `$order` lists columns with optional ASC/DESC; `$limit` is `count`, `count OFFSET offset`, or `offset, count`; other values throw `TInvalidDataValueException` (4.4.0). |
 | `deleteDBLog(...): int` | Deletes matching log rows and returns the removed count. |
 | `static timespanToSeconds(string $timespan): ?int` | Converts an ISO 8601 duration string to seconds. |
 

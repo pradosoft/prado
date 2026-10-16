@@ -418,6 +418,8 @@ dblogroute_connectionid_invalid			= TDbLogRoute unable to create the Database Co
 dblogroute_insert_failed				= TDbLogRoute unable to insert the log into the '{0}'.
 dblogroute_bad_retain_period			= TDbLogRoute.RetainPeriod '{0}' is not valid
 dblogroute_table_nonexistent			= TDbLogRoute table '{0}' does not exist and must be created.
+dblogroute_order_invalid				= TDbLogRoute order '{0}' must list columns, each optionally followed by ASC or DESC.
+dblogroute_limit_invalid				= TDbLogRoute limit '{0}' must be a row count, 'count OFFSET offset', or 'offset, count'.
 
 filelogroute_logpath_invalid			= TFileLogRoute.LogPath '{0}' must be a directory in namespace format and must be writable by the Web server process.
 filelogroute_maxfilesize_invalid		= TFileLogRoute.MaxFileSize must be greater than 0.
