@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: `TSessionPageStatePersister` unserialized its session snapshot unchecked; the snapshot carries a security manager HMAC and is validated before it is unserialized. (belisoful)
 BUG: `TPageStateFormatter` unserialized client page state without HMAC validation into any class; unvalidated state is restored with `allowed_classes` false, and igbinary serializes only validated state. UPGRADE.md covers the change. (belisoful)
 CHG: `TAuthManager::generateUserKey()` keys its session and auto-login cookie name with the security manager's `ValidationKey`, so the name is not predictable from the application ID. UPGRADE.md covers the change. (belisoful)
 CHG: `TSecurityManager::EncryptionKeyAlgorithm` defaults to `sha256` instead of `md5`. UPGRADE.md covers reading data encrypted under the old default. (belisoful)
