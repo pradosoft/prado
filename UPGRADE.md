@@ -10,6 +10,9 @@ for both A and B.
 Upgrading from v4.3.3
 ---------------------
 - PHP 8.2 is now required. Applications running PHP 8.1 stay on Prado 4.3.
+- `TAuthManager::getUserKey()`, the session variable and auto-login cookie name, is an HMAC keyed by the
+  security manager's `ValidationKey`; it was a SHA-1 of the application ID. Users are signed out once after the
+  upgrade, and existing auto-login cookies are ignored. Keep `ValidationKey` stable across servers and deployments.
 - A PHP-configured `TFeedService` lists its feeds under a `feeds` key. Feeds beside the service `class` key still load when their class implements `IFeedContentProvider`; that form is deprecated.
 - `Prado::exceptionHandler()` and `Prado::fatalError()` return `never`. A subclass overriding either must declare `never`.
 - TTemplate applies a template attribute name as written instead of replacing its dashes with underscores.
