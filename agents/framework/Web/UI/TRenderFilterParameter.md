@@ -30,6 +30,30 @@ The parameter tracks which representation is *current*:
 - `setFilterText()` / `setFilterDOM()` makes the set representation current and discards the other.
 - `postRaiseEvent` automatically serialises DOM → HTML after all handlers run, so `processRenderFilter` always receives a valid string.
 
+## Parsing
+
+`htmlToDom()` parses in the context of the element holding the first tag (`getFragmentContext()`):
+
+| First tag | Context |
+|---|---|
+| `<!DOCTYPE>`, `<html>` | `#document` |
+| `<head>`, `<body>` | `html` |
+| `<tr>` | `tbody` |
+| `<td>`, `<th>` | `tr` |
+| `<caption>`, `<colgroup>`, `<thead>`, `<tbody>`, `<tfoot>` | `table` |
+| `<col>` | `colgroup` |
+| `<option>`, `<optgroup>` | `select` |
+| other, or text | `body` |
+
+| PHP (`getUseHtml5Parser()`) | Parser |
+|---|---|
+| 8.4+ | `Dom\HTMLDocument` (HTML5); nodes import into the legacy `DOMDocument`. `<template>` content re-parses from its `innerHTML` (the HTML5 DOM keeps it outside the child nodes). `<html>`/`<head>`/`<body>` without a start tag in the source are left out. Non-XML names (`@click`, `[prop]`) import under a placeholder name. |
+| 8.2, 8.3 | libxml `loadHTML()` inside a wrapper of the context element, then unwrapped. `<script>`/`<style>` content and `<svg>`/`<math>` elements become placeholder comments (`protectRawMarkup()`); handlers do not see or change them. libxml drops non-XML attribute names. |
+
+`domToHtml()` serializes with `saveHTML()`, writes the doctype itself, and restores placeholders. Placeholders carry a per-parse random nonce.
+
+Before 4.4.0 the parse used `LIBXML_HTML_NOIMPLIED` with no context: leading text gained a `<p>`, whitespace between top-level elements was dropped, `</` ended script content, SVG names were lowercased, and the `<head>` tag and doctype were lost.
+
 ## Key Methods
 
 ### HTML accessor

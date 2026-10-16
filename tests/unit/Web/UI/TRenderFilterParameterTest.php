@@ -33,6 +33,28 @@ class TRenderFilterParameterParseFail extends TRenderFilterParameter
 }
 
 /**
+ * Fixture: parses with libxml's HTML parser on any PHP version.
+ */
+class TRenderFilterParameterLibxml extends TRenderFilterParameter
+{
+	protected function getUseHtml5Parser(): bool
+	{
+		return false;
+	}
+}
+
+/**
+ * Fixture: parses with the HTML5 parser of PHP 8.4+.
+ */
+class TRenderFilterParameterHtml5 extends TRenderFilterParameter
+{
+	protected function getUseHtml5Parser(): bool
+	{
+		return true;
+	}
+}
+
+/**
  * Comprehensive tests for {@see TRenderFilterParameter}.
  *
  * Sections:
@@ -47,6 +69,7 @@ class TRenderFilterParameterParseFail extends TRenderFilterParameter
  *   9.  Extra keys via parent ArrayAccess
  *  10.  getFilterErrors / getHasFilterError
  *  11.  ArrayAccess — 'errors' key
+ *  12.  Parse fidelity of the libxml and HTML5 parsers
  */
 class TRenderFilterParameterTest extends TestCase
 {
@@ -1043,5 +1066,213 @@ class TRenderFilterParameterTest extends TestCase
 		$p->getFilterDOM();
 		unset($p[TRenderFilterParameter::RENDER_FILTER_ERRORS]);
 		$this->assertFalse(isset($p[TRenderFilterParameter::RENDER_FILTER_ERRORS]));
+	}
+
+	// ================================================================================
+	// 12. Parse fidelity of the libxml and HTML5 parsers
+	// ================================================================================
+
+	public static function parserProvider(): array
+	{
+		return [
+			'libxml' => [TRenderFilterParameterLibxml::class],
+			'html5' => [TRenderFilterParameterHtml5::class],
+		];
+	}
+
+	public static function roundTripProvider(): array
+	{
+		$cases = [
+			'leading text' => 'Lead HTML text <b>bold</b> tail',
+			'top-level whitespace' => '<span>A</span> <span>B</span>',
+			'indented elements' => "\n\t<h1>T</h1>\n\t<p>x</p>\n",
+			'script with end tag text' => '<script>var s = "</div>"; if (a < b && c) {}</script><p>x</p>',
+			'empty script' => '<script src="a.js"></script>',
+			'style with end tag text' => '<style>p > a::before { content: "</p>"; }</style>',
+			'comment holding a script tag' => '<!-- <script> --><p>c</p>',
+			'nested svg' => '<svg viewBox="0 0 10 10"><svg viewBox="0 0 1 1"><path d="M0 0"></path></svg><text>HTML</text></svg><p>after</p>',
+			'math' => '<math><mi>x</mi></math>',
+			'void elements' => '<input disabled><br><img src="a.png" alt="">',
+			'table rows' => "\n<tr><td>cell</td></tr>",
+			'table cells' => '<td>c</td><th>h</th>',
+			'table head' => '<thead><tr><th>h</th></tr></thead>',
+			'options' => '<option value="1" selected>One</option><optgroup label="g"><option>2</option></optgroup>',
+			'columns' => '<col span="2">',
+			'document' => '<!DOCTYPE html><html lang="en"><head><title>T</title></head><body><p>x</p></body></html>',
+			'head' => '<head><title>T</title></head>',
+			'body' => '<body class="b"><p>x</p></body>',
+			'template rows' => '<search><output name="o">1</output></search><template><tr><td>x</td></tr></template>',
+			'shadow root template' => '<template shadowrootmode="open"><slot></slot></template><b>light</b>',
+		];
+		$data = [];
+		foreach (self::parserProvider() as $parser => [$class]) {
+			foreach ($cases as $name => $html) {
+				$data[$parser . ': ' . $name] = [$class, $html];
+			}
+		}
+		return $data;
+	}
+
+	private function skipUnlessParser(string $class): void
+	{
+		if ($class === TRenderFilterParameterHtml5::class && !class_exists(\Dom\HTMLDocument::class)) {
+			$this->markTestSkipped('The HTML5 parser requires PHP 8.4+.');
+		}
+	}
+
+	/**
+	 * @dataProvider roundTripProvider
+	 */
+	public function testDomRoundTripKeepsMarkup(string $class, string $html)
+	{
+		$this->skipUnlessParser($class);
+		$p = new $class($html);
+		$this->assertInstanceOf(\DOMDocument::class, $p->getFilterDOM());
+		$this->assertSame($html, $p->getFilterText());
+	}
+
+	/**
+	 * @dataProvider parserProvider
+	 */
+	public function testDomRoundTripDecodesEntities(string $class)
+	{
+		$this->skipUnlessParser($class);
+		$p = new $class('<p>Caf&eacute; &amp; &lt;b&gt;</p>');
+		$p->getFilterDOM();
+		$this->assertSame("<p>Caf\u{e9} &amp; &lt;b&gt;</p>", $p->getFilterText());
+	}
+
+	/**
+	 * @dataProvider parserProvider
+	 */
+	public function testLeadingTextIsTopLevelTextNode(string $class)
+	{
+		$this->skipUnlessParser($class);
+		$p = new $class('Lead <b>bold</b>');
+		$dom = $p->getFilterDOM();
+		$this->assertSame(XML_TEXT_NODE, $dom->firstChild->nodeType);
+		$this->assertSame('Lead ', $dom->firstChild->nodeValue);
+	}
+
+	/**
+	 * @dataProvider parserProvider
+	 */
+	public function testDomChangeKeepsScriptAndSvg(string $class)
+	{
+		$this->skipUnlessParser($class);
+		$p = new $class('<p>HTML</p><script>x("</p>")</script><svg viewBox="0 0 1 1"></svg>');
+		$p->walkElements(function (\DOMElement $el) {
+			if ($el->tagName === 'p') {
+				$abbr = $el->ownerDocument->createElement('abbr', 'HTML');
+				$abbr->setAttribute('title', 'HyperText Markup Language');
+				$el->replaceChild($abbr, $el->firstChild);
+			}
+		});
+		$this->assertSame(
+			'<p><abbr title="HyperText Markup Language">HTML</abbr></p><script>x("</p>")</script><svg viewBox="0 0 1 1"></svg>',
+			$p->getFilterText()
+		);
+	}
+
+	/**
+	 * @dataProvider parserProvider
+	 */
+	public function testTableRowsAreElements(string $class)
+	{
+		$this->skipUnlessParser($class);
+		$p = new $class('<tr><td>a</td><td>b</td></tr>');
+		$tags = [];
+		$p->walkElements(function (\DOMElement $el) use (&$tags) {
+			$tags[] = $el->tagName;
+		});
+		$this->assertSame(['tr', 'td', 'td'], $tags);
+	}
+
+	public function testLibxmlKeepsScriptContentAsPlaceholder()
+	{
+		$p = new TRenderFilterParameterLibxml('<script>x("</p>")</script><svg></svg>');
+		$dom = $p->getFilterDOM();
+		$this->assertStringStartsWith('<!--prado-raw-', $dom->firstChild->textContent);
+		$this->assertSame(XML_COMMENT_NODE, $dom->lastChild->nodeType);
+		$this->assertStringNotContainsString('prado-raw', $p->getFilterText());
+	}
+
+	public function testHtml5ScriptContentIsText()
+	{
+		$this->skipUnlessParser(TRenderFilterParameterHtml5::class);
+		$p = new TRenderFilterParameterHtml5('<script>x("</p>")</script>');
+		$this->assertSame('x("</p>")', $p->getFilterDOM()->firstChild->textContent);
+	}
+
+	public function testHtml5TemplateContentIsWalked()
+	{
+		$this->skipUnlessParser(TRenderFilterParameterHtml5::class);
+		$p = new TRenderFilterParameterHtml5('<template><tr><td>x</td></tr></template>');
+		$tags = [];
+		$p->walkElements(function (\DOMElement $el) use (&$tags) {
+			$tags[] = $el->tagName;
+		});
+		$this->assertSame(['template', 'tr', 'td'], $tags);
+	}
+
+	public function testHtml5KeepsNonXmlAttributeNames()
+	{
+		$this->skipUnlessParser(TRenderFilterParameterHtml5::class);
+		$html = '<div @click="go()" :class="c" [prop]="v" (event)="e">x</div>';
+		$p = new TRenderFilterParameterHtml5($html);
+		$p->getFilterDOM();
+		$this->assertSame($html, $p->getFilterText());
+	}
+
+	public function testHtml5DocumentLeavesOutImpliedElements()
+	{
+		$this->skipUnlessParser(TRenderFilterParameterHtml5::class);
+		$p = new TRenderFilterParameterHtml5('<!DOCTYPE html><p>x</p>');
+		$p->getFilterDOM();
+		$this->assertSame('<!DOCTYPE html><p>x</p>', $p->getFilterText());
+	}
+
+	public function testDoctypeWithIdentifiersSerialized()
+	{
+		$html = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html><body><p>x</p></body></html>';
+		$p = new TRenderFilterParameterLibxml($html);
+		$p->getFilterDOM();
+		$this->assertStringStartsWith('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">', $p->getFilterText());
+	}
+
+	public function testUseHtml5ParserFollowsPhpVersion()
+	{
+		$this->assertSame(class_exists(\Dom\HTMLDocument::class), \Prado\Test\Unit\PradoUnit::invoke(new TRenderFilterParameter(), 'getUseHtml5Parser'));
+	}
+
+	public static function fragmentContextProvider(): array
+	{
+		return [
+			'text' => ['plain text', 'body'],
+			'paragraph' => ['<p>x</p>', 'body'],
+			'comment first' => ['<!-- c --> <tr>', 'tbody'],
+			'doctype' => ['<!DOCTYPE html><html>', '#document'],
+			'html' => ['<HTML lang="en">', '#document'],
+			'head' => ['<head>', 'html'],
+			'body' => ['<body>', 'html'],
+			'row' => ['<tr>', 'tbody'],
+			'cell' => ['<td>', 'tr'],
+			'header cell' => ['<th>', 'tr'],
+			'caption' => ['<caption>', 'table'],
+			'column group' => ['<colgroup>', 'table'],
+			'table body' => ['<tbody>', 'table'],
+			'column' => ['<col>', 'colgroup'],
+			'option' => ['<option>', 'select'],
+			'option group' => ['<optgroup>', 'select'],
+			'header is not head' => ['<header>', 'body'],
+		];
+	}
+
+	/**
+	 * @dataProvider fragmentContextProvider
+	 */
+	public function testGetFragmentContext(string $html, string $context)
+	{
+		$this->assertSame($context, \Prado\Test\Unit\PradoUnit::invoke(new TRenderFilterParameter(), 'getFragmentContext', $html));
 	}
 }
