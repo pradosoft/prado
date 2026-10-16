@@ -121,6 +121,7 @@ class TActiveFileUploadTest extends TestCase
 		$this->assertStringContainsString('Options.clientID = "' . $upload->getClientID() . '";', $output);
 		$this->assertStringContainsString('Options.targetID = "x\\u0027;alert(1);\\/\\/\\u003C\\/script\\u003E";', $output);
 		$this->assertStringNotContainsString("x';alert(1)", $output);
+	}
 
 	public function testParamsTokenRoundTrip()
 	{
