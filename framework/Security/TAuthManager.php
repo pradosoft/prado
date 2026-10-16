@@ -293,12 +293,17 @@ class TAuthManager extends \Prado\TModule
 	}
 
 	/**
+	 * Generates the session variable and auto-login cookie name.  The name is an HMAC of
+	 * the application ID keyed by the security manager's
+	 * {@see \Prado\Security\TSecurityManager::getValidationKey() ValidationKey}, so it
+	 * cannot be predicted from the application ID alone.
 	 * @return string a key used to store user information in session
 	 * @since 3.1.1
 	 */
 	protected function generateUserKey()
 	{
-		return sha1($this->getApplication()->getUniqueID() . 'prado:user');
+		$securityManager = $this->getApplication()->getSecurityManager();
+		return hash_hmac($securityManager->getHashAlgorithm(), $this->getApplication()->getUniqueID() . 'prado:user', $securityManager->getValidationKey());
 	}
 
 	/**

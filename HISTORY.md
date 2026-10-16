@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+CHG: `TAuthManager::generateUserKey()` keys its session and auto-login cookie name with the security manager's `ValidationKey`, so the name is not predictable from the application ID. UPGRADE.md covers the change. (belisoful)
 CHG: `TSecurityManager::EncryptionKeyAlgorithm` defaults to `sha256` instead of `md5`. UPGRADE.md covers reading data encrypted under the old default. (belisoful)
 BUG: `TActiveFileUpload` wrote the `TActiveFileUpload_TargetId` and `TActiveFileUpload_InputId` request values into its script unencoded; they are now quoted with `TJavaScript::quoteString()`. (belisoful)
 BUG: `TActiveFileUpload` unserialized its callback token without a class restriction; only `TActiveFileUploadCallbackParams` is allowed. (belisoful)

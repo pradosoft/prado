@@ -10,6 +10,9 @@ for both A and B.
 Upgrading from v4.3.3
 ---------------------
 - PHP 8.2 is now required. Applications running PHP 8.1 stay on Prado 4.3.
+- `TAuthManager::getUserKey()`, the session variable and auto-login cookie name, is an HMAC keyed by the
+  security manager's `ValidationKey`; it was a SHA-1 of the application ID. Users are signed out once after the
+  upgrade, and existing auto-login cookies are ignored. Keep `ValidationKey` stable across servers and deployments.
 - `TSecurityManager::EncryptionKeyAlgorithm` defaults to `sha256`; it was `md5`. Data encrypted under the old
   default, such as auto-login cookies and encrypted page state, no longer decrypts. Set
   `EncryptionKeyAlgorithm="md5"` on the security manager module to keep reading it.
