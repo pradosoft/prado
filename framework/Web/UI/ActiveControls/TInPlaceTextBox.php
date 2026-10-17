@@ -192,8 +192,8 @@ class TInPlaceTextBox extends TActiveTextBox
 		$options['TextBoxID'] = $this->getClientID();
 		$options['EditorID'] = $this->getClientID();
 		$options['ExternalControl'] = $this->getExternalControlID();
-		$options['AutoHide'] = $this->getAutoHideEditor() == false ? '' : true;
-		$options['AutoPostBack'] = $this->getAutoPostBack() == false ? '' : true;
+		$options['AutoHide'] = $this->getAutoHideEditor() ? true : '';
+		$options['AutoPostBack'] = $this->getAutoPostBack() ? true : '';
 		$options['EmptyDisplayText'] = $this->getEmptyDisplayText();
 		$options['DisplayEditor'] = $this->getDisplayEditor();
 		// The created text input has no associated label element; ToolTip names
@@ -202,7 +202,7 @@ class TInPlaceTextBox extends TActiveTextBox
 		$options['Columns'] = $this->getColumns();
 		if ($this->getTextMode() === 'MultiLine') {
 			$options['Rows'] = $this->getRows();
-			$options['Wrap'] = $this->getWrap() == false ? '' : true;
+			$options['Wrap'] = $this->getWrap() ? true : '';
 		} else {
 			$length = $this->getMaxLength();
 			$options['MaxLength'] = $length > 0 ? $length : '';
