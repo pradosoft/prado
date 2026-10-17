@@ -848,7 +848,6 @@ class TDbCronManager extends TCronModule implements IDbModule
 		$this->ensureTable();
 
 		$db = $this->getDbConnection();
-		$driver = $db->getDriverName();
 
 		$limit = $orderby = $where = '';
 		if (is_string($name)) {
@@ -857,15 +856,7 @@ class TDbCronManager extends TCronModule implements IDbModule
 		$pageSize = (int) $pageSize;
 		$offset = (int) $offset;
 		if ($pageSize !== 0) {
-			if ($offset !== 0) {
-				if ($driver === 'postgresql') {
-					$limit = " LIMIT {$pageSize} OFFSET {$offset}";
-				} else {
-					$limit = " LIMIT {$offset}, {$pageSize}";
-				}
-			} else {
-				$limit = " LIMIT {$pageSize}";
-			}
+			$limit = " LIMIT {$pageSize}" . ($offset !== 0 ? " OFFSET {$offset}" : '');
 			$sortingDesc ??= true;
 		}
 		if ($sortingDesc !== null) {
