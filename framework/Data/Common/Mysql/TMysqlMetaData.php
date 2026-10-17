@@ -264,13 +264,14 @@ class TMysqlMetaData extends TDbMetaData
 	}
 
 	/**
-	 * http://dev.mysql.com/doc/refman/5.0/en/identifiers.html
+	 * Checks a database or table name part.  It must not contain `/`, `\`, `.`, NUL,
+	 * or byte 0xFF.  http://dev.mysql.com/doc/refman/5.0/en/identifiers.html
 	 * @param string $name identifier name
 	 * @return bool true if valid identifier.
 	 */
 	protected function isValidIdentifier($name)
 	{
-		return !preg_match('#/|\\|.|\x00|\xFF#', $name);
+		return !preg_match('#[/\\\\.\x00\xFF]#', $name);
 	}
 
 	/**
