@@ -138,7 +138,7 @@ abstract class MessageSource implements IMessageSource
 			$filename = __DIR__ . '/' . $class . '.php';
 		}
 
-		if (is_file($filename) == false) {
+		if (!is_file($filename)) {
 			throw new Exception("File $filename not found");
 		}
 
@@ -177,7 +177,7 @@ abstract class MessageSource implements IMessageSource
 		foreach ($variants as $variant) {
 			$source = $this->getSource($variant);
 
-			if ($this->isValidSource($source) == false) {
+			if (!$this->isValidSource($source)) {
 				continue;
 			}
 

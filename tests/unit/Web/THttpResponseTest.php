@@ -216,6 +216,22 @@ class THttpResponseTest extends \PHPUnit\Framework\TestCase
 		ob_end_flush();
 	}
 
+	public function testSetStatusCodeRejectsLineBreakAtReasonStart()
+	{
+		$response = new TTestHttpResponse();
+		$response->init(null);
+		$rejected = 0;
+		foreach (["\r\nX-Injected: 1", "\nX-Injected: 1", "OK\r\nX-Injected: 1"] as $reason) {
+			try {
+				$response->setStatusCode(299, $reason);
+			} catch (TInvalidDataValueException $e) {
+				$rejected++;
+			}
+		}
+		self::assertSame(3, $rejected);
+		ob_end_flush();
+	}
+
 	public function testGetCookies()
 	{
 		$response = new TTestHttpResponse();

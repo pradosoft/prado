@@ -15,6 +15,7 @@ use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbConnection;
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Prado;
 
 /**
@@ -284,5 +285,26 @@ trait TDbPropertiesTrait
 			$this->_gateways[$tableName] = $gateway;
 		}
 		return $gateway;
+	}
+
+	/**
+	 * Validates a configured SQL identifier, such as a table or column name, that is
+	 * written into SQL.  An identifier is one to three parts separated by `.`.  Each part
+	 * is a plain name of letters, digits, `_`, and `$` that does not start with a digit,
+	 * or a name quoted with back-ticks, double quotes, or square brackets that does not
+	 * contain its closing quote.
+	 * @param string $value the identifier.
+	 * @param string $property the property that holds the identifier, for the error message.
+	 * @throws TInvalidDataValueException when the identifier is not valid.
+	 * @return string the identifier.
+	 * @since 4.4.0
+	 */
+	protected function ensureSqlIdentifier(string $value, string $property): string
+	{
+		$part = '(?:[A-Za-z_][A-Za-z0-9_$]*|`[^`\x00]+`|"[^"\x00]+"|\[[^\]\x00]+\])';
+		if (!preg_match('/^' . $part . '(?:\.' . $part . '){0,2}$/D', $value)) {
+			throw new TInvalidDataValueException('dbproperties_identifier_invalid', $property, static::class, $value);
+		}
+		return $value;
 	}
 }

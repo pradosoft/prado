@@ -223,10 +223,10 @@ class MessageSource_gettext extends MessageSource
 			[$variant, $MOFile, $POFile] = $this->createMessageTemplate($catalogue);
 		}
 
-		if (is_writable($MOFile) == false) {
+		if (!is_writable($MOFile)) {
 			throw new TIOException("Unable to save to file {$MOFile}, file must be writable.");
 		}
-		if (is_writable($POFile) == false) {
+		if (!is_writable($POFile)) {
 			throw new TIOException("Unable to save to file {$POFile}, file must be writable.");
 		}
 
@@ -281,10 +281,10 @@ class MessageSource_gettext extends MessageSource
 			return false;
 		}
 
-		if (is_writable($MOFile) == false) {
+		if (!is_writable($MOFile)) {
 			throw new TIOException("Unable to modify file {$MOFile}, file must be writable.");
 		}
-		if (is_writable($POFile) == false) {
+		if (!is_writable($POFile)) {
 			throw new TIOException("Unable to modify file {$POFile}, file must be writable.");
 		}
 
@@ -330,10 +330,10 @@ class MessageSource_gettext extends MessageSource
 			return false;
 		}
 
-		if (is_writable($MOFile) == false) {
+		if (!is_writable($MOFile)) {
 			throw new TIOException("Unable to update file {$MOFile}, file must be writable.");
 		}
-		if (is_writable($POFile) == false) {
+		if (!is_writable($POFile)) {
 			throw new TIOException("Unable to update file {$POFile}, file must be writable.");
 		}
 

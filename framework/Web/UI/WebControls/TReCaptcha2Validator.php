@@ -68,7 +68,7 @@ class TReCaptcha2Validator extends TBaseValidator
 			$control = $this->getCaptchaControl();
 			$this->_isvalid = $control->validate();
 		}
-		return ($this->_isvalid == true);
+		return (bool) $this->_isvalid;
 	}
 
 	public function onPreRender($param)
