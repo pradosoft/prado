@@ -46,6 +46,10 @@ use Prado\Util\Traits\TInitializedTrait;
  * </modules>
  * ```
  *
+ * The key field, value field, table, and autoload field are SQL identifiers; their setters
+ * reject any other value.  The autoload values are bound as query parameters.  A value
+ * quoted as an SQL string literal, such as `'yes'`, is bound without its quotes.
+ *
  * PHP configuration style:
  * ```php
  * return [
@@ -234,10 +238,13 @@ class TDbParameterModule extends TDbModule implements IPermissions, IModuleDepen
 		$this->ensureTable();
 
 		$autoLoadField = $this->getAutoLoadField();
-		$where = ($autoLoadField ? " WHERE {$autoLoadField}={$this->getAutoLoadValue()}" : '');
+		$where = ($autoLoadField ? " WHERE {$autoLoadField}=:auto" : '');
 		$cmd = $db->createCommand(
 			"SELECT {$this->getKeyField()} as keyField, {$this->getValueField()}  as valueField FROM {$this->getTableName()}{$where}"
 		);
+		if ($autoLoadField) {
+			$cmd->bindValue(':auto', $this->getAutoLoadBindValue(true), PDO::PARAM_STR);
+		}
 		$results = $cmd->query();
 
 		$appParameters = $this->getApplication()->getParameters();
@@ -465,7 +472,7 @@ class TDbParameterModule extends TDbModule implements IPermissions, IModuleDepen
 		$cmd->bindParameter(":key", $key, PDO::PARAM_STR);
 		$cmd->bindParameter(":value", $_value, PDO::PARAM_STR);
 		if ($autoLoadField) {
-			$alv = $autoLoad ? $this->getAutoLoadValue() : $this->getAutoLoadValueFalse();
+			$alv = $this->getAutoLoadBindValue((bool) $autoLoad);
 			$cmd->bindParameter(":auto", $alv, PDO::PARAM_STR);
 		}
 		$cmd->execute();
@@ -581,7 +588,7 @@ class TDbParameterModule extends TDbModule implements IPermissions, IModuleDepen
 	public function setKeyField($value)
 	{
 		$this->assertUninitialized('KeyField');
-		$this->_keyField = TPropertyValue::ensureString($value);
+		$this->_keyField = $this->ensureSqlIdentifier(TPropertyValue::ensureString($value), 'KeyField');
 	}
 
 	/**
@@ -599,7 +606,7 @@ class TDbParameterModule extends TDbModule implements IPermissions, IModuleDepen
 	public function setValueField($value)
 	{
 		$this->assertUninitialized('ValueField');
-		$this->_valueField = TPropertyValue::ensureString($value);
+		$this->_valueField = $this->ensureSqlIdentifier(TPropertyValue::ensureString($value), 'ValueField');
 	}
 
 	/**
@@ -617,7 +624,7 @@ class TDbParameterModule extends TDbModule implements IPermissions, IModuleDepen
 	public function setTableName($value)
 	{
 		$this->assertUninitialized('TableName');
-		$this->_tableName = TPropertyValue::ensureString($value);
+		$this->_tableName = $this->ensureSqlIdentifier(TPropertyValue::ensureString($value), 'TableName');
 	}
 
 	/**
@@ -635,7 +642,8 @@ class TDbParameterModule extends TDbModule implements IPermissions, IModuleDepen
 	public function setAutoLoadField($value)
 	{
 		$this->assertUninitialized('AutoLoadField');
-		$this->_autoLoadField = TPropertyValue::ensureString($value);
+		$value = TPropertyValue::ensureString($value);
+		$this->_autoLoadField = $value === '' ? '' : $this->ensureSqlIdentifier($value, 'AutoLoadField');
 	}
 
 	/**
@@ -654,6 +662,23 @@ class TDbParameterModule extends TDbModule implements IPermissions, IModuleDepen
 	{
 		$this->assertUninitialized('AutoLoadValue');
 		$this->_autoLoadValue = TPropertyValue::ensureString($value);
+	}
+
+	/**
+	 * Returns the autoload value bound as a query parameter.  A value quoted as an SQL
+	 * string literal, such as `'yes'`, is returned without its quotes, and a doubled
+	 * quote inside it becomes one quote.
+	 * @param bool $autoLoad true for {@see getAutoLoadValue()}, false for {@see getAutoLoadValueFalse()}.
+	 * @return string the value to bind.
+	 * @since 4.4.0
+	 */
+	protected function getAutoLoadBindValue(bool $autoLoad): string
+	{
+		$value = $autoLoad ? $this->getAutoLoadValue() : $this->getAutoLoadValueFalse();
+		if (strlen($value) >= 2 && $value[0] === "'" && $value[-1] === "'") {
+			$value = str_replace("''", "'", substr($value, 1, -1));
+		}
+		return $value;
 	}
 
 	/**
