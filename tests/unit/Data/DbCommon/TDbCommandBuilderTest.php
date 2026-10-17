@@ -269,6 +269,18 @@ class TDbCommandBuilderTest extends \PHPUnit\Framework\TestCase
 		$this->assertContains('NULL AS "id"', $result);
 	}
 
+	public function test_get_select_field_list_null_value_selects_the_column()
+	{
+		$result = $this->builder()->getSelectFieldList(['price' => null, 'alias' => null, null]);
+		$this->assertSame(['"price"', 'NULL AS alias', 'NULL'], $result);
+	}
+
+	public function test_get_select_field_list_falsy_values_are_literals()
+	{
+		$result = $this->builder()->getSelectFieldList(['price' => 0, 'note' => '']);
+		$this->assertSame(['0 AS "price"', "'' AS \"note\""], $result);
+	}
+
 	public function test_get_select_field_list_alias()
 	{
 		// 'myalias' => 'name' where 'name' is a known column → '"name" AS myalias'

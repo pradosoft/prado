@@ -119,7 +119,7 @@ class MessageCache
 
 		$cache = $this->cache->getCacheFile();
 
-		if (is_file($cache) == false) {
+		if (!is_file($cache)) {
 			return false;
 		}
 

@@ -16,6 +16,7 @@ use Prado\Data\TDbConnection;
 use Prado\Data\TDbDriver;
 use Prado\Data\TDbPropertiesTrait;
 use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TLogException;
 use Prado\TPropertyValue;
 use Prado\Util\Clock\TApplicationClockAwareTrait;
@@ -266,19 +267,28 @@ class TDbLogRoute extends TLogRoute
 	 *   are exploded with ','.
 	 * @param ?float $minTime All logs after this time are found
 	 * @param ?float $maxTime All logs before this time are found
-	 * @param string $order The order statement.
-	 * @param string $limit The limit statement.
+	 * @param string $order The ORDER BY columns, each optionally followed by ASC or DESC,
+	 *   such as `logtime DESC, log_id`.
+	 * @param string $limit The LIMIT row count, `count OFFSET offset`, or `offset, count`.
+	 * @throws TInvalidDataValueException if `$order` or `$limit` is not in that form.
 	 * @return \Prado\Data\IDataReader the logs from the database.
 	 * @since 4.3.0
 	 */
 	public function getDBLogs(?int $level = null, null|string|array $categories = null, ?float $minTime = null, ?float $maxTime = null, string $order = '', string $limit = '')
 	{
 		$values = [];
-		if ($order) {
-			$order .= ' ORDER BY ' . $order;
+		if ($order !== '') {
+			$column = '[A-Za-z_][A-Za-z0-9_]*(?:\s+(?:ASC|DESC))?';
+			if (!preg_match('/^\s*' . $column . '(?:\s*,\s*' . $column . ')*\s*$/iD', $order)) {
+				throw new TInvalidDataValueException('dblogroute_order_invalid', $order);
+			}
+			$order = ' ORDER BY ' . $order;
 		}
-		if ($limit) {
-			$limit .= ' LIMIT ' . $limit;
+		if ($limit !== '') {
+			if (!preg_match('/^\s*\d+(?:\s*,\s*\d+|\s+OFFSET\s+\d+)?\s*$/iD', $limit)) {
+				throw new TInvalidDataValueException('dblogroute_limit_invalid', $limit);
+			}
+			$limit = ' LIMIT ' . $limit;
 		}
 		$where = $this->getLogWhere($level, $categories, $minTime, $maxTime, $values);
 		$sql = 'SELECT * FROM ' . $this->_logTable . $where . $order . $limit;
@@ -381,13 +391,14 @@ class TDbLogRoute extends TLogRoute
 	 * and you want to create the DB table manually by yourself,
 	 * you need to make sure the DB table is of the following structure:
 	 * (key CHAR(128) PRIMARY KEY, value BLOB, expire INT)
-	 * @param string $value the name of the DB table to store log content
+	 * @param string $value the name of the DB table to store log content, an SQL identifier
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the name is not an SQL identifier
 	 * @return static The current object.
 	 * @see setAutoCreateLogTable
 	 */
 	public function setLogTableName($value): static
 	{
-		$this->_logTable = $value;
+		$this->_logTable = $this->ensureSqlIdentifier(TPropertyValue::ensureString($value), 'LogTableName');
 
 		return $this;
 	}

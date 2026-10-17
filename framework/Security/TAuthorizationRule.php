@@ -292,13 +292,13 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 		if (count($this->_ipRules) === 1 && $this->_ipRules[0] === '*') {
 			$exprops[] = "\0Prado\Security\TAuthorizationRule\0_ipRules";
 		}
-		if ($this->_everyone == true) {
+		if ($this->_everyone) {
 			$exprops[] = "\0Prado\Security\TAuthorizationRule\0_everyone";
 		}
-		if ($this->_guest == false) {
+		if (!$this->_guest) {
 			$exprops[] = "\0Prado\Security\TAuthorizationRule\0_guest";
 		}
-		if ($this->_authenticated == false) {
+		if (!$this->_authenticated) {
 			$exprops[] = "\0Prado\Security\TAuthorizationRule\0_authenticated";
 		}
 		if ($this->_priority === null) {
