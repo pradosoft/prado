@@ -146,9 +146,10 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	 */
 	public function setEnabled($enabled)
 	{
-		if ($enabled == true && !$this->_paramBehavior) {
+		$enabled = TPropertyValue::ensureBoolean($enabled);
+		if ($enabled && !$this->_paramBehavior) {
 			$this->attachParamMapRoute();
-		} elseif ($enabled == false && $this->_paramBehavior) {
+		} elseif (!$enabled && $this->_paramBehavior) {
 			$this->getApplication()->getParameters()->detachBehavior($this->_routeBehaviorName);
 			$this->_paramBehavior = null;
 		}

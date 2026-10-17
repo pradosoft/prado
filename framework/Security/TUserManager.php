@@ -275,7 +275,9 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	}
 
 	/**
-	 * Validates if the username and password are correct.
+	 * Validates if the username and password are correct.  The password is compared
+	 * with `hash_equals()`, so the comparison time does not depend on where the
+	 * password first differs.
 	 * @param string $username user name
 	 * @param string $password password
 	 * @return bool true if validation is successful, false otherwise.
@@ -288,7 +290,10 @@ class TUserManager extends \Prado\TModule implements IUserManager
 			$password = sha1($password);
 		}
 		$username = strtolower($username);
-		return (isset($this->_users[$username]) && $this->_users[$username] === $password);
+		if (!isset($this->_users[$username]) || !is_string($password)) {
+			return false;
+		}
+		return hash_equals((string) $this->_users[$username], $password);
 	}
 
 	/**

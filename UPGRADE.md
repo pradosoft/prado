@@ -10,6 +10,9 @@ for both A and B.
 Upgrading from v4.3.3
 ---------------------
 - PHP 8.2 is now required. Applications running PHP 8.1 stay on Prado 4.3.
+- `TSecurityManager::UseEncryptionHmac` defaults to `true`; it was `false`. `decrypt()` reads data with or without the
+  HMAC, so existing encrypted data still decrypts. Prado versions before 4.3.3 cannot decrypt the new output; an
+  application sharing encrypted data with them sets `UseEncryptionHmac="false"`.
 - `TDbParameterModule` binds `AutoLoadValue` and `AutoLoadValueFalse` as parameters. A value quoted as an SQL literal,
   such as `'yes'`, is bound without its quotes; an SQL expression is no longer evaluated. `TableName`, `KeyField`,
   `ValueField`, and `AutoLoadField` must be SQL identifiers.

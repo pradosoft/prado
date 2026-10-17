@@ -318,6 +318,7 @@ permissions_permissionfile_invalid		= TPermissionsManager.PermissionFile '{0}' i
 thememanager_basepath_invalid			= TThemeManager.BasePath '{0}' is not a valid path alias. Make sure you have defined this alias in configuration and it points to a valid directory.
 thememanager_basepath_invalid2			= TThemeManager.BasePath '{0}' is not a valid directory.
 thememanager_basepath_unchangeable		= TThemeManager.BasePath cannot be modified after the module is initialized.
+thememanager_theme_invalid				= TThemeManager theme name '{0}' must be a single directory name.
 
 theme_baseurl_required					= TThemeManager.BasePath is required. By default, a directory named 'themes' under the directory containing the application entry script is assumed.
 theme_path_inexistent					= Theme path '{0}' does not exist.

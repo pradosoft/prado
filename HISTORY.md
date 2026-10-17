@@ -1,5 +1,11 @@
 ## Version 4.4.0 - TBA
 BUG: `TMysqlMetaData::isValidIdentifier()` misread its pattern and accepted `\` and `.`, while rejecting `|` followed by any character; it now rejects `/`, `\`, `.`, NUL, and 0xFF as intended. (belisoful)
+CHG: `TSecurityManager::UseEncryptionHmac` defaults to `true`, so `encrypt()` output carries an HMAC. UPGRADE.md covers the change. (belisoful)
+BUG: `TSqlMapObjectCollectionTree::collect()` looped forever when a group key was `"0"`, and `addNode()` matched parent keys loosely, so `"1e3"` matched `"1000"`; both loops iterate `array_keys()` and compare keys as strings. (belisoful)
+BUG: `TDbCommandBuilder::getSelectFieldList()` raised a PHP deprecation for a null value and selected the column for `0`, `''`, or `false`; a null value selects the column (or `NULL AS` an unknown key), and other scalars are literals. (belisoful)
+BUG: `THttpResponse::setStatusCode()` missed a CR or LF at the start of a custom reason phrase. `TParameterizeBehavior` and `TTimeZoneParameterBehavior::setEnabled()` attached their parameter route for the string `'false'`. Other `== true` and `== false` comparisons are written as boolean tests. (belisoful)
+BUG: `TUserManager::validateUser()` compared passwords with `===`; it uses `hash_equals()`. (belisoful)
+BUG: `TThemeManager::getTheme()` joined the theme name to `BasePath` unchecked, so `../` left the themes directory; a name must be a single directory name. (belisoful)
 BUG: `TDbLogRoute::getDBLogs()` built an invalid query for any `$order` or `$limit` and wrote them into SQL unchecked; it now builds the clauses correctly and rejects values that are not a column list or a row limit. (belisoful)
 BUG: `TMysqlMetaData::getIsView()` wrote the table name into a `LIKE` string; it is quoted with its wildcards escaped. (belisoful)
 BUG: `TDbCache.CacheTableName`, `TDbLogRoute.LogTableName`, and `TDbCronManager.TableName` are written into SQL; their setters reject a name that is not an SQL identifier. (belisoful)

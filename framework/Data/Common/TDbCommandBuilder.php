@@ -190,6 +190,13 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDataCommandBuilder
 	 * // SELECT "my custom string" AS `col1`, 1.0 AS `col2`, NULL AS `col3` FROM...
 	 * ```
 	 *
+	 * - A null value selects the column named by its key; for a key that is not a column,
+	 *   it selects NULL under that alias
+	 * ```php
+	 * array('col1' => null, 'alias' => null)
+	 * // SELECT `col1`, NULL AS alias FROM...
+	 * ```
+	 *
 	 * - If the *-wildcard char is used as key or value, add the full list of quoted table column names
 	 * ```php
 	 * array('col1' => 'NULL', '*')
@@ -237,6 +244,15 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDataCommandBuilder
 					continue;
 				}
 
+				if ($value === null) {
+					if (is_string($key) && isset($columns[$key])) {
+						$result[] = $columns[$key]->getColumnName();
+					} else {
+						$result[] = 'NULL' . (is_string($key) ? ' AS ' . $key : '');
+					}
+					continue;
+				}
+
 				if (preg_match('/\bAS\b/i', $value)) {
 					$result[] = $value;
 					continue;
@@ -269,11 +285,6 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDataCommandBuilder
 
 				if ($v && $key == $value) {
 					$result[] = $columns[$value]->getColumnName();
-					continue;
-				}
-
-				if ($k && $value == null) {
-					$result[] = $columns[$key]->getColumnName();
 					continue;
 				}
 

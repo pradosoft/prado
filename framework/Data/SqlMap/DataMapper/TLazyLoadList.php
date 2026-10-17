@@ -80,7 +80,7 @@ class TLazyLoadList
 	 */
 	protected function fetchListData()
 	{
-		if ($this->_loaded == false) {
+		if (!$this->_loaded) {
 			$this->_innerList = $this->_statement->executeQueryForList($this->_connection, $this->_param);
 			$this->_loaded = true;
 			//replace the target property with real list
