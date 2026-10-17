@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+CHG: `TSecurityManager::UseEncryptionHmac` defaults to `true`, so `encrypt()` output carries an HMAC. UPGRADE.md covers the change. (belisoful)
 BUG: `TSqlMapObjectCollectionTree::collect()` looped forever when a group key was `"0"`, and `addNode()` matched parent keys loosely, so `"1e3"` matched `"1000"`; both loops iterate `array_keys()` and compare keys as strings. (belisoful)
 BUG: `TDbCommandBuilder::getSelectFieldList()` raised a PHP deprecation for a null value and selected the column for `0`, `''`, or `false`; a null value selects the column (or `NULL AS` an unknown key), and other scalars are literals. (belisoful)
 BUG: `THttpResponse::setStatusCode()` missed a CR or LF at the start of a custom reason phrase. `TParameterizeBehavior` and `TTimeZoneParameterBehavior::setEnabled()` attached their parameter route for the string `'false'`. Other `== true` and `== false` comparisons are written as boolean tests. (belisoful)

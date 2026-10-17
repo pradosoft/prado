@@ -42,7 +42,7 @@ use Prado\TPropertyValue;
  * Prado 4.3 defaulted to `md5`; setting EncryptionKeyAlgorithm to `md5` decrypts data
  * encrypted under that default.
  *
- * Optionally, {@see setUseEncryptionHmac UseEncryptionHmac} (default `false`) enables
+ * {@see setUseEncryptionHmac UseEncryptionHmac} (default `true`) enables
  * authenticated encryption: {@see encrypt()} prepends a raw HMAC (keyed on
  * {@see getValidationKey ValidationKey} with {@see getHashAlgorithm HashAlgorithm}) over
  * the IV+ciphertext block. {@see decrypt()} always attempts HMAC verification first
@@ -100,7 +100,7 @@ class TSecurityManager extends \Prado\TModule
 	private $_hashAlgorithm = 'sha256';
 	private $_cryptAlgorithm = 'aes-256-cbc';
 	private $_encryptionKeyAlgorithm = 'sha256';
-	private $_useEncryptionHmac = false;	// @todo v4.4 change to true.
+	private $_useEncryptionHmac = true;
 	private $_mbstring;
 	private $_closureSecretKey;
 	private ?bool $_closureUnencrypted = null;
@@ -382,7 +382,8 @@ class TSecurityManager extends \Prado\TModule
 	/**
 	 * @return bool Whether {@see encrypt()} prepends an HMAC over the IV+ciphertext block.
 	 * When `true`, {@see decrypt()} detects ciphertext tampering reliably and returns `false`
-	 * deterministically rather than relying on PKCS7 padding luck. Defaults to `false`.
+	 * deterministically rather than relying on PKCS7 padding luck. Defaults to `true`;
+	 * Prado 4.3 defaulted to `false`.
 	 * @since 4.3.3
 	 */
 	public function getUseEncryptionHmac(): bool
