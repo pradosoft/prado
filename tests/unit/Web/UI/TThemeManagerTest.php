@@ -312,4 +312,20 @@ class TThemeManagerTest extends \PHPUnit\Framework\TestCase
 		$theme = $manager->getTheme('ATheme');
 		$this->assertStringStartsWith('/custom/themes', $theme->getBaseUrl());
 	}
+
+	public function testGetThemeRejectsPathNames(): void
+	{
+		$manager = new TThemeManager();
+		$this->setBasePath($manager, $this->createTmpDir('prado_themes_path_'));
+		$rejected = 0;
+		$names = ['', '.', '..', '../secret', 'a/b', 'a\\b', "a\0b", '/etc'];
+		foreach ($names as $name) {
+			try {
+				$manager->getTheme($name);
+			} catch (TInvalidDataValueException $e) {
+				$rejected++;
+			}
+		}
+		$this->assertSame(count($names), $rejected);
+	}
 }

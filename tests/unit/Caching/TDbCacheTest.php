@@ -5,6 +5,7 @@ namespace Prado\Test\Unit\Caching;
 use Prado\Caching\TDbCache;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Test\Unit\Harness\TTestApplication;
 use Prado\Test\Unit\PradoUnit;
 
@@ -79,6 +80,12 @@ class TDbCacheTest extends \PHPUnit\Framework\TestCase
 	{
 		$this->_cache->setCacheTableName('custom_cache_table');
 		$this->assertEquals('custom_cache_table', $this->_cache->getCacheTableName());
+	}
+
+	public function testCacheTableNameRejectsSql()
+	{
+		$this->expectException(TInvalidDataValueException::class);
+		$this->_cache->setCacheTableName('pradocache; DROP TABLE users');
 	}
 
 	public function testAutoCreateCacheTable()

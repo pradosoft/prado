@@ -101,4 +101,4 @@ External user file (set `UserFile` to a namespace path matching the config forma
 - **Cookie auto-login token is `md5(username . storedPassword)`** — if the stored password changes, all existing cookies are immediately invalidated. This is intentional.
 - **`PasswordMode::MD5` is the default** — applications that require stronger hashing should use [TDbUserManager](./TDbUserManager.md) with bcrypt/Argon2 in the custom `TDbUser`.
 - **Not suitable for large user bases** — the entire user list is loaded into memory on every request.
-- **`validateUser()` uses `#[\SensitiveParameter]`** on the password argument, so it is redacted from stack traces.
+- **`validateUser()` uses `#[\SensitiveParameter]`** on the password argument, so it is redacted from stack traces. It compares the stored and supplied passwords with `hash_equals()` (4.4.0).

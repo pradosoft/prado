@@ -131,7 +131,7 @@ class TBaseActiveControl extends \Prado\TComponent
 	public function canUpdateClientSide($bDontRequireVisibility = false)
 	{
 		return 	$this->getControl()->getHasChildInitialized()
-				&& $this->getPage()->getIsLoadingPostData() == false
+				&& !$this->getPage()->getIsLoadingPostData()
 				&& $this->getPage()->getIsCallback()
 				&& $this->getEnableUpdate()
 				&& ($bDontRequireVisibility || $this->getControl()->getVisible());
