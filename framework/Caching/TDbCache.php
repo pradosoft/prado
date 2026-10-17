@@ -450,13 +450,14 @@ class TDbCache extends TSerializingCache implements IDbModule
 	 *
 	 * Important: Make sure that the indices are non-unique!
 	 *
-	 * @param string $value the name of the DB table to store cache content
+	 * @param string $value the name of the DB table to store cache content, an SQL identifier
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the name is not an SQL identifier
 	 * @see setAutoCreateCacheTable
 	 */
 	public function setCacheTableName($value)
 	{
 		$this->assertUninitialized('CacheTableName');
-		$this->_cacheTable = $value;
+		$this->_cacheTable = $this->ensureSqlIdentifier(TPropertyValue::ensureString($value), 'CacheTableName');
 	}
 
 	/**

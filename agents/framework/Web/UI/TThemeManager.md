@@ -35,7 +35,7 @@ Module that manages themes for a Prado application. Each theme is a subdirectory
 
 ### Theme Access
 
-- `getTheme(string $name): TTheme` — Returns a theme instance by name. Constructs the path as `getBasePath() . DIRECTORY_SEPARATOR . $name` and URL as `getBaseUrl() . '/' . $name`. Instantiates via `Prado::createComponent($this->getThemeClass(), $themePath, $themeUrl)`.
+- `getTheme(string $name): TTheme` — Returns a theme instance by name. Constructs the path as `getBasePath() . DIRECTORY_SEPARATOR . $name` and URL as `getBaseUrl() . '/' . $name`. Instantiates via `Prado::createComponent($this->getThemeClass(), $themePath, $themeUrl)`. A name that is empty, `.`, `..`, or contains `/`, `\`, or NUL throws `TInvalidDataValueException` (`thememanager_theme_invalid`, 4.4.0).
 - `getAvailableThemes(): array` — Lists subdirectory names under `BasePath` (excludes `.`, `..`, `.svn`).
 
 ### Path & URL Resolution
