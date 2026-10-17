@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: `TThemeManager::getTheme()` joined the theme name to `BasePath` unchecked, so `../` left the themes directory; a name must be a single directory name. (belisoful)
 BUG: `TDbLogRoute::getDBLogs()` built an invalid query for any `$order` or `$limit` and wrote them into SQL unchecked; it now builds the clauses correctly and rejects values that are not a column list or a row limit. (belisoful)
 BUG: `TMysqlMetaData::getIsView()` wrote the table name into a `LIKE` string; it is quoted with its wildcards escaped. (belisoful)
 BUG: `TDbCache.CacheTableName`, `TDbLogRoute.LogTableName`, and `TDbCronManager.TableName` are written into SQL; their setters reject a name that is not an SQL identifier. (belisoful)
