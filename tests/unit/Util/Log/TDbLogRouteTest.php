@@ -5,6 +5,7 @@ namespace Prado\Test\Unit\Util\Log;
 use Prado\Util\Log\TLogger;
 use Prado\Util\Log\TSysLogRoute;
 use Prado\Util\Log\TDbLogRoute;
+use Prado\Exceptions\TInvalidDataValueException;
 
 class TTestDbLogRoute extends TDbLogRoute {
 }
@@ -111,6 +112,11 @@ class TDbLogRouteTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals(2, count($route->getDBLogs(null, null, $firstTime, $secondTime)->readAll()));
 		$this->assertEquals(1, count($route->getDBLogs(null, 'Prado\\*, ~Prado\\Test\\*', $firstTime, $secondTime)->readAll()));
 		$this->assertEquals(1, count($route->getDBLogs(TLogger::WARNING, 'Prado\\*, ~Prado\\Test\\*', $firstTime, $secondTime)->readAll()));
+
+		$rows = $route->getDBLogs(null, null, null, null, 'log_id DESC', '2')->readAll();
+		$this->assertCount(2, $rows);
+		$this->assertGreaterThan($rows[1]['log_id'], $rows[0]['log_id']);
+		$this->assertCount(3, $route->getDBLogs(null, null, null, null, 'logtime, log_id ASC', '3 OFFSET 1')->readAll());
 		
 		$this->assertEquals(1, $route->deleteDBLog(null, \Prado\TModule::class));
 		$this->assertEquals(1, $route->deleteDBLog(null, null, $firstTime, $secondTime));
@@ -122,6 +128,30 @@ class TDbLogRouteTest extends \PHPUnit\Framework\TestCase
 		$route->collectLogs($logger, true); // all and the "new" (but delayed) are deleted
 		$this->assertEquals(0, $route->getDBLogCount());
 		
+	}
+
+	public function testLogTableNameRejectsSql()
+	{
+		$route = new TDbLogRoute();
+		$route->setLogTableName('main.pradolog');
+		$this->assertEquals('main.pradolog', $route->getLogTableName());
+		$this->expectException(TInvalidDataValueException::class);
+		$route->setLogTableName('pradolog; DROP TABLE users');
+	}
+
+	public function testGetDBLogsRejectsSqlInOrderAndLimit()
+	{
+		$route = new TDbLogRoute();
+		$cases = [['log_id; DROP TABLE pradolog', ''], ['(SELECT 1)', ''], ['', '1; DROP TABLE pradolog'], ['', '1 UNION SELECT 1']];
+		$rejected = 0;
+		foreach ($cases as [$order, $limit]) {
+			try {
+				$route->getDBLogs(null, null, null, null, $order, $limit);
+			} catch (TInvalidDataValueException $e) {
+				$rejected++;
+			}
+		}
+		$this->assertSame(count($cases), $rejected);
 	}
 }
 

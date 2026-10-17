@@ -44,7 +44,7 @@ return [
 - `ConnectionID` - ID of TDataSourceConfig module
 - `ConnectionString` - PDO DSN
 - `Username` / `Password` - Database credentials
-- `CacheTableName` - Table name (default: `pradocache`)
+- `CacheTableName` - Table name (default: `pradocache`); must be an SQL identifier (4.4.0)
 - `AutoCreateCacheTable` - Auto-create table (default: true)
 - `FlushInterval` - Seconds between expired item cleanup (default: 60, 0=manual)
 

@@ -1,5 +1,9 @@
 ## Version 4.4.0 - TBA
 BUG: `TThemeManager::getTheme()` joined the theme name to `BasePath` unchecked, so `../` left the themes directory; a name must be a single directory name. (belisoful)
+BUG: `TDbLogRoute::getDBLogs()` built an invalid query for any `$order` or `$limit` and wrote them into SQL unchecked; it now builds the clauses correctly and rejects values that are not a column list or a row limit. (belisoful)
+BUG: `TMysqlMetaData::getIsView()` wrote the table name into a `LIKE` string; it is quoted with its wildcards escaped. (belisoful)
+BUG: `TDbCache.CacheTableName`, `TDbLogRoute.LogTableName`, and `TDbCronManager.TableName` are written into SQL; their setters reject a name that is not an SQL identifier. (belisoful)
+BUG: `TDbParameterModule` wrote `AutoLoadValue` into its load query; it is now bound, and the table and field properties must be SQL identifiers (`TDbPropertiesTrait::ensureSqlIdentifier()`). (belisoful)
 BUG: The `TRenderFilterParameter` DOM round trip altered markup: it wrapped leading text in `<p>`, dropped whitespace between top-level elements, cut `<script>` content at `</`, lowercased SVG names, and lost table rows and the doctype. Fragments now parse in the context of their first tag, with the HTML5 parser on PHP 8.4+. (belisoful)
 BUG: `TSessionPageStatePersister` unserialized its session snapshot unchecked; the snapshot carries a security manager HMAC and is validated before it is unserialized. (belisoful)
 BUG: `TPageStateFormatter` unserialized client page state without HMAC validation into any class; unvalidated state is restored with `allowed_classes` false, and igbinary serializes only validated state. UPGRADE.md covers the change. (belisoful)
