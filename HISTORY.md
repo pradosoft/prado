@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: `TDbCommandBuilder::getSelectFieldList()` raised a PHP deprecation for a null value and selected the column for `0`, `''`, or `false`; a null value selects the column (or `NULL AS` an unknown key), and other scalars are literals. (belisoful)
 BUG: `THttpResponse::setStatusCode()` missed a CR or LF at the start of a custom reason phrase. `TParameterizeBehavior` and `TTimeZoneParameterBehavior::setEnabled()` attached their parameter route for the string `'false'`. Other `== true` and `== false` comparisons are written as boolean tests. (belisoful)
 BUG: `TUserManager::validateUser()` compared passwords with `===`; it uses `hash_equals()`. (belisoful)
 BUG: `TThemeManager::getTheme()` joined the theme name to `BasePath` unchecked, so `../` left the themes directory; a name must be a single directory name. (belisoful)
