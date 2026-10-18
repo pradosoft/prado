@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: `TDbCronManager::getCronLog()` compared the driver name to `'postgresql'` instead of `'pgsql'`, so PostgreSQL received MySQL's `LIMIT offset, count`; every driver now gets `LIMIT count OFFSET offset`. (belisoful)
 BUG: `TMysqlMetaData::isValidIdentifier()` misread its pattern and accepted `\` and `.`, while rejecting `|` followed by any character; it now rejects `/`, `\`, `.`, NUL, and 0xFF as intended. (belisoful)
 CHG: `TSecurityManager::UseEncryptionHmac` defaults to `true`, so `encrypt()` output carries an HMAC. UPGRADE.md covers the change. (belisoful)
 BUG: `TSqlMapObjectCollectionTree::collect()` looped forever when a group key was `"0"`, and `addNode()` matched parent keys loosely, so `"1e3"` matched `"1000"`; both loops iterate `array_keys()` and compare keys as strings. (belisoful)
