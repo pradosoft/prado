@@ -17,6 +17,7 @@
 
 namespace Prado\I18N\core;
 
+use Closure;
 use Exception;
 
 /**
@@ -62,6 +63,7 @@ use Exception;
  *   # <tt>&gt;</tt> -- greater than.
  *   # <tt>&gt=</tt> -- greater than equals.
  *   # <tt>==</tt> -- of equal value.
+ *   # <tt>!=</tt> -- not of equal value.
  *   # <tt>%</tt> -- modulo, e.g., 1 % 10 equals 1, 11 % 10 equals 1.
  *   # <tt>-</tt> -- minus, negative.
  *   # <tt>+</tt> -- addition.
@@ -72,6 +74,8 @@ use Exception;
  *   # <tt>!</tt> -- negation.
  *
  * Additional round brackets can also be used to perform grouping.
+ * The operators follow PHP precedence. The expression is parsed by ChoiceFormat
+ * and is not executed as PHP; any other token makes the set match no number.
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
  */
@@ -88,6 +92,11 @@ class ChoiceFormat
 	 * @var string
 	 */
 	protected $parse = '/\s*\|?([\(\[\{]([-Inf\d:\s]+,?[\+Inf\d\s:\?\-=!><%\|&\(\)]*)+[\)\]\}])\s*/';
+
+	/**
+	 * The binary operators of the set notation expression, from lowest to highest precedence.
+	 */
+	private const SET_OPERATORS = [['||'], ['&&'], ['|'], ['&'], ['==', '!='], ['<', '<=', '>', '>='], ['+', '-'], ['%']];
 
 	/**
 	 * The value for positive infinity.
@@ -169,13 +178,135 @@ class ChoiceFormat
 		return false;
 	}
 
+	/**
+	 * Determine if the given number satisfies a set notation expression.
+	 * @param float $number the number to test.
+	 * @param string $set the expression after "n:" in the set notation.
+	 * @return bool true if the expression is true for the number, false otherwise or when the expression is invalid.
+	 */
 	protected function isValidSetNotation($number, $set)
 	{
 		try {
-			return eval('return ' . str_replace('n', '$number', $set) . ';');
+			return (bool) $this->compileSetNotation($set)($number);
 		} catch (Exception $e) {
 			return false;
 		}
+	}
+
+	/**
+	 * Compile a set notation expression into a closure of the number "n".
+	 * @param string $set the expression after "n:" in the set notation.
+	 * @throws Exception when the expression has a token or form outside the set notation.
+	 * @return Closure the expression as a function of the number.
+	 */
+	protected function compileSetNotation($set): Closure
+	{
+		$tokens = $this->tokenizeSetNotation($set);
+		$pos = 0;
+		$expression = $this->parseSetBinary($tokens, $pos, 0);
+		if ($pos !== count($tokens)) {
+			throw new Exception("Invalid set notation \"{$set}\"");
+		}
+		return $expression;
+	}
+
+	/**
+	 * Split a set notation expression into numbers, "n", operators, and brackets.
+	 * @param string $set the expression after "n:" in the set notation.
+	 * @throws Exception when the expression has a token outside the set notation.
+	 * @return string[] the tokens.
+	 */
+	protected function tokenizeSetNotation($set): array
+	{
+		$tokens = [];
+		$length = strlen($set);
+		$offset = 0;
+		while ($offset < $length) {
+			if (!preg_match('/\s*(\d+(?:\.\d+)?|n|==|!=|<=|>=|&&|\|\||[-+%<>!&|()])\s*/A', $set, $match, 0, $offset)) {
+				throw new Exception("Invalid set notation \"{$set}\"");
+			}
+			$tokens[] = $match[1];
+			$offset += strlen($match[0]);
+		}
+		return $tokens;
+	}
+
+	/**
+	 * Parse the binary operators of a precedence level and all higher levels.
+	 * @param string[] $tokens the expression tokens.
+	 * @param int $pos the position of the next token, advanced past the parsed tokens.
+	 * @param int $level the index into {@see SET_OPERATORS}.
+	 * @throws Exception when the tokens do not form an expression.
+	 * @return Closure the parsed expression.
+	 */
+	protected function parseSetBinary(array $tokens, int &$pos, int $level): Closure
+	{
+		if ($level >= count(self::SET_OPERATORS)) {
+			return $this->parseSetUnary($tokens, $pos);
+		}
+		$left = $this->parseSetBinary($tokens, $pos, $level + 1);
+		while (in_array($tokens[$pos] ?? null, self::SET_OPERATORS[$level], true)) {
+			$operator = $tokens[$pos++];
+			$right = $this->parseSetBinary($tokens, $pos, $level + 1);
+			$left = match ($operator) {
+				'||' => fn ($n) => $left($n) || $right($n),
+				'&&' => fn ($n) => $left($n) && $right($n),
+				'|' => fn ($n) => (int) $left($n) | (int) $right($n),
+				'&' => fn ($n) => (int) $left($n) & (int) $right($n),
+				'==' => fn ($n) => $left($n) == $right($n),
+				'!=' => fn ($n) => $left($n) != $right($n),
+				'<' => fn ($n) => $left($n) < $right($n),
+				'<=' => fn ($n) => $left($n) <= $right($n),
+				'>' => fn ($n) => $left($n) > $right($n),
+				'>=' => fn ($n) => $left($n) >= $right($n),
+				'+' => fn ($n) => $left($n) + $right($n),
+				'-' => fn ($n) => $left($n) - $right($n),
+				'%' => function ($n) use ($left, $right) {
+					$divisor = (int) $right($n);
+					if ($divisor === 0) {
+						throw new Exception('Modulo by zero in set notation');
+					}
+					return (int) $left($n) % $divisor;
+				},
+				default => throw new Exception("Unknown set notation operator \"{$operator}\""),
+			};
+		}
+		return $left;
+	}
+
+	/**
+	 * Parse a unary operator, a number, "n", or a bracketed expression.
+	 * @param string[] $tokens the expression tokens.
+	 * @param int $pos the position of the next token, advanced past the parsed tokens.
+	 * @throws Exception when the tokens do not form an expression.
+	 * @return Closure the parsed expression.
+	 */
+	protected function parseSetUnary(array $tokens, int &$pos): Closure
+	{
+		$token = $tokens[$pos++] ?? null;
+		if ($token === '!' || $token === '-' || $token === '+') {
+			$operand = $this->parseSetUnary($tokens, $pos);
+			return match ($token) {
+				'!' => fn ($n) => !$operand($n),
+				'-' => fn ($n) => -$operand($n),
+				'+' => fn ($n) => +$operand($n),
+			};
+		}
+		if ($token === 'n') {
+			return fn ($n) => $n;
+		}
+		if ($token === '(') {
+			$expression = $this->parseSetBinary($tokens, $pos, 0);
+			if (($tokens[$pos++] ?? null) !== ')') {
+				throw new Exception('Unbalanced brackets in set notation');
+			}
+			return $expression;
+		}
+		if ($token !== null && is_numeric($token)) {
+			$value = $token + 0;
+			return fn ($n) => $value;
+		}
+		throw new Exception('Invalid set notation');
 	}
 
 	/**

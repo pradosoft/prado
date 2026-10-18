@@ -45,6 +45,22 @@ echo $choice->format($pattern, 5);  // "5 items"
 {n: n % 10 > 1 && n % 10 < 5}  // matches 2,3,4,22,23,24
 ```
 
+`isValidSetNotation()` compiles the expression with `compileSetNotation()` into a closure of `n`; it is never passed to `eval()`. Tokens are numbers, `n`, brackets, and the operators below, at PHP precedence (lowest first):
+
+| Level | Operators |
+|-------|-----------|
+| 1 | `\|\|` |
+| 2 | `&&` |
+| 3 | `\|` (bitwise) |
+| 4 | `&` (bitwise) |
+| 5 | `==` `!=` |
+| 6 | `<` `<=` `>` `>=` |
+| 7 | `+` `-` |
+| 8 | `%` (integer; modulo by zero fails) |
+| 9 | unary `!` `-` `+` |
+
+`&&` and `\|\|` short-circuit. Any other token, an incomplete expression, or modulo by zero makes the set match no number.
+
 ## Key Methods
 
 ### `format($string, $number)`
