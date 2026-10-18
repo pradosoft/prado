@@ -390,7 +390,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 				throw new TInvalidDataValueException("response_status_reason_missing");
 			}
 			$reason = TPropertyValue::ensureString($reason);
-			if (strpos($reason, "\r") != false || strpos($reason, "\n") != false) {
+			if (str_contains($reason, "\r") || str_contains($reason, "\n")) {
 				throw new TInvalidDataValueException("response_status_reason_barchars");
 			}
 			$this->_reason = $reason;

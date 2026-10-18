@@ -86,11 +86,8 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 	protected function addNode(&$childs, $parent, $node)
 	{
 		$found = false;
-		reset($childs);
-		for ($i = 0, $k = count($childs); $i < $k; $i++) {
-			$key = key($childs);
-			next($childs);
-			if ($key == $parent) {
+		foreach (array_keys($childs) as $key) {
+			if ((string) $key === (string) $parent) {
 				$found = true;
 				$childs[$key][$node] = [];
 			} else {
@@ -135,8 +132,7 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 	{
 		$noChildren = !$this->hasChildren($nodes);
 		$childs = [];
-		for (reset($nodes); $key = key($nodes);) {
-			next($nodes);
+		foreach (array_keys($nodes) as $key) {
 			if ($noChildren) {
 				$childs[] = $key;
 				unset($nodes[$key]);

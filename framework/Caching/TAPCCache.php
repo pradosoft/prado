@@ -81,7 +81,7 @@ class TAPCCache extends TCache
 				throw new TConfigurationException('apccache_extension_required');
 			}
 
-			if (ini_get('apc.enabled') == false) {
+			if (!ini_get('apc.enabled')) {
 				throw new TConfigurationException('apccache_extension_not_enabled');
 			}
 

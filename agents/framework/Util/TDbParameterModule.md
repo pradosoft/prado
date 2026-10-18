@@ -63,11 +63,13 @@ Default SQLite database is used if `ConnectionID` is not specified.
 | `KeyField` | string | `param_key` | Column name for parameter key |
 | `ValueField` | string | `param_value` | Column name for parameter value |
 | `AutoLoadField` | string | `auto_load` | Column name for auto-load flag |
-| `AutoLoadValue` | string | `1` | Value in `AutoLoadField` that means "load on init" |
+| `AutoLoadValue` | string | `1` | Value in `AutoLoadField` that means "load on init". Bound as a parameter; a quoted SQL literal such as `'yes'` is bound without its quotes (4.4.0) |
 | `AutoLoadValueFalse` | string | `0` | Value meaning "do not auto-load" |
 | `AutoCreateParamTable` | bool | true | Create table if it doesn't exist |
 | `CaptureParameterChanges` | bool | false | Auto-write changes to `$app->getParameters()` back to DB |
 | `Serializer` | string\|callable | `'php'` | Serialization: `'php'`, `'json'`, or `callable($data, $encode)` |
+
+`TableName`, `KeyField`, `ValueField`, and a non-empty `AutoLoadField` must be SQL identifiers; the setters validate them with `TDbPropertiesTrait::ensureSqlIdentifier()` (4.4.0).
 
 ## Key Methods
 

@@ -360,7 +360,7 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 		$http_request .= $req;
 
 		$response = '';
-		if (false == ($fs = @fsockopen($host, $port, $errno, $errstr, 10))) {
+		if (($fs = @fsockopen($host, $port, $errno, $errstr, 10)) === false) {
 			die('Could not open socket');
 		}
 

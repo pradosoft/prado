@@ -191,6 +191,13 @@ class TParameterizeBehaviorTest extends \PHPUnit\Framework\TestCase
 		$this->obj->setEnabled(true);
 		$defaultvalue = $params[$key] = 'nextValue';
 		self::assertEquals($defaultvalue, $owner->getField());
+		$this->obj->setEnabled('false');
+		self::assertFalse($this->obj->getEnabled());
+		$params[$key] = '--nothing--';
+		self::assertEquals($defaultvalue, $owner->getField());
+		$this->obj->setEnabled('true');
+		$defaultvalue = $params[$key] = 'nextValue';
+		self::assertEquals($defaultvalue, $owner->getField());
 		$owner->detachBehavior($behaviorName);
 		
 		$params[$key] = $value;

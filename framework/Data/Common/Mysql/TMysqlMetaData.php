@@ -264,13 +264,14 @@ class TMysqlMetaData extends TDbMetaData
 	}
 
 	/**
-	 * http://dev.mysql.com/doc/refman/5.0/en/identifiers.html
+	 * Checks a database or table name part.  It must not contain `/`, `\`, `.`, NUL,
+	 * or byte 0xFF.  http://dev.mysql.com/doc/refman/5.0/en/identifiers.html
 	 * @param string $name identifier name
 	 * @return bool true if valid identifier.
 	 */
 	protected function isValidIdentifier($name)
 	{
-		return !preg_match('#/|\\|.|\x00|\xFF#', $name);
+		return !preg_match('#[/\\\\.\x00\xFF]#', $name);
 	}
 
 	/**
@@ -295,6 +296,7 @@ class TMysqlMetaData extends TDbMetaData
 	 * http://dev.mysql.com/doc/refman/5.0/en/show-tables.html
 	 *
 	 * For MySQL version 5.0.1 or earlier, this always return false.
+	 * The table name is quoted with its `LIKE` wildcards escaped, so it matches exactly.
 	 * @param string $schemaName database name, null to use default connection database.
 	 * @param string $tableName table or view name.
 	 * @throws TDbException if table or view does not exist.
@@ -305,10 +307,11 @@ class TMysqlMetaData extends TDbMetaData
 		if ($this->getServerVersion() < 5.01) {
 			return false;
 		}
+		$like = $this->getDbConnection()->quoteString(str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $tableName));
 		if ($schemaName !== null) {
-			$sql = "SHOW FULL TABLES FROM `{$schemaName}` LIKE '{$tableName}'";
+			$sql = "SHOW FULL TABLES FROM `{$schemaName}` LIKE {$like}";
 		} else {
-			$sql = "SHOW FULL TABLES LIKE '{$tableName}'";
+			$sql = "SHOW FULL TABLES LIKE {$like}";
 		}
 
 		$command = $this->getDbConnection()->createCommand($sql);

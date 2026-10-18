@@ -3,6 +3,8 @@
 namespace Prado\Test\Unit\Util;
 
 use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Util\TDbParameterModule;
 use Prado\Test\Unit\Harness\Traits\PradoUnitModuleDependencyTrait;
@@ -323,6 +325,60 @@ class TDbParameterModuleTest extends \PHPUnit\Framework\TestCase
 		self::assertEquals("\'true\'", $this->obj->getAutoLoadValue());
 		$this->obj->setAutoLoadValue("\'yes\'");
 		self::assertEquals("\'yes\'", $this->obj->getAutoLoadValue());
+	}
+
+	public function testIdentifierPropertiesRejectSql()
+	{
+		$tableName = $this->obj->getTableName();
+		$autoLoadField = $this->obj->getAutoLoadField();
+		foreach (['setKeyField', 'setValueField', 'setTableName', 'setAutoLoadField'] as $setter) {
+			try {
+				$this->obj->$setter('name; DROP TABLE parameters');
+				self::fail("$setter accepted an SQL fragment.");
+			} catch (TInvalidDataValueException $e) {
+			}
+		}
+		$this->obj->setTableName('main.parameters');
+		self::assertEquals('main.parameters', $this->obj->getTableName());
+		$this->obj->setTableName('`my params`');
+		self::assertEquals('`my params`', $this->obj->getTableName());
+		$this->obj->setAutoLoadField('');
+		self::assertEquals('', $this->obj->getAutoLoadField());
+		$this->obj->setTableName($tableName);
+		$this->obj->setAutoLoadField($autoLoadField);
+	}
+
+	public function testAutoLoadBindValueUnquotesSqlLiteral()
+	{
+		$this->obj->setAutoLoadValue("'yes'");
+		$this->obj->setAutoLoadValueFalse("'it''s'");
+		self::assertSame('yes', PradoUnit::invoke($this->obj, 'getAutoLoadBindValue', true));
+		self::assertSame("it's", PradoUnit::invoke($this->obj, 'getAutoLoadBindValue', false));
+		$this->obj->setAutoLoadValue('1');
+		self::assertSame('1', PradoUnit::invoke($this->obj, 'getAutoLoadBindValue', true));
+	}
+
+	public function testAutoLoadValueIsBound()
+	{
+		$params = \Prado::getApplication()->getParameters();
+		$this->obj->init(null);
+		$this->obj->set('bindtest_on', 'on', true, false);
+		$this->obj->set('bindtest_off', 'off', false, false);
+		try {
+			foreach (["0 OR 1=1" => false, "'1'" => true] as $autoLoadValue => $loaded) {
+				$params->detachBehavior(TDbParameterModule::APP_PARAMETER_LAZY_BEHAVIOR);
+				unset($params['bindtest_on'], $params['bindtest_off']);
+				$module = new TDbParameterModule();
+				$module->setAutoLoadValue($autoLoadValue);
+				$module->init(null);
+				self::assertSame($loaded, isset($params['bindtest_on']), $autoLoadValue);
+				self::assertFalse(isset($params['bindtest_off']), $autoLoadValue);
+			}
+		} finally {
+			unset($params['bindtest_on'], $params['bindtest_off']);
+			$this->obj->remove('bindtest_on');
+			$this->obj->remove('bindtest_off');
+		}
 	}
 
 	public function testAutoLoadValueFalse()

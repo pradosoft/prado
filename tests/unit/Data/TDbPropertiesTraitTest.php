@@ -7,6 +7,7 @@ use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbConnection;
 use Prado\Data\TDbPropertiesTrait;
 use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Prado;
 use Prado\TComponent;
 use Prado\Test\Unit\PradoUnit;
@@ -290,6 +291,27 @@ class TDbPropertiesTraitTest extends \PHPUnit\Framework\TestCase
 			$this->assertSame('dbproperties_property_required', $e->getErrorCode());
 		} finally {
 			PradoUnit::setProp($app, '_runtimePath', $runtimePath);
+		}
+	}
+
+	public function testEnsureSqlIdentifierAcceptsIdentifiers(): void
+	{
+		$subject = new DbPropertiesTraitFixture();
+		foreach (['pradocache', '_t1', 'my$table', 'main.pradocache', 'db.schema.t', '`my table`', '"My Table"', '[my table]', 'db.`t`'] as $name) {
+			$this->assertSame($name, PradoUnit::invoke($subject, 'ensureSqlIdentifier', $name, 'TableName'));
+		}
+	}
+
+	public function testEnsureSqlIdentifierRejectsSql(): void
+	{
+		$subject = new DbPropertiesTraitFixture();
+		foreach (['', '1table', 't; DROP TABLE x', "t'", 't--', 't x', '`a`b`', 'a.b.c.d', 'a.', '.a', "t\n", "`a\x00`"] as $name) {
+			try {
+				PradoUnit::invoke($subject, 'ensureSqlIdentifier', $name, 'TableName');
+				$this->fail('Accepted ' . json_encode($name));
+			} catch (TInvalidDataValueException $e) {
+				$this->assertStringContainsString('TableName', $e->getMessage());
+			}
 		}
 	}
 }

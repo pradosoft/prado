@@ -3,6 +3,7 @@
 namespace Prado\Test\Unit\Util\Cron;
 
 use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Util\Cron\TDbCronModule;
 use Prado\Util\Cron\TCronMethodTask;
@@ -873,6 +874,12 @@ class TDbCronManagerTest extends TCronModuleTest
 		$this->obj->setTableName($value);
 		self::assertEquals($value, $this->obj->getTableName());
 		$this->obj->setTableName($restoreValue);
+	}
+
+	public function testTableNameRejectsSql()
+	{
+		$this->expectException(TInvalidDataValueException::class);
+		$this->obj->setTableName('crontabs; DROP TABLE users');
 	}
 	
 	public function testAutoCreateCronTable()

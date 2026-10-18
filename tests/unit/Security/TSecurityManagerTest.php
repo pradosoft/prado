@@ -962,11 +962,11 @@ class TSecurityManagerTest extends \PHPUnit\Framework\TestCase
 	// UseEncryptionHmac tests
 	// -------------------------------------------------------------------------
 
-	public function testUseEncryptionHmacDefaultFalse()
+	public function testUseEncryptionHmacDefaultTrue()
 	{
 		$sec = new TSecurityManager();
 		$sec->init(null);
-		self::assertFalse($sec->getUseEncryptionHmac());
+		self::assertTrue($sec->getUseEncryptionHmac());
 	}
 
 	public function testUseEncryptionHmacSetterGetter()

@@ -281,7 +281,7 @@ class MessageSource_PHP extends MessageSource
 			[$variant, $filename] = $this->createMessageTemplate($catalogue);
 		}
 
-		if (is_writable($filename) == false) {
+		if (!is_writable($filename)) {
 			throw new TIOException("Unable to save to file {$filename}, file must be writable.");
 		}
 
@@ -317,7 +317,7 @@ class MessageSource_PHP extends MessageSource
 			return false;
 		}
 
-		if (is_writable($filename) == false) {
+		if (!is_writable($filename)) {
 			throw new TIOException("Unable to update file {$filename}, file must be writable.");
 		}
 
@@ -354,7 +354,7 @@ class MessageSource_PHP extends MessageSource
 			return false;
 		}
 
-		if (is_writable($filename) == false) {
+		if (!is_writable($filename)) {
 			throw new TIOException("Unable to modify file {$filename}, file must be writable.");
 		}
 

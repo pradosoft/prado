@@ -928,13 +928,14 @@ class TDbCronManager extends TCronModule implements IDbModule
 	}
 
 	/**
-	 * @param string $table table in the database for cron tasks and logs
+	 * @param string $table table in the database for cron tasks and logs, an SQL identifier
 	 * @throws TInvalidOperationException when trying to set this property but the module is already initialized.
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the name is not an SQL identifier
 	 */
 	public function setTableName($table)
 	{
 		$this->assertUninitialized('TableName');
-		$this->_tableName = TPropertyValue::ensureString($table);
+		$this->_tableName = $this->ensureSqlIdentifier(TPropertyValue::ensureString($table), 'TableName');
 	}
 
 	/**
