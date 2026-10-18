@@ -72,6 +72,7 @@ use Exception;
  *   # <tt>|</tt> -- conditional OR.
  *   # <tt>||</tt> -- conditional OR with short circuit.
  *   # <tt>!</tt> -- negation.
+ *   # <tt>? :</tt> -- conditional, e.g., n > 1 ? n < 5 : n == 0; also the short form <tt>?:</tt>.
  *
  * Additional round brackets can also be used to perform grouping.
  * The operators follow PHP precedence. The expression is parsed by ChoiceFormat
@@ -203,7 +204,7 @@ class ChoiceFormat
 	{
 		$tokens = $this->tokenizeSetNotation($set);
 		$pos = 0;
-		$expression = $this->parseSetBinary($tokens, $pos, 0);
+		$expression = $this->parseSetTernary($tokens, $pos);
 		if ($pos !== count($tokens)) {
 			throw new Exception("Invalid set notation \"{$set}\"");
 		}
@@ -222,13 +223,41 @@ class ChoiceFormat
 		$length = strlen($set);
 		$offset = 0;
 		while ($offset < $length) {
-			if (!preg_match('/\s*(\d+(?:\.\d+)?|n|==|!=|<=|>=|&&|\|\||[-+%<>!&|()])\s*/A', $set, $match, 0, $offset)) {
+			if (!preg_match('/\s*(\d+(?:\.\d+)?|n|==|!=|<=|>=|&&|\|\||[-+%<>!&|()?:])\s*/A', $set, $match, 0, $offset)) {
 				throw new Exception("Invalid set notation \"{$set}\"");
 			}
 			$tokens[] = $match[1];
 			$offset += strlen($match[0]);
 		}
 		return $tokens;
+	}
+
+	/**
+	 * Parse a conditional "? :" or short "?:" expression, or a binary expression.
+	 * As in PHP 8, an unbracketed conditional is not allowed as the last operand of another.
+	 * @param string[] $tokens the expression tokens.
+	 * @param int $pos the position of the next token, advanced past the parsed tokens.
+	 * @throws Exception when the tokens do not form an expression.
+	 * @return Closure the parsed expression.
+	 */
+	protected function parseSetTernary(array $tokens, int &$pos): Closure
+	{
+		$condition = $this->parseSetBinary($tokens, $pos, 0);
+		if (($tokens[$pos] ?? null) !== '?') {
+			return $condition;
+		}
+		$pos++;
+		if (($tokens[$pos] ?? null) === ':') {
+			$pos++;
+			$else = $this->parseSetBinary($tokens, $pos, 0);
+			return fn ($n) => $condition($n) ?: $else($n);
+		}
+		$then = $this->parseSetTernary($tokens, $pos);
+		if (($tokens[$pos++] ?? null) !== ':') {
+			throw new Exception('Missing ":" in set notation');
+		}
+		$else = $this->parseSetBinary($tokens, $pos, 0);
+		return fn ($n) => $condition($n) ? $then($n) : $else($n);
 	}
 
 	/**
@@ -296,7 +325,7 @@ class ChoiceFormat
 			return fn ($n) => $n;
 		}
 		if ($token === '(') {
-			$expression = $this->parseSetBinary($tokens, $pos, 0);
+			$expression = $this->parseSetTernary($tokens, $pos);
 			if (($tokens[$pos++] ?? null) !== ')') {
 				throw new Exception('Unbalanced brackets in set notation');
 			}

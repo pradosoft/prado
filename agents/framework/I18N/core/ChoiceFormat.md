@@ -49,6 +49,7 @@ echo $choice->format($pattern, 5);  // "5 items"
 
 | Level | Operators |
 |-------|-----------|
+| 0 | `? :` and short `?:` (an unbracketed conditional cannot be the last operand of another, as in PHP 8) |
 | 1 | `\|\|` |
 | 2 | `&&` |
 | 3 | `\|` (bitwise) |
@@ -59,7 +60,7 @@ echo $choice->format($pattern, 5);  // "5 items"
 | 8 | `%` (integer; modulo by zero fails) |
 | 9 | unary `!` `-` `+` |
 
-`&&` and `\|\|` short-circuit. Any other token, an incomplete expression, or modulo by zero makes the set match no number.
+`&&`, `\|\|`, and `? :` short-circuit. Any other token, an incomplete expression, or modulo by zero makes the set match no number.
 
 ## Key Methods
 
