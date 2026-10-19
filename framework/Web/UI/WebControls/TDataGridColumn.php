@@ -10,7 +10,6 @@
 
 namespace Prado\Web\UI\WebControls;
 
-use Exception;
 use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Exceptions\TInvalidDataValueException;
@@ -58,6 +57,9 @@ use Prado\Web\UI\TControl;
  * - {@see \Prado\Web\UI\WebControls\TCheckBoxColumn}, displaying a checkbox that may be bound to specific field in datasource.
  * - {@see \Prado\Web\UI\WebControls\TTemplateColumn}, displaying content based on templates.
  *
+ * Format properties, such as {@see \Prado\Web\UI\WebControls\TBoundColumn::setDataFormatString DataFormatString},
+ * take a format string or a callable; see {@see formatDataValue()}.
+ *
  * To create your own column class, simply override {@see initializeCell()} method,
  * which is the major logic for managing the data and presentation of cells in the column.
  *
@@ -66,6 +68,14 @@ use Prado\Web\UI\TControl;
  */
 abstract class TDataGridColumn extends \Prado\TApplicationComponent
 {
+	use TDataValueFormatterTrait;
+
+	/**
+	 * The error code for an invalid `#` expression in a format property.
+	 * @since 4.4.0
+	 */
+	protected const DATA_FORMAT_EXPRESSION_ERROR = 'datagridcolumn_expression_invalid';
+
 	private $_id = '';
 	private $_owner;
 	private $_viewState = [];
@@ -500,33 +510,5 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 			}
 		}
 		return $control;
-	}
-
-	/**
-	 * Formats the text value according to a format string.
-	 * If the format string is empty, the original value is converted into
-	 * a string and returned.
-	 * If the format string starts with '#', the string is treated as a PHP expression
-	 * within which the token '{0}' is translated with the data value to be formated.
-	 * Otherwise, the format string and the data value are passed
-	 * as the first and second parameters in {@see sprintf}.
-	 * @param string $formatString format string
-	 * @param mixed $value the data to be formatted
-	 * @return string the formatted result
-	 */
-	protected function formatDataValue($formatString, $value)
-	{
-		if ($formatString === '') {
-			return TPropertyValue::ensureString($value);
-		} elseif ($formatString[0] === '#') {
-			$expression = strtr(substr($formatString, 1), ['{0}' => '$value']);
-			try {
-				return eval("return $expression;");
-			} catch (Exception $e) {
-				throw new TInvalidDataValueException('datagridcolumn_expression_invalid', $this::class, $expression, $e->getMessage());
-			}
-		} else {
-			return sprintf($formatString, $value);
-		}
 	}
 }

@@ -25,7 +25,7 @@ TListControl is the base class for list controls like TListBox, TDropDownList, T
 - `getDataSource()` / `setDataSource()` - Gets or sets data source for items
 - `getDataTextField()` / `setDataTextField()` - Gets or sets data field for item text
 - `getDataValueField()` / `setDataValueField()` - Gets or sets data field for item value
-- `getDataTextFormatString()` / `setDataTextFormatString()` - Gets or sets text format string
+- `getDataTextFormatString()` / `setDataTextFormatString()` - Gets or sets the item text format: a format string or a callable ([TDataValueFormatterTrait](./TDataValueFormatterTrait.md))
 - `getDataGroupField()` / `setDataGroupField()` - Gets or sets data field for item grouping
 - `getPromptText()` / `setPromptText()` - Gets or sets prompt text for first item
 - `getPromptValue()` / `setPromptValue()` - Gets or sets prompt selection value
@@ -39,3 +39,4 @@ TListControl is the base class for list controls like TListBox, TDropDownList, T
 - [TDataBoundControl](./TDataBoundControl.md)
 - [TListItem](./TListItem.md)
 - [TListSelectionMode](./TListSelectionMode.md)
+- [TDataValueFormatterTrait](./TDataValueFormatterTrait.md)

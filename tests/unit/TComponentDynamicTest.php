@@ -178,6 +178,37 @@ class TComponentDynamicTest extends TComponentTestBase
 		$this->assertSame($levelBefore, ob_get_level());
 	}
 
+	public function testEvaluateExpressionScopeAndClosure()
+	{
+		$this->assertSame($this->component, $this->component->evaluateExpression('$this'));
+		$closure = $this->component->evaluateExpression('fn ($value) => $value * 2');
+		$this->assertInstanceOf(\Closure::class, $closure);
+		$this->assertSame(10, $closure(5));
+	}
+
+	public function testEvaluateExceptionsKeepThePreviousThrowable()
+	{
+		foreach (['{{{' => \ParseError::class, 'intdiv(1, 0)' => \DivisionByZeroError::class] as $expression => $class) {
+			try {
+				$this->component->evaluateExpression($expression);
+				$this->fail("TInvalidOperationException not raised for $expression");
+			} catch (\Prado\Exceptions\TInvalidOperationException $e) {
+				$this->assertSame('component_expression_invalid', $e->getErrorCode());
+				$this->assertInstanceOf($class, $e->getPrevious());
+				$this->assertStringContainsString($e->getPrevious()->getMessage(), $e->getMessage());
+			}
+		}
+
+		try {
+			$this->component->evaluateStatements('throw new \RuntimeException("statement failed");');
+			$this->fail('TInvalidOperationException not raised for a throwing statement');
+		} catch (\Prado\Exceptions\TInvalidOperationException $e) {
+			$this->assertSame('component_statements_invalid', $e->getErrorCode());
+			$this->assertInstanceOf(\RuntimeException::class, $e->getPrevious());
+			$this->assertStringContainsString('statement failed', $e->getMessage());
+		}
+	}
+
 	public function testDynamicFunctionCall()
 	{
 		$this->assertEquals(' aa bb cc __ .. ++ || !! ?? ', $this->component->dyTextFilter(' aa bb cc __ .. ++ || !! ?? '));

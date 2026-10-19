@@ -1902,7 +1902,7 @@ class TComponent
 		try {
 			return eval("return $expression;");
 		} catch (\Throwable $e) {
-			throw new TInvalidOperationException('component_expression_invalid', $this::class, $expression, $e->getMessage());
+			throw new TInvalidOperationException('component_expression_invalid', $this::class, $expression, $e->getMessage(), $e);
 		}
 	}
 
@@ -1936,7 +1936,7 @@ class TComponent
 			return $content;
 		} catch (\Throwable $e) {
 			ob_end_clean();
-			throw new TInvalidOperationException('component_statements_invalid', $this::class, $statements, $e->getMessage());
+			throw new TInvalidOperationException('component_statements_invalid', $this::class, $statements, $e->getMessage(), $e);
 		}
 	}
 

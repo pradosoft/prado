@@ -783,6 +783,7 @@ return [
 'TDataSourceSelectParameters' => 'Prado\Web\UI\WebControls\TDataSourceSelectParameters',
 'TDataSourceView' => 'Prado\Web\UI\WebControls\TDataSourceView',
 'TDataTypeValidator' => 'Prado\Web\UI\WebControls\TDataTypeValidator',
+'TDataValueFormatterTrait' => 'Prado\Web\UI\WebControls\TDataValueFormatterTrait',
 'TDatePicker' => 'Prado\Web\UI\WebControls\TDatePicker',
 'TDatePickerClientScript' => 'Prado\Web\UI\WebControls\TDatePickerClientScript',
 'TDatePickerInputMode' => 'Prado\Web\UI\WebControls\TDatePickerInputMode',

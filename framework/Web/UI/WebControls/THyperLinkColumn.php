@@ -74,19 +74,19 @@ class THyperLinkColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @return string the formatting string used to control how the hyperlink caption will be displayed.
+	 * @return callable|string the format string or callable used to control how the hyperlink caption will be displayed.
 	 */
 	public function getDataTextFormatString()
 	{
-		return $this->getViewState('DataTextFormatString', '');
+		return $this->getDataFormat('DataTextFormatString');
 	}
 
 	/**
-	 * @param string $value the formatting string used to control how the hyperlink caption will be displayed.
+	 * @param callable|string $value the format string or callable used to control how the hyperlink caption will be displayed.
 	 */
 	public function setDataTextFormatString($value)
 	{
-		$this->setViewState('DataTextFormatString', $value, '');
+		$this->setDataFormat('DataTextFormatString', $value);
 	}
 
 	/**
@@ -171,19 +171,19 @@ class THyperLinkColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @return string the formatting string used to control how the navigate url of hyperlink will be displayed.
+	 * @return callable|string the format string or callable used to control how the navigate url of hyperlink will be displayed.
 	 */
 	public function getDataNavigateUrlFormatString()
 	{
-		return $this->getViewState('DataNavigateUrlFormatString', '');
+		return $this->getDataFormat('DataNavigateUrlFormatString');
 	}
 
 	/**
-	 * @param string $value the formatting string used to control how the navigate url of hyperlink will be displayed.
+	 * @param callable|string $value the format string or callable used to control how the navigate url of hyperlink will be displayed.
 	 */
 	public function setDataNavigateUrlFormatString($value)
 	{
-		$this->setViewState('DataNavigateUrlFormatString', $value, '');
+		$this->setDataFormat('DataNavigateUrlFormatString', $value);
 	}
 
 	/**

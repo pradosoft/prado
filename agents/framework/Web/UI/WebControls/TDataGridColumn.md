@@ -20,10 +20,11 @@ TDataGridColumn serves as the base class for all DataGrid column types. Defines 
 - `HeaderRenderer` / `FooterRenderer` - Custom renderer classes
 - `EnableCellGrouping` - Group consecutive cells with same content
 - `initializeCell()` - Initializes column cells
-- `formatDataValue()` - Formats cell data values
+- `formatDataValue()` - Formats cell data values with a format string or a callable ([TDataValueFormatterTrait](./TDataValueFormatterTrait.md))
 
 ## See Also
 
+- [TDataValueFormatterTrait](./TDataValueFormatterTrait.md)
 - [TBoundColumn](./TBoundColumn.md)
 - [TButtonColumn](./TButtonColumn.md)
 - [TCheckBoxColumn](./TCheckBoxColumn.md)

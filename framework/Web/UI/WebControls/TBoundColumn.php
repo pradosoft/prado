@@ -117,19 +117,19 @@ class TBoundColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @return string the formatting string used to control how the bound data will be displayed.
+	 * @return callable|string the format string or callable used to control how the bound data will be displayed.
 	 */
 	public function getDataFormatString()
 	{
-		return $this->getViewState('DataFormatString', '');
+		return $this->getDataFormat('DataFormatString');
 	}
 
 	/**
-	 * @param string $value the formatting string used to control how the bound data will be displayed.
+	 * @param callable|string $value the format string or callable used to control how the bound data will be displayed.
 	 */
 	public function setDataFormatString($value)
 	{
-		$this->setViewState('DataFormatString', $value, '');
+		$this->setDataFormat('DataFormatString', $value);
 	}
 
 	/**

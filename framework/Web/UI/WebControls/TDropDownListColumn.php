@@ -126,19 +126,19 @@ class TDropDownListColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @return string the formatting string used to control how the bound data will be displayed.
+	 * @return callable|string the format string or callable used to control how the bound data will be displayed.
 	 */
 	public function getDataTextFormatString()
 	{
-		return $this->getViewState('DataTextFormatString', '');
+		return $this->getDataFormat('DataTextFormatString');
 	}
 
 	/**
-	 * @param string $value the formatting string used to control how the bound data will be displayed.
+	 * @param callable|string $value the format string or callable used to control how the bound data will be displayed.
 	 */
 	public function setDataTextFormatString($value)
 	{
-		$this->setViewState('DataTextFormatString', $value, '');
+		$this->setDataFormat('DataTextFormatString', $value);
 	}
 
 	/**
@@ -225,19 +225,19 @@ class TDropDownListColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @return string the formatting string used to control how the list item texts will be displayed.
+	 * @return callable|string the format string or callable used to control how the list item texts will be displayed.
 	 */
 	public function getListTextFormatString()
 	{
-		return $this->getViewState('ListTextFormatString', '');
+		return $this->getDataFormat('ListTextFormatString');
 	}
 
 	/**
-	 * @param string $value the formatting string used to control how the list item texts will be displayed.
+	 * @param callable|string $value the format string or callable used to control how the list item texts will be displayed.
 	 */
 	public function setListTextFormatString($value)
 	{
-		$this->setViewState('ListTextFormatString', $value, '');
+		$this->setDataFormat('ListTextFormatString', $value);
 	}
 
 	/**

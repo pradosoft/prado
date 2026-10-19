@@ -13,6 +13,8 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 - **[`TI18NWebControl`](TI18NWebControl.md)** — Extends `TWebControl` with `TI18NControlTrait`, adding `Culture` and `Charset` properties for I18N-aware controls. @since 4.3.3
 
+- **[`TDataValueFormatterTrait`](TDataValueFormatterTrait.md)** — Formats bound data values for `TListControl` and `TDataGridColumn` with a format string, a `#` PHP expression, or a callable. A callable is kept for the current request only. @since 4.4.0
+
 - **[`TWebControlDecorator`](TWebControlDecorator.md)** — Injects additional HTML before/after a WebControl's rendered output without subclassing.
 
 - **[`TContent`](TContent.md)** / **[`TContentPlaceHolder`](TContentPlaceHolder.md)** — Master page content injection. `TContent` blocks are injected into matching `TContentPlaceHolder` elements in the master template. Supports hierarchy matching.
