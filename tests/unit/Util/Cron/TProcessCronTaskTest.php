@@ -16,7 +16,7 @@ class TTestProcessCronTask extends TProcessCronTask
 	public ?string $launchedCommand = null;
 	public ?int $nextPid = 4242;
 	public bool $launchedAlive = true;   // post-launch liveness of the just-launched fake pid
-	public ?string $fakeStart = null;    // when set, processStartTime() returns this for any pid
+	public ?string $fakeStart = null;    // when set, processStartTime() returns this for any pid; the fake pid otherwise has none
 
 	protected function launchProcess(string $command): ?int
 	{
@@ -33,7 +33,11 @@ class TTestProcessCronTask extends TProcessCronTask
 
 	protected function processStartTime(int $pid): ?string
 	{
-		return $this->fakeStart ?? parent::processStartTime($pid);
+		// The fake pid has no real start time; a real process may hold that pid on the host.
+		if ($this->fakeStart !== null || $pid === $this->nextPid) {
+			return $this->fakeStart;
+		}
+		return parent::processStartTime($pid);
 	}
 }
 
