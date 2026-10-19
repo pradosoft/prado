@@ -4,14 +4,32 @@ namespace Prado\Test\Unit\Web\UI\WebControls;
 
 use Prado\Web\UI\WebControls\TDropDownList;
 use Prado\Web\UI\WebControls\TListItem;
-use Prado\Web\UI\THtmlWriter;
-use Prado\IO\TTextWriter;
-use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Web\UI\WebControls\TPanel;
+use Prado\Web\UI\TPage;
+use Prado\Web\UI\IPostBackDataHandler;
+use Prado\Web\UI\IValidatable;
+use Prado\Exceptions\TNotSupportedException;
 use PHPUnit\Framework\TestCase;
+use Prado\Test\Unit\Harness\Traits\TWebControlRenderTrait;
 use Prado\Test\Unit\PradoUnit;
 
 class TDropDownListTest extends TestCase
 {
+	use TWebControlRenderTrait;
+
+	private function createPageList(array $items = ['a' => 'A', 'b' => 'B', 'c' => 'C']): array
+	{
+		$page = new TPage();
+		PradoUnit::setProp($page, '_inFormRender', true);
+		$list = new TDropDownList();
+		$list->setID('List');
+		foreach ($items as $value => $text) {
+			$list->getItems()->add(new TListItem($text, (string) $value));
+		}
+		$page->getControls()->add($list);
+		return [$page, $list];
+	}
+
 	private function invokeFormatDataValue($list, $formatString, $value)
 	{
 		return PradoUnit::invoke($list, 'formatDataValue', $formatString, $value);
@@ -265,5 +283,160 @@ class TDropDownListTest extends TestCase
 		$list->getItems()[0]->setEnabled(false);
 		$this->assertFalse($list->getItems()[0]->getEnabled());
 		$this->assertTrue($list->getItems()[1]->getEnabled());
+	}
+
+	// ================================================================================
+	// Interfaces
+	// ================================================================================
+
+	public function testImplementsPostBackDataHandlerAndValidatable()
+	{
+		$list = new TDropDownList();
+		$this->assertInstanceOf(IPostBackDataHandler::class, $list);
+		$this->assertInstanceOf(IValidatable::class, $list);
+	}
+
+	// ================================================================================
+	// Rendering
+	// ================================================================================
+
+	public function testRenderAddsNameAttribute()
+	{
+		[, $list] = $this->createPageList();
+		$output = $this->renderBeginTag($list);
+		$this->assertStringContainsString('name="' . $list->getUniqueID() . '"', $output);
+		$this->assertStringNotContainsString('multiple', $output);
+	}
+
+	// ================================================================================
+	// Post data
+	// ================================================================================
+
+	public function testLoadPostDataSelectsPostedValue()
+	{
+		[, $list] = $this->createPageList();
+		$this->assertFalse($list->getDataChanged());
+		$this->assertTrue($list->loadPostData('List', ['List' => 'b']));
+		$this->assertSame(1, $list->getSelectedIndex());
+		$this->assertTrue($list->getDataChanged());
+	}
+
+	public function testLoadPostDataUnchangedSelection()
+	{
+		[, $list] = $this->createPageList();
+		$list->setSelectedIndex(2);
+		$this->assertFalse($list->loadPostData('List', ['List' => 'c']));
+		$this->assertSame(2, $list->getSelectedIndex());
+		$this->assertFalse($list->getDataChanged());
+	}
+
+	public function testLoadPostDataUnknownValueClearsSelection()
+	{
+		[, $list] = $this->createPageList();
+		$list->setSelectedIndex(0);
+		$this->assertTrue($list->loadPostData('List', ['List' => 'missing']));
+		$this->assertSame(-1, $list->getSelectedIndex());
+	}
+
+	public function testLoadPostDataMissingKeyKeepsSelection()
+	{
+		[, $list] = $this->createPageList();
+		$list->setSelectedIndex(1);
+		$this->assertFalse($list->loadPostData('List', []));
+		$this->assertSame(1, $list->getSelectedIndex());
+		$this->assertFalse($list->getDataChanged());
+	}
+
+	public function testLoadPostDataDisabledIsIgnored()
+	{
+		[, $list] = $this->createPageList();
+		$list->setEnabled(false);
+		$this->assertFalse($list->loadPostData('List', ['List' => 'b']));
+		$this->assertSame(-1, $list->getSelectedIndex());
+	}
+
+	public function testLoadPostDataDisabledByParentIsIgnored()
+	{
+		$page = new TPage();
+		$panel = new TPanel();
+		$page->getControls()->add($panel);
+		$list = new TDropDownList();
+		$list->getItems()->add(new TListItem('A', 'a'));
+		$panel->getControls()->add($list);
+		$panel->setEnabled(false);
+		$this->assertFalse($list->loadPostData('x', ['x' => 'a']));
+		$this->assertSame(-1, $list->getSelectedIndex());
+	}
+
+	public function testRaisePostDataChangedEventRaisesSelectedIndexChanged()
+	{
+		[$page, $list] = $this->createPageList();
+		$raised = [];
+		$list->attachEventHandler('OnSelectedIndexChanged', function ($sender, $param) use (&$raised) {
+			$raised[] = [$sender, $param];
+		});
+		$list->raisePostDataChangedEvent();
+		$this->assertSame([[$list, null]], $raised);
+		$this->assertFalse(PradoUnit::getProp($page, '_validated'));
+	}
+
+	public function testRaisePostDataChangedEventValidatesOnAutoPostBack()
+	{
+		[$page, $list] = $this->createPageList();
+		$list->setAutoPostBack(true);
+		$list->raisePostDataChangedEvent();
+		$this->assertTrue(PradoUnit::getProp($page, '_validated'));
+	}
+
+	public function testRaisePostDataChangedEventSkipsValidationWithoutCausesValidation()
+	{
+		[$page, $list] = $this->createPageList();
+		$list->setAutoPostBack(true);
+		$list->setCausesValidation(false);
+		$list->raisePostDataChangedEvent();
+		$this->assertFalse(PradoUnit::getProp($page, '_validated'));
+	}
+
+	// ================================================================================
+	// Selection restrictions
+	// ================================================================================
+
+	public function testSetSelectedIndicesNotSupported()
+	{
+		$list = new TDropDownList();
+		try {
+			$list->setSelectedIndices([0]);
+			$this->fail('TNotSupportedException expected.');
+		} catch (TNotSupportedException $e) {
+			$this->assertSame('dropdownlist_selectedindices_unsupported', $e->getErrorCode());
+		}
+	}
+
+	public function testSetSelectedValuesNotSupported()
+	{
+		$list = new TDropDownList();
+		$this->expectException(TNotSupportedException::class);
+		$list->setSelectedValues(['a']);
+	}
+
+	// ================================================================================
+	// Validation
+	// ================================================================================
+
+	public function testGetValidationPropertyValue()
+	{
+		[, $list] = $this->createPageList();
+		$this->assertSame('', $list->getValidationPropertyValue());
+		$list->setSelectedValue('c');
+		$this->assertSame('c', $list->getValidationPropertyValue());
+	}
+
+	public function testSetIsValid()
+	{
+		$list = new TDropDownList();
+		$list->setIsValid('false');
+		$this->assertFalse($list->getIsValid());
+		$list->setIsValid(true);
+		$this->assertTrue($list->getIsValid());
 	}
 }
