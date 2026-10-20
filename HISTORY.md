@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: `TListControlValidator` ignored `RequiredSelections="0"` and matched required values loosely, so `1` matched `01`; required values match selected values exactly, as on the client. (belisoful)
 ENH: `TListControl` and `TDataGridColumn` share `formatDataValue()` through `TDataValueFormatterTrait`; a `#` format expression is evaluated by `evaluateExpression()`, and format properties also accept a callable. (belisoful)
 BUG: `ChoiceFormat` passed `{n: ...}` set notation to `eval()`; the expression is parsed and accepts only numbers, `n`, brackets, and its documented operators. (belisoful)
 BUG: `TDbCronManager::getCronLog()` compared the driver name to `'postgresql'` instead of `'pgsql'`, so PostgreSQL received MySQL's `LIMIT offset, count`; every driver now gets `LIMIT count OFFSET offset`. (belisoful)
