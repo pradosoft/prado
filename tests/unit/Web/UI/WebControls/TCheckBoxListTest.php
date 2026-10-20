@@ -140,6 +140,22 @@ class TCheckBoxListTest extends TestCase
 		return [$page, $list];
 	}
 
+	/**
+	 * Renders the control, then an empty div with the same writer, so attributes left in
+	 * the writer show on the div.
+	 * @param TCheckBoxList $list
+	 * @return string the output
+	 */
+	private function renderBeforeDiv(TCheckBoxList $list): string
+	{
+		$textWriter = new TTextWriter();
+		$writer = new THtmlWriter($textWriter);
+		$list->renderControl($writer);
+		$writer->renderBeginTag('div');
+		$writer->renderEndTag();
+		return $textWriter->flush();
+	}
+
 	// ================================================================================
 	// Basics
 	// ================================================================================
@@ -576,9 +592,47 @@ class TCheckBoxListTest extends TestCase
 		$list->setRepeatLayout(TRepeatLayout::Raw);
 		$list->setToolTip('Tip');
 		$output = $this->render($list);
-		$this->assertStringStartsWith('<span id="List" role="group" aria-label="Tip">', $output);
+		$list->setCssClass('cls');
+		$list->setAttribute('data-x', 'y');
+		$output = $this->render($list);
+		$this->assertStringStartsWith('<span id="List" title="Tip" data-x="y" class="cls" role="group" aria-label="Tip"><span id="List_c0_parent">', $output);
 		$this->assertStringEndsWith('<label for="List_c1">B</label></span></span>', $output);
 		$this->assertSame(1, substr_count($output, 'role="group"'));
+		$this->assertSame(1, substr_count($output, 'class="cls"'));
+	}
+
+	public function testRenderLeavesNoAttributesInWriter()
+	{
+		foreach ([TRepeatLayout::Table, TRepeatLayout::Flow, TRepeatLayout::Raw] as $layout) {
+			foreach ([['a' => 'A'], []] as $items) {
+				[, $list] = $this->createPageList($items);
+				$list->setRepeatLayout($layout);
+				$list->setAutoPostBack(true);
+				$list->setCssClass('cls');
+				$this->assertStringEndsWith('<div></div>', $this->renderBeforeDiv($list), $layout);
+			}
+		}
+	}
+
+	public function testRenderContainerHasNoMultipleOrTabIndex()
+	{
+		foreach ([TRepeatLayout::Table, TRepeatLayout::Flow, TRepeatLayout::Raw] as $layout) {
+			[, $list] = $this->createPageList(['a' => 'A']);
+			$list->setRepeatLayout($layout);
+			$output = $this->render($list);
+			$this->assertStringNotContainsString('multiple', $output, $layout);
+			$this->assertStringNotContainsString('tabindex', $output, $layout);
+		}
+	}
+
+	public function testGetTagName()
+	{
+		$list = new TCheckBoxList();
+		$this->assertSame('table', PradoUnit::invoke($list, 'getTagName'));
+		$list->setRepeatLayout(TRepeatLayout::Flow);
+		$this->assertSame('span', PradoUnit::invoke($list, 'getTagName'));
+		$list->setRepeatLayout(TRepeatLayout::Raw);
+		$this->assertSame('span', PradoUnit::invoke($list, 'getTagName'));
 	}
 
 	public function testRenderTextAlignLeft()
@@ -634,11 +688,10 @@ class TCheckBoxListTest extends TestCase
 		$list->setAutoPostBack(true);
 		$output = $this->render($list);
 		$this->assertStringNotContainsString('onclick', $output);
-		$registered = $page->getClientScript()->getPostBackControls();
-		$this->assertNotEmpty($registered);
-		foreach ($registered as $entry) {
-			$this->assertSame(['Prado.WebUI.TCheckBoxList', PradoUnit::invoke($list, 'getPostBackOptions')], $entry);
-		}
+		$this->assertSame(
+			[['Prado.WebUI.TCheckBoxList', PradoUnit::invoke($list, 'getPostBackOptions')]],
+			$page->getClientScript()->getPostBackControls()
+		);
 	}
 
 	public function testRenderAutoPostBackWithoutClientScript()

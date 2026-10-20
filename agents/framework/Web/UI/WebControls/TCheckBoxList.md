@@ -21,6 +21,18 @@ TCheckBoxList displays a list of checkboxes on a Web page. Supports multiple sel
 - `SelectedIndices` - Indices of selected items
 - `SelectedValues` - Values of selected items
 
+## Rendering
+| Layout | Container (has the list's id, attributes, style, and `role`) |
+|---|---|
+| Table | `<table>` from `TRepeatInfo` |
+| Flow | `<span>` from `TRepeatInfo` |
+| Raw | `<span>` from `render()`; items render directly inside |
+
+- `AccessKey` and `TabIndex` move to each item; the container renders neither.
+- `getTagName()` returns `table` or `span`, so `TListControl` renders `multiple` only on a `<select>`.
+- With no items, only the Raw layout renders its span (with the id and group attributes).
+- `addAttributesToRender()` registers the AutoPostBack client script once.
+
 ## See Also
 
 - [TListControl](./TListControl.md)

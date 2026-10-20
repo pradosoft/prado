@@ -338,25 +338,30 @@ class TRatingList extends TRadioButtonList
 	}
 
 	/**
-	 * Add rating style class name to the class attribute
-	 * when {@see setReadOnly ReadOnly} property is true and when the
-	 * {@see setCssClass CssClass} property is empty.
+	 * Registers the rating client control and renders the list.
 	 * @param \Prado\Web\UI\THtmlWriter $writer renderer
 	 */
 	public function render($writer)
 	{
-		$writer->addAttribute('id', $this->getClientID());
-		// TRadioButtonList supplies role="radiogroup" and the aria-label; the
-		// visually-hidden radios keep the group operable by keyboard and readable
-		// by assistive tech. A read-only rating additionally announces as such.
-		if ($this->getReadOnly()) {
-			$writer->addAttribute('aria-readonly', 'true');
-		}
 		$this->getPage()->getClientScript()->registerPostBackControl(
 			$this->getClientClassName(),
 			$this->getPostBackOptions()
 		);
 		parent::render($writer);
+	}
+
+	/**
+	 * Adds the grouping ARIA attributes to the list container.  TRadioButtonList supplies
+	 * `role="radiogroup"` and the `aria-label`; a read-only rating also renders `aria-readonly`.
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for rendering purpose.
+	 * @since 4.4.0
+	 */
+	protected function addGroupAttributesToRender($writer)
+	{
+		parent::addGroupAttributesToRender($writer);
+		if ($this->getReadOnly()) {
+			$writer->addAttribute('aria-readonly', 'true');
+		}
 	}
 
 	/**

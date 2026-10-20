@@ -61,14 +61,13 @@ class TActiveCheckBoxList extends TCheckBoxList implements IActiveControl, ICall
 	}
 
 	/**
-	 * Since at least a control with id is needed to update the content during callback,
-	 * always force the surrounding span to be rendered, so initially empty lists can be
-	 * updated later.
-	 *@return bool always true
+	 * A callback update replaces the element with the list's id, so an empty list renders
+	 * a span with the id.  A list with items renders its container with the id.
+	 * @return bool whether the list is rendered inside a span: Raw layout, or no items.
 	 */
 	protected function getSpanNeeded()
 	{
-		return true;
+		return parent::getSpanNeeded() || $this->getItemCount() === 0;
 	}
 
 	/**

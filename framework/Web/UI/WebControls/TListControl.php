@@ -135,7 +135,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	{
 		$page = $this->getPage();
 		$page->ensureRenderInForm($this);
-		if ($this->getIsMultiSelect()) {
+		if ($this->getIsMultiSelect() && $this->getTagName() === 'select') {
 			$writer->addAttribute('multiple', 'multiple');
 		}
 		if ($this->getEnabled(true)) {

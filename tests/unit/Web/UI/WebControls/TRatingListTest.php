@@ -3,6 +3,8 @@
 namespace Prado\Test\Unit\Web\UI\WebControls;
 
 use PHPUnit\Framework\TestCase;
+use Prado\Web\UI\THtmlWriter;
+use Prado\IO\TTextWriter;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Test\Unit\Harness\Traits\TWebControlRenderTrait;
 use Prado\Test\Unit\PradoUnit;
@@ -439,5 +441,17 @@ class TRatingListTest extends TestCase
 		$list->setReadOnly(true);
 		$output = $this->render($list);
 		$this->assertMatchesRegularExpression('/^<table id="Rate"[^>]*aria-readonly="true"[^>]*>/', $output);
+	}
+
+	public function testRenderWithoutItemsLeavesNoAttributesInWriter()
+	{
+		[, $list] = $this->createPageList(0);
+		$list->setReadOnly(true);
+		$textWriter = new TTextWriter();
+		$writer = new THtmlWriter($textWriter);
+		$list->renderControl($writer);
+		$writer->renderBeginTag('div');
+		$writer->renderEndTag();
+		$this->assertSame('<div></div>', $textWriter->flush());
 	}
 }
