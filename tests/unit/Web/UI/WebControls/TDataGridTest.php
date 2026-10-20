@@ -936,7 +936,21 @@ class TDataGridTest extends TestCase
 		$this->assertSame(['OnItemCommand', $grid, $param], $log[0]);
 	}
 
-	public function testItemCommandsRaiseEvents()
+	public function testSelectCommandFromPagerSelectsNothing()
+	{
+		$grid = $this->createGrid();
+		$grid->setAllowPaging(true);
+		$grid->setPageSize(2);
+		$this->bind($grid, $this->rows(5));
+		$log = $this->recordEvents($grid, ['OnItemCommand', 'OnSelectedIndexChanged']);
+		$button = new TLinkButton();
+		$grid->getTopPager()->getControls()->add($button);
+		$button->onCommand(new TCommandEventParameter('Select', ''));
+		$this->assertSame(-1, $grid->getSelectedItemIndex());
+		$this->assertSame(['OnItemCommand'], array_column($log->getArrayCopy(), 0));
+	}
+
+		public function testItemCommandsRaiseEvents()
 	{
 		$commands = [
 			'edit' => 'OnEditCommand',
@@ -1376,13 +1390,13 @@ class TDataGridTest extends TestCase
 		$this->assertSame('blue', $items->itemAt(1)->getStyle()->getBackColor());
 		$this->assertSame('red', $items->itemAt(1)->getStyle()->getForeColor());
 
-		// item 2 is the control at index 3 (after the header): odd, merges ItemStyle
+		// item 2 has an even item index and merges ItemStyle
 		$selected = $items->itemAt(2)->getStyle();
 		$this->assertSame('selected', $selected->getCssClass());
 		$this->assertSame('red', $selected->getForeColor());
 		$this->assertSame('', $selected->getBackColor());
 
-		// item 3 is the control at index 4: even, merges AlternatingItemStyle
+		// item 3 has an odd item index and merges AlternatingItemStyle
 		$edit = $items->itemAt(3)->getStyle();
 		$this->assertSame('edit', $edit->getCssClass());
 		$this->assertSame('green', $edit->getBorderColor());
@@ -1407,7 +1421,32 @@ class TDataGridTest extends TestCase
 		$this->assertSame('red', $items->itemAt(1)->getStyle()->getForeColor());
 	}
 
-	public function testApplyItemStylesWithoutItemStyle()
+	public function testApplyItemStylesWithPagerUsesItemIndex()
+	{
+		foreach ([TDataGridPagerPosition::Bottom, TDataGridPagerPosition::Top] as $position) {
+			foreach ([0 => 'item', 1 => 'alt'] as $index => $class) {
+				$grid = $this->createGrid();
+				$grid->setAllowPaging(true);
+				$grid->setPageSize(4);
+				$grid->getPagerStyle()->setPosition($position);
+				$grid->getItemStyle()->setCssClass('item');
+				$grid->getAlternatingItemStyle()->setCssClass('alt');
+				$grid->getSelectedItemStyle()->setForeColor('red');
+				$grid->getEditItemStyle()->setBackColor('blue');
+				$grid->setSelectedItemIndex($index);
+				$grid->setEditItemIndex(1 - $index);
+				$this->bind($grid, $this->rows(6));
+				PradoUnit::invoke($grid, 'applyItemStyles');
+				$items = $grid->getItems();
+				$this->assertSame('red', $items->itemAt($index)->getStyle()->getForeColor());
+				$this->assertSame($class, $items->itemAt($index)->getStyle()->getCssClass(), "$position selected $index");
+				$this->assertSame('blue', $items->itemAt(1 - $index)->getStyle()->getBackColor());
+				$this->assertSame($index ? 'item' : 'alt', $items->itemAt(1 - $index)->getStyle()->getCssClass(), "$position edit " . (1 - $index));
+			}
+		}
+	}
+
+		public function testApplyItemStylesWithoutItemStyle()
 	{
 		$grid = $this->createGrid();
 		$grid->getEditItemStyle()->setCssClass('edit');
