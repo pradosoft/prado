@@ -76,6 +76,7 @@ class TDataSourceControlTest extends TestCase
 			$this->fail('focus() must throw TNotSupportedException.');
 		} catch (TNotSupportedException $e) {
 			$this->assertSame('datasourcecontrol_focus_unsupported', $e->getErrorCode());
+			$this->assertSame($this->source::class . ' does not support Focus.', $e->getMessage());
 		}
 	}
 
