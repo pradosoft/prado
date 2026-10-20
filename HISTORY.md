@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: A cloned `TListControl` shared its items with the original, so every `TDropDownListColumn` edit cell showed the last cell's selection; `TListControl` and `TListItem` clone their items and attributes. (belisoful)
 ENH: `TListControl` and `TDataGridColumn` share `formatDataValue()` through `TDataValueFormatterTrait`; a `#` format expression is evaluated by `evaluateExpression()`, and format properties also accept a callable. (belisoful)
 BUG: `ChoiceFormat` passed `{n: ...}` set notation to `eval()`; the expression is parsed and accepts only numbers, `n`, brackets, and its documented operators. (belisoful)
 BUG: `TDbCronManager::getCronLog()` compared the driver name to `'postgresql'` instead of `'pgsql'`, so PostgreSQL received MySQL's `LIMIT offset, count`; every driver now gets `LIMIT count OFFSET offset`. (belisoful)

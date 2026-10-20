@@ -104,6 +104,22 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	private $_cachedSelectedValues;
 
 	/**
+	 * Clones the list items into a new collection, so the clone selects items independently.
+	 * @since 4.4.0
+	 */
+	public function __clone()
+	{
+		parent::__clone();
+		if ($this->_items !== null) {
+			$items = $this->_items;
+			$this->_items = $this->createListItemCollection();
+			foreach ($items as $item) {
+				$this->_items->add(clone $item);
+			}
+		}
+	}
+
+	/**
 	 * @return string tag name of the list control
 	 */
 	protected function getTagName()

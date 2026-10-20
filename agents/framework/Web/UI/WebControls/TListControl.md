@@ -33,6 +33,7 @@ TListControl is the base class for list controls like TListBox, TDropDownList, T
 - `onSelectedIndexChanged()` - Raises OnSelectedIndexChanged event
 - `onTextChanged()` - Raises OnTextChanged event
 - `dataBind()` - Binds data source to items
+- `__clone()` - Clones each item into a new collection; a clone selects items independently ([TDropDownListColumn](./TDropDownListColumn.md) clones its list for each edit cell)
 
 ## See Also
 

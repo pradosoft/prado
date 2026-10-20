@@ -306,7 +306,25 @@ class TListControlTest extends TestCase
 		$this->assertTrue($list->getHasItems());
 	}
 
-	// ================================================================================
+	public function testCloneCopiesItems()
+	{
+		$list = $this->createList(false, ['a' => 'A', 'b' => 'B']);
+		$list->getItems()->itemAt(0)->setAttribute('class', 'first');
+		$copy = clone $list;
+		$this->assertNotSame($list->getItems(), $copy->getItems());
+		$this->assertNotSame($list->getItems()->itemAt(0), $copy->getItems()->itemAt(0));
+		$this->assertSame(['A', 'B'], [$copy->getItems()->itemAt(0)->getText(), $copy->getItems()->itemAt(1)->getText()]);
+		$this->assertSame('first', $copy->getItems()->itemAt(0)->getAttribute('class'));
+
+		$copy->setSelectedIndex(1);
+		$this->assertSame(-1, $list->getSelectedIndex());
+		$copy->getItems()->add(new TListItem('C', 'c'));
+		$this->assertSame(2, $list->getItemCount());
+
+		$this->assertNull(PradoUnit::getProp(clone new TListControlTestList(), '_items'));
+	}
+
+		// ================================================================================
 	// Selection: single
 	// ================================================================================
 
