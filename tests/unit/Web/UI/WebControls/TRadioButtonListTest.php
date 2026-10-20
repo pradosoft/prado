@@ -110,8 +110,10 @@ class TRadioButtonListTest extends TestCase
 	public function testLoadPostDataSelectsPostedValue()
 	{
 		[, $list] = $this->createPageList();
+		$this->assertFalse($list->getDataChanged());
 		$this->assertTrue($list->loadPostData('List', ['List' => 'b']));
 		$this->assertSame(1, $list->getSelectedIndex());
+		$this->assertTrue($list->getDataChanged());
 	}
 
 	public function testLoadPostDataChangesSelection()
@@ -129,6 +131,21 @@ class TRadioButtonListTest extends TestCase
 		$list->setSelectedIndex(1);
 		$this->assertFalse($list->loadPostData('List', ['List' => 'b']));
 		$this->assertSame(1, $list->getSelectedIndex());
+		$this->assertFalse($list->getDataChanged());
+	}
+
+	public function testLoadPostDataIgnoredWhenDisabled()
+	{
+		[$page, $list] = $this->createPageList();
+		$list->setEnabled(false);
+		$this->assertFalse($list->loadPostData('List', ['List' => 'b']));
+		$this->assertSame(-1, $list->getSelectedIndex());
+		$this->assertFalse($list->getDataChanged());
+
+		$list->setEnabled(true);
+		$page->setEnabled(false);
+		$this->assertFalse($list->loadPostData('List', ['List' => 'b']));
+		$this->assertSame(-1, $list->getSelectedIndex());
 	}
 
 	public function testLoadPostDataSkipsDisabledItem()
