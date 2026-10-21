@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: A cloned `TListControl` shared its items with the original, so every `TDropDownListColumn` edit cell showed the last cell's selection; `TListControl` and `TListItem` clone their items and attributes. (belisoful)
 BUG: `TDataBoundControl` did not detach its `OnDataSourceViewChanged` handler from a replaced data source view, so a change to the old view still requested a rebind. (belisoful)
 BUG: `TListControl` applied a `SelectedValue` set before databinding over a later `SelectedIndex`, and `clearSelection()` kept the stored selection; the last selection set is applied, and `clearSelection()` clears it. (belisoful)
 BUG: `TDataGrid` and `TPager` link-button and label pagers rendered their default page texts (`<`, `>`, `<<`, `>>`) unencoded; the default texts are HTML-encoded, and other texts still render as HTML. (belisoful)
