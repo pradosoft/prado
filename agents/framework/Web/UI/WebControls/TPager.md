@@ -20,6 +20,11 @@ TPager creates a pager that provides UI for end-users to interactively specify w
 - `getPageButtonCount()` / `setPageButtonCount($value)` - Max pager buttons to display
 - `onPageIndexChanged($param)` - Event raised when page index changes
 - `buildPager()` - Builds pager content based on mode
+- `getFirstPageText()` / `getPrevPageText()` / `getNextPageText()` / `getLastPageText()` - Button texts; default `<<`, `<`, `>`, `>>`
+- `createPagerButton(...)` - Creates a TLinkButton, TLabel, TButton, or TImageButton
+
+## Page Texts
+In link-button and label pager buttons, the default page texts (`<`, `>`, `<<`, `>>`) render HTML-encoded (`encodeDefaultPagerText()`); any other text renders as HTML. Push and image buttons put the text in an encoded attribute.
 
 ## See Also
 
