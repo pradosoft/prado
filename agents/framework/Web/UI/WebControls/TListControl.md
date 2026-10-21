@@ -18,7 +18,7 @@ TListControl is the base class for list controls like TListBox, TDropDownList, T
 - `getSelectedValue()` / `setSelectedValue()` - Gets or sets selected item value
 - `getSelectedValues()` / `setSelectedValues()` - Gets or sets array of selected values (multi-select)
 - `getSelectedIndices()` / `setSelectedIndices()` - Gets or sets array of selected indices
-- `clearSelection()` - Clears all selections
+- `clearSelection()` - Clears all selections, including one stored for the next databinding
 - `getAutoPostBack()` / `setAutoPostBack()` - Gets or sets auto postback on change
 - `getCausesValidation()` / `setCausesValidation()` - Gets or sets whether validation triggers on postback
 - `getValidationGroup()` / `setValidationGroup()` - Gets or sets validation group
@@ -33,6 +33,11 @@ TListControl is the base class for list controls like TListBox, TDropDownList, T
 - `onSelectedIndexChanged()` - Raises OnSelectedIndexChanged event
 - `onTextChanged()` - Raises OnTextChanged event
 - `dataBind()` - Binds data source to items
+
+## Selection Before Databinding
+Each selection setter also stores its selection; `performDataBinding()` and `addParsedObject()` apply the stored selection to the new items, then clear it.
+- Each setter replaces any selection stored by another setter, so the last one set is applied.
+- `clearSelection()` clears the stored selection.
 
 ## See Also
 
