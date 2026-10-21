@@ -66,6 +66,10 @@ TDataGrid::CMD_PAGE_LAST  = 'Last'
 
 `ItemStyle`, `AlternatingItemStyle`, `SelectedItemStyle`, `EditItemStyle`, `HeaderStyle`, `FooterStyle`, `PagerStyle`, `TableHeadStyle`, `TableBodyStyle`, `TableFootStyle`
 
+`applyItemStyles()` merges each item's style:
+- `AlternatingItemStyle` inherits `ItemStyle`; `EditItemStyle` inherits `SelectedItemStyle`.
+- A selected or edit item also merges `ItemStyle` for an even item index, or `AlternatingItemStyle` for an odd one.
+
 ## Events
 
 | Event | When |

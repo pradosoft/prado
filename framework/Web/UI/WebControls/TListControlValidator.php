@@ -146,7 +146,7 @@ class TListControlValidator extends TBaseValidator
 				return false;
 			}
 			foreach ($required as $require) {
-				$exists = $exists && in_array($require, $values);
+				$exists = $exists && in_array($require, $values, true);
 			}
 		}
 
@@ -186,7 +186,7 @@ class TListControlValidator extends TBaseValidator
 	{
 		$required = [];
 		$string = $this->getRequiredSelections();
-		if (!empty($string)) {
+		if ($string !== '') {
 			$required = preg_split('/,\s*/', $string);
 		}
 		return $required;

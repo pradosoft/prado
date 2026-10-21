@@ -21,6 +21,7 @@ TListItem represents an item in a list control. Each item has Text and Value pro
 - `hasAttribute()` - Checks if named attribute exists
 - `getAttribute()` / `setAttribute()` - Gets or sets attribute value
 - `removeAttribute()` - Removes an attribute
+- `__clone()` - Clones the attribute collection
 
 ## See Also
 
