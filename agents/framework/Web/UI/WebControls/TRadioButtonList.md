@@ -14,7 +14,8 @@ TRadioButtonList displays a group of radio buttons on a Web page, allowing singl
 
 - `getIsMultiSelect()` - Always returns false (single selection only)
 - `createRepeatedControl()` - Returns TRadioButtonItem template control
-- `loadPostData()` - Loads user input data from postback
+- `loadPostData()` - Loads the posted value; a disabled list ignores it
+- `getDataChanged()` - Whether the posted value changed the selection
 - `setSelectedIndices()` - Throws TNotSupportedException (not supported for radio buttons)
 - `getClientClassName()` - Returns 'Prado.WebUI.TRadioButtonList'
 

@@ -121,6 +121,7 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	protected function createPagerButton($buttonType, $enabled, $text, $commandName, $commandParameter)
 	{
 		if ($buttonType === TPagerButtonType::LinkButton) {
+			$text = $this->encodeDefaultPagerText($text);
 			if ($enabled) {
 				$button = new TActiveLinkButton();
 			} else {

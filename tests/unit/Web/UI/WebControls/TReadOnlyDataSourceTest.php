@@ -130,6 +130,7 @@ class TReadOnlyDataSourceTest extends TestCase
 			$this->fail('A string data source must throw TInvalidDataTypeException.');
 		} catch (TInvalidDataTypeException $e) {
 			$this->assertSame('readonlydatasource_datasource_invalid', $e->getErrorCode());
+			$this->assertSame('TReadOnlyDataSource requires an array, an IDataSource, or a Traversable data source.', $e->getMessage());
 		}
 	}
 
@@ -193,6 +194,7 @@ class TReadOnlyDataSourceTest extends TestCase
 			$this->fail('A string data source must throw TInvalidDataTypeException.');
 		} catch (TInvalidDataTypeException $e) {
 			$this->assertSame('readonlydatasourceview_datasource_invalid', $e->getErrorCode());
+			$this->assertSame('TReadOnlyDataSourceView requires null, an array, or a Traversable data source.', $e->getMessage());
 		}
 	}
 
