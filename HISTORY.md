@@ -1,5 +1,9 @@
 ## Version 4.4.0 - TBA
 BUG: A cloned `TListControl` shared its items with the original, so every `TDropDownListColumn` edit cell showed the last cell's selection; `TListControl` and `TListItem` clone their items and attributes. (belisoful)
+BUG: `TDataBoundControl` did not detach its `OnDataSourceViewChanged` handler from a replaced data source view, so a change to the old view still requested a rebind. (belisoful)
+BUG: `TListControl` applied a `SelectedValue` set before databinding over a later `SelectedIndex`, and `clearSelection()` kept the stored selection; the last selection set is applied, and `clearSelection()` clears it. (belisoful)
+BUG: `TDataGrid` and `TPager` link-button and label pagers rendered their default page texts (`<`, `>`, `<<`, `>>`) unencoded; the default texts are HTML-encoded, and other texts still render as HTML. (belisoful)
+BUG: `TActiveRatingList` wrote caption, rating, and read-only values unencoded into callback JavaScript; the values are encoded by `TJavaScript::encode()`. (belisoful)
 ENH: `TListControl` and `TDataGridColumn` share `formatDataValue()` through `TDataValueFormatterTrait`; a `#` format expression is evaluated by `evaluateExpression()`, and format properties also accept a callable. (belisoful)
 BUG: `ChoiceFormat` passed `{n: ...}` set notation to `eval()`; the expression is parsed and accepts only numbers, `n`, brackets, and its documented operators. (belisoful)
 BUG: `TDbCronManager::getCronLog()` compared the driver name to `'postgresql'` instead of `'pgsql'`, so PostgreSQL received MySQL's `LIMIT offset, count`; every driver now gets `LIMIT count OFFSET offset`. (belisoful)

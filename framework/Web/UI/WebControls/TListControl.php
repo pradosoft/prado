@@ -271,6 +271,9 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 		}
 	}
 
+	/**
+	 * Clears the selections stored for the next databinding.
+	 */
 	private function resetCachedSelections()
 	{
 		$this->_cachedSelectedValue = null;
@@ -503,6 +506,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 				$this->_items->itemAt($index)->setSelected(true);
 			}
 		}
+		$this->resetCachedSelections();
 		$this->_cachedSelectedIndex = $index;
 		if ($this->getAdapter() instanceof IListControlAdapter) {
 			$this->getAdapter()->setSelectedIndex($index);
@@ -541,6 +545,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 					}
 				}
 			}
+			$this->resetCachedSelections();
 			$this->_cachedSelectedIndices = $indices;
 		} else {
 			throw new TNotSupportedException('listcontrol_multiselect_unsupported', $this::class);
@@ -616,6 +621,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 				$this->clearSelection();
 			}
 		}
+		$this->resetCachedSelections();
 		$this->_cachedSelectedValue = $value;
 		if ($this->getAdapter() instanceof IListControlAdapter) {
 			$this->getAdapter()->setSelectedValue($value);
@@ -657,6 +663,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 					}
 				}
 			}
+			$this->resetCachedSelections();
 			$this->_cachedSelectedValues = $values;
 		} else {
 			throw new TNotSupportedException('listcontrol_multiselect_unsupported', $this::class);
@@ -684,10 +691,11 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	}
 
 	/**
-	 * Clears all existing selections.
+	 * Clears all existing selections, including a selection set before databinding.
 	 */
 	public function clearSelection()
 	{
+		$this->resetCachedSelections();
 		if ($this->_items) {
 			foreach ($this->_items as $item) {
 				$item->setSelected(false);

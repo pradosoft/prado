@@ -725,6 +725,48 @@ class TListControlTest extends TestCase
 		$this->assertNull(PradoUnit::getProp($list, '_cachedSelectedIndices'));
 	}
 
+	public function testBindAppliesLastSelectionSet()
+	{
+		$list = new TListControlTestList();
+		$list->setSelectedValue('b');
+		$list->setSelectedIndex(0);
+		$this->bind($list, ['a' => 'A', 'b' => 'B']);
+		$this->assertSame(0, $list->getSelectedIndex());
+
+		$list = new TListControlTestList();
+		$list->setSelectedIndex(1);
+		$list->setSelectedValue('a');
+		$this->bind($list, ['a' => 'A', 'b' => 'B']);
+		$this->assertSame(0, $list->getSelectedIndex());
+
+		$list = $this->createList(true);
+		$list->setSelectedValues(['a']);
+		$list->setSelectedIndices([1, 2]);
+		$this->bind($list, ['a' => 'A', 'b' => 'B', 'c' => 'C']);
+		$this->assertSame([1, 2], $list->getSelectedIndices());
+
+		$list = new TListControlTestList();
+		$list->setSelectedValue('b');
+		$list->setSelectedIndex(-1);
+		$this->bind($list, ['a' => 'A', 'b' => 'B']);
+		$this->assertSame(-1, $list->getSelectedIndex());
+	}
+
+	public function testBindAfterClearSelectionSelectsNothing()
+	{
+		$list = new TListControlTestList();
+		$list->setSelectedValue('b');
+		$list->clearSelection();
+		$this->bind($list, ['a' => 'A', 'b' => 'B']);
+		$this->assertSame(-1, $list->getSelectedIndex());
+
+		$list = $this->createList(false, ['a' => 'A', 'b' => 'B']);
+		$list->setSelectedIndex(1);
+		$list->clearSelection();
+		$this->bind($list, ['x' => 'X', 'y' => 'Y']);
+		$this->assertSame(-1, $list->getSelectedIndex());
+	}
+
 	public function testBindWithoutCachedSelectionSelectsNothing()
 	{
 		$list = new TListControlTestList();
