@@ -67,6 +67,18 @@ class TListItem extends \Prado\TComponent
 	}
 
 	/**
+	 * Clones the attributes, so the clone's attributes change independently.
+	 * @since 4.4.0
+	 */
+	public function __clone()
+	{
+		parent::__clone();
+		if ($this->_attributes !== null) {
+			$this->_attributes = clone $this->_attributes;
+		}
+	}
+
+	/**
 	 * Returns an array with the names of all variables of this object that should NOT be serialized
 	 * because their value is the default one or useless to be cached for the next page loads.
 	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
