@@ -12,6 +12,7 @@ namespace Prado\Web\UI\WebControls;
 
 use Prado\Exceptions\TConfigurationException;
 use Prado\TPropertyValue;
+use Prado\Web\THttpUtility;
 use Prado\Exceptions\TInvalidDataValueException;
 
 /**
@@ -61,6 +62,10 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	public const CMD_PAGE_PREV = 'Previous';
 	public const CMD_PAGE_FIRST = 'First';
 	public const CMD_PAGE_LAST = 'Last';
+	/**
+	 * @var array<string, true> the default page texts, HTML-encoded in link button and label pager buttons.
+	 */
+	private const DEFAULT_PAGER_TEXTS = ['<' => true, '>' => true, '<<' => true, '>>' => true];
 
 	private $_pageCount = 0;
 
@@ -443,6 +448,19 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
+	 * Returns the text of a link button or label pager button.  A default page text
+	 * (`<`, `>`, `<<`, `>>`) is HTML-encoded; any other text renders as HTML, as in
+	 * {@see TLinkButton} and {@see TLabel}.
+	 * @param string $text the page text.
+	 * @return string the button text.
+	 * @since 4.4.0
+	 */
+	protected function encodeDefaultPagerText($text)
+	{
+		return isset(self::DEFAULT_PAGER_TEXTS[$text]) ? THttpUtility::htmlEncode($text) : $text;
+	}
+
+	/**
 	 * Creates a pager button.
 	 * Depending on the button type, a TLinkButton or a TButton may be created.
 	 * If it is enabled (clickable), its command name and parameter will also be set.
@@ -457,6 +475,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	protected function createPagerButton($buttonType, $enabled, $text, $commandName, $commandParameter)
 	{
 		if ($buttonType === TPagerButtonType::LinkButton) {
+			$text = $this->encodeDefaultPagerText($text);
 			if ($enabled) {
 				$button = new TLinkButton();
 			} else {

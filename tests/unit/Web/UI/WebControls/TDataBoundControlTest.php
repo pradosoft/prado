@@ -676,6 +676,7 @@ class TDataBoundControlTest extends TestCase
 		$this->control->onDataSourceChanged();
 		$this->assertSame($second, PradoUnit::invoke($this->control, 'getDataSourceView'));
 		$this->assertTrue($second->hasEventHandler('OnDataSourceViewChanged'));
+		$this->assertFalse($view->hasEventHandler('OnDataSourceViewChanged'));
 	}
 
 	// ---------------------------------------------------------------------

@@ -19,6 +19,9 @@ Clickable star rating control that behaves like a TRadioButtonList. Supports rea
 - `onCallback($param)` - Event raised when callback is requested
 - `getClientClassName()` - Returns `Prado.WebUI.TActiveRatingList`
 
+## Client Updates
+During a callback, `setReadOnly()`, `setRating()`, and `setCaption()` call `callClientFunction()`, which sends `Prado.Registry['<ClientID>'].<method>(<value>)` with the value encoded by `TJavaScript::encode()`. The client writes the caption through `innerHTML`, as `TLabel` renders its text unencoded.
+
 ## See Also
 
 - `TRatingList`, [ICallbackEventHandler](./ICallbackEventHandler.md)

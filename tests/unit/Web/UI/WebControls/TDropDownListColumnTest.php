@@ -284,7 +284,17 @@ class TDropDownListColumnTest extends TestCase
 		$this->assertSame('', $cell->getText());
 	}
 
-	public function testDataBindEditItemSelectsByTextField()
+	public function testDataBindEditItemsSelectIndependently()
+	{
+		$column = $this->createEditColumn();
+		$first = $this->bindCell($column, ['color' => 'r'], TListItemType::EditItem)->getRegisteredObject('DropDownList');
+		$second = $this->bindCell($column, ['color' => 'b'], TListItemType::EditItem)->getRegisteredObject('DropDownList');
+		$this->assertSame('r', $first->getSelectedValue());
+		$this->assertSame('b', $second->getSelectedValue());
+		$this->assertSame(-1, PradoUnit::getProp($column, '_listControl')->getSelectedIndex());
+	}
+
+		public function testDataBindEditItemSelectsByTextField()
 	{
 		$column = new TDropDownListColumn();
 		$column->setListDataSource(['red' => 'Red', 'green' => 'Green', 'blue' => 'Blue']);
