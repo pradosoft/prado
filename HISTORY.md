@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: Nine `TDataSourceControl`, `TDataSourceView`, and `TReadOnlyDataSource` error codes had no message, and three `TDataBoundControl` messages repeated their codes; each has a message. (belisoful)
 BUG: A cloned `TListControl` shared its items with the original, so every `TDropDownListColumn` edit cell showed the last cell's selection; `TListControl` and `TListItem` clone their items and attributes. (belisoful)
 BUG: `TDataBoundControl` did not detach its `OnDataSourceViewChanged` handler from a replaced data source view, so a change to the old view still requested a rebind. (belisoful)
 BUG: `TListControl` applied a `SelectedValue` set before databinding over a later `SelectedIndex`, and `clearSelection()` kept the stored selection; the last selection set is applied, and `clearSelection()` clears it. (belisoful)

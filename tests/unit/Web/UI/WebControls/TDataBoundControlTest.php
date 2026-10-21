@@ -608,7 +608,7 @@ class TDataBoundControlTest extends TestCase
 		$this->buildContainerWithSource();
 		$this->control->setDataSourceID('missing');
 		$this->expectException(TInvalidDataValueException::class);
-		$this->expectExceptionMessage('databoundcontrol_datasourceid_inexistent');
+		$this->expectExceptionMessage("DataSourceID 'missing' does not refer to an existing control.");
 		PradoUnit::invoke($this->control, 'determineDataSource');
 	}
 
@@ -620,7 +620,7 @@ class TDataBoundControlTest extends TestCase
 		$container->getControls()->add($plain);
 		$this->control->setDataSourceID('plain');
 		$this->expectException(TInvalidDataValueException::class);
-		$this->expectExceptionMessage('databoundcontrol_datasourceid_invalid');
+		$this->expectExceptionMessage("DataSourceID 'plain' must refer to a control implementing IDataSource.");
 		PradoUnit::invoke($this->control, 'determineDataSource');
 	}
 
@@ -630,7 +630,7 @@ class TDataBoundControlTest extends TestCase
 		$this->control->setDataSourceID('ds');
 		$this->control->setDataMember('nope');
 		$this->expectException(TInvalidDataValueException::class);
-		$this->expectExceptionMessage('databoundcontrol_datamember_invalid');
+		$this->expectExceptionMessage("DataMember 'nope' does not name a view of the data source.");
 		PradoUnit::invoke($this->control, 'getDataSourceView');
 	}
 
