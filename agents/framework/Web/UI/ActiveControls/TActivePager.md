@@ -13,7 +13,7 @@ Active counterpart to TPager that uses callbacks instead of postbacks for page n
 ## Key Properties/Methods
 
 - `buildListPager()` - Creates active dropdown list for page selection
-- `createPagerButton(...)` - Creates appropriate active button type
+- `createPagerButton(...)` - Creates appropriate active button type; encodes a default page text for link buttons and labels, as [TPager](../WebControls/TPager.md) does
 - `handleCallback($sender, $param)` - Event handler for callback buttons
 - `raiseCallbackEvent($param)` - Raises callback event
 - `onCallback($param)` - Event raised when callback is requested

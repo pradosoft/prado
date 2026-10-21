@@ -91,6 +91,7 @@ class TDataSourceViewTest extends TestCase
 			$this->fail('insertAt() must throw TNotSupportedException.');
 		} catch (TNotSupportedException $e) {
 			$this->assertSame('datasourceview_insert_unsupported', $e->getErrorCode());
+			$this->assertSame($this->view::class . ' does not support insert.', $e->getMessage());
 		}
 	}
 
