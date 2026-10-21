@@ -203,7 +203,8 @@ class TActiveCheckBoxListTest extends TestCase
 		[, $list, $cs] = $this->createPageList(false);
 		$list->setSelectedValue('b');
 		$html = $this->renderControl($list);
-		$this->assertStringStartsWith('<span id="List" role="group">', $html);
+		$this->assertStringStartsWith('<table id="List" role="group">', $html);
+		$this->assertSame(1, substr_count($html, 'id="List"'));
 		$this->assertStringContainsString('id="List_c0"', $html);
 		$this->assertStringContainsString('id="List_c1"', $html);
 		$this->assertStringContainsString('value="b"', $html);

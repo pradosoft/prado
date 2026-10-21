@@ -379,6 +379,15 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	}
 
 	/**
+	 * @return string the tag name of the list container: `table` for the Table layout, otherwise `span`.
+	 * @since 4.4.0
+	 */
+	protected function getTagName()
+	{
+		return $this->getRepeatLayout() === TRepeatLayout::Table ? 'table' : 'span';
+	}
+
+	/**
 	 * Whether the list should be rendered inside a span or not
 	 *
 	 *@return bool true if we need a span
@@ -420,40 +429,36 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	 */
 	public function render($writer)
 	{
+		$accessKey = $this->getAccessKey();
+		$tabIndex = $this->getTabIndex();
+		$this->setAccessKey('');
+		$this->setTabIndex(null);
+		$hasItems = $this->getItemCount() > 0;
 		if ($needSpan = $this->getSpanNeeded()) {
+			if ($hasItems) {
+				$this->addAttributesToRender($writer);
+			}
 			$writer->addAttribute('id', $this->getClientId());
 			$this->addGroupAttributesToRender($writer);
 			$writer->renderBeginTag('span');
 		}
-		if ($this->getItemCount() > 0) {
+		if ($hasItems) {
 			$this->_isEnabled = $this->getEnabled(true);
 			$repeatInfo = $this->getRepeatInfo();
-			$accessKey = $this->getAccessKey();
-			$tabIndex = $this->getTabIndex();
 			$this->_repeatedControl->setTextAlign($this->getTextAlign());
 			$this->_repeatedControl->setAccessKey($accessKey);
 			$this->_repeatedControl->setTabIndex($tabIndex);
-			$this->setAccessKey('');
-			$this->setTabIndex(0);
-			$this->addAttributesToRender($writer);
 			if (!$needSpan) {
+				$this->addAttributesToRender($writer);
 				$this->addGroupAttributesToRender($writer);
 			}
 			$repeatInfo->renderRepeater($writer, $this);
-			$this->setAccessKey($accessKey);
-			$this->setTabIndex($tabIndex);
 		}
 		if ($needSpan) {
 			$writer->renderEndTag();
 		}
-
-		//checkbox skipped the client control script in addAttributesToRender
-		if ($this->getEnabled(true)
-			&& $this->getEnableClientScript()
-			&& $this->getAutoPostBack()
-			&& $this->getPage()->getClientSupportsJavaScript()) {
-			$this->renderClientControlScript($writer);
-		}
+		$this->setAccessKey($accessKey);
+		$this->setTabIndex($tabIndex);
 	}
 
 	/**

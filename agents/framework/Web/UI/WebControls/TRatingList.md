@@ -18,6 +18,7 @@ TRatingList displays a star-based rating control that allows users to select a r
 - `getCaptionID()` / `setCaptionID(string)` - Control ID for displaying a caption
 - `getRatingStyle()` / `setRatingStyle(string)` - CSS style name for rating images
 - `onSelectedIndexChanged($param)` - Event raised when rating changes
+- `addGroupAttributesToRender()` - Adds `aria-readonly="true"` to the radiogroup table when read-only
 
 ## See Also
 

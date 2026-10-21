@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: `TCheckBoxList` left its `id` for the next tag after rendering, put its attributes on the first item in the Raw layout, and rendered `multiple` and `tabindex="0"` on its container; `TRatingList` without items leaked `id` and `aria-readonly`, and `TActiveCheckBoxList` rendered its id twice. (belisoful)
 BUG: `TActiveListControlAdapter` sent a client selection for an index equal to the item count when the list had no prompt. (belisoful)
 BUG: `TDataGrid` threw on a `Select` command from a pager, and with paging on, a selected or edit item merged the wrong one of `ItemStyle` and `AlternatingItemStyle`; a pager `Select` selects nothing, and the style follows the item index. (belisoful)
 BUG: `TDataGridPagerStyle::reset()`, `copyFrom()`, and `mergeWith()` skipped `FirstPageText` and `LastPageText`. (belisoful)
