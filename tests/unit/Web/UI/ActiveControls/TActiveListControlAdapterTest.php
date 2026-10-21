@@ -136,10 +136,16 @@ class TActiveListControlAdapterTest extends TestCase
 		$this->assertSame([$this->select('Index', 1)], $page->getClientFunctions());
 	}
 
-	public function testSetSelectedIndexAtItemCountIsSent()
+	public function testSetSelectedIndexAtItemCountIsNotSent()
 	{
-		[$page, , $adapter] = $this->createList();
+		[$page, $list, $adapter] = $this->createList();
 		$adapter->setSelectedIndex(3);
+		$this->assertSame([], $page->getClientFunctions());
+
+		$list->setPromptText('Choose');
+		$adapter->setSelectedIndex(3);
+		$this->assertSame([], $page->getClientFunctions());
+		$adapter->setSelectedIndex(2);
 		$this->assertSame([$this->select('Index', 3)], $page->getClientFunctions());
 	}
 
@@ -185,7 +191,7 @@ class TActiveListControlAdapterTest extends TestCase
 	public function testSetSelectedIndices()
 	{
 		[$page, , $adapter] = $this->createList();
-		$adapter->setSelectedIndices([0, '2', -1, 7]);
+		$adapter->setSelectedIndices([0, '2', -1, 3, 7]);
 		$this->assertSame([$this->select('Indices', [0, 2])], $page->getClientFunctions());
 	}
 

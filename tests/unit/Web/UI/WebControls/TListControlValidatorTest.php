@@ -17,7 +17,7 @@ use Prado\Web\UI\WebControls\TTextBox;
 
 class TListControlValidatorTest extends TestCase
 {
-	private function createPageValidator(array $selected = []): array
+	private function createPageValidator(array $selected = [], array $items = ['a' => 'A', 'b' => 'B', 'c' => 'C', 'd' => 'D']): array
 	{
 		$page = new TPage();
 		$form = new TForm();
@@ -27,8 +27,8 @@ class TListControlValidatorTest extends TestCase
 
 		$list = new TCheckBoxList();
 		$list->setID('List');
-		foreach (['a' => 'A', 'b' => 'B', 'c' => 'C', 'd' => 'D'] as $value => $text) {
-			$list->getItems()->add(new TListItem($text, $value));
+		foreach ($items as $value => $text) {
+			$list->getItems()->add(new TListItem($text, (string) $value));
 		}
 		$list->setSelectedValues($selected);
 		$page->getControls()->add($list);
@@ -99,6 +99,8 @@ class TListControlValidatorTest extends TestCase
 		$this->assertSame([], PradoUnit::invoke($validator, 'getRequiredValues'));
 		$validator->setRequiredSelections('a,b,  c');
 		$this->assertSame(['a', 'b', 'c'], PradoUnit::invoke($validator, 'getRequiredValues'));
+		$validator->setRequiredSelections('0');
+		$this->assertSame(['0'], PradoUnit::invoke($validator, 'getRequiredValues'));
 	}
 
 	public function testGetSelection()
@@ -153,7 +155,32 @@ class TListControlValidatorTest extends TestCase
 		$this->assertFalse($this->isValid($validator));
 	}
 
-	public function testRequiredSelectionsFewerSelectedThanRequired()
+	public function testRequiredSelectionZero()
+	{
+		$items = ['0' => 'Zero', '1' => 'One'];
+		[$validator] = $this->createPageValidator([], $items);
+		$validator->setRequiredSelections('0');
+		$this->assertFalse($this->isValid($validator));
+
+		[$validator] = $this->createPageValidator(['1'], $items);
+		$validator->setRequiredSelections('0');
+		$this->assertFalse($this->isValid($validator));
+
+		[$validator] = $this->createPageValidator(['0'], $items);
+		$validator->setRequiredSelections('0');
+		$this->assertTrue($this->isValid($validator));
+	}
+
+	public function testRequiredSelectionsMatchValuesExactly()
+	{
+		foreach ([['1e1', '10'], ['1', '01'], ['1', '1.0'], ['1', ' 1']] as [$required, $selected]) {
+			[$validator] = $this->createPageValidator([$selected], [$required => 'R', $selected => 'S']);
+			$validator->setRequiredSelections($required);
+			$this->assertFalse($this->isValid($validator), "$required matched $selected");
+		}
+	}
+
+		public function testRequiredSelectionsFewerSelectedThanRequired()
 	{
 		[$validator] = $this->createPageValidator(['a']);
 		$validator->setRequiredSelections('a,b');

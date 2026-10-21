@@ -757,7 +757,7 @@ class TDataGridTest extends TestCase
 		$grid->setAllowPaging(true);
 		$grid->setPageSize(1);
 		$this->bind($grid, $this->rows(3));
-		$this->assertSame(['L:<<', 'L:<', 'B:>|Page|Next', 'B:>>|Page|Last'], $this->pagerSummary($grid->getTopPager()));
+		$this->assertSame(['L:&lt;&lt;', 'L:&lt;', 'B:&gt;|Page|Next', 'B:&gt;&gt;|Page|Last'], $this->pagerSummary($grid->getTopPager()));
 		$this->assertSame($this->pagerSummary($grid->getTopPager()), $this->pagerSummary($grid->getBottomPager()));
 	}
 
@@ -768,7 +768,7 @@ class TDataGridTest extends TestCase
 		$grid->setPageSize(1);
 		$grid->setCurrentPageIndex(1);
 		$this->bind($grid, $this->rows(3));
-		$this->assertSame(['B:<<|Page|First', 'B:<|Page|Previous', 'B:>|Page|Next', 'B:>>|Page|Last'], $this->pagerSummary($grid->getTopPager()));
+		$this->assertSame(['B:&lt;&lt;|Page|First', 'B:&lt;|Page|Previous', 'B:&gt;|Page|Next', 'B:&gt;&gt;|Page|Last'], $this->pagerSummary($grid->getTopPager()));
 		$this->assertContains("\n", $grid->getTopPager()->getControls()->toArray());
 	}
 
@@ -779,7 +779,7 @@ class TDataGridTest extends TestCase
 		$grid->setPageSize(1);
 		$grid->setCurrentPageIndex(2);
 		$this->bind($grid, $this->rows(3));
-		$this->assertSame(['B:<<|Page|First', 'B:<|Page|Previous', 'L:>', 'L:>>'], $this->pagerSummary($grid->getTopPager()));
+		$this->assertSame(['B:&lt;&lt;|Page|First', 'B:&lt;|Page|Previous', 'L:&gt;', 'L:&gt;&gt;'], $this->pagerSummary($grid->getTopPager()));
 	}
 
 	public function testNextPrevPagerWithoutFirstAndLastText()
@@ -805,7 +805,7 @@ class TDataGridTest extends TestCase
 		$grid = $this->createGrid();
 		$grid->setAllowPaging(true);
 		$this->bind($grid, $this->rows(2));
-		$this->assertSame(['L:<<', 'L:<', 'L:>', 'L:>>'], $this->pagerSummary($grid->getTopPager()));
+		$this->assertSame(['L:&lt;&lt;', 'L:&lt;', 'L:&gt;', 'L:&gt;&gt;'], $this->pagerSummary($grid->getTopPager()));
 	}
 
 	public function testNextPrevPagerPushButtons()
@@ -867,20 +867,20 @@ class TDataGridTest extends TestCase
 
 	public function testNumericPagerFirstWindow()
 	{
-		$this->assertSame(['L:1', 'B:2|Page|2', 'B:3|Page|3', 'B:>|Page|4', 'B:>>|Page|Last'], $this->numericPager(10, 0));
+		$this->assertSame(['L:1', 'B:2|Page|2', 'B:3|Page|3', 'B:&gt;|Page|4', 'B:&gt;&gt;|Page|Last'], $this->numericPager(10, 0));
 	}
 
 	public function testNumericPagerMiddleWindow()
 	{
 		$this->assertSame(
-			['B:<<|Page|First', 'B:<|Page|3', 'B:4|Page|4', 'L:5', 'B:6|Page|6', 'B:>|Page|7', 'B:>>|Page|Last'],
+			['B:&lt;&lt;|Page|First', 'B:&lt;|Page|3', 'B:4|Page|4', 'L:5', 'B:6|Page|6', 'B:&gt;|Page|7', 'B:&gt;&gt;|Page|Last'],
 			$this->numericPager(10, 4)
 		);
 	}
 
 	public function testNumericPagerLastWindowIsFilled()
 	{
-		$this->assertSame(['B:<<|Page|First', 'B:<|Page|7', 'B:8|Page|8', 'B:9|Page|9', 'L:10'], $this->numericPager(10, 9));
+		$this->assertSame(['B:&lt;&lt;|Page|First', 'B:&lt;|Page|7', 'B:8|Page|8', 'B:9|Page|9', 'L:10'], $this->numericPager(10, 9));
 	}
 
 	public function testNumericPagerFewerPagesThanButtons()
@@ -893,13 +893,32 @@ class TDataGridTest extends TestCase
 		$this->assertSame(['B:1|Page|1', 'B:2|Page|2', 'B:3|Page|3'], $this->numericPager(3, 5, 10));
 	}
 
-	public function testNumericPagerWithoutFirstAndLastText()
+	public function testPagerEncodesOnlyDefaultLinkTexts()
+	{
+		$grid = $this->createGrid();
+		$grid->setAllowPaging(true);
+		$grid->setPageSize(1);
+		$grid->getPagerStyle()->setFirstPageText('<b>First</b>');
+		$grid->getPagerStyle()->setNextPageText('Next &raquo;');
+		$this->bind($grid, $this->rows(3));
+		$this->assertSame(['L:<b>First</b>', 'L:&lt;', 'B:Next &raquo;|Page|Next', 'B:&gt;&gt;|Page|Last'], $this->pagerSummary($grid->getTopPager()));
+	}
+
+	public function testEncodeDefaultPagerText()
+	{
+		$grid = new TDataGrid();
+		foreach (['<' => '&lt;', '>' => '&gt;', '<<' => '&lt;&lt;', '>>' => '&gt;&gt;', '<b>' => '<b>', '3' => '3', '' => ''] as $text => $expected) {
+			$this->assertSame($expected, PradoUnit::invoke($grid, 'encodeDefaultPagerText', (string) $text));
+		}
+	}
+
+		public function testNumericPagerWithoutFirstAndLastText()
 	{
 		$summary = $this->numericPager(10, 4, 3, function ($style) {
 			$style->setFirstPageText('');
 			$style->setLastPageText('');
 		});
-		$this->assertSame(['B:<|Page|3', 'B:4|Page|4', 'L:5', 'B:6|Page|6', 'B:>|Page|7'], $summary);
+		$this->assertSame(['B:&lt;|Page|3', 'B:4|Page|4', 'L:5', 'B:6|Page|6', 'B:&gt;|Page|7'], $summary);
 	}
 
 	public function testNumericPagerThroughDataBind()
@@ -936,7 +955,21 @@ class TDataGridTest extends TestCase
 		$this->assertSame(['OnItemCommand', $grid, $param], $log[0]);
 	}
 
-	public function testItemCommandsRaiseEvents()
+	public function testSelectCommandFromPagerSelectsNothing()
+	{
+		$grid = $this->createGrid();
+		$grid->setAllowPaging(true);
+		$grid->setPageSize(2);
+		$this->bind($grid, $this->rows(5));
+		$log = $this->recordEvents($grid, ['OnItemCommand', 'OnSelectedIndexChanged']);
+		$button = new TLinkButton();
+		$grid->getTopPager()->getControls()->add($button);
+		$button->onCommand(new TCommandEventParameter('Select', ''));
+		$this->assertSame(-1, $grid->getSelectedItemIndex());
+		$this->assertSame(['OnItemCommand'], array_column($log->getArrayCopy(), 0));
+	}
+
+		public function testItemCommandsRaiseEvents()
 	{
 		$commands = [
 			'edit' => 'OnEditCommand',
@@ -1376,13 +1409,13 @@ class TDataGridTest extends TestCase
 		$this->assertSame('blue', $items->itemAt(1)->getStyle()->getBackColor());
 		$this->assertSame('red', $items->itemAt(1)->getStyle()->getForeColor());
 
-		// item 2 is the control at index 3 (after the header): odd, merges ItemStyle
+		// item 2 has an even item index and merges ItemStyle
 		$selected = $items->itemAt(2)->getStyle();
 		$this->assertSame('selected', $selected->getCssClass());
 		$this->assertSame('red', $selected->getForeColor());
 		$this->assertSame('', $selected->getBackColor());
 
-		// item 3 is the control at index 4: even, merges AlternatingItemStyle
+		// item 3 has an odd item index and merges AlternatingItemStyle
 		$edit = $items->itemAt(3)->getStyle();
 		$this->assertSame('edit', $edit->getCssClass());
 		$this->assertSame('green', $edit->getBorderColor());
@@ -1407,7 +1440,32 @@ class TDataGridTest extends TestCase
 		$this->assertSame('red', $items->itemAt(1)->getStyle()->getForeColor());
 	}
 
-	public function testApplyItemStylesWithoutItemStyle()
+	public function testApplyItemStylesWithPagerUsesItemIndex()
+	{
+		foreach ([TDataGridPagerPosition::Bottom, TDataGridPagerPosition::Top] as $position) {
+			foreach ([0 => 'item', 1 => 'alt'] as $index => $class) {
+				$grid = $this->createGrid();
+				$grid->setAllowPaging(true);
+				$grid->setPageSize(4);
+				$grid->getPagerStyle()->setPosition($position);
+				$grid->getItemStyle()->setCssClass('item');
+				$grid->getAlternatingItemStyle()->setCssClass('alt');
+				$grid->getSelectedItemStyle()->setForeColor('red');
+				$grid->getEditItemStyle()->setBackColor('blue');
+				$grid->setSelectedItemIndex($index);
+				$grid->setEditItemIndex(1 - $index);
+				$this->bind($grid, $this->rows(6));
+				PradoUnit::invoke($grid, 'applyItemStyles');
+				$items = $grid->getItems();
+				$this->assertSame('red', $items->itemAt($index)->getStyle()->getForeColor());
+				$this->assertSame($class, $items->itemAt($index)->getStyle()->getCssClass(), "$position selected $index");
+				$this->assertSame('blue', $items->itemAt(1 - $index)->getStyle()->getBackColor());
+				$this->assertSame($index ? 'item' : 'alt', $items->itemAt(1 - $index)->getStyle()->getCssClass(), "$position edit " . (1 - $index));
+			}
+		}
+	}
+
+		public function testApplyItemStylesWithoutItemStyle()
 	{
 		$grid = $this->createGrid();
 		$grid->getEditItemStyle()->setCssClass('edit');
@@ -1595,7 +1653,7 @@ class TDataGridTest extends TestCase
 		$this->assertSame(2, substr_count($output, '<div'));
 		$this->assertLessThan(strpos($output, '<table'), strpos($output, '<div'));
 		$this->assertGreaterThan(strrpos($output, '</table>'), strrpos($output, '<div'));
-		$this->assertSame(2, substr_count($output, '<span><</span>'));
+		$this->assertSame(2, substr_count($output, '<span>&lt;</span>'));
 		$this->assertSame(4, count($page->getClientScript()->getPostBackControls()));
 	}
 

@@ -26,6 +26,8 @@ use Prado\Exceptions\TNotSupportedException;
  */
 class TRadioButtonList extends TCheckBoxList
 {
+	private $_dataChanged = false;
+
 	/**
 	 * @return bool whether this control supports multiple selection. Always false for radiobutton list.
 	 */
@@ -44,7 +46,7 @@ class TRadioButtonList extends TCheckBoxList
 	}
 
 	/**
-	 * Loads user input data.
+	 * Loads user input data.  A disabled list ignores the input.
 	 * This method is primarly used by framework developers.
 	 * @param string $key the key that can be used to retrieve data from the input data collection
 	 * @param array $values the input data collection
@@ -52,6 +54,9 @@ class TRadioButtonList extends TCheckBoxList
 	 */
 	public function loadPostData($key, $values)
 	{
+		if (!$this->getEnabled(true)) {
+			return false;
+		}
 		$value = $values[$key] ?? '';
 		$oldSelection = $this->getSelectedIndex();
 		$this->ensureDataBound();
@@ -61,11 +66,22 @@ class TRadioButtonList extends TCheckBoxList
 					return false;
 				} else {
 					$this->setSelectedIndex($index);
-					return true;
+					return $this->_dataChanged = true;
 				}
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Returns a value indicating whether postback has caused the control data change.
+	 * This method is required by the \Prado\Web\UI\IPostBackDataHandler interface.
+	 * @return bool whether postback has caused the control data change. False if the page is not in postback mode.
+	 * @since 4.4.0
+	 */
+	public function getDataChanged()
+	{
+		return $this->_dataChanged;
 	}
 
 	/**

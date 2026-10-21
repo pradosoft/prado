@@ -125,26 +125,35 @@ class TProcessHelperTest extends \PHPUnit\Framework\TestCase
 	{
 		self::assertTrue(TProcessHelper::isRunning(getmypid()));
 		
-		$command = TProcessHelper::filterCommand(['@php', '-r', 'sleep(5);']);
+		// The child outlives the priority calls; on Windows each one starts PowerShell, which can take seconds.
+		$command = TProcessHelper::filterCommand(['@php', '-r', 'sleep(60);']);
 		
 		$descriptorspec = [];
 		
 		$process = proc_open($command, $descriptorspec, $pipes);
 		$info = proc_get_status($process);
 		$pid = $info['pid'];
-		usleep(50_000); // Allow time for the process to appear in the OS task list (needed on Windows).
-		self::assertTrue(TProcessHelper::isRunning($pid));
-		
-		self::assertTrue(is_int($processPriority = TProcessHelper::getProcessPriority($pid)));
-		self::assertTrue(TProcessHelper::setProcessPriority(TProcessHelper::WINDOWS_BELOW_NORMAL_PRIORITY, $pid));
-		self::assertEquals(TProcessHelper::WINDOWS_BELOW_NORMAL_PRIORITY, TProcessHelper::getProcessPriority($pid));
-		
-		self::assertTrue(TProcessHelper::setProcessPriority(TProcessHelper::WINDOWS_IDLE_PRIORITY, $pid));
-		self::assertEquals(TProcessHelper::WINDOWS_IDLE_PRIORITY, TProcessHelper::getProcessPriority($pid));
-		
-		self::assertTrue(TProcessHelper::kill($pid)); // kill pid despite sleeping.
-		proc_close($process);
-		self::assertFalse(TProcessHelper::isRunning($pid));
+		try {
+			usleep(50_000); // Allow time for the process to appear in the OS task list (needed on Windows).
+			self::assertTrue(TProcessHelper::isRunning($pid));
+			
+			self::assertTrue(is_int($processPriority = TProcessHelper::getProcessPriority($pid)));
+			self::assertTrue(TProcessHelper::setProcessPriority(TProcessHelper::WINDOWS_BELOW_NORMAL_PRIORITY, $pid));
+			self::assertEquals(TProcessHelper::WINDOWS_BELOW_NORMAL_PRIORITY, TProcessHelper::getProcessPriority($pid));
+			
+			self::assertTrue(TProcessHelper::setProcessPriority(TProcessHelper::WINDOWS_IDLE_PRIORITY, $pid));
+			self::assertEquals(TProcessHelper::WINDOWS_IDLE_PRIORITY, TProcessHelper::getProcessPriority($pid));
+			
+			self::assertTrue(TProcessHelper::kill($pid)); // kill pid despite sleeping.
+			proc_close($process);
+			$process = null;
+			self::assertFalse(TProcessHelper::isRunning($pid));
+		} finally {
+			if ($process !== null) {
+				proc_terminate($process, 9);
+				proc_close($process);
+			}
+		}
 	}
 	
 	public function testEscapeShellArg()

@@ -145,7 +145,18 @@ class TListItemTest extends TestCase
 		$this->assertContains("\0*\0_selected", $props);
 	}
 
-	public function testSerializeRoundTrip()
+	public function testCloneCopiesAttributes()
+	{
+		$item = new TListItem('Text', 'val');
+		$item->setAttribute('class', 'hot');
+		$copy = clone $item;
+		$copy->setAttribute('class', 'cold');
+		$this->assertSame('hot', $item->getAttribute('class'));
+		$this->assertSame('cold', $copy->getAttribute('class'));
+		$this->assertFalse((clone new TListItem())->getHasAttributes());
+	}
+
+		public function testSerializeRoundTrip()
 	{
 		$item = new TListItem('Text', 'val', false, true);
 		$item->setAttribute('class', 'hot');

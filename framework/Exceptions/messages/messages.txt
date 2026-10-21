@@ -524,9 +524,19 @@ databoundcontrol_pagesize_invalid		= {0}.PageSize must be an integer no smaller 
 databoundcontrol_virtualitemcount_invalid = {0}.VirtualItemCount must be an integer no smaller than 0.
 databoundcontrol_currentpageindex_invalid = {0}.CurrentPageIndex is out of range.
 databoundcontrol_datasource_invalid		= {0}.DataSource is not valid.
-databoundcontrol_datasourceid_inexistent = databoundcontrol_datasourceid_inexistent.
-databoundcontrol_datasourceid_invalid	= databoundcontrol_datasourceid_invalid
-databoundcontrol_datamember_invalid		= databoundcontrol_datamember_invalid
+databoundcontrol_datasourceid_inexistent = DataSourceID '{0}' does not refer to an existing control.
+databoundcontrol_datasourceid_invalid	= DataSourceID '{0}' must refer to a control implementing IDataSource.
+databoundcontrol_datamember_invalid		= DataMember '{0}' does not name a view of the data source.
+
+datasourcecontrol_focus_unsupported		= {0} does not support Focus.
+datasourcecontrol_enabletheming_unsupported = {0} does not support EnableTheming.
+datasourcecontrol_skinid_unsupported	= {0} does not support SkinID.
+datasourcecontrol_visible_unsupported	= {0} does not support Visible.
+datasourceview_insert_unsupported		= {0} does not support insert.
+datasourceview_update_unsupported		= {0} does not support update.
+datasourceview_delete_unsupported		= {0} does not support delete.
+readonlydatasource_datasource_invalid	= TReadOnlyDataSource requires an array, an IDataSource, or a Traversable data source.
+readonlydatasourceview_datasource_invalid = TReadOnlyDataSourceView requires null, an array, or a Traversable data source.
 
 clientscript_invalid_file_position		= Invalid file position '{1}' for TClientScript control '{0}', must be 'Head', 'Here' or 'Begin'.
 clientscript_invalid_package_path		= Invalid PackagePath '{0}' for TClientScript control '{1}'.

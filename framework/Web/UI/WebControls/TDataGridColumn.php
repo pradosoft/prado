@@ -149,7 +149,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 *
 	 * If not empty, the class will be used to instantiate as a child control in the column header cell.
 	 * If the class implements {@see \Prado\IDataRenderer}, the <b>Data</b> property
-	 * will be set as the {@see getFooterText FooterText}.
+	 * will be set as the {@see getHeaderText HeaderText}.
 	 *
 	 * @param string $value the renderer class name in namespace format.
 	 * @since 3.1.0
@@ -472,7 +472,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 *
 	 * This method attempts to use {@see getFooterRenderer FooterRenderer} to
 	 * instantiate the footer cell. If that is not available, it will populate
-	 * the cell with a text string specified by {@see getFooterImageUrl FooterImageUrl}
+	 * the cell with a text string specified by {@see getFooterText FooterText}.
 	 *
 	 * @param TTableCell $cell the cell to be initialized
 	 * @param int $columnIndex the index to the Columns property that the cell resides in.
