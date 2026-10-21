@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: `TActiveListControlAdapter` sent a client selection for an index equal to the item count when the list had no prompt. (belisoful)
 BUG: `TDataGrid` threw on a `Select` command from a pager, and with paging on, a selected or edit item merged the wrong one of `ItemStyle` and `AlternatingItemStyle`; a pager `Select` selects nothing, and the style follows the item index. (belisoful)
 BUG: `TDataGridPagerStyle::reset()`, `copyFrom()`, and `mergeWith()` skipped `FirstPageText` and `LastPageText`. (belisoful)
 BUG: `TRadioButtonList` accepted posted data while disabled, and its `DataChanged` stayed false after a change; a disabled list ignores posted data, and `getDataChanged()` reports the change. (belisoful)
