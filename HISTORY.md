@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: `TDataGrid` and `TPager` link-button and label pagers rendered their default page texts (`<`, `>`, `<<`, `>>`) unencoded; the default texts are HTML-encoded, and other texts still render as HTML. (belisoful)
 BUG: `TActiveRatingList` wrote caption, rating, and read-only values unencoded into callback JavaScript; the values are encoded by `TJavaScript::encode()`. (belisoful)
 ENH: `TListControl` and `TDataGridColumn` share `formatDataValue()` through `TDataValueFormatterTrait`; a `#` format expression is evaluated by `evaluateExpression()`, and format properties also accept a callable. (belisoful)
 BUG: `ChoiceFormat` passed `{n: ...}` set notation to `eval()`; the expression is parsed and accepts only numbers, `n`, brackets, and its documented operators. (belisoful)
