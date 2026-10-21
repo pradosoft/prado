@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: `TRadioButtonList` accepted posted data while disabled, and its `DataChanged` stayed false after a change; a disabled list ignores posted data, and `getDataChanged()` reports the change. (belisoful)
 BUG: `TListControlValidator` ignored `RequiredSelections="0"` and matched required values loosely, so `1` matched `01`; required values match selected values exactly, as on the client. (belisoful)
 BUG: Nine `TDataSourceControl`, `TDataSourceView`, and `TReadOnlyDataSource` error codes had no message, and three `TDataBoundControl` messages repeated their codes; each has a message. (belisoful)
 BUG: A cloned `TListControl` shared its items with the original, so every `TDropDownListColumn` edit cell showed the last cell's selection; `TListControl` and `TListItem` clone their items and attributes. (belisoful)
