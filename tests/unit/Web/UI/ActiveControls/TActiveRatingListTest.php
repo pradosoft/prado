@@ -160,7 +160,9 @@ class TActiveRatingListTest extends TestCase
 		[$page, $list] = $this->createPageList();
 		$list->setReadOnly(true);
 		$this->assertTrue($list->getReadOnly());
-		$this->assertSame([$this->evaluate("Prado.Registry['List'].setReadOnly(1)")], $page->getClientFunctions());
+		$this->assertSame([$this->evaluate("Prado.Registry['List'].setReadOnly(true)")], $page->getClientFunctions());
+		$list->setReadOnly(false);
+		$this->assertSame($this->evaluate("Prado.Registry['List'].setReadOnly(false)"), $page->getClientFunctions()[1]);
 	}
 
 	public function testSetReadOnlyUnchangedSendsNothing()
@@ -247,6 +249,18 @@ class TActiveRatingListTest extends TestCase
 		$this->assertSame('Your rating:', $list->getCaption());
 		$this->assertSame('Your rating:', $caption->getText());
 		$this->assertSame([], $page->getClientFunctions());
+	}
+
+	public function testSetCaptionUpdatesClientWithEncodedString()
+	{
+		[$page, $list, , $caption] = $this->createPageList();
+		$list->setCaption('Great');
+		$this->assertSame('Great', $caption->getText());
+		$list->setCaption("x');alert(1);('</script>");
+		$this->assertSame([
+			$this->evaluate('Prado.Registry[\'List\'].setCaption("Great")'),
+			$this->evaluate('Prado.Registry[\'List\'].setCaption("x\\u0027);alert(1);(\\u0027\\u003C\\/script\\u003E")'),
+		], $page->getClientFunctions());
 	}
 
 	public function testSetCaptionUnchangedSendsNothing()
