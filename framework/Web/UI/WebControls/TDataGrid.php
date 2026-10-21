@@ -679,6 +679,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * the command name is a recognized one, which includes 'select', 'edit',
 	 * 'delete', 'update', and 'cancel' (case-insensitive), then a
 	 * corresponding command event is also raised (such as {@see onEditCommand OnEditCommand}).
+	 * A 'select' command from a pager selects no item.
 	 * This method should only be used by control developers.
 	 * @param \Prado\Web\UI\TControl $sender the sender of the event
 	 * @param \Prado\TEventParameter $param event parameter
@@ -690,8 +691,10 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 			$this->onItemCommand($param);
 			$command = $param->getCommandName();
 			if (strcasecmp($command, self::CMD_SELECT) === 0) {
-				$this->setSelectedItemIndex($param->getItem()->getItemIndex());
-				$this->onSelectedIndexChanged($param);
+				if (($item = $param->getItem()) instanceof TDataGridItem) {
+					$this->setSelectedItemIndex($item->getItemIndex());
+					$this->onSelectedIndexChanged($param);
+				}
 				return true;
 			} elseif (strcasecmp($command, self::CMD_EDIT) === 0) {
 				$this->onEditCommand($param);
@@ -1466,7 +1469,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 					if ($selectedItemStyle) {
 						$item->getStyle()->mergeWith($selectedItemStyle);
 					}
-					if ($index % 2 == 1) {
+					if ($item->getItemIndex() % 2 === 0) {
 						if ($itemStyle) {
 							$item->getStyle()->mergeWith($itemStyle);
 						}
@@ -1480,7 +1483,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 					if ($editItemStyle) {
 						$item->getStyle()->mergeWith($editItemStyle);
 					}
-					if ($index % 2 == 1) {
+					if ($item->getItemIndex() % 2 === 0) {
 						if ($itemStyle) {
 							$item->getStyle()->mergeWith($itemStyle);
 						}
