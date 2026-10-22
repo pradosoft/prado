@@ -48,7 +48,7 @@ The parameter tracks which representation is *current*:
 | PHP (`getUseHtml5Parser()`) | Parser |
 |---|---|
 | 8.4+ | `Dom\HTMLDocument` (HTML5); nodes import into the legacy `DOMDocument`. `<template>` content re-parses from its `innerHTML` (the HTML5 DOM keeps it outside the child nodes). `<html>`/`<head>`/`<body>` without a start tag in the source are left out. Non-XML names (`@click`, `[prop]`) import under a placeholder name. |
-| 8.2, 8.3 | libxml `loadHTML()` inside a wrapper of the context element, then unwrapped. `<script>`/`<style>` content and `<svg>`/`<math>` elements become placeholder comments (`protectRawMarkup()`); handlers do not see or change them. libxml drops non-XML attribute names. |
+| 8.2, 8.3 | libxml `loadHTML()` inside a wrapper of the context element, then unwrapped. `<script>`/`<style>` content and `<svg>`/`<math>` elements become placeholder comments (`protectRawMarkup()`); handlers do not see or change them. Attribute names that are not ASCII XML names (`@click`, `[prop]`, `ü`), which libxml drops, get a placeholder name before the parse (`protectAttributeNames()`). The start-tag scan copies only the tags it changes. |
 
 `domToHtml()` serializes with `saveHTML()`, writes the doctype itself, and restores placeholders. Placeholders carry a per-parse random nonce.
 
