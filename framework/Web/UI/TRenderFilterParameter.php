@@ -11,9 +11,11 @@
 namespace Prado\Web\UI;
 
 use DOMDocument;
+use DOMComment;
 use DOMDocumentType;
 use DOMElement;
 use DOMNode;
+use DOMXPath;
 use Prado\IEventCycleParameter;
 use Prado\Prado;
 use Prado\TEventParameter;
@@ -63,6 +65,25 @@ use Prado\TEventParameter;
  *
  * Both serialize with libxml. Entities decode to characters, and a self-closing
  * SVG element gains an end tag.
+ *
+ * ## Exempt markup
+ *
+ * An element with {@see EXEMPT_ATTRIBUTE} (`data-prado-filter-exempt`) and its
+ * content are exempt from the handlers. Before the handlers run,
+ * {@see preRaiseEvent} replaces the exempt markup with placeholder comments;
+ * {@see postRaiseEvent} restores it. The nearest attribute of an element or its
+ * ancestors decides:
+ *
+ * | Nearest attribute | Handlers |
+ * |---|---|
+ * | none | see the element |
+ * | present, empty, or any value but `false` | see a placeholder |
+ * | `false` | see the element, inside an exempt ancestor |
+ *
+ * A re-enabled element stays in place among the placeholders, which also hold the
+ * start and end tags of its exempt ancestors. The attribute stays in the output,
+ * so each enclosing filter exempts the same markup. HTML without the attribute
+ * does not parse. {@see TControl::getRenderFilterExempt} exempts a control's output.
  *
  * ## DOM element walker
  *
@@ -115,6 +136,13 @@ class TRenderFilterParameter extends TEventParameter implements IEventCycleParam
 	public const RENDER_FILTER_ERRORS = 'errors';
 
 	/**
+	 * The attribute that exempts an element and its content from the handlers.
+	 * Present, empty, or any value other than `false` exempts; `false` re-enables
+	 * the element inside an exempt ancestor.
+	 */
+	public const EXEMPT_ATTRIBUTE = 'data-prado-filter-exempt';
+
+	/**
 	 * The HTML namespace of HTML5 parser elements.
 	 */
 	private const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
@@ -155,6 +183,16 @@ class TRenderFilterParameter extends TEventParameter implements IEventCycleParam
 	 * @var string the random part of the placeholders of the current parse
 	 */
 	private string $_nonce = '';
+
+	/**
+	 * @var array<string, string> the exempt markup, by placeholder
+	 */
+	private array $_exemptMarkup = [];
+
+	/**
+	 * @var string the random part of the exempt markup placeholders
+	 */
+	private string $_exemptNonce = '';
 
 	/**
 	 * Constructor.
@@ -367,8 +405,24 @@ class TRenderFilterParameter extends TEventParameter implements IEventCycleParam
 	// -------------------------------------------------------------------------
 
 	/**
+	 * Replaces the markup exempt from the handlers with placeholder comments before
+	 * the handlers run ({@see protectExemptMarkup}).
+	 *
+	 * @param string $name event name
+	 * @param mixed $sender event sender
+	 * @param \Prado\TEventParameter $param this parameter instance
+	 * @param ?int $responsetype response accumulation mode
+	 * @param ?callable $postfunction per-handler post-processing function
+	 */
+	public function preRaiseEvent($name, $sender, $param, $responsetype, $postfunction): void
+	{
+		$this->protectExemptMarkup();
+	}
+
+	/**
 	 * Serialises DOM→HTML after all handlers run (if DOM is current), so
-	 * {@see TControl::processRenderFilter} always receives a valid string.
+	 * {@see TControl::processRenderFilter} always receives a valid string, and
+	 * restores the exempt markup.
 	 *
 	 * @param array $responses aggregated handler responses
 	 * @param string $name event name
@@ -380,6 +434,172 @@ class TRenderFilterParameter extends TEventParameter implements IEventCycleParam
 	public function postRaiseEvent($responses, $name, $sender, $param, $responsetype, $postfunction): void
 	{
 		$this->ensureFilterText();
+		if ($this->_exemptMarkup !== []) {
+			parent::offsetSet(self::RENDER_FILTER_TEXT, strtr(parent::offsetGet(self::RENDER_FILTER_TEXT) ?? '', $this->_exemptMarkup));
+			parent::offsetSet(self::RENDER_FILTER_DOM, null);
+			$this->_exemptMarkup = [];
+		}
+	}
+
+	// -------------------------------------------------------------------------
+	// Exempt markup
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Replaces each element exempt from the handlers ({@see EXEMPT_ATTRIBUTE}), with
+	 * its content, by a placeholder comment that {@see postRaiseEvent} restores.
+	 *
+	 * The nearest {@see EXEMPT_ATTRIBUTE} of an element or its ancestors decides
+	 * whether the handlers see it. A re-enabled element (`false`) inside an exempt
+	 * element stays in place, and placeholders replace the exempt markup around it,
+	 * including the start and end tags of its exempt ancestors.
+	 *
+	 * HTML without the attribute does not parse. The exempt markup serializes from
+	 * the DOM, so it is equivalent to the rendered HTML.
+	 */
+	protected function protectExemptMarkup(): void
+	{
+		if (stripos($this->getFilterText(), self::EXEMPT_ATTRIBUTE) === false || !($dom = $this->getFilterDOM())) {
+			return;
+		}
+		$this->_exemptNonce = bin2hex(random_bytes(4));
+		$xpath = new DOMXPath($dom);
+		foreach (iterator_to_array($xpath->query('//*[@' . self::EXEMPT_ATTRIBUTE . ']')) as $element) {
+			if ($this->getIsExemptRoot($element)) {
+				$this->protectExemptElement($element, $xpath);
+			}
+		}
+	}
+
+	/**
+	 * @param DOMElement $element an element with {@see EXEMPT_ATTRIBUTE}
+	 * @return bool whether its attribute value exempts it
+	 */
+	private function getIsExemptValue(DOMElement $element): bool
+	{
+		return strcasecmp(trim($element->getAttribute(self::EXEMPT_ATTRIBUTE)), 'false') !== 0;
+	}
+
+	/**
+	 * @param DOMElement $element an element
+	 * @return ?DOMElement the nearest ancestor with {@see EXEMPT_ATTRIBUTE}, or null
+	 */
+	private function getExemptAncestor(DOMElement $element): ?DOMElement
+	{
+		for ($node = $element->parentNode; $node instanceof DOMElement; $node = $node->parentNode) {
+			if ($node->hasAttribute(self::EXEMPT_ATTRIBUTE)) {
+				return $node;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * An element inside a placeholder keeps its exempt ancestor, so it is not a root.
+	 * @param DOMElement $element an element with {@see EXEMPT_ATTRIBUTE}
+	 * @return bool whether the element is exempt and inside no exempt element
+	 */
+	private function getIsExemptRoot(DOMElement $element): bool
+	{
+		if (!$this->getIsExemptValue($element)) {
+			return false;
+		}
+		$ancestor = $this->getExemptAncestor($element);
+		return $ancestor === null || !$this->getIsExemptValue($ancestor);
+	}
+
+	/**
+	 * Replaces an exempt element by placeholder comments and the re-enabled elements inside it.
+	 *
+	 * @param DOMElement $element the exempt element inside no exempt element
+	 * @param DOMXPath $xpath the XPath of the document
+	 */
+	private function protectExemptElement(DOMElement $element, DOMXPath $xpath): void
+	{
+		$enabled = [];
+		$ancestors = [];
+		foreach ($xpath->query('.//*[@' . self::EXEMPT_ATTRIBUTE . ']', $element) as $descendant) {
+			if ($this->getIsExemptValue($descendant)) {
+				continue;
+			}
+			if (!$this->getIsExemptValue($this->getExemptAncestor($descendant))) {
+				continue;
+			}
+			$enabled[spl_object_id($descendant)] = $descendant;
+			for ($node = $descendant->parentNode; !$node->isSameNode($element); $node = $node->parentNode) {
+				$ancestors[spl_object_id($node)] = $node;
+			}
+		}
+		$nodes = [];
+		$markup = '';
+		if ($enabled !== []) {
+			$ancestors[spl_object_id($element)] = $element;
+		}
+		$this->collectExemptNodes($element, $enabled, $ancestors, $nodes, $markup);
+		if ($markup !== '') {
+			$nodes[] = $this->exemptComment($markup);
+		}
+		$parent = $element->parentNode;
+		foreach ($nodes as $node) {
+			$parent->insertBefore($node, $element);
+		}
+		$parent->removeChild($element);
+	}
+
+	/**
+	 * Collects the nodes that replace an exempt node: placeholder comments for the
+	 * exempt markup and the re-enabled elements in place.
+	 *
+	 * @param DOMNode $node the exempt node
+	 * @param array<int, DOMElement> $enabled the re-enabled elements, by object id
+	 * @param array<int, DOMNode> $ancestors the exempt ancestors of the re-enabled elements below the exempt element, by object id
+	 * @param DOMNode[] $nodes the collected nodes, passed by reference
+	 * @param string $markup the exempt markup not yet in a placeholder, passed by reference
+	 */
+	private function collectExemptNodes(DOMNode $node, array $enabled, array $ancestors, array &$nodes, string &$markup): void
+	{
+		$id = spl_object_id($node);
+		if (isset($enabled[$id])) {
+			if ($markup !== '') {
+				$nodes[] = $this->exemptComment($markup);
+				$markup = '';
+			}
+			$nodes[] = $node;
+			return;
+		}
+		if (!isset($ancestors[$id])) {
+			$markup .= $this->getExemptHtml($node);
+			return;
+		}
+		$html = $this->getExemptHtml($node->cloneNode(false));
+		$endTag = strtr('</' . $node->nodeName . '>', $this->_rawMarkup);
+		$markup .= str_ends_with($html, $endTag) ? substr($html, 0, -strlen($endTag)) : $html;
+		foreach (iterator_to_array($node->childNodes) as $child) {
+			$this->collectExemptNodes($child, $enabled, $ancestors, $nodes, $markup);
+		}
+		$markup .= $endTag;
+	}
+
+	/**
+	 * @param DOMNode $node a node of the document
+	 * @return string the HTML of the node, with the parse placeholders restored
+	 */
+	private function getExemptHtml(DOMNode $node): string
+	{
+		return strtr($node->ownerDocument->saveHTML($node), $this->_rawMarkup);
+	}
+
+	/**
+	 * Stores exempt markup for {@see postRaiseEvent} to restore.
+	 *
+	 * @param string $markup the exempt markup
+	 * @return DOMComment the placeholder comment
+	 */
+	private function exemptComment(string $markup): DOMComment
+	{
+		$data = TRenderFilterContext::EXEMPT_TOKEN . $this->_exemptNonce . '-' . count($this->_exemptMarkup);
+		$this->_exemptMarkup['<!--' . $data . '-->'] = $markup;
+		return $this->getFilterDOM()->createComment($data);
 	}
 
 	// -------------------------------------------------------------------------

@@ -683,6 +683,37 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	}
 
 	/**
+	 * Returns whether the control's output is exempt from the render filters of its
+	 * ancestors ({@see TRenderFilterContext}). The nearest setting between a filter
+	 * and the output decides whether the filter sees the output.
+	 *
+	 * | Value | Output |
+	 * |---|---|
+	 * | `null` (default) | follows the nearest ancestor setting |
+	 * | `true` | exempt from the filters of the ancestors |
+	 * | `false` | seen by the filters of the ancestors, inside an exempt ancestor |
+	 *
+	 * The control's own `onRenderFilter` handlers see its output.
+	 * @return ?bool whether the output is exempt, or null to follow the ancestors
+	 * @since 4.4.0
+	 */
+	public function getRenderFilterExempt(): ?bool
+	{
+		return $this->getViewState('RenderFilterExempt');
+	}
+
+	/**
+	 * Sets whether the control's output is exempt from the render filters of its ancestors.
+	 * @param ?bool $value whether the output is exempt; null or '' follows the ancestors
+	 * @since 4.4.0
+	 */
+	public function setRenderFilterExempt($value)
+	{
+		$value = TPropertyValue::ensureNullIf($value, TPropertyValue::FILTER_NULL | TPropertyValue::FILTER_TRIM | TPropertyValue::FILTER_BLANK);
+		$this->setViewState('RenderFilterExempt', $value === null ? null : TPropertyValue::ensureBoolean($value));
+	}
+
+	/**
 	 * Returns a value indicating whether the control is enabled.
 	 * A control is enabled if it allows client user interaction.
 	 * If $checkParents is true, all parent controls will be checked,
@@ -1701,15 +1732,18 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	 * {@see TRenderFilterParameter} (accessible via {@see TRenderFilterParameter::RENDER_FILTER_TEXT}
 	 * / {@see TRenderFilterParameter::RENDER_FILTER_DOM} or the getter/setter API), and the
 	 * modified HTML is written to `$writer`.  Handlers may exchange state via extra array keys.
+	 * {@see getRenderFilterExempt} exempts the output from the filters of the ancestors.
 	 *
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for rendering
 	 */
 	public function renderControl($writer)
 	{
 		if ($this instanceof IActiveControl || $this->getVisible(false)) {
+			$exempt = $this->preRenderFilterExempt($writer);
 			$oldWriter = $this->preRenderFilter($writer);
 			$this->getAdapterControl()->render($writer);
 			$this->processRenderFilter($writer, $oldWriter);
+			$this->processRenderFilterExempt($writer, $exempt);
 		}
 	}
 
@@ -1774,6 +1808,14 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 		if (!$control->hasEventHandler('onRenderFilter')) {
 			return null;
 		}
+		if ($writer instanceof THtmlWriter) {
+			$context = $writer->getRenderFilterContext();
+			if ($context === null) {
+				$context = new TRenderFilterContext();
+				$writer->setRenderFilterContext($context);
+			}
+			$context->beginCapture();
+		}
 		$oldWriter = $writer->getWriter();
 		$writer->setWriter($this->newRenderFilterWriter());
 		return $oldWriter;
@@ -1796,7 +1838,8 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	 *
 	 * No-op when `$oldWriter` is `null`.  Otherwise flushes the capture buffer,
 	 * passes the HTML through `onRenderFilter`, writes the result to `$oldWriter`,
-	 * and restores the original writer.
+	 * and restores the original writer.  The outermost filter restores the exempt
+	 * output ({@see TRenderFilterContext::endCapture}).
 	 *
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer holding the capture buffer
 	 * @param ?ITextWriter $oldWriter original writer to restore, or `null` when filtering is disabled
@@ -1813,11 +1856,56 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 		if (!empty($output)) {
 			$control ??= $this;
 			$output = $control->onRenderFilter($output);
-			if (!empty($output)) {
-				$oldWriter->write($output);
-			}
+		}
+		if ($writer instanceof THtmlWriter && ($context = $writer->getRenderFilterContext()) !== null) {
+			$output = $context->endCapture((string) $output);
+		}
+		if (!empty($output)) {
+			$oldWriter->write($output);
 		}
 		$writer->setWriter($oldWriter);
+	}
+
+	/**
+	 * Starts the exemption of this control's output from the render filters of its
+	 * ancestors, or its re-enabling inside an exempt ancestor ({@see getRenderFilterExempt}).
+	 *
+	 * Returns `null` (no-op) when no filter has captured output of `$writer`.
+	 *
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer currently in use
+	 * @return ?bool the RenderFilterExempt value started, or `null` when nothing started
+	 * @see processRenderFilterExempt()
+	 * @since 4.4.0
+	 */
+	protected function preRenderFilterExempt($writer): ?bool
+	{
+		if (!($writer instanceof THtmlWriter) || ($context = $writer->getRenderFilterContext()) === null) {
+			return null;
+		}
+		$exempt = $this->getRenderFilterExempt();
+		if ($exempt === true && $context->beginExempt($writer)) {
+			return true;
+		}
+		if ($exempt === false && $context->beginFilter($writer)) {
+			return false;
+		}
+		return null;
+	}
+
+	/**
+	 * Ends what {@see preRenderFilterExempt} started.
+	 *
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer currently in use
+	 * @param ?bool $exempt the value {@see preRenderFilterExempt} returned
+	 * @since 4.4.0
+	 */
+	protected function processRenderFilterExempt($writer, ?bool $exempt): void
+	{
+		if ($exempt === true) {
+			$writer->getRenderFilterContext()->endExempt($writer);
+		} elseif ($exempt === false) {
+			$writer->getRenderFilterContext()->endFilter($writer);
+		}
 	}
 
 	/**

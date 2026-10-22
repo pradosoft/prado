@@ -36,6 +36,7 @@ The following tags are treated as void elements and are self-closed (`/>`):
 - `writeLine($str)` - Writes a string with newline
 - `writeBreak()` - Renders an HTML break tag
 - `static getVoidElements(): array` - Returns list of all void element tag names (@since 4.3.3)
+- `getRenderFilterContext(): ?TRenderFilterContext` / `setRenderFilterContext()` - The [render filter context](TRenderFilterContext.md) of this writer; `TControl::preRenderFilter()` creates it on the first capture (@since 4.4.0)
 
 ## See Also
 
