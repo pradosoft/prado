@@ -59,7 +59,7 @@ use Prado\TEventParameter;
  * | PHP | Parser |
  * |---|---|
  * | 8.4+ | The HTML5 parser (`Dom\HTMLDocument`); the nodes import into the `DOMDocument`. Attribute names `DOMDocument` rejects, such as `@click`, are kept. |
- * | 8.2, 8.3 | libxml's HTML parser. `<script>` and `<style>` content, and `<svg>` and `<math>` elements, are placeholders in the DOM and return unchanged. |
+ * | 8.2, 8.3 | libxml's HTML parser. `<script>` and `<style>` content, and `<svg>` and `<math>` elements, are placeholders in the DOM and return unchanged. Attribute names libxml drops, such as `@click`, are kept. |
  *
  * Both serialize with libxml. Entities decode to characters, and a self-closing
  * SVG element gains an end tag.
@@ -124,6 +124,22 @@ class TRenderFilterParameter extends TEventParameter implements IEventCycleParam
 	 * class resolves only when it exists.
 	 */
 	private const HTML5_DOCUMENT_CLASS = 'Dom\HTMLDocument';
+
+	/**
+	 * One attribute of a start tag: its leading separators, name, and `=` value.
+	 */
+	private const ATTRIBUTE = '/([\s\/]*+)([^\s\/>][^\s\/>=]*+)((?>\s*=\s*(?>"[^"]*"|\'[^\']*\'|[^\s>]*+))?)/';
+
+	/**
+	 * The attributes of a start tag after its element name, through its `>`. Group 1
+	 * holds a name libxml's HTML parser drops when the tag has one.
+	 */
+	private const START_TAG_ATTRIBUTES = '/\G(?>[\s\/]*+(?>' . self::LIBXML_NAME . '(?=[\s\/>=])|([^\s\/>][^\s\/>=]*+))(?>\s*=\s*(?>"[^"]*"|\'[^\']*\'|[^\s>]*+))?)*+[\s\/]*+>/i';
+
+	/**
+	 * An attribute name libxml's HTML parser keeps: an ASCII XML name.
+	 */
+	private const LIBXML_NAME = '[a-z_:][a-z0-9_:.\-]*+';
 
 	/**
 	 * @var bool true when the DOM has been modified and the HTML string has not yet been re-synced
@@ -556,7 +572,8 @@ class TRenderFilterParameter extends TEventParameter implements IEventCycleParam
 	 * libxml's HTML4 parser ends `<script>` and `<style>` content at the first
 	 * `</`, and lowercases SVG and MathML names. In the DOM, a placeholder
 	 * holds the content of `<script>` and `<style>` and replaces each `<svg>` and
-	 * `<math>` element ({@see protectRawMarkup}); serialization restores them.
+	 * `<math>` element, and a placeholder name replaces each attribute name
+	 * libxml drops ({@see protectRawMarkup}); serialization restores them.
 	 * Handlers do not change that content.
 	 *
 	 * @param string $html raw HTML fragment or document
@@ -605,7 +622,9 @@ class TRenderFilterParameter extends TEventParameter implements IEventCycleParam
 
 	/**
 	 * Replaces `<script>` and `<style>` content, and `<svg>` and `<math>` elements,
-	 * with placeholder comments that {@see domToHtml} restores. Comments pass unchanged.
+	 * with placeholder comments, and the attribute names libxml drops with
+	 * placeholder names ({@see protectAttributeNames}). {@see domToHtml} restores both.
+	 * Comments pass unchanged.
 	 *
 	 * @param string $html raw HTML
 	 * @return string the HTML with placeholders
@@ -613,32 +632,56 @@ class TRenderFilterParameter extends TEventParameter implements IEventCycleParam
 	private function protectRawMarkup(string $html): string
 	{
 		$result = '';
+		$copied = 0;
 		$offset = 0;
-		while (preg_match('/<!--|<(script|style|svg|math)(?=[\s\/>])/i', $html, $match, PREG_OFFSET_CAPTURE, $offset)) {
+		while (preg_match('/<!--|<([a-z][^\s\/>]*)/i', $html, $match, PREG_OFFSET_CAPTURE, $offset)) {
 			$start = $match[0][1];
 			if ($match[0][0] === '<!--') {
 				$end = strpos($html, '-->', $start + 4);
-				$end = ($end === false) ? strlen($html) : $end + 3;
-				$result .= substr($html, $offset, $end - $offset);
-				$offset = $end;
+				$offset = ($end === false) ? strlen($html) : $end + 3;
 				continue;
 			}
 			$tag = strtolower($match[1][0]);
-			if ($tag === 'script' || $tag === 'style') {
-				if (($open = strpos($html, '>', $start)) === false) {
-					break;
-				}
-				$close = stripos($html, '</' . $tag, $open + 1);
-				$close = ($close === false) ? strlen($html) : $close;
-				$result .= substr($html, $offset, $open + 1 - $offset) . $this->rawMarkupToken(substr($html, $open + 1, $close - $open - 1));
-				$offset = $close;
-			} else {
+			if ($tag === 'svg' || $tag === 'math') {
 				$end = $this->findElementEnd($html, $tag, $start);
-				$result .= substr($html, $offset, $start - $offset) . $this->rawMarkupToken(substr($html, $start, $end - $start));
-				$offset = $end;
+				$result .= substr($html, $copied, $start - $copied) . $this->rawMarkupToken(substr($html, $start, $end - $start));
+				$offset = $copied = $end;
+				continue;
+			}
+			$nameEnd = $start + strlen($match[0][0]);
+			if (!preg_match(self::START_TAG_ATTRIBUTES, $html, $attributes, 0, $nameEnd)) {
+				break;
+			}
+			$offset = $nameEnd + strlen($attributes[0]);
+			if (isset($attributes[1])) {
+				$result .= substr($html, $copied, $nameEnd - $copied) . $this->protectAttributeNames($attributes[0]);
+				$copied = $offset;
+			}
+			if ($tag === 'script' || $tag === 'style') {
+				$close = stripos($html, '</' . $tag, $offset);
+				$close = ($close === false) ? strlen($html) : $close;
+				$result .= substr($html, $copied, $offset - $copied) . $this->rawMarkupToken(substr($html, $offset, $close - $offset));
+				$offset = $copied = $close;
 			}
 		}
-		return $result . substr($html, $offset);
+		return $result . substr($html, $copied);
+	}
+
+	/**
+	 * Replaces each attribute name of a start tag that libxml's HTML parser drops
+	 * with a placeholder name ({@see nameToken}). libxml keeps ASCII XML names only,
+	 * so names such as `@click` and `ü` are replaced.
+	 *
+	 * @param string $attributes the start tag after its element name, through its `>`
+	 * @return string the attributes with placeholder names
+	 */
+	private function protectAttributeNames(string $attributes): string
+	{
+		return preg_replace_callback(
+			self::ATTRIBUTE,
+			fn ($m) => $m[1] . (preg_match('/^' . self::LIBXML_NAME . '$/i', $m[2]) ? $m[2] : $this->nameToken($m[2])) . $m[3],
+			$attributes
+		);
 	}
 
 	/**
@@ -778,6 +821,17 @@ class TRenderFilterParameter extends TEventParameter implements IEventCycleParam
 		if (preg_match('/^[\p{L}_:][\p{L}\p{N}_:.\-]*$/u', $name)) {
 			return $name;
 		}
+		return $this->nameToken($name);
+	}
+
+	/**
+	 * Stores `$name` for {@see domToHtml} to restore.
+	 *
+	 * @param string $name an element or attribute name
+	 * @return string the placeholder name
+	 */
+	private function nameToken(string $name): string
+	{
 		$alias = 'prado-name-' . $this->_nonce . '-' . count($this->_rawMarkup);
 		$this->_rawMarkup[$alias] = $name;
 		return $alias;

@@ -1103,6 +1103,8 @@ class TRenderFilterParameterTest extends TestCase
 			'body' => '<body class="b"><p>x</p></body>',
 			'template rows' => '<search><output name="o">1</output></search><template><tr><td>x</td></tr></template>',
 			'shadow root template' => '<template shadowrootmode="open"><slot></slot></template><b>light</b>',
+			'non-XML attribute names' => '<div @click="go()" :class="c" [prop]="v" (event)="e" x-on:click.prevent="z" ü="j">x</div>',
+			'script start tag attribute' => '<script @load="go()">if (a<b) {}</script><p>x</p>',
 		];
 		$data = [];
 		foreach (self::parserProvider() as $parser => [$class]) {
@@ -1215,13 +1217,17 @@ class TRenderFilterParameterTest extends TestCase
 		$this->assertSame(['template', 'tr', 'td'], $tags);
 	}
 
-	public function testHtml5KeepsNonXmlAttributeNames()
+	/**
+	 * @dataProvider parserProvider
+	 */
+	public function testDomChangeKeepsNonXmlAttributeNames(string $class)
 	{
-		$this->skipUnlessParser(TRenderFilterParameterHtml5::class);
-		$html = '<div @click="go()" :class="c" [prop]="v" (event)="e">x</div>';
-		$p = new TRenderFilterParameterHtml5($html);
-		$p->getFilterDOM();
-		$this->assertSame($html, $p->getFilterText());
+		$this->skipUnlessParser($class);
+		$p = new $class('<button @click="open = !open">HTML</button>');
+		$p->walkElements(function (\DOMElement $el) {
+			$el->setAttribute('type', 'button');
+		});
+		$this->assertSame('<button @click="open = !open" type="button">HTML</button>', $p->getFilterText());
 	}
 
 	public function testHtml5DocumentLeavesOutImpliedElements()
