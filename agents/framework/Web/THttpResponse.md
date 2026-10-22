@@ -26,6 +26,7 @@ THttpResponse implements the mechanism for sending output to client users, manag
 - `CacheExpire` (int): TTL for cached session pages in minutes, defaults to 180
 - `CacheControl` (string): Cache control method for session pages
 - `StatusCode` (int): HTTP status code, defaults to 200
+- `HttpHeaderSent` (bool, read-only): Whether the HTTP status header is sent; `setStatusCode()` throws after it is sent (@since 4.4.0)
 - `AcceptRanges` (bool): Whether `writeFile()` serves byte ranges, defaults to true (@since 4.4.0)
 - `StatusReason` (string): Reason phrase for HTTP status code
 - `HtmlWriterType` (string): Type of HTML writer to be used, defaults to [THtmlWriter](UI/THtmlWriter.md)
@@ -66,7 +67,8 @@ return [
 
 ### HTTP Status and Headers
 - `getStatusCode()`: Gets the current HTTP status code
-- `setStatusCode($status, $reason = null)`: Sets HTTP status code with optional reason
+- `setStatusCode($status, $reason = null)`: Sets HTTP status code with optional reason; throws once the status header is sent
+- `getHttpHeaderSent()`: Whether the HTTP status header is sent (@since 4.4.0)
 - `getStatusReason()`: Gets the HTTP status reason phrase
 - `sendHttpHeader()`: Sends the HTTP status header with the status code
 - `appendHeader($value, $replace = true)`: Sends a custom header

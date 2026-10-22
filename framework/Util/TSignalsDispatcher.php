@@ -480,13 +480,15 @@ class TSignalsDispatcher extends TComponent implements \Prado\ISingleton
 	 * @param mixed $handler The handler to remove.
 	 * @param mixed $priority The priority of the handler to remove. default false for
 	 *   any priority.
+	 * @return bool Whether the handler was removed.
 	 */
 	public function detachPidHandler(int $pid, mixed $handler, mixed $priority = false)
 	{
 		if (isset(self::$_pidHandlers[$pid])) {
 			try {
 				self::$_pidHandlers[$pid]->remove($handler, $priority);
-			} catch (\Exception $e) {
+			} catch (TInvalidDataValueException $e) {
+				return false;
 			}
 			if (self::$_pidHandlers[$pid]->getCount() === 0) {
 				$this->clearPidHandlers($pid);

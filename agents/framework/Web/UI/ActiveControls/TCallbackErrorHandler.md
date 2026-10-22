@@ -12,7 +12,7 @@ Captures errors and exceptions during callback processing and sends them back to
 
 ## Key Properties/Methods
 
-- `displayException($exception)` - Sends error details to client in JSON format
+- `displayException($exception)` - Sends error details to client in JSON format; sets status 500 only when `THttpResponse::getHttpHeaderSent()` is false
 - `getExceptionStackTrace($exception)` - Formats exception data for client response
 
 ## See Also
