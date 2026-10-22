@@ -197,8 +197,15 @@ class Prado
 	/**
 	 * PHP error handler.
 	 * This method should be registered as PHP error handler using
-	 * {@see set_error_handler}. The method throws an exception that
-	 * contains the error information.
+	 * {@see set_error_handler}. An error that {@see error_reporting} reports
+	 * throws a {@see TPhpErrorException}. A masked error returns true, and
+	 * execution continues.
+	 *
+	 * The `@` operator masks the warnings and notices of one expression. Code
+	 * uses `@` on a call whose failure is expected, such as reading a missing
+	 * file, so the call returns its failure value instead of throwing. Since
+	 * PHP 8.0, `@` does not mask `E_ERROR`, `E_CORE_ERROR`, `E_COMPILE_ERROR`,
+	 * `E_USER_ERROR`, `E_RECOVERABLE_ERROR`, or `E_PARSE`.
 	 * @param int $errno the level of the error raised
 	 * @param string $errstr the error message
 	 * @param string $errfile the filename that the error was raised in

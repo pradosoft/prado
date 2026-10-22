@@ -29,9 +29,25 @@ PRADO_CHMOD        // legacy compat alias (0777)
 - `getVersion(): string` — Returns the Prado framework version string.
 
 ### Error Handling
-- `phpErrorHandler($errno, $errstr, $errfile, $errline): bool` — Converts PHP errors to `TPhpErrorException`.
+- `phpErrorHandler($errno, $errstr, $errfile, $errline): bool` — Throws `TPhpErrorException` for an error that `error_reporting()` reports; returns `true` for a masked error.
 - `phpFatalErrorHandler()` — Shutdown function; converts fatal errors to `TPhpFatalErrorException`.
 - `exceptionHandler(\Throwable $e)` — Fallback exception handler for uncaught exceptions.
+
+### Error Suppression (`@`)
+Every unmasked warning and notice throws `TPhpErrorException` at the call site, so the PHP function never returns its failure value.
+
+| Call | Result when the call fails |
+|---|---|
+| `file_get_contents($file)` | throws `TPhpErrorException` |
+| `@file_get_contents($file)` | returns `false` |
+
+- Use `@` on a call whose failure is an expected outcome and whose return value the code checks:
+  - reading an optional file: `TApplicationStatePersister::load()`, `TXmlDocument::loadFromFile()`, the source and template reads in `TErrorHandler`.
+  - best-effort filesystem cleanup: `unlink`, `rmdir`, `chmod`, and `touch` in `TTarFileExtractor`.
+- Removing such an `@` turns the expected failure into an exception and skips the fallback code.
+- A prior `is_file()` check does not replace `@`; the file can change between the check and the call.
+- Do not use `@` where a failure is a bug; the exception reports it.
+- Since PHP 8.0, `@` does not mask `E_ERROR`, `E_CORE_ERROR`, `E_COMPILE_ERROR`, `E_USER_ERROR`, `E_RECOVERABLE_ERROR`, or `E_PARSE`. `phpErrorHandler` throws for `E_USER_ERROR` and `E_RECOVERABLE_ERROR` under `@`, and `phpFatalErrorHandler` reports the fatal errors.
 
 ### Component and Namespace Management
 - `createComponent(string $type, mixed ...$args): TComponent` — Instantiates a class by PRADO namespace or PHP class name.
