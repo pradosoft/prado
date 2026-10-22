@@ -21,6 +21,7 @@ Event parameter for the `onRenderFilter` event raised by `TControl::renderContro
 | `RENDER_FILTER_TEXT` | `'html'` | Array key for the HTML string |
 | `RENDER_FILTER_DOM` | `'dom'` | Array key for the DOMDocument |
 | `RENDER_FILTER_ERRORS` | `'errors'` | Array key for the libxml error list |
+| `EXEMPT_ATTRIBUTE` | `'data-prado-filter-exempt'` | Attribute exempting an element and its content from the handlers (@since 4.4.0) |
 
 ## Resource switching
 
@@ -53,6 +54,26 @@ The parameter tracks which representation is *current*:
 `domToHtml()` serializes with `saveHTML()`, writes the doctype itself, and restores placeholders. Placeholders carry a per-parse random nonce.
 
 Before 4.4.0 the parse used `LIBXML_HTML_NOIMPLIED` with no context: leading text gained a `<p>`, whitespace between top-level elements was dropped, `</` ended script content, SVG names were lowercased, and the `<head>` tag and doctype were lost.
+
+## Exempt markup (@since 4.4.0)
+
+`preRaiseEvent()` calls `protectExemptMarkup()`; `postRaiseEvent()` restores. The nearest `data-prado-filter-exempt` of an element or its ancestors decides, like `translate`:
+
+| Nearest attribute | Handlers see |
+|---|---|
+| none | the element |
+| present, `""`, any value but `false` (case-insensitive) | a placeholder comment `<!--prado-exempt-{nonce}-{n}-->` |
+| `false` | the element, inside an exempt ancestor |
+
+- `stripos()` precheck: HTML without the attribute is not parsed.
+- An exempt root (`getIsExemptRoot()`: exempt, in the document, no exempt ancestor) without re-enabled descendants becomes one placeholder.
+- With re-enabled descendants it is flattened (`collectExemptNodes()`): the start/end tags of the root and of the exempt ancestors of each re-enabled element go into placeholders, and each re-enabled element moves into place among them. Handlers do not see those exempt ancestors (TAbbr does not see an exempt `<pre>` around a re-enabled span).
+- Exempt markup serializes from the DOM with the parse placeholders (`_rawMarkup`) resolved, so it is equivalent, not byte-identical, to the rendered HTML.
+- After the restore, the DOM slot is cleared (it holds placeholders).
+- The attribute stays in the output; an enclosing filter protects the same markup again.
+- A string handler that rewrites `prado-exempt` text in comments breaks the restore; a handler that deletes a placeholder deletes the exempt markup.
+
+Control-level exemption: [TRenderFilterContext](./TRenderFilterContext.md). Markup re-enables only inside exempt markup, and a control re-enables only inside an exempt control: markup inside an exempt control's output is already a placeholder, and a control inside exempt markup is markup by the time the filter runs.
 
 ## Key Methods
 

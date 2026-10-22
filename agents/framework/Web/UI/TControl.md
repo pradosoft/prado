@@ -132,6 +132,8 @@ $control->onRenderFilter[] = function ($sender, \Prado\Web\UI\TRenderFilterParam
 
 The filter lifecycle is zero-cost when no handlers are registered (no buffer allocation).
 
+**Exemption (@since 4.4.0).** `RenderFilterExempt` (`?bool`, viewstate, default `null`) exempts the control's output from its ancestors' filters (`true`) or re-enables it inside an exempt ancestor (`false`). `renderControl()` wraps the filter lifecycle in `preRenderFilterExempt()` / `processRenderFilterExempt()`, so the control's own handlers see its output. `preRenderFilter()` creates the writer's [TRenderFilterContext](./TRenderFilterContext.md) on the first capture and counts the capture; `processRenderFilter()` ends it, and the outermost capture restores exempt output. The exempt hooks return early when the writer has no context, so pages without filters read no viewstate for them. Markup uses `data-prado-filter-exempt` ([TRenderFilterParameter](./TRenderFilterParameter.md)).
+
 See [TRenderFilterParameter](./TRenderFilterParameter.md) and [TFilterRenderableTrait](./Traits/TFilterRenderableTrait.md).
 
 ---

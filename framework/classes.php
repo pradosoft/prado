@@ -703,6 +703,7 @@ return [
 'TPageStateCompressionConfig' => 'Prado\Web\UI\TPageStateCompressionConfig',
 'TPageStateFormatter' => 'Prado\Web\UI\TPageStateFormatter',
 'TPageStatePersister' => 'Prado\Web\UI\TPageStatePersister',
+'TRenderFilterContext' => 'Prado\Web\UI\TRenderFilterContext',
 'TRenderFilterParameter' => 'Prado\Web\UI\TRenderFilterParameter',
 'TSessionPageStatePersister' => 'Prado\Web\UI\TSessionPageStatePersister',
 'TSkinTemplate' => 'Prado\Web\UI\TSkinTemplate',

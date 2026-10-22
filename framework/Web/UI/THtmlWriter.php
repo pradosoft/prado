@@ -77,6 +77,10 @@ class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITex
 	 * @var ?ITextWriter underlying writer receiving all output
 	 */
 	protected $_writer;
+	/**
+	 * @var ?TRenderFilterContext the render filters capturing this writer's output
+	 */
+	private ?TRenderFilterContext $_renderFilterContext = null;
 
 	/**
 	 * Returns all void element tag names as a flat list.
@@ -136,6 +140,29 @@ class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITex
 	public function setWriter($writer)
 	{
 		$this->_writer = $writer;
+		return $this;
+	}
+
+	/**
+	 * Returns the render filters capturing this writer's output and the controls
+	 * exempt from them. {@see TControl::preRenderFilter} creates it on the first capture.
+	 * @return ?TRenderFilterContext the context, or null before the first capture
+	 * @since 4.4.0
+	 */
+	public function getRenderFilterContext(): ?TRenderFilterContext
+	{
+		return $this->_renderFilterContext;
+	}
+
+	/**
+	 * Sets the render filter context of this writer.
+	 * @param ?TRenderFilterContext $context the context
+	 * @return $this for method chaining
+	 * @since 4.4.0
+	 */
+	public function setRenderFilterContext(?TRenderFilterContext $context): static
+	{
+		$this->_renderFilterContext = $context;
 		return $this;
 	}
 

@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+ENH: Render filters skip exempt output: `TControl.RenderFilterExempt` exempts a control's output from its ancestors' `onRenderFilter` handlers, and markup with `data-prado-filter-exempt` (`TRenderFilterParameter::EXEMPT_ATTRIBUTE`) is hidden from the handlers; a `false` value re-enables output inside an exempt one. `TRenderFilterContext` on `THtmlWriter` tracks the capturing filters. (belisoful)
 BUG: On PHP 8.2 and 8.3, the `TRenderFilterParameter` DOM round trip dropped attribute names libxml rejects, such as Alpine's `@click`; they are kept. (belisoful)
 BUG: `TCheckBoxList` left its `id` for the next tag after rendering, put its attributes on the first item in the Raw layout, and rendered `multiple` and `tabindex="0"` on its container; `TRatingList` without items leaked `id` and `aria-readonly`, and `TActiveCheckBoxList` rendered its id twice. (belisoful)
 BUG: `TActiveListControlAdapter` sent a client selection for an index equal to the item count when the list had no prompt. (belisoful)

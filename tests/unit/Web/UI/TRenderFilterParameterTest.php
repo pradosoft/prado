@@ -55,6 +55,20 @@ class TRenderFilterParameterHtml5 extends TRenderFilterParameter
 }
 
 /**
+ * Fixture: counts the parses of the HTML.
+ */
+class TRenderFilterParameterCounting extends TRenderFilterParameter
+{
+	public int $parses = 0;
+
+	protected function htmlToDom(string $html): \DOMDocument|false
+	{
+		$this->parses++;
+		return parent::htmlToDom($html);
+	}
+}
+
+/**
  * Comprehensive tests for {@see TRenderFilterParameter}.
  *
  * Sections:
@@ -70,6 +84,7 @@ class TRenderFilterParameterHtml5 extends TRenderFilterParameter
  *  10.  getFilterErrors / getHasFilterError
  *  11.  ArrayAccess — 'errors' key
  *  12.  Parse fidelity of the libxml and HTML5 parsers
+ *  13.  Exempt markup (EXEMPT_ATTRIBUTE)
  */
 class TRenderFilterParameterTest extends TestCase
 {
@@ -1280,5 +1295,143 @@ class TRenderFilterParameterTest extends TestCase
 	public function testGetFragmentContext(string $html, string $context)
 	{
 		$this->assertSame($context, \Prado\Test\Unit\PradoUnit::invoke(new TRenderFilterParameter(), 'getFragmentContext', $html));
+	}
+
+	// ================================================================================
+	// 13. Exempt markup (EXEMPT_ATTRIBUTE)
+	// ================================================================================
+
+	/**
+	 * Raises `onRenderFilter` with `$handler` on a parameter of `$class` and returns the filtered HTML.
+	 */
+	private function raiseFilter(string $class, string $html, callable $handler): string
+	{
+		$source = new \Prado\Web\UI\TControl();
+		$source->onRenderFilter[] = $handler;
+		$param = new $class($html);
+		$source->raiseEvent('onRenderFilter', $source, $param);
+		return $param->getFilterText();
+	}
+
+	private static function replaceTextHandler(): callable
+	{
+		return function ($sender, TRenderFilterParameter $param) {
+			$param->setFilterText(str_replace('HTML', 'X', $param->getFilterText()));
+		};
+	}
+
+	private static function replaceDomHandler(): callable
+	{
+		return function ($sender, TRenderFilterParameter $param) {
+			$xpath = new \DOMXPath($param->getFilterDOM());
+			foreach (iterator_to_array($xpath->query('//text()')) as $text) {
+				$text->data = str_replace('HTML', 'X', $text->data);
+			}
+		};
+	}
+
+	public static function exemptProvider(): array
+	{
+		$cases = [
+			'exempt element' => [
+				'<p>HTML</p><pre data-prado-filter-exempt="">HTML <b>HTML</b></pre><p>HTML</p>',
+				'<p>X</p><pre data-prado-filter-exempt="">HTML <b>HTML</b></pre><p>X</p>',
+			],
+			'true value' => [
+				'<div data-prado-filter-exempt="true">HTML</div>HTML',
+				'<div data-prado-filter-exempt="true">HTML</div>X',
+			],
+			'false outside exempt' => [
+				'<div data-prado-filter-exempt="false">HTML</div>',
+				'<div data-prado-filter-exempt="false">X</div>',
+			],
+			're-enabled element' => [
+				'<div data-prado-filter-exempt="true" title="HTML">HTML <span data-prado-filter-exempt="false">HTML</span> HTML</div>',
+				'<div data-prado-filter-exempt="true" title="HTML">HTML <span data-prado-filter-exempt="false">X</span> HTML</div>',
+			],
+			're-enabled deep inside exempt' => [
+				'<ul data-prado-filter-exempt="true"><li>HTML</li><li><b data-prado-filter-exempt="FALSE">HTML</b></li></ul>',
+				'<ul data-prado-filter-exempt="true"><li>HTML</li><li><b data-prado-filter-exempt="FALSE">X</b></li></ul>',
+			],
+			'exempt inside re-enabled' => [
+				'<div data-prado-filter-exempt="true"><span data-prado-filter-exempt="false">HTML <code data-prado-filter-exempt="true">HTML</code></span></div>',
+				'<div data-prado-filter-exempt="true"><span data-prado-filter-exempt="false">X <code data-prado-filter-exempt="true">HTML</code></span></div>',
+			],
+			'exempt inside exempt' => [
+				'<div data-prado-filter-exempt="true"><p data-prado-filter-exempt="true">HTML</p></div><p>HTML</p>',
+				'<div data-prado-filter-exempt="true"><p data-prado-filter-exempt="true">HTML</p></div><p>X</p>',
+			],
+			'non-XML attribute name' => [
+				'<div data-prado-filter-exempt="true" @click="go()">HTML <span data-prado-filter-exempt="false">HTML</span></div>',
+				'<div data-prado-filter-exempt="true" @click="go()">HTML <span data-prado-filter-exempt="false">X</span></div>',
+			],
+		];
+		$data = [];
+		foreach (self::parserProvider() as $parser => [$class]) {
+			foreach (['string' => 'replaceTextHandler', 'dom' => 'replaceDomHandler'] as $style => $handler) {
+				foreach ($cases as $name => [$html, $expected]) {
+					$data[$parser . ' ' . $style . ': ' . $name] = [$class, $handler, $html, $expected];
+				}
+			}
+		}
+		return $data;
+	}
+
+	/**
+	 * @dataProvider exemptProvider
+	 */
+	public function testExemptMarkupIsHiddenFromHandlers(string $class, string $handler, string $html, string $expected)
+	{
+		$this->skipUnlessParser($class);
+		$this->assertSame($expected, $this->raiseFilter($class, $html, self::$handler()));
+	}
+
+	/**
+	 * @dataProvider parserProvider
+	 */
+	public function testExemptMarkupIsPlaceholderForHandlers(string $class)
+	{
+		$this->skipUnlessParser($class);
+		$seen = '';
+		$this->raiseFilter($class, '<p>a</p><pre data-prado-filter-exempt="">secret</pre>', function ($sender, TRenderFilterParameter $param) use (&$seen) {
+			$seen = $param->getFilterText();
+		});
+		$this->assertStringNotContainsString('secret', $seen);
+		$this->assertStringContainsString('<!--' . \Prado\Web\UI\TRenderFilterContext::EXEMPT_TOKEN, $seen);
+	}
+
+	/**
+	 * @dataProvider parserProvider
+	 */
+	public function testWalkElementsSkipsExemptMarkup(string $class)
+	{
+		$this->skipUnlessParser($class);
+		$tags = [];
+		$this->raiseFilter($class, '<p>a</p><div data-prado-filter-exempt="true"><b>b</b><i data-prado-filter-exempt="false">c</i></div>', function ($sender, TRenderFilterParameter $param) use (&$tags) {
+			$param->walkElements(function (\DOMElement $el) use (&$tags) {
+				$tags[] = $el->tagName;
+			});
+		});
+		$this->assertSame(['p', 'i'], $tags);
+	}
+
+	public function testHtmlWithoutExemptAttributeIsNotParsed()
+	{
+		$param = new TRenderFilterParameterCounting('<p>HTML</p>');
+		$param->preRaiseEvent('onrenderfilter', null, $param, null, null);
+		$this->assertSame(0, $param->parses);
+		$param = new TRenderFilterParameterCounting('<p data-prado-filter-exempt>HTML</p>');
+		$param->preRaiseEvent('onrenderfilter', null, $param, null, null);
+		$this->assertSame(1, $param->parses);
+	}
+
+	public function testExemptRestoredAfterRaise()
+	{
+		$html = '<pre data-prado-filter-exempt="">HTML</pre>';
+		$param = new TRenderFilterParameterLibxml($html);
+		$param->preRaiseEvent('onrenderfilter', null, $param, null, null);
+		$this->assertStringNotContainsString('HTML', $param->getFilterText());
+		$param->postRaiseEvent([], 'onrenderfilter', null, $param, null, null);
+		$this->assertSame($html, $param->getFilterText());
 	}
 }
