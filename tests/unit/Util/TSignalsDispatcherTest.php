@@ -255,8 +255,12 @@ class TSignalsDispatcherTest extends \PHPUnit\Framework\TestCase
 			self::assertTrue($handlers->contains($handler));
 			self::assertEquals(5, $handlers->priorityOf($handler));
 			
-			$this->dispatcher->detachPidHandler($pid, $handler, 5);
+			self::assertFalse($this->dispatcher->detachPidHandler($pid, function ($sender, $param) {}));
+			self::assertFalse($this->dispatcher->detachPidHandler($pid, $handler, 10));
+			self::assertTrue($this->dispatcher->hasPidHandler($pid));
+			self::assertTrue($this->dispatcher->detachPidHandler($pid, $handler, 5));
 			self::assertFalse($this->dispatcher->hasPidHandler($pid));
+			self::assertFalse($this->dispatcher->detachPidHandler($pid, $handler, 5));
 		}
 		
 		// End the PID

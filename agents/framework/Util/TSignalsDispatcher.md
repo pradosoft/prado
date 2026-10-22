@@ -69,8 +69,8 @@ Prior handlers are saved and restored on `detach()` so third-party signal handli
 SIGCHLD dispatches to the global `fxSignalChild` event AND to any registered per-PID handler:
 
 ```php
-$dispatcher->attachPidHandler(int $pid, callable $handler, mixed $priority = null): void
-$dispatcher->detachPidHandler(int $pid, callable $handler, mixed $priority = false): void
+$dispatcher->attachPidHandler(int $pid, callable $handler, mixed $priority = null): bool
+$dispatcher->detachPidHandler(int $pid, callable $handler, mixed $priority = false): bool  // false when the handler is not attached at $priority
 $dispatcher->hasPidHandler(int $pid): bool
 $dispatcher->getPidHandlers(int $pid, bool $validate = false): array
 $dispatcher->clearPidHandlers(int $pid): bool
