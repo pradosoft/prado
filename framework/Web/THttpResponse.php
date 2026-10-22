@@ -175,7 +175,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	/**
 	 * @var bool whether http response header has been sent
 	 */
-	private $_httpHeaderSent;
+	private $_httpHeaderSent = false;
 	/**
 	 * @var bool whether content-type header has been sent
 	 */
@@ -367,6 +367,16 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	public function getStatusCode()
 	{
 		return $this->_status;
+	}
+
+	/**
+	 * Returns whether the HTTP status header is sent. The status code cannot change after it is sent.
+	 * @return bool Whether the HTTP status header is sent.
+	 * @since 4.4.0
+	 */
+	public function getHttpHeaderSent(): bool
+	{
+		return $this->_httpHeaderSent;
 	}
 
 	/**
