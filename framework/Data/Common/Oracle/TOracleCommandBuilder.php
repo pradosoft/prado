@@ -85,10 +85,10 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 			return $sql;
 		}
 
-		// When called from SqlMap (e.g. queryForList with skip/max), no specific
-		// table is known so getTableInfo() returns an empty stub without a table
-		// name or columns.  In that case, use Oracle 12c+ OFFSET/FETCH NEXT
-		// syntax which handles arbitrary SQL without column or table metadata.
+		// When called without a specific table (e.g. a mapped query with skip/max),
+		// getTableInfo() returns an empty stub without a table name or columns.
+		// In that case, use Oracle 12c+ OFFSET/FETCH NEXT syntax which handles
+		// arbitrary SQL without column or table metadata.
 		$tableName = $this->getTableInfo()?->getTableName();
 		if ($tableName === null || $tableName === '') {
 			$result = rtrim($sql);
