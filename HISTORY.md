@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+ENH: `TEvaluationFilterBehavior` checks the code of `TComponent::evaluateExpression()` and `evaluateStatements()` before it runs: statements are off unless `AllowStatements`, and calls must be in `AllowedFunctions` or `AllowedStaticMethods`. (belisoful)
 BUG: An active control re-rendered in a callback, such as `TActivePanel`, skipped its own `onRenderFilter` handlers; `TActivePageAdapter::renderDeferredControl()` runs them, with `TCallbackResponseWriter::flushWithoutBoundary()`. (belisoful)
 ENH: `TControl.RenderFilterFragments` has a control's render filters also filter a descendant re-rendered alone in a callback, with `TRenderFilterParameter::getIsFragment()` true; TAbbr, TDfn, and TVar set it on their target. (belisoful)
 ENH: TAbbr, TDfn, and TVar render `<abbr>`, `<dfn>`, and `<var>` and mark the other occurrences of their term and `Terms` in their parent or `TargetControl` through `onRenderFilter`, skipping code, raw text, and exempt markup; `MarkLimit` caps the marks per term (`TDfn` marks the first). They share the base class `TBaseTerm`. (belisoful)
