@@ -1,8 +1,6 @@
 # Data/SUMMARY.md
 
-Database access layer providing PDO wrapper plus three complementary data-access patterns: raw commands, stateless table gateway, stateful active record, and XML-based SQL mapping.
-
-SqlMap result construction reports type-handler failures through contextual `TSqlMapException` instances.
+Database access layer providing PDO wrapper plus three complementary data-access patterns: raw commands, stateless table gateway, and stateful active record.
 
 ## Classes
 
