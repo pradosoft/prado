@@ -195,6 +195,11 @@ class TRenderFilterParameter extends TEventParameter implements IEventCycleParam
 	private string $_exemptNonce = '';
 
 	/**
+	 * @var bool whether the HTML is part of the output of the filtering control
+	 */
+	private bool $_isFragment = false;
+
+	/**
 	 * Constructor.
 	 * @param string $html the rendered HTML to filter
 	 */
@@ -205,6 +210,30 @@ class TRenderFilterParameter extends TEventParameter implements IEventCycleParam
 			self::RENDER_FILTER_DOM => null,
 			self::RENDER_FILTER_ERRORS => null,
 		]);
+	}
+
+	/**
+	 * Returns whether the HTML is part of the output of the filtering control: the
+	 * output of a descendant that re-renders alone during a callback
+	 * ({@see TControl::getRenderFilterFragments}). The HTML holds the start tags
+	 * that enclose the descendant, marker comments around its output, and the end
+	 * tags. A handler that depends on the whole output, such as one counting
+	 * elements, checks it.
+	 * @return bool whether the HTML is a fragment of the control's output
+	 * @since 4.4.0
+	 */
+	public function getIsFragment(): bool
+	{
+		return $this->_isFragment;
+	}
+
+	/**
+	 * @param bool $value whether the HTML is a fragment of the control's output
+	 * @since 4.4.0
+	 */
+	public function setIsFragment(bool $value): void
+	{
+		$this->_isFragment = $value;
 	}
 
 	// -------------------------------------------------------------------------

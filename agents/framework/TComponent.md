@@ -147,7 +147,7 @@ TComponent::RAISE_EVENT_GLOBAL      // flag: also raise as global fx event
 ## Other Notable Methods
 
 - **`getClassHierarchy(bool $lowercase = false): string[]`** — returns class name + all parent class, trait, and interface names. Result is cached statically per class/lowercase combination; cache now correctly handles both lowercase and non-lowercase variants independently.
-- **`evaluateStatements(string $statements): string`** — evals PHP code, captures output. Calls `ob_end_clean()` in both the success and exception paths, preventing output buffer leaks on eval errors.
+- **`evaluateExpression(string $expression): mixed`** / **`evaluateStatements(string $statements): string`** — `eval()` PHP code after the `dyEvaluateExpressionFilter` / `dyEvaluateStatementsFilter` chain. `evaluateStatements()` captures output and calls `ob_end_clean()` in both the success and exception paths. [TEvaluationFilterBehavior](Util/Behaviors/TEvaluationFilterBehavior.md) implements both filters.
 - **`__isset($name)`** / **`__call`** — both check `isset($this->_e[...])` and `isset($this->_m)` before accessing them, guarding against uninitialized state during construction or deserialization.
 
 ## Patterns & Gotchas

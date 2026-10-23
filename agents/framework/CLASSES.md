@@ -1,6 +1,6 @@
 # PRADO Framework Classes
 
-**Total Classes: 727**
+**Total Classes: 734**
 
 This document lists all classes in the PRADO framework as defined in `classes.php`.
 
@@ -8,8 +8,8 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 | Directory | Classes | Interfaces | Total | Recursive |
 |-----------|---------|------------|-------|-----------|
-| [Prado](./INDEX.md) | 17 | 7 | 24 | 727 |
-| [Prado\\Caching](./Caching/INDEX.md) | 11 | 2 | 13 | 13 |
+| [Prado](./INDEX.md) | 17 | 7 | 24 | 734 |
+| [Prado\\Caching](./Caching/INDEX.md) | 18 | 2 | 20 | 20 |
 | [Prado\\Collections](./Collections/INDEX.md) | 27 | 7 | 34 | 34 |
 | [Prado\\Data](./Data/INDEX.md) | 10 | 5 | 15 | 81 |
 | [Prado\\Data\\ActiveRecord](./Data/ActiveRecord/INDEX.md) | 7 | 0 | 7 | 29 |
@@ -93,14 +93,14 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Caching](./Caching/INDEX.md) - Classes: 11, Interfaces: 2, Total: 13, Recursive: 13
+## [Prado\Caching](./Caching/INDEX.md) - Classes: 18, Interfaces: 2, Total: 20, Recursive: 20
 
 ### Interfaces (2)
 
 - [ICache](./Caching/ICache.md)
 - [ICacheDependency](./Caching/ICacheDependency.md)
 
-### Classes (11)
+### Classes (18)
 
 - [TAPCCache](./Caching/TAPCCache.md)
 - [TApplicationStateCacheDependency](./Caching/TApplicationStateCacheDependency.md)
@@ -114,6 +114,13 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TFileCacheDependency](./Caching/TFileCacheDependency.md)
 - [TGlobalStateCacheDependency](./Caching/TGlobalStateCacheDependency.md)
 - [TMemCache](./Caching/TMemCache.md)
+- [TPsrCache](./Caching/TPsrCache.md)
+- [TPsrCacheBackingTrait](./Caching/TPsrCacheBackingTrait.md)
+- [TPsrCacheException](./Caching/TPsrCacheException.md)
+- [TPsrCacheInvalidArgumentException](./Caching/TPsrCacheInvalidArgumentException.md)
+- [TPsrCacheItem](./Caching/TPsrCacheItem.md)
+- [TPsrCacheItemPool](./Caching/TPsrCacheItemPool.md)
+- [TPsrSimpleCache](./Caching/TPsrSimpleCache.md)
 - [TRedisCache](./Caching/TRedisCache.md)
 
 ---

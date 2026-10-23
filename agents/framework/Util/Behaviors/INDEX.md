@@ -14,6 +14,7 @@ Pre-built installable behaviors for common Prado application concerns. Each beha
 | `TApplicationSignals` | [`TApplication`](../../TApplication.md) | Connects POSIX signals (`SIGTERM`, `SIGINT`, `SIGHUP`) to application lifecycle events |
 | `TBehaviorParameterLoader` | Any [`TComponent`](../../TComponent.md) | Loads behavior configuration from a configuration parameter to be preset before the init phase |
 | `TCaptureForkLog` | [`TApplication`](../../TApplication.md) | Captures log entries from forked child processes |
+| `TEvaluationFilterBehavior` | [`TApplicationComponent`](../../TApplicationComponent.md), [`TApplication`](../../TApplication.md) | Opt-in check of `evaluateExpression()` and `evaluateStatements()` code against function, static method, and member lists |
 | `TForkable` | Trait | Provides `fork()` helper for safe process forking with log capture |
 | `TGlobalClassAware` | Any | Checks class availability across the application |
 | `TMapLazyLoadBehavior` | [`TMap`](../../Collections/TMap.md) subclass | Lazy-loads TMap items on first access |

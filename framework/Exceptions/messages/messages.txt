@@ -138,6 +138,14 @@ assetmanager_tarfile_extract_failed		= TAssetManager failed to extract the tar f
 assetmanager_source_directory_invalid	= TAssetManager is copying an invalid directory '{0}'.
 
 cache_primary_duplicated				= At most one primary cache module is allowed. {0} is trying to register as another primary cache.
+psrcache_backing_cache_required			= TPsrCache.BackingCacheId or TPsrCache.BackingCache is required.
+psrcache_backing_cache_not_found		= TPsrCache.BackingCacheId '{0}' does not refer to an application module.
+psrcache_invalid_backing_cache_type		= TPsrCache.BackingCacheId '{0}' must refer to a module implementing Psr\SimpleCache\CacheInterface or Psr\Cache\CacheItemPoolInterface.
+psrcache_backing_cache_recursive		= TPsrCache.BackingCache '{0}' is a PSR adapter of this TPsrCache; it would read and write back into the same cache.
+psrcachebacking_cache_required			= {0} requires a backing cache. Set {0}.BackingCacheId, {0}.BackingCache, or a primary application cache.
+psrcachebacking_cache_not_found			= {0}.BackingCacheId '{1}' does not refer to an application module.
+psrcachebacking_invalid_cache_type		= {0}.BackingCacheId '{1}' must refer to a Prado\Caching\ICache module.
+psrcachebacking_key_invalid				= {0} cache key must be a non-empty string without the reserved characters {}()/\@: but '{1}' is given.
 sqlitecache_extension_required			= TSqliteCache requires SQLite PHP extension.
 sqlitecache_dbfile_required				= TSqliteCache.DbFile is required.
 sqlitecache_connection_failed			= TSqliteCache database connection failed. {0}.
@@ -227,6 +235,9 @@ behaviorparameterloader_attachto_and_class_only_one = TBehaviorParameterLoader m
 behaviorparameterloader_moduleid_required = TBehaviorParameterLoader attachto 'module:' requires a module id.
 behaviorparameterloader_behaviorowner_required = TBehaviorParameterLoader attachto '{0}' could not be found.
 behaviorparameterloader_behaviormodule_not_found 	= TBehaviorParameterLoader could not find module '{0}' to attach behaviors.
+
+evaluationfilter_statements_denied		= Component '{0}' cannot evaluate PHP statements '{1}' because TEvaluationFilterBehavior.AllowStatements is false.
+evaluationfilter_code_denied			= Component '{0}' cannot evaluate '{1}' because TEvaluationFilterBehavior does not allow '{2}'.
 
 maplazyloadbehavior_handler_not_callable = TMapLazyLoadBehavior must have a callable to construct.
 maproutebehavior_handler_not_callable	= TMapRouteBehavior must have a callable to construct.
@@ -385,6 +396,9 @@ label_associatedcontrol_invalid			= TLabel.AssociatedControl '{0}' cannot be fou
 textbox_suggestionlist_invalid			= TTextBox.SuggestionList '{0}' cannot be found.
 
 output_forcontrol_invalid				= TOutput.ForControl '{0}' cannot be found.
+
+baseterm_targetcontrol_invalid			= {0}.TargetControl '{1}' cannot be found.
+baseterm_marklimit_invalid				= {0}.MarkLimit '{1}' must not be negative.
 
 hiddenfield_focus_unsupported			= THiddenField does not support setting input focus.
 hiddenfield_theming_unsupported			= THiddenField does not support theming.

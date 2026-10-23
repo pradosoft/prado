@@ -31,3 +31,13 @@ Cache backends and dependency system providing unified `ICache` interface over m
 - **`TChainedCacheDependency`** — Composite dependency that invalidates if any child dependency reports changed.
 
 - **`TCacheDependencyList`** — Typed `TList` enforcing `ICacheDependency` on all items.
+
+- **`TPsrSimpleCache`** — PSR-16 `CacheInterface` module over an `ICache`; properties: `BackingCacheId`, `BackingCache`, `KeyPrefix`, `DefaultExpire`.
+
+- **`TPsrCacheItemPool`** — PSR-6 `CacheItemPoolInterface` module over an `ICache`, with `TPsrCacheItem` as its item; deferred items commit before a read, at `OnEndRequest`, and on destruction.
+
+- **`TPsrCacheBackingTrait`** — Backing resolution, key validation, TTL conversion, and the value envelope shared by the two PSR adapter modules.
+
+- **`TPsrCache`** — `TCache` module stored in a PSR-16 or PSR-6 cache; properties: `BackingCacheId`, `BackingCache`.
+
+- **`TPsrCacheException`**, **`TPsrCacheInvalidArgumentException`** — Prado exceptions that also implement the PSR cache exception interfaces.

@@ -134,6 +134,8 @@ The filter lifecycle is zero-cost when no handlers are registered (no buffer all
 
 **Exemption (@since 4.4.0).** `RenderFilterExempt` (`?bool`, viewstate, default `null`) exempts the control's output from its ancestors' filters (`true`) or re-enables it inside an exempt ancestor (`false`). `renderControl()` wraps the filter lifecycle in `preRenderFilterExempt()` / `processRenderFilterExempt()`, so the control's own handlers see its output. `preRenderFilter()` creates the writer's [TRenderFilterContext](./TRenderFilterContext.md) on the first capture and counts the capture; `processRenderFilter()` ends it, and the outermost capture restores exempt output. The exempt hooks return early when the writer has no context, so pages without filters read no viewstate for them. Markup uses `data-prado-filter-exempt` ([TRenderFilterParameter](./TRenderFilterParameter.md)).
 
+**Callback fragments (@since 4.4.0).** A control re-rendered alone during a callback (`TActivePanel` and others registered with `TActivePageAdapter::registerControlToRender()`) runs its own filters in `TActivePageAdapter::renderDeferredControl()`. `RenderFilterFragments` (`bool`, viewstate, default `false`) has an ancestor's filters also see that re-render, with `TRenderFilterParameter::getIsFragment()` true, inside the elements that enclose it in the ancestor's output (`TActivePageAdapter::getFragmentContext()`); the first `RenderFilterExempt` walking up from the re-rendered control decides for the ancestors above it. Off by default because a filter that wraps, restructures, or counts its output would see only a fragment.
+
 See [TRenderFilterParameter](./TRenderFilterParameter.md) and [TFilterRenderableTrait](./Traits/TFilterRenderableTrait.md).
 
 ---
