@@ -714,6 +714,34 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	}
 
 	/**
+	 * Returns whether the control's render filters also filter a descendant that
+	 * re-renders alone during a callback, such as a
+	 * {@see \Prado\Web\UI\ActiveControls\TActivePanel}. The handlers receive the output
+	 * of the descendant inside the elements that enclose it in this control's output,
+	 * and {@see TRenderFilterParameter::getIsFragment} is true.
+	 * {@see getRenderFilterExempt} applies as in a full render. Defaults to false, since
+	 * a handler that wraps, restructures, or counts its output sees only a fragment.
+	 * @return bool whether the render filters filter the callback re-renders of descendants
+	 * @see \Prado\Web\UI\ActiveControls\TActivePageAdapter::renderDeferredControl()
+	 * @since 4.4.0
+	 */
+	public function getRenderFilterFragments(): bool
+	{
+		return $this->getViewState('RenderFilterFragments', false);
+	}
+
+	/**
+	 * Sets whether the control's render filters also filter a descendant that
+	 * re-renders alone during a callback.
+	 * @param bool|string $value whether the render filters filter the callback re-renders of descendants
+	 * @since 4.4.0
+	 */
+	public function setRenderFilterFragments($value)
+	{
+		$this->setViewState('RenderFilterFragments', TPropertyValue::ensureBoolean($value), false);
+	}
+
+	/**
 	 * Returns a value indicating whether the control is enabled.
 	 * A control is enabled if it allows client user interaction.
 	 * If $checkParents is true, all parent controls will be checked,
