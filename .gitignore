@@ -17,7 +17,6 @@
 /playwright/.cache
 
 # Test artifacts
-/tests/unit/Data/SqlMap/sqlite/tests.db
 /tests/unit/Data/db/
 /playwright-report
 /test-results
