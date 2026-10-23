@@ -1891,6 +1891,7 @@ class TComponent
 	 * to be executed when evaluateExpression is called.  All attached behaviors are notified through
 	 * dyEvaluateExpressionFilter.  The chaining is important in this function due to the filtering
 	 * pass-through effect.
+	 * {@see \Prado\Util\Behaviors\TEvaluationFilterBehavior} implements this filter.
 	 *
 	 * @param string $expression PHP expression
 	 * @throws TInvalidOperationException if the expression is invalid
@@ -1918,6 +1919,7 @@ class TComponent
 	 * to be executed when evaluateStatements is called.  All attached behaviors are notified through
 	 * dyEvaluateStatementsFilter.  The chaining is important in this function due to the filtering
 	 * pass-through effect.
+	 * {@see \Prado\Util\Behaviors\TEvaluationFilterBehavior} implements this filter.
 	 *
 	 * @param string $statements PHP statements
 	 * @throws TInvalidOperationException if the statements are invalid

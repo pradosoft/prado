@@ -1,0 +1,41 @@
+<com:TContent ID="Content">
+	<h1>Term Test Case</h1>
+
+	<com:TPanel ID="glossary">
+		<p id="intro"><com:TAbbr ID="html" Text="HTML" Title="HyperText Markup Language" /> pages use HTML and CSS.</p>
+		<p><a id="learn" href="#glossary">Learn HTML</a> <button type="button" id="help">HTML help</button></p>
+		<p><code id="code">HTML</code></p>
+		<p id="exempt" data-prado-filter-exempt="">HTML is exempt.</p>
+		<com:TAbbr ID="css" Terms="CSS => Cascading Style Sheets" MarkLimit="1" />
+		<p id="again">CSS again.</p>
+		<p id="define">A <com:TDfn ID="filter" Text="render filter" /> changes the output. Each render filter runs.</p>
+		<com:TDfn ID="placeholder" Terms="placeholder" />
+		<p id="hold">A placeholder holds markup, and the placeholder returns.</p>
+	</com:TPanel>
+
+	<com:TPanel ID="formula">
+		<p>The area is <com:TVar ID="w" Text="w" Terms="h" /> times h.</p>
+	</com:TPanel>
+
+	<p id="outside">HTML outside the glossary.</p>
+
+	<com:TActivePanel ID="live">
+		<p id="note"><com:TActiveLabel ID="update" Text="Nothing yet." /></p>
+		<com:TAbbr ID="url" Terms="URL => Uniform Resource Locator" />
+		<com:TPanel ID="liveExempt" RenderFilterExempt="true">
+			<p id="noteExempt"><com:TActiveLabel ID="updateExempt" Text="Nothing yet." /></p>
+		</com:TPanel>
+	</com:TActivePanel>
+
+	<com:TPanel ID="outer">
+		<com:TAbbr ID="api" Terms="API => Application Programming Interface" />
+		<com:TDfn ID="callback" Terms="callback" />
+		<com:TActivePanel ID="inner">
+			<p id="innerNote"><com:TActiveLabel ID="innerUpdate" Text="Nothing yet." /></p>
+		</com:TActivePanel>
+		<pre id="preNote"><com:TActivePanel ID="innerPre"><com:TActiveLabel ID="preUpdate" Text="Nothing yet." /></com:TActivePanel></pre>
+	</com:TPanel>
+
+	<com:TActiveButton ID="btnUpdate" Text="Update" OnCallback="update_live" />
+	<com:TActiveButton ID="btnInner" Text="Update inner" OnCallback="update_inner" />
+</com:TContent>
