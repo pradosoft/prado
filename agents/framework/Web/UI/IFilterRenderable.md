@@ -46,3 +46,7 @@ When `TControl::renderChildren` encounters a non-`TControl` child that implement
 3. `processRenderFilter($writer, $oldWriter, $child)` — flushes the buffer, calls `$child->onRenderFilter($output)`, writes the result to the original writer, and restores it.
 
 If no handler is registered, all three steps are no-ops and output goes directly to the writer.
+
+During a callback, `TActivePageAdapter` renders each re-rendered active control (such as `TActivePanel`) with `render()`, so that control's own `onRenderFilter` handlers do not run; the handlers of the controls inside it do.
+
+[`TBaseTerm`](WebControls/TBaseTerm.md) (`TAbbr`, `TDfn`, `TVar`) attaches a handler to its target to mark terms.
