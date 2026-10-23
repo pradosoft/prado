@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+CHG: SqlMap moves out of the framework into the `pradosoft/prado-sqlmap` package (#1168): `framework/Data/SqlMap`, its 55 `classes.php` entries, and its tests are removed. Namespaces and class names are unchanged. UPGRADE.md covers the change. (belisoful)
 ENH: Render filters skip exempt output: `TControl.RenderFilterExempt` exempts a control's output from its ancestors' `onRenderFilter` handlers, and markup with `data-prado-filter-exempt` (`TRenderFilterParameter::EXEMPT_ATTRIBUTE`) is hidden from the handlers; a `false` value re-enables output inside an exempt one. `TRenderFilterContext` on `THtmlWriter` tracks the capturing filters. (belisoful)
 BUG: On PHP 8.2 and 8.3, the `TRenderFilterParameter` DOM round trip dropped attribute names libxml rejects, such as Alpine's `@click`; they are kept. (belisoful)
 BUG: `TCallbackErrorHandler` threw without `SERVER_SOFTWARE` and hid failed status changes in an empty catch; it sets status 500 only before the new `THttpResponse::getHttpHeaderSent()` is true, and `TSignalsDispatcher::detachPidHandler()` returns false for a handler that is not attached. (belisoful)
