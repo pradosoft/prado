@@ -17,6 +17,8 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 - **[`TWebControlDecorator`](TWebControlDecorator.md)** — Injects additional HTML before/after a WebControl's rendered output without subclassing.
 
+- **[`TBaseTerm`](TBaseTerm.md)** — Base for `TAbbr`, `TDfn`, and `TVar`: renders a term element and marks the term's other occurrences in a target control through `onRenderFilter`. @since 4.4.0
+
 - **[`TContent`](TContent.md)** / **[`TContentPlaceHolder`](TContentPlaceHolder.md)** — Master page content injection. `TContent` blocks are injected into matching `TContentPlaceHolder` elements in the master template. Supports hierarchy matching.
 
 ## Subdirectories
@@ -121,8 +123,10 @@ All extend [THtmlElement](./THtmlElement.md). Each wraps the named HTML5 element
 
 | Class | Default Tag | HTML5 Semantic Meaning |
 |---|---|---|
+| [`TAbbr`](TAbbr.md) | `abbr` | Abbreviation; `Title` is the expansion; marks the abbreviation's other occurrences ([TBaseTerm](TBaseTerm.md), @since 4.4.0) |
 | [`TArticle`](TArticle.md) | `article` | Self-contained composition (blog post, news article) |
 | [`TAside`](TAside.md) | `aside` | Tangentially related content; sidebar |
+| [`TDfn`](TDfn.md) | `dfn` | Defining instance of a term; marks the first occurrence of `Terms` ([TBaseTerm](TBaseTerm.md), @since 4.4.0) |
 | [`TFooter`](TFooter.md) | `footer` | Footer of nearest sectioning ancestor |
 | [`THeader`](THeader.md) | `header` | Introductory content or navigational links |
 | [`TMain`](TMain.md) | `main` | Dominant page content; one per document |
@@ -130,6 +134,7 @@ All extend [THtmlElement](./THtmlElement.md). Each wraps the named HTML5 element
 | [`TNav`](TNav.md) | `nav` | Navigation links section |
 | [`TSearch`](TSearch.md) | `search` | Search or filter controls; landmark; another tag renders `role="search"` (@since 4.4.0) |
 | [`TSection`](TSection.md) | `section` | Generic thematic document section |
+| [`TVar`](TVar.md) | `var` | Variable or placeholder; marks the variable's other occurrences ([TBaseTerm](TBaseTerm.md), @since 4.4.0) |
 
 ## Rich Text & Special Controls
 
@@ -181,4 +186,5 @@ declares, through `light-dark()` and the `Canvas`/`CanvasText` system colors. Se
 - `TDataGrid` postback with sorting/paging raises `OnPageIndexChanged` / `OnSortCommand` — you must re-bind data in those handlers.
 - `TValidationSummary` with `ShowMessageBox=true` uses a JavaScript `alert()` — avoid this in modern UIs.
 - `TOutputCache` caches the rendered HTML; dynamic controls inside it will not update until the cache expires.
+- `TAbbr`, `TDfn`, and `TVar` filter their parent by default; a large parent, such as a `TContent`, is parsed whenever it holds an unmarked term. Set `TargetControl` to a small container, and exempt markup with `data-prado-filter-exempt`.
 - `TConditional` evaluates the `Condition` PHP expression on every render; keep it lightweight.

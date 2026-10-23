@@ -389,6 +389,9 @@ textbox_suggestionlist_invalid			= TTextBox.SuggestionList '{0}' cannot be found
 
 output_forcontrol_invalid				= TOutput.ForControl '{0}' cannot be found.
 
+baseterm_targetcontrol_invalid			= {0}.TargetControl '{1}' cannot be found.
+baseterm_marklimit_invalid				= {0}.MarkLimit '{1}' must not be negative.
+
 hiddenfield_focus_unsupported			= THiddenField does not support setting input focus.
 hiddenfield_theming_unsupported			= THiddenField does not support theming.
 hiddenfield_skinid_unsupported			= THiddenField does not support control skin.

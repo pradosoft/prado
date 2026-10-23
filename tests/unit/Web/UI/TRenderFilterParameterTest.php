@@ -88,6 +88,14 @@ class TRenderFilterParameterCounting extends TRenderFilterParameter
  */
 class TRenderFilterParameterTest extends TestCase
 {
+	public function testIsFragment()
+	{
+		$param = new TRenderFilterParameter('x');
+		$this->assertFalse($param->getIsFragment());
+		$param->setIsFragment(true);
+		$this->assertTrue($param->getIsFragment());
+	}
+
 	// ================================================================================
 	// Helpers
 	// ================================================================================
