@@ -76,6 +76,10 @@ Upgrading from v4.3.3
   response passed. A token verifies once, so validate it in one request.
 - TCaptchaValidator no longer sends the client a hash of the token, which leaked the answer. Client-side validation
   checks that the input is not empty; the server compares the token.
+- `psr/cache` and `psr/simple-cache` are required. `TPsrSimpleCache` (PSR-16) and `TPsrCacheItemPool` (PSR-6) present a
+  Prado cache to a PSR consumer, and `TPsrCache` stores a Prado cache in a PSR cache. All caching in Prado 5 is PSR
+  compliant, so a new application reaches its cache through `TPsrSimpleCache` or `TPsrCacheItemPool`, and an
+  application that intends to upgrade to Prado 5 moves its cache access to them; that code carries over unchanged.
 
 Upgrading from v4.3.2
 ---------------------

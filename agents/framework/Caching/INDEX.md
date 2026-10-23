@@ -40,6 +40,16 @@ Cache backends and dependency system providing unified `ICache` interface over m
 
 - **[`TEtcdCache`](TEtcdCache.md)** — etcd distributed cache using the HTTP v2 API via `THttpClient` (cURL or stream wrappers). Properties: `Host`, `Port` (default `2379`), `Dir` (etcd directory, default `'pradocache'`), `Downloader`. Values stored as JSON with optional TTL.
 
+## PSR-6 and PSR-16 Adapters (since 4.4.0)
+
+- **[`TPsrSimpleCache`](TPsrSimpleCache.md)** — `Psr\SimpleCache\CacheInterface` module over an [`ICache`](ICache.md). Hand it to a library that accepts a PSR-16 cache.
+- **[`TPsrCacheItemPool`](TPsrCacheItemPool.md)** — `Psr\Cache\CacheItemPoolInterface` module over an [`ICache`](ICache.md), with [`TPsrCacheItem`](TPsrCacheItem.md) as its item. Deferred items commit before a read, at `OnEndRequest`, and on destruction.
+- **[`TPsrCacheBackingTrait`](TPsrCacheBackingTrait.md)** — Shared by both modules: `BackingCacheId` (declared as an `IModuleDependency`), `BackingCache`, the primary-cache default, `KeyPrefix`, `DefaultExpire`, key validation, TTL conversion, and the value envelope that keeps `null`, `false`, `0`, `''`, and `[]` cached.
+- **[`TPsrCache`](TPsrCache.md)** — The reverse: a [`TCache`](TCache.md) module stored in a PSR-16 or PSR-6 cache named by `BackingCacheId` or set as `BackingCache`. Rejects an adapter of itself.
+- **[`TPsrCacheException`](TPsrCacheException.md)**, **[`TPsrCacheInvalidArgumentException`](TPsrCacheInvalidArgumentException.md)** — The `TConfigurationException` and `TInvalidDataValueException` that also implement the PSR cache exception interfaces.
+
+All caching in Prado 5 is PSR compliant. A new application reaches its cache through `TPsrSimpleCache` or `TPsrCacheItemPool`, and an application that intends to upgrade moves its cache access to them; that code carries over unchanged.
+
 ## Cache Dependencies
 
 - **[`TFileCacheDependency`](TFileCacheDependency.md)** — Invalidates when a file's `mtime` changes.
