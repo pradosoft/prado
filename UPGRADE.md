@@ -15,9 +15,10 @@ Upgrading from v4.3.3
   `TSqlMapManager` adds the package: `composer require pradosoft/prado-sqlmap`. Namespaces, class names, short names
   in configuration (`class="TSqlMapConfig"`), `TSqlMapConfig` properties, the XML mapping formats, the `TSqlMapGateway`
   API, and the `sqlmap_*` error codes are unchanged; Prado registers the package's class map and error messages from
-  its Composer `extra.prado` section. After installing the package, clear the application cache so a `TSqlMapManager`
-  stored by `EnableCache="true"` is rebuilt, and compare `TSqlMapException::getErrorCode()` with the message code
-  rather than the message text. The package's migration guide lists every behavior difference:
+  its Composer `extra.prado` section. A `TSqlMapManager` cached by `EnableCache="true"` under the framework copy is
+  rebuilt from the configuration file on the next request, so no cache clear is needed. After installing the package,
+  compare `TSqlMapException::getErrorCode()` with the message code rather than the message text. The package's
+  migration guide lists every behavior difference:
   https://github.com/pradosoft/prado-sqlmap/blob/master/docs/migration.md
 - `TSecurityManager::UseEncryptionHmac` defaults to `true`; it was `false`. `decrypt()` reads data with or without the
   HMAC, so existing encrypted data still decrypts. Prado versions before 4.3.3 cannot decrypt the new output; an
