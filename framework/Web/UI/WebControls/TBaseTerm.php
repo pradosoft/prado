@@ -69,10 +69,11 @@ use Prado\Web\UI\TRenderFilterParameter;
  * element of {@see SKIP_TAGS}. A target output without an unmarked term does not
  * parse, so the output of the target is unchanged. An invisible control marks nothing.
  *
- * The handler attaches in {@see onPreRender}. An active control that re-renders
- * during a callback, such as a {@see \Prado\Web\UI\ActiveControls\TActivePanel},
- * skips its own render filters, so the target inside it is a plain control, such
- * as a {@see TPanel}.
+ * The handler attaches in {@see onPreRender}. During a callback, a control that
+ * re-renders alone, such as a {@see \Prado\Web\UI\ActiveControls\TActivePanel}, is
+ * marked when it is the target or inside it: the target filters fragments
+ * ({@see \Prado\Web\UI\TControl::getRenderFilterFragments}). A fragment is not
+ * marked when MarkLimit is set, since the marks elsewhere in the target are unknown.
  *
  * Accessibility: a mark keeps the text, so the names of links and buttons that
  * hold a term are unchanged. Do not add a `role` or `aria-label` to the control.
@@ -105,7 +106,9 @@ abstract class TBaseTerm extends THtmlElement implements \Prado\IDataRenderer
 	private bool $_targetFiltered = false;
 
 	/**
-	 * Attaches the handler that marks the terms to the target.
+	 * Attaches the handler that marks the terms to the target, and has the target
+	 * filter the callback re-renders of its descendants
+	 * ({@see \Prado\Web\UI\TControl::getRenderFilterFragments}).
 	 * @param \Prado\TEventParameter $param event parameter
 	 * @throws TInvalidDataValueException if the TargetControl control cannot be found
 	 */
@@ -114,6 +117,7 @@ abstract class TBaseTerm extends THtmlElement implements \Prado\IDataRenderer
 		parent::onPreRender($param);
 		if (!$this->_targetFiltered && $this->getMarkOccurrences() && ($target = $this->getMarkTarget()) !== null) {
 			$target->attachEventHandler('onRenderFilter', [$this, 'markTerms']);
+			$target->setRenderFilterFragments(true);
 			$this->_targetFiltered = true;
 		}
 	}
@@ -208,13 +212,15 @@ abstract class TBaseTerm extends THtmlElement implements \Prado\IDataRenderer
 	/**
 	 * Marks the occurrences of the terms in the rendered output of the target.
 	 * This is the `onRenderFilter` handler on the target. Output without an
-	 * unmarked term does not parse.
+	 * unmarked term does not parse. A fragment of the output of the target
+	 * ({@see TRenderFilterParameter::getIsFragment}) is not marked when MarkLimit
+	 * is set, since the marks elsewhere in the target are unknown.
 	 * @param mixed $sender the target
 	 * @param TRenderFilterParameter $param the rendered output of the target
 	 */
 	public function markTerms($sender, $param)
 	{
-		if (($titles = $this->getMarkedTermTitles()) === []) {
+		if (($param->getIsFragment() && $this->getMarkLimit() > 0) || ($titles = $this->getMarkedTermTitles()) === []) {
 			return;
 		}
 		$html = $param->getFilterText();

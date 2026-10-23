@@ -69,7 +69,7 @@ test('TTermTestCase: accessible names and roles', async ({ page }) => {
 
 /**
  * A TAbbr inside a TActivePanel re-rendered in a callback marks the new text of
- * its parent TPanel.
+ * the panel, except in its exempt child.
  */
 test('TTermTestCase: callback re-render marks terms', async ({ page }) => {
 	const h = new PradoTestHelper(page, GENERIC_BASE_URL);
@@ -79,5 +79,25 @@ test('TTermTestCase: callback re-render marks terms', async ({ page }) => {
 	await h.click(`${BASE}btnUpdate`);
 	await h.waitForAjaxCalls();
 	await expect(page.locator('#note')).toHaveText('Each URL is new.');
-	expect(await marks(page, `#${BASE}live`, 'abbr')).toEqual([['URL', 'Uniform Resource Locator']]);
+	await expect(page.locator('#noteExempt')).toHaveText('This URL is exempt.');
+	expect(await marks(page, '#note', 'abbr')).toEqual([['URL', 'Uniform Resource Locator']]);
+	expect(await marks(page, '#noteExempt', 'abbr')).toEqual([]);
+});
+
+/**
+ * A TActivePanel re-rendered alone in a callback is a fragment of the TPanel
+ * around it: the TAbbr of the TPanel marks it, and the TDfn, with its MarkLimit,
+ * does not. A fragment inside a `<pre>` stays unmarked, as in a full render.
+ */
+test('TTermTestCase: callback fragment marks terms of an ancestor', async ({ page }) => {
+	const h = new PradoTestHelper(page, GENERIC_BASE_URL);
+	await h.url(PAGE_URL);
+
+	await h.click(`${BASE}btnInner`);
+	await h.waitForAjaxCalls();
+	await expect(page.locator('#innerNote')).toHaveText('The API runs a callback.');
+	expect(await marks(page, '#innerNote', 'abbr')).toEqual([['API', 'Application Programming Interface']]);
+	expect(await marks(page, '#innerNote', 'dfn')).toEqual([]);
+	await expect(page.locator('#preNote')).toHaveText('The API is literal here.');
+	expect(await marks(page, '#preNote', 'abbr')).toEqual([]);
 });

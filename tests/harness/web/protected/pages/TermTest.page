@@ -20,11 +20,22 @@
 	<p id="outside">HTML outside the glossary.</p>
 
 	<com:TActivePanel ID="live">
-		<com:TPanel ID="liveText">
-			<p id="note"><com:TActiveLabel ID="update" Text="Nothing yet." /></p>
-			<com:TAbbr ID="url" Terms="URL => Uniform Resource Locator" />
+		<p id="note"><com:TActiveLabel ID="update" Text="Nothing yet." /></p>
+		<com:TAbbr ID="url" Terms="URL => Uniform Resource Locator" />
+		<com:TPanel ID="liveExempt" RenderFilterExempt="true">
+			<p id="noteExempt"><com:TActiveLabel ID="updateExempt" Text="Nothing yet." /></p>
 		</com:TPanel>
 	</com:TActivePanel>
 
+	<com:TPanel ID="outer">
+		<com:TAbbr ID="api" Terms="API => Application Programming Interface" />
+		<com:TDfn ID="callback" Terms="callback" />
+		<com:TActivePanel ID="inner">
+			<p id="innerNote"><com:TActiveLabel ID="innerUpdate" Text="Nothing yet." /></p>
+		</com:TActivePanel>
+		<pre id="preNote"><com:TActivePanel ID="innerPre"><com:TActiveLabel ID="preUpdate" Text="Nothing yet." /></com:TActivePanel></pre>
+	</com:TPanel>
+
 	<com:TActiveButton ID="btnUpdate" Text="Update" OnCallback="update_live" />
+	<com:TActiveButton ID="btnInner" Text="Update inner" OnCallback="update_inner" />
 </com:TContent>

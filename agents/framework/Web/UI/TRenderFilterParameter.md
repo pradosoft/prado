@@ -97,6 +97,7 @@ Control-level exemption: [TRenderFilterContext](./TRenderFilterContext.md). Mark
 |---|---|
 | `getFilterErrors(): ?array` | `LibXMLError[]` from the most recent parse, or `null` when no errors |
 | `getHasFilterError(): bool` | `true` when at least one libxml error was captured |
+| `getIsFragment(): bool` / `setIsFragment(bool)` | `true` when the HTML is a callback re-render of a descendant (`TControl.RenderFilterFragments`): its enclosing start tags, `<!--prado-fragment-…-->` markers around its output, and the end tags. A handler that counts or restructures the whole output checks it (@since 4.4.0) |
 
 ### DOM walker
 

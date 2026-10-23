@@ -14,6 +14,7 @@ Wraps content within HTML comment boundaries for multiple chunk delivery in call
 
 - `getBoundary()` / `setBoundary($value)` - Boundary identifier
 - `flush()` - Returns content wrapped in boundary comments
+- `flushWithoutBoundary()` - Returns content without the boundary comments; `TActivePageAdapter` filters it (@since 4.4.0)
 
 ## See Also
 

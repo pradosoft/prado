@@ -85,6 +85,16 @@ class TRenderFilterContextTest extends TestCase
 		$this->assertSame($expected, $control->getRenderFilterExempt());
 	}
 
+	public function testRenderFilterFragments()
+	{
+		$control = new TControl();
+		$this->assertFalse($control->getRenderFilterFragments());
+		$control->setRenderFilterFragments('true');
+		$this->assertTrue($control->getRenderFilterFragments());
+		$control->setRenderFilterFragments(false);
+		$this->assertFalse($control->getRenderFilterFragments());
+	}
+
 	// ================================================================================
 	// Exempt output
 	// ================================================================================

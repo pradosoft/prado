@@ -4,15 +4,26 @@
  * Harness page for TAbbr, TDfn, and TVar functional tests.
  *
  * The glossary panel holds the abbreviations and definitions and the text they
- * mark. The live panel re-renders during a callback. Its TAbbr marks the new text
- * in the TPanel inside it, since an active control re-rendering in a callback skips
- * its own render filters.
+ * mark. The live panel re-renders during a callback, and its TAbbr marks the new
+ * text, except in its exempt TPanel. The inner active panel re-renders alone, and
+ * the TAbbr of the outer TPanel around it marks its new text; the TDfn, with its
+ * MarkLimit, does not mark a fragment. The active panel in a `<pre>` re-renders
+ * alone, and its new text stays unmarked.
  */
 class TermTest extends TPage
 {
 	public function update_live($sender, $param)
 	{
 		$this->update->setText('Each URL is new.');
+		$this->updateExempt->setText('This URL is exempt.');
 		$this->live->render($param->getNewWriter());
+	}
+
+	public function update_inner($sender, $param)
+	{
+		$this->innerUpdate->setText('The API runs a callback.');
+		$this->inner->render($param->getNewWriter());
+		$this->preUpdate->setText('The API is literal here.');
+		$this->innerPre->render($param->getNewWriter());
 	}
 }

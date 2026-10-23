@@ -60,7 +60,7 @@ TBaseTerm renders a term element and marks the other occurrences of its terms in
 
 ## Callbacks
 
-`TActivePageAdapter` renders a re-rendered active control with `render()`, so that control's own `onRenderFilter` handlers do not run. A term control whose target is a `TActivePanel` marks nothing in the callback response; target a plain control inside it, such as a `TPanel`.
+A control re-rendered alone in a callback, such as a `TActivePanel`, is marked when it is the target or inside it. `onPreRender` sets the target's `RenderFilterFragments`, so `TActivePageAdapter::renderDeferredControl` raises `markTerms` on the re-render with `getIsFragment()` true. The fragment is inside the elements that enclose it in the target, so a re-render inside `<pre>` or exempt markup stays unmarked. A fragment is not marked when `MarkLimit` is above 0 (so a `TDfn` adds no second defining instance), since the marks elsewhere in the target are unknown. Other handlers on the target also see the fragments.
 
 ## Accessibility
 

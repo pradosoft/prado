@@ -475,6 +475,37 @@ class TBaseTermTest extends TestCase
 		$this->assertSame(1, $parent->getEventHandlers('onRenderFilter')->getCount());
 	}
 
+	public function testTargetFiltersFragments()
+	{
+		$abbr = $this->abbr();
+		$parent = $this->parent($abbr);
+		$abbr->onPreRender(null);
+		$this->assertTrue($parent->getRenderFilterFragments());
+		$off = $this->abbr();
+		$off->setMarkOccurrences(false);
+		$other = $this->parent($off);
+		$off->onPreRender(null);
+		$this->assertFalse($other->getRenderFilterFragments());
+	}
+
+	public function testFragmentIsMarkedWithoutMarkLimit()
+	{
+		$param = new TRenderFilterParameter('<p>HTML</p>');
+		$param->setIsFragment(true);
+		$this->abbr()->markTerms(null, $param);
+		$this->assertSame('<p>' . $this->marked('HTML') . '</p>', $param->getFilterText());
+	}
+
+	public function testFragmentIsNotMarkedWithMarkLimit()
+	{
+		$dfn = new TDfn();
+		$dfn->setTerms('placeholder');
+		$param = new TRenderFilterParameter('<p>placeholder</p>');
+		$param->setIsFragment(true);
+		$dfn->markTerms(null, $param);
+		$this->assertSame('<p>placeholder</p>', $param->getFilterText());
+	}
+
 	public function testMarkTermsWithoutTermsLeavesParameter()
 	{
 		$param = new TRenderFilterParameter('HTML<br/>');
