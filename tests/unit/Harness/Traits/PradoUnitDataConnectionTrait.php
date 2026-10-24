@@ -23,8 +23,10 @@ use Prado\Data\TDbConnection;
  * {@see getDatabaseName()} is the database name.  it can be set to null to have a
  * direct connection without a specific database.
  *
- * {@see getIsForActiveRecord()} specifies if {@see TActiveRecordManager}.DbConnection
- *  should be set the newly created connection.
+ * {@see getIsForActiveRecord()} specifies if `TActiveRecordManager::DbConnection`
+ * should be set to the newly created connection. `TActiveRecordManager` is in the
+ * `pradosoft/prado-activerecord` package, whose tests use this trait; without the
+ * package the flag has no effect.
  *
  * {@see getTestTables()} specifies the array of tables that the test uses.  The
  * generic setUp in the trait will check for each of them.
