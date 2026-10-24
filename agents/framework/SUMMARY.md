@@ -6,8 +6,6 @@ The IO utilities include TAR extraction with cleanup for every `Throwable`, incl
 
 The exception message catalogs use the English catalog as the master and remove obsolete keys from language variants.
 
-SqlMap result maps wrap type-handler construction failures with mapping context.
-
 ## Classes
 
 - **`TComponent`** — Base class for nearly everything; provides property system (`getXxx()`/`setXxx()`), event system (`attachEventHandler()`/`raiseEvent()`), behavior attachment, dynamic events (`dy*` prefix), and serialization support.

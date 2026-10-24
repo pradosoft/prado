@@ -18,7 +18,7 @@ use Prado\Data\IDataConnection;
  * IDataCommandBuilder defines the contract for building CRUD commands against a
  * specific table. Implementations are returned by
  * {@see IDataMetaData::createCommandBuilder()} and used throughout the Active
- * Record, SqlMap, and DataGateway layers.
+ * Record and DataGateway layers.
  *
  * The concrete implementation for SQL/PDO databases is {@see TDbCommandBuilder}.
  * Driver-specific subclasses override {@see applyLimitOffset()} and other

@@ -10,6 +10,14 @@ for both A and B.
 Upgrading from v4.3.3
 ---------------------
 - PHP 8.2 is now required. Applications running PHP 8.1 stay on Prado 4.3.
+- SqlMap (`Prado\Data\SqlMap`) is no longer part of the framework; it is the `pradosoft/prado-sqlmap` package (#1168).
+  An application that does not use SqlMap needs no change. An application using `TSqlMapConfig`, `TSqlMapGateway`, or
+  `TSqlMapManager` adds the package: `composer require pradosoft/prado-sqlmap`. Namespaces, class names, short names
+  in configuration (`class="TSqlMapConfig"`), `TSqlMapConfig` properties, the XML mapping formats, the `TSqlMapGateway`
+  API, and the `sqlmap_*` error codes are unchanged; Prado registers the package's class map and error messages from
+  its Composer `extra.prado` section. After installing the package, compare `TSqlMapException::getErrorCode()` with
+  the message code rather than the message text. The package's migration guide lists every behavior difference:
+  https://github.com/pradosoft/prado-sqlmap/blob/master/docs/migration.md
 - `TSecurityManager::UseEncryptionHmac` defaults to `true`; it was `false`. `decrypt()` reads data with or without the
   HMAC, so existing encrypted data still decrypts. Prado versions before 4.3.3 cannot decrypt the new output; an
   application sharing encrypted data with them sets `UseEncryptionHmac="false"`.

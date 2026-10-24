@@ -74,7 +74,6 @@ TApplication
  └─ Data Layer     framework/Data/
       TDbConnection  (PDO wrapper)
       ActiveRecord/  (ORM)
-      SqlMap/        (SQL mapping, iBatis-style)
       DataGateway/
  └─ Caching        framework/Caching/    (APC, Database, Etcd, Memcached, Redis, file-based)
  └─ Security       framework/Security/   (RBAC, TAuthManager, TSecurityManager, TPermissionsManager)

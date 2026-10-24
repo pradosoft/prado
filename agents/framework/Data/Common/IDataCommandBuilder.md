@@ -10,7 +10,7 @@
 
 ## Overview
 
-`IDataCommandBuilder` defines the contract for building CRUD commands against a specific database table. Implementations are returned by [`IDataMetaData::createCommandBuilder()`](./IDataMetaData.md) and are consumed by the Active Record, SqlMap, and DataGateway layers.
+`IDataCommandBuilder` defines the contract for building CRUD commands against a specific database table. Implementations are returned by [`IDataMetaData::createCommandBuilder()`](./IDataMetaData.md) and are consumed by the Active Record and DataGateway layers.
 
 The concrete SQL/PDO implementation is [`TDbCommandBuilder`](./TDbCommandBuilder.md). Driver-specific subclasses override `applyLimitOffset()` and other dialect-sensitive helpers.
 

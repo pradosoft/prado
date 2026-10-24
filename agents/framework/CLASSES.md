@@ -1,6 +1,6 @@
 # PRADO Framework Classes
 
-**Total Classes: 789**
+**Total Classes: 734**
 
 This document lists all classes in the PRADO framework as defined in `classes.php`.
 
@@ -8,10 +8,10 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 | Directory | Classes | Interfaces | Total | Recursive |
 |-----------|---------|------------|-------|-----------|
-| [Prado](./INDEX.md) | 17 | 7 | 24 | 789 |
+| [Prado](./INDEX.md) | 17 | 7 | 24 | 734 |
 | [Prado\\Caching](./Caching/INDEX.md) | 18 | 2 | 20 | 20 |
 | [Prado\\Collections](./Collections/INDEX.md) | 27 | 7 | 34 | 34 |
-| [Prado\\Data](./Data/INDEX.md) | 10 | 5 | 15 | 136 |
+| [Prado\\Data](./Data/INDEX.md) | 10 | 5 | 15 | 81 |
 | [Prado\\Data\\ActiveRecord](./Data/ActiveRecord/INDEX.md) | 7 | 0 | 7 | 29 |
 | [Prado\\Data\\ActiveRecord\\Exceptions](./Data/ActiveRecord/Exceptions/INDEX.md) | 2 | 0 | 2 | 2 |
 | [Prado\\Data\\ActiveRecord\\Relations](./Data/ActiveRecord/Relations/INDEX.md) | 6 | 0 | 6 | 6 |
@@ -26,10 +26,6 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 | [Prado\\Data\\Common\\Pgsql](./Data/Common/Pgsql/INDEX.md) | 4 | 0 | 4 | 4 |
 | [Prado\\Data\\Common\\Sqlite](./Data/Common/Sqlite/INDEX.md) | 4 | 0 | 4 | 4 |
 | [Prado\\Data\\DataGateway](./Data/DataGateway/INDEX.md) | 5 | 0 | 5 | 5 |
-| [Prado\\Data\\SqlMap](./Data/SqlMap/INDEX.md) | 3 | 0 | 3 | 55 |
-| [Prado\\Data\\SqlMap\\Configuration](./Data/SqlMap/Configuration/INDEX.md) | 20 | 0 | 20 | 20 |
-| [Prado\\Data\\SqlMap\\DataMapper](./Data/SqlMap/DataMapper/INDEX.md) | 16 | 0 | 16 | 16 |
-| [Prado\\Data\\SqlMap\\Statements](./Data/SqlMap/Statements/INDEX.md) | 15 | 1 | 16 | 16 |
 | [Prado\\Exceptions](./Exceptions/INDEX.md) | 22 | 0 | 22 | 22 |
 | [Prado\\I18N](./I18N/INDEX.md) | 9 | 0 | 9 | 24 |
 | [Prado\\I18N\\core](./I18N/core/INDEX.md) | 12 | 1 | 13 | 16 |
@@ -173,7 +169,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Data](./Data/INDEX.md) - Classes: 10, Interfaces: 5, Total: 15, Recursive: 136
+## [Prado\Data](./Data/INDEX.md) - Classes: 10, Interfaces: 5, Total: 15, Recursive: 81
 
 ### Interfaces (5)
 
@@ -373,92 +369,6 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TDataGatewayResultEventParameter](./Data/DataGateway/TDataGatewayResultEventParameter.md)
 - [TSqlCriteria](./Data/DataGateway/TSqlCriteria.md)
 - [TTableGateway](./Data/TTableGateway.md)
-
----
-
-## [Prado\Data\SqlMap](./Data/SqlMap/INDEX.md) - Classes: 3, Interfaces: 0, Total: 3, Recursive: 55
-
-### Classes (3)
-
-- [TSqlMapConfig](./Data/SqlMap/TSqlMapConfig.md)
-- [TSqlMapGateway](./Data/SqlMap/TSqlMapGateway.md)
-- [TSqlMapManager](./Data/SqlMap/TSqlMapManager.md)
-
----
-
-## [Prado\Data\SqlMap\Configuration](./Data/SqlMap/Configuration/INDEX.md) - Classes: 20, Interfaces: 0, Total: 20, Recursive: 20
-
-### Classes (20)
-
-- [TDiscriminator](./Data/SqlMap/Configuration/TDiscriminator.md)
-- [TInlineParameterMapParser](./Data/SqlMap/Configuration/TInlineParameterMapParser.md)
-- [TParameterMap](./Data/SqlMap/Configuration/TParameterMap.md)
-- [TParameterProperty](./Data/SqlMap/Configuration/TParameterProperty.md)
-- [TResultMap](./Data/SqlMap/Configuration/TResultMap.md)
-- [TResultProperty](./Data/SqlMap/Configuration/TResultProperty.md)
-- [TSimpleDynamicParser](./Data/SqlMap/Configuration/TSimpleDynamicParser.md)
-- [TSqlMapCacheKey](./Data/SqlMap/Configuration/TSqlMapCacheKey.md)
-- [TSqlMapCacheModel](./Data/SqlMap/Configuration/TSqlMapCacheModel.md)
-- [TSqlMapCacheTypes](./Data/SqlMap/Configuration/TSqlMapCacheTypes.md)
-- [TSqlMapDelete](./Data/SqlMap/Configuration/TSqlMapDelete.md)
-- [TSqlMapInsert](./Data/SqlMap/Configuration/TSqlMapInsert.md)
-- [TSqlMapSelect](./Data/SqlMap/Configuration/TSqlMapSelect.md)
-- [TSqlMapSelectKey](./Data/SqlMap/Configuration/TSqlMapSelectKey.md)
-- [TSqlMapStatement](./Data/SqlMap/Configuration/TSqlMapStatement.md)
-- [TSqlMapUpdate](./Data/SqlMap/Configuration/TSqlMapUpdate.md)
-- [TSqlMapXmlConfigBuilder](./Data/SqlMap/Configuration/TSqlMapXmlConfigBuilder.md)
-- [TSqlMapXmlConfiguration](./Data/SqlMap/Configuration/TSqlMapXmlConfiguration.md)
-- [TSqlMapXmlMappingConfiguration](./Data/SqlMap/Configuration/TSqlMapXmlMappingConfiguration.md)
-- [TSubMap](./Data/SqlMap/Configuration/TSubMap.md)
-
----
-
-## [Prado\Data\SqlMap\DataMapper](./Data/SqlMap/DataMapper/INDEX.md) - Classes: 16, Interfaces: 0, Total: 16, Recursive: 16
-
-### Classes (16)
-
-- [TInvalidPropertyException](./Data/SqlMap/DataMapper/TInvalidPropertyException.md)
-- [TLazyLoadList](./Data/SqlMap/DataMapper/TLazyLoadList.md)
-- [TObjectProxy](./Data/SqlMap/DataMapper/TObjectProxy.md)
-- [TPropertyAccess](./Data/SqlMap/DataMapper/TPropertyAccess.md)
-- [TSqlMapApplicationCache](./Data/SqlMap/DataMapper/TSqlMapApplicationCache.md)
-- [TSqlMapCache](./Data/SqlMap/DataMapper/TSqlMapCache.md)
-- [TSqlMapConfigurationException](./Data/SqlMap/DataMapper/TSqlMapConfigurationException.md)
-- [TSqlMapDuplicateException](./Data/SqlMap/DataMapper/TSqlMapDuplicateException.md)
-- [TSqlMapException](./Data/SqlMap/DataMapper/TSqlMapException.md)
-- [TSqlMapExecutionException](./Data/SqlMap/DataMapper/TSqlMapExecutionException.md)
-- [TSqlMapFifoCache](./Data/SqlMap/DataMapper/TSqlMapFifoCache.md)
-- [TSqlMapLruCache](./Data/SqlMap/DataMapper/TSqlMapLruCache.md)
-- [TSqlMapPagedList](./Data/SqlMap/DataMapper/TSqlMapPagedList.md)
-- [TSqlMapTypeHandler](./Data/SqlMap/DataMapper/TSqlMapTypeHandler.md)
-- [TSqlMapTypeHandlerRegistry](./Data/SqlMap/DataMapper/TSqlMapTypeHandlerRegistry.md)
-- [TSqlMapUndefinedException](./Data/SqlMap/DataMapper/TSqlMapUndefinedException.md)
-
----
-
-## [Prado\Data\SqlMap\Statements](./Data/SqlMap/Statements/INDEX.md) - Classes: 15, Interfaces: 1, Total: 16, Recursive: 16
-
-### Interfaces (1)
-
-- [IMappedStatement](./Data/SqlMap/Statements/IMappedStatement.md)
-
-### Classes (15)
-
-- [TCachingStatement](./Data/SqlMap/Statements/TCachingStatement.md)
-- [TDeleteMappedStatement](./Data/SqlMap/Statements/TDeleteMappedStatement.md)
-- [TInsertMappedStatement](./Data/SqlMap/Statements/TInsertMappedStatement.md)
-- [TMappedStatement](./Data/SqlMap/Statements/TMappedStatement.md)
-- [TPostSelectBinding](./Data/SqlMap/Statements/TPostSelectBinding.md)
-- [TPreparedCommand](./Data/SqlMap/Statements/TPreparedCommand.md)
-- [TPreparedStatement](./Data/SqlMap/Statements/TPreparedStatement.md)
-- [TPreparedStatementFactory](./Data/SqlMap/Statements/TPreparedStatementFactory.md)
-- [TResultSetListItemParameter](./Data/SqlMap/Statements/TResultSetListItemParameter.md)
-- [TResultSetMapItemParameter](./Data/SqlMap/Statements/TResultSetMapItemParameter.md)
-- [TSelectMappedStatement](./Data/SqlMap/Statements/TSelectMappedStatement.md)
-- [TSimpleDynamicSql](./Data/SqlMap/Statements/TSimpleDynamicSql.md)
-- [TSqlMapObjectCollectionTree](./Data/SqlMap/Statements/TSqlMapObjectCollectionTree.md)
-- [TStaticSql](./Data/SqlMap/Statements/TStaticSql.md)
-- [TUpdateMappedStatement](./Data/SqlMap/Statements/TUpdateMappedStatement.md)
 
 ---
 
