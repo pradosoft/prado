@@ -47,6 +47,7 @@ return [
 | Property | Default | Description |
 |----------|---------|-------------|
 | `ValidationKey` | auto-generated | Private key for HMAC generation; persisted in global state when auto-generated |
+| `CookieValidationKey` | derived | Private key for cookie HMACs; defaults to `hash_hmac(HashAlgorithm, 'prado:cookie', ValidationKey)`. Changing it invalidates every signed cookie and no other data. @since 4.4.0 |
 | `EncryptionKey` | auto-generated | Key for encrypt/decrypt; persisted in global state when auto-generated |
 | `HashAlgorithm` | `sha256` | Hash algorithm for HMAC (any value from `hash_hmac_algos()`) |
 | `CryptAlgorithm` | `aes-256-cbc` | OpenSSL cipher algorithm |
@@ -59,9 +60,12 @@ return [
 |--------|-------------|
 | `hashData(string $data): string` | Prefixes data with HMAC (hex) |
 | `validateData(string $data): string\|false` | Strips and validates HMAC; returns raw data or `false` |
+| `hashCookieData(string $data): string` | Prefixes cookie data with an HMAC keyed by `CookieValidationKey` @since 4.4.0 |
+| `validateCookieData(string $data): string\|false` | Validates `hashCookieData()` output @since 4.4.0 |
 | `encrypt(string $data): string` | Encrypts with OpenSSL; prepends HMAC when `UseEncryptionHmac=true` |
 | `decrypt(string $data): string\|false` | Decrypts; always probes for HMAC header first; returns `false` on tamper |
 | `computeHMAC(string $data): string` | Protected: computes `hash_hmac(algo, data, validationKey)` |
+| `computeCookieHMAC(string $data): string` | Protected: computes `hash_hmac(algo, data, cookieValidationKey)` @since 4.4.0 |
 | `supportedHashAlgorithms(): array` | @since 4.3.3 — returns `hash_hmac_algos()` or `hash_algos()` |
 | `supportedCipherAlgorithms(): array` | @since 4.3.3 — returns `openssl_get_cipher_methods()` |
 
@@ -84,7 +88,8 @@ This dual-path design means ciphertext produced before or after enabling `UseEnc
 - **OpenSSL required** — `encrypt()` and `decrypt()` throw `TNotSupportedException` if the `openssl` extension is absent.
 - **`EncryptionKeyAlgorithm` defaults to `sha256`** since 4.4.0. Set it to `md5` to decrypt data encrypted under the Prado 4.3 default.
 - **`UseEncryptionHmac` defaults to `true`** since 4.4.0. `decrypt()` reads ciphertext with or without the HMAC, so data encrypted under the 4.3 default still decrypts.
-- **Empty keys are rejected** — `setValidationKey('')` and `setEncryptionKey('')` throw `TInvalidDataValueException`.
+- **Empty keys are rejected** — `setValidationKey('')`, `setCookieValidationKey('')`, and `setEncryptionKey('')` throw `TInvalidDataValueException`.
+- **Cookies use `CookieValidationKey`** — `THttpRequest`/`THttpResponse` cookie validation, the `TAuthManager` auto-login cookie, and the `TUserManager` auto-login token. Set it to sign out every remembered user without touching page state or encrypted data.
 - **mbstring** — when the `mbstring` extension is present, binary-safe `mb_strlen`/`mb_substr` with `'8bit'` encoding are used internally to avoid multibyte-string splitting errors.
 
 ## See Also

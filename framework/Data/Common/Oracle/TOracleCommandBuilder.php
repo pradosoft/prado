@@ -107,22 +107,23 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 		$fieldsALIAS = 'xyz';
 
 		$nfimDaSQL = strlen($sql);
-		$nfimDoWhere = (stripos($sql, 'ORDER') !== false ? stripos($sql, 'ORDER') : $nfimDaSQL);
-		$selectPos = stripos($sql, 'SELECT');
-		$niniDoSelect = ($selectPos !== false ? $selectPos : 0) + 6;
-		$nfimDoSelect = (stripos($sql, 'FROM') !== false ? stripos($sql, 'FROM') : $nfimDaSQL);
+		$orderBy = $this->findClause($sql, 'ORDER\s+BY');
+		$select = $this->findClause($sql, 'SELECT');
+		$from = $this->findClause($sql, 'FROM');
+		$where = $this->findClause($sql, 'WHERE');
+		$nfimDoWhere = $orderBy !== null ? $orderBy[0] : $nfimDaSQL;
+		$niniDoSelect = $select !== null ? $select[0] + $select[1] : 0;
+		$nfimDoSelect = $from !== null ? $from[0] : $nfimDaSQL;
 
 		$WhereInSubSelect = "";
-		$wherePos = stripos($sql, 'WHERE');
-		if ($wherePos !== false) {
-			$whereStart = $wherePos + 5;
+		if ($where !== null) {
+			$whereStart = $where[0] + $where[1];
 			$WhereInSubSelect = "WHERE " . substr($sql, $whereStart, $nfimDoWhere - $whereStart);
 		}
 
 		$sORDERBY = '';
-		if (stripos($sql, 'ORDER') !== false) {
-			$p = stripos($sql, 'ORDER');
-			$sORDERBY = substr($sql, $p + 8);
+		if ($orderBy !== null) {
+			$sORDERBY = substr($sql, $orderBy[0] + $orderBy[1]);
 		}
 
 		$fields = substr($sql, 0, $nfimDoSelect);
@@ -182,5 +183,28 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 					" WHERE nn.{$pradoNUMLIN} >= {$offset} AND nn.{$pradoNUMLIN} < {$toReg} ";
 		//echo $newSql."\n<br>\n";
 		return $newSql;
+	}
+
+	/**
+	 * Locates the first occurrence of an SQL keyword as a whole word outside quoted
+	 * strings and quoted identifiers, so a column such as `sort_order` or a literal
+	 * `'from'` does not pass for a clause.
+	 * @param string $sql SQL text.
+	 * @param string $keyword keyword as a regular expression fragment, such as `ORDER\s+BY`.
+	 * @return ?array `[offset, length]` of the keyword in `$sql`, or null when absent.
+	 * @since 4.4.0
+	 */
+	protected function findClause($sql, $keyword)
+	{
+		$pattern = "/'(?:[^']|'')*'|\"[^\"]*\"|\\b(" . $keyword . ")\\b/i";
+		if (!preg_match_all($pattern, $sql, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE)) {
+			return null;
+		}
+		foreach ($matches as $match) {
+			if (isset($match[1]) && $match[1][1] >= 0) {
+				return [$match[1][1], strlen($match[1][0])];
+			}
+		}
+		return null;
 	}
 }

@@ -270,6 +270,49 @@ class TSecurityManagerTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
+	public function testCookieValidationKey()
+	{
+		$sec = new TSecurityManager();
+		$sec->init(null);
+		$sec->setValidationKey('aKey');
+		// The default derives from ValidationKey and differs from it.
+		self::assertSame(hash_hmac('sha256', 'prado:cookie', 'aKey'), $sec->getCookieValidationKey());
+		$sec->setValidationKey('bKey');
+		self::assertSame(hash_hmac('sha256', 'prado:cookie', 'bKey'), $sec->getCookieValidationKey());
+
+		$sec->setCookieValidationKey('cookieKey');
+		self::assertSame('cookieKey', $sec->getCookieValidationKey());
+		self::assertSame('bKey', $sec->getValidationKey());
+		$sec->setCookieValidationKey(null);
+		self::assertSame(hash_hmac('sha256', 'prado:cookie', 'bKey'), $sec->getCookieValidationKey());
+
+		try {
+			$sec->setCookieValidationKey('');
+			self::fail('Expected TInvalidDataValueException not thrown');
+		} catch (TInvalidDataValueException $e) {
+			self::assertSame('securitymanager_cookievalidationkey_invalid', $e->getErrorCode());
+		}
+	}
+
+	public function testHashCookieData()
+	{
+		$sec = new TSecurityManager();
+		$sec->init(null);
+		$sec->setValidationKey('aKey');
+		$hashed = $sec->hashCookieData('value');
+		self::assertSame('value', $sec->validateCookieData($hashed));
+		// Cookie and data HMACs use separate keys.
+		self::assertFalse($sec->validateData($hashed));
+		self::assertFalse($sec->validateCookieData($sec->hashData('value')));
+		self::assertFalse($sec->validateCookieData('short'));
+
+		// Changing CookieValidationKey invalidates cookies and leaves other data valid.
+		$data = $sec->hashData('value');
+		$sec->setCookieValidationKey('rotated');
+		self::assertFalse($sec->validateCookieData($hashed));
+		self::assertSame('value', $sec->validateData($data));
+	}
+
 	public function testEncryptionKey()
 	{
 		$sec = new TSecurityManager();

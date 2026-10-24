@@ -368,7 +368,7 @@ class THttpRequestTest extends \PHPUnit\Framework\TestCase
 		// Test with cookie validation
 		$security = new TSecurityManager();
 		$this->app->setModule('security', $security);
-		$_COOKIE['phpsessid'] = $security->hashData('0123456789abcdef');
+		$_COOKIE['phpsessid'] = $security->hashCookieData('0123456789abcdef');
 		$request = new THttpRequest();
 		$request->init(null);
 		$request->setEnableCookieValidation(true);
