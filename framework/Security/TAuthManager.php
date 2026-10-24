@@ -34,6 +34,8 @@ use Prado\Web\THttpCookie;
  * should be stored in a cookie to perform automatic login. Enabling this
  * feature will cause that {@see setAuthExpire AuthExpire} has no effect
  * since the user will be logged in again on authentication expiration.
+ * The auto-login cookie is HttpOnly, Secure over HTTPS, and signed with the
+ * security manager's CookieValidationKey; a cookie with an invalid HMAC is ignored.
  *
  * Attached behaviors may intercept the following dynamic (`dy-`) events:
  * - `dyHandleUnauthorized(bool $handled): bool` — Called in {@see leave()} when
@@ -418,7 +420,7 @@ class TAuthManager extends \Prado\TModule
 		// try authenticating through cookie if possible
 		if ($this->getAllowAutoLogin() && ($user->getIsGuest() || $isAuthExpired)) {
 			$cookie = $this->getRequest()->getCookies()->itemAt($this->getUserKey());
-			if ($cookie instanceof THttpCookie) {
+			if ($cookie instanceof THttpCookie && ($cookie = $this->validateUserCookie($cookie)) !== null) {
 				if (($user2 = $this->getUserManager()->getUserFromCookie($cookie)) !== null) {
 					$user = $user2;
 					$this->updateSessionUser($user);
@@ -531,10 +533,10 @@ class TAuthManager extends \Prado\TModule
 			$this->getApplication()->setUser($user);
 
 			if ($expire > 0) {
-				$cookie = new THttpCookie($this->getUserKey(), '');
+				$cookie = $this->createUserCookie();
 				$cookie->setExpire($this->getClock()->time() + $expire);
 				$this->getUserManager()->saveUserToCookie($cookie);
-				$this->getResponse()->getCookies()->add($cookie);
+				$this->getResponse()->getCookies()->add($this->signUserCookie($cookie));
 			}
 			$this->onLogin($user);
 			return true;
@@ -557,9 +559,52 @@ class TAuthManager extends \Prado\TModule
 		$this->getApplication()->getUser()->setIsGuest(true);
 		$this->destroySession();
 		if ($this->getAllowAutoLogin()) {
-			$cookie = new THttpCookie($this->getUserKey(), '');
-			$this->getResponse()->getCookies()->add($cookie);
+			$this->getResponse()->getCookies()->add($this->createUserCookie());
 		}
+	}
+
+	/**
+	 * Creates an auto-login cookie named {@see getUserKey()}.  The cookie is HttpOnly,
+	 * and Secure when the request is over HTTPS.
+	 * @param string $value the cookie value.
+	 * @return THttpCookie the auto-login cookie.
+	 * @since 4.4.0
+	 */
+	protected function createUserCookie(string $value = ''): THttpCookie
+	{
+		$cookie = new THttpCookie($this->getUserKey(), $value);
+		$cookie->setHttpOnly(true);
+		$cookie->setSecure($this->getRequest()->getIsSecureConnection());
+		return $cookie;
+	}
+
+	/**
+	 * Prefixes the auto-login cookie value with an HMAC by
+	 * {@see \Prado\Security\TSecurityManager::hashCookieData()}.  The cookie is signed
+	 * whether or not {@see \Prado\Web\THttpRequest::getEnableCookieValidation() EnableCookieValidation} is on.
+	 * @param THttpCookie $cookie the auto-login cookie holding the user manager's auth data.
+	 * @return THttpCookie the cookie with its value signed.
+	 * @since 4.4.0
+	 */
+	protected function signUserCookie(THttpCookie $cookie): THttpCookie
+	{
+		$cookie->setValue($this->getApplication()->getSecurityManager()->hashCookieData($cookie->getValue()));
+		return $cookie;
+	}
+
+	/**
+	 * Validates the HMAC of a request's auto-login cookie.
+	 * @param THttpCookie $cookie the auto-login cookie from the request.
+	 * @return ?THttpCookie a cookie holding the auth data, or null when the HMAC does not match.
+	 * @since 4.4.0
+	 */
+	protected function validateUserCookie(THttpCookie $cookie): ?THttpCookie
+	{
+		$value = $this->getApplication()->getSecurityManager()->validateCookieData($cookie->getValue());
+		if ($value === false) {
+			return null;
+		}
+		return $this->createUserCookie($value);
 	}
 
 	// =========================================================================

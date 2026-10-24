@@ -53,7 +53,7 @@ Module that handles authentication and authorization flow. Registered in `applic
 | `UserManager` | Module ID or `IUserManager` instance (read-only after init) |
 | `LoginPage` | Page path to redirect to when auth fails |
 | `AuthExpire` | Session timeout in seconds (0 = never) |
-| `AllowAutoLogin` | Enable cookie-based remember-me |
+| `AllowAutoLogin` | Enable cookie-based remember-me; the cookie is HttpOnly, Secure over HTTPS, and signed by `TSecurityManager::hashCookieData()` |
 | `ReturnUrlVarName` | Session key for the post-login redirect URL (defaults to `AppID:ReturnUrl`) |
 
 ### Auth Flow
@@ -163,7 +163,7 @@ return [
 
 - `TAuthManager` must be registered **before** `TPermissionsManager` in `application.xml`.
 - `LoginPage` must be publicly accessible — it is exempted from authorization checks.
-- Cookie auto-login requires a stable `ValidationKey` in `TSecurityManager`.
+- Cookie auto-login requires a stable `ValidationKey` (or `CookieValidationKey`) in `TSecurityManager`. `createUserCookie()`, `signUserCookie()`, and `validateUserCookie()` (protected, @since 4.4.0) build, sign, and check the cookie whether or not `EnableCookieValidation` is on; a cookie with a bad HMAC is ignored.
 - `TDbUserManager` needs a DB connection module ID in `ConnectionID` property.
 - `UserManager` cannot be changed after `init()`.
 - `updateSessionUser()` calls `$session->regenerate(true)` on every login to prevent session fixation.
