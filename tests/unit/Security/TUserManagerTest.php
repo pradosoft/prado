@@ -11,6 +11,7 @@ use Prado\Xml\TXmlDocument;
 use Prado\Test\Unit\Harness\TTestApplication;
 use Prado\Security\TUserManagerPasswordMode;
 use Prado\Test\Unit\PradoUnit;
+use Prado\Web\THttpCookie;
 
 class TUserManagerTest extends \PHPUnit\Framework\TestCase
 {
@@ -159,5 +160,39 @@ class TUserManagerTest extends \PHPUnit\Framework\TestCase
 		self::assertEquals(['Writer'], $user->getRoles());
 		self::assertFalse($user->getIsGuest());
 		self::assertNull($userManager->getUser('badUser'));
+	}
+
+	public function testUserCookie()
+	{
+		$userManager = new TUserManager();
+		$userManager->init(self::$config);
+		$userManager->getApplication()->setUser($userManager->getUser('Joe'));
+		$cookie = new THttpCookie('auth', '');
+		$userManager->saveUserToCookie($cookie);
+		$data = json_decode($cookie->getValue(), true);
+		self::assertSame('joe', $data[0]);
+		self::assertStringNotContainsString(sha1('joedemo'), $cookie->getValue());
+		self::assertEquals('joe', $userManager->getUserFromCookie($cookie)->getName());
+
+		$invalid = [
+			'',
+			'not json',
+			json_encode(['joe']),
+			json_encode(['joe', $data[1], 'x']),
+			json_encode(['joe', 'wrong-token']),
+			json_encode(['joe', ['token']]),
+			json_encode(['nobody', $data[1]]),
+			json_encode(['joe', sha1('joedemo')]),
+			serialize(['joe', $data[1]]),
+		];
+		foreach ($invalid as $value) {
+			self::assertNull($userManager->getUserFromCookie(new THttpCookie('auth', $value)), $value);
+		}
+
+		$config = new TXmlDocument('1.0', 'utf8');
+		$config->loadFromString('<users><user name="Joe" password="changed"/></users>');
+		$changed = new TUserManager();
+		$changed->init($config);
+		self::assertNull($changed->getUserFromCookie($cookie), 'A password change invalidates the token.');
 	}
 }

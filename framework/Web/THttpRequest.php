@@ -713,7 +713,8 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @return bool whether cookies should be validated. Defaults to false.
+	 * @return bool whether cookies should be validated. Defaults to false.  Cookies are signed with
+	 *   {@see \Prado\Security\TSecurityManager::getCookieValidationKey() CookieValidationKey}.
 	 */
 	public function getEnableCookieValidation()
 	{
@@ -758,7 +759,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 			if ($this->getEnableCookieValidation()) {
 				$sm = $this->getApplication()->getSecurityManager();
 				foreach ($_COOKIE as $key => $value) {
-					if (($value = $sm->validateData($value)) !== false) {
+					if (($value = $sm->validateCookieData($value)) !== false) {
 						$this->_cookies->add(new THttpCookie($key, $value));
 					}
 				}

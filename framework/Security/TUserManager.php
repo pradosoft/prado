@@ -325,20 +325,20 @@ class TUserManager extends \Prado\TModule implements IUserManager
 
 	/**
 	 * Returns a user instance according to auth data stored in a cookie.
+	 * The cookie value is the JSON `[username, token]` written by {@see saveUserToCookie()}.
 	 * @param \Prado\Web\THttpCookie $cookie the cookie storing user authentication information
 	 * @return ?TUser the user instance generated based on the cookie auth data, null if the cookie does not have valid auth data.
 	 * @since 3.1.1
 	 */
 	public function getUserFromCookie($cookie)
 	{
-		if (($data = $cookie->getValue()) !== '') {
-			$data = unserialize($data);
-			if (is_array($data) && count($data) === 2) {
-				[$username, $token] = $data;
-				if (isset($this->_users[$username]) && $token === sha1($username . $this->_users[$username])) {
-					return $this->getUser($username);
-				}
-			}
+		$data = json_decode($cookie->getValue(), true);
+		if (!is_array($data) || count($data) !== 2 || !is_string($data[0] ?? null) || !is_string($data[1] ?? null)) {
+			return null;
+		}
+		[$username, $token] = $data;
+		if (isset($this->_users[$username]) && hash_equals($this->generateCookieToken($username), $token)) {
+			return $this->getUser($username);
 		}
 		return null;
 	}
@@ -353,8 +353,22 @@ class TUserManager extends \Prado\TModule implements IUserManager
 		$user = $this->getApplication()->getUser();
 		$username = strtolower($user->getName());
 		if (isset($this->_users[$username])) {
-			$data = [$username, sha1($username . $this->_users[$username])];
-			$cookie->setValue(serialize($data));
+			$cookie->setValue(json_encode([$username, $this->generateCookieToken($username)]));
 		}
+	}
+
+	/**
+	 * Generates the auto-login token of a user.  The token is an HMAC of the username and
+	 * password keyed by the security manager's
+	 * {@see \Prado\Security\TSecurityManager::getCookieValidationKey() CookieValidationKey}.
+	 * A password change invalidates the token.
+	 * @param string $username the lowercase name of a user in the user database.
+	 * @return string the auto-login token.
+	 * @since 4.4.0
+	 */
+	protected function generateCookieToken(string $username): string
+	{
+		$securityManager = $this->getApplication()->getSecurityManager();
+		return hash_hmac($securityManager->getHashAlgorithm(), $username . "\0" . $this->_users[$username], $securityManager->getCookieValidationKey());
 	}
 }

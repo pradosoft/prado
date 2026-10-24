@@ -750,7 +750,7 @@ class THttpResponseTest extends \PHPUnit\Framework\TestCase
 		$this->assertCount(1, $response->cookies);
 		[$name, $value, $options] = $response->cookies[0];
 		$this->assertEquals('name', $name);
-		$this->assertEquals($this->app->getRequest()->getEnableCookieValidation() ? $this->app->getSecurityManager()->hashData('value') : 'value', $value);
+		$this->assertEquals($this->app->getRequest()->getEnableCookieValidation() ? $this->app->getSecurityManager()->hashCookieData('value') : 'value', $value);
 		$this->assertEquals($cookie->getPhpOptions(), $options);
 	}
 

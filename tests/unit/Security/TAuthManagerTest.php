@@ -587,8 +587,8 @@ class TAuthManagerTest extends \PHPUnit\Framework\TestCase
 	{
 		/*
 		 * login() with $expire > 0 writes a remember-me cookie to the response:
-		 * a THttpCookie keyed by getUserKey(), carrying the serialized auth token
-		 * from the user manager.  The session-write side is a CLI no-op (see
+		 * an HttpOnly THttpCookie keyed by getUserKey(), carrying the signed auth
+		 * token from the user manager.  The session-write side is a CLI no-op (see
 		 * testUpdateSessionUser); the cookie side runs fully in CLI.
 		 */
 		$authManager = new TAuthManager();
@@ -608,8 +608,12 @@ class TAuthManagerTest extends \PHPUnit\Framework\TestCase
 
 			$cookie = $response->getCookies()->itemAt($authManager->getUserKey());
 			self::assertInstanceOf(THttpCookie::class, $cookie);
-			self::assertNotEquals('', $cookie->getValue());
+			self::assertTrue($cookie->getHttpOnly());
 			self::assertGreaterThan(time(), $cookie->getExpire());
+			// The value is the user manager's auth data signed by the security manager.
+			$value = self::$app->getSecurityManager()->validateCookieData($cookie->getValue());
+			self::assertIsString($value);
+			self::assertSame('joe', json_decode($value, true)[0]);
 		} finally {
 			self::$usrMgr->setPasswordMode('MD5');
 			self::$app->setResponse($savedResponse);
@@ -964,6 +968,7 @@ class TAuthManagerTest extends \PHPUnit\Framework\TestCase
 			$cookie = $response->getCookies()->itemAt($auth->getUserKey());
 			self::assertInstanceOf(THttpCookie::class, $cookie);
 			self::assertEquals('', $cookie->getValue());
+			self::assertTrue($cookie->getHttpOnly());
 		} finally {
 			self::$app->setResponse($savedResponse);
 			self::$usrMgr->setPasswordMode('MD5');
@@ -1005,6 +1010,7 @@ class TAuthManagerTest extends \PHPUnit\Framework\TestCase
 			self::$app->setUser(self::$usrMgr->getUser('Joe'));
 			$authCookie = new THttpCookie($auth->getUserKey(), '');
 			self::$usrMgr->saveUserToCookie($authCookie);
+			$authCookie->setValue(self::$app->getSecurityManager()->hashCookieData($authCookie->getValue()));
 			self::$app->getRequest()->getCookies()->add($authCookie);
 			self::$app->setUser(self::$usrMgr->getUser(null));
 
@@ -1029,17 +1035,23 @@ class TAuthManagerTest extends \PHPUnit\Framework\TestCase
 		try {
 			$auth->setAllowAutoLogin(true);
 
-			// A well-formed [username, token] cookie whose token does not match
-			// the computed auth token: getUserFromCookie() returns null and the
-			// user stays a guest.
-			$badCookie = new THttpCookie($auth->getUserKey(), serialize(['joe', 'wrong-token']));
-			self::$app->getRequest()->getCookies()->add($badCookie);
-			self::$app->setUser(self::$usrMgr->getUser(null));
+			// A signed [username, token] cookie whose token does not match the
+			// computed auth token, and a valid cookie without the HMAC: the user
+			// stays a guest.
+			self::$app->setUser(self::$usrMgr->getUser('Joe'));
+			$unsigned = new THttpCookie($auth->getUserKey(), '');
+			self::$usrMgr->saveUserToCookie($unsigned);
+			$sm = self::$app->getSecurityManager();
+			foreach ([$sm->hashCookieData(json_encode(['joe', 'wrong-token'])), $unsigned->getValue()] as $value) {
+				self::$app->getRequest()->getCookies()->clear();
+				self::$app->getRequest()->getCookies()->add(new THttpCookie($auth->getUserKey(), $value));
+				self::$app->setUser(self::$usrMgr->getUser(null));
 
-			$auth->onAuthenticate(null);
+				$auth->onAuthenticate(null);
 
-			self::assertTrue(self::$app->getUser()->getIsGuest());
-			self::assertArrayNotHasKey($auth->getUserKey(), $auth->fakeSession->data);
+				self::assertTrue(self::$app->getUser()->getIsGuest());
+				self::assertArrayNotHasKey($auth->getUserKey(), $auth->fakeSession->data);
+			}
 		} finally {
 			self::$app->getRequest()->getCookies()->clear();
 			self::$app->setResponse($savedResponse);
