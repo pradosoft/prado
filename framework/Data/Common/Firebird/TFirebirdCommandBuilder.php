@@ -10,6 +10,8 @@
 
 namespace Prado\Data\Common\Firebird;
 
+use PDOStatement;
+use Prado\Data\TDbCommand;
 use Prado\Data\Common\TDbCommandBuilder;
 
 /**
@@ -18,10 +20,11 @@ use Prado\Data\Common\TDbCommandBuilder;
  * Firebird uses `SELECT FIRST n SKIP m FROM ...` syntax (injected after SELECT)
  * rather than a trailing LIMIT/OFFSET clause.
  *
- * Last-insert-ID for identity columns (Firebird 3+) is retrieved via
- * `SELECT RDB$GET_CONTEXT('SYSTEM', 'LAST_INSERT_ID') FROM RDB$DATABASE`.
- * For Firebird 2.x with generator-based sequences, the sequence must be queried
- * directly; this builder only supports the Firebird 3+ IDENTITY approach.
+ * Firebird has no last-insert-id function. A generated identity value (Firebird 3+)
+ * is available only through `INSERT ... RETURNING <column>`: {@see createInsertCommand()}
+ * appends the clause for the table's identity column, and {@see getLastInsertID()}
+ * reads the value from that executed statement. A Firebird 2.x generator is not
+ * reported; the generator must be queried directly.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3
@@ -29,21 +32,75 @@ use Prado\Data\Common\TDbCommandBuilder;
 class TFirebirdCommandBuilder extends TDbCommandBuilder
 {
 	/**
-	 * Overrides parent implementation. Retrieves last identity value (Firebird 3+).
-	 * @return null|int last inserted identity value, null if no identity column.
+	 * @var ?TDbCommand the last insert command with a `RETURNING` clause.
 	 */
-	public function getLastInsertID()
+	private $_insertCommand;
+	/**
+	 * @var ?int the identity value read from the last insert command.
+	 */
+	private $_lastInsertID;
+
+	/**
+	 * @return ?TFirebirdTableColumn the first identity column of the table, or null when there is none.
+	 * @since 4.4.0
+	 */
+	protected function getIdentityColumn()
 	{
 		foreach ($this->getTableInfo()->getColumns() as $column) {
 			if ($column->hasSequence()) {
-				$command = $this->getDbConnection()->createCommand(
-					"SELECT RDB\$GET_CONTEXT('SYSTEM', 'LAST_INSERT_ID') FROM RDB\$DATABASE"
-				);
-				$value = $command->queryScalar();
-				return $value !== false && $value !== null ? (int) $value : null;
+				return $column;
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Overrides parent implementation. The insert statement of a table with an
+	 * identity column ends in `RETURNING <column>`, so the generated value comes
+	 * back with the statement and {@see getLastInsertID()} returns it.
+	 * @param array $data name-value pairs of new data to be inserted.
+	 * @return TDbCommand insert command
+	 * @since 4.4.0
+	 */
+	public function createInsertCommand($data)
+	{
+		$this->_insertCommand = null;
+		$this->_lastInsertID = null;
+		$table = $this->getTableInfo()->getTableFullName();
+		[$fields, $bindings] = $this->getInsertFieldBindings($data);
+		$sql = "INSERT INTO {$table}({$fields}) VALUES ($bindings)";
+		$identity = $this->getIdentityColumn();
+		if ($identity !== null) {
+			$sql .= ' RETURNING ' . $identity->getColumnName();
+		}
+		$command = $this->createCommand($sql);
+		$this->bindColumnValues($command, $data);
+		if ($identity !== null) {
+			$this->_insertCommand = $command;
+		}
+		return $command;
+	}
+
+	/**
+	 * Overrides parent implementation. Returns the identity value of the last insert
+	 * command this builder created, read once from the `RETURNING` row of its
+	 * executed statement.
+	 * @return null|int last inserted identity value; null without an identity column
+	 * or before an insert command of this builder has run.
+	 */
+	public function getLastInsertID()
+	{
+		if ($this->_lastInsertID === null && $this->_insertCommand !== null) {
+			$statement = $this->_insertCommand->getPdoStatement();
+			if ($statement instanceof PDOStatement) {
+				$value = $statement->fetchColumn();
+				$statement->closeCursor();
+				if ($value !== false && $value !== null) {
+					$this->_lastInsertID = (int) $value;
+				}
+			}
+		}
+		return $this->_lastInsertID;
 	}
 
 	/**
