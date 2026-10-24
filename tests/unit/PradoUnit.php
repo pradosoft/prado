@@ -908,22 +908,14 @@ class PradoUnit
 	 * to {@see processException()} which classifies the error into a `[key, message]` pair or returns the original
 	 * exception for unrecognised errors.
 	 *
-	 * When `$isActiveRecord` is `true`, the connection succeeds, and the
-	 * `pradosoft/prado-activerecord` package is installed, the shared
-	 * `TActiveRecordManager` instance's `DbConnection` property is set to the new
-	 * connection so that the package's Active Record tests can use it without
-	 * additional setup. Without the package the flag has no effect.
-	 *
 	 * @param string $database       Optional database/schema name. Empty string
 	 *   connects without selecting a specific database.
-	 * @param bool   $isActiveRecord When `true` and the `pradosoft/prado-activerecord`
-	 *   package is installed, sets the connection on `TActiveRecordManager::getInstance()`.
 	 * @return array{0:string,1:string}|\Exception|\Prado\Data\TDbConnection
 	 *   `TDbConnection` on success; `[key, message]` for a recognised failure
 	 *   (extension missing, server unreachable, database not found, table absent);
 	 *   the original `\Exception` for an unrecognised error.
 	 */
-	public static function setupMysqlConnection($database = '', $isActiveRecord = false)
+	public static function setupMysqlConnection($database = '')
 	{
 		if (!empty($database)) {
 			$database = ';dbname=' . $database;
@@ -934,9 +926,6 @@ class PradoUnit
 		$conn = new TDbConnection('mysql:host=localhost' . $database, 'prado_unitest', 'prado_unitest');
 		try {
 			$conn->setActive(true);
-			if ($isActiveRecord && class_exists(\Prado\Data\ActiveRecord\TActiveRecordManager::class)) {
-				\Prado\Data\ActiveRecord\TActiveRecordManager::getInstance()->setDbConnection($conn);
-			}
 		} catch (\Exception $e) {
 			return static::processException($e, $conn);
 		}
@@ -954,11 +943,9 @@ class PradoUnit
 	 * loaded. On connection failure delegates to {@see processException()}.
 	 *
 	 * @param string $database       Optional database/schema name.
-	 * @param bool   $isActiveRecord When `true` and the `pradosoft/prado-activerecord`
-	 *   package is installed, sets the connection on `TActiveRecordManager::getInstance()`.
 	 * @return array{0:string,1:string}|\Exception|\Prado\Data\TDbConnection
 	 */
-	public static function setupPgsqlConnection($database = '', $isActiveRecord = false)
+	public static function setupPgsqlConnection($database = '')
 	{
 		if (!empty($database)) {
 			$database = ';dbname=' . $database;
@@ -970,9 +957,6 @@ class PradoUnit
 		$conn = new TDbConnection('pgsql:host=localhost' . $database, $cred, $cred);
 		try {
 			$conn->setActive(true);
-			if ($isActiveRecord && class_exists(\Prado\Data\ActiveRecord\TActiveRecordManager::class)) {
-				\Prado\Data\ActiveRecord\TActiveRecordManager::getInstance()->setDbConnection($conn);
-			}
 		} catch (\Exception $e) {
 			return static::processException($e, $conn);
 		}
@@ -991,11 +975,9 @@ class PradoUnit
 	 *
 	 * @param string $database       Optional absolute path to the Firebird database
 	 *   file. Overrides the environment variable default when non-empty.
-	 * @param bool   $isActiveRecord When `true` and the `pradosoft/prado-activerecord`
-	 *   package is installed, sets the connection on `TActiveRecordManager::getInstance()`.
 	 * @return array{0:string,1:string}|\Exception|\Prado\Data\TDbConnection
 	 */
-	public static function setupFirebirdConnection($database = '', $isActiveRecord = false)
+	public static function setupFirebirdConnection($database = '')
 	{
 		if (!extension_loaded('pdo_firebird')) {
 			return ['extension:pdo_firebird', 'The pdo_firebird extension is not available.'];
@@ -1008,9 +990,6 @@ class PradoUnit
 		);
 		try {
 			$conn->setActive(true);
-			if ($isActiveRecord && class_exists(\Prado\Data\ActiveRecord\TActiveRecordManager::class)) {
-				\Prado\Data\ActiveRecord\TActiveRecordManager::getInstance()->setDbConnection($conn);
-			}
 		} catch (\Exception $e) {
 			return static::processException($e, $conn);
 		}
@@ -1028,11 +1007,9 @@ class PradoUnit
 	 *
 	 * @param string $database       Optional absolute path to an SQLite database file.
 	 *   Pass an empty string (the default) for an in-memory database.
-	 * @param bool   $isActiveRecord When `true` and the `pradosoft/prado-activerecord`
-	 *   package is installed, sets the connection on `TActiveRecordManager::getInstance()`.
 	 * @return array{0:string,1:string}|\Exception|\Prado\Data\TDbConnection
 	 */
-	public static function setupSqliteConnection($database = '', $isActiveRecord = false)
+	public static function setupSqliteConnection($database = '')
 	{
 		if (!extension_loaded('pdo_sqlite')) {
 			return ['extension:pdo_sqlite', 'The pdo_sqlite extension is not available.'];
@@ -1041,9 +1018,6 @@ class PradoUnit
 		$conn = new TDbConnection($dsn, '', '');
 		try {
 			$conn->setActive(true);
-			if ($isActiveRecord && class_exists(\Prado\Data\ActiveRecord\TActiveRecordManager::class)) {
-				\Prado\Data\ActiveRecord\TActiveRecordManager::getInstance()->setDbConnection($conn);
-			}
 		} catch (\Exception $e) {
 			return static::processException($e, $conn);
 		}
@@ -1060,11 +1034,9 @@ class PradoUnit
 	 * loaded. On connection failure delegates to {@see processException()}.
 	 *
 	 * @param string $database       Optional database name appended as `;Database=<name>`.
-	 * @param bool   $isActiveRecord When `true` and the `pradosoft/prado-activerecord`
-	 *   package is installed, sets the connection on `TActiveRecordManager::getInstance()`.
 	 * @return array{0:string,1:string}|\Exception|\Prado\Data\TDbConnection
 	 */
-	public static function setupMssqlConnection($database = '', $isActiveRecord = false)
+	public static function setupMssqlConnection($database = '')
 	{
 		if (!extension_loaded('pdo_sqlsrv')) {
 			return ['extension:pdo_sqlsrv', 'The pdo_sqlsrv extension is not available.'];
@@ -1077,9 +1049,6 @@ class PradoUnit
 		);
 		try {
 			$conn->setActive(true);
-			if ($isActiveRecord && class_exists(\Prado\Data\ActiveRecord\TActiveRecordManager::class)) {
-				\Prado\Data\ActiveRecord\TActiveRecordManager::getInstance()->setDbConnection($conn);
-			}
 		} catch (\Exception $e) {
 			return static::processException($e, $conn);
 		}
@@ -1098,11 +1067,9 @@ class PradoUnit
 	 *
 	 * @param string $database       Optional Oracle service name. Overrides the
 	 *   environment variable default when non-empty.
-	 * @param bool   $isActiveRecord When `true` and the `pradosoft/prado-activerecord`
-	 *   package is installed, sets the connection on `TActiveRecordManager::getInstance()`.
 	 * @return array{0:string,1:string}|\Exception|\Prado\Data\TDbConnection
 	 */
-	public static function setupOciConnection($database = '', $isActiveRecord = false)
+	public static function setupOciConnection($database = '')
 	{
 		if (!extension_loaded('pdo_oci')) {
 			return ['extension:pdo_oci', 'The pdo_oci extension is not available.'];
@@ -1115,9 +1082,6 @@ class PradoUnit
 		);
 		try {
 			$conn->setActive(true);
-			if ($isActiveRecord && class_exists(\Prado\Data\ActiveRecord\TActiveRecordManager::class)) {
-				\Prado\Data\ActiveRecord\TActiveRecordManager::getInstance()->setDbConnection($conn);
-			}
 		} catch (\Exception $e) {
 			return static::processException($e, $conn);
 		}
@@ -1136,11 +1100,9 @@ class PradoUnit
 	 *
 	 * @param string $database       Optional database name. Overrides the `DB2_DATABASE`
 	 *   environment variable when non-empty.
-	 * @param bool   $isActiveRecord When `true` and the `pradosoft/prado-activerecord`
-	 *   package is installed, sets the connection on `TActiveRecordManager::getInstance()`.
 	 * @return array{0:string,1:string}|\Exception|\Prado\Data\TDbConnection
 	 */
-	public static function setupIbmConnection($database = '', $isActiveRecord = false)
+	public static function setupIbmConnection($database = '')
 	{
 		if (!extension_loaded('pdo_ibm')) {
 			return ['extension:pdo_ibm', 'The pdo_ibm extension is not available.'];
@@ -1155,9 +1117,6 @@ class PradoUnit
 		);
 		try {
 			$conn->setActive(true);
-			if ($isActiveRecord && class_exists(\Prado\Data\ActiveRecord\TActiveRecordManager::class)) {
-				\Prado\Data\ActiveRecord\TActiveRecordManager::getInstance()->setDbConnection($conn);
-			}
 		} catch (\Exception $e) {
 			return static::processException($e, $conn);
 		}
