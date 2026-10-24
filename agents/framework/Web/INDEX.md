@@ -22,7 +22,7 @@ HTTP layer, URL routing, asset management, session handling, and all web UI comp
 
 - **[THttpResponse](THttpResponse.md)** — HTTP response output. Manages status codes, headers, cookies, content type, charset, output buffering, file downloads (`writeFile()`, with byte-range `206`/`416` serving; contiguous ranges merge), and redirects. Extended by `THttpResponseAdapter` for callback/AJAX responses.
 
-- **[THttpSession](THttpSession.md)** — PHP session wrapper implementing `ArrayAccess`. Properties: `AutoStart`, `SessionName`, `CookieMode`, `GCProbability`. Supports custom storage via `THttpSessionHandler`. Cookie attributes: `HttpOnly`, `SameSite`.
+- **[THttpSession](THttpSession.md)** — PHP session wrapper implementing `ArrayAccess`. Properties: `AutoStart`, `SessionName`, `CookieMode`, `GCProbability`. Supports custom storage via `THttpSessionHandler`. The session cookie is always HttpOnly unless `Cookie.HttpOnly="false"`; a configured `Cookie` keeps php.ini's Secure/HttpOnly when on.
 
 - **[TAssetManager](TAssetManager.md)** — Publishes private `framework/` and application assets to a web-accessible `assets/` directory. Uses timestamp-based caching. Handles recursive directory publishing and TAR extraction. Access via `$app->getAssetManager()`.
 
@@ -32,7 +32,7 @@ HTTP layer, URL routing, asset management, session handling, and all web UI comp
 
 - **[TUri](TUri.md)** — URI parsing and construction (scheme, host, port, path, query string).
 
-- **[THttpCookie](THttpCookie.md)** / **[THttpCookieCollection](THttpCookieCollection.md)** — Cookie objects with `Domain`, `Path`, `ExpireTime`, `HttpOnly`, `SameSite` attributes.
+- **[THttpCookie](THttpCookie.md)** / **[THttpCookieCollection](THttpCookieCollection.md)** — Cookie objects with `Domain`, `Path`, `ExpireTime`, `HttpOnly` (default true), `SameSite` (default Lax) attributes.
 
 ## Key Patterns
 

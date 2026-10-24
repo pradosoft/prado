@@ -55,4 +55,14 @@ class THttpCookieTest extends \PHPUnit\Framework\TestCase
 		$cookie->setSecure(true);
 		self::assertTrue($cookie->getSecure());
 	}
+
+	public function testHttpOnly()
+	{
+		$cookie = new THttpCookie('name', 'value');
+		self::assertTrue($cookie->getHttpOnly());
+		self::assertFalse($cookie->getSecure());
+		self::assertTrue($cookie->getPhpOptions()['httponly']);
+		$cookie->setHttpOnly(false);
+		self::assertFalse($cookie->getHttpOnly());
+	}
 }
