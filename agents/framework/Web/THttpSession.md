@@ -65,7 +65,7 @@ return [
 ## Core Methods
 
 ### Session Management
-- `open()`: Starts the session if not already started
+- `open()`: Starts the session if not already started; sets the session cookie parameters from `getSessionCookieParams()` (protected, @since 4.4.0) through the `sessionSetCookieParams()`/`sessionGetCookieParams()` wrappers
 - `close()`: Ends session and stores data
 - `destroy()`: Destroys all data registered to session
 - `regenerate($deleteOld = false)`: Update session ID with new one
@@ -112,7 +112,7 @@ THttpSession implements ArrayAccess, IteratorAggregate, and Countable interfaces
 - `getKeys()`: Returns key list
 
 ## Security Considerations
-- HttpOnly flag can be set on session cookie for security
+- The session cookie is HttpOnly. Without a configured `Cookie`, the other parameters come from php.ini. A configured `Cookie` supplies all of them, and php.ini's `session.cookie_secure`/`session.cookie_httponly` stay on when on. `Cookie.HttpOnly="false"` turns HttpOnly off only when php.ini leaves it off.
 - Session IDs are protected from modification after start
 - Custom storage enables specialized security considerations
 - Configurable session timeouts for automatic cleanup
