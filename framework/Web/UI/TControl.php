@@ -1393,6 +1393,18 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	}
 
 	/**
+	 * Returns the objects registered with this control by name.
+	 * A control declared with an `ID` in a template is registered with its naming
+	 * container under that ID; {@see registerObject()} adds any other object.
+	 * @return array<string, object> the registered objects keyed by name
+	 * @since 4.4.0
+	 */
+	public function getRegisteredObjects(): array
+	{
+		return $this->_rf[self::RF_NAMED_OBJECTS] ?? [];
+	}
+
+	/**
 	 * @todo v4.4 param $inTemplate for whether or not its for template or for creating control
 	 *					This can be used by TModuleView.
 	 * @return bool whether body contents are allowed for this control. Defaults to true.
