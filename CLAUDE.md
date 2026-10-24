@@ -73,7 +73,6 @@ TApplication
       UI/            (TControl, TPage, TTemplateControl, WebControls/, ActiveControls/, JuiControls/)
  └─ Data Layer     framework/Data/
       TDbConnection  (PDO wrapper)
-      ActiveRecord/  (ORM)
       SqlMap/        (SQL mapping, iBatis-style)
       DataGateway/
  └─ Caching        framework/Caching/    (APC, Database, Etcd, Memcached, Redis, file-based)
@@ -153,7 +152,7 @@ Database tests need MySQL/PostgreSQL initialized from `tests/initdb_mysql.sql` /
   - Directories holding classes use PascalCase, except where they mirror a lowercase framework namespace (`I18N/core`).
   - Class names in strings, templates (`<com:…>`), and XML configuration are fully qualified; use `Foo::class` in PHP.
   - Global-namespace fixtures (`Security/app/prado3stubs/`, `Exceptions/TErrorHandlerTestGlobalClass.php`) and `PHPStan/Fixtures/` are excluded from the classmap and are not autoloaded.
-  - Test classes are inside `Prado\*`: a default log category is the test class, and an ActiveRecord fixture needs `const TABLE`.
+  - Test classes are inside `Prado\*`: a default log category is the test class, and a record fixture needs `const TABLE`.
   - Helper classes in their own file must not end in `Test`; phpunit collects `*Test.php` files as tests.
 - Use `Prado\Test\Unit\PradoUnit` infrastructure for:
   - access to an object's protected/private properties

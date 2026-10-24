@@ -11,9 +11,7 @@
 namespace Prado\Test\Unit\Shell;
 
 use Prado\Caching\ICache;
-use Prado\Data\ActiveRecord\TActiveRecordConfig;
 use Prado\Prado;
-use Prado\Shell\Actions\TActiveRecordAction;
 use Prado\Shell\Actions\TFlushCachesAction;
 use Prado\Shell\Actions\THelpAction;
 use Prado\Shell\Actions\TPhpShellAction;
@@ -37,16 +35,6 @@ class ShellTestCacheModule extends TModule implements ICache
 	public function add($id, $value, $expire = 0, $dependency = null) { return true; }
 	public function delete($id) { return true; }
 	public function flush() { return true; }
-}
-
-/**
- * A minimal TActiveRecordConfig stub used to verify that
- * {@see TShellApplication::installShellActions()} registers {@see TActiveRecordAction}
- * only when at least one {@see TActiveRecordConfig} module is present.
- */
-class ShellTestActiveRecordConfig extends TActiveRecordConfig
-{
-	public function init($config) {}
 }
 
 /**
@@ -217,44 +205,12 @@ class TShellApplicationTest extends \PHPUnit\Framework\TestCase
 	}
 
 	// -----------------------------------------------------------------------
-	// hasActiveRecordConfig / TActiveRecordAction conditional gate
+	// hasActiveRecordConfig (deprecated; Active Record is the prado-activerecord package)
 	// -----------------------------------------------------------------------
 
 	public function testHasActiveRecordConfigReturnsFalseWithoutModule()
 	{
 		$this->assertFalse($this->_app->hasActiveRecordConfig());
-	}
-
-	public function testHasActiveRecordConfigReturnsTrueWithModule()
-	{
-		$this->_app->setModule('testAR', new ShellTestActiveRecordConfig());
-
-		$this->assertTrue($this->_app->hasActiveRecordConfig());
-	}
-
-	public function testInstallShellActionsOmitsActiveRecordWithoutConfig()
-	{
-		$this->_app->setMode(TApplicationMode::Normal);
-
-		$this->_app->installShellActions();
-
-		$this->assertFalse(
-			$this->_app->hasShellActionClass(TActiveRecordAction::class),
-			'TActiveRecordAction must not be registered when no TActiveRecordConfig module exists.'
-		);
-	}
-
-	public function testInstallShellActionsAddsActiveRecordWithConfig()
-	{
-		$this->_app->setMode(TApplicationMode::Normal);
-		$this->_app->setModule('testAR', new ShellTestActiveRecordConfig());
-
-		$this->_app->installShellActions();
-
-		$this->assertTrue(
-			$this->_app->hasShellActionClass(TActiveRecordAction::class),
-			'TActiveRecordAction must be registered when at least one TActiveRecordConfig module is present.'
-		);
 	}
 
 	// -----------------------------------------------------------------------

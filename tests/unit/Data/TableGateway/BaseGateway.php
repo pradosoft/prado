@@ -47,11 +47,6 @@ class BaseGateway extends \PHPUnit\Framework\TestCase
 		return 'setupMysqlConnection';
 	}
 	
-	protected function getIsForActiveRecord(): bool
-	{
-		return false;
-	}
-	
 	protected function getTestTables(): array
 	{
 		return ['address', 'department_sections'];

@@ -9,10 +9,6 @@ Built-in CLI action handlers for the Prado shell (`php protected/index.php`). Ea
 
 ## Classes
 
-- **[`TActiveRecordAction`](TActiveRecordAction.md)** — Action `activerecord`. Generates Active Record PHP class skeletons from database tables.
-  - `generate <table> <output>` — generate AR class for a single table with optional `--soap` and `--overwrite` flags.
-  - `generate-all <output>` — generate AR classes for all tables with optional `--prefix`, `--suffix`, `--soap`, `--overwrite`.
-
 - **[`TDbParameterAction`](TDbParameterAction.md)** — Action `param`. Manages [`TDbParameterModule`](../../Util/TDbParameterModule.md) parameters (key/value store backed by a database).
   - Subcommands for listing, getting, setting, and deleting application parameters.
 
@@ -34,7 +30,7 @@ Built-in CLI action handlers for the Prado shell (`php protected/index.php`). Ea
 1. Create a class extending [`TShellAction`](../TShellAction.md) in this directory.
 2. Set `$action` (command name), `$methods` (subcommand list), `$parameters`, `$optional`, and `$description`.
 3. Implement each method corresponding to an entry in `$methods`.
-4. Register the class in `framework/Shell/TShellApplication.php` (or via module config).
+4. Register the class in `framework/Shell/TShellApplication.php` (or via module config). An extension package registers its action from a module's `init()` with `addShellActionClass()`, as prado-activerecord's `TActiveRecordConfig` does for the `activerecord` action.
 5. Add the class to `framework/classes.php`.
 
 ## Conventions

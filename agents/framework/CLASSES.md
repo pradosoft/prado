@@ -1,6 +1,6 @@
 # PRADO Framework Classes
 
-**Total Classes: 789**
+**Total Classes: 759**
 
 This document lists all classes in the PRADO framework as defined in `classes.php`.
 
@@ -8,15 +8,10 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 | Directory | Classes | Interfaces | Total | Recursive |
 |-----------|---------|------------|-------|-----------|
-| [Prado](./INDEX.md) | 17 | 7 | 24 | 789 |
+| [Prado](./INDEX.md) | 17 | 7 | 24 | 759 |
 | [Prado\\Caching](./Caching/INDEX.md) | 18 | 2 | 20 | 20 |
 | [Prado\\Collections](./Collections/INDEX.md) | 27 | 7 | 34 | 34 |
-| [Prado\\Data](./Data/INDEX.md) | 10 | 5 | 15 | 136 |
-| [Prado\\Data\\ActiveRecord](./Data/ActiveRecord/INDEX.md) | 7 | 0 | 7 | 29 |
-| [Prado\\Data\\ActiveRecord\\Exceptions](./Data/ActiveRecord/Exceptions/INDEX.md) | 2 | 0 | 2 | 2 |
-| [Prado\\Data\\ActiveRecord\\Relations](./Data/ActiveRecord/Relations/INDEX.md) | 6 | 0 | 6 | 6 |
-| [Prado\\Data\\ActiveRecord\\Scaffold](./Data/ActiveRecord/Scaffold/INDEX.md) | 5 | 1 | 6 | 14 |
-| [Prado\\Data\\ActiveRecord\\Scaffold\\InputBuilder](./Data/ActiveRecord/Scaffold/InputBuilder/INDEX.md) | 8 | 1 | 9 | 9 |
+| [Prado\\Data](./Data/INDEX.md) | 10 | 5 | 15 | 106 |
 | [Prado\\Data\\Common](./Data/Common/INDEX.md) | 4 | 4 | 8 | 36 |
 | [Prado\\Data\\Common\\Firebird](./Data/Common/Firebird/INDEX.md) | 4 | 0 | 4 | 4 |
 | [Prado\\Data\\Common\\Ibm](./Data/Common/Ibm/INDEX.md) | 4 | 0 | 4 | 4 |
@@ -39,7 +34,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 | [Prado\Security](./Security/INDEX.md) | 10 | 2 | 12 | 21 |
 | [Prado\\Security\\Permissions](./Security/Permissions/INDEX.md) | 8 | 1 | 9 | 9 |
 | [Prado\\Shell](./Shell/INDEX.md) | 4 | 0 | 4 | 10 |
-| [Prado\\Shell\\Actions](./Shell/Actions/INDEX.md) | 6 | 0 | 6 | 6 |
+| [Prado\\Shell\\Actions](./Shell/Actions/INDEX.md) | 5 | 0 | 5 | 5 |
 | [Prado\\Util](./Util/INDEX.md) | 23 | 7 | 30 | 78 |
 | [Prado\\Util\\Behaviors](./Util/Behaviors/INDEX.md) | 14 | 0 | 14 | 14 |
 | [Prado\\Util\\Cron](./Util/Cron/INDEX.md) | 11 | 0 | 11 | 11 |
@@ -47,11 +42,11 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 | [Prado\\Util\\Log](./Util/Log/INDEX.md) | 13 | 1 | 14 | 14 |
 | [Prado\\Util\\Math](./Util/Math/INDEX.md) | 2 | 0 | 2 | 2 |
 | [Prado\\Util\\Traits](./Util/Traits/INDEX.md) | 2 | 0 | 2 | 2 |
-| [Prado\\Web](./Web/INDEX.md) | 21 | 0 | 21 | 423 |
+| [Prado\\Web](./Web/INDEX.md) | 21 | 0 | 21 | 424 |
 | [Prado\\Web\\Behaviors](./Web/Behaviors/INDEX.md) | 1 | 0 | 1 | 1 |
 | [Prado\\Web\\Javascripts](./Web/Javascripts/INDEX.md) | 4 | 0 | 4 | 4 |
 | [Prado\\Web\\Services](./Web/Services/INDEX.md) | 14 | 1 | 15 | 15 |
-| [Prado\\Web\\UI](./Web/UI/INDEX.md) | 28 | 15 | 43 | 366 |
+| [Prado\\Web\\UI](./Web/UI/INDEX.md) | 28 | 16 | 44 | 367 |
 | [Prado\\Web\\UI\\ActiveControls](./Web/UI/ActiveControls/INDEX.md) | 72 | 2 | 74 | 74 |
 | [Prado\\Web\\UI\\JuiControls](./Web/UI/JuiControls/INDEX.md) | 19 | 1 | 20 | 20 |
 | [Prado\\Web\\UI\\WebControls](./Web/UI/WebControls/INDEX.md) | 231 | 5 | 236 | 236 |
@@ -62,7 +57,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ## Class Listings
 
-## [Prado](./INDEX.md) - Classes: 17, Interfaces: 7, Total: 24, Recursive: 775
+## [Prado](./INDEX.md) - Classes: 17, Interfaces: 7, Total: 24, Recursive: 745
 
 ### Interfaces (6)
 
@@ -173,7 +168,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Data](./Data/INDEX.md) - Classes: 10, Interfaces: 5, Total: 15, Recursive: 136
+## [Prado\Data](./Data/INDEX.md) - Classes: 10, Interfaces: 5, Total: 15, Recursive: 106
 
 ### Interfaces (5)
 
@@ -195,77 +190,6 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TDbNullConversionMode](./Data/TDbNullConversionMode.md)
 - TDbPropertiesTrait
 - [TDbTransaction](./Data/TDbTransaction.md)
-
----
-
-## [Prado\Data\ActiveRecord](./Data/ActiveRecord/INDEX.md) - Classes: 7, Interfaces: 0, Total: 7, Recursive: 29
-
-### Classes (7)
-
-- [TActiveRecord](Data/TActiveRecord.md)
-- [TActiveRecordChangeEventParameter](./Data/ActiveRecord/TActiveRecordChangeEventParameter.md)
-- [TActiveRecordConfig](./Data/ActiveRecord/TActiveRecordConfig.md)
-- [TActiveRecordCriteria](./Data/ActiveRecord/TActiveRecordCriteria.md)
-- [TActiveRecordGateway](./Data/ActiveRecord/TActiveRecordGateway.md)
-- [TActiveRecordInvalidFinderResult](./Data/ActiveRecord/TActiveRecordInvalidFinderResult.md)
-- [TActiveRecordManager](./Data/ActiveRecord/TActiveRecordManager.md)
-
----
-
-## [Prado\Data\ActiveRecord\Exceptions](./Data/ActiveRecord/Exceptions/INDEX.md) - Classes: 2, Interfaces: 0, Total: 2, Recursive: 2
-
-### Classes (2)
-
-- [TActiveRecordConfigurationException](./Data/ActiveRecord/Exceptions/TActiveRecordConfigurationException.md)
-- [TActiveRecordException](./Data/ActiveRecord/Exceptions/TActiveRecordException.md)
-
----
-
-## [Prado\Data\ActiveRecord\Relations](./Data/ActiveRecord/Relations/INDEX.md) - Classes: 6, Interfaces: 0, Total: 6, Recursive: 6
-
-### Classes (6)
-
-- [TActiveRecordBelongsTo](./Data/ActiveRecord/Relations/TActiveRecordBelongsTo.md)
-- [TActiveRecordHasMany](./Data/ActiveRecord/Relations/TActiveRecordHasMany.md)
-- [TActiveRecordHasManyAssociation](./Data/ActiveRecord/Relations/TActiveRecordHasManyAssociation.md)
-- [TActiveRecordHasOne](./Data/ActiveRecord/Relations/TActiveRecordHasOne.md)
-- [TActiveRecordRelation](./Data/ActiveRecord/Relations/TActiveRecordRelation.md)
-- [TActiveRecordRelationContext](./Data/ActiveRecord/Relations/TActiveRecordRelationContext.md)
-
----
-
-## [Prado\Data\ActiveRecord\Scaffold](./Data/ActiveRecord/Scaffold/INDEX.md) - Classes: 5, Interfaces: 1, Total: 6, Recursive: 14
-
-### Interfaces (1)
-
-- [IScaffoldEditRenderer](./Data/ActiveRecord/Scaffold/IScaffoldEditRenderer.md)
-
-### Classes (5)
-
-- [TScaffoldBase](./Data/ActiveRecord/Scaffold/TScaffoldBase.md)
-- [TScaffoldEditView](./Data/ActiveRecord/Scaffold/TScaffoldEditView.md)
-- [TScaffoldListView](./Data/ActiveRecord/Scaffold/TScaffoldListView.md)
-- [TScaffoldSearch](./Data/ActiveRecord/Scaffold/TScaffoldSearch.md)
-- [TScaffoldView](./Data/ActiveRecord/Scaffold/TScaffoldView.md)
-
----
-
-## [Prado\Data\ActiveRecord\Scaffold\InputBuilder](./Data/ActiveRecord/Scaffold/InputBuilder/INDEX.md) - Classes: 8, Interfaces: 1, Total: 9, Recursive: 9
-
-### Interfaces (1)
-
-- IScaffoldInput
-
-### Classes (8)
-
-- [TFirebirdScaffoldInput](./Data/ActiveRecord/Scaffold/InputBuilder/TFirebirdScaffoldInput.md)
-- [TIbmScaffoldInput](./Data/ActiveRecord/Scaffold/InputBuilder/TIbmScaffoldInput.md)
-- [TMssqlScaffoldInput](./Data/ActiveRecord/Scaffold/InputBuilder/TMssqlScaffoldInput.md)
-- [TMysqlScaffoldInput](./Data/ActiveRecord/Scaffold/InputBuilder/TMysqlScaffoldInput.md)
-- [TPgsqlScaffoldInput](./Data/ActiveRecord/Scaffold/InputBuilder/TPgsqlScaffoldInput.md)
-- [TScaffoldInputBase](./Data/ActiveRecord/Scaffold/InputBuilder/TScaffoldInputBase.md)
-- [TScaffoldInputCommon](./Data/ActiveRecord/Scaffold/InputBuilder/TScaffoldInputCommon.md)
-- [TSqliteScaffoldInput](./Data/ActiveRecord/Scaffold/InputBuilder/TSqliteScaffoldInput.md)
 
 ---
 
@@ -621,11 +545,10 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Shell\Actions](./Shell/Actions/INDEX.md) - Classes: 6, Interfaces: 0, Total: 6, Recursive: 6
+## [Prado\Shell\Actions](./Shell/Actions/INDEX.md) - Classes: 5, Interfaces: 0, Total: 5, Recursive: 5
 
-### Classes (6)
+### Classes (5)
 
-- [TActiveRecordAction](./Shell/Actions/TActiveRecordAction.md)
 - [TDbParameterAction](./Shell/Actions/TDbParameterAction.md)
 - [TFlushCachesAction](./Shell/Actions/TFlushCachesAction.md)
 - [THelpAction](./Shell/Actions/THelpAction.md)
@@ -768,7 +691,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Web](./Web/INDEX.md) - Classes: 21, Interfaces: 0, Total: 21, Recursive: 418
+## [Prado\Web](./Web/INDEX.md) - Classes: 21, Interfaces: 0, Total: 21, Recursive: 419
 
 ### Classes (20)
 
@@ -840,9 +763,9 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Web\UI](./Web/UI/INDEX.md) - Classes: 28, Interfaces: 15, Total: 43, Recursive: 361
+## [Prado\Web\UI](./Web/UI/INDEX.md) - Classes: 28, Interfaces: 16, Total: 44, Recursive: 362
 
-### Interfaces (13)
+### Interfaces (14)
 
 - [IAdapterControl](./Web/UI/IAdapterControl.md)
 - [IBindable](./Web/UI/IBindable.md)
@@ -859,6 +782,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [ITheme](./Web/UI/ITheme.md)
 - [IValidatable](./Web/UI/IValidatable.md)
 - [IValidator](./Web/UI/IValidator.md)
+- [IViewDataModel](./Web/UI/IViewDataModel.md)
 
 ### Classes (26)
 
