@@ -7,14 +7,13 @@ This file provides guidance to Agents when working with code in this repository.
 
 | Directory | Purpose |
 |---|---|
-| [ActiveRecord/](ActiveRecord/INDEX.md) | Stateful ORM |
 | [Common/](Common/INDEX.md) | Driver-Specific Implementations |
 | [DataGateway/](DataGateway/INDEX.md) | Stateless Table Gateway |
 | [SqlMap/](SqlMap/INDEX.md) | XML-based SQL Mapping (iBATIS-style) |
 
 ## Purpose
 
-Database access layer for the Prado framework. Provides a PDO wrapper plus three complementary data-access patterns: raw commands, stateless table gateway, stateful active record, and XML-based SQL mapping.
+Database access layer for the Prado framework. Provides a PDO wrapper plus three complementary data-access patterns: raw commands, stateless table gateway, and XML-based SQL mapping. The stateful Active Record ORM is the `pradosoft/prado-activerecord` package (namespace `Prado\Data\ActiveRecord`), built on this layer.
 
 ## Top-Level Classes
 
@@ -50,21 +49,6 @@ Database access layer for the Prado framework. Provides a PDO wrapper plus three
 
 ## Subdirectories
 
-### `ActiveRecord/` — Stateful ORM
-
-Domain objects that represent database rows. Each class maps to one table.
-
-- **[`TActiveRecord`](TActiveRecord.md)** — Base class. Define `const TABLENAME` and optionally `const COLUMN_MAPPING`. Key methods:
-  - Finders: `findByPk()`, `findAll()`, `findBySql()`, `findAllBySql()`, `count()`
-  - Persistence: `save()`, `insert()`, `update()`, `delete()`
-  - Relations: `hasMany()`, `belongsTo()`, `hasOne()`, `manyMany()` — lazily loaded
-  - Lifecycle events: `onBeforeSave`, `onAfterSave`, `onBeforeDelete`, `onAfterDelete`
-- **[`TActiveRecordManager`](ActiveRecord/TActiveRecordManager.md)** — Singleton; configure via `TActiveRecordConfig` in `application.xml`.
-- **[`TActiveRecordGateway`](ActiveRecord/TActiveRecordGateway.md)** — Internal command builder for AR operations.
-- **`Relations/`** — Relationship implementations (HasMany, BelongsTo, HasManyBelongsToMany, etc.).
-- **`Scaffold/`** — Auto-generated CRUD UI: [`TScaffoldEditView`](ActiveRecord/Scaffold/TScaffoldEditView.md), [`TScaffoldListView`](ActiveRecord/Scaffold/TScaffoldListView.md), `InputBuilder`.
-- **`Exceptions/`** — AR-specific exception classes.
-
 ### `DataGateway/` — Stateless Table Gateway
 
 Lightweight, stateless access to a single table. No object identity tracking.
@@ -99,9 +83,8 @@ Each subdir contains four classes: `T{Driver}MetaData`, `T{Driver}CommandBuilder
 
 - **Always use parameter binding** — never interpolate user input into SQL strings.
 - **Choose the right pattern:**
-  - [`TActiveRecord`](TActiveRecord.md) for stateful ORM with lazy relationships.
   - [`TTableGateway`](TTableGateway.md) for lightweight stateless access.
+  - `TActiveRecord` from the `pradosoft/prado-activerecord` package for a stateful ORM with lazy relationships.
   - `TSqlMap` when you need full SQL control via external XML.
 - **DSN format:** `mysql:host=localhost;dbname=mydb` (standard PDO DSN).
-- **`COLUMN_MAPPING`** in AR classes maps logical property names to physical column names.
 - **`TSqlCriteria`** is the standard way to pass WHERE/ORDER/LIMIT to gateway methods.

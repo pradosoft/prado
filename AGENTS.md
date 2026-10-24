@@ -111,7 +111,7 @@ Docblocks inform and describe; it is not persuasive writing.
 - 'framework/classes.php' MUST be updated with all new classes.
 - Web Pages are PHP classes with a ".page" TTemplate file with the same base name
 - UI Portlets are PHP classes with a ".tpl" TTemplate file with the same base name
-- Data components should support `TActiveRecord` pattern
+- Data components should stay usable by the `pradosoft/prado-activerecord` package (`TActiveRecord` pattern)
 - All UI controls should have proper template support and state management
 - All changes (eg. method param/return types) in point releases must be backward compatible.
 - Minor releases can be breaking, but minimize the breakages where possible.
@@ -196,7 +196,7 @@ All instances self-register in `Prado.Registry[controlId]` on construction and a
   - Directories holding classes use PascalCase, except where they mirror a lowercase framework namespace (`I18N/core`).
   - Class names in strings, templates (`<com:…>`), and XML configuration are fully qualified; use `Foo::class` in PHP.
   - Global-namespace fixtures (`Security/app/prado3stubs/`, `Exceptions/TErrorHandlerTestGlobalClass.php`) and `PHPStan/Fixtures/` are excluded from the classmap and are not autoloaded.
-  - Test classes are inside `Prado\*`: a default log category is the test class, and an ActiveRecord fixture needs `const TABLE`.
+  - Test classes are inside `Prado\*`: a default log category is the test class, and a record fixture needs `const TABLE`.
   - Helper classes in their own file must not end in `Test`; phpunit collects `*Test.php` files as tests.
 - Use `Prado\Test\Unit\PradoUnit` infrastructure for:
   - access to an object's protected/private properties
@@ -230,7 +230,6 @@ All instances self-register in `Prado.Registry[controlId]` on construction and a
 │   ├── Caching/                # APC, Database, Etcd, Mem, Redis
 │   ├── Collections/            # TList, TMap, TNull, TPriorityList, TPriorityMap, TQueue, TStack, TWeakList, TArraySubscription
 │   ├── Data/                   # Database classes: TDbCommand, TDbConnection, TDbDataReader, TDbTransaction, TDataSourceConfig
-│   │   └── ActiveRecord/       # The Active Record classes
 │   ├── Exceptions/             # T*Exceptions directory
 │   ├── I18N/                   # Internationalization: TTranslate, TDateFormat
 │   │   ├── TGlobalization      # settings for culture, charset and translation configuration
@@ -242,7 +241,7 @@ All instances self-register in `Prado.Registry[controlId]` on construction and a
 │   ├── Security/               # TAuthManager, TSecurityManager, TUser, TUserManager, TDbUser, TDbUserManager
 │   │   └── Permissions         # TPermissionsManager
 │   ├── Shell/                  # TShellAction, TShellApplication, TShellWriter
-│   │   └── Actions/            # Framework Shell Actions: TWebServerAction, THelpAction, TFlushCachesAction, TDbParameterAction, TActiveRecordAction
+│   │   └── Actions/            # Framework Shell Actions: TWebServerAction, THelpAction, TFlushCachesAction, TDbParameterAction
 │   ├── classes.php             # List of All PRADO classes with namespace; format: PHP Array, by path name order ascending
 │   ├── TComponent.php          # Base class
 │   ├── TApplicationComponent.php      # base class for application components

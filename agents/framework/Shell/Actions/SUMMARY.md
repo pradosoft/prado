@@ -4,8 +4,6 @@ Built-in CLI action handlers for the Prado shell (`php protected/index.php`); ea
 
 ## Classes
 
-- **`TActiveRecordAction`** — Action `activerecord`; generates AR class skeletons from database tables with `generate` and `generate-all` subcommands.
-
 - **`TDbParameterAction`** — Action `param`; manages `TDbParameterModule` parameters (list, get, set, delete).
 
 - **`TFlushCachesAction`** — Action `cache`; clears application cache modules implementing `ICache`; subcommands: `index`, `flush`, `flush-all`.

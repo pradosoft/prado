@@ -71,10 +71,9 @@ php vendor/bin/prado-cli /path/to/protected [command] [args...]
 |--------|---------------|-------------------|
 | `hasCacheModules()` | `ICache` module(s) present | [TFlushCachesAction](./Actions/TFlushCachesAction.md) |
 | always | — | [THelpAction](./Actions/THelpAction.md), [TPhpShellAction](./Actions/TPhpShellAction.md) |
-| `hasActiveRecordConfig()` | `TActiveRecordConfig` module present | [TActiveRecordAction](./Actions/TActiveRecordAction.md) |
 | `hasDevWebServer()` | `Debug` mode or `TWebServerAction::DEV_WEBSERVER_PARAM` param truthy | [TWebServerAction](./Actions/TWebServerAction.md) |
 
-All three gating methods (`hasCacheModules()`, `hasActiveRecordConfig()`, `hasDevWebServer()`) are @since 4.3.3 and public — subclasses or tests can override them.
+Both gating methods (`hasCacheModules()`, `hasDevWebServer()`) are @since 4.3.3 and public — subclasses or tests can override them. `hasActiveRecordConfig()` (@since 4.3.3) is deprecated since 4.4.0: the `pradosoft/prado-activerecord` package's `TActiveRecordConfig` registers `TActiveRecordAction` from its own `init()`, so `installShellActions()` no longer gates on it.
 
 `hasShellActionClass(string $class): bool` checks whether a given class is already registered (@since 4.3.3).
 
@@ -189,7 +188,6 @@ Format constants: `NORMAL`, `INFO`, `SUCCESS`, `WARNING`, `ERROR`, `DEBUG`.
 | Command | Class | Purpose |
 |---------|-------|---------|
 | `help` | [THelpAction](./Actions/THelpAction.md) | List commands and usage |
-| `activerecord` | [TActiveRecordAction](./Actions/TActiveRecordAction.md) | Generate AR class skeletons from DB tables (requires `TActiveRecordConfig` module) |
 | `param` | [TDbParameterAction](./Actions/TDbParameterAction.md) | Manage `TDbParameterModule` entries |
 | `shell` | [TPhpShellAction](./Actions/TPhpShellAction.md) | Interactive PHP REPL with app context |
 | `serve` | [TWebServerAction](./Actions/TWebServerAction.md) | Start PHP's built-in dev web server (Debug mode or param) |

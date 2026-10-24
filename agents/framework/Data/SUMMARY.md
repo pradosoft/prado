@@ -1,6 +1,6 @@
 # Data/SUMMARY.md
 
-Database access layer providing PDO wrapper plus three complementary data-access patterns: raw commands, stateless table gateway, stateful active record, and XML-based SQL mapping.
+Database access layer providing PDO wrapper plus three complementary data-access patterns: raw commands, stateless table gateway, and XML-based SQL mapping. The Active Record ORM is the `pradosoft/prado-activerecord` package.
 
 SqlMap result construction reports type-handler failures through contextual `TSqlMapException` instances.
 
