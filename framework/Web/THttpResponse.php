@@ -973,7 +973,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 		$cookie = $this->dySetCookie($cookie, false);
 		$request = $this->getRequest();
 		if ($request->getEnableCookieValidation()) {
-			$value = $this->getApplication()->getSecurityManager()->hashData($cookie->getValue());
+			$value = $this->getApplication()->getSecurityManager()->hashCookieData($cookie->getValue());
 		} else {
 			$value = $cookie->getValue();
 		}

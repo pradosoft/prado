@@ -25,7 +25,7 @@ THttpRequest provides storage and access scheme for user requests sent via HTTP.
 - `UrlParamSeparator` (string): Separator used for PATH format URL parameters, defaults to comma ','
 - `ServiceID` (string): Requested service ID
 - `ServiceParameter` (string): Requested service parameter
-- `EnableCookieValidation` (bool): Whether cookies should be validated, defaults to false
+- `EnableCookieValidation` (bool): Whether cookies should be validated, defaults to false; cookies are signed with `TSecurityManager::CookieValidationKey`
 - `CgiFix` (int): Whether to use ORIG_PATH_INFO and ORIG_SCRIPT_NAME for CGI environments
 
 ## Method Types

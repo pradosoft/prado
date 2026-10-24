@@ -25,6 +25,9 @@ Upgrading from v4.3.3
 - `THttpCookie::HttpOnly` defaults to `true`; it was `false`. JavaScript reading a cookie set by the server needs
   `setHttpOnly(false)` on that cookie. The `THttpSession` cookie is HttpOnly unless `Cookie.HttpOnly="false"` and
   php.ini's `session.cookie_httponly` is off.
+- Cookies are signed with `TSecurityManager::CookieValidationKey`, which derives from `ValidationKey` unless set. Cookies
+  signed by `EnableCookieValidation` before the upgrade are dropped once. The `TAuthManager` auto-login cookie is always
+  signed and HttpOnly; an `IUserManager` reading it receives the unsigned value as before.
 - `TSecurityManager::EncryptionKeyAlgorithm` defaults to `sha256`; it was `md5`. Data encrypted under the old
   default, such as auto-login cookies and encrypted page state, no longer decrypts. Set
   `EncryptionKeyAlgorithm="md5"` on the security manager module to keep reading it.
