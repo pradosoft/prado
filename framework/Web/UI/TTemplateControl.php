@@ -10,15 +10,14 @@
 
 namespace Prado\Web\UI;
 
+use Prado\IDataRenderer;
 use Prado\Prado;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Web\UI\WebControls\TContent;
 use Prado\Web\UI\WebControls\TContentPlaceHolder;
-use Prado\Web\UI\WebControls\TCheckBox;
+use Prado\Web\UI\WebControls\TDataBoundControl;
 use Prado\Web\UI\WebControls\TDatePicker;
-use Prado\Web\UI\WebControls\TListControl;
-use Prado\Web\UI\WebControls\TTextBox;
 
 /**
  * TTemplateControl class.
@@ -253,46 +252,42 @@ class TTemplateControl extends TCompositeControl
 	}
 
 	/**
-	 * Updates the view controls with the data of a record object.
-	 * A control and the record property it shows have the same name: the control ID
-	 * matches the property. A `RELATIONS` entry fills the control named by its key:
-	 * `BELONGS_TO` and `HAS_ONE` set the text, `HAS_MANY` binds a {@see TListControl}.
-	 * @param object $arObj a record object with a static `$RELATIONS` array, such as a
-	 *   prado-activerecord `TActiveRecord`
-	 * @param bool $throwExceptions whether to throw exceptions
+	 * Updates the view controls with the data of a model.
+	 *
+	 * Each key of the model data names a control of this template control, read as
+	 * `$this->{$key}`. The value goes to that control by its type:
+	 *
+	 * - {@see TDataBoundControl} and an iterable value → `DataSource`, then `dataBind()`
+	 * - {@see TDatePicker} → `Date` (a date string)
+	 * - {@see IDataRenderer} → `Data` (`Text`, `Checked`, `SelectedValue`, ...)
+	 *
+	 * A key without a control, or with a control of another type, is skipped.
+	 *
+	 * The model data is {@see IViewDataModel::getViewData()}. An object that defines
+	 * `getViewData()` without the interface is read the same way, so the prado-activerecord
+	 * `TActiveRecord` binds its columns and relations on PRADO 4.3 as well. An array is
+	 * the data itself; any other object contributes its public properties.
+	 *
+	 * @param array|object $model the model
+	 * @param bool $throwExceptions true rethrows an exception raised while a control takes
+	 *   a value; false (default) skips that key
 	 * @author Daniel Sampedro <darthdaniel85@gmail.com>
 	 */
-	public function tryToUpdateView($arObj, $throwExceptions = false)
+	public function tryToUpdateView($model, $throwExceptions = false)
 	{
-		$objAttrs = get_class_vars($arObj::class);
-		foreach (array_keys($objAttrs) as $key) {
+		foreach ($this->getModelViewData($model) as $field => $value) {
 			try {
-				if ($key != "RELATIONS") {
-					$control = $this->{$key};
-					if ($control instanceof TDatePicker) {
-						$control->setDate($arObj->{$key});
-					} elseif ($control instanceof TTextBox) {
-						$control->setText($arObj->{$key});
-					} elseif ($control instanceof TCheckBox) {
-						$control->setChecked((bool) $arObj->{$key});
-					}
-				} else {
-					foreach ($objAttrs["RELATIONS"] as $relKey => $relValues) {
-						$relControl = $this->{$relKey};
-						switch ($relValues[0]) {
-							case 'BELONGS_TO':
-							case 'HAS_ONE':
-								$relControl->setText($arObj->{$relKey});
-								break;
-							case 'HAS_MANY':
-								if ($relControl instanceof TListControl) {
-									$relControl->setDataSource($arObj->{$relKey});
-									$relControl->dataBind();
-								}
-								break;
-						}
-					}
-					break;
+				if (!isset($this->{$field})) {
+					continue;
+				}
+				$control = $this->{$field};
+				if ($control instanceof TDataBoundControl && is_iterable($value)) {
+					$control->setDataSource($value);
+					$control->dataBind();
+				} elseif ($control instanceof TDatePicker) {
+					$control->setDate($value);
+				} elseif ($control instanceof IDataRenderer) {
+					$control->setData($value);
 				}
 			} catch (\Exception $ex) {
 				if ($throwExceptions) {
@@ -303,35 +298,93 @@ class TTemplateControl extends TCompositeControl
 	}
 
 	/**
-	 * Updates a record object with the data of the view controls.
-	 * A control and the record property it fills have the same name: the control ID
-	 * matches the property. The `RELATIONS` entry is skipped.
-	 * @param object $arObj a record object with a static `$RELATIONS` array, such as a
-	 *   prado-activerecord `TActiveRecord`
-	 * @param bool $throwExceptions whether to throw exceptions
-	 * @author Daniel Sampedro <darthdaniel85@gmail.com>
+	 * Updates a model with the values of the view's input controls.
+	 *
+	 * Every object registered with this template control by ID (see
+	 * {@see TControl::getRegisteredObjects()}) that accepts user input is read: a
+	 * {@see TDatePicker} gives its `Date`, any other {@see IPostBackDataHandler} that is an
+	 * {@see IDataRenderer} gives its `Data` (`Text`, `Checked`, `SelectedValue`, ...).
+	 * Output-only controls such as {@see \Prado\Web\UI\WebControls\TLabel} are not read.
+	 *
+	 * The values, keyed by control ID, go to {@see IViewDataModel::setViewData()}; an object
+	 * that defines `setViewData()` without the interface receives them the same way. Any
+	 * other object receives each value whose key is one of its public properties. The model
+	 * decides which keys it takes.
+	 *
+	 * @param object $model the model
+	 * @param bool $throwExceptions true rethrows an exception raised while a control is read
+	 *   or the model takes the values; false (default) skips the control, or the model
+	 * @since 4.4.0
 	 */
-	public function tryToUpdateAR($arObj, $throwExceptions = false)
+	public function tryToUpdateModel($model, $throwExceptions = false)
 	{
-		$objAttrs = get_class_vars($arObj::class);
-		foreach (array_keys($objAttrs) as $key) {
+		$values = [];
+		foreach ($this->getRegisteredObjects() as $field => $control) {
 			try {
-				if ($key == "RELATIONS") {
-					break;
-				}
-				$control = $this->{$key};
 				if ($control instanceof TDatePicker) {
-					$arObj->{$key} = $control->getDate();
-				} elseif ($control instanceof TTextBox) {
-					$arObj->{$key} = $control->getText();
-				} elseif ($control instanceof TCheckBox) {
-					$arObj->{$key} = $control->getChecked();
+					$values[$field] = $control->getDate();
+				} elseif ($control instanceof IPostBackDataHandler && $control instanceof IDataRenderer) {
+					$values[$field] = $control->getData();
 				}
 			} catch (\Exception $ex) {
 				if ($throwExceptions) {
 					throw $ex;
 				}
 			}
+		}
+		try {
+			$this->setModelViewData($model, $values);
+		} catch (\Exception $ex) {
+			if ($throwExceptions) {
+				throw $ex;
+			}
+		}
+	}
+
+	/**
+	 * Updates a record with the values of the view's input controls.
+	 * This is the name from the time Active Record was part of the framework; it calls
+	 * {@see tryToUpdateModel()}.
+	 * @param object $arObj the record
+	 * @param bool $throwExceptions see {@see tryToUpdateModel()}
+	 * @author Daniel Sampedro <darthdaniel85@gmail.com>
+	 */
+	public function tryToUpdateAR($arObj, $throwExceptions = false)
+	{
+		$this->tryToUpdateModel($arObj, $throwExceptions);
+	}
+
+	/**
+	 * Returns the data of a model for {@see tryToUpdateView()}.
+	 * @param array|object $model the model
+	 * @return array<string, mixed> values keyed by field name
+	 * @since 4.4.0
+	 */
+	protected function getModelViewData($model): array
+	{
+		if (is_array($model)) {
+			return $model;
+		}
+		if ($model instanceof IViewDataModel || method_exists($model, 'getViewData')) {
+			return $model->getViewData();
+		}
+		return get_object_vars($model);
+	}
+
+	/**
+	 * Passes the view values to a model for {@see tryToUpdateModel()}.
+	 * @param object $model the model
+	 * @param array<string, mixed> $values values keyed by control ID
+	 * @since 4.4.0
+	 */
+	protected function setModelViewData($model, array $values): void
+	{
+		if ($model instanceof IViewDataModel || method_exists($model, 'setViewData')) {
+			$model->setViewData($values);
+			return;
+		}
+		foreach (array_intersect_key($values, get_object_vars($model)) as $field => $value) {
+			$model->{$field} = $value;
 		}
 	}
 }

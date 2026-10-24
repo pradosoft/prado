@@ -639,6 +639,7 @@ return [
 'ITheme' => 'Prado\Web\UI\ITheme',
 'IValidatable' => 'Prado\Web\UI\IValidatable',
 'IValidator' => 'Prado\Web\UI\IValidator',
+'IViewDataModel' => 'Prado\Web\UI\IViewDataModel',
 'IJuiOptions' => 'Prado\Web\UI\JuiControls\IJuiOptions',
 'TJuiAutoComplete' => 'Prado\Web\UI\JuiControls\TJuiAutoComplete',
 'TJuiAutoCompleteEventParameter' => 'Prado\Web\UI\JuiControls\TJuiAutoCompleteEventParameter',

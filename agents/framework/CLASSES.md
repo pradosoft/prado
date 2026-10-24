@@ -1,6 +1,6 @@
 # PRADO Framework Classes
 
-**Total Classes: 758**
+**Total Classes: 759**
 
 This document lists all classes in the PRADO framework as defined in `classes.php`.
 
@@ -8,7 +8,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 | Directory | Classes | Interfaces | Total | Recursive |
 |-----------|---------|------------|-------|-----------|
-| [Prado](./INDEX.md) | 17 | 7 | 24 | 758 |
+| [Prado](./INDEX.md) | 17 | 7 | 24 | 759 |
 | [Prado\\Caching](./Caching/INDEX.md) | 18 | 2 | 20 | 20 |
 | [Prado\\Collections](./Collections/INDEX.md) | 27 | 7 | 34 | 34 |
 | [Prado\\Data](./Data/INDEX.md) | 10 | 5 | 15 | 106 |
@@ -42,11 +42,11 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 | [Prado\\Util\\Log](./Util/Log/INDEX.md) | 13 | 1 | 14 | 14 |
 | [Prado\\Util\\Math](./Util/Math/INDEX.md) | 2 | 0 | 2 | 2 |
 | [Prado\\Util\\Traits](./Util/Traits/INDEX.md) | 2 | 0 | 2 | 2 |
-| [Prado\\Web](./Web/INDEX.md) | 21 | 0 | 21 | 423 |
+| [Prado\\Web](./Web/INDEX.md) | 21 | 0 | 21 | 424 |
 | [Prado\\Web\\Behaviors](./Web/Behaviors/INDEX.md) | 1 | 0 | 1 | 1 |
 | [Prado\\Web\\Javascripts](./Web/Javascripts/INDEX.md) | 4 | 0 | 4 | 4 |
 | [Prado\\Web\\Services](./Web/Services/INDEX.md) | 14 | 1 | 15 | 15 |
-| [Prado\\Web\\UI](./Web/UI/INDEX.md) | 28 | 15 | 43 | 366 |
+| [Prado\\Web\\UI](./Web/UI/INDEX.md) | 28 | 16 | 44 | 367 |
 | [Prado\\Web\\UI\\ActiveControls](./Web/UI/ActiveControls/INDEX.md) | 72 | 2 | 74 | 74 |
 | [Prado\\Web\\UI\\JuiControls](./Web/UI/JuiControls/INDEX.md) | 19 | 1 | 20 | 20 |
 | [Prado\\Web\\UI\\WebControls](./Web/UI/WebControls/INDEX.md) | 231 | 5 | 236 | 236 |
@@ -57,7 +57,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ## Class Listings
 
-## [Prado](./INDEX.md) - Classes: 17, Interfaces: 7, Total: 24, Recursive: 744
+## [Prado](./INDEX.md) - Classes: 17, Interfaces: 7, Total: 24, Recursive: 745
 
 ### Interfaces (6)
 
@@ -691,7 +691,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Web](./Web/INDEX.md) - Classes: 21, Interfaces: 0, Total: 21, Recursive: 418
+## [Prado\Web](./Web/INDEX.md) - Classes: 21, Interfaces: 0, Total: 21, Recursive: 419
 
 ### Classes (20)
 
@@ -763,9 +763,9 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Web\UI](./Web/UI/INDEX.md) - Classes: 28, Interfaces: 15, Total: 43, Recursive: 361
+## [Prado\Web\UI](./Web/UI/INDEX.md) - Classes: 28, Interfaces: 16, Total: 44, Recursive: 362
 
-### Interfaces (13)
+### Interfaces (14)
 
 - [IAdapterControl](./Web/UI/IAdapterControl.md)
 - [IBindable](./Web/UI/IBindable.md)
@@ -782,6 +782,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [ITheme](./Web/UI/ITheme.md)
 - [IValidatable](./Web/UI/IValidatable.md)
 - [IValidator](./Web/UI/IValidator.md)
+- [IViewDataModel](./Web/UI/IViewDataModel.md)
 
 ### Classes (26)
 

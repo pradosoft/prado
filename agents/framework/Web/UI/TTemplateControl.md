@@ -63,6 +63,12 @@ TTemplateControl is the base class for all controls that use templates in PRADO 
 - `setCachedTemplate()`: Sets cached template instance
 - `clearTemplateCache()`: Clears template cache
 
+### View Data Binding
+- `tryToUpdateView($model, $throwExceptions = false)`: Sets each model value on the control whose ID is the key. A `TDataBoundControl` takes an iterable value as `DataSource` and data-binds, a `TDatePicker` takes `Date`, any `IDataRenderer` takes `Data`. Keys without a control are skipped. The model is an [`IViewDataModel`](./IViewDataModel.md) (or an object with `getViewData()`), an array, or an object whose public properties are the data.
+- `tryToUpdateModel($model, $throwExceptions = false)`: Reads every registered input control (`IPostBackDataHandler` + `IDataRenderer`, `TDatePicker` as `Date`) into `IViewDataModel::setViewData()`, or into the object's public properties. @since 4.4.0
+- `tryToUpdateAR($model, $throwExceptions = false)`: The Active Record era name; calls `tryToUpdateModel()`.
+- `$throwExceptions` false (default) skips a control that throws; true rethrows.
+
 ## Template Structure Concepts
 
 ### Master-Content Template

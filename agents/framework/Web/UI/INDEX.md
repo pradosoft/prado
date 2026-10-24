@@ -76,6 +76,7 @@ Core UI component system for the Prado framework: the control hierarchy, templat
 | `INamingContainer` | Uniquely names child controls (prefixes client IDs) |
 | `IPostBackEventHandler` | Receives postback events (buttons, links) |
 | `IPostBackDataHandler` | Processes postback data (inputs, checkboxes) |
+| [`IViewDataModel`](IViewDataModel.md) | Model whose `getViewData()` / `setViewData()` exchange values with a `TTemplateControl`'s controls by ID. @since 4.4.0 |
 | `IPageStatePersister` | Pluggable page state serialization strategy |
 | [`TPageStatePersister`](TPageStatePersister.md) | Default persister: serialises view-state into a hidden `__VIEWSTATE` form field |
 | [`TSessionPageStatePersister`](TSessionPageStatePersister.md) | Session-based persister: stores view-state in the PHP session with a FIFO history queue |
