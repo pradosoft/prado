@@ -8,7 +8,7 @@
 **Namespace:** `Prado\Data\DataGateway`
 
 ## Overview
-`TDataGatewayCommand` is the command builder and executor for [`TTableGateway`](../TTableGateway.md) and [`TActiveRecordGateway`](../ActiveRecord/TActiveRecordGateway.md).
+`TDataGatewayCommand` is the command builder and executor for [`TTableGateway`](../TTableGateway.md). The `pradosoft/prado-activerecord` package's `TActiveRecordGateway` uses it the same way.
 
 ## Index Conditions
 

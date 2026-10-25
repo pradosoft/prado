@@ -24,7 +24,6 @@ Built-in shell commands:
 | Class | Command | Purpose |
 |---|---|---|
 | [`THelpAction`](Actions/THelpAction.md) | `help` | List available commands and usage |
-| [`TActiveRecordAction`](Actions/TActiveRecordAction.md) | `activerecord` | Generate AR class skeletons from DB tables (`generate`, `generate-all`) |
 | [`TDbParameterAction`](Actions/TDbParameterAction.md) | `param` | Manage [`TDbParameterModule`](../Util/TDbParameterModule.md) entries (list, get, set, delete) |
 | [`TPhpShellAction`](Actions/TPhpShellAction.md) | `shell` | Interactive PHP REPL with bootstrapped app context |
 | [`TWebServerAction`](Actions/TWebServerAction.md) | `serve` | Start PHP's built-in dev web server (`--address=host:port`) |
