@@ -42,6 +42,32 @@ test('TDataGridSortTestCase: postback sort state', async ({ page }) => {
 });
 
 /**
+ * aria-sort is on the column header, the role that carries it; the sort link
+ * keeps its name, and it has focus after the sort, so keyboard and screen reader
+ * users stay at the header they activated.
+ */
+test('TDataGridSortTestCase: accessible sort state and focus', async ({ page }) => {
+	const h = new PradoTestHelper(page, GENERIC_BASE_URL);
+	await h.url(PAGE_URL);
+
+	const grid = page.locator(`#${BASE}grid`);
+	await expect(grid.getByRole('columnheader', { name: 'City', exact: true })).toHaveAttribute('aria-sort', 'ascending');
+	await expect(grid.getByRole('columnheader', { name: 'Note', exact: true })).not.toHaveAttribute('aria-sort');
+
+	await grid.getByRole('link', { name: 'Name', exact: true }).focus();
+	await page.keyboard.press('Enter');
+	await expect(grid.getByRole('columnheader', { name: 'Name', exact: true })).toHaveAttribute('aria-sort', 'ascending');
+	await expect(grid.getByRole('link', { name: 'Name', exact: true })).toBeFocused();
+
+	const active = page.locator(`#${BASE}activeGrid`);
+	await active.getByRole('link', { name: 'City', exact: true }).focus();
+	await page.keyboard.press('Enter');
+	await h.waitForAjaxCalls();
+	await expect(active.getByRole('columnheader', { name: 'City', exact: true })).toHaveAttribute('aria-sort', 'ascending');
+	await expect(active.getByRole('link', { name: 'City', exact: true })).toBeFocused();
+});
+
+/**
  * A TActiveDataGrid re-rendered in a callback carries the new aria-sort.
  */
 test('TDataGridSortTestCase: callback sort state', async ({ page }) => {

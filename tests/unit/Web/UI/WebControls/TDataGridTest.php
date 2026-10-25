@@ -1113,6 +1113,34 @@ class TDataGridTest extends TestCase
 		$this->assertSame(TDataGridSortDirection::Ascending, $this->sort($grid, 0)->getSortDirection());
 	}
 
+	public function testSortCommandFocusesSortButton()
+	{
+		$grid = $this->sortableGrid();
+		$page = $this->attachToPage($grid);
+		$button = $grid->getHeader()->getCells()->itemAt(1)->getControls()->itemAt(0);
+		$this->sort($grid, 1, false);
+		$this->assertSame($button->getClientID(), PradoUnit::getProp($page, '_focus'));
+		$this->assertSame($button->getClientID(), PradoUnit::invoke($grid, 'getSortFocusID'));
+	}
+
+	public function testSortCommandHandlerFocusWins()
+	{
+		$grid = $this->sortableGrid();
+		$page = $this->attachToPage($grid);
+		$grid->attachEventHandler('OnSortCommand', function ($sender, $param) use ($page) {
+			$page->setFocus('elsewhere');
+		});
+		$this->sort($grid, 0, false);
+		$this->assertSame('elsewhere', PradoUnit::getProp($page, '_focus'));
+	}
+
+	public function testSortCommandWithoutPageFocusesNothing()
+	{
+		$grid = $this->sortableGrid();
+		$this->sort($grid, 0, false);
+		$this->assertNull(PradoUnit::invoke($grid, 'getSortFocusID'));
+	}
+
 	public function testSortCommandEventParameterDirection()
 	{
 		$command = new TDataGridCommandEventParameter(null, null, new TCommandEventParameter('sort', 'name'));

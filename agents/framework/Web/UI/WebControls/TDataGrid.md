@@ -119,6 +119,10 @@ public function sortGrid($sender, $param)
 
 At render, `applySortState()` sets `aria-sort="ascending|descending"` on the header `<th>` (in `<thead>`, so a column header) of the sortable column whose `SortExpression` equals the grid's, through the cell's ARIA collection, and removes it from the other header cells. No other header cell gets `aria-sort="none"`. Style the indicator with `th[aria-sort="ascending"]` / `th[aria-sort="descending"]`. A grid whose application never sets `SortExpression` renders no `aria-sort`, so an application that sorts one direction only announces no direction it does not perform.
 
+Before raising `OnSortCommand`, `focusSortControl()` sets `TPage::setFocus()` to the sort button's client ID (kept in `getSortFocusID()`), so after the postback a keyboard or screen reader user is back at the header they activated; the header's client IDs are the same after a rebind. A handler's own `setFocus()` wins. `TActiveDataGrid` queues `TCallbackClientScript::focus()` after its `replaceContent()`, since a callback renders no page focus script. (`PRADO_LASTFOCUS` restore is not wired: no control sets the client `TrackFocus` option.)
+
+Accessibility audit (4.4.0, Chromium/Firefox/WebKit): the header `<th>` in `<thead>` is `columnheader`, the role `aria-sort` belongs to; the sort link keeps the header text as its name. Not changed: a sort header is a link (`TLinkButton`, `href="javascript:;"`) for an action, and an image header (`HeaderImageUrl`) without `HeaderText` has no alternate text, so no name.
+
 ## Paging
 
 ```php

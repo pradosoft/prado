@@ -176,6 +176,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	 * Renders the datagrid.
 	 * If the datagrid did not pass the prerender phase yet, it will register itself for rendering later.
 	 * Else it will call the {@see renderDataGrid()} method which will do the rendering of the datagrid.
+	 * After a sort command, the sort button of the replaced content receives focus.
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function render($writer)
@@ -184,6 +185,9 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 			$this->renderDataGrid($writer);
 			if ($this->getActiveControl()->canUpdateClientSide()) {
 				$this->getPage()->getCallbackClient()->replaceContent($this->getSurroundingTagId(), $writer);
+				if (($focus = $this->getSortFocusID()) !== null) {
+					$this->getPage()->getCallbackClient()->focus($focus);
+				}
 			}
 		} else {
 			$this->getPage()->getAdapter()->registerControlToRender($this, $writer);

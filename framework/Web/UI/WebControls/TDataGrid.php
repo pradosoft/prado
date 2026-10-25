@@ -21,6 +21,7 @@ use Prado\TPropertyValue;
 use Prado\Web\THttpUtility;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Web\UI\ITemplate;
+use Prado\Web\UI\TControl;
 
 /**
  * TDataGrid class
@@ -196,6 +197,10 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * @var TList all columns including both manually and automatically created columns
 	 */
 	private $_allColumns;
+	/**
+	 * @var ?string the client ID of the control that raised the sort command
+	 */
+	private $_sortFocusID;
 	/**
 	 * @var TDataGridItemCollection datagrid item collection
 	 */
@@ -660,6 +665,31 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
+	 * Gives focus to the control that raised a sort command after the page loads,
+	 * so a keyboard or screen reader user stays at the sorted column header. An
+	 * OnSortCommand handler may focus another control ({@see \Prado\Web\UI\TPage::setFocus}).
+	 * @param \Prado\Web\UI\TControl $control the sort button
+	 * @since 4.4.0
+	 */
+	protected function focusSortControl($control)
+	{
+		if ($control instanceof TControl && ($page = $this->getPage()) !== null) {
+			$this->_sortFocusID = $control->getClientID();
+			$page->setFocus($this->_sortFocusID);
+		}
+	}
+
+	/**
+	 * @return ?string the client ID of the control that raised the sort command of
+	 *   this request, or null
+	 * @since 4.4.0
+	 */
+	protected function getSortFocusID()
+	{
+		return $this->_sortFocusID;
+	}
+
+	/**
 	 * Returns the direction a sort command for an expression requests.
 	 * @param string $expression the sort expression of the command
 	 * @return string Descending for the current expression sorted Ascending; otherwise Ascending
@@ -781,6 +811,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 				return true;
 			} elseif (strcasecmp($command, self::CMD_SORT) === 0) {
 				$direction = $this->getNextSortDirection((string) $param->getCommandParameter());
+				$this->focusSortControl($param->getCommandSource());
 				$this->onSortCommand(new TDataGridSortCommandEventParameter($sender, $param, $direction));
 				return true;
 			} elseif (strcasecmp($command, self::CMD_PAGE) === 0) {
