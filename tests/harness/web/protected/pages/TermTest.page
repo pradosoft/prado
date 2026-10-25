@@ -36,6 +36,27 @@
 		<pre id="preNote"><com:TActivePanel ID="innerPre"><com:TActiveLabel ID="preUpdate" Text="Nothing yet." /></com:TActivePanel></pre>
 	</com:TPanel>
 
+	<com:TPanel ID="levels">
+		<com:TAbbr ID="dom" Terms="DOM => Document Object Model" DepthLimit="2" />
+		<p id="levelTop">The DOM is a tree.</p>
+		<com:TPanel ID="levelOne">
+			<p id="levelOneNote">Each DOM node has a parent.</p>
+			<com:TPanel ID="levelTwo">
+				<p id="levelTwoNote">The DOM has levels.</p>
+				<com:TPanel ID="levelThree">
+					<p id="levelThreeNote">This DOM level is past the limit.</p>
+				</com:TPanel>
+			</com:TPanel>
+		</com:TPanel>
+		<com:TActivePanel ID="levelLive">
+			<p id="levelLiveNote"><com:TActiveLabel ID="levelUpdate" Text="Nothing yet." /></p>
+			<com:TPanel ID="levelLiveDeep">
+				<p id="levelDeepNote"><com:TActiveLabel ID="levelDeepUpdate" Text="Nothing yet." /></p>
+			</com:TPanel>
+		</com:TActivePanel>
+	</com:TPanel>
+
 	<com:TActiveButton ID="btnUpdate" Text="Update" OnCallback="update_live" />
 	<com:TActiveButton ID="btnInner" Text="Update inner" OnCallback="update_inner" />
+	<com:TActiveButton ID="btnLevels" Text="Update levels" OnCallback="update_levels" />
 </com:TContent>

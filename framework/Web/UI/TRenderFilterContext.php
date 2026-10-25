@@ -34,6 +34,15 @@ use Prado\IO\TTextWriter;
  * handlers run ({@see endCapture}). A handler that removes a placeholder removes
  * the exempt output.
  *
+ * A filter of a control with {@see TControl::getRenderFilterDepth} sees the output of
+ * the controls at most that many levels below the control. Marker comments bound
+ * the output of each control from two levels to one level past the limit
+ * ({@see beginControl}); {@see createDepthParameter} gives the markers to the
+ * {@see TRenderFilterParameter}, which hides the deeper output from the handlers
+ * ({@see TRenderFilterParameter::getDepthLimit}). The filters of the deeper controls,
+ * and the filters around the control, see the output. {@see endCapture} removes
+ * the markers of the filter.
+ *
  * Output a control renders into another `THtmlWriter` has no context of its own,
  * so a control exempts itself only from the filters of its own writer.
  *
@@ -55,9 +64,20 @@ class TRenderFilterContext
 	public const FILTER_MARKER = 'prado-filter-';
 
 	/**
-	 * @var int the number of filters capturing output
+	 * The comment data that starts each marker of a control level.
 	 */
-	private int $_depth = 0;
+	public const DEPTH_MARKER = 'prado-depth-';
+
+	/**
+	 * @var array[] the filters capturing output, innermost last: the serial, the depth
+	 *   limit, and the depth of the control rendering below the filtering control
+	 */
+	private array $_filters = [];
+
+	/**
+	 * @var int the number of filters that have captured output
+	 */
+	private int $_serial = 0;
 
 	/**
 	 * @var \Prado\IO\ITextWriter[] the writers of the exempt controls rendering, innermost last
@@ -87,7 +107,7 @@ class TRenderFilterContext
 	 */
 	public function getIsCapturing(): bool
 	{
-		return $this->_depth > 0;
+		return $this->_filters !== [];
 	}
 
 	/**
@@ -100,22 +120,33 @@ class TRenderFilterContext
 
 	/**
 	 * Records that a filter starts capturing output.
+	 *
+	 * The controls rendering into the output are `$depth` levels below the filtering
+	 * control, so a control rendered alone in a callback starts below its ancestors
+	 * ({@see wrapDepth}).
+	 * @param int $depthLimit the {@see TControl::getRenderFilterDepth} of the filtering control
+	 * @param int $depth the levels below the filtering control of the output
 	 */
-	public function beginCapture(): void
+	public function beginCapture(int $depthLimit = 0, int $depth = 0): void
 	{
-		$this->_depth++;
+		$this->_filters[] = [++$this->_serial, max(0, $depthLimit), max(0, $depth)];
 	}
 
 	/**
-	 * Records that a filter stops capturing output, and returns its filtered output.
-	 * When the outermost filter stops, the placeholders in `$output` are restored.
+	 * Records that a filter stops capturing output, and returns its filtered output
+	 * without the markers of its control levels. When the outermost filter stops,
+	 * the placeholders in `$output` are restored, and the remaining markers removed.
 	 *
 	 * @param string $output the filtered output
 	 * @return string the output, with the exempt output restored by the outermost filter
 	 */
 	public function endCapture(string $output): string
 	{
-		if (--$this->_depth > 0 || $this->_exemptOutput === []) {
+		[$serial, $limit] = array_pop($this->_filters);
+		if ($limit > 0) {
+			$output = $this->stripDepthMarkers($output, (string) $serial);
+		}
+		if ($this->_filters !== [] || $this->_exemptOutput === []) {
 			return $output;
 		}
 		$prefix = '<!--' . self::EXEMPT_TOKEN . $this->_nonce . '-';
@@ -123,7 +154,93 @@ class TRenderFilterContext
 			$output = $restored;
 		}
 		$this->_exemptOutput = [];
+		return $this->stripDepthMarkers($output, '\\d+');
+	}
+
+	/**
+	 * Starts the output of a control. For each filter with a depth limit, the control
+	 * is one level further below the filtering control; a marker starts the output
+	 * of a control from two levels to one level past the limit.
+	 * @return string the markers to write before the output of the control
+	 */
+	public function beginControl(): string
+	{
+		$markers = '';
+		foreach ($this->_filters as $i => [$serial, $limit]) {
+			if ($limit > 0 && $this->getIsMarkedDepth(++$this->_filters[$i][2], $limit)) {
+				$markers .= $this->depthMarker($serial, $this->_filters[$i][2]);
+			}
+		}
+		return $markers;
+	}
+
+	/**
+	 * Ends the output of a control that {@see beginControl} started.
+	 * @return string the markers to write after the output of the control
+	 */
+	public function endControl(): string
+	{
+		$markers = '';
+		for ($i = count($this->_filters) - 1; $i >= 0; $i--) {
+			[$serial, $limit, $depth] = $this->_filters[$i];
+			if ($limit > 0) {
+				if ($this->getIsMarkedDepth($depth, $limit)) {
+					$markers .= $this->depthMarker($serial, $depth, true);
+				}
+				$this->_filters[$i][2]--;
+			}
+		}
+		return $markers;
+	}
+
+	/**
+	 * Encloses output in the markers of the levels above it, for the innermost
+	 * filter. The output of a control rendered alone in a callback lies inside the
+	 * output of the controls between it and the filtering control ({@see beginCapture}).
+	 * @param string $output the output of the control
+	 * @return string the output in the markers of the levels above it
+	 */
+	public function wrapDepth(string $output): string
+	{
+		[$serial, $limit, $depth] = end($this->_filters) ?: [0, 0, 0];
+		for ($level = min($depth, $limit + 1); $limit > 0 && $level >= 2; $level--) {
+			$output = $this->depthMarker($serial, $level) . $output . $this->depthMarker($serial, $level, true);
+		}
 		return $output;
+	}
+
+	/**
+	 * Returns a {@see TRenderFilterParameter} that hides the output of the controls
+	 * deeper than the depth limit of the innermost filter.
+	 * @param string $html the output to filter
+	 * @return ?TRenderFilterParameter the parameter, or null when the filter has no depth limit
+	 */
+	public function createDepthParameter(string $html): ?TRenderFilterParameter
+	{
+		[$serial, $limit] = end($this->_filters) ?: [0, 0];
+		if ($limit === 0) {
+			return null;
+		}
+		$param = new TRenderFilterParameter($html);
+		$param->setDepthMarker(self::DEPTH_MARKER . $this->_nonce . '-' . $serial . '-', $limit);
+		return $param;
+	}
+
+	/**
+	 * Passes output through the `onRenderFilter` handlers of the innermost filter.
+	 * For a control with a depth limit, the event is raised on a {@see createDepthParameter}
+	 * parameter; otherwise {@see IFilterRenderable::onRenderFilter} filters the output.
+	 * @param IFilterRenderable $control the filtering control
+	 * @param string $output the output to filter
+	 * @return string the filtered output
+	 */
+	public function filterOutput(IFilterRenderable $control, string $output): string
+	{
+		if (!($control instanceof TControl) || ($param = $this->createDepthParameter($output)) === null) {
+			return (string) $control->onRenderFilter($output);
+		}
+		$control->raiseEvent('onRenderFilter', $control, $param);
+		return $param->getFilterText();
 	}
 
 	/**
@@ -195,6 +312,40 @@ class TRenderFilterContext
 	public function endFilter(THtmlWriter $writer): void
 	{
 		$writer->write('<!--/' . self::FILTER_MARKER . $this->_nonce . '-->');
+	}
+
+	/**
+	 * @param int $depth the levels below a filtering control
+	 * @param int $limit the depth limit of the filter
+	 * @return bool whether a control at the depth has markers
+	 */
+	private function getIsMarkedDepth(int $depth, int $limit): bool
+	{
+		return $depth >= 2 && $depth <= $limit + 1;
+	}
+
+	/**
+	 * @param int $serial the serial of the filter
+	 * @param int $depth the levels below the filtering control
+	 * @param bool $end whether the marker ends the output
+	 * @return string the marker comment
+	 */
+	private function depthMarker(int $serial, int $depth, bool $end = false): string
+	{
+		return '<!--' . ($end ? '/' : '') . self::DEPTH_MARKER . $this->_nonce . '-' . $serial . '-' . $depth . '-->';
+	}
+
+	/**
+	 * @param string $output the output
+	 * @param string $serial the serial of the filter, as a pattern
+	 * @return string the output without the markers of the filter
+	 */
+	private function stripDepthMarkers(string $output, string $serial): string
+	{
+		if (!str_contains($output, self::DEPTH_MARKER . $this->_nonce)) {
+			return $output;
+		}
+		return preg_replace('/<!--\/?' . self::DEPTH_MARKER . $this->_nonce . '-' . $serial . '-\d+-->/', '', $output);
 	}
 
 	/**
