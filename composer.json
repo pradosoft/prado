@@ -91,7 +91,8 @@
 		"ext-xdebug": "Useful to get stack traces on Php fatal errors",
 		"ext-xsl" : "Used by the TXmlTransform component",
 		"ext-zlib" : "Enables compression to reduce page size",
-		"pradosoft/prado-demos" : "Demo applications for Prado"
+		"pradosoft/prado-demos" : "Demo applications for Prado",
+		"pradosoft/prado-sqlmap" : "SqlMap data mapper (Prado\\Data\\SqlMap), formerly part of the framework"
 	},
 	"extra": {
 		"branch-alias": {

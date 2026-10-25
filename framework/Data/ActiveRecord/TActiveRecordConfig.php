@@ -199,7 +199,7 @@ class TActiveRecordConfig extends TDataSourceConfig implements IModuleDependency
 
 	/**
 	 * Set true to cache the table meta data.
-	 * @param bool $value true to cache sqlmap instance.
+	 * @param bool $value true to cache the table meta data.
 	 */
 	public function setEnableCache($value)
 	{

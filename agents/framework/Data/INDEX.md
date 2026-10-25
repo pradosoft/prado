@@ -10,11 +10,10 @@ This file provides guidance to Agents when working with code in this repository.
 | [ActiveRecord/](ActiveRecord/INDEX.md) | Stateful ORM |
 | [Common/](Common/INDEX.md) | Driver-Specific Implementations |
 | [DataGateway/](DataGateway/INDEX.md) | Stateless Table Gateway |
-| [SqlMap/](SqlMap/INDEX.md) | XML-based SQL Mapping (iBATIS-style) |
 
 ## Purpose
 
-Database access layer for the Prado framework. Provides a PDO wrapper plus three complementary data-access patterns: raw commands, stateless table gateway, stateful active record, and XML-based SQL mapping.
+Database access layer for the Prado framework. Provides a PDO wrapper plus three complementary data-access patterns: raw commands, stateless table gateway, and stateful active record.
 
 ## Top-Level Classes
 
@@ -74,16 +73,6 @@ Lightweight, stateless access to a single table. No object identity tracking.
 - **[`TSqlCriteria`](DataGateway/TSqlCriteria.md)** — Helper for WHERE clauses and parameter binding. Properties: `Condition`, `Parameters`, `OrdersBy`, `Limit`, `Offset`, `Select`. Constructor shorthand: `new TSqlCriteria('col = :v', [':v' => $val])`.
 - **[`TDataGatewayEventParameter`](DataGateway/TDataGatewayEventParameter.md)** / **[`TDataGatewayResultEventParameter`](DataGateway/TDataGatewayResultEventParameter.md)** — Event parameters for `OnCreateCommand` / `OnExecuteCommand`.
 
-### `SqlMap/` — XML-based SQL Mapping (iBATIS-style)
-
-Separates SQL from code via external XML mapping files.
-
-- **[`TSqlMapManager`](SqlMap/TSqlMapManager.md)** — Registry and manager; load via `TSqlMapConfig`.
-- **[`TSqlMapGateway`](SqlMap/TSqlMapGateway.md)** — Facade: `queryForObject()`, `queryForList()`, `queryForMap()`, `insert()`, `update()`, `delete()`.
-- **`Configuration/`** — XML parsing: `TSqlMapStatement`, `TParameterMap`, `TResultMap`, `TResultProperty`, cache models, dynamic SQL. `TResultMap` adds context when type-handler construction fails.
-- **`DataMapper/`** — Runtime execution engine; paging support via `TSqlMapPagedList`.
-- **`Statements/`** — Statement type classes (Select, Insert, Update, Delete).
-
 ### `Common/` — Driver-Specific Implementations
 
 Subdirs: `Firebird/`, `Ibm/`, `Mssql/`, `Mysql/`, `Oracle/`, `Pgsql/`, `Sqlite/`
@@ -101,7 +90,6 @@ Each subdir contains four classes: `T{Driver}MetaData`, `T{Driver}CommandBuilder
 - **Choose the right pattern:**
   - [`TActiveRecord`](TActiveRecord.md) for stateful ORM with lazy relationships.
   - [`TTableGateway`](TTableGateway.md) for lightweight stateless access.
-  - `TSqlMap` when you need full SQL control via external XML.
 - **DSN format:** `mysql:host=localhost;dbname=mydb` (standard PDO DSN).
 - **`COLUMN_MAPPING`** in AR classes maps logical property names to physical column names.
 - **`TSqlCriteria`** is the standard way to pass WHERE/ORDER/LIMIT to gateway methods.
