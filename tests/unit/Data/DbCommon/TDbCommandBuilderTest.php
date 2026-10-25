@@ -224,6 +224,36 @@ class TDbCommandBuilderTest extends \PHPUnit\Framework\TestCase
 		$this->assertStringContainsString(' AND ', $result);
 	}
 
+	public function test_get_search_expression_escapes_like_wildcards()
+	{
+		$result = $this->builder()->getSearchExpression(['name'], '50% a_b c\\d');
+		$this->assertStringContainsString("'%50\\%%' ESCAPE '\\'", $result);
+		$this->assertStringContainsString("'%a\\_b%' ESCAPE '\\'", $result);
+		$this->assertStringContainsString("'%c\\\\d%' ESCAPE '\\'", $result);
+	}
+
+	public function test_get_search_expression_matches_wildcards_literally()
+	{
+		self::$conn->createCommand("INSERT INTO items VALUES (3, 'rate 50%', 1.0, NULL)")->execute();
+		self::$conn->createCommand("INSERT INTO items VALUES (4, 'rate 500', 1.0, NULL)")->execute();
+		self::$conn->createCommand("INSERT INTO items VALUES (5, 'a_b', 1.0, NULL)")->execute();
+		self::$conn->createCommand("INSERT INTO items VALUES (6, 'axb', 1.0, NULL)")->execute();
+		try {
+			$builder = $this->builder();
+			$names = static function ($rows) {
+				return array_column($rows, 'name');
+			};
+			$rows = $builder->createFindCommand($builder->getSearchExpression(['name'], '50%'))->query()->readAll();
+			$this->assertSame(['rate 50%'], $names($rows));
+			$rows = $builder->createFindCommand($builder->getSearchExpression(['name'], 'a_b'))->query()->readAll();
+			$this->assertSame(['a_b'], $names($rows));
+			$rows = $builder->createFindCommand($builder->getSearchExpression(['name'], 'rate'))->query()->readAll();
+			$this->assertSame(['rate 50%', 'rate 500'], $names($rows));
+		} finally {
+			self::$conn->createCommand('DELETE FROM items WHERE id > 2')->execute();
+		}
+	}
+
 	// -----------------------------------------------------------------------
 	// getSelectFieldList
 	// -----------------------------------------------------------------------

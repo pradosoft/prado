@@ -204,10 +204,19 @@ class TDataGatewayCommand extends \Prado\TComponent
 		return $this->onExecuteCommand($command, $command->execute());
 	}
 
+	/**
+	 * Constructs a "(col1, col2) IN ((v1, v2), ...)" condition over the index columns.
+	 * An empty value list yields `1=0`, which matches no row in every driver; a bare
+	 * `FALSE` is not a predicate in Oracle, SQL Server, Firebird, and DB2.
+	 * @param \Prado\Data\Common\TDbTableInfo $table table information.
+	 * @param array $fields index column ids.
+	 * @param array $values index values, one value or one value array per row.
+	 * @return string SQL condition.
+	 */
 	public function getIndexKeyCondition($table, $fields, $values)
 	{
 		if (!count($values)) {
-			return 'FALSE';
+			return '1=0';
 		}
 		$columns = [];
 		$tableName = $table->getTableFullName();
