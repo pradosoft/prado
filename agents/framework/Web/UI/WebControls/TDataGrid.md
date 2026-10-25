@@ -50,6 +50,8 @@ TDataGrid::CMD_PAGE_LAST  = 'Last'
 | `Columns` | TDataGridColumnCollection | Explicit column definitions |
 | `AutoGenerateColumns` | bool | Auto-generate columns from data (default: false) |
 | `AllowSorting` | bool | Enable sort links in column headers |
+| `SortExpression` | string | Current sort: the sorted column's `SortExpression`, `''` when unsorted. The application sets it (@since 4.4.0) |
+| `SortDirection` | `TDataGridSortDirection` | Current sort direction, default `Ascending`. The application sets it (@since 4.4.0) |
 | `AllowPaging` | bool | Enable pagination |
 | `PageSize` | int | Items per page (default: 10) |
 | `CurrentPageIndex` | int | Zero-based current page |
@@ -101,6 +103,22 @@ $grid->getSelectedItem(): ?TDataGridItem
 $grid->getEditItem(): ?TDataGridItem
 ```
 
+## Sorting
+
+A sort link raises `OnSortCommand` with a `TDataGridSortCommandEventParameter`: `SortExpression` is the column's, and `SortDirection` is the direction the click requests from the grid's current sort (`getNextSortDirection()`): `Ascending` for a new expression, the reverse for the current one. The grid does not change its own sort state; the handler applies the sort it performs:
+
+```php
+public function sortGrid($sender, $param)
+{
+    $sender->SortExpression = $param->SortExpression;
+    $sender->SortDirection = $param->SortDirection;
+    $sender->DataSource = $this->query($sender->SortExpression, $sender->SortDirection);
+    $sender->dataBind();
+}
+```
+
+At render, `applySortState()` sets `aria-sort="ascending|descending"` on the header `<th>` (in `<thead>`, so a column header) of the sortable column whose `SortExpression` equals the grid's, through the cell's ARIA collection, and removes it from the other header cells. No other header cell gets `aria-sort="none"`. Style the indicator with `th[aria-sort="ascending"]` / `th[aria-sort="descending"]`. A grid whose application never sets `SortExpression` renders no `aria-sort`, so an application that sorts one direction only announces no direction it does not perform.
+
 ## Paging
 
 ```php
@@ -141,7 +159,7 @@ protected function updateRow($sender, $param)
 ## Patterns & Gotchas
 
 - **Always re-bind on postback events** — sorting, paging, edit, and update handlers must call `dataBind()` after updating state.
-- **`AutoGenerateColumns=true`** — for prototyping only; disables sorting, custom rendering, and editing support.
+- **`AutoGenerateColumns=true`** — for prototyping only; no control over rendering or editing. With `AllowSorting`, each auto column sorts by its field name.
 - **`DataKeyField`** — important for identifying the correct record on update/delete. Access via `$grid->getDataKeys()[$item->ItemIndex]`.
 - **Column order** — columns render in the order they appear in the `<Columns>` block (or in the data for auto-generated).
 - **Pager position** — `ShowTopPager`/`ShowBottomPager` control where the pager row appears. Both can be shown simultaneously.

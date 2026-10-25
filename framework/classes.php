@@ -782,6 +782,7 @@ return [
 'TDataGridPagerPosition' => 'Prado\Web\UI\WebControls\TDataGridPagerPosition',
 'TDataGridPagerStyle' => 'Prado\Web\UI\WebControls\TDataGridPagerStyle',
 'TDataGridSortCommandEventParameter' => 'Prado\Web\UI\WebControls\TDataGridSortCommandEventParameter',
+'TDataGridSortDirection' => 'Prado\Web\UI\WebControls\TDataGridSortDirection',
 'TDataList' => 'Prado\Web\UI\WebControls\TDataList',
 'TDataListCommandEventParameter' => 'Prado\Web\UI\WebControls\TDataListCommandEventParameter',
 'TDataListItem' => 'Prado\Web\UI\WebControls\TDataListItem',

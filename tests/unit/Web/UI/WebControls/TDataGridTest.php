@@ -28,6 +28,7 @@ use Prado\Web\UI\WebControls\TDataGridPagerMode;
 use Prado\Web\UI\WebControls\TDataGridPagerPosition;
 use Prado\Web\UI\WebControls\TDataGridPagerStyle;
 use Prado\Web\UI\WebControls\TDataGridSortCommandEventParameter;
+use Prado\Web\UI\WebControls\TDataGridSortDirection;
 use Prado\Web\UI\WebControls\TLabel;
 use Prado\Web\UI\WebControls\TLinkButton;
 use Prado\Web\UI\WebControls\TListItemType;
@@ -1028,6 +1029,99 @@ class TDataGridTest extends TestCase
 		$this->assertSame($grid->getHeader(), $param->getCommandSource());
 	}
 
+	private function sortableGrid(): TDataGrid
+	{
+		$grid = $this->createGrid();
+		$grid->setAllowSorting(true);
+		$grid->getColumns()->itemAt(0)->setSortExpression('name');
+		$grid->getColumns()->itemAt(1)->setSortExpression('city');
+		return $this->bind($grid, $this->rows(2));
+	}
+
+	/**
+	 * Clicks the sort button of a column. A handler applying the requested sort
+	 * sets the sort state of the grid when `$apply` is true.
+	 */
+	private function sort(TDataGrid $grid, int $column, bool $apply = true): TDataGridSortCommandEventParameter
+	{
+		$log = new \ArrayObject();
+		$grid->attachEventHandler('OnSortCommand', function ($sender, $param) use ($log, $apply) {
+			$log[] = $param;
+			if ($apply) {
+				$sender->setSortExpression($param->getSortExpression());
+				$sender->setSortDirection($param->getSortDirection());
+			}
+		});
+		$button = $grid->getHeader()->getCells()->itemAt($column)->getControls()->itemAt(0);
+		$button->onCommand(new TCommandEventParameter($button->getCommandName(), $button->getCommandParameter()));
+		$grid->getEventHandlers('OnSortCommand')->clear();
+		return $log[0];
+	}
+
+	public function testSortStateDefaults()
+	{
+		$grid = new TDataGrid();
+		$this->assertSame('', $grid->getSortExpression());
+		$this->assertSame(TDataGridSortDirection::Ascending, $grid->getSortDirection());
+		$grid->setSortExpression('name');
+		$grid->setSortDirection('descending');
+		$this->assertSame('name', $grid->getSortExpression());
+		$this->assertSame(TDataGridSortDirection::Descending, $grid->getSortDirection());
+	}
+
+	public function testSortDirectionInvalid()
+	{
+		$this->expectException(TInvalidDataValueException::class);
+		(new TDataGrid())->setSortDirection('Sideways');
+	}
+
+	public function testSortCommandLeavesSortState()
+	{
+		$grid = $this->sortableGrid();
+		$param = $this->sort($grid, 0, false);
+		$this->assertSame(TDataGridSortDirection::Ascending, $param->getSortDirection());
+		$this->assertSame('', $grid->getSortExpression());
+		$this->assertSame(TDataGridSortDirection::Ascending, $this->sort($grid, 0, false)->getSortDirection());
+	}
+
+	public function testSortCommandReversesCurrentExpression()
+	{
+		$grid = $this->sortableGrid();
+		$this->assertSame(TDataGridSortDirection::Ascending, $this->sort($grid, 0)->getSortDirection());
+		$this->assertSame(TDataGridSortDirection::Descending, $this->sort($grid, 0)->getSortDirection());
+		$this->assertSame(TDataGridSortDirection::Ascending, $this->sort($grid, 0)->getSortDirection());
+		$this->assertSame('name', $grid->getSortExpression());
+		$this->assertSame(TDataGridSortDirection::Ascending, $grid->getSortDirection());
+	}
+
+	public function testSortCommandNewExpressionSortsAscending()
+	{
+		$grid = $this->sortableGrid();
+		$grid->setSortExpression('name');
+		$grid->setSortDirection(TDataGridSortDirection::Descending);
+		$param = $this->sort($grid, 1);
+		$this->assertSame('city', $param->getSortExpression());
+		$this->assertSame(TDataGridSortDirection::Ascending, $param->getSortDirection());
+		$this->assertSame('city', $grid->getSortExpression());
+	}
+
+	public function testSortCommandFromDescendingSortsAscending()
+	{
+		$grid = $this->sortableGrid();
+		$grid->setSortExpression('name');
+		$grid->setSortDirection(TDataGridSortDirection::Descending);
+		$this->assertSame(TDataGridSortDirection::Ascending, $this->sort($grid, 0)->getSortDirection());
+	}
+
+	public function testSortCommandEventParameterDirection()
+	{
+		$command = new TDataGridCommandEventParameter(null, null, new TCommandEventParameter('sort', 'name'));
+		$this->assertSame(TDataGridSortDirection::Ascending, (new TDataGridSortCommandEventParameter(null, $command))->getSortDirection());
+		$this->assertSame(TDataGridSortDirection::Descending, (new TDataGridSortCommandEventParameter(null, $command, 'Descending'))->getSortDirection());
+		$this->expectException(TInvalidDataValueException::class);
+		new TDataGridSortCommandEventParameter(null, $command, 'Up');
+	}
+
 	public function testPageCommands()
 	{
 		$cases = [
@@ -1603,6 +1697,72 @@ class TDataGridTest extends TestCase
 		$this->assertMatchesRegularExpression('#<thead>\s*<tr>\s*<th[^>]*>Name</th>\s*<th[^>]*>City</th>\s*</tr></thead>#', $output);
 		$this->assertMatchesRegularExpression('#<tbody>\s*<tr>\s*<td>n0</td>\s*<td>c0</td>\s*</tr><tr>\s*<td>n1</td>\s*<td>c1</td>\s*</tr></tbody>#', $output);
 		$this->assertStringNotContainsString('<tfoot', $output);
+	}
+
+	public static function ariaSortProvider(): array
+	{
+		return [
+			'unsorted' => ['', TDataGridSortDirection::Ascending, [null, null]],
+			'ascending' => ['name', TDataGridSortDirection::Ascending, ['ascending', null]],
+			'descending' => ['city', TDataGridSortDirection::Descending, [null, 'descending']],
+			'no column' => ['id', TDataGridSortDirection::Ascending, [null, null]],
+		];
+	}
+
+	/**
+	 * @dataProvider ariaSortProvider
+	 */
+	public function testRenderAriaSort(string $expression, string $direction, array $expected)
+	{
+		$grid = $this->sortableGrid();
+		$grid->setSortExpression($expression);
+		$grid->setSortDirection($direction);
+		$this->attachToPage($grid);
+		$output = $this->render($grid);
+		preg_match_all('#<th(?=[\s>])([^>]*)>#', $output, $matches);
+		$this->assertCount(2, $matches[1]);
+		foreach ($expected as $i => $sort) {
+			if ($sort === null) {
+				$this->assertStringNotContainsString('aria-sort', $matches[1][$i]);
+			} else {
+				$this->assertStringContainsString('aria-sort="' . $sort . '"', $matches[1][$i]);
+			}
+		}
+	}
+
+	public function testRenderAriaSortFollowsSortChange()
+	{
+		$grid = $this->sortableGrid();
+		$this->attachToPage($grid);
+		$grid->setSortExpression('name');
+		$this->assertMatchesRegularExpression('#<th aria-sort="ascending"[^>]*>.*?Name#s', $this->render($grid));
+		$grid->setSortExpression('city');
+		$output = $this->render($grid);
+		$this->assertSame(1, substr_count($output, 'aria-sort'));
+		$this->assertMatchesRegularExpression('#<th aria-sort="ascending"[^>]*>.*?City#s', $output);
+	}
+
+	public function testRenderAriaSortRequiresAllowSorting()
+	{
+		$grid = $this->createGrid();
+		$grid->getColumns()->itemAt(0)->setSortExpression('name');
+		$grid->setSortExpression('name');
+		$this->bind($grid, $this->rows(1));
+		$this->attachToPage($grid);
+		$this->assertStringNotContainsString('aria-sort', $this->render($grid));
+	}
+
+	public function testRenderAriaSortOnAutoColumn()
+	{
+		$grid = new TDataGrid();
+		$grid->setID('Grid');
+		$grid->setAllowSorting(true);
+		$grid->setSortExpression('city');
+		$grid->setSortDirection(TDataGridSortDirection::Descending);
+		$this->bind($grid, $this->rows(1));
+		$this->attachToPage($grid);
+		preg_match_all('#<th(?=[\s>])([^>]*)>#', $this->render($grid), $matches);
+		$this->assertSame([false, false, true], array_map(fn ($attributes) => str_contains($attributes, 'aria-sort="descending"'), $matches[1]));
 	}
 
 	public function testRenderFooterCaptionAndSectionStyles()

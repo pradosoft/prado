@@ -81,7 +81,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 | Class | Purpose |
 |---|---|
-| `TDataGrid` | Tabular display with paging/sorting/editing. Columns: `TBoundColumn`, `TButtonColumn`, `TCheckBoxColumn`, `TDropDownListColumn`, `TTemplateColumn`. Events: `OnEditCommand`, `OnDeleteCommand`, `OnUpdateCommand`, `OnPageIndexChanged`, `OnSortCommand` |
+| `TDataGrid` | Tabular display with paging/sorting/editing. Columns: `TBoundColumn`, `TButtonColumn`, `TCheckBoxColumn`, `TDropDownListColumn`, `TTemplateColumn`. Events: `OnEditCommand`, `OnDeleteCommand`, `OnUpdateCommand`, `OnPageIndexChanged`, `OnSortCommand`. `SortExpression` / `SortDirection` (`TDataGridSortDirection`) hold the sort and render `aria-sort` on its header |
 | `TDataList` | Repeating item list with templates. Templates: `ItemTemplate`, `AlternatingItemTemplate`, `HeaderTemplate`, `FooterTemplate`, `EditItemTemplate`. `EditItemIndex` for inline editing. |
 | `TRepeater` | Flexible repeating container. Template-driven, no built-in editing or paging. Lightest-weight data control. |
 | `TListView` | Enhanced repeater with paging, sorting, and grouping support |
@@ -183,7 +183,7 @@ declares, through `light-dark()` and the `Canvas`/`CanvasText` system colors. Se
 ## Gotchas
 
 - `TFileUpload` requires `enctype="multipart/form-data"` on the `TForm` — set `TForm.Enctype` property.
-- `TDataGrid` postback with sorting/paging raises `OnPageIndexChanged` / `OnSortCommand` — you must re-bind data in those handlers.
+- `TDataGrid` postback with sorting/paging raises `OnPageIndexChanged` / `OnSortCommand` — you must re-bind data in those handlers. A sort handler also sets the grid's `SortExpression` and `SortDirection` from the parameter.
 - `TValidationSummary` with `ShowMessageBox=true` uses a JavaScript `alert()` — avoid this in modern UIs.
 - `TOutputCache` caches the rendered HTML; dynamic controls inside it will not update until the cache expires.
 - `TAbbr`, `TDfn`, and `TVar` filter their parent by default; a large parent, such as a `TContent`, is parsed whenever it holds an unmarked term. Set `TargetControl` to a small container, and exempt markup with `data-prado-filter-exempt`.
