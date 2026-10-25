@@ -95,7 +95,7 @@ TPage is the base class for all web pages in PRADO framework. It extends [TTempl
 ## Constants
 - `FIELD_POSTBACK_TARGET`: System postback target field name
 - `FIELD_POSTBACK_PARAMETER`: System postback parameter field name
-- `FIELD_LASTFOCUS`: System last focus field name
+- `FIELD_LASTFOCUS`: Deprecated since 4.4.0; a reserved field name that no script posts and the page ignores
 - `FIELD_PAGESTATE`: System page state field name
 - `FIELD_CALLBACK_TARGET`: System callback target field name
 - `FIELD_CALLBACK_PARAMETER`: System callback parameter field name

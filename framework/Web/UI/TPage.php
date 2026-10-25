@@ -80,6 +80,9 @@ class TPage extends TTemplateControl
 	 */
 	public const FIELD_POSTBACK_TARGET = 'PRADO_POSTBACK_TARGET';
 	public const FIELD_POSTBACK_PARAMETER = 'PRADO_POSTBACK_PARAMETER';
+	/**
+	 * @deprecated since 4.4.0. No client script posts this field, and the page ignores it.
+	 */
 	public const FIELD_LASTFOCUS = 'PRADO_LASTFOCUS';
 	public const FIELD_PAGESTATE = 'PRADO_PAGESTATE';
 	public const FIELD_CALLBACK_TARGET = 'PRADO_CALLBACK_TARGET';
@@ -91,7 +94,7 @@ class TPage extends TTemplateControl
 	private static $_systemPostFields = [
 		'PRADO_POSTBACK_TARGET' => true,
 		'PRADO_POSTBACK_PARAMETER' => true,
-		'PRADO_LASTFOCUS' => true,
+		'PRADO_LASTFOCUS' => true, // deprecated since 4.4.0
 		'PRADO_PAGESTATE' => true,
 		'PRADO_CALLBACK_TARGET' => true,
 		'PRADO_CALLBACK_PARAMETER' => true,
@@ -1049,6 +1052,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
+	 * Registers the {@see setFocus} target, if any, as the control focused on page load.
 	 * @internal This method is invoked by TForm at the end of its rendering
 	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
 	 */
@@ -1061,8 +1065,6 @@ class TPage extends TTemplateControl
 				$focus = $this->_focus;
 			}
 			$this->getClientScript()->registerFocusControl($focus);
-		} elseif ($this->_postData && ($lastFocus = $this->_postData->itemAt(self::FIELD_LASTFOCUS)) !== null) {
-			$this->getClientScript()->registerFocusControl($lastFocus);
 		}
 		$this->_inFormRender = false;
 	}

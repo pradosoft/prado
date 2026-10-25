@@ -253,7 +253,6 @@ if (typeof jQuery !== 'undefined') {
  * @... {optional string} ValidationGroup - Group to Validate
  * @... {optional string} ID - Validation ID
  * @... {optional string} PostBackUrl - Postback URL
- * @... {optional boolean} TrackFocus - Keep track of focused element if true
  * @... {string} EventTarget - Id of element that triggered PostBack
  * @... {string} EventParameter - EventParameter for PostBack
  */
@@ -281,19 +280,6 @@ Prado.PostBack = Prado.Class(
 
 		if(this.options['PostBackUrl'] && this.options['PostBackUrl'].length > 0)
 			form.action = this.options['PostBackUrl'];
-
-		if(this.options['TrackFocus'])
-		{
-			const lastFocus = document.getElementById('PRADO_LASTFOCUS');
-			if(lastFocus)
-			{
-				const active = document.activeElement;
-				if(active)
-					lastFocus.value = active.id;
-				else
-					lastFocus.value = this.options['EventTarget'];
-			}
-		}
 
 		let input=null;
 		if(this.options.EventTarget)

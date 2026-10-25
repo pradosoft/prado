@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+CHG: `TPage` no longer restores focus from the posted `PRADO_LASTFOCUS` field, which it wrote unencoded into page JavaScript, and `Prado.PostBack` drops the `TrackFocus` option; `TPage::FIELD_LASTFOCUS` is deprecated. (belisoful)
 CHG: `THttpCookie.HttpOnly` defaults to true, and the `THttpSession` cookie is HttpOnly; a configured `THttpSession.Cookie` keeps php.ini's `session.cookie_secure` and `session.cookie_httponly` when on. (belisoful)
 BUG: The `TAuthManager` auto-login cookie is HttpOnly, Secure over HTTPS, and always signed; `TUserManager` stores it as JSON instead of unserializing it. `TSecurityManager.CookieValidationKey` signs cookies and rotates separately from `ValidationKey`. (belisoful)
 BUG: `TSqliteMetaData` marked only the first column of a composite primary key as a key, since `PRAGMA table_info` reports each key column's position in `pk`; every key column is reported, in key order, and only a lone `INTEGER PRIMARY KEY` auto-increments. (belisoful)

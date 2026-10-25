@@ -82,7 +82,6 @@ function postBackOptions(id, formId = 'testForm', extra = {}) {
 		CausesValidation: false,
 		ValidationGroup: '',
 		PostBackUrl: '',
-		TrackFocus: false,
 		...extra,
 	};
 }
