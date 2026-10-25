@@ -58,4 +58,6 @@ During a callback, `TActivePageAdapter::renderDeferredControl` renders each re-r
 
 `<!--prado-fragment-{nonce}-->` comments bound the fragment, which is cut out after the handlers; a handler that removes a marker leaves the fragment unfiltered. Other controls' own tags are not in the context. (@since 4.4.0)
 
+A control's `RenderFilterDepth` limits its filters to the output of the controls at most that many levels below it ([TRenderFilterContext](TRenderFilterContext.md)). In a callback re-render the control is as many levels below each ancestor as in a full render: `renderDeferredControl` starts each ancestor's capture at that depth and `TRenderFilterContext::wrapDepth()` encloses the fragment in the markers of the levels above it. (@since 4.4.0)
+
 [`TBaseTerm`](WebControls/TBaseTerm.md) (`TAbbr`, `TDfn`, `TVar`) attaches a handler to its target to mark terms.

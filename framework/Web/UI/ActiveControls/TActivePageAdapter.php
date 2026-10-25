@@ -61,6 +61,11 @@ class TActivePageAdapter extends TControlAdapter
 	 */
 	public const CALLBACK_PAGESTATE_HEADER = 'X-PRADO-PAGESTATE';
 	/**
+	 * Callback response part holding a fresh CSRF token for the page's hidden field.
+	 * @since 4.4.0
+	 */
+	public const CALLBACK_CSRFTOKEN_HEADER = 'X-PRADO-CSRF-TOKEN';
+	/**
 	 * Script list header name.
 	 */
 	public const CALLBACK_SCRIPTLIST_HEADER = 'X-PRADO-SCRIPTLIST';
@@ -142,6 +147,8 @@ class TActivePageAdapter extends TControlAdapter
 	 * ancestors that filter fragments ({@see TControl::getRenderFilterFragments}),
 	 * filter what it renders into a {@see TCallbackResponseWriter}, innermost first.
 	 * An exempt descendant is hidden from them, as in {@see TControl::renderControl}.
+	 * The control is as many levels below each ancestor as in a full render
+	 * ({@see TControl::getRenderFilterDepth}).
 	 * The output stays in the same writer, so the boundary that client functions
 	 * name during the render holds the filtered output.
 	 * @param TControl $control the control to render
@@ -160,14 +167,14 @@ class TActivePageAdapter extends TControlAdapter
 			$context = new TRenderFilterContext();
 			$writer->setRenderFilterContext($context);
 		}
-		foreach ($filters as $filter) {
-			$context->beginCapture();
+		foreach (array_reverse($filters) as $filter) {
+			$context->beginCapture($filter->getRenderFilterDepth(), $this->getControlDepth($filter, $control));
 		}
 		$control->render($writer);
 		$output = $inner->flushWithoutBoundary();
 		foreach ($filters as $filter) {
 			if ($output !== '') {
-				$output = ($filter === $control) ? $control->onRenderFilter($output) : $this->filterFragment($filter, $control, $output);
+				$output = ($filter === $control) ? $context->filterOutput($control, $output) : $this->filterFragment($filter, $control, $output, $context);
 			}
 			$output = $context->endCapture((string) $output);
 		}
@@ -197,24 +204,42 @@ class TActivePageAdapter extends TControlAdapter
 	}
 
 	/**
+	 * @param TControl $ancestor the ancestor, or the control
+	 * @param TControl $control the control re-rendering
+	 * @return int the levels of the control below the ancestor
+	 * @since 4.4.0
+	 */
+	protected function getControlDepth($ancestor, $control): int
+	{
+		for ($depth = 0; $control !== $ancestor && $control !== null; $depth++) {
+			$control = $control->getParent();
+		}
+		return $depth;
+	}
+
+	/**
 	 * Raises the `onRenderFilter` event of an ancestor on a fragment of its output.
 	 * The fragment is inside the start tags that enclose it in the output of the
 	 * ancestor ({@see getFragmentContext}), so skipped tags and exempt markup apply
 	 * as in a full render. Marker comments bound the fragment; the handlers see
-	 * them, and a handler that removes one leaves the fragment unfiltered.
+	 * them, and a handler that removes one leaves the fragment unfiltered. With
+	 * the context of the capture, the markers of the levels above the control
+	 * enclose its output ({@see TRenderFilterContext::wrapDepth}).
 	 * @param TControl $ancestor the ancestor
 	 * @param TControl $control the control re-rendering
 	 * @param string $html the output of the control re-rendering
+	 * @param ?TRenderFilterContext $context the context capturing for the ancestor
 	 * @return string the filtered output
 	 * @since 4.4.0
 	 */
-	protected function filterFragment($ancestor, $control, string $html): string
+	protected function filterFragment($ancestor, $control, string $html, ?TRenderFilterContext $context = null): string
 	{
 		[$open, $close] = $this->getFragmentContext($ancestor, $control);
 		$marker = 'prado-fragment-' . bin2hex(random_bytes(4));
 		$begin = '<!--' . $marker . '-->';
 		$end = '<!--/' . $marker . '-->';
-		$param = new TRenderFilterParameter($open . $begin . $html . $end . $close);
+		$fragment = $open . $begin . ($context !== null ? $context->wrapDepth($html) : $html) . $end . $close;
+		$param = $context?->createDepthParameter($fragment) ?? new TRenderFilterParameter($fragment);
 		$param->setIsFragment(true);
 		$ancestor->raiseEvent('onRenderFilter', $ancestor, $param);
 		$output = $param->getFilterText();
@@ -398,6 +423,11 @@ class TActivePageAdapter extends TControlAdapter
 				$pagestate = $this->getPage()->getClientState();
 				$this->appendContentPart($response, self::CALLBACK_PAGESTATE_HEADER, $pagestate);
 			}
+		}
+
+		//sends a fresh CSRF token, since a login or logout during the callback replaces the secret
+		if ($this->getPage()->getEnableCsrfValidation()) {
+			$this->appendContentPart($response, self::CALLBACK_CSRFTOKEN_HEADER, $this->getRequest()->getCsrfToken());
 		}
 
 		//safari must receive at least 1 byte of data.

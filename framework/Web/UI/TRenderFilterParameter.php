@@ -16,9 +16,11 @@ use DOMDocumentType;
 use DOMElement;
 use DOMNode;
 use DOMXPath;
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\IEventCycleParameter;
 use Prado\Prado;
 use Prado\TEventParameter;
+use Prado\TPropertyValue;
 
 /**
  * TRenderFilterParameter class
@@ -84,6 +86,15 @@ use Prado\TEventParameter;
  * start and end tags of its exempt ancestors. The attribute stays in the output,
  * so each enclosing filter exempts the same markup. HTML without the attribute
  * does not parse. {@see TControl::getRenderFilterExempt} exempts a control's output.
+ *
+ * ## Depth limit
+ *
+ * The handlers of a control with {@see TControl::getRenderFilterDepth} see the
+ * output of the controls at most {@see getDepthLimit} levels below the control.
+ * The output of a deeper control is a placeholder comment; {@see postRaiseEvent}
+ * restores it. A handler sets its own limit from 1 to the RenderFilterDepth, or 0
+ * to see all output; the limit applies to the handlers that follow. The output
+ * holds marker comments around the output of the controls within the limit.
  *
  * ## DOM element walker
  *
@@ -200,6 +211,26 @@ class TRenderFilterParameter extends TEventParameter implements IEventCycleParam
 	private bool $_isFragment = false;
 
 	/**
+	 * @var string the comment data that starts the markers of the control levels
+	 */
+	private string $_depthMarker = '';
+
+	/**
+	 * @var int the RenderFilterDepth of the filtering control
+	 */
+	private int $_depthMax = 0;
+
+	/**
+	 * @var int the levels below the filtering control that the handlers see; 0 for all
+	 */
+	private int $_depthLimit = 0;
+
+	/**
+	 * @var array<string, string> the output of the deeper controls, by placeholder
+	 */
+	private array $_depthHidden = [];
+
+	/**
 	 * Constructor.
 	 * @param string $html the rendered HTML to filter
 	 */
@@ -234,6 +265,80 @@ class TRenderFilterParameter extends TEventParameter implements IEventCycleParam
 	public function setIsFragment(bool $value): void
 	{
 		$this->_isFragment = $value;
+	}
+
+	/**
+	 * Returns the levels of controls below the filtering control whose output the
+	 * handlers see. The output of a deeper control is a placeholder comment.
+	 * @return int the depth limit; 0 for all output
+	 * @since 4.4.0
+	 */
+	public function getDepthLimit(): int
+	{
+		return $this->_depthLimit;
+	}
+
+	/**
+	 * Sets the levels of controls whose output the following handlers see, and
+	 * discards the DOM.
+	 * @param int $value the depth limit, from 1 to the RenderFilterDepth of the
+	 *   filtering control; 0 for all output
+	 * @throws TInvalidDataValueException if the value is negative or greater than the RenderFilterDepth
+	 * @since 4.4.0
+	 */
+	public function setDepthLimit($value): void
+	{
+		$value = TPropertyValue::ensureInteger($value);
+		if ($value < 0 || $value > $this->_depthMax) {
+			throw new TInvalidDataValueException('renderfilterparameter_depthlimit_invalid', $value, $this->_depthMax);
+		}
+		if ($value === $this->_depthLimit) {
+			return;
+		}
+		$this->_depthLimit = $value;
+		$html = $this->restoreDepth($this->getFilterText());
+		if ($value > 0) {
+			$marker = preg_quote($this->_depthMarker . ($value + 1) . '-->', '/');
+			$html = preg_replace_callback('/<!--' . $marker . '.*?<!--\/' . $marker . '/s', fn ($match) => $this->depthToken($match[0]), $html);
+		}
+		$this->setFilterText($html);
+	}
+
+	/**
+	 * Sets the markers of the control levels in the HTML, and hides the output
+	 * deeper than the limit. {@see TRenderFilterContext::createDepthParameter} calls it.
+	 * @param string $marker the comment data that starts the markers of the control levels
+	 * @param int $limit the RenderFilterDepth of the filtering control
+	 * @since 4.4.0
+	 */
+	public function setDepthMarker(string $marker, int $limit): void
+	{
+		$this->_depthMarker = $marker;
+		$this->_depthMax = max(0, $limit);
+		$this->setDepthLimit($this->_depthMax);
+	}
+
+	/**
+	 * @param string $html the HTML
+	 * @return string the HTML with the output of the deeper controls restored
+	 */
+	private function restoreDepth(string $html): string
+	{
+		while ($this->_depthHidden !== [] && ($restored = strtr($html, $this->_depthHidden)) !== $html) {
+			$html = $restored;
+		}
+		return $html;
+	}
+
+	/**
+	 * @param string $markup the output of a deeper control
+	 * @return string the placeholder comment of the output
+	 */
+	private function depthToken(string $markup): string
+	{
+		$token = '<!--' . $this->_depthMarker . 'h' . count($this->_depthHidden) . '-->';
+		$this->_depthHidden[$token] = $markup;
+		return $token;
 	}
 
 	// -------------------------------------------------------------------------
@@ -451,7 +556,7 @@ class TRenderFilterParameter extends TEventParameter implements IEventCycleParam
 	/**
 	 * Serialises DOM→HTML after all handlers run (if DOM is current), so
 	 * {@see TControl::processRenderFilter} always receives a valid string, and
-	 * restores the exempt markup.
+	 * restores the exempt markup and the output of the deeper controls.
 	 *
 	 * @param array $responses aggregated handler responses
 	 * @param string $name event name
@@ -463,11 +568,18 @@ class TRenderFilterParameter extends TEventParameter implements IEventCycleParam
 	public function postRaiseEvent($responses, $name, $sender, $param, $responsetype, $postfunction): void
 	{
 		$this->ensureFilterText();
-		if ($this->_exemptMarkup !== []) {
-			parent::offsetSet(self::RENDER_FILTER_TEXT, strtr(parent::offsetGet(self::RENDER_FILTER_TEXT) ?? '', $this->_exemptMarkup));
+		if ($this->_exemptMarkup !== [] || $this->_depthHidden !== []) {
+			$html = parent::offsetGet(self::RENDER_FILTER_TEXT) ?? '';
+			$hidden = $this->_exemptMarkup + $this->_depthHidden;
+			while (($restored = strtr($html, $hidden)) !== $html) {
+				$html = $restored;
+			}
+			parent::offsetSet(self::RENDER_FILTER_TEXT, $html);
 			parent::offsetSet(self::RENDER_FILTER_DOM, null);
 			$this->_exemptMarkup = [];
+			$this->_depthHidden = [];
 		}
+		$this->_depthLimit = 0;
 	}
 
 	// -------------------------------------------------------------------------

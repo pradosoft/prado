@@ -19,7 +19,7 @@ Core UI component system for the Prado framework: the control hierarchy, templat
   - Implements `IRenderable`, `IBindable`
 
 - **[`TPage`](TPage.md)** — Root control and page container. Manages:
-  - Form postback/callback request processing
+  - Form postback/callback request processing, each refused without the CSRF token while `EnableCsrfValidation` is on (the default)
   - Validator collection
   - Theme/skin application
   - Page state serialization (HMAC-signed, optionally encrypted and compressed)

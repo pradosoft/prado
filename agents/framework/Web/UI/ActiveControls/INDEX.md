@@ -17,6 +17,7 @@ AJAX-enabled controls for the Prado framework. ActiveControls trigger server-sid
    - `X-PRADO-ACTIONS` — JSON array of client-side DOM commands
    - `X-PRADO-DATA` — arbitrary return data
    - `X-PRADO-PAGESTATE` — updated page state token
+   - `X-PRADO-CSRF-TOKEN` — fresh CSRF token for the `PRADO_CSRF_TOKEN` hidden field, while `TPage.EnableCsrfValidation` is on (4.4.0)
    - `X-PRADO-SCRIPTLIST` / `X-PRADO-STYLESHEET` — dynamic asset loading
 6. JavaScript processes the response and applies updates without a page reload.
 

@@ -70,5 +70,6 @@ Advanced RBAC with permission hierarchies and dynamic authorization.
 ## Gotchas
 
 - `TAuthManager` redirects unauthenticated requests to `LoginPage` — ensure that page is publicly accessible (exempt from authorization rules).
-- Cookie auto-login stores an HttpOnly cookie signed with `TSecurityManager::CookieValidationKey`; changing that key signs out every remembered user.
+- Cookie auto-login stores an HttpOnly cookie signed with `TSecurityManager::CookieValidationKey`; changing that key signs out every remembered user, and drops every CSRF secret kept in the `PRADO_CSRF` cookie.
+- `TAuthManager::login()` and `logout()` replace the CSRF secret (`THttpRequest::getCsrfToken(true)`); a page that logs in during a callback receives the fresh token in the callback response.
 - `TPermissionsManager` uses `TDbParameterModule` for dynamic roles — that module must be initialized first.

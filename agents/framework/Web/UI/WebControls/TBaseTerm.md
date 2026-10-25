@@ -32,6 +32,7 @@ TBaseTerm renders a term element and marks the other occurrences of its terms in
 | `TargetControl` | ID located with `findControl`; empty → the parent. Missing → `baseterm_targetcontrol_invalid`. |
 | `MarkOccurrences` | Whether the target is marked. Default `true`. |
 | `MarkLimit` | Marks per term; `0` → every occurrence. Default `0`; `TDfn` `1`. Negative → `baseterm_marklimit_invalid`. |
+| `DepthLimit` | Levels of controls below the target whose output is marked; `0` → all. Each child control of the target is one level. Default `0`. Negative → `baseterm_depthlimit_invalid`. |
 | `CaseSensitive` | Default `true`. A mark keeps the text as written. |
 | `Term` | Read-only: `Text`, or the text of a body that holds only strings. |
 | `TermTitles` | Read-only: `Terms` plus the control's term with its `Title` (the control's term wins). |
@@ -48,9 +49,14 @@ TBaseTerm renders a term element and marks the other occurrences of its terms in
 | Exempt markup (`data-prado-filter-exempt`) or an exempt control (`RenderFilterExempt`) | no; they are placeholders when the handler runs |
 | Inside a skipped tag, under an element with `data-prado-filter-exempt="false"` | yes; the nearest attribute or skipped tag decides |
 | Past `MarkLimit` | no; elements of the control's tag that hold the term count toward the limit |
+| Output of a control more than `DepthLimit` levels below the target | no; it is a placeholder when the handler runs, and its elements do not count toward `MarkLimit` |
 
 - `getSkipTags()` is the override point for the skip list.
 - With `MarkLimit` `1`, the control's own term is dropped when the control renders inside its target (its element is the term's mark), so a `TDfn` term costs no parse.
+
+## Depth limit
+
+`onPreRender` raises the target's `TControl.RenderFilterDepth` to at least `DepthLimit`, so the target writes depth markers to that level; other handlers on the target see the same levels or more. `markTerms` sets `TRenderFilterParameter::setDepthLimit()` to the control's own `DepthLimit` (0 sees all), marks through `markOutput()`, and restores the previous limit for the handlers that follow. Terms with different limits on one target each mark their own levels. A `RenderFilterDepth` the target keeps in viewstate stays raised after a term is removed.
 
 ## Cost
 

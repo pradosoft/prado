@@ -26,6 +26,7 @@ THttpRequest provides storage and access scheme for user requests sent via HTTP.
 - `ServiceID` (string): Requested service ID
 - `ServiceParameter` (string): Requested service parameter
 - `EnableCookieValidation` (bool): Whether cookies should be validated, defaults to false; cookies are signed with `TSecurityManager::CookieValidationKey`
+- `EnableCsrfCookie` (bool): Whether the CSRF secret is kept in the `PRADO_CSRF` cookie, signed with `CookieValidationKey`, HttpOnly and Secure over HTTPS; defaults to true. False keeps it in the session, which must exist (`httprequest_csrf_session_required`) (@since 4.4.0)
 - `CgiFix` (int): Whether to use ORIG_PATH_INFO and ORIG_SCRIPT_NAME for CGI environments
 
 ## Method Types
@@ -63,6 +64,12 @@ THttpRequest provides storage and access scheme for user requests sent via HTTP.
 - `getAcceptTypes()`: Returns user browser accept types
 - `getUserLanguages()`: Returns list of user preferred languages
 - `getBrowser()`: Returns PHP browser capabilities and throws `TConfigurationException` when the `browscap` directive is not configured
+
+### CSRF Token (@since 4.4.0)
+- `getCsrfToken(bool $regenerate = false)`: The token for forms and scripts of this response: the secret masked with random bytes, so every call differs and a compressed page does not expose the secret. A request without a secret receives one, written to the cookie or session `CSRF_TOKEN_KEY` (`PRADO_CSRF`). `$regenerate` replaces the secret; `TAuthManager::login()` and `logout()` do this
+- `validateCsrfToken(?string $token = null)`: Compares a token with the secret using `hash_equals()`. Without an argument, reads the `CSRF_TOKEN_FIELD` (`PRADO_CSRF_TOKEN`) POST field, then the `CSRF_TOKEN_HEADER` (`X-Prado-Csrf-Token`) header. The query string never supplies the token
+- Protected seams: `getCsrfTokenFromRequest()`, `loadCsrfToken()`, `saveCsrfToken()`, `createCsrfCookie()`, `getCsrfSession()`, `generateCsrfToken()` (32 hex characters), `maskCsrfToken()` / `unmaskCsrfToken()` (base64 of mask + XOR)
+- Enforcement: [TPage](UI/TPage.md) `EnableCsrfValidation` (on by default) checks every postback and callback; [TService](../TService.md) `EnableCsrfValidation` (off by default) checks state-changing requests to the other services
 
 ### Cookie Handling
 - `getCookies()`: Returns [THttpCookieCollection](./THttpCookieCollection.md) of cookies sent by user
@@ -103,7 +110,7 @@ THttpRequest implements ArrayAccess, IteratorAggregate, and Countable interfaces
 - Works with [TUrlManager](./TUrlManager.md) for URL interpretation and construction  
 - Integrates with [THttpCookieCollection](./THttpCookieCollection.md) for cookie handling
 - Uses [THttpCookie](./THttpCookie.md) for individual cookie objects
-- Interacts with [TSecurityManager](../Security/TSecurityManager.md) for cookie validation when enabled
+- Interacts with [TSecurityManager](../Security/TSecurityManager.md) for cookie validation when enabled, and to sign the CSRF cookie
 
 ## Usage Example
 ```php

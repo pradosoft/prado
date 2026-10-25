@@ -10,6 +10,14 @@ for both A and B.
 Upgrading from v4.3.3
 ---------------------
 - PHP 8.2 is now required. Applications running PHP 8.1 stay on Prado 4.3.
+- SqlMap (`Prado\Data\SqlMap`) is no longer part of the framework; it is the `pradosoft/prado-sqlmap` package (#1168).
+  An application that does not use SqlMap needs no change. An application using `TSqlMapConfig`, `TSqlMapGateway`, or
+  `TSqlMapManager` adds the package: `composer require pradosoft/prado-sqlmap`. Namespaces, class names, short names
+  in configuration (`class="TSqlMapConfig"`), `TSqlMapConfig` properties, the XML mapping formats, the `TSqlMapGateway`
+  API, and the `sqlmap_*` error codes are unchanged; Prado registers the package's class map and error messages from
+  its Composer `extra.prado` section. After installing the package, compare `TSqlMapException::getErrorCode()` with
+  the message code rather than the message text. The package's migration guide lists every behavior difference:
+  https://github.com/pradosoft/prado-sqlmap/blob/master/docs/migration.md
 - `TSecurityManager::UseEncryptionHmac` defaults to `true`; it was `false`. `decrypt()` reads data with or without the
   HMAC, so existing encrypted data still decrypts. Prado versions before 4.3.3 cannot decrypt the new output; an
   application sharing encrypted data with them sets `UseEncryptionHmac="false"`.
@@ -25,6 +33,13 @@ Upgrading from v4.3.3
 - `THttpCookie::HttpOnly` defaults to `true`; it was `false`. JavaScript reading a cookie set by the server needs
   `setHttpOnly(false)` on that cookie. The `THttpSession` cookie is HttpOnly unless `Cookie.HttpOnly="false"` and
   php.ini's `session.cookie_httponly` is off.
+- A postback or callback must carry the CSRF token the page renders in its `PRADO_CSRF_TOKEN` hidden field, or in
+  the `X-Prado-Csrf-Token` header, or it is refused with HTTP 400. A postback through the query string is refused.
+  Prado forms and callbacks send the token on their own. A form or script outside Prado that posts to a page adds
+  the token from `THttpRequest::getCsrfToken()`, or the page sets `EnableCsrfValidation="false"`, also available on
+  `<pages>` for every page. The secret lives in the `PRADO_CSRF` cookie, signed with `CookieValidationKey`; set
+  `THttpRequest.EnableCsrfCookie="false"` to keep it in the session instead. A form left open until the browser
+  restarts, or until the session ends with session storage, is refused on submit.
 - Cookies are signed with `TSecurityManager::CookieValidationKey`, which derives from `ValidationKey` unless set. Cookies
   signed by `EnableCookieValidation` before the upgrade are dropped once. The `TAuthManager` auto-login cookie is always
   signed and HttpOnly; an `IUserManager` reading it receives the unsigned value as before.

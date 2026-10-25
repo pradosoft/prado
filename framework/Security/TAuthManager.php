@@ -516,7 +516,8 @@ class TAuthManager extends \Prado\TModule
 	 * Logs in a user with username and password.
 	 * The username and password will be used to validate if login is successful.
 	 * If yes, a user object will be created for the application.
-	 * On successful Login, onLogin is raised with the TUser as parameter.
+	 * On successful Login, onLogin is raised with the TUser as parameter, and the CSRF
+	 * secret is replaced, so a token issued before the login stops validating.
 	 * When the login fails, onLoginFailed is raised with the username as parameter.
 	 * @param string $username username
 	 * @param string $password password
@@ -531,6 +532,7 @@ class TAuthManager extends \Prado\TModule
 			}
 			$this->updateSessionUser($user);
 			$this->getApplication()->setUser($user);
+			$this->getRequest()->getCsrfToken(true);
 
 			if ($expire > 0) {
 				$cookie = $this->createUserCookie();
@@ -549,7 +551,7 @@ class TAuthManager extends \Prado\TModule
 	/**
 	 * Logs out a user.  Raises onLogout with the TUser as parameter
 	 * before logging out. User session will be destroyed after this
-	 * method is called.
+	 * method is called, and the CSRF secret is replaced.
 	 * @throws TConfigurationException if session module is not loaded.
 	 */
 	public function logout()
@@ -558,6 +560,7 @@ class TAuthManager extends \Prado\TModule
 		$this->requireSession();
 		$this->getApplication()->getUser()->setIsGuest(true);
 		$this->destroySession();
+		$this->getRequest()->getCsrfToken(true);
 		if ($this->getAllowAutoLogin()) {
 			$this->getResponse()->getCookies()->add($this->createUserCookie());
 		}

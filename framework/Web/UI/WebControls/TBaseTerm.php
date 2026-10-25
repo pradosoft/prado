@@ -43,6 +43,8 @@ use Prado\Web\UI\TRenderFilterParameter;
  * - <b>MarkOccurrences</b>, bool: whether the control marks its target. Defaults to true.
  * - <b>MarkLimit</b>, int: the number of occurrences of each term to mark; 0
  *   marks every occurrence. The elements of a term in the target count toward its limit.
+ * - <b>DepthLimit</b>, int: the levels of controls below the target whose output
+ *   is marked; 0 marks all output. Each child control of the target is one level.
  * - <b>CaseSensitive</b>, bool: whether the terms match case-sensitively. Defaults
  *   to true. A mark keeps the text as written.
  *
@@ -74,6 +76,11 @@ use Prado\Web\UI\TRenderFilterParameter;
  * marked when it is the target or inside it: the target filters fragments
  * ({@see \Prado\Web\UI\TControl::getRenderFilterFragments}). A fragment is not
  * marked when MarkLimit is set, since the marks elsewhere in the target are unknown.
+ *
+ * A DepthLimit raises the {@see \Prado\Web\UI\TControl::getRenderFilterDepth} of
+ * the target to at least the limit, so the other render filters of the target see
+ * the same levels or more. Each control marks the levels of its own DepthLimit
+ * ({@see TRenderFilterParameter::setDepthLimit}).
  *
  * Accessibility: a mark keeps the text, so the names of links and buttons that
  * hold a term are unchanged. Do not add a `role` or `aria-label` to the control.
@@ -108,7 +115,8 @@ abstract class TBaseTerm extends THtmlElement implements \Prado\IDataRenderer
 	/**
 	 * Attaches the handler that marks the terms to the target, and has the target
 	 * filter the callback re-renders of its descendants
-	 * ({@see \Prado\Web\UI\TControl::getRenderFilterFragments}).
+	 * ({@see \Prado\Web\UI\TControl::getRenderFilterFragments}) to at least the
+	 * DepthLimit ({@see \Prado\Web\UI\TControl::getRenderFilterDepth}).
 	 * @param \Prado\TEventParameter $param event parameter
 	 * @throws TInvalidDataValueException if the TargetControl control cannot be found
 	 */
@@ -118,6 +126,9 @@ abstract class TBaseTerm extends THtmlElement implements \Prado\IDataRenderer
 		if (!$this->_targetFiltered && $this->getMarkOccurrences() && ($target = $this->getMarkTarget()) !== null) {
 			$target->attachEventHandler('onRenderFilter', [$this, 'markTerms']);
 			$target->setRenderFilterFragments(true);
+			if (($depth = $this->getDepthLimit()) > $target->getRenderFilterDepth()) {
+				$target->setRenderFilterDepth($depth);
+			}
 			$this->_targetFiltered = true;
 		}
 	}
@@ -210,15 +221,31 @@ abstract class TBaseTerm extends THtmlElement implements \Prado\IDataRenderer
 	}
 
 	/**
-	 * Marks the occurrences of the terms in the rendered output of the target.
-	 * This is the `onRenderFilter` handler on the target. Output without an
-	 * unmarked term does not parse. A fragment of the output of the target
-	 * ({@see TRenderFilterParameter::getIsFragment}) is not marked when MarkLimit
-	 * is set, since the marks elsewhere in the target are unknown.
+	 * Marks the occurrences of the terms in the rendered output of the target,
+	 * to the DepthLimit. This is the `onRenderFilter` handler on the target. The
+	 * handlers that follow see the depth of output they saw before.
 	 * @param mixed $sender the target
 	 * @param TRenderFilterParameter $param the rendered output of the target
 	 */
 	public function markTerms($sender, $param)
+	{
+		$depth = $param->getDepthLimit();
+		$param->setDepthLimit($this->getDepthLimit());
+		try {
+			$this->markOutput($param);
+		} finally {
+			$param->setDepthLimit($depth);
+		}
+	}
+
+	/**
+	 * Marks the occurrences of the terms in the output that the handler sees.
+	 * Output without an unmarked term does not parse. A fragment of the output of
+	 * the target ({@see TRenderFilterParameter::getIsFragment}) is not marked when
+	 * MarkLimit is set, since the marks elsewhere in the target are unknown.
+	 * @param TRenderFilterParameter $param the rendered output of the target
+	 */
+	protected function markOutput(TRenderFilterParameter $param): void
 	{
 		if (($param->getIsFragment() && $this->getMarkLimit() > 0) || ($titles = $this->getMarkedTermTitles()) === []) {
 			return;
@@ -521,6 +548,27 @@ abstract class TBaseTerm extends THtmlElement implements \Prado\IDataRenderer
 			throw new TInvalidDataValueException('baseterm_marklimit_invalid', get_class($this), $value);
 		}
 		$this->setViewState('MarkLimit', $value, $this->getDefaultMarkLimit());
+	}
+
+	/**
+	 * @return int the levels of controls below the target whose output is marked;
+	 *   0 marks all output. Defaults to 0.
+	 */
+	public function getDepthLimit(): int
+	{
+		return $this->getViewState('DepthLimit', 0);
+	}
+
+	/**
+	 * @param int|string $value the levels of controls below the target whose output is marked; 0 marks all output
+	 * @throws TInvalidDataValueException if the value is negative
+	 */
+	public function setDepthLimit($value)
+	{
+		if (($value = TPropertyValue::ensureInteger($value)) < 0) {
+			throw new TInvalidDataValueException('baseterm_depthlimit_invalid', get_class($this), $value);
+		}
+		$this->setViewState('DepthLimit', $value, 0);
 	}
 
 	/**

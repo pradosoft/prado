@@ -113,6 +113,7 @@ class TJsonService extends \Prado\TService
 	 */
 	public function run()
 	{
+		$this->ensureCsrfToken();
 		$id = $this->getRequest()->getServiceParameter();
 		if (isset($this->_services[$id])) {
 			$serviceConfig = $this->_services[$id];

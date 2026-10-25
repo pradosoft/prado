@@ -101,3 +101,28 @@ test('TTermTestCase: callback fragment marks terms of an ancestor', async ({ pag
 	await expect(page.locator('#preNote')).toHaveText('The API is literal here.');
 	expect(await marks(page, '#preNote', 'abbr')).toEqual([]);
 });
+
+/**
+ * A TAbbr with a DepthLimit of 2 marks the text of the controls at most two levels
+ * below its parent: each TPanel and TActiveLabel is a level. A TActivePanel
+ * re-rendered alone in a callback is marked to the same levels.
+ */
+test('TTermTestCase: depth limit', async ({ page }) => {
+	const h = new PradoTestHelper(page, GENERIC_BASE_URL);
+	await h.url(PAGE_URL);
+
+	const dom = [['DOM', 'Document Object Model']];
+	expect(await marks(page, '#levelTop', 'abbr')).toEqual(dom);
+	expect(await marks(page, '#levelOneNote', 'abbr')).toEqual(dom);
+	expect(await marks(page, '#levelTwoNote', 'abbr')).toEqual(dom);
+	expect(await marks(page, '#levelThreeNote', 'abbr')).toEqual([]);
+	expect(await page.locator(`#${BASE}levels`).evaluate((el) => el.innerHTML.includes('prado-depth'))).toBe(false);
+
+	await h.click(`${BASE}btnLevels`);
+	await h.waitForAjaxCalls();
+	await expect(page.locator('#levelLiveNote')).toHaveText('The DOM changed.');
+	await expect(page.locator('#levelDeepNote')).toHaveText('A deeper DOM change.');
+	expect(await marks(page, '#levelLiveNote', 'abbr')).toEqual(dom);
+	expect(await marks(page, '#levelDeepNote', 'abbr')).toEqual([]);
+	expect(await page.locator(`#${BASE}levels`).evaluate((el) => el.innerHTML.includes('prado-depth'))).toBe(false);
+});

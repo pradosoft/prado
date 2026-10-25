@@ -3,6 +3,7 @@
 namespace Prado\Test\Unit\Web\UI;
 
 use PHPUnit\Framework\TestCase;
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Web\UI\TControl;
 use Prado\Web\UI\THtmlWriter;
 use Prado\Web\UI\TRenderFilterContext;
@@ -221,6 +222,167 @@ class TRenderFilterContextTest extends TestCase
 	}
 
 	// ================================================================================
+	// TControl::RenderFilterDepth
+	// ================================================================================
+
+	private function depth(TControl $control, int $depth): TControl
+	{
+		$control->setRenderFilterDepth($depth);
+		return $control;
+	}
+
+	/**
+	 * F holding A holding B holding C, each with the word html.
+	 */
+	private function levels(): array
+	{
+		$c = $this->box('C', 'html');
+		$b = $this->box('B', 'html', $c);
+		$a = $this->box('A', 'html', $b);
+		return [$this->box('F', 'html', $a), $a, $b, $c];
+	}
+
+	public function testRenderFilterDepth()
+	{
+		$control = new TControl();
+		$this->assertSame(0, $control->getRenderFilterDepth());
+		$control->setRenderFilterDepth('2');
+		$this->assertSame(2, $control->getRenderFilterDepth());
+		$this->expectException(TInvalidDataValueException::class);
+		$control->setRenderFilterDepth(-1);
+	}
+
+	public static function depthProvider(): array
+	{
+		return [
+			'all' => [0, '[F html-1[A html-1[B html-1[C html-1 C] B] A] F]'],
+			'children' => [1, '[F html-1[A html-1[B html[C html C] B] A] F]'],
+			'grandchildren' => [2, '[F html-1[A html-1[B html-1[C html C] B] A] F]'],
+			'past the controls' => [5, '[F html-1[A html-1[B html-1[C html-1 C] B] A] F]'],
+		];
+	}
+
+	/**
+	 * @dataProvider depthProvider
+	 */
+	public function testDepthHidesDeeperOutput(int $depth, string $expected)
+	{
+		[$f] = $this->levels();
+		$this->assertSame($expected, $this->render($this->filter($this->depth($f, $depth), '1')));
+	}
+
+	public function testDeeperFilterSeesHiddenOutput()
+	{
+		[$f, , $b] = $this->levels();
+		$this->filter($b, '2');
+		$this->assertSame(
+			'[F html-1[A html-1[B html-2[C html-2 C] B] A] F]',
+			$this->render($this->filter($this->depth($f, 1), '1'))
+		);
+	}
+
+	public function testEnclosingFilterSeesHiddenOutput()
+	{
+		[$f] = $this->levels();
+		$this->filter($this->depth($f, 1), '1');
+		$this->assertSame(
+			'[O html-o[F html-o-1[A html-o-1[B html-o[C html-o C] B] A] F] O]',
+			$this->render($this->filter($this->box('O', 'html', $f), 'o'))
+		);
+	}
+
+	public function testNestedFiltersCountTheirOwnDepth()
+	{
+		[$f, $a] = $this->levels();
+		$this->filter($this->depth($a, 1), 'a');
+		$this->assertSame(
+			'[F html-1[A html-1-a[B html-a[C html C] B] A] F]',
+			$this->render($this->filter($this->depth($f, 1), '1'))
+		);
+	}
+
+	public function testHandlerSeesPlaceholderAndRemovesNoMarkers()
+	{
+		[$f] = $this->levels();
+		$seen = '';
+		$this->depth($f, 2)->onRenderFilter[] = function ($sender, TRenderFilterParameter $param) use (&$seen) {
+			$seen = $param->getFilterText();
+		};
+		$output = $this->render($f);
+		$this->assertStringNotContainsString('[C', $seen);
+		$this->assertStringContainsString('<!--' . TRenderFilterContext::DEPTH_MARKER, $seen);
+		$this->assertSame('[F html[A html[B html[C html C] B] A] F]', $output);
+	}
+
+	public function testHandlerSetsItsDepthLimit()
+	{
+		[$f] = $this->levels();
+		$limits = [];
+		$this->depth($f, 2);
+		$f->onRenderFilter[] = function ($sender, TRenderFilterParameter $param) use (&$limits) {
+			$limits[] = $param->getDepthLimit();
+			$param->setDepthLimit(1);
+			$param->setFilterText(preg_replace('/\bhtml\b/', 'html-1', $param->getFilterText()));
+		};
+		$f->onRenderFilter[] = function ($sender, TRenderFilterParameter $param) use (&$limits) {
+			$limits[] = $param->getDepthLimit();
+			$param->setDepthLimit(0);
+			$param->setFilterText(preg_replace('/\bhtml\b/', 'html-0', $param->getFilterText()));
+		};
+		$this->assertSame('[F html-0-1[A html-0-1[B html-0[C html-0 C] B] A] F]', $this->render($f));
+		$this->assertSame([2, 1], $limits);
+	}
+
+	public static function invalidHandlerDepthProvider(): array
+	{
+		return [
+			'negative' => [2, -1],
+			'past the control' => [2, 3],
+			'without a control depth' => [0, 1],
+		];
+	}
+
+	/**
+	 * @dataProvider invalidHandlerDepthProvider
+	 */
+	public function testHandlerDepthLimitOutOfRangeThrows(int $depth, int $limit)
+	{
+		[$f] = $this->levels();
+		$this->depth($f, $depth)->onRenderFilter[] = function ($sender, TRenderFilterParameter $param) use ($limit) {
+			$param->setDepthLimit($limit);
+		};
+		$this->expectException(TInvalidDataValueException::class);
+		$this->render($f);
+	}
+
+	public function testDepthMarkersInsideExemptOutputAreRemoved()
+	{
+		[$f, $a] = $this->levels();
+		$this->exempt($a, true);
+		$this->assertSame(
+			'[F html-1[A html[B html[C html C] B] A] F]',
+			$this->render($this->filter($this->depth($f, 2), '1'))
+		);
+	}
+
+	public function testExemptOutputInsideHiddenOutputIsRestored()
+	{
+		[$f, , $b, $c] = $this->levels();
+		$this->exempt($c, true);
+		$this->filter($b, '2');
+		$this->assertSame(
+			'[F html-1[A html-1[B html-2[C html C] B] A] F]',
+			$this->render($this->filter($this->depth($f, 1), '1'))
+		);
+	}
+
+	public function testDepthWithoutFilterRendersUnchanged()
+	{
+		[$f] = $this->levels();
+		$this->assertSame('[F html[A html[B html[C html C] B] A] F]', $this->render($this->depth($f, 1)));
+	}
+
+	// ================================================================================
 	// TRenderFilterContext API
 	// ================================================================================
 
@@ -234,6 +396,59 @@ class TRenderFilterContextTest extends TestCase
 		$this->assertTrue($context->getIsCapturing());
 		$this->assertSame('b', $context->endCapture('b'));
 		$this->assertFalse($context->getIsCapturing());
+	}
+
+	public function testControlMarkers()
+	{
+		$context = new TRenderFilterContext();
+		$this->assertSame('', $context->beginControl());
+		$this->assertSame('', $context->endControl());
+		$context->beginCapture(1);
+		$this->assertSame('', $context->beginControl());
+		$marker = $context->beginControl();
+		$this->assertMatchesRegularExpression('/^<!--' . TRenderFilterContext::DEPTH_MARKER . '[0-9a-f]{8}-\d+-2-->$/', $marker);
+		$this->assertSame('', $context->beginControl());
+		$this->assertSame('', $context->endControl());
+		$this->assertSame('<!--/' . substr($marker, 4), $context->endControl());
+		$this->assertSame('', $context->endControl());
+		$this->assertSame('a', $context->endCapture('a' . $marker));
+	}
+
+	public function testWrapDepth()
+	{
+		$context = new TRenderFilterContext();
+		$this->assertSame('x', $context->wrapDepth('x'));
+		$context->beginCapture(1, 4);
+		$this->assertSame(1, preg_match_all('/<!--' . TRenderFilterContext::DEPTH_MARKER . '[^>]*-2-->/', $context->wrapDepth('x')));
+		$context->beginCapture(3, 3);
+		$wrapped = $context->wrapDepth('x');
+		$this->assertMatchesRegularExpression('/^(<!--prado-depth-[^>]*-[23]-->){2}x(<!--\/prado-depth-[^>]*-[32]-->){2}$/', $wrapped);
+		$this->assertSame('x', $context->endCapture($wrapped));
+		$context->beginCapture(0, 3);
+		$this->assertSame('x', $context->wrapDepth('x'));
+	}
+
+	public function testCreateDepthParameter()
+	{
+		$context = new TRenderFilterContext();
+		$this->assertNull($context->createDepthParameter('x'));
+		$context->beginCapture(2);
+		$param = $context->createDepthParameter('x');
+		$this->assertSame(2, $param->getDepthLimit());
+		$this->assertSame('x', $param->getFilterText());
+	}
+
+	public function testFilterOutputWithoutDepthCallsOnRenderFilter()
+	{
+		$control = new class () extends TControl {
+			public function onRenderFilter($renderedText)
+			{
+				return strtoupper($renderedText);
+			}
+		};
+		$context = new TRenderFilterContext();
+		$context->beginCapture();
+		$this->assertSame('X', $context->filterOutput($control, 'x'));
 	}
 
 	public function testBeginExemptWithoutCaptureDoesNothing()
