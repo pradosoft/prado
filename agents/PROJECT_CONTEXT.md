@@ -44,7 +44,6 @@ TApplication
  └─ Data Layer     framework/Data/
       TDbConnection  (PDO wrapper)
       ActiveRecord/  (ORM with lazy relations)
-      SqlMap/        (XML-based SQL mapping, iBATIS-style)
       DataGateway/   (stateless table gateway)
  └─ Caching        framework/Caching/    (TAPCCache, TMemCache, TRedisCache, TDbCache, TEtcdCache)
  └─ Security       framework/Security/   (TAuthManager, TSecurityManager, TUserManager, TPermissionsManager)
@@ -345,12 +344,7 @@ $gw = new TTableGateway('users', $conn);
 $rows = $gw->findAll(new TSqlCriteria('active = :a', [':a' => 1]));
 ```
 
-**4. `TSqlMapGateway` (XML SQL mapping)**
-```php
-$manager = TSqlMapManager::getInstance();
-$gateway = new TSqlMapGateway($manager);
-$users = $gateway->queryForList('User.findAll');
-```
+SqlMap (`TSqlMapConfig`, `TSqlMapGateway`, XML SQL mapping) left the framework in 4.4.0 (#1168, #1356). It is the `pradosoft/prado-sqlmap` package; `composer require pradosoft/prado-sqlmap` keeps the `Prado\Data\SqlMap` namespace, short names, and API.
 
 `TDbMetaData::getInstance($conn)` auto-selects the correct driver (MySQL, PostgreSQL, SQLite, MSSQL, Oracle, IBM DB2, Firebird). Always use parameter binding — never interpolate user input.
 
@@ -601,7 +595,7 @@ Tests require a running `TApplication`. Bootstrap: `tests/test_tools/phpunit_boo
 ├── framework/                  # Framework source (PSR-4 Prado\)
 │   ├── Caching/                # TAPCCache, TMemCache, TRedisCache, TDbCache, TEtcdCache
 │   ├── Collections/            # TList, TMap, TPriorityList, TPriorityMap, TQueue, TStack, TWeakList
-│   ├── Data/                   # TDbConnection (PDO), ActiveRecord ORM, SqlMap, DataGateway
+│   ├── Data/                   # TDbConnection (PDO), ActiveRecord ORM, DataGateway
 │   ├── Exceptions/             # Exception hierarchy, TErrorHandler, multilingual error messages
 │   ├── I18N/                   # TGlobalization, MessageSource, CultureInfo, date/number formatting
 │   ├── IO/                     # Text writers, TTarFileExtractor, stream notifications
