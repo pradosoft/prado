@@ -701,6 +701,9 @@ public function testSetThemeToNonEmptyStringStoresString(): void
 		$page->endFormRender(null);
 
 		$this->assertFalse($page->getInFormRender());
+	}
+
+	// -----------------------------------------------------------------------
 	// CSRF validation
 	// -----------------------------------------------------------------------
 
