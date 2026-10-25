@@ -11,7 +11,6 @@
 namespace Prado\Web\UI\WebControls;
 
 use Prado\TPropertyValue;
-use Prado\Web\THttpUtility;
 
 /**
  * TDetails class
@@ -50,6 +49,8 @@ use Prado\Web\THttpUtility;
  */
 class TDetails extends TWebControl
 {
+	use TEncodeTrait;
+
 	/**
 	 * @return string tag name
 	 */
@@ -77,21 +78,6 @@ class TDetails extends TWebControl
 		$this->setViewState('Summary', $value, '');
 	}
 
-	/**
-	 * @return bool whether the Summary text is HTML-encoded when rendered. Defaults to false.
-	 */
-	public function getEncode()
-	{
-		return $this->getViewState('Encode', false);
-	}
-
-	/**
-	 * @param bool $value whether the Summary text is HTML-encoded when rendered
-	 */
-	public function setEncode($value)
-	{
-		$this->setViewState('Encode', TPropertyValue::ensureBoolean($value), false);
-	}
 
 	/**
 	 * @return bool whether the details is open
@@ -185,7 +171,7 @@ class TDetails extends TWebControl
 	protected function renderSummary($writer, string $summary)
 	{
 		$writer->renderBeginTag('summary');
-		$writer->write($this->getEncode() ? THttpUtility::htmlEncode($summary) : $summary);
+		$writer->write($this->encodeText($summary));
 		$writer->renderEndTag();
 	}
 }

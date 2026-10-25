@@ -19,7 +19,8 @@ use Prado\TPropertyValue;
  * TTable displays an HTML table on a Web page.
  *
  * A table may have {@see setCaption Caption}, whose alignment is specified
- * via {@see setCaptionAlign CaptionAlign}. The table cellpadding and cellspacing
+ * via {@see setCaptionAlign CaptionAlign} and which is HTML-encoded when
+ * {@see setEncode Encode} is true. The table cellpadding and cellspacing
  * are specified via {@see setCellPadding CellPadding} and {@see setCellSpacing CellSpacing}
  * properties, respectively. The {@see setGridLines GridLines} specifies how
  * the table should display its borders. The horizontal alignment of the table
@@ -73,6 +74,8 @@ use Prado\TPropertyValue;
  */
 class TTable extends \Prado\Web\UI\WebControls\TWebControl
 {
+	use TEncodeTrait;
+
 	/**
 	 * @return string tag name for the table
 	 */
@@ -175,6 +178,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	{
 		$this->setViewState('Caption', $value, '');
 	}
+
 
 	/**
 	 * @return string|TTableCaptionAlign table caption alignment. Defaults to TTableCaptionAlign::NotSet.
@@ -312,7 +316,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 				$writer->addStyleAttribute('caption-side', strtolower($align));
 			}
 			$writer->renderBeginTag('caption');
-			$writer->write($caption);
+			$writer->write($this->encodeText($caption));
 			$writer->renderEndTag();
 		}
 		$groups = $this->getViewState('ColumnGroups', null);

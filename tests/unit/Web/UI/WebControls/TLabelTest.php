@@ -226,6 +226,18 @@ class TLabelTest extends TestCase
 		$this->assertEquals('Custom Text', $tw->flush());
 	}
 
+	public function testRenderContentsEncodesTextWhenEncode()
+	{
+		$label = new TLabel();
+		$this->assertFalse($label->getEncode());
+		$label->setText('<b>a & b</b>');
+		$this->assertSame('<b>a & b</b>', $this->renderContents($label));
+
+		$label->setEncode(true);
+		$this->assertTrue($label->getEncode());
+		$this->assertSame('&lt;b&gt;a & b&lt;/b&gt;', $this->renderContents($label));
+	}
+
 	public function testRenderContentsWithEmptyText()
 	{
 		$label = new TLabel();

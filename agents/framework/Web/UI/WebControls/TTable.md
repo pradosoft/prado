@@ -16,7 +16,8 @@ Extends `[TWebControl](./TWebControl.md)`.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `Caption` | string | '' | Text for `<caption>` element |
+| `Caption` | string | '' | Text for `<caption>` element, rendered as HTML unless `Encode` is true |
+| `Encode` | bool | false | Whether `Caption` is HTML-encoded when rendered (4.4.0) |
 | `CaptionAlign` | TTableCaptionAlign | NotSet | Caption alignment (Top/Bottom/Left/Right/NotSet) |
 | `CellSpacing` | int | -1 | `cellspacing` attribute (-1 = not rendered) |
 | `CellPadding` | int | -1 | `cellpadding` attribute (-1 = not rendered) |
@@ -48,7 +49,7 @@ Represents `<tr>`. Child of `TTable` or `TTableSection`.
 
 | Property | Description |
 |----------|-------------|
-| `Text` | Cell content (short form; overrides child controls) |
+| `Text` | Cell content (short form; overrides child controls), rendered as HTML unless the cell's `Encode` is true |
 | `ColumnSpan` | `colspan` attribute |
 | `RowSpan` | `rowspan` attribute |
 | `HorizontalAlign` / `VerticalAlign` | Cell alignment |

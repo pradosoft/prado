@@ -12,7 +12,8 @@ TLinkButton creates a hyperlink-style button that posts back to the page. Can be
 
 ## Key Properties/Methods
 
-- `Text` - Button caption; the body content is rendered when `Text` is empty
+- `Text` - Button caption, rendered as HTML unless `Encode` is true; the body content is rendered when `Text` is empty
+- `Encode` - Whether `Text` is HTML-encoded when rendered, default false (4.4.0)
 - `CommandName` - Command name for OnCommand event
 - `CommandParameter` - Parameter for command
 - `CausesValidation` - Whether button triggers validation, default true

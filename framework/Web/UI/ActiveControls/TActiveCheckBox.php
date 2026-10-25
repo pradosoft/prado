@@ -86,7 +86,8 @@ class TActiveCheckBox extends TCheckBox implements IActiveControl, ICallbackEven
 
 	/**
 	 * Updates the button text on the client-side if the
-	 * {@see setEnableUpdate EnableUpdate} property is set to true.
+	 * {@see setEnableUpdate EnableUpdate} property is set to true, HTML-encoded when
+	 * {@see getEncode Encode} is true.
 	 * @param string $value caption of the button
 	 */
 	public function setText($value)
@@ -99,7 +100,7 @@ class TActiveCheckBox extends TCheckBox implements IActiveControl, ICallbackEven
 		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->getPage()->getCallbackClient()->update(
 				$this->getDefaultLabelID(),
-				$value
+				$this->encodeText($value)
 			);
 		}
 	}

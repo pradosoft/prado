@@ -73,6 +73,17 @@ class TTableTest extends TestCase
 		$this->assertLessThan(strpos($output, '<tr'), strpos($output, '<colgroup'));
 	}
 
+	public function testCaptionEncodedWhenEncode()
+	{
+		$table = new TTable();
+		$table->setCaption('<b>Q1 & Q2</b>');
+		$this->assertFalse($table->getEncode());
+		$this->assertStringContainsString('<caption><b>Q1 & Q2</b></caption>', $this->render($table));
+
+		$table->setEncode(true);
+		$this->assertStringContainsString('<caption>&lt;b&gt;Q1 & Q2&lt;/b&gt;</caption>', $this->render($table));
+	}
+
 	public function testColumnGroupRenderedAfterCaption()
 	{
 		$table = new TTable();

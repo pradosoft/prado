@@ -17,7 +17,8 @@ TTableCell displays a table cell (td element) on a Web page. Content can be set 
 - `getColumnSpan()` / `setColumnSpan(int)` - Number of columns to span
 - `getRowSpan()` / `setRowSpan(int)` - Number of rows to span
 - `getWrap()` / `setWrap(bool)` - Whether text wraps
-- `getText()` / `setText(string)` - Cell text content
+- `getText()` / `setText(string)` - Cell text content, rendered as HTML unless `Encode` is true
+- `getEncode()` / `setEncode(bool)` - Whether `Text` is HTML-encoded when rendered, default false; TTableHeaderCell inherits it (4.4.0)
 - `getData()` / `setData($value)` - IDataRenderer implementation
 
 ## See Also

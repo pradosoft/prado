@@ -26,6 +26,8 @@ use Prado\TPropertyValue;
  * The tab caption is specified by {@see setCaption Caption}. If {@see setNavigateUrl NavigateUrl}
  * is set, the tab will contain a hyperlink pointing to the specified URL. In this case,
  * clicking on the tab will redirect the browser to the specified URL.
+ * {@see setText Text} and {@see setCaption Caption} render as HTML unless
+ * {@see setEncode Encode} is true, which HTML-encodes both.
  *
  * TTabView may be toggled between visible (active) and invisible (inactive) by
  * setting the {@see setActive Active} property.
@@ -36,6 +38,8 @@ use Prado\TPropertyValue;
  */
 class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 {
+	use TEncodeTrait;
+
 	private $_active = false;
 
 	/**
@@ -122,6 +126,7 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 		$this->setViewState('Text', TPropertyValue::ensureString($value), '');
 	}
 
+
 	/**
 	 * @return bool whether this tab view is active. Defaults to false.
 	 */
@@ -145,7 +150,7 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 	public function renderContents($writer)
 	{
 		if (($text = $this->getText()) !== '') {
-			$writer->write($text);
+			$writer->write($this->encodeText($text));
 		} elseif ($this->getHasControls()) {
 			parent::renderContents($writer);
 		}
@@ -184,12 +189,15 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 	 * Renders the content in the tab. A navigation tab ({@see setNavigateUrl
 	 * NavigateUrl}) renders a hyperlink; a JS-switching tab renders its caption
 	 * as text, so the `role="tab"` element itself is the only focusable control.
+	 * The caption is HTML-encoded when {@see getEncode Encode} is true.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
 	 */
 	protected function renderTabContent($writer)
 	{
 		if (($caption = $this->getCaption()) === '') {
 			$caption = '&nbsp;';
+		} else {
+			$caption = $this->encodeText($caption);
 		}
 		if (($url = $this->getNavigateUrl()) === '') {
 			$writer->write($caption);
