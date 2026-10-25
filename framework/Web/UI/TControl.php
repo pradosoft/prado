@@ -742,6 +742,34 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	}
 
 	/**
+	 * Returns the levels of controls below this control whose output its render
+	 * filters see. Each child control is one level. The output of a deeper control
+	 * is hidden from the filters of this control
+	 * ({@see TRenderFilterParameter::getDepthLimit}); the filters of the deeper control
+	 * and of the ancestors see it. Defaults to 0, all output.
+	 * @return int the depth of the output the render filters see; 0 for all output
+	 * @since 4.4.0
+	 */
+	public function getRenderFilterDepth(): int
+	{
+		return $this->getViewState('RenderFilterDepth', 0);
+	}
+
+	/**
+	 * Sets the levels of controls below this control whose output its render filters see.
+	 * @param int|string $value the depth of the output the render filters see; 0 for all output
+	 * @throws TInvalidDataValueException if the value is negative
+	 * @since 4.4.0
+	 */
+	public function setRenderFilterDepth($value)
+	{
+		if (($value = TPropertyValue::ensureInteger($value)) < 0) {
+			throw new TInvalidDataValueException('control_renderfilterdepth_invalid', get_class($this), $value);
+		}
+		$this->setViewState('RenderFilterDepth', $value, 0);
+	}
+
+	/**
 	 * Returns a value indicating whether the control is enabled.
 	 * A control is enabled if it allows client user interaction.
 	 * If $checkParents is true, all parent controls will be checked,
@@ -1761,17 +1789,20 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 	 * / {@see TRenderFilterParameter::RENDER_FILTER_DOM} or the getter/setter API), and the
 	 * modified HTML is written to `$writer`.  Handlers may exchange state via extra array keys.
 	 * {@see getRenderFilterExempt} exempts the output from the filters of the ancestors.
+	 * {@see getRenderFilterDepth} limits the levels of output the filters of a control see.
 	 *
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for rendering
 	 */
 	public function renderControl($writer)
 	{
 		if ($this instanceof IActiveControl || $this->getVisible(false)) {
+			$depth = $this->preRenderFilterDepth($writer);
 			$exempt = $this->preRenderFilterExempt($writer);
 			$oldWriter = $this->preRenderFilter($writer);
 			$this->getAdapterControl()->render($writer);
 			$this->processRenderFilter($writer, $oldWriter);
 			$this->processRenderFilterExempt($writer, $exempt);
+			$this->processRenderFilterDepth($writer, $depth);
 		}
 	}
 
@@ -1842,7 +1873,7 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 				$context = new TRenderFilterContext();
 				$writer->setRenderFilterContext($context);
 			}
-			$context->beginCapture();
+			$context->beginCapture($control instanceof TControl ? $control->getRenderFilterDepth() : 0);
 		}
 		$oldWriter = $writer->getWriter();
 		$writer->setWriter($this->newRenderFilterWriter());
@@ -1881,17 +1912,54 @@ class TControl extends \Prado\TApplicationComponent implements IAdapterControl, 
 			return;
 		}
 		$output = $writer->getWriter()->flush();
+		$context = ($writer instanceof THtmlWriter) ? $writer->getRenderFilterContext() : null;
 		if (!empty($output)) {
 			$control ??= $this;
-			$output = $control->onRenderFilter($output);
+			$output = ($context !== null) ? $context->filterOutput($control, $output) : $control->onRenderFilter($output);
 		}
-		if ($writer instanceof THtmlWriter && ($context = $writer->getRenderFilterContext()) !== null) {
+		if ($context !== null) {
 			$output = $context->endCapture((string) $output);
 		}
 		if (!empty($output)) {
 			$oldWriter->write($output);
 		}
 		$writer->setWriter($oldWriter);
+	}
+
+	/**
+	 * Starts this control's output one level further below the filters with a
+	 * depth limit ({@see getRenderFilterDepth}), and writes the markers that bound it.
+	 *
+	 * Returns false (no-op) when no filter has captured output of `$writer`.
+	 *
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer currently in use
+	 * @return bool whether the output started a level
+	 * @see processRenderFilterDepth()
+	 * @since 4.4.0
+	 */
+	protected function preRenderFilterDepth($writer): bool
+	{
+		if (!($writer instanceof THtmlWriter) || ($context = $writer->getRenderFilterContext()) === null) {
+			return false;
+		}
+		if (($markers = $context->beginControl()) !== '') {
+			$writer->write($markers);
+		}
+		return true;
+	}
+
+	/**
+	 * Ends the level that {@see preRenderFilterDepth} started, and writes the markers that bound it.
+	 *
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer currently in use
+	 * @param bool $depth the value {@see preRenderFilterDepth} returned
+	 * @since 4.4.0
+	 */
+	protected function processRenderFilterDepth($writer, bool $depth): void
+	{
+		if ($depth && ($markers = $writer->getRenderFilterContext()->endControl()) !== '') {
+			$writer->write($markers);
+		}
 	}
 
 	/**

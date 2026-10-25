@@ -2,6 +2,7 @@
 
 namespace Prado\Test\Unit\Web\UI;
 
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Prado;
 use Prado\Util\Log\TLogger;
 use Prado\Web\UI\TRenderFilterParameter;
@@ -94,6 +95,74 @@ class TRenderFilterParameterTest extends TestCase
 		$this->assertFalse($param->getIsFragment());
 		$param->setIsFragment(true);
 		$this->assertTrue($param->getIsFragment());
+	}
+
+	/**
+	 * Output with the markers of levels 2 and 3 of a filter.
+	 */
+	private const DEPTH_HTML = '<p>one<!--m-2--><b>two<!--m-3--><i>three</i><!--/m-3--></b><!--/m-2--></p>';
+
+	public function testDepthLimitDefaultsToZero()
+	{
+		$param = new TRenderFilterParameter(self::DEPTH_HTML);
+		$this->assertSame(0, $param->getDepthLimit());
+		$this->assertSame(self::DEPTH_HTML, $param->getFilterText());
+	}
+
+	public function testDepthMarkerHidesDeeperOutput()
+	{
+		$param = new TRenderFilterParameter(self::DEPTH_HTML);
+		$param->setDepthMarker('m-', 2);
+		$this->assertSame(2, $param->getDepthLimit());
+		$this->assertMatchesRegularExpression('/^<p>one<!--m-2--><b>two<!--m-h\d+--><\/b><!--\/m-2--><\/p>$/', $param->getFilterText());
+		$param->setDepthLimit(1);
+		$this->assertMatchesRegularExpression('/^<p>one<!--m-h\d+--><\/p>$/', $param->getFilterText());
+		$param->setDepthLimit(0);
+		$this->assertSame(self::DEPTH_HTML, $param->getFilterText());
+	}
+
+	public function testPostRaiseEventRestoresDeeperOutput()
+	{
+		$param = new TRenderFilterParameter(self::DEPTH_HTML);
+		$param->setDepthMarker('m-', 1);
+		$param->getFilterDOM()->getElementsByTagName('p')->item(0)->setAttribute('class', 'x');
+		$param->postRaiseEvent([], 'onRenderFilter', null, $param, null, null);
+		$this->assertSame(str_replace('<p>', '<p class="x">', self::DEPTH_HTML), $param->getFilterText());
+		$this->assertSame(0, $param->getDepthLimit());
+	}
+
+	public function testDeeperOutputInsideExemptMarkupIsRestored()
+	{
+		$html = '<div data-prado-filter-exempt="">a<!--m-2-->b<!--/m-2--></div>c';
+		$param = new TRenderFilterParameter($html);
+		$param->setDepthMarker('m-', 2);
+		$param->preRaiseEvent('onRenderFilter', null, $param, null, null);
+		$param->setDepthLimit(1);
+		$this->assertStringNotContainsString('data-prado-filter-exempt', $param->getFilterText());
+		$param->postRaiseEvent([], 'onRenderFilter', null, $param, null, null);
+		$this->assertSame($html, $param->getFilterText());
+	}
+
+	public static function invalidDepthLimitProvider(): array
+	{
+		return [
+			'negative' => [2, -1],
+			'past the control depth' => [2, 3],
+			'without markers' => [0, 1],
+		];
+	}
+
+	/**
+	 * @dataProvider invalidDepthLimitProvider
+	 */
+	public function testDepthLimitOutOfRangeThrows(int $depth, int $limit)
+	{
+		$param = new TRenderFilterParameter(self::DEPTH_HTML);
+		if ($depth > 0) {
+			$param->setDepthMarker('m-', $depth);
+		}
+		$this->expectException(TInvalidDataValueException::class);
+		$param->setDepthLimit($limit);
 	}
 
 	// ================================================================================

@@ -167,6 +167,71 @@ class TActivePageAdapterTest extends TestCase
 		$this->assertSame([true], $fragments);
 	}
 
+	private function child(mixed ...$children): TControl
+	{
+		$control = new TControl();
+		foreach ($children as $child) {
+			$control->getControls()->add($child);
+		}
+		return $control;
+	}
+
+	public static function ancestorDepthProvider(): array
+	{
+		return [
+			'outer sees the panel' => [1, 0, 'html-top-outer html-top'],
+			'top does not see the panel' => [0, 1, 'html-outer html-outer'],
+			'top sees the panel' => [0, 2, 'html-top-outer html-outer'],
+		];
+	}
+
+	/**
+	 * The panel is one level below the outer control and two below the top control.
+	 * @dataProvider ancestorDepthProvider
+	 */
+	public function testAncestorDepthCountsFromAncestor(int $outerDepth, int $topDepth, string $expected)
+	{
+		[, $panel] = $this->createPanel('html ', $this->child('html'));
+		[$outer, $top] = $this->nest($panel);
+		$outer->setRenderFilterDepth($outerDepth);
+		$top->setRenderFilterDepth($topDepth);
+		$inner = new TCallbackResponseWriter();
+		$this->renderDeferred($panel, new THtmlWriter($inner));
+		$this->assertSame($this->bounded($inner, '<div id="Live">' . $expected . '</div>'), $inner->flush());
+	}
+
+	public function testOwnDepthCountsFromControl()
+	{
+		[, $panel] = $this->createPanel('html ', $this->child('html ', $this->child('html')));
+		$this->filter($panel)->setRenderFilterDepth(1);
+		$inner = new TCallbackResponseWriter();
+		$this->renderDeferred($panel, new THtmlWriter($inner));
+		$this->assertSame($this->bounded($inner, '<div id="Live">html-f html-f html</div>'), $inner->flush());
+	}
+
+	public function testTermsMarkFragmentToTheirDepthLimit()
+	{
+		[, $panel] = $this->createPanel('HTML CSS');
+		[$ancestor] = $this->enclose($panel, '', '', $this->child());
+		$ancestor->onRenderFilter->clear();
+		$middle = $this->child();
+		$ancestor->getControls()->remove($panel);
+		$middle->getControls()->add($panel);
+		$ancestor->getControls()->add($middle);
+		$html = new TAbbr();
+		$html->setTerms('HTML');
+		$html->setDepthLimit(1);
+		$css = new TAbbr();
+		$css->setTerms('CSS');
+		$ancestor->getControls()->add($html);
+		$ancestor->getControls()->add($css);
+		$html->onPreRender(null);
+		$css->onPreRender(null);
+		$inner = new TCallbackResponseWriter();
+		$this->renderDeferred($panel, new THtmlWriter($inner));
+		$this->assertSame($this->bounded($inner, '<div id="Live">HTML <abbr>CSS</abbr></div>'), $inner->flush());
+	}
+
 	public function testAncestorWithoutFragmentsIsSkipped()
 	{
 		[, $panel] = $this->createPanel('html');

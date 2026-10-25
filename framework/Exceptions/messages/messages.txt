@@ -347,6 +347,7 @@ control_skinid_unchangeable				= {0}.SkinID cannot be modified after a skin has 
 control_enabletheming_unchangeable		= {0}.EnableTheming cannot be modified after the child controls have been created.
 control_stylesheet_applied				= StyleSheet skin has already been applied to {0}.
 control_id_nonunique					= {0}.ID '{1}' is not unique among all controls under the same naming container.
+control_renderfilterdepth_invalid		= {0}.RenderFilterDepth '{1}' must not be negative.
 
 templatecontrol_mastercontrol_invalid	= Master control must be of type TTemplateControl or a child class.
 templatecontrol_mastercontrol_required	= Control '{0}' requires a master control since the control uses TContent.
@@ -400,6 +401,8 @@ output_forcontrol_invalid				= TOutput.ForControl '{0}' cannot be found.
 
 baseterm_targetcontrol_invalid			= {0}.TargetControl '{1}' cannot be found.
 baseterm_marklimit_invalid				= {0}.MarkLimit '{1}' must not be negative.
+baseterm_depthlimit_invalid				= {0}.DepthLimit '{1}' must not be negative.
+renderfilterparameter_depthlimit_invalid	= TRenderFilterParameter.DepthLimit '{0}' must be from 0 to the RenderFilterDepth {1} of the filtering control.
 
 hiddenfield_focus_unsupported			= THiddenField does not support setting input focus.
 hiddenfield_theming_unsupported			= THiddenField does not support theming.
