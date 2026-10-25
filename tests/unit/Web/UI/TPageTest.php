@@ -13,8 +13,13 @@ use Prado\Web\UI\TTheme;
 use Prado\Collections\TList;
 use Prado\Collections\TStack;
 use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\THttpException;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\Prado;
+use Prado\Web\Services\TPageService;
+use Prado\Web\THttpRequest;
 use Prado\Web\UI\ActiveControls\TCallbackClientScript;
+use Prado\Test\Unit\Harness\Web\TTestCookieResponse;
 use Prado\Test\Unit\PradoUnit;
 
 class TPageTest extends \PHPUnit\Framework\TestCase
@@ -625,8 +630,108 @@ public function testSetThemeToNonEmptyStringStoresString(): void
 	}
 
 	// -----------------------------------------------------------------------
+	// CSRF validation
+	// -----------------------------------------------------------------------
+
+	public function testGetEnableCsrfValidationDefaultIsTrue(): void
+	{
+		$page = new TPage();
+		$this->assertTrue($page->getEnableCsrfValidation());
+		$page->setEnableCsrfValidation(false);
+		$this->assertFalse($page->getEnableCsrfValidation());
+		$page->setEnableCsrfValidation('true');
+		$this->assertTrue($page->getEnableCsrfValidation());
+	}
+
+	/**
+	 * Runs the test with a response that records cookies, a fresh CSRF secret, and
+	 * no token in the request, restoring the globals afterwards.
+	 * @param callable $test receives the request and a token of the secret
+	 */
+	private function withCsrfSecret(callable $test): void
+	{
+		$app = Prado::getApplication();
+		$obLevel = ob_get_level();
+		$savedResponse = $app->getResponse();
+		$savedService = $app->getService();
+		$savedPost = $_POST;
+		$savedGet = $_GET;
+		$app->setResponse(new TTestCookieResponse());
+		$app->setService(new TPageService());
+		unset($_POST[THttpRequest::CSRF_TOKEN_FIELD], $_GET[THttpRequest::CSRF_TOKEN_FIELD]);
+		try {
+			$request = $app->getRequest();
+			$test($request, $request->getCsrfToken(true));
+		} finally {
+			$_POST = $savedPost;
+			$_GET = $savedGet;
+			$app->setResponse($savedResponse);
+			$app->setService($savedService);
+			// the first getResponse() of the run bootstraps the response, which starts a buffer
+			while (ob_get_level() > $obLevel) {
+				ob_end_clean();
+			}
+		}
+	}
+
+	public function testEnsureCsrfTokenRefusesAMissingOrInvalidToken(): void
+	{
+		$this->withCsrfSecret(function (THttpRequest $request, string $token) {
+			$page = new TPage();
+			foreach ([null, 'bad', $token] as $sent) {
+				unset($_POST[THttpRequest::CSRF_TOKEN_FIELD]);
+				if ($sent === $token) {
+					$_GET[THttpRequest::CSRF_TOKEN_FIELD] = $sent;
+				} elseif ($sent !== null) {
+					$_POST[THttpRequest::CSRF_TOKEN_FIELD] = $sent;
+				}
+				try {
+					PradoUnit::invoke($page, 'ensureCsrfToken');
+					$this->fail('the token ' . var_export($sent, true) . ' was accepted');
+				} catch (THttpException $e) {
+					$this->assertSame(400, $e->getStatusCode());
+					$this->assertSame('page_csrf_token_invalid', $e->getErrorCode());
+				}
+			}
+			unset($_GET[THttpRequest::CSRF_TOKEN_FIELD]);
+
+			// the POST field passes, and a page without validation skips the check
+			$_POST[THttpRequest::CSRF_TOKEN_FIELD] = $token;
+			PradoUnit::invoke($page, 'ensureCsrfToken');
+			$_POST[THttpRequest::CSRF_TOKEN_FIELD] = 'bad';
+			$page->setEnableCsrfValidation(false);
+			PradoUnit::invoke($page, 'ensureCsrfToken');
+			$this->assertTrue(true);
+		});
+	}
+
+	public function testBeginFormRenderRegistersTheCsrfToken(): void
+	{
+		$this->withCsrfSecret(function (THttpRequest $request, string $token) {
+			$page = new TPage();
+			$page->beginFormRender(null);
+			$fields = $page->getClientScript()->getHiddenFields();
+			$this->assertArrayHasKey(TPage::FIELD_PAGESTATE, $fields);
+			$this->assertArrayHasKey(TPage::FIELD_CSRF_TOKEN, $fields);
+			$this->assertNotEquals($token, $fields[TPage::FIELD_CSRF_TOKEN]);
+			$this->assertTrue($request->validateCsrfToken($fields[TPage::FIELD_CSRF_TOKEN]));
+
+			$page = new TPage();
+			$page->setEnableCsrfValidation(false);
+			$page->beginFormRender(null);
+			$this->assertArrayNotHasKey(TPage::FIELD_CSRF_TOKEN, $page->getClientScript()->getHiddenFields());
+		});
+	}
+
+	// -----------------------------------------------------------------------
 	// System post field constants
 	// -----------------------------------------------------------------------
+
+	public function testFieldCsrfTokenConstant(): void
+	{
+		$this->assertEquals('PRADO_CSRF_TOKEN', TPage::FIELD_CSRF_TOKEN);
+		$this->assertTrue(PradoUnit::invoke(new TPage(), 'isSystemPostField', TPage::FIELD_CSRF_TOKEN));
+	}
 
 	public function testFieldPostbackTargetConstant(): void
 	{

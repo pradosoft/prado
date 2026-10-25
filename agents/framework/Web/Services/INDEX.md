@@ -29,5 +29,6 @@ Application services for the Prado framework. Each service handles a different t
 
 - **Service activation** — [THttpRequest](../THttpRequest.md) determines which service to activate based on URL parameters or path patterns. The service ID matches the `id` attribute in `application.xml`.
 - **TPageService is the default** — Most applications use only `TPageService`; other services are opt-in.
+- **CSRF** — [TPage](../UI/TPage.md) `EnableCsrfValidation` (on by default) checks every postback and callback. `TJsonService`, `TSoapService`, and `TFeedService` check POST requests through `TService::ensureCsrfToken()` when `EnableCsrfValidation` is set on the service (off by default). `TCspReportingService` takes browser reports, which carry no token, and does not check.
 - **SOAP `@soapmethod`** — PHP methods on the provider class must have this annotation for WSDL auto-generation. Strict PHPDoc (`@param`, `@return` with types) is required for accurate WSDL.
 - **TRpcApiProvider methods** — Must be public; exposed automatically to the RPC layer.

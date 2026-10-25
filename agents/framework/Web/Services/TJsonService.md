@@ -15,6 +15,7 @@ TJsonService provides JavaScript content response in JSON format for end-users. 
 - Configurable through XML or PHP formats
 - Supports JSON encoding of content using TJavaScript::jsonEncode
 - Handles service initialization and execution
+- `EnableCsrfValidation` (off by default) has `run()` refuse a POST without the CSRF token through `TService::ensureCsrfToken()` (4.4.0)
 
 ## Configuration
 

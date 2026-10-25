@@ -446,4 +446,30 @@ class TFeedServiceTest extends \PHPUnit\Framework\TestCase
 		$this->expectException(THttpException::class);
 		$this->runPhp(['a' => ['class' => TNestedPathFeedProvider::class]], 'nosuchfeed');
 	}
+
+	/**
+	 * With EnableCsrfValidation on, a POST without the token is refused before the
+	 * feed is built.
+	 */
+	public function testRunWithCsrfValidationRefusesAPostWithoutAToken()
+	{
+		$savedMethod = $_SERVER['REQUEST_METHOD'] ?? null;
+		$_SERVER['REQUEST_METHOD'] = 'POST';
+		unset($_POST[\Prado\Web\THttpRequest::CSRF_TOKEN_FIELD]);
+		Prado::getApplication()->setConfigurationType(TApplication::CONFIG_TYPE_PHP);
+		Prado::getApplication()->getRequest()->setServiceParameter('a');
+		TNestedPathFeedProvider::$last = null;
+		$service = new TFeedService();
+		$service->setEnableCsrfValidation(true);
+		$service->init(['class' => TFeedService::class, 'feeds' => ['a' => ['class' => TNestedPathFeedProvider::class]]]);
+		try {
+			$service->run();
+			$this->fail('the POST was accepted');
+		} catch (THttpException $e) {
+			$this->assertSame(400, $e->getStatusCode());
+			$this->assertNull(TNestedPathFeedProvider::$last);
+		} finally {
+			$_SERVER['REQUEST_METHOD'] = $savedMethod;
+		}
+	}
 }

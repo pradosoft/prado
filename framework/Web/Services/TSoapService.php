@@ -301,6 +301,7 @@ class TSoapService extends \Prado\TService
 	public function run()
 	{
 		Prado::trace("Running SOAP service", TSoapService::class);
+		$this->ensureCsrfToken();
 		$server = $this->createServer();
 		$this->getResponse()->setContentType(TMediaType::XML_TEXT);
 		$this->getResponse()->setCharset($server->getEncoding());

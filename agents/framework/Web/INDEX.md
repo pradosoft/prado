@@ -18,7 +18,7 @@ HTTP layer, URL routing, asset management, session handling, and all web UI comp
 
 ## Top-Level Classes
 
-- **[THttpRequest](THttpRequest.md)** — Encapsulates the incoming HTTP request. Implements `ArrayAccess`/`IteratorAggregate` for unified GET+POST access. Manages URL parsing, path-info extraction, service routing, and cookie access. Lazily loads `TUrlManager`. Properties: `RequestType`, `Url`, `ServerPort`, `IsSecureConnection`, `PathInfo`.
+- **[THttpRequest](THttpRequest.md)** — Encapsulates the incoming HTTP request. Implements `ArrayAccess`/`IteratorAggregate` for unified GET+POST access. Manages URL parsing, path-info extraction, service routing, and cookie access. Lazily loads `TUrlManager`. Properties: `RequestType`, `Url`, `ServerPort`, `IsSecureConnection`, `PathInfo`. Issues and checks the CSRF token (`getCsrfToken()`, `validateCsrfToken()`); the secret lives in the signed `PRADO_CSRF` cookie, or in the session when `EnableCsrfCookie` is false.
 
 - **[THttpResponse](THttpResponse.md)** — HTTP response output. Manages status codes, headers, cookies, content type, charset, output buffering, file downloads (`writeFile()`, with byte-range `206`/`416` serving; contiguous ranges merge), and redirects. Extended by `THttpResponseAdapter` for callback/AJAX responses.
 

@@ -61,6 +61,11 @@ class TActivePageAdapter extends TControlAdapter
 	 */
 	public const CALLBACK_PAGESTATE_HEADER = 'X-PRADO-PAGESTATE';
 	/**
+	 * Callback response part holding a fresh CSRF token for the page's hidden field.
+	 * @since 4.4.0
+	 */
+	public const CALLBACK_CSRFTOKEN_HEADER = 'X-PRADO-CSRF-TOKEN';
+	/**
 	 * Script list header name.
 	 */
 	public const CALLBACK_SCRIPTLIST_HEADER = 'X-PRADO-SCRIPTLIST';
@@ -398,6 +403,11 @@ class TActivePageAdapter extends TControlAdapter
 				$pagestate = $this->getPage()->getClientState();
 				$this->appendContentPart($response, self::CALLBACK_PAGESTATE_HEADER, $pagestate);
 			}
+		}
+
+		//sends a fresh CSRF token, since a login or logout during the callback replaces the secret
+		if ($this->getPage()->getEnableCsrfValidation()) {
+			$this->appendContentPart($response, self::CALLBACK_CSRFTOKEN_HEADER, $this->getRequest()->getCsrfToken());
 		}
 
 		//safari must receive at least 1 byte of data.

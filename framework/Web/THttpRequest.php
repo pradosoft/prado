@@ -66,6 +66,14 @@ use Prado\TEventResults;
  * THttpRequest also provides the cookies sent by the user, user information such
  * as his browser capabilities, accepted languages, etc.
  *
+ * THttpRequest issues and checks the CSRF token. {@see getCsrfToken()} returns the
+ * token a form or script sends back in the {@see CSRF_TOKEN_FIELD} POST field or the
+ * {@see CSRF_TOKEN_HEADER} header, and {@see validateCsrfToken()} checks it. The secret
+ * behind the token lives in a signed cookie, or in the session when
+ * {@see setEnableCsrfCookie EnableCsrfCookie} is false. {@see \Prado\Web\UI\TPage}
+ * checks every postback and callback; other services opt in through
+ * {@see \Prado\TService::setEnableCsrfValidation()}.
+ *
  * By default, THttpRequest is registered with {@see \Prado\TApplication} as the
  * request module. It can be accessed via {@see \Prado\TApplication::getRequest()}.
  *
@@ -103,6 +111,21 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 {
 	public const CGIFIX__PATH_INFO = 1;
 	public const CGIFIX__SCRIPT_NAME = 2;
+	/**
+	 * The POST field, and the hidden form field, carrying the CSRF token.
+	 * @since 4.4.0
+	 */
+	public const CSRF_TOKEN_FIELD = 'PRADO_CSRF_TOKEN';
+	/**
+	 * The request header carrying the CSRF token of a request without the field.
+	 * @since 4.4.0
+	 */
+	public const CSRF_TOKEN_HEADER = 'X-Prado-Csrf-Token';
+	/**
+	 * The cookie, or session variable, holding the CSRF secret.
+	 * @since 4.4.0
+	 */
+	public const CSRF_TOKEN_KEY = 'PRADO_CSRF';
 	/**
 	 * @var TUrlManager the URL manager module
 	 */
@@ -143,6 +166,16 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	private $_resolveMethod = THttpRequestResolveMethod::ParameterOrder;
 	private $_requestResolved = false;
 	private $_enableCookieValidation = false;
+	/**
+	 * @var bool whether the CSRF secret is kept in a cookie; false keeps it in the session
+	 * @since 4.4.0
+	 */
+	private $_enableCsrfCookie = true;
+	/**
+	 * @var ?string the CSRF secret of this request, null until first used
+	 * @since 4.4.0
+	 */
+	private $_csrfToken;
 	private $_cgiFix = 0;
 	/**
 	 * @var bool whether to cache the TUrlManager class (useful with a lot of TUrlMappings)
@@ -727,6 +760,187 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	public function setEnableCookieValidation($value)
 	{
 		$this->_enableCookieValidation = TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
+	 * @return bool whether the CSRF secret is kept in a cookie signed with
+	 *   {@see \Prado\Security\TSecurityManager::hashCookieData()}. Defaults to true.
+	 *   When false, the secret is kept in the session, which the application must have.
+	 * @since 4.4.0
+	 */
+	public function getEnableCsrfCookie(): bool
+	{
+		return $this->_enableCsrfCookie;
+	}
+
+	/**
+	 * @param bool $value whether the CSRF secret is kept in a cookie; false keeps it in the session.
+	 * @since 4.4.0
+	 */
+	public function setEnableCsrfCookie($value)
+	{
+		$this->_enableCsrfCookie = TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
+	 * Returns the CSRF token for the forms and scripts of this response.  The token is
+	 * the secret of this request masked with random bytes, so each call returns a
+	 * different token for one secret and a compressed response does not expose the
+	 * secret.  A request without a secret receives a new one, written to the cookie
+	 * or session named {@see CSRF_TOKEN_KEY}.
+	 * @param bool $regenerate whether to replace the secret, so earlier tokens stop validating.
+	 * @return string the masked CSRF token.
+	 * @since 4.4.0
+	 */
+	public function getCsrfToken(bool $regenerate = false): string
+	{
+		if ($regenerate || $this->_csrfToken === null) {
+			$this->_csrfToken = $regenerate ? null : $this->loadCsrfToken();
+			if ($this->_csrfToken === null) {
+				$this->_csrfToken = $this->generateCsrfToken();
+				$this->saveCsrfToken($this->_csrfToken);
+			}
+		}
+		return $this->maskCsrfToken($this->_csrfToken);
+	}
+
+	/**
+	 * Validates a CSRF token against the secret of this request.  Without a token
+	 * argument, the token is read from the {@see CSRF_TOKEN_FIELD} POST field, then from
+	 * the {@see CSRF_TOKEN_HEADER} header.  The query string never supplies the token,
+	 * so a GET request without the header fails.
+	 * @param ?string $token the token to validate; null reads it from the request.
+	 * @return bool whether the token matches the secret.
+	 * @since 4.4.0
+	 */
+	public function validateCsrfToken(?string $token = null): bool
+	{
+		$token ??= $this->getCsrfTokenFromRequest();
+		if ($token === null || $token === '') {
+			return false;
+		}
+		$this->_csrfToken ??= $this->loadCsrfToken();
+		if ($this->_csrfToken === null) {
+			return false;
+		}
+		return hash_equals($this->_csrfToken, $this->unmaskCsrfToken($token));
+	}
+
+	/**
+	 * Reads the CSRF token the client sent: the {@see CSRF_TOKEN_FIELD} POST field, else
+	 * the {@see CSRF_TOKEN_HEADER} header.
+	 * @return ?string the token, or null when the request carries none.
+	 * @since 4.4.0
+	 */
+	protected function getCsrfTokenFromRequest(): ?string
+	{
+		$token = $_POST[self::CSRF_TOKEN_FIELD] ?? $this->getHeader(self::CSRF_TOKEN_HEADER);
+		return is_string($token) ? $token : null;
+	}
+
+	/**
+	 * Loads the CSRF secret from the signed cookie, or from the session when
+	 * {@see getEnableCsrfCookie() EnableCsrfCookie} is false.
+	 * @return ?string the secret, or null when the request carries none.
+	 * @since 4.4.0
+	 */
+	protected function loadCsrfToken(): ?string
+	{
+		if ($this->getEnableCsrfCookie()) {
+			$cookie = $this->getCookies()->itemAt(self::CSRF_TOKEN_KEY);
+			if (!($cookie instanceof THttpCookie)) {
+				return null;
+			}
+			$secret = $this->getApplication()->getSecurityManager()->validateCookieData($cookie->getValue());
+		} else {
+			$secret = $this->getCsrfSession()->itemAt(self::CSRF_TOKEN_KEY);
+		}
+		return is_string($secret) && $secret !== '' ? $secret : null;
+	}
+
+	/**
+	 * Writes the CSRF secret to the response cookie, or to the session when
+	 * {@see getEnableCsrfCookie() EnableCsrfCookie} is false.
+	 * @param string $secret the CSRF secret.
+	 * @since 4.4.0
+	 */
+	protected function saveCsrfToken(string $secret): void
+	{
+		if ($this->getEnableCsrfCookie()) {
+			$value = $this->getApplication()->getSecurityManager()->hashCookieData($secret);
+			$this->getResponse()->getCookies()->add($this->createCsrfCookie($value));
+		} else {
+			$this->getCsrfSession()->add(self::CSRF_TOKEN_KEY, $secret);
+		}
+	}
+
+	/**
+	 * Creates the cookie holding the signed CSRF secret: a session cookie that is
+	 * HttpOnly, and Secure when the request is over HTTPS.
+	 * @param string $value the signed secret.
+	 * @return THttpCookie the CSRF cookie.
+	 * @since 4.4.0
+	 */
+	protected function createCsrfCookie(string $value): THttpCookie
+	{
+		$cookie = new THttpCookie(self::CSRF_TOKEN_KEY, $value);
+		$cookie->setHttpOnly(true);
+		$cookie->setSecure($this->getIsSecureConnection());
+		return $cookie;
+	}
+
+	/**
+	 * Returns the session holding the CSRF secret, opened.
+	 * @throws TConfigurationException when the application has no session module.
+	 * @return THttpSession the application session.
+	 * @since 4.4.0
+	 */
+	protected function getCsrfSession(): THttpSession
+	{
+		$session = $this->getSession();
+		if ($session === null) {
+			throw new TConfigurationException('httprequest_csrf_session_required');
+		}
+		$session->open();
+		return $session;
+	}
+
+	/**
+	 * @return string a new random CSRF secret.
+	 * @since 4.4.0
+	 */
+	protected function generateCsrfToken(): string
+	{
+		return bin2hex(random_bytes(16));
+	}
+
+	/**
+	 * Masks the secret with random bytes of its length: the mask, then the XOR of the
+	 * secret and the mask, base64 encoded.
+	 * @param string $secret the CSRF secret.
+	 * @return string the masked token.
+	 * @since 4.4.0
+	 */
+	protected function maskCsrfToken(string $secret): string
+	{
+		$mask = random_bytes(strlen($secret));
+		return base64_encode($mask . ($secret ^ $mask));
+	}
+
+	/**
+	 * Reverses {@see maskCsrfToken()}.
+	 * @param string $token the masked token.
+	 * @return string the secret, or '' when the token is not a masked token.
+	 * @since 4.4.0
+	 */
+	protected function unmaskCsrfToken(string $token): string
+	{
+		$decoded = base64_decode($token, true);
+		if ($decoded === false || $decoded === '' || strlen($decoded) % 2 !== 0) {
+			return '';
+		}
+		$length = intdiv(strlen($decoded), 2);
+		return substr($decoded, 0, $length) ^ substr($decoded, $length);
 	}
 
 	/**

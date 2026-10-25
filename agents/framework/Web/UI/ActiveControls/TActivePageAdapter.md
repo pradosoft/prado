@@ -20,6 +20,7 @@ Callback request handler for TPage. Intercepts callback requests, routes to `rai
 - `setCallbackEventTarget($control)` - Sets the callback event target
 - `getCallbackClientHandler()` - Returns [TCallbackClientScript](./TCallbackClientScript.md) handler
 - `CALLBACK_DATA_HEADER`, `CALLBACK_ACTION_HEADER`, etc. - Response header constants
+- `CALLBACK_CSRFTOKEN_HEADER` (`X-PRADO-CSRF-TOKEN`) - A fresh `THttpRequest::getCsrfToken()` sent by `renderResponse()` while `TPage.EnableCsrfValidation` is on; `ajax3.js` `updateCsrfToken()` writes it into the `PRADO_CSRF_TOKEN` field (@since 4.4.0)
 
 ## See Also
 

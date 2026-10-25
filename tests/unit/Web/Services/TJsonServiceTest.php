@@ -21,6 +21,7 @@ use Prado\TApplication;
 use Prado\TComponent;
 use Prado\Test\Unit\Harness\Traits\TNestedPathTrait;
 use Prado\Test\Unit\PradoUnit;
+use Prado\Web\THttpRequest;
 use Prado\Web\Services\TJsonResponse;
 use Prado\Web\Services\TJsonService;
 use Prado\Xml\TXmlDocument;
@@ -283,6 +284,31 @@ class TJsonServiceTest extends \PHPUnit\Framework\TestCase
 	{
 		$this->expectException(THttpException::class);
 		$this->runPhp(['a' => ['class' => TNestedPathJsonResponse::class]], 'nosuchservice');
+	}
+
+	/**
+	 * With EnableCsrfValidation on, a POST without the token is refused before any
+	 * response is built.
+	 */
+	public function testRunWithCsrfValidationRefusesAPostWithoutAToken()
+	{
+		$savedMethod = $_SERVER['REQUEST_METHOD'] ?? null;
+		$_SERVER['REQUEST_METHOD'] = 'POST';
+		unset($_POST[THttpRequest::CSRF_TOKEN_FIELD]);
+		Prado::getApplication()->setConfigurationType(TApplication::CONFIG_TYPE_PHP);
+		Prado::getApplication()->getRequest()->setServiceParameter('a');
+		$service = new TJsonService();
+		$service->setEnableCsrfValidation(true);
+		$service->init(['json' => ['a' => ['class' => TNestedPathJsonResponse::class]]]);
+		try {
+			$service->run();
+			$this->fail('the POST was accepted');
+		} catch (THttpException $e) {
+			$this->assertSame(400, $e->getStatusCode());
+			$this->assertNull(TNestedPathJsonResponse::$last);
+		} finally {
+			$_SERVER['REQUEST_METHOD'] = $savedMethod;
+		}
 	}
 
 	// -------------------------------------------------------------------------

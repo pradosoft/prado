@@ -15,6 +15,7 @@ TFeedService provides feed content (RSS/Atom) to end-users. It manages a set of 
 - Configurable through XML or PHP formats
 - Supports different feed types through content type configuration
 - Implements standard feed retrieval pattern
+- `EnableCsrfValidation` (off by default) has `run()` refuse a POST without the CSRF token through `TService::ensureCsrfToken()`; feeds are read with GET, which is never checked (4.4.0)
 
 ## Configuration
 

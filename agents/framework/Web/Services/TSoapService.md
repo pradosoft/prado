@@ -15,6 +15,7 @@ TSoapService processes SOAP requests for a PRADO application. It requires PHP SO
 - Generates WSDL automatically for SOAP providers
 - Supports session persistence for SOAP providers
 - Configurable through XML or PHP configuration formats
+- `EnableCsrfValidation` (off by default) has `run()` refuse a SOAP POST without the CSRF token, sent in the `X-Prado-Csrf-Token` header, through `TService::ensureCsrfToken()` (4.4.0)
 
 ## Configuration
 
