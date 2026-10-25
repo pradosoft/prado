@@ -167,3 +167,4 @@ return [
 - `TDbUserManager` needs a DB connection module ID in `ConnectionID` property.
 - `UserManager` cannot be changed after `init()`.
 - `updateSessionUser()` calls `$session->regenerate(true)` on every login to prevent session fixation.
+- `login()` and `logout()` call `THttpRequest::getCsrfToken(true)`, so a CSRF token issued before either stops validating (@since 4.4.0).

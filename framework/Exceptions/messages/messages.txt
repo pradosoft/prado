@@ -68,6 +68,7 @@ application_service_default_unregister	= The default page service '{0}' cannot b
 application_service_unknown				= Requested service '{0}' is not defined.
 application_unavailable					= Application is unavailable at this time.
 application_service_unavailable			= Service '{0}' is unavailable at this time.
+service_csrf_token_invalid				= Service '{0}' requires a valid CSRF token.
 application_moduleid_duplicated			= Application module ID '{0}' is not unique.
 application_runtimepath_failed			= Unable to create runtime path '{0}'. Make sure the parent directory exists and is writable by the Web process.
 application_module_required_dep_missing	= Module '{0}' has a required dependency on module '{1}', which is not registered with the application.
@@ -103,6 +104,7 @@ httprequest_browscap_required			= THttpRequest requires the browscap directive t
 httprequest_separator_invalid			= THttpRequest.UrlParamSeparator can only contain a single character.
 httprequest_urlmanager_inexist			= THttpRequest.UrlManager '{0}' does not point to an existing module.
 httprequest_urlmanager_invalid			= THttpRequest.UrlManager '{0}' must point to a module extending from TUrlManager.
+httprequest_csrf_session_required		= THttpRequest.EnableCsrfCookie is false, which requires a session module.
 
 httpcookiecollection_httpcookie_required = THttpCookieCollection can only accept THttpCookie objects.
 
@@ -363,6 +365,7 @@ page_head_duplicated					= A page can contain at most one THead.
 page_head_required						= A THead control is needed in page template in order to render CSS and js in the HTML head section.
 page_statepersister_invalid				= Page state persister must implement IPageStatePersister interface.
 page_csmanagerclass_invalid				= ClientScriptManager class '{0}' must be an instance of TClientScriptManager.
+page_csrf_token_invalid					= The page requires a valid CSRF token.
 
 csmanager_pradoscript_invalid			= Unknown Prado script library name '{0}'.
 csmanager_pradoscript_notloaded			= Prado script library name '{0}' has not been loaded yet.

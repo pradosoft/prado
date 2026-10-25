@@ -18,6 +18,7 @@ Abstract base class for all application services. Services handle actual respons
 |----------|-------------|
 | `ID` | Unique service identifier (set from `id` attribute in `application.xml`) |
 | `Enabled` | Whether the service may handle requests; default `true` |
+| `EnableCsrfValidation` | Whether a POST, PUT, PATCH, or DELETE request must carry the CSRF token of `THttpRequest::getCsrfToken()`; default `false`. `TPageService` leaves the check to `TPage.EnableCsrfValidation`, on by default. @since 4.4.0 |
 
 ## Core Methods
 
@@ -25,6 +26,7 @@ Abstract base class for all application services. Services handle actual respons
 |--------|-------------|
 | `init($config)` | Initializes the service; raises `dyInit($config)` for behaviors. Always call `parent::init($config)` in subclasses. |
 | `run()` | Handles the request. Override in subclasses to generate the response. Default implementation is empty. |
+| `ensureCsrfToken()` | Protected. Throws `THttpException` 400 (`service_csrf_token_invalid`) when `EnableCsrfValidation` is on, the method is not GET, HEAD, or OPTIONS, and `THttpRequest::validateCsrfToken()` fails. A service that changes state calls it at the start of `run()`; `TJsonService`, `TSoapService`, and `TFeedService` do. @since 4.4.0 |
 | `getID()` / `setID()` | Service identifier |
 | `getEnabled()` / `setEnabled()` | Enable/disable the service |
 | `getInstance(?TApplication $app = null): ?static` | Returns the currently active service if it is an instance of the called class, or `null` otherwise. Accepts an optional `TApplication` argument; defaults to `Prado::getApplication()`. @since 4.3.3 |

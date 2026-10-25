@@ -39,6 +39,11 @@ Prado.CallbackRequestManager =
 	 */
 	PAGESTATE_HEADER : 'X-PRADO-PAGESTATE',
 	/**
+	 * Hidden field holding the CSRF token, and the response part holding a fresh one.
+	 */
+	FIELD_CSRF_TOKEN : 'PRADO_CSRF_TOKEN',
+	CSRFTOKEN_HEADER : 'X-PRADO-CSRF-TOKEN',
+	/**
 	 * Script list header name.
 	 */
 	SCRIPTLIST_HEADER : 'X-PRADO-SCRIPTLIST',
@@ -581,6 +586,7 @@ Prado.CallbackRequest = Prado.Class(Prado.PostBack,
 
 		try {
 			this.updatePageState();
+			this.updateCsrfToken();
 			this.checkHiddenFields();
 			const obj = this;
 			this.loadAssets(() => {
@@ -624,6 +630,24 @@ Prado.CallbackRequest = Prado.Class(Prado.PostBack,
 		//Logger.warn('## state updated: setting current request to null');
 		//self.tryNextRequest();
 		return true;
+	},
+
+	/**
+	 * Replaces the CSRF token field with the token of the response, so a secret
+	 * replaced during the callback, by a login or logout, is the one the next
+	 * request sends. A page without the field, or a response without the token,
+	 * is left alone.
+	 * @return {boolean} whether the field was updated
+	 */
+	updateCsrfToken() {
+		const field = document.getElementById(Prado.CallbackRequestManager.FIELD_CSRF_TOKEN);
+		const data = this.extractContent(Prado.CallbackRequestManager.CSRFTOKEN_HEADER);
+		if (field && typeof(data) == "string" && data.length > 0)
+		{
+			field.value = data;
+			return true;
+		}
+		return false;
 	},
 
 	checkHiddenField(name, value) {
