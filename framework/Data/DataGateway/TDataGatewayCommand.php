@@ -17,13 +17,13 @@ use Prado\Data\Common\TDbTableInfo;
 use Prado\Exceptions\TDbException;
 
 /**
- * TDataGatewayCommand is command builder and executor class for
- * TTableGateway and TActiveRecordGateway.
+ * TDataGatewayCommand is the command builder and executor class for
+ * TTableGateway. The prado-activerecord package's TActiveRecordGateway uses
+ * it in the same way.
  *
- * TDataGatewayCommand builds the TDbCommand for TTableGateway
- * and TActiveRecordGateway commands such as find(), update(), insert(), etc,
- * using the TDbCommandBuilder classes (database specific TDbCommandBuilder
- * classes are used).
+ * TDataGatewayCommand builds the TDbCommand for TTableGateway commands such
+ * as find(), update(), insert(), etc, using the TDbCommandBuilder classes
+ * (database specific TDbCommandBuilder classes are used).
  *
  * Once the command is built and the query parameters are binded, the
  * {@see OnCreateCommand} event is raised. Event handlers for the OnCreateCommand

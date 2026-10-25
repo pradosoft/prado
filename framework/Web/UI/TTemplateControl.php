@@ -19,7 +19,6 @@ use Prado\Web\UI\WebControls\TCheckBox;
 use Prado\Web\UI\WebControls\TDatePicker;
 use Prado\Web\UI\WebControls\TListControl;
 use Prado\Web\UI\WebControls\TTextBox;
-use Prado\Data\ActiveRecord\TActiveRecord;
 
 /**
  * TTemplateControl class.
@@ -254,10 +253,13 @@ class TTemplateControl extends TCompositeControl
 	}
 
 	/**
-	 * Function to update view controls with data in a given AR object.
-	 * View controls and AR object need to have the same name in IDs and Attrs respectively.
-	 * @param \Prado\Data\ActiveRecord\TActiveRecord $arObj
-	 * @param bool $throwExceptions Wheter or not to throw exceptions
+	 * Updates the view controls with the data of a record object.
+	 * A control and the record property it shows have the same name: the control ID
+	 * matches the property. A `RELATIONS` entry fills the control named by its key:
+	 * `BELONGS_TO` and `HAS_ONE` set the text, `HAS_MANY` binds a {@see TListControl}.
+	 * @param object $arObj a record object with a static `$RELATIONS` array, such as a
+	 *   prado-activerecord `TActiveRecord`
+	 * @param bool $throwExceptions whether to throw exceptions
 	 * @author Daniel Sampedro <darthdaniel85@gmail.com>
 	 */
 	public function tryToUpdateView($arObj, $throwExceptions = false)
@@ -278,11 +280,11 @@ class TTemplateControl extends TCompositeControl
 					foreach ($objAttrs["RELATIONS"] as $relKey => $relValues) {
 						$relControl = $this->{$relKey};
 						switch ($relValues[0]) {
-							case TActiveRecord::BELONGS_TO:
-							case TActiveRecord::HAS_ONE:
+							case 'BELONGS_TO':
+							case 'HAS_ONE':
 								$relControl->setText($arObj->{$relKey});
 								break;
-							case TActiveRecord::HAS_MANY:
+							case 'HAS_MANY':
 								if ($relControl instanceof TListControl) {
 									$relControl->setDataSource($arObj->{$relKey});
 									$relControl->dataBind();
@@ -301,9 +303,12 @@ class TTemplateControl extends TCompositeControl
 	}
 
 	/**
-	 * Function to try to update an AR object with data in view controls.
-	 * @param \Prado\Data\ActiveRecord\TActiveRecord $arObj
-	 * @param bool $throwExceptions Wheter or not to throw exceptions
+	 * Updates a record object with the data of the view controls.
+	 * A control and the record property it fills have the same name: the control ID
+	 * matches the property. The `RELATIONS` entry is skipped.
+	 * @param object $arObj a record object with a static `$RELATIONS` array, such as a
+	 *   prado-activerecord `TActiveRecord`
+	 * @param bool $throwExceptions whether to throw exceptions
 	 * @author Daniel Sampedro <darthdaniel85@gmail.com>
 	 */
 	public function tryToUpdateAR($arObj, $throwExceptions = false)
