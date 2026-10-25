@@ -10,7 +10,7 @@
 ## Overview
 TBaseValidator is the abstract base class for all validator controls. It extends TLabel and implements `IValidator`. Validators run on every postback (or when `TPage::validate()` is called manually) and check the value of a target input control. If client-side scripting is enabled, validation is also performed in the browser before the form is submitted.
 
-Error display is controlled by the `Display` property. The displayed text is chosen from: `Text` property → `ErrorMessage` property → body content of the validator tag (in that priority order). Error messages also feed into `TValidationSummary` controls via `ErrorMessage`.
+Error display is controlled by the `Display` property. The displayed text is chosen from: `Text` property → `ErrorMessage` property → body content of the validator tag (in that priority order). Error messages also feed into `TValidationSummary` controls via `ErrorMessage`. Both are HTML unless `Encode` is true (4.4.0).
 
 Validators self-register with `TPage::getValidators()` on `onInit` and remove themselves on `onUnload`.
 
@@ -34,6 +34,7 @@ Implements: `IValidator`
 | `ControlToValidate` | string | `''` | Dot-path ID of the input control to validate (relative to the validator's naming container) |
 | `ErrorMessage` | string | `''` | Text shown in `TValidationSummary`; also shown in the validator if `Text` is empty |
 | `Text` | string | `''` | Text displayed inline by the validator when invalid (inherited from TLabel) |
+| `Encode` | bool | `false` | Whether `Text` and `ErrorMessage` are HTML-encoded: in the validator, in `TValidationSummary`, and on the client (the `Encode` client option; `Prado.Validation.setErrorMessage()` writes text). `TFileValidator` encodes its `{files}` names regardless. @since 4.4.0 |
 | `Display` | TValidatorDisplayStyle | `Fixed` | How the validator element behaves in layout when valid |
 | `EnableClientScript` | bool | `true` | Whether to emit JavaScript for browser-side validation |
 | `IsValid` | bool | `true` | Whether the last validation passed; set to `true` automatically when disabled |

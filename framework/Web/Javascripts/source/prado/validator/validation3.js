@@ -204,7 +204,13 @@ Object.assign(Prado.Validation,
 				{
 					validator.options.ErrorMessage = message;
 					const el = document.getElementById(validatorID);
-					if (el) el.innerHTML = message;
+					if (el)
+					{
+						if (validator.options.Encode)
+							el.textContent = message;
+						else
+							el.innerHTML = message;
+					}
 				}
 			}
 		}
@@ -614,7 +620,7 @@ Prado.WebUI.TValidationSummary.prototype =
 
 		if(this.options.ShowSummary != false && refresh)
 		{
-			this.updateHTMLMessages(this.getMessages(validators));
+			this.updateHTMLMessages(this.getHtmlMessages(validators));
 			this.showSummary(validators);
 		}
 
@@ -659,6 +665,23 @@ Prado.WebUI.TValidationSummary.prototype =
 		const messages = [];
 		for (const validator of validators) {
 			const message = validator.getErrorMessage();
+			if(typeof(message) == 'string' && message.length > 0)
+				messages.push(message);
+		}
+		return messages;
+	},
+
+	/**
+	 * Get messages from validators as HTML: a validator with the Encode option
+	 * has its message HTML-encoded.
+	 * @function {string[]} ?
+	 * @param {TBaseValidator[]} validators - Array of validators.
+	 * @return Array of validator error messages as HTML.
+	 */
+	getHtmlMessages(validators) {
+		const messages = [];
+		for (const validator of validators) {
+			const message = validator.getErrorMessageHtml ? validator.getErrorMessageHtml() : validator.getErrorMessage();
 			if(typeof(message) == 'string' && message.length > 0)
 				messages.push(message);
 		}
@@ -923,6 +946,16 @@ Prado.WebUI.TBaseValidator = Prado.Class(Prado.WebUI.Control,
 	 */
 	getErrorMessage() {
 		return this.options.ErrorMessage;
+	},
+
+	/**
+	 * Get the error message as HTML: encoded when the Encode option is set.
+	 * @function {string} ?
+	 * @return Validation error message as HTML.
+	 */
+	getErrorMessageHtml() {
+		const message = this.getErrorMessage();
+		return this.options.Encode ? Prado.htmlEncode(message) : message;
 	},
 
 	/**

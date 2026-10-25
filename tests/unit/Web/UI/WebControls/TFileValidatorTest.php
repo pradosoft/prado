@@ -546,6 +546,21 @@ class TFileValidatorTest extends TestCase
 		$this->assertEquals('&lt;b&gt;.gif', $validator->getErrorMessage());
 	}
 
+	public function testErrorMessageFilesTokenStaysEncodedWhenEncode()
+	{
+		[$page, $upload] = $this->createPageWithUpload();
+		$validator = $this->createValidator($page, $upload);
+		$validator->setAllowedFileExtensions('txt');
+		$validator->setErrorMessage('<i>{files}</i>');
+		$validator->setEncode(true);
+		$this->setFiles($upload, [$this->makeFile('<b>.gif', 10)]);
+
+		$this->assertFalse($this->invokeEvaluateIsValid($validator));
+		// the names are encoded in the message, and once more encoding the whole message changes nothing
+		$this->assertEquals('<i>&lt;b&gt;.gif</i>', $validator->getErrorMessage());
+		$this->assertEquals('&lt;i&gt;&lt;b&gt;.gif&lt;/i&gt;', $this->renderContents($validator));
+	}
+
 	// ================================================================================
 	// Validate Method Integration Tests
 	// ================================================================================

@@ -507,6 +507,35 @@ describe('TValidationSummary', () => {
 		expect(summary.style.visibility).toBe('visible');
 	});
 
+	it('encodes the message of a validator with the Encode option', () => {
+		const s = new WebUI.TValidationSummary({ ID: 'vsSummary', FormID: 'vsForm', ShowSummary: true, DisplayMode: 'BulletList' });
+		const proto = WebUI.TBaseValidator.prototype;
+		const make = (message, encode) => ({
+			options: { ErrorMessage: message, Encode: encode },
+			getErrorMessage: proto.getErrorMessage,
+			getErrorMessageHtml: proto.getErrorMessageHtml,
+			requestDispatched: false,
+		});
+		const validators = [make('<b>raw</b>', false), make('<b>enc</b>', true)];
+		expect(s.getMessages(validators)).toEqual(['<b>raw</b>', '<b>enc</b>']);
+		expect(s.getHtmlMessages(validators)).toEqual(['<b>raw</b>', '&lt;b&gt;enc&lt;/b&gt;']);
+		s.updateSummary(validators, true);
+		expect(summary.innerHTML).toContain('<li><b>raw</b></li>');
+		expect(summary.innerHTML).toContain('<li>&lt;b&gt;enc&lt;/b&gt;</li>');
+	});
+
+	it('setErrorMessage writes text, not HTML, for a validator with the Encode option', () => {
+		const manager = Validation.managers['vsForm'];
+		manager.validators.push({ options: { ID: 'vsSpan', Encode: true } });
+		Validation.setErrorMessage('vsSpan', '<b>x</b>');
+		expect(span.textContent).toBe('<b>x</b>');
+		expect(span.children.length).toBe(0);
+
+		manager.validators[manager.validators.length - 1].options.Encode = false;
+		Validation.setErrorMessage('vsSpan', '<b>y</b>');
+		expect(span.innerHTML).toBe('<b>y</b>');
+	});
+
 	describe('formatSummary', () => {
 		let s;
 

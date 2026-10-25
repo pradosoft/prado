@@ -20,7 +20,7 @@ TValidationSummary displays a summary of validation errors on a Web page. It col
 - `getEnableClientScript()` / `setEnableClientScript(bool)` - Enable client-side updates
 - `getValidationGroup()` / `setValidationGroup(string)` - Validator group to summarize
 - `getClientSide()` - Client-side event options
-- `getErrorMessages()` - Collects error messages from validators
+- `getErrorMessages()` - Collects error messages from validators as HTML; a message is HTML-encoded when its validator's `Encode` is true (4.4.0). The client summary does the same through `getHtmlMessages()` in `validation3.js`
 
 ## See Also
 
