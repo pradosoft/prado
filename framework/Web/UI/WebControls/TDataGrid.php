@@ -21,6 +21,7 @@ use Prado\TPropertyValue;
 use Prado\Web\THttpUtility;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Web\UI\ITemplate;
+use Prado\Web\UI\TControl;
 
 /**
  * TDataGrid class
@@ -85,12 +86,30 @@ use Prado\Web\UI\ITemplate;
  * the {@see getColumns Columns} property.
  *
  * TDataGrid supports sorting. If the {@see setAllowSorting AllowSorting}
- * is set to true, a column with nonempty {@see setSortExpression SortExpression}
+ * is set to true, a column with nonempty {@see \Prado\Web\UI\WebControls\TDataGridColumn::setSortExpression SortExpression}
  * will have its header text displayed as a clickable link button.
  * Clicking on the link button will raise {@see onSortCommand OnSortCommand}
  * event. You can respond to this event, sort the data source according
  * to the event parameter, and then invoke {@see databind()} on the datagrid
  * to show to end users the sorted data.
+ *
+ * {@see setSortExpression SortExpression} and {@see setSortDirection SortDirection}
+ * hold the current sort of the data, which the application sets. The OnSortCommand
+ * parameter gives the direction the command requests: Ascending for a new
+ * expression, and the reverse direction for the current expression. A handler
+ * applies the sort it performs:
+ * ```php
+ * public function sortGrid($sender, $param)
+ * {
+ *     $sender->setSortExpression($param->getSortExpression());
+ *     $sender->setSortDirection($param->getSortDirection());
+ *     $sender->setDataSource($this->getSortedData($sender->getSortExpression(), $sender->getSortDirection()));
+ *     $sender->dataBind();
+ * }
+ * ```
+ * The header cell of the sortable column with the current sort expression renders
+ * `aria-sort="ascending"` or `aria-sort="descending"`, which also serves as a CSS
+ * hook, such as `th[aria-sort="ascending"]::after`.
  *
  * TDataGrid supports paging. If the {@see setAllowPaging AllowPaging}
  * is set to true, a pager will be displayed on top and/or bottom of the table.
@@ -178,6 +197,10 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * @var TList all columns including both manually and automatically created columns
 	 */
 	private $_allColumns;
+	/**
+	 * @var ?string the client ID of the control that raised the sort command
+	 */
+	private $_sortFocusID;
 	/**
 	 * @var TDataGridItemCollection datagrid item collection
 	 */
@@ -603,6 +626,84 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
+	 * @return string the sort expression of the current sort, or '' when unsorted.
+	 *   It is the {@see \Prado\Web\UI\WebControls\TDataGridColumn::getSortExpression SortExpression}
+	 *   of the sorted column. The application sets it. Defaults to ''.
+	 * @since 4.4.0
+	 */
+	public function getSortExpression()
+	{
+		return $this->getViewState('SortExpression', '');
+	}
+
+	/**
+	 * @param string $value the sort expression of the current sort, or '' when unsorted
+	 * @since 4.4.0
+	 */
+	public function setSortExpression($value)
+	{
+		$this->setViewState('SortExpression', TPropertyValue::ensureString($value), '');
+	}
+
+	/**
+	 * @return string the direction of the current sort ({@see TDataGridSortDirection}).
+	 *   Defaults to TDataGridSortDirection::Ascending.
+	 * @since 4.4.0
+	 */
+	public function getSortDirection()
+	{
+		return $this->getViewState('SortDirection', TDataGridSortDirection::Ascending);
+	}
+
+	/**
+	 * @param string $value the direction of the current sort ({@see TDataGridSortDirection})
+	 * @since 4.4.0
+	 */
+	public function setSortDirection($value)
+	{
+		$this->setViewState('SortDirection', TPropertyValue::ensureEnum($value, TDataGridSortDirection::class), TDataGridSortDirection::Ascending);
+	}
+
+	/**
+	 * Gives focus to the control that raised a sort command after the page loads,
+	 * so a keyboard or screen reader user stays at the sorted column header. An
+	 * OnSortCommand handler may focus another control ({@see \Prado\Web\UI\TPage::setFocus}).
+	 * @param \Prado\Web\UI\TControl $control the sort button
+	 * @since 4.4.0
+	 */
+	protected function focusSortControl($control)
+	{
+		if ($control instanceof TControl && ($page = $this->getPage()) !== null) {
+			$this->_sortFocusID = $control->getClientID();
+			$page->setFocus($this->_sortFocusID);
+		}
+	}
+
+	/**
+	 * @return ?string the client ID of the control that raised the sort command of
+	 *   this request, or null
+	 * @since 4.4.0
+	 */
+	protected function getSortFocusID()
+	{
+		return $this->_sortFocusID;
+	}
+
+	/**
+	 * Returns the direction a sort command for an expression requests.
+	 * @param string $expression the sort expression of the command
+	 * @return string Descending for the current expression sorted Ascending; otherwise Ascending
+	 * @since 4.4.0
+	 */
+	protected function getNextSortDirection($expression)
+	{
+		if ($expression === $this->getSortExpression() && $this->getSortDirection() === TDataGridSortDirection::Ascending) {
+			return TDataGridSortDirection::Descending;
+		}
+		return TDataGridSortDirection::Ascending;
+	}
+
+	/**
 	 * @return bool whether datagrid columns should be automatically generated. Defaults to true.
 	 */
 	public function getAutoGenerateColumns()
@@ -709,7 +810,9 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 				$this->onCancelCommand($param);
 				return true;
 			} elseif (strcasecmp($command, self::CMD_SORT) === 0) {
-				$this->onSortCommand(new TDataGridSortCommandEventParameter($sender, $param));
+				$direction = $this->getNextSortDirection((string) $param->getCommandParameter());
+				$this->focusSortControl($param->getCommandSource());
+				$this->onSortCommand(new TDataGridSortCommandEventParameter($sender, $param, $direction));
 				return true;
 			} elseif (strcasecmp($command, self::CMD_PAGE) === 0) {
 				$p = $param->getCommandParameter();
@@ -1536,6 +1639,34 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
+	 * Sets `aria-sort` on the header cell of the column with the current
+	 * {@see getSortExpression SortExpression} when sorting is allowed, and removes
+	 * it from the other header cells.
+	 * @since 4.4.0
+	 */
+	protected function applySortState()
+	{
+		if (!$this->_header || ($columns = $this->_allColumns) === null) {
+			return;
+		}
+		$expression = $this->getSortExpression();
+		$sort = strtolower($this->getSortDirection());
+		$cells = $this->_header->getCells();
+		$count = $cells->getCount();
+		foreach ($columns as $index => $column) {
+			if ($index >= $count) {
+				break;
+			}
+			$cell = $cells->itemAt($index);
+			if ($expression !== '' && $column->getAllowSorting() && $column->getSortExpression() === $expression) {
+				$cell->getAria()->add('aria-sort', $sort);
+			} elseif ($cell->getHasAria()) {
+				$cell->getAria()->remove('aria-sort');
+			}
+		}
+	}
+
+	/**
 	 * Renders the openning tag for the datagrid control which will render table caption if present.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
@@ -1572,6 +1703,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 				$control->renderEndTag($writer);
 			} elseif ($this->getViewState('ItemCount', 0) > 0) {
 				$this->applyItemStyles();
+				$this->applySortState();
 				if ($this->_topPager) {
 					$this->_topPager->renderControl($writer);
 					$writer->writeLine();
