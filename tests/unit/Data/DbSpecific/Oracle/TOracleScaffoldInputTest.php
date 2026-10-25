@@ -43,7 +43,7 @@ class TOracleScaffoldInputTest extends \PHPUnit\Framework\TestCase
 
 	private function column(string $dbType, array $info = []): TOracleTableColumn
 	{
-		return new TOracleTableColumn(['ColumnName' => 'col', 'ColumnId' => 'col', 'DbType' => $dbType, 'AllowNull' => true] + $info);
+		return new TOracleTableColumn($info + ['ColumnName' => 'col', 'ColumnId' => 'col', 'DbType' => $dbType, 'AllowNull' => true]);
 	}
 
 	private function record($value = null): TActiveRecord
