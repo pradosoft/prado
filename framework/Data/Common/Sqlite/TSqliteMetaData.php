@@ -127,6 +127,7 @@ class TSqliteMetaData extends TDbMetaData
 	}
 
 	/**
+	 * A column allows null unless `PRAGMA table_info` reports `notnull` as 1.
 	 * A column is a primary key column when its `pk` position is above zero. It
 	 * auto-increments only as a lone `INTEGER PRIMARY KEY`, the one declaration
 	 * SQLite aliases to the rowid; `key_count` holds the number of key columns.
@@ -142,7 +143,7 @@ class TSqliteMetaData extends TDbMetaData
 		$info['ColumnId'] = $columnId;
 		$info['ColumnIndex'] = $col['index'];
 
-		if ($col['notnull'] !== '99') {
+		if ((int) $col['notnull'] === 0) {
 			$info['AllowNull'] = true;
 		}
 

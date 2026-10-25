@@ -88,6 +88,7 @@ return [
 'TIbmScaffoldInput' => 'Prado\Data\ActiveRecord\Scaffold\InputBuilder\TIbmScaffoldInput',
 'TMssqlScaffoldInput' => 'Prado\Data\ActiveRecord\Scaffold\InputBuilder\TMssqlScaffoldInput',
 'TMysqlScaffoldInput' => 'Prado\Data\ActiveRecord\Scaffold\InputBuilder\TMysqlScaffoldInput',
+'TOracleScaffoldInput' => 'Prado\Data\ActiveRecord\Scaffold\InputBuilder\TOracleScaffoldInput',
 'TPgsqlScaffoldInput' => 'Prado\Data\ActiveRecord\Scaffold\InputBuilder\TPgsqlScaffoldInput',
 'TScaffoldInputBase' => 'Prado\Data\ActiveRecord\Scaffold\InputBuilder\TScaffoldInputBase',
 'TScaffoldInputCommon' => 'Prado\Data\ActiveRecord\Scaffold\InputBuilder\TScaffoldInputCommon',

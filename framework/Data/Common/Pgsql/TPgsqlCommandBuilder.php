@@ -61,7 +61,7 @@ class TPgsqlCommandBuilder extends TDbCommandBuilder
 	{
 		$conditions = [];
 		foreach ($words as $word) {
-			$conditions[] = $column . ' ILIKE ' . $this->getDbConnection()->quoteString('%' . $word . '%');
+			$conditions[] = $column . ' ILIKE ' . $this->getSearchPattern($word);
 		}
 		return '(' . implode(' AND ', $conditions) . ')';
 	}

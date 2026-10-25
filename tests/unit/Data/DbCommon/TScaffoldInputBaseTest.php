@@ -149,6 +149,16 @@ class TScaffoldInputBaseTest extends \PHPUnit\Framework\TestCase
 		$this->assertInstanceOf(\Prado\Data\ActiveRecord\Scaffold\InputBuilder\TFirebirdScaffoldInput::class, $result);
 	}
 
+	public function test_createInputBuilder_valid_oci_driver()
+	{
+		$record = $this->createMockRecord(TDbDriver::DRIVER_OCI);
+		$conn = $record->getDbConnection();
+		$conn->expects($this->never())->method('raiseEvent');
+
+		$result = TScaffoldInputBase::createInputBuilder($record);
+		$this->assertInstanceOf(\Prado\Data\ActiveRecord\Scaffold\InputBuilder\TOracleScaffoldInput::class, $result);
+	}
+
 	public function test_createInputBuilder_driver_name_is_case_insensitive()
 	{
 		$record = $this->createMockRecord('PGSQL');
