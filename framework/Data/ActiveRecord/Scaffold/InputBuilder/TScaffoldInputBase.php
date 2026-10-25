@@ -22,7 +22,7 @@ use Prado\Exceptions\TConfigurationException;
  * the database driver.
  *
  * This class provides the foundation for database-specific input builder implementations
- * (e.g., TMysqlScaffoldInput, TSqliteScaffoldInput, etc.) that map database
+ * (e.g., TMysqlScaffoldInput, TSqliteScaffoldInput, TOracleScaffoldInput, etc.) that map database
  * column types to appropriate Prado web controls like TTextBox, TCheckBox, TDropDownList,
  * TDatePicker, etc.
  *
@@ -91,6 +91,9 @@ class TScaffoldInputBase implements IScaffoldInput
 			case TDbDriver::DRIVER_INTERBASE:
 				require_once(__DIR__ . '/TFirebirdScaffoldInput.php');
 				return new TFirebirdScaffoldInput();
+			case TDbDriver::DRIVER_OCI:
+				require_once(__DIR__ . '/TOracleScaffoldInput.php');
+				return new TOracleScaffoldInput();
 			default:
 				$inputClasses = ($connection instanceof \Prado\TComponent)
 					? $connection->raiseEvent('fxActiveRecordScaffoldInputClass', $connection, $driver)

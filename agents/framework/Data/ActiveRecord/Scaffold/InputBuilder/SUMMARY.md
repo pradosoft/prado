@@ -17,3 +17,7 @@ Driver-specific input control builders mapping database column types to Prado fo
 - **`TSqliteScaffoldInput`** — SQLite-specific: handles SQLite's affinity types (`INTEGER`, `REAL`, `TEXT`, `BLOB`).
 
 - **`TIbmScaffoldInput`** — IBM DB2-specific: handles `INTEGER`, `BIGINT`, `DECIMAL`, `TIMESTAMP`, etc.
+
+- **`TFirebirdScaffoldInput`** — Firebird-specific: `DATE`, `TIME`, `TIMESTAMP`, `BOOLEAN`, `DECFLOAT`.
+
+- **`TOracleScaffoldInput`** — Oracle-specific: `NUMBER` by scale, `DATE`/`TIMESTAMP` as date-time, `CLOB`/`BLOB` multiline.

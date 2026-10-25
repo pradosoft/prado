@@ -32,6 +32,10 @@ Driver-specific input control builders for the Active Record scaffold UI. Each c
 
 - **`TIbmScaffoldInput`** — IBM DB2-specific: handles DB2 column type conventions (`INTEGER`, `BIGINT`, `DECIMAL`, `TIMESTAMP`, `DATE`, `TIME`, `CHAR`, `VARCHAR`).
 
+- **[`TFirebirdScaffoldInput`](./TFirebirdScaffoldInput.md)** — Firebird-specific: `DATE`, `TIME`, `TIMESTAMP` (with time zone variants), `BOOLEAN`, `DECFLOAT`.
+
+- **[`TOracleScaffoldInput`](./TOracleScaffoldInput.md)** — Oracle-specific (`oci`): `NUMBER` with scale 0 is an integer, other `NUMBER` a float; `DATE` and `TIMESTAMP` variants take a date-time control since Oracle `DATE` holds a time; `CLOB`/`NCLOB`/`LONG`/`BLOB` are multiline.
+
 ## Patterns & Gotchas
 
 - The correct subclass is selected automatically by `TScaffoldInputBase::createInputBuilder($record)` based on the PDO driver name. For unknown drivers the `fxActiveRecordScaffoldInputClass` event fires; the first handler returning a class name wins.

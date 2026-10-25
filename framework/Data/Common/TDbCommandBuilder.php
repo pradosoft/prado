@@ -24,6 +24,12 @@ use Prado\Data\Common\IDataCommandBuilder;
  */
 class TDbCommandBuilder extends \Prado\TComponent implements IDataCommandBuilder
 {
+	/**
+	 * LIKE escape character named by the `ESCAPE` clause of a search pattern.
+	 * @since 4.4.0
+	 */
+	public const SEARCH_ESCAPE_CHAR = '\\';
+
 	private $_connection;
 	private $_tableInfo;
 
@@ -129,7 +135,8 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDataCommandBuilder
 	/**
 	 * Computes the SQL condition for search a set of column using regular expression
 	 * (or LIKE, depending on database implementation) to match a string of
-	 * keywords (default matches all keywords).
+	 * keywords (default matches all keywords). The LIKE wildcards `%` and `_` in a
+	 * keyword match themselves; see {@see getSearchPattern()}.
 	 * @param array $fields list of column id for potential search condition.
 	 * @param string $keywords string of keywords
 	 * @return string SQL search condition matching on a set of columns.
@@ -157,9 +164,37 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDataCommandBuilder
 	{
 		$conditions = [];
 		foreach ($words as $word) {
-			$conditions[] = $column . ' LIKE ' . $this->getDbConnection()->quoteString('%' . $word . '%');
+			$conditions[] = $column . ' LIKE ' . $this->getSearchPattern($word);
 		}
 		return '(' . implode(' AND ', $conditions) . ')';
+	}
+
+	/**
+	 * Builds the quoted LIKE operand that contains a keyword, `'%word%' ESCAPE '\'`.
+	 * The keyword's `%`, `_`, and `\` are escaped with {@see SEARCH_ESCAPE_CHAR} so
+	 * they match literally; the `ESCAPE` clause names that character for every driver.
+	 * @param string $word keyword.
+	 * @return string quoted pattern with its ESCAPE clause.
+	 * @since 4.4.0
+	 */
+	protected function getSearchPattern($word)
+	{
+		$conn = $this->getDbConnection();
+		return $conn->quoteString('%' . $this->escapeSearchWord($word) . '%')
+			. ' ESCAPE ' . $conn->quoteString(self::SEARCH_ESCAPE_CHAR);
+	}
+
+	/**
+	 * Escapes the LIKE wildcards `%` and `_` and the escape character itself in a
+	 * keyword, each prefixed with {@see SEARCH_ESCAPE_CHAR}.
+	 * @param string $word keyword.
+	 * @return string keyword that LIKE matches literally.
+	 * @since 4.4.0
+	 */
+	protected function escapeSearchWord($word)
+	{
+		$escape = self::SEARCH_ESCAPE_CHAR;
+		return strtr((string) $word, [$escape => $escape . $escape, '%' => $escape . '%', '_' => $escape . '_']);
 	}
 
 	/**

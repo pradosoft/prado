@@ -197,6 +197,9 @@ class TOracleMetaData extends TDbMetaData
 	}
 
 	/**
+	 * Builds a column from an `ALL_TAB_COLUMNS` row. The `type` field carries
+	 * `NUMBER(precision,scale)`, with either part empty for an unconstrained
+	 * `NUMBER`; `DbType` drops the parenthesized part and keeps the parts present.
 	 * @param TOracleTableInfo $tableInfo table information.
 	 * @param array $col column information.
 	 */
@@ -237,14 +240,16 @@ class TOracleMetaData extends TDbMetaData
 		}
 		*/
 		$matches = [];
-		if (preg_match('/\((\d+)(?:,(\d+))?+\)/', $col['type'], $matches)) {
-			$info['DbType'] = preg_replace('/\(\d+(?:,\d+)?\)/', '', $col['type']);
+		if (preg_match('/\((\d*)(?:,(\d*))?+\)/', $col['type'], $matches)) {
+			$info['DbType'] = preg_replace('/\(\d*(?:,\d*)?\)/', '', $col['type']);
 			if ($this->isPrecisionType($info['DbType'])) {
-				$info['NumericPrecision'] = (int) ($matches[1]);
-				if (count($matches) > 2) {
+				if ($matches[1] !== '') {
+					$info['NumericPrecision'] = (int) ($matches[1]);
+				}
+				if (count($matches) > 2 && $matches[2] !== '') {
 					$info['NumericScale'] = (int) ($matches[2]);
 				}
-			} else {
+			} elseif ($matches[1] !== '') {
 				$info['ColumnSize'] = (int) ($matches[1]);
 			}
 		} else {

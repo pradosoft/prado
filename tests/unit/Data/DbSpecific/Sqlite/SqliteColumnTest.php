@@ -101,8 +101,8 @@ class SqliteColumnTest extends \PHPUnit\Framework\TestCase
 			'ColumnIndex'   => 0,
 			// 'integer' (exact lowercase type) + pk=1 → AutoIncrement
 			'DbType'        => 'integer',
-			// notnull check uses !== '99', so AllowNull is always true regardless of constraint
-			'AllowNull'     => true,
+			'PHPType'       => 'integer',
+			'AllowNull'     => false,
 			'IsPrimaryKey'  => true,
 			'IsForeignKey'  => false,
 			'AutoIncrement' => true,
@@ -114,7 +114,8 @@ class SqliteColumnTest extends \PHPUnit\Framework\TestCase
 			'ColumnIndex'   => 1,
 			'DbType'        => 'varchar',
 			'ColumnSize'    => 45,
-			'AllowNull'     => true,
+			'PHPType'     => 'string',
+			'AllowNull'     => false,
 			'IsPrimaryKey'  => false,
 			'IsForeignKey'  => false,
 			'AutoIncrement' => false,
@@ -126,7 +127,8 @@ class SqliteColumnTest extends \PHPUnit\Framework\TestCase
 			'ColumnIndex'   => 2,
 			// 'int' is NOT the same as 'integer' so AutoIncrement is false
 			'DbType'        => 'int',
-			'AllowNull'     => true,
+			'PHPType'     => 'integer',
+			'AllowNull'     => false,
 			'IsPrimaryKey'  => false,
 			'IsForeignKey'  => false,
 			'AutoIncrement' => false,
@@ -137,6 +139,7 @@ class SqliteColumnTest extends \PHPUnit\Framework\TestCase
 			'ColumnName'    => '"field2_text"',
 			'ColumnIndex'   => 3,
 			'DbType'        => 'text',
+			'PHPType'     => 'string',
 			'AllowNull'     => true,
 			'IsPrimaryKey'  => false,
 			'IsForeignKey'  => false,
@@ -148,7 +151,8 @@ class SqliteColumnTest extends \PHPUnit\Framework\TestCase
 			'ColumnName'    => '"field3_real"',
 			'ColumnIndex'   => 4,
 			'DbType'        => 'real',
-			'AllowNull'     => true,
+			'PHPType'     => 'float',
+			'AllowNull'     => false,
 			'IsPrimaryKey'  => false,
 			'IsForeignKey'  => false,
 			'AutoIncrement' => false,
@@ -159,6 +163,7 @@ class SqliteColumnTest extends \PHPUnit\Framework\TestCase
 			'ColumnName'    => '"field4_blob"',
 			'ColumnIndex'   => 5,
 			'DbType'        => 'blob',
+			'PHPType'     => 'string',
 			'AllowNull'     => true,
 			'IsPrimaryKey'  => false,
 			'IsForeignKey'  => false,
@@ -173,7 +178,8 @@ class SqliteColumnTest extends \PHPUnit\Framework\TestCase
 			'DbType'           => 'numeric',
 			'NumericPrecision' => 10,
 			'NumericScale'     => 4,
-			'AllowNull'        => true,
+			'PHPType'        => 'float',
+			'AllowNull'        => false,
 			'IsPrimaryKey'     => false,
 			'IsForeignKey'     => false,
 			'AutoIncrement'    => false,
@@ -184,7 +190,8 @@ class SqliteColumnTest extends \PHPUnit\Framework\TestCase
 			'ColumnName'    => '"field6_bool"',
 			'ColumnIndex'   => 7,
 			'DbType'        => 'boolean',
-			'AllowNull'     => true,
+			'PHPType'     => 'boolean',
+			'AllowNull'     => false,
 			'IsPrimaryKey'  => false,
 			'IsForeignKey'  => false,
 			'AutoIncrement' => false,
@@ -195,6 +202,7 @@ class SqliteColumnTest extends \PHPUnit\Framework\TestCase
 			'ColumnName'    => '"field7_date"',
 			'ColumnIndex'   => 8,
 			'DbType'        => 'date',
+			'PHPType'     => 'string',
 			'AllowNull'     => true,
 			'IsPrimaryKey'  => false,
 			'IsForeignKey'  => false,
@@ -209,6 +217,7 @@ class SqliteColumnTest extends \PHPUnit\Framework\TestCase
 			'DbType'           => 'decimal',
 			'NumericPrecision' => 8,
 			'NumericScale'     => 2,
+			'PHPType'        => 'float',
 			'AllowNull'        => true,
 			'IsPrimaryKey'     => false,
 			'IsForeignKey'     => false,
@@ -321,6 +330,47 @@ class SqliteColumnTest extends \PHPUnit\Framework\TestCase
 		// 'integer(10)' → DbType='integer' after stripping parens, but AutoIncrement
 		// is set BEFORE parsing parens (from the raw type), so it is false
 		$this->assertFalse($meta->getTableInfo('t3')->Columns['id']->AutoIncrement);
+	}
+
+	public function test_allow_null_follows_the_not_null_constraint()
+	{
+		$conn = new TDbConnection('sqlite::memory:');
+		$conn->Active = true;
+		$conn->createCommand('CREATE TABLE t (code TEXT PRIMARY KEY, required TEXT NOT NULL, optional TEXT)')->execute();
+		$columns = (new TSqliteMetaData($conn))->getTableInfo('t')->getColumns();
+
+		// A non-integer PRIMARY KEY without NOT NULL accepts NULL in SQLite.
+		$this->assertTrue($columns['code']->getAllowNull());
+		$this->assertFalse($columns['required']->getAllowNull());
+		$this->assertTrue($columns['optional']->getAllowNull());
+	}
+
+	public function test_php_type_follows_the_type_map_then_the_affinity_rules()
+	{
+		$conn = new TDbConnection('sqlite::memory:');
+		$conn->Active = true;
+		$conn->createCommand('
+			CREATE TABLE t (
+				a INT2, b BOOL, c DOUBLE PRECISION, d UNSIGNED BIG INT,
+				e CHARACTER(20), f NVARCHAR(100), g CLOB, h FLOAT8, i DATETIME, j MONEY, k
+			)
+		')->execute();
+		$columns = (new TSqliteMetaData($conn))->getTableInfo('t')->getColumns();
+
+		$this->assertSame('integer', $columns['a']->getPHPType());
+		$this->assertSame('boolean', $columns['b']->getPHPType());
+		$this->assertSame('float', $columns['c']->getPHPType());
+		$this->assertSame('integer', $columns['d']->getPHPType());
+		$this->assertSame('string', $columns['e']->getPHPType());
+		$this->assertSame('string', $columns['f']->getPHPType());
+		$this->assertSame('string', $columns['g']->getPHPType());
+		$this->assertSame('float', $columns['h']->getPHPType());
+		$this->assertSame('string', $columns['i']->getPHPType());
+		$this->assertSame('string', $columns['j']->getPHPType());
+		$this->assertSame('', $columns['k']->getDbType());
+		$this->assertSame('string', $columns['k']->getPHPType());
+		$this->assertSame(\PDO::PARAM_INT, $columns['a']->getPdoType());
+		$this->assertSame(\PDO::PARAM_BOOL, $columns['b']->getPdoType());
 	}
 
 	public function assertColumn($columns, $table)

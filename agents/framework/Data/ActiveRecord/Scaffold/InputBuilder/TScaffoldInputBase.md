@@ -28,6 +28,7 @@ Selects the correct builder from the active record's database driver:
 | `mssql` | `TMssqlScaffoldInput` |
 | `ibm` | `TIbmScaffoldInput` |
 | `firebird`, `interbase` | `TFirebirdScaffoldInput` |
+| `oci` | `TOracleScaffoldInput` |
 
 **Unknown driver fallback:** raises `fxActiveRecordScaffoldInputClass` on the connection with the driver name string as the parameter. Handlers return a fully-qualified class name implementing [`IScaffoldInput`](./IScaffoldInput.md); the **first returned value** wins. The class is instantiated with `new $class()`. Throws `TConfigurationException('ar_invalid_database_driver')` if no handler responds, or `TConfigurationException('ar_not_input_base')` if the returned class does not implement `IScaffoldInput`.
 
