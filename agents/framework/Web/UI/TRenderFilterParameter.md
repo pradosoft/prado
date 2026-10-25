@@ -53,6 +53,8 @@ The parameter tracks which representation is *current*:
 
 `domToHtml()` serializes with `saveHTML()`, writes the doctype itself, and restores placeholders. Placeholders carry a per-parse random nonce.
 
+`parseLibxml()` removes its injected UTF-8 prefix as either a processing instruction or an exact matching comment, skipping a leading doctype when locating it. Only that first non-doctype node is checked, preserving source comments with the same content; the temporary context wrapper is located through `documentElement`.
+
 Before 4.4.0 the parse used `LIBXML_HTML_NOIMPLIED` with no context: leading text gained a `<p>`, whitespace between top-level elements was dropped, `</` ended script content, SVG names were lowercased, and the `<head>` tag and doctype were lost.
 
 ## Exempt markup (@since 4.4.0)

@@ -967,12 +967,19 @@ class TRenderFilterParameter extends TEventParameter implements IEventCycleParam
 			);
 			return false;
 		}
-		foreach (iterator_to_array($dom->childNodes) as $node) {
-			if ($node->nodeType === XML_PI_NODE && $node->nodeName === 'xml') {
-				$dom->removeChild($node);
-			}
+		$prefix = $dom->firstChild;
+		// libxml can place the doctype before the injected encoding prefix.
+		if ($prefix instanceof DOMDocumentType) {
+			$prefix = $prefix->nextSibling;
 		}
-		if ($context !== '#document' && ($wrapper = $dom->firstChild) instanceof DOMElement) {
+		if ($prefix !== null && (
+			($prefix->nodeType === XML_PI_NODE && $prefix->nodeName === 'xml')
+			|| ($prefix->nodeType === XML_COMMENT_NODE
+				&& $prefix->nodeValue === '?xml encoding="UTF-8"')
+		)) {
+			$dom->removeChild($prefix);
+		}
+		if ($context !== '#document' && ($wrapper = $dom->documentElement) instanceof DOMElement) {
 			while ($wrapper->firstChild) {
 				$dom->insertBefore($wrapper->firstChild, $wrapper);
 			}

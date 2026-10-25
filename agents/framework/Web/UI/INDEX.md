@@ -50,7 +50,7 @@ Core UI component system for the Prado framework: the control hierarchy, templat
 
 - **[`TRenderFilterContext`](TRenderFilterContext.md)** — Per-`THtmlWriter` state of the capturing render filters and the controls exempt from them (`TControl.RenderFilterExempt`). @since 4.4.0
 
-- **[`TRenderFilterParameter`](TRenderFilterParameter.md)** — Event parameter for the `onRenderFilter` event. Carries rendered HTML as both a raw string and a lazily-parsed `DOMDocument`. @since 4.3.3
+- **[`TRenderFilterParameter`](TRenderFilterParameter.md)** — Event parameter for the `onRenderFilter` event. Carries rendered HTML as both a raw string and a lazily-parsed `DOMDocument`; libxml parsing removes the injected encoding prefix in processing-instruction or comment form and unwraps the context element while preserving source comments. @since 4.3.3
 
 - **[`TWebColor`](TWebColor.md)** — `TEnumerable` subclass defining all CSS named colors as `#RRGGBB` constants. Replaces the deprecated `TWebColors`. @since 4.3.0
 

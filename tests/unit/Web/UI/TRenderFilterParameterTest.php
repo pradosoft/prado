@@ -1177,6 +1177,9 @@ class TRenderFilterParameterTest extends TestCase
 		$cases = [
 			'leading text' => 'Lead HTML text <b>bold</b> tail',
 			'top-level whitespace' => '<span>A</span> <span>B</span>',
+			'UTF-8 text and attributes' => '<p title="è € 😀">è € 😀</p>',
+			'leading comment' => '<!--keep--><p>x</p>',
+			'comment matching encoding prefix' => '<!--?xml encoding="UTF-8"--><p>x</p>',
 			'indented elements' => "\n\t<h1>T</h1>\n\t<p>x</p>\n",
 			'script with end tag text' => '<script>var s = "</div>"; if (a < b && c) {}</script><p>x</p>',
 			'empty script' => '<script src="a.js"></script>',
@@ -1191,6 +1194,8 @@ class TRenderFilterParameterTest extends TestCase
 			'options' => '<option value="1" selected>One</option><optgroup label="g"><option>2</option></optgroup>',
 			'columns' => '<col span="2">',
 			'document' => '<!DOCTYPE html><html lang="en"><head><title>T</title></head><body><p>x</p></body></html>',
+			'document with leading comment' => '<!DOCTYPE html><!--keep--><html><head><title>T</title></head><body><p>x</p></body></html>',
+			'document with encoding comment' => '<!DOCTYPE html><!--?xml encoding="UTF-8"--><html><head><title>T</title></head><body><p>x</p></body></html>',
 			'head' => '<head><title>T</title></head>',
 			'body' => '<body class="b"><p>x</p></body>',
 			'template rows' => '<search><output name="o">1</output></search><template><tr><td>x</td></tr></template>',
