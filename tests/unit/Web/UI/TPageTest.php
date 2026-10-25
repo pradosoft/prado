@@ -8,9 +8,12 @@ use Prado\Web\UI\TSessionPageStatePersister;
 use Prado\Web\UI\IPageStatePersister;
 use Prado\Web\UI\TTemplateControl;
 use Prado\Web\UI\TForm;
+use Prado\Web\UI\TClientScriptManager;
+use Prado\Web\UI\TControl;
 use Prado\Web\UI\WebControls\THead;
 use Prado\Web\UI\TTheme;
 use Prado\Collections\TList;
+use Prado\Collections\TMap;
 use Prado\Collections\TStack;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\THttpException;
@@ -630,6 +633,74 @@ public function testSetThemeToNonEmptyStringStoresString(): void
 	}
 
 	// -----------------------------------------------------------------------
+	// endFormRender — focus registration
+	// -----------------------------------------------------------------------
+
+	/**
+	 * Returns a page whose client script manager records focus registrations.
+	 */
+	private function createPageWithClientScript(): TPage
+	{
+		$page = new TPage();
+		PradoUnit::setProp($page, '_clientScript', new TPageFocusClientScriptManager($page));
+		return $page;
+	}
+
+	public function testEndFormRenderWithoutFocusRegistersNoFocus(): void
+	{
+		$page = $this->createPageWithClientScript();
+		$page->endFormRender(null);
+
+		$this->assertSame([], $page->getClientScript()->focusTargets);
+	}
+
+	public function testEndFormRenderRegistersFocusElementId(): void
+	{
+		$page = $this->createPageWithClientScript();
+		$page->setFocus('myElementId');
+		$page->endFormRender(null);
+
+		$this->assertSame(['myElementId'], $page->getClientScript()->focusTargets);
+	}
+
+	public function testEndFormRenderRegistersFocusControlClientId(): void
+	{
+		$page = $this->createPageWithClientScript();
+		$control = new TControl();
+		$control->setID('myControl');
+		$control->setPage($page);
+		$page->setFocus($control);
+		$page->endFormRender(null);
+
+		$this->assertSame([$control->getClientID()], $page->getClientScript()->focusTargets);
+	}
+
+	public function testEndFormRenderIgnoresPostedLastFocus(): void
+	{
+		$page = $this->createPageWithClientScript();
+		PradoUnit::setProp($page, '_postData', new TMap([TPage::FIELD_LASTFOCUS => "x');alert(1);//"]));
+		$page->endFormRender(null);
+
+		$this->assertSame([], $page->getClientScript()->focusTargets);
+	}
+
+	public function testEndFormRenderPrefersSetFocusOverPostedLastFocus(): void
+	{
+		$page = $this->createPageWithClientScript();
+		PradoUnit::setProp($page, '_postData', new TMap([TPage::FIELD_LASTFOCUS => 'postedId']));
+		$page->setFocus('myElementId');
+		$page->endFormRender(null);
+
+		$this->assertSame(['myElementId'], $page->getClientScript()->focusTargets);
+	}
+
+	public function testEndFormRenderEndsFormRender(): void
+	{
+		$page = $this->createPageWithClientScript();
+		PradoUnit::setProp($page, '_inFormRender', true);
+		$page->endFormRender(null);
+
+		$this->assertFalse($page->getInFormRender());
 	// CSRF validation
 	// -----------------------------------------------------------------------
 
@@ -743,6 +814,12 @@ public function testSetThemeToNonEmptyStringStoresString(): void
 		$this->assertEquals('PRADO_POSTBACK_PARAMETER', TPage::FIELD_POSTBACK_PARAMETER);
 	}
 
+	public function testDeprecatedFieldLastFocusConstantIsStillReserved(): void
+	{
+		$this->assertEquals('PRADO_LASTFOCUS', TPage::FIELD_LASTFOCUS);
+		$this->assertTrue(PradoUnit::invoke(new TPage(), 'isSystemPostField', TPage::FIELD_LASTFOCUS));
+	}
+
 	public function testFieldPageStateConstant(): void
 	{
 		$this->assertEquals('PRADO_PAGESTATE', TPage::FIELD_PAGESTATE);
@@ -756,5 +833,18 @@ public function testSetThemeToNonEmptyStringStoresString(): void
 	public function testFieldCallbackParameterConstant(): void
 	{
 		$this->assertEquals('PRADO_CALLBACK_PARAMETER', TPage::FIELD_CALLBACK_PARAMETER);
+	}
+}
+
+/**
+ * Records the targets passed to registerFocusControl() without registering scripts.
+ */
+class TPageFocusClientScriptManager extends TClientScriptManager
+{
+	public array $focusTargets = [];
+
+	public function registerFocusControl($target)
+	{
+		$this->focusTargets[] = $target;
 	}
 }

@@ -168,21 +168,22 @@ describe('Prado.PostBack.doPostBack', () => {
 		expect(submits).toHaveLength(0);
 	});
 
-	// ── TrackFocus ────────────────────────────────────────────────────────
+	// ── TrackFocus (removed) ──────────────────────────────────────────────
 
-	it('does not throw when TrackFocus is true', () => {
-		// PostBack reads jQuery('#PRADO_LASTFOCUS') which is always truthy as a
-		// jQuery object; it then sets .value on the jQuery object (not the DOM
-		// element — this is a known quirk in the source). We simply assert no
-		// exception is thrown and the form submission proceeds normally.
+	it('ignores the removed TrackFocus option and leaves PRADO_LASTFOCUS untouched', () => {
 		const lastFocus = document.createElement('input');
 		lastFocus.id   = 'PRADO_LASTFOCUS';
 		lastFocus.type = 'hidden';
 		form.appendChild(lastFocus);
+		const btn = document.createElement('button');
+		btn.id = 'btn1';
+		form.appendChild(btn);
+		btn.focus();
 
 		const fakeEvent = { preventDefault: vi.fn() };
-		expect(() => new PostBack(baseOpts({ TrackFocus: true }), fakeEvent)).not.toThrow();
-		// The form submit should still be triggered.
+		new PostBack(baseOpts({ TrackFocus: true, EventTarget: 'btn1' }), fakeEvent);
+
+		expect(lastFocus.value).toBe('');
 		expect(submits).toHaveLength(1);
 	});
 });
