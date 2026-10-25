@@ -6,7 +6,11 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Prado;
 use Prado\Security\TSecurityManager;
+use Prado\Test\Unit\Harness\Web\TTestCookieResponse;
+use Prado\Test\Unit\Harness\Web\TTestMemorySession;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Web\TAssetManager;
+use Prado\Web\THttpCookie;
 use Prado\Web\THttpRequest;
 use Prado\Web\THttpRequestUrlFormat;
 use Prado\Web\TUrlManager;
@@ -375,6 +379,121 @@ class THttpRequestTest extends \PHPUnit\Framework\TestCase
 		$cookies = $request->getCookies();
 		self::assertInstanceOf(\Prado\Web\THttpCookieCollection::class, $cookies);
 		self::assertEquals('0123456789abcdef', $cookies->itemAt('phpsessid')->getValue());
+	}
+
+	/**
+	 * Builds a request on a response that records its cookies, without a CSRF cookie or field.
+	 */
+	private function newCsrfRequest(?TTestCookieResponse $response = null): THttpRequest
+	{
+		$this->app->setResponse($response ?? new TTestCookieResponse());
+		unset($_COOKIE[THttpRequest::CSRF_TOKEN_KEY], $_POST[THttpRequest::CSRF_TOKEN_FIELD], $_GET[THttpRequest::CSRF_TOKEN_FIELD]);
+		$request = new THttpRequest();
+		$request->init(null);
+		return $request;
+	}
+
+	public function testCsrfTokenCookie()
+	{
+		$response = new TTestCookieResponse();
+		$request = $this->newCsrfRequest($response);
+		self::assertTrue($request->getEnableCsrfCookie());
+
+		// a request without a secret issues one, signed, in an HttpOnly cookie
+		$token = $request->getCsrfToken();
+		$cookie = $response->getCookies()->itemAt(THttpRequest::CSRF_TOKEN_KEY);
+		self::assertInstanceOf(THttpCookie::class, $cookie);
+		self::assertTrue($cookie->getHttpOnly());
+		self::assertFalse($cookie->getSecure());
+		$secret = $this->app->getSecurityManager()->validateCookieData($cookie->getValue());
+		self::assertSame(32, strlen($secret));
+		self::assertSame($secret, PradoUnit::invoke($request, 'unmaskCsrfToken', $token));
+
+		// every token is masked differently, and each validates
+		$token2 = $request->getCsrfToken();
+		self::assertNotEquals($token, $token2);
+		self::assertTrue($request->validateCsrfToken($token));
+		self::assertTrue($request->validateCsrfToken($token2));
+		self::assertFalse($request->validateCsrfToken(''));
+		self::assertFalse($request->validateCsrfToken('not base64!'));
+		self::assertFalse($request->validateCsrfToken(base64_encode('odd')));
+		self::assertFalse($request->validateCsrfToken(base64_encode(str_repeat('x', 64))));
+		self::assertCount(1, $response->setCookies);
+
+		// a regenerated secret stops the earlier tokens
+		$token3 = $request->getCsrfToken(true);
+		self::assertFalse($request->validateCsrfToken($token));
+		self::assertTrue($request->validateCsrfToken($token3));
+		self::assertCount(2, $response->setCookies);
+
+		// the next request reads the cookie and keeps the secret
+		$_COOKIE[THttpRequest::CSRF_TOKEN_KEY] = $response->setCookies[1][1];
+		$request = new THttpRequest();
+		$request->init(null);
+		self::assertTrue($request->validateCsrfToken($token3));
+		self::assertFalse($request->validateCsrfToken($token));
+		$request->getCsrfToken();
+		self::assertCount(2, $response->setCookies);
+
+		// a tampered cookie is no secret: validation fails and a new secret is issued
+		$_COOKIE[THttpRequest::CSRF_TOKEN_KEY] = 'x' . $response->setCookies[1][1];
+		$request = new THttpRequest();
+		$request->init(null);
+		self::assertFalse($request->validateCsrfToken($token3));
+		$request->getCsrfToken();
+		self::assertCount(3, $response->setCookies);
+		unset($_COOKIE[THttpRequest::CSRF_TOKEN_KEY]);
+	}
+
+	public function testCsrfTokenFromRequest()
+	{
+		$response = new TTestCookieResponse();
+		$request = $this->newCsrfRequest($response);
+		$token = $request->getCsrfToken();
+
+		self::assertFalse($request->validateCsrfToken(), 'no token sent');
+		$_GET[THttpRequest::CSRF_TOKEN_FIELD] = $token;
+		self::assertFalse($request->validateCsrfToken(), 'the query string never supplies the token');
+		$_POST[THttpRequest::CSRF_TOKEN_FIELD] = [$token];
+		self::assertFalse($request->validateCsrfToken(), 'an array is not a token');
+		$_POST[THttpRequest::CSRF_TOKEN_FIELD] = $token;
+		self::assertTrue($request->validateCsrfToken(), 'the POST field');
+		unset($_GET[THttpRequest::CSRF_TOKEN_FIELD], $_POST[THttpRequest::CSRF_TOKEN_FIELD]);
+
+		// the header, read by a request that parses its headers after it is set
+		$_COOKIE[THttpRequest::CSRF_TOKEN_KEY] = $response->setCookies[0][1];
+		$_SERVER['HTTP_X_PRADO_CSRF_TOKEN'] = $token;
+		$request = new THttpRequest();
+		$request->init(null);
+		self::assertTrue($request->validateCsrfToken(), 'the header');
+		unset($_SERVER['HTTP_X_PRADO_CSRF_TOKEN'], $_COOKIE[THttpRequest::CSRF_TOKEN_KEY]);
+	}
+
+	public function testCsrfTokenSession()
+	{
+		$response = new TTestCookieResponse();
+		$session = new TTestMemorySession();
+		$this->app->setSession($session);
+		$request = $this->newCsrfRequest($response);
+		$request->setEnableCsrfCookie(false);
+		self::assertFalse($request->getEnableCsrfCookie());
+
+		$token = $request->getCsrfToken();
+		self::assertTrue($session->opened);
+		$secret = $session->data[THttpRequest::CSRF_TOKEN_KEY];
+		self::assertSame(32, strlen($secret));
+		self::assertTrue($request->validateCsrfToken($token));
+		self::assertCount(0, $response->setCookies);
+
+		// another request of the session reads the secret, and replaces it on regeneration
+		$request = new THttpRequest();
+		$request->init(null);
+		$request->setEnableCsrfCookie(false);
+		self::assertTrue($request->validateCsrfToken($token));
+		$request->getCsrfToken(true);
+		self::assertNotSame($secret, $session->data[THttpRequest::CSRF_TOKEN_KEY]);
+		self::assertFalse($request->validateCsrfToken($token));
+		self::assertCount(0, $response->setCookies);
 	}
 
 	public function testGetUploadedFiles()

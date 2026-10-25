@@ -150,6 +150,7 @@ class TFeedService extends \Prado\TService
 	 */
 	public function run()
 	{
+		$this->ensureCsrfToken();
 		$id = $this->getRequest()->getServiceParameter();
 		if (isset($this->_feeds[$id])) {
 			$feedConfig = $this->_feeds[$id];

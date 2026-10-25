@@ -98,6 +98,8 @@ Control-level exemption: [TRenderFilterContext](./TRenderFilterContext.md). Mark
 | `getFilterErrors(): ?array` | `LibXMLError[]` from the most recent parse, or `null` when no errors |
 | `getHasFilterError(): bool` | `true` when at least one libxml error was captured |
 | `getIsFragment(): bool` / `setIsFragment(bool)` | `true` when the HTML is a callback re-render of a descendant (`TControl.RenderFilterFragments`): its enclosing start tags, `<!--prado-fragment-…-->` markers around its output, and the end tags. A handler that counts or restructures the whole output checks it (@since 4.4.0) |
+| `getDepthLimit(): int` / `setDepthLimit($value)` | Levels of controls below the filtering control whose output the handlers see; 0 → all. Starts at the control's `TControl.RenderFilterDepth`. A handler sets 0 or 1 through that depth (else `renderfilterparameter_depthlimit_invalid`) for the handlers that follow; setting it discards the DOM. Deeper output is a `<!--{marker}h{n}-->` placeholder; `postRaiseEvent()` restores it with the exempt markup, repeating `strtr` while nested placeholders appear (@since 4.4.0) |
+| `setDepthMarker(string $marker, int $limit)` | Called by `TRenderFilterContext::createDepthParameter()`: the marker prefix of the capture and the control's `RenderFilterDepth`; hides the deeper output (@since 4.4.0) |
 
 ### DOM walker
 

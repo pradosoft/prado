@@ -92,8 +92,12 @@ class TFormTest extends \PHPUnit\Framework\TestCase
 	public function testRender()
 	{
 		$app = \Prado\Prado::getApplication();
+		$obLevel = ob_get_level();
 		$originalService = $app->getService();
+		$originalResponse = $app->getResponse();
 		$app->setService(new TPageService());
+		// the form renders the CSRF token, which writes its cookie to the response
+		$app->setResponse(new \Prado\Test\Unit\Harness\Web\TTestCookieResponse());
 
 		try {
 			$page = new TPage();
@@ -111,8 +115,14 @@ class TFormTest extends \PHPUnit\Framework\TestCase
 			$this->assertStringContainsString('id="TestForm"', $output);
 			$this->assertStringContainsString('method="post"', $output);
 			$this->assertStringContainsString('</form>', $output);
+			$this->assertStringContainsString('name="PRADO_CSRF_TOKEN"', $output);
 		} finally {
 			$app->setService($originalService);
+			$app->setResponse($originalResponse);
+			// the first getResponse() of the run bootstraps the response, which starts a buffer
+			while (ob_get_level() > $obLevel) {
+				ob_end_clean();
+			}
 		}
 	}
 

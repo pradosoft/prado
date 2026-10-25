@@ -32,6 +32,7 @@ TPage is the base class for all web pages in PRADO framework. It extends [TTempl
 - `IsCallback` (bool): Whether the request is a callback (read-only)
 - `StatePersisterClass` / `StatePersister` ([IPageStatePersister](./IPageStatePersister.md)): Where page state is stored
 - `EnableStateValidation` (bool): Whether page state should be HMAC validated. Unvalidated state is restored with `allowed_classes` false, so its objects are not instantiated
+- `EnableCsrfValidation` (bool): Whether a postback or callback must carry the CSRF token of [THttpRequest](../THttpRequest.md) `getCsrfToken()`; defaults to true. Set it per page or on `<pages>`; a page turning it off in `onPreInit()` or `onInit()` skips the check of the current request (4.4.0)
 - `EnableStateEncryption` (bool): Whether page state should be encrypted
 - `EnableStateCompression` (bool): Whether page state should be compressed. Reads and writes the `Enabled` of `StateCompression` (4.4.0)
 - `StateCompression` ([TPageStateCompressionConfig](./TPageStateCompressionConfig.md), read-only): The page state compression settings: `Enabled`, `Method`, `Level`. A persister implementing `ICompressionConfigurable` holds them as `StatePersister.Compression`, which the three built-in persisters do; for any other persister, custom persisters written before 4.4.0 included, the page keeps them. `Method` defaults to `deflate`; `zstd`, `br` and `gzip` are available where the extension is. `setStatePersisterClass()` carries them to a replacement persister (4.4.0)
@@ -53,7 +54,11 @@ TPage is the base class for all web pages in PRADO framework. It extends [TTempl
 - `getHead()` / `setHead($head)`: The single [THead](./WebControls/THead.md) of the page
 - `setFocus($control)`: Sets focus to a control or element ID
 - `ensureRenderInForm($control)`: Throws when a control renders outside the form
-- `getInFormRender()`, `beginFormRender($writer)`, `endFormRender($writer)`: Form render state, invoked by TForm
+- `getInFormRender()`, `beginFormRender($writer)`, `endFormRender($writer)`: Form render state, invoked by TForm. `beginFormRender()` registers the `FIELD_PAGESTATE` hidden field, and `FIELD_CSRF_TOKEN` while `EnableCsrfValidation` is on
+
+### CSRF Validation (4.4.0)
+- `ensureCsrfToken()`: Protected. Runs after `onInitComplete()` and before `loadPageState()` in the postback and callback life cycles. Throws `THttpException` 400 (`page_csrf_token_invalid`) when `EnableCsrfValidation` is on and `THttpRequest::validateCsrfToken()` fails. The token is read from the POST body or the `X-Prado-Csrf-Token` header only, so a postback through the query string is refused
+- A callback response carries a fresh token in the `X-PRADO-CSRF-TOKEN` part ([TActivePageAdapter](ActiveControls/TActivePageAdapter.md)), and `ajax3.js` writes it into the hidden field, so a login or logout during a callback does not break the next one
 
 ### Validation
 - `getValidators($validationGroup = null)`: Gets the [TList](../../Collections/TList.md) of registered validators; validators add and remove themselves
@@ -99,9 +104,10 @@ TPage is the base class for all web pages in PRADO framework. It extends [TTempl
 - `FIELD_PAGESTATE`: System page state field name
 - `FIELD_CALLBACK_TARGET`: System callback target field name
 - `FIELD_CALLBACK_PARAMETER`: System callback parameter field name
+- `FIELD_CSRF_TOKEN`: CSRF token field name, `THttpRequest::CSRF_TOKEN_FIELD` (4.4.0)
 
 ## Page Lifecycle Stages
-`onPreInit` -> `initRecursive` -> `onInitComplete` -> `loadPageState` *(POST/Callback)* -> `processPostData` *(POST/Callback)* -> `onPreLoad` -> `loadRecursive` -> `processPostData` *(POST/Callback)* -> `raiseChangedEvents` *(POST/Callback)* -> `raisePostBackEvent` *(POST-only)* -> `processCallbackEvent` *(Callback-only)* -> `onLoadComplete` -> `preRenderRecursive` -> `onPreRenderComplete` -> `savePageState` -> `onSaveStateComplete` -> `renderControl` *(GET/POST)* / `renderCallbackResponse` *(Callback-only)* -> `unloadRecursive`
+`onPreInit` -> `initRecursive` -> `onInitComplete` -> `ensureCsrfToken` *(POST/Callback)* -> `loadPageState` *(POST/Callback)* -> `processPostData` *(POST/Callback)* -> `onPreLoad` -> `loadRecursive` -> `processPostData` *(POST/Callback)* -> `raiseChangedEvents` *(POST/Callback)* -> `raisePostBackEvent` *(POST-only)* -> `processCallbackEvent` *(Callback-only)* -> `onLoadComplete` -> `preRenderRecursive` -> `onPreRenderComplete` -> `savePageState` -> `onSaveStateComplete` -> `renderControl` *(GET/POST)* / `renderCallbackResponse` *(Callback-only)* -> `unloadRecursive`
 
 ## Validation Flow
 1. A validator adds itself to `Validators` when it is initialized, and removes itself when it is unloaded

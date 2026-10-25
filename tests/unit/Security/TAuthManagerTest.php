@@ -138,6 +138,8 @@ class TAuthManagerTest extends \PHPUnit\Framework\TestCase
 	public static function setUpBeforeClass(): void
 	{
 		self::$app = new TTestApplication();
+		// login() and logout() write the CSRF cookie, which setcookie() cannot do in the CLI
+		self::$app->setResponse(new TTestAuthResponse());
 
 		self::$usrMgr = new TUserManager();
 		$config = new TXmlDocument('1.0', 'utf8');
@@ -1085,6 +1087,26 @@ class TAuthManagerTest extends \PHPUnit\Framework\TestCase
 		$authManager->onLoginFailed[] = [$this, 'myhandler'];
 		$authManager->onLoginFailed($this, null);
 		self::assertEquals(1, $this->_handled);
+	}
+
+	public function testLoginAndLogoutReplaceTheCsrfSecret()
+	{
+		$auth = $this->makeSessionAuth();
+		try {
+			$request = self::$app->getRequest();
+			$token = $request->getCsrfToken();
+
+			self::assertTrue($auth->login('Joe', 'demo'));
+			self::assertFalse($request->validateCsrfToken($token), 'a token issued before the login');
+			$token = $request->getCsrfToken();
+			self::assertTrue($request->validateCsrfToken($token));
+
+			$auth->logout();
+			self::assertFalse($request->validateCsrfToken($token), 'a token issued before the logout');
+			self::assertTrue($request->validateCsrfToken($request->getCsrfToken()));
+		} finally {
+			self::$usrMgr->setPasswordMode('MD5');
+		}
 	}
 
 	public function testOnLogout()

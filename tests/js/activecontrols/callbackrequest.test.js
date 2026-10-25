@@ -168,6 +168,40 @@ describe('Prado.CallbackRequest.extractContent', () => {
 	});
 });
 
+// ─── updateCsrfToken ──────────────────────────────────────────────────────────
+
+describe('Prado.CallbackRequest.updateCsrfToken', () => {
+	const FIELD = 'PRADO_CSRF_TOKEN';
+	const PART  = 'X-PRADO-CSRF-TOKEN';
+
+	afterEach(() => {
+		document.body.innerHTML = '';
+	});
+
+	function update(data) {
+		const req = makeRequest();
+		req.data  = data;
+		return req.updateCsrfToken();
+	}
+
+	it('replaces the field value with the token of the response', () => {
+		document.body.innerHTML = `<input type="hidden" id="${FIELD}" name="${FIELD}" value="old" />`;
+		expect(update(`<!--${PART}-->fresh<!--//${PART}-->`)).toBe(true);
+		expect(document.getElementById(FIELD).value).toBe('fresh');
+	});
+
+	it('leaves the field alone when the response carries no token', () => {
+		document.body.innerHTML = `<input type="hidden" id="${FIELD}" name="${FIELD}" value="old" />`;
+		expect(update('<!--X-PRADO-PAGESTATE-->state<!--//X-PRADO-PAGESTATE-->')).toBe(false);
+		expect(update(`<!--${PART}--><!--//${PART}-->`)).toBe(false);
+		expect(document.getElementById(FIELD).value).toBe('old');
+	});
+
+	it('does nothing for a page without the field', () => {
+		expect(update(`<!--${PART}-->fresh<!--//${PART}-->`)).toBe(false);
+	});
+});
+
 // ─── Prado.AssetManagerClass — isAssetLoaded / markAssetAsLoaded ─────────────
 
 describe('Prado.AssetManagerClass isAssetLoaded / markAssetAsLoaded', () => {

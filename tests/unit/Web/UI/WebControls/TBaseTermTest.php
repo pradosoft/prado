@@ -166,6 +166,20 @@ class TBaseTermTest extends TestCase
 		(new TAbbr())->setMarkLimit(-1);
 	}
 
+	public function testSetDepthLimit()
+	{
+		$abbr = new TAbbr();
+		$this->assertSame(0, $abbr->getDepthLimit());
+		$abbr->setDepthLimit('2');
+		$this->assertSame(2, $abbr->getDepthLimit());
+	}
+
+	public function testSetDepthLimitNegativeThrows()
+	{
+		$this->expectException(TInvalidDataValueException::class);
+		(new TAbbr())->setDepthLimit(-1);
+	}
+
 	// ================================================================================
 	// Rendering
 	// ================================================================================
@@ -352,6 +366,83 @@ class TBaseTermTest extends TestCase
 			'<abbr>HTML</abbr> ' . $this->marked('HTML') . ' HTML ' . $this->marked('CSS', '') . ' ' . $this->marked('CSS', '') . ' CSS',
 			$this->renderTree($this->parent('<abbr>HTML</abbr> HTML HTML CSS', $abbr, ' CSS CSS'))
 		);
+	}
+
+	/**
+	 * A TControl parent holding HTML, the control, a child with HTML, and a
+	 * grandchild with HTML.
+	 */
+	private function levels(TControl ...$terms): TControl
+	{
+		return $this->parent('HTML ', ...[...$terms, $this->parent('HTML ', $this->parent('HTML'))]);
+	}
+
+	public function testDepthLimit()
+	{
+		$abbr = new TAbbr();
+		$abbr->setTerms(['HTML' => self::EXPANSION]);
+		$abbr->setDepthLimit(1);
+		$this->assertSame($this->marked('HTML') . ' ' . $this->marked('HTML') . ' HTML', $this->renderTree($this->levels($abbr)));
+	}
+
+	public function testDepthLimitZeroMarksAllLevels()
+	{
+		$abbr = new TAbbr();
+		$abbr->setTerms(['HTML' => self::EXPANSION]);
+		$this->assertSame(
+			$this->marked('HTML') . ' ' . $this->marked('HTML') . ' ' . $this->marked('HTML'),
+			$this->renderTree($this->levels($abbr))
+		);
+	}
+
+	public function testDepthLimitRaisesTargetRenderFilterDepth()
+	{
+		$abbr = new TAbbr();
+		$abbr->setTerms(['HTML' => self::EXPANSION]);
+		$abbr->setDepthLimit(2);
+		$target = $this->levels($abbr);
+		$this->renderTree($target);
+		$this->assertSame(2, $target->getRenderFilterDepth());
+
+		$deeper = new TAbbr();
+		$deeper->setTerms(['HTML' => self::EXPANSION]);
+		$deeper->setDepthLimit(1);
+		$target = $this->levels($deeper);
+		$target->setRenderFilterDepth(3);
+		$this->renderTree($target);
+		$this->assertSame(3, $target->getRenderFilterDepth());
+	}
+
+	public function testTermsMarkTheirOwnDepthLimit()
+	{
+		$abbr = new TAbbr();
+		$abbr->setTerms(['HTML' => self::EXPANSION]);
+		$abbr->setDepthLimit(1);
+		$css = new TAbbr();
+		$css->setTerms(['CSS' => '']);
+		$target = $this->parent('HTML CSS ', $abbr, $css, $this->parent('HTML CSS ', $this->parent('HTML CSS')));
+		$this->assertSame(
+			$this->marked('HTML') . ' ' . $this->marked('CSS', '') . ' ' . $this->marked('HTML') . ' ' . $this->marked('CSS', '') . ' HTML ' . $this->marked('CSS', ''),
+			$this->renderTree($target)
+		);
+	}
+
+	public function testDepthLimitRestoresParameterDepth()
+	{
+		$abbr = new TAbbr();
+		$abbr->setTerms(['HTML' => self::EXPANSION]);
+		$abbr->setDepthLimit(1);
+		$target = $this->levels($abbr);
+		$target->setRenderFilterDepth(2);
+		PradoUnit::invoke($target, 'preRenderRecursive');
+		$limits = [];
+		$target->onRenderFilter[] = function ($sender, TRenderFilterParameter $param) use (&$limits) {
+			$limits[] = $param->getDepthLimit();
+		};
+		$writer = new THtmlWriter();
+		$target->renderControl($writer);
+		$this->assertSame([2], $limits);
+		$this->assertSame($this->marked('HTML') . ' ' . $this->marked('HTML') . ' HTML', $writer->flush());
 	}
 
 	public function testDfnMarksFirstOccurrenceOfTerms()

@@ -22,6 +22,7 @@ use Prado\IO\Compression\ICompressionConfigurable;
 use Prado\IO\Compression\TCompressionConfig;
 use Prado\Prado;
 use Prado\TPropertyValue;
+use Prado\Web\THttpRequest;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\UI\ActiveControls\TActivePageAdapter;
 use Prado\Web\UI\ActiveControls\TCallbackClientScript;
@@ -59,6 +60,14 @@ use Prado\Web\UI\WebControls\THead;
  * {@see setEnableStateCompression EnableStateCompression} reads and writes their
  * `Enabled`.
  *
+ * A postback or callback must carry the CSRF token of
+ * {@see \Prado\Web\THttpRequest::getCsrfToken()} while
+ * {@see setEnableCsrfValidation EnableCsrfValidation} is on. The form renders the token
+ * in the {@see FIELD_CSRF_TOKEN} hidden field, and a callback response returns a fresh
+ * one. A request without a valid token is refused with HTTP 400 before its state is
+ * loaded; a postback through the query string is refused, since the token is read from
+ * the POST body and the request header only.
+ *
  * Validators add themselves to {@see getValidators Validators}. {@see validate()}
  * runs them, either all of them or those of a single validation group, and
  * {@see getIsValid IsValid} reports the outcome.
@@ -87,6 +96,11 @@ class TPage extends TTemplateControl
 	public const FIELD_PAGESTATE = 'PRADO_PAGESTATE';
 	public const FIELD_CALLBACK_TARGET = 'PRADO_CALLBACK_TARGET';
 	public const FIELD_CALLBACK_PARAMETER = 'PRADO_CALLBACK_PARAMETER';
+	/**
+	 * The hidden field carrying the CSRF token, {@see \Prado\Web\THttpRequest::CSRF_TOKEN_FIELD}.
+	 * @since 4.4.0
+	 */
+	public const FIELD_CSRF_TOKEN = THttpRequest::CSRF_TOKEN_FIELD;
 
 	/**
 	 * @var array system post fields
@@ -98,6 +112,7 @@ class TPage extends TTemplateControl
 		'PRADO_PAGESTATE' => true,
 		'PRADO_CALLBACK_TARGET' => true,
 		'PRADO_CALLBACK_PARAMETER' => true,
+		'PRADO_CSRF_TOKEN' => true,
 	];
 	/**
 	 * @var TForm form instance
@@ -179,6 +194,11 @@ class TPage extends TTemplateControl
 	 * @var bool whether page state should be HMAC validated
 	 */
 	private $_enableStateValidation = true;
+	/**
+	 * @var bool whether a postback or callback must carry a valid CSRF token
+	 * @since 4.4.0
+	 */
+	private $_enableCsrfValidation = true;
 	/**
 	 * @var bool whether page state should be encrypted
 	 */
@@ -316,6 +336,7 @@ class TPage extends TTemplateControl
 		Prado::trace("Page onInitComplete()", TPage::class);
 		$this->onInitComplete(null);
 
+		$this->ensureCsrfToken();
 		$this->_restPostData = new TMap();
 		Prado::trace("Page loadPageState()", TPage::class);
 		$this->loadPageState();
@@ -397,6 +418,7 @@ class TPage extends TTemplateControl
 		Prado::trace("Page onInitComplete()", TPage::class);
 		$this->onInitComplete(null);
 
+		$this->ensureCsrfToken();
 		$this->_restPostData = new TMap();
 		Prado::trace("Page loadPageState()", TPage::class);
 		$this->loadPageState();
@@ -1048,6 +1070,9 @@ class TPage extends TTemplateControl
 		}
 		$this->_formRendered = true;
 		$this->getClientScript()->registerHiddenField(self::FIELD_PAGESTATE, $this->getClientState());
+		if ($this->getEnableCsrfValidation()) {
+			$this->getClientScript()->registerHiddenField(self::FIELD_CSRF_TOKEN, $this->getRequest()->getCsrfToken());
+		}
 		$this->_inFormRender = true;
 	}
 
@@ -1256,6 +1281,40 @@ class TPage extends TTemplateControl
 	public function setEnableStateValidation($value)
 	{
 		$this->_enableStateValidation = TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
+	 * @return bool whether a postback or callback must carry a valid CSRF token. Defaults to true.
+	 * @since 4.4.0
+	 */
+	public function getEnableCsrfValidation(): bool
+	{
+		return $this->_enableCsrfValidation;
+	}
+
+	/**
+	 * Set this in a page or the `<pages>` configuration. A page that turns it off in
+	 * {@see onPreInit()} or {@see onInit()} skips the check of the current request.
+	 * @param bool $value whether a postback or callback must carry a valid CSRF token.
+	 * @since 4.4.0
+	 */
+	public function setEnableCsrfValidation($value)
+	{
+		$this->_enableCsrfValidation = TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
+	 * Refuses a postback or callback without a valid CSRF token while
+	 * {@see getEnableCsrfValidation() EnableCsrfValidation} is on.  Runs after
+	 * {@see onInitComplete()} and before the page state is loaded.
+	 * @throws THttpException 400 when the token is missing or invalid.
+	 * @since 4.4.0
+	 */
+	protected function ensureCsrfToken(): void
+	{
+		if ($this->getEnableCsrfValidation() && !$this->getRequest()->validateCsrfToken()) {
+			throw new THttpException(400, 'page_csrf_token_invalid');
+		}
 	}
 
 	/**
