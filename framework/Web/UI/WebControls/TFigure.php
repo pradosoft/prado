@@ -11,7 +11,6 @@
 namespace Prado\Web\UI\WebControls;
 
 use Prado\TPropertyValue;
-use Prado\Web\THttpUtility;
 
 /**
  * TFigure class
@@ -58,6 +57,8 @@ use Prado\Web\THttpUtility;
  */
 class TFigure extends TWebControl
 {
+	use TEncodeTrait;
+
 	/**
 	 * @return string tag name
 	 */
@@ -109,21 +110,6 @@ class TFigure extends TWebControl
 		}
 	}
 
-	/**
-	 * @return bool whether the Caption text is HTML-encoded when rendered. Defaults to false.
-	 */
-	public function getEncode()
-	{
-		return $this->getViewState('Encode', false);
-	}
-
-	/**
-	 * @param bool $value whether the Caption text is HTML-encoded when rendered
-	 */
-	public function setEncode($value)
-	{
-		$this->setViewState('Encode', TPropertyValue::ensureBoolean($value), false);
-	}
 
 	/**
 	 * Renders the body content of the figure element.
@@ -176,7 +162,7 @@ class TFigure extends TWebControl
 	protected function renderCaption($writer, string $caption)
 	{
 		$writer->renderBeginTag('figcaption');
-		$writer->write($this->getEncode() ? THttpUtility::htmlEncode($caption) : $caption);
+		$writer->write($this->encodeText($caption));
 		$writer->renderEndTag();
 	}
 }

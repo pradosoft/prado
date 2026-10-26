@@ -30,7 +30,8 @@ use Prado\Exceptions\TInvalidDataValueException;
  * bars of the panel. You can set
  * {@see setBackImageUrl BackImageUrl} to give a background image to the panel,
  * and you can set {@see setGroupingText GroupingText} so that the body content is
- * enclosed in a field set with a legend text. Finally, you can specify
+ * enclosed in a field set with a legend text, HTML-encoded when {@see setEncode Encode}
+ * is true. Finally, you can specify
  * a default button to be fired when users press 'return' key within the panel
  * by setting the {@see setDefaultButton DefaultButton} property.
  *
@@ -40,6 +41,8 @@ use Prado\Exceptions\TInvalidDataValueException;
  */
 class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 {
+	use TEncodeTrait;
+
 	/**
 	 * @var string ID path to the default button
 	 */
@@ -184,6 +187,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 		$this->setViewState('GroupingText', $value, '');
 	}
 
+
 	/**
 	 * @return string|TScrollBars the visibility and position of scroll bars in a panel control, defaults to TScrollBars::None.
 	 */
@@ -213,7 +217,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 		if (($text = $this->getGroupingText()) !== '') {
 			$writer->renderBeginTag('fieldset');
 			$writer->renderBeginTag('legend');
-			$writer->write($text);
+			$writer->write($this->encodeText($text));
 			$writer->renderEndTag();
 		}
 	}

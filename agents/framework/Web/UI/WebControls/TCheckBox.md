@@ -20,7 +20,8 @@ TCheckBox displays a check box on the page. It supports both single and tri-stat
 
 ## Core Properties
 - `Checked` (bool): Whether check box is checked (true/false or tri-state)
-- `Text` (string): Text caption displayed beside check box
+- `Text` (string): Text caption displayed beside check box, rendered as HTML unless `Encode` is true
+- `Encode` (bool): Whether `Text` is HTML-encoded when rendered, default false; TRadioButton inherits it (4.4.0)
 - `TextAlign` (string): Text alignment (Left or Right) relative to check box
 - `AutoPostBack` (bool): Whether postback occurs on check box change
 - `CausesValidation` (bool): Whether validation occurs on check box change

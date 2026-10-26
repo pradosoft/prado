@@ -49,13 +49,13 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 | Class | HTML | Key Properties |
 |---|---|---|
-| `TLabel` | `<label>` or `<span>` | `Text`, `For` (associated control ID), `AssociatedControlID` |
+| `TLabel` | `<label>` or `<span>` | `Text`, `Encode` (4.4.0), `ForControl` (associated control ID) |
 | [`TOutput`](TOutput.md) | `<output>` | `Text` (encoded), `ForControl` (source control IDs); `status` live region (@since 4.4.0) |
 | `TImage` | `<img>` | `ImageUrl`, `AlternateText`, `ImageAlign` |
 | `THyperLink` | `<a>` | `NavigateUrl`, `Text`, `ImageUrl`, `Target` |
 | `TLiteral` | raw text | `Text` (not HTML-encoded), `Encode` |
 | `TExpression` | evaluated PHP | Inline expression output (also via `<%= %>` in templates) |
-| `TPanel` | `<div>` or `<span>` | `DefaultButton`, `GroupingText`, `Direction` (LTR/RTL) |
+| `TPanel` | `<div>` or `<span>` | `DefaultButton`, `GroupingText`, `Encode` (4.4.0), `Direction` (LTR/RTL) |
 | `TPlaceHolder` | (none) | Invisible container for dynamic child controls |
 | `TBulletedList` | `<ul>` / `<ol>` | `BulletStyle`, `DisplayMode` (Text/HyperLink/LinkButton) |
 | `TTable` | `<table>` | `Rows` collection; `TTableRow` → `TTableCell` hierarchy |
@@ -161,6 +161,7 @@ All extend [THtmlElement](./THtmlElement.md). Each wraps the named HTML5 element
 - **`IPostBackEventHandler`** — Implement on controls that raise events from postback (buttons, links). `raisePostBackEvent($param)` is the handler.
 - **`IPostBackDataHandler`** — Implement on input controls that receive posted values. `loadPostData()` reads the value; `raiseChangedEvent()` fires if it changed.
 - **`AutoPostBack`** — Input controls with `AutoPostBack=true` submit the form via JavaScript on change. A corresponding JavaScript observer is registered by `TClientScriptManager`.
+- **`Encode`** — A control that renders a text property as HTML has an `Encode` property from [TEncodeTrait](./TEncodeTrait.md), off by default; on, the text is HTML-encoded as it is rendered (4.4.0).
 - **`ValidationGroup`** — Empty string validates all validators on the page. Non-empty groups are validated independently — useful for multiple forms on one page.
 - **`TDataGrid` columns** — Always define columns explicitly for production; `AutoGenerateColumns=true` is for prototyping only (no control over rendering, sorting, or editing).
 - **Templates in data controls** — Must be set programmatically in `createColumnGroup()` / `createItemTemplate()` or via `.tpl` syntax. Templates cannot be changed after `initRecursive()`.

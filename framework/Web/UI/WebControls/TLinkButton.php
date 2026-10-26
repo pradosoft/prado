@@ -51,6 +51,7 @@ use Prado\TPropertyValue;
  * as the hyperlink text. If {@see setText Text} is empty, the body content
  * of TLinkButton will be displayed. Therefore, you can use TLinkButton
  * as an image button by enclosing an &lt;img&gt; tag as the body of TLinkButton.
+ * {@see setText Text} renders as HTML unless {@see setEncode Encode} is true.
  *
  * TLinkButton posts back through javascript. The anchor renders a no-op href
  * and the postback script only when {@see setEnableClientScript EnableClientScript}
@@ -62,6 +63,8 @@ use Prado\TPropertyValue;
  */
 class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\IPostBackEventHandler, \Prado\Web\UI\IButtonControl, \Prado\IDataRenderer
 {
+	use TEncodeTrait;
+
 	/**
 	 * @return string tag name of the button
 	 */
@@ -184,7 +187,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 		if (($text = $this->getText()) === '') {
 			parent::renderContents($writer);
 		} else {
-			$writer->write($text);
+			$writer->write($this->encodeText($text));
 		}
 	}
 
@@ -203,6 +206,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	{
 		$this->setViewState('Text', $value, '');
 	}
+
 
 	/**
 	 * Returns the caption of the button.

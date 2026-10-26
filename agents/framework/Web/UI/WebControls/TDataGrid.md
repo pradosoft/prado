@@ -61,7 +61,8 @@ TDataGrid::CMD_PAGE_LAST  = 'Last'
 | `SelectedItemIndex` | int | Row index selected (-1 = none) |
 | `ShowHeader` | bool | Show column headers (default: true) |
 | `ShowFooter` | bool | Show column footers (default: false) |
-| `Caption` | string | Table caption text |
+| `Caption` | string | Table caption text, rendered as HTML unless `Encode` is true |
+| `Encode` | bool | Whether `Caption` is HTML-encoded when rendered (default: false; 4.4.0) |
 | `EmptyTemplate` | ITemplate | Rendered when no data |
 
 ## Style Properties

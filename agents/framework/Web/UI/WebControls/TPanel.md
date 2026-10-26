@@ -29,7 +29,8 @@ Properties fall into two groups: those stored directly on TPanel and those deleg
 | Property | Type | Default | Description |
 |---|---|---|---|
 | `DefaultButton` | string | `''` | ID path to the button that is "clicked" when the user presses Enter inside the panel. Resolved via `findControl()`; the control must implement `IButtonControl`. |
-| `GroupingText` | string | `''` | When non-empty, wraps the panel body in `<fieldset><legend>GroupingText</legend>...</fieldset>` inside the `<div>`. |
+| `GroupingText` | string | `''` | When non-empty, wraps the panel body in `<fieldset><legend>GroupingText</legend>...</fieldset>` inside the `<div>`. Rendered as HTML unless `Encode` is true. |
+| `Encode` | bool | `false` | Whether `GroupingText` is HTML-encoded when rendered (4.4.0) |
 
 **Style-delegated properties (via `TPanelStyle`):**
 

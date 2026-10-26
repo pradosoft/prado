@@ -36,14 +36,16 @@ use Prado\TPropertyValue;
  * is true, validation will also be processed, which can be further restricted within
  * a {@see setValidationGroup ValidationGroup}.
  *
- * Note, {@see setText Text} is rendered as is. Make sure it does not contain unwanted characters
- * that may bring security vulnerabilities.
+ * {@see setText Text} renders as HTML unless {@see setEncode Encode} is true, which
+ * HTML-encodes it.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
 class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\IPostBackDataHandler, \Prado\Web\UI\IValidatable, \Prado\IDataRenderer, \Prado\Web\UI\ISurroundable
 {
+	use TEncodeTrait;
+
 	private $_dataChanged = false;
 	private $_isValid = true;
 
@@ -164,6 +166,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	{
 		$this->setViewState('Text', $value, '');
 	}
+
 
 	/**
 	 * @return string the value of the checkbox. Defaults to empty.
@@ -433,7 +436,8 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	}
 
 	/**
-	 * Renders a label beside the checkbox.
+	 * Renders a label beside the checkbox.  The text is HTML-encoded when
+	 * {@see getEncode Encode} is true.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer for the rendering purpose
 	 * @param string $clientID checkbox id
 	 * @param string $text label text
@@ -445,7 +449,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 			$writer->addAttributes($attributes);
 		}
 		$writer->renderBeginTag('label');
-		$writer->write($text);
+		$writer->write($this->encodeText($text));
 		$writer->renderEndTag();
 	}
 

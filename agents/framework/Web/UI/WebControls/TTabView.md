@@ -18,6 +18,7 @@ Extends `[TWebControl](./TWebControl.md)`.
 |----------|------|---------|-------------|
 | `Caption` | string | '' | Tab header label. If set, used as the tab title (highest precedence) |
 | `Text` | string | '' | Alternative tab label (used if Caption is empty) |
+| `Encode` | bool | false | Whether `Text` and `Caption` are HTML-encoded when rendered (4.4.0) |
 | `NavigateUrl` | string | '' | URL for tab header link; if set and Caption/Text are empty, the URL is used as the label |
 | `Active` | bool | — | Whether this tab is the currently active view (read-only from outside; set by `TTabPanel`) |
 

@@ -725,6 +725,7 @@ return [
 'TDropDownListColumn' => 'Prado\Web\UI\WebControls\TDropDownListColumn',
 'TEditCommandColumn' => 'Prado\Web\UI\WebControls\TEditCommandColumn',
 'TEmailAddressValidator' => 'Prado\Web\UI\WebControls\TEmailAddressValidator',
+'TEncodeTrait' => 'Prado\Web\UI\WebControls\TEncodeTrait',
 'TEnterKeyHint' => 'Prado\Web\UI\WebControls\TEnterKeyHint',
 'TExpression' => 'Prado\Web\UI\WebControls\TExpression',
 'TFigure' => 'Prado\Web\UI\WebControls\TFigure',

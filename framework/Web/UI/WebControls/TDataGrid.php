@@ -166,6 +166,8 @@ use Prado\Web\UI\TControl;
  */
 class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 {
+	use TEncodeTrait;
+
 	/**
 	 * Command name that TDataGrid understands.
 	 */
@@ -459,6 +461,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	{
 		$this->setViewState('Caption', $value, '');
 	}
+
 
 	/**
 	 * @return string|TTableCaptionAlign datagrid caption alignment. Defaults to TTableCaptionAlign::NotSet.
@@ -1678,7 +1681,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 				$writer->addStyleAttribute('caption-side', strtolower($align));
 			}
 			$writer->renderBeginTag('caption');
-			$writer->write($caption);
+			$writer->write($this->encodeText($caption));
 			$writer->renderEndTag();
 		}
 	}

@@ -95,7 +95,8 @@ class TActiveLinkButton extends TLinkButton implements IActiveControl, ICallback
 
 	/**
 	 * Updates the link text on the client-side if the
-	 * {@see setEnableUpdate EnableUpdate} property is set to true.
+	 * {@see setEnableUpdate EnableUpdate} property is set to true, HTML-encoded when
+	 * {@see getEncode Encode} is true.
 	 * @param string $value caption of the button
 	 */
 	public function setText($value)
@@ -106,7 +107,7 @@ class TActiveLinkButton extends TLinkButton implements IActiveControl, ICallback
 
 		parent::setText($value);
 		if ($this->getActiveControl()->canUpdateClientSide()) {
-			$this->getPage()->getCallbackClient()->update($this, $value);
+			$this->getPage()->getCallbackClient()->update($this, $this->encodeText($value));
 		}
 	}
 
