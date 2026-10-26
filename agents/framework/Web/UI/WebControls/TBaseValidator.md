@@ -34,7 +34,7 @@ Implements: `IValidator`
 | `ControlToValidate` | string | `''` | Dot-path ID of the input control to validate (relative to the validator's naming container) |
 | `ErrorMessage` | string | `''` | Text shown in `TValidationSummary`; also shown in the validator if `Text` is empty |
 | `Text` | string | `''` | Text displayed inline by the validator when invalid (inherited from TLabel) |
-| `Encode` | bool | `false` | Whether `Text` and `ErrorMessage` are HTML-encoded: in the validator, in `TValidationSummary`, and on the client (the `Encode` client option; `Prado.Validation.setErrorMessage()` writes text). `TFileValidator` encodes its `{files}` names regardless. @since 4.4.0 |
+| `Encode` | bool | `false` | From [TEncodeTrait](./TEncodeTrait.md) through TLabel. Whether `Text` and `ErrorMessage` are HTML-encoded: in the validator, in `TValidationSummary`, and on the client (the `Encode` client option; `Prado.Validation.setErrorMessage()` writes text). `TFileValidator` encodes its `{files}` names regardless. @since 4.4.0 |
 | `Display` | TValidatorDisplayStyle | `Fixed` | How the validator element behaves in layout when valid |
 | `EnableClientScript` | bool | `true` | Whether to emit JavaScript for browser-side validation |
 | `IsValid` | bool | `true` | Whether the last validation passed; set to `true` automatically when disabled |
