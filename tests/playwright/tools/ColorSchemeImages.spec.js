@@ -20,7 +20,6 @@ import { PradoTestHelper, GENERIC_BASE_URL } from '../helpers.js';
 
 const OUT_DIR = resolve(process.cwd(), '..', 'prado-demos', 'local', 'v4.4', 'color-scheme-awareness');
 const GALLERY = 'web/index.php?page=ColorSchemeGalleryTest';
-const SCAFFOLD = 'web/index.php?page=ColorSchemeScaffoldTest';
 const SCHEMES = ['light', 'dark'];
 
 // 2x output so the images stay sharp in the quickstart.
@@ -216,22 +215,6 @@ test.describe('color-scheme documentation images', () => {
 		});
 		await captureGroup(page, composer, [
 			['datepicker', 'TDatePicker — calendar panel, today, selected and hovered days', '.TDatePicker_default'],
-		]);
-
-		// ── Scaffold page ─────────────────────────────────────────────────────
-		await h.url(SCAFFOLD);
-		await h.assertSourceContains('Color Scheme Scaffold');
-		const forceScaffoldPseudo = await pseudoForcer(context, page);
-		await forceScaffoldPseudo('#pagerLink', 0, ['hover']);
-		const pagerState = await page.evaluate(() => ({
-			hovered: getComputedStyle(document.querySelector('#pagerLink')).backgroundColor,
-			plain: getComputedStyle(document.querySelector('.pager a')).backgroundColor,
-		}));
-		expect(pagerState.hovered, 'forced :hover did not recolor the pager link').not.toBe(
-			pagerState.plain,
-		);
-		await captureGroup(page, composer, [
-			['scaffold', 'ActiveRecord Scaffold — rows, pager and edit inputs', '#shot-scaffold'],
 		]);
 	});
 });

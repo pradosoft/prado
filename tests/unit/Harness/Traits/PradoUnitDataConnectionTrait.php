@@ -23,8 +23,9 @@ use Prado\Data\TDbConnection;
  * {@see getDatabaseName()} is the database name.  it can be set to null to have a
  * direct connection without a specific database.
  *
- * {@see getIsForActiveRecord()} specifies if {@see TActiveRecordManager}.DbConnection
- *  should be set the newly created connection.
+ * An extension's tests add setup steps by composing this trait and wrapping
+ * {@see setUpConnection()}: prado-activerecord's `PradoUnitActiveRecordConnectionTrait`
+ * sets the connection on its record manager this way.
  *
  * {@see getTestTables()} specifies the array of tables that the test uses.  The
  * generic setUp in the trait will check for each of them.
@@ -41,7 +42,7 @@ trait PradoUnitDataConnectionTrait
 		if (empty($unitSetup)) {
 			return null;
 		}
-		$conn = PradoUnit::$unitSetup($this->getDatabaseName(), $this->getIsForActiveRecord());
+		$conn = PradoUnit::$unitSetup($this->getDatabaseName());
 		if (is_array($conn)) {
 			PradoUnit::failFirstThenSkip($this, $conn[0], null, $conn[1]);
 			return null;
@@ -73,11 +74,6 @@ trait PradoUnitDataConnectionTrait
 	protected function getPradoUnitSetup(): ?string
 	{
 		return 'setupMysqlConnection';
-	}
-
-	protected function getIsForActiveRecord(): bool
-	{
-		return false;
 	}
 
 	protected function getTestTables(): array

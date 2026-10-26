@@ -43,8 +43,8 @@ TApplication
       UI/            (TControl, TPage, TTemplateControl, WebControls/, ActiveControls/, JuiControls/)
  └─ Data Layer     framework/Data/
       TDbConnection  (PDO wrapper)
-      ActiveRecord/  (ORM with lazy relations)
       DataGateway/   (stateless table gateway)
+      Active Record ORM: pradosoft/prado-activerecord; SqlMap: pradosoft/prado-sqlmap (separate packages)
  └─ Caching        framework/Caching/    (TAPCCache, TMemCache, TRedisCache, TDbCache, TEtcdCache)
  └─ Security       framework/Security/   (TAuthManager, TSecurityManager, TUserManager, TPermissionsManager)
  └─ I18N           framework/I18N/       (TGlobalization, MessageSource, CultureInfo, TDateFormat, TNumberFormat)
@@ -595,7 +595,7 @@ Tests require a running `TApplication`. Bootstrap: `tests/test_tools/phpunit_boo
 ├── framework/                  # Framework source (PSR-4 Prado\)
 │   ├── Caching/                # TAPCCache, TMemCache, TRedisCache, TDbCache, TEtcdCache
 │   ├── Collections/            # TList, TMap, TPriorityList, TPriorityMap, TQueue, TStack, TWeakList
-│   ├── Data/                   # TDbConnection (PDO), ActiveRecord ORM, DataGateway
+│   ├── Data/                   # TDbConnection (PDO), DataGateway; ActiveRecord and SqlMap are separate packages
 │   ├── Exceptions/             # Exception hierarchy, TErrorHandler, multilingual error messages
 │   ├── I18N/                   # TGlobalization, MessageSource, CultureInfo, date/number formatting
 │   ├── IO/                     # Text writers, TTarFileExtractor, stream notifications

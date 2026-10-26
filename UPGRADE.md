@@ -18,6 +18,20 @@ Upgrading from v4.3.3
   its Composer `extra.prado` section. After installing the package, compare `TSqlMapException::getErrorCode()` with
   the message code rather than the message text. The package's migration guide lists every behavior difference:
   https://github.com/pradosoft/prado-sqlmap/blob/master/docs/migration.md
+- Active Record (`Prado\Data\ActiveRecord`) is no longer part of the framework; it is the `pradosoft/prado-activerecord`
+  package (#1168). An application that does not use Active Record needs no change. An application using
+  `TActiveRecordConfig`, `TActiveRecord`, the Scaffold controls, or `prado-cli activerecord` adds the package:
+  `composer require pradosoft/prado-activerecord`. Namespaces, class names, short names in configuration and templates
+  (`class="TActiveRecordConfig"`, `<com:TScaffoldListView>`), `TActiveRecordConfig` properties, record classes and
+  their `$RELATIONS`, the Scaffold controls, the `prado-cli activerecord generate` and `generate-all` commands, and the
+  `ar_*` error codes are unchanged; Prado registers the package's class map and error messages from its Composer
+  `extra.prado` section. The package's `TActiveRecordConfig` registers `TActiveRecordAction` with the shell
+  application itself, so `TShellApplication::hasActiveRecordConfig()` is deprecated and `installShellActions()` no
+  longer calls it. `TTemplateControl::tryToUpdateView()` and `tryToUpdateAR()` bind through the record's `getViewData()`
+  and `setViewData()` (the new `IViewDataModel` contract) instead of reading `TActiveRecord` constants; a record binds
+  as before, and an `IDataRenderer` control such as a `TDropDownList` named after a column now binds as well. The
+  package's migration guide lists every behavior difference:
+  https://github.com/pradosoft/prado-activerecord/blob/main/docs/migration.md
 - `TSecurityManager::UseEncryptionHmac` defaults to `true`; it was `false`. `decrypt()` reads data with or without the
   HMAC, so existing encrypted data still decrypts. Prado versions before 4.3.3 cannot decrypt the new output; an
   application sharing encrypted data with them sets `UseEncryptionHmac="false"`.

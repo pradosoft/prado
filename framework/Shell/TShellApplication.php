@@ -11,10 +11,8 @@
 namespace Prado\Shell;
 
 use Prado\Caching\ICache;
-use Prado\Data\ActiveRecord\TActiveRecordConfig;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
-use Prado\Shell\Actions\TActiveRecordAction;
 use Prado\Shell\Actions\THelpAction;
 use Prado\Shell\Actions\TFlushCachesAction;
 use Prado\Shell\Actions\TPhpShellAction;
@@ -201,14 +199,17 @@ class TShellApplication extends \Prado\TApplication
 	}
 
 	/**
-	 * Returns whether the application has at least one {@see TActiveRecordConfig} module configured.
-	 * Used by {@see installShellActions()} to gate {@see TActiveRecordAction} registration.
+	 * Returns whether the application has at least one `TActiveRecordConfig` module configured.
+	 * Active Record is the `pradosoft/prado-activerecord` package; its `TActiveRecordConfig`
+	 * registers `TActiveRecordAction` during `init()`, so {@see installShellActions()} no longer
+	 * calls this method. Without the package no module matches and the result is `false`.
 	 * @return bool whether any TActiveRecordConfig module is present.
 	 * @since 4.3.3
+	 * @deprecated 4.4.0 prado-activerecord registers its shell action itself; this gate has no caller.
 	 */
 	public function hasActiveRecordConfig(): bool
 	{
-		return !empty($this->getModulesByType(TActiveRecordConfig::class));
+		return !empty($this->getModulesByType('Prado\\Data\\ActiveRecord\\TActiveRecordConfig'));
 	}
 
 	/**
@@ -232,8 +233,11 @@ class TShellApplication extends \Prado\TApplication
 	 * Installs the built-in shell actions. Always registers {@see THelpAction} and
 	 * {@see TPhpShellAction}. Conditionally registers:
 	 * - {@see TFlushCachesAction} — only when {@see hasCacheModules()} is true.
-	 * - {@see TActiveRecordAction} — only when {@see hasActiveRecordConfig()} is true.
 	 * - {@see TWebServerAction} — only when {@see hasDevWebServer()} is true.
+	 *
+	 * Extension packages add their own actions from a module's `init()` with
+	 * {@see addShellActionClass()}; prado-activerecord's `TActiveRecordConfig` adds
+	 * `TActiveRecordAction` this way.
 	 * @since 4.3.0
 	 */
 	public function installShellActions()
@@ -243,9 +247,6 @@ class TShellApplication extends \Prado\TApplication
 		}
 		$this->addShellActionClass(THelpAction::class);
 		$this->addShellActionClass(TPhpShellAction::class);
-		if ($this->hasActiveRecordConfig()) {
-			$this->addShellActionClass(TActiveRecordAction::class);
-		}
 		if ($this->hasDevWebServer()) {
 			$this->addShellActionClass(TWebServerAction::class);
 		}
