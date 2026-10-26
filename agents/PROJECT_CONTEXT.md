@@ -344,12 +344,7 @@ $gw = new TTableGateway('users', $conn);
 $rows = $gw->findAll(new TSqlCriteria('active = :a', [':a' => 1]));
 ```
 
-**4. `TSqlMapGateway` (XML SQL mapping)**
-```php
-$manager = TSqlMapManager::getInstance();
-$gateway = new TSqlMapGateway($manager);
-$users = $gateway->queryForList('User.findAll');
-```
+SqlMap (`TSqlMapConfig`, `TSqlMapGateway`, XML SQL mapping) left the framework in 4.4.0 (#1168, #1356). It is the `pradosoft/prado-sqlmap` package; `composer require pradosoft/prado-sqlmap` keeps the `Prado\Data\SqlMap` namespace, short names, and API.
 
 `TDbMetaData::getInstance($conn)` auto-selects the correct driver (MySQL, PostgreSQL, SQLite, MSSQL, Oracle, IBM DB2, Firebird). Always use parameter binding — never interpolate user input.
 
