@@ -334,6 +334,17 @@ class TDataGridTest extends TestCase
 		$this->assertSame('', $grid->getCaption());
 	}
 
+	public function testCaptionEncodedWhenEncode()
+	{
+		$grid = new TDataGrid();
+		$grid->setCaption('<b>Q1 & Q2</b>');
+		$this->assertFalse($grid->getEncode());
+		$this->assertStringContainsString('<caption><b>Q1 & Q2</b></caption>', $this->renderBeginTag($grid));
+
+		$grid->setEncode(true);
+		$this->assertStringContainsString('<caption>&lt;b&gt;Q1 & Q2&lt;/b&gt;</caption>', $this->renderBeginTag($grid));
+	}
+
 	public function testCaptionAlign()
 	{
 		$grid = new TDataGrid();

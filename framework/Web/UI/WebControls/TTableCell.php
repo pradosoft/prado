@@ -18,8 +18,8 @@ use Prado\TPropertyValue;
  * TTableCell displays a table cell on a Web page. Content of the table cell
  * is specified by the {@see setText Text} property. If {@see setText Text}
  * is empty, the body contents enclosed by the table cell component tag are rendered.
- * Note, {@see setText Text} is not HTML-encoded when displayed. So make sure
- * it does not contain dangerous characters.
+ * {@see setText Text} renders as HTML unless {@see setEncode Encode} is true, which
+ * HTML-encodes it.
  *
  * The horizontal and vertical alignments of the contents in the cell
  * are specified via {@see setHorizontalAlign HorizontalAlign} and
@@ -35,6 +35,8 @@ use Prado\TPropertyValue;
  */
 class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDataRenderer
 {
+	use TEncodeTrait;
+
 	/**
 	 * @return string tag name for the table cell
 	 */
@@ -170,6 +172,7 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 		$this->setViewState('Text', $value, '');
 	}
 
+
 	/**
 	 * Returns the text content of the table cell.
 	 * This method is required by {@see \Prado\IDataRenderer}.
@@ -218,7 +221,7 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	public function renderContents($writer)
 	{
 		if (($text = $this->getText()) !== '') {
-			$writer->write($text);
+			$writer->write($this->encodeText($text));
 		} elseif ($this->getHasControls()) {
 			parent::renderContents($writer);
 		} else {
