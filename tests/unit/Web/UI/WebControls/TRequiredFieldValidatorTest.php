@@ -59,6 +59,28 @@ class TRequiredFieldValidatorTest extends TestCase
 	// Constructor and Default State Tests
 	// ================================================================================
 
+	public function testEncodeRendersAndSendsEncodedMessages()
+	{
+		[$page, $textbox] = $this->createPageWithControls();
+		$form = new \Prado\Web\UI\TForm();
+		$form->setID('form1');
+		$page->setForm($form);
+		$validator = $this->createValidator($page, $textbox);
+		$validator->setErrorMessage('<b>a & b</b>');
+		$this->assertFalse($validator->getEncode());
+		$this->assertSame('<b>a & b</b>', $this->renderContents($validator));
+		$this->assertArrayNotHasKey('Encode', $this->invokeGetClientScriptOptions($validator));
+
+		$validator->setEncode(true);
+		$this->assertTrue($validator->getEncode());
+		$this->assertSame('&lt;b&gt;a & b&lt;/b&gt;', $this->renderContents($validator));
+		$this->assertTrue($this->invokeGetClientScriptOptions($validator)['Encode']);
+
+		// Text takes precedence over ErrorMessage, and is encoded too
+		$validator->setText('<i>');
+		$this->assertSame('&lt;i&gt;', $this->renderContents($validator));
+	}
+
 	public function testSetForeColorToRed()
 	{
 		$validator = new TRequiredFieldValidator();

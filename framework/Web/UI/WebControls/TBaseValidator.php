@@ -48,6 +48,9 @@ use Prado\Web\UI\IValidator;
  * property is set, it will be displayed instead. If both {@see setErrorMessage ErrorMessage}
  * and {@see setText Text} are empty, the body content of the validator will
  * be displayed. Error display is controlled by {@see setDisplay Display} property.
+ * {@see setText Text} and {@see setErrorMessage ErrorMessage} render as HTML unless
+ * {@see setEncode Encode} (from {@see TEncodeTrait}) is true, which HTML-encodes them
+ * in the validator, in {@see \Prado\Web\UI\WebControls\TValidationSummary}, and on the client.
  *
  * You can also customized the client-side behaviour by adding javascript
  * code to the subproperties of the {@see getClientSide ClientSide}
@@ -186,6 +189,9 @@ abstract class TBaseValidator extends TLabel implements IValidator
 
 		$options['ControlType'] = $this->getClientControlClass($control);
 		$options['Enabled'] = $this->getEnabled(true);
+		if ($this->getEncode()) {
+			$options['Encode'] = true;
+		}
 
 		//get date format from date picker target control
 		if ($control instanceof TDatePicker) {
@@ -609,17 +615,19 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * Renders the validator control.
+	 * Renders the validator control: {@see getText Text}, else {@see getErrorMessage ErrorMessage},
+	 * else the body content.  The text is HTML-encoded when {@see getEncode Encode} is true.
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function renderContents($writer)
 	{
-		if (($text = $this->getText()) !== '') {
-			$writer->write($text);
-		} elseif (($text = $this->getErrorMessage()) !== '') {
-			$writer->write($text);
+		if (($text = $this->getText()) === '') {
+			$text = $this->getErrorMessage();
+		}
+		if ($text !== '') {
+			$writer->write($this->encodeText($text));
 		} else {
-			parent::renderContents($writer);
+			TLabel::renderContents($writer);
 		}
 	}
 }

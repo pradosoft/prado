@@ -28,6 +28,7 @@ TEncodeTrait backs the `Encode` property of a control that renders a text proper
 | [TTable](./TTable.md), [TDataGrid](./TDataGrid.md), [TFigure](./TFigure.md) | `Caption` |
 | [TDetails](./TDetails.md) | `Summary` |
 | [TLiteralColumn](./TLiteralColumn.md) | `Text` and the bound data value |
+| [TBaseValidator](./TBaseValidator.md) (through TLabel) | `Text` and `ErrorMessage`, in the validator, in [TValidationSummary](./TValidationSummary.md), and on the client |
 
 The active counterparts TActiveLabel, TActiveLinkButton, TActiveCheckBox and TActiveRadioButton inherit it and encode the client update of `setText()` the same way.
 

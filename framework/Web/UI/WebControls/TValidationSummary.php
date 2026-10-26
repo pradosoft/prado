@@ -11,6 +11,7 @@
 namespace Prado\Web\UI\WebControls;
 
 use Prado\TPropertyValue;
+use Prado\Web\THttpUtility;
 use Prado\Web\Javascripts\TJavaScript;
 
 /**
@@ -26,6 +27,8 @@ use Prado\Web\Javascripts\TJavaScript;
  * The summary can be displayed as a list, as a bulleted list, or as a single
  * paragraph based on the {@see setDisplayMode DisplayMode} property.
  * The messages shown can be prefixed with {@see setHeaderText HeaderText}.
+ * A message renders as HTML, HTML-encoded when its validator's
+ * {@see \Prado\Web\UI\WebControls\TBaseValidator::setEncode Encode} is true.
  *
  * The summary can be displayed on the Web page and in a message box by setting
  * the {@see setShowSummary ShowSummary} and {@see setShowMessageBox ShowMessageBox}
@@ -312,7 +315,8 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * Get the list of validation error messages.
+	 * Get the list of validation error messages, as HTML.  A message is HTML-encoded
+	 * when its validator's {@see TBaseValidator::getEncode() Encode} is true.
 	 * @return array list of validator error messages.
 	 */
 	protected function getErrorMessages()
@@ -321,7 +325,9 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 		$messages = [];
 		foreach ($validators as $validator) {
 			if (!$validator->getIsValid() && ($msg = $validator->getErrorMessage()) !== '') {
-				//$messages[] = $validator->getAnchoredMessage($msg);
+				if ($validator instanceof TBaseValidator && $validator->getEncode()) {
+					$msg = THttpUtility::htmlEncode($msg);
+				}
 				$messages[] = $msg;
 			}
 		}

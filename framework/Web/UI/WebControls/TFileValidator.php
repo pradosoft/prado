@@ -58,7 +58,7 @@ use Prado\Web\TMediaType;
  * to the browser supplied type.
  *
  * The "{files}" token in {@see TBaseValidator::setErrorMessage ErrorMessage} is
- * replaced with the comma separated names of the invalid files.
+ * replaced with the HTML-encoded, comma separated names of the invalid files.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
@@ -293,7 +293,14 @@ class TFileValidator extends TBaseValidator
 
 	/**
 	 * Returns the error message with the "{files}" token replaced by the HTML
-	 * encoded, comma separated names of the invalid files.
+	 * encoded, comma separated names of the invalid files.  The names come from the
+	 * client, so they are encoded whether or not {@see getEncode Encode} is on;
+	 * {@see \Prado\Web\THttpUtility::htmlEncode()} leaves them unchanged when Encode
+	 * encodes the whole message.
+	 * @agents security: always encode the file names. A file name is user input that
+	 *   lands in an HTML message, so a `<script>` name is XSS wherever the message is
+	 *   written raw: the validator, TValidationSummary, or an application reading this
+	 *   method. Do not make the encoding depend on Encode or any other setting.
 	 * @return string the error message.
 	 */
 	public function getErrorMessage()

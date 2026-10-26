@@ -88,7 +88,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 ## Validation Controls
 
-All validators extend `TBaseValidator`. Shared properties: `ControlToValidate`, `ErrorMessage`, `Display` (Static/Dynamic/None), `CssClass`, `ValidationGroup`, `EnableClientScript`.
+All validators extend `TBaseValidator`. Shared properties: `ControlToValidate`, `ErrorMessage`, `Display` (Static/Dynamic/None), `CssClass`, `ValidationGroup`, `EnableClientScript`, `Encode` (HTML-encodes `ErrorMessage` and `Text` everywhere they show; 4.4.0).
 
 | Class | Validates |
 |---|---|
