@@ -10,6 +10,17 @@ for both A and B.
 Upgrading from v4.3.3
 ---------------------
 - PHP 8.2 is now required. Applications running PHP 8.1 stay on Prado 4.3.
+- Framework exception messages are English (#1292). `TException` no longer selects `messages-<lang>.txt` by the client's
+  `Accept-Language`; `getMessage()` and log records of a framework exception are English in every language. The
+  `THttpException` messages the visitor sees (404, 403, 400, 503 pages) stay translated: `framework/Exceptions/messages/messages-<lang>.txt`
+  now holds only those keys. Developers who want the exception pages and logs in French, Indonesian, Chinese, or one of
+  35 further languages add the language pack: `composer require pradosoft/prado-dev-errormessages`. Prado registers its
+  message files from the package's Composer `extra.prado` section; with the pack installed, messages follow the client
+  language as in 4.3. Message files registered with `TException::addMessageFile()`, by the `errormessages` application
+  configuration, or by an extension's `extra.prado.error-messages` are now read after the framework master and override
+  its text; in 4.3 the framework file won. A subclass that overrides `getErrorMessageFile()` keeps working; the new
+  `getErrorMessageFiles()` returns that file first, then the registered files. The package's migration guide:
+  https://github.com/pradosoft/prado-dev-errormessages/blob/master/docs/migration.md
 - SqlMap (`Prado\Data\SqlMap`) is no longer part of the framework; it is the `pradosoft/prado-sqlmap` package (#1168).
   An application that does not use SqlMap needs no change. An application using `TSqlMapConfig`, `TSqlMapGateway`, or
   `TSqlMapManager` adds the package: `composer require pradosoft/prado-sqlmap`. Namespaces, class names, short names

@@ -570,8 +570,7 @@ messagesource_connectionid_required     = ConnectionID in MessageSource_Database
 
 callback_not_support_no_priority_state_update	= Callback request does not support unprioritized pagestate update.
 callback_invalid_callback_options		= '{1}' is not a valid TCallbackOptions control for Callback control '{0}'.
-callback_invalid_clientside_options		= Callback ClientSide property must be either a string that is the ID of a TCallbackOptions control or an instance of TCallbackClientSideOptions.=======
-callback_not_support_no_priority_state_update	= Callback request does not support unprioritized pagestate update.
+callback_invalid_clientside_options		= Callback ClientSide property must be either a string that is the ID of a TCallbackOptions control or an instance of TCallbackClientSideOptions.
 callback_invalid_handler				= Invalid callback handler, control {0} must implement ICallbackEventHandler.
 callback_invalid_target					= Invalid callback target, no such control with ID {0}.
 
@@ -656,8 +655,6 @@ bitwriter_invalid_bits					= Cannot write {0} bits; the count must be between 0 
 bitwriter_64bit_php_required			= Writing {0} bits requires a 64-bit PHP build.
 bitwriter_invalid_float_bits			= Cannot write a {0}-bit float; only 8, 16, 32, or 64 bits are supported.
 
-httpclient_transport_error				= HTTP client transport error (code {0}): {1}
-httpclient_http_error					= HTTP error response with status {0}.
 
 soapservice_configfile_invalid			= TSoapService.ConfigFile '{0}' does not exist. Note, it has to be specified in a namespace format and the file extension must be '.xml' or '.php'.
 soapservice_request_invalid				= SOAP server '{0}' not found.

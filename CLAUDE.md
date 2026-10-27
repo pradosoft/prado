@@ -126,7 +126,7 @@ TApplication
 - **`framework/classes.php`** — must be updated whenever a new class is added to the framework.
 - **`if` statements** always use a block (`{}`), never a single-line body.
 - **`@` error suppression** — `Prado::phpErrorHandler` throws `TPhpErrorException` for every unmasked warning. Keep `@` on a call whose failure is expected and whose return value is checked; see [Error Suppression](agents/framework/Prado.md).
-- **Error codes** for PRADO exceptions are defined in `framework/Exceptions/messages/messages.txt` (English master); language variants are `messages-<lang>.txt` in the same directory.
+- **Error codes** for PRADO exceptions are defined in `framework/Exceptions/messages/messages.txt` (English master). Framework messages are English; `messages-<lang>.txt` in the same directory holds only the keys thrown as `THttpException`, which the visitor sees. Translations of the developer-facing messages are the `pradosoft/prado-dev-errormessages` package; a new key is added there in every language.
 - **Backward compatibility** — all changes must be backward compatible for point releases. Minor releases can have breaking changes, but minimize the breaks.
 - **`HISTORY.md` entries** — an entry's length is proportional to the change's importance. A bug fix or a small or internal change is one short sentence; a major feature takes a few sentences naming its main classes and properties. Keep issue numbers, removed or renamed API, and UPGRADE.md pointers; implementation reasoning belongs in docblocks and `agents/`.
 - **`@since` tag** — use the next release version (`4.4.0`) when adding new methods or classes; omit the method tag when it matches the class tag.
