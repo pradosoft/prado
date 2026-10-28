@@ -15,6 +15,7 @@ use Prado\Prado;
 use Prado\TApplicationMode;
 use Prado\TPropertyValue;
 use Prado\Web\IPublishable;
+use Prado\Web\THttpUtility;
 use Prado\Web\UI\TWebColor;
 
 /**
@@ -57,7 +58,9 @@ use Prado\Web\UI\TWebColor;
  * the SVG in the url; but in Normal and Performance mode it publishes the SVG data file.
  * This behavior can be changed by the {@link setPublishStyle} which accepts "Auto",
  * "Embed", "Publish", and "Inline", default "Auto".  "Inline" writes the SVG markup
- * directly into the page instead of an <img> element.
+ * directly into the page instead of an <img> element.  An inline dot with {@link
+ * getAlternateText AlternateText} renders `role="img"` and a <title> naming it; one
+ * without is `aria-hidden`.  Its SVG IDs are prefixed with the ClientID.
  *
  * This SVG is created by the @author and released into the public domain.
  *
@@ -619,8 +622,13 @@ class TDot extends TImage implements IPublishable
 
 	/**
 	 * Adds the rendered attributes. The "Inline" publish style writes the <svg> root
-	 * attributes (namespace, aspect ratio, size) followed by the generic web control
-	 * attributes, skipping the <img>-specific source and alternate text. Every other style
+	 * attributes (namespace, aspect ratio, size), the accessibility attributes, and the
+	 * generic web control attributes in place of the <img> source and alternate text:
+	 * - {@see getAlternateText AlternateText} set → `role="img"` and `aria-labelledby`
+	 *   naming the <title> that {@see renderContents} writes.
+	 * - AlternateText empty → `aria-hidden="true"`; the dot is decorative, as `alt=""` is.
+	 *
+	 * A {@see getRole Role} set on the control replaces `role="img"`. Every other style
 	 * renders the {@see TImage} <img> attributes.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose.
 	 */
@@ -631,6 +639,12 @@ class TDot extends TImage implements IPublishable
 			$writer->addAttribute('preserveAspectRatio', 'xMidYMid meet');
 			$writer->addAttribute('width', (string) $this->getSize());
 			$writer->addAttribute('height', (string) $this->getSize());
+			if ($this->getAlternateText() !== '') {
+				$writer->addAttribute('role', 'img');
+				$writer->addAttribute('aria-labelledby', $this->getInlineIdPrefix() . 'title');
+			} else {
+				$writer->addAttribute('aria-hidden', 'true');
+			}
 			TWebControl::addAttributesToRender($writer);
 			return;
 		}
@@ -641,16 +655,33 @@ class TDot extends TImage implements IPublishable
 
 	/**
 	 * Renders the body content. The "Inline" publish style writes the inner SVG markup
-	 * inside the <svg> element; every other style renders the empty <img> body.
+	 * inside the <svg> element, its IDs prefixed by {@see getInlineIdPrefix}. A non-empty
+	 * {@see getAlternateText AlternateText} is written first as the <title> element
+	 * `<ClientID>_title` that names the dot. Every other style renders the empty <img> body.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose.
 	 */
 	public function renderContents($writer)
 	{
 		if ($this->resolvePublishStyle() === 'inline') {
-			$writer->write($this->generateInnerSVG());
+			$prefix = $this->getInlineIdPrefix();
+			if (($alt = $this->getAlternateText()) !== '') {
+				$writer->write('<title id="' . $prefix . 'title">' . THttpUtility::htmlEncode($alt) . '</title>');
+			}
+			$writer->write($this->generateInnerSVG($prefix));
 			return;
 		}
 		parent::renderContents($writer);
+	}
+
+	/**
+	 * The prefix of the element IDs inside an "Inline" <svg>. Inline SVG shares the page's
+	 * ID namespace, so each dot prefixes its IDs with its ClientID to keep one dot's
+	 * `url(#…)` references from resolving to another dot's gradients and filters.
+	 * @return string The ClientID followed by an underscore.
+	 */
+	protected function getInlineIdPrefix(): string
+	{
+		return $this->getClientID() . '_';
 	}
 
 	/**
@@ -899,11 +930,14 @@ class TDot extends TImage implements IPublishable
 	/**
 	 * Generates the inner SVG markup for both the flat 2D and 3D versions based upon set
 	 * colors, shadows and borders. The "Inline" style renders this inside an <svg> element
-	 * built from the control's attributes.
+	 * built from the control's attributes, with the 3D dot's IDs and their `url(#…)`
+	 * references prefixed by {@see getInlineIdPrefix}. The "Embed" and "Publish" styles are
+	 * separate SVG documents and use the plain IDs.
+	 * @param string $idPrefix the prefix of the element IDs, default ''.
 	 * @return string the inner SVG markup of the colored dot.
 	 * @author 3D SVG & 2D SVG - Brad Anderson <belisoful@icloud.com>  [CC0 - public domain]
 	 */
-	protected function generateInnerSVG()
+	protected function generateInnerSVG(string $idPrefix = '')
 	{
 		$main = $this->getMainColor();
 		$highlight = $this->getHighlightColor();
@@ -921,6 +955,6 @@ class TDot extends TImage implements IPublishable
 		$blurx = round($size * 0.08); //	/ 12.5
 		$blury = round($size * 0.023); //	/ 43.5
 		$shBlur = floor($size * 0.02); //	/ 50
-		return "<defs><filter id='hblur'><feGaussianBlur in='SourceGraphic' stdDeviation='{$blurx} {$blury}' /></filter><radialGradient id='highgrad' cy='5%' r='45%' gradientTransform='translate(-0.25 0) scale(1.5 1)'><stop offset='10%' stop-color='white' stop-opacity='100'/><stop offset='100%' stop-color='white' stop-opacity='0'/></radialGradient><radialGradient id='grad' cy='92%' r='60%' gradientTransform='translate(-0.2 0) scale(1.4 1)'><stop offset='0%' stop-color='{$highlight}'/><stop offset='100%' stop-color='{$main}'/></radialGradient><filter id='shadowBlur'><feGaussianBlur in='SourceGraphic' stdDeviation='{$shBlur}' /></filter></defs><circle filter='url(#shadowBlur)' fill='black' opacity='{$opacity}' cx='50%' cy='49%' r='45%'/><circle fill='url(#grad)' cx='50%' cy='45%' r='45%'/><clipPath id='hclip'><circle cx='50%' cy='45%' r='45%' /></clipPath><clipPath id='hcclip'><circle cx='50%' cy='40%' r='37%' /></clipPath><g filter='url(#hblur)' clip-path='url(#hclip)'><circle fill='url(#highgrad)' cx='50%' cy='50%' r='48%' clip-path='url(#hcclip)' /></g>";
+		return "<defs><filter id='{$idPrefix}hblur'><feGaussianBlur in='SourceGraphic' stdDeviation='{$blurx} {$blury}' /></filter><radialGradient id='{$idPrefix}highgrad' cy='5%' r='45%' gradientTransform='translate(-0.25 0) scale(1.5 1)'><stop offset='10%' stop-color='white' stop-opacity='100'/><stop offset='100%' stop-color='white' stop-opacity='0'/></radialGradient><radialGradient id='{$idPrefix}grad' cy='92%' r='60%' gradientTransform='translate(-0.2 0) scale(1.4 1)'><stop offset='0%' stop-color='{$highlight}'/><stop offset='100%' stop-color='{$main}'/></radialGradient><filter id='{$idPrefix}shadowBlur'><feGaussianBlur in='SourceGraphic' stdDeviation='{$shBlur}' /></filter></defs><circle filter='url(#{$idPrefix}shadowBlur)' fill='black' opacity='{$opacity}' cx='50%' cy='49%' r='45%'/><circle fill='url(#{$idPrefix}grad)' cx='50%' cy='45%' r='45%'/><clipPath id='{$idPrefix}hclip'><circle cx='50%' cy='45%' r='45%' /></clipPath><clipPath id='{$idPrefix}hcclip'><circle cx='50%' cy='40%' r='37%' /></clipPath><g filter='url(#{$idPrefix}hblur)' clip-path='url(#{$idPrefix}hclip)'><circle fill='url(#{$idPrefix}highgrad)' cx='50%' cy='50%' r='48%' clip-path='url(#{$idPrefix}hcclip)' /></g>";
 	}
 }
