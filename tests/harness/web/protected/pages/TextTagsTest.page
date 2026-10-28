@@ -1,0 +1,21 @@
+<com:TContent ID="Content">
+	<h1>Text Tags Test Case</h1>
+
+	<p>Run <com:TCode ID="code">render()</com:TCode>, which prints <com:TSamp ID="samp">Done.</com:TSamp>
+	Press <com:TKbd ID="kbd"><com:TKbd>Ctrl</com:TKbd>+<com:TKbd>C</com:TKbd></com:TKbd>.</p>
+	<com:TPre ID="pre"><com:TCode>echo 1;</com:TCode></com:TPre>
+	<com:TPre ID="art" Role="img" Aria.label="A cat face">=^.^=</com:TPre>
+
+	<p>H<com:TSub ID="sub">2</com:TSub>O and E = mc<com:TSup ID="sup">2</com:TSup></p>
+
+	<p>From <com:TCite ID="cite">The Book</com:TCite>: <com:TQuote ID="quote" Cite="https://example.com/q">short words</com:TQuote></p>
+	<com:TBlockQuote ID="blockquote" Cite="https://example.com/b"><p>Quoted paragraph.</p></com:TBlockQuote>
+
+	<com:TAddress ID="address" Aria.label="Webmaster">Contact <a href="mailto:web@example.com">the webmaster</a>.</com:TAddress>
+
+	<p>Price: <com:TDel ID="del" DateTime="2026-10-01">$40</com:TDel> <com:TIns ID="ins" DateTime="2026-10-01" Cite="/changes/12">$30</com:TIns></p>
+
+	<p>User <com:TBdi ID="bdi">إيان</com:TBdi>: 3 posts. <com:TBdo ID="bdo" Dir="rtl">reversed</com:TBdo></p>
+
+	<p>Product: <com:TDataValue ID="data" Value="398">Mini Ketchup</com:TDataValue></p>
+</com:TContent>
