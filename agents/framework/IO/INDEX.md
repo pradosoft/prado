@@ -11,7 +11,7 @@ Input/output utilities for the Prado framework: text writer abstractions, archiv
 
 | Directory | Purpose |
 |---|---|
-| [Async/](Async/INDEX.md) | The event loop API: [`IEventLoop`](Async/IEventLoop.md), [`ITickableEventLoop`](Async/ITickableEventLoop.md), the default [`TRevoltEventLoop`](Async/TRevoltEventLoop.md) over `revolt/event-loop`, and [`TLoopSuspension`](Async/TLoopSuspension.md). Futures, `TAsync`, async I/O, and cron concurrency follow in later releases of this API. |
+| [Async/](Async/INDEX.md) | The async API: [`IEventLoop`](Async/IEventLoop.md), [`ITickableEventLoop`](Async/ITickableEventLoop.md), the default [`TRevoltEventLoop`](Async/TRevoltEventLoop.md) over `revolt/event-loop`, [`TLoopSuspension`](Async/TLoopSuspension.md); the primitives [`TFuture`](Async/TFuture.md), [`TDeferred`](Async/TDeferred.md), [`TCancellationToken`](Async/TCancellationToken.md), [`TFiberContext`](Async/TFiberContext.md), and the [`TAsync`](Async/TAsync.md) facade (`run`, `all`, `any`, `timeout`, `sleep`). |
 | [Socket/](Socket/INDEX.md) | Socket streams, servers, the dependency-free [`TSocketReactor`](Socket/TSocketReactor.md) event loop, and `TSocketServerModule`. |
 
 ## Classes

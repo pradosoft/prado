@@ -11,6 +11,7 @@
 namespace Prado\Util\Cron;
 
 use Prado\Exceptions\TConfigurationException;
+use Prado\IO\Async\TAsync;
 use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Util\Helpers\TProcessHelper;
@@ -159,8 +160,9 @@ class TProcessCronTask extends TCronTask
 		}
 		$this->writePid($pid);
 		// Detect a command that fails to exec / exits immediately, so it is not recorded as a success and
-		// relaunched every minute with a misleading "started" log.
-		usleep(static::LAUNCH_GRACE_USEC);
+		// relaunched every minute with a misleading "started" log.  The grace pause yields to the event
+		// loop, so other cron fibers run meanwhile.
+		TAsync::sleep(static::LAUNCH_GRACE_USEC / 1_000_000);
 		if (!$this->isRunning($pid)) {
 			throw new TConfigurationException('processcrontask_launch_failed', $this->getCommand());
 		}

@@ -89,6 +89,8 @@ class TLoopSuspension implements Suspension
 	 * Suspends the current fiber until {@see resume()} or {@see throw()} is called.
 	 * @throws \Error When called from another fiber, when a suspend is pending, or when the loop
 	 *   empties before the suspension is resumed.
+	 * @throws \FiberError When the worker fiber cannot switch, as inside a destructor; the
+	 *   suspension is then no longer pending.
 	 * @throws \Throwable The exception passed to {@see throw()}.
 	 * @return mixed The value passed to {@see resume()}.
 	 */
@@ -104,7 +106,12 @@ class TLoopSuspension implements Suspension
 		$this->_pending = true;
 		$this->_resolved = false;
 		if ($fiber !== null) {
-			return \Fiber::suspend();
+			try {
+				return \Fiber::suspend();
+			} catch (\FiberError $e) {
+				$this->_pending = false;
+				throw $e;
+			}
 		}
 		return $this->waitInMain();
 	}

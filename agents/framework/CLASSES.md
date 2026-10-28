@@ -1,6 +1,6 @@
 # PRADO Framework Classes
 
-**Total Classes: 708**
+**Total Classes: 714**
 
 This document lists all classes in the PRADO framework as defined in `classes.php`.
 
@@ -8,7 +8,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 | Directory | Classes | Interfaces | Total | Recursive |
 |-----------|---------|------------|-------|-----------|
-| [Prado](./INDEX.md) | 17 | 7 | 24 | 708 |
+| [Prado](./INDEX.md) | 17 | 7 | 24 | 714 |
 | [Prado\\Caching](./Caching/INDEX.md) | 18 | 2 | 20 | 20 |
 | [Prado\\Collections](./Collections/INDEX.md) | 27 | 7 | 34 | 34 |
 | [Prado\\Data](./Data/INDEX.md) | 10 | 5 | 15 | 51 |
@@ -21,12 +21,12 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 | [Prado\\Data\\Common\\Pgsql](./Data/Common/Pgsql/INDEX.md) | 4 | 0 | 4 | 4 |
 | [Prado\\Data\\Common\\Sqlite](./Data/Common/Sqlite/INDEX.md) | 4 | 0 | 4 | 4 |
 | [Prado\\Data\\DataGateway](./Data/DataGateway/INDEX.md) | 5 | 0 | 5 | 5 |
-| [Prado\\Exceptions](./Exceptions/INDEX.md) | 22 | 0 | 22 | 22 |
+| [Prado\\Exceptions](./Exceptions/INDEX.md) | 23 | 0 | 23 | 23 |
 | [Prado\\I18N](./I18N/INDEX.md) | 9 | 0 | 9 | 24 |
 | [Prado\\I18N\\core](./I18N/core/INDEX.md) | 12 | 1 | 13 | 16 |
 | [Prado\\I18N\\core\\Gettext](./I18N/core/Gettext/INDEX.md) | 3 | 0 | 3 | 3 |
-| [Prado\IO](./IO/INDEX.md) | 6 | 1 | 7 | 11 |
-| [Prado\IO\Async](./IO/Async/INDEX.md) | 2 | 2 | 4 | 4 |
+| [Prado\IO](./IO/INDEX.md) | 6 | 1 | 7 | 16 |
+| [Prado\IO\Async](./IO/Async/INDEX.md) | 7 | 2 | 9 | 9 |
 | [Prado\PHPStan](./PHPStan/INDEX.md) | 3 | 0 | 3 | 3 |
 | [Prado\Security](./Security/INDEX.md) | 10 | 2 | 12 | 21 |
 | [Prado\\Security\\Permissions](./Security/Permissions/INDEX.md) | 8 | 1 | 9 | 9 |
@@ -297,11 +297,12 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Exceptions](./Exceptions/INDEX.md) - Classes: 22, Interfaces: 0, Total: 22, Recursive: 22
+## [Prado\Exceptions](./Exceptions/INDEX.md) - Classes: 23, Interfaces: 0, Total: 23, Recursive: 23
 
 ### Classes (21)
 
 - [TApplicationException](./Exceptions/TApplicationException.md)
+- [TCancelledException](./Exceptions/TCancelledException.md)
 - [TConfigurationException](./Exceptions/TConfigurationException.md)
 - [TDbConnectionException](./Exceptions/TDbConnectionException.md)
 - [TDbException](./Exceptions/TDbException.md)
@@ -377,7 +378,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\IO](./IO/INDEX.md) - Classes: 6, Interfaces: 1, Total: 7, Recursive: 11
+## [Prado\IO](./IO/INDEX.md) - Classes: 6, Interfaces: 1, Total: 7, Recursive: 16
 
 ### Interfaces (1)
 
@@ -394,15 +395,20 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\IO\Async](./IO/Async/INDEX.md) - Classes: 2, Interfaces: 2, Total: 4, Recursive: 4
+## [Prado\IO\Async](./IO/Async/INDEX.md) - Classes: 7, Interfaces: 2, Total: 9, Recursive: 9
 
 ### Interfaces (2)
 
 - [IEventLoop](./IO/Async/IEventLoop.md)
 - [ITickableEventLoop](./IO/Async/ITickableEventLoop.md)
 
-### Classes (2)
+### Classes (7)
 
+- [TAsync](./IO/Async/TAsync.md)
+- [TCancellationToken](./IO/Async/TCancellationToken.md)
+- [TDeferred](./IO/Async/TDeferred.md)
+- [TFiberContext](./IO/Async/TFiberContext.md)
+- [TFuture](./IO/Async/TFuture.md)
 - [TLoopSuspension](./IO/Async/TLoopSuspension.md)
 - [TRevoltEventLoop](./IO/Async/TRevoltEventLoop.md)
 

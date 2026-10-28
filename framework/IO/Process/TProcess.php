@@ -13,6 +13,7 @@ namespace Prado\IO\Process;
 use Prado\Exceptions\TIOException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Prado;
+use Prado\IO\Async\TAsync;
 use Prado\IO\IResource;
 use Prado\IO\TResource;
 use Prado\IO\TStream;
@@ -593,9 +594,11 @@ class TProcess extends TResource implements \ArrayAccess, \IteratorAggregate, \C
 	}
 
 	/**
-	 * Blocks until the process exits or the timeout elapses.  It does not drain the
-	 * pipes, so a child that can fill a stdout/stderr pipe buffer may deadlock; read (or
-	 * close) those pipes while waiting on such commands.
+	 * Waits until the process exits or the timeout elapses, polling the status at the poll
+	 * interval.  Each pause goes through {@see \Prado\IO\Async\TAsync::sleep()}, so a waiting
+	 * fiber yields to the event loop.  It does not drain the pipes, so a child that can fill a
+	 * stdout/stderr pipe buffer may deadlock; read (or close) those pipes while waiting on such
+	 * commands.
 	 * @param int $pollMicroseconds Poll interval while waiting. Default 1000 (1 ms).
 	 * @param int $timeoutMicroseconds Maximum time to wait; 0 waits indefinitely. Default 0.
 	 * @return int The exit code, or -1 when still running at the timeout or unknown.
@@ -607,7 +610,7 @@ class TProcess extends TResource implements \ArrayAccess, \IteratorAggregate, \C
 			if ($timeoutMicroseconds > 0 && $waited >= $timeoutMicroseconds) {
 				return -1;
 			}
-			usleep($pollMicroseconds);
+			TAsync::sleep($pollMicroseconds / 1_000_000);
 			$waited += $pollMicroseconds;
 		}
 		return $this->getExitCodeDirect() ?? -1;

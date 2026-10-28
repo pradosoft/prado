@@ -10,6 +10,8 @@
 
 namespace Prado\Util\Clock;
 
+use Prado\IO\Async\TAsync;
+
 /**
  * TClockTrait trait
  *
@@ -17,7 +19,8 @@ namespace Prado\Util\Clock;
  * clock. It provides {@see now} (the current system time), plus {@see time}, {@see microtime}, and
  * {@see timezone} all derived from it, so a class reads the current time through one seam instead of
  * repeating the `(float) now()->format('U.u')` conversion or calling the global
- * {@see \time()}/{@see \microtime()}. {@see sleep} wraps {@see \usleep()} as the same seam for pausing.
+ * {@see \time()}/{@see \microtime()}. {@see sleep} is the same seam for pausing; it delegates to
+ * {@see \Prado\IO\Async\TAsync::sleep()}, so a pause inside a fiber yields to the event loop.
  * {@see timezone} returns the system default zone from a cached {@see \DateTimeZone} that is rebuilt only
  * when the default zone name changes, so the hot accessors allocate nothing.
  *
@@ -97,15 +100,14 @@ trait TClockTrait
 	}
 
 	/**
-	 * Pauses execution for the given number of seconds by blocking with {@see \usleep()}. A
-	 * non-positive value returns immediately. Microsecond fractions are honored.
+	 * Pauses execution for the given number of seconds through {@see \Prado\IO\Async\TAsync::sleep()}:
+	 * a worker fiber yields to the event loop and the main fiber runs the loop until the timer fires.
+	 * A non-positive value returns immediately. Microsecond fractions are honored.
 	 * @param float|int $seconds the number of seconds to pause
 	 */
 	public function sleep(float|int $seconds): void
 	{
-		if ($seconds > 0) {
-			\usleep((int) \round($seconds * 1_000_000));
-		}
+		TAsync::sleep($seconds);
 	}
 
 	// =========================================================================

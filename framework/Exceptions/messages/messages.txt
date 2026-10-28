@@ -606,6 +606,10 @@ socketservermodule_eventloopclass_invalid	= TSocketServerModule EventLoopClass '
 eventloop_delay_invalid					= Event loop delay '{0}' is invalid. It must be zero or more seconds.
 eventloop_callback_invalid				= Event loop callback '{0}' is unknown; it was never registered or is already cancelled.
 eventloop_signals_unsupported			= Event loop signal callbacks require the pcntl extension.
+async_cancelled							= The operation was cancelled.
+async_timeout							= The operation timed out after {0} seconds.
+async_any_empty							= TAsync::any() received no futures.
+async_deferred_complete					= The TDeferred is already complete; a future is resolved or rejected once.
 
 bitreader_invalid_bits					= Cannot read {0} bits; the count must be between 0 and the platform integer width.
 bitreader_64bit_php_required			= Reading {0} bits requires a 64-bit PHP build.
