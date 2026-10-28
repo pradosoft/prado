@@ -1,0 +1,18 @@
+<com:TContent ID="Content">
+	<h1>SVG Test Case</h1>
+
+	<p>Settings <com:TSvg ID="icon" ViewBox="0 0 24 24" Width="24" Height="24" AlternateText="Settings" Description="A gear"><circle cx="12" cy="12" r="10" fill="currentColor" /></com:TSvg></p>
+	<p>Decorative <com:TSvg ID="decor" ViewBox="0 0 24 24" Width="24" Height="24" Decorative="true"><circle cx="12" cy="12" r="10" /></com:TSvg></p>
+
+	<com:TSvg ID="badge1" SvgFile="Application.media.badge" />
+	<com:TSvg ID="badge2" SvgFile="Application.media.badge" />
+
+	<com:TSvg ID="map" Role="group" Aria.label="Regions" ViewBox="0 0 100 50" Width="100" Height="50">
+		<a href="#north"><text x="5" y="20">North</text></a>
+	</com:TSvg>
+
+	<com:TSvg ID="spinner" ViewBox="0 0 24 24" Width="24" Height="24" AlternateText="Loading" ReducedMotion="true">
+		<circle cx="12" cy="12" r="10" style="animation: spin 1s linear infinite" />
+	</com:TSvg>
+	<style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+</com:TContent>

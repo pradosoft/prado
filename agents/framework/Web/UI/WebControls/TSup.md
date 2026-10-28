@@ -23,7 +23,7 @@ E = mc<com:TSup>2</com:TSup>
 
 - Browsers expose `<sup>` with the `superscript` role.
 - Most screen readers do not announce a superscript, so x<sup>2</sup> reads as "x 2"; text that depends on it says so in words or in a visually hidden span.
-- A footnote reference is a link inside the TSup whose text names the footnote.
+- A footnote reference is a link inside the TSup whose text names the footnote; [TFootnote](./TFootnote.md) renders one.
 
 ## Tests
 

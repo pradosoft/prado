@@ -40,6 +40,8 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 - **`TImage`** — `<img>`; properties: `ImageUrl`, `AlternateText`.
 
+- **`TDot`** — SVG status dot as `<img>` or inline `<svg>`; properties: `Color`, `Size`, `Flat`, `PublishStyle`, `AlternateText`.
+
 - **`THyperLink`** — `<a>`; properties: `NavigateUrl`, `Text`, `Target`.
 
 - **`TLiteral`** — raw text; property: `Text` (not HTML-encoded).
