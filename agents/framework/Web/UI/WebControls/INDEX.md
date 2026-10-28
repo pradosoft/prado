@@ -136,7 +136,7 @@ All extend [THtmlElement](./THtmlElement.md). Each wraps the named HTML5 element
 | [`TBdo`](TBdo.md) | `bdo` | Text displayed in a forced direction; `Dir` required (@since 4.4.0) |
 | [`TBlockQuote`](TBlockQuote.md) | `blockquote` | Block quotation; `blockquote` role; `Cite` source URL (@since 4.4.0) |
 | [`TCite`](TCite.md) | `cite` | Title of a creative work (@since 4.4.0) |
-| [`TCanvas`](TCanvas.md) | `canvas` | Bitmap for client drawing; `Width`/`Height` bitmap size; `AlternateText` → `role="img"`; children are fallback content (@since 4.4.0) |
+| [`TCanvas`](TCanvas.md) | `canvas` | Bitmap for client drawing; `Width`/`Height` bitmap size; `AlternateText` → `role="img"`; children are fallback content; `ClientSide.OnDraw` draws through `controls/canvas.js` (@since 4.4.0) |
 | [`TCode`](TCode.md) | `code` | Fragment of computer code; `code` role (@since 4.4.0) |
 | [`TDataValue`](TDataValue.md) | `data` | Content with a machine-readable `Value` (@since 4.4.0) |
 | [`TDel`](TDel.md) | `del` | Deleted text; `deletion` role; `Cite`, `DateTime` (@since 4.4.0) |

@@ -672,6 +672,8 @@ return [
 'TButtonTag' => 'Prado\Web\UI\WebControls\TButtonTag',
 'TButtonType' => 'Prado\Web\UI\WebControls\TButtonType',
 'TCanvas' => 'Prado\Web\UI\WebControls\TCanvas',
+'TCanvasClientScript' => 'Prado\Web\UI\WebControls\TCanvasClientScript',
+'TCanvasContextType' => 'Prado\Web\UI\WebControls\TCanvasContextType',
 'TCaptcha' => 'Prado\Web\UI\WebControls\TCaptcha',
 'TCaptchaValidator' => 'Prado\Web\UI\WebControls\TCaptchaValidator',
 'TCheckBox' => 'Prado\Web\UI\WebControls\TCheckBox',
