@@ -837,6 +837,7 @@ return [
 'TPagerPageChangedEventParameter' => 'Prado\Web\UI\WebControls\TPagerPageChangedEventParameter',
 'TPanel' => 'Prado\Web\UI\WebControls\TPanel',
 'TPanelStyle' => 'Prado\Web\UI\WebControls\TPanelStyle',
+'TPicture' => 'Prado\Web\UI\WebControls\TPicture',
 'TPlaceHolder' => 'Prado\Web\UI\WebControls\TPlaceHolder',
 'TPolygonHotSpot' => 'Prado\Web\UI\WebControls\TPolygonHotSpot',
 'TPre' => 'Prado\Web\UI\WebControls\TPre',

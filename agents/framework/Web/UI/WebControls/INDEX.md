@@ -180,6 +180,7 @@ All extend [THtmlElement](./THtmlElement.md). Each wraps the named HTML5 element
 | [`TTextTrack`](TTextTrack.md) | `<track>` | `Src`, `Kind` ([TTextTrackKind](TTextTrackKind.md)), `SrcLang`, `Label`, `IsDefault` |
 | [`TVideo`](TVideo.md) | `<video>` | `Src`, `ShowControls`, `AutoPlay`, `Loop`, `Muted`, `Preload`, `CrossOrigin`; `Width`, `Height`, `Poster`, `PlaysInline` |
 | [`TAudio`](TAudio.md) | `<audio>` | `Src`, `ShowControls`, `AutoPlay`, `Loop`, `Muted`, `Preload`, `CrossOrigin` |
+| [`TPicture`](TPicture.md) | `<picture>` + `<img>` | Extends `TImage`; child `TMediaSource` sources render before the `<img>`, which carries the attributes |
 
 ## Rich Text & Special Controls
 
