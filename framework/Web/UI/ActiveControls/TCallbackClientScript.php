@@ -537,6 +537,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 
 	/**
 	 * Evaluate a block of javascript enclosed in a boundary.
+	 * On a page with a CSP nonce, the client runs the script in a `<script>` element
+	 * that carries the page nonce; see `Prado.Element.evaluateScript()` in prado.js.
 	 * @param \Prado\Web\UI\THtmlWriter|string $writer writer for the content.
 	 */
 	public function evaluateScript($writer)

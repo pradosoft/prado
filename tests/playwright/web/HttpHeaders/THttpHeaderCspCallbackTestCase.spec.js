@@ -13,6 +13,10 @@ import { GENERIC_BASE_URL } from '../../helpers.js';
  *                                       that `'self'` does not cover it
  *   - Prado.Element.replace           — a `<script>` in the callback markup, which
  *                                       carries the callback's own nonce
+ *   - Prado.Element.evaluateScript    — the callback's end script and a
+ *                                       TCallbackClientScript::evaluateScript()
+ *                                       snippet, which the policy's missing
+ *                                       'unsafe-eval' keeps from `eval`
  */
 const CSP_CALLBACK_PAGE = GENERIC_BASE_URL + 'HttpHeaders/index.php?page=CspCallbackPage';
 
@@ -33,8 +37,8 @@ test.describe('THttpHeaderCspCallbackTestCase', () => {
 	});
 
 	/**
-	 * 2. The callback's inline script block, script file, and markup script all run,
-	 *    and the callback raises no CSP violation.
+	 * 2. The callback's inline script block, script file, markup script, end script,
+	 *    and evaluated snippet all run, and the callback raises no CSP violation.
 	 */
 	test('callback scripts run with the page nonce', async ({ page }) => {
 		await page.goto(CSP_CALLBACK_PAGE, { waitUntil: 'load' });
@@ -54,6 +58,31 @@ test.describe('THttpHeaderCspCallbackTestCase', () => {
 		await expect(html).toHaveAttribute('data-callback-block-ran', '1');
 		await expect(html).toHaveAttribute('data-callback-file-ran', '1');
 		await expect(html).toHaveAttribute('data-callback-markup-ran', '1');
+		await expect(html).toHaveAttribute('data-callback-end-ran', '1');
+		await expect(html).toHaveAttribute('data-callback-evaluate-ran', '1');
+
+		const violations = await page.evaluate((n) => window.__cspViolations.slice(n), before);
+		expect(violations).toEqual([]);
+	});
+
+	/**
+	 * 3. Prado.Element.evaluateScript throws the error of the nonce'd script to its
+	 *    caller, as `eval` does, without a CSP violation.
+	 */
+	test('evaluateScript throws the error of the nonce\'d script', async ({ page }) => {
+		await page.goto(CSP_CALLBACK_PAGE, { waitUntil: 'load' });
+		const before = await page.evaluate(() => window.__cspViolations.length);
+
+		const result = await page.evaluate(() => {
+			window.addEventListener('error', (e) => e.preventDefault(), { once: true });
+			try {
+				Prado.Element.evaluateScript("window.__evaluated = 1; throw new TypeError('script error');");
+				return 'no error';
+			} catch (e) {
+				return `${e.name}: ${e.message}, evaluated ${window.__evaluated}`;
+			}
+		});
+		expect(result).toBe('TypeError: script error, evaluated 1');
 
 		const violations = await page.evaluate((n) => window.__cspViolations.slice(n), before);
 		expect(violations).toEqual([]);
