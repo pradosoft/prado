@@ -13,7 +13,8 @@ use Prado\Web\UI\TPage;
  * a new nonce, while the page keeps the policy of its first load. The callback sends:
  *   - an inline script block (Prado.Element.appendScriptBlock),
  *   - a cross-origin script file (Prado.ScriptManager), which `'self'` does not cover,
- *   - markup with a `<script>` carrying the callback's nonce (Prado.Element.replace).
+ *   - markup with a `<script>` carrying the callback's nonce (Prado.Element.replace),
+ *   - an end script and a snippet, each run by Prado.Element.evaluateScript.
  * Each script sets a dataset marker on `<html>` when it runs.
  */
 class CspCallbackPage extends TPage
@@ -45,5 +46,8 @@ class CspCallbackPage extends TPage
 		$markup = $this->getResponse()->createHtmlWriter();
 		$markup->write(TJavaScript::renderScriptBlock("document.documentElement.dataset.callbackMarkupRan = '1';"));
 		$client->replaceContent('replace-target', $markup, false);
+
+		$this->getClientScript()->registerEndScript('csp-callback-end', "document.documentElement.dataset.callbackEndRan = '1';");
+		$client->evaluateScript("document.documentElement.dataset.callbackEvaluateRan = '1';");
 	}
 }

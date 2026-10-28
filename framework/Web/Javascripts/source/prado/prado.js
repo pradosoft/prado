@@ -611,7 +611,22 @@ Prado.Element =
 	},
 
 	/**
-	 * Evaluate a javascript snippet from a string.
+	 * Evaluate a javascript snippet from a string as global code.
+	 * The server sends a callback's end scripts and
+	 * `TCallbackClientScript::evaluateScript()` through this method.
+	 *
+	 * | Page | How the snippet runs |
+	 * |---|---|
+	 * | has a nonce, {@link Prado.Element.getPageNonce} | a `<script>` with the page nonce, {@link Prado.Element.evaluateNonceScript} |
+	 * | has a nonce, and the policy blocks that `<script>` | indirect `(0, eval)` |
+	 * | has no nonce | indirect `(0, eval)` |
+	 *
+	 * A nonce-based `script-src` without `'unsafe-eval'` blocks `eval` and allows
+	 * the nonce'd `<script>`. The `<script>` runs as global code like the indirect
+	 * `eval`. This method logs and rethrows an error of the `<script>`, as it does for `eval`.
+	 * The `eval` fallback runs only when the `<script>` did not run, so the
+	 * snippet never runs twice. It succeeds only when the policy allows
+	 * `'unsafe-eval'`; otherwise the browser reports a second CSP violation.
 	 * @function ?
 	 * @param {string} content - String containing the script
 	 * @param {string} boundary - Boundary containing the script
@@ -626,10 +641,14 @@ Prado.Element =
 
 		try
 		{
-			// Evaluate in global scope (jQuery.globalEval equivalent).
-			// The indirect (0, eval) call forces script to run as global code.
-			// eslint-disable-next-line no-eval
-			(0, eval)(content);
+			const nonce = Prado.Element.getPageNonce();
+			if(!nonce || !Prado.Element.evaluateNonceScript(content, nonce))
+			{
+				// Evaluate in global scope (jQuery.globalEval equivalent).
+				// The indirect (0, eval) call forces script to run as global code.
+				// eslint-disable-next-line no-eval
+				(0, eval)(content);
+			}
 		}
 		catch(e)
 		{
@@ -637,6 +656,47 @@ Prado.Element =
 				Logger.error(`Error during evaluation of script "${content}"`);
 			throw e;
 		}
+	},
+
+	/**
+	 * Runs `content` as global code in a `<script>` element that carries `nonce`.
+	 * The browser runs the inline script during `appendChild` and reports its
+	 * error to the window `error` event; this method throws that error.
+	 * A trailing statement marks the element, `document.currentScript`, as run.
+	 * Without the mark or an error, the policy blocked the script.
+	 * Window `error` listeners and the console also receive the script's error.
+	 * @function {boolean} ?
+	 * @param {string} content - String containing the script
+	 * @param {string} nonce - CSP nonce of the script element
+	 * @returns true when the script ran, false when the policy blocked it
+	 * @since 4.4.0
+	 */
+	evaluateNonceScript(content, nonce) {
+		let error = null;
+		const onError = (event) => {
+			error = event.error || new Error(event.message);
+		};
+
+		const el = document.createElement('script');
+		el.nonce = nonce;
+		el.text = `${content}\n;document.currentScript.dataset.pradoRan = '1';`;
+
+		window.addEventListener('error', onError);
+		try
+		{
+			(document.getElementsByTagName('head')[0] || document.documentElement).appendChild(el);
+		}
+		finally
+		{
+			window.removeEventListener('error', onError);
+			el.remove();
+		}
+
+		if(el.dataset.pradoRan)
+			return true;
+		if(error)
+			throw error;
+		return false;
 	}
 };
 

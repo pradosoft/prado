@@ -1,6 +1,6 @@
 /**
  * Tests for the previously uncovered parts of Prado.Element:
- *   j(), select(), setOptions(), replace(), evaluateScript(),
+ *   j(), select(), setOptions(), replace(), evaluateScript(), evaluateNonceScript(),
  *   setAttribute (on* and hidden/inert/popover with false),
  *   and Selection.selectValues / checkValues / checkIndices.
  *
@@ -215,18 +215,143 @@ describe('Prado.Element.replace', () => {
 
 // ─── Prado.Element.evaluateScript ────────────────────────────────────────────
 
+// jsdom runs an appended inline script in its own global, shares the document,
+// and reports the script's error to the window `error` event. The scripts below
+// count their runs on <html>, which both globals reach.
+const COUNT = 'document.documentElement.dataset.evalCount = +(document.documentElement.dataset.evalCount || 0) + 1;';
+
+function evalCount() {
+	return +(document.documentElement.dataset.evalCount || 0);
+}
+
 describe('Prado.Element.evaluateScript', () => {
-	it('does not throw for a valid JavaScript string', () => {
-		// jQuery.globalEval injects a <script> element into the DOM.
-		// jsdom does not execute injected scripts, so we can only assert
-		// that the call completes without throwing.
-		expect(() => Element.evaluateScript('var __noop = 1;')).not.toThrow();
+	let savedNonce;
+	// Marks script errors handled, as a page's error handler would, so jsdom does
+	// not report them as uncaught.
+	const handled = (event) => event.preventDefault();
+
+	beforeEach(() => {
+		savedNonce = Element._pageNonce;
+		Element._pageNonce = '';
+		window.addEventListener('error', handled);
 	});
 
-	it('does not throw for a second valid JavaScript string', () => {
-		// jQuery.globalEval injects a <script> element; jsdom does not execute it,
-		// so we can only assert the call returns without throwing.
-		expect(() => Element.evaluateScript('1 + 1;')).not.toThrow();
+	afterEach(() => {
+		Element._pageNonce = savedNonce;
+		window.removeEventListener('error', handled);
+		delete document.documentElement.dataset.evalCount;
+		delete globalThis.Logger;
+		vi.restoreAllMocks();
+	});
+
+	it('evaluates the content as global code when the page has no nonce', () => {
+		const append = vi.spyOn(document.head, 'appendChild');
+		Element.evaluateScript('var __evalResult = 7;');
+		expect(globalThis.__evalResult).toBe(7);
+		expect(append).not.toHaveBeenCalled();
+		delete globalThis.__evalResult;
+	});
+
+	it('logs and rethrows an error of the evaluated content', () => {
+		globalThis.Logger = { error: vi.fn() };
+		expect(() => Element.evaluateScript('throw new RangeError("bad");')).toThrow(RangeError);
+		expect(globalThis.Logger.error).toHaveBeenCalledWith('Error during evaluation of script "throw new RangeError("bad");"');
+	});
+
+	it('reads the content from the boundary of the request it runs on', () => {
+		const request = { extractContent: vi.fn(() => COUNT) };
+		Element.evaluateScript.call(request, null, 'b1');
+		expect(request.extractContent).toHaveBeenCalledWith('b1');
+		expect(evalCount()).toBe(1);
+	});
+
+	it('runs the content once in a script element with the page nonce', () => {
+		Element._pageNonce = 'page-nonce';
+		const append = vi.spyOn(document.head, 'appendChild');
+
+		Element.evaluateScript(COUNT);
+
+		expect(evalCount()).toBe(1);
+		const script = append.mock.calls[0][0];
+		expect(script.nonce).toBe('page-nonce');
+		expect(script.isConnected).toBe(false);
+	});
+
+	it('logs and rethrows the error the nonce\'d script reports to the window', () => {
+		Element._pageNonce = 'page-nonce';
+		globalThis.Logger = { error: vi.fn() };
+
+		expect(() => Element.evaluateScript(COUNT + 'throw new TypeError("nonce error");')).toThrow('nonce error');
+
+		expect(evalCount()).toBe(1);
+		expect(globalThis.Logger.error).toHaveBeenCalledTimes(1);
+	});
+
+	it('rethrows a syntax error of the nonce\'d script', () => {
+		Element._pageNonce = 'page-nonce';
+		// jsdom's script global has its own SyntaxError class; compare the name.
+		expect(() => Element.evaluateScript('var = ;')).toThrow(expect.objectContaining({ name: 'SyntaxError' }));
+	});
+
+	it('evaluates the content when the policy blocks the nonce\'d script', () => {
+		Element._pageNonce = 'page-nonce';
+		// A blocked script does not run; this one is not inserted.
+		const append = vi.spyOn(document.head, 'appendChild').mockImplementation((node) => node);
+
+		Element.evaluateScript(COUNT);
+
+		expect(append).toHaveBeenCalledTimes(1);
+		expect(evalCount()).toBe(1);
+	});
+
+	it('does not evaluate again when the nonce\'d script ran and a nested script reported an error', () => {
+		Element._pageNonce = 'page-nonce';
+
+		// The script reports an error to the window, as a nested script would, and completes.
+		Element.evaluateScript(COUNT
+			+ 'window.dispatchEvent(new ErrorEvent("error", { error: new Error("nested") }));');
+
+		expect(evalCount()).toBe(1);
+	});
+
+	it('marks each script, so an inner run does not mark the outer script as run', () => {
+		Element._pageNonce = 'page-nonce';
+		// The document is shared, so it hands Prado to jsdom's script global.
+		document.__prado = global.Prado;
+
+		expect(() => Element.evaluateScript(
+			'document.__prado.Element.evaluateScript(' + JSON.stringify(COUNT) + ');'
+			+ 'throw new Error("outer");'
+		)).toThrow('outer');
+		expect(evalCount()).toBe(1);
+
+		delete document.__prado;
+	});
+});
+
+// ─── Prado.Element.evaluateNonceScript ───────────────────────────────────────
+
+describe('Prado.Element.evaluateNonceScript', () => {
+	afterEach(() => { vi.restoreAllMocks(); });
+
+	it('returns true and removes the script after it runs', () => {
+		const append = vi.spyOn(document.head, 'appendChild');
+		expect(Element.evaluateNonceScript('1;', 'n1')).toBe(true);
+		const script = append.mock.calls[0][0];
+		expect(script.nonce).toBe('n1');
+		expect(script.text).toBe('1;\n;document.currentScript.dataset.pradoRan = \'1\';');
+		expect(script.isConnected).toBe(false);
+	});
+
+	it('returns false when the script does not run', () => {
+		vi.spyOn(document.head, 'appendChild').mockImplementation((node) => node);
+		expect(Element.evaluateNonceScript('1;', 'n1')).toBe(false);
+	});
+
+	it('removes its window error listener', () => {
+		const remove = vi.spyOn(window, 'removeEventListener');
+		Element.evaluateNonceScript('1;', 'n1');
+		expect(remove).toHaveBeenCalledWith('error', expect.any(Function));
 	});
 });
 
