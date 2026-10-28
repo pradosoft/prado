@@ -168,6 +168,15 @@ All extend [THtmlElement](./THtmlElement.md). Each wraps the named HTML5 element
 | [`TSup`](TSup.md) | `sup` | Superscript; `superscript` role (@since 4.4.0) |
 | [`TVar`](TVar.md) | `var` | Variable or placeholder; marks the variable's other occurrences ([TBaseTerm](TBaseTerm.md), @since 4.4.0) |
 
+## Media Controls (@since 4.4.0)
+
+[TVideo](TVideo.md) and [TAudio](TAudio.md) extend [TBaseMedia](TBaseMedia.md); `ShowControls` defaults to true. Children render as sources, tracks, then fallback content.
+
+| Class | HTML | Key Properties |
+|---|---|---|
+| [`TMediaSource`](TMediaSource.md) | `<source>` | `Src`, `Type`, `Media`; `Srcset`, `Sizes`, `Width`, `Height` in a TPicture |
+| [`TTextTrack`](TTextTrack.md) | `<track>` | `Src`, `Kind` ([TTextTrackKind](TTextTrackKind.md)), `SrcLang`, `Label`, `IsDefault` |
+
 ## Rich Text & Special Controls
 
 | Class | Purpose |
