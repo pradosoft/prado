@@ -12,6 +12,8 @@ namespace Prado\IO\Socket;
 
 use Prado\Collections\TMap;
 use Prado\Exceptions\TConfigurationException;
+use Prado\IO\Async\IEventLoop;
+use Prado\IO\Async\TRevoltEventLoop;
 use Prado\IO\TUriScheme;
 use Prado\Prado;
 use Prado\Security\Permissions\IPermissions;
@@ -30,9 +32,10 @@ use Prado\Util\TSignalsDispatcher;
  *
  * The module binds the listening endpoint from {@see getEndpoint() Endpoint} (composed from
  * {@see getScheme() Scheme}, {@see getAddress() Address}, and {@see getPort() Port} when not set
- * explicitly), then drives a {@see TSocketReactor}: the reactor accepts connections and dispatches
+ * explicitly), then serves it on an {@see IEventLoop}: the loop accepts connections and dispatches
  * readable ones through {@see onClientData}, while {@see onClientConnect} and {@see onClientDisconnect}
- * bracket each connection's lifetime.
+ * bracket each connection's lifetime.  {@see getEventLoop() EventLoop} is the loop; the default is a
+ * {@see getEventLoopClass() EventLoopClass} instance, a {@see TRevoltEventLoop}.
  *
  * The server is connection-oriented: it accepts streams.  Configure a stream scheme (`tcp`, `tls`,
  * `ssl`, or `unix`); a connectionless datagram scheme (`udp`, `udg`) is rejected, as a datagram
@@ -41,9 +44,9 @@ use Prado\Util\TSignalsDispatcher;
  * Three seams let subclasses specialize the server without rewriting the lifecycle:
  *  - {@see createServer()} builds and configures the {@see TSocketServer} (override to bind a
  *    subclass, attach a handler, or set socket options).
- *  - {@see createReactor()} builds the {@see TSocketReactor} (override to pre-register other sources
- *    or timers).
- *  - {@see serveLoop()} drives the reactor (override when the server owns its own loop).
+ *  - {@see createEventLoop()} builds the default {@see IEventLoop} (override to register other
+ *    callbacks or timers before serving).
+ *  - {@see serveLoop()} runs the loop (override when the server owns its own loop).
  *
  * XML configuration:
  * ```xml
@@ -85,11 +88,29 @@ class TSocketServerModule extends TModule implements IPermissions
 	/** The default shell action class registered for command line control. */
 	public const DEFAULT_SHELL_CLASS = TSocketServerAction::class;
 
+	/** The default IEventLoop class the server is served on. */
+	public const DEFAULT_EVENT_LOOP_CLASS = TRevoltEventLoop::class;
+
+	/** The seconds between the signal deliveries and stop checks of {@see serveLoop()}. */
+	public const SERVE_PUMP_INTERVAL = 1.0;
+
 	/** @var string The shell action class registered for command line control. */
 	private string $_shellClass;
 
 	/** @var string The TSocketServer class the server is created from. */
 	private string $_serverClass;
+
+	/** @var string The IEventLoop class the default loop is created from. */
+	private string $_eventLoopClass;
+
+	/** @var ?IEventLoop The loop the server is served on. */
+	private ?IEventLoop $_eventLoop = null;
+
+	/** @var ?string The loop callback watching the listening server, while it serves. */
+	private ?string $_acceptCallbackId = null;
+
+	/** @var array<int, string> The loop callbacks watching the accepted connections, keyed by connection object id. */
+	private array $_connectionCallbackIds = [];
 
 	/** @var string The URI scheme of the listening endpoint. */
 	private string $_scheme;
@@ -120,6 +141,7 @@ class TSocketServerModule extends TModule implements IPermissions
 	{
 		$this->_shellClass = static::DEFAULT_SHELL_CLASS;
 		$this->_serverClass = static::DEFAULT_SERVER_CLASS;
+		$this->_eventLoopClass = static::DEFAULT_EVENT_LOOP_CLASS;
 		$this->_scheme = static::DEFAULT_SCHEME;
 		$this->_address = static::DEFAULT_ADDRESS;
 		$this->_port = static::DEFAULT_PORT;
@@ -176,70 +198,111 @@ class TSocketServerModule extends TModule implements IPermissions
 	}
 
 	/**
-	 * Builds the reactor that multiplexes the server and its connections.  Subclasses override this
-	 * to pre-register other sources or timers before {@see serveLoop()} runs it.
-	 * @return TSocketReactor The reactor.
+	 * Builds the default loop from {@see getEventLoopClass() EventLoopClass}.  Subclasses override
+	 * this to register other callbacks or timers before {@see serveLoop()} runs it.
+	 * @return IEventLoop The loop.
 	 */
-	protected function createReactor(): TSocketReactor
+	protected function createEventLoop(): IEventLoop
 	{
-		return Prado::createComponent(TSocketReactor::class);
+		return Prado::createComponent($this->getEventLoopClass());
 	}
 
 	/**
-	 * Drives the reactor until the server stops or {@see stop()} is requested.  The reactor watches
-	 * the server for acceptable connections ({@see acceptClient()}) and each accepted connection for
-	 * readable data ({@see dispatchClient()}).  Subclasses override this when the server owns its own
-	 * loop.
+	 * Runs the loop until the server stops or {@see stop()} is requested.  The loop watches the
+	 * server for acceptable connections ({@see acceptClient()}) and each accepted connection for
+	 * readable data ({@see dispatchClient()}).  A repeating timer delivers the signals caught in
+	 * sync mode and stops the loop once the server no longer listens.  Subclasses override this when
+	 * the server owns its own loop.
 	 * @param TSocketServer $server The listening server.
 	 */
 	protected function serveLoop(TSocketServer $server): void
 	{
-		$reactor = $this->createReactor();
-		$reactor->register($server, onReadable: fn () => $this->acceptClient($server, $reactor));
-		while (!$this->_stopping && $server->isListening()) {
-			$reactor->tick(1.0);
-			// Deliver any signal caught during the tick when the dispatcher runs in sync mode; a
+		$loop = $this->getEventLoop();
+		$this->_acceptCallbackId = $loop->onReadable($server, fn () => $this->acceptClient($server, $loop));
+		$pumpId = $loop->repeat(static::SERVE_PUMP_INTERVAL, function () use ($server, $loop): void {
+			// Deliver any signal caught during the wait when the dispatcher runs in sync mode; a
 			// no-op in async mode and without pcntl, so the loop is correct under either mode.
 			TSignalsDispatcher::syncDispatch();
+			if ($this->_stopping || !$server->isListening()) {
+				$loop->stop();
+			}
+		});
+		try {
+			$loop->run();
+		} finally {
+			$loop->cancel($pumpId);
+			$this->cancelAcceptCallback();
+			foreach ($this->_connectionCallbackIds as $id) {
+				$loop->cancel($id);
+			}
+			$this->_connectionCallbackIds = [];
 		}
 	}
 
 	/**
-	 * Accepts one pending connection, sets it non-blocking, and registers it with the reactor for
-	 * readable data.  Raises {@see onClientConnect}.
+	 * Accepts one pending connection, sets it non-blocking, and watches it on the loop for readable
+	 * data.  Raises {@see onClientConnect}.
 	 * @param TSocketServer $server The listening server.
-	 * @param TSocketReactor $reactor The reactor watching the server.
+	 * @param IEventLoop $loop The loop watching the server.
 	 */
-	protected function acceptClient(TSocketServer $server, TSocketReactor $reactor): void
+	protected function acceptClient(TSocketServer $server, IEventLoop $loop): void
 	{
 		if (($connection = $server->accept(0.0)) === null) {
 			return;
 		}
 		$connection->setBlocking(false);
 		$this->onClientConnect($connection);
-		$reactor->register($connection, onReadable: fn () => $this->dispatchClient($connection, $reactor));
+		$this->_connectionCallbackIds[spl_object_id($connection)] = $loop->onReadable($connection, fn () => $this->dispatchClient($connection, $loop));
+	}
+
+	/**
+	 * Stops watching a connection on the loop.
+	 * @param TSocketStream $connection The connection.
+	 * @param IEventLoop $loop The loop watching the connection.
+	 */
+	protected function forgetConnection(TSocketStream $connection, IEventLoop $loop): void
+	{
+		$key = spl_object_id($connection);
+		if (isset($this->_connectionCallbackIds[$key])) {
+			$loop->cancel($this->_connectionCallbackIds[$key]);
+			unset($this->_connectionCallbackIds[$key]);
+		}
+	}
+
+	/**
+	 * Stops watching the listening server on the loop.
+	 */
+	private function cancelAcceptCallback(): void
+	{
+		if ($this->_acceptCallbackId !== null) {
+			$this->_eventLoop?->cancel($this->_acceptCallbackId);
+			$this->_acceptCallbackId = null;
+		}
 	}
 
 	/**
 	 * Dispatches a readable connection.  A one-byte peek distinguishes pending data from a closed
 	 * connection: a peek of `''` is an orderly end of stream (the peer sent FIN) and a peek of `false`
-	 * is a broken or reset connection.  Either one unregisters the connection, raises it through
+	 * is a broken or reset connection.  Either one stops watching the connection, raises it through
 	 * {@see onClientDisconnect}, and closes it.  A peek that returns data hands the connection to
-	 * {@see onClientData}.  The peek reads the raw transport, so a TLS subclass that buffers decrypted
-	 * bytes overrides this.
+	 * {@see onClientData}; a handler that closes the connection ends the watch too.  The peek reads
+	 * the raw transport, so a TLS subclass that buffers decrypted bytes overrides this.
 	 * @param TSocketStream $connection The readable connection.
-	 * @param TSocketReactor $reactor The reactor watching the connection.
+	 * @param IEventLoop $loop The loop watching the connection.
 	 */
-	protected function dispatchClient(TSocketStream $connection, TSocketReactor $reactor): void
+	protected function dispatchClient(TSocketStream $connection, IEventLoop $loop): void
 	{
 		$peek = $connection->recvFrom(1, STREAM_PEEK);
 		if ($peek === '' || $peek === false) {
-			$reactor->unregister($connection);
+			$this->forgetConnection($connection, $loop);
 			$this->onClientDisconnect($connection);
 			$connection->close();
 			return;
 		}
 		$this->onClientData($connection);
+		if (!$connection->isOpen()) {
+			$this->forgetConnection($connection, $loop);
+		}
 	}
 
 	/**
@@ -287,7 +350,11 @@ class TSocketServerModule extends TModule implements IPermissions
 	public function stop(): void
 	{
 		$this->_stopping = true;
-		$this->_server?->close();
+		$this->cancelAcceptCallback();
+		if ($this->_server !== null) {
+			$this->_server->close();
+			$this->_eventLoop?->stop();
+		}
 	}
 
 	/**
@@ -344,6 +411,55 @@ class TSocketServerModule extends TModule implements IPermissions
 			throw new TConfigurationException('socketservermodule_serverclass_invalid', $value);
 		}
 		$this->_serverClass = $value;
+		return $this;
+	}
+
+	/**
+	 * Returns the loop the server is served on, creating the default from
+	 * {@see getEventLoopClass() EventLoopClass} on first use.
+	 * @return IEventLoop The loop.
+	 */
+	public function getEventLoop(): IEventLoop
+	{
+		if ($this->_eventLoop === null) {
+			$this->_eventLoop = $this->createEventLoop();
+		}
+		return $this->_eventLoop;
+	}
+
+	/**
+	 * Sets the loop the server is served on.
+	 * @param ?IEventLoop $value The loop, or null to create the default on the next {@see getEventLoop()}.
+	 * @return static The current module.
+	 */
+	public function setEventLoop(?IEventLoop $value): static
+	{
+		$this->_eventLoop = $value;
+		return $this;
+	}
+
+	/**
+	 * Returns the IEventLoop class the default loop is created from.
+	 * @return string The IEventLoop class name, default {@see DEFAULT_EVENT_LOOP_CLASS}.
+	 */
+	public function getEventLoopClass(): string
+	{
+		return $this->_eventLoopClass;
+	}
+
+	/**
+	 * Sets the IEventLoop class the default loop is created from.
+	 * @param string $value An IEventLoop class name, such as {@see \Prado\IO\Socket\TSocketReactor}.
+	 * @throws TConfigurationException When the class is not an IEventLoop.
+	 * @return static The current module.
+	 */
+	public function setEventLoopClass($value): static
+	{
+		$value = TPropertyValue::ensureString($value);
+		if (!is_a($value, IEventLoop::class, true)) {
+			throw new TConfigurationException('socketservermodule_eventloopclass_invalid', $value);
+		}
+		$this->_eventLoopClass = $value;
 		return $this;
 	}
 

@@ -1,6 +1,6 @@
 # IO/SUMMARY.md
 
-Input/output utilities: text writer abstractions, archive extraction, and stream notifications.
+Input/output utilities: text writer abstractions, archive extraction, stream notifications, sockets, and the `Prado\IO\Async` event loop API (`IEventLoop`, `ITickableEventLoop`, `TRevoltEventLoop` over `revolt/event-loop`, `TLoopSuspension`; `TSocketReactor` is the dependency-free loop).
 
 ## Classes
 
