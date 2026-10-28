@@ -1,0 +1,25 @@
+<%@ MasterClass="" %><!DOCTYPE html>
+<html data-page="csp-callback-test">
+<com:THead Title="CSP Callback Script Test">
+<meta charset="UTF-8">
+</com:THead>
+<body>
+
+<!-- Records CSP violations so the tests can assert none fire. -->
+<script id="violation-listener" nonce="<%= $this->Nonce %>">
+window.__cspViolations = [];
+document.addEventListener('securitypolicyviolation', function (e) {
+	window.__cspViolations.push(e.violatedDirective + ' ' + e.blockedURI);
+});
+</script>
+
+<!-- Inline script without a nonce: the policy blocks it. -->
+<script id="no-nonce-script">document.documentElement.dataset.noNonceRan = '1';</script>
+
+<com:TForm>
+	<com:TActiveButton ID="RunCallback" Text="Run callback" OnCallback="runCallback" />
+	<div id="replace-target"></div>
+</com:TForm>
+
+</body>
+</html>

@@ -548,22 +548,48 @@ Prado.Element =
 	 * Re-evaluate every <script> element under `root`. Used after
 	 * Prado.Element.replace() to mimic jQuery .html() / .replaceWith()
 	 * behavior, which executes inline scripts injected via innerHTML.
+	 * The re-created scripts carry the page CSP nonce,
+	 * {@link Prado.Element.getPageNonce}, in place of the callback's nonce.
 	 * @function ?
 	 * @param {element} root - DOM subtree to scan
 	 * @since 4.4.0
 	 */
 	executeScripts(root) {
+		const nonce = Prado.Element.getPageNonce();
 		const scripts = root.querySelectorAll('script');
 		for (const oldScript of scripts) {
 			const fresh = document.createElement('script');
 			for (const attr of oldScript.attributes) fresh.setAttribute(attr.name, attr.value);
+			if (nonce)
+				fresh.nonce = nonce;
 			fresh.text = oldScript.textContent;
 			oldScript.parentNode.replaceChild(fresh, oldScript);
 		}
 	},
 
 	/**
-	 * Appends a javascript block to the document.
+	 * Returns the CSP nonce of the page, read from the `nonce` property of the
+	 * first element with a `nonce` attribute. The browser empties the attribute
+	 * once parsed under a CSP header; the property keeps the value.
+	 * A callback response is a new request with its own nonce, while the page
+	 * keeps the policy of its first load. Elements created on the client
+	 * therefore carry the page nonce. The first non-empty nonce is cached, and
+	 * prado.js reads it on load, before any callback markup reaches the page.
+	 * @function ?
+	 * @returns {string} the page nonce, or '' when the page has none
+	 * @since 4.4.0
+	 */
+	getPageNonce() {
+		if (!Prado.Element._pageNonce) {
+			const el = document.querySelector('[nonce]');
+			Prado.Element._pageNonce = el ? (el.nonce || el.getAttribute('nonce') || '') : '';
+		}
+		return Prado.Element._pageNonce;
+	},
+
+	/**
+	 * Appends a javascript block to the document. The block carries the page
+	 * CSP nonce, {@link Prado.Element.getPageNonce}.
 	 * @function ?
 	 * @param {string} boundary - Boundary containing the javascript code
 	 */
@@ -575,6 +601,9 @@ Prado.Element =
 		const el   = document.createElement("script");
 		el.type  = "text/javascript";
 		el.id    = `inline_${boundary}`;
+		const nonce = Prado.Element.getPageNonce();
+		if (nonce)
+			el.nonce = nonce;
 		el.text  = content;
 
 		(document.getElementsByTagName('head')[0] || document.documentElement).appendChild(el);
@@ -610,6 +639,9 @@ Prado.Element =
 		}
 	}
 };
+
+// Cache the page nonce while the document holds only page-rendered elements.
+Prado.Element.getPageNonce();
 
 /**
  * Utilities for selections.
