@@ -214,6 +214,81 @@ class TExceptionMessageFilesTest extends \PHPUnit\Framework\TestCase
 	}
 
 	/**
+	 * Reads every framework PHP file with its comments removed.
+	 * @return array<string, string> file path => code.
+	 */
+	protected static function frameworkCode(): array
+	{
+		static $code = null;
+		if ($code === null) {
+			$code = [];
+			$iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(Prado::getFrameworkPath(), \FilesystemIterator::SKIP_DOTS));
+			foreach ($iterator as $file) {
+				if ($file->getExtension() === 'php') {
+					$stripped = '';
+					foreach (token_get_all(file_get_contents($file->getPathname())) as $token) {
+						if (is_array($token) && in_array($token[0], [T_COMMENT, T_DOC_COMMENT], true)) {
+							continue;
+						}
+						$stripped .= is_array($token) ? $token[1] : $token;
+					}
+					$code[$file->getPathname()] = $stripped;
+				}
+			}
+		}
+		return $code;
+	}
+
+	/**
+	 * @return string[] the message keys the framework source passes to a Prado exception constructor, sorted.
+	 */
+	public static function thrownKeys(): array
+	{
+		$keys = [];
+		foreach (self::frameworkCode() as $code) {
+			if (preg_match_all("/new\\s+\\\\?(?:Prado\\\\[\\w\\\\]*\\\\)?T\\w*Exception\\s*\\(\\s*(?:\\d+\\s*,\\s*)?'([a-z][a-z0-9_]*)'/", $code, $matches)) {
+				$keys = array_merge($keys, $matches[1]);
+			}
+		}
+		$keys = array_unique($keys);
+		sort($keys);
+		return $keys;
+	}
+
+	public function testEveryThrownKeyIsDefinedInTheEnglishMaster(): void
+	{
+		[$english] = self::parse(self::messagesDir() . '/messages.txt');
+		$this->assertNotEmpty(self::thrownKeys());
+		$this->assertSame([], array_values(array_diff(self::thrownKeys(), array_keys($english))), 'keys thrown in framework/ without a messages.txt entry');
+	}
+
+	public function testEveryEnglishMasterKeyIsUsedInTheFramework(): void
+	{
+		[$english] = self::parse(self::messagesDir() . '/messages.txt');
+		$code = implode("\n", self::frameworkCode());
+		$unused = [];
+		foreach (array_keys($english) as $key) {
+			if (!str_contains($code, "'" . $key . "'") && !str_contains($code, '"' . $key . '"')) {
+				$unused[] = $key;
+			}
+		}
+		$this->assertSame([], $unused, 'messages.txt keys no framework/ source refers to');
+	}
+
+	public function testEnglishMasterEntriesEndWithPunctuationAndSingleSpaces(): void
+	{
+		[$english] = self::parse(self::messagesDir() . '/messages.txt');
+		$headings = ['pageservice_page_unknown', 'pageservice_page_required'];
+		foreach ($english as $key => $value) {
+			$this->assertStringNotContainsString('  ', $value, "'$key' contains a double space");
+			$this->assertMatchesRegularExpression('/^(?:[A-Z]|\\{\\d+\\}|[\'"<_])/', $value, "'$key' does not start with a capital letter, a placeholder, a quote, a tag, or an identifier");
+			if (!in_array($key, $headings, true)) {
+				$this->assertMatchesRegularExpression("/[.!?)\\]'\"}]$/", $value, "'$key' does not end with punctuation");
+			}
+		}
+	}
+
+	/**
 	 * @return array<string, array{string}> the language codes of the framework message files.
 	 */
 	public static function languageProvider(): array
