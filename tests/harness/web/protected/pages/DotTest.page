@@ -1,0 +1,11 @@
+<com:TContent ID="Content">
+	<h1>Dot Test Case</h1>
+
+	<p>
+		<com:TDot ID="green" Size="40" Color="Green" PublishStyle="Inline" AlternateText="Online" />
+		<com:TDot ID="red" Size="40" Color="Red" PublishStyle="Inline" AlternateText="Offline" />
+		<com:TDot ID="decorative" Size="40" Color="Blue" PublishStyle="Inline" />
+		<com:TDot ID="status" Size="40" Color="Yellow" PublishStyle="Inline" AlternateText="Away" Role="status" />
+		<com:TDot ID="embed" Size="40" Color="Gray" PublishStyle="Embed" AlternateText="Idle" />
+	</p>
+</com:TContent>

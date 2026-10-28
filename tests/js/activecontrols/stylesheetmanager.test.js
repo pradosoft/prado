@@ -5,7 +5,8 @@
  *
  * A callback response is rendered with its own request nonce, which the page's
  * Content-Security-Policy does not allow, so the stylesheet manager gives the
- * `<style>` and `<link>` elements it creates the nonce of the page.
+ * `<style>` and `<link>` elements it creates the nonce of the page, from
+ * Prado.Element.getPageNonce() (covered in page-nonce.test.js).
  *
  * ESM note: only tests/js/adapters/ajax.js changes on ESM conversion.
  */
@@ -24,26 +25,7 @@ function addNonced(tag, nonce) {
 afterEach(() => {
 	document.head.innerHTML = '';
 	document.body.innerHTML = '';
-});
-
-describe('Prado.StyleSheetManager.getPageNonce', () => {
-	it('returns an empty string when the page has no nonce', () => {
-		expect(manager().getPageNonce()).toBe('');
-	});
-
-	it('reads the nonce of a script, style, or link element', () => {
-		for (const tag of ['script', 'style', 'link']) {
-			const el = addNonced(tag, `n-${tag}`);
-			expect(manager().getPageNonce()).toBe(`n-${tag}`);
-			el.remove();
-		}
-	});
-
-	it('prefers the nonce property, which the browser keeps after hiding the attribute', () => {
-		const el = addNonced('script', '');
-		el.nonce = 'hidden-value';
-		expect(manager().getPageNonce()).toBe('hidden-value');
-	});
+	global.Prado.Element._pageNonce = '';
 });
 
 describe('Prado.StyleSheetManager created elements', () => {
