@@ -139,6 +139,7 @@ All extend [THtmlElement](./THtmlElement.md). Each wraps the named HTML5 element
 | [`TDataValue`](TDataValue.md) | `data` | Content with a machine-readable `Value` (@since 4.4.0) |
 | [`TDel`](TDel.md) | `del` | Deleted text; `deletion` role; `Cite`, `DateTime` (@since 4.4.0) |
 | [`TDfn`](TDfn.md) | `dfn` | Defining instance of a term; marks the first occurrence of `Terms` ([TBaseTerm](TBaseTerm.md), @since 4.4.0) |
+| [`TFootnote`](TFootnote.md) | `sup` | Numbered footnote reference; child controls are the note, rendered in a `TReferenceList`; `Key` joins references (@since 4.4.0) |
 | [`TFooter`](TFooter.md) | `footer` | Footer of nearest sectioning ancestor |
 | [`THeader`](THeader.md) | `header` | Introductory content or navigational links |
 | [`TIns`](TIns.md) | `ins` | Inserted text; `insertion` role; `Cite`, `DateTime` (@since 4.4.0) |
@@ -149,6 +150,10 @@ All extend [THtmlElement](./THtmlElement.md). Each wraps the named HTML5 element
 | [`TPre`](TPre.md) | `pre` | Preformatted text; whitespace kept (@since 4.4.0) |
 | [`TQuote`](TQuote.md) | `q` | Inline quotation; `Cite` source URL (@since 4.4.0) |
 | [`TSamp`](TSamp.md) | `samp` | Sample output from a program (@since 4.4.0) |
+| [`TRuby`](TRuby.md) | `ruby` | Base text with annotations; `Base`, `Annotation`, `<rp>` parentheses (@since 4.4.0) |
+| [`TRubyParenthesis`](TRubyParenthesis.md) | `rp` | Parenthesis around a ruby annotation; hidden where ruby renders (@since 4.4.0) |
+| [`TRubyText`](TRubyText.md) | `rt` | Ruby annotation (@since 4.4.0) |
+| [`TReferenceList`](TReferenceList.md) | `section` | Numbered notes of the page's `TFootnote` references with back links; region named by `HeaderText` (@since 4.4.0) |
 | [`TSearch`](TSearch.md) | `search` | Search or filter controls; landmark; another tag renders `role="search"` (@since 4.4.0) |
 | [`TSection`](TSection.md) | `section` | Generic thematic document section |
 | [`TSub`](TSub.md) | `sub` | Subscript; `subscript` role (@since 4.4.0) |
