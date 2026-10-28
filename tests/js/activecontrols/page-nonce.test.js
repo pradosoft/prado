@@ -2,6 +2,7 @@
  * Tests for the page CSP nonce on client-created scripts:
  *   Prado.Element.getPageNonce(), executeScripts(), appendScriptBlock(),
  *   and Prado.ScriptManagerClass.createAssetElement().
+ * The stylesheet manager's use of the page nonce is in stylesheetmanager.test.js.
  *
  * A callback response carries a new nonce, while the page keeps the policy of
  * its first load. Scripts created on the client carry the page nonce.
@@ -55,6 +56,18 @@ describe('Prado.Element.getPageNonce', () => {
 		expect(Element.getPageNonce()).toBe('style-nonce');
 
 		style.remove();
+	});
+
+	it('prefers the nonce property, which the browser keeps after hiding the attribute', () => {
+		Element._pageNonce = '';
+		const link = document.createElement('link');
+		link.setAttribute('nonce', '');
+		link.nonce = 'hidden-value';
+		document.head.appendChild(link);
+
+		expect(Element.getPageNonce()).toBe('hidden-value');
+
+		link.remove();
 	});
 
 	it('returns an empty string when the page has no nonce\'d element', () => {

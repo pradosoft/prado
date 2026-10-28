@@ -39,10 +39,10 @@ Static utility that renders `<style>` blocks and `<link rel="stylesheet">` tags 
 | [TStyleSheet](../UI/WebControls/TStyleSheet.md) child CSS | `renderStyleHeader()` / `renderStyleFooter()` |
 | `TClientScriptManager::renderStyleSheets()` (`registerStyleSheet()`) | `renderStyleBlocks()` |
 | `TClientScriptManager::renderStyleSheetFiles()` (`registerStyleSheetFile()`, PRADO and theme CSS) | `renderStyleSheetFiles()` |
-| Callback stylesheet sections | `ajax3.js` `Prado.StyleSheetManager`: `createStyleSheetCode()` and `createAssetElement()` set the page's nonce from `getPageNonce()` |
+| Callback stylesheet sections | `ajax3.js` `Prado.StyleSheetManager`: `createStyleSheetCode()` and `createAssetElement()` set the page's nonce from `prado.js` `Prado.Element.getPageNonce()` |
 
 ## Callbacks
-A callback response is a new request with a new nonce, while the page keeps the policy of its first load. The client therefore uses the page's nonce, read from the `nonce` property of the first `script`/`style`/`link` that has one; the browser hides the attribute after parsing, but the property keeps it. CSS that changes in a callback is registered with `registerStyleSheet()`; a TStyleSheet rendered again in a callback carries the callback's nonce and is blocked.
+A callback response is a new request with a new nonce, while the page keeps the policy of its first load. The client therefore uses the page's nonce from `Prado.Element.getPageNonce()`, which reads the `nonce` property of the first element that has one; the browser hides the attribute after parsing, but the property keeps it. prado.js caches the nonce on load, before callback markup with a callback nonce reaches the page. Callback scripts use the same nonce: `Prado.ScriptManager` script files, `Prado.Element.appendScriptBlock()`, and the scripts `Prado.Element.executeScripts()` re-creates after `replace()`. CSS that changes in a callback is registered with `registerStyleSheet()`; a TStyleSheet rendered again in a callback carries the callback's nonce and is blocked.
 
 ## Policy
 A nonce does not cover `style="…"` attributes, which Prado controls render. A nonce policy for styles splits the directives:
