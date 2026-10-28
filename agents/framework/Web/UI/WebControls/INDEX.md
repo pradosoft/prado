@@ -138,6 +138,9 @@ All extend [THtmlElement](./THtmlElement.md). Each wraps the named HTML5 element
 | [`TCode`](TCode.md) | `code` | Fragment of computer code; `code` role (@since 4.4.0) |
 | [`TDataValue`](TDataValue.md) | `data` | Content with a machine-readable `Value` (@since 4.4.0) |
 | [`TDel`](TDel.md) | `del` | Deleted text; `deletion` role; `Cite`, `DateTime` (@since 4.4.0) |
+| [`TDescriptionDetails`](TDescriptionDetails.md) | `dd` | Details of a description list group; `Term` renders its `<dt>`; `definition` role (@since 4.4.0) |
+| [`TDescriptionList`](TDescriptionList.md) | `dl` | Description list of term-details groups (@since 4.4.0) |
+| [`TDescriptionTerm`](TDescriptionTerm.md) | `dt` | Term of a description list group; `term` role (@since 4.4.0) |
 | [`TDfn`](TDfn.md) | `dfn` | Defining instance of a term; marks the first occurrence of `Terms` ([TBaseTerm](TBaseTerm.md), @since 4.4.0) |
 | [`TFootnote`](TFootnote.md) | `sup` | Numbered footnote reference; child controls are the note, rendered in a `TReferenceList`; `Key` joins references (@since 4.4.0) |
 | [`TFooter`](TFooter.md) | `footer` | Footer of nearest sectioning ancestor |
