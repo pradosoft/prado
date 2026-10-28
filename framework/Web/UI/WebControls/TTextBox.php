@@ -155,7 +155,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 				case TTextBoxMode::Date:
 					$writer->addAttribute('type', 'date');
 					break;
-				case TTextBoxMode::Datetime:
+				case TTextBoxMode::Datetime: // deprecated; HTML removed the type
 					$writer->addAttribute('type', 'datetime');
 					break;
 				case TTextBoxMode::DatetimeLocal:

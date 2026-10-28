@@ -191,4 +191,11 @@ class TTextBoxTest extends TestCase
 		$textbox->setStep('any');
 		$this->assertStringContainsString('step="any"', $this->render($textbox));
 	}
+
+	public function testDeprecatedDatetimeStillRendersItsType()
+	{
+		[, $textbox] = $this->createPageWithTextBox();
+		$textbox->setTextMode(TTextBoxMode::Datetime);
+		$this->assertStringContainsString('type="datetime"', $this->render($textbox));
+	}
 }

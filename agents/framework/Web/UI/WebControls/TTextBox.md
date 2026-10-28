@@ -24,7 +24,8 @@ Implements: `IPostBackDataHandler`, `IValidatable`, `IDataRenderer`
 - `SingleLine` — `<input type="text">` (default)
 - `MultiLine` — `<textarea>`
 - `Password` — `<input type="password">` (value not sent back to browser unless `PersistPassword=true`)
-- HTML5 types: `Color`, `Date`, `Datetime`, `DatetimeLocal`, `Email`, `Month`, `Number`, `Range`, `Search`, `Tel`, `Time`, `Url`, `Week`
+- HTML5 types: `Color`, `Date`, `DatetimeLocal`, `Email`, `Month`, `Number`, `Range`, `Search`, `Tel`, `Time`, `Url`, `Week`
+- `Datetime` — deprecated (4.4.0): renders `type="datetime"`, which HTML removed, so browsers show a text box; use `DatetimeLocal`
 
 **`TTextBoxAutoCompleteType`** (used by `AutoCompleteType` property):
 - `None` — no autocomplete attribute rendered (default)
