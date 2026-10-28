@@ -21,6 +21,8 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 - **[`TCiteTrait`](TCiteTrait.md)** — Backs the `Cite` property (source or explanation URL) of `TQuote`, `TBlockQuote`, `TIns`, and `TDel`. @since 4.4.0
 
+- **[`TBaseEdit`](TBaseEdit.md)** — Base for `TIns` and `TDel`: `Cite` and `DateTime` of an edit. @since 4.4.0
+
 - **[`TContent`](TContent.md)** / **[`TContentPlaceHolder`](TContentPlaceHolder.md)** — Master page content injection. `TContent` blocks are injected into matching `TContentPlaceHolder` elements in the master template. Supports hierarchy matching.
 
 ## Subdirectories
@@ -132,9 +134,11 @@ All extend [THtmlElement](./THtmlElement.md). Each wraps the named HTML5 element
 | [`TBlockQuote`](TBlockQuote.md) | `blockquote` | Block quotation; `blockquote` role; `Cite` source URL (@since 4.4.0) |
 | [`TCite`](TCite.md) | `cite` | Title of a creative work (@since 4.4.0) |
 | [`TCode`](TCode.md) | `code` | Fragment of computer code; `code` role (@since 4.4.0) |
+| [`TDel`](TDel.md) | `del` | Deleted text; `deletion` role; `Cite`, `DateTime` (@since 4.4.0) |
 | [`TDfn`](TDfn.md) | `dfn` | Defining instance of a term; marks the first occurrence of `Terms` ([TBaseTerm](TBaseTerm.md), @since 4.4.0) |
 | [`TFooter`](TFooter.md) | `footer` | Footer of nearest sectioning ancestor |
 | [`THeader`](THeader.md) | `header` | Introductory content or navigational links |
+| [`TIns`](TIns.md) | `ins` | Inserted text; `insertion` role; `Cite`, `DateTime` (@since 4.4.0) |
 | [`TKbd`](TKbd.md) | `kbd` | User input: key, key combination, spoken command (@since 4.4.0) |
 | [`TMain`](TMain.md) | `main` | Dominant page content; one per document |
 | [`TMark`](TMark.md) | `mark` | Highlighted or marked text |
