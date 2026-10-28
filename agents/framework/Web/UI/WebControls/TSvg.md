@@ -33,6 +33,7 @@ TSvg renders an inline `<svg>`. Its content comes from the child controls (templ
 | `Decorative` | `aria-hidden="true"` |
 | `Sanitize` | SvgFile/Svg only; default true; [TSvgDocument](./TSvgDocument.md)`::sanitize()` |
 | `PrefixIds` | SvgFile/Svg only; default true; IDs → `<ClientID>_id` with their references |
+| `ScopeStyles` | SvgFile/Svg only; default true; CSS selectors prefixed with `#<ClientID>` (EnsureId) |
 | `HoistStyles` | SvgFile/Svg only; default true; `<style>` → `registerStyleSheet('TSvg:<md5>')` in `onPreRender()`, deduplicated, with the CSP nonce ([TStyleSheetHelper](../../Javascripts/TStyleSheetHelper.md)) |
 | `ReducedMotion` | Registers `@media (prefers-reduced-motion: reduce) { #id, #id * { animation: none !important; transition: none !important; } }`; SMIL is not stopped |
 
@@ -54,7 +55,7 @@ Content is processed once per request, in `onPreRender()`, so hoisted styles rea
 ## Tests
 
 - `tests/unit/Web/UI/WebControls/TSvgTest.php`
-- `tests/playwright/web/TSvgTestCase.spec.js` with `tests/harness/web/protected/pages/SvgTest.page`: names, decorative hiding, group links, sanitizing, per-copy IDs, hoisted styles, reduced motion, and the Chromium accessibility tree
+- `tests/playwright/web/TSvgTestCase.spec.js` with `tests/harness/web/protected/pages/SvgTest.page`: names, decorative hiding, group links, sanitizing, per-copy IDs and scoped hoisted styles, reduced motion, and the Chromium accessibility tree
 
 ## See Also
 

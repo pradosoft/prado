@@ -40,6 +40,9 @@ use Prado\TPropertyValue;
  * - {@see setPrefixIds() PrefixIds}, on by default, prefixes each ID with the
  *   client ID and rewrites the references to it, so two copies on a page keep
  *   their own gradients, clip paths, and filters.
+ * - {@see setScopeStyles() ScopeStyles}, on by default, limits the CSS of the
+ *   `<style>` elements to this graphic. CSS in an inline SVG applies to the whole
+ *   page, so two SVGs with the same class names would otherwise share rules.
  * - {@see setHoistStyles() HoistStyles}, on by default, moves the `<style>`
  *   elements into the page head through
  *   {@see \Prado\Web\UI\TClientScriptManager::registerStyleSheet()}, where equal
@@ -280,6 +283,24 @@ class TSvg extends TWebControl
 	}
 
 	/**
+	 * @return bool whether the CSS of SvgFile and Svg content is limited to this graphic.
+	 *   Defaults to true.
+	 */
+	public function getScopeStyles()
+	{
+		return $this->getViewState('ScopeStyles', true);
+	}
+
+	/**
+	 * @param bool $value whether the CSS of SvgFile and Svg content is limited to this graphic.
+	 */
+	public function setScopeStyles($value)
+	{
+		$this->setViewState('ScopeStyles', TPropertyValue::ensureBoolean($value), true);
+		$this->_processed = false;
+	}
+
+	/**
 	 * @return bool whether the `<style>` elements of SvgFile and Svg content move into the
 	 *   page head. Defaults to true.
 	 */
@@ -368,7 +389,7 @@ class TSvg extends TWebControl
 
 	/**
 	 * Parses the SvgFile or Svg content once per request: sanitizes it, prefixes its IDs,
-	 * finds its root `<title>`, and registers its styles with the page.
+	 * scopes its styles, finds its root `<title>`, and registers its styles with the page.
 	 * @return ?TSvgDocument the processed content, or null for template markup.
 	 */
 	protected function processDocument(): ?TSvgDocument
@@ -391,6 +412,10 @@ class TSvg extends TWebControl
 		}
 		if ($this->getPrefixIds()) {
 			$document->prefixIds($this->getClientID());
+		}
+		if ($this->getScopeStyles()) {
+			$this->setEnsureId(true);
+			$document->scopeStyles('#' . $this->getClientID());
 		}
 		if ($this->getAlternateText() !== '') {
 			$document->removeTitles();

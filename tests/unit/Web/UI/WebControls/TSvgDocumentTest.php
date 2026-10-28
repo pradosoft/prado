@@ -150,4 +150,25 @@ class TSvgDocumentTest extends TestCase
 		$this->assertSame(['.a{fill:red}', '.b{fill:blue}'], $doc->extractStyles());
 		$this->assertSame('<g/><circle class="a"/>', $doc->getInnerMarkup());
 	}
+
+	public function testScopeCss()
+	{
+		$this->assertSame('#s .a {fill:red}', TSvgDocument::scopeCss('.a{fill:red}', '#s'));
+		$this->assertSame('#s .a, #s g > .b {fill:red}', TSvgDocument::scopeCss('.a, g > .b {fill:red}', '#s'));
+		$this->assertSame('#s, #s:hover .a {x:1}', TSvgDocument::scopeCss('svg, svg:hover .a {x:1}', '#s'));
+		$this->assertSame('#s {x:1}', TSvgDocument::scopeCss(':root {x:1}', '#s'));
+		$this->assertSame('#s .svgicon {x:1}', TSvgDocument::scopeCss('.svgicon {x:1}', '#s'));
+		$this->assertSame('#s :is(.a, .b) {x:1}', TSvgDocument::scopeCss(':is(.a, .b) {x:1}', '#s'));
+		$this->assertSame('@media (min-width: 1px) {#s .a {x:1}}', TSvgDocument::scopeCss('@media (min-width: 1px) {.a {x:1}}', '#s'));
+		$this->assertSame('@keyframes spin {to { transform: rotate(1turn) }}', TSvgDocument::scopeCss('@keyframes spin {to { transform: rotate(1turn) }}', '#s'));
+		$this->assertSame('@charset "utf-8"; #s .a {x:1}', TSvgDocument::scopeCss('@charset "utf-8"; .a {x:1}', '#s'));
+		$this->assertSame('#s .a {x:1} #s .b {y:2}', TSvgDocument::scopeCss('/* c */ .a {x:1} .b {y:2}', '#s'));
+	}
+
+	public function testScopeStyles()
+	{
+		$doc = $this->doc('<style>.a{fill:red}</style><circle class="a"/>');
+		$doc->scopeStyles('#p');
+		$this->assertSame('<style>#p .a {fill:red}</style><circle class="a"/>', $doc->getInnerMarkup());
+	}
 }

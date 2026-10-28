@@ -52,6 +52,7 @@ class TSvgTest extends TestCase
 		$this->assertFalse($svg->getDecorative());
 		$this->assertTrue($svg->getSanitize());
 		$this->assertTrue($svg->getPrefixIds());
+		$this->assertTrue($svg->getScopeStyles());
 		$this->assertTrue($svg->getHoistStyles());
 		$this->assertFalse($svg->getReducedMotion());
 		$this->assertSame('<svg></svg>', $this->render($svg));
@@ -118,7 +119,7 @@ class TSvgTest extends TestCase
 			. '<title id="icon_title">Icon</title><defs><linearGradient id="icon_g"/></defs><circle class="s" r="2"/></svg>',
 			$this->render($svg)
 		);
-		$this->assertSame(['TSvg:' . md5('.s{fill:url(#icon_g)}') => '.s{fill:url(#icon_g)}'], $svg->getPage()->getClientScript()->styles);
+		$this->assertSame(['TSvg:' . md5('#icon .s {fill:url(#icon_g)}') => '#icon .s {fill:url(#icon_g)}'], $svg->getPage()->getClientScript()->styles);
 	}
 
 	public function testProcessingCanBeTurnedOff()
@@ -127,6 +128,7 @@ class TSvgTest extends TestCase
 		$svg->setSvg(self::ICON);
 		$svg->setSanitize(false);
 		$svg->setPrefixIds(false);
+		$svg->setScopeStyles(false);
 		$svg->setHoistStyles(false);
 		$svg->onPreRender(null);
 		$output = $this->render($svg);

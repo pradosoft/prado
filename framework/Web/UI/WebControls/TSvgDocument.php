@@ -23,6 +23,7 @@ use Prado\Exceptions\TInvalidDataValueException;
  * - {@see sanitize()} removes script and external resources from untrusted SVG.
  * - {@see prefixIds()} makes the IDs unique on the page and rewrites the
  *   references to them.
+ * - {@see scopeStyles()} limits the CSS of the `<style>` elements to the graphic.
  * - {@see extractStyles()} removes the `<style>` elements and returns their CSS.
  * The markup is parsed as XML without network access. A document that declares
  * entities is refused, so entity expansion cannot amplify it; a DOCTYPE without
@@ -273,6 +274,107 @@ class TSvgDocument
 			}
 		}
 		return $map;
+	}
+
+	/**
+	 * Limits the CSS of the `<style>` elements to the graphic. CSS in an inline SVG
+	 * applies to the whole page, so a rule such as `.shape { fill: url(#g) }` in two
+	 * SVGs reaches both, and the last one wins. Each selector gains `$scope` as an
+	 * ancestor; a leading `svg` or `:root` becomes `$scope` itself. Rules in `@media`,
+	 * `@supports`, `@container`, and `@layer` are scoped; `@keyframes`, `@font-face`,
+	 * and other at-rules are not. Comments are removed.
+	 * @param string $scope the selector of the graphic, such as `#icon`.
+	 */
+	public function scopeStyles(string $scope): void
+	{
+		foreach ($this->elements() as $element) {
+			if ($element->localName === 'style') {
+				$element->textContent = static::scopeCss($element->textContent, $scope);
+			}
+		}
+	}
+
+	/**
+	 * Prefixes each selector of the CSS with a scope; see {@see scopeStyles()}.
+	 * @param string $css the CSS.
+	 * @param string $scope the selector of the graphic.
+	 * @return string the scoped CSS.
+	 */
+	public static function scopeCss(string $css, string $scope): string
+	{
+		$css = preg_replace('#/\*.*?\*/#s', '', $css);
+		$out = '';
+		$length = strlen($css);
+		$i = 0;
+		while ($i < $length) {
+			if (($brace = strpos($css, '{', $i)) === false) {
+				$out .= substr($css, $i);
+				break;
+			}
+			$depth = 1;
+			for ($j = $brace + 1; $j < $length && $depth > 0; $j++) {
+				if ($css[$j] === '{') {
+					$depth++;
+				} elseif ($css[$j] === '}') {
+					$depth--;
+				}
+			}
+			$prelude = substr($css, $i, $brace - $i);
+			$body = substr($css, $brace + 1, max(0, $j - $brace - 2));
+			if (($semicolon = strrpos($prelude, ';')) !== false) {
+				$out .= substr($prelude, 0, $semicolon + 1);
+				$prelude = substr($prelude, $semicolon + 1);
+			}
+			$selector = trim($prelude);
+			if (str_starts_with($selector, '@')) {
+				$nested = (bool) preg_match('/^@(media|supports|container|layer)\b/i', $selector);
+				$out .= $prelude . '{' . ($nested ? static::scopeCss($body, $scope) : $body) . '}';
+			} else {
+				$selectors = array_map(fn ($s) => static::scopeSelector($s, $scope), static::splitSelectors($selector));
+				$out .= ($out === '' || ctype_space(substr($out, -1)) ? '' : ' ') . implode(', ', $selectors) . ' {' . $body . '}';
+			}
+			$i = $j;
+		}
+		return $out;
+	}
+
+	/**
+	 * @param string $selector one selector.
+	 * @param string $scope the selector of the graphic.
+	 * @return string the selector within the scope.
+	 */
+	protected static function scopeSelector(string $selector, string $scope): string
+	{
+		if (preg_match('/^(svg|:root)(?![\w-])/i', $selector, $m)) {
+			return $scope . substr($selector, strlen($m[1]));
+		}
+		return $scope . ' ' . $selector;
+	}
+
+	/**
+	 * Splits a selector list at its top-level commas, so `:is(a, b)` stays whole.
+	 * @param string $list the selector list.
+	 * @return string[] the selectors.
+	 */
+	protected static function splitSelectors(string $list): array
+	{
+		$selectors = [];
+		$depth = 0;
+		$start = 0;
+		$length = strlen($list);
+		for ($i = 0; $i < $length; $i++) {
+			$c = $list[$i];
+			if ($c === '(' || $c === '[') {
+				$depth++;
+			} elseif ($c === ')' || $c === ']') {
+				$depth--;
+			} elseif ($c === ',' && $depth === 0) {
+				$selectors[] = trim(substr($list, $start, $i - $start));
+				$start = $i + 1;
+			}
+		}
+		$selectors[] = trim(substr($list, $start));
+		return array_values(array_filter($selectors, fn ($s) => $s !== ''));
 	}
 
 	/**
