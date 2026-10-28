@@ -58,6 +58,7 @@ through `light-dark()` and the `Canvas` system color. See
 | `activefileupload` | `activefileupload.js` | AJAX file upload with progress |
 | `keyboard` | `controls/keyboard.js` | Virtual on-screen keyboard |
 | `slider` | `controls/slider.js` | Range slider |
+| `canvas` | `controls/canvas.js` | TCanvas `ClientSide.OnDraw`: draws on load, after a callback, and on resize; matches the device pixel ratio |
 | `accordion` | `controls/accordion.js` | Expand/collapse panels |
 | `tabpanel` | `controls/tabpanel.js` | Tabbed interface |
 | `proofofwork` | `controls/proofofwork-solver.js`, `controls/proofofwork.js` | TProofOfWork client; the solver file is also its Web Worker script |

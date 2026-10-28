@@ -64,6 +64,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 | `TPanel` | `<div>` or `<span>` | `DefaultButton`, `GroupingText`, `Encode` (4.4.0), `Direction` (LTR/RTL) |
 | `TPlaceHolder` | (none) | Invisible container for dynamic child controls |
 | `TBulletedList` | `<ul>` / `<ol>` | `BulletStyle`, `DisplayMode` (Text/HyperLink/LinkButton) |
+| [`TMenuList`](TMenuList.md) | `<menu>` | `TBulletedList` items as a toolbar of commands; `list` role, not an ARIA `menu` (@since 4.4.0) |
 | `TTable` | `<table>` | `Rows` collection; `TTableRow` → `TTableCell` hierarchy |
 | `TImage` | `<img>` | `ImageUrl`, `AlternateText` |
 | `TConditional` | (conditional) | `Condition` PHP expression; renders `TrueTemplate` or `FalseTemplate` |
@@ -137,13 +138,18 @@ All extend [THtmlElement](./THtmlElement.md). Each wraps the named HTML5 element
 | [`TBdo`](TBdo.md) | `bdo` | Text displayed in a forced direction; `Dir` required (@since 4.4.0) |
 | [`TBlockQuote`](TBlockQuote.md) | `blockquote` | Block quotation; `blockquote` role; `Cite` source URL (@since 4.4.0) |
 | [`TCite`](TCite.md) | `cite` | Title of a creative work (@since 4.4.0) |
+| [`TCanvas`](TCanvas.md) | `canvas` | Bitmap for client drawing; `Width`/`Height` bitmap size; `AlternateText` → `role="img"`; children are fallback content; `ClientSide.OnDraw` draws through `controls/canvas.js` (@since 4.4.0) |
 | [`TCode`](TCode.md) | `code` | Fragment of computer code; `code` role (@since 4.4.0) |
 | [`TDataValue`](TDataValue.md) | `data` | Content with a machine-readable `Value` (@since 4.4.0) |
 | [`TDel`](TDel.md) | `del` | Deleted text; `deletion` role; `Cite`, `DateTime` (@since 4.4.0) |
+| [`TDescriptionDetails`](TDescriptionDetails.md) | `dd` | Details of a description list group; `Term` renders its `<dt>`; `definition` role (@since 4.4.0) |
+| [`TDescriptionList`](TDescriptionList.md) | `dl` | Description list of term-details groups (@since 4.4.0) |
+| [`TDescriptionTerm`](TDescriptionTerm.md) | `dt` | Term of a description list group; `term` role (@since 4.4.0) |
 | [`TDfn`](TDfn.md) | `dfn` | Defining instance of a term; marks the first occurrence of `Terms` ([TBaseTerm](TBaseTerm.md), @since 4.4.0) |
 | [`TFootnote`](TFootnote.md) | `sup` | Numbered footnote reference; child controls are the note, rendered in a `TReferenceList`; `Key` joins references (@since 4.4.0) |
 | [`TFooter`](TFooter.md) | `footer` | Footer of nearest sectioning ancestor |
 | [`THeader`](THeader.md) | `header` | Introductory content or navigational links |
+| [`THGroup`](THGroup.md) | `hgroup` | Heading with subtitle; `HeaderText` in `<h1>`–`<h6>`; `group` role (@since 4.4.0) |
 | [`TIns`](TIns.md) | `ins` | Inserted text; `insertion` role; `Cite`, `DateTime` (@since 4.4.0) |
 | [`TKbd`](TKbd.md) | `kbd` | User input: key, key combination, spoken command (@since 4.4.0) |
 | [`TMain`](TMain.md) | `main` | Dominant page content; one per document |
