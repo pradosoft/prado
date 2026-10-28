@@ -70,3 +70,22 @@ test('TTextBoxConstraintTestCase: browser accessibility tree', async ({ page, br
 	expect(props.valuemin).toBe(2);
 	expect(props.valuemax).toBe(10);
 });
+
+/**
+ * TRangeValidator with a Week data type and Step rejects an off-step week on the
+ * client and accepts an on-step week on the server.
+ */
+test('TTextBoxConstraintTestCase: range validator checks week steps', async ({ page }) => {
+	const h = new PradoTestHelper(page, GENERIC_BASE_URL);
+	await h.url(PAGE_URL);
+
+	await page.locator(`#${BASE}quantity`).fill('4');
+	await page.locator(`#${BASE}sprint`).fill('2026-W04');
+	await page.locator(`#${BASE}save`).click();
+	await expect(page.locator(`#${BASE}sprintRange`)).toBeVisible();
+	await expect(page.locator(`#${BASE}status`)).toHaveText('none');
+
+	await page.locator(`#${BASE}sprint`).fill('2026-W05');
+	await Promise.all([page.waitForNavigation(), page.locator(`#${BASE}save`).click()]);
+	await expect(page.locator(`#${BASE}status`)).toHaveText('saved 2026-W05');
+});

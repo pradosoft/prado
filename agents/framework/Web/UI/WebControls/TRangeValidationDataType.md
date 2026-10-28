@@ -13,6 +13,7 @@ TRangeValidationDataType defines the enumerable type for the possible data types
 ## Key Properties/Methods
 
 - `StringLength` - Check for string length
+- `Time`, `Month`, `Week`, `DateTimeLocal` - HTML input values: `HH:mm[:ss[.sss]]`, `yyyy-MM`, `yyyy-Www`, `yyyy-MM-ddTHH:mm[:ss[.sss]]` (4.4.0)
 - Inherits from TValidationDataType: `Integer`, `Float`, `Date`, `String`
 
 ## See Also

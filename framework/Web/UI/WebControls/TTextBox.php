@@ -49,8 +49,10 @@ use Prado\Exceptions\TConfigurationException;
  * | {@see setRequired Required} | `required` | every mode except Color and Range |
  * The browser checks the constraints when a submit button posts the form, and a
  * script postback skips them. The server checks none of them; validators do:
- * {@see TRequiredFieldValidator} for Required, {@see TRangeValidator} for Min and
- * Max, and {@see TRegularExpressionValidator} for Pattern.
+ * {@see TRequiredFieldValidator} for Required, {@see TRangeValidator} with `Step`
+ * for Min, Max, and Step, and {@see TRegularExpressionValidator} for Pattern.
+ * TRangeValidator's Time, Month, Week, and DateTimeLocal data types read the values
+ * of those text modes.
  * Accessibility: browsers expose Required as a required field. A Placeholder is
  * not a label; the text box keeps its {@see TLabel}.
  * To suggest predefined values, set the {@see setSuggestionList SuggestionList} property

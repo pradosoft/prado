@@ -9,4 +9,10 @@
 
 	<com:TLabel ForControl="meeting" Text="Meeting" />
 	<com:TTextBox ID="meeting" TextMode="Time" Min="09:00" Max="17:00" Step="1800" EnableClientScript="false" />
+
+	<com:TLabel ForControl="sprint" Text="Sprint start" />
+	<com:TTextBox ID="sprint" TextMode="Week" EnableClientScript="false" />
+	<com:TButton ID="save" Text="Save" OnClick="save" />
+	<div><com:TRangeValidator ID="sprintRange" ControlToValidate="sprint" DataType="Week" MinValue="2026-W01" MaxValue="2026-W52" Step="2" ErrorMessage="Pick an odd week of 2026." Display="Dynamic" /></div>
+	<div>Status: <com:TLabel ID="status" Text="none" /></div>
 </com:TContent>

@@ -269,6 +269,81 @@ describe('TRangeValidator.evaluateIsValid', () => {
 
 // ─── TRegularExpressionValidator.evaluateIsValid ──────────────────────────────
 
+// ─── TRangeValidator HTML data types and Step ────────────────────────────────
+
+describe('TRangeValidator HTML data types and Step', () => {
+	let env;
+
+	beforeEach(() => {
+		env = makeEnv('rsForm', 'rsInput', 'rsSpan');
+	});
+
+	afterEach(() => teardown(env.form, 'rsForm'));
+
+	function check(options, value) {
+		env.input.value = value;
+		const v = new WebUI.TRangeValidator({
+			ID: 'rsSpan', FormID: 'rsForm', ControlToValidate: 'rsInput', ErrorMessage: '*', Enabled: true,
+			...options,
+		});
+		v.validate();
+		return v.isValid;
+	}
+
+	it('checks Integer and Float steps from MinValue', () => {
+		const opts = { DataType: 'Integer', MinValue: '1', MaxValue: '20', Step: '3' };
+		expect(check(opts, '7')).toBe(true);
+		expect(check(opts, '8')).toBe(false);
+		const floats = { DataType: 'Float', MinValue: '0', MaxValue: '1', Step: '0.1' };
+		expect(check(floats, '0.7')).toBe(true);
+		expect(check(floats, '0.35')).toBe(false);
+	});
+
+	it('counts steps from zero without MinValue, and ignores Step any', () => {
+		expect(check({ DataType: 'Integer', Step: '5' }, '-10')).toBe(true);
+		expect(check({ DataType: 'Integer', Step: '5' }, '12')).toBe(false);
+		expect(check({ DataType: 'Integer', Step: 'any' }, '12')).toBe(true);
+	});
+
+	it('validates Time ranges and steps in seconds', () => {
+		const opts = { DataType: 'Time', MinValue: '09:00', MaxValue: '17:00', Step: '1800' };
+		expect(check(opts, '09:30')).toBe(true);
+		expect(check(opts, '17:00:00')).toBe(true);
+		expect(check(opts, '09:15')).toBe(false);
+		expect(check(opts, '17:30')).toBe(false);
+		expect(check(opts, '9:30')).toBe(false);
+	});
+
+	it('validates Month ranges and steps in months', () => {
+		const opts = { DataType: 'Month', MinValue: '2026-01', MaxValue: '2026-12', Step: '3' };
+		expect(check(opts, '2026-04')).toBe(true);
+		expect(check(opts, '2026-05')).toBe(false);
+		expect(check(opts, '2026-13')).toBe(false);
+	});
+
+	it('validates ISO weeks', () => {
+		const opts = { DataType: 'Week', MinValue: '2026-W01', MaxValue: '2026-W53', Step: '2' };
+		expect(check(opts, '2026-W03')).toBe(true);
+		expect(check(opts, '2026-W53')).toBe(true);
+		expect(check(opts, '2026-W04')).toBe(false);
+		expect(check({ DataType: 'Week' }, '2025-W53')).toBe(false);
+		expect(check({ DataType: 'Week' }, '2020-W53')).toBe(true);
+		expect(check({ DataType: 'Week', Step: '2' }, '1970-W03')).toBe(true);
+	});
+
+	it('validates DateTimeLocal ranges and steps in seconds', () => {
+		const opts = { DataType: 'DateTimeLocal', MinValue: '2026-10-01T08:00', MaxValue: '2026-10-31T18:00', Step: '900' };
+		expect(check(opts, '2026-10-15T09:15')).toBe(true);
+		expect(check(opts, '2026-10-15T09:20')).toBe(false);
+		expect(check(opts, '2026-11-01T09:00')).toBe(false);
+		expect(check(opts, '2026-02-30T09:00')).toBe(false);
+	});
+
+	it('fails when MinValue or MaxValue does not have the format', () => {
+		expect(check({ DataType: 'Time', MinValue: 'noon' }, '12:00')).toBe(false);
+	});
+});
+
 describe('TRegularExpressionValidator.evaluateIsValid', () => {
 	let env;
 
