@@ -17,7 +17,8 @@ namespace Prado\Web\UI\WebControls;
  * Accessibility: browsers expose `<sup>` with the `superscript` role. Most screen
  * readers do not announce a superscript, so x<sup>2</sup> reads as "x 2"; text
  * that depends on it says so in words or in a visually hidden span. A footnote
- * reference is a link inside the TSup, whose text names the footnote.
+ * reference is a link inside the TSup, whose text names the footnote;
+ * {@see TFootnote} renders one.
  * The default tag is `sup`. It can be overridden at runtime via the
  * {@see setTagName TagName} property (e.g. from a theme or template), which is
  * provided by the {@see THtmlElement} base class.

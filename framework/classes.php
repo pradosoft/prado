@@ -878,6 +878,8 @@ return [
 'TSuggestionList' => 'Prado\Web\UI\WebControls\TSuggestionList',
 'TSummary' => 'Prado\Web\UI\WebControls\TSummary',
 'TSup' => 'Prado\Web\UI\WebControls\TSup',
+'TSvg' => 'Prado\Web\UI\WebControls\TSvg',
+'TSvgDocument' => 'Prado\Web\UI\WebControls\TSvgDocument',
 'TTable' => 'Prado\Web\UI\WebControls\TTable',
 'TTableCaptionAlign' => 'Prado\Web\UI\WebControls\TTableCaptionAlign',
 'TTableCell' => 'Prado\Web\UI\WebControls\TTableCell',

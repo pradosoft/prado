@@ -6,7 +6,7 @@
 ## Class Info
 **Location:** `framework/Web/UI/WebControls/TFootnote.php`
 **Namespace:** `Prado\Web\UI\WebControls`
-**Extends:** `THtmlElement` (default tag `sup`)
+**Extends:** [TSup](./TSup.md) (default tag `sup`)
 
 ## Overview
 TFootnote is a numbered footnote reference: a superscript link to its note. Its child controls are the note, rendered in a [TReferenceList](./TReferenceList.md) through `renderNote()`; `renderContents()` renders only the link.
@@ -51,6 +51,6 @@ TFootnote is a numbered footnote reference: a superscript link to its note. Its 
 ## See Also
 
 - [TReferenceList](./TReferenceList.md)
-- [THtmlElement](./THtmlElement.md)
+- [TSup](./TSup.md)
 
 **@since 4.4.0**

@@ -773,6 +773,11 @@ progress_max_invalid					= TProgress Max must be greater than 0; {0} given.
 time_invalid_datetime					= TTime DateTime must be a DateTimeInterface, DateInterval, string, or numeric value; {0} given.
 time_invalid_text_format				= TTime TextFormat '{0}' is not a TTimeFormat constant name or ICU datetime pattern.
 
+svgdocument_invalid						= The SVG markup is not well-formed XML.
+svgdocument_entity_invalid				= The SVG markup declares entities, which are not allowed.
+svgdocument_root_invalid				= The root element of the SVG markup is not <svg>.
+svgdocument_file_invalid				= The SVG file '{0}' cannot be read.
+
 bdo_dir_invalid							= {0}.Dir '{1}' is invalid. Allowed values are 'ltr' and 'rtl'.
 footnote_referencelist_missing			= TFootnote '{0}' has no TReferenceList: ReferenceList '{1}' is not a TReferenceList, or the page has none.
 referencelist_headerlevel_invalid		= TReferenceList HeaderLevel must be 1 through 6; {0} given.

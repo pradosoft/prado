@@ -57,6 +57,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 | [`TOutput`](TOutput.md) | `<output>` | `Text` (encoded), `ForControl` (source control IDs); `status` live region (@since 4.4.0) |
 | `TImage` | `<img>` | `ImageUrl`, `AlternateText`, `ImageAlign` |
 | [`TDot`](TDot.md) | `<img>` or inline `<svg>` | SVG status dot; `Color`, `Size`, `Flat`, `PublishStyle`, `AlternateText` names an inline dot (@since 4.4.0) |
+| [`TSvg`](TSvg.md) | `<svg>` | Inline SVG from template markup, `SvgFile`, or `Svg`; `AlternateText`/`Decorative`; `Sanitize`, `PrefixIds`, `ScopeStyles`, `HoistStyles` via [TSvgDocument](TSvgDocument.md) (@since 4.4.0) |
 | `THyperLink` | `<a>` | `NavigateUrl`, `Text`, `ImageUrl`, `Target` |
 | `TLiteral` | raw text | `Text` (not HTML-encoded), `Encode` |
 | `TExpression` | evaluated PHP | Inline expression output (also via `<%= %>` in templates) |
