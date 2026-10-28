@@ -11,8 +11,6 @@
 ## Overview
 TTextTrack represents the HTML `<track>` element: a WebVTT text track of a [TVideo](./TVideo.md) or [TAudio](./TAudio.md). `<track>` is void; child controls do not render. The `.vtt` file is same-origin, or cross-origin with CORS and the media element's `CrossOrigin`.
 
-The default tag is `track`. It can be overridden at runtime via the `TagName` property (inherited from [THtmlElement](./THtmlElement.md)).
-
 ## Template Usage
 
 ```xml
@@ -43,7 +41,7 @@ The default tag is `track`. It can be overridden at runtime via the `TagName` pr
 
 ## See Also
 
-- [THtmlElement](./THtmlElement.md)
+- [TWebControl](./TWebControl.md)
 - [TVideo](./TVideo.md)
 - [TAudio](./TAudio.md)
 - [TTextTrackKind](./TTextTrackKind.md)

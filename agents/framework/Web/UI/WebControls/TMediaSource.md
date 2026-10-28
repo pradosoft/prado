@@ -11,8 +11,6 @@
 ## Overview
 TMediaSource represents the HTML `<source>` element: one alternative resource of a [TVideo](./TVideo.md), [TAudio](./TAudio.md), or [TPicture](./TPicture.md). The browser uses the first source whose `Type` and `Media` it supports. `<source>` is void; child controls do not render.
 
-The default tag is `source`. It can be overridden at runtime via the `TagName` property (inherited from [THtmlElement](./THtmlElement.md)).
-
 ## Template Usage
 
 ```xml
@@ -48,7 +46,7 @@ The default tag is `source`. It can be overridden at runtime via the `TagName` p
 
 ## See Also
 
-- [THtmlElement](./THtmlElement.md)
+- [TWebControl](./TWebControl.md)
 - [TVideo](./TVideo.md)
 - [TAudio](./TAudio.md)
 - [TPicture](./TPicture.md)
