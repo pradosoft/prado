@@ -37,6 +37,7 @@ The default tag is `blockquote`. It can be overridden at runtime via the `TagNam
 ## Tests
 
 - `tests/unit/Web/UI/WebControls/TBlockQuoteTest.php`
+- `tests/playwright/web/TTextTagsTestCase.spec.js` with `tests/harness/web/protected/pages/TextTagsTest.page`: element, role (Chromium accessibility tree), attributes, and browser styles
 
 ## See Also
 

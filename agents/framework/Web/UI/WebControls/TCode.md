@@ -27,6 +27,7 @@ Call <com:TCode>render()</com:TCode> after the page loads.
 ## Tests
 
 - `tests/unit/Web/UI/WebControls/TCodeTest.php`
+- `tests/playwright/web/TTextTagsTestCase.spec.js` with `tests/harness/web/protected/pages/TextTagsTest.page`: element, role (Chromium accessibility tree), attributes, and browser styles
 
 ## See Also
 

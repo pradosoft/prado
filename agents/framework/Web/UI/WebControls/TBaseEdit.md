@@ -37,5 +37,6 @@ TBaseEdit is the base class of the HTML edit elements, [TIns](./TIns.md) and [TD
 ## Tests
 
 - `tests/unit/Web/UI/WebControls/TInsTest.php`, `TDelTest.php`
+- `tests/playwright/web/TTextTagsTestCase.spec.js` with `tests/harness/web/protected/pages/TextTagsTest.page`: element, role (Chromium accessibility tree), attributes, and browser styles
 
 **@since 4.4.0**
