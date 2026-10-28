@@ -62,6 +62,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 | `TPanel` | `<div>` or `<span>` | `DefaultButton`, `GroupingText`, `Encode` (4.4.0), `Direction` (LTR/RTL) |
 | `TPlaceHolder` | (none) | Invisible container for dynamic child controls |
 | `TBulletedList` | `<ul>` / `<ol>` | `BulletStyle`, `DisplayMode` (Text/HyperLink/LinkButton) |
+| [`TMenuList`](TMenuList.md) | `<menu>` | `TBulletedList` items as a toolbar of commands; `list` role, not an ARIA `menu` (@since 4.4.0) |
 | `TTable` | `<table>` | `Rows` collection; `TTableRow` → `TTableCell` hierarchy |
 | `TImage` | `<img>` | `ImageUrl`, `AlternateText` |
 | `TConditional` | (conditional) | `Condition` PHP expression; renders `TrueTemplate` or `FalseTemplate` |

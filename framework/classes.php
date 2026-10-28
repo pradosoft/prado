@@ -806,6 +806,7 @@ return [
 'TMain' => 'Prado\Web\UI\WebControls\TMain',
 'TMark' => 'Prado\Web\UI\WebControls\TMark',
 'TMarkdown' => 'Prado\Web\UI\WebControls\TMarkdown',
+'TMenuList' => 'Prado\Web\UI\WebControls\TMenuList',
 'TMetaTag' => 'Prado\Web\UI\WebControls\TMetaTag',
 'TMetaTagCollection' => 'Prado\Web\UI\WebControls\TMetaTagCollection',
 'TMeter' => 'Prado\Web\UI\WebControls\TMeter',
