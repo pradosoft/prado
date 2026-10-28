@@ -11,6 +11,7 @@ use Prado\Web\UI\WebControls\THtmlElement;
 use Prado\Web\UI\WebControls\TFootnote;
 use Prado\Web\UI\WebControls\TPanel;
 use Prado\Web\UI\WebControls\TReferenceList;
+use Prado\Web\UI\WebControls\TSup;
 
 class TFootnoteTest extends TestCase
 {
@@ -46,6 +47,7 @@ class TFootnoteTest extends TestCase
 	public function testDefaults()
 	{
 		$footnote = new TFootnote();
+		$this->assertInstanceOf(TSup::class, $footnote);
 		$this->assertInstanceOf(THtmlElement::class, $footnote);
 		$this->assertSame('sup', $footnote->getTagName());
 		$this->assertSame('', $footnote->getReferenceList());
