@@ -12,7 +12,7 @@ TValidationSummary displays a summary of validation errors on a Web page. It col
 
 ## Key Properties/Methods
 
-- `getDisplay()` / `setDisplay(TValidationSummaryDisplayStyle)` - Display style (Fixed, Dynamic, None)
+- `getDisplay()` / `setDisplay(TValidationSummaryDisplayStyle)` - Display style (Fixed, Dynamic, None). A Dynamic summary collapses when its validators pass; a change re-validation during a mouse press waits for the release, so a button below it still receives its click.
 - `getHeaderText()` / `setHeaderText(string)` - Header text
 - `getDisplayMode()` / `setDisplayMode(TValidationSummaryDisplayMode)` - Message format
 - `getShowMessageBox()` / `setShowMessageBox(bool)` - Show in message box

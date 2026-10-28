@@ -73,6 +73,7 @@ Note: `ForControl` (inherited from TLabel) is **not supported** and throws `TNot
 - **Disabled target control** — If the target `TWebControl` has `Enabled=false`, the validator skips evaluation and reports valid.
 - **`ControlCssClass`** — Applied to the target control's `CssClass` when invalid; stripped on success. Only works when the target is a `TWebControl`.
 - **`TValidationSummary`** — Reads `ErrorMessage` (not `Text`) from each validator in the same `ValidationGroup`.
+- **Client re-validation on change** — After its first validation, a client validator re-validates when the control's `change` event fires and updates its summary. A text box fires `change` on blur, which a mouse press on a button causes. While the primary mouse button is held, `Prado.Validation.afterPress()` delays the re-validation until after the release and click. Hiding a `Dynamic` message or summary then moves the button only after its click lands.
 - **Subclassing** — Must implement both `evaluateIsValid()` and `getClientClassName()`. Call `parent::getClientScriptOptions()` and merge in subclass-specific keys.
 - **Constructor** — Sets `ForeColor` to `'red'` by default.
 - **Client-side special controls** — `TCheckBox`, `TDatePicker`, `THtmlArea`, `THtmlArea5`, `TReCaptcha2`, `TCheckBoxList`, `TListBox`, `TRadioButton` receive special handling in `validation3.js`. New controls needing custom JS extraction must be added to both `$_clientClass` and the JS file.

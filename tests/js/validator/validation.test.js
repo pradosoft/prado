@@ -420,6 +420,147 @@ describe('validator ARIA wiring', () => {
 	});
 });
 
+// ─── change re-validation during a mouse press ──────────────────────────────
+
+describe('change re-validation during a mouse press', () => {
+	let form, input, span, button;
+
+	beforeEach(() => {
+		vi.useFakeTimers();
+		form  = document.createElement('form');
+		form.id = 'pressForm';
+
+		input = document.createElement('input');
+		input.id   = 'pressInput';
+		input.type = 'text';
+
+		span  = document.createElement('span');
+		span.id = 'pressValidator';
+
+		button = document.createElement('input');
+		button.type = 'submit';
+
+		form.appendChild(input);
+		form.appendChild(span);
+		form.appendChild(button);
+		document.body.appendChild(form);
+
+		new ValidationManager({ FormID: 'pressForm' });
+	});
+
+	afterEach(() => {
+		document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+		vi.runAllTimers();
+		vi.useRealTimers();
+		document.body.removeChild(form);
+		delete Validation.managers['pressForm'];
+	});
+
+	/**
+	 * Builds a required field validator, fails it, then fixes the value.
+	 */
+	function failThenFix(display) {
+		const v = new WebUI.TRequiredFieldValidator({
+			ID:               'pressValidator',
+			FormID:           'pressForm',
+			ControlToValidate:'pressInput',
+			ErrorMessage:     '*',
+			Enabled:          true,
+			Display:          display,
+		});
+		input.value = '';
+		v.validate();
+		expect(v.isValid).toBe(false);
+		input.value = 'fixed';
+		return v;
+	}
+
+	function press(target, buttonIndex = 0) {
+		target.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: buttonIndex }));
+	}
+
+	function change() {
+		input.dispatchEvent(new Event('change', { bubbles: true }));
+	}
+
+	it('afterPress runs the callback at once without a press', () => {
+		const callback = vi.fn();
+		Validation.afterPress(callback);
+		expect(callback).toHaveBeenCalledTimes(1);
+	});
+
+	it('re-validates at once on change without a press', () => {
+		const v = failThenFix('Dynamic');
+		change();
+		expect(v.isValid).toBe(true);
+		expect(span.style.display).toBe('none');
+	});
+
+	it('keeps a Dynamic message in place until the press ends', () => {
+		const v = failThenFix('Dynamic');
+		press(button);
+		change();
+		expect(v.isValid).toBe(false);
+		expect(span.style.display).toBe('');
+
+		button.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+		// The click dispatches before the waiting re-validation runs
+		expect(span.style.display).toBe('');
+		vi.runAllTimers();
+		expect(v.isValid).toBe(true);
+		expect(span.style.display).toBe('none');
+		expect(input.getAttribute('aria-invalid')).toBe('false');
+	});
+
+	it('keeps a Fixed message visible until the press ends', () => {
+		failThenFix('Fixed');
+		press(button);
+		change();
+		expect(span.style.visibility).toBe('visible');
+		document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+		vi.runAllTimers();
+		expect(span.style.visibility).toBe('hidden');
+	});
+
+	it('updates the validation summary after the press ends', () => {
+		const summary = document.createElement('div');
+		summary.id = 'pressSummary';
+		form.appendChild(summary);
+		new WebUI.TValidationSummary({ ID: 'pressSummary', FormID: 'pressForm', Display: 'Dynamic', ShowSummary: true });
+		failThenFix('None');
+		Validation.managers['pressForm'].updateSummary();
+		expect(summary.style.display).toBe('');
+
+		press(button);
+		change();
+		expect(summary.style.display).toBe('');
+		document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+		vi.runAllTimers();
+		expect(summary.style.display).toBe('none');
+	});
+
+	it('does not wait for a secondary mouse button', () => {
+		const v = failThenFix('Dynamic');
+		press(button, 2);
+		change();
+		expect(v.isValid).toBe(true);
+	});
+
+	it.each([
+		['a drag end', () => document.dispatchEvent(new Event('dragend', { bubbles: true }))],
+		['the window losing focus', () => window.dispatchEvent(new Event('blur'))],
+	])('ends the press on %s', (_name, release) => {
+		const v = failThenFix('Dynamic');
+		press(button);
+		change();
+		expect(v.isValid).toBe(false);
+		release();
+		expect(Validation.pressing).toBe(false);
+		vi.runAllTimers();
+		expect(v.isValid).toBe(true);
+	});
+});
+
 // ─── TDataTypeValidator — pure data-type validation ──────────────────────────
 
 describe('TDataTypeValidator', () => {
