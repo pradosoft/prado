@@ -27,7 +27,7 @@ class MyClock extends \Prado\TComponent implements \Prado\Util\Clock\IClock
 | `microtime(): float` | Fast `\microtime(true)` (real clock; not built from `now()`). |
 | `timezone(): \DateTimeZone` | The system default zone from `systemTimezone()` (fast; not built from `now()`). |
 | `systemTimezone(): \DateTimeZone` | Protected. The system default zone as a cached `\DateTimeZone`, rebuilt only when `date_default_timezone_get()` reports a new name; no allocation on repeated calls. |
-| `sleep(float\|int $seconds): void` | Blocks with `\usleep()`; a non-positive value returns immediately. |
+| `sleep(float\|int $seconds): void` | Pauses through [`TAsync::sleep()`](../../IO/Async/TAsync.md), so a fiber yields to the event loop; a non-positive value returns immediately. |
 
 ## Used By
 [`TNativeClock`](TNativeClock.md) (the trait as a component, overriding nothing; [`TTimezoneClock`](TTimezoneClock.md)/[`TUTCClock`](TUTCClock.md) override `now()` and `timezone()` together for a fixed zone), the standalone [`TMockClock`](TMockClock.md) (overrides the accessors to follow its pin), and [`TCronModule`](../Cron/TCronModule.md) (a module that is itself a clock). `TCronModule` uses the trait's accessors as-is — its `now()` is system time in the system zone, so they stay consistent.

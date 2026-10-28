@@ -5,7 +5,7 @@
 
 ## Purpose
 
-PRADO's event loop API. A loop schedules callbacks on deferred work, timers, stream readiness, and signals, and a fiber waits on it through a `Revolt\EventLoop\Suspension`. The `revolt/event-loop` package (required, MIT, no dependencies) runs the default loop; `TSocketReactor` is the dependency-free fallback. Futures, `TAsync`, async I/O, cron concurrency, and an async HTTP client follow on this contract.
+PRADO's async API. A loop schedules callbacks on deferred work, timers, stream readiness, and signals, and a fiber waits on it through a `Revolt\EventLoop\Suspension`. The `revolt/event-loop` package (required, MIT, no dependencies) runs the default loop; `TSocketReactor` is the dependency-free fallback. On the loop sit the primitives: `TFuture`/`TDeferred`, `TCancellationToken`, `TFiberContext`, and the `TAsync` facade. Async I/O, cron concurrency, and an async HTTP client follow on this contract.
 
 ## Interfaces
 
@@ -16,6 +16,11 @@ PRADO's event loop API. A loop schedules callbacks on deferred work, timers, str
 
 - **[`TRevoltEventLoop`](./TRevoltEventLoop.md)** — The default `IEventLoop`, a thin adapter over the process-wide `Revolt\EventLoop` driver. Discards callback return values, unwraps `UncaughtThrowable` from `run()`, maps Revolt's errors to PRADO exceptions. `installFreshDriver()` for forked children.
 - **[`TLoopSuspension`](./TLoopSuspension.md)** — The `Suspension` of an `ITickableEventLoop`: a worker fiber suspends to the loop and is re-entered from a deferred callback; the main fiber ticks the loop until resumed.
+- **[`TFuture`](./TFuture.md)** — A value that arrives later; `await()` suspends on the loop, `map`/`catch`/`finally` derive futures, `onComplete` registers callbacks. Created by `TDeferred`, `TAsync::run()`, the factories, or an executor.
+- **[`TDeferred`](./TDeferred.md)** — The producer side: `getFuture()`, `resolve()`, `reject()`, once.
+- **[`TCancellationToken`](./TCancellationToken.md)** — Cooperative cancellation with a loop `Timeout` and linked parents; `cancel()`, `onCancel`, `subscribe()`, `throwIfCancelled()`; the reason is a `TCancelledException`.
+- **[`TFiberContext`](./TFiberContext.md)** — Per-fiber key/value state in a `WeakMap`; `TAsync::run()` copies the parent's context into the child.
+- **[`TAsync`](./TAsync.md)** — Static facade: `getLoop()`/`setLoop()`, `run()`, `await()`, `all()`, `any()`, `timeout()`, `sleep()`. Holds the sleep policy table.
 
 ## The wait pattern
 
@@ -46,4 +51,5 @@ The conformance suite `tests/unit/IO/Async/EventLoopConformanceTestCase.php` run
 - Revolt callbacks must return null; `TRevoltEventLoop` wraps every callback so a non-null return is discarded.
 - `IEventLoop::run()` returns when no enabled callback remains. A disabled callback does not keep it alive.
 - No fiber switch inside `__destruct` on the 8.2 floor.
-- `\usleep`/`\sleep` policy: PR 2 (`async-primitives`) routes every pause through `TAsync::sleep()`; this PR does not touch the sleep sites.
+- Sleep policy: `\usleep()` lives only in `TAsync::sleep()`; `IClock::sleep()` and the framework's other pauses delegate to it (table in [`TAsync`](./TAsync.md)).
+- No `await()` or main-fiber `suspend()` inside `__destruct` on the 8.2 floor; `TAsync::sleep()` probes for it and blocks instead.

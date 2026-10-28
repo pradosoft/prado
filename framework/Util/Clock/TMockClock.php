@@ -10,6 +10,7 @@
 
 namespace Prado\Util\Clock;
 
+use Prado\IO\Async\TAsync;
 use Prado\TComponent;
 
 /**
@@ -186,16 +187,15 @@ class TMockClock extends TComponent implements IClock
 
 	/**
 	 * Advances the pinned instant by the given seconds instead of blocking, so time-dependent code under a
-	 * frozen clock runs without real delay. When the clock is not pinned this blocks with {@see \usleep()}.
+	 * frozen clock runs without real delay. When the clock is not pinned this pauses through
+	 * {@see \Prado\IO\Async\TAsync::sleep()}, as {@see \Prado\Util\Clock\TClockTrait::sleep()} does.
 	 * Microsecond fractions are honored and the displayed timezone is preserved; a negative value rewinds.
 	 * @param float|int $seconds the number of seconds to advance the pinned instant, or to pause
 	 */
 	public function sleep(float|int $seconds): void
 	{
 		if ($this->_now === null) {
-			if ($seconds > 0) {
-				\usleep((int) \round($seconds * 1000000));
-			}
+			TAsync::sleep($seconds);
 			return;
 		}
 		$this->_now = $this->fromMicrotime((float) $this->_now->format('U.u') + $seconds);

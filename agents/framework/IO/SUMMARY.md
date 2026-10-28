@@ -1,6 +1,6 @@
 # IO/SUMMARY.md
 
-Input/output utilities: text writer abstractions, archive extraction, stream notifications, sockets, and the `Prado\IO\Async` event loop API (`IEventLoop`, `ITickableEventLoop`, `TRevoltEventLoop` over `revolt/event-loop`, `TLoopSuspension`; `TSocketReactor` is the dependency-free loop).
+Input/output utilities: text writer abstractions, archive extraction, stream notifications, sockets, and the `Prado\IO\Async` async API (`IEventLoop`, `ITickableEventLoop`, `TRevoltEventLoop` over `revolt/event-loop`, `TLoopSuspension`; `TSocketReactor` is the dependency-free loop) with its primitives `TFuture`, `TDeferred`, `TCancellationToken`, `TFiberContext`, and the `TAsync` facade whose `sleep()` is the framework's one `\usleep()` site.
 
 ## Classes
 

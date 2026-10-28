@@ -32,6 +32,7 @@ Exception hierarchy and error display for the Prado framework. Provides English 
 | [`TDbException`](TDbException.md) / [`TDbConnectionException`](TDbConnectionException.md) | Database errors |
 | [`THttpException`](THttpException.md) | HTTP status code errors (404, 500, …) |
 | [`TIOException`](TIOException.md) / [`TSocketException`](TSocketException.md) / [`TNetworkException`](TNetworkException.md) | I/O and network errors |
+| [`TCancelledException`](TCancelledException.md) | A wait cancelled by a `TCancellationToken` or a `TAsync::timeout()` deadline (`async_cancelled`, `async_timeout`) |
 | [`TInvalidDataTypeException`](TInvalidDataTypeException.md) | Wrong data type passed |
 | [`TInvalidDataValueException`](TInvalidDataValueException.md) | Bad value for valid type |
 | [`TInvalidOperationException`](TInvalidOperationException.md) | Operation not allowed in current state |
