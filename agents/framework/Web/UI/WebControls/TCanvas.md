@@ -63,6 +63,7 @@ With `ClientSide.OnDraw` set, the client is JavaScript-capable, and the control 
 
 - `tests/unit/Web/UI/WebControls/TCanvasTest.php`
 - `tests/js/controls/canvas.test.js`
+- `tests/playwright/web/TStructureTagsTestCase.spec.js` with `tests/harness/web/protected/pages/StructureTagsTest.page`: roles (Chromium accessibility tree), menu postback, canvas fallback focus, and canvas drawing on load, resize, callback, and at pixel ratio 2
 
 ## See Also
 

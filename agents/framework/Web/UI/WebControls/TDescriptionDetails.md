@@ -33,6 +33,7 @@ The default tag is `dd`. It can be overridden at runtime via the `TagName` prope
 ## Tests
 
 - `tests/unit/Web/UI/WebControls/TDescriptionDetailsTest.php`
+- `tests/playwright/web/TStructureTagsTestCase.spec.js` with `tests/harness/web/protected/pages/StructureTagsTest.page`: roles (Chromium accessibility tree), menu postback, canvas fallback focus, and canvas drawing on load, resize, callback, and at pixel ratio 2
 
 ## See Also
 
