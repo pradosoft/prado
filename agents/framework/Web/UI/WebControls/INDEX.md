@@ -126,6 +126,7 @@ All extend [THtmlElement](./THtmlElement.md). Each wraps the named HTML5 element
 | Class | Default Tag | HTML5 Semantic Meaning |
 |---|---|---|
 | [`TAbbr`](TAbbr.md) | `abbr` | Abbreviation; `Title` is the expansion; marks the abbreviation's other occurrences ([TBaseTerm](TBaseTerm.md), @since 4.4.0) |
+| [`TAddress`](TAddress.md) | `address` | Contact information for the article or page; `group` role (@since 4.4.0) |
 | [`TArticle`](TArticle.md) | `article` | Self-contained composition (blog post, news article) |
 | [`TAside`](TAside.md) | `aside` | Tangentially related content; sidebar |
 | [`TBlockQuote`](TBlockQuote.md) | `blockquote` | Block quotation; `blockquote` role; `Cite` source URL (@since 4.4.0) |

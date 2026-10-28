@@ -646,6 +646,7 @@ return [
 'TAccordion' => 'Prado\Web\UI\WebControls\TAccordion',
 'TAccordionView' => 'Prado\Web\UI\WebControls\TAccordionView',
 'TAccordionViewCollection' => 'Prado\Web\UI\WebControls\TAccordionViewCollection',
+'TAddress' => 'Prado\Web\UI\WebControls\TAddress',
 'TArticle' => 'Prado\Web\UI\WebControls\TArticle',
 'TAside' => 'Prado\Web\UI\WebControls\TAside',
 'TBaseDataList' => 'Prado\Web\UI\WebControls\TBaseDataList',
