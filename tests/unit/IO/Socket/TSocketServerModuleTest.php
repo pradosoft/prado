@@ -3,6 +3,8 @@
 namespace Prado\Test\Unit\IO\Socket;
 
 use Prado\Exceptions\TConfigurationException;
+use Prado\IO\Async\IEventLoop;
+use Prado\IO\Async\TRevoltEventLoop;
 use Prado\IO\Socket\TSocketReactor;
 use Prado\IO\Socket\TSocketServer;
 use Prado\IO\Socket\TSocketServerModule;
@@ -22,14 +24,14 @@ class TestableSocketServerModule extends TSocketServerModule
 		return $this->createServer();
 	}
 
-	public function publicAcceptClient(TSocketServer $server, TSocketReactor $reactor): void
+	public function publicAcceptClient(TSocketServer $server, IEventLoop $loop): void
 	{
-		$this->acceptClient($server, $reactor);
+		$this->acceptClient($server, $loop);
 	}
 
-	public function publicDispatchClient(TSocketStream $connection, TSocketReactor $reactor): void
+	public function publicDispatchClient(TSocketStream $connection, IEventLoop $loop): void
 	{
-		$this->dispatchClient($connection, $reactor);
+		$this->dispatchClient($connection, $loop);
 	}
 }
 
@@ -99,14 +101,37 @@ class TSocketServerModuleTest extends \PHPUnit\Framework\TestCase
 		$server->close();
 	}
 
+	/**
+	 * Binds a listener, connects a client, and accepts it through the module so the module watches
+	 * the connection on the loop.
+	 * @param TestableSocketServerModule $module The module under test.
+	 * @param IEventLoop $loop The loop the module watches the connection on.
+	 * @return array{0: TSocketServer, 1: TSocketStream, 2: TSocketStream} The server, the client, and the accepted connection.
+	 */
+	private function acceptOne(TestableSocketServerModule $module, IEventLoop $loop): array
+	{
+		$server = TSocketServer::bind('tcp://127.0.0.1:0');
+		$accepted = null;
+		$module->attachEventHandler('onClientConnect', function ($sender, $param) use (&$accepted) {
+			$accepted = $param;
+		});
+		$client = TSocketStream::connect('tcp://127.0.0.1:' . $server->getPort(), 1.0);
+		$deadline = microtime(true) + 2.0;
+		while ($accepted === null && microtime(true) < $deadline) {
+			$module->publicAcceptClient($server, $loop);
+			if ($accepted === null) {
+				usleep(10000);
+			}
+		}
+		self::assertInstanceOf(TSocketStream::class, $accepted, 'The module accepts the connection.');
+		return [$server, $client, $accepted];
+	}
+
 	public function testDispatchRaisesClientDataWhenReadable()
 	{
-		[$conn, $peer] = TSocketStream::pair();
-		$conn->setBlocking(false);
-		$reactor = new TSocketReactor();
-		$reactor->register($conn, onReadable: fn () => null);
-
+		$loop = new TSocketReactor();
 		$module = new TestableSocketServerModule();
+		[$server, $client, $conn] = $this->acceptOne($module, $loop);
 		$data = null;
 		$disconnected = false;
 		$module->attachEventHandler('onClientData', function ($sender, $param) use (&$data) {
@@ -116,23 +141,22 @@ class TSocketServerModuleTest extends \PHPUnit\Framework\TestCase
 			$disconnected = true;
 		});
 
-		$peer->write('hi');
-		$module->publicDispatchClient($conn, $reactor);
+		$client->write('hi');
+		$loop->tick(1.0);   // the loop dispatches the readable connection through dispatchClient()
 		self::assertSame($conn, $data, 'A readable connection with data raises onClientData.');
 		self::assertFalse($disconnected, 'Data does not raise onClientDisconnect.');
+		self::assertCount(1, $loop->getIdentifiers(), 'The connection stays watched after data.');
 
 		$conn->close();
-		$peer->close();
+		$client->close();
+		$server->close();
 	}
 
 	public function testDispatchDetectsHalfCloseThroughPeek()
 	{
-		[$conn, $peer] = TSocketStream::pair();
-		$conn->setBlocking(false);
-		$reactor = new TSocketReactor();
-		$reactor->register($conn, onReadable: fn () => null);
-
+		$loop = new TSocketReactor();
 		$module = new TestableSocketServerModule();
+		[$server, $client, $conn] = $this->acceptOne($module, $loop);
 		$dataRaised = false;
 		$closed = null;
 		$module->attachEventHandler('onClientData', function () use (&$dataRaised) {
@@ -142,13 +166,49 @@ class TSocketServerModuleTest extends \PHPUnit\Framework\TestCase
 			$closed = $param;
 		});
 
-		$peer->close();   // the connection is now readable at end of stream
-		$module->publicDispatchClient($conn, $reactor);
+		$client->close();   // the connection is now readable at end of stream
+		$module->publicDispatchClient($conn, $loop);
 
 		self::assertSame($conn, $closed, 'A readable connection at end of stream raises onClientDisconnect.');
 		self::assertFalse($dataRaised, 'A half-close does not raise onClientData.');
 		self::assertFalse($conn->isOpen(), 'The disconnected connection is closed.');
-		self::assertFalse($reactor->isRegistered($conn), 'The disconnected connection is unregistered.');
+		self::assertSame([], $loop->getIdentifiers(), 'The disconnected connection is no longer watched.');
+		$server->close();
+	}
+
+	public function testDispatchStopsWatchingAConnectionClosedByAHandler()
+	{
+		$loop = new TSocketReactor();
+		$module = new TestableSocketServerModule();
+		[$server, $client, $conn] = $this->acceptOne($module, $loop);
+		$module->attachEventHandler('onClientData', function ($sender, $param) {
+			$param->close();   // the handler closes the connection itself
+		});
+
+		$client->write('bye');
+		$module->publicDispatchClient($conn, $loop);
+
+		self::assertFalse($conn->isOpen());
+		self::assertSame([], $loop->getIdentifiers(), 'A connection closed by a handler is no longer watched.');
+		$client->close();
+		$server->close();
+	}
+
+	public function testEventLoopDefaultsToTheRevoltLoopAndAcceptsALoop()
+	{
+		$module = new TSocketServerModule();
+		self::assertSame(TRevoltEventLoop::class, $module->getEventLoopClass());
+		self::assertInstanceOf(TRevoltEventLoop::class, $module->getEventLoop(), 'The default loop is created from EventLoopClass.');
+
+		$reactor = new TSocketReactor();
+		$module->setEventLoop($reactor);
+		self::assertSame($reactor, $module->getEventLoop(), 'An injected loop is used as is.');
+
+		$module->setEventLoop(null)->setEventLoopClass(TSocketReactor::class);
+		self::assertInstanceOf(TSocketReactor::class, $module->getEventLoop(), 'EventLoopClass selects the default loop.');
+
+		$this->expectException(TConfigurationException::class);
+		$module->setEventLoopClass(TSocketServer::class);
 	}
 
 	public function testConstructorAppliesTheDefaultConstants()
@@ -372,28 +432,16 @@ class TSocketServerModuleTest extends \PHPUnit\Framework\TestCase
 		self::assertNull($module->getServer(), 'A denied serve() binds no server.');
 	}
 
-	public function testAcceptClientRaisesConnectAndRegistersTheConnection()
+	public function testAcceptClientRaisesConnectAndWatchesTheConnection()
 	{
-		$server = TSocketServer::bind('tcp://127.0.0.1:0');
-		$reactor = new TSocketReactor();
+		$loop = new TSocketReactor();
 		$module = new TestableSocketServerModule();
-		$connected = null;
-		$module->attachEventHandler('onClientConnect', function ($sender, $param) use (&$connected) {
-			$connected = $param;
-		});
-
-		$client = TSocketStream::connect('tcp://127.0.0.1:' . $server->getPort(), 1.0);
-		$deadline = microtime(true) + 2.0;
-		while ($connected === null && microtime(true) < $deadline) {
-			$module->publicAcceptClient($server, $reactor);
-			if ($connected === null) {
-				usleep(10000);
-			}
-		}
+		[$server, $client, $connected] = $this->acceptOne($module, $loop);
 
 		self::assertInstanceOf(TSocketStream::class, $connected, 'acceptClient raises onClientConnect with the connection.');
-		self::assertTrue($reactor->isRegistered($connected), 'The accepted connection is registered with the reactor.');
+		self::assertCount(1, $loop->getIdentifiers(), 'The accepted connection is watched on the loop.');
 
+		$connected->close();
 		$client->close();
 		$server->close();
 	}
@@ -401,27 +449,25 @@ class TSocketServerModuleTest extends \PHPUnit\Framework\TestCase
 	public function testAcceptClientIgnoresAReadableServerWithNoConnection()
 	{
 		$server = TSocketServer::bind('tcp://127.0.0.1:0');
-		$reactor = new TSocketReactor();
+		$loop = new TSocketReactor();
 		$module = new TestableSocketServerModule();
 		$raised = false;
 		$module->attachEventHandler('onClientConnect', function () use (&$raised) {
 			$raised = true;
 		});
 
-		$module->publicAcceptClient($server, $reactor);   // no pending connection: the early return
+		$module->publicAcceptClient($server, $loop);   // no pending connection: the early return
 		self::assertFalse($raised, 'No pending connection raises no onClientConnect.');
+		self::assertSame([], $loop->getIdentifiers(), 'Nothing is watched without a connection.');
 
 		$server->close();
 	}
 
 	public function testDispatchTreatsABrokenConnectionAsDisconnect()
 	{
-		[$conn, $peer] = TSocketStream::pair();
-		$conn->setBlocking(false);
-		$reactor = new TSocketReactor();
-		$reactor->register($conn, onReadable: fn () => null);
-
+		$loop = new TSocketReactor();
 		$module = new TestableSocketServerModule();
+		[$server, $client, $conn] = $this->acceptOne($module, $loop);
 		$dataRaised = false;
 		$closed = null;
 		$module->attachEventHandler('onClientData', function () use (&$dataRaised) {
@@ -432,13 +478,14 @@ class TSocketServerModuleTest extends \PHPUnit\Framework\TestCase
 		});
 
 		$conn->close();   // the resource is gone, so a peek returns false (a broken connection)
-		$module->publicDispatchClient($conn, $reactor);
+		$module->publicDispatchClient($conn, $loop);
 
 		self::assertSame($conn, $closed, 'A broken connection (peek false) raises onClientDisconnect.');
 		self::assertFalse($dataRaised, 'A broken connection does not raise onClientData.');
-		self::assertFalse($reactor->isRegistered($conn), 'The broken connection is unregistered.');
+		self::assertSame([], $loop->getIdentifiers(), 'The broken connection is no longer watched.');
 
-		$peer->close();
+		$client->close();
+		$server->close();
 	}
 
 	public function testServeClosesTheServerAndConnectionsOnExit()

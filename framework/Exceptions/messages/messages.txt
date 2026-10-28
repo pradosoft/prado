@@ -648,6 +648,11 @@ clicompressor_command_failed			= The '{0}' compressor command '{1}' exited with 
 socketservermodule_endpoint_required	= TSocketServerModule requires an Endpoint, or a positive Port to compose one.
 socketservermodule_serverclass_invalid	= TSocketServerModule ServerClass '{0}' is invalid. It must be TSocketServer or a subclass.
 socketservermodule_scheme_not_stream	= TSocketServerModule cannot accept on the connectionless scheme '{0}'. Use a stream scheme such as tcp, tls, ssl, or unix.
+socketservermodule_eventloopclass_invalid	= TSocketServerModule EventLoopClass '{0}' is invalid. It must implement Prado\IO\Async\IEventLoop.
+
+eventloop_delay_invalid					= Event loop delay '{0}' is invalid. It must be zero or more seconds.
+eventloop_callback_invalid				= Event loop callback '{0}' is unknown; it was never registered or is already cancelled.
+eventloop_signals_unsupported			= Event loop signal callbacks require the pcntl extension.
 
 bitreader_invalid_bits					= Cannot read {0} bits; the count must be between 0 and the platform integer width.
 bitreader_64bit_php_required			= Reading {0} bits requires a 64-bit PHP build.
