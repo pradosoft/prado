@@ -3,6 +3,7 @@
 namespace Prado\Test\Unit\IO\Process;
 
 use Prado\IO\Process\TPipeStream;
+use Prado\IO\Async\TAsync;
 use Prado\IO\Process\TProcess;
 use Prado\IO\Process\TProcessStatus;
 use Prado\IO\TStream;
@@ -341,6 +342,21 @@ class TProcessTest extends \PHPUnit\Framework\TestCase
 		self::assertSame(5, $revived->getExitCode(), 'Captured exit code survives serialization.');
 		self::assertFalse($revived->isOpen(), 'Revived process holds no handle.');
 		self::assertCount(0, $revived, 'Revived process holds no pipes.');
+		$p->close();
+	}
+
+	public function testWaitInAWorkerFiberLetsOtherFibersRun()
+	{
+		$p = $this->openRunning('usleep(150000);');
+		$waiting = TAsync::run(fn () => $p->wait());
+		$other = TAsync::run(function () {
+			TAsync::sleep(0.01);
+			return 'ran';
+		});
+		self::assertSame('ran', $other->await(), 'Another fiber runs while wait() is suspended.');
+		self::assertFalse($waiting->isComplete(), 'The process is still running.');
+		self::assertSame(0, $waiting->await());
+		self::assertSame([], TAsync::getLoop()->getIdentifiers(), 'The wait leaves no callback on the loop.');
 		$p->close();
 	}
 

@@ -12,7 +12,8 @@ namespace Prado\IO\Process;
 
 use Prado\Exceptions\TIOException;
 use Prado\Exceptions\TNotSupportedException;
-use Prado\IO\Socket\TSocketReactor;
+use Prado\IO\Async\IEventLoop;
+use Prado\IO\Async\TAsync;
 use Prado\IO\Socket\TSocketStream;
 use Prado\Prado;
 use Prado\TComponent;
@@ -35,14 +36,16 @@ use Prado\Util\TSignalsDispatcher;
  *  - {@see start()} — container: the call returns the handle in both processes; the child checks
  *    {@see getIsChild()}, does its work, and calls {@see exit()}.
  *
- * The parent side reaps the child synchronously with {@see wait()} (blocking) or {@see poll()}
+ * The parent side reaps the child with {@see wait()}, which suspends the current fiber on the
+ * {@see \Prado\IO\Async\IEventLoop event loop} until the child exits, with {@see poll()}
  * (non-blocking), or asynchronously by enabling {@see setAsync() Async} (a subclass defaults it
  * through {@see DEFAULT_ASYNC}), which registers the child with the {@see TSignalsDispatcher} so a
  * `SIGCHLD` reap raises {@see onExit} without an explicit wait.  {@see terminate()} and
  * {@see kill()} signal the child.  An optional {@see getChannel() Channel} is one end of a socket
- * pair for parent-child messaging; a channel-backed fork drains it through a {@see TSocketReactor},
- * either inside {@see wait()} or folded into an existing event loop with {@see register()}, so the
- * drained data and {@see onExit} arrive as the loop runs.
+ * pair for parent-child messaging; a channel-backed fork drains it on the loop, either inside
+ * {@see wait()} or folded into a running loop with {@see register()}, so the drained data and
+ * {@see onExit} arrive as the loop runs.  The child gets loops of its own through
+ * {@see TProcessHelper::fork()}.
  *
  * ```php
  * $worker = TProcessFork::fork(function (TProcessFork $self) {
@@ -71,6 +74,9 @@ class TProcessFork extends TComponent
 	/** The bytes read from the channel per readable event. */
 	public const CHUNK_SIZE = 65536;
 
+	/** The seconds between the exit polls that back the `SIGCHLD` wake-up while the parent waits. */
+	public const EXIT_POLL_INTERVAL = 0.01;
+
 	/** Whether a subclass always opens a parent-child channel (the result/live forks need it). */
 	protected const REQUIRES_CHANNEL = false;
 
@@ -98,8 +104,20 @@ class TProcessFork extends TComponent
 	/** @var bool Whether the child is reaped asynchronously through the signals dispatcher. */
 	private bool $_async = false;
 
-	/** @var ?TSocketReactor The reactor draining the channel while the parent waits, when channel-backed. */
-	private ?TSocketReactor $_reactor = null;
+	/** @var ?IEventLoop The loop the parent waits on, once registered or waited. */
+	private ?IEventLoop $_loop = null;
+
+	/** @var ?string The loop callback draining the channel, while registered. */
+	private ?string $_channelCallbackId = null;
+
+	/** @var string[] The loop callbacks polling for the exit, while waiting. */
+	private array $_exitCallbackIds = [];
+
+	/** @var ?\Closure The closure that stops the `SIGCHLD` watch, while waiting. */
+	private ?\Closure $_unwatchSignal = null;
+
+	/** @var \Closure[] The resumers of the fibers suspended in {@see wait()}. */
+	private array $_exitWaiters = [];
 
 	/**
 	 * Forks the process into a worker.  The child runs {@see run()} inside an isolation wrapper and
@@ -222,53 +240,58 @@ class TProcessFork extends TComponent
 	}
 
 	/**
-	 * Blocks until the child exits, then records its exit code and raises {@see onExit}.  A
-	 * channel-backed fork drains the channel through a {@see TSocketReactor} as it waits, so the
-	 * child never blocks writing a large result into a full pipe; a channel-less fork waits on a
-	 * plain blocking {@see https://www.php.net/pcntl_waitpid waitpid}.  A fork already
-	 * {@see register() registered} is driven through that reactor, and the parameter is ignored.
-	 * @param ?TSocketReactor $reactor The reactor to drive, or null to drive a private one.
+	 * Waits until the child exits, then returns its exit code; {@see onExit} is raised as the exit
+	 * is recorded and the wait returns on the following loop iteration.  The current fiber suspends
+	 * on the loop: a worker fiber yields to it and the main fiber runs it.  A channel-backed fork drains the channel as it waits, so the child never blocks
+	 * writing a large result into a full pipe.  The exit is detected by the channel's end of stream,
+	 * by `SIGCHLD` ({@see TProcessHelper::watchChildSignal()}), and by a poll every
+	 * {@see EXIT_POLL_INTERVAL} seconds.  A fork already {@see register() registered} waits on that
+	 * loop, and the parameter is ignored.
+	 * @param ?IEventLoop $loop The loop to wait on, or null for {@see TAsync::getLoop()}.
 	 * @return ?int The exit code, or null when there is no child to wait on.
 	 */
-	public function wait(?TSocketReactor $reactor = null): ?int
+	public function wait(?IEventLoop $loop = null): ?int
 	{
 		if ($this->getIsChild() || $this->_pid <= 0 || $this->_state === self::STATE_EXITED) {
 			return $this->_exitCode;
 		}
-		if ($this->_channel === null) {
-			return $this->reap(0);
-		}
-		if ($this->_reactor === null) {
-			$this->register($reactor ?? Prado::createComponent(TSocketReactor::class));
-		}
-		while ($this->_state !== self::STATE_EXITED) {
-			$this->_reactor->tick(null);
-		}
+		$this->_loop ??= $loop ?? TAsync::getLoop();
+		$this->register($this->_loop);
+		$this->watchExit();
+		$suspension = $this->_loop->suspension();
+		$settled = false;
+		$this->_exitWaiters[] = static function () use (&$settled, $suspension): void {
+			if (!$settled) {
+				$settled = true;
+				$suspension->resume();
+			}
+		};
+		$suspension->suspend();
 		return $this->_exitCode;
 	}
 
 	/**
-	 * Registers the channel with a reactor so the parent drains it (and detects the child's exit by
-	 * the channel's end of stream) without blocking, folding the fork into an existing event loop.
-	 * A child handle, a channel-less fork, or an already-registered fork is a no-op.
-	 * @param TSocketReactor $reactor The reactor to drain the channel through.
+	 * Watches the channel on a loop so the parent drains it (and detects the child's exit by the
+	 * channel's end of stream) as the loop runs, folding the fork into a running loop.  A child
+	 * handle, a channel-less fork, or an already-registered fork is a no-op.
+	 * @param IEventLoop $loop The loop to drain the channel on.
 	 */
-	public function register(TSocketReactor $reactor): void
+	public function register(IEventLoop $loop): void
 	{
-		if ($this->getIsChild() || $this->_channel === null || $this->_reactor !== null) {
+		if ($this->getIsChild() || $this->_channel === null || $this->_channelCallbackId !== null) {
 			return;
 		}
-		$this->_reactor = $reactor;
+		$this->_loop = $loop;
 		$this->_channel->setBlocking(false);
-		$reactor->register($this->_channel, onReadable: fn () => $this->drainChannel());
+		$this->_channelCallbackId = $loop->onReadable($this->_channel, fn () => $this->drainChannel());
 	}
 
 	/**
 	 * Reads what the channel has ready.  Bytes are handed to {@see consume()}; an end of stream means
-	 * the child closed its end, so the channel is finished, unregistered, and closed, and the child is
-	 * reaped.  A child normally closes as it exits, but a container child may close early and keep
-	 * working, so the reap polls (and follows up on a reactor timer) rather than blocking a shared
-	 * event loop in a waitpid.
+	 * the child closed its end, so the channel is finished, its loop callback cancelled, and the
+	 * channel closed, and the child is reaped.  A child normally closes as it exits, but a container
+	 * child may close early and keep working, so a reap that finds it running leaves the exit to
+	 * {@see watchExit()} rather than blocking a shared event loop in a waitpid.
 	 */
 	protected function drainChannel(): void
 	{
@@ -283,17 +306,42 @@ class TProcessFork extends TComponent
 			return;
 		}
 		$this->finishChannel();
-		if ($this->_channel !== null) {
-			$this->_reactor?->unregister($this->_channel);
-			$this->_channel->close();
+		if ($this->_channelCallbackId !== null) {
+			$this->_loop?->cancel($this->_channelCallbackId);
+			$this->_channelCallbackId = null;
 		}
-		if ($this->poll() === null && $this->_reactor !== null) {
-			$timerId = '';
-			$timerId = $this->_reactor->repeat(0.01, function () use (&$timerId) {
-				if ($this->poll() !== null) {
-					$this->_reactor?->cancel($timerId);
-				}
-			});
+		$this->_channel?->close();
+		if ($this->poll() === null && $this->_loop !== null) {
+			$this->watchExit();
+		}
+	}
+
+	/**
+	 * Polls for the exit on the loop: on each `SIGCHLD` and every {@see EXIT_POLL_INTERVAL} seconds,
+	 * until {@see captureExit()} stops the watch.  A second call while watching is a no-op.
+	 */
+	protected function watchExit(): void
+	{
+		if ($this->_loop === null || $this->_exitCallbackIds !== [] || $this->_state === self::STATE_EXITED) {
+			return;
+		}
+		$poll = fn () => $this->poll();
+		$this->_exitCallbackIds[] = $this->_loop->repeat(static::EXIT_POLL_INTERVAL, $poll);
+		$this->_unwatchSignal = TProcessHelper::watchChildSignal($this->_loop, $poll);
+	}
+
+	/**
+	 * Stops the exit watch of {@see watchExit()}.
+	 */
+	protected function unwatchExit(): void
+	{
+		foreach ($this->_exitCallbackIds as $id) {
+			$this->_loop?->cancel($id);
+		}
+		$this->_exitCallbackIds = [];
+		if ($this->_unwatchSignal !== null) {
+			($this->_unwatchSignal)();
+			$this->_unwatchSignal = null;
 		}
 	}
 
@@ -378,6 +426,27 @@ class TProcessFork extends TComponent
 				$this->_async = false;
 			}
 			$this->onExit($code);
+			// The reap may run inside a signal handler that a loop calls from within its dispatch,
+			// where a cancel or a resume is not acted on; the loop work moves to the next iteration,
+			// which the exit poll timer keeps near.
+			if ($this->_loop !== null) {
+				$this->_loop->defer(fn () => $this->releaseWaiters());
+			} else {
+				$this->releaseWaiters();
+			}
+		}
+	}
+
+	/**
+	 * Stops the exit watch and resumes the fibers suspended in {@see wait()}.
+	 */
+	private function releaseWaiters(): void
+	{
+		$this->unwatchExit();
+		$waiters = $this->_exitWaiters;
+		$this->_exitWaiters = [];
+		foreach ($waiters as $waiter) {
+			$waiter();
 		}
 	}
 
@@ -545,6 +614,10 @@ class TProcessFork extends TComponent
 		parent::_getZappableSleepProps($exprops);
 		$exprops[] = "\0" . __CLASS__ . "\0_channel";
 		$exprops[] = "\0" . __CLASS__ . "\0_body";
-		$exprops[] = "\0" . __CLASS__ . "\0_reactor";
+		$exprops[] = "\0" . __CLASS__ . "\0_loop";
+		$exprops[] = "\0" . __CLASS__ . "\0_channelCallbackId";
+		$exprops[] = "\0" . __CLASS__ . "\0_exitCallbackIds";
+		$exprops[] = "\0" . __CLASS__ . "\0_unwatchSignal";
+		$exprops[] = "\0" . __CLASS__ . "\0_exitWaiters";
 	}
 }

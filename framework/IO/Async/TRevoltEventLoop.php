@@ -59,6 +59,12 @@ class TRevoltEventLoop extends TComponent implements IEventLoop
 	/** @var int The number of {@see run()} calls in progress. */
 	private static int $_runDepth = 0;
 
+	/** @var array<int, array<string, true>> The signal callbacks registered through this class, keyed by signal. */
+	private static array $_signalIds = [];
+
+	/** @var array<int, mixed> The pcntl handlers in place before the first callback of each signal. */
+	private static array $_priorSignalHandlers = [];
+
 	/**
 	 * Gives a forked child a driver with no callbacks.  The inherited driver's callbacks are
 	 * cancelled and its error handler unset.  Outside a fiber the inherited driver is then run to
@@ -170,7 +176,10 @@ class TRevoltEventLoop extends TComponent implements IEventLoop
 	}
 
 	/**
-	 * Watches a process signal.
+	 * Watches a process signal.  The driver installs its own `pcntl_signal()` handler once the
+	 * loop runs; when the last callback of the signal registered through this class is
+	 * {@see cancel() cancelled}, the handler in place before the first one is restored, as the
+	 * driver leaves `SIG_DFL`.
 	 * @param int $signal The signal number.
 	 * @param callable $callback Called as `(string $callbackId, int $signal)`.
 	 * @throws TNotSupportedException When the driver has no signal handling.
@@ -179,10 +188,15 @@ class TRevoltEventLoop extends TComponent implements IEventLoop
 	public function onSignal(int $signal, callable $callback): string
 	{
 		try {
-			return EventLoop::onSignal($signal, static::wrap($callback));
+			$id = EventLoop::onSignal($signal, static::wrap($callback));
 		} catch (UnsupportedFeatureException $e) {
 			throw new TNotSupportedException('eventloop_signals_unsupported');
 		}
+		if (!isset(self::$_signalIds[$signal])) {
+			self::$_priorSignalHandlers[$signal] = pcntl_signal_get_handler($signal);
+		}
+		self::$_signalIds[$signal][$id] = true;
+		return $id;
 	}
 
 	/**
@@ -222,6 +236,31 @@ class TRevoltEventLoop extends TComponent implements IEventLoop
 	public function cancel(string $callbackId): void
 	{
 		EventLoop::cancel($callbackId);
+		$this->forgetSignalCallback($callbackId);
+	}
+
+	/**
+	 * Drops a cancelled callback from the signal registry and restores the prior handler of a
+	 * signal that has no callback of this class left.
+	 * @param string $callbackId The cancelled callback identifier.
+	 */
+	private function forgetSignalCallback(string $callbackId): void
+	{
+		foreach (self::$_signalIds as $signal => $ids) {
+			if (!isset($ids[$callbackId])) {
+				continue;
+			}
+			unset(self::$_signalIds[$signal][$callbackId]);
+			if (self::$_signalIds[$signal] === []) {
+				unset(self::$_signalIds[$signal]);
+				$prior = self::$_priorSignalHandlers[$signal] ?? \SIG_DFL;
+				unset(self::$_priorSignalHandlers[$signal]);
+				if ($prior !== \SIG_DFL && pcntl_signal_get_handler($signal) === \SIG_DFL) {
+					pcntl_signal($signal, $prior);
+				}
+			}
+			return;
+		}
 	}
 
 	/**

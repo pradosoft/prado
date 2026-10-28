@@ -21,7 +21,7 @@ use Prado\Util\Log\TLogger;
  * channel and the parent reads it back through {@see getResult()} once the child is reaped.
  *
  * The channel is always opened.  The parent collects the serialized result as the channel drains
- * (through {@see wait()} or a registered {@see \Prado\IO\Socket\TSocketReactor}), so a result larger
+ * (through {@see wait()} or a {@see register() registered} {@see \Prado\IO\Async\IEventLoop}), so a result larger
  * than the pipe buffer cannot deadlock the child.  Only serializable data crosses the channel: a
  * closure, resource, or open handle does not.  An uncaught exception in the body leaves
  * {@see getHasResult()} false and exits the child with {@see EXIT_EXCEPTION}.

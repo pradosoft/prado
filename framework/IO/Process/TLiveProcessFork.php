@@ -17,13 +17,13 @@ use Prado\Exceptions\TInvalidOperationException;
  *
  * A {@see TProcessFork} with a live data map the child streams to the parent.  Reached as an array
  * ({@see \ArrayAccess}), each `$fork[$key] = $value` (or `unset($fork[$key])`) in the child is framed
- * and sent over the channel; the parent's reactor decodes the frames into its own copy as they
+ * and sent over the channel; the parent decodes the frames into its own copy as they
  * arrive, so the parent watches the child's progress and partial results live rather than only at the
  * end.
  *
  * The flow is one-way, child to parent: the child mutates, the parent observes.  The parent applies
- * each update as the channel drains (through {@see wait()} or a registered
- * {@see \Prado\IO\Socket\TSocketReactor}), raising {@see onData} per update; {@see getData()} returns
+ * each update as the channel drains (through {@see wait()} or a {@see register() registered}
+ * {@see \Prado\IO\Async\IEventLoop}), raising {@see onData} per update; {@see getData()} returns
  * the current map.  Only serializable values cross the channel.  Updates are framed with a 4-byte
  * length prefix, since a stream of messages needs a boundary the single end of stream cannot give.
  *

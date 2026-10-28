@@ -610,6 +610,7 @@ async_cancelled							= The operation was cancelled.
 async_timeout							= The operation timed out after {0} seconds.
 async_any_empty							= TAsync::any() received no futures.
 async_deferred_complete					= The TDeferred is already complete; a future is resolved or rejected once.
+asyncstream_no_resource					= TAsyncStream cannot wait for readiness; the inner stream has no open PHP stream resource.
 
 bitreader_invalid_bits					= Cannot read {0} bits; the count must be between 0 and the platform integer width.
 bitreader_64bit_php_required			= Reading {0} bits requires a 64-bit PHP build.
