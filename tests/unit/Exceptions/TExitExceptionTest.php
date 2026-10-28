@@ -120,8 +120,8 @@ class TExitExceptionTest extends \PHPUnit\Framework\TestCase
 
 	public function testVariadicPlaceholdersReplacedInMessage()
 	{
-		// prado_component_unknown uses {0} and {1}
-		$ex = new TExitException(2, 'prado_component_unknown', 'MyClass', 'SomeContext');
+		// component_property_undefined uses {0} and {1}
+		$ex = new TExitException(2, 'component_property_undefined', 'MyClass', 'SomeContext');
 		$this->assertStringContainsString('MyClass', $ex->getMessage());
 		$this->assertStringContainsString('SomeContext', $ex->getMessage());
 	}
@@ -341,7 +341,7 @@ class TExitExceptionTest extends \PHPUnit\Framework\TestCase
 	public function testExceptionChainingWithPlaceholders()
 	{
 		$prev = new \LogicException('root cause');
-		$ex = new TExitException(2, 'prado_component_unknown', 'CompA', 'CompB', $prev);
+		$ex = new TExitException(2, 'component_property_undefined', 'CompA', 'CompB', $prev);
 		$this->assertSame($prev, $ex->getPrevious());
 		$this->assertStringContainsString('CompA', $ex->getMessage());
 		$this->assertStringContainsString('CompB', $ex->getMessage());
@@ -443,9 +443,9 @@ class TExitExceptionTest extends \PHPUnit\Framework\TestCase
 	public function testMultipleInstancesHaveIndependentErrorCodes()
 	{
 		$ex1 = new TExitException(1, 'prado_application_singleton_required');
-		$ex2 = new TExitException(2, 'prado_component_unknown', 'X', 'Y');
+		$ex2 = new TExitException(2, 'component_property_undefined', 'X', 'Y');
 		$ex1->setErrorCode('modified');
 		$this->assertSame('modified', $ex1->getErrorCode());
-		$this->assertSame('prado_component_unknown', $ex2->getErrorCode());
+		$this->assertSame('component_property_undefined', $ex2->getErrorCode());
 	}
 }

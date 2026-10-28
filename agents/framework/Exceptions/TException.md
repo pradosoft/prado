@@ -8,7 +8,7 @@
 **Namespace:** `Prado\Exceptions`
 
 ## Overview
-Prado's exception hierarchy extends PHP's `Exception`. `TException` provides multilingual error messages loaded from `messages/messages.txt` keyed by error code string. `TErrorHandler` renders errors using HTML templates.
+Prado's exception hierarchy extends PHP's `Exception`. `TException` provides English error messages loaded from `messages/messages.txt` keyed by error code string; registered message files override them. `TErrorHandler` renders errors using HTML templates.
 
 Supports two constructor styles: old-style (string key as first argument) and new-style (integer PHP error code as first argument followed by string message key). Additional string arguments fill `{0}`, `{1}`, … placeholders; a trailing `Throwable` is chained as `$previous`.
 
@@ -35,11 +35,13 @@ db_query_failed=Database query failed: {0}
 
 ### Loading Messages
 
-Messages are loaded from:
-1. `framework/Exceptions/messages/messages-{lang}.txt` (localized)
-2. `framework/Exceptions/messages/messages.txt` (English fallback)
+`translateErrorMessage()` reads the files of `getErrorMessageFiles()` in order; a later file overrides an earlier definition, and a key defined nowhere is the message itself:
 
-Loaded once per language per request; cached in `TException::$_messageCache`.
+1. `getErrorMessageFile()`: `framework/Exceptions/messages/messages.txt`, the English master
+2. `THttpException` only: `framework/Exceptions/messages/messages-{lang}.txt` of `Prado::getPreferredLanguage()`, the visitor-facing keys
+3. The files of `addMessageFile()`, in registration order: application `errormessages`, Composer extensions' `extra.prado.error-messages`
+
+Each file is parsed once per request and cached in `TException::$_messageCache`; an unreadable file is cached as empty. Developer-facing messages are English unless a registered file defines the key; the `pradosoft/prado-dev-errormessages` package registers `messages/messages.txt`, which `addMessageFile()` resolves to `messages-{lang}.txt`.
 
 ## Exception Class Reference
 
@@ -85,7 +87,7 @@ Template files: `error{code}.html` (e.g., `error404.html`), `error.html` (generi
    ```
    my_error_code=Something went wrong: {0}
    ```
-2. Add translations to `messages-{lang}.txt` as needed.
+2. A key thrown as `THttpException` is also added to every `messages-{lang}.txt` in the same directory; `TExceptionMessageFilesTest` checks that those files hold exactly the `THttpException` keys. Any other key is translated in the `pradosoft/prado-dev-errormessages` package.
 3. Throw: `throw new TApplicationException('my_error_code', $detail);`
 
 ## Extra Message Files
@@ -94,7 +96,7 @@ Third-party modules can register additional message files:
 ```php
 TException::addMessageFile('path/to/messages.txt');
 ```
-The method automatically resolves a language-specific variant if one exists.
+The method resolves a `-{lang}` variant (`messages-fr.txt`) when one exists for `Prado::getPreferredLanguage()`. A registered file overrides the framework's English text and the files registered before it. Composer extensions declare the path in `extra.prado.error-messages` instead.
 
 ## Gotchas
 
