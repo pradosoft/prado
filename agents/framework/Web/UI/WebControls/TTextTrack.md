@@ -34,10 +34,12 @@ TTextTrack represents the HTML `<track>` element: a WebVTT text track of a [TVid
 - Recorded video with sound has a `Captions` track (WCAG 1.2.2).
 - Each track has a `Label`, which names it in the track menu.
 - Browsers rarely voice `Descriptions`; audio description is a described version or a transcript (WCAG 1.2.5).
+- Chromium and Firefox show an `IsDefault` track; Safari follows the user's caption preference and can leave it off until it is selected in the track menu.
 
 ## Tests
 
 - `tests/unit/Web/UI/WebControls/TTextTrackTest.php`
+- `tests/playwright/web/TMediaTagsTestCase.spec.js` with `tests/harness/web/protected/pages/MediaTagsTest.page`: attributes, captions track loading, source selection, video focus, and roles (Chromium accessibility tree)
 
 ## See Also
 

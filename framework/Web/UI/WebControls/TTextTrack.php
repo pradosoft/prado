@@ -31,6 +31,8 @@ use Prado\TPropertyValue;
  * Each track has a Label, which names it in the track menu; a `Subtitles` track
  * requires SrcLang. Browsers rarely voice `Descriptions`, so audio description is
  * a described version of the video or a transcript (WCAG 1.2.5).
+ * Chromium and Firefox show an IsDefault track. Safari follows the user's caption
+ * preference and can leave it off; the track menu of the controls turns it on.
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
  */

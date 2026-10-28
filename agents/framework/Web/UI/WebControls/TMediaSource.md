@@ -43,6 +43,7 @@ TMediaSource represents the HTML `<source>` element: one alternative resource of
 ## Tests
 
 - `tests/unit/Web/UI/WebControls/TMediaSourceTest.php`
+- `tests/playwright/web/TMediaTagsTestCase.spec.js` with `tests/harness/web/protected/pages/MediaTagsTest.page`: attributes, captions track loading, source selection, video focus, and roles (Chromium accessibility tree)
 
 ## See Also
 

@@ -31,6 +31,7 @@ The default tag is `audio`. It can be overridden at runtime via the `TagName` pr
 ## Tests
 
 - `tests/unit/Web/UI/WebControls/TAudioTest.php`
+- `tests/playwright/web/TMediaTagsTestCase.spec.js` with `tests/harness/web/protected/pages/MediaTagsTest.page`: attributes, captions track loading, source selection, video focus, and roles (Chromium accessibility tree)
 
 ## See Also
 

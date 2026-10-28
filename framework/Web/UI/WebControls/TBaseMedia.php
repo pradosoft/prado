@@ -31,7 +31,8 @@ use Prado\TPropertyValue;
  * - ShowControls defaults to true, unlike the HTML attribute, because the
  *   browser's controls are the keyboard and screen reader access to play,
  *   pause, volume, and captions. A page that sets it false provides its own
- *   labeled controls.
+ *   labeled controls. Chromium and Firefox put a media element with controls in
+ *   the tab order; Safari does not.
  * - Recorded video with sound has a `Captions` {@see TTextTrack} (WCAG 1.2.2).
  *   Recorded audio has a transcript (WCAG 1.2.1), and video an audio
  *   description or a transcript (WCAG 1.2.3, 1.2.5).

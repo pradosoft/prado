@@ -36,6 +36,7 @@ TPicture represents the HTML `<picture>` element: an image with alternative reso
 ## Tests
 
 - `tests/unit/Web/UI/WebControls/TPictureTest.php`
+- `tests/playwright/web/TMediaTagsTestCase.spec.js` with `tests/harness/web/protected/pages/MediaTagsTest.page`: attributes, captions track loading, source selection, video focus, and roles (Chromium accessibility tree)
 
 ## See Also
 

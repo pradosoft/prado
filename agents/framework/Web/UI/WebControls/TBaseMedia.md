@@ -36,10 +36,11 @@ The property is `ShowControls` because `TControl::getControls()` is the child co
 | Stop sound that plays over 3 s on its own (WCAG 1.4.2) | The browser's controls |
 | Pause motion over 5 s (WCAG 2.2.2) | The browser's controls; `AutoPlay` + `Loop` without ShowControls needs a page pause control |
 
-Browsers block `AutoPlay` with sound unless `Muted`.
+Browsers block `AutoPlay` with sound unless `Muted`. Chromium and Firefox put a media element with controls in the tab order; Safari does not.
 
 ## Tests
 
 - `tests/unit/Web/UI/WebControls/TVideoTest.php`, `TAudioTest.php`
+- `tests/playwright/web/TMediaTagsTestCase.spec.js` with `tests/harness/web/protected/pages/MediaTagsTest.page`: attributes, captions track loading, source selection, video focus, and roles (Chromium accessibility tree)
 
 **@since 4.4.0**
