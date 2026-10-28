@@ -1,0 +1,31 @@
+<com:TContent ID="Content">
+	<h1>Structure Tags Test Case</h1>
+
+	<com:TDescriptionList ID="dl">
+		<com:TDescriptionDetails ID="author" Term="Author">Brad</com:TDescriptionDetails>
+		<com:TDescriptionTerm ID="editor">Editor</com:TDescriptionTerm>
+		<com:TDescriptionDetails ID="editorName">Qiang</com:TDescriptionDetails>
+	</com:TDescriptionList>
+
+	<com:THGroup ID="hgroup" HeaderText="Prado" HeaderLevel="2">
+		<p>Component framework for PHP</p>
+	</com:THGroup>
+
+	<com:TMenuList ID="menu" DisplayMode="LinkButton" OnClick="menuClicked" Aria.label="Edit">
+		<com:TListItem Text="Cut" Value="cut" />
+		<com:TListItem Text="Copy" Value="copy" />
+	</com:TMenuList>
+	<div>Status: <com:TLabel ID="status" Text="none" /></div>
+
+	<com:TActivePanel ID="live">
+		<com:TCanvas ID="chart" AlternateText="<%= $this->Page->ChartText %>" Style="width:200px;height:100px"
+			ClientSide.OnDraw="var c = parameter.canvas; c.dataset.draws = (+(c.dataset.draws || 0) + 1);
+				parameter.context.fillStyle = 'rgb(255, 0, 0)';
+				parameter.context.fillRect(0, 0, parameter.width, parameter.height);" />
+	</com:TActivePanel>
+	<com:TActiveButton ID="btnRedraw" Text="Update chart" OnCallback="redraw" />
+
+	<com:TCanvas ID="interactive" Width="200" Height="100">
+		<button type="button" id="region">North region: 40%</button>
+	</com:TCanvas>
+</com:TContent>

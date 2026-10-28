@@ -58,7 +58,8 @@ class PradoUnit
 	// `\ReflectionClass`, `\ReflectionMethod`, or `\ReflectionProperty` is
 	// cheap individually but adds up across a 6 000-test suite. The framework
 	// itself caches `\ReflectionClass` in {@see \Prado\TComponentReflection::getReflectionClassByType()};
-	// the harness mirrors that pattern for all three reflection types.
+	// the harness mirrors that pattern for all three reflection types and for
+	// attribute instances ({@see \Prado\TComponentReflection::getClassAttributesByType()}).
 	//
 	// Cache keys are lowercased so case-insensitive class names share one
 	// cached object. Cache entries live for the process lifetime — classes
@@ -76,6 +77,9 @@ class PradoUnit
 
 	/** @var array<string, ?\ReflectionProperty> "{class}::{property}" lowercased → cached ReflectionProperty (or null when absent at any level). */
 	private static array $_reflectionPropertyCache = [];
+
+	/** @var array<string, array> Lowercased "{kind}::{class}::{member}::{attribute}" → cached attribute instances or member map. */
+	private static array $_attributeCache = [];
 
 	/**
 	 * Returns a cached {@see \ReflectionClass} for `$class`, or `null` when the
@@ -172,6 +176,198 @@ class PradoUnit
 			$rc = $rc->getParentClass() ?: null;
 		}
 		return self::$_reflectionPropertyCache[$key] = $found;
+	}
+
+	/**
+	 * Returns the instances of `$attribute` on `$class`, or an empty array when the
+	 * class carries none or does not exist.
+	 *
+	 * The filter matches as `instanceof`, so a subclass of `$attribute` is returned,
+	 * and `$attribute` must be a class. With `$inherit` true the parent classes are
+	 * walked and their attributes follow the class's own, from the class up to the
+	 * root; interfaces and traits are not walked. The instances are built once per
+	 * process and shared by every caller. This mirrors
+	 * {@see \Prado\TComponentReflection::getClassAttributesByType()} on the harness
+	 * cache, so a test does not touch the framework's caches.
+	 *
+	 * @param object|string $class Class name or instance.
+	 * @param string $attribute The attribute class to match.
+	 * @param bool $inherit Whether the parent classes' attributes are included.
+	 * @throws \Error when `$attribute` is not a class.
+	 * @return array<int,object> The attribute instances, the class's own first.
+	 * @since 4.4.0
+	 */
+	public static function classAttributes(string|object $class, string $attribute, bool $inherit = true): array
+	{
+		$name = is_object($class) ? $class::class : $class;
+		$key = strtolower('class::' . $name . '::' . ($inherit ? '1' : '0') . '::' . $attribute);
+		if (!array_key_exists($key, self::$_attributeCache)) {
+			$rc = self::reflectionClass($name);
+			if ($rc === null) {
+				return [];
+			}
+			$instances = [];
+			while ($rc !== null) {
+				$instances = [...$instances, ...self::newAttributeInstances($rc, $attribute)];
+				$rc = $inherit ? ($rc->getParentClass() ?: null) : null;
+			}
+			self::$_attributeCache[$key] = $instances;
+		}
+		return self::$_attributeCache[$key];
+	}
+
+	/**
+	 * Returns the instances of `$attribute` on `$class::$method`, or an empty array
+	 * when the method carries none or is not found.
+	 *
+	 * {@see reflectionMethod()} resolves the method, so an inherited method is found
+	 * on a subclass. Behavior-contributed methods are not resolved; query the behavior
+	 * class. The instances are cached by the declaring class and shared by every
+	 * subclass.
+	 *
+	 * @param object|string $class Class name or instance.
+	 * @param string $method Method name.
+	 * @param string $attribute The attribute class to match, as `instanceof`.
+	 * @throws \Error when `$attribute` is not a class.
+	 * @return array<int,object> The attribute instances.
+	 * @since 4.4.0
+	 */
+	public static function methodAttributes(string|object $class, string $method, string $attribute): array
+	{
+		$rm = self::reflectionMethod($class, $method);
+		if ($rm === null) {
+			return [];
+		}
+		return self::memberAttributes('method', $rm, $attribute);
+	}
+
+	/**
+	 * Returns the instances of `$attribute` on `$class::$property`, or an empty array
+	 * when the property carries none or is not declared at any level of the class
+	 * hierarchy.
+	 *
+	 * {@see reflectionProperty()} resolves the property, so a private property of an
+	 * ancestor is found. The instances are cached by the declaring class and shared
+	 * by every subclass.
+	 *
+	 * @param object|string $class Class name or instance.
+	 * @param string $property Property name (no `$` prefix).
+	 * @param string $attribute The attribute class to match, as `instanceof`.
+	 * @throws \Error when `$attribute` is not a class.
+	 * @return array<int,object> The attribute instances.
+	 * @since 4.4.0
+	 */
+	public static function propertyAttributes(string|object $class, string $property, string $attribute): array
+	{
+		$rp = self::reflectionProperty($class, $property);
+		if ($rp === null) {
+			return [];
+		}
+		return self::memberAttributes('property', $rp, $attribute);
+	}
+
+	/**
+	 * Returns the methods of `$class` that carry `$attribute`, keyed by method name,
+	 * each with its attribute instances. An empty array means no method carries it
+	 * or the class does not exist.
+	 *
+	 * Inherited methods are included, as `ReflectionClass::getMethods()` returns them.
+	 *
+	 * @param object|string $class Class name or instance.
+	 * @param string $attribute The attribute class to match, as `instanceof`.
+	 * @throws \Error when `$attribute` is not a class.
+	 * @return array<string,array<int,object>> Attribute instances keyed by method name.
+	 * @since 4.4.0
+	 */
+	public static function methodsWithAttribute(string|object $class, string $attribute): array
+	{
+		$name = is_object($class) ? $class::class : $class;
+		$key = strtolower('methods::' . $name . '::' . $attribute);
+		if (!array_key_exists($key, self::$_attributeCache)) {
+			$rc = self::reflectionClass($name);
+			if ($rc === null) {
+				return [];
+			}
+			$methods = [];
+			foreach ($rc->getMethods() as $rm) {
+				$instances = self::memberAttributes('method', $rm, $attribute);
+				if ($instances) {
+					$methods[$rm->getName()] = $instances;
+				}
+			}
+			self::$_attributeCache[$key] = $methods;
+		}
+		return self::$_attributeCache[$key];
+	}
+
+	/**
+	 * Returns the properties of `$class` that carry `$attribute`, keyed by property
+	 * name, each with its attribute instances. An empty array means no property
+	 * carries it or the class does not exist.
+	 *
+	 * Inherited public and protected properties are included, as
+	 * `ReflectionClass::getProperties()` returns them; an ancestor's private property
+	 * is not, and is queried with {@see propertyAttributes()}.
+	 *
+	 * @param object|string $class Class name or instance.
+	 * @param string $attribute The attribute class to match, as `instanceof`.
+	 * @throws \Error when `$attribute` is not a class.
+	 * @return array<string,array<int,object>> Attribute instances keyed by property name.
+	 * @since 4.4.0
+	 */
+	public static function propertiesWithAttribute(string|object $class, string $attribute): array
+	{
+		$name = is_object($class) ? $class::class : $class;
+		$key = strtolower('properties::' . $name . '::' . $attribute);
+		if (!array_key_exists($key, self::$_attributeCache)) {
+			$rc = self::reflectionClass($name);
+			if ($rc === null) {
+				return [];
+			}
+			$properties = [];
+			foreach ($rc->getProperties() as $rp) {
+				$instances = self::memberAttributes('property', $rp, $attribute);
+				if ($instances) {
+					$properties[$rp->getName()] = $instances;
+				}
+			}
+			self::$_attributeCache[$key] = $properties;
+		}
+		return self::$_attributeCache[$key];
+	}
+
+	/**
+	 * Returns the cached attribute instances of a method or property, building them
+	 * on the first call. The key uses the declaring class, so every subclass that
+	 * inherits the member shares the entry.
+	 * @param string $kind `method` or `property`, the key prefix.
+	 * @param \ReflectionMethod|\ReflectionProperty $member The member to read.
+	 * @param string $attribute The attribute class to match, as `instanceof`.
+	 * @return array<int,object> The attribute instances.
+	 */
+	private static function memberAttributes(string $kind, \ReflectionMethod|\ReflectionProperty $member, string $attribute): array
+	{
+		$key = strtolower($kind . '::' . $member->getDeclaringClass()->getName() . '::' . $member->getName() . '::' . $attribute);
+		if (!array_key_exists($key, self::$_attributeCache)) {
+			self::$_attributeCache[$key] = self::newAttributeInstances($member, $attribute);
+		}
+		return self::$_attributeCache[$key];
+	}
+
+	/**
+	 * Instantiates the attributes of a reflector that are instances of `$attribute`.
+	 * @param \ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflector The declaration to read.
+	 * @param string $attribute The attribute class to match, as `instanceof`.
+	 * @throws \Error when `$attribute` is not a class, from `getAttributes()`.
+	 * @return array<int,object> The attribute instances, in declaration order.
+	 */
+	private static function newAttributeInstances(\ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflector, string $attribute): array
+	{
+		$instances = [];
+		foreach ($reflector->getAttributes($attribute, \ReflectionAttribute::IS_INSTANCEOF) as $ra) {
+			$instances[] = $ra->newInstance();
+		}
+		return $instances;
 	}
 
 	// =========================================================================

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width="20" height="20">
+	<title>Badge</title>
+	<defs><linearGradient id="fill"><stop offset="0" stop-color="rgb(0, 128, 0)"/></linearGradient></defs>
+	<style>.badge-shape { fill: url(#fill); }</style>
+	<circle class="badge-shape" cx="10" cy="10" r="9" onclick="document.documentElement.dataset.svgClicked = '1'"/>
+	<script>document.documentElement.dataset.svgScript = '1';</script>
+</svg>

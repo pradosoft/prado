@@ -63,6 +63,8 @@ $found = TComponentReflection::getMethodAttributesByType($component, 'behaviorMe
 
 Discovery is pull-based. A consumer asks for the attributes on the classes it already knows about; there is no boot-time scan of the class map and no attribute registry.
 
+The test harness `Prado\Test\Unit\PradoUnit` mirrors the five lookups on its own cache as `classAttributes()`, `methodAttributes()`, `propertyAttributes()`, `methodsWithAttribute()` and `propertiesWithAttribute()`, so a test reads fixture attributes without touching the framework cache. Its `methodAttributes()` does not resolve behavior methods.
+
 ## Instance Description
 
 ```php
