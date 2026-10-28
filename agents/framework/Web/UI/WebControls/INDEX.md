@@ -19,6 +19,8 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 - **[`TBaseTerm`](TBaseTerm.md)** — Base for `TAbbr`, `TDfn`, and `TVar`: renders a term element and marks the term's other occurrences in a target control through `onRenderFilter`. @since 4.4.0
 
+- **[`TCiteTrait`](TCiteTrait.md)** — Backs the `Cite` property (source or explanation URL) of `TQuote`, `TBlockQuote`, `TIns`, and `TDel`. @since 4.4.0
+
 - **[`TContent`](TContent.md)** / **[`TContentPlaceHolder`](TContentPlaceHolder.md)** — Master page content injection. `TContent` blocks are injected into matching `TContentPlaceHolder` elements in the master template. Supports hierarchy matching.
 
 ## Subdirectories
@@ -126,6 +128,8 @@ All extend [THtmlElement](./THtmlElement.md). Each wraps the named HTML5 element
 | [`TAbbr`](TAbbr.md) | `abbr` | Abbreviation; `Title` is the expansion; marks the abbreviation's other occurrences ([TBaseTerm](TBaseTerm.md), @since 4.4.0) |
 | [`TArticle`](TArticle.md) | `article` | Self-contained composition (blog post, news article) |
 | [`TAside`](TAside.md) | `aside` | Tangentially related content; sidebar |
+| [`TBlockQuote`](TBlockQuote.md) | `blockquote` | Block quotation; `blockquote` role; `Cite` source URL (@since 4.4.0) |
+| [`TCite`](TCite.md) | `cite` | Title of a creative work (@since 4.4.0) |
 | [`TCode`](TCode.md) | `code` | Fragment of computer code; `code` role (@since 4.4.0) |
 | [`TDfn`](TDfn.md) | `dfn` | Defining instance of a term; marks the first occurrence of `Terms` ([TBaseTerm](TBaseTerm.md), @since 4.4.0) |
 | [`TFooter`](TFooter.md) | `footer` | Footer of nearest sectioning ancestor |
@@ -135,6 +139,7 @@ All extend [THtmlElement](./THtmlElement.md). Each wraps the named HTML5 element
 | [`TMark`](TMark.md) | `mark` | Highlighted or marked text |
 | [`TNav`](TNav.md) | `nav` | Navigation links section |
 | [`TPre`](TPre.md) | `pre` | Preformatted text; whitespace kept (@since 4.4.0) |
+| [`TQuote`](TQuote.md) | `q` | Inline quotation; `Cite` source URL (@since 4.4.0) |
 | [`TSamp`](TSamp.md) | `samp` | Sample output from a program (@since 4.4.0) |
 | [`TSearch`](TSearch.md) | `search` | Search or filter controls; landmark; another tag renders `role="search"` (@since 4.4.0) |
 | [`TSection`](TSection.md) | `section` | Generic thematic document section |
