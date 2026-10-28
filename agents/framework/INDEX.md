@@ -59,7 +59,7 @@ This is the root source directory of the **Prado** PHP framework (PSR-4 namespac
 - **`TPropertyValue.php`** — Static type-conversion utilities used in property setters:
   - `ensureBoolean()`, `ensureInteger()`, `ensureFloat()`, `ensureString()`, `ensureArray()`, `ensureEnum()`
 
-- **`TComponentReflection.php`** — Introspection utilities for [`TComponent`](TComponent.md) property/event metadata.
+- **[`TComponentReflection.php`](TComponentReflection.md)** — Describes a class's properties, events, methods and attributes, and holds the framework's reflection cache: `getReflectionClassByType()`, `getReflectionMethodByType()`, `getReflectionPropertyByType()`, and the attribute lookups `getClassAttributesByType()`, `getMethodAttributesByType()`, `getPropertyAttributesByType()`, `getMethodsWithAttributeByType()`, `getPropertiesWithAttributeByType()`.
 
 - **[`Prado.php`](Prado.md)** — Static framework utility class: `Prado::getApplication()`, `Prado::getLogger()`, `Prado::getUser()`, `Prado::log()`, `Prado::setPathOfAlias()`, `Prado::getPathOfAlias()`, `Prado::using()`.
 

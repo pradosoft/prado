@@ -76,7 +76,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TApplicationSignals](./Util/Behaviors/TApplicationSignals.md)
 - TApplicationStatePersister
 - [TComponent](./TComponent.md)
-- TComponentReflection
+- [TComponentReflection](./TComponentReflection.md)
 - TEnumerable
 - [TEventHandler](./TEventHandler.md)
 - TEventParameter
