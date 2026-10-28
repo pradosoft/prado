@@ -15,6 +15,8 @@ Client-side JavaScript/CSS package registry and asset utilities for the Prado we
   - `quoteJsLiteral($value)` — safely JSON-encodes a PHP value for embedding in JavaScript.
   - `jsonEncode($value)` — wrapper around `json_encode` with Prado-standard flags.
 
+- **[TStyleSheetHelper](TStyleSheetHelper.md)** — Static utility for `<style>` blocks and `<link rel="stylesheet">` tags: the CSP nonce (the script nonce), a stylesheet SRI registry, and `RequireStyleIntegrity`. The stylesheet counterpart of `TJavaScript`. @since 4.4.0
+
 - **[TJavaScriptAsset](TJavaScriptAsset.md)** — Represents a published JS asset. Properties: `BaseUrl`, `Version`. Used by [TAssetManager](../TAssetManager.md) to generate cache-busted URLs.
 
 - **[TJavaScriptLiteral](TJavaScriptLiteral.md)** — Wraps a raw JavaScript expression that should **not** be quoted when embedded in a JS context (e.g., a callback function reference). Distinguishes literal code from string values in `quoteJsLiteral()`.

@@ -1,0 +1,18 @@
+<%@ MasterClass="" %><!DOCTYPE html>
+<html data-page="style-sri-test">
+<head>
+<meta charset="UTF-8">
+<title>Style SRI Test – <%= $this->Action %></title>
+<script>
+window.__cspViolations = [];
+document.addEventListener('securitypolicyviolation', function (e) {
+	window.__cspViolations.push(e.violatedDirective);
+});
+</script>
+<%= $this->LinkTag %>
+</head>
+<body>
+<div id="action"><%= $this->Action %></div>
+<div id="sri-marker">styled</div>
+</body>
+</html>

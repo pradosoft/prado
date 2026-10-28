@@ -7,6 +7,7 @@ use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
 use Prado\TApplication;
 use Prado\Web\Javascripts\TJavaScript;
+use Prado\Web\Javascripts\TStyleSheetHelper;
 use Prado\Web\TIntegrityManager;
 use Prado\Xml\TXmlDocument;
 use Prado\Test\Unit\Harness\TTestApplication;
@@ -25,12 +26,16 @@ class TIntegrityManagerTest extends \PHPUnit\Framework\TestCase
 		Prado::setPathOfAlias('App', __DIR__);
 		TJavaScript::setScriptIntegrity(self::REMOTE, null);
 		TJavaScript::setRequireScriptIntegrity(false);
+		TStyleSheetHelper::setStyleIntegrity(self::REMOTE, null);
+		TStyleSheetHelper::setRequireStyleIntegrity(false);
 	}
 
 	protected function tearDown(): void
 	{
 		TJavaScript::setScriptIntegrity(self::REMOTE, null);
 		TJavaScript::setRequireScriptIntegrity(false);
+		TStyleSheetHelper::setStyleIntegrity(self::REMOTE, null);
+		TStyleSheetHelper::setRequireStyleIntegrity(false);
 		if ($this->app !== null) {
 			$this->app->restoreApplication();
 			$this->app = null;
@@ -74,6 +79,38 @@ class TIntegrityManagerTest extends \PHPUnit\Framework\TestCase
 		self::assertTrue(TJavaScript::getRequireScriptIntegrity());
 		self::expectException(TConfigurationException::class);
 		TJavaScript::renderScriptFile('https://cdn.example.com/unpinned.js');
+	}
+
+	public function testInitRegistersStyleIntegrity()
+	{
+		$manager = new TIntegrityManager();
+		$manager->init($this->config('<integrity url="' . self::REMOTE . '" hash="BBBB" method="sha512" />'));
+		self::assertEquals('sha512-BBBB', TStyleSheetHelper::getStyleIntegrity(self::REMOTE));
+		$html = TStyleSheetHelper::renderStyleSheetFile(self::REMOTE);
+		self::assertStringContainsString('integrity="sha512-BBBB"', $html);
+		self::assertStringContainsString('crossorigin="anonymous"', $html);
+	}
+
+	public function testRequireStyleIntegrity()
+	{
+		$manager = new TIntegrityManager();
+		self::assertFalse($manager->getRequireStyleIntegrity());
+		$manager->setRequireStyleIntegrity('true');
+		self::assertTrue($manager->getRequireStyleIntegrity());
+		self::assertTrue(TStyleSheetHelper::getRequireStyleIntegrity());
+		self::assertFalse(TJavaScript::getRequireScriptIntegrity());
+		$manager->init($this->config(''));
+		self::expectException(TConfigurationException::class);
+		TStyleSheetHelper::renderStyleSheetFile('https://cdn.example.com/unpinned.css');
+	}
+
+	public function testRequireIntegrityLeavesStylesheetsLenient()
+	{
+		$manager = new TIntegrityManager();
+		$manager->setRequireIntegrity(true);
+		$manager->init($this->config(''));
+		self::assertFalse(TStyleSheetHelper::getRequireStyleIntegrity());
+		self::assertStringContainsString('href="https://cdn.example.com/unpinned.css"', TStyleSheetHelper::renderStyleSheetFile('https://cdn.example.com/unpinned.css'));
 	}
 
 	public function testRequireIntegrityAllowsPinnedRemote()

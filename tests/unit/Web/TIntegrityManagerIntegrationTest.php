@@ -5,6 +5,7 @@ namespace Prado\Test\Unit\Web;
 use Prado\IO\TTextWriter;
 use Prado\Prado;
 use Prado\Web\Javascripts\TJavaScript;
+use Prado\Web\Javascripts\TStyleSheetHelper;
 use Prado\Web\Services\TPageService;
 use Prado\Web\TIntegrityManager;
 use Prado\Web\UI\THtmlWriter;
@@ -28,6 +29,8 @@ class TIntegrityManagerIntegrationTest extends \PHPUnit\Framework\TestCase
 	{
 		TJavaScript::setScriptIntegrity(self::REMOTE, null);
 		TJavaScript::setRequireScriptIntegrity(false);
+		TStyleSheetHelper::setStyleIntegrity(self::REMOTE, null);
+		TStyleSheetHelper::setRequireStyleIntegrity(false);
 		$app = Prado::getApplication();
 		$this->originalService = $app->getService();
 		$app->setService(new TPageService());
@@ -37,6 +40,8 @@ class TIntegrityManagerIntegrationTest extends \PHPUnit\Framework\TestCase
 	{
 		TJavaScript::setScriptIntegrity(self::REMOTE, null);
 		TJavaScript::setRequireScriptIntegrity(false);
+		TStyleSheetHelper::setStyleIntegrity(self::REMOTE, null);
+		TStyleSheetHelper::setRequireStyleIntegrity(false);
 		Prado::getApplication()->setService($this->originalService);
 	}
 
