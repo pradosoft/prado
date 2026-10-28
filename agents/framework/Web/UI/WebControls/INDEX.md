@@ -145,6 +145,7 @@ All extend [THtmlElement](./THtmlElement.md). Each wraps the named HTML5 element
 | [`TFootnote`](TFootnote.md) | `sup` | Numbered footnote reference; child controls are the note, rendered in a `TReferenceList`; `Key` joins references (@since 4.4.0) |
 | [`TFooter`](TFooter.md) | `footer` | Footer of nearest sectioning ancestor |
 | [`THeader`](THeader.md) | `header` | Introductory content or navigational links |
+| [`THGroup`](THGroup.md) | `hgroup` | Heading with subtitle; `HeaderText` in `<h1>`–`<h6>`; `group` role (@since 4.4.0) |
 | [`TIns`](TIns.md) | `ins` | Inserted text; `insertion` role; `Cite`, `DateTime` (@since 4.4.0) |
 | [`TKbd`](TKbd.md) | `kbd` | User input: key, key combination, spoken command (@since 4.4.0) |
 | [`TMain`](TMain.md) | `main` | Dominant page content; one per document |

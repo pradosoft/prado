@@ -767,6 +767,7 @@ return [
 'THeader4' => 'Prado\Web\UI\WebControls\THeader4',
 'THeader5' => 'Prado\Web\UI\WebControls\THeader5',
 'THeader6' => 'Prado\Web\UI\WebControls\THeader6',
+'THGroup' => 'Prado\Web\UI\WebControls\THGroup',
 'THiddenField' => 'Prado\Web\UI\WebControls\THiddenField',
 'THorizontalAlign' => 'Prado\Web\UI\WebControls\THorizontalAlign',
 'THotSpot' => 'Prado\Web\UI\WebControls\THotSpot',
