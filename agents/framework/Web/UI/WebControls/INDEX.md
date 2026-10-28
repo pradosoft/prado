@@ -133,6 +133,9 @@ All extend [THtmlElement](./THtmlElement.md). Each wraps the named HTML5 element
 | [`TMain`](TMain.md) | `main` | Dominant page content; one per document |
 | [`TMark`](TMark.md) | `mark` | Highlighted or marked text |
 | [`TNav`](TNav.md) | `nav` | Navigation links section |
+| [`TRuby`](TRuby.md) | `ruby` | Base text with annotations; `Base`, `Annotation`, `<rp>` parentheses (@since 4.4.0) |
+| [`TRubyParenthesis`](TRubyParenthesis.md) | `rp` | Parenthesis around a ruby annotation; hidden where ruby renders (@since 4.4.0) |
+| [`TRubyText`](TRubyText.md) | `rt` | Ruby annotation (@since 4.4.0) |
 | [`TReferenceList`](TReferenceList.md) | `section` | Numbered notes of the page's `TFootnote` references with back links; region named by `HeaderText` (@since 4.4.0) |
 | [`TSearch`](TSearch.md) | `search` | Search or filter controls; landmark; another tag renders `role="search"` (@since 4.4.0) |
 | [`TSection`](TSection.md) | `section` | Generic thematic document section |
