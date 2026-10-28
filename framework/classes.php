@@ -653,6 +653,8 @@ return [
 'TBaseEdit' => 'Prado\Web\UI\WebControls\TBaseEdit',
 'TBaseTerm' => 'Prado\Web\UI\WebControls\TBaseTerm',
 'TBaseValidator' => 'Prado\Web\UI\WebControls\TBaseValidator',
+'TBdi' => 'Prado\Web\UI\WebControls\TBdi',
+'TBdo' => 'Prado\Web\UI\WebControls\TBdo',
 'TBlockQuote' => 'Prado\Web\UI\WebControls\TBlockQuote',
 'TBoundColumn' => 'Prado\Web\UI\WebControls\TBoundColumn',
 'TBulletedList' => 'Prado\Web\UI\WebControls\TBulletedList',

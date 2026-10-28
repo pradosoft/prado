@@ -131,6 +131,8 @@ All extend [THtmlElement](./THtmlElement.md). Each wraps the named HTML5 element
 | [`TAddress`](TAddress.md) | `address` | Contact information for the article or page; `group` role (@since 4.4.0) |
 | [`TArticle`](TArticle.md) | `article` | Self-contained composition (blog post, news article) |
 | [`TAside`](TAside.md) | `aside` | Tangentially related content; sidebar |
+| [`TBdi`](TBdi.md) | `bdi` | Text isolated from the surrounding direction (@since 4.4.0) |
+| [`TBdo`](TBdo.md) | `bdo` | Text displayed in a forced direction; `Dir` required (@since 4.4.0) |
 | [`TBlockQuote`](TBlockQuote.md) | `blockquote` | Block quotation; `blockquote` role; `Cite` source URL (@since 4.4.0) |
 | [`TCite`](TCite.md) | `cite` | Title of a creative work (@since 4.4.0) |
 | [`TCode`](TCode.md) | `code` | Fragment of computer code; `code` role (@since 4.4.0) |
