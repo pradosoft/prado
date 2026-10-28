@@ -1117,10 +1117,19 @@ Prado.ScriptManagerClass = Prado.Class(Prado.AssetManagerClass, {
 		return urls;
 	},
 
+	/**
+	 * Creates a script element for `url` that carries the page CSP nonce,
+	 * {@link Prado.Element.getPageNonce}.
+	 * @param string url of the script
+	 * @return element the script element
+	 */
 	createAssetElement(url) {
 		const asset = document.createElement('script');
 		asset.type = 'text/javascript';
 		asset.src = url;
+		const nonce = Prado.Element.getPageNonce();
+		if (nonce)
+			asset.nonce = nonce;
 	//	asset.async = false; // HTML5 only
 		return asset;
 	}
