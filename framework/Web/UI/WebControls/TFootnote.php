@@ -14,9 +14,9 @@ use Prado\TPropertyValue;
 
 /**
  * TFootnote class
- * TFootnote is a numbered footnote reference. It renders a superscript link to
- * its note, and its child controls are the note, which renders in a
- * {@see TReferenceList}.
+ * TFootnote is a numbered footnote reference, a {@see TSup} superscript. It
+ * renders a link to its note, and its child controls are the note, which renders
+ * in a {@see TReferenceList}.
  * ```html
  * <p>Prado is component based.<com:TFootnote>Like ASP.NET Web Forms.</com:TFootnote></p>
  * <com:TReferenceList />
@@ -33,22 +33,14 @@ use Prado\TPropertyValue;
  * Accessibility: the reference is a link whose name is the note number and whose
  * description is the heading of the list, so a screen reader announces
  * "1, link, Notes". Following it moves to the note; the note's back link returns.
- * The default tag is `sup`. It can be overridden at runtime via the
+ * The default tag is `sup`, from {@see TSup}. It can be overridden at runtime via the
  * {@see setTagName TagName} property (e.g. from a theme or template), which is
  * provided by the {@see THtmlElement} base class.
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
  */
-class TFootnote extends THtmlElement
+class TFootnote extends TSup
 {
-	/**
-	 * @return string the default tag name
-	 */
-	public function getDefaultTagName()
-	{
-		return 'sup';
-	}
-
 	/**
 	 * @return string the ID path of the TReferenceList holding the note. Defaults to '',
 	 *   the first TReferenceList on the page.
