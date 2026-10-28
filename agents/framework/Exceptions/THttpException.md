@@ -22,7 +22,7 @@ THttpException
 ## Key Features
 
 - HTTP status code stored separately from PHP's exception code
-- Automatic message translation via `TException` message files
+- Message translated for the client language: `getErrorMessageFiles()` reads `messages/messages-<lang>.txt` after the English master. Those files hold only the `THttpException` keys; other exceptions are English.
 - Placeholder replacement in messages (`{0}`, `{1}`, …)
 - Recognized by `TErrorHandler` to render user-facing error pages
 

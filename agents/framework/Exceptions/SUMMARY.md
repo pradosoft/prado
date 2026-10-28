@@ -1,6 +1,6 @@
 # Exceptions/SUMMARY.md
 
-Exception hierarchy and error display for the Prado framework with multilingual error messages.
+Exception hierarchy and error display for the Prado framework with English error messages, visitor-facing translations for `THttpException`, and override message files.
 
 The English message catalog is the master. Removed error codes must also be removed from language variants.
 

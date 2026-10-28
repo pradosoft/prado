@@ -5,7 +5,14 @@
 
 ## Purpose
 
-Input/output utilities for the Prado framework: text writer abstractions and archive extraction.
+Input/output utilities for the Prado framework: text writer abstractions, archive extraction, streams, sockets, processes, and the event loop API.
+
+## Subdirectories
+
+| Directory | Purpose |
+|---|---|
+| [Async/](Async/INDEX.md) | The event loop API: [`IEventLoop`](Async/IEventLoop.md), [`ITickableEventLoop`](Async/ITickableEventLoop.md), the default [`TRevoltEventLoop`](Async/TRevoltEventLoop.md) over `revolt/event-loop`, and [`TLoopSuspension`](Async/TLoopSuspension.md). Futures, `TAsync`, async I/O, and cron concurrency follow in later releases of this API. |
+| [Socket/](Socket/INDEX.md) | Socket streams, servers, the dependency-free [`TSocketReactor`](Socket/TSocketReactor.md) event loop, and `TSocketServerModule`. |
 
 ## Classes
 

@@ -1,6 +1,6 @@
 # PRADO Framework Classes
 
-**Total Classes: 704**
+**Total Classes: 708**
 
 This document lists all classes in the PRADO framework as defined in `classes.php`.
 
@@ -8,7 +8,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 | Directory | Classes | Interfaces | Total | Recursive |
 |-----------|---------|------------|-------|-----------|
-| [Prado](./INDEX.md) | 17 | 7 | 24 | 704 |
+| [Prado](./INDEX.md) | 17 | 7 | 24 | 708 |
 | [Prado\\Caching](./Caching/INDEX.md) | 18 | 2 | 20 | 20 |
 | [Prado\\Collections](./Collections/INDEX.md) | 27 | 7 | 34 | 34 |
 | [Prado\\Data](./Data/INDEX.md) | 10 | 5 | 15 | 51 |
@@ -25,7 +25,8 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 | [Prado\\I18N](./I18N/INDEX.md) | 9 | 0 | 9 | 24 |
 | [Prado\\I18N\\core](./I18N/core/INDEX.md) | 12 | 1 | 13 | 16 |
 | [Prado\\I18N\\core\\Gettext](./I18N/core/Gettext/INDEX.md) | 3 | 0 | 3 | 3 |
-| [Prado\IO](./IO/INDEX.md) | 6 | 1 | 7 | 7 |
+| [Prado\IO](./IO/INDEX.md) | 6 | 1 | 7 | 11 |
+| [Prado\IO\Async](./IO/Async/INDEX.md) | 2 | 2 | 4 | 4 |
 | [Prado\PHPStan](./PHPStan/INDEX.md) | 3 | 0 | 3 | 3 |
 | [Prado\Security](./Security/INDEX.md) | 10 | 2 | 12 | 21 |
 | [Prado\\Security\\Permissions](./Security/Permissions/INDEX.md) | 8 | 1 | 9 | 9 |
@@ -76,7 +77,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TApplicationSignals](./Util/Behaviors/TApplicationSignals.md)
 - TApplicationStatePersister
 - [TComponent](./TComponent.md)
-- TComponentReflection
+- [TComponentReflection](./TComponentReflection.md)
 - TEnumerable
 - [TEventHandler](./TEventHandler.md)
 - TEventParameter
@@ -376,7 +377,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\IO](./IO/INDEX.md) - Classes: 6, Interfaces: 1, Total: 7, Recursive: 7
+## [Prado\IO](./IO/INDEX.md) - Classes: 6, Interfaces: 1, Total: 7, Recursive: 11
 
 ### Interfaces (1)
 
@@ -390,6 +391,20 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TStreamNotificationParameter](./IO/TStreamNotificationParameter.md)
 - [TTarFileExtractor](./IO/TTarFileExtractor.md)
 - [TTextWriter](./IO/TTextWriter.md)
+
+---
+
+## [Prado\IO\Async](./IO/Async/INDEX.md) - Classes: 2, Interfaces: 2, Total: 4, Recursive: 4
+
+### Interfaces (2)
+
+- [IEventLoop](./IO/Async/IEventLoop.md)
+- [ITickableEventLoop](./IO/Async/ITickableEventLoop.md)
+
+### Classes (2)
+
+- [TLoopSuspension](./IO/Async/TLoopSuspension.md)
+- [TRevoltEventLoop](./IO/Async/TRevoltEventLoop.md)
 
 ---
 

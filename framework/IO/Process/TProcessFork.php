@@ -288,10 +288,10 @@ class TProcessFork extends TComponent
 			$this->_channel->close();
 		}
 		if ($this->poll() === null && $this->_reactor !== null) {
-			$timerId = 0;
-			$timerId = $this->_reactor->every(0.01, function () use (&$timerId) {
+			$timerId = '';
+			$timerId = $this->_reactor->repeat(0.01, function () use (&$timerId) {
 				if ($this->poll() !== null) {
-					$this->_reactor?->cancelTimer($timerId);
+					$this->_reactor?->cancel($timerId);
 				}
 			});
 		}

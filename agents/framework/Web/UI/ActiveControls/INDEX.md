@@ -36,7 +36,8 @@ AJAX-enabled controls for the Prado framework. ActiveControls trigger server-sid
 - **[`TActivePageAdapter`](TActivePageAdapter.md)** — `TPage` adapter. Intercepts callback requests. Handles `X-PRADO-*` response headers. Manages deferred control rendering. Traps errors into the callback error handler.
 
 - **[`TCallbackClientScript`](TCallbackClientScript.md)** — Server-side API for client DOM updates. Key methods:
-  - `update($controlID, $html)` — Replace innerHTML
+  - `update($controlID, $html)` — Set inner HTML; the content is parsed as HTML and its scripts run, so user input is encoded first
+  - `setText($controlID, $text)` — Set text content, not parsed as HTML (4.4.0)
   - `replace($controlID, $html)` — Replace element
   - `insertContent($position, $controlID, $html)` — Insert HTML (before/after/top/bottom)
   - `setAttribute($controlID, $attr, $value)` — Set attribute
