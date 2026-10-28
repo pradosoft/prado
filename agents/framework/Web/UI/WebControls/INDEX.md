@@ -126,12 +126,16 @@ All extend [THtmlElement](./THtmlElement.md). Each wraps the named HTML5 element
 | [`TAbbr`](TAbbr.md) | `abbr` | Abbreviation; `Title` is the expansion; marks the abbreviation's other occurrences ([TBaseTerm](TBaseTerm.md), @since 4.4.0) |
 | [`TArticle`](TArticle.md) | `article` | Self-contained composition (blog post, news article) |
 | [`TAside`](TAside.md) | `aside` | Tangentially related content; sidebar |
+| [`TCode`](TCode.md) | `code` | Fragment of computer code; `code` role (@since 4.4.0) |
 | [`TDfn`](TDfn.md) | `dfn` | Defining instance of a term; marks the first occurrence of `Terms` ([TBaseTerm](TBaseTerm.md), @since 4.4.0) |
 | [`TFooter`](TFooter.md) | `footer` | Footer of nearest sectioning ancestor |
 | [`THeader`](THeader.md) | `header` | Introductory content or navigational links |
+| [`TKbd`](TKbd.md) | `kbd` | User input: key, key combination, spoken command (@since 4.4.0) |
 | [`TMain`](TMain.md) | `main` | Dominant page content; one per document |
 | [`TMark`](TMark.md) | `mark` | Highlighted or marked text |
 | [`TNav`](TNav.md) | `nav` | Navigation links section |
+| [`TPre`](TPre.md) | `pre` | Preformatted text; whitespace kept (@since 4.4.0) |
+| [`TSamp`](TSamp.md) | `samp` | Sample output from a program (@since 4.4.0) |
 | [`TSearch`](TSearch.md) | `search` | Search or filter controls; landmark; another tag renders `role="search"` (@since 4.4.0) |
 | [`TSection`](TSection.md) | `section` | Generic thematic document section |
 | [`TVar`](TVar.md) | `var` | Variable or placeholder; marks the variable's other occurrences ([TBaseTerm](TBaseTerm.md), @since 4.4.0) |
