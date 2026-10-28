@@ -12,8 +12,10 @@ Server-side API for client-side DOM updates during callback responses. Provides 
 
 ## Key Properties/Methods
 
-- `update($element, $content)` - Replace innerHTML
-- `replaceContent($element, $content)` - Replace element content
+- `update($element, $content)` - Set inner HTML through jQuery `.html()`; the content is parsed as HTML
+- `setText($element, $text)` - Set the text content through jQuery `.text()`; the text is not parsed as HTML, so it takes user input (@since 4.4.0)
+- `replaceContent($element, $content, $self = true)` - Replace the element or its content with HTML: a string, a rendered control, or a writer's content
+- `appendContent()` / `prependContent()` / `insertContentAfter()` / `insertContentBefore()` - Insert an HTML fragment
 - `setAttribute($control, $name, $value)` - Set HTML attribute
 - `removeAttribute($control, $name)` - Remove an HTML attribute (@since 4.3.3)
 - `setValue($input, $text)` - Set input element value
@@ -28,6 +30,14 @@ Server-side API for client-side DOM updates during callback responses. Provides 
 - `visualEffect($type, $element, $options)` - Apply visual effects
 - `fadeIn($element)` / `fadeOut($element)` / `fadeTo($element, $value, $duration)` - Fade effects
 - `slideDown($element)` / `slideUp($element)` - Slide effects
+
+## HTML and Text
+
+The content methods (`update()`, `replaceContent()`, `appendContent()`, `prependContent()`, `insertContentAfter()`, `insertContentBefore()`) insert HTML. `Prado.Element.replace()` and jQuery `.html()` run inline scripts in it, so content from user input is script execution on the client. Rules:
+
+- Text from user input → `setText()`, or `THttpUtility::htmlEncode()` before a content method.
+- An active control that pushes a text property with `update()` encodes it as its render does: `TActiveOutput` and `TActiveHyperLink` always, the `TEncodeTrait` controls when `Encode` is true.
+- A rendered control or writer → `replaceContent()`; the control's own rendering decides the encoding.
 
 ## See Also
 

@@ -12,6 +12,7 @@ namespace Prado\Web\UI\ActiveControls;
 
 use Prado\IO\TTextWriter;
 use Prado\Prado;
+use Prado\Web\THttpUtility;
 use Prado\Web\UI\WebControls\THyperLink;
 
 /**
@@ -50,8 +51,9 @@ class TActiveHyperLink extends THyperLink implements IActiveControl
 	}
 
 	/**
-	 * On callback response, the inner HTMl of the label is updated.
-	 * @param string $value the text value of the label
+	 * On callback response, the content of the link is updated with the text, HTML-encoded
+	 * as {@see \Prado\Web\UI\WebControls\THyperLink::renderContents()} encodes it.
+	 * @param string $value the text value of the link
 	 */
 	public function setText($value)
 	{
@@ -61,7 +63,7 @@ class TActiveHyperLink extends THyperLink implements IActiveControl
 
 		parent::setText($value);
 		if ($this->getActiveControl()->canUpdateClientSide()) {
-			$this->getPage()->getCallbackClient()->update($this, $value);
+			$this->getPage()->getCallbackClient()->update($this, THttpUtility::htmlEncode($value));
 		}
 	}
 
