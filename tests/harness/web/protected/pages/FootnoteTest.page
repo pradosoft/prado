@@ -1,0 +1,11 @@
+<com:TContent ID="Content">
+	<h1>Footnote Test Case</h1>
+
+	<p>Prado is component based.<com:TFootnote ID="fnDesign">It follows ASP.NET Web Forms.</com:TFootnote>
+	Its templates compile to PHP.<com:TFootnote ID="fnSource" Key="source">See the Prado manual.</com:TFootnote></p>
+	<p>Controls keep their state between requests.<com:TFootnote ID="fnSource2" Key="source" /></p>
+
+	<div style="height: 1500px">Spacer</div>
+
+	<com:TReferenceList ID="notes" />
+</com:TContent>

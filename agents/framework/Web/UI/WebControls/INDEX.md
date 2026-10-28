@@ -19,6 +19,10 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 - **[`TBaseTerm`](TBaseTerm.md)** — Base for `TAbbr`, `TDfn`, and `TVar`: renders a term element and marks the term's other occurrences in a target control through `onRenderFilter`. @since 4.4.0
 
+- **[`TCiteTrait`](TCiteTrait.md)** — Backs the `Cite` property (source or explanation URL) of `TQuote`, `TBlockQuote`, `TIns`, and `TDel`. @since 4.4.0
+
+- **[`TBaseEdit`](TBaseEdit.md)** — Base for `TIns` and `TDel`: `Cite` and `DateTime` of an edit. @since 4.4.0
+
 - **[`TContent`](TContent.md)** / **[`TContentPlaceHolder`](TContentPlaceHolder.md)** — Master page content injection. `TContent` blocks are injected into matching `TContentPlaceHolder` elements in the master template. Supports hierarchy matching.
 
 ## Subdirectories
@@ -124,16 +128,36 @@ All extend [THtmlElement](./THtmlElement.md). Each wraps the named HTML5 element
 | Class | Default Tag | HTML5 Semantic Meaning |
 |---|---|---|
 | [`TAbbr`](TAbbr.md) | `abbr` | Abbreviation; `Title` is the expansion; marks the abbreviation's other occurrences ([TBaseTerm](TBaseTerm.md), @since 4.4.0) |
+| [`TAddress`](TAddress.md) | `address` | Contact information for the article or page; `group` role (@since 4.4.0) |
 | [`TArticle`](TArticle.md) | `article` | Self-contained composition (blog post, news article) |
 | [`TAside`](TAside.md) | `aside` | Tangentially related content; sidebar |
+| [`TBdi`](TBdi.md) | `bdi` | Text isolated from the surrounding direction (@since 4.4.0) |
+| [`TBdo`](TBdo.md) | `bdo` | Text displayed in a forced direction; `Dir` required (@since 4.4.0) |
+| [`TBlockQuote`](TBlockQuote.md) | `blockquote` | Block quotation; `blockquote` role; `Cite` source URL (@since 4.4.0) |
+| [`TCite`](TCite.md) | `cite` | Title of a creative work (@since 4.4.0) |
+| [`TCode`](TCode.md) | `code` | Fragment of computer code; `code` role (@since 4.4.0) |
+| [`TDataValue`](TDataValue.md) | `data` | Content with a machine-readable `Value` (@since 4.4.0) |
+| [`TDel`](TDel.md) | `del` | Deleted text; `deletion` role; `Cite`, `DateTime` (@since 4.4.0) |
 | [`TDfn`](TDfn.md) | `dfn` | Defining instance of a term; marks the first occurrence of `Terms` ([TBaseTerm](TBaseTerm.md), @since 4.4.0) |
+| [`TFootnote`](TFootnote.md) | `sup` | Numbered footnote reference; child controls are the note, rendered in a `TReferenceList`; `Key` joins references (@since 4.4.0) |
 | [`TFooter`](TFooter.md) | `footer` | Footer of nearest sectioning ancestor |
 | [`THeader`](THeader.md) | `header` | Introductory content or navigational links |
+| [`TIns`](TIns.md) | `ins` | Inserted text; `insertion` role; `Cite`, `DateTime` (@since 4.4.0) |
+| [`TKbd`](TKbd.md) | `kbd` | User input: key, key combination, spoken command (@since 4.4.0) |
 | [`TMain`](TMain.md) | `main` | Dominant page content; one per document |
 | [`TMark`](TMark.md) | `mark` | Highlighted or marked text |
 | [`TNav`](TNav.md) | `nav` | Navigation links section |
+| [`TPre`](TPre.md) | `pre` | Preformatted text; whitespace kept (@since 4.4.0) |
+| [`TQuote`](TQuote.md) | `q` | Inline quotation; `Cite` source URL (@since 4.4.0) |
+| [`TSamp`](TSamp.md) | `samp` | Sample output from a program (@since 4.4.0) |
+| [`TRuby`](TRuby.md) | `ruby` | Base text with annotations; `Base`, `Annotation`, `<rp>` parentheses (@since 4.4.0) |
+| [`TRubyParenthesis`](TRubyParenthesis.md) | `rp` | Parenthesis around a ruby annotation; hidden where ruby renders (@since 4.4.0) |
+| [`TRubyText`](TRubyText.md) | `rt` | Ruby annotation (@since 4.4.0) |
+| [`TReferenceList`](TReferenceList.md) | `section` | Numbered notes of the page's `TFootnote` references with back links; region named by `HeaderText` (@since 4.4.0) |
 | [`TSearch`](TSearch.md) | `search` | Search or filter controls; landmark; another tag renders `role="search"` (@since 4.4.0) |
 | [`TSection`](TSection.md) | `section` | Generic thematic document section |
+| [`TSub`](TSub.md) | `sub` | Subscript; `subscript` role (@since 4.4.0) |
+| [`TSup`](TSup.md) | `sup` | Superscript; `superscript` role (@since 4.4.0) |
 | [`TVar`](TVar.md) | `var` | Variable or placeholder; marks the variable's other occurrences ([TBaseTerm](TBaseTerm.md), @since 4.4.0) |
 
 ## Rich Text & Special Controls

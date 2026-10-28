@@ -19,11 +19,9 @@ use Throwable;
  *
  * TException is the base class for all PRADO exceptions.
  *
- * TException provides the functionality of translating an error code
- * into a descriptive error message in a language that is preferred
- * by user browser. Additional parameters may be passed together with
- * the error code so that the translated message contains more detailed
- * information.
+ * TException translates an error code into a descriptive error message.
+ * Additional parameters may be passed together with the error code so
+ * that the message contains more detailed information.
  *
  * Old style TException only have an error Message Code as follows:
  * ```php
@@ -42,11 +40,18 @@ use Throwable;
  * to the Normal PHP Exceptions (where the $message is the first parameter and $code
  * is the second).  This done to support Error Message Parameters.
  *
- * By default, TException looks for a message file by calling
- * {@see getErrorMessageFile()} method, which uses the "message-xx.txt"
- * file located under "Prado\Exceptions\messages\" folder, where "xx" is
- * the code of the user preferred language. If such a file is not found,
- * "message.txt" will be used instead.
+ * The error code is looked up in the files of {@see getErrorMessageFiles()}:
+ * the English master "messages.txt" under "Prado\Exceptions\messages\" from
+ * {@see getErrorMessageFile()}, then every file registered with
+ * {@see addMessageFile()}. A later file overrides an earlier definition. A code
+ * defined in no file is the message itself.
+ *
+ * Framework messages are English. {@see THttpException} adds the framework's
+ * "messages-xx.txt" of the client language, "xx" from
+ * {@see \Prado\Prado::getPreferredLanguage()}, for the messages shown to the site
+ * visitor. Translations of the developer-facing messages are the
+ * `pradosoft/prado-dev-errormessages` package, registered through its Composer
+ * `extra.prado.error-messages` entry.
  *
  * The Message Files can have blank lines, and both '#' and ';' comments.
  *
@@ -65,8 +70,8 @@ class TException extends \Exception
 	 *   Exceptions this is a string error Message Code.  If this is a string, then the
 	 *   $errorCode acts as and $errorMessage becomes a parameter in $args.
 	 * @param string $errorMessage The error message code when $errorCode is an integer.
-	 *   This can be a string that is listed in the message file. If so, the message in
-	 *   the preferred language will be used as the error message.
+	 *   This can be a string that is listed in a message file. If so, the listed
+	 *   message is the error message.
 	 * @param array $args These are used to replace placeholders ({0}, {1}, {2}, etc.)
 	 *   in the message except the last argument.  If the last argument is a Throwable
 	 *   it is treated as the $previous Exception for exception chaining.
@@ -97,7 +102,11 @@ class TException extends \Exception
 	}
 
 	/**
-	 * Adds to the various files to read when rendering an error
+	 * Registers a message file read after the file of {@see getErrorMessageFile()}. Its
+	 * definitions override the framework messages and the files registered before it.
+	 * When a "-xx" variant of the file exists for the client language of
+	 * {@see \Prado\Prado::getPreferredLanguage()}, "messages-fr.txt" for "messages.txt",
+	 * the variant is registered in its place.
 	 * @param string $file the extra message file
 	 * @since 4.2.0
 	 */
@@ -114,24 +123,25 @@ class TException extends \Exception
 	}
 
 	/**
-	 * Translates an error code into an error message. Allows for '#' and ';' comments.
+	 * Translates an error code into an error message through the files of
+	 * {@see getErrorMessageFiles()}; a later file overrides an earlier definition.
+	 * Each file is parsed once per request, an unreadable file as no entries. Allows
+	 * for '#' and ';' comments.
 	 * @param ?string $key error code that is passed in the exception constructor.
-	 * @return string the translated error message
+	 * @return string the translated error message, or the error code when no file defines it.
 	 */
 	protected function translateErrorMessage($key)
 	{
 		if (empty($key)) {
 			return '';
 		}
-		$msgFiles = TException::$_messageFiles;
-		$msgFiles[] = $this->getErrorMessageFile();
 		$value = $key;
 
 		// Cache messages
-		foreach ($msgFiles as $msgFile) {
+		foreach ($this->getErrorMessageFiles() as $msgFile) {
 			if (!isset(self::$_messageCache[$msgFile])) {
+				self::$_messageCache[$msgFile] = [];
 				if (($entries = @file($msgFile)) !== false) {
-					self::$_messageCache[$msgFile] = [];
 					foreach ($entries as $entry) {
 						$entry = trim($entry);
 
@@ -153,16 +163,23 @@ class TException extends \Exception
 	}
 
 	/**
-	 * @return string path to the error message file
+	 * Returns the message files to read, in order of increasing precedence: the file of
+	 * {@see getErrorMessageFile()}, then the files of {@see addMessageFile()} in
+	 * registration order. A key defined in a later file overrides the earlier definition.
+	 * @return string[] the message file paths.
+	 * @since 4.4.0
+	 */
+	protected function getErrorMessageFiles(): array
+	{
+		return [$this->getErrorMessageFile(), ...self::$_messageFiles];
+	}
+
+	/**
+	 * @return string path to the English master message file of the framework.
 	 */
 	protected function getErrorMessageFile()
 	{
-		$lang = Prado::getPreferredLanguage();
-		$msgFile = Prado::getFrameworkPath() . '/Exceptions/messages/messages-' . $lang . '.txt';
-		if (!is_file($msgFile)) {
-			$msgFile = Prado::getFrameworkPath() . '/Exceptions/messages/messages.txt';
-		}
-		return $msgFile;
+		return Prado::getFrameworkPath() . '/Exceptions/messages/messages.txt';
 	}
 
 	/**
