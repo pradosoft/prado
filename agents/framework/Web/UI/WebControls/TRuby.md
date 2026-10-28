@@ -20,6 +20,9 @@ The default tag is `ruby`. It can be overridden at runtime via the `TagName` pro
 <com:TRuby Lang="ja" Base="漢字" Annotation="かんじ" />
 <!-- <ruby lang="ja">漢字<rp>(</rp><rt>かんじ</rt><rp>)</rp></ruby> -->
 
+<!-- character by character: one TRuby per character -->
+<com:TRuby Lang="ja" Base="漢" Annotation="かん" /><com:TRuby Lang="ja" Base="字" Annotation="じ" />
+
 <com:TRuby Lang="ja">東<com:TRubyParenthesis>（</com:TRubyParenthesis><com:TRubyText>とう</com:TRubyText><com:TRubyParenthesis>）</com:TRubyParenthesis></com:TRuby>
 ```
 
@@ -36,11 +39,13 @@ The default tag is `ruby`. It can be overridden at runtime via the `TagName` pro
 ## Accessibility
 
 - Screen readers read the base text, then the annotation; a browser that renders ruby hides the `<rp>` parentheses (`display: none`).
+- Chromium exposes a `<ruby>`'s annotation as its description, and only the first annotation of a `<ruby>` with several base texts. One TRuby per base text keeps each annotation.
 - Text in another language sets `Lang`, so a screen reader uses that language's voice.
 
 ## Tests
 
 - `tests/unit/Web/UI/WebControls/TRubyTest.php`
+- `tests/playwright/web/TRubyTestCase.spec.js` with `tests/harness/web/protected/pages/RubyTest.page`: ruby layout, hidden parentheses, reading order, and the Chromium accessibility tree
 
 ## See Also
 

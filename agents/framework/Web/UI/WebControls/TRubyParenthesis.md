@@ -20,6 +20,7 @@ The default tag is `rp`. It can be overridden at runtime via the `TagName` prope
 ## Tests
 
 - `tests/unit/Web/UI/WebControls/TRubyTest.php`
+- `tests/playwright/web/TRubyTestCase.spec.js` with `tests/harness/web/protected/pages/RubyTest.page`: ruby layout, hidden parentheses, reading order, and the Chromium accessibility tree
 
 ## See Also
 

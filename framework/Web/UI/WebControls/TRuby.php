@@ -19,19 +19,21 @@ use Prado\TPropertyValue;
  * When {@see setBase() Base} and {@see setAnnotation() Annotation} are set, they
  * render as the base text and its {@see TRubyText}, with {@see TRubyParenthesis}
  * parentheses around the annotation while {@see setShowParentheses()
- * ShowParentheses} is true. The child controls render after them, so a
- * per-character annotation is children:
+ * ShowParentheses} is true. The child controls render after them.
  * ```html
  * <com:TRuby Lang="ja" Base="漢字" Annotation="かんじ" />
- * <com:TRuby Lang="ja">漢<com:TRubyText>かん</com:TRubyText>字<com:TRubyText>じ</com:TRubyText></com:TRuby>
+ * <com:TRuby Lang="ja" Base="漢" Annotation="かん" /><com:TRuby Lang="ja" Base="字" Annotation="じ" />
  * ```
- * The first renders `<ruby>漢字<rp>(</rp><rt>かんじ</rt><rp>)</rp></ruby>`.
+ * The first renders `<ruby>漢字<rp>(</rp><rt>かんじ</rt><rp>)</rp></ruby>`. A word
+ * annotated character by character is one TRuby per character.
  * {@see setOpenParenthesis() OpenParenthesis} and
  * {@see setCloseParenthesis() CloseParenthesis} are the parentheses, such as the
  * full-width `（` and `）`. {@see setEncode() Encode} HTML-encodes Base and Annotation.
  * Accessibility: screen readers read the base text, then the annotation; a
- * browser that renders ruby hides the parentheses. Text in another language sets
- * `Lang`, so a screen reader reads it with that language's voice.
+ * browser that renders ruby hides the parentheses. Chromium exposes only the
+ * first annotation of a `<ruby>`, as its description, so each base text with an
+ * annotation is its own TRuby. Text in another language sets `Lang`, so a screen
+ * reader reads it with that language's voice.
  * The default tag is `ruby`. It can be overridden at runtime via the
  * {@see setTagName TagName} property (e.g. from a theme or template), which is
  * provided by the {@see THtmlElement} base class.
