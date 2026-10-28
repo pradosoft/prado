@@ -53,6 +53,11 @@ Implements: `IPostBackDataHandler`, `IValidatable`, `IDataRenderer`
 | `PersistPassword` | bool | `false` | If true, the password value is re-sent to the browser on postback |
 | `AutoCompleteType` | TTextBoxAutoCompleteType | `None` | Browser autocomplete hint |
 | `SuggestionList` | string | `''` | ID of a [`TSuggestionList`](./TSuggestionList.md); renders `list` with its ClientID (@since 4.4.0) |
+| `Min`, `Max`, `Step` | string | `''` | `min`, `max`, `step` in the format and unit of the text mode; `Step="any"` (@since 4.4.0) |
+| `Pattern` | string | `''` | `pattern`, a regular expression the whole value matches (@since 4.4.0) |
+| `Placeholder` | string | `''` | `placeholder` hint (@since 4.4.0) |
+| `Required` | bool | `false` | `required` (@since 4.4.0) |
+| `Multiple` | bool | `false` | `multiple`: Email accepts a comma-separated list (@since 4.4.0) |
 | `EnableClientScript` | bool | `true` | Whether JS postback/event handling is registered |
 | `IsValid` | bool | `true` | Set by validators; readable after validation runs |
 
@@ -87,4 +92,7 @@ Implements: `IPostBackDataHandler`, `IValidatable`, `IDataRenderer`
 - **SafeText caching** — The HTMLPurifier result is cached in `$_safeText`. Calling `setText()` clears the cache. The HTMLPurifier instance is shared statically across all TTextBox instances.
 - **Client JS** — Registered only when `EnableClientScript=true`, the control is enabled, and either `AutoPostBack=true` or `TextMode=SingleLine`.
 - **`SuggestionList`** — Resolved with `findControl()` at render; a missing control throws `textbox_suggestionlist_invalid`. No `list` for `MultiLine` or `Password`, or when the list is not visible.
+- **Constraints render per text mode** (`addConstraintAttributesToRender()`): `min`/`max`/`step` for Date, DatetimeLocal, Month, Number, Range, Time, Week; `pattern` for SingleLine, Email, Password, Search, Tel, Url; `multiple` for Email; `placeholder` for those text modes plus MultiLine and Number; `required` for every mode except Color and Range.
+- **Constraints are browser-only** — The browser checks them when a submit button posts the form; a script postback (`form.submit()`) skips them, and the server checks none. Pair them with `TRequiredFieldValidator`, `TRangeValidator`, and `TRegularExpressionValidator`.
+- **Placeholder is not a label** — Keep a `TLabel`; browsers expose `Required` as a required field.
 - **`Columns` meaning differs by mode** — In SingleLine/Password it becomes the `size` attribute; in MultiLine it is the `cols` attribute with a 20-column fallback.

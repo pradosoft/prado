@@ -1,0 +1,12 @@
+<com:TContent ID="Content">
+	<h1>TextBox Constraint Test Case</h1>
+
+	<com:TLabel ForControl="quantity" Text="Quantity" />
+	<com:TTextBox ID="quantity" TextMode="Number" Min="2" Max="10" Step="2" Required="true" Placeholder="Even number" EnableClientScript="false" />
+
+	<com:TLabel ForControl="emails" Text="Emails" />
+	<com:TTextBox ID="emails" TextMode="Email" Multiple="true" Pattern=".+@example\.com(,.+@example\.com)*" EnableClientScript="false" />
+
+	<com:TLabel ForControl="meeting" Text="Meeting" />
+	<com:TTextBox ID="meeting" TextMode="Time" Min="09:00" Max="17:00" Step="1800" EnableClientScript="false" />
+</com:TContent>

@@ -36,6 +36,23 @@ use Prado\Exceptions\TConfigurationException;
  * property to true. If you want to limit the user input to a specified number
  * of characters, set the {@see setMaxLength MaxLength} property.
  * To use AutoComplete feature, set the {@see setAutoCompleteType AutoCompleteType} property.
+ *
+ * ## Constraints
+ * The HTML constraint properties render as attributes for the text modes that
+ * define them:
+ * | Property | Attribute | Text modes |
+ * |---|---|---|
+ * | {@see setMin Min}, {@see setMax Max}, {@see setStep Step} | `min`, `max`, `step` | Date, DatetimeLocal, Month, Number, Range, Time, Week |
+ * | {@see setPattern Pattern} | `pattern` | SingleLine, Email, Password, Search, Tel, Url |
+ * | {@see setMultiple Multiple} | `multiple` | Email |
+ * | {@see setPlaceholder Placeholder} | `placeholder` | SingleLine, Email, MultiLine, Number, Password, Search, Tel, Url |
+ * | {@see setRequired Required} | `required` | every mode except Color and Range |
+ * The browser checks the constraints when a submit button posts the form, and a
+ * script postback skips them. The server checks none of them; validators do:
+ * {@see TRequiredFieldValidator} for Required, {@see TRangeValidator} for Min and
+ * Max, and {@see TRegularExpressionValidator} for Pattern.
+ * Accessibility: browsers expose Required as a required field. A Placeholder is
+ * not a label; the text box keeps its {@see TLabel}.
  * To suggest predefined values, set the {@see setSuggestionList SuggestionList} property
  * to the ID of a {@see \Prado\Web\UI\WebControls\TSuggestionList}.
  *
@@ -201,6 +218,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 				$writer->addAttribute('maxlength', "$maxLength");
 			}
 		}
+		$this->addConstraintAttributesToRender($writer, $textMode);
 		if ($this->getReadOnly()) {
 			$writer->addAttribute('readonly', 'readonly');
 		}
@@ -510,6 +528,170 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	public function setMaxLength($value)
 	{
 		$this->setViewState('MaxLength', TPropertyValue::ensureInteger($value), 0);
+	}
+
+	/**
+	 * @return string the minimum value, in the format of the text mode, such as `2026-01-01`
+	 *   for Date. Defaults to ''.
+	 * @since 4.4.0
+	 */
+	public function getMin()
+	{
+		return $this->getViewState('Min', '');
+	}
+
+	/**
+	 * @param string $value the minimum value, in the format of the text mode.
+	 * @since 4.4.0
+	 */
+	public function setMin($value)
+	{
+		$this->setViewState('Min', trim(TPropertyValue::ensureString($value)), '');
+	}
+
+	/**
+	 * @return string the maximum value, in the format of the text mode. Defaults to ''.
+	 * @since 4.4.0
+	 */
+	public function getMax()
+	{
+		return $this->getViewState('Max', '');
+	}
+
+	/**
+	 * @param string $value the maximum value, in the format of the text mode.
+	 * @since 4.4.0
+	 */
+	public function setMax($value)
+	{
+		$this->setViewState('Max', trim(TPropertyValue::ensureString($value)), '');
+	}
+
+	/**
+	 * @return string the step between allowed values, a number in the unit of the text mode
+	 *   (days for Date, seconds for Time and DatetimeLocal), or `any`. Defaults to ''.
+	 * @since 4.4.0
+	 */
+	public function getStep()
+	{
+		return $this->getViewState('Step', '');
+	}
+
+	/**
+	 * @param string $value the step between allowed values, or `any`.
+	 * @since 4.4.0
+	 */
+	public function setStep($value)
+	{
+		$this->setViewState('Step', trim(TPropertyValue::ensureString($value)), '');
+	}
+
+	/**
+	 * @return string the regular expression the whole value matches. Defaults to ''.
+	 * @since 4.4.0
+	 */
+	public function getPattern()
+	{
+		return $this->getViewState('Pattern', '');
+	}
+
+	/**
+	 * @param string $value the regular expression the whole value matches, without delimiters.
+	 * @since 4.4.0
+	 */
+	public function setPattern($value)
+	{
+		$this->setViewState('Pattern', TPropertyValue::ensureString($value), '');
+	}
+
+	/**
+	 * @return string the hint shown in the empty text box. Defaults to ''.
+	 * @since 4.4.0
+	 */
+	public function getPlaceholder()
+	{
+		return $this->getViewState('Placeholder', '');
+	}
+
+	/**
+	 * @param string $value the hint shown in the empty text box.
+	 * @since 4.4.0
+	 */
+	public function setPlaceholder($value)
+	{
+		$this->setViewState('Placeholder', TPropertyValue::ensureString($value), '');
+	}
+
+	/**
+	 * @return bool whether the browser requires a value before submitting. Defaults to false.
+	 * @since 4.4.0
+	 */
+	public function getRequired()
+	{
+		return $this->getViewState('Required', false);
+	}
+
+	/**
+	 * @param bool $value whether the browser requires a value before submitting.
+	 * @since 4.4.0
+	 */
+	public function setRequired($value)
+	{
+		$this->setViewState('Required', TPropertyValue::ensureBoolean($value), false);
+	}
+
+	/**
+	 * @return bool whether an Email text box accepts a comma-separated list of addresses.
+	 *   Defaults to false.
+	 * @since 4.4.0
+	 */
+	public function getMultiple()
+	{
+		return $this->getViewState('Multiple', false);
+	}
+
+	/**
+	 * @param bool $value whether an Email text box accepts a comma-separated list of addresses.
+	 * @since 4.4.0
+	 */
+	public function setMultiple($value)
+	{
+		$this->setViewState('Multiple', TPropertyValue::ensureBoolean($value), false);
+	}
+
+	/**
+	 * Adds the constraint attributes that the text mode defines; see the class
+	 * documentation for the table.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
+	 * @param string $textMode the text mode.
+	 * @since 4.4.0
+	 */
+	protected function addConstraintAttributesToRender($writer, $textMode)
+	{
+		$ranged = [TTextBoxMode::Date, TTextBoxMode::Datetime, TTextBoxMode::DatetimeLocal, TTextBoxMode::Month,
+			TTextBoxMode::Number, TTextBoxMode::Range, TTextBoxMode::Time, TTextBoxMode::Week];
+		$textual = [TTextBoxMode::SingleLine, TTextBoxMode::Email, TTextBoxMode::Password, TTextBoxMode::Search,
+			TTextBoxMode::Tel, TTextBoxMode::Url];
+		if (in_array($textMode, $ranged, true)) {
+			foreach (['min' => $this->getMin(), 'max' => $this->getMax(), 'step' => $this->getStep()] as $name => $value) {
+				if ($value !== '') {
+					$writer->addAttribute($name, $value);
+				}
+			}
+		}
+		if (in_array($textMode, $textual, true) && ($pattern = $this->getPattern()) !== '') {
+			$writer->addAttribute('pattern', $pattern);
+		}
+		if ($textMode === TTextBoxMode::Email && $this->getMultiple()) {
+			$writer->addAttribute('multiple', 'multiple');
+		}
+		if ((in_array($textMode, $textual, true) || $textMode === TTextBoxMode::MultiLine || $textMode === TTextBoxMode::Number)
+			&& ($placeholder = $this->getPlaceholder()) !== '') {
+			$writer->addAttribute('placeholder', $placeholder);
+		}
+		if ($textMode !== TTextBoxMode::Color && $textMode !== TTextBoxMode::Range && $this->getRequired()) {
+			$writer->addAttribute('required', 'required');
+		}
 	}
 
 	/**
