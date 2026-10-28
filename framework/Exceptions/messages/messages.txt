@@ -767,6 +767,9 @@ progress_max_invalid					= TProgress Max must be greater than 0; {0} given.
 time_invalid_datetime					= TTime DateTime must be a DateTimeInterface, DateInterval, string, or numeric value; {0} given.
 time_invalid_text_format				= TTime TextFormat '{0}' is not a TTimeFormat constant name or ICU datetime pattern.
 
+footnote_referencelist_missing			= TFootnote '{0}' has no TReferenceList: ReferenceList '{1}' is not a TReferenceList, or the page has none.
+referencelist_headerlevel_invalid		= TReferenceList HeaderLevel must be 1 through 6; {0} given.
+
 webtemplate_invalid_child				= TWebTemplate '{0}' cannot contain '{1}': active, postback, and validator controls do not function inside inert template content. Use plain markup with {{...}} placeholders, or set ValidateContent="false".
 
 vardumper_not_array						= __debuginfo() must return an array.
