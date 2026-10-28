@@ -62,6 +62,12 @@ use Prado\Web\UI\WebControls\TSuggestionList;
  * $this->getPage()->getClientScript()->registerPradoScript('jqueryui');
  * ```
  *
+ * The content methods {@see update()}, {@see appendContent()}, {@see prependContent()},
+ * {@see insertContentAfter()}, {@see insertContentBefore()}, and {@see replaceContent()}
+ * insert their content as HTML, and the client runs any inline script in it, as jQuery
+ * `.html()` does.  Text from user input goes through {@see setText()}, which sets text
+ * content, or through {@see \Prado\Web\THttpUtility::htmlEncode()} before a content method.
+ *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @since 3.1
@@ -374,10 +380,11 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * Update the element's innerHTML with new content.
-	 * @param \Prado\Web\UI\TControl $element control element or element id
-	 * @param \Prado\Web\UI\TControl $content new HTML content, if content is of a TControl, the
-	 * controls render method is called.
+	 * Sets the element's inner HTML, through jQuery `.html()`.  The content is parsed as HTML
+	 * and its inline scripts run, so user input is HTML-encoded first or goes through
+	 * {@see setText()}.  {@see replaceContent()} inserts a rendered control.
+	 * @param \Prado\Web\UI\TControl|string $element control element or element id
+	 * @param string $content new HTML content
 	 */
 	public function update($element, $content)
 	{
@@ -449,9 +456,10 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * Append a HTML fragement to the element.
-	 * @param \Prado\Web\UI\TControl $element control element or element id
-	 * @param string $content HTML fragement or the control to be rendered
+	 * Appends an HTML fragment to the element's content, as HTML.  The fragment is parsed and its inline
+	 * scripts run, so user input is HTML-encoded first.
+	 * @param \Prado\Web\UI\TControl|string $element control element or element id
+	 * @param string $content HTML fragment
 	 */
 	public function appendContent($element, $content)
 	{
@@ -459,9 +467,10 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * Prepend a HTML fragement to the element.
-	 * @param \Prado\Web\UI\TControl $element control element or element id
-	 * @param string $content HTML fragement or the control to be rendered
+	 * Prepends an HTML fragment to the element's content, as HTML.  The fragment is parsed and its inline
+	 * scripts run, so user input is HTML-encoded first.
+	 * @param \Prado\Web\UI\TControl|string $element control element or element id
+	 * @param string $content HTML fragment
 	 */
 	public function prependContent($element, $content)
 	{
@@ -469,9 +478,10 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * Insert a HTML fragement after the element.
-	 * @param \Prado\Web\UI\TControl $element control element or element id
-	 * @param string $content HTML fragement or the control to be rendered
+	 * Inserts an HTML fragment after the element, as HTML.  The fragment is parsed and its inline
+	 * scripts run, so user input is HTML-encoded first.
+	 * @param \Prado\Web\UI\TControl|string $element control element or element id
+	 * @param string $content HTML fragment
 	 */
 	public function insertContentAfter($element, $content)
 	{
@@ -479,9 +489,10 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * Insert a HTML fragement in before the element.
-	 * @param \Prado\Web\UI\TControl $element control element or element id
-	 * @param string $content HTML fragement or the control to be rendered
+	 * Inserts an HTML fragment before the element, as HTML.  The fragment is parsed and its inline
+	 * scripts run, so user input is HTML-encoded first.
+	 * @param \Prado\Web\UI\TControl|string $element control element or element id
+	 * @param string $content HTML fragment
 	 */
 	public function insertContentBefore($element, $content)
 	{
@@ -489,17 +500,11 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * Replace the content of an element with new content. The new content can
-	 * be a string or a TControl component. If the <tt>content</tt> parameter is
-	 * a TControl component, its rendered method will be called and its contents
-	 * will be used for replacement.
-	 * @param \Prado\Web\UI\TControl $element control element or HTML element id.
-	 * @param string $content HTML fragement or the control to be rendered.
+	 * Replaces the element, or its content, through `Prado.Element.replace`.  A control is
+	 * rendered and a writer's content is sent inside a response boundary; a string is sent as is.
+	 * @param \Prado\Web\UI\TControl|string $element control element or HTML element id.
+	 * @param \Prado\Web\UI\TControl|\Prado\Web\UI\THtmlWriter|string $content HTML fragment, the control to be rendered, or the writer holding the content.
 	 * @param bool $self whether to fully replace the element or just its inner content.
-	 * @see insertAbout
-	 * @see insertBelow
-	 * @see insertBefore
-	 * @see insertAfter
 	 */
 	protected function replace($element, $content, $self)
 	{
@@ -517,9 +522,11 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * Replace the content of an element with new content contained in writer.
-	 * @param \Prado\Web\UI\TControl $element control element or HTML element id.
-	 * @param string $content HTML fragement or the control to be rendered.
+	 * Replaces the element, or its content, with HTML: a string, a control that is rendered,
+	 * or the content of a writer.  The HTML is parsed and its inline scripts run, so user
+	 * input in a string is HTML-encoded first.
+	 * @param \Prado\Web\UI\TControl|string $element control element or HTML element id.
+	 * @param \Prado\Web\UI\TControl|\Prado\Web\UI\THtmlWriter|string $content HTML fragment, the control to be rendered, or the writer holding the content.
 	 * @param bool $self whether to fully replace the element or just its inner content, defaults to true.
 	 */
 	public function replaceContent($element, $content, $self = true)
