@@ -10,41 +10,13 @@ for both A and B.
 Upgrading from v4.3.3
 ---------------------
 - PHP 8.2 is now required. Applications running PHP 8.1 stay on Prado 4.3.
-- Framework exception messages are English (#1292). `TException` no longer selects `messages-<lang>.txt` by the client's
-  `Accept-Language`; `getMessage()` and log records of a framework exception are English in every language. The
-  `THttpException` messages the visitor sees (404, 403, 400, 503 pages) stay translated: `framework/Exceptions/messages/messages-<lang>.txt`
-  now holds only those keys. Developers who want the exception pages and logs in French, Indonesian, Chinese, or one of
-  35 further languages add the language pack: `composer require pradosoft/prado-dev-errormessages`. Prado registers its
-  message files from the package's Composer `extra.prado` section; with the pack installed, messages follow the client
-  language as in 4.3. Message files registered with `TException::addMessageFile()`, by the `errormessages` application
-  configuration, or by an extension's `extra.prado.error-messages` are now read after the framework master and override
-  its text; in 4.3 the framework file won. A subclass that overrides `getErrorMessageFile()` keeps working; the new
-  `getErrorMessageFiles()` returns that file first, then the registered files. The package's migration guide:
-  https://github.com/pradosoft/prado-dev-errormessages/blob/master/docs/migration.md
-- `framework/Exceptions/messages/messages.txt` holds exactly the keys the framework throws. 74 keys that no framework
-  code throws are removed; an application that throws one of them with a Prado exception class now gets the key as the
-  message and should define the key in its own `errormessages` file. Removed: `prado_component_unknown`,
-  `prado_using_invalid`, `component_tbehavior_cannot_attach_as_class_behavior`, `map_addition_disallowed`,
-  `map_item_unremovable`, `eventsubscription_no_setcollection`, `appconfig_moduleid_required`,
-  `securitymanager_mcryptextension_required`, `securitymanager_mcryptextension_initfailed`, `httpresponse_file_inexistent`,
-  `httpsession_storage_unchangeable`, `httpsession_autostart_unchangeable`, `assetmanager_basepath_unchangeable`,
-  `assetmanager_baseurl_unchangeable`, the six `sqlitecache_*` keys, `memcache_extension_required`,
-  `pageservice_defaultpage_unchangeable`, `pageservice_basepath_unchangeable`, `pageservice_pageclass_invalid`, the six
-  `pageserviceconf_*` keys, `behaviormodule_behaviorname_required`, `behaviormodule_behaviorclass_required`,
-  `behaviorparameterloader_no_behavior_name`, `template_comments_forbidden`, `template_content_unexpected`,
-  `thememanager_basepath_unchangeable`, `theme_baseurl_required`, `csmanager_pradoscript_notloaded`,
-  `csmanager_invalid_packages`, the three `listcontrol_*` keys, `logrouter_routetype_required`, the three `datagrid_*`
-  paging keys, `tablecellcollection_tablerow_required`, `texthighlighter_stylesheet_invalid`,
-  `parametermodule_parameterfile_unchangeable`, `databoundcontrol_currentpageindex_invalid`,
-  `clientscript_invalid_file_position`, `clientscript_invalid_package_path`, `callback_not_support_no_priority_state_update`,
-  `callback_invalid_clientside_options`, `callback_no_autopostback`, `dbcommand_column_empty`,
-  `dbcommandbuilder_value_must_not_be_null`, `dbpluginmodule_connectionid_invalid`, `dbpluginmodule_connectionid_required`,
-  `captcha_gd2_required`, `captcha_imagepng_required`, `recaptchavalidator_captchacontrol_invalid`,
-  `slider_handle_class_invalid`, `ar_data_invalid`, `ar_save_invalid`, `ar_delete_invalid` (defined by
-  prado-activerecord), `distributeddatasource_child_required`, `masterslavedbconnection_connection_exists`,
-  `masterslavedbconnection_interface_required`, `slavedbconnection_requires_master`, `response_status_reason_badchars`, `appconfig_tag_invalid`, `theme_databind_forbidden`,
-  `control_adapter_not_active`. 46 keys the framework throws gain a definition, so exceptions that showed the raw key
-  (`memcached_extension_required`, `eventhandler_not_callable`, `pagedlist_pagesize_invalid`, ...) now show a sentence.
+- Framework exception messages are English (#1292). `messages-<lang>.txt` in `framework/Exceptions/messages/` now holds
+  only the `THttpException` messages the visitor sees; every other exception is English unless a registered message
+  file defines the key. Developers who want translated exception pages and logs add the language pack:
+  `composer require pradosoft/prado-dev-errormessages`. Message files registered with `TException::addMessageFile()`,
+  the `errormessages` configuration, or an extension's `extra.prado.error-messages` now override the framework text.
+  `messages.txt` holds exactly the keys the framework throws; an application that throws one of the removed keys
+  defines it in its own message file.
 - SqlMap (`Prado\Data\SqlMap`) is no longer part of the framework; it is the `pradosoft/prado-sqlmap` package (#1168).
   An application that does not use SqlMap needs no change. An application using `TSqlMapConfig`, `TSqlMapGateway`, or
   `TSqlMapManager` adds the package: `composer require pradosoft/prado-sqlmap`. Namespaces, class names, short names
