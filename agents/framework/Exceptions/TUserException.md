@@ -8,7 +8,7 @@
 **Namespace:** `Prado\Exceptions`
 
 ## Overview
-Base class for exceptions designed for display to end users. These are typically caused by user mistakes (invalid input, wrong permissions, etc.). Extends `TApplicationException`.
+Base class for exceptions whose message is written for the site visitor, typically caused by a visitor mistake (invalid input, wrong permissions). Extends `TApplicationException` and implements `IUserException` (4.4), the marker `TErrorHandler` uses to decide which messages the visitor may see.
 
 ## Hierarchy
 
@@ -22,14 +22,17 @@ TUserException
 ## Usage
 
 ```php
-throw new TUserException('invalid_username');
+throw new TUserException(Prado::localize('The user name is not available.'));
+throw new TUserException('app_username_taken', $name);   // key in the application's errormessages file
 ```
+
+A string that is not a message key passes through `TException` unchanged, so the application translates at the throw site with `Prado::localize()`, or defines the key in its own `errormessages` file with `-<lang>` variants.
 
 ## Design Principle
 
-- Messages should be user-friendly and in the user's language
-- Generally caught and displayed by `TErrorHandler` with external template
-- Not for system/programming errors
+- The message is for the visitor: `TErrorHandler::getExternalErrorMessage()` shows it in every application mode. Any other exception shows the generic `errorhandler_internal_error` sentence outside Debug mode.
+- With a globalization module configured for translation, `TErrorHandler::localizeErrorMessage()` looks the error code up in the `prado` catalogue with `getErrorArguments()` as placeholders.
+- Not for system or programming errors; those stay developer-facing and English.
 
 ## See Also
 

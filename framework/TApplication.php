@@ -2785,16 +2785,16 @@ class TApplication extends TComponent implements ISingleton
 	public function startService($serviceID)
 	{
 		if (!$this->hasRegisteredService($serviceID)) {
-			throw new THttpException(500, 'application_service_unknown', $serviceID);
+			throw new THttpException(404, 'application_service_unknown', $serviceID);
 		}
 
 		[$serviceClass, $initProperties, $configElement] = $this->getRegisteredService($serviceID);
 		$service = Prado::createComponent($serviceClass);
 		if (!($service instanceof IService && $service instanceof TComponent)) {
-			throw new THttpException(500, 'application_service_invalid', $serviceClass);
+			throw new TConfigurationException('application_service_invalid', $serviceClass);
 		}
 		if (!$service->getEnabled()) {
-			throw new THttpException(500, 'application_service_unavailable', $serviceClass);
+			throw new TConfigurationException('application_service_unavailable', $serviceClass);
 		}
 		$service->setID($serviceID);
 		$this->setService($service);

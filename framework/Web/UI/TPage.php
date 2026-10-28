@@ -682,7 +682,7 @@ class TPage extends TTemplateControl
 			$className = $classPath = $this->getService()->getClientScriptManagerClass();
 
 			if ($className !== TClientScriptManager::class && !is_subclass_of($className, TClientScriptManager::class)) {
-				throw new THttpException(404, 'page_csmanagerclass_invalid', $className);
+				throw new TConfigurationException('page_csmanagerclass_invalid', $className);
 			}
 
 			$this->_clientScript = new $className($this);

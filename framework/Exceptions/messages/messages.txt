@@ -175,6 +175,7 @@ directorycachedependency_directory_invalid = TDirectoryCacheDependency.Directory
 cachedependencylist_cachedependency_required = Only objects implementing ICacheDependency can be added into TCacheDependencyList.
 
 errorhandler_errortemplatepath_invalid	= TErrorHandler.ErrorTemplatePath '{0}' is invalid. Make sure it is in namespace form and points to a valid directory containing error template files.
+errorhandler_internal_error				= An internal server error occurred.
 
 pageservice_page_unknown				= Page '{0}' Not Found
 pageservice_pageclass_unknown			= Page class '{0}' is unknown.

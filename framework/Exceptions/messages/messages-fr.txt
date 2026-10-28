@@ -4,15 +4,11 @@
 
 application_unavailable					= L'application n'est pas disponible actuellement.
 application_service_unknown				= Le service demandé '{0}' n'est pas défini.
-application_service_invalid				= Le service '{0}' doit implémenter l'interface IService.
-application_service_unavailable			= Le service '{0}' n'est pas disponible actuellement.
 
 pageservice_page_required				= Le nom de la page est requis.
 pageservice_page_unknown				= La page '{0}' n'a pas été trouvée.
-pageservice_pageclass_unknown			= La classe de page '{0}' est inconnue.
 pageservice_security_violation			= TPageService ne peut pas accéder au répertoire supplémentaire '{0}'.
 
-page_csmanagerclass_invalid				= La classe ClientScriptManager '{0}' doit être une instance de TClientScriptManager.
 page_csrf_token_invalid					= La page requiert un jeton CSRF valide.
 
 pagestatepersister_pagestate_corrupted	= L'état de la page est corrompu.
@@ -23,4 +19,4 @@ soapservice_request_invalid				= Le serveur SOAP '{0}' est introuvable.
 jsonservice_provider_unknown			= Le fournisseur JSON demandé '{0}' est inconnu.
 feedservice_feed_unknown				= Le flux demandé '{0}' est inconnu.
 
-juioptions_control_invalid				= Le contrôle '{0}' doit implémenter IJuiOptions.
+errorhandler_internal_error				= Une erreur interne du serveur s'est produite.

@@ -154,6 +154,7 @@ return [
 'TTemplateException' => 'Prado\Exceptions\TTemplateException',
 'TUnknownMethodException' => 'Prado\Exceptions\TUnknownMethodException',
 'TUserException' => 'Prado\Exceptions\TUserException',
+'IUserException' => 'Prado\Exceptions\IUserException',
 'ChoiceFormat' => 'Prado\I18N\core\ChoiceFormat',
 'CultureInfo' => 'Prado\I18N\core\CultureInfo',
 'CultureInfoUnits' => 'Prado\I18N\core\CultureInfoUnits',
