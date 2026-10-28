@@ -138,6 +138,8 @@ All extend [THtmlElement](./THtmlElement.md). Each wraps the named HTML5 element
 | [`TSamp`](TSamp.md) | `samp` | Sample output from a program (@since 4.4.0) |
 | [`TSearch`](TSearch.md) | `search` | Search or filter controls; landmark; another tag renders `role="search"` (@since 4.4.0) |
 | [`TSection`](TSection.md) | `section` | Generic thematic document section |
+| [`TSub`](TSub.md) | `sub` | Subscript; `subscript` role (@since 4.4.0) |
+| [`TSup`](TSup.md) | `sup` | Superscript; `superscript` role (@since 4.4.0) |
 | [`TVar`](TVar.md) | `var` | Variable or placeholder; marks the variable's other occurrences ([TBaseTerm](TBaseTerm.md), @since 4.4.0) |
 
 ## Rich Text & Special Controls
