@@ -36,6 +36,11 @@ use Prado\Web\Javascripts\TJavaScript;
  * display an "Ok" and "Cancel" buttons. You can customize the button labels setting the <b>OKButtonText</b>
  * and <b>CancelButtonText</b> properties.
  *
+ * The browser's own color picker is a {@see TTextBox} with TextMode `Color`. It
+ * needs no script and uses the platform picker; it posts a lowercase `#rrggbb` and
+ * has no palette modes. TColorPicker renders the same picker in every browser,
+ * with the Simple, Basic, and Full palettes.
+ *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.0
  */

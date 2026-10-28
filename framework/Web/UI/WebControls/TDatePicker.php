@@ -74,6 +74,14 @@ use Prado\I18N\core\CultureInfo;
  * as "Bottom". It specifies the position of the calendar popup, relative to the
  * input field.
  *
+ * The browser's own date and time pickers are a {@see TTextBox} with TextMode
+ * `Date`, `DatetimeLocal`, `Month`, `Week`, or `Time`. They need no script, use the
+ * platform picker on phones, and take `Min`, `Max`, and `Step`; they display the
+ * user's locale and post a fixed format, such as `yyyy-MM-dd`, which
+ * {@see TRangeValidator} reads with its Date, Time, Month, Week, and DateTimeLocal
+ * data types. TDatePicker renders the same calendar in every browser and posts the
+ * text of its {@see setDateFormat DateFormat}.
+ *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>
  * @since 3.0
