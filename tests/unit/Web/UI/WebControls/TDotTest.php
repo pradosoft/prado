@@ -492,6 +492,101 @@ class TDotTest extends \PHPUnit\Framework\TestCase
 		self::assertStringNotContainsString('<img', $output);
 	}
 
+	public function testInlineAlternateTextNamesTheDot()
+	{
+		$this->obj->setID('dot');
+		$this->obj->setColor('Green');
+		$this->obj->setPublishStyle('Inline');
+		$this->obj->setAlternateText('Online <ready>');
+
+		$output = $this->render($this->obj);
+		self::assertStringContainsString('role="img"', $output);
+		self::assertStringContainsString('aria-labelledby="dot_title"', $output);
+		self::assertStringNotContainsString('aria-hidden', $output);
+		self::assertStringNotContainsString('alt=', $output);
+		// The <title> is the first child of the <svg>, HTML-encoded.
+		self::assertMatchesRegularExpression('/^<svg[^>]*><title id="dot_title">Online &lt;ready&gt;<\/title><defs>/', $output);
+	}
+
+	public function testInlineWithoutAlternateTextIsDecorative()
+	{
+		$this->obj->setID('dot');
+		$this->obj->setColor('Green');
+		$this->obj->setPublishStyle('Inline');
+
+		$output = $this->render($this->obj);
+		self::assertStringContainsString('aria-hidden="true"', $output);
+		self::assertStringNotContainsString('role=', $output);
+		self::assertStringNotContainsString('aria-labelledby', $output);
+		self::assertStringNotContainsString('<title', $output);
+	}
+
+	public function testInlineRolePrecedence()
+	{
+		$this->obj->setID('dot');
+		$this->obj->setColor('Green');
+		$this->obj->setPublishStyle('Inline');
+		$this->obj->setAlternateText('Online');
+		$this->obj->setRole('status');
+
+		$output = $this->render($this->obj);
+		self::assertStringContainsString('role="status"', $output);
+		self::assertStringNotContainsString('role="img"', $output);
+		self::assertStringContainsString('aria-labelledby="dot_title"', $output);
+	}
+
+	public function testInlineIdsArePrefixed()
+	{
+		$this->obj->setID('dot1');
+		$this->obj->setColor('Green');
+		$this->obj->setPublishStyle('Inline');
+		$dot2 = new TDot();
+		$dot2->setID('dot2');
+		$dot2->setColor('Red');
+		$dot2->setPublishStyle('Inline');
+
+		$ids = [];
+		foreach ([$this->obj, $dot2] as $dot) {
+			$output = $this->render($dot);
+			$prefix = $dot->getID() . '_';
+			preg_match_all("/id='([^']+)'/", $output, $defined);
+			preg_match_all('/url\(#([^)]+)\)/', $output, $referenced);
+			self::assertCount(6, $defined[1]);
+			foreach (array_merge($defined[1], $referenced[1]) as $id) {
+				self::assertStringStartsWith($prefix, $id);
+			}
+			// Every url(#…) reference resolves to an ID of the same dot.
+			self::assertEmpty(array_diff($referenced[1], $defined[1]));
+			$ids = array_merge($ids, $defined[1]);
+		}
+		self::assertSame($ids, array_unique($ids));
+		self::assertContains('dot1_grad', $ids);
+		self::assertContains('dot2_grad', $ids);
+	}
+
+	public function testEmbedIdsAreNotPrefixed()
+	{
+		// Embed and Publish are separate SVG documents and keep the plain IDs.
+		$this->obj->setID('dot');
+		$this->obj->setColor('Green');
+		$svg = $this->decodeEmbed();
+		self::assertStringContainsString("id='grad'", $svg);
+		self::assertStringContainsString('url(#grad)', $svg);
+		self::assertStringNotContainsString('dot_', $svg);
+	}
+
+	public function testGetImageUrlEmbedRendersImgAlt()
+	{
+		// The <img> styles keep TImage's alt and add no inline accessibility attributes.
+		$this->obj->setColor('Green');
+		$this->obj->setPublishStyle('Embed');
+		$this->obj->setAlternateText('Online');
+		$output = $this->render($this->obj);
+		self::assertStringContainsString('alt="Online"', $output);
+		self::assertStringNotContainsString('aria-', $output);
+		self::assertStringNotContainsString('role=', $output);
+	}
+
 	public function testInlineGetImageUrlFallsBackToData()
 	{
 		// Inline has no URL of its own, so getImageUrl degrades to the data URI.
