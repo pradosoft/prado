@@ -608,6 +608,23 @@ class TClientScriptManagerTest extends \PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('/*]]>*/', $output);
 	}
 
+	public function testRenderStyleSheetFilesAndStyleSheetsIncludeNonce()
+	{
+		$this->_cs->registerStyleSheetFile('css1', '/style1.css');
+		$this->_cs->registerStyleSheet('mycss', '.a{}');
+		TJavaScript::setScriptNonce('n0nce');
+		try {
+			$writer = $this->createWriter();
+			$this->_cs->renderStyleSheetFiles($writer);
+			$this->_cs->renderStyleSheets($writer);
+			$output = $writer->flush();
+		} finally {
+			TJavaScript::setScriptNonce(null);
+		}
+		$this->assertStringContainsString('<link rel="stylesheet" type="text/css" href="/style1.css" nonce="n0nce" />', $output);
+		$this->assertStringContainsString('<style type="text/css" nonce="n0nce">', $output);
+	}
+
 	public function testRenderStyleSheetsEmpty()
 	{
 		$writer = $this->createWriter();

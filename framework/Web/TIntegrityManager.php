@@ -17,6 +17,7 @@ use Prado\TModule;
 use Prado\TPropertyValue;
 use Prado\Util\Traits\TInitializedTrait;
 use Prado\Web\Javascripts\TJavaScript;
+use Prado\Web\Javascripts\TStyleSheetHelper;
 use Prado\Xml\TXmlDocument;
 use Prado\Xml\TXmlElement;
 
@@ -24,13 +25,16 @@ use Prado\Xml\TXmlElement;
  * TIntegrityManager class
  *
  * TIntegrityManager registers Subresource Integrity (SRI) values for external
- * script URLs so that a strict `Content-Security-Policy` can require an
- * `integrity` attribute on every third-party `<script>` tag. Each configured
- * entry is pushed into the per-request registry on {@see TJavaScript} via
- * {@see TJavaScript::setScriptIntegrity()}; the registry is consumed by
- * {@see TJavaScript::renderScriptFile()} and {@see \Prado\Web\Javascripts\TJavaScriptAsset},
- * which emit the `integrity` and `crossorigin="anonymous"` attributes for matching
- * remote URLs.
+ * script and stylesheet URLs so that a strict `Content-Security-Policy` can require
+ * an `integrity` attribute on every third-party `<script>` and
+ * `<link rel="stylesheet">` tag. Each configured entry is pushed into the
+ * per-request registries on {@see TJavaScript} via
+ * {@see TJavaScript::setScriptIntegrity()} and on {@see TStyleSheetHelper} via
+ * {@see TStyleSheetHelper::setStyleIntegrity()}; the registries are consumed by
+ * {@see TJavaScript::renderScriptFile()}, {@see \Prado\Web\Javascripts\TJavaScriptAsset},
+ * and {@see TStyleSheetHelper::renderStyleSheetFile()}, which emit the `integrity`
+ * and `crossorigin="anonymous"` attributes for matching remote URLs. An entry's
+ * URL identifies its resource, so one list serves scripts and stylesheets.
  *
  * XML configuration style:
  * ```xml
@@ -89,10 +93,12 @@ use Prado\Xml\TXmlElement;
  * When {@see setRequireIntegrity RequireIntegrity} is enabled, a remote
  * `<script src>` with no registered integrity raises a {@see TConfigurationException}
  * at render time. A strict CSP would otherwise block such a tag silently.
+ * {@see setRequireStyleIntegrity RequireStyleIntegrity} does the same for a remote
+ * stylesheet. It is a separate setting because some remote stylesheets, such as
+ * font service CSS generated per browser, have no fixed hash.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
- * @todo Stylesheet Integrity
  */
 class TIntegrityManager extends TModule
 {
@@ -215,8 +221,9 @@ class TIntegrityManager extends TModule
 	}
 
 	/**
-	 * Registers a single integrity entry with this module and with {@see TJavaScript}.
-	 * @param string $url the script URL; normalized before storage
+	 * Registers a single integrity entry with this module, with {@see TJavaScript},
+	 * and with {@see TStyleSheetHelper}.
+	 * @param string $url the script or stylesheet URL; normalized before storage
 	 * @param string $hash fully-formed `algo-digest` SRI string or a bare base64 digest
 	 * @param string $method algorithm prefix prepended to a bare digest (default `sha384`)
 	 * @throws TConfigurationException if the URL or hash is empty
@@ -228,6 +235,7 @@ class TIntegrityManager extends TModule
 		}
 		$key = THttpUtility::normalizeIntegrityUrl($url);
 		TJavaScript::setScriptIntegrity($key, $hash, $method);
+		TStyleSheetHelper::setStyleIntegrity($key, $hash, $method);
 		$this->_integrities[$key] = TJavaScript::getScriptIntegrity($key);
 	}
 
@@ -295,6 +303,27 @@ class TIntegrityManager extends TModule
 	public function setRequireIntegrity($value)
 	{
 		TJavaScript::setRequireScriptIntegrity(TPropertyValue::ensureBoolean($value));
+	}
+
+	/**
+	 * This is an alias for {@see TStyleSheetHelper::getRequireStyleIntegrity()}.
+	 * @return bool whether remote stylesheets must carry a registered integrity, defaults to false
+	 */
+	public function getRequireStyleIntegrity(): bool
+	{
+		return TStyleSheetHelper::getRequireStyleIntegrity();
+	}
+
+	/**
+	 * Sets whether remote stylesheets must carry a registered integrity. The value is
+	 * stored on {@see TStyleSheetHelper::setRequireStyleIntegrity()}. When enabled,
+	 * rendering a remote stylesheet with no registered integrity throws a
+	 * {@see TConfigurationException}.
+	 * @param mixed $value whether remote stylesheets must carry a registered integrity
+	 */
+	public function setRequireStyleIntegrity($value)
+	{
+		TStyleSheetHelper::setRequireStyleIntegrity(TPropertyValue::ensureBoolean($value));
 	}
 
 	/**

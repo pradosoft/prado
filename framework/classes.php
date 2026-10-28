@@ -448,6 +448,7 @@ return [
 'TJavaScriptAsset' => 'Prado\Web\Javascripts\TJavaScriptAsset',
 'TJavaScriptLiteral' => 'Prado\Web\Javascripts\TJavaScriptLiteral',
 'TJavaScriptString' => 'Prado\Web\Javascripts\TJavaScriptString',
+'TStyleSheetHelper' => 'Prado\Web\Javascripts\TStyleSheetHelper',
 'IFeedContentProvider' => 'Prado\Web\Services\IFeedContentProvider',
 'TFeedService' => 'Prado\Web\Services\TFeedService',
 'TJsonResponse' => 'Prado\Web\Services\TJsonResponse',

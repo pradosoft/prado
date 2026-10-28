@@ -1141,11 +1141,26 @@ Prado.StyleSheetManagerClass = Prado.Class(Prado.AssetManagerClass, {
 		return urls;
 	},
 
+	/**
+	 * Returns the CSP nonce of the page, read from the first element that carries one,
+	 * or '' when the page has none. A callback response has its own request nonce,
+	 * which the page's policy does not allow, so the elements a callback creates use
+	 * the page's. The browser hides the nonce attribute; the nonce property keeps it.
+	 * @returns {string} the page's nonce, or ''
+	 */
+	getPageNonce() {
+		const el = document.querySelector('script[nonce], style[nonce], link[nonce]');
+		return el ? (el.nonce || el.getAttribute('nonce') || '') : '';
+	},
+
 	createAssetElement(url) {
 		const asset = document.createElement('link');
 		asset.rel = 'stylesheet';
 		asset.media = 'screen';
 		asset.setAttribute('type', 'text/css');
+		const nonce = this.getPageNonce();
+		if (nonce)
+			asset.nonce = nonce;
 		asset.href = url;
 	//	asset.async = false; // HTML5 only
 		return asset;
@@ -1154,6 +1169,9 @@ Prado.StyleSheetManagerClass = Prado.Class(Prado.AssetManagerClass, {
 	createStyleSheetCode(code) {
 		const asset = document.createElement('style');
 		asset.setAttribute('type', 'text/css');
+		const nonce = this.getPageNonce();
+		if (nonce)
+			asset.nonce = nonce;
 
 		if(asset.styleSheet)
 			asset.styleSheet.cssText = code; // IE7+IE8

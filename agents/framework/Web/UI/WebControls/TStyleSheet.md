@@ -16,6 +16,10 @@ TStyleSheet represents a link to a stylesheet file and/or inline CSS code. It su
 - `getPradoStyles()` / `setPradoStyles(string)` - Comma-delimited list of bundled CSS libraries
 - `getMediaType()` / `setMediaType(string)` - CSS media type (e.g., 'screen', 'print')
 
+## CSP
+
+The `<style>` of the child CSS and the stylesheet `<link>` carry the CSP nonce through [TStyleSheetHelper](../../Javascripts/TStyleSheetHelper.md) (@since 4.4.0). A TStyleSheet rendered again in a callback carries the callback request's nonce, which the page's policy does not allow; CSS that changes in a callback is registered with `TClientScriptManager::registerStyleSheet()`.
+
 ## See Also
 
 - [TControl](../TControl.md)

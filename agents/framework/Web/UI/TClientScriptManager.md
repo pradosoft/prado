@@ -17,7 +17,7 @@ TClientScriptManager manages JavaScript and CSS stylesheets for a page. It suppo
 - `registerPradoStyle($name)` - Registers a PRADO CSS library by name
 - `registerScriptFile($key, $url)` - Registers a JavaScript file within the form
 - `registerHeadScriptFile($key, $url, $async)` - Registers a JavaScript file in the page head
-- `registerStyleSheetFile($key, $url, $media)` - Registers a CSS file
+- `registerStyleSheetFile($key, $url, $media)` - Registers a CSS file; `renderStyleSheetFiles()` and `renderStyleSheets()` render through [TStyleSheetHelper](../Javascripts/TStyleSheetHelper.md) with the CSP nonce and, for remote files, SRI (4.4.0)
 - `registerBeginScript($key, $script)` - Registers JavaScript at the beginning of the form
 - `registerEndScript($key, $script)` - Registers JavaScript at the end of the form
 - `registerHiddenField($name, $value)` - Registers a hidden field

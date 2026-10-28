@@ -309,6 +309,7 @@ integritymanager_integrityfile_invalid		= TIntegrityManager.IntegrityFile '{0}' 
 integritymanager_integrityfile_unchangeable	= {1}.{0} cannot be modified. The integrity module has been initialized already.
 
 javascript_script_integrity_required		= No Subresource Integrity is registered for the remote script '{0}', but integrity is required.
+stylesheet_integrity_required			= No Subresource Integrity is registered for the remote stylesheet '{0}', but integrity is required.
 
 authmanager_usermanager_required		= TAuthManager.UserManager must be assigned a value.
 authmanager_usermanager_inexistent		= TAuthManager.UserManager '{0}' does not refer to an ID of application module.
