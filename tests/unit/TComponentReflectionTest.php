@@ -240,6 +240,71 @@ class ReflectionPropertyChild extends ReflectionPropertyAncestor
 }
 
 // ---------------------------------------------------------------------------
+// Fixtures for attribute lookup (4.4.0)
+// ---------------------------------------------------------------------------
+
+#[\Attribute(\Attribute::TARGET_ALL | \Attribute::IS_REPEATABLE)]
+class ReflectionTestAttribute
+{
+	public function __construct(public string $value = '')
+	{
+	}
+}
+
+#[\Attribute(\Attribute::TARGET_ALL)]
+class ReflectionTestSubAttribute extends ReflectionTestAttribute
+{
+}
+
+#[\Attribute]
+class ReflectionTestOtherAttribute
+{
+}
+
+#[ReflectionTestAttribute('parent')]
+class ReflectionAttributeParent
+{
+	#[ReflectionTestAttribute('parent-prop')]
+	public string $parentProp = '';
+
+	#[ReflectionTestAttribute('private-prop')]
+	private string $privateParentProp = '';
+
+	#[ReflectionTestAttribute('inherited-method')]
+	public function inheritedMethod(): void
+	{
+	}
+}
+
+#[ReflectionTestAttribute('child-a')]
+#[ReflectionTestAttribute('child-b')]
+#[ReflectionTestOtherAttribute]
+class ReflectionAttributeChild extends ReflectionAttributeParent
+{
+	#[ReflectionTestAttribute('child-prop')]
+	protected int $childProp = 0;
+
+	public int $plainProp = 0;
+
+	#[ReflectionTestSubAttribute('sub')]
+	public function subMethod(): void
+	{
+	}
+
+	public function plainMethod(): void
+	{
+	}
+}
+
+class ReflectionAttributeBehavior extends \Prado\Util\TBehavior
+{
+	#[ReflectionTestAttribute('behavior')]
+	public function behaviorAttributedMethod(): void
+	{
+	}
+}
+
+// ---------------------------------------------------------------------------
 
 class TComponentReflectionTest extends TestCase
 {
@@ -1272,5 +1337,199 @@ class TComponentReflectionTest extends TestCase
 		$rp = TComponentReflection::getReflectionPropertyByType(ReflectionPropertyChild::class, 'privateChildProp');
 		$this->assertInstanceOf(\ReflectionProperty::class, $rp);
 		$this->assertSame('privateChildProp', $rp->getName());
+	}
+
+	// ========================================================================
+	// getClassAttributesByType (4.4.0)
+	// ========================================================================
+
+	/** @return string[] the `value` of each attribute instance */
+	private static function values(array $instances): array
+	{
+		return array_map(fn ($a) => $a->value, $instances);
+	}
+
+	public function testGetClassAttributesByTypeReturnsOwnThenParent(): void
+	{
+		$found = TComponentReflection::getClassAttributesByType(ReflectionAttributeChild::class, ReflectionTestAttribute::class);
+		$this->assertCount(3, $found);
+		$this->assertContainsOnlyInstancesOf(ReflectionTestAttribute::class, $found);
+		$this->assertSame(['child-a', 'child-b', 'parent'], self::values($found));
+	}
+
+	public function testGetClassAttributesByTypeWithoutInherit(): void
+	{
+		$found = TComponentReflection::getClassAttributesByType(ReflectionAttributeChild::class, ReflectionTestAttribute::class, false);
+		$this->assertSame(['child-a', 'child-b'], self::values($found));
+	}
+
+	public function testGetClassAttributesByTypeFiltersByAttribute(): void
+	{
+		$found = TComponentReflection::getClassAttributesByType(ReflectionAttributeChild::class, ReflectionTestOtherAttribute::class);
+		$this->assertCount(1, $found);
+		$this->assertInstanceOf(ReflectionTestOtherAttribute::class, $found[0]);
+	}
+
+	public function testGetClassAttributesByTypeAcceptsObject(): void
+	{
+		$found = TComponentReflection::getClassAttributesByType(new ReflectionAttributeChild(), ReflectionTestAttribute::class);
+		$this->assertSame(['child-a', 'child-b', 'parent'], self::values($found));
+	}
+
+	public function testGetClassAttributesByTypeReturnsSharedInstances(): void
+	{
+		$first = TComponentReflection::getClassAttributesByType(ReflectionAttributeChild::class, ReflectionTestAttribute::class);
+		$second = TComponentReflection::getClassAttributesByType(strtoupper(ReflectionAttributeChild::class), ReflectionTestAttribute::class);
+		$this->assertSame($first[0], $second[0]);
+		$this->assertSame($first[2], $second[2]);
+	}
+
+	public function testGetClassAttributesByTypeEmptyWhenNone(): void
+	{
+		$this->assertSame([], TComponentReflection::getClassAttributesByType(PlainPhpClass::class, ReflectionTestAttribute::class));
+		$this->assertSame([], TComponentReflection::getClassAttributesByType(PlainPhpClass::class, ReflectionTestAttribute::class));
+	}
+
+	public function testGetClassAttributesByTypeThrowsForUnknownAttributeClass(): void
+	{
+		$this->expectException(\Error::class);
+		TComponentReflection::getClassAttributesByType(ReflectionAttributeChild::class, 'NoSuchAttribute_XYZ');
+	}
+
+	public function testGetClassAttributesByTypeMissingClassDoesNotCache(): void
+	{
+		$missing = 'ThisClassWillNeverExist_Attr_Test_XYZ999';
+		$this->assertSame([], TComponentReflection::getClassAttributesByType($missing, ReflectionTestAttribute::class));
+		$this->assertSame([], TComponentReflection::getClassAttributesByType($missing, ReflectionTestAttribute::class));
+
+		$found = TComponentReflection::getClassAttributesByType(ReflectionAttributeParent::class, ReflectionTestAttribute::class);
+		$this->assertSame(['parent'], self::values($found));
+	}
+
+	// ========================================================================
+	// getMethodAttributesByType (4.4.0)
+	// ========================================================================
+
+	public function testGetMethodAttributesByTypeFindsInheritedMethod(): void
+	{
+		$found = TComponentReflection::getMethodAttributesByType(ReflectionAttributeChild::class, 'inheritedMethod', ReflectionTestAttribute::class);
+		$this->assertSame(['inherited-method'], self::values($found));
+	}
+
+	public function testGetMethodAttributesByTypeMatchesSubclassAttribute(): void
+	{
+		$found = TComponentReflection::getMethodAttributesByType(ReflectionAttributeChild::class, 'subMethod', ReflectionTestAttribute::class);
+		$this->assertCount(1, $found);
+		$this->assertInstanceOf(ReflectionTestSubAttribute::class, $found[0]);
+		$this->assertSame('sub', $found[0]->value);
+	}
+
+	public function testGetMethodAttributesByTypeSharedAcrossSubclasses(): void
+	{
+		$parent = TComponentReflection::getMethodAttributesByType(ReflectionAttributeParent::class, 'inheritedMethod', ReflectionTestAttribute::class);
+		$child = TComponentReflection::getMethodAttributesByType(ReflectionAttributeChild::class, 'inheritedMethod', ReflectionTestAttribute::class);
+		$this->assertSame($parent[0], $child[0]);
+	}
+
+	public function testGetMethodAttributesByTypeEmptyWhenNoneOrMissing(): void
+	{
+		$this->assertSame([], TComponentReflection::getMethodAttributesByType(ReflectionAttributeChild::class, 'plainMethod', ReflectionTestAttribute::class));
+		$this->assertSame([], TComponentReflection::getMethodAttributesByType(ReflectionAttributeChild::class, 'noSuchMethod', ReflectionTestAttribute::class));
+		$this->assertSame([], TComponentReflection::getMethodAttributesByType('NoSuchClass_Attr_XYZ', 'plainMethod', ReflectionTestAttribute::class));
+	}
+
+	public function testGetMethodAttributesByTypeFindsBehaviorMethod(): void
+	{
+		$component = new ReflectionFixtureComponent();
+		$component->attachBehavior('attributed', new ReflectionAttributeBehavior());
+
+		$found = TComponentReflection::getMethodAttributesByType($component, 'behaviorAttributedMethod', ReflectionTestAttribute::class);
+		$this->assertSame(['behavior'], self::values($found));
+		$this->assertSame([], TComponentReflection::getMethodAttributesByType(ReflectionFixtureComponent::class, 'behaviorAttributedMethod', ReflectionTestAttribute::class));
+	}
+
+	// ========================================================================
+	// getPropertyAttributesByType (4.4.0)
+	// ========================================================================
+
+	public function testGetPropertyAttributesByTypeFindsOwnAndInherited(): void
+	{
+		$own = TComponentReflection::getPropertyAttributesByType(ReflectionAttributeChild::class, 'childProp', ReflectionTestAttribute::class);
+		$this->assertSame(['child-prop'], self::values($own));
+		$inherited = TComponentReflection::getPropertyAttributesByType(ReflectionAttributeChild::class, 'parentProp', ReflectionTestAttribute::class);
+		$this->assertSame(['parent-prop'], self::values($inherited));
+		$private = TComponentReflection::getPropertyAttributesByType(ReflectionAttributeChild::class, 'privateParentProp', ReflectionTestAttribute::class);
+		$this->assertSame(['private-prop'], self::values($private));
+	}
+
+	public function testGetPropertyAttributesByTypeEmptyWhenNoneOrMissing(): void
+	{
+		$this->assertSame([], TComponentReflection::getPropertyAttributesByType(ReflectionAttributeChild::class, 'plainProp', ReflectionTestAttribute::class));
+		$this->assertSame([], TComponentReflection::getPropertyAttributesByType(ReflectionAttributeChild::class, 'noSuchProp', ReflectionTestAttribute::class));
+	}
+
+	// ========================================================================
+	// getMethodsWithAttributeByType / getPropertiesWithAttributeByType (4.4.0)
+	// ========================================================================
+
+	public function testGetMethodsWithAttributeByTypeMapsMethodsToInstances(): void
+	{
+		$map = TComponentReflection::getMethodsWithAttributeByType(ReflectionAttributeChild::class, ReflectionTestAttribute::class);
+		$this->assertEqualsCanonicalizing(['subMethod', 'inheritedMethod'], array_keys($map));
+		$this->assertSame(['sub'], self::values($map['subMethod']));
+		$this->assertSame(['inherited-method'], self::values($map['inheritedMethod']));
+	}
+
+	public function testGetMethodsWithAttributeByTypeSharesMemberCache(): void
+	{
+		$map = TComponentReflection::getMethodsWithAttributeByType(ReflectionAttributeChild::class, ReflectionTestAttribute::class);
+		$single = TComponentReflection::getMethodAttributesByType(ReflectionAttributeChild::class, 'inheritedMethod', ReflectionTestAttribute::class);
+		$this->assertSame($single[0], $map['inheritedMethod'][0]);
+		$this->assertSame($map, TComponentReflection::getMethodsWithAttributeByType(new ReflectionAttributeChild(), ReflectionTestAttribute::class));
+	}
+
+	public function testGetMethodsWithAttributeByTypeEmptyWhenNoneOrMissing(): void
+	{
+		$this->assertSame([], TComponentReflection::getMethodsWithAttributeByType(PlainPhpClass::class, ReflectionTestAttribute::class));
+		$this->assertSame([], TComponentReflection::getMethodsWithAttributeByType('NoSuchClass_Attr_XYZ', ReflectionTestAttribute::class));
+	}
+
+	public function testGetPropertiesWithAttributeByTypeMapsPropertiesToInstances(): void
+	{
+		$map = TComponentReflection::getPropertiesWithAttributeByType(ReflectionAttributeChild::class, ReflectionTestAttribute::class);
+		$this->assertEqualsCanonicalizing(['childProp', 'parentProp'], array_keys($map));
+		$this->assertSame(['child-prop'], self::values($map['childProp']));
+		$this->assertSame(['parent-prop'], self::values($map['parentProp']));
+	}
+
+	public function testGetPropertiesWithAttributeByTypeEmptyWhenNoneOrMissing(): void
+	{
+		$this->assertSame([], TComponentReflection::getPropertiesWithAttributeByType(PlainPhpClass::class, ReflectionTestAttribute::class));
+		$this->assertSame([], TComponentReflection::getPropertiesWithAttributeByType('NoSuchClass_Attr_XYZ', ReflectionTestAttribute::class));
+	}
+
+	// ========================================================================
+	// getAttributes (4.4.0)
+	// ========================================================================
+
+	public function testGetAttributesListsOwnThenParentWithoutInstantiating(): void
+	{
+		$reflection = new TComponentReflection(ReflectionAttributeChild::class);
+		$attributes = $reflection->getAttributes();
+		$this->assertCount(4, $attributes);
+		$this->assertSame(['name', 'arguments', 'class'], array_keys($attributes[0]));
+		$this->assertSame(ReflectionTestAttribute::class, $attributes[0]['name']);
+		$this->assertSame(['child-a'], $attributes[0]['arguments']);
+		$this->assertSame(ReflectionAttributeChild::class, $attributes[0]['class']);
+		$this->assertSame(ReflectionTestOtherAttribute::class, $attributes[2]['name']);
+		$this->assertSame([], $attributes[2]['arguments']);
+		$this->assertSame(['parent'], $attributes[3]['arguments']);
+		$this->assertSame(ReflectionAttributeParent::class, $attributes[3]['class']);
+	}
+
+	public function testGetAttributesEmptyForPlainClass(): void
+	{
+		$reflection = new TComponentReflection(PlainPhpClass::class);
+		$this->assertSame([], $reflection->getAttributes());
 	}
 }

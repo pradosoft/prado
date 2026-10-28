@@ -26,6 +26,14 @@ use Prado\Exceptions\TInvalidDataTypeException;
  * When reflecting methods on a {@see \Prado\TComponent} instance, attached
  * behaviors are queried so that behavior-contributed methods are discoverable.
  *
+ * Attribute lookup shares the cache. {@see getClassAttributesByType()},
+ * {@see getMethodAttributesByType()}, {@see getPropertyAttributesByType()},
+ * {@see getMethodsWithAttributeByType()} and {@see getPropertiesWithAttributeByType()}
+ * build an attribute's instances once per declaring class and return the same
+ * instances to every caller. PHP does not inherit attributes; the class lookup
+ * walks the parent classes on request, and a member lookup finds an attribute on
+ * an inherited method or property through the member's declaring class.
+ *
  * The following code displays the properties and events defined in {@see \Prado\Web\UI\WebControls\TDataGrid},
  * ```php
  *   $reflection=new TComponentReflection('TDataGrid');
@@ -52,10 +60,18 @@ class TComponentReflection extends \Prado\TComponent
 	 *   @since 4.4.0 */
 	private static array $_reflection_property_cache = [];
 
+	/** @var array<string,array> Cached attribute instances, lowercased keys. A class entry is
+	 *   "class::{class}::{0|1 inherit}::{attribute}"; a member entry is "method::{declaring class}::{method}::{attribute}"
+	 *   or "property::{declaring class}::{property}::{attribute}", shared by every subclass that inherits the
+	 *   member; a member map is "methods::{class}::{attribute}" or "properties::{class}::{attribute}".
+	 *   @since 4.4.0 */
+	private static array $_reflection_attribute_cache = [];
+
 	private $_className;
 	private $_properties = [];
 	private $_events = [];
 	private $_methods = [];
+	private $_attributes = [];
 
 	/**
 	 * Returns a cached {@see \ReflectionClass} for the given class or object, or
@@ -222,6 +238,192 @@ class TComponentReflection extends \Prado\TComponent
 	}
 
 	/**
+	 * Returns the instances of `$attribute` on `$class`, or an empty array when the class
+	 * carries none or does not exist.
+	 *
+	 * The filter matches as `instanceof`, so a subclass of `$attribute` is returned, and
+	 * `$attribute` must be a class. With `$inherit` true the parent classes are walked and
+	 * their attributes follow the class's own, from the class up to the root; interfaces and
+	 * traits are not walked. The instances are built once per class per process and shared
+	 * by every caller.
+	 *
+	 * @param object|string $class Class name or instance.
+	 * @param string $attribute The attribute class to match.
+	 * @param bool $inherit Whether the parent classes' attributes are included.
+	 * @return array<int,object> The attribute instances, the class's own first.
+	 * @since 4.4.0
+	 */
+	public static function getClassAttributesByType(string|object $class, string $attribute, bool $inherit = true): array
+	{
+		$className = is_object($class) ? $class::class : $class;
+		$key = strtolower('class::' . $className . '::' . ($inherit ? '1' : '0') . '::' . $attribute);
+		if (!array_key_exists($key, self::$_reflection_attribute_cache)) {
+			$rc = self::getReflectionClassByType($className);
+			if ($rc === null) {
+				return [];
+			}
+			$instances = [];
+			while ($rc !== null) {
+				$instances = [...$instances, ...self::newAttributeInstances($rc, $attribute)];
+				$rc = $inherit ? ($rc->getParentClass() ?: null) : null;
+			}
+			self::$_reflection_attribute_cache[$key] = $instances;
+		}
+		return self::$_reflection_attribute_cache[$key];
+	}
+
+	/**
+	 * Returns the instances of `$attribute` on `$class::$method`, or an empty array when the
+	 * method carries none or is not found.
+	 *
+	 * {@see getReflectionMethodByType()} resolves the method, so an inherited method is found
+	 * on a subclass, and a behavior-contributed method is found when `$class` is a
+	 * {@see \Prado\TComponent} instance with that behavior attached. The instances are cached
+	 * by the method's declaring class and shared by every subclass.
+	 *
+	 * @param object|string $class Class name or instance.
+	 * @param string $method Method name.
+	 * @param string $attribute The attribute class to match, as `instanceof`.
+	 * @return array<int,object> The attribute instances.
+	 * @since 4.4.0
+	 */
+	public static function getMethodAttributesByType(string|object $class, string $method, string $attribute): array
+	{
+		$rm = self::getReflectionMethodByType($class, $method);
+		if ($rm === null) {
+			return [];
+		}
+		return self::getMemberAttributes('method', $rm, $attribute);
+	}
+
+	/**
+	 * Returns the instances of `$attribute` on `$class::$property`, or an empty array when
+	 * the property carries none or is not declared at any level of the class hierarchy.
+	 *
+	 * {@see getReflectionPropertyByType()} resolves the property, so a private property of an
+	 * ancestor is found. The instances are cached by the property's declaring class and
+	 * shared by every subclass.
+	 *
+	 * @param object|string $class Class name or instance.
+	 * @param string $property Property name (without `$` prefix).
+	 * @param string $attribute The attribute class to match, as `instanceof`.
+	 * @return array<int,object> The attribute instances.
+	 * @since 4.4.0
+	 */
+	public static function getPropertyAttributesByType(string|object $class, string $property, string $attribute): array
+	{
+		$rp = self::getReflectionPropertyByType($class, $property);
+		if ($rp === null) {
+			return [];
+		}
+		return self::getMemberAttributes('property', $rp, $attribute);
+	}
+
+	/**
+	 * Returns the methods of `$class` that carry `$attribute`, keyed by method name, each
+	 * with its attribute instances. An empty array means no method carries it or the class
+	 * does not exist.
+	 *
+	 * Inherited methods are included, as {@see \ReflectionClass::getMethods()} returns them.
+	 * Behavior methods are not: the map is cached by class, and a behavior is attached per
+	 * instance. Query the behavior class, or one method with {@see getMethodAttributesByType()}.
+	 *
+	 * @param object|string $class Class name or instance.
+	 * @param string $attribute The attribute class to match, as `instanceof`.
+	 * @return array<string,array<int,object>> Attribute instances keyed by method name.
+	 * @since 4.4.0
+	 */
+	public static function getMethodsWithAttributeByType(string|object $class, string $attribute): array
+	{
+		$className = is_object($class) ? $class::class : $class;
+		$key = strtolower('methods::' . $className . '::' . $attribute);
+		if (!array_key_exists($key, self::$_reflection_attribute_cache)) {
+			$rc = self::getReflectionClassByType($className);
+			if ($rc === null) {
+				return [];
+			}
+			$methods = [];
+			foreach ($rc->getMethods() as $rm) {
+				$instances = self::getMemberAttributes('method', $rm, $attribute);
+				if ($instances) {
+					$methods[$rm->getName()] = $instances;
+				}
+			}
+			self::$_reflection_attribute_cache[$key] = $methods;
+		}
+		return self::$_reflection_attribute_cache[$key];
+	}
+
+	/**
+	 * Returns the properties of `$class` that carry `$attribute`, keyed by property name,
+	 * each with its attribute instances. An empty array means no property carries it or the
+	 * class does not exist.
+	 *
+	 * Inherited public and protected properties are included, as
+	 * {@see \ReflectionClass::getProperties()} returns them; an ancestor's private property
+	 * is not, and is queried with {@see getPropertyAttributesByType()}.
+	 *
+	 * @param object|string $class Class name or instance.
+	 * @param string $attribute The attribute class to match, as `instanceof`.
+	 * @return array<string,array<int,object>> Attribute instances keyed by property name.
+	 * @since 4.4.0
+	 */
+	public static function getPropertiesWithAttributeByType(string|object $class, string $attribute): array
+	{
+		$className = is_object($class) ? $class::class : $class;
+		$key = strtolower('properties::' . $className . '::' . $attribute);
+		if (!array_key_exists($key, self::$_reflection_attribute_cache)) {
+			$rc = self::getReflectionClassByType($className);
+			if ($rc === null) {
+				return [];
+			}
+			$properties = [];
+			foreach ($rc->getProperties() as $rp) {
+				$instances = self::getMemberAttributes('property', $rp, $attribute);
+				if ($instances) {
+					$properties[$rp->getName()] = $instances;
+				}
+			}
+			self::$_reflection_attribute_cache[$key] = $properties;
+		}
+		return self::$_reflection_attribute_cache[$key];
+	}
+
+	/**
+	 * Returns the cached attribute instances of a method or property, building them on the
+	 * first call. The key uses the declaring class, so every subclass that inherits the
+	 * member shares the entry.
+	 * @param string $kind `method` or `property`, the key prefix.
+	 * @param \ReflectionMethod|\ReflectionProperty $member The member to read.
+	 * @param string $attribute The attribute class to match, as `instanceof`.
+	 * @return array<int,object> The attribute instances.
+	 */
+	private static function getMemberAttributes(string $kind, \ReflectionMethod|\ReflectionProperty $member, string $attribute): array
+	{
+		$key = strtolower($kind . '::' . $member->getDeclaringClass()->getName() . '::' . $member->getName() . '::' . $attribute);
+		if (!array_key_exists($key, self::$_reflection_attribute_cache)) {
+			self::$_reflection_attribute_cache[$key] = self::newAttributeInstances($member, $attribute);
+		}
+		return self::$_reflection_attribute_cache[$key];
+	}
+
+	/**
+	 * Instantiates the attributes of a reflector that are instances of `$attribute`.
+	 * @param \ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflector The declaration to read.
+	 * @param string $attribute The attribute class to match, as `instanceof`.
+	 * @throws \Error when `$attribute` is not a class, from {@see \ReflectionClass::getAttributes()}.
+	 * @return array<int,object> The attribute instances, in declaration order.
+	 */
+	private static function newAttributeInstances(\ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflector, string $attribute): array
+	{
+		$instances = [];
+		foreach ($reflector->getAttributes($attribute, \ReflectionAttribute::IS_INSTANCEOF) as $ra) {
+			$instances[] = $ra->newInstance();
+		}
+		return $instances;
+	}
+
+	/**
 	 * Constructor.
 	 * @param object|string $component the component instance or the class name
 	 * @throws TInvalidDataTypeException if the object is not a component
@@ -260,6 +462,17 @@ class TComponentReflection extends \Prado\TComponent
 		$properties = [];
 		$events = [];
 		$methods = [];
+		$attributes = [];
+		for ($level = $class; $level !== null; $level = $level->getParentClass() ?: null) {
+			foreach ($level->getAttributes() as $attribute) {
+				$attributes[] = [
+					'name' => $attribute->getName(),
+					'arguments' => $attribute->getArguments(),
+					'class' => $level->getName(),
+				];
+			}
+		}
+		$this->_attributes = $attributes;
 		$isComponent = is_a($this->getClassName(), TComponent::class, true);
 		foreach ($class->getMethods() as $method) {
 			if ($method->isPublic() || $method->isProtected()) {
@@ -372,5 +585,18 @@ class TComponentReflection extends \Prado\TComponent
 	public function getMethods()
 	{
 		return $this->_methods;
+	}
+
+	/**
+	 * @return array list of the class attributes, the class's own first, then each parent's.
+	 * Each array element is of the following structure:
+	 * [name]=>the attribute class name,
+	 * [arguments]=>the attribute arguments,
+	 * [class]=>the class that declares the attribute.
+	 * @since 4.4.0
+	 */
+	public function getAttributes()
+	{
+		return $this->_attributes;
 	}
 }
