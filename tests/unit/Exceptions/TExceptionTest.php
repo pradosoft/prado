@@ -60,14 +60,14 @@ class TExceptionTest extends \PHPUnit\Framework\TestCase
     public function testNewStyleTranslationWithPlaceholders()
     {
         // New style: integer errorCode, followed by message code and args
-        $ex = new TException(404, 'prado_component_unknown', 'SomeComponent', 'SomeReason');
+        $ex = new TException(404, 'component_property_undefined', 'SomeComponent', 'SomeReason');
 
         // Code is preserved as 404
         $this->assertSame(404, $ex->getCode());
         // Error code string stored for translation reference
-        $this->assertSame('prado_component_unknown', $ex->getErrorCode());
+        $this->assertSame('component_property_undefined', $ex->getErrorCode());
         // Message should be translated with placeholders replaced
-        $expectedStart = 'Unknown component type';
+        $expectedStart = 'Component property';
         $this->assertStringStartsWith($expectedStart, $ex->getMessage());
         // Ensure placeholders were substituted
         $this->assertStringContainsString('SomeComponent', $ex->getMessage());
@@ -77,7 +77,7 @@ class TExceptionTest extends \PHPUnit\Framework\TestCase
     public function testChainingWithOldStyleAndThrowable()
     {
         $cause = new \RuntimeException('boom');
-        $ex = new TException('prado_using_invalid', null, $cause);
+        $ex = new TException('component_property_readonly', null, $cause);
         $this->assertInstanceOf(\RuntimeException::class, $ex->getPrevious());
         $this->assertEquals('boom', $ex->getPrevious()->getMessage());
     }
