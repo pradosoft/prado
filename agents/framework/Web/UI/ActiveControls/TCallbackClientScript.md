@@ -13,6 +13,7 @@ Server-side API for client-side DOM updates during callback responses. Provides 
 ## Key Properties/Methods
 
 - `update($element, $content)` - Replace innerHTML
+- `setText($element, $text)` - Set the text content through jQuery `.text()`; the text is not parsed as HTML, so it takes user input (@since 4.4.0)
 - `replaceContent($element, $content)` - Replace element content
 - `setAttribute($control, $name, $value)` - Set HTML attribute
 - `removeAttribute($control, $name)` - Remove an HTML attribute (@since 4.3.3)

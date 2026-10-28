@@ -37,6 +37,7 @@ AJAX-enabled controls for the Prado framework. ActiveControls trigger server-sid
 
 - **[`TCallbackClientScript`](TCallbackClientScript.md)** — Server-side API for client DOM updates. Key methods:
   - `update($controlID, $html)` — Replace innerHTML
+  - `setText($controlID, $text)` — Set text content, not parsed as HTML (4.4.0)
   - `replace($controlID, $html)` — Replace element
   - `insertContent($position, $controlID, $html)` — Insert HTML (before/after/top/bottom)
   - `setAttribute($controlID, $attr, $value)` — Set attribute

@@ -385,6 +385,18 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	}
 
 	/**
+	 * Sets the element's text content, through jQuery `.text()`.  The text is not parsed as
+	 * HTML, so it is the method for text from user input; {@see update()} sets HTML.
+	 * @param \Prado\Web\UI\TControl|string $element control element or element id
+	 * @param string $text new text content
+	 * @since 4.4.0
+	 */
+	public function setText($element, $text)
+	{
+		$this->jQuery($element, 'text', [TPropertyValue::ensureString($text)]);
+	}
+
+	/**
 	 * Add a Css class name to the element.
 	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param string $cssClass CssClass name to add.
