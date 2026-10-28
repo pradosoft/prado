@@ -127,11 +127,13 @@ All extend [THtmlElement](./THtmlElement.md). Each wraps the named HTML5 element
 | [`TArticle`](TArticle.md) | `article` | Self-contained composition (blog post, news article) |
 | [`TAside`](TAside.md) | `aside` | Tangentially related content; sidebar |
 | [`TDfn`](TDfn.md) | `dfn` | Defining instance of a term; marks the first occurrence of `Terms` ([TBaseTerm](TBaseTerm.md), @since 4.4.0) |
+| [`TFootnote`](TFootnote.md) | `sup` | Numbered footnote reference; child controls are the note, rendered in a `TReferenceList`; `Key` joins references (@since 4.4.0) |
 | [`TFooter`](TFooter.md) | `footer` | Footer of nearest sectioning ancestor |
 | [`THeader`](THeader.md) | `header` | Introductory content or navigational links |
 | [`TMain`](TMain.md) | `main` | Dominant page content; one per document |
 | [`TMark`](TMark.md) | `mark` | Highlighted or marked text |
 | [`TNav`](TNav.md) | `nav` | Navigation links section |
+| [`TReferenceList`](TReferenceList.md) | `section` | Numbered notes of the page's `TFootnote` references with back links; region named by `HeaderText` (@since 4.4.0) |
 | [`TSearch`](TSearch.md) | `search` | Search or filter controls; landmark; another tag renders `role="search"` (@since 4.4.0) |
 | [`TSection`](TSection.md) | `section` | Generic thematic document section |
 | [`TVar`](TVar.md) | `var` | Variable or placeholder; marks the variable's other occurrences ([TBaseTerm](TBaseTerm.md), @since 4.4.0) |
