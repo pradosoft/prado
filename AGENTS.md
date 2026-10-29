@@ -82,7 +82,7 @@ Docblocks inform and describe; it is not persuasive writing.
 - Return false or null for methods that are designed to fail gracefully
 - All methods should handle edge cases and validate input parameters
 - PRADO Exceptions use errorCodes specified in framework/Exceptions/messages/messages.txt; the master error Code file in American English.  messages.txt is purely for user information display only.
-- framework/Exceptions/messages/messages.txt has language specific versions at framework/Exceptions/messages/messages-<language code>.txt
+- framework/Exceptions/messages/messages-<language code>.txt holds only the keys thrown as `THttpException`, which the visitor sees. Developer-facing translations are the `pradosoft/prado-dev-errormessages` package. In this repository, create, update, and delete keys in the English master only; the package is synced in one batch before each PRADO tag and release, never per change.
 
 ### Imports and Includes
 - Use PSR-4 autoloading - no manual includes required

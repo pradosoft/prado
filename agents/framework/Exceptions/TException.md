@@ -87,7 +87,7 @@ Template files: `error{code}.html` (e.g., `error404.html`), `error.html` (generi
    ```
    my_error_code=Something went wrong: {0}
    ```
-2. A key thrown as `THttpException` is also added to every `messages-{lang}.txt` in the same directory; `TExceptionMessageFilesTest` checks that those files hold exactly the `THttpException` keys. Any other key is translated in the `pradosoft/prado-dev-errormessages` package.
+2. A key thrown as `THttpException` is also added to every `messages-{lang}.txt` in the same directory; `TExceptionMessageFilesTest` checks that those files hold exactly the `THttpException` keys. Any other key is translated in the `pradosoft/prado-dev-errormessages` package at the batch sync before the PRADO tag and release; do not edit the package per change.
 3. Throw: `throw new TApplicationException('my_error_code', $detail);`
 
 ## Extra Message Files
