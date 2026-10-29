@@ -837,6 +837,7 @@ return [
 'TMeter' => 'Prado\Web\UI\WebControls\TMeter',
 'TMultiView' => 'Prado\Web\UI\WebControls\TMultiView',
 'TNav' => 'Prado\Web\UI\WebControls\TNav',
+'TNoScript' => 'Prado\Web\UI\WebControls\TNoScript',
 'TOutput' => 'Prado\Web\UI\WebControls\TOutput',
 'TOutputCache' => 'Prado\Web\UI\WebControls\TOutputCache',
 'TOutputCacheCalculateKeyEventParameter' => 'Prado\Web\UI\WebControls\TOutputCacheCalculateKeyEventParameter',

@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+ENH: Issue #959 - `TNoScript` renders `<noscript>`. (belisoful)
 ENH: Issue #959 - `TSeparator` renders `<hr>`. (belisoful)
 ENH: Issue #959 - `TFieldSet` renders `<fieldset>` with its `Legend`, or a `TLegend` child, and `Enabled` false disables the group in the browser and its controls on the server. (belisoful)
 NEW: `TCurlMultiHttpClient` is an async HTTP transport on a cURL multi handle pumped from the event loop: `downloadAsync()` returns the `TFuture` of the response and takes a `TCancellationToken`, `download()` awaits it so a fiber yields while the response is in flight, and `PollInterval` and `MaxConnections` tune the pump; `TCurlHttpClient` and `TFopenHttpClient` stay synchronous and `TCurlHttpClient::createHandle()` and `createResponse()` are shared. `TChannel` passes values between fibers in order with a `Capacity` of null, 0 (rendezvous), or `n`, `send()`/`receive()` waits, `close()`, and iteration. `composer.json` suggests `amphp/http-client`, `amphp/mysql`, `amphp/postgres`, `amphp/redis`, and `amphp/parallel`, which schedule on the same Revolt loop. (belisoful)

@@ -159,6 +159,7 @@ All extend [THtmlElement](./THtmlElement.md). Each wraps the named HTML5 element
 | [`TMain`](TMain.md) | `main` | Dominant page content; one per document |
 | [`TMark`](TMark.md) | `mark` | Highlighted or marked text |
 | [`TNav`](TNav.md) | `nav` | Navigation links section |
+| [`TNoScript`](TNoScript.md) | `noscript` | Fallback content shown when scripting is disabled (@since 4.4.0) |
 | [`TPre`](TPre.md) | `pre` | Preformatted text; whitespace kept (@since 4.4.0) |
 | [`TQuote`](TQuote.md) | `q` | Inline quotation; `Cite` source URL (@since 4.4.0) |
 | [`TSamp`](TSamp.md) | `samp` | Sample output from a program (@since 4.4.0) |
