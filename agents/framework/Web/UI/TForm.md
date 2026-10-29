@@ -22,6 +22,11 @@ TForm is the base class for HTML forms in PRADO framework. It extends [TControl]
 - `Method` (string): Form submission method ('post' or 'get'), defaults to 'post'
 - `Enctype` (string): Encoding type for form data submission
 - `Name` (string): Form name, equal to UniqueID
+- `NoValidate` (bool, @since 4.4.0): `novalidate`; the browser skips the constraint check of `required`, `pattern`, and the rest. Server validators still run. A button's `formnovalidate` (`CausesValidation` false) does the same for one submission.
+- `AutoComplete` (?bool, @since 4.4.0): `autocomplete` `on`/`off`, the default autofill of the fields; a field's own value takes precedence
+- `Target` (string, @since 4.4.0): `target`, the browsing context of the response
+- `AcceptCharset` (string, @since 4.4.0): `accept-charset`; HTML allows only `UTF-8`
+- `Rel` (string, @since 4.4.0): `rel` link types of the submission, such as `noopener noreferrer`
 
 ## Core Methods
 
