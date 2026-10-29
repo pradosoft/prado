@@ -59,6 +59,7 @@
 		"bower-asset/highlightjs": "^9",
 		"bower-asset/clipboard": "^2",
 		"bower-asset/highlightjs-line-numbers.js": "^2",
+		"npm-asset/idiomorph": "0.8.0",
 		"psy/psysh": "^0",
 		"psr/clock": "^1.0",
 		"psr/http-message": "^2.0",

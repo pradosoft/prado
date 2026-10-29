@@ -18,6 +18,7 @@ This file defines the JavaScript package registry for PRADO. It declares all JS 
 | `tinymce` | `Vendor\bower-asset\tinymce` |
 | `highlightjs` | `Vendor\bower-asset\highlightjs` |
 | `clipboard` | `Vendor\bower-asset\clipboard\dist` |
+| `idiomorph` | `Vendor\npm-asset\idiomorph\dist` |
 
 ## Packages
 
@@ -40,10 +41,11 @@ This file defines the JavaScript package registry for PRADO. It declares all JS 
 | `activefileupload` | `prado/activefileupload/activefileupload.js` |
 | `activedatepicker` | `prado/activecontrols/activedatepicker.js` |
 | `proofofwork` | `prado/controls/proofofwork-solver.js`, `prado/controls/proofofwork.js` |
+| `idiomorph` | `idiomorph/idiomorph.js`: DOM morphing for callback updates; `npm-asset/idiomorph`, pinned exactly in composer.json and package.json |
 
 ## Dependencies
 
-Key dependencies include: `prado` requires `jquery`, `ajax` requires `jquery` and `prado`, `activedatepicker` requires `jquery`, `prado`, `datepicker`, and `ajax`.
+Key dependencies include: `prado` requires `jquery`, `ajax` requires `jquery` and `prado`, `activedatepicker` requires `jquery`, `prado`, `datepicker`, and `ajax`. `morph` (no files of its own) requires `jquery`, `prado`, `ajax`, and `idiomorph`; [TActiveControlAdapter](../UI/ActiveControls/TActiveControlAdapter.md) registers it for a control whose callback updates morph.
 
 ## See Also
 
