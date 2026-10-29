@@ -1,0 +1,43 @@
+<com:TContent ID="Content">
+	<h1>Callback Morph Test Case</h1>
+
+	<com:TActiveButton ID="refresh" Text="Refresh" OnCallback="refreshPanels" />
+	<com:TActiveButton ID="slow" Text="Slow refresh" OnCallback="slowRefresh" />
+	<div>Inner clicks: <com:TActiveLabel ID="innerCount" Text="0" /></div>
+	<div>Rating changes: <com:TActiveLabel ID="ratingCount" Text="0" /></div>
+
+	<com:TActivePanel ID="panel" ActiveControl.UpdateMode="Morph">
+		<p>Refresh count: <com:TLabel ID="count" /></p>
+		<div id="live" role="status">Saved</div>
+		<span id="marker">marker</span>
+		<com:TLabel ForControl="note" Text="Note" />
+		<com:TTextBox ID="note" />
+		<com:TLabel ForControl="other" Text="Other" />
+		<com:TTextBox ID="other" />
+		<com:TActiveButton ID="inner" Text="Inner" OnCallback="innerClick" />
+		<com:TActiveRatingList ID="rating" AutoPostBack="true" OnSelectedIndexChanged="ratingChanged">
+			<com:TListItem Value="1" Text="One" />
+			<com:TListItem Value="2" Text="Two" />
+			<com:TListItem Value="3" Text="Three" />
+		</com:TActiveRatingList>
+		<svg id="art" width="60" height="30" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+			<defs><rect id="art_r" width="10" height="10" /></defs>
+			<circle id="art_dot" cx="15" cy="15" r="<%= 5 + $this->Page->RefreshCount %>" />
+			<use id="art_use" xlink:href="#art_r" x="40" y="10" />
+		</svg>
+		<div id="widget" data-prado-morph="skip">server <%= $this->Page->RefreshCount %></div>
+		<script>window.staticRuns = (window.staticRuns || 0) + 1;</script>
+		<script>window.dynamicRuns = (window.dynamicRuns || 0) + 1; window.lastDynamic = <%= $this->Page->RefreshCount %>;</script>
+	</com:TActivePanel>
+
+	<com:TActivePanel ID="replaced" ActiveControl.UpdateMode="Replace">
+		<span id="replacedMarker">replaced <%= $this->Page->RefreshCount %></span>
+	</com:TActivePanel>
+
+	<com:TActiveButton ID="insertTop" Text="Insert at top" OnCallback="insertTop" />
+	<com:TActiveRepeater ID="rows" ActiveControl.UpdateMode="Morph">
+		<prop:ItemTemplate>
+			<div class="row"><span class="name"><%# $this->Data %></span> <com:TTextBox ID="value" /></div>
+		</prop:ItemTemplate>
+	</com:TActiveRepeater>
+</com:TContent>
