@@ -241,8 +241,12 @@ class TRestPagination extends TApplicationComponent
 	 */
 	public function getOffset(): int
 	{
-		$offset = ($this->getPage() - 1) * $this->getPerPage();
-		return is_int($offset) ? $offset : PHP_INT_MAX;
+		$page = $this->getPage() - 1;
+		$perPage = $this->getPerPage();
+		if ($page > intdiv(PHP_INT_MAX, $perPage)) {
+			return PHP_INT_MAX;
+		}
+		return $page * $perPage;
 	}
 
 	/**

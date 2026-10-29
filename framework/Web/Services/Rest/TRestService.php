@@ -11,219 +11,127 @@
 namespace Prado\Web\Services\Rest;
 
 use Prado\Exceptions\TConfigurationException;
-use Prado\Exceptions\TIOException;
+use Prado\Exceptions\THttpException;
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Prado;
+use Prado\Security\TAuthorizationRule;
 use Prado\TApplicationMode;
 use Prado\TPropertyValue;
 use Prado\Util\Log\TLogger;
 use Prado\Web\THttpHeaderName;
+use Prado\Web\THttpRequest;
+use Prado\Web\THttpRequestUrlFormat;
 use Prado\Web\TMediaType;
 use Prado\Xml\TXmlDocument;
+use Prado\Xml\TXmlElement;
 
 /**
  * TRestService class
  *
- * TRestService provides a self-contained REST API layer for PRADO applications,
- * intended as the backend for single-page applications built with React, Vue,
- * Svelte, or any other client that consumes a JSON HTTP API.
+ * TRestService serves a JSON HTTP API from {@see IRestResource} classes, as the
+ * backend of a single-page application or of any client of the API. Each
+ * resource declares the HTTP verb and URL pattern of its handler methods with
+ * {@see TRestRoute}; the service compiles them into {@see TRestRoutePattern}
+ * routes, matches the request, and calls the handler with the path parameters.
  *
  * ## Request lifecycle
  *
- * On each request the service:
+ * | Step | What happens |
+ * |---|---|
+ * | `init()` | The configuration is read, each resource is created and asked for its routes, the request path is matched (see *Routing*), and the `<authorization>` rules of the matched route join the application rules |
+ * | `onAuthorization` | {@see \Prado\Security\TAuthManager} applies the rules; a refusal is written as a `401` problem document |
+ * | `run()` | {@see \Prado\TService::ensureCsrfToken()} when `EnableCsrfValidation` is on, a `400` problem document when the token is missing; `404` when no route matched the path; `405` with an `Allow` header when the path matched another verb; otherwise the resource receives the route, {@see onPreRunResource()} is raised, {@see IRestResource::authorize()} runs, the handler runs, and its return value is written as JSON with the status code and headers the resource chose. `HEAD` and `204` send no body |
+ * | an exception | {@see onError()} is raised and the exception is written as a problem document (see *Error responses*) |
  *
- *  1. Emits CORS headers and short-circuits `OPTIONS` preflights when
- *     {@see setEnableCors EnableCors} is on.
- *  2. Strips {@see setBasePath BasePath} from `PATH_INFO` and matches the
- *     remainder against its compiled route table in declaration order; the
- *     first matching pattern wins, otherwise the service returns `404`.
- *     Requests whose path lies outside `BasePath` also return `404`.
- *  3. Instantiates the matched {@see TRestResource} subclass, applies any
- *     extra XML attributes as object properties, and injects the captured
- *     path parameters.
- *  4. Calls {@see TRestResource::authorize() authorize()} (which may throw),
- *     then dispatches to a `do…()` method chosen from the HTTP verb and the
- *     pattern's shape (see *Routing & dispatch* below).
- *  5. JSON-encodes the return value and writes it with the resource's chosen
- *     status code and headers. `HEAD` and `204` responses suppress the body.
- *     Any {@see TRestException} (or other `Throwable`) is converted to a JSON
- *     error envelope (see *Error responses* below).
+ * ## Routing
  *
- * ## Routing & dispatch
+ * A route pattern is `BasePath`, the group prefix, the resource prefix and the
+ * handler pattern joined by `/`. Placeholders are `{name}`, constrained by
+ * `parameters.name` or inline as `{name:\d+}`, and match one path segment by
+ * default. Routes are tried in declaration order. The path is matched first and
+ * the verb second, so the first route whose path and verb both match wins, and a
+ * path that matches only routes of other verbs is a `405` whose `Allow` header
+ * lists their verbs. A `HEAD` request runs the `GET` handler without a body
+ * unless a route names `HEAD` itself.
  *
- * Patterns use `{name}` placeholders, optionally constrained per-parameter
- * with `parameters.<name>="<regex>"` (default: `[^/]+`). A route is classified
- * as an **item** route when its final path segment is a placeholder, and as a
- * **collection** route otherwise. The HTTP verb and the route shape together
- * select the resource method:
+ * {@see constructUrl()} is the reverse: the URL of a named route for a set of
+ * parameter values. A route is named by its attribute, or by the resource class
+ * short name and the method name joined by a dot.
  *
- * | Verb       | Collection route | Item route                  |
- * |------------|------------------|-----------------------------|
- * | GET / HEAD | `doIndex()`      | `doShow()` (HEAD omits body) |
- * | POST       | `doStore()`      | `doStore()`                 |
- * | PUT        | `doStore()`      | `doUpdate()`                |
- * | PATCH      | `doStore()`      | `doPatch()`                 |
- * | DELETE     | `doDestroy()`    | `doDestroy()`               |
- *
- * `PUT` and `PATCH` on a collection route both fall through to `doStore()`
- * so that a resource may treat them as upsert; subclasses that do not want
- * that behaviour simply omit `doStore()`, which yields `405`. Unknown verbs
- * and resources that do not implement the selected method also yield `405
- * Method Not Allowed`. Path parameters are passed to the resource method
- * **by name** via PHP reflection — parameter order in the signature does
- * not matter, and unmatched parameters fall back to PHP defaults.
- *
- * ## Configuring resources
- *
- * Routes are declared as `<resource>` elements directly under the `<service>`,
- * or inside `<group>` elements that share a common URL prefix. Groups support
- * an `enabled` attribute that accepts boolean-ish values plus the
- * case-insensitive string `'Debug'`, which evaluates to `true` only when
- * `TApplicationMode::Debug` is active — useful for diagnostic endpoints that
- * should disappear in `Normal` and `Performance` modes. URL routing is set up
- * once on the request module, then resources are declared on the service:
+ * ## Configuration
  *
  * ```xml
- * <module id="request" class="THttpRequest" UrlManager="url-manager" />
- * <module id="url-manager" class="Prado\Web\TUrlMapping" EnableCustomUrl="true">
- *   <url ServiceID="rest" ServiceParameter="1" pattern="api/{*}" />
- * </module>
- *
- * <service id="rest" class="Prado\Web\Services\Rest\TRestService"
- *   BasePath="api/"
- *   EnableCors="true"
- *   AllowOrigin="https://myapp.example.com">
- *
- *   <!-- Top-level resources: collection + item + nested -->
- *   <resource pattern="users"                   class="App.Api.UsersResource" />
- *   <resource pattern="users/{id}"              class="App.Api.UsersResource"  parameters.id="\d+" />
- *   <resource pattern="users/{userId}/posts"    class="App.Api.UserPostsResource" parameters.userId="\d+" />
- *   <resource pattern="users/{userId}/posts/{id}" class="App.Api.UserPostsResource"
- *             parameters.userId="\d+" parameters.id="\d+" />
- *
- *   <!-- Grouped resources sharing a prefix; combines every group option -->
- *   <group prefix="v1/" enabled="true">
- *     <resource pattern="users" class="App.Api.V1.UsersResource" />
+ * <service id="rest" class="Prado\Web\Services\Rest\TRestService" BasePath="api">
+ *   <resource class="App\Api\UsersResource" />
+ *   <resource class="App\Api\PostsResource" prefix="posts" PageSize="50">
+ *     <authorization>
+ *       <allow roles="editor" verb="POST,PUT,PATCH,DELETE" />
+ *       <deny users="?" verb="POST,PUT,PATCH,DELETE" />
+ *     </authorization>
+ *   </resource>
+ *   <route verbs="GET" pattern="health" class="App\Api\StatusResource" method="health" name="health" />
+ *   <group prefix="v2">
+ *     <include file="Application.config.rest-v2" />
  *   </group>
- *   <group prefix="v2/" groupfile="Application.config.rest-v2" />     <!-- loaded from file -->
- *   <group prefix="v3/" enabled="false">                              <!-- temporarily off -->
- *     <resource pattern="users" class="App.Api.V3.UsersResource" />
- *   </group>
- *   <group prefix="debug/" enabled="Debug">                           <!-- Debug-mode-only -->
- *     <resource pattern="dump" class="App.Api.Debug.DumpResource" />
+ *   <group prefix="debug" enabled="Debug">
+ *     <resource class="App\Api\Debug\DumpResource" />
  *   </group>
  * </service>
  * ```
  *
- * The same configuration expressed as a PHP array (when the application is
- * configured with `CONFIG_TYPE_PHP`) — `<resource>` and `<group>` attributes
- * become array keys, and `parameters.<name>="…"` collapses to a nested
- * `'parameters'` array:
+ * | Element | Meaning |
+ * |---|---|
+ * | `<resource class prefix enabled …>` | A resource class; its routes come from {@see IRestResource::getRoutes()}. `prefix` replaces the class attribute prefix. Any other attribute is a property of the resource |
+ * | `<route verbs pattern class method name parameters.x query.x enabled>` | One route declared in the configuration; `class` and `method` name the handler |
+ * | `<group prefix enabled>` | Resources, routes, groups and includes sharing a prefix |
+ * | `<include file>` | A configuration file in PRADO namespace format, in the application's configuration type, whose root holds the same elements |
+ * | `<authorization>` | `<allow>` and `<deny>` rules of {@see \Prado\Security\TAuthorizationRule}, applying to the routes of the element that holds it |
  *
+ * `enabled` takes a boolean or `Debug`, which enables the element in
+ * {@see \Prado\TApplicationMode::Debug} mode only. The PHP configuration uses the
+ * same names as array keys:
  * ```php
  * 'services' => [
  *   'rest' => [
- *     'class' => 'Prado\\Web\\Services\\Rest\\TRestService',
- *     'properties' => [
- *       'BasePath' => 'api/',
- *       'EnableCors' => 'true',
- *       'AllowOrigin' => 'https://myapp.example.com',
- *     ],
+ *     'class' => \Prado\Web\Services\Rest\TRestService::class,
+ *     'properties' => ['BasePath' => 'api'],
  *     'resources' => [
- *       ['pattern' => 'users',                     'class' => 'App.Api.UsersResource'],
- *       ['pattern' => 'users/{id}',                'class' => 'App.Api.UsersResource',
- *        'parameters' => ['id' => '\d+']],
- *       ['pattern' => 'users/{userId}/posts',      'class' => 'App.Api.UserPostsResource',
- *        'parameters' => ['userId' => '\d+']],
- *       ['pattern' => 'users/{userId}/posts/{id}', 'class' => 'App.Api.UserPostsResource',
- *        'parameters' => ['userId' => '\d+', 'id' => '\d+']],
+ *       ['class' => \App\Api\UsersResource::class],
+ *       ['class' => \App\Api\PostsResource::class, 'prefix' => 'posts', 'PageSize' => 50,
+ *        'authorization' => [['action' => 'allow', 'roles' => 'editor', 'verb' => 'POST,PUT,PATCH,DELETE']]],
+ *     ],
+ *     'routes' => [
+ *       ['verbs' => 'GET', 'pattern' => 'health', 'class' => \App\Api\StatusResource::class, 'method' => 'health'],
  *     ],
  *     'groups' => [
- *       ['prefix' => 'v1/', 'enabled' => true, 'resources' => [
- *         ['pattern' => 'users', 'class' => 'App.Api.V1.UsersResource'],
- *       ]],
- *       ['prefix' => 'v2/', 'groupfile' => 'Application.config.rest-v2'],
- *       ['prefix' => 'v3/', 'enabled' => false, 'resources' => [
- *         ['pattern' => 'users', 'class' => 'App.Api.V3.UsersResource'],
- *       ]],
- *       ['prefix' => 'debug/', 'enabled' => 'Debug', 'resources' => [
- *         ['pattern' => 'dump', 'class' => 'App.Api.Debug.DumpResource'],
- *       ]],
+ *       ['prefix' => 'v2', 'include' => 'Application.config.rest-v2'],
+ *       ['prefix' => 'debug', 'enabled' => 'Debug', 'resources' => [['class' => \App\Api\Debug\DumpResource::class]]],
  *     ],
  *   ],
  * ],
  * ```
- *
- * ## External configuration files
- *
- * Either the full service config or a single group's resources can live in a
- * separate file referenced by Prado namespace path (without extension). The
- * loader prefers `.php` and falls back to `.xml`; for XML files the root
- * element name is arbitrary, only direct `<resource>` (and, for `configfile`,
- * `<group>`) children are read.
- *
- *  - **`<service configfile="…">`** loads top-level `resources` and `groups`.
- *    Inline entries on the `<service>` element are appended afterwards, so
- *    file contents act as a base that inline entries can extend.
- *  - **`<group groupfile="…">`** loads only the `resources` for that group.
- *    The `prefix` and `enabled` flag stay on the referencing `<group>`.
- *
- * A representative pair of external files — one service-level, one
- * group-level — looks like:
- *
- * ```xml
- * <!-- Application/config/rest.xml — referenced by <service configfile="..."> -->
- * <rest>
- *   <resource pattern="users" class="App.Api.UsersResource" />
- *   <group prefix="v2/" groupfile="Application.config.rest-v2" />
- *   <group prefix="debug/" enabled="Debug">
- *     <resource pattern="dump" class="App.Api.Debug.DumpResource" />
- *   </group>
- * </rest>
- *
- * <!-- Application/config/rest-v2.xml — referenced by <group groupfile="..."> -->
- * <resources>
- *   <resource pattern="users"      class="App.Api.V2.UsersResource" />
- *   <resource pattern="users/{id}" class="App.Api.V2.UsersResource" parameters.id="\d+" />
- * </resources>
- * ```
- *
- * The PHP-array equivalents return `['resources' => […], 'groups' => […]]`
- * for a service-level file and `['resources' => […]]` for a group-level
- * file, with each entry using the same keys as the XML attributes.
- *
- * ## CORS
- *
- * When {@see setEnableCors EnableCors} is on, `Access-Control-Allow-Origin`
- * (plus `Access-Control-Allow-Credentials` and `Vary: Origin` when
- * applicable) is added to every response, and `OPTIONS` preflights are
- * answered with `204 No Content` carrying the preflight-only headers
- * `Access-Control-Allow-Methods`, `Access-Control-Allow-Headers`, and
- * `Access-Control-Max-Age`. {@see setAllowOrigin AllowOrigin},
- * {@see setAllowMethods AllowMethods}, {@see setAllowHeaders AllowHeaders},
- * {@see setAllowCredentials AllowCredentials}, and {@see setMaxAge MaxAge}
- * control the emitted values. Combining {@see setAllowCredentials
- * AllowCredentials} with the wildcard `'*'` origin is rejected as a
- * configuration error — reflecting arbitrary origins while allowing
- * credentials would grant every website authenticated access to the API, so
- * an explicit origin must be configured instead.
+ * The request reaches the service through the URL manager as any other service
+ * does; a `TUrlMapping` rule such as `<url ServiceID="rest" ServiceParameter="api" pattern="api/" UrlFormat="Path" />`
+ * routes `/index.php/api/...` to it, and the service matches `PathInfo` itself.
  *
  * ## Error responses
  *
- * Every error — routing failures, method mismatches, thrown
- * {@see TRestException} instances, and uncaught exceptions — is serialized as
- * an RFC 7807-inspired JSON envelope. Validation failures additionally
- * include an `errors` key:
- *
+ * Every error is a {@see TRestException} written as an RFC 9457 problem document
+ * with the `application/problem+json` media type:
  * ```json
  * { "status": 404, "title": "Not Found", "detail": "User 42 not found." }
- * { "status": 422, "title": "Unprocessable Entity",
- *   "detail": "The given data was invalid.",
+ * { "status": 422, "title": "Unprocessable Entity", "detail": "The given data was invalid.",
  *   "errors": { "email": ["The email field is required."] } }
  * ```
+ * A {@see \Prado\Exceptions\THttpException} keeps its status code and message. Any
+ * other exception is logged and written as a `500` whose `detail` is the message
+ * when {@see setExposeErrors() ExposeErrors} is on, as it is in Debug mode.
  *
- * Uncaught exceptions become `500` responses; their `getMessage()` is
- * included in `detail` only when {@see setExposeErrors ExposeErrors} is on
- * (the default in `TApplicationMode::Debug`).
+ * ## Cross-origin requests
+ *
+ * {@see \Prado\Web\HttpHeaders\TCorsModule} answers preflights and sends the
+ * `Access-Control-*` headers for every service, and a `PathPrefix` equal to
+ * `BasePath` limits it to the API.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
@@ -231,325 +139,349 @@ use Prado\Xml\TXmlDocument;
 class TRestService extends \Prado\TService
 {
 	/**
-	 * @var string Base URL path prefix stripped before route matching.
-	 *   For example, `"api/"` means `PATH_INFO` of `/api/users/1` is matched
-	 *   as `users/1`. Include the trailing slash. Defaults to empty string.
+	 * @var string[] the verbs an `Allow` header lists for a route without `Verbs`.
+	 */
+	public const STANDARD_VERBS = ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'];
+
+	/**
+	 * @var string path prefix of every route.
 	 */
 	private string $_basePath = '';
 
 	/**
-	 * @var bool Whether to emit CORS headers. Defaults to false.
-	 */
-	private bool $_enableCors = false;
-
-	/**
-	 * @var string Value of the `Access-Control-Allow-Origin` header.
-	 *   Use `'*'` to allow any origin. Defaults to `'*'`.
-	 */
-	private string $_allowOrigin = '*';
-
-	/**
-	 * @var string Comma-separated list of allowed HTTP methods.
-	 */
-	private string $_allowMethods = 'GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD';
-
-	/**
-	 * @var string Comma-separated list of allowed request headers.
-	 */
-	private string $_allowHeaders = 'Content-Type, Authorization, X-Requested-With, Accept';
-
-	/**
-	 * @var bool Whether `Access-Control-Allow-Credentials` is sent. Defaults to false.
-	 */
-	private bool $_allowCredentials = false;
-
-	/**
-	 * @var int Max-age in seconds for preflight cache. Defaults to 86400 (24 h).
-	 */
-	private int $_maxAge = 86400;
-
-	/**
-	 * @var bool Whether to expose internal exception messages in 500 responses.
-	 *   Automatically true when the application runs in Debug mode.
+	 * @var bool whether a `500` carries the exception message.
 	 */
 	private bool $_exposeErrors = false;
 
 	/**
-	 * @var array Compiled route table. Each entry:
-	 *   [ 'pattern' => string, 'regex' => string, 'class' => string,
-	 *     'isItem' => bool, 'paramOrder' => string[], 'properties' => array ]
+	 * @var string class of the routes.
+	 */
+	private string $_routeClass = TRestRoutePattern::class;
+
+	/**
+	 * @var TRestRoutePattern[] the routes in declaration order.
+	 */
+	private array $_routes = [];
+
+	/**
+	 * @var array<string,IRestResource> the resources keyed by class name.
 	 */
 	private array $_resources = [];
 
-	// ── Initialisation ─────────────────────────────────────────────────────────
+	/**
+	 * @var array<int,array{0:TRestRoutePattern,1:array}> the routes whose path matched the request.
+	 */
+	private array $_pathMatches = [];
 
 	/**
-	 * Initializes the service by validating the CORS configuration and
-	 * compiling the resource route table.
-	 * @param mixed $config Service configuration element.
-	 * @throws TConfigurationException when CORS credentials are combined with
-	 *   the wildcard origin, or a resource declaration is invalid (missing
-	 *   `pattern`/`class`, bad route parameter name, or non-resource class).
-	 * @throws TIOException when a referenced config or group file cannot be found.
+	 * @var ?TRestRoutePattern the route serving the request.
+	 */
+	private ?TRestRoutePattern $_route = null;
+
+	/**
+	 * @var array path parameters of the route serving the request.
+	 */
+	private array $_pathParameters = [];
+
+	// ── Initialization ────────────────────────────────────────────────────────
+
+	/**
+	 * Reads the configuration, matches the request, and merges the authorization
+	 * rules of the matched route into the application rules.
+	 * @param null|array|TXmlElement $config the service configuration.
+	 * @throws TConfigurationException when a resource, route or include is invalid.
 	 */
 	public function init($config): void
 	{
 		$this->setExposeErrors($this->getApplication()->getMode() === TApplicationMode::Debug);
-		$this->assertValidCorsConfig();
-		$this->loadResources($config);
+		$this->loadConfig($config);
+		$this->resolveRoute();
+		if ($this->getRoute() !== null) {
+			$this->getApplication()->getAuthorizationRules()->mergeWith($this->getRoute()->getAuthorizationRules());
+		}
+		$this->getApplication()->attachEventHandler('onAuthorization', [$this, 'handleUnauthorized']);
 		parent::init($config);
 	}
 
 	/**
-	 * Guards against the insecure combination of credentialed CORS and a
-	 * wildcard origin.
-	 *
-	 * Reflecting arbitrary request origins while sending
-	 * `Access-Control-Allow-Credentials: true` would let any website make
-	 * authenticated requests with the user's cookies, which the CORS
-	 * specification deliberately forbids. Called from {@see init()} for
-	 * fail-fast configuration errors and from {@see sendCorsHeaders()} to
-	 * cover properties changed programmatically after initialization.
-	 *
-	 * @throws TConfigurationException when EnableCors and AllowCredentials are
-	 *   both true while AllowOrigin is `'*'`.
+	 * Loads the resources, routes, groups and includes of a configuration.
+	 * @param null|array|TXmlElement $config the service configuration.
 	 */
-	protected function assertValidCorsConfig(): void
+	protected function loadConfig(mixed $config): void
 	{
-		if ($this->getEnableCors() && $this->getAllowCredentials() && $this->getAllowOrigin() === '*') {
-			throw new TConfigurationException('restservice_cors_credentials_wildcard');
+		if ($config instanceof TXmlElement) {
+			$config = $this->xmlToArray($config);
+		}
+		if (is_array($config)) {
+			$this->loadRoutes($config, '', []);
 		}
 	}
 
 	/**
-	 * Parses `<resource>` and `<group>` elements from the service configuration
-	 * and compiles each resource pattern into a named-capture regular expression.
-	 *
-	 * XML configurations are first normalized to a PHP array via
-	 * {@see xmlConfigToArray()}; only the PHP array path is then parsed. This
-	 * ensures a single, consistent parsing code path regardless of config format.
-	 *
-	 * Top-level `<resource>` elements are registered directly. `<group>` elements
-	 * are delegated to {@see loadGroup()}, which prepends the group prefix to every
-	 * pattern before the routes are added to the table. Disabled groups
-	 * (`enabled="false"`) are skipped entirely.
-	 *
-	 * A `configfile` attribute on the service (or `'configfile'` key in PHP
-	 * config) loads an external file containing the same `resources` + `groups`
-	 * structure; its contents are processed first, then inline entries are
-	 * appended. The external file may itself reference further `groupfile`s.
-	 *
-	 * @param mixed $config Service configuration element.
-	 * @throws TConfigurationException when required attributes are missing.
-	 * @throws TIOException when a referenced config or group file cannot be found.
+	 * Converts a configuration element to the array form: attributes become keys,
+	 * `parameters.x` and `query.x` nest, and the `resource`, `route`, `group`,
+	 * `include` and `authorization` children become the lists of the same names.
+	 * @param TXmlElement $element the element.
+	 * @return array the configuration array.
 	 */
-	protected function loadResources(mixed $config): void
+	protected function xmlToArray(TXmlElement $element): array
 	{
-		if ($config === null) {
-			return;
-		}
-
-		if ($config instanceof \Prado\Xml\TXmlElement) {
-			$phpConfig = $this->xmlConfigToArray($config);
-		} elseif (is_array($config)) {
-			$phpConfig = $config;
-		} else {
-			return;
-		}
-
-		// Merge an external configfile (if any) ahead of inline entries.
-		$configFile = (string) ($phpConfig['configfile'] ?? '');
-		if ($configFile !== '') {
-			$external = $this->loadConfigFile($configFile);
-			$phpConfig['resources'] = array_merge($external['resources'] ?? [], $phpConfig['resources'] ?? []);
-			$phpConfig['groups'] = array_merge($external['groups'] ?? [], $phpConfig['groups'] ?? []);
-		}
-
-		foreach ($phpConfig['resources'] ?? [] as $item) {
-			$this->registerResource($item);
-		}
-		foreach ($phpConfig['groups'] ?? [] as $groupConfig) {
-			$this->loadGroup($groupConfig);
-		}
-	}
-
-	/**
-	 * Converts a service XML config element to a PHP array suitable for
-	 * {@see loadResources()}.
-	 *
-	 * Only direct child elements are inspected: `<resource>` elements are
-	 * collected under `'resources'`; `<group>` elements are collected under
-	 * `'groups'`. This prevents double-registration of resources that live
-	 * inside `<group>` elements. The `configfile` attribute, if present on
-	 * the service element, is preserved under the `'configfile'` key.
-	 *
-	 * @param \Prado\Xml\TXmlElement $config Service XML element.
-	 * @return array{resources: array, groups: array, configfile?: string}
-	 */
-	protected function xmlConfigToArray(\Prado\Xml\TXmlElement $config): array
-	{
-		$result = ['resources' => [], 'groups' => []];
-
-		$configFile = $config->getAttribute('configfile');
-		if ($configFile !== null && $configFile !== '') {
-			$result['configfile'] = $configFile;
-		}
-
-		foreach ($config->getElements() as $element) {
-			$tagName = strtolower($element->getTagName());
-			if ($tagName === 'resource') {
-				$result['resources'][] = $this->xmlResourceToArray($element);
-			} elseif ($tagName === 'group') {
-				$result['groups'][] = $this->xmlGroupToArray($element);
-			}
-		}
-
-		return $result;
-	}
-
-	/**
-	 * Converts a `<group>` XML element to a PHP array.
-	 *
-	 * All attributes are preserved as top-level keys. Direct `<resource>` child
-	 * elements are collected under the `'resources'` key via
-	 * {@see xmlResourceToArray()}.
-	 *
-	 * @param \Prado\Xml\TXmlElement $element XML group element.
-	 * @return array Group config array with at least a `'resources'` key.
-	 */
-	protected function xmlGroupToArray(\Prado\Xml\TXmlElement $element): array
-	{
-		$group = [];
-
-		foreach ($element->getAttributes()->toArray() as $key => $value) {
-			$group[$key] = $value;
-		}
-
-		$resources = [];
-		foreach ($element->getElements() as $child) {
-			if (strtolower($child->getTagName()) === 'resource') {
-				$resources[] = $this->xmlResourceToArray($child);
-			}
-		}
-		$group['resources'] = $resources;
-
-		return $group;
-	}
-
-	/**
-	 * Converts a `<resource>` XML element to a PHP array.
-	 *
-	 * Attributes prefixed with `'parameters.'` are collected into a nested
-	 * `'parameters'` array. All remaining attributes are preserved as top-level
-	 * keys (including `'pattern'` and `'class'`).
-	 *
-	 * @param \Prado\Xml\TXmlElement $element XML resource element.
-	 * @return array Resource config array.
-	 */
-	protected function xmlResourceToArray(\Prado\Xml\TXmlElement $element): array
-	{
-		$item = [];
-		$parameters = [];
-
+		$config = [];
 		foreach ($element->getAttributes()->toArray() as $key => $value) {
 			if (str_starts_with($key, 'parameters.')) {
-				$parameters[substr($key, 11)] = $value;
+				$config['parameters'][substr($key, 11)] = $value;
+			} elseif (str_starts_with($key, 'query.')) {
+				$config['query'][substr($key, 6)] = $value;
 			} else {
-				$item[$key] = $value;
+				$config[$key] = $value;
 			}
 		}
-
-		if ($parameters !== []) {
-			$item['parameters'] = $parameters;
+		foreach ($element->getElements() as $child) {
+			switch (strtolower($child->getTagName())) {
+				case 'resource':
+					$config['resources'][] = $this->xmlToArray($child);
+					break;
+				case 'route':
+					$config['routes'][] = $this->xmlToArray($child);
+					break;
+				case 'group':
+					$config['groups'][] = $this->xmlToArray($child);
+					break;
+				case 'include':
+					$config['include'][] = $child->getAttribute('file');
+					break;
+				case 'authorization':
+					foreach ($child->getElements() as $rule) {
+						$config['authorization'][] = ['action' => $rule->getTagName()] + $rule->getAttributes()->toArray();
+					}
+					break;
+			}
 		}
-
-		return $item;
+		return $config;
 	}
 
 	/**
-	 * Registers a resource from a PHP array config entry.
-	 *
-	 * Validates that `'pattern'` and `'class'` keys are present, extracts
-	 * `'parameters'` constraints, and passes all remaining keys as resource
-	 * properties to {@see addResource()}.
-	 *
-	 * @param array $item Resource config array. Must contain `'pattern'` and `'class'`.
-	 * @param string $prefix Optional URL prefix to prepend to the pattern.
-	 * @throws TConfigurationException when a required key is absent.
+	 * Registers the routes of a configuration level: a service, group, include or
+	 * resource. The level's prefix joins the inherited prefix, and its
+	 * authorization rules join the inherited rules.
+	 * @param array $config the configuration of the level.
+	 * @param string $prefix the inherited pattern prefix.
+	 * @param TAuthorizationRule[] $rules the inherited authorization rules.
 	 */
-	protected function registerResource(array $item, string $prefix = ''): void
+	protected function loadRoutes(array $config, string $prefix, array $rules): void
 	{
-		if (!isset($item['pattern'])) {
-			throw new TConfigurationException('restservice_pattern_required');
+		if (!$this->isEnabled($config['enabled'] ?? true)) {
+			return;
 		}
-		if (!isset($item['class'])) {
+		$prefix = $this->joinPath($prefix, (string) ($config['prefix'] ?? ''));
+		$rules = array_merge($rules, $this->createAuthorizationRules($config['authorization'] ?? []));
+		foreach ((array) ($config['include'] ?? []) as $file) {
+			$this->loadRoutes($this->loadIncludeFile((string) $file), $prefix, $rules);
+		}
+		foreach ($config['resources'] ?? [] as $item) {
+			$this->registerResource($item, $prefix, $rules);
+		}
+		foreach ($config['routes'] ?? [] as $item) {
+			$this->registerRoute($item, $prefix, $rules);
+		}
+		foreach ($config['groups'] ?? [] as $item) {
+			$this->loadRoutes($item, $prefix, $rules);
+		}
+	}
+
+	/**
+	 * Registers a resource: creates it, applies its properties, and adds a route for
+	 * each declaration of {@see IRestResource::getRoutes()} and each `routes` entry.
+	 * @param array $item the resource configuration.
+	 * @param string $prefix the inherited pattern prefix.
+	 * @param TAuthorizationRule[] $rules the inherited authorization rules.
+	 * @throws TConfigurationException when `class` is absent or not an IRestResource.
+	 */
+	protected function registerResource(array $item, string $prefix, array $rules): void
+	{
+		if (!$this->isEnabled($item['enabled'] ?? true)) {
+			return;
+		}
+		$class = (string) ($item['class'] ?? '');
+		if ($class === '') {
 			throw new TConfigurationException('restservice_class_required');
 		}
-
-		// An individual resource may carry an `enabled` flag (boolean-ish, or the
-		// case-insensitive `'Debug'`), mirroring `<group>`; a disabled resource is skipped.
-		if (array_key_exists('enabled', $item) && !$this->isEnabled($item['enabled'])) {
-			return;
+		$properties = array_diff_key($item, array_flip(['class', 'prefix', 'enabled', 'authorization', 'routes']));
+		$resource = $this->createResource($class, $properties);
+		$prefix = $this->joinPath($prefix, array_key_exists('prefix', $item) ? (string) $item['prefix'] : $resource->getRoutePrefix());
+		$rules = array_merge($rules, $this->createAuthorizationRules($item['authorization'] ?? []));
+		foreach ($resource->getRoutes() as $method => $declarations) {
+			foreach ($declarations as $declaration) {
+				if (!($declaration instanceof TRestRoute)) {
+					throw new TConfigurationException('restservice_route_invalid', $class, $method);
+				}
+				$this->addRoute(
+					$this->joinPath($prefix, $declaration->pattern),
+					$resource::class,
+					(string) $method,
+					$declaration->verbs,
+					$declaration->parameters,
+					$declaration->query,
+					$declaration->name ?? $this->getDefaultRouteName($resource::class, (string) $method),
+					$rules,
+					$properties,
+				);
+			}
 		}
-
-		$pattern = $prefix . $item['pattern'];
-		$class = $item['class'];
-		$parameters = $item['parameters'] ?? [];
-		$properties = array_diff_key($item, array_flip(['pattern', 'class', 'parameters', 'enabled']));
-
-		$this->addResource($pattern, $class, $parameters, $properties);
+		foreach ($item['routes'] ?? [] as $route) {
+			$this->registerRoute(['class' => $class] + $route, $prefix, $rules);
+		}
 	}
 
 	/**
-	 * Processes a group config array and registers all enabled resources.
-	 *
-	 * Reads `'prefix'`, `'enabled'`, and `'groupfile'` from the config.
-	 * All other keys are available to subclass overrides. File-based resources
-	 * are loaded first via {@see loadGroupFile()}; inline `'resources'` entries
-	 * are appended afterward. Disabled groups are skipped entirely.
-	 *
-	 * The `'enabled'` value is resolved by {@see isEnabled()}, which accepts
-	 * standard boolean-ish strings plus the special value `'Debug'` (enabled
-	 * only when the application runs in Debug mode).
-	 *
-	 * @param array $config Group config array.
-	 * @throws TIOException when a referenced group file cannot be found.
+	 * Registers a route declared in the configuration.
+	 * @param array $item the route configuration: `class`, `method`, `pattern`, and optionally `verbs`, `name`, `parameters`, `query`, `enabled`.
+	 * @param string $prefix the inherited pattern prefix.
+	 * @param TAuthorizationRule[] $rules the inherited authorization rules.
+	 * @throws TConfigurationException when `class`, `method` or `pattern` is absent.
 	 */
-	protected function loadGroup(array $config): void
+	protected function registerRoute(array $item, string $prefix, array $rules): void
 	{
-		$prefix = (string) ($config['prefix'] ?? '');
-		$enabled = $this->isEnabled($config['enabled'] ?? true);
-		$groupFile = (string) ($config['groupfile'] ?? '');
-
-		if (!$enabled) {
+		if (!$this->isEnabled($item['enabled'] ?? true)) {
 			return;
 		}
-
-		$resources = [];
-
-		if ($groupFile !== '') {
-			$resources = $this->loadGroupFile($groupFile);
+		$class = (string) ($item['class'] ?? '');
+		if ($class === '') {
+			throw new TConfigurationException('restservice_class_required');
 		}
-
-		foreach ($config['resources'] ?? [] as $item) {
-			$resources[] = $item;
+		$method = (string) ($item['method'] ?? '');
+		if ($method === '') {
+			throw new TConfigurationException('restservice_route_method_required', $class);
 		}
-
-		foreach ($resources as $item) {
-			$this->registerResource($item, $prefix);
+		if (!array_key_exists('pattern', $item)) {
+			throw new TConfigurationException('restservice_route_pattern_required', $class, $method);
 		}
+		$resource = $this->getResource($class) ?? $this->createResource($class, []);
+		$rules = array_merge($rules, $this->createAuthorizationRules($item['authorization'] ?? []));
+		$this->addRoute(
+			$this->joinPath($prefix, (string) $item['pattern']),
+			$resource::class,
+			$method,
+			$item['verbs'] ?? null,
+			(array) ($item['parameters'] ?? []),
+			(array) ($item['query'] ?? []),
+			(string) ($item['name'] ?? $this->getDefaultRouteName($resource::class, $method)),
+			$rules,
+			[],
+		);
 	}
 
 	/**
-	 * Resolves whether a group is enabled based on a config value.
-	 *
-	 * Accepts any value `TPropertyValue::ensureBoolean()` understands, plus the
-	 * case-insensitive string `'Debug'`, which resolves to `true` only when the
-	 * application's mode is {@see TApplicationMode::Debug} (and `false`
-	 * for `Normal` or `Performance` mode).
-	 *
-	 * @param mixed $value Raw `enabled` value from the config.
-	 * @return bool Whether the group is enabled in the current application mode.
+	 * Creates a route and appends it to the route table.
+	 * @param string $pattern the pattern under `BasePath`.
+	 * @param string $class the resource class.
+	 * @param string $method the handler method.
+	 * @param null|array|string $verbs the verbs, `null` for every verb.
+	 * @param array $parameters placeholder constraints keyed by name.
+	 * @param array $query GET variable constraints keyed by name.
+	 * @param string $name the route name.
+	 * @param TAuthorizationRule[] $rules the authorization rules of the route.
+	 * @param array $properties the resource properties of the declaration.
+	 * @throws TConfigurationException when `RouteClass` is not a TRestRoutePattern.
+	 * @return TRestRoutePattern the route.
+	 */
+	protected function addRoute(string $pattern, string $class, string $method, null|array|string $verbs, array $parameters, array $query, string $name, array $rules, array $properties): TRestRoutePattern
+	{
+		$route = Prado::createComponent($this->getRouteClass());
+		if (!($route instanceof TRestRoutePattern)) {
+			throw new TConfigurationException('restservice_routeclass_invalid', $this->getRouteClass());
+		}
+		$route->setServiceID($this->getID());
+		$route->setPattern($this->joinPath($this->getBasePath(), $pattern));
+		$route->setVerbs($verbs);
+		$route->setName($name);
+		$route->setResource($class);
+		$route->setMethod($method);
+		$route->setResourceProperties($properties);
+		foreach ($parameters as $key => $value) {
+			$route->getParameters()->add($key, $value);
+		}
+		foreach ($query as $key => $value) {
+			$route->getQuery()->add($key, $value);
+		}
+		foreach ($rules as $rule) {
+			$route->addAuthorizationRule($rule);
+		}
+		$route->init([]);
+		$this->addRouteDirect($route);
+		return $route;
+	}
+
+	/**
+	 * Creates a resource and applies its configured properties. A class is created
+	 * once; a later declaration of the same class reuses the instance.
+	 * @param string $class the resource class, in namespace or dot notation.
+	 * @param array $properties property values of the declaration.
+	 * @throws TConfigurationException when the class is not an IRestResource.
+	 * @return IRestResource the resource.
+	 */
+	protected function createResource(string $class, array $properties): IRestResource
+	{
+		$resource = Prado::createComponent($class);
+		if (!($resource instanceof IRestResource)) {
+			throw new TConfigurationException('restservice_resource_invalid', $class);
+		}
+		if ($properties !== [] && $resource instanceof \Prado\TComponent) {
+			$resource->setSubProperties($properties);
+		}
+		$resources = $this->getResourcesDirect();
+		$resources[$resource::class] = $resource;
+		$this->setResourcesDirect($resources);
+		return $resource;
+	}
+
+	/**
+	 * Builds the {@see TAuthorizationRule} objects of an `authorization` list.
+	 * @param array $items rules as `action`, `users`, `roles`, `verb`, `ips`, `priority` keys.
+	 * @return TAuthorizationRule[] the rules.
+	 */
+	protected function createAuthorizationRules(array $items): array
+	{
+		$rules = [];
+		foreach ($items as $item) {
+			$rules[] = new TAuthorizationRule(
+				(string) ($item['action'] ?? 'allow'),
+				(string) ($item['users'] ?? ''),
+				(string) ($item['roles'] ?? ''),
+				(string) ($item['verb'] ?? ''),
+				(string) ($item['ips'] ?? ''),
+				$item['priority'] ?? null,
+			);
+		}
+		return $rules;
+	}
+
+	/**
+	 * Loads an included configuration file in the application's configuration type.
+	 * @param string $file the file in PRADO namespace format, without extension.
+	 * @throws TConfigurationException when the file is not found.
+	 * @return array the configuration array of the file.
+	 */
+	protected function loadIncludeFile(string $file): array
+	{
+		$application = $this->getApplication();
+		$path = Prado::getPathOfNamespace($file, $application->getConfigurationFileExt());
+		if ($path === null || !is_file($path)) {
+			throw new TConfigurationException('restservice_include_not_found', $file);
+		}
+		if ($application->getConfigurationType() === \Prado\TApplication::CONFIG_TYPE_PHP) {
+			$config = include $path;
+			return is_array($config) ? $config : [];
+		}
+		$dom = new TXmlDocument('1.0', 'UTF-8');
+		$dom->loadFromFile($path);
+		return $this->xmlToArray($dom);
+	}
+
+	/**
+	 * Resolves an `enabled` value: a boolean, or `Debug` for Debug mode only.
+	 * @param mixed $value the configured value.
+	 * @return bool whether the element is enabled.
 	 */
 	protected function isEnabled(mixed $value): bool
 	{
@@ -560,438 +492,301 @@ class TRestService extends \Prado\TService
 	}
 
 	/**
-	 * Resolves and loads an external service-level config file.
-	 *
-	 * The file contains the same structure as the inline service config —
-	 * top-level `resources` and/or `groups` entries. Tries `.php` first; falls
-	 * back to `.xml`. The PHP file must return an array with `'resources'`
-	 * and/or `'groups'` keys. The XML file is treated like an inline `<service>`
-	 * element: direct `<resource>` and `<group>` children are loaded; the root
-	 * element name is arbitrary.
-	 *
-	 * Groups loaded from the external file may themselves reference
-	 * `groupfile` entries — those are resolved by {@see loadGroupFile()} when
-	 * {@see loadGroup()} processes each group.
-	 *
-	 * @param string $file Prado namespace path without extension (e.g.
-	 *   `'Application.config.rest'`).
-	 * @throws TIOException when neither a `.php` nor a `.xml` file is found.
-	 * @return array{resources: array, groups: array} Service config array.
+	 * Joins two pattern parts with one slash, ignoring an empty part.
+	 * @param string $prefix the first part.
+	 * @param string $pattern the second part.
+	 * @return string the joined pattern without leading or trailing slash.
 	 */
-	protected function loadConfigFile(string $file): array
+	protected function joinPath(string $prefix, string $pattern): string
 	{
-		$phpFile = Prado::getPathOfNamespace($file, '.php');
-		if ($phpFile !== null && is_file($phpFile)) {
-			$config = include $phpFile;
-			if (!is_array($config)) {
-				return ['resources' => [], 'groups' => []];
+		$prefix = trim($prefix, '/');
+		$pattern = trim($pattern, '/');
+		if ($prefix === '') {
+			return $pattern;
+		}
+		return ($pattern === '') ? $prefix : $prefix . '/' . $pattern;
+	}
+
+	/**
+	 * @param string $class the resource class.
+	 * @param string $method the handler method.
+	 * @return string the default route name: the class short name and the method joined by a dot.
+	 */
+	protected function getDefaultRouteName(string $class, string $method): string
+	{
+		return substr($class, (int) strrpos('\\' . $class, '\\')) . '.' . $method;
+	}
+
+	// ── Routing ───────────────────────────────────────────────────────────────
+
+	/**
+	 * Matches the request against the routes: the path first, then the verb. A
+	 * `HEAD` request takes a `GET` route when none names `HEAD`.
+	 */
+	protected function resolveRoute(): void
+	{
+		$request = $this->getRequest();
+		$verb = strtoupper((string) ($request->getRequestType() ?? 'GET'));
+		$matches = [];
+		$route = null;
+		$parameters = [];
+		foreach ($this->getRoutes() as $candidate) {
+			$values = $candidate->matchPath($request);
+			if ($values === null) {
+				continue;
 			}
-			return [
-				'resources' => $config['resources'] ?? [],
-				'groups' => $config['groups'] ?? [],
-			];
-		}
-
-		$xmlFile = Prado::getPathOfNamespace($file, '.xml');
-		if ($xmlFile !== null && is_file($xmlFile)) {
-			$dom = new TXmlDocument('1.0', 'UTF-8');
-			$dom->loadFromFile($xmlFile);
-			return $this->xmlConfigToArray($dom);
-		}
-
-		throw new TIOException('restconfig_file_not_found', $file);
-	}
-
-	/**
-	 * Resolves and loads an external resource definition file.
-	 *
-	 * Tries a `.php` file first; falls back to `.xml`. The PHP file must return
-	 * an array with a `'resources'` key. The XML file must have `<resource>`
-	 * elements as direct children of its root element; the root element name
-	 * itself is arbitrary and ignored.
-	 *
-	 * @param string $file Prado namespace path without extension (e.g.
-	 *   `'Application.config.rest-v2'`).
-	 * @throws TIOException when neither a `.php` nor a `.xml` file is found.
-	 * @return array Flat array of resource config arrays.
-	 */
-	protected function loadGroupFile(string $file): array
-	{
-		$phpFile = Prado::getPathOfNamespace($file, '.php');
-		if ($phpFile !== null && is_file($phpFile)) {
-			$config = include $phpFile;
-			return is_array($config) ? ($config['resources'] ?? []) : [];
-		}
-
-		$xmlFile = Prado::getPathOfNamespace($file, '.xml');
-		if ($xmlFile !== null && is_file($xmlFile)) {
-			$dom = new TXmlDocument('1.0', 'UTF-8');
-			$dom->loadFromFile($xmlFile);
-			$resources = [];
-			foreach ($dom->getElementsByTagName('resource') as $element) {
-				$resources[] = $this->xmlResourceToArray($element);
-			}
-			return $resources;
-		}
-
-		throw new TIOException('restgroup_file_not_found', $file);
-	}
-
-	/**
-	 * Adds a compiled resource entry to the route table.
-	 * @param string $pattern URL pattern (e.g., `'users/{id}'`).
-	 * @param string $class Resource class in PRADO namespace format.
-	 * @param array $parameters Per-parameter regex constraints (key = param name, value = regex fragment).
-	 * @param array $properties Additional properties to set on the resource after instantiation.
-	 */
-	protected function addResource(string $pattern, string $class, array $parameters = [], array $properties = []): void
-	{
-		[$regex, $paramOrder, $isItem] = $this->compilePattern($pattern, $parameters);
-
-		$this->addResourceEntryDirect([
-			'pattern' => $pattern,
-			'regex' => $regex,
-			'class' => $class,
-			'isItem' => $isItem,
-			'paramOrder' => $paramOrder,
-			'properties' => $properties,
-		]);
-	}
-
-	/**
-	 * Compiles a URL pattern string into a named-capture regular expression.
-	 *
-	 * `{paramName}` placeholders become `(?P<paramName>(?:constraint))`; the
-	 * inner non-capturing group lets user constraints contain top-level
-	 * alternation (`\d+|new`) without leaking out of the named capture.
-	 * Literal path segments are regex-escaped and the result is anchored.
-	 *
-	 * @param string $pattern URL pattern, e.g., `'users/{userId}/posts/{id}'`.
-	 * @param array $parameters Regex constraints keyed by parameter name. Defaults to `[^/]+`.
-	 * @return array{0: string, 1: string[], 2: bool} [regex, paramOrder, isItem]
-	 */
-	protected function compilePattern(string $pattern, array $parameters): array
-	{
-		// Extract parameter names in order
-		preg_match_all('/\{([^}]+)\}/', $pattern, $matches);
-		$paramOrder = $matches[1];
-
-		// Fail fast on names that are not valid PCRE named-group identifiers, or on
-		// duplicates (PCRE rejects repeated group names, which would silently break routing).
-		foreach ($paramOrder as $paramName) {
-			if (!preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $paramName)) {
-				throw new TConfigurationException('restservice_param_name_invalid', $paramName, $pattern);
+			$matches[] = [$candidate, $values];
+			if ($route === null && $candidate->acceptsVerb($verb)) {
+				$route = $candidate;
+				$parameters = $values;
 			}
 		}
-		if (count($paramOrder) !== count(array_unique($paramOrder))) {
-			throw new TConfigurationException('restservice_param_name_duplicate', $pattern);
+		if ($route === null && $verb === 'HEAD') {
+			foreach ($matches as [$candidate, $values]) {
+				if ($candidate->acceptsVerb('GET')) {
+					$route = $candidate;
+					$parameters = $values;
+					break;
+				}
+			}
 		}
-
-		// Split pattern on {param} tokens, escape literal parts, rejoin with named captures
-		$literalParts = preg_split('/\{[^}]+\}/', $pattern);
-		$regexParts = [];
-
-		foreach ($paramOrder as $i => $paramName) {
-			$constraint = $parameters[$paramName] ?? '[^/]+';
-			// Wrap constraint in (?:...) so user-supplied alternations like "\d+|\d{4}-\d{2}"
-			// don't break the named capture group.
-			$regexParts[] = preg_quote($literalParts[$i], '#') . '(?P<' . $paramName . '>(?:' . $constraint . '))';
-		}
-		$regexParts[] = preg_quote($literalParts[count($paramOrder)], '#');
-
-		$regex = '#^' . implode('', $regexParts) . '$#u';
-
-		// A route is an "item" route when the last path segment is a {param}
-		$isItem = (bool) preg_match('/\{[^}]+\}\s*$/', rtrim($pattern, '/'));
-
-		return [$regex, $paramOrder, $isItem];
+		$this->setPathMatchesDirect($matches);
+		$this->setRouteDirect($route);
+		$this->setPathParametersDirect($parameters);
 	}
 
-	// ── Request Handling ───────────────────────────────────────────────────────
+	/**
+	 * Returns the verbs the routes matching the request path serve, for the
+	 * `Allow` header. A route without `Verbs` serves {@see STANDARD_VERBS}; `HEAD`
+	 * accompanies `GET`.
+	 * @return string[] the verbs in {@see STANDARD_VERBS} order.
+	 */
+	public function getAllowedVerbs(): array
+	{
+		$allowed = [];
+		foreach ($this->getPathMatches() as [$route]) {
+			$verbs = $route->getVerbs();
+			if ($verbs === null) {
+				return self::STANDARD_VERBS;
+			}
+			foreach ($verbs as $verb) {
+				if (!str_starts_with($verb, '!') && !str_starts_with($verb, '~')) {
+					$allowed[strtoupper($verb)] = true;
+				}
+			}
+		}
+		if (isset($allowed['GET'])) {
+			$allowed['HEAD'] = true;
+		}
+		return array_values(array_filter(self::STANDARD_VERBS, fn ($verb) => isset($allowed[$verb])));
+	}
 
 	/**
-	 * Runs the service. Handles CORS, route matching, dispatch, and response encoding.
+	 * Returns the URL of a named route.
+	 * @param string $name the route name.
+	 * @param array $parameters placeholder values keyed by placeholder name.
+	 * @param array $getItems GET variables appended as the query string.
+	 * @param bool $encodeAmpersand whether `&amp;` separates the GET variables.
+	 * @throws TInvalidDataValueException when no route has the name, or a placeholder has no value.
+	 * @return string the URL, from the application entry script.
+	 */
+	public function constructUrl(string $name, array $parameters = [], array $getItems = [], bool $encodeAmpersand = false): string
+	{
+		$route = $this->getRouteByName($name);
+		if ($route === null) {
+			throw new TInvalidDataValueException('restservice_route_unknown', $name);
+		}
+		$request = $this->getRequest();
+		if ($request->getUrlFormat() === THttpRequestUrlFormat::HiddenPath) {
+			$base = rtrim(str_replace('\\', '/', dirname((string) $request->getApplicationUrl())), '/');
+		} else {
+			$base = (string) $request->getApplicationUrl();
+		}
+		return $base . '/' . $route->constructPath($parameters, $getItems, $encodeAmpersand);
+	}
+
+	/**
+	 * @param string $name the route name.
+	 * @return ?TRestRoutePattern the first route of the name, `null` for none.
+	 */
+	public function getRouteByName(string $name): ?TRestRoutePattern
+	{
+		foreach ($this->getRoutes() as $route) {
+			if ($route->getName() === $name) {
+				return $route;
+			}
+		}
+		return null;
+	}
+
+	// ── Request handling ──────────────────────────────────────────────────────
+
+	/**
+	 * Runs the service: refuses a request without a route, or dispatches to the
+	 * resource and writes its result.
 	 */
 	public function run(): void
 	{
-		$request = $this->getRequest();
-		$response = $this->getResponse();
-
 		try {
-			// CORS — must be first so preflight OPTIONS responses work
-			if ($this->getEnableCors()) {
-				$this->sendCorsHeaders();
-				if (strtoupper($request->getRequestType() ?? '') === 'OPTIONS') {
-					$response->setStatusCode(204);
-					return;
+			$this->ensureCsrfToken();
+			$route = $this->getRoute();
+			if ($route === null) {
+				if ($this->getPathMatches() !== []) {
+					throw TRestException::methodNotAllowed();
 				}
+				throw TRestException::notFound();
 			}
-
-			$path = $this->getApiPath();
-			[$resourceConfig, $pathParams] = $this->matchRoute($path);
-
-			// Instantiate the resource
-			$resource = $this->createResource($resourceConfig);
-			$resource->setPathParameters($pathParams);
-
-			// Resolve HTTP verb → dispatch method name
-			$verb = strtoupper($request->getRequestType() ?? 'GET');
-			$method = $this->resolveMethod($verb, $resourceConfig['isItem']);
-
-			// Auth hook — may throw TRestException
-			$resource->authorize($method);
-
-			// Dispatch — inject path params by name via reflection
-			$result = $this->dispatchToResource($resource, $method, $pathParams);
-
-			// Send response
+			$resource = $this->getResource((string) $route->getResource());
+			if ($resource === null) {
+				throw new TConfigurationException('restservice_resource_invalid', (string) $route->getResource());
+			}
+			$resource->setRoute($route, $this->getPathParameters());
+			$this->onPreRunResource($resource);
+			$resource->authorize($route);
+			$result = $this->dispatch($resource, $route, $this->getPathParameters());
 			$statusCode = $resource->getStatusCode();
 			$headers = $resource->getResponseHeaders();
-
-			// HEAD: same logic as GET but no body
-			// 204 No Content: no body regardless of verb
+			$verb = strtoupper((string) $this->getRequest()->getRequestType());
 			if ($verb === 'HEAD' || $statusCode === 204) {
-				$response->setStatusCode($statusCode);
-				foreach ($headers as $name => $value) {
-					$response->appendHeader("{$name}: {$value}");
-				}
+				$this->sendHeaders($statusCode, $headers);
 				return;
 			}
-
 			$this->sendJsonResponse($result, $statusCode, $headers);
 		} catch (TRestException $e) {
-			if ($e->getStatusCode() === 405 && isset($resource, $resourceConfig)) {
-				// RFC 7231 §6.5.5: a 405 response must carry an Allow header.
-				$response->appendHeader(THttpHeaderName::Allow . ': ' . implode(', ', $this->getAllowedVerbs($resource, $resourceConfig['isItem'])));
-			}
-			$this->sendErrorResponse($e);
-		} catch (\Prado\Exceptions\THttpException $e) {
-			$this->sendErrorResponse(new TRestException($e->getStatusCode(), '', $e->getMessage()));
+			$this->handleError($e);
+		} catch (THttpException $e) {
+			$this->handleError(new TRestException($e->getStatusCode(), '', $e->getMessage()));
 		} catch (\Throwable $e) {
-			$detail = $this->getExposeErrors() ? $e->getMessage() : '';
 			Prado::log($e->getMessage(), TLogger::ERROR, self::class);
-			$this->sendErrorResponse(new TRestException(500, '', $detail));
+			$this->handleError(new TRestException(500, '', $this->getExposeErrors() ? $e->getMessage() : ''), $e);
 		}
 	}
 
-	// ── Routing ────────────────────────────────────────────────────────────────
-
 	/**
-	 * Returns the portion of PATH_INFO that follows the configured BasePath.
-	 *
-	 * For example, if BasePath is `"api/"` and PATH_INFO is `/api/users/42`,
-	 * this method returns `"users/42"`.
-	 * @throws TRestException 404 when the path lies outside BasePath.
-	 * @return string Relative API path, with no leading slash.
+	 * Raises {@see onError()} and writes the problem document; a `405` carries the
+	 * `Allow` header of the matched paths.
+	 * @param TRestException $e the error.
+	 * @param ?\Throwable $cause the exception behind a `500`, when there is one.
 	 */
-	protected function getApiPath(): string
+	protected function handleError(TRestException $e, ?\Throwable $cause = null): void
 	{
-		$pathInfo = ltrim($this->getRequest()->getPathInfo() ?? '', '/');
-		return $this->applyBasePath($pathInfo);
+		$this->onError($cause ?? $e);
+		if ($e->getStatusCode() === 405) {
+			$this->getResponse()->appendHeader(THttpHeaderName::Allow . ': ' . implode(', ', $this->getAllowedVerbs()));
+		}
+		$this->sendErrorResponse($e);
 	}
 
 	/**
-	 * Strips the configured BasePath prefix from a raw path-info string.
-	 *
-	 * Leading slashes are removed before comparison. When BasePath is empty,
-	 * the path is returned unchanged. A path equal to BasePath without its
-	 * trailing slash resolves to the empty root path. A path outside BasePath
-	 * is rejected with `404` so routes are reachable only under the
-	 * configured prefix.
-	 *
-	 * @param string $pathInfo Raw path info (leading slash already stripped).
-	 * @throws TRestException 404 when the path lies outside BasePath.
-	 * @return string API-relative path, with no leading slash.
+	 * Writes the `401` problem document when the authorization rules refuse the
+	 * request, since the application then ends the request without running the
+	 * service. Attached to the application's `onAuthorization` event after the
+	 * {@see \Prado\Security\TAuthManager} handler.
+	 * @param mixed $sender the application.
+	 * @param mixed $param the event parameter.
 	 */
-	protected function applyBasePath(string $pathInfo): string
+	public function handleUnauthorized($sender, $param): void
 	{
-		$basePath = trim($this->getBasePath(), '/');
-
-		if ($basePath === '') {
-			return $pathInfo;
+		if ($this->getApplication()->getRequestCompleted() && $this->getResponse()->getStatusCode() === 401) {
+			$this->handleError(TRestException::unauthorized());
 		}
-		if ($pathInfo === $basePath) {
-			return '';
-		}
-		// Match only on a segment boundary so BasePath "api" does not capture "apidocs/…".
-		if (str_starts_with($pathInfo, $basePath . '/')) {
-			return ltrim(substr($pathInfo, strlen($basePath) + 1), '/');
-		}
-
-		throw TRestException::notFound('The requested resource was not found.');
 	}
 
 	/**
-	 * Matches the given path against the compiled route table.
-	 *
-	 * Routes are tested in declaration order; the first match wins.
-	 *
-	 * @param string $path API path (relative, no leading slash).
-	 * @throws TRestException 404 when no route matches.
-	 * @return array{0: array, 1: array} [resourceConfig, pathParams]
+	 * Calls the handler method with the path parameters as the arguments of the
+	 * same names, cast to the scalar type each parameter declares. A parameter
+	 * typed {@see \Prado\Web\THttpRequest} receives the request and one typed
+	 * {@see TRestRoutePattern} receives the route.
+	 * @param IRestResource $resource the resource.
+	 * @param TRestRoutePattern $route the route.
+	 * @param array $parameters path parameter values keyed by placeholder name.
+	 * @throws TRestException 405 when the resource has no such method; 404 when a value does not fit the parameter type.
+	 * @throws TConfigurationException when a required parameter has no path parameter.
+	 * @return mixed the handler's return value.
 	 */
-	protected function matchRoute(string $path): array
+	protected function dispatch(IRestResource $resource, TRestRoutePattern $route, array $parameters): mixed
 	{
-		foreach ($this->getResourcesDirect() as $resourceConfig) {
-			if (preg_match($resourceConfig['regex'], $path, $matches)) {
-				$pathParams = [];
-				foreach ($resourceConfig['paramOrder'] as $paramName) {
-					if (isset($matches[$paramName])) {
-						$pathParams[$paramName] = $matches[$paramName];
-					}
-				}
-				return [$resourceConfig, $pathParams];
-			}
-		}
-
-		throw TRestException::notFound('The requested resource was not found.');
-	}
-
-	// ── Dispatch ───────────────────────────────────────────────────────────────
-
-	/**
-	 * Instantiates a TRestResource from a compiled route config entry.
-	 *
-	 * Applies any extra properties declared in the resource element. Path
-	 * parameters are injected separately by {@see run()} after instantiation.
-	 *
-	 * @param array $resourceConfig Compiled route config entry.
-	 * @throws TConfigurationException when the class does not extend TRestResource.
-	 * @return TRestResource
-	 */
-	protected function createResource(array $resourceConfig): TRestResource
-	{
-		$class = $resourceConfig['class'];
-
-		// Prado::createComponent handles both dot-notation and PHP namespaces
-		$resource = Prado::createComponent($class);
-
-		if (!($resource instanceof TRestResource)) {
-			throw new TConfigurationException('restservice_resource_invalid', $class);
-		}
-
-		$resource->setSubProperties($resourceConfig['properties']);
-
-		return $resource;
-	}
-
-	/**
-	 * Maps an HTTP verb and route type to the TRestResource dispatch method name.
-	 *
-	 * | Verb | Collection | Item |
-	 * |------|-----------|------|
-	 * | GET / HEAD | `doIndex` | `doShow` |
-	 * | POST | `doStore` | `doStore` |
-	 * | PUT | `doStore` | `doUpdate` |
-	 * | PATCH | `doStore` | `doPatch` |
-	 * | DELETE | `doDestroy` | `doDestroy` |
-	 *
-	 * @param string $verb Uppercase HTTP method (e.g., `'GET'`, `'POST'`).
-	 * @param bool $isItem True for item routes (last segment is a `{param}`).
-	 * @throws TRestException 405 for unsupported verbs.
-	 * @return string Method name to call on the resource.
-	 */
-	protected function resolveMethod(string $verb, bool $isItem): string
-	{
-		return match ($verb) {
-			'GET', 'HEAD' => $isItem ? 'doShow' : 'doIndex',
-			'POST' => 'doStore',
-			'PUT' => $isItem ? 'doUpdate' : 'doStore',
-			'PATCH' => $isItem ? 'doPatch' : 'doStore',
-			'DELETE' => 'doDestroy',
-			default => throw TRestException::methodNotAllowed("HTTP method {$verb} is not supported."),
-		};
-	}
-
-	/**
-	 * Returns the HTTP verbs the given resource supports for the matched route.
-	 *
-	 * A verb is supported when the resource subclass declares the convention
-	 * method that {@see resolveMethod()} maps it to. `OPTIONS` is appended
-	 * when CORS is enabled because the service answers preflights itself.
-	 * Used to populate the `Allow` header on `405` responses.
-	 *
-	 * @param TRestResource $resource Resource instance for the matched route.
-	 * @param bool $isItem True for item routes (last segment is a `{param}`).
-	 * @return string[] Supported verbs in canonical order.
-	 */
-	protected function getAllowedVerbs(TRestResource $resource, bool $isItem): array
-	{
-		$verbs = [];
-		foreach (['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE'] as $verb) {
-			if (method_exists($resource, $this->resolveMethod($verb, $isItem))) {
-				$verbs[] = $verb;
-			}
-		}
-		if ($this->getEnableCors()) {
-			$verbs[] = 'OPTIONS';
-		}
-		return $verbs;
-	}
-
-	/**
-	 * Calls a method on a TRestResource, injecting path parameters by name.
-	 *
-	 * Uses PHP reflection to read the method's parameter list and passes only
-	 * those path params whose names match declared parameters, in declaration order.
-	 * Parameters with default values are used when a matching path param is absent.
-	 *
-	 * @param TRestResource $resource Resource instance.
-	 * @param string $method Method name to call.
-	 * @param array $pathParams Path parameters extracted from the URL, keyed by name.
-	 * @throws TRestException 405 when the resource does not implement the method.
-	 * @throws TRestException 500 when a required parameter cannot be satisfied.
-	 * @return mixed Return value of the resource method.
-	 */
-	protected function dispatchToResource(TRestResource $resource, string $method, array $pathParams): mixed
-	{
+		$method = (string) $route->getMethod();
 		if (!method_exists($resource, $method)) {
 			throw TRestException::methodNotAllowed();
 		}
-
-		$ref = new \ReflectionMethod($resource, $method);
-		$args = [];
-
-		foreach ($ref->getParameters() as $param) {
-			$name = $param->getName();
-			if (array_key_exists($name, $pathParams)) {
-				$args[] = $pathParams[$name];
-			} elseif ($param->isDefaultValueAvailable()) {
-				$args[] = $param->getDefaultValue();
+		$arguments = [];
+		foreach ((new \ReflectionMethod($resource, $method))->getParameters() as $parameter) {
+			$name = $parameter->getName();
+			$type = $parameter->getType();
+			$typeName = ($type instanceof \ReflectionNamedType) ? $type->getName() : null;
+			if (array_key_exists($name, $parameters)) {
+				$arguments[] = $this->castParameter($parameters[$name], $typeName, $name);
+			} elseif ($typeName !== null && is_a($this->getRequest(), $typeName)) {
+				$arguments[] = $this->getRequest();
+			} elseif ($typeName !== null && is_a($route, $typeName)) {
+				$arguments[] = $route;
+			} elseif ($parameter->isDefaultValueAvailable()) {
+				$arguments[] = $parameter->getDefaultValue();
 			} else {
-				throw new TRestException(
-					500,
-					'Internal Server Error',
-					"Resource method '{$method}' requires path parameter '\${$name}' which is not defined in the matched route."
-				);
+				throw new TConfigurationException('restservice_parameter_unbound', $resource::class . '::' . $method, $name);
 			}
 		}
-
-		return $resource->$method(...$args);
+		return $resource->$method(...$arguments);
 	}
 
-	// ── Response ───────────────────────────────────────────────────────────────
+	/**
+	 * Casts a path parameter value to the scalar type of the handler parameter.
+	 * @param string $value the path parameter value.
+	 * @param ?string $type the declared type, `null` or a class name for none.
+	 * @param string $name the parameter name.
+	 * @throws TRestException 404 when the value does not fit the type.
+	 * @return mixed the cast value.
+	 */
+	protected function castParameter(string $value, ?string $type, string $name): mixed
+	{
+		$cast = match ($type) {
+			'int' => filter_var($value, FILTER_VALIDATE_INT),
+			'float' => filter_var($value, FILTER_VALIDATE_FLOAT),
+			'bool' => filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false,
+			default => $value,
+		};
+		if ($cast === false && ($type === 'int' || $type === 'float')) {
+			throw TRestException::notFound();
+		}
+		return $cast;
+	}
+
+	// ── Events ────────────────────────────────────────────────────────────────
 
 	/**
-	 * Encodes $data as JSON and writes it to the HTTP response with the given status code.
-	 *
-	 * A `null` $data value produces a response with no body (useful for `204`).
-	 *
-	 * @param mixed $data Response payload. Must be JSON-serializable.
-	 * @param int $statusCode HTTP status code. Defaults to 200.
-	 * @param array $headers Additional response headers as name => value pairs.
-	 * @throws \JsonException when the payload cannot be JSON-encoded.
+	 * Raised before the resource authorizes and handles the request, with the
+	 * resource as the parameter. A module attaches here to reach every resource.
+	 * @param IRestResource $resource the resource about to run.
+	 */
+	public function onPreRunResource(IRestResource $resource): void
+	{
+		$this->raiseEvent('onPreRunResource', $this, $resource);
+	}
+
+	/**
+	 * Raised with the exception before the problem document is written.
+	 * @param \Throwable $exception the error: the {@see TRestException}, or the exception behind a `500`.
+	 */
+	public function onError(\Throwable $exception): void
+	{
+		$this->raiseEvent('onError', $this, $exception);
+	}
+
+	// ── Response ──────────────────────────────────────────────────────────────
+
+	/**
+	 * Writes a JSON response.
+	 * @param mixed $data the response body; `null` sends none.
+	 * @param int $statusCode the status code.
+	 * @param array $headers response headers as name => value pairs.
+	 * @throws \JsonException when the body cannot be encoded.
 	 */
 	protected function sendJsonResponse(mixed $data, int $statusCode = 200, array $headers = []): void
 	{
-		$response = $this->getResponse();
-		$response->setStatusCode($statusCode);
-
-		foreach ($headers as $name => $value) {
-			$response->appendHeader("{$name}: {$value}");
-		}
-
+		$this->sendHeaders($statusCode, $headers);
 		if ($data !== null) {
+			$response = $this->getResponse();
 			$response->setContentType(TMediaType::JSON);
 			$response->setCharset('UTF-8');
 			$response->write(json_encode($data, JSON_THROW_ON_ERROR));
@@ -999,62 +794,37 @@ class TRestService extends \Prado\TService
 	}
 
 	/**
-	 * Serializes a TRestException to JSON and writes it to the HTTP response.
-	 * @param TRestException $e Exception to serialize.
-	 * @throws \JsonException when the error envelope cannot be JSON-encoded.
+	 * Writes the status code and headers of a response.
+	 * @param int $statusCode the status code.
+	 * @param array $headers response headers as name => value pairs.
+	 */
+	protected function sendHeaders(int $statusCode, array $headers): void
+	{
+		$response = $this->getResponse();
+		$response->setStatusCode($statusCode);
+		foreach ($headers as $name => $value) {
+			$response->appendHeader($name . ': ' . $value);
+		}
+	}
+
+	/**
+	 * Writes an error as an `application/problem+json` document.
+	 * @param TRestException $e the error.
+	 * @throws \JsonException when the document cannot be encoded.
 	 */
 	protected function sendErrorResponse(TRestException $e): void
 	{
 		$response = $this->getResponse();
 		$response->setStatusCode($e->getStatusCode());
-		$response->setContentType(TMediaType::JSON);
+		$response->setContentType(TMediaType::PROBLEM_JSON);
 		$response->setCharset('UTF-8');
 		$response->write(json_encode($e->toArray(), JSON_THROW_ON_ERROR));
 	}
 
-	// ── CORS ───────────────────────────────────────────────────────────────────
+	// ── Direct Accessors (UAP-SE) ─────────────────────────────────────────────
 
 	/**
-	 * Emits `Access-Control-*` headers for CORS support.
-	 *
-	 * Called at the top of {@see run()} when {@see getEnableCors()} is true.
-	 * The origin headers (`Access-Control-Allow-Origin`,
-	 * `Access-Control-Allow-Credentials`, `Vary: Origin`) are sent on every
-	 * response; the preflight-only headers (`Access-Control-Allow-Methods`,
-	 * `Access-Control-Allow-Headers`, `Access-Control-Max-Age`) are sent only
-	 * for `OPTIONS` requests because browsers ignore them elsewhere.
-	 *
-	 * @throws TConfigurationException when CORS credentials are combined with
-	 *   the wildcard origin (see {@see assertValidCorsConfig()}).
-	 */
-	protected function sendCorsHeaders(): void
-	{
-		$this->assertValidCorsConfig();
-
-		$response = $this->getResponse();
-		$origin = $this->getAllowOrigin();
-
-		$response->appendHeader(THttpHeaderName::AccessControlAllowOrigin . ': ' . $origin);
-
-		if ($this->getAllowCredentials()) {
-			$response->appendHeader(THttpHeaderName::AccessControlAllowCredentials . ': true');
-		}
-
-		if ($origin !== '*') {
-			$response->appendHeader(THttpHeaderName::Vary . ': Origin');
-		}
-
-		if (strtoupper($this->getRequest()->getRequestType() ?? '') === 'OPTIONS') {
-			$response->appendHeader(THttpHeaderName::AccessControlAllowMethods . ': ' . $this->getAllowMethods());
-			$response->appendHeader(THttpHeaderName::AccessControlAllowHeaders . ': ' . $this->getAllowHeaders());
-			$response->appendHeader(THttpHeaderName::AccessControlMaxAge . ': ' . $this->getMaxAge());
-		}
-	}
-
-	// ── Direct Accessors (UAP-SE) ──────────────────────────────────────────────
-
-	/**
-	 * @return string Base URL path prefix stored value.
+	 * @return string the stored base path.
 	 */
 	protected function getBasePathDirect(): string
 	{
@@ -1062,7 +832,7 @@ class TRestService extends \Prado\TService
 	}
 
 	/**
-	 * @param string $value Base URL path prefix.
+	 * @param string $value the base path to store.
 	 */
 	protected function setBasePathDirect(string $value): void
 	{
@@ -1070,103 +840,7 @@ class TRestService extends \Prado\TService
 	}
 
 	/**
-	 * @return bool Stored EnableCors flag.
-	 */
-	protected function getEnableCorsDirect(): bool
-	{
-		return $this->_enableCors;
-	}
-
-	/**
-	 * @param bool $value EnableCors stored value.
-	 */
-	protected function setEnableCorsDirect(bool $value): void
-	{
-		$this->_enableCors = $value;
-	}
-
-	/**
-	 * @return string Stored AllowOrigin value.
-	 */
-	protected function getAllowOriginDirect(): string
-	{
-		return $this->_allowOrigin;
-	}
-
-	/**
-	 * @param string $value AllowOrigin stored value.
-	 */
-	protected function setAllowOriginDirect(string $value): void
-	{
-		$this->_allowOrigin = $value;
-	}
-
-	/**
-	 * @return string Stored AllowMethods value.
-	 */
-	protected function getAllowMethodsDirect(): string
-	{
-		return $this->_allowMethods;
-	}
-
-	/**
-	 * @param string $value AllowMethods stored value.
-	 */
-	protected function setAllowMethodsDirect(string $value): void
-	{
-		$this->_allowMethods = $value;
-	}
-
-	/**
-	 * @return string Stored AllowHeaders value.
-	 */
-	protected function getAllowHeadersDirect(): string
-	{
-		return $this->_allowHeaders;
-	}
-
-	/**
-	 * @param string $value AllowHeaders stored value.
-	 */
-	protected function setAllowHeadersDirect(string $value): void
-	{
-		$this->_allowHeaders = $value;
-	}
-
-	/**
-	 * @return bool Stored AllowCredentials flag.
-	 */
-	protected function getAllowCredentialsDirect(): bool
-	{
-		return $this->_allowCredentials;
-	}
-
-	/**
-	 * @param bool $value AllowCredentials stored value.
-	 */
-	protected function setAllowCredentialsDirect(bool $value): void
-	{
-		$this->_allowCredentials = $value;
-	}
-
-	/**
-	 * @return int Stored MaxAge value in seconds.
-	 */
-	protected function getMaxAgeDirect(): int
-	{
-		return $this->_maxAge;
-	}
-
-	/**
-	 * @param int $value MaxAge stored value in seconds.
-	 */
-	protected function setMaxAgeDirect(int $value): void
-	{
-		$this->_maxAge = $value;
-	}
-
-	/**
-	 * @return bool Stored ExposeErrors flag.
+	 * @return bool the stored ExposeErrors flag.
 	 */
 	protected function getExposeErrorsDirect(): bool
 	{
@@ -1174,7 +848,7 @@ class TRestService extends \Prado\TService
 	}
 
 	/**
-	 * @param bool $value ExposeErrors stored value.
+	 * @param bool $value the ExposeErrors flag to store.
 	 */
 	protected function setExposeErrorsDirect(bool $value): void
 	{
@@ -1182,9 +856,39 @@ class TRestService extends \Prado\TService
 	}
 
 	/**
-	 * Returns the compiled route table directly, bypassing any subclass override
-	 * of public accessor methods.
-	 * @return array Compiled route table.
+	 * @return string the stored route class.
+	 */
+	protected function getRouteClassDirect(): string
+	{
+		return $this->_routeClass;
+	}
+
+	/**
+	 * @param string $value the route class to store.
+	 */
+	protected function setRouteClassDirect(string $value): void
+	{
+		$this->_routeClass = $value;
+	}
+
+	/**
+	 * @return TRestRoutePattern[] the stored routes.
+	 */
+	protected function getRoutesDirect(): array
+	{
+		return $this->_routes;
+	}
+
+	/**
+	 * @param TRestRoutePattern $route a route to append.
+	 */
+	protected function addRouteDirect(TRestRoutePattern $route): void
+	{
+		$this->_routes[] = $route;
+	}
+
+	/**
+	 * @return array<string,IRestResource> the stored resources.
 	 */
 	protected function getResourcesDirect(): array
 	{
@@ -1192,18 +896,65 @@ class TRestService extends \Prado\TService
 	}
 
 	/**
-	 * Appends a compiled route entry to the route table directly.
-	 * @param array $entry Compiled route entry.
+	 * @param array<string,IRestResource> $value the resources to store.
 	 */
-	protected function addResourceEntryDirect(array $entry): void
+	protected function setResourcesDirect(array $value): void
 	{
-		$this->_resources[] = $entry;
+		$this->_resources = $value;
 	}
 
-	// ── Property Accessors ─────────────────────────────────────────────────────
+	/**
+	 * @return array the stored path matches.
+	 */
+	protected function getPathMatchesDirect(): array
+	{
+		return $this->_pathMatches;
+	}
 
 	/**
-	 * @return string Base URL path prefix. Defaults to empty string.
+	 * @param array $value the path matches to store.
+	 */
+	protected function setPathMatchesDirect(array $value): void
+	{
+		$this->_pathMatches = $value;
+	}
+
+	/**
+	 * @return ?TRestRoutePattern the stored matched route.
+	 */
+	protected function getRouteDirect(): ?TRestRoutePattern
+	{
+		return $this->_route;
+	}
+
+	/**
+	 * @param ?TRestRoutePattern $value the matched route to store.
+	 */
+	protected function setRouteDirect(?TRestRoutePattern $value): void
+	{
+		$this->_route = $value;
+	}
+
+	/**
+	 * @return array the stored path parameters.
+	 */
+	protected function getPathParametersDirect(): array
+	{
+		return $this->_pathParameters;
+	}
+
+	/**
+	 * @param array $value the path parameters to store.
+	 */
+	protected function setPathParametersDirect(array $value): void
+	{
+		$this->_pathParameters = $value;
+	}
+
+	// ── Properties ────────────────────────────────────────────────────────────
+
+	/**
+	 * @return string path prefix of every route, `''` by default.
 	 */
 	public function getBasePath(): string
 	{
@@ -1211,120 +962,17 @@ class TRestService extends \Prado\TService
 	}
 
 	/**
-	 * Sets the base URL path prefix that is stripped before route matching.
-	 *
-	 * For example, setting `BasePath="api/v1/"` means a request for `/api/v1/users`
-	 * is matched against the pattern `users`.
-	 * @param string $value Base path, with optional leading/trailing slashes.
+	 * Sets the path prefix of every route; `api` makes the pattern `users/{id}`
+	 * match the path `api/users/42`.
+	 * @param string $value the prefix, with or without slashes.
 	 */
 	public function setBasePath(string $value): void
 	{
-		$this->setBasePathDirect($value);
+		$this->setBasePathDirect(trim($value, '/'));
 	}
 
 	/**
-	 * @return bool Whether CORS headers are emitted. Defaults to false.
-	 */
-	public function getEnableCors(): bool
-	{
-		return $this->getEnableCorsDirect();
-	}
-
-	/**
-	 * @param bool|string $value Whether to enable CORS headers.
-	 */
-	public function setEnableCors(bool|string $value): void
-	{
-		$this->setEnableCorsDirect(TPropertyValue::ensureBoolean($value));
-	}
-
-	/**
-	 * @return string `Access-Control-Allow-Origin` value. Defaults to `'*'`.
-	 */
-	public function getAllowOrigin(): string
-	{
-		return $this->getAllowOriginDirect();
-	}
-
-	/**
-	 * Sets the allowed CORS origin(s).
-	 * Use `'*'` to permit any origin (not compatible with credentials).
-	 * @param string $value Origin value or `'*'`.
-	 */
-	public function setAllowOrigin(string $value): void
-	{
-		$this->setAllowOriginDirect($value);
-	}
-
-	/**
-	 * @return string Comma-separated `Access-Control-Allow-Methods` value.
-	 */
-	public function getAllowMethods(): string
-	{
-		return $this->getAllowMethodsDirect();
-	}
-
-	/**
-	 * @param string $value Comma-separated list of allowed HTTP methods.
-	 */
-	public function setAllowMethods(string $value): void
-	{
-		$this->setAllowMethodsDirect($value);
-	}
-
-	/**
-	 * @return string Comma-separated `Access-Control-Allow-Headers` value.
-	 */
-	public function getAllowHeaders(): string
-	{
-		return $this->getAllowHeadersDirect();
-	}
-
-	/**
-	 * @param string $value Comma-separated list of allowed request headers.
-	 */
-	public function setAllowHeaders(string $value): void
-	{
-		$this->setAllowHeadersDirect($value);
-	}
-
-	/**
-	 * @return bool Whether `Access-Control-Allow-Credentials: true` is emitted. Defaults to false.
-	 */
-	public function getAllowCredentials(): bool
-	{
-		return $this->getAllowCredentialsDirect();
-	}
-
-	/**
-	 * When true, `Access-Control-Allow-Credentials: true` is sent. Requires
-	 * an explicit {@see setAllowOrigin AllowOrigin} — combining credentials
-	 * with the wildcard `'*'` origin raises a configuration error.
-	 * @param bool|string $value
-	 */
-	public function setAllowCredentials($value): void
-	{
-		$this->setAllowCredentialsDirect(TPropertyValue::ensureBoolean($value));
-	}
-
-	/**
-	 * @return int Preflight cache duration in seconds. Defaults to 86400.
-	 */
-	public function getMaxAge(): int
-	{
-		return $this->getMaxAgeDirect();
-	}
-
-	/**
-	 * @param int|string $value Preflight cache duration in seconds.
-	 */
-	public function setMaxAge($value): void
-	{
-		$this->setMaxAgeDirect(TPropertyValue::ensureInteger($value));
-	}
-
-	/**
-	 * @return bool Whether internal error details are included in 500 responses.
+	 * @return bool whether a `500` carries the exception message; true in Debug mode by default.
 	 */
 	public function getExposeErrors(): bool
 	{
@@ -1332,12 +980,80 @@ class TRestService extends \Prado\TService
 	}
 
 	/**
-	 * When true, uncaught exception messages are included in 500 error responses.
-	 * Defaults to true in Debug application mode; false otherwise.
-	 * @param bool|string $value
+	 * @param bool|string $value whether a `500` carries the exception message.
 	 */
-	public function setExposeErrors($value): void
+	public function setExposeErrors(bool|string $value): void
 	{
 		$this->setExposeErrorsDirect(TPropertyValue::ensureBoolean($value));
+	}
+
+	/**
+	 * @return string class of the routes, {@see TRestRoutePattern} by default.
+	 */
+	public function getRouteClass(): string
+	{
+		return $this->getRouteClassDirect();
+	}
+
+	/**
+	 * @param string $value class of the routes, a {@see TRestRoutePattern} subclass.
+	 */
+	public function setRouteClass(string $value): void
+	{
+		$this->setRouteClassDirect($value);
+	}
+
+	/**
+	 * @return TRestRoutePattern[] the routes in declaration order.
+	 */
+	public function getRoutes(): array
+	{
+		return $this->getRoutesDirect();
+	}
+
+	/**
+	 * @return array<string,IRestResource> the resources keyed by class name.
+	 */
+	public function getResources(): array
+	{
+		return $this->getResourcesDirect();
+	}
+
+	/**
+	 * @param string $class the resource class, in namespace or dot notation.
+	 * @return ?IRestResource the resource of the class, `null` when none is registered.
+	 */
+	public function getResource(string $class): ?IRestResource
+	{
+		$resources = $this->getResourcesDirect();
+		if (isset($resources[$class])) {
+			return $resources[$class];
+		}
+		$className = ltrim(str_replace('.', '\\', $class), '\\');
+		return $resources[$className] ?? null;
+	}
+
+	/**
+	 * @return array<int,array{0:TRestRoutePattern,1:array}> the routes whose path matched the request, with their parameters.
+	 */
+	public function getPathMatches(): array
+	{
+		return $this->getPathMatchesDirect();
+	}
+
+	/**
+	 * @return ?TRestRoutePattern the route serving the request, `null` when none matched.
+	 */
+	public function getRoute(): ?TRestRoutePattern
+	{
+		return $this->getRouteDirect();
+	}
+
+	/**
+	 * @return array path parameters of the route serving the request.
+	 */
+	public function getPathParameters(): array
+	{
+		return $this->getPathParametersDirect();
 	}
 }
