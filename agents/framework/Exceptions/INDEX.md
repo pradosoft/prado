@@ -53,10 +53,10 @@ Exception hierarchy and error display for the Prado framework. Provides English 
 - **Location:** `framework/Exceptions/messages/`
 - **Master (English):** `messages.txt`; every framework message is English.
 - **Visitor-facing variants:** `messages-<lang>.txt` (`fr`, `id`, `zh`) hold exactly the keys thrown as `THttpException`; `TExceptionMessageFilesTest` enforces the set.
-- **Developer-facing translations:** the `pradosoft/prado-dev-errormessages` package, one `messages-<lang>.txt` per language, registered through its Composer `extra.prado.error-messages`.
+- **Developer-facing translations:** the `pradosoft/prado-dev-errormessages` package, one `messages-<lang>.txt` per language, registered through its Composer `extra.prado.error-messages`. The package is synced in one batch before each PRADO tag and release; a change here does not touch the package.
 - **Format:** `error_code=Human readable message with {0} placeholders`
-- **Adding new error codes:** Add to `messages.txt`. A `THttpException` key also goes into every `messages-<lang>.txt` here; any other key into the package.
-- **Removing error codes:** Remove the key from the English master, from the variants here, and from the package.
+- **Adding new error codes:** Add to `messages.txt`. A `THttpException` key also goes into every `messages-<lang>.txt` here. Any other key reaches the package at the pre-release batch sync.
+- **Removing error codes:** Remove the key from the English master and from the variants here. The package drops it at the pre-release batch sync.
 - **Display only:** The messages file content is for display. The error code string is the canonical identifier in code.
 
 ## Gotchas
