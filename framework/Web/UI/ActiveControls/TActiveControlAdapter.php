@@ -91,12 +91,16 @@ class TActiveControlAdapter extends TControlAdapter
 	}
 
 	/**
-	 * Renders the callback client scripts.
+	 * Renders the callback client scripts. A control that morphs its callback
+	 * updates also loads the `morph` package, which brings idiomorph.
 	 * @param mixed $writer
 	 */
 	public function render($writer)
 	{
 		$this->getPage()->getClientScript()->registerPradoScript('ajax');
+		if ($this->getBaseActiveControl()->getIsMorphUpdate()) {
+			$this->getPage()->getClientScript()->registerPradoScript('morph');
+		}
 		if ($this->_control->getVisible(false)) {
 			parent::render($writer);
 		} else {

@@ -184,7 +184,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 		if ($this->getHasPreRendered()) {
 			$this->renderDataGrid($writer);
 			if ($this->getActiveControl()->canUpdateClientSide()) {
-				$this->getPage()->getCallbackClient()->replaceContent($this->getSurroundingTagId(), $writer);
+				$this->getPage()->getCallbackClient()->replaceContent($this->getSurroundingTagId(), $writer, true, $this->getActiveControl()->getIsMorphUpdate());
 				if (($focus = $this->getSortFocusID()) !== null) {
 					$this->getPage()->getCallbackClient()->focus($focus);
 				}

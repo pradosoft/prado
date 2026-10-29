@@ -559,6 +559,7 @@ return [
 'TActiveTableRowEventParameter' => 'Prado\Web\UI\ActiveControls\TActiveTableRowEventParameter',
 'TActiveTemplateColumn' => 'Prado\Web\UI\ActiveControls\TActiveTemplateColumn',
 'TActiveTextBox' => 'Prado\Web\UI\ActiveControls\TActiveTextBox',
+'TActiveUpdateMode' => 'Prado\Web\UI\ActiveControls\TActiveUpdateMode',
 'TActiveWebTemplate' => 'Prado\Web\UI\ActiveControls\TActiveWebTemplate',
 'TBaseActiveCallbackControl' => 'Prado\Web\UI\ActiveControls\TBaseActiveCallbackControl',
 'TBaseActiveControl' => 'Prado\Web\UI\ActiveControls\TBaseActiveControl',

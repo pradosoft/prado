@@ -32,6 +32,7 @@ TPage is the base class for all web pages in PRADO framework. It extends [TTempl
 - `IsCallback` (bool): Whether the request is a callback (read-only)
 - `StatePersisterClass` / `StatePersister` ([IPageStatePersister](./IPageStatePersister.md)): Where page state is stored
 - `EnableStateValidation` (bool): Whether page state should be HMAC validated. Unvalidated state is restored with `allowed_classes` false, so its objects are not instantiated
+- `CallbackUpdateMode` ([TActiveUpdateMode](ActiveControls/TActiveUpdateMode.md)): How a callback updates a re-rendered active control whose `ActiveControl.UpdateMode` is Default: Replace (default) or Morph; Default sets Replace. Set it per page or on `<pages>` (4.4.0)
 - `EnableCsrfValidation` (bool): Whether a postback or callback must carry the CSRF token of [THttpRequest](../THttpRequest.md) `getCsrfToken()`; defaults to true. Set it per page or on `<pages>`; a page turning it off in `onPreInit()` or `onInit()` skips the check of the current request (4.4.0)
 - `EnableStateEncryption` (bool): Whether page state should be encrypted
 - `EnableStateCompression` (bool): Whether page state should be compressed. Reads and writes the `Enabled` of `StateCompression` (4.4.0)

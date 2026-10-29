@@ -23,7 +23,12 @@ use Prado\Web\UI\TPage;
  *
  * The {@see setEnableUpdate EnableUpdate} property determines whether the active
  * control is allowed to update the contents of the client-side when the callback
- * response returns.
+ * response returns. The {@see setUpdateMode UpdateMode} property determines how a
+ * control that renders again updates its markup: replaced, or morphed so the
+ * existing nodes keep their listeners and focus.
+ * ```html
+ * <com:TActivePanel ID="Results" ActiveControl.UpdateMode="Morph">
+ * ```
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @since 3.1
@@ -117,6 +122,45 @@ class TBaseActiveControl extends \Prado\TComponent
 	public function getEnableUpdate()
 	{
 		return $this->getOption('EnableUpdate', true);
+	}
+
+	/**
+	 * @return string how a callback response updates the control's markup, a
+	 *   {@see TActiveUpdateMode}. Defaults to Default.
+	 * @since 4.4.0
+	 */
+	public function getUpdateMode()
+	{
+		return $this->getOption('UpdateMode', TActiveUpdateMode::Default);
+	}
+
+	/**
+	 * Sets how a callback response updates the control's markup. Morph keeps the
+	 * existing nodes; Default follows the page's
+	 * {@see \Prado\Web\UI\TPage::getCallbackUpdateMode CallbackUpdateMode}.
+	 * A skin sets it for every control of a type.
+	 * @param string $value a {@see TActiveUpdateMode}
+	 * @since 4.4.0
+	 */
+	public function setUpdateMode($value)
+	{
+		$this->setOption('UpdateMode', TPropertyValue::ensureEnum($value, TActiveUpdateMode::class), TActiveUpdateMode::Default);
+	}
+
+	/**
+	 * Returns whether a callback response morphs the control's markup:
+	 * {@see getUpdateMode UpdateMode} is Morph, or Default on a page whose
+	 * CallbackUpdateMode is Morph.
+	 * @return bool whether the update morphs
+	 * @since 4.4.0
+	 */
+	public function getIsMorphUpdate(): bool
+	{
+		$mode = $this->getUpdateMode();
+		if ($mode === TActiveUpdateMode::Default && ($page = $this->getPage()) !== null) {
+			$mode = $page->getCallbackUpdateMode();
+		}
+		return $mode === TActiveUpdateMode::Morph;
 	}
 
 	/**

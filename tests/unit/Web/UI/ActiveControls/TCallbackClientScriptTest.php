@@ -43,4 +43,24 @@ class TCallbackClientScriptTest extends TestCase
 			$page->getClientFunctions()
 		);
 	}
+
+	public function testReplaceContentSendsNoMorphArgumentByDefault()
+	{
+		$page = new TTestCallbackPage();
+		$page->getCallbackClient()->replaceContent('Target', '<b>a</b>');
+		$this->assertSame(
+			[['Prado.Element.replace' => ['Target', '<b>a</b>', null, true]]],
+			$page->getClientFunctions()
+		);
+	}
+
+	public function testReplaceContentSendsTheMorphArgument()
+	{
+		$page = new TTestCallbackPage();
+		$page->getCallbackClient()->replaceContent('Target', '<b>a</b>', false, true);
+		$this->assertSame(
+			[['Prado.Element.replace' => ['Target', '<b>a</b>', null, false, true]]],
+			$page->getClientFunctions()
+		);
+	}
 }

@@ -25,6 +25,7 @@ use Prado\TPropertyValue;
 use Prado\Web\THttpRequest;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\UI\ActiveControls\TActivePageAdapter;
+use Prado\Web\UI\ActiveControls\TActiveUpdateMode;
 use Prado\Web\UI\ActiveControls\TCallbackClientScript;
 use Prado\Web\UI\WebControls\THead;
 
@@ -67,6 +68,10 @@ use Prado\Web\UI\WebControls\THead;
  * one. A request without a valid token is refused with HTTP 400 before its state is
  * loaded; a postback through the query string is refused, since the token is read from
  * the POST body and the request header only.
+ *
+ * {@see setCallbackUpdateMode CallbackUpdateMode} is how a callback response updates
+ * the markup of an active control that renders again, when the control's
+ * `ActiveControl.UpdateMode` is Default: Replace (the default) or Morph.
  *
  * Validators add themselves to {@see getValidators Validators}. {@see validate()}
  * runs them, either all of them or those of a single validation group, and
@@ -199,6 +204,10 @@ class TPage extends TTemplateControl
 	 * @since 4.4.0
 	 */
 	private $_enableCsrfValidation = true;
+	/**
+	 * @var string how a callback updates re-rendered active controls, a TActiveUpdateMode
+	 */
+	private $_callbackUpdateMode = TActiveUpdateMode::Replace;
 	/**
 	 * @var bool whether page state should be encrypted
 	 */
@@ -1301,6 +1310,31 @@ class TPage extends TTemplateControl
 	public function setEnableCsrfValidation($value)
 	{
 		$this->_enableCsrfValidation = TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
+	 * @return string how a callback response updates the markup of an active control
+	 *   whose `ActiveControl.UpdateMode` is Default, a {@see TActiveUpdateMode}:
+	 *   Replace or Morph. Defaults to Replace.
+	 * @since 4.4.0
+	 */
+	public function getCallbackUpdateMode()
+	{
+		return $this->_callbackUpdateMode;
+	}
+
+	/**
+	 * Sets how a callback response updates the markup of an active control whose
+	 * `ActiveControl.UpdateMode` is Default. Morph keeps the existing nodes, so
+	 * they keep their listeners, focus, and caret. Set it in a page or the
+	 * `<pages>` configuration.
+	 * @param string $value a {@see TActiveUpdateMode}; Default is Replace.
+	 * @since 4.4.0
+	 */
+	public function setCallbackUpdateMode($value)
+	{
+		$value = TPropertyValue::ensureEnum($value, TActiveUpdateMode::class);
+		$this->_callbackUpdateMode = $value === TActiveUpdateMode::Default ? TActiveUpdateMode::Replace : $value;
 	}
 
 	/**
