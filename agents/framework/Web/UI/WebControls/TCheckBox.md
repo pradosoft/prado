@@ -8,10 +8,10 @@
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-TCheckBox displays a check box on the page. It supports both single and tri-state check boxes with various configuration options for display, validation, and user experience.
+TCheckBox displays a check box on the page, with a caption, validation, AutoPostBack, and an indeterminate (mixed) display state.
 
 ## Key Features
-- **Check Box States**: Supports checked, unchecked, and indeterminate (tri-state) modes
+- **Check Box States**: Checked or unchecked; `Indeterminate` displays the mixed state (@since 4.4.0)
 - **Validation Integration**: Works with PRADO validation framework
 - **Postback Handling**: Supports AutoPostBack with validation
 - **Event Handling**: Raises OnCheckedChanged event for state changes
@@ -19,7 +19,7 @@ TCheckBox displays a check box on the page. It supports both single and tri-stat
 - **Accessibility**: Support for labels and screen readers
 
 ## Core Properties
-- `Checked` (bool): Whether check box is checked (true/false or tri-state)
+- `Checked` (bool): Whether check box is checked
 - `Text` (string): Text caption displayed beside check box, rendered as HTML unless `Encode` is true
 - `Encode` (bool): Whether `Text` is HTML-encoded when rendered, default false; TRadioButton inherits it (4.4.0)
 - `TextAlign` (string): Text alignment (Left or Right) relative to check box
@@ -27,10 +27,9 @@ TCheckBox displays a check box on the page. It supports both single and tri-stat
 - `CausesValidation` (bool): Whether validation occurs on check box change
 - `ValidationGroup` (string): Validation group for restriction
 - `Value` (string): Value associated with check box state
-- `CheckedValue` (string): Value when check box is checked
-- `UncheckedValue` (string): Value when check box is unchecked
 - `EnableClientScript` (bool): Whether JavaScript is rendered
-- `TriState` (bool): Whether check box supports tri-state (checked/unchecked/indeterminate)
+- `Indeterminate` (bool, @since 4.4.0): Shows the mixed state. HTML has no attribute, so `registerIndeterminateScript()` registers an end script (`prado:indeterminate:<ClientID>`) that sets the DOM property; the box still posts `Checked`. A postback that changes `Checked` clears it.
+- `Switch` (bool, @since 4.4.0): Renders `switch` (Safari's native switch) and `role="switch"` on the input; a switch has no mixed state, so it ignores `Indeterminate`. TRadioButton renders its own input and has neither.
 
 ## Core Events
 - `OnCheckedChanged`: Raised when check box state changes between posts
@@ -39,18 +38,15 @@ TCheckBox displays a check box on the page. It supports both single and tri-stat
 ## Check Box States
 - **False**: Unchecked state (default)
 - **True**: Checked state
-- **Null**: Indeterminate state (tri-state mode)
+- **Indeterminate**: a display state over either; a click clears it in the browser
 
 ## Core Methods
 
 ### State Management
-- `getChecked()`: Gets check box state (true, false, or null)
+- `getChecked()`: Gets check box state
 - `setChecked($value)`: Sets check box state
-- `isChecked()`: Checks if check box is checked
-- `isUnchecked()`: Checks if check box is unchecked
-- `isIndeterminate()`: Checks if check box is in indeterminate state
-- `getTriState()`: Gets tri-state support status
-- `setTriState($value)`: Sets tri-state support status
+- `getIndeterminate()` / `setIndeterminate($value)`: Mixed display state
+- `getSwitch()` / `setSwitch($value)`: Switch presentation
 
 ### Text and Display
 - `getText()`: Gets text caption
@@ -59,13 +55,8 @@ TCheckBox displays a check box on the page. It supports both single and tri-stat
 - `setTextAlign($value)`: Sets text alignment
 - `getValue()`: Gets associated value
 - `setValue($value)`: Sets associated value
-- `getCheckedValue()`: Gets value when checked
-- `setCheckedValue($value)`: Sets value when checked
-- `getUncheckedValue()`: Gets value when unchecked
-- `setUncheckedValue($value)`: Sets value when unchecked
 
 ### Validation
-- `validate()`: Validates check box state
 - `getIsValid()`: Gets validation status
 - `setIsValid($value)`: Sets validation status
 - `getCausesValidation()`: Gets validation trigger status
