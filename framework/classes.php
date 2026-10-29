@@ -817,6 +817,8 @@ return [
 'TLabel' => 'Prado\Web\UI\WebControls\TLabel',
 'TLegend' => 'Prado\Web\UI\WebControls\TLegend',
 'TLinkButton' => 'Prado\Web\UI\WebControls\TLinkButton',
+'TLinkTag' => 'Prado\Web\UI\WebControls\TLinkTag',
+'TLinkTagCollection' => 'Prado\Web\UI\WebControls\TLinkTagCollection',
 'TListBox' => 'Prado\Web\UI\WebControls\TListBox',
 'TListControl' => 'Prado\Web\UI\WebControls\TListControl',
 'TListControlValidator' => 'Prado\Web\UI\WebControls\TListControlValidator',

@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+ENH: Issue #959 - `TLinkTag` renders a `<link>` in `THead.LinkTags` (`TLinkTagCollection`), such as a canonical, alternate, preload, preconnect, icon, or manifest link; stylesheet and preload links carry the CSP nonce. (belisoful)
 ENH: Issue #959 - `TNoScript` renders `<noscript>`. (belisoful)
 ENH: Issue #959 - `TSeparator` renders `<hr>`. (belisoful)
 ENH: Issue #959 - `TFieldSet` renders `<fieldset>` with its `Legend`, or a `TLegend` child, and `Enabled` false disables the group in the browser and its controls on the server. (belisoful)
