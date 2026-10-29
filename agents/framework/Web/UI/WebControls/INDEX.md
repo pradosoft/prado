@@ -168,6 +168,7 @@ All extend [THtmlElement](./THtmlElement.md). Each wraps the named HTML5 element
 | [`TReferenceList`](TReferenceList.md) | `section` | Numbered notes of the page's `TFootnote` references with back links; region named by `HeaderText` (@since 4.4.0) |
 | [`TSearch`](TSearch.md) | `search` | Search or filter controls; landmark; another tag renders `role="search"` (@since 4.4.0) |
 | [`TSection`](TSection.md) | `section` | Generic thematic document section |
+| [`TSeparator`](TSeparator.md) | `hr` | Thematic break; void; another tag renders `role="separator"` (@since 4.4.0) |
 | [`TSub`](TSub.md) | `sub` | Subscript; `subscript` role (@since 4.4.0) |
 | [`TSup`](TSup.md) | `sup` | Superscript; `superscript` role (@since 4.4.0) |
 | [`TVar`](TVar.md) | `var` | Variable or placeholder; marks the variable's other occurrences ([TBaseTerm](TBaseTerm.md), @since 4.4.0) |

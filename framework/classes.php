@@ -897,6 +897,7 @@ return [
 'TScrollBars' => 'Prado\Web\UI\WebControls\TScrollBars',
 'TSearch' => 'Prado\Web\UI\WebControls\TSearch',
 'TSection' => 'Prado\Web\UI\WebControls\TSection',
+'TSeparator' => 'Prado\Web\UI\WebControls\TSeparator',
 'TServerValidateEventParameter' => 'Prado\Web\UI\WebControls\TServerValidateEventParameter',
 'TShadowRootMode' => 'Prado\Web\UI\WebControls\TShadowRootMode',
 'TSlider' => 'Prado\Web\UI\WebControls\TSlider',
