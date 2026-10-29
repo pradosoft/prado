@@ -51,11 +51,12 @@ TFieldSet overrides TPanel's `renderGroupingBeginTag()` and `renderGroupingEndTa
 - The fieldset is a `group` named by its first legend.
 - A radio or check box group uses a fieldset whose legend asks the question (WCAG 1.3.1).
 - A fieldset without a legend is named with `Aria.label` or `Aria.labelledby`.
-- Audited in `tests/playwright/web/THtmlGroupingTestCase.spec.js`.
+- Audited in Chromium, Firefox, and WebKit: each fieldset is a `group` named by its `Legend` or TLegend; a disabled group's controls are disabled and keep their state across a postback.
 
 ## Tests
 
 - `tests/unit/Web/UI/WebControls/TFieldSetTest.php`
+- `tests/playwright/web/THtmlGroupingTestCase.spec.js` with `tests/harness/web/protected/pages/HtmlGroupingTest.page`
 
 ## See Also
 

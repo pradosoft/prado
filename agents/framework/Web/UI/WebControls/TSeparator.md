@@ -28,6 +28,7 @@ TSeparator represents the HTML `<hr>` element: a thematic break between paragrap
 ## Tests
 
 - `tests/unit/Web/UI/WebControls/TSeparatorTest.php`
+- `tests/playwright/web/THtmlGroupingTestCase.spec.js` with `tests/harness/web/protected/pages/HtmlGroupingTest.page`
 
 ## See Also
 

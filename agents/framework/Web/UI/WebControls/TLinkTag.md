@@ -56,6 +56,7 @@ Attributes render in this order; an empty value renders nothing.
 ## Tests
 
 - `tests/unit/Web/UI/WebControls/TLinkTagTest.php`
+- `tests/playwright/web/THtmlGroupingTestCase.spec.js` with `tests/harness/web/protected/pages/HtmlGroupingTest.page`
 
 ## See Also
 

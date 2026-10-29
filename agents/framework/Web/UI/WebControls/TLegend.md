@@ -29,6 +29,7 @@ TLegend represents the HTML `<legend>` element, the caption of its parent [TFiel
 ## Tests
 
 - `tests/unit/Web/UI/WebControls/TFieldSetTest.php`
+- `tests/playwright/web/THtmlGroupingTestCase.spec.js` with `tests/harness/web/protected/pages/HtmlGroupingTest.page`
 
 ## See Also
 
