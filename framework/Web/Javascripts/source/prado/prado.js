@@ -579,8 +579,7 @@ Prado.Element =
 			for (let node = before ? before.nextSibling : parent.firstChild; node !== el; node = node.nextSibling)
 				inserted.push(node);
 			el.remove();
-			for (const node of inserted)
-				Prado.Element.executeScripts(node);
+			Prado.Element.executeScripts(inserted);
 		}
 		else
 		{
@@ -596,23 +595,72 @@ Prado.Element =
 	 * via innerHTML. The re-created scripts carry the page CSP nonce,
 	 * {@link Prado.Element.getPageNonce}, in place of the callback's nonce.
 	 * A text or comment node has no scripts.
+	 *
+	 * The scripts run in document order. A re-created external script loads
+	 * asynchronously, so the scripts after a classic `<script src>` without
+	 * `async` run once it loads or fails, as jQuery's synchronous load ran them.
 	 * @function ?
-	 * @param {node} root - DOM node or subtree to scan
+	 * @param {node|node[]} root - DOM node or subtree to scan, or a list of them in document order
+	 * @return {Promise} resolves once every script has run or failed to load
 	 * @since 4.4.0
 	 */
 	executeScripts(root) {
-		if (root.nodeType !== Node.ELEMENT_NODE)
-			return;
+		const scripts = [];
+		for (const node of Array.isArray(root) ? root : [root]) {
+			if (node.nodeType !== Node.ELEMENT_NODE)
+				continue;
+			scripts.push(...(node.matches('script') ? [node] : node.querySelectorAll('script')));
+		}
+		return Prado.Element.runScripts(scripts, 0);
+	},
+
+	/**
+	 * Re-creates the scripts from `index` on, in order, and waits for each
+	 * classic external script without `async` to load before the next one.
+	 * @function ?
+	 * @param {element[]} scripts - the parsed, inert <script> elements
+	 * @param {number} index - the first script to re-create
+	 * @return {Promise} resolves once every script has run or failed to load
+	 * @since 4.4.0
+	 */
+	runScripts(scripts, index) {
 		const nonce = Prado.Element.getPageNonce();
-		const scripts = root.matches('script') ? [root] : root.querySelectorAll('script');
-		for (const oldScript of scripts) {
+		for (let i = index; i < scripts.length; i++) {
+			const oldScript = scripts[i];
+			if (!oldScript.parentNode)
+				continue;
 			const fresh = document.createElement('script');
 			for (const attr of oldScript.attributes) fresh.setAttribute(attr.name, attr.value);
 			if (nonce)
 				fresh.nonce = nonce;
 			fresh.text = oldScript.textContent;
+			if (Prado.Element.isBlockingScript(oldScript))
+			{
+				return new Promise((resolve) => {
+					const next = () => resolve(Prado.Element.runScripts(scripts, i + 1));
+					fresh.addEventListener('load', next, { once: true });
+					fresh.addEventListener('error', next, { once: true });
+					oldScript.parentNode.replaceChild(fresh, oldScript);
+				});
+			}
 			oldScript.parentNode.replaceChild(fresh, oldScript);
 		}
+		return Promise.resolve();
+	},
+
+	/**
+	 * Tells whether a parsed script is a classic external script that the
+	 * parser would load and run before the scripts after it.
+	 * @function ?
+	 * @param {element} script - the <script> element
+	 * @return {boolean} whether the scripts after it wait for it to load
+	 * @since 4.4.0
+	 */
+	isBlockingScript(script) {
+		if (!script.hasAttribute('src') || script.hasAttribute('async') || script.hasAttribute('nomodule'))
+			return false;
+		const type = (script.getAttribute('type') || '').trim();
+		return type === '' || /^(?:text|application)\/(?:x-)?(?:java|ecma)script$/i.test(type);
 	},
 
 	/**

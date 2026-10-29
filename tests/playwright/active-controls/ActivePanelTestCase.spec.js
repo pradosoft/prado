@@ -9,5 +9,6 @@ test('ActivePanelTestCase', async ({ page }) => {
   await h.byId('div1').click();
   await h.assertSourceContains('Something lalala');
   await h.assertText('panelScriptRuns', '1');
+  await h.assertText('panelLibStatus', 'loaded');
   expect(await page.evaluate(() => window.siblingScriptRuns)).toBe(1);
 });

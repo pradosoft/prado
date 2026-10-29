@@ -277,6 +277,89 @@ describe('Prado.Element.replace', () => {
 
 			expect(runs('newRuns')).toBe(1);
 		});
+
+		it('runs an inline script after an external script loads', async () => {
+			wrapper.innerHTML = '<div id="rs-target"></div>';
+
+			Element.replace('rs-target', '<script src="lib.js"></script>' + count('newRuns'));
+
+			expect(runs('newRuns')).toBe(0);
+			wrapper.querySelector('script[src]').dispatchEvent(new Event('load'));
+			await Promise.resolve();
+			expect(runs('newRuns')).toBe(1);
+		});
+
+		it('keeps the order across the inserted nodes of the self content', async () => {
+			wrapper.innerHTML = '<div id="rs-target"></div>';
+
+			Element.replace('rs-target', '<div id="rs-target"><script src="lib.js"></script></div>' + count('newRuns'), null, true);
+
+			expect(runs('newRuns')).toBe(0);
+			wrapper.querySelector('script[src]').dispatchEvent(new Event('load'));
+			await Promise.resolve();
+			expect(runs('newRuns')).toBe(1);
+		});
+	});
+
+	describe('external scripts', () => {
+		const runs = () => +(document.documentElement.dataset.extRuns || 0);
+		const inline = '<script>document.documentElement.dataset.extRuns = +(document.documentElement.dataset.extRuns || 0) + 1;</script>';
+		let wrapper;
+
+		beforeEach(() => {
+			wrapper = document.createElement('div');
+			document.body.appendChild(wrapper);
+		});
+
+		afterEach(() => {
+			wrapper.remove();
+			delete document.documentElement.dataset.extRuns;
+		});
+
+		it('continues after an external script fails to load', async () => {
+			wrapper.innerHTML = '<script src="missing.js"></script>' + inline;
+
+			const done = Element.executeScripts(wrapper);
+			expect(runs()).toBe(0);
+			wrapper.querySelector('script[src]').dispatchEvent(new Event('error'));
+			await done;
+
+			expect(runs()).toBe(1);
+		});
+
+		it('does not wait for an async external script', async () => {
+			wrapper.innerHTML = '<script src="lib.js" async></script>' + inline;
+
+			await Element.executeScripts(wrapper);
+
+			expect(runs()).toBe(1);
+		});
+
+		it('re-creates the external script with its attributes', () => {
+			wrapper.innerHTML = '<script src="lib.js" data-x="1"></script>';
+			const old = wrapper.firstChild;
+
+			Element.executeScripts(wrapper);
+
+			const fresh = wrapper.firstChild;
+			expect(fresh).not.toBe(old);
+			expect(fresh.getAttribute('src')).toBe('lib.js');
+			expect(fresh.getAttribute('data-x')).toBe('1');
+		});
+
+		it.each([
+			['<script src="a.js"></script>', true],
+			['<script src="a.js" type="text/javascript"></script>', true],
+			['<script src="a.js" type="application/javascript"></script>', true],
+			['<script src="a.js" async></script>', false],
+			['<script src="a.js" type="module"></script>', false],
+			['<script src="a.js" nomodule></script>', false],
+			['<script src="a.js" type="text/template"></script>', false],
+			['<script>1</script>', false],
+		])('isBlockingScript(%s) is %s', (html, expected) => {
+			wrapper.innerHTML = html;
+			expect(Element.isBlockingScript(wrapper.firstChild)).toBe(expected);
+		});
 	});
 
 	// NOTE: Element.replace(id, content, boundary) calls this.extractContent(boundary)
