@@ -95,6 +95,16 @@ class TCallbackPageStateTracker
 		$states['Inert'] = ['TScalarDiff', fn ($diff) => $this->updateAttribute('inert', $diff)];
 		$states['Popover'] = ['TScalarDiff', fn ($diff) => $this->updateAttribute('popover', $diff)];
 		$states['Slot'] = ['TScalarDiff', fn ($diff) => $this->updateAttribute('slot', $diff)];
+		$states['AutoCapitalize'] = ['TScalarDiff', fn ($diff) => $this->updateOptionalAttribute('autocapitalize', $diff === null ? null : strtolower($diff))];
+		$states['AutoCorrect'] = ['TScalarDiff', fn ($diff) => $this->updateOptionalAttribute('autocorrect', $diff === null ? null : ($diff ? 'on' : 'off'))];
+		$states['WritingSuggestions'] = ['TScalarDiff', fn ($diff) => $this->updateOptionalAttribute('writingsuggestions', $diff === null ? null : ($diff ? 'true' : 'false'))];
+		$states['Part'] = ['TScalarDiff', fn ($diff) => $this->updateOptionalAttribute('part', $diff)];
+		$states['ExportParts'] = ['TScalarDiff', fn ($diff) => $this->updateOptionalAttribute('exportparts', $diff)];
+		$states['ItemScope'] = ['TScalarDiff', fn ($diff) => $this->updatePresenceAttribute('itemscope', (bool) $diff)];
+		$states['ItemScopeType'] = ['TScalarDiff', fn ($diff) => $this->updateOptionalAttribute('itemtype', $diff)];
+		$states['ItemProp'] = ['TScalarDiff', fn ($diff) => $this->updateOptionalAttribute('itemprop', $diff)];
+		$states['ItemId'] = ['TScalarDiff', fn ($diff) => $this->updateOptionalAttribute('itemid', $diff)];
+		$states['ItemRef'] = ['TScalarDiff', fn ($diff) => $this->updateOptionalAttribute('itemref', $diff)];
 
 		$states['Aria'] = ['TMapCollectionDiff', [$this, 'updateAttributes']];
 		$states['Dataset'] = ['TMapCollectionDiff', [$this, 'updateAttributes']];
@@ -171,6 +181,22 @@ class TCallbackPageStateTracker
 	protected function updateAttribute($attrName, $value)
 	{
 		$this->client()->setAttribute($this->_control, $attrName, $value);
+	}
+
+	/**
+	 * Sets an attribute on the tracked control, or removes it when the value is null or ''.
+	 *
+	 * @param string $attrName the HTML attribute name
+	 * @param ?string $value the attribute value
+	 * @since 4.4.0
+	 */
+	protected function updateOptionalAttribute($attrName, $value)
+	{
+		if ($value === null || $value === '') {
+			$this->client()->removeAttribute($this->_control, $attrName);
+		} else {
+			$this->client()->setAttribute($this->_control, $attrName, $value);
+		}
 	}
 
 	/**

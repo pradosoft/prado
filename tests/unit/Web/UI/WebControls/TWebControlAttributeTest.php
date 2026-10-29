@@ -37,6 +37,12 @@ class TWebControlAttributeTest extends TestCase
 			'Inert'          => (1 << 18),
 			'Popover'        => (1 << 19),
 			'Slot'           => (1 << 20),
+			'AutoFocus'      => (1 << 21),
+			'AutoCapitalize' => (1 << 22),
+			'AutoCorrect'    => (1 << 23),
+			'WritingSuggestions' => (1 << 24),
+			'Part'           => (1 << 25),
+			'Microdata'      => (1 << 26),
 		];
 	}
 

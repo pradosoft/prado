@@ -99,6 +99,11 @@ class TCallbackPageStateTrackerTestable extends TCallbackPageStateTracker
 		$this->updatePresenceAttribute($attrName, $isPresent);
 	}
 
+	public function exposedUpdateOptionalAttribute(string $attrName, ?string $value): void
+	{
+		$this->updateOptionalAttribute($attrName, $value);
+	}
+
 	public function exposedUpdateVisible(mixed $visible): void
 	{
 		$this->updateVisible($visible);
@@ -149,7 +154,9 @@ class TCallbackPageStateTrackerTest extends TestCase
 			'TabIndex', 'ToolTip', 'AccessKey',
 			'Translate', 'Lang', 'Dir', 'Hidden', 'SpellCheck',
 			'Draggable', 'ContentEditable', 'InputMode', 'EnterKeyHint',
-			'Inert', 'Popover', 'Slot', 'Aria', 'Dataset',
+			'Inert', 'Popover', 'Slot', 'AutoCapitalize', 'AutoCorrect',
+			'WritingSuggestions', 'Part', 'ExportParts', 'ItemScope', 'ItemScopeType',
+			'ItemProp', 'ItemId', 'ItemRef', 'Aria', 'Dataset',
 		];
 		foreach ($expected as $key) {
 			$this->assertTrue($states->contains($key), "StatesToTrack must contain '$key'");
@@ -258,6 +265,32 @@ class TCallbackPageStateTrackerTest extends TestCase
 		$removes = $this->client->getCollectedCalls('removeAttribute');
 		$this->assertCount(1, $removes);
 		$this->assertSame('disabled', $removes[0][1]);
+		$this->assertSame(0, $this->client->getCollectedCallCount('setAttribute'));
+	}
+
+	// -----------------------------------------------------------------------
+	// updateOptionalAttribute
+	// -----------------------------------------------------------------------
+
+	public function testUpdateOptionalAttributeValueCallsSetAttribute()
+	{
+		$this->tracker->exposedUpdateOptionalAttribute('autocorrect', 'off');
+
+		$calls = $this->client->getCollectedCalls('setAttribute');
+		$this->assertCount(1, $calls);
+		$this->assertSame('autocorrect', $calls[0][1]);
+		$this->assertSame('off', $calls[0][2]);
+	}
+
+	public function testUpdateOptionalAttributeEmptyCallsRemoveAttribute()
+	{
+		$this->tracker->exposedUpdateOptionalAttribute('part', '');
+		$this->tracker->exposedUpdateOptionalAttribute('itemprop', null);
+
+		$removes = $this->client->getCollectedCalls('removeAttribute');
+		$this->assertCount(2, $removes);
+		$this->assertSame('part', $removes[0][1]);
+		$this->assertSame('itemprop', $removes[1][1]);
 		$this->assertSame(0, $this->client->getCollectedCallCount('setAttribute'));
 	}
 
