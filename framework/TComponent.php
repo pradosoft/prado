@@ -470,11 +470,14 @@ class TComponent
 	 * This reattaches the behaviors to the cloned object.
 	 * IBehavior objects are cloned, IClassBehaviors are not.
 	 * Clone object events are scrubbed of the old object behaviors' events.
+	 * A clone of a component that listens to global events listens itself.
 	 * To finalize the behaviors, dyClone is raised.
 	 * @since 4.3.0
 	 */
 	public function __clone()
 	{
+		$listening = $this->_listeningenabled;
+		$this->_listeningenabled = false;
 		foreach ($this->_e as $event => $handlers) {
 			$this->_e[$event] = clone $handlers;
 		}
@@ -501,6 +504,9 @@ class TComponent
 					$this->attachBehavior($name, $behavior, $priority);
 				}
 			}
+		}
+		if ($listening) {
+			$this->listen();
 		}
 		$this->callBehaviorsMethod('dyClone', $return);
 	}

@@ -836,6 +836,8 @@ class TDbCronManagerTest extends TCronModuleTest
 		}
 		self::assertStringEndsWith(' LIMIT 2 OFFSET 4', $manager->recorder->sql[0]);
 		self::assertStringEndsWith(' LIMIT 3', $manager->recorder->sql[1]);
+		// Xdebug retains the objects on the stack of a thrown exception, so the manager unlistens itself rather than in its destructor.
+		$manager->unlisten();
 	}
 
 	public function testGetDbConnection()

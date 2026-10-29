@@ -76,7 +76,7 @@ $app->setModule($id, $module);
 $app->getRequest();                 // THttpRequest
 $app->getResponse();                // THttpResponse
 $app->getSession();                 // THttpSession
-$app->getUser();                    // IUser
+$app->getUser();                    // IUser; the fiber's user (TFiberContext, USER_CONTEXT_KEY) first, as in a cron task
 $app->getCache();                   // ICache (primary cache)
 $app->getSecurityManager();         // TSecurityManager
 $app->getService();                 // current IService

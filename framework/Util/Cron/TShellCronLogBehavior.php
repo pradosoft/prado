@@ -145,4 +145,19 @@ class TShellCronLogBehavior extends TBehavior
 
 		return $callchain->dyLogCronTaskEnd($task);
 	}
+
+	/**
+	 * Logs the exception that ended a single cron task when run in the shell.
+	 * @param \Prado\Util\Cron\TCronTask $task the task that threw
+	 * @param \Throwable $exception the exception
+	 * @param \Prado\Util\TCallChain $callchain the chain of methods
+	 * @return mixed
+	 * @since 4.4.0
+	 */
+	public function dyLogCronTaskError($task, $exception, $callchain)
+	{
+		$this->_outWriter->writeLine("Task {$task->getName()} failed: " . $exception::class . ': ' . $exception->getMessage() . "\n");
+
+		return $callchain->dyLogCronTaskError($task, $exception);
+	}
 }

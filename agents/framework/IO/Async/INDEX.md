@@ -5,7 +5,7 @@
 
 ## Purpose
 
-PRADO's async API. A loop schedules callbacks on deferred work, timers, stream readiness, and signals, and a fiber waits on it through a `Revolt\EventLoop\Suspension`. The `revolt/event-loop` package (required, MIT, no dependencies) runs the default loop; `TSocketReactor` is the dependency-free fallback. On the loop sit the primitives: `TFuture`/`TDeferred`, `TCancellationToken`, `TFiberContext`, and the `TAsync` facade. Async I/O, `TChannel`, and the async HTTP client [`TCurlMultiHttpClient`](../HttpClient/TCurlMultiHttpClient.md) build on this contract; cron concurrency follows.
+PRADO's async API. A loop schedules callbacks on deferred work, timers, stream readiness, and signals, and a fiber waits on it through a `Revolt\EventLoop\Suspension`. The `revolt/event-loop` package (required, MIT, no dependencies) runs the default loop; `TSocketReactor` is the dependency-free fallback. On the loop sit the primitives: `TFuture`/`TDeferred`, `TCancellationToken`, `TFiberContext`, and the `TAsync` facade. Async I/O, `TChannel`, cron concurrency (`TCronModule::Concurrency`, a fiber per task), and the async HTTP client [`TCurlMultiHttpClient`](../HttpClient/TCurlMultiHttpClient.md) build on this contract.
 
 ## Interfaces
 

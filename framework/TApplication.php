@@ -16,6 +16,7 @@ use Prado\Collections\TMap;
 use Prado\Exceptions\{TConfigurationException, TException, TExitException, THttpException};
 use Prado\Exceptions\TErrorHandler;
 use Prado\I18N\TGlobalization;
+use Prado\IO\Async\TFiberContext;
 use Prado\Security\IUser;
 use Prado\Security\TAuthorizationRuleCollection;
 use Prado\Security\TSecurityManager;
@@ -186,6 +187,12 @@ class TApplication extends TComponent implements ISingleton
 	 * @since 4.4.0
 	 */
 	public const DEFAULT_CLOCK_CLASS = TNativeClock::class;
+
+	/**
+	 * The {@see \Prado\IO\Async\TFiberContext} key of the user a fiber runs as; {@see getUser} returns it before the application user.
+	 * @since 4.4.0
+	 */
+	public const USER_CONTEXT_KEY = 'user';
 	/**
 	 * Key used within the dependency cache array to store sort results,
 	 * distinct from the integer spl_object_id keys used for per-instance data.
@@ -1171,20 +1178,27 @@ class TApplication extends TComponent implements ISingleton
 	// =========================================================================
 
 	/**
+	 * Returns the user of the current fiber when its {@see \Prado\IO\Async\TFiberContext} holds one under
+	 * {@see USER_CONTEXT_KEY}, as a cron task fiber does, otherwise the application user.
 	 * @return IUser the application user
 	 */
 	public function getUser()
 	{
-		return $this->_user;
+		return TFiberContext::get(self::USER_CONTEXT_KEY) ?? $this->_user;
 	}
 
 	/**
-	 * This sets the application user and raises the onSetUser event.
+	 * This sets the application user and raises the onSetUser event.  In a fiber whose
+	 * {@see \Prado\IO\Async\TFiberContext} holds a user, the fiber's user is replaced and the application user is unchanged.
 	 * @param IUser $user the application user
 	 */
 	public function setUser(IUser $user)
 	{
-		$this->_user = $user;
+		if (TFiberContext::has(self::USER_CONTEXT_KEY)) {
+			TFiberContext::set(self::USER_CONTEXT_KEY, $user);
+		} else {
+			$this->_user = $user;
+		}
 		$this->onSetUser($user);
 	}
 

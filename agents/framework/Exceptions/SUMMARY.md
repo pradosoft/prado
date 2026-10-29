@@ -10,6 +10,8 @@ The English message catalog is the master. Removed error codes must also be remo
 
 - **`TErrorHandler`** — Application module for rendering errors/exceptions using templates in `Exceptions/templates/`.
 
+- **`TErrorMessageEventParameter`** — Parameter of `TErrorHandler.OnMissingTranslation`; a handler sets `Message` for a visitor-facing message the `prado` catalogue lacks.
+
 - **`TApplicationException`** — General application-level errors.
 
 - **`TConfigurationException`** — Bad configuration values.

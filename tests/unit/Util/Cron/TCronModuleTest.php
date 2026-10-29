@@ -2,10 +2,17 @@
 
 namespace Prado\Test\Unit\Util\Cron;
 
+use Prado\Exceptions\TCancelledException;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\IO\Async\TAsync;
+use Prado\IO\Async\TDeferred;
+use Prado\IO\Async\TFiberContext;
 use Prado\Prado;
+use Prado\Test\Unit\PradoUnit;
+use Prado\Util\TBehavior;
 use Prado\TApplication;
 use Prado\TComponent;
 use Prado\TApplicationComponent;
@@ -47,6 +54,66 @@ class TTestCronUserTask extends TCronTask
 	{
 		if($user = $this->getApplication()->getUser())
 			$this->executingUser = $user->getName();
+	}
+}
+
+/**
+ * Records its start and end, the user it sees before and after a pause on the loop, and can throw.
+ */
+class TTestCronRecordingTask extends TCronTask
+{
+	public static array $events = [];
+	public float $pause = 0;
+	public bool $throw = false;
+	public array $users = [];
+
+	public function execute($cron)
+	{
+		self::$events[] = $this->getName() . ' start';
+		$this->users[] = $this->getApplication()->getUser()?->getName();
+		if ($this->pause > 0) {
+			TAsync::sleep($this->pause);
+			$this->users[] = $this->getApplication()->getUser()?->getName();
+		}
+		if ($this->throw) {
+			throw new \RuntimeException('task failed: ' . $this->getName());
+		}
+		self::$events[] = $this->getName() . ' end';
+	}
+}
+
+/**
+ * Waits on a future that never resolves, observing its cancellation token.
+ */
+class TTestCronWaitingTask extends TCronTask
+{
+	public ?\Throwable $error = null;
+	public ?float $tokenTimeout = null;
+
+	public function execute($cron)
+	{
+		$token = $this->getCancellationToken();
+		$this->tokenTimeout = $token?->getTimeout();
+		try {
+			(new TDeferred())->getFuture()->await($token);
+		} catch (\Throwable $e) {
+			$this->error = $e;
+			throw $e;
+		}
+	}
+}
+
+/**
+ * Collects the dyLogCronTaskError calls of a cron module.
+ */
+class TTestCronErrorLogBehavior extends TBehavior
+{
+	public array $errors = [];
+
+	public function dyLogCronTaskError($task, $exception, $callchain)
+	{
+		$this->errors[] = [$task->getName(), $exception];
+		return $callchain->dyLogCronTaskError($task, $exception);
 	}
 }
 
@@ -746,6 +813,163 @@ class TCronModuleTest extends \PHPUnit\Framework\TestCase
 		
 	}
 	
+	public function testConcurrency()
+	{
+		self::assertSame(1, $this->obj->getConcurrency());
+		$this->obj->setConcurrency('3');
+		self::assertSame(3, $this->obj->getConcurrency());
+		self::expectException(TInvalidDataValueException::class);
+		$this->obj->setConcurrency(0);
+	}
+
+	public function testTaskTimeout()
+	{
+		self::assertNull($this->obj->getTaskTimeout());
+		$this->obj->setTaskTimeout('2.5');
+		self::assertSame(2.5, $this->obj->getTaskTimeout());
+		$this->obj->setTaskTimeout('');
+		self::assertNull($this->obj->getTaskTimeout());
+		self::expectException(TInvalidDataValueException::class);
+		$this->obj->setTaskTimeout(0);
+	}
+
+	public function testProcessPendingTasks_ConcurrencyRunsTasksInFibers()
+	{
+		TTestCronRecordingTask::$events = [];
+		$this->obj->init([
+			['name' => 'slowA', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class],
+			['name' => 'slowB', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class],
+		]);
+		$tasks = $this->obj->getTasks();
+		$tasks['slowA']->pause = 0.02;
+		$tasks['slowB']->pause = 0.02;
+		self::assertEquals(2, $this->obj->processPendingTasks());
+		self::assertEquals(['slowA start', 'slowA end', 'slowB start', 'slowB end'], TTestCronRecordingTask::$events, 'Concurrency 1 runs the tasks in order');
+
+		TTestCronRecordingTask::$events = [];
+		$this->obj->unlisten();
+		$this->obj = new $this->baseClass();
+		$this->obj->setConcurrency(2);
+		$this->obj->init([
+			['name' => 'slowC', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class],
+			['name' => 'slowD', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class],
+			['name' => 'slowE', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class],
+		]);
+		$tasks = $this->obj->getTasks();
+		$tasks['slowC']->pause = 0.02;
+		$tasks['slowD']->pause = 0.02;
+		$tasks['slowE']->pause = 0.02;
+		self::assertEquals(3, $this->obj->processPendingTasks());
+		$order = array_flip(TTestCronRecordingTask::$events);
+		self::assertCount(6, $order);
+		self::assertLessThan($order['slowC end'], $order['slowD start'], 'Concurrency 2 starts the second task while the first waits');
+		self::assertGreaterThan($order['slowC end'], $order['slowE start'], 'The third task waits for a slot');
+		self::assertGreaterThan($order['slowE start'], $order['slowE end']);
+	}
+
+	public function testRunTask_UserIsTheFiberUser()
+	{
+		$app = $this->obj->getApplication();
+		$priorUser = $app->getUser();
+		$users = new TUserManager();
+		$userconfig = new TXmlDocument('1.0', 'utf8');
+		$userconfig->loadFromString('<users><user name="admin" password="demo"/><user name="cron" password="cron" /></users>');
+		$priorConfigType = $app->getConfigurationType();
+		$app->setConfigurationType(TApplication::CONFIG_TYPE_XML);
+		try {
+			$users->init($userconfig);
+		} finally {
+			$app->setConfigurationType($priorConfigType);
+		}
+		$current = new TUser($users);
+		$current->setName('current_user');
+		$app->setUser($current);
+		try {
+			$this->obj->setConcurrency(2);
+			$this->obj->setUserManager($users);
+			$this->obj->init([
+				['name' => 'userA', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class, 'username' => 'admin'],
+				['name' => 'userB', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class, 'username' => 'cron'],
+			]);
+			$tasks = $this->obj->getTasks();
+			$tasks['userA']->pause = 0.02;
+			$tasks['userB']->pause = 0.02;
+			self::assertEquals(2, $this->obj->processPendingTasks());
+			self::assertEquals(['admin', 'admin'], $tasks['userA']->users, 'A task sees its own user before and after yielding to the other task');
+			self::assertEquals(['cron', 'cron'], $tasks['userB']->users);
+			self::assertSame($current, $app->getUser(), 'The application user is unchanged');
+			self::assertFalse(TFiberContext::has(TApplication::USER_CONTEXT_KEY));
+		} finally {
+			PradoUnit::setProp($app, '_user', $priorUser);
+		}
+	}
+
+	public function testRunTask_ExceptionIsLoggedAndTheSweepContinues()
+	{
+		TTestCronRecordingTask::$events = [];
+		$behavior = new TTestCronErrorLogBehavior();
+		$this->obj->attachBehavior('errorLog', $behavior);
+		$this->obj->init([
+			['name' => 'failing', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class],
+			['name' => 'after', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class],
+		]);
+		$tasks = $this->obj->getTasks();
+		$tasks['failing']->throw = true;
+		self::assertEquals(2, $this->obj->processPendingTasks());
+		self::assertEquals(['failing start', 'after start', 'after end'], TTestCronRecordingTask::$events);
+		self::assertCount(1, $behavior->errors);
+		self::assertEquals('failing', $behavior->errors[0][0]);
+		self::assertInstanceOf(\RuntimeException::class, $behavior->errors[0][1]);
+		self::assertEquals('task failed: failing', $behavior->errors[0][1]->getMessage());
+
+		self::assertFalse($this->obj->runTask($tasks['failing']));
+		self::assertTrue($this->obj->runTask($tasks['after']));
+		self::assertCount(2, $behavior->errors);
+	}
+
+	public function testRunTask_TimeoutCancelsTheTask()
+	{
+		$behavior = new TTestCronErrorLogBehavior();
+		$this->obj->attachBehavior('errorLog', $behavior);
+		$this->obj->init([
+			['name' => 'waiting', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronWaitingTask::class, 'timeout' => '0.05'],
+		]);
+		$task = $this->obj->getTask('waiting');
+		self::assertSame(0.05, $task->getTimeout());
+		$start = microtime(true);
+		self::assertEquals(1, $this->obj->processPendingTasks());
+		self::assertLessThan(2, microtime(true) - $start);
+		self::assertSame(0.05, $task->tokenTimeout, 'The task Timeout is the token Timeout');
+		self::assertInstanceOf(TCancelledException::class, $task->error);
+		self::assertNull($task->getCancellationToken(), 'The token is cleared after the run');
+		self::assertCount(1, $behavior->errors);
+		self::assertInstanceOf(TCancelledException::class, $behavior->errors[0][1]);
+
+		// The module TaskTimeout applies to a task without its own Timeout.
+		$this->obj->unlisten();
+		$this->obj = new $this->baseClass();
+		$this->obj->setTaskTimeout(0.05);
+		$this->obj->init([
+			['name' => 'waiting2', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronWaitingTask::class],
+		]);
+		$task = $this->obj->getTask('waiting2');
+		self::assertNull($task->getTimeout());
+		self::assertEquals(1, $this->obj->processPendingTasks());
+		self::assertSame(0.05, $task->tokenTimeout);
+		self::assertInstanceOf(TCancelledException::class, $task->error);
+
+		// A task that finishes before its deadline leaves no timer on the loop.
+		$this->obj->unlisten();
+		$this->obj = new $this->baseClass();
+		$this->obj->setTaskTimeout(10);
+		$this->obj->init([
+			['name' => 'quick', 'schedule' => '0 0 1 1 ? 2000', 'task' => TTestCronRecordingTask::class],
+		]);
+		$before = count(TAsync::getLoop()->getIdentifiers());
+		self::assertEquals(1, $this->obj->processPendingTasks());
+		self::assertCount($before, TAsync::getLoop()->getIdentifiers());
+	}
+
 	public function testLastCronTime()
 	{
 		self::assertEquals(0, $this->obj->getLastCronTime());
