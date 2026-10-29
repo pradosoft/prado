@@ -26,6 +26,7 @@ ENH: Issue #959 - `TForm.NoValidate`, `AutoComplete`, `Target`, `AcceptCharset`,
 ENH: Issue #959 - `THyperLink.Download`, `Rel`, `HrefLang`, `Type`, `ReferrerPolicy`, and `Ping`. (belisoful)
 ENH: Issue #959 - `TTextBox.MinLength` and `DirName`; a MultiLine `TTextBox` renders `MaxLength`. (belisoful)
 ENH: Issue #959 - `TCheckBox.Indeterminate` shows the mixed state, and `Switch` renders `role="switch"` and the `switch` attribute. (belisoful)
+ENH: Issue #959 - `TTableCell.Headers` renders `headers` with the client IDs of its header cells. (belisoful)
 ENH: Issue #959 - `TTextBox.Min`, `Max`, `Step`, `Pattern`, `Placeholder`, `Required`, and `Multiple` render the HTML constraint attributes for the text modes that define them. (belisoful)
 ENH: Issue #959 - `TRangeValidator.Step` checks the HTML step rule, and the `Time`, `Month`, `Week`, and `DateTimeLocal` data types validate the values of those input types, on the server and the client. (belisoful)
 CHG: `TTextBoxMode::Datetime` is deprecated; HTML removed `type="datetime"`, so use `DatetimeLocal`. (belisoful)
