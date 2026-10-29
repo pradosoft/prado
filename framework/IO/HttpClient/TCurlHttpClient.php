@@ -44,52 +44,9 @@ class TCurlHttpClient extends THttpClient
 	 */
 	public function download(string $method, string $url, array $headers = [], ?string $body = null): THttpClientResponse
 	{
-		$ch = curl_init();
+		$responseHeaders = [];
+		$ch = $this->createHandle($method, $url, $headers, $body, $responseHeaders);
 		try {
-			curl_setopt($ch, CURLOPT_URL, $url);
-			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, strtoupper($method));
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-			curl_setopt($ch, CURLOPT_HEADER, false);
-			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, $this->getFollowRedirects());
-			curl_setopt($ch, CURLOPT_MAXREDIRS, $this->getMaxRedirects());
-			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->getTimeout());
-			curl_setopt($ch, CURLOPT_TIMEOUT, $this->getTimeout());
-
-			if ($headers !== []) {
-				curl_setopt($ch, CURLOPT_HTTPHEADER, $this->formatHeaderLines($headers));
-			}
-
-			if ($body !== null) {
-				curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
-			}
-
-			if (strtoupper($method) === 'HEAD') {
-				curl_setopt($ch, CURLOPT_NOBODY, true);
-			}
-
-			// Collect response headers via a write-header callback so we can
-			// preserve their order and handle duplicates predictably.
-			$responseHeaders = [];
-			curl_setopt($ch, CURLOPT_HEADERFUNCTION, function ($ch, $headerLine) use (&$responseHeaders) {
-				$length = strlen($headerLine);
-				$trimmed = trim($headerLine);
-				// Skip status lines and empty separators between header blocks
-				if ($trimmed === '' || str_starts_with($trimmed, 'HTTP/')) {
-					return $length;
-				}
-				$colon = strpos($trimmed, ':');
-				if ($colon !== false) {
-					$name = trim(substr($trimmed, 0, $colon));
-					$value = trim(substr($trimmed, $colon + 1));
-					if (isset($responseHeaders[$name])) {
-						$responseHeaders[$name] .= ', ' . $value;
-					} else {
-						$responseHeaders[$name] = $value;
-					}
-				}
-				return $length;
-			});
-
 			$responseBody = curl_exec($ch);
 
 			if ($responseBody === false) {
@@ -100,12 +57,82 @@ class TCurlHttpClient extends THttpClient
 				);
 			}
 
-			$statusCode = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
-
-			return new THttpClientResponse($statusCode, $responseHeaders, (string) $responseBody);
+			return $this->createResponse($ch, $responseHeaders, (string) $responseBody);
 		} finally {
 			// Releasing the last reference frees the handle; curl_close() is a no-op since PHP 8.0.
 			unset($ch);
 		}
+	}
+
+	/**
+	 * Creates a cURL handle for a request with the client's timeout and redirect settings.
+	 * The response headers are collected into `$responseHeaders` as the transfer runs.
+	 * @param string $method HTTP verb.
+	 * @param string $url Absolute URL to request.
+	 * @param array<string,string> $headers Request headers.
+	 * @param ?string $body Raw request body, or null.
+	 * @param array<string,string> $responseHeaders Receives the response headers, by reference.
+	 * @return \CurlHandle The handle, ready for `curl_exec()` or a multi handle.
+	 * @since 4.4.0
+	 */
+	protected function createHandle(string $method, string $url, array $headers, ?string $body, array &$responseHeaders): \CurlHandle
+	{
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, strtoupper($method));
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_HEADER, false);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, $this->getFollowRedirects());
+		curl_setopt($ch, CURLOPT_MAXREDIRS, $this->getMaxRedirects());
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->getTimeout());
+		curl_setopt($ch, CURLOPT_TIMEOUT, $this->getTimeout());
+
+		if ($headers !== []) {
+			curl_setopt($ch, CURLOPT_HTTPHEADER, $this->formatHeaderLines($headers));
+		}
+
+		if ($body !== null) {
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
+		}
+
+		if (strtoupper($method) === 'HEAD') {
+			curl_setopt($ch, CURLOPT_NOBODY, true);
+		}
+
+		// Collect response headers via a write-header callback so we can
+		// preserve their order and handle duplicates predictably.
+		curl_setopt($ch, CURLOPT_HEADERFUNCTION, function ($ch, $headerLine) use (&$responseHeaders) {
+			$length = strlen($headerLine);
+			$trimmed = trim($headerLine);
+			// Skip status lines and empty separators between header blocks
+			if ($trimmed === '' || str_starts_with($trimmed, 'HTTP/')) {
+				return $length;
+			}
+			$colon = strpos($trimmed, ':');
+			if ($colon !== false) {
+				$name = trim(substr($trimmed, 0, $colon));
+				$value = trim(substr($trimmed, $colon + 1));
+				if (isset($responseHeaders[$name])) {
+					$responseHeaders[$name] .= ', ' . $value;
+				} else {
+					$responseHeaders[$name] = $value;
+				}
+			}
+			return $length;
+		});
+		return $ch;
+	}
+
+	/**
+	 * Builds the response of a finished handle.
+	 * @param \CurlHandle $ch The finished handle.
+	 * @param array<string,string> $responseHeaders The collected response headers.
+	 * @param string $body The response body.
+	 * @return THttpClientResponse The response with the handle's status code.
+	 * @since 4.4.0
+	 */
+	protected function createResponse(\CurlHandle $ch, array $responseHeaders, string $body): THttpClientResponse
+	{
+		return new THttpClientResponse((int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE), $responseHeaders, $body);
 	}
 }

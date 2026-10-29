@@ -95,7 +95,12 @@
 		"pradosoft/prado-dev-errormessages" : "Translations of the developer-facing exception messages; require ^4.4@dev until PRADO 4.4.0 is released, then ^4.4",
 		"pradosoft/prado-demos" : "Demo applications for Prado",
 		"pradosoft/prado-sqlmap" : "SqlMap data mapper (Prado\\Data\\SqlMap), formerly part of the framework",
-		"pradosoft/prado-activerecord" : "Active Record ORM, Scaffold controls, and the prado-cli activerecord command, formerly part of the framework"
+		"pradosoft/prado-activerecord" : "Active Record ORM, Scaffold controls, and the prado-cli activerecord command, formerly part of the framework",
+		"amphp/http-client" : "Non-blocking HTTP/1.1 and HTTP/2 client that schedules on the same Revolt event loop as Prado\\IO\\Async",
+		"amphp/mysql" : "Non-blocking MySQL client on the Revolt event loop",
+		"amphp/postgres" : "Non-blocking PostgreSQL client on the Revolt event loop",
+		"amphp/redis" : "Non-blocking Redis client on the Revolt event loop",
+		"amphp/parallel" : "Worker processes and threads with futures on the Revolt event loop"
 	},
 	"extra": {
 		"branch-alias": {

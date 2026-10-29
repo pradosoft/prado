@@ -5,7 +5,7 @@
 
 ## Purpose
 
-PRADO's async API. A loop schedules callbacks on deferred work, timers, stream readiness, and signals, and a fiber waits on it through a `Revolt\EventLoop\Suspension`. The `revolt/event-loop` package (required, MIT, no dependencies) runs the default loop; `TSocketReactor` is the dependency-free fallback. On the loop sit the primitives: `TFuture`/`TDeferred`, `TCancellationToken`, `TFiberContext`, and the `TAsync` facade. Async I/O, cron concurrency, and an async HTTP client follow on this contract.
+PRADO's async API. A loop schedules callbacks on deferred work, timers, stream readiness, and signals, and a fiber waits on it through a `Revolt\EventLoop\Suspension`. The `revolt/event-loop` package (required, MIT, no dependencies) runs the default loop; `TSocketReactor` is the dependency-free fallback. On the loop sit the primitives: `TFuture`/`TDeferred`, `TCancellationToken`, `TFiberContext`, and the `TAsync` facade. Async I/O, `TChannel`, and the async HTTP client [`TCurlMultiHttpClient`](../HttpClient/TCurlMultiHttpClient.md) build on this contract; cron concurrency follows.
 
 ## Interfaces
 
@@ -22,6 +22,7 @@ PRADO's async API. A loop schedules callbacks on deferred work, timers, stream r
 - **[`TFiberContext`](./TFiberContext.md)** — Per-fiber key/value state in a `WeakMap`; `TAsync::run()` copies the parent's context into the child.
 - **[`TAsync`](./TAsync.md)** — Static facade: `getLoop()`/`setLoop()`, `run()`, `await()`, `all()`, `any()`, `timeout()`, `sleep()`, `resetLoopForChild()`. Holds the sleep policy table.
 - **[`TAsyncStream`](./TAsyncStream.md)** — A `TStreamDecorator` whose `read()`/`write()` wait for readiness on the loop; `''` only at end of stream, whole-string writes, optional `TCancellationToken`.
+- **[`TChannel`](./TChannel.md)** — An ordered queue between fibers: `send()`/`receive()` suspend on the loop, a `Capacity` of null, 0 (rendezvous), or `n`; `close()` drains and releases waiters; iterable.
 
 ## Process waits
 
