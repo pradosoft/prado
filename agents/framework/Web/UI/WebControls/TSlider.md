@@ -24,6 +24,10 @@ TSlider displays a slider for numeric input. It consists of a track defining the
 - `getClientSide()` - Gets TSliderClientScript for event handlers
 - `onValueChanged($param)` - Event raised when value changes
 
+## Native Alternative
+
+A [TTextBox](./TTextBox.md) with `TextMode="Range"` renders `<input type="range">`: no script, `Min`/`Max`/`Step`, and the browser exposes the `slider` role with arrow-key control. TSlider adds a styled track and handle, a `Values` list, `ClientSide.onSlide`/`onChange`, and its own `OnValueChanged` postback. [TRangeValidator](./TRangeValidator.md) with `Step` validates either on the server.
+
 ## See Also
 
 - [TSliderClientScript](./TSliderClientScript.md)

@@ -20,7 +20,7 @@ A single-threaded event loop over one `TSocketServer::select()` that needs no ex
 1. `pruneClosed()` cancels stream callbacks whose resource closed and forgets their sources.
 2. `runDeferred()` runs the callbacks deferred before this tick (a defer made by one of them runs next tick; a throwing one leaves the rest queued).
 3. An empty loop returns 0 on a null timeout.
-4. `pcntl_signal_dispatch()` when signal callbacks exist.
+4. `pcntl_signal_dispatch()` when pcntl is loaded, so handlers installed in sync mode (the `TSignalsDispatcher`) run during a tick.
 5. `select()` over the enabled stream callbacks plus the self-pipe reader, for the smaller of the timeout and the nearest enabled timer (0 when deferred callbacks or caught signals wait).
 6. Drains the self-pipe, runs the caught signals' callbacks, the due timers in deadline order, then the ready streams (readable, writable, except).
 

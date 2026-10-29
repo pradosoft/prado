@@ -23,7 +23,8 @@ namespace Prado\Web\UI\WebControls;
  * Html5 declares new types that will degrade as plain textboxes on unsupported browsers:
  * - Color: a color picker can show up in the input field.
  * - Date: a date picker can show up in the input field.
- * - Datetime: a date / time / timezone picker can show up in the input field.
+ * - Datetime: deprecated; renders `type="datetime"`, which HTML removed, so browsers
+ *   show a text box. Use DatetimeLocal.
  * - DatetimeLocal: a date / time picker can show up in the input field.
  * - Email: the e-mail address can be automatically validated when submitted.
  * - Month: a month / year picker can show up in the input field.
@@ -47,6 +48,10 @@ class TTextBoxMode extends \Prado\TEnumerable
 	public const Password = 'Password';
 	public const Color = 'Color';
 	public const Date = 'Date';
+	/**
+	 * @deprecated since 4.4.0; HTML removed `type="datetime"`, so browsers render a text
+	 *   box. Use {@see DatetimeLocal}.
+	 */
 	public const Datetime = 'Datetime';
 	public const DatetimeLocal = 'DatetimeLocal';
 	public const Email = 'Email';

@@ -629,7 +629,7 @@ class TPageServiceTest extends \PHPUnit\Framework\TestCase
 	{
 		$service = $this->service('PageServiceApp', 'Home');
 		$service->setBasePageClass('No.Such.PageClass');
-		$this->expectException(THttpException::class);
+		$this->expectException(TConfigurationException::class);
 		PradoUnit::invoke($service, 'createPage', 'Home');
 	}
 

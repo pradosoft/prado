@@ -92,6 +92,7 @@
 		"ext-xdebug": "Useful to get stack traces on Php fatal errors",
 		"ext-xsl" : "Used by the TXmlTransform component",
 		"ext-zlib" : "Enables compression to reduce page size",
+		"pradosoft/prado-dev-errormessages" : "Translations of the developer-facing exception messages; require ^4.4@dev until PRADO 4.4.0 is released, then ^4.4",
 		"pradosoft/prado-demos" : "Demo applications for Prado",
 		"pradosoft/prado-sqlmap" : "SqlMap data mapper (Prado\\Data\\SqlMap), formerly part of the framework",
 		"pradosoft/prado-activerecord" : "Active Record ORM, Scaffold controls, and the prado-cli activerecord command, formerly part of the framework"

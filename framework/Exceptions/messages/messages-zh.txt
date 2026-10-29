@@ -4,15 +4,11 @@
 
 application_unavailable					= 应用暂时不可用。
 application_service_unknown				= 请求的服务“{0}”未定义。
-application_service_invalid				= 服务“{0}”必须实现IService接口。
-application_service_unavailable			= 服务“{0}”暂时不可用。
 
 pageservice_page_required				= 请提供页面名字。
 pageservice_page_unknown				= 无法找到页面“{0}”。
-pageservice_pageclass_unknown			= 未知页面类“{0}”。
 pageservice_security_violation			= TPageService无法访问附加目录“{0}”。
 
-page_csmanagerclass_invalid				= ClientScriptManager类“{0}”必须是TClientScriptManager的实例。
 page_csrf_token_invalid					= 该页面需要有效的CSRF令牌。
 
 pagestatepersister_pagestate_corrupted	= 页面状态已损坏。
@@ -23,4 +19,4 @@ soapservice_request_invalid				= 未找到SOAP服务器“{0}”。
 jsonservice_provider_unknown			= 请求的JSON提供者“{0}”未知。
 feedservice_feed_unknown				= 请求的Feed“{0}”未知。
 
-juioptions_control_invalid				= 控件“{0}”必须实现IJuiOptions。
+errorhandler_internal_error				= 服务器发生内部错误。

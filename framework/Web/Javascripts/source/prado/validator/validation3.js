@@ -1704,6 +1704,13 @@ Prado.WebUI.TActiveCustomValidator = Prado.Class(Prado.WebUI.TBaseValidator,
  *   setting <tt>DateFormat</tt> option, which must be recognizable
  *   by <tt>Date.SimpleParse</tt> javascript function.
  * - <b>String</b> A string data type.
+ * - <b>Time</b>, <b>Month</b>, <b>Week</b>, <b>DateTimeLocal</b> The values of the
+ *   matching HTML input types: <tt>HH:mm[:ss[.sss]]</tt>, <tt>yyyy-MM</tt>,
+ *   <tt>yyyy-Www</tt>, and <tt>yyyy-MM-ddTHH:mm[:ss[.sss]]</tt>.
+ *
+ * <p>The <tt>Step</tt> option requires the value to be <tt>MinValue</tt> plus a
+ * whole number of steps, in the unit of the data type: a number, days for Date,
+ * seconds for Time and DateTimeLocal, months for Month, and weeks for Week.</p>
  *
  * @class Prado.WebUI.TRangeValidator
  * @extends Prado.WebUI.TBaseValidator
@@ -1718,6 +1725,7 @@ Prado.WebUI.TRangeValidator = Prado.Class(Prado.WebUI.TBaseValidator,
 	 * @... {string} MaxValue - Maximum range value
 	 * @... {string} DataType - Value data type: "Integer", "Float", "Date" or "String"
 	 * @... {string} DateFormat - Date format for data type Date.
+	 * @... {string} Step - Step between valid values, in the unit of the data type.
 	 */
 
 	/**
@@ -1732,9 +1740,18 @@ Prado.WebUI.TRangeValidator = Prado.Class(Prado.WebUI.TBaseValidator,
 			return true;
 		if(typeof(this.options.DataType) == "undefined")
 			this.options.DataType = "String";
+		const raw = value;
 
 		let min, max;
-		if(this.options.DataType != "StringLength")
+		if(this.isHtmlType(this.options.DataType))
+		{
+			min = this.options.MinValue ? this.convertHtml(this.options.DataType, this.options.MinValue) : null;
+			max = this.options.MaxValue ? this.convertHtml(this.options.DataType, this.options.MaxValue) : null;
+			value = this.convertHtml(this.options.DataType, value);
+			if((this.options.MinValue && min == null) || (this.options.MaxValue && max == null))
+				return false;
+		}
+		else if(this.options.DataType != "StringLength")
 		{
 			min = this.convert(this.options.DataType, this.options.MinValue || null);
 			max = this.convert(this.options.DataType, this.options.MaxValue || null);
@@ -1756,7 +1773,101 @@ Prado.WebUI.TRangeValidator = Prado.Class(Prado.WebUI.TBaseValidator,
 			valid = valid && (this.options.StrictComparison ? value > min : value >= min);
 		if(max != null)
 			valid = valid && (this.options.StrictComparison ? value < max : value <= max);
-		return valid;
+		return valid && this.isValidStep(raw);
+	},
+
+	/**
+	 * @function {boolean} ?
+	 * @param {string} dataType - Data type
+	 * @return True for the HTML input data types Time, Month, Week, and DateTimeLocal.
+	 */
+	isHtmlType(dataType) {
+		return dataType == "Time" || dataType == "Month" || dataType == "Week" || dataType == "DateTimeLocal";
+	},
+
+	/**
+	 * Converts a Time, Month, Week, or DateTimeLocal value to a number: seconds since
+	 * midnight, months since 1970-01, weeks since 1970-W01, or seconds since
+	 * 1970-01-01T00:00.
+	 * @function {?number} ?
+	 * @param {string} dataType - Data type
+	 * @param {string} value - Value
+	 * @return The number, or null when the value does not have the format.
+	 */
+	convertHtml(dataType, value) {
+		const v = String(value).trim();
+		let m;
+		switch(dataType)
+		{
+			case "Time":
+				m = /^([01]\d|2[0-3]):([0-5]\d)(?::([0-5]\d)(?:\.(\d{1,3}))?)?$/.exec(v);
+				return m ? m[1] * 3600 + m[2] * 60 + Number(m[3] || 0) + Number(`0.${m[4] || 0}`) : null;
+			case "Month":
+				m = /^(\d{4,})-(0[1-9]|1[0-2])$/.exec(v);
+				return m ? (m[1] - 1970) * 12 + (m[2] - 1) : null;
+			case "Week": {
+				m = /^(\d{4,})-W(\d{2})$/.exec(v);
+				if(!m || Number(m[2]) < 1)
+					return null;
+				const year = Number(m[1]);
+				const jan4 = Date.UTC(year, 0, 4);
+				const monday = jan4 - ((new Date(jan4).getUTCDay() + 6) % 7) * 86400000 + (Number(m[2]) - 1) * 604800000;
+				if(new Date(monday + 3 * 86400000).getUTCFullYear() != year)
+					return null;
+				return (monday - Date.UTC(1969, 11, 29)) / 604800000;
+			}
+			case "DateTimeLocal": {
+				m = /^(\d{4,})-(\d{2})-(\d{2})[T ]([01]\d|2[0-3]):([0-5]\d)(?::([0-5]\d)(?:\.(\d{1,3}))?)?$/.exec(v);
+				if(!m)
+					return null;
+				const time = Date.UTC(m[1], m[2] - 1, m[3], m[4], m[5], m[6] || 0);
+				const date = new Date(time);
+				if(date.getUTCFullYear() != m[1] || date.getUTCMonth() != m[2] - 1 || date.getUTCDate() != m[3])
+					return null;
+				return time / 1000 + Number(`0.${m[7] || 0}`);
+			}
+		}
+		return null;
+	},
+
+	/**
+	 * Converts a value to a number in the step unit of the data type.
+	 * @function {?number} ?
+	 * @param {string} value - Value
+	 * @return The number, or null when the value does not convert.
+	 */
+	convertStep(value) {
+		const dataType = this.options.DataType;
+		if(this.isHtmlType(dataType))
+			return this.convertHtml(dataType, value);
+		const number = this.convert(dataType, value);
+		if(number == null || isNaN(number))
+			return null;
+		if(dataType == "Date")
+		{
+			const date = new Date(number);
+			return Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 86400000;
+		}
+		return (dataType == "Integer" || dataType == "Float" || dataType == "Double") ? number : null;
+	},
+
+	/**
+	 * @function {boolean} ?
+	 * @param {string} value - Value
+	 * @return True when there is no Step, or the value is MinValue plus a whole number of steps.
+	 */
+	isValidStep(value) {
+		const step = Number(this.options.Step);
+		if(!this.options.Step || !(step > 0))
+			return true;
+		if(this.options.DataType == "String" || this.options.DataType == "StringLength")
+			return true;
+		const number = this.convertStep(value);
+		if(number == null)
+			return false;
+		const min = this.options.MinValue ? this.convertStep(this.options.MinValue) : null;
+		const steps = (number - (min == null ? 0 : min)) / step;
+		return Math.abs(steps - Math.round(steps)) <= 1e-9 * Math.max(1, Math.abs(steps));
 	}
 });
 

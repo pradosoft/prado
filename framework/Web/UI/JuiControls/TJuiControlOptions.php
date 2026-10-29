@@ -11,7 +11,6 @@
 namespace Prado\Web\UI\JuiControls;
 
 use Prado\Collections\TMap;
-use Prado\Exceptions\THttpException;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\Javascripts\TJavaScriptLiteral;
@@ -55,12 +54,12 @@ class TJuiControlOptions
 	/**
 	 * Sets the parent control.
 	 * @param \Prado\Web\UI\TControl $control $control
-	 * @throws THttpException
+	 * @throws TConfigurationException when the control does not implement IJuiOptions.
 	 */
 	public function setControl($control)
 	{
 		if (!$control instanceof IJuiOptions) {
-			throw new THttpException(500, 'juioptions_control_invalid', $control->getID());
+			throw new TConfigurationException('juioptions_control_invalid', $control->getID());
 		}
 		$this->_control = $control;
 	}
@@ -70,7 +69,7 @@ class TJuiControlOptions
 	 * named values for the javascript control.
 	 * @param string $name option name.
 	 * @param mixed $value option value.
-	 * @throws THttpException
+	 * @throws TConfigurationException when the option is not a valid option of the control.
 	 */
 	public function __set($name, $value)
 	{

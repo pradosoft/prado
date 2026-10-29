@@ -1,6 +1,6 @@
 # PRADO Framework Classes
 
-**Total Classes: 714**
+**Total Classes: 715**
 
 This document lists all classes in the PRADO framework as defined in `classes.php`.
 
@@ -8,7 +8,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 | Directory | Classes | Interfaces | Total | Recursive |
 |-----------|---------|------------|-------|-----------|
-| [Prado](./INDEX.md) | 17 | 7 | 24 | 714 |
+| [Prado](./INDEX.md) | 17 | 7 | 24 | 715 |
 | [Prado\\Caching](./Caching/INDEX.md) | 18 | 2 | 20 | 20 |
 | [Prado\\Collections](./Collections/INDEX.md) | 27 | 7 | 34 | 34 |
 | [Prado\\Data](./Data/INDEX.md) | 10 | 5 | 15 | 51 |
@@ -25,8 +25,8 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 | [Prado\\I18N](./I18N/INDEX.md) | 9 | 0 | 9 | 24 |
 | [Prado\\I18N\\core](./I18N/core/INDEX.md) | 12 | 1 | 13 | 16 |
 | [Prado\\I18N\\core\\Gettext](./I18N/core/Gettext/INDEX.md) | 3 | 0 | 3 | 3 |
-| [Prado\IO](./IO/INDEX.md) | 6 | 1 | 7 | 16 |
-| [Prado\IO\Async](./IO/Async/INDEX.md) | 7 | 2 | 9 | 9 |
+| [Prado\IO](./IO/INDEX.md) | 6 | 1 | 7 | 17 |
+| [Prado\IO\Async](./IO/Async/INDEX.md) | 8 | 2 | 10 | 10 |
 | [Prado\PHPStan](./PHPStan/INDEX.md) | 3 | 0 | 3 | 3 |
 | [Prado\Security](./Security/INDEX.md) | 10 | 2 | 12 | 21 |
 | [Prado\\Security\\Permissions](./Security/Permissions/INDEX.md) | 8 | 1 | 9 | 9 |
@@ -378,7 +378,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\IO](./IO/INDEX.md) - Classes: 6, Interfaces: 1, Total: 7, Recursive: 16
+## [Prado\IO](./IO/INDEX.md) - Classes: 6, Interfaces: 1, Total: 7, Recursive: 17
 
 ### Interfaces (1)
 
@@ -395,16 +395,17 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\IO\Async](./IO/Async/INDEX.md) - Classes: 7, Interfaces: 2, Total: 9, Recursive: 9
+## [Prado\IO\Async](./IO/Async/INDEX.md) - Classes: 8, Interfaces: 2, Total: 10, Recursive: 10
 
 ### Interfaces (2)
 
 - [IEventLoop](./IO/Async/IEventLoop.md)
 - [ITickableEventLoop](./IO/Async/ITickableEventLoop.md)
 
-### Classes (7)
+### Classes (8)
 
 - [TAsync](./IO/Async/TAsync.md)
+- [TAsyncStream](./IO/Async/TAsyncStream.md)
 - [TCancellationToken](./IO/Async/TCancellationToken.md)
 - [TDeferred](./IO/Async/TDeferred.md)
 - [TFiberContext](./IO/Async/TFiberContext.md)

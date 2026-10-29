@@ -17,7 +17,7 @@ TTextBoxMode defines the enumerable type for the possible modes of a TTextBox co
 - `Password` - Hidden user input
 - `Color` - Color picker
 - `Date` - Date picker
-- `Datetime` - Date/time/timezone picker
+- `Datetime` - Deprecated (4.4.0): `type="datetime"` was removed from HTML and renders as a text box; use `DatetimeLocal`
 - `DatetimeLocal` - Date/time picker
 - `Email` - Email validation
 - `Month` - Month/year picker

@@ -61,6 +61,8 @@ use Throwable;
 class TException extends \Exception
 {
 	private $_errorCode = '';
+	/** @var string[] the message arguments as strings, in placeholder order. */
+	private array $_errorArguments = [];
 	private static $_messageFiles = [];
 	protected static $_messageCache = [];
 
@@ -96,7 +98,8 @@ class TException extends \Exception
 		}
 		$tokens = [];
 		for ($i = 0; $i < $n; ++$i) {
-			$tokens['{' . $i . '}'] = TPropertyValue::ensureString($args[$i]);
+			$this->_errorArguments[$i] = TPropertyValue::ensureString($args[$i]);
+			$tokens['{' . $i . '}'] = $this->_errorArguments[$i];
 		}
 		parent::__construct(strtr($errorMessage, $tokens), $errorCode, $previous);
 	}
@@ -188,6 +191,18 @@ class TException extends \Exception
 	public function getErrorCode()
 	{
 		return $this->_errorCode;
+	}
+
+	/**
+	 * Returns the message arguments that filled the `{0}`, `{1}`, ... placeholders, as
+	 * strings in placeholder order. A translator rebuilds the message from
+	 * {@see getErrorCode()} and these arguments.
+	 * @return string[] the message arguments.
+	 * @since 4.4.0
+	 */
+	public function getErrorArguments(): array
+	{
+		return $this->_errorArguments;
 	}
 
 	/**

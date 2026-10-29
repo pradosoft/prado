@@ -19,15 +19,15 @@ use Prado\Prado;
  * of end-users. The {@see getStatusCode StatusCode} gives the type of HTTP error.
  * It is used by {@see \Prado\Exceptions\TErrorHandler} to provide different error output to users.
  *
- * The message is shown to the site visitor. The framework translates it in the
- * "messages-xx.txt" file of the client language, which {@see getErrorMessageFiles()}
- * reads after the English master. Every other exception class is English unless a
- * registered message file defines the code.
+ * The message is shown to the site visitor ({@see IUserException}). The framework
+ * translates it in the "messages-xx.txt" file of the application language, which
+ * {@see getErrorMessageFiles()} reads after the English master. Every other
+ * exception class is English unless a registered message file defines the code.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
-class THttpException extends TSystemException
+class THttpException extends TSystemException implements IUserException
 {
 	/** @var int The status code. */
 	private int $_statusCode;
@@ -49,16 +49,16 @@ class THttpException extends TSystemException
 	}
 
 	/**
-	 * Adds the framework's "messages-xx.txt" of the client language after the English
-	 * master, "xx" from {@see \Prado\Prado::getPreferredLanguage()}. These files hold the
-	 * messages shown to the site visitor.
+	 * Adds the framework's "messages-xx.txt" of the application language after the
+	 * English master, "xx" from {@see \Prado\Prado::getApplicationLanguage()}. These files
+	 * hold the messages shown to the site visitor.
 	 * @return string[] the message file paths.
 	 * @since 4.4.0
 	 */
 	protected function getErrorMessageFiles(): array
 	{
 		$files = parent::getErrorMessageFiles();
-		$langFile = Prado::getFrameworkPath() . '/Exceptions/messages/messages-' . Prado::getPreferredLanguage() . '.txt';
+		$langFile = Prado::getFrameworkPath() . '/Exceptions/messages/messages-' . Prado::getApplicationLanguage() . '.txt';
 		if (is_file($langFile)) {
 			array_splice($files, 1, 0, [$langFile]);
 		}

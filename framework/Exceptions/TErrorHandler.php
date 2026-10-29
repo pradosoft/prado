@@ -78,6 +78,12 @@ class TErrorHandler extends \Prado\TModule
 	 * exception template file basename
 	 */
 	public const EXCEPTION_FILE_NAME = 'exception';
+
+	/**
+	 * The translation catalogue {@see localizeErrorMessage()} looks error codes up in.
+	 * @since 4.4.0
+	 */
+	public const TRANSLATION_CATALOGUE = 'prado';
 	/**
 	 * number of lines before and after the error line to be displayed in case of an exception
 	 */
@@ -334,9 +340,11 @@ class TErrorHandler extends \Prado\TModule
 	}
 
 	/**
-	 * Renders a user-facing error page for the given HTTP status code.
-	 * Logs non-HTTP exceptions via {@see errorLog()}.
-	 * In non-Debug mode, strips sensitive path information from the error message.
+	 * Renders a visitor-facing error page for the given HTTP status code.
+	 * Logs non-HTTP exceptions via {@see errorLog()}. The page shows the message of
+	 * {@see getExternalErrorMessage()}: in Debug mode the exception message, otherwise
+	 * the message of an {@see IUserException} or the generic internal-error sentence,
+	 * with sensitive path information stripped.
 	 * @param int $statusCode
 	 * @param \Exception $exception
 	 */
@@ -352,7 +360,7 @@ class TErrorHandler extends \Prado\TModule
 
 		$isDebug = $this->getApplication()->getMode() === TApplicationMode::Debug;
 
-		$errorMessage = $exception->getMessage();
+		$errorMessage = $this->getExternalErrorMessage($exception, $isDebug);
 		if ($isDebug) {
 			$version = ($this->serverGlobal('SERVER_SOFTWARE') ?? '') . ' <a href="https://github.com/pradosoft/prado">PRADO</a>/' . Prado::getVersion();
 		} else {
@@ -371,6 +379,54 @@ class TErrorHandler extends \Prado\TModule
 		$this->getApplication()->getResponse()->setStatusCode($statusCode, $isDebug ? $exception->getMessage() : null);
 
 		echo strtr($content, $tokens);
+	}
+
+	/**
+	 * Returns the message the error page shows for an exception. In Debug mode this is
+	 * the exception message. Otherwise an {@see IUserException} shows its own message
+	 * and any other exception shows the `errorhandler_internal_error` sentence, so a
+	 * developer-facing message never reaches the visitor. Both pass through
+	 * {@see localizeErrorMessage()}.
+	 * @param \Throwable $exception the exception being rendered.
+	 * @param bool $isDebug whether the application runs in Debug mode.
+	 * @return string the message to render.
+	 * @since 4.4.0
+	 */
+	protected function getExternalErrorMessage(\Throwable $exception, bool $isDebug): string
+	{
+		if ($isDebug) {
+			return $exception->getMessage();
+		}
+		if (!($exception instanceof IUserException)) {
+			$exception = new THttpException(500, 'errorhandler_internal_error');
+		}
+		return $exception instanceof TException ? $this->localizeErrorMessage($exception) : $exception->getMessage();
+	}
+
+	/**
+	 * Translates a visitor-facing message through the application's globalization
+	 * module. When the module is loaded with a translation configuration, the error
+	 * code is looked up in the {@see TRANSLATION_CATALOGUE} catalogue and the
+	 * placeholders are filled with {@see TException::getErrorArguments()}. The exception
+	 * message is returned when there is no module, no configuration, or no entry.
+	 * @param TException $exception the exception whose message is rendered.
+	 * @return string the translated message, or the exception message.
+	 * @since 4.4.0
+	 */
+	protected function localizeErrorMessage(TException $exception): string
+	{
+		$globalization = $this->getApplication()->getGlobalization(false);
+		$config = $globalization?->getTranslationConfiguration();
+		$key = $exception->getErrorCode();
+		if ($config === null || $key === '' || $key === null) {
+			return $exception->getMessage();
+		}
+		$translated = Prado::localize($key, $exception->getErrorArguments(), static::TRANSLATION_CATALOGUE);
+		$marker = $config['marker'] ?? '';
+		if ($translated === $key || ($marker !== '' && $translated === $marker . $key . $marker)) {
+			return $exception->getMessage();
+		}
+		return $translated;
 	}
 
 	/**
@@ -480,7 +536,7 @@ class TErrorHandler extends \Prado\TModule
 	 */
 	protected function getExceptionTemplate($exception)
 	{
-		$lang = Prado::getPreferredLanguage();
+		$lang = Prado::getApplicationLanguage();
 		$templatePath = $this->getErrorTemplatePath();
 		$exceptionFile = $templatePath . DIRECTORY_SEPARATOR . static::EXCEPTION_FILE_NAME . '-' . $lang . '.html';
 		if (!is_file($exceptionFile)) {
@@ -511,7 +567,7 @@ class TErrorHandler extends \Prado\TModule
 	protected function getErrorTemplate($statusCode, $exception)
 	{
 		$base = $this->getErrorTemplatePath() . DIRECTORY_SEPARATOR . static::ERROR_FILE_NAME;
-		$lang = Prado::getPreferredLanguage();
+		$lang = Prado::getApplicationLanguage();
 		if (is_file("$base$statusCode-$lang.html")) {
 			$errorFile = "$base$statusCode-$lang.html";
 		} elseif (is_file("$base$statusCode.html")) {

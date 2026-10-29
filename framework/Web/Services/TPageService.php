@@ -533,7 +533,7 @@ class TPageService extends \Prado\TService
 			$basePageClass = $this->getBasePageClass();
 			$className = Prado::usingClass($basePageClass);
 			if (!is_string($className)) {
-				throw new THttpException(404, 'pageservice_pageclass_unknown', $basePageClass);
+				throw new TConfigurationException('pageservice_pageclass_unknown', $basePageClass);
 			}
 		}
 

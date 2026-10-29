@@ -2,7 +2,9 @@
 
 namespace Prado\Test\Unit\IO\Process;
 
+use Prado\IO\Async\TAsync;
 use Prado\IO\Process\TProcessFork;
+use Prado\IO\Socket\TSocketReactor;
 use Prado\Util\Helpers\TProcessHelper;
 use Prado\Util\TSignalsDispatcher;
 
@@ -166,7 +168,7 @@ class TProcessForkTest extends \PHPUnit\Framework\TestCase
 
 	public function testEarlyChannelCloseDoesNotBlockAnExternalReactor(): void
 	{
-		$reactor = new \Prado\IO\Socket\TSocketReactor();
+		$reactor = new TSocketReactor();
 		$fork = TProcessFork::start(channel: true);
 		if ($fork->getIsChild()) {
 			// The child always exits; a throw (e.g. a signal converted to an exception during the
@@ -181,20 +183,52 @@ class TProcessForkTest extends \PHPUnit\Framework\TestCase
 		}
 		$fork->register($reactor);
 
-		// Drain to the end of stream: the channel unregisters, but the child still works.
+		// Drain to the end of stream: the channel closes, but the child still works.
 		$deadline = microtime(true) + 3.0;
-		while ($reactor->isRegistered($fork->getChannel()) && microtime(true) < $deadline) {
+		while ($fork->getChannel()->isOpen() && microtime(true) < $deadline) {
 			$reactor->tick(0.05);
 		}
 		self::assertNull($fork->getExitCode(), 'The end of stream does not block on the still-working child.');
 		self::assertTrue($fork->getIsRunning(), 'The child keeps working after closing its channel.');
+		self::assertNotSame([], $reactor->getIdentifiers(), 'The exit watch stays on the loop.');
 
-		// The poll timer captures the exit without any blocking waitpid in the loop.
+		// The exit watch captures the exit without any blocking waitpid in the loop.
 		$deadline = microtime(true) + 5.0;
 		while ($fork->getState() !== TProcessFork::STATE_EXITED && microtime(true) < $deadline) {
 			$reactor->tick(0.05);
 		}
-		self::assertSame(6, $fork->getExitCode(), 'The reactor timer reaps the exit after the early close.');
+		self::assertSame(6, $fork->getExitCode(), 'The loop poll reaps the exit after the early close.');
+		$reactor->tick(0);   // the exit watch is removed on the iteration after the reap
+		self::assertSame([], $reactor->getIdentifiers(), 'The exit watch is removed once the child is reaped.');
+	}
+
+	public function testWaitInAWorkerFiberLetsOtherFibersRun(): void
+	{
+		$fork = TProcessFork::fork(function () {
+			usleep(150000);
+			return 4;
+		});
+		$waiting = TAsync::run(fn () => $fork->wait());
+		$other = TAsync::run(function () {
+			TAsync::sleep(0.01);
+			return 'ran';
+		});
+		self::assertSame('ran', $other->await(), 'Another fiber runs while wait() is suspended.');
+		self::assertFalse($waiting->isComplete(), 'The child is still running.');
+		self::assertSame(4, $waiting->await());
+		self::assertSame([], TAsync::getLoop()->getIdentifiers(), 'The wait leaves no callback on the loop.');
+	}
+
+	public function testRegisterOnTheDefaultLoopReapsWhenTheLoopRuns(): void
+	{
+		$fork = TProcessFork::fork(function (TProcessFork $self) {
+			$self->getChannel()->write('bye');
+			return 2;
+		}, channel: true);
+		$fork->register(TAsync::getLoop());
+		TAsync::getLoop()->run();   // returns once the channel drains and the exit watch is removed
+		self::assertSame(TProcessFork::STATE_EXITED, $fork->getState());
+		self::assertSame(2, $fork->getExitCode());
 	}
 
 	public function testSynchronousReapWhileAsyncDetachesTheDispatcherHandler(): void
