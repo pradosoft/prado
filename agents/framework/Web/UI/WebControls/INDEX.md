@@ -192,7 +192,7 @@ All extend [THtmlElement](./THtmlElement.md). Each wraps the named HTML5 element
 | `TSafeHtml` | Sanitises HTML input (strips dangerous tags) |
 | `TXmlTransform` | Applies XSLT transformation to XML |
 | `TGravatar` | Renders Gravatar image from email hash |
-| `TInlineFrame` | `<iframe>` wrapper |
+| `TInlineFrame` | `<iframe>` wrapper; `SrcDoc`, `Sandbox`, `Allow`, `Loading`, `ReferrerPolicy` (@since 4.4.0) |
 | `TWebTemplate` | `<template>`; client stamping with `{{...}}` placeholders, or a declarative shadow root via `ShadowRootMode` (@since 4.4.0) |
 | `TSlot` | `<slot>` in a shadow root; `Name` matches the light DOM `slot` attribute (`TWebControl::Slot`); content is the fallback (@since 4.4.0) |
 | `TWizard` | Multi-step wizard with `TWizardStep` navigation |

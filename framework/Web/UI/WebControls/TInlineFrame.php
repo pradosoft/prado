@@ -17,14 +17,23 @@ use Prado\TPropertyValue;
  * TInlineFrame class
  *
  * TInlineFrame displays an inline frame (iframe) on a Web page.
- * The location of the frame content is specified by {@see setFrameUrl FrameUrl}.
- * The frame's alignment is specified by {@see setAlign Align}.
- * The {@see setMarginWidth MarginWidth} and {@see setMarginHeight MarginHeight}
- * properties define the number of pixels to use as the left/right margins and
- * top/bottom margins, respectively, within the inline frame.
- * The {@see setScrollBars ScrollBars} property specifies whether scrollbars are
- * provided for the inline frame. And {@see setDescriptionUrl DescriptionUrl}
- * gives the URI of a long description of the frame's contents.
+ * The location of the frame content is specified by {@see setFrameUrl FrameUrl},
+ * or the content itself by {@see setSrcDoc SrcDoc}. {@see setWidth Width} and
+ * {@see setHeight Height} render the `width` and `height` attributes.
+ *
+ * | Property | Attribute |
+ * |---|---|
+ * | {@see setSandbox Sandbox} | `sandbox`: the restrictions on the frame content and the tokens that lift them |
+ * | {@see setAllow Allow} | `allow`: the permissions policy of the frame, such as `fullscreen; camera 'none'` |
+ * | {@see setLoading Loading} | `loading` ({@see TLoadingMode}): Lazy defers an off-screen frame |
+ * | {@see setReferrerPolicy ReferrerPolicy} | `referrerpolicy` ({@see TReferrerPolicy}) |
+ * | {@see setSrcDoc SrcDoc} | `srcdoc`: an HTML document that the frame shows in place of FrameUrl |
+ *
+ * Accessibility: the {@see setToolTip ToolTip} renders the `title` that names the
+ * frame to assistive technologies; each frame takes a title that describes its content.
+ *
+ * Align, ShowBorder, ScrollBars, MarginWidth, MarginHeight, and DescriptionUrl
+ * render attributes that HTML made obsolete; CSS replaces them.
  *
  * Original Prado v2 IFrame Author Information
  * @author Jason Ragsdale <jrags@jasrags.net>
@@ -240,6 +249,124 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	}
 
 	/**
+	 * @return ?string the sandbox tokens of the frame: null when the frame is not
+	 *   sandboxed, '' for every restriction. Defaults to null.
+	 * @since 4.4.0
+	 */
+	public function getSandbox()
+	{
+		return $this->getViewState('Sandbox', null);
+	}
+
+	/**
+	 * Sets the sandbox of the frame (`sandbox`). A sandboxed frame runs no script,
+	 * submits no form, and has an opaque origin; each token lifts one restriction.
+	 * - null or false → no `sandbox` attribute.
+	 * - '' or true → `sandbox=""`: every restriction.
+	 * - tokens → the restrictions those tokens leave, such as `allow-scripts allow-forms`.
+	 *
+	 * A frame of the same origin with `allow-scripts` and `allow-same-origin` can
+	 * remove its own sandbox.
+	 * @param null|bool|string $value the sandbox state or space-separated tokens
+	 * @since 4.4.0
+	 */
+	public function setSandbox($value)
+	{
+		if (is_string($value)) {
+			$value = trim(preg_replace('/\s+/', ' ', $value));
+			$lower = strtolower($value);
+			if ($lower === 'true' || $lower === 'false') {
+				$value = $lower === 'true';
+			}
+		}
+		if (is_bool($value) || $value === null) {
+			$value = $value ? '' : null;
+		}
+		$this->setViewState('Sandbox', $value, null);
+	}
+
+	/**
+	 * @return string the permissions policy of the frame, or '' if not set
+	 * @since 4.4.0
+	 */
+	public function getAllow()
+	{
+		return $this->getViewState('Allow', '');
+	}
+
+	/**
+	 * Sets the permissions policy of the frame (`allow`), the browser features its
+	 * content may use, such as `fullscreen; geolocation 'self'`.
+	 * @param string $value the policy directives
+	 * @since 4.4.0
+	 */
+	public function setAllow($value)
+	{
+		$this->setViewState('Allow', trim(TPropertyValue::ensureString($value)), '');
+	}
+
+	/**
+	 * @return string when the frame loads, a {@see TLoadingMode}. Defaults to NotSet.
+	 * @since 4.4.0
+	 */
+	public function getLoading()
+	{
+		return $this->getViewState('Loading', TLoadingMode::NotSet);
+	}
+
+	/**
+	 * Sets when the frame loads (`loading`); Lazy defers an off-screen frame.
+	 * @param string $value a {@see TLoadingMode}
+	 * @since 4.4.0
+	 */
+	public function setLoading($value)
+	{
+		$this->setViewState('Loading', TPropertyValue::ensureEnum($value, TLoadingMode::class), TLoadingMode::NotSet);
+	}
+
+	/**
+	 * @return string the referrer policy of the frame request, a {@see TReferrerPolicy}.
+	 *   Defaults to NotSet.
+	 * @since 4.4.0
+	 */
+	public function getReferrerPolicy()
+	{
+		return $this->getViewState('ReferrerPolicy', TReferrerPolicy::NotSet);
+	}
+
+	/**
+	 * Sets the referrer policy of the frame request (`referrerpolicy`).
+	 * @param string $value a {@see TReferrerPolicy}
+	 * @since 4.4.0
+	 */
+	public function setReferrerPolicy($value)
+	{
+		$this->setViewState('ReferrerPolicy', TPropertyValue::ensureEnum($value, TReferrerPolicy::class), TReferrerPolicy::NotSet);
+	}
+
+	/**
+	 * @return string the HTML document of the frame, or '' if not set
+	 * @since 4.4.0
+	 */
+	public function getSrcDoc()
+	{
+		return $this->getViewState('SrcDoc', '');
+	}
+
+	/**
+	 * Sets the HTML document that the frame shows (`srcdoc`); it takes precedence
+	 * over {@see setFrameUrl FrameUrl}. The value renders HTML-encoded in the
+	 * attribute, including `&`, and the browser decodes it into the document
+	 * unchanged. Untrusted content belongs in a {@see setSandbox Sandbox} frame.
+	 * @param string $value the HTML document
+	 * @since 4.4.0
+	 */
+	public function setSrcDoc($value)
+	{
+		$this->setViewState('SrcDoc', TPropertyValue::ensureString($value), '');
+	}
+
+	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This overrides the parent implementation with additional button specific attributes.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
@@ -252,6 +379,27 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 
 		if (($src = $this->getFrameUrl()) !== '') {
 			$writer->addAttribute('src', $src);
+		}
+
+		if (($srcDoc = $this->getSrcDoc()) !== '') {
+			// THtmlWriter keeps '&'; encoding it keeps the document's own character references
+			$writer->addAttribute('srcdoc', str_replace('&', '&amp;', $srcDoc));
+		}
+
+		if (($sandbox = $this->getSandbox()) !== null) {
+			$writer->addAttribute('sandbox', $sandbox);
+		}
+
+		if (($allow = $this->getAllow()) !== '') {
+			$writer->addAttribute('allow', $allow);
+		}
+
+		if (($loading = $this->getLoading()) !== TLoadingMode::NotSet) {
+			$writer->addAttribute('loading', strtolower($loading));
+		}
+
+		if (($policy = $this->getReferrerPolicy()) !== TReferrerPolicy::NotSet) {
+			$writer->addAttribute('referrerpolicy', TReferrerPolicy::toAttributeValue($policy));
 		}
 
 		if (($align = strtolower($this->getAlign())) !== 'notset') {
