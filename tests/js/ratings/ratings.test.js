@@ -728,6 +728,57 @@ describe('TRatingList accessibility', () => {
 	});
 });
 
+// ─── TRatingList — one selection per click ───────────────────────────────────
+
+describe('TRatingList click dispatch', () => {
+	let rl, cleanup, dispatch;
+
+	beforeEach(() => {
+		const built = buildRatingDOM('rlk', 5, { AutoPostBack: true });
+		cleanup = built.cleanup;
+		rl = new TRatingList(built.options);
+		dispatch = vi.spyOn(TRatingList.prototype, 'dispatchRequest').mockImplementation(() => {});
+	});
+
+	afterEach(() => {
+		dispatch.mockRestore();
+		cleanup();
+	});
+
+	it('a click on the label selects once', () => {
+		rl.radios[2].closest('label').click();
+		expect(rl.selectedIndex).toBe(2);
+		expect(dispatch).toHaveBeenCalledTimes(1);
+	});
+
+	it('a click elsewhere in the cell checks the radio and selects once', () => {
+		rl.radios[1].parentNode.parentNode.click();
+		expect(rl.radios[1].checked).toBe(true);
+		expect(rl.selectedIndex).toBe(1);
+		expect(dispatch).toHaveBeenCalledTimes(1);
+	});
+
+	it('a click on the current rating sends no request', () => {
+		rl.radios[3].closest('label').click();
+		rl.radios[3].closest('label').click();
+		expect(dispatch).toHaveBeenCalledTimes(1);
+	});
+
+	it('a read-only cell click does nothing', () => {
+		rl.setReadOnly(true);
+		rl.radios[1].parentNode.parentNode.click();
+		expect(rl.selectedIndex).toBe(-1);
+		expect(dispatch).not.toHaveBeenCalled();
+	});
+
+	it('a wrapper registered again on the same elements adds no handlers', () => {
+		const again = new TRatingList(Object.assign({}, rl.options));
+		expect(global.Prado.Registry.rlk).toBe(again);
+		again.radios[4].closest('label').click();
+		expect(dispatch).toHaveBeenCalledTimes(1);
+	});
+});
+
 // ─── TActiveRatingList — class existence and inheritance ─────────────────────
 
 describe('TActiveRatingList', () => {

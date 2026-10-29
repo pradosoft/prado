@@ -11,7 +11,6 @@ Prado.WebUI.TRatingList = Prado.Class(Prado.WebUI.Control,
 		this.options = Object.assign({}, { caption : cap ? cap.innerHTML : '' }, options || {});
 
 		this.radios = [];
-		this._handlers = [];
 
 		const root = document.getElementById(options.ID);
 		if (root) root.classList.add(options.Style);
@@ -31,6 +30,15 @@ Prado.WebUI.TRatingList = Prado.Class(Prado.WebUI.Control,
 				// Give the radio an accessible name even when its item text is empty.
 				if(!radio.getAttribute('aria-label'))
 					radio.setAttribute('aria-label', this.getIndexCaption(index) || String(index+1));
+				// Observers are removed with this wrapper, so a callback that keeps
+				// the element (a morph) and registers a new wrapper adds no duplicates.
+				// The handlers return early while read-only.
+				this.observe(td, 'mouseover', this.hover.bind(this, index));
+				this.observe(td, 'mouseout',  this.recover.bind(this, index));
+				this.observe(td, 'click',     this.cellClick.bind(this, index));
+				this.observe(radio, 'change', this.change.bind(this, index));
+				this.observe(radio, 'focus',  this.focus.bind(this, index));
+				this.observe(radio, 'blur',   this.blur.bind(this, index));
 			}
 		}
 
@@ -67,6 +75,20 @@ Prado.WebUI.TRatingList = Prado.Class(Prado.WebUI.Control,
 	click(index, ev) {
 		if(this.readOnly==true) return;
 		this.select(index, ev);
+	},
+
+	/**
+	 * Star cell click. A click on the radio or its label checks the radio, and
+	 * the radio `change` selects the rating; a click elsewhere in the cell
+	 * clicks the radio. One click therefore selects once, and a click on the
+	 * current rating sends no request.
+	 */
+	cellClick(index, ev) {
+		if(this.readOnly==true) return;
+		const radio = this.radios[index];
+		if(ev.target === radio || (ev.target.closest && ev.target.closest('label')))
+			return;
+		radio.click();
 	},
 
 	/**
@@ -183,39 +205,10 @@ Prado.WebUI.TRatingList = Prado.Class(Prado.WebUI.Control,
 		{
 			const radio = this.radios[i];
 			const node = radio.parentNode.parentNode;
-			let h = this._handlers[i];
-			if (!h) {
-				h = this._handlers[i] = {
-					hover:   this.hover.bind(this, i),
-					recover: this.recover.bind(this, i),
-					click:   this.click.bind(this, i),
-					change:  this.change.bind(this, i),
-					focus:   this.focus.bind(this, i),
-					blur:    this.blur.bind(this, i),
-				};
-			}
-			if(value)
-			{
-				node.classList.add('rating_disabled');
-				// Disabled radios leave the tab order but still announce the
-				// checked state, so a read-only rating stays readable.
-				radio.disabled = true;
-				node.removeEventListener('mouseover', h.hover);
-				node.removeEventListener('mouseout',  h.recover);
-				node.removeEventListener('click',     h.click);
-				radio.removeEventListener('change',   h.change);
-				radio.removeEventListener('focus',    h.focus);
-				radio.removeEventListener('blur',     h.blur);
-			} else {
-				node.classList.remove('rating_disabled');
-				radio.disabled = false;
-				node.addEventListener('mouseover', h.hover);
-				node.addEventListener('mouseout',  h.recover);
-				node.addEventListener('click',     h.click);
-				radio.addEventListener('change',   h.change);
-				radio.addEventListener('focus',    h.focus);
-				radio.addEventListener('blur',     h.blur);
-			}
+			// Disabled radios leave the tab order but still announce the
+			// checked state, so a read-only rating stays readable.
+			node.classList.toggle('rating_disabled', !!value);
+			radio.disabled = !!value;
 		}
 
 		this.showRating(this.rating);
