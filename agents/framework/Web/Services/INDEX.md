@@ -11,6 +11,8 @@ Application services for the Prado framework. Each service handles a different t
 
 - **[TPageService](TPageService.md)** — Primary service serving `.page` template-based web pages. Discovers page classes from `BasePath`, lazily loads them, handles directory-level `config.xml` authorization rules, and runs the full [TPage](../UI/TPage.md) lifecycle. Requires [TTemplateManager](../UI/TTemplateManager.md) and [TThemeManager](../UI/TThemeManager.md) modules. `onPreRunPage` gives modules access to the `TPage` lifecycle before it starts.
 
+- **[Rest/](Rest/INDEX.md)** — `TRestService`, a JSON HTTP API service: resources declare each handler's verb and URL pattern with the `#[TRestRoute]` attribute (or a `getRoutes()` table), routes are `TRestRoutePattern` objects (a `TUrlMappingPattern`), errors are `application/problem+json` documents, `<authorization>` rules feed `TAuthManager`, and `onPreRunResource` / `onError` are raised. **Since 4.4.0.**
+
 - **[TJsonService](TJsonService.md)** — Returns JSON-formatted responses. Configures named JSON response handlers; each handler is a class that produces the JSON payload.
 
 - **[TRpcService](TRpcService.md)** — Generic RPC framework supporting multiple protocols. Architecture:

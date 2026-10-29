@@ -16,6 +16,7 @@ THttpRequest provides storage and access scheme for user requests sent via HTTP.
 - Provides comprehensive HTTP request information including cookies, headers, user agents, etc.
 - Handles URL parsing and construction with customizable URL managers
 - Supports service-based request resolution
+- Reads and decodes the request body once by media type (JSON, form-encoded, multipart) (@since 4.4.0)
 - Implements PHP session integration for cookie-only handling
 
 ## Core Properties
@@ -64,6 +65,16 @@ THttpRequest provides storage and access scheme for user requests sent via HTTP.
 - `getAcceptTypes()`: Returns user browser accept types
 - `getUserLanguages()`: Returns list of user preferred languages
 - `getBrowser()`: Returns PHP browser capabilities and throws `TConfigurationException` when the `browscap` directive is not configured
+
+### Request Body (@since 4.4.0)
+- `getRawBody()`: The raw request body from `php://input`, read once through the protected seam `readRawBody()` and cached; `getRawBodyDirect()` / `setRawBodyDirect(?string)` back the cache, so a subclass or test supplies a body by overriding the seam or setting the cache
+- `getParsedBody()`: The body decoded by the media type of `getContentType()`, parsed once through the protected `parseBody()` and cached behind `getParsedBodyDirect()` / `setParsedBodyDirect(?array)`:
+  - `application/json` or `application/*+json` (`TMediaType::matchesPattern()`) → `json_decode()`; an empty body or a scalar gives `[]`; malformed JSON throws `THttpException` 400 (`httprequest_body_json_invalid`)
+  - `application/x-www-form-urlencoded` → `$_POST` for POST; `parse_str()` of the raw body for PUT, PATCH and the other methods, which PHP does not fill `$_POST` for
+  - `multipart/form-data` → `$_POST`, which PHP fills for POST only
+  - no content type or any other type → `[]`
+- `getQueryParameters()`: The query-string variables alone (`$_GET`); `itemAt()` merges the URL manager route parameters, `$_GET` and `$_POST`
+- Services read the body through these methods instead of `php://input`, `$_POST` or `$_GET`; `TCspReportingService::readBody()` delegates to `getRawBody()`
 
 ### CSRF Token (@since 4.4.0)
 - `getCsrfToken(bool $regenerate = false)`: The token for forms and scripts of this response: the secret masked with random bytes, so every call differs and a compressed page does not expose the secret. A request without a secret receives one, written to the cookie or session `CSRF_TOKEN_KEY` (`PRADO_CSRF`). `$regenerate` replaces the secret; `TAuthManager::login()` and `logout()` do this

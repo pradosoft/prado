@@ -3,6 +3,7 @@
 namespace Prado\Test\Unit\Web;
 
 use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\THttpException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Prado;
 use Prado\Security\TSecurityManager;
@@ -797,5 +798,270 @@ class THttpRequestTest extends \PHPUnit\Framework\TestCase
 		self::assertEquals('testService', $request->resolveRequest(['page', 'testService']));
 		
 		unset($_GET[$resolveKey]);
+	}
+
+	/**
+	 * Builds a request with a fixed body under the given method and content type.
+	 * The caller restores `$_SERVER` through {@see restoreBodyEnvironment()}.
+	 * @param string $method the request method.
+	 * @param ?string $contentType the `CONTENT_TYPE` server variable; null unsets it.
+	 * @param string $body the raw request body.
+	 */
+	protected function newBodyRequest(string $method, ?string $contentType, string $body): TBodyHttpRequest
+	{
+		$_SERVER['REQUEST_METHOD'] = $method;
+		if ($contentType === null) {
+			unset($_SERVER['CONTENT_TYPE']);
+		} else {
+			$_SERVER['CONTENT_TYPE'] = $contentType;
+		}
+		$request = new TBodyHttpRequest();
+		$request->body = $body;
+		return $request;
+	}
+
+	protected function restoreBodyEnvironment(array $post, array $get): void
+	{
+		$_SERVER['REQUEST_METHOD'] = 'GET';
+		unset($_SERVER['CONTENT_TYPE']);
+		$_POST = $post;
+		$_GET = $get;
+	}
+
+	public function testGetRawBodyReadsOnce()
+	{
+		$request = new TBodyHttpRequest();
+		$request->body = '{"a":1}';
+		self::assertNull(PradoUnit::getProp($request, '_rawBody'));
+		self::assertSame('{"a":1}', $request->getRawBody());
+		self::assertSame('{"a":1}', $request->getRawBody());
+		self::assertSame(1, $request->reads);
+		self::assertSame('{"a":1}', PradoUnit::getProp($request, '_rawBody'));
+
+		PradoUnit::setProp($request, '_rawBody', 'injected');
+		self::assertSame('injected', $request->getRawBody());
+		self::assertSame(1, $request->reads);
+
+		PradoUnit::invoke($request, 'setRawBodyDirect', null);
+		self::assertSame('{"a":1}', $request->getRawBody());
+		self::assertSame(2, $request->reads);
+	}
+
+	public function testGetRawBodyDefaultSeam()
+	{
+		$request = new THttpRequest();
+		self::assertSame('', $request->getRawBody());
+	}
+
+	public static function jsonBodyMethodProvider(): array
+	{
+		return [
+			'POST' => ['POST'],
+			'PUT' => ['PUT'],
+			'PATCH' => ['PATCH'],
+		];
+	}
+
+	/**
+	 * @dataProvider jsonBodyMethodProvider
+	 * @param string $method
+	 */
+	public function testGetParsedBodyJson(string $method)
+	{
+		$post = $_POST;
+		$get = $_GET;
+		try {
+			$_POST = ['ignored' => '1'];
+			$request = $this->newBodyRequest($method, 'application/json; charset=UTF-8', '{"name":"prado","tags":["a","b"]}');
+			self::assertSame(['name' => 'prado', 'tags' => ['a', 'b']], $request->getParsedBody());
+		} finally {
+			$this->restoreBodyEnvironment($post, $get);
+		}
+	}
+
+	public function testGetParsedBodyJsonSuffixType()
+	{
+		$post = $_POST;
+		$get = $_GET;
+		try {
+			$request = $this->newBodyRequest('POST', 'application/reports+json', '[{"type":"csp-violation"}]');
+			self::assertSame([['type' => 'csp-violation']], $request->getParsedBody());
+			$request = $this->newBodyRequest('POST', 'application/ld+json', '{"@id":"x"}');
+			self::assertSame(['@id' => 'x'], $request->getParsedBody());
+		} finally {
+			$this->restoreBodyEnvironment($post, $get);
+		}
+	}
+
+	public function testGetParsedBodyJsonEmpty()
+	{
+		$post = $_POST;
+		$get = $_GET;
+		try {
+			$request = $this->newBodyRequest('POST', 'application/json', '');
+			self::assertSame([], $request->getParsedBody());
+		} finally {
+			$this->restoreBodyEnvironment($post, $get);
+		}
+	}
+
+	public function testGetParsedBodyJsonScalar()
+	{
+		$post = $_POST;
+		$get = $_GET;
+		try {
+			$request = $this->newBodyRequest('POST', 'application/json', '42');
+			self::assertSame([], $request->getParsedBody());
+			$request = $this->newBodyRequest('POST', 'application/json', '"text"');
+			self::assertSame([], $request->getParsedBody());
+			$request = $this->newBodyRequest('POST', 'application/json', 'null');
+			self::assertSame([], $request->getParsedBody());
+		} finally {
+			$this->restoreBodyEnvironment($post, $get);
+		}
+	}
+
+	public function testGetParsedBodyJsonMalformed()
+	{
+		$post = $_POST;
+		$get = $_GET;
+		try {
+			$request = $this->newBodyRequest('POST', 'application/json', '{"name":');
+			try {
+				$request->getParsedBody();
+				self::fail('THttpException not thrown for malformed JSON');
+			} catch (THttpException $e) {
+				self::assertSame(400, $e->getStatusCode());
+			}
+			self::assertNull(PradoUnit::getProp($request, '_parsedBody'));
+		} finally {
+			$this->restoreBodyEnvironment($post, $get);
+		}
+	}
+
+	public function testGetParsedBodyFormPost()
+	{
+		$post = $_POST;
+		$get = $_GET;
+		try {
+			$_POST = ['name' => 'prado', 'list' => ['1', '2']];
+			$request = $this->newBodyRequest('POST', 'application/x-www-form-urlencoded', 'name=raw');
+			self::assertSame($_POST, $request->getParsedBody());
+			self::assertSame(0, $request->reads);
+		} finally {
+			$this->restoreBodyEnvironment($post, $get);
+		}
+	}
+
+	public static function formBodyMethodProvider(): array
+	{
+		return [
+			'PUT' => ['PUT'],
+			'PATCH' => ['PATCH'],
+		];
+	}
+
+	/**
+	 * @dataProvider formBodyMethodProvider
+	 * @param string $method
+	 */
+	public function testGetParsedBodyFormOtherMethods(string $method)
+	{
+		$post = $_POST;
+		$get = $_GET;
+		try {
+			$_POST = ['ignored' => '1'];
+			$request = $this->newBodyRequest($method, 'application/x-www-form-urlencoded', 'name=prado&list%5B%5D=1&list%5B%5D=2');
+			self::assertSame(['name' => 'prado', 'list' => ['1', '2']], $request->getParsedBody());
+			self::assertSame(1, $request->reads);
+		} finally {
+			$this->restoreBodyEnvironment($post, $get);
+		}
+	}
+
+	public function testGetParsedBodyMultipartPost()
+	{
+		$post = $_POST;
+		$get = $_GET;
+		try {
+			$_POST = ['field' => 'value'];
+			$request = $this->newBodyRequest('POST', 'multipart/form-data; boundary=----x', '------x');
+			self::assertSame(['field' => 'value'], $request->getParsedBody());
+			self::assertSame(0, $request->reads);
+		} finally {
+			$this->restoreBodyEnvironment($post, $get);
+		}
+	}
+
+	public function testGetParsedBodyNoContentType()
+	{
+		$post = $_POST;
+		$get = $_GET;
+		try {
+			$_POST = ['field' => 'value'];
+			$request = $this->newBodyRequest('GET', null, '');
+			self::assertSame([], $request->getParsedBody());
+			$request = $this->newBodyRequest('POST', null, '{"a":1}');
+			self::assertSame([], $request->getParsedBody());
+			$request = $this->newBodyRequest('POST', 'text/plain', 'a=1');
+			self::assertSame([], $request->getParsedBody());
+		} finally {
+			$this->restoreBodyEnvironment($post, $get);
+		}
+	}
+
+	public function testGetParsedBodyCached()
+	{
+		$post = $_POST;
+		$get = $_GET;
+		try {
+			$request = $this->newBodyRequest('PUT', 'application/json', '{"a":1}');
+			self::assertNull(PradoUnit::getProp($request, '_parsedBody'));
+			self::assertSame(['a' => 1], $request->getParsedBody());
+			$_SERVER['CONTENT_TYPE'] = 'text/plain';
+			self::assertSame(['a' => 1], $request->getParsedBody());
+			self::assertSame(['a' => 1], PradoUnit::getProp($request, '_parsedBody'));
+
+			PradoUnit::setProp($request, '_parsedBody', ['injected' => true]);
+			self::assertSame(['injected' => true], $request->getParsedBody());
+
+			PradoUnit::invoke($request, 'setParsedBodyDirect', null);
+			self::assertSame([], $request->getParsedBody());
+		} finally {
+			$this->restoreBodyEnvironment($post, $get);
+		}
+	}
+
+	public function testGetQueryParameters()
+	{
+		$post = $_POST;
+		$get = $_GET;
+		try {
+			$_GET = ['page' => 'Links', 'q' => '1'];
+			$_POST = ['page' => 'Posted', 'extra' => '2'];
+			$request = new THttpRequest();
+			$request->init(null);
+			$request->resolveRequest(['page']);
+			self::assertSame($_GET, $request->getQueryParameters());
+			self::assertSame('Posted', $request->itemAt('page'));
+			self::assertSame('2', $request->itemAt('extra'));
+		} finally {
+			$this->restoreBodyEnvironment($post, $get);
+		}
+	}
+}
+
+/**
+ * THttpRequest with a settable raw body, counting the reads of the seam.
+ */
+class TBodyHttpRequest extends THttpRequest
+{
+	public string $body = '';
+	public int $reads = 0;
+
+	protected function readRawBody(): string
+	{
+		$this->reads++;
+		return $this->body;
 	}
 }

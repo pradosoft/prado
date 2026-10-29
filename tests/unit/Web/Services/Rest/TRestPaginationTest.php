@@ -1,6 +1,6 @@
 <?php
 
-namespace Prado\Test\Unit\Web\Services;
+namespace Prado\Test\Unit\Web\Services\Rest;
 
 use Prado\Prado;
 use Prado\Web\Services\Rest\TRestPagination;

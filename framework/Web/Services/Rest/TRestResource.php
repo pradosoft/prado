@@ -10,259 +10,258 @@
 
 namespace Prado\Web\Services\Rest;
 
-use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Prado;
 use Prado\TApplicationComponent;
-use Prado\Web\TMediaType;
+use Prado\TComponentReflection;
+use Prado\Util\TInputValidationException;
+use Prado\Util\TInputValidator;
 
 /**
  * TRestResource class
  *
- * TRestResource is the abstract base class for all REST resource handlers used with
- * {@see TRestService}. Each subclass represents one or more URL patterns and implements
- * the HTTP verb methods it supports.
+ * TRestResource is the base class of the resources a {@see TRestService} serves.
+ * A resource declares which HTTP verb and URL pattern each of its methods handles,
+ * and the service calls that method with the path parameters as arguments.
  *
- * ## Convention Methods
+ * ## Declaring routes
  *
- * Override only the verbs your resource supports. Any convention method that is
- * **not** declared on the concrete subclass automatically responds with
- * `405 Method Not Allowed` (handled via `__call`).
- *
- * |  Method       |  Verb  |  Route type  |
- * |---------------|--------|--------------|
- * | `doIndex()`   | GET    | collection   |
- * | `doStore()`   | POST   | collection   |
- * | `doShow()`    | GET    | item         |
- * | `doUpdate()`  | PUT    | item         |
- * | `doPatch()`   | PATCH  | item         |
- * | `doDestroy()` | DELETE | item         |
- *
- * Because the base class uses `__call` rather than typed stubs, subclasses are
- * free to declare any parameter signature they need. Path parameters are injected
- * by name via PHP reflection — declare them as method parameters matching the
- * `{name}` placeholders in the route pattern:
- * ```php
- * // Route: users/{userId}/posts/{id}
- * public function doShow(string $userId, string $id): array { ... }
- * ```
- *
- * ## Status Helpers
- *
- * Use the protected helpers to set non-200 success codes before returning:
- * ```php
- * public function doStore(): array
- * {
- *     $data = $this->validateBody(['name' => 'required|string']);
- *     return $this->created(MyRecord::create($data)->toArray());
- * }
- *
- * public function doDestroy(string $id): void
- * {
- *     MyRecord::delete($id);
- *     $this->noContent();
- * }
- * ```
- *
- * ## Authentication
- *
- * Override {@see authorize()} to enforce any auth requirement. It is called before
- * dispatch and receives the `do`-prefixed method name (e.g. `'doShow'`, `'doStore'`).
- * It may throw {@see TRestException} to abort the request:
- * ```php
- * public function authorize(string $method): void
- * {
- *     if ($this->getApplication()->getUser()->getIsGuest()) {
- *         $this->unauthorized('Authentication required.');
- *     }
- * }
- * ```
- *
- * ## Validation
- *
- * {@see validateBody()} validates the parsed request body against a rule set and
- * returns only the declared fields, or throws `422 Unprocessable Entity`:
- * ```php
- * $data = $this->validateBody([
- *     'email' => 'required|email',
- *     'name'  => 'required|string|max:255',
- *     'age'   => 'nullable|integer|min:0|max:150',
- * ]);
- * ```
- *
- * Supported rules: `required`, `nullable`, `string`, `integer`, `float`, `numeric`,
- * `boolean`, `bool`, `array`, `email`, `url`, `min:N`, `max:N`, `in:a,b,c`.
- *
- * ## Example
- *
- * The following resource handles both the `/api/users` collection and the
- * `/api/users/{id}` item route. Register both patterns in `application.xml`:
- * ```xml
- * <service id="rest" class="Prado\Web\Services\Rest\TRestService" BasePath="api/">
- *   <resource pattern="users"      class="App.Api.UsersResource" />
- *   <resource pattern="users/{id}" class="App.Api.UsersResource"
- *             parameters.id="\d+" />
- * </service>
- * ```
- *
+ * A handler is any public method with a {@see TRestRoute} attribute. The class
+ * attribute gives the prefix shared by every route of the resource:
  * ```php
  * namespace App\Api;
  *
  * use Prado\Web\Services\Rest\TRestResource;
+ * use Prado\Web\Services\Rest\TRestRoute;
  *
+ * #[TRestRoute(pattern: 'users')]
  * class UsersResource extends TRestResource
  * {
- *     // Require a signed-in user for every mutating verb.
- *     public function authorize(string $method): void
+ *     #[TRestRoute('GET')]
+ *     public function index(): array
  *     {
- *         if (!in_array($method, ['doIndex', 'doShow'], true)) {
- *             if ($this->getApplication()->getUser()->getIsGuest()) {
- *                 $this->unauthorized('Authentication required.');
- *             }
- *         }
+ *         return UserDao::findAll(['role' => $this->query('role')]);
  *     }
  *
- *     // GET /api/users  — supports ?role= query filter
- *     public function doIndex(): array
+ *     #[TRestRoute('GET', '{id:\d+}')]
+ *     public function show(int $id): array
  *     {
- *         $role = $this->query('role');
- *         return UserDao::findAll($role ? ['role' => $role] : []);
+ *         return UserDao::find($id) ?? $this->notFound("User {$id} not found.");
  *     }
  *
- *     // GET /api/users/{id}
- *     public function doShow(string $id): array
- *     {
- *         return UserDao::find((int) $id)
- *             ?? $this->notFound("User {$id} not found.");
- *     }
- *
- *     // POST /api/users
- *     public function doStore(): array
+ *     #[TRestRoute('POST')]
+ *     public function store(): array
  *     {
  *         $data = $this->validateBody([
- *             'name'  => 'required|string|max:255',
+ *             'name' => 'required|string|max:255',
  *             'email' => 'required|email',
- *             'role'  => 'nullable|string|in:admin,editor,viewer',
  *         ]);
  *         $user = UserDao::create($data);
- *         $this->header('Location', '/api/users/' . $user['id']);
+ *         $this->header('Location', $this->getService()->constructUrl('UsersResource.show', ['id' => $user['id']]));
  *         return $this->created($user);
  *     }
  *
- *     // PUT /api/users/{id}  — full replacement
- *     public function doUpdate(string $id): array
+ *     #[TRestRoute('DELETE', '{id:\d+}')]
+ *     public function destroy(int $id): void
  *     {
- *         UserDao::find((int) $id) ?? $this->notFound("User {$id} not found.");
- *         $data = $this->validateBody([
- *             'name'  => 'required|string|max:255',
- *             'email' => 'required|email',
- *             'role'  => 'required|string|in:admin,editor,viewer',
- *         ]);
- *         return UserDao::update((int) $id, $data);
- *     }
- *
- *     // PATCH /api/users/{id}  — partial update; only supplied fields are changed
- *     public function doPatch(string $id): array
- *     {
- *         UserDao::find((int) $id) ?? $this->notFound("User {$id} not found.");
- *         $data = $this->validate($this->only(['name', 'email', 'role']), [
- *             'name'  => 'nullable|string|max:255',
- *             'email' => 'nullable|email',
- *             'role'  => 'nullable|string|in:admin,editor,viewer',
- *         ]);
- *         return UserDao::update((int) $id, array_filter($data, fn($v) => $v !== null));
- *     }
- *
- *     // DELETE /api/users/{id}
- *     public function doDestroy(string $id): void
- *     {
- *         UserDao::find((int) $id) ?? $this->notFound("User {$id} not found.");
- *         UserDao::delete((int) $id);
+ *         UserDao::delete($id);
  *         $this->noContent();
  *     }
  * }
  * ```
+ * Path parameters are passed by name and cast to the scalar type the parameter
+ * declares. A method the route names but the verb does not reach answers `405`.
+ *
+ * {@see getRoutes()} is the lookup behind the attributes. It walks the parent
+ * classes, so a subclass that overrides `show()` without the attribute keeps the
+ * parent's route. A resource overrides it to declare the routes as a table instead
+ * of, or in addition to, the attributes:
+ * ```php
+ * public function getRoutes(): array
+ * {
+ *     return parent::getRoutes() + [
+ *         'export' => [new TRestRoute('GET', 'export/{format:csv|json}')],
+ *     ];
+ * }
+ * ```
+ * The service registers the resource in the application configuration:
+ * ```xml
+ * <service id="rest" class="Prado\Web\Services\Rest\TRestService" BasePath="api">
+ *   <resource class="App\Api\UsersResource" />
+ * </service>
+ * ```
+ *
+ * ## Request helpers
+ *
+ * | Method | Reads |
+ * |---|---|
+ * | {@see getBody()} | the body decoded by {@see \Prado\Web\THttpRequest::getParsedBody()} |
+ * | {@see query()} | one query-string variable |
+ * | {@see input()} | one body field, then one query-string variable |
+ * | {@see only()}, {@see except()} | a subset of the body |
+ * | {@see validateBody()}, {@see validate()} | the body, or any array, against {@see \Prado\Util\TInputValidator} rules; a failure is a `422` with field errors |
+ *
+ * ## Response helpers
+ *
+ * {@see created()}, {@see accepted()} and {@see noContent()} set the status code;
+ * {@see header()} adds a response header. {@see notFound()}, {@see unauthorized()},
+ * {@see forbidden()}, {@see conflict()}, {@see unprocessable()} and {@see abort()}
+ * throw the {@see TRestException} the service writes as a problem document.
+ *
+ * ## Authorization
+ *
+ * `<authorization>` rules in the configuration are enforced by the application's
+ * {@see \Prado\Security\TAuthManager} before the service runs. {@see authorize()}
+ * is the hook of the resource itself, called with the matched route before the
+ * handler; throw to refuse the request.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
  */
-abstract class TRestResource extends TApplicationComponent
+abstract class TRestResource extends TApplicationComponent implements IRestResource
 {
 	/**
-	 * @var array Path parameters extracted from the matched route pattern.
+	 * @var ?TRestRoutePattern the matched route.
+	 */
+	private ?TRestRoutePattern $_route = null;
+
+	/**
+	 * @var array path parameters of the matched route.
 	 */
 	private array $_pathParameters = [];
 
 	/**
-	 * @var int HTTP status code for the response. Defaults to 200.
+	 * @var int HTTP status code of the response.
 	 */
 	private int $_statusCode = 200;
 
 	/**
-	 * @var array Additional response headers as name => value pairs.
+	 * @var array response headers as name => value pairs.
 	 */
 	private array $_responseHeaders = [];
 
 	/**
-	 * @var ?array Lazily parsed request body. Null until first access.
+	 * @var ?TInputValidator the validator of {@see validate()}.
 	 */
-	private ?array $_parsedBody = null;
+	private ?TInputValidator $_validator = null;
 
-	// ── Convention methods ─────────────────────────────────────────────────────
+	// ── Routes ────────────────────────────────────────────────────────────────
 
 	/**
-	 * Catches calls to the six REST convention methods that are not overridden
-	 * by the concrete resource subclass.
-	 *
-	 * The six convention method names are: `doIndex`, `doShow`, `doStore`,
-	 * `doUpdate`, `doPatch`, `doDestroy`. Calling any of them on an instance
-	 * that has not overridden the method throws a `405 Method Not Allowed`
-	 * exception.
-	 *
-	 * Using `__call` instead of concrete stub methods avoids PHP's LSP
-	 * signature-compatibility requirement, which would otherwise prevent
-	 * subclasses from adding typed path-parameter arguments (e.g.,
-	 * `doShow(string $id): array`).
-	 *
-	 * @param mixed $name Method name called.
-	 * @param mixed $args Arguments passed by the caller (unused).
-	 * @throws TRestException 405 when $name is a known convention method.
-	 * @throws \BadMethodCallException for any other undefined method.
-	 * @return never
+	 * Returns the routes of the resource from the {@see TRestRoute} attributes of its
+	 * public methods. A method without the attribute takes the attributes of the
+	 * method it overrides, up the parent classes. Override this method to declare
+	 * routes as a table.
+	 * @return array<string,TRestRoute[]> route declarations keyed by method name.
 	 */
-	public function __call(mixed $name, mixed $args): never
+	public function getRoutes(): array
 	{
-		if (in_array($name, ['doIndex', 'doShow', 'doStore', 'doUpdate', 'doPatch', 'doDestroy'], true)) {
-			throw TRestException::methodNotAllowed();
+		$routes = [];
+		foreach ((new \ReflectionClass($this))->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+			if ($method->isStatic() || $method->isConstructor()) {
+				continue;
+			}
+			$name = $method->getName();
+			for ($class = static::class; $class !== false; $class = get_parent_class($class)) {
+				$attributes = TComponentReflection::getMethodAttributesByType($class, $name, TRestRoute::class);
+				if ($attributes !== []) {
+					$routes[$name] = $attributes;
+					break;
+				}
+			}
 		}
-		throw new \BadMethodCallException('Call to undefined method ' . static::class . '::' . $name . '()');
+		return $routes;
 	}
 
-	// ── Auth lifecycle ─────────────────────────────────────────────────────────
+	/**
+	 * Returns the pattern prefix of the resource from the {@see TRestRoute} attribute
+	 * of the class, or of its nearest ancestor that carries one.
+	 * @return string the prefix, `''` for none.
+	 */
+	public function getRoutePrefix(): string
+	{
+		foreach (TComponentReflection::getClassAttributesByType($this, TRestRoute::class) as $attribute) {
+			return $attribute->pattern;
+		}
+		return '';
+	}
 
 	/**
-	 * Authorization hook called by {@see TRestService} before dispatch.
-	 *
-	 * Override to enforce authentication or authorization. The `$method`
-	 * parameter is the `do`-prefixed dispatch method name (e.g. `'doShow'`,
-	 * `'doStore'`). Throw a {@see TRestException} to abort the request:
-	 * ```php
-	 * public function authorize(string $method): void
-	 * {
-	 *     if ($this->getApplication()->getUser()->getIsGuest()) {
-	 *         $this->unauthorized('Authentication required.');
-	 *     }
-	 * }
-	 * ```
-	 * @param string $method The dispatch method name (e.g., `'doShow'`, `'doStore'`).
+	 * Receives the matched route and its path parameters before dispatch.
+	 * @param TRestRoutePattern $route the matched route.
+	 * @param array $parameters path parameter values keyed by placeholder name.
 	 */
-	public function authorize(string $method): void
+	public function setRoute(TRestRoutePattern $route, array $parameters): void
+	{
+		$this->setRouteDirect($route);
+		$this->setPathParametersDirect($parameters);
+	}
+
+	/**
+	 * @return ?TRestRoutePattern the matched route, `null` before dispatch.
+	 */
+	public function getRoute(): ?TRestRoutePattern
+	{
+		return $this->getRouteDirect();
+	}
+
+	/**
+	 * @return array path parameter values keyed by placeholder name.
+	 */
+	public function getPathParameters(): array
+	{
+		return $this->getPathParametersDirect();
+	}
+
+	/**
+	 * @param string $name placeholder name.
+	 * @param mixed $default value when the placeholder is absent.
+	 * @return mixed the path parameter value, or `$default`.
+	 */
+	public function getPathParameter(string $name, mixed $default = null): mixed
+	{
+		return $this->getPathParameters()[$name] ?? $default;
+	}
+
+	/**
+	 * Authorizes the request before the handler runs. The default accepts every
+	 * request; override and throw, for example through {@see unauthorized()} or
+	 * {@see forbidden()}, to refuse one.
+	 * @param TRestRoutePattern $route the matched route.
+	 */
+	public function authorize(TRestRoutePattern $route): void
 	{
 	}
 
-	// ── Direct Accessors (UAP-SE) ──────────────────────────────────────────────
+	/**
+	 * @return ?TRestService the service running the resource, `null` outside a request.
+	 */
+	public function getService(): ?TRestService
+	{
+		$service = $this->getApplication()->getService();
+		return ($service instanceof TRestService) ? $service : null;
+	}
+
+	// ── Direct Accessors (UAP-SE) ─────────────────────────────────────────────
 
 	/**
-	 * @return array Stored path parameters.
+	 * @return ?TRestRoutePattern the stored route.
+	 */
+	protected function getRouteDirect(): ?TRestRoutePattern
+	{
+		return $this->_route;
+	}
+
+	/**
+	 * @param ?TRestRoutePattern $value the route to store.
+	 */
+	protected function setRouteDirect(?TRestRoutePattern $value): void
+	{
+		$this->_route = $value;
+	}
+
+	/**
+	 * @return array the stored path parameters.
 	 */
 	protected function getPathParametersDirect(): array
 	{
@@ -270,7 +269,7 @@ abstract class TRestResource extends TApplicationComponent
 	}
 
 	/**
-	 * @param array $value Path parameters to store.
+	 * @param array $value the path parameters to store.
 	 */
 	protected function setPathParametersDirect(array $value): void
 	{
@@ -278,7 +277,7 @@ abstract class TRestResource extends TApplicationComponent
 	}
 
 	/**
-	 * @return int Stored HTTP status code.
+	 * @return int the stored status code.
 	 */
 	protected function getStatusCodeDirect(): int
 	{
@@ -286,7 +285,7 @@ abstract class TRestResource extends TApplicationComponent
 	}
 
 	/**
-	 * @param int $value HTTP status code to store.
+	 * @param int $value the status code to store.
 	 */
 	protected function setStatusCodeDirect(int $value): void
 	{
@@ -294,7 +293,7 @@ abstract class TRestResource extends TApplicationComponent
 	}
 
 	/**
-	 * @return array Stored response headers.
+	 * @return array the stored response headers.
 	 */
 	protected function getResponseHeadersDirect(): array
 	{
@@ -302,7 +301,7 @@ abstract class TRestResource extends TApplicationComponent
 	}
 
 	/**
-	 * @param array $value Response headers to store.
+	 * @param array $value the response headers to store.
 	 */
 	protected function setResponseHeadersDirect(array $value): void
 	{
@@ -310,25 +309,25 @@ abstract class TRestResource extends TApplicationComponent
 	}
 
 	/**
-	 * @return ?array Stored parsed body, or null if not yet parsed.
+	 * @return ?TInputValidator the stored validator.
 	 */
-	protected function getParsedBodyDirect(): ?array
+	protected function getValidatorDirect(): ?TInputValidator
 	{
-		return $this->_parsedBody;
+		return $this->_validator;
 	}
 
 	/**
-	 * @param ?array $value Parsed body to store, or null to clear.
+	 * @param ?TInputValidator $value the validator to store.
 	 */
-	protected function setParsedBodyDirect(?array $value): void
+	protected function setValidatorDirect(?TInputValidator $value): void
 	{
-		$this->_parsedBody = $value;
+		$this->_validator = $value;
 	}
 
-	// ── Internal accessors used by TRestService ────────────────────────────────
+	// ── Response state ────────────────────────────────────────────────────────
 
 	/**
-	 * @return int HTTP status code to send with the response.
+	 * @return int HTTP status code of the response, 200 by default.
 	 */
 	public function getStatusCode(): int
 	{
@@ -336,9 +335,8 @@ abstract class TRestResource extends TApplicationComponent
 	}
 
 	/**
-	 * Sets the HTTP status code for the response.
-	 * Use the semantic helpers {@see created()}, {@see accepted()}, and
-	 * {@see noContent()} in resource methods rather than calling this directly.
+	 * Sets the HTTP status code of the response. {@see created()}, {@see accepted()}
+	 * and {@see noContent()} set the usual ones.
 	 * @param int $value HTTP status code.
 	 */
 	protected function setStatusCode(int $value): void
@@ -347,7 +345,7 @@ abstract class TRestResource extends TApplicationComponent
 	}
 
 	/**
-	 * @return array Additional response headers as name => value pairs.
+	 * @return array response headers as name => value pairs.
 	 */
 	public function getResponseHeaders(): array
 	{
@@ -355,10 +353,10 @@ abstract class TRestResource extends TApplicationComponent
 	}
 
 	/**
-	 * Adds a single response header.
-	 * Called internally by {@see header()}.
-	 * @param string $name Header name.
-	 * @param string $value Header value.
+	 * Adds a response header, replacing one of the same name.
+	 * @param string $name header name.
+	 * @param string $value header value.
+	 * @throws TInvalidDataValueException when the name is not a token or the value holds CR or LF.
 	 */
 	protected function addResponseHeader(string $name, string $value): void
 	{
@@ -370,118 +368,23 @@ abstract class TRestResource extends TApplicationComponent
 		$this->setResponseHeadersDirect($headers);
 	}
 
-	/**
-	 * Sets the extracted path parameters.
-	 * This method is called by {@see TRestService} before dispatch.
-	 * @param array $params Path parameters keyed by parameter name.
-	 */
-	public function setPathParameters(array $params): void
-	{
-		$this->setPathParametersDirect($params);
-	}
+	// ── Request helpers ───────────────────────────────────────────────────────
 
 	/**
-	 * @return array Path parameters extracted from the matched route pattern.
-	 */
-	public function getPathParameters(): array
-	{
-		return $this->getPathParametersDirect();
-	}
-
-	// ── Request helpers ────────────────────────────────────────────────────────
-
-	/**
-	 * Returns a single path parameter by name.
-	 * @param string $name Parameter name as declared in the route pattern.
-	 * @param mixed $default Value to return when the parameter is absent.
-	 * @return mixed Parameter value or $default.
-	 */
-	public function getPathParameter(string $name, mixed $default = null): mixed
-	{
-		return $this->getPathParameters()[$name] ?? $default;
-	}
-
-	/**
-	 * Returns the parsed request body.
-	 *
-	 * `Content-Type: application/json` requests decode the raw input stream; a
-	 * non-empty body that is not valid JSON raises `400 Bad Request`. Form-encoded
-	 * `POST` requests return `$_POST` directly; form-encoded `PUT` and `PATCH`
-	 * requests parse `php://input` via `parse_str()` (PHP does not populate
-	 * `$_POST` for non-`POST` verbs). Other verbs return an empty array. The
-	 * result is cached for the lifetime of the resource.
-	 * @throws TRestException 400 when a JSON body is present but malformed.
-	 * @return array Parsed body data.
+	 * Returns the request body decoded by its media type, through
+	 * {@see \Prado\Web\THttpRequest::getParsedBody()}: JSON, form-encoded on any
+	 * verb, or multipart. A malformed JSON body is a `400`.
+	 * @return array the decoded body, `[]` when there is none.
 	 */
 	public function getBody(): array
 	{
-		if ($this->getParsedBodyDirect() !== null) {
-			return $this->getParsedBodyDirect();
-		}
-
-		$request = $this->getRequest();
-		$verb = strtoupper($request->getRequestType() ?? 'GET');
-
-		if (in_array($verb, ['POST', 'PUT', 'PATCH'], true)) {
-			$contentType = $request->getContentType() ?? '';
-			if (str_contains($contentType, TMediaType::JSON)) {
-				$raw = $this->readRawRequestBody();
-				if ($raw === '') {
-					$this->setParsedBodyDirect([]);
-				} else {
-					$decoded = json_decode($raw, true);
-					if (json_last_error() !== JSON_ERROR_NONE) {
-						throw TRestException::badRequest('Malformed JSON request body.');
-					}
-					$this->setParsedBodyDirect(is_array($decoded) ? $decoded : []);
-				}
-			} elseif ($verb === 'POST') {
-				$this->setParsedBodyDirect($_POST);
-			} else {
-				// PHP only populates $_POST for POST requests; parse the raw stream
-				// for PUT/PATCH form-encoded bodies.
-				$parsed = [];
-				parse_str($this->readRawRequestBody(), $parsed);
-				$this->setParsedBodyDirect($parsed);
-			}
-		} else {
-			$this->setParsedBodyDirect([]);
-		}
-
-		return $this->getParsedBodyDirect() ?? [];
+		return $this->getRequest()->getParsedBody();
 	}
 
 	/**
-	 * Reads the raw HTTP request body from `php://input`.
-	 *
-	 * Extracted as a protected seam so unit tests can override it without
-	 * needing to register a stream wrapper.
-	 * @return string Raw request body, or empty string when unavailable.
-	 */
-	protected function readRawRequestBody(): string
-	{
-		return (string) (file_get_contents('php://input') ?: '');
-	}
-
-	/**
-	 * Returns the raw query-string parameters.
-	 *
-	 * Reads PHP's `$_GET` superglobal, which holds only true query-string
-	 * values — {@see \Prado\Web\THttpRequest::itemAt()} would also surface
-	 * routing parameters and form-`POST` fields. Extracted as a protected
-	 * seam so unit tests can override it.
-	 * @return array Query-string parameters keyed by name.
-	 */
-	protected function getQueryParams(): array
-	{
-		return $_GET;
-	}
-
-	/**
-	 * Returns a value from the request body first, then from the query string.
-	 * @param string $key Field name.
-	 * @param mixed $default Value to return when the key is absent.
-	 * @return mixed
+	 * @param string $key field name.
+	 * @param mixed $default value when the key is absent.
+	 * @return mixed the body field, then the query-string variable, then `$default`.
 	 */
 	public function input(string $key, mixed $default = null): mixed
 	{
@@ -489,35 +392,31 @@ abstract class TRestResource extends TApplicationComponent
 		if (array_key_exists($key, $body)) {
 			return $body[$key];
 		}
-		return $this->getQueryParams()[$key] ?? $default;
+		return $this->getRequest()->getQueryParameters()[$key] ?? $default;
 	}
 
 	/**
-	 * Returns a value from the query string only.
-	 * Body fields, routing parameters, and form-`POST` values are excluded.
-	 * @param string $key Query parameter name.
-	 * @param mixed $default Value to return when the key is absent.
-	 * @return mixed
+	 * @param string $key query-string variable name.
+	 * @param mixed $default value when the variable is absent.
+	 * @return mixed the query-string variable; body fields and route parameters are not read.
 	 */
 	public function query(string $key, mixed $default = null): mixed
 	{
-		return $this->getQueryParams()[$key] ?? $default;
+		return $this->getRequest()->getQueryParameters()[$key] ?? $default;
 	}
 
 	/**
-	 * Returns whether the key is present in the body or query string.
-	 * @param string $key Field name.
-	 * @return bool
+	 * @param string $key field name.
+	 * @return bool whether the body or the query string holds the key.
 	 */
 	public function hasInput(string $key): bool
 	{
-		return array_key_exists($key, $this->getBody()) || array_key_exists($key, $this->getQueryParams());
+		return array_key_exists($key, $this->getBody()) || array_key_exists($key, $this->getRequest()->getQueryParameters());
 	}
 
 	/**
-	 * Returns a subset of the request body containing only the given keys.
-	 * @param array $keys Field names to include.
-	 * @return array
+	 * @param string[] $keys field names.
+	 * @return array the body fields named in `$keys`.
 	 */
 	public function only(array $keys): array
 	{
@@ -525,22 +424,20 @@ abstract class TRestResource extends TApplicationComponent
 	}
 
 	/**
-	 * Returns the request body with the given keys removed.
-	 * @param array $keys Field names to exclude.
-	 * @return array
+	 * @param string[] $keys field names.
+	 * @return array the body without the fields named in `$keys`.
 	 */
 	public function except(array $keys): array
 	{
 		return array_diff_key($this->getBody(), array_flip($keys));
 	}
 
-	// ── Status helpers ─────────────────────────────────────────────────────────
+	// ── Status helpers ────────────────────────────────────────────────────────
 
 	/**
-	 * Sets the response status to 201 Created and returns the provided data.
-	 * Call this in {@see doStore()} after successfully creating a resource.
-	 * @param mixed $data Resource data to return in the response body.
-	 * @return mixed The passed $data value.
+	 * Sets the status to `201 Created` and returns the data.
+	 * @param mixed $data the response body.
+	 * @return mixed `$data`.
 	 */
 	protected function created(mixed $data = null): mixed
 	{
@@ -549,9 +446,9 @@ abstract class TRestResource extends TApplicationComponent
 	}
 
 	/**
-	 * Sets the response status to 202 Accepted and returns the provided data.
-	 * @param mixed $data Optional response body data.
-	 * @return mixed The passed $data value.
+	 * Sets the status to `202 Accepted` and returns the data.
+	 * @param mixed $data the response body.
+	 * @return mixed `$data`.
 	 */
 	protected function accepted(mixed $data = null): mixed
 	{
@@ -560,8 +457,7 @@ abstract class TRestResource extends TApplicationComponent
 	}
 
 	/**
-	 * Sets the response status to 204 No Content.
-	 * The response body will be suppressed by {@see TRestService}.
+	 * Sets the status to `204 No Content`; the service sends no body.
 	 */
 	protected function noContent(): void
 	{
@@ -569,10 +465,10 @@ abstract class TRestResource extends TApplicationComponent
 	}
 
 	/**
-	 * Appends a custom response header.
-	 * @param string $name Header name (e.g., `'X-Total-Count'`).
-	 * @param string $value Header value.
-	 * @return static
+	 * Adds a response header.
+	 * @param string $name header name, such as `X-Total-Count`.
+	 * @param string $value header value.
+	 * @return static the resource.
 	 */
 	protected function header(string $name, string $value): static
 	{
@@ -580,13 +476,13 @@ abstract class TRestResource extends TApplicationComponent
 		return $this;
 	}
 
-	// ── Exception helpers ──────────────────────────────────────────────────────
+	// ── Exception helpers ─────────────────────────────────────────────────────
 
 	/**
-	 * Throws a {@see TRestException} with the given status code.
+	 * Throws a {@see TRestException} with the status code.
 	 * @param int $status HTTP status code.
-	 * @param string $detail Optional detail message.
-	 * @param array $errors Optional field-level validation errors.
+	 * @param string $detail detail message for the visitor.
+	 * @param array $errors field errors keyed by field name.
 	 * @return never
 	 */
 	protected function abort(int $status, string $detail = '', array $errors = []): never
@@ -595,8 +491,8 @@ abstract class TRestResource extends TApplicationComponent
 	}
 
 	/**
-	 * Throws a 404 Not Found exception.
-	 * @param string $detail Optional detail message.
+	 * Throws a `404 Not Found`.
+	 * @param string $detail detail message for the visitor.
 	 * @return never
 	 */
 	protected function notFound(string $detail = ''): never
@@ -605,8 +501,8 @@ abstract class TRestResource extends TApplicationComponent
 	}
 
 	/**
-	 * Throws a 401 Unauthorized exception.
-	 * @param string $detail Optional detail message.
+	 * Throws a `401 Unauthorized`.
+	 * @param string $detail detail message for the visitor.
 	 * @return never
 	 */
 	protected function unauthorized(string $detail = ''): never
@@ -615,8 +511,8 @@ abstract class TRestResource extends TApplicationComponent
 	}
 
 	/**
-	 * Throws a 403 Forbidden exception.
-	 * @param string $detail Optional detail message.
+	 * Throws a `403 Forbidden`.
+	 * @param string $detail detail message for the visitor.
 	 * @return never
 	 */
 	protected function forbidden(string $detail = ''): never
@@ -625,8 +521,8 @@ abstract class TRestResource extends TApplicationComponent
 	}
 
 	/**
-	 * Throws a 409 Conflict exception.
-	 * @param string $detail Optional detail message.
+	 * Throws a `409 Conflict`.
+	 * @param string $detail detail message for the visitor.
 	 * @return never
 	 */
 	protected function conflict(string $detail = ''): never
@@ -635,9 +531,9 @@ abstract class TRestResource extends TApplicationComponent
 	}
 
 	/**
-	 * Throws a 422 Unprocessable Entity exception with field-level errors.
-	 * @param array $errors Validation errors keyed by field name.
-	 * @param string $detail Optional detail message.
+	 * Throws a `422 Unprocessable Entity` with field errors.
+	 * @param array $errors field errors keyed by field name.
+	 * @param string $detail detail message for the visitor.
 	 * @return never
 	 */
 	protected function unprocessable(array $errors, string $detail = ''): never
@@ -645,203 +541,50 @@ abstract class TRestResource extends TApplicationComponent
 		throw TRestException::unprocessable($errors, $detail);
 	}
 
-	// ── Validation ─────────────────────────────────────────────────────────────
+	// ── Validation ────────────────────────────────────────────────────────────
 
 	/**
-	 * Validates the given data array against a rule set.
-	 *
-	 * Returns the validated data (only the fields declared in $rules) with any
-	 * applicable type coercions applied. Throws `422 Unprocessable Entity` if
-	 * validation fails.
-	 *
-	 * Rule format: `'field' => 'rule1|rule2|rule3:param'`.
-	 *
-	 * Supported rules:
-	 * - `required` — field must be present and non-null
-	 * - `nullable` — field may be null; skips type rules when null
-	 * - `string` — value must be a string
-	 * - `integer` / `int` — value must be or cast to an integer
-	 * - `float` / `numeric` — value must be numeric
-	 * - `boolean` / `bool` — value must be boolean-ish (true/false/1/0/'1'/'0'/'true'/'false')
-	 * - `array` — value must be an array
-	 * - `email` — value must pass `FILTER_VALIDATE_EMAIL`
-	 * - `url` — value must pass `FILTER_VALIDATE_URL`
-	 * - `min:N` — string: minimum length N; number: minimum value N
-	 * - `max:N` — string: maximum length N; number: maximum value N
-	 * - `in:a,b,c` — value must be one of the comma-separated options
-	 *
-	 * Rule names outside this list raise a {@see TConfigurationException} so
-	 * that typos (e.g. `'requried'`) surface during development instead of
-	 * silently skipping validation.
-	 *
-	 * @param array $data Input data to validate (e.g., parsed request body).
-	 * @param array $rules Rule set keyed by field name.
-	 * @throws TRestException 422 when validation fails.
-	 * @throws TConfigurationException when a rule name is not recognized.
-	 * @return array Validated and type-coerced data containing only declared fields.
+	 * @return TInputValidator the validator of {@see validate()}, created on first use.
 	 */
-	protected function validate(array $data, array $rules): array
+	public function getValidator(): TInputValidator
 	{
-		$errors = [];
-		$validated = [];
-
-		foreach ($rules as $field => $ruleString) {
-			$fieldRules = is_array($ruleString) ? $ruleString : explode('|', $ruleString);
-			$required = in_array('required', $fieldRules, true);
-			$nullable = in_array('nullable', $fieldRules, true);
-			$present = array_key_exists($field, $data);
-			$value = $data[$field] ?? null;
-
-			// Handle missing / null values
-			if (!$present || $value === null) {
-				if ($required && (!$present || $value === null)) {
-					$errors[$field][] = "The {$field} field is required.";
-				} elseif ($nullable && $present) {
-					$validated[$field] = null;
-				}
-				continue;
-			}
-
-			$fieldValid = true;
-			foreach ($fieldRules as $rule) {
-				if ($rule === 'required' || $rule === 'nullable') {
-					continue;
-				}
-
-				$ruleParts = explode(':', $rule, 2);
-				$ruleName = $ruleParts[0];
-				$ruleParam = $ruleParts[1] ?? null;
-
-				switch ($ruleName) {
-					case 'string':
-						if (!is_string($value)) {
-							$errors[$field][] = "The {$field} field must be a string.";
-							$fieldValid = false;
-						}
-						break;
-
-					case 'integer':
-					case 'int':
-						// Use FILTER_VALIDATE_INT so strings like '--5', '1-2', '1.5',
-						// '5e2', and ' 5' are rejected rather than silently coerced.
-						if (is_int($value)) {
-							// already correct
-						} elseif (is_string($value) || is_float($value)) {
-							$filtered = filter_var($value, FILTER_VALIDATE_INT);
-							if ($filtered === false) {
-								$errors[$field][] = "The {$field} field must be an integer.";
-								$fieldValid = false;
-							} else {
-								$value = $filtered;
-							}
-						} else {
-							$errors[$field][] = "The {$field} field must be an integer.";
-							$fieldValid = false;
-						}
-						break;
-
-					case 'float':
-					case 'numeric':
-						if (is_numeric($value)) {
-							$value = (float) $value;
-						} else {
-							$errors[$field][] = "The {$field} field must be numeric.";
-							$fieldValid = false;
-						}
-						break;
-
-					case 'boolean':
-					case 'bool':
-						if (in_array($value, [true, false, 1, 0, '1', '0', 'true', 'false'], true)) {
-							$value = filter_var($value, FILTER_VALIDATE_BOOLEAN);
-						} else {
-							$errors[$field][] = "The {$field} field must be a boolean.";
-							$fieldValid = false;
-						}
-						break;
-
-					case 'array':
-						if (!is_array($value)) {
-							$errors[$field][] = "The {$field} field must be an array.";
-							$fieldValid = false;
-						}
-						break;
-
-					case 'email':
-						if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
-							$errors[$field][] = "The {$field} field must be a valid email address.";
-							$fieldValid = false;
-						}
-						break;
-
-					case 'url':
-						if (!filter_var($value, FILTER_VALIDATE_URL)) {
-							$errors[$field][] = "The {$field} field must be a valid URL.";
-							$fieldValid = false;
-						}
-						break;
-
-					case 'min':
-						$min = (float) $ruleParam;
-						if (is_string($value)) {
-							if (mb_strlen($value) < $min) {
-								$errors[$field][] = "The {$field} field must be at least {$ruleParam} characters.";
-								$fieldValid = false;
-							}
-						} elseif (is_numeric($value) && $value < $min) {
-							$errors[$field][] = "The {$field} field must be at least {$ruleParam}.";
-							$fieldValid = false;
-						}
-						break;
-
-					case 'max':
-						$max = (float) $ruleParam;
-						if (is_string($value)) {
-							if (mb_strlen($value) > $max) {
-								$errors[$field][] = "The {$field} field must not exceed {$ruleParam} characters.";
-								$fieldValid = false;
-							}
-						} elseif (is_numeric($value) && $value > $max) {
-							$errors[$field][] = "The {$field} field must not exceed {$ruleParam}.";
-							$fieldValid = false;
-						}
-						break;
-
-					case 'in':
-						$allowed = array_map('trim', explode(',', $ruleParam ?? ''));
-						if (!is_scalar($value) || !in_array((string) $value, $allowed, true)) {
-							$list = implode(', ', $allowed);
-							$errors[$field][] = "The {$field} field must be one of: {$list}.";
-							$fieldValid = false;
-						}
-						break;
-
-					default:
-						throw new TConfigurationException('restresource_rule_unknown', $ruleName, $field);
-				}
-			}
-
-			if ($fieldValid) {
-				$validated[$field] = $value;
-			}
+		if ($this->getValidatorDirect() === null) {
+			$this->setValidatorDirect(Prado::createComponent(TInputValidator::class));
 		}
-
-		if ($errors !== []) {
-			throw TRestException::unprocessable($errors, 'The given data was invalid.');
-		}
-
-		return $validated;
+		return $this->getValidatorDirect();
 	}
 
 	/**
-	 * Validates the parsed request body against a rule set.
-	 *
-	 * Convenience wrapper around {@see validate()} that reads the body
-	 * automatically.
-	 * @param array $rules Rule set keyed by field name.
-	 * @throws TRestException 422 when validation fails.
-	 * @throws TConfigurationException when a rule name is not recognized.
-	 * @return array Validated and type-coerced data.
+	 * @param TInputValidator $value the validator of {@see validate()}, for extra rules.
+	 */
+	public function setValidator(TInputValidator $value): void
+	{
+		$this->setValidatorDirect($value);
+	}
+
+	/**
+	 * Validates data against {@see \Prado\Util\TInputValidator} rules and returns the
+	 * declared fields, coerced. A failure is a `422 Unprocessable Entity` whose
+	 * `errors` hold the messages of each field.
+	 * @param array $data the data, such as {@see getBody()}.
+	 * @param array $rules rules keyed by field name, such as `'email' => 'required|email'`.
+	 * @throws TRestException 422 when the data is invalid.
+	 * @return array the validated fields.
+	 */
+	protected function validate(array $data, array $rules): array
+	{
+		try {
+			return $this->getValidator()->validate($data, $rules);
+		} catch (TInputValidationException $e) {
+			throw TRestException::unprocessable($e->getErrors(), Prado::localize('The given data was invalid.'));
+		}
+	}
+
+	/**
+	 * Validates the request body with {@see validate()}.
+	 * @param array $rules rules keyed by field name.
+	 * @throws TRestException 422 when the body is invalid.
+	 * @return array the validated fields.
 	 */
 	protected function validateBody(array $rules): array
 	{

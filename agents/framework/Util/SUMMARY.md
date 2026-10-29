@@ -16,6 +16,8 @@ Cross-cutting utilities: behavior/mixin system, logging, scheduled tasks, RPC cl
 
 - **Logging** — `TLogger`, `TLogRouter`, `TLogRoute` outputs, and the PSR-3 adapters `TPsrLogger` / `TPsrLogRoute` are in [Log/](Log/SUMMARY.md) (namespace `Prado\Util\Log`).
 
+- **`TInputValidator`** — Rule-string validation of input arrays (`required|integer|min:0`), extensible with `addRule()`; `TInputValidationException` carries the field errors.
+
 - **`TParameterModule`** — Stores named configuration parameters.
 
 - **`TDbParameterModule`** — DB-backed parameter store; supports auto-capture of parameter changes.
