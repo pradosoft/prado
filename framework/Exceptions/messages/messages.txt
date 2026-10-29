@@ -349,6 +349,7 @@ csmanager_pradostyle_invalid			= Unknown Prado style library name '{0}'.
 httpclient_transport_error				= HTTP client transport error (code {0}): {1}
 httpclient_http_error						= HTTP error response with status {0}.
 httpclient_transport_required			= No HTTP transport is available: the cURL extension is not loaded and allow_url_fopen is off.
+httpclient_poll_interval_invalid		= TCurlMultiHttpClient PollInterval must be greater than zero; '{0}' given.
 
 restclient_invalid_header				= TRestClient header '{0}' has an invalid name or a value containing CR/LF.
 restclient_basicauth_username_colon		= TRestClient Basic-auth username must not contain a colon (RFC 7617 credential separator).
@@ -612,6 +613,8 @@ async_timeout							= The operation timed out after {0} seconds.
 async_any_empty							= TAsync::any() received no futures.
 async_deferred_complete					= The TDeferred is already complete; a future is resolved or rejected once.
 asyncstream_no_resource					= TAsyncStream cannot wait for readiness; the inner stream has no open PHP stream resource.
+async_channel_closed					= The TChannel is closed.
+async_channel_capacity_invalid			= TChannel capacity must be null, 0, or a positive integer; '{0}' given.
 
 bitreader_invalid_bits					= Cannot read {0} bits; the count must be between 0 and the platform integer width.
 bitreader_64bit_php_required			= Reading {0} bits requires a 64-bit PHP build.
