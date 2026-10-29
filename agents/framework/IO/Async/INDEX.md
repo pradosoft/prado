@@ -20,7 +20,16 @@ PRADO's async API. A loop schedules callbacks on deferred work, timers, stream r
 - **[`TDeferred`](./TDeferred.md)** — The producer side: `getFuture()`, `resolve()`, `reject()`, once.
 - **[`TCancellationToken`](./TCancellationToken.md)** — Cooperative cancellation with a loop `Timeout` and linked parents; `cancel()`, `onCancel`, `subscribe()`, `throwIfCancelled()`; the reason is a `TCancelledException`.
 - **[`TFiberContext`](./TFiberContext.md)** — Per-fiber key/value state in a `WeakMap`; `TAsync::run()` copies the parent's context into the child.
-- **[`TAsync`](./TAsync.md)** — Static facade: `getLoop()`/`setLoop()`, `run()`, `await()`, `all()`, `any()`, `timeout()`, `sleep()`. Holds the sleep policy table.
+- **[`TAsync`](./TAsync.md)** — Static facade: `getLoop()`/`setLoop()`, `run()`, `await()`, `all()`, `any()`, `timeout()`, `sleep()`, `resetLoopForChild()`. Holds the sleep policy table.
+- **[`TAsyncStream`](./TAsyncStream.md)** — A `TStreamDecorator` whose `read()`/`write()` wait for readiness on the loop; `''` only at end of stream, whole-string writes, optional `TCancellationToken`.
+
+## Process waits
+
+`TProcess::wait()` and `TProcessFork::wait()` suspend the current fiber on the loop. The exit is detected by `SIGCHLD` through `TProcessHelper::watchChildSignal()` and by a repeating status poll (`TProcess`: the poll interval; `TProcessFork::EXIT_POLL_INTERVAL`, 10 ms), which also covers a platform without signals. A channel-backed fork drains its channel through `onReadable()` and detects the exit by the channel's end of stream first.
+
+`watchChildSignal()` keeps the `TSignalsDispatcher` in charge of `SIGCHLD` when it is installed: the callback is deferred from its `fxSignalChild` handler to the next loop iteration, because that handler runs inside `pcntl_signal_dispatch()`, which Revolt calls from within its dispatch phase. Loop work done there (a cancel, a resume) is not acted on until the current wait ends, and with no timer left Revolt sleeps indefinitely. The same rule holds for `TProcessFork::captureExit()`, which may run from the dispatcher's PID handler: it raises `onExit` at once and defers the watch removal and the waiter resumes. Without the dispatcher the callback is an `onSignal(SIGCHLD)` callback of the loop.
+
+A forked child calls `TAsync::resetLoopForChild()` from `TProcessHelper::fork()`: the Revolt driver is replaced (`TRevoltEventLoop::installFreshDriver()`), and a `TAsync` loop of another class is replaced by a new instance, so the child services none of the parent's callbacks and shares no self-pipe.
 
 ## The wait pattern
 
@@ -49,6 +58,8 @@ The conformance suite `tests/unit/IO/Async/EventLoopConformanceTestCase.php` run
 
 - Revolt's `EventLoop::setDriver()` throws while the driver runs, and the driver's loop fiber stays alive after an interrupt (a resumed main suspension, an uncaught exception) until the next `run()` empties it. `installFreshDriver()` handles this; a child forked from inside a callback keeps the inherited driver with every callback cancelled.
 - Revolt callbacks must return null; `TRevoltEventLoop` wraps every callback so a non-null return is discarded.
+- A Revolt loop whose only enabled callbacks are signal callbacks sleeps indefinitely (`usleep(PHP_INT_MAX)`): `run()` does not return and nothing but a signal ends the wait. Keep a timer beside a signal callback, or `stop()` the loop.
+- `TRevoltEventLoop::onSignal()` restores the `pcntl_signal()` handler in place before the first callback of a signal once the last one is cancelled; the driver itself leaves `SIG_DFL`.
 - `IEventLoop::run()` returns when no enabled callback remains. A disabled callback does not keep it alive.
 - No fiber switch inside `__destruct` on the 8.2 floor.
 - Sleep policy: `\usleep()` lives only in `TAsync::sleep()`; `IClock::sleep()` and the framework's other pauses delegate to it (table in [`TAsync`](./TAsync.md)).

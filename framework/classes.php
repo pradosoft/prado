@@ -197,6 +197,7 @@ return [
 'IEventLoop' => 'Prado\IO\Async\IEventLoop',
 'ITickableEventLoop' => 'Prado\IO\Async\ITickableEventLoop',
 'TAsync' => 'Prado\IO\Async\TAsync',
+'TAsyncStream' => 'Prado\IO\Async\TAsyncStream',
 'TCancellationToken' => 'Prado\IO\Async\TCancellationToken',
 'TDeferred' => 'Prado\IO\Async\TDeferred',
 'TFiberContext' => 'Prado\IO\Async\TFiberContext',

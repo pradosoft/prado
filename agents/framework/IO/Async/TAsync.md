@@ -21,6 +21,7 @@ The static facade of the async API. `Loop` is the process-wide [`IEventLoop`](IE
 | `any(iterable $futures): TFuture` | Resolves with the first value; rejects with the last rejection once all reject; empty input rejects (`async_any_empty`). |
 | `timeout(TFuture $f, float $seconds): TFuture` | Takes the input's result, or rejects with `TCancelledException('async_timeout')` when the deadline passes first; the input stays pending and the timer is cancelled on completion. |
 | `sleep(float\|int $seconds): void` | Pauses the current fiber on the loop. Non-positive returns at once. |
+| `resetLoopForChild(): void` | For a forked child: `TRevoltEventLoop::installFreshDriver()`, and a non-Revolt `Loop` is replaced by a new instance of its class. Called by `TProcessHelper::fork()`. |
 
 ## Sleep policy
 `\usleep()` appears in the framework only inside `TAsync::sleep()`, as the fallback where no fiber switch is possible. Every other pause calls `TAsync::sleep()` or `IClock::sleep()`, which delegates to it:
@@ -30,7 +31,7 @@ The static facade of the async API. `Loop` is the process-wide [`IEventLoop`](IE
 | `TClockTrait::sleep()` (and so `TNativeClock`, `TClockDecorator`, `TOffsetClock`, `TTimezoneDecorator`, `TUTCClock`) | `TAsync::sleep()` |
 | `TMockClock::sleep()` | pinned: advances the pin; unpinned: `TAsync::sleep()` |
 | `TProcessCronTask::startProcess()` launch grace | `TAsync::sleep(LAUNCH_GRACE_USEC / 1e6)` |
-| `TProcess::wait()` poll | `TAsync::sleep($pollMicroseconds / 1e6)` per poll (interim; PR `async-io` removes the poll) |
+| `TProcess::wait()` | a suspension on the loop: `SIGCHLD` plus a repeating status poll at the poll interval |
 | `TSocketReactor::tick()` idle | `select()` on the self-pipe, never the clock's `sleep()`, so the reactor does not re-enter itself through `TAsync` |
 | `TActivePager` `usleep(1)` | not a pause (forces distinct `microtime()` boundaries); out of scope |
 

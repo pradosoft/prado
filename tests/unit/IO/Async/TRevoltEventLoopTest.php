@@ -42,6 +42,27 @@ class TRevoltEventLoopTest extends EventLoopConformanceTestCase
 		self::assertNull(EventLoop::getErrorHandler());
 	}
 
+	public function testCancellingTheLastSignalCallbackRestoresThePriorHandler(): void
+	{
+		if (!function_exists('pcntl_signal')) {
+			self::markTestSkipped('pcntl is required for signal callbacks.');
+		}
+		$original = pcntl_signal_get_handler(SIGUSR1);
+		$prior = static function (int $signal): void {
+		};
+		pcntl_signal(SIGUSR1, $prior);
+		try {
+			$id = $this->loop->onSignal(SIGUSR1, fn () => null);
+			$this->loop->delay(0, fn () => $this->loop->stop());   // a lone signal callback keeps run() alive
+			$this->loop->run();   // the driver installs its handler as the loop activates the callback
+			self::assertNotSame($prior, pcntl_signal_get_handler(SIGUSR1), 'The driver holds the signal while a callback is registered.');
+			$this->loop->cancel($id);
+			self::assertSame($prior, pcntl_signal_get_handler(SIGUSR1), 'The prior handler returns once the last callback is cancelled.');
+		} finally {
+			pcntl_signal(SIGUSR1, $original);
+		}
+	}
+
 	public function testRunFromAWorkerFiberThrows(): void
 	{
 		$fiber = new \Fiber(function (): ?string {

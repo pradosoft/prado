@@ -59,6 +59,22 @@ final class TAsync
 	}
 
 	/**
+	 * Gives a forked child loops of its own.  The process-wide Revolt driver is replaced through
+	 * {@see TRevoltEventLoop::installFreshDriver()}, and a {@see setLoop() loop} of another class
+	 * is replaced by a new instance of that class, so the child services none of the parent's
+	 * callbacks and shares none of its descriptors.  {@see \Prado\Util\Helpers\TProcessHelper::fork()}
+	 * calls this in the child.
+	 */
+	public static function resetLoopForChild(): void
+	{
+		TRevoltEventLoop::installFreshDriver();
+		if (self::$_loop !== null && !(self::$_loop instanceof TRevoltEventLoop)) {
+			$class = self::$_loop::class;
+			self::$_loop = new $class();
+		}
+	}
+
+	/**
 	 * Runs a callable in a new fiber and returns the future of its result.  The fiber starts at
 	 * once and runs until it suspends or returns; its return value resolves the future and an
 	 * uncaught exception rejects it.  The new fiber starts with a copy of the caller's

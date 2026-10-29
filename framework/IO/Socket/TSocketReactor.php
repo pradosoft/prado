@@ -38,9 +38,10 @@ use Revolt\EventLoop\Suspension;
  * callbacks to one source, with the writable callback {@see wantWrite() armed} only while output
  * waits, and {@see registerServer()} folds a listener's accepted connections into the loop.
  *
- * Each {@see tick()} runs the {@see defer() deferred} callbacks, dispatches caught signals,
- * waits in `select()` up to the timeout or the nearest timer, runs the due timers in deadline
- * order, then dispatches the ready streams.  A self-pipe joins every `select()`, so a
+ * Each {@see tick()} runs the {@see defer() deferred} callbacks, delivers pending signals to
+ * their PHP handlers (`pcntl_signal_dispatch()`), waits in `select()` up to the timeout or the
+ * nearest timer, runs the caught signals' callbacks and the due timers in deadline order, then
+ * dispatches the ready streams.  A self-pipe joins every `select()`, so a
  * {@see stop()} or a registration from a signal handler ends the wait at once.  A callback that
  * throws goes to the {@see setErrorHandler() ErrorHandler} when one is set; without one the
  * exception leaves `tick()` or {@see run()} after the loop's bookkeeping is complete, so the
@@ -786,11 +787,12 @@ class TSocketReactor extends TComponent implements ITickableEventLoop
 	}
 
 	/**
-	 * Delivers pending signals to the PHP handlers when signal callbacks exist.
+	 * Delivers pending signals to the PHP handlers, so handlers installed in sync mode, such as
+	 * the {@see \Prado\Util\TSignalsDispatcher}, run during a tick.
 	 */
 	private function catchSignals(): void
 	{
-		if ($this->_signals !== []) {
+		if (function_exists('pcntl_signal_dispatch')) {
 			pcntl_signal_dispatch();
 		}
 	}
