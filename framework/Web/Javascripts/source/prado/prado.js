@@ -306,7 +306,39 @@ Prado.PostBack = Prado.Class(
 		// validation in JS and many emitted forms don't carry HTML5 constraints
 		// that would silently abort form.requestSubmit()).
 		const evt = new Event('submit', { bubbles: true, cancelable: true });
-		if (form.dispatchEvent(evt)) form.submit();
+		if (form.dispatchEvent(evt)) {
+			const restore = this.applySubmitterOverrides(form, document.getElementById(this.options['ID']));
+			form.submit();
+			restore();
+		}
+	},
+
+	/**
+	 * Applies the formaction, formtarget, and formenctype of the submitting
+	 * button to its form, because form.submit() submits without a submitter.
+	 * The submission reads them at once, so they are restored right after it.
+	 * @param {HTMLFormElement} form - the form to submit
+	 * @param {?HTMLElement} submitter - the button that posts back
+	 * @return {function} restores the form attributes
+	 */
+	applySubmitterOverrides(form, submitter) {
+		const saved = [];
+		if (submitter && submitter.form === form) {
+			for (const [attr, prop] of [['formaction', 'action'], ['formtarget', 'target'], ['formenctype', 'enctype']]) {
+				if (submitter.hasAttribute(attr)) {
+					saved.push([prop, form.getAttribute(prop)]);
+					form.setAttribute(prop, submitter.getAttribute(attr));
+				}
+			}
+		}
+		return () => {
+			for (const [prop, value] of saved) {
+				if (value === null)
+					form.removeAttribute(prop);
+				else
+					form.setAttribute(prop, value);
+			}
+		};
 	}
 });
 

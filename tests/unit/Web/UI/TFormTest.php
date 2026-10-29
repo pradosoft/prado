@@ -156,6 +156,77 @@ class TFormTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals('multipart/form-data', $form->getEnctype());
 	}
 
+	/**
+	 * Renders a form whose properties the callable sets, with the page service and a
+	 * response that takes the CSRF cookie.
+	 */
+	private function renderForm(callable $setup): string
+	{
+		$app = \Prado\Prado::getApplication();
+		$obLevel = ob_get_level();
+		$originalService = $app->getService();
+		$originalResponse = $app->getResponse();
+		$app->setService(new TPageService());
+		$app->setResponse(new \Prado\Test\Unit\Harness\Web\TTestCookieResponse());
+		try {
+			$page = new TPage();
+			$form = new TForm();
+			$form->setID('TestForm');
+			$page->getControls()->add($form);
+			$form->onInit(null);
+			$setup($form);
+			$textWriter = new TTextWriter();
+			$form->render(new THtmlWriter($textWriter));
+			return $textWriter->flush();
+		} finally {
+			$app->setService($originalService);
+			$app->setResponse($originalResponse);
+			while (ob_get_level() > $obLevel) {
+				ob_end_clean();
+			}
+		}
+	}
+
+	public function testSubmissionAttributeDefaults()
+	{
+		$form = new TForm();
+		$this->assertFalse($form->getNoValidate());
+		$this->assertNull($form->getAutoComplete());
+		$this->assertSame('', $form->getTarget());
+		$this->assertSame('', $form->getAcceptCharset());
+		$this->assertSame('', $form->getRel());
+		$output = $this->renderForm(fn ($form) => null);
+		$formTag = substr($output, 0, strpos($output, '>') + 1);
+		foreach (['novalidate', 'autocomplete', 'target=', 'accept-charset', 'rel='] as $attribute) {
+			$this->assertStringNotContainsString($attribute, $formTag);
+		}
+	}
+
+	public function testSubmissionAttributesRender()
+	{
+		$output = $this->renderForm(function ($form) {
+			$form->setNoValidate('true');
+			$form->setAutoComplete(false);
+			$form->setTarget(' _blank ');
+			$form->setAcceptCharset('UTF-8');
+			$form->setRel('noopener noreferrer');
+		});
+		$this->assertStringContainsString('novalidate="novalidate"', $output);
+		$this->assertStringContainsString('autocomplete="off"', $output);
+		$this->assertStringContainsString('target="_blank"', $output);
+		$this->assertStringContainsString('accept-charset="UTF-8"', $output);
+		$this->assertStringContainsString('rel="noopener noreferrer"', $output);
+	}
+
+	public function testAutoCompleteStates()
+	{
+		$form = new TForm();
+		$form->setAutoComplete('true');
+		$this->assertTrue($form->getAutoComplete());
+		$form->setAutoComplete('');
+		$this->assertNull($form->getAutoComplete());
+	}
+
 	public function testGetName()
 	{
 		$page = new TPage();

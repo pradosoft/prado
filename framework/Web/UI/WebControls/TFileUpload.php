@@ -48,7 +48,9 @@ use Prado\Web\TMediaType;
  * attribute to filter the file types offered in the browser file picker, the
  * {@see setCapture Capture} property renders the "capture" attribute to select a
  * mobile capture device, and a {@see \Prado\Web\UI\WebControls\TFileValidator}
- * can validate the selected files.
+ * can validate the selected files. {@see setDirectory Directory} selects a folder
+ * and uploads its files; {@see \Prado\Web\UI\WebControls\TFileUploadItem::getFullPath}
+ * gives each file's path within the folder.
  *
  * @author Marcus Nyeholt <tanus@users.sourceforge.net>, Qiang Xue <qiang.xue@gmail.com>
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
@@ -67,6 +69,10 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 * @var bool whether this file upload supports multiple files
 	 */
 	private $_multiple = false;
+	/**
+	 * @var bool whether this file upload selects a folder
+	 */
+	private $_directory = false;
 	/**
 	 * @var array the list of uploaded files represented by {@see \Prado\Web\UI\WebControls\TFileUploadItem}
 	 */
@@ -95,9 +101,12 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('type', 'file');
 		$name = $this->getUniqueID();
-		if ($this->getMultiple()) {
+		if ($this->getMultiple() || $this->getDirectory()) {
 			$name .= '[]';
 			$writer->addAttribute('multiple', 'multiple');
+		}
+		if ($this->getDirectory()) {
+			$writer->addAttribute('webkitdirectory', 'webkitdirectory');
 		}
 		if (($accept = $this->getAccept()) !== '') {
 			$writer->addAttribute('accept', $accept);
@@ -304,12 +313,12 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	public function loadPostData($key, $values)
 	{
 		if (isset($_FILES[$key])) {
-			if ($this->getMultiple() || is_array($_FILES[$key]['name'])) {
+			if ($this->getMultiple() || $this->getDirectory() || is_array($_FILES[$key]['name'])) {
 				foreach ($_FILES[$key]['name'] as $index => $name) {
-					$this->_files[$index] = new static::$fileUploadItemClass($name, $_FILES[$key]['size'][$index], $_FILES[$key]['type'][$index], $_FILES[$key]['error'][$index], $_FILES[$key]['tmp_name'][$index]);
+					$this->_files[$index] = new static::$fileUploadItemClass($name, $_FILES[$key]['size'][$index], $_FILES[$key]['type'][$index], $_FILES[$key]['error'][$index], $_FILES[$key]['tmp_name'][$index], $_FILES[$key]['full_path'][$index] ?? $name);
 				}
 			} else {
-				$this->_files[0] = new static::$fileUploadItemClass($_FILES[$key]['name'], $_FILES[$key]['size'], $_FILES[$key]['type'], $_FILES[$key]['error'], $_FILES[$key]['tmp_name']);
+				$this->_files[0] = new static::$fileUploadItemClass($_FILES[$key]['name'], $_FILES[$key]['size'], $_FILES[$key]['type'], $_FILES[$key]['error'], $_FILES[$key]['tmp_name'], $_FILES[$key]['full_path'] ?? $_FILES[$key]['name']);
 			}
 			return $this->_dataChanged = true;
 		} else {
@@ -392,6 +401,28 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	public function setMultiple($value)
 	{
 		$this->_multiple = TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
+	 * @return bool whether this file upload selects a folder. Defaults to false.
+	 * @since 4.4.0
+	 */
+	public function getDirectory()
+	{
+		return $this->_directory;
+	}
+
+	/**
+	 * Sets whether this file upload selects a folder and uploads every file in it
+	 * and its subfolders (`webkitdirectory`). It posts the files as Multiple does;
+	 * {@see \Prado\Web\UI\WebControls\TFileUploadItem::getFullPath FullPath}
+	 * is each file's path within the folder. {@see setAccept Accept} does not filter a folder.
+	 * @param bool|string $value whether this file upload selects a folder
+	 * @since 4.4.0
+	 */
+	public function setDirectory($value)
+	{
+		$this->_directory = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**

@@ -43,6 +43,8 @@ use Prado\Exceptions\TConfigurationException;
  * | Property | Attribute | Text modes |
  * |---|---|---|
  * | {@see setMin Min}, {@see setMax Max}, {@see setStep Step} | `min`, `max`, `step` | Date, DatetimeLocal, Month, Number, Range, Time, Week |
+ * | {@see setMinLength MinLength} | `minlength` | SingleLine, Email, MultiLine, Password, Search, Tel, Url |
+ * | {@see setMaxLength MaxLength} | `maxlength` | every mode; browsers apply it to the modes of MinLength |
  * | {@see setPattern Pattern} | `pattern` | SingleLine, Email, Password, Search, Tel, Url |
  * | {@see setMultiple Multiple} | `multiple` | Email |
  * | {@see setPlaceholder Placeholder} | `placeholder` | SingleLine, Email, MultiLine, Number, Password, Search, Tel, Url |
@@ -53,6 +55,8 @@ use Prado\Exceptions\TConfigurationException;
  * for Min, Max, and Step, and {@see TRegularExpressionValidator} for Pattern.
  * TRangeValidator's Time, Month, Week, and DateTimeLocal data types read the values
  * of those text modes.
+ * {@see setDirName DirName} renders `dirname` for the same text modes as MinLength:
+ * the browser posts the text direction, `ltr` or `rtl`, in a field of that name.
  * Accessibility: browsers expose Required as a required field. A Placeholder is
  * not a label; the text box keeps its {@see TLabel}.
  * To suggest predefined values, set the {@see setSuggestionList SuggestionList} property
@@ -143,6 +147,9 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 			$writer->addAttribute('cols', "$cols");
 			if (!$this->getWrap()) {
 				$writer->addAttribute('wrap', 'off');
+			}
+			if (($maxLength = $this->getMaxLength()) > 0) {
+				$writer->addAttribute('maxlength', "$maxLength");
 			}
 		} else {
 			switch ($textMode) {
@@ -533,6 +540,47 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	}
 
 	/**
+	 * @return int the minimum number of characters, 0 when not set. Defaults to 0.
+	 * @since 4.4.0
+	 */
+	public function getMinLength()
+	{
+		return $this->getViewState('MinLength', 0);
+	}
+
+	/**
+	 * Sets the minimum number of characters of a non-empty value (`minlength`). An
+	 * empty value passes unless {@see setRequired Required} is set.
+	 * @param int|string $value the minimum length; 0 or less clears it
+	 * @since 4.4.0
+	 */
+	public function setMinLength($value)
+	{
+		$this->setViewState('MinLength', max(0, TPropertyValue::ensureInteger($value)), 0);
+	}
+
+	/**
+	 * @return string the name of the field that posts the text direction, or '' if not set
+	 * @since 4.4.0
+	 */
+	public function getDirName()
+	{
+		return $this->getViewState('DirName', '');
+	}
+
+	/**
+	 * Sets the name of the field in which the browser posts the direction of the
+	 * text, `ltr` or `rtl` (`dirname`). The page reads it from the request, such as
+	 * `$this->Request['comment.dir']`.
+	 * @param string $value the field name
+	 * @since 4.4.0
+	 */
+	public function setDirName($value)
+	{
+		$this->setViewState('DirName', trim(TPropertyValue::ensureString($value)), '');
+	}
+
+	/**
 	 * @return string the minimum value, in the format of the text mode, such as `2026-01-01`
 	 *   for Date. Defaults to ''.
 	 * @since 4.4.0
@@ -679,6 +727,14 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 				if ($value !== '') {
 					$writer->addAttribute($name, $value);
 				}
+			}
+		}
+		if (in_array($textMode, $textual, true) || $textMode === TTextBoxMode::MultiLine) {
+			if (($minLength = $this->getMinLength()) > 0) {
+				$writer->addAttribute('minlength', "$minLength");
+			}
+			if (($dirName = $this->getDirName()) !== '') {
+				$writer->addAttribute('dirname', $dirName);
 			}
 		}
 		if (in_array($textMode, $textual, true) && ($pattern = $this->getPattern()) !== '') {

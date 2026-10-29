@@ -6,6 +6,8 @@ use Prado\Web\UI\WebControls\TWebControl;
 use Prado\Web\UI\WebControls\TWebControlDecorator;
 use Prado\Web\UI\WebControls\TWebInputMode;
 use Prado\Web\UI\WebControls\TEnterKeyHint;
+use Prado\Web\UI\WebControls\TAutoCapitalize;
+use Prado\Web\UI\WebControls\TWebControlAttribute;
 use Prado\Web\UI\WebControls\TDisplayStyle;
 use Prado\Web\UI\WebControls\TStyle;
 use Prado\Web\UI\THtmlWriter;
@@ -205,7 +207,7 @@ class TWebControlTest extends TestCase
 		$this->assertFalse($target->getSpellCheck());
 		$this->assertTrue($target->getDraggable());
 		$this->assertTrue($target->getInert());
-		$this->assertTrue($target->getPopover());
+		$this->assertSame('auto', $target->getPopover());
 		$this->assertEquals('title', $target->getSlot());
 		$this->assertEquals('plaintext-only', $target->getContentEditable());
 		$this->assertEquals(TWebInputMode::Email, $target->getInputMode());
@@ -601,6 +603,20 @@ class TWebControlTest extends TestCase
 		$this->assertTrue($control->getHidden());
 	}
 
+	public function testHiddenUntilFound()
+	{
+		$control = new TWebControl();
+		$control->setHidden('until-found');
+		$this->assertSame('until-found', $control->getHidden());
+		$this->assertStringContainsString('hidden="until-found"', $this->render($control));
+
+		$control->setHidden('UntilFound');
+		$this->assertSame('until-found', $control->getHidden());
+
+		$control->setHidden(true);
+		$this->assertStringContainsString('hidden="hidden"', $this->render($control));
+	}
+
 	public function testSpellCheckGetSet()
 	{
 		$control = new TWebControl();
@@ -710,20 +726,41 @@ class TWebControlTest extends TestCase
 	public function testPopoverGetSet()
 	{
 		$control = new TWebControl();
-		$this->assertFalse($control->getPopover());
+		$this->assertSame('', $control->getPopover());
 
 		$control->setPopover(true);
-		$this->assertTrue($control->getPopover());
+		$this->assertSame('auto', $control->getPopover());
 
 		$control->setPopover(false);
-		$this->assertFalse($control->getPopover());
+		$this->assertSame('', $control->getPopover());
+
+		$control->setPopover('true');
+		$this->assertSame('auto', $control->getPopover());
+
+		$control->setPopover(' Manual ');
+		$this->assertSame('manual', $control->getPopover());
+
+		$control->setPopover('hint');
+		$this->assertSame('hint', $control->getPopover());
+
+		$control->setPopover('false');
+		$this->assertSame('', $control->getPopover());
 	}
 
 	public function testPopoverRender()
 	{
 		$control = new TWebControl();
 		$control->setPopover(true);
-		$this->assertStringContainsString('popover', $this->render($control));
+		$this->assertStringContainsString('popover="auto"', $this->render($control));
+		$control->setPopover('manual');
+		$this->assertStringContainsString('popover="manual"', $this->render($control));
+	}
+
+	public function testPopoverInvalid()
+	{
+		$control = new TWebControl();
+		$this->expectException(TInvalidDataValueException::class);
+		$control->setPopover('sometimes');
 	}
 
 	public function testPopoverFalseNotRendered()
@@ -731,6 +768,145 @@ class TWebControlTest extends TestCase
 		$control = new TWebControl();
 		$control->setPopover(false);
 		$this->assertStringNotContainsString('popover', $this->render($control));
+	}
+
+	public function testAutoFocus()
+	{
+		$control = new TWebControl();
+		$this->assertFalse($control->getAutoFocus());
+		$this->assertStringNotContainsString('autofocus', $this->render($control));
+
+		$control->setAutoFocus('true');
+		$this->assertTrue($control->getAutoFocus());
+		$this->assertStringContainsString('autofocus="autofocus"', $this->render($control));
+	}
+
+	public function testAutoCapitalize()
+	{
+		$control = new TWebControl();
+		$this->assertNull($control->getAutoCapitalize());
+		$this->assertStringNotContainsString('autocapitalize', $this->render($control));
+
+		$control->setAutoCapitalize('words');
+		$this->assertSame(TAutoCapitalize::Words, $control->getAutoCapitalize());
+		$this->assertStringContainsString('autocapitalize="words"', $this->render($control));
+
+		$control->setAutoCapitalize('');
+		$this->assertNull($control->getAutoCapitalize());
+	}
+
+	public function testAutoCapitalizeInvalid()
+	{
+		$control = new TWebControl();
+		$this->expectException(TInvalidDataValueException::class);
+		$control->setAutoCapitalize('shout');
+	}
+
+	public function testAutoCorrect()
+	{
+		$control = new TWebControl();
+		$this->assertNull($control->getAutoCorrect());
+		$this->assertStringNotContainsString('autocorrect', $this->render($control));
+
+		$control->setAutoCorrect(false);
+		$this->assertFalse($control->getAutoCorrect());
+		$this->assertStringContainsString('autocorrect="off"', $this->render($control));
+
+		$control->setAutoCorrect('true');
+		$this->assertStringContainsString('autocorrect="on"', $this->render($control));
+
+		$control->setAutoCorrect('');
+		$this->assertNull($control->getAutoCorrect());
+	}
+
+	public function testWritingSuggestions()
+	{
+		$control = new TWebControl();
+		$this->assertNull($control->getWritingSuggestions());
+		$this->assertStringNotContainsString('writingsuggestions', $this->render($control));
+
+		$control->setWritingSuggestions(false);
+		$this->assertStringContainsString('writingsuggestions="false"', $this->render($control));
+
+		$control->setWritingSuggestions(true);
+		$this->assertStringContainsString('writingsuggestions="true"', $this->render($control));
+
+		$control->setWritingSuggestions(null);
+		$this->assertNull($control->getWritingSuggestions());
+	}
+
+	public function testPartAndExportParts()
+	{
+		$control = new TWebControl();
+		$this->assertSame('', $control->getPart());
+		$this->assertSame('', $control->getExportParts());
+		$this->assertStringNotContainsString('part', $this->render($control));
+
+		$control->setPart(' label icon ');
+		$control->setExportParts('label, icon: button-icon');
+		$this->assertSame('label icon', $control->getPart());
+		$output = $this->render($control);
+		$this->assertStringContainsString('part="label icon"', $output);
+		$this->assertStringContainsString('exportparts="label, icon: button-icon"', $output);
+	}
+
+	public function testMicrodata()
+	{
+		$control = new TWebControl();
+		$this->assertFalse($control->getItemScope());
+		$this->assertSame('', $control->getItemScopeType());
+		$this->assertSame('', $control->getItemProp());
+		$this->assertSame('', $control->getItemId());
+		$this->assertSame('', $control->getItemRef());
+		$this->assertStringNotContainsString('item', $this->render($control));
+
+		$control->setItemScope(true);
+		$control->setItemScopeType('https://schema.org/Book');
+		$control->setItemId('urn:isbn:0-330-34032-8');
+		$control->setItemRef('publisher');
+		$control->setItemProp('about');
+		$output = $this->render($control);
+		$this->assertStringContainsString('itemscope="itemscope"', $output);
+		$this->assertStringContainsString('itemtype="https://schema.org/Book"', $output);
+		$this->assertStringContainsString('itemid="urn:isbn:0-330-34032-8"', $output);
+		$this->assertStringContainsString('itemref="publisher"', $output);
+		$this->assertStringContainsString('itemprop="about"', $output);
+	}
+
+	public function testCopyBaseAttributesNewGlobals()
+	{
+		$source = new TWebControl();
+		$source->setAutoFocus(true);
+		$source->setAutoCapitalize(TAutoCapitalize::Sentences);
+		$source->setAutoCorrect(false);
+		$source->setWritingSuggestions(false);
+		$source->setPart('label');
+		$source->setExportParts('icon');
+		$source->setItemScope(true);
+		$source->setItemScopeType('https://schema.org/Person');
+		$source->setItemProp('author');
+		$source->setItemId('urn:x');
+		$source->setItemRef('bio');
+
+		$target = new TWebControl();
+		$target->copyBaseAttributes($source);
+		$this->assertTrue($target->getAutoFocus());
+		$this->assertSame(TAutoCapitalize::Sentences, $target->getAutoCapitalize());
+		$this->assertFalse($target->getAutoCorrect());
+		$this->assertFalse($target->getWritingSuggestions());
+		$this->assertSame('label', $target->getPart());
+		$this->assertSame('icon', $target->getExportParts());
+		$this->assertTrue($target->getItemScope());
+		$this->assertSame('https://schema.org/Person', $target->getItemScopeType());
+		$this->assertSame('author', $target->getItemProp());
+		$this->assertSame('urn:x', $target->getItemId());
+		$this->assertSame('bio', $target->getItemRef());
+
+		$partial = new TWebControl();
+		$partial->copyBaseAttributes($source, TWebControlAttribute::Part);
+		$this->assertSame('label', $partial->getPart());
+		$this->assertFalse($partial->getAutoFocus());
+		$this->assertFalse($partial->getItemScope());
 	}
 
 	public function testSlotGetSet()

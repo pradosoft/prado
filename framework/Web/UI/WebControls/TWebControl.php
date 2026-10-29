@@ -63,8 +63,24 @@ use Prado\Collections\TWebAttributeCollection;
  * $control->setInputMode(TWebInputMode::Email);
  * $control->setEnterKeyHint(TEnterKeyHint::Next);
  * $control->setTranslate('yes');
- * $control->setPopover(true);
+ * $control->setPopover('manual');
  * $control->setSlot('title');
+ * $control->setHidden('until-found');
+ * $control->setAutoFocus(true);
+ * $control->setAutoCapitalize(TAutoCapitalize::Words);
+ * $control->setAutoCorrect(false);
+ * $control->setWritingSuggestions(false);
+ * $control->setPart('label');
+ * ```
+ *
+ * ### Microdata
+ *
+ * ItemScope, ItemScopeType, ItemProp, ItemId, and ItemRef render the microdata
+ * attributes `itemscope`, `itemtype`, `itemprop`, `itemid`, and `itemref`:
+ * ```html
+ * <com:TPanel ItemScope="true" ItemScopeType="https://schema.org/Person">
+ *     <com:TLabel ItemProp="name" Text="Ada Lovelace" />
+ * </com:TPanel>
  * ```
  *
  * ### ARIA Attributes
@@ -233,6 +249,29 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 		}
 		if ($attrToCopy & TWebControlAttribute::Slot) {
 			$this->setSlot($control->getSlot());
+		}
+		if ($attrToCopy & TWebControlAttribute::AutoFocus) {
+			$this->setAutoFocus($control->getAutoFocus());
+		}
+		if ($attrToCopy & TWebControlAttribute::AutoCapitalize) {
+			$this->setAutoCapitalize($control->getAutoCapitalize());
+		}
+		if ($attrToCopy & TWebControlAttribute::AutoCorrect) {
+			$this->setAutoCorrect($control->getAutoCorrect());
+		}
+		if ($attrToCopy & TWebControlAttribute::WritingSuggestions) {
+			$this->setWritingSuggestions($control->getWritingSuggestions());
+		}
+		if ($attrToCopy & TWebControlAttribute::Part) {
+			$this->setPart($control->getPart());
+			$this->setExportParts($control->getExportParts());
+		}
+		if ($attrToCopy & TWebControlAttribute::Microdata) {
+			$this->setItemScope($control->getItemScope());
+			$this->setItemScopeType($control->getItemScopeType());
+			$this->setItemProp($control->getItemProp());
+			$this->setItemId($control->getItemId());
+			$this->setItemRef($control->getItemRef());
 		}
 		if ($attrToCopy & TWebControlAttribute::ARIA && $control->getHasAria()) {
 			$this->getAria()->copyFrom($control->getAria());
@@ -492,7 +531,8 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * @return bool whether the control is hidden
+	 * @return bool|string whether the control is hidden: false, true, or
+	 *   'until-found' for content the browser reveals on find-in-page and fragment navigation
 	 * @since 4.4.0
 	 */
 	public function getHidden()
@@ -501,13 +541,19 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * Sets whether the control is hidden.
+	 * Sets whether the control is hidden. The value 'until-found' hides the content
+	 * until find-in-page or fragment navigation reaches it; the browser then removes
+	 * the attribute and fires `beforematch`.
 	 *
-	 * @param bool $value true to hide the element
+	 * @param bool|string $value true to hide the element, or 'until-found'
 	 * @since 4.4.0
 	 */
 	public function setHidden($value)
 	{
+		if (is_string($value) && strtolower(str_replace(['-', ' '], '', $value)) === 'untilfound') {
+			$this->setViewState('Hidden', 'until-found', false);
+			return;
+		}
 		$this->setViewState('Hidden', TPropertyValue::ensureBoolean($value), false);
 	}
 
@@ -768,23 +814,38 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * @return bool whether popover behavior is enabled
+	 * @return string the popover state: 'auto', 'manual', 'hint', or '' when the
+	 *   element is not a popover. Defaults to ''.
 	 * @since 4.4.0
 	 */
 	public function getPopover()
 	{
-		return $this->getViewState('Popover', false);
+		return $this->getViewState('Popover', '');
 	}
 
 	/**
-	 * Sets whether popover behavior is enabled.
+	 * Sets the popover state.
+	 * - 'auto' or true → light dismiss; opening it closes other auto popovers.
+	 * - 'manual' → closes only by script or an invoker.
+	 * - 'hint' → a tooltip-like popover that does not close auto popovers.
+	 * - '' or false → not a popover.
 	 *
-	 * @param bool $value true to enable popover
+	 * @param bool|string $value the popover state
+	 * @throws TInvalidDataValueException if the value is not a popover state.
 	 * @since 4.4.0
 	 */
 	public function setPopover($value)
 	{
-		$this->setViewState('Popover', TPropertyValue::ensureBoolean($value), false);
+		if (!is_string($value)) {
+			$value = $value ? 'auto' : '';
+		} elseif (($value = strtolower(trim($value))) === 'true') {
+			$value = 'auto';
+		} elseif ($value === 'false') {
+			$value = '';
+		} elseif ($value !== 'auto' && $value !== 'manual' && $value !== 'hint' && $value !== '') {
+			throw new TInvalidDataValueException('webcontrol_popover_invalid', $this::class, $value);
+		}
+		$this->setViewState('Popover', $value, '');
 	}
 
 	/**
@@ -809,6 +870,242 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	public function setSlot($value)
 	{
 		$this->setViewState('Slot', trim(TPropertyValue::ensureString($value)), '');
+	}
+
+	/**
+	 * @return bool whether the element takes focus when the page loads or, inside a
+	 *   `<dialog>` or popover, when it opens. Defaults to false.
+	 * @since 4.4.0
+	 */
+	public function getAutoFocus()
+	{
+		return $this->getViewState('AutoFocus', false);
+	}
+
+	/**
+	 * Sets whether the element takes focus when the page loads or, inside a `<dialog>`
+	 * or popover, when it opens. One element per page or dialog takes `autofocus`;
+	 * {@see \Prado\Web\UI\TPage::setFocus} sets the focus of a postback by script.
+	 *
+	 * @param bool $value whether the element takes focus
+	 * @since 4.4.0
+	 */
+	public function setAutoFocus($value)
+	{
+		$this->setViewState('AutoFocus', TPropertyValue::ensureBoolean($value), false);
+	}
+
+	/**
+	 * @return ?string the virtual keyboard capitalization, a {@see TAutoCapitalize},
+	 *   null for the browser default
+	 * @since 4.4.0
+	 */
+	public function getAutoCapitalize()
+	{
+		return $this->getViewState('AutoCapitalize', null);
+	}
+
+	/**
+	 * Sets the capitalization a virtual keyboard or voice input applies.
+	 *
+	 * @param ?string $value a {@see TAutoCapitalize}, or null or '' for the browser default
+	 * @since 4.4.0
+	 */
+	public function setAutoCapitalize($value)
+	{
+		$value = TPropertyValue::ensureNullIf($value, TPropertyValue::FILTER_NULL | TPropertyValue::FILTER_BLANK);
+		$this->setViewState('AutoCapitalize', $value !== null ? TPropertyValue::ensureEnum($value, TAutoCapitalize::class) : null, null);
+	}
+
+	/**
+	 * @return ?bool whether the browser corrects spelling as the user types, null for
+	 *   the browser default
+	 * @since 4.4.0
+	 */
+	public function getAutoCorrect()
+	{
+		return $this->getViewState('AutoCorrect', null);
+	}
+
+	/**
+	 * Sets whether the browser corrects spelling as the user types (`autocorrect`).
+	 *
+	 * @param null|bool|string $value true, false, or null or '' for the browser default
+	 * @since 4.4.0
+	 */
+	public function setAutoCorrect($value)
+	{
+		$this->setViewState('AutoCorrect', ($value === null || $value === '') ? null : TPropertyValue::ensureBoolean($value), null);
+	}
+
+	/**
+	 * @return ?bool whether the browser offers writing suggestions, null for the
+	 *   browser default
+	 * @since 4.4.0
+	 */
+	public function getWritingSuggestions()
+	{
+		return $this->getViewState('WritingSuggestions', null);
+	}
+
+	/**
+	 * Sets whether the browser offers writing suggestions (`writingsuggestions`),
+	 * such as predictive text completion.
+	 *
+	 * @param null|bool|string $value true, false, or null or '' for the browser default
+	 * @since 4.4.0
+	 */
+	public function setWritingSuggestions($value)
+	{
+		$this->setViewState('WritingSuggestions', ($value === null || $value === '') ? null : TPropertyValue::ensureBoolean($value), null);
+	}
+
+	/**
+	 * @return string the shadow part names of the element, or '' if not set
+	 * @since 4.4.0
+	 */
+	public function getPart()
+	{
+		return $this->getViewState('Part', '');
+	}
+
+	/**
+	 * Sets the shadow part names of an element inside a shadow root (`part`). A page
+	 * style selects the element with `::part(name)`.
+	 *
+	 * @param string $value space-separated part names
+	 * @since 4.4.0
+	 */
+	public function setPart($value)
+	{
+		$this->setViewState('Part', trim(TPropertyValue::ensureString($value)), '');
+	}
+
+	/**
+	 * @return string the shadow parts the element's shadow root exports, or '' if not set
+	 * @since 4.4.0
+	 */
+	public function getExportParts()
+	{
+		return $this->getViewState('ExportParts', '');
+	}
+
+	/**
+	 * Sets the parts of the element's shadow root that it exports to the enclosing
+	 * tree (`exportparts`), such as `label, icon: button-icon`.
+	 *
+	 * @param string $value comma-separated part names, each optionally renamed with `inner: outer`
+	 * @since 4.4.0
+	 */
+	public function setExportParts($value)
+	{
+		$this->setViewState('ExportParts', trim(TPropertyValue::ensureString($value)), '');
+	}
+
+	/**
+	 * @return bool whether the element is a microdata item (`itemscope`). Defaults to false.
+	 * @since 4.4.0
+	 */
+	public function getItemScope()
+	{
+		return $this->getViewState('ItemScope', false);
+	}
+
+	/**
+	 * Sets whether the element is a microdata item (`itemscope`). Its descendants'
+	 * {@see setItemProp ItemProp} values are the item's properties.
+	 *
+	 * @param bool $value whether the element is a microdata item
+	 * @since 4.4.0
+	 */
+	public function setItemScope($value)
+	{
+		$this->setViewState('ItemScope', TPropertyValue::ensureBoolean($value), false);
+	}
+
+	/**
+	 * @return string the vocabulary types of the microdata item, or '' if not set
+	 * @since 4.4.0
+	 */
+	public function getItemScopeType()
+	{
+		return $this->getViewState('ItemScopeType', '');
+	}
+
+	/**
+	 * Sets the vocabulary types of the microdata item (`itemtype`), such as
+	 * `https://schema.org/Person`. It applies with {@see setItemScope ItemScope}.
+	 * The property is not named ItemType, which data item controls use for their
+	 * {@see TListItemType}.
+	 *
+	 * @param string $value space-separated absolute type URLs
+	 * @since 4.4.0
+	 */
+	public function setItemScopeType($value)
+	{
+		$this->setViewState('ItemScopeType', trim(TPropertyValue::ensureString($value)), '');
+	}
+
+	/**
+	 * @return string the microdata property names of the element, or '' if not set
+	 * @since 4.4.0
+	 */
+	public function getItemProp()
+	{
+		return $this->getViewState('ItemProp', '');
+	}
+
+	/**
+	 * Sets the microdata property names the element's value provides (`itemprop`).
+	 *
+	 * @param string $value space-separated property names
+	 * @since 4.4.0
+	 */
+	public function setItemProp($value)
+	{
+		$this->setViewState('ItemProp', trim(TPropertyValue::ensureString($value)), '');
+	}
+
+	/**
+	 * @return string the global identifier of the microdata item, or '' if not set
+	 * @since 4.4.0
+	 */
+	public function getItemId()
+	{
+		return $this->getViewState('ItemId', '');
+	}
+
+	/**
+	 * Sets the global identifier of the microdata item (`itemid`), a URL such as
+	 * `urn:isbn:0-330-34032-8`. It applies with {@see setItemScopeType ItemScopeType}.
+	 *
+	 * @param string $value the item URL
+	 * @since 4.4.0
+	 */
+	public function setItemId($value)
+	{
+		$this->setViewState('ItemId', trim(TPropertyValue::ensureString($value)), '');
+	}
+
+	/**
+	 * @return string the IDs of the elements holding more properties of the item, or ''
+	 * @since 4.4.0
+	 */
+	public function getItemRef()
+	{
+		return $this->getViewState('ItemRef', '');
+	}
+
+	/**
+	 * Sets the IDs of elements outside the item that hold more of its properties
+	 * (`itemref`). It applies with {@see setItemScope ItemScope}. The IDs are client IDs.
+	 *
+	 * @param string $value space-separated element IDs
+	 * @since 4.4.0
+	 */
+	public function setItemRef($value)
+	{
+		$this->setViewState('ItemRef', trim(TPropertyValue::ensureString($value)), '');
 	}
 
 	/**
@@ -1042,7 +1339,8 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 *
 	 * Renders in order: id, accesskey, role, disabled, tabindex, title, translate, lang,
 	 * dir, hidden, spellcheck, draggable, contenteditable, inputmode, enterkeyhint, inert,
-	 * popover, aria-*, data-*, style, custom attributes.
+	 * popover, slot, autofocus, autocapitalize, autocorrect, writingsuggestions, part,
+	 * exportparts, microdata, aria-*, data-*, style, custom attributes.
 	 *
 	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
 	 */
@@ -1075,8 +1373,8 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 		if (($dir = $this->getDir()) !== '') {
 			$writer->addAttribute('dir', $dir);
 		}
-		if ($this->getHidden()) {
-			$writer->addAttribute('hidden', 'hidden');
+		if (($hidden = $this->getHidden()) !== false) {
+			$writer->addAttribute('hidden', $hidden === true ? 'hidden' : $hidden);
 		}
 		if (($spellCheck = $this->getSpellCheck()) !== null) {
 			$writer->addAttribute('spellcheck', $spellCheck ? 'true' : 'false');
@@ -1096,12 +1394,31 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 		if ($this->getInert()) {
 			$writer->addAttribute('inert', 'inert');
 		}
-		if ($this->getPopover()) {
-			$writer->addAttribute('popover', 'popover');
+		if (($popover = $this->getPopover()) !== '') {
+			$writer->addAttribute('popover', $popover);
 		}
 		if (($slot = $this->getSlot()) !== '') {
 			$writer->addAttribute('slot', $slot);
 		}
+		if ($this->getAutoFocus()) {
+			$writer->addAttribute('autofocus', 'autofocus');
+		}
+		if (($autoCapitalize = $this->getAutoCapitalize()) !== null) {
+			$writer->addAttribute('autocapitalize', strtolower($autoCapitalize));
+		}
+		if (($autoCorrect = $this->getAutoCorrect()) !== null) {
+			$writer->addAttribute('autocorrect', $autoCorrect ? 'on' : 'off');
+		}
+		if (($suggestions = $this->getWritingSuggestions()) !== null) {
+			$writer->addAttribute('writingsuggestions', $suggestions ? 'true' : 'false');
+		}
+		if (($part = $this->getPart()) !== '') {
+			$writer->addAttribute('part', $part);
+		}
+		if (($exportParts = $this->getExportParts()) !== '') {
+			$writer->addAttribute('exportparts', $exportParts);
+		}
+		$this->addMicrodataAttributesToRender($writer);
 		if ($aria = $this->getViewState('Aria', null)) {
 			$aria->addAttributesToRender($writer);
 		}
@@ -1113,6 +1430,26 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 		}
 		if ($this->getHasAttributes()) {
 			foreach ($this->getAttributes() as $name => $value) {
+				$writer->addAttribute($name, $value);
+			}
+		}
+	}
+
+	/**
+	 * Adds the microdata attributes that are set: itemscope, itemtype, itemid,
+	 * itemref, and itemprop.
+	 *
+	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
+	 * @since 4.4.0
+	 */
+	protected function addMicrodataAttributesToRender($writer)
+	{
+		if ($this->getItemScope()) {
+			$writer->addAttribute('itemscope', 'itemscope');
+		}
+		foreach (['itemtype' => $this->getItemScopeType(), 'itemid' => $this->getItemId(),
+			'itemref' => $this->getItemRef(), 'itemprop' => $this->getItemProp()] as $name => $value) {
+			if ($value !== '') {
 				$writer->addAttribute($name, $value);
 			}
 		}

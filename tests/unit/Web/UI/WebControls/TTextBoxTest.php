@@ -192,6 +192,58 @@ class TTextBoxTest extends TestCase
 		$this->assertStringContainsString('step="any"', $this->render($textbox));
 	}
 
+	public static function lengthModeProvider(): array
+	{
+		return [
+			'SingleLine' => [TTextBoxMode::SingleLine, true],
+			'MultiLine' => [TTextBoxMode::MultiLine, true],
+			'Email' => [TTextBoxMode::Email, true],
+			'Password' => [TTextBoxMode::Password, true],
+			'Search' => [TTextBoxMode::Search, true],
+			'Tel' => [TTextBoxMode::Tel, true],
+			'Url' => [TTextBoxMode::Url, true],
+			'Number' => [TTextBoxMode::Number, false],
+			'Date' => [TTextBoxMode::Date, false],
+			'Color' => [TTextBoxMode::Color, false],
+		];
+	}
+
+	/**
+	 * @dataProvider lengthModeProvider
+	 */
+	public function testMinLengthAndDirNameRenderForTextualModes(string $mode, bool $expected)
+	{
+		[, $textbox] = $this->createPageWithTextBox();
+		$textbox->setTextMode($mode);
+		$textbox->setMinLength('3');
+		$textbox->setDirName('comment.dir');
+		$output = $this->render($textbox);
+		if ($expected) {
+			$this->assertStringContainsString('minlength="3"', $output);
+			$this->assertStringContainsString('dirname="comment.dir"', $output);
+		} else {
+			$this->assertStringNotContainsString('minlength', $output);
+			$this->assertStringNotContainsString('dirname', $output);
+		}
+	}
+
+	public function testMinLengthDefaultsAndClears()
+	{
+		$textbox = new TTextBox();
+		$this->assertSame(0, $textbox->getMinLength());
+		$this->assertSame('', $textbox->getDirName());
+		$textbox->setMinLength(-4);
+		$this->assertSame(0, $textbox->getMinLength());
+	}
+
+	public function testMultiLineRendersMaxLength()
+	{
+		[, $textbox] = $this->createPageWithTextBox();
+		$textbox->setTextMode(TTextBoxMode::MultiLine);
+		$textbox->setMaxLength(500);
+		$this->assertStringContainsString('maxlength="500"', $this->render($textbox));
+	}
+
 	public function testDeprecatedDatetimeStillRendersItsType()
 	{
 		[, $textbox] = $this->createPageWithTextBox();

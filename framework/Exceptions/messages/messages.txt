@@ -362,6 +362,7 @@ controlcollection_control_required		= TControlList can only accept strings or TC
 
 webcontrol_accesskey_invalid			= {0}.AccessKey '{1}' is invalid. It must be a single character only.
 webcontrol_dir_invalid					= {0}.Dir '{1}' is invalid. Allowed values are 'ltr', 'rtl', and 'auto'.
+webcontrol_popover_invalid				= {0}.Popover '{1}' is invalid. Allowed values are 'auto', 'manual', 'hint', true, and false.
 webcontrol_style_invalid				= {0}.Style must take string value only.
 
 listcontrol_expression_invalid			= {0} is evaluating an invalid expression '{1}' : {2}

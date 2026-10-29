@@ -20,6 +20,7 @@ TTableCell displays a table cell (td element) on a Web page. Content can be set 
 - `getText()` / `setText(string)` - Cell text content, rendered as HTML unless `Encode` is true
 - `getEncode()` / `setEncode(bool)` - Whether `Text` is HTML-encoded when rendered, default false; TTableHeaderCell inherits it (4.4.0)
 - `getData()` / `setData($value)` - IDataRenderer implementation
+- `getHeaders()` / `setHeaders(string)` - `headers`: space-separated header cell IDs; `resolveHeaders()` turns an ID that `findControl()` finds into its client ID and keeps others as client IDs. For complex tables a `TTableHeaderCell.Scope` cannot describe (WCAG 1.3.1). TTableHeaderCell inherits it (@since 4.4.0)
 
 ## See Also
 

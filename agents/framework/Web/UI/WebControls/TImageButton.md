@@ -27,6 +27,8 @@ It extends [TImage](./TImage.md) and renders `<input type="image">`. The browser
 - `loadPostData($key, $values)` - Reads the click coordinates and makes the button the page's postback event target; always returns false
 - `getDataChanged()` - True when the button was clicked in this postback
 - `needPostBackScript()` - Javascript is rendered only for validation or for a panel default button; a plain image button submits natively
+- `getFormAction()` / `getFormEncType()` / `getFormTarget()` - `formaction`, `formenctype`, `formtarget` from `TFormSubmitterTrait`; `CausesValidation` false renders `formnovalidate` (@since 4.4.0). See [TButton](./TButton.md#form-overrides-since-440).
+- Of the `TImage` loading properties, only `IntrinsicWidth`/`IntrinsicHeight` render; `srcset`, `loading`, and the rest do not apply to `<input type="image">`.
 
 ## See Also
 

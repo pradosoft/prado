@@ -55,11 +55,20 @@ use Prado\Web\UI\IPostBackEventHandler;
  * named after the control, which {@see loadPostData()} reads. The control therefore
  * registers itself with the page through {@see \Prado\Web\UI\TPage::registerRequiresPostData()}.
  *
+ * TImageButton renders the form overrides of {@see TFormSubmitterTrait}:
+ * {@see setFormAction FormAction}, {@see setFormEncType FormEncType}, and
+ * {@see setFormTarget FormTarget}, and `formnovalidate` when
+ * {@see setCausesValidation CausesValidation} is false. Of the {@see TImage}
+ * loading properties, only IntrinsicWidth and IntrinsicHeight apply to an
+ * `<input type="image">`.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
 class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler, IPostBackEventHandler, \Prado\Web\UI\IButtonControl
 {
+	use TFormSubmitterTrait;
+
 	/**
 	 * @var int x coordinate that the image is being clicked at
 	 */
@@ -117,6 +126,7 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 		} elseif ($this->getEnabled()) { // in this case, parent will not render 'disabled'
 			$writer->addAttribute('disabled', 'disabled');
 		}
+		$this->addFormSubmitterAttributesToRender($writer);
 		parent::addAttributesToRender($writer);
 	}
 

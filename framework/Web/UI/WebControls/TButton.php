@@ -54,11 +54,19 @@ use Prado\TPropertyValue;
  * In addition, clicking on a Reset button will clear up all input fields
  * if the button does not cause a postback.
  *
+ * A Submit button renders the form overrides of {@see TFormSubmitterTrait}:
+ * {@see setFormAction FormAction}, {@see setFormEncType FormEncType}, and
+ * {@see setFormTarget FormTarget}. A button whose CausesValidation is false
+ * renders `formnovalidate`, so the browser does not check the form's
+ * constraint attributes, such as {@see TTextBox::setRequired TTextBox.Required}.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
 class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\IPostBackEventHandler, \Prado\Web\UI\IButtonControl, \Prado\IDataRenderer
 {
+	use TFormSubmitterTrait;
+
 	/**
 	 * @return string tag name of the button
 	 */
@@ -123,6 +131,9 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 			}
 		} elseif ($this->getEnabled()) { // in this case, parent will not render 'disabled'
 			$writer->addAttribute('disabled', 'disabled');
+		}
+		if ($this->getButtonType() === TButtonType::Submit) {
+			$this->addFormSubmitterAttributesToRender($writer);
 		}
 
 		parent::addAttributesToRender($writer);

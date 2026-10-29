@@ -94,4 +94,22 @@ class TWebControlAttribute extends \Prado\TEnumerable
 	/** The `slot` HTML attribute; the name of the shadow tree slot the element is assigned to. */
 	public const Slot = (1 << 20);
 
+	/** The `autofocus` HTML attribute; the element takes focus on page load or when its dialog opens. */
+	public const AutoFocus = (1 << 21);
+
+	/** The `autocapitalize` HTML attribute; the capitalization a virtual keyboard applies. */
+	public const AutoCapitalize = (1 << 22);
+
+	/** The `autocorrect` HTML attribute; whether the browser corrects spelling while typing. */
+	public const AutoCorrect = (1 << 23);
+
+	/** The `writingsuggestions` HTML attribute; whether the browser offers writing suggestions. */
+	public const WritingSuggestions = (1 << 24);
+
+	/** The `part` and `exportparts` HTML attributes; shadow part names. */
+	public const Part = (1 << 25);
+
+	/** The microdata attributes `itemscope`, `itemtype`, `itemprop`, `itemid`, and `itemref`. */
+	public const Microdata = (1 << 26);
+
 }
