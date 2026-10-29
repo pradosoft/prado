@@ -63,7 +63,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 | `THyperLink` | `<a>` | `NavigateUrl`, `Text`, `ImageUrl`, `Target`; `Download`, `Rel`, `HrefLang`, `Type`, `ReferrerPolicy`, `Ping` (@since 4.4.0) |
 | `TLiteral` | raw text | `Text` (not HTML-encoded), `Encode` |
 | `TExpression` | evaluated PHP | Inline expression output (also via `<%= %>` in templates) |
-| `TPanel` | `<div>` or `<span>` | `DefaultButton`, `GroupingText`, `Encode` (4.4.0), `Direction` (LTR/RTL) |
+| `TPanel` | `<div>` or `<span>` | `DefaultButton`, `GroupingText`, `Encode` (4.4.0), `Direction` (LTR/RTL); [TFieldSet](TFieldSet.md) renders the fieldset as its own tag |
 | `TPlaceHolder` | (none) | Invisible container for dynamic child controls |
 | `TBulletedList` | `<ul>` / `<ol>` | `BulletStyle`, `DisplayMode` (Text/HyperLink/LinkButton) |
 | [`TMenuList`](TMenuList.md) | `<menu>` | `TBulletedList` items as a toolbar of commands; `list` role, not an ARIA `menu` (@since 4.4.0) |
@@ -148,12 +148,14 @@ All extend [THtmlElement](./THtmlElement.md). Each wraps the named HTML5 element
 | [`TDescriptionList`](TDescriptionList.md) | `dl` | Description list of term-details groups (@since 4.4.0) |
 | [`TDescriptionTerm`](TDescriptionTerm.md) | `dt` | Term of a description list group; `term` role (@since 4.4.0) |
 | [`TDfn`](TDfn.md) | `dfn` | Defining instance of a term; marks the first occurrence of `Terms` ([TBaseTerm](TBaseTerm.md), @since 4.4.0) |
+| [`TFieldSet`](TFieldSet.md) | `fieldset` | Group of form controls; `Legend` caption; `Enabled=false` disables the group natively and on the server; extends TPanel (@since 4.4.0) |
 | [`TFootnote`](TFootnote.md) | `sup` | Numbered footnote reference; child controls are the note, rendered in a `TReferenceList`; `Key` joins references (@since 4.4.0) |
 | [`TFooter`](TFooter.md) | `footer` | Footer of nearest sectioning ancestor |
 | [`THeader`](THeader.md) | `header` | Introductory content or navigational links |
 | [`THGroup`](THGroup.md) | `hgroup` | Heading with subtitle; `HeaderText` in `<h1>`–`<h6>`; `group` role (@since 4.4.0) |
 | [`TIns`](TIns.md) | `ins` | Inserted text; `insertion` role; `Cite`, `DateTime` (@since 4.4.0) |
 | [`TKbd`](TKbd.md) | `kbd` | User input: key, key combination, spoken command (@since 4.4.0) |
+| [`TLegend`](TLegend.md) | `legend` | Caption of a TFieldSet with markup or controls; first child (@since 4.4.0) |
 | [`TMain`](TMain.md) | `main` | Dominant page content; one per document |
 | [`TMark`](TMark.md) | `mark` | Highlighted or marked text |
 | [`TNav`](TNav.md) | `nav` | Navigation links section |
