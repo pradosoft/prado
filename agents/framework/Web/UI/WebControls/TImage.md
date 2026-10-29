@@ -21,8 +21,21 @@ TImage displays an image on a page. It provides functionality for specifying ima
 ## Core Properties
 - `ImageUrl` (string): URL to the image file (relative or absolute)
 - `AlternateText` (string): Alternative text displayed when image is unavailable
-- `DescriptionUrl` (string): Long description URL for accessibility
-- `ImageAlign` (string): Image alignment with respect to other elements
+- `DescriptionUrl` (string, deprecated): `longdesc`; obsolete in HTML, use `aria-describedby` or `aria-details`
+- `ImageAlign` (string, deprecated): `align`; obsolete in HTML, use CSS `float` or `vertical-align`
+
+## Loading Properties (@since 4.4.0)
+| Property | Attribute | Values |
+|---|---|---|
+| `Srcset`, `Sizes` | `srcset`, `sizes` | candidate list; media conditions with lengths |
+| `IntrinsicWidth`, `IntrinsicHeight` | `width`, `height` | pixels; -1 unsets. `Width`/`Height` stay the CSS display size. |
+| `Loading` | `loading` | `TLoadingMode`: NotSet, Eager, Lazy |
+| `Decoding` | `decoding` | `TImageDecoding`: NotSet, Sync, Async, Auto |
+| `FetchPriority` | `fetchpriority` | `TFetchPriority`: NotSet, High, Low, Auto |
+| `CrossOrigin` | `crossorigin` | '', `anonymous`, `use-credentials` (`media_crossorigin_invalid`) |
+| `ReferrerPolicy` | `referrerpolicy` | `TReferrerPolicy`; `toAttributeValue()` gives the kebab-case token |
+
+`addLoadingAttributesToRender()` renders them only when the tag is `img`. `TImageButton` (`<input type="image">`) renders only the intrinsic size; `TPicture`, `TCaptcha`, `TGravatar`, and `TImageMap` inherit them all. A lazy image keeps its layout space only with an intrinsic size.
 - `ImageStyle` (string): CSS style for image display
 - `Width` (string): Image width
 - `Height` (string): Image height
