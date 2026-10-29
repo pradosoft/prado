@@ -29,6 +29,9 @@ TButton creates a clickable button control on the page. It is primarily used for
 - `EnableClientScript` (bool): Whether JavaScript is rendered for button
 - `IsDefaultButton` (bool): Set by a [TPanel](./TPanel.md) to make this the panel's default button
 
+## Form Overrides (@since 4.4.0)
+`TFormSubmitterTrait` gives a Submit button `FormAction` (`formaction`), `FormEncType` (`formenctype`), and `FormTarget` (`formtarget`); they replace the form's attribute for this button's submission. `CausesValidation` false renders `formnovalidate`, so the browser skips the form's constraint attributes (such as `TTextBox.Required`). `Prado.PostBack.applySubmitterOverrides()` applies the overrides to the form around `form.submit()`, which otherwise submits without a submitter, then restores the form. A callback ignores them; a `FormAction` to another page raises no event of this button. `TImageButton` uses the same trait.
+
 ## Core Events
 - `OnClick`: Raised when button is clicked
 - `OnCommand`: Raised when button is clicked, bubbled to parent controls with command parameters

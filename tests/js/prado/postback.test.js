@@ -186,4 +186,59 @@ describe('Prado.PostBack.doPostBack', () => {
 		expect(lastFocus.value).toBe('');
 		expect(submits).toHaveLength(1);
 	});
+
+	// ── submitter formaction / formtarget / formenctype ───────────────────
+
+	describe('submitter overrides', () => {
+		let btn;
+		let seen;
+
+		beforeEach(() => {
+			// Let the submit event through and record the form state at submit time.
+			jQuery(form).off('submit');
+			seen = null;
+			form.submit = vi.fn(() => {
+				seen = {
+					action: form.getAttribute('action'),
+					target: form.getAttribute('target'),
+					enctype: form.getAttribute('enctype'),
+				};
+			});
+			btn = document.createElement('button');
+			btn.id = 'btn1';
+			form.appendChild(btn);
+		});
+
+		it('submits with the button formaction, formtarget, and formenctype, then restores the form', () => {
+			form.setAttribute('target', '_self');
+			btn.setAttribute('formaction', '/export');
+			btn.setAttribute('formtarget', '_blank');
+			btn.setAttribute('formenctype', 'multipart/form-data');
+
+			new PostBack(baseOpts({ ID: 'btn1' }), { preventDefault: vi.fn() });
+
+			expect(seen).toEqual({ action: '/export', target: '_blank', enctype: 'multipart/form-data' });
+			expect(form.getAttribute('action')).toBe('http://example.com/original');
+			expect(form.getAttribute('target')).toBe('_self');
+			expect(form.hasAttribute('enctype')).toBe(false);
+		});
+
+		it('leaves the form unchanged for a button without form attributes', () => {
+			new PostBack(baseOpts({ ID: 'btn1' }), { preventDefault: vi.fn() });
+
+			expect(seen).toEqual({ action: 'http://example.com/original', target: null, enctype: null });
+		});
+
+		it('ignores a button outside the form', () => {
+			const outside = document.createElement('button');
+			outside.id = 'btn2';
+			outside.setAttribute('formaction', '/elsewhere');
+			document.body.appendChild(outside);
+
+			new PostBack(baseOpts({ ID: 'btn2' }), { preventDefault: vi.fn() });
+
+			expect(seen.action).toBe('http://example.com/original');
+			outside.remove();
+		});
+	});
 });

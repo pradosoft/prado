@@ -773,6 +773,7 @@ return [
 'TFootnote' => 'Prado\Web\UI\WebControls\TFootnote',
 'TFormGuard' => 'Prado\Web\UI\WebControls\TFormGuard',
 'TFormGuardFailure' => 'Prado\Web\UI\WebControls\TFormGuardFailure',
+'TFormSubmitterTrait' => 'Prado\Web\UI\WebControls\TFormSubmitterTrait',
 'TGravatar' => 'Prado\Web\UI\WebControls\TGravatar',
 'THead' => 'Prado\Web\UI\WebControls\THead',
 'THeader' => 'Prado\Web\UI\WebControls\THeader',
