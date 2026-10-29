@@ -137,6 +137,7 @@ return [
 'TDbConnectionException' => 'Prado\Exceptions\TDbConnectionException',
 'TDbException' => 'Prado\Exceptions\TDbException',
 'TErrorHandler' => 'Prado\Exceptions\TErrorHandler',
+'TErrorMessageEventParameter' => 'Prado\Exceptions\TErrorMessageEventParameter',
 'TException' => 'Prado\Exceptions\TException',
 'TExitException' => 'Prado\Exceptions\TExitException',
 'THttpException' => 'Prado\Exceptions\THttpException',

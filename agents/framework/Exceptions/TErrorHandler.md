@@ -14,7 +14,8 @@ TErrorHandler is a module that handles all PHP errors and exceptions during requ
 
 - Displays errors using HTML templates
 - Multilingual support (uses user's preferred language)
-- Two error types: external (user errors, via `THttpException`) and internal (developer errors, debug mode)
+- Two error types: external (visitor errors, via `IUserException`) and internal (developer errors, debug mode)
+- Visitor-facing messages translate through the `prado` catalogue, then the `OnMissingTranslation` event (4.4)
 - Source code context around exceptions (12 lines)
 - Re-entrance guard prevents infinite error-handling loops
 - Strips private filesystem paths from output in non-Debug mode
@@ -76,6 +77,7 @@ Default templates live under `framework/Exceptions/templates/`.
 |----------|-------|-------------|
 | `ERROR_FILE_NAME` | `'error'` | Basename for error templates |
 | `EXCEPTION_FILE_NAME` | `'exception'` | Basename for exception template |
+| `TRANSLATION_CATALOGUE` | `'prado'` | Catalogue `getCatalogueMessage()` looks error codes up in (4.4) |
 | `SOURCE_LINES` | `12` | Lines of source context before/after error line |
 | `FATAL_ERROR_TRACE_DROP_LINES` | `5` | Frames dropped from xdebug fatal error traces |
 
@@ -96,6 +98,35 @@ Default templates live under `framework/Exceptions/templates/`.
 | `restoreExceptionHandler(): void` | Wraps `restore_exception_handler()` — overridable in tests |
 | `phpSapiName(): string` | Wraps `php_sapi_name()` — overridable in tests |
 | `serverGlobal(string $key): mixed` | Wraps `$_SERVER[$key]` access — overridable in tests |
+
+## Visitor-Facing Message (4.4)
+
+`handleExternalError()` shows the message of `getExternalErrorMessage($exception, $isDebug)`:
+
+| Condition | Message |
+|---|---|
+| Debug mode | `$exception->getMessage()`, no translation |
+| `IUserException` | its message, through `localizeErrorMessage()` |
+| any other exception | `errorhandler_internal_error` as a `THttpException(500)`, through `localizeErrorMessage()`; the exception is logged |
+
+`localizeErrorMessage(\Throwable)` resolves in order:
+
+1. `getCatalogueMessage()` — the `TRANSLATION_CATALOGUE` entry of a `TException` error code when the globalization module has a translation configuration, with `TException::getErrorArguments()` as `{0}`… placeholders; `null` for a marker-wrapped or unchanged key, a non-`TException`, or no module.
+2. `onMissingTranslation(TErrorMessageEventParameter)` — raised when step 1 gives `null`. The parameter's `Message` starts as the exception message (already in the `messages-<lang>.txt` language for a `THttpException`); a handler sets it. `Exception`, `ErrorCode`, `ErrorArguments`, and `Language` (`Prado::getApplicationLanguage()`) are read-only.
+3. The parameter's `Message` is returned, then `hideSecurityRelated()` strips paths.
+
+```php
+$errorHandler->attachEventHandler('OnMissingTranslation', function ($sender, TErrorMessageEventParameter $param) use ($repository) {
+	$text = $repository->find($param->getErrorCode(), $param->getLanguage());
+	if ($text !== null) {
+		$replacements = [];
+		foreach ($param->getErrorArguments() as $i => $argument) {
+			$replacements['{' . $i . '}'] = $argument;
+		}
+		$param->setMessage(strtr($text, $replacements));
+	}
+});
+```
 
 ## Error Handling Flow
 

@@ -13,6 +13,7 @@ use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use Prado\Exceptions\IUserException;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TErrorHandler;
+use Prado\Exceptions\TErrorMessageEventParameter;
 use Prado\Exceptions\TException;
 use Prado\Exceptions\THttpException;
 use Prado\Collections\TMap;
@@ -53,16 +54,29 @@ class TUserMessageErrorHandler extends TErrorHandler
 		return $this->getExternalErrorMessage($exception, $isDebug);
 	}
 
-	public function pubLocalizeErrorMessage(TException $exception): string
+	public function pubLocalizeErrorMessage(\Throwable $exception): string
 	{
 		return $this->localizeErrorMessage($exception);
 	}
+
+	public function pubGetCatalogueMessage(\Throwable $exception): ?string
+	{
+		return $this->getCatalogueMessage($exception);
+	}
+}
+
+/**
+ * An exception written for the visitor that is not a TException.
+ */
+class TForeignUserException extends \RuntimeException implements IUserException
+{
 }
 
 /**
  * Tests the visitor-facing message rule of {@see TErrorHandler}: an {@see IUserException}
  * shows its message, any other exception shows the generic sentence outside Debug mode,
- * and the globalization module's `prado` catalogue overrides both.
+ * and the globalization module's `prado` catalogue overrides both. Without a catalogue
+ * entry the handler raises OnMissingTranslation, and a handler's message is shown.
  */
 class TErrorHandlerUserMessageTest extends \PHPUnit\Framework\TestCase
 {
@@ -188,7 +202,93 @@ class TErrorHandlerUserMessageTest extends \PHPUnit\Framework\TestCase
 	{
 		PradoUnit::setProp(Prado::getApplication(), '_globalization', null);
 		$e = new THttpException(404, 'pageservice_page_unknown', 'Home');
+		$this->assertNull($this->_handler->pubGetCatalogueMessage($e));
 		$this->assertSame("Page 'Home' Not Found", $this->_handler->pubLocalizeErrorMessage($e));
+	}
+
+	public function testCatalogueMessageIsNullForAnExceptionWithoutAnErrorCode(): void
+	{
+		$this->assertNull($this->_handler->pubGetCatalogueMessage(new \RuntimeException('plain')));
+		$this->assertNull($this->_handler->pubGetCatalogueMessage(new TUserException('Your session has expired.')));
+	}
+
+	// ── OnMissingTranslation ─────────────────────────────────────────────────
+
+	/** @var TErrorMessageEventParameter[] the parameters OnMissingTranslation was raised with */
+	private array $_seen = [];
+
+	/**
+	 * Attaches a handler that records every parameter in $_seen and sets the message when $message is given.
+	 * @param ?string $message the message the handler supplies.
+	 */
+	protected function recordMissingTranslations(?string $message = null): void
+	{
+		$this->_handler->attachEventHandler('OnMissingTranslation', function ($sender, TErrorMessageEventParameter $param) use ($message) {
+			$this->assertSame($this->_handler, $sender);
+			$this->_seen[] = $param;
+			if ($message !== null) {
+				$param->setMessage($message);
+			}
+		});
+	}
+
+	public function testMissingTranslationIsRaisedWithoutAGlobalizationModule(): void
+	{
+		PradoUnit::setProp(Prado::getApplication(), '_globalization', null);
+		$this->recordMissingTranslations();
+		$e = new THttpException(404, 'pageservice_page_unknown', 'Home');
+		$this->assertSame("Page 'Home' Not Found", $this->_handler->pubGetExternalErrorMessage($e, false));
+		$this->assertCount(1, $this->_seen);
+		$this->assertSame($e, $this->_seen[0]->getException());
+		$this->assertSame('pageservice_page_unknown', $this->_seen[0]->getErrorCode());
+		$this->assertSame(['Home'], $this->_seen[0]->getErrorArguments());
+		$this->assertSame(Prado::getApplicationLanguage(), $this->_seen[0]->getLanguage());
+		$this->assertSame("Page 'Home' Not Found", $this->_seen[0]->getMessage());
+		$this->assertFalse($this->_seen[0]->getParameterChanged());
+	}
+
+	public function testAHandlerSuppliesTheVisitorMessage(): void
+	{
+		PradoUnit::setProp(Prado::getApplication(), '_globalization', null);
+		$this->recordMissingTranslations('Seite nicht gefunden.');
+		$this->assertSame('Seite nicht gefunden.', $this->_handler->pubGetExternalErrorMessage(new THttpException(404, 'pageservice_page_unknown', 'Home'), false));
+		$this->assertTrue($this->_seen[0]->getParameterChanged());
+	}
+
+	public function testTheGenericSentenceIsOfferedForTranslation(): void
+	{
+		PradoUnit::setProp(Prado::getApplication(), '_globalization', null);
+		$this->recordMissingTranslations('Interner Fehler.');
+		$this->assertSame('Interner Fehler.', $this->_handler->pubGetExternalErrorMessage(new \RuntimeException('plain'), false));
+		$this->assertSame('errorhandler_internal_error', $this->_seen[0]->getErrorCode());
+		$this->assertInstanceOf(THttpException::class, $this->_seen[0]->getException());
+	}
+
+	public function testAForeignUserExceptionIsOfferedForTranslation(): void
+	{
+		PradoUnit::setProp(Prado::getApplication(), '_globalization', null);
+		$this->recordMissingTranslations();
+		$e = new TForeignUserException('Your cart is empty.');
+		$this->assertSame('Your cart is empty.', $this->_handler->pubGetExternalErrorMessage($e, false));
+		$this->assertSame($e, $this->_seen[0]->getException());
+		$this->assertSame('', $this->_seen[0]->getErrorCode());
+		$this->assertSame([], $this->_seen[0]->getErrorArguments());
+	}
+
+	public function testDebugModeDoesNotRaiseMissingTranslation(): void
+	{
+		$this->recordMissingTranslations('unused');
+		$this->assertSame('plain', $this->_handler->pubGetExternalErrorMessage(new \RuntimeException('plain'), true));
+		$this->assertCount(0, $this->_seen);
+	}
+
+	public function testRenderedProductionPageShowsTheHandlerMessage(): void
+	{
+		PradoUnit::setProp(Prado::getApplication(), '_globalization', null);
+		$this->recordMissingTranslations('Seite nicht gefunden.');
+		$output = $this->render(new THttpException(404, 'pageservice_page_unknown', 'Home'), TApplicationMode::Normal);
+		$this->assertStringContainsString('Seite nicht gefunden.', $output);
+		$this->assertStringNotContainsString("Page 'Home' Not Found", $output);
 	}
 
 	#[RunInSeparateProcess]
@@ -218,11 +318,16 @@ class TErrorHandlerUserMessageTest extends \PHPUnit\Framework\TestCase
 			// A TMap, as the XML configuration produces: Translation::init() reads optional keys without isset().
 			PradoUnit::setProp($globalization, '_translation', new TMap(['type' => 'PHP', 'source' => $dir, 'catalogue' => 'prado', 'marker' => '@@']));
 			Prado::getApplication()->setGlobalization($globalization);
+			$this->recordMissingTranslations();
 
 			$this->assertSame('Page Home introuvable (catalogue).', $this->_handler->pubGetExternalErrorMessage(new THttpException(404, 'pageservice_page_unknown', 'Home'), false));
 			$this->assertSame('Erreur interne (catalogue).', $this->_handler->pubGetExternalErrorMessage(new \RuntimeException('plain'), false));
-			// A key the catalogue does not define keeps the message file text, without the marker.
+			$this->assertCount(0, $this->_seen);
+			// A key the catalogue does not define keeps the message file text, without the marker, and is offered to OnMissingTranslation.
 			$this->assertSame("Le nom de la page est requis.", $this->_handler->pubGetExternalErrorMessage(new THttpException(404, 'pageservice_page_required'), false));
+			$this->assertCount(1, $this->_seen);
+			$this->assertSame('pageservice_page_required', $this->_seen[0]->getErrorCode());
+			$this->assertSame('fr', $this->_seen[0]->getLanguage());
 		} finally {
 			unlink($dir . '/prado.fr.php');
 			rmdir($dir);
