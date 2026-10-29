@@ -115,10 +115,22 @@ Prado.WebUI.TAccordion = Prado.Class(Prado.WebUI.Control,
 				}
 				if (old) old.style.display = 'none';
 
-				if (oldHdr) { oldHdr.className = ''; oldHdr.classList.add(this.options.HeaderCssClass); this.setExpanded(oldHdr, false); }
-				if (curHdr) { curHdr.className = ''; curHdr.classList.add(this.options.ActiveHeaderCssClass); this.setExpanded(curHdr, true); }
+				this.setHeaderState(oldHdr, false);
+				this.setHeaderState(curHdr, true);
 			}
 		}
+	},
+
+	/**
+	 * Replaces the class of a header with HeaderCssClass or ActiveHeaderCssClass,
+	 * which may hold several class names, and reflects its open state.
+	 * @param {?element} header - the header element
+	 * @param {boolean} active - whether the header's view is the open one
+	 */
+	setHeaderState(header, active) {
+		if (!header) return;
+		header.className = Prado.Element.classTokens(active ? this.options.ActiveHeaderCssClass : this.options.HeaderCssClass).join(' ');
+		this.setExpanded(header, active);
 	},
 
 	/** Reflects the open/closed state of a header for assistive technology. */
@@ -160,8 +172,8 @@ Prado.WebUI.TAccordion = Prado.Class(Prado.WebUI.Control,
 	animate() {
 		const oldHdr = document.getElementById(`${this.oldView}_0`);
 		const curHdr = document.getElementById(`${this.currentView}_0`);
-		if (oldHdr) { oldHdr.className = ''; oldHdr.classList.add(this.options.HeaderCssClass); this.setExpanded(oldHdr, false); }
-		if (curHdr) { curHdr.className = ''; curHdr.classList.add(this.options.ActiveHeaderCssClass); this.setExpanded(curHdr, true); }
+		this.setHeaderState(oldHdr, false);
+		this.setHeaderState(curHdr, true);
 
 		const old = document.getElementById(this.oldView);
 		const cur = document.getElementById(this.currentView);

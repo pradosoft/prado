@@ -533,3 +533,32 @@ describe('TAccordion accessibility', () => {
 		expect(prevented).toBe(false);
 	});
 });
+
+// ─── CSS classes with several names ──────────────────────────────────────────
+
+describe('TAccordion header CSS classes with several names', () => {
+	it('sets every name of HeaderCssClass and ActiveHeaderCssClass', () => {
+		const { accordion } = makeAccordion(['v0', 'v1'], 0, {
+			HeaderCssClass: 'acc-header  closed',
+			ActiveHeaderCssClass: 'acc-header open',
+		});
+		expect(() => accordion.elementClicked('v1', {})).not.toThrow();
+		expect(document.getElementById('v1_0').className).toBe('acc-header open');
+		expect(document.getElementById('v0_0').className).toBe('acc-header closed');
+	});
+
+	it('clears the header class when the CSS class is empty', () => {
+		const { accordion } = makeAccordion(['v0', 'v1'], 0, { HeaderCssClass: '' });
+		expect(() => accordion.elementClicked('v1', {})).not.toThrow();
+		expect(document.getElementById('v0_0').className).toBe('');
+	});
+
+	it('sets several class names when animated', () => {
+		const { accordion } = makeAccordion(['v0', 'v1'], 0, {
+			Duration: 1,
+			ActiveHeaderCssClass: 'acc-header open',
+		});
+		expect(() => accordion.elementClicked('v1', {})).not.toThrow();
+		expect(document.getElementById('v1_0').className).toBe('acc-header open');
+	});
+});

@@ -98,6 +98,7 @@ Upgrading from v4.3.3
 - TPropertyValue::ensureEnum normalizes the case of the enum constant name.
 - TReCaptcha2::getResponse changed to TReCaptcha2::getCaptchaResponse - no longer overrides TApplicationComponent::getResponse (#1132)
 - Prado JS dispatches `prado:ajaxComplete` event with jQuery.onAjaxComplete for non-dependence on jQuery. Use this event instead of the jQuery event.
+- The listener class of the `logger` package, the global `CustomEvent`, is renamed `LogEvent`. The browser's native `CustomEvent` is no longer replaced when the logger loads.
 - `Prado\Web\TUri` is now a PSR-7 `UriInterface`: scheme/host are lower-cased, path/query/fragment are
   percent-encoded, and `getPort()` returns `?int` (`null` when absent or scheme default).
 - TDatePicker::InputMode changed to TDatePicker::DateInputMode - due to conflict with TWebControl::InputMode
