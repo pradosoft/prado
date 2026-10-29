@@ -24,6 +24,10 @@ TCronTask is the abstract base class for all cron tasks. Subclasses must impleme
 - `getScheduler()` - Gets the TTimeScheduler instance
 - `resetTaskLastExecTime()` - Resets lastExecTime to prevent false triggers
 - `execute($cronModule)` - Abstract method; implement to run task logic
+- `getTimeout()` / `setTimeout($seconds)` - Seconds one run may take, or null for the module's `TaskTimeout` (4.4.0); set per job with `Timeout="60"`
+- `getCancellationToken()` / `setCancellationToken($token)` - The `TCancellationToken` of the current run, set by `TCronModule::runTask()` and cleared after; null outside a run or without a deadline (4.4.0). Pass it to `TFuture::await()` or call `throwIfCancelled()` at checkpoints.
+
+`TCronModule::runTask()` runs the task in a fiber of its own as the task's user; see [TCronModule](TCronModule.md). The token is not serialized.
 
 ## See Also
 

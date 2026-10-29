@@ -19,6 +19,7 @@ TShellCronLogBehavior is a behavior that enables cron logging to the shell. It w
 - `dyLogCron($numtasks, $callchain)` - Logs when cron starts running
 - `dyLogCronTask($task, $username, $callchain)` - Logs when a task starts
 - `dyLogCronTaskEnd($task, $callchain)` - Logs when a task ends
+- `dyLogCronTaskError($task, $exception, $callchain)` - Logs the exception that ended a task (4.4.0)
 
 ## See Also
 

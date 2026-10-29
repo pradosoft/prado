@@ -18,6 +18,5 @@ Per-fiber state: a `WeakMap<\Fiber, array>` keyed by the current fiber, plus an 
 | `set(string $key, mixed $value): void` / `remove(string $key): void` | Write. |
 | `all(): array` / `replace(array $values): void` / `clear(): void` | The whole map. |
 
-## Planned uses
-- `user`: the user a cron task runs as; `TApplication::getUser()` consults it (PR `async-cron`).
-- A per-task log category.
+## Uses
+- `TApplication::USER_CONTEXT_KEY` (`user`): the user a cron task runs as. `TApplication::getUser()` returns it before the application user, and `setUser()` replaces it in a fiber that holds one; `TCronModule::runTask()` sets and restores it around the task.

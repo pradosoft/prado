@@ -11,6 +11,8 @@
 namespace Prado\Util\Cron;
 
 use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\IO\Async\TCancellationToken;
 use Prado\Prado;
 use Prado\TApplicationComponent;
 use Prado\TPropertyValue;
@@ -21,6 +23,11 @@ use Prado\TPropertyValue;
  * TCronTask is the base class for all cron tasks.  Subclasses need to implement the
  * abstract method {@see execute} to run tasks.
  * If a task is not run at the schedule time, it is run at the next available task sweep.
+ *
+ * {@see \Prado\Util\Cron\TCronModule::runTask()} runs the task in a fiber of its own as the task's
+ * {@see getUserName() UserName}.  A {@see getTimeout() Timeout} bounds one run: the module cancels the
+ * {@see getCancellationToken() CancellationToken} at the deadline, which a cooperative task passes to its waits
+ * or checks with {@see \Prado\IO\Async\TCancellationToken::throwIfCancelled()}.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0
@@ -47,6 +54,12 @@ abstract class TCronTask extends TApplicationComponent
 
 	/** @var ?int the last time this task was run */
 	private $_lastexectime;
+
+	/** @var ?float the seconds one run of the task may take, or null for the module's TaskTimeout */
+	private ?float $_timeout = null;
+
+	/** @var ?TCancellationToken the token of the current run, set by the module */
+	private ?TCancellationToken $_cancellationToken = null;
 
 	/**
 	 * This is the abstract method for running a task.
@@ -216,6 +229,53 @@ abstract class TCronTask extends TApplicationComponent
 	}
 
 	/**
+	 * @return ?float the seconds one run of the task may take, or null for the module's TaskTimeout
+	 * @since 4.4.0
+	 */
+	public function getTimeout(): ?float
+	{
+		return $this->_timeout;
+	}
+
+	/**
+	 * @param null|float|string $seconds the seconds one run of the task may take, or null for the module's TaskTimeout
+	 * @throws TInvalidDataValueException when the seconds are not greater than zero
+	 * @since 4.4.0
+	 */
+	public function setTimeout($seconds)
+	{
+		if ($seconds !== null && $seconds !== '') {
+			$seconds = TPropertyValue::ensureFloat($seconds);
+			if ($seconds <= 0) {
+				throw new TInvalidDataValueException('crontask_timeout_invalid', $seconds);
+			}
+		} else {
+			$seconds = null;
+		}
+		$this->_timeout = $seconds;
+	}
+
+	/**
+	 * @return ?TCancellationToken the token of the current run, cancelled at the run's deadline; null outside a run or without a deadline
+	 * @since 4.4.0
+	 */
+	public function getCancellationToken(): ?TCancellationToken
+	{
+		return $this->_cancellationToken;
+	}
+
+	/**
+	 * Sets the token of the current run.  {@see \Prado\Util\Cron\TCronModule::runTask()} sets it before
+	 * {@see execute()} and clears it after.
+	 * @param ?TCancellationToken $token the token of the current run
+	 * @since 4.4.0
+	 */
+	public function setCancellationToken(?TCancellationToken $token)
+	{
+		$this->_cancellationToken = $token;
+	}
+
+	/**
 	 * @return \Prado\Util\Cron\TTimeScheduler the time scheduler for processing the schedule
 	 */
 	public function getScheduler()
@@ -251,5 +311,9 @@ abstract class TCronTask extends TApplicationComponent
 		if ($this->_lastexectime == null) {
 			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_lastexectime";
 		}
+		if ($this->_timeout === null) {
+			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_timeout";
+		}
+		$exprops[] = "\0Prado\Util\Cron\TCronTask\0_cancellationToken";
 	}
 }
