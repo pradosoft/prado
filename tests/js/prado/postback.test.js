@@ -41,9 +41,6 @@ describe('Prado.PostBack.doPostBack', () => {
 	const submits = [];
 
 	beforeEach(() => {
-		// Reset the shared prototype options object between tests to prevent
-		// option bleed: PostBack.prototype.options is mutated by jQuery.extend.
-		PostBack.prototype.options = {};
 		form = makeForm();
 		submits.length = 0;
 		// Capture submit events via jQuery (PostBack uses jQuery.trigger, not
@@ -166,6 +163,61 @@ describe('Prado.PostBack.doPostBack', () => {
 
 		expect(fakeEvent.preventDefault).toHaveBeenCalled();
 		expect(submits).toHaveLength(0);
+	});
+
+	// ── option isolation between postbacks ────────────────────────────────
+
+	describe('option isolation', () => {
+		it('keeps options per instance and leaves the prototype untouched', () => {
+			const first = new PostBack(baseOpts({ EventParameter: 'p1' }), { preventDefault: vi.fn() });
+			const second = new PostBack(baseOpts(), { preventDefault: vi.fn() });
+
+			expect(first.options).not.toBe(second.options);
+			expect(first.options.EventParameter).toBe('p1');
+			expect(second.options.EventParameter).toBe('');
+			expect(Object.hasOwn(PostBack.prototype, 'options')).toBe(false);
+		});
+
+		it('does not reuse PostBackUrl from a postback cancelled by a submit listener', () => {
+			new PostBack(baseOpts({ PostBackUrl: 'http://example.com/crosspage' }), { preventDefault: vi.fn() });
+			expect(submits).toHaveLength(1);
+			form.action = 'http://example.com/original';
+
+			new PostBack(baseOpts(), { preventDefault: vi.fn() });
+
+			expect(form.action).toBe('http://example.com/original');
+		});
+
+		it('does not reuse PostBackUrl from a postback cancelled by validation', () => {
+			global.Prado.Validation = { validate: vi.fn().mockReturnValueOnce(false).mockReturnValue(true) };
+			new PostBack(
+				baseOpts({ CausesValidation: true, ID: 'btn1', PostBackUrl: 'http://example.com/crosspage' }),
+				{ preventDefault: vi.fn() },
+			);
+			expect(form.action).toBe('http://example.com/original');
+
+			new PostBack(baseOpts({ CausesValidation: true, ID: 'btn2' }), { preventDefault: vi.fn() });
+
+			expect(form.action).toBe('http://example.com/original');
+		});
+
+		it('does not reuse ValidationGroup or CausesValidation from an earlier postback', () => {
+			const validate = vi.fn().mockReturnValue(false);
+			global.Prado.Validation = { validate };
+			new PostBack(
+				baseOpts({ CausesValidation: true, ValidationGroup: 'g1', ID: 'btn1' }),
+				{ preventDefault: vi.fn() },
+			);
+			new PostBack(baseOpts({ CausesValidation: true, ID: 'btn2' }), { preventDefault: vi.fn() });
+
+			expect(validate).toHaveBeenNthCalledWith(2, 'testForm', undefined, null);
+
+			const { CausesValidation: _omit, ...plain } = baseOpts({ ID: 'btn3' });
+			new PostBack(plain, { preventDefault: vi.fn() });
+
+			expect(validate).toHaveBeenCalledTimes(2);
+			expect(submits).toHaveLength(1);
+		});
 	});
 
 	// ── TrackFocus (removed) ──────────────────────────────────────────────

@@ -245,6 +245,7 @@ if (typeof jQuery !== 'undefined') {
 }
 /**
  * Performs a PostBack using javascript.
+ * Each instance copies its options, so an option one postback omits is unset.
  * @function Prado.PostBack
  * @param options - Postback options
  * @param event - Event that triggered this postback
@@ -258,10 +259,8 @@ if (typeof jQuery !== 'undefined') {
  */
 Prado.PostBack = Prado.Class(
 {
-	options : {},
-
 	initialize(options, event) {
-		Object.assign(this.options, options || {});
+		this.options = Object.assign({}, options || {});
 		this.event = event;
 		this.doPostBack();
 	},
