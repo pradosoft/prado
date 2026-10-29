@@ -1,0 +1,18 @@
+<com:TContent ID="Content">
+	<h1>Validator Dynamic Shift Test</h1>
+
+	<p>
+		<com:TLabel ForControl="amount" Text="Amount" />
+		<com:TTextBox ID="amount" /> <com:TRangeValidator ID="amountRange" ControlToValidate="amount" DataType="Integer" MinValue="1" MaxValue="9" Display="Dynamic" Text="The amount must be a whole number from 1 to 9." /> <com:TButton ID="save" Text="Save" OnClick="save" />
+	</p>
+
+	<div>
+		<com:TLabel ForControl="title" Text="Title" />
+		<com:TTextBox ID="title" />
+		<com:TRequiredFieldValidator ID="titleRequired" ControlToValidate="title" ValidationGroup="summary" Display="None" ErrorMessage="The title is required." />
+		<com:TValidationSummary ID="summary" ValidationGroup="summary" Display="Dynamic" />
+		<com:TButton ID="saveTitle" Text="Save Title" ValidationGroup="summary" OnClick="saveTitle" />
+	</div>
+
+	<div>Status: <com:TLabel ID="status" Text="none" /></div>
+</com:TContent>

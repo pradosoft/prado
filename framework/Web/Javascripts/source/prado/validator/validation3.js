@@ -225,8 +225,61 @@ Object.assign(Prado.Validation,
 				}
 			}
 		}
+	},
+
+	/**
+	 * Whether the primary mouse button is held down in the document.
+	 * @var {boolean} pressing
+	 */
+	pressing : false,
+
+	/**
+	 * Callbacks waiting for the primary mouse button to be released.
+	 * @var {function[]} pressCallbacks
+	 */
+	pressCallbacks : [],
+
+	/**
+	 * Runs a callback now, or after the primary mouse button is released.
+	 * A control's change event fires on blur when the mouse goes down on another
+	 * element, such as a submit button. Re-validation that hides a Dynamic message
+	 * or summary moves that element. Waiting for the release keeps the element under
+	 * the pointer until its click is dispatched.
+	 * @function ?
+	 * @param {function} callback - Function to run.
+	 */
+	afterPress(callback) {
+		if(this.pressing)
+			this.pressCallbacks.push(callback);
+		else
+			callback();
+	},
+
+	/**
+	 * Tracks the primary mouse button. A release, a drag end, or the window losing
+	 * focus ends the press; the waiting callbacks run after the click dispatches.
+	 * @function ?
+	 */
+	observePress() {
+		const release = () => {
+			if(!this.pressing)
+				return;
+			this.pressing = false;
+			const callbacks = this.pressCallbacks.splice(0);
+			if(callbacks.length > 0)
+				setTimeout(() => callbacks.forEach((callback) => callback()), 0);
+		};
+		document.addEventListener('mousedown', (event) => {
+			if(event.button === 0)
+				this.pressing = true;
+		}, true);
+		document.addEventListener('mouseup', release, true);
+		document.addEventListener('dragend', release, true);
+		window.addEventListener('blur', release);
 	}
 });
+
+Prado.Validation.observePress();
 
 /**
  * Manages validators for a particular HTML form.
@@ -1115,7 +1168,8 @@ Prado.WebUI.TBaseValidator = Prado.Class(Prado.WebUI.Control,
 	/**
 	 * Add control to observe for changes.
 	 * Re-validates upon change. If the validator is not visible,
-	 * no updates are propagated.
+	 * no updates are propagated. During a mouse press the re-validation
+	 * waits for the release (see {@see Prado.Validation.afterPress}).
 	 * @function ?
 	 * @param {element} control - DOM element of control to observe
 	 */
@@ -1130,11 +1184,13 @@ Prado.WebUI.TBaseValidator = Prado.Class(Prado.WebUI.Control,
 			const validator = this;
 
 			this.observe(control, 'change', () => {
-				if(validator.visible)
-				{
-					validator.validate();
-					validator.manager.updateSummary(validator.group);
-				}
+				Prado.Validation.afterPress(() => {
+					if(validator.visible)
+					{
+						validator.validate();
+						validator.manager.updateSummary(validator.group);
+					}
+				});
 			});
 			this._isObserving[control.id+this.options.ID] = true;
 		}

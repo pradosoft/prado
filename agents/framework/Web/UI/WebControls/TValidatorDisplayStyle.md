@@ -13,7 +13,7 @@ TValidatorDisplayStyle defines the enumerable type for the possible styles that 
 ## Key Properties/Methods
 
 - `None` - Error message not displayed
-- `Dynamic` - Error message dynamically appears
+- `Dynamic` - Error message dynamically appears; showing or hiding it moves the content around it. A change re-validation during a mouse press waits for the release, so a moved button still receives its click.
 - `Fixed` - Error message occupies page layout
 
 ## See Also
