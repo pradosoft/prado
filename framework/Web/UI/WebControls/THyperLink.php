@@ -11,6 +11,7 @@
 namespace Prado\Web\UI\WebControls;
 
 use Prado\Prado;
+use Prado\TPropertyValue;
 use Prado\Web\THttpUtility;
 
 /**
@@ -27,6 +28,16 @@ use Prado\Web\THttpUtility;
  * The link target is specified via the {@see setTarget Target} property.
  * If both {@see getImageUrl ImageUrl} and {@see getText Text} are empty,
  * the content enclosed within the control tag will be rendered.
+ *
+ * Link properties render with the `href`; a disabled link renders none of them.
+ * | Property | Attribute |
+ * |---|---|
+ * | {@see setDownload Download} | `download`: save the resource, optionally under a file name |
+ * | {@see setRel Rel} | `rel`: the link types, such as `nofollow` or `noopener` |
+ * | {@see setHrefLang HrefLang} | `hreflang`: the language of the linked resource |
+ * | {@see setType Type} | `type`: the MIME type of the linked resource |
+ * | {@see setReferrerPolicy ReferrerPolicy} | `referrerpolicy` ({@see TReferrerPolicy}) |
+ * | {@see setPing Ping} | `ping`: URLs notified when the link is followed |
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -57,6 +68,33 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 		}
 		if (($target = $this->getTarget()) !== '') {
 			$writer->addAttribute('target', $target);
+		}
+		if ($url !== '' && $isEnabled) {
+			$this->addLinkAttributesToRender($writer);
+		}
+	}
+
+	/**
+	 * Adds the link attributes that are set: download, rel, hreflang, type,
+	 * referrerpolicy, and ping.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
+	 * @since 4.4.0
+	 */
+	protected function addLinkAttributesToRender($writer)
+	{
+		if (($download = $this->getDownload()) !== null) {
+			$writer->addAttribute('download', $download);
+		}
+		foreach (['rel' => $this->getRel(), 'hreflang' => $this->getHrefLang(), 'type' => $this->getType()] as $name => $value) {
+			if ($value !== '') {
+				$writer->addAttribute($name, $value);
+			}
+		}
+		if (($policy = $this->getReferrerPolicy()) !== TReferrerPolicy::NotSet) {
+			$writer->addAttribute('referrerpolicy', TReferrerPolicy::toAttributeValue($policy));
+		}
+		if (($ping = $this->getPing()) !== '') {
+			$writer->addAttribute('ping', $ping);
 		}
 	}
 
@@ -268,5 +306,137 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	public function setTarget($value)
 	{
 		$this->setViewState('Target', $value, '');
+	}
+
+	/**
+	 * @return ?string the download file name: null when the link navigates, '' to
+	 *   download under the resource's own name. Defaults to null.
+	 * @since 4.4.0
+	 */
+	public function getDownload()
+	{
+		return $this->getViewState('Download', null);
+	}
+
+	/**
+	 * Sets whether the link downloads its resource (`download`). Browsers download
+	 * only same-origin, `blob:`, and `data:` URLs; others navigate.
+	 * - null or false → no `download` attribute: the link navigates.
+	 * - '' or true → `download=""`: save under the resource's own name.
+	 * - a file name → save under that name, such as `report-2026.pdf`.
+	 * @param null|bool|string $value the download state or file name
+	 * @since 4.4.0
+	 */
+	public function setDownload($value)
+	{
+		if (is_string($value)) {
+			$value = trim($value);
+			$lower = strtolower($value);
+			if ($lower === 'true' || $lower === 'false') {
+				$value = $lower === 'true';
+			}
+		}
+		if (is_bool($value) || $value === null) {
+			$value = $value ? '' : null;
+		}
+		$this->setViewState('Download', $value, null);
+	}
+
+	/**
+	 * @return string the link types, or '' if not set
+	 * @since 4.4.0
+	 */
+	public function getRel()
+	{
+		return $this->getViewState('Rel', '');
+	}
+
+	/**
+	 * Sets the link types (`rel`), such as `nofollow`, `noopener noreferrer`, or `external`.
+	 * @param string $value space-separated link types
+	 * @since 4.4.0
+	 */
+	public function setRel($value)
+	{
+		$this->setViewState('Rel', trim(TPropertyValue::ensureString($value)), '');
+	}
+
+	/**
+	 * @return string the language of the linked resource, or '' if not set
+	 * @since 4.4.0
+	 */
+	public function getHrefLang()
+	{
+		return $this->getViewState('HrefLang', '');
+	}
+
+	/**
+	 * Sets the language of the linked resource (`hreflang`), a BCP 47 tag such as `fr-CA`.
+	 * @param string $value the language tag
+	 * @since 4.4.0
+	 */
+	public function setHrefLang($value)
+	{
+		$this->setViewState('HrefLang', trim(TPropertyValue::ensureString($value)), '');
+	}
+
+	/**
+	 * @return string the MIME type of the linked resource, or '' if not set
+	 * @since 4.4.0
+	 */
+	public function getType()
+	{
+		return $this->getViewState('Type', '');
+	}
+
+	/**
+	 * Sets the MIME type of the linked resource (`type`), such as `application/pdf`.
+	 * The value is advisory; the browser uses the response type.
+	 * @param string $value the MIME type
+	 * @since 4.4.0
+	 */
+	public function setType($value)
+	{
+		$this->setViewState('Type', trim(TPropertyValue::ensureString($value)), '');
+	}
+
+	/**
+	 * @return string the referrer policy of the navigation, a {@see TReferrerPolicy}.
+	 *   Defaults to NotSet.
+	 * @since 4.4.0
+	 */
+	public function getReferrerPolicy()
+	{
+		return $this->getViewState('ReferrerPolicy', TReferrerPolicy::NotSet);
+	}
+
+	/**
+	 * Sets the referrer policy of the navigation (`referrerpolicy`).
+	 * @param string $value a {@see TReferrerPolicy}
+	 * @since 4.4.0
+	 */
+	public function setReferrerPolicy($value)
+	{
+		$this->setViewState('ReferrerPolicy', TPropertyValue::ensureEnum($value, TReferrerPolicy::class), TReferrerPolicy::NotSet);
+	}
+
+	/**
+	 * @return string the URLs notified when the link is followed, or '' if not set
+	 * @since 4.4.0
+	 */
+	public function getPing()
+	{
+		return $this->getViewState('Ping', '');
+	}
+
+	/**
+	 * Sets the URLs that the browser notifies with a POST when the user follows the
+	 * link (`ping`). Firefox disables it by default.
+	 * @param string $value space-separated URLs
+	 * @since 4.4.0
+	 */
+	public function setPing($value)
+	{
+		$this->setViewState('Ping', trim(preg_replace('/\s+/', ' ', TPropertyValue::ensureString($value))), '');
 	}
 }
