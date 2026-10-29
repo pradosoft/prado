@@ -421,6 +421,8 @@ Prado.CallbackRequest = Prado.Class(Prado.PostBack,
 		if (this.options.onInteractive)
 			this.options.onInteractive(this,null);
 
+		// a morphed update keeps what the user types after this point
+		this.focusSnapshot = Prado.Element.getFocusSnapshot();
 		this.request = Prado.CallbackRequestManager.ajax(this.options);
 	},
 
