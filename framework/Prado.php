@@ -767,6 +767,27 @@ class Prado
 	}
 
 	/**
+	 * Returns the language of the application culture: the two-letter language of
+	 * {@see \Prado\I18N\TGlobalization::getCulture()} when the application has a
+	 * globalization module, otherwise {@see getPreferredLanguage()}. The error
+	 * handler and {@see \Prado\Exceptions\THttpException} select the visitor-facing
+	 * language with it.
+	 * @return string the two-letter application language, defaults to English.
+	 * @since 4.4.0
+	 */
+	public static function getApplicationLanguage(): string
+	{
+		$globalization = self::$_application?->getGlobalization(false);
+		if ($globalization !== null) {
+			$lang = strtolower(explode('_', str_replace('-', '_', $globalization->getCulture()))[0]);
+			if ($lang !== '' && ctype_alpha($lang)) {
+				return $lang;
+			}
+		}
+		return self::getPreferredLanguage();
+	}
+
+	/**
 	 * Returns the most preferred language by the client user.
 	 * @return string the most preferred language by the client user, defaults to English.
 	 */

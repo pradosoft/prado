@@ -4,15 +4,11 @@
 
 application_unavailable					= Aplikasi tidak tersedia saat ini.
 application_service_unknown				= Layanan yang diminta '{0}' tidak didefinisikan.
-application_service_invalid				= Layanan '{0}' harus mengimplementasikan antarmuka IService.
-application_service_unavailable			= Layanan '{0}' tidak tersedia saat ini.
 
 pageservice_page_required				= Nama halaman diperlukan.
 pageservice_page_unknown				= Halaman '{0}' tidak ditemukan.
-pageservice_pageclass_unknown			= Kelas halaman '{0}' tidak dikenal.
 pageservice_security_violation			= TPageService tidak dapat mengakses direktori tambahan '{0}'.
 
-page_csmanagerclass_invalid				= Kelas ClientScriptManager '{0}' harus merupakan instance dari TClientScriptManager.
 page_csrf_token_invalid					= Halaman ini memerlukan token CSRF yang valid.
 
 pagestatepersister_pagestate_corrupted	= Kondisi halaman rusak.
@@ -23,4 +19,4 @@ soapservice_request_invalid				= Server SOAP '{0}' tidak ditemukan.
 jsonservice_provider_unknown			= Penyedia JSON '{0}' yang diminta tidak dikenal.
 feedservice_feed_unknown				= Feed '{0}' yang diminta tidak dikenal.
 
-juioptions_control_invalid				= Kontrol '{0}' harus mengimplementasikan IJuiOptions.
+errorhandler_internal_error				= Terjadi kesalahan internal pada server.

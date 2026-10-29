@@ -54,7 +54,7 @@ throw new THttpException(500, 'internal_server_error');
 
 `TErrorHandler::handleError()` detects `THttpException` and calls `handleExternalError($statusCode, $exception)`, which selects the matching error template and sets the HTTP response status code accordingly.
 
-Non-`THttpException` exceptions in non-Debug mode result in a generic HTTP 500 response.
+`THttpException` implements `IUserException`, so its message is shown to the visitor in every mode. Any other exception in non-Debug mode results in a 500 response whose page shows the `errorhandler_internal_error` sentence, and the exception is logged.
 
 ## See Also
 

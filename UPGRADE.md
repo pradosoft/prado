@@ -17,6 +17,12 @@ Upgrading from v4.3.3
   the `errormessages` configuration, or an extension's `extra.prado.error-messages` now override the framework text.
   `messages.txt` holds exactly the keys the framework throws; an application that throws one of the removed keys
   defines it in its own message file.
+- In Normal and Performance mode the error page shows the message of an `IUserException` (`THttpException`,
+  `TUserException`, or an application exception implementing it) and the sentence "An internal server error occurred."
+  for every other exception, which is logged; in 4.3 it showed every exception's message. An application that relied on
+  the 500 page to show a message to the visitor throws a `TUserException`. With a globalization module configured for
+  translation, the error page looks the error code up in the `prado` catalogue first. `TApplication::startService()`
+  throws `TConfigurationException` for an invalid or disabled service and a 404 `THttpException` for an unknown one.
 - SqlMap (`Prado\Data\SqlMap`) is no longer part of the framework; it is the `pradosoft/prado-sqlmap` package (#1168).
   An application that does not use SqlMap needs no change. An application using `TSqlMapConfig`, `TSqlMapGateway`, or
   `TSqlMapManager` adds the package: `composer require pradosoft/prado-sqlmap`. Namespaces, class names, short names

@@ -38,11 +38,15 @@ Exception hierarchy and error display for the Prado framework. Provides English 
 | [`TInvalidOperationException`](TInvalidOperationException.md) | Operation not allowed in current state |
 | [`TNotSupportedException`](TNotSupportedException.md) | Feature not implemented/supported |
 | [`TUnknownMethodException`](TUnknownMethodException.md) | Call to undefined method |
-| [`TUserException`](TUserException.md) | User-facing errors |
+| [`TUserException`](TUserException.md) | Visitor-facing errors; implements `IUserException`, so the error page shows its message in every mode |
 | [`TPhpErrorException`](TPhpErrorException.md) / `TPhpFatalErrorException` | Wrapped PHP errors |
 | [`TTemplateException`](TTemplateException.md) | Template parsing/rendering errors |
 | [`TLogException`](TLogException.md) | Logging subsystem errors |
 | [`TExitException`](TExitException.md) | Controlled application exit |
+
+## Visitor-Facing Exceptions
+
+`IUserException` (4.4) marks an exception whose message is written for the visitor. `THttpException` and `TUserException` implement it. `TErrorHandler::getExternalErrorMessage()` shows an `IUserException` message in every mode; any other exception shows `errorhandler_internal_error` outside Debug mode and is logged. `TErrorHandler::localizeErrorMessage()` looks the error code up in the globalization module's `prado` catalogue (`TErrorHandler::TRANSLATION_CATALOGUE`) when translation is configured, with `TException::getErrorArguments()` as placeholders. `Prado::getApplicationLanguage()` gives the language for `messages-<lang>.txt` and the error templates: the globalization culture when the module is loaded, else the client's preferred language.
 
 ## Error Message Files
 

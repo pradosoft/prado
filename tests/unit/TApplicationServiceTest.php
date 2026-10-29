@@ -2,6 +2,7 @@
 
 namespace Prado\Test\Unit;
 
+use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\THttpException;
 use Prado\Prado;
 use Prado\TApplication;
@@ -932,7 +933,7 @@ class TApplicationServiceTest extends \PHPUnit\Framework\TestCase
 		$this->setServices([
 			'bad' => [NotAService::class, [], null],
 		]);
-		$this->expectException(THttpException::class);
+		$this->expectException(TConfigurationException::class);
 		$this->_app->startService('bad');
 	}
 
@@ -941,7 +942,7 @@ class TApplicationServiceTest extends \PHPUnit\Framework\TestCase
 		$this->setServices([
 			'disabled' => [DisabledTestService::class, [], null],
 		]);
-		$this->expectException(THttpException::class);
+		$this->expectException(TConfigurationException::class);
 		$this->_app->startService('disabled');
 	}
 
