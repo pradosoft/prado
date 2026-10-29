@@ -17,6 +17,7 @@ namespace Prado\Web\UI\WebControls;
 
 use Prado\Collections\TList;
 use Prado\Collections\TPagedDataSource;
+use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\THttpUtility;
 use Prado\Exceptions\TInvalidDataTypeException;
@@ -160,12 +161,23 @@ use Prado\Web\UI\TControl;
  * from some persistent storage such as DB.
  * - Save the data in viewstate and get it back during postbacks.
  *
+ * Accessibility:
+ * - {@see setCaption Caption} renders a `<caption>`, which names the table.
+ * - {@see setStickyHeader StickyHeader} keeps the `<thead>` in view while the page scrolls.
+ * - {@see setResponsiveMode ResponsiveMode} Scroll renders the table in a region that
+ *   scrolls horizontally. The region is named by the caption and takes keyboard focus,
+ *   so arrow keys scroll it.
+ * - {@see TRowSelectColumn} adds a column of row checkboxes with a select-all checkbox.
+ * - The pagers render a `<nav>` landmark; see {@see TDataGridPager}.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  * @method TTableStyle getStyle()
  */
 class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 {
+	use TPagerAccessibilityTrait;
+
 	use TEncodeTrait;
 
 	/**
@@ -477,6 +489,53 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	public function setCaptionAlign($value)
 	{
 		$this->setViewState('CaptionAlign', TPropertyValue::ensureEnum($value, TTableCaptionAlign::class), TTableCaptionAlign::NotSet);
+	}
+
+	/**
+	 * @return bool whether the table header stays in view while the page scrolls. Defaults to false.
+	 * @since 4.4.0
+	 */
+	public function getStickyHeader()
+	{
+		return $this->getViewState('StickyHeader', false);
+	}
+
+	/**
+	 * Sets whether the table header stays in view while the page scrolls.
+	 * The `<thead>` renders `position: sticky` at the top of the nearest scrolling
+	 * ancestor, with the `Canvas` background unless {@see getTableHeadStyle TableHeadStyle}
+	 * sets a background color. Inside a {@see setResponsiveMode ResponsiveMode} Scroll
+	 * region the header sticks to the region, which scrolls vertically only when CSS
+	 * limits its height.
+	 * @param bool $value whether the table header stays in view.
+	 * @since 4.4.0
+	 */
+	public function setStickyHeader($value)
+	{
+		$this->setViewState('StickyHeader', TPropertyValue::ensureBoolean($value), false);
+	}
+
+	/**
+	 * @return string|TDataGridResponsiveMode how the table fits a narrow viewport.
+	 *   Defaults to TDataGridResponsiveMode::None.
+	 * @since 4.4.0
+	 */
+	public function getResponsiveMode()
+	{
+		return $this->getViewState('ResponsiveMode', TDataGridResponsiveMode::None);
+	}
+
+	/**
+	 * Sets how the table fits a narrow viewport.
+	 * Scroll renders the table in a `<div role="region" tabindex="0">` with
+	 * `overflow-x: auto`. The region is named by the {@see getCaption Caption},
+	 * else by the datagrid `aria-label`, else "Table".
+	 * @param string|TDataGridResponsiveMode $value None or Scroll.
+	 * @since 4.4.0
+	 */
+	public function setResponsiveMode($value)
+	{
+		$this->setViewState('ResponsiveMode', TPropertyValue::ensureEnum($value, TDataGridResponsiveMode::class), TDataGridResponsiveMode::None);
 	}
 
 	/**
@@ -1360,37 +1419,45 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 		if ($currentPageIndex === 0) {
 			if (($text = $style->getFirstPageText()) !== '') {
 				$label = $this->createPagerButton($pager, $buttonType, false, $text, '', '');
+				$this->labelPagerButton($label, $text, 'First page');
 				$controls->add($label);
 				$controls->add("\n");
 			}
 
-			$label = $this->createPagerButton($pager, $buttonType, false, $style->getPrevPageText(), '', '');
+			$label = $this->createPagerButton($pager, $buttonType, false, $text = $style->getPrevPageText(), '', '');
+			$this->labelPagerButton($label, $text, 'Previous page');
 			$controls->add($label);
 		} else {
 			if (($text = $style->getFirstPageText()) !== '') {
 				$button = $this->createPagerButton($pager, $buttonType, true, $text, self::CMD_PAGE, self::CMD_PAGE_FIRST);
+				$this->labelPagerButton($button, $text, 'First page');
 				$controls->add($button);
 				$controls->add("\n");
 			}
 
-			$button = $this->createPagerButton($pager, $buttonType, true, $style->getPrevPageText(), self::CMD_PAGE, self::CMD_PAGE_PREV);
+			$button = $this->createPagerButton($pager, $buttonType, true, $text = $style->getPrevPageText(), self::CMD_PAGE, self::CMD_PAGE_PREV);
+			$this->labelPagerButton($button, $text, 'Previous page');
 			$controls->add($button);
 		}
 		$controls->add("\n");
 		if ($currentPageIndex === $this->getPageCount() - 1) {
-			$label = $this->createPagerButton($pager, $buttonType, false, $style->getNextPageText(), '', '');
+			$label = $this->createPagerButton($pager, $buttonType, false, $text = $style->getNextPageText(), '', '');
+			$this->labelPagerButton($label, $text, 'Next page');
 			$controls->add($label);
 			if (($text = $style->getLastPageText()) !== '') {
 				$controls->add("\n");
 				$label = $this->createPagerButton($pager, $buttonType, false, $text, '', '');
+				$this->labelPagerButton($label, $text, 'Last page');
 				$controls->add($label);
 			}
 		} else {
-			$button = $this->createPagerButton($pager, $buttonType, true, $style->getNextPageText(), self::CMD_PAGE, self::CMD_PAGE_NEXT);
+			$button = $this->createPagerButton($pager, $buttonType, true, $text = $style->getNextPageText(), self::CMD_PAGE, self::CMD_PAGE_NEXT);
+			$this->labelPagerButton($button, $text, 'Next page');
 			$controls->add($button);
 			if (($text = $style->getLastPageText()) !== '') {
 				$controls->add("\n");
 				$button = $this->createPagerButton($pager, $buttonType, true, $text, self::CMD_PAGE, self::CMD_PAGE_LAST);
+				$this->labelPagerButton($button, $text, 'Last page');
 				$controls->add($button);
 			}
 		}
@@ -1426,11 +1493,13 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 		if ($startPageIndex > 1) {
 			if (($text = $style->getFirstPageText()) !== '') {
 				$button = $this->createPagerButton($pager, $buttonType, true, $text, self::CMD_PAGE, self::CMD_PAGE_FIRST);
+				$this->labelPagerButton($button, $text, 'First page');
 				$controls->add($button);
 				$controls->add("\n");
 			}
 			$prevPageIndex = $startPageIndex - 1;
-			$button = $this->createPagerButton($pager, $buttonType, true, $style->getPrevPageText(), self::CMD_PAGE, "$prevPageIndex");
+			$button = $this->createPagerButton($pager, $buttonType, true, $text = $style->getPrevPageText(), self::CMD_PAGE, "$prevPageIndex");
+			$this->labelPagerButton($button, $text, 'Previous pages');
 			$controls->add($button);
 			$controls->add("\n");
 		}
@@ -1438,9 +1507,11 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 		for ($i = $startPageIndex; $i <= $endPageIndex; ++$i) {
 			if ($i === $pageIndex) {
 				$label = $this->createPagerButton($pager, $buttonType, false, "$i", '', '');
+				$this->labelPageNumberButton($label, $i, true);
 				$controls->add($label);
 			} else {
 				$button = $this->createPagerButton($pager, $buttonType, true, "$i", self::CMD_PAGE, "$i");
+				$this->labelPageNumberButton($button, $i, false);
 				$controls->add($button);
 			}
 			if ($i < $endPageIndex) {
@@ -1451,11 +1522,13 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 		if ($pageCount > $endPageIndex) {
 			$controls->add("\n");
 			$nextPageIndex = $endPageIndex + 1;
-			$button = $this->createPagerButton($pager, $buttonType, true, $style->getNextPageText(), self::CMD_PAGE, "$nextPageIndex");
+			$button = $this->createPagerButton($pager, $buttonType, true, $text = $style->getNextPageText(), self::CMD_PAGE, "$nextPageIndex");
+			$this->labelPagerButton($button, $text, 'Next pages');
 			$controls->add($button);
 			if (($text = $style->getLastPageText()) !== '') {
 				$controls->add("\n");
 				$button = $this->createPagerButton($pager, $buttonType, true, $text, self::CMD_PAGE, self::CMD_PAGE_LAST);
+				$this->labelPagerButton($button, $text, 'Last page');
 				$controls->add($button);
 			}
 		}
@@ -1680,10 +1753,22 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 			if (($align = $this->getCaptionAlign()) !== TTableCaptionAlign::NotSet) {
 				$writer->addStyleAttribute('caption-side', strtolower($align));
 			}
+			if ($this->getResponsiveMode() === TDataGridResponsiveMode::Scroll) {
+				$writer->addAttribute('id', $this->getCaptionClientID());
+			}
 			$writer->renderBeginTag('caption');
 			$writer->write($this->encodeText($caption));
 			$writer->renderEndTag();
 		}
+	}
+
+	/**
+	 * @return string the ID of the `<caption>` element.
+	 * @since 4.4.0
+	 */
+	protected function getCaptionClientID()
+	{
+		return $this->getClientID() . '_caption';
 	}
 
 	/**
@@ -1711,12 +1796,59 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 					$this->_topPager->renderControl($writer);
 					$writer->writeLine();
 				}
-				$this->renderTable($writer);
+				if ($this->getResponsiveMode() === TDataGridResponsiveMode::Scroll) {
+					$this->renderScrollRegion($writer);
+				} else {
+					$this->renderTable($writer);
+				}
 				if ($this->_bottomPager) {
 					$writer->writeLine();
 					$this->_bottomPager->renderControl($writer);
 				}
 			}
+		}
+	}
+
+	/**
+	 * Renders the table in a named, focusable region that scrolls horizontally.
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer
+	 * @since 4.4.0
+	 */
+	protected function renderScrollRegion($writer)
+	{
+		$writer->addAttribute('role', 'region');
+		if ($this->getCaption() !== '') {
+			$writer->addAttribute('aria-labelledby', $this->getCaptionClientID());
+		} elseif ($this->getHasAria() && ($label = $this->getAttribute('aria-label')) !== null) {
+			$writer->addAttribute('aria-label', $label);
+		} else {
+			$writer->addAttribute('aria-label', Prado::localize('Table'));
+		}
+		$writer->addAttribute('tabindex', '0');
+		$writer->addStyleAttribute('overflow-x', 'auto');
+		$writer->renderBeginTag('div');
+		$writer->writeLine();
+		$this->renderTable($writer);
+		$writer->writeLine();
+		$writer->renderEndTag();
+	}
+
+	/**
+	 * Adds the sticky positioning of the `<thead>` when {@see getStickyHeader StickyHeader} is true.
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer
+	 * @param ?TStyle $style the {@see getTableHeadStyle TableHeadStyle}, null when unset.
+	 * @since 4.4.0
+	 */
+	protected function addStickyHeaderToRender($writer, $style)
+	{
+		if (!$this->getStickyHeader()) {
+			return;
+		}
+		$writer->addStyleAttribute('position', 'sticky');
+		$writer->addStyleAttribute('top', '0');
+		$writer->addStyleAttribute('z-index', '1');
+		if ($style === null || $style->getBackColor() === '') {
+			$writer->addStyleAttribute('background-color', 'Canvas');
 		}
 	}
 
@@ -1732,6 +1864,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 			if ($style = $this->getViewState('TableHeadStyle', null)) {
 				$style->addAttributesToRender($writer);
 			}
+			$this->addStickyHeaderToRender($writer, $style);
 			$writer->renderBeginTag('thead');
 			$this->_header->render($writer);
 			$writer->renderEndTag();
