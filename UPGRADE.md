@@ -99,6 +99,13 @@ Upgrading from v4.3.3
 - TReCaptcha2::getResponse changed to TReCaptcha2::getCaptchaResponse - no longer overrides TApplicationComponent::getResponse (#1132)
 - Prado JS dispatches `prado:ajaxComplete` event with jQuery.onAjaxComplete for non-dependence on jQuery. Use this event instead of the jQuery event.
 - The listener class of the `logger` package, the global `CustomEvent`, is renamed `LogEvent`. The browser's native `CustomEvent` is no longer replaced when the logger loads.
+- `Prado.WebUI.Control.observe()` attaches a native listener: it takes a DOM element or an element id and one event name. A jQuery object, a `#id`
+  selector, several or namespaced event names, and an event-data argument are no longer accepted; custom controls that pass them call `observe()` once per element and event.
+- The `invoker` passed to a validator's client-side `OnValidate`, `OnValidationSuccess`, and `OnValidationError` handlers is a DOM element in place of a jQuery object.
+- `jQuery(el).trigger()` on an element that a Prado control registers or observes dispatches a native event. A jQuery handler on that element receives the trigger's
+  extra parameters in `event.detail` in place of handler arguments. Only `click`, `focus`, `blur`, and a form's `submit` run the element's native method.
+- A TColorPicker in `Basic` mode stays open after a palette color is clicked; it closes on a click outside the picker or on Escape.
+- TAccordion animates for `AnimationDuration` seconds, default 1; in 4.3 every animation took jQuery's default 400 ms.
 - `Prado\Web\TUri` is now a PSR-7 `UriInterface`: scheme/host are lower-cased, path/query/fragment are
   percent-encoded, and `getPort()` returns `?int` (`null` when absent or scheme default).
 - TDatePicker::InputMode changed to TDatePicker::DateInputMode - due to conflict with TWebControl::InputMode

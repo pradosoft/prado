@@ -78,9 +78,40 @@ Prado.WebUI.TAccordion = Prado.Class(Prado.WebUI.Control,
 		for(const viewID in this.options.Views)
 		{
 			const view = document.getElementById(viewID);
-			if(view && view.offsetHeight > this.maxHeight)
- 				this.maxHeight = view.offsetHeight;
+			const height = view ? this.measureHeight(view) : 0;
+			if(height > this.maxHeight)
+ 				this.maxHeight = height;
 		}
+	},
+
+	/**
+	 * Measures the height of a view. A view hidden with an inline
+	 * `display:none`, which TAccordionView renders for each inactive view, is
+	 * displayed invisibly for the measurement, as jQuery `.height()` did.
+	 * @param {element} view - the view element
+	 * @return {number} the offset height of the view in pixels
+	 */
+	measureHeight(view) {
+		const style = view.style;
+		if (style.display !== 'none')
+			return view.offsetHeight;
+		const display = style.display;
+		const visibility = style.visibility;
+		style.visibility = 'hidden';
+		style.display = '';
+		const height = view.offsetHeight;
+		style.display = display;
+		style.visibility = visibility;
+		return height;
+	},
+
+	/**
+	 * Converts the Duration option, the AnimationDuration in seconds, to milliseconds.
+	 * @return {number} the animation length in milliseconds; 0 for no animation
+	 */
+	getDurationMs() {
+		const seconds = parseFloat(this.options.Duration);
+		return seconds > 0 ? seconds * 1000 : 0;
 	},
 
 	elementClicked(viewID, _event) {
@@ -105,7 +136,7 @@ Prado.WebUI.TAccordion = Prado.Class(Prado.WebUI.Control,
 			const old = document.getElementById(this.oldView);
 			const oldHdr = document.getElementById(`${this.oldView}_0`);
 			const curHdr = document.getElementById(`${this.currentView}_0`);
-			if(this.options.Duration > 0)
+			if(this.getDurationMs() > 0)
 			{
 				this.animate();
 			} else {
@@ -178,12 +209,12 @@ Prado.WebUI.TAccordion = Prado.Class(Prado.WebUI.Control,
 		const old = document.getElementById(this.oldView);
 		const cur = document.getElementById(this.currentView);
 		if (old) {
-			_accAnimateHeight(old, old.offsetHeight, 0, this.options.Duration, () => { old.style.display = 'none'; });
+			_accAnimateHeight(old, old.offsetHeight, 0, this.getDurationMs(), () => { old.style.display = 'none'; });
 		}
 		if (cur) {
 			cur.style.height = '0px';
 			cur.style.display = '';
-			_accAnimateHeight(cur, 0, this.maxHeight, this.options.Duration);
+			_accAnimateHeight(cur, 0, this.maxHeight, this.getDurationMs());
 		}
 	}
 });

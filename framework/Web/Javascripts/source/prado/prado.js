@@ -519,12 +519,9 @@ Prado.Element =
 			if (el) el.focus();
 		};
 		// If a callback request is in flight, defer briefly so we focus the
-		// post-update DOM. Prado.CallbackRequest tracks in-flight requests
-		// in its requestQueue (see ajax3.js).
-		const pending = (typeof Prado !== 'undefined'
-			&& Prado.CallbackRequest
-			&& Prado.CallbackRequest.requestQueue
-			&& Prado.CallbackRequest.requestQueue.length) > 0;
+		// post-update DOM. Callbacks are sent with jQuery.ajax (see ajax3.js),
+		// and jQuery.active counts the requests in flight.
+		const pending = typeof jQuery !== 'undefined' && jQuery.active > 0;
 		if (pending) setTimeout(doFocus, 100);
 		else doFocus();
 	},
