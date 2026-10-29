@@ -9,7 +9,7 @@ Cron-style scheduled task engine for the Prado framework. Supports both file-con
 
 ## Classes
 
-- **`TCronModule`** — Main cron scheduler [`TModule`](../../TModule.md). Parses cron schedule expressions (standard Linux `minute hour day month dayOfWeek` format plus special expressions like `@daily`, `@hourly`). Registers tasks and triggers execution. Designed to be called periodically by the system crontab (run the `prado-cli cron` shell action). Supports user context switching per task.
+- **`TCronModule`** — Main cron scheduler [`TModule`](../../TModule.md). Parses cron schedule expressions (standard Linux `minute hour day month dayOfWeek` format plus special expressions like `@daily`, `@hourly`). Registers tasks and triggers execution. Designed to be called periodically by the system crontab (run the `prado-cli cron` shell action). Runs each due task in a fiber of its own as the task's user (`TFiberContext`), `Concurrency` tasks at once (default 1), with a `TaskTimeout` deadline and an exception boundary per task (4.4.0).
 
 - **`TDbCronManager`** — Extends `TCronModule` with database-backed task storage. Supports dynamic task CRUD, execution logging, runtime task queuing (onEndRequest), and permission-gated CLI management. **Since 4.3.3.**
 

@@ -4,6 +4,8 @@ namespace Prado\Test\Unit;
 
 use Prado\Collections\TCollectionItemChangeParameter;
 use Prado\Exceptions\TConfigurationException;
+use Prado\IO\Async\TAsync;
+use Prado\IO\Async\TFiberContext;
 use Prado\Prado;
 use Prado\TApplication;
 use Prado\TApplicationMode;
@@ -1086,6 +1088,51 @@ class TApplicationTest extends \PHPUnit\Framework\TestCase
 
 		$this->_app->detachEventHandler('onSetUser', $handler);
 		$this->assertSame($user, $receivedUser);
+	}
+
+	public function testGetUser_returnsTheFiberUserFirst(): void
+	{
+		$appUser = new AppTestUser();
+		$this->_app->setUser($appUser);
+		$fiberUser = new AppTestUser();
+		TFiberContext::set(TApplication::USER_CONTEXT_KEY, $fiberUser);
+		try {
+			$this->assertSame($fiberUser, $this->_app->getUser());
+		} finally {
+			TFiberContext::remove(TApplication::USER_CONTEXT_KEY);
+		}
+		$this->assertSame($appUser, $this->_app->getUser());
+
+		$seen = TAsync::run(function () use ($fiberUser) {
+			TFiberContext::set(TApplication::USER_CONTEXT_KEY, $fiberUser);
+			return $this->_app->getUser();
+		})->await();
+		$this->assertSame($fiberUser, $seen);
+		$this->assertSame($appUser, $this->_app->getUser(), 'A user set in a worker fiber stays in that fiber');
+	}
+
+	public function testSetUser_replacesTheFiberUser(): void
+	{
+		$appUser = new AppTestUser();
+		$this->_app->setUser($appUser);
+		$fiberUser = new AppTestUser();
+		$other = new AppTestUser();
+		$received = null;
+		$handler = function ($sender, $param) use (&$received) {
+			$received = $param;
+		};
+		$this->_app->attachEventHandler('onSetUser', $handler);
+		TFiberContext::set(TApplication::USER_CONTEXT_KEY, $fiberUser);
+		try {
+			$this->_app->setUser($other);
+			$this->assertSame($other, TFiberContext::get(TApplication::USER_CONTEXT_KEY));
+			$this->assertSame($other, $this->_app->getUser());
+		} finally {
+			TFiberContext::remove(TApplication::USER_CONTEXT_KEY);
+			$this->_app->detachEventHandler('onSetUser', $handler);
+		}
+		$this->assertSame($other, $received);
+		$this->assertSame($appUser, $this->_app->getUser(), 'The application user is unchanged');
 	}
 
 	public function testOnSetUser_raisesEventDirectly(): void

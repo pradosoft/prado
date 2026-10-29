@@ -107,8 +107,8 @@ class TProcessCronTask extends TCronTask
 			try {
 				$pid = $this->startProcess();
 			} catch (\Throwable $e) {
-				// A launch failure must not abort the cron sweep (runTask does not catch around execute);
-				// surface it as an error and let the next poll retry, rather than logging a false "started".
+				// A launch failure is this task's own error, not a failed run: log it and let the next poll
+				// retry, rather than logging a false "started".
 				Prado::log('Process "' . $this->getName() . '" failed to launch: ' . $e->getMessage(), TLogger::ERROR, TProcessCronTask::class);
 				return false;
 			}

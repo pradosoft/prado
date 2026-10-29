@@ -718,7 +718,10 @@ cron_schedule_required					= Cron Task must have a schedule.
 cron_task_required						= Cron Task must have a task.
 cron_not_a_crontask						= Cron Task '{0}' is not a TCronTask.
 cron_additional_tasks_invalid			= '{0}' is not a valid additional cron task.
+cron_concurrency_invalid				= TCronModule Concurrency must be at least 1; '{0}' given.
+cron_task_timeout_invalid				= TCronModule TaskTimeout must be greater than zero or null; '{0}' given.
 crontask_no_module						= TCronTask could not find module '{0}'.
+crontask_timeout_invalid				= TCronTask Timeout must be greater than zero or null; '{0}' given.
 
 dbcronclean_moduleid_is_null			= TDbCronCleanLogTask could not find the specified module '{0}'.
 dbcron_invalid_name						= TDbCronManager the task name '{0}' is invalid .

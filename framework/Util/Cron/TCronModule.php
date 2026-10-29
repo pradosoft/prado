@@ -13,12 +13,19 @@ namespace Prado\Util\Cron;
 use Exception;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\IO\Async\TAsync;
+use Prado\IO\Async\TCancellationToken;
+use Prado\IO\Async\TFiberContext;
+use Prado\IO\Async\TFuture;
 use Prado\Prado;
+use Prado\Security\IUser;
 use Prado\Security\IUserManager;
 use Prado\Security\Permissions\IPermissions;
 use Prado\Security\Permissions\TPermissionEvent;
 use Prado\Shell\TShellApplication;
+use Prado\TApplication;
 use Prado\TPropertyValue;
 use Prado\Util\Log\TLogger;
 use Prado\Util\Traits\TInitializedTrait;
@@ -75,16 +82,27 @@ use Prado\Xml\TXmlDocument;
  *		* * * * *  php /dir_to_/vendor/bin/prado-cli app /dir_to_app/ cron
  * ```
  *
- * The default cron user can be set with {@see set$DefaultUserName} with its
+ * The default cron user can be set with {@see setDefaultUserName} with its
  * default being 'cron' user.  The default user is used when no task specific
- * user is specifiedThe 'cron' user should exist in the TUserManager to
- * switched the application user properly.
+ * user is specified.  The 'cron' user should exist in the TUserManager to
+ * run the task as that user.
+ *
+ * {@see runTask()} runs each task in a fiber of its own.  The task's user is the
+ * fiber's user in {@see \Prado\IO\Async\TFiberContext}, which
+ * {@see \Prado\TApplication::getUser()} returns inside the task; the application
+ * user is unchanged.  {@see setConcurrency Concurrency} is the number of tasks that
+ * run at once (default 1, the tasks in order), so a task that waits on the event
+ * loop lets the next one start.  An exception from a task is logged
+ * ({@see logCronTaskError}) and the sweep continues.  {@see setTaskTimeout TaskTimeout}
+ * and a task's own {@see \Prado\Util\Cron\TCronTask::setTimeout Timeout} bound a run with a
+ * {@see \Prado\IO\Async\TCancellationToken} the task observes.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0
  * @method void dyLogCron($numtasks)
  * @method void dyLogCronTask($task, $username)
  * @method void dyLogCronTaskEnd($task)
+ * @method void dyLogCronTaskError($task, $exception)
  * @method bool dyRegisterShellAction($returnValue)
  * @method \Prado\Shell\TShellWriter getOutputWriter()
  * @see https://crontab.guru For more info on Crontab Schedule Expressions.
@@ -148,6 +166,12 @@ class TCronModule extends \Prado\TModule implements IPermissions
 
 	/** @var array|TXmlDocument any additional tasks to install from properties */
 	private $_additionalCronTasks = [];
+
+	/** @var int the number of tasks that run at once, default 1 */
+	private int $_concurrency = 1;
+
+	/** @var ?float the seconds a task run may take unless the task has its own Timeout, default null for no deadline */
+	private ?float $_taskTimeout = null;
 
 	/**
 	 * Initializes the module.  Read the configuration, installs Shell Actions,
@@ -423,8 +447,9 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	}
 
 	/**
-	 * processPendingTasks executes pending tasks
-	 * @return int number of tasks run that were pending
+	 * processPendingTasks executes pending tasks through {@see runTasks}.  In a crontab shell
+	 * no task starts after the minute the sweep began.
+	 * @return int number of tasks that were pending
 	 */
 	public function processPendingTasks()
 	{
@@ -432,19 +457,51 @@ class TCronModule extends \Prado\TModule implements IPermissions
 		$this->filterStaleTasks();
 		$pendingTasks = $this->getPendingTasks();
 		$numtasks = count($pendingTasks);
-		$startMinute = floor(time() / 60);
+		$startMinute = (int) floor(time() / 60);
 
 		$this->logCron($numtasks);
 		if ($numtasks) {
-			foreach ($pendingTasks as $key => $task) {
-				if ($inCronTab && $startMinute != floor(time() / 60)) {
-					break;
-				}
-				$this->runTask($task);
-			}
+			$this->runTasks($pendingTasks, $inCronTab ? $startMinute : null);
 		}
 
 		return $numtasks;
+	}
+
+	/**
+	 * Runs tasks, each in a fiber of its own through {@see runTask}, with at most
+	 * {@see getConcurrency} running at once.  Returns once every task has finished.
+	 * @param TCronTask[] $tasks the tasks to run, in order
+	 * @param ?int $startMinute the minute (`time() / 60`) after which no further task starts, or null for no limit
+	 * @since 4.4.0
+	 */
+	protected function runTasks(array $tasks, ?int $startMinute = null)
+	{
+		$running = [];
+		foreach ($tasks as $task) {
+			if ($startMinute !== null && $startMinute != floor(time() / 60)) {
+				break;
+			}
+			$this->awaitTasks($running, $this->getConcurrency() - 1);
+			$running[] = TAsync::run([$this, 'runTask'], $task);
+		}
+		$this->awaitTasks($running, 0);
+	}
+
+	/**
+	 * Waits on the event loop until at most a number of task futures are still running, and
+	 * drops the finished ones from the list.
+	 * @param TFuture[] $futures the futures of running tasks, by reference
+	 * @param int $limit the number of futures that may remain pending
+	 * @since 4.4.0
+	 */
+	protected function awaitTasks(array &$futures, int $limit)
+	{
+		$pending = static fn (TFuture $future): bool => !$future->isComplete();
+		$futures = array_filter($futures, $pending);
+		while (count($futures) > $limit) {
+			TAsync::any($futures)->await();
+			$futures = array_filter($futures, $pending);
+		}
 	}
 
 	/**
@@ -473,48 +530,80 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	}
 
 	/**
-	 * Runs a specific task. Sets the user to the Task user or the cron module
-	 * {@see getDefaultUserName}.
+	 * Runs a task in the current fiber as its user ({@see resolveTaskUser}), which is the
+	 * fiber's user in {@see \Prado\IO\Async\TFiberContext} for the run.  A deadline from the
+	 * task's Timeout or the module's {@see getTaskTimeout} becomes the task's
+	 * {@see \Prado\Util\Cron\TCronTask::getCancellationToken() CancellationToken}.  An exception
+	 * from the task is logged by {@see logCronTaskError} and does not leave this method.
 	 * @param \Prado\Util\Cron\TCronTask $task the task to run.
+	 * @return bool whether the task ran without an exception
 	 */
 	public function runTask($task)
 	{
 		$app = $this->getApplication();
-		$users = $this->getUserManager();
+		[$user, $username] = $this->resolveTaskUser($task);
+		$hadFiberUser = TFiberContext::has(TApplication::USER_CONTEXT_KEY);
+		$priorFiberUser = TFiberContext::get(TApplication::USER_CONTEXT_KEY);
+		if ($user !== null) {
+			TFiberContext::set(TApplication::USER_CONTEXT_KEY, $user);
+			$app->onSetUser($user);
+		}
+		$timeout = $task->getTimeout() ?? $this->getTaskTimeout();
+		$token = ($timeout !== null) ? new TCancellationToken($timeout) : null;
+		$task->setCancellationToken($token);
+		try {
+			$this->logCronTask($task, $username);
+			$this->updateTaskInfo($task);
+			try {
+				$task->execute($this);
+				$this->logCronTaskEnd($task);
+				return true;
+			} catch (\Throwable $e) {
+				$this->logCronTaskError($task, $e);
+				return false;
+			}
+		} finally {
+			$task->setCancellationToken(null);
+			if ($user !== null) {
+				if ($hadFiberUser) {
+					TFiberContext::set(TApplication::USER_CONTEXT_KEY, $priorFiberUser);
+				} else {
+					TFiberContext::remove(TApplication::USER_CONTEXT_KEY);
+				}
+				if (($restored = $app->getUser()) !== null) {
+					$app->onSetUser($restored);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Resolves the user a task runs as: the task's UserName, else {@see getDefaultUserName},
+	 * looked up in the {@see getUserManager}; without a match, a guest copy of the
+	 * application user.  Without a user manager the task runs as the current user.
+	 * @param \Prado\Util\Cron\TCronTask $task the task
+	 * @return array{0: ?IUser, 1: string} the user to run as, or null to keep the current user, and the user name looked up last
+	 * @since 4.4.0
+	 */
+	protected function resolveTaskUser($task): array
+	{
 		$defaultUsername = $username = $this->getDefaultUserName();
-		$restore_user = $app->getUser();
-		$user = null;
-
-		if ($users) {
-			if ($nusername = $task->getUserName()) {
-				$username = $nusername;
-			}
-			$user = $users->getUser($username);
-			if (!$user && $username !== $defaultUsername) {
-				$user = $users->getUser($username = $defaultUsername);
-			}
-
-			if ($user) {
-				$app->setUser($user);
-			} elseif ($restore_user) {
-				$user = clone $restore_user;
-				$user->setIsGuest(true);
-				$app->setUser($user);
-			}
+		$users = $this->getUserManager();
+		if (!$users) {
+			return [null, $username];
 		}
-
-		$this->logCronTask($task, $username);
-		$this->updateTaskInfo($task);
-		$task->execute($this);
-		$this->logCronTaskEnd($task);
-
-		if ($user) {
-			if ($restore_user) {
-				$app->setUser($restore_user);
-			} else {
-				$user->setIsGuest(true);
-			}
+		if ($nusername = $task->getUserName()) {
+			$username = $nusername;
 		}
+		$user = $users->getUser($username);
+		if (!$user && $username !== $defaultUsername) {
+			$user = $users->getUser($username = $defaultUsername);
+		}
+		if (!$user && ($current = $this->getApplication()->getUser()) !== null) {
+			$user = clone $current;
+			$user->setIsGuest(true);
+		}
+		return [$user ?: null, $username];
 	}
 
 	/**
@@ -553,6 +642,18 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	{
 		Prado::log('Ending cron task (' . $task->getName() . ', ' . $task->getTask() . ')', TLogger::INFO, TCronModule::class);
 		$this->dyLogCronTaskEnd($task);
+	}
+
+	/**
+	 * Logs the exception that ended a task, at the error level, and raises `dyLogCronTaskError`.
+	 * @param TCronTask $task the task that threw
+	 * @param \Throwable $exception the exception
+	 * @since 4.4.0
+	 */
+	protected function logCronTaskError($task, \Throwable $exception)
+	{
+		Prado::log('Cron task (' . $task->getName() . ', ' . $task->getTask() . ') failed: ' . $exception::class . ': ' . $exception->getMessage(), TLogger::ERROR, TCronModule::class);
+		$this->dyLogCronTaskError($task, $exception);
 	}
 
 	/**
@@ -677,6 +778,56 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	public function setInCronShell($inCronShell)
 	{
 		$this->_inCronShell = $inCronShell === null ? null : TPropertyValue::ensureBoolean($inCronShell === '' ? true : $inCronShell);
+	}
+
+	/**
+	 * @return int the number of tasks that run at once, default 1
+	 * @since 4.4.0
+	 */
+	public function getConcurrency(): int
+	{
+		return $this->_concurrency;
+	}
+
+	/**
+	 * @param int|string $count the number of tasks that run at once; 1 runs the tasks in order
+	 * @throws TInvalidDataValueException when the count is less than 1
+	 * @since 4.4.0
+	 */
+	public function setConcurrency($count)
+	{
+		$count = TPropertyValue::ensureInteger($count);
+		if ($count < 1) {
+			throw new TInvalidDataValueException('cron_concurrency_invalid', $count);
+		}
+		$this->_concurrency = $count;
+	}
+
+	/**
+	 * @return ?float the seconds a task run may take unless the task has its own Timeout, or null for no deadline
+	 * @since 4.4.0
+	 */
+	public function getTaskTimeout(): ?float
+	{
+		return $this->_taskTimeout;
+	}
+
+	/**
+	 * @param null|float|string $seconds the seconds a task run may take unless the task has its own Timeout, or null for no deadline
+	 * @throws TInvalidDataValueException when the seconds are not greater than zero
+	 * @since 4.4.0
+	 */
+	public function setTaskTimeout($seconds)
+	{
+		if ($seconds !== null && $seconds !== '') {
+			$seconds = TPropertyValue::ensureFloat($seconds);
+			if ($seconds <= 0) {
+				throw new TInvalidDataValueException('cron_task_timeout_invalid', $seconds);
+			}
+		} else {
+			$seconds = null;
+		}
+		$this->_taskTimeout = $seconds;
 	}
 
 	/**

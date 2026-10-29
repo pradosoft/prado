@@ -133,4 +133,24 @@ class TComponentGlobalEventsTest extends TComponentTestBase
 		$second = $component->unlisten();
 		$this->assertNull($second, 'unlisten() must return null when not listening');
 	}
+
+	public function testCloneOfAListeningComponentListens()
+	{
+		$handlers = $this->component->getEventHandlers('fxAttachClassBehavior');
+		$count = $handlers->getCount();
+		$this->assertTrue($this->component->getListeningToGlobalEvents());
+
+		$copy = clone $this->component;
+		$this->assertTrue($copy->getListeningToGlobalEvents());
+		$this->assertEquals($count + 1, $handlers->getCount(), 'The clone registers its own global event handlers');
+		$this->assertGreaterThan(0, $copy->unlisten());
+		$this->assertEquals($count, $handlers->getCount());
+		$this->assertTrue($this->component->getListeningToGlobalEvents(), 'The original still listens');
+
+		$this->component->unlisten();
+		$copy = clone $this->component;
+		$this->assertFalse($copy->getListeningToGlobalEvents(), 'A clone of a component that does not listen does not listen');
+		$this->assertNull($copy->unlisten());
+		$this->assertEquals($count - 1, $handlers->getCount());
+	}
 }
