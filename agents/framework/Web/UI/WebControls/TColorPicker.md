@@ -88,6 +88,17 @@ $picker->setText(string $v): void
 - **No AutoPostBack** — color picker changes do not auto-submit. Use a submit button or call JavaScript to trigger form submission.
 - **`TWebColors`** — provides a mapping of CSS named colors to hex values. Use `TWebColors::colorValues()` to populate a predefined color list for users.
 
+## Native Alternative
+
+A [TTextBox](./TTextBox.md) with `TextMode="Color"` renders `<input type="color">`, the browser's picker.
+
+| | `TTextBox TextMode="Color"` | TColorPicker |
+|---|---|---|
+| Script | None | `colorpicker` package |
+| Picker | The platform's | Prado's, the same in every browser |
+| Value | Lowercase `#rrggbb` | `#RRGGBB` text |
+| Palettes | None | `Simple`, `Basic`, `Full` |
+
 ## Color Scheme
 
 The panel background uses `Canvas` and its borders adapt through `light-dark()`. The hue strip and target images carry fixed colors, which is correct for color content. The shipped stylesheet declares no `color-scheme` of its own, so an

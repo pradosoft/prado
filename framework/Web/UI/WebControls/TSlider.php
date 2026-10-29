@@ -43,6 +43,11 @@ use Prado\TPropertyValue;
  * javascript variable. You can use this event to update on client side a label with the current value
  * - ClientSide.onChange is called when the slider value has changed (at the end of a move).
  *
+ * The browser's own slider is a {@see TTextBox} with TextMode `Range`. It needs no
+ * script, takes `Min`, `Max`, and `Step`, and browsers expose it with the `slider`
+ * role and arrow-key control. TSlider renders a styled track and handle, a list of
+ * {@see setValues Values}, and the ClientSide events.
+ *
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
  * @since 3.1.1
  */
