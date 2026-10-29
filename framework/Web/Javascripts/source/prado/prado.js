@@ -277,28 +277,11 @@ Prado.PostBack = Prado.Class(
 				return this.event.preventDefault();
 		}
 
+		if (!form) return;
 		if(this.options['PostBackUrl'] && this.options['PostBackUrl'].length > 0)
 			form.action = this.options['PostBackUrl'];
 
-		let input=null;
-		if(this.options.EventTarget)
-		{
-			input = document.createElement("input");
-			input.setAttribute("type", "hidden");
-			input.setAttribute("name", Prado.RequestManager.FIELD_POSTBACK_TARGET);
-			input.setAttribute("value", this.options.EventTarget);
-			form.appendChild(input);
-		}
-		if(this.options.EventParameter)
-		{
-			input = document.createElement("input");
-			input.setAttribute("type", "hidden");
-			input.setAttribute("name", Prado.RequestManager.FIELD_POSTBACK_PARAMETER);
-			input.setAttribute("value", this.options.EventParameter);
-			form.appendChild(input);
-		}
-
-		if (!form) return;
+		const removeFields = this.addPostBackFields(form);
 		// Match jQuery $(form).trigger('submit'): fire a cancellable submit event
 		// so handlers can preventDefault, then call form.submit() (which skips
 		// HTML5 constraint validation — important because Prado does its own
@@ -310,6 +293,36 @@ Prado.PostBack = Prado.Class(
 			form.submit();
 			restore();
 		}
+		removeFields();
+	},
+
+	/**
+	 * Adds the EventTarget and EventParameter hidden fields to the form.
+	 * Submit listeners and form.submit() read them at once, so they are removed
+	 * right after. A cancelled submit, or one to another window, leaves the page
+	 * in place, and a later submit of the form would otherwise post them again.
+	 * @param {HTMLFormElement} form - the form to submit
+	 * @return {function} removes the added fields
+	 */
+	addPostBackFields(form) {
+		const fields = [];
+		for (const [name, value] of [
+			[Prado.RequestManager.FIELD_POSTBACK_TARGET, this.options.EventTarget],
+			[Prado.RequestManager.FIELD_POSTBACK_PARAMETER, this.options.EventParameter]
+		]) {
+			if (value) {
+				const input = document.createElement("input");
+				input.setAttribute("type", "hidden");
+				input.setAttribute("name", name);
+				input.setAttribute("value", value);
+				form.appendChild(input);
+				fields.push(input);
+			}
+		}
+		return () => {
+			for (const input of fields)
+				input.remove();
+		};
 	},
 
 	/**
