@@ -8,4 +8,6 @@ test('ActivePanelTestCase', async ({ page }) => {
   await h.assertSourceNotContains('Something lalala');
   await h.byId('div1').click();
   await h.assertSourceContains('Something lalala');
+  await h.assertText('panelScriptRuns', '1');
+  expect(await page.evaluate(() => window.siblingScriptRuns)).toBe(1);
 });

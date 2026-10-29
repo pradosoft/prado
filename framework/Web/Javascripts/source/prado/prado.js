@@ -563,32 +563,48 @@ Prado.Element =
 		}
 		const el = document.getElementById(element);
 		if(!el) return;
+		// innerHTML / insertAdjacentHTML parse <script> tags but the HTML spec
+		// marks them as already-executed, so the browser refuses to run them.
+		// jQuery's .html() / .replaceWith() worked around this by re-creating
+		// script nodes. Mirror that so Prado callback responses that embed
+		// inline JavaScript continue to execute.
 		if(self)
-		  el.outerHTML = content;
+		{
+			// The new nodes are inserted before el, then el is removed. Only
+			// the inserted nodes run their scripts; the siblings' scripts do not.
+			const parent = el.parentNode;
+			const before = el.previousSibling;
+			el.insertAdjacentHTML('beforebegin', content);
+			const inserted = [];
+			for (let node = before ? before.nextSibling : parent.firstChild; node !== el; node = node.nextSibling)
+				inserted.push(node);
+			el.remove();
+			for (const node of inserted)
+				Prado.Element.executeScripts(node);
+		}
 		else
-		  el.innerHTML = content;
-		// innerHTML / outerHTML parse <script> tags but the HTML spec marks
-		// them as already-executed, so the browser refuses to run them. jQuery's
-		// .html() / .replaceWith() worked around this by re-creating script
-		// nodes. Mirror that so Prado callback responses that embed inline
-		// JavaScript continue to execute.
-		const container = self ? el.parentNode : el;
-		if (container) Prado.Element.executeScripts(container);
+		{
+			el.innerHTML = content;
+			Prado.Element.executeScripts(el);
+		}
 	},
 
 	/**
-	 * Re-evaluate every <script> element under `root`. Used after
-	 * Prado.Element.replace() to mimic jQuery .html() / .replaceWith()
-	 * behavior, which executes inline scripts injected via innerHTML.
-	 * The re-created scripts carry the page CSP nonce,
+	 * Re-evaluate `root` when it is a <script> element, and every <script>
+	 * element under `root`. Used after Prado.Element.replace() to mimic jQuery
+	 * .html() / .replaceWith() behavior, which executes inline scripts injected
+	 * via innerHTML. The re-created scripts carry the page CSP nonce,
 	 * {@link Prado.Element.getPageNonce}, in place of the callback's nonce.
+	 * A text or comment node has no scripts.
 	 * @function ?
-	 * @param {element} root - DOM subtree to scan
+	 * @param {node} root - DOM node or subtree to scan
 	 * @since 4.4.0
 	 */
 	executeScripts(root) {
+		if (root.nodeType !== Node.ELEMENT_NODE)
+			return;
 		const nonce = Prado.Element.getPageNonce();
-		const scripts = root.querySelectorAll('script');
+		const scripts = root.matches('script') ? [root] : root.querySelectorAll('script');
 		for (const oldScript of scripts) {
 			const fresh = document.createElement('script');
 			for (const attr of oldScript.attributes) fresh.setAttribute(attr.name, attr.value);

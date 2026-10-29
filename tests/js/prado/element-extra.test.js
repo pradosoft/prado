@@ -205,6 +205,80 @@ describe('Prado.Element.replace', () => {
 		document.body.removeChild(wrapper);
 	});
 
+	describe('inline scripts', () => {
+		// jsdom runs an inserted inline script in its own global and shares the
+		// document. The scripts count their runs on <html>, which both globals reach.
+		const count = (key) => `<script>document.documentElement.dataset.${key} = +(document.documentElement.dataset.${key} || 0) + 1;</script>`;
+		const runs = (key) => +(document.documentElement.dataset[key] || 0);
+		let wrapper;
+
+		beforeEach(() => {
+			wrapper = document.createElement('div');
+			document.body.appendChild(wrapper);
+		});
+
+		afterEach(() => {
+			wrapper.remove();
+			for (const key of ['newRuns', 'siblingRuns', 'nestedRuns'])
+				delete document.documentElement.dataset[key];
+		});
+
+		it('runs a top-level script of the self content exactly once', () => {
+			wrapper.innerHTML = '<div id="rs-target"></div>';
+
+			Element.replace('rs-target', '<div id="rs-target">new</div>' + count('newRuns'), null, true);
+
+			expect(runs('newRuns')).toBe(1);
+			expect(document.getElementById('rs-target').textContent).toBe('new');
+			expect(wrapper.querySelectorAll('script')).toHaveLength(1);
+		});
+
+		it('runs a nested script of the self content exactly once', () => {
+			wrapper.innerHTML = '<div id="rs-target"></div>';
+
+			Element.replace('rs-target', '<div id="rs-target"><span>new</span>' + count('nestedRuns') + '</div>', null, true);
+
+			expect(runs('nestedRuns')).toBe(1);
+		});
+
+		it('does not re-run the scripts of the siblings of the replaced element', () => {
+			wrapper.innerHTML = '<p>before</p><div id="rs-target"></div><p>after</p>';
+			const siblingScript = () => {
+				const script = document.createElement('script');
+				script.text = 'document.documentElement.dataset.siblingRuns = +(document.documentElement.dataset.siblingRuns || 0) + 1;';
+				return script;
+			};
+			const beforeScript = wrapper.firstChild.appendChild(siblingScript());
+			wrapper.lastChild.appendChild(siblingScript());
+			expect(runs('siblingRuns')).toBe(2);
+
+			Element.replace('rs-target', '<div id="rs-target">new</div>' + count('newRuns'), null, true);
+
+			expect(runs('siblingRuns')).toBe(2);
+			expect(runs('newRuns')).toBe(1);
+			expect(wrapper.firstChild.querySelector('script')).toBe(beforeScript);
+			expect(wrapper.firstChild.firstChild.data).toBe('before');
+			expect(wrapper.lastChild.firstChild.data).toBe('after');
+		});
+
+		it('keeps the order of the replacement nodes when the element is the first child', () => {
+			wrapper.innerHTML = '<div id="rs-target"></div><p>after</p>';
+
+			Element.replace('rs-target', 'text<b>bold</b>' + count('newRuns'), null, true);
+
+			expect(wrapper.innerHTML).toMatch(/^text<b>bold<\/b><script>.*<\/script><p>after<\/p>$/);
+			expect(runs('newRuns')).toBe(1);
+		});
+
+		it('runs a script of the inner content exactly once', () => {
+			wrapper.innerHTML = '<div id="rs-target"></div>';
+
+			Element.replace('rs-target', '<span>inner</span>' + count('newRuns'));
+
+			expect(runs('newRuns')).toBe(1);
+		});
+	});
+
 	// NOTE: Element.replace(id, content, boundary) calls this.extractContent(boundary)
 	// where `this` is Prado.Element.  Prado.Element does NOT have an extractContent
 	// method — that method lives on Prado.CallbackRequest.  The boundary path is

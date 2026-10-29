@@ -4,8 +4,11 @@
 	<com:TActivePanel ID="panel1">
 		<com:TPlaceHolder ID="content1" Visible="false">
 			Something lalala <com:TButton ID="button1" Text="Button Text"/>
+			<script>window.panelScriptCount = (window.panelScriptCount || 0) + 1; document.getElementById('panelScriptRuns').textContent = window.panelScriptCount;</script>
 		</com:TPlaceHolder>
 	</com:TActivePanel>
+	<script>window.siblingScriptRuns = (window.siblingScriptRuns || 0) + 1;</script>
+	<p>Panel script runs: <span id="panelScriptRuns">0</span></p>
 	<div id="div1" style="border:1px solid #666; background-color: #ffe; text-align: center; padding:3em">
 		Click Me!
 	</div>
