@@ -47,7 +47,9 @@ Implements: `IPostBackDataHandler`, `IValidatable`, `IDataRenderer`
 | `CausesValidation` | bool | `true` | Whether postback triggers validation |
 | `ValidationGroup` | string | `''` | Validation group for AutoPostBack |
 | `ReadOnly` | bool | `false` | Renders `readonly` attribute; posted value is ignored |
-| `MaxLength` | int | `0` | `maxlength` attribute (0 = not set) |
+| `MaxLength` | int | `0` | `maxlength` attribute (0 = not set); MultiLine renders it too (@since 4.4.0) |
+| `MinLength` | int | `0` | `minlength` attribute for the textual modes and MultiLine (@since 4.4.0) |
+| `DirName` | string | `''` | `dirname`: the field that posts the text direction, `ltr` or `rtl` (@since 4.4.0) |
 | `Columns` | int | `0` | `size` attribute for SingleLine; `cols` for MultiLine (0 = use DEFAULT_COLUMNS for MultiLine) |
 | `Rows` | int | `4` | `rows` attribute for MultiLine only |
 | `Wrap` | bool | `true` | Whether MultiLine text wraps. `false` adds `wrap="off"` (not XHTML-compatible) |
@@ -93,7 +95,7 @@ Implements: `IPostBackDataHandler`, `IValidatable`, `IDataRenderer`
 - **SafeText caching** — The HTMLPurifier result is cached in `$_safeText`. Calling `setText()` clears the cache. The HTMLPurifier instance is shared statically across all TTextBox instances.
 - **Client JS** — Registered only when `EnableClientScript=true`, the control is enabled, and either `AutoPostBack=true` or `TextMode=SingleLine`.
 - **`SuggestionList`** — Resolved with `findControl()` at render; a missing control throws `textbox_suggestionlist_invalid`. No `list` for `MultiLine` or `Password`, or when the list is not visible.
-- **Constraints render per text mode** (`addConstraintAttributesToRender()`): `min`/`max`/`step` for Date, DatetimeLocal, Month, Number, Range, Time, Week; `pattern` for SingleLine, Email, Password, Search, Tel, Url; `multiple` for Email; `placeholder` for those text modes plus MultiLine and Number; `required` for every mode except Color and Range.
+- **Constraints render per text mode** (`addConstraintAttributesToRender()`): `min`/`max`/`step` for Date, DatetimeLocal, Month, Number, Range, Time, Week; `pattern` for SingleLine, Email, Password, Search, Tel, Url; `minlength` and `dirname` for those text modes plus MultiLine; `multiple` for Email; `placeholder` for those text modes plus MultiLine and Number; `required` for every mode except Color and Range.
 - **Constraints are browser-only** — The browser checks them when a submit button posts the form; a script postback (`form.submit()`) skips them, and the server checks none. Pair them with `TRequiredFieldValidator`, `TRangeValidator` (`Step`; data types `Time`, `Month`, `Week`, `DateTimeLocal`), and `TRegularExpressionValidator`.
 - **Placeholder is not a label** — Keep a `TLabel`; browsers expose `Required` as a required field.
 - **`Columns` meaning differs by mode** — In SingleLine/Password it becomes the `size` attribute; in MultiLine it is the `cols` attribute with a 20-column fallback.

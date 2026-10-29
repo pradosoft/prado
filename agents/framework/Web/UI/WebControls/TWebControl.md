@@ -58,7 +58,7 @@ $text = $this->username->Text;
 | Property | Description |
 |----------|-------------|
 | `TextMode` | `SingleLine`, `MultiLine`, `Password` |
-| `MaxLength` | Max characters (not applied in MultiLine) |
+| `MaxLength`, `MinLength` | Character limits (`maxlength`, `minlength`) |
 | `ReadOnly` | Render as readonly input |
 | `AutoPostBack` | Post form on change |
 | `AutoCompleteType` | HTML autocomplete hint |
