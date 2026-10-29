@@ -46,6 +46,13 @@ use Prado\Web\THttpHeaderName;
  * the application then routes all unhandled errors and exceptions through
  * {@see handleError()}.
  *
+ * Outside Debug mode the error page shows the message of an {@see IUserException}
+ * and the generic `errorhandler_internal_error` sentence for any other exception.
+ * {@see localizeErrorMessage()} translates that message through the globalization
+ * module's {@see TRANSLATION_CATALOGUE} catalogue and, when the catalogue has no
+ * entry, raises {@see onMissingTranslation() OnMissingTranslation} with a
+ * {@see TErrorMessageEventParameter} whose `Message` a handler may set.
+ *
  * TErrorHandler may be configured in application.xml as follows:
  * ```xml
  * <modules>
@@ -400,33 +407,69 @@ class TErrorHandler extends \Prado\TModule
 		if (!($exception instanceof IUserException)) {
 			$exception = new THttpException(500, 'errorhandler_internal_error');
 		}
-		return $exception instanceof TException ? $this->localizeErrorMessage($exception) : $exception->getMessage();
+		return $this->localizeErrorMessage($exception);
 	}
 
 	/**
-	 * Translates a visitor-facing message through the application's globalization
-	 * module. When the module is loaded with a translation configuration, the error
-	 * code is looked up in the {@see TRANSLATION_CATALOGUE} catalogue and the
-	 * placeholders are filled with {@see TException::getErrorArguments()}. The exception
-	 * message is returned when there is no module, no configuration, or no entry.
-	 * @param TException $exception the exception whose message is rendered.
+	 * Translates a visitor-facing message. The translation is the catalogue entry of
+	 * {@see getCatalogueMessage()} when there is one. Otherwise {@see onMissingTranslation()}
+	 * is raised with the exception message, and the message of its parameter is returned:
+	 * the text a handler set, or the exception message.
+	 * @param \Throwable $exception the exception whose message is rendered.
 	 * @return string the translated message, or the exception message.
 	 * @since 4.4.0
 	 */
-	protected function localizeErrorMessage(TException $exception): string
+	protected function localizeErrorMessage(\Throwable $exception): string
 	{
+		$translated = $this->getCatalogueMessage($exception);
+		if ($translated !== null) {
+			return $translated;
+		}
+		$param = new TErrorMessageEventParameter($exception, Prado::getApplicationLanguage());
+		$this->onMissingTranslation($param);
+		return $param->getMessage();
+	}
+
+	/**
+	 * Looks a {@see TException} error code up in the {@see TRANSLATION_CATALOGUE} catalogue
+	 * of the application's globalization module and fills the placeholders with
+	 * {@see TException::getErrorArguments()}. There is no entry when the exception is not
+	 * a TException, has no error code, when no globalization module is loaded, when the
+	 * module has no translation configuration, or when the catalogue lacks the code.
+	 * @param \Throwable $exception the exception whose message is rendered.
+	 * @return ?string the catalogue translation, or null when there is no entry.
+	 * @since 4.4.0
+	 */
+	protected function getCatalogueMessage(\Throwable $exception): ?string
+	{
+		if (!($exception instanceof TException)) {
+			return null;
+		}
+		$key = $exception->getErrorCode();
 		$globalization = $this->getApplication()->getGlobalization(false);
 		$config = $globalization?->getTranslationConfiguration();
-		$key = $exception->getErrorCode();
 		if ($config === null || $key === '' || $key === null) {
-			return $exception->getMessage();
+			return null;
 		}
 		$translated = Prado::localize($key, $exception->getErrorArguments(), static::TRANSLATION_CATALOGUE);
 		$marker = $config['marker'] ?? '';
 		if ($translated === $key || ($marker !== '' && $translated === $marker . $key . $marker)) {
-			return $exception->getMessage();
+			return null;
 		}
 		return $translated;
+	}
+
+	/**
+	 * Raises the OnMissingTranslation event when the translation catalogue has no entry
+	 * for a visitor-facing message, including when no globalization module is loaded.
+	 * A handler sets {@see TErrorMessageEventParameter::setMessage() Message} to the text
+	 * the error page shows for the parameter's exception, error code, arguments, and language.
+	 * @param TErrorMessageEventParameter $param the message to translate.
+	 * @since 4.4.0
+	 */
+	public function onMissingTranslation(TErrorMessageEventParameter $param): void
+	{
+		$this->raiseEvent('OnMissingTranslation', $this, $param);
 	}
 
 	/**

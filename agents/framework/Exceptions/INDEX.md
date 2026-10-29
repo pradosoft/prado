@@ -23,6 +23,8 @@ Exception hierarchy and error display for the Prado framework. Provides English 
 
 - **[`TErrorHandler`](TErrorHandler.md)** — Application module for rendering errors/exceptions. Configured in `application.xml` as a module, or created by [`TApplication`](../TApplication.md) if not configured. Uses templates in `Exceptions/templates/` (`error.html`, `exception.html`; language-suffixed variants supported). Replaces `%%ErrorMessage%%`, `%%Version%%`, etc. in templates. `SOURCE_LINES = 12` lines of context shown around the error location.
 
+- **`TErrorMessageEventParameter`** — Parameter of `TErrorHandler::onMissingTranslation()`: `Exception`, `ErrorCode`, `ErrorArguments`, `Language`, and the writable `Message` (the event `Parameter`, so `ParameterChanged` reports a supplied translation).
+
 ### Specific Exception Classes
 
 | Class | Use |
@@ -46,7 +48,7 @@ Exception hierarchy and error display for the Prado framework. Provides English 
 
 ## Visitor-Facing Exceptions
 
-`IUserException` (4.4) marks an exception whose message is written for the visitor. `THttpException` and `TUserException` implement it. `TErrorHandler::getExternalErrorMessage()` shows an `IUserException` message in every mode; any other exception shows `errorhandler_internal_error` outside Debug mode and is logged. `TErrorHandler::localizeErrorMessage()` looks the error code up in the globalization module's `prado` catalogue (`TErrorHandler::TRANSLATION_CATALOGUE`) when translation is configured, with `TException::getErrorArguments()` as placeholders. `Prado::getApplicationLanguage()` gives the language for `messages-<lang>.txt` and the error templates: the globalization culture when the module is loaded, else the client's preferred language.
+`IUserException` (4.4) marks an exception whose message is written for the visitor. `THttpException` and `TUserException` implement it. `TErrorHandler::getExternalErrorMessage()` shows an `IUserException` message in every mode; any other exception shows `errorhandler_internal_error` outside Debug mode and is logged. `TErrorHandler::localizeErrorMessage()` looks the error code up in the globalization module's `prado` catalogue (`TErrorHandler::TRANSLATION_CATALOGUE`, `getCatalogueMessage()`) when translation is configured, with `TException::getErrorArguments()` as placeholders. Without a catalogue entry, also without a globalization module, it raises `OnMissingTranslation` with a `TErrorMessageEventParameter`; the page shows the handler's `Message`, else the exception message. Debug mode shows the exception message and raises nothing. `Prado::getApplicationLanguage()` gives the language for `messages-<lang>.txt` and the error templates: the globalization culture when the module is loaded, else the client's preferred language.
 
 ## Error Message Files
 

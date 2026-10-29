@@ -56,6 +56,8 @@ throw new THttpException(500, 'internal_server_error');
 
 `THttpException` implements `IUserException`, so its message is shown to the visitor in every mode. Any other exception in non-Debug mode results in a 500 response whose page shows the `errorhandler_internal_error` sentence, and the exception is logged.
 
+Outside Debug mode the message passes through `TErrorHandler::localizeErrorMessage()`: the `prado` catalogue entry of the error code when the globalization module translates, else the `OnMissingTranslation` handler's `Message`, else the message from `messages-<lang>.txt`.
+
 ## See Also
 
 - [TErrorHandler](./TErrorHandler.md) - Renders user-facing error pages
