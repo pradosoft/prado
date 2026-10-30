@@ -4,6 +4,7 @@ namespace Prado\Test\Unit\IO\Socket;
 
 use Prado\Exceptions\TConfigurationException;
 use Prado\IO\Async\IEventLoop;
+use Prado\IO\Async\TAsync;
 use Prado\IO\Async\TRevoltEventLoop;
 use Prado\IO\Socket\TSocketReactor;
 use Prado\IO\Socket\TSocketServer;
@@ -527,6 +528,47 @@ class TSocketServerModuleTest extends \PHPUnit\Framework\TestCase
 			self::assertFalse($module->getListeningToGlobalEvents(), 'serve() restores the not-listening state on exit.');
 		} finally {
 			$module->clientRef?->close();
+			$module->unlisten();
+			if ($createdSignals) {
+				TSignalsDispatcher::singleton(false)?->detach();
+			}
+		}
+	}
+
+	public function testServeMakesTheServedLoopTheAsyncLoop()
+	{
+		$createdSignals = TSignalsDispatcher::singleton(false) === null;
+		$priorLoop = TAsync::getLoop();
+		$reactor = new TSocketReactor();
+		$module = new TSocketServerModule();
+		$module->setEndpoint('tcp://127.0.0.1:0')->setEventLoop($reactor);
+		$client = null;
+		$handlerLoop = null;
+		$resumed = false;
+		$reactor->defer(function () use ($module, &$client): void {
+			$client = TSocketStream::connect('tcp://127.0.0.1:' . $module->getServer()->getPort(), 1.0);
+			$client->write('x');
+		});
+		$module->attachEventHandler('onClientData', function ($sender, $connection) use ($module, &$handlerLoop, &$resumed): void {
+			$connection->read(1);
+			$handlerLoop = TAsync::getLoop();
+			TAsync::run(function () use ($module, &$resumed): void {
+				TAsync::sleep(0.01);
+				$resumed = true;
+				$module->stop();
+			});
+		});
+		$guardId = $reactor->delay(5.0, fn () => $module->stop());
+
+		try {
+			self::assertTrue($module->serve(), 'serve() ran.');
+			self::assertSame($reactor, $handlerLoop, 'A handler sees the served loop as the TAsync loop.');
+			self::assertTrue($resumed, 'A fiber a handler starts resumes on the served loop.');
+			self::assertSame($priorLoop, TAsync::getLoop(), 'serve() restores the prior TAsync loop on exit.');
+		} finally {
+			$reactor->cancel($guardId);
+			TAsync::setLoop($priorLoop);
+			$client?->close();
 			$module->unlisten();
 			if ($createdSignals) {
 				TSignalsDispatcher::singleton(false)?->detach();

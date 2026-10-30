@@ -29,7 +29,7 @@ Implemented by [`TRevoltEventLoop`](TRevoltEventLoop.md) (default) and [`TSocket
 | `getIdentifiers(): string[]` | Every registered callback, enabled or not. |
 | `suspension(): Revolt\EventLoop\Suspension` | The current fiber's suspension, one per fiber for its lifetime. |
 | `run(): void` | Runs until `stop()` or no enabled callback remains. Called from the main fiber. |
-| `stop(): void` | Stops the running loop after the current callback. |
+| `stop(): void` | Stops the running loop after the current callback. Outside a run it does nothing. |
 | `isRunning(): bool` | Whether `run()` is in progress. |
 | `getErrorHandler(): ?callable` / `setErrorHandler(?callable)` | The handler for exceptions thrown by callbacks, called as `($exception)`. With a handler the loop continues; without one the exception leaves `run()` with the other callbacks still registered. |
 

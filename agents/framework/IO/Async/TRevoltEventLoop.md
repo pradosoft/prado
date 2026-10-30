@@ -22,7 +22,8 @@ The default `IEventLoop`: a thin adapter over the process-wide `Revolt\EventLoop
 | `IResource` streams | Unwrapped to the PHP stream for the driver; the callback receives the object as registered. |
 | Errors | `InvalidCallbackError` → `TInvalidDataValueException('eventloop_callback_invalid')`; `UnsupportedFeatureException` on `onSignal()` → `TNotSupportedException('eventloop_signals_unsupported')`; a negative delay → `TInvalidDataValueException('eventloop_delay_invalid')`. |
 | `run()` | `EventLoop::run()`; an `UncaughtThrowable` is unwrapped and the original exception rethrown. Throws `\Error` from a worker fiber. |
-| `isRunning()` | True while a `run()` of this class is in progress or the current fiber is a driver callback. The driver's own `isRunning()` stays true after an interrupt until the next run, so it is not used alone. |
+| `isRunning()` | True while a `run()` of this class is in progress or the driver's loop fiber executes (every callback and every resume of a suspended fiber runs there). The driver's own `isRunning()` stays true while its loop fiber is suspended after an interrupt, so `isDriverExecuting()` reads the loop fiber's state from `Revolt\EventLoop\Internal\AbstractDriver`; another driver class falls back to the driver's `isRunning()`. |
+| `stop()` | The driver's `stop()` only while `isRunning()`. The driver keeps a stop until its loop fiber next runs, so a stop outside a run, from the main fiber or a worker fiber, would end the next wait. |
 | `suspension()` | `EventLoop::getSuspension()`. |
 | `ErrorHandler` | `EventLoop::setErrorHandler()` / `getErrorHandler()`. |
 

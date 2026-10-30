@@ -168,6 +168,40 @@ abstract class EventLoopConformanceTestCase extends \PHPUnit\Framework\TestCase
 		self::assertFalse($this->loop->isRunning());
 	}
 
+	public function testStopOutsideRunIsANoOp(): void
+	{
+		$this->loop->stop();
+		$suspension = $this->loop->suspension();
+		$this->loop->delay(0.001, fn () => $suspension->resume('ok'));
+		self::assertSame('ok', $suspension->suspend(), 'A stop() outside run() leaves the next wait running.');
+		$ran = false;
+		$this->loop->stop();
+		$this->loop->delay(0.001, function () use (&$ran) {
+			$ran = true;
+		});
+		$this->loop->run();
+		self::assertTrue($ran, 'A stop() outside run() leaves the next run() running.');
+	}
+
+	public function testStopFromAWorkerFiberOutsideRunIsANoOp(): void
+	{
+		$suspension = $this->loop->suspension();
+		$this->loop->delay(0.001, fn () => $suspension->resume('ok'));
+		self::assertSame('ok', $suspension->suspend(), 'A main-fiber wait completes first.');
+		$running = null;
+		(new \Fiber(function () use (&$running): void {
+			$running = $this->loop->isRunning();
+			$this->loop->stop();
+		}))->start();
+		self::assertFalse($running, 'isRunning() is false in a worker fiber outside run().');
+		$ran = false;
+		$this->loop->delay(0.001, function () use (&$ran) {
+			$ran = true;
+		});
+		$this->loop->run();
+		self::assertTrue($ran, 'A stop() from a worker fiber outside run() leaves the next run() running.');
+	}
+
 	// =========================================================================
 	// Suspension
 	// =========================================================================

@@ -15,6 +15,7 @@ use Prado\Exceptions\TNotSupportedException;
 use Prado\IO\IResource;
 use Prado\TComponent;
 use Revolt\EventLoop;
+use Revolt\EventLoop\Internal\AbstractDriver;
 use Revolt\EventLoop\InvalidCallbackError;
 use Revolt\EventLoop\Suspension;
 use Revolt\EventLoop\UncaughtThrowable;
@@ -42,9 +43,10 @@ use Revolt\EventLoop\UnsupportedFeatureException;
  * exception, unwrapped from Revolt's {@see UncaughtThrowable}.
  *
  * {@see isRunning()} is true while a {@see run()} of this class is in progress or while the
- * current fiber is a callback of the driver.  The driver's own `isRunning()` stays true after an
- * interrupt (a resumed main-fiber suspension or an uncaught exception) until the next run, so it
- * is not used alone.
+ * driver's loop fiber executes, which runs every callback and every resume of a suspended fiber.
+ * The driver's own `isRunning()` stays true while its loop fiber is suspended after an interrupt
+ * (a resumed main-fiber suspension or an uncaught exception), so it is not used alone.
+ * {@see stop()} acts only while the loop is running.
  *
  * A forked child calls {@see installFreshDriver()} before its first callback, so it does not
  * service the parent's callbacks.  {@see \Revolt\EventLoop::setDriver()} throws while a driver
@@ -64,6 +66,9 @@ class TRevoltEventLoop extends TComponent implements IEventLoop
 
 	/** @var array<int, mixed> The pcntl handlers in place before the first callback of each signal. */
 	private static array $_priorSignalHandlers = [];
+
+	/** @var ?\Closure The reader of a driver's loop fiber, bound to the driver's scope. */
+	private static ?\Closure $_loopFiberReader = null;
 
 	/**
 	 * Gives a forked child a driver with no callbacks.  The inherited driver's callbacks are
@@ -299,11 +304,15 @@ class TRevoltEventLoop extends TComponent implements IEventLoop
 	}
 
 	/**
-	 * Stops the running loop after the current callback returns.
+	 * Stops the running loop after the current callback returns.  Outside a run it does nothing;
+	 * the driver keeps a stop until its loop fiber next runs, which would end the next wait.
+	 * A worker fiber started outside a run is outside it.
 	 */
 	public function stop(): void
 	{
-		EventLoop::getDriver()->stop();
+		if ($this->isRunning()) {
+			EventLoop::getDriver()->stop();
+		}
 	}
 
 	/**
@@ -312,7 +321,23 @@ class TRevoltEventLoop extends TComponent implements IEventLoop
 	 */
 	public function isRunning(): bool
 	{
-		return self::$_runDepth > 0 || (\Fiber::getCurrent() !== null && EventLoop::getDriver()->isRunning());
+		return self::$_runDepth > 0 || (\Fiber::getCurrent() !== null && static::isDriverExecuting());
+	}
+
+	/**
+	 * Indicates whether the driver's loop fiber executes, so the current code runs inside the loop.
+	 * Revolt exposes only whether that fiber is running or suspended, so its state is read from
+	 * the driver; a driver of another class falls back to the driver's `isRunning()`.
+	 * @return bool Whether the driver's loop fiber executes.
+	 */
+	protected static function isDriverExecuting(): bool
+	{
+		$driver = EventLoop::getDriver();
+		if (!($driver instanceof AbstractDriver) || !property_exists(AbstractDriver::class, 'fiber')) {
+			return $driver->isRunning();
+		}
+		self::$_loopFiberReader ??= \Closure::bind(static fn (AbstractDriver $driver): \Fiber => $driver->fiber, null, AbstractDriver::class);
+		return (self::$_loopFiberReader)($driver)->isRunning();
 	}
 
 	/**
