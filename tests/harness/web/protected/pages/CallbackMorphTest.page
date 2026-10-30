@@ -35,9 +35,31 @@
 	</com:TActivePanel>
 
 	<com:TActiveButton ID="insertTop" Text="Insert at top" OnCallback="insertTop" />
+	<com:TActiveButton ID="deleteTop" Text="Delete top" OnCallback="deleteTop" />
 	<com:TActiveRepeater ID="rows" ActiveControl.UpdateMode="Morph">
 		<prop:ItemTemplate>
 			<div class="row"><span class="name"><%# $this->Data %></span> <com:TTextBox ID="value" /></div>
 		</prop:ItemTemplate>
 	</com:TActiveRepeater>
+
+	<com:TActiveButton ID="gridInsertTop" Text="Grid insert at top" OnCallback="gridInsertTop" />
+	<com:TActiveButton ID="gridDeleteTop" Text="Grid delete top" OnCallback="gridDeleteTop" />
+	<com:TActiveDataGrid ID="grid" ActiveControl.UpdateMode="Morph" AutoGenerateColumns="false" CssClass="grid">
+		<com:TTemplateColumn HeaderText="Name">
+			<prop:ItemTemplate>
+				<span class="gname"><%# $this->NamingContainer->Data %></span>
+				<com:TTextBox ID="gvalue" CssClass="gvalue" Text="<%# 'v-' . $this->NamingContainer->Data %>" />
+			</prop:ItemTemplate>
+		</com:TTemplateColumn>
+	</com:TActiveDataGrid>
+
+	<com:TActiveButton ID="bigRefresh" Text="Big refresh" OnCallback="bigRefresh" />
+	<com:TActiveDataGrid ID="big" ActiveControl.UpdateMode="Morph" AutoGenerateColumns="false" CssClass="big">
+		<com:TTemplateColumn HeaderText="Row">
+			<prop:ItemTemplate>
+				<span class="bname"><%# $this->NamingContainer->Data %></span>
+				<com:TTextBox ID="bvalue" Text="<%# $this->NamingContainer->Data %>" />
+			</prop:ItemTemplate>
+		</com:TTemplateColumn>
+	</com:TActiveDataGrid>
 </com:TContent>

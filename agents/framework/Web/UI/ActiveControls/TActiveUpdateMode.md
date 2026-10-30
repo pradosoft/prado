@@ -52,13 +52,13 @@ A skin sets `ActiveControl.UpdateMode` for every control of a type. `TBaseActive
 - **Rows pair by position.** Data-bound item IDs follow the item index (`rows_ctl1_value` becomes `rows_ctl2_value` after an insert at the top). idiomorph pairs by id, so a morphed row node follows the position, not the record; client-side row state (a class, a listener) stays at its position. Server-rendered state is the same as with Replace.
   - *Keyed matching (not implemented):* render a `data-prado-key` from `DataKeyField` on each item and have the adapter pair items by key, remapping the ids around the morph, since idiomorph pairs only by id.
 - **Client control wrappers.** The element stays, so the old `Prado.WebUI.Control` wrapper must remove its listeners when the callback registers a new one. Listeners go through `observe()`; TRatingList moved to it in 4.4.0.
-- **Speed.** A 500-row repeater morphs in 10–30 ms; a replace takes 2–6 ms.
+- **Speed.** A 500-row repeater morphs in 10–30 ms; a replace takes 2–6 ms. The functional test bounds a 500-row TActiveDataGrid morph at one second and annotates the time (12–16 ms in Chromium, Firefox, and WebKit).
 
 ## Tests
 
-- `tests/unit/Web/UI/ActiveControls/TActiveUpdateModeTest.php`
+- `tests/unit/Web/UI/ActiveControls/TActiveUpdateModeTest.php` (includes a skin that sets `ActiveControl.UpdateMode`)
 - `tests/js/prado/morph.test.js`
-- `tests/playwright/web/TCallbackMorphTestCase.spec.js` with `tests/harness/web/protected/pages/CallbackMorphTest.page` (Chromium, Firefox, WebKit; includes the accessibility audit: focus and caret kept, unchanged live region untouched)
+- `tests/playwright/web/TCallbackMorphTestCase.spec.js` with `tests/harness/web/protected/pages/CallbackMorphTest.page` (Chromium, Firefox, WebKit): TActiveRepeater and TActiveDataGrid rows inserted and deleted at the top, the 500-row grid timing, and the accessibility audit: focus and caret kept, unchanged live region untouched
 
 ## See Also
 

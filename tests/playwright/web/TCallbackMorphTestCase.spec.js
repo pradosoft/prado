@@ -177,3 +177,103 @@ test('TCallbackMorphTestCase: repeater rows pair by position', async ({ page }) 
 	}));
 	expect(rows).toEqual({ names: ['a3', 'b', 'c', 'd'], firstKept: true, firstName: 'a3' });
 });
+
+/**
+ * A repeater row deleted at the top: the remaining row nodes pair by position and the last is removed.
+ */
+test('TCallbackMorphTestCase: a repeater row deleted at the top', async ({ page }) => {
+	await open(page);
+	await page.evaluate(() => {
+		window.__rows = [...document.querySelectorAll('.row')];
+	});
+	await page.locator(`#${B}deleteTop`).click();
+	await expect(page.locator('.row')).toHaveCount(2);
+	const rows = await page.evaluate(() => {
+		const now = [...document.querySelectorAll('.row')];
+		return {
+			names: now.map((row) => row.querySelector('.name').textContent),
+			kept: now.map((row, i) => row === window.__rows[i]),
+			lastRemoved: !document.contains(window.__rows[2]),
+		};
+	});
+	expect(rows).toEqual({ names: ['c', 'd'], kept: [true, true], lastRemoved: true });
+});
+
+/**
+ * TActiveDataGrid rows inserted and deleted at the top: the grid and row nodes are kept by
+ * position, a listener on the grid survives, and each field shows its record's server value.
+ */
+test('TCallbackMorphTestCase: grid rows inserted and deleted at the top', async ({ page }) => {
+	await open(page);
+	const snapshot = () => page.evaluate(() => {
+		const rows = [...document.querySelectorAll('table.grid .gname')].map((el) => el.closest('tr'));
+		return {
+			names: rows.map((row) => row.querySelector('.gname').textContent),
+			values: rows.map((row) => row.querySelector('.gvalue').value),
+			kept: window.__gridRows.map((row, i) => row === rows[i]),
+			sameGrid: document.querySelector('table.grid') === window.__grid,
+		};
+	});
+	const remember = () => page.evaluate(() => {
+		window.__gridRows = [...document.querySelectorAll('table.grid .gname')].map((el) => el.closest('tr'));
+	});
+	await page.evaluate(() => {
+		window.__grid = document.querySelector('table.grid');
+		window.__gridClicks = 0;
+		window.__grid.addEventListener('click', () => window.__gridClicks++);
+	});
+	await remember();
+
+	await page.locator(`#${B}gridInsertTop`).click();
+	await expect(page.locator('table.grid .gname')).toHaveCount(4);
+	expect(await snapshot()).toEqual({
+		names: ['a3', 'b', 'c', 'd'],
+		values: ['v-a3', 'v-b', 'v-c', 'v-d'],
+		kept: [true, true, true],
+		sameGrid: true,
+	});
+	await page.locator('table.grid .gname').first().click();
+	expect(await page.evaluate(() => window.__gridClicks)).toBe(1);
+
+	await remember();
+	await page.locator(`#${B}gridDeleteTop`).click();
+	await expect(page.locator('table.grid .gname')).toHaveCount(3);
+	expect(await snapshot()).toEqual({
+		names: ['b', 'c', 'd'],
+		values: ['v-b', 'v-c', 'v-d'],
+		kept: [true, true, true, false],
+		sameGrid: true,
+	});
+	expect(await page.evaluate(() => !document.contains(window.__gridRows[3]))).toBe(true);
+});
+
+/**
+ * A 500-row TActiveDataGrid morphs in one pass well inside a second; the time is annotated.
+ */
+test('TCallbackMorphTestCase: a 500-row grid morphs in time', async ({ page }) => {
+	await open(page);
+	await expect(page.locator('table.big .bname')).toHaveCount(500);
+	await page.evaluate(() => {
+		const morph = Prado.Element.morph;
+		window.__morphMs = [];
+		Prado.Element.morph = function (...args) {
+			const start = performance.now();
+			const result = morph.apply(this, args);
+			window.__morphMs.push(performance.now() - start);
+			return result;
+		};
+		window.__bigRow = document.querySelector('table.big .bname').closest('tr');
+	});
+	await page.locator(`#${B}bigRefresh`).click();
+	await expect(page.locator('table.big .bname').last()).toHaveText('r500-1');
+	const big = await page.evaluate(() => ({
+		rows: document.querySelectorAll('table.big .bname').length,
+		kept: document.querySelector('table.big .bname').closest('tr') === window.__bigRow,
+		ms: window.__morphMs,
+	}));
+	test.info().annotations.push({ type: 'morph-ms', description: big.ms.map((ms) => ms.toFixed(1)).join(', ') });
+	expect(big.rows).toBe(500);
+	expect(big.kept).toBe(true);
+	expect(big.ms).toHaveLength(1);
+	expect(big.ms[0]).toBeLessThan(1000);
+});

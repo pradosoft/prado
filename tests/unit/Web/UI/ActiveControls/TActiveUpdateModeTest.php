@@ -10,6 +10,9 @@ use Prado\Web\UI\ActiveControls\TActivePanel;
 use Prado\Web\UI\ActiveControls\TActiveUpdateMode;
 use Prado\Web\UI\TControl;
 use Prado\Web\UI\TPage;
+use Prado\Web\UI\TSkinTemplate;
+use Prado\Web\UI\TTemplate;
+use Prado\Web\UI\TTheme;
 
 /**
  * TActiveUpdateMode, TBaseActiveControl.UpdateMode, and TPage.CallbackUpdateMode.
@@ -91,5 +94,23 @@ class TActiveUpdateModeTest extends TestCase
 		$this->assertSame($panel->getClientID(), $params[0]);
 		$this->assertCount(5, $params);
 		$this->assertTrue($params[4]);
+	}
+
+	public function testASkinSetsTheUpdateModeForEveryControlOfAType()
+	{
+		$template = new TSkinTemplate('<com:Prado\\Web\\UI\\ActiveControls\\TActivePanel ActiveControl.UpdateMode="Morph" />', __DIR__);
+		$skins = [];
+		foreach ($template->getItems() as $item) {
+			if (isset($item[TTemplate::TPL_PROPS])) {
+				$skins[$item[TTemplate::TPL_TYPE]][0] = $item[TTemplate::TPL_PROPS];
+			}
+		}
+		$theme = PradoUnit::reflectionClass(TTheme::class)->newInstanceWithoutConstructor();
+		PradoUnit::setProp($theme, '_skins', $skins);
+		foreach ([new TActivePanel(), new TActivePanel()] as $panel) {
+			$this->assertTrue($theme->applySkin($panel));
+			$this->assertSame(TActiveUpdateMode::Morph, $panel->getActiveControl()->getUpdateMode());
+			$this->assertTrue($panel->getActiveControl()->getIsMorphUpdate());
+		}
 	}
 }
