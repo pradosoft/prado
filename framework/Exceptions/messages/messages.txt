@@ -100,6 +100,7 @@ httprequest_separator_invalid			= THttpRequest.UrlParamSeparator can only contai
 httprequest_urlmanager_inexist			= THttpRequest.UrlManager '{0}' does not point to an existing module.
 httprequest_urlmanager_invalid			= THttpRequest.UrlManager '{0}' must point to a module extending from TUrlManager.
 httprequest_csrf_session_required		= THttpRequest.EnableCsrfCookie is false, which requires a session module.
+httprequest_body_json_invalid			= THttpRequest body is not valid JSON.
 
 httpcookiecollection_httpcookie_required = THttpCookieCollection can only accept THttpCookie objects.
 
@@ -187,6 +188,24 @@ pageservice_includefile_invalid			= Unable to find page service configuration {0
 pageserviceconf_file_invalid			= Unable to open page directory configuration file '{0}'.
 pageserviceconf_page_invalid			= <page> element must have an "id" attribute in page directory configuration file '{0}'.
 pageserviceconf_includefile_required	= Page configuration <include> element must have a "file" attribute.
+
+restservice_class_required				= TRestService resource and route configuration requires a 'class' attribute.
+restservice_resource_invalid			= TRestService resource class '{0}' must implement Prado\Web\Services\Rest\IRestResource.
+restservice_route_invalid				= TRestService resource '{0}' returned a route of method '{1}' that is not a TRestRoute.
+restservice_route_method_required		= TRestService route configuration of resource '{0}' requires a 'method' attribute.
+restservice_route_pattern_required		= TRestService route configuration of '{0}::{1}' requires a 'pattern' attribute.
+restservice_routeclass_invalid			= TRestService.RouteClass '{0}' must extend Prado\Web\Services\Rest\TRestRoutePattern.
+restservice_include_not_found			= TRestService include file '{0}' could not be found.
+restservice_route_unknown				= TRestService has no route named '{0}'.
+restservice_parameter_unbound			= TRestService handler '{0}' requires the parameter '{1}', which the matched route does not supply.
+restservice_http_error					= HTTP {0} {1}
+restroute_parameter_duplicate			= TRestRoutePattern placeholder '{0}' is repeated in pattern '{1}'.
+restroute_pattern_invalid				= TRestRoutePattern pattern '{0}' holds a malformed placeholder.
+restroute_parameter_missing				= TRestRoutePattern placeholder '{0}' of pattern '{1}' has no value.
+restresource_invalid_header				= TRestResource response header '{0}' has an invalid name or a value containing CR/LF.
+inputvalidator_invalid					= TInputValidator found invalid data in field(s) '{0}'.
+inputvalidator_rule_unknown				= TInputValidator rule '{0}' for field '{1}' is not recognized.
+corsmodule_credentials_wildcard			= TCorsModule.AllowOrigin must be an explicit origin (not '*') when AllowCredentials is enabled.
 
 basebehavior_cannot_setname_with_owner	= The TBaseBehavior.Name "{0}" cannot be changed (to "{1}") after the behavior is attached.
 basebehavior_sync_no_owner				= The TBaseBehavior "{0}" has no owner and cannot synchronize event handlers on a component without owners.

@@ -18,5 +18,6 @@ sessionpagestatepersister_pagestate_corrupted	= 页面状态已损坏。
 soapservice_request_invalid				= 未找到SOAP服务器“{0}”。
 jsonservice_provider_unknown			= 请求的JSON提供者“{0}”未知。
 feedservice_feed_unknown				= 请求的Feed“{0}”未知。
+httprequest_body_json_invalid				= THttpRequest 请求体不是有效的 JSON。
 
 errorhandler_internal_error				= 服务器发生内部错误。

@@ -18,5 +18,6 @@ sessionpagestatepersister_pagestate_corrupted	= Kondisi halaman rusak.
 soapservice_request_invalid				= Server SOAP '{0}' tidak ditemukan.
 jsonservice_provider_unknown			= Penyedia JSON '{0}' yang diminta tidak dikenal.
 feedservice_feed_unknown				= Feed '{0}' yang diminta tidak dikenal.
+httprequest_body_json_invalid				= Isi permintaan THttpRequest bukan JSON yang valid.
 
 errorhandler_internal_error				= Terjadi kesalahan internal pada server.
