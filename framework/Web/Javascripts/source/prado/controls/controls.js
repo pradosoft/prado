@@ -301,17 +301,16 @@ Prado.WebUI.TImageButton = Prado.Class(Prado.WebUI.PostBackControl,
 
 	/**
 	 * Add hidden inputs to capture the x,y point clicked on the image.
+	 * The point is in pixels from the image's top-left corner inside its border,
+	 * rounded to integers as a native image submit posts it. Page scrolling does
+	 * not affect it. A keyboard activation posts 0,0.
 	 * @param event DOM click event.
 	 * @param array image button options.
 	 */
 	addXYInput(options, event) {
 		const rect = this.element.getBoundingClientRect();
-		const imagePos = { top: rect.top + window.pageYOffset, left: rect.left + window.pageXOffset };
-		const clickedPos = [event.clientX, event.clientY];
-		let x = clickedPos[0]-imagePos['left']+1;
-		let y = clickedPos[1]-imagePos['top']+1;
-		x = x < 0 ? 0 : x;
-		y = y < 0 ? 0 : y;
+		const x = Math.max(0, Math.round(event.clientX - rect.left - this.element.clientLeft));
+		const y = Math.max(0, Math.round(event.clientY - rect.top - this.element.clientTop));
 		const id = this.element.id;
 		const name = options['EventTarget'];
 		const form = this.element.form || document.getElementById('PRADO_PAGESTATE').form;
