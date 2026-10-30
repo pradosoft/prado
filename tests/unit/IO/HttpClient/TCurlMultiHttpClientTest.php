@@ -10,6 +10,10 @@ use Prado\IO\Async\TFuture;
 use Prado\IO\HttpClient\TCurlMultiHttpClient;
 use Prado\IO\HttpClient\THttpClient;
 use Prado\IO\HttpClient\THttpClientException;
+use Prado\IO\Process\TProcessFork;
+use Prado\Prado;
+use Prado\Test\Unit\PradoUnit;
+use Prado\Util\Helpers\TProcessHelper;
 
 /**
  * Tests for TCurlMultiHttpClient against PHP's built-in test server.
@@ -146,6 +150,42 @@ class TCurlMultiHttpClientTest extends \PHPUnit\Framework\TestCase
 		self::assertSame(0, $client->getPendingCount());
 		$this->expectException(THttpClientException::class);
 		$client->download('GET', 'http://127.0.0.1:1/');
+	}
+
+	public function testPrepareForForkReleasesAnIdleMultiHandle(): void
+	{
+		$this->requireRunningHttpServer();
+		$app = Prado::getApplication();
+		$client = new TCurlMultiHttpClient();
+		$client->download('GET', self::url('/'));
+		self::assertNotNull(PradoUnit::getProp($client, '_multi'));
+
+		$app->raiseEvent(TProcessHelper::FX_PREPARE_FOR_FORK, $app, null);
+		self::assertNull(PradoUnit::getProp($client, '_multi'), 'An idle client releases its multi handle before a fork');
+		self::assertSame('hello', $client->download('GET', self::url('/'))->getBody(), 'The next transfer creates a new handle');
+
+		$future = $client->downloadAsync('GET', self::url('/slow?delay=0.1'));
+		$app->raiseEvent(TProcessHelper::FX_PREPARE_FOR_FORK, $app, null);
+		self::assertNotNull(PradoUnit::getProp($client, '_multi'), 'A pending transfer keeps the handle');
+		self::assertSame('slow', $future->await()->getBody());
+	}
+
+	public function testAForkedChildExitsAfterTheClientWasUsed(): void
+	{
+		$this->requireRunningHttpServer();
+		if (!TProcessHelper::isForkable()) {
+			self::markTestSkipped('pcntl forking is not available.');
+		}
+		$client = new TCurlMultiHttpClient();
+		$client->download('GET', self::url('/'));
+		$fork = TProcessFork::fork(fn () => 0);
+		$exit = TAsync::timeout(TAsync::run(fn () => $fork->wait()), 10.0);
+		try {
+			self::assertSame(0, $exit->await(), 'The child exits instead of waiting on libcurl threads it does not have');
+		} catch (TCancelledException $e) {
+			$fork->kill();
+			self::fail('The forked child did not exit within 10 seconds.');
+		}
 	}
 
 	public function testCancellationRemovesTheTransfer(): void
