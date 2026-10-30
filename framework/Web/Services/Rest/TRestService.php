@@ -16,6 +16,7 @@ use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Prado;
 use Prado\Security\TAuthorizationRule;
 use Prado\TApplicationMode;
+use Prado\TComponentReflection;
 use Prado\TPropertyValue;
 use Prado\Util\Log\TLogger;
 use Prado\Web\THttpHeaderName;
@@ -696,7 +697,9 @@ class TRestService extends \Prado\TService
 	 * Calls the handler method with the path parameters as the arguments of the
 	 * same names, cast to the scalar type each parameter declares. A parameter
 	 * typed {@see \Prado\Web\THttpRequest} receives the request and one typed
-	 * {@see TRestRoutePattern} receives the route.
+	 * {@see TRestRoutePattern} receives the route. The method is resolved through
+	 * {@see \Prado\TComponentReflection::getReflectionMethodByType()}, so a method
+	 * a behavior adds to the resource is a handler too.
 	 * @param IRestResource $resource the resource.
 	 * @param TRestRoutePattern $route the route.
 	 * @param array $parameters path parameter values keyed by placeholder name.
@@ -707,11 +710,12 @@ class TRestService extends \Prado\TService
 	protected function dispatch(IRestResource $resource, TRestRoutePattern $route, array $parameters): mixed
 	{
 		$method = (string) $route->getMethod();
-		if (!method_exists($resource, $method)) {
+		$reflection = TComponentReflection::getReflectionMethodByType($resource, $method);
+		if ($reflection === null || !$reflection->isPublic()) {
 			throw TRestException::methodNotAllowed();
 		}
 		$arguments = [];
-		foreach ((new \ReflectionMethod($resource, $method))->getParameters() as $parameter) {
+		foreach ($reflection->getParameters() as $parameter) {
 			$name = $parameter->getName();
 			$type = $parameter->getType();
 			$typeName = ($type instanceof \ReflectionNamedType) ? $type->getName() : null;
