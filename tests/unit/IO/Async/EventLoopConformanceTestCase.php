@@ -168,6 +168,21 @@ abstract class EventLoopConformanceTestCase extends \PHPUnit\Framework\TestCase
 		self::assertFalse($this->loop->isRunning());
 	}
 
+	public function testStopOutsideRunIsANoOp(): void
+	{
+		$this->loop->stop();
+		$suspension = $this->loop->suspension();
+		$this->loop->delay(0.001, fn () => $suspension->resume('ok'));
+		self::assertSame('ok', $suspension->suspend(), 'A stop() outside run() leaves the next wait running.');
+		$ran = false;
+		$this->loop->stop();
+		$this->loop->delay(0.001, function () use (&$ran) {
+			$ran = true;
+		});
+		$this->loop->run();
+		self::assertTrue($ran, 'A stop() outside run() leaves the next run() running.');
+	}
+
 	// =========================================================================
 	// Suspension
 	// =========================================================================

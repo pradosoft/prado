@@ -23,6 +23,7 @@ The default `IEventLoop`: a thin adapter over the process-wide `Revolt\EventLoop
 | Errors | `InvalidCallbackError` → `TInvalidDataValueException('eventloop_callback_invalid')`; `UnsupportedFeatureException` on `onSignal()` → `TNotSupportedException('eventloop_signals_unsupported')`; a negative delay → `TInvalidDataValueException('eventloop_delay_invalid')`. |
 | `run()` | `EventLoop::run()`; an `UncaughtThrowable` is unwrapped and the original exception rethrown. Throws `\Error` from a worker fiber. |
 | `isRunning()` | True while a `run()` of this class is in progress or the current fiber is a driver callback. The driver's own `isRunning()` stays true after an interrupt until the next run, so it is not used alone. |
+| `stop()` | The driver's `stop()` only while `isRunning()`. The driver keeps a stop until its loop fiber next runs, so a stop outside a run would end the next wait. |
 | `suspension()` | `EventLoop::getSuspension()`. |
 | `ErrorHandler` | `EventLoop::setErrorHandler()` / `getErrorHandler()`. |
 

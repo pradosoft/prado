@@ -41,3 +41,4 @@ From a worker fiber `sleep()` yields to the loop. From the main fiber it runs th
 - `run()` starts the fiber synchronously, so a body with no suspend completes before `run()` returns.
 - `all()`/`any()`/`timeout()` callbacks run on whichever fiber settles the inputs.
 - `TAsync::getLoop()` is a static; tests that inject a reactor call `TAsync::setLoop(null)` in `tearDown()`.
+- A fiber waits on `TAsync::getLoop()`, so code that runs a loop of its own makes it the `TAsync` loop; otherwise the fiber never resumes. `TSocketServerModule::serve()` does this for its `EventLoop`.

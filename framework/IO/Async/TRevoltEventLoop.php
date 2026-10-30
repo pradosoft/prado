@@ -299,11 +299,14 @@ class TRevoltEventLoop extends TComponent implements IEventLoop
 	}
 
 	/**
-	 * Stops the running loop after the current callback returns.
+	 * Stops the running loop after the current callback returns.  Outside a run it does nothing;
+	 * the driver keeps a stop until its loop fiber next runs, which would end the next wait.
 	 */
 	public function stop(): void
 	{
-		EventLoop::getDriver()->stop();
+		if ($this->isRunning()) {
+			EventLoop::getDriver()->stop();
+		}
 	}
 
 	/**

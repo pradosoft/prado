@@ -13,10 +13,11 @@ Socket streams and servers over PHP's stream transports (TCP, UDP, UNIX, UDG, wi
 - **`TSocketServer`** — A listening socket: `bind()`, `accept()`, the connection registry, and the static `select()` over `IResource` objects or raw resources that every loop wait goes through.
 - **`TSocketAddress`** — A parsed socket address (host, port, path, family).
 - **[`TSocketReactor`](./TSocketReactor.md)** — The `select()` event loop: an [`IEventLoop`](../Async/IEventLoop.md) and [`ITickableEventLoop`](../Async/ITickableEventLoop.md) with the `register()` source API for servers.
-- **`TSocketServerModule`** — Runs a `TSocketServer` as a daemon on an `IEventLoop` (`EventLoop`, `EventLoopClass`, default `TRevoltEventLoop`); raises `onClientConnect`, `onClientData`, `onClientDisconnect`. Seams: `createServer()`, `createEventLoop()`, `serveLoop()`, `acceptClient()`, `dispatchClient()`, `forgetConnection()`. `stop()` cancels the accept callback, closes the server, and stops the loop while serving.
+- **`TSocketServerModule`** — Runs a `TSocketServer` as a daemon on an `IEventLoop` (`EventLoop`, `EventLoopClass`, default `TRevoltEventLoop`); raises `onClientConnect`, `onClientData`, `onClientDisconnect`. Seams: `createServer()`, `createEventLoop()`, `serveLoop()`, `acceptClient()`, `dispatchClient()`, `forgetConnection()`. `stop()` cancels the accept callback, closes the server, and stops the loop while serving. `serve()` installs `EventLoop` as the `TAsync` loop while serving and restores the prior one on exit.
 - **`TSocketServerAction`** — The `socket/serve` shell action paired with the module.
 
 ## Notes
 
 - `TSocketServerModule::serveLoop()` registers the listener with `onReadable()`, a `repeat(SERVE_PUMP_INTERVAL)` timer that delivers sync-mode signals and stops the loop once the server no longer listens, and runs the loop; the `finally` cancels every callback it registered.
+- A handler that starts a fiber with `TAsync::run()` waits on `TAsync::getLoop()`. `serve()` makes that the served loop, so a fiber suspended on a `TSocketReactor` resumes. A `serveLoop()` override that runs a loop other than `EventLoop` sets `TAsync::setLoop()` to it, or its handlers' fibers never resume.
 - A connection closed by an `onClientData` handler is forgotten by `dispatchClient()`, so a closed resource never reaches the next `select()`.
