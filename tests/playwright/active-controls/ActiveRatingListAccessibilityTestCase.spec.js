@@ -5,7 +5,8 @@ import { genericHelper } from '../helpers.js';
  * Accessibility of the rating widget (parent TRatingList behavior, inherited by
  * TActiveRatingList): the star cells are a real radio group that assistive tech
  * can read and the keyboard can operate. Regression guard for the previous
- * `display:none` on the radios, which removed them from the a11y tree entirely.
+ * `display:none` on the radios and `aria-hidden` on their star cells, which
+ * each removed the radios from the a11y tree.
  */
 test.describe('ActiveRatingListAccessibilityTestCase', () => {
   const base = 'ctl0_Content_';
@@ -28,11 +29,12 @@ test.describe('ActiveRatingListAccessibilityTestCase', () => {
     );
     expect(display).not.toBe('none');
 
-    // The decorative star cells are hidden from assistive tech
-    const cellHidden = await page.locator(`#${base}RatingList_c0`).evaluate(
-      (el) => el.closest('td').getAttribute('aria-hidden')
-    );
-    expect(cellHidden).toBe('true');
+    // Every radio is in the accessibility tree under the radiogroup. getByRole
+    // skips aria-hidden subtrees, so an aria-hidden star cell drops its radio.
+    const radios = page.getByRole('radiogroup').getByRole('radio');
+    await expect(radios).toHaveCount(6);
+    await expect(page.getByRole('radio', { name: 'Good', exact: true })).toHaveCount(1);
+    expect(await page.locator(`#${base}RatingList [aria-hidden="true"]`).count()).toBe(0);
 
     // Keyboard: focus a star's radio and activate it with the Space key, the
     // native radio behavior — no mouse involved

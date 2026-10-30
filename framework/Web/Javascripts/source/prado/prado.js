@@ -563,40 +563,104 @@ Prado.Element =
 		}
 		const el = document.getElementById(element);
 		if(!el) return;
+		// innerHTML / insertAdjacentHTML parse <script> tags but the HTML spec
+		// marks them as already-executed, so the browser refuses to run them.
+		// jQuery's .html() / .replaceWith() worked around this by re-creating
+		// script nodes. Mirror that so Prado callback responses that embed
+		// inline JavaScript continue to execute.
 		if(self)
-		  el.outerHTML = content;
+		{
+			// The new nodes are inserted before el, then el is removed. Only
+			// the inserted nodes run their scripts; the siblings' scripts do not.
+			const parent = el.parentNode;
+			const before = el.previousSibling;
+			el.insertAdjacentHTML('beforebegin', content);
+			const inserted = [];
+			for (let node = before ? before.nextSibling : parent.firstChild; node !== el; node = node.nextSibling)
+				inserted.push(node);
+			el.remove();
+			Prado.Element.executeScripts(inserted);
+		}
 		else
-		  el.innerHTML = content;
-		// innerHTML / outerHTML parse <script> tags but the HTML spec marks
-		// them as already-executed, so the browser refuses to run them. jQuery's
-		// .html() / .replaceWith() worked around this by re-creating script
-		// nodes. Mirror that so Prado callback responses that embed inline
-		// JavaScript continue to execute.
-		const container = self ? el.parentNode : el;
-		if (container) Prado.Element.executeScripts(container);
+		{
+			el.innerHTML = content;
+			Prado.Element.executeScripts(el);
+		}
 	},
 
 	/**
-	 * Re-evaluate every <script> element under `root`. Used after
-	 * Prado.Element.replace() to mimic jQuery .html() / .replaceWith()
-	 * behavior, which executes inline scripts injected via innerHTML.
-	 * The re-created scripts carry the page CSP nonce,
+	 * Re-evaluate `root` when it is a <script> element, and every <script>
+	 * element under `root`. Used after Prado.Element.replace() to mimic jQuery
+	 * .html() / .replaceWith() behavior, which executes inline scripts injected
+	 * via innerHTML. The re-created scripts carry the page CSP nonce,
 	 * {@link Prado.Element.getPageNonce}, in place of the callback's nonce.
+	 * A text or comment node has no scripts.
+	 *
+	 * The scripts run in document order. A re-created external script loads
+	 * asynchronously, so the scripts after a classic `<script src>` without
+	 * `async` run once it loads or fails, as jQuery's synchronous load ran them.
 	 * @function ?
-	 * @param {element} root - DOM subtree to scan
+	 * @param {node|node[]} root - DOM node or subtree to scan, or a list of them in document order
+	 * @return {Promise} resolves once every script has run or failed to load
 	 * @since 4.4.0
 	 */
 	executeScripts(root) {
+		const scripts = [];
+		for (const node of Array.isArray(root) ? root : [root]) {
+			if (node.nodeType !== Node.ELEMENT_NODE)
+				continue;
+			scripts.push(...(node.matches('script') ? [node] : node.querySelectorAll('script')));
+		}
+		return Prado.Element.runScripts(scripts, 0);
+	},
+
+	/**
+	 * Re-creates the scripts from `index` on, in order, and waits for each
+	 * classic external script without `async` to load before the next one.
+	 * @function ?
+	 * @param {element[]} scripts - the parsed, inert <script> elements
+	 * @param {number} index - the first script to re-create
+	 * @return {Promise} resolves once every script has run or failed to load
+	 * @since 4.4.0
+	 */
+	runScripts(scripts, index) {
 		const nonce = Prado.Element.getPageNonce();
-		const scripts = root.querySelectorAll('script');
-		for (const oldScript of scripts) {
+		for (let i = index; i < scripts.length; i++) {
+			const oldScript = scripts[i];
+			if (!oldScript.parentNode)
+				continue;
 			const fresh = document.createElement('script');
 			for (const attr of oldScript.attributes) fresh.setAttribute(attr.name, attr.value);
 			if (nonce)
 				fresh.nonce = nonce;
 			fresh.text = oldScript.textContent;
+			if (Prado.Element.isBlockingScript(oldScript))
+			{
+				return new Promise((resolve) => {
+					const next = () => resolve(Prado.Element.runScripts(scripts, i + 1));
+					fresh.addEventListener('load', next, { once: true });
+					fresh.addEventListener('error', next, { once: true });
+					oldScript.parentNode.replaceChild(fresh, oldScript);
+				});
+			}
 			oldScript.parentNode.replaceChild(fresh, oldScript);
 		}
+		return Promise.resolve();
+	},
+
+	/**
+	 * Tells whether a parsed script is a classic external script that the
+	 * parser would load and run before the scripts after it.
+	 * @function ?
+	 * @param {element} script - the <script> element
+	 * @return {boolean} whether the scripts after it wait for it to load
+	 * @since 4.4.0
+	 */
+	isBlockingScript(script) {
+		if (!script.hasAttribute('src') || script.hasAttribute('async') || script.hasAttribute('nomodule'))
+			return false;
+		const type = (script.getAttribute('type') || '').trim();
+		return type === '' || /^(?:text|application)\/(?:x-)?(?:java|ecma)script$/i.test(type);
 	},
 
 	/**

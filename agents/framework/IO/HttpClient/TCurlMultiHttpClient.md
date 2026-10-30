@@ -33,8 +33,12 @@ PHP exposes neither `CURLMOPT_SOCKETFUNCTION` nor `CURLMOPT_TIMERFUNCTION`, so t
 
 Per-request `Timeout`, `FollowRedirects`, and `MaxRedirects` come from the inherited properties through `createHandle()`.
 
+## Forking
+libcurl's resolver thread pool does not survive `fork()`; a child that destroys an inherited `CurlMultiHandle` blocks forever in `curl_multi_cleanup()` waiting for threads it does not have (seen as a forked test child that never exits, the parent waiting in `stream_select()`). The client listens to `fxPrepareForFork`, which `TProcessHelper::fork()` raises before forking: an idle client (no pending transfer) drops its multi handle in the parent and creates a new one on the next transfer. A fork while a transfer is pending is not supported; a child that inherits a live multi handle must not exit normally.
+
 ## Gotchas
 - The pump timer holds the client; a client with pending transfers is not destroyed.
+- Code that calls `pcntl_fork()` directly bypasses `fxPrepareForFork`; raise it on the application first, or fork before using the client.
 - `download()` from the main fiber runs the loop, which also runs every other due callback (cron task fibers, timers). Code that must not re-enter the loop uses `TCurlHttpClient`.
 - Not in `THttpClient::TRANSPORTS`; `THttpClient::create()` keeps returning the synchronous clients.
 - A multi-handle failure (`curl_multi_exec()` returning other than `CURLM_OK`) rejects every pending transfer with the same exception.
