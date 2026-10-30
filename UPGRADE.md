@@ -106,6 +106,10 @@ Upgrading from v4.3.3
   extra parameters in `event.detail` in place of handler arguments. Only `click`, `focus`, `blur`, and a form's `submit` run the element's native method.
 - A TColorPicker in `Basic` mode stays open after a palette color is clicked; it closes on a click outside the picker or on Escape.
 - TAccordion animates for `AnimationDuration` seconds, default 1; in 4.3 every animation took jQuery's default 400 ms.
+- A `<script src>` in content a callback replaces (`TCallbackClientScript::replaceContent()` and active control re-renders) loads asynchronously.
+  The inline scripts after it in that content wait for it to load. The later actions of the same callback response do not wait, as they did under jQuery's
+  synchronous load, so an `evaluateScript()` that uses what the file defines can run first. Call that code from an inline script after the `<script src>`,
+  or load the file with the page.
 - `Prado\Web\TUri` is now a PSR-7 `UriInterface`: scheme/host are lower-cased, path/query/fragment are
   percent-encoded, and `getPort()` returns `?int` (`null` when absent or scheme default).
 - TDatePicker::InputMode changed to TDatePicker::DateInputMode - due to conflict with TWebControl::InputMode
