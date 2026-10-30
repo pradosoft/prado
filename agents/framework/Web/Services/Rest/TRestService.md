@@ -56,7 +56,7 @@ The PHP form uses the plural keys `resources`, `routes`, `groups`, and `include`
 - `onError($exception)` — before the problem document is written; the `TRestException`, or the exception behind a `500`.
 
 ## Dispatch
-Path parameters are passed by name and cast to the declared scalar type (`int`, `float`, `bool`; a value that does not fit is `404`). A parameter typed `THttpRequest` or `TRestRoutePattern` is injected. A missing parameter uses its default, otherwise `TConfigurationException('restservice_parameter_unbound')` (a `500`). A handler returning `null`, or status `204`, or a `HEAD` request, sends no body. A `JsonSerializable` return value encodes as any array.
+The handler is resolved with `TComponentReflection::getReflectionMethodByType()`, so a behavior-added method serves too. Path parameters are passed by name and cast to the declared scalar type (`int`, `float`, `bool`; a value that does not fit is `404`). A parameter typed `THttpRequest` or `TRestRoutePattern` is injected. A missing parameter uses its default, otherwise `TConfigurationException('restservice_parameter_unbound')` (a `500`). A handler returning `null`, or status `204`, or a `HEAD` request, sends no body. A `JsonSerializable` return value encodes as any array.
 
 ## Patterns & Gotchas
 - `init()` matches the request before `run()`, so a module may read `getRoute()` from `onInitComplete` on.

@@ -29,7 +29,7 @@ class UsersResource extends TRestResource
 ```
 
 ## Routes
-- `getRoutes(): array<string, TRestRoute[]>` — for each public method, the `TRestRoute` attributes of the method, looked up through `TComponentReflection::getMethodAttributesByType()` from the class up its parents, so an override without the attribute keeps the inherited route. Override to declare routes as a table: `return parent::getRoutes() + ['export' => [new TRestRoute('GET', 'export')]];`.
+- `getRoutes(): array<string, TRestRoute[]>` — `TComponentReflection::getMethodsWithAttributeByType()` from the class up its parents (public, non-static methods only), so an override without the attribute keeps the inherited route. Override to declare routes as a table: `return parent::getRoutes() + ['export' => [new TRestRoute('GET', 'export')]];`.
 - `getRoutePrefix()` — the `pattern` of the nearest class-level `TRestRoute` (`TComponentReflection::getClassAttributesByType()` with inheritance), `''` for none. A `prefix` attribute in the configuration replaces it.
 - `setRoute($route, $parameters)`, `getRoute()`, `getPathParameters()`, `getPathParameter($name, $default)` — set by the service before dispatch.
 - `authorize(TRestRoutePattern $route)` — no-op; override and throw (`unauthorized()`, `forbidden()`) to refuse.

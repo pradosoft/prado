@@ -149,24 +149,23 @@ abstract class TRestResource extends TApplicationComponent implements IRestResou
 
 	/**
 	 * Returns the routes of the resource from the {@see TRestRoute} attributes of its
-	 * public methods. A method without the attribute takes the attributes of the
-	 * method it overrides, up the parent classes. Override this method to declare
-	 * routes as a table.
+	 * public methods, through {@see \Prado\TComponentReflection::getMethodsWithAttributeByType()}
+	 * from the class up its parents, so a method without the attribute takes the
+	 * attributes of the method it overrides. Override this method to declare routes
+	 * as a table.
 	 * @return array<string,TRestRoute[]> route declarations keyed by method name.
 	 */
 	public function getRoutes(): array
 	{
 		$routes = [];
-		foreach ((new \ReflectionClass($this))->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
-			if ($method->isStatic() || $method->isConstructor()) {
-				continue;
-			}
-			$name = $method->getName();
-			for ($class = static::class; $class !== false; $class = get_parent_class($class)) {
-				$attributes = TComponentReflection::getMethodAttributesByType($class, $name, TRestRoute::class);
-				if ($attributes !== []) {
-					$routes[$name] = $attributes;
-					break;
+		for ($class = static::class; $class !== false; $class = get_parent_class($class)) {
+			foreach (TComponentReflection::getMethodsWithAttributeByType($class, TRestRoute::class) as $method => $attributes) {
+				if (isset($routes[$method])) {
+					continue;
+				}
+				$reflection = TComponentReflection::getReflectionMethodByType($class, $method);
+				if ($reflection !== null && $reflection->isPublic() && !$reflection->isStatic()) {
+					$routes[$method] = $attributes;
 				}
 			}
 		}
