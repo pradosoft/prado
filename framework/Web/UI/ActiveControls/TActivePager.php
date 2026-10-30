@@ -92,6 +92,7 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	protected function buildListPager()
 	{
 		$list = new TActiveDropDownList();
+		$this->labelPageList($list);
 
 		$list->getActiveControl()->setClientSide(
 			$this->getClientSide()

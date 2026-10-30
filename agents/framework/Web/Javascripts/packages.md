@@ -31,6 +31,7 @@ This file defines the JavaScript package registry for PRADO. It declares all JS 
 | `colorpicker` | `prado/colorpicker/colorpicker.js` |
 | `slider` | `prado/controls/slider.js` |
 | `keyboard` | `prado/controls/keyboard.js` |
+| `rowselect` | `prado/controls/rowselect.js` |
 | `tabpanel` | `prado/controls/tabpanel.js` |
 | `accordion` | `prado/controls/accordion.js` |
 | `htmlarea` | `prado/controls/htmlarea.js` |

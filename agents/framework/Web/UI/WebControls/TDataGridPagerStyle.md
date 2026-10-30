@@ -16,6 +16,7 @@ TDataGridPagerStyle specifies styles and properties for datagrid pager display.
 - `ButtonType` - Button type (LinkButton or PushButton)
 - `Position` - Pager position (Top, Bottom, TopAndBottom)
 - `PageButtonCount` - Max number of pager buttons (default 10)
+- `ListLayout` - Renders the pager buttons as `<ul>` list items (default false; @since 4.4.0)
 - `NextPageText` / `PrevPageText` / `FirstPageText` / `LastPageText` - Button text. In link-button and label pager buttons, the default page texts (`<`, `>`, `<<`, `>>`) render HTML-encoded (`TDataGrid::encodeDefaultPagerText()`); any other text renders as HTML. Push and image buttons put the text in an encoded attribute.
 
 ## See Also

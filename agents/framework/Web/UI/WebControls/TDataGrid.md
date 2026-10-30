@@ -36,6 +36,7 @@ TDataGrid::CMD_PAGE_LAST  = 'Last'
 | `TButtonColumn` | Renders a button/link per row (Select, Edit, Delete, Custom) |
 | `TEditCommandColumn` | Edit/Update/Cancel button group for inline editing |
 | `TCheckBoxColumn` | Checkbox column (read-only or editable) |
+| [`TRowSelectColumn`](./TRowSelectColumn.md) | Row checkboxes with a select-all header checkbox; `getSelectedIndices()` / `getSelectedKeys()` (@since 4.4.0) |
 | `TDropDownListColumn` | Drop-down in edit mode |
 | `TTemplateColumn` | Custom `ItemTemplate`, `EditItemTemplate`, `HeaderTemplate`, `FooterTemplate` |
 | `TAutoIdColumn` | Auto-incrementing row number |
@@ -64,6 +65,8 @@ TDataGrid::CMD_PAGE_LAST  = 'Last'
 | `Caption` | string | Table caption text, rendered as HTML unless `Encode` is true |
 | `Encode` | bool | Whether `Caption` is HTML-encoded when rendered (default: false; 4.4.0) |
 | `EmptyTemplate` | ITemplate | Rendered when no data |
+| `StickyHeader` | bool | `<thead>` renders `position:sticky; top:0; z-index:1`, with `background-color:Canvas` unless `TableHeadStyle` sets one (default false; 4.4.0) |
+| `ResponsiveMode` | [`TDataGridResponsiveMode`](./TDataGridResponsiveMode.md) | `Scroll` wraps the table in `<div role="region" tabindex="0" style="overflow-x:auto">` (default `None`; 4.4.0) |
 
 ## Style Properties
 
@@ -123,6 +126,13 @@ At render, `applySortState()` sets `aria-sort="ascending|descending"` on the hea
 Before raising `OnSortCommand`, `focusSortControl()` sets `TPage::setFocus()` to the sort button's client ID (kept in `getSortFocusID()`), so after the postback a keyboard or screen reader user is back at the header they activated; the header's client IDs are the same after a rebind. A handler's own `setFocus()` wins. `TActiveDataGrid` queues `TCallbackClientScript::focus()` after its `replaceContent()`, since a callback renders no page focus script. (`PRADO_LASTFOCUS` restore is not wired: no control sets the client `TrackFocus` option.)
 
 Accessibility audit (4.4.0, Chromium/Firefox/WebKit): the header `<th>` in `<thead>` is `columnheader`, the role `aria-sort` belongs to; the sort link keeps the header text as its name. Not changed: a sort header is a link (`TLinkButton`, `href="javascript:;"`) for an action, and an image header (`HeaderImageUrl`) without `HeaderText` has no alternate text, so no name.
+
+## Accessibility (4.4.0, #1407)
+
+- **Caption** names the table. With `ResponsiveMode` Scroll the `<caption>` gets the ID `{ClientID}_caption` and names the scroll region through `aria-labelledby`; without a caption the region takes the grid's `aria-label`, else "Table". The region is focusable so arrow keys scroll it (WCAG 2.1.1). The pagers stay outside the region.
+- **StickyHeader** sticks to the nearest scrolling ancestor. Inside a Scroll region that is the region, which scrolls vertically only when CSS limits its height.
+- **Pagers** render a named `<nav>` landmark with named buttons and `aria-current="page"`; see [TDataGridPager](./TDataGridPager.md) and [TPagerAccessibilityTrait](./TPagerAccessibilityTrait.md). TDataGrid uses the trait for the button names in `buildNextPrevPager()` / `buildNumericPager()`.
+- **Row selection**: [TRowSelectColumn](./TRowSelectColumn.md).
 
 ## Paging
 

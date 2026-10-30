@@ -128,6 +128,11 @@ Upgrading from v4.3.3
   Prado cache to a PSR consumer, and `TPsrCache` stores a Prado cache in a PSR cache. All caching in Prado 5 is PSR
   compliant, so a new application reaches its cache through `TPsrSimpleCache` or `TPsrCacheItemPool`, and an
   application that intends to upgrade to Prado 5 moves its cache access to them; that code carries over unchanged.
+- Pager and wizard markup changed for accessibility (#1407). `TPager` renders a `<nav>` instead of a `<span>`, and the
+  `TDataGrid` pager renders a `<nav>` instead of a `<div>`; both carry `aria-label="Pagination"`. CSS that selects
+  `span` or `div` pagers selects `nav`; a pager placed inline in text styles `nav` with `display: inline`. The default
+  `TWizard` side bar renders its steps as an `<ol>` instead of a `<table>`; CSS for the side bar table, or
+  `list-style: none`, restores the previous look. A custom `SideBarTemplate` is unchanged.
 
 Upgrading from v4.3.2
 ---------------------

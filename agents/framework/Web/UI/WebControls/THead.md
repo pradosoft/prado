@@ -8,7 +8,7 @@
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-THead displays a head element on a page, rendering the page title, base URL, shortcut icon, meta tags, and registered stylesheets/JavaScripts. It manages meta tags through its MetaTags collection property.
+THead displays a head element on a page, rendering the page title, base URL, shortcut icon, meta tags, link tags, and registered stylesheets/JavaScripts, in that order. It manages meta tags through its MetaTags collection property and `<link>` elements through its LinkTags collection (4.4.0).
 
 ## Key Properties/Methods
 
@@ -16,7 +16,8 @@ THead displays a head element on a page, rendering the page title, base URL, sho
 - `getBaseUrl()` / `setBaseUrl()` - Gets or sets base URL for the page
 - `getShortcutIcon()` / `setShortcutIcon()` - Gets or sets favicon URL
 - `getMetaTags()` - Returns the TMetaTagCollection
-- `addParsedObject()` - Adds TMetaTag components to the collection
+- `getLinkTags()` - Returns the TLinkTagCollection (4.4.0)
+- `addParsedObject()` - Adds TMetaTag and TLinkTag components to their collections
 - `render()` - Renders the head element with all contents
 
 ## See Also
@@ -24,3 +25,5 @@ THead displays a head element on a page, rendering the page title, base URL, sho
 - [TPage](../TPage.md)
 - [TMetaTag](./TMetaTag.md)
 - [TMetaTagCollection](./TMetaTagCollection.md)
+- [TLinkTag](./TLinkTag.md)
+- [TLinkTagCollection](./TLinkTagCollection.md)

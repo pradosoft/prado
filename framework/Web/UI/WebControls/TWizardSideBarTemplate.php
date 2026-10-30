@@ -15,6 +15,8 @@ use Prado\Web\UI\ITemplate;
 /**
  * TWizardSideBarTemplate class.
  * TWizardSideBarTemplate is the default template for wizard sidebar.
+ * It renders the wizard steps as an ordered list, a {@see TDataList} with the
+ * {@see TRepeatLayout::OrderedList} layout.
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
@@ -22,13 +24,14 @@ class TWizardSideBarTemplate extends \Prado\TComponent implements ITemplate
 {
 	/**
 	 * Instantiates the template.
-	 * It creates a {@see \Prado\Web\UI\WebControls\TDataList} control.
+	 * It creates a {@see \Prado\Web\UI\WebControls\TDataList} control with the OrderedList layout.
 	 * @param \Prado\Web\UI\TControl $parent parent to hold the content within the template
 	 */
 	public function instantiateIn($parent)
 	{
 		$dataList = new TDataList();
 		$dataList->setID(TWizard::ID_SIDEBAR_LIST);
+		$dataList->setRepeatLayout(TRepeatLayout::OrderedList);
 		$dataList->getSelectedItemStyle()->getFont()->setBold(true);
 		$dataList->setItemTemplate(new TWizardSideBarListItemTemplate());
 		$parent->getControls()->add($dataList);

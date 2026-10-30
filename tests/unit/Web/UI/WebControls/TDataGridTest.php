@@ -27,6 +27,7 @@ use Prado\Web\UI\WebControls\TDataGridPagerEventParameter;
 use Prado\Web\UI\WebControls\TDataGridPagerMode;
 use Prado\Web\UI\WebControls\TDataGridPagerPosition;
 use Prado\Web\UI\WebControls\TDataGridPagerStyle;
+use Prado\Web\UI\WebControls\TDataGridResponsiveMode;
 use Prado\Web\UI\WebControls\TDataGridSortCommandEventParameter;
 use Prado\Web\UI\WebControls\TDataGridSortDirection;
 use Prado\Web\UI\WebControls\TLabel;
@@ -1849,9 +1850,9 @@ class TDataGridTest extends TestCase
 		$this->bind($grid, $this->rows(2));
 		$page = $this->attachToPage($grid);
 		$output = $this->render($grid);
-		$this->assertSame(2, substr_count($output, '<div'));
-		$this->assertLessThan(strpos($output, '<table'), strpos($output, '<div'));
-		$this->assertGreaterThan(strrpos($output, '</table>'), strrpos($output, '<div'));
+		$this->assertSame(2, substr_count($output, '<nav aria-label="Pagination"'));
+		$this->assertLessThan(strpos($output, '<table'), strpos($output, '<nav'));
+		$this->assertGreaterThan(strrpos($output, '</table>'), strrpos($output, '<nav'));
 		$this->assertSame(2, substr_count($output, '<span>&lt;</span>'));
 		$this->assertSame(4, count($page->getClientScript()->getPostBackControls()));
 	}
@@ -1864,8 +1865,8 @@ class TDataGridTest extends TestCase
 		$this->attachToPage($grid);
 		$output = $this->render($grid);
 		$this->assertStringStartsWith("\n<table", $output);
-		$this->assertSame(1, substr_count($output, '<div'));
-		$this->assertGreaterThan(strrpos($output, '</table>'), strpos($output, '<div'));
+		$this->assertSame(1, substr_count($output, '<nav'));
+		$this->assertGreaterThan(strrpos($output, '</table>'), strpos($output, '<nav'));
 	}
 
 	public function testRenderEmptyTemplate()
@@ -1897,5 +1898,207 @@ class TDataGridTest extends TestCase
 		$output = $this->render($grid);
 		$this->assertStringContainsString('<td rowspan="2">x</td>', $output);
 		$this->assertSame(1, substr_count($output, '>x</td>'));
+	}
+
+	// ================================================================================
+	// Accessibility
+	// ================================================================================
+
+	public function testPagerRendersNamedNavLandmark()
+	{
+		$grid = $this->createGrid();
+		$grid->setAllowPaging(true);
+		$grid->setPageSize(1);
+		$this->bind($grid, $this->rows(2));
+		$this->attachToPage($grid);
+		$output = $this->render($grid);
+		$this->assertStringContainsString('<nav aria-label="Pagination">', $output);
+		$this->assertStringContainsString('</nav>', $output);
+	}
+
+	public function testPagerKeepsAuthorAccessibleName()
+	{
+		$grid = $this->createGrid();
+		$grid->setAllowPaging(true);
+		$grid->setPageSize(1);
+		$grid->attachEventHandler('OnPagerCreated', function ($sender, $param) {
+			$param->getPager()->setAttribute('aria-label', 'Cities pages');
+		});
+		$this->bind($grid, $this->rows(2));
+		$this->attachToPage($grid);
+		$output = $this->render($grid);
+		$this->assertStringContainsString('aria-label="Cities pages"', $output);
+		$this->assertStringNotContainsString('aria-label="Pagination"', $output);
+	}
+
+	public function testNextPrevPagerButtonNames()
+	{
+		$grid = $this->createGrid();
+		$grid->setAllowPaging(true);
+		$grid->setPageSize(1);
+		$grid->setCurrentPageIndex(1);
+		$grid->getPagerStyle()->setButtonType(TDataGridPagerButtonType::PushButton);
+		$this->bind($grid, $this->rows(3));
+		$this->attachToPage($grid);
+		$output = $this->render($grid);
+		foreach (['First page', 'Previous page', 'Next page', 'Last page'] as $name) {
+			$this->assertStringContainsString('aria-label="' . $name . '"', $output);
+		}
+	}
+
+	public function testPagerLabelsTakeNoAccessibleName()
+	{
+		$grid = $this->createGrid();
+		$grid->setAllowPaging(true);
+		$grid->setPageSize(1);
+		$this->bind($grid, $this->rows(2));
+		$this->attachToPage($grid);
+		$output = $this->render($grid);
+		$this->assertStringContainsString('<span>&lt;</span>', $output);
+		$this->assertStringContainsString('aria-label="Next page"', $output);
+		$this->assertStringNotContainsString('aria-label="Previous page"', $output);
+	}
+
+	public function testCustomPagerTextKeepsItsName()
+	{
+		$grid = $this->createGrid();
+		$grid->setAllowPaging(true);
+		$grid->setPageSize(1);
+		$grid->getPagerStyle()->setNextPageText('Next');
+		$this->bind($grid, $this->rows(2));
+		$this->attachToPage($grid);
+		$this->assertStringNotContainsString('aria-label="Next page"', $this->render($grid));
+	}
+
+	public function testNumericPagerMarksCurrentPage()
+	{
+		$grid = $this->createGrid();
+		$grid->setAllowPaging(true);
+		$grid->setPageSize(1);
+		$grid->setCurrentPageIndex(1);
+		$grid->getPagerStyle()->setMode(TDataGridPagerMode::Numeric);
+		$this->bind($grid, $this->rows(3));
+		$this->attachToPage($grid);
+		$output = $this->render($grid);
+		$this->assertStringContainsString('<span aria-current="page">2</span>', $output);
+		$this->assertMatchesRegularExpression('#<a [^>]*aria-label="Page 1"[^>]*>1</a>#', $output);
+		$this->assertMatchesRegularExpression('#<a [^>]*aria-label="Page 3"[^>]*>3</a>#', $output);
+	}
+
+	public function testNumericPagerNamesPageSetButtons()
+	{
+		$grid = $this->createGrid();
+		$grid->setAllowPaging(true);
+		$grid->setPageSize(1);
+		$grid->setCurrentPageIndex(2);
+		$grid->getPagerStyle()->setMode(TDataGridPagerMode::Numeric);
+		$grid->getPagerStyle()->setPageButtonCount(2);
+		$this->bind($grid, $this->rows(5));
+		$this->attachToPage($grid);
+		$output = $this->render($grid);
+		$this->assertStringContainsString('aria-label="Previous pages"', $output);
+		$this->assertStringContainsString('aria-label="Next pages"', $output);
+	}
+
+	public function testPagerListLayout()
+	{
+		$grid = $this->createGrid();
+		$grid->setAllowPaging(true);
+		$grid->setPageSize(1);
+		$grid->getPagerStyle()->setListLayout(true);
+		$this->bind($grid, $this->rows(2));
+		$this->attachToPage($grid);
+		$output = $this->render($grid);
+		$this->assertMatchesRegularExpression('#<nav aria-label="Pagination"><ul><li><span>&lt;&lt;</span></li><li><span>&lt;</span></li><li><a [^>]*>&gt;</a></li><li><a [^>]*>&gt;&gt;</a></li></ul></nav>#', $output);
+	}
+
+	public function testStickyHeaderDefaultsToFalse()
+	{
+		$grid = $this->createGrid();
+		$this->assertFalse($grid->getStickyHeader());
+		$this->bind($grid, $this->rows(1));
+		$this->attachToPage($grid);
+		$this->assertStringNotContainsString('sticky', $this->render($grid));
+	}
+
+	public function testStickyHeaderRendersStickyThead()
+	{
+		$grid = $this->createGrid();
+		$grid->setStickyHeader('true');
+		$this->assertTrue($grid->getStickyHeader());
+		$this->bind($grid, $this->rows(1));
+		$this->attachToPage($grid);
+		$this->assertStringContainsString('<thead style="position:sticky;top:0;z-index:1;background-color:Canvas;">', $this->render($grid));
+	}
+
+	public function testStickyHeaderKeepsTableHeadBackground()
+	{
+		$grid = $this->createGrid();
+		$grid->setStickyHeader(true);
+		$grid->getTableHeadStyle()->setBackColor('navy');
+		$this->bind($grid, $this->rows(1));
+		$this->attachToPage($grid);
+		$output = $this->render($grid);
+		$this->assertStringContainsString('position:sticky;', $output);
+		$this->assertStringContainsString('background-color:navy;', $output);
+		$this->assertStringNotContainsString('Canvas', $output);
+	}
+
+	public function testResponsiveModeDefaultsToNone()
+	{
+		$grid = $this->createGrid();
+		$this->assertSame(TDataGridResponsiveMode::None, $grid->getResponsiveMode());
+		$this->bind($grid, $this->rows(1));
+		$this->attachToPage($grid);
+		$this->assertStringNotContainsString('role="region"', $this->render($grid));
+	}
+
+	public function testResponsiveModeRejectsUnknownValue()
+	{
+		$this->expectException(TInvalidDataValueException::class);
+		$this->createGrid()->setResponsiveMode('Stack');
+	}
+
+	public function testResponsiveScrollRegionNamedByCaption()
+	{
+		$grid = $this->createGrid();
+		$grid->setCaption('Cities');
+		$grid->setResponsiveMode(TDataGridResponsiveMode::Scroll);
+		$this->bind($grid, $this->rows(1));
+		$this->attachToPage($grid);
+		$output = $this->render($grid);
+		$this->assertStringContainsString('<div role="region" aria-labelledby="Grid_caption" tabindex="0" style="overflow-x:auto;">' . "\n" . '<table id="Grid"><caption id="Grid_caption">Cities</caption>', $output);
+		$this->assertStringContainsString("</table>\n</div>", $output);
+	}
+
+	public function testResponsiveScrollRegionNamedByAriaLabel()
+	{
+		$grid = $this->createGrid();
+		$grid->setAttribute('aria-label', 'City list');
+		$grid->setResponsiveMode(TDataGridResponsiveMode::Scroll);
+		$this->bind($grid, $this->rows(1));
+		$this->attachToPage($grid);
+		$this->assertStringContainsString('<div role="region" aria-label="City list" tabindex="0"', $this->render($grid));
+	}
+
+	public function testResponsiveScrollRegionDefaultName()
+	{
+		$grid = $this->createGrid();
+		$grid->setResponsiveMode(TDataGridResponsiveMode::Scroll);
+		$this->bind($grid, $this->rows(1));
+		$this->attachToPage($grid);
+		$this->assertStringContainsString('<div role="region" aria-label="Table" tabindex="0"', $this->render($grid));
+	}
+
+	public function testResponsiveScrollRegionExcludesPagers()
+	{
+		$grid = $this->createGrid();
+		$grid->setAllowPaging(true);
+		$grid->setPageSize(1);
+		$grid->setResponsiveMode(TDataGridResponsiveMode::Scroll);
+		$this->bind($grid, $this->rows(2));
+		$this->attachToPage($grid);
+		$output = $this->render($grid);
+		$this->assertLessThan(strpos($output, '<nav'), strpos($output, '</div>'));
 	}
 }
