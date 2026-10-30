@@ -20,11 +20,19 @@ namespace Prado\Web\UI\WebControls;
  *
  * TDataGridPager represents a datagrid pager.
  *
+ * The pager renders a `<nav>` landmark named "Pagination". An `aria-label` or
+ * `aria-labelledby` attribute set on the pager in an
+ * {@see TDataGrid::onPagerCreated OnPagerCreated} handler replaces the name.
+ * {@see TDataGridPagerStyle::setListLayout PagerStyle.ListLayout} renders the
+ * buttons as a `<ul>` list; see {@see TPagerAccessibilityTrait}.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
 class TDataGridPager extends TPanel implements \Prado\Web\UI\INamingContainer
 {
+	use TPagerAccessibilityTrait;
+
 	private $_dataGrid;
 
 	/**
@@ -35,6 +43,41 @@ class TDataGridPager extends TPanel implements \Prado\Web\UI\INamingContainer
 	{
 		$this->_dataGrid = $dataGrid;
 		parent::__construct();
+	}
+
+	/**
+	 * @return string the tag name of the pager, `nav`.
+	 * @since 4.4.0
+	 */
+	protected function getTagName()
+	{
+		return 'nav';
+	}
+
+	/**
+	 * Adds the default accessible name of the pager.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer
+	 * @since 4.4.0
+	 */
+	protected function addAttributesToRender($writer)
+	{
+		parent::addAttributesToRender($writer);
+		$this->addPagerLabelToRender($writer);
+	}
+
+	/**
+	 * Renders the pager buttons, as a `<ul>` list when the datagrid
+	 * {@see TDataGridPagerStyle::getListLayout PagerStyle.ListLayout} is true.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer
+	 * @since 4.4.0
+	 */
+	public function renderContents($writer)
+	{
+		if ($this->_dataGrid->getPagerStyle()->getListLayout()) {
+			$this->renderPagerList($writer);
+		} else {
+			parent::renderContents($writer);
+		}
 	}
 
 	/**

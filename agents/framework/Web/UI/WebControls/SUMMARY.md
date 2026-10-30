@@ -74,7 +74,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 ### Data Controls
 
-- **`TDataGrid`** — Tabular display with paging/sorting/editing; column types: `TBoundColumn`, `TButtonColumn`, `TCheckBoxColumn`, `TDropDownListColumn`, `TTemplateColumn`.
+- **`TDataGrid`** — Tabular display with paging/sorting/editing; column types: `TBoundColumn`, `TButtonColumn`, `TCheckBoxColumn`, `TDropDownListColumn`, `TRowSelectColumn`, `TTemplateColumn`.
 
 - **`TDataList`** — Repeating item list with templates; `EditItemIndex` for inline editing.
 

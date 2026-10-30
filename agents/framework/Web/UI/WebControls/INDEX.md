@@ -19,6 +19,8 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 - **[`TBaseTerm`](TBaseTerm.md)** — Base for `TAbbr`, `TDfn`, and `TVar`: renders a term element and marks the term's other occurrences in a target control through `onRenderFilter`. @since 4.4.0
 
+- **[`TPagerAccessibilityTrait`](TPagerAccessibilityTrait.md)** — Accessible names, `aria-current="page"`, the named `<nav>`, and the `<ul>` list layout of the `TPager` and `TDataGrid` pagers. @since 4.4.0
+
 - **[`TCiteTrait`](TCiteTrait.md)** — Backs the `Cite` property (source or explanation URL) of `TQuote`, `TBlockQuote`, `TIns`, and `TDel`. @since 4.4.0
 
 - **[`TBaseEdit`](TBaseEdit.md)** — Base for `TIns` and `TDel`: `Cite` and `DateTime` of an edit. @since 4.4.0
@@ -90,7 +92,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 | Class | Purpose |
 |---|---|
-| `TDataGrid` | Tabular display with paging/sorting/editing. Columns: `TBoundColumn`, `TButtonColumn`, `TCheckBoxColumn`, `TDropDownListColumn`, `TTemplateColumn`. Events: `OnEditCommand`, `OnDeleteCommand`, `OnUpdateCommand`, `OnPageIndexChanged`, `OnSortCommand`. `SortExpression` / `SortDirection` (`TDataGridSortDirection`) hold the sort and render `aria-sort` on its header |
+| `TDataGrid` | Tabular display with paging/sorting/editing. Columns: `TBoundColumn`, `TButtonColumn`, `TCheckBoxColumn`, `TDropDownListColumn`, `TTemplateColumn`. Events: `OnEditCommand`, `OnDeleteCommand`, `OnUpdateCommand`, `OnPageIndexChanged`, `OnSortCommand`. `SortExpression` / `SortDirection` (`TDataGridSortDirection`) hold the sort and render `aria-sort` on its header. `TRowSelectColumn`, `StickyHeader`, `ResponsiveMode` (`TDataGridResponsiveMode`), and a named `<nav>` pager (4.4.0) |
 | `TDataList` | Repeating item list with templates. Templates: `ItemTemplate`, `AlternatingItemTemplate`, `HeaderTemplate`, `FooterTemplate`, `EditItemTemplate`. `EditItemIndex` for inline editing. |
 | `TRepeater` | Flexible repeating container. Template-driven, no built-in editing or paging. Lightest-weight data control. |
 | `TListView` | Enhanced repeater with paging, sorting, and grouping support |
@@ -200,7 +202,7 @@ All extend [THtmlElement](./THtmlElement.md). Each wraps the named HTML5 element
 | `TWebTemplate` | `<template>`; client stamping with `{{...}}` placeholders, or a declarative shadow root via `ShadowRootMode` (@since 4.4.0) |
 | `TSlot` | `<slot>` in a shadow root; `Name` matches the light DOM `slot` attribute (`TWebControl::Slot`); content is the fallback (@since 4.4.0) |
 | `THead` | `<head>`; `Title`, `BaseUrl`, `ShortcutIcon`, `MetaTags` ([TMetaTag](TMetaTag.md)), `LinkTags` ([TLinkTag](TLinkTag.md): canonical, alternate, preload, icon; @since 4.4.0) |
-| `TWizard` | Multi-step wizard with `TWizardStep` navigation |
+| `TWizard` | Multi-step wizard with `TWizardStep` navigation; the default sidebar is an `<ol>` step indicator with `aria-current="step"` |
 | `TOutputCache` | Caches rendered output of child controls |
 
 ## Style Classes

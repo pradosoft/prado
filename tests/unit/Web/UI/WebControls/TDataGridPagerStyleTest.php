@@ -28,6 +28,7 @@ class TDataGridPagerStyleTest extends TestCase
 		$style->setPageButtonCount(5);
 		$style->setPosition(TDataGridPagerPosition::TopAndBottom);
 		$style->setVisible(false);
+		$style->setListLayout(true);
 		return $style;
 	}
 
@@ -48,6 +49,7 @@ class TDataGridPagerStyleTest extends TestCase
 			'PageButtonCount' => $style->getPageButtonCount(),
 			'Position' => $style->getPosition(),
 			'Visible' => $style->getVisible(),
+			'ListLayout' => $style->getListLayout(),
 		];
 	}
 
@@ -63,6 +65,7 @@ class TDataGridPagerStyleTest extends TestCase
 			'PageButtonCount' => 10,
 			'Position' => TDataGridPagerPosition::Bottom,
 			'Visible' => true,
+			'ListLayout' => false,
 		];
 	}
 
@@ -78,6 +81,7 @@ class TDataGridPagerStyleTest extends TestCase
 			'PageButtonCount' => 5,
 			'Position' => TDataGridPagerPosition::TopAndBottom,
 			'Visible' => false,
+			'ListLayout' => true,
 		];
 	}
 
