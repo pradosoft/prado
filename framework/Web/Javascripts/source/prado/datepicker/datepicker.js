@@ -639,8 +639,12 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 			// a focus-triggered show() fires during mousedown; the calendar is
 			// then positioned at the cursor and intercepted by mouseup, the
 			// resulting click bubbles to body with a non-control target, and
-			// hideOnClick immediately closes the calendar.
-			setTimeout(() => this.observe(document.body, "click", this.documentClickEvent), 0);
+			// hideOnClick immediately closes the calendar.  hide() cancels the
+			// pending attach, so a hide in the same task leaks no listener.
+			this._documentClickTimer = setTimeout(() => {
+				this._documentClickTimer = null;
+				this.observe(document.body, "click", this.documentClickEvent);
+			}, 0);
 			const date = this.getDateFromInput();
 			if(date)
 			{
@@ -684,7 +688,15 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 		{
 			this._calDiv.style.display = "none";
 			this.showing = false;
-			this.stopObserving(document.body, "click", this.documentClickEvent);
+			if(this._documentClickTimer)
+			{
+				clearTimeout(this._documentClickTimer);
+				this._documentClickTimer = null;
+			}
+			else
+			{
+				this.stopObserving(document.body, "click", this.documentClickEvent);
+			}
 			this.stopObserving(document,"keydown", this.documentKeyDownEvent);
 			if(this.trigger && this.trigger.setAttribute)
 				this.trigger.setAttribute("aria-expanded", "false");
