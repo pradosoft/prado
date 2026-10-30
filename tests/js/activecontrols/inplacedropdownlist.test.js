@@ -405,7 +405,7 @@ describe('TInPlaceDropDownList onKeyPressed', () => {
 		ctrl.enterEditMode(null);
 		select.selectedIndex = 2;
 		const showLabel = vi.spyOn(ctrl, 'showLabel');
-		ctrl.onKeyPressed({ keyCode: 27 });
+		ctrl.onKeyPressed({ key: 'Escape' });
 		expect(select.value).toBe('0');
 		expect(ctrl.isEditing).toBe(false);
 		expect(showLabel).toHaveBeenCalled();
@@ -415,7 +415,7 @@ describe('TInPlaceDropDownList onKeyPressed', () => {
 		const ctrl = new TInPlaceDropDownList(makeOptions());
 		ctrl.enterEditMode(null);
 		const blur = vi.spyOn(select, 'blur');
-		const evt = { keyCode: 13, preventDefault: vi.fn() };
+		const evt = { key: 'Enter', preventDefault: vi.fn() };
 		ctrl.onKeyPressed(evt);
 		expect(evt.preventDefault).toHaveBeenCalled();
 		expect(blur).toHaveBeenCalled();

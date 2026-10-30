@@ -8,7 +8,7 @@
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-Click-to-edit text box that displays as a label until clicked. When clicked, transforms into a text input for editing. Supports loading text from server via callback before allowing edit, and can auto-hide the textbox after losing focus. The client-side input honors the full `TTextBoxMode` set (Date, Number, Email, Color, etc.), matching `TTextBox` type rendering. Shares the label/editor swap machinery with `TInPlaceDropDownList` through `TInPlaceControlTrait` (PHP) and `Prado.WebUI.TInPlaceControlBase` (JS, `inlineeditor.js`).
+Click-to-edit text box that displays as a label until clicked. When clicked, transforms into a text input for editing. Supports loading text from server via callback before allowing edit, and can auto-hide the textbox after losing focus. The client-side input honors the full `TTextBoxMode` set (Date, Number, Email, Color, etc.), matching `TTextBox` type rendering. `MaxLength` sets `maxlength` on the created input and textarea, as `TTextBox` renders it in every mode. Shares the label/editor swap machinery with `TInPlaceDropDownList` through `TInPlaceControlTrait` (PHP) and `Prado.WebUI.TInPlaceControlBase` (JS, `inlineeditor.js`).
 
 ## Key Properties/Methods
 
@@ -22,7 +22,7 @@ Click-to-edit text box that displays as a label until clicked. When clicked, tra
 
 ## Accessibility
 
-The label is rendered as an operable button (`role="button"`, `tabindex="0"`) with `aria-live="polite"`; Enter/Space enter edit mode, and focus returns to the label after an Enter/Escape/change commit. A read-only control renders the label as plain text (no button role). The editor takes its accessible name from `ToolTip` (sent as the `EditorLabel` option). Shared via `TInPlaceControlTrait::renderLabelAccessibilityAttributes` (PHP) and the base class in `inlineeditor.js` (JS).
+The label is rendered as an operable button (`role="button"`, `tabindex="0"`) with `aria-live="polite"`; Enter/Space enter edit mode, and focus returns to the label after an Enter/Escape/change commit. The editor handles Escape (cancel) and Enter (commit) on `keydown`, since browsers fire no `keypress` for Escape. A read-only control renders the label as plain text (no button role). The editor takes its accessible name from `ToolTip` (sent as the `EditorLabel` option). Shared via `TInPlaceControlTrait::renderLabelAccessibilityAttributes` (PHP) and the base class in `inlineeditor.js` (JS).
 
 ## See Also
 
