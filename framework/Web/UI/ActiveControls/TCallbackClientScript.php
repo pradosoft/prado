@@ -426,9 +426,11 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	/**
 	 * Scroll the top of the browser viewing area to the location of the
 	 * element.
+	 * The scroll lasts 'duration' milliseconds. A 'duration' of 0, or a
+	 * browser preferring reduced motion, jumps to the element at once.
 	 *
 	 * @param \Prado\Web\UI\TControl $element control element or element id
-	 * @param array $options additional options: 'duration' in ms, 'offset' from the top in pixels
+	 * @param array $options additional options: 'duration' in ms (default 500), 'offset' from the top in pixels (default 50)
 	 */
 	public function scrollTo($element, $options = [])
 	{
