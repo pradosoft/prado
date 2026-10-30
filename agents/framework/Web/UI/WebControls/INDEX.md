@@ -63,7 +63,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 | `THyperLink` | `<a>` | `NavigateUrl`, `Text`, `ImageUrl`, `Target`; `Download`, `Rel`, `HrefLang`, `Type`, `ReferrerPolicy`, `Ping` (@since 4.4.0) |
 | `TLiteral` | raw text | `Text` (not HTML-encoded), `Encode` |
 | `TExpression` | evaluated PHP | Inline expression output (also via `<%= %>` in templates) |
-| `TPanel` | `<div>` or `<span>` | `DefaultButton`, `GroupingText`, `Encode` (4.4.0), `Direction` (LTR/RTL) |
+| `TPanel` | `<div>` or `<span>` | `DefaultButton`, `GroupingText`, `Encode` (4.4.0), `Direction` (LTR/RTL); [TFieldSet](TFieldSet.md) renders the fieldset as its own tag |
 | `TPlaceHolder` | (none) | Invisible container for dynamic child controls |
 | `TBulletedList` | `<ul>` / `<ol>` | `BulletStyle`, `DisplayMode` (Text/HyperLink/LinkButton) |
 | [`TMenuList`](TMenuList.md) | `<menu>` | `TBulletedList` items as a toolbar of commands; `list` role, not an ARIA `menu` (@since 4.4.0) |
@@ -148,15 +148,18 @@ All extend [THtmlElement](./THtmlElement.md). Each wraps the named HTML5 element
 | [`TDescriptionList`](TDescriptionList.md) | `dl` | Description list of term-details groups (@since 4.4.0) |
 | [`TDescriptionTerm`](TDescriptionTerm.md) | `dt` | Term of a description list group; `term` role (@since 4.4.0) |
 | [`TDfn`](TDfn.md) | `dfn` | Defining instance of a term; marks the first occurrence of `Terms` ([TBaseTerm](TBaseTerm.md), @since 4.4.0) |
+| [`TFieldSet`](TFieldSet.md) | `fieldset` | Group of form controls; `Legend` caption; `Enabled=false` disables the group natively and on the server; extends TPanel (@since 4.4.0) |
 | [`TFootnote`](TFootnote.md) | `sup` | Numbered footnote reference; child controls are the note, rendered in a `TReferenceList`; `Key` joins references (@since 4.4.0) |
 | [`TFooter`](TFooter.md) | `footer` | Footer of nearest sectioning ancestor |
 | [`THeader`](THeader.md) | `header` | Introductory content or navigational links |
 | [`THGroup`](THGroup.md) | `hgroup` | Heading with subtitle; `HeaderText` in `<h1>`–`<h6>`; `group` role (@since 4.4.0) |
 | [`TIns`](TIns.md) | `ins` | Inserted text; `insertion` role; `Cite`, `DateTime` (@since 4.4.0) |
 | [`TKbd`](TKbd.md) | `kbd` | User input: key, key combination, spoken command (@since 4.4.0) |
+| [`TLegend`](TLegend.md) | `legend` | Caption of a TFieldSet with markup or controls; first child (@since 4.4.0) |
 | [`TMain`](TMain.md) | `main` | Dominant page content; one per document |
 | [`TMark`](TMark.md) | `mark` | Highlighted or marked text |
 | [`TNav`](TNav.md) | `nav` | Navigation links section |
+| [`TNoScript`](TNoScript.md) | `noscript` | Fallback content shown when scripting is disabled (@since 4.4.0) |
 | [`TPre`](TPre.md) | `pre` | Preformatted text; whitespace kept (@since 4.4.0) |
 | [`TQuote`](TQuote.md) | `q` | Inline quotation; `Cite` source URL (@since 4.4.0) |
 | [`TSamp`](TSamp.md) | `samp` | Sample output from a program (@since 4.4.0) |
@@ -166,6 +169,7 @@ All extend [THtmlElement](./THtmlElement.md). Each wraps the named HTML5 element
 | [`TReferenceList`](TReferenceList.md) | `section` | Numbered notes of the page's `TFootnote` references with back links; region named by `HeaderText` (@since 4.4.0) |
 | [`TSearch`](TSearch.md) | `search` | Search or filter controls; landmark; another tag renders `role="search"` (@since 4.4.0) |
 | [`TSection`](TSection.md) | `section` | Generic thematic document section |
+| [`TSeparator`](TSeparator.md) | `hr` | Thematic break; void; another tag renders `role="separator"` (@since 4.4.0) |
 | [`TSub`](TSub.md) | `sub` | Subscript; `subscript` role (@since 4.4.0) |
 | [`TSup`](TSup.md) | `sup` | Superscript; `superscript` role (@since 4.4.0) |
 | [`TVar`](TVar.md) | `var` | Variable or placeholder; marks the variable's other occurrences ([TBaseTerm](TBaseTerm.md), @since 4.4.0) |
@@ -195,6 +199,7 @@ All extend [THtmlElement](./THtmlElement.md). Each wraps the named HTML5 element
 | `TInlineFrame` | `<iframe>` wrapper; `SrcDoc`, `Sandbox`, `Allow`, `Loading`, `ReferrerPolicy` (@since 4.4.0) |
 | `TWebTemplate` | `<template>`; client stamping with `{{...}}` placeholders, or a declarative shadow root via `ShadowRootMode` (@since 4.4.0) |
 | `TSlot` | `<slot>` in a shadow root; `Name` matches the light DOM `slot` attribute (`TWebControl::Slot`); content is the fallback (@since 4.4.0) |
+| `THead` | `<head>`; `Title`, `BaseUrl`, `ShortcutIcon`, `MetaTags` ([TMetaTag](TMetaTag.md)), `LinkTags` ([TLinkTag](TLinkTag.md): canonical, alternate, preload, icon; @since 4.4.0) |
 | `TWizard` | Multi-step wizard with `TWizardStep` navigation |
 | `TOutputCache` | Caches rendered output of child controls |
 

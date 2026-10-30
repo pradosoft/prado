@@ -50,6 +50,8 @@ Properties fall into two groups: those stored directly on TPanel and those deleg
 | `createStyle()` | Returns a `TPanelStyle` instance (overrides TWebControl). |
 | `renderBeginTag($writer)` | Renders the `<div>` opening tag. If `GroupingText` is set, also opens `<fieldset>` and `<legend>`. |
 | `renderEndTag($writer)` | If `GroupingText` is set, closes `</fieldset>` before closing `</div>`. |
+| `renderGroupingBeginTag($writer, $text)` / `renderGroupingEndTag($writer)` | Open the fieldset with its legend, and close it (4.4.0). [TFieldSet](./TFieldSet.md) overrides them to render only the legend. |
+| `renderLegend($writer, $text)` | Renders `<legend>`, encoded when `Encode` is true (4.4.0). |
 | `render($writer)` | After rendering children, resolves `DefaultButton` and registers it with `TClientScriptManager::registerDefaultButton()`. Throws `TInvalidDataValueException` if the button ID cannot be found. |
 
 ## Events
@@ -60,7 +62,7 @@ None beyond those inherited from `TWebControl`.
 
 - **`DefaultButton` resolution** — The button is located with `findControl($id)` at render time. If it cannot be found, a `TInvalidDataValueException` is thrown. If it is found but does not implement `IButtonControl`, `registerDefaultButton()` returns silently and no default button behavior is registered. The panel's client ID is also emitted as an HTML `id` attribute when `DefaultButton` is set (required by the JS handler).
 - **Default button flag** — Registering a button sets its `IsDefaultButton`, which is what makes [TButton](./TButton.md) and [TLinkButton](./TLinkButton.md) render their postback javascript even when they would not otherwise need it.
-- **`GroupingText` and tag structure** — When `GroupingText` is set, the rendered HTML is `<div ...><fieldset><legend>text</legend>...children...</fieldset></div>`. The outer `<div>` is always present; the fieldset is nested inside it.
+- **`GroupingText` and tag structure** — When `GroupingText` is set, the rendered HTML is `<div ...><fieldset><legend>text</legend>...children...</fieldset></div>`. The outer `<div>` is always present; the fieldset is nested inside it. [TFieldSet](./TFieldSet.md) is the fieldset itself, with `Legend` and a native `disabled`.
 - **Show/hide groups** — Set `Visible=false` to hide the entire panel and all its children at once. This is the most common use case.
 - **`Direction=RightToLeft`** — Applied by `TPanelStyle` as a CSS `direction` style. Useful for RTL languages.
 - **`ScrollBars`** — Applies CSS `overflow` variants. `Auto` maps to `overflow: auto`; `Both` to `overflow: scroll`.
