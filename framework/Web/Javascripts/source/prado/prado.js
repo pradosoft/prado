@@ -519,6 +519,70 @@ Prado.Element =
 	},
 
 	/**
+	 * The view transition started by {@link Prado.Element.viewTransition} that has
+	 * not finished, or null.
+	 * @private
+	 */
+	_viewTransition: null,
+
+	/**
+	 * Returns whether {@link Prado.Element.viewTransition} animates an update:
+	 * the browser has `document.startViewTransition`, the page is visible, and
+	 * `prefers-reduced-motion: reduce` does not match.
+	 * @function ?
+	 * @returns {boolean} whether an update runs inside a view transition
+	 * @since 4.4.0
+	 */
+	canViewTransition() {
+		return typeof document.startViewTransition === 'function'
+			&& document.visibilityState !== 'hidden'
+			&& !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+	},
+
+	/**
+	 * Runs a DOM update inside a view transition, so the browser animates from the
+	 * old state of the page to the new one.
+	 *
+	 * | Condition | Result |
+	 * |---|---|
+	 * | {@link Prado.Element.canViewTransition} is false | `update` runs at once |
+	 * | A transition started here is running | It is skipped: it jumps to its end state |
+	 * | `update` throws | The returned promise rejects; the browser skips the animation and shows the page |
+	 * | The browser skips the animation (a duplicate `view-transition-name`) | `update` still runs |
+	 *
+	 * `update` runs once in every case. Inside a transition it runs after the
+	 * browser captures the old state, in a later frame.
+	 * @function ?
+	 * @param {function} update - Synchronous function that changes the DOM
+	 * @returns {Promise} settles after `update` ran; rejects with its error
+	 * @since 4.4.0
+	 */
+	viewTransition(update) {
+		const self = Prado.Element;
+		if (!self.canViewTransition()) {
+			try {
+				update();
+			} catch (e) {
+				return Promise.reject(e);
+			}
+			return Promise.resolve();
+		}
+		if (self._viewTransition)
+			self._viewTransition.skipTransition();
+		const transition = document.startViewTransition(update);
+		self._viewTransition = transition;
+		// A skipped animation rejects ready; an update error rejects all three
+		// promises. The caller handles updateCallbackDone.
+		transition.ready.catch(() => {});
+		const done = () => {
+			if (self._viewTransition === transition)
+				self._viewTransition = null;
+		};
+		transition.finished.then(done, done);
+		return transition.updateCallbackDone;
+	},
+
+	/**
 	 * Animation frame id of the scroll in progress, or null.
 	 * @private
 	 */
