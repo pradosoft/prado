@@ -69,7 +69,7 @@ class TActiveMultiView extends TMultiView implements IActiveControl
 		if ($this->getHasPreRendered()) {
 			$this->renderMultiView($writer);
 			if ($this->getActiveControl()->canUpdateClientSide()) {
-				$this->getPage()->getCallbackClient()->replaceContent($this->getContainerID(), $writer, true, $this->getActiveControl()->getIsMorphUpdate());
+				$this->getActiveControl()->replaceClientContent($this->getContainerID(), $writer);
 			}
 		} else {
 			$this->getPage()->getAdapter()->registerControlToRender($this, $writer);
