@@ -1,0 +1,61 @@
+<com:TContent ID="Content">
+	<h1>Unsaved Changes Test Case</h1>
+	<style>
+		[data-prado-dirty] { outline: 2px dashed currentColor; outline-offset: 2px; }
+	</style>
+
+	<com:TUnsavedChangesGuard ID="guard" StatusText="You have unsaved changes." DirtyCssClass="changed" />
+
+	<p>
+		<com:TLabel ForControl="name" Text="Name" />
+		<com:TTextBox ID="name" Text="Ann" />
+		<com:TRequiredFieldValidator ID="nameRequired" ControlToValidate="name" EnableClientScript="false" ErrorMessage="Name is required." />
+	</p>
+	<p>
+		<com:TLabel ForControl="notes" Text="Notes" />
+		<com:TTextBox ID="notes" TextMode="MultiLine" Text="line" />
+	</p>
+	<p><com:TCheckBox ID="agree" Text="Agree" /></p>
+	<p><com:TCheckBox ID="auto" Text="Auto post back" AutoPostBack="true" /></p>
+	<com:TRadioButtonList ID="size">
+		<com:TListItem Value="s" Text="Small" Selected="true" />
+		<com:TListItem Value="l" Text="Large" />
+	</com:TRadioButtonList>
+	<p>
+		<com:TLabel ForControl="color" Text="Color" />
+		<com:TDropDownList ID="color">
+			<com:TListItem Value="r" Text="Red" />
+			<com:TListItem Value="g" Text="Green" />
+		</com:TDropDownList>
+	</p>
+	<p>
+		<com:TLabel ForControl="tags" Text="Tags" />
+		<com:TListBox ID="tags" SelectionMode="Multiple">
+			<com:TListItem Value="a" Text="A" Selected="true" />
+			<com:TListItem Value="b" Text="B" />
+		</com:TListBox>
+	</p>
+	<p>
+		<com:TLabel ForControl="upload" Text="File" />
+		<com:TFileUpload ID="upload" />
+	</p>
+	<p>
+		<com:TLabel ForControl="search" Text="Search" />
+		<com:TTextBox ID="search" Attributes.data-prado-dirty-ignore="true" />
+	</p>
+	<com:TActivePanel ID="panel">
+		<com:TLabel ForControl="server" Text="Server value" />
+		<com:TTextBox ID="server" />
+	</com:TActivePanel>
+
+	<p>
+		<com:TButton ID="submit" Text="Save by postback" OnClick="save" />
+		<com:TLinkButton ID="linkSubmit" Text="Save by link" OnClick="save" />
+		<com:TActiveButton ID="callbackSave" Text="Save by callback" OnCallback="callbackSave" />
+		<com:TActiveButton ID="callbackOnly" Text="Callback without save" OnCallback="callbackOnly" />
+		<com:TActiveButton ID="refresh" Text="Re-render panel" OnCallback="refreshPanel" />
+		<com:TActiveButton ID="redirect" Text="Callback redirect" OnCallback="redirect" />
+	</p>
+	<p>Saves: <com:TActiveLabel ID="saves" Text="0" /></p>
+	<p><a id="leave" href="index.php?page=HttpRedirectTarget">Leave</a></p>
+</com:TContent>
