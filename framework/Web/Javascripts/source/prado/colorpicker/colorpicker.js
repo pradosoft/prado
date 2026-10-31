@@ -325,12 +325,30 @@ Prado.WebUI.TColorPicker = Prado.Class(Prado.WebUI.Control, {
 		this.show(mode);
 	},
 
+	/**
+	 * Finds the containing block of an absolutely positioned child of the
+	 * element's parent, as jQuery `.offsetParent()` does. The native
+	 * `offsetParent` also returns a table cell or `<body>` that is not positioned.
+	 * @param {element} el - the element whose parent holds the popup
+	 * @return {?element} the nearest positioned ancestor; null for the page
+	 */
+	getPositioningParent(el) {
+		for (let parent = el.parentElement; parent && parent !== document.documentElement; parent = parent.parentElement) {
+			const position = window.getComputedStyle(parent).position;
+			if (position !== 'static' && position !== '')
+				return parent;
+		}
+		return null;
+	},
+
 	show(type) {
 		if(!this.showing)
 		{
+			// The popup is absolutely positioned in the input's parent, so its
+			// offset is relative to the nearest positioned ancestor, or the page.
 			const controlOffset = _cpOffset(this.input);
-			const parent = this.input.offsetParent || document.body;
-			const parentOffset = _cpOffset(parent);
+			const parent = this.getPositioningParent(this.input);
+			const parentOffset = parent ? _cpOffset(parent) : { top: 0, left: 0 };
 
 			this.element.style.top = `${controlOffset.top - parentOffset.top + this.input.offsetHeight - 1}px`;
 			this.element.style.left = `${controlOffset.left - parentOffset.left}px`;
@@ -381,7 +399,7 @@ Prado.WebUI.TColorPicker = Prado.Class(Prado.WebUI.Control, {
 		}
 	},
 
-	keyPressed(event, type) {
+	keyPressed(type, event) {
 		// esc
 		if(event.keyCode == 27)
 			this.hide(event,type);
@@ -791,7 +809,7 @@ Prado.WebUI.TColorPicker = Prado.Class(Prado.WebUI.Control, {
 		this.hide(ev);
 	},
 
-	onInputChanged(ev, type) {
+	onInputChanged(type, _ev) {
 		if(this.isMouseDownOnColor || this.isMouseDownOnHue)
 			return;
 

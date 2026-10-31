@@ -554,6 +554,8 @@ prado.js
 
 All JS controls self-register in `Prado.Registry[controlId]` on construction and clean up via `deinitialize()`.
 
+`Prado.WebUI.Control.observe()` attaches native listeners and records each observed element in `Prado.Observed`. jQuery `.trigger()` does not reach native listeners, so the `jQuery.fn.trigger` bridge in `prado.js` dispatches a native event to an element registered under its own id or recorded in `Prado.Observed`. `TCallbackClientScript::raiseClientEvent()` goes through this bridge.
+
 ---
 
 ## Shell (`framework/Shell/`)

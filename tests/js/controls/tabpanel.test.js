@@ -534,3 +534,41 @@ describe('TTabPanel accessibility', () => {
 		expect(tab(2).getAttribute('aria-selected')).toBe('true');
 	});
 });
+
+// ─── CSS classes with several names ──────────────────────────────────────────
+
+describe('TTabPanel CSS classes with several names', () => {
+	afterEach(() => {
+		document.body.innerHTML = '';
+	});
+
+	it('initializes with a CSS class that holds several names', () => {
+		expect(() => makeTabPanel(['tab0', 'tab1'], 0, null, {
+			ActiveCssClass: 'nav-link active',
+			NormalCssClass: 'nav-link',
+		})).not.toThrow();
+		expect(document.getElementById('tab0_0').className).toBe('nav-link active');
+		expect(document.getElementById('tab1_0').className).toBe('nav-link');
+	});
+
+	it('swaps several class names on click and keeps a shared name', () => {
+		const { tabpanel } = makeTabPanel(['tab0', 'tab1'], 0, null, {
+			ActiveCssClass: 'nav-link active',
+			NormalCssClass: 'nav-link',
+		});
+		tabpanel.elementClicked('tab1');
+		expect(document.getElementById('tab0_0').className).toBe('nav-link');
+		expect(document.getElementById('tab1_0').classList.contains('nav-link')).toBe(true);
+		expect(document.getElementById('tab1_0').classList.contains('active')).toBe(true);
+	});
+
+	it('accepts an empty CSS class', () => {
+		const { tabpanel } = makeTabPanel(['tab0', 'tab1'], 0, null, {
+			ActiveCssClass: 'active',
+			NormalCssClass: '',
+		});
+		expect(() => tabpanel.elementClicked('tab1')).not.toThrow();
+		expect(document.getElementById('tab1_0').className).toBe('active');
+		expect(document.getElementById('tab0_0').className).toBe('');
+	});
+});

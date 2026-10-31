@@ -701,13 +701,113 @@ describe('TColorPicker.keyPressed', () => {
 	});
 
 	it('hides the picker when Escape (keyCode 27) is pressed', () => {
-		picker.keyPressed({ keyCode: 27 }, 'Basic');
+		picker.keyPressed('Basic', { keyCode: 27 });
 		expect(picker.showing).toBe(false);
 	});
 
 	it('does not hide for other key codes', () => {
-		picker.keyPressed({ keyCode: 13 }, 'Basic');
+		picker.keyPressed('Basic', { keyCode: 13 });
 		expect(picker.showing).toBe(true);
+	});
+});
+
+describe('TColorPicker document Escape', () => {
+	const ID = 'cp-doc-esc-test';
+
+	afterEach(() => {
+		cleanupPicker(ID);
+		document.body.innerHTML = '';
+	});
+
+	it.each(['Basic', 'Full'])('closes the %s picker on Escape outside the palette', (mode) => {
+		buildPickerDOM(ID);
+		const picker = new TColorPicker({ ID, ShowColorPicker: false, Mode: mode, Palette: 'Small' });
+		picker.buttonOnClick();
+		expect(picker.showing).toBe(true);
+
+		document.body.dispatchEvent(new KeyboardEvent('keydown', { keyCode: 27, bubbles: true }));
+
+		expect(picker.showing).toBe(false);
+	});
+});
+
+describe('TColorPicker Full mode inputs', () => {
+	const ID = 'cp-full-input-test';
+
+	afterEach(() => {
+		cleanupPicker(ID);
+		document.body.innerHTML = '';
+	});
+
+	it('updates the color when an RGB input changes', () => {
+		buildPickerDOM(ID);
+		const picker = new TColorPicker({ ID, ShowColorPicker: false, Mode: 'Full', Palette: 'Small' });
+		picker.buttonOnClick();
+
+		picker.inputs.R.value = '255';
+		picker.inputs.G.value = '0';
+		picker.inputs.B.value = '0';
+		picker.inputs.B.dispatchEvent(new Event('change'));
+
+		expect(picker.inputs.HEX.value).toBe('FF0000');
+	});
+
+	it('updates the color when the HEX input changes', () => {
+		buildPickerDOM(ID);
+		const picker = new TColorPicker({ ID, ShowColorPicker: false, Mode: 'Full', Palette: 'Small' });
+		picker.buttonOnClick();
+
+		picker.inputs.HEX.value = '00FF00';
+		picker.inputs.HEX.dispatchEvent(new Event('change'));
+
+		expect(picker.inputs.G.value).toBe('255');
+	});
+});
+
+describe('TColorPicker popup position', () => {
+	const ID = 'cp-pos-test';
+
+	afterEach(() => {
+		cleanupPicker(ID);
+		document.body.innerHTML = '';
+	});
+
+	const rect = (top, left) => ({ top, left, bottom: top, right: left, width: 0, height: 0, x: left, y: top });
+
+	it('positions against the page when no ancestor is positioned, even inside a table cell', () => {
+		buildPickerDOM(ID);
+		const picker = new TColorPicker({ ID, ShowColorPicker: false, Mode: 'Basic', Palette: 'Small' });
+		const table = document.createElement('table');
+		const cell = table.insertRow().insertCell();
+		document.body.appendChild(table);
+		picker.input.parentNode.style.position = '';
+		cell.appendChild(picker.input.parentNode);
+		picker.input.getBoundingClientRect = () => rect(300, 350);
+		Object.defineProperty(picker.input, 'offsetHeight', { configurable: true, value: 20 });
+		cell.getBoundingClientRect = () => rect(290, 340);
+
+		picker.buttonOnClick();
+
+		expect(picker.element.style.top).toBe('319px');
+		expect(picker.element.style.left).toBe('350px');
+	});
+
+	it('positions against the nearest positioned ancestor', () => {
+		buildPickerDOM(ID);
+		const picker = new TColorPicker({ ID, ShowColorPicker: false, Mode: 'Basic', Palette: 'Small' });
+		const box = document.createElement('div');
+		box.style.position = 'relative';
+		document.body.appendChild(box);
+		picker.input.parentNode.style.position = '';
+		box.appendChild(picker.input.parentNode);
+		picker.input.getBoundingClientRect = () => rect(300, 350);
+		Object.defineProperty(picker.input, 'offsetHeight', { configurable: true, value: 20 });
+		box.getBoundingClientRect = () => rect(100, 50);
+
+		picker.buttonOnClick();
+
+		expect(picker.element.style.top).toBe('219px');
+		expect(picker.element.style.left).toBe('300px');
 	});
 });
 

@@ -1,5 +1,5 @@
 /**
- * Tests for logger.js globals: CustomEvent, Cookie, Logger, LogEntry,
+ * Tests for logger.js globals: LogEvent, Cookie, Logger, LogEntry,
  * LogConsole, inspect, puts, and Prado.Inspector.
  * Source: framework/Web/Javascripts/source/prado/logger/logger.js
  *
@@ -7,7 +7,7 @@
  */
 
 import {
-	CustomEvent,
+	LogEvent,
 	Cookie,
 	Logger,
 	LogEntry,
@@ -17,18 +17,36 @@ import {
 	PradoInspector,
 } from '../adapters/logger.js';
 
-// ─── CustomEvent ─────────────────────────────────────────────────────────────
+// ─── LogEvent ────────────────────────────────────────────────────────────────
 
-describe('CustomEvent', () => {
+describe('LogEvent', () => {
+	it('leaves the native CustomEvent in place', () => {
+		expect(LogEvent).not.toBe(window.CustomEvent);
+		const target = document.createElement('div');
+		const listener = vi.fn();
+		target.addEventListener('prado:test', listener);
+		target.dispatchEvent(new CustomEvent('prado:test', { detail: 7 }));
+		expect(listener).toHaveBeenCalledTimes(1);
+		expect(listener.mock.calls[0][0].detail).toBe(7);
+	});
+
+	it('lets the prado:ajaxComplete bridge dispatch', () => {
+		const listener = vi.fn();
+		document.addEventListener('prado:ajaxComplete', listener);
+		jQuery(document).trigger('ajaxComplete');
+		document.removeEventListener('prado:ajaxComplete', listener);
+		expect(listener).toHaveBeenCalledTimes(1);
+	});
+
 	describe('constructor / initialize', () => {
 		it('creates an instance with an empty listeners array', () => {
-			const ev = new CustomEvent();
+			const ev = new LogEvent();
 			expect(ev.listeners).toEqual([]);
 		});
 
 		it('each instance has its own listeners array', () => {
-			const a = new CustomEvent();
-			const b = new CustomEvent();
+			const a = new LogEvent();
+			const b = new LogEvent();
 			a.listeners.push(() => {});
 			expect(b.listeners).toHaveLength(0);
 		});
@@ -36,14 +54,14 @@ describe('CustomEvent', () => {
 
 	describe('addListener', () => {
 		it('appends a function to listeners', () => {
-			const ev = new CustomEvent();
+			const ev = new LogEvent();
 			const fn = vi.fn();
 			ev.addListener(fn);
 			expect(ev.listeners).toContain(fn);
 		});
 
 		it('can add multiple listeners', () => {
-			const ev = new CustomEvent();
+			const ev = new LogEvent();
 			const fn1 = vi.fn();
 			const fn2 = vi.fn();
 			ev.addListener(fn1);
@@ -52,7 +70,7 @@ describe('CustomEvent', () => {
 		});
 
 		it('allows the same listener to be added more than once', () => {
-			const ev = new CustomEvent();
+			const ev = new LogEvent();
 			const fn = vi.fn();
 			ev.addListener(fn);
 			ev.addListener(fn);
@@ -62,7 +80,7 @@ describe('CustomEvent', () => {
 
 	describe('removeListener', () => {
 		it('removes the first occurrence of a listener', () => {
-			const ev = new CustomEvent();
+			const ev = new LogEvent();
 			const fn = vi.fn();
 			ev.addListener(fn);
 			ev.removeListener(fn);
@@ -76,7 +94,7 @@ describe('CustomEvent', () => {
 			// occurrence to index 0, making the second splice (index 1) a no-op.
 			// This is a known quirk of the source; the test documents the actual
 			// behaviour rather than the ideal behaviour.
-			const ev = new CustomEvent();
+			const ev = new LogEvent();
 			const fn = vi.fn();
 			ev.addListener(fn);
 			ev.addListener(fn);
@@ -86,14 +104,14 @@ describe('CustomEvent', () => {
 		});
 
 		it('is a no-op when the listener was never added', () => {
-			const ev = new CustomEvent();
+			const ev = new LogEvent();
 			const fn = vi.fn();
 			expect(() => ev.removeListener(fn)).not.toThrow();
 			expect(ev.listeners).toHaveLength(0);
 		});
 
 		it('leaves other listeners intact', () => {
-			const ev = new CustomEvent();
+			const ev = new LogEvent();
 			const fn1 = vi.fn();
 			const fn2 = vi.fn();
 			ev.addListener(fn1);
@@ -106,7 +124,7 @@ describe('CustomEvent', () => {
 
 	describe('dispatch', () => {
 		it('calls every listener with the supplied handler argument', () => {
-			const ev = new CustomEvent();
+			const ev = new LogEvent();
 			const fn1 = vi.fn();
 			const fn2 = vi.fn();
 			ev.addListener(fn1);
@@ -118,12 +136,12 @@ describe('CustomEvent', () => {
 		});
 
 		it('does not throw when there are no listeners', () => {
-			const ev = new CustomEvent();
+			const ev = new LogEvent();
 			expect(() => ev.dispatch('anything')).not.toThrow();
 		});
 
 		it('continues dispatching to remaining listeners when one throws (uses alert)', () => {
-			const ev = new CustomEvent();
+			const ev = new LogEvent();
 			const bad = vi.fn(() => { throw new Error('boom'); });
 			const good = vi.fn();
 			// The source catches exceptions and calls alert(); stub alert.
@@ -138,7 +156,7 @@ describe('CustomEvent', () => {
 		});
 
 		it('dispatches with undefined when called without arguments', () => {
-			const ev = new CustomEvent();
+			const ev = new LogEvent();
 			const fn = vi.fn();
 			ev.addListener(fn);
 			ev.dispatch();
@@ -148,7 +166,7 @@ describe('CustomEvent', () => {
 
 	describe('_findListenerIndexes (private)', () => {
 		it('returns all indexes where the method appears', () => {
-			const ev = new CustomEvent();
+			const ev = new LogEvent();
 			const fn = vi.fn();
 			const other = vi.fn();
 			ev.addListener(other);
@@ -159,7 +177,7 @@ describe('CustomEvent', () => {
 		});
 
 		it('returns an empty array when the method is not present', () => {
-			const ev = new CustomEvent();
+			const ev = new LogEvent();
 			expect(ev._findListenerIndexes(vi.fn())).toEqual([]);
 		});
 	});
@@ -295,10 +313,10 @@ describe('Logger', () => {
 	// Reset Logger state before each test.
 	beforeEach(() => {
 		Logger.clear();
-		// Re-attach fresh CustomEvent instances so listeners from prior tests
+		// Re-attach fresh LogEvent instances so listeners from prior tests
 		// don't interfere.
-		Logger.onupdate = new CustomEvent();
-		Logger.onclear = new CustomEvent();
+		Logger.onupdate = new LogEvent();
+		Logger.onclear = new LogEvent();
 	});
 
 	describe('log', () => {
@@ -429,13 +447,13 @@ describe('Logger', () => {
 		});
 	});
 
-	describe('onupdate / onclear are CustomEvent instances', () => {
-		it('onupdate is a CustomEvent', () => {
-			expect(Logger.onupdate).toBeInstanceOf(CustomEvent);
+	describe('onupdate / onclear are LogEvent instances', () => {
+		it('onupdate is a LogEvent', () => {
+			expect(Logger.onupdate).toBeInstanceOf(LogEvent);
 		});
 
-		it('onclear is a CustomEvent', () => {
-			expect(Logger.onclear).toBeInstanceOf(CustomEvent);
+		it('onclear is a LogEvent', () => {
+			expect(Logger.onclear).toBeInstanceOf(LogEvent);
 		});
 	});
 });
@@ -535,8 +553,8 @@ describe('inspect', () => {
 describe('puts', () => {
 	beforeEach(() => {
 		Logger.clear();
-		Logger.onupdate = new CustomEvent();
-		Logger.onclear = new CustomEvent();
+		Logger.onupdate = new LogEvent();
+		Logger.onclear = new LogEvent();
 	});
 
 	it('is a function', () => {
@@ -591,9 +609,9 @@ describe('LogConsole', () => {
 	beforeEach(() => {
 		document.body.innerHTML = '';
 		Logger.clear();
-		Logger.onupdate = new CustomEvent();
-		Logger.onclear = new CustomEvent();
-		// Stub alert (used by CustomEvent.dispatch on listener errors).
+		Logger.onupdate = new LogEvent();
+		Logger.onclear = new LogEvent();
+		// Stub alert (used by LogEvent.dispatch on listener errors).
 		global.alert = vi.fn();
 		// Cookie.get('ConsoleVisible') returns null in a fresh jsdom — LogConsole
 		// will not auto-toggle.  Cookie.get('tagPattern') returns null — defaults
