@@ -102,6 +102,19 @@ class TInPlaceTextBoxTest extends TestCase
 		$this->assertSame($control->getClientID(), $options['TextBoxID']);
 	}
 
+	public function testPostBackOptionsCarryMaxLengthInEveryTextMode()
+	{
+		$control = new TInPlaceTextBox();
+		$options = PradoUnit::invoke($control, 'getPostBackOptions');
+		$this->assertSame('', $options['MaxLength']);
+		$control->setMaxLength(20);
+		$options = PradoUnit::invoke($control, 'getPostBackOptions');
+		$this->assertSame(20, $options['MaxLength']);
+		$control->setTextMode('MultiLine');
+		$options = PradoUnit::invoke($control, 'getPostBackOptions');
+		$this->assertSame(20, $options['MaxLength']);
+	}
+
 	private function accessibilityAttributes(TInPlaceTextBox $control, bool $readOnly): string
 	{
 		$textWriter = new TTextWriter();

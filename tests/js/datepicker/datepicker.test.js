@@ -1011,7 +1011,85 @@ describe('TDatePicker#show and hide', () => {
 	});
 });
 
-// ─── getDateFromInput ─────────────────────────────────────────────────────────
+// ─── document click listener lifecycle ────────────────────────────────────────
+
+describe('TDatePicker document click listener', () => {
+	let picker, addSpy, removeSpy;
+	const id = nextId();
+
+	/** Net number of body click listeners the picker has added. */
+	const netBodyClicks = () =>
+		addSpy.mock.calls.filter(c => c[0] === 'click').length
+		- removeSpy.mock.calls.filter(c => c[0] === 'click').length;
+
+	/** Body click entries in the picker's observer list. */
+	const bodyClickObservers = () =>
+		picker.observers.filter(o => o._element === document.body && o._eventName === 'click');
+
+	beforeEach(() => {
+		vi.useFakeTimers();
+		buildDOM(id);
+		picker = new TDatePicker(makeOptions(id));
+		addSpy = vi.spyOn(document.body, 'addEventListener');
+		removeSpy = vi.spyOn(document.body, 'removeEventListener');
+	});
+
+	afterEach(() => {
+		picker.showing && picker.hide();
+		vi.runAllTimers();
+		vi.useRealTimers();
+		addSpy.mockRestore();
+		removeSpy.mockRestore();
+		document.getElementById(`${id}_container`)?.remove();
+		delete global.Prado.Registry[id];
+	});
+
+	it('attaches one listener on the tick after show()', () => {
+		picker.show();
+		expect(bodyClickObservers()).toHaveLength(0);
+		vi.runAllTimers();
+		expect(bodyClickObservers()).toHaveLength(1);
+		expect(netBodyClicks()).toBe(1);
+	});
+
+	it('removes the listener on hide()', () => {
+		picker.show();
+		vi.runAllTimers();
+		picker.hide();
+		expect(bodyClickObservers()).toHaveLength(0);
+		expect(netBodyClicks()).toBe(0);
+	});
+
+	it('leaves no listener when hide() runs before the deferred attach', () => {
+		picker.show();
+		picker.hide();
+		vi.runAllTimers();
+		expect(bodyClickObservers()).toHaveLength(0);
+		expect(netBodyClicks()).toBe(0);
+	});
+
+	it('attaches one listener when show() runs twice', () => {
+		picker.show();
+		picker.show();
+		vi.runAllTimers();
+		expect(bodyClickObservers()).toHaveLength(1);
+		expect(netBodyClicks()).toBe(1);
+	});
+
+	it('attaches one listener for show(), hide(), show() in one task', () => {
+		picker.show();
+		picker.hide();
+		picker.show();
+		vi.runAllTimers();
+		expect(bodyClickObservers()).toHaveLength(1);
+		expect(bodyClickObservers()[0]._handler).toBe(picker.documentClickEvent);
+		picker.hide();
+		expect(bodyClickObservers()).toHaveLength(0);
+		expect(netBodyClicks()).toBe(0);
+	});
+});
+
+// ─── getDateFromInput─────────────────────────────────────────────────────────
 
 describe('TDatePicker#getDateFromInput', () => {
 	let picker;
@@ -1203,6 +1281,7 @@ describe('TDatePicker#selectDate', () => {
 describe('TDatePicker#mouseWheelChange', () => {
 	let picker;
 	const id = nextId();
+	const wheel = (props) => Object.assign({ preventDefault: vi.fn(), stopPropagation: vi.fn() }, props);
 
 	beforeEach(() => {
 		buildDOM(id);
@@ -1217,24 +1296,38 @@ describe('TDatePicker#mouseWheelChange', () => {
 	});
 
 	it('scrolling forward (wheelDelta positive) moves to next month', () => {
-		picker.mouseWheelChange({ wheelDelta: 120 });
+		picker.mouseWheelChange(wheel({ wheelDelta: 120 }));
 		expect(picker.selectedDate.getMonth()).toBe(6); // July
 	});
 
 	it('scrolling backward (wheelDelta negative) moves to prev month', () => {
-		picker.mouseWheelChange({ wheelDelta: -120 });
+		picker.mouseWheelChange(wheel({ wheelDelta: -120 }));
 		expect(picker.selectedDate.getMonth()).toBe(4); // May
 	});
 
 	it('scrolling forward using detail (Firefox) moves to prev month', () => {
 		// detail > 0 means scroll down → prev month
-		picker.mouseWheelChange({ detail: 3 });
+		picker.mouseWheelChange(wheel({ detail: 3 }));
 		expect(picker.selectedDate.getMonth()).toBe(4); // May
 	});
 
 	it('returns false', () => {
-		const result = picker.mouseWheelChange({ wheelDelta: 120 });
+		const result = picker.mouseWheelChange(wheel({ wheelDelta: 120 }));
 		expect(result).toBe(false);
+	});
+
+	it('keeps a wheel event over the calendar from scrolling the page', () => {
+		const event = new Event('DOMMouseScroll', { bubbles: true, cancelable: true });
+		Object.defineProperty(event, 'detail', { value: -3 });
+		const outer = vi.fn();
+		document.body.addEventListener('DOMMouseScroll', outer);
+
+		picker._calDiv.dispatchEvent(event);
+		document.body.removeEventListener('DOMMouseScroll', outer);
+
+		expect(event.defaultPrevented).toBe(true);
+		expect(outer).not.toHaveBeenCalled();
+		expect(picker.selectedDate.getMonth()).toBe(6); // July
 	});
 });
 
