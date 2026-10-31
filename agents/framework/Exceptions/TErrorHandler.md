@@ -133,7 +133,7 @@ $errorHandler->attachEventHandler('OnMissingTranslation', function ($sender, TEr
 ```
 handleError($sender, $param)
   ├── restoreErrorHandler() + restoreExceptionHandler()  // prevent PHP loops
-  ├── if already handling → handleRecursiveError()       // minimal fallback
+  ├── if already handling → handleRecursiveError()       // minimal fallback; Debug: encoded <pre>, else log + 500 header
   └── else
         ├── clear response, set Content-Type: text/html
         ├── THttpException → handleExternalError($statusCode, $exception)

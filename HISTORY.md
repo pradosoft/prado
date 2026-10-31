@@ -1,4 +1,6 @@
 ## Version 4.4.0 - TBA
+BUG: In Debug mode `TErrorHandler` wrote an error raised while handling another error to the page unencoded; the exception text is HTML-encoded. (belisoful)
+BUG: Outside Debug mode a `TSoapServer` fault carried the message of any exception the provider threw; it carries the message of an `IUserException` and the `errorhandler_internal_error` sentence for any other exception, which is logged, as the error page does. (belisoful)
 BUG: `Prado.Element.scrollTo()` ignored its `duration` option; the scroll lasts `duration` milliseconds (default 500) and jumps for 0 or `prefers-reduced-motion: reduce`. (belisoful)
 BUG: `TImageButton` and `TActiveImageButton` client script posted click coordinates off by the page scroll; it posts them relative to the image, as a native image submit does. (belisoful)
 BUG: `TInPlaceTextBox` applies `MaxLength` to its editor, the multi-line textarea included, and Escape cancels the edit; Escape and Enter are handled on keydown. (belisoful)

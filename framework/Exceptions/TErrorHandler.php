@@ -474,7 +474,7 @@ class TErrorHandler extends \Prado\TModule
 
 	/**
 	 * Handles an error that occurs while already handling another error.
-	 * In Debug mode, renders a minimal HTML page with the exception details.
+	 * In Debug mode, renders a minimal HTML page with the exception details, HTML-encoded.
 	 * In non-Debug mode, logs the error via {@see errorLog()} and sends a
 	 * `HTTP/1.0 500 Internal Error` header via {@see header()}, but only when
 	 * {@see headersSent()} reports that headers have not yet been sent.
@@ -486,7 +486,7 @@ class TErrorHandler extends \Prado\TModule
 		if ($this->getApplication()->getMode() === TApplicationMode::Debug) {
 			echo "<html><head><title>Recursive Error</title></head>\n";
 			echo "<body><h1>Recursive Error</h1>\n";
-			echo "<pre>" . $exception->__toString() . "</pre>\n";
+			echo "<pre>" . htmlspecialchars($exception->__toString()) . "</pre>\n";
 			echo "</body></html>";
 		} else {
 			$this->errorLog("Error happened while processing an existing error:\n" . $exception->__toString());
