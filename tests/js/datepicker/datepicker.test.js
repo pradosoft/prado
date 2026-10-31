@@ -1203,6 +1203,7 @@ describe('TDatePicker#selectDate', () => {
 describe('TDatePicker#mouseWheelChange', () => {
 	let picker;
 	const id = nextId();
+	const wheel = (props) => Object.assign({ preventDefault: vi.fn(), stopPropagation: vi.fn() }, props);
 
 	beforeEach(() => {
 		buildDOM(id);
@@ -1217,24 +1218,38 @@ describe('TDatePicker#mouseWheelChange', () => {
 	});
 
 	it('scrolling forward (wheelDelta positive) moves to next month', () => {
-		picker.mouseWheelChange({ wheelDelta: 120 });
+		picker.mouseWheelChange(wheel({ wheelDelta: 120 }));
 		expect(picker.selectedDate.getMonth()).toBe(6); // July
 	});
 
 	it('scrolling backward (wheelDelta negative) moves to prev month', () => {
-		picker.mouseWheelChange({ wheelDelta: -120 });
+		picker.mouseWheelChange(wheel({ wheelDelta: -120 }));
 		expect(picker.selectedDate.getMonth()).toBe(4); // May
 	});
 
 	it('scrolling forward using detail (Firefox) moves to prev month', () => {
 		// detail > 0 means scroll down → prev month
-		picker.mouseWheelChange({ detail: 3 });
+		picker.mouseWheelChange(wheel({ detail: 3 }));
 		expect(picker.selectedDate.getMonth()).toBe(4); // May
 	});
 
 	it('returns false', () => {
-		const result = picker.mouseWheelChange({ wheelDelta: 120 });
+		const result = picker.mouseWheelChange(wheel({ wheelDelta: 120 }));
 		expect(result).toBe(false);
+	});
+
+	it('keeps a wheel event over the calendar from scrolling the page', () => {
+		const event = new Event('DOMMouseScroll', { bubbles: true, cancelable: true });
+		Object.defineProperty(event, 'detail', { value: -3 });
+		const outer = vi.fn();
+		document.body.addEventListener('DOMMouseScroll', outer);
+
+		picker._calDiv.dispatchEvent(event);
+		document.body.removeEventListener('DOMMouseScroll', outer);
+
+		expect(event.defaultPrevented).toBe(true);
+		expect(outer).not.toHaveBeenCalled();
+		expect(picker.selectedDate.getMonth()).toBe(6); // July
 	});
 });
 

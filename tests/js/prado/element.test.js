@@ -150,6 +150,37 @@ describe('Prado.Element.setDataListOptions', () => {
 
 // ─── Prado.Element.setAttribute ───────────────────────────────────────────────
 
+describe('Prado.Element.focus', () => {
+	let input;
+
+	beforeEach(() => {
+		vi.useFakeTimers();
+		input = document.createElement('input');
+		input.id = 'test-focus';
+		document.body.appendChild(input);
+	});
+
+	afterEach(() => {
+		jQuery.active = 0;
+		vi.useRealTimers();
+		input.remove();
+	});
+
+	it('focuses the element at once when no callback is in flight', () => {
+		jQuery.active = 0;
+		Element.focus('test-focus');
+		expect(document.activeElement).toBe(input);
+	});
+
+	it('defers the focus while a callback is in flight', () => {
+		jQuery.active = 1;
+		Element.focus('test-focus');
+		expect(document.activeElement).not.toBe(input);
+		vi.advanceTimersByTime(100);
+		expect(document.activeElement).toBe(input);
+	});
+});
+
 describe('Prado.Element.setAttribute', () => {
 	let el;
 

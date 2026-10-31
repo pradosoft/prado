@@ -85,6 +85,7 @@ Prado.WebUI.Control = Prado.Class({
 		const target = (typeof element === 'string') ? document.getElementById(element) : element;
 		if (!target) return;
 		this.observers.push({ _element: target, _eventName: eventName, _handler: handler });
+		Prado.Observed.add(target);
 		target.addEventListener(eventName, handler);
 	},
 
@@ -117,7 +118,10 @@ Prado.WebUI.Control = Prado.Class({
 		const idx = this.findObserver(element, eventName, handler);
 		const target = (typeof element === 'string') ? document.getElementById(element) : element;
 		if (idx!=-1)
+		{
 			this.observers.splice(idx, 1);
+			if (target) Prado.Observed.remove(target);
+		}
 		else
 			// eslint-disable-next-line no-debugger
 			debugger; // shouldn't happen
@@ -216,7 +220,11 @@ Prado.WebUI.Control = Prado.Class({
 				while (this.observers.length>0)
 				{
 					const e = this.observers.pop();
-					if (e._element) e._element.removeEventListener(e._eventName, e._handler);
+					if (e._element)
+					{
+						e._element.removeEventListener(e._eventName, e._handler);
+						Prado.Observed.remove(e._element);
+					}
 				}
 			}
 		else

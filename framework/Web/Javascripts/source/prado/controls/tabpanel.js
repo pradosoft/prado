@@ -27,18 +27,29 @@ Prado.WebUI.TTabPanel = Prado.Class(Prado.WebUI.Control,
 				if (view)
 					if(this.hiddenField.value == i)
 					{
-						element.classList.add(this.activeCssClass);
-						element.classList.remove(this.normalCssClass);
+						this.setTabCssClass(element, true);
 						view.style.display = '';
 						this.setTabState(element, true);
 					} else {
-						element.classList.add(this.normalCssClass);
-						element.classList.remove(this.activeCssClass);
+						this.setTabCssClass(element, false);
 						view.style.display = 'none';
 						this.setTabState(element, false);
 					}
 			}
 		}
+	},
+
+	/**
+	 * Replaces the class names of the other state with those of the given state.
+	 * Either CSS class may hold several names; removing first keeps a name that
+	 * both states share.
+	 * @param {element} tab - the tab element
+	 * @param {boolean} active - whether the tab is the active one
+	 */
+	setTabCssClass(tab, active) {
+		const tokens = Prado.Element.classTokens;
+		tab.classList.remove(...tokens(active ? this.normalCssClass : this.activeCssClass));
+		tab.classList.add(...tokens(active ? this.activeCssClass : this.normalCssClass));
 	},
 
 	/**
@@ -62,16 +73,14 @@ Prado.WebUI.TTabPanel = Prado.Class(Prado.WebUI.Control,
 			{
 				if(item == viewID)
 				{
-					tab.classList.remove(this.normalCssClass);
-					tab.classList.add(this.activeCssClass);
+					this.setTabCssClass(tab, true);
 					view.style.display = '';
 					this.hiddenField.value=i;
 					this.setTabState(tab, true);
 				}
 				else
 				{
-					tab.classList.remove(this.activeCssClass);
-					tab.classList.add(this.normalCssClass);
+					this.setTabCssClass(tab, false);
 					view.style.display = 'none';
 					this.setTabState(tab, false);
 				}

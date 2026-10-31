@@ -142,6 +142,46 @@ Prado.RequestManager =
 	FIELD_POSTBACK_PARAMETER : 'PRADO_POSTBACK_PARAMETER'
 };
 
+/**
+ * Counts the event observers that Prado control wrappers install on each
+ * element through `Prado.WebUI.Control.observe()`. The jQuery trigger bridge
+ * dispatches native events to an element with observers.
+ * @namespace Prado.Observed
+ * @since 4.4.0
+ */
+Prado.Observed =
+{
+	_counts: new WeakMap(),
+
+	/**
+	 * Records an observer on an element.
+	 * @param {element} el - the observed element
+	 */
+	add(el) {
+		this._counts.set(el, (this._counts.get(el) || 0) + 1);
+	},
+
+	/**
+	 * Removes the record of an observer on an element.
+	 * @param {element} el - the observed element
+	 */
+	remove(el) {
+		const count = (this._counts.get(el) || 0) - 1;
+		if (count > 0)
+			this._counts.set(el, count);
+		else
+			this._counts.delete(el);
+	},
+
+	/**
+	 * @param {element} el - the element to check
+	 * @return {boolean} whether the element has a Prado observer
+	 */
+	has(el) {
+		return this._counts.has(el);
+	}
+};
+
 // jQuery compatibility bridges. Both are installed only when jQuery is
 // available on the page; when the jQuery quarantine plan ships, this whole
 // block moves into the jQuery-loading package only.
@@ -165,11 +205,16 @@ if (typeof jQuery !== 'undefined') {
 	 * https://github.com/jquery/jquery/issues/2476), so pre-4.4 calls
 	 * become no-ops without this bridge.
 	 *
+	 * A Prado-managed element is registered in `Prado.Registry` under its
+	 * own id, or has an observer in `Prado.Observed`. The second covers an
+	 * element that a wrapper registered under another id observes: the
+	 * control of a validator, the target of a TEventTriggeredCallback, and
+	 * the selects of a TDatePicker.
+	 *
 	 * Behavior:
-	 *   - Elements not registered in `Prado.Registry` keep the original
-	 *     jQuery `.trigger()` semantics. No regression for pure-jQuery
-	 *     controls.
-	 *   - Klass-registered elements receive `el.dispatchEvent(CustomEvent)`.
+	 *   - Elements that are not Prado-managed keep the original jQuery
+	 *     `.trigger()` semantics. No regression for pure-jQuery controls.
+	 *   - Prado-managed elements receive `el.dispatchEvent(CustomEvent)`.
 	 *     This reaches both native `addEventListener` handlers AND any
 	 *     jQuery-bound handlers (because jQuery itself attaches via
 	 *     `addEventListener` under the hood).
@@ -190,6 +235,7 @@ if (typeof jQuery !== 'undefined') {
 		// elements; everything else goes through jQuery's own trigger
 		// pipeline exactly as before.
 		const $klass = this.filter(function () {
+			if (Prado.Observed.has(this)) return true;
 			const reg = this.id && Prado.Registry[this.id];
 			return !!(reg && reg.constructor && reg.constructor.isPradoClass);
 		});
@@ -382,21 +428,51 @@ Prado.Element =
 	},
 
 	/**
-	 * Sets an attribute of a DOM element.
+	 * Splits a CSS class value into its class names for `classList.add()` and
+	 * `classList.remove()`, which throw on a name with whitespace or an empty
+	 * name. Whitespace separates the names, as in jQuery `.addClass()`.
+	 * @function ?
+	 * @param {?string} value - one or more class names separated by whitespace
+	 * @return {string[]} the class names; empty for a null, undefined, or blank value
+	 * @since 4.4.0
+	 */
+	classTokens(value) {
+		if (value === null || value === undefined)
+			return [];
+		return String(value).split(/\s+/).filter(Boolean);
+	},
+
+	/**
+	 * Boolean attributes that a `false` value removes and a `true` value sets
+	 * to their own name, as jQuery `.attr()` does.
+	 * @var BOOLEAN_ATTRIBUTES
+	 * @since 4.4.0
+	 */
+	BOOLEAN_ATTRIBUTES: /^(?:checked|selected|async|autofocus|autoplay|controls|defer|disabled|hidden|ismap|loop|multiple|open|readonly|required|scoped|inert)$/i,
+
+	/**
+	 * Sets an attribute of a DOM element. A null or undefined value removes
+	 * the attribute. A boolean attribute is removed by `false` and set to its
+	 * own name by `true`.
 	 * @function ?
 	 * @param {string} element - Element id
 	 * @param {string} attribute - Name of attribute
-	 * @param {string} value - Value of attribute
+	 * @param {?string} value - Value of attribute
 	 */
 	setAttribute(element, attribute, value) {
 		const el = document.getElementById(element);
 		if(!el) return;
+		const isBoolean = Prado.Element.BOOLEAN_ATTRIBUTES.test(attribute);
 		// "disabled" is for <button>, <fieldset>, <input>, <optgroup>, <option>, <select>, <textarea>
 		// "readonly is for <input>, <textarea>
 		// global presence attributes: hidden, inert, popover
 		// removed 'href' and 'multiple' was a hack - they use removeAttribute now
-		if((attribute == "disabled" || attribute == "readonly" || attribute == "hidden" || attribute == "inert" || attribute == "popover") && value==false)
+		if(value === null || value === undefined || (isBoolean && value === false))
 			el.removeAttribute(attribute);
+		else if((attribute == "disabled" || attribute == "readonly" || attribute == "hidden" || attribute == "inert" || attribute == "popover") && value==false)
+			el.removeAttribute(attribute);
+		else if(isBoolean && value === true)
+			el.setAttribute(attribute, attribute);
 		else if(attribute.match(/^on/i)) //event methods
 		{
 			try
@@ -443,12 +519,9 @@ Prado.Element =
 			if (el) el.focus();
 		};
 		// If a callback request is in flight, defer briefly so we focus the
-		// post-update DOM. Prado.CallbackRequest tracks in-flight requests
-		// in its requestQueue (see ajax3.js).
-		const pending = (typeof Prado !== 'undefined'
-			&& Prado.CallbackRequest
-			&& Prado.CallbackRequest.requestQueue
-			&& Prado.CallbackRequest.requestQueue.length) > 0;
+		// post-update DOM. Callbacks are sent with jQuery.ajax (see ajax3.js),
+		// and jQuery.active counts the requests in flight.
+		const pending = typeof jQuery !== 'undefined' && jQuery.active > 0;
 		if (pending) setTimeout(doFocus, 100);
 		else doFocus();
 	},

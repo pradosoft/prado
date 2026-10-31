@@ -896,3 +896,25 @@ describe('Prado.ValidationManager.getValidatorsWithError', () => {
 		expect(Validation.managers['gveForm'].getValidatorsWithError()).toContain(v);
 	});
 });
+
+// ─── TBaseValidator.updateControlCssClass ─────────────────────────────────────
+
+describe('TBaseValidator.updateControlCssClass', () => {
+	const update = (cssClass, control, valid) =>
+		WebUI.TBaseValidator.prototype.updateControlCssClass.call(
+			{ options: { ID: 'ccsVal', ControlCssClass: cssClass } },
+			control,
+			valid,
+		);
+
+	it('adds and removes a ControlCssClass that holds several names', () => {
+		const control = document.createElement('input');
+		control.className = 'form-control';
+
+		expect(() => update('is-invalid  error', control, false)).not.toThrow();
+		expect(control.className).toBe('form-control is-invalid error');
+
+		update('is-invalid  error', control, true);
+		expect(control.className).toBe('form-control');
+	});
+});

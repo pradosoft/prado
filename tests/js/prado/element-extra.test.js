@@ -100,6 +100,42 @@ describe('Prado.Element.setAttribute — boolean-remove attributes', () => {
 		Element.setAttribute('attr-bool-test', 'hidden', true);
 		expect(el.hasAttribute('hidden')).toBe(true);
 	});
+
+	it('sets a boolean attribute to its own name when value is true', () => {
+		Element.setAttribute('attr-bool-test', 'hidden', true);
+		expect(el.getAttribute('hidden')).toBe('hidden');
+	});
+
+	it('removes an attribute when value is null', () => {
+		el.setAttribute('hidden', '');
+		el.setAttribute('title', 'tip');
+		Element.setAttribute('attr-bool-test', 'hidden', null);
+		Element.setAttribute('attr-bool-test', 'title', null);
+		expect(el.hasAttribute('hidden')).toBe(false);
+		expect(el.hasAttribute('title')).toBe(false);
+	});
+
+	it('removes an attribute when value is undefined', () => {
+		el.setAttribute('lang', 'en');
+		Element.setAttribute('attr-bool-test', 'lang', undefined);
+		expect(el.hasAttribute('lang')).toBe(false);
+	});
+
+	it('removes any boolean attribute when value is false', () => {
+		el.setAttribute('open', '');
+		Element.setAttribute('attr-bool-test', 'open', false);
+		expect(el.hasAttribute('open')).toBe(false);
+	});
+
+	it('keeps a non-boolean attribute set to "false" when value is false', () => {
+		Element.setAttribute('attr-bool-test', 'draggable', false);
+		expect(el.getAttribute('draggable')).toBe('false');
+	});
+
+	it('keeps the "until-found" value of hidden', () => {
+		Element.setAttribute('attr-bool-test', 'hidden', 'until-found');
+		expect(el.getAttribute('hidden')).toBe('until-found');
+	});
 });
 
 // ─── Prado.Element.setAttribute — on* event handler branch ───────────────────
