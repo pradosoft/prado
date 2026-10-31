@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: `TImageButton` and `TActiveImageButton` client script posted click coordinates off by the page scroll; it posts them relative to the image, as a native image submit does. (belisoful)
 BUG: `TInPlaceTextBox` applies `MaxLength` to its editor, the multi-line textarea included, and Escape cancels the edit; Escape and Enter are handled on keydown. (belisoful)
 BUG: A `TDatePicker` hidden in the task that showed it leaked a document click listener; `hide()` cancels the pending attach. (belisoful)
 BUG: `Prado.Element.setAttribute()` removes the attribute for a null value, as jQuery did, so an active control's `Hidden`, `Inert`, or `ToolTip` reset to its default no longer leaves `hidden="null"` or `title="null"`. (belisoful)

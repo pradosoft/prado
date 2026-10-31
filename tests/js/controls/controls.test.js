@@ -757,7 +757,6 @@ describe('Prado.WebUI.TImageButton', () => {
 			const ctrl = new TImageButton(postBackOptions('tib2'));
 
 			const form = document.getElementById('testForm');
-			// clientX/Y = 0 in jsdom; offset = 0 → x=1, y=1 (clamped to 0 when <0)
 			const fakeEvent = { clientX: 5, clientY: 10, target: el };
 			const opts = postBackOptions('tib2', 'testForm', { EventTarget: 'tib2' });
 			ctrl.addXYInput(opts, fakeEvent);
@@ -784,6 +783,44 @@ describe('Prado.WebUI.TImageButton', () => {
 			const yInput = document.getElementById('tib3_y');
 			expect(parseInt(xInput.value, 10)).toBeGreaterThanOrEqual(0);
 			expect(parseInt(yInput.value, 10)).toBeGreaterThanOrEqual(0);
+		});
+
+		it('posts rounded pixels relative to the image on a scrolled page', () => {
+			createForm();
+			const el = createElement('input', 'tib6', { type: 'image' });
+			const ctrl = new TImageButton(postBackOptions('tib6'));
+			// The image is 300px down the page and the page is scrolled 250px.
+			// getBoundingClientRect and clientX/Y are both viewport coordinates.
+			vi.spyOn(el, 'getBoundingClientRect').mockReturnValue({ left: 40, top: 50, right: 140, bottom: 100, width: 100, height: 50 });
+			const scrollX = window.pageXOffset;
+			const scrollY = window.pageYOffset;
+			window.pageXOffset = 0;
+			window.pageYOffset = 250;
+			try {
+				const opts = postBackOptions('tib6', 'testForm', { EventTarget: 'tib6' });
+				ctrl.addXYInput(opts, { clientX: 47.4, clientY: 55.2, target: el });
+			} finally {
+				window.pageXOffset = scrollX;
+				window.pageYOffset = scrollY;
+			}
+
+			expect(document.getElementById('tib6_x').value).toBe('7');
+			expect(document.getElementById('tib6_y').value).toBe('5');
+		});
+
+		it('measures from inside the image border', () => {
+			createForm();
+			const el = createElement('input', 'tib7', { type: 'image' });
+			const ctrl = new TImageButton(postBackOptions('tib7'));
+			vi.spyOn(el, 'getBoundingClientRect').mockReturnValue({ left: 10, top: 20, right: 110, bottom: 70, width: 100, height: 50 });
+			Object.defineProperty(el, 'clientLeft', { value: 3 });
+			Object.defineProperty(el, 'clientTop', { value: 2 });
+
+			const opts = postBackOptions('tib7', 'testForm', { EventTarget: 'tib7' });
+			ctrl.addXYInput(opts, { clientX: 13, clientY: 22, target: el });
+
+			expect(document.getElementById('tib7_x').value).toBe('0');
+			expect(document.getElementById('tib7_y').value).toBe('0');
 		});
 	});
 
