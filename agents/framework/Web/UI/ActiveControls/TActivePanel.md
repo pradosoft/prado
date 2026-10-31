@@ -17,4 +17,4 @@ Active counterpart to TPanel. Allows client-side content updates during callback
 
 ## See Also
 
-- `TPanel`, [TCallbackClientScript](./TCallbackClientScript.md)
+- `TPanel`, [TCallbackClientScript](./TCallbackClientScript.md), [TLazyPanel](./TLazyPanel.md) (loads its content by callback)

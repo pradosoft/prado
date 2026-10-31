@@ -34,6 +34,8 @@ AJAX-enabled controls triggering server-side processing via XMLHttpRequest callb
 
 - **`TActivePanel`** — Container with `refresh()` method for server-side HTML update.
 
+- **`TLazyPanel`** — Renders a placeholder, then loads its content by callback when the page loads, the panel becomes visible, or the client asks; `OnLoadContent`. **`TLazyPanelTrigger`** — enum `Load`, `Visible`, `Manual`.
+
 - **`TActiveDataGrid`** / **`TActiveDataList`** / **`TActiveRepeater`** — Data controls with callback paging/sorting/editing.
 
 - **`TActiveFileUpload`** — Async upload via hidden iframe; `OnFileUpload` event.
