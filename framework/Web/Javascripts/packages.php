@@ -66,6 +66,10 @@ $packages = [
 		'prado/controls/tabpanel.js',
 	],
 
+	'keyshortcuts' => [
+		'prado/keyshortcuts/keyshortcuts.js',
+	],
+
 	'webtemplate' => [
 		'prado/controls/webtemplate.js',
 	],
@@ -153,6 +157,7 @@ $dependencies = [
 	'htmlarea' => ['jquery', 'prado', 'htmlarea'],
 	'htmlarea5' => ['jquery', 'prado', 'htmlarea5', 'tinymce'],
 	'keyboard' => ['jquery', 'prado', 'keyboard'],
+	'keyshortcuts' => ['jquery', 'prado', 'keyshortcuts'],
 	'slider' => ['jquery', 'prado', 'slider'],
 	'relativetime' => ['jquery', 'prado', 'relativetime'],
 	'canvas' => ['jquery', 'prado', 'canvas'],
