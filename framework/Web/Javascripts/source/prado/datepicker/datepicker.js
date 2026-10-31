@@ -420,6 +420,9 @@ Prado.WebUI.TDatePicker = Prado.Class(Prado.WebUI.Control,
 		const d = this.newDate(this.selectedDate);
 		const m = d.getMonth() + Math.round(delta);
 		this.setMonth(m,true);
+		// The wheel changes the month instead of scrolling the page.
+		event.preventDefault();
+		event.stopPropagation();
 		return false;
 	},
 
