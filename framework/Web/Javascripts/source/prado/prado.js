@@ -678,14 +678,18 @@ Prado.Element =
 	 * @param {optional string} content - New content of element
 	 * @param {optional string} boundary - Boundary of new content
 	 * @param {optional boolean} self - Whether to replace itself or just the inner content
+	 * @param {optional boolean} morph - Whether to morph the existing nodes through
+	 *   {@link Prado.Element.morph}; it falls back to the replacement when idiomorph is not loaded
 	 */
-	replace(element, content, boundary, self) {
+	replace(element, content, boundary, self, morph) {
 		if(boundary)
 		{
 			const result = this.extractContent(boundary);
 			if(result != null)
 				content = result;
 		}
+		if(morph && Prado.Element.morph(element, content, self, this && this.focusSnapshot))
+			return;
 		const el = document.getElementById(element);
 		if(!el) return;
 		// innerHTML / insertAdjacentHTML parse <script> tags but the HTML spec
@@ -786,6 +790,118 @@ Prado.Element =
 			return false;
 		const type = (script.getAttribute('type') || '').trim();
 		return type === '' || /^(?:text|application)\/(?:x-)?(?:java|ecma)script$/i.test(type);
+	},
+
+	/**
+	 * Morphs an element, or its content, into new markup through idiomorph.
+	 * The existing nodes are patched to match the markup, so they keep their
+	 * event listeners, script references, focus, caret, and scroll position.
+	 * This is the only code that calls idiomorph.
+	 *
+	 * - An element with `data-prado-morph="skip"` and its subtree are left as they are.
+	 * - A new `<script>`, or one whose text changed, runs once with the page CSP
+	 *   nonce, in document order; an unchanged script does not run again.
+	 * - The focused field takes the new value only when it still holds the value
+	 *   of `focus`, the snapshot taken when the callback was sent; otherwise it
+	 *   keeps what the user typed.
+	 * @function ?
+	 * @param {string} element - Element id
+	 * @param {string} content - New markup
+	 * @param {boolean} self - Whether to morph the element itself or only its content
+	 * @param {optional object} focus - {@link Prado.Element.getFocusSnapshot} result
+	 * @returns {boolean} false when idiomorph is not loaded or the element is missing
+	 * @since 4.4.0
+	 */
+	morph(element, content, self, focus) {
+		const el = document.getElementById(element);
+		if (!el || typeof Idiomorph === 'undefined')
+			return false;
+		const active = document.activeElement;
+		const typedSince = !focus || focus.element !== active || active.value !== focus.value;
+		const scripts = new Set();
+		// Each script of added content is inert while inserted, so it runs only
+		// through runScript(); the original type is restored before it runs.
+		const scriptsOf = (node) => node.nodeName === 'SCRIPT' ? [node] :
+			(node.nodeType === Node.ELEMENT_NODE ? node.querySelectorAll('script') : []);
+		Idiomorph.morph(el, content, {
+			morphStyle: self ? 'outerHTML' : 'innerHTML',
+			ignoreActiveValue: typedSince,
+			restoreFocus: true,
+			callbacks: {
+				beforeNodeMorphed(oldNode, newNode) {
+					if (oldNode.nodeType === Node.ELEMENT_NODE && oldNode.getAttribute('data-prado-morph') === 'skip')
+						return false;
+					if (oldNode.nodeName === 'SCRIPT' && oldNode.textContent !== newNode.textContent)
+						scripts.add(oldNode);
+					return true;
+				},
+				beforeNodeAdded(node) {
+					for (const script of scriptsOf(node)) {
+						if (!script.hasAttribute(Prado.Element.MORPH_SCRIPT_TYPE))
+							script.setAttribute(Prado.Element.MORPH_SCRIPT_TYPE, script.getAttribute('type') ?? '');
+						script.setAttribute('type', 'text/x-prado-morph');
+					}
+					return true;
+				},
+				afterNodeAdded(node) {
+					for (const script of scriptsOf(node))
+						scripts.add(script);
+				},
+			},
+		});
+		const ordered = [...scripts].filter((script) => script.isConnected).sort((a, b) =>
+			(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) ? -1 : 1);
+		for (const script of ordered) {
+			if (script.hasAttribute(Prado.Element.MORPH_SCRIPT_TYPE)) {
+				const type = script.getAttribute(Prado.Element.MORPH_SCRIPT_TYPE);
+				script.removeAttribute(Prado.Element.MORPH_SCRIPT_TYPE);
+				if (type === '')
+					script.removeAttribute('type');
+				else
+					script.setAttribute('type', type);
+			}
+			Prado.Element.runScript(script);
+		}
+		return true;
+	},
+
+	/**
+	 * Attribute holding the original `type` of a script while
+	 * {@link Prado.Element.morph} keeps it inert.
+	 * @since 4.4.0
+	 */
+	MORPH_SCRIPT_TYPE: 'data-prado-script-type',
+
+	/**
+	 * Runs a `<script>` element by replacing it with a new one that carries its
+	 * attributes, its text, and the page CSP nonce.
+	 * @function ?
+	 * @param {element} script - The script element
+	 * @since 4.4.0
+	 */
+	runScript(script) {
+		const fresh = document.createElement('script');
+		for (const attr of script.attributes)
+			fresh.setAttribute(attr.name, attr.value);
+		const nonce = Prado.Element.getPageNonce();
+		if (nonce)
+			fresh.nonce = nonce;
+		fresh.text = script.textContent;
+		script.parentNode.replaceChild(fresh, script);
+	},
+
+	/**
+	 * Returns the focused form field and its value, or null when no field has
+	 * focus. A callback request records it when sent, for {@link Prado.Element.morph}.
+	 * @function ?
+	 * @returns {?object} `{element, value}`
+	 * @since 4.4.0
+	 */
+	getFocusSnapshot() {
+		const active = document.activeElement;
+		if (!active || !('value' in active) || active === document.body)
+			return null;
+		return { element: active, value: active.value };
 	},
 
 	/**

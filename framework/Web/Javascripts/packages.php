@@ -9,6 +9,7 @@ $folders = [
 	'highlightjs' => 'Vendor\\bower-asset\\highlightjs',
 	'highlightjs-line-numbers' => 'Vendor\\bower-asset\\highlightjs-line-numbers.js\\dist',
 	'clipboard' => 'Vendor\\bower-asset\\clipboard\\dist',
+	'idiomorph' => 'Vendor\\npm-asset\\idiomorph\\dist',
 ];
 
 //package names and its contents (files relative to the current directory)
@@ -128,6 +129,11 @@ $packages = [
 	'clipboard' => [
 		'clipboard/clipboard.js',
 	],
+
+	//idiomorph: DOM morphing for callback updates
+	'idiomorph' => [
+		'idiomorph/idiomorph.js',
+	],
 ];
 
 //package names and their dependencies
@@ -137,6 +143,7 @@ $dependencies = [
 	'validator' => ['jquery', 'prado', 'validator'],
 	'tabpanel' => ['jquery', 'prado', 'tabpanel'],
 	'ajax' => ['jquery', 'prado', 'ajax'],
+	'morph' => ['jquery', 'prado', 'ajax', 'idiomorph'],
 	'logger' => ['jquery', 'prado', 'logger'],
 	'activefileupload' => ['jquery', 'prado', 'ajax', 'activefileupload'],
 	'effects' => ['jquery', 'jqueryui'],

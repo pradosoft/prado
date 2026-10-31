@@ -27,9 +27,11 @@ AJAX-enabled controls for the Prado framework. ActiveControls trigger server-sid
 
 - **[`ICallbackEventHandler`](ICallbackEventHandler.md)** — Extends `IActiveControl`. Interface: `raiseCallbackEvent(TCallbackEventParameter $param)`. Implement this on any control that should respond to AJAX callbacks.
 
-- **[`TActiveControlAdapter`](TActiveControlAdapter.md)** — Wraps any control to add active/callback support. Instantiates `TBaseActiveControl` (or `TBaseActiveCallbackControl` for `ICallbackEventHandler` controls). Publishes the `ajax` script package. Tracks viewstate changes via `TCallbackPageStateTracker` to send only changed properties.
+- **[`TActiveControlAdapter`](TActiveControlAdapter.md)** — Wraps any control to add active/callback support. Instantiates `TBaseActiveControl` (or `TBaseActiveCallbackControl` for `ICallbackEventHandler` controls). Publishes the `ajax` script package, and the `morph` package for a control whose updates morph. Tracks viewstate changes via `TCallbackPageStateTracker` to send only changed properties.
 
-- **[`TBaseActiveControl`](TBaseActiveControl.md)** — Options holder (`TMap`). `setOption($name, $value)` / `getOption($name)`. `canUpdateClientSide()` returns `true` when: control initialized, not loading post data, is a callback request, `EnableUpdate=true`, and control is visible.
+- **[`TBaseActiveControl`](TBaseActiveControl.md)** — Options holder (`TMap`). `setOption($name, $value)` / `getOption($name)`. `canUpdateClientSide()` returns `true` when: control initialized, not loading post data, is a callback request, `EnableUpdate=true`, and control is visible. `UpdateMode` and `getIsMorphUpdate()` select a replaced or morphed update (4.4.0).
+
+- **[`TActiveUpdateMode`](TActiveUpdateMode.md)** — Enum: `Default` (the page's `CallbackUpdateMode`), `Replace`, `Morph` (4.4.0).
 
 - **[`TBaseActiveCallbackControl`](TBaseActiveCallbackControl.md)** — Extends `TBaseActiveControl`. Adds `TCallbackClientSide` options and `CausesValidation`, `ValidationGroup` properties.
 
@@ -87,6 +89,7 @@ AJAX-enabled controls for the Prado framework. ActiveControls trigger server-sid
 - **Implement `ICallbackEventHandler`** on any new active control. The `raiseCallbackEvent()` method is the server-side callback handler.
 - **Use `TActiveControlAdapter`** (not subclassing) to add active behaviour to existing controls. The adapter pattern keeps controls decoupled from the callback mechanism.
 - **`canUpdateClientSide()`** — always check this before calling `TCallbackClientScript` methods to avoid updating the DOM during non-callback requests.
+- **`ActiveControl.UpdateMode`** — `Morph` patches a re-rendered control's existing nodes through idiomorph, so they keep their listeners, focus, and caret; `TPage.CallbackUpdateMode` is the default. Render-in-callback controls pass `getActiveControl()->getIsMorphUpdate()` to `replaceContent()`. See [TActiveUpdateMode](TActiveUpdateMode.md) (4.4.0).
 - **`TCallbackPageStateTracker`** — tracks which viewstate properties changed during a callback. Only changed properties are sent to the client, minimising payload.
 - **Client-side class** — the JavaScript counterpart lives in `framework/Web/Javascripts/source/prado/activecontrols/activecontrols3.js` under `Prado.WebUI.<ClassName>`.
 
@@ -96,3 +99,4 @@ AJAX-enabled controls for the Prado framework. ActiveControls trigger server-sid
 - `TActivePageAdapter` suppresses normal HTML rendering; only `X-PRADO-*` headers are sent. Do not `echo` from callback handlers.
 - `TTimeTriggeredCallback` keeps firing while the page is open — always implement server-side guards against runaway callbacks.
 - `TActiveFileUpload` uses a hidden iframe (not XHR) for upload; progress tracking is limited.
+- A Replace update creates new nodes, so listeners on inner elements, focus, and typing are lost; `UpdateMode="Morph"` keeps them. Under Morph, data-bound rows pair by position, since item IDs follow the index.

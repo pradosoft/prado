@@ -16,7 +16,9 @@ Basic properties for every active control. Provides options management and deter
 - `getOption($name, $default)` - Get named option
 - `getEnableUpdate()` / `setEnableUpdate($value)` - Allow fine-grain callback updates
 - `canUpdateClientSide($bDontRequireVisibility)` - Check if client updates are allowed
+- `getUpdateMode()` / `setUpdateMode($value)` - How a callback updates the control's markup, a [TActiveUpdateMode](./TActiveUpdateMode.md); defaults to Default (4.4.0)
+- `getIsMorphUpdate()` - Whether the update morphs: UpdateMode Morph, or Default on a page whose `CallbackUpdateMode` is Morph (4.4.0)
 
 ## See Also
 
-- [TBaseActiveCallbackControl](./TBaseActiveCallbackControl.md), [TActiveControlAdapter](./TActiveControlAdapter.md)
+- [TBaseActiveCallbackControl](./TBaseActiveCallbackControl.md), [TActiveControlAdapter](./TActiveControlAdapter.md), [TActiveUpdateMode](./TActiveUpdateMode.md)

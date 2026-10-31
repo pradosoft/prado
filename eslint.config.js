@@ -36,6 +36,7 @@ export default [
 				// Third-party libraries Prado integrates with via PHP-emitted scripts.
 				hljs:        'readonly', // highlight.js — TTextHighlighter
 				ClipboardJS: 'readonly', // clipboard.js — TTextHighlighter copy-code
+				Idiomorph:   'readonly', // idiomorph — morphed callback updates (Prado.Element.morph)
 
 				// reCAPTCHA v2 loader callback. Defined in validation3.js, called
 				// asynchronously by Google's loader script.

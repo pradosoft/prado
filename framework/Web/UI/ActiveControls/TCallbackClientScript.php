@@ -507,8 +507,9 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param \Prado\Web\UI\TControl|string $element control element or HTML element id.
 	 * @param \Prado\Web\UI\TControl|\Prado\Web\UI\THtmlWriter|string $content HTML fragment, the control to be rendered, or the writer holding the content.
 	 * @param bool $self whether to fully replace the element or just its inner content.
+	 * @param bool $morph whether the client morphs the existing nodes; see {@see replaceContent()}.
 	 */
-	protected function replace($element, $content, $self)
+	protected function replace($element, $content, $self, $morph = false)
 	{
 		if ($content instanceof TControl) {
 			$boundary = $this->getRenderedContentBoundary($content);
@@ -520,7 +521,11 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 			$boundary = null;
 		}
 
-		$this->callClientFunction('Prado.Element.replace', [$element, $content, $boundary, $self]);
+		$params = [$element, $content, $boundary, $self];
+		if ($morph) {
+			$params[] = true;
+		}
+		$this->callClientFunction('Prado.Element.replace', $params);
 	}
 
 	/**
@@ -530,10 +535,15 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param \Prado\Web\UI\TControl|string $element control element or HTML element id.
 	 * @param \Prado\Web\UI\TControl|\Prado\Web\UI\THtmlWriter|string $content HTML fragment, the control to be rendered, or the writer holding the content.
 	 * @param bool $self whether to fully replace the element or just its inner content, defaults to true.
+	 * @param bool $morph whether the client patches the existing nodes to match the HTML
+	 *   through `Prado.Element.morph`, so they keep their listeners, focus, and caret;
+	 *   defaults to false. The `morph` script package loads idiomorph; without it the
+	 *   client replaces. An active control passes its
+	 *   {@see TBaseActiveControl::getIsMorphUpdate() ActiveControl.IsMorphUpdate}.
 	 */
-	public function replaceContent($element, $content, $self = true)
+	public function replaceContent($element, $content, $self = true, $morph = false)
 	{
-		$this->replace($element, $content, $self);
+		$this->replace($element, $content, $self, $morph);
 	}
 
 
