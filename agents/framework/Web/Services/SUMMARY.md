@@ -14,4 +14,6 @@ Application services handling different response types; registered in `applicati
 
 - **`TFeedService`** — RSS/Atom feed generation; delegates to content provider classes.
 
+- **`TServerEventService`** — Server-sent events stream of one channel; events from an `IServerEventBroker` module (`TServerEventCacheBroker`, `TServerEventMemoryBroker`); page side is `TServerEventTriggeredCallback`.
+
 - **`TPageConfiguration`** — Parses per-directory `config.xml`/`config.php` files for page-level module loading, authorization rules.

@@ -23,12 +23,14 @@ Application services for the Prado framework. Each service handles a different t
 
 - **[TFeedService](TFeedService.md)** — RSS/Atom feed generation. Delegates to content provider classes.
 
+- **[TServerEventService](TServerEventService.md)** — Server-sent events: streams one channel as `text/event-stream` to a browser `EventSource`, with a channel token bound to the user, `retry:`, heartbeats, `Last-Event-ID` resume, a released session, and a bounded `MaxLifetime`. Events come from an [IServerEventBroker](IServerEventBroker.md) module: [TServerEventCacheBroker](TServerEventCacheBroker.md) (polls an `ICache`, across processes) or [TServerEventMemoryBroker](TServerEventMemoryBroker.md) (wakes fibers on the loop, one process), both on [TServerEventBroker](TServerEventBroker.md). `TServerEvent` is the event; `TServerEventBrokerIDTrait` resolves `BrokerID`. [TServerEventTriggeredCallback](../UI/ActiveControls/TServerEventTriggeredCallback.md) is the page side.
+
 - **[TPageConfiguration](TPageConfiguration.md)** — Parses per-directory `config.xml`/`config.php` files for page-level module loading, authorization rules, and default property values.
 
 ## Conventions
 
 - **Service activation** — [THttpRequest](../THttpRequest.md) determines which service to activate based on URL parameters or path patterns. The service ID matches the `id` attribute in `application.xml`.
 - **TPageService is the default** — Most applications use only `TPageService`; other services are opt-in.
-- **CSRF** — [TPage](../UI/TPage.md) `EnableCsrfValidation` (on by default) checks every postback and callback. `TJsonService`, `TSoapService`, and `TFeedService` check POST requests through `TService::ensureCsrfToken()` when `EnableCsrfValidation` is set on the service (off by default). `TCspReportingService` takes browser reports, which carry no token, and does not check.
+- **CSRF** — [TPage](../UI/TPage.md) `EnableCsrfValidation` (on by default) checks every postback and callback. `TJsonService`, `TSoapService`, and `TFeedService` check POST requests through `TService::ensureCsrfToken()` when `EnableCsrfValidation` is set on the service (off by default). `TCspReportingService` takes browser reports, which carry no token, and does not check. `TServerEventService` streams on GET and checks its channel token instead.
 - **SOAP `@soapmethod`** — PHP methods on the provider class must have this annotation for WSDL auto-generation. Strict PHPDoc (`@param`, `@return` with types) is required for accurate WSDL.
 - **TRpcApiProvider methods** — Must be public; exposed automatically to the RPC layer.
