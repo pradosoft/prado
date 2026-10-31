@@ -41,6 +41,7 @@ This file defines the JavaScript package registry for PRADO. It declares all JS 
 | `htmlarea` | `prado/controls/htmlarea.js` |
 | `htmlarea5` | `prado/controls/htmlarea5.js` |
 | `ratings` | `prado/ratings/ratings.js` |
+| `serverevents` | `prado/activecontrols/serverevents.js`: `Prado.EventSource`, one shared `EventSource` per stream URL, and the client of [TServerEventTriggeredCallback](../UI/ActiveControls/TServerEventTriggeredCallback.md); requires `ajax` |
 | `inlineeditor` | `prado/activecontrols/inlineeditor.js` |
 | `activefileupload` | `prado/activefileupload/activefileupload.js` |
 | `activedatepicker` | `prado/activecontrols/activedatepicker.js` |

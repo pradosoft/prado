@@ -609,6 +609,7 @@ return [
 'TScalarDiff' => 'Prado\Web\UI\ActiveControls\TScalarDiff',
 'TStyleDiff' => 'Prado\Web\UI\ActiveControls\TStyleDiff',
 'TTimeTriggeredCallback' => 'Prado\Web\UI\ActiveControls\TTimeTriggeredCallback',
+'TServerEventTriggeredCallback' => 'Prado\Web\UI\ActiveControls\TServerEventTriggeredCallback',
 'TTriggeredCallback' => 'Prado\Web\UI\ActiveControls\TTriggeredCallback',
 'TValueTriggeredCallback' => 'Prado\Web\UI\ActiveControls\TValueTriggeredCallback',
 'TViewStateDiff' => 'Prado\Web\UI\ActiveControls\TViewStateDiff',

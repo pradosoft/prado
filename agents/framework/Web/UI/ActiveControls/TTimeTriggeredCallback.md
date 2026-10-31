@@ -21,3 +21,4 @@ Triggers callback requests at fixed time intervals. Useful for polling scenarios
 ## See Also
 
 - [TTriggeredCallback](./TTriggeredCallback.md), [TValueTriggeredCallback](./TValueTriggeredCallback.md), [TEventTriggeredCallback](./TEventTriggeredCallback.md)
+- [TServerEventTriggeredCallback](./TServerEventTriggeredCallback.md) — server push instead of polling; TTimeTriggeredCallback stays the option where a held stream per page is too costly
