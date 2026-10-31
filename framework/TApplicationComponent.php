@@ -11,6 +11,7 @@
 namespace Prado;
 
 use Prado\TApplicationMode;
+use Prado\Util\TComposerReflection;
 
 /**
  * TApplicationComponent class
@@ -34,6 +35,9 @@ use Prado\TApplicationMode;
  */
 class TApplicationComponent extends \Prado\TComponent
 {
+	/**
+	 * The runtime file that keeps class fx-event lists in Performance mode.
+	 */
 	public const FX_CACHE_FILE = 'fxevent.cache';
 	/**
 	 * TApplicationComponents auto listen to global events.
@@ -46,51 +50,57 @@ class TApplicationComponent extends \Prado\TComponent
 	}
 
 	/**
-	 * This caches the 'fx' events for PRADO classes in the application cache
+	 * Returns the 'fx' events of a class.  In Performance mode the lists are kept across
+	 * requests in the {@see FX_CACHE_FILE} runtime file, read once per process.  The file is
+	 * discarded when it is older than the installed Composer manifests, so installing,
+	 * updating, or removing a package refreshes it; a deployment that changes an
+	 * application class's fx handlers clears the file.  In the other modes each process
+	 * computes the lists from the loaded classes.
 	 * @param object $class The object to get the 'fx' events.
 	 * @return string[] fx events from a specific class
 	 */
 	protected function getClassFxEvents($class)
 	{
-		static $_classfx = [];
-		static $_classfxSize = 0;
-		static $_loaded = false;
-
 		$app = $this->getApplication();
-		$cacheFile = $mode = null;
-		if ($app) {
-			$cacheFile = $app->getRuntimePath() . DIRECTORY_SEPARATOR . self::FX_CACHE_FILE;
-			if ((($mode = $app->getMode()) === TApplicationMode::Normal || $mode === TApplicationMode::Performance) && !$_loaded) {
-				$_loaded = true;
-				if (($content = @file_get_contents($cacheFile)) !== false) {
-					$_classfx = @unserialize($content) ?? [];
-					$_classfxSize = count($_classfx);
-				}
-			}
+		if ($app === null || $app->getMode() !== TApplicationMode::Performance) {
+			return parent::getClassFxEvents($class);
 		}
+		static $_classfx = null;
+
+		$cacheFile = $app->getRuntimePath() . DIRECTORY_SEPARATOR . self::FX_CACHE_FILE;
+		$_classfx ??= static::readFxCache($cacheFile);
 		$className = $class::class;
 		if (array_key_exists($className, $_classfx)) {
 			return $_classfx[$className];
 		}
 		$fx = parent::getClassFxEvents($class);
 		$_classfx[$className] = $fx;
-		if ($cacheFile) {
-			if ($mode === TApplicationMode::Performance) {
-				file_put_contents($cacheFile, serialize($_classfx), LOCK_EX);
-			} elseif ($mode === TApplicationMode::Normal) {
-				static $_flipClassMap = null;
-
-				if ($_flipClassMap === null) {
-					$_flipClassMap = array_flip(Prado::$classMap);
-				}
-				$classData = array_intersect_key($_classfx, $_flipClassMap);
-				if (($c = count($classData)) > $_classfxSize) {
-					$_classfxSize = $c;
-					file_put_contents($cacheFile, serialize($_classfx), LOCK_EX);
-				}
-			}
-		}
+		file_put_contents($cacheFile, serialize($_classfx), LOCK_EX);
 		return $fx;
+	}
+
+	/**
+	 * Reads the fx-event lists from a {@see FX_CACHE_FILE}.  The file holds an array of
+	 * string lists, so it is unserialized without objects.  A missing or unreadable file, or
+	 * one older than {@see TComposerReflection::getInstalledManifestsTime()}, gives an empty
+	 * array.
+	 * @param string $cacheFile the cache file path.
+	 * @return array<string, string[]> the fx events, keyed by class name.
+	 * @since 4.4.0
+	 */
+	protected static function readFxCache(string $cacheFile): array
+	{
+		if (($cacheTime = @filemtime($cacheFile)) === false) {
+			return [];
+		}
+		if (($manifestsTime = TComposerReflection::getInstalledManifestsTime()) !== null && $cacheTime < $manifestsTime) {
+			return [];
+		}
+		if (($content = @file_get_contents($cacheFile)) === false) {
+			return [];
+		}
+		$cached = @unserialize($content, ['allowed_classes' => false]);
+		return is_array($cached) ? $cached : [];
 	}
 
 	/**
