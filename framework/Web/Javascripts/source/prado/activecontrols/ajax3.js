@@ -237,20 +237,22 @@ Prado.CallbackRequestManager =
  * an application/x-www-form-urlencoded string. Matches the legacy behavior
  * of `jQuery('input, select, textarea').serialize()` which ignored form
  * boundaries and skipped:
- *   - disabled controls
+ *   - disabled controls, including those in a disabled `<fieldset>`
  *   - elements without a `name`
  *   - file inputs
  *   - submit/button/image/reset inputs
  *   - unchecked checkboxes and radios
+ *   - disabled options and the options of a disabled `<optgroup>`
+ * Line breaks in a value are sent as CRLF, as a form submission sends them.
  * @since 4.4.0
  */
 Prado.CallbackRequest_serializePageInputs = function() {
 	const out = [];
-	const enc = (s) => encodeURIComponent(s).replace(/%20/g, '+');
+	const enc = (s) => encodeURIComponent(String(s).replace(/\r?\n/g, '\r\n')).replace(/%20/g, '+');
 	const skipTypes = new Set(['file', 'submit', 'reset', 'button', 'image']);
 	const fields = document.querySelectorAll('input, select, textarea');
 	for (const el of fields) {
-		if (el.disabled || !el.name) continue;
+		if (!el.name || el.matches(':disabled')) continue;
 		const tag = el.tagName.toLowerCase();
 		if (tag === 'input') {
 			const t = (el.type || 'text').toLowerCase();
@@ -259,7 +261,7 @@ Prado.CallbackRequest_serializePageInputs = function() {
 			out.push(`${enc(el.name)}=${enc(el.value)}`);
 		} else if (tag === 'select') {
 			for (const opt of el.options) {
-				if (opt.selected) out.push(`${enc(el.name)}=${enc(opt.value)}`);
+				if (opt.selected && !opt.matches(':disabled')) out.push(`${enc(el.name)}=${enc(opt.value)}`);
 			}
 		} else { // textarea
 			out.push(`${enc(el.name)}=${enc(el.value)}`);

@@ -44,6 +44,12 @@ use Prado\TPropertyValue;
  * {@see TCurlHttpClient} and {@see TFopenHttpClient} stay synchronous; this client is chosen
  * explicitly and is not in {@see THttpClient::TRANSPORTS}.
  *
+ * libcurl's resolver thread pool does not survive a `fork()`, and a child that destroys an
+ * inherited multi handle waits forever for the pool's threads.  Before
+ * {@see \Prado\Util\Helpers\TProcessHelper::fork()} forks, {@see fxPrepareForFork()} releases an
+ * idle multi handle in the parent, and the next transfer creates a new one; a fork while a
+ * transfer is pending is not supported.
+ *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
  */
@@ -174,6 +180,24 @@ class TCurlMultiHttpClient extends TCurlHttpClient
 		if ($this->_multi !== null) {
 			curl_multi_setopt($this->_multi, CURLMOPT_MAX_TOTAL_CONNECTIONS, $this->_maxConnections);
 		}
+	}
+
+	/**
+	 * Releases the multi handle before the process forks, when no transfer is pending.  The
+	 * parent frees it while libcurl's threads still exist, so the child inherits no handle whose
+	 * destruction would wait on them.  Raised as `fxPrepareForFork` by
+	 * {@see \Prado\Util\Helpers\TProcessHelper::fork()}.
+	 * @param mixed $sender The application.
+	 * @param mixed $param Null.
+	 * @return array Nothing to restore after the fork.
+	 */
+	public function fxPrepareForFork($sender, $param): array
+	{
+		if ($this->_transfers === []) {
+			$this->stopPump();
+			$this->_multi = null;
+		}
+		return [];
 	}
 
 	/**

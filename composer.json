@@ -78,7 +78,7 @@
 		"phpdocumentor/shim": "^3",
 		"pradosoft/prado-phpdoc-template": "*",
 		"friendsofphp/php-cs-fixer": "3.95.27",
-		"phpstan/phpstan": "2.3.1"
+		"phpstan/phpstan": "2.3.3"
 	},
 	"suggest" : {
 		"ext-apcu" : "Enables the use of TAPCCache as a cache handler",

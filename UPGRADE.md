@@ -23,6 +23,8 @@ Upgrading from v4.3.3
   the 500 page to show a message to the visitor throws a `TUserException`. With a globalization module configured for
   translation, the error page looks the error code up in the `prado` catalogue first. `TApplication::startService()`
   throws `TConfigurationException` for an invalid or disabled service and a 404 `THttpException` for an unknown one.
+  A `TSoapServer` fault follows the same rule for an exception its provider throws; a provider that faults with a
+  message for the client throws a `SoapFault` or a `TUserException`.
 - SqlMap (`Prado\Data\SqlMap`) is no longer part of the framework; it is the `pradosoft/prado-sqlmap` package (#1168).
   An application that does not use SqlMap needs no change. An application using `TSqlMapConfig`, `TSqlMapGateway`, or
   `TSqlMapManager` adds the package: `composer require pradosoft/prado-sqlmap`. Namespaces, class names, short names
@@ -98,6 +100,18 @@ Upgrading from v4.3.3
 - TPropertyValue::ensureEnum normalizes the case of the enum constant name.
 - TReCaptcha2::getResponse changed to TReCaptcha2::getCaptchaResponse - no longer overrides TApplicationComponent::getResponse (#1132)
 - Prado JS dispatches `prado:ajaxComplete` event with jQuery.onAjaxComplete for non-dependence on jQuery. Use this event instead of the jQuery event.
+- The listener class of the `logger` package, the global `CustomEvent`, is renamed `LogEvent`. The browser's native `CustomEvent` is no longer replaced when the logger loads.
+- `Prado.WebUI.Control.observe()` attaches a native listener: it takes a DOM element or an element id and one event name. A jQuery object, a `#id`
+  selector, several or namespaced event names, and an event-data argument are no longer accepted; custom controls that pass them call `observe()` once per element and event.
+- The `invoker` passed to a validator's client-side `OnValidate`, `OnValidationSuccess`, and `OnValidationError` handlers is a DOM element in place of a jQuery object.
+- `jQuery(el).trigger()` on an element that a Prado control registers or observes dispatches a native event. A jQuery handler on that element receives the trigger's
+  extra parameters in `event.detail` in place of handler arguments. Only `click`, `focus`, `blur`, and a form's `submit` run the element's native method.
+- A TColorPicker in `Basic` mode stays open after a palette color is clicked; it closes on a click outside the picker or on Escape.
+- TAccordion animates for `AnimationDuration` seconds, default 1; in 4.3 every animation took jQuery's default 400 ms.
+- A `<script src>` in content a callback replaces (`TCallbackClientScript::replaceContent()` and active control re-renders) loads asynchronously.
+  The inline scripts after it in that content wait for it to load. The later actions of the same callback response do not wait, as they did under jQuery's
+  synchronous load, so an `evaluateScript()` that uses what the file defines can run first. Call that code from an inline script after the `<script src>`,
+  or load the file with the page.
 - `Prado\Web\TUri` is now a PSR-7 `UriInterface`: scheme/host are lower-cased, path/query/fragment are
   percent-encoded, and `getPort()` returns `?int` (`null` when absent or scheme default).
 - TDatePicker::InputMode changed to TDatePicker::DateInputMode - due to conflict with TWebControl::InputMode
@@ -128,6 +142,11 @@ Upgrading from v4.3.3
   Prado cache to a PSR consumer, and `TPsrCache` stores a Prado cache in a PSR cache. All caching in Prado 5 is PSR
   compliant, so a new application reaches its cache through `TPsrSimpleCache` or `TPsrCacheItemPool`, and an
   application that intends to upgrade to Prado 5 moves its cache access to them; that code carries over unchanged.
+- Pager and wizard markup changed for accessibility (#1407). `TPager` renders a `<nav>` instead of a `<span>`, and the
+  `TDataGrid` pager renders a `<nav>` instead of a `<div>`; both carry `aria-label="Pagination"`. CSS that selects
+  `span` or `div` pagers selects `nav`; a pager placed inline in text styles `nav` with `display: inline`. The default
+  `TWizard` side bar renders its steps as an `<ol>` instead of a `<table>`; CSS for the side bar table, or
+  `list-style: none`, restores the previous look. A custom `SideBarTemplate` is unchanged.
 
 Upgrading from v4.3.2
 ---------------------

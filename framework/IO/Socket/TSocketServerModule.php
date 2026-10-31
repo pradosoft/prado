@@ -13,6 +13,7 @@ namespace Prado\IO\Socket;
 use Prado\Collections\TMap;
 use Prado\Exceptions\TConfigurationException;
 use Prado\IO\Async\IEventLoop;
+use Prado\IO\Async\TAsync;
 use Prado\IO\Async\TRevoltEventLoop;
 use Prado\IO\TUriScheme;
 use Prado\Prado;
@@ -35,7 +36,10 @@ use Prado\Util\TSignalsDispatcher;
  * explicitly), then serves it on an {@see IEventLoop}: the loop accepts connections and dispatches
  * readable ones through {@see onClientData}, while {@see onClientConnect} and {@see onClientDisconnect}
  * bracket each connection's lifetime.  {@see getEventLoop() EventLoop} is the loop; the default is a
- * {@see getEventLoopClass() EventLoopClass} instance, a {@see TRevoltEventLoop}.
+ * {@see getEventLoopClass() EventLoopClass} instance, a {@see TRevoltEventLoop}.  While the server
+ * serves, the loop is also the {@see TAsync::getLoop() TAsync loop}, so a fiber that a handler starts
+ * with {@see TAsync::run()} waits on the loop that runs.  {@see serve()} restores the prior TAsync
+ * loop on exit.
  *
  * The server is connection-oriented: it accepts streams.  Configure a stream scheme (`tcp`, `tls`,
  * `ssl`, or `unix`); a connectionless datagram scheme (`udp`, `udg`) is rejected, as a datagram
@@ -212,7 +216,8 @@ class TSocketServerModule extends TModule implements IPermissions
 	 * server for acceptable connections ({@see acceptClient()}) and each accepted connection for
 	 * readable data ({@see dispatchClient()}).  A repeating timer delivers the signals caught in
 	 * sync mode and stops the loop once the server no longer listens.  Subclasses override this when
-	 * the server owns its own loop.
+	 * the server owns its own loop; such an override makes that loop the
+	 * {@see TAsync::setLoop() TAsync loop}, so fibers its handlers start resume.
 	 * @param TSocketServer $server The listening server.
 	 */
 	protected function serveLoop(TSocketServer $server): void
@@ -307,8 +312,9 @@ class TSocketServerModule extends TModule implements IPermissions
 
 	/**
 	 * Runs the socket server: binds the endpoint, subscribes to the signals dispatcher, and serves
-	 * until stopped by a SIGTERM/SIGINT signal or the server closing.  Open connections are closed on
-	 * exit.
+	 * until stopped by a SIGTERM/SIGINT signal or the server closing.  The
+	 * {@see getEventLoop() EventLoop} is the {@see TAsync::getLoop() TAsync loop} while the server
+	 * serves.  Open connections are closed and the prior TAsync loop is restored on exit.
 	 * @throws TConfigurationException When the endpoint is unconfigured or names a datagram scheme.
 	 * @return bool Whether the server ran (false when the permission is denied).
 	 */
@@ -328,9 +334,12 @@ class TSocketServerModule extends TModule implements IPermissions
 				$listened = true;
 			}
 		}
+		$priorLoop = TAsync::getLoop();
+		TAsync::setLoop($this->getEventLoop());
 		try {
 			$this->serveLoop($this->_server);
 		} finally {
+			TAsync::setLoop($priorLoop);
 			foreach ($this->_server->getConnections() as $connection) {
 				$connection->close();
 			}

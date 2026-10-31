@@ -74,6 +74,11 @@ use Prado\Exceptions\TInvalidDataValueException;
  *   {@see getCancelButtonStyle CancelButtonStyle}.
  * - side bar: {@see getSideBarStyle SideBarStyle} and {@see getSideBarButtonStyle SideBarButtonStyle}.
  *
+ * The default side bar is a step indicator: an `<ol>` of step buttons in which
+ * the button of the active step has `aria-current="step"`. A custom
+ * {@see setSideBarTemplate SideBarTemplate} sets the `RepeatLayout` of its
+ * `SideBarList` data list to OrderedList for the same list structure.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */

@@ -44,6 +44,7 @@ export default [
 
 				// logger.js public exports — defined in logger.js, used by
 				// PHP-emitted client scripts and dev consoles.
+				LogEvent:    'writable',
 				LogEntry:    'writable',
 				LogConsole:  'writable',
 				puts:        'writable',

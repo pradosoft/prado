@@ -666,9 +666,19 @@ describe('TRatingList accessibility', () => {
 		expect(r.radios[2].getAttribute('aria-label')).toBe('3');
 	});
 
-	it('marks the decorative star cells aria-hidden', () => {
+	it('keeps each focusable radio out of any aria-hidden subtree', () => {
+		// aria-hidden on an ancestor hides the radio from assistive technology
+		// while it stays in the tab order (WCAG 4.1.2).
 		rl.radios.forEach((radio) => {
-			expect(radio.parentNode.parentNode.getAttribute('aria-hidden')).toBe('true');
+			expect(radio.closest('[aria-hidden="true"]')).toBeNull();
+		});
+	});
+
+	it('leaves the star cells exposed after read-only toggles', () => {
+		rl.setReadOnly(true);
+		rl.setReadOnly(false);
+		document.querySelectorAll('#rla td').forEach((td) => {
+			expect(td.hasAttribute('aria-hidden')).toBe(false);
 		});
 	});
 

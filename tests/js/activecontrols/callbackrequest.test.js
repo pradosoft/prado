@@ -238,3 +238,34 @@ describe('Prado.AssetManagerClass isAssetLoaded / markAssetAsLoaded', () => {
 		expect(mgr.isAssetLoaded('http://example.com/b.js')).toBe(false);
 	});
 });
+
+// ─── Prado.CallbackRequest_serializePageInputs ───────────────────────────────
+
+describe('Prado.CallbackRequest_serializePageInputs', () => {
+	afterEach(() => {
+		document.body.innerHTML = '';
+	});
+
+	it('matches jQuery serialize() for line breaks, disabled fieldsets, and disabled options', () => {
+		document.body.innerHTML = `
+			<textarea name="ta"></textarea>
+			<fieldset disabled><input name="infs" value="v"></fieldset>
+			<select name="sel" multiple>
+				<option value="1" selected disabled>1</option>
+				<optgroup disabled><option value="2" selected>2</option></optgroup>
+				<option value="3" selected>3</option>
+			</select>`;
+		document.querySelector('textarea').value = 'a\nb';
+
+		const expected = jQuery('input, select, textarea').serialize();
+
+		expect(Prado.CallbackRequest_serializePageInputs()).toBe(expected);
+		expect(expected).toBe('ta=a%0D%0Ab&sel=3');
+	});
+
+	it('keeps a CRLF line break as one CRLF', () => {
+		document.body.innerHTML = '<input type="hidden" name="h">';
+		document.querySelector('input').value = 'a\r\nb';
+		expect(Prado.CallbackRequest_serializePageInputs()).toBe('h=a%0D%0Ab');
+	});
+});

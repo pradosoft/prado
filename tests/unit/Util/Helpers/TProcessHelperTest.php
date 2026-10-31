@@ -134,8 +134,12 @@ class TProcessHelperTest extends \PHPUnit\Framework\TestCase
 		$info = proc_get_status($process);
 		$pid = $info['pid'];
 		try {
-			usleep(50_000); // Allow time for the process to appear in the OS task list (needed on Windows).
-			self::assertTrue(TProcessHelper::isRunning($pid));
+			// A loaded Windows runner can take well over 50ms to list the child in TASKLIST.
+			$deadline = microtime(true) + 10;
+			while (!($running = TProcessHelper::isRunning($pid)) && microtime(true) < $deadline) {
+				usleep(50_000);
+			}
+			self::assertTrue($running, "Child process $pid did not appear in the OS process list.");
 			
 			self::assertTrue(is_int($processPriority = TProcessHelper::getProcessPriority($pid)));
 			self::assertTrue(TProcessHelper::setProcessPriority(TProcessHelper::WINDOWS_BELOW_NORMAL_PRIORITY, $pid));

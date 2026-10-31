@@ -17,9 +17,12 @@ use Prado\Exceptions\TInvalidDataValueException;
  * TRepeatInfo class.
  * TRepeatInfo represents repeat information for controls like {@see \Prado\Web\UI\WebControls\TCheckBoxList}.
  * The layout of the repeated items is specified via {@see setRepeatLayout RepeatLayout},
- * which can be either Table (default), Flow or Raw.
+ * which can be either Table (default), Flow, Raw, OrderedList, or UnorderedList.
  * A table layout uses HTML table cells to organize the items while
  * a flow layout uses line breaks to organize the items.
+ * An OrderedList or UnorderedList layout renders an `<ol>` or `<ul>` with each
+ * item, the header, and the footer in an `<li>`. It omits the separators and the
+ * caption, and ignores the column and repeat direction settings.
  * The number of columns used to display the items is specified via
  * {@see setRepeatColumns RepeatColumns} property, while the {@see setRepeatDirection RepeatDirection}
  * governs the order of the items being rendered.
@@ -152,6 +155,9 @@ class TRepeatInfo extends \Prado\TComponent
 		} elseif ($this->_repeatLayout === TRepeatLayout::Raw) {
 			$this->renderRawContents($writer, $user);
 			return;
+		} elseif ($this->_repeatLayout === TRepeatLayout::OrderedList || $this->_repeatLayout === TRepeatLayout::UnorderedList) {
+			$control = new THtmlElement();
+			$control->setTagName($this->_repeatLayout === TRepeatLayout::OrderedList ? 'ol' : 'ul');
 		} else {
 			$control = new TWebControl();
 		}
@@ -163,7 +169,9 @@ class TRepeatInfo extends \Prado\TComponent
 		$control->renderBeginTag($writer);
 		$writer->writeLine();
 
-		if ($this->_repeatDirection === TRepeatDirection::Vertical) {
+		if ($control instanceof THtmlElement) {
+			$this->renderListContents($writer, $user);
+		} elseif ($this->_repeatDirection === TRepeatDirection::Vertical) {
 			$this->renderVerticalContents($writer, $user);
 		} else {
 			$this->renderHorizontalContents($writer, $user);
@@ -195,6 +203,45 @@ class TRepeatInfo extends \Prado\TComponent
 		if ($user->getHasFooter()) {
 			$user->renderItem($writer, $this, TListItemType::Footer, -1);
 		}
+	}
+
+	/**
+	 * Renders the header, the items, and the footer each in an `<li>`.
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
+	 * @param IRepeatInfoUser $user repeat information user
+	 * @since 4.4.0
+	 */
+	protected function renderListContents($writer, $user)
+	{
+		if ($user->getHasHeader()) {
+			$this->renderListItem($writer, $user, TListItemType::Header, -1);
+		}
+		$itemCount = $user->getItemCount();
+		for ($i = 0; $i < $itemCount; ++$i) {
+			$this->renderListItem($writer, $user, TListItemType::Item, $i);
+		}
+		if ($user->getHasFooter()) {
+			$this->renderListItem($writer, $user, TListItemType::Footer, -1);
+		}
+	}
+
+	/**
+	 * Renders one item in an `<li>` that carries the item style.
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
+	 * @param IRepeatInfoUser $user repeat information user
+	 * @param string $itemType item type
+	 * @param int $index zero-based index of the item
+	 * @since 4.4.0
+	 */
+	protected function renderListItem($writer, $user, $itemType, $index)
+	{
+		if (($style = $user->generateItemStyle($itemType, $index)) !== null) {
+			$style->addAttributesToRender($writer);
+		}
+		$writer->renderBeginTag('li');
+		$user->renderItem($writer, $this, $itemType, $index);
+		$writer->renderEndTag();
+		$writer->writeLine();
 	}
 
 	/**

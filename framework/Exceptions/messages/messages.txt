@@ -818,6 +818,7 @@ logroute_bad_level							= TLogRoute.Levels '{0}' contains an undefined log leve
 logroute_bad_prefix_callback				= TLogRoute.PrefixCallback must be callable.
 memcached_extension_required				= TMemCache requires the memcached PHP extension.
 metatagcollection_metatag_invalid			= TMetaTagCollection can only accept TMetaTag objects.
+linktagcollection_linktag_invalid			= TLinkTagCollection can only accept TLinkTag objects.
 numberformat_type_invalid					= TNumberFormat.Type '{0}' is not valid.
 pageddatasource_datasource_invalid			= TPagedDataSource.DataSource must be an array or an object implementing Traversable.
 pageddatasource_pagesize_invalid			= TPagedDataSource.PageSize must be greater than 0.

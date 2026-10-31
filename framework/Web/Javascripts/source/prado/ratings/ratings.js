@@ -25,8 +25,8 @@ Prado.WebUI.TRatingList = Prado.Class(Prado.WebUI.Control,
 				const index = this.radios.length;
 				this.radios.push(radio);
 				td.classList.add("rating");
-				// The star cell is decorative; the radio carries the semantics.
-				td.setAttribute('aria-hidden', 'true');
+				// The star image is a CSS background, outside the accessibility tree.
+				// The cell is not aria-hidden: that would hide the focusable radio in it.
 				// Give the radio an accessible name even when its item text is empty.
 				if(!radio.getAttribute('aria-label'))
 					radio.setAttribute('aria-label', this.getIndexCaption(index) || String(index+1));

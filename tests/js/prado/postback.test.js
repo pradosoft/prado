@@ -41,14 +41,12 @@ describe('Prado.PostBack.doPostBack', () => {
 	const submits = [];
 
 	beforeEach(() => {
-		// Reset the shared prototype options object between tests to prevent
-		// option bleed: PostBack.prototype.options is mutated by jQuery.extend.
-		PostBack.prototype.options = {};
 		form = makeForm();
 		submits.length = 0;
 		// Capture submit events via jQuery (PostBack uses jQuery.trigger, not
 		// a native DOM event, so native addEventListener won't fire here).
-		jQuery(form).on('submit', function (e) { e.preventDefault(); submits.push(true); });
+		// Each entry is the form data a listener sees at submit time.
+		jQuery(form).on('submit', function (e) { e.preventDefault(); submits.push(new FormData(form)); });
 	});
 
 	afterEach(() => {
@@ -68,36 +66,50 @@ describe('Prado.PostBack.doPostBack', () => {
 
 	// ── EventTarget / EventParameter hidden fields ─────────────────────────
 
-	it('appends a PRADO_POSTBACK_TARGET hidden field when EventTarget is set', () => {
+	it('submits a PRADO_POSTBACK_TARGET hidden field when EventTarget is set', () => {
 		const fakeEvent = { preventDefault: vi.fn() };
 		new PostBack(baseOpts({ EventTarget: 'btn1' }), fakeEvent);
 
-		const field = form.querySelector('[name="PRADO_POSTBACK_TARGET"]');
-		expect(field).not.toBeNull();
-		expect(field.value).toBe('btn1');
+		expect(submits[0].getAll('PRADO_POSTBACK_TARGET')).toEqual(['btn1']);
 	});
 
-	it('does NOT append PRADO_POSTBACK_TARGET when EventTarget is empty', () => {
+	it('does NOT submit PRADO_POSTBACK_TARGET when EventTarget is empty', () => {
 		const fakeEvent = { preventDefault: vi.fn() };
 		new PostBack(baseOpts({ EventTarget: '' }), fakeEvent);
 
-		expect(form.querySelector('[name="PRADO_POSTBACK_TARGET"]')).toBeNull();
+		expect(submits[0].has('PRADO_POSTBACK_TARGET')).toBe(false);
 	});
 
-	it('appends a PRADO_POSTBACK_PARAMETER hidden field when EventParameter is set', () => {
+	it('submits a PRADO_POSTBACK_PARAMETER hidden field when EventParameter is set', () => {
 		const fakeEvent = { preventDefault: vi.fn() };
 		new PostBack(baseOpts({ EventParameter: 'p42' }), fakeEvent);
 
-		const field = form.querySelector('[name="PRADO_POSTBACK_PARAMETER"]');
-		expect(field).not.toBeNull();
-		expect(field.value).toBe('p42');
+		expect(submits[0].getAll('PRADO_POSTBACK_PARAMETER')).toEqual(['p42']);
 	});
 
-	it('does NOT append PRADO_POSTBACK_PARAMETER when EventParameter is empty', () => {
+	it('does NOT submit PRADO_POSTBACK_PARAMETER when EventParameter is empty', () => {
 		const fakeEvent = { preventDefault: vi.fn() };
 		new PostBack(baseOpts({ EventParameter: '' }), fakeEvent);
 
+		expect(submits[0].has('PRADO_POSTBACK_PARAMETER')).toBe(false);
+	});
+
+	it('removes the hidden fields when a submit listener cancels the submit', () => {
+		// A TBulletedList item click whose submit a listener cancels.
+		new PostBack(baseOpts({ EventTarget: 'list1', EventParameter: '3' }), { preventDefault: vi.fn() });
+
+		expect(submits[0].get('PRADO_POSTBACK_PARAMETER')).toBe('3');
+		expect(form.querySelector('[name="PRADO_POSTBACK_TARGET"]')).toBeNull();
 		expect(form.querySelector('[name="PRADO_POSTBACK_PARAMETER"]')).toBeNull();
+
+		// A later button postback without EventParameter submits only its own fields.
+		jQuery(form).off('submit');
+		let sent = null;
+		form.submit = vi.fn(() => { sent = new FormData(form); });
+		new PostBack({ FormID: 'testForm', EventTarget: 'btn1' }, { preventDefault: vi.fn() });
+
+		expect(sent.getAll('PRADO_POSTBACK_TARGET')).toEqual(['btn1']);
+		expect(sent.has('PRADO_POSTBACK_PARAMETER')).toBe(false);
 	});
 
 	// ── PostBackUrl ────────────────────────────────────────────────────────
@@ -168,6 +180,61 @@ describe('Prado.PostBack.doPostBack', () => {
 		expect(submits).toHaveLength(0);
 	});
 
+	// ── option isolation between postbacks ────────────────────────────────
+
+	describe('option isolation', () => {
+		it('keeps options per instance and leaves the prototype untouched', () => {
+			const first = new PostBack(baseOpts({ EventParameter: 'p1' }), { preventDefault: vi.fn() });
+			const second = new PostBack(baseOpts(), { preventDefault: vi.fn() });
+
+			expect(first.options).not.toBe(second.options);
+			expect(first.options.EventParameter).toBe('p1');
+			expect(second.options.EventParameter).toBe('');
+			expect(Object.hasOwn(PostBack.prototype, 'options')).toBe(false);
+		});
+
+		it('does not reuse PostBackUrl from a postback cancelled by a submit listener', () => {
+			new PostBack(baseOpts({ PostBackUrl: 'http://example.com/crosspage' }), { preventDefault: vi.fn() });
+			expect(submits).toHaveLength(1);
+			form.action = 'http://example.com/original';
+
+			new PostBack(baseOpts(), { preventDefault: vi.fn() });
+
+			expect(form.action).toBe('http://example.com/original');
+		});
+
+		it('does not reuse PostBackUrl from a postback cancelled by validation', () => {
+			global.Prado.Validation = { validate: vi.fn().mockReturnValueOnce(false).mockReturnValue(true) };
+			new PostBack(
+				baseOpts({ CausesValidation: true, ID: 'btn1', PostBackUrl: 'http://example.com/crosspage' }),
+				{ preventDefault: vi.fn() },
+			);
+			expect(form.action).toBe('http://example.com/original');
+
+			new PostBack(baseOpts({ CausesValidation: true, ID: 'btn2' }), { preventDefault: vi.fn() });
+
+			expect(form.action).toBe('http://example.com/original');
+		});
+
+		it('does not reuse ValidationGroup or CausesValidation from an earlier postback', () => {
+			const validate = vi.fn().mockReturnValue(false);
+			global.Prado.Validation = { validate };
+			new PostBack(
+				baseOpts({ CausesValidation: true, ValidationGroup: 'g1', ID: 'btn1' }),
+				{ preventDefault: vi.fn() },
+			);
+			new PostBack(baseOpts({ CausesValidation: true, ID: 'btn2' }), { preventDefault: vi.fn() });
+
+			expect(validate).toHaveBeenNthCalledWith(2, 'testForm', undefined, null);
+
+			const { CausesValidation: _omit, ...plain } = baseOpts({ ID: 'btn3' });
+			new PostBack(plain, { preventDefault: vi.fn() });
+
+			expect(validate).toHaveBeenCalledTimes(2);
+			expect(submits).toHaveLength(1);
+		});
+	});
+
 	// ── TrackFocus (removed) ──────────────────────────────────────────────
 
 	it('ignores the removed TrackFocus option and leaves PRADO_LASTFOCUS untouched', () => {
@@ -221,6 +288,19 @@ describe('Prado.PostBack.doPostBack', () => {
 			expect(form.getAttribute('action')).toBe('http://example.com/original');
 			expect(form.getAttribute('target')).toBe('_self');
 			expect(form.hasAttribute('enctype')).toBe(false);
+		});
+
+		it('removes the hidden fields after a submit to another window', () => {
+			let sent = null;
+			form.submit = vi.fn(() => { sent = new FormData(form); });
+			btn.setAttribute('formtarget', '_blank');
+
+			new PostBack(baseOpts({ ID: 'btn1', EventTarget: 'btn1', EventParameter: 'pdf' }), { preventDefault: vi.fn() });
+
+			expect(sent.get('PRADO_POSTBACK_TARGET')).toBe('btn1');
+			expect(sent.get('PRADO_POSTBACK_PARAMETER')).toBe('pdf');
+			expect(form.querySelector('[name="PRADO_POSTBACK_TARGET"]')).toBeNull();
+			expect(form.querySelector('[name="PRADO_POSTBACK_PARAMETER"]')).toBeNull();
 		});
 
 		it('leaves the form unchanged for a button without form attributes', () => {

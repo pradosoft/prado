@@ -11,7 +11,9 @@
 
 namespace Prado\Web\Services;
 
+use Prado\Exceptions\IUserException;
 use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\THttpException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\TPropertyValue;
 use Prado\Prado;
@@ -57,6 +59,11 @@ use Prado\Wsdl\WsdlGenerator;
  *   ]
  * ```
  * The style has no effect when {@see setWsdlUri WsdlUri} names a WSDL to serve.
+ *
+ * An exception the provider throws becomes a SOAP fault through {@see faultException()}.
+ * Outside Debug mode the client sees the message of an
+ * {@see \Prado\Exceptions\IUserException} only, as on the error page; a SoapFault
+ * the provider throws is sent as is.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1
@@ -138,11 +145,28 @@ class TSoapServer extends \Prado\TApplicationComponent
 		try {
 			$server->handle();
 		} catch (\Exception $e) {
-			if ($this->getApplication()->getMode() === TApplicationMode::Debug) {
-				$this->fault($e->getMessage(), $e->__toString());
-			} else {
-				$this->fault($e->getMessage());
-			}
+			$this->faultException($e);
+		}
+	}
+
+	/**
+	 * Sends the SOAP fault for an exception the provider throws.  A SoapFault the provider
+	 * throws is sent by SoapServer itself and does not reach this method.
+	 *  - Debug mode → the exception message, with the exception and its stack trace as detail.
+	 *  - An {@see \Prado\Exceptions\IUserException} → its message.
+	 *  - Any other exception → the `errorhandler_internal_error` sentence, and the exception is logged.
+	 * @param \Exception $exception the exception the provider threw.
+	 * @since 4.4.0
+	 */
+	protected function faultException(\Exception $exception): void
+	{
+		if ($this->getApplication()->getMode() === TApplicationMode::Debug) {
+			$this->fault($exception->getMessage(), $exception->__toString());
+		} elseif ($exception instanceof IUserException) {
+			$this->fault($exception->getMessage());
+		} else {
+			Prado::error($exception->__toString(), TSoapService::class);
+			$this->fault((new THttpException(500, 'errorhandler_internal_error'))->getMessage());
 		}
 	}
 

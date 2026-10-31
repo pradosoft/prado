@@ -111,6 +111,24 @@ describe('Prado.Element.executeScripts', () => {
 		expect(root.querySelector('script').nonce).toBe('page-nonce');
 	});
 
+	it('re-creates the root when the root is a script', () => {
+		root.innerHTML = '<script data-x="4">var __n = 4;</script>';
+		const oldScript = root.firstChild;
+
+		Element.executeScripts(oldScript);
+
+		const fresh = root.firstChild;
+		expect(fresh).not.toBe(oldScript);
+		expect(fresh.getAttribute('data-x')).toBe('4');
+		expect(fresh.nonce).toBe('page-nonce');
+	});
+
+	it('ignores a text node', () => {
+		root.textContent = 'text';
+		expect(() => Element.executeScripts(root.firstChild)).not.toThrow();
+		expect(root.textContent).toBe('text');
+	});
+
 	it('leaves the nonce unset when the page has no nonce', () => {
 		Element._pageNonce = '';
 		root.innerHTML = '<script>var __n = 3;</script>';

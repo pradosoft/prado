@@ -215,10 +215,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	{
 		parent::renderBeginTag($writer);
 		if (($text = $this->getGroupingText()) !== '') {
-			$writer->renderBeginTag('fieldset');
-			$writer->renderBeginTag('legend');
-			$writer->write($this->encodeText($text));
-			$writer->renderEndTag();
+			$this->renderGroupingBeginTag($writer, $text);
 		}
 	}
 
@@ -230,9 +227,44 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	public function renderEndTag($writer)
 	{
 		if ($this->getGroupingText() !== '') {
-			$writer->renderEndTag();
+			$this->renderGroupingEndTag($writer);
 		}
 		parent::renderEndTag($writer);
+	}
+
+	/**
+	 * Opens the fieldset that encloses the body content and renders its legend.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
+	 * @param string $text the {@see setGroupingText GroupingText}
+	 * @since 4.4.0
+	 */
+	protected function renderGroupingBeginTag($writer, $text)
+	{
+		$writer->renderBeginTag('fieldset');
+		$this->renderLegend($writer, $text);
+	}
+
+	/**
+	 * Closes the fieldset opened by {@see renderGroupingBeginTag()}.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
+	 * @since 4.4.0
+	 */
+	protected function renderGroupingEndTag($writer)
+	{
+		$writer->renderEndTag();
+	}
+
+	/**
+	 * Renders the `<legend>` of the text, HTML-encoded when {@see setEncode Encode} is true.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
+	 * @param string $text the legend text
+	 * @since 4.4.0
+	 */
+	protected function renderLegend($writer, $text)
+	{
+		$writer->renderBeginTag('legend');
+		$writer->write($this->encodeText($text));
+		$writer->renderEndTag();
 	}
 
 	/**

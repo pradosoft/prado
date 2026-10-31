@@ -100,6 +100,42 @@ describe('Prado.Element.setAttribute — boolean-remove attributes', () => {
 		Element.setAttribute('attr-bool-test', 'hidden', true);
 		expect(el.hasAttribute('hidden')).toBe(true);
 	});
+
+	it('sets a boolean attribute to its own name when value is true', () => {
+		Element.setAttribute('attr-bool-test', 'hidden', true);
+		expect(el.getAttribute('hidden')).toBe('hidden');
+	});
+
+	it('removes an attribute when value is null', () => {
+		el.setAttribute('hidden', '');
+		el.setAttribute('title', 'tip');
+		Element.setAttribute('attr-bool-test', 'hidden', null);
+		Element.setAttribute('attr-bool-test', 'title', null);
+		expect(el.hasAttribute('hidden')).toBe(false);
+		expect(el.hasAttribute('title')).toBe(false);
+	});
+
+	it('removes an attribute when value is undefined', () => {
+		el.setAttribute('lang', 'en');
+		Element.setAttribute('attr-bool-test', 'lang', undefined);
+		expect(el.hasAttribute('lang')).toBe(false);
+	});
+
+	it('removes any boolean attribute when value is false', () => {
+		el.setAttribute('open', '');
+		Element.setAttribute('attr-bool-test', 'open', false);
+		expect(el.hasAttribute('open')).toBe(false);
+	});
+
+	it('keeps a non-boolean attribute set to "false" when value is false', () => {
+		Element.setAttribute('attr-bool-test', 'draggable', false);
+		expect(el.getAttribute('draggable')).toBe('false');
+	});
+
+	it('keeps the "until-found" value of hidden', () => {
+		Element.setAttribute('attr-bool-test', 'hidden', 'until-found');
+		expect(el.getAttribute('hidden')).toBe('until-found');
+	});
 });
 
 // ─── Prado.Element.setAttribute — on* event handler branch ───────────────────
@@ -203,6 +239,163 @@ describe('Prado.Element.replace', () => {
 		expect(wrapper.querySelector('span').textContent).toBe('replaced');
 
 		document.body.removeChild(wrapper);
+	});
+
+	describe('inline scripts', () => {
+		// jsdom runs an inserted inline script in its own global and shares the
+		// document. The scripts count their runs on <html>, which both globals reach.
+		const count = (key) => `<script>document.documentElement.dataset.${key} = +(document.documentElement.dataset.${key} || 0) + 1;</script>`;
+		const runs = (key) => +(document.documentElement.dataset[key] || 0);
+		let wrapper;
+
+		beforeEach(() => {
+			wrapper = document.createElement('div');
+			document.body.appendChild(wrapper);
+		});
+
+		afterEach(() => {
+			wrapper.remove();
+			for (const key of ['newRuns', 'siblingRuns', 'nestedRuns'])
+				delete document.documentElement.dataset[key];
+		});
+
+		it('runs a top-level script of the self content exactly once', () => {
+			wrapper.innerHTML = '<div id="rs-target"></div>';
+
+			Element.replace('rs-target', '<div id="rs-target">new</div>' + count('newRuns'), null, true);
+
+			expect(runs('newRuns')).toBe(1);
+			expect(document.getElementById('rs-target').textContent).toBe('new');
+			expect(wrapper.querySelectorAll('script')).toHaveLength(1);
+		});
+
+		it('runs a nested script of the self content exactly once', () => {
+			wrapper.innerHTML = '<div id="rs-target"></div>';
+
+			Element.replace('rs-target', '<div id="rs-target"><span>new</span>' + count('nestedRuns') + '</div>', null, true);
+
+			expect(runs('nestedRuns')).toBe(1);
+		});
+
+		it('does not re-run the scripts of the siblings of the replaced element', () => {
+			wrapper.innerHTML = '<p>before</p><div id="rs-target"></div><p>after</p>';
+			const siblingScript = () => {
+				const script = document.createElement('script');
+				script.text = 'document.documentElement.dataset.siblingRuns = +(document.documentElement.dataset.siblingRuns || 0) + 1;';
+				return script;
+			};
+			const beforeScript = wrapper.firstChild.appendChild(siblingScript());
+			wrapper.lastChild.appendChild(siblingScript());
+			expect(runs('siblingRuns')).toBe(2);
+
+			Element.replace('rs-target', '<div id="rs-target">new</div>' + count('newRuns'), null, true);
+
+			expect(runs('siblingRuns')).toBe(2);
+			expect(runs('newRuns')).toBe(1);
+			expect(wrapper.firstChild.querySelector('script')).toBe(beforeScript);
+			expect(wrapper.firstChild.firstChild.data).toBe('before');
+			expect(wrapper.lastChild.firstChild.data).toBe('after');
+		});
+
+		it('keeps the order of the replacement nodes when the element is the first child', () => {
+			wrapper.innerHTML = '<div id="rs-target"></div><p>after</p>';
+
+			Element.replace('rs-target', 'text<b>bold</b>' + count('newRuns'), null, true);
+
+			expect(wrapper.innerHTML).toMatch(/^text<b>bold<\/b><script>.*<\/script><p>after<\/p>$/);
+			expect(runs('newRuns')).toBe(1);
+		});
+
+		it('runs a script of the inner content exactly once', () => {
+			wrapper.innerHTML = '<div id="rs-target"></div>';
+
+			Element.replace('rs-target', '<span>inner</span>' + count('newRuns'));
+
+			expect(runs('newRuns')).toBe(1);
+		});
+
+		it('runs an inline script after an external script loads', async () => {
+			wrapper.innerHTML = '<div id="rs-target"></div>';
+
+			Element.replace('rs-target', '<script src="lib.js"></script>' + count('newRuns'));
+
+			expect(runs('newRuns')).toBe(0);
+			wrapper.querySelector('script[src]').dispatchEvent(new Event('load'));
+			await Promise.resolve();
+			expect(runs('newRuns')).toBe(1);
+		});
+
+		it('keeps the order across the inserted nodes of the self content', async () => {
+			wrapper.innerHTML = '<div id="rs-target"></div>';
+
+			Element.replace('rs-target', '<div id="rs-target"><script src="lib.js"></script></div>' + count('newRuns'), null, true);
+
+			expect(runs('newRuns')).toBe(0);
+			wrapper.querySelector('script[src]').dispatchEvent(new Event('load'));
+			await Promise.resolve();
+			expect(runs('newRuns')).toBe(1);
+		});
+	});
+
+	describe('external scripts', () => {
+		const runs = () => +(document.documentElement.dataset.extRuns || 0);
+		const inline = '<script>document.documentElement.dataset.extRuns = +(document.documentElement.dataset.extRuns || 0) + 1;</script>';
+		let wrapper;
+
+		beforeEach(() => {
+			wrapper = document.createElement('div');
+			document.body.appendChild(wrapper);
+		});
+
+		afterEach(() => {
+			wrapper.remove();
+			delete document.documentElement.dataset.extRuns;
+		});
+
+		it('continues after an external script fails to load', async () => {
+			wrapper.innerHTML = '<script src="missing.js"></script>' + inline;
+
+			const done = Element.executeScripts(wrapper);
+			expect(runs()).toBe(0);
+			wrapper.querySelector('script[src]').dispatchEvent(new Event('error'));
+			await done;
+
+			expect(runs()).toBe(1);
+		});
+
+		it('does not wait for an async external script', async () => {
+			wrapper.innerHTML = '<script src="lib.js" async></script>' + inline;
+
+			await Element.executeScripts(wrapper);
+
+			expect(runs()).toBe(1);
+		});
+
+		it('re-creates the external script with its attributes', () => {
+			wrapper.innerHTML = '<script src="lib.js" data-x="1"></script>';
+			const old = wrapper.firstChild;
+
+			Element.executeScripts(wrapper);
+
+			const fresh = wrapper.firstChild;
+			expect(fresh).not.toBe(old);
+			expect(fresh.getAttribute('src')).toBe('lib.js');
+			expect(fresh.getAttribute('data-x')).toBe('1');
+		});
+
+		it.each([
+			['<script src="a.js"></script>', true],
+			['<script src="a.js" type="text/javascript"></script>', true],
+			['<script src="a.js" type="application/javascript"></script>', true],
+			['<script src="a.js" async></script>', false],
+			['<script src="a.js" type="module"></script>', false],
+			['<script src="a.js" nomodule></script>', false],
+			['<script src="a.js" type="text/template"></script>', false],
+			['<script>1</script>', false],
+		])('isBlockingScript(%s) is %s', (html, expected) => {
+			wrapper.innerHTML = html;
+			expect(Element.isBlockingScript(wrapper.firstChild)).toBe(expected);
+		});
 	});
 
 	// NOTE: Element.replace(id, content, boundary) calls this.extractContent(boundary)

@@ -74,6 +74,10 @@ $packages = [
 		'prado/controls/safetycover.js',
 	],
 
+	'rowselect' => [
+		'prado/controls/rowselect.js',
+	],
+
 	'activedatepicker' => [
 		'prado/activecontrols/activedatepicker.js',
 	],
@@ -155,6 +159,7 @@ $dependencies = [
 	'proofofwork' => ['jquery', 'prado', 'proofofwork'],
 	'webtemplate' => ['jquery', 'prado', 'webtemplate'],
 	'safetycover' => ['jquery', 'prado', 'safetycover'],
+	'rowselect' => ['jquery', 'prado', 'rowselect'],
 	'inlineeditor' => ['jquery', 'prado', 'ajax', 'inlineeditor'],
 	'accordion' => ['jquery', 'prado', 'accordion'],
 	'ratings' => ['jquery', 'prado', 'ajax', 'ratings'],

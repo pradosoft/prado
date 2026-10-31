@@ -141,7 +141,7 @@ interface IEventLoop
 	public function run(): void;
 
 	/**
-	 * Stops the running loop after the current callback returns.
+	 * Stops the running loop after the current callback returns.  Outside a run it does nothing.
 	 */
 	public function stop(): void;
 
