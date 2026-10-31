@@ -579,6 +579,8 @@ return [
 'TInPlaceListControlTrait' => 'Prado\Web\UI\ActiveControls\TInPlaceListControlTrait',
 'TInPlaceTextBox' => 'Prado\Web\UI\ActiveControls\TInPlaceTextBox',
 'TInvalidCallbackException' => 'Prado\Web\UI\ActiveControls\TInvalidCallbackException',
+'TLazyPanel' => 'Prado\Web\UI\ActiveControls\TLazyPanel',
+'TLazyPanelTrigger' => 'Prado\Web\UI\ActiveControls\TLazyPanelTrigger',
 'TMapCollectionDiff' => 'Prado\Web\UI\ActiveControls\TMapCollectionDiff',
 'TScalarDiff' => 'Prado\Web\UI\ActiveControls\TScalarDiff',
 'TStyleDiff' => 'Prado\Web\UI\ActiveControls\TStyleDiff',
