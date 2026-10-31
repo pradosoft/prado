@@ -1,0 +1,38 @@
+<com:TContent ID="Content">
+	<h1>Lazy Panel Test Case</h1>
+
+	<p>Loads: <com:TActiveLabel ID="loads" Text="0" /></p>
+	<p>Callbacks: <com:TActiveLabel ID="callbacks" Text="0" /></p>
+	<com:TActiveButton ID="other" Text="Other callback" OnCallback="otherCallback" />
+	<com:TButton ID="postback" Text="Postback" />
+	<com:TCheckBox ID="fail" Text="Fail the next load" />
+	<com:TActiveButton ID="serverLoad" Text="Server load" OnCallback="serverLoad" />
+	<button type="button" id="manualLoad" onclick="Prado.WebUI.TLazyPanel.load('ctl0_Content_manual')">Load manual</button>
+
+	<com:TLazyPanel ID="onload" Trigger="Load" OnLoadContent="loadContent">
+		<prop:PlaceholderTemplate><p class="placeholder">Loading on load…</p></prop:PlaceholderTemplate>
+		<prop:ContentTemplate>
+			<p id="onloadContent">Loaded on load</p>
+			<com:TLabel ForControl="note" Text="Note" />
+			<com:TTextBox ID="note" />
+			<com:TActiveLabel ID="noteEcho" />
+		</prop:ContentTemplate>
+	</com:TLazyPanel>
+
+	<com:TLazyPanel ID="manual" Trigger="Manual" OnLoadContent="loadContent">
+		<prop:PlaceholderTemplate><p class="placeholder">Waiting for a manual load</p></prop:PlaceholderTemplate>
+		<prop:ContentTemplate><p id="manualContent">Loaded manually</p></prop:ContentTemplate>
+	</com:TLazyPanel>
+
+	<com:TLazyPanel ID="server" Trigger="Manual" OnLoadContent="loadContent">
+		<prop:PlaceholderTemplate><p class="placeholder">Waiting for the server</p></prop:PlaceholderTemplate>
+		<prop:ContentTemplate><p id="serverContent">Loaded by the server</p></prop:ContentTemplate>
+	</com:TLazyPanel>
+
+	<div id="spacer" style="height: 3000px">Spacer</div>
+
+	<com:TLazyPanel ID="visible" Trigger="Visible" RootMargin="100px" OnLoadContent="loadContent">
+		<prop:PlaceholderTemplate><p class="placeholder">Loading when visible…</p></prop:PlaceholderTemplate>
+		<prop:ContentTemplate><p id="visibleContent">Loaded when visible</p></prop:ContentTemplate>
+	</com:TLazyPanel>
+</com:TContent>
