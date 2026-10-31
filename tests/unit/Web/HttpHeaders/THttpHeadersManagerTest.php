@@ -66,6 +66,7 @@ class THttpHeadersManagerTest extends \PHPUnit\Framework\TestCase
 	{
 		if (self::$app === null) {
 			self::$app = new TApplication(__DIR__ . '/../../Security/app');
+			self::$app->setMode(TApplicationMode::Debug);
 		}
 	}
 

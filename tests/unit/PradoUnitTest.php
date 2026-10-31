@@ -354,7 +354,7 @@ class PradoUnitTest extends \PHPUnit\Framework\TestCase
 
 		$snap = TTestApplication::snapshotApp($app, ['_mode']);
 
-		$app->setMode(\Prado\TApplicationMode::Normal);
+		$app->setMode($originalMode === \Prado\TApplicationMode::Performance ? \Prado\TApplicationMode::Normal : \Prado\TApplicationMode::Performance);
 		$this->assertNotSame($originalMode, $app->getMode());
 
 		TTestApplication::restoreApp($snap, $app);

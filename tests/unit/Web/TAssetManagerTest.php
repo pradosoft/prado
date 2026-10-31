@@ -10,6 +10,7 @@ use Prado\Prado;
 use Prado\TApplication;
 use Prado\Web\TAssetManager;
 use Prado\Test\Unit\Harness\IO\TarTestHelper;
+use Prado\TApplicationMode;
 
 class TAssetManagerTest extends \PHPUnit\Framework\TestCase
 {
@@ -52,6 +53,7 @@ class TAssetManagerTest extends \PHPUnit\Framework\TestCase
 
 		if (self::$app === null) {
 			self::$app = new TApplication(__DIR__ . '/app');
+			self::$app->setMode(TApplicationMode::Debug);
 		}
 
 		if (self::$assetDir === null) {

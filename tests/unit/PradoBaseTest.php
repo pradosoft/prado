@@ -988,6 +988,7 @@ class PradoBaseTest extends \PHPUnit\Framework\TestCase
 		$logger = Prado::getLogger();
 		$logger->deleteLogs();
 		
+		$app->setMode(TApplicationMode::Debug);
 		Prado::trace('msg', 'Category', 'ctlClass');
 		$app->setMode(TApplicationMode::Normal);
 		Prado::trace('msg2');

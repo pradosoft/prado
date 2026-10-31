@@ -6,6 +6,7 @@ use Prado\Data\TDbConnection;
 use Prado\TApplication;
 use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 use Prado\Exceptions\TDbException;
+use Prado\TApplicationMode;
 
 /**
  * Integration tests for TDbConnection charset handling — SQL Server (sqlsrv).
@@ -49,7 +50,7 @@ class TDbConnectionCharsetMssqlIntegrationTest extends \PHPUnit\Framework\TestCa
 	{
 		static $booted = false;
 		if (!$booted) {
-			new TApplication(__DIR__ . '/../../../Security/app', false, TApplication::CONFIG_TYPE_PHP);
+			(new TApplication(__DIR__ . '/../../../Security/app', false, TApplication::CONFIG_TYPE_PHP))->setMode(TApplicationMode::Debug);
 			$booted = true;
 		}
 		$this->setUpConnection();

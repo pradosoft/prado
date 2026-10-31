@@ -4,6 +4,8 @@ namespace Prado\Test\Unit\Util\Cron;
 
 use Prado\Prado;
 use Prado\TApplicationMode;
+use Prado\Test\Unit\PradoUnit;
+use Prado\Util\TSerializableClosure;
 use Prado\Util\Cron\TClosureCronTask;
 use Prado\Util\Cron\TCronModule;
 use Prado\Exceptions\TConfigurationException;
@@ -135,14 +137,23 @@ class TClosureCronTaskTest extends \PHPUnit\Framework\TestCase
 	{
 		// A raw (unencrypted) payload is HMAC-signed, so tampering is detected on decode rather than
 		// eval()'d — the closure-RCE guard. (The signer is configured before signing, see encodeClosure.)
-		$task = new TClosureCronTask(fn ($t, $c) => 'legit');
-		$task->setName('cct_tamper');
-		$task->setStoreRaw(true);
-		$blob = serialize($task);
-		self::assertStringContainsString('legit', $blob); // raw payload is readable
-		$tampered = str_replace('legit', 'pwned', $blob);
-		self::expectException(\Laravel\SerializableClosure\Exceptions\InvalidSignatureException::class);
-		unserialize($tampered)->getClosure();
+		// Outside Debug mode the security manager also encrypts every closure; the encrypter is
+		// cleared here so the signed payload stays readable.
+		$encrypt = PradoUnit::getProp(TSerializableClosure::class, 'encryptUsing');
+		$decrypt = PradoUnit::getProp(TSerializableClosure::class, 'decryptUsing');
+		TSerializableClosure::setEncryptionUsing(null, null);
+		try {
+			$task = new TClosureCronTask(fn ($t, $c) => 'legit');
+			$task->setName('cct_tamper');
+			$task->setStoreRaw(true);
+			$blob = serialize($task);
+			self::assertStringContainsString('legit', $blob); // raw payload is readable
+			$tampered = str_replace('legit', 'pwned', $blob);
+			self::expectException(\Laravel\SerializableClosure\Exceptions\InvalidSignatureException::class);
+			unserialize($tampered)->getClosure();
+		} finally {
+			TSerializableClosure::setEncryptionUsing($encrypt, $decrypt);
+		}
 	}
 
 	public function testRoundTripPreservesTaskProperties()
