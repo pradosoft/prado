@@ -518,12 +518,52 @@ Prado.Element =
 		el.removeAttribute(attribute);
 	},
 
+	/**
+	 * Animation frame id of the scroll in progress, or null.
+	 * @private
+	 */
+	_scrollFrame: null,
+
+	/**
+	 * Scrolls the window until the top of an element is `offset` pixels below the top of the viewport.
+	 * The scroll lasts `duration` milliseconds and eases in and out, like the jQuery `swing` easing.
+	 * A `duration` that is not a positive number jumps to the position at once.
+	 * Under `prefers-reduced-motion: reduce` the scroll always jumps at once.
+	 * A new call stops the scroll in progress.
+	 * @function ?
+	 * @param {string} element - Element id
+	 * @param {object} [options] - Scroll options
+	 * @param {number} [options.duration=500] - Length of the scroll in milliseconds
+	 * @param {number} [options.offset=50] - Distance in pixels from the top of the viewport to the element
+	 */
 	scrollTo(element, options) {
-		const op = { offset : 50, ...(options || {}) };
+		const op = { duration : 500, offset : 50, ...(options || {}) };
 		const el = document.getElementById(element);
 		if (!el) return;
-		const top = el.getBoundingClientRect().top + window.pageYOffset - op.offset;
-		window.scrollTo({ top, behavior: 'smooth' });
+		const self = Prado.Element;
+		if (self._scrollFrame !== null) {
+			cancelAnimationFrame(self._scrollFrame);
+			self._scrollFrame = null;
+		}
+		const left = window.pageXOffset;
+		const from = window.pageYOffset;
+		const top = el.getBoundingClientRect().top + from - op.offset;
+		const duration = Number(op.duration);
+		const reducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+		if (!(duration > 0) || reducedMotion) {
+			window.scrollTo({ left, top, behavior: 'instant' });
+			return;
+		}
+		// 'instant' keeps a CSS `scroll-behavior: smooth` from smoothing each frame.
+		let start = null;
+		const step = (now) => {
+			if (start === null) start = now;
+			const progress = Math.min((now - start) / duration, 1);
+			const eased = 0.5 - Math.cos(progress * Math.PI) / 2;
+			window.scrollTo({ left, top: from + (top - from) * eased, behavior: 'instant' });
+			self._scrollFrame = progress < 1 ? requestAnimationFrame(step) : null;
+		};
+		self._scrollFrame = requestAnimationFrame(step);
 	},
 
 	focus(element) {

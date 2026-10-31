@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: `Prado.Element.scrollTo()` ignored its `duration` option; the scroll lasts `duration` milliseconds (default 500) and jumps for 0 or `prefers-reduced-motion: reduce`. (belisoful)
 BUG: `TImageButton` and `TActiveImageButton` client script posted click coordinates off by the page scroll; it posts them relative to the image, as a native image submit does. (belisoful)
 BUG: `TInPlaceTextBox` applies `MaxLength` to its editor, the multi-line textarea included, and Escape cancels the edit; Escape and Enter are handled on keydown. (belisoful)
 BUG: A `TDatePicker` hidden in the task that showed it leaked a document click listener; `hide()` cancels the pending attach. (belisoful)
