@@ -70,6 +70,10 @@ $packages = [
 		'prado/controls/webtemplate.js',
 	],
 
+	'teleport' => [
+		'prado/controls/teleport.js',
+	],
+
 	'safetycover' => [
 		'prado/controls/safetycover.js',
 	],
@@ -158,6 +162,7 @@ $dependencies = [
 	'canvas' => ['jquery', 'prado', 'canvas'],
 	'proofofwork' => ['jquery', 'prado', 'proofofwork'],
 	'webtemplate' => ['jquery', 'prado', 'webtemplate'],
+	'teleport' => ['jquery', 'prado', 'teleport'],
 	'safetycover' => ['jquery', 'prado', 'safetycover'],
 	'rowselect' => ['jquery', 'prado', 'rowselect'],
 	'inlineeditor' => ['jquery', 'prado', 'ajax', 'inlineeditor'],

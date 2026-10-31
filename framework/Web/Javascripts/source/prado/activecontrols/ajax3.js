@@ -306,10 +306,16 @@ Prado.CallbackRequest = Prado.Class(Prado.PostBack,
 		Object.assign(this.options, options || {});
 	},
 
+	/**
+	 * Gets the form of the callback: the form owner of the target element, or the
+	 * form that holds PRADO_PAGESTATE. A `<form method="dialog">` never submits to
+	 * the server, so its controls call back through the page form.
+	 * @return {?HTMLFormElement} the form of the callback
+	 */
 	getForm() {
 		const el = document.getElementById(this.options.ID);
-		const owned = el && el.closest('form');
-		if (owned) return owned;
+		const owned = el && (el.form || el.closest('form'));
+		if (owned && (owned.getAttribute('method') || '').toLowerCase() !== 'dialog') return owned;
 		const ps = document.getElementById('PRADO_PAGESTATE');
 		return ps ? ps.form : null;
 	},

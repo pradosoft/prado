@@ -18,6 +18,7 @@ This file defines the JavaScript package registry for PRADO. It declares all JS 
 | `tinymce` | `Vendor\bower-asset\tinymce` |
 | `highlightjs` | `Vendor\bower-asset\highlightjs` |
 | `clipboard` | `Vendor\bower-asset\clipboard\dist` |
+| `teleport` | `prado/controls/teleport.js`: `Prado.WebUI.TTeleport`, the page form association of [TTeleport](../UI/WebControls/TTeleport.md) content |
 | `idiomorph` | `Vendor\npm-asset\idiomorph\dist` |
 
 ## Packages
