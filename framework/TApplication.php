@@ -64,7 +64,8 @@ use Prado\Xml\TXmlElement;
  *   will only be recorded in system error logs. The cache is ensured to be
  *   up-to-date if it is enabled.
  * - <b>Performance</b> mode is similar to <b>Normal</b> mode except that it
- *   does not ensure the cache is up-to-date.
+ *   does not ensure the cache is up-to-date.  It keeps class fx-event lists in a
+ *   runtime file that a deployment clears with `prado-cli cache/flush-all`.
  *
  * TApplication dispatches each user request to a particular service which
  * finishes the actual work for the request with the aid from the application

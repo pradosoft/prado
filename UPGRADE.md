@@ -9,6 +9,9 @@ for both A and B.
 
 Upgrading from v4.3.3
 ---------------------
+- Only Performance mode keeps class fx-event lists in `runtime/fxevent.cache`; Normal mode computes them per process.
+  The file is refreshed when Composer installs, updates, or removes a package. A Performance-mode deployment that
+  changes an application class's `fx` handlers runs `prado-cli cache/flush-all`, which now deletes the file.
 - PHP 8.2 is now required. Applications running PHP 8.1 stay on Prado 4.3.
 - Framework exception messages are English (#1292). `messages-<lang>.txt` in `framework/Exceptions/messages/` now holds
   only the `THttpException` messages the visitor sees; every other exception is English unless a registered message

@@ -33,7 +33,8 @@ TApplicationComponent is the base class for all application-related components i
 
 ### Global Event Support
 - `getAutoGlobalListen()`: Returns whether the component should automatically listen to global events (always returns true)
-- `getClassFxEvents()`: Caches 'fx' events for PRADO classes in application cache
+- `getClassFxEvents()`: Returns a class's 'fx' events; Performance mode keeps them in the `fxevent.cache` runtime file
+- `readFxCache($cacheFile)`: Protected static. Reads the cache file without objects; a missing, corrupt, or pre-Composer-change file gives `[]` (4.4.0)
 
 ## Framework Integration
 - Works as base class for TModule, TService, and UI controls
@@ -42,9 +43,14 @@ TApplicationComponent is the base class for all application-related components i
 - Connects to TApplication's module, service, and state management
 
 ## Caching Features
-- Implements caching for global event handling in Normal and Performance modes
-- Uses runtime cache file (fxevent.cache) for performance optimization
-- Caches event data based on application mode and class mappings
+| Mode | fx-event lists |
+|------|----------------|
+| Debug, Normal, Off | Computed per process from the loaded classes |
+| Performance | Read once per process from `runtime/fxevent.cache` and written as classes are added |
+
+- The Performance file is discarded when it is older than `TComposerReflection::getInstalledManifestsTime()`, so a package install, update, or removal refreshes it.
+- A deployment that changes an application class's fx handlers runs `prado-cli cache/flush-all`, which deletes the file.
+- The runtime directory carries the Prado version, so a Prado upgrade starts a new file.
 
 ## Standards Followed
 - PSR-4 autoloading compatibility
