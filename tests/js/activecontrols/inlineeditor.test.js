@@ -147,12 +147,29 @@ describe('TInPlaceTextBox createTextBox', () => {
 		expect(field.tagName.toLowerCase()).toBe('textarea');
 	});
 
-	it('sets maxlength when MaxLength > 0 (SingleLine)', () => {
+	it('sets the maxlength attribute when MaxLength > 0 (SingleLine)', () => {
 		clearRegistry(); clearTextboxes();
 		({ container } = buildDOM());
 		new TInPlaceTextBox(makeOptions({ TextMode: 'SingleLine', MaxLength: 20 }));
 		const field = document.getElementById('tb_lbl1');
-		expect(field.maxlength).toBe(20);
+		expect(field.maxLength).toBe(20);
+		expect(field.getAttribute('maxlength')).toBe('20');
+	});
+
+	it('sets the maxlength attribute when MaxLength > 0 (MultiLine)', () => {
+		clearRegistry(); clearTextboxes();
+		({ container } = buildDOM());
+		new TInPlaceTextBox(makeOptions({ TextMode: 'MultiLine', MaxLength: 20 }));
+		const field = document.getElementById('tb_lbl1');
+		expect(field.getAttribute('maxlength')).toBe('20');
+	});
+
+	it('omits the maxlength attribute when MaxLength is empty', () => {
+		clearRegistry(); clearTextboxes();
+		({ container } = buildDOM());
+		new TInPlaceTextBox(makeOptions({ TextMode: 'SingleLine', MaxLength: '' }));
+		const field = document.getElementById('tb_lbl1');
+		expect(field.hasAttribute('maxlength')).toBe(false);
 	});
 
 	it('sets size when Columns > 0 (SingleLine)', () => {
@@ -392,30 +409,70 @@ describe('TInPlaceTextBox onKeyPressed', () => {
 
 	afterEach(() => { restoreMocks(); container.remove(); });
 
-	it('resets editField value and clears isEditing on ESC (keyCode 27) when AutoHide', () => {
+	it('resets editField value and clears isEditing on Escape when AutoHide', () => {
 		const ctrl = new TInPlaceTextBox(makeOptions({ AutoHide: true }));
 		ctrl.isEditing = true;
 		ctrl.element.innerHTML = 'Original';
 		ctrl.editField.value   = 'Changed';
 		const showLabel = vi.spyOn(ctrl, 'showLabel');
-		ctrl.onKeyPressed({ keyCode: 27 });
+		ctrl.onKeyPressed({ key: 'Escape' });
 		expect(ctrl.editField.value).toBe('Original');
 		expect(ctrl.isEditing).toBe(false);
 		expect(showLabel).toHaveBeenCalled();
 	});
 
-	it('calls preventDefault on ENTER (keyCode 13) in SingleLine mode', () => {
+	it('Enter in SingleLine mode prevents the default and blurs to commit', () => {
 		const ctrl = new TInPlaceTextBox(makeOptions({ TextMode: 'SingleLine' }));
-		const evt = { keyCode: 13, preventDefault: vi.fn() };
+		const blur = vi.spyOn(ctrl.editField, 'blur');
+		const evt = { key: 'Enter', preventDefault: vi.fn() };
 		ctrl.onKeyPressed(evt);
 		expect(evt.preventDefault).toHaveBeenCalled();
+		expect(blur).toHaveBeenCalled();
+		expect(ctrl.returnFocusOnCollapse).toBe(true);
 	});
 
-	it('does NOT call preventDefault on ENTER in MultiLine mode', () => {
+	it('does NOT call preventDefault on Enter in MultiLine mode', () => {
 		const ctrl = new TInPlaceTextBox(makeOptions({ TextMode: 'MultiLine' }));
-		const evt = { keyCode: 13, preventDefault: vi.fn() };
+		const evt = { key: 'Enter', preventDefault: vi.fn() };
 		ctrl.onKeyPressed(evt);
 		expect(evt.preventDefault).not.toHaveBeenCalled();
+	});
+
+	it('ignores Enter and Escape during an IME composition', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions({ AutoHide: true }));
+		ctrl.isEditing = true;
+		ctrl.element.innerHTML = 'Original';
+		ctrl.editField.value   = 'Changed';
+		const evt = { key: 'Enter', isComposing: true, preventDefault: vi.fn() };
+		ctrl.onKeyPressed(evt);
+		ctrl.onKeyPressed({ key: 'Escape', isComposing: true });
+		expect(evt.preventDefault).not.toHaveBeenCalled();
+		expect(ctrl.editField.value).toBe('Changed');
+		expect(ctrl.isEditing).toBe(true);
+	});
+
+	it('a dispatched Escape keydown cancels the edit and restores the label', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions({ AutoHide: true }));
+		ctrl.element.innerHTML = 'Original';
+		ctrl.enterEditMode(null);
+		ctrl.editField.value = 'Changed';
+		ctrl.editField.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+		expect(ctrl.editField.value).toBe('Original');
+		expect(ctrl.isEditing).toBe(false);
+		expect(ctrl.element.style.display).toBe('');
+		expect(ctrl.editField.style.display).toBe('none');
+		expect(ctrl.element.innerHTML).toBe('Original');
+	});
+
+	it('a dispatched Enter keydown commits a SingleLine edit', () => {
+		const ctrl = new TInPlaceTextBox(makeOptions({ AutoHide: true }));
+		ctrl.enterEditMode(null);
+		ctrl.editField.value = 'Changed';
+		const evt = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true });
+		ctrl.editField.dispatchEvent(evt);
+		expect(evt.defaultPrevented).toBe(true);
+		expect(ctrl.element.innerHTML).toBe('Changed');
+		expect(ctrl.isEditing).toBe(false);
 	});
 });
 
@@ -844,7 +901,7 @@ describe('TInPlaceTextBox accessibility', () => {
 		const ctrl = new TInPlaceTextBox(makeOptions({ AutoHide: true }));
 		ctrl.enterEditMode(null);
 		const focus = vi.spyOn(ctrl, 'focusLabel');
-		ctrl.onKeyPressed({ keyCode: 27 });
+		ctrl.onKeyPressed({ key: 'Escape' });
 		expect(focus).toHaveBeenCalled();
 	});
 

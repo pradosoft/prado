@@ -1060,18 +1060,19 @@ Prado.WebUI.TBaseValidator = Prado.Class(Prado.WebUI.Control,
 		const CssClass = this.options.ControlCssClass;
 		if(typeof(CssClass) == "string" && CssClass.length > 0)
 		{
+			const classNames = Prado.Element.classTokens(CssClass);
 			if(valid)
 			{
 				if (control.lastValidator == this.options.ID)
 				{
 					control.lastValidator = null;
-					control.classList.remove(CssClass);
+					control.classList.remove(...classNames);
 				}
 			}
 			else
 			{
 				control.lastValidator = this.options.ID;
-				control.classList.add(CssClass);
+				control.classList.add(...classNames);
 			}
 		}
 	},

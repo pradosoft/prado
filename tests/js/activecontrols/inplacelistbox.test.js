@@ -173,7 +173,7 @@ describe('TInPlaceListBox selection snapshot', () => {
 		ctrl.enterEditMode(null);
 		select.options[0].selected = false;
 		select.options[1].selected = true;
-		ctrl.onKeyPressed({ keyCode: 27 });
+		ctrl.onKeyPressed({ key: 'Escape' });
 		expect(ctrl.captureSelection()).toEqual([0, 2]);
 	});
 

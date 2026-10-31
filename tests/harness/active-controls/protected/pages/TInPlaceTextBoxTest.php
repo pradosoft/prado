@@ -12,6 +12,11 @@ class TInPlaceTextBoxTest extends TPage
 		$this->status->Text = "Status: " . $sender->Text;
 	}
 
+	public function limited_changed($sender, $param)
+	{
+		$this->status->Text = "Limited: " . $sender->Text;
+	}
+
 	public function button_clicked($sender, $param)
 	{
 		$this->label1->Text = "hahahaha";

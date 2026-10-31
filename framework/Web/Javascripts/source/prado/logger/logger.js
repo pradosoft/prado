@@ -11,11 +11,13 @@ Use it all you want. Just remember to give me some credit :)
 
 */
 
-// ------------
-// Custom Event
-// ------------
+// ---------
+// Log Event
+// ---------
 
-CustomEvent = Prado.Class({
+// The listener list of a logger event. Named LogEvent so the browser's
+// native CustomEvent, which Prado dispatches, stays intact.
+LogEvent = Prado.Class({
   initialize() {
   	this.listeners = []
   },
@@ -138,8 +140,8 @@ var Cookie = {
 Logger = {
 	logEntries : [],
 
-	onupdate : new CustomEvent(),
-	onclear : new CustomEvent(),
+	onupdate : new LogEvent(),
+	onclear : new LogEvent(),
 
 
 	// Logger output
