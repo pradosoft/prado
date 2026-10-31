@@ -23,6 +23,8 @@ Upgrading from v4.3.3
   the 500 page to show a message to the visitor throws a `TUserException`. With a globalization module configured for
   translation, the error page looks the error code up in the `prado` catalogue first. `TApplication::startService()`
   throws `TConfigurationException` for an invalid or disabled service and a 404 `THttpException` for an unknown one.
+  A `TSoapServer` fault follows the same rule for an exception its provider throws; a provider that faults with a
+  message for the client throws a `SoapFault` or a `TUserException`.
 - SqlMap (`Prado\Data\SqlMap`) is no longer part of the framework; it is the `pradosoft/prado-sqlmap` package (#1168).
   An application that does not use SqlMap needs no change. An application using `TSqlMapConfig`, `TSqlMapGateway`, or
   `TSqlMapManager` adds the package: `composer require pradosoft/prado-sqlmap`. Namespaces, class names, short names

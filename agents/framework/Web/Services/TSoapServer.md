@@ -24,6 +24,7 @@ TSoapServer wraps PHP's SoapServer class to provide SOAP/WSDL web services. It a
 - **`getClassMaps()` / `setClassMaps($classes)`** - Gets/sets complex type class mappings.
 - **`run()`** - Handles the SOAP request.
 - **`fault($title, $details, $code, $actor, $name)`** - Generates a SOAP fault message.
+- **`faultException($exception)`** - Protected. Sends the fault for an exception the provider throws: in Debug mode its message with the exception as detail; otherwise the message of an `IUserException`, or the `errorhandler_internal_error` sentence with the exception logged. A provider's `SoapFault` is sent by `SoapServer` itself and does not reach it (4.4.0).
 - **`getRequestedMethod()`** - Returns the SOAP method requested from the message.
 
 ## See Also
