@@ -87,6 +87,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 | `TKeyboard` | Virtual on-screen keyboard; JS in `controls/keyboard.js` |
 | `TRatingList` | Star/block rating; JS in `ratings/ratings.js` |
 | `TRelativeTime` | Live "time ago" in a `<time>` element; extends `TTime`; JS in `controls/relativetime.js` |
+| [`TTeleport`](TTeleport.md) | Renders its content after `</form>`, outside the page form: a native `<form method="dialog">`, overlays, toasts; JS in `controls/teleport.js` sets the `form` attribute of its fields (@since 4.4.0) |
 
 ## Data Controls
 
