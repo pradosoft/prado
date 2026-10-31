@@ -1,0 +1,18 @@
+<com:TContent ID="Content">
+	<h1>Active Svg Test Case</h1>
+
+	<com:TActiveButton ID="grow" Text="Grow" OnCallback="grow" />
+	<com:TActiveButton ID="same" Text="Same" OnCallback="same" />
+	<com:TActiveButton ID="restyle" Text="Restyle" OnCallback="restyle" />
+	<com:TActiveButton ID="decorate" Text="Decorate" OnCallback="decorate" />
+	<com:TActiveButton ID="redraw" Text="Redraw" OnCallback="redraw" />
+	<div>Callbacks: <com:TActiveLabel ID="calls" Text="0" /></div>
+
+	<com:TActiveSvg ID="chart" Width="120" Height="60" />
+
+	<com:TActiveSvg ID="replaced" ActiveControl.UpdateMode="Replace" Width="120" Height="60" />
+
+	<com:TActiveSvg ID="drawn" ViewBox="0 0 60 30" Width="60" Height="30" AlternateText="Dot">
+		<circle id="drawn_dot" cx="15" cy="15" r="<%= 5 + $this->Page->Redraws %>" />
+	</com:TActiveSvg>
+</com:TContent>

@@ -27,7 +27,7 @@ How a callback response updates the markup of an active control that renders aga
 <%@ Page CallbackUpdateMode="Morph" %>
 ```
 
-A skin sets `ActiveControl.UpdateMode` for every control of a type. `TBaseActiveControl::getIsMorphUpdate()` resolves Default against the page.
+A skin sets `ActiveControl.UpdateMode` for every control of a type. `TBaseActiveControl::getIsMorphUpdate()` resolves Default against the page. [TActiveSvg](./TActiveSvg.md) sets `Morph` in its constructor, so it morphs on a Replace page.
 
 ## Morph Pipeline
 
