@@ -552,6 +552,8 @@ Prado.CallbackRequest = Prado.Class(Prado.PostBack,
 
 	/**
 	 * Callback OnSuccess event,logs reponse and data to console.
+	 * Dispatches `prado:callbackRedirect` on document before a server redirect, and
+	 * `prado:callbackUpdated` after the response actions run.
 	 */
 	successHandler(data, textStatus, request) {
 		let log;
@@ -584,7 +586,11 @@ Prado.CallbackRequest = Prado.Class(Prado.PostBack,
 
 		const redirectUrl = this.extractContent(Prado.CallbackRequestManager.REDIRECT_HEADER);
 		if (redirectUrl)
-				document.location.href = redirectUrl;
+		{
+			// a server redirect is a leave the page asked for; TUnsavedChangesGuard lets it pass
+			document.dispatchEvent(new CustomEvent('prado:callbackRedirect', { detail: { url: redirectUrl } }));
+			document.location.href = redirectUrl;
+		}
 
 		this.outputDebug();
 
@@ -599,6 +605,8 @@ Prado.CallbackRequest = Prado.Class(Prado.PostBack,
                 } catch (e) {
                     obj.exceptionHandler(e);
                 }
+                // the response's DOM updates have run; TUnsavedChangesGuard re-checks its fields
+                document.dispatchEvent(new CustomEvent('prado:callbackUpdated', { detail: { request: obj } }));
             }
 			);
 
