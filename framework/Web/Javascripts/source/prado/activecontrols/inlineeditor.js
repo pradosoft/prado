@@ -472,11 +472,11 @@ Prado.WebUI.TInPlaceTextBox = Prado.Class(Prado.WebUI.TInPlaceControlBase,
 		{
 			this.editField = document.createElement("input");
 			this.editField.type = Prado.WebUI.TInPlaceTextBox.INPUT_TYPES[this.options.TextMode] || 'text';
-			if(this.options.MaxLength > 0)
-				this.editField.maxlength = this.options.MaxLength;
 			if(this.options.Columns > 0)
 				this.editField.size = this.options.Columns;
 		}
+		if(this.options.MaxLength > 0)
+			this.editField.maxLength = this.options.MaxLength;
 
 		this.editField.className = cssClass;
 		this.editField.name = inputName;
@@ -484,25 +484,8 @@ Prado.WebUI.TInPlaceTextBox = Prado.Class(Prado.WebUI.TInPlaceControlBase,
 		this.editField.style.display="none";
 		this.element.parentNode.insertBefore(this.editField, this.element)
 
-		//handle return key within single line inputs
-		if(this.options.TextMode != 'MultiLine')
-		{
-			this.observe(this.editField, "keydown", e => {
-				if(e.keyCode == 13) //KEY_RETURN
-				{
-					const target = e.target;
-					if(target)
-					{
-						this.returnFocusOnCollapse = true;
-						target.blur();
-						e.preventDefault();
-					}
-				}
-			});
-		}
-
 		this.observe(this.editField, "blur", this.onTextBoxBlur.bind(this));
-		this.observe(this.editField, "keypress", this.onKeyPressed.bind(this));
+		this.observe(this.editField, "keydown", this.onKeyPressed.bind(this));
 	},
 
 	onTextBoxBlur(_e) {
@@ -522,8 +505,17 @@ Prado.WebUI.TInPlaceTextBox = Prado.Class(Prado.WebUI.TInPlaceControlBase,
 		}
 	},
 
+	/**
+	 * Escape restores the text and leaves edit mode. Enter in a single line
+	 * editor commits the text by blurring the field. Both return focus to the
+	 * label. The handler observes keydown, since browsers do not fire keypress
+	 * for Escape. Keys pressed during an IME composition are ignored.
+	 * @param {KeyboardEvent} e keydown event
+	 */
 	onKeyPressed(e) {
-		if (e.keyCode == 27) //KEY_ESC
+		if(e.isComposing)
+			return;
+		if(e.key === 'Escape')
 		{
 			this.editField.value = this.getText();
 			this.isEditing = false;
@@ -531,9 +523,12 @@ Prado.WebUI.TInPlaceTextBox = Prado.Class(Prado.WebUI.TInPlaceControlBase,
 				this.showLabel();
 			this.focusLabel();
 		}
-		else if (e.keyCode == 13 // KEY_RETURN
-			&& this.options.TextMode != 'MultiLine')
-			e.preventDefault()
+		else if(e.key === 'Enter' && this.options.TextMode != 'MultiLine')
+		{
+			e.preventDefault();
+			this.returnFocusOnCollapse = true;
+			this.editField.blur();
+		}
 	},
 
 	/**
@@ -738,8 +733,13 @@ Prado.WebUI.TInPlaceDropDownList = Prado.Class(Prado.WebUI.TInPlaceControlBase,
 		this.maybeReturnFocus();
 	},
 
+	/**
+	 * Escape restores the edit-start selection and leaves edit mode. Enter
+	 * blurs the select. Both return focus to the label.
+	 * @param {KeyboardEvent} e keydown event
+	 */
 	onKeyPressed(e) {
-		if (e.keyCode == 27) //KEY_ESC
+		if(e.key === 'Escape')
 		{
 			this.applySelection(this.originalSelection);
 			this.refreshLabel();
@@ -748,7 +748,7 @@ Prado.WebUI.TInPlaceDropDownList = Prado.Class(Prado.WebUI.TInPlaceControlBase,
 				this.showLabel();
 			this.focusLabel();
 		}
-		else if (e.keyCode == 13) //KEY_RETURN
+		else if(e.key === 'Enter')
 		{
 			e.preventDefault();
 			this.returnFocusOnCollapse = true;

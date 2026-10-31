@@ -85,6 +85,7 @@ Prado.WebUI.Control = Prado.Class({
 		const target = (typeof element === 'string') ? document.getElementById(element) : element;
 		if (!target) return;
 		this.observers.push({ _element: target, _eventName: eventName, _handler: handler });
+		Prado.Observed.add(target);
 		target.addEventListener(eventName, handler);
 	},
 
@@ -117,7 +118,10 @@ Prado.WebUI.Control = Prado.Class({
 		const idx = this.findObserver(element, eventName, handler);
 		const target = (typeof element === 'string') ? document.getElementById(element) : element;
 		if (idx!=-1)
+		{
 			this.observers.splice(idx, 1);
+			if (target) Prado.Observed.remove(target);
+		}
 		else
 			// eslint-disable-next-line no-debugger
 			debugger; // shouldn't happen
@@ -216,7 +220,11 @@ Prado.WebUI.Control = Prado.Class({
 				while (this.observers.length>0)
 				{
 					const e = this.observers.pop();
-					if (e._element) e._element.removeEventListener(e._eventName, e._handler);
+					if (e._element)
+					{
+						e._element.removeEventListener(e._eventName, e._handler);
+						Prado.Observed.remove(e._element);
+					}
 				}
 			}
 		else
@@ -301,17 +309,16 @@ Prado.WebUI.TImageButton = Prado.Class(Prado.WebUI.PostBackControl,
 
 	/**
 	 * Add hidden inputs to capture the x,y point clicked on the image.
+	 * The point is in pixels from the image's top-left corner inside its border,
+	 * rounded to integers as a native image submit posts it. Page scrolling does
+	 * not affect it. A keyboard activation posts 0,0.
 	 * @param event DOM click event.
 	 * @param array image button options.
 	 */
 	addXYInput(options, event) {
 		const rect = this.element.getBoundingClientRect();
-		const imagePos = { top: rect.top + window.pageYOffset, left: rect.left + window.pageXOffset };
-		const clickedPos = [event.clientX, event.clientY];
-		let x = clickedPos[0]-imagePos['left']+1;
-		let y = clickedPos[1]-imagePos['top']+1;
-		x = x < 0 ? 0 : x;
-		y = y < 0 ? 0 : y;
+		const x = Math.max(0, Math.round(event.clientX - rect.left - this.element.clientLeft));
+		const y = Math.max(0, Math.round(event.clientY - rect.top - this.element.clientTop));
 		const id = this.element.id;
 		const name = options['EventTarget'];
 		const form = this.element.form || document.getElementById('PRADO_PAGESTATE').form;

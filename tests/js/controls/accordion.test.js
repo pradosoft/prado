@@ -303,14 +303,14 @@ describe('TAccordion.elementClicked — switching views without animation', () =
 
 describe('TAccordion.elementClicked — switching views with animation', () => {
 	it('calls animate when Duration > 0 and view changes', () => {
-		const { accordion } = makeAccordion(['v0', 'v1'], 0, { Duration: 300 });
+		const { accordion } = makeAccordion(['v0', 'v1'], 0, { Duration: 0.3 });
 		const spy = vi.spyOn(accordion, 'animate');
 		accordion.elementClicked('v1', { stopPropagation: vi.fn() });
 		expect(spy).toHaveBeenCalledOnce();
 	});
 
 	it('does NOT call animate when Duration > 0 but same view clicked', () => {
-		const { accordion } = makeAccordion(['v0', 'v1'], 0, { Duration: 300 });
+		const { accordion } = makeAccordion(['v0', 'v1'], 0, { Duration: 0.3 });
 		const spy = vi.spyOn(accordion, 'animate');
 		accordion.elementClicked('v0', { stopPropagation: vi.fn() });
 		expect(spy).not.toHaveBeenCalled();
@@ -321,7 +321,7 @@ describe('TAccordion.elementClicked — switching views with animation', () => {
 
 describe('TAccordion.animate', () => {
 	it('applies ActiveHeaderCssClass to the current view header', () => {
-		const { accordion } = makeAccordion(['v0', 'v1'], 0, { Duration: 300 });
+		const { accordion } = makeAccordion(['v0', 'v1'], 0, { Duration: 0.3 });
 		// Manually set up state as elementClicked would.
 		accordion.oldView = 'v0';
 		accordion.currentView = 'v1';
@@ -330,7 +330,7 @@ describe('TAccordion.animate', () => {
 	});
 
 	it('applies HeaderCssClass to the old view header', () => {
-		const { accordion } = makeAccordion(['v0', 'v1'], 0, { Duration: 300 });
+		const { accordion } = makeAccordion(['v0', 'v1'], 0, { Duration: 0.3 });
 		accordion.oldView = 'v0';
 		accordion.currentView = 'v1';
 		accordion.animate();
@@ -531,5 +531,85 @@ describe('TAccordion accessibility', () => {
 		let prevented = false;
 		accordion.keyPressed('a', { keyCode: 65, preventDefault: () => { prevented = true; } });
 		expect(prevented).toBe(false);
+	});
+});
+
+// ─── measureHeight / getDurationMs ───────────────────────────────────────────
+
+describe('TAccordion.measureHeight', () => {
+	it('measures a view hidden with display:none while displayed', () => {
+		const { accordion } = makeAccordion(['v0', 'v1'], 0);
+		const view = document.getElementById('v1');
+		view.style.display = 'none';
+		const seen = [];
+		Object.defineProperty(view, 'offsetHeight', {
+			configurable: true,
+			get: () => { seen.push([view.style.display, view.style.visibility]); return view.style.display === 'none' ? 0 : 140; },
+		});
+
+		expect(accordion.measureHeight(view)).toBe(140);
+		expect(seen).toEqual([['', 'hidden']]);
+		expect(view.style.display).toBe('none');
+		expect(view.style.visibility).toBe('');
+	});
+
+	it('sizes to the tallest view when the taller one is hidden', () => {
+		const { accordion } = makeAccordion(['v0', 'v1'], 0);
+		const tall = document.getElementById('v1');
+		tall.style.display = 'none';
+		Object.defineProperty(tall, 'offsetHeight', {
+			configurable: true,
+			get: () => (tall.style.display === 'none' ? 0 : 300),
+		});
+		accordion.maxHeight = 0;
+
+		accordion.checkMaxHeight();
+
+		expect(accordion.maxHeight).toBe(300);
+	});
+});
+
+describe('TAccordion.getDurationMs', () => {
+	it('converts the Duration in seconds, as AnimationDuration emits it, to milliseconds', () => {
+		const { accordion } = makeAccordion(['v0'], 0, { Duration: '1' });
+		expect(accordion.getDurationMs()).toBe(1000);
+		accordion.options.Duration = '0.25';
+		expect(accordion.getDurationMs()).toBe(250);
+	});
+
+	it('returns 0 for no animation', () => {
+		const { accordion } = makeAccordion(['v0'], 0, { Duration: '0' });
+		expect(accordion.getDurationMs()).toBe(0);
+		accordion.options.Duration = 'x';
+		expect(accordion.getDurationMs()).toBe(0);
+	});
+});
+
+// ─── CSS classes with several names ──────────────────────────────────────────
+
+describe('TAccordion header CSS classes with several names', () => {
+	it('sets every name of HeaderCssClass and ActiveHeaderCssClass', () => {
+		const { accordion } = makeAccordion(['v0', 'v1'], 0, {
+			HeaderCssClass: 'acc-header  closed',
+			ActiveHeaderCssClass: 'acc-header open',
+		});
+		expect(() => accordion.elementClicked('v1', {})).not.toThrow();
+		expect(document.getElementById('v1_0').className).toBe('acc-header open');
+		expect(document.getElementById('v0_0').className).toBe('acc-header closed');
+	});
+
+	it('clears the header class when the CSS class is empty', () => {
+		const { accordion } = makeAccordion(['v0', 'v1'], 0, { HeaderCssClass: '' });
+		expect(() => accordion.elementClicked('v1', {})).not.toThrow();
+		expect(document.getElementById('v0_0').className).toBe('');
+	});
+
+	it('sets several class names when animated', () => {
+		const { accordion } = makeAccordion(['v0', 'v1'], 0, {
+			Duration: 1,
+			ActiveHeaderCssClass: 'acc-header open',
+		});
+		expect(() => accordion.elementClicked('v1', {})).not.toThrow();
+		expect(document.getElementById('v1_0').className).toBe('acc-header open');
 	});
 });

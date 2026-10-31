@@ -142,6 +142,46 @@ Prado.RequestManager =
 	FIELD_POSTBACK_PARAMETER : 'PRADO_POSTBACK_PARAMETER'
 };
 
+/**
+ * Counts the event observers that Prado control wrappers install on each
+ * element through `Prado.WebUI.Control.observe()`. The jQuery trigger bridge
+ * dispatches native events to an element with observers.
+ * @namespace Prado.Observed
+ * @since 4.4.0
+ */
+Prado.Observed =
+{
+	_counts: new WeakMap(),
+
+	/**
+	 * Records an observer on an element.
+	 * @param {element} el - the observed element
+	 */
+	add(el) {
+		this._counts.set(el, (this._counts.get(el) || 0) + 1);
+	},
+
+	/**
+	 * Removes the record of an observer on an element.
+	 * @param {element} el - the observed element
+	 */
+	remove(el) {
+		const count = (this._counts.get(el) || 0) - 1;
+		if (count > 0)
+			this._counts.set(el, count);
+		else
+			this._counts.delete(el);
+	},
+
+	/**
+	 * @param {element} el - the element to check
+	 * @return {boolean} whether the element has a Prado observer
+	 */
+	has(el) {
+		return this._counts.has(el);
+	}
+};
+
 // jQuery compatibility bridges. Both are installed only when jQuery is
 // available on the page; when the jQuery quarantine plan ships, this whole
 // block moves into the jQuery-loading package only.
@@ -165,11 +205,16 @@ if (typeof jQuery !== 'undefined') {
 	 * https://github.com/jquery/jquery/issues/2476), so pre-4.4 calls
 	 * become no-ops without this bridge.
 	 *
+	 * A Prado-managed element is registered in `Prado.Registry` under its
+	 * own id, or has an observer in `Prado.Observed`. The second covers an
+	 * element that a wrapper registered under another id observes: the
+	 * control of a validator, the target of a TEventTriggeredCallback, and
+	 * the selects of a TDatePicker.
+	 *
 	 * Behavior:
-	 *   - Elements not registered in `Prado.Registry` keep the original
-	 *     jQuery `.trigger()` semantics. No regression for pure-jQuery
-	 *     controls.
-	 *   - Klass-registered elements receive `el.dispatchEvent(CustomEvent)`.
+	 *   - Elements that are not Prado-managed keep the original jQuery
+	 *     `.trigger()` semantics. No regression for pure-jQuery controls.
+	 *   - Prado-managed elements receive `el.dispatchEvent(CustomEvent)`.
 	 *     This reaches both native `addEventListener` handlers AND any
 	 *     jQuery-bound handlers (because jQuery itself attaches via
 	 *     `addEventListener` under the hood).
@@ -190,6 +235,7 @@ if (typeof jQuery !== 'undefined') {
 		// elements; everything else goes through jQuery's own trigger
 		// pipeline exactly as before.
 		const $klass = this.filter(function () {
+			if (Prado.Observed.has(this)) return true;
 			const reg = this.id && Prado.Registry[this.id];
 			return !!(reg && reg.constructor && reg.constructor.isPradoClass);
 		});
@@ -277,28 +323,11 @@ Prado.PostBack = Prado.Class(
 				return this.event.preventDefault();
 		}
 
+		if (!form) return;
 		if(this.options['PostBackUrl'] && this.options['PostBackUrl'].length > 0)
 			form.action = this.options['PostBackUrl'];
 
-		let input=null;
-		if(this.options.EventTarget)
-		{
-			input = document.createElement("input");
-			input.setAttribute("type", "hidden");
-			input.setAttribute("name", Prado.RequestManager.FIELD_POSTBACK_TARGET);
-			input.setAttribute("value", this.options.EventTarget);
-			form.appendChild(input);
-		}
-		if(this.options.EventParameter)
-		{
-			input = document.createElement("input");
-			input.setAttribute("type", "hidden");
-			input.setAttribute("name", Prado.RequestManager.FIELD_POSTBACK_PARAMETER);
-			input.setAttribute("value", this.options.EventParameter);
-			form.appendChild(input);
-		}
-
-		if (!form) return;
+		const removeFields = this.addPostBackFields(form);
 		// Match jQuery $(form).trigger('submit'): fire a cancellable submit event
 		// so handlers can preventDefault, then call form.submit() (which skips
 		// HTML5 constraint validation — important because Prado does its own
@@ -310,6 +339,36 @@ Prado.PostBack = Prado.Class(
 			form.submit();
 			restore();
 		}
+		removeFields();
+	},
+
+	/**
+	 * Adds the EventTarget and EventParameter hidden fields to the form.
+	 * Submit listeners and form.submit() read them at once, so they are removed
+	 * right after. A cancelled submit, or one to another window, leaves the page
+	 * in place, and a later submit of the form would otherwise post them again.
+	 * @param {HTMLFormElement} form - the form to submit
+	 * @return {function} removes the added fields
+	 */
+	addPostBackFields(form) {
+		const fields = [];
+		for (const [name, value] of [
+			[Prado.RequestManager.FIELD_POSTBACK_TARGET, this.options.EventTarget],
+			[Prado.RequestManager.FIELD_POSTBACK_PARAMETER, this.options.EventParameter]
+		]) {
+			if (value) {
+				const input = document.createElement("input");
+				input.setAttribute("type", "hidden");
+				input.setAttribute("name", name);
+				input.setAttribute("value", value);
+				form.appendChild(input);
+				fields.push(input);
+			}
+		}
+		return () => {
+			for (const input of fields)
+				input.remove();
+		};
 	},
 
 	/**
@@ -382,21 +441,51 @@ Prado.Element =
 	},
 
 	/**
-	 * Sets an attribute of a DOM element.
+	 * Splits a CSS class value into its class names for `classList.add()` and
+	 * `classList.remove()`, which throw on a name with whitespace or an empty
+	 * name. Whitespace separates the names, as in jQuery `.addClass()`.
+	 * @function ?
+	 * @param {?string} value - one or more class names separated by whitespace
+	 * @return {string[]} the class names; empty for a null, undefined, or blank value
+	 * @since 4.4.0
+	 */
+	classTokens(value) {
+		if (value === null || value === undefined)
+			return [];
+		return String(value).split(/\s+/).filter(Boolean);
+	},
+
+	/**
+	 * Boolean attributes that a `false` value removes and a `true` value sets
+	 * to their own name, as jQuery `.attr()` does.
+	 * @var BOOLEAN_ATTRIBUTES
+	 * @since 4.4.0
+	 */
+	BOOLEAN_ATTRIBUTES: /^(?:checked|selected|async|autofocus|autoplay|controls|defer|disabled|hidden|ismap|loop|multiple|open|readonly|required|scoped|inert)$/i,
+
+	/**
+	 * Sets an attribute of a DOM element. A null or undefined value removes
+	 * the attribute. A boolean attribute is removed by `false` and set to its
+	 * own name by `true`.
 	 * @function ?
 	 * @param {string} element - Element id
 	 * @param {string} attribute - Name of attribute
-	 * @param {string} value - Value of attribute
+	 * @param {?string} value - Value of attribute
 	 */
 	setAttribute(element, attribute, value) {
 		const el = document.getElementById(element);
 		if(!el) return;
+		const isBoolean = Prado.Element.BOOLEAN_ATTRIBUTES.test(attribute);
 		// "disabled" is for <button>, <fieldset>, <input>, <optgroup>, <option>, <select>, <textarea>
 		// "readonly is for <input>, <textarea>
 		// global presence attributes: hidden, inert, popover
 		// removed 'href' and 'multiple' was a hack - they use removeAttribute now
-		if((attribute == "disabled" || attribute == "readonly" || attribute == "hidden" || attribute == "inert" || attribute == "popover") && value==false)
+		if(value === null || value === undefined || (isBoolean && value === false))
 			el.removeAttribute(attribute);
+		else if((attribute == "disabled" || attribute == "readonly" || attribute == "hidden" || attribute == "inert" || attribute == "popover") && value==false)
+			el.removeAttribute(attribute);
+		else if(isBoolean && value === true)
+			el.setAttribute(attribute, attribute);
 		else if(attribute.match(/^on/i)) //event methods
 		{
 			try
@@ -429,12 +518,52 @@ Prado.Element =
 		el.removeAttribute(attribute);
 	},
 
+	/**
+	 * Animation frame id of the scroll in progress, or null.
+	 * @private
+	 */
+	_scrollFrame: null,
+
+	/**
+	 * Scrolls the window until the top of an element is `offset` pixels below the top of the viewport.
+	 * The scroll lasts `duration` milliseconds and eases in and out, like the jQuery `swing` easing.
+	 * A `duration` that is not a positive number jumps to the position at once.
+	 * Under `prefers-reduced-motion: reduce` the scroll always jumps at once.
+	 * A new call stops the scroll in progress.
+	 * @function ?
+	 * @param {string} element - Element id
+	 * @param {object} [options] - Scroll options
+	 * @param {number} [options.duration=500] - Length of the scroll in milliseconds
+	 * @param {number} [options.offset=50] - Distance in pixels from the top of the viewport to the element
+	 */
 	scrollTo(element, options) {
-		const op = { offset : 50, ...(options || {}) };
+		const op = { duration : 500, offset : 50, ...(options || {}) };
 		const el = document.getElementById(element);
 		if (!el) return;
-		const top = el.getBoundingClientRect().top + window.pageYOffset - op.offset;
-		window.scrollTo({ top, behavior: 'smooth' });
+		const self = Prado.Element;
+		if (self._scrollFrame !== null) {
+			cancelAnimationFrame(self._scrollFrame);
+			self._scrollFrame = null;
+		}
+		const left = window.pageXOffset;
+		const from = window.pageYOffset;
+		const top = el.getBoundingClientRect().top + from - op.offset;
+		const duration = Number(op.duration);
+		const reducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+		if (!(duration > 0) || reducedMotion) {
+			window.scrollTo({ left, top, behavior: 'instant' });
+			return;
+		}
+		// 'instant' keeps a CSS `scroll-behavior: smooth` from smoothing each frame.
+		let start = null;
+		const step = (now) => {
+			if (start === null) start = now;
+			const progress = Math.min((now - start) / duration, 1);
+			const eased = 0.5 - Math.cos(progress * Math.PI) / 2;
+			window.scrollTo({ left, top: from + (top - from) * eased, behavior: 'instant' });
+			self._scrollFrame = progress < 1 ? requestAnimationFrame(step) : null;
+		};
+		self._scrollFrame = requestAnimationFrame(step);
 	},
 
 	focus(element) {
@@ -443,12 +572,9 @@ Prado.Element =
 			if (el) el.focus();
 		};
 		// If a callback request is in flight, defer briefly so we focus the
-		// post-update DOM. Prado.CallbackRequest tracks in-flight requests
-		// in its requestQueue (see ajax3.js).
-		const pending = (typeof Prado !== 'undefined'
-			&& Prado.CallbackRequest
-			&& Prado.CallbackRequest.requestQueue
-			&& Prado.CallbackRequest.requestQueue.length) > 0;
+		// post-update DOM. Callbacks are sent with jQuery.ajax (see ajax3.js),
+		// and jQuery.active counts the requests in flight.
+		const pending = typeof jQuery !== 'undefined' && jQuery.active > 0;
 		if (pending) setTimeout(doFocus, 100);
 		else doFocus();
 	},
