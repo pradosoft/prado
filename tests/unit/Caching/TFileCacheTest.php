@@ -17,6 +17,7 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\TApplication;
 use Prado\Util\Cron\TCronTaskInfo;
 use Prado\Test\Unit\Harness\Caching\TTestFileCache;
+use Prado\TApplicationMode;
 
 
 // ── Test class ─────────────────────────────────────────────────────────────────
@@ -65,6 +66,7 @@ class TFileCacheTest extends \PHPUnit\Framework\TestCase
 	{
 		$basePath = __DIR__ . '/mockapp';
 		$this->app = new TApplication($basePath);
+		$this->app->setMode(TApplicationMode::Debug);
 
 		$this->cache = new TTestFileCache(self::$cacheDir);
 		$this->cache->setPrimaryCache(false);
@@ -234,6 +236,7 @@ class TFileCacheTest extends \PHPUnit\Framework\TestCase
 	{
 		$basePath = __DIR__ . '/mockapp';
 		$app = new TApplication($basePath);
+		$app->setMode(TApplicationMode::Debug);
 
 		$cache = new TTestFileCache();
 		$cache->setPrimaryCache(false);

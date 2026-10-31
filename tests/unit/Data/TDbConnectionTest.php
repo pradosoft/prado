@@ -10,6 +10,7 @@ use Prado\Data\TDbNullConversionMode;
 use Prado\Exceptions\TDbException;
 use Prado\TApplication;
 use Prado\Test\Unit\PradoUnit;
+use Prado\TApplicationMode;
 
 if (!defined('TEST_DB_FILE')) {
 	define('TEST_DB_FILE', __DIR__ . '/db/test.db');
@@ -30,7 +31,7 @@ class TDbConnectionTest extends \PHPUnit\Framework\TestCase
 		@unlink(TEST_DB_FILE2);
 
 		// create application just to provide application mode
-		new TApplication(__DIR__, false, TApplication::CONFIG_TYPE_PHP);
+		(new TApplication(__DIR__, false, TApplication::CONFIG_TYPE_PHP))->setMode(TApplicationMode::Debug);
 
 		$this->_connection1 = new TDbConnection('sqlite:' . TEST_DB_FILE);
 		$this->_connection1->Active = true;

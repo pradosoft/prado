@@ -40,7 +40,7 @@ class TApplicationTestAccessor extends TApplication
  */
 class AppCustomMode extends TApplication
 {
-	public const DEFAULT_APPLICATION_MODE = TApplicationMode::Normal;
+	public const DEFAULT_APPLICATION_MODE = TApplicationMode::Performance;
 }
 
 /**
@@ -238,10 +238,18 @@ class TApplicationTest extends \PHPUnit\Framework\TestCase
 	// Mode
 	// -----------------------------------------------------------------------
 
-	public function testGetMode_defaultIsDebug(): void
+	public function testGetMode_defaultIsNormal(): void
 	{
-		// The bootstrap app is created without an explicit mode; default is Debug.
-		$this->assertSame(TApplicationMode::Debug, $this->_app->getMode());
+		// An application created without an explicit mode is in Normal mode. The harness
+		// application defaults to Debug, so this one restores the TApplication default.
+		$app = new class () extends TTestApplication {
+			public const DEFAULT_APPLICATION_MODE = TApplication::DEFAULT_APPLICATION_MODE;
+		};
+		try {
+			$this->assertSame(TApplicationMode::Normal, $app->getMode());
+		} finally {
+			$app->restoreApplication();
+		}
 	}
 
 	public function testSetMode_debug(): void
@@ -1869,7 +1877,7 @@ class TApplicationTest extends \PHPUnit\Framework\TestCase
 
 	public function testConstant_defaultApplicationMode(): void
 	{
-		$this->assertSame(TApplicationMode::Debug, TApplication::DEFAULT_APPLICATION_MODE);
+		$this->assertSame(TApplicationMode::Normal, TApplication::DEFAULT_APPLICATION_MODE);
 	}
 
 	public function testConstant_defaultPageServiceClass(): void
@@ -1884,9 +1892,9 @@ class TApplicationTest extends \PHPUnit\Framework\TestCase
 	public function testSubclass_defaultApplicationMode_overridable(): void
 	{
 		// The subclass constant is independently defined.
-		$this->assertSame(TApplicationMode::Normal, AppCustomMode::DEFAULT_APPLICATION_MODE);
+		$this->assertSame(TApplicationMode::Performance, AppCustomMode::DEFAULT_APPLICATION_MODE);
 		// The base class constant is unchanged.
-		$this->assertSame(TApplicationMode::Debug, TApplication::DEFAULT_APPLICATION_MODE);
+		$this->assertSame(TApplicationMode::Normal, TApplication::DEFAULT_APPLICATION_MODE);
 	}
 
 	public function testSubclass_defaultPageServiceClass_overridable(): void

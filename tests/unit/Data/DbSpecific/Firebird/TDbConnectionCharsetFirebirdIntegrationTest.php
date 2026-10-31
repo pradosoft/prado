@@ -6,6 +6,7 @@ use Prado\Exceptions\TDbException;
 use Prado\Data\TDbConnection;
 use Prado\TApplication;
 use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+use Prado\TApplicationMode;
 
 /**
  * Integration tests for TDbConnection charset handling — Firebird.
@@ -51,7 +52,7 @@ class TDbConnectionCharsetFirebirdIntegrationTest extends \PHPUnit\Framework\Tes
 	{
 		static $booted = false;
 		if (!$booted) {
-			new TApplication(__DIR__ . '/../../../Security/app', false, TApplication::CONFIG_TYPE_PHP);
+			(new TApplication(__DIR__ . '/../../../Security/app', false, TApplication::CONFIG_TYPE_PHP))->setMode(TApplicationMode::Debug);
 			$booted = true;
 		}
 		$this->setUpConnection();

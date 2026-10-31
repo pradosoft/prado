@@ -18,6 +18,7 @@ use Prado\Test\Unit\Harness\Caching\TTestNoFlushCache;
 use Prado\Util\Clock\TMockClock;
 use Prado\Util\Log\TLogger;
 use Psr\SimpleCache\CacheInterface;
+use Prado\TApplicationMode;
 
 /**
  * A module that is not an ICache, for the invalid-type guard.
@@ -70,6 +71,7 @@ class TPsrSimpleCacheTest extends \PHPUnit\Framework\TestCase
 	protected function setUp(): void
 	{
 		$this->app = new TApplication(__DIR__ . '/mockapp');
+		$this->app->setMode(TApplicationMode::Debug);
 		$this->backing = new TTestCache();
 		$this->backing->setPrimaryCache(false);
 		$this->backing->init(null);

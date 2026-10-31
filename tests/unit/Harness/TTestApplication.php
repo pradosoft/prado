@@ -13,6 +13,7 @@ namespace Prado\Test\Unit\Harness;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TApplication;
+use Prado\TApplicationMode;
 use Prado\Test\Unit\Harness\Traits\TTestApplicationRestorationTrait;
 use Prado\Test\Unit\PradoUnit;
 
@@ -40,6 +41,9 @@ use Prado\Test\Unit\PradoUnit;
  * **3. Sane test defaults.**
  * `$basePath` defaults to `sys_get_temp_dir()` and `$cacheConfig` defaults
  * to `false`, so a plain `new TTestApplication()` works without any setup.
+ * The mode defaults to Debug ({@see DEFAULT_APPLICATION_MODE}); Normal and
+ * Performance mode write a class fx-event cache into the runtime directory that
+ * a later run reads back, so a test of those modes sets the mode itself.
  *
  * **4. Exit capture.**
  * {@see exit()} is overridden to store the exit code in {@see $capturedExitCode}
@@ -76,6 +80,11 @@ use Prado\Test\Unit\PradoUnit;
 class TTestApplication extends TApplication
 {
 	use TTestApplicationRestorationTrait;
+
+	/**
+	 * The harness application runs in Debug mode, so a test writes no fx-event cache.
+	 */
+	public const DEFAULT_APPLICATION_MODE = TApplicationMode::Debug;
 
 	/**
 	 * @var ?int Exit code passed to {@see exit()} by the last TExitException
