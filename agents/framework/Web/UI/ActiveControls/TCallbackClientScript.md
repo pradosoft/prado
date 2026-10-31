@@ -15,6 +15,7 @@ Server-side API for client-side DOM updates during callback responses. Provides 
 - `update($element, $content)` - Set inner HTML through jQuery `.html()`; the content is parsed as HTML
 - `setText($element, $text)` - Set the text content through jQuery `.text()`; the text is not parsed as HTML, so it takes user input (@since 4.4.0)
 - `replaceContent($element, $content, $self = true, $morph = false)` - Replace the element or its content with HTML: a string, a rendered control, or a writer's content. `$morph` patches the existing nodes through `Prado.Element.morph` (idiomorph), which keep their listeners, focus, and caret; the client function then gets a fifth argument, `true` (4.4.0). See [TActiveUpdateMode](./TActiveUpdateMode.md)
+- `getViewTransition()` / `setViewTransition($value)` - Whether the client applies the functions of this response inside a view transition; defaults to false. See [CallbackViewTransition](./CallbackViewTransition.md) (4.4.0)
 - `appendContent()` / `prependContent()` / `insertContentAfter()` / `insertContentBefore()` - Insert an HTML fragment
 - `setAttribute($control, $name, $value)` - Set HTML attribute
 - `removeAttribute($control, $name)` - Remove an HTML attribute (@since 4.3.3)

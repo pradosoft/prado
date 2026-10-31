@@ -21,6 +21,7 @@ Callback request handler for TPage. Intercepts callback requests, routes to `rai
 - `getCallbackClientHandler()` - Returns [TCallbackClientScript](./TCallbackClientScript.md) handler
 - `CALLBACK_DATA_HEADER`, `CALLBACK_ACTION_HEADER`, etc. - Response header constants
 - `CALLBACK_CSRFTOKEN_HEADER` (`X-PRADO-CSRF-TOKEN`) - A fresh `THttpRequest::getCsrfToken()` sent by `renderResponse()` while `TPage.EnableCsrfValidation` is on; `ajax3.js` `updateCsrfToken()` writes it into the `PRADO_CSRF_TOKEN` field (@since 4.4.0)
+- `CALLBACK_VIEWTRANSITION_HEADER` (`X-PRADO-VIEWTRANSITION`) - `1`, sent by `renderResponse()` for a response with client actions when `getIsViewTransition()` is true (`TPage.CallbackViewTransition` or `TCallbackClientScript::getViewTransition()`); `ajax3.js` then runs the actions inside a view transition. See [CallbackViewTransition](./CallbackViewTransition.md) (@since 4.4.0)
 
 ## See Also
 

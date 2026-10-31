@@ -19,7 +19,8 @@ AJAX-enabled controls for the Prado framework. ActiveControls trigger server-sid
    - `X-PRADO-PAGESTATE` — updated page state token
    - `X-PRADO-CSRF-TOKEN` — fresh CSRF token for the `PRADO_CSRF_TOKEN` hidden field, while `TPage.EnableCsrfValidation` is on (4.4.0)
    - `X-PRADO-SCRIPTLIST` / `X-PRADO-STYLESHEET` — dynamic asset loading
-6. JavaScript processes the response and applies updates without a page reload.
+   - `X-PRADO-VIEWTRANSITION` — the actions run inside a view transition (4.4.0)
+6. JavaScript processes the response and applies updates without a page reload, inside a view transition when the response asks for one ([CallbackViewTransition](CallbackViewTransition.md)).
 
 ## Core Classes
 
@@ -89,7 +90,8 @@ AJAX-enabled controls for the Prado framework. ActiveControls trigger server-sid
 - **Implement `ICallbackEventHandler`** on any new active control. The `raiseCallbackEvent()` method is the server-side callback handler.
 - **Use `TActiveControlAdapter`** (not subclassing) to add active behaviour to existing controls. The adapter pattern keeps controls decoupled from the callback mechanism.
 - **`canUpdateClientSide()`** — always check this before calling `TCallbackClientScript` methods to avoid updating the DOM during non-callback requests.
-- **`ActiveControl.UpdateMode`** — `Morph` patches a re-rendered control's existing nodes through idiomorph, so they keep their listeners, focus, and caret; `TPage.CallbackUpdateMode` is the default. Render-in-callback controls pass `getActiveControl()->getIsMorphUpdate()` to `replaceContent()`. See [TActiveUpdateMode](TActiveUpdateMode.md) (4.4.0).
+- **`ActiveControl.UpdateMode`** — `Morph` patches a re-rendered control's existing nodes through idiomorph, so they keep their listeners, focus, and caret; `TPage.CallbackUpdateMode` is the default. Render-in-callback controls send their markup through `getActiveControl()->replaceClientContent()`, which passes `getIsMorphUpdate()` to `replaceContent()`. See [TActiveUpdateMode](TActiveUpdateMode.md) (4.4.0).
+- **`ActiveControl.ViewTransition`** — a response that renders the control again applies its client actions inside a view transition; `TPage.CallbackViewTransition` does it for every response, and `TCallbackClientScript::setViewTransition()` for the current one. Reduced motion and browsers without support apply them at once. See [CallbackViewTransition](CallbackViewTransition.md) (4.4.0).
 - **`TCallbackPageStateTracker`** — tracks which viewstate properties changed during a callback. Only changed properties are sent to the client, minimising payload.
 - **Client-side class** — the JavaScript counterpart lives in `framework/Web/Javascripts/source/prado/activecontrols/activecontrols3.js` under `Prado.WebUI.<ClassName>`.
 
@@ -99,4 +101,5 @@ AJAX-enabled controls for the Prado framework. ActiveControls trigger server-sid
 - `TActivePageAdapter` suppresses normal HTML rendering; only `X-PRADO-*` headers are sent. Do not `echo` from callback handlers.
 - `TTimeTriggeredCallback` keeps firing while the page is open — always implement server-side guards against runaway callbacks.
 - `TActiveFileUpload` uses a hidden iframe (not XHR) for upload; progress tracking is limited.
+- A view transition runs the actions in a later frame. onComplete and the next callback request wait for them; other code that reads the DOM right after the response sees the old page.
 - A Replace update creates new nodes, so listeners on inner elements, focus, and typing are lost; `UpdateMode="Morph"` keeps them. Under Morph, data-bound rows pair by position, since item IDs follow the index.
