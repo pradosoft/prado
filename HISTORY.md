@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+BUG: A `TDatePicker` hidden in the task that showed it leaked a document click listener; `hide()` cancels the pending attach. (belisoful)
 BUG: `Prado.Element.setAttribute()` removes the attribute for a null value, as jQuery did, so an active control's `Hidden`, `Inert`, or `ToolTip` reset to its default no longer leaves `hidden="null"` or `title="null"`. (belisoful)
 BUG: TTabPanel, TAccordion, and a validator's `ControlCssClass` accept a CSS class with several names or none; `Prado.Element.classTokens()` splits it. (belisoful)
 BUG: The `logger` package no longer replaces the native `CustomEvent`, which broke callbacks and jQuery triggers on its pages; its listener class is `LogEvent` (see UPGRADE.md). (belisoful)
