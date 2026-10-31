@@ -71,4 +71,14 @@
 
 	<com:TActiveButton Text="ad" OnCallback="button_clicked" />
 
+	<com:TInPlaceTextBox id="limited"
+		OnTextChanged="limited_changed"
+		MaxLength="5"
+		Text="Short" />
+
+	<com:TInPlaceTextBox id="limitedMulti"
+		TextMode="MultiLine"
+		MaxLength="5"
+		Text="Multi" />
+
 </com:TContent>
