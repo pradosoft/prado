@@ -1205,7 +1205,8 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	 * Renders hidden fields. To avoid browsers from trying to restore the previous
 	 * state of the fields after a page reload, the autocomplete="off" attribute is used.
 	 * Unfortunately this attribute is invalid for hidden fields, so text fields are
-	 * rendered instead (#642).
+	 * rendered instead (#642). Their container carries `data-prado-dirty-ignore`, so
+	 * {@see \Prado\Web\UI\WebControls\TUnsavedChangesGuard} does not watch them.
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 * @param mixed $initial
 	 */
@@ -1230,7 +1231,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 			$this->_renderedHiddenFields[] = $name;
 		}
 		if ($str !== '') {
-			$writer->write("<div style=\"visibility:hidden;\">\n" . $str . "</div>\n");
+			$writer->write("<div style=\"visibility:hidden;\" data-prado-dirty-ignore=\"\">\n" . $str . "</div>\n");
 		}
 	}
 

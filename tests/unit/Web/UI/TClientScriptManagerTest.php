@@ -944,6 +944,7 @@ class TClientScriptManagerTest extends \PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('name="field1"', $output);
 		$this->assertStringContainsString('name="field2"', $output);
 		$this->assertStringContainsString('autocomplete="off"', $output);
+		$this->assertStringContainsString('<div style="visibility:hidden;" data-prado-dirty-ignore="">', $output);
 	}
 
 	public function testRenderHiddenFieldsBeginThenEnd()

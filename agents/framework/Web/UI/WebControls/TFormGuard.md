@@ -47,6 +47,7 @@ Audited in 4.4.0. The honeypot is invisible, removed from the accessibility tree
 
 ## See Also
 
+- [TUnsavedChangesGuard](./TUnsavedChangesGuard.md) - guards unsaved input instead of submission
 - [TProofOfWork](./TProofOfWork.md)
 - [TCaptcha](./TCaptcha.md)
 - [TCustomValidator](./TCustomValidator.md)
