@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<com:THead Title="Server events" />
+<body>
+<com:TForm>
+<h1>TServerEventTriggeredCallback</h1>
+
+<com:TServerEventTriggeredCallback ID="ChangedWatch" Channel="orders" EventName="changed" OnCallback="changedEvent" />
+<com:TServerEventTriggeredCallback ID="AnyWatch" Channel="orders" OnCallback="anyEvent" />
+
+<p>Changed: <com:TActiveLabel ID="ChangedLabel" Text="none" /></p>
+<p>Any: <com:TActiveLabel ID="AnyLabel" Text="none" /></p>
+
+<com:TActiveButton ID="PublishChanged" Text="Publish changed" OnCallback="publishChanged" />
+<com:TActiveButton ID="PublishRemoved" Text="Publish removed" OnCallback="publishRemoved" />
+
+<com:TActivePanel ID="WatchPanel">
+	<com:TServerEventTriggeredCallback ID="PanelWatch" Channel="panel" OnCallback="panelEvent" />
+</com:TActivePanel>
+<p>Panel: <com:TActiveLabel ID="PanelLabel" Text="none" /></p>
+
+<com:TActiveButton ID="RefreshPanel" Text="Refresh panel" OnCallback="refreshPanel" />
+<com:TActiveButton ID="RemoveWatch" Text="Remove panel watch" OnCallback="removeWatch" />
+<com:TActiveButton ID="PublishPanel" Text="Publish panel" OnCallback="publishPanel" />
+</com:TForm>
+</body>
+</html>
