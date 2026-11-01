@@ -10,7 +10,7 @@ AJAX-enabled controls triggering server-side processing via XMLHttpRequest callb
 
 - **`TActiveControlAdapter`** — Wraps any control to add active/callback support; publishes `ajax` script package.
 
-- **`TBaseActiveControl`** — Options holder (`TMap`); `setOption($name, $value)` / `getOption($name)`; `canUpdateClientSide()`.
+- **`TBaseActiveControl`** — Options holder (`TMap`); `setOption($name, $value)` / `getOption($name)`; `canUpdateClientSide()`; `UpdateMode` and `ViewTransition` for re-rendered markup.
 
 - **`TBaseActiveCallbackControl`** — Extends `TBaseActiveControl`; adds `TCallbackClientSide` options and `CausesValidation`, `ValidationGroup` properties.
 

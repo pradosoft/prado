@@ -72,6 +72,8 @@ use Prado\Web\UI\WebControls\THead;
  * {@see setCallbackUpdateMode CallbackUpdateMode} is how a callback response updates
  * the markup of an active control that renders again, when the control's
  * `ActiveControl.UpdateMode` is Default: Replace (the default) or Morph.
+ * {@see setCallbackViewTransition CallbackViewTransition} applies the client actions
+ * of every callback response inside a view transition (`document.startViewTransition`).
  *
  * Validators add themselves to {@see getValidators Validators}. {@see validate()}
  * runs them, either all of them or those of a single validation group, and
@@ -208,6 +210,10 @@ class TPage extends TTemplateControl
 	 * @var string how a callback updates re-rendered active controls, a TActiveUpdateMode
 	 */
 	private $_callbackUpdateMode = TActiveUpdateMode::Replace;
+	/**
+	 * @var bool whether every callback response applies its client actions in a view transition
+	 */
+	private $_callbackViewTransition = false;
 	/**
 	 * @var bool whether page state should be encrypted
 	 */
@@ -1335,6 +1341,29 @@ class TPage extends TTemplateControl
 	{
 		$value = TPropertyValue::ensureEnum($value, TActiveUpdateMode::class);
 		$this->_callbackUpdateMode = $value === TActiveUpdateMode::Default ? TActiveUpdateMode::Replace : $value;
+	}
+
+	/**
+	 * @return bool whether every callback response with client actions applies them
+	 *   inside a view transition. Defaults to false.
+	 * @since 4.4.0
+	 */
+	public function getCallbackViewTransition()
+	{
+		return $this->_callbackViewTransition;
+	}
+
+	/**
+	 * Sets whether every callback response with client actions applies them inside
+	 * a view transition (`document.startViewTransition`). The client applies them
+	 * directly under `prefers-reduced-motion: reduce` or without view transition
+	 * support. Set it in a page or the `<pages>` configuration.
+	 * @param bool $value whether callback updates animate through a view transition.
+	 * @since 4.4.0
+	 */
+	public function setCallbackViewTransition($value)
+	{
+		$this->_callbackViewTransition = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**

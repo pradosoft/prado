@@ -82,7 +82,7 @@ class TActiveDataList extends TDataList implements IActiveControl
 		if ($this->getHasPreRendered()) {
 			$this->renderDataList($writer);
 			if ($this->getActiveControl()->canUpdateClientSide()) {
-				$this->getPage()->getCallbackClient()->replaceContent($this->getContainerID(), $writer, true, $this->getActiveControl()->getIsMorphUpdate());
+				$this->getActiveControl()->replaceClientContent($this->getContainerID(), $writer);
 			}
 		} else {
 			$this->getPage()->getAdapter()->registerControlToRender($this, $writer);

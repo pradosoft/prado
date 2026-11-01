@@ -32,7 +32,7 @@ A skin sets `ActiveControl.UpdateMode` for every control of a type. `TBaseActive
 ## Morph Pipeline
 
 1. `TActiveControlAdapter::render()` registers the `morph` script package (idiomorph) for a morphing control, in a full page or a callback.
-2. The control's callback render calls `TCallbackClientScript::replaceContent($element, $writer, true, $morph)`; the client function gets a fifth argument, `true`.
+2. The control's callback render calls `TBaseActiveControl::replaceClientContent()`, which calls `TCallbackClientScript::replaceContent($element, $writer, true, $morph)`; the client function gets a fifth argument, `true`.
 3. `Prado.Element.replace()` calls `Prado.Element.morph()`, the only code that calls idiomorph. Without idiomorph it replaces.
 
 ## Client Rules (`Prado.Element.morph`)

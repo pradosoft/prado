@@ -1,6 +1,6 @@
 # Util/SUMMARY.md
 
-Cross-cutting utilities: behavior/mixin system, logging, scheduled tasks, RPC clients, POSIX signal handling, parameter modules, and helpers.
+Cross-cutting utilities: behavior/mixin system, logging, scheduled tasks, named locks, RPC clients, POSIX signal handling, parameter modules, and helpers.
 
 ## Classes
 
@@ -15,6 +15,8 @@ Cross-cutting utilities: behavior/mixin system, logging, scheduled tasks, RPC cl
 - **`TCallChain`** — AOP-style method call chain for `dy*` dynamic events.
 
 - **Logging** — `TLogger`, `TLogRouter`, `TLogRoute` outputs, and the PSR-3 adapters `TPsrLogger` / `TPsrLogRoute` are in [Log/](Log/SUMMARY.md) (namespace `Prado\Util\Log`).
+
+- **Mutexes** — Named lock modules `TFileMutex`, `TSemaphoreMutex`, `TSyncMutex`, `TMemoryMutex`, `TCacheMutex`, `TRedisMutex`, `TMysqlMutex`, `TPgsqlMutex`, `TOracleMutex`, `TMssqlMutex`, `TDbTableMutex`, and the routing `TDbMutex` on the `TMutex` base are in [Mutex/](Mutex/SUMMARY.md) (namespace `Prado\Util\Mutex`).
 
 - **`TParameterModule`** — Stores named configuration parameters.
 

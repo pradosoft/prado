@@ -813,6 +813,15 @@ vardumper_not_array						= __debuginfo() must return an array.
 
 htmlpurifier_source_path_failed		    = Unable to create html purifier cache path ''{0}''. Make sure the parent directory exists and is writable by the Web process.
 
+mutex_acquire_failed						= {0} could not acquire the lock '{1}' within {2} seconds.
+mutex_retrydelay_invalid					= {0}.RetryDelay must be at least 1 millisecond; {1} given.
+mutex_expire_invalid						= {0}.Expire must be greater than zero; {1} given.
+filemutex_mutexpath_invalid					= TFileMutex could not create the mutex directory '{0}'. Make sure the parent directory exists and is writable.
+semaphoremutex_extension_required			= TSemaphoreMutex requires the sysvsem PHP extension.
+syncmutex_extension_required				= TSyncMutex requires the sync PECL extension.
+redismutex_extension_required				= TRedisMutex requires the redis PHP extension.
+dbmutex_driver_unsupported					= {0} does not support the '{1}' database driver; it requires {2}.
+
 
 active_controls_client_side_exists			= Control ''{0}'' already has ClientSide options; the ClientSide property cannot be replaced.
 componentreflection_class_invalid			= TComponentReflection requires a class name or an object.

@@ -78,7 +78,7 @@ TApplication
  └─ Security       framework/Security/   (RBAC, TAuthManager, TSecurityManager, TPermissionsManager)
  └─ I18N           framework/I18N/       (TGlobalization, MessageSource, CultureInfo)
  └─ Xml            framework/Xml/        (TXmlDocument/TXmlElement with XPath, DOM compat, ArrayAccess)
- └─ Util           framework/Util/       (logging, behaviors, cron, helpers, TCallChain, TVarDumper)
+ └─ Util           framework/Util/       (logging, behaviors, cron, mutexes, helpers, TCallChain, TVarDumper)
  └─ PHPStan        framework/PHPStan/    (custom static-analysis extensions for dynamic Prado properties)
 ```
 
