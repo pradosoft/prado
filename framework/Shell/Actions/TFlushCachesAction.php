@@ -12,11 +12,13 @@ namespace Prado\Shell\Actions;
 
 use Prado\Prado;
 use Prado\Caching\ICache;
+use Prado\TApplicationComponent;
 use Prado\Shell\TShellAction;
 use Prado\Shell\TShellWriter;
 
 /**
- * This command clears all application modules implementing ICache.
+ * This command clears all application modules implementing ICache.  `cache/flush-all`
+ * also deletes the Performance-mode fx-event cache file ({@see flushFxEventCache()}).
  *
  * @author Brad Anderson <belisoful[at]icloud[dot]com>
  * @since 4.2.0
@@ -31,7 +33,7 @@ class TFlushCachesAction extends TShellAction
 		'Allows you to flush the cache(s).',
 		'Displays the cache modules that can be flushed.',
 		'Flushes the specified ICache modules.',
-		'Flushes all application ICache modules.',
+		'Flushes all application ICache modules and the fx-event cache file.',
 	];
 
 	/**
@@ -85,10 +87,29 @@ class TFlushCachesAction extends TShellAction
 			$this->_outWriter->write($id, [TShellWriter::GREEN, TShellWriter::BOLD]);
 			$this->_outWriter->writeLine(' (' . $module::class . ')');
 		}
-		if (!$module) {
+		$fxFlushed = $this->flushFxEventCache();
+		if (!$module && !$fxFlushed) {
 			$this->_outWriter->writeLine('  (no caches were found)', [TShellWriter::RED, TShellWriter::BOLD]);
 		}
 		$this->_outWriter->writeLine();
+		return true;
+	}
+
+	/**
+	 * Deletes the application's {@see TApplicationComponent::FX_CACHE_FILE}, which Performance
+	 * mode keeps in the runtime directory without checking application classes for changes.
+	 * @return bool whether a cache file was deleted.
+	 * @since 4.4.0
+	 */
+	protected function flushFxEventCache(): bool
+	{
+		$cacheFile = Prado::getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . TApplicationComponent::FX_CACHE_FILE;
+		if (!is_file($cacheFile) || !@unlink($cacheFile)) {
+			return false;
+		}
+		$this->_outWriter->write('  ');
+		$this->_outWriter->write(TApplicationComponent::FX_CACHE_FILE, [TShellWriter::GREEN, TShellWriter::BOLD]);
+		$this->_outWriter->writeLine(' (Performance-mode fx-event cache)');
 		return true;
 	}
 

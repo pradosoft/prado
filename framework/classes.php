@@ -954,6 +954,7 @@ return [
 'TTextTrackKind' => 'Prado\Web\UI\WebControls\TTextTrackKind',
 'TTime' => 'Prado\Web\UI\WebControls\TTime',
 'TTimeFormat' => 'Prado\Web\UI\WebControls\TTimeFormat',
+'TUnsavedChangesGuard' => 'Prado\Web\UI\WebControls\TUnsavedChangesGuard',
 'TValidationCompareOperator' => 'Prado\Web\UI\WebControls\TValidationCompareOperator',
 'TValidationDataType' => 'Prado\Web\UI\WebControls\TValidationDataType',
 'TValidationSummary' => 'Prado\Web\UI\WebControls\TValidationSummary',

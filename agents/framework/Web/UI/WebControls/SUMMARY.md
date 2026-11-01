@@ -32,6 +32,8 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 - **`THiddenField`** — properties: `Value`, `OnValueChanged`.
 
+- **`TUnsavedChangesGuard`** — Marks changed fields of its form or `ControlToWatch` and warns on leave through `beforeunload`, except for the form's own postbacks; `StatusText`, `markClean()`; JS in `controls/unsavedchanges.js`. @since 4.4.0
+
 ### Display Controls
 
 - **`TLabel`** — `<label>` or `<span>`; properties: `Text`, `For`.
