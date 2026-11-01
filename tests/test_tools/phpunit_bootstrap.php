@@ -25,6 +25,10 @@ $appPath = realpath(__DIR__ . DIRECTORY_SEPARATOR . $relativeAppPath);
 // For unit tests requiring a global TApplication object,
 //  construct -which sets {@see Prado::getApplication()}- but do not run
 $application = new \Prado\TApplication($appPath);
+// The test application is a development application, as the prado-app starter is. Normal and
+// Performance mode keep a class fx-event cache in the runtime directory that later runs read back,
+// so a test of those modes sets the mode itself.
+$application->setMode(\Prado\TApplicationMode::Debug);
 
 /*
 // ## DEPRECATED

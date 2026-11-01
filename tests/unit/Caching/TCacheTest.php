@@ -16,6 +16,7 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\TApplication;
 use Prado\Util\Clock\TMockClock;
 use Prado\Test\Unit\Harness\Caching\TTestCache;
+use Prado\TApplicationMode;
 
 /**
  * Unit tests for the abstract {@see \Prado\Caching\TCache} base, exercised through the
@@ -31,6 +32,7 @@ class TCacheTest extends \PHPUnit\Framework\TestCase
 	{
 		// A fresh application per test → getCache() starts null for primary-cache tests.
 		$this->app = new TApplication(__DIR__ . '/mockapp');
+		$this->app->setMode(TApplicationMode::Debug);
 	}
 
 	private function newCache(bool $primary = false): TTestCache

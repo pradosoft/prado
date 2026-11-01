@@ -52,6 +52,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 | `TRadioButtonList` | multiple `<input type="radio">` | Same as TCheckBoxList |
 | `TFileUpload` | `<input type="file">` | `HasFile`, `FileName`, `FileSize`, `FileType`, `LocalName`; `SaveAs($path)` |
 | `THiddenField` | `<input type="hidden">` | `Value`, `OnValueChanged` |
+| [`TUnsavedChangesGuard`](TUnsavedChangesGuard.md) | `<span>` (status) | Marks changed fields (`data-prado-dirty`, `DirtyCssClass`) and warns on leave through `beforeunload`; `ControlToWatch`, `StatusText`, `markClean()`; JS in `controls/unsavedchanges.js` (@since 4.4.0) |
 
 ## Display Controls
 

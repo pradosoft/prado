@@ -34,6 +34,7 @@ This file defines the JavaScript package registry for PRADO. It declares all JS 
 | `slider` | `prado/controls/slider.js` |
 | `keyboard` | `prado/controls/keyboard.js` |
 | `rowselect` | `prado/controls/rowselect.js` |
+| `unsavedchanges` | `prado/controls/unsavedchanges.js` |
 | `tabpanel` | `prado/controls/tabpanel.js` |
 | `accordion` | `prado/controls/accordion.js` |
 | `htmlarea` | `prado/controls/htmlarea.js` |

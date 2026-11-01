@@ -6,6 +6,7 @@ use Prado\Caching\TAPCCache;
 use Prado\Exceptions\TConfigurationException;
 use Prado\TApplication;
 use Prado\Exceptions\TNotSupportedException;
+use Prado\TApplicationMode;
 
 class TAPCCacheTest extends \PHPUnit\Framework\TestCase
 {
@@ -24,6 +25,7 @@ class TAPCCacheTest extends \PHPUnit\Framework\TestCase
 			}
 			try {
 				$this->app = new TApplication($basePath);
+				$this->app->setMode(TApplicationMode::Debug);
 				self::$cache = new TAPCCache();
 				self::$cache->init(null);
 			} catch (TConfigurationException $e) {
