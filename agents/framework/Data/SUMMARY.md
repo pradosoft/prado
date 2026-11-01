@@ -10,7 +10,7 @@ Database access layer providing PDO wrapper plus two complementary data-access p
 
 - **`TDbDataReader`** — Iterator over PDO result set; methods: `read()`, `readAll()`, `nextResult()`; implements `Iterator` and `Countable`.
 
-- **`TDbTransaction`** — Transaction wrapper; methods: `commit()`, `rollBack()`; property: `Active`.
+- **`TDbTransaction`** — Transaction wrapper; methods: `commit()`, `rollBack()`; property: `Active`; events: `OnCommit`, `OnRollback` (after the database commits or rolls back).
 
 - **`TDataSourceConfig`** — Configuration holder for connection pooling and datasource settings.
 

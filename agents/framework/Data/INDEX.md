@@ -22,7 +22,7 @@ Database access layer for the Prado framework. Provides a PDO wrapper plus two c
 
 - **[`TDbDataReader`](TDbDataReader.md)** — Iterator over a PDO result set. Methods: `read()`, `readAll()`, `nextResult()`. Implements `Iterator` and `Countable`.
 
-- **[`TDbTransaction`](TDbTransaction.md)** — Transaction wrapper. Methods: `commit()`, `rollBack()`. Property: `Active`.
+- **[`TDbTransaction`](TDbTransaction.md)** — Transaction wrapper. Methods: `commit()`, `rollBack()`. Property: `Active`. Raises `OnCommit` and `OnRollback` after the database commits or rolls back; handlers attached to `getCurrentTransaction()` defer work until the commit.
 
 - **[`TDataSourceConfig`](TDataSourceConfig.md)** — Configuration holder for connection pooling and datasource settings.
 

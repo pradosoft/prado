@@ -123,7 +123,7 @@ try {
 }
 ```
 
-Properties: `Active` (bool — whether transaction is open).
+Properties: `Active` (bool — whether transaction is open). Events: `OnCommit` and `OnRollback`, raised after the database commits or rolls back; see [`TDbTransaction`](./TDbTransaction.md#events-since-440).
 
 ---
 
@@ -134,6 +134,6 @@ Properties: `Active` (bool — whether transaction is open).
 - **Charset setup** — `Charset` accepts universal IANA-style names (`UTF-8`, `ISO-8859-1`, etc.) translated per-driver via `resolveCharsetForDriver()`. MySQL: `SET NAMES`; PostgreSQL: `SET client_encoding`; SQLite: `PRAGMA encoding`; Firebird/Oracle/MSSQL: injected into the DSN before opening. IBM DB2 has no charset support.
 - **`Charset` cannot be changed after opening** for drivers that only support DSN-level charset (Firebird, Oracle, MSSQL). `getCanCharsetChange()` indicates whether it is still safe to set.
 - **`getDatabaseCharset()`** queries the live connection for the actual charset in use; useful for verification.
-- **One active transaction at a time** — `TDbConnection` tracks one `TDbTransaction`; nested transactions are not natively supported (use SAVEPOINTs manually if needed).
+- **One active transaction at a time** — `TDbConnection` tracks one `TDbTransaction`; nested transactions are not natively supported (use SAVEPOINTs manually if needed). `getCurrentTransaction()` returns it only while it is active, so code that defers work until the commit attaches to its `OnCommit` event.
 - **`getDbMetaData()`** returns a cached `TDbMetaData` subclass — the correct driver is selected automatically from `getDriverName()`. Supports MySQL, PostgreSQL, SQLite, MSSQL, Oracle, IBM DB2, and Firebird.
 - **Implements `IDataConnection`** — can be used wherever a [`IDataConnection`](./IDataConnection.md) is expected.
