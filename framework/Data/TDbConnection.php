@@ -679,6 +679,8 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 	}
 
 	/**
+	 * Returns the transaction begun by {@see beginTransaction()} while it is active.
+	 * Code that defers work until the commit attaches to its {@see TDbTransaction::onCommit OnCommit} event.
 	 * @return null|TDbTransaction the currently active transaction. Null if no active transaction.
 	 */
 	public function getCurrentTransaction()
