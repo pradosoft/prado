@@ -81,6 +81,11 @@ class TActivePageAdapter extends TControlAdapter
 	 * Hidden field list header name.
 	 */
 	public const CALLBACK_HIDDENFIELDLIST_HEADER = 'X-PRADO-HIDDENFIELDLIST';
+	/**
+	 * Callback response part present when the client applies the actions inside a view transition.
+	 * @since 4.4.0
+	 */
+	public const CALLBACK_VIEWTRANSITION_HEADER = 'X-PRADO-VIEWTRANSITION';
 
 	/**
 	 * Callback redirect url header name.
@@ -444,7 +449,9 @@ class TActivePageAdapter extends TControlAdapter
 		$executeJavascript = $this->getCallbackClientHandler()->getClientFunctionsToExecute();
 		$actions = TJavaScript::jsonEncode($executeJavascript);
 		$this->appendContentPart($response, self::CALLBACK_ACTION_HEADER, $actions);
-
+		if ($executeJavascript !== [] && $this->getIsViewTransition()) {
+			$this->appendContentPart($response, self::CALLBACK_VIEWTRANSITION_HEADER, '1');
+		}
 
 		$cs = $this->getPage()->getClientScript();
 
@@ -471,6 +478,18 @@ class TActivePageAdapter extends TControlAdapter
 		if (count($fields) > 0) {
 			$this->appendContentPart($response, self::CALLBACK_HIDDENFIELDLIST_HEADER, TJavaScript::jsonEncode($fields));
 		}
+	}
+
+	/**
+	 * Returns whether the client applies the actions of the response inside a view
+	 * transition: {@see \Prado\Web\UI\TPage::getCallbackViewTransition() TPage.CallbackViewTransition}
+	 * or {@see TCallbackClientScript::getViewTransition()} is true.
+	 * @return bool whether the response asks for a view transition
+	 * @since 4.4.0
+	 */
+	protected function getIsViewTransition(): bool
+	{
+		return $this->getPage()->getCallbackViewTransition() || $this->getCallbackClientHandler()->getViewTransition();
 	}
 
 	/**
