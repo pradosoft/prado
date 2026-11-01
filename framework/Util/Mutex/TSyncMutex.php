@@ -11,6 +11,7 @@
 namespace Prado\Util\Mutex;
 
 use Prado\Exceptions\TConfigurationException;
+use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Util\Helpers\TProcessHelper;
 
@@ -21,14 +22,23 @@ use Prado\Util\Helpers\TProcessHelper;
  * `sync` extension.  It excludes the processes of one host on Windows and on POSIX
  * systems; {@see TSemaphoreMutex} has no Windows build.
  *
- * The semaphore is created with auto-unlock off.  A `SyncMutex` unlocks when its
- * object is freed, so a forked child would release its parent's lock at exit; the
- * semaphore does not.  {@see getAutoRelease AutoRelease} releases the held names at
- * shutdown, after a fatal error included.  A process that is killed while it holds
- * a lock, without PHP's shutdown, leaves the permit taken: on POSIX until the
+ * The semaphore is created with auto-unlock off, so freeing its object never gives
+ * back a permit; a `SyncMutex` always unlocks when freed.
+ * {@see getAutoRelease AutoRelease} releases the held names at shutdown, after a
+ * fatal error included.  A process that is killed while it holds a lock, without
+ * PHP's shutdown, leaves the permit taken: on POSIX until the
  * `/dev/shm/Sync_Semaphore*` object is removed or the host restarts, and on Windows
  * while any process keeps the semaphore open.  {@see TFileMutex} and
  * {@see TSemaphoreMutex} recover from a killed holder.
+ *
+ * On POSIX the extension counts the open objects of a semaphore in its shared
+ * memory, and the first object opened at a count of zero resets the semaphore.  A
+ * child that {@see \Prado\Util\Helpers\TProcessHelper::fork()} creates while this
+ * mutex holds a lock inherits the open object; the child's exit lowers the count
+ * without having raised it, so a later process can reset the semaphore and acquire
+ * the parent's lock.  {@see fxPrepareForFork()} logs a warning for each held name.
+ * Use {@see TFileMutex} or {@see TSemaphoreMutex} where a holder forks.  Windows has
+ * no fork.
  *
  * The semaphore name of a lock is `Prado_Mutex_` and the MD5 hash of the name with
  * the {@see getKeyPrefix KeyPrefix}.  With {@see getGlobalNamespace GlobalNamespace}
@@ -133,6 +143,24 @@ class TSyncMutex extends TMutex
 			return false;
 		}
 		return $semaphore->unlock();
+	}
+
+	/**
+	 * Logs a warning for each held name before a POSIX fork, as the child's exit
+	 * lowers the extension's open-object count of the semaphore.  Raised as
+	 * `fxPrepareForFork` by {@see \Prado\Util\Helpers\TProcessHelper::fork()}.
+	 * @param mixed $sender the application.
+	 * @param mixed $param null.
+	 * @return array nothing to restore after the fork.
+	 */
+	public function fxPrepareForFork($sender, $param): array
+	{
+		if (!TProcessHelper::isSystemWindows()) {
+			foreach ($this->getAcquiredLocks() as $name) {
+				Prado::warning("Forking while holding lock '{$name}': the child's exit lets another process reset its sync semaphore.", static::class);
+			}
+		}
+		return [];
 	}
 
 	/**

@@ -41,7 +41,7 @@ Named locks (`Prado\Util\Mutex`). A mutex module excludes other holders of a loc
 - **Leases.** `TCacheMutex`, `TRedisMutex`, and `TDbTableMutex` locks expire after `Expire` seconds, so a crashed holder frees them, and a holder whose work outlasts the lease loses it. A release checks the token; `TCacheMutex` checks and deletes in two calls, `TRedisMutex` in one script.
 - **Transactions.** `DBMS_LOCK.ALLOCATE_UNIQUE` commits; a failed `TDbTableMutex` insert aborts a PostgreSQL transaction. Give those mutexes a connection of their own.
 - **Killed holders.** `TFileMutex` and `TSemaphoreMutex` locks free when the holder's process dies. A `TSyncMutex` permit of a killed process (no PHP shutdown) stays taken until `/dev/shm/Sync_Semaphore*` is removed or the host restarts on POSIX, or while any process keeps it open on Windows.
-- **Fork.** A child forgets the inherited names. `TFileMutex` closes its copy of the descriptor (the parent's lock remains); `TSemaphoreMutex` and `TSyncMutex` are created without auto-release so the child's teardown does not post the parent's permit; `TSyncMutex` uses `SyncSemaphore` because a `SyncMutex` always unlocks when freed.
+- **Fork.** A child forgets the inherited names. `TFileMutex` closes its copy of the descriptor (the parent's lock remains); `TSemaphoreMutex` is created without PHP auto-release so the child's teardown does not post the parent's permit. `TSyncMutex` is not fork safe on POSIX: the extension's open-object count drops at the child's exit and a later opener resets the semaphore; it warns on `fxPrepareForFork`.
 - **Optimistic locking** (Yii2 `ActiveRecord::optimisticLock()`) belongs to the record layer in `pradosoft/prado-activerecord`.
 
 ## Conventions

@@ -11,7 +11,9 @@
 namespace Prado\Test\Unit\Util\Mutex;
 
 use Prado\Exceptions\TConfigurationException;
+use Prado\Prado;
 use Prado\Util\Helpers\TProcessHelper;
+use Prado\Util\Log\TLogger;
 use Prado\Util\Mutex\TSyncMutex;
 
 /**
@@ -184,16 +186,29 @@ class TSyncMutexTest extends \PHPUnit\Framework\TestCase
 		$this->assertTrue($b->acquire('job'));
 	}
 
-	public function testLiveForkedChildKeepsParentPermit(): void
+	public function testForkWarnsForHeldNamesOnPosix(): void
+	{
+		$mutex = $this->newFake();
+		$mutex->acquire('job');
+		$logger = Prado::getLogger();
+		$logger->deleteLogs(TLogger::WARNING, TSyncMutexTestMutex::class);
+		$this->assertSame([], $mutex->fxPrepareForFork(null, null));
+		$logs = $logger->deleteLogs(TLogger::WARNING, TSyncMutexTestMutex::class);
+		if (TProcessHelper::isSystemWindows()) {
+			$this->assertSame([], $logs);
+		} else {
+			$this->assertCount(1, $logs);
+			$this->assertStringContainsString("'job'", $logs[0][0]);
+		}
+	}
+
+	public function testLiveSemaphoreResetsWithNoOpenObject(): void
 	{
 		$a = $this->newLive();
 		$this->assertTrue($a->acquire('job'));
-		$name = $a->getSemaphoreName('job');
+		$this->assertFalse($this->newLive()->acquire('job'));
 		$a->fxRestoreAfterFork(null, ['pid' => 0]);
 		gc_collect_cycles();
-		$this->assertFalse($this->newLive()->acquire('job'));
-		$semaphore = new \SyncSemaphore($name, 1, false);
-		$this->assertTrue($semaphore->unlock());
 		$this->assertTrue($this->newLive()->acquire('job'));
 	}
 }
