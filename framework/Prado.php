@@ -27,6 +27,13 @@ if (empty($_SERVER["REQUEST_TIME_FLOAT"])) {
 	$_SERVER["REQUEST_TIME"] = (int) $time;
 }
 
+// Defines the request start on the monotonic clock, in hrtime() nanoseconds, if none is defined.
+// The wall-clock time elapsed since REQUEST_TIME_FLOAT is read once here; later durations
+// measured from this reading are immune to wall-clock changes.
+if (empty($_SERVER["PRADO_REQUEST_HRTIME"])) {
+	$_SERVER["PRADO_REQUEST_HRTIME"] = hrtime(true) - (int) round((microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]) * 1_000_000_000);
+}
+
 // Defines the PRADO framework installation path.
 if (!defined('PRADO_DIR')) {
 	define('PRADO_DIR', __DIR__);
@@ -288,6 +295,19 @@ class Prado
 	public static function getFrameworkPath(): string
 	{
 		return PRADO_DIR;
+	}
+
+	/**
+	 * Returns the request start on the monotonic clock: `$_SERVER["PRADO_REQUEST_HRTIME"]`,
+	 * the counterpart of `$_SERVER["REQUEST_TIME_FLOAT"]`.  Measure a duration from the request
+	 * start with {@see \Prado\Util\Clock\TMonotonicClock::elapsed()}.  A server that runs
+	 * several requests in one process sets both keys at the start of each request.
+	 * @return int the request start, in {@see \hrtime()} nanoseconds
+	 * @since 4.4.0
+	 */
+	public static function getRequestStartNanoseconds(): int
+	{
+		return (int) $_SERVER["PRADO_REQUEST_HRTIME"];
 	}
 
 	/**
