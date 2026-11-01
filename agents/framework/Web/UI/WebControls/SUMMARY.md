@@ -72,6 +72,8 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 - **`TAccordion`** / **`TTabPanel`** / **`TSlider`** / **`TColorPicker`** / **`TDatePicker`** / **`TKeyboard`** / **`TRatingList`** — Widget controls with JS implementations.
 
+- **`TTeleport`** — Renders its content after `</form>`, outside the page form, so a native `<form method="dialog">` works and overlays escape their ancestors; `TForm::registerTeleportContent()`; JS in `controls/teleport.js` joins its fields to the page form. @since 4.4.0
+
 - **`TSafetyCover`** — Panel content behind a click-to-open overlay (slide/collapse/none, optional fade), guarding against accidental clicks; JS in `controls/safetycover.js`. @since 4.4.0
 
 ### Data Controls

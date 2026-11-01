@@ -944,6 +944,7 @@ return [
 'TTabPanel' => 'Prado\Web\UI\WebControls\TTabPanel',
 'TTabView' => 'Prado\Web\UI\WebControls\TTabView',
 'TTabViewCollection' => 'Prado\Web\UI\WebControls\TTabViewCollection',
+'TTeleport' => 'Prado\Web\UI\WebControls\TTeleport',
 'TTemplateColumn' => 'Prado\Web\UI\WebControls\TTemplateColumn',
 'TTemplatedWizardStep' => 'Prado\Web\UI\WebControls\TTemplatedWizardStep',
 'TTextAlign' => 'Prado\Web\UI\WebControls\TTextAlign',
