@@ -31,6 +31,7 @@ use Prado\TPropertyValue;
  * {@see setWidth() Width} and {@see setHeight() Height} are the size in CSS pixels,
  * rendered as attributes; {@see setViewBox() ViewBox} and
  * {@see setPreserveAspectRatio() PreserveAspectRatio} render as written.
+ * {@see \Prado\Web\UI\ActiveControls\TActiveSvg} updates the graphic in a callback.
  *
  * ## SvgFile and Svg content
  * An inline SVG runs in the page, so the content of SvgFile and Svg is processed

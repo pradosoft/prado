@@ -553,6 +553,7 @@ return [
 'TActiveRatingList' => 'Prado\Web\UI\ActiveControls\TActiveRatingList',
 'TActiveRepeater' => 'Prado\Web\UI\ActiveControls\TActiveRepeater',
 'TActiveSuggestionList' => 'Prado\Web\UI\ActiveControls\TActiveSuggestionList',
+'TActiveSvg' => 'Prado\Web\UI\ActiveControls\TActiveSvg',
 'TActiveTableCell' => 'Prado\Web\UI\ActiveControls\TActiveTableCell',
 'TActiveTableCellEventParameter' => 'Prado\Web\UI\ActiveControls\TActiveTableCellEventParameter',
 'TActiveTableRow' => 'Prado\Web\UI\ActiveControls\TActiveTableRow',
