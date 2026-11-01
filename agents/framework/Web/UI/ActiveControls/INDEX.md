@@ -68,6 +68,7 @@ AJAX-enabled controls for the Prado framework. ActiveControls trigger server-sid
 | `TActiveListBox` | TListBox | Callback on selection change |
 | [`TActiveSuggestionList`](TActiveSuggestionList.md) | TSuggestionList | Replaces the `<datalist>` options when items change in a callback; raises no callback (@since 4.4.0) |
 | [`TActiveOutput`](TActiveOutput.md) | TOutput | Replaces the `<output>` text and `for` attribute in a callback; the live region announces the result (@since 4.4.0) |
+| [`TActiveSvg`](TActiveSvg.md) | TSvg | Re-renders the `<svg>` once when its content or attributes change in a callback and morphs it, keeping nodes and listeners (@since 4.4.0) |
 | `TActivePanel` | TPanel | Container with `refresh()` method for server-side HTML update |
 | [`TLazyPanel`](TLazyPanel.md) | TActivePanel | Renders a placeholder, then loads its `ContentTemplate` by callback on `Trigger` `Load`, `Visible` (IntersectionObserver), or `Manual`; `OnLoadContent` ([`TLazyPanelTrigger`](TLazyPanelTrigger.md)) (@since 4.4.0) |
 | `TActiveDataGrid` | TDataGrid | Data grid with callback paging/sorting/editing |

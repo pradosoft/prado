@@ -221,6 +221,7 @@ class TClientScriptManagerTest extends \PHPUnit\Framework\TestCase
 			$_SERVER['SCRIPT_FILENAME'] = dirname(__FILE__) . '/../../../harness/features/protected/';
 			$_SERVER['SCRIPT_NAME'] = '/index.php';
 			self::$app = new TApplication(realpath(dirname(__FILE__) . '/../app'));
+			self::$app->setMode(TApplicationMode::Debug);
 
 			self::$app->initApplication();
 		}
@@ -944,6 +945,7 @@ class TClientScriptManagerTest extends \PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('name="field1"', $output);
 		$this->assertStringContainsString('name="field2"', $output);
 		$this->assertStringContainsString('autocomplete="off"', $output);
+		$this->assertStringContainsString('<div style="visibility:hidden;" data-prado-dirty-ignore="">', $output);
 	}
 
 	public function testRenderHiddenFieldsBeginThenEnd()

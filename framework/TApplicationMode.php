@@ -17,7 +17,8 @@ namespace Prado;
  * In particular, the following modes are defined
  * - Off: the application is not running. Any request to the application will obtain an error.
  * - Debug: the application is running in debug mode.
- * - Normal: the application is running in normal production mode.
+ * - Normal: the application is running in normal production mode. It is the default
+ *   ({@see \Prado\TApplication::DEFAULT_APPLICATION_MODE}).
  * - Performance: the application is running in performance mode.
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4

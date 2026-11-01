@@ -15,6 +15,7 @@ use Prado\Test\Unit\Harness\Caching\TTestNoFlushCache;
 use Prado\Util\Clock\TMockClock;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
+use Prado\TApplicationMode;
 
 /**
  * An item of another PSR-6 implementation.
@@ -97,6 +98,7 @@ class TPsrCacheItemPoolTest extends \PHPUnit\Framework\TestCase
 	protected function setUp(): void
 	{
 		$this->app = new TApplication(__DIR__ . '/mockapp');
+		$this->app->setMode(TApplicationMode::Debug);
 		$this->backing = new TTestArrayCache();
 		$this->pool = new TPsrCacheItemPool();
 		$this->pool->setBackingCache($this->backing);
