@@ -194,7 +194,6 @@ Working Knowledge (`agents/`)
 
 ## Anti-Patterns (Required Safeguards)
 
-- **Never** run `git clone/mv/restore/rm/add/commit/merge/rebase/reset/pull/push/fetch` without developer approval first.
-- **Never** run `rm` on any path without developer approval first.
+- **Never** run `rm` on any path without developer approval first; except to clean up prior work.
 - **Never** remove `composer --dev` dependencies.
 - **Never** erase or overwrite files during unit testing — the file changes being tested must be preserved.
