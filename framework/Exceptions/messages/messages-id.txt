@@ -1,13 +1,14 @@
 # PRADO error messages shown to the site visitor: Indonesian (id).
 # These keys are thrown as THttpException; the framework translates them for the client language.
 # Developer-facing messages are English. Their translations are the pradosoft/prado-dev-errormessages package.
+# Values are ICU MessageFormat patterns; an apostrophe before or after a brace is doubled: ''{0}''.
 
 application_unavailable					= Aplikasi tidak tersedia saat ini.
-application_service_unknown				= Layanan yang diminta '{0}' tidak didefinisikan.
+application_service_unknown				= Layanan yang diminta ''{0}'' tidak didefinisikan.
 
 pageservice_page_required				= Nama halaman diperlukan.
-pageservice_page_unknown				= Halaman '{0}' tidak ditemukan.
-pageservice_security_violation			= TPageService tidak dapat mengakses direktori tambahan '{0}'.
+pageservice_page_unknown				= Halaman ''{0}'' tidak ditemukan.
+pageservice_security_violation			= TPageService tidak dapat mengakses direktori tambahan ''{0}''.
 
 page_csrf_token_invalid					= Halaman ini memerlukan token CSRF yang valid.
 
@@ -15,8 +16,8 @@ pagestatepersister_pagestate_corrupted	= Kondisi halaman rusak.
 cachepagestatepersister_pagestate_corrupted	= Kondisi halaman rusak.
 sessionpagestatepersister_pagestate_corrupted	= Kondisi halaman rusak.
 
-soapservice_request_invalid				= Server SOAP '{0}' tidak ditemukan.
-jsonservice_provider_unknown			= Penyedia JSON '{0}' yang diminta tidak dikenal.
-feedservice_feed_unknown				= Feed '{0}' yang diminta tidak dikenal.
+soapservice_request_invalid				= Server SOAP ''{0}'' tidak ditemukan.
+jsonservice_provider_unknown			= Penyedia JSON ''{0}'' yang diminta tidak dikenal.
+feedservice_feed_unknown				= Feed ''{0}'' yang diminta tidak dikenal.
 
 errorhandler_internal_error				= Terjadi kesalahan internal pada server.

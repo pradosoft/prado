@@ -26,6 +26,11 @@ Upgrading from v4.3.3
   the `errormessages` configuration, or an extension's `extra.prado.error-messages` now override the framework text.
   `messages.txt` holds exactly the keys the framework throws; an application that throws one of the removed keys
   defines it in its own message file.
+- Error message file entries are ICU MessageFormat patterns, formatted with `MessageFormatter` in the file's language.
+  ICU quotes literal text with apostrophes, so an apostrophe before or after a brace is doubled: an application or
+  extension message file that writes `'{0}'` renders the literal `{0}` and changes it to `''{0}''`. A literal brace is
+  written `'{'`. An apostrophe elsewhere, as in "can't", is unchanged. An exception message that no file defines keeps
+  plain `{0}` substitution.
 - In Normal and Performance mode the error page shows the message of an `IUserException` (`THttpException`,
   `TUserException`, or an application exception implementing it) and the sentence "An internal server error occurred."
   for every other exception, which is logged; in 4.3 it showed every exception's message. An application that relied on

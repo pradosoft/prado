@@ -16,7 +16,7 @@ Exception hierarchy and error display for the Prado framework. Provides English 
 - **[`TException`](TException.md)** — Base exception class. Supports two usage styles:
   - *Old style:* `throw new TException('error_code', $param1, $param2)`
   - *New style:* `throw new TException($intCode, 'error_code', $param1, $param2)`
-  - Message parameters use `{0}`, `{1}`, … placeholders.
+  - Message parameters are the `{0}`, `{1}`, … arguments of an ICU MessageFormat pattern.
   - Loads messages from `messages/messages.txt` (English master), then the files of `addMessageFile()`; a later file overrides. [`THttpException`](THttpException.md) inserts `messages/messages-<lang>.txt` after the master.
   - Static cache `TException::$_messageCache` — each file parsed once per request.
   - Last constructor argument may be a `Throwable` for exception chaining.
@@ -56,7 +56,7 @@ Exception hierarchy and error display for the Prado framework. Provides English 
 - **Master (English):** `messages.txt`; every framework message is English.
 - **Visitor-facing variants:** `messages-<lang>.txt` (`fr`, `id`, `zh`) hold exactly the keys thrown as `THttpException`; `TExceptionMessageFilesTest` enforces the set.
 - **Developer-facing translations:** the `pradosoft/prado-dev-errormessages` package, one `messages-<lang>.txt` per language, registered through its Composer `extra.prado.error-messages`. The package is synced in one batch before each PRADO tag and release; a change here does not touch the package.
-- **Format:** `error_code=Human readable message with {0} placeholders`
+- **Format:** `error_code=ICU MessageFormat pattern`, such as `module_not_found=Module ''{0}'' has {1, plural, one{# error} other{# errors}}.` `TException::formatErrorMessage()` formats a file message with `\MessageFormatter` in the language of the file (`getMessageFileLanguage()`: `-xx` suffix, else `en`). An apostrophe before or after a brace is doubled (`''{0}''`); `'{0}'` is the literal text `{0}`, and `'{}'` is a literal brace pair. A code defined in no file is the message itself, with `{0}`, `{1}`, ... replaced. `TExceptionMessageFilesTest` checks that every entry parses and renders each argument.
 - **Adding new error codes:** Add to `messages.txt`. A `THttpException` key also goes into every `messages-<lang>.txt` here. Any other key reaches the package at the pre-release batch sync.
 - **Removing error codes:** Remove the key from the English master and from the variants here. The package drops it at the pre-release batch sync.
 - **Display only:** The messages file content is for display. The error code string is the canonical identifier in code.

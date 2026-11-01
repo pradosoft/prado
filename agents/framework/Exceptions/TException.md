@@ -25,17 +25,28 @@ throw new [THttpException](./THttpException.md)(404, 'page_not_found', $page);
 throw new [TDbException](./TDbException.md)('db_query_failed', $sql, $e);  // $e is Throwable
 ```
 
-Message format in `messages.txt`:
+Message format in `messages.txt`, an ICU MessageFormat pattern:
 ```
-module_not_initialized=The module '{0}' has not been initialized.
+module_not_initialized=The module ''{0}'' has not been initialized.
 db_query_failed=Database query failed: {0}
+cache_items_expired={0, plural, one{# item} other{# items}} expired.
 ```
 
-`{0}`, `{1}`, … placeholders are replaced with constructor arguments.
+The constructor arguments, as strings (`getErrorArguments()`), are the `{0}`, `{1}`, … arguments. `formatErrorMessage()` formats a message defined in a file with `\MessageFormatter::formatMessage()` in the language of `getMessageFileLanguage()` (the file's `-xx` suffix, else `en`); ICU converts a string argument of a `plural`, `number`, or `date` argument. A code defined in no file, or a pattern ICU cannot parse, has its `{0}`, `{1}`, … replaced with `strtr()`.
+
+ICU apostrophe quoting:
+
+| In the file | Renders |
+|---|---|
+| `''{0}''` | `'value'` |
+| `'{0}'` | `{0}` (quoted literal) |
+| `'{}'` | `{}` |
+| `''''` | `''` |
+| `can't` | `can't` (an apostrophe not next to a brace is literal) |
 
 ### Loading Messages
 
-`translateErrorMessage()` reads the files of `getErrorMessageFiles()` in order; a later file overrides an earlier definition, and a key defined nowhere is the message itself:
+`findErrorMessageFile()` returns the file of `getErrorMessageFiles()` with the highest precedence that defines a key, and `translateErrorMessage()` returns its message; a later file overrides an earlier definition, and a key defined nowhere is the message itself:
 
 1. `getErrorMessageFile()`: `framework/Exceptions/messages/messages.txt`, the English master
 2. `THttpException` only: `framework/Exceptions/messages/messages-{lang}.txt` of `Prado::getPreferredLanguage()`, the visitor-facing keys
@@ -85,7 +96,7 @@ Template files: `error{code}.html` (e.g., `error404.html`), `error.html` (generi
 
 1. Add entry to `framework/Exceptions/messages/messages.txt`:
    ```
-   my_error_code=Something went wrong: {0}
+   my_error_code=Something went wrong in ''{0}''.
    ```
 2. A key thrown as `THttpException` is also added to every `messages-{lang}.txt` in the same directory; `TExceptionMessageFilesTest` checks that those files hold exactly the `THttpException` keys. Any other key is translated in the `pradosoft/prado-dev-errormessages` package at the batch sync before the PRADO tag and release; do not edit the package per change.
 3. Throw: `throw new TApplicationException('my_error_code', $detail);`
@@ -104,4 +115,5 @@ The method resolves a `-{lang}` variant (`messages-fr.txt`) when one exists for 
 - **`[TExitException](./TExitException.md)`** — not really an error; caught by `TApplication::run()` to perform a clean exit. Don't let it propagate to user-facing error handlers.
 - **`[THttpException](./THttpException.md)`** — triggers `[TErrorHandler](./TErrorHandler.md)` to emit the correct HTTP status code. Use for 404, 403, 500, etc.
 - **Parameter count** — constructor parameters after the error code string are substituted positionally; extra parameters are silently ignored.
+- **Quoted placeholders** — `'{0}'` in a message file is ICU literal text and renders `{0}`; write `''{0}''`. The message-file lint fails on it.
 - **New-style vs old-style** — first argument is `int` for new-style (PHP error code), `string` for old-style (message key). Do not pass `0` as an integer to mean "no code" when an old-style string is intended.
