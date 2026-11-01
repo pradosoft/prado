@@ -373,6 +373,7 @@ return [
 'TClockTrait' => 'Prado\Util\Clock\TClockTrait',
 'TMockClock' => 'Prado\Util\Clock\TMockClock',
 'TMonotonicClock' => 'Prado\Util\Clock\TMonotonicClock',
+'TMonotonicClockAwareTrait' => 'Prado\Util\Clock\TMonotonicClockAwareTrait',
 'TNativeClock' => 'Prado\Util\Clock\TNativeClock',
 'TOffsetClock' => 'Prado\Util\Clock\TOffsetClock',
 'TTimezoneClock' => 'Prado\Util\Clock\TTimezoneClock',
