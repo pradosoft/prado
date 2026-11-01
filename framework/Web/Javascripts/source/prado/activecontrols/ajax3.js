@@ -60,6 +60,11 @@ Prado.CallbackRequestManager =
 	 */
 	HIDDENFIELDLIST_HEADER : 'X-PRADO-HIDDENFIELDLIST',
 	/**
+	 * Response part present when the actions run inside a view transition.
+	 * @since 4.4.0
+	 */
+	VIEWTRANSITION_HEADER : 'X-PRADO-VIEWTRANSITION',
+	/**
 	 * Log debug informations when a callback fails, default true
 	 */
 	LOG_ERROR : true,
@@ -431,6 +436,7 @@ Prado.CallbackRequest = Prado.Class(Prado.PostBack,
 
 		// a morphed update keeps what the user types after this point
 		this.focusSnapshot = Prado.Element.getFocusSnapshot();
+		this.actionsApplied = null;
 		this.request = Prado.CallbackRequestManager.ajax(this.options);
 	},
 
@@ -535,9 +541,17 @@ Prado.CallbackRequest = Prado.Class(Prado.PostBack,
 			this.options.onFailure(this,textStatus);
 	},
 
+	/**
+	 * Callback OnComplete event. While a view transition holds the actions of the
+	 * response, onComplete waits until they ran, so it sees the updated page.
+	 */
 	completeHandler(request, textStatus) {
 //"success", "notmodified", "error", "timeout", "abort", or "parsererror"
-		if (this.options.onComplete)
+		if (!this.options.onComplete)
+			return;
+		if (this.actionsApplied)
+			this.actionsApplied.then(() => this.options.onComplete(this,textStatus));
+		else
 			this.options.onComplete(this,textStatus);
 	},
 
@@ -605,20 +619,65 @@ Prado.CallbackRequest = Prado.Class(Prado.PostBack,
 			this.updateCsrfToken();
 			this.checkHiddenFields();
 			const obj = this;
+			const transition = this.getIsViewTransition();
 			this.loadAssets(() => {
-                try {
-                    obj.dispatchActions();
-                } catch (e) {
-                    obj.exceptionHandler(e);
-                }
-                // the response's DOM updates have run; TUnsavedChangesGuard re-checks its fields
-                document.dispatchEvent(new CustomEvent('prado:callbackUpdated', { detail: { request: obj } }));
-            }
+				const apply = () => {
+					try {
+						obj.dispatchActions();
+					} catch (e) {
+						obj.exceptionHandler(e);
+					}
+					// the response's DOM updates have run; TUnsavedChangesGuard re-checks its fields
+					document.dispatchEvent(new CustomEvent('prado:callbackUpdated', { detail: { request: obj } }));
+				};
+				if (transition)
+					obj.applyInViewTransition(apply);
+				else
+					apply();
+			}
 			);
 
 		} catch (e) {
 			this.exceptionHandler(e);
 		}
+	},
+
+	/**
+	 * Returns whether the actions of the response run inside a view transition: the
+	 * response carries the {@link Prado.CallbackRequestManager.VIEWTRANSITION_HEADER}
+	 * part, and {@link Prado.Element.canViewTransition} is true.
+	 * @return {boolean} whether the response animates its update
+	 * @since 4.4.0
+	 */
+	getIsViewTransition() {
+		return this.extractContent(Prado.CallbackRequestManager.VIEWTRANSITION_HEADER) !== null
+			&& Prado.Element.canViewTransition();
+	},
+
+	/**
+	 * Runs the actions of the response inside a view transition. Until they ran, a
+	 * send gate holds the next callback request, so it posts the updated inputs, and
+	 * {@link Prado.CallbackRequest.completeHandler} holds onComplete.
+	 * An error in `apply` surfaces through {@link Prado.CallbackRequest.exceptionHandler}.
+	 * @param {function} apply - Runs the actions
+	 * @since 4.4.0
+	 */
+	applyInViewTransition(apply) {
+		let release;
+		const applied = new Promise((resolve) => { release = resolve; });
+		const gate = () => applied;
+		Prado.CallbackRequestManager.addSendGate(gate);
+		this.actionsApplied = applied;
+		const done = () => {
+			Prado.CallbackRequestManager.removeSendGate(gate);
+			if (this.actionsApplied === applied)
+				this.actionsApplied = null;
+			release();
+		};
+		Prado.Element.viewTransition(apply).then(done, (e) => {
+			this.exceptionHandler(e);
+			done();
+		});
 	},
 
 	/**

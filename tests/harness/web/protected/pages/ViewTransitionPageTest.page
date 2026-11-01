@@ -1,0 +1,8 @@
+<%@ CallbackViewTransition="true" %>
+<com:TContent ID="Content">
+	<h1>View Transition Page Test Case</h1>
+
+	<com:TActiveButton ID="update" Text="Update" OnCallback="update" />
+	<com:TActiveButton ID="nothing" Text="Nothing" OnCallback="nothing" />
+	<div>Status: <com:TActiveLabel ID="status" Text="idle" /></div>
+</com:TContent>

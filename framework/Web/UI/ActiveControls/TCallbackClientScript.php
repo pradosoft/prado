@@ -68,6 +68,13 @@ use Prado\Web\UI\WebControls\TSuggestionList;
  * `.html()` does.  Text from user input goes through {@see setText()}, which sets text
  * content, or through {@see \Prado\Web\THttpUtility::htmlEncode()} before a content method.
  *
+ * {@see setViewTransition ViewTransition} applies the client functions of this response
+ * inside a view transition (`document.startViewTransition`), so the browser animates
+ * from the old page to the updated one:
+ * ```php
+ * $this->getPage()->getCallbackClient()->setViewTransition(true);
+ * ```
+ *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @since 3.1
@@ -78,6 +85,10 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @var TList list of client functions to execute.
 	 */
 	private $_actions;
+	/**
+	 * @var bool whether the response applies its client functions in a view transition
+	 */
+	private $_viewTransition = false;
 
 	/**
 	 * Constructor.
@@ -95,6 +106,29 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	public function getClientFunctionsToExecute()
 	{
 		return $this->_actions->toArray();
+	}
+
+	/**
+	 * @return bool whether the client applies the functions of this response inside
+	 *   a view transition. Defaults to false.
+	 * @since 4.4.0
+	 */
+	public function getViewTransition(): bool
+	{
+		return $this->_viewTransition;
+	}
+
+	/**
+	 * Sets whether the client applies the functions of this response inside a view
+	 * transition. The client applies them directly under `prefers-reduced-motion: reduce`
+	 * or without view transition support. {@see \Prado\Web\UI\TPage::getCallbackViewTransition()
+	 * TPage.CallbackViewTransition} turns it on for every response.
+	 * @param bool $value whether the response animates through a view transition.
+	 * @since 4.4.0
+	 */
+	public function setViewTransition($value): void
+	{
+		$this->_viewTransition = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**

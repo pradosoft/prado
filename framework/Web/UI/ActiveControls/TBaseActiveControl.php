@@ -29,6 +29,12 @@ use Prado\Web\UI\TPage;
  * ```html
  * <com:TActivePanel ID="Results" ActiveControl.UpdateMode="Morph">
  * ```
+ * The {@see setViewTransition ViewTransition} property applies the client actions of
+ * a callback response that renders the control again inside a view transition, so
+ * the browser animates the update.
+ * ```html
+ * <com:TActivePanel ID="Results" ActiveControl.ViewTransition="true">
+ * ```
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @since 3.1
@@ -161,6 +167,48 @@ class TBaseActiveControl extends \Prado\TComponent
 			$mode = $page->getCallbackUpdateMode();
 		}
 		return $mode === TActiveUpdateMode::Morph;
+	}
+
+	/**
+	 * @return bool whether a callback response that renders the control again applies
+	 *   its client actions inside a view transition. Defaults to false.
+	 * @since 4.4.0
+	 */
+	public function getViewTransition(): bool
+	{
+		return $this->getOption('ViewTransition', false);
+	}
+
+	/**
+	 * Sets whether a callback response that renders the control again applies its
+	 * client actions inside a view transition (`document.startViewTransition`).
+	 * The whole response transitions, with the updates of every other control in it.
+	 * {@see \Prado\Web\UI\TPage::getCallbackViewTransition() TPage.CallbackViewTransition}
+	 * turns it on for every response. A skin sets it for every control of a type.
+	 * @param bool $value whether the control's updates animate through a view transition.
+	 * @since 4.4.0
+	 */
+	public function setViewTransition($value): void
+	{
+		$this->setOption('ViewTransition', TPropertyValue::ensureBoolean($value), false);
+	}
+
+	/**
+	 * Sends the markup of the control rendered again to the client. The update
+	 * morphs when {@see getIsMorphUpdate()} is true, and a
+	 * {@see getViewTransition ViewTransition} control turns on the response's
+	 * {@see TCallbackClientScript::setViewTransition() view transition}.
+	 * @param \Prado\Web\UI\TControl|string $element the control or HTML element id to replace.
+	 * @param \Prado\Web\UI\TControl|\Prado\Web\UI\THtmlWriter|string $content the HTML, the control to render, or the writer holding it.
+	 * @since 4.4.0
+	 */
+	public function replaceClientContent($element, $content): void
+	{
+		$client = $this->getPage()->getCallbackClient();
+		if ($this->getViewTransition()) {
+			$client->setViewTransition(true);
+		}
+		$client->replaceContent($element, $content, true, $this->getIsMorphUpdate());
 	}
 
 	/**
