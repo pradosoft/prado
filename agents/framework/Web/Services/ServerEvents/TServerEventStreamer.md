@@ -40,7 +40,7 @@ Returns the ID of the last event sent, or `$lastEventId` when none was sent.
 | Method | Description |
 |---|---|
 | `getHeaders()` | `Content-Type: text/event-stream; charset=UTF-8`, `Cache-Control: no-cache`, `X-Accel-Buffering: no`. No connection-specific field (RFC 9113 §8.2.2), so HTTP/2 sends them as given. |
-| `formatEvent(TServerEvent)` | `id: <id>\ndata: {"event":name,"data":data}\n\n` |
+| `formatEvent(TServerEvent)` | `id: <id>\ndata: {"channel":channel,"event":name,"data":data}\n\n` |
 | `resolveLastEventId($broker, $channel, ?$header, ?$parameter)` | the `Last-Event-ID` header, else the rendered parameter, else `getLastEventId($channel)` |
 
 ## Properties

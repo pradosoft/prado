@@ -19,9 +19,15 @@ Sends a callback request when the server publishes an event on its `Channel`. Th
 ```php
 public function ordersChanged($sender, $param)
 {
-    $event = $param->getCallbackParameter();   // stdClass: ID, Event, Data
+    $event = $param->getCallbackParameter();   // stdClass: Channel, ID, Event, Data
     $this->Orders->render($param->getNewWriter());
 }
+```
+
+A data-only update needs no round trip; the client handler applies it and no callback is sent:
+```xml
+<com:TServerEventTriggeredCallback Channel="inbox" CallbackOnEvent="false"
+    ClientSide.OnServerEvent="document.getElementById('unread').textContent = parameter.Data.unread;" />
 ```
 
 ## Properties
@@ -32,16 +38,18 @@ public function ordersChanged($sender, $param)
 | `EventName` | `''` | the event that triggers; empty for every event of the channel (filtered on the client) |
 | `ServiceID` | `events` | the `TServerEventService` ID |
 | `BrokerID` | `''` | the broker module for the render-time `LastEventID`; empty finds the first |
+| `CallbackOnEvent` | true | false sends no callbacks; only `ClientSide.OnServerEvent` runs. Sent to the client only when false |
+| `ClientSide` | [`TServerEventClientSide`](TServerEventClientSide.md) | set in the constructor; adds `OnServerEvent` to the callback options |
 | `ActiveControl.CausesValidation` | false | set in the constructor; a server event does not validate the user's form |
 
 ## Rendering
 `<span id="ClientID" hidden="hidden"></span>`, the `serverevents` package, and `new Prado.WebUI.TServerEventTriggeredCallback({ID, EventTarget, StreamUrl, LastEventID, EventName, ...})`. `StreamUrl` is `TServerEventService::constructChannelUrl()`, with the token for the page's user. `LastEventID` is the broker's latest ID at render, so the stream starts after the events the page already shows and none published between render and connect are missed.
 
 ## Client (`serverevents.js`)
-- `Prado.EventSource` keeps one `EventSource` per `StreamUrl` and opens it with `&lastEventId=<LastEventID>`; later reconnects send `Last-Event-ID`. A message `{"event", "data"}` becomes `{ID, Event, Data}` for each subscriber.
+- `Prado.EventSource` keeps one `EventSource` per `StreamUrl` and opens it with `&lastEventId=<LastEventID>`; later reconnects send `Last-Event-ID`. A message `{"channel", "event", "data"}` becomes `{Channel, ID, Event, Data}`. `dispatch()` first dispatches it on `document` as a `prado:serverevent` CustomEvent (`Prado.EventSource.DOCUMENT_EVENT`, `detail` the event), once per message, then hands it to each subscriber. Any script or component can listen; at least one control on the page subscribes the stream.
 - A subscriber is inactive once deinitialized or once its anchor span leaves the document. Inactive subscribers are dropped on the next message and on each `prado:ajaxComplete`. The last one closes the `EventSource` at the end of the current task, so a control re-registered by the same callback response keeps the open stream.
 - An `error` with `readyState` CLOSED (an HTTP `403`/`404`) forgets the stream; the browser does not retry it.
-- `onServerEvent()` skips another `EventName`, then dispatches `Prado.CallbackRequest` with the event as `CallbackParameter`. Callbacks queue one per event, in order.
+- `onServerEvent()` skips another `EventName`, runs `options.OnServerEvent(sender, event)` when set (a `false` return skips the callback), skips the callback when `CallbackOnEvent` is false, then dispatches `Prado.CallbackRequest` with the event as `CallbackParameter`. Callbacks queue one per event, in order.
 
 ## Accessibility audit (4.4.0)
 - The control renders only an empty `hidden` span: no role, focus stop, or accessible name, and nothing in the accessibility tree.
@@ -53,3 +61,5 @@ public function ordersChanged($sender, $param)
 - The callback parameter comes from the browser; a handler re-reads server state and treats `Data` as user input.
 - With no broker module, render throws `servereventbroker_required`.
 - A burst of events queues a burst of callbacks; publish change notifications, not every row.
+- Every open page sends its own callback per event, so one event to many pages is many POSTs, each with its page state. When the event data is the whole update, use `CallbackOnEvent="false"` with `ClientSide.OnServerEvent`.
+- A client-side handler's DOM change is the application's; a change a user must notice goes into a live region, as in the audit above.

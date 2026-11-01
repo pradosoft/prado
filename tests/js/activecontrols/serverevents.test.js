@@ -96,19 +96,44 @@ describe('Prado.EventSource', () => {
 		const a = subscriber(), b = subscriber();
 		const source = EventSourceManager.subscribe(URL, a, '');
 		EventSourceManager.subscribe(URL, b, '');
-		source.emit({ event: 'changed', data: { id: 7 } }, 'g-4');
-		const expected = { ID: 'g-4', Event: 'changed', Data: { id: 7 } };
+		source.emit({ channel: 'orders', event: 'changed', data: { id: 7 } }, 'g-4');
+		const expected = { Channel: 'orders', ID: 'g-4', Event: 'changed', Data: { id: 7 } };
 		expect(a.events).toEqual([expected]);
 		expect(b.events).toEqual([expected]);
 	});
 
+	it('gives an empty Channel to a message without one', () => {
+		const a = subscriber();
+		const source = EventSourceManager.subscribe(URL, a, '');
+		source.emit({ event: 'changed', data: 1 }, 'g-4');
+		expect(a.events).toEqual([{ Channel: '', ID: 'g-4', Event: 'changed', Data: 1 }]);
+	});
+
 	it('ignores a message that is not a Prado server event', () => {
 		const a = subscriber();
+		const seen = [];
+		const listener = (e) => seen.push(e.detail);
+		document.addEventListener('prado:serverevent', listener);
 		const source = EventSourceManager.subscribe(URL, a, '');
 		source.emit('not json');
 		source.emit({ data: 1 });
 		source.emit('null');
+		document.removeEventListener('prado:serverevent', listener);
 		expect(a.events).toEqual([]);
+		expect(seen).toEqual([]);
+	});
+
+	it('dispatches each message on document before the subscribers receive it', () => {
+		const order = [];
+		const a = { isActive: () => true, onServerEvent: (event) => order.push(['subscriber', event]) };
+		const listener = (e) => order.push(['document', e.detail]);
+		document.addEventListener('prado:serverevent', listener);
+		const source = EventSourceManager.subscribe(URL, a, '');
+		source.emit({ channel: 'orders', event: 'changed', data: 3 }, 'g-5');
+		document.removeEventListener('prado:serverevent', listener);
+		const event = { Channel: 'orders', ID: 'g-5', Event: 'changed', Data: 3 };
+		expect(order).toEqual([['document', event], ['subscriber', event]]);
+		expect(EventSourceManager.DOCUMENT_EVENT).toBe('prado:serverevent');
 	});
 
 	it('drops an inactive subscriber on the next message and closes the last one', async () => {
@@ -161,10 +186,57 @@ describe('Prado.WebUI.TServerEventTriggeredCallback', () => {
 		control('Orders');
 		const source = FakeEventSource.instances[0];
 		expect(source.url).toBe(URL + '&lastEventId=g-3');
-		source.emit({ event: 'changed', data: 5 }, 'g-4');
+		source.emit({ channel: 'orders', event: 'changed', data: 5 }, 'g-4');
 		expect(global.Prado.CallbackRequest).toHaveBeenCalledWith('ctl0$Orders', expect.objectContaining({ StreamUrl: URL }));
-		expect(setCallbackParameterMock).toHaveBeenCalledWith({ ID: 'g-4', Event: 'changed', Data: 5 });
+		expect(setCallbackParameterMock).toHaveBeenCalledWith({ Channel: 'orders', ID: 'g-4', Event: 'changed', Data: 5 });
 		expect(dispatchMock).toHaveBeenCalledTimes(1);
+	});
+
+	it('runs OnServerEvent before the callback, and false skips the callback', () => {
+		const { dispatchMock } = mockCallbackRequest();
+		const calls = [];
+		const ctl = control('Orders', {
+			OnServerEvent: (sender, event) => {
+				calls.push([sender, event]);
+				return event.Data !== 'skip';
+			},
+		});
+		const source = FakeEventSource.instances[0];
+		source.emit({ channel: 'orders', event: 'changed', data: 'skip' }, 'g-4');
+		expect(dispatchMock).not.toHaveBeenCalled();
+		source.emit({ channel: 'orders', event: 'changed', data: 'send' }, 'g-5');
+		expect(dispatchMock).toHaveBeenCalledTimes(1);
+		expect(calls).toEqual([
+			[ctl, { Channel: 'orders', ID: 'g-4', Event: 'changed', Data: 'skip' }],
+			[ctl, { Channel: 'orders', ID: 'g-5', Event: 'changed', Data: 'send' }],
+		]);
+	});
+
+	it('OnServerEvent returning undefined still sends the callback', () => {
+		const { dispatchMock } = mockCallbackRequest();
+		control('Orders', { OnServerEvent: () => {} });
+		FakeEventSource.instances[0].emit({ event: 'changed', data: 1 });
+		expect(dispatchMock).toHaveBeenCalledTimes(1);
+	});
+
+	it('CallbackOnEvent false runs only OnServerEvent', () => {
+		const { dispatchMock } = mockCallbackRequest();
+		const seen = [];
+		control('Orders', { CallbackOnEvent: false, OnServerEvent: (sender, event) => { seen.push(event.Data); } });
+		FakeEventSource.instances[0].emit({ event: 'changed', data: 1 });
+		FakeEventSource.instances[0].emit({ event: 'changed', data: 2 });
+		expect(seen).toEqual([1, 2]);
+		expect(dispatchMock).not.toHaveBeenCalled();
+		expect(global.Prado.CallbackRequest).not.toHaveBeenCalled();
+	});
+
+	it('OnServerEvent runs only for its EventName', () => {
+		mockCallbackRequest();
+		const seen = [];
+		control('Orders', { EventName: 'changed', OnServerEvent: (sender, event) => { seen.push(event.Event); } });
+		FakeEventSource.instances[0].emit({ event: 'removed', data: 1 });
+		FakeEventSource.instances[0].emit({ event: 'changed', data: 1 });
+		expect(seen).toEqual(['changed']);
 	});
 
 	it('sends callbacks only for its EventName', () => {

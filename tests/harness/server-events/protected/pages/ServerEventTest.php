@@ -9,7 +9,10 @@ use Prado\Web\UI\TPage;
  * each event carries the page's publish count. ChangedWatch takes the `changed`
  * events of `orders`, AnyWatch every event of `orders`, and PanelWatch, inside
  * WatchPanel, the events of `panel`. "Remove panel watch" re-renders the panel
- * without PanelWatch.
+ * without PanelWatch. ClientWatch has CallbackOnEvent false: its client-side
+ * OnServerEvent writes ClientLabel, and clientEvent, which would mark
+ * ClientCallbackLabel, never runs. A page script writes every `prado:serverevent`
+ * to DocumentLabel.
  */
 class ServerEventTest extends TPage
 {
@@ -45,6 +48,11 @@ class ServerEventTest extends TPage
 	{
 		$event = $param->getCallbackParameter();
 		$this->AnyLabel->setText($event->Event . ' ' . $event->Data->n);
+	}
+
+	public function clientEvent($sender, $param)
+	{
+		$this->ClientCallbackLabel->setText('called');
 	}
 
 	public function panelEvent($sender, $param)

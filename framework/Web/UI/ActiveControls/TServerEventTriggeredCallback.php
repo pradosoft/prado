@@ -11,6 +11,7 @@
 namespace Prado\Web\UI\ActiveControls;
 
 use Prado\Exceptions\TConfigurationException;
+use Prado\TPropertyValue;
 use Prado\Web\Services\ServerEvents\TServerEventBroker;
 use Prado\Web\Services\ServerEvents\TServerEventBrokerIDTrait;
 use Prado\Web\Services\ServerEvents\TServerEventService;
@@ -36,7 +37,7 @@ use Prado\Web\Services\ServerEvents\TServerEventService;
  * }
  * ```
  *
- * The callback parameter is an object with `ID`, `Event`, and `Data` of the server event.
+ * The callback parameter is an object with `Channel`, `ID`, `Event`, and `Data` of the server event.
  * It comes from the browser, so a handler reads the current server state and treats `Data`
  * as user input.
  *
@@ -44,6 +45,21 @@ use Prado\Web\Services\ServerEvents\TServerEventService;
  * selects the events of the channel that trigger this control; empty selects all of them.
  * Events arrive one callback each, in order, through the callback queue. The control does
  * not cause validation by default.
+ *
+ * **Client-side handling.** `ClientSide.OnServerEvent` ({@see TServerEventClientSide}) runs in
+ * the browser for each selected event before its callback, with the event as `parameter`; a
+ * `return false;` skips that callback. With {@see setCallbackOnEvent CallbackOnEvent} false the
+ * control sends no callbacks and only runs OnServerEvent, which suits an event whose data is
+ * the whole update, such as a count or a notice. Every stream message is also dispatched on
+ * `document` as a `prado:serverevent` CustomEvent, `detail` `{Channel, ID, Event, Data}`.
+ *
+ * ```xml
+ * <com:TServerEventTriggeredCallback Channel="inbox" CallbackOnEvent="false"
+ *     ClientSide.OnServerEvent="document.getElementById('unread').textContent = parameter.Data.unread;" />
+ * ```
+ * ```js
+ * document.addEventListener('prado:serverevent', (e) => console.log(e.detail.Channel, e.detail.Event));
+ * ```
  *
  * The control renders an empty `<span hidden>` with its client ID. When a callback removes
  * the control from the page, the span goes with it and the client unsubscribes; the last
@@ -61,12 +77,40 @@ class TServerEventTriggeredCallback extends TCallback
 	use TServerEventBrokerIDTrait;
 
 	/**
-	 * Constructor. The control does not cause validation by default.
+	 * Constructor. The control does not cause validation by default, and its client-side
+	 * options are a {@see TServerEventClientSide}.
 	 */
 	public function __construct()
 	{
 		parent::__construct();
+		$this->getActiveControl()->setClientSide(new TServerEventClientSide());
 		$this->getActiveControl()->setCausesValidation(false);
+	}
+
+	/**
+	 * @return TCallbackClientSide The client-side options: the {@see TServerEventClientSide}
+	 *   set in the constructor, with OnServerEvent.
+	 */
+	public function getClientSide()
+	{
+		return $this->getActiveControl()->getClientSide();
+	}
+
+	/**
+	 * @return bool Whether a selected server event sends a callback. Defaults to true.
+	 */
+	public function getCallbackOnEvent(): bool
+	{
+		return $this->getViewState('CallbackOnEvent', true);
+	}
+
+	/**
+	 * @param bool|string $value Whether a selected server event sends a callback; false runs
+	 *   only the client-side OnServerEvent.
+	 */
+	public function setCallbackOnEvent($value): void
+	{
+		$this->setViewState('CallbackOnEvent', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -141,18 +185,23 @@ class TServerEventTriggeredCallback extends TCallback
 	}
 
 	/**
-	 * @return array The client control options: `ID`, `EventTarget`, `StreamUrl`, `LastEventID`, `EventName`.
+	 * @return array The client control options: `ID`, `EventTarget`, `StreamUrl`, `LastEventID`,
+	 *   `EventName`, and `CallbackOnEvent` when it is false.
 	 */
 	protected function getTriggerOptions(): array
 	{
 		$channel = $this->getChannel();
-		return [
+		$options = [
 			'ID' => $this->getClientID(),
 			'EventTarget' => $this->getUniqueID(),
 			'StreamUrl' => TServerEventService::constructChannelUrl($channel, $this->getServiceID(), $this->getApplication()),
 			'LastEventID' => $this->resolveBroker()->getLastEventId($channel),
 			'EventName' => $this->getEventName(),
 		];
+		if (!$this->getCallbackOnEvent()) {
+			$options['CallbackOnEvent'] = false;
+		}
+		return $options;
 	}
 
 	/**

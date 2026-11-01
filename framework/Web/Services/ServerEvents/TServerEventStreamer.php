@@ -93,13 +93,13 @@ class TServerEventStreamer extends TComponent
 
 	/**
 	 * Formats an event as an `id:` and `data:` frame.
-	 * The data line is JSON `{"event": name, "data": data}`.
+	 * The data line is JSON `{"channel": channel, "event": name, "data": data}`.
 	 * @param TServerEvent $event The event.
 	 * @return string The frame, ending in a blank line.
 	 */
 	public static function formatEvent(TServerEvent $event): string
 	{
-		$data = json_encode(['event' => $event->getName(), 'data' => $event->getData()], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+		$data = json_encode(['channel' => $event->getChannel(), 'event' => $event->getName(), 'data' => $event->getData()], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
 		return 'id: ' . $event->getID() . "\ndata: " . $data . "\n\n";
 	}
 

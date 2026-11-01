@@ -176,7 +176,7 @@ class TServerEventStreamerTest extends \PHPUnit\Framework\TestCase
 		self::assertSame($ids[0], $ids[1]);
 		foreach ($sinks as $sink) {
 			self::assertCount(2, $sink->chunks);
-			self::assertStringEndsWith("data: {\"event\":\"changed\",\"data\":\"both\"}\n\n", $sink->chunks[1]);
+			self::assertStringEndsWith("data: {\"channel\":\"orders\",\"event\":\"changed\",\"data\":\"both\"}\n\n", $sink->chunks[1]);
 			self::assertSame(1, $sink->closes);
 		}
 	}
@@ -194,6 +194,6 @@ class TServerEventStreamerTest extends \PHPUnit\Framework\TestCase
 	public function testFormatEvent(): void
 	{
 		$event = new TServerEvent('ab12-3', 'c', 'note', "line1\nline2");
-		self::assertSame("id: ab12-3\ndata: {\"event\":\"note\",\"data\":\"line1\\nline2\"}\n\n", TServerEventStreamer::formatEvent($event));
+		self::assertSame("id: ab12-3\ndata: {\"channel\":\"c\",\"event\":\"note\",\"data\":\"line1\\nline2\"}\n\n", TServerEventStreamer::formatEvent($event));
 	}
 }

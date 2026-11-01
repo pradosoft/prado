@@ -291,8 +291,8 @@ class TServerEventServiceTest extends \PHPUnit\Framework\TestCase
 		self::assertSame(['releaseSession', 'openOutput'], $service->calls);
 		self::assertSame([
 			'retry: 1500',
-			'id: ' . $first->getID() . "\n" . 'data: {"event":"changed","data":{"id":1,"path":"a/b"}}',
-			'id: ' . $second->getID() . "\n" . 'data: {"event":"removed","data":"é"}',
+			'id: ' . $first->getID() . "\n" . 'data: {"channel":"orders","event":"changed","data":{"id":1,"path":"a/b"}}',
+			'id: ' . $second->getID() . "\n" . 'data: {"channel":"orders","event":"removed","data":"é"}',
 			': heartbeat',
 			': heartbeat',
 		], $this->frames($response->output));
@@ -317,7 +317,7 @@ class TServerEventServiceTest extends \PHPUnit\Framework\TestCase
 
 		$frames = $this->frames($service->fakeResponse->output);
 		self::assertCount(2, $frames);
-		self::assertStringEndsWith('data: {"event":"changed","data":7}', $frames[1]);
+		self::assertStringEndsWith('data: {"channel":"orders","event":"changed","data":7}', $frames[1]);
 	}
 
 	public function testResumePointPrefersTheHeaderThenTheQuery(): void
@@ -376,7 +376,7 @@ class TServerEventServiceTest extends \PHPUnit\Framework\TestCase
 
 		$frames = $this->frames($service->fakeResponse->output);
 		self::assertCount(2, $frames);
-		self::assertStringEndsWith('data: {"event":"changed","data":"now"}', $frames[1]);
+		self::assertStringEndsWith('data: {"channel":"orders","event":"changed","data":"now"}', $frames[1]);
 	}
 
 	public function testVerifyChannelToken(): void

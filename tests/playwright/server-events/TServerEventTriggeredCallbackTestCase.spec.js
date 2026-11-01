@@ -45,12 +45,31 @@ test('TServerEventTriggeredCallback: a published event raises the callbacks of t
 	await expect(page.locator('#ChangedLabel')).toHaveText('changed 3', WAIT);
 });
 
+test('TServerEventTriggeredCallback: CallbackOnEvent false runs only the client handler, and every event reaches document', async ({ page }) => {
+	await open(page);
+	const clientCallbacks = [];
+	page.on('request', (request) => {
+		if (request.method() === 'POST' && (request.postData() || '').includes('PRADO_CALLBACK_TARGET=ClientWatch'))
+			clientCallbacks.push(request.url());
+	});
+
+	await page.locator('#PublishChanged').click();
+	await expect(page.locator('#ClientLabel')).toHaveText('changed 1', WAIT);
+	await expect(page.locator('#DocumentLabel')).toHaveText('orders changed 1', WAIT);
+	// The callback controls on the same stream still run; ClientWatch sends no request.
+	await expect(page.locator('#AnyLabel')).toHaveText('changed 1', WAIT);
+	// A ClientWatch callback would queue behind AnyWatch's; give the queue time to drain.
+	await page.waitForTimeout(3_000);
+	await expect(page.locator('#ClientCallbackLabel')).toHaveText('none');
+	expect(clientCallbacks).toEqual([]);
+});
+
 test('TServerEventTriggeredCallback: controls on one channel share one EventSource', async ({ page }) => {
 	await open(page);
 	const streams = await page.evaluate(() => Object.fromEntries(
 		Object.entries(Prado.EventSource.sources).map(([url, entry]) => [new URL(url, location.href).searchParams.get('events'), entry.subscribers.map((s) => s.ID)])
 	));
-	expect(streams).toEqual({ orders: ['ChangedWatch', 'AnyWatch'], panel: ['PanelWatch'] });
+	expect(streams).toEqual({ orders: ['ChangedWatch', 'AnyWatch', 'ClientWatch'], panel: ['PanelWatch'] });
 	expect(await streamUrl(page, 'ChangedWatch')).toBe(await streamUrl(page, 'AnyWatch'));
 });
 

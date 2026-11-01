@@ -2,10 +2,14 @@
  * Shares one EventSource per stream URL among its subscribers.
  *
  * A subscriber is an object with `isActive()` and `onServerEvent(event)`. Each
- * message of the stream is the JSON `{"event": name, "data": data}` of
- * TServerEventService; a subscriber receives `{ID, Event, Data}`. A subscriber
- * that is no longer active is removed when a message arrives and after each
- * callback response, and the last one to leave closes its EventSource.
+ * message of the stream is the JSON `{"channel": channel, "event": name, "data": data}`
+ * of TServerEventService; a subscriber receives `{Channel, ID, Event, Data}`. A
+ * subscriber that is no longer active is removed when a message arrives and after
+ * each callback response, and the last one to leave closes its EventSource.
+ *
+ * Each message is also dispatched on `document` as a `prado:serverevent`
+ * CustomEvent whose `detail` is `{Channel, ID, Event, Data}`, before the
+ * subscribers receive it, so any script can react to the streams of the page.
  *
  * @namespace Prado.EventSource
  * @since 4.4.0
@@ -14,6 +18,9 @@ Prado.EventSource =
 {
 	/** The query parameter carrying the event ID the stream resumes after. */
 	LAST_EVENT_ID_PARAMETER: 'lastEventId',
+
+	/** The type of the CustomEvent dispatched on `document` for each message. */
+	DOCUMENT_EVENT: 'prado:serverevent',
 
 	/** Open streams by URL: `{source, subscribers}`. */
 	sources: {},
@@ -88,7 +95,8 @@ Prado.EventSource =
 	},
 
 	/**
-	 * Delivers a stream message to the active subscribers of its URL.
+	 * Dispatches a stream message on `document` as {@link Prado.EventSource.DOCUMENT_EVENT},
+	 * then delivers it to the active subscribers of its URL.
 	 * @param {string} url - the stream URL
 	 * @param {MessageEvent} message - the stream message
 	 */
@@ -102,7 +110,13 @@ Prado.EventSource =
 			return;
 		}
 		if (!payload || typeof payload.event !== 'string') return;
-		const event = { ID: message.lastEventId, Event: payload.event, Data: payload.data };
+		const event = {
+			Channel: typeof payload.channel === 'string' ? payload.channel : '',
+			ID: message.lastEventId,
+			Event: payload.event,
+			Data: payload.data,
+		};
+		document.dispatchEvent(new CustomEvent(this.DOCUMENT_EVENT, { detail: event }));
 		for (const subscriber of [...entry.subscribers]) {
 			if (subscriber.isActive())
 				subscriber.onServerEvent(event);
@@ -134,8 +148,10 @@ Prado.EventSource =
 };
 
 /**
- * Sends a callback request for each server event of its channel.
- * Options: ID, EventTarget, StreamUrl, LastEventID, EventName (empty for every event).
+ * Handles each server event of its channel: runs OnServerEvent, then sends a
+ * callback request unless OnServerEvent returned false or CallbackOnEvent is false.
+ * Options: ID, EventTarget, StreamUrl, LastEventID, EventName (empty for every
+ * event), CallbackOnEvent, and the optional function OnServerEvent(sender, event).
  * @class Prado.WebUI.TServerEventTriggeredCallback
  * @since 4.4.0
  */
@@ -154,11 +170,14 @@ Prado.WebUI.TServerEventTriggeredCallback = Prado.Class(Prado.WebUI.Control,
 	},
 
 	/**
-	 * Sends the callback for a server event that matches EventName.
-	 * @param {object} event - the server event: ID, Event, Data
+	 * Handles a server event that matches EventName: OnServerEvent runs first, and
+	 * returning false from it skips the callback; CallbackOnEvent false skips it always.
+	 * @param {object} event - the server event: Channel, ID, Event, Data
 	 */
 	onServerEvent(event) {
 		if (this.options.EventName && event.Event !== this.options.EventName) return;
+		if (typeof this.options.OnServerEvent === 'function' && this.options.OnServerEvent(this, event) === false) return;
+		if (this.options.CallbackOnEvent === false) return;
 		const request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
 		request.setCallbackParameter(event);
 		request.dispatch();

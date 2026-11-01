@@ -12,6 +12,7 @@ use Prado\Web\Services\ServerEvents\TServerEventMemoryBroker;
 use Prado\Web\Services\ServerEvents\TServerEventService;
 use Prado\Web\UI\ActiveControls\ICallbackEventHandler;
 use Prado\Web\UI\ActiveControls\TCallback;
+use Prado\Web\UI\ActiveControls\TServerEventClientSide;
 use Prado\Web\UI\ActiveControls\TServerEventTriggeredCallback;
 use Prado\Web\UI\TClientScriptManager;
 
@@ -113,6 +114,34 @@ class TServerEventTriggeredCallbackTest extends TestCase
 		self::assertSame($latest, $options['LastEventID']);
 		self::assertSame('changed', $options['EventName']);
 		self::assertFalse($options['CausesValidation']);
+	}
+
+	public function testClientSideOnServerEventReachesTheClientOptions(): void
+	{
+		[$page, $control, $cs] = $this->createControl();
+		self::assertInstanceOf(TServerEventClientSide::class, $control->getClientSide());
+		self::assertNull($control->getClientSide()->getOnServerEvent());
+		$control->getClientSide()->setOnServerEvent('return parameter.Data > 0;');
+
+		$this->render($control);
+
+		$handler = (string) $cs->callbackControls[0][1]['OnServerEvent'];
+		self::assertStringContainsString('function(sender, parameter)', $handler);
+		self::assertStringContainsString('return parameter.Data > 0;', $handler);
+	}
+
+	public function testCallbackOnEvent(): void
+	{
+		[$page, $control, $cs] = $this->createControl();
+		self::assertTrue($control->getCallbackOnEvent());
+		$this->render($control);
+		self::assertArrayNotHasKey('CallbackOnEvent', $cs->callbackControls[0][1], 'The default true is not sent.');
+
+		[$page, $control, $cs] = $this->createControl();
+		$control->setCallbackOnEvent('false');
+		self::assertFalse($control->getCallbackOnEvent());
+		$this->render($control);
+		self::assertFalse($cs->callbackControls[0][1]['CallbackOnEvent']);
 	}
 
 	public function testLastEventIdIsEmptyForAQuietChannel(): void

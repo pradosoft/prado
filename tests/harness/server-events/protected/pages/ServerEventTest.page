@@ -8,8 +8,19 @@
 <com:TServerEventTriggeredCallback ID="ChangedWatch" Channel="orders" EventName="changed" OnCallback="changedEvent" />
 <com:TServerEventTriggeredCallback ID="AnyWatch" Channel="orders" OnCallback="anyEvent" />
 
+<com:TServerEventTriggeredCallback ID="ClientWatch" Channel="orders" CallbackOnEvent="false" OnCallback="clientEvent"
+	ClientSide.OnServerEvent="document.getElementById('ClientLabel').textContent = parameter.Event + ' ' + parameter.Data.n;" />
+
 <p>Changed: <com:TActiveLabel ID="ChangedLabel" Text="none" /></p>
 <p>Any: <com:TActiveLabel ID="AnyLabel" Text="none" /></p>
+<p>Client: <span id="ClientLabel">none</span></p>
+<p>Client callback: <com:TActiveLabel ID="ClientCallbackLabel" Text="none" /></p>
+<p>Document: <span id="DocumentLabel">none</span></p>
+<script>
+	document.addEventListener('prado:serverevent', function (e) {
+		document.getElementById('DocumentLabel').textContent = e.detail.Channel + ' ' + e.detail.Event + ' ' + e.detail.Data.n;
+	});
+</script>
 
 <com:TActiveButton ID="PublishChanged" Text="Publish changed" OnCallback="publishChanged" />
 <com:TActiveButton ID="PublishRemoved" Text="Publish removed" OnCallback="publishRemoved" />
