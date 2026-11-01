@@ -112,4 +112,7 @@ class TWebControlAttribute extends \Prado\TEnumerable
 	/** The microdata attributes `itemscope`, `itemtype`, `itemprop`, `itemid`, and `itemref`. */
 	public const Microdata = (1 << 26);
 
+	/** The `aria-keyshortcuts` attribute and its client binding: KeyShortcuts, KeyShortcutScope, and KeyShortcutAllowReserved. */
+	public const KeyShortcuts = (1 << 27);
+
 }

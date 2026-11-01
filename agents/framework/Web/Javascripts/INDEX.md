@@ -57,6 +57,7 @@ through `light-dark()` and the `Canvas` system color. See
 | `activedatepicker` | `activedatepicker.js` | AJAX-enhanced date picker |
 | `activefileupload` | `activefileupload.js` | AJAX file upload with progress |
 | `keyboard` | `controls/keyboard.js` | Virtual on-screen keyboard |
+| `keyshortcuts` | `keyshortcuts/keyshortcuts.js` | `Prado.KeyShortcuts` key-binding registry for `TWebControl.KeyShortcuts` and `register()`; see [TKeyShortcuts](../UI/WebControls/TKeyShortcuts.md) |
 | `slider` | `controls/slider.js` | Range slider |
 | `canvas` | `controls/canvas.js` | TCanvas `ClientSide.OnDraw`: draws on load, after a callback, and on resize; matches the device pixel ratio |
 | `accordion` | `controls/accordion.js` | Expand/collapse panels |

@@ -819,6 +819,7 @@ return [
 'TJavascriptLogger' => 'Prado\Web\UI\WebControls\TJavascriptLogger',
 'TKbd' => 'Prado\Web\UI\WebControls\TKbd',
 'TKeyboard' => 'Prado\Web\UI\WebControls\TKeyboard',
+'TKeyShortcuts' => 'Prado\Web\UI\WebControls\TKeyShortcuts',
 'TLabel' => 'Prado\Web\UI\WebControls\TLabel',
 'TLegend' => 'Prado\Web\UI\WebControls\TLegend',
 'TLinkButton' => 'Prado\Web\UI\WebControls\TLinkButton',

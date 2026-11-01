@@ -1,0 +1,28 @@
+<com:TContent ID="Content">
+	<h1>Key Shortcuts Test Case</h1>
+
+	<p>Last action: <com:TActiveLabel ID="result" Text="none" /></p>
+
+	<com:TButton ID="save" Text="Save" KeyShortcuts="Control+S Meta+S" OnClick="saveClicked" />
+	<p>Saves: <com:TLabel ID="saves" Text="0" /></p>
+
+	<com:TLabel ForControl="search" Text="Search" />
+	<com:TTextBox ID="search" KeyShortcuts="/" />
+
+	<com:TActiveButton ID="italic" Text="Italic" KeyShortcuts="I" OnCallback="italicClicked" />
+	<com:TActiveButton ID="rebind" Text="Rebind italic" OnCallback="rebindItalic" />
+
+	<com:TCheckBox ID="characterKeys" Text="Single-key shortcuts" Checked="true" />
+
+	<com:TPanel ID="toolbar" Role="toolbar" Aria.label="Formatting">
+		<com:TActiveButton ID="first" Text="First" OnCallback="firstClicked" />
+		<com:TActiveButton ID="bold" Text="Bold" KeyShortcuts="B" KeyShortcutScope="toolbar" OnCallback="boldClicked" />
+	</com:TPanel>
+
+	<com:TActiveButton ID="refresh" Text="Refresh panel" OnCallback="refreshPanel" />
+	<com:TActiveButton ID="hideInner" Text="Hide inner" OnCallback="hideInner" />
+	<com:TActivePanel ID="panel">
+		<p>Panel renders: <com:TLabel ID="renders" Text="0" /></p>
+		<com:TActiveButton ID="inner" Text="Inner" KeyShortcuts="Alt+Shift+R" OnCallback="innerClicked" />
+	</com:TActivePanel>
+</com:TContent>

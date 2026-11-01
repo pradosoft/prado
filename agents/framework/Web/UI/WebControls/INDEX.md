@@ -9,7 +9,9 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 ## Base Classes
 
-- **[`TWebControl`](TWebControl.md)** — Base for all WebControls. Adds HTML attribute management (style, CSS class, AccessKey, TabIndex, ToolTip, etc.) and standard HTML rendering helpers. Extends `TControl`.
+- **[`TWebControl`](TWebControl.md)** — Base for all WebControls. Adds HTML attribute management (style, CSS class, AccessKey, KeyShortcuts, TabIndex, ToolTip, etc.) and standard HTML rendering helpers. Extends `TControl`.
+
+- **[`TKeyShortcuts`](TKeyShortcuts.md)** — Validates and normalizes `aria-keyshortcuts` values and lists the reserved shortcuts for `TWebControl.KeyShortcuts` and the `Prado.KeyShortcuts` client registry (`keyshortcuts` package). @since 4.4.0
 
 - **[`TI18NWebControl`](TI18NWebControl.md)** — Extends `TWebControl` with `TI18NControlTrait`, adding `Culture` and `Charset` properties for I18N-aware controls. @since 4.3.3
 

@@ -11,6 +11,7 @@
 namespace Prado\Web\UI\WebControls;
 
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Exceptions\TInvalidOperationException;
 use Prado\TPropertyValue;
 use Prado\Collections\TAttributeCollection;
 use Prado\Collections\TWebAttributeCollection;
@@ -72,6 +73,18 @@ use Prado\Collections\TWebAttributeCollection;
  * $control->setWritingSuggestions(false);
  * $control->setPart('label');
  * ```
+ *
+ * ### Keyboard Shortcuts
+ *
+ * KeyShortcuts renders `aria-keyshortcuts` and binds the shortcuts in the
+ * `Prado.KeyShortcuts` client registry. A shortcut clicks a button, link, check
+ * box, or radio button, and focuses any other element:
+ * ```html
+ * <com:TButton Text="Save" KeyShortcuts="Control+S Meta+S" OnClick="save" />
+ * <com:TTextBox ID="search" KeyShortcuts="/" />
+ * ```
+ * KeyShortcutScope limits the shortcuts to focus inside another control, and
+ * KeyShortcutAllowReserved opts in to reserved shortcuts; see {@see TKeyShortcuts}.
  *
  * ### Microdata
  *
@@ -273,6 +286,11 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 			$this->setItemId($control->getItemId());
 			$this->setItemRef($control->getItemRef());
 		}
+		if ($attrToCopy & TWebControlAttribute::KeyShortcuts) {
+			$this->setKeyShortcuts($control->getKeyShortcuts());
+			$this->setKeyShortcutScope($control->getKeyShortcutScopeClientID());
+			$this->setKeyShortcutAllowReserved($control->getKeyShortcutAllowReserved());
+		}
 		if ($attrToCopy & TWebControlAttribute::ARIA && $control->getHasAria()) {
 			$this->getAria()->copyFrom($control->getAria());
 		}
@@ -317,6 +335,156 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 			throw new TInvalidDataValueException('webcontrol_accesskey_invalid', $this::class, $value);
 		}
 		$this->setViewState('AccessKey', $value, '');
+	}
+
+	/**
+	 * @return string the keyboard shortcuts in the normalized `aria-keyshortcuts`
+	 *   syntax, or '' when the control has none
+	 * @since 4.4.0
+	 */
+	public function getKeyShortcuts()
+	{
+		return $this->getViewState('KeyShortcuts', '');
+	}
+
+	/**
+	 * Sets the keyboard shortcuts that activate or focus the control.
+	 *
+	 * The value is a space-separated list in the `aria-keyshortcuts` syntax, such
+	 * as 'Control+S Meta+S'. {@see TKeyShortcuts::normalize} validates and
+	 * normalizes it. The control renders `aria-keyshortcuts` and the
+	 * `data-prado-keyshortcuts` marker, and registers the `keyshortcuts` script
+	 * package, whose `Prado.KeyShortcuts` registry handles the keys.
+	 *
+	 * @param ?string $value the shortcuts, or '' for none
+	 * @throws TInvalidDataValueException when a shortcut is not valid
+	 * @since 4.4.0
+	 */
+	public function setKeyShortcuts($value)
+	{
+		$this->setViewState('KeyShortcuts', TKeyShortcuts::normalize($value), '');
+	}
+
+	/**
+	 * @return string the ID of the control whose element bounds where the
+	 *   shortcuts work, or '' when they work page-wide
+	 * @since 4.4.0
+	 */
+	public function getKeyShortcutScope()
+	{
+		return $this->getViewState('KeyShortcutScope', '');
+	}
+
+	/**
+	 * Sets the scope of the keyboard shortcuts.
+	 *
+	 * - '' → the shortcuts work page-wide.
+	 * - a control ID → the shortcuts work while focus is inside that control's
+	 *   element. {@see \Prado\Web\UI\TControl::findControl} locates the control;
+	 *   an ID that names no control is used as the element ID.
+	 *
+	 * @param ?string $value the scope control ID, or ''
+	 * @since 4.4.0
+	 */
+	public function setKeyShortcutScope($value)
+	{
+		$this->setViewState('KeyShortcutScope', trim(TPropertyValue::ensureString($value)), '');
+	}
+
+	/**
+	 * @return string the element ID of the shortcut scope, or '' for page-wide shortcuts
+	 * @since 4.4.0
+	 */
+	public function getKeyShortcutScopeClientID()
+	{
+		if (($scope = $this->getKeyShortcutScope()) === '') {
+			return '';
+		}
+		$control = $this->findControl($scope);
+		return $control ? $control->getClientID() : $scope;
+	}
+
+	/**
+	 * @return bool whether the shortcuts may include reserved shortcuts. Defaults to false.
+	 * @since 4.4.0
+	 */
+	public function getKeyShortcutAllowReserved()
+	{
+		return $this->getViewState('KeyShortcutAllowReserved', false);
+	}
+
+	/**
+	 * Sets whether the shortcuts may include reserved shortcuts.
+	 *
+	 * Reserved shortcuts serve focus navigation, editing, and the browser; see
+	 * {@see TKeyShortcuts::isReserved}. A reserved shortcut without this opt-in
+	 * throws on render.
+	 *
+	 * @param bool $value whether reserved shortcuts are allowed
+	 * @since 4.4.0
+	 */
+	public function setKeyShortcutAllowReserved($value)
+	{
+		$this->setViewState('KeyShortcutAllowReserved', TPropertyValue::ensureBoolean($value), false);
+	}
+
+	/**
+	 * Returns the attributes that bind the shortcuts on the client.
+	 *
+	 * | Attribute | Value |
+	 * |---|---|
+	 * | `aria-keyshortcuts` | {@see getKeyShortcuts} |
+	 * | `data-prado-keyshortcuts` | {@see getKeyShortcutScopeClientID}; '' for page-wide |
+	 * | `data-prado-keyshortcuts-reserved` | 'true' when {@see getKeyShortcutAllowReserved}, otherwise null |
+	 *
+	 * @throws TInvalidOperationException when a shortcut is reserved and reserved
+	 *   shortcuts are not allowed
+	 * @return array<string, ?string> attribute names and values; empty when the
+	 *   control has no shortcuts
+	 * @since 4.4.0
+	 */
+	public function getKeyShortcutsAttributes()
+	{
+		if (($keys = $this->getKeyShortcuts()) === '') {
+			return [];
+		}
+		$allowReserved = $this->getKeyShortcutAllowReserved();
+		if (!$allowReserved) {
+			foreach (explode(' ', $keys) as $shortcut) {
+				if (TKeyShortcuts::isReserved($shortcut)) {
+					throw new TInvalidOperationException('webcontrol_keyshortcuts_reserved', $this::class, $shortcut);
+				}
+			}
+		}
+		return [
+			'aria-keyshortcuts' => $keys,
+			'data-prado-keyshortcuts' => $this->getKeyShortcutScopeClientID(),
+			'data-prado-keyshortcuts-reserved' => $allowReserved ? 'true' : null,
+		];
+	}
+
+	/**
+	 * Adds the shortcut attributes and registers the `keyshortcuts` script package.
+	 *
+	 * Controls that render their shortcuts on an inner element, such as the
+	 * input of {@see TCheckBox}, call this for that element.
+	 *
+	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
+	 * @since 4.4.0
+	 */
+	protected function addKeyShortcutsAttributesToRender($writer)
+	{
+		if (!($attributes = $this->getKeyShortcutsAttributes())) {
+			return;
+		}
+		foreach ($attributes as $name => $value) {
+			if ($value !== null) {
+				$writer->addAttribute($name, $value);
+			}
+		}
+		if ($page = $this->getPage()) {
+			$page->getClientScript()->registerPradoScript('keyshortcuts');
+		}
 	}
 
 	/**
@@ -1340,7 +1508,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 * Renders in order: id, accesskey, role, disabled, tabindex, title, translate, lang,
 	 * dir, hidden, spellcheck, draggable, contenteditable, inputmode, enterkeyhint, inert,
 	 * popover, slot, autofocus, autocapitalize, autocorrect, writingsuggestions, part,
-	 * exportparts, microdata, aria-*, data-*, style, custom attributes.
+	 * exportparts, microdata, aria-*, key shortcuts, data-*, style, custom attributes.
 	 *
 	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
 	 */
@@ -1422,6 +1590,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 		if ($aria = $this->getViewState('Aria', null)) {
 			$aria->addAttributesToRender($writer);
 		}
+		$this->addKeyShortcutsAttributesToRender($writer);
 		if ($dataset = $this->getViewState('Dataset', null)) {
 			$dataset->addAttributesToRender($writer);
 		}

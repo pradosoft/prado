@@ -8,7 +8,7 @@
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-Tracks viewstate changes during callback to enable fine-grained client-side updates. Tracks properties like Visible, Enabled, Attributes, Style, TabIndex, ToolTip, and AccessKey, then calls corresponding client-side update handlers when changes are detected.
+Tracks viewstate changes during callback to enable fine-grained client-side updates. Tracks properties like Visible, Enabled, Attributes, Style, TabIndex, ToolTip, AccessKey, and KeyShortcuts, then calls corresponding client-side update handlers when changes are detected.
 
 ## Key Properties/Methods
 
@@ -17,6 +17,7 @@ Tracks viewstate changes during callback to enable fine-grained client-side upda
 - `getStatesToTrack()` - Returns TMap of states being tracked
 - `updateVisible($visible)`, `updateEnabled($enable)` - Client update handlers
 - `updateStyle($style)`, `updateAttributes($attributes)` - Client update handlers
+- `updateKeyShortcuts()` - Sends `TWebControl::getKeyShortcutsAttributes()` once per callback when `KeyShortcuts`, `KeyShortcutScope`, or `KeyShortcutAllowReserved` changes, targeting the ClientID element (the input of a TCheckBox), and registers the `keyshortcuts` package (4.4.0)
 
 ## See Also
 

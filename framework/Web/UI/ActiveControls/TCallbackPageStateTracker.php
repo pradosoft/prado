@@ -22,7 +22,8 @@ use stdClass;
  * dispatches the registered client-side update handler for each changed property.
  *
  * View states tracked by default:
- * - Scalar: Visible, Enabled, TabIndex, ToolTip, AccessKey, Translate, Lang, Dir,
+ * - Scalar: Visible, Enabled, TabIndex, ToolTip, AccessKey, KeyShortcuts,
+ *   KeyShortcutScope, KeyShortcutAllowReserved, Translate, Lang, Dir,
  *   Hidden, SpellCheck, Draggable, ContentEditable, InputMode, EnterKeyHint, Inert, Popover,
  *   Slot
  * - Map collections: Attributes, Style, Aria, Dataset
@@ -50,6 +51,10 @@ class TCallbackPageStateTracker
 	 * @var object sentinel value used to detect the absence of a diff result
 	 */
 	private $_nullObject;
+	/**
+	 * @var bool whether this callback has sent the key shortcut attributes
+	 */
+	private $_keyShortcutsUpdated = false;
 
 	/**
 	 * Initializes the tracker for the given control and registers the default view states.
@@ -81,6 +86,9 @@ class TCallbackPageStateTracker
 		$states['TabIndex'] = ['TScalarDiff', fn ($diff) => $this->updateAttribute('tabindex', $diff)];
 		$states['ToolTip'] = ['TScalarDiff', fn ($diff) => $this->updateAttribute('title', $diff)];
 		$states['AccessKey'] = ['TScalarDiff', fn ($diff) => $this->updateAttribute('accesskey', $diff)];
+		$states['KeyShortcuts'] = ['TScalarDiff', fn ($diff) => $this->updateKeyShortcuts()];
+		$states['KeyShortcutScope'] = ['TScalarDiff', fn ($diff) => $this->updateKeyShortcuts()];
+		$states['KeyShortcutAllowReserved'] = ['TScalarDiff', fn ($diff) => $this->updateKeyShortcuts()];
 
 		// HTML 5 attributes
 		$states['Translate'] = ['TScalarDiff', fn ($diff) => $this->updateAttribute('translate', $diff)];
@@ -197,6 +205,40 @@ class TCallbackPageStateTracker
 		} else {
 			$this->client()->setAttribute($this->_control, $attrName, $value);
 		}
+	}
+
+	/**
+	 * Sets or removes the key shortcut attributes of the tracked control.
+	 *
+	 * The attributes come from {@see \Prado\Web\UI\WebControls\TWebControl::getKeyShortcutsAttributes},
+	 * and are sent once per callback when several of the shortcut properties change.
+	 * They target the element of the control's ClientID, which is the input of a
+	 * {@see \Prado\Web\UI\WebControls\TCheckBox}.
+	 * Shortcuts that are set register the `keyshortcuts` script package.
+	 * @since 4.4.0
+	 */
+	protected function updateKeyShortcuts()
+	{
+		if ($this->_keyShortcutsUpdated || !method_exists($this->_control, 'getKeyShortcutsAttributes')) {
+			return;
+		}
+		$this->_keyShortcutsUpdated = true;
+		$id = $this->_control->getClientID();
+		$attributes = $this->_control->getKeyShortcutsAttributes();
+		if (!$attributes) {
+			foreach (['aria-keyshortcuts', 'data-prado-keyshortcuts', 'data-prado-keyshortcuts-reserved'] as $name) {
+				$this->client()->removeAttribute($id, $name);
+			}
+			return;
+		}
+		foreach ($attributes as $name => $value) {
+			if ($value === null) {
+				$this->client()->removeAttribute($id, $name);
+			} else {
+				$this->client()->setAttribute($id, $name, $value);
+			}
+		}
+		$this->_control->getPage()->getClientScript()->registerPradoScript('keyshortcuts');
 	}
 
 	/**
