@@ -1,11 +1,11 @@
-# Web/Services/IServerEventSink
+# Web/Services/ServerEvents/IServerEventSink
 
 ### Directories
-[framework](../../INDEX.md) / [Web](../INDEX.md) / [Services](./INDEX.md) / **`IServerEventSink`**
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [Services](../INDEX.md) / [ServerEvents](./INDEX.md) / **`IServerEventSink`**
 
 ## Class Info
-**Location:** `framework/Web/Services/IServerEventSink.php`
-**Namespace:** `Prado\Web\Services`
+**Location:** `framework/Web/Services/ServerEvents/IServerEventSink.php`
+**Namespace:** `Prado\Web\Services\ServerEvents`
 **Since:** 4.4.0
 
 ## Overview

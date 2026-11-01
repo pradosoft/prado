@@ -1,6 +1,6 @@
 <?php
 
-namespace Prado\Test\Unit\Web\Services;
+namespace Prado\Test\Unit\Web\Services\ServerEvents;
 
 use Prado\Caching\ICache;
 

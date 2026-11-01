@@ -1,16 +1,16 @@
-# Web/Services/TServerEventMemoryBroker
+# Web/Services/ServerEvents/TServerEventMemoryBroker
 
 ### Directories
-[framework](../../INDEX.md) / [Web](../INDEX.md) / [Services](./INDEX.md) / **`TServerEventMemoryBroker`**
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [Services](../INDEX.md) / [ServerEvents](./INDEX.md) / **`TServerEventMemoryBroker`**
 
 ## Class Info
-**Location:** `framework/Web/Services/TServerEventMemoryBroker.php`
-**Namespace:** `Prado\Web\Services`
+**Location:** `framework/Web/Services/ServerEvents/TServerEventMemoryBroker.php`
+**Namespace:** `Prado\Web\Services\ServerEvents`
 **Extends:** [`TServerEventBroker`](TServerEventBroker.md)
 **Since:** 4.4.0
 
 ## Overview
-Keeps each channel's state in the process. `receive()` returns buffered events at once; otherwise it registers a `TDeferred` waiter and awaits `TAsync::timeout()` of it, so a worker fiber yields to the [loop](../../IO/Async/INDEX.md) and the main fiber runs it. `publish()` resolves the channel's waiters, which then read the new events. `getWaiterCount($channel)` reports the waiting receivers.
+Keeps each channel's state in the process. `receive()` returns buffered events at once; otherwise it registers a `TDeferred` waiter and awaits `TAsync::timeout()` of it, so a worker fiber yields to the [loop](../../../IO/Async/INDEX.md) and the main fiber runs it. `publish()` resolves the channel's waiters, which then read the new events. `getWaiterCount($channel)` reports the waiting receivers.
 
 ```php
 $broker = new TServerEventMemoryBroker();

@@ -8,7 +8,7 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-namespace Prado\Web\Services;
+namespace Prado\Web\Services\ServerEvents;
 
 use Prado\Caching\ICache;
 use Prado\Caching\TCacheModuleIDTrait;
@@ -38,7 +38,7 @@ use Prado\TPropertyValue;
  *
  * ```xml
  * <module id="cache" class="Prado\Caching\TRedisCache" />
- * <module id="serverevents" class="Prado\Web\Services\TServerEventCacheBroker" PollInterval="0.5" />
+ * <module id="serverevents" class="Prado\Web\Services\ServerEvents\TServerEventCacheBroker" PollInterval="0.5" />
  * ```
  *
  * @author Brad Anderson <belisoful@icloud.com>

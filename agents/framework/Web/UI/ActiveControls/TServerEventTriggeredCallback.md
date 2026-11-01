@@ -7,11 +7,11 @@
 **Location:** `framework/Web/UI/ActiveControls/TServerEventTriggeredCallback.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 **Extends:** `TCallback`
-**Uses:** `Prado\Web\Services\TServerEventBrokerIDTrait`
+**Uses:** `Prado\Web\Services\ServerEvents\TServerEventBrokerIDTrait`
 **Since:** 4.4.0
 
 ## Overview
-Sends a callback request when the server publishes an event on its `Channel`. The page holds an `EventSource` on [TServerEventService](../../Services/TServerEventService.md); each event raises `OnCallback` through a regular callback, so the handler updates active controls with the page state and the callback renderer. Server push in place of [TTimeTriggeredCallback](TTimeTriggeredCallback.md) polling.
+Sends a callback request when the server publishes an event on its `Channel`. The page holds an `EventSource` on [TServerEventService](../../Services/ServerEvents/TServerEventService.md); each event raises `OnCallback` through a regular callback, so the handler updates active controls with the page state and the callback renderer. Server push in place of [TTimeTriggeredCallback](TTimeTriggeredCallback.md) polling.
 
 ```xml
 <com:TServerEventTriggeredCallback Channel="orders" EventName="changed" OnCallback="ordersChanged" />

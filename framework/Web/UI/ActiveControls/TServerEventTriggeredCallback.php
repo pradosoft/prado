@@ -11,9 +11,9 @@
 namespace Prado\Web\UI\ActiveControls;
 
 use Prado\Exceptions\TConfigurationException;
-use Prado\Web\Services\TServerEventBroker;
-use Prado\Web\Services\TServerEventBrokerIDTrait;
-use Prado\Web\Services\TServerEventService;
+use Prado\Web\Services\ServerEvents\TServerEventBroker;
+use Prado\Web\Services\ServerEvents\TServerEventBrokerIDTrait;
+use Prado\Web\Services\ServerEvents\TServerEventService;
 
 /**
  * TServerEventTriggeredCallback class.

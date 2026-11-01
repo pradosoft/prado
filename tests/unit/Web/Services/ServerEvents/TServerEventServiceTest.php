@@ -1,6 +1,6 @@
 <?php
 
-namespace Prado\Test\Unit\Web\Services;
+namespace Prado\Test\Unit\Web\Services\ServerEvents;
 
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
@@ -11,12 +11,12 @@ use Prado\Security\TUser;
 use Prado\Security\TUserManager;
 use Prado\TApplication;
 use Prado\Test\Unit\PradoUnit;
-use Prado\Web\Services\IServerEventSink;
-use Prado\Web\Services\TServerEventCacheBroker;
-use Prado\Web\Services\TServerEventMemoryBroker;
-use Prado\Web\Services\TServerEventResponseSink;
-use Prado\Web\Services\TServerEventService;
-use Prado\Web\Services\TServerEventStreamer;
+use Prado\Web\Services\ServerEvents\IServerEventSink;
+use Prado\Web\Services\ServerEvents\TServerEventCacheBroker;
+use Prado\Web\Services\ServerEvents\TServerEventMemoryBroker;
+use Prado\Web\Services\ServerEvents\TServerEventResponseSink;
+use Prado\Web\Services\ServerEvents\TServerEventService;
+use Prado\Web\Services\ServerEvents\TServerEventStreamer;
 use Prado\Web\TMediaType;
 use Prado\Xml\TXmlDocument;
 
@@ -160,7 +160,7 @@ class TServerEventServiceTestService extends TServerEventService
 		return $this->fakeResponse;
 	}
 
-	protected function resolveBroker(): \Prado\Web\Services\IServerEventBroker
+	protected function resolveBroker(): \Prado\Web\Services\ServerEvents\IServerEventBroker
 	{
 		return $this->broker ?? parent::resolveBroker();
 	}
@@ -178,7 +178,7 @@ class TServerEventServiceTestService extends TServerEventService
 		return $this->sink;
 	}
 
-	public function callResolveBroker(): \Prado\Web\Services\IServerEventBroker
+	public function callResolveBroker(): \Prado\Web\Services\ServerEvents\IServerEventBroker
 	{
 		return parent::resolveBroker();
 	}

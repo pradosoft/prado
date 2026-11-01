@@ -8,11 +8,11 @@
 <application id="ServerEventTests" Mode="Debug">
 	<modules>
 		<module id="cache" class="Prado\Caching\TFileCache" />
-		<module id="serverevents" class="Prado\Web\Services\TServerEventCacheBroker" PollInterval="0.1" />
+		<module id="serverevents" class="Prado\Web\Services\ServerEvents\TServerEventCacheBroker" PollInterval="0.1" />
 	</modules>
 	<services>
 		<service id="page" class="TPageService" DefaultPage="ServerEventTest">
 		</service>
-		<service id="events" class="Prado\Web\Services\TServerEventService" MaxLifetime="2" HeartbeatInterval="1" RetryInterval="200" />
+		<service id="events" class="Prado\Web\Services\ServerEvents\TServerEventService" MaxLifetime="2" HeartbeatInterval="1" RetryInterval="200" />
 	</services>
 </application>

@@ -1,11 +1,11 @@
-# Web/Services/TServerEventBroker
+# Web/Services/ServerEvents/TServerEventBroker
 
 ### Directories
-[framework](../../INDEX.md) / [Web](../INDEX.md) / [Services](./INDEX.md) / **`TServerEventBroker`**
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [Services](../INDEX.md) / [ServerEvents](./INDEX.md) / **`TServerEventBroker`**
 
 ## Class Info
-**Location:** `framework/Web/Services/TServerEventBroker.php`
-**Namespace:** `Prado\Web\Services`
+**Location:** `framework/Web/Services/ServerEvents/TServerEventBroker.php`
+**Namespace:** `Prado\Web\Services\ServerEvents`
 **Extends:** `Prado\TModule`
 **Implements:** [`IServerEventBroker`](IServerEventBroker.md)
 **Uses:** `TApplicationClockAwareTrait`

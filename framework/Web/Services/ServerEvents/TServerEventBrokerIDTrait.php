@@ -8,7 +8,7 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-namespace Prado\Web\Services;
+namespace Prado\Web\Services\ServerEvents;
 
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;

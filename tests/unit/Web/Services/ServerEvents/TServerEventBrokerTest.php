@@ -1,15 +1,15 @@
 <?php
 
-namespace Prado\Test\Unit\Web\Services;
+namespace Prado\Test\Unit\Web\Services\ServerEvents;
 
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\IO\Async\TAsync;
-use Prado\Web\Services\IServerEventBroker;
-use Prado\Web\Services\TServerEvent;
-use Prado\Web\Services\TServerEventBroker;
-use Prado\Web\Services\TServerEventCacheBroker;
-use Prado\Web\Services\TServerEventMemoryBroker;
+use Prado\Web\Services\ServerEvents\IServerEventBroker;
+use Prado\Web\Services\ServerEvents\TServerEvent;
+use Prado\Web\Services\ServerEvents\TServerEventBroker;
+use Prado\Web\Services\ServerEvents\TServerEventCacheBroker;
+use Prado\Web\Services\ServerEvents\TServerEventMemoryBroker;
 
 class TServerEventBrokerTest extends \PHPUnit\Framework\TestCase
 {

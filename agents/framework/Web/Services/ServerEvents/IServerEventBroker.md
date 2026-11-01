@@ -1,11 +1,11 @@
-# Web/Services/IServerEventBroker
+# Web/Services/ServerEvents/IServerEventBroker
 
 ### Directories
-[framework](../../INDEX.md) / [Web](../INDEX.md) / [Services](./INDEX.md) / **`IServerEventBroker`**
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [Services](../INDEX.md) / [ServerEvents](./INDEX.md) / **`IServerEventBroker`**
 
 ## Class Info
-**Location:** `framework/Web/Services/IServerEventBroker.php`
-**Namespace:** `Prado\Web\Services`
+**Location:** `framework/Web/Services/ServerEvents/IServerEventBroker.php`
+**Namespace:** `Prado\Web\Services\ServerEvents`
 **Since:** 4.4.0
 
 ## Overview

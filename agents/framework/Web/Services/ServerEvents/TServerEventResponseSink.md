@@ -1,11 +1,11 @@
-# Web/Services/TServerEventResponseSink
+# Web/Services/ServerEvents/TServerEventResponseSink
 
 ### Directories
-[framework](../../INDEX.md) / [Web](../INDEX.md) / [Services](./INDEX.md) / **`TServerEventResponseSink`**
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [Services](../INDEX.md) / [ServerEvents](./INDEX.md) / **`TServerEventResponseSink`**
 
 ## Class Info
-**Location:** `framework/Web/Services/TServerEventResponseSink.php`
-**Namespace:** `Prado\Web\Services`
+**Location:** `framework/Web/Services/ServerEvents/TServerEventResponseSink.php`
+**Namespace:** `Prado\Web\Services\ServerEvents`
 **Extends:** `Prado\TComponent`
 **Implements:** [`IServerEventSink`](IServerEventSink.md)
 **Since:** 4.4.0

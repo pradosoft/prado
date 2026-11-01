@@ -8,7 +8,7 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-namespace Prado\Web\Services;
+namespace Prado\Web\Services\ServerEvents;
 
 use Prado\Prado;
 use Prado\TApplication;
@@ -28,10 +28,10 @@ use Prado\Web\TMediaType;
  * ```xml
  * <modules>
  *     <module id="cache" class="Prado\Caching\TRedisCache" />
- *     <module id="serverevents" class="Prado\Web\Services\TServerEventCacheBroker" />
+ *     <module id="serverevents" class="Prado\Web\Services\ServerEvents\TServerEventCacheBroker" />
  * </modules>
  * <services>
- *     <service id="events" class="Prado\Web\Services\TServerEventService" MaxLifetime="30" />
+ *     <service id="events" class="Prado\Web\Services\ServerEvents\TServerEventService" MaxLifetime="30" />
  * </services>
  * ```
  *

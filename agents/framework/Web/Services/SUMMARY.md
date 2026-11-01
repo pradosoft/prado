@@ -14,6 +14,6 @@ Application services handling different response types; registered in `applicati
 
 - **`TFeedService`** — RSS/Atom feed generation; delegates to content provider classes.
 
-- **`TServerEventService`** — Server-sent events stream of one channel; events from an `IServerEventBroker` module (`TServerEventCacheBroker`, `TServerEventMemoryBroker`); page side is `TServerEventTriggeredCallback`. `TServerEventStreamer` writes the stream to an `IServerEventSink` (`TServerEventResponseSink` for PHP SAPI; an event loop host supplies its own).
+- **Server events** — `TServerEventService` streams one channel as server-sent events from an `IServerEventBroker` module (`TServerEventCacheBroker`, `TServerEventMemoryBroker`); `TServerEventStreamer` writes the stream to an `IServerEventSink`; page side is `TServerEventTriggeredCallback`. In [ServerEvents/](ServerEvents/SUMMARY.md) (namespace `Prado\Web\Services\ServerEvents`).
 
 - **`TPageConfiguration`** — Parses per-directory `config.xml`/`config.php` files for page-level module loading, authorization rules.

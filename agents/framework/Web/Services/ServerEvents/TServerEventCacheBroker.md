@@ -1,11 +1,11 @@
-# Web/Services/TServerEventCacheBroker
+# Web/Services/ServerEvents/TServerEventCacheBroker
 
 ### Directories
-[framework](../../INDEX.md) / [Web](../INDEX.md) / [Services](./INDEX.md) / **`TServerEventCacheBroker`**
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [Services](../INDEX.md) / [ServerEvents](./INDEX.md) / **`TServerEventCacheBroker`**
 
 ## Class Info
-**Location:** `framework/Web/Services/TServerEventCacheBroker.php`
-**Namespace:** `Prado\Web\Services`
+**Location:** `framework/Web/Services/ServerEvents/TServerEventCacheBroker.php`
+**Namespace:** `Prado\Web\Services\ServerEvents`
 **Extends:** [`TServerEventBroker`](TServerEventBroker.md)
 **Uses:** `TCacheModuleIDTrait`
 **Since:** 4.4.0
@@ -15,7 +15,7 @@ Keeps each channel's state in one `ICache` entry (`CACHE_KEY_PREFIX . channel`, 
 
 ```xml
 <module id="cache" class="Prado\Caching\TRedisCache" />
-<module id="serverevents" class="Prado\Web\Services\TServerEventCacheBroker" PollInterval="0.5" />
+<module id="serverevents" class="Prado\Web\Services\ServerEvents\TServerEventCacheBroker" PollInterval="0.5" />
 ```
 
 | Property | Default | Notes |

@@ -86,7 +86,7 @@ AJAX-enabled controls for the Prado framework. ActiveControls trigger server-sid
 | `TTimeTriggeredCallback` | (no UI) | Timer-based callback; `Interval`, `StartTimerOnLoad` |
 | `TValueTriggeredCallback` | (no UI) | Polls a JS expression; fires callback when value changes |
 | `TEventTriggeredCallback` | (no UI) | Fires callback on arbitrary DOM event |
-| [`TServerEventTriggeredCallback`](TServerEventTriggeredCallback.md) | (hidden anchor) | Fires callback on each server event of its `Channel` through a shared `EventSource` on [TServerEventService](../../Services/TServerEventService.md) (@since 4.4.0) |
+| [`TServerEventTriggeredCallback`](TServerEventTriggeredCallback.md) | (hidden anchor) | Fires callback on each server event of its `Channel` through a shared `EventSource` on [TServerEventService](../../Services/ServerEvents/TServerEventService.md) (@since 4.4.0) |
 
 ## Conventions
 

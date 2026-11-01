@@ -1,25 +1,25 @@
-# Web/Services/TServerEventService
+# Web/Services/ServerEvents/TServerEventService
 
 ### Directories
-[framework](../../INDEX.md) / [Web](../INDEX.md) / [Services](./INDEX.md) / **`TServerEventService`**
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [Services](../INDEX.md) / [ServerEvents](./INDEX.md) / **`TServerEventService`**
 
 ## Class Info
-**Location:** `framework/Web/Services/TServerEventService.php`
-**Namespace:** `Prado\Web\Services`
+**Location:** `framework/Web/Services/ServerEvents/TServerEventService.php`
+**Namespace:** `Prado\Web\Services\ServerEvents`
 **Extends:** `Prado\TService`
 **Uses:** `TServerEventBrokerIDTrait`
 **Since:** 4.4.0
 
 ## Overview
-Streams the events of one channel to a browser `EventSource` as `text/event-stream`. The events come from an [`IServerEventBroker`](IServerEventBroker.md) module (`BrokerID`, else the first broker module). [`TServerEventTriggeredCallback`](../UI/ActiveControls/TServerEventTriggeredCallback.md) subscribes a page; each event it receives raises a regular callback of that control, so page updates run through the page state and the callback renderer. The stream itself carries only event names and small data.
+Streams the events of one channel to a browser `EventSource` as `text/event-stream`. The events come from an [`IServerEventBroker`](IServerEventBroker.md) module (`BrokerID`, else the first broker module). [`TServerEventTriggeredCallback`](../../UI/ActiveControls/TServerEventTriggeredCallback.md) subscribes a page; each event it receives raises a regular callback of that control, so page updates run through the page state and the callback renderer. The stream itself carries only event names and small data.
 
 ```xml
 <modules>
     <module id="cache" class="Prado\Caching\TRedisCache" />
-    <module id="serverevents" class="Prado\Web\Services\TServerEventCacheBroker" />
+    <module id="serverevents" class="Prado\Web\Services\ServerEvents\TServerEventCacheBroker" />
 </modules>
 <services>
-    <service id="events" class="Prado\Web\Services\TServerEventService" MaxLifetime="30" />
+    <service id="events" class="Prado\Web\Services\ServerEvents\TServerEventService" MaxLifetime="30" />
 </services>
 ```
 ```php

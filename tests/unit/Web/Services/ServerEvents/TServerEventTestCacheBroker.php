@@ -1,9 +1,9 @@
 <?php
 
-namespace Prado\Test\Unit\Web\Services;
+namespace Prado\Test\Unit\Web\Services\ServerEvents;
 
 use Prado\Caching\ICache;
-use Prado\Web\Services\TServerEventCacheBroker;
+use Prado\Web\Services\ServerEvents\TServerEventCacheBroker;
 
 /**
  * A cache broker over a TServerEventArrayCache.

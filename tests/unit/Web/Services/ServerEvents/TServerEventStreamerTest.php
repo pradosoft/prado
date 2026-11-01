@@ -1,12 +1,12 @@
 <?php
 
-namespace Prado\Test\Unit\Web\Services;
+namespace Prado\Test\Unit\Web\Services\ServerEvents;
 
 use Prado\IO\Async\TAsync;
-use Prado\Web\Services\IServerEventSink;
-use Prado\Web\Services\TServerEvent;
-use Prado\Web\Services\TServerEventMemoryBroker;
-use Prado\Web\Services\TServerEventStreamer;
+use Prado\Web\Services\ServerEvents\IServerEventSink;
+use Prado\Web\Services\ServerEvents\TServerEvent;
+use Prado\Web\Services\ServerEvents\TServerEventMemoryBroker;
+use Prado\Web\Services\ServerEvents\TServerEventStreamer;
 use Prado\Web\TMediaType;
 
 /**

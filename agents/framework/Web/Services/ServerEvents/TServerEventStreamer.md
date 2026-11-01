@@ -1,11 +1,11 @@
-# Web/Services/TServerEventStreamer
+# Web/Services/ServerEvents/TServerEventStreamer
 
 ### Directories
-[framework](../../INDEX.md) / [Web](../INDEX.md) / [Services](./INDEX.md) / **`TServerEventStreamer`**
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [Services](../INDEX.md) / [ServerEvents](./INDEX.md) / **`TServerEventStreamer`**
 
 ## Class Info
-**Location:** `framework/Web/Services/TServerEventStreamer.php`
-**Namespace:** `Prado\Web\Services`
+**Location:** `framework/Web/Services/ServerEvents/TServerEventStreamer.php`
+**Namespace:** `Prado\Web\Services\ServerEvents`
 **Extends:** `Prado\TComponent`
 **Uses:** `TApplicationClockAwareTrait`
 **Since:** 4.4.0
