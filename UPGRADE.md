@@ -9,6 +9,12 @@ for both A and B.
 
 Upgrading from v4.3.3
 ---------------------
+- The default application mode is `Normal`; in 4.3 it was `Debug`. An application that does not set `Mode` gets the
+  Normal behavior: the error page shows no exception details to visitors, client scripts are served minified,
+  `Prado::debug()` is dropped and `Prado::trace()` logs at `INFO`, `TMemoryCache` keys are hashed, serialized closures
+  are encrypted, an Auto `THttpHeadersManager.ReportOnly` sends an enforcing CSP, an Auto `TDot`/`TSvg` publish style
+  publishes, and `prado-cli http` needs the `Prado:PhpWebServer` parameter. A development application sets
+  `<application Mode="Debug">` or calls `$app->setMode('Debug')`; the `pradosoft/prado-app` starter already does.
 - PHP 8.2 is now required. Applications running PHP 8.1 stay on Prado 4.3.
 - Framework exception messages are English (#1292). `messages-<lang>.txt` in `framework/Exceptions/messages/` now holds
   only the `THttpException` messages the visitor sees; every other exception is English unless a registered message

@@ -18,6 +18,7 @@ namespace Prado\Test\Unit\Web\Services;
 use Prado\TApplication;
 use Prado\Web\Services\TCspReportingService;
 use Prado\Web\Services\TCspViolationParameter;
+use Prado\TApplicationMode;
 
 // ---------------------------------------------------------------------------
 // Minimal fake objects — avoid touching the real HTTP stack.
@@ -132,6 +133,7 @@ class TCspReportingServiceTest extends \PHPUnit\Framework\TestCase
 	{
 		if (self::$app === null) {
 			self::$app = new TApplication(__DIR__ . '/../../Security/app');
+			self::$app->setMode(TApplicationMode::Debug);
 		}
 	}
 

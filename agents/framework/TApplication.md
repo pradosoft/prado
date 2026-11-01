@@ -17,10 +17,10 @@ The top-level service container for every Prado request. Loads `application.xml`
 |------|----------|
 | `Off` | Refuses all requests |
 | `Debug` | Cache always updated; verbose errors; debug info shown |
-| `Normal` | Standard production mode; exceptions logged |
+| `Normal` | Standard production mode; exceptions logged; the default (`DEFAULT_APPLICATION_MODE`, 4.4.0) |
 | `Performance` | Like Normal but skips cache freshness checks |
 
-Set via `$app->setMode('Debug')` or in `application.xml`:
+An application without `Mode` runs in `Normal`; in 4.3 it ran in `Debug`. Set via `$app->setMode('Debug')` or in `application.xml`:
 ```xml
 <application Mode="Debug">
 ```

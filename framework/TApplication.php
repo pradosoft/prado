@@ -55,7 +55,8 @@ use Prado\Xml\TXmlElement;
  * composer extension module.  The ID of the module is the name of the package.
  *
  * TApplication has four modes that can be changed by setting {@see setMode Mode}
- * property (in the application configuration file).
+ * property (in the application configuration file).  The default is <b>Normal</b>
+ * ({@see DEFAULT_APPLICATION_MODE}); an application in development sets <b>Debug</b>.
  * - <b>Off</b> mode will prevent the application from serving user requests.
  * - <b>Debug</b> mode is mainly used during application development. It ensures
  *   the cache is always up-to-date if caching is enabled. It also allows
@@ -173,10 +174,11 @@ class TApplication extends TComponent implements ISingleton
 	 */
 	public const GLOBAL_FILE = 'global.cache';
 	/**
-	 * Default Application Mode
+	 * Default Application Mode.  Normal shows visitors no exception details, so an
+	 * application opts into {@see TApplicationMode::Debug} for development.
 	 * @since 4.3.3
 	 */
-	public const DEFAULT_APPLICATION_MODE = TApplicationMode::Debug;
+	public const DEFAULT_APPLICATION_MODE = TApplicationMode::Normal;
 	/**
 	 * Default Page Service Class
 	 * @since 4.3.3
@@ -919,7 +921,7 @@ class TApplication extends TComponent implements ISingleton
 	}
 
 	/**
-	 * @return string|TApplicationMode application mode. Defaults to static::DEFAULT_APPLICATION_MODE - TApplicationMode::Debug.
+	 * @return string|TApplicationMode application mode. Defaults to static::DEFAULT_APPLICATION_MODE - TApplicationMode::Normal.
 	 */
 	public function getMode()
 	{

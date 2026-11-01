@@ -221,6 +221,7 @@ class TClientScriptManagerTest extends \PHPUnit\Framework\TestCase
 			$_SERVER['SCRIPT_FILENAME'] = dirname(__FILE__) . '/../../../harness/features/protected/';
 			$_SERVER['SCRIPT_NAME'] = '/index.php';
 			self::$app = new TApplication(realpath(dirname(__FILE__) . '/../app'));
+			self::$app->setMode(TApplicationMode::Debug);
 
 			self::$app->initApplication();
 		}

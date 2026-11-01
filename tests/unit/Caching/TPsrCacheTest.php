@@ -18,6 +18,7 @@ use Prado\Util\Log\TLogger;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\SimpleCache\CacheInterface;
+use Prado\TApplicationMode;
 
 /**
  * A PSR-16 cache module recording the TTL of each write.
@@ -249,6 +250,7 @@ class TPsrCacheTest extends \PHPUnit\Framework\TestCase
 	protected function setUp(): void
 	{
 		$this->app = new TApplication(__DIR__ . '/mockapp');
+		$this->app->setMode(TApplicationMode::Debug);
 		$this->simple = new TPsrCacheTestSimpleCache();
 		$this->pool = new TPsrCacheTestItemPool();
 	}

@@ -4,6 +4,7 @@ namespace Prado\Test\Unit\Caching;
 
 use Prado\Caching\TMemCache;
 use Prado\TApplication;
+use Prado\TApplicationMode;
 
 class TMemCacheTest extends \PHPUnit\Framework\TestCase
 {
@@ -21,6 +22,7 @@ class TMemCacheTest extends \PHPUnit\Framework\TestCase
 				self::markTestSkipped("'$runtimePath' is not writable");
 			}
 			$this->app = new TApplication($basePath);
+			$this->app->setMode(TApplicationMode::Debug);
 			self::$cache = new TMemCache();
 			self::$cache->init(null);
 		}
