@@ -595,3 +595,97 @@ Prado.WebUI.TActiveDialog.setOpen = function(id, open)
 		control.setOpen(open);
 	}
 };
+
+/**
+ * TLazyPanel control.
+ *
+ * Requests the panel content by callback once: when the page loads (Trigger
+ * Load), when the panel enters the viewport (Visible), or when load() is called
+ * (Manual). Visible uses an IntersectionObserver with the RootMargin option;
+ * without IntersectionObserver the content is requested at once.
+ *
+ * The callback response replaces the panel with its content, which renders
+ * without aria-busy. A failed request leaves the placeholder, removes aria-busy,
+ * and sets data-prado-lazy="failed"; load() requests the content again.
+ */
+Prado.WebUI.TLazyPanel = Prado.Class(Prado.WebUI.Control,
+{
+	onInit(options) {
+		this.options = options;
+		this.loading = false;
+		if (!this.element || options.Trigger === 'Manual')
+			return;
+		if (options.Trigger === 'Visible' && typeof IntersectionObserver !== 'undefined') {
+			this.observer = new IntersectionObserver(this.onIntersect.bind(this), { rootMargin: options.RootMargin || '0px' });
+			this.observer.observe(this.element);
+		} else {
+			this.load();
+		}
+	},
+
+	/**
+	 * Loads the content when the panel intersects the extended viewport.
+	 * @param {IntersectionObserverEntry[]} entries the observed changes
+	 */
+	onIntersect(entries) {
+		if (entries.some((entry) => entry.isIntersecting))
+			this.load();
+	},
+
+	/**
+	 * Dispatches the load callback, unless one is in flight.
+	 */
+	load() {
+		if (this.loading || !this.element)
+			return;
+		this.loading = true;
+		this.disconnect();
+		this.element.setAttribute('aria-busy', 'true');
+		this.element.removeAttribute('data-prado-lazy');
+		const userFailure = this.options.onFailure;
+		const options = {
+			...this.options,
+			onFailure: (request, status) => {
+				this.onFailure();
+				if (typeof userFailure === 'function')
+					userFailure(request, status);
+			}
+		};
+		const request = new Prado.CallbackRequest(this.options.EventTarget, options);
+		if (request.dispatch() === false)
+			this.onFailure();
+	},
+
+	/**
+	 * Leaves the placeholder after a failed request, marked as failed and no longer busy.
+	 */
+	onFailure() {
+		this.loading = false;
+		if (this.element) {
+			this.element.removeAttribute('aria-busy');
+			this.element.setAttribute('data-prado-lazy', 'failed');
+		}
+	},
+
+	disconnect() {
+		if (this.observer) {
+			this.observer.disconnect();
+			this.observer = null;
+		}
+	},
+
+	onDone() {
+		this.disconnect();
+	}
+});
+
+/**
+ * Requests the content of the lazy panel with the client ID, as for Trigger Manual or a retry.
+ * @param {string} id the client ID of the panel
+ */
+Prado.WebUI.TLazyPanel.load = function(id)
+{
+	const control = Prado.Registry[id];
+	if (control instanceof Prado.WebUI.TLazyPanel)
+		control.load();
+};

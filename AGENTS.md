@@ -136,6 +136,7 @@ Client-side JavaScript for ActiveControls and related controls lives at `framewo
 | `prado/controls/accordion.js` | TAccordion | Animated expand/collapse sections |
 | `prado/controls/slider.js` | TSlider | Drag-and-drop range slider (custom, not jQuery-UI) |
 | `prado/controls/keyboard.js` | TKeyboard | Virtual on-screen keyboard overlay |
+| `prado/keyshortcuts/keyshortcuts.js` | TWebControl.KeyShortcuts | `Prado.KeyShortcuts` key-binding registry: one document keydown listener for `aria-keyshortcuts` elements and `register()` bindings |
 | `prado/controls/htmlarea.js` | THtmlArea | TinyMCE v3/v4 wrapper with AJAX lifecycle hooks |
 | `prado/controls/htmlarea5.js` | THtmlArea5 | TinyMCE v5+ wrapper (async init) |
 | `prado/datepicker/datepicker.js` | TDatePicker | Popup calendar, format/parse, dropdown/textbox input modes |
@@ -159,6 +160,7 @@ prado.js
  │    ├── controls/keyboard.js
  │    ├── controls/htmlarea.js
  │    └── controls/htmlarea5.js
+ ├── keyshortcuts/keyshortcuts.js
  ├── datepicker/datepicker.js
  │    └── activecontrols/activedatepicker.js
  ├── colorpicker/colorpicker.js

@@ -66,8 +66,16 @@ $packages = [
 		'prado/controls/tabpanel.js',
 	],
 
+	'keyshortcuts' => [
+		'prado/keyshortcuts/keyshortcuts.js',
+	],
+
 	'webtemplate' => [
 		'prado/controls/webtemplate.js',
+	],
+
+	'teleport' => [
+		'prado/controls/teleport.js',
 	],
 
 	'safetycover' => [
@@ -76,6 +84,10 @@ $packages = [
 
 	'rowselect' => [
 		'prado/controls/rowselect.js',
+	],
+
+	'unsavedchanges' => [
+		'prado/controls/unsavedchanges.js',
 	],
 
 	'activedatepicker' => [
@@ -153,13 +165,16 @@ $dependencies = [
 	'htmlarea' => ['jquery', 'prado', 'htmlarea'],
 	'htmlarea5' => ['jquery', 'prado', 'htmlarea5', 'tinymce'],
 	'keyboard' => ['jquery', 'prado', 'keyboard'],
+	'keyshortcuts' => ['jquery', 'prado', 'keyshortcuts'],
 	'slider' => ['jquery', 'prado', 'slider'],
 	'relativetime' => ['jquery', 'prado', 'relativetime'],
 	'canvas' => ['jquery', 'prado', 'canvas'],
 	'proofofwork' => ['jquery', 'prado', 'proofofwork'],
 	'webtemplate' => ['jquery', 'prado', 'webtemplate'],
+	'teleport' => ['jquery', 'prado', 'teleport'],
 	'safetycover' => ['jquery', 'prado', 'safetycover'],
 	'rowselect' => ['jquery', 'prado', 'rowselect'],
+	'unsavedchanges' => ['jquery', 'prado', 'unsavedchanges'],
 	'inlineeditor' => ['jquery', 'prado', 'ajax', 'inlineeditor'],
 	'accordion' => ['jquery', 'prado', 'accordion'],
 	'ratings' => ['jquery', 'prado', 'ajax', 'ratings'],

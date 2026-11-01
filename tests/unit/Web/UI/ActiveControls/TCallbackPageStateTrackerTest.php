@@ -62,6 +62,35 @@ class FakeTrackedControl
 }
 
 /**
+ * Control double with key shortcut attributes and a page that records script packages.
+ */
+class FakeKeyShortcutControl extends FakeTrackedControl
+{
+	public array $keyShortcutsAttributes = [];
+	public array $pradoScripts = [];
+
+	public function getKeyShortcutsAttributes(): array
+	{
+		return $this->keyShortcutsAttributes;
+	}
+
+	public function getPage(): object
+	{
+		return $this;
+	}
+
+	public function getClientScript(): object
+	{
+		return $this;
+	}
+
+	public function registerPradoScript(string $name): void
+	{
+		$this->pradoScripts[] = $name;
+	}
+}
+
+/**
  * Subclass that injects FakeCallbackClient and exposes protected methods.
  */
 class TCallbackPageStateTrackerTestable extends TCallbackPageStateTracker
@@ -151,7 +180,7 @@ class TCallbackPageStateTrackerTest extends TestCase
 		$states = $this->tracker->exposedGetStatesToTrack();
 		$expected = [
 			'Visible', 'Enabled', 'Attributes', 'Style',
-			'TabIndex', 'ToolTip', 'AccessKey',
+			'TabIndex', 'ToolTip', 'AccessKey', 'KeyShortcuts', 'KeyShortcutScope', 'KeyShortcutAllowReserved',
 			'Translate', 'Lang', 'Dir', 'Hidden', 'SpellCheck',
 			'Draggable', 'ContentEditable', 'InputMode', 'EnterKeyHint',
 			'Inert', 'Popover', 'Slot', 'AutoCapitalize', 'AutoCorrect',
@@ -400,5 +429,56 @@ class TCallbackPageStateTrackerTest extends TestCase
 		$this->assertNotEmpty($sets, 'setAttribute must be called when control is disabled');
 		$this->assertSame('disabled', $sets[0][1]);
 		$this->assertSame('disabled', $sets[0][2]);
+	}
+
+	// -----------------------------------------------------------------------
+	// Key shortcuts
+	// -----------------------------------------------------------------------
+
+	public function testKeyShortcutsSetOnceForSeveralChangedProperties()
+	{
+		$control = new FakeKeyShortcutControl();
+		$tracker = new TCallbackPageStateTrackerTestable($control, $this->client);
+		$tracker->trackChanges();
+		$control->setViewState('KeyShortcuts', 'Alt+B');
+		$control->setViewState('KeyShortcutScope', 'toolbar');
+		$control->setViewState('KeyShortcutAllowReserved', true);
+		$control->keyShortcutsAttributes = [
+			'aria-keyshortcuts' => 'Alt+B',
+			'data-prado-keyshortcuts' => 'ctl0_toolbar',
+			'data-prado-keyshortcuts-reserved' => null,
+		];
+		$tracker->respondToChanges();
+
+		$sets = $this->client->getCollectedCalls('setAttribute');
+		$this->assertSame([['ctrl1', 'aria-keyshortcuts', 'Alt+B'], ['ctrl1', 'data-prado-keyshortcuts', 'ctl0_toolbar']], $sets);
+		$this->assertSame([['ctrl1', 'data-prado-keyshortcuts-reserved']], $this->client->getCollectedCalls('removeAttribute'));
+		$this->assertSame(['keyshortcuts'], $control->pradoScripts);
+	}
+
+	public function testKeyShortcutsClearedRemovesAttributes()
+	{
+		$control = new FakeKeyShortcutControl();
+		$control->setViewState('KeyShortcuts', 'Alt+B');
+		$tracker = new TCallbackPageStateTrackerTestable($control, $this->client);
+		$tracker->trackChanges();
+		$control->setViewState('KeyShortcuts', null);
+		$tracker->respondToChanges();
+
+		$this->assertSame([], $this->client->getCollectedCalls('setAttribute'));
+		$this->assertSame([
+			['ctrl1', 'aria-keyshortcuts'],
+			['ctrl1', 'data-prado-keyshortcuts'],
+			['ctrl1', 'data-prado-keyshortcuts-reserved'],
+		], $this->client->getCollectedCalls('removeAttribute'));
+		$this->assertSame([], $control->pradoScripts);
+	}
+
+	public function testKeyShortcutsIgnoredForControlWithoutShortcuts()
+	{
+		$this->tracker->trackChanges();
+		$this->control->setViewState('KeyShortcuts', 'Alt+B');
+		$this->tracker->respondToChanges();
+		$this->assertSame(0, $this->client->getCollectedCallCount());
 	}
 }

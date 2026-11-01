@@ -31,8 +31,11 @@ AJAX-enabled controls triggering server-side processing via XMLHttpRequest callb
 - **`TActiveTextBox`** / **`TActiveDropDownList`** / **`TActiveListBox`** — Callback on text change or selection change.
 - **`TActiveSuggestionList`** — `<datalist>` whose options update when items change in a callback.
 - **`TActiveOutput`** — `<output>` whose text and `for` attribute update in a callback; the live region announces the result.
+- **`TActiveSvg`** — Inline `<svg>` that morphs when its content or attributes change in a callback; nodes keep their listeners.
 
 - **`TActivePanel`** — Container with `refresh()` method for server-side HTML update.
+
+- **`TLazyPanel`** — Renders a placeholder, then loads its content by callback when the page loads, the panel becomes visible, or the client asks; `OnLoadContent`. **`TLazyPanelTrigger`** — enum `Load`, `Visible`, `Manual`.
 
 - **`TActiveDataGrid`** / **`TActiveDataList`** / **`TActiveRepeater`** — Data controls with callback paging/sorting/editing.
 

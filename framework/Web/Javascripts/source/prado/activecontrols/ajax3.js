@@ -311,10 +311,16 @@ Prado.CallbackRequest = Prado.Class(Prado.PostBack,
 		Object.assign(this.options, options || {});
 	},
 
+	/**
+	 * Gets the form of the callback: the form owner of the target element, or the
+	 * form that holds PRADO_PAGESTATE. A `<form method="dialog">` never submits to
+	 * the server, so its controls call back through the page form.
+	 * @return {?HTMLFormElement} the form of the callback
+	 */
 	getForm() {
 		const el = document.getElementById(this.options.ID);
-		const owned = el && el.closest('form');
-		if (owned) return owned;
+		const owned = el && (el.form || el.closest('form'));
+		if (owned && (owned.getAttribute('method') || '').toLowerCase() !== 'dialog') return owned;
 		const ps = document.getElementById('PRADO_PAGESTATE');
 		return ps ? ps.form : null;
 	},
@@ -566,6 +572,8 @@ Prado.CallbackRequest = Prado.Class(Prado.PostBack,
 
 	/**
 	 * Callback OnSuccess event,logs reponse and data to console.
+	 * Dispatches `prado:callbackRedirect` on document before a server redirect, and
+	 * `prado:callbackUpdated` after the response actions run.
 	 */
 	successHandler(data, textStatus, request) {
 		let log;
@@ -598,7 +606,11 @@ Prado.CallbackRequest = Prado.Class(Prado.PostBack,
 
 		const redirectUrl = this.extractContent(Prado.CallbackRequestManager.REDIRECT_HEADER);
 		if (redirectUrl)
-				document.location.href = redirectUrl;
+		{
+			// a server redirect is a leave the page asked for; TUnsavedChangesGuard lets it pass
+			document.dispatchEvent(new CustomEvent('prado:callbackRedirect', { detail: { url: redirectUrl } }));
+			document.location.href = redirectUrl;
+		}
 
 		this.outputDebug();
 
@@ -615,6 +627,8 @@ Prado.CallbackRequest = Prado.Class(Prado.PostBack,
 					} catch (e) {
 						obj.exceptionHandler(e);
 					}
+					// the response's DOM updates have run; TUnsavedChangesGuard re-checks its fields
+					document.dispatchEvent(new CustomEvent('prado:callbackUpdated', { detail: { request: obj } }));
 				};
 				if (transition)
 					obj.applyInViewTransition(apply);

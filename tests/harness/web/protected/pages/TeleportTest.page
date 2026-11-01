@@ -1,0 +1,62 @@
+<com:TContent ID="Content">
+	<h1>Teleport Test Case</h1>
+
+	<p>Postbacks: <com:TLabel ID="postbacks" Text="0" /></p>
+	<p>Saved name: <com:TLabel ID="savedName" /></p>
+	<p>Dialog closed with: <com:TActiveLabel ID="closedWith" /></p>
+	<com:TActiveButton ID="refresh" Text="Refresh" OnCallback="refreshTeleport" />
+	<com:TActiveButton ID="rerender" Text="Re-render outer" OnCallback="rerenderOuter" />
+	<button type="button" id="openEdit" onclick="document.getElementById('ctl0_Content_editDialog').showModal()">Edit name</button>
+	<button type="button" id="openNote" onclick="document.getElementById('ctl0_Content_noteDialog').showModal()">Add note</button>
+
+	<div id="transformed" style="transform: translateX(10px); overflow: hidden; height: 2em;">
+		<span id="anchor">The teleports are here in the template.</span>
+		<com:TTeleport ID="layer">
+			<com:TDialog ID="editDialog" Attributes.aria-labelledby="editTitle">
+				<h2 id="editTitle">Edit name</h2>
+				<com:TLabel ForControl="userName" Text="Name" />
+				<com:TTextBox ID="userName" />
+				<com:TButton ID="save" Text="Save" OnClick="saveClicked" />
+				<form method="dialog" id="editDialogForm">
+					<label for="reason">Reason</label>
+					<input id="reason" name="reason" required />
+					<button id="confirm" value="confirm">Confirm</button>
+					<button id="cancel" value="cancel" formnovalidate>Cancel</button>
+				</form>
+			</com:TDialog>
+
+			<com:TActivePanel ID="replacedPanel">
+				<span id="replacedCount"><%= $this->Page->RefreshCount %></span>
+				<com:TTextBox ID="replacedField" />
+			</com:TActivePanel>
+			<com:TActivePanel ID="morphedPanel" ActiveControl.UpdateMode="Morph">
+				<span id="morphedCount"><%= $this->Page->RefreshCount %></span>
+				<com:TTextBox ID="morphedField" />
+			</com:TActivePanel>
+
+			<div id="toast" role="status" style="position: fixed; right: 0; bottom: 0;">Saved</div>
+		</com:TTeleport>
+	</div>
+
+	<com:TTeleport ID="noteLayer">
+		<com:TActiveDialog ID="noteDialog" Attributes.aria-labelledby="noteTitle" OnClose="noteClosed">
+			<h2 id="noteTitle">Add note</h2>
+			<form method="dialog">
+				<com:TLabel ForControl="noteText" Text="Note" />
+				<com:TTextBox ID="noteText" />
+				<button id="noteOk" value="ok">OK</button>
+			</form>
+		</com:TActiveDialog>
+	</com:TTeleport>
+
+	<com:TActivePanel ID="outer">
+		<span id="outerCount"><%= $this->Page->RefreshCount %></span>
+		<com:TTeleport ID="innerLayer">
+			<span id="innerCount"><%= $this->Page->RefreshCount %></span>
+			<com:TTextBox ID="innerField" />
+		</com:TTeleport>
+		<com:TTeleport ID="lateLayer" Visible="false">
+			<span id="lateCount"><%= $this->Page->RefreshCount %></span>
+		</com:TTeleport>
+	</com:TActivePanel>
+</com:TContent>

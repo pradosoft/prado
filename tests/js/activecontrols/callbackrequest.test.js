@@ -269,3 +269,38 @@ describe('Prado.CallbackRequest_serializePageInputs', () => {
 		expect(Prado.CallbackRequest_serializePageInputs()).toBe('h=a%0D%0Ab');
 	});
 });
+
+// ─── getForm() ────────────────────────────────────────────────────────────────
+
+describe('Prado.CallbackRequest — getForm()', () => {
+	beforeEach(() => {
+		document.body.innerHTML =
+			'<form id="PageForm" method="post"><input id="PRADO_PAGESTATE" name="PRADO_PAGESTATE"><input id="inside"></form>' +
+			'<div><input id="outside" form="PageForm"><span id="loose"></span>' +
+			'<form id="Other" method="post"><input id="inOther"></form>' +
+			'<dialog><form id="DialogForm" method="dialog"><button id="inDialog">OK</button></form></dialog></div>';
+	});
+
+	afterEach(() => {
+		document.body.innerHTML = '';
+	});
+
+	const formOf = (id) => new CallbackRequest(id, { ID: id }).getForm().id;
+
+	it('is the form that holds the target', () => {
+		expect(formOf('inside')).toBe('PageForm');
+		expect(formOf('inOther')).toBe('Other');
+	});
+
+	it('is the form owner of a target with the form attribute', () => {
+		expect(formOf('outside')).toBe('PageForm');
+	});
+
+	it('is the page form for a target outside any form', () => {
+		expect(formOf('loose')).toBe('PageForm');
+	});
+
+	it('is the page form for a target inside a dialog form', () => {
+		expect(formOf('inDialog')).toBe('PageForm');
+	});
+});

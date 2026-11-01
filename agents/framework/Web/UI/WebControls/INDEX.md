@@ -9,7 +9,9 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 ## Base Classes
 
-- **[`TWebControl`](TWebControl.md)** — Base for all WebControls. Adds HTML attribute management (style, CSS class, AccessKey, TabIndex, ToolTip, etc.) and standard HTML rendering helpers. Extends `TControl`.
+- **[`TWebControl`](TWebControl.md)** — Base for all WebControls. Adds HTML attribute management (style, CSS class, AccessKey, KeyShortcuts, TabIndex, ToolTip, etc.) and standard HTML rendering helpers. Extends `TControl`.
+
+- **[`TKeyShortcuts`](TKeyShortcuts.md)** — Validates and normalizes `aria-keyshortcuts` values and lists the reserved shortcuts for `TWebControl.KeyShortcuts` and the `Prado.KeyShortcuts` client registry (`keyshortcuts` package). @since 4.4.0
 
 - **[`TI18NWebControl`](TI18NWebControl.md)** — Extends `TWebControl` with `TI18NControlTrait`, adding `Culture` and `Charset` properties for I18N-aware controls. @since 4.3.3
 
@@ -52,6 +54,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 | `TRadioButtonList` | multiple `<input type="radio">` | Same as TCheckBoxList |
 | `TFileUpload` | `<input type="file">` | `HasFile`, `FileName`, `FileSize`, `FileType`, `LocalName`; `SaveAs($path)` |
 | `THiddenField` | `<input type="hidden">` | `Value`, `OnValueChanged` |
+| [`TUnsavedChangesGuard`](TUnsavedChangesGuard.md) | `<span>` (status) | Marks changed fields (`data-prado-dirty`, `DirtyCssClass`) and warns on leave through `beforeunload`; `ControlToWatch`, `StatusText`, `markClean()`; JS in `controls/unsavedchanges.js` (@since 4.4.0) |
 
 ## Display Controls
 
@@ -87,6 +90,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 | `TKeyboard` | Virtual on-screen keyboard; JS in `controls/keyboard.js` |
 | `TRatingList` | Star/block rating; JS in `ratings/ratings.js` |
 | `TRelativeTime` | Live "time ago" in a `<time>` element; extends `TTime`; JS in `controls/relativetime.js` |
+| [`TTeleport`](TTeleport.md) | Renders its content after `</form>`, outside the page form: a native `<form method="dialog">`, overlays, toasts; JS in `controls/teleport.js` sets the `form` attribute of its fields (@since 4.4.0) |
 
 ## Data Controls
 
