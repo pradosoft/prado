@@ -63,6 +63,6 @@ All caching in Prado 5 is PSR compliant. A new application reaches its cache thr
 
 - **Template Method pattern** — [`TCache`](TCache.md) defines the public API flow; subclasses only implement the four backend-specific protected methods.
 - **Serialisation** — Values and dependencies are serialised together before storage. Ensure all objects stored in cache are serialisable.
-- **`add()` vs `set()`** — `add()` is a conditional set (no-op if the key already exists); `set()` always overwrites. `add()` is atomic on TAPCCache, TMemCache, TRedisCache, and TEtcdCache; TFileCache and TDbCache leave a race window. There is no increment.
+- **`add()` vs `set()`** — `add()` is a conditional set (no-op if the key already exists); `set()` always overwrites. `add()` is atomic on TAPCCache, TMemCache, TRedisCache, and TEtcdCache; TFileCache and TDbCache leave a race window. [`TCacheMutex`](../Util/Mutex/TCacheMutex.md) locks through `add()`. There is no increment.
 - **Key prefix** — Two apps sharing the same Memcached/Redis instance are isolated by default via the key prefix. Override `KeyPrefix` if intentional sharing is needed.
 - **`TDbCache` cleanup** — Expired entries are cleaned on a configurable interval (`FlushInterval`), not on every read. For aggressive cleanup, register the cron task explicitly.
