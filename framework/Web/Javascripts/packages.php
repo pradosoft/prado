@@ -78,6 +78,10 @@ $packages = [
 		'prado/controls/rowselect.js',
 	],
 
+	'unsavedchanges' => [
+		'prado/controls/unsavedchanges.js',
+	],
+
 	'activedatepicker' => [
 		'prado/activecontrols/activedatepicker.js',
 	],
@@ -160,6 +164,7 @@ $dependencies = [
 	'webtemplate' => ['jquery', 'prado', 'webtemplate'],
 	'safetycover' => ['jquery', 'prado', 'safetycover'],
 	'rowselect' => ['jquery', 'prado', 'rowselect'],
+	'unsavedchanges' => ['jquery', 'prado', 'unsavedchanges'],
 	'inlineeditor' => ['jquery', 'prado', 'ajax', 'inlineeditor'],
 	'accordion' => ['jquery', 'prado', 'accordion'],
 	'ratings' => ['jquery', 'prado', 'ajax', 'ratings'],
