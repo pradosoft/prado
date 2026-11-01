@@ -647,17 +647,17 @@ jsonservice_response_type_invalid		= JSON class {0} is invalid. It should be TJs
 jsonservice_class_required			= TJsonService requires 'class' attribute in its JSON elements.
 jsonservice_provider_unknown			= Unknown JSON provider ''{0}'' requested.
 
-servereventbroker_name_invalid			= Server event channel or event name '{0}' is invalid. It must be 1 to 128 letters, digits, '_', '.', ':', or '-'.
-servereventbroker_data_invalid			= The data of server event '{1}' on channel '{0}' is not JSON-encodable: {2}.
-servereventbroker_buffersize_invalid	= TServerEventBroker.BufferSize must be at least 1, '{0}' given.
-servereventbroker_eventlifetime_invalid	= TServerEventBroker.EventLifetime must be at least 1 second, '{0}' given.
-servereventbroker_id_invalid			= {0}.BrokerID '{1}' does not point to a module implementing IServerEventBroker.
+servereventbroker_name_invalid			= Server event channel or event name ''{0}'' is invalid. It must be 1 to 128 letters, digits, '_', '.', ':', or '-'.
+servereventbroker_data_invalid			= The data of server event ''{1}'' on channel ''{0}'' is not JSON-encodable: {2}.
+servereventbroker_buffersize_invalid	= TServerEventBroker.BufferSize must be at least 1, ''{0}'' given.
+servereventbroker_eventlifetime_invalid	= TServerEventBroker.EventLifetime must be at least 1 second, ''{0}'' given.
+servereventbroker_id_invalid			= {0}.BrokerID ''{1}'' does not point to a module implementing IServerEventBroker.
 servereventbroker_required				= {0} requires a server event broker. Configure a module implementing IServerEventBroker or set {0}.BrokerID.
-servereventcachebroker_pollinterval_invalid	= TServerEventCacheBroker.PollInterval must be greater than 0 seconds, '{0}' given.
-servereventstreamer_maxlifetime_invalid	= Server event stream MaxLifetime must be greater than 0 seconds, '{0}' given.
-servereventstreamer_heartbeatinterval_invalid	= Server event stream HeartbeatInterval must be greater than 0 seconds, '{0}' given.
-servereventstreamer_retryinterval_invalid	= Server event stream RetryInterval must be at least 0 milliseconds, '{0}' given.
-servereventtriggeredcallback_channel_invalid	= TServerEventTriggeredCallback '{0}' requires a valid Channel; '{1}' must be 1 to 128 letters, digits, '_', '.', ':', or '-'.
+servereventcachebroker_pollinterval_invalid	= TServerEventCacheBroker.PollInterval must be greater than 0 seconds, ''{0}'' given.
+servereventstreamer_maxlifetime_invalid	= Server event stream MaxLifetime must be greater than 0 seconds, ''{0}'' given.
+servereventstreamer_heartbeatinterval_invalid	= Server event stream HeartbeatInterval must be greater than 0 seconds, ''{0}'' given.
+servereventstreamer_retryinterval_invalid	= Server event stream RetryInterval must be at least 0 milliseconds, ''{0}'' given.
+servereventtriggeredcallback_channel_invalid	= TServerEventTriggeredCallback ''{0}'' requires a valid Channel; ''{1}'' must be 1 to 128 letters, digits, '_', '.', ':', or '-'.
 
 dbusermanager_userclass_required		= TDbUserManager.UserClass is required.
 dbusermanager_userclass_invalid			= TDbUserManager.UserClass ''{0}'' is not a valid user class. The class must extend TDbUser.
