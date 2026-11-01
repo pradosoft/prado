@@ -26,7 +26,8 @@ use Prado\Web\THttpUtility;
  * A field is changed while it differs from the value the server rendered, so undoing a
  * change clears it. Text inputs, textareas, selects, checkboxes, radios, and file inputs
  * are watched. Hidden and button inputs are not. A field inside an element with the
- * `data-prado-dirty-ignore` attribute is not watched.
+ * `data-prado-dirty-ignore` attribute is not watched. A template sets it through the
+ * {@see TWebControl::getDataset Dataset} subproperty: `Dataset.prado-dirty-ignore="true"`.
  *
  * | State | Client markup |
  * |---|---|
@@ -48,6 +49,7 @@ use Prado\Web\THttpUtility;
  * ```php
  * <com:TUnsavedChangesGuard ID="Guard" ControlToWatch="EditPanel"
  *     StatusText="You have unsaved changes." DirtyCssClass="changed" />
+ * <com:TTextBox ID="Search" Dataset.prado-dirty-ignore="true" />
  * ```
  *
  * The server does not learn which fields changed.

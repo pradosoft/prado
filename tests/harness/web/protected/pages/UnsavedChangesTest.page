@@ -41,7 +41,7 @@
 	</p>
 	<p>
 		<com:TLabel ForControl="search" Text="Search" />
-		<com:TTextBox ID="search" Attributes.data-prado-dirty-ignore="true" />
+		<com:TTextBox ID="search" Dataset.prado-dirty-ignore="true" />
 	</p>
 	<com:TActivePanel ID="panel">
 		<com:TLabel ForControl="server" Text="Server value" />

@@ -14,6 +14,7 @@ TUnsavedChangesGuard marks the fields a user changed and warns through `beforeun
 ```php
 <com:TUnsavedChangesGuard ID="Guard" ControlToWatch="EditPanel"
     StatusText="You have unsaved changes." DirtyCssClass="changed" />
+<com:TTextBox ID="Search" Dataset.prado-dirty-ignore="true" />
 ```
 
 **Scope:** the form holding the guard, or the element of `ControlToWatch` (resolved by `findControl()`, must render its ClientID, such as a TPanel). An unknown ID throws `unsavedchangesguard_controltowatch_invalid`.
@@ -31,7 +32,7 @@ The baseline is the rendered default, so typing and undoing clears the mark, and
 | select-multiple | any option's `selected` differs from `defaultSelected` |
 | file | `files` differ from the baseline (none, or the files at `markClean()`) |
 
-Not watched: `hidden`, `button`, `submit`, `reset`, `image` inputs, and a field inside `[data-prado-dirty-ignore]`. `TClientScriptManager` renders the Prado state fields (`PRADO_PAGESTATE`, `PRADO_CSRF_TOKEN`, registered hidden fields) as `type="text"` inputs (#642) in a container with that attribute. The scope is re-checked on `input`/`change` (capturing), `prado:callbackUpdated`, form `reset`, and `pageshow`.
+Not watched: `hidden`, `button`, `submit`, `reset`, `image` inputs, and a field inside `[data-prado-dirty-ignore]`, which a template sets with `Dataset.prado-dirty-ignore="true"` (the `TWebControl` data-* collection adds the prefix). `TClientScriptManager` renders the Prado state fields (`PRADO_PAGESTATE`, `PRADO_CSRF_TOKEN`, registered hidden fields) as `type="text"` inputs (#642) in a container with that attribute. The scope is re-checked on `input`/`change` (capturing), `prado:callbackUpdated`, form `reset`, and `pageshow`.
 
 ## Client Markup
 

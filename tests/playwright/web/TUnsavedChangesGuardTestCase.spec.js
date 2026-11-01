@@ -103,10 +103,11 @@ test('TUnsavedChangesGuardTestCase: each field type marks its change', async ({ 
 });
 
 /**
- * A field under data-prado-dirty-ignore is not watched.
+ * A field under data-prado-dirty-ignore, set by Dataset.prado-dirty-ignore, is not watched.
  */
 test('TUnsavedChangesGuardTestCase: an ignored field stays clean', async ({ page }) => {
 	await open(page);
+	await expect(page.locator(`#${B}search`)).toHaveAttribute('data-prado-dirty-ignore', 'true');
 	await typeInto(page, 'search', 'query');
 	await expect(page.locator(`#${B}search`)).not.toHaveAttribute('data-prado-dirty', '');
 	await expectDirty(page, false);
