@@ -7,7 +7,7 @@
 **Location:** `framework/Web/Services/TServerEventService.php`
 **Namespace:** `Prado\Web\Services`
 **Extends:** `Prado\TService`
-**Uses:** `TApplicationClockAwareTrait`, `TServerEventBrokerIDTrait`
+**Uses:** `TServerEventBrokerIDTrait`
 **Since:** 4.4.0
 
 ## Overview
@@ -40,35 +40,46 @@ Resume point: the `Last-Event-ID` header, else the `lastEventId` query parameter
 
 ## Stream
 
-1. `beginStream()`: headers, `releaseSession()` (writes and closes the PHP session so its lock does not hold the user's other requests), `openOutput()` (`zlib.output_compression` off, `ignore_user_abort(true)`, `set_time_limit(MaxLifetime + 30)`, `THttpResponse::flush(false)`, every removable output buffer ended).
-2. `retry: RetryInterval`.
-3. Loop until `MaxLifetime` passes: `broker->receive(channel, lastId, wait)`; each event is `id: <id>\ndata: {"event":name,"data":data}\n\n`; after `HeartbeatInterval` quiet seconds a `: heartbeat` comment. `sendChunk()` writes and flushes; `isClientConnected()` false ends the loop.
+The service is the PHP SAPI host of a [`TServerEventStreamer`](TServerEventStreamer.md):
+
+1. `releaseSession()` writes and closes the PHP session so its lock does not hold the user's other requests.
+2. `getStreamer()->run(createSink(), broker, channel, lastId)`. The sink is a [`TServerEventResponseSink`](TServerEventResponseSink.md) over the response with a time limit of `MaxLifetime + TIME_LIMIT_MARGIN` (30) seconds.
+3. The streamer opens the sink with `TServerEventStreamer::getHeaders()`, sends `retry:`, the events, and heartbeats until `MaxLifetime` passes or the sink reports a disconnect, and closes the sink.
 4. The response ends; the browser reconnects after `retry` with `Last-Event-ID`.
+
+| Layer | PHP SAPI | Event loop host (HTTP/2 server) |
+|---|---|---|
+| request, channel check, token | `TServerEventService::run()` | the host's request handler, with `TServerEventBroker::isValidName()` and `verifyChannelToken()` |
+| resume point | `resolveLastEventId()` | `TServerEventStreamer::resolveLastEventId($broker, $channel, $header)` |
+| format, timing, loop | `TServerEventStreamer` | the same, one `run()` per stream in a fiber |
+| output, disconnect | `TServerEventResponseSink` (`THttpResponse`, `connection_aborted()`) | an [`IServerEventSink`](IServerEventSink.md) over the response stream (flow-controlled write, stream close or reset) |
+| waiting | `TServerEventCacheBroker` polls | `TServerEventMemoryBroker` wakes the fiber on `publish()` |
 
 ## Properties
 
 | Property | Default | Notes |
 |---|---|---|
-| `MaxLifetime` | 30 | seconds a stream stays open; > 0 |
-| `HeartbeatInterval` | 15 | quiet seconds before `: heartbeat`; > 0 |
-| `RetryInterval` | 3000 | milliseconds, the `retry:` field; >= 0 |
+| `MaxLifetime` | 30 | seconds a stream stays open; > 0; forwards to the streamer |
+| `HeartbeatInterval` | 15 | quiet seconds before `: heartbeat`; > 0; forwards to the streamer |
+| `RetryInterval` | 3000 | milliseconds, the `retry:` field; >= 0; forwards to the streamer |
 | `BrokerID` | `''` | the broker module; empty finds the first by type |
+| `Streamer` | read-only | the `TServerEventStreamer`, created once by `createStreamer()` |
 
 ## Methods
 
 | Method | Description |
 |---|---|
 | `static createChannelToken($channel, ?$app)` | hex `hash_hmac(HashAlgorithm, "prado-serverevent\0" . channel . "\0" . userName, ValidationKey)` |
+| `static verifyChannelToken($channel, $token, ?$app)` | `hash_equals` with `createChannelToken()`; false for an empty token |
 | `static constructChannelUrl($channel, $serviceID = 'events', ?$app)` | `?events=<channel>&token=<token>`, unencoded `&` |
-| `formatEvent(TServerEvent)` | the `id:`/`data:` frame |
-| `authorizeChannel($channel, $token)` | `hash_equals` of the tokens; the override seam for an application check |
-| `resolveLastEventId`, `beginStream`, `releaseSession`, `openOutput`, `stream`, `sendChunk`, `isClientConnected` | protected seams; tests override the output ones |
+| `authorizeChannel($channel, $token)` | `verifyChannelToken()`; the override seam for an application check |
+| `resolveLastEventId`, `releaseSession`, `createStreamer`, `createSink` | protected seams; tests replace the sink |
 
-Time is read through the application clock (`TApplicationClockAwareTrait`); with a pinned `TMockClock` and a cache broker the whole stream runs without real waiting.
+Time is read through the streamer's clock (`TApplicationClockAwareTrait`); with a pinned `TMockClock` on `getStreamer()` and a cache broker the whole stream runs without real waiting.
 
 ## Gotchas
 - Under PHP-FPM or mod_php each open stream holds a worker for up to `MaxLifetime`. Size the pool for the open pages, or use `TTimeTriggeredCallback` polling.
-- Over HTTP/1.1 a browser opens at most six connections per host; each channel of a page takes one.
+- Over HTTP/1.1 a browser opens at most six connections per host, shared by its tabs; each channel of a page takes one. Over HTTP/2 a stream is one stream of the shared connection, limited by `SETTINGS_MAX_CONCURRENT_STREAMS`. HTTP/2 at a proxy in front of FPM still holds one worker per stream.
 - The PHP built-in server serves one request at a time unless `PHP_CLI_SERVER_WORKERS` is set; an open stream holds every other request until it ends.
 - The token binds the channel to the user name, so logging out or in invalidates a rendered stream URL. It never expires on its own; `authorizeChannel()` is the place for revocation.
 - `CSRF` is not checked: the stream is a GET that changes nothing.

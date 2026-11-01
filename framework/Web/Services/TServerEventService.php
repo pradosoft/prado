@@ -10,13 +10,10 @@
 
 namespace Prado\Web\Services;
 
-use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Prado;
 use Prado\TApplication;
 use Prado\TPropertyValue;
 use Prado\TService;
-use Prado\Util\Clock\TApplicationClockAwareTrait;
-use Prado\Web\THttpHeaderName;
 use Prado\Web\TMediaType;
 
 /**
@@ -50,14 +47,13 @@ use Prado\Web\TMediaType;
  * channel, gets `403 Forbidden`. An invalid channel name gets `404 Not Found`. A browser
  * `EventSource` does not reconnect after either.
  *
- * **Stream.** Before the first byte the service closes the PHP session, so the session lock
- * does not hold the user's other requests, turns off output compression and every removable
- * output buffer, and sends `Cache-Control: no-cache` and `X-Accel-Buffering: no`. The stream
- * starts with `retry:` {@see getRetryInterval RetryInterval}, sends each event as `id:` and
- * a `data:` line of JSON `{"event": name, "data": data}`, and sends a `: heartbeat` comment
- * after {@see getHeartbeatInterval HeartbeatInterval} quiet seconds. It ends after
- * {@see getMaxLifetime MaxLifetime} seconds or when the client disconnects. The browser then
- * reconnects with `Last-Event-ID` and resumes after its last event.
+ * **Stream.** The service closes the PHP session before the first byte, so the session lock
+ * does not hold the user's other requests. Its {@see getStreamer() streamer} then writes the
+ * stream to a {@see TServerEventResponseSink}: `retry:`, the events, and heartbeats, until
+ * {@see getMaxLifetime MaxLifetime} passes or the client disconnects. The browser reconnects
+ * with `Last-Event-ID` and resumes after its last event. A server on the event loop, such as
+ * an HTTP/2 server, runs a {@see TServerEventStreamer} over its own {@see IServerEventSink}
+ * and checks the token with {@see verifyChannelToken()}.
  *
  * **Resume point.** A `Last-Event-ID` request header, else the `lastEventId` query parameter
  * (the ID the page rendered), else the channel's latest event ID at connect time.
@@ -65,14 +61,14 @@ use Prado\Web\TMediaType;
  * Under PHP-FPM or mod_php each open stream holds a worker for up to MaxLifetime seconds.
  * Size the pool for the open pages, or keep {@see \Prado\Web\UI\ActiveControls\TTimeTriggeredCallback}
  * polling where a held worker per page is too costly. Over HTTP/1.1 a browser opens at most
- * six connections per host, and each channel of a page takes one.
+ * six connections per host, and each channel of a page takes one. Over HTTP/2 a stream is
+ * one stream of the shared connection.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
  */
 class TServerEventService extends TService
 {
-	use TApplicationClockAwareTrait;
 	use TServerEventBrokerIDTrait;
 
 	/** The default service ID. */
@@ -84,26 +80,11 @@ class TServerEventService extends TService
 	/** The query parameter of the event ID to resume after. */
 	public const LAST_EVENT_ID_PARAMETER = 'lastEventId';
 
-	/** The request header of the event ID to resume after. */
-	public const LAST_EVENT_ID_HEADER = 'Last-Event-ID';
+	/** The seconds `set_time_limit()` allows beyond MaxLifetime. */
+	public const TIME_LIMIT_MARGIN = 30;
 
-	/** The default seconds a stream stays open. */
-	public const DEFAULT_MAX_LIFETIME = 30.0;
-
-	/** The default quiet seconds before a heartbeat comment. */
-	public const DEFAULT_HEARTBEAT_INTERVAL = 15.0;
-
-	/** The default milliseconds the browser waits before reconnecting. */
-	public const DEFAULT_RETRY_INTERVAL = 3000;
-
-	/** @var float The seconds a stream stays open. */
-	private float $_maxLifetime = self::DEFAULT_MAX_LIFETIME;
-
-	/** @var float The quiet seconds before a heartbeat comment. */
-	private float $_heartbeatInterval = self::DEFAULT_HEARTBEAT_INTERVAL;
-
-	/** @var int The milliseconds the browser waits before reconnecting. */
-	private int $_retryInterval = self::DEFAULT_RETRY_INTERVAL;
+	/** @var ?TServerEventStreamer The streamer, created on first use. */
+	private ?TServerEventStreamer $_streamer = null;
 
 	/**
 	 * Computes the token that grants the current user a channel.
@@ -117,6 +98,18 @@ class TServerEventService extends TService
 		$security = $app->getSecurityManager();
 		$user = $app->getUser()?->getName() ?? '';
 		return hash_hmac($security->getHashAlgorithm(), "prado-serverevent\0" . $channel . "\0" . $user, $security->getValidationKey());
+	}
+
+	/**
+	 * Returns whether a token grants the current user a channel.
+	 * @param string $channel The channel name.
+	 * @param string $token The token of the request.
+	 * @param ?TApplication $app The application; defaults to {@see Prado::getApplication()}.
+	 * @return bool Whether the token equals {@see createChannelToken()}, compared in constant time.
+	 */
+	public static function verifyChannelToken(string $channel, string $token, ?TApplication $app = null): bool
+	{
+		return $token !== '' && hash_equals(static::createChannelToken($channel, $app), $token);
 	}
 
 	/**
@@ -134,20 +127,28 @@ class TServerEventService extends TService
 	}
 
 	/**
+	 * @return TServerEventStreamer The streamer that writes the streams of this service.
+	 */
+	public function getStreamer(): TServerEventStreamer
+	{
+		return $this->_streamer ??= $this->createStreamer();
+	}
+
+	/**
 	 * @return float The seconds a stream stays open. Defaults to 30.
 	 */
 	public function getMaxLifetime(): float
 	{
-		return $this->_maxLifetime;
+		return $this->getStreamer()->getMaxLifetime();
 	}
 
 	/**
 	 * @param float|string $value The seconds a stream stays open, greater than 0.
-	 * @throws TInvalidDataValueException When the value is not positive.
+	 * @throws \Prado\Exceptions\TInvalidDataValueException When the value is not positive.
 	 */
 	public function setMaxLifetime($value): void
 	{
-		$this->_maxLifetime = $this->ensurePositive($value, 'servereventservice_maxlifetime_invalid');
+		$this->getStreamer()->setMaxLifetime($value);
 	}
 
 	/**
@@ -155,16 +156,16 @@ class TServerEventService extends TService
 	 */
 	public function getHeartbeatInterval(): float
 	{
-		return $this->_heartbeatInterval;
+		return $this->getStreamer()->getHeartbeatInterval();
 	}
 
 	/**
 	 * @param float|string $value The quiet seconds before a heartbeat comment, greater than 0.
-	 * @throws TInvalidDataValueException When the value is not positive.
+	 * @throws \Prado\Exceptions\TInvalidDataValueException When the value is not positive.
 	 */
 	public function setHeartbeatInterval($value): void
 	{
-		$this->_heartbeatInterval = $this->ensurePositive($value, 'servereventservice_heartbeatinterval_invalid');
+		$this->getStreamer()->setHeartbeatInterval($value);
 	}
 
 	/**
@@ -172,20 +173,16 @@ class TServerEventService extends TService
 	 */
 	public function getRetryInterval(): int
 	{
-		return $this->_retryInterval;
+		return $this->getStreamer()->getRetryInterval();
 	}
 
 	/**
 	 * @param int|string $value The milliseconds the browser waits before reconnecting, at least 0.
-	 * @throws TInvalidDataValueException When the value is negative.
+	 * @throws \Prado\Exceptions\TInvalidDataValueException When the value is negative.
 	 */
 	public function setRetryInterval($value): void
 	{
-		$value = TPropertyValue::ensureInteger($value);
-		if ($value < 0) {
-			throw new TInvalidDataValueException('servereventservice_retryinterval_invalid', $value);
-		}
-		$this->_retryInterval = $value;
+		$this->getStreamer()->setRetryInterval($value);
 	}
 
 	/**
@@ -207,19 +204,8 @@ class TServerEventService extends TService
 		}
 		$broker = $this->resolveBroker();
 		$lastEventId = $this->resolveLastEventId($broker, $channel);
-		$this->beginStream();
-		$this->stream($broker, $channel, $lastEventId);
-	}
-
-	/**
-	 * Formats an event as an `id:` and `data:` frame.
-	 * @param TServerEvent $event The event.
-	 * @return string The frame, ending in a blank line.
-	 */
-	public function formatEvent(TServerEvent $event): string
-	{
-		$data = json_encode(['event' => $event->getName(), 'data' => $event->getData()], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
-		return 'id: ' . $event->getID() . "\ndata: " . $data . "\n\n";
+		$this->releaseSession();
+		$this->getStreamer()->run($this->createSink(), $broker, $channel, $lastEventId);
 	}
 
 	/**
@@ -231,11 +217,11 @@ class TServerEventService extends TService
 	 */
 	protected function authorizeChannel(string $channel, string $token): bool
 	{
-		return $token !== '' && hash_equals(static::createChannelToken($channel, $this->getApplication()), $token);
+		return static::verifyChannelToken($channel, $token, $this->getApplication());
 	}
 
 	/**
-	 * Resolves the event ID the stream resumes after.
+	 * Resolves the event ID the stream resumes after, through {@see TServerEventStreamer::resolveLastEventId()}.
 	 * @param IServerEventBroker $broker The broker.
 	 * @param string $channel The channel name.
 	 * @return string The `Last-Event-ID` header, else the `lastEventId` query parameter, else
@@ -244,27 +230,31 @@ class TServerEventService extends TService
 	protected function resolveLastEventId(IServerEventBroker $broker, string $channel): string
 	{
 		$request = $this->getRequest();
-		if (($header = $request->getHeader(self::LAST_EVENT_ID_HEADER)) !== null) {
-			return TPropertyValue::ensureString($header);
-		}
-		if ($request->contains(self::LAST_EVENT_ID_PARAMETER)) {
-			return TPropertyValue::ensureString($request->itemAt(self::LAST_EVENT_ID_PARAMETER));
-		}
-		return $broker->getLastEventId($channel);
+		$header = $request->getHeader(TServerEventStreamer::LAST_EVENT_ID_HEADER);
+		$parameter = $request->contains(self::LAST_EVENT_ID_PARAMETER) ? $request->itemAt(self::LAST_EVENT_ID_PARAMETER) : null;
+		return TServerEventStreamer::resolveLastEventId(
+			$broker,
+			$channel,
+			$header === null ? null : TPropertyValue::ensureString($header),
+			$parameter === null ? null : TPropertyValue::ensureString($parameter)
+		);
 	}
 
 	/**
-	 * Sets the stream headers, releases the session, and opens unbuffered output.
+	 * @return TServerEventStreamer A new streamer for {@see getStreamer()}.
 	 */
-	protected function beginStream(): void
+	protected function createStreamer(): TServerEventStreamer
 	{
-		$response = $this->getResponse();
-		$response->setContentType(TMediaType::EVENT_STREAM);
-		$response->setCharset('UTF-8');
-		$response->appendHeader(THttpHeaderName::CacheControl . ': no-cache');
-		$response->appendHeader('X-Accel-Buffering: no');
-		$this->releaseSession();
-		$this->openOutput();
+		return new TServerEventStreamer();
+	}
+
+	/**
+	 * @return IServerEventSink The sink of this request: the response, with a time limit of
+	 *   MaxLifetime plus {@see TIME_LIMIT_MARGIN} seconds.
+	 */
+	protected function createSink(): IServerEventSink
+	{
+		return new TServerEventResponseSink($this->getResponse(), (int) ceil($this->getMaxLifetime()) + self::TIME_LIMIT_MARGIN);
 	}
 
 	/**
@@ -281,97 +271,5 @@ class TServerEventService extends TService
 		} else {
 			session_write_close();
 		}
-	}
-
-	/**
-	 * Turns off output compression and the removable output buffers, sends the headers, and
-	 * keeps the request running after a disconnect, so the stream ends through {@see isClientConnected()}.
-	 */
-	protected function openOutput(): void
-	{
-		if (!headers_sent()) {
-			ini_set('zlib.output_compression', '0');
-		}
-		ignore_user_abort(true);
-		if (function_exists('set_time_limit')) {
-			set_time_limit((int) ceil($this->getMaxLifetime()) + 30);
-		}
-		$this->getResponse()->flush(false);
-		while (($status = ob_get_status()) !== [] && ($status['flags'] & PHP_OUTPUT_HANDLER_REMOVABLE)) {
-			ob_end_flush();
-		}
-	}
-
-	/**
-	 * Sends the events of a channel until {@see getMaxLifetime MaxLifetime} passes or the client leaves.
-	 * @param IServerEventBroker $broker The broker.
-	 * @param string $channel The channel name.
-	 * @param string $lastEventId The event ID to resume after.
-	 */
-	protected function stream(IServerEventBroker $broker, string $channel, string $lastEventId): void
-	{
-		$clock = $this->getClock();
-		$deadline = $clock->microtime() + $this->getMaxLifetime();
-		$heartbeat = $this->getHeartbeatInterval();
-		$lastWrite = $clock->microtime();
-		if (!$this->sendChunk('retry: ' . $this->getRetryInterval() . "\n\n")) {
-			return;
-		}
-		while (($now = $clock->microtime()) < $deadline) {
-			$wait = min($deadline - $now, $lastWrite + $heartbeat - $now);
-			$events = $wait > 0 ? $broker->receive($channel, $lastEventId, $wait) : [];
-			if ($events !== []) {
-				$chunk = '';
-				foreach ($events as $event) {
-					$chunk .= $this->formatEvent($event);
-					$lastEventId = $event->getID();
-				}
-			} elseif ($clock->microtime() - $lastWrite >= $heartbeat) {
-				$chunk = ": heartbeat\n\n";
-			} else {
-				continue;
-			}
-			$lastWrite = $clock->microtime();
-			if (!$this->sendChunk($chunk)) {
-				return;
-			}
-		}
-	}
-
-	/**
-	 * Writes a chunk of the stream and flushes it to the client.
-	 * @param string $chunk The chunk.
-	 * @return bool Whether the client is still connected.
-	 */
-	protected function sendChunk(string $chunk): bool
-	{
-		$response = $this->getResponse();
-		$response->write($chunk);
-		$response->flush();
-		return $this->isClientConnected();
-	}
-
-	/**
-	 * @return bool Whether the client is still connected.
-	 */
-	protected function isClientConnected(): bool
-	{
-		return connection_aborted() === 0;
-	}
-
-	/**
-	 * Converts a property value to a positive float.
-	 * @param float|string $value The value.
-	 * @param string $errorCode The error code for a value that is not positive.
-	 * @throws TInvalidDataValueException When the value is not positive.
-	 * @return float The value.
-	 */
-	private function ensurePositive($value, string $errorCode): float
-	{
-		$value = TPropertyValue::ensureFloat($value);
-		if ($value <= 0) {
-			throw new TInvalidDataValueException($errorCode, $value);
-		}
-		return $value;
 	}
 }

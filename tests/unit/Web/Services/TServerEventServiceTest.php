@@ -11,10 +11,12 @@ use Prado\Security\TUser;
 use Prado\Security\TUserManager;
 use Prado\TApplication;
 use Prado\Test\Unit\PradoUnit;
-use Prado\Web\Services\TServerEvent;
+use Prado\Web\Services\IServerEventSink;
 use Prado\Web\Services\TServerEventCacheBroker;
 use Prado\Web\Services\TServerEventMemoryBroker;
+use Prado\Web\Services\TServerEventResponseSink;
 use Prado\Web\Services\TServerEventService;
+use Prado\Web\Services\TServerEventStreamer;
 use Prado\Web\TMediaType;
 use Prado\Xml\TXmlDocument;
 
@@ -92,7 +94,45 @@ class TServerEventServiceTestResponse
 }
 
 /**
- * The service over fake request and response objects; the session and output seams record their calls.
+ * The response sink with the SAPI output calls recorded; a disconnect follows a chunk count.
+ */
+class TServerEventServiceTestSink extends TServerEventResponseSink
+{
+	public array $calls = [];
+	public ?int $connectedChunks = null;
+	public int $chunks = 0;
+	public int $closes = 0;
+
+	public function write(string $chunk): bool
+	{
+		$this->chunks++;
+		return parent::write($chunk);
+	}
+
+	public function close(): void
+	{
+		$this->closes++;
+		parent::close();
+	}
+
+	public function callApplyContentType(string $value): void
+	{
+		$this->applyContentType($value);
+	}
+
+	protected function openOutput(): void
+	{
+		$this->calls[] = 'openOutput';
+	}
+
+	protected function isClientConnected(): bool
+	{
+		return $this->connectedChunks === null || $this->chunks < $this->connectedChunks;
+	}
+}
+
+/**
+ * The service over fake request and response objects; the session seam and the sink record their calls.
  */
 class TServerEventServiceTestService extends TServerEventService
 {
@@ -101,7 +141,7 @@ class TServerEventServiceTestService extends TServerEventService
 	public ?object $broker = null;
 	public array $calls = [];
 	public ?int $connectedChunks = null;
-	public int $chunks = 0;
+	public ?TServerEventServiceTestSink $sink = null;
 
 	public function __construct()
 	{
@@ -130,20 +170,12 @@ class TServerEventServiceTestService extends TServerEventService
 		$this->calls[] = 'releaseSession';
 	}
 
-	protected function openOutput(): void
+	protected function createSink(): IServerEventSink
 	{
-		$this->calls[] = 'openOutput';
-	}
-
-	protected function sendChunk(string $chunk): bool
-	{
-		$this->chunks++;
-		return parent::sendChunk($chunk);
-	}
-
-	protected function isClientConnected(): bool
-	{
-		return $this->connectedChunks === null || $this->chunks < $this->connectedChunks;
+		$this->sink = new TServerEventServiceTestSink($this->getResponse(), parent::createSink()->getTimeLimit());
+		$this->sink->calls = &$this->calls;
+		$this->sink->connectedChunks = $this->connectedChunks;
+		return $this->sink;
 	}
 
 	public function callResolveBroker(): \Prado\Web\Services\IServerEventBroker
@@ -169,7 +201,7 @@ class TServerEventServiceTest extends \PHPUnit\Framework\TestCase
 		$broker->setClock($clock);
 		$broker->setPollInterval(1.0);
 		$service = new TServerEventServiceTestService();
-		$service->setClock($clock);
+		$service->getStreamer()->setClock($clock);
 		$service->broker = $broker;
 		$service->fakeRequest->serviceParameter = 'orders';
 		$service->fakeRequest->items[TServerEventService::TOKEN_PARAMETER] = TServerEventService::createChannelToken('orders');
@@ -264,6 +296,8 @@ class TServerEventServiceTest extends \PHPUnit\Framework\TestCase
 			': heartbeat',
 		], $this->frames($response->output));
 		self::assertSame(4, $response->flushes, 'Each chunk is flushed.');
+		self::assertSame(1, $service->sink->closes);
+		self::assertSame(10 + TServerEventService::TIME_LIMIT_MARGIN, $service->sink->getTimeLimit());
 		self::assertEqualsWithDelta($start + 10, $clock->microtime(), 0.0001);
 	}
 
@@ -344,19 +378,49 @@ class TServerEventServiceTest extends \PHPUnit\Framework\TestCase
 		self::assertStringEndsWith('data: {"event":"changed","data":"now"}', $frames[1]);
 	}
 
-	public function testFormatEvent(): void
+	public function testVerifyChannelToken(): void
+	{
+		$token = TServerEventService::createChannelToken('orders');
+		self::assertTrue(TServerEventService::verifyChannelToken('orders', $token));
+		self::assertFalse(TServerEventService::verifyChannelToken('orders', ''));
+		self::assertFalse(TServerEventService::verifyChannelToken('orders', strtoupper($token)));
+		self::assertFalse(TServerEventService::verifyChannelToken('other', $token));
+	}
+
+	public function testResponseSinkSetsTheHeadersOnTheResponse(): void
+	{
+		$response = new TServerEventServiceTestResponse();
+		$sink = new TServerEventServiceTestSink($response, -5);
+		self::assertSame(0, $sink->getTimeLimit(), 'A negative time limit leaves the limit unchanged.');
+
+		$sink->open(TServerEventStreamer::getHeaders());
+
+		self::assertSame(TMediaType::EVENT_STREAM, $response->contentType);
+		self::assertSame('UTF-8', $response->charset);
+		self::assertSame(['Cache-Control: no-cache', 'X-Accel-Buffering: no'], $response->headers);
+		self::assertSame(['openOutput'], $sink->calls);
+
+		$sink->callApplyContentType('text/plain;Charset="ISO-8859-1"');
+		self::assertSame('text/plain', $response->contentType);
+		self::assertSame('ISO-8859-1', $response->charset);
+	}
+
+	public function testStreamerIsSharedAndCreatedOnce(): void
 	{
 		$service = new TServerEventService();
-		$event = new TServerEvent('ab12-3', 'c', 'note', "line1\nline2");
-		self::assertSame("id: ab12-3\ndata: {\"event\":\"note\",\"data\":\"line1\\nline2\"}\n\n", $service->formatEvent($event));
+		$streamer = $service->getStreamer();
+		self::assertInstanceOf(TServerEventStreamer::class, $streamer);
+		self::assertSame($streamer, $service->getStreamer());
+		$service->setMaxLifetime(12);
+		self::assertSame(12.0, $streamer->getMaxLifetime());
 	}
 
 	public function testPropertyDefaultsAndValidation(): void
 	{
 		$service = new TServerEventService();
-		self::assertSame(TServerEventService::DEFAULT_MAX_LIFETIME, $service->getMaxLifetime());
-		self::assertSame(TServerEventService::DEFAULT_HEARTBEAT_INTERVAL, $service->getHeartbeatInterval());
-		self::assertSame(TServerEventService::DEFAULT_RETRY_INTERVAL, $service->getRetryInterval());
+		self::assertSame(TServerEventStreamer::DEFAULT_MAX_LIFETIME, $service->getMaxLifetime());
+		self::assertSame(TServerEventStreamer::DEFAULT_HEARTBEAT_INTERVAL, $service->getHeartbeatInterval());
+		self::assertSame(TServerEventStreamer::DEFAULT_RETRY_INTERVAL, $service->getRetryInterval());
 		self::assertSame('', $service->getBrokerID());
 		$service->setMaxLifetime('2.5');
 		$service->setHeartbeatInterval('1.5');
@@ -371,7 +435,7 @@ class TServerEventServiceTest extends \PHPUnit\Framework\TestCase
 				$service->$setter($value);
 				self::fail("Expected $setter($value) to throw");
 			} catch (TInvalidDataValueException $e) {
-				self::assertStringStartsWith('servereventservice_', $e->getErrorCode());
+				self::assertStringStartsWith('servereventstreamer_', $e->getErrorCode());
 			}
 		}
 	}
