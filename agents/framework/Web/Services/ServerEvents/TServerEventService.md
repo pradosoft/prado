@@ -75,7 +75,7 @@ The service is the PHP SAPI host of a [`TServerEventStreamer`](TServerEventStrea
 | `authorizeChannel($channel, $token)` | `verifyChannelToken()`; the override seam for an application check |
 | `resolveLastEventId`, `releaseSession`, `createStreamer`, `createSink` | protected seams; tests replace the sink |
 
-Time is read through the streamer's clock (`TApplicationClockAwareTrait`); with a pinned `TMockClock` on `getStreamer()` and a cache broker the whole stream runs without real waiting.
+The streamer measures `MaxLifetime` and the heartbeats on its monotonic clock ([`TMonotonicClockAwareTrait`](../../../Util/Clock/TMonotonicClockAwareTrait.md)), so a wall-clock step does not move them. Tests give `getStreamer()` and the cache broker a monotonic clock that the broker's pinned `TMockClock` advances on each `sleep()`, so a whole stream runs without real waiting.
 
 ## Gotchas
 - Under PHP-FPM or mod_php each open stream holds a worker for up to `MaxLifetime`. Size the pool for the open pages, or use `TTimeTriggeredCallback` polling.

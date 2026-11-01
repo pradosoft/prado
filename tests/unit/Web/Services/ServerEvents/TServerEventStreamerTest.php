@@ -62,9 +62,10 @@ class TServerEventStreamerTest extends \PHPUnit\Framework\TestCase
 		$clock = new TServerEventMockClock();
 		$broker = new TServerEventTestCacheBroker(new TServerEventArrayCache());
 		$broker->setClock($clock);
+		$broker->setMonotonicClock($clock->elapsed);
 		$broker->setPollInterval(1.0);
 		$streamer = new TServerEventStreamer();
-		$streamer->setClock($clock);
+		$streamer->setMonotonicClock($clock->elapsed);
 		return [$streamer, $broker, $clock];
 	}
 
@@ -101,6 +102,33 @@ class TServerEventStreamerTest extends \PHPUnit\Framework\TestCase
 		], $sink->chunks);
 		self::assertSame(1, $sink->closes);
 		self::assertSame($second->getID(), $lastId);
+	}
+
+	/**
+	 * A wall-clock step during a stream, back or forward an hour, keeps MaxLifetime and the heartbeats.
+	 * @dataProvider wallClockStepProvider
+	 */
+	public function testWallClockStepKeepsTheLifetimeAndHeartbeats(float $step): void
+	{
+		[$streamer, $broker, $clock] = $this->streamer();
+		$streamer->setMaxLifetime(10);
+		$streamer->setHeartbeatInterval(4);
+		$clock->onSleep = function ($clock, int $count) use ($step) {
+			if ($count === 2) {
+				$clock->setMicrotime($clock->microtime() + $step);
+			}
+		};
+		$sink = new TServerEventStreamerTestSink();
+
+		$streamer->run($sink, $broker, 'orders', '');
+
+		self::assertSame(["retry: 3000\n\n", ": heartbeat\n\n", ": heartbeat\n\n"], $sink->chunks);
+		self::assertSame(10.0, $clock->elapsed->seconds(), 'The stream lasted MaxLifetime of elapsed time.');
+	}
+
+	public static function wallClockStepProvider(): array
+	{
+		return ['back an hour' => [-3600.0], 'forward an hour' => [3600.0], 'no step' => [0.0]];
 	}
 
 	public function testDisconnectEndsTheStreamAndReturnsTheLastSentId(): void

@@ -7,7 +7,7 @@
 **Location:** `framework/Web/Services/ServerEvents/TServerEventStreamer.php`
 **Namespace:** `Prado\Web\Services\ServerEvents`
 **Extends:** `Prado\TComponent`
-**Uses:** `TApplicationClockAwareTrait`
+**Uses:** [`TMonotonicClockAwareTrait`](../../../Util/Clock/TMonotonicClockAwareTrait.md)
 **Since:** 4.4.0
 
 ## Overview
@@ -30,7 +30,7 @@ TAsync::run(fn () => $streamer->run($sink, $broker, $channel, $lastId));
 
 1. `$sink->open(getHeaders())`.
 2. `retry: RetryInterval`.
-3. Loop until `MaxLifetime` passes: `broker->receive(channel, lastId, wait)`, `wait` bounded by the deadline and the next heartbeat; the events of one receive go out as one chunk of `formatEvent()` frames; after `HeartbeatInterval` quiet seconds a `: heartbeat` comment. `$sink->write()` false ends the loop.
+3. Loop until `MaxLifetime` passes: `broker->receive(channel, lastId, wait)`, `wait` bounded by the deadline and the next heartbeat; the events of one receive go out as one chunk of `formatEvent()` frames; after `HeartbeatInterval` quiet seconds a `: heartbeat` comment. `$sink->write()` false ends the loop. The deadline and heartbeat spacing are elapsed time on `getMonotonicClock()`, so a wall-clock step (NTP, a manual change, a resumed VM) neither ends the stream early nor holds it open past `MaxLifetime`.
 4. `$sink->close()` in a `finally`, so a broker exception still closes the sink.
 
 Returns the ID of the last event sent, or `$lastEventId` when none was sent.

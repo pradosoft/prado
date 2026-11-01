@@ -199,9 +199,10 @@ class TServerEventServiceTest extends \PHPUnit\Framework\TestCase
 		$clock ??= new TServerEventMockClock();
 		$broker = new TServerEventTestCacheBroker(new TServerEventArrayCache());
 		$broker->setClock($clock);
+		$broker->setMonotonicClock($clock->elapsed);
 		$broker->setPollInterval(1.0);
 		$service = new TServerEventServiceTestService();
-		$service->getStreamer()->setClock($clock);
+		$service->getStreamer()->setMonotonicClock($clock->elapsed);
 		$service->broker = $broker;
 		$service->fakeRequest->serviceParameter = 'orders';
 		$service->fakeRequest->items[TServerEventService::TOKEN_PARAMETER] = TServerEventService::createChannelToken('orders');

@@ -13,7 +13,7 @@ namespace Prado\Web\Services\ServerEvents;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\TComponent;
 use Prado\TPropertyValue;
-use Prado\Util\Clock\TApplicationClockAwareTrait;
+use Prado\Util\Clock\TMonotonicClockAwareTrait;
 use Prado\Web\THttpHeaderName;
 use Prado\Web\TMediaType;
 
@@ -44,15 +44,16 @@ use Prado\Web\TMediaType;
  * {@see getRetryInterval RetryInterval}, sends each event as {@see formatEvent()}, and sends a
  * `: heartbeat` comment after {@see getHeartbeatInterval HeartbeatInterval} quiet seconds. It ends
  * after {@see getMaxLifetime MaxLifetime} seconds or when the sink reports a disconnect, then
- * closes the sink. Time is read through the clock, and the wait is the broker's
- * {@see IServerEventBroker::receive()}.
+ * closes the sink. The lifetime and heartbeat spacing are elapsed time from the
+ * {@see getMonotonicClock() monotonic clock}, so a wall-clock change does not lengthen or
+ * shorten them. The wait is the broker's {@see IServerEventBroker::receive()}.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
  */
 class TServerEventStreamer extends TComponent
 {
-	use TApplicationClockAwareTrait;
+	use TMonotonicClockAwareTrait;
 
 	/** The request header of the event ID to resume after. */
 	public const LAST_EVENT_ID_HEADER = 'Last-Event-ID';
@@ -198,14 +199,14 @@ class TServerEventStreamer extends TComponent
 	 */
 	protected function stream(IServerEventSink $sink, IServerEventBroker $broker, string $channel, string $lastEventId): string
 	{
-		$clock = $this->getClock();
-		$deadline = $clock->microtime() + $this->getMaxLifetime();
+		$clock = $this->getMonotonicClock();
+		$deadline = $clock->seconds() + $this->getMaxLifetime();
 		$heartbeat = $this->getHeartbeatInterval();
-		$lastWrite = $clock->microtime();
+		$lastWrite = $clock->seconds();
 		if (!$sink->write('retry: ' . $this->getRetryInterval() . "\n\n")) {
 			return $lastEventId;
 		}
-		while (($now = $clock->microtime()) < $deadline) {
+		while (($now = $clock->seconds()) < $deadline) {
 			$wait = min($deadline - $now, $lastWrite + $heartbeat - $now);
 			$events = $wait > 0 ? $broker->receive($channel, $lastEventId, $wait) : [];
 			if ($events !== []) {
@@ -214,12 +215,12 @@ class TServerEventStreamer extends TComponent
 					$chunk .= static::formatEvent($event);
 					$lastEventId = $event->getID();
 				}
-			} elseif ($clock->microtime() - $lastWrite >= $heartbeat) {
+			} elseif ($clock->seconds() - $lastWrite >= $heartbeat) {
 				$chunk = ": heartbeat\n\n";
 			} else {
 				continue;
 			}
-			$lastWrite = $clock->microtime();
+			$lastWrite = $clock->seconds();
 			if (!$sink->write($chunk)) {
 				break;
 			}

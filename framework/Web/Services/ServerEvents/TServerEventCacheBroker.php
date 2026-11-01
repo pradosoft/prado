@@ -17,6 +17,7 @@ use Prado\Caching\TFileCache;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\TPropertyValue;
+use Prado\Util\Clock\TMonotonicClockAwareTrait;
 use Prado\Util\Mutex\IMutex;
 use Prado\Util\Mutex\TCacheMutex;
 use Prado\Util\Mutex\TDbMutex;
@@ -31,7 +32,9 @@ use Prado\Util\Mutex\TMutexException;
  * an event published by one request reaches the streams that other PHP processes serve.
  * It fits PHP-FPM, mod_php, and the built-in server. {@see receive()} polls the entry every
  * {@see getPollInterval PollInterval} seconds through the clock's `sleep()`, which yields to
- * the event loop in a fiber.
+ * the event loop in a fiber. Its timeout is elapsed time from the
+ * {@see getMonotonicClock() monotonic clock}, so a wall-clock change does not move it; event
+ * times and {@see getEventLifetime EventLifetime} stay on the wall clock, which processes share.
  *
  * The cache is the module named by {@see getCacheModuleID CacheModuleID}, or the
  * application's primary cache. Use a cache that every web process shares, such as
@@ -65,6 +68,7 @@ use Prado\Util\Mutex\TMutexException;
 class TServerEventCacheBroker extends TServerEventBroker
 {
 	use TCacheModuleIDTrait;
+	use TMonotonicClockAwareTrait;
 
 	/** The prefix of the cache keys. */
 	public const CACHE_KEY_PREFIX = 'prado:serverevents:';
@@ -184,15 +188,15 @@ class TServerEventCacheBroker extends TServerEventBroker
 	 */
 	public function receive(string $channel, string $lastEventId, float $timeout): array
 	{
-		$clock = $this->getClock();
-		$deadline = $clock->microtime() + $timeout;
+		$elapsed = $this->getMonotonicClock();
+		$deadline = $elapsed->seconds() + $timeout;
 		while (true) {
 			$events = $this->eventsAfter($this->loadState($channel), $channel, $lastEventId);
-			$remaining = $deadline - $clock->microtime();
+			$remaining = $deadline - $elapsed->seconds();
 			if ($events !== [] || $remaining <= 0) {
 				return $events;
 			}
-			$clock->sleep(min($this->getPollInterval(), $remaining));
+			$this->getClock()->sleep(min($this->getPollInterval(), $remaining));
 		}
 	}
 

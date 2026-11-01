@@ -27,8 +27,10 @@ class TServerEventBrokerTest extends \PHPUnit\Framework\TestCase
 
 	private function cacheBroker(?TServerEventArrayCache $cache = null, ?TServerEventMockClock $clock = null): TServerEventTestCacheBroker
 	{
+		$clock ??= new TServerEventMockClock();
 		$broker = new TServerEventTestCacheBroker($cache ?? new TServerEventArrayCache());
-		$broker->setClock($clock ?? new TServerEventMockClock());
+		$broker->setClock($clock);
+		$broker->setMonotonicClock($clock->elapsed);
 		return $broker;
 	}
 
@@ -186,6 +188,24 @@ class TServerEventBrokerTest extends \PHPUnit\Framework\TestCase
 		self::assertSame([1.0, 1.0, 0.5], $clock->sleeps);
 		self::assertEqualsWithDelta($start + 2.5, $clock->microtime(), 0.0001);
 		self::assertSame(4, $broker->cache->gets);
+	}
+
+	public function testCacheBrokerTimeoutIgnoresAWallClockStep(): void
+	{
+		foreach ([-3600.0, 3600.0] as $step) {
+			$clock = new TServerEventMockClock();
+			$broker = $this->cacheBroker(null, $clock);
+			$broker->setPollInterval(1.0);
+			$clock->onSleep = function ($clock, int $count) use ($step) {
+				if ($count === 1) {
+					$clock->setMicrotime($clock->microtime() + $step);
+				}
+			};
+
+			self::assertSame([], $broker->receive('c', '', 2.5));
+
+			self::assertSame([1.0, 1.0, 0.5], $clock->sleeps, "A step of {$step} s keeps the 2.5 s timeout.");
+		}
 	}
 
 	public function testCacheBrokerReturnsAnEventPublishedWhilePolling(): void

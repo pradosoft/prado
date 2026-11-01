@@ -7,11 +7,11 @@
 **Location:** `framework/Web/Services/ServerEvents/TServerEventCacheBroker.php`
 **Namespace:** `Prado\Web\Services\ServerEvents`
 **Extends:** [`TServerEventBroker`](TServerEventBroker.md)
-**Uses:** `TCacheModuleIDTrait`
+**Uses:** `TCacheModuleIDTrait`, [`TMonotonicClockAwareTrait`](../../../Util/Clock/TMonotonicClockAwareTrait.md)
 **Since:** 4.4.0
 
 ## Overview
-Keeps each channel's state in one `ICache` entry (`CACHE_KEY_PREFIX . channel`, expire `EventLifetime`), so an event published by one PHP process reaches the streams of the others. `receive()` reads the entry, then sleeps `min(PollInterval, remaining)` through the clock until an event follows the ID or the timeout passes. The clock's `sleep()` yields to the event loop in a fiber.
+Keeps each channel's state in one `ICache` entry (`CACHE_KEY_PREFIX . channel`, expire `EventLifetime`), so an event published by one PHP process reaches the streams of the others. `receive()` reads the entry, then sleeps `min(PollInterval, remaining)` through the clock until an event follows the ID or the timeout passes. The clock's `sleep()` yields to the event loop in a fiber. The timeout is elapsed time on `getMonotonicClock()`; event times and `EventLifetime` stay on the wall clock, which processes share.
 
 ```xml
 <module id="cache" class="Prado\Caching\TRedisCache" />
