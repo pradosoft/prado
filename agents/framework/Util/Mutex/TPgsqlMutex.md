@@ -6,7 +6,7 @@
 ## Class Info
 **Location:** `framework/Util/Mutex/TPgsqlMutex.php`
 **Namespace:** `Prado\Util\Mutex`
-**Extends:** [`TDbMutex`](TDbMutex.md)
+**Extends:** [`TBaseDbMutex`](TBaseDbMutex.md)
 **Since:** 4.4.0
 
 ## Overview

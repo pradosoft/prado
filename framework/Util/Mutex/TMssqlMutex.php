@@ -17,7 +17,7 @@ use Prado\Data\TDbDriver;
  *
  * TMssqlMutex locks a name with SQL Server `sp_getapplock` in `Exclusive` mode,
  * owned by the `Session`, and releases it with `sp_releaseapplock`.  The lock
- * belongs to the connection's session, as {@see TDbMutex} describes.  A name with
+ * belongs to the connection's session, as {@see TBaseDbMutex} describes.  A name with
  * the {@see getKeyPrefix KeyPrefix} longer than 255 characters, the server's limit,
  * becomes its SHA-1 hash.
  *
@@ -28,7 +28,7 @@ use Prado\Data\TDbDriver;
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
  */
-class TMssqlMutex extends TDbMutex
+class TMssqlMutex extends TBaseDbMutex
 {
 	/** The longest resource name the server accepts. */
 	public const MAX_NAME_LENGTH = 255;
@@ -36,7 +36,7 @@ class TMssqlMutex extends TDbMutex
 	/**
 	 * @return string[] the SQL Server drivers.
 	 */
-	public function getSupportedDrivers(): array
+	public static function getSupportedDrivers(): array
 	{
 		return [TDbDriver::DRIVER_SQLSRV, TDbDriver::DRIVER_DBLIB, 'mssql'];
 	}

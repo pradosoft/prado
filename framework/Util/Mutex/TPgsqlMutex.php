@@ -17,7 +17,7 @@ use Prado\Data\TDbDriver;
  *
  * TPgsqlMutex locks a name with a PostgreSQL session advisory lock,
  * `pg_try_advisory_lock(key1, key2)`, and releases it with `pg_advisory_unlock()`.
- * The lock belongs to the connection's session, as {@see TDbMutex} describes.
+ * The lock belongs to the connection's session, as {@see TBaseDbMutex} describes.
  *
  * The two `int4` keys of a name are the first 64 bits of the SHA-1 hash of the name
  * with the {@see getKeyPrefix KeyPrefix}.  The two-key form does not collide with
@@ -30,12 +30,12 @@ use Prado\Data\TDbDriver;
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
  */
-class TPgsqlMutex extends TDbMutex
+class TPgsqlMutex extends TBaseDbMutex
 {
 	/**
 	 * @return string[] the PostgreSQL driver.
 	 */
-	public function getSupportedDrivers(): array
+	public static function getSupportedDrivers(): array
 	{
 		return [TDbDriver::DRIVER_PGSQL];
 	}

@@ -31,6 +31,7 @@ use Prado\TPropertyValue;
  * | {@see TMemoryMutex} | process memory | fibers and mutexes of one process |
  * | {@see TCacheMutex} | {@see \Prado\Caching\ICache::add()} | clients of the cache |
  * | {@see TRedisMutex} | Redis `SET NX PX` | clients of the Redis server |
+ * | {@see TDbMutex} | the server lock of the driver, or a lock table | per routed mutex |
  * | {@see TMysqlMutex} | MySQL `GET_LOCK()` | connections to the server |
  * | {@see TPgsqlMutex} | PostgreSQL advisory lock | connections to the server |
  * | {@see TOracleMutex} | Oracle `DBMS_LOCK` | connections to the server |

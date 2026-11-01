@@ -49,7 +49,7 @@ use Prado\Util\Clock\TApplicationClockAwareTrait;
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
  */
-class TDbTableMutex extends TDbMutex
+class TDbTableMutex extends TBaseDbMutex
 {
 	use TApplicationClockAwareTrait;
 
@@ -77,7 +77,7 @@ class TDbTableMutex extends TDbMutex
 	/**
 	 * @return string[] an empty list, as the lock table works with every driver.
 	 */
-	public function getSupportedDrivers(): array
+	public static function getSupportedDrivers(): array
 	{
 		return [];
 	}

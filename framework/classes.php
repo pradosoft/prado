@@ -421,6 +421,7 @@ return [
 'TRational' => 'Prado\Util\Math\TRational',
 'TURational' => 'Prado\Util\Math\TURational',
 'IMutex' => 'Prado\Util\Mutex\IMutex',
+'TBaseDbMutex' => 'Prado\Util\Mutex\TBaseDbMutex',
 'TCacheMutex' => 'Prado\Util\Mutex\TCacheMutex',
 'TDbMutex' => 'Prado\Util\Mutex\TDbMutex',
 'TDbTableMutex' => 'Prado\Util\Mutex\TDbTableMutex',

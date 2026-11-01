@@ -16,7 +16,7 @@ Cross-cutting utilities: behavior/mixin system, logging, scheduled tasks, named 
 
 - **Logging** — `TLogger`, `TLogRouter`, `TLogRoute` outputs, and the PSR-3 adapters `TPsrLogger` / `TPsrLogRoute` are in [Log/](Log/SUMMARY.md) (namespace `Prado\Util\Log`).
 
-- **Mutexes** — Named lock modules `TFileMutex`, `TSemaphoreMutex`, `TMemoryMutex`, `TCacheMutex`, `TRedisMutex`, `TMysqlMutex`, `TPgsqlMutex`, `TOracleMutex`, `TMssqlMutex`, and `TDbTableMutex` on the `TMutex` base are in [Mutex/](Mutex/SUMMARY.md) (namespace `Prado\Util\Mutex`).
+- **Mutexes** — Named lock modules `TFileMutex`, `TSemaphoreMutex`, `TMemoryMutex`, `TCacheMutex`, `TRedisMutex`, `TMysqlMutex`, `TPgsqlMutex`, `TOracleMutex`, `TMssqlMutex`, `TDbTableMutex`, and the routing `TDbMutex` on the `TMutex` base are in [Mutex/](Mutex/SUMMARY.md) (namespace `Prado\Util\Mutex`).
 
 - **`TParameterModule`** — Stores named configuration parameters.
 

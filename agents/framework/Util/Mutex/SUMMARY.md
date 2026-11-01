@@ -18,7 +18,9 @@ Named lock modules over files, semaphores, process memory, caches, Redis, and da
 
 - **`TRedisMutex`** — `SET NX PX` lease with an atomic Lua release.
 
-- **`TDbMutex`** — Abstract base of the database mutexes (`ConnectionID`, driver check).
+- **`TBaseDbMutex`** — Abstract base of the database mutexes (`ConnectionID`, `DbConnection`, static driver check).
+
+- **`TDbMutex`** — Universal database mutex; routes to the driver's server lock or the lock table, with static `getServerMutexClass()` and `getIsServerLockAvailable()` for a connection or DSN.
 
 - **`TMysqlMutex`**, **`TPgsqlMutex`**, **`TOracleMutex`**, **`TMssqlMutex`** — Server session locks.
 

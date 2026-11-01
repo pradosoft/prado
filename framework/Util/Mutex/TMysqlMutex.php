@@ -17,7 +17,7 @@ use Prado\Data\TDbDriver;
  *
  * TMysqlMutex locks a name with MySQL or MariaDB `GET_LOCK()` and releases it with
  * `RELEASE_LOCK()`.  The lock belongs to the connection's session, as
- * {@see TDbMutex} describes.  A name with the {@see getKeyPrefix KeyPrefix} longer
+ * {@see TBaseDbMutex} describes.  A name with the {@see getKeyPrefix KeyPrefix} longer
  * than 64 characters, the server's limit, becomes its SHA-1 hash.
  *
  * ```xml
@@ -27,7 +27,7 @@ use Prado\Data\TDbDriver;
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
  */
-class TMysqlMutex extends TDbMutex
+class TMysqlMutex extends TBaseDbMutex
 {
 	/** The longest lock name the server accepts. */
 	public const MAX_NAME_LENGTH = 64;
@@ -35,7 +35,7 @@ class TMysqlMutex extends TDbMutex
 	/**
 	 * @return string[] the MySQL driver.
 	 */
-	public function getSupportedDrivers(): array
+	public static function getSupportedDrivers(): array
 	{
 		return [TDbDriver::DRIVER_MYSQL];
 	}

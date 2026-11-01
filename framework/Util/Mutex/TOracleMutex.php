@@ -18,7 +18,7 @@ use Prado\TPropertyValue;
  *
  * TOracleMutex locks a name with Oracle `DBMS_LOCK.REQUEST` and releases it with
  * `DBMS_LOCK.RELEASE`.  The lock belongs to the connection's session, as
- * {@see TDbMutex} describes.  The user needs `EXECUTE` on `DBMS_LOCK`.
+ * {@see TBaseDbMutex} describes.  The user needs `EXECUTE` on `DBMS_LOCK`.
  *
  * `DBMS_LOCK.ALLOCATE_UNIQUE` maps the name to a lock handle and commits the
  * session's transaction, so an attempt or a release ends an open transaction of
@@ -38,7 +38,7 @@ use Prado\TPropertyValue;
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
  */
-class TOracleMutex extends TDbMutex
+class TOracleMutex extends TBaseDbMutex
 {
 	/** The longest lock name the server accepts. */
 	public const MAX_NAME_LENGTH = 128;
@@ -55,7 +55,7 @@ class TOracleMutex extends TDbMutex
 	/**
 	 * @return string[] the Oracle driver.
 	 */
-	public function getSupportedDrivers(): array
+	public static function getSupportedDrivers(): array
 	{
 		return [TDbDriver::DRIVER_OCI];
 	}
