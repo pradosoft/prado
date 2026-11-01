@@ -5,6 +5,7 @@ namespace Prado\Test\Unit\Util;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TExitException;
 use Prado\TEventSubscription;
+use Prado\Test\Unit\Harness\Util\Clock\TTestMonotonicClock;
 use Prado\Util\TSignalsDispatcher;
 use Prado\Util\TSignalParameter;
 use Prado\Collections\TWeakCallableCollection;
@@ -478,6 +479,40 @@ class TSignalsDispatcherTest extends \PHPUnit\Framework\TestCase
 		self::assertLessThan(2, $called[0] - $time);
 		self::assertLessThan(2, $called[1] - $time);
 		self::assertEquals(2, count($called));
+	}
+
+	public function testAlarmTimesFollowTheMonotonicClock()
+	{
+		if (!TSignalsDispatcher::hasSignals()) {
+			$this->markTestSkipped("skipping " . TSignalsDispatcher::class . " alarm times.");
+			return;
+		}
+		// Alarm times read the wall clock once, as the anchor, so a later wall-clock step cannot move an alarm.
+		$this->dispatcher = new TTestSignalsDispatcher();
+		self::assertSame($this->dispatcher, TTestSignalsDispatcher::singleton(false));
+		$clock = new TTestMonotonicClock(1_000_000_000_000);
+		self::assertSame($this->dispatcher, $this->dispatcher->setMonotonicClock($clock));
+		$base = $this->dispatcher->getAlarmNow();
+		self::assertEqualsWithDelta(time(), $base, 1, 'The alarm time base is anchored to the Unix time.');
+
+		$called = [];
+		$time = TTestSignalsDispatcher::alarm(5, function ($sender, $param) use (&$called) {
+			$called[] = $param->getAlarmTime();
+		});
+		self::assertSame($base + 5, $time);
+
+		$clock->advance(4);
+		$this->dispatcher->ring($this->dispatcher, new TSignalParameter(SIGALRM));
+		self::assertSame([], $called, 'The alarm is not due after 4 s on the monotonic clock.');
+
+		$clock->advance(1);
+		$this->dispatcher->ring($this->dispatcher, new TSignalParameter(SIGALRM));
+		self::assertSame([$base + 5], $called, 'The alarm rings after 5 s on the monotonic clock.');
+		self::assertNull(TTestSignalsDispatcher::alarm(), 'No alarm is pending.');
+
+		$this->dispatcher->setMonotonicClock(new TTestMonotonicClock(7_000_000_000));
+		self::assertSame($base + 5, $this->dispatcher->getAlarmNow(), 'A new clock continues the alarm time base.');
+		pcntl_alarm(0);
 	}
 	
 	public function testDelegateChild()
