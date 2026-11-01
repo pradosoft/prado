@@ -500,8 +500,11 @@ class TSignalsDispatcherTest extends \PHPUnit\Framework\TestCase
 			$called[] = $param->getAlarmTime();
 		});
 		self::assertSame($base + 5, $time);
+		self::assertSame($this->dispatcher->getAlarmNow(), TTestSignalsDispatcher::alarmNow(), 'The static alarmNow() is the singleton\'s.');
+		self::assertSame(5, $time - TTestSignalsDispatcher::alarmNow(), 'The seconds until an alarm.');
 
 		$clock->advance(4);
+		self::assertSame(1, $time - TTestSignalsDispatcher::alarmNow());
 		$this->dispatcher->ring($this->dispatcher, new TSignalParameter(SIGALRM));
 		self::assertSame([], $called, 'The alarm is not due after 4 s on the monotonic clock.');
 
@@ -515,6 +518,44 @@ class TSignalsDispatcherTest extends \PHPUnit\Framework\TestCase
 		pcntl_alarm(0);
 	}
 	
+	public function testDisarmKeepsTheOtherAlarmsOfTheTimeAndRearmsForTheNext()
+	{
+		if (!TSignalsDispatcher::hasSignals()) {
+			$this->markTestSkipped("skipping " . TSignalsDispatcher::class . "::disarm.");
+			return;
+		}
+		$this->dispatcher = new TTestSignalsDispatcher();
+		$clock = new TTestMonotonicClock(1_000_000_000_000);
+		$this->dispatcher->setMonotonicClock($clock);
+
+		// Disarming one callback keeps the others of the same alarm time.
+		$called = [];
+		$time = TTestSignalsDispatcher::alarm(5, $f1 = function () use (&$called) { $called[] = 'f1'; });
+		self::assertSame($time, TTestSignalsDispatcher::alarm(5, $f2 = function () use (&$called) { $called[] = 'f2'; }));
+		self::assertSame($time, TTestSignalsDispatcher::disarm($f1));
+		self::assertSame($time, TTestSignalsDispatcher::alarm(), 'f2 is still pending at the same time.');
+		$clock->advance(5);
+		$this->dispatcher->ring($this->dispatcher, new TSignalParameter(SIGALRM));
+		self::assertSame(['f2'], $called);
+		pcntl_alarm(0);
+
+		// Disarming the next alarm arms the OS alarm for the remaining seconds of the following one.
+		$near = TTestSignalsDispatcher::alarm(2, $g1 = function () {});
+		$far = TTestSignalsDispatcher::alarm(10, $g2 = function () {});
+		self::assertSame($near, TTestSignalsDispatcher::disarm($g1));
+		self::assertSame($far, TTestSignalsDispatcher::alarm());
+		self::assertContains(pcntl_alarm(0), [9, 10], 'The OS alarm waits for the far alarm, not 1 s.');
+
+		// A following alarm that is already due arms the OS alarm for 1 s instead of cancelling it.
+		$near = TTestSignalsDispatcher::alarm(2, $h1 = function () {});
+		$clock->advance(20);
+		self::assertSame($near, TTestSignalsDispatcher::disarm($h1));
+		self::assertSame($far, TTestSignalsDispatcher::alarm());
+		self::assertSame(1, pcntl_alarm(0), 'An overdue alarm still rings.');
+		TTestSignalsDispatcher::disarm($g2);
+		pcntl_alarm(0);
+	}
+
 	public function testDelegateChild()
 	{
 		if (!TSignalsDispatcher::hasSignals()) {

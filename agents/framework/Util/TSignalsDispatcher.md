@@ -96,6 +96,10 @@ TSignalsDispatcher::nullAlarm($sender, $param): void
 
 Alarm times are Unix seconds from `getAlarmNow()`: `getMonotonicClock()` seconds anchored to `microtime(true)` at the first reading. `pcntl_alarm()` counts elapsed seconds, and `ring()` compares alarm times on the same monotonic base, so a wall-clock step after the anchor does not ring an alarm early or late. `setMonotonicClock()` continues the base on the new clock. A test sets a `TMonotonicClock` subclass on the singleton and advances it before `ring()`.
 
+After a wall-clock step an alarm time differs from `time()` by the size of the step. Compare alarm times (from `alarm()` or `TSignalParameter::getAlarmTime()`) with the static `TSignalsDispatcher::alarmNow()`, the singleton's `getAlarmNow()`: the seconds until an alarm are `$alarmTime - TSignalsDispatcher::alarmNow()`.
+
+`disarm()` keeps the other callbacks of the time it disarms from. When that time was the next alarm, it arms `pcntl_alarm()` for the following time, at least 1 s ahead, so an overdue alarm still rings.
+
 ## Async vs Synchronous Dispatch
 
 ```php
