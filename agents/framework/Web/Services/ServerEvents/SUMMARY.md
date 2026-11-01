@@ -12,7 +12,7 @@ Server push (namespace `Prado\Web\Services\ServerEvents`): brokers carry publish
 
 - **`TServerEventBroker`** — Abstract base broker module; name and data validation, `BufferSize`, `EventLifetime`.
 
-- **`TServerEventCacheBroker`** — Broker over an `ICache` entry per channel, polled every `PollInterval`; across processes.
+- **`TServerEventCacheBroker`** — Broker over an `ICache` entry per channel, polled every `PollInterval`; across processes. Publishes take the channel's lock in an `IMutex` (`MutexID` or a default matched to the cache).
 
 - **`TServerEventMemoryBroker`** — In-process broker; `publish()` wakes fibers waiting on the event loop.
 

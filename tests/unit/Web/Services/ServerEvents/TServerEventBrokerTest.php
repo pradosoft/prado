@@ -171,7 +171,7 @@ class TServerEventBrokerTest extends \PHPUnit\Framework\TestCase
 		self::assertCount(1, $received);
 		self::assertSame(['id' => 9], $received[0]->getData());
 		self::assertSame(120, $cache->expires[TServerEventCacheBroker::CACHE_KEY_PREFIX . 'orders']);
-		self::assertArrayNotHasKey(TServerEventCacheBroker::CACHE_KEY_PREFIX . 'orders:lock', $cache->values);
+		self::assertSame([TServerEventCacheBroker::CACHE_KEY_PREFIX . 'orders'], array_keys($cache->values), 'The publish released its lock.');
 	}
 
 	public function testCacheBrokerPollsUntilTheTimeout(): void
@@ -206,21 +206,6 @@ class TServerEventBrokerTest extends \PHPUnit\Framework\TestCase
 		self::assertCount(1, $events);
 		self::assertSame('ready', $events[0]->getName());
 		self::assertSame([0.5, 0.5], $clock->sleeps);
-	}
-
-	public function testCacheBrokerPublishesWhenTheLockIsNotReleased(): void
-	{
-		$cache = new TServerEventArrayCache();
-		$clock = new TServerEventMockClock();
-		$broker = $this->cacheBroker($cache, $clock);
-		$lock = TServerEventCacheBroker::CACHE_KEY_PREFIX . 'c:lock';
-		$cache->add($lock, 1, 2);
-
-		$event = $broker->publish('c', 'e', 1);
-
-		self::assertSame($event->getID(), $broker->getLastEventId('c'));
-		self::assertCount(TServerEventCacheBroker::LOCK_ATTEMPTS, $clock->sleeps);
-		self::assertArrayHasKey($lock, $cache->values, 'A lock this publish did not claim stays.');
 	}
 
 	public function testCacheBrokerRequiresACacheModule(): void

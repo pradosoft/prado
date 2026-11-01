@@ -16,7 +16,7 @@ Server push for the Prado framework (namespace `Prado\Web\Services\ServerEvents`
 
 - **`TServerEvent`** — The immutable event: `ID`, `Channel`, `Name`, `Data`, `Time`.
 - **[`TServerEventBroker`](TServerEventBroker.md)** — Abstract base module of the brokers: name and data validation, the channel state, `BufferSize` and `EventLifetime` pruning.
-- **[`TServerEventCacheBroker`](TServerEventCacheBroker.md)** — Keeps each channel in an `ICache` entry and polls it every `PollInterval`; reaches every process sharing the cache (FPM, mod_php, the built-in server).
+- **[`TServerEventCacheBroker`](TServerEventCacheBroker.md)** — Keeps each channel in an `ICache` entry and polls it every `PollInterval`; reaches every process sharing the cache (FPM, mod_php, the built-in server). A publish holds the channel's lock in an `IMutex` (`MutexID`, else `TFileMutex`, `TDbMutex`, or `TCacheMutex` matched to the cache).
 - **[`TServerEventMemoryBroker`](TServerEventMemoryBroker.md)** — Keeps each channel in the process; a `publish()` wakes the fibers waiting on the event loop. For a long-running event loop server.
 - **`TServerEventBrokerIDTrait`** — The `BrokerID` property and `resolveBroker()`; an empty ID resolves the first module that implements `IServerEventBroker`. Used by the service and the control.
 - **[`TServerEventStreamer`](TServerEventStreamer.md)** — Writes one channel from a broker to a sink: `retry:`, the events, and heartbeats, until `MaxLifetime` passes or the client disconnects. Holds no request state; one `run()` per stream.

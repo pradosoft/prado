@@ -12,8 +12,17 @@ namespace Prado\Web\Services\ServerEvents;
 
 use Prado\Caching\ICache;
 use Prado\Caching\TCacheModuleIDTrait;
+use Prado\Caching\TDbCache;
+use Prado\Caching\TFileCache;
+use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\TPropertyValue;
+use Prado\Util\Mutex\IMutex;
+use Prado\Util\Mutex\TCacheMutex;
+use Prado\Util\Mutex\TDbMutex;
+use Prado\Util\Mutex\TFileMutex;
+use Prado\Util\Mutex\TMutex;
+use Prado\Util\Mutex\TMutexException;
 
 /**
  * TServerEventCacheBroker class
@@ -30,11 +39,20 @@ use Prado\TPropertyValue;
  * {@see \Prado\Caching\TFileCache}, or {@see \Prado\Caching\TDbCache}. A per-process cache,
  * such as APCu under several FPM pools, does not carry events between processes.
  *
- * A publish reads, appends to, and writes the entry under a lock claimed with
- * {@see ICache::add()}. The claim is atomic on {@see \Prado\Caching\TAPCCache},
- * {@see \Prado\Caching\TMemCache}, {@see \Prado\Caching\TRedisCache}, and
- * {@see \Prado\Caching\TEtcdCache}. On {@see \Prado\Caching\TFileCache} and
- * {@see \Prado\Caching\TDbCache} two concurrent publishes on one channel can lose an event.
+ * A publish reads, appends to, and writes the channel's entry while it holds the channel's lock
+ * in an {@see IMutex}, so concurrent publishes on one channel keep every event. The mutex is
+ * the module named by {@see getMutexID MutexID}, else one {@see createMutex()} matches to the cache:
+ *
+ * | Cache | Default mutex | Excludes |
+ * |---|---|---|
+ * | {@see TFileCache} | {@see TFileMutex} in the cache directory's `mutex` folder | processes of the host |
+ * | {@see TDbCache} | {@see TDbMutex} on the cache's connection | connections to the database |
+ * | any other {@see ICache} | {@see TCacheMutex} on the cache | clients of the cache, where `add()` is atomic |
+ *
+ * A publish waits up to {@see getLockTimeout LockTimeout} seconds for the lock, then throws
+ * {@see \Prado\Util\Mutex\TMutexException} and stores nothing. A cache shared by several hosts
+ * needs a mutex that spans them: TDbCache's default does, and a TFileCache on a network share
+ * names a {@see \Prado\Util\Mutex\TRedisMutex} or {@see TDbMutex} module through MutexID.
  *
  * ```xml
  * <module id="cache" class="Prado\Caching\TRedisCache" />
@@ -54,17 +72,26 @@ class TServerEventCacheBroker extends TServerEventBroker
 	/** The default seconds between polls. */
 	public const DEFAULT_POLL_INTERVAL = 1.0;
 
-	/** The seconds a publish lock lasts when its holder does not release it. */
-	public const LOCK_TTL = 2;
+	/** The default seconds a publish waits for the channel's lock. */
+	public const DEFAULT_LOCK_TIMEOUT = 5.0;
 
-	/** The attempts to claim the publish lock before publishing without it. */
-	public const LOCK_ATTEMPTS = 50;
+	/** The milliseconds between attempts of a default mutex to take a lock. */
+	public const MUTEX_RETRY_DELAY = 5;
 
-	/** The seconds between attempts to claim the publish lock. */
-	public const LOCK_RETRY_DELAY = 0.01;
+	/** The folder of a TFileCache directory that holds the default mutex's lock files. */
+	public const FILE_MUTEX_FOLDER = 'mutex';
 
 	/** @var float The seconds between polls. */
 	private float $_pollInterval = self::DEFAULT_POLL_INTERVAL;
+
+	/** @var string The ID of the mutex module; empty for a default mutex. */
+	private string $_mutexID = '';
+
+	/** @var float The seconds a publish waits for the channel's lock. */
+	private float $_lockTimeout = self::DEFAULT_LOCK_TIMEOUT;
+
+	/** @var ?IMutex The resolved mutex. */
+	private ?IMutex $_mutex = null;
 
 	/**
 	 * @return float The seconds between polls of {@see receive()}. Defaults to 1.
@@ -85,6 +112,67 @@ class TServerEventCacheBroker extends TServerEventBroker
 			throw new TInvalidDataValueException('servereventcachebroker_pollinterval_invalid', $value);
 		}
 		$this->_pollInterval = $value;
+	}
+
+	/**
+	 * @return string The ID of the {@see IMutex} module that serializes publishes; empty for
+	 *   the default mutex of the cache. Defaults to empty.
+	 */
+	public function getMutexID(): string
+	{
+		return $this->_mutexID;
+	}
+
+	/**
+	 * @param string $value The ID of the {@see IMutex} module that serializes publishes;
+	 *   empty for the default mutex of the cache.
+	 */
+	public function setMutexID($value): void
+	{
+		$this->_mutexID = TPropertyValue::ensureString($value);
+		$this->_mutex = null;
+	}
+
+	/**
+	 * @return float The seconds a publish waits for the channel's lock. Defaults to 5.
+	 */
+	public function getLockTimeout(): float
+	{
+		return $this->_lockTimeout;
+	}
+
+	/**
+	 * @param float|string $value The seconds a publish waits for the channel's lock, at least 0.
+	 * @throws TInvalidDataValueException When the value is negative.
+	 */
+	public function setLockTimeout($value): void
+	{
+		$value = TPropertyValue::ensureFloat($value);
+		if ($value < 0) {
+			throw new TInvalidDataValueException('servereventcachebroker_locktimeout_invalid', $value);
+		}
+		$this->_lockTimeout = $value;
+	}
+
+	/**
+	 * Returns the mutex that serializes the publishes of a channel: the module named by
+	 * {@see getMutexID MutexID}, else the default of the cache from {@see createMutex()}.
+	 * @throws TConfigurationException When MutexID does not name an {@see IMutex} module.
+	 * @return IMutex The mutex.
+	 */
+	public function getMutex(): IMutex
+	{
+		if ($this->_mutex !== null) {
+			return $this->_mutex;
+		}
+		if (($id = $this->getMutexID()) !== '') {
+			$mutex = $this->getApplication()?->getModule($id);
+			if (!($mutex instanceof IMutex)) {
+				throw new TConfigurationException('servereventcachebroker_mutexid_invalid', $id);
+			}
+			return $this->_mutex = $mutex;
+		}
+		return $this->_mutex = $this->createMutex($this->getCache());
 	}
 
 	/**
@@ -109,25 +197,55 @@ class TServerEventCacheBroker extends TServerEventBroker
 	}
 
 	/**
-	 * Appends an event to the channel's entry under the publish lock.
+	 * Appends an event to the channel's entry while holding the channel's lock.
 	 * @param string $channel The valid channel name.
 	 * @param string $event The valid event name.
 	 * @param mixed $data The JSON-encodable event data.
+	 * @throws \Prado\Util\Mutex\TMutexException When the lock is not acquired within LockTimeout.
 	 * @return TServerEvent The stored event.
 	 */
 	protected function storeEvent(string $channel, string $event, mixed $data): TServerEvent
 	{
-		$cache = $this->getCache();
-		$locked = $this->lockChannel($cache, $channel);
+		$mutex = $this->getMutex();
+		$key = $this->getCacheKey($channel);
+		if (!$mutex->acquire($key, $this->getLockTimeout())) {
+			throw new TMutexException('mutex_acquire_failed', $mutex::class, $key, $this->getLockTimeout());
+		}
 		try {
 			[$state, $published] = $this->appendEvent($this->loadState($channel), $channel, $event, $data);
-			$cache->set($this->getCacheKey($channel), $state, $this->getEventLifetime());
+			$this->getCache()->set($key, $state, $this->getEventLifetime());
 		} finally {
-			if ($locked) {
-				$cache->delete($this->getCacheKey($channel) . ':lock');
-			}
+			$mutex->release($key);
 		}
 		return $published;
+	}
+
+	/**
+	 * Creates the default mutex of a cache.
+	 * @param ICache $cache The cache that holds the event buffers.
+	 * @return IMutex A {@see TFileMutex} in the `mutex` folder of a {@see TFileCache} directory,
+	 *   a {@see TDbMutex} on the connection of a {@see TDbCache}, else a {@see TCacheMutex} on the cache.
+	 */
+	protected function createMutex(ICache $cache): IMutex
+	{
+		if ($cache instanceof TFileCache) {
+			$mutex = (new TFileMutex())->setMutexPath($cache->getDirectory() . DIRECTORY_SEPARATOR . static::FILE_MUTEX_FOLDER);
+		} elseif ($cache instanceof TDbCache) {
+			$mutex = (new TDbMutex())->setDbConnection($cache->getDbConnection());
+		} else {
+			$mutex = (new TCacheMutex())->setCache($cache);
+		}
+		return $this->configureMutex($mutex);
+	}
+
+	/**
+	 * Sets the retry delay of a default mutex, so a publish that waits behind another resumes promptly.
+	 * @param TMutex $mutex The default mutex.
+	 * @return TMutex The mutex.
+	 */
+	protected function configureMutex(TMutex $mutex): TMutex
+	{
+		return $mutex->setRetryDelay(static::MUTEX_RETRY_DELAY);
 	}
 
 	/**
@@ -139,24 +257,6 @@ class TServerEventCacheBroker extends TServerEventBroker
 	{
 		$state = $this->getCache()->get($this->getCacheKey($channel));
 		return is_array($state) ? $state : null;
-	}
-
-	/**
-	 * Claims the publish lock of a channel, retrying up to {@see LOCK_ATTEMPTS} times.
-	 * @param ICache $cache The cache.
-	 * @param string $channel The channel name.
-	 * @return bool Whether the lock was claimed.
-	 */
-	protected function lockChannel(ICache $cache, string $channel): bool
-	{
-		$key = $this->getCacheKey($channel) . ':lock';
-		for ($attempt = 0; $attempt < static::LOCK_ATTEMPTS; $attempt++) {
-			if ($this->claimCacheKey($cache, $key, static::LOCK_TTL)) {
-				return true;
-			}
-			$this->getClock()->sleep(static::LOCK_RETRY_DELAY);
-		}
-		return false;
 	}
 
 	/**
