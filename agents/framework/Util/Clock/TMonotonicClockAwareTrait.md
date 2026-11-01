@@ -25,7 +25,3 @@ while ($this->getMonotonicClock()->seconds() < $deadline) {
 
 ## Testing
 A test sets a `TMonotonicClock` subclass whose protected `hrtime()` returns a counter it controls. A loop that waits through a mocked `IClock::sleep()` needs that counter to advance with each sleep, or the loop never reaches its deadline. Changing the mock wall clock (`setMicrotime()`) leaves the counter alone, which is how a test shows a wall-clock step does not move a timeout.
-
-## Users
-- [`TServerEventStreamer`](../../Web/Services/ServerEvents/TServerEventStreamer.md): `MaxLifetime` and heartbeat spacing.
-- [`TServerEventCacheBroker`](../../Web/Services/ServerEvents/TServerEventCacheBroker.md): the `receive()` timeout.
