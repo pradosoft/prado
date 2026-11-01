@@ -46,14 +46,14 @@ Register a one-shot callback that resumes the suspension, then suspend. From a w
 
 | Aspect | `TRevoltEventLoop` | `TSocketReactor` |
 |---|---|---|
-| Timer clock | Revolt's monotonic clock; a pinned `TMockClock` does not move it | the injected `IClock`, else `hrtime()`; a pinned `TMockClock` advances timers |
+| Timer clock | Revolt's monotonic clock; a test cannot move it | `getMonotonicClock()`, `hrtime()` by default; a test sets a `TMonotonicClock` subclass it advances |
 | `run()` from a worker fiber | throws | nests |
 | `tick()` | none | `ITickableEventLoop` |
 | Callback exception with no handler | leaves `run()` as the original exception | leaves `tick()`/`run()` as the original exception |
 | Scope | one process-wide driver shared by every instance | one loop per instance |
 | Fork | child calls `TRevoltEventLoop::installFreshDriver()` | child constructs a new reactor |
 
-The conformance suite `tests/unit/IO/Async/EventLoopConformanceTestCase.php` runs against both loops (`TRevoltEventLoopTest`, `TSocketReactorEventLoopTest`). A test that pins a clock under scheduled work uses the reactor.
+The conformance suite `tests/unit/IO/Async/EventLoopConformanceTestCase.php` runs against both loops (`TRevoltEventLoopTest`, `TSocketReactorEventLoopTest`). A test that drives time under scheduled work uses the reactor. Neither loop reads the wall clock, so a wall-clock step does not move a timer.
 
 ## Gotchas
 
