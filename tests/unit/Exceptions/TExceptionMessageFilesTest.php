@@ -19,8 +19,8 @@ use Prado\Test\Unit\PradoUnit;
 /**
  * Tests the message file lookup of {@see TException} and {@see THttpException}: the English
  * master, the precedence of files added with `addMessageFile()`, the `-<lang>` variant
- * resolution, and the client-language files of the visitor-facing `THttpException` keys.
- * Also lints `messages.txt` and `messages-<lang>.txt`.
+ * resolution, the client-language files of the visitor-facing `THttpException` keys, and the
+ * ICU MessageFormat formatting of file messages. Also lints `messages.txt` and `messages-<lang>.txt`.
  */
 class TExceptionMessageFilesTest extends \PHPUnit\Framework\TestCase
 {
@@ -138,6 +138,63 @@ class TExceptionMessageFilesTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame('no_such_prado_key', (new TException('no_such_prado_key', 'A'))->getMessage());
 	}
 
+	// ── ICU MessageFormat ────────────────────────────────────────────────────
+
+	public function testFileMessageIsAnIcuPattern(): void
+	{
+		TException::addMessageFile($this->writeMessageFile('icu.txt', "icu_key = {0, plural, one{# item} other{# items}} in ''{1}''; '{1}' is literal.\n"));
+		$this->assertSame("1 item in 'A'; {1} is literal.", (new TException('icu_key', 1, 'A'))->getMessage());
+		$this->assertSame("1,500 items in 'A'; {1} is literal.", (new TException('icu_key', 1500, 'A'))->getMessage());
+	}
+
+	public function testFileMessageIsFormattedInTheLanguageOfTheFile(): void
+	{
+		$pattern = "lang_key = {0, plural, one{one} other{other}}\n";
+		TException::addMessageFile($this->writeMessageFile('lang.txt', $pattern));
+		$this->assertSame('other', (new TException('lang_key', 0))->getMessage());
+		TException::addMessageFile($this->writeMessageFile('lang-fr.txt', $pattern));
+		$this->assertSame('one', (new TException('lang_key', 0))->getMessage());
+	}
+
+	public function testArgumentsAreValuesOfThePattern(): void
+	{
+		TException::addMessageFile($this->writeMessageFile('values.txt', "values_key = Value {0}.\n"));
+		$e = new TException('values_key', "it's {1} '{0}'");
+		$this->assertSame("Value it's {1} '{0}'.", $e->getMessage());
+		$this->assertSame(["it's {1} '{0}'"], $e->getErrorArguments());
+	}
+
+	public function testUnparsablePatternReplacesThePlaceholders(): void
+	{
+		TException::addMessageFile($this->writeMessageFile('broken.txt', "broken_key = Broken {0} {1\n"));
+		$this->assertSame('Broken A {1', (new TException('broken_key', 'A', 'B'))->getMessage());
+	}
+
+	public function testUndefinedKeyReplacesThePlaceholders(): void
+	{
+		$this->assertSame("Raw 'A' text", (new TException("Raw '{0}' text", 'A'))->getMessage());
+	}
+
+	public function testMessageFileLanguage(): void
+	{
+		$e = new TException('component_property_undefined', 'A', 'B');
+		$this->assertSame('en', PradoUnit::invoke($e, 'getMessageFileLanguage', self::messagesDir() . '/messages.txt'));
+		$this->assertSame('fr', PradoUnit::invoke($e, 'getMessageFileLanguage', '/app/messages-fr.txt'));
+		$this->assertSame('pt', PradoUnit::invoke($e, 'getMessageFileLanguage', '/app/messages-pt_BR.txt'));
+		$this->assertSame('en', PradoUnit::invoke($e, 'getMessageFileLanguage', '/my-app/app-messages.txt'));
+	}
+
+	public function testFindErrorMessageFileIsTheFileWithTheHighestPrecedence(): void
+	{
+		$added = $this->writeMessageFile('find.txt', "component_property_undefined = Custom\n");
+		$e = new TException('component_property_undefined', 'A', 'B');
+		$this->assertSame(self::messagesDir() . '/messages.txt', PradoUnit::invoke($e, 'findErrorMessageFile', 'component_property_undefined'));
+		TException::addMessageFile($added);
+		$this->assertSame($added, PradoUnit::invoke($e, 'findErrorMessageFile', 'component_property_undefined'));
+		$this->assertNull(PradoUnit::invoke($e, 'findErrorMessageFile', 'no_such_prado_key'));
+		$this->assertNull(PradoUnit::invoke($e, 'findErrorMessageFile', ''));
+	}
+
 	// ── Client language ──────────────────────────────────────────────────────
 
 	#[RunInSeparateProcess]
@@ -211,6 +268,47 @@ class TExceptionMessageFilesTest extends \PHPUnit\Framework\TestCase
 	{
 		[, $duplicates] = self::parse(self::messagesDir() . '/messages.txt');
 		$this->assertSame([], $duplicates);
+	}
+
+	/**
+	 * @return array<string, array{string}> the framework message file names.
+	 */
+	public static function messageFileProvider(): array
+	{
+		$sets = [];
+		foreach (glob(self::messagesDir() . '/messages*.txt') ?: [] as $file) {
+			$sets[basename($file)] = [basename($file)];
+		}
+		return $sets;
+	}
+
+	/**
+	 * @param string $message the message pattern.
+	 * @return int[] the argument numbers the pattern refers to, sorted.
+	 */
+	protected static function argumentNumbers(string $message): array
+	{
+		preg_match_all('/\{\s*(\d+)\s*[,}]/', $message, $matches);
+		$numbers = array_map('intval', array_unique($matches[1]));
+		sort($numbers);
+		return $numbers;
+	}
+
+	#[DataProvider('messageFileProvider')]
+	public function testMessageFileEntriesAreIcuPatternsThatRenderEveryArgument(string $name): void
+	{
+		[$entries] = self::parse(self::messagesDir() . '/' . $name);
+		$lang = PradoUnit::invoke(new TException('lint'), 'getMessageFileLanguage', $name);
+		foreach ($entries as $key => $value) {
+			$numbers = self::argumentNumbers($value);
+			$args = $numbers === [] ? [] : array_map(fn ($i) => "\u{AB}$i\u{BB}", range(0, max($numbers)));
+			$formatted = \MessageFormatter::formatMessage($lang, $value, $args);
+			$this->assertNotFalse($formatted, "'$key' of $name is not an ICU MessageFormat pattern");
+			$this->assertDoesNotMatchRegularExpression('/\{\d/', $formatted, "'$key' of $name quotes a placeholder; double the apostrophe: ''{0}''");
+			foreach ($numbers as $i) {
+				$this->assertStringContainsString("\u{AB}$i\u{BB}", $formatted, "'$key' of $name does not render argument $i");
+			}
+		}
 	}
 
 	/**
@@ -342,11 +440,7 @@ class TExceptionMessageFilesTest extends \PHPUnit\Framework\TestCase
 		foreach ($entries as $key => $value) {
 			$this->assertArrayHasKey($key, $english, "'$key' of messages-$lang.txt is not in messages.txt");
 			$this->assertNotSame($english[$key], $value, "'$key' of messages-$lang.txt is untranslated");
-			preg_match_all('/\{\d+\}/', $english[$key], $expected);
-			preg_match_all('/\{\d+\}/', $value, $actual);
-			sort($expected[0]);
-			sort($actual[0]);
-			$this->assertSame(array_unique($expected[0]), array_unique($actual[0]), "placeholders of '$key' differ in messages-$lang.txt");
+			$this->assertSame(self::argumentNumbers($english[$key]), self::argumentNumbers($value), "placeholders of '$key' differ in messages-$lang.txt");
 		}
 	}
 }

@@ -46,6 +46,17 @@ use Throwable;
  * {@see addMessageFile()}. A later file overrides an earlier definition. A code
  * defined in no file is the message itself.
  *
+ * A message defined in a file is an ICU MessageFormat pattern. {@see formatErrorMessage()}
+ * formats it with `\MessageFormatter` in the language of the defining file
+ * ({@see getMessageFileLanguage()}), so a message can use `plural`, `select`, and
+ * `number` arguments:
+ * ```
+ * cache_items_expired = {0, plural, one{# item} other{# items}} expired in ''{1}''.
+ * ```
+ * ICU quotes literal text with apostrophes. An apostrophe before or after a brace is
+ * doubled, so `''{0}''` renders the argument in single quotes; `'{0}'` renders the
+ * literal text `{0}`. An apostrophe elsewhere, as in "can't", is literal.
+ *
  * Framework messages are English. {@see THttpException} adds the framework's
  * "messages-xx.txt" of the client language, "xx" from
  * {@see \Prado\Prado::getPreferredLanguage()}, for the messages shown to the site
@@ -74,7 +85,7 @@ class TException extends \Exception
 	 * @param string $errorMessage The error message code when $errorCode is an integer.
 	 *   This can be a string that is listed in a message file. If so, the listed
 	 *   message is the error message.
-	 * @param array $args These are used to replace placeholders ({0}, {1}, {2}, etc.)
+	 * @param array $args These are the arguments of the placeholders ({0}, {1}, {2}, etc.)
 	 *   in the message except the last argument.  If the last argument is a Throwable
 	 *   it is treated as the $previous Exception for exception chaining.
 	 */
@@ -89,19 +100,65 @@ class TException extends \Exception
 			$errorCode = 0;
 		}
 		$this->_errorCode = $errorMessage;
-		$errorMessage = $this->translateErrorMessage($errorMessage);
 		$n = count($args);
 		$previous = null;
 		if ($n > 0 && ($args[$n - 1] instanceof Throwable)) {
 			$previous = array_pop($args);
 			$n--;
 		}
-		$tokens = [];
 		for ($i = 0; $i < $n; ++$i) {
 			$this->_errorArguments[$i] = TPropertyValue::ensureString($args[$i]);
-			$tokens['{' . $i . '}'] = $this->_errorArguments[$i];
 		}
-		parent::__construct(strtr($errorMessage, $tokens), $errorCode, $previous);
+		parent::__construct($this->formatErrorMessage($errorMessage, $this->_errorArguments), $errorCode, $previous);
+	}
+
+	/**
+	 * Formats the message of an error code with its arguments.
+	 *
+	 * | Message source | Formatting |
+	 * |---|---|
+	 * | defined in a message file | ICU MessageFormat in the language of {@see getMessageFileLanguage()} |
+	 * | defined in no file | `{0}`, `{1}`, ... replaced with the arguments |
+	 * | a pattern ICU cannot parse | `{0}`, `{1}`, ... replaced with the arguments |
+	 * @param ?string $key the error code.
+	 * @param string[] $args the message arguments, in placeholder order.
+	 * @return string the error message.
+	 * @since 4.4.0
+	 */
+	protected function formatErrorMessage(?string $key, array $args): string
+	{
+		$message = $this->translateErrorMessage($key);
+		$file = $this->findErrorMessageFile($key);
+		if ($file !== null) {
+			try {
+				$formatted = \MessageFormatter::formatMessage($this->getMessageFileLanguage($file), $message, $args);
+			} catch (\IntlException) {
+				$formatted = false;
+			}
+			if ($formatted !== false) {
+				return $formatted;
+			}
+		}
+		$tokens = [];
+		foreach ($args as $i => $arg) {
+			$tokens['{' . $i . '}'] = $arg;
+		}
+		return strtr($message, $tokens);
+	}
+
+	/**
+	 * Returns the language of a message file: "xx" of a "-xx.txt" or "-xx_YY.txt" name,
+	 * as "messages-fr.txt" from {@see addMessageFile()}, and "en" for any other name.
+	 * @param string $file the message file path.
+	 * @return string the language code that formats the file's messages.
+	 * @since 4.4.0
+	 */
+	protected function getMessageFileLanguage(string $file): string
+	{
+		if (preg_match('/-([a-z]{2,3})(?:[_-][a-z0-9]+)?\.\w+$/i', basename($file), $matches)) {
+			return strtolower($matches[1]);
+		}
+		return 'en';
 	}
 
 	/**
@@ -128,8 +185,6 @@ class TException extends \Exception
 	/**
 	 * Translates an error code into an error message through the files of
 	 * {@see getErrorMessageFiles()}; a later file overrides an earlier definition.
-	 * Each file is parsed once per request, an unreadable file as no entries. Allows
-	 * for '#' and ';' comments.
 	 * @param ?string $key error code that is passed in the exception constructor.
 	 * @return string the translated error message, or the error code when no file defines it.
 	 */
@@ -138,31 +193,57 @@ class TException extends \Exception
 		if (empty($key)) {
 			return '';
 		}
-		$value = $key;
+		$file = $this->findErrorMessageFile($key);
+		return $file === null ? $key : self::readMessageFile($file)[$key];
+	}
 
-		// Cache messages
-		foreach ($this->getErrorMessageFiles() as $msgFile) {
-			if (!isset(self::$_messageCache[$msgFile])) {
-				self::$_messageCache[$msgFile] = [];
-				if (($entries = @file($msgFile)) !== false) {
-					foreach ($entries as $entry) {
-						$entry = trim($entry);
+	/**
+	 * Returns the file of {@see getErrorMessageFiles()} with the highest precedence that
+	 * defines an error code.
+	 * @param ?string $key the error code.
+	 * @return ?string the message file path, or null when no file defines the code.
+	 * @since 4.4.0
+	 */
+	protected function findErrorMessageFile(?string $key): ?string
+	{
+		if ($key === null || $key === '') {
+			return null;
+		}
+		foreach (array_reverse($this->getErrorMessageFiles()) as $msgFile) {
+			if (isset(self::readMessageFile($msgFile)[$key])) {
+				return $msgFile;
+			}
+		}
+		return null;
+	}
 
-						// Skip empty lines and comments starting with # or ;
-						if ($entry === '' || strncmp($entry, '#', 1) === 0 || strncmp($entry, ';', 1) === 0) {
-							continue;
-						}
+	/**
+	 * Parses a message file into its entries. Each file is parsed once per request, an
+	 * unreadable file as no entries. Allows for '#' and ';' comments.
+	 * @param string $msgFile the message file path.
+	 * @return array<string, string> error code => message.
+	 */
+	private static function readMessageFile(string $msgFile): array
+	{
+		if (!isset(self::$_messageCache[$msgFile])) {
+			self::$_messageCache[$msgFile] = [];
+			if (($entries = @file($msgFile)) !== false) {
+				foreach ($entries as $entry) {
+					$entry = trim($entry);
 
-						if (strpos($entry, '=') !== false) {
-							[$code, $message] = explode('=', $entry, 2);
-							self::$_messageCache[$msgFile][trim($code)] = trim($message);
-						}
+					// Skip empty lines and comments starting with # or ;
+					if ($entry === '' || strncmp($entry, '#', 1) === 0 || strncmp($entry, ';', 1) === 0) {
+						continue;
+					}
+
+					if (strpos($entry, '=') !== false) {
+						[$code, $message] = explode('=', $entry, 2);
+						self::$_messageCache[$msgFile][trim($code)] = trim($message);
 					}
 				}
 			}
-			$value = self::$_messageCache[$msgFile][$key] ?? $value;
 		}
-		return $value;
+		return self::$_messageCache[$msgFile];
 	}
 
 	/**
@@ -196,7 +277,8 @@ class TException extends \Exception
 	/**
 	 * Returns the message arguments that filled the `{0}`, `{1}`, ... placeholders, as
 	 * strings in placeholder order. A translator rebuilds the message from
-	 * {@see getErrorCode()} and these arguments.
+	 * {@see getErrorCode()} and these arguments, an ICU pattern through
+	 * `\MessageFormatter::formatMessage()`.
 	 * @return string[] the message arguments.
 	 * @since 4.4.0
 	 */

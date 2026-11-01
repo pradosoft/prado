@@ -1,6 +1,7 @@
 # PRADO error messages shown to the site visitor: Chinese, Simplified (zh).
 # These keys are thrown as THttpException; the framework translates them for the client language.
 # Developer-facing messages are English. Their translations are the pradosoft/prado-dev-errormessages package.
+# Values are ICU MessageFormat patterns; an apostrophe before or after a brace is doubled: ''{0}''.
 
 application_unavailable					= 应用暂时不可用。
 application_service_unknown				= 请求的服务“{0}”未定义。

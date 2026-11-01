@@ -444,7 +444,7 @@ throw new THttpException(404, 'page_not_found');
 | `TDbException` / `TDbConnectionException` | Database errors |
 | `TTemplateException` | Template parse/render errors |
 
-Error message files: `framework/Exceptions/messages/messages.txt` (English master). Language variants: `messages-<lang>.txt`. Format: `error_code=Message with {0} placeholders`. Add to `messages.txt` first, then translate.
+Error message files: `framework/Exceptions/messages/messages.txt` (English master). Language variants: `messages-<lang>.txt`. Format: `error_code=ICU MessageFormat pattern with {0} arguments`, quoting as `''{0}''`. Add to `messages.txt` first, then translate.
 
 ---
 

@@ -233,7 +233,7 @@ throw new TNotSupportedException('error_code');
 throw new TDbException('error_code');
 ```
 
-Error codes defined in `framework/Exceptions/messages/messages.txt` (English master). Format: `error_code=Message with {0} placeholders`. Add here first; then translate into `messages-<lang>.txt`.
+Error codes defined in `framework/Exceptions/messages/messages.txt` (English master). Format: `error_code=ICU MessageFormat pattern with {0} arguments`, quoting as `''{0}''`. Add here first; then translate into `messages-<lang>.txt`.
 
 ---
 

@@ -169,7 +169,7 @@ throw new THttpException(404, 'page_not_found');
 throw new TNotSupportedException('error_code');
 ```
 
-Error codes defined in `framework/Exceptions/messages/messages.txt`. Format: `error_code=Message with {0} placeholder`.
+Error codes defined in `framework/Exceptions/messages/messages.txt`. Format: `error_code=ICU MessageFormat pattern with {0} arguments`, quoting as `''{0}''`.
 
 ---
 
