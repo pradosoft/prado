@@ -28,7 +28,7 @@ $this->getPage()->getCallbackClient()->setViewTransition(true);
 
 ## Pipeline
 
-1. The render-in-callback active controls (TActivePanel, TActiveDataGrid, TActiveDataList, TActiveRepeater, TActiveMultiView, TActivePager, TActiveTableRow, TActiveTableCell) send their markup through `TBaseActiveControl::replaceClientContent()`, which turns on the response's `ViewTransition` for a `ViewTransition` control and passes `getIsMorphUpdate()`.
+1. The render-in-callback active controls (TActivePanel, TActiveDataGrid, TActiveDataList, TActiveRepeater, TActiveMultiView, TActivePager, TActiveTableRow, TActiveTableCell, TActiveSvg) send their markup through `TBaseActiveControl::replaceClientContent()`, which turns on the response's `ViewTransition` for a `ViewTransition` control and passes `getIsMorphUpdate()`.
 2. `TActivePageAdapter::renderResponse()` adds the `X-PRADO-VIEWTRANSITION` part (`1`) when the response has client actions and `getIsViewTransition()` is true: `TPage.CallbackViewTransition` or the response's `ViewTransition`.
 3. `Prado.CallbackRequest.successHandler()` reads the part through `getIsViewTransition()`, which also requires `Prado.Element.canViewTransition()`. After the assets load, `applyInViewTransition()` runs `dispatchActions()` through `Prado.Element.viewTransition()`.
 

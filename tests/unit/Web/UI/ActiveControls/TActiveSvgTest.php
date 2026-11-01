@@ -203,6 +203,21 @@ class TActiveSvgTest extends TestCase
 		$this->assertStringContainsString('id="Chart_bar"', $markup);
 	}
 
+	public function testViewTransitionTurnsOnTheResponseTransition()
+	{
+		[$page, , $svg] = $this->createLoadedSvg();
+		PradoUnit::invoke($svg, 'setControlStage', TControl::CS_PRERENDERED);
+		$svg->render(new THtmlWriter(new TTextWriter()));
+		$this->assertFalse($page->getCallbackClient()->getViewTransition());
+
+		[$page, , $svg] = $this->createLoadedSvg();
+		$svg->getActiveControl()->setViewTransition(true);
+		PradoUnit::invoke($svg, 'setControlStage', TControl::CS_PRERENDERED);
+		$svg->render(new THtmlWriter(new TTextWriter()));
+		$this->assertTrue($page->getCallbackClient()->getViewTransition());
+		$this->assertTrue($page->getClientFunctions()[0]['Prado.Element.replace'][4], 'The graphic still morphs.');
+	}
+
 	public function testReplaceModeSendsNoMorphArgument()
 	{
 		[$page, , $svg] = $this->createLoadedSvg();
