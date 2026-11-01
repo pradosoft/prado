@@ -13,6 +13,7 @@ namespace Prado\Util\Log;
 use Prado\Prado;
 use Prado\TEventParameter;
 use Prado\Util\Clock\TApplicationClockAwareTrait;
+use Prado\Util\Clock\TMonotonicClockAwareTrait;
 use Prado\Web\UI\TControl;
 
 /**
@@ -29,6 +30,12 @@ use Prado\Web\UI\TControl;
  * The log message, log level, log category (class), microtime Time stamp
  * memory used, control ID, traces, and process ID.
  *
+ * A PROFILE_END logged through {@see log()} returns the seconds since its PROFILE_BEGIN,
+ * measured on the {@see getMonotonicClock() monotonic clock}, so a wall-clock change does
+ * not lengthen or shorten it.  The record times stay wall-clock timestamps.  A pair added
+ * through {@see mergeLogs()} or collected from another process returns the difference of
+ * its record times.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 3.0
@@ -36,6 +43,7 @@ use Prado\Web\UI\TControl;
 class TLogger extends \Prado\TComponent
 {
 	use TApplicationClockAwareTrait;
+	use TMonotonicClockAwareTrait;
 
 	/**
 	 * Log levels.
@@ -92,6 +100,16 @@ class TLogger extends \Prado\TComponent
 	 * @since 4.3.0
 	 */
 	private array $_profileBeginTimes = [];
+	/**
+	 * @var array<string, int> The monotonic readings of the Profile Begin logs from {@see log()}, in nanoseconds
+	 * @since 4.4.0
+	 */
+	private array $_profileBeginNanoseconds = [];
+	/**
+	 * @var ?int The monotonic reading of the {@see log()} call whose record {@see addLog()} adds next
+	 * @since 4.4.0
+	 */
+	private ?int $_logNanoseconds = null;
 	/**
 	 * @var ?int log levels (bits) to be filtered
 	 */
@@ -266,6 +284,8 @@ class TLogger extends \Prado\TComponent
 	protected function addLog(array $log, bool $flush = true): ?float
 	{
 		$return = null;
+		$nanoseconds = $this->_logNanoseconds;
+		$this->_logNanoseconds = null;
 		if ($this->_flushing) {
 			$this->_flushingLog[] = $log;
 			return $return;
@@ -275,6 +295,11 @@ class TLogger extends \Prado\TComponent
 			$add = !isset($this->_profileLogs[$profileName]);
 			$this->_profileLogs[$profileName] = $log;
 			$this->_profileBeginTimes[$profileName] = $log[static::LOG_TIME];
+			if ($nanoseconds !== null) {
+				$this->_profileBeginNanoseconds[$profileName] = $nanoseconds;
+			} else {
+				unset($this->_profileBeginNanoseconds[$profileName]);
+			}
 			if ($add) {
 				$this->_profileLogsCount++;
 				$this->checkProfileLogsSize($flush);
@@ -291,7 +316,9 @@ class TLogger extends \Prado\TComponent
 
 					unset($this->_profileLogs[$profileName]);
 				}
-				if (isset($this->_profileBeginTimes[$profileName])) {
+				if ($nanoseconds !== null && isset($this->_profileBeginNanoseconds[$profileName])) {
+					$return = ($nanoseconds - $this->_profileBeginNanoseconds[$profileName]) / 1_000_000_000;
+				} elseif (isset($this->_profileBeginTimes[$profileName])) {
 					$return = $log[static::LOG_TIME] - $this->_profileBeginTimes[$profileName];
 				}
 			}
@@ -346,7 +373,8 @@ class TLogger extends \Prado\TComponent
 	 * TLogger::PROFILE_BEGIN, TLogger::PROFILE_END
 	 * @param ?string $category category of the message
 	 * @param null|string|TControl $ctl control of the message
-	 * @return ?float The time delta for PROFILE_END; and null in other cases.
+	 * @return ?float The seconds since the PROFILE_BEGIN of the token, on the monotonic clock, for
+	 *   PROFILE_END; and null in other cases.
 	 */
 	public function log(mixed $token, int $level, ?string $category = null, mixed $ctl = null): ?float
 	{
@@ -383,6 +411,7 @@ class TLogger extends \Prado\TComponent
 			}
 		}
 
+		$this->_logNanoseconds = $this->getMonotonicClock()->nanoseconds();
 		return $this->addLog([$token, $level, $category, $this->getClock()->microtime(), memory_get_usage(), $ctl, $traces, getmypid()]);
 	}
 
@@ -611,6 +640,7 @@ class TLogger extends \Prado\TComponent
 		$this->_profileLogs = [];
 		$this->_profileLogsCount = 0;
 		$this->_profileBeginTimes = [];
+		$this->_profileBeginNanoseconds = [];
 
 		return $profileLogs;
 	}
