@@ -814,6 +814,7 @@ mutex_retrydelay_invalid					= {0}.RetryDelay must be at least 1 millisecond; {1
 mutex_expire_invalid						= {0}.Expire must be greater than zero; {1} given.
 filemutex_mutexpath_invalid					= TFileMutex could not create the mutex directory '{0}'. Make sure the parent directory exists and is writable.
 semaphoremutex_extension_required			= TSemaphoreMutex requires the sysvsem PHP extension.
+syncmutex_extension_required				= TSyncMutex requires the sync PECL extension.
 redismutex_extension_required				= TRedisMutex requires the redis PHP extension.
 dbmutex_driver_unsupported					= {0} does not support the '{1}' database driver; it requires {2}.
 

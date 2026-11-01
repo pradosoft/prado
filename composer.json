@@ -90,6 +90,8 @@
 		"ext-pdo" : "Used by all the Prado\\Data components, eg. TDbConnection and TTableGateway",
 		"ext-soap" : "Used by TSoapService to provide a soap backend",
 		"ext-sockets" : "Used by TCaptureForkLog to capture the log of a child process",
+		"ext-sync" : "Enables the use of TSyncMutex, a named lock between the processes of a host, Windows included",
+		"ext-sysvsem" : "Enables the use of TSemaphoreMutex, a System V semaphore lock between the processes of a host",
 		"ext-xdebug": "Useful to get stack traces on Php fatal errors",
 		"ext-xsl" : "Used by the TXmlTransform component",
 		"ext-zlib" : "Enables compression to reduce page size",

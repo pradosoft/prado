@@ -12,6 +12,8 @@ Named lock modules over files, semaphores, process memory, caches, Redis, and da
 
 - **`TSemaphoreMutex`** — System V semaphore through `sysvsem`.
 
+- **`TSyncMutex`** — Named `SyncSemaphore` through the PECL `sync` extension; works on Windows.
+
 - **`TMemoryMutex`** — In-process lock table for fibers and tests.
 
 - **`TCacheMutex`** — Token lease through `ICache::add()`.

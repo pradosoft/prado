@@ -28,6 +28,7 @@ use Prado\TPropertyValue;
  * |---|---|---|
  * | {@see TFileMutex} | `flock()` on a lock file | processes on one host or a shared file system |
  * | {@see TSemaphoreMutex} | System V semaphore | processes on one host |
+ * | {@see TSyncMutex} | `sync` extension semaphore | processes on one host, Windows included |
  * | {@see TMemoryMutex} | process memory | fibers and mutexes of one process |
  * | {@see TCacheMutex} | {@see \Prado\Caching\ICache::add()} | clients of the cache |
  * | {@see TRedisMutex} | Redis `SET NX PX` | clients of the Redis server |

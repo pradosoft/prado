@@ -435,6 +435,7 @@ return [
 'TPgsqlMutex' => 'Prado\Util\Mutex\TPgsqlMutex',
 'TRedisMutex' => 'Prado\Util\Mutex\TRedisMutex',
 'TSemaphoreMutex' => 'Prado\Util\Mutex\TSemaphoreMutex',
+'TSyncMutex' => 'Prado\Util\Mutex\TSyncMutex',
 'TBaseBehavior' => 'Prado\Util\TBaseBehavior',
 'TBehavior' => 'Prado\Util\TBehavior',
 'TBehaviorsModule' => 'Prado\Util\TBehaviorsModule',

@@ -18,7 +18,7 @@ use Prado\TPropertyValue;
  *
  * TSemaphoreMutex locks a name with a System V semaphore of one permit, through the
  * `sysvsem` extension.  It excludes the processes of one host and needs no file or
- * server.  The extension is not available on Windows.
+ * server.  The extension is not available on Windows; {@see TSyncMutex} is.
  *
  * The semaphore key of a name is 31 bits of the MD5 hash of the name with the
  * {@see getKeyPrefix KeyPrefix}.  Two names with the same key share one lock.  The

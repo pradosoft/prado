@@ -5,7 +5,7 @@
 
 ## Purpose
 
-Named locks (`Prado\Util\Mutex`). A mutex module excludes other holders of a lock name: processes on a host, clients of a cache or Redis server, or connections to a database. The set covers the Yii2 mutexes (`FileMutex`, `MysqlMutex`, `PgsqlMutex`, `OracleMutex`, yii2-redis `Mutex`) and adds a System V semaphore, an in-process, a cache, a SQL Server, a portable lock-table, and a universal database mutex that routes by driver.
+Named locks (`Prado\Util\Mutex`). A mutex module excludes other holders of a lock name: processes on a host, clients of a cache or Redis server, or connections to a database. The set covers the Yii2 mutexes (`FileMutex`, `MysqlMutex`, `PgsqlMutex`, `OracleMutex`, yii2-redis `Mutex`) and adds a System V semaphore, a PECL `sync` semaphore for Windows, an in-process, a cache, a SQL Server, a portable lock-table, and a universal database mutex that routes by driver.
 
 ## Contract and Base
 
@@ -20,6 +20,7 @@ Named locks (`Prado\Util\Mutex`). A mutex module excludes other holders of a loc
 |---|---|---|---|
 | [`TFileMutex`](TFileMutex.md) | `flock()` on `MutexPath/md5(name).lock` | processes of a host | no |
 | [`TSemaphoreMutex`](TSemaphoreMutex.md) | System V semaphore (`sysvsem`) | processes of a host | no |
+| [`TSyncMutex`](TSyncMutex.md) | named `SyncSemaphore` (PECL `sync`) | processes of a host, Windows included | no |
 | [`TMemoryMutex`](TMemoryMutex.md) | static table of the process | mutexes and fibers of a process | no |
 | [`TCacheMutex`](TCacheMutex.md) | `ICache::add()` of a token | clients of the cache | `Expire` (30 s) |
 | [`TRedisMutex`](TRedisMutex.md) | `SET NX PX`, Lua release | clients of the Redis server | `Expire` (30 s) |
@@ -39,11 +40,12 @@ Named locks (`Prado\Util\Mutex`). A mutex module excludes other holders of a loc
 - **Session locks.** `TMysqlMutex`, `TPgsqlMutex`, `TOracleMutex`, and `TMssqlMutex` locks belong to the connection's session. The server drops them when the connection closes. Mutexes that share one connection do not exclude each other.
 - **Leases.** `TCacheMutex`, `TRedisMutex`, and `TDbTableMutex` locks expire after `Expire` seconds, so a crashed holder frees them, and a holder whose work outlasts the lease loses it. A release checks the token; `TCacheMutex` checks and deletes in two calls, `TRedisMutex` in one script.
 - **Transactions.** `DBMS_LOCK.ALLOCATE_UNIQUE` commits; a failed `TDbTableMutex` insert aborts a PostgreSQL transaction. Give those mutexes a connection of their own.
-- **Fork.** A child forgets the inherited names. `TFileMutex` closes its copy of the descriptor (the parent's lock remains); `TSemaphoreMutex` is created without PHP auto-release so the child's teardown does not post the parent's permit.
+- **Killed holders.** `TFileMutex` and `TSemaphoreMutex` locks free when the holder's process dies. A `TSyncMutex` permit of a killed process (no PHP shutdown) stays taken until `/dev/shm/Sync_Semaphore*` is removed or the host restarts on POSIX, or while any process keeps it open on Windows.
+- **Fork.** A child forgets the inherited names. `TFileMutex` closes its copy of the descriptor (the parent's lock remains); `TSemaphoreMutex` and `TSyncMutex` are created without auto-release so the child's teardown does not post the parent's permit; `TSyncMutex` uses `SyncSemaphore` because a `SyncMutex` always unlocks when freed.
 - **Optimistic locking** (Yii2 `ActiveRecord::optimisticLock()`) belongs to the record layer in `pradosoft/prado-activerecord`.
 
 ## Conventions
 
 - Registered in `framework/classes.php`; `@since 4.4.0`.
-- Error keys: `mutex_acquire_failed`, `mutex_retrydelay_invalid`, `mutex_expire_invalid`, `filemutex_mutexpath_invalid`, `semaphoremutex_extension_required`, `redismutex_extension_required`, `dbmutex_driver_unsupported`.
+- Error keys: `mutex_acquire_failed`, `mutex_retrydelay_invalid`, `mutex_expire_invalid`, `filemutex_mutexpath_invalid`, `semaphoremutex_extension_required`, `syncmutex_extension_required`, `redismutex_extension_required`, `dbmutex_driver_unsupported`.
 - Tests: `tests/unit/Util/Mutex/`; `Harness/Util/Mutex/TTestLockConnection` and `TTestLockCommand` script database results without a server.

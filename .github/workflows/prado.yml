@@ -38,8 +38,13 @@ jobs:
         uses: shivammathur/setup-php@v2 #https://github.com/shivammathur/setup-php
         with:
           php-version: ${{ matrix.php-versions }}
-          extensions: ctype, dom, intl, json, mbstring, memcached, pdo_mysql, pdo_pgsql, pdo_sqlite, openssl, pcre, spl, zlib, bz2, zstd, brotli
+          # sysvsem and sync back TSemaphoreMutex and TSyncMutex
+          extensions: ctype, dom, intl, json, mbstring, memcached, pdo_mysql, pdo_pgsql, pdo_sqlite, openssl, pcre, spl, zlib, bz2, zstd, brotli, sysvsem, sync
           tools: php-cs-fixer, phpstan, cs2pr
+
+      - name: Report mutex extensions
+        run: |
+          php -r 'foreach (["sysvsem", "sync"] as $e) { echo extension_loaded($e) ? "$e loaded" : "::warning::$e is not loaded; its mutex tests skip", PHP_EOL; }'
 
       - name: Validate composer.json and composer.lock
         run: composer validate --strict
@@ -177,8 +182,13 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ env.PHP_VERSION }}
-          extensions: ctype, dom, intl, json, mbstring, memcached, pdo_mysql, pdo_pgsql, pdo_sqlite, openssl, pcre, spl, zlib, bz2, zstd, brotli
+          # sysvsem and sync back TSemaphoreMutex and TSyncMutex
+          extensions: ctype, dom, intl, json, mbstring, memcached, pdo_mysql, pdo_pgsql, pdo_sqlite, openssl, pcre, spl, zlib, bz2, zstd, brotli, sysvsem, sync
           tools: php-cs-fixer, phpstan, cs2pr
+
+      - name: Report mutex extensions
+        run: |
+          php -r 'foreach (["sysvsem", "sync"] as $e) { echo extension_loaded($e) ? "$e loaded" : "::warning::$e is not loaded; its mutex tests skip", PHP_EOL; }'
 
       - name: Validate composer.json and composer.lock
         run: composer validate --strict
@@ -246,8 +256,13 @@ jobs:
         with:
           php-version: ${{ env.PHP_VERSION }}
           # memcached extension omitted: libmemcached is not available on Windows
-          extensions: ctype, dom, intl, json, mbstring, pdo_mysql, pdo_pgsql, pdo_sqlite, openssl, pcre, spl, bz2, xsl, zip, zlib, zstd, brotli
+          # sysvsem omitted: System V IPC is not available on Windows; sync backs TSyncMutex
+          extensions: ctype, dom, intl, json, mbstring, pdo_mysql, pdo_pgsql, pdo_sqlite, openssl, pcre, spl, bz2, xsl, zip, zlib, zstd, brotli, sync
           tools: php-cs-fixer, phpstan, cs2pr
+
+      - name: Report mutex extensions
+        run: |
+          php -r 'echo extension_loaded("sync") ? "sync loaded" : "::warning::sync is not loaded; its mutex tests skip", PHP_EOL;'
 
       - name: Validate composer.json and composer.lock
         run: composer validate --strict
