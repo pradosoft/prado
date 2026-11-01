@@ -69,8 +69,8 @@ The service is the PHP SAPI host of a [`TServerEventStreamer`](TServerEventStrea
 
 | Method | Description |
 |---|---|
-| `static createChannelToken($channel, ?$app)` | hex `hash_hmac(HashAlgorithm, "prado-serverevent\0" . channel . "\0" . userName, ValidationKey)` |
-| `static verifyChannelToken($channel, $token, ?$app)` | `hash_equals` with `createChannelToken()`; false for an empty token |
+| `static createChannelToken($channel, ?$app, ?$userName)` | hex `hash_hmac(HashAlgorithm, "prado-serverevent\0" . channel . "\0" . userName, ValidationKey)`; a null `$userName` is the application's current user |
+| `static verifyChannelToken($channel, $token, ?$app, ?$userName)` | `hash_equals` with `createChannelToken()`; false for an empty token. A server that authenticates its client outside a PRADO request (a WebSocket handshake) passes the user name |
 | `static constructChannelUrl($channel, $serviceID = 'events', ?$app)` | `?events=<channel>&token=<token>`, unencoded `&` |
 | `authorizeChannel($channel, $token)` | `verifyChannelToken()`; the override seam for an application check |
 | `resolveLastEventId`, `releaseSession`, `createStreamer`, `createSink` | protected seams; tests replace the sink |

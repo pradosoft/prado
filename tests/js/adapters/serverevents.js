@@ -17,6 +17,7 @@ loadScript('framework/Web/Javascripts/source/prado/controls/controls.js');
 loadScript('framework/Web/Javascripts/source/prado/activecontrols/ajax3.js');
 loadScript('framework/Web/Javascripts/source/prado/activecontrols/serverevents.js');
 
-export const EventSourceManager            = global.Prado.EventSource;
+export const ServerEvents                  = global.Prado.ServerEvents;
+export const EventSourceTransport          = global.Prado.EventSource;
 export const TServerEventTriggeredCallback = global.Prado.WebUI.TServerEventTriggeredCallback;
 export const Registry                      = global.Prado.Registry;

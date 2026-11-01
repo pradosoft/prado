@@ -34,6 +34,10 @@ use Prado\Util\Clock\TApplicationClockAwareTrait;
  * {@see getEventLifetime EventLifetime} seconds. A browser that reconnects after its
  * last event left the buffer misses the events in between.
  *
+ * After it stores an event, {@see publish()} raises the global {@see PUBLISHED_EVENT}
+ * (`fxServerEventPublished`) through {@see announcePublished()}, so a module can relay every
+ * published event to another transport.
+ *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
  */
@@ -43,6 +47,9 @@ abstract class TServerEventBroker extends TModule implements IServerEventBroker
 
 	/** The pattern of a channel or event name. */
 	public const NAME_PATTERN = '/^[A-Za-z0-9_.:\-]{1,128}$/';
+
+	/** The global event raised after a broker stores an event; see {@see announcePublished()}. */
+	public const PUBLISHED_EVENT = 'fxServerEventPublished';
 
 	/** The default number of buffered events per channel. */
 	public const DEFAULT_BUFFER_SIZE = 100;
@@ -124,7 +131,24 @@ abstract class TServerEventBroker extends TModule implements IServerEventBroker
 		if (json_encode($data) === false) {
 			throw new TInvalidDataValueException('servereventbroker_data_invalid', $channel, $event, json_last_error_msg());
 		}
-		return $this->storeEvent($channel, $event, $data);
+		$published = $this->storeEvent($channel, $event, $data);
+		static::announcePublished($this, $published);
+		return $published;
+	}
+
+	/**
+	 * Raises the global {@see PUBLISHED_EVENT} for an event a broker stored, with the broker
+	 * as the sender and the {@see TServerEvent} as the parameter.  A module that relays events
+	 * to another transport, such as a WebSocket cluster, listens with an `fxServerEventPublished`
+	 * method.  {@see publish()} calls it after {@see storeEvent()}; a broker that implements
+	 * {@see IServerEventBroker} itself calls it once the event is stored and visible to readers,
+	 * which for a transactional store is after the commit.
+	 * @param IServerEventBroker $broker The broker that stored the event.
+	 * @param TServerEvent $event The stored event, with its event ID.
+	 */
+	public static function announcePublished(IServerEventBroker $broker, TServerEvent $event): void
+	{
+		$event->raiseEvent(static::PUBLISHED_EVENT, $broker, $event);
 	}
 
 	/**

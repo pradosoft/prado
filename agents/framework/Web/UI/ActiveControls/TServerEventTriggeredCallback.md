@@ -36,19 +36,21 @@ A data-only update needs no round trip; the client handler applies it and no cal
 |---|---|---|
 | `Channel` | `''` | required; `TServerEventBroker::NAME_PATTERN`, else `servereventtriggeredcallback_channel_invalid` at render |
 | `EventName` | `''` | the event that triggers; empty for every event of the channel (filtered on the client) |
-| `ServiceID` | `events` | the `TServerEventService` ID |
+| `ServiceID` | `events` | the `TServerEventService` ID of the default `sse` endpoint |
+| `EndpointID` | `''` | an [`IServerEventEndpoint`](../../Services/ServerEvents/IServerEventEndpoint.md) module, such as a WebSocket package's; empty for `TServerEventSseEndpoint` on `ServiceID`; else `servereventtriggeredcallback_endpointid_invalid` at render |
 | `BrokerID` | `''` | the broker module for the render-time `LastEventID`; empty finds the first |
 | `CallbackOnEvent` | true | false sends no callbacks; only `ClientSide.OnServerEvent` runs. Sent to the client only when false |
 | `ClientSide` | [`TServerEventClientSide`](TServerEventClientSide.md) | set in the constructor; adds `OnServerEvent` to the callback options |
 | `ActiveControl.CausesValidation` | false | set in the constructor; a server event does not validate the user's form |
 
 ## Rendering
-`<span id="ClientID" hidden="hidden"></span>`, the `serverevents` package, and `new Prado.WebUI.TServerEventTriggeredCallback({ID, EventTarget, StreamUrl, LastEventID, EventName, ...})`. `StreamUrl` is `TServerEventService::constructChannelUrl()`, with the token for the page's user. `LastEventID` is the broker's latest ID at render, so the stream starts after the events the page already shows and none published between render and connect are missed.
+`<span id="ClientID" hidden="hidden"></span>`, the `serverevents` package, the endpoint's `registerClientScripts()`, and `new Prado.WebUI.TServerEventTriggeredCallback({...endpoint options, ID, EventTarget, Channel, EventName, ...})`. The endpoint options come from `resolveEndpoint()->getClientOptions($channel, $lastEventId)`; the control's own keys win. For the default `sse` endpoint they are `Transport: 'sse'`, `StreamUrl` (`TServerEventService::constructChannelUrl()`, with the token for the page's user), and `LastEventID`. `LastEventID` is the broker's latest ID at render, so the stream starts after the events the page already shows and none published between render and connect are missed.
 
 ## Client (`serverevents.js`)
-- `Prado.EventSource` keeps one `EventSource` per `StreamUrl` and opens it with `&lastEventId=<LastEventID>`; later reconnects send `Last-Event-ID`. A message `{"channel", "event", "data"}` becomes `{Channel, ID, Event, Data}`. `dispatch()` first dispatches it on `document` as a `prado:serverevent` CustomEvent (`Prado.EventSource.DOCUMENT_EVENT`, `detail` the event), once per message, then hands it to each subscriber. Any script or component can listen; at least one control on the page subscribes the stream.
-- A subscriber is inactive once deinitialized or once its anchor span leaves the document. Inactive subscribers are dropped on the next message and on each `prado:ajaxComplete`. The last one closes the `EventSource` at the end of the current task, so a control re-registered by the same callback response keeps the open stream.
-- An `error` with `readyState` CLOSED (an HTTP `403`/`404`) forgets the stream; the browser does not retry it.
+- `Prado.ServerEvents` shares one stream per transport and stream key: `registerTransport(name, {key(options), open(options, deliver, refused)})`, `subscribe(options, subscriber)` returns the key (`'<transport> <key>'`), `unsubscribe(key, subscriber)`, `streams` (`{transport, handle, subscribers}`). Options without `Transport` use `DEFAULT_TRANSPORT`, `sse`; an unregistered transport throws.
+- `deliver(key, event)` dispatches the event on `document` as a `prado:serverevent` CustomEvent (`Prado.ServerEvents.DOCUMENT_EVENT`, `detail` `{Channel, ID, Event, Data}`), then hands it to each active subscriber. Any script or component can listen; at least one control on the page subscribes the stream.
+- `Prado.EventSource` is the `sse` transport: one `EventSource` per `StreamUrl`, opened with `&lastEventId=<LastEventID>`; later reconnects send `Last-Event-ID`. `decode()` turns a message `{"channel", "event", "data"}` into `{Channel, ID, Event, Data}`. An `error` with `readyState` CLOSED (an HTTP `403`/`404`) is `refused()`: the stream is forgotten and not retried. The handle is `{source, url, close()}`.
+- A subscriber is inactive once deinitialized or once its anchor span leaves the document. Inactive subscribers are dropped on the next event and on each `prado:ajaxComplete`. The last one closes the stream at the end of the current task, so a control re-registered by the same callback response keeps the open stream.
 - `onServerEvent()` skips another `EventName`, runs `options.OnServerEvent(sender, event)` when set (a `false` return skips the callback), skips the callback when `CallbackOnEvent` is false, then dispatches `Prado.CallbackRequest` with the event as `CallbackParameter`. Callbacks queue one per event, in order.
 
 ## Accessibility audit (4.4.0)

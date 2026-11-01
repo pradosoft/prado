@@ -388,6 +388,18 @@ class TServerEventServiceTest extends \PHPUnit\Framework\TestCase
 		self::assertFalse(TServerEventService::verifyChannelToken('other', $token));
 	}
 
+	public function testChannelTokenForANamedUser(): void
+	{
+		$current = Prado::getApplication()->getUser()?->getName() ?? '';
+		self::assertSame(TServerEventService::createChannelToken('orders'), TServerEventService::createChannelToken('orders', null, $current), 'Null names the current user.');
+
+		$alice = TServerEventService::createChannelToken('orders', null, 'alice');
+		self::assertNotSame($alice, TServerEventService::createChannelToken('orders', null, 'bob'));
+		self::assertTrue(TServerEventService::verifyChannelToken('orders', $alice, null, 'alice'));
+		self::assertFalse(TServerEventService::verifyChannelToken('orders', $alice, null, 'bob'));
+		self::assertFalse(TServerEventService::verifyChannelToken('inbox', $alice, null, 'alice'));
+	}
+
 	public function testResponseSinkSetsTheHeadersOnTheResponse(): void
 	{
 		$response = new TServerEventServiceTestResponse();

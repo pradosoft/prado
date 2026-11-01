@@ -8,9 +8,13 @@ Server push (namespace `Prado\Web\Services\ServerEvents`): brokers carry publish
 
 - **`IServerEventSink`** — Interface: the response a stream is written to; `open()`, `write()`, `close()`.
 
-- **`TServerEvent`** — Immutable event: `ID`, `Channel`, `Name`, `Data`, `Time`.
+- **`IServerEventEndpoint`** — Interface: where the browser streams a channel and its transport; `getClientOptions()`, `registerClientScripts()`.
 
-- **`TServerEventBroker`** — Abstract base broker module; name and data validation, `BufferSize`, `EventLifetime`.
+- **`TServerEvent`** — Immutable event: `ID`, `Channel`, `Name`, `Data`, `Time`; `toArray()` is the transport-neutral payload.
+
+- **`TServerEventBroker`** — Abstract base broker module; name and data validation, `BufferSize`, `EventLifetime`; raises the global `fxServerEventPublished` after a publish (`announcePublished()`).
+
+- **`TServerEventSseEndpoint`** — The default endpoint: `sse` over `TServerEventService`.
 
 - **`TServerEventCacheBroker`** — Broker over an `ICache` entry per channel, polled every `PollInterval`; across processes. Publishes take the channel's lock in an `IMutex` (`MutexID` or a default matched to the cache).
 

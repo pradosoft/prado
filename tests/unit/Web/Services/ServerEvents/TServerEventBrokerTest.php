@@ -5,11 +5,25 @@ namespace Prado\Test\Unit\Web\Services\ServerEvents;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\IO\Async\TAsync;
+use Prado\TComponent;
 use Prado\Web\Services\ServerEvents\IServerEventBroker;
 use Prado\Web\Services\ServerEvents\TServerEvent;
 use Prado\Web\Services\ServerEvents\TServerEventBroker;
 use Prado\Web\Services\ServerEvents\TServerEventCacheBroker;
 use Prado\Web\Services\ServerEvents\TServerEventMemoryBroker;
+
+/**
+ * A global listener of fxServerEventPublished, as a relay to another transport is.
+ */
+class TServerEventBrokerTestRelay extends TComponent
+{
+	public array $published = [];
+
+	public function fxServerEventPublished($sender, $param)
+	{
+		$this->published[] = [$sender, $param];
+	}
+}
 
 class TServerEventBrokerTest extends \PHPUnit\Framework\TestCase
 {
@@ -44,6 +58,38 @@ class TServerEventBrokerTest extends \PHPUnit\Framework\TestCase
 		self::assertFalse(TServerEventBroker::isValidName('a b'));
 		self::assertFalse(TServerEventBroker::isValidName("a\nb"));
 		self::assertFalse(TServerEventBroker::isValidName('a/b'));
+	}
+
+	public function testPublishAnnouncesTheStoredEventGlobally(): void
+	{
+		$relay = new TServerEventBrokerTestRelay();
+		$relay->listen();
+		try {
+			$memory = $this->memoryBroker();
+			$cache = $this->cacheBroker();
+			$first = $memory->publish('orders', 'changed', ['id' => 1]);
+			$second = $cache->publish('inbox', 'new', 2);
+
+			self::assertCount(2, $relay->published);
+			self::assertSame($memory, $relay->published[0][0]);
+			self::assertSame($first, $relay->published[0][1]);
+			self::assertSame($cache, $relay->published[1][0]);
+			self::assertSame($second, $relay->published[1][1]);
+			self::assertSame($second->getID(), $cache->getLastEventId('inbox'), 'The event was stored before the announcement.');
+
+			try {
+				$memory->publish('bad channel', 'e');
+			} catch (TInvalidDataValueException $e) {
+			}
+			self::assertCount(2, $relay->published, 'A rejected publish announces nothing.');
+
+			$direct = new TServerEvent('x-1', 'orders', 'e', null);
+			TServerEventBroker::announcePublished($memory, $direct);
+			self::assertSame([$memory, $direct], $relay->published[2], 'A broker that implements the interface itself announces through the helper.');
+			self::assertSame('fxServerEventPublished', TServerEventBroker::PUBLISHED_EVENT);
+		} finally {
+			$relay->unlisten();
+		}
 	}
 
 	public function testBrokersImplementTheInterface(): void

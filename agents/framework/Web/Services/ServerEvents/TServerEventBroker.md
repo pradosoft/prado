@@ -12,7 +12,10 @@
 **Since:** 4.4.0
 
 ## Overview
-The abstract base of the brokers. `publish()` validates the names and the data, then calls the subclass's `storeEvent()`. `getLastEventId()` reads the subclass's `loadState()`.
+The abstract base of the brokers. `publish()` validates the names and the data, calls the subclass's `storeEvent()`, then `announcePublished()`. `getLastEventId()` reads the subclass's `loadState()`.
+
+## Publish announcement
+`static announcePublished(IServerEventBroker $broker, TServerEvent $event)` raises the global `PUBLISHED_EVENT`, `fxServerEventPublished`, with the broker as sender and the event as parameter. A module with an `fxServerEventPublished($sender, $param)` method that listens (a `TModule` auto-listens) receives every published event, which is how a relay forwards events to another transport such as a WebSocket cluster. A broker that implements `IServerEventBroker` itself calls the helper once the event is stored and visible to readers; for a transactional store, after the commit. A rejected publish (invalid name or data) announces nothing.
 
 ## State
 A channel's state is `['generation' => 8 hex chars, 'sequence' => int, 'events' => [['sequence', 'name', 'data', 'time'], ...]]`. Helpers: `createState()`, `appendEvent($state, ...)` (returns `[$state, TServerEvent]`), `pruneState()`, `eventsAfter($state, $channel, $lastEventId)`, `formatEventId()`.

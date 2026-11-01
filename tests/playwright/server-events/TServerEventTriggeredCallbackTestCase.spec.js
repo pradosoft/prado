@@ -67,7 +67,7 @@ test('TServerEventTriggeredCallback: CallbackOnEvent false runs only the client 
 test('TServerEventTriggeredCallback: controls on one channel share one EventSource', async ({ page }) => {
 	await open(page);
 	const streams = await page.evaluate(() => Object.fromEntries(
-		Object.entries(Prado.EventSource.sources).map(([url, entry]) => [new URL(url, location.href).searchParams.get('events'), entry.subscribers.map((s) => s.ID)])
+		Object.values(Prado.ServerEvents.streams).map((entry) => [new URL(entry.handle.url, location.href).searchParams.get('events'), entry.subscribers.map((s) => s.ID)])
 	));
 	expect(streams).toEqual({ orders: ['ChangedWatch', 'AnyWatch', 'ClientWatch'], panel: ['PanelWatch'] });
 	expect(await streamUrl(page, 'ChangedWatch')).toBe(await streamUrl(page, 'AnyWatch'));
@@ -76,16 +76,16 @@ test('TServerEventTriggeredCallback: controls on one channel share one EventSour
 test('TServerEventTriggeredCallback: a re-rendered control keeps its stream, a removed one closes it', async ({ page }) => {
 	await open(page);
 	const panelUrl = await streamUrl(page, 'PanelWatch');
-	await page.evaluate(() => { window.__panelSource = Object.values(Prado.EventSource.sources).find((e) => e.subscribers[0].ID === 'PanelWatch').source; });
+	await page.evaluate(() => { window.__panelSource = Object.values(Prado.ServerEvents.streams).find((e) => e.subscribers[0].ID === 'PanelWatch').handle.source; });
 
 	await page.locator('#RefreshPanel').click();
 	await page.waitForFunction(() => Prado.Registry.PanelWatch && !Prado.Registry.PanelWatch.isLingering() && document.getElementById('PanelWatch'), null, WAIT);
-	expect(await page.evaluate((url) => Prado.EventSource.sources[url].source === window.__panelSource, panelUrl)).toBe(true);
+	expect(await page.evaluate((url) => Prado.ServerEvents.streams['sse ' + url].handle.source === window.__panelSource, panelUrl)).toBe(true);
 	await page.locator('#PublishPanel').click();
 	await expect(page.locator('#PanelLabel')).toHaveText('ping 1', WAIT);
 
 	await page.locator('#RemoveWatch').click();
-	await page.waitForFunction((url) => !(url in Prado.EventSource.sources), panelUrl, WAIT);
+	await page.waitForFunction((url) => !(('sse ' + url) in Prado.ServerEvents.streams), panelUrl, WAIT);
 	expect(await page.evaluate(() => window.__panelSource.readyState)).toBe(2);
 	await page.locator('#PublishPanel').click();
 	await page.locator('#PublishChanged').click();

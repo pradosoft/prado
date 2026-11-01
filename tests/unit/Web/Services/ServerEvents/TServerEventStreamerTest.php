@@ -194,6 +194,7 @@ class TServerEventStreamerTest extends \PHPUnit\Framework\TestCase
 	public function testFormatEvent(): void
 	{
 		$event = new TServerEvent('ab12-3', 'c', 'note', "line1\nline2");
+		self::assertSame(['id' => 'ab12-3', 'channel' => 'c', 'event' => 'note', 'data' => "line1\nline2"], $event->toArray());
 		self::assertSame("id: ab12-3\ndata: {\"channel\":\"c\",\"event\":\"note\",\"data\":\"line1\\nline2\"}\n\n", TServerEventStreamer::formatEvent($event));
 	}
 }

@@ -96,4 +96,15 @@ class TServerEvent extends TComponent
 	{
 		return $this->_time;
 	}
+
+	/**
+	 * Returns the transport-neutral payload of the event: what any transport sends a browser.
+	 * The server-sent event stream carries it as the `id:` field and the `data:` JSON; another
+	 * transport, such as a WebSocket, sends it as one JSON message.
+	 * @return array{id: string, channel: string, event: string, data: mixed} The payload.
+	 */
+	public function toArray(): array
+	{
+		return ['id' => $this->getID(), 'channel' => $this->getChannel(), 'event' => $this->getName(), 'data' => $this->getData()];
+	}
 }

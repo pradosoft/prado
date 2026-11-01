@@ -8,8 +8,11 @@ use Prado\Prado;
 use Prado\Test\Unit\Harness\Traits\TWebControlRenderTrait;
 use Prado\Test\Unit\Harness\Web\UI\TTestCallbackPage;
 use Prado\Test\Unit\PradoUnit;
+use Prado\TModule;
+use Prado\Web\Services\ServerEvents\IServerEventEndpoint;
 use Prado\Web\Services\ServerEvents\TServerEventMemoryBroker;
 use Prado\Web\Services\ServerEvents\TServerEventService;
+use Prado\Web\Services\ServerEvents\TServerEventSseEndpoint;
 use Prado\Web\UI\ActiveControls\ICallbackEventHandler;
 use Prado\Web\UI\ActiveControls\TCallback;
 use Prado\Web\UI\ActiveControls\TServerEventClientSide;
@@ -33,6 +36,24 @@ class TServerEventTriggeredCallbackTestClientScript extends TClientScriptManager
 	public function registerPradoScript($name)
 	{
 		$this->pradoScripts[] = $name;
+	}
+}
+
+/**
+ * An endpoint of another transport, as a WebSocket package supplies.
+ */
+class TServerEventTriggeredCallbackTestEndpoint extends TModule implements IServerEventEndpoint
+{
+	public array $scriptPages = [];
+
+	public function getClientOptions(string $channel, string $lastEventId): array
+	{
+		return ['Transport' => 'websocket', 'Url' => 'wss://example.test/ws', 'Token' => 't-' . $channel, 'LastEventID' => $lastEventId, 'ID' => 'endpoint-id', 'Channel' => 'endpoint-channel'];
+	}
+
+	public function registerClientScripts($page): void
+	{
+		$this->scriptPages[] = $page;
 	}
 }
 
@@ -157,6 +178,63 @@ class TServerEventTriggeredCallbackTest extends TestCase
 		$control->setServiceID('push');
 		$this->render($control);
 		self::assertSame(TServerEventService::constructChannelUrl('orders', 'push'), $cs->callbackControls[0][1]['StreamUrl']);
+	}
+
+	public function testDefaultEndpointIsTheSseStream(): void
+	{
+		[$page, $control, $cs] = $this->createControl();
+		self::assertSame('', $control->getEndpointID());
+		$this->render($control);
+		$options = $cs->callbackControls[0][1];
+		self::assertSame('sse', $options['Transport']);
+		self::assertSame('orders', $options['Channel']);
+		self::assertSame(TServerEventService::constructChannelUrl('orders'), $options['StreamUrl']);
+	}
+
+	public function testSseEndpoint(): void
+	{
+		$endpoint = new TServerEventSseEndpoint();
+		self::assertSame(TServerEventService::SERVICE_ID, $endpoint->getServiceID());
+		self::assertSame($endpoint, $endpoint->setServiceID('push'));
+		self::assertSame([
+			'Transport' => 'sse',
+			'StreamUrl' => TServerEventService::constructChannelUrl('orders', 'push'),
+			'LastEventID' => 'g-3',
+		], $endpoint->getClientOptions('orders', 'g-3'));
+	}
+
+	public function testEndpointIDSelectsAnotherTransport(): void
+	{
+		$endpoint = new TServerEventTriggeredCallbackTestEndpoint();
+		Prado::getApplication()->setModule('ws-test-endpoint', $endpoint);
+		[$page, $control, $cs] = $this->createControl();
+		$control->setEndpointID('ws-test-endpoint');
+		$latest = $this->broker->publish('orders', 'changed', 1)->getID();
+
+		$this->render($control);
+
+		$options = $cs->callbackControls[0][1];
+		self::assertSame('websocket', $options['Transport']);
+		self::assertSame('wss://example.test/ws', $options['Url']);
+		self::assertSame('t-orders', $options['Token']);
+		self::assertSame($latest, $options['LastEventID'], 'The endpoint gets the channel\'s latest event ID.');
+		self::assertSame($control->getClientID(), $options['ID'], 'The control options win over the endpoint\'s.');
+		self::assertSame('orders', $options['Channel']);
+		self::assertArrayNotHasKey('StreamUrl', $options);
+		self::assertSame([$page], $endpoint->scriptPages);
+		self::assertSame(['serverevents'], $cs->pradoScripts);
+	}
+
+	public function testEndpointIDMustNameAnEndpointModule(): void
+	{
+		[$page, $control, $cs] = $this->createControl();
+		$control->setEndpointID('sse-test-broker');
+		try {
+			$this->render($control);
+			self::fail('Expected TConfigurationException for an EndpointID that is not an endpoint');
+		} catch (TConfigurationException $e) {
+			self::assertSame('servereventtriggeredcallback_endpointid_invalid', $e->getErrorCode());
+		}
 	}
 
 	public function testRenderRequiresAValidChannel(): void

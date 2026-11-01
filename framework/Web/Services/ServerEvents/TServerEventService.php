@@ -87,29 +87,33 @@ class TServerEventService extends TService
 	private ?TServerEventStreamer $_streamer = null;
 
 	/**
-	 * Computes the token that grants the current user a channel.
+	 * Computes the token that grants a user a channel.  A server that authenticates its client
+	 * outside a PRADO request, such as a WebSocket server at the handshake, passes that user's
+	 * name; the token matches the one the page rendered for the same user.
 	 * @param string $channel The channel name.
 	 * @param ?TApplication $app The application; defaults to {@see Prado::getApplication()}.
+	 * @param ?string $userName The user name; null for the application's current user.
 	 * @return string The hex HMAC of the channel and the user name.
 	 */
-	public static function createChannelToken(string $channel, ?TApplication $app = null): string
+	public static function createChannelToken(string $channel, ?TApplication $app = null, ?string $userName = null): string
 	{
 		$app ??= Prado::getApplication();
 		$security = $app->getSecurityManager();
-		$user = $app->getUser()?->getName() ?? '';
-		return hash_hmac($security->getHashAlgorithm(), "prado-serverevent\0" . $channel . "\0" . $user, $security->getValidationKey());
+		$userName ??= $app->getUser()?->getName() ?? '';
+		return hash_hmac($security->getHashAlgorithm(), "prado-serverevent\0" . $channel . "\0" . $userName, $security->getValidationKey());
 	}
 
 	/**
-	 * Returns whether a token grants the current user a channel.
+	 * Returns whether a token grants a user a channel.
 	 * @param string $channel The channel name.
 	 * @param string $token The token of the request.
 	 * @param ?TApplication $app The application; defaults to {@see Prado::getApplication()}.
+	 * @param ?string $userName The user name; null for the application's current user.
 	 * @return bool Whether the token equals {@see createChannelToken()}, compared in constant time.
 	 */
-	public static function verifyChannelToken(string $channel, string $token, ?TApplication $app = null): bool
+	public static function verifyChannelToken(string $channel, string $token, ?TApplication $app = null, ?string $userName = null): bool
 	{
-		return $token !== '' && hash_equals(static::createChannelToken($channel, $app), $token);
+		return $token !== '' && hash_equals(static::createChannelToken($channel, $app, $userName), $token);
 	}
 
 	/**

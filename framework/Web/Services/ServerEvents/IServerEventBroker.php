@@ -33,7 +33,9 @@ namespace Prado\Web\Services\ServerEvents;
 interface IServerEventBroker
 {
 	/**
-	 * Publishes an event on a channel.
+	 * Publishes an event on a channel.  Once the event is stored and visible to readers, an
+	 * implementation calls {@see TServerEventBroker::announcePublished()}, which raises the global
+	 * `fxServerEventPublished` event that relays to other transports listen to.
 	 * @param string $channel The channel name.
 	 * @param string $event The event name the subscribers filter on.
 	 * @param mixed $data JSON-encodable data sent with the event.
