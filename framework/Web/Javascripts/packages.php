@@ -74,12 +74,20 @@ $packages = [
 		'prado/controls/webtemplate.js',
 	],
 
+	'teleport' => [
+		'prado/controls/teleport.js',
+	],
+
 	'safetycover' => [
 		'prado/controls/safetycover.js',
 	],
 
 	'rowselect' => [
 		'prado/controls/rowselect.js',
+	],
+
+	'unsavedchanges' => [
+		'prado/controls/unsavedchanges.js',
 	],
 
 	'activedatepicker' => [
@@ -163,8 +171,10 @@ $dependencies = [
 	'canvas' => ['jquery', 'prado', 'canvas'],
 	'proofofwork' => ['jquery', 'prado', 'proofofwork'],
 	'webtemplate' => ['jquery', 'prado', 'webtemplate'],
+	'teleport' => ['jquery', 'prado', 'teleport'],
 	'safetycover' => ['jquery', 'prado', 'safetycover'],
 	'rowselect' => ['jquery', 'prado', 'rowselect'],
+	'unsavedchanges' => ['jquery', 'prado', 'unsavedchanges'],
 	'inlineeditor' => ['jquery', 'prado', 'ajax', 'inlineeditor'],
 	'accordion' => ['jquery', 'prado', 'accordion'],
 	'ratings' => ['jquery', 'prado', 'ajax', 'ratings'],

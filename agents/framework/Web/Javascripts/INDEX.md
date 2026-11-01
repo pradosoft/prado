@@ -63,11 +63,13 @@ through `light-dark()` and the `Canvas` system color. See
 | `accordion` | `controls/accordion.js` | Expand/collapse panels |
 | `tabpanel` | `controls/tabpanel.js` | Tabbed interface |
 | `proofofwork` | `controls/proofofwork-solver.js`, `controls/proofofwork.js` | TProofOfWork client; the solver file is also its Web Worker script |
+| `unsavedchanges` | `controls/unsavedchanges.js` | TUnsavedChangesGuard: changed-field marks and the `beforeunload` warning |
 
 External packages (jQuery, jQuery UI, TinyMCE, HighlightJS, Clipboard) are sourced from `bower_components` and declared in `packages.php`.
 
 ## Patterns & Gotchas
 
+- **Callback document events** — `Prado.CallbackRequest` dispatches `prado:callbackRedirect` (`detail.url`) on `document` before a server redirect, and `prado:callbackUpdated` (`detail.request`) after the response actions run. [TUnsavedChangesGuard](../UI/WebControls/TUnsavedChangesGuard.md) uses both (@since 4.4.0).
 - **Never reference JS files directly** — always use the package name via [TClientScriptManager::registerPackage()](../UI/TClientScriptManager.md). The manager resolves dependencies, deduplicates, and handles publishing.
 - **TJavaScriptLiteral** must be used for any PHP value that is already valid JavaScript (function references, pre-encoded JSON). Passing raw strings through `quoteJsLiteral()` will double-encode them.
 - **Asset versioning** — [TJavaScriptAsset::getVersion()](TJavaScriptAsset.md) appends a version query parameter to bust browser caches on upgrade. Update it when making breaking JS changes.

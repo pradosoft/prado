@@ -18,6 +18,7 @@ This file defines the JavaScript package registry for PRADO. It declares all JS 
 | `tinymce` | `Vendor\bower-asset\tinymce` |
 | `highlightjs` | `Vendor\bower-asset\highlightjs` |
 | `clipboard` | `Vendor\bower-asset\clipboard\dist` |
+| `teleport` | `prado/controls/teleport.js`: `Prado.WebUI.TTeleport`, the page form association of [TTeleport](../UI/WebControls/TTeleport.md) content |
 | `idiomorph` | `Vendor\npm-asset\idiomorph\dist` |
 
 ## Packages
@@ -34,6 +35,7 @@ This file defines the JavaScript package registry for PRADO. It declares all JS 
 | `keyboard` | `prado/controls/keyboard.js` |
 | `keyshortcuts` | `prado/keyshortcuts/keyshortcuts.js`: the `Prado.KeyShortcuts` key-binding registry; [TWebControl](../UI/WebControls/TWebControl.md) `KeyShortcuts` registers it |
 | `rowselect` | `prado/controls/rowselect.js` |
+| `unsavedchanges` | `prado/controls/unsavedchanges.js` |
 | `tabpanel` | `prado/controls/tabpanel.js` |
 | `accordion` | `prado/controls/accordion.js` |
 | `htmlarea` | `prado/controls/htmlarea.js` |

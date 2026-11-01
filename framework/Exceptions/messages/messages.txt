@@ -690,6 +690,7 @@ recaptcha_publickey_unknown				= TReCaptcha.PublicKey is unknown. To use reCAPTC
 formguard_honeypotname_invalid        = TFormGuard.HoneypotName '{0}' must contain only letters, digits, '_', and '-'.
 proofofwork_complexity_invalid        = TProofOfWork.Complexity must be an integer between {0} and {1}.
 proofofworkvalidator_control_invalid  = TProofOfWorkValidator.ControlToValidate '{0}' must point to a TProofOfWork control.
+unsavedchangesguard_controltowatch_invalid = TUnsavedChangesGuard.ControlToWatch '{0}' does not point to a control.
 
 cachepagestatepersister_cachemoduleid_invalid = TCachePageStatePersister.CacheModuleID '{0}' does not point to a valid cache module.
 cachepagestatepersister_cache_required  = TCachePageStatePersister requires a cache module to be loaded.

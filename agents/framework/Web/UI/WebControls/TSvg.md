@@ -60,6 +60,7 @@ Content is processed once per request, in `onPreRender()`, so hoisted styles rea
 ## See Also
 
 - [TSvgDocument](./TSvgDocument.md)
+- [TActiveSvg](../ActiveControls/TActiveSvg.md): morphs the graphic when its content or attributes change in a callback
 - [TCanvas](./TCanvas.md)
 - [TImage](./TImage.md)
 

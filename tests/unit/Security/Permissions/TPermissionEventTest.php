@@ -9,6 +9,7 @@ use Prado\Security\TAuthorizationRule;
 use Prado\Security\TUserManager;
 use Prado\TApplication;
 use Prado\Xml\TXmlDocument;
+use Prado\TApplicationMode;
 
 class TPermissionEventTest extends \PHPUnit\Framework\TestCase
 {
@@ -20,6 +21,7 @@ class TPermissionEventTest extends \PHPUnit\Framework\TestCase
 		/*
 		if (self::$app === null) {
 			self::$app = new TApplication(__DIR__ . '../app');
+			self::$app->setMode(TApplicationMode::Debug);
 		}
 
 		// Make a fake user manager module

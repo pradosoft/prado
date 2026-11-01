@@ -37,11 +37,21 @@ use Prado\TPropertyValue;
  * A button overrides the action, encoding, target, and constraint check of a
  * submission with {@see \Prado\Web\UI\WebControls\TFormSubmitterTrait}.
  *
+ * A {@see \Prado\Web\UI\WebControls\TTeleport} in the form registers its content
+ * through {@see registerTeleportContent}. The form renders the content after
+ * `</form>`, and then its end script files and end scripts, so the scripts find the
+ * content.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
 class TForm extends TControl
 {
+	/**
+	 * @var array<string, string> the HTML rendered after `</form>`, by the unique ID of its control
+	 */
+	private array $_teleportContents = [];
+
 	/**
 	 * Registers the form with the page.
 	 * @param mixed $param event parameter
@@ -92,7 +102,7 @@ class TForm extends TControl
 	}
 
 	/**
-	 * Renders the form.
+	 * Renders the form. Teleported content follows `</form>`, before the end scripts.
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer
 	 */
 	public function render($writer)
@@ -113,8 +123,16 @@ class TForm extends TControl
 			$cs->renderHiddenFieldsEnd($writer);
 			$page->endFormRender($writer);
 
+			$teleported = $this->getHasTeleportContent();
+			if ($teleported) {
+				$writer->renderEndTag();
+				$this->renderTeleportContents($writer);
+			}
 			$cs->renderScriptFilesEnd($writer);
 			$cs->renderEndScripts($writer);
+			if ($teleported) {
+				return;
+			}
 		} else {
 			$cs->renderHiddenFieldsBegin($writer);
 
@@ -126,6 +144,52 @@ class TForm extends TControl
 		}
 
 		$writer->renderEndTag();
+		$this->renderTeleportContents($writer);
+	}
+
+	/**
+	 * Registers HTML that renders after `</form>`, outside the form. A
+	 * {@see \Prado\Web\UI\WebControls\TTeleport} registers its content while the
+	 * form renders its children. A key registered again replaces its content.
+	 * @param string $key the unique ID of the control of the content
+	 * @param string $content the HTML
+	 * @since 4.4.0
+	 */
+	public function registerTeleportContent(string $key, string $content): void
+	{
+		$this->_teleportContents[$key] = $content;
+	}
+
+	/**
+	 * @return array<string, string> the HTML that renders after `</form>`, by key, in
+	 *   the order of registration
+	 * @since 4.4.0
+	 */
+	public function getTeleportContents(): array
+	{
+		return $this->_teleportContents;
+	}
+
+	/**
+	 * @return bool whether HTML is registered to render after `</form>`
+	 * @since 4.4.0
+	 */
+	public function getHasTeleportContent(): bool
+	{
+		return $this->getTeleportContents() !== [];
+	}
+
+	/**
+	 * Writes the registered teleport content and clears it.
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer
+	 * @since 4.4.0
+	 */
+	protected function renderTeleportContents($writer): void
+	{
+		foreach ($this->getTeleportContents() as $content) {
+			$writer->write($content);
+		}
+		$this->_teleportContents = [];
 	}
 
 	/**
