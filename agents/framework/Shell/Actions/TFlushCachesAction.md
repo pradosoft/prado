@@ -8,7 +8,7 @@
 **Namespace:** `Prado\Shell\Actions`
 
 ## Overview
-Lists and flushes application cache modules implementing `ICache`.
+Lists and flushes application cache modules implementing `ICache`. `flush-all` also deletes the Performance-mode `runtime/fxevent.cache` through `flushFxEventCache()` (4.4.0).
 
 ## Usage
 
@@ -19,7 +19,7 @@ php prado-cli.php cache
 # Flush specific cache
 php prado-cli.php cache/flush cacheid
 
-# Flush all caches
+# Flush all caches and the fx-event cache file
 php prado-cli.php cache/flush-all
 ```
 

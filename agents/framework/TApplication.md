@@ -18,7 +18,7 @@ The top-level service container for every Prado request. Loads `application.xml`
 | `Off` | Refuses all requests |
 | `Debug` | Cache always updated; verbose errors; debug info shown |
 | `Normal` | Standard production mode; exceptions logged; the default (`DEFAULT_APPLICATION_MODE`, 4.4.0) |
-| `Performance` | Like Normal but skips cache freshness checks |
+| `Performance` | Like Normal but skips cache freshness checks; keeps class fx-event lists in `runtime/fxevent.cache`, refreshed on a Composer change and cleared by `prado-cli cache/flush-all` |
 
 An application without `Mode` runs in `Normal`; in 4.3 it ran in `Debug`. Set via `$app->setMode('Debug')` or in `application.xml`:
 ```xml
