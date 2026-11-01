@@ -69,6 +69,7 @@ class TMemoryCacheTest extends \PHPUnit\Framework\TestCase
 	{
 		$basePath = __DIR__ . '/mockapp';
 		$this->app = new TApplication($basePath);
+		$this->app->setMode(TApplicationMode::Debug);
 
 		$this->cache = new TTestMemoryCache();
 		$this->cache->setPrimaryCache(false);
@@ -1222,8 +1223,7 @@ class TMemoryCacheTest extends \PHPUnit\Framework\TestCase
 
 	public function testGenerateUniqueKeyAutoDebugModeDoesNotHash(): void
 	{
-		// TApplication defaults to Debug mode — hash must be off.
-		$this->assertSame(TApplicationMode::Debug, $this->app->getMode());
+		$this->app->setMode(TApplicationMode::Debug);
 
 		$cache = new TTestMemoryCache();
 		$cache->setKeyPrefix('pfx_');

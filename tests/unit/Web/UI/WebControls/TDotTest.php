@@ -38,6 +38,7 @@ class TDotTest extends \PHPUnit\Framework\TestCase
 		
 		if (self::$app === null) {
 			self::$app = new TApplication(__DIR__ . '/../../app');
+			self::$app->setMode(TApplicationMode::Debug);
 		}
 		
 		if (self::$assetDir === null) {

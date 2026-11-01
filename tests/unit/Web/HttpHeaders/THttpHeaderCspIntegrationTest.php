@@ -32,6 +32,7 @@ use Prado\Web\Services\TCspReportingService;
 use Prado\Web\Services\TCspViolationParameter;
 use Prado\Test\Unit\Harness\Web\HttpHeaders\TTestHttpHeadersManager;
 use Prado\Test\Unit\PradoUnit;
+use Prado\TApplicationMode;
 
 // Bootstrap loads PradoUnit, which transitively autoloads everything under
 // tests/unit/Harness/ — TTestHttpHeadersManager and friends are available
@@ -45,6 +46,7 @@ class THttpHeaderCspIntegrationTest extends \PHPUnit\Framework\TestCase
 	{
 		if (self::$app === null) {
 			self::$app = new TApplication(__DIR__ . '/../../Security/app');
+			self::$app->setMode(TApplicationMode::Debug);
 		}
 		TJavaScript::setScriptNonce(null);
 	}
@@ -329,7 +331,8 @@ class THttpHeaderCspIntegrationTest extends \PHPUnit\Framework\TestCase
 		try {
 			$manager = $this->makeManagerWithCsp();
 			$manager->setReportingServiceMode('Auto');
-			// ReportOnly=true is the default — enforcing CSP will be downgraded.
+			// ReportOnly=true downgrades the enforcing CSP.
+			$manager->setReportOnly(true);
 
 			$manager->ensureHeadersSent();
 
@@ -356,6 +359,7 @@ class THttpHeaderCspIntegrationTest extends \PHPUnit\Framework\TestCase
 		try {
 			$manager = $this->makeManagerWithCsp();
 			$manager->setReportingServiceMode('Auto');
+			$manager->setReportOnly(true);
 			$manager->publicFinalizeReporterService();
 
 			/** @var THttpHeaderCsp $csp */
@@ -586,10 +590,11 @@ class THttpHeaderCspIntegrationTest extends \PHPUnit\Framework\TestCase
 				],
 			]);
 			// Sandbox is still present after loading — init() does not strip it.
-			// ReportOnly=true (default) converts the enforcing CSP to report-only in
+			// ReportOnly=true converts the enforcing CSP to report-only in
 			// finalizeReporterService(), then finalizeHeader() strips sandbox.
 			// Both happen inside finalizeHeaders(), so we call that.
 			$manager->setReportingServiceMode('Auto');
+			$manager->setReportOnly(true);
 			$manager->publicFinalizeHeaders();
 
 			/** @var THttpHeaderCsp $csp */
@@ -879,7 +884,8 @@ class THttpHeaderCspIntegrationTest extends \PHPUnit\Framework\TestCase
 	{
 		$m = new TTestHttpHeadersManager();
 		$m->setReportingServiceMode('Auto');
-		// ReportOnly=true (default) triggers registration in Auto mode.
+		// ReportOnly=true triggers registration in Auto mode.
+		$m->setReportOnly(true);
 		$m->setId('headers');
 
 		$before = PradoUnit::getProp(self::$app, '_services');
