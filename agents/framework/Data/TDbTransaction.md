@@ -39,7 +39,7 @@ try {
 | Event | Raised | Sender | Parameter |
 |-------|--------|--------|-----------|
 | `OnCommit` | after `PDO::commit()` succeeds | the transaction, inactive | `null` |
-| `OnRollback` | after `PDO::rollBack()` succeeds | the transaction, inactive | `null` |
+| `OnRollback` | after `PDO::rollBack()` succeeds, or after the connection closes with the transaction still held by the database | the transaction, inactive | `null` |
 
 Deferring work until the commit:
 
@@ -57,7 +57,8 @@ if ($transaction === null) {
 - **Once** → a transaction ends once, so its handlers run at most once. Each `beginTransaction()` returns a new transaction without handlers.
 - **Handler exception** → propagates out of `commit()`/`rollback()`; later handlers do not run. The database work is already committed or rolled back, and the transaction stays inactive. A `catch` block that rolls back checks `getActive()` first, or its `rollBack()` throws `dbtransaction_transaction_inactive` and hides the handler exception.
 - **Nesting** → not supported. `TDbConnection` holds one transaction; a second `beginTransaction()` while one is active throws a `PDOException` from the driver. The events belong to the outermost transaction.
-- **No events** → for a transaction begun, committed, or rolled back on `getPdoInstance()` directly, a transaction ended by closing the connection, and a transaction the server ends implicitly (MySQL DDL).
+- **Connection close** → `TDbConnection::close()` (`Active = false`) calls `endOnClose()` before it drops the PDO. When `PDO::inTransaction()` reports the transaction still held by the database, it rolls back (a failure is left to the server, which discards a closing connection's uncommitted work) and `OnRollback` is raised after the connection closes, so a handler sees an inactive connection. This covers a commit that threw and was then abandoned. A transaction the connection began and saw end raises exactly one of `OnCommit` and `OnRollback`.
+- **No events** → for a transaction begun, committed, or rolled back on `getPdoInstance()` directly, a transaction the server ends implicitly (MySQL DDL), and a transaction still open when the script ends. A close after such an end raises nothing either: `inTransaction()` is false and the outcome is unknown, so the transaction only goes inactive.
 - **No handlers** → behavior is unchanged.
 - **Not on `IDataTransaction`** → the interface does not declare the events, so other implementers stay valid.
 

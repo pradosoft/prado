@@ -174,6 +174,101 @@ class TDbTransactionTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame(['rollback'], $events);
 	}
 
+	public function testClosingTheConnectionRollsBackAnOpenTransaction()
+	{
+		$rollbacks = [];
+		$transaction = $this->_connection->beginTransaction();
+		$transaction->attachEventHandler('OnCommit', function ($sender, $param) {
+			$this->fail('OnCommit raised by closing the connection');
+		});
+		$transaction->attachEventHandler('OnRollback', function ($sender, $param) use (&$rollbacks) {
+			$rollbacks[] = [$sender, $sender->getActive(), $sender->getConnection()->getActive()];
+		});
+		$this->_connection->createCommand('INSERT INTO foo(id,name) VALUES (1,\'a\')')->execute();
+
+		$this->_connection->setActive(false);
+
+		$this->assertCount(1, $rollbacks);
+		$this->assertSame($transaction, $rollbacks[0][0]);
+		$this->assertFalse($rollbacks[0][1], 'The transaction is inactive in the handler.');
+		$this->assertFalse($rollbacks[0][2], 'OnRollback is raised after the connection closes.');
+		$this->assertFalse($transaction->getActive());
+		$this->assertEquals(0, $this->countRowsOnOtherConnection());
+
+		$this->_connection->setActive(true);
+		$this->_connection->setActive(false);
+		$this->assertCount(1, $rollbacks, 'An ended transaction raises nothing on a later close.');
+	}
+
+	public function testClosingAfterAFailedCommitRollsBack()
+	{
+		$this->_connection->createCommand('PRAGMA foreign_keys = ON')->execute();
+		$this->_connection->createCommand('CREATE TABLE parent (id INTEGER NOT NULL PRIMARY KEY)')->execute();
+		$this->_connection->createCommand('CREATE TABLE child (id INTEGER NOT NULL PRIMARY KEY, parent_id INTEGER REFERENCES parent(id) DEFERRABLE INITIALLY DEFERRED)')->execute();
+		$events = [];
+		$transaction = $this->_connection->beginTransaction();
+		$transaction->attachEventHandler('OnCommit', function ($sender, $param) use (&$events) {
+			$events[] = 'commit';
+		});
+		$transaction->attachEventHandler('OnRollback', function ($sender, $param) use (&$events) {
+			$events[] = 'rollback';
+		});
+		$this->_connection->createCommand('INSERT INTO child(id,parent_id) VALUES (1,99)')->execute();
+		try {
+			$transaction->commit();
+			$this->fail('Expected the deferred foreign key to fail the commit');
+		} catch (\PDOException $e) {
+		}
+		$this->assertSame([], $events);
+
+		$this->_connection->setActive(false);
+
+		$this->assertSame(['rollback'], $events, 'The database still held the transaction, so the close rolled it back.');
+		$this->assertFalse($transaction->getActive());
+	}
+
+	public function testClosingAfterACommitOnThePdoRaisesNothing()
+	{
+		$events = [];
+		$transaction = $this->_connection->beginTransaction();
+		$transaction->attachEventHandler('OnCommit', function ($sender, $param) use (&$events) {
+			$events[] = 'commit';
+		});
+		$transaction->attachEventHandler('OnRollback', function ($sender, $param) use (&$events) {
+			$events[] = 'rollback';
+		});
+		$this->_connection->createCommand('INSERT INTO foo(id,name) VALUES (1,\'a\')')->execute();
+		$this->_connection->getPdoInstance()->commit();
+
+		$this->_connection->setActive(false);
+
+		$this->assertSame([], $events, 'The outcome is unknown to the transaction, so it raises nothing.');
+		$this->assertFalse($transaction->getActive());
+		$this->assertEquals(1, $this->countRowsOnOtherConnection());
+	}
+
+	public function testClosingAfterACommitRaisesOnlyOnCommit()
+	{
+		$events = [];
+		$transaction = $this->_connection->beginTransaction();
+		$transaction->attachEventHandler('OnCommit', function ($sender, $param) use (&$events) {
+			$events[] = 'commit';
+		});
+		$transaction->attachEventHandler('OnRollback', function ($sender, $param) use (&$events) {
+			$events[] = 'rollback';
+		});
+		$transaction->commit();
+		$this->_connection->setActive(false);
+		$this->assertSame(['commit'], $events);
+	}
+
+	public function testEndOnCloseOfAnInactiveTransactionDoesNothing()
+	{
+		$transaction = $this->_connection->beginTransaction();
+		$transaction->rollback();
+		$this->assertFalse($transaction->endOnClose());
+	}
+
 	public function testFailingRollbackRaisesNoEvent()
 	{
 		$raised = false;

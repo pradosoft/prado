@@ -237,12 +237,19 @@ class TDbConnection extends \Prado\TComponent implements IDbConnection
 
 	/**
 	 * Closes the currently active DB connection.
-	 * It does nothing if the connection is already closed.
+	 * It does nothing if the connection is already closed.  An open transaction ends first
+	 * ({@see TDbTransaction::endOnClose()}); when it was rolled back, its
+	 * {@see TDbTransaction::onRollback() OnRollback} is raised after the connection closes.
 	 */
 	protected function close()
 	{
+		$transaction = $this->_transaction;
+		$rolledBack = $transaction !== null && $transaction->endOnClose();
 		$this->_pdo = null;
 		$this->_active = false;
+		if ($rolledBack) {
+			$transaction->onRollback();
+		}
 	}
 
 	/*

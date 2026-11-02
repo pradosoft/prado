@@ -33,7 +33,7 @@ $conn->close();        // or $conn->Active = false
 | `Username` | DB username |
 | `Password` | DB password |
 | `Charset` | Character set to use for the connection. Universal IANA-style names (e.g. `UTF-8`, `ISO-8859-1`) are auto-translated per driver. @since 4.3.3 |
-| `Active` | Open/close the connection |
+| `Active` | Open/close the connection. Closing with a `TDbTransaction` the database still holds rolls it back and raises its `OnRollback` after the close (4.4.0) |
 | `Attributes` | PDO attributes array (e.g., `[PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]`) |
 | `ColumnCase` | [`TDbColumnCaseMode`](./TDbColumnCaseMode.md): `Preserved`, `LowerCase`, `UpperCase` |
 | `NullConversion` | [`TDbNullConversionMode`](./TDbNullConversionMode.md): `Preserved`, `EmptyStringToNull`, `NullToEmptyString` |
