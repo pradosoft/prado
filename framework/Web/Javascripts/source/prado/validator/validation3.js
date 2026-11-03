@@ -240,6 +240,40 @@ Object.assign(Prado.Validation,
 	pressCallbacks : [],
 
 	/**
+	 * Estimates the entropy of a password in bits from its characters, as the
+	 * server side TPasswordStrengthValidator::estimateEntropy() does. The pool
+	 * size is the sum of the character classes present: 26 lower case letters,
+	 * 26 upper case letters, 10 digits, 33 other ASCII characters, and 100
+	 * non-ASCII characters. Each distinct character adds log2 of the pool size,
+	 * and each repeated character adds log2 of the distinct count.
+	 * @function {number} ?
+	 * @param {string} password - The password.
+	 * @return The estimated entropy in bits.
+	 */
+	estimatePasswordEntropy(password) {
+		const chars = Array.from(password);
+		if (chars.length == 0)
+			return 0;
+		const sizes = { lower: 26, upper: 26, digit: 10, symbol: 33, other: 100 };
+		const classes = new Set(chars.map((char) => {
+			const code = char.codePointAt(0);
+			if (code > 127)
+				return 'other';
+			if (code >= 97 && code <= 122)
+				return 'lower';
+			if (code >= 65 && code <= 90)
+				return 'upper';
+			if (code >= 48 && code <= 57)
+				return 'digit';
+			return 'symbol';
+		}));
+		let pool = 0;
+		classes.forEach((name) => { pool += sizes[name]; });
+		const distinct = new Set(chars).size;
+		return distinct * Math.log2(pool) + (chars.length - distinct) * Math.log2(distinct);
+	},
+
+	/**
 	 * Runs a callback now, or after the primary mouse button is released.
 	 * A control's change event fires on blur when the mouse goes down on another
 	 * element, such as a submit button. Re-validation that hides a Dynamic message
@@ -2036,6 +2070,104 @@ Prado.WebUI.TDataTypeValidator = Prado.Class(Prado.WebUI.TBaseValidator,
 		if(value.length <= 0)
 			return true;
 		return this.convert(this.options.DataType, value) != null;
+	}
+});
+
+/**
+ * TPasswordStrengthValidator validates whether the value of an associated
+ * input component is a password with enough estimated entropy. The estimate
+ * matches the server side TPasswordStrengthValidator::estimateEntropy(); the
+ * compromised password check runs on the server only.
+ *
+ * @class Prado.WebUI.TPasswordStrengthValidator
+ * @extends Prado.WebUI.TBaseValidator
+ */
+Prado.WebUI.TPasswordStrengthValidator = Prado.Class(Prado.WebUI.TBaseValidator,
+{
+	/**
+	 * Additional constructor options.
+	 * @constructor initialize
+	 * @param {object} options - Additional constructor options:
+	 * @... {number} MinEntropy - Minimum estimated entropy in bits.
+	 */
+
+	/**
+	 * Evaluate validation state
+	 * @function {boolean} ?
+	 * @return True if the password has enough estimated entropy or the value is empty.
+	 */
+	evaluateIsValid() {
+		const value = this.getRawValidationValue();
+		if (value.length <= 0)
+			return true;
+		return this.estimateEntropy(value) >= this.options.MinEntropy;
+	},
+
+	/**
+	 * Estimates the entropy of a password in bits.
+	 * @function {number} ?
+	 * @param {string} password - The password.
+	 * @return The estimated entropy in bits; see {@see Prado.Validation.estimatePasswordEntropy}.
+	 */
+	estimateEntropy(password) {
+		return Prado.Validation.estimatePasswordEntropy(password);
+	}
+});
+
+/**
+ * TPasswordStrengthMeter shows the estimated strength of the password typed in
+ * a control: a row of notches fills from the left and shifts from red to green
+ * as the estimated entropy grows toward MaxEntropy, and a text names the
+ * strength level. The element is a role="meter" whose aria-valuenow is the
+ * entropy in bits and whose aria-valuetext is the level name.
+ *
+ * @class Prado.WebUI.TPasswordStrengthMeter
+ * @extends Prado.WebUI.Control
+ */
+Prado.WebUI.TPasswordStrengthMeter = Prado.Class(Prado.WebUI.Control,
+{
+	/**
+	 * Constructor options.
+	 * @constructor onInit
+	 * @param {object} options - Constructor options:
+	 * @... {string} ID - Client ID of the meter.
+	 * @... {string} ControlToMeasure - Client ID of the password control.
+	 * @... {number} MaxEntropy - Entropy in bits that fills the bar.
+	 * @... {string[]} LevelTexts - Level names from VeryWeak to VeryStrong.
+	 * @... {number[]} LevelEntropy - Entropy in bits at which each level starts.
+	 */
+	onInit(options) {
+		this.options = options;
+		this.control = document.getElementById(options.ControlToMeasure);
+		if (!this.element || !this.control)
+			return;
+		this.bar = this.element.querySelector('.prado-password-meter-bar');
+		this.notches = this.element.querySelectorAll('.prado-password-meter-notch');
+		this.text = this.element.querySelector('.prado-password-meter-text');
+		this.observe(this.control, 'input', () => this.update());
+		this.update();
+	},
+
+	/**
+	 * Measures the password and updates the notches, the color, the text, and the meter values.
+	 * @function ?
+	 */
+	update() {
+		const value = this.control.value || '';
+		const bits = Prado.Validation.estimatePasswordEntropy(value);
+		const fraction = Math.min(bits / this.options.MaxEntropy, 1);
+		const lit = value.length > 0 ? Math.max(1, Math.ceil(fraction * this.notches.length)) : 0;
+		this.notches.forEach((notch, i) => notch.classList.toggle('lit', i < lit));
+		this.bar.style.setProperty('--prado-meter-hue', String(Math.round(fraction * 120)));
+		let level = 0;
+		this.options.LevelEntropy.forEach((start, i) => {
+			if (bits >= start)
+				level = i;
+		});
+		const name = this.options.LevelTexts[level];
+		this.text.textContent = value.length > 0 ? name : '';
+		this.element.setAttribute('aria-valuenow', String(Math.round(Math.min(bits, this.options.MaxEntropy))));
+		this.element.setAttribute('aria-valuetext', name);
 	}
 });
 
