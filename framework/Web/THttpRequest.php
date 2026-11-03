@@ -609,8 +609,10 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * Returns the raw request body, read once from `php://input` through {@see readRawBody()}
-	 * and cached for the life of the module.
-	 * @return string the raw request body; empty when the request has none.
+	 * and cached for the life of the module. The body is read whole into memory;
+	 * `post_max_size` bounds a form body and `memory_limit` any other.
+	 * @return string the raw request body; empty when the request has none, when PHP
+	 *   consumed a `multipart/form-data` POST body, or when the stream cannot be opened.
 	 * @since 4.4.0
 	 */
 	public function getRawBody(): string
@@ -658,7 +660,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 *
 	 * | {@see getContentType()} | Result |
 	 * |---|---|
-	 * | `application/json`, `application/*+json` | `json_decode()` of the raw body; an empty body or a scalar gives `[]` |
+	 * | `application/json`, `application/*+json` | `json_decode()` of the raw body, big integers as strings; a blank body or a scalar gives `[]` |
 	 * | `application/x-www-form-urlencoded` | `$_POST` for POST; `parse_str()` of the raw body for other methods |
 	 * | `multipart/form-data` | `$_POST`, which PHP fills for POST only |
 	 * | absent or other | `[]` |
@@ -723,18 +725,19 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * Decodes a JSON request body.
+	 * Decodes a JSON request body. An integer beyond `PHP_INT_MAX` is decoded as a
+	 * string (`JSON_BIGINT_AS_STRING`), so an identifier keeps its digits.
 	 * @param string $raw the raw request body.
 	 * @throws THttpException 400 when the body is malformed JSON.
-	 * @return array the decoded body; `[]` for an empty body or a scalar.
+	 * @return array the decoded body; `[]` for a blank body or a scalar.
 	 * @since 4.4.0
 	 */
 	protected function parseJsonBody(string $raw): array
 	{
-		if ($raw === '') {
+		if (trim($raw) === '') {
 			return [];
 		}
-		$data = json_decode($raw, true);
+		$data = json_decode($raw, true, 512, JSON_BIGINT_AS_STRING);
 		if (json_last_error() !== JSON_ERROR_NONE) {
 			throw new THttpException(400, 'httprequest_body_json_invalid');
 		}

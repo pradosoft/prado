@@ -17,6 +17,7 @@ class TCorsCapturingResponse extends THttpResponse
 {
 	public int $status = 200;
 	public array $headers = [];
+	public array $replaced = [];
 	public string $body = '';
 
 	public function getStatusCode(): int
@@ -32,6 +33,7 @@ class TCorsCapturingResponse extends THttpResponse
 	public function appendHeader($header, bool $replace = true, int $response_code = 0): void
 	{
 		$this->headers[] = $header;
+		$this->replaced[] = $replace;
 	}
 
 	public function write($str): void
@@ -221,11 +223,22 @@ class TCorsModuleTest extends TestCase
 		$this->assertNoCorsHeaders();
 	}
 
-	public function testOriginOutsideListSendsNothing(): void
+	public function testOriginOutsideListSendsVaryOnly(): void
 	{
 		$_SERVER['HTTP_ORIGIN'] = 'https://evil.example.com';
 		$this->beginRequest(['AllowOrigin' => 'https://app.example.com']);
-		$this->assertNoCorsHeaders();
+		self::assertSame(['Vary: Origin'], $this->response->headers);
+		self::assertSame([false], $this->response->replaced);
+		self::assertSame(200, $this->response->status);
+		self::assertFalse($this->app->getRequestCompleted());
+	}
+
+	public function testOriginOutsideWildcardWithCredentialsIsImpossibleSoVaryFollowsCredentials(): void
+	{
+		$_SERVER['HTTP_ORIGIN'] = ' https://app.example.com ';
+		$this->beginRequest(['AllowOrigin' => 'https://app.example.com', 'AllowCredentials' => 'true']);
+		self::assertSame('Access-Control-Allow-Origin: https://app.example.com', $this->response->headerLine(THttpHeaderName::AccessControlAllowOrigin));
+		self::assertSame('Vary: Origin', $this->response->headerLine(THttpHeaderName::Vary));
 	}
 
 	public function testWildcardSendsStarWithoutVary(): void
@@ -278,6 +291,36 @@ class TCorsModuleTest extends TestCase
 		self::assertSame('Access-Control-Expose-Headers: X-Total-Count, Link', $this->response->headerLine(THttpHeaderName::AccessControlExposeHeaders));
 	}
 
+	public function testPreflightSendsNoExposeHeadersAndSendsCredentials(): void
+	{
+		$_SERVER['HTTP_ORIGIN'] = 'https://app.example.com';
+		$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'] = 'PUT';
+		$this->beginRequest(['AllowOrigin' => 'https://app.example.com', 'AllowCredentials' => 'true', 'ExposeHeaders' => 'Link'], 'OPTIONS');
+		self::assertNull($this->response->headerLine(THttpHeaderName::AccessControlExposeHeaders));
+		self::assertSame('Access-Control-Allow-Credentials: true', $this->response->headerLine(THttpHeaderName::AccessControlAllowCredentials));
+		self::assertSame(204, $this->response->status);
+	}
+
+	public function testPreflightEchoesTheRequestedHeadersWhenAllowHeadersIsEmpty(): void
+	{
+		$_SERVER['HTTP_ORIGIN'] = 'https://any.example.com';
+		$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'] = 'POST';
+		$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'] = "content-type, x-custom\r\nInjected: yes";
+		$this->beginRequest(['AllowHeaders' => '', 'AllowMethods' => ''], 'OPTIONS');
+		self::assertSame('Access-Control-Allow-Headers: content-type, x-customInjected yes', $this->response->headerLine(THttpHeaderName::AccessControlAllowHeaders));
+		self::assertNull($this->response->headerLine(THttpHeaderName::AccessControlAllowMethods));
+		self::assertSame(204, $this->response->status);
+	}
+
+	public function testPreflightWithoutRequestedHeadersSendsNoAllowHeaders(): void
+	{
+		$_SERVER['HTTP_ORIGIN'] = 'https://any.example.com';
+		$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'] = 'POST';
+		$this->beginRequest(['AllowHeaders' => ''], 'OPTIONS');
+		self::assertNull($this->response->headerLine(THttpHeaderName::AccessControlAllowHeaders));
+		self::assertSame(204, $this->response->status);
+	}
+
 	public function testPreflightSendsPreflightHeadersAndCompletesRequest(): void
 	{
 		$_SERVER['HTTP_ORIGIN'] = 'https://app.example.com';
@@ -315,12 +358,14 @@ class TCorsModuleTest extends TestCase
 		self::assertFalse($this->app->getRequestCompleted());
 	}
 
-	public function testPreflightOutsideListSendsNothing(): void
+	public function testPreflightOutsideListSendsVaryOnlyAndDoesNotCompleteTheRequest(): void
 	{
 		$_SERVER['HTTP_ORIGIN'] = 'https://evil.example.com';
 		$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'] = 'PUT';
 		$this->beginRequest(['AllowOrigin' => 'https://app.example.com'], 'OPTIONS');
-		$this->assertNoCorsHeaders();
+		self::assertSame(['Vary: Origin'], $this->response->headers);
+		self::assertSame(200, $this->response->status);
+		self::assertFalse($this->app->getRequestCompleted());
 	}
 
 	public function testPathPrefixMatch(): void

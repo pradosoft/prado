@@ -333,6 +333,84 @@ class TInputValidatorTest extends TestCase
 		$this->validator()->validate(['site' => 'example.com'], ['site' => 'url']);
 	}
 
+	public function testValidateRequiredRejectsEmptyStringAndArray(): void
+	{
+		$v = $this->validator();
+		$this->assertFalse($v->isValid(['name' => ''], ['name' => 'required|string']));
+		$this->assertSame(['name' => ['The name field is required.']], $v->getErrors());
+		$this->assertFalse($v->isValid(['tags' => []], ['tags' => 'required|array']));
+		$this->assertSame(['name' => '', 'tags' => []], $v->validate(['name' => '', 'tags' => []], ['name' => 'string', 'tags' => 'array']));
+	}
+
+	public function testValidateTrimsRuleStrings(): void
+	{
+		$result = $this->validator()->validate(['n' => '5'], ['n' => ' required | integer | min: 1 ', 's' => ['  string ', '']]);
+		$this->assertSame(['n' => 5], $result);
+	}
+
+	public function testValidateAcceptsACallableInAList(): void
+	{
+		$even = fn (mixed &$value, ?string $parameter, string $field): ?string => ((int) $value) % 2 === 0 ? null : "The {$field} field must be even.";
+		$v = $this->validator();
+		$this->assertSame(['n' => 4], $v->validate(['n' => '4'], ['n' => ['integer', $even]]));
+		$this->assertFalse($v->isValid(['n' => 3], ['n' => ['integer', $even]]));
+		$this->assertSame(['n' => ['The n field must be even.']], $v->getErrors());
+	}
+
+	public function testValidateMinAndMaxCountAnArray(): void
+	{
+		$v = $this->validator();
+		$this->assertTrue($v->isValid(['tags' => ['a', 'b']], ['tags' => 'array|min:1|max:2']));
+		$this->assertFalse($v->isValid(['tags' => ['a', 'b', 'c']], ['tags' => 'array|max:2']));
+		$this->assertSame(['tags' => ['The tags field must not have more than 2 items.']], $v->getErrors());
+		$this->assertFalse($v->isValid(['tags' => []], ['tags' => 'array|min:1']));
+		$this->assertSame(['tags' => ['The tags field must have at least 1 items.']], $v->getErrors());
+	}
+
+	public function testValidateIntegerAcceptsWhitespaceAndPlus(): void
+	{
+		$this->assertSame(['a' => 5, 'b' => 5], $this->validator()->validate(['a' => ' 5', 'b' => '+5'], ['a' => 'integer', 'b' => 'integer']));
+	}
+
+	/** @dataProvider missingParameterRules */
+	public function testValidateRuleWithoutParameterThrows(string $rule): void
+	{
+		try {
+			$this->validator()->validate(['n' => 1], ['n' => $rule]);
+			$this->fail('expected TConfigurationException');
+		} catch (TConfigurationException $e) {
+			$this->assertSame('inputvalidator_parameter_required', $e->getErrorCode());
+			$this->assertSame([explode(':', $rule)[0], 'n'], $e->getErrorArguments());
+		}
+	}
+
+	public static function missingParameterRules(): array
+	{
+		return [['min'], ['max:'], ['max:abc'], ['in'], ['in: ']];
+	}
+
+	public function testValidateUnknownRuleCarriesRuleAndField(): void
+	{
+		try {
+			$this->validator()->validate(['n' => 1], ['n' => 'nope:x']);
+			$this->fail('expected TConfigurationException');
+		} catch (TConfigurationException $e) {
+			$this->assertSame('inputvalidator_rule_unknown', $e->getErrorCode());
+			$this->assertSame(['nope', 'n'], $e->getErrorArguments());
+		}
+	}
+
+	public function testSerializationKeepsTheBuiltInRules(): void
+	{
+		$v = $this->validator();
+		$v->addRule('custom', fn (mixed &$value, ?string $parameter, string $field): ?string => null);
+		$copy = unserialize(serialize($v));
+		$this->assertInstanceOf(TInputValidator::class, $copy);
+		$this->assertTrue($copy->hasRule('integer'));
+		$this->assertFalse($copy->hasRule('custom'));
+		$this->assertSame(['n' => 5], $copy->validate(['n' => '5'], ['n' => 'integer']));
+	}
+
 	public function testValidateRequiredMissingField(): void
 	{
 		try {

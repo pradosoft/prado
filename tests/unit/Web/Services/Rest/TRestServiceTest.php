@@ -101,8 +101,32 @@ class CapturingResponse extends THttpResponse
 
 // ── Resources ─────────────────────────────────────────────────────────────────
 
+enum ExportFormat: string
+{
+	case Json = 'json';
+	case Csv = 'csv';
+}
+
+enum Priority: int
+{
+	case Low = 1;
+	case High = 2;
+}
+
 class TypedParamsResource extends TRestResource
 {
+	#[TRestRoute('GET', 'export/{format}/{priority}')]
+	public function export(ExportFormat $format, Priority $priority): array
+	{
+		return ['format' => $format->value, 'priority' => $priority->value];
+	}
+
+	#[TRestRoute('GET', 'static')]
+	public static function staticHandler(): array
+	{
+		return [];
+	}
+
 	#[TRestRoute('GET', 'typed/{n}/{f}/{b}')]
 	public function typed(int $n, float $f, bool $b, string $rest = 'default'): array
 	{
@@ -170,6 +194,19 @@ class BadRoutesResource extends TRestResource
 	}
 }
 
+class SingleRouteResource extends TRestResource
+{
+	public function getRoutes(): array
+	{
+		return ['ping' => new TRestRoute('GET', 'ping')];
+	}
+
+	public function ping(): array
+	{
+		return ['pong' => true];
+	}
+}
+
 class NotAResource
 {
 }
@@ -189,7 +226,7 @@ class TRestServiceTest extends \PHPUnit\Framework\TestCase
 	{
 		UsersFixtureResource::$log = [];
 		$application = Prado::getApplication();
-		$this->requestSnapshot = PradoUnit::snapshot($application->getRequest(), ['_pathInfo', '_parsedBody', '_urlFormat']);
+		$this->requestSnapshot = PradoUnit::snapshot($application->getRequest(), ['_pathInfo', '_serviceParam', '_parsedBody', '_urlFormat']);
 		$this->applicationSnapshot = PradoUnit::snapshot($application, ['_authRules', '_mode', '_configType', '_configFileExt', '_requestCompleted']);
 		Prado::setPathOfAlias('RestFixtures', __DIR__ . '/fixtures');
 		$this->service = new TRestServiceExposed();
@@ -299,6 +336,35 @@ class TRestServiceTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame(['Tag' => 'cfg'], $this->service->getRouteByName('UsersFixtureResource.show')->getResourceProperties());
 	}
 
+	public function testResourcePropertiesKey(): void
+	{
+		$this->load(['resources' => [['class' => UsersFixtureResource::class, 'properties' => ['Tag' => 'nested']]]]);
+		$this->assertSame('nested', $this->service->getResource(UsersFixtureResource::class)->getTag());
+		$this->assertSame(['Tag' => 'nested'], $this->service->getRouteByName('UsersFixtureResource.show')->getResourceProperties());
+	}
+
+	public function testAClassDeclaredTwiceRunsWithThePropertiesOfTheMatchedRoute(): void
+	{
+		$config = ['resources' => [
+			['class' => UsersFixtureResource::class, 'prefix' => 'a', 'Tag' => 'A'],
+			['class' => UsersFixtureResource::class, 'prefix' => 'b', 'Tag' => 'B'],
+		]];
+		$response = $this->runWith('GET', '/api/a', $config);
+		$this->assertSame('A', json_decode($response->body, true)['tag']);
+		$this->assertCount(1, $this->service->getResources());
+		$this->service = new TRestServiceExposed();
+		$this->service->setID('rest');
+		$this->service->setBasePath('api');
+		$response = $this->runWith('GET', '/api/b', $config);
+		$this->assertSame('B', json_decode($response->body, true)['tag']);
+	}
+
+	public function testADeclarationMayBeOneRoute(): void
+	{
+		$response = $this->runWith('GET', '/api/ping', ['resources' => [['class' => SingleRouteResource::class]]]);
+		$this->assertSame(['pong' => true], json_decode($response->body, true));
+	}
+
 	public function testEmptyPrefixRemovesTheClassPrefix(): void
 	{
 		$this->load(['resources' => [['class' => UsersFixtureResource::class, 'prefix' => '']]]);
@@ -323,7 +389,7 @@ class TRestServiceTest extends \PHPUnit\Framework\TestCase
 			}
 		}
 		$this->assertSame([null], $anyVerbs);
-		$this->assertCount(6, $this->service->getRoutes());
+		$this->assertCount(7, $this->service->getRoutes());
 	}
 
 	public function testGroupPrefixAndEnabled(): void
@@ -505,6 +571,13 @@ class TRestServiceTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame(TRestService::STANDARD_VERBS, $this->service->getAllowedVerbs());
 	}
 
+	public function testInitKeepsAConfiguredExposeErrors(): void
+	{
+		$this->service->setExposeErrors(!(Prado::getApplication()->getMode() === TApplicationMode::Debug));
+		$this->service->init(null);
+		$this->assertSame(!(Prado::getApplication()->getMode() === TApplicationMode::Debug), $this->service->getExposeErrors());
+	}
+
 	public function testInitMergesTheMatchedRouteRules(): void
 	{
 		$application = Prado::getApplication();
@@ -526,10 +599,38 @@ class TRestServiceTest extends \PHPUnit\Framework\TestCase
 		$this->load($this->usersConfig());
 		$request = Prado::getApplication()->getRequest();
 		$base = (string) $request->getApplicationUrl();
-		$this->assertSame($base . '/api/users/42', $this->service->constructUrl('UsersFixtureResource.show', ['id' => 42]));
-		$this->assertSame($base . '/api/users?page=2', $this->service->constructUrl('UsersFixtureResource.index', [], ['page' => 2]));
+		$request->setUrlFormat(THttpRequestUrlFormat::Get);
+		$this->assertSame($base . '?rest=api/users/42', $this->service->constructUrl('UsersFixtureResource.show', ['id' => 42]));
+		$this->assertSame($base . '?rest=api/users&page=2&q=a%20b', $this->service->constructUrl('UsersFixtureResource.index', [], ['page' => 2, 'q' => 'a b']));
+		$this->assertSame($base . '?rest=api/users&amp;page=2', $this->service->constructUrl('UsersFixtureResource.index', [], ['page' => 2], true));
+		$request->setUrlFormat(THttpRequestUrlFormat::Path);
+		$this->assertSame($base . '/rest/api/users/42', $this->service->constructUrl('UsersFixtureResource.show', ['id' => 42]));
+		$this->assertSame($base . '/rest/api/users?page=2', $this->service->constructUrl('UsersFixtureResource.index', [], ['page' => 2]));
 		$request->setUrlFormat(THttpRequestUrlFormat::HiddenPath);
-		$this->assertSame(rtrim(str_replace('\\', '/', dirname($base)), '/') . '/api/users/42', $this->service->constructUrl('UsersFixtureResource.show', ['id' => 42]));
+		$this->assertSame(rtrim(str_replace('\\', '/', dirname($base)), '/') . '/rest/api/users/42', $this->service->constructUrl('UsersFixtureResource.show', ['id' => 42]));
+	}
+
+	public function testRoutePathDropsTheServiceIdSegment(): void
+	{
+		$this->setPath('/rest/api/users/42');
+		$this->assertSame('api/users/42', $this->service->getRoutePath());
+		$this->setPath('/rest');
+		$this->assertSame('', $this->service->getRoutePath());
+		$this->setPath('/restful/x/');
+		$this->assertSame('restful/x', $this->service->getRoutePath());
+		$this->setPath('/api/users');
+		$this->assertSame('api/users', $this->service->getRoutePath());
+	}
+
+	public function testRoutePathIsTheServiceParameterWithoutPathInfo(): void
+	{
+		$this->setPath('');
+		PradoUnit::setProp(Prado::getApplication()->getRequest(), '_serviceParam', '/api/users/42/');
+		$this->assertSame('api/users/42', $this->service->getRoutePath());
+		$this->load($this->usersConfig());
+		$this->service->resolveRoute();
+		$this->assertSame('UsersFixtureResource.show', $this->service->getRoute()->getName());
+		$this->assertSame(['id' => '42'], $this->service->getPathParameters());
 	}
 
 	public function testConstructUrlUnknownRouteThrows(): void
@@ -551,6 +652,38 @@ class TRestServiceTest extends \PHPUnit\Framework\TestCase
 	{
 		$response = $this->runWith('GET', '/api/typed/x/2.5/true', ['resources' => [['class' => TypedParamsResource::class]]]);
 		$this->assertSame(404, $response->status);
+	}
+
+	public function testDispatchCastsBackedEnums(): void
+	{
+		$response = $this->runWith('GET', '/api/export/csv/2', ['resources' => [['class' => TypedParamsResource::class]]]);
+		$this->assertSame(200, $response->status);
+		$this->assertSame(['format' => 'csv', 'priority' => 2], json_decode($response->body, true));
+	}
+
+	public function testDispatchRejectsAValueThatIsNotAnEnumCase(): void
+	{
+		$config = ['resources' => [['class' => TypedParamsResource::class]]];
+		$this->assertSame(404, $this->runWith('GET', '/api/export/xml/2', $config)->status);
+		$this->service = new TRestServiceExposed();
+		$this->service->setID('rest');
+		$this->service->setBasePath('api');
+		$this->assertSame(404, $this->runWith('GET', '/api/export/csv/9', $config)->status);
+	}
+
+	public function testDispatchRefusesAStaticMethod(): void
+	{
+		$config = ['resources' => [['class' => TypedParamsResource::class]]];
+		$this->assertSame([], (new TypedParamsResource())->getRoutes()['staticHandler'] ?? []);
+		$this->load($config);
+		$route = new TRestRoutePattern();
+		$route->setPattern('api/static');
+		$route->setResource(TypedParamsResource::class);
+		$route->setMethod('staticHandler');
+		$route->init([]);
+		$this->expectException(TRestException::class);
+		$this->expectExceptionCode(405);
+		$this->service->dispatch($this->service->getResource(TypedParamsResource::class), $route, []);
 	}
 
 	public function testDispatchInjectsRequestAndRoute(): void
@@ -707,6 +840,8 @@ class TRestServiceTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame('', $service->getBasePath());
 		$service->setBasePath('/api/v1/');
 		$this->assertSame('api/v1', $service->getBasePath());
+		$this->assertSame(Prado::getApplication()->getMode() === TApplicationMode::Debug, $service->getExposeErrors());
+		$service->setExposeErrors('false');
 		$this->assertFalse($service->getExposeErrors());
 		$service->setExposeErrors('true');
 		$this->assertTrue($service->getExposeErrors());

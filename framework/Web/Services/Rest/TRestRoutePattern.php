@@ -13,7 +13,6 @@ namespace Prado\Web\Services\Rest;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Security\TAuthorizationRule;
-use Prado\TPropertyValue;
 use Prado\Web\THttpRequest;
 use Prado\Web\TUrlManager;
 use Prado\Web\TUrlMappingPattern;
@@ -31,7 +30,7 @@ use Prado\Web\TUrlMappingPattern;
  * - A placeholder may carry its constraint inline, `{id:\d+}`, and a placeholder
  *   without a constraint matches one path segment, `[^/]+`.
  * - The path is matched apart from the verb. {@see matchPath()} returns the path
- *   parameters of a request whose path matches, whatever its verb, and
+ *   parameters of a path that matches, whatever the request verb, and
  *   {@see acceptsVerb()} tells whether the route serves a verb, so the service
  *   answers `405` with a correct `Allow` header when the path matches another verb.
  *
@@ -172,20 +171,25 @@ class TRestRoutePattern extends TUrlMappingPattern
 	}
 
 	/**
-	 * Matches the path of a request, and its query constraints, apart from the verb.
+	 * Matches a request path, and the query constraints of the request, apart from
+	 * the verb.
 	 * @param THttpRequest $request the request.
+	 * @param ?string $path the path without leading or trailing slashes; `null` for the request `PathInfo`.
 	 * @return ?array path parameter values keyed by placeholder name, `null` when the path does not match.
 	 */
-	public function matchPath(THttpRequest $request): ?array
+	public function matchPath(THttpRequest $request, ?string $path = null): ?array
 	{
 		if ($this->getQuery()->getCount() > 0 && !$this->matchesQuery($this->getQueryItems())) {
 			return null;
 		}
+		if ($path === null) {
+			$path = trim((string) $request->getPathInfo(), '/');
+		}
 		$matches = [];
 		if (($regexp = $this->getRegularExpression()) !== '') {
-			$matched = preg_match($regexp, $this->getMatchSubject($request, (string) $request->getPathInfo()), $matches);
+			$matched = preg_match($regexp, $this->getMatchSubject($request, $path), $matches);
 		} else {
-			$matched = preg_match($this->getParameterizedPattern(), $this->getMatchSubject($request, trim((string) $request->getPathInfo(), '/') . '/'), $matches);
+			$matched = preg_match($this->getParameterizedPattern(), $this->getMatchSubject($request, $path . '/'), $matches);
 		}
 		if (!$matched) {
 			return null;
@@ -347,13 +351,5 @@ class TRestRoutePattern extends TUrlMappingPattern
 	public function setVerbs($value)
 	{
 		parent::setVerbs(is_string($value) ? strtoupper($value) : $value);
-	}
-
-	/**
-	 * @param array|string $value the pattern, or the `Pattern` key of an array.
-	 */
-	public function setPattern($value)
-	{
-		parent::setPattern(is_array($value) ? ($value['Pattern'] ?? '') : TPropertyValue::ensureString($value));
 	}
 }

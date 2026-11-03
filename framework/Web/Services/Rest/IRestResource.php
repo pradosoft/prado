@@ -27,8 +27,9 @@ interface IRestResource
 {
 	/**
 	 * Returns the routes of the resource: the {@see TRestRoute} declarations of each
-	 * handler method, keyed by method name.
-	 * @return array<string,TRestRoute[]> route declarations keyed by method name.
+	 * handler method, keyed by method name. A declaration is one `TRestRoute` or a
+	 * list of them.
+	 * @return array<string,TRestRoute|TRestRoute[]> route declarations keyed by method name.
 	 */
 	public function getRoutes(): array;
 

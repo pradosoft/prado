@@ -15,14 +15,14 @@ One route of `TRestService`: the pattern (already under `BasePath`), the handler
 ## Differences from TUrlMappingPattern
 - `init()` compiles placeholders: `{name:regex}` moves the regex into `Parameters` and the pattern becomes `{name}`; a placeholder without a constraint gets `DEFAULT_CONSTRAINT` (`[^/]+`); a repeated name throws `restroute_parameter_duplicate`; a malformed one throws `restroute_pattern_invalid`. `ServiceParameter` defaults to `Name`.
 - `substituteParameters()` wraps each constraint in `(?:…)`, so `\d+|new` stays inside its placeholder.
-- `matchPath($request): ?array` — the path match (and `Query` constraints) apart from the verb; returns the placeholder values plus constants, or `null`.
+- `matchPath($request, $path = null): ?array` — the match of `$path` (no leading or trailing slash; `null` for the request `PathInfo`) and the `Query` constraints, apart from the verb; returns the placeholder values plus constants, or `null`. The service passes `TRestService::getRoutePath()`.
 - `acceptsVerb($verb): bool` — the inherited `Verbs` rule.
 - `constructPath($parameters, $getItems, $encodeAmpersand): string` — the path with values substituted (raw-URL-encoded) and a query string from `$getItems`; a missing value throws `restroute_parameter_missing`. `constructUrl()` is overridden to split GET items into placeholders and query.
 - `getParameterNames()` — placeholder names in pattern order.
 
 ## Handler properties
-`Resource`, `Method`, `Name` (defaults to the pattern), `ResourceProperties`, `getAuthorizationRules()` / `addAuthorizationRule()`. `setVerbs()` uppercases a string value.
+`Resource`, `Method`, `Name` (defaults to the pattern), `ResourceProperties` (applied to the resource before dispatch), `getAuthorizationRules()` / `addAuthorizationRule()`. `setVerbs()` uppercases a string value.
 
 ## Gotchas
-- The match subject is `trim(PathInfo, '/') . '/'`, so a trailing slash never matters.
+- The match subject is the path with one trailing slash appended, so a trailing slash never matters; a custom `RegularExpression` sees the path without slashes.
 - `UrlFormat` stays `Get`; the `Path` format's `urlparams` suffix is not used for REST routes.

@@ -55,9 +55,20 @@ use Prado\Xml\TXmlElement;
  * lists their verbs. A `HEAD` request runs the `GET` handler without a body
  * unless a route names `HEAD` itself.
  *
+ * {@see getRoutePath()} is the path the routes are matched against:
+ *
+ * | URL format | Request URL | Route path |
+ * |---|---|---|
+ * | `Get` | `index.php?rest=users/42` | the service parameter, `users/42` |
+ * | `Path` | `index.php/rest/users/42` | `PathInfo` without the service ID segment, `users/42` |
+ * | `HiddenPath` | `/rest/users/42` | `users/42` |
+ * | a `TUrlMapping` rule, `<url ServiceID="rest" ServiceParameter="api" pattern="api/" UrlFormat="Path" />` | `index.php/api/users/42` | `PathInfo`, `api/users/42`, so `BasePath` is `api` |
+ *
  * {@see constructUrl()} is the reverse: the URL of a named route for a set of
- * parameter values. A route is named by its attribute, or by the resource class
- * short name and the method name joined by a dot.
+ * parameter values, in the URL format of the request. A route is named by its
+ * attribute, or by the resource class short name and the method name joined by a
+ * dot. An application whose `TUrlMapping` rule gives the service another URL
+ * overrides `constructUrl()`.
  *
  * ## Configuration
  *
@@ -82,7 +93,7 @@ use Prado\Xml\TXmlElement;
  *
  * | Element | Meaning |
  * |---|---|
- * | `<resource class prefix enabled …>` | A resource class; its routes come from {@see IRestResource::getRoutes()}. `prefix` replaces the class attribute prefix. Any other attribute is a property of the resource |
+ * | `<resource class prefix enabled …>` | A resource class; its routes come from {@see IRestResource::getRoutes()}. `prefix` replaces the class attribute prefix. Any other attribute, or a `properties` array in PHP, is a property of the resource |
  * | `<route verbs pattern class method name parameters.x query.x enabled>` | One route declared in the configuration; `class` and `method` name the handler |
  * | `<group prefix enabled>` | Resources, routes, groups and includes sharing a prefix |
  * | `<include file>` | A configuration file in PRADO namespace format, in the application's configuration type, whose root holds the same elements |
@@ -112,8 +123,7 @@ use Prado\Xml\TXmlElement;
  * ],
  * ```
  * The request reaches the service through the URL manager as any other service
- * does; a `TUrlMapping` rule such as `<url ServiceID="rest" ServiceParameter="api" pattern="api/" UrlFormat="Path" />`
- * routes `/index.php/api/...` to it, and the service matches `PathInfo` itself.
+ * does, and the service matches the route path itself (see *Routing*).
  *
  * ## Error responses
  *
@@ -150,9 +160,9 @@ class TRestService extends \Prado\TService
 	private string $_basePath = '';
 
 	/**
-	 * @var bool whether a `500` carries the exception message.
+	 * @var ?bool whether a `500` carries the exception message; `null` for the Debug mode default.
 	 */
-	private bool $_exposeErrors = false;
+	private ?bool $_exposeErrors = null;
 
 	/**
 	 * @var string class of the routes.
@@ -194,7 +204,6 @@ class TRestService extends \Prado\TService
 	 */
 	public function init($config): void
 	{
-		$this->setExposeErrors($this->getApplication()->getMode() === TApplicationMode::Debug);
 		$this->loadConfig($config);
 		$this->resolveRoute();
 		if ($this->getRoute() !== null) {
@@ -293,6 +302,8 @@ class TRestService extends \Prado\TService
 	/**
 	 * Registers a resource: creates it, applies its properties, and adds a route for
 	 * each declaration of {@see IRestResource::getRoutes()} and each `routes` entry.
+	 * The properties are every key but `class`, `prefix`, `enabled`, `authorization`
+	 * and `routes`, and the keys of a `properties` array.
 	 * @param array $item the resource configuration.
 	 * @param string $prefix the inherited pattern prefix.
 	 * @param TAuthorizationRule[] $rules the inherited authorization rules.
@@ -307,12 +318,12 @@ class TRestService extends \Prado\TService
 		if ($class === '') {
 			throw new TConfigurationException('restservice_class_required');
 		}
-		$properties = array_diff_key($item, array_flip(['class', 'prefix', 'enabled', 'authorization', 'routes']));
+		$properties = (array) ($item['properties'] ?? []) + array_diff_key($item, array_flip(['class', 'prefix', 'enabled', 'authorization', 'routes', 'properties']));
 		$resource = $this->createResource($class, $properties);
 		$prefix = $this->joinPath($prefix, array_key_exists('prefix', $item) ? (string) $item['prefix'] : $resource->getRoutePrefix());
 		$rules = array_merge($rules, $this->createAuthorizationRules($item['authorization'] ?? []));
 		foreach ($resource->getRoutes() as $method => $declarations) {
-			foreach ($declarations as $declaration) {
+			foreach (is_array($declarations) ? $declarations : [$declarations] as $declaration) {
 				if (!($declaration instanceof TRestRoute)) {
 					throw new TConfigurationException('restservice_route_invalid', $class, $method);
 				}
@@ -414,8 +425,10 @@ class TRestService extends \Prado\TService
 	}
 
 	/**
-	 * Creates a resource and applies its configured properties. A class is created
-	 * once; a later declaration of the same class reuses the instance.
+	 * Creates a resource and applies the properties of its declaration. A class is
+	 * created once; a later declaration of the same class reuses the instance and
+	 * applies its own properties, and {@see run()} applies the properties of the
+	 * matched route again before dispatch.
 	 * @param string $class the resource class, in namespace or dot notation.
 	 * @param array $properties property values of the declaration.
 	 * @throws TConfigurationException when the class is not an IRestResource.
@@ -423,17 +436,30 @@ class TRestService extends \Prado\TService
 	 */
 	protected function createResource(string $class, array $properties): IRestResource
 	{
-		$resource = Prado::createComponent($class);
-		if (!($resource instanceof IRestResource)) {
-			throw new TConfigurationException('restservice_resource_invalid', $class);
+		$resource = $this->getResource($class);
+		if ($resource === null) {
+			$resource = Prado::createComponent($class);
+			if (!($resource instanceof IRestResource)) {
+				throw new TConfigurationException('restservice_resource_invalid', $class);
+			}
+			$resources = $this->getResourcesDirect();
+			$resources[$resource::class] = $resource;
+			$this->setResourcesDirect($resources);
 		}
+		$this->applyResourceProperties($resource, $properties);
+		return $resource;
+	}
+
+	/**
+	 * Applies declared property values to a resource that is a {@see \Prado\TComponent}.
+	 * @param IRestResource $resource the resource.
+	 * @param array $properties property values keyed by property name.
+	 */
+	protected function applyResourceProperties(IRestResource $resource, array $properties): void
+	{
 		if ($properties !== [] && $resource instanceof \Prado\TComponent) {
 			$resource->setSubProperties($properties);
 		}
-		$resources = $this->getResourcesDirect();
-		$resources[$resource::class] = $resource;
-		$this->setResourcesDirect($resources);
-		return $resource;
 	}
 
 	/**
@@ -528,11 +554,12 @@ class TRestService extends \Prado\TService
 	{
 		$request = $this->getRequest();
 		$verb = strtoupper((string) ($request->getRequestType() ?? 'GET'));
+		$path = $this->getRoutePath();
 		$matches = [];
 		$route = null;
 		$parameters = [];
 		foreach ($this->getRoutes() as $candidate) {
-			$values = $candidate->matchPath($request);
+			$values = $candidate->matchPath($request, $path);
 			if ($values === null) {
 				continue;
 			}
@@ -554,6 +581,28 @@ class TRestService extends \Prado\TService
 		$this->setPathMatchesDirect($matches);
 		$this->setRouteDirect($route);
 		$this->setPathParametersDirect($parameters);
+	}
+
+	/**
+	 * Returns the path the routes are matched against: `PathInfo` without the
+	 * leading service ID segment the `Path` and `HiddenPath` URL formats carry, so
+	 * `index.php/rest/users/42` gives `users/42`; without a `PathInfo`, the service
+	 * parameter of the `Get` format, `index.php?rest=users/42`. The `PathInfo` a
+	 * {@see \Prado\Web\TUrlMapping} rule leaves is matched as it is.
+	 * @return string the path, without leading or trailing slashes.
+	 */
+	public function getRoutePath(): string
+	{
+		$request = $this->getRequest();
+		$path = trim((string) $request->getPathInfo(), '/');
+		if ($path === '') {
+			return trim((string) $request->getServiceParameter(), '/');
+		}
+		$id = (string) $this->getID();
+		if ($id !== '' && ($path === $id || str_starts_with($path, $id . '/'))) {
+			$path = (string) substr($path, strlen($id) + 1);
+		}
+		return $path;
 	}
 
 	/**
@@ -583,7 +632,9 @@ class TRestService extends \Prado\TService
 	}
 
 	/**
-	 * Returns the URL of a named route.
+	 * Returns the URL of a named route in the URL format of the request, the
+	 * reverse of {@see getRoutePath()}: `index.php?rest=users/42` in the `Get`
+	 * format, `index.php/rest/users/42` in `Path`, `/rest/users/42` in `HiddenPath`.
 	 * @param string $name the route name.
 	 * @param array $parameters placeholder values keyed by placeholder name.
 	 * @param array $getItems GET variables appended as the query string.
@@ -598,12 +649,21 @@ class TRestService extends \Prado\TService
 			throw new TInvalidDataValueException('restservice_route_unknown', $name);
 		}
 		$request = $this->getRequest();
-		if ($request->getUrlFormat() === THttpRequestUrlFormat::HiddenPath) {
-			$base = rtrim(str_replace('\\', '/', dirname((string) $request->getApplicationUrl())), '/');
-		} else {
-			$base = (string) $request->getApplicationUrl();
+		$amp = $encodeAmpersand ? '&amp;' : '&';
+		$path = $route->constructPath($parameters);
+		$query = ($getItems === []) ? '' : http_build_query($getItems, '', $amp, PHP_QUERY_RFC3986);
+		$application = (string) $request->getApplicationUrl();
+		switch ($request->getUrlFormat()) {
+			case THttpRequestUrlFormat::Path:
+				$url = $application . '/' . $this->getID() . '/' . $path;
+				return ($query === '') ? $url : $url . '?' . $query;
+			case THttpRequestUrlFormat::HiddenPath:
+				$url = rtrim(str_replace('\\', '/', dirname($application)), '/') . '/' . $this->getID() . '/' . $path;
+				return ($query === '') ? $url : $url . '?' . $query;
+			default:
+				$url = $application . '?' . $this->getID() . '=' . $path;
+				return ($query === '') ? $url : $url . $amp . $query;
 		}
-		return $base . '/' . $route->constructPath($parameters, $getItems, $encodeAmpersand);
 	}
 
 	/**
@@ -641,6 +701,7 @@ class TRestService extends \Prado\TService
 			if ($resource === null) {
 				throw new TConfigurationException('restservice_resource_invalid', (string) $route->getResource());
 			}
+			$this->applyResourceProperties($resource, $route->getResourceProperties());
 			$resource->setRoute($route, $this->getPathParameters());
 			$this->onPreRunResource($resource);
 			$resource->authorize($route);
@@ -658,7 +719,7 @@ class TRestService extends \Prado\TService
 		} catch (THttpException $e) {
 			$this->handleError(new TRestException($e->getStatusCode(), '', $e->getMessage()));
 		} catch (\Throwable $e) {
-			Prado::log($e->getMessage(), TLogger::ERROR, self::class);
+			Prado::log($e::class . ': ' . $e->getMessage(), TLogger::ERROR, self::class);
 			$this->handleError(new TRestException(500, '', $this->getExposeErrors() ? $e->getMessage() : ''), $e);
 		}
 	}
@@ -695,9 +756,9 @@ class TRestService extends \Prado\TService
 
 	/**
 	 * Calls the handler method with the path parameters as the arguments of the
-	 * same names, cast to the scalar type each parameter declares. A parameter
-	 * typed {@see \Prado\Web\THttpRequest} receives the request and one typed
-	 * {@see TRestRoutePattern} receives the route. The method is resolved through
+	 * same names, cast to the scalar or backed enum type each parameter declares. A
+	 * parameter typed {@see \Prado\Web\THttpRequest} receives the request and one
+	 * typed {@see TRestRoutePattern} receives the route. The method is resolved through
 	 * {@see \Prado\TComponentReflection::getReflectionMethodByType()}, so a method
 	 * a behavior adds to the resource is a handler too.
 	 * @param IRestResource $resource the resource.
@@ -711,7 +772,7 @@ class TRestService extends \Prado\TService
 	{
 		$method = (string) $route->getMethod();
 		$reflection = TComponentReflection::getReflectionMethodByType($resource, $method);
-		if ($reflection === null || !$reflection->isPublic()) {
+		if ($reflection === null || !$reflection->isPublic() || $reflection->isStatic()) {
 			throw TRestException::methodNotAllowed();
 		}
 		$arguments = [];
@@ -735,15 +796,25 @@ class TRestService extends \Prado\TService
 	}
 
 	/**
-	 * Casts a path parameter value to the scalar type of the handler parameter.
+	 * Casts a path parameter value to the type of the handler parameter: `int`,
+	 * `float`, `bool`, or a backed enum through `tryFrom()`.
 	 * @param string $value the path parameter value.
-	 * @param ?string $type the declared type, `null` or a class name for none.
+	 * @param ?string $type the declared type, `null` or another class name for none.
 	 * @param string $name the parameter name.
 	 * @throws TRestException 404 when the value does not fit the type.
 	 * @return mixed the cast value.
 	 */
 	protected function castParameter(string $value, ?string $type, string $name): mixed
 	{
+		if ($type !== null && is_subclass_of($type, \BackedEnum::class)) {
+			$backing = (string) (new \ReflectionEnum($type))->getBackingType();
+			$key = ($backing === 'int') ? filter_var($value, FILTER_VALIDATE_INT) : $value;
+			$case = ($key === false) ? null : $type::tryFrom($key);
+			if ($case === null) {
+				throw TRestException::notFound();
+			}
+			return $case;
+		}
 		$cast = match ($type) {
 			'int' => filter_var($value, FILTER_VALIDATE_INT),
 			'float' => filter_var($value, FILTER_VALIDATE_FLOAT),
@@ -844,17 +915,17 @@ class TRestService extends \Prado\TService
 	}
 
 	/**
-	 * @return bool the stored ExposeErrors flag.
+	 * @return ?bool the stored ExposeErrors flag, `null` when none is set.
 	 */
-	protected function getExposeErrorsDirect(): bool
+	protected function getExposeErrorsDirect(): ?bool
 	{
 		return $this->_exposeErrors;
 	}
 
 	/**
-	 * @param bool $value the ExposeErrors flag to store.
+	 * @param ?bool $value the ExposeErrors flag to store.
 	 */
-	protected function setExposeErrorsDirect(bool $value): void
+	protected function setExposeErrorsDirect(?bool $value): void
 	{
 		$this->_exposeErrors = $value;
 	}
@@ -976,11 +1047,11 @@ class TRestService extends \Prado\TService
 	}
 
 	/**
-	 * @return bool whether a `500` carries the exception message; true in Debug mode by default.
+	 * @return bool whether a `500` carries the exception message; true in Debug mode unless set.
 	 */
 	public function getExposeErrors(): bool
 	{
-		return $this->getExposeErrorsDirect();
+		return $this->getExposeErrorsDirect() ?? ($this->getApplication()->getMode() === TApplicationMode::Debug);
 	}
 
 	/**

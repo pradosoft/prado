@@ -900,6 +900,20 @@ class THttpRequestTest extends \PHPUnit\Framework\TestCase
 		try {
 			$request = $this->newBodyRequest('POST', 'application/json', '');
 			self::assertSame([], $request->getParsedBody());
+			$request = $this->newBodyRequest('POST', 'application/json', " \r\n");
+			self::assertSame([], $request->getParsedBody());
+		} finally {
+			$this->restoreBodyEnvironment($post, $get);
+		}
+	}
+
+	public function testGetParsedBodyJsonBigIntegerIsAString()
+	{
+		$post = $_POST;
+		$get = $_GET;
+		try {
+			$request = $this->newBodyRequest('POST', 'application/json', '{"id":12345678901234567890123,"n":42}');
+			self::assertSame(['id' => '12345678901234567890123', 'n' => 42], $request->getParsedBody());
 		} finally {
 			$this->restoreBodyEnvironment($post, $get);
 		}
@@ -932,6 +946,7 @@ class THttpRequestTest extends \PHPUnit\Framework\TestCase
 				self::fail('THttpException not thrown for malformed JSON');
 			} catch (THttpException $e) {
 				self::assertSame(400, $e->getStatusCode());
+				self::assertSame('httprequest_body_json_invalid', $e->getErrorCode());
 			}
 			self::assertNull(PradoUnit::getProp($request, '_parsedBody'));
 		} finally {

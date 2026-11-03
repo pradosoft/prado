@@ -243,11 +243,4 @@ class TRestRoutePatternTest extends \PHPUnit\Framework\TestCase
 		$route->addAuthorizationRule($rule);
 		$this->assertSame([$rule], $route->getAuthorizationRules());
 	}
-
-	public function testSetPatternAcceptsArrayForm(): void
-	{
-		$route = new TRestRoutePattern();
-		$route->setPattern(['Pattern' => 'a/b']);
-		$this->assertSame('a/b', $route->getPattern());
-	}
 }

@@ -21,8 +21,9 @@ A JSON HTTP API service for PRADO, the backend of a single-page application or o
 
 - **Pattern syntax is the URL manager's.** `{name}`, `parameters.name`, inline `{name:regex}`, `query.name`, `Verbs`, `CaseSensitive`. A placeholder without a constraint matches one segment.
 - **Path first, verb second.** The first route whose path and verb match wins; a path matched by other verbs is `405` with `Allow`. `HEAD` runs the `GET` handler without a body.
+- **The route path** is `TRestService::getRoutePath()`: `PathInfo` minus the leading service ID segment (`index.php/rest/users/42` → `users/42`), or the service parameter in the `Get` format (`index.php?rest=users/42`); a `TUrlMapping` rule's `PathInfo` is matched as is. `constructUrl()` is the reverse in the request's URL format.
 - **Routes inherit.** An override without `#[TRestRoute]` keeps the parent's route; the class prefix comes from the nearest ancestor carrying the attribute; `getRoutes()` may be overridden (`parent::getRoutes() + [...]`).
-- **One instance per resource class per request**, created at `init()` to read its routes and reused for dispatch; declare a class once.
+- **One instance per resource class per request**, created at `init()` to read its routes and reused for dispatch; a class declared more than once runs each route with the properties of its own declaration.
 - **Authorization** rules of the matched route are merged into `TApplication::getAuthorizationRules()` at `init()`, enforced by `TAuthManager`; the service writes the `401` problem document from its `onAuthorization` handler. `IRestResource::authorize()` is the per-resource hook.
 - **CSRF**: `TService.EnableCsrfValidation` applies through `ensureCsrfToken()`, a `400` problem document on failure.
 - **CORS** is not here: `Prado\Web\HttpHeaders\TCorsModule` with `PathPrefix` equal to `BasePath`.

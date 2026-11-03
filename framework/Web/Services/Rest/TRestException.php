@@ -19,8 +19,8 @@ use Prado\Exceptions\THttpException;
  * processing. It carries an HTTP status code, a human-readable title, an optional
  * detail message, and an optional structured array of field-level validation errors.
  *
- * The error payload is inspired by RFC 7807 (Problem Details for HTTP APIs) and is
- * serialized as JSON by {@see TRestService} when returned to the client.
+ * The error payload is the RFC 9457 problem document (Problem Details for HTTP
+ * APIs) that {@see TRestService} writes as `application/problem+json`.
  *
  * Use the static factory methods for the most common HTTP error conditions:
  * ```php
@@ -46,7 +46,7 @@ class TRestException extends THttpException
 	/**
 	 * Standard HTTP status reason phrases.
 	 */
-	private static array $HTTP_TITLES = [
+	private const HTTP_TITLES = [
 		400 => 'Bad Request',
 		401 => 'Unauthorized',
 		403 => 'Forbidden',
@@ -87,7 +87,7 @@ class TRestException extends THttpException
 	 */
 	public function __construct(int $statusCode, string $title = '', string $detail = '', array $errors = [])
 	{
-		$this->setTitleDirect($title !== '' ? $title : (self::$HTTP_TITLES[$statusCode] ?? 'Error'));
+		$this->setTitleDirect($title !== '' ? $title : (self::HTTP_TITLES[$statusCode] ?? 'Error'));
 		$this->setDetailDirect($detail);
 		$this->setErrorsDirect($errors);
 		parent::__construct($statusCode, 'restservice_http_error', $statusCode, $this->getTitleDirect());
@@ -178,7 +178,7 @@ class TRestException extends THttpException
 	 * The `status` and `title` keys are always present. The `detail` key is
 	 * included only when non-empty. The `errors` key is included only when
 	 * the errors array is non-empty.
-	 * @return array RFC 7807-inspired problem detail array.
+	 * @return array the RFC 9457 problem document.
 	 */
 	public function toArray(): array
 	{

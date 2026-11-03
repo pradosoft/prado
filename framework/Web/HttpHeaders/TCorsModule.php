@@ -25,10 +25,12 @@ use Prado\Web\THttpHeaderName;
  *
  * A request without an `Origin` header is not a cross-origin request and is
  * left alone. A request whose origin is outside {@see setAllowOrigin AllowOrigin}
- * receives no CORS headers, which makes the browser block the response. A
- * preflight request (`OPTIONS` with `Access-Control-Request-Method`) is
- * answered with status `204`, and {@see \Prado\TApplication::completeRequest()}
- * stops the application lifecycle so no service runs.
+ * receives no `Access-Control-*` headers, which makes the browser block the
+ * response. A preflight request (`OPTIONS` with `Access-Control-Request-Method`)
+ * is answered with status `204`, and {@see \Prado\TApplication::completeRequest()}
+ * stops the application lifecycle so no service runs. The preflight answer lists
+ * the configured methods and headers; the browser compares them with the actual
+ * request.
  *
  * XML configuration:
  *
@@ -55,27 +57,30 @@ use Prado\Web\THttpHeaderName;
  * ```
  *
  * {@see setAllowOrigin AllowOrigin} is `'*'` (every origin) or a comma-separated
- * allow-list of origins, compared without regard to case. The CORS specification
- * forbids `Access-Control-Allow-Origin: *` together with
+ * allow-list of exact origins, compared without regard to case. The CORS
+ * specification forbids `Access-Control-Allow-Origin: *` together with
  * `Access-Control-Allow-Credentials: true`, so {@see init()} throws a
  * {@see TConfigurationException} when {@see setAllowCredentials AllowCredentials}
  * is on while `AllowOrigin` is `'*'`. An allow-list, or credentials, echoes the
- * request origin back and adds `Vary: Origin` so caches keep the responses apart.
+ * request origin back and adds `Vary: Origin` to every response, the ones of a
+ * refused origin included, so a shared cache keeps the responses apart.
  *
  * {@see setPathPrefix PathPrefix} limits the module to one part of the
  * application. The request path (`PathInfo` without its leading slash) must
  * equal the prefix or continue it at a `/` boundary: `api` matches `api` and
- * `api/users`, and does not match `apidocs`.
+ * `api/users`, and does not match `apidocs`. `PathInfo` is the raw URL path, so
+ * a prefix needs the `Path` or `HiddenPath` URL format; in the `Get` format it is
+ * empty and a prefix matches nothing.
  *
  * | Request | Headers sent |
  * |---|---|
- * | No `Origin` header | none |
- * | Origin outside the allow-list, or path outside `PathPrefix` | none |
+ * | No `Origin` header, or path outside `PathPrefix` | none |
+ * | Origin outside the allow-list | `Vary: Origin` |
  * | Allowed origin, `AllowOrigin` is `*`, credentials off | `Access-Control-Allow-Origin: *` |
  * | Allowed origin, allow-list or credentials on | `Access-Control-Allow-Origin: <origin>`, `Vary: Origin` |
  * | Credentials on | adds `Access-Control-Allow-Credentials: true` |
- * | `ExposeHeaders` set | adds `Access-Control-Expose-Headers` |
- * | Preflight (`OPTIONS` with `Access-Control-Request-Method`) | adds `Access-Control-Allow-Methods`, `Access-Control-Allow-Headers`, `Access-Control-Max-Age`; status `204`; the request completes |
+ * | Actual request, `ExposeHeaders` set | adds `Access-Control-Expose-Headers` |
+ * | Preflight (`OPTIONS` with `Access-Control-Request-Method`) | adds `Access-Control-Allow-Methods` and `Access-Control-Allow-Headers` when not empty (an empty `AllowHeaders` echoes `Access-Control-Request-Headers`), `Access-Control-Max-Age`; status `204`; the request completes |
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
@@ -84,9 +89,6 @@ class TCorsModule extends TModule
 {
 	/** The `AllowOrigin` value that allows every origin. */
 	public const WILDCARD_ORIGIN = '*';
-
-	/** The request header that marks an `OPTIONS` request as a preflight. */
-	public const REQUEST_METHOD_HEADER = 'Access-Control-Request-Method';
 
 	/** Default value of {@see setAllowMethods AllowMethods}. */
 	public const DEFAULT_ALLOW_METHODS = 'GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD';
@@ -146,9 +148,10 @@ class TCorsModule extends TModule
 
 	/**
 	 * Sends the CORS headers for a cross-origin request and answers a preflight.
-	 * Does nothing when the request has no `Origin` header, when the path is
-	 * outside {@see setPathPrefix PathPrefix}, or when the origin is not allowed.
-	 * A preflight gets status `204` and completes the request.
+	 * Does nothing when the request has no `Origin` header or the path is outside
+	 * {@see setPathPrefix PathPrefix}. When the allowed origin depends on the
+	 * request origin, every response carries `Vary: Origin`; a refused origin gets
+	 * nothing else. A preflight gets status `204` and completes the request.
 	 * @param mixed $sender The application raising `onBeginRequest`.
 	 * @param mixed $param The event parameter.
 	 * @throws TConfigurationException when AllowCredentials is on while AllowOrigin is `'*'`.
@@ -156,47 +159,44 @@ class TCorsModule extends TModule
 	public function handleRequest($sender, $param): void
 	{
 		$request = $this->getRequest();
-		$origin = (string) $request->getHeader(THttpHeaderName::Origin, '');
-		if ($origin === '' || !$this->appliesToPath((string) $request->getPathInfo()) || !$this->isOriginAllowed($origin)) {
+		$origin = trim((string) $request->getHeader(THttpHeaderName::Origin, ''));
+		if ($origin === '' || !$this->appliesToPath((string) $request->getPathInfo())) {
 			return;
 		}
 		$this->assertValidConfig();
 
 		$response = $this->getResponse();
-		$allowOrigin = $this->getAllowOriginHeaderValue($origin);
-		$response->appendHeader(THttpHeaderName::AccessControlAllowOrigin . ': ' . $allowOrigin);
-		if ($allowOrigin !== self::WILDCARD_ORIGIN) {
+		$echo = $this->getAllowOrigin() !== self::WILDCARD_ORIGIN || $this->getAllowCredentials();
+		if ($echo) {
 			$response->appendHeader(THttpHeaderName::Vary . ': ' . THttpHeaderName::Origin, false);
 		}
+		if (!$this->isOriginAllowed($origin)) {
+			return;
+		}
+		$response->appendHeader(THttpHeaderName::AccessControlAllowOrigin . ': ' . ($echo ? $origin : self::WILDCARD_ORIGIN));
 		if ($this->getAllowCredentials()) {
 			$response->appendHeader(THttpHeaderName::AccessControlAllowCredentials . ': true');
 		}
-		if (($expose = $this->getExposeHeaders()) !== '') {
-			$response->appendHeader(THttpHeaderName::AccessControlExposeHeaders . ': ' . $expose);
-		}
 
-		if ($this->getIsPreflight()) {
-			$response->appendHeader(THttpHeaderName::AccessControlAllowMethods . ': ' . $this->getAllowMethods());
-			$response->appendHeader(THttpHeaderName::AccessControlAllowHeaders . ': ' . $this->getAllowHeaders());
-			$response->appendHeader(THttpHeaderName::AccessControlMaxAge . ': ' . $this->getMaxAge());
-			$response->setStatusCode(204);
-			$this->getApplication()->completeRequest();
+		if (!$this->getIsPreflight()) {
+			if (($expose = $this->getExposeHeaders()) !== '') {
+				$response->appendHeader(THttpHeaderName::AccessControlExposeHeaders . ': ' . $expose);
+			}
+			return;
 		}
-	}
-
-	/**
-	 * Returns the `Access-Control-Allow-Origin` value for an allowed request origin:
-	 * `'*'` when AllowOrigin is `'*'` and credentials are off, otherwise the
-	 * request origin.
-	 * @param string $origin The allowed request origin.
-	 * @return string The header value.
-	 */
-	protected function getAllowOriginHeaderValue(string $origin): string
-	{
-		if ($this->getAllowOrigin() === self::WILDCARD_ORIGIN && !$this->getAllowCredentials()) {
-			return self::WILDCARD_ORIGIN;
+		if (($methods = $this->getAllowMethods()) !== '') {
+			$response->appendHeader(THttpHeaderName::AccessControlAllowMethods . ': ' . $methods);
 		}
-		return $origin;
+		$headers = $this->getAllowHeaders();
+		if ($headers === '') {
+			$headers = $this->getRequestedHeaders();
+		}
+		if ($headers !== '') {
+			$response->appendHeader(THttpHeaderName::AccessControlAllowHeaders . ': ' . $headers);
+		}
+		$response->appendHeader(THttpHeaderName::AccessControlMaxAge . ': ' . $this->getMaxAge());
+		$response->setStatusCode(204);
+		$this->getApplication()->completeRequest();
 	}
 
 	/**
@@ -208,13 +208,24 @@ class TCorsModule extends TModule
 	{
 		$request = $this->getRequest();
 		return strtoupper((string) $request->getRequestType()) === 'OPTIONS'
-			&& $request->getHeader(self::REQUEST_METHOD_HEADER) !== null;
+			&& $request->getHeader(THttpHeaderName::AccessControlRequestMethod) !== null;
+	}
+
+	/**
+	 * Returns the `Access-Control-Request-Headers` of a preflight, reduced to header
+	 * name characters, commas and spaces.
+	 * @return string The requested header names, `''` when the request names none.
+	 */
+	protected function getRequestedHeaders(): string
+	{
+		$requested = (string) $this->getRequest()->getHeader(THttpHeaderName::AccessControlRequestHeaders, '');
+		return trim((string) preg_replace('/[^A-Za-z0-9_\-, ]/', '', $requested));
 	}
 
 	/**
 	 * Returns whether an origin is allowed: every origin when AllowOrigin is
 	 * `'*'`, otherwise an origin that equals an entry of the allow-list without
-	 * regard to case. Entries are trimmed.
+	 * regard to case. Entries are trimmed; no pattern matching is done.
 	 * @param string $origin The request origin.
 	 * @return bool Whether the origin is allowed.
 	 */
@@ -376,8 +387,10 @@ class TCorsModule extends TModule
 
 	/**
 	 * Sets the allowed origins: `'*'` for every origin, or a comma-separated
-	 * allow-list such as `https://app.example.com, https://admin.example.com`.
-	 * `'*'` is incompatible with {@see setAllowCredentials AllowCredentials}.
+	 * allow-list of exact origins such as `https://app.example.com, https://admin.example.com`;
+	 * no pattern matches a subdomain. `'*'` is incompatible with
+	 * {@see setAllowCredentials AllowCredentials}. Do not list `null`, the origin of
+	 * a sandboxed document, in an allow-list used with credentials.
 	 * @param mixed $value `'*'` or the comma-separated allow-list.
 	 */
 	public function setAllowOrigin(mixed $value): void
@@ -410,7 +423,8 @@ class TCorsModule extends TModule
 	}
 
 	/**
-	 * @param mixed $value Comma-separated list of the request headers a preflight allows.
+	 * @param mixed $value Comma-separated list of the request headers a preflight allows;
+	 *   `''` echoes the `Access-Control-Request-Headers` of the preflight.
 	 */
 	public function setAllowHeaders(mixed $value): void
 	{
@@ -477,7 +491,8 @@ class TCorsModule extends TModule
 
 	/**
 	 * Sets the request path prefix the module acts on, such as `api`. Surrounding
-	 * slashes are ignored; `''` acts on every path.
+	 * slashes are ignored; `''` acts on every path. The prefix is compared with the
+	 * raw `PathInfo`, which the `Path` and `HiddenPath` URL formats carry.
 	 * @param mixed $value The path prefix.
 	 */
 	public function setPathPrefix(mixed $value): void

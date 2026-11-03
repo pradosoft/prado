@@ -84,7 +84,8 @@ use Prado\Util\TInputValidator;
  *     ];
  * }
  * ```
- * The service registers the resource in the application configuration:
+ * A declaration is one `TRestRoute` or a list of them. The service registers the
+ * resource in the application configuration:
  * ```xml
  * <service id="rest" class="Prado\Web\Services\Rest\TRestService" BasePath="api">
  *   <resource class="App\Api\UsersResource" />
@@ -153,7 +154,7 @@ abstract class TRestResource extends TApplicationComponent implements IRestResou
 	 * from the class up its parents, so a method without the attribute takes the
 	 * attributes of the method it overrides. Override this method to declare routes
 	 * as a table.
-	 * @return array<string,TRestRoute[]> route declarations keyed by method name.
+	 * @return array<string,TRestRoute|TRestRoute[]> route declarations keyed by method name.
 	 */
 	public function getRoutes(): array
 	{
