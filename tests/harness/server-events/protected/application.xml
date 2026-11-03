@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+	Server event tests. The PHP built-in server of the functional tests serves one request
+	at a time, so a stream lasts MaxLifetime="2" seconds and the browser reconnects after
+	RetryInterval="200" milliseconds; requests made meanwhile wait for the stream to end.
+-->
+<application id="ServerEventTests" Mode="Debug">
+	<modules>
+		<module id="cache" class="Prado\Caching\TFileCache" />
+		<module id="serverevents" class="Prado\Web\Services\ServerEvents\TServerEventCacheBroker" PollInterval="0.1" />
+	</modules>
+	<services>
+		<service id="page" class="TPageService" DefaultPage="ServerEventTest">
+		</service>
+		<service id="events" class="Prado\Web\Services\ServerEvents\TServerEventService" MaxLifetime="2" HeartbeatInterval="1" RetryInterval="200" />
+	</services>
+</application>

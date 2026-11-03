@@ -118,6 +118,10 @@ $packages = [
 		'prado/ratings/ratings.js',
 	],
 
+	'serverevents' => [
+		'prado/activecontrols/serverevents.js',
+	],
+
 	// jquery
 	'jquery' => [
 		'jquery/jquery.js',
@@ -178,6 +182,7 @@ $dependencies = [
 	'inlineeditor' => ['jquery', 'prado', 'ajax', 'inlineeditor'],
 	'accordion' => ['jquery', 'prado', 'accordion'],
 	'ratings' => ['jquery', 'prado', 'ajax', 'ratings'],
+	'serverevents' => ['jquery', 'prado', 'ajax', 'serverevents'],
 	'jqueryui' => ['jquery', 'jqueryui'],
 	'texthighlight' => ['jquery', 'prado', 'highlightjs', 'clipboard'],
 ];

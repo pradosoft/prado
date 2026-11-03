@@ -52,6 +52,7 @@ AJAX-enabled controls for the Prado framework. ActiveControls trigger server-sid
 - **[`TCallbackResponseAdapter`](TCallbackResponseAdapter.md)** — Overrides `THttpResponse` to send callback-specific headers instead of normal HTML.
 
 - **[`TCallbackClientSide`](TCallbackClientSide.md)** — Stores client-side options: `OnSuccess`, `OnFailure`, `OnLoading`, `OnComplete` JavaScript handlers; `PostState`, `EnablePageStateUpdate`.
+- **[`TServerEventClientSide`](TServerEventClientSide.md)** — `TCallbackClientSide` of `TServerEventTriggeredCallback`; adds `OnServerEvent(sender, parameter)`, where `return false;` skips the event's callback.
 
 ## Active Controls
 
@@ -86,6 +87,7 @@ AJAX-enabled controls for the Prado framework. ActiveControls trigger server-sid
 | `TTimeTriggeredCallback` | (no UI) | Timer-based callback; `Interval`, `StartTimerOnLoad` |
 | `TValueTriggeredCallback` | (no UI) | Polls a JS expression; fires callback when value changes |
 | `TEventTriggeredCallback` | (no UI) | Fires callback on arbitrary DOM event |
+| [`TServerEventTriggeredCallback`](TServerEventTriggeredCallback.md) | (hidden anchor) | Fires callback on each server event of its `Channel` through a shared `EventSource` on [TServerEventService](../../Services/ServerEvents/TServerEventService.md); `ClientSide.OnServerEvent` ([TServerEventClientSide](TServerEventClientSide.md)) runs first, and `CallbackOnEvent="false"` handles events in the browser only (@since 4.4.0) |
 
 ## Conventions
 
@@ -102,6 +104,7 @@ AJAX-enabled controls for the Prado framework. ActiveControls trigger server-sid
 - Callbacks run the **full page lifecycle** (init, load, etc.) — ensure event handlers are idempotent.
 - `TActivePageAdapter` suppresses normal HTML rendering; only `X-PRADO-*` headers are sent. Do not `echo` from callback handlers.
 - `TTimeTriggeredCallback` keeps firing while the page is open — always implement server-side guards against runaway callbacks.
+- `TServerEventTriggeredCallback` replaces polling with server push; each open page holds a stream (a PHP worker under FPM) for the service's `MaxLifetime`. Its callback parameter comes from the browser: re-read server state and treat `Data` as user input. Each event costs every open page a callback; a data-only update uses `CallbackOnEvent="false"` with `ClientSide.OnServerEvent`. Every stream message is also a `prado:serverevent` CustomEvent on `document`.
 - `TActiveFileUpload` uses a hidden iframe (not XHR) for upload; progress tracking is limited.
 - A view transition runs the actions in a later frame. onComplete and the next callback request wait for them; other code that reads the DOM right after the response sees the old page.
 - A Replace update creates new nodes, so listeners on inner elements, focus, and typing are lost; `UpdateMode="Morph"` keeps them. Under Morph, data-bound rows pair by position, since item IDs follow the index.
