@@ -17,6 +17,7 @@ use Prado\Web\UI\WebControls\TDfn;
 use Prado\Web\UI\WebControls\THtmlElement;
 use Prado\Web\UI\WebControls\TPanel;
 use Prado\Web\UI\WebControls\TVar;
+use Prado\Util\TMultibyteString;
 
 /**
  * Tests for {@see TBaseTerm} and its controls {@see TAbbr}, {@see TDfn}, and {@see TVar}.
@@ -237,8 +238,8 @@ class TBaseTermTest extends TestCase
 
 	public function testTermKeyWithoutMbstring()
 	{
-		$mbstring = PradoUnit::getStaticProp(TBaseTerm::class, '_mbstring');
-		PradoUnit::setStaticProp(TBaseTerm::class, '_mbstring', false);
+		$mbstring = PradoUnit::getStaticProp(TMultibyteString::class, '_mbstring');
+		PradoUnit::setStaticProp(TMultibyteString::class, '_mbstring', false);
 		try {
 			$abbr = new TAbbr();
 			$this->assertSame('Render Filter', $abbr->getTermKey("Render \n Filter"));
@@ -246,7 +247,7 @@ class TBaseTermTest extends TestCase
 			$this->assertSame('café au lait', $abbr->getTermKey("CAFÉ au\nLait"));
 			$this->assertSame('straße i̇', $abbr->getTermKey('STRAßE İ'));
 		} finally {
-			PradoUnit::setStaticProp(TBaseTerm::class, '_mbstring', $mbstring);
+			PradoUnit::setStaticProp(TMultibyteString::class, '_mbstring', $mbstring);
 		}
 	}
 

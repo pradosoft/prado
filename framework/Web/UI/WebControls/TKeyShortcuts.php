@@ -11,6 +11,7 @@
 namespace Prado\Web\UI\WebControls;
 
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Util\TMultibyteString;
 
 /**
  * TKeyShortcuts validates and normalizes keyboard shortcuts in the
@@ -68,9 +69,6 @@ class TKeyShortcuts
 		'arrowup' => 'ArrowUp', 'up' => 'ArrowUp', 'arrowdown' => 'ArrowDown', 'down' => 'ArrowDown',
 		'arrowleft' => 'ArrowLeft', 'left' => 'ArrowLeft', 'arrowright' => 'ArrowRight', 'right' => 'ArrowRight',
 	];
-
-	/** @var ?bool whether the mbstring extension is loaded, resolved on first use */
-	private static ?bool $_mbstring = null;
 
 	/**
 	 * @var ?array<string, true> reserved shortcuts, built on first use
@@ -130,46 +128,15 @@ class TKeyShortcuts
 	}
 
 	/**
-	 * Tells whether a token is one character.
-	 * With the mbstring extension loaded, `mb_strlen()` counts the characters; without
-	 * it, the token is one character when it is one UTF-8 code point.
-	 * @param string $token the key token
-	 * @return bool whether the token is one character
-	 */
-	private static function isCharacter(string $token): bool
-	{
-		self::$_mbstring ??= extension_loaded('mbstring');
-		return self::$_mbstring ? mb_strlen($token) === 1 : preg_match('/^.\z/su', $token) === 1;
-	}
-
-	/**
-	 * Returns the uppercase of a character.
-	 * With the mbstring extension loaded, `mb_strtoupper()` applies the full case
-	 * mapping, so the result may be two characters (`ß` is `SS`); without it,
-	 * `\IntlChar::toupper()` of the intl extension applies the simple mapping.
-	 * @param string $character one character
-	 * @return string the uppercase
-	 */
-	private static function upperCharacter(string $character): string
-	{
-		self::$_mbstring ??= extension_loaded('mbstring');
-		if (self::$_mbstring) {
-			return mb_strtoupper($character);
-		}
-		$upper = \IntlChar::toupper($character);
-		return is_string($upper) ? $upper : $character;
-	}
-
-	/**
 	 * Normalizes one key token.
 	 * @param string $token the key token
 	 * @return ?string the key value, or null for an empty token or an unknown key name
 	 */
 	protected static function normalizeKey(string $token): ?string
 	{
-		if (self::isCharacter($token)) {
-			$upper = self::upperCharacter($token);
-			return self::isCharacter($upper) ? $upper : $token;
+		if (TMultibyteString::length($token) === 1) {
+			$upper = TMultibyteString::upper($token);
+			return TMultibyteString::length($upper) === 1 ? $upper : $token;
 		}
 		$lower = strtolower($token);
 		if (isset(self::KEY_NAMES[$lower])) {

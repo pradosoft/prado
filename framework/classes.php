@@ -455,6 +455,7 @@ return [
 'TConstantReflectionTrait' => 'Prado\Util\Traits\TConstantReflectionTrait',
 'TInitializedTrait' => 'Prado\Util\Traits\TInitializedTrait',
 'TModuleConfigurationFileTrait' => 'Prado\Util\Traits\TModuleConfigurationFileTrait',
+'TMultibyteString' => 'Prado\Util\TMultibyteString',
 'TReflectionClassTrait' => 'Prado\Util\Traits\TReflectionClassTrait',
 'TSerializableClosure' => 'Prado\Util\TSerializableClosure',
 'TSignalParameter' => 'Prado\Util\TSignalParameter',
