@@ -518,7 +518,6 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TParameterModule](./Util/TParameterModule.md)
 - [TPluginModule](./Util/TPluginModule.md)
 - [TRpcClient](./Util/TRpcClient.md)
-- [TRpcClientRequestException](./Util/TRpcClientRequestException.md)
 - [TRpcClientResponseException](./Util/TRpcClientResponseException.md)
 - [TRpcClientTypesEnumerable](./Util/TRpcClientTypesEnumerable.md)
 - [TSignalParameter](./Util/TSignalParameter.md)

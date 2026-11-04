@@ -21,4 +21,3 @@ The error code from the remote fault is accessible via `getErrorCode()`.
 ## See Also
 
 - [`TRpcClient`](./TRpcClient.md) — base class
-- [`TRpcClientRequestException`](./TRpcClientRequestException.md) — raised on transport failure

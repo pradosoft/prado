@@ -72,7 +72,6 @@ When a behavior registers event handlers in `attach()`, it **must** unregister t
 - **[`TJsonRpcClient`](TJsonRpcClient.md)** — JSON-RPC 1.0 client.
 - **[`TXmlRpcClient`](TXmlRpcClient.md)** — XML-RPC client via `xmlrpc_*` functions.
 - **[`TRpcClientTypesEnumerable`](TRpcClientTypesEnumerable.md)** — Enumeration mapping short type tokens (`JSON`, `XML`) to concrete client class names.
-- **[`TRpcClientRequestException`](TRpcClientRequestException.md)** — Thrown on transport/HTTP failure.
 - **[`TRpcClientResponseException`](TRpcClientResponseException.md)** — Thrown when the server returns an RPC fault. Carries an optional numeric error code.
 
 ## Other Utilities

@@ -33,5 +33,4 @@ $result = $client->someMethod($arg1, $arg2);
 - [`TJsonRpcClient`](./TJsonRpcClient.md) — JSON-RPC implementation
 - [`TXmlRpcClient`](./TXmlRpcClient.md) — XML-RPC implementation
 - [`TRpcClientTypesEnumerable`](./TRpcClientTypesEnumerable.md) — type registry
-- [`TRpcClientRequestException`](./TRpcClientRequestException.md) — transport error
 - [`TRpcClientResponseException`](./TRpcClientResponseException.md) — server-side RPC error
