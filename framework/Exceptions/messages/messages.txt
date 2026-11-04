@@ -448,6 +448,8 @@ comparevalidator_controltocompare_invalid = TCompareValidator.ControlToCompare c
 
 filevalidator_fileupload_required		= {0}.ControlToValidate must point to a TFileUpload control.
 
+ipaddressvalidator_range_invalid		= {0}.Ranges entry ''{1}'' is not an IP address, a CIDR block, or a range name.
+
 listcontrolvalidator_invalid_control	= {0}.ControlToValidate contains an invalid TListControl ID path, "{1}" is a {2}.
 
 repeater_template_required				= TRepeater.{0} requires a template instance implementing ITemplate interface.
