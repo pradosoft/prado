@@ -82,6 +82,10 @@ A control re-rendered alone in a callback, such as a `TActivePanel`, is marked w
 - Do not add `role` or `aria-label` to the control.
 - Playwright's computed tree in Firefox and WebKit matches for the link and button names and the `term` role.
 
+## Without mbstring
+
+`getTermKey()` lowers a case-insensitive key through `lowerCase()`: `mb_strtolower()` with the extension loaded, else the ICU `Any-Lower` transliterator of the required intl extension, which applies the same full case mapping. The static `_mbstring` flag is resolved once; tests force it to `false`.
+
 ## Tests
 
 - `tests/unit/Web/UI/WebControls/TBaseTermTest.php` (all three controls)

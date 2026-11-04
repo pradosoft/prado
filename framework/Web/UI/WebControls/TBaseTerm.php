@@ -110,6 +110,12 @@ abstract class TBaseTerm extends THtmlElement implements \Prado\IDataRenderer
 	/**
 	 * @var bool whether the handler is on the target
 	 */
+	/** @var ?bool whether the mbstring extension is loaded, resolved on first use */
+	private static ?bool $_mbstring = null;
+
+	/** @var ?\Transliterator the ICU lowercase transliterator, used without the mbstring extension */
+	private static ?\Transliterator $_lower = null;
+
 	private bool $_targetFiltered = false;
 
 	/**
@@ -427,7 +433,26 @@ abstract class TBaseTerm extends THtmlElement implements \Prado\IDataRenderer
 	public function getTermKey(string $term): string
 	{
 		$term = preg_replace('/\s+/u', ' ', $term);
-		return $this->getCaseSensitive() ? $term : mb_strtolower($term, 'UTF-8');
+		return $this->getCaseSensitive() ? $term : self::lowerCase($term);
+	}
+
+	/**
+	 * Returns a string in lowercase.
+	 * With the mbstring extension loaded, `mb_strtolower()` lowers the string; without
+	 * it, the ICU `Any-Lower` transliterator of the intl extension does, and
+	 * `strtolower()` when no transliterator is available.
+	 * @param string $text the text
+	 * @return string the text in lowercase
+	 */
+	protected static function lowerCase(string $text): string
+	{
+		self::$_mbstring ??= extension_loaded('mbstring');
+		if (self::$_mbstring) {
+			return mb_strtolower($text, 'UTF-8');
+		}
+		self::$_lower ??= \Transliterator::create('Any-Lower');
+		$lower = self::$_lower?->transliterate($text);
+		return is_string($lower) ? $lower : strtolower($text);
 	}
 
 	/**

@@ -65,6 +65,10 @@ Key matching: `event.key`; a shifted symbol also matches without Shift (`?`); wh
 - `AccessKey` is separate: browsers bind it to Alt, Alt+Shift, or Control+Option. An `Alt+<letter>` shortcut can collide with an access key of the same letter.
 - TKeyboard keys handle Enter and Space and call `preventDefault()`, so the registry ignores those presses.
 
+## Without mbstring
+
+`normalizeKey()` tests a token for one character and uppercases it through `isCharacter()` and `upperCharacter()`: `mb_strlen()` and `mb_strtoupper()` with the extension loaded, else one UTF-8 code point by `preg_match()` and `\IntlChar::toupper()` (simple case mapping, so `ß` stays `ß` either way). The static `_mbstring` flag is resolved once; tests force it to `false`.
+
 ## Omissions
 
 - No command palette (P3 in #1408).

@@ -74,3 +74,4 @@ This is the root source directory of the **Prado** PHP framework (PSR-4 namespac
 - **@since 4.3.3** — tag all new files, classes, and methods with the next release version.
 - **`if` blocks** — always use `{}`, never single-line bodies.
 - **Property setters** — use `TPropertyValue::ensureXxx()` for type coercion in Configuration and templates setters.
+- **Optional extensions** — only `ctype`, `dom`, `intl`, `json`, `pcre` and `spl` are required by `composer.json`. `mbstring` is suggested: resolve `extension_loaded('mbstring')` once into a static flag and fall back on `pcre` (code points) or `intl` (`\IntlChar`, `\Transliterator`) for every `mb_*` call, as `TSecurityManager`, `TKeyShortcuts` and `TBaseTerm` do. Tests force the flag to `false` to cover the fallback.
