@@ -12,6 +12,7 @@ namespace Prado\Web\UI\WebControls;
 
 use Prado\Prado;
 use Prado\TPropertyValue;
+use Prado\Util\Clock\TMonotonicClockAwareTrait;
 
 /**
  * TPageLoadTime class.
@@ -20,18 +21,33 @@ use Prado\TPropertyValue;
  * This is the longest possible time to wait.  Localize the suffix "s" with
  * {@see setSecondSuffix} or use PRADO localization.
  *
+ * The time is measured on the {@see getMonotonicClock() monotonic clock} from
+ * {@see \Prado\Prado::getRequestStartNanoseconds()}, so a wall-clock change during the
+ * request does not lengthen or shorten it.
+ *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0
  */
 class TPageLoadTime extends TLabel
 {
+	use TMonotonicClockAwareTrait;
+
 	/**
-	 * writes the difference in time that the request started to the moment of this method call.
-	 * @param mixed $writer
+	 * Writes the seconds from the request start to this call, and the suffix.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer
 	 */
 	public function renderContents($writer)
 	{
-		$writer->write(round(microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"], 5) . Prado::localize($this->getSecondSuffix()));
+		$writer->write(round($this->getLoadTime(), 5) . Prado::localize($this->getSecondSuffix()));
+	}
+
+	/**
+	 * @return float the seconds from the request start to now, on the monotonic clock
+	 * @since 4.4.0
+	 */
+	public function getLoadTime(): float
+	{
+		return $this->getMonotonicClock()->elapsed(Prado::getRequestStartNanoseconds());
 	}
 
 	/**

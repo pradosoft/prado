@@ -34,6 +34,6 @@ The default `IEventLoop`: a thin adapter over the process-wide `Revolt\EventLoop
 | `installFreshDriver(): void` | For a forked child. Cancels the inherited driver's callbacks and unsets its error handler; outside a fiber it then runs the driver once to unwind its loop fiber and installs a new `DriverFactory` driver. Inside a fiber `setDriver()` is refused, so the emptied inherited driver stays. |
 
 ## Gotchas
-- Timers read Revolt's `hrtime()` clock; an injected `IClock` or a pinned `TMockClock` does not move them. Use `TSocketReactor` for clock-pinned tests.
+- Timers read Revolt's `hrtime()` clock, which a test cannot move. Use `TSocketReactor` and its `setMonotonicClock()` for tests that drive time.
 - After an uncaught exception from `run()` the loop stays usable; the other callbacks remain registered.
 - A `{main}` suspension that Revolt reports dead (loop emptied while main was suspended) throws from the next `suspend()`.

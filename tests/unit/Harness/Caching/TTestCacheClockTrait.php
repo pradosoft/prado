@@ -15,7 +15,7 @@ namespace Prado\Test\Unit\Harness\Caching;
  *
  * Setting {@see setFakeNow FakeNow} or {@see setFakeMicrotime FakeMicrotime} installs a
  * {@see TTestCacheClock} on the cache (through {@see \Prado\Util\Clock\TClockAwareTrait::setClock()}),
- * so expiry and least-recently-used behavior run deterministically. The two knobs are independent, and
+ * so expiry and wall-clock timestamps run deterministically. The two knobs are independent, and
  * {@see pubTime()} / {@see pubMicrotime()} expose what the cache reads through its clock.
  *
  * @author Brad Anderson <belisoful@icloud.com>
