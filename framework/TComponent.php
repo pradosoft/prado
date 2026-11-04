@@ -1767,6 +1767,9 @@ class TComponent
 	 * {@see TEventResults::EVENT_RESULT_FEED_FORWARD}, the stop is read from the
 	 * forwarded value that becomes the current `$param`, not the original parameter.
 	 *
+	 * A handler held by a WeakReference whose object is freed during the raise is
+	 * skipped.
+	 *
 	 * @param string $name the event name
 	 * @param mixed $sender the event sender object
 	 * @param \Prado\TEventParameter $param the event parameter
@@ -1814,6 +1817,10 @@ class TComponent
 			}
 			$stoppable = $param instanceof IEventStoppableParameter;
 			foreach ($handlerArray as $handler) {
+				// A weak handler collected during the raise outputs as null.
+				if ($handler === null) {
+					continue;
+				}
 				$this->callBehaviorsMethod('dyIntraRaiseEventTestHandler', $return, $handler, $sender, $param, $name);
 				if ($return === false) {
 					continue;
