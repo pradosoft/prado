@@ -93,23 +93,6 @@ Handler class must implement a method returning the response data; `TJsonService
 
 ---
 
-## TRpcService
-
-Generic RPC framework supporting JSON-RPC and XML-RPC:
-
-```xml
-<modules>
-    <module id="rpc" class="Prado\Web\Services\TRpcService" />
-</modules>
-```
-
-Architecture:
-- `TRpcProtocol` — marshals request/response format
-- `TRpcServer` — request router
-- `TRpcApiProvider` — implement RPC methods here (all public methods exposed)
-
----
-
 ## TSoapService
 
 SOAP service with auto-generated WSDL.
@@ -145,4 +128,3 @@ RSS/Atom feed generation:
 - **`TPageService` is the default** — omit it from `application.xml` to use defaults, or configure only what differs.
 - **Service routing** — `THttpRequest` determines the active service. The `ServiceID` URL parameter selects the service; page name is the `ServiceParameter`.
 - **SOAP WSDL** — Method parameters must have strict `@param Type $name` annotations. Missing type annotations produce invalid WSDL.
-- **`TRpcApiProvider` auto-exposure** — all public methods are exposed; prefix internal helpers with `_` to signal intent (though they'll still be callable unless explicitly excluded).

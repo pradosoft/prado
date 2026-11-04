@@ -17,6 +17,6 @@ Namespace `Prado\` · version `4.3.2` (next/`@since`: `4.3.3`) · PHP 8.1+ · 74
 
 **`TModule`** — pluggable unit; implement `init($config)` (always call `parent::init($config)`). Init phases in dependency order: instantiate → `dyPreInit` → `init` → `dyPostInit`. Declare deps via `IModuleDependency::getModuleDependencies(): array` returning module ID strings.
 
-**`TService`** — handles one request type (page, JSON, RPC, SOAP, feed); only one runs per request. `TPageService` runs the page lifecycle.
+**`TService`** — handles one request type (page, JSON, SOAP, feed); only one runs per request. `TPageService` runs the page lifecycle.
 
 **`TControl`** — base UI control; lives in a parent/child tree rooted at `TPage`. Lifecycle events: `onPreInit` → `onInit` → `onLoad` → `onPreRender` → `render` → `onUnload`. State managed via view state. Active controls (AJAX) extend this with callback support.

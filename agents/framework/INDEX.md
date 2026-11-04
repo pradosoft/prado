@@ -14,7 +14,7 @@
 | [PHPStan/](PHPStan/INDEX.md) | Static analysis extensions: property reflection ([`TComponentPropertiesReflectionExtension`](PHPStan/TComponentPropertiesReflectionExtension.md), [`TComponentPropertyReflection`](PHPStan/TComponentPropertyReflection.md)), type-narrowing for `canGetProperty`, `canSetProperty`, `hasMethod`, `isa()`, and `method_visible()` |
 | [Security/](Security/INDEX.md) | [`TAuthManager`](Security/TAuthManager.md), [`TUserManager`](Security/TUserManager.md), [`TSecurityManager`](Security/TSecurityManager.md), RBAC ([`TPermissionsManager`](Security/Permissions/TPermissionsManager.md)) |
 | [Shell/](Shell/INDEX.md) | [`TShellApplication`](Shell/TShellApplication.md), [`TShellAction`](Shell/TShellAction.md), [`TShellWriter`](Shell/TShellWriter.md) — CLI application support |
-| [Util/](Util/INDEX.md) | Logging, behaviors, cron ([`TDbCronManager`](Util/Cron/TDbCronManager.md)), mutexes ([`TMutex`](Util/Mutex/TMutex.md)), RPC clients, helpers, [`TVarDumper`](Util/TVarDumper.md), [`TCallChain`](Util/TCallChain.md), [`TDbModule`](Util/TDbModule.md), traits ([`TConstantReflectionTrait`](Util/Traits/TConstantReflectionTrait.md), [`TInitializedTrait`](Util/Traits/TInitializedTrait.md)) |
+| [Util/](Util/INDEX.md) | Logging, behaviors, cron ([`TDbCronManager`](Util/Cron/TDbCronManager.md)), mutexes ([`TMutex`](Util/Mutex/TMutex.md)), helpers, [`TVarDumper`](Util/TVarDumper.md), [`TCallChain`](Util/TCallChain.md), [`TDbModule`](Util/TDbModule.md), traits ([`TConstantReflectionTrait`](Util/Traits/TConstantReflectionTrait.md), [`TInitializedTrait`](Util/Traits/TInitializedTrait.md)) |
 | [Web/](Web/INDEX.md) | HTTP layer, URL routing, asset management ([`TAssetManager`](Web/TAssetManager.md) with symlink/timestamp support), UI controls, services, templates, javascript, active controls, jui, skins, themes; new semantic HTML5 controls (`TArticle`, `TAside`, `TFooter`, `THeader`, `TMain`, `TMark`, `TNav`, `TOutput`, `TSearch`, `TSection`; term controls `TAbbr`, `TDfn`, `TVar` that mark their terms through the render filter), [`TModuleView`](Web/UI/TModuleView.md), [`TWebColor`](Web/UI/TWebColor.md), render-filter pipeline ([`IFilterRenderable`](Web/UI/IFilterRenderable.md), [`TRenderFilterParameter`](Web/UI/TRenderFilterParameter.md)) |
 | [Xml/](Xml/INDEX.md) | [`TXmlDocument`](Xml/TXmlDocument.md), [`TXmlElement`](Xml/TXmlElement.md) — DOM-compatible XML with XPath, ArrayAccess |
 
@@ -42,7 +42,7 @@ This is the root source directory of the **Prado** PHP framework (PSR-4 namespac
 
 - **[`TModule.php`](TModule.md)** — Base for pluggable application modules registered in configuration.
 
-- **[`TService.php`](TService.md)** — Base for application services (page, JSON, RPC, SOAP, feed).
+- **[`TService.php`](TService.md)** — Base for application services (page, JSON, SOAP, feed).
 
 - **[`TEventHandler.php`](TEventHandler.md)** — Invokable wrapper for event handlers; supports hierarchical invokable data.
 
