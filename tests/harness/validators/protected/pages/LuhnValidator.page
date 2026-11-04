@@ -1,0 +1,31 @@
+<com:TContent ID="Content">
+<h1>Prado LuhnValidator Tests</h1>
+<div>
+	<com:TLabel ForControl="text1" Text="IMEI" />
+	<com:TTextBox ID="text1" Attributes.inputmode="numeric" />
+	<com:TLuhnValidator
+		ID="validator1"
+		ControlToValidate="text1"
+		ErrorMessage="Check the number; a digit may be mistyped"
+		ControlCssClass="required" />
+
+	<com:TLabel ForControl="text2" Text="Card number" />
+	<com:TTextBox ID="text2" Attributes.inputmode="numeric" Attributes.autocomplete="cc-number" />
+	<com:TLuhnValidator
+		ID="validator2"
+		ControlToValidate="text2"
+		ErrorMessage="Check the card number"
+		AllowSeparators="true" />
+
+	<com:TLabel ForControl="text3" Text="Server checked number" />
+	<com:TTextBox ID="text3" />
+	<com:TLuhnValidator
+		ID="validator3"
+		ControlToValidate="text3"
+		ErrorMessage="Server: invalid number"
+		EnableClientScript="false" />
+
+	<com:TButton ID="submit1" Text="Test" OnClick="submitted" />
+	<com:TLabel ID="status" />
+</div>
+</com:TContent>

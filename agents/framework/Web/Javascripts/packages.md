@@ -25,7 +25,7 @@ This file defines the JavaScript package registry for PRADO. It declares all JS 
 
 | Package | Files |
 |---------|-------|
-| `prado` | `prado/prado.js`, `prado/controls/controls.js` |
+| `prado` | `prado/prado.js`, `prado/controls/controls.js`, `prado/controls/browser.js` |
 | `logger` | `prado/logger/logger.js` |
 | `validator` | `prado/validator/validation3.js` |
 | `ajax` | `prado/activecontrols/ajax3.js`, `prado/activecontrols/activecontrols3.js` |

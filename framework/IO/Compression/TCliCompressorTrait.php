@@ -95,7 +95,8 @@ trait TCliCompressorTrait
 	 * input and returning its standard output.  The three standard streams are staged through
 	 * temporary files rather than pipes, so a large transfer never blocks on a full pipe buffer
 	 * and the run does not depend on {@see https://www.php.net/stream_select stream_select},
-	 * which is unreliable for pipes on Windows.
+	 * which is unreliable for pipes on Windows.  Every staging file is removed when the run
+	 * ends, including the ones already created when a later one cannot be.
 	 * @param string[] $args The argument vector after the command name.
 	 * @param string $input The bytes to feed to the command.
 	 * @throws TIOException When the command is missing, cannot start, or exits non-zero.
@@ -107,10 +108,11 @@ trait TCliCompressorTrait
 		if ($command === null) {
 			throw new TIOException('clicompressor_command_missing', static::NAME, implode("', '", static::commands()));
 		}
-		$stdin = self::cliTempFile();
-		$stdout = self::cliTempFile();
-		$stderr = self::cliTempFile();
+		$staged = [];
 		try {
+			$staged[] = $stdin = self::cliTempFile();
+			$staged[] = $stdout = self::cliTempFile();
+			$staged[] = $stderr = self::cliTempFile();
 			file_put_contents($stdin, $input);
 			$descriptors = [0 => ['file', $stdin, 'r'], 1 => ['file', $stdout, 'w'], 2 => ['file', $stderr, 'w']];
 			$process = @proc_open([$command, ...$args], $descriptors, $pipes);
@@ -123,9 +125,9 @@ trait TCliCompressorTrait
 			}
 			return (string) file_get_contents($stdout);
 		} finally {
-			@unlink($stdin);
-			@unlink($stdout);
-			@unlink($stderr);
+			foreach ($staged as $path) {
+				@unlink($path);
+			}
 		}
 	}
 
@@ -136,11 +138,22 @@ trait TCliCompressorTrait
 	 */
 	private static function cliTempFile(): string
 	{
-		$path = tempnam(sys_get_temp_dir(), 'prado_cli_');
+		$path = static::cliStageFile(sys_get_temp_dir());
 		if ($path === false) {
 			throw new TIOException('clicompressor_process_failed', static::NAME, 'tempnam');
 		}
 		return $path;
+	}
+
+	/**
+	 * Creates one staging file in the given directory.  A using class overrides it to stage
+	 * elsewhere or to restrict where the files are created.
+	 * @param string $directory The staging directory.
+	 * @return false|string The created file path, or false on failure.
+	 */
+	protected static function cliStageFile(string $directory): false|string
+	{
+		return @tempnam($directory, 'prado_cli_');
 	}
 
 	/**

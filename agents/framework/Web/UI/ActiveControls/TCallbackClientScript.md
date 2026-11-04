@@ -32,6 +32,17 @@ Server-side API for client-side DOM updates during callback responses. Provides 
 - `fadeIn($element)` / `fadeOut($element)` / `fadeTo($element, $value, $duration)` - Fade effects
 - `slideDown($element)` / `slideUp($element)` - Slide effects
 
+## Browser Methods (4.4.0)
+
+These reach outside the page through `Prado.Browser` and `Prado.Notification` in `controls/browser.js` (the `prado` package, so always loaded). Each does nothing in a browser without the API.
+
+- `notify($title, $options = [], $clickTarget = null, $clickParameter = null)` - `Prado.Notification.show`: a system notification. `$options` are the Notification constructor options (`body`, `icon`, `tag`, `lang`, `dir`, `badge`, `image`, `silent`, `requireInteraction`, `renotify`, `data`) plus `focus` (click focuses the window, default true) and `closeAfter` (ms). `$clickTarget` (a control or unique ID) becomes `EventTarget` and `$clickParameter` becomes `CallbackParameter`: a click runs `Prado.Callback(EventTarget, CallbackParameter)`, so the control's `raiseCallbackEvent()` gets the parameter. The click also dispatches `prado:notificationclick` on the document.
+- `setAppBadge($count = null)` / `clearAppBadge()` - `Prado.Browser.setAppBadge` / `clearAppBadge` (Badging API; installed web apps only). Null shows a flag, 0 clears, negative throws `InvalidArgumentException`.
+- `setDocumentTitle($title)` - `Prado.Browser.setTitle`
+- `vibrate($pattern)` - `Prado.Browser.vibrate`; an int or an int array; 0 cancels.
+
+Permission: the browser grants `Notification.requestPermission()` only from a user interaction, and a callback response arrives after one at best within the activation window. A page asks from the client, such as a button's `OnClientClick="Prado.Notification.requestPermission()"`, and reads the state with `Prado.Notification.getPermission()` or `Prado.Browser.queryPermission('notifications')` (`granted`, `denied`, `prompt`, `unsupported`). `notify()` with permission `default` asks first; with `denied` it shows nothing. A notification shows while the tab is open, in the foreground or background; a closed tab needs Web Push, which is outside the framework.
+
 ## HTML and Text
 
 The content methods (`update()`, `replaceContent()`, `appendContent()`, `prependContent()`, `insertContentAfter()`, `insertContentBefore()`) insert HTML. `Prado.Element.replace()` and jQuery `.html()` run inline scripts in it, so content from user input is script execution on the client. Rules:

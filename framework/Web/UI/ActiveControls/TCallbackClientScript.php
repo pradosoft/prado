@@ -74,6 +74,13 @@ use Prado\Web\UI\WebControls\TSuggestionList;
  * ```php
  * $this->getPage()->getCallbackClient()->setViewTransition(true);
  * ```
+ * *
+ * The browser methods reach outside the page: {@see notify()} shows a system
+ * notification, {@see setAppBadge()} and {@see clearAppBadge()} set the badge of an
+ * installed web app, {@see setDocumentTitle()} sets the document title, and
+ * {@see vibrate()} vibrates the device. Each does nothing in a browser without the API.
+ * A notification needs permission, which the page asks for from a user interaction
+ * with `Prado.Notification.requestPermission()`.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
@@ -150,6 +157,87 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 			}
 		}
 		$this->_actions->add([$function => $params]);
+	}
+
+	/**
+	 * Shows a system notification through the Notification API (`Prado.Notification.show`).
+	 * The client shows it with permission granted; with permission not asked, it asks, which
+	 * the browser grants only from a recent user interaction; with permission denied or
+	 * without the API, nothing is shown. A click on the notification focuses the window and
+	 * raises the callback of `$clickTarget` with `$clickParameter`.
+	 *
+	 * `$options` are those of the Notification constructor: `body`, `icon`, `tag`, `lang`,
+	 * `dir`, `badge`, `image`, `silent`, `requireInteraction`, `renotify`, and `data`, plus
+	 * `focus` (whether a click focuses the window, default true) and `closeAfter`
+	 * (milliseconds until the notification closes).
+	 * @param string $title the notification title
+	 * @param array $options the notification options
+	 * @param null|string|TControl $clickTarget the callback control a click raises, or its unique ID
+	 * @param mixed $clickParameter the parameter of that callback
+	 * @since 4.4.0
+	 */
+	public function notify($title, array $options = [], $clickTarget = null, $clickParameter = null): void
+	{
+		if ($clickTarget !== null) {
+			$options['EventTarget'] = $clickTarget instanceof TControl ? $clickTarget->getUniqueID() : TPropertyValue::ensureString($clickTarget);
+			if ($clickParameter !== null) {
+				$options['CallbackParameter'] = $clickParameter;
+			}
+		}
+		$this->callClientFunction('Prado.Notification.show', [TPropertyValue::ensureString($title), $options]);
+	}
+
+	/**
+	 * Sets the badge on the icon of the installed web app through the Badging API
+	 * (`Prado.Browser.setAppBadge`). Null shows a flag without a number, and 0 clears the badge.
+	 * @param ?int $count the number to show, or null for a flag
+	 * @throws \InvalidArgumentException when the count is negative
+	 * @since 4.4.0
+	 */
+	public function setAppBadge($count = null): void
+	{
+		if ($count !== null) {
+			$count = TPropertyValue::ensureInteger($count);
+			if ($count < 0) {
+				throw new \InvalidArgumentException('The app badge count must be 0 or more.');
+			}
+		}
+		$this->callClientFunction('Prado.Browser.setAppBadge', [$count]);
+	}
+
+	/**
+	 * Clears the badge on the icon of the installed web app (`Prado.Browser.clearAppBadge`).
+	 * @since 4.4.0
+	 */
+	public function clearAppBadge(): void
+	{
+		$this->callClientFunction('Prado.Browser.clearAppBadge', []);
+	}
+
+	/**
+	 * Sets the document title (`Prado.Browser.setTitle`), which the browser shows on
+	 * the tab and the window.
+	 * @param string $title the new title
+	 * @since 4.4.0
+	 */
+	public function setDocumentTitle($title): void
+	{
+		$this->callClientFunction('Prado.Browser.setTitle', [TPropertyValue::ensureString($title)]);
+	}
+
+	/**
+	 * Vibrates the device through the Vibration API (`Prado.Browser.vibrate`). A pattern
+	 * alternates vibration and pause lengths in milliseconds; 0 or an empty pattern cancels
+	 * a vibration in progress. The browser ignores the call without a recent user interaction.
+	 * @param int|int[] $pattern milliseconds, or a pattern of them
+	 * @since 4.4.0
+	 */
+	public function vibrate($pattern): void
+	{
+		$pattern = is_array($pattern)
+			? array_values(array_map(TPropertyValue::ensureInteger(...), $pattern))
+			: TPropertyValue::ensureInteger($pattern);
+		$this->callClientFunction('Prado.Browser.vibrate', [$pattern]);
 	}
 
 	/**

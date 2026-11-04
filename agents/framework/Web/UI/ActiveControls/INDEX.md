@@ -83,7 +83,7 @@ AJAX-enabled controls for the Prado framework. ActiveControls trigger server-sid
 | `TInPlaceControlTrait` | (trait) | Shared in-place surface: `AutoHideEditor`, `DisplayEditor`, `EditTriggerControlID`, `EmptyDisplayText`, label ID |
 | `TInPlaceListControlTrait` | (trait) | Shared select-based in-place surface for the drop down list and list box (label sync, rendering, callback options) |
 | `TActiveCustomValidator` | TCustomValidator | Server-side validation via callback |
-| `TTimeTriggeredCallback` | (no UI) | Timer-based callback; `Interval`, `StartTimerOnLoad` |
+| `TTimeTriggeredCallback` | (no UI) | Timer-based callback; `Interval`, `StartTimerOnLoad`, `PauseWhenHidden` (pauses while hidden or offline, 4.4.0) |
 | `TValueTriggeredCallback` | (no UI) | Polls a JS expression; fires callback when value changes |
 | `TEventTriggeredCallback` | (no UI) | Fires callback on arbitrary DOM event |
 
@@ -101,7 +101,7 @@ AJAX-enabled controls for the Prado framework. ActiveControls trigger server-sid
 
 - Callbacks run the **full page lifecycle** (init, load, etc.) — ensure event handlers are idempotent.
 - `TActivePageAdapter` suppresses normal HTML rendering; only `X-PRADO-*` headers are sent. Do not `echo` from callback handlers.
-- `TTimeTriggeredCallback` keeps firing while the page is open — always implement server-side guards against runaway callbacks.
+- `TTimeTriggeredCallback` keeps firing while the page is open and visible — always implement server-side guards against runaway callbacks. It pauses while the page is hidden (`PauseWhenHidden`, default true) or offline, and sends one callback at once when the page is visible and online again, so a handler cannot count on one callback per interval.
 - `TActiveFileUpload` uses a hidden iframe (not XHR) for upload; progress tracking is limited.
 - A view transition runs the actions in a later frame. onComplete and the next callback request wait for them; other code that reads the DOM right after the response sees the old page.
 - A Replace update creates new nodes, so listeners on inner elements, focus, and typing are lost; `UpdateMode="Morph"` keeps them. Under Morph, data-bound rows pair by position, since item IDs follow the index.

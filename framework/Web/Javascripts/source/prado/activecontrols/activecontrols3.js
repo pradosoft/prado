@@ -205,37 +205,111 @@ Prado.WebUI.TJuiAutoComplete = Prado.Class(Prado.WebUI.TActiveTextBox,
 
 /**
  * Time Triggered Callback class.
+ *
+ * Sends a callback request every Interval seconds while the timer runs.
+ * The timer pauses while the page is hidden (`document.visibilityState`),
+ * unless the PauseWhenHidden option is false, and while the browser is
+ * offline (`navigator.onLine`). When the page is visible and online again
+ * it sends one callback at once if an interval passed since the last one,
+ * then resumes the interval.
  */
 Prado.WebUI.TTimeTriggeredCallback = Prado.Class(Prado.WebUI.Control,
 {
 	onInit(options) {
-		this.options = { Interval : 1, ...(options || {}) };
+		this.options = { Interval : 1, PauseWhenHidden : true, ...(options || {}) };
+		this.active = false;
+		this.lastTick = null;
 		Prado.WebUI.TTimeTriggeredCallback.registerTimer(this);
+		this.observe(document, 'visibilitychange', this.onVisibilityChange.bind(this));
+		this.observe(window, 'online', this.resume.bind(this));
+		this.observe(window, 'offline', this.unschedule.bind(this));
 	},
 
+	/**
+	 * Starts the timer. The interval waits while the timer is paused.
+	 */
 	startTimer() {
-		if(typeof(this.timer) == 'undefined' || this.timer == null)
-			this.timer = this.setInterval(this.onTimerEvent.bind(this),this.options.Interval*1000);
+		this.active = true;
+		this.schedule();
 	},
 
+	/**
+	 * Stops the timer.
+	 */
 	stopTimer() {
-		if(typeof(this.timer) != 'undefined')
-		{
-			this.clearInterval(this.timer);
-			this.timer = null;
-		}
+		this.active = false;
+		this.unschedule();
 	},
 
+	/**
+	 * Restarts the interval of a started timer.
+	 */
 	resetTimer() {
-		if(typeof(this.timer) != 'undefined')
-		{
-			this.clearInterval(this.timer);
-			this.timer = null;
-			this.timer = this.setInterval(this.onTimerEvent.bind(this),this.options.Interval*1000);
-		}
+		this.unschedule();
+		this.schedule();
 	},
 
+	/**
+	 * Returns whether the timer is paused: the page is hidden and PauseWhenHidden
+	 * is true, or the browser is offline.
+	 * @returns {boolean} whether the timer is paused
+	 */
+	isPaused() {
+		return (this.options.PauseWhenHidden && document.visibilityState === 'hidden')
+			|| navigator.onLine === false;
+	},
+
+	/**
+	 * Sets the interval when the timer is started, not paused, and has no interval.
+	 */
+	schedule() {
+		if (!this.active || this.isPaused() || (this.timer !== undefined && this.timer !== null))
+			return;
+		this.timer = this.setInterval(this.onTimerEvent.bind(this), this.options.Interval * 1000);
+	},
+
+	/**
+	 * Clears the interval; the timer stays started.
+	 */
+	unschedule() {
+		if (this.timer !== undefined && this.timer !== null)
+			this.clearInterval(this.timer);
+		if (this.timer !== undefined)
+			this.timer = null;
+	},
+
+	/**
+	 * Resumes a started timer after a pause: sends a callback at once when an
+	 * interval passed since the last one, and sets the interval again.
+	 */
+	resume() {
+		if (!this.active || this.isPaused() || (this.timer !== undefined && this.timer !== null))
+			return;
+		const due = this.lastTick === null || Date.now() - this.lastTick >= this.options.Interval * 1000;
+		this.schedule();
+		if (due)
+			this.onTimerEvent();
+	},
+
+	/**
+	 * Pauses the timer when the page is hidden and resumes it when visible.
+	 */
+	onVisibilityChange() {
+		if (!this.options.PauseWhenHidden)
+			return;
+		if (document.visibilityState === 'hidden')
+			this.unschedule();
+		else
+			this.resume();
+	},
+
+	/**
+	 * Sends the callback request, unless the timer is paused.
+	 */
 	onTimerEvent() {
+		if (this.isPaused())
+			return;
+		this.lastTick = Date.now();
 		const request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
 		request.dispatch();
 	},

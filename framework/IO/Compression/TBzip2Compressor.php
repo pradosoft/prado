@@ -22,6 +22,16 @@ namespace Prado\IO\Compression;
  * The compression level is a bzip2 block size of 1..9 (each step is 100 KB of working
  * memory); -1 selects the library default.
  *
+ * Decompression follows what `bzdecompress` can report:
+ * - Corrupt data or a wrong signature → bzdecompress returns an error number, and the codec throws.
+ * - A stream that decodes to nothing but is not the empty stream (empty input, or input cut
+ *   off before its first block ends) → the codec throws.
+ * - A stream cut off after a block ends → bzdecompress returns the blocks decoded so far.
+ *   The extension does not report the missing end-of-stream marker, so the codec cannot
+ *   detect this truncation, where the `bzip2` command rejects it.
+ * - Concatenated streams, as written by parallel bzip2 tools → only the first stream decodes,
+ *   and the data after it is ignored.
+ *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
  */
@@ -36,6 +46,12 @@ class TBzip2Compressor extends TBuiltinCompressor
 	/** The bzip2 block size used when no explicit level is given. */
 	public const DEFAULT_BLOCK_SIZE = 4;
 
+	/** The libbzip2 error number for data that ends before its stream does (`BZ_UNEXPECTED_EOF`). */
+	public const BZ_UNEXPECTED_EOF = -7;
+
+	/** The pattern of the bzip2 stream that holds no data: a header, the end-of-stream marker, and a zero CRC. */
+	private const EMPTY_STREAM_PATTERN = '/^BZh[1-9]\x17\x72\x45\x38\x50\x90\x00{4}/';
+
 	/**
 	 * Compresses with bzcompress.
 	 * @param string $data The raw bytes.
@@ -49,12 +65,17 @@ class TBzip2Compressor extends TBuiltinCompressor
 	}
 
 	/**
-	 * Decompresses with bzdecompress.
+	 * Decompresses with bzdecompress.  An empty result from input other than the empty
+	 * stream is reported as {@see BZ_UNEXPECTED_EOF}.
 	 * @param string $data The bzip2 bytes.
 	 * @return int|string The raw bytes, or a bzip2 error number on failure.
 	 */
 	protected static function decode(string $data): string|int
 	{
-		return bzdecompress($data);
+		$result = bzdecompress($data);
+		if ($result === '' && !preg_match(self::EMPTY_STREAM_PATTERN, $data)) {
+			return self::BZ_UNEXPECTED_EOF;
+		}
+		return $result;
 	}
 }

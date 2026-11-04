@@ -1,0 +1,33 @@
+<com:TContent ID="Content">
+<h1>Prado UrlValidator Tests</h1>
+<div>
+	<com:TLabel ForControl="text1" Text="Website" />
+	<com:TTextBox ID="text1" />
+	<com:TUrlValidator
+		ID="validator1"
+		ControlToValidate="text1"
+		ErrorMessage="Enter an http or https URL"
+		ControlCssClass="required" />
+
+	<com:TLabel ForControl="text2" Text="Intranet link" />
+	<com:TTextBox ID="text2" />
+	<com:TUrlValidator
+		ID="validator2"
+		ControlToValidate="text2"
+		ErrorMessage="Enter an http, https, or ftp URL with an ASCII host"
+		ValidSchemes="http,https,ftp"
+		AllowIdn="false"
+		RequireTld="false" />
+
+	<com:TLabel ForControl="text3" Text="Server checked link" />
+	<com:TTextBox ID="text3" />
+	<com:TUrlValidator
+		ID="validator3"
+		ControlToValidate="text3"
+		ErrorMessage="Server: invalid URL"
+		EnableClientScript="false" />
+
+	<com:TButton ID="submit1" Text="Test" OnClick="submitted" />
+	<com:TLabel ID="status" />
+</div>
+</com:TContent>

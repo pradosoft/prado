@@ -51,6 +51,7 @@ TApplicationComponent is the base class for all application-related components i
 - The Performance file is discarded when it is older than `TComposerReflection::getInstalledManifestsTime()`, so a package install, update, or removal refreshes it.
 - A deployment that changes an application class's fx handlers runs `prado-cli cache/flush-all`, which deletes the file.
 - The runtime directory carries the Prado version, so a Prado upgrade starts a new file.
+- The process-wide lists live in `private static ?array $_classFx`, seeded from the first file read. A unit test resets it with `PradoUnit::setStaticProp()`; otherwise a stale test-app runtime file (e.g. `tests/unit/Security/app/runtime/`) that already lists the class suppresses the write.
 
 ## Standards Followed
 - PSR-4 autoloading compatibility

@@ -170,6 +170,70 @@ class TBuiltinCompressorTest extends \PHPUnit\Framework\TestCase
 		self::assertSame('gzip magic check', gzdecode($packed), 'A stock gzdecode reads it.');
 	}
 
+	public function testGzipRejectsTrailingData(): void
+	{
+		$this->skipIfUnavailable(TGzipCompressor::class);
+		$packed = TGzipCompressor::compress('hello');
+		foreach (['JUNK', "\0\0\0\0"] as $trailer) {
+			try {
+				TGzipCompressor::decompress($packed . $trailer);
+				self::fail('Data after the last gzip member is rejected, as gzip -d does.');
+			} catch (TIOException $e) {
+				self::assertSame('builtincompressor_decompress_failed', $e->getErrorCode());
+			}
+		}
+	}
+
+	public function testGzipRejectsATruncatedTrailer(): void
+	{
+		$this->skipIfUnavailable(TGzipCompressor::class);
+		$packed = TGzipCompressor::compress('hello');
+		foreach ([1, 4, 8] as $cut) {
+			try {
+				TGzipCompressor::decompress(substr($packed, 0, -$cut));
+				self::fail("A member missing {$cut} trailer bytes is rejected.");
+			} catch (TIOException $e) {
+				self::assertSame('builtincompressor_decompress_failed', $e->getErrorCode());
+			}
+		}
+	}
+
+	public function testGzipDecodesEveryMember(): void
+	{
+		$this->skipIfUnavailable(TGzipCompressor::class);
+		$packed = TGzipCompressor::compress('hello') . TGzipCompressor::compress('') . TGzipCompressor::compress(' world');
+		self::assertSame('hello world', TGzipCompressor::decompress($packed), 'Concatenated members decode to the concatenated data, as gzip -d does.');
+	}
+
+	public function testBzip2RejectsEmptyInput(): void
+	{
+		$this->skipIfUnavailable(TBzip2Compressor::class);
+		$this->expectException(TIOException::class);
+		TBzip2Compressor::decompress('');
+	}
+
+	public function testBzip2RejectsAStreamTruncatedBeforeItsFirstBlock(): void
+	{
+		$this->skipIfUnavailable(TBzip2Compressor::class);
+		$packed = TBzip2Compressor::compress('hello');
+		foreach ([11, 20, strlen($packed) - 4, strlen($packed) - 1] as $cut) {
+			try {
+				TBzip2Compressor::decompress(substr($packed, 0, -$cut));
+				self::fail("A stream missing {$cut} bytes, which decodes to nothing, is rejected.");
+			} catch (TIOException $e) {
+				self::assertSame('builtincompressor_decompress_failed', $e->getErrorCode());
+			}
+		}
+	}
+
+	public function testBzip2DecodesTheEmptyStream(): void
+	{
+		$this->skipIfUnavailable(TBzip2Compressor::class);
+		foreach ([-1, 1, 9] as $level) {
+			self::assertSame('', TBzip2Compressor::decompress(TBzip2Compressor::compress('', $level)), "The empty stream at level {$level} decodes to nothing.");
+		}
+	}
+
 	/**
 	 * @param class-string<TBuiltinCompressor> $codec
 	 */

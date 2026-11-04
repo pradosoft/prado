@@ -18,6 +18,7 @@ $packages = [
 	'prado' => [
 		'prado/prado.js',
 		'prado/controls/controls.js',
+		'prado/controls/browser.js',
 	],
 
 	'logger' => [

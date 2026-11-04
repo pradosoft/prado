@@ -603,7 +603,7 @@ builtincompressor_decompress_failed		= The ''{0}'' compressor failed to decompre
 compression_method_unknown				= The compression method ''{0}'' is unknown or its extension is not available.
 compression_none_available				= No compression method is available in this PHP installation.
 compressionconfig_method_unknown		= TCompressionConfig.Method ''{0}'' is not a known content coding. The known codings are: {1}.
-compression_xz_unsupported				= The xz/LZMA format has no PHP extension; install belisoful/prado-compression for a native or CLI xz codec.
+compression_xz_unsupported				= The core xz/LZMA codec is an inert stub that wraps no PHP xz extension; install belisoful/prado-compression for a working xz codec.
 clicompressor_command_missing			= The ''{0}'' compressor requires one of these system commands on the PATH: ''{1}''.
 clicompressor_process_failed			= The ''{0}'' compressor could not start the ''{1}'' command.
 clicompressor_command_failed			= The ''{0}'' compressor command ''{1}'' exited with code {2}: {3}
@@ -695,6 +695,7 @@ formguard_honeypotname_invalid        = TFormGuard.HoneypotName ''{0}'' must con
 proofofwork_complexity_invalid        = TProofOfWork.Complexity must be an integer between {0} and {1}.
 proofofworkvalidator_control_invalid  = TProofOfWorkValidator.ControlToValidate ''{0}'' must point to a TProofOfWork control.
 unsavedchangesguard_controltowatch_invalid = TUnsavedChangesGuard.ControlToWatch ''{0}'' does not point to a control.
+passwordstrengthmeter_controltomeasure_invalid = TPasswordStrengthMeter ''{0}'': ControlToMeasure is empty or does not point to a control.
 
 cachepagestatepersister_cachemoduleid_invalid = TCachePageStatePersister.CacheModuleID ''{0}'' does not point to a valid cache module.
 cachepagestatepersister_cache_required  = TCachePageStatePersister requires a cache module to be loaded.

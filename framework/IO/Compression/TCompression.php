@@ -34,8 +34,9 @@ use Prado\Exceptions\TIOException;
  * content negotiation (bzip2, raw DEFLATE) are used through their classes directly.
  *
  * The `xz`/LZMA format stays out of this negotiation: it is not a registered HTTP content
- * coding, and having no PHP extension it is a command-backed {@see TXzCompressor} rather than
- * a native in-process codec.  It is used through that class directly.
+ * coding, and core wraps no PHP xz extension, so {@see TXzCompressor} is an unavailable stub.
+ * The `belisoful/prado-compression` package provides a working xz codec, used through its
+ * class directly.
  *
  * ```php
  * $method = TCompression::negotiate($request->getHeader('Accept-Encoding'));
