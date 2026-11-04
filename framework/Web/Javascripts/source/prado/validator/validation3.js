@@ -2116,9 +2116,9 @@ Prado.WebUI.TPasswordStrengthValidator = Prado.Class(Prado.WebUI.TBaseValidator,
 
 /**
  * TPasswordStrengthMeter shows the estimated strength of the password typed in
- * a control: a row of notches fills from the left and shifts from red to green
- * as the estimated entropy grows toward MaxEntropy, and a text names the
- * strength level. The element is a role="meter" whose aria-valuenow is the
+ * a control: the fill of its bar grows from the left and shifts from red to
+ * green as the estimated entropy grows toward MaxEntropy. Optional texts name
+ * the strength level and show the bits. The element is a role="meter" whose aria-valuenow is the
  * entropy in bits and whose aria-valuetext is the level name.
  *
  * @class Prado.WebUI.TPasswordStrengthMeter
@@ -2135,6 +2135,7 @@ Prado.WebUI.TPasswordStrengthMeter = Prado.Class(Prado.WebUI.Control,
 	 * @... {number} MaxEntropy - Entropy in bits that fills the bar.
 	 * @... {string[]} LevelTexts - Level names from VeryWeak to VeryStrong.
 	 * @... {number[]} LevelEntropy - Entropy in bits at which each level starts.
+	 * @... {string} BitsFormat - Format of the bits text; "{0}" is the rounded bits.
 	 */
 	onInit(options) {
 		this.options = options;
@@ -2142,22 +2143,22 @@ Prado.WebUI.TPasswordStrengthMeter = Prado.Class(Prado.WebUI.Control,
 		if (!this.element || !this.control)
 			return;
 		this.bar = this.element.querySelector('.prado-password-meter-bar');
-		this.notches = this.element.querySelectorAll('.prado-password-meter-notch');
+		this.fill = this.element.querySelector('.prado-password-meter-fill');
 		this.text = this.element.querySelector('.prado-password-meter-text');
+		this.bits = this.element.querySelector('.prado-password-meter-bits');
 		this.observe(this.control, 'input', () => this.update());
 		this.update();
 	},
 
 	/**
-	 * Measures the password and updates the notches, the color, the text, and the meter values.
+	 * Measures the password and updates the fill, the color, the texts, and the meter values.
 	 * @function ?
 	 */
 	update() {
 		const value = this.control.value || '';
 		const bits = Prado.Validation.estimatePasswordEntropy(value);
 		const fraction = Math.min(bits / this.options.MaxEntropy, 1);
-		const lit = value.length > 0 ? Math.max(1, Math.ceil(fraction * this.notches.length)) : 0;
-		this.notches.forEach((notch, i) => notch.classList.toggle('lit', i < lit));
+		this.fill.style.width = `${(fraction * 100).toFixed(2)}%`;
 		this.bar.style.setProperty('--prado-meter-hue', String(Math.round(fraction * 120)));
 		let level = 0;
 		this.options.LevelEntropy.forEach((start, i) => {
@@ -2165,7 +2166,10 @@ Prado.WebUI.TPasswordStrengthMeter = Prado.Class(Prado.WebUI.Control,
 				level = i;
 		});
 		const name = this.options.LevelTexts[level];
-		this.text.textContent = value.length > 0 ? name : '';
+		if (this.text)
+			this.text.textContent = value.length > 0 ? name : '';
+		if (this.bits)
+			this.bits.textContent = value.length > 0 ? this.options.BitsFormat.replace('{0}', String(Math.round(bits))) : '';
 		this.element.setAttribute('aria-valuenow', String(Math.round(Math.min(bits, this.options.MaxEntropy))));
 		this.element.setAttribute('aria-valuetext', name);
 	}

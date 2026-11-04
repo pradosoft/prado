@@ -89,19 +89,27 @@ describe('TPasswordStrengthMeter', () => {
 
 	const levelTexts = ['Very weak', 'Weak', 'Medium', 'Strong', 'Very strong'];
 
-	beforeEach(() => {
+	function build(texts = true, bits = true) {
 		input = document.createElement('input');
 		input.id = 'pmInput';
 		input.type = 'password';
 		meter = document.createElement('div');
 		meter.id = 'pmMeter';
 		meter.setAttribute('role', 'meter');
-		meter.innerHTML = '<span class="prado-password-meter-bar" aria-hidden="true">'
-			+ '<span class="prado-password-meter-notch"></span>'.repeat(20)
-			+ '</span><span class="prado-password-meter-text" aria-hidden="true"></span>';
+		meter.innerHTML = '<span class="prado-password-meter-bar" aria-hidden="true"><span class="prado-password-meter-fill"></span></span>'
+			+ (texts ? '<span class="prado-password-meter-text" aria-hidden="true"></span>' : '')
+			+ (bits ? '<span class="prado-password-meter-bits" aria-hidden="true"></span>' : '');
 		document.body.appendChild(input);
 		document.body.appendChild(meter);
-	});
+		return new WebUI.TPasswordStrengthMeter({
+			ID:               'pmMeter',
+			ControlToMeasure: 'pmInput',
+			MaxEntropy:       120,
+			LevelTexts:       levelTexts,
+			LevelEntropy:     [0, 40, 60, 80, 100],
+			BitsFormat:       '{0} bits',
+		});
+	}
 
 	afterEach(() => {
 		delete global.Prado.Registry.pmMeter;
@@ -109,72 +117,73 @@ describe('TPasswordStrengthMeter', () => {
 		meter.remove();
 	});
 
-	function makeMeter() {
-		return new WebUI.TPasswordStrengthMeter({
-			ID:               'pmMeter',
-			ControlToMeasure: 'pmInput',
-			MaxEntropy:       120,
-			LevelTexts:       levelTexts,
-			LevelEntropy:     [0, 40, 60, 80, 100],
-		});
-	}
-
 	function type(value) {
 		input.value = value;
 		input.dispatchEvent(new Event('input'));
 	}
 
-	const lit = () => meter.querySelectorAll('.prado-password-meter-notch.lit').length;
+	const width = () => parseFloat(meter.querySelector('.prado-password-meter-fill').style.width);
 	const hue = () => meter.querySelector('.prado-password-meter-bar').style.getPropertyValue('--prado-meter-hue');
 	const text = () => meter.querySelector('.prado-password-meter-text').textContent;
+	const bits = () => meter.querySelector('.prado-password-meter-bits').textContent;
 
 	it('starts empty', () => {
-		makeMeter();
-		expect(lit()).toBe(0);
+		build();
+		expect(width()).toBe(0);
 		expect(hue()).toBe('0');
 		expect(text()).toBe('');
+		expect(bits()).toBe('');
 		expect(meter.getAttribute('aria-valuenow')).toBe('0');
 		expect(meter.getAttribute('aria-valuetext')).toBe('Very weak');
 	});
 
-	it('fills notches and shifts the hue as the password grows', () => {
-		makeMeter();
+	it('grows the fill and shifts the hue as the password grows', () => {
+		build();
 		const seen = [];
 		for (const value of ['a', 'password', 'Password1', 'Password1!', 'kX9#mQ2$vL7!pZ', 'correct horse battery staple']) {
 			type(value);
-			seen.push({ lit: lit(), hue: Number(hue()), text: text() });
+			seen.push({ width: width(), hue: Number(hue()), text: text() });
 		}
 		expect(seen.map((s) => s.text)).toEqual(['Very weak', 'Very weak', 'Weak', 'Medium', 'Strong', 'Very strong']);
 		for (let i = 1; i < seen.length; i++) {
-			expect(seen[i].lit).toBeGreaterThan(seen[i - 1].lit);
+			expect(seen[i].width).toBeGreaterThan(seen[i - 1].width);
 			expect(seen[i].hue).toBeGreaterThanOrEqual(seen[i - 1].hue);
 		}
-		// One character lights one notch; 132 bits fills all 20 and turns green.
-		expect(seen[0].lit).toBe(1);
-		expect(seen[5]).toEqual({ lit: 20, hue: 120, text: 'Very strong' });
+		// 132 bits fills the bar and turns it green.
+		expect(seen[5]).toEqual({ width: 100, hue: 120, text: 'Very strong' });
 	});
 
-	it('maps the entropy to notches and hue', () => {
-		makeMeter();
+	it('maps the entropy to the fill, the hue, and the bits text', () => {
+		build();
 		type('Password1!');
-		const bits = Validation.estimatePasswordEntropy('Password1!');
-		expect(lit()).toBe(Math.ceil(bits / 120 * 20));
-		expect(Number(hue())).toBe(Math.round(bits / 120 * 120));
-		expect(meter.getAttribute('aria-valuenow')).toBe(String(Math.round(bits)));
+		const estimate = Validation.estimatePasswordEntropy('Password1!');
+		expect(width()).toBeCloseTo(estimate / 120 * 100, 2);
+		expect(Number(hue())).toBe(Math.round(estimate / 120 * 120));
+		expect(bits()).toBe(`${Math.round(estimate)} bits`);
+		expect(meter.getAttribute('aria-valuenow')).toBe(String(Math.round(estimate)));
 		expect(meter.getAttribute('aria-valuetext')).toBe('Medium');
 	});
 
 	it('caps the meter value at MaxEntropy', () => {
-		makeMeter();
+		build();
 		type('correct horse battery staple');
 		expect(meter.getAttribute('aria-valuenow')).toBe('120');
+		expect(bits()).toBe('132 bits');
+	});
+
+	it('works without the level and bits texts', () => {
+		build(false, false);
+		type('Password1!');
+		expect(width()).toBeGreaterThan(0);
+		expect(meter.getAttribute('aria-valuetext')).toBe('Medium');
 	});
 
 	it('empties again when the field is cleared', () => {
-		makeMeter();
+		build();
 		type('Password1!');
 		type('');
-		expect(lit()).toBe(0);
+		expect(width()).toBe(0);
 		expect(text()).toBe('');
+		expect(bits()).toBe('');
 	});
 });

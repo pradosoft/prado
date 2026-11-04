@@ -50,20 +50,12 @@ class TPasswordStrengthMeterTest extends TestCase
 		$meter = new TPasswordStrengthMeter();
 		$this->assertSame('', $meter->getControlToMeasure());
 		$this->assertSame(120, $meter->getMaxEntropy());
-		$this->assertSame(20, $meter->getNotches());
+		$this->assertTrue($meter->getShowText());
+		$this->assertFalse($meter->getShowBits());
+		$this->assertSame('{0} bits', $meter->getBitsFormat());
 		$this->assertSame(TPasswordStrengthMeter::DEFAULT_LEVEL_TEXTS, $meter->getLevelTexts());
 		$this->assertSame(['Very weak', 'Weak', 'Medium', 'Strong', 'Very strong'], $meter->getLevelTextList());
 		$this->assertSame('default', $meter->getCssUrl());
-	}
-
-	public function testNotchesAreClamped()
-	{
-		$this->meter->setNotches(1);
-		$this->assertSame(2, $this->meter->getNotches());
-		$this->meter->setNotches('500');
-		$this->assertSame(100, $this->meter->getNotches());
-		$this->meter->setNotches(40);
-		$this->assertSame(40, $this->meter->getNotches());
 	}
 
 	public function testMaxEntropyIsAtLeastOne()
@@ -82,9 +74,8 @@ class TPasswordStrengthMeterTest extends TestCase
 		$this->assertSame(['1', '2', '3', '4', '5'], $this->meter->getLevelTextList());
 	}
 
-	public function testRendersMeterWithNotches()
+	public function testRendersMeter()
 	{
-		$this->meter->setNotches(8);
 		$html = $this->render();
 		$this->assertStringStartsWith('<div ', $html);
 		$this->assertStringContainsString('id="meter"', $html);
@@ -95,9 +86,24 @@ class TPasswordStrengthMeterTest extends TestCase
 		$this->assertStringContainsString('aria-valuenow="0"', $html);
 		$this->assertStringContainsString('aria-valuetext="Very weak"', $html);
 		$this->assertStringContainsString('aria-label="Password strength"', $html);
-		$this->assertSame(8, substr_count($html, 'class="prado-password-meter-notch"'));
-		$this->assertStringContainsString('<span class="prado-password-meter-bar" aria-hidden="true">', $html);
+		$this->assertStringContainsString('<span class="prado-password-meter-bar" aria-hidden="true"><span class="prado-password-meter-fill"></span></span>', $html);
 		$this->assertStringContainsString('<span class="prado-password-meter-text" aria-hidden="true"></span>', $html);
+		$this->assertStringNotContainsString('prado-password-meter-bits', $html);
+	}
+
+	public function testTextsToggle()
+	{
+		$this->meter->setShowText('false');
+		$this->meter->setShowBits(true);
+		$html = $this->render();
+		$this->assertStringNotContainsString('prado-password-meter-text', $html);
+		$this->assertStringContainsString('<span class="prado-password-meter-bits" aria-hidden="true"></span>', $html);
+		$this->assertStringContainsString('prado-password-meter-fill', $html);
+
+		$this->meter->setShowBits(false);
+		$html = $this->render();
+		$this->assertStringNotContainsString('prado-password-meter-bits', $html);
+		$this->assertStringContainsString('aria-valuetext="Very weak"', $html);
 	}
 
 	public function testCssClassIsAppended()
@@ -136,11 +142,13 @@ class TPasswordStrengthMeterTest extends TestCase
 	{
 		$this->meter->setMaxEntropy(100);
 		$this->meter->setLevelTexts('a,b,c,d,e');
+		$this->meter->setBitsFormat('{0} Bit');
 		$options = PradoUnit::invoke($this->meter, 'getClientOptions');
 		$this->assertSame('meter', $options['ID']);
 		$this->assertSame('input', $options['ControlToMeasure']);
 		$this->assertSame(100, $options['MaxEntropy']);
 		$this->assertSame(['a', 'b', 'c', 'd', 'e'], $options['LevelTexts']);
 		$this->assertSame(array_values(TPasswordStrengthValidator::STRENGTH_ENTROPY), $options['LevelEntropy']);
+		$this->assertSame('{0} Bit', $options['BitsFormat']);
 	}
 }

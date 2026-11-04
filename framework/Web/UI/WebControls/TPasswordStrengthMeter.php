@@ -18,11 +18,13 @@ use Prado\Web\Javascripts\TJavaScript;
  * TPasswordStrengthMeter class
  *
  * TPasswordStrengthMeter shows the estimated strength of the password typed in
- * the control named by {@see setControlToMeasure ControlToMeasure}. It renders a
- * row of {@see setNotches Notches} that fill from the left as the estimated
- * entropy grows toward {@see setMaxEntropy MaxEntropy}. The color of the filled
- * notches shifts continuously from red at 0 bits to green at MaxEntropy, and
- * the text after the bar names the {@see TPasswordStrength} level.
+ * the control named by {@see setControlToMeasure ControlToMeasure}. Its bar
+ * fills from the left as the estimated entropy grows toward
+ * {@see setMaxEntropy MaxEntropy}, and the color of the fill shifts continuously
+ * from red at 0 bits to green at MaxEntropy. After the bar:
+ * - {@see setShowText ShowText} (default true) → the {@see TPasswordStrength} level name;
+ * - {@see setShowBits ShowBits} (default false) → the estimate in bits, formatted by
+ *   {@see setBitsFormat BitsFormat}.
  *
  * The estimate is {@see TPasswordStrengthValidator::estimateEntropy()}, computed
  * in the browser on each input. The meter informs; pair it with a
@@ -36,9 +38,9 @@ use Prado\Web\Javascripts\TJavaScript;
  *
  * The element has `role="meter"` with `aria-valuenow` in bits and the level
  * name as `aria-valuetext`. Its accessible name defaults to "Password strength";
- * set the "aria-label" attribute to change it. The bar and the text are hidden
- * from assistive technology, which reads the meter values instead. The level
- * name keeps the strength readable without color.
+ * set the "aria-label" attribute to change it. The bar and the texts are hidden
+ * from assistive technology, which reads the meter values instead. The fill
+ * length and the level name keep the strength readable without color.
  *
  * The default style sheet is published from the assets directory; set
  * {@see setCssUrl CssUrl} to replace it, or to an empty string to style the
@@ -105,20 +107,55 @@ class TPasswordStrengthMeter extends TWebControl
 	}
 
 	/**
-	 * @return int the number of notches in the bar. Defaults to 20.
+	 * @return bool whether the level name follows the bar. Defaults to true.
 	 */
-	public function getNotches()
+	public function getShowText()
 	{
-		return $this->getViewState('Notches', 20);
+		return $this->getViewState('ShowText', true);
 	}
 
 	/**
-	 * Sets the number of notches in the bar. More notches show finer steps of strength.
-	 * @param int $value the number of notches, from 2 to 100.
+	 * Sets whether the {@see TPasswordStrength} level name follows the bar.
+	 * @param bool $value whether the level name shows.
 	 */
-	public function setNotches($value)
+	public function setShowText($value)
 	{
-		$this->setViewState('Notches', min(100, max(2, TPropertyValue::ensureInteger($value))), 20);
+		$this->setViewState('ShowText', TPropertyValue::ensureBoolean($value), true);
+	}
+
+	/**
+	 * @return bool whether the estimate in bits follows the bar. Defaults to false.
+	 */
+	public function getShowBits()
+	{
+		return $this->getViewState('ShowBits', false);
+	}
+
+	/**
+	 * Sets whether the estimate in bits, formatted by {@see setBitsFormat BitsFormat}, follows the bar.
+	 * @param bool $value whether the bits show.
+	 */
+	public function setShowBits($value)
+	{
+		$this->setViewState('ShowBits', TPropertyValue::ensureBoolean($value), false);
+	}
+
+	/**
+	 * @return string the format of the bits text; "{0}" is the rounded bits. Defaults to "{0} bits".
+	 */
+	public function getBitsFormat()
+	{
+		return $this->getViewState('BitsFormat', '{0} bits');
+	}
+
+	/**
+	 * Sets the format of the bits text, such as "{0} Bit". "{0}" is replaced
+	 * with the estimate rounded to whole bits.
+	 * @param string $value the format of the bits text.
+	 */
+	public function setBitsFormat($value)
+	{
+		$this->setViewState('BitsFormat', TPropertyValue::ensureString($value), '{0} bits');
 	}
 
 	/**
@@ -233,6 +270,7 @@ class TPasswordStrengthMeter extends TWebControl
 			'MaxEntropy' => $this->getMaxEntropy(),
 			'LevelTexts' => $this->getLevelTextList(),
 			'LevelEntropy' => array_values(TPasswordStrengthValidator::STRENGTH_ENTROPY),
+			'BitsFormat' => $this->getBitsFormat(),
 		];
 	}
 
@@ -257,13 +295,17 @@ class TPasswordStrengthMeter extends TWebControl
 	}
 
 	/**
-	 * Renders the empty notches and the level text.
+	 * Renders the empty bar, then the level text with ShowText and the bits text with ShowBits.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer
 	 */
 	public function renderContents($writer)
 	{
-		$writer->write('<span class="prado-password-meter-bar" aria-hidden="true">');
-		$writer->write(str_repeat('<span class="prado-password-meter-notch"></span>', $this->getNotches()));
-		$writer->write('</span><span class="prado-password-meter-text" aria-hidden="true"></span>');
+		$writer->write('<span class="prado-password-meter-bar" aria-hidden="true"><span class="prado-password-meter-fill"></span></span>');
+		if ($this->getShowText()) {
+			$writer->write('<span class="prado-password-meter-text" aria-hidden="true"></span>');
+		}
+		if ($this->getShowBits()) {
+			$writer->write('<span class="prado-password-meter-bits" aria-hidden="true"></span>');
+		}
 	}
 }

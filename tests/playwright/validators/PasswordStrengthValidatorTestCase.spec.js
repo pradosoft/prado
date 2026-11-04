@@ -51,15 +51,14 @@ function contrast(a, b) {
 }
 
 /**
- * The meter fills notches and shifts from red to green as the password grows,
- * names the level, and keeps a 3:1 contrast against the page.
+ * The meter fill grows and shifts from red to green as the password grows,
+ * names the level, shows the bits, and keeps a 3:1 contrast against the page.
  */
 test('PasswordStrengthValidatorTestCase: strength meter', async ({ page }) => {
 	await open(page);
 	const input = page.locator(`#${base}text1`);
-	const meter = page.getByRole('meter', { name: 'Password strength' });
+	const meter = page.getByRole('meter', { name: 'Password strength' }).first();
 	await expect(meter).toHaveAttribute('aria-valuenow', '0');
-	await expect(page.locator(`#${base}meter1 .prado-password-meter-notch`)).toHaveCount(20);
 
 	// Computed colors may be oklch(); a canvas pixel converts them to sRGB.
 	const read = () => page.evaluate((id) => {
@@ -71,11 +70,13 @@ test('PasswordStrengthValidatorTestCase: strength meter', async ({ page }) => {
 			return a === 0 ? 'rgb(255, 255, 255)' : `rgb(${r}, ${g}, ${b})`;
 		};
 		const el = document.getElementById(id);
-		const lit = el.querySelectorAll('.prado-password-meter-notch.lit');
+		const bar = el.querySelector('.prado-password-meter-bar');
+		const fill = el.querySelector('.prado-password-meter-fill');
 		return {
-			lit: lit.length,
-			color: lit.length ? toRgb(getComputedStyle(lit[0]).backgroundColor) : null,
+			fraction: fill.getBoundingClientRect().width / bar.clientWidth,
+			color: toRgb(getComputedStyle(fill).backgroundColor),
 			text: el.querySelector('.prado-password-meter-text').textContent,
+			bits: el.querySelector('.prado-password-meter-bits').textContent,
 			valuetext: el.getAttribute('aria-valuetext'),
 			page: toRgb(getComputedStyle(document.body).backgroundColor),
 		};
@@ -84,25 +85,40 @@ test('PasswordStrengthValidatorTestCase: strength meter', async ({ page }) => {
 	const steps = [];
 	for (const value of ['pass', 'password', 'Password1', 'Password1!', 'kX9#mQ2$vL7!pZ', 'correct horse battery staple']) {
 		await input.fill(value);
+		// Let the width transition finish.
+		await page.waitForTimeout(250);
 		steps.push(await read());
 	}
 	expect(steps.map((s) => s.text)).toEqual(['Very weak', 'Very weak', 'Weak', 'Medium', 'Strong', 'Very strong']);
+	expect(steps.map((s) => s.bits)).toEqual(['16 bits', '36 bits', '51 bits', '62 bits', '92 bits', '132 bits']);
 	expect(steps.map((s) => s.valuetext)).toEqual(steps.map((s) => s.text));
 	for (let i = 1; i < steps.length; i++) {
-		expect(steps[i].lit).toBeGreaterThan(steps[i - 1].lit);
+		expect(steps[i].fraction).toBeGreaterThan(steps[i - 1].fraction);
 	}
+	expect(steps[5].fraction).toBeGreaterThan(0.95);
 	const rgb = (s) => s.color.match(/\d+/g).map(Number);
 	const [r0, g0] = rgb(steps[0]);
 	const [r5, g5] = rgb(steps[5]);
 	expect(r0).toBeGreaterThan(g0);
 	expect(g5).toBeGreaterThan(r5);
-	expect(steps[5].lit).toBe(20);
 	for (const step of steps) {
 		expect(contrast(step.color, step.page)).toBeGreaterThanOrEqual(3);
 	}
 
 	await input.fill('');
-	await expect(page.locator(`#${base}meter1 .prado-password-meter-notch.lit`)).toHaveCount(0);
+	await expect(page.locator(`#${base}meter1 .prado-password-meter-fill`)).toHaveCSS('width', '0px');
+	await expect(page.locator(`#${base}meter1 .prado-password-meter-bits`)).toHaveText('');
+});
+
+/**
+ * ShowText="false" leaves the bar alone; the meter still reports the level.
+ */
+test('PasswordStrengthValidatorTestCase: meter without texts', async ({ page }) => {
+	await open(page);
+	await expect(page.locator(`#${base}meter2 .prado-password-meter-text`)).toHaveCount(0);
+	await expect(page.locator(`#${base}meter2 .prado-password-meter-bits`)).toHaveCount(0);
+	await page.locator(`#${base}text2`).fill('Password1!');
+	await expect(page.locator(`#${base}meter2`)).toHaveAttribute('aria-valuetext', 'Medium');
 });
 
 /**

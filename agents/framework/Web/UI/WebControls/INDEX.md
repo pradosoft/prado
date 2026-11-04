@@ -114,7 +114,7 @@ All validators extend `TBaseValidator`. Shared properties: `ControlToValidate`, 
 | `TCustomValidator` | Custom server-side (and optional client-side) logic |
 | `TEmailAddressValidator` | Valid email format |
 | [`TPasswordStrengthValidator`](./TPasswordStrengthValidator.md) | Password reaches `MinStrength` ([`TPasswordStrength`](./TPasswordStrength.md)), estimated from its characters; optional Pwned Passwords lookup (`CheckCompromised`, server only) (@since 4.4.0) |
-| [`TPasswordStrengthMeter`](./TPasswordStrengthMeter.md) | Not a validator: a `role="meter"` bar of `Notches` that fill red to green with the estimated entropy of `ControlToMeasure` (@since 4.4.0) |
+| [`TPasswordStrengthMeter`](./TPasswordStrengthMeter.md) | Not a validator: a `role="meter"` bar that fills red to green with the estimated entropy of `ControlToMeasure`; `ShowText`, `ShowBits` (@since 4.4.0) |
 | `TDataTypeValidator` | Value is correct data type (integer, date, etc.) |
 | `TFileValidator` | Files selected in a `TFileUpload`: size, count, extension, MIME type (@since 4.4.0) |
 | `TImageValidator` | Image files selected in a `TFileUpload`: TFileValidator checks plus pixel dimensions and a readable-image check (@since 4.4.0) |
