@@ -854,6 +854,7 @@ return [
 'TListSelectionMode' => 'Prado\Web\UI\WebControls\TListSelectionMode',
 'TLiteral' => 'Prado\Web\UI\WebControls\TLiteral',
 'TLiteralColumn' => 'Prado\Web\UI\WebControls\TLiteralColumn',
+'TLoginName' => 'Prado\Web\UI\WebControls\TLoginName',
 'TLoadingMode' => 'Prado\Web\UI\WebControls\TLoadingMode',
 'TMain' => 'Prado\Web\UI\WebControls\TMain',
 'TMark' => 'Prado\Web\UI\WebControls\TMark',
