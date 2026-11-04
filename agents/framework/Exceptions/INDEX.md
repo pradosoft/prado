@@ -60,7 +60,6 @@ Component exceptions:
 | Class | Namespace | Extends | Belongs because |
 |---|---|---|---|
 | `TInvalidCallbackException` | `Web\UI\ActiveControls` | `TException` | thrown only by callback handling (3.1) |
-| `TRpcClientRequestException` | `Util` | `TApplicationException` | thrown only by `TRpcClient` (3.2) |
 | `TMessageSourceIOException` | `I18N\core` | `TException` | thrown only by the message sources |
 | `TMutexException` | `Util\Mutex` | `TSystemException` | thrown only by the mutexes |
 | `THttpClientException` | `IO\HttpClient` | `TException` | carries a `THttpClientResponse` |
