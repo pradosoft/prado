@@ -16,6 +16,7 @@ use Prado\IModuleDependency;
 use Prado\Prado;
 use Prado\TApplicationMode;
 use Prado\TPropertyValue;
+use Prado\Util\Clock\TMonotonicClockAwareTrait;
 
 /**
  * TMemoryCache class.
@@ -102,8 +103,10 @@ use Prado\TPropertyValue;
  * {@see TCache} base class. After every {@see set()} call the total is checked, and
  * the least recently accessed entries are evicted one at a time until the store fits
  * within the limit, following the algorithm used by Apple Foundation's `NSCache`.
- * A value of `0` (the default) means no size limit is enforced. When a single
- * serialized entry exceeds the configured limit, {@see set()} throws
+ * The access order is read from the {@see getMonotonicClock() monotonic clock}, so a
+ * wall-clock change does not reorder it.  A value of `0` (the default) means no size
+ * limit is enforced. When a single serialized entry exceeds the configured limit,
+ * {@see set()} throws
  * {@see \Prado\Exceptions\TInvalidDataValueException} rather than writing the
  * entry and evicting everything else.
  *
@@ -172,6 +175,7 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 {
 	use TCacheSizeTrait;
 	use TCacheFileTrait;
+	use TMonotonicClockAwareTrait;
 
 	/** Merge policy: backing fills in only the keys absent from memory. */
 	public const MERGE = 'Merge';
@@ -262,9 +266,9 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 	private array $_entrySizes = [];
 
 	/**
-	 * @var array<string, float> Per-key last-access timestamp from `$this->getClock()->microtime()`,
-	 *   used to determine eviction order in {@see evictToFitMaximumSize()}.
-	 *   Entries loaded without an explicit access record are assigned `0.0` (oldest
+	 * @var array<string, int> Per-key last-access reading of the {@see getMonotonicClock() monotonic clock},
+	 *   in nanoseconds, used to determine eviction order in {@see evictToFitMaximumSize()}.
+	 *   Entries loaded without an explicit access record are assigned `0` (oldest
 	 *   possible) by {@see computeCurrentSize()} so they are evicted first.
 	 *   Only populated when {@see getMaximumSize MaximumSize} is greater than `0`.
 	 */
@@ -686,7 +690,7 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 			return false;
 		}
 		if ($this->getMaximumSizeDirect() > 0) {
-			$this->_accessTimes[$key] = $this->getClock()->microtime();
+			$this->_accessTimes[$key] = $this->getMonotonicClock()->nanoseconds();
 		}
 		return $entry[static::STORE_DATA];
 	}
@@ -723,7 +727,7 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 		$this->setChangedDirect(true);
 
 		if ($this->getMaximumSizeDirect() > 0) {
-			$this->_accessTimes[$key] = $this->getClock()->microtime();
+			$this->_accessTimes[$key] = $this->getMonotonicClock()->nanoseconds();
 			$current = $this->getCurrentSizeDirect();
 			if ($current >= 0) {
 				$this->setCurrentSizeDirect($current - $oldSize + $newSize);
@@ -830,7 +834,7 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 			$this->_entrySizes[$key] = $bytes;
 			if (!array_key_exists($key, $this->_accessTimes)) {
 				// Entries with no recorded access are treated as oldest for LRU.
-				$this->_accessTimes[$key] = 0.0;
+				$this->_accessTimes[$key] = 0;
 			}
 			$size += $bytes;
 		}
@@ -1196,8 +1200,8 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 	/**
 	 * Excludes transient and default-valued fields from serialization so that a
 	 * serialized TMemoryCache does not carry process-scoped state across process
-	 * boundaries. The in-memory store, dirty flag, LRU access times, per-key size
-	 * bookkeeping, and the size-cache state are always excluded — they are all
+	 * boundaries. The in-memory store, dirty flag, LRU access times and their monotonic
+	 * clock, per-key size bookkeeping, and the size-cache state are always excluded — they are all
 	 * rebuilt during {@see init()} or on the first {@see enforceMaximumSize()} call.
 	 *
 	 * @param array $exprops excluded-properties list, passed by reference
@@ -1209,6 +1213,7 @@ class TMemoryCache extends TSerializingCache implements IModuleDependency, ICach
 		$exprops[] = "\0" . __CLASS__ . "\0_changed";
 		$exprops[] = "\0" . __CLASS__ . "\0_entrySizes";
 		$exprops[] = "\0" . __CLASS__ . "\0_accessTimes";
+		$exprops[] = "\0" . __CLASS__ . "\0_monotonicClock";
 		// TCacheSizeTrait fields — private props scoped to this class.
 		$exprops[] = "\0" . __CLASS__ . "\0_currentSize";
 		$exprops[] = "\0" . __CLASS__ . "\0_sizeFingerprint";

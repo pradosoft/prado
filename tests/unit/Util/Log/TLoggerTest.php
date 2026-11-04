@@ -2,6 +2,7 @@
 
 namespace Prado\Test\Unit\Util\Log;
 
+use Prado\Test\Unit\Harness\Util\Clock\TTestMonotonicClock;
 use Prado\Util\Clock\TMockClock;
 use Prado\Util\Log\TLogger;
 
@@ -265,7 +266,47 @@ class TLoggerTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals(2, $logger->getLogCount(0));
 		$this->assertEquals(2, $logger->getLogCount(true));
 	}
-	
+
+	/**
+	 * A wall-clock step between PROFILE_BEGIN and PROFILE_END does not change the profiled duration.
+	 * @dataProvider wallClockStepProvider
+	 */
+	public function testLog_ProfileEndDurationIsMonotonic(float $step): void
+	{
+		$logger = new TTestLogger();
+		$wall = new TMockClock();
+		$wall->setMicrotime(1_700_000_000.0);
+		$logger->setClock($wall);
+		$elapsed = new TTestMonotonicClock(42_000_000_000);
+		$logger->setMonotonicClock($elapsed);
+
+		$this->assertNull($logger->log('work', TLogger::PROFILE_BEGIN));
+		$wall->setMicrotime(1_700_000_000.0 + $step + 0.25);
+		$elapsed->advance(0.25);
+
+		$this->assertSame(0.25, $logger->log('work', TLogger::PROFILE_END), 'The duration is elapsed time on the monotonic clock.');
+		$logs = $logger->getLogs(TLogger::PROFILE_END_SELECT);
+		$this->assertSame(1_700_000_000.0 + $step + 0.25, $logs[0][TLogger::LOG_TIME], 'The record time stays the wall-clock time.');
+	}
+
+	public static function wallClockStepProvider(): array
+	{
+		return ['back an hour' => [-3600.0], 'forward an hour' => [3600.0], 'no step' => [0.0]];
+	}
+
+	public function testLog_ProfileEndOfMergedBeginUsesRecordTimes(): void
+	{
+		$logger = new TTestLogger();
+		$logger->setMonotonicClock(new TTestMonotonicClock(1_000_000_000));
+		$t = 1_700_000_000.0;
+		$logger->mergeLogs([['work', TLogger::PROFILE_BEGIN, 'Category', $t, 0, null, null, getmypid()]]);
+		$wall = new TMockClock();
+		$wall->setMicrotime($t + 2.0);
+		$logger->setClock($wall);
+
+		$this->assertSame(2.0, $logger->log('work', TLogger::PROFILE_END), 'A merged PROFILE_BEGIN has no monotonic reading.');
+	}
+
 	public function testLog_Flush()
 	{
 		$logger = new TTestLogger();

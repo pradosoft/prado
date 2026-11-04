@@ -6,6 +6,7 @@
 ## Class Info
 **Location:** `framework/Util/Log/TLogger.php`
 **Namespace:** `Prado\Util\Log`
+**Uses:** `TApplicationClockAwareTrait`, [`TMonotonicClockAwareTrait`](../Clock/TMonotonicClockAwareTrait.md)
 
 ## Overview
 Two-part logging system: `TLogger` accumulates log entries in memory; `[TLogRouter](TLogRouter.md)` module routes them to one or more output targets at flush time (end of request, or on `flush()`).
@@ -96,5 +97,5 @@ Each route accepts `Levels` (pipe-separated or bitmask) and `Categories` (comma-
 - **`[Prado](../../Prado.md)::log()` is the preferred call** — it avoids a `getLogger()` call when no logger is registered.
 - **Categories enable filtering** — use consistent dot-separated namespaces matching your module hierarchy.
 - **Flush on route** — routes process logs in `flush()`, called automatically by the application at end-of-request (`onEndRequest`). Manual flush via `$logger->flush()` if needed mid-request.
-- **Profiling** — `PROFILE_BEGIN`/`PROFILE_END` pairs are matched by category to compute elapsed time. Displayed in `TBrowserLogRoute` with timing.
+- **Profiling** — `PROFILE_BEGIN`/`PROFILE_END` pairs are matched by category to compute elapsed time. Displayed in `TBrowserLogRoute` with timing. `log()` of a `PROFILE_END` returns the seconds since its `PROFILE_BEGIN` on `getMonotonicClock()`, so a wall-clock step does not change it; a pair whose `PROFILE_BEGIN` came through `mergeLogs()` returns the difference of the record times. Record times (`LOG_TIME`) stay wall-clock `getClock()->microtime()` timestamps.
 - **Auto-flush threshold** — `TLogger` auto-flushes when log count exceeds `AutoFlush` (default 10000) entries to prevent memory overflow.
