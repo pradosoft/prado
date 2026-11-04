@@ -982,6 +982,7 @@ return [
 'TUnicodeValidator' => 'Prado\Web\UI\WebControls\TUnicodeValidator',
 'TUnsavedChangesGuard' => 'Prado\Web\UI\WebControls\TUnsavedChangesGuard',
 'TUrlValidator' => 'Prado\Web\UI\WebControls\TUrlValidator',
+'TUuidValidator' => 'Prado\Web\UI\WebControls\TUuidValidator',
 'TValidationCompareOperator' => 'Prado\Web\UI\WebControls\TValidationCompareOperator',
 'TValidationDataType' => 'Prado\Web\UI\WebControls\TValidationDataType',
 'TValidationSummary' => 'Prado\Web\UI\WebControls\TValidationSummary',
