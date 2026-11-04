@@ -1914,6 +1914,121 @@ Prado.WebUI.TRegularExpressionValidator = Prado.Class(Prado.WebUI.TBaseValidator
  */
 Prado.WebUI.TEmailAddressValidator = Prado.WebUI.TRegularExpressionValidator;
 
+/**
+ * TUrlValidator validates whether the value of an associated input component
+ * is an absolute URL with an allowed scheme and a valid host. The checks
+ * match the server side TUrlValidator.
+ *
+ * @class Prado.WebUI.TUrlValidator
+ * @extends Prado.WebUI.TBaseValidator
+ */
+Prado.WebUI.TUrlValidator = Prado.Class(Prado.WebUI.TBaseValidator,
+{
+	/**
+	 * Additional constructor options.
+	 * @constructor initialize
+	 * @param {object} options - Additional constructor options:
+	 * @... {string[]} ValidSchemes - Lower case allowed schemes; empty allows every scheme.
+	 * @... {boolean} AllowIdn - Whether the host may be an internationalized domain name.
+	 * @... {boolean} RequireTld - Whether a domain name host requires a top-level label.
+	 */
+
+	/**
+	 * Evaluate validation state
+	 * @function {boolean} ?
+	 * @return True if the value is a valid URL or the value is empty.
+	 */
+	evaluateIsValid() {
+		const value = this.getRawValidationValue();
+		if (value.length <= 0)
+			return true;
+		return this.isValidUrl(value);
+	},
+
+	/**
+	 * Checks a URL against the scheme, host, and port restrictions.
+	 * @function {boolean} ?
+	 * @param {string} value - The URL.
+	 * @return True if the URL is valid.
+	 */
+	isValidUrl(value) {
+		// The control characters are matched on purpose: a URL must not contain them.
+		// eslint-disable-next-line no-control-regex
+		const m = /^([a-z][a-z0-9+.-]*):\/\/(?:[^\x00-\x20\x7f/?#@[\]]+@)?(\[[0-9a-f:.]+\]|[^\x00-\x20\x7f/?#@:[\]%]+)(?::([0-9]{1,5}))?(?:[/?#][^\x00-\x20\x7f]*)?$/iu.exec(value);
+		if (m == null)
+			return false;
+		const schemes = this.options.ValidSchemes || [];
+		if (schemes.length > 0 && schemes.indexOf(m[1].toLowerCase()) < 0)
+			return false;
+		if (m[3] !== undefined && parseInt(m[3], 10) > 65535)
+			return false;
+		return this.isValidHost(m[2]);
+	},
+
+	/**
+	 * Checks the host of a URL: a bracketed IPv6 address, an IPv4 address, or a domain name.
+	 * An internationalized domain name is converted to ASCII by the browser URL parser.
+	 * @function {boolean} ?
+	 * @param {string} host - The host.
+	 * @return True if the host is valid.
+	 */
+	isValidHost(host) {
+		if (host.charAt(0) == '[')
+			return this.isIPv6(host.slice(1, -1));
+		if (/^[0-9.]+$/.test(host))
+			return this.isIPv4(host);
+		if (/[^ -~]/.test(host)) {
+			if (!this.options.AllowIdn)
+				return false;
+			try {
+				host = new URL(`http://${host}/`).hostname;
+			} catch {
+				return false;
+			}
+		}
+		host = host.toLowerCase();
+		const label = '[a-z0-9_](?:[a-z0-9_\\-]{0,61}[a-z0-9_])?';
+		if (host.length > 253 || !new RegExp(`^${label}(?:\\.${label})*$`).test(host))
+			return false;
+		if (this.options.RequireTld) {
+			const labels = host.split('.');
+			return labels.length > 1 && /^(?:[a-z]{2,63}|xn--[a-z0-9-]{1,59})$/.test(labels[labels.length - 1]);
+		}
+		return true;
+	},
+
+	/**
+	 * @function {boolean} ?
+	 * @param {string} value - The address.
+	 * @return True if the value is a dotted decimal IPv4 address without leading zeros.
+	 */
+	isIPv4(value) {
+		return /^(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)$/.test(value);
+	},
+
+	/**
+	 * @function {boolean} ?
+	 * @param {string} value - The address.
+	 * @return True if the value is an IPv6 address, optionally ending in an IPv4 address.
+	 */
+	isIPv6(value) {
+		if (value.indexOf('.') >= 0) {
+			const last = value.lastIndexOf(':');
+			if (last < 0 || !this.isIPv4(value.substring(last + 1)))
+				return false;
+			value = `${value.substring(0, last + 1)}0:0`;
+		}
+		const halves = value.split('::');
+		if (halves.length > 2)
+			return false;
+		const groups = (half) => half === '' ? [] : half.split(':');
+		const all = halves.length == 2 ? groups(halves[0]).concat(groups(halves[1])) : groups(halves[0]);
+		if (!all.every((group) => /^[0-9a-f]{1,4}$/i.test(group)))
+			return false;
+		return halves.length == 2 ? all.length < 8 : all.length == 8;
+	}
+});
+
 
 /**
  * TListControlValidator checks the number of selection and their values
