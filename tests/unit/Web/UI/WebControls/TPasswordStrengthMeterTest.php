@@ -52,7 +52,7 @@ class TPasswordStrengthMeterTest extends TestCase
 		$this->assertSame(120, $meter->getMaxEntropy());
 		$this->assertTrue($meter->getShowText());
 		$this->assertFalse($meter->getShowBits());
-		$this->assertSame('{0} bits', $meter->getBitsFormat());
+		$this->assertSame('', $meter->getBitsFormat());
 		$this->assertSame(TPasswordStrengthMeter::DEFAULT_LEVEL_TEXTS, $meter->getLevelTexts());
 		$this->assertSame(['Very weak', 'Weak', 'Medium', 'Strong', 'Very strong'], $meter->getLevelTextList());
 		$this->assertSame('default', $meter->getCssUrl());
@@ -126,6 +126,32 @@ class TPasswordStrengthMeterTest extends TestCase
 		$this->assertStringNotContainsString('aria-label=', $html);
 	}
 
+	public function testBitsPatternsFollowTheCulture()
+	{
+		$this->meter->setCulture('en');
+		$this->assertSame(['one' => '{0} bit', 'other' => '{0} bits'], $this->meter->getBitsPatterns());
+		$this->meter->setCulture('ru');
+		$this->assertSame(['one' => '{0} бит', 'few' => '{0} бита', 'many' => '{0} бит', 'other' => '{0} бита'], $this->meter->getBitsPatterns());
+		$this->meter->setCulture('ja');
+		$this->assertSame(['other' => '{0} ビット'], $this->meter->getBitsPatterns());
+	}
+
+	public function testBitsPatternsFallBackToShortWidth()
+	{
+		// The CLDR "ar" data has the short width only.
+		$this->meter->setCulture('ar');
+		$patterns = $this->meter->getBitsPatterns();
+		$this->assertArrayHasKey('other', $patterns);
+		$this->assertStringContainsString('{0}', $patterns['other']);
+	}
+
+	public function testBitsFormatReplacesTheCulture()
+	{
+		$this->meter->setCulture('ru');
+		$this->meter->setBitsFormat('{0} b');
+		$this->assertSame(['other' => '{0} b'], $this->meter->getBitsPatterns());
+	}
+
 	public function testMeasureTarget()
 	{
 		$this->assertSame($this->input, $this->meter->getMeasureTarget());
@@ -142,13 +168,15 @@ class TPasswordStrengthMeterTest extends TestCase
 	{
 		$this->meter->setMaxEntropy(100);
 		$this->meter->setLevelTexts('a,b,c,d,e');
-		$this->meter->setBitsFormat('{0} Bit');
+		$this->meter->setCulture('de_DE');
 		$options = PradoUnit::invoke($this->meter, 'getClientOptions');
 		$this->assertSame('meter', $options['ID']);
 		$this->assertSame('input', $options['ControlToMeasure']);
 		$this->assertSame(100, $options['MaxEntropy']);
 		$this->assertSame(['a', 'b', 'c', 'd', 'e'], $options['LevelTexts']);
 		$this->assertSame(array_values(TPasswordStrengthValidator::STRENGTH_ENTROPY), $options['LevelEntropy']);
-		$this->assertSame('{0} Bit', $options['BitsFormat']);
+		$this->assertSame('de-DE', $options['Culture']);
+		// The CLDR "one" pattern has a no-break space.
+		$this->assertSame(['one' => "{0}\u{00A0}Bit", 'other' => '{0} Bit'], $options['BitsPatterns']);
 	}
 }

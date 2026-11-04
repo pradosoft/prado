@@ -228,7 +228,7 @@ class TPasswordStrengthValidator extends TBaseValidator
 		}
 		$classes = [];
 		foreach ($chars as $char) {
-			$code = ord($char);
+			$code = ord($char[0]);
 			$class = match (true) {
 				strlen($char) > 1 || $code > 127 => 'other',
 				$code >= 97 && $code <= 122 => 'lower',

@@ -89,7 +89,7 @@ describe('TPasswordStrengthMeter', () => {
 
 	const levelTexts = ['Very weak', 'Weak', 'Medium', 'Strong', 'Very strong'];
 
-	function build(texts = true, bits = true) {
+	function build(texts = true, bits = true, extra = {}) {
 		input = document.createElement('input');
 		input.id = 'pmInput';
 		input.type = 'password';
@@ -107,7 +107,9 @@ describe('TPasswordStrengthMeter', () => {
 			MaxEntropy:       120,
 			LevelTexts:       levelTexts,
 			LevelEntropy:     [0, 40, 60, 80, 100],
-			BitsFormat:       '{0} bits',
+			Culture:          'en',
+			BitsPatterns:     { one: '{0} bit', other: '{0} bits' },
+			...extra,
 		});
 	}
 
@@ -169,6 +171,24 @@ describe('TPasswordStrengthMeter', () => {
 		type('correct horse battery staple');
 		expect(meter.getAttribute('aria-valuenow')).toBe('120');
 		expect(bits()).toBe('132 bits');
+	});
+
+	it('selects the plural pattern and number format of the culture', () => {
+		const m = build(true, true, {
+			Culture:      'ru',
+			BitsPatterns: { one: '{0} бит', few: '{0} бита', many: '{0} бит', other: '{0} бита' },
+		});
+		expect(m.formatBits(1)).toBe('1 бит');
+		expect(m.formatBits(2)).toBe('2 бита');
+		expect(m.formatBits(5)).toBe('5 бит');
+		expect(m.formatBits(21)).toBe('21 бит');
+		expect(m.formatBits(1234)).toBe('1\u00a0234 бита');
+	});
+
+	it('falls back to the other pattern and the browser culture', () => {
+		const m = build(true, true, { Culture: 'not a culture', BitsPatterns: { other: '{0} b' } });
+		expect(m.formatBits(1)).toBe('1 b');
+		expect(m.formatBits(62)).toBe('62 b');
 	});
 
 	it('works without the level and bits texts', () => {

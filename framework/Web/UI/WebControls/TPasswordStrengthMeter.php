@@ -11,6 +11,8 @@
 namespace Prado\Web\UI\WebControls;
 
 use Prado\Exceptions\TConfigurationException;
+use Prado\I18N\core\CultureInfoUnits;
+use Prado\I18N\TI18NControlTrait;
 use Prado\TPropertyValue;
 use Prado\Web\Javascripts\TJavaScript;
 
@@ -23,8 +25,12 @@ use Prado\Web\Javascripts\TJavaScript;
  * {@see setMaxEntropy MaxEntropy}, and the color of the fill shifts continuously
  * from red at 0 bits to green at MaxEntropy. After the bar:
  * - {@see setShowText ShowText} (default true) → the {@see TPasswordStrength} level name;
- * - {@see setShowBits ShowBits} (default false) → the estimate in bits, formatted by
- *   {@see setBitsFormat BitsFormat}.
+ * - {@see setShowBits ShowBits} (default false) → the estimate in bits, such as
+ *   "62 bits". The unit name comes from the CLDR "digital-bit" patterns of the
+ *   {@see getCulture Culture} (the application culture by default), so it is
+ *   "62 Bit" in German and "62 бита" in Russian; the browser selects the plural
+ *   form with Intl.PluralRules and formats the number with Intl.NumberFormat.
+ *   {@see setBitsFormat BitsFormat} replaces the patterns with one format.
  *
  * The estimate is {@see TPasswordStrengthValidator::estimateEntropy()}, computed
  * in the browser on each input. The meter informs; pair it with a
@@ -51,6 +57,8 @@ use Prado\Web\Javascripts\TJavaScript;
  */
 class TPasswordStrengthMeter extends TWebControl
 {
+	use TI18NControlTrait;
+
 	/**
 	 * The default level names, from VeryWeak to VeryStrong.
 	 */
@@ -141,21 +149,41 @@ class TPasswordStrengthMeter extends TWebControl
 	}
 
 	/**
-	 * @return string the format of the bits text; "{0}" is the rounded bits. Defaults to "{0} bits".
+	 * @return string the format of the bits text; "{0}" is the rounded bits.
+	 *   Defaults to '', the CLDR patterns of the culture.
 	 */
 	public function getBitsFormat()
 	{
-		return $this->getViewState('BitsFormat', '{0} bits');
+		return $this->getViewState('BitsFormat', '');
 	}
 
 	/**
-	 * Sets the format of the bits text, such as "{0} Bit". "{0}" is replaced
-	 * with the estimate rounded to whole bits.
+	 * Sets one format for the bits text, such as "{0} b", in place of the CLDR
+	 * patterns of the culture. "{0}" is replaced with the formatted estimate
+	 * rounded to whole bits. An empty format uses the culture.
 	 * @param string $value the format of the bits text.
 	 */
 	public function setBitsFormat($value)
 	{
-		$this->setViewState('BitsFormat', TPropertyValue::ensureString($value), '{0} bits');
+		$this->setViewState('BitsFormat', TPropertyValue::ensureString($value), '');
+	}
+
+	/**
+	 * Gets the plural patterns of the bits text, keyed by CLDR plural category.
+	 * {@see getBitsFormat BitsFormat} gives the single "other" pattern; otherwise
+	 * the long "digital-bit" unit patterns of the {@see getCulture Culture} apply,
+	 * then the short ones, then "{0} bits".
+	 * @return array<string, string> the patterns, each with a "{0}" number placeholder.
+	 */
+	public function getBitsPatterns(): array
+	{
+		if (($format = $this->getBitsFormat()) !== '') {
+			return [CultureInfoUnits::UNIT_OTHER_PATTERN => $format];
+		}
+		$cultureInfo = $this->getCultureInfo();
+		return $cultureInfo->getUnitPatterns(CultureInfoUnits::TYPE_DIGITAL_BIT)
+			?: $cultureInfo->getUnitPatterns(CultureInfoUnits::TYPE_DIGITAL_BIT, CultureInfoUnits::WIDTH_SHORT)
+			?: [CultureInfoUnits::UNIT_OTHER_PATTERN => '{0} bits'];
 	}
 
 	/**
@@ -270,7 +298,8 @@ class TPasswordStrengthMeter extends TWebControl
 			'MaxEntropy' => $this->getMaxEntropy(),
 			'LevelTexts' => $this->getLevelTextList(),
 			'LevelEntropy' => array_values(TPasswordStrengthValidator::STRENGTH_ENTROPY),
-			'BitsFormat' => $this->getBitsFormat(),
+			'Culture' => str_replace('_', '-', $this->getCulture()),
+			'BitsPatterns' => $this->getBitsPatterns(),
 		];
 	}
 

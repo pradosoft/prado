@@ -2135,7 +2135,8 @@ Prado.WebUI.TPasswordStrengthMeter = Prado.Class(Prado.WebUI.Control,
 	 * @... {number} MaxEntropy - Entropy in bits that fills the bar.
 	 * @... {string[]} LevelTexts - Level names from VeryWeak to VeryStrong.
 	 * @... {number[]} LevelEntropy - Entropy in bits at which each level starts.
-	 * @... {string} BitsFormat - Format of the bits text; "{0}" is the rounded bits.
+	 * @... {string} Culture - Culture of the bits text, such as "de-DE"; empty uses the browser.
+	 * @... {object} BitsPatterns - Bits text patterns keyed by CLDR plural category; "{0}" is the number.
 	 */
 	onInit(options) {
 		this.options = options;
@@ -2146,6 +2147,14 @@ Prado.WebUI.TPasswordStrengthMeter = Prado.Class(Prado.WebUI.Control,
 		this.fill = this.element.querySelector('.prado-password-meter-fill');
 		this.text = this.element.querySelector('.prado-password-meter-text');
 		this.bits = this.element.querySelector('.prado-password-meter-bits');
+		const culture = options.Culture || undefined;
+		try {
+			this.pluralRules = new Intl.PluralRules(culture);
+			this.numberFormat = new Intl.NumberFormat(culture);
+		} catch {
+			this.pluralRules = new Intl.PluralRules();
+			this.numberFormat = new Intl.NumberFormat();
+		}
 		this.observe(this.control, 'input', () => this.update());
 		this.update();
 	},
@@ -2169,9 +2178,21 @@ Prado.WebUI.TPasswordStrengthMeter = Prado.Class(Prado.WebUI.Control,
 		if (this.text)
 			this.text.textContent = value.length > 0 ? name : '';
 		if (this.bits)
-			this.bits.textContent = value.length > 0 ? this.options.BitsFormat.replace('{0}', String(Math.round(bits))) : '';
+			this.bits.textContent = value.length > 0 ? this.formatBits(Math.round(bits)) : '';
 		this.element.setAttribute('aria-valuenow', String(Math.round(Math.min(bits, this.options.MaxEntropy))));
 		this.element.setAttribute('aria-valuetext', name);
+	},
+
+	/**
+	 * Formats a number of bits with the plural pattern of the culture.
+	 * @function {string} ?
+	 * @param {number} bits - The whole number of bits.
+	 * @return The bits text, such as "62 bits".
+	 */
+	formatBits(bits) {
+		const patterns = this.options.BitsPatterns || {};
+		const pattern = patterns[this.pluralRules.select(bits)] || patterns.other || patterns.one || '{0}';
+		return pattern.replace('{0}', this.numberFormat.format(bits));
 	}
 });
 

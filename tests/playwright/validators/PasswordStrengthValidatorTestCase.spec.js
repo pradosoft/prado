@@ -111,14 +111,17 @@ test('PasswordStrengthValidatorTestCase: strength meter', async ({ page }) => {
 });
 
 /**
- * ShowText="false" leaves the bar alone; the meter still reports the level.
+ * ShowText="false" leaves out the level name; the meter still reports the
+ * level. Culture="de" takes the bits unit from the German CLDR patterns.
  */
-test('PasswordStrengthValidatorTestCase: meter without texts', async ({ page }) => {
+test('PasswordStrengthValidatorTestCase: meter without level text, German bits', async ({ page }) => {
 	await open(page);
 	await expect(page.locator(`#${base}meter2 .prado-password-meter-text`)).toHaveCount(0);
-	await expect(page.locator(`#${base}meter2 .prado-password-meter-bits`)).toHaveCount(0);
 	await page.locator(`#${base}text2`).fill('Password1!');
 	await expect(page.locator(`#${base}meter2`)).toHaveAttribute('aria-valuetext', 'Medium');
+	await expect(page.locator(`#${base}meter2 .prado-password-meter-bits`)).toHaveText('62 Bit');
+	await page.locator(`#${base}text2`).fill('a');
+	await expect(page.locator(`#${base}meter2 .prado-password-meter-bits`)).toHaveText('5 Bit');
 });
 
 /**

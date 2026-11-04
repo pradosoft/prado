@@ -7,6 +7,7 @@
 **Location:** `framework/Web/UI/WebControls/TPasswordStrengthMeter.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 **Extends:** [TWebControl](./TWebControl.md)
+**Uses:** [TI18NControlTrait](../../../I18N/TI18NControlTrait.md)
 
 ## Overview
 Shows the estimated strength of the password typed in `ControlToMeasure`. Its bar fills from the left and shifts continuously from red to green as the estimated entropy grows. The [TPasswordStrength](./TPasswordStrength.md) level name (`ShowText`) and the bits (`ShowBits`) can follow the bar. The estimate is `TPasswordStrengthValidator::estimateEntropy()`, recomputed in the browser on each `input` event. The meter informs only; [TPasswordStrengthValidator](./TPasswordStrengthValidator.md) enforces a minimum.
@@ -25,7 +26,8 @@ Shows the estimated strength of the password typed in `ControlToMeasure`. Its ba
 | `MaxEntropy` | `120` | Bits that fill the bar and reach green; at least 1. |
 | `ShowText` | `true` | Show the level name after the bar. |
 | `ShowBits` | `false` | Show the estimate in bits after the bar. |
-| `BitsFormat` | `{0} bits` | Format of the bits text; `{0}` is the rounded bits. |
+| `Culture` | application culture | From `TI18NControlTrait`; chooses the bits unit patterns and the number format. |
+| `BitsFormat` | `''` | One format, such as `{0} b`, in place of the culture's patterns; `{0}` is the formatted number. |
 | `LevelTexts` | `Very weak,Weak,Medium,Strong,Very strong` | The five level names, comma separated; `getLevelTextList()` fills missing names with the defaults. |
 | `CssUrl` | `default` | `default` publishes `assets/passwordstrengthmeter.css`; `''` registers none. |
 
@@ -34,10 +36,12 @@ Shows the estimated strength of the password typed in `ControlToMeasure`. Its ba
 | State | Fill width | Hue | Level text | Bits text |
 |---|---|---|---|---|
 | empty | 0% | 0 | none | none |
-| `bits` > 0 | `min(bits / MaxEntropy, 1) × 100%` | `round(min(bits / MaxEntropy, 1) × 120)` | the level of `bits` | `BitsFormat` with `round(bits)` |
+| `bits` > 0 | `min(bits / MaxEntropy, 1) × 100%` | `round(min(bits / MaxEntropy, 1) × 120)` | the level of `bits` | the plural pattern of `round(bits)` |
 
 - Markup: `<div class="prado-password-meter" role="meter">` holding `<span class="prado-password-meter-bar"><span class="prado-password-meter-fill"></span></span>`, then `<span class="prado-password-meter-text">` with `ShowText` and `<span class="prado-password-meter-bits">` with `ShowBits`. `CssClass` is appended to the meter class.
-- `Prado.WebUI.TPasswordStrengthMeter` in `validation3.js` (the `validator` package) sets the fill width and `--prado-meter-hue` on the bar, and fills the texts that are present. It shares `Prado.Validation.estimatePasswordEntropy()` with the validator. The client options are `LevelEntropy` (from `STRENGTH_ENTROPY`), `LevelTexts`, and `BitsFormat`.
+- `Prado.WebUI.TPasswordStrengthMeter` in `validation3.js` (the `validator` package) sets the fill width and `--prado-meter-hue` on the bar, and fills the texts that are present. It shares `Prado.Validation.estimatePasswordEntropy()` with the validator. The client options are `LevelEntropy` (from `STRENGTH_ENTROPY`), `LevelTexts`, `Culture` (with hyphens), and `BitsPatterns`.
+- Bits text: `getBitsPatterns()` returns `['other' => BitsFormat]` when set. Otherwise it returns `CultureInfo::getUnitPatterns(CultureInfoUnits::TYPE_DIGITAL_BIT)` in the long width, then the short width (CLDR `ar` has short only), then `{0} bits`. The client's `formatBits()` picks the category with `Intl.PluralRules(Culture)` and formats the number with `Intl.NumberFormat(Culture)`, as [TRelativeTime](./TRelativeTime.md) does; an invalid culture falls back to the browser's. Examples: en `62 bits`, de `62 Bit`, ru `2 бита` / `5 бит`, ja `62 ビット`.
+- `LevelTexts` has no CLDR source and stays an application translation.
 - CSS: the fill uses `oklch(0.56 0.19 25…145)` in light and `oklch(0.74 0.17 …)` in dark through `light-dark()`, with HSL fallbacks declared first. One OKLCH lightness keeps every hue at a 3:1 contrast or better against the page. The bar has a `#767676` / `#8f8f8f` border. The width transition (0.15 s) is off under `prefers-reduced-motion: reduce`. Under `forced-colors`, the fill uses `Highlight`.
 
 ## Accessibility
