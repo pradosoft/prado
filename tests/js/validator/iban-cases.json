@@ -1,0 +1,39 @@
+{
+	"_comment": "IBAN cases shared by tests/unit/Web/UI/WebControls/TIbanValidatorTest.php and tests/js/validator/ibanvalidator.test.js, so both sides agree. Each case is [value, valid]. The valid IBANs are the SWIFT IBAN Registry examples. The option sets are: default (every country) and dach (Countries DE,AT,CH).",
+	"default": [
+		["", true],
+		["DE89 3704 0044 0532 0130 00", true],
+		["DE89370400440532013000", true],
+		["de89 3704 0044 0532 0130 00", true],
+		["GB82 WEST 1234 5698 7654 32", true],
+		["FR14 2004 1010 0505 0001 3M02 606", true],
+		["NL91 ABNA 0417 1643 00", true],
+		["NO93 8601 1117 947", true],
+		["CH93 0076 2011 6238 5295 7", true],
+		["AT61 1904 3002 3457 3201", true],
+		["MT84 MALT 0110 0001 2345 MTLC AST0 01S", true],
+		["BR15 0000 0000 0000 1093 2840 814 P2", true],
+		["LC14 BOSL 1234 5678 9012 3456 7890 1234", true],
+		["RU02 0445 2560 0407 0281 0412 3456 7890 1", true],
+		["DE89 3704 0044 0532 0130 01", false],
+		["DE98 3704 0044 0532 0130 00", false],
+		["DE89 3704 0044 0532 0130 0", false],
+		["DE89 3704 0044 0532 0130 000", false],
+		["GB82 1234 1234 5698 7654 32", false],
+		["NL91 0417 ABNA 1643 00", false],
+		["XX89 3704 0044 0532 0130 00", false],
+		["DZ58 0002 1000 0111 3000 0005 70", false],
+		["DEAB 3704 0044 0532 0130 00", false],
+		["DE89-3704-0044-0532-0130-00", false],
+		["D E89 3704 0044 0532 0130 00", true],
+		["DE89\t3704004405320130 00", false],
+		["37040044053201300", false]
+	],
+	"dach": [
+		["DE89 3704 0044 0532 0130 00", true],
+		["AT61 1904 3002 3457 3201", true],
+		["ch93 0076 2011 6238 5295 7", true],
+		["GB82 WEST 1234 5698 7654 32", false],
+		["FR14 2004 1010 0505 0001 3M02 606", false]
+	]
+}

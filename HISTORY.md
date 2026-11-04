@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+NEW: Issue #1406 - `TIbanValidator` validates an IBAN against the SWIFT registry country formats and the mod 97 checksum on the client and the server, with `Countries`. (belisoful)
 NEW: Issue #1406 - `TLuhnValidator` validates the Luhn checksum of card, IMEI, and ID numbers on the client and the server, with `AllowSeparators`. (belisoful)
 NEW: Issue #1406 - `TJsonValidator` validates JSON text on the client and the server. (belisoful)
 NEW: Issue #1406 - `TUuidValidator` validates an RFC 9562 UUID on the client and the server, with `Versions`, `Strict`, and `AllowNil`. (belisoful)
