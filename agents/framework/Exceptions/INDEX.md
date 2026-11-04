@@ -46,6 +46,37 @@ Exception hierarchy and error display for the Prado framework. Provides English 
 | [`TLogException`](TLogException.md) | Logging subsystem errors |
 | [`TExitException`](TExitException.md) | Controlled application exit |
 
+## Placement
+
+`Prado\Exceptions` holds exception kinds: the classes that classify an error and that code across the framework throws or catches without knowing which component raised it. An exception that belongs to one component lives in that component's namespace, beside the class that throws it, and extends the closest kind here.
+
+| Condition | Location |
+|---|---|
+| Classifies an error for the whole framework (type, value, operation, configuration, HTTP, I/O, DB) | `Prado\Exceptions` |
+| Named after a component, thrown only by it, or carries its data | the component's namespace |
+
+Component exceptions:
+
+| Class | Namespace | Extends | Belongs because |
+|---|---|---|---|
+| `TInvalidCallbackException` | `Web\UI\ActiveControls` | `TException` | thrown only by callback handling (3.1) |
+| `TRpcClientRequestException` | `Util` | `TApplicationException` | thrown only by `TRpcClient` (3.2) |
+| `TMessageSourceIOException` | `I18N\core` | `TException` | thrown only by the message sources |
+| `TMutexException` | `Util\Mutex` | `TSystemException` | thrown only by the mutexes |
+| `THttpClientException` | `IO\HttpClient` | `TException` | carries a `THttpClientResponse` |
+| `TPsrCacheException`, `TPsrCacheInvalidArgumentException` | `Caching` | `TConfigurationException`, `TInvalidDataValueException` | implement the PSR-6 and PSR-16 exception interfaces |
+| `TInputValidationException` | `Util` | `TInvalidDataValueException` | carries the field errors of `TInputValidator` |
+| `TRestException` | `Web\Services\Rest` | `THttpException` | carries the status, title and problem document |
+
+Rules for a new exception:
+
+- Extend the closest kind in `Prado\Exceptions`, never `\Exception` directly, so `catch (TException)`, `IUserException` and `TErrorHandler` apply. `TMessageSourceIOException` and `TInvalidCallbackException` predate the rule.
+- Message keys go in `messages.txt` whatever the class location.
+- No per-directory `Exception/` subfolders: the directories are flat, the `T` prefix disambiguates, and `agents/` and `classes.php` map one file to one class.
+- `TDbException`, `TLogException` and `TTemplateException` are component-flavored kinds that stay here; moving a namespaced class breaks every `catch` on it.
+
+Centralizing component exceptions inverts the dependency direction: this directory is the bottom layer, and a central `THttpClientException` would import `IO\HttpClient`. Yii2 (`yii\base` kinds, `yii\web` HTTP exceptions), CakePHP, CodeIgniter 4 and PSR draw the same line.
+
 ## Visitor-Facing Exceptions
 
 `IUserException` (4.4) marks an exception whose message is written for the visitor. `THttpException` and `TUserException` implement it. `TErrorHandler::getExternalErrorMessage()` shows an `IUserException` message in every mode; any other exception shows `errorhandler_internal_error` outside Debug mode and is logged. `TErrorHandler::localizeErrorMessage()` looks the error code up in the globalization module's `prado` catalogue (`TErrorHandler::TRANSLATION_CATALOGUE`, `getCatalogueMessage()`) when translation is configured, with `TException::getErrorArguments()` as placeholders. Without a catalogue entry, also without a globalization module, it raises `OnMissingTranslation` with a `TErrorMessageEventParameter`; the page shows the handler's `Message`, else the exception message. Debug mode shows the exception message and raises nothing. `Prado::getApplicationLanguage()` gives the language for `messages-<lang>.txt` and the error templates: the globalization culture when the module is loaded, else the client's preferred language.
