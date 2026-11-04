@@ -1570,6 +1570,58 @@ Prado.WebUI.TCompareValidator = Prado.Class(Prado.WebUI.TBaseValidator,
 });
 
 /**
+ * TLuhnValidator validates whether the value of an associated input component
+ * passes the Luhn (mod 10) checksum. The checks match the server side
+ * TLuhnValidator.
+ *
+ * @class Prado.WebUI.TLuhnValidator
+ * @extends Prado.WebUI.TBaseValidator
+ */
+Prado.WebUI.TLuhnValidator = Prado.Class(Prado.WebUI.TBaseValidator,
+{
+	/**
+	 * Additional constructor options.
+	 * @constructor initialize
+	 * @param {object} options - Additional constructor options:
+	 * @... {boolean} AllowSeparators - Whether spaces and hyphens between the digits are ignored.
+	 */
+
+	/**
+	 * Evaluate validation state
+	 * @function {boolean} ?
+	 * @return True if the value passes the Luhn checksum or the value is empty.
+	 */
+	evaluateIsValid() {
+		let value = this.getRawValidationValue();
+		if (value.length <= 0)
+			return true;
+		if (this.options.AllowSeparators)
+			value = value.replace(/[ -]/g, '');
+		return this.isValidLuhn(value);
+	},
+
+	/**
+	 * Checks a string of digits against the Luhn checksum.
+	 * @function {boolean} ?
+	 * @param {string} digits - The digits.
+	 * @return True if the string has 2 or more digits only and passes the checksum.
+	 */
+	isValidLuhn(digits) {
+		if (!/^[0-9]{2,}$/.test(digits))
+			return false;
+		let sum = 0, double = false;
+		for (let i = digits.length - 1; i >= 0; i--) {
+			let digit = digits.charCodeAt(i) - 48;
+			if (double && (digit *= 2) > 9)
+				digit -= 9;
+			sum += digit;
+			double = !double;
+		}
+		return sum % 10 == 0;
+	}
+});
+
+/**
  * TCustomValidator performs user-defined client-side validation on an
  * input component.
  *
