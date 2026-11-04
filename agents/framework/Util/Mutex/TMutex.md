@@ -8,12 +8,13 @@
 **Namespace:** `Prado\Util\Mutex`
 **Extends:** `Prado\TModule`
 **Implements:** [`IMutex`](IMutex.md)
+**Uses:** [`TMonotonicClockAwareTrait`](../Clock/TMonotonicClockAwareTrait.md)
 **Since:** 4.4.0
 
 ## Overview
 Base of the mutex modules. A subclass implements `acquireLock($name)` (one non-blocking attempt), `releaseLock($name)`, and optionally `forgetLock($name)` (drop local state in a forked child).
 
-`acquire()` tries once, then sleeps `min(remaining, RetryDelay)` through `TAsync::sleep()` between attempts until the timeout. A held name is not re-entered: the attempt waits like any contended one. `release()` forgets the name even when the backend reports failure, and returns the backend result. `synchronize($name, $callback, $timeout)` acquires, runs `$callback($mutex)`, and releases in `finally`; it throws [`TMutexException`](TMutexException.md) when the lock is not acquired.
+`acquire()` tries once, then sleeps `min(remaining, RetryDelay)` through `TAsync::sleep()` between attempts until the timeout. The timeout is elapsed time on `getMonotonicClock()`, so a wall-clock step (NTP, a manual change, a resumed VM) neither ends the wait early nor extends it; a test sets a `TMonotonicClock` subclass it advances. A held name is not re-entered: the attempt waits like any contended one. `release()` forgets the name even when the backend reports failure, and returns the backend result. `synchronize($name, $callback, $timeout)` acquires, runs `$callback($mutex)`, and releases in `finally`; it throws [`TMutexException`](TMutexException.md) when the lock is not acquired.
 
 With `AutoRelease`, the destructor and a shutdown function (registered on the first acquire, holding the mutex through a `WeakReference`) release the held names; a release that throws there is logged as a warning. `fxRestoreAfterFork` with `pid` 0 calls `forgetLock()` for each held name and clears them.
 

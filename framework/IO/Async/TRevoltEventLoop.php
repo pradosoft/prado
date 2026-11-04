@@ -31,8 +31,8 @@ use Revolt\EventLoop\UnsupportedFeatureException;
  * callbacks and one {@see run()}.
  *
  * Differences from {@see \Prado\IO\Socket\TSocketReactor}:
- *  - timers read Revolt's monotonic clock; an injected {@see \Prado\Util\Clock\IClock} does not
- *    advance them.
+ *  - timers read Revolt's monotonic clock, which a test cannot advance; a test advances the
+ *    reactor's {@see \Prado\IO\Socket\TSocketReactor::setMonotonicClock() MonotonicClock}.
  *  - {@see run()} throws when called from a worker fiber.
  *  - there is no {@see ITickableEventLoop::tick() tick()}.
  *
