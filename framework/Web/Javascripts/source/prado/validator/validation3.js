@@ -947,6 +947,7 @@ Prado.WebUI.TBaseValidator = Prado.Class(Prado.WebUI.Control,
 			// Point the field's accessible description at this validator's
 			// message, so assistive technology reads the error with the field.
 			this.linkDescribedBy();
+			this.claimServerAria();
 
 			/**
 			 * ValidationManager of this validator
@@ -969,6 +970,16 @@ Prado.WebUI.TBaseValidator = Prado.Class(Prado.WebUI.Control,
 			existing.push(this.message.id);
 			this.control.setAttribute('aria-describedby', existing.join(' '));
 		}
+	},
+
+	/**
+	 * Takes ownership of an aria-invalid="true" that the server rendered when
+	 * this validator failed on the server (the IsValid option is false). The
+	 * attribute then clears once this validator passes on the client.
+	 */
+	claimServerAria() {
+		if(this.options.IsValid === false && this.control.getAttribute('aria-invalid') == 'true' && !this.control.lastAriaValidator)
+			this.control.lastAriaValidator = this.options.ID;
 	},
 
 	/**
@@ -2036,6 +2047,26 @@ Prado.WebUI.TDataTypeValidator = Prado.Class(Prado.WebUI.TBaseValidator,
 		if(value.length <= 0)
 			return true;
 		return this.convert(this.options.DataType, value) != null;
+	}
+});
+
+/**
+ * TUnicodeValidator checks for suspicious Unicode characters on the server
+ * only, with the intl Spoofchecker. The client side validator always succeeds,
+ * so a value the server rejected is checked again on the next postback.
+ *
+ * @class Prado.WebUI.TUnicodeValidator
+ * @extends Prado.WebUI.TBaseValidator
+ */
+Prado.WebUI.TUnicodeValidator = Prado.Class(Prado.WebUI.TBaseValidator,
+{
+	/**
+	 * Evaluate validation state
+	 * @function {boolean} ?
+	 * @return Always true; the server validates.
+	 */
+	evaluateIsValid() {
+		return true;
 	}
 });
 
