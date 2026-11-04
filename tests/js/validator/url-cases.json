@@ -1,0 +1,72 @@
+{
+	"_comment": "URL cases shared by tests/unit/Web/UI/WebControls/TUrlValidatorTest.php and tests/js/validator/urlvalidator.test.js, so both sides agree. Each case is [value, valid] under the default options: ValidSchemes http,https; AllowIdn; RequireTld.",
+	"default": [
+		["", true],
+		["http://example.com", true],
+		["https://example.com/", true],
+		["HTTPS://Example.COM/Path", true],
+		["https://www.example.com:8080/a/b?c=d&e=f#g", true],
+		["https://user:pass@example.com/", true],
+		["http://sub_domain.example.com", true],
+		["http://a-b.example.co.uk", true],
+		["http://xn--bcher-kva.example", true],
+		["http://bücher.example/straße", true],
+		["http://例え.テスト", true],
+		["http://192.168.0.1", true],
+		["http://192.168.0.1:80/x", true],
+		["http://[::1]", true],
+		["http://[2001:db8::1]:8080/", true],
+		["http://[::ffff:192.0.2.1]/", true],
+		["http://example.com:65535", true],
+		["http://example.com/a b", false],
+		["http://exa mple.com", false],
+		["http://example.com:65536", false],
+		["http://example.com:", false],
+		["ftp://example.com", false],
+		["javascript:alert(1)", false],
+		["mailto:user@example.com", false],
+		["//example.com", false],
+		["example.com", false],
+		["http:/example.com", false],
+		["http://", false],
+		["http://localhost", false],
+		["http://example", false],
+		["http://example.123", false],
+		["http://-example.com", false],
+		["http://example-.com", false],
+		["http://exa..mple.com", false],
+		["http://example.com.", false],
+		["http://ex%41mple.com", false],
+		["http://999.1.1.1", false],
+		["http://1.2.3", false],
+		["http://01.2.3.4", false],
+		["http://[::1", false],
+		["http://[1::2::3]", false],
+		["http://[12345::1]", false],
+		["http://[1:2:3:4:5:6:7:8:9]", false],
+		["http://[1.2.3.4]", false],
+		["http://ex\tample.com", false],
+		["http://example.com/\u0000", false],
+		["http://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.com", false]
+	],
+	"noTld": [
+		["http://localhost", true],
+		["http://localhost:8080/app", true],
+		["http://intranet.123", true],
+		["http://-bad", false]
+	],
+	"noIdn": [
+		["http://xn--bcher-kva.example", true],
+		["http://bücher.example", false],
+		["http://example.com/straße", true]
+	],
+	"anyScheme": [
+		["ftp://example.com/file", true],
+		["git+ssh://example.com/repo.git", true],
+		["1ab://example.com", false]
+	],
+	"ftpOnly": [
+		["FTP://example.com", true],
+		["http://example.com", false]
+	]
+}
