@@ -21,6 +21,7 @@ class TWeakCallableCollectionUnit extends TWeakCallableCollection
 	
 	public $_scrubCount = 0;
 	public $_scrubError = false;
+	public $_afterScrub = null;
 	public int $_containWith_fd = 0;
 	public int $_containWithout_fd = 0;
 	
@@ -33,6 +34,11 @@ class TWeakCallableCollectionUnit extends TWeakCallableCollection
 			throw new TInvalidOperationException("Only allowed to scrub once");
 		}
 		parent::scrubWeakReferences();
+		if ($this->_afterScrub) {
+			$afterScrub = $this->_afterScrub;
+			$this->_afterScrub = null;
+			$afterScrub();
+		}
 	}
 	
 	public function setScrubError($value)
@@ -407,6 +413,66 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		$list->setDiscardInvalid(true);
 	}
 	
+	/**
+	 * A weak listener freed between the scrub and the output filter (the cycle
+	 * collector can run there) is dropped from the output instead of returned as null.
+	 */
+	public function testOutputDropsReferentFreedAfterScrub_TWCC()
+	{
+		$outputs = [
+			'toArray' => fn ($list) => $list->toArray(),
+			'toArrayBelowPriority' => fn ($list) => $list->toArrayBelowPriority(100),
+			'toArrayAbovePriority' => fn ($list) => $list->toArrayAbovePriority(0),
+			'getIterator' => fn ($list) => iterator_to_array($list->getIterator()),
+			'itemsAtPriority' => fn ($list) => $list->itemsAtPriority(10),
+		];
+		foreach ($outputs as $name => $output) {
+			$retained = new CallableListItem();
+			$dying = new CallableListItem();
+			$list = new $this->_baseClass();
+			$list->add([$retained, 'eventHandler'], 10);
+			$list->add([$dying, 'eventHandler'], 10);
+			$list->add($dying, 10);
+			$list->_afterScrub = function () use (&$dying) {
+				$dying = null;
+			};
+			self::assertSame([[$retained, 'eventHandler']], $output($list), $name);
+			self::assertNull($dying, $name);
+			self::assertEquals(1, $list->getCount(), $name);
+		}
+
+		$retained = new CallableListItem();
+		$dying = new CallableListItem();
+		$list = new $this->_baseClass();
+		$list->add([$retained, 'eventHandler'], 10);
+		$list->add([$dying, 'eventHandler'], 20);
+		$list->_afterScrub = function () use (&$dying) {
+			$dying = null;
+		};
+		self::assertSame(['10' => [[$retained, 'eventHandler']]], $list->toPriorityArray());
+
+		$dying = new CallableListItem();
+		$list = new $this->_baseClass();
+		$list->add($dying, 20);
+		$list->_afterScrub = function () use (&$dying) {
+			$dying = null;
+		};
+		self::assertNull($list->itemsAtPriority(20));
+	}
+
+	/**
+	 * Lists that keep invalid WeakReferences (DiscardInvalid false) keep null
+	 * placeholders in the output so indices match {@see TWeakCallableCollection::itemAt}.
+	 */
+	public function testOutputKeepsNullWithoutDiscardInvalid_TWCC()
+	{
+		$retained = new CallableListItem();
+		$dying = new CallableListItem();
+		$list = new $this->_baseClass([[$retained, 'eventHandler'], [$dying, 'eventHandler']], true);
+		$dying = null;
+		self::assertSame([[$retained, 'eventHandler'], null], $list->toArray());
+	}
+
 	public function testGetPriorities_TWCC()
 	{
 		$list = new $this->_baseClass();

@@ -162,6 +162,10 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	/**
 	 * This converts the $items array of callable with WeakReferences back into the
 	 * actual callable.
+	 * The cycle collector can free a referent after {@see scrubWeakReferences} and
+	 * before this filter.  When {@see getDiscardInvalid} is true, such an entry is
+	 * dropped and the array is reindexed.  Otherwise it is output as null so indices
+	 * match {@see itemAt}.
 	 * @param array &$items an array of callable where objects are WeakReference
 	 */
 	protected function filterItemsForOutput(&$items)
@@ -169,8 +173,17 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 		if (!is_array($items)) {
 			return;
 		}
+		$discardInvalid = $this->getDiscardInvalid();
+		$dropped = false;
 		for ($i = 0, $c = count($items); $i < $c; $i++) {
 			$this->filterItemForOutput($items[$i]);
+			if ($discardInvalid && $items[$i] === null) {
+				unset($items[$i]);
+				$dropped = true;
+			}
+		}
+		if ($dropped) {
+			$items = array_values($items);
 		}
 	}
 
@@ -463,7 +476,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 		$this->scrubWeakReferences();
 		$items = parent::itemsAtPriority($priority);
 		$this->filterItemsForOutput($items);
-		return $items;
+		return $items ?: null;
 	}
 
 	/**
@@ -927,6 +940,9 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 		$result = parent::toPriorityArray();
 		foreach (array_keys($result) as $key) {
 			$this->filterItemsForOutput($result[$key]);
+			if (empty($result[$key])) {
+				unset($result[$key]);
+			}
 		}
 		return $result;
 	}
