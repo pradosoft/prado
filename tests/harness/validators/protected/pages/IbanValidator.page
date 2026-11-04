@@ -1,0 +1,31 @@
+<com:TContent ID="Content">
+<h1>Prado IbanValidator Tests</h1>
+<div>
+	<com:TLabel ForControl="text1" Text="IBAN" />
+	<com:TTextBox ID="text1" Attributes.autocomplete="off" />
+	<com:TIbanValidator
+		ID="validator1"
+		ControlToValidate="text1"
+		ErrorMessage="Check the IBAN, such as DE89 3704 0044 0532 0130 00"
+		ControlCssClass="required" />
+
+	<com:TLabel ForControl="text2" Text="German, Austrian, or Swiss IBAN" />
+	<com:TTextBox ID="text2" />
+	<com:TIbanValidator
+		ID="validator2"
+		ControlToValidate="text2"
+		ErrorMessage="Enter a German, Austrian, or Swiss IBAN"
+		Countries="DE,AT,CH" />
+
+	<com:TLabel ForControl="text3" Text="Server checked IBAN" />
+	<com:TTextBox ID="text3" />
+	<com:TIbanValidator
+		ID="validator3"
+		ControlToValidate="text3"
+		ErrorMessage="Server: invalid IBAN"
+		EnableClientScript="false" />
+
+	<com:TButton ID="submit1" Text="Test" OnClick="submitted" />
+	<com:TLabel ID="status" />
+</div>
+</com:TContent>

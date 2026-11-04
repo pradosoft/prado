@@ -15,6 +15,7 @@ use Prado\IO\Async\TAsync;
 use Prado\Prado;
 use Prado\TModule;
 use Prado\TPropertyValue;
+use Prado\Util\Clock\TMonotonicClockAwareTrait;
 
 /**
  * TMutex class.
@@ -40,7 +41,9 @@ use Prado\TPropertyValue;
  * | {@see TDbTableMutex} | a row in a lock table | connections to the database |
  *
  * {@see acquire()} tries once and then waits {@see getRetryDelay RetryDelay}
- * milliseconds between attempts until `$timeout` seconds elapse.  The wait is
+ * milliseconds between attempts until `$timeout` seconds elapse.  The timeout
+ * is elapsed time on the {@see getMonotonicClock() monotonic clock}, so a
+ * wall-clock change does not lengthen or shorten it.  The wait is
  * {@see \Prado\IO\Async\TAsync::sleep()}, so a fiber yields to the event loop
  * while it waits.  A mutex does not re-enter: acquiring a name it holds waits
  * like any other contended attempt, so another fiber that shares the mutex
@@ -75,6 +78,8 @@ use Prado\TPropertyValue;
  */
 abstract class TMutex extends TModule implements IMutex
 {
+	use TMonotonicClockAwareTrait;
+
 	/** The default milliseconds between attempts of {@see acquire()}. */
 	public const DEFAULT_RETRY_DELAY = 50;
 
@@ -113,14 +118,15 @@ abstract class TMutex extends TModule implements IMutex
 	 */
 	public function acquire(string $name, float|int $timeout = 0): bool
 	{
-		$deadline = microtime(true) + max(0, $timeout);
+		$clock = $this->getMonotonicClock();
+		$deadline = $clock->seconds() + max(0, $timeout);
 		while (true) {
 			if (!$this->isAcquired($name) && $this->acquireLock($name)) {
 				$this->_locks[$name] = true;
 				$this->registerShutdownRelease();
 				return true;
 			}
-			$remaining = $deadline - microtime(true);
+			$remaining = $deadline - $clock->seconds();
 			if ($remaining <= 0) {
 				return false;
 			}

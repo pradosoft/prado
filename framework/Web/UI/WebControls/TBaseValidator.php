@@ -192,6 +192,9 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		if ($this->getEncode()) {
 			$options['Encode'] = true;
 		}
+		if (!$this->getIsValid()) {
+			$options['IsValid'] = false;
+		}
 
 		//get date format from date picker target control
 		if ($control instanceof TDatePicker) {
@@ -286,6 +289,25 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	{
 		parent::onPreRender($param);
 		$this->updateControlCssClass();
+		$this->updateControlAria();
+	}
+
+	/**
+	 * Marks the validated control with aria-invalid="true" when it failed
+	 * validation on the server, and removes the attribute when it is valid, so
+	 * assistive technology reports a server side failure. The client validator
+	 * that failed takes over the attribute and clears it when it passes.
+	 */
+	protected function updateControlAria()
+	{
+		if (($id = $this->getControlToValidate()) === '' || !(($control = $this->findControl($id)) instanceof TWebControl) || !($control instanceof \Prado\Web\UI\IValidatable)) {
+			return;
+		}
+		if (!$control->getIsValid()) {
+			$control->getAttributes()->add('aria-invalid', 'true');
+		} elseif ($control->getHasAttributes()) {
+			$control->getAttributes()->remove('aria-invalid');
+		}
 	}
 
 	/**

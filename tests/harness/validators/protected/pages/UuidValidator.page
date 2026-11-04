@@ -1,0 +1,32 @@
+<com:TContent ID="Content">
+<h1>Prado UuidValidator Tests</h1>
+<div>
+	<com:TLabel ForControl="text1" Text="Order ID" />
+	<com:TTextBox ID="text1" />
+	<com:TUuidValidator
+		ID="validator1"
+		ControlToValidate="text1"
+		ErrorMessage="Enter a UUID such as 550e8400-e29b-41d4-a716-446655440000"
+		ControlCssClass="required" />
+
+	<com:TLabel ForControl="text2" Text="Version 4 or 7 ID" />
+	<com:TTextBox ID="text2" />
+	<com:TUuidValidator
+		ID="validator2"
+		ControlToValidate="text2"
+		ErrorMessage="Enter a version 4 or 7 UUID"
+		Versions="4,7"
+		Strict="false" />
+
+	<com:TLabel ForControl="text3" Text="Server checked ID" />
+	<com:TTextBox ID="text3" />
+	<com:TUuidValidator
+		ID="validator3"
+		ControlToValidate="text3"
+		ErrorMessage="Server: invalid UUID"
+		EnableClientScript="false" />
+
+	<com:TButton ID="submit1" Text="Test" OnClick="submitted" />
+	<com:TLabel ID="status" />
+</div>
+</com:TContent>

@@ -26,6 +26,12 @@ use Prado\TPropertyValue;
  * {@see stopTimer()}. The timer can be automatically started when
  * {@see setStartTimerOnLoad StartTimerOnLoad} is true.
  *
+ * A started timer pauses while the browser is offline, and while the page is
+ * hidden when {@see setPauseWhenHidden PauseWhenHidden} is true. When the page
+ * is visible and online again, the client sends one callback at once if an
+ * interval passed since the last one, then resumes the interval. The server
+ * handler cannot assume one callback per interval.
+ *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.1
  */
@@ -99,6 +105,28 @@ class TTimeTriggeredCallback extends TCallback
 	}
 
 	/**
+	 * @return bool whether the timer pauses while the page is hidden. Defaults to true.
+	 * @since 4.4.0
+	 */
+	public function getPauseWhenHidden(): bool
+	{
+		return $this->getViewState('PauseWhenHidden', true);
+	}
+
+	/**
+	 * Sets whether the timer pauses while the page is hidden (`document.visibilityState`),
+	 * such as in a background tab. A visible page resumes the timer and sends one callback
+	 * at once if an interval passed. False keeps the interval running when hidden, at the
+	 * rate the browser throttles a hidden page to.
+	 * @param mixed $value whether the timer pauses while the page is hidden.
+	 * @since 4.4.0
+	 */
+	public function setPauseWhenHidden($value): void
+	{
+		$this->setViewState('PauseWhenHidden', TPropertyValue::ensureBoolean($value), true);
+	}
+
+	/**
 	 * @return array list of timer options for client-side.
 	 */
 	protected function getTriggerOptions()
@@ -106,6 +134,9 @@ class TTimeTriggeredCallback extends TCallback
 		$options['ID'] = $this->getClientID();
 		$options['EventTarget'] = $this->getUniqueID();
 		$options['Interval'] = $this->getInterval();
+		if (!$this->getPauseWhenHidden()) {
+			$options['PauseWhenHidden'] = false;
+		}
 		return $options;
 	}
 
