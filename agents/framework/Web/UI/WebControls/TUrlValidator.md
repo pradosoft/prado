@@ -9,7 +9,7 @@
 **Extends:** [TBaseValidator](./TBaseValidator.md)
 
 ## Overview
-Validates an absolute URL of the form `scheme://host[:port][/path][?query][#fragment]`. It checks the syntax only and makes no network request. An empty value passes; pair it with [TRequiredFieldValidator](./TRequiredFieldValidator.md). Client and server apply the same checks.
+Validates an absolute URL of the form `scheme://host[:port][/path][?query][#fragment]`. It checks the syntax only and makes no network request, unless `CheckDns` is set. An empty value passes; pair it with [TRequiredFieldValidator](./TRequiredFieldValidator.md). Client and server apply the same syntax checks.
 
 ## Key Properties
 
@@ -18,6 +18,7 @@ Validates an absolute URL of the form `scheme://host[:port][/path][?query][#frag
 | `ValidSchemes` | `http,https` | Comma separated schemes, compared case-insensitively. An empty list allows every scheme. `getValidSchemeList()` returns them trimmed, lower case, and unique. |
 | `AllowIdn` | `true` | A host with Unicode labels is converted to ASCII under UTS #46 and then checked. `false` fails it. |
 | `RequireTld` | `true` | A domain name needs two or more labels and a top-level label of letters or `xn--`, so `http://localhost` fails. IP address hosts are exempt. |
+| `CheckDns` | `false` | Server only: a domain name host also needs an A or AAAA record. IP address hosts are not looked up. |
 
 ## Mechanics
 
@@ -35,7 +36,22 @@ Validates an absolute URL of the form `scheme://host[:port][/path][?query][#frag
 - `URL_REGEXP` splits the URL; user information (`user:pass@`) is accepted. `DOMAIN_REGEXP`, `TLD_REGEXP`, and `MAX_DOMAIN_LENGTH` check the host.
 - Server: `idn_to_ascii(IDNA_NONTRANSITIONAL_TO_ASCII, INTL_IDNA_VARIANT_UTS46)` (ext-intl is required). The `u` modifier fails a value of invalid UTF-8.
 - Client: `Prado.WebUI.TUrlValidator` in `validation3.js` converts an IDN host with `new URL()`, the WHATWG parser, which applies UTS #46 too. `isIPv4()` and `isIPv6()` are its address checks.
-- `isValidUrl(string)` is public for use outside a form.
+- `isValidUrl(string)` is public for use outside a form; it applies `CheckDns` too.
+
+## CheckDns
+
+`hostHasDnsRecord()` converts an IDN host to ASCII and calls `lookupDns()`, which runs `checkdnsrr()` for `A`, then `AAAA`, on the fully qualified name (trailing `.`, so no resolver search domain is appended). Tests override `lookupDns()`. The option is not sent to the client.
+
+It defaults to `false`, as in Symfony, whose Url constraint dropped its `checkDNS` option. The class docblock lists the reasons:
+
+| Concern | Effect |
+|---|---|
+| Browser script cannot query DNS | the check runs on the postback only |
+| A record is not a web server; a registered domain may have no A or AAAA record | false results both ways |
+| `checkdnsrr()` reports a resolver timeout or failure as no record | valid hosts fail while DNS is down |
+| The lookup blocks the request | latency set by the resolver, with no timeout option |
+| The lookup reaches the domain's name servers | input is disclosed to them |
+| DNS can change after validation | SSRF protection belongs where the server connects |
 - Client options: `ValidSchemes` (array), `AllowIdn`, `RequireTld`.
 
 ## Accessibility
