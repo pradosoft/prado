@@ -15,9 +15,11 @@ namespace Prado\Web\UI\WebControls;
  *
  * TMetaTag represents a meta tag appearing in a page head section.
  * You can set its {@see setID ID}, {@see setHttpEquiv HttpEquiv},
- * {@see setName Name}, {@see setContent Content}, {@see setScheme Scheme}, {@see setCharset Charset}
- * properties, which correspond to
- * id, http-equiv, name, content, scheme and charset * attributes for a meta tag, respectively.
+ * {@see setName Name}, {@see setProperty Property}, {@see setContent Content},
+ * {@see setScheme Scheme}, {@see setCharset Charset} properties, which correspond to
+ * id, http-equiv, name, property, content, scheme and charset attributes for a meta tag, respectively.
+ * The RDFa `property` attribute names Open Graph metadata, such as `og:title`;
+ * {@see TOpenGraph} renders those.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -36,6 +38,10 @@ class TMetaTag extends \Prado\TComponent
 	 * @var string name attribute of the meta tag
 	 */
 	private $_name = '';
+	/**
+	 * @var string property attribute of the meta tag
+	 */
+	private $_property = '';
 	/**
 	 * @var string content attribute of the meta tag
 	 */
@@ -95,6 +101,25 @@ class TMetaTag extends \Prado\TComponent
 	public function setName($value)
 	{
 		$this->_name = $value;
+	}
+
+	/**
+	 * @return string property attribute of the meta tag
+	 * @since 4.4.0
+	 */
+	public function getProperty()
+	{
+		return $this->_property;
+	}
+
+	/**
+	 * Sets the RDFa property the meta tag carries, such as `og:title`.
+	 * @param string $value property attribute of the meta tag
+	 * @since 4.4.0
+	 */
+	public function setProperty($value)
+	{
+		$this->_property = $value;
 	}
 
 	/**
@@ -158,6 +183,9 @@ class TMetaTag extends \Prado\TComponent
 		}
 		if ($this->_name !== '') {
 			$writer->addAttribute('name', $this->_name);
+		}
+		if ($this->_property !== '') {
+			$writer->addAttribute('property', $this->_property);
 		}
 		if ($this->_httpEquiv !== '') {
 			$writer->addAttribute('http-equiv', $this->_httpEquiv);
