@@ -22,11 +22,11 @@ use Prado\Util\Helpers\TProcessHelper;
  * from a callback for the main and a worker fiber, exception isolation, cancellation that
  * leaves no callback, and a fork made while a fiber is suspended.
  *
- * Timers run on each loop's own clock.  A pinned {@see \Prado\Util\Clock\TMockClock} advances
- * the {@see \Prado\IO\Socket\TSocketReactor} timers, which read the injected clock; it does not
- * advance {@see \Prado\IO\Async\TRevoltEventLoop} timers, which read Revolt's monotonic clock.
- * A test that pins a clock under scheduled work uses the reactor; this suite uses real delays
- * so it holds for both.
+ * Timers run on each loop's own monotonic clock.  A test advances the
+ * {@see \Prado\IO\Socket\TSocketReactor} timers through its `MonotonicClock`; nothing advances
+ * the {@see \Prado\IO\Async\TRevoltEventLoop} timers, which read Revolt's clock.  A test that
+ * drives time under scheduled work uses the reactor; this suite uses real delays so it holds
+ * for both.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
