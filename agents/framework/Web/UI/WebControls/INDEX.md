@@ -113,6 +113,7 @@ All validators extend `TBaseValidator`. Shared properties: `ControlToValidate`, 
 | `TRegularExpressionValidator` | Value matches regex pattern |
 | `TCustomValidator` | Custom server-side (and optional client-side) logic |
 | `TEmailAddressValidator` | Valid email format |
+| [`TJsonValidator`](./TJsonValidator.md) | JSON text; client and server agree on surrogates and the 512 depth (@since 4.4.0) |
 | `TDataTypeValidator` | Value is correct data type (integer, date, etc.) |
 | `TFileValidator` | Files selected in a `TFileUpload`: size, count, extension, MIME type (@since 4.4.0) |
 | `TImageValidator` | Image files selected in a `TFileUpload`: TFileValidator checks plus pixel dimensions and a readable-image check (@since 4.4.0) |
