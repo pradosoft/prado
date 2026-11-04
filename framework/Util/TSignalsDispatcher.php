@@ -15,6 +15,8 @@ use Prado\Collections\TWeakCallableCollection;
 use Prado\Exceptions\{TExitException};
 use Prado\Exceptions\{TInvalidOperationException, TInvalidDataValueException};
 use Prado\TComponent;
+use Prado\Util\Clock\TMonotonicClock;
+use Prado\Util\Clock\TMonotonicClockAwareTrait;
 use Prado\Util\Helpers\TProcessHelper;
 
 // Signal constants are provided by the pcntl extension (Linux/macOS only).
@@ -82,6 +84,13 @@ if (!function_exists('pcntl_signal')) {
  * without a time callback.  By calling alarm() without parameters, the next alarm
  * time is returned.
  *
+ * Alarm times are Unix seconds that the {@see getMonotonicClock() monotonic clock} counts
+ * from the wall-clock time of the first alarm reading.  `pcntl_alarm()` counts elapsed
+ * seconds too, so a later wall-clock change does not make an alarm ring early or late.
+ * After such a change an alarm time differs from `time()` by the size of the change, so
+ * compare alarm times with {@see self::alarmNow()}: the seconds until an alarm are
+ * `$alarmTime - TSignalsDispatcher::alarmNow()`.
+ *
  * The methods {@see self::hasEvent()}, {@see self::hasEventHandler}, and {@see self::getEventHandlers}
  * will accept process signals (int) as event names and translate it into the associated
  * PRADO signal global event.  These methods will also return the proper values
@@ -101,6 +110,7 @@ if (!function_exists('pcntl_signal')) {
 class TSignalsDispatcher extends TComponent implements \Prado\ISingleton
 {
 	use TPriorityPropertyTrait;
+	use TMonotonicClockAwareTrait;
 
 	public const FX_SIGNAL_ALARM = 'fxSignalAlarm';
 	public const FX_SIGNAL_HANG_UP = 'fxSignalHangUp';
@@ -184,6 +194,9 @@ class TSignalsDispatcher extends TComponent implements \Prado\ISingleton
 
 	/** @var array The pid handlers. */
 	private static array $_pidHandlers = [];
+
+	/** @var ?float The Unix time of monotonic zero; an alarm time is this plus the monotonic seconds. */
+	private ?float $_alarmEpoch = null;
 
 	/**
 	 * Returns the singleton of the class.  The singleton is created if/when $create
@@ -280,7 +293,7 @@ class TSignalsDispatcher extends TComponent implements \Prado\ISingleton
 				case SIGALRM:
 					parent::attachEventHandler($event, [$this, 'ring'], $this->getPriority());
 					if ($nextAlarm = pcntl_alarm(0)) {
-						self::$_nextAlarmTime = $nextAlarm + time();
+						self::$_nextAlarmTime = $nextAlarm + $this->getAlarmNow();
 						if ($callable) {
 							static::$_alarms[self::$_nextAlarmTime][] = $handler;
 						}
@@ -588,6 +601,50 @@ class TSignalsDispatcher extends TComponent implements \Prado\ISingleton
 	}
 
 	/**
+	 * Returns the current alarm time: the monotonic clock in seconds, anchored to the wall
+	 * clock at the first reading.
+	 * @return int The current alarm time, in Unix seconds.
+	 * @since 4.4.0
+	 */
+	public function getAlarmNow(): int
+	{
+		$seconds = $this->getMonotonicClock()->seconds();
+		$this->_alarmEpoch ??= microtime(true) - $seconds;
+		return (int) floor($this->_alarmEpoch + $seconds);
+	}
+
+	/**
+	 * Sets the monotonic clock of the alarms.  An anchored alarm time base continues from its
+	 * current time on the new clock, so pending alarms keep their remaining seconds.
+	 * @param ?TMonotonicClock $clock The clock, or null for the system timer.
+	 * @return static The current dispatcher.
+	 * @since 4.4.0
+	 */
+	public function setMonotonicClock(?TMonotonicClock $clock): static
+	{
+		$now = ($this->_alarmEpoch === null) ? null : $this->_alarmEpoch + $this->getMonotonicClock()->seconds();
+		$this->_monotonicClock = $clock;
+		if ($now !== null) {
+			$this->_alarmEpoch = $now - $this->getMonotonicClock()->seconds();
+		}
+		return $this;
+	}
+
+	/**
+	 * Returns the current alarm time of the singleton, creating the singleton when needed.
+	 * Compare an alarm time with this value, not with `time()`: the seconds until an alarm
+	 * are `$alarmTime - TSignalsDispatcher::alarmNow()`.  Without signals there is no
+	 * singleton, and the wall-clock time is returned.
+	 * @return int The current alarm time, in Unix seconds.
+	 * @since 4.4.0
+	 */
+	public static function alarmNow(): int
+	{
+		$singleton = static::singleton();
+		return ($singleton instanceof self) ? $singleton->getAlarmNow() : time();
+	}
+
+	/**
 	 * Creates a new alarm callback at a specific time from now.  If no callback is
 	 * provided, then the alarm will raise `fxSignalAlarm` without a time-based callback.
 	 * When calling alarm() without parameters, it will return the next alarm time.
@@ -595,7 +652,7 @@ class TSignalsDispatcher extends TComponent implements \Prado\ISingleton
 	 *   the next alarm time and not adding any callback.
 	 * @param mixed $callback The alarm callback. Default null.
 	 * @return ?int The time of the alarm for the callback or the next alarm time when
-	 *   $seconds = 0.
+	 *   $seconds = 0.  Compare it with {@see self::alarmNow()}, not `time()`.
 	 */
 	public static function alarm(int $seconds = 0, mixed $callback = null): ?int
 	{
@@ -604,8 +661,7 @@ class TSignalsDispatcher extends TComponent implements \Prado\ISingleton
 		}
 
 		if ($seconds > 0) {
-			static::singleton();
-			$alarmTime = time() + $seconds;
+			$alarmTime = static::alarmNow() + $seconds;
 			if ($callback === null) {
 				$callback = static::NULL_ALARM;
 			}
@@ -627,9 +683,12 @@ class TSignalsDispatcher extends TComponent implements \Prado\ISingleton
 	}
 
 	/**
-	 * Disarms an alarm time-callback, at the optional time.
-	 * @param ?int $alarmTime
-	 * @param callable $callback
+	 * Disarms an alarm callback, at the optional alarm time.  The other callbacks of that
+	 * time stay armed.  When the disarmed time was the next alarm, the OS alarm is armed for
+	 * the following alarm time, at least 1 second ahead, so an overdue alarm still rings.
+	 * @param ?int $alarmTime The alarm time, or null for the first time that holds the callback.
+	 * @param callable $callback The callback; null for the {@see NULL_ALARM}.
+	 * @return ?int The alarm time the callback was disarmed from, or null when none held it.
 	 */
 	public static function disarm(mixed $alarmTime = null, mixed $callback = null): ?int
 	{
@@ -663,12 +722,13 @@ class TSignalsDispatcher extends TComponent implements \Prado\ISingleton
 		foreach ($alarmTime !== null ? [$alarmTime] : array_keys(static::$_alarms) as $time) {
 			if (($key = array_search($callback, static::$_alarms[$time] ?? [], true)) !== false) {
 				unset(static::$_alarms[$time][$key]);
-				if (is_array(static::$_alarms[$time] ?? false)) {
+				if (empty(static::$_alarms[$time])) {
 					unset(static::$_alarms[$time]);
 					if ($time === self::$_nextAlarmTime) {
 						self::$_nextAlarmTime = array_key_first(static::$_alarms);
 						if (self::$_nextAlarmTime !== null) {
-							$seconds = min(1, self::$_nextAlarmTime - time());
+							// At least 1 s: pcntl_alarm(0) cancels, so an overdue alarm would never ring.
+							$seconds = max(1, self::$_nextAlarmTime - static::alarmNow());
 						} else {
 							$seconds = 0;
 						}
@@ -683,7 +743,7 @@ class TSignalsDispatcher extends TComponent implements \Prado\ISingleton
 
 	/**
 	 * The common SIGALRM callback time-processing handler raised by `fxSignalAlarm`.
-	 * All alarm callbacks before or at `time()` are called.  The next alarm time is
+	 * All alarm callbacks before or at {@see getAlarmNow()} are called.  The next alarm time is
 	 * found and the next signal alarm is set.
 	 * @param TSignalsDispatcher $sender The object raising the event.
 	 * @param TSignalParameter $signalParam The signal parameters.
@@ -699,7 +759,7 @@ class TSignalsDispatcher extends TComponent implements \Prado\ISingleton
 		}
 		do {
 			$nextTime = null;
-			$startTime = time();
+			$startTime = $this->getAlarmNow();
 			$signalParam->setAlarmTime($startTime);
 			foreach (static::$_alarms as $alarmTime => $alarms) {
 				if ($alarmTime <= $startTime) {
@@ -710,7 +770,7 @@ class TSignalsDispatcher extends TComponent implements \Prado\ISingleton
 					break;
 				}
 			}
-			$now = time();
+			$now = $this->getAlarmNow();
 		} while ($startTime !== $now);
 
 		if ($nextTime !== null) {

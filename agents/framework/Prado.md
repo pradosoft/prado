@@ -20,6 +20,15 @@ PRADO_FILE_CHMOD   // default file permission (0644)
 PRADO_CHMOD        // legacy compat alias (0777)
 ```
 
+At load, `Prado.php` sets the request start when the SAPI has not:
+
+| `$_SERVER` key | Value | Use |
+|---|---|---|
+| `REQUEST_TIME_FLOAT` | `microtime(true)` | the wall-clock request start (log record totals) |
+| `PRADO_REQUEST_HRTIME` (4.4.0) | `hrtime(true)` minus the wall-clock time elapsed since `REQUEST_TIME_FLOAT`, read once | the monotonic request start; durations from it ignore wall-clock changes (`TPageLoadTime`) |
+
+A server that runs several requests in one process sets both keys at the start of each request.
+
 ## Core Methods
 
 ### Initialization
@@ -58,6 +67,7 @@ Every unmasked warning and notice throws `TPhpErrorException` at the call site, 
 ### Application Management
 - `setApplication(TApplication $app): void` — Stores the singleton. Called by `TApplication::__construct`.
 - `getApplication(): TApplication` — Returns the application singleton.
+- `getRequestStartNanoseconds(): int` — The monotonic request start, `$_SERVER["PRADO_REQUEST_HRTIME"]`, in `hrtime()` nanoseconds; measure from it with `TMonotonicClock::elapsed()` (4.4.0).
 
 ### Path and Namespace Management
 - `getPathOfNamespace(string $namespace, string $ext = ''): ?string` — Converts a dotted namespace to a filesystem path.

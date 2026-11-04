@@ -22,6 +22,7 @@ use Prado\TComponent;
 use Prado\Test\Unit\Harness\Traits\TNestedPathTrait;
 use Prado\Test\Unit\PradoUnit;
 use Prado\Web\THttpRequest;
+use Prado\Web\THttpResponse;
 use Prado\Web\Services\TJsonResponse;
 use Prado\Web\Services\TJsonService;
 use Prado\Xml\TXmlDocument;
@@ -57,6 +58,20 @@ class TNestedPathJsonResponse extends TJsonResponse
 	public function getJsonContent()
 	{
 		return self::$content;
+	}
+}
+
+/**
+ * An HTTP response that records written content instead of echoing it.
+ */
+class TJsonServiceTestResponse extends THttpResponse
+{
+	/** @var string everything written to the response. */
+	public string $content = '';
+
+	public function write($str)
+	{
+		$this->content .= $str;
 	}
 }
 
@@ -321,16 +336,21 @@ class TJsonServiceTest extends \PHPUnit\Framework\TestCase
 	public function testCreateJsonResponseWritesNonNullContent()
 	{
 		TNestedPathJsonResponse::$content = ['a' => 1];
-		$obLevel = ob_get_level();
+		$app = Prado::getApplication();
+		// read the slot directly: getResponse() would bootstrap a response and open an output buffer
+		$savedResponse = PradoUnit::getProp($app, '_response');
+		$httpResponse = new TJsonServiceTestResponse();
+		$app->setResponse($httpResponse);
 		try {
 			$service = new TJsonService();
 			$response = new TNestedPathJsonResponse();
 			PradoUnit::invoke($service, 'createJsonResponse', $response, [], 'the-config');
 			$this->assertSame('the-config', $response->initConfig);
+			$this->assertSame('{"a":1}', $httpResponse->content);
+			$this->assertSame('application/json', $httpResponse->getContentType());
+			$this->assertSame('UTF-8', $httpResponse->getCharset());
 		} finally {
-			while (ob_get_level() > $obLevel) {
-				ob_end_clean();
-			}
+			PradoUnit::setProp($app, '_response', $savedResponse);
 		}
 	}
 

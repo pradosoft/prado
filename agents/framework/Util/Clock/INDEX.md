@@ -27,6 +27,7 @@ PSR-20 clock abstractions: a single, overridable source of "now" so subsystems a
 ## Monotonic timer
 
 - **[`TMonotonicClock`](TMonotonicClock.md)** — a thin reader over `\hrtime()` for measuring **elapsed time** (`nanoseconds()`/`seconds()`/`elapsed()`). Separate from the wall-clock `IClock` hierarchy: monotonic, no timezone, no epoch. For durations/timeouts.
+- **[`TMonotonicClockAwareTrait`](TMonotonicClockAwareTrait.md)** — for a class that measures elapsed time: `getMonotonicClock()`/`setMonotonicClock()`, a `TMonotonicClock` created on first use. Durations and deadlines use it; stored or shared timestamps stay on `IClock`.
 
 ## Design notes
 
@@ -39,5 +40,5 @@ PSR-20 clock abstractions: a single, overridable source of "now" so subsystems a
 
 ## Conventions
 
-- Registered in `framework/classes.php` (`IClock`, `TApplicationClockAwareTrait`, `TClockAwareTrait`, `TClockDecorator`, `TClockTrait`, `TMockClock`, `TMonotonicClock`, `TNativeClock`, `TOffsetClock`, `TTimezoneClock`, `TTimezoneDecorator`, `TUTCClock`).
+- Registered in `framework/classes.php` (`IClock`, `TApplicationClockAwareTrait`, `TClockAwareTrait`, `TClockDecorator`, `TClockTrait`, `TMockClock`, `TMonotonicClock`, `TMonotonicClockAwareTrait`, `TNativeClock`, `TOffsetClock`, `TTimezoneClock`, `TTimezoneDecorator`, `TUTCClock`).
 - `@since 4.4.0` for all members; requires the `psr/clock` composer dependency.

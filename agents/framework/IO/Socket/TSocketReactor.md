@@ -8,7 +8,7 @@
 **Namespace:** `Prado\IO\Socket`
 **Extends:** `Prado\TComponent`
 **Implements:** [`ITickableEventLoop`](../Async/ITickableEventLoop.md) (so [`IEventLoop`](../Async/IEventLoop.md))
-**Uses:** `TClockAwareTrait`
+**Uses:** [`TMonotonicClockAwareTrait`](../../Util/Clock/TMonotonicClockAwareTrait.md)
 **Since:** 4.4.0
 
 ## Overview
@@ -40,7 +40,7 @@ A single-threaded event loop over one `TSocketServer::select()` that needs no ex
 Identifiers are decimal strings from one counter. `cancel()` of an unknown id is a no-op; `enable()`/`disable()` of one throws `TInvalidDataValueException('eventloop_callback_invalid')`.
 
 ## Time base
-`now()` reads the injected `IClock::microtime()` when `setClock()` was called, else `hrtime()`. `setClock()` re-bases pending timers so each keeps its remaining delay; `getClock()` creates the default clock through `setClock()` and so re-bases too. A pinned `TMockClock` therefore advances reactor timers; `TMockClock::sleep()` or `setMicrotime()` plus `tick(0)` fires them deterministically.
+`now()` reads `getMonotonicClock()->seconds()`, a `TMonotonicClock` over `hrtime()` by default. The reactor reads no wall clock, so a wall-clock step (NTP, a manual change, a resumed VM) does not move a timer. `setMonotonicClock()` re-bases pending timers so each keeps its remaining delay. A test sets a `TMonotonicClock` subclass whose `hrtime()` it advances, then calls `tick(0)` to fire the due timers deterministically.
 
 ## Source API (sugar over the callbacks)
 

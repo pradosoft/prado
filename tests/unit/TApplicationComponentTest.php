@@ -54,10 +54,14 @@ class TApplicationComponentTest extends TestCase
 
 	private string $_tmpDir;
 	private TTestApplication $_app;
+	private ?array $_classFx;
 
 	protected function setUp(): void
 	{
 		$this->saveOutputBufferLevel();
+		// An earlier Performance-mode test may have seeded the process-wide lists from a stale runtime file.
+		$this->_classFx = PradoUnit::getStaticProp(TApplicationComponent::class, '_classFx');
+		PradoUnit::setStaticProp(TApplicationComponent::class, '_classFx', null);
 		$this->_tmpDir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'tac_comp_' . uniqid('', true);
 		mkdir($this->_tmpDir, 0o777, true);
 		$this->_app = new TTestApplication($this->_tmpDir);
@@ -75,6 +79,7 @@ class TApplicationComponentTest extends TestCase
 			rmdir($runtime);
 		}
 		rmdir($this->_tmpDir);
+		PradoUnit::setStaticProp(TApplicationComponent::class, '_classFx', $this->_classFx);
 		$this->restoreOutputBufferLevel();
 	}
 
