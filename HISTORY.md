@@ -1,4 +1,6 @@
 ## Version 4.4.0 - TBA
+NEW: Browser integration in callback responses: `TCallbackClientScript::notify()` shows a system notification through the Notification API, and a click on it raises the callback of a control; `setAppBadge()` and `clearAppBadge()` set the badge of an installed web app, `setDocumentTitle()` sets the document title, and `vibrate()` vibrates the device. `Prado.Browser` and `Prado.Notification` in the `prado` script package (`controls/browser.js`) are the client side; `Prado.Notification.requestPermission()` asks for permission from a user interaction, and `Prado.Browser.queryPermission()` reads a permission state. (belisoful)
+ENH: `TTimeTriggeredCallback` pauses while the browser is offline, and while the page is hidden when `PauseWhenHidden` is true (the default); a visible, online page sends one callback at once if an interval passed, then resumes the interval. (belisoful)
 NEW: Issue #1406 - `TIbanValidator` validates an IBAN against the SWIFT registry country formats and the mod 97 checksum on the client and the server, with `Countries`. (belisoful)
 NEW: Issue #1406 - `TLuhnValidator` validates the Luhn checksum of card, IMEI, and ID numbers on the client and the server, with `AllowSeparators`. (belisoful)
 NEW: Issue #1406 - `TJsonValidator` validates JSON text on the client and the server. (belisoful)

@@ -45,7 +45,7 @@ through `light-dark()` and the `Canvas` system color. See
 
 | Package | File(s) | Purpose |
 |---|---|---|
-| `prado` | `prado.js`, `controls/controls.js` | Framework core, jQuery OOP layer, behaviors, events |
+| `prado` | `prado.js`, `controls/controls.js`, `controls/browser.js` | Framework core, jQuery OOP layer, behaviors, events; `Prado.Browser` (title, app badge, vibration, permission state, visibility, online) and `Prado.Notification` (Notification API permission and show, click raises a callback) (4.4.0) |
 | `ajax` | `ajax3.js`, `activecontrols3.js` | Callback/postback AJAX system |
 | `validator` | `validator/validation3.js` | Client-side form validation |
 | `datepicker` | `datepicker/datepicker.js` | Calendar date picker widget |
