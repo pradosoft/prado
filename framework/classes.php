@@ -826,6 +826,7 @@ return [
 'TImageDecoding' => 'Prado\Web\UI\WebControls\TImageDecoding',
 'TImageMap' => 'Prado\Web\UI\WebControls\TImageMap',
 'TImageMapEventParameter' => 'Prado\Web\UI\WebControls\TImageMapEventParameter',
+'TIbanValidator' => 'Prado\Web\UI\WebControls\TIbanValidator',
 'TImageValidator' => 'Prado\Web\UI\WebControls\TImageValidator',
 'TInlineFrame' => 'Prado\Web\UI\WebControls\TInlineFrame',
 'TInlineFrameAlign' => 'Prado\Web\UI\WebControls\TInlineFrameAlign',

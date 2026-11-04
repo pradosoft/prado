@@ -2104,6 +2104,82 @@ Prado.WebUI.TCaptchaValidator = Prado.Class(Prado.WebUI.TBaseValidator,
 
 
 /**
+ * TIbanValidator validates whether the value of an associated input component
+ * is an International Bank Account Number. The checks match the server side
+ * TIbanValidator, which supplies the country formats.
+ *
+ * @class Prado.WebUI.TIbanValidator
+ * @extends Prado.WebUI.TBaseValidator
+ */
+Prado.WebUI.TIbanValidator = Prado.Class(Prado.WebUI.TBaseValidator,
+{
+	/**
+	 * Additional constructor options.
+	 * @constructor initialize
+	 * @param {object} options - Additional constructor options:
+	 * @... {object} CountryFormats - BBAN format of each allowed country code, such as "4a,6n,8c".
+	 */
+
+	/**
+	 * Evaluate validation state
+	 * @function {boolean} ?
+	 * @return True if the value is a valid IBAN or the value is empty.
+	 */
+	evaluateIsValid() {
+		const value = this.getRawValidationValue();
+		if (value.length <= 0)
+			return true;
+		return this.isValidIban(value);
+	},
+
+	/**
+	 * Checks an IBAN against the country formats and the mod 97-10 checksum.
+	 * @function {boolean} ?
+	 * @param {string} value - The IBAN; spaces are ignored and letters compared upper case.
+	 * @return True if the IBAN is valid.
+	 */
+	isValidIban(value) {
+		const iban = value.replace(/ /g, '').toUpperCase();
+		const formats = this.options.CountryFormats || {};
+		const m = /^([A-Z]{2})[0-9]{2}([A-Z0-9]+)$/.exec(iban);
+		if (m == null || !Object.prototype.hasOwnProperty.call(formats, m[1]))
+			return false;
+		if (!this.bbanPattern(formats[m[1]]).test(m[2]))
+			return false;
+		return this.mod97(iban.slice(4) + iban.slice(0, 4)) == 1;
+	},
+
+	/**
+	 * Builds the regular expression of a BBAN format.
+	 * @function {RegExp} ?
+	 * @param {string} format - A BBAN format, such as "4a,6n,8c".
+	 * @return The anchored regular expression.
+	 */
+	bbanPattern(format) {
+		const classes = { n: '[0-9]', a: '[A-Z]', c: '[A-Z0-9]' };
+		const runs = format.split(',').map((run) => `${classes[run.slice(-1)]}{${parseInt(run, 10)}}`);
+		return new RegExp(`^${runs.join('')}$`);
+	},
+
+	/**
+	 * Computes the ISO 7064 mod 97-10 remainder of digits and upper case
+	 * letters; each letter counts as two digits, A as 10 to Z as 35.
+	 * @function {number} ?
+	 * @param {string} value - The digits and letters.
+	 * @return The remainder, 0 to 96.
+	 */
+	mod97(value) {
+		let remainder = 0;
+		for (const char of value) {
+			const digits = /[0-9]/.test(char) ? char : String(char.charCodeAt(0) - 55);
+			for (const digit of digits)
+				remainder = (remainder * 10 + Number(digit)) % 97;
+		}
+		return remainder;
+	}
+});
+
+/**
  * TReCaptchaValidator client-side control.
  * Deprecated with TReCaptcha (reCAPTCHA v1); use Prado.WebUI.TReCaptcha2Validator.
  *
