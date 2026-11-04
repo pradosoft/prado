@@ -240,6 +240,40 @@ Object.assign(Prado.Validation,
 	pressCallbacks : [],
 
 	/**
+	 * Estimates the entropy of a password in bits from its characters, as the
+	 * server side TPasswordStrengthValidator::estimateEntropy() does. The pool
+	 * size is the sum of the character classes present: 26 lower case letters,
+	 * 26 upper case letters, 10 digits, 33 other ASCII characters, and 100
+	 * non-ASCII characters. Each distinct character adds log2 of the pool size,
+	 * and each repeated character adds log2 of the distinct count.
+	 * @function {number} ?
+	 * @param {string} password - The password.
+	 * @return The estimated entropy in bits.
+	 */
+	estimatePasswordEntropy(password) {
+		const chars = Array.from(password);
+		if (chars.length == 0)
+			return 0;
+		const sizes = { lower: 26, upper: 26, digit: 10, symbol: 33, other: 100 };
+		const classes = new Set(chars.map((char) => {
+			const code = char.codePointAt(0);
+			if (code > 127)
+				return 'other';
+			if (code >= 97 && code <= 122)
+				return 'lower';
+			if (code >= 65 && code <= 90)
+				return 'upper';
+			if (code >= 48 && code <= 57)
+				return 'digit';
+			return 'symbol';
+		}));
+		let pool = 0;
+		classes.forEach((name) => { pool += sizes[name]; });
+		const distinct = new Set(chars).size;
+		return distinct * Math.log2(pool) + (chars.length - distinct) * Math.log2(distinct);
+	},
+
+	/**
 	 * Runs a callback now, or after the primary mouse button is released.
 	 * A control's change event fires on blur when the mouse goes down on another
 	 * element, such as a submit button. Re-validation that hides a Dynamic message
@@ -947,6 +981,7 @@ Prado.WebUI.TBaseValidator = Prado.Class(Prado.WebUI.Control,
 			// Point the field's accessible description at this validator's
 			// message, so assistive technology reads the error with the field.
 			this.linkDescribedBy();
+			this.claimServerAria();
 
 			/**
 			 * ValidationManager of this validator
@@ -969,6 +1004,16 @@ Prado.WebUI.TBaseValidator = Prado.Class(Prado.WebUI.Control,
 			existing.push(this.message.id);
 			this.control.setAttribute('aria-describedby', existing.join(' '));
 		}
+	},
+
+	/**
+	 * Takes ownership of an aria-invalid="true" that the server rendered when
+	 * this validator failed on the server (the IsValid option is false). The
+	 * attribute then clears once this validator passes on the client.
+	 */
+	claimServerAria() {
+		if(this.options.IsValid === false && this.control.getAttribute('aria-invalid') == 'true' && !this.control.lastAriaValidator)
+			this.control.lastAriaValidator = this.options.ID;
 	},
 
 	/**
@@ -1966,6 +2011,121 @@ Prado.WebUI.TRegularExpressionValidator = Prado.Class(Prado.WebUI.TBaseValidator
  */
 Prado.WebUI.TEmailAddressValidator = Prado.WebUI.TRegularExpressionValidator;
 
+/**
+ * TUrlValidator validates whether the value of an associated input component
+ * is an absolute URL with an allowed scheme and a valid host. The checks
+ * match the server side TUrlValidator.
+ *
+ * @class Prado.WebUI.TUrlValidator
+ * @extends Prado.WebUI.TBaseValidator
+ */
+Prado.WebUI.TUrlValidator = Prado.Class(Prado.WebUI.TBaseValidator,
+{
+	/**
+	 * Additional constructor options.
+	 * @constructor initialize
+	 * @param {object} options - Additional constructor options:
+	 * @... {string[]} ValidSchemes - Lower case allowed schemes; empty allows every scheme.
+	 * @... {boolean} AllowIdn - Whether the host may be an internationalized domain name.
+	 * @... {boolean} RequireTld - Whether a domain name host requires a top-level label.
+	 */
+
+	/**
+	 * Evaluate validation state
+	 * @function {boolean} ?
+	 * @return True if the value is a valid URL or the value is empty.
+	 */
+	evaluateIsValid() {
+		const value = this.getRawValidationValue();
+		if (value.length <= 0)
+			return true;
+		return this.isValidUrl(value);
+	},
+
+	/**
+	 * Checks a URL against the scheme, host, and port restrictions.
+	 * @function {boolean} ?
+	 * @param {string} value - The URL.
+	 * @return True if the URL is valid.
+	 */
+	isValidUrl(value) {
+		// The control characters are matched on purpose: a URL must not contain them.
+		// eslint-disable-next-line no-control-regex
+		const m = /^([a-z][a-z0-9+.-]*):\/\/(?:[^\x00-\x20\x7f/?#@[\]]+@)?(\[[0-9a-f:.]+\]|[^\x00-\x20\x7f/?#@:[\]%]+)(?::([0-9]{1,5}))?(?:[/?#][^\x00-\x20\x7f]*)?$/iu.exec(value);
+		if (m == null)
+			return false;
+		const schemes = this.options.ValidSchemes || [];
+		if (schemes.length > 0 && schemes.indexOf(m[1].toLowerCase()) < 0)
+			return false;
+		if (m[3] !== undefined && parseInt(m[3], 10) > 65535)
+			return false;
+		return this.isValidHost(m[2]);
+	},
+
+	/**
+	 * Checks the host of a URL: a bracketed IPv6 address, an IPv4 address, or a domain name.
+	 * An internationalized domain name is converted to ASCII by the browser URL parser.
+	 * @function {boolean} ?
+	 * @param {string} host - The host.
+	 * @return True if the host is valid.
+	 */
+	isValidHost(host) {
+		if (host.charAt(0) == '[')
+			return this.isIPv6(host.slice(1, -1));
+		if (/^[0-9.]+$/.test(host))
+			return this.isIPv4(host);
+		if (/[^ -~]/.test(host)) {
+			if (!this.options.AllowIdn)
+				return false;
+			try {
+				host = new URL(`http://${host}/`).hostname;
+			} catch {
+				return false;
+			}
+		}
+		host = host.toLowerCase();
+		const label = '[a-z0-9_](?:[a-z0-9_\\-]{0,61}[a-z0-9_])?';
+		if (host.length > 253 || !new RegExp(`^${label}(?:\\.${label})*$`).test(host))
+			return false;
+		if (this.options.RequireTld) {
+			const labels = host.split('.');
+			return labels.length > 1 && /^(?:[a-z]{2,63}|xn--[a-z0-9-]{1,59})$/.test(labels[labels.length - 1]);
+		}
+		return true;
+	},
+
+	/**
+	 * @function {boolean} ?
+	 * @param {string} value - The address.
+	 * @return True if the value is a dotted decimal IPv4 address without leading zeros.
+	 */
+	isIPv4(value) {
+		return /^(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)$/.test(value);
+	},
+
+	/**
+	 * @function {boolean} ?
+	 * @param {string} value - The address.
+	 * @return True if the value is an IPv6 address, optionally ending in an IPv4 address.
+	 */
+	isIPv6(value) {
+		if (value.indexOf('.') >= 0) {
+			const last = value.lastIndexOf(':');
+			if (last < 0 || !this.isIPv4(value.substring(last + 1)))
+				return false;
+			value = `${value.substring(0, last + 1)}0:0`;
+		}
+		const halves = value.split('::');
+		if (halves.length > 2)
+			return false;
+		const groups = (half) => half === '' ? [] : half.split(':');
+		const all = halves.length == 2 ? groups(halves[0]).concat(groups(halves[1])) : groups(halves[0]);
+		if (!all.every((group) => /^[0-9a-f]{1,4}$/i.test(group)))
+			return false;
+		return halves.length == 2 ? all.length < 8 : all.length == 8;
+	}
+});
+
 
 /**
  * TListControlValidator checks the number of selection and their values
@@ -2052,6 +2212,83 @@ Prado.WebUI.TListControlValidator = Prado.Class(Prado.WebUI.TBaseValidator,
 
 
 /**
+ * TJsonValidator validates whether the value of an associated input component
+ * is JSON text. The checks match the server side TJsonValidator: JSON.parse()
+ * syntax, no unpaired UTF-16 surrogate escape, and arrays and objects nested
+ * fewer than MaxDepth levels.
+ *
+ * @class Prado.WebUI.TJsonValidator
+ * @extends Prado.WebUI.TBaseValidator
+ */
+Prado.WebUI.TJsonValidator = Prado.Class(Prado.WebUI.TBaseValidator,
+{
+	/**
+	 * Additional constructor options.
+	 * @constructor initialize
+	 * @param {object} options - Additional constructor options:
+	 * @... {number} MaxDepth - The PHP JSON depth; at most MaxDepth - 1 arrays and objects nest.
+	 */
+
+	/**
+	 * Evaluate validation state
+	 * @function {boolean} ?
+	 * @return True if the value is JSON text or the value is empty.
+	 */
+	evaluateIsValid() {
+		const value = this.getRawValidationValue();
+		if (value.length <= 0)
+			return true;
+		return this.isValidJson(value);
+	},
+
+	/**
+	 * Checks whether a string is JSON text.
+	 * @function {boolean} ?
+	 * @param {string} value - The string.
+	 * @return True if the string is JSON text.
+	 */
+	isValidJson(value) {
+		let wellFormed = true;
+		try {
+			JSON.parse(value, (key, item) => {
+				if (/\p{Cs}/u.test(key) || (typeof item == 'string' && /\p{Cs}/u.test(item)))
+					wellFormed = false;
+				return item;
+			});
+		} catch {
+			return false;
+		}
+		return wellFormed && this.nestingDepth(value) < (this.options.MaxDepth || 512);
+	},
+
+	/**
+	 * Measures the deepest nesting of arrays and objects in parsed JSON text.
+	 * @function {number} ?
+	 * @param {string} value - JSON text that JSON.parse() accepts.
+	 * @return The deepest nesting level; 0 for a scalar.
+	 */
+	nestingDepth(value) {
+		let depth = 0, max = 0, inString = false;
+		for (let i = 0; i < value.length; i++) {
+			const c = value.charAt(i);
+			if (inString) {
+				if (c == '\\')
+					i++;
+				else if (c == '"')
+					inString = false;
+			} else if (c == '"') {
+				inString = true;
+			} else if (c == '[' || c == '{') {
+				max = Math.max(max, ++depth);
+			} else if (c == ']' || c == '}') {
+				depth--;
+			}
+		}
+		return max;
+	}
+});
+
+/**
  * TDataTypeValidator verifies if the input data is of the type specified
  * by <tt>DataType</tt> option.
  *
@@ -2088,6 +2325,149 @@ Prado.WebUI.TDataTypeValidator = Prado.Class(Prado.WebUI.TBaseValidator,
 		if(value.length <= 0)
 			return true;
 		return this.convert(this.options.DataType, value) != null;
+	}
+});
+
+/**
+ * TUnicodeValidator checks for suspicious Unicode characters on the server
+ * only, with the intl Spoofchecker. The client side validator always succeeds,
+ * so a value the server rejected is checked again on the next postback.
+ *
+ * @class Prado.WebUI.TUnicodeValidator
+ * @extends Prado.WebUI.TBaseValidator
+ */
+Prado.WebUI.TUnicodeValidator = Prado.Class(Prado.WebUI.TBaseValidator,
+{
+	/**
+	 * Evaluate validation state
+	 * @function {boolean} ?
+	 * @return Always true; the server validates.
+	 */
+	evaluateIsValid() {
+		return true;
+  }
+});
+
+/**
+ * TPasswordStrengthValidator validates whether the value of an associated
+ * input component is a password with enough estimated entropy. The estimate
+ * matches the server side TPasswordStrengthValidator::estimateEntropy(); the
+ * compromised password check runs on the server only.
+ *
+ * @class Prado.WebUI.TPasswordStrengthValidator
+ * @extends Prado.WebUI.TBaseValidator
+ */
+Prado.WebUI.TPasswordStrengthValidator = Prado.Class(Prado.WebUI.TBaseValidator,
+{
+	/**
+	 * Additional constructor options.
+	 * @constructor initialize
+	 * @param {object} options - Additional constructor options:
+	 * @... {number} MinEntropy - Minimum estimated entropy in bits.
+	 */
+
+	/**
+	 * Evaluate validation state
+	 * @function {boolean} ?
+	 * @return True if the password has enough estimated entropy or the value is empty.
+	 */
+	evaluateIsValid() {
+		const value = this.getRawValidationValue();
+		if (value.length <= 0)
+			return true;
+		return this.estimateEntropy(value) >= this.options.MinEntropy;
+	},
+
+	/**
+	 * Estimates the entropy of a password in bits.
+	 * @function {number} ?
+	 * @param {string} password - The password.
+	 * @return The estimated entropy in bits; see {@see Prado.Validation.estimatePasswordEntropy}.
+	 */
+	estimateEntropy(password) {
+		return Prado.Validation.estimatePasswordEntropy(password);
+	}
+});
+
+/**
+ * TPasswordStrengthMeter shows the estimated strength of the password typed in
+ * a control: the fill of its bar grows from the left and shifts from red to
+ * green as the estimated entropy grows toward MaxEntropy. Optional texts name
+ * the strength level and show the bits. The element is a role="meter" whose aria-valuenow is the
+ * entropy in bits and whose aria-valuetext is the level name.
+ *
+ * @class Prado.WebUI.TPasswordStrengthMeter
+ * @extends Prado.WebUI.Control
+ */
+Prado.WebUI.TPasswordStrengthMeter = Prado.Class(Prado.WebUI.Control,
+{
+	/**
+	 * Constructor options.
+	 * @constructor onInit
+	 * @param {object} options - Constructor options:
+	 * @... {string} ID - Client ID of the meter.
+	 * @... {string} ControlToMeasure - Client ID of the password control.
+	 * @... {number} MaxEntropy - Entropy in bits that fills the bar.
+	 * @... {string[]} LevelTexts - Level names from VeryWeak to VeryStrong.
+	 * @... {number[]} LevelEntropy - Entropy in bits at which each level starts.
+	 * @... {string} Culture - Culture of the bits text, such as "de-DE"; empty uses the browser.
+	 * @... {object} BitsPatterns - Bits text patterns keyed by CLDR plural category; "{0}" is the number.
+	 */
+	onInit(options) {
+		this.options = options;
+		this.control = document.getElementById(options.ControlToMeasure);
+		if (!this.element || !this.control)
+			return;
+		this.bar = this.element.querySelector('.prado-password-meter-bar');
+		this.fill = this.element.querySelector('.prado-password-meter-fill');
+		this.text = this.element.querySelector('.prado-password-meter-text');
+		this.bits = this.element.querySelector('.prado-password-meter-bits');
+		const culture = options.Culture || undefined;
+		try {
+			this.pluralRules = new Intl.PluralRules(culture);
+			this.numberFormat = new Intl.NumberFormat(culture);
+		} catch {
+			this.pluralRules = new Intl.PluralRules();
+			this.numberFormat = new Intl.NumberFormat();
+		}
+		this.observe(this.control, 'input', () => this.update());
+		this.update();
+	},
+
+	/**
+	 * Measures the password and updates the fill, the color, the texts, and the meter values.
+	 * @function ?
+	 */
+	update() {
+		const value = this.control.value || '';
+		const bits = Prado.Validation.estimatePasswordEntropy(value);
+		const fraction = Math.min(bits / this.options.MaxEntropy, 1);
+		this.fill.style.width = `${(fraction * 100).toFixed(2)}%`;
+		this.bar.style.setProperty('--prado-meter-hue', String(Math.round(fraction * 120)));
+		let level = 0;
+		this.options.LevelEntropy.forEach((start, i) => {
+			if (bits >= start)
+				level = i;
+		});
+		const name = this.options.LevelTexts[level];
+		if (this.text)
+			this.text.textContent = value.length > 0 ? name : '';
+		if (this.bits)
+			this.bits.textContent = value.length > 0 ? this.formatBits(Math.round(bits)) : '';
+		this.element.setAttribute('aria-valuenow', String(Math.round(Math.min(bits, this.options.MaxEntropy))));
+		this.element.setAttribute('aria-valuetext', name);
+	},
+
+	/**
+	 * Formats a number of bits with the plural pattern of the culture.
+	 * @function {string} ?
+	 * @param {number} bits - The whole number of bits.
+	 * @return The bits text, such as "62 bits".
+	 */
+	formatBits(bits) {
+		const patterns = this.options.BitsPatterns || {};
+		const pattern = patterns[this.pluralRules.select(bits)] || patterns.other || patterns.one || '{0}';
+		return pattern.replace('{0}', this.numberFormat.format(bits));
 	}
 });
 
@@ -2589,5 +2969,64 @@ Prado.WebUI.TImageValidator = Prado.Class(Prado.WebUI.TFileValidator,
 		if(this.options.MaxImageHeight > 0 && info.height > this.options.MaxImageHeight)
 			return false;
 		return true;
+	}
+});
+
+/**
+ * TUuidValidator validates whether the value of an associated input component
+ * is an RFC 9562 UUID. The checks match the server side TUuidValidator.
+ *
+ * @class Prado.WebUI.TUuidValidator
+ * @extends Prado.WebUI.TBaseValidator
+ */
+Prado.WebUI.TUuidValidator = Prado.Class(Prado.WebUI.TBaseValidator,
+{
+	/**
+	 * Additional constructor options.
+	 * @constructor initialize
+	 * @param {object} options - Additional constructor options:
+	 * @... {number[]} Versions - Allowed versions from 1 to 8; empty allows every version.
+	 * @... {boolean} Strict - Whether only the hyphenated 8-4-4-4-12 form is accepted.
+	 * @... {boolean} AllowNil - Whether the nil UUID is valid.
+	 */
+
+	/**
+	 * Evaluate validation state
+	 * @function {boolean} ?
+	 * @return True if the value is a valid UUID or the value is empty.
+	 */
+	evaluateIsValid() {
+		const value = this.getRawValidationValue();
+		if (value.length <= 0)
+			return true;
+		return this.isValidUuid(value);
+	},
+
+	/**
+	 * Checks a UUID against the form, version, variant, and nil restrictions.
+	 * @function {boolean} ?
+	 * @param {string} value - The UUID.
+	 * @return True if the UUID is valid.
+	 */
+	isValidUuid(value) {
+		const canonical = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+		if (!this.options.Strict) {
+			if (value.slice(0, 9).toLowerCase() == 'urn:uuid:')
+				value = value.slice(9);
+			if (value.length > 2 && value.charAt(0) == '{' && value.charAt(value.length - 1) == '}')
+				value = value.slice(1, -1);
+			if (!canonical.test(value) && !/^[0-9a-f]{32}$/i.test(value))
+				return false;
+		} else if (!canonical.test(value)) {
+			return false;
+		}
+		const hex = value.replace(/-/g, '').toLowerCase();
+		if (hex == '0'.repeat(32))
+			return !!this.options.AllowNil;
+		const version = parseInt(hex.charAt(12), 16);
+		if (version < 1 || version > 8 || '89ab'.indexOf(hex.charAt(16)) < 0)
+			return false;
+		const versions = this.options.Versions || [];
+		return versions.length == 0 || versions.indexOf(version) >= 0;
 	}
 });

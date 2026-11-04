@@ -1,0 +1,56 @@
+{
+	"_comment": "UUID cases shared by tests/unit/Web/UI/WebControls/TUuidValidatorTest.php and tests/js/validator/uuidvalidator.test.js, so both sides agree. Each case is [value, valid]. The option sets are: default (Strict, every version, no nil); loose (Strict off); v4v7 (Versions 4,7); nil (AllowNil).",
+	"default": [
+		["", true],
+		["f81d4fae-7dec-11d0-a765-00a0c91e6bf6", true],
+		["F81D4FAE-7DEC-11D0-A765-00A0C91E6BF6", true],
+		["000003e8-cbb9-21ea-b201-00045a86c8a1", true],
+		["a3bb189e-8bf9-3888-9912-ace4e6543002", true],
+		["550e8400-e29b-41d4-a716-446655440000", true],
+		["2ed6657d-e927-568b-95e1-2665a8aea6a2", true],
+		["1ec9414c-232a-6b00-b3c8-9f6bdeced846", true],
+		["017f22e2-79b0-7cc3-98c4-dc0c0c07398f", true],
+		["320c3d4d-cc00-875b-8ec9-32d5f69181c0", true],
+		["550e8400-e29b-41d4-b716-446655440000", true],
+		["550e8400-e29b-41d4-8716-446655440000", true],
+		["550e8400-e29b-41d4-9716-446655440000", true],
+		["00000000-0000-0000-0000-000000000000", false],
+		["ffffffff-ffff-ffff-ffff-ffffffffffff", false],
+		["550e8400-e29b-01d4-a716-446655440000", false],
+		["550e8400-e29b-91d4-a716-446655440000", false],
+		["550e8400-e29b-41d4-c716-446655440000", false],
+		["550e8400-e29b-41d4-7716-446655440000", false],
+		["550e8400e29b41d4a716446655440000", false],
+		["{550e8400-e29b-41d4-a716-446655440000}", false],
+		["urn:uuid:550e8400-e29b-41d4-a716-446655440000", false],
+		["550e8400-e29b-41d4-a716-44665544000", false],
+		["550e8400-e29b-41d4-a716-4466554400000", false],
+		["550e8400-e29b-41d4-a716-44665544000g", false],
+		["550e8400-e29b41d4-a716-446655440000", false],
+		[" 550e8400-e29b-41d4-a716-446655440000", false]
+	],
+	"loose": [
+		["550e8400-e29b-41d4-a716-446655440000", true],
+		["550e8400e29b41d4a716446655440000", true],
+		["{550e8400-e29b-41d4-a716-446655440000}", true],
+		["{550e8400e29b41d4a716446655440000}", true],
+		["urn:uuid:550e8400-e29b-41d4-a716-446655440000", true],
+		["URN:UUID:550E8400E29B41D4A716446655440000", true],
+		["urn:uuid:{550e8400-e29b-41d4-a716-446655440000}", true],
+		["{550e8400-e29b-41d4-a716-446655440000", false],
+		["550e8400-e29b41d4a716-446655440000", false],
+		["550e8400e29b01d4a716446655440000", false],
+		["{}", false]
+	],
+	"v4v7": [
+		["550e8400-e29b-41d4-a716-446655440000", true],
+		["017f22e2-79b0-7cc3-98c4-dc0c0c07398f", true],
+		["f81d4fae-7dec-11d0-a765-00a0c91e6bf6", false],
+		["1ec9414c-232a-6b00-b3c8-9f6bdeced846", false]
+	],
+	"nil": [
+		["00000000-0000-0000-0000-000000000000", true],
+		["ffffffff-ffff-ffff-ffff-ffffffffffff", false],
+		["550e8400-e29b-41d4-a716-446655440000", true]
+	]
+}
