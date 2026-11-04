@@ -16,8 +16,8 @@ use Prado\IO\Async\ITickableEventLoop;
 use Prado\IO\Async\TLoopSuspension;
 use Prado\IO\IResource;
 use Prado\TComponent;
-use Prado\Util\Clock\IClock;
-use Prado\Util\Clock\TClockAwareTrait;
+use Prado\Util\Clock\TMonotonicClock;
+use Prado\Util\Clock\TMonotonicClockAwareTrait;
 use Revolt\EventLoop\Suspension;
 
 /**
@@ -47,10 +47,9 @@ use Revolt\EventLoop\Suspension;
  * exception leaves `tick()` or {@see run()} after the loop's bookkeeping is complete, so the
  * other callbacks stay registered and the next tick continues.
  *
- * Timers read the injected {@see \Prado\Util\Clock\IClock} when one is set, so a pinned
- * {@see \Prado\Util\Clock\TMockClock} advances them.  Without an injected clock they read
- * {@see \hrtime()}, which a wall-clock step does not move.  {@see setClock()} re-bases pending
- * timers onto the new clock.
+ * Timers read the {@see getMonotonicClock() monotonic clock}, so a wall-clock change does not
+ * lengthen or shorten them.  {@see setMonotonicClock()} re-bases pending timers onto the new
+ * clock; a test sets a {@see \Prado\Util\Clock\TMonotonicClock} subclass it advances.
  *
  * {@see suspension()} returns a {@see TLoopSuspension}: a worker fiber that suspends yields to
  * the loop and is re-entered from a deferred callback; the main fiber ticks the loop until it
@@ -62,7 +61,7 @@ use Revolt\EventLoop\Suspension;
  */
 class TSocketReactor extends TComponent implements ITickableEventLoop
 {
-	use TClockAwareTrait;
+	use TMonotonicClockAwareTrait;
 
 	/** The callback type of {@see defer()}. */
 	public const TYPE_DEFER = 'defer';
@@ -147,27 +146,15 @@ class TSocketReactor extends TComponent implements ITickableEventLoop
 	// =========================================================================
 
 	/**
-	 * Returns the clock timers read, creating the default clock on first use.
-	 * @return IClock The clock.
-	 */
-	public function getClock(): IClock
-	{
-		if ($this->_clock === null) {
-			$this->setClock($this->createClock());
-		}
-		return $this->_clock;
-	}
-
-	/**
-	 * Sets the clock timers read and re-bases the pending timers onto it, so each keeps its
-	 * remaining delay.  Null returns the reactor to {@see \hrtime()}.
-	 * @param ?IClock $clock The clock, or null for the monotonic default.
+	 * Sets the monotonic clock timers read and re-bases the pending timers onto it, so each
+	 * keeps its remaining delay.  Null returns the reactor to the system timer.
+	 * @param ?TMonotonicClock $clock The clock, or null for the system timer.
 	 * @return static The current reactor.
 	 */
-	public function setClock(?IClock $clock): static
+	public function setMonotonicClock(?TMonotonicClock $clock): static
 	{
 		$before = $this->now();
-		$this->_clock = $clock;
+		$this->_monotonicClock = $clock;
 		$delta = $this->now() - $before;
 		foreach ($this->_callbacks as $id => $callback) {
 			if ($callback['type'] === self::TYPE_DELAY || $callback['type'] === self::TYPE_REPEAT) {
@@ -178,14 +165,12 @@ class TSocketReactor extends TComponent implements ITickableEventLoop
 	}
 
 	/**
-	 * Returns the current time on the timer base: the injected clock's
-	 * {@see \Prado\Util\Clock\IClock::microtime() microtime()}, or {@see \hrtime()} seconds
-	 * without one.
-	 * @return float The current time in seconds.
+	 * Returns the current time on the timer base, the {@see getMonotonicClock() monotonic clock}.
+	 * @return float The current time in seconds, from an arbitrary origin.
 	 */
 	public function now(): float
 	{
-		return ($this->_clock === null) ? \hrtime(true) / 1_000_000_000 : $this->_clock->microtime();
+		return $this->getMonotonicClock()->seconds();
 	}
 
 	// =========================================================================
