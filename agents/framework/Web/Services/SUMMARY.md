@@ -13,3 +13,5 @@ Application services handling different response types; registered in `applicati
 - **`TFeedService`** — RSS/Atom feed generation; delegates to content provider classes.
 
 - **`TPageConfiguration`** — Parses per-directory `config.xml`/`config.php` files for page-level module loading, authorization rules.
+
+RPC (`TRpcService` and the protocols) is the `pradosoft/prado-rpc` package since 4.4.0 (#1210); see [INDEX.md](INDEX.md).

@@ -17,7 +17,7 @@ This file provides guidance to Agents when working with code in this repository.
 
 ## Purpose
 
-Cross-cutting utilities for the Prado framework: the behavior/mixin system, logging, scheduled tasks, named locks, POSIX signal handling, parameter modules, and general-purpose helpers.
+Cross-cutting utilities for the Prado framework: the behavior/mixin system, logging, scheduled tasks, named locks, POSIX signal handling, parameter modules, and general-purpose helpers. The RPC clients left `Prado\Util` for `Prado\IO\Rpc` in the `pradosoft/prado-rpc` package in 4.4.0 (#1210); see [Web/Services](../Web/Services/INDEX.md#rpc-the-pradosoftprado-rpc-package).
 
 ## Behavior System
 

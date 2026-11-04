@@ -40,6 +40,7 @@ TApplication
       TUrlManager / TUrlMapping (routing)
       TAssetManager
       Services/      (TPageService, TJsonService, TFeedService, TSoapService)
+      RPC (TRpcService, JSON-RPC/XML-RPC, clients): pradosoft/prado-rpc (separate package)
       UI/            (TControl, TPage, TTemplateControl, WebControls/, ActiveControls/, JuiControls/)
  └─ Data Layer     framework/Data/
       TDbConnection  (PDO wrapper)
@@ -477,6 +478,8 @@ Update extensions when adding new dynamic accessor prefixes or type-narrowing he
 | `TJsonService` | `json` | JSON responses |
 | `TSoapService` | `soap` | SOAP / WSDL |
 | `TFeedService` | `feed` | RSS / Atom feeds |
+
+RPC (`TRpcService`, JSON-RPC and XML-RPC, and the `TRpcClient` family) left the framework in 4.4.0 (#1210). It is the `pradosoft/prado-rpc` package; `composer require pradosoft/prado-rpc` keeps the `Prado\Web\Services` server classes and short names, and the clients become `Prado\IO\Rpc`. What the framework owes the package is in [Web/Services/INDEX.md](framework/Web/Services/INDEX.md#rpc-the-pradosoftprado-rpc-package).
 
 ### UI Hierarchy
 ```
