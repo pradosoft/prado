@@ -70,9 +70,9 @@ TForm renders the end scripts after the teleported content only when there is so
 
 ## TDialog and TActiveDialog
 
-A dialog inside a TTeleport can hold a `<form method="dialog">`: its submit buttons close the dialog script-free, set `returnValue` from the button `value`, and run the constraint check of the dialog form's fields first (`formnovalidate` skips it). A `TActiveDialog` raises OnClose by callback after such a close, and that callback posts the dialog form's fields. `returnValue` is not sent to the server.
+A dialog inside a TTeleport can hold a `<form method="dialog">`: its submit buttons close the dialog script-free, set `returnValue` from the button `value`, and run the constraint check of the dialog form's fields first (`formnovalidate` skips it). A `TActiveDialog` raises OnClose by callback after such a close, and that callback posts the dialog form's fields and `returnValue` (`TActiveDialog.ReturnValue`).
 
-#959's remaining dialog item (Invoker Commands `command`/`commandfor`, TDialog `ClosedBy`, `Modal`, `ReturnValue`) closes a dialog script-free inside the page form. Prefer invokers for a dialog whose fields post back with the page and need no dialog form; prefer a TTeleport for the dialog form (`returnValue` from the submitter, constraint check before closing) and for content that must escape its ancestors.
+A [TButton](TButton.md) with `CommandFor` and `Command` (Invoker Commands) opens and closes a [TDialog](TDialog.md) script-free inside the page form. Prefer invokers for a dialog whose fields post back with the page and need no dialog form; prefer a TTeleport for the dialog form (constraint check before closing) and for content that must escape its ancestors.
 
 ## Accessibility
 

@@ -7,7 +7,7 @@
  * updates the active panels inside a teleport, one replaced and one morphed.
  * "Re-render outer" re-renders an active panel that holds two teleports, the
  * second of them hidden on the first render. The note dialog is a TActiveDialog
- * whose close callback reports its return value and the note field.
+ * whose close callback reports its ReturnValue and the note field.
  */
 class TeleportTest extends TPage
 {
@@ -39,6 +39,6 @@ class TeleportTest extends TPage
 
 	public function noteClosed($sender, $param)
 	{
-		$this->closedWith->setText($this->noteText->getText());
+		$this->closedWith->setText($this->noteDialog->getReturnValue() . ':' . $this->noteText->getText());
 	}
 }

@@ -169,6 +169,58 @@ class TActiveDialogTest extends TestCase
 		$this->assertFalse($closeFired);
 	}
 
+	public function testReturnValueDefaultsEmpty()
+	{
+		$this->assertSame('', (new TActiveDialog())->getReturnValue());
+	}
+
+	public function testRaiseCallbackEventCloseSetsReturnValueBeforeOnClose()
+	{
+		$control = new TActiveDialog();
+		$control->setOpen(true);
+		$seen = null;
+		$control->attachEventHandler('OnClose', function ($sender) use (&$seen) {
+			$seen = $sender->getReturnValue();
+		});
+
+		$control->raiseCallbackEvent($this->createCallbackEventParameter(['close', 'confirm']));
+
+		$this->assertFalse($control->getOpen());
+		$this->assertSame('confirm', $seen);
+		$this->assertSame('confirm', $control->getReturnValue());
+	}
+
+	public function testRaiseCallbackEventCloseWithoutReturnValue()
+	{
+		$control = new TActiveDialog();
+		$control->raiseCallbackEvent($this->createCallbackEventParameter(['close', 'confirm']));
+
+		$control->raiseCallbackEvent($this->createCallbackEventParameter('close'));
+		$this->assertSame('', $control->getReturnValue());
+
+		$control->raiseCallbackEvent($this->createCallbackEventParameter(['close', ['nested']]));
+		$this->assertSame('', $control->getReturnValue());
+	}
+
+	public function testOpeningResetsReturnValue()
+	{
+		$control = new TActiveDialog();
+		$control->raiseCallbackEvent($this->createCallbackEventParameter(['close', 'confirm']));
+		$control->raiseCallbackEvent($this->createCallbackEventParameter('open'));
+		$this->assertSame('', $control->getReturnValue());
+
+		$control->raiseCallbackEvent($this->createCallbackEventParameter(['close', 'cancel']));
+		$control->setOpen(true);
+		$this->assertSame('', $control->getReturnValue());
+	}
+
+	public function testRaiseCallbackEventArrayOpen()
+	{
+		$control = new TActiveDialog();
+		$control->raiseCallbackEvent($this->createCallbackEventParameter(['open']));
+		$this->assertTrue($control->getOpen());
+	}
+
 	// --- getClientClassName ---
 
 	public function testGetClientClassName()
@@ -187,13 +239,28 @@ class TActiveDialogTest extends TestCase
 		$options = $ref->invoke($control);
 		$this->assertArrayHasKey('ID', $options);
 		$this->assertArrayHasKey('EventTarget', $options);
+		$this->assertFalse($options['ShowModal']);
+	}
+
+	public function testPostBackOptionsShowModalWhenOpenAndModal()
+	{
+		$control = new TActiveDialog();
+		$ref = new \ReflectionMethod($control, 'getPostBackOptions');
+		$control->setModal(true);
+		$this->assertFalse($ref->invoke($control)['ShowModal']);
+
+		$control->setOpen(true);
+		$this->assertTrue($ref->invoke($control)['ShowModal']);
+
+		$control->setModal(false);
+		$this->assertFalse($ref->invoke($control)['ShowModal']);
 	}
 
 	// Note: rendering TActiveDialog requires a full page context (registerCallbackClientScript
 	// calls getClientScript() which needs TPage). Rendering is covered by integration tests.
 
 	// Helper: create a TCallbackEventParameter mock
-	private function createCallbackEventParameter(string $param): TCallbackEventParameter
+	private function createCallbackEventParameter(string|array $param): TCallbackEventParameter
 	{
 		$eventParam = $this->createMock(TCallbackEventParameter::class);
 		$eventParam->method('getCallbackParameter')->willReturn($param);

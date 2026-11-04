@@ -11,4 +11,14 @@
 	<com:TActiveButton ID="button1" Text="Server Open" OnClick="open_dialog" />
 	<com:TActiveButton ID="button2" Text="Server Close" OnClick="close_dialog" />
 	<button type="button" id="showBtn" onclick="document.querySelector('dialog').show()">Client Show</button>
+
+	<com:TActiveDialog ID="dialog2" Modal="true" OnClose="confirm_closed" Attributes.aria-labelledby="confirmTitle">
+		<h2 id="confirmTitle">Confirm</h2>
+		<com:TButton ID="confirmOk" Text="OK" CommandFor="dialog2" Command="close" Attributes.value="ok" />
+		<com:TButton ID="confirmCancel" Text="Cancel" CommandFor="dialog2" Command="close" Attributes.value="cancel" />
+	</com:TActiveDialog>
+
+	<p>Confirm: <com:TActiveLabel ID="label2" Text="waiting" /></p>
+	<com:TButton ID="openConfirm" Text="Confirm" CommandFor="dialog2" Command="show-modal" />
+	<com:TActiveButton ID="button3" Text="Server Open Modal" OnClick="open_confirm" />
 </com:TContent>

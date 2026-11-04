@@ -176,6 +176,25 @@ describe('TActiveButton', () => {
 		expect(evt.preventDefault).toHaveBeenCalled();
 	});
 
+	it('lets an invoker button run its command once the callback is sent', () => {
+		mockCallbackRequest();
+		btn.setAttribute('commandfor', 'dialog1');
+		const ctrl = new TActiveButton({ ID: 'btn1', EventTarget: 'btn1' });
+		const evt = fakeEvent({ target: btn });
+		ctrl.onPostBack({ EventTarget: 'btn1' }, evt);
+		expect(evt.preventDefault).not.toHaveBeenCalled();
+	});
+
+	it('cancels the command of an invoker button when validation fails', () => {
+		const { dispatchMock } = mockCallbackRequest();
+		dispatchMock.mockReturnValue(false);
+		btn.setAttribute('commandfor', 'dialog1');
+		const ctrl = new TActiveButton({ ID: 'btn1', EventTarget: 'btn1' });
+		const evt = fakeEvent({ target: btn });
+		ctrl.onPostBack({ EventTarget: 'btn1' }, evt);
+		expect(evt.preventDefault).toHaveBeenCalled();
+	});
+
 	it('does not prevent the default when dispatch throws, so the postback fallback runs', () => {
 		// Deliberate v4.4 design: a throwing ClientSide hook degrades the click
 		// to a full-page postback rather than dead-ending it. The error is
@@ -1304,9 +1323,10 @@ describe('TActiveDetails', () => {
 // ─── TActiveDialog ───────────────────────────────────────────────────────────
 
 /**
- * jsdom reflects the `open` attribute of <dialog> but implements neither
- * show() nor close(), so both are stubbed with the semantics a browser gives
- * them: show() sets the attribute, close() clears it and fires `close`. The
+ * jsdom reflects the `open` attribute of <dialog> but implements none of
+ * show(), showModal(), and close(), so they are stubbed with the semantics a
+ * browser gives them: show() and showModal() set the attribute, showModal()
+ * also marks the stub modal, and close() clears it and fires `close`. The
  * MutationObserver that detects a programmatic open delivers asynchronously,
  * hence the awaited ticks. The end-to-end behavior is covered by
  * tests/playwright/active-controls/ActiveDialogTestCase.spec.js.
@@ -1337,6 +1357,10 @@ describe('TActiveDialog', () => {
 		dialog.show = function () {
 			this.open = true;
 		};
+		dialog.showModal = function () {
+			this.open = true;
+			this.modal = true;
+		};
 		dialog.close = function () {
 			this.open = false;
 			this.dispatchEvent(new Event('close'));
@@ -1364,18 +1388,54 @@ describe('TActiveDialog', () => {
 		expect(Registry['dialog1']).toBeDefined();
 	});
 
-	it('dispatches a callback with CallbackParameter "close" when the dialog is dismissed', () => {
+	it('dispatches a callback with CallbackParameter ["close", returnValue] when the dialog is dismissed', () => {
 		const { MockCtor, dispatchMock } = mockCallbackRequest();
 		makeDialog();
 		dialog.open = true;
+		dialog.returnValue = '';
 
 		dialog.close();
 
 		expect(dispatchMock).toHaveBeenCalledTimes(1);
 		expect(MockCtor).toHaveBeenCalledWith(
 			'dialog1',
-			expect.objectContaining({ CallbackParameter: 'close' }),
+			expect.objectContaining({ CallbackParameter: ['close', ''] }),
 		);
+	});
+
+	it('sends the returnValue a close button set', () => {
+		const { MockCtor } = mockCallbackRequest();
+		makeDialog();
+		dialog.open = true;
+
+		dialog.returnValue = 'confirm'; // set by a button with command="close" value="confirm"
+		dialog.close();
+
+		expect(MockCtor).toHaveBeenCalledWith(
+			'dialog1',
+			expect.objectContaining({ CallbackParameter: ['close', 'confirm'] }),
+		);
+	});
+
+	it('resets the returnValue when the dialog opens, so Esc does not report an earlier close', async () => {
+		mockCallbackRequest();
+		makeDialog();
+		dialog.returnValue = 'confirm';
+
+		dialog.show();
+		await tick();
+
+		expect(dialog.returnValue).toBe('');
+	});
+
+	it('shows the dialog modally on init with the ShowModal option, without a callback', async () => {
+		const { dispatchMock } = mockCallbackRequest();
+		makeDialog({ ID: 'dialog1', EventTarget: 'dialog1', ShowModal: true });
+		await tick();
+
+		expect(dialog.open).toBe(true);
+		expect(dialog.modal).toBe(true);
+		expect(dispatchMock).not.toHaveBeenCalled();
 	});
 
 	it('dispatches a callback with CallbackParameter "open" when opened programmatically', async () => {
@@ -1411,6 +1471,19 @@ describe('TActiveDialog', () => {
 		await tick();
 
 		expect(dialog.open).toBe(true);
+		expect(dispatchMock).not.toHaveBeenCalled();
+	});
+
+	it('setOpen(true, true) opens the dialog modally and resets its returnValue', async () => {
+		const { dispatchMock } = mockCallbackRequest();
+		const ctrl = makeDialog();
+		dialog.returnValue = 'confirm';
+
+		ctrl.setOpen(true, true);
+		await tick();
+
+		expect(dialog.modal).toBe(true);
+		expect(dialog.returnValue).toBe('');
 		expect(dispatchMock).not.toHaveBeenCalled();
 	});
 
@@ -1472,11 +1545,11 @@ describe('TActiveDialog', () => {
 		const ctrl = makeDialog();
 		const spy = vi.spyOn(ctrl, 'setOpen');
 
-		TActiveDialog.setOpen('dialog1', true);
+		TActiveDialog.setOpen('dialog1', true, true);
 		await tick();
 
-		expect(spy).toHaveBeenCalledWith(true);
-		expect(dialog.open).toBe(true);
+		expect(spy).toHaveBeenCalledWith(true, true);
+		expect(dialog.modal).toBe(true);
 	});
 
 	it('the static setOpen() ignores an unknown id', () => {

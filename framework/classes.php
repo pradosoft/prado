@@ -776,6 +776,7 @@ return [
 'TDetails' => 'Prado\Web\UI\WebControls\TDetails',
 'TDfn' => 'Prado\Web\UI\WebControls\TDfn',
 'TDialog' => 'Prado\Web\UI\WebControls\TDialog',
+'TDialogClosedBy' => 'Prado\Web\UI\WebControls\TDialogClosedBy',
 'TDisplayStyle' => 'Prado\Web\UI\WebControls\TDisplayStyle',
 'TDot' => 'Prado\Web\UI\WebControls\TDot',
 'TDropDownList' => 'Prado\Web\UI\WebControls\TDropDownList',

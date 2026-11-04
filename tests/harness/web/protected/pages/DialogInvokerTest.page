@@ -1,0 +1,20 @@
+<com:TContent ID="Content">
+	<h1>Dialog Invoker Test Case</h1>
+
+	<p>Status: <com:TLabel ID="status" Text="waiting" /></p>
+	<com:TButton ID="openEdit" Text="Edit name" CommandFor="editDialog" Command="show-modal" />
+	<com:TButton ID="openNotice" Text="Show notice" CommandFor="notice" Command="show-modal" />
+
+	<com:TDialog ID="editDialog" Modal="true" Attributes.aria-labelledby="editTitle">
+		<h2 id="editTitle">Edit name</h2>
+		<com:TLabel ForControl="userName" Text="Name" />
+		<com:TTextBox ID="userName" />
+		<com:TButton ID="save" Text="Save" OnClick="saveClicked" />
+		<com:TButton ID="cancel" Text="Cancel" CommandFor="editDialog" Command="close" Attributes.value="cancel" />
+	</com:TDialog>
+
+	<com:TDialog ID="notice" ClosedBy="Any" Attributes.aria-labelledby="noticeTitle">
+		<h2 id="noticeTitle">Notice</h2>
+		<p>A click outside closes this dialog.</p>
+	</com:TDialog>
+</com:TContent>
