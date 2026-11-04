@@ -39,3 +39,50 @@ test('ActiveDialogTestCase', async ({ page }) => {
   await h.pause(500);
   await h.assertText(`${base}label1`, 'server-closed');
 });
+
+/**
+ * A close button's value reaches OnClose as ReturnValue; opening resets it, so
+ * Esc reports ''.
+ */
+test('ActiveDialogTestCase: ReturnValue from invoker buttons', async ({ page }) => {
+  const h = genericHelper(page);
+  const base = 'ctl0_Content_';
+  await h.url('active-controls/index.php?page=ActiveDialogTest');
+  const dialog = h.byId(`${base}dialog2`);
+
+  await page.getByRole('button', { name: 'Confirm' }).click();
+  await h.waitForAjaxCalls();
+  expect(await dialog.evaluate((el) => el.matches(':modal'))).toBe(true);
+  await page.getByRole('button', { name: 'OK' }).click();
+  await h.waitForAjaxCalls();
+  await h.assertText(`${base}label2`, 'closed:ok');
+
+  await page.getByRole('button', { name: 'Confirm' }).click();
+  await h.waitForAjaxCalls();
+  await page.keyboard.press('Escape');
+  await h.waitForAjaxCalls();
+  await expect(dialog).toHaveJSProperty('open', false);
+  await h.assertText(`${base}label2`, 'closed:');
+});
+
+/**
+ * A Modal dialog opened by the server in a callback shows modally, without an
+ * open callback echoed back.
+ */
+test('ActiveDialogTestCase: server open of a Modal dialog', async ({ page }) => {
+  const h = genericHelper(page);
+  const base = 'ctl0_Content_';
+  await h.url('active-controls/index.php?page=ActiveDialogTest');
+  const dialog = h.byId(`${base}dialog2`);
+
+  await h.click(`${base}button3`);
+  await h.waitForAjaxCalls();
+  await expect(dialog).toHaveJSProperty('open', true);
+  expect(await dialog.evaluate((el) => el.matches(':modal'))).toBe(true);
+  await h.pause(500);
+  await h.assertText(`${base}label2`, 'server-opened');
+
+  await page.getByRole('button', { name: 'Cancel' }).click();
+  await h.waitForAjaxCalls();
+  await h.assertText(`${base}label2`, 'closed:cancel');
+});

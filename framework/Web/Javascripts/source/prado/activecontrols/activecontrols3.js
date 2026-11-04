@@ -11,10 +11,13 @@ Prado.WebUI.CallbackControl = Prado.Class(Prado.WebUI.PostBackControl,
 		// submit button degrades to a full-page postback instead of dead-ending
 		// the click. The error is logged and rethrown; note the request reaches
 		// the server without whatever the failed hook was preparing.
+		// An invoker button (`commandfor`) runs its command as the click's default
+		// action: a sent callback lets the command run, a failed validation cancels it.
 		try {
 			const request = new Prado.CallbackRequest(options.EventTarget, options);
-			request.dispatch();
-			event.preventDefault();
+			const sent = request.dispatch() !== false;
+			if (!sent || !this.element.hasAttribute('commandfor'))
+				event.preventDefault();
 		} catch (e) {
 			if (typeof Logger != "undefined")
 				Logger.error("Callback dispatch failed; falling back to the default action", e.message);
@@ -578,9 +581,13 @@ Prado.WebUI.TActiveDetails.setOpen = function(id, open)
  *
  * Listens for the native `close` event on the `<dialog>` element (fired when
  * the dialog is dismissed) and also for an `open` attribute mutation so that
- * opening via showModal() / show() is detected. Fires a callback with parameter
- * `'open'` or `'close'` so the server can raise the corresponding OnOpen / OnClose event.
+ * opening via showModal() / show() or an invoker button is detected. Fires a
+ * callback with parameter `'open'`, or `['close', returnValue]`, so the server
+ * can raise the corresponding OnOpen / OnClose event. Opening resets the
+ * dialog's `returnValue` to '', so a close by Esc does not report the value of
+ * an earlier close.
  *
+ * The ShowModal option shows the dialog modally when the control initializes.
  * Server-initiated changes go through setOpen(), which opens or closes the
  * dialog without echoing a callback back to the server.
  */
@@ -590,6 +597,9 @@ Prado.WebUI.TActiveDialog = Prado.Class(Prado.WebUI.Control,
 	{
 		this.options = options;
 		this._suppressClose = false;
+		if (options.ShowModal && !this.element.open) {
+			this.element.showModal();
+		}
 		this.observe(this.element, 'close', jQuery.proxy(this.onDialogClose, this, options));
 
 		// Use a MutationObserver to detect programmatic open (showModal/show)
@@ -602,6 +612,7 @@ Prado.WebUI.TActiveDialog = Prado.Class(Prado.WebUI.Control,
 					if (isOpen !== self._lastOpen) {
 						self._lastOpen = isOpen;
 						if (isOpen) {
+							self.element.returnValue = '';
 							self.dispatchCallback(options, 'open');
 						}
 					}
@@ -614,13 +625,20 @@ Prado.WebUI.TActiveDialog = Prado.Class(Prado.WebUI.Control,
 	/**
 	 * Opens or closes the dialog on behalf of the server, without dispatching
 	 * an open/close callback back to the server.
+	 * @param {boolean} open - whether the dialog is open
+	 * @param {boolean} modal - whether an opening dialog shows modally
 	 */
-	setOpen : function(open)
+	setOpen : function(open, modal)
 	{
 		if (open) {
 			if (!this.element.open) {
 				this._lastOpen = true;
-				this.element.show();
+				this.element.returnValue = '';
+				if (modal) {
+					this.element.showModal();
+				} else {
+					this.element.show();
+				}
 			}
 		} else {
 			if (this.element.open) {
@@ -637,7 +655,7 @@ Prado.WebUI.TActiveDialog = Prado.Class(Prado.WebUI.Control,
 			this._suppressClose = false;
 			return;
 		}
-		this.dispatchCallback(options, 'close');
+		this.dispatchCallback(options, ['close', this.element.returnValue]);
 	},
 
 	dispatchCallback : function(options, param)
@@ -662,11 +680,11 @@ Prado.WebUI.TActiveDialog = Prado.Class(Prado.WebUI.Control,
  * Server-side entry point: resolves the control instance by client ID and
  * forwards to its setOpen() instance method.
  */
-Prado.WebUI.TActiveDialog.setOpen = function(id, open)
+Prado.WebUI.TActiveDialog.setOpen = function(id, open, modal)
 {
 	var control = Prado.Registry[id];
 	if (control && control.setOpen) {
-		control.setOpen(open);
+		control.setOpen(open, modal);
 	}
 };
 

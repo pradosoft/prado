@@ -41,7 +41,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 | Class | HTML | Key Properties / Events |
 |---|---|---|
-| `TButton` | `<input type="submit">` or `<button>` | `ButtonType`, `ButtonTag`, `CausesValidation`, `ValidationGroup`, `OnClick`, `OnCommand` |
+| `TButton` | `<input type="submit">` or `<button>` | `ButtonType`, `ButtonTag`, `CausesValidation`, `ValidationGroup`, `OnClick`, `OnCommand`; `CommandFor` and `Command` make it an invoker (`commandfor`, `command`) |
 | `TLinkButton` | `<a>` with postback | Same as TButton |
 | `TImageButton` | `<input type="image">` | Sends x,y coordinates; `OnClick` with `TImageClickEventParameter` |
 | `TTextBox` | `<input>` / `<textarea>` | `TextMode` (SingleLine/MultiLine/Password), `MaxLength`, `ReadOnly`, `AutoPostBack`, `SuggestionList` |
@@ -90,6 +90,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 | `TKeyboard` | Virtual on-screen keyboard; JS in `controls/keyboard.js` |
 | `TRatingList` | Star/block rating; JS in `ratings/ratings.js` |
 | `TRelativeTime` | Live "time ago" in a `<time>` element; extends `TTime`; JS in `controls/relativetime.js` |
+| [`TDialog`](TDialog.md) | `<dialog>`; `Open`, `Modal` (an Open dialog shows modally through `showModal()`), `ClosedBy` ([`TDialogClosedBy`](TDialogClosedBy.md), light dismiss); a TButton with `CommandFor` opens and closes it without script (@since 4.4.0) |
 | [`TTeleport`](TTeleport.md) | Renders its content after `</form>`, outside the page form: a native `<form method="dialog">`, overlays, toasts; JS in `controls/teleport.js` sets the `form` attribute of its fields (@since 4.4.0) |
 
 ## Data Controls

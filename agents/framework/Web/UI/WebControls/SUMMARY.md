@@ -12,7 +12,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 ### Input Controls
 
-- **`TButton`** — `<input type="submit">` or `<button>`; properties: `ButtonType`, `ButtonTag`, `CausesValidation`, `ValidationGroup`.
+- **`TButton`** — `<input type="submit">` or `<button>`; properties: `ButtonType`, `ButtonTag`, `CausesValidation`, `ValidationGroup`, `CommandFor` and `Command` (an invoker that opens or closes a dialog or popover without script).
 
 - **`TLinkButton`** — `<a>` with postback; same properties as TButton.
 
@@ -71,6 +71,8 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 - **`TMultiView`** / **`TView`** — Shows one child `TView` at a time; `ActiveViewIndex`.
 
 - **`TAccordion`** / **`TTabPanel`** / **`TSlider`** / **`TColorPicker`** / **`TDatePicker`** / **`TKeyboard`** / **`TRatingList`** — Widget controls with JS implementations.
+
+- **`TDialog`** — `<dialog>`; `Open`, `Modal`, `ClosedBy` (**`TDialogClosedBy`**: `Auto`, `Any`, `CloseRequest`, `None`); opened and closed by TButton invokers without script. @since 4.4.0
 
 - **`TTeleport`** — Renders its content after `</form>`, outside the page form, so a native `<form method="dialog">` works and overlays escape their ancestors; `TForm::registerTeleportContent()`; JS in `controls/teleport.js` joins its fields to the page form. @since 4.4.0
 

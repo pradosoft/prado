@@ -22,9 +22,16 @@ use Prado\Web\UI\WebControls\TDialog;
  *
  * Two server-side events are available:
  * - <b>OnOpen</b> — raised when the dialog is opened. The {@see getOpen Open}
- *   property is updated to `true` before the event fires.
+ *   property is updated to `true` and {@see getReturnValue ReturnValue} to ''
+ *   before the event fires.
  * - <b>OnClose</b> — raised when the dialog is closed. The {@see getOpen Open}
- *   property is updated to `false` before the event fires.
+ *   property is updated to `false` and {@see getReturnValue ReturnValue} to the
+ *   dialog's `returnValue` before the event fires.
+ *
+ * A {@see \Prado\Web\UI\WebControls\TButton} with `Command="close"` closes the
+ * dialog with its `value` as the `returnValue`, so an OnClose handler reads which
+ * button closed it. The client resets `returnValue` to '' when the dialog opens,
+ * so a close by Esc or light dismiss reports ''.
  *
  * The {@see getOpen Open} property can also be changed server-side during a
  * callback; the client will be updated automatically when
@@ -32,9 +39,9 @@ use Prado\Web\UI\WebControls\TDialog;
  * ActiveControl.EnableUpdate} is `true` (the default).
  *
  * To open the dialog from the server, call `$dialog->setOpen(true)` inside a
- * callback handler. To open it modally from the client side, you can use the
- * `ActiveControl.ClientSide.OnSuccess` script to call
- * `document.getElementById('dialogId').showModal()`.
+ * callback handler. With {@see setModal Modal} true, it opens modally, both on
+ * page load and in a callback; set Modal before Open. A button with
+ * `Command="show-modal"` opens it modally from the client.
  *
  * Additional client-side callback options (e.g. `OnSuccess`, `OnFailure`) are
  * available through the {@see getClientSide ActiveControl.ClientSide} sub-property.
@@ -71,19 +78,32 @@ class TActiveDialog extends TDialog implements IActiveControl, ICallbackEventHan
 	}
 
 	/**
+	 * @return string the `returnValue` of the dialog's last close, or '' while it is open
+	 */
+	public function getReturnValue()
+	{
+		return $this->getViewState('ReturnValue', '');
+	}
+
+	/**
 	 * Raises the callback event. Called by the framework when a callback request
 	 * targets this control. The {@see getCallbackParameter CallbackParameter} of
-	 * `$param` is either `'open'` or `'close'`, indicating which transition occurred.
+	 * `$param` is `'open'` when the dialog opened, and `['close', returnValue]` or
+	 * `'close'` when it closed.
 	 * @param TCallbackEventParameter $param the event parameter
 	 */
 	public function raiseCallbackEvent($param)
 	{
-		$action = $param->getCallbackParameter();
+		$parameter = $param->getCallbackParameter();
+		$action = is_array($parameter) ? ($parameter[0] ?? null) : $parameter;
 		if ($action === 'open') {
 			parent::setOpen(true);
+			$this->setViewState('ReturnValue', '', '');
 			$this->onOpen($param);
 		} elseif ($action === 'close') {
 			parent::setOpen(false);
+			$returnValue = is_array($parameter) && is_scalar($parameter[1] ?? null) ? (string) $parameter[1] : '';
+			$this->setViewState('ReturnValue', $returnValue, '');
 			$this->onClose($param);
 		}
 	}
@@ -112,7 +132,8 @@ class TActiveDialog extends TDialog implements IActiveControl, ICallbackEventHan
 	 * Opens or closes the dialog on the client-side when the Open property
 	 * changes during a callback. The client-side helper opens or closes the
 	 * `<dialog>` element without echoing an open/close callback back to the
-	 * server.
+	 * server. Opening resets {@see getReturnValue ReturnValue} to '' and shows
+	 * the dialog modally when {@see getModal Modal} is true.
 	 * @param bool $value whether the dialog is open
 	 */
 	public function setOpen($value)
@@ -121,12 +142,24 @@ class TActiveDialog extends TDialog implements IActiveControl, ICallbackEventHan
 			return;
 		}
 		parent::setOpen($value);
+		if ($this->getOpen()) {
+			$this->setViewState('ReturnValue', '', '');
+		}
 		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->getPage()->getCallbackClient()->callClientFunction(
 				'Prado.WebUI.TActiveDialog.setOpen',
-				[$this, $this->getOpen()]
+				[$this, $this->getOpen(), $this->getModal()]
 			);
 		}
+	}
+
+	/**
+	 * Registers nothing: the client control shows an Open, Modal dialog modally
+	 * when it initializes, through the `ShowModal` option, so the open is not
+	 * echoed to the server.
+	 */
+	protected function registerShowModalScript()
+	{
 	}
 
 	/**
@@ -148,7 +181,11 @@ class TActiveDialog extends TDialog implements IActiveControl, ICallbackEventHan
 	 */
 	protected function getPostBackOptions()
 	{
-		return ['ID' => $this->getClientID(), 'EventTarget' => $this->getUniqueID()];
+		return [
+			'ID' => $this->getClientID(),
+			'EventTarget' => $this->getUniqueID(),
+			'ShowModal' => $this->getOpen() && $this->getModal(),
+		];
 	}
 
 	/**

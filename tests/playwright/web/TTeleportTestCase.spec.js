@@ -160,7 +160,7 @@ test('TTeleportTestCase: callback updates inside the content', async ({ page }) 
 });
 
 /**
- * A callback posts the fields of a dialog form: the TActiveDialog close callback reads its note.
+ * A callback posts the fields of a dialog form: the TActiveDialog close callback reads its ReturnValue and note.
  */
 test('TTeleportTestCase: a TActiveDialog close callback posts the dialog form field', async ({ page }) => {
 	await open(page);
@@ -170,7 +170,7 @@ test('TTeleportTestCase: a TActiveDialog close callback posts the dialog form fi
 	await dialog.getByLabel('Note').fill('remember');
 	await page.locator('#noteOk').click();
 	await expect(dialog).toBeHidden();
-	await expect(page.locator(`#${B}closedWith`)).toHaveText('remember');
+	await expect(page.locator(`#${B}closedWith`)).toHaveText('ok:remember');
 	expect(await page.evaluate((b) => document.getElementById(`${b}noteDialog`).returnValue, B)).toBe('ok');
 });
 

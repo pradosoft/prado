@@ -28,9 +28,14 @@ TButton creates a clickable button control on the page. It is primarily used for
 - `Text` (string): Button caption text
 - `EnableClientScript` (bool): Whether JavaScript is rendered for button
 - `IsDefaultButton` (bool): Set by a [TPanel](./TPanel.md) to make this the panel's default button
+- `CommandFor` (string): ID of the control that receives `Command` on click (`commandfor`); resolved by `findControl()`, throws `button_commandfor_invalid` when missing, omitted when the control is invisible
+- `Command` (string): The command run on `CommandFor` (`command`): `show-modal`, `close`, `request-close`, `show-popover`, `hide-popover`, `toggle-popover`, or a custom `--name`
 
 ## Form Overrides (@since 4.4.0)
 `TFormSubmitterTrait` gives a Submit button `FormAction` (`formaction`), `FormEncType` (`formenctype`), and `FormTarget` (`formtarget`); they replace the form's attribute for this button's submission. `CausesValidation` false renders `formnovalidate`, so the browser skips the form's constraint attributes (such as `TTextBox.Required`). `Prado.PostBack.applySubmitterOverrides()` applies the overrides to the form around `form.submit()`, which otherwise submits without a submitter, then restores the form. A callback ignores them; a `FormAction` to another page raises no event of this button. `TImageButton` uses the same trait.
+
+## Invoker Commands (@since 4.4.0)
+`CommandFor` and `Command` render `commandfor` and `command`: a click runs the command on the target element in the browser, without script. The browser runs commands only from a `<button>` that does not submit, so with `CommandFor` set, `ButtonTag` and `ButtonType` default to Button (an explicit Input or Submit falls back to that default). `close` sets the dialog's `returnValue` to the button's `value`; set it with `Attributes.value`. `Command` is unrelated to `CommandName`, which names the server `OnCommand` event. An element outside the control tree takes `Attributes.commandfor`. A button with an OnClick handler runs the command and posts back by script; a TActiveButton runs it and sends its callback. A failed client validation cancels the command.
 
 ## Core Events
 - `OnClick`: Raised when button is clicked
