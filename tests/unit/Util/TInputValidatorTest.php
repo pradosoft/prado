@@ -5,6 +5,7 @@ namespace Prado\Test\Unit\Util;
 use PHPUnit\Framework\TestCase;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Util\TInputValidationException;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Util\TInputValidator;
 
 class TInputValidatorTest extends TestCase
@@ -303,6 +304,25 @@ class TInputValidatorTest extends TestCase
 		// "héllo" should be rejected by max:4.
 		$this->expectException(TInputValidationException::class);
 		$this->validator()->validate(['s' => 'héllo'], ['s' => 'string|max:4']);
+	}
+
+	public function testCharacterLengthWithoutMbstringCountsCodePoints(): void
+	{
+		$validator = $this->validator();
+		$mbstring = PradoUnit::getStaticProp(TInputValidator::class, '_mbstring');
+		PradoUnit::setStaticProp(TInputValidator::class, '_mbstring', false);
+		try {
+			$this->assertSame(5, PradoUnit::invoke($validator, 'getCharacterLength', 'héllo'));
+			$this->assertSame(0, PradoUnit::invoke($validator, 'getCharacterLength', ''));
+			$this->assertSame(2, PradoUnit::invoke($validator, 'getCharacterLength', "a\n"));
+			$this->assertSame(3, PradoUnit::invoke($validator, 'getCharacterLength', "\xC3\x28\x41"), 'invalid UTF-8 falls back to the byte length');
+			$result = $validator->validate(['s' => 'héllo'], ['s' => 'string|min:5|max:5']);
+			$this->assertSame('héllo', $result['s']);
+			$this->expectException(TInputValidationException::class);
+			$validator->validate(['s' => 'héllo'], ['s' => 'string|max:4']);
+		} finally {
+			PradoUnit::setStaticProp(TInputValidator::class, '_mbstring', $mbstring);
+		}
 	}
 
 	public function testValidateMinOnStringUsesMultibyteLength(): void

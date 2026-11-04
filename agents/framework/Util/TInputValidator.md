@@ -37,8 +37,8 @@ $data = $validator->validate($body, [
 | `array` | `is_array()` | |
 | `email` | `FILTER_VALIDATE_EMAIL` | |
 | `url` | `FILTER_VALIDATE_URL` (a bare hostname fails; any scheme passes) | |
-| `min:N` | string: `mb_strlen() >= N`; array: `count() >= N`; numeric: value `>= N` | |
-| `max:N` | string: `mb_strlen() <= N`; array: `count() <= N`; numeric: value `<= N` | |
+| `min:N` | string: characters `>= N`; array: `count() >= N`; numeric: value `>= N` | |
+| `max:N` | string: characters `<= N`; array: `count() <= N`; numeric: value `<= N` | |
 | `in:a,b,c` | scalar whose string form equals one of the trimmed options; a non-scalar fails | |
 
 `min`, `max` and `in` without a parameter (or with a non-numeric one for `min`/`max`) throw `TConfigurationException('inputvalidator_parameter_required', $rule, $field)`.
@@ -92,6 +92,7 @@ Each message is built by protected `getMessage(string $text, array $parameters)`
 
 ## Patterns & Gotchas
 
+- **mbstring is optional** — `getCharacterLength()` uses `mb_strlen()` when the extension is loaded and counts UTF-8 code points with `preg_match_all()` otherwise, so `min`/`max` on strings count characters either way. Tests force the fallback through the static `_mbstring` flag.
 - **Reusable instance** — `isValid()` / `validate()` replace the stored errors and validated data on every call; a failed `validate()` leaves the partial validated data available through `getValidated()`.
 - **`min`/`max` on a bool** pass silently; pair them with a type rule.
 - **`in` compares string forms** — `in:1,2` accepts int `1` and string `'1'`; put `in` after a coercing rule only when the coerced string form matches the options (`true` casts to `'1'`).
