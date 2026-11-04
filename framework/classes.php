@@ -834,6 +834,7 @@ return [
 'TIns' => 'Prado\Web\UI\WebControls\TIns',
 'TItemDataRenderer' => 'Prado\Web\UI\WebControls\TItemDataRenderer',
 'TJavascriptLogger' => 'Prado\Web\UI\WebControls\TJavascriptLogger',
+'TJsonValidator' => 'Prado\Web\UI\WebControls\TJsonValidator',
 'TKbd' => 'Prado\Web\UI\WebControls\TKbd',
 'TKeyboard' => 'Prado\Web\UI\WebControls\TKeyboard',
 'TKeyShortcuts' => 'Prado\Web\UI\WebControls\TKeyShortcuts',

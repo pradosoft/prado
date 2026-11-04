@@ -1,0 +1,23 @@
+<com:TContent ID="Content">
+<h1>Prado JsonValidator Tests</h1>
+<div>
+	<com:TLabel ForControl="text1" Text="Settings (JSON)" />
+	<com:TTextBox ID="text1" TextMode="MultiLine" Rows="4" Columns="40" />
+	<com:TJsonValidator
+		ID="validator1"
+		ControlToValidate="text1"
+		ErrorMessage="Enter valid JSON"
+		ControlCssClass="required" />
+
+	<com:TLabel ForControl="text2" Text="Server checked JSON" />
+	<com:TTextBox ID="text2" TextMode="MultiLine" Rows="2" Columns="40" />
+	<com:TJsonValidator
+		ID="validator2"
+		ControlToValidate="text2"
+		ErrorMessage="Server: invalid JSON"
+		EnableClientScript="false" />
+
+	<com:TButton ID="submit1" Text="Test" OnClick="submitted" />
+	<com:TLabel ID="status" />
+</div>
+</com:TContent>

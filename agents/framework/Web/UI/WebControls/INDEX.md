@@ -113,6 +113,7 @@ All validators extend `TBaseValidator`. Shared properties: `ControlToValidate`, 
 | `TRegularExpressionValidator` | Value matches regex pattern |
 | `TCustomValidator` | Custom server-side (and optional client-side) logic |
 | `TEmailAddressValidator` | Valid email format |
+| [`TJsonValidator`](./TJsonValidator.md) | JSON text; client and server agree on surrogates and the 512 depth (@since 4.4.0) |
 | [`TPasswordStrengthValidator`](./TPasswordStrengthValidator.md) | Password reaches `MinStrength` ([`TPasswordStrength`](./TPasswordStrength.md)), estimated from its characters; optional Pwned Passwords lookup (`CheckCompromised`, server only) (@since 4.4.0) |
 | [`TPasswordStrengthMeter`](./TPasswordStrengthMeter.md) | Not a validator: a `role="meter"` bar that fills red to green with the estimated entropy of `ControlToMeasure`; `ShowText`, `ShowBits` (@since 4.4.0) |
 | [`TUnicodeValidator`](./TUnicodeValidator.md) | No suspicious Unicode: invisible characters, mixed numbering systems, hidden overlays, `RestrictionLevel` ([`TUnicodeRestrictionLevel`](./TUnicodeRestrictionLevel.md)), `Locales`; server only (@since 4.4.0) |

@@ -2160,6 +2160,83 @@ Prado.WebUI.TListControlValidator = Prado.Class(Prado.WebUI.TBaseValidator,
 
 
 /**
+ * TJsonValidator validates whether the value of an associated input component
+ * is JSON text. The checks match the server side TJsonValidator: JSON.parse()
+ * syntax, no unpaired UTF-16 surrogate escape, and arrays and objects nested
+ * fewer than MaxDepth levels.
+ *
+ * @class Prado.WebUI.TJsonValidator
+ * @extends Prado.WebUI.TBaseValidator
+ */
+Prado.WebUI.TJsonValidator = Prado.Class(Prado.WebUI.TBaseValidator,
+{
+	/**
+	 * Additional constructor options.
+	 * @constructor initialize
+	 * @param {object} options - Additional constructor options:
+	 * @... {number} MaxDepth - The PHP JSON depth; at most MaxDepth - 1 arrays and objects nest.
+	 */
+
+	/**
+	 * Evaluate validation state
+	 * @function {boolean} ?
+	 * @return True if the value is JSON text or the value is empty.
+	 */
+	evaluateIsValid() {
+		const value = this.getRawValidationValue();
+		if (value.length <= 0)
+			return true;
+		return this.isValidJson(value);
+	},
+
+	/**
+	 * Checks whether a string is JSON text.
+	 * @function {boolean} ?
+	 * @param {string} value - The string.
+	 * @return True if the string is JSON text.
+	 */
+	isValidJson(value) {
+		let wellFormed = true;
+		try {
+			JSON.parse(value, (key, item) => {
+				if (/\p{Cs}/u.test(key) || (typeof item == 'string' && /\p{Cs}/u.test(item)))
+					wellFormed = false;
+				return item;
+			});
+		} catch {
+			return false;
+		}
+		return wellFormed && this.nestingDepth(value) < (this.options.MaxDepth || 512);
+	},
+
+	/**
+	 * Measures the deepest nesting of arrays and objects in parsed JSON text.
+	 * @function {number} ?
+	 * @param {string} value - JSON text that JSON.parse() accepts.
+	 * @return The deepest nesting level; 0 for a scalar.
+	 */
+	nestingDepth(value) {
+		let depth = 0, max = 0, inString = false;
+		for (let i = 0; i < value.length; i++) {
+			const c = value.charAt(i);
+			if (inString) {
+				if (c == '\\')
+					i++;
+				else if (c == '"')
+					inString = false;
+			} else if (c == '"') {
+				inString = true;
+			} else if (c == '[' || c == '{') {
+				max = Math.max(max, ++depth);
+			} else if (c == ']' || c == '}') {
+				depth--;
+			}
+		}
+		return max;
+	}
+});
+
+/**
  * TDataTypeValidator verifies if the input data is of the type specified
  * by <tt>DataType</tt> option.
  *
