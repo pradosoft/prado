@@ -24,6 +24,14 @@ namespace Prado\IO\Compression;
  * $data = TGzipCompressor::decompress($packed);
  * ```
  *
+ * Decompression accepts what the `gzip` command accepts.  The data is one or more gzip
+ * members, and concatenated members decode to their concatenated data.  A member cut off
+ * before its CRC-32 and length trailer ends, or any byte after the last member, is rejected.
+ * PHP's `gzdecode` is laxer: it decodes the first member only, ignores the data after it, and
+ * accepts a member missing its trailer.  The codec drives an
+ * {@see https://www.php.net/inflate_init inflate context} instead, which reports where each
+ * member ends and whether it ended.
+ *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
  */
@@ -48,12 +56,24 @@ class TGzipCompressor extends TBuiltinCompressor
 	}
 
 	/**
-	 * Decompresses with gzdecode.
+	 * Decompresses each gzip member in turn until the data is consumed.
 	 * @param string $data The gzip bytes.
-	 * @return false|string The raw bytes, or false on failure.
+	 * @return false|string The raw bytes, or false when a member is corrupt or incomplete or
+	 *   data follows the last member.
 	 */
 	protected static function decode(string $data): string|false
 	{
-		return @gzdecode($data);
+		$result = '';
+		$offset = 0;
+		do {
+			$context = inflate_init(ZLIB_ENCODING_GZIP);
+			$member = @inflate_add($context, substr($data, $offset), ZLIB_FINISH);
+			if ($member === false || inflate_get_status($context) !== ZLIB_STREAM_END) {
+				return false;
+			}
+			$result .= $member;
+			$offset += inflate_get_read_len($context);
+		} while ($offset < strlen($data));
+		return $result;
 	}
 }

@@ -15,16 +15,18 @@ use Prado\Exceptions\TNotSupportedException;
 /**
  * TXzCompressor class.
  *
- * A built-in stub for the xz/LZMA format (`.xz`).  PHP has no xz extension, so unlike the
- * other {@see TBuiltinCompressor} codecs there is no native function to wrap: the codec is
- * always {@see isAvailable() unavailable} and every call throws {@see TNotSupportedException},
- * so the format has a stable, discoverable class in core without pretending to work.
+ * A built-in stub for the xz/LZMA format (`.xz`).  PHP bundles no xz extension.  The
+ * third-party `codemasher/php-ext-xz` extension (installed through PIE, `extension=xz.so`)
+ * provides `xzencode()`/`xzdecode()`, and its fork `mateuszanella/php-ext-xz` changes those
+ * signatures.  Core wraps neither, so unlike the other {@see TBuiltinCompressor} codecs the
+ * codec is always {@see isAvailable() unavailable} and every call throws
+ * {@see TNotSupportedException}.  The format still has a stable, discoverable class in core.
  *
- * A working xz codec lives in the `belisoful/prado-compression` package, which uses the xz
- * command as a fallback (and a native xz extension first, if one is ever adopted) through
- * {@see TCliCompressorTrait}.  When a maintained PHP xz extension is adopted into core, this
- * stub is replaced by a native codec with the same name and {@see ICompressor} contract.  The
- * `.tar.xz` archive path uses the xz command directly in {@see \Prado\IO\TTarFileExtractor}.
+ * A working xz codec lives in the `belisoful/prado-compression` package, which prefers a
+ * loaded xz extension and falls back to the xz command through {@see TCliCompressorTrait}.
+ * If core adopts a PHP xz extension, this stub becomes a native codec with the same name and
+ * {@see ICompressor} contract.  The `.tar.xz` archive path uses the xz command directly in
+ * {@see \Prado\IO\TTarFileExtractor}.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.4.0
@@ -34,11 +36,11 @@ class TXzCompressor extends TBuiltinCompressor
 	/** The wire-format name. */
 	public const NAME = 'xz';
 
-	/** The PHP extension that would back the codec; none is published, so the stub is inert. */
+	/** The PHP extension name of the third-party xz extensions; core does not call it, so the stub is inert. */
 	protected const EXTENSION = 'xz';
 
 	/**
-	 * Reports the codec unavailable: no PHP xz extension exists.
+	 * Reports the codec unavailable: core wraps no PHP xz extension.
 	 * @return bool Always false.
 	 */
 	public static function isAvailable(): bool
@@ -70,7 +72,7 @@ class TXzCompressor extends TBuiltinCompressor
 	}
 
 	/**
-	 * Unreachable native backend; the stub has no xz extension to call.
+	 * Unreachable native backend; the stub calls no xz extension.
 	 * @param string $data The raw bytes.
 	 * @param int $level The compression level.
 	 * @throws TNotSupportedException Always.
@@ -82,7 +84,7 @@ class TXzCompressor extends TBuiltinCompressor
 	}
 
 	/**
-	 * Unreachable native backend; the stub has no xz extension to call.
+	 * Unreachable native backend; the stub calls no xz extension.
 	 * @param string $data The compressed bytes.
 	 * @throws TNotSupportedException Always.
 	 * @return false|int|string Never returns.
