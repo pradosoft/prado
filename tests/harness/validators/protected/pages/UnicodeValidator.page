@@ -1,0 +1,23 @@
+<com:TContent ID="Content">
+<h1>Prado UnicodeValidator Tests</h1>
+<div>
+	<com:TLabel ForControl="text1" Text="User name" />
+	<com:TTextBox ID="text1" />
+	<com:TUnicodeValidator
+		ID="validator1"
+		ControlToValidate="text1"
+		ErrorMessage="The user name has characters that can be mistaken for others"
+		ControlCssClass="required" />
+
+	<com:TLabel ForControl="text2" Text="ASCII handle" />
+	<com:TTextBox ID="text2" />
+	<com:TUnicodeValidator
+		ID="validator2"
+		ControlToValidate="text2"
+		ErrorMessage="Use ASCII characters only"
+		RestrictionLevel="Ascii" />
+
+	<com:TButton ID="submit1" Text="Test" OnClick="submitted" />
+	<com:TLabel ID="status" />
+</div>
+</com:TContent>

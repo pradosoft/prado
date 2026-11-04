@@ -1,0 +1,34 @@
+{
+	"_comment": "Luhn cases shared by tests/unit/Web/UI/WebControls/TLuhnValidatorTest.php and tests/js/validator/luhnvalidator.test.js, so both sides agree. Each case is [value, valid]. The option sets are: default (digits only) and separators (AllowSeparators).",
+	"default": [
+		["", true],
+		["79927398713", true],
+		["4111111111111111", true],
+		["5500005555555559", true],
+		["378282246310005", true],
+		["6011111111111117", true],
+		["490154203237518", true],
+		["18", true],
+		["00", true],
+		["79927398710", false],
+		["4111111111111112", false],
+		["0", false],
+		["5", false],
+		["4111 1111 1111 1111", false],
+		["4111-1111-1111-1111", false],
+		["4111a1111111111", false],
+		["-18", false],
+		["١٨", false],
+		[" 79927398713", false]
+	],
+	"separators": [
+		["4111 1111 1111 1111", true],
+		["4111-1111-1111-1111", true],
+		["3782 822463 10005", true],
+		["4111 1111 1111 1112", false],
+		["4111_1111_1111_1111", false],
+		["4111.1111.1111.1111", false],
+		[" - ", false],
+		["1 8", true]
+	]
+}

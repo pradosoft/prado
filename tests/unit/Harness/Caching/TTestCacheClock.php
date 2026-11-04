@@ -20,7 +20,8 @@ use Prado\Util\Clock\TClockTrait;
  *
  * {@see $fakeNow} pins {@see time()} and {@see $fakeMicrotime} pins {@see microtime()}; either left null
  * falls back to the real system clock. The two knobs are independent so a harness can drive expiry (whole
- * seconds) and least-recently-used ordering (sub-second) separately. {@see now()}, {@see timezone()}, and
+ * seconds) and sub-second timestamps separately. Least-recently-used ordering reads the cache's monotonic
+ * clock, which this clock does not move. {@see now()}, {@see timezone()}, and
  * {@see sleep()} keep the {@see TClockTrait} system-time defaults, which cache code does not read.
  *
  * @author Brad Anderson <belisoful@icloud.com>

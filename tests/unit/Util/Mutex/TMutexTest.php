@@ -11,6 +11,7 @@
 namespace Prado\Test\Unit\Util\Mutex;
 
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Test\Unit\Harness\Util\Clock\TTestMonotonicClock;
 use Prado\Util\Mutex\IMutex;
 use Prado\Util\Mutex\TMutex;
 use Prado\Util\Mutex\TMutexException;
@@ -35,9 +36,15 @@ class TMutexTestScriptedMutex extends TMutex
 	/** @var bool the result of a backend release. */
 	public bool $releaseResult = true;
 
+	/** @var ?callable called after each backend attempt. */
+	public $afterAttempt = null;
+
 	protected function acquireLock(string $name): bool
 	{
 		$this->acquireCalls[] = $name;
+		if ($this->afterAttempt !== null) {
+			($this->afterAttempt)(count($this->acquireCalls));
+		}
 		return $this->attempts === [] ? true : array_shift($this->attempts);
 	}
 
@@ -149,6 +156,23 @@ class TMutexTest extends \PHPUnit\Framework\TestCase
 		$this->assertGreaterThanOrEqual(0.09, $elapsed);
 		$this->assertLessThan(2, $elapsed);
 		$this->assertGreaterThan(1, count($mutex->acquireCalls));
+	}
+
+	public function testTimeoutIsElapsedTimeOnTheMonotonicClock(): void
+	{
+		// acquire() reads no wall clock, so a wall-clock step cannot lengthen or shorten its timeout.
+		$mutex = $this->newMutex();
+		$clock = new TTestMonotonicClock(7_000_000_000);
+		$this->assertSame($mutex, $mutex->setMonotonicClock($clock));
+		$this->assertSame($clock, $mutex->getMonotonicClock());
+		$mutex->attempts = array_fill(0, 1000, false);
+		$mutex->afterAttempt = fn () => $clock->advance(1);
+		$start = hrtime(true);
+
+		$this->assertFalse($mutex->acquire('a', 3));
+
+		$this->assertCount(3, $mutex->acquireCalls, 'The 3 s timeout ends after 3 s on the monotonic clock.');
+		$this->assertLessThan(1.0, (hrtime(true) - $start) / 1e9, 'The real time spent is the short retry waits.');
 	}
 
 	public function testHeldNameDoesNotReenter(): void

@@ -5,11 +5,11 @@ namespace Prado\Test\Unit\IO\Socket;
 use Prado\IO\Socket\TSocketReactor;
 use Prado\IO\Socket\TSocketServer;
 use Prado\IO\Socket\TSocketStream;
-use Prado\Util\Clock\TMockClock;
-use Prado\Util\Clock\TNativeClock;
+use Prado\Test\Unit\Harness\Util\Clock\TTestMonotonicClock;
+use Prado\Util\Clock\TMonotonicClock;
 
 /**
- * Tests the reactor's source API, clock seam, and tick mechanics.  The IEventLoop contract is
+ * Tests the reactor's source API, monotonic clock, and tick mechanics.  The IEventLoop contract is
  * covered by the conformance suite in tests/unit/IO/Async.
  */
 class TSocketReactorTest extends \PHPUnit\Framework\TestCase
@@ -147,19 +147,18 @@ class TSocketReactorTest extends \PHPUnit\Framework\TestCase
 		$b->close();
 	}
 
-	public function testTimersFireAndRepeatOnAPinnedClock()
+	public function testTimersFireAndRepeatOnASetClock()
 	{
-		// A pinned clock makes timer firing deterministic on any platform; sleep() advances the pin.
+		// A set monotonic clock makes timer firing deterministic on any platform; advance() moves it.
 		$reactor = new TSocketReactor();
-		$clock = new TMockClock();
-		$clock->setMicrotime(1000.0);
-		$reactor->setClock($clock);
+		$clock = new TTestMonotonicClock(1_000_000_000_000);
+		$reactor->setMonotonicClock($clock);
 
 		$fired = 0;
 		$reactor->delay(2.0, function () use (&$fired) {
 			$fired++;
 		});
-		$clock->sleep(2.0);                  // reach the one-shot's deadline
+		$clock->advance(2.0);                // reach the one-shot's deadline
 		$reactor->tick(0);
 		self::assertSame(1, $fired, 'A one-shot timer fires once.');
 
@@ -167,14 +166,14 @@ class TSocketReactorTest extends \PHPUnit\Framework\TestCase
 		$id = $reactor->repeat(1.0, function () use (&$ticks) {
 			$ticks++;
 		});
-		$clock->sleep(1.0);                  // each interval boundary fires the repeating timer once
+		$clock->advance(1.0);                // each interval boundary fires the repeating timer once
 		$reactor->tick(0);
-		$clock->sleep(1.0);
+		$clock->advance(1.0);
 		$reactor->tick(0);
 		self::assertSame(2, $ticks, 'A repeating timer fires each interval.');
 
 		$reactor->cancel($id);
-		$clock->sleep(1.0);
+		$clock->advance(1.0);
 		$reactor->tick(0);
 		self::assertSame(2, $ticks, 'A cancelled timer stops firing.');
 	}
@@ -199,12 +198,12 @@ class TSocketReactorTest extends \PHPUnit\Framework\TestCase
 		$b->close();
 	}
 
-	public function testInjectedClockDrivesTimers()
+	public function testSetClockDrivesTimers()
 	{
-		$clock = new TMockClock();
-		$clock->setMicrotime(1000.0);
+		$clock = new TTestMonotonicClock(1_000_000_000_000);
 		$reactor = new TSocketReactor();
-		$reactor->setClock($clock);
+		self::assertSame($reactor, $reactor->setMonotonicClock($clock));
+		self::assertSame($clock, $reactor->getMonotonicClock());
 
 		$fired = 0;
 		$reactor->delay(1.0, function () use (&$fired) {
@@ -213,9 +212,30 @@ class TSocketReactorTest extends \PHPUnit\Framework\TestCase
 		$reactor->tick(0);
 		self::assertSame(0, $fired, 'The timer has not reached its deadline.');
 
-		$clock->setMicrotime(1001.0);   // advance the injected clock to the deadline
+		$clock->advance(1.0);           // advance the set clock to the deadline
 		$reactor->tick(0);
-		self::assertSame(1, $fired, 'Advancing the injected clock fires the timer.');
+		self::assertSame(1, $fired, 'Advancing the set clock fires the timer.');
+	}
+
+	public function testTimersFollowOnlyTheMonotonicClock()
+	{
+		// The reactor reads no wall clock, so a wall-clock step cannot move a timer.
+		$clock = new TTestMonotonicClock(1_000_000_000_000);
+		$reactor = new TSocketReactor();
+		$reactor->setMonotonicClock($clock);
+		$fired = 0;
+		$reactor->delay(0.05, function () use (&$fired) {
+			$fired++;
+		});
+
+		$start = hrtime(true);
+		$reactor->tick(0.2);            // select() waits the timer's 0.05 s of real time
+		self::assertGreaterThanOrEqual(0.04, (hrtime(true) - $start) / 1e9);
+		self::assertSame(0, $fired, 'Real time passing does not fire a timer whose clock stands still.');
+
+		$clock->advance(0.05);
+		$reactor->tick(0);
+		self::assertSame(1, $fired, 'The timer fires when its clock reaches the deadline.');
 	}
 
 	public function testSetClockRebasesPendingTimers()
@@ -225,27 +245,30 @@ class TSocketReactorTest extends \PHPUnit\Framework\TestCase
 		$reactor->delay(5.0, function () use (&$fired) {
 			$fired++;
 		});
-		$clock = new TMockClock();
-		$clock->setMicrotime(1000.0);
-		$reactor->setClock($clock);           // the timer keeps its remaining 5 s on the new clock
+		$clock = new TTestMonotonicClock(1_000_000_000_000);
+		$reactor->setMonotonicClock($clock);  // the timer keeps its remaining 5 s on the new clock
 
-		$clock->setMicrotime(1004.0);
+		$clock->advance(4.0);
 		$reactor->tick(0);
 		self::assertSame(0, $fired, 'The re-based timer is not yet due.');
-		$clock->setMicrotime(1005.0);
+		$clock->advance(1.0);
 		$reactor->tick(0);
 		self::assertSame(1, $fired, 'The re-based timer fires at its remaining delay.');
 	}
 
-	public function testDefaultTimeBaseIsMonotonicUntilAClockIsInjected()
+	public function testDefaultTimeBaseIsTheSystemTimer()
 	{
 		$reactor = new TSocketReactor();
 		$before = hrtime(true) / 1e9;
 		$now = $reactor->now();
-		self::assertEqualsWithDelta($before, $now, 1.0, 'Without a clock, now() reads hrtime().');
+		self::assertEqualsWithDelta($before, $now, 1.0, 'Without a set clock, now() reads hrtime().');
+		self::assertInstanceOf(TMonotonicClock::class, $reactor->getMonotonicClock());
 
-		$reactor->setClock(new TNativeClock());
-		self::assertEqualsWithDelta(microtime(true), $reactor->now(), 1.0, 'With a clock, now() reads the clock.');
+		$reactor->setMonotonicClock(new TTestMonotonicClock(5_000_000_000));
+		self::assertSame(5.0, $reactor->now(), 'With a set clock, now() reads the clock.');
+
+		$reactor->setMonotonicClock(null);
+		self::assertEqualsWithDelta(hrtime(true) / 1e9, $reactor->now(), 1.0, 'Null returns now() to hrtime().');
 	}
 
 	public function testEmptyTickReturnsAtOnceAndFiniteTimeoutWaits()

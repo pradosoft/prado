@@ -21,6 +21,7 @@ use Prado\Test\Unit\Harness\Caching\TTestMemoryCache;
 use Prado\Test\Unit\Harness\Caching\TTestMemoryCacheCustomKey;
 use Prado\Test\Unit\Harness\Caching\TTestMemoryCacheCustomMergePolicy;
 use Prado\Test\Unit\Harness\Traits\PradoUnitModuleDependencyTrait;
+use Prado\Test\Unit\Harness\Util\Clock\TTestMonotonicClock;
 
 
 // ── Test class ─────────────────────────────────────────────────────────────────
@@ -1534,13 +1535,39 @@ class TMemoryCacheTest extends \PHPUnit\Framework\TestCase
 		$this->cache->setMaximumSize(150);
 		$this->cache->set('a', $payload); // A is written first (older access time)
 		// A brief sleep is unacceptable; instead write B immediately after A.
-		// microtime(true) resolution is sufficient for the two calls to differ.
+		// The monotonic clock's nanosecond resolution is sufficient for the two calls to differ.
 		$this->cache->set('b', $payload); // B is newer, triggers eviction of A
 		// After eviction A must be gone and B must survive.
 		$this->assertFalse($this->cache->get('a'),
 			'LRU eviction must remove the oldest entry (a) when the cache is over capacity.');
 		$this->assertSame($payload, $this->cache->get('b'),
 			'LRU eviction must preserve the most recently written entry (b).');
+	}
+
+	/**
+	 * A wall-clock step between two writes does not change which entry is least recently used.
+	 * @dataProvider wallClockStepProvider
+	 */
+	public function testEvictionOrderIgnoresWallClockStep(float $step): void
+	{
+		$payload = str_repeat('x', 100);
+		$elapsed = new TTestMonotonicClock(1_000_000_000);
+		$this->cache->setMonotonicClock($elapsed);
+		$this->cache->fakeMicrotime = 1_700_000_000.0;
+		$this->cache->setMaximumSize(150);
+		$this->cache->set('a', $payload);
+
+		$this->cache->fakeMicrotime = 1_700_000_000.0 + $step;
+		$elapsed->advance(1);
+		$this->cache->set('b', $payload);
+
+		$this->assertFalse($this->cache->get('a'), 'The entry written first is evicted.');
+		$this->assertSame($payload, $this->cache->get('b'), 'The entry written last survives.');
+	}
+
+	public static function wallClockStepProvider(): array
+	{
+		return ['back an hour' => [-3600.0], 'forward an hour' => [3600.0], 'no step' => [0.0]];
 	}
 
 	public function testComputeSizeFingerprintChangesWhenKeyAdded(): void
