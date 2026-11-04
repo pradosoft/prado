@@ -2539,3 +2539,62 @@ Prado.WebUI.TImageValidator = Prado.Class(Prado.WebUI.TFileValidator,
 		return true;
 	}
 });
+
+/**
+ * TUuidValidator validates whether the value of an associated input component
+ * is an RFC 9562 UUID. The checks match the server side TUuidValidator.
+ *
+ * @class Prado.WebUI.TUuidValidator
+ * @extends Prado.WebUI.TBaseValidator
+ */
+Prado.WebUI.TUuidValidator = Prado.Class(Prado.WebUI.TBaseValidator,
+{
+	/**
+	 * Additional constructor options.
+	 * @constructor initialize
+	 * @param {object} options - Additional constructor options:
+	 * @... {number[]} Versions - Allowed versions from 1 to 8; empty allows every version.
+	 * @... {boolean} Strict - Whether only the hyphenated 8-4-4-4-12 form is accepted.
+	 * @... {boolean} AllowNil - Whether the nil UUID is valid.
+	 */
+
+	/**
+	 * Evaluate validation state
+	 * @function {boolean} ?
+	 * @return True if the value is a valid UUID or the value is empty.
+	 */
+	evaluateIsValid() {
+		const value = this.getRawValidationValue();
+		if (value.length <= 0)
+			return true;
+		return this.isValidUuid(value);
+	},
+
+	/**
+	 * Checks a UUID against the form, version, variant, and nil restrictions.
+	 * @function {boolean} ?
+	 * @param {string} value - The UUID.
+	 * @return True if the UUID is valid.
+	 */
+	isValidUuid(value) {
+		const canonical = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+		if (!this.options.Strict) {
+			if (value.slice(0, 9).toLowerCase() == 'urn:uuid:')
+				value = value.slice(9);
+			if (value.length > 2 && value.charAt(0) == '{' && value.charAt(value.length - 1) == '}')
+				value = value.slice(1, -1);
+			if (!canonical.test(value) && !/^[0-9a-f]{32}$/i.test(value))
+				return false;
+		} else if (!canonical.test(value)) {
+			return false;
+		}
+		const hex = value.replace(/-/g, '').toLowerCase();
+		if (hex == '0'.repeat(32))
+			return !!this.options.AllowNil;
+		const version = parseInt(hex.charAt(12), 16);
+		if (version < 1 || version > 8 || '89ab'.indexOf(hex.charAt(16)) < 0)
+			return false;
+		const versions = this.options.Versions || [];
+		return versions.length == 0 || versions.indexOf(version) >= 0;
+	}
+});
