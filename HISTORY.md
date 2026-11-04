@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+NEW: Issue #1406 - `TLuhnValidator` validates the Luhn checksum of card, IMEI, and ID numbers on the client and the server, with `AllowSeparators`. (belisoful)
 NEW: Issue #1406 - `TJsonValidator` validates JSON text on the client and the server. (belisoful)
 NEW: Issue #1406 - `TUuidValidator` validates an RFC 9562 UUID on the client and the server, with `Versions`, `Strict`, and `AllowNil`. (belisoful)
 NEW: Issue #1406 - `TUnicodeValidator` rejects suspicious Unicode in user names and other identifiers on the server with the intl Spoofchecker: invisible and format characters, mixed numbering systems, hidden overlays, a UTS #39 `RestrictionLevel` (`TUnicodeRestrictionLevel`), and the scripts of `Locales`. Validators render `aria-invalid="true"` on a field that fails on the server. (belisoful)
