@@ -1,7 +1,5 @@
 <?php
 
-namespace Prado\Test\Unit;
-
 /**
  * PradoUnitInitialStateTest class file.
  *
@@ -10,7 +8,7 @@ namespace Prado\Test\Unit;
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-// No Namespace for unit tests, separate from the system.
+namespace Prado\Test\Unit;
 
 /**
  * Unit tests for the session-baseline capture surface on {@see PradoUnit}.

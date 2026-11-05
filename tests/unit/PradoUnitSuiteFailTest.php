@@ -1,7 +1,5 @@
 <?php
 
-namespace Prado\Test\Unit;
-
 /**
  * PradoUnitSuiteFailTest class file.
  *
@@ -10,7 +8,7 @@ namespace Prado\Test\Unit;
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-// No Namespace for unit tests, separate from the system.
+namespace Prado\Test\Unit;
 
 /**
  * Stub that mimics a TException subclass by exposing getErrorCode().

@@ -10,14 +10,13 @@
 
 namespace Prado\Test\Unit\HarnessTests;
 
-use Prado\Test\Unit\Harness\TTestShellApplication;
-use Prado\Test\Unit\PradoUnit;
-
 use Prado\Prado;
 use Prado\Shell\TShellApplication;
 use Prado\Shell\TShellWriter;
 use Prado\IO\TTextWriter;
 use Prado\TApplication;
+use Prado\Test\Unit\Harness\TTestShellApplication;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * Unit tests for {@see TTestShellApplication}.

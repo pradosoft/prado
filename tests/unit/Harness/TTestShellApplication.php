@@ -10,11 +10,10 @@
 
 namespace Prado\Test\Unit\Harness;
 
-use Prado\Test\Unit\Harness\Traits\TTestApplicationRestorationTrait;
-
 use Prado\Prado;
 use Prado\Shell\TShellApplication;
 use Prado\Shell\TShellWriter;
+use Prado\Test\Unit\Harness\Traits\TTestApplicationRestorationTrait;
 
 /**
  * TTestShellApplication extends {@see TShellApplication} with test-friendly behaviour.
