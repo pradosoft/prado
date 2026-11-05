@@ -11,6 +11,7 @@
 namespace Prado\Test\Unit\Data;
 
 use PDO;
+use Prado\Data\IDataConnection;
 use Prado\Data\TDataCharset;
 use Prado\Data\TDbConnection;
 use Prado\Data\TDbDriver;
@@ -1188,6 +1189,71 @@ class TDbDriverCapabilitiesTest extends \PHPUnit\Framework\TestCase
 	}
 
 	// =========================================================================
+	//  getMetaDataClass — plugin connections (IDataConnection, not TDbConnection)
+	// =========================================================================
+
+	public function testGetMetaDataClassPluginConnectionRaisesEventBeforeBuiltIn(): void
+	{
+		// A plugin connection reporting a built-in driver name gets its handler's class.
+		$conn = $this->createMock(TDbDriverCapabilitiesTestPluginConnection::class);
+		$conn->method('getDriverName')->willReturn('SQLSRV');
+		$conn->expects($this->once())
+			->method('raiseEvent')
+			->with('fxDataGetMetaDataClass', $conn, TDbDriver::DRIVER_SQLSRV)
+			->willReturn([TMysqlMetaData::class]);
+
+		$this->assertSame(TMysqlMetaData::class, TDbDriverCapabilities::getMetaDataClass($conn));
+	}
+
+	public function testGetMetaDataClassPluginConnectionFallsBackToBuiltIn(): void
+	{
+		$conn = $this->createMock(TDbDriverCapabilitiesTestPluginConnection::class);
+		$conn->method('getDriverName')->willReturn(TDbDriver::DRIVER_MYSQL);
+		$conn->expects($this->once())->method('raiseEvent')->willReturn([]);
+
+		$this->assertSame(TMysqlMetaData::class, TDbDriverCapabilities::getMetaDataClass($conn));
+	}
+
+	public function testGetMetaDataClassPluginConnectionUnknownDriverThrows(): void
+	{
+		// The event is raised once; no handler and no built-in class → TDbException.
+		$conn = $this->createMock(TDbDriverCapabilitiesTestPluginConnection::class);
+		$conn->method('getDriverName')->willReturn('plugin_driver');
+		$conn->expects($this->once())->method('raiseEvent')->willReturn([]);
+
+		$this->expectException(TDbException::class);
+		TDbDriverCapabilities::getMetaDataClass($conn);
+	}
+
+	public function testGetMetaDataClassPluginConnectionInvalidHandlerClassThrows(): void
+	{
+		$conn = $this->createMock(TDbDriverCapabilitiesTestPluginConnection::class);
+		$conn->method('getDriverName')->willReturn(TDbDriver::DRIVER_MYSQL);
+		$conn->method('raiseEvent')->willReturn([\stdClass::class]);
+
+		$this->expectException(TDbException::class);
+		TDbDriverCapabilities::getMetaDataClass($conn);
+	}
+
+	public function testGetMetaDataClassNonComponentConnectionUsesBuiltIn(): void
+	{
+		// An IDataConnection that is not a TComponent cannot raise the event.
+		$conn = $this->createMock(IDataConnection::class);
+		$conn->method('getDriverName')->willReturn(TDbDriver::DRIVER_PGSQL);
+
+		$this->assertSame(TPgsqlMetaData::class, TDbDriverCapabilities::getMetaDataClass($conn));
+	}
+
+	public function testGetMetaDataClassNonComponentConnectionUnknownDriverThrows(): void
+	{
+		$conn = $this->createMock(IDataConnection::class);
+		$conn->method('getDriverName')->willReturn('plugin_driver');
+
+		$this->expectException(TDbException::class);
+		TDbDriverCapabilities::getMetaDataClass($conn);
+	}
+
+	// =========================================================================
 	//  Cross-method consistency assertions
 	// =========================================================================
 
@@ -1392,4 +1458,11 @@ class TDbDriverCapabilitiesTest extends \PHPUnit\Framework\TestCase
 			);
 		}
 	}
+}
+
+/**
+ * Prado Data plugin connection shape: a TComponent IDataConnection that is not a TDbConnection.
+ */
+abstract class TDbDriverCapabilitiesTestPluginConnection extends \Prado\TComponent implements IDataConnection
+{
 }
