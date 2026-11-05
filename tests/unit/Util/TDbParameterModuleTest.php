@@ -1,5 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\Util;
+
+use Prado\Data\TDbConnection;
+use Prado\Prado;
+use Prado\Util\Behaviors\TMapLazyLoadBehavior;
+use Prado\Util\Behaviors\TMapRouteBehavior;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Util\TDbParameterModule;
@@ -12,7 +18,7 @@ function dbParamTestFunction($data, $encode)
 		return unserialize($data);
 }
 
-class TDbParameterModuleTest extends PHPUnit\Framework\TestCase
+class TDbParameterModuleTest extends \PHPUnit\Framework\TestCase
 {
 	protected $obj;
 
@@ -124,7 +130,7 @@ class TDbParameterModuleTest extends PHPUnit\Framework\TestCase
 		$this->obj->set($key2, $value2, false);
 		
 		$arrayValue = ['propA' => 'data1', 'propB' => 'data2'];
-		$objValue = new stdClass;
+		$objValue = new \stdClass;
 		$objValue->propA = 'data1';
 		$objValue->propB = 'data2';
 		$this->obj->set($key3, $arrayValue);
@@ -346,7 +352,7 @@ class TDbParameterModuleTest extends PHPUnit\Framework\TestCase
 	{
 		$key = 'testparam';
 		$value = ['propA' => 'data1', 'propB' => 'data2'];
-		$value2 = new stdClass;
+		$value2 = new \stdClass;
 		$value2->propA = 'data1';
 		$value2->propB = 'data2';
 		
@@ -368,8 +374,8 @@ class TDbParameterModuleTest extends PHPUnit\Framework\TestCase
 		$this->obj->set($key, $value2);
 		self::assertEquals($value2, $this->obj->get($key, false));
 		
-		$this->obj->setSerializer('dbParamTestFunction');
-		self::assertEquals('dbParamTestFunction', $this->obj->getSerializer());
+		$this->obj->setSerializer(__NAMESPACE__ . '\\dbParamTestFunction');
+		self::assertEquals(__NAMESPACE__ . '\\dbParamTestFunction', $this->obj->getSerializer());
 		
 		$this->obj->set($key, $value);
 		self::assertTrue($this->obj->exists($key));

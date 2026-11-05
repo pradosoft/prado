@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web;
+
 use Prado\Web\THttpRequest;
 use Prado\Web\THttpRequestUrlFormat;
 use Prado\Web\TUrlManager;
@@ -8,7 +10,7 @@ use Prado\TApplication;
 /**
  * Test class for TUrlManager.
  */
-class TUrlManagerTest extends PHPUnit\Framework\TestCase
+class TUrlManagerTest extends \PHPUnit\Framework\TestCase
 {
 	protected static $app = null;
 

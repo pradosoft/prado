@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Data\SqlMap\domain;
+
 class Book extends Document
 {
 	private $_PageNumber = '';

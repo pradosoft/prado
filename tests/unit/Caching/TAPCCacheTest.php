@@ -1,11 +1,13 @@
 <?php
 
+namespace Prado\Test\Unit\Caching;
+
 use Prado\Caching\TAPCCache;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TNotSupportedException;
 use Prado\TApplication;
 
-class TAPCCacheTest extends PHPUnit\Framework\TestCase
+class TAPCCacheTest extends \PHPUnit\Framework\TestCase
 {
 	protected $app;
 	protected static $cache = null;

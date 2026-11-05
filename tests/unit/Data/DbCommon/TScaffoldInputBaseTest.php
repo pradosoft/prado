@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Data\DbCommon;
+
 use Prado\Data\ActiveRecord\Scaffold\InputBuilder\TScaffoldInputBase;
 use Prado\Data\ActiveRecord\TActiveRecord;
 use Prado\Data\TDbDriver;
@@ -10,7 +12,7 @@ use Prado\Exceptions\TConfigurationException;
  *
  * Tests the createInputBuilder factory method and fxActiveRecordScaffoldInputClass event.
  */
-class TScaffoldInputBaseTest extends PHPUnit\Framework\TestCase
+class TScaffoldInputBaseTest extends \PHPUnit\Framework\TestCase
 {
 	private function createMockRecord(string $driver): TActiveRecord
 	{

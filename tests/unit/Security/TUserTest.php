@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Security;
+
 use Prado\Prado;
 use Prado\Security\TUser;
 use Prado\Security\TUserManager;
@@ -20,7 +22,7 @@ class TUserBehavior extends TBehavior {
 	}
 }
 
-class TUserTest extends PHPUnit\Framework\TestCase
+class TUserTest extends \PHPUnit\Framework\TestCase
 {
 	public static $app = null;
 	public static $mgr = null;

@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Util;
+
 use Prado\Util\TClassBehavior;
 use Prado\TComponent;
 use Prado\Exceptions\TInvalidOperationException;
@@ -12,7 +14,7 @@ class TestClassBehaviorKey extends TClassBehavior
     }
 }
 
-class TClassBehaviorTest extends PHPUnit\Framework\TestCase
+class TClassBehaviorTest extends \PHPUnit\Framework\TestCase
 {
     public function testAttachMultipleOwnersGetOwnersIsOwner()
     {

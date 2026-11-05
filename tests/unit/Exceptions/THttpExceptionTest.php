@@ -6,6 +6,8 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Exceptions;
+
 use Prado\Exceptions\THttpException;
 use Prado\Exceptions\TSystemException;
 use Prado\Exceptions\TException;
@@ -16,7 +18,7 @@ use Prado\Exceptions\TException;
  * setErrorCode(), getCode() vs getStatusCode() distinction, throw/catch,
  * exception chaining (getPrevious()), and the full inheritance chain.
  */
-class THttpExceptionTest extends PHPUnit\Framework\TestCase
+class THttpExceptionTest extends \PHPUnit\Framework\TestCase
 {
 	// ── Basic construction and status code ───────────────────────────────────
 

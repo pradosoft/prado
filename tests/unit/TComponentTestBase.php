@@ -1,6 +1,8 @@
 <?php
 
-require_once __DIR__ . '/TComponentTestFixtures.php';
+namespace Prado\Test\Unit;
+
+require_once __DIR__ . '/TComponentTestFunctions.php';
 
 use Prado\TComponent;
 
@@ -9,7 +11,7 @@ use Prado\TComponent;
  *
  * All tests have been split into focused suites:
  *   - TComponentTestBase.php              — abstract base (setUp / tearDown)
- *   - TComponentTestFixtures.php          — shared fixture classes
+ *   - TComponentTestFunctions.php         — global event handler functions
  *   - TComponentGlobalEventsTest.php      — global-event listen / unlisten
  *   - TComponentClassBehaviorTest.php     — attachClassBehavior / detachClassBehavior
  *   - TComponentBehaviorTest.php          — instance behaviors (attach, detach, enable, disable)
@@ -24,7 +26,7 @@ use Prado\TComponent;
  * directly so that the global-event cleanup and behavior-leak assertion run
  * consistently for every test.
  */
-abstract class TComponentTestBase extends PHPUnit\Framework\TestCase
+abstract class TComponentTestBase extends \PHPUnit\Framework\TestCase
 {
 	/** @var array<callable> Closures executed in tearDown to reverse side-effects. */
 	protected $tearDownScripts = [];

@@ -1,8 +1,10 @@
 <?php
 
+namespace Prado\Test\Unit\Data\DbSpecific\Ibm;
+
 use Prado\Data\Common\Ibm\TIbmCommandBuilder;
 
-class CommandBuilderIbmTest extends PHPUnit\Framework\TestCase
+class CommandBuilderIbmTest extends \PHPUnit\Framework\TestCase
 {
 	protected static $sql = [
 		'simple'   => 'SELECT username, age FROM accounts',

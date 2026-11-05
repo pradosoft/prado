@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit;
+
 use Prado\TEventParameter;
 use Prado\Collections\TAttributeCollection;
 use PHPUnit\Framework\TestCase;
@@ -56,7 +58,7 @@ class TEventParameterTest extends TestCase
 
 	public function testConstructorWithObjectParameter()
 	{
-		$obj = new stdClass();
+		$obj = new \stdClass();
 		$obj->key = 'value';
 		$param = new TEventParameter($obj);
 		$this->assertSame($obj, $param->getParameter());
@@ -238,7 +240,7 @@ class TEventParameterTest extends TestCase
 
 	public function testOffsetExistsWithObjectParameter()
 	{
-		$param = new TEventParameter(new stdClass());
+		$param = new TEventParameter(new \stdClass());
 		$this->assertFalse($param->offsetExists('anyKey'));
 	}
 
@@ -405,7 +407,7 @@ class TEventParameterTest extends TestCase
 	public function testImplementsArrayAccess()
 	{
 		$param = new TEventParameter();
-		$this->assertInstanceOf(ArrayAccess::class, $param);
+		$this->assertInstanceOf(\ArrayAccess::class, $param);
 	}
 
 	// ================================================================================
@@ -712,7 +714,7 @@ class TEventParameterTest extends TestCase
 
 	public function testGetParameterIsArrayWithObject()
 	{
-		$param = new TEventParameter(new stdClass());
+		$param = new TEventParameter(new \stdClass());
 		$this->assertFalse($param->getParameterIsArray());
 	}
 

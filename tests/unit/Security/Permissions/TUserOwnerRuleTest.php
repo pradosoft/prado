@@ -1,11 +1,14 @@
 <?php
 
+namespace Prado\Test\Unit\Security\Permissions;
+
+use Prado\Security\TUser;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Security\Permissions\TUserOwnerRule;
 use Prado\Security\TUserManager;
 
-class TUserOwnerRuleTest extends PHPUnit\Framework\TestCase
+class TUserOwnerRuleTest extends \PHPUnit\Framework\TestCase
 {
 	protected $obj;
 	

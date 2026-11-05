@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Data\SqlMap\domain;
+
 use Prado\Collections\TList;
 
 class Order

@@ -1,12 +1,14 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI;
+
 use Prado\Prado;
 use Prado\Web\UI\TTemplateManager;
 use Prado\Web\UI\TTemplate;
 use Prado\Web\UI\TSkinTemplate;
 use Prado\Web\UI\ITemplate;
 
-class TTemplateManagerTest extends PHPUnit\Framework\TestCase
+class TTemplateManagerTest extends \PHPUnit\Framework\TestCase
 {
 	/** @var string[] temp .tpl files created during tests */
 	private array $_tmpFiles = [];

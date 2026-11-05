@@ -1,6 +1,12 @@
 <?php
 
-require_once(__DIR__ . '/BaseCase.php');
+namespace Prado\Test\Unit\Data\SqlMap;
+
+use Prado\Collections\TList;
+use Prado\Test\Unit\Data\SqlMap\domain\Account;
+use Prado\Test\Unit\Data\SqlMap\domain\LineItem;
+use Prado\Test\Unit\Data\SqlMap\domain\LineItemCollection;
+use Prado\Test\Unit\Data\SqlMap\domain\Order;
 
 class ResultMapTest extends BaseCase
 {
@@ -40,7 +46,6 @@ class ResultMapTest extends BaseCase
 		$this->assertTrue($order->getLineItemsList() instanceof TList);
 		$this->assertSame(2, $order->getLineItemsList()->getCount());
 	}
-
 
 	public function testLazyLoad()
 	{
@@ -151,7 +156,6 @@ class ResultMapTest extends BaseCase
 		$this->assertSame("ESM-23", $order->getFavouriteLineItem()->getCode());
 	}
 
-
 	public function testNestedObjects2()
 	{
 		$order = self::$sqlmap->queryForObject("GetOrderJoinedFavourite2", 1);
@@ -193,7 +197,6 @@ class ResultMapTest extends BaseCase
 		$this->assertSame(1, $order2->getFavouriteLineItem()->getID());
 	}
 
-
 	public function testSimpleTypeMapping()
 	{
 		$this->resetDatabase();
@@ -232,7 +235,6 @@ class ResultMapTest extends BaseCase
 		$this->asserEquals($enumClass['Color'], 'Colors.Blue');
 		$this->assertSame($enumClass['Month'], 'Months.All');
 	}
-
 
 	function testByteArrayMapping()
 	{

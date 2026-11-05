@@ -1,9 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\Caching;
+
 use Prado\Caching\TMemCache;
 use Prado\TApplication;
 
-class TMemCacheTest extends PHPUnit\Framework\TestCase
+class TMemCacheTest extends \PHPUnit\Framework\TestCase
 {
 	protected $app;
 	protected static $cache = null;
@@ -76,8 +78,8 @@ class TMemCacheTest extends PHPUnit\Framework\TestCase
 	public function testSetOptions()
 	{
 		self::$cache->setOptions([
-			Memcached::OPT_HASH => Memcached::HASH_MURMUR,
-			Memcached::OPT_PREFIX_KEY => "widgets"
+			\Memcached::OPT_HASH => \Memcached::HASH_MURMUR,
+			\Memcached::OPT_PREFIX_KEY => "widgets"
 		]);
 		$this->testSetAndGet();
 	}

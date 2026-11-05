@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Security;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Security\TAuthManager;
@@ -7,7 +9,7 @@ use Prado\Security\TUserManager;
 use Prado\TApplication;
 use Prado\Xml\TXmlDocument;
 
-class TAuthManagerTest extends PHPUnit\Framework\TestCase
+class TAuthManagerTest extends \PHPUnit\Framework\TestCase
 {
 	public static $app = null;
 	public static $usrMgr = null;
@@ -75,7 +77,7 @@ class TAuthManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testDoAuthentication()
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		throw new \PHPUnit\Framework\IncompleteTestError();
 		// Not yet finished, Session won't start because of headers :( :(
 
 		$authManager = new TAuthManager();
@@ -87,12 +89,12 @@ class TAuthManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testDoAuthorization()
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		throw new \PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testLeave()
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		throw new \PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testReturnUrlVarName()
@@ -149,15 +151,15 @@ class TAuthManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testOnAuthenticate()
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		throw new \PHPUnit\Framework\IncompleteTestError();
 	}
 	public function testOnAuthExpire()
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		throw new \PHPUnit\Framework\IncompleteTestError();
 	}
 	public function testOnAuthorize()
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		throw new \PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testUserKey()
@@ -171,22 +173,22 @@ class TAuthManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testUpdateSessionUser()
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		throw new \PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testSwitchUser()
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		throw new \PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testLogin()
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		throw new \PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testLogout()
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		throw new \PHPUnit\Framework\IncompleteTestError();
 	}
 	
 	protected $_handled = 0;

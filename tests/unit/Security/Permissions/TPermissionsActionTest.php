@@ -1,5 +1,10 @@
 <?php
 
+namespace Prado\Test\Unit\Security\Permissions;
+
+use Prado\Prado;
+use Prado\Security\Permissions\TUserOwnerRule;
+use Prado\Security\TAuthorizationRule;
 use Prado\IO\TTextWriter;
 use Prado\Shell\TShellWriter;
 use Prado\Security\Permissions\TPermissionsAction;
@@ -7,7 +12,7 @@ use Prado\Security\Permissions\TPermissionsManager;
 use Prado\Security\TUserManager;
 use Prado\Util\TDbParameterModule;
 
-class TPermissionsActionTest extends PHPUnit\Framework\TestCase
+class TPermissionsActionTest extends \PHPUnit\Framework\TestCase
 {
 	protected $dbparam;
 	protected $manager;
@@ -287,7 +292,7 @@ class TPermissionsActionTest extends PHPUnit\Framework\TestCase
 	
 	public function testPermissionsManager()
 	{
-		$this->obj->setPermissionsManager($v = new stdClass());
+		$this->obj->setPermissionsManager($v = new \stdClass());
 		self::assertEquals($v, $this->obj->getPermissionsManager());
 	}
 

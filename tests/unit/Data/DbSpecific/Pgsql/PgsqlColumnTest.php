@@ -1,10 +1,14 @@
 <?php
 
-require_once(__DIR__ . '/../../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\DbSpecific\Pgsql;
+
+use Prado\Data\Common\TDbTableColumn;
+use Prado\Data\TDbConnection;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 
 use Prado\Data\Common\Pgsql\TPgsqlMetaData;
 
-class PgsqlColumnTest extends PHPUnit\Framework\TestCase
+class PgsqlColumnTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 	

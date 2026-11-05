@@ -1,8 +1,9 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Behaviors;
+
 use Prado\TComponent;
 use Prado\Util\Behaviors\TForkable;
-
 
 class TTestForkablePrepare extends TComponent
 {
@@ -33,7 +34,7 @@ class TTestForkableBehavior extends TComponent
 	}
 }
 
-class TForkableTest extends PHPUnit\Framework\TestCase
+class TForkableTest extends \PHPUnit\Framework\TestCase
 {
 	protected $behavior;
 
@@ -64,7 +65,6 @@ class TForkableTest extends PHPUnit\Framework\TestCase
 		$component->detachBehavior($name);
 		self::assertFalse($component->hasEventHandler('fxPrepareForFork'));
 		self::assertFalse($component->hasEventHandler('fxRestoreAfterFork'));
-
 
 		$component = new TTestForkablePrepare();
 		

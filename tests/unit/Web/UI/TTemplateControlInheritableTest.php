@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI;
+
 use Prado\Util\TBehavior;
 use Prado\Web\UI\ITemplate;
 use Prado\Web\UI\TTemplate;
@@ -25,7 +27,7 @@ class TTemplateControlInheritableCreateChildBehavior extends TBehavior
 // TTemplateControlInheritableTest
 // ---------------------------------------------------------------------------
 
-class TTemplateControlInheritableTest extends PHPUnit\Framework\TestCase
+class TTemplateControlInheritableTest extends \PHPUnit\Framework\TestCase
 {
 	// -----------------------------------------------------------------------
 	// Helpers

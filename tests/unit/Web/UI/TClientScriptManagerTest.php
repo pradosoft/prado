@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI;
+
 use Prado\Collections\TMap;
 use Prado\IO\TTextWriter;
 use Prado\Prado;
@@ -22,7 +24,7 @@ class TClientScriptManagerTestable extends TClientScriptManager
 {
 	public static function resetJavascriptCache()
 	{
-		$reflection = new ReflectionClass(TClientScriptManager::class);
+		$reflection = new \ReflectionClass(TClientScriptManager::class);
 		$prop = $reflection->getProperty('_scripts');
 		$prop->setAccessible(true);
 		$prop->setValue(null, null);
@@ -202,7 +204,7 @@ function rrmdir($src) {
 	rmdir($src);
 }
 
-class TClientScriptManagerTest extends PHPUnit\Framework\TestCase
+class TClientScriptManagerTest extends \PHPUnit\Framework\TestCase
 {
 	public static $app;
 
@@ -1122,7 +1124,7 @@ class TClientScriptManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testRegisterHeadScriptInRenderThrowsException()
 	{
-		$reflection = new ReflectionClass($this->_page);
+		$reflection = new \ReflectionClass($this->_page);
 		$prop = $reflection->getProperty('_inFormRender');
 		$prop->setAccessible(true);
 		$prop->setValue($this->_page, true);
@@ -1133,7 +1135,7 @@ class TClientScriptManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testRegisterHeadScriptFileInRenderThrowsException()
 	{
-		$reflection = new ReflectionClass($this->_page);
+		$reflection = new \ReflectionClass($this->_page);
 		$prop = $reflection->getProperty('_inFormRender');
 		$prop->setAccessible(true);
 		$prop->setValue($this->_page, true);
@@ -1144,7 +1146,7 @@ class TClientScriptManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testRegisterBeginScriptInRenderThrowsException()
 	{
-		$reflection = new ReflectionClass($this->_page);
+		$reflection = new \ReflectionClass($this->_page);
 		$prop = $reflection->getProperty('_inFormRender');
 		$prop->setAccessible(true);
 		$prop->setValue($this->_page, true);
@@ -1380,7 +1382,7 @@ class TClientScriptManagerTest extends PHPUnit\Framework\TestCase
 
 	private function getPrivateProperty($object, $property)
 	{
-		$reflection = new ReflectionClass($object);
+		$reflection = new \ReflectionClass($object);
 		$prop = $reflection->getProperty($property);
 		$prop->setAccessible(true);
 		return $prop->getValue($object);
@@ -1388,7 +1390,7 @@ class TClientScriptManagerTest extends PHPUnit\Framework\TestCase
 
 	private function invokePrivateMethod($object, $method, $args = [])
 	{
-		$reflection = new ReflectionClass($object);
+		$reflection = new \ReflectionClass($object);
 		$method = $reflection->getMethod($method);
 		$method->setAccessible(true);
 		return $method->invokeArgs($object, $args);

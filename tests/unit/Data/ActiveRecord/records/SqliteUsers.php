@@ -1,5 +1,9 @@
 <?php
 
+namespace Prado\Test\Unit\Data\ActiveRecord\records;
+
+use Prado\Data\ActiveRecord\TActiveRecord;
+
 class SqliteUsers extends TActiveRecord
 {
 	public $username;

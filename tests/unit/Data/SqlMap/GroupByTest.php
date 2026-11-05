@@ -1,21 +1,6 @@
 <?php
 
-require_once(__DIR__ . '/BaseCase.php');
-
-class AccountWithOrders extends Account
-{
-	private $_orders = [];
-
-	public function setOrders($orders)
-	{
-		$this->_orders = $orders;
-	}
-
-	public function getOrders()
-	{
-		return $this->_orders;
-	}
-}
+namespace Prado\Test\Unit\Data\SqlMap;
 
 class GroupByTest extends BaseCase
 {

@@ -1,5 +1,9 @@
 <?php
 
+namespace Prado\Test\Unit;
+
+use Prado\TApplicationMode;
+use Prado\Util\TLogger;
 use Prado\Prado;
 
 class MethodVisibleTestClassA
@@ -293,7 +297,7 @@ class MethodVisibleTestClassB extends MethodVisibleTestClassA
 /**
  * @package System
  */
-class PradoBaseTest extends PHPUnit\Framework\TestCase
+class PradoBaseTest extends \PHPUnit\Framework\TestCase
 {
 	const INTERFACE_FQN = 'Prado\\Web\\UI\\IValidatable';
 	const INTERFACE_SHORT_NAME = 'IValidatable';

@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Data\SqlMap\domain;
+
 class Account
 {
 	private $_ID = 0;

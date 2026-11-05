@@ -1,9 +1,14 @@
 <?php
 
-require_once(__DIR__ . '/../../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\DbSpecific\Mysql;
+
+use Prado\Data\Common\TDbTableColumn;
+use Prado\Data\TDbConnection;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+
 use Prado\Data\Common\Mysql\TMysqlMetaData;
 
-class MysqlColumnTest extends PHPUnit\Framework\TestCase
+class MysqlColumnTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 	

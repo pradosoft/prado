@@ -1,10 +1,13 @@
 <?php
 
-require_once(__DIR__ . '/../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\TableGateway;
+
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
 
-class BaseGateway extends PHPUnit\Framework\TestCase
+class BaseGateway extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 
@@ -96,7 +99,6 @@ class BaseGateway extends PHPUnit\Framework\TestCase
 			'int_fk2' => 1,
 		];
 	}
-
 
 	public function get_record2()
 	{

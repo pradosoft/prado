@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Data\SqlMap\domain;
+
 class Newspaper extends Document
 {
 	private $_City = '';

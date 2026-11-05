@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI;
+
 use Prado\IO\TTextWriter;
 use Prado\Web\UI\IAdapterControl;
 use Prado\Web\UI\TControl;
@@ -63,7 +65,7 @@ class TControlAdapterSpy extends TControlAdapter
 	}
 }
 
-class TControlTest extends PHPUnit\Framework\TestCase
+class TControlTest extends \PHPUnit\Framework\TestCase
 {
 	public function testConstruct()
 	{
@@ -346,7 +348,7 @@ class TControlTest extends PHPUnit\Framework\TestCase
 	{
 		$label = new TLabel();
 		$label->autoBindProperty('Text', "'auto value'");
-		$ref = new ReflectionObject($label);
+		$ref = new \ReflectionObject($label);
 		$method = $ref->getMethod('autoDataBindProperties');
 		$method->setAccessible(true);
 		$method->invoke($label);
@@ -483,7 +485,7 @@ class TControlTest extends PHPUnit\Framework\TestCase
 		$control = new TControl();
 		$this->assertFalse($control->getHasChildInitialized()); // CS_CONSTRUCTED < CS_CHILD_INITIALIZED
 		// initRecursive() advances the stage to at least CS_CHILD_INITIALIZED
-		$ref = new ReflectionObject($control);
+		$ref = new \ReflectionObject($control);
 		$method = $ref->getMethod('initRecursive');
 		$method->setAccessible(true);
 		$method->invoke($control, null);

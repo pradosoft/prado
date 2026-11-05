@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Cron;
+
 use Prado\Prado;
 use Prado\TModule;
 use Prado\Util\Cron\TCronTaskInfo;
@@ -9,7 +11,7 @@ class TCTITModule extends TModule
 	
 }
 
-class TCronTaskInfoTest extends PHPUnit\Framework\TestCase
+class TCronTaskInfoTest extends \PHPUnit\Framework\TestCase
 {
 	protected $obj;
 

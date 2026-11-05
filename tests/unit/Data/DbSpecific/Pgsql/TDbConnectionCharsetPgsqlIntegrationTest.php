@@ -1,6 +1,8 @@
 <?php
 
-require_once(__DIR__ . '/../../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\DbSpecific\Pgsql;
+
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 
 use Prado\Data\TDbConnection;
 use Prado\TApplication;
@@ -18,7 +20,7 @@ use Prado\TApplication;
  * On Scrutinizer CI the user/password is 'scrutinizer'; elsewhere both default
  * to 'prado_unitest'.
  */
-class TDbConnectionCharsetPgsqlIntegrationTest extends PHPUnit\Framework\TestCase
+class TDbConnectionCharsetPgsqlIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

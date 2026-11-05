@@ -1,10 +1,12 @@
 <?php
 
-require_once(__DIR__ . '/../../PradoUnit.php');
-require_once(__DIR__ . '/records/DepartmentRecord.php');
-require_once(__DIR__ . '/records/DepSections.php');
+namespace Prado\Test\Unit\Data\ActiveRecord;
 
-class CriteriaTest extends PHPUnit\Framework\TestCase
+use Prado\Data\ActiveRecord\TActiveRecordCriteria;
+use Prado\Test\Unit\Data\ActiveRecord\records\DepartmentRecord;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+
+class CriteriaTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 	

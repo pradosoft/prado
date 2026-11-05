@@ -8,7 +8,9 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-require_once __DIR__ . '/../PradoUnitRequires.php';
+namespace Prado\Test\Unit\Shell;
+
+use Prado\Test\Unit\Harness\TTestShellApplication;
 
 use Prado\Caching\ICache;
 use Prado\Data\ActiveRecord\TActiveRecordConfig;
@@ -35,16 +37,6 @@ class ShellTestCacheModule extends TModule implements ICache
 	public function add($id, $value, $expire = 0, $dependency = null) { return true; }
 	public function delete($id) { return true; }
 	public function flush() {}
-}
-
-/**
- * A minimal TActiveRecordConfig stub used to verify that
- * {@see TShellApplication::installShellActions()} registers {@see TActiveRecordAction}
- * only when at least one {@see TActiveRecordConfig} module is present.
- */
-class ShellTestActiveRecordConfig extends TActiveRecordConfig
-{
-	public function init($config) {}
 }
 
 /**
@@ -112,7 +104,7 @@ class ShellTestNoOptionAction extends \Prado\Shell\TShellAction
  *
  * @package System.Shell
  */
-class TShellApplicationTest extends PHPUnit\Framework\TestCase
+class TShellApplicationTest extends \PHPUnit\Framework\TestCase
 {
 	private TTestShellApplication $_app;
 

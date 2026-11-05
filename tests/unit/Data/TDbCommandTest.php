@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Data;
+
 use Prado\Data\TDbConnection;
 use Prado\Data\TDbDataReader;
 use Prado\Exceptions\TDbException;
@@ -9,7 +11,7 @@ if (!defined('TEST_DB_FILE')) {
 	define('TEST_DB_FILE', __DIR__ . '/db/test.db');
 }
 
-class TDbCommandTest extends PHPUnit\Framework\TestCase
+class TDbCommandTest extends \PHPUnit\Framework\TestCase
 {
 	private $_connection;
 
@@ -72,7 +74,7 @@ class TDbCommandTest extends PHPUnit\Framework\TestCase
 		$command = $this->_connection->createCommand($sql);
 		$this->assertTrue($command->PdoStatement === null);
 		$command->prepare();
-		$this->assertTrue($command->PdoStatement instanceof PDOStatement);
+		$this->assertTrue($command->PdoStatement instanceof \PDOStatement);
 
 		try {
 			$command->Text = 'Bad SQL';
@@ -87,7 +89,7 @@ class TDbCommandTest extends PHPUnit\Framework\TestCase
 		$sql = 'SELECT name FROM foo';
 		$command = $this->_connection->createCommand($sql);
 		$command->prepare();
-		$this->assertTrue($command->PdoStatement instanceof PDOStatement);
+		$this->assertTrue($command->PdoStatement instanceof \PDOStatement);
 		$command->cancel();
 		$this->assertEquals($command->PdoStatement, null);
 	}

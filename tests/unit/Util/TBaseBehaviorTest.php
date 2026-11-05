@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Util;
+
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Util\TBaseBehavior;
 use Prado\Util\TBehavior;
@@ -71,7 +73,7 @@ class TestAssertOwnerClassBehavior extends TClassBehavior
 	}
 }
 
-class TBaseBehaviorTest extends PHPUnit\Framework\TestCase
+class TBaseBehaviorTest extends \PHPUnit\Framework\TestCase
 {
 	// === mergeHandlers ===
 

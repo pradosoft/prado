@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI\WebControls;
+
 use Prado\Web\UI\WebControls\TI18NWebControl;
 use Prado\Web\UI\WebControls\TWebControl;
 use Prado\I18N\TI18NControlTrait;

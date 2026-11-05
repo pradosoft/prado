@@ -1,6 +1,8 @@
 <?php
 
-require_once(__DIR__ . '/../../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\DbSpecific\Mysql;
+
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 
 use Prado\Data\TDbConnection;
 use Prado\TApplication;
@@ -18,7 +20,7 @@ use Prado\TApplication;
  * Credentials expected: host=localhost, db=prado_unitest, user=prado_unitest,
  * password=prado_unitest (same as the rest of the test suite).
  */
-class TDbConnectionCharsetMysqlIntegrationTest extends PHPUnit\Framework\TestCase
+class TDbConnectionCharsetMysqlIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

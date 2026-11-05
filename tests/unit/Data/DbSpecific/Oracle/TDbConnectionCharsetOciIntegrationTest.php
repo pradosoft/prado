@@ -1,6 +1,9 @@
 <?php
 
-require_once(__DIR__ . '/../../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\DbSpecific\Oracle;
+
+use Prado\Exceptions\TDbException;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 
 use Prado\Data\TDbConnection;
 use Prado\TApplication;
@@ -23,7 +26,7 @@ use Prado\TApplication;
  * ---------------------
  * ORACLE_SERVICE_NAME  Oracle PDB service name (default: FREEPDB1).
  */
-class TDbConnectionCharsetOciIntegrationTest extends PHPUnit\Framework\TestCase
+class TDbConnectionCharsetOciIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

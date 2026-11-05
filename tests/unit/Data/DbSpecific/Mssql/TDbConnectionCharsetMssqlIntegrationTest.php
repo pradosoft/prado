@@ -1,6 +1,9 @@
 <?php
 
-require_once(__DIR__ . '/../../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\DbSpecific\Mssql;
+
+use Prado\Exceptions\TDbException;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 
 use Prado\Data\TDbConnection;
 use Prado\TApplication;
@@ -24,7 +27,7 @@ use Prado\TApplication;
  * TrustServerCertificate=yes is required for ODBC Driver 18+ which enforces
  * encrypted connections and rejects self-signed certificates.
  */
-class TDbConnectionCharsetMssqlIntegrationTest extends PHPUnit\Framework\TestCase
+class TDbConnectionCharsetMssqlIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

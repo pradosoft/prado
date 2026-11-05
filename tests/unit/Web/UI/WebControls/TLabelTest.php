@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI\WebControls;
+
 use Prado\Web\UI\WebControls\TLabel;
 use Prado\Web\UI\WebControls\TTextBox;
 use Prado\Web\UI\THtmlWriter;
@@ -19,7 +21,7 @@ class TLabelTest extends TestCase
 
 	private function getTagName($label)
 	{
-		$method = new ReflectionMethod($label, 'getTagName');
+		$method = new \ReflectionMethod($label, 'getTagName');
 		$method->setAccessible(true);
 		return $method->invoke($label);
 	}

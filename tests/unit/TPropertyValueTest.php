@@ -1,22 +1,23 @@
 <?php
 
+namespace Prado\Test\Unit;
+
+use Prado\Web\Javascripts\TJavaScriptLiteral;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\TPropertyValue;
 use Prado\Web\Javascripts\TJavaScript;
 
 /**
  */
-class TPropertyValueTest extends PHPUnit\Framework\TestCase
+class TPropertyValueTest extends \PHPUnit\Framework\TestCase
 {
 	protected function setUp(): void
 	{
 	}
 
-
 	protected function tearDown(): void
 	{
 	}
-
 
 	public function testEnsureBoolean()
 	{
@@ -30,7 +31,7 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(true, TPropertyValue::ensureBoolean('0.001'));
 		self::assertEquals(true, TPropertyValue::ensureBoolean('100'));
 		self::assertEquals(true, TPropertyValue::ensureBoolean(['value']));
-		self::assertEquals(true, TPropertyValue::ensureBoolean(new stdClass()));
+		self::assertEquals(true, TPropertyValue::ensureBoolean(new \stdClass()));
 
 		self::assertEquals(false, TPropertyValue::ensureBoolean(false));
 		self::assertEquals(false, TPropertyValue::ensureBoolean('false'));
@@ -439,7 +440,7 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 	public function testEnsureArrayNonStringObject()
 	{
 		// (array) stdClass → public properties become associative keys
-		$obj = new stdClass();
+		$obj = new \stdClass();
 		$obj->foo = 'bar';
 		$obj->num = 42;
 		self::assertSame(['foo' => 'bar', 'num' => 42], TPropertyValue::ensureArray($obj));
@@ -448,23 +449,23 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 	public function testEnsureArrayNonStringObjectEmpty()
 	{
 		// (array) empty stdClass → []
-		self::assertSame([], TPropertyValue::ensureArray(new stdClass()));
+		self::assertSame([], TPropertyValue::ensureArray(new \stdClass()));
 	}
 	
 	public function testEnsureObject()
 	{
-		self::assertEquals(new stdClass(), TPropertyValue::ensureObject(null));
-		$obj = new stdClass();
+		self::assertEquals(new \stdClass(), TPropertyValue::ensureObject(null));
+		$obj = new \stdClass();
 		$obj->scalar = '';
 		self::assertEquals($obj, TPropertyValue::ensureObject(''));
-		self::assertEquals(new stdClass(), TPropertyValue::ensureObject([]));
+		self::assertEquals(new \stdClass(), TPropertyValue::ensureObject([]));
 		$obj->scalar = 0;
 		self::assertEquals($obj, TPropertyValue::ensureObject(0));
 		$obj->scalar = 1;
 		self::assertEquals($obj, TPropertyValue::ensureObject(1));
 		$obj->scalar = 'value';
 		self::assertEquals($obj, TPropertyValue::ensureObject('value'));
-		$obj = new stdClass();
+		$obj = new \stdClass();
 		$obj->key = 'Prop';
 		self::assertEquals($obj, TPropertyValue::ensureObject(['key' => 'Prop']));
 		self::assertEquals($obj, TPropertyValue::ensureObject($obj));
@@ -473,7 +474,7 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 	public function testEnsureObjectEdgeCases()
 	{
 		// Boolean inputs — PHP wraps scalars in stdClass{$scalar = value}
-		$obj = new stdClass();
+		$obj = new \stdClass();
 		$obj->scalar = true;
 		self::assertEquals($obj, TPropertyValue::ensureObject(true));
 
@@ -627,7 +628,7 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		self::assertEquals('11', TPropertyValue::ensureNullIfEmpty('11'));
 		self::assertEquals(11, TPropertyValue::ensureNullIfEmpty(11));
 		self::assertEquals([11], TPropertyValue::ensureNullIfEmpty([11]));
-		self::assertEquals(new stdClass(), TPropertyValue::ensureNullIfEmpty(new stdClass()));
+		self::assertEquals(new \stdClass(), TPropertyValue::ensureNullIfEmpty(new \stdClass()));
 	}
 
 	public function testEnsureNullIfEmptyEdgeCases()

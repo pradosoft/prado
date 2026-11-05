@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/TComponentTestBase.php';
+namespace Prado\Test\Unit;
 
 use Prado\Exceptions\TUnknownMethodException;
 
@@ -25,7 +25,6 @@ class TComponentCallTest extends TComponentTestBase
 		// Check that the called object is shifted in front of the array of a class behavior call
 		$this->assertEquals($this->component, $this->component->getLastClassObject());
 
-
 		//Test the FooBarBehavior
 		$this->assertEquals(27, $this->component->moreFunction(3, 3));
 
@@ -44,9 +43,8 @@ class TComponentCallTest extends TComponentTestBase
 		$this->component->detachClassBehavior($fooClassBehaviorName);
 		unset($this->tearDownScripts[$fooClassBehaviorName]);
 
-
 		// test object instance behaviors implemented through class-wide behaviors
-		$this->component->attachClassBehavior('FooFooBehaviorAsClass', 'FooFooBehavior');
+		$this->component->attachClassBehavior('FooFooBehaviorAsClass', FooFooBehavior::class);
 
 		$component = new NewComponent;
 
@@ -63,8 +61,6 @@ class TComponentCallTest extends TComponentTestBase
 		} catch (TUnknownMethodException $e) {
 		}
 
-
-
 		// make a call to an unpatched fx and dy call so that it's passed through to the __dycall function
 		$dynamicComponent = new DynamicCallComponent;
 
@@ -80,7 +76,6 @@ class TComponentCallTest extends TComponentTestBase
 
 		$dynamicComponent->unlisten();
 	}
-
 
 	public function testCallStatic_singleton()
 	{
@@ -162,7 +157,6 @@ class TComponentCallTest extends TComponentTestBase
 		self::assertEquals(16, NewComponent::aStaticMethod(4));
 
 		NewComponent::detachClassBehavior($behaviorName);
-
 
 		unset($this->tearDownScripts[$behaviorName]);
 	}

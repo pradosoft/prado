@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI\WebControls;
+
 use Prado\Web\UI\WebControls\THeader;
 use Prado\Web\UI\WebControls\THtmlElement;
 use Prado\Web\UI\THtmlWriter;

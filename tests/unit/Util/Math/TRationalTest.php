@@ -1,8 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Math;
+
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Util\Math\TRational;
 
-class TRationalTest extends PHPUnit\Framework\TestCase
+class TRationalTest extends \PHPUnit\Framework\TestCase
 {
 	public $obj;
 	

@@ -1,12 +1,14 @@
 <?php
 
-require_once(__DIR__ . '/../../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\DbSpecific\Sqlite;
+
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 
 use Prado\Data\Common\Sqlite\TSqliteMetaData;
 use Prado\Data\Common\TDbTableColumn;
 use Prado\Data\TDbConnection;
 
-class SqliteColumnTest extends PHPUnit\Framework\TestCase
+class SqliteColumnTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

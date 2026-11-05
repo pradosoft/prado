@@ -1,9 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\Caching;
+
 use Prado\Caching\TDirectoryCacheDependency;
 use Prado\Exceptions\TInvalidDataValueException;
 
-class TDirectoryCacheDependencyTest extends PHPUnit\Framework\TestCase
+class TDirectoryCacheDependencyTest extends \PHPUnit\Framework\TestCase
 {
 	protected function setUp(): void
 	{

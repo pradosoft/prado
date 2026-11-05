@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/TComponentTestFixtures.php';
+namespace Prado\Test\Unit;
 
 use Prado\Collections\TPriorityList;
 use Prado\Exceptions\TApplicationException;
@@ -17,7 +17,7 @@ use Prado\Util\TClassBehavior;
 /**
  * @package System
  */
-class TComponentRaiseEventTest extends PHPUnit\Framework\TestCase
+class TComponentRaiseEventTest extends \PHPUnit\Framework\TestCase
 {
 	protected $tearDownScripts = [];
 	protected $component;
@@ -89,7 +89,6 @@ class TComponentRaiseEventTest extends PHPUnit\Framework\TestCase
 		$this->component->resetEventHandled();
 		$this->component->Object->resetEventHandled();
 
-
 		// Test a behavior on event
 		$this->component->attachBehavior('test', new BehaviorTestBehavior);
 
@@ -111,19 +110,17 @@ class TComponentRaiseEventTest extends PHPUnit\Framework\TestCase
 		try {
 			$this->component->attachEventHandler('onBehaviorEvent', [$this->component, 'myEventHandler']);
 			$this->fail('exception not raised when getting event handlers for undefined event');
-		} catch (Prado\Exceptions\TInvalidOperationException $e) {
+		} catch (\Prado\Exceptions\TInvalidOperationException $e) {
 		}
 		$this->assertFalse($this->component->isEventHandled());
 		try {
 			$this->component->raiseEvent('onBehaviorEvent', $this, null);
 			$this->fail('exception not raised when getting event handlers for undefined event');
-		} catch (Prado\Exceptions\TInvalidOperationException $e) {
+		} catch (\Prado\Exceptions\TInvalidOperationException $e) {
 		}
 		$this->assertFalse($this->component->isEventHandled());
 
 		$this->component->enableBehavior('test');
-
-
 
 		//Test the return types of this function
 
@@ -149,7 +146,6 @@ class TComponentRaiseEventTest extends PHPUnit\Framework\TestCase
 		$arr = $this->component->onBehaviorEvent($this, $this->component, false);
 		$this->assertEquals([null, null], $arr);
 
-
 		unset($this->component->onBehaviorEvent);
 		$this->assertEquals(0, $this->component->onBehaviorEvent->Count);
 
@@ -161,7 +157,6 @@ class TComponentRaiseEventTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals([exp(4), exp(1)], $arr);
 		$arr = $this->component->onBehaviorEvent($this, $this->component, [$this, 'postEventFunction2']);
 		$this->assertEquals([sin(4), sin(1)], $arr);
-
 
 		//Testing Feed-forward functionality
 		unset($this->component->onBehaviorEvent);
@@ -176,7 +171,6 @@ class TComponentRaiseEventTest extends PHPUnit\Framework\TestCase
 
 		$arr = $this->component->onBehaviorEvent($this, 5, TEventResults::EVENT_REVERSE);
 		$this->assertEquals([10, 20], $arr);
-
 
 		unset($this->component->onBehaviorEvent);
 
@@ -215,6 +209,6 @@ class TComponentRaiseEventTest extends PHPUnit\Framework\TestCase
 	public function testGlobalEventListenerInRaiseEvent()
 	{
 		//TODO Test the Global Event Listener
-		throw new PHPUnit\Framework\IncompleteTestError();
+		throw new \PHPUnit\Framework\IncompleteTestError();
 	}
 }

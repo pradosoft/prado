@@ -1,8 +1,10 @@
 <?php
 
+namespace Prado\Test\Unit\Data\SqlMap;
+
 use Prado\Data\SqlMap\TSqlMapManager;
 
-class Ticket589Test extends PHPUnit\Framework\TestCase
+class Ticket589Test extends \PHPUnit\Framework\TestCase
 {
 	public function test()
 	{

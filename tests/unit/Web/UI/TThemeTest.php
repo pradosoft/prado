@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI;
+
 use Prado\Web\UI\TTheme;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\WebControls\TLabel;
@@ -9,7 +11,7 @@ use Prado\Web\UI\TTemplate;
 use Prado\TApplication;
 use Prado\Prado;
 
-class TThemeTest extends PHPUnit\Framework\TestCase
+class TThemeTest extends \PHPUnit\Framework\TestCase
 {
 	private $_themePath;
 	private $_app;
@@ -32,7 +34,7 @@ class TThemeTest extends PHPUnit\Framework\TestCase
 	private function _createSkin($controlClass, $skinId, array $properties)
 	{
 		$skinId = $skinId ?? 0;
-		$ref = new ReflectionClass(TTheme::class);
+		$ref = new \ReflectionClass(TTheme::class);
 		$theme = $ref->newInstanceWithoutConstructor();
 		
 		$skinsProp = $ref->getProperty('_skins');
@@ -494,7 +496,7 @@ class TThemeTest extends PHPUnit\Framework\TestCase
 
 	public function testApplySkin_EmptySkinArray_ReturnsFalse()
 	{
-		$ref = new ReflectionClass(TTheme::class);
+		$ref = new \ReflectionClass(TTheme::class);
 		$theme = $ref->newInstanceWithoutConstructor();
 		
 		$skinsProp = $ref->getProperty('_skins');
@@ -555,7 +557,7 @@ class TThemeTest extends PHPUnit\Framework\TestCase
 
 	public function testApplySkin_MultipleSkinIds_SameControl()
 	{
-		$ref = new ReflectionClass(TTheme::class);
+		$ref = new \ReflectionClass(TTheme::class);
 		$theme = $ref->newInstanceWithoutConstructor();
 		
 		$skinsProp = $ref->getProperty('_skins');

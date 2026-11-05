@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Caching;
+
 use Prado\Caching\TDbCache;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TConfigurationException;
@@ -9,7 +11,7 @@ if (!defined('TEST_CACHE_DB_DIR')) {
 	define('TEST_CACHE_DB_DIR', __DIR__ . '/../Data/db');
 }
 
-class TDbCacheTest extends PHPUnit\Framework\TestCase
+class TDbCacheTest extends \PHPUnit\Framework\TestCase
 {
 	private $_cache;
 	private $_dbDir;
@@ -318,7 +320,7 @@ class TDbCacheTest extends PHPUnit\Framework\TestCase
 		$this->initCache();
 
 		$key = 'object_key';
-		$value = new stdClass();
+		$value = new \stdClass();
 		$value->prop1 = 'value1';
 		$value->prop2 = 123;
 
@@ -495,7 +497,7 @@ class TDbCacheTest extends PHPUnit\Framework\TestCase
 
 	public function testSqliteDatabaseName()
 	{
-		$reflection = new ReflectionClass($this->_cache);
+		$reflection = new \ReflectionClass($this->_cache);
 		$method = $reflection->getMethod('getSqliteDatabaseName');
 		$method->setAccessible(true);
 
@@ -538,7 +540,7 @@ class TDbCacheTest extends PHPUnit\Framework\TestCase
 
 		$this->_cache->set('force_key', 'force_value');
 
-		$reflection = new ReflectionClass($this->_cache);
+		$reflection = new \ReflectionClass($this->_cache);
 		$property = $reflection->getProperty('_cacheInitialized');
 		$property->setAccessible(true);
 		$property->setValue($this->_cache, false);
@@ -609,7 +611,7 @@ class TDbCacheTest extends PHPUnit\Framework\TestCase
 		$key = 'init_key';
 		$value = 'init_value';
 
-		$reflection = new ReflectionClass($this->_cache);
+		$reflection = new \ReflectionClass($this->_cache);
 		$property = $reflection->getProperty('_cacheInitialized');
 		$property->setAccessible(true);
 		$property->setValue($this->_cache, false);
@@ -634,7 +636,7 @@ class TDbCacheTest extends PHPUnit\Framework\TestCase
 	{
 		$this->initCache();
 
-		$method = new ReflectionMethod($this->_cache, 'getTraitDbConnection');
+		$method = new \ReflectionMethod($this->_cache, 'getTraitDbConnection');
 		$method->setAccessible(true);
 
 		$db = $method->invoke($this->_cache);

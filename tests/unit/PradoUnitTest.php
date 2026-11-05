@@ -8,6 +8,10 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit;
+
+use Prado\Test\Unit\Harness\TTestApplication;
+
 /**
  * Base class for the hierarchy used in PradoUnit reflection tests.
  * Declares private and protected fields so they exercise ancestor-level
@@ -17,6 +21,11 @@ class PradoUnitTestBase
 {
 	private int $_basePrivate = 10;
 	protected string $_baseProtected = 'base';
+
+	private function multiply(int $a, int $b): int
+	{
+		return $a * $b;
+	}
 }
 
 /**
@@ -39,6 +48,11 @@ class PradoUnitStaticTestBase
 {
 	private static int $_baseStaticPrivate = 10;
 	protected static string $_baseStaticProtected = 'base';
+
+	private static function add(int $a, int $b): int
+	{
+		return $a + $b;
+	}
 }
 
 /**
@@ -53,15 +67,85 @@ class PradoUnitStaticTestChild extends PradoUnitStaticTestBase
 }
 
 /**
+ * Repeatable attribute for the PradoUnit attribute lookup tests.
+ */
+#[\Attribute(\Attribute::TARGET_ALL | \Attribute::IS_REPEATABLE)]
+class PradoUnitTestAttribute
+{
+	public function __construct(public string $value)
+	{
+	}
+}
+
+/**
+ * Subclass attribute; matched by `instanceof` when PradoUnitTestAttribute is the filter.
+ */
+#[\Attribute(\Attribute::TARGET_ALL)]
+class PradoUnitTestSubAttribute extends PradoUnitTestAttribute
+{
+}
+
+/**
+ * Unrelated attribute; never matched by the PradoUnitTestAttribute filter.
+ */
+#[\Attribute]
+class PradoUnitTestOtherAttribute
+{
+}
+
+/**
+ * Parent of the attributed hierarchy: a class attribute, a public and a private
+ * attributed property, and an attributed method the child inherits.
+ */
+#[PradoUnitTestAttribute('parent')]
+class PradoUnitAttributeBase
+{
+	#[PradoUnitTestAttribute('parent-prop')]
+	public int $parentProp = 1;
+
+	#[PradoUnitTestAttribute('private-prop')]
+	private int $_privateParentProp = 2;
+
+	#[PradoUnitTestAttribute('inherited-method')]
+	public function inheritedMethod(): void
+	{
+	}
+}
+
+/**
+ * Child of the attributed hierarchy: two repeated class attributes and an
+ * unrelated one, an attributed property, a plain property, a method carrying
+ * the subclass attribute, and a plain method.
+ */
+#[PradoUnitTestAttribute('child-a')]
+#[PradoUnitTestAttribute('child-b')]
+#[PradoUnitTestOtherAttribute]
+class PradoUnitAttributeChild extends PradoUnitAttributeBase
+{
+	#[PradoUnitTestAttribute('child-prop')]
+	public int $childProp = 3;
+
+	public int $plainProp = 4;
+
+	#[PradoUnitTestSubAttribute('sub')]
+	public function subMethod(): void
+	{
+	}
+
+	public function plainMethod(): void
+	{
+	}
+}
+
+/**
  * Tests for {@see PradoUnit}.
  *
  * Covers: snapshot/restore across a two-level hierarchy, partial-snapshot
  * filtering, getProp/setProp for private ancestor fields, and the
  * ReflectionException path for missing properties.
  *
- * @package System
  */
-class PradoUnitTest extends PHPUnit\Framework\TestCase
+class PradoUnitTest extends \PHPUnit\Framework\TestCase
 {
 	// -----------------------------------------------------------------------
 	// snapshot
@@ -207,17 +291,70 @@ class PradoUnitTest extends PHPUnit\Framework\TestCase
 	}
 
 	// -----------------------------------------------------------------------
+	// getProp / setProp — static mode (class-string argument)
+	// -----------------------------------------------------------------------
+
+	public function testGetPropStaticReadsPrivateAncestorField()
+	{
+		$this->assertSame(10, PradoUnit::getProp(PradoUnitStaticTestChild::class, '_baseStaticPrivate'));
+	}
+
+	public function testGetPropStaticReadsProtectedField()
+	{
+		$this->assertSame('base', PradoUnit::getProp(PradoUnitStaticTestChild::class, '_baseStaticProtected'));
+	}
+
+	public function testGetPropStaticReadsChildPrivateField()
+	{
+		$this->assertSame(2.5, PradoUnit::getProp(PradoUnitStaticTestChild::class, '_childStaticPrivate'));
+	}
+
+	public function testGetPropStaticThrowsForMissingProperty()
+	{
+		$this->expectException(\ReflectionException::class);
+		PradoUnit::getProp(PradoUnitStaticTestChild::class, 'doesNotExist');
+	}
+
+	public function testSetPropStaticWritesPrivateAncestorField()
+	{
+		$original = PradoUnit::getProp(PradoUnitStaticTestChild::class, '_baseStaticPrivate');
+		try {
+			PradoUnit::setProp(PradoUnitStaticTestChild::class, '_baseStaticPrivate', 99);
+			$this->assertSame(99, PradoUnit::getProp(PradoUnitStaticTestChild::class, '_baseStaticPrivate'));
+		} finally {
+			PradoUnit::setProp(PradoUnitStaticTestChild::class, '_baseStaticPrivate', $original);
+		}
+	}
+
+	public function testSetPropStaticWritesChildPrivateField()
+	{
+		$original = PradoUnit::getProp(PradoUnitStaticTestChild::class, '_childStaticPrivate');
+		try {
+			PradoUnit::setProp(PradoUnitStaticTestChild::class, '_childStaticPrivate', 6.28);
+			$this->assertSame(6.28, PradoUnit::getProp(PradoUnitStaticTestChild::class, '_childStaticPrivate'));
+		} finally {
+			PradoUnit::setProp(PradoUnitStaticTestChild::class, '_childStaticPrivate', $original);
+		}
+	}
+
+	public function testSetPropStaticThrowsForMissingProperty()
+	{
+		$this->expectException(\ReflectionException::class);
+		PradoUnit::setProp(PradoUnitStaticTestChild::class, 'doesNotExist', 'value');
+	}
+
+	// -----------------------------------------------------------------------
 	// snapshot / restore round-trip on a real TApplication
 	// -----------------------------------------------------------------------
 
 	public function testSnapshotRestoreRoundTripOnRealApp()
 	{
-		$app = Prado::getApplication();
+		$app = \Prado::getApplication();
 		$originalMode = $app->getMode();
 
 		$snap = TTestApplication::snapshotApp($app, ['_mode']);
 
-		$app->setMode(\Prado\TApplicationMode::Normal);
+		$app->setMode($originalMode === \Prado\TApplicationMode::Performance ? \Prado\TApplicationMode::Normal : \Prado\TApplicationMode::Performance);
 		$this->assertNotSame($originalMode, $app->getMode());
 
 		TTestApplication::restoreApp($snap, $app);
@@ -360,6 +497,9 @@ class PradoUnitTest extends PHPUnit\Framework\TestCase
 	/**
 	 * Temporarily override an env variable, run $callback, then restore the original
 	 * value (or unset it if it was not set before).
+	 * @param string $name
+	 * @param false|string $value
+	 * @param callable $callback
 	 */
 	private function withEnv(string $name, string|false $value, callable $callback): void
 	{
@@ -556,5 +696,276 @@ class PradoUnitTest extends PHPUnit\Framework\TestCase
 		$this->withEnv('PRADO_UNITTEST_SKIP_SLOW', 'yes', function () {
 			$this->assertFalse(PradoUnit::skipSlowTests());
 		});
+	}
+
+	// -----------------------------------------------------------------------
+	// reflectionClass / reflectionMethod / reflectionProperty (cache)
+	// -----------------------------------------------------------------------
+
+	public function testReflectionClass_returnsReflectionClass_forClassName(): void
+	{
+		$rc = PradoUnit::reflectionClass(PradoUnitTestChild::class);
+		$this->assertInstanceOf(\ReflectionClass::class, $rc);
+		$this->assertSame(PradoUnitTestChild::class, $rc->getName());
+	}
+
+	public function testReflectionClass_returnsReflectionClass_forInstance(): void
+	{
+		$rc = PradoUnit::reflectionClass(new PradoUnitTestChild());
+		$this->assertInstanceOf(\ReflectionClass::class, $rc);
+		$this->assertSame(PradoUnitTestChild::class, $rc->getName());
+	}
+
+	public function testReflectionClass_cachesSameInstance(): void
+	{
+		$first = PradoUnit::reflectionClass(PradoUnitTestChild::class);
+		$second = PradoUnit::reflectionClass(PradoUnitTestChild::class);
+		$this->assertSame($first, $second);
+	}
+
+	public function testReflectionClass_isCaseInsensitive(): void
+	{
+		$lower = PradoUnit::reflectionClass(strtolower(PradoUnitTestChild::class));
+		$exact = PradoUnit::reflectionClass(PradoUnitTestChild::class);
+		$this->assertSame($exact, $lower);
+	}
+
+	public function testReflectionClass_returnsNull_forUnknownClass(): void
+	{
+		$this->assertNull(PradoUnit::reflectionClass('NoSuchClassXyz123'));
+	}
+
+	public function testReflectionClass_cachesNullForUnknownClass(): void
+	{
+		// Second lookup of an unknown class returns the same cached null result
+		// without re-attempting the ReflectionException path.
+		$this->assertNull(PradoUnit::reflectionClass('NoSuchClassXyz456'));
+		$this->assertNull(PradoUnit::reflectionClass('NoSuchClassXyz456'));
+	}
+
+	public function testReflectionMethod_returnsMethod_byClassName(): void
+	{
+		$rm = PradoUnit::reflectionMethod(PradoUnit::class, 'reflectionClass');
+		$this->assertInstanceOf(\ReflectionMethod::class, $rm);
+		$this->assertSame('reflectionClass', $rm->getName());
+	}
+
+	public function testReflectionMethod_cachesSameInstance(): void
+	{
+		$first = PradoUnit::reflectionMethod(PradoUnit::class, 'reflectionClass');
+		$second = PradoUnit::reflectionMethod(PradoUnit::class, 'reflectionClass');
+		$this->assertSame($first, $second);
+	}
+
+	public function testReflectionMethod_returnsNull_forUnknownMethod(): void
+	{
+		$this->assertNull(PradoUnit::reflectionMethod(PradoUnit::class, 'noSuchMethodXyz'));
+	}
+
+	public function testReflectionMethod_returnsNull_forUnknownClass(): void
+	{
+		$this->assertNull(PradoUnit::reflectionMethod('NoSuchClassXyz789', 'anything'));
+	}
+
+	// -----------------------------------------------------------------------
+	// invoke — instance and static modes
+	// -----------------------------------------------------------------------
+
+	public function testInvokeCallsPrivateAncestorMethod(): void
+	{
+		$obj = new PradoUnitTestChild();
+
+		$this->assertSame(12, PradoUnit::invoke($obj, 'multiply', 3, 4));
+	}
+
+	public function testInvokeCallsStaticMethodViaClassString(): void
+	{
+		$this->assertSame(7, PradoUnit::invoke(PradoUnitStaticTestChild::class, 'add', 3, 4));
+	}
+
+	public function testInvokePassesMultipleArgs(): void
+	{
+		$obj = new PradoUnitTestChild();
+
+		$this->assertSame(0, PradoUnit::invoke($obj, 'multiply', 0, 99));
+	}
+
+	public function testInvokeThrowsForMissingMethod(): void
+	{
+		$obj = new PradoUnitTestChild();
+
+		$this->expectException(\ReflectionException::class);
+		PradoUnit::invoke($obj, 'noSuchMethodXyz');
+	}
+
+	public function testInvokeThrowsForMissingMethodOnClass(): void
+	{
+		$this->expectException(\ReflectionException::class);
+		PradoUnit::invoke(PradoUnitStaticTestChild::class, 'noSuchMethodXyz');
+	}
+
+	public function testReflectionProperty_findsPropertyOnConcreteClass(): void
+	{
+		$rp = PradoUnit::reflectionProperty(PradoUnitTestChild::class, 'childPublic');
+		$this->assertInstanceOf(\ReflectionProperty::class, $rp);
+		$this->assertSame('childPublic', $rp->getName());
+		$this->assertSame(PradoUnitTestChild::class, $rp->getDeclaringClass()->getName());
+	}
+
+	public function testReflectionProperty_findsPrivateAncestorProperty(): void
+	{
+		// _basePrivate is declared on the parent — the standard
+		// ReflectionClass::getProperty() called on the child would miss it.
+		$rp = PradoUnit::reflectionProperty(PradoUnitTestChild::class, '_basePrivate');
+		$this->assertInstanceOf(\ReflectionProperty::class, $rp);
+		$this->assertSame(PradoUnitTestBase::class, $rp->getDeclaringClass()->getName());
+	}
+
+	public function testReflectionProperty_cachesSameInstance(): void
+	{
+		$first = PradoUnit::reflectionProperty(PradoUnitTestChild::class, '_basePrivate');
+		$second = PradoUnit::reflectionProperty(PradoUnitTestChild::class, '_basePrivate');
+		$this->assertSame($first, $second);
+	}
+
+	public function testReflectionProperty_returnsNull_forUnknownProperty(): void
+	{
+		$this->assertNull(PradoUnit::reflectionProperty(PradoUnitTestChild::class, 'noSuchProp'));
+	}
+
+	public function testReflectionProperty_returnsNull_forUnknownClass(): void
+	{
+		$this->assertNull(PradoUnit::reflectionProperty('NoSuchClassAbc', 'anything'));
+	}
+
+	// -----------------------------------------------------------------------
+	// classAttributes / methodAttributes / propertyAttributes / *WithAttribute
+	// -----------------------------------------------------------------------
+
+	/**
+	 * Maps attribute instances to their `value` strings.
+	 * @param array<int,object> $attributes
+	 * @return string[]
+	 */
+	private static function attributeValues(array $attributes): array
+	{
+		return array_map(fn ($a) => $a->value, $attributes);
+	}
+
+	public function testClassAttributes_ownThenParent_inDeclarationOrder(): void
+	{
+		$attributes = PradoUnit::classAttributes(PradoUnitAttributeChild::class, PradoUnitTestAttribute::class);
+		$this->assertSame(['child-a', 'child-b', 'parent'], self::attributeValues($attributes));
+		$this->assertContainsOnlyInstancesOf(PradoUnitTestAttribute::class, $attributes);
+	}
+
+	public function testClassAttributes_withoutInherit_returnsOwnOnly(): void
+	{
+		$attributes = PradoUnit::classAttributes(PradoUnitAttributeChild::class, PradoUnitTestAttribute::class, false);
+		$this->assertSame(['child-a', 'child-b'], self::attributeValues($attributes));
+	}
+
+	public function testClassAttributes_filtersByAttributeClass(): void
+	{
+		$attributes = PradoUnit::classAttributes(PradoUnitAttributeChild::class, PradoUnitTestOtherAttribute::class);
+		$this->assertCount(1, $attributes);
+		$this->assertInstanceOf(PradoUnitTestOtherAttribute::class, $attributes[0]);
+	}
+
+	public function testClassAttributes_acceptsInstance(): void
+	{
+		$byName = PradoUnit::classAttributes(PradoUnitAttributeChild::class, PradoUnitTestAttribute::class);
+		$byInstance = PradoUnit::classAttributes(new PradoUnitAttributeChild(), PradoUnitTestAttribute::class);
+		$this->assertSame($byName, $byInstance);
+	}
+
+	public function testClassAttributes_cachesSameInstances_caseInsensitively(): void
+	{
+		$first = PradoUnit::classAttributes(PradoUnitAttributeChild::class, PradoUnitTestAttribute::class);
+		$second = PradoUnit::classAttributes(strtoupper(PradoUnitAttributeChild::class), PradoUnitTestAttribute::class);
+		$this->assertSame($first[0], $second[0]);
+	}
+
+	public function testClassAttributes_returnsEmpty_forClassWithoutAttribute(): void
+	{
+		$this->assertSame([], PradoUnit::classAttributes(PradoUnitTestChild::class, PradoUnitTestAttribute::class));
+	}
+
+	public function testClassAttributes_returnsEmpty_forUnknownClass(): void
+	{
+		$this->assertSame([], PradoUnit::classAttributes('NoSuchClassAttr123', PradoUnitTestAttribute::class));
+	}
+
+	public function testClassAttributes_throwsError_forUnknownAttributeClass(): void
+	{
+		$this->expectException(\Error::class);
+		PradoUnit::classAttributes(PradoUnitAttributeChild::class, 'NoSuchAttributeXyz');
+	}
+
+	public function testMethodAttributes_findsInheritedMethod(): void
+	{
+		$attributes = PradoUnit::methodAttributes(PradoUnitAttributeChild::class, 'inheritedMethod', PradoUnitTestAttribute::class);
+		$this->assertSame(['inherited-method'], self::attributeValues($attributes));
+	}
+
+	public function testMethodAttributes_matchesSubclassAttribute(): void
+	{
+		$attributes = PradoUnit::methodAttributes(PradoUnitAttributeChild::class, 'subMethod', PradoUnitTestAttribute::class);
+		$this->assertCount(1, $attributes);
+		$this->assertInstanceOf(PradoUnitTestSubAttribute::class, $attributes[0]);
+	}
+
+	public function testMethodAttributes_sharesInstances_acrossSubclasses(): void
+	{
+		$parent = PradoUnit::methodAttributes(PradoUnitAttributeBase::class, 'inheritedMethod', PradoUnitTestAttribute::class);
+		$child = PradoUnit::methodAttributes(PradoUnitAttributeChild::class, 'inheritedMethod', PradoUnitTestAttribute::class);
+		$this->assertSame($parent[0], $child[0]);
+	}
+
+	public function testMethodAttributes_returnsEmpty_forPlainOrUnknownMethod(): void
+	{
+		$this->assertSame([], PradoUnit::methodAttributes(PradoUnitAttributeChild::class, 'plainMethod', PradoUnitTestAttribute::class));
+		$this->assertSame([], PradoUnit::methodAttributes(PradoUnitAttributeChild::class, 'noSuchMethod', PradoUnitTestAttribute::class));
+	}
+
+	public function testPropertyAttributes_findsPrivateAncestorProperty(): void
+	{
+		$attributes = PradoUnit::propertyAttributes(PradoUnitAttributeChild::class, '_privateParentProp', PradoUnitTestAttribute::class);
+		$this->assertSame(['private-prop'], self::attributeValues($attributes));
+	}
+
+	public function testPropertyAttributes_returnsEmpty_forPlainOrUnknownProperty(): void
+	{
+		$this->assertSame([], PradoUnit::propertyAttributes(PradoUnitAttributeChild::class, 'plainProp', PradoUnitTestAttribute::class));
+		$this->assertSame([], PradoUnit::propertyAttributes(PradoUnitAttributeChild::class, 'noSuchProp', PradoUnitTestAttribute::class));
+	}
+
+	public function testMethodsWithAttribute_mapsOwnAndInheritedMethods(): void
+	{
+		$map = PradoUnit::methodsWithAttribute(PradoUnitAttributeChild::class, PradoUnitTestAttribute::class);
+		$this->assertSame(['subMethod', 'inheritedMethod'], array_keys($map));
+		$this->assertSame(['sub'], self::attributeValues($map['subMethod']));
+		$this->assertSame(['inherited-method'], self::attributeValues($map['inheritedMethod']));
+	}
+
+	public function testMethodsWithAttribute_sharesInstances_withSingleLookup(): void
+	{
+		$map = PradoUnit::methodsWithAttribute(PradoUnitAttributeChild::class, PradoUnitTestAttribute::class);
+		$single = PradoUnit::methodAttributes(PradoUnitAttributeChild::class, 'subMethod', PradoUnitTestAttribute::class);
+		$this->assertSame($single[0], $map['subMethod'][0]);
+	}
+
+	public function testPropertiesWithAttribute_mapsOwnAndInheritedPublicProperties(): void
+	{
+		$map = PradoUnit::propertiesWithAttribute(PradoUnitAttributeChild::class, PradoUnitTestAttribute::class);
+		$this->assertSame(['childProp', 'parentProp'], array_keys($map));
+		$this->assertSame(['child-prop'], self::attributeValues($map['childProp']));
+		$this->assertArrayNotHasKey('_privateParentProp', $map);
+	}
+
+	public function testPropertiesWithAttribute_returnsEmpty_forUnknownClass(): void
+	{
+		$this->assertSame([], PradoUnit::propertiesWithAttribute('NoSuchClassAttr456', PradoUnitTestAttribute::class));
+		$this->assertSame([], PradoUnit::methodsWithAttribute('NoSuchClassAttr456', PradoUnitTestAttribute::class));
 	}
 }

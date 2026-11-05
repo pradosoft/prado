@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI;
+
 use Prado\Prado;
 use Prado\Web\UI\TThemeManager;
 use Prado\Web\UI\TTheme;
@@ -7,7 +9,7 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 
-class TThemeManagerTest extends PHPUnit\Framework\TestCase
+class TThemeManagerTest extends \PHPUnit\Framework\TestCase
 {
 	/** @var string[] temp directories created during tests */
 	private array $_tmpDirs = [];
@@ -51,7 +53,7 @@ class TThemeManagerTest extends PHPUnit\Framework\TestCase
 	 */
 	private function setBasePath(TThemeManager $manager, string $path): void
 	{
-		$ref = new ReflectionProperty(TThemeManager::class, '_basePath');
+		$ref = new \ReflectionProperty(TThemeManager::class, '_basePath');
 		$ref->setAccessible(true);
 		$ref->setValue($manager, $path);
 	}
@@ -61,7 +63,7 @@ class TThemeManagerTest extends PHPUnit\Framework\TestCase
 	 */
 	private function getBasePathValue(TThemeManager $manager): ?string
 	{
-		$ref = new ReflectionProperty(TThemeManager::class, '_basePath');
+		$ref = new \ReflectionProperty(TThemeManager::class, '_basePath');
 		$ref->setAccessible(true);
 		return $ref->getValue($manager);
 	}

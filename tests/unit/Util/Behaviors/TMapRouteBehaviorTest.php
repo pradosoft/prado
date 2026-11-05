@@ -1,11 +1,13 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Behaviors;
+
+use Prado\Collections\TMap;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\TComponent;
 use Prado\Util\Behaviors\TMapRouteBehavior;
 
-
-class TMapRouteBehaviorTest extends PHPUnit\Framework\TestCase
+class TMapRouteBehaviorTest extends \PHPUnit\Framework\TestCase
 {
 	public const BEHAVIOR_NAME = 'route';
 	public const BEHAVIOR_NAME_ALL = 'routeall';

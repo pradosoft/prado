@@ -1,6 +1,9 @@
 <?php
 
-require_once(__DIR__ . '/BaseGateway.php');
+namespace Prado\Test\Unit\Data\TableGateway;
+
+use Prado\Data\Common\TDbMetaData;
+use Prado\Data\DataGateway\TTableGateway;
 
 class TableInfoGatewayTest extends BaseGateway
 {

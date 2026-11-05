@@ -1,15 +1,16 @@
 <?php
 
+namespace Prado\Test\Unit;
+
 use Prado\TEnumerable;
 
 /**
  */
-class TEnumerableTest extends PHPUnit\Framework\TestCase
+class TEnumerableTest extends \PHPUnit\Framework\TestCase
 {
 	protected function setUp(): void
 	{
 	}
-
 
 	protected function tearDown(): void
 	{
@@ -305,7 +306,7 @@ class TEnumerableTest extends PHPUnit\Framework\TestCase
 	{
 		$className = $this->createEnumerableClass(['Left' => 'Left', 'Right' => 'Right']);
 
-		$ref = new ReflectionClass($className);
+		$ref = new \ReflectionClass($className);
 
 		$align = 'Left';
 		$value = $ref->getConstant($align);

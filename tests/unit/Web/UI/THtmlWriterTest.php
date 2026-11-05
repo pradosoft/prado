@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI;
+
 use Prado\IO\ITextWriter;
 use Prado\Web\THttpUtility;
 use Prado\Web\UI\THtmlWriter;
@@ -784,7 +786,7 @@ class THtmlWriterTest extends TestCase
 
 	private function getAttributes(THtmlWriter $writer): array
 	{
-		$reflection = new ReflectionClass($writer);
+		$reflection = new \ReflectionClass($writer);
 		$prop = $reflection->getProperty('_attributes');
 		$prop->setAccessible(true);
 		return $prop->getValue($writer);
@@ -792,7 +794,7 @@ class THtmlWriterTest extends TestCase
 
 	private function getStyles(THtmlWriter $writer): array
 	{
-		$reflection = new ReflectionClass($writer);
+		$reflection = new \ReflectionClass($writer);
 		$prop = $reflection->getProperty('_styles');
 		$prop->setAccessible(true);
 		return $prop->getValue($writer);
@@ -800,7 +802,7 @@ class THtmlWriterTest extends TestCase
 
 	private function getOpenTags(THtmlWriter $writer): array
 	{
-		$reflection = new ReflectionClass($writer);
+		$reflection = new \ReflectionClass($writer);
 		$prop = $reflection->getProperty('_openTags');
 		$prop->setAccessible(true);
 		return $prop->getValue($writer);

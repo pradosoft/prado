@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Data;
+
 use Prado\Data\TDbColumnCaseMode;
 use Prado\Data\TDbCommand;
 use Prado\Data\TDbConnection;
@@ -15,7 +17,7 @@ if (!defined('TEST_DB_FILE2')) {
 	define('TEST_DB_FILE2', __DIR__ . '/db/test2.db');
 }
 
-class TDbConnectionTest extends PHPUnit\Framework\TestCase
+class TDbConnectionTest extends \PHPUnit\Framework\TestCase
 {
 	private $_connection1;
 	private $_connection2;
@@ -57,7 +59,7 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 		$this->_connection2->Active = true;
 		$this->assertTrue($this->_connection2->Active);
 		$pdo = $this->_connection2->PdoInstance;
-		$this->assertTrue($pdo instanceof PDO);
+		$this->assertTrue($pdo instanceof \PDO);
 		// test setting Active repeatedly doesn't re-connect DB
 		$this->_connection2->Active = true;
 		$this->assertTrue($pdo === $this->_connection2->PdoInstance);
@@ -95,7 +97,7 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 			$this->_connection1->createCommand($sql)->execute();
 			$this->fail('Expected exception not raised');
 			$transaction->commit();
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			$transaction->rollBack();
 			$reader = $this->_connection1->createCommand('SELECT * FROM foo')->query();
 			$this->assertFalse($reader->read());

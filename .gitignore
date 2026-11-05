@@ -10,7 +10,6 @@ atlassian-ide-plugin.xml
 /.cache
 /build
 /vendor
-/composer.lock
 /.cache
 .claude/
 tests/FunctionalTests/results.dat
@@ -20,6 +19,7 @@ tests/unit/Data/db/
 
 # Composer stuff
 vendor/*
+/composer.lock
 
 #OSX
 .DS_Store

@@ -6,8 +6,17 @@
  * the right package in unit test and code coverage reports.
  */
 
+// Composer autoloads the framework (Prado\) and the unit-test classes
+// (Prado\Test\Unit\ via autoload-dev PSR-4).
 require_once(__DIR__ . '/../../vendor/autoload.php');
 require_once(__DIR__ . '/../../framework/Prado.php');
+
+use Prado\Test\Unit\PradoUnit;
+
+// Capture the process-global baseline (superglobals, cwd, timezone,
+// error_reporting, include_path) BEFORE the bootstrap TApplication runs and
+// mutates any of it. Tests can restore via PradoUnit::restoreInitialState().
+PradoUnit::captureInitialState();
 
 //  Use the test app at 'Security/app'
 $relativeAppPath = '/../unit/Security/app';
@@ -16,6 +25,10 @@ $appPath = realpath(__DIR__ . DIRECTORY_SEPARATOR . $relativeAppPath);
 // For unit tests requiring a global TApplication object, 
 //  construct -which sets {@see Prado::getApplication()}- but do not run
 $application = new \Prado\TApplication($appPath);
+// The test application is a development application, as the prado-app starter is. Normal and
+// Performance mode keep a class fx-event cache in the runtime directory that later runs read back,
+// so a test of those modes sets the mode itself.
+$application->setMode(\Prado\TApplicationMode::Debug);
 
 // for Selenium functional tests
 require_once(__DIR__ . '/PradoGenericSelenium2Test.php');

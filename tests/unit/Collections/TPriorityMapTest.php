@@ -1,5 +1,9 @@
 <?php
 
+namespace Prado\Test\Unit\Collections;
+
+use Prado\Collections\IPriorityCapture;
+use Prado\Collections\IPriorityProperty;
 use Prado\Collections\IPriorityItem;
 use Prado\Collections\TPriorityMap;
 use Prado\Collections\TPriorityList;
@@ -305,7 +309,7 @@ class TPriorityMapTest extends TMapTest
 		$this->assertEquals(null, $this->map['key3']);
 		$this->map->attachBehavior(self::BEHAVIOR_NAME, $b = new TMapTestNoItemBehavior);
 		
-		$this->assertInstanceOf('TMapTest_MapItem', $this->map['key3']);
+		$this->assertInstanceOf(TMapTest_MapItem::class, $this->map['key3']);
 		
 		$this->map['key3'] = null;
 		
@@ -336,7 +340,6 @@ class TPriorityMapTest extends TMapTest
 	
 	// **    End TMap tests on TPriorityMap
 	// ***********************************************
-
 
 	// ***********************************************
 	// **    Start TPriorityMap specific tests
@@ -520,7 +523,6 @@ class TPriorityMapTest extends TMapTest
 		$this->assertEquals(5, $this->map->getCount());
 		$this->map->remove('key6', null);
 		$this->assertEquals(5, $this->map->getCount());
-
 
 		// key5 is at priority 1...   not the default priority defined by null...  nothing should happen here
 		$this->map->remove('key5', null);

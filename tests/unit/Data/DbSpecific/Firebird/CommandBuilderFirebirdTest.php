@@ -1,8 +1,10 @@
 <?php
 
+namespace Prado\Test\Unit\Data\DbSpecific\Firebird;
+
 use Prado\Data\Common\Firebird\TFirebirdCommandBuilder;
 
-class CommandBuilderFirebirdTest extends PHPUnit\Framework\TestCase
+class CommandBuilderFirebirdTest extends \PHPUnit\Framework\TestCase
 {
 	protected static $sql = [
 		'simple'   => 'SELECT username, age FROM accounts',

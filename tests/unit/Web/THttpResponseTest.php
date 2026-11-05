@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web;
+
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\TApplication;
@@ -31,8 +33,7 @@ class TTestHttpResponse extends THttpResponse {
 	}
 }
 
-
-class THttpResponseTest extends PHPUnit\Framework\TestCase
+class THttpResponseTest extends \PHPUnit\Framework\TestCase
 {
 	public static $app = null;
 

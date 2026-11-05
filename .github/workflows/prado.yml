@@ -303,6 +303,12 @@ jobs:
         run: |
           # The runner image installs PostgreSQL but leaves the service disabled.
           # PGBIN, PGDATA, and PGPASSWORD (=root) are pre-set as machine env vars.
+          # Prepend trust rules so prado_unitest (created by initdb_pgsql.sql) can
+          # connect without a password — mirrors POSTGRES_HOST_AUTH_METHOD: trust
+          # used by the Linux service container.
+          $hba = "$env:PGDATA\pg_hba.conf"
+          $existing = Get-Content $hba -Raw
+          Set-Content $hba "host all all 127.0.0.1/32 trust`nhost all all ::1/128 trust`n$existing"
           & "$env:PGBIN\pg_ctl.exe" start -D $env:PGDATA -w
           & "$env:PGBIN\createdb.exe" -h 127.0.0.1 -U postgres prado_unitest
           & "$env:PGBIN\psql.exe" -h 127.0.0.1 -U postgres prado_unitest -f .\tests\initdb_pgsql.sql
@@ -352,8 +358,9 @@ jobs:
 
       - name: Install mssql-tools18
         run: |
-          curl -sSL -O https://packages.microsoft.com/config/ubuntu/24.04/packages-microsoft-prod.deb
-          sudo dpkg -i packages-microsoft-prod.deb
+          . /etc/os-release
+          curl -sSL -O "https://packages.microsoft.com/config/ubuntu/${VERSION_ID}/packages-microsoft-prod.deb"
+          sudo dpkg -i --force-confnew --force-confmiss packages-microsoft-prod.deb
           sudo apt-get update -qq
           sudo ACCEPT_EULA=Y apt-get install -y mssql-tools18 unixodbc-dev
 
@@ -364,7 +371,7 @@ jobs:
           -i ./tests/initdb_mssql.sql
 
       - name: Run SQL Server tests
-        run: php vendor/bin/phpunit tests/unit/Data/DbSpecific/Mssql/
+        run: php vendor/bin/phpunit --testsuite db-sqlsrv
 
   db-firebird:
     name: Prado Data (Firebird)
@@ -425,7 +432,7 @@ jobs:
           "
 
       - name: Run Firebird tests
-        run: php vendor/bin/phpunit tests/unit/Data/DbSpecific/Firebird/
+        run: php vendor/bin/phpunit --testsuite db-firebird
 
   db-oracle:
     name: Prado Data (Oracle)
@@ -498,7 +505,7 @@ jobs:
             bash -c 'source ~/.bash_profile && sqlplus -S prado_unitest/prado_unitest@//localhost/FREEPDB1 @/tmp/initdb_oracle.sql'
 
       - name: Run Oracle tests
-        run: php vendor/bin/phpunit tests/unit/Data/DbSpecific/Oracle/
+        run: php vendor/bin/phpunit --testsuite db-oracle
         env:
           ORACLE_SERVICE_NAME: FREEPDB1
 
@@ -554,7 +561,7 @@ jobs:
             su - db2inst1 -c "db2 connect to pradount && db2 -td@ -f /tmp/initdb.sql"
 
       - name: Run IBM DB2 tests
-        run: php vendor/bin/phpunit tests/unit/Data/DbSpecific/Ibm/
+        run: php vendor/bin/phpunit --testsuite db-ibm
         env:
           DB2_USER: db2inst1
           DB2_PASSWORD: Prado_Unitest1
