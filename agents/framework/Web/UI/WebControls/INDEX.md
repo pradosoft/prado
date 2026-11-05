@@ -61,6 +61,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 | Class | HTML | Key Properties |
 |---|---|---|
 | `TLabel` | `<label>` or `<span>` | `Text`, `Encode` (4.4.0), `ForControl` (associated control ID) |
+| [`TLoginName`](TLoginName.md) | `<span>` | Current user's name, encoded; `FormatString` (`{0}`), `NameProperty`, `DisplayGuest`; nothing for a guest (@since 4.4.0) |
 | [`TOutput`](TOutput.md) | `<output>` | `Text` (encoded), `ForControl` (source control IDs); `status` live region (@since 4.4.0) |
 | `TImage` | `<img>` | `ImageUrl`, `AlternateText`; `Srcset`, `Sizes`, `IntrinsicWidth`/`IntrinsicHeight`, `Loading` (`TLoadingMode`), `Decoding`, `FetchPriority`, `CrossOrigin`, `ReferrerPolicy` (`TReferrerPolicy`) (@since 4.4.0) |
 | [`TDot`](TDot.md) | `<img>` or inline `<svg>` | SVG status dot; `Color`, `Size`, `Flat`, `PublishStyle`, `AlternateText` names an inline dot (@since 4.4.0) |

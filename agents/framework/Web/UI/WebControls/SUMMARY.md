@@ -38,6 +38,8 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 - **`TLabel`** — `<label>` or `<span>`; properties: `Text`, `For`.
 
+- **`TLoginName`** — `<span>` with the current user's name; nothing for a guest; properties: `FormatString`, `NameProperty`, `DisplayGuest`.
+
 - **`TOutput`** — `<output>` result of a calculation; a `status` live region; properties: `Text`, `ForControl`.
 
 - **`TImage`** — `<img>`; properties: `ImageUrl`, `AlternateText`.
