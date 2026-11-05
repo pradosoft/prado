@@ -44,9 +44,11 @@ use Prado\Prado;
  * | `ibm`/`db2`      | `TIbmMetaData`         |
  * | `firebird`       | `TFirebirdMetaData`    |
  *
- * When no built-in driver matches, the **`fxDataGetMetaDataClass`** global event
- * is raised on the connection so that third-party extensions can supply a
- * custom handler class.
+ * The **`fxDataGetMetaDataClass`** global event is raised on the connection so
+ * that third-party extensions can supply a custom handler class.  A
+ * {@see TDbConnection} raises it when no built-in driver matches.  Any other
+ * {@see IDataConnection}, such as a Prado Data plugin connection, raises it
+ * before the built-in lookup.
  *
  * ## Table-info caching
  *
@@ -111,15 +113,17 @@ abstract class TDbMetaData extends \Prado\TComponent implements IDbMetaData
 	 *
 	 * This method activates the connection, resolves the driver name, and delegates to
 	 * {@see TDbDriverCapabilities::getMetaDataClass()} to find the matching handler class.
-	 * If no built-in driver is found, the **`fxDataGetMetaDataClass`** global event is
-	 * raised on the connection (with the driver name as the parameter) to allow
-	 * third-party extensions to supply a custom metadata handler class.
+	 * The **`fxDataGetMetaDataClass`** global event is raised on the connection (with
+	 * the driver name as the parameter) to allow third-party extensions to supply a
+	 * custom metadata handler class: after the built-in lookup for a
+	 * {@see TDbConnection}, and before it for any other {@see IDataConnection}.
+	 * The handler class is constructed with the connection.
 	 *
 	 * The handler is an {@see IDataMetaData}: the built-in SQL drivers return a
 	 * TDbMetaData subclass, and a handler supplied by a Prado Data plugin may
 	 * implement {@see IDataMetaData} without extending TDbMetaData.
 	 *
-	 * @param \Prado\Data\TDbConnection $connection database connection.
+	 * @param IDataConnection $connection database connection.
 	 * @throws TDbException if no metadata handler can be created for the driver.
 	 * @return ?IDataMetaData database-specific metadata handler.
 	 */

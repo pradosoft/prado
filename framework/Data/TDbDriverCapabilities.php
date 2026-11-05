@@ -58,9 +58,10 @@ use Prado\Data\Common\Sqlite\TSqliteMetaData;
  * parameter, and the raising logic is fully encapsulated in this class so
  * callers never need to call `raiseEvent` themselves:
  *
- * - **`fxDataGetMetaDataClass`** — raised by {@see getMetaDataClass} when no
- *   built-in MetaData class is registered for the driver.  Sender is the
- *   connection; parameter is the driver name string.  Handlers must return a
+ * - **`fxDataGetMetaDataClass`** — raised by {@see getMetaDataClass}.  A
+ *   {@see TDbConnection} raises it when no built-in MetaData class is registered
+ *   for the driver; any other {@see IDataConnection} raises it before the
+ *   built-in lookup.  Sender is the connection; parameter is the driver name string.  Handlers must return a
  *   fully-qualified class name implementing {@see \Prado\Data\Common\IDataMetaData}.
  *   The last returned value wins.
  *
@@ -1007,39 +1008,64 @@ class TDbDriverCapabilities
 	// =========================================================================
 
 	/**
-	 * Resolves the {@see \Prado\Data\Common\TDbMetaData} subclass for a driver.
+	 * Resolves the {@see \Prado\Data\Common\IDataMetaData} class for a connection or driver.
 	 *
 	 * Built-in drivers (mysql, sqlite[2], pgsql, firebird/interbase, sqlsrv/dblib,
-	 * oci, ibm) are returned from a static `match`.  When the driver is unknown
-	 * and a {@see TDbConnection} was passed, the **`fxDataGetMetaDataClass`**
+	 * oci, ibm) are returned from a static `match`.  The **`fxDataGetMetaDataClass`**
 	 * global event is raised on the connection with the lower-cased driver name
-	 * as its single argument; the **last** non-null value returned by any handler
-	 * wins.  Handlers must return a fully-qualified class name string implementing
+	 * as its parameter; the **last** non-null value returned by any handler wins.
+	 * Handlers must return a fully-qualified class name string implementing
 	 * {@see \Prado\Data\Common\IDataMetaData}.
 	 *
-	 * This method fully encapsulates the `fxDataGetMetaDataClass` event so
-	 * callers never need to call `raiseEvent` themselves.  Pass a bare driver
-	 * string instead of a connection when only a static lookup is needed (the
-	 * event is skipped and `null` is returned for unknown drivers).
+	 * | Argument                                | Resolution order                     |
+	 * |-----------------------------------------|--------------------------------------|
+	 * | driver-name string                      | built-in only; `null` when unknown   |
+	 * | {@see TDbConnection}                    | built-in, then the event             |
+	 * | other {@see IDataConnection} (plugins)  | the event, then built-in             |
 	 *
-	 * @param string|TDbConnection $connection an active connection (driver is
-	 *   derived via {@see TDbConnection::getDriverName()}), or a bare PDO
-	 *   driver-name string for static lookup only.
-	 * @throws TDbException when a connection is given, the driver is unknown,
-	 *   and no handler supplies a valid class name.
+	 * A Prado Data plugin connection (e.g. `TMysqliConnection`, `TMssqlConnection`)
+	 * may report a built-in driver name, so its handler is asked first.  Connections
+	 * that are not a {@see \Prado\TComponent} cannot raise the event and use the
+	 * built-in classes only.
+	 *
+	 * This method fully encapsulates the `fxDataGetMetaDataClass` event so
+	 * callers never need to call `raiseEvent` themselves.
+	 *
+	 * @param IDataConnection|string $connection a connection (driver is derived via
+	 *   {@see IDataConnection::getDriverName()}), or a bare PDO driver-name string
+	 *   for static lookup only.
+	 * @throws TDbException when a connection is given and neither a built-in class
+	 *   nor a handler supplies a valid class name.
 	 * @return ?string fully-qualified class name, or `null` when a driver
 	 *   string was passed and the driver has no built-in handler.
 	 */
-	public static function getMetaDataClass(TDbConnection|string $connection): ?string
+	public static function getMetaDataClass(IDataConnection|string $connection): ?string
 	{
-		if ($connection instanceof TDbConnection) {
-			$driver = strtolower($connection->getDriverName());
-		} else {
-			$driver = $connection;
-			$connection = null;
+		if (is_string($connection)) {
+			return static::getBuiltInMetaDataClass($connection);
 		}
 
-		$class = match ($driver) {
+		$driver = strtolower((string) $connection->getDriverName());
+		$isPdo = $connection instanceof TDbConnection;
+		$class = $isPdo ? null : static::raiseMetaDataClassEvent($connection, $driver);
+		$class ??= static::getBuiltInMetaDataClass($driver);
+		if ($class === null && $isPdo) {
+			$class = static::raiseMetaDataClassEvent($connection, $driver);
+		}
+		if ($class === null) {
+			throw new TDbException('dbmetadata_invalid_database_driver', $driver);
+		}
+		return $class;
+	}
+
+	/**
+	 * Returns the built-in metadata class for a driver.
+	 * @param string $driver PDO driver name (lowercase).
+	 * @return ?string fully-qualified class name, or `null` when the driver has no built-in handler.
+	 */
+	protected static function getBuiltInMetaDataClass(string $driver): ?string
+	{
+		return match ($driver) {
 			TDbDriver::DRIVER_MYSQL => TMysqlMetaData::class,
 			TDbDriver::DRIVER_SQLITE2,
 			TDbDriver::DRIVER_SQLITE => TSqliteMetaData::class,
@@ -1052,14 +1078,25 @@ class TDbDriverCapabilities
 			TDbDriver::DRIVER_IBM => TIbmMetaData::class,
 			default => null,
 		};
+	}
 
-		if ($class !== null || !$connection) {
-			return $class;
+	/**
+	 * Raises `fxDataGetMetaDataClass` on the connection and returns the last handler's class.
+	 * @param IDataConnection $connection the connection raising the event.
+	 * @param string $driver the lower-cased driver name passed to the handlers.
+	 * @throws TDbException when the last handler returns a value that is not an
+	 *   {@see \Prado\Data\Common\IDataMetaData} class name.
+	 * @return ?string fully-qualified class name, or `null` when no handler answers
+	 *   or the connection is not a {@see \Prado\TComponent}.
+	 */
+	protected static function raiseMetaDataClassEvent(IDataConnection $connection, string $driver): ?string
+	{
+		if (!($connection instanceof \Prado\TComponent)) {
+			return null;
 		}
-
 		$driverClasses = $connection->raiseEvent('fxDataGetMetaDataClass', $connection, $driver);
 		if (empty($driverClasses)) {
-			throw new TDbException('dbmetadata_invalid_database_driver', $driver);
+			return null;
 		}
 		$class = array_pop($driverClasses);
 		if (!is_string($class) || !is_a($class, IDataMetaData::class, true)) {
