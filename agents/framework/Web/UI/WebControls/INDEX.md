@@ -218,6 +218,8 @@ All extend [THtmlElement](./THtmlElement.md). Each wraps the named HTML5 element
 | `TWebTemplate` | `<template>`; client stamping with `{{...}}` placeholders, or a declarative shadow root via `ShadowRootMode` (@since 4.4.0) |
 | `TSlot` | `<slot>` in a shadow root; `Name` matches the light DOM `slot` attribute (`TWebControl::Slot`); content is the fallback (@since 4.4.0) |
 | `THead` | `<head>`; `Title`, `BaseUrl`, `ShortcutIcon`, `MetaTags` ([TMetaTag](TMetaTag.md)), `LinkTags` ([TLinkTag](TLinkTag.md): canonical, alternate, preload, icon; @since 4.4.0) |
+| [`TJsonLd`](TJsonLd.md) | `<script type="application/ld+json">` structured data from its JSON body or a `StructuredData` array; adds the schema.org `Context` (@since 4.4.0) |
+| [`TOpenGraph`](TOpenGraph.md) | Open Graph `og:*` and X Card `twitter:*` meta tags from properties; child TMetaTags in `MetaTags` (@since 4.4.0) |
 | `TWizard` | Multi-step wizard with `TWizardStep` navigation; the default sidebar is an `<ol>` step indicator with `aria-current="step"` |
 | `TOutputCache` | Caches rendered output of child controls |
 
