@@ -2,7 +2,12 @@
 
 namespace Prado\Test\Unit\Data\DbCommon;
 
+use Prado\Data\Common\IDataMetaData;
+use Prado\Data\Common\SqlSrv\TSqlSrvMetaData;
+use Prado\Data\Common\Sqlite\TSqliteMetaData;
 use Prado\Data\Common\TDbMetaData;
+use Prado\Data\IDataConnection;
+use Prado\Data\IDataTransaction;
 use Prado\Data\TDbConnection;
 use Prado\Data\TDbDriver;
 use Prado\Exceptions\TDbException;
@@ -15,6 +20,23 @@ use Prado\Exceptions\TDbException;
  */
 class TDbMetaDataTest extends \PHPUnit\Framework\TestCase
 {
+	private ?TDbMetaDataTestPluginSourceConfig $_config = null;
+
+	protected function tearDown(): void
+	{
+		if ($this->_config !== null) {
+			$this->_config->unlisten();
+			$this->_config = null;
+		}
+	}
+
+	private function listenPluginConfig(): TDbMetaDataTestPluginSourceConfig
+	{
+		$this->_config = new TDbMetaDataTestPluginSourceConfig();
+		$this->_config->listen();
+		return $this->_config;
+	}
+
 	private function createMockConnection(string $driver): TDbConnection
 	{
 		$conn = $this->createMock(TDbConnection::class);
@@ -453,5 +475,192 @@ class TDbMetaDataTest extends \PHPUnit\Framework\TestCase
 		$meta->clearTableInfo();
 		$this->assertNotSame($a2, $meta->getTableInfo('a'));
 		$this->assertNotSame($b, $meta->getTableInfo('b'));
+	}
+
+	// --- fxDataGetMetaDataClass from a listening Prado Data plugin ---
+
+	/**
+	 * Driver names reported by the Prado Data plugin connections: mysqli, mssql,
+	 * doctrine/propel over MySQL, and mongodb.
+	 */
+	public static function providePluginDriverNames(): array
+	{
+		return [
+			'mysqli' => ['mysqli'],
+			'sqlsrv' => [TDbDriver::DRIVER_SQLSRV],
+			'mysql' => [TDbDriver::DRIVER_MYSQL],
+			'mongo' => ['mongo'],
+		];
+	}
+
+	/** @dataProvider providePluginDriverNames */
+	public function test_getInstance_plugin_connection_uses_listening_handler(string $driver)
+	{
+		$config = $this->listenPluginConfig();
+		$conn = new TDbMetaDataTestPluginConnection($driver);
+
+		$result = TDbMetaData::getInstance($conn);
+
+		$this->assertInstanceOf(TDbMetaDataTestPluginMetaData::class, $result);
+		$this->assertSame($conn, $result->getDbConnection());
+		$this->assertSame([[$conn, $driver]], $config->calls);
+	}
+
+	public function test_getInstance_plugin_connection_without_handler_uses_built_in()
+	{
+		$result = TDbMetaData::getInstance(new TDbMetaDataTestPluginConnection(TDbDriver::DRIVER_SQLITE));
+
+		$this->assertInstanceOf(TSqliteMetaData::class, $result);
+	}
+
+	public function test_getInstance_pdo_sqlsrv_connection_keeps_built_in_with_plugin_listening()
+	{
+		$config = $this->listenPluginConfig();
+		$conn = $this->createMockConnection(TDbDriver::DRIVER_SQLSRV);
+
+		$result = TDbMetaData::getInstance($conn);
+
+		$this->assertInstanceOf(TSqlSrvMetaData::class, $result);
+		$this->assertSame([], $config->calls);
+	}
+}
+
+/**
+ * Prado Data plugin connection: a TComponent IDataConnection that is not a TDbConnection.
+ */
+class TDbMetaDataTestPluginConnection extends \Prado\TComponent implements IDataConnection
+{
+	public function __construct(private string $_driver)
+	{
+		parent::__construct();
+	}
+
+	public function getDriverName()
+	{
+		return $this->_driver;
+	}
+
+	public function getActive()
+	{
+		return true;
+	}
+
+	public function setActive($value)
+	{
+	}
+
+	public function createCommand($query)
+	{
+		throw new \LogicException('Not used.');
+	}
+
+	public function beginTransaction()
+	{
+		throw new \LogicException('Not used.');
+	}
+
+	public function getCurrentTransaction()
+	{
+		return null;
+	}
+
+	public function getLastTransaction(): ?IDataTransaction
+	{
+		return null;
+	}
+
+	public function commit(): ?bool
+	{
+		return null;
+	}
+
+	public function rollback(): ?bool
+	{
+		return null;
+	}
+
+	public function getLastInsertID($sequenceName = '')
+	{
+		return '';
+	}
+
+	public function getDbMetaData()
+	{
+		return TDbMetaData::getInstance($this);
+	}
+
+	public function getConnectionString()
+	{
+		return '';
+	}
+
+	public function quoteString($str)
+	{
+		return $str;
+	}
+
+	public function getColumnCase()
+	{
+		return null;
+	}
+
+	public function setColumnCase($value)
+	{
+	}
+
+	public function getAttribute($name)
+	{
+		return null;
+	}
+
+	public function setAttribute($name, $value)
+	{
+	}
+}
+
+/**
+ * Metadata handler supplied by the plugin; constructed with the plugin connection.
+ */
+class TDbMetaDataTestPluginMetaData implements IDataMetaData
+{
+	public function __construct(private TDbMetaDataTestPluginConnection $_connection)
+	{
+	}
+
+	public function getDbConnection()
+	{
+		return $this->_connection;
+	}
+
+	public function getTableInfo($tableName = null)
+	{
+		throw new \LogicException('Not used.');
+	}
+
+	public function createCommandBuilder($tableName = null)
+	{
+		throw new \LogicException('Not used.');
+	}
+
+	public function findTableNames($schema = '')
+	{
+		return [];
+	}
+}
+
+/**
+ * Listening module in the shape of a plugin's TDataSourceConfig; records each fxDataGetMetaDataClass call.
+ */
+class TDbMetaDataTestPluginSourceConfig extends \Prado\TComponent
+{
+	public array $calls = [];
+
+	public function fxDataGetMetaDataClass(mixed $sender, mixed $param): ?string
+	{
+		$this->calls[] = [$sender, $param];
+		if (!($sender instanceof TDbMetaDataTestPluginConnection)) {
+			return null;
+		}
+		return TDbMetaDataTestPluginMetaData::class;
 	}
 }
