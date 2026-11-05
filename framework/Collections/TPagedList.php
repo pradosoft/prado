@@ -78,12 +78,12 @@ class TPagedList extends TList
 	/**
 	 * Constructor.
 	 * @param null|array|\Iterator $data the initial data. Default is null, meaning no initialization.
-	 * @param bool $readOnly whether the list is read-only. Always true for paged list.
+	 * @param bool $readOnly ignored; a paged list is always read-only.
+	 * @phpstan-ignore constructor.unusedParameter (kept for callers that pass the read-only flag)
 	 */
 	public function __construct($data = null, $readOnly = false)
 	{
-		$readOnly = true;
-		parent::__construct($data, $readOnly);
+		parent::__construct($data, true);
 	}
 
 	/**

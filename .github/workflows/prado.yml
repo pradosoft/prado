@@ -352,8 +352,9 @@ jobs:
 
       - name: Install mssql-tools18
         run: |
-          curl -sSL -O https://packages.microsoft.com/config/ubuntu/24.04/packages-microsoft-prod.deb
-          sudo dpkg -i packages-microsoft-prod.deb
+          . /etc/os-release
+          curl -sSL -O "https://packages.microsoft.com/config/ubuntu/${VERSION_ID}/packages-microsoft-prod.deb"
+          sudo dpkg -i --force-confnew --force-confmiss packages-microsoft-prod.deb
           sudo apt-get update -qq
           sudo ACCEPT_EULA=Y apt-get install -y mssql-tools18 unixodbc-dev
 
