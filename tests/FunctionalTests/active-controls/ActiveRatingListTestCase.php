@@ -179,6 +179,8 @@ class ActiveRatingListTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 		// Verify we're on the right page.
 		$this->url("active-controls/index.php?page=ActiveRatingListHoverCaptionTest");
 		$this->assertSourceContains("TActiveRatingList Hover Caption Test Case");
+		// The previous test leaves the pointer where the rating list now renders; move it off the list.
+		$this->moveto($this->byXPath("//h1"));
 		$this->assertText("{$base}Status", "CaptionID='Status'");
 		$this->assertElementPresent("//input[@id='{$base}RatingList_c0']/../../../td[contains(@class, 'rating_selected')]");
 		$this->assertElementPresent("//input[@id='{$base}RatingList_c1']/../../../td[contains(@class, 'rating_selected')]");
