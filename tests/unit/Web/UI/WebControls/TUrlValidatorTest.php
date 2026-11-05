@@ -76,6 +76,7 @@ class TUrlValidatorTest extends TestCase
 		$this->assertSame(['http', 'https'], $this->validator->getValidSchemeList());
 		$this->assertTrue($this->validator->getAllowIdn());
 		$this->assertTrue($this->validator->getRequireTld());
+		$this->assertFalse($this->validator->getCheckDns());
 	}
 
 	public function testValidSchemeListTrimsLowersAndDedupes()
@@ -92,6 +93,52 @@ class TUrlValidatorTest extends TestCase
 		$this->assertFalse($this->validator->getAllowIdn());
 		$this->validator->setRequireTld('false');
 		$this->assertFalse($this->validator->getRequireTld());
+		$this->validator->setCheckDns('true');
+		$this->assertTrue($this->validator->getCheckDns());
+	}
+
+	/**
+	 * Replaces the validator with one, with CheckDns, whose DNS lookup finds only the given domains.
+	 * @param string[] $domains the ASCII domains that have a record.
+	 * @return TUrlValidatorDnsStub the validator under test.
+	 */
+	private function stubDns(array $domains): TUrlValidatorDnsStub
+	{
+		$stub = new TUrlValidatorDnsStub();
+		$stub->domains = $domains;
+		$stub->setControlToValidate('input');
+		$stub->setCheckDns(true);
+		$this->validator->getParent()->getControls()->add($stub);
+		$this->validator = $stub;
+		return $stub;
+	}
+
+	public function testCheckDnsLooksUpDomainHosts()
+	{
+		$stub = $this->stubDns(['example.com', 'xn--bcher-kva.example']);
+		$this->assertTrue($this->valid('https://Example.COM/path'));
+		$this->assertTrue($this->valid('http://bücher.example'));
+		$this->assertFalse($this->valid('https://sanoehusnhoeustnhatoehut.com'));
+		$this->assertSame(['example.com', 'xn--bcher-kva.example', 'sanoehusnhoeustnhatoehut.com'], $stub->lookups);
+	}
+
+	public function testCheckDnsSkipsIpHostsAndInvalidUrls()
+	{
+		$stub = $this->stubDns([]);
+		$this->assertTrue($this->valid('http://192.0.2.1/'));
+		$this->assertTrue($this->valid('http://[2001:db8::1]/'));
+		$this->assertFalse($this->valid('ftp://example.com'));
+		$this->assertFalse($this->valid('http://localhost'));
+		$this->assertTrue($this->valid(''));
+		$this->assertSame([], $stub->lookups);
+	}
+
+	public function testCheckDnsOffMakesNoLookup()
+	{
+		$stub = $this->stubDns([]);
+		$stub->setCheckDns(false);
+		$this->assertTrue($this->valid('https://sanoehusnhoeustnhatoehut.com'));
+		$this->assertSame([], $stub->lookups);
 	}
 
 	public function testDomainLengthLimit()
@@ -127,5 +174,22 @@ class TUrlValidatorTest extends TestCase
 		$this->assertSame(['https'], $options['ValidSchemes']);
 		$this->assertFalse($options['AllowIdn']);
 		$this->assertFalse($options['RequireTld']);
+		$this->validator->setCheckDns(true);
+		$this->assertArrayNotHasKey('CheckDns', PradoUnit::invoke($this->validator, 'getClientScriptOptions'));
+	}
+}
+
+/**
+ * A TUrlValidator whose DNS lookup finds only {@see $domains} and records each lookup.
+ */
+class TUrlValidatorDnsStub extends TUrlValidator
+{
+	public array $domains = [];
+	public array $lookups = [];
+
+	protected function lookupDns(string $domain): bool
+	{
+		$this->lookups[] = $domain;
+		return in_array($domain, $this->domains, true);
 	}
 }
