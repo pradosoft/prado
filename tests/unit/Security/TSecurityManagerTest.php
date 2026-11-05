@@ -1549,9 +1549,8 @@ class TSecurityManagerTest extends \PHPUnit\Framework\TestCase
 	}
 
 	/**
-	 * hashData() / validateData() must work identically regardless of whether
-	 * mbstring is available (the _mbstring flag controls which strlen/substr is
-	 * used internally; both must count binary octets, not characters).
+	 * hashData() / validateData() count binary octets, not characters, through
+	 * the byte functions strlen() and substr().
 	 *
 	 * We verify this by running a UTF-8 string through hashData/validateData and
 	 * checking that the HMAC prefix length and data recovery are byte-accurate.

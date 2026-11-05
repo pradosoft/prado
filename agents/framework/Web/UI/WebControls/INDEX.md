@@ -61,11 +61,13 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 | Class | HTML | Key Properties |
 |---|---|---|
 | `TLabel` | `<label>` or `<span>` | `Text`, `Encode` (4.4.0), `ForControl` (associated control ID) |
+| [`TLoginName`](TLoginName.md) | `<span>` | Current user's name, encoded; `FormatString` (`{0}`), `NameProperty`, `DisplayGuest`; nothing for a guest (@since 4.4.0) |
 | [`TOutput`](TOutput.md) | `<output>` | `Text` (encoded), `ForControl` (source control IDs); `status` live region (@since 4.4.0) |
 | `TImage` | `<img>` | `ImageUrl`, `AlternateText`; `Srcset`, `Sizes`, `IntrinsicWidth`/`IntrinsicHeight`, `Loading` (`TLoadingMode`), `Decoding`, `FetchPriority`, `CrossOrigin`, `ReferrerPolicy` (`TReferrerPolicy`) (@since 4.4.0) |
 | [`TDot`](TDot.md) | `<img>` or inline `<svg>` | SVG status dot; `Color`, `Size`, `Flat`, `PublishStyle`, `AlternateText` names an inline dot (@since 4.4.0) |
 | [`TSvg`](TSvg.md) | `<svg>` | Inline SVG from template markup, `SvgFile`, or `Svg`; `AlternateText`/`Decorative`; `Sanitize`, `PrefixIds`, `ScopeStyles`, `HoistStyles` via [TSvgDocument](TSvgDocument.md) (@since 4.4.0) |
 | `THyperLink` | `<a>` | `NavigateUrl`, `Text`, `ImageUrl`, `Target`; `Download`, `Rel`, `HrefLang`, `Type`, `ReferrerPolicy`, `Ping` (@since 4.4.0) |
+| [`TSkipLink`](TSkipLink.md) | `<a>` | Skip link to the main content, shown on focus (WCAG 2.4.1); `TargetID`, `CssUrl` (@since 4.4.0) |
 | `TLiteral` | raw text | `Text` (not HTML-encoded), `Encode` |
 | `TExpression` | evaluated PHP | Inline expression output (also via `<%= %>` in templates) |
 | `TPanel` | `<div>` or `<span>` | `DefaultButton`, `GroupingText`, `Encode` (4.4.0), `Direction` (LTR/RTL); [TFieldSet](TFieldSet.md) renders the fieldset as its own tag |
@@ -115,12 +117,13 @@ All validators extend `TBaseValidator`. Shared properties: `ControlToValidate`, 
 | `TCustomValidator` | Custom server-side (and optional client-side) logic |
 | `TEmailAddressValidator` | Valid email format |
 | [`TIbanValidator`](./TIbanValidator.md) | IBAN: SWIFT registry country formats and the mod 97 checksum; `Countries` (@since 4.4.0) |
+| [`TIpAddressValidator`](./TIpAddressValidator.md) | IPv4 or IPv6 address: `Version` ([`TIpAddressVersion`](./TIpAddressVersion.md)), CIDR notation (`AllowCidr`, `RequireCidr`), ordered `Ranges` with `private`, `public`, and other named ranges (@since 4.4.0) |
 | [`TJsonValidator`](./TJsonValidator.md) | JSON text; client and server agree on surrogates and the 512 depth (@since 4.4.0) |
 | [`TLuhnValidator`](./TLuhnValidator.md) | Luhn (mod 10) checksum of card, IMEI, and ID numbers; `AllowSeparators` (@since 4.4.0) |
 | [`TPasswordStrengthValidator`](./TPasswordStrengthValidator.md) | Password reaches `MinStrength` ([`TPasswordStrength`](./TPasswordStrength.md)), estimated from its characters; optional Pwned Passwords lookup (`CheckCompromised`, server only) (@since 4.4.0) |
 | [`TPasswordStrengthMeter`](./TPasswordStrengthMeter.md) | Not a validator: a `role="meter"` bar that fills red to green with the estimated entropy of `ControlToMeasure`; `ShowText`, `ShowBits` (@since 4.4.0) |
 | [`TUnicodeValidator`](./TUnicodeValidator.md) | No suspicious Unicode: invisible characters, mixed numbering systems, hidden overlays, `RestrictionLevel` ([`TUnicodeRestrictionLevel`](./TUnicodeRestrictionLevel.md)), `Locales`; server only (@since 4.4.0) |
-| [`TUrlValidator`](./TUrlValidator.md) | Absolute URL: `ValidSchemes` (http, https), IDN hosts (`AllowIdn`), IP hosts, `RequireTld` (@since 4.4.0) |
+| [`TUrlValidator`](./TUrlValidator.md) | Absolute URL: `ValidSchemes` (http, https), IDN hosts (`AllowIdn`), IP hosts, `RequireTld`, opt-in server DNS lookup (`CheckDns`) (@since 4.4.0) |
 | [`TUuidValidator`](./TUuidValidator.md) | RFC 9562 UUID: `Versions`, `Strict` form, `AllowNil` (@since 4.4.0) |
 | `TDataTypeValidator` | Value is correct data type (integer, date, etc.) |
 | `TFileValidator` | Files selected in a `TFileUpload`: size, count, extension, MIME type (@since 4.4.0) |

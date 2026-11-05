@@ -13,6 +13,7 @@ namespace Prado\Util;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\I18N\core\TIntlDateFormatterTrait;
 use Prado\Util\Clock\TApplicationClockAwareTrait;
+use Prado\Util\TMultibyteString;
 use Prado\Util\TUtf8Converter;
 
 /**
@@ -790,13 +791,23 @@ class TSimpleDateFormatter
 	}
 
 	/**
-	 * Calculate the length of a string using iconv_strlen.
+	 * Tells whether {@see getCharset() Charset} is UTF-8, which
+	 * {@see TMultibyteString} measures; any other charset goes through iconv.
+	 * @return bool whether the charset is UTF-8.
+	 */
+	private function isUtf8(): bool
+	{
+		return strcasecmp(str_replace('-', '', $this->getCharset()), 'utf8') === 0;
+	}
+
+	/**
+	 * Calculates the length of a string in characters of the charset.
 	 * @param mixed $string
 	 * @return int
 	 */
 	private function length($string)
 	{
-		return iconv_strlen($string, $this->getCharset());
+		return $this->isUtf8() ? TMultibyteString::length((string) $string) : iconv_strlen($string, $this->getCharset());
 	}
 
 	/**
@@ -811,7 +822,7 @@ class TSimpleDateFormatter
 	}
 
 	/**
-	 * Gets a portion of a string using iconv_substr.
+	 * Gets a portion of a string by character position of the charset.
 	 * @param mixed $string
 	 * @param mixed $start
 	 * @param mixed $length
@@ -819,7 +830,7 @@ class TSimpleDateFormatter
 	 */
 	private function substring($string, $start, $length)
 	{
-		return iconv_substr($string, $start, $length, $this->getCharset());
+		return $this->isUtf8() ? TMultibyteString::substr((string) $string, (int) $start, (int) $length) : iconv_substr($string, $start, $length, $this->getCharset());
 	}
 
 	/**

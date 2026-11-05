@@ -18,7 +18,7 @@ TRangeValidator tests whether an input value is within a specified range. It use
 - `getStep()` / `setStep($value)` - Step between valid values, in the data type's unit; `''`, `any`, or a non-positive value checks no step (4.4.0)
 - `getStrictComparison()` / `setStrictComparison($value)` - Whether to use strict comparison (< or <=)
 - `getDateFormat()` / `setDateFormat($value)` - Date format for date validation
-- `getCharset()` / `setCharset($value)` - Charset for string length comparison
+- `getCharset()` / `setCharset($value)` - Charset for string length comparison; UTF-8 (the default) is measured by [`TMultibyteString::length()`](../../../Util/TMultibyteString.md), any other charset by `iconv_strlen()`, which needs the iconv extension
 
 ## HTML Input Values (4.4.0)
 

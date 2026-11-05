@@ -274,6 +274,66 @@ Object.assign(Prado.Validation,
 	},
 
 	/**
+	 * @function {boolean} ?
+	 * @param {string} value - The address.
+	 * @return True if the value is a dotted decimal IPv4 address without leading zeros.
+	 */
+	isIPv4(value) {
+		return /^(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)$/.test(value);
+	},
+
+	/**
+	 * @function {boolean} ?
+	 * @param {string} value - The address.
+	 * @return True if the value is an IPv6 address, optionally ending in an IPv4 address.
+	 */
+	isIPv6(value) {
+		return this.ipv6Groups(value) != null;
+	},
+
+	/**
+	 * Expands an IPv6 address into its eight 16-bit groups. An IPv4 address at
+	 * the end becomes the last two groups.
+	 * @function {number[]} ?
+	 * @param {string} value - The address.
+	 * @return The eight groups; null when the value is not an IPv6 address.
+	 */
+	ipv6Groups(value) {
+		if (value.indexOf('.') >= 0) {
+			const last = value.lastIndexOf(':');
+			if (last < 0 || !this.isIPv4(value.substring(last + 1)))
+				return null;
+			const ipv4 = value.substring(last + 1).split('.').map(Number);
+			value = `${value.substring(0, last + 1)}${((ipv4[0] << 8) | ipv4[1]).toString(16)}:${((ipv4[2] << 8) | ipv4[3]).toString(16)}`;
+		}
+		const halves = value.split('::');
+		if (halves.length > 2)
+			return null;
+		const groups = (half) => half === '' ? [] : half.split(':');
+		const head = groups(halves[0]);
+		const tail = halves.length == 2 ? groups(halves[1]) : [];
+		const all = head.concat(tail);
+		if (!all.every((group) => /^[0-9a-f]{1,4}$/i.test(group)))
+			return null;
+		if (halves.length == 2 ? all.length >= 8 : all.length != 8)
+			return null;
+		return head.concat(new Array(8 - all.length).fill('0'), tail).map((group) => parseInt(group, 16));
+	},
+
+	/**
+	 * Converts an IPv4 or IPv6 address to its bytes, as PHP inet_pton() does.
+	 * @function {number[]} ?
+	 * @param {string} value - The address.
+	 * @return The 4 or 16 bytes; null when the value is not an IP address.
+	 */
+	ipAddressBytes(value) {
+		if (this.isIPv4(value))
+			return value.split('.').map(Number);
+		const groups = this.ipv6Groups(value);
+		return groups == null ? null : groups.flatMap((group) => [group >> 8, group & 0xff]);
+	},
+
+	/**
 	 * Runs a callback now, or after the primary mouse button is released.
 	 * A control's change event fires on blur when the mouse goes down on another
 	 * element, such as a submit button. Re-validation that hides a Dynamic message
@@ -2100,7 +2160,7 @@ Prado.WebUI.TUrlValidator = Prado.Class(Prado.WebUI.TBaseValidator,
 	 * @return True if the value is a dotted decimal IPv4 address without leading zeros.
 	 */
 	isIPv4(value) {
-		return /^(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)$/.test(value);
+		return Prado.Validation.isIPv4(value);
 	},
 
 	/**
@@ -2109,20 +2169,136 @@ Prado.WebUI.TUrlValidator = Prado.Class(Prado.WebUI.TBaseValidator,
 	 * @return True if the value is an IPv6 address, optionally ending in an IPv4 address.
 	 */
 	isIPv6(value) {
-		if (value.indexOf('.') >= 0) {
-			const last = value.lastIndexOf(':');
-			if (last < 0 || !this.isIPv4(value.substring(last + 1)))
-				return false;
-			value = `${value.substring(0, last + 1)}0:0`;
+		return Prado.Validation.isIPv6(value);
+	}
+});
+
+/**
+ * TIpAddressValidator validates whether the value of an associated input
+ * component is an IPv4 or IPv6 address, optionally in CIDR notation, within
+ * the allowed ranges. The checks match the server side TIpAddressValidator.
+ *
+ * @class Prado.WebUI.TIpAddressValidator
+ * @extends Prado.WebUI.TBaseValidator
+ */
+Prado.WebUI.TIpAddressValidator = Prado.Class(Prado.WebUI.TBaseValidator,
+{
+	/**
+	 * Additional constructor options.
+	 * @constructor initialize
+	 * @param {object} options - Additional constructor options:
+	 * @... {string} Version - "Any", "IPv4", or "IPv6".
+	 * @... {boolean} AllowCidr - Whether the value may end in a "/prefix".
+	 * @... {boolean} RequireCidr - Whether the value must end in a "/prefix".
+	 * @... {object[]} Ranges - Ordered range entries, each with "Negate", "Blocks", and "Outside".
+	 */
+
+	/**
+	 * Evaluate validation state
+	 * @function {boolean} ?
+	 * @return True if the value is a valid IP address or the value is empty.
+	 */
+	evaluateIsValid() {
+		const value = this.getRawValidationValue();
+		if (value.length <= 0)
+			return true;
+		return this.isValidIpAddress(value);
+	},
+
+	/**
+	 * Checks an IP address against the version, CIDR, and range restrictions.
+	 * @function {boolean} ?
+	 * @param {string} value - The IP address, optionally with a "/prefix".
+	 * @return True if the IP address is valid.
+	 */
+	isValidIpAddress(value) {
+		const block = this.parseBlock(value);
+		if (block == null)
+			return false;
+		const version = this.options.Version;
+		if ((version == 'IPv4' && block.bytes.length != 4) || (version == 'IPv6' && block.bytes.length != 16))
+			return false;
+		if (block.hasPrefix ? !this.options.AllowCidr && !this.options.RequireCidr : this.options.RequireCidr)
+			return false;
+		const ranges = this.options.Ranges || [];
+		if (ranges.length == 0)
+			return true;
+		const candidates = this.candidateBlocks(block);
+		for (const range of ranges) {
+			if (this.rangeMatches(range, candidates))
+				return !range.Negate;
 		}
-		const halves = value.split('::');
-		if (halves.length > 2)
-			return false;
-		const groups = (half) => half === '' ? [] : half.split(':');
-		const all = halves.length == 2 ? groups(halves[0]).concat(groups(halves[1])) : groups(halves[0]);
-		if (!all.every((group) => /^[0-9a-f]{1,4}$/i.test(group)))
-			return false;
-		return halves.length == 2 ? all.length < 8 : all.length == 8;
+		return false;
+	},
+
+	/**
+	 * Parses an IP address with an optional "/prefix" into a block.
+	 * @function {object} ?
+	 * @param {string} value - The IP address, optionally with a "/prefix".
+	 * @return The address bytes, the prefix length, and whether the value has a prefix; null when not valid.
+	 */
+	parseBlock(value) {
+		const parts = value.split('/');
+		const bytes = parts.length <= 2 ? Prado.Validation.ipAddressBytes(parts[0]) : null;
+		if (bytes == null)
+			return null;
+		if (parts.length == 1)
+			return { bytes, prefix: bytes.length * 8, hasPrefix: false };
+		if (!/^(?:0|[1-9][0-9]{0,2})$/.test(parts[1]) || parseInt(parts[1], 10) > bytes.length * 8)
+			return null;
+		return { bytes, prefix: parseInt(parts[1], 10), hasPrefix: true };
+	},
+
+	/**
+	 * Returns the blocks a value matches the ranges with: the value itself and,
+	 * for an IPv4-mapped IPv6 block, the block of its embedded IPv4 address.
+	 * @function {object[]} ?
+	 * @param {object} block - The block of the value.
+	 * @return The blocks of the value.
+	 */
+	candidateBlocks(block) {
+		const candidates = [block];
+		const mapped = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255];
+		if (block.bytes.length == 16 && block.prefix >= 96 && mapped.every((byte, i) => block.bytes[i] == byte))
+			candidates.push({ bytes: block.bytes.slice(12), prefix: block.prefix - 96 });
+		return candidates;
+	},
+
+	/**
+	 * Checks whether a range entry matches the value. A plain entry matches a
+	 * value inside one of its blocks; a negated entry matches a value that
+	 * overlaps one of its blocks. An "Outside" entry matches the complement.
+	 * @function {boolean} ?
+	 * @param {object} range - A range entry.
+	 * @param {object[]} candidates - The blocks of the value.
+	 * @return True if the range entry matches the value.
+	 */
+	rangeMatches(range, candidates) {
+		const inside = range.Negate == range.Outside;
+		const found = range.Blocks.some((cidr) => {
+			const block = this.parseBlock(cidr);
+			return candidates.some((candidate) => block.bytes.length == candidate.bytes.length
+				&& (!inside || candidate.prefix >= block.prefix)
+				&& this.prefixMatches(block.bytes, candidate.bytes, Math.min(block.prefix, candidate.prefix)));
+		});
+		return found != range.Outside;
+	},
+
+	/**
+	 * Checks whether two address byte arrays share their leading bits.
+	 * @function {boolean} ?
+	 * @param {number[]} a - The address bytes.
+	 * @param {number[]} b - The address bytes of the same length.
+	 * @param {number} bits - The number of leading bits to compare.
+	 * @return True if the leading bits are equal.
+	 */
+	prefixMatches(a, b, bits) {
+		for (let i = 0; bits > 0; i++, bits -= 8) {
+			const mask = bits >= 8 ? 0xff : (0xff00 >> bits) & 0xff;
+			if ((a[i] & mask) != (b[i] & mask))
+				return false;
+		}
+		return true;
 	}
 });
 
