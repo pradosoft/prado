@@ -437,4 +437,21 @@ class TDbMetaDataTest extends \PHPUnit\Framework\TestCase
 		$this->expectException(TDbException::class);
 		$metaData->getTableInfo(null);
 	}
+
+	public function test_clearTableInfo_evicts_one_table_or_the_whole_cache()
+	{
+		$meta = $this->createTestableMetaData($this->createMockConnection(TDbDriver::DRIVER_SQLITE));
+		$a = $meta->getTableInfo('a');
+		$b = $meta->getTableInfo('b');
+		$this->assertSame($a, $meta->getTableInfo('a'));
+
+		$meta->clearTableInfo('a');
+		$a2 = $meta->getTableInfo('a');
+		$this->assertNotSame($a, $a2);
+		$this->assertSame($b, $meta->getTableInfo('b'));
+
+		$meta->clearTableInfo();
+		$this->assertNotSame($a2, $meta->getTableInfo('a'));
+		$this->assertNotSame($b, $meta->getTableInfo('b'));
+	}
 }

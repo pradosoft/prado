@@ -4,6 +4,7 @@ namespace Prado\Test\Unit\Data\DbSpecific\Pgsql\Common;
 
 use Prado\Data\Common\Pgsql\TPgsqlMetaData;
 use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Data\TDbConnection;
 
 class CommandBuilderPgsqlTest extends \PHPUnit\Framework\TestCase
@@ -26,8 +27,8 @@ class CommandBuilderPgsqlTest extends \PHPUnit\Framework\TestCase
 	{
 		if (static::$pgMetaData === null) {
 			$conn = $this->setupPradoUnitConnection('prado_unitest');
-			if (is_string($conn)) {
-				$this->markTestSkipped($conn);
+			if (is_array($conn)) {
+				PradoUnit::failFirstThenSkip($this, $conn[0], null, $conn[1]);
 				return;
 			}
 			if ($conn instanceof \Exception) {
@@ -109,5 +110,27 @@ class CommandBuilderPgsqlTest extends \PHPUnit\Framework\TestCase
 		$limit = $builder->applyLimitOffset($query, 2, 3);
 		$expect = $query . ' LIMIT 2 OFFSET 3';
 		$this->assertEquals($expect, $limit);
+	}
+
+	public function test_pgsql_search_expression_uses_ilike_on_text_columns_only()
+	{
+		$builder = $this->getCommandBuilder('address');
+		$expression = $builder->getSearchExpression(['username', 'phone', 'field4_integer', 'field5_text'], 'Ab cd');
+		$this->assertSame(
+			'(("username" ILIKE \'%Ab%\' ESCAPE \'\\\' AND "username" ILIKE \'%cd%\' ESCAPE \'\\\')'
+			. ' OR ("phone" ILIKE \'%Ab%\' ESCAPE \'\\\' AND "phone" ILIKE \'%cd%\' ESCAPE \'\\\')'
+			. ' OR ("field5_text" ILIKE \'%Ab%\' ESCAPE \'\\\' AND "field5_text" ILIKE \'%cd%\' ESCAPE \'\\\'))',
+			$expression
+		);
+		$this->assertSame('', $builder->getSearchExpression(['username'], '  '));
+		$this->assertSame('', $builder->getSearchExpression(['field4_integer'], 'Ab'));
+	}
+
+	public function test_pgsql_search_expression_matches_case_insensitively()
+	{
+		$builder = $this->getCommandBuilder('address');
+		$expression = $builder->getSearchExpression(['username'], 'CASE_probe');
+		$sql = 'SELECT COUNT(*) FROM (SELECT \'xcase_PROBEx\'::varchar AS "username") t WHERE ' . $expression;
+		$this->assertEquals(1, $builder->getDbConnection()->createCommand($sql)->queryScalar());
 	}
 }

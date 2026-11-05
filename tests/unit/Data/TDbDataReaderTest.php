@@ -5,6 +5,7 @@ namespace Prado\Test\Unit\Data;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TDbException;
 use Prado\TApplication;
+use Prado\Test\Unit\PradoUnit;
 use Prado\TComponent;
 use Prado\TApplicationMode;
 
@@ -183,5 +184,49 @@ class TDbDataReaderTest extends \PHPUnit\Framework\TestCase
 		$reader->read();
 		$this->assertEquals($id, '2');
 		$this->assertEquals($name, 'my name 2');
+	}
+
+	public function testSerializeDropsTheStatement()
+	{
+		$reader = $this->_connection->createCommand('SELECT * FROM foo')->query();
+		$reader->read();
+
+		$copy = unserialize(serialize($reader));
+
+		$this->assertNull(PradoUnit::getProp($copy, '_statement'));
+		$this->assertFalse($copy->getIsClosed());
+	}
+
+	public function testBindColumnWithType()
+	{
+		$reader = $this->_connection->createCommand('SELECT * FROM foo')->query();
+		$id = null;
+		$reader->bindColumn('id', $id, \PDO::PARAM_INT);
+		$reader->read();
+		$this->assertSame(1, $id);
+	}
+
+	public function testNextResultRaisesWhereTheDriverHasNoMultipleRowsets()
+	{
+		$reader = $this->_connection->createCommand('SELECT * FROM foo')->query();
+		$this->expectException(\PDOException::class);
+		$reader->nextResult();
+	}
+
+	public function testRowCountOfADeleteIsTheAffectedRows()
+	{
+		$reader = $this->_connection->createCommand('DELETE FROM foo')->query();
+		$this->assertSame(2, $reader->getRowCount());
+	}
+
+	public function testKeyFollowsTheIteratorPosition()
+	{
+		$reader = $this->_connection->createCommand('SELECT * FROM foo')->query();
+		$keys = [];
+		foreach ($reader as $key => $row) {
+			$keys[] = $key;
+			$this->assertSame($key, $reader->key());
+		}
+		$this->assertSame([0, 1], $keys);
 	}
 }

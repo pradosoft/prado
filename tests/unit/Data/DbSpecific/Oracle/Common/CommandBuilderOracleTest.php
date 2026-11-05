@@ -3,8 +3,12 @@
 namespace Prado\Test\Unit\Data\DbSpecific\Oracle\Common;
 
 use Prado\Data\Common\Oracle\TOracleCommandBuilder;
+use Prado\Data\Common\Oracle\TOracleDbCommand;
 use Prado\Data\Common\Oracle\TOracleTableColumn;
 use Prado\Data\Common\Oracle\TOracleTableInfo;
+use Prado\Data\TDbConnection;
+use Prado\Exceptions\TDbException;
+use Prado\Test\Unit\PradoUnit;
 
 class CommandBuilderOracleTest extends \PHPUnit\Framework\TestCase
 {
@@ -209,5 +213,225 @@ class CommandBuilderOracleTest extends \PHPUnit\Framework\TestCase
 
 		$this->assertStringStartsWith('SELECT department_id, name, sort_order FROM (', $result);
 		$this->assertStringContainsString('OVER ( ORDER BY department_id ) -1 as pradoNUMLIN , xyz.* FROM PRADO_TEST.DEPARTMENTS xyz WHERE department_id > ? ) nn', $result);
+	}
+	// -----------------------------------------------------------------------
+	// Paging without a table: OFFSET / FETCH NEXT
+	// -----------------------------------------------------------------------
+
+	public function test_tableless_limit_and_offset_uses_offset_fetch()
+	{
+		$builder = new TOracleCommandBuilder(null, new TOracleTableInfo());
+
+		$this->assertSame('SELECT * FROM t OFFSET 5 ROWS FETCH NEXT 10 ROWS ONLY', $builder->applyLimitOffset("SELECT * FROM t \n", 10, 5));
+		$this->assertSame('SELECT * FROM t FETCH NEXT 3 ROWS ONLY', $builder->applyLimitOffset('SELECT * FROM t', 3, -1));
+		$this->assertSame('SELECT * FROM t OFFSET 4 ROWS', $builder->applyLimitOffset('SELECT * FROM t', -1, 4));
+		$this->assertSame('SELECT * FROM t OFFSET 4 ROWS', $builder->applyLimitOffset('SELECT * FROM t', 0, 4));
+	}
+
+	public function test_builder_without_table_info_uses_offset_fetch()
+	{
+		$builder = new TOracleCommandBuilder();
+
+		$this->assertSame('SELECT 1 FROM DUAL FETCH NEXT 1 ROWS ONLY', $builder->applyLimitOffset('SELECT 1 FROM DUAL', '1', null));
+	}
+
+	public function test_select_list_fields_are_aliased_to_the_table()
+	{
+		$builder = $this->make_builder();
+
+		$result = $this->collapse($builder->applyLimitOffset('SELECT id, Name FROM accounts', 2, 1));
+
+		$this->assertSame('SELECT id, Name FROM ( SELECT ROW_NUMBER() OVER ( ORDER BY ROWNUM ) -1 as pradoNUMLIN , xyz.id, xyz.name FROM PRADO_TEST.ACCOUNTS xyz ) nn WHERE nn.pradoNUMLIN >= 1 AND nn.pradoNUMLIN < 3', $result);
+	}
+
+	public function test_select_list_with_table_columns()
+	{
+		$builder = $this->make_builder();
+		$builder->getTableInfo()->getColumns()->add('id', new TOracleTableColumn(['ColumnName' => 'ID', 'ColumnId' => 'id']));
+
+		$result = $this->collapse($builder->applyLimitOffset('SELECT id, score AS s FROM accounts', 2, 0));
+
+		$this->assertSame('SELECT id, score AS s FROM ( SELECT ROW_NUMBER() OVER ( ORDER BY ROWNUM ) -1 as pradoNUMLIN , xyz.id, score as s FROM PRADO_TEST.ACCOUNTS xyz ) nn WHERE nn.pradoNUMLIN >= 0 AND nn.pradoNUMLIN < 2', $result);
+	}
+
+	public function test_select_without_from_clause()
+	{
+		$builder = $this->make_builder();
+
+		$result = $this->collapse($builder->applyLimitOffset('SELECT 1', 2, 0));
+
+		$this->assertSame('SELECT 1 FROM ( SELECT ROW_NUMBER() OVER ( ORDER BY ROWNUM ) -1 as pradoNUMLIN , xyz.* FROM PRADO_TEST.ACCOUNTS xyz ) nn WHERE nn.pradoNUMLIN >= 0 AND nn.pradoNUMLIN < 2', $result);
+	}
+
+	public function test_find_clause_returns_offset_and_length()
+	{
+		$builder = $this->make_builder();
+
+		$this->assertSame([33, 9], PradoUnit::invoke($builder, 'findClause', "SELECT a FROM t WHERE 'order by' ORDER  BY a", 'ORDER\s+BY'));
+		$this->assertSame([0, 6], PradoUnit::invoke($builder, 'findClause', 'select x', 'SELECT'));
+		$this->assertNull(PradoUnit::invoke($builder, 'findClause', 'SELECT a FROM t', 'WHERE'));
+		$this->assertNull(PradoUnit::invoke($builder, 'findClause', "SELECT 'where' FROM \"WHERE\"", 'WHERE'));
+	}
+
+	// -----------------------------------------------------------------------
+	// Search expressions
+	// -----------------------------------------------------------------------
+
+	/**
+	 * A builder over an in-memory SQLite connection, for string quoting, with
+	 * columns of several Oracle types.
+	 * @return TOracleCommandBuilder
+	 */
+	protected function make_search_builder()
+	{
+		$conn = new TDbConnection('sqlite::memory:');
+		$conn->setActive(true);
+		$tableInfo = new TOracleTableInfo(['SchemaName' => 'PRADO_TEST', 'TableName' => 'ACCOUNTS'], ['id']);
+		$types = ['id' => 'NUMBER', 'name' => 'VARCHAR2', 'code' => 'CHAR', 'notes' => 'text', 'title' => 'Character Varying', 'flag' => 'character', 'created' => 'DATE'];
+		$index = 0;
+		foreach ($types as $id => $type) {
+			$tableInfo->getColumns()[$id] = new TOracleTableColumn(['ColumnName' => $id, 'ColumnId' => $id, 'ColumnIndex' => $index++, 'DbType' => $type]);
+		}
+		return new TOracleCommandBuilder($conn, $tableInfo);
+	}
+
+	public function test_searchable_column_types()
+	{
+		$builder = $this->make_search_builder();
+		$columns = $builder->getTableInfo()->getColumns();
+
+		$searchable = [];
+		foreach ($columns as $id => $column) {
+			$searchable[$id] = PradoUnit::invoke($builder, 'isSearchableColumn', $column);
+		}
+
+		$this->assertSame(['id' => false, 'name' => true, 'code' => true, 'notes' => true, 'title' => true, 'flag' => true, 'created' => false], $searchable);
+	}
+
+	public function test_search_expression_skips_unsearchable_columns()
+	{
+		$builder = $this->make_search_builder();
+
+		$result = $builder->getSearchExpression(['id', 'name', 'created', 'code'], 'ab 5%');
+
+		$this->assertSame("((name LIKE '%ab%' ESCAPE '\\' AND name LIKE '%5\\%%' ESCAPE '\\') OR (code LIKE '%ab%' ESCAPE '\\' AND code LIKE '%5\\%%' ESCAPE '\\'))", $result);
+	}
+
+	public function test_search_expression_with_blank_keywords_is_empty()
+	{
+		$builder = $this->make_search_builder();
+
+		$this->assertSame('', $builder->getSearchExpression(['name'], '  '));
+	}
+
+	// -----------------------------------------------------------------------
+	// insertOrIgnore / upsert MERGE statements
+	// -----------------------------------------------------------------------
+
+	/**
+	 * A builder whose connection is an in-memory SQLite database that creates
+	 * {@see TOracleDbCommand} commands. The OCI command defers parameter binding,
+	 * so the MERGE text is built without the SQLite driver preparing it.
+	 * @param bool $transaction whether to begin a transaction
+	 * @return TOracleCommandBuilder
+	 */
+	protected function make_merge_builder(bool $transaction = true)
+	{
+		$conn = new CommandBuilderOracleConnection('sqlite::memory:');
+		$conn->setActive(true);
+		if ($transaction) {
+			$conn->beginTransaction();
+		}
+		$tableInfo = new TOracleTableInfo(['SchemaName' => 'PRADO_TEST', 'TableName' => 'UPSERT_TEST'], ['username']);
+		$tableInfo->getColumns()['username'] = new TOracleTableColumn(['ColumnName' => 'username', 'ColumnId' => 'username', 'ColumnIndex' => 0, 'DbType' => 'VARCHAR2', 'IsPrimaryKey' => true]);
+		$tableInfo->getColumns()['score'] = new TOracleTableColumn(['ColumnName' => 'score', 'ColumnId' => 'score', 'ColumnIndex' => 1, 'DbType' => 'NUMBER']);
+		$tableInfo->getColumns()['email'] = new TOracleTableColumn(['ColumnName' => 'email', 'ColumnId' => 'email', 'ColumnIndex' => 2, 'DbType' => 'VARCHAR2', 'AllowNull' => true]);
+		return new TOracleCommandBuilder($conn, $tableInfo);
+	}
+
+	public function test_insert_or_ignore_builds_merge_from_dual()
+	{
+		$builder = $this->make_merge_builder();
+
+		$command = $builder->createInsertOrIgnoreCommand(['username' => 'wei', 'score' => 5]);
+
+		$this->assertInstanceOf(TOracleDbCommand::class, $command);
+		$this->assertSame(
+			'MERGE INTO PRADO_TEST.UPSERT_TEST t USING (SELECT :username AS username, :score AS score FROM DUAL) s ON (t.username = s.username)'
+			. ' WHEN NOT MATCHED THEN INSERT (username, score) VALUES (s.username, s.score)',
+			$command->getText()
+		);
+		$this->assertSame([':username' => 'wei', ':score' => 5], PradoUnit::getProp($command, '_ociParams'));
+	}
+
+	public function test_upsert_updates_non_conflict_columns_by_default()
+	{
+		$builder = $this->make_merge_builder();
+
+		$command = $builder->createUpsertCommand(['username' => 'wei', 'score' => 5, 'email' => null]);
+
+		$this->assertSame(
+			'MERGE INTO PRADO_TEST.UPSERT_TEST t USING (SELECT :username AS username, :score AS score, :email AS email FROM DUAL) s ON (t.username = s.username)'
+			. ' WHEN MATCHED THEN UPDATE SET t.score = s.score, t.email = s.email'
+			. ' WHEN NOT MATCHED THEN INSERT (username, score, email) VALUES (s.username, s.score, s.email)',
+			$command->getText()
+		);
+		$this->assertSame([':username' => 'wei', ':score' => 5, ':email' => null], PradoUnit::getProp($command, '_ociParams'));
+	}
+
+	public function test_upsert_with_explicit_values_and_conflict_columns()
+	{
+		$builder = $this->make_merge_builder();
+
+		$command = $builder->createUpsertCommand(['username' => 'wei', 'score' => 5, 'email' => 'w@x.y'], ['email', 'score' => 99], ['username', 'email']);
+
+		$this->assertSame(
+			'MERGE INTO PRADO_TEST.UPSERT_TEST t USING (SELECT :username AS username, :score AS score, :email AS email FROM DUAL) s ON (t.username = s.username AND t.email = s.email)'
+			. ' WHEN MATCHED THEN UPDATE SET t.email = s.email, t.score = :_upsert_score'
+			. ' WHEN NOT MATCHED THEN INSERT (username, score, email) VALUES (s.username, s.score, s.email)',
+			$command->getText()
+		);
+		$this->assertSame([':username' => 'wei', ':score' => 5, ':email' => 'w@x.y', ':_upsert_score' => 99], PradoUnit::getProp($command, '_ociParams'));
+	}
+
+	public function test_upsert_with_empty_update_data_omits_matched_branch()
+	{
+		$builder = $this->make_merge_builder();
+
+		$command = $builder->createUpsertCommand(['username' => 'wei'], []);
+
+		$this->assertSame(
+			'MERGE INTO PRADO_TEST.UPSERT_TEST t USING (SELECT :username AS username FROM DUAL) s ON (t.username = s.username)'
+			. ' WHEN NOT MATCHED THEN INSERT (username) VALUES (s.username)',
+			$command->getText()
+		);
+	}
+
+	public function test_insert_or_ignore_requires_a_transaction()
+	{
+		$builder = $this->make_merge_builder(false);
+
+		$this->expectException(TDbException::class);
+		$builder->createInsertOrIgnoreCommand(['username' => 'wei']);
+	}
+
+	public function test_upsert_requires_a_transaction()
+	{
+		$builder = $this->make_merge_builder(false);
+
+		$this->expectException(TDbException::class);
+		$builder->createUpsertCommand(['username' => 'wei']);
+	}
+}
+
+/**
+ * An SQLite connection that creates Oracle commands, which defer binding until execution.
+ */
+class CommandBuilderOracleConnection extends TDbConnection
+{
+	public function createCommand($sql)
+	{
+		$this->assertActive();
+		return new TOracleDbCommand($this, $sql);
 	}
 }

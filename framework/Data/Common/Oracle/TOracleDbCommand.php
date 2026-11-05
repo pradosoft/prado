@@ -92,6 +92,7 @@ class TOracleDbCommand extends TDbCommand
 	 * without parameter substitution.
 	 *
 	 * Both positional (`?`) and named (`:name`) placeholders are supported.
+	 * Placeholders inside quoted literals and quoted identifiers are left unchanged.
 	 * NULL values are rendered as the literal SQL NULL.
 	 *
 	 * @return ?string Substituted SQL ready for direct execution, or null
@@ -103,24 +104,33 @@ class TOracleDbCommand extends TDbCommand
 			return null;
 		}
 		$pdo = $this->getConnection()->getPdoInstance();
-		$sql = $this->getText();
-		$firstKey = array_key_first($this->_ociParams);
-		if (is_int($firstKey)) {
-			// Positional '?' placeholders — replace left-to-right.
-			$values = array_values($this->_ociParams);
+		$params = $this->_ociParams;
+		$quote = static fn ($value) => $value === null ? 'NULL' : $pdo->quote((string) $value);
+		// One pass over the SQL; quoted literals and identifiers are matched first and kept.
+		$literal = '\'(?:[^\']|\'\')*\'|"(?:[^"]|"")*"';
+		if (is_int(array_key_first($params))) {
+			// Positional '?' placeholders, replaced left to right.
+			$values = array_values($params);
 			$i = 0;
-			$sql = preg_replace_callback('/\?/', static function () use ($pdo, $values, &$i) {
-				$value = $values[$i++] ?? null;
-				return $value === null ? 'NULL' : $pdo->quote((string) $value);
-			}, $sql);
-		} else {
-			// Named placeholders (:name) — substitute by name.
-			foreach ($this->_ociParams as $placeholder => $value) {
-				$quoted = $value === null ? 'NULL' : $pdo->quote((string) $value);
-				$sql = str_replace((string) $placeholder, $quoted, $sql);
-			}
+			return preg_replace_callback('/' . $literal . '|\?/', static function ($m) use ($quote, $values, &$i) {
+				if ($m[0] !== '?') {
+					return $m[0];
+				}
+				return $quote($values[$i++] ?? null);
+			}, $this->getText());
 		}
-		return $sql;
+		// Named placeholders, matched as whole names so ':id' leaves ':id2' alone.
+		return preg_replace_callback('/' . $literal . '|(?<!:):([A-Za-z_]\w*)/', static function ($m) use ($quote, $params) {
+			if (!isset($m[1])) {
+				return $m[0];
+			}
+			foreach ([$m[0], $m[1]] as $key) {
+				if (array_key_exists($key, $params)) {
+					return $quote($params[$key]);
+				}
+			}
+			return $m[0];
+		}, $this->getText());
 	}
 
 	// -----------------------------------------------------------------------

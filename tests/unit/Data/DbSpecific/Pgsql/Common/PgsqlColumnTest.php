@@ -4,6 +4,7 @@ namespace Prado\Test\Unit\Data\DbSpecific\Pgsql\Common;
 
 use Prado\Data\Common\Pgsql\TPgsqlMetaData;
 use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Data\Common\TDbTableColumn;
 use Prado\Data\TDbConnection;
 
@@ -27,8 +28,8 @@ class PgsqlColumnTest extends \PHPUnit\Framework\TestCase
 	{
 		if (static::$pgMetaData === null) {
 			$conn = $this->setupPradoUnitConnection('prado_unitest');
-			if (is_string($conn)) {
-				$this->markTestSkipped($conn);
+			if (is_array($conn)) {
+				PradoUnit::failFirstThenSkip($this, $conn[0], null, $conn[1]);
 				return;
 			}
 			if ($conn instanceof \Exception) {

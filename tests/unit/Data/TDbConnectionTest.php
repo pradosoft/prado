@@ -4,6 +4,8 @@ namespace Prado\Test\Unit\Data;
 
 use PDO;
 use ReflectionMethod;
+use Prado\Data\Common\IDataMetaData;
+use Prado\Data\TDataTransaction;
 use Prado\Data\TDbColumnCaseMode;
 use Prado\Data\TDbCommand;
 use Prado\Data\TDbConnection;
@@ -20,6 +22,77 @@ if (!defined('TEST_DB_FILE')) {
 }
 if (!defined('TEST_DB_FILE2')) {
 	define('TEST_DB_FILE2', __DIR__ . '/db/test2.db');
+}
+
+/**
+ * Metadata handler that implements IDataMetaData without the SQL quoting of IDbMetaData.
+ */
+class TDbConnectionTestDataOnlyMetaData implements IDataMetaData
+{
+	public function __construct(private $_connection)
+	{
+	}
+
+	public function getDbConnection()
+	{
+		return $this->_connection;
+	}
+
+	public function getTableInfo($tableName = null)
+	{
+		return null;
+	}
+
+	public function createCommandBuilder($tableName = null)
+	{
+		return null;
+	}
+
+	public function findTableNames($schema = '')
+	{
+		return [];
+	}
+}
+
+/**
+ * SQLite connection that reports a plugin driver whose metadata handler comes from fxDataGetMetaDataClass.
+ */
+class TDbConnectionTestPluginConnection extends TDbConnection
+{
+	public function getDriverName()
+	{
+		return 'covplugin';
+	}
+
+	public function raiseEvent($name, $sender, $param, $responsetype = null, $postfunction = null)
+	{
+		if (strcasecmp($name, 'fxDataGetMetaDataClass') === 0) {
+			return [TDbConnectionTestDataOnlyMetaData::class];
+		}
+		return parent::raiseEvent($name, $sender, $param, $responsetype, $postfunction);
+	}
+}
+
+/**
+ * Command whose scalar query finds no value, as a driver without a readable charset does.
+ */
+class TDbConnectionTestNoValueCommand extends TDbCommand
+{
+	public function queryScalar()
+	{
+		return false;
+	}
+}
+
+/**
+ * SQLite connection whose commands return no scalar value.
+ */
+class TDbConnectionTestNoValueConnection extends TDbConnection
+{
+	public function createCommand($sql)
+	{
+		return new TDbConnectionTestNoValueCommand($this, $sql);
+	}
 }
 
 class TDbConnectionTest extends \PHPUnit\Framework\TestCase
@@ -1880,4 +1953,96 @@ class TDbConnectionTest extends \PHPUnit\Framework\TestCase
 		];
 	}
 
+	// -----------------------------------------------------------------------
+	// Edge paths: open(), DSN without driver, quoteString(null), invalid
+	// transaction class, non-SQL metadata handler, inactive attributes
+	// -----------------------------------------------------------------------
+
+	public function testOpenOnAnOpenConnectionKeepsThePdoInstance(): void
+	{
+		$pdo = $this->_connection1->getPdoInstance();
+		PradoUnit::invoke($this->_connection1, 'open');
+		$this->assertSame($pdo, $this->_connection1->getPdoInstance());
+	}
+
+	public function testExtractCharsetFromDsnWithoutDriverIsNull(): void
+	{
+		$this->assertNull(PradoUnit::invoke($this->_connection2, 'extractCharsetFromDsn', 'host=localhost;charset=utf8'));
+	}
+
+	public function testQuoteStringNullIsSqlNull(): void
+	{
+		$this->assertSame('NULL', $this->_connection1->quoteString(null));
+		$this->assertSame("'it''s'", $this->_connection1->quoteString("it's"));
+	}
+
+	public function testBeginTransactionRejectsANonDbTransactionClass(): void
+	{
+		$this->_connection1->setTransactionClass(TDataTransaction::class);
+		try {
+			$this->_connection1->beginTransaction();
+			$this->fail('Expected TDbException for a TransactionClass that is not a TDbTransaction');
+		} catch (TDbException $e) {
+			$this->assertSame('dbconnection_transaction_class_invalid', $e->getErrorCode());
+		}
+		$this->assertFalse($this->_connection1->getPdoInstance()->inTransaction());
+		$this->assertNull($this->_connection1->getCurrentTransaction());
+	}
+
+	public function testGetDbMetaDataRejectsAHandlerWithoutSqlQuoting(): void
+	{
+		$conn = new TDbConnectionTestPluginConnection('sqlite::memory:');
+		try {
+			$conn->getDbMetaData();
+			$this->fail('Expected TDbException for an IDataMetaData handler that is not an IDbMetaData');
+		} catch (TDbException $e) {
+			$this->assertSame('dbmetadata_not_meta_data', $e->getErrorCode());
+		} finally {
+			$conn->setActive(false);
+		}
+	}
+
+	public function testAttributeGettersOnAnInactiveConnectionReadTheStoredAttributes(): void
+	{
+		$conn = new TDbConnection('sqlite::memory:');
+		$conn->setAttribute(PDO::ATTR_TIMEOUT, 7);
+		$conn->setAttribute(PDO::ATTR_PREFETCH, 0);
+		$conn->setAttribute(PDO::ATTR_CONNECTION_STATUS, 'idle');
+		$conn->setAttribute(PDO::ATTR_SERVER_INFO, 'info');
+
+		$this->assertSame(7, $conn->getTimeout());
+		$this->assertSame(0, $conn->getPrefetch());
+		$this->assertSame('idle', $conn->getConnectionStatus());
+		$this->assertSame('info', $conn->getServerInfo());
+		$this->assertNull((new TDbConnection('sqlite::memory:'))->getTimeout());
+	}
+
+	public function testAttributeGettersRaiseForAttributesSqliteDoesNotSupport(): void
+	{
+		$this->expectException(\PDOException::class);
+		$this->_connection1->getServerInfo();
+	}
+
+	public function testGetDatabaseCharsetFallsBackToTheResolvedCharsetWithoutAQueryResult(): void
+	{
+		$conn = new TDbConnectionTestNoValueConnection('sqlite::memory:', '', '', 'ISO-8859-1');
+		$conn->setActive(true);
+		try {
+			$this->assertSame('UTF-8', $conn->getDatabaseCharset());
+			// A charset without a SQLite mapping is returned as configured.
+			PradoUnit::setProp($conn, '_charset', 'x-unmapped');
+			$this->assertSame('x-unmapped', $conn->getDatabaseCharset());
+		} finally {
+			$conn->setActive(false);
+		}
+	}
+
+	public function testUnrecognizedCaseAndNullAttributesReadAsPreserved(): void
+	{
+		$conn = new TDbConnection('sqlite::memory:');
+		$conn->setAttribute(PDO::ATTR_CASE, 99);
+		$conn->setAttribute(PDO::ATTR_ORACLE_NULLS, 99);
+		$this->assertSame(TDbColumnCaseMode::Preserved, $conn->getColumnCase());
+		$this->assertSame(TDbNullConversionMode::Preserved, $conn->getNullConversion());
+	}
 }

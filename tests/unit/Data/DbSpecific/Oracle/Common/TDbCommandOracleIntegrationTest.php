@@ -33,8 +33,8 @@ class TDbCommandOracleIntegrationTest extends \PHPUnit\Framework\TestCase
 	private function openOracle(): TDbConnection
 	{
 		$conn = PradoUnit::setupOracleConnection();
-		if (is_string($conn)) {
-			$this->markTestSkipped($conn);
+		if (is_array($conn)) {
+			PradoUnit::failFirstThenSkip($this, $conn[0], null, $conn[1]);
 		}
 		return $conn;
 	}

@@ -4,6 +4,7 @@ namespace Prado\Test\Unit\Data\DbSpecific\Mysql\Common;
 
 use Prado\Data\Common\Mysql\TMysqlMetaData;
 use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Data\Common\TDbTableColumn;
 use Prado\Data\TDbConnection;
 use Prado\Data\TDbDriver;
@@ -28,8 +29,8 @@ class MysqlColumnTest extends \PHPUnit\Framework\TestCase
 	{
 		if (static::$myMetaData === null) {
 			$conn = $this->setupPradoUnitConnection('prado_unitest');
-			if (is_string($conn)) {
-				$this->markTestSkipped($conn);
+			if (is_array($conn)) {
+				PradoUnit::failFirstThenSkip($this, $conn[0], null, $conn[1]);
 				return;
 			}
 			if ($conn instanceof \Exception) {

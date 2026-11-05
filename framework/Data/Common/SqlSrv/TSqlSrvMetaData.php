@@ -84,7 +84,9 @@ class TSqlSrvMetaData extends TDbMetaData
 		INFORMATION_SCHEMA.TABLES t,
 		INFORMATION_SCHEMA.COLUMNS c
 	WHERE
-		t.table_name = c.table_name
+		t.table_catalog = c.table_catalog
+		AND t.table_schema = c.table_schema
+		AND t.table_name = c.table_name
 		AND t.table_name = :table
 	EOD;
 		if ($schemaName !== null) {
@@ -93,6 +95,7 @@ class TSqlSrvMetaData extends TDbMetaData
 		if ($catalogName !== null) {
 			$sql .= ' AND t.table_catalog = :catalog';
 		}
+		$sql .= ' ORDER BY c.ordinal_position';
 
 		$command = $this->getDbConnection()->createCommand($sql);
 		$command->bindValue(':table', $tableName);
@@ -208,14 +211,17 @@ class TSqlSrvMetaData extends TDbMetaData
 	FROM
 		INFORMATION_SCHEMA.KEY_COLUMN_USAGE k
 		LEFT JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS c
-		ON k.table_name = c.table_name
+		ON k.table_schema = c.table_schema
+		AND k.table_name = c.table_name
 		AND k.constraint_name = c.constraint_name
 	WHERE
 		k.constraint_catalog = DB_NAME()
 		AND	c.constraint_type ='PRIMARY KEY'
+		AND k.table_schema = :schema
 		AND k.table_name = :table
 	EOD;
 		$command = $this->getDbConnection()->createCommand($sql);
+		$command->bindValue(':schema', $col['TABLE_SCHEMA']);
 		$command->bindValue(':table', $col['TABLE_NAME']);
 		$primary = [];
 		foreach ($command->query()->readAll() as $field) {
@@ -259,12 +265,13 @@ class TSqlSrvMetaData extends TDbMetaData
 		RC.UNIQUE_CONSTRAINT_NAME
 		AND KCU2.ORDINAL_POSITION = KCU1.ORDINAL_POSITION
 	WHERE
-		KCU1.TABLE_NAME = :table
+		KCU1.TABLE_SCHEMA = :schema
+		AND KCU1.TABLE_NAME = :table
 	EOD;
 		$command = $this->getDbConnection()->createCommand($sql);
+		$command->bindValue(':schema', $col['TABLE_SCHEMA']);
 		$command->bindValue(':table', $col['TABLE_NAME']);
 		$fkeys = [];
-		$catalogSchema = "[{$col['TABLE_CATALOG']}].[{$col['TABLE_SCHEMA']}]";
 		foreach ($command->query() as $info) {
 			$fkeys[$info['FK_CONSTRAINT_NAME']]['keys'][$info['FK_COLUMN_NAME']] = $info['UQ_COLUMN_NAME'];
 			$fkeys[$info['FK_CONSTRAINT_NAME']]['table'] = $info['UQ_TABLE_NAME'];
@@ -310,7 +317,7 @@ class TSqlSrvMetaData extends TDbMetaData
 			if ($schema == self::DEFAULT_SCHEMA) {
 				$names[] = $row['TABLE_NAME'];
 			} else {
-				$names[] = $schema . '.' . $row['TABLE_SCHEMA'] . '.' . $row['TABLE_NAME'];
+				$names[] = $row['TABLE_SCHEMA'] . '.' . $row['TABLE_NAME'];
 			}
 		}
 

@@ -524,6 +524,8 @@ class TTableGateway extends \Prado\TComponent
 	 * ```
 	 * @param mixed $method
 	 * @param mixed $args
+	 * Other methods pass to {@see \Prado\TComponent::__call()}, which calls behavior methods
+	 * and throws on an unknown method.
 	 * @return mixed single record if method name starts with "findBy", 0 or more records
 	 * if method name starts with "findAllBy"
 	 */
@@ -539,7 +541,7 @@ class TTableGateway extends \Prado\TComponent
 		} elseif ($delete = substr(strtolower($method), 0, 11) === 'deleteallby') {
 			$condition = $method[11] === '_' ? substr($method, 12) : substr($method, 11);
 		} else {
-			return null;
+			return parent::__call($method, $args);
 		}
 
 		$criteria = $this->getCommand()->createCriteriaFromString($method, $condition, $args);

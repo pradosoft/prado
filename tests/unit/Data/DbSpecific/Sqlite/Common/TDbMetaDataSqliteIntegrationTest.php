@@ -256,4 +256,17 @@ class TDbMetaDataSqliteIntegrationTest extends \PHPUnit\Framework\TestCase
 		$quoted = $meta->quoteColumnAlias('baz');
 		$this->assertSame('"baz"', $quoted);
 	}
+
+	public function testSqliteGetTableInfoOfAViewIsAView(): void
+	{
+		$this->_conn->createCommand('CREATE VIEW meta_view AS SELECT id, name FROM meta_test')->execute();
+		try {
+			$info = TDbMetaData::getInstance($this->_conn)->getTableInfo('meta_view');
+			$this->assertTrue($info->getIsView());
+			$this->assertSame(['id', 'name'], array_keys($info->getColumns()->toArray()));
+			$this->assertFalse(TDbMetaData::getInstance($this->_conn)->getTableInfo('meta_test')->getIsView());
+		} finally {
+			$this->_conn->createCommand('DROP VIEW meta_view')->execute();
+		}
+	}
 }

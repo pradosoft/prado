@@ -33,8 +33,8 @@ class TDbMetaDataIbmIntegrationTest extends \PHPUnit\Framework\TestCase
 	private function openIbm(): TDbConnection
 	{
 		$conn = PradoUnit::setupIbmConnection();
-		if (is_string($conn)) {
-			$this->markTestSkipped($conn);
+		if (is_array($conn)) {
+			PradoUnit::failFirstThenSkip($this, $conn[0], null, $conn[1]);
 		}
 		return $conn;
 	}

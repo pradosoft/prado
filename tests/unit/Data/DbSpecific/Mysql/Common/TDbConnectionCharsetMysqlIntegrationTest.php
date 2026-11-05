@@ -248,4 +248,20 @@ class TDbConnectionCharsetMysqlIntegrationTest extends \PHPUnit\Framework\TestCa
 		);
 		$conn->Active = false;
 	}
+
+	public function testMysqlDsnCharsetReplacesADifferentCharsetProperty(): void
+	{
+		$conn = $this->openConnection('mysql:host=localhost;dbname=prado_unitest;charset=latin1', 'prado_unitest', 'prado_unitest', 'UTF-8');
+		$this->assertSame('ISO-8859-1', $conn->getCharset());
+		$this->assertSame('latin1', $this->mysqlClientCharset($conn));
+		$conn->Active = false;
+	}
+
+	public function testMysqlDsnCharsetKeepsAnEquivalentCharsetProperty(): void
+	{
+		$conn = $this->openConnection('mysql:host=localhost;dbname=prado_unitest;charset=utf8mb4', 'prado_unitest', 'prado_unitest', 'utf8');
+		$this->assertSame('utf8', $conn->getCharset());
+		$this->assertSame('utf8mb4', $this->mysqlClientCharset($conn));
+		$conn->Active = false;
+	}
 }

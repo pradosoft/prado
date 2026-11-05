@@ -33,8 +33,8 @@ class TDbMetaDataFirebirdIntegrationTest extends \PHPUnit\Framework\TestCase
 	private function openFirebird(): TDbConnection
 	{
 		$conn = PradoUnit::setupFirebirdConnection();
-		if (is_string($conn)) {
-			$this->markTestSkipped($conn);
+		if (is_array($conn)) {
+			PradoUnit::failFirstThenSkip($this, $conn[0], null, $conn[1]);
 		}
 		return $conn;
 	}

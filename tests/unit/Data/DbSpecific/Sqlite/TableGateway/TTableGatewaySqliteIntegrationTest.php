@@ -5,6 +5,8 @@ namespace Prado\Test\Unit\Data\DbSpecific\Sqlite\TableGateway;
 use Prado\Data\DataGateway\TSqlCriteria;
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
+use Prado\Exceptions\TDbException;
+use Prado\Exceptions\TUnknownMethodException;
 use Prado\TApplication;
 use Prado\TApplicationMode;
 
@@ -343,5 +345,142 @@ class TTableGatewaySqliteIntegrationTest extends \PHPUnit\Framework\TestCase
 		$this->assertTrue($gateway->getTableExists(), 'pre-condition: table must exist before drop');
 		self::$conn->createCommand('DROP TABLE gw_exists_probe')->execute();
 		$this->assertFalse($gateway->getTableExists());
+	}
+
+	// -----------------------------------------------------------------------
+	// Table info, SQL finders, magic deletes, and argument validation
+	// -----------------------------------------------------------------------
+
+	private function gatewayNames(): array
+	{
+		return self::$conn->createCommand('SELECT name FROM gw_test ORDER BY id')->queryColumn();
+	}
+
+	public function testConstructorRejectsAnInvalidTable(): void
+	{
+		try {
+			new TTableGateway(42, self::$conn);
+			$this->fail('Expected TDbException for a table that is neither a name nor an IDataTableInfo');
+		} catch (TDbException $e) {
+			$this->assertSame('dbtablegateway_invalid_table_info', $e->getErrorCode());
+		}
+	}
+
+	public function testTableInfoAndTableName(): void
+	{
+		$this->assertSame('gw_test', self::$gw->getTableName());
+		$this->assertSame(['id', 'name', 'score', 'active'], array_keys(self::$gw->getTableInfo()->getColumns()->toArray()));
+	}
+
+	public function testFindAllBySqlWithPositionalArguments(): void
+	{
+		$this->insertRow('Alice', 1.0);
+		$this->insertRow('Bob', 2.0);
+		$this->insertRow('Carol', 3.0);
+		$rows = self::$gw->findAllBySql('SELECT name FROM gw_test WHERE score > ? AND active = ? ORDER BY id', 1.5, 1)->readAll();
+		$this->assertSame(['Bob', 'Carol'], array_column($rows, 'name'));
+	}
+
+	public function testFindBySqlWithNamedParameters(): void
+	{
+		$this->insertRow('Alice');
+		$this->insertRow('Bob');
+		$row = self::$gw->findBySql('SELECT name FROM gw_test WHERE name = :name', [':name' => 'Bob']);
+		$this->assertSame(['name' => 'Bob'], $row);
+	}
+
+	public function testDeleteAllByPksRemovesEachKey(): void
+	{
+		$a = $this->insertRow('Alice');
+		$b = $this->insertRow('Bob');
+		$c = $this->insertRow('Carol');
+		$this->assertSame(2, self::$gw->deleteAllByPks($a, $c));
+		$this->assertSame(['Bob'], $this->gatewayNames());
+		$this->assertSame(1, self::$gw->deleteAllByPks([$b]));
+		$this->assertSame([], $this->gatewayNames());
+	}
+
+	public function testGetLastInsertIdIsTheInsertedId(): void
+	{
+		$id = $this->insertRow('Alice');
+		$this->assertEquals($id, self::$gw->getLastInsertId());
+	}
+
+	public function testCriteriaMustBeAStringOrSqlCriteria(): void
+	{
+		try {
+			self::$gw->find(['name' => 'Alice']);
+			$this->fail('Expected TDbException for an array criteria');
+		} catch (TDbException $e) {
+			$this->assertSame('dbtablegateway_invalid_criteria', $e->getErrorCode());
+		}
+	}
+
+	public function testMagicDeleteByRemovesMatchingRows(): void
+	{
+		$this->insertRow('Alice', 1.0, 0);
+		$this->insertRow('Bob', 2.0, 1);
+		$this->insertRow('Carol', 3.0, 0);
+		$this->assertSame(2, self::$gw->deleteByActive(0));
+		$this->assertSame(['Bob'], $this->gatewayNames());
+	}
+
+	public function testMagicDeleteAllByWithUnderscoreRemovesMatchingRows(): void
+	{
+		$this->insertRow('Alice', 1.0, 1);
+		$this->insertRow('Bob', 2.0, 1);
+		$this->insertRow('Carol', 3.0, 0);
+		$this->assertSame(1, self::$gw->deleteAllBy_Name_And_Active('Bob', 1));
+		$this->assertSame(['Alice', 'Carol'], $this->gatewayNames());
+	}
+
+	public function testMagicFindAllByReturnsAllMatches(): void
+	{
+		$this->insertRow('Alice', 1.0, 1);
+		$this->insertRow('Bob', 2.0, 0);
+		$this->insertRow('Carol', 3.0, 1);
+		$rows = self::$gw->findAllByActive(1)->readAll();
+		$this->assertSame(['Alice', 'Carol'], array_column($rows, 'name'));
+		$this->assertSame('Bob', self::$gw->findBy_Name('Bob')['name']);
+	}
+
+	public function testUnknownMagicMethodThrows(): void
+	{
+		$this->insertRow('Alice');
+		try {
+			self::$gw->purgeByName('Alice');
+			$this->fail('An unknown method must throw.');
+		} catch (TUnknownMethodException $e) {
+			$this->assertSame(['Alice'], $this->gatewayNames());
+		}
+	}
+
+	public function testSqlFindersWithoutParameters(): void
+	{
+		$this->insertRow('Alice');
+		$this->insertRow('Bob');
+		$this->assertSame(['name' => 'Alice'], self::$gw->findBySql('SELECT name FROM gw_test ORDER BY id'));
+		$this->assertSame(['Alice', 'Bob'], array_column(self::$gw->findAllBySql('SELECT name FROM gw_test ORDER BY id')->readAll(), 'name'));
+	}
+
+	public function testFindAllWithAndWithoutCriteria(): void
+	{
+		$this->insertRow('Alice', 1.0);
+		$this->insertRow('Bob', 2.0);
+		$this->assertSame(['Alice', 'Bob'], array_column(self::$gw->findAll()->readAll(), 'name'));
+		$this->assertSame(['Bob'], array_column(self::$gw->findAll('score > ?', 1.5)->readAll(), 'name'));
+		$this->assertSame(['Bob'], array_column(self::$gw->findAll('score > :s', [':s' => 1.5])->readAll(), 'name'));
+	}
+
+	public function testMagicMethodPrefixVariants(): void
+	{
+		$this->insertRow('Alice', 1.0, 1);
+		$this->insertRow('Bob', 2.0, 1);
+		$this->insertRow('Carol', 3.0, 0);
+		$this->insertRow('Dave', 4.0, 0);
+		$this->assertSame(['Alice', 'Bob'], array_column(self::$gw->findAllBy_Active(1)->readAll(), 'name'));
+		$this->assertSame(1, self::$gw->deleteBy_Name('Alice'));
+		$this->assertSame(1, self::$gw->deleteAllByName('Bob'));
+		$this->assertSame(['Carol', 'Dave'], $this->gatewayNames());
 	}
 }

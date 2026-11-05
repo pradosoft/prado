@@ -289,4 +289,11 @@ class TSqlCriteriaTest extends \PHPUnit\Framework\TestCase
 		$str = (string) $c;
 		$this->assertStringContainsString('id > 0', $str);
 	}
+
+	public function testSetParametersRejectsScalar()
+	{
+		$c = new TSqlCriteria();
+		$this->expectException(\Prado\Exceptions\TException::class);
+		$c->setParameters('not an array');
+	}
 }

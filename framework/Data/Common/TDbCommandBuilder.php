@@ -218,7 +218,8 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 	 * keyword match themselves; see {@see getSearchPattern()}.
 	 * @param array $fields list of column id for potential search condition.
 	 * @param string $keywords string of keywords
-	 * @return string SQL search condition matching on a set of columns.
+	 * @return string SQL search condition matching on a set of columns, or an empty string
+	 * when there are no keywords or no fields.
 	 */
 	public function getSearchExpression($fields, $keywords)
 	{
@@ -230,6 +231,9 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 		foreach ($fields as $field) {
 			$column = $this->getTableInfo()->getColumn($field)->getColumnName();
 			$conditions[] = $this->getSearchCondition($column, $words);
+		}
+		if ($conditions === []) {
+			return '';
 		}
 		return '(' . implode(' OR ', $conditions) . ')';
 	}
@@ -372,7 +376,7 @@ class TDbCommandBuilder extends \Prado\TComponent implements IDbCommandBuilder
 					continue;
 				}
 
-				$v = isset($columns[$value]);
+				$v = isset($columns[(string) $value]);
 				$k = isset($columns[$key]);
 				if (is_int($key) && $v) {
 					$key = $value;

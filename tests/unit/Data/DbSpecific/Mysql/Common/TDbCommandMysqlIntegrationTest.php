@@ -29,8 +29,8 @@ class TDbCommandMysqlIntegrationTest extends \PHPUnit\Framework\TestCase
 	private function openMysql(): TDbConnection
 	{
 		$conn = PradoUnit::setupMysqlConnection('prado_unitest');
-		if (is_string($conn)) {
-			$this->markTestSkipped($conn);
+		if (is_array($conn)) {
+			PradoUnit::failFirstThenSkip($this, $conn[0], null, $conn[1]);
 		}
 		return $conn;
 	}

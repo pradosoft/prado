@@ -235,7 +235,6 @@ class TIbmMetaData extends TDbMetaData
 			}
 		}
 
-		$class = $this->getTableInfoClass();
 		$tableInfo->getColumns()[$columnId] = new TIbmTableColumn($info);
 	}
 

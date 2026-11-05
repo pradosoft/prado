@@ -352,7 +352,8 @@ class SqliteColumnTest extends \PHPUnit\Framework\TestCase
 		$conn->createCommand('
 			CREATE TABLE t (
 				a INT2, b BOOL, c DOUBLE PRECISION, d UNSIGNED BIG INT,
-				e CHARACTER(20), f NVARCHAR(100), g CLOB, h FLOAT8, i DATETIME, j MONEY, k
+				e CHARACTER(20), f NVARCHAR(100), g CLOB, h FLOAT8, i DATETIME, j MONEY, k,
+				l INT4, m POINT
 			)
 		')->execute();
 		$columns = (new TSqliteMetaData($conn))->getTableInfo('t')->getColumns();
@@ -369,6 +370,8 @@ class SqliteColumnTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame('string', $columns['j']->getPHPType());
 		$this->assertSame('', $columns['k']->getDbType());
 		$this->assertSame('string', $columns['k']->getPHPType());
+		$this->assertSame('integer', $columns['l']->getPHPType());
+		$this->assertSame('integer', $columns['m']->getPHPType());
 		$this->assertSame(\PDO::PARAM_INT, $columns['a']->getPdoType());
 		$this->assertSame(\PDO::PARAM_BOOL, $columns['b']->getPdoType());
 	}

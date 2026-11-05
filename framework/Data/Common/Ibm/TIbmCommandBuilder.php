@@ -113,8 +113,8 @@ class TIbmCommandBuilder extends TDbCommandBuilder
 		if ($limit >= 0) {
 			return $sql . ' FETCH FIRST ' . $limit . ' ROWS ONLY';
 		}
-		// offset only (no limit): fall back to ROW_NUMBER() subquery
-		return $this->rewriteLimitOffsetSql($sql, PHP_INT_MAX, $offset);
+		// offset only (no limit): fall back to ROW_NUMBER() subquery; the upper bound stays an integer.
+		return $this->rewriteLimitOffsetSql($sql, PHP_INT_MAX - $offset, $offset);
 	}
 
 	/**

@@ -29,8 +29,8 @@ class TDbCommandPgsqlIntegrationTest extends \PHPUnit\Framework\TestCase
 	private function openPgsql(): TDbConnection
 	{
 		$conn = PradoUnit::setupPgsqlConnection('prado_unitest');
-		if (is_string($conn)) {
-			$this->markTestSkipped($conn);
+		if (is_array($conn)) {
+			PradoUnit::failFirstThenSkip($this, $conn[0], null, $conn[1]);
 		}
 		return $conn;
 	}
@@ -347,5 +347,10 @@ class TDbCommandPgsqlIntegrationTest extends \PHPUnit\Framework\TestCase
 		$this->assertArrayHasKey(1, $row);
 		$this->assertArrayNotHasKey('id', $row);
 		$reader->close();
+	}
+
+	public function testPgsqlQueryScalarReadsAByteaStream(): void
+	{
+		$this->assertSame('abc', $this->_conn->createCommand("SELECT 'abc'::bytea")->queryScalar());
 	}
 }

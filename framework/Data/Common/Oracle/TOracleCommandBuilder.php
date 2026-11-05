@@ -183,8 +183,7 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 			$fields = substr($fields, 0, strlen($fields) - 1);
 		} else {
 			if (strpos($fields, ',') !== false) {
-				$arr = $this->getTableInfo()->getColumns();
-				foreach ($arr as $field) {
+				foreach (explode(',', $fields) as $field) {
 					$field = strtolower($field);
 					$existAS = str_ireplace(' as ', '-as-', $field);
 					if (strpos($existAS, '-as-') === false) {

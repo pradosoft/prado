@@ -6,6 +6,7 @@ use Prado\Data\Common\Pgsql\TPgsqlMetaData;
 use Prado\Data\Common\TDbCommandBuilder;
 use Prado\Data\Common\TDbMetaData;
 use Prado\Data\TDbConnection;
+use Prado\Exceptions\TDbException;
 use Prado\TApplication;
 use Prado\Test\Unit\PradoUnit;
 use Prado\TApplicationMode;
@@ -31,8 +32,8 @@ class TDbMetaDataPgsqlIntegrationTest extends \PHPUnit\Framework\TestCase
 	private function openPgsql(): TDbConnection
 	{
 		$conn = PradoUnit::setupPgsqlConnection('prado_unitest');
-		if (is_string($conn)) {
-			$this->markTestSkipped($conn);
+		if (is_array($conn)) {
+			PradoUnit::failFirstThenSkip($this, $conn[0], null, $conn[1]);
 		}
 		return $conn;
 	}
@@ -268,5 +269,64 @@ class TDbMetaDataPgsqlIntegrationTest extends \PHPUnit\Framework\TestCase
 		$meta = TDbMetaData::getInstance($this->_conn);
 		$quoted = $meta->quoteColumnAlias('baz');
 		$this->assertSame('"baz"', $quoted);
+	}
+
+	// -----------------------------------------------------------------------
+	// Views, identifiers, schemas, sequences, and foreign key definitions
+	// -----------------------------------------------------------------------
+
+	public function testPgsqlGetTableInfoOfAViewIsAView(): void
+	{
+		$this->_conn->createCommand('CREATE VIEW cov_meta_view AS SELECT id, name FROM meta_test')->execute();
+		try {
+			$meta = new TPgsqlMetaData($this->_conn);
+			$this->assertTrue($meta->getTableInfo('cov_meta_view')->getIsView());
+			$this->assertFalse($meta->getTableInfo('meta_test')->getIsView());
+		} finally {
+			$this->_conn->createCommand('DROP VIEW IF EXISTS cov_meta_view')->execute();
+		}
+	}
+
+	public function testPgsqlAssertIdentifierRejectsADoubleQuote(): void
+	{
+		$meta = new TPgsqlMetaData($this->_conn);
+		$this->assertSame('meta_test', PradoUnit::invoke($meta, 'assertIdentifier', 'meta_test'));
+		try {
+			PradoUnit::invoke($meta, 'assertIdentifier', 'bad"name');
+			$this->fail('Expected TDbException for an identifier with a double quote');
+		} catch (TDbException $e) {
+			$this->assertSame('dbcommon_invalid_identifier_name', $e->getErrorCode());
+		}
+	}
+
+	public function testPgsqlFindTableNamesOfTheDefaultSchemaAreUnprefixed(): void
+	{
+		$meta = new TPgsqlMetaData($this->_conn);
+		$this->assertContains('information_schema.sql_features', $meta->findTableNames('information_schema'));
+
+		$meta->setDefaultSchema('information_schema');
+		$this->assertSame('information_schema', $meta->getDefaultSchema());
+		$names = $meta->findTableNames('');
+		$this->assertContains('sql_features', $names);
+		$this->assertNotContains('meta_test', $names);
+	}
+
+	public function testPgsqlSequenceNameFromAColumnDefault(): void
+	{
+		$meta = new TPgsqlMetaData($this->_conn);
+		$info = $meta->getTableInfo('meta_test');
+		$this->assertSame('other.cov_seq', PradoUnit::invoke($meta, 'getSequenceName', $info, "nextval('other.cov_seq'::regclass)"));
+		$this->assertSame('public.cov_seq', PradoUnit::invoke($meta, 'getSequenceName', $info, "nextval('cov_seq'::regclass)"));
+		$this->assertNull(PradoUnit::invoke($meta, 'getSequenceName', $info, '42'));
+	}
+
+	public function testPgsqlForeignKeysFromAConstraintDefinition(): void
+	{
+		$meta = new TPgsqlMetaData($this->_conn);
+		$this->assertSame(
+			['table' => 'public.parent', 'keys' => ['a' => 'x', 'b' => 'y']],
+			PradoUnit::invoke($meta, 'getForeignKeys', 'FOREIGN KEY (a, b) REFERENCES "public"."parent"(x, y)')
+		);
+		$this->assertNull(PradoUnit::invoke($meta, 'getForeignKeys', 'CHECK (score > 0)'));
 	}
 }
