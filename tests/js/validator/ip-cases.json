@@ -1,0 +1,182 @@
+{
+	"_comment": "IP address cases shared by tests/unit/Web/UI/WebControls/TIpAddressValidatorTest.php and tests/js/validator/ipaddressvalidator.test.js, so both sides agree. Each case is [value, valid]. \"options\" holds the property values of each set; \"clientRanges\" holds the Ranges option that TIpAddressValidator::getRangeList() sends to the client for each set with Ranges.",
+	"options": {
+		"default": {},
+		"v4": { "Version": "IPv4" },
+		"v6": { "Version": "IPv6" },
+		"cidr": { "AllowCidr": true },
+		"requireCidr": { "RequireCidr": true },
+		"public": { "Ranges": "public", "AllowCidr": true },
+		"private": { "Ranges": "private", "AllowCidr": true },
+		"notPublic": { "Ranges": "!public, any" },
+		"custom": { "Ranges": "!10.1.0.0/16, 10.0.0.0/8, 2001:db8::1", "AllowCidr": true },
+		"publicOrNet": { "Ranges": "public, !10.0.0.0/9, 10.0.0.0/8" }
+	},
+	"clientRanges": {
+		"public": [
+			{"Negate": false, "Blocks": ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "fc00::/7", "127.0.0.0/8", "::1/128", "169.254.0.0/16", "fe80::/10", "224.0.0.0/4", "ff00::/8", "192.0.2.0/24", "198.51.100.0/24", "203.0.113.0/24", "2001:db8::/32", "3fff::/20", "0.0.0.0/8", "100.64.0.0/10", "192.0.0.0/24", "198.18.0.0/15", "240.0.0.0/4", "::/128", "64:ff9b:1::/48", "100::/64", "2001::/23", "5f00::/16", "fec0::/10"], "Outside": true}
+		],
+		"private": [
+			{"Negate": false, "Blocks": ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "fc00::/7"], "Outside": false}
+		],
+		"notPublic": [
+			{"Negate": true, "Blocks": ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "fc00::/7", "127.0.0.0/8", "::1/128", "169.254.0.0/16", "fe80::/10", "224.0.0.0/4", "ff00::/8", "192.0.2.0/24", "198.51.100.0/24", "203.0.113.0/24", "2001:db8::/32", "3fff::/20", "0.0.0.0/8", "100.64.0.0/10", "192.0.0.0/24", "198.18.0.0/15", "240.0.0.0/4", "::/128", "64:ff9b:1::/48", "100::/64", "2001::/23", "5f00::/16", "fec0::/10"], "Outside": true},
+			{"Negate": false, "Blocks": ["0.0.0.0/0", "::/0"], "Outside": false}
+		],
+		"custom": [
+			{"Negate": true, "Blocks": ["10.1.0.0/16"], "Outside": false},
+			{"Negate": false, "Blocks": ["10.0.0.0/8"], "Outside": false},
+			{"Negate": false, "Blocks": ["2001:db8::1"], "Outside": false}
+		],
+		"publicOrNet": [
+			{"Negate": false, "Blocks": ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "fc00::/7", "127.0.0.0/8", "::1/128", "169.254.0.0/16", "fe80::/10", "224.0.0.0/4", "ff00::/8", "192.0.2.0/24", "198.51.100.0/24", "203.0.113.0/24", "2001:db8::/32", "3fff::/20", "0.0.0.0/8", "100.64.0.0/10", "192.0.0.0/24", "198.18.0.0/15", "240.0.0.0/4", "::/128", "64:ff9b:1::/48", "100::/64", "2001::/23", "5f00::/16", "fec0::/10"], "Outside": true},
+			{"Negate": true, "Blocks": ["10.0.0.0/9"], "Outside": false},
+			{"Negate": false, "Blocks": ["10.0.0.0/8"], "Outside": false}
+		]
+	},
+	"default": [
+		["", true],
+		["0.0.0.0", true],
+		["192.0.2.1", true],
+		["255.255.255.255", true],
+		["::", true],
+		["::1", true],
+		["2001:db8::1", true],
+		["2001:DB8:0:0:0:0:0:1", true],
+		["1::2:3:4:5:6:7", true],
+		["1:2:3:4:5:6:7::", true],
+		["::ffff:192.0.2.1", true],
+		["1:2:3:4:5:6:192.0.2.1", true],
+		["256.1.1.1", false],
+		["1.2.3", false],
+		["1.2.3.4.5", false],
+		["01.2.3.4", false],
+		["1.2.3.04", false],
+		[" 1.2.3.4", false],
+		["1.2.3.4 ", false],
+		["1::2::3", false],
+		[":::", false],
+		["1:2:3:4:5:6:7:8:9", false],
+		["1:2:3:4:5:6:7", false],
+		["g::1", false],
+		["12345::1", false],
+		["fe80::1%eth0", false],
+		["::ffff:01.2.3.4", false],
+		["::1.2.3", false],
+		["10.0.0.0/8", false],
+		["example.com", false],
+		["[::1]", false]
+	],
+	"v4": [
+		["192.0.2.1", true],
+		["::1", false],
+		["::ffff:192.0.2.1", false]
+	],
+	"v6": [
+		["::1", true],
+		["::ffff:192.0.2.1", true],
+		["192.0.2.1", false]
+	],
+	"cidr": [
+		["10.0.0.0/8", true],
+		["10.1.2.3/8", true],
+		["0.0.0.0/0", true],
+		["1.2.3.4/32", true],
+		["1.2.3.4", true],
+		["2001:db8::/32", true],
+		["::/0", true],
+		["::1/128", true],
+		["1.2.3.4/33", false],
+		["::1/129", false],
+		["10.0.0.0/08", false],
+		["10.0.0.0/", false],
+		["10.0.0.0/8/8", false],
+		["10.0.0.0/-1", false],
+		["10.0.0.0/ 8", false],
+		["/8", false]
+	],
+	"requireCidr": [
+		["10.0.0.0/8", true],
+		["2001:db8::/32", true],
+		["10.0.0.1", false],
+		["2001:db8::1", false]
+	],
+	"public": [
+		["8.8.8.8", true],
+		["2606:4700::1111", true],
+		["::ffff:8.8.8.8", true],
+		["64:ff9b::808:808", true],
+		["8.0.0.0/8", true],
+		["10.0.0.1", false],
+		["172.16.0.1", false],
+		["172.31.255.255", false],
+		["172.32.0.1", true],
+		["192.168.1.1", false],
+		["127.0.0.1", false],
+		["169.254.1.1", false],
+		["224.0.0.1", false],
+		["192.0.2.1", false],
+		["198.51.100.1", false],
+		["203.0.113.1", false],
+		["0.0.0.0", false],
+		["100.64.0.1", false],
+		["198.18.0.1", false],
+		["240.0.0.1", false],
+		["255.255.255.255", false],
+		["::", false],
+		["::1", false],
+		["fc00::1", false],
+		["fd12:3456::1", false],
+		["fe80::1", false],
+		["ff02::1", false],
+		["2001:db8::1", false],
+		["3fff::1", false],
+		["2001::1", false],
+		["fec0::1", false],
+		["::ffff:10.0.0.1", false],
+		["::ffff:127.0.0.1", false],
+		["0.0.0.0/0", false],
+		["8.0.0.0/7", true],
+		["10.0.0.0/7", false]
+	],
+	"private": [
+		["10.0.0.1", true],
+		["10.255.255.255", true],
+		["172.16.0.1", true],
+		["192.168.0.0/16", true],
+		["192.168.1.0/24", true],
+		["fd00::1", true],
+		["::ffff:192.168.1.1", true],
+		["::ffff:192.168.0.0/112", true],
+		["192.168.0.0/15", false],
+		["11.0.0.1", false],
+		["127.0.0.1", false],
+		["fe80::1", false]
+	],
+	"notPublic": [
+		["10.0.0.1", true],
+		["::1", true],
+		["::ffff:127.0.0.1", true],
+		["8.8.8.8", false],
+		["::ffff:8.8.8.8", false]
+	],
+	"custom": [
+		["10.0.0.1", true],
+		["10.2.0.0/16", true],
+		["10.1.0.1", false],
+		["10.1.0.0/24", false],
+		["10.0.0.0/8", false],
+		["10.0.0.0/15", false],
+		["::ffff:10.2.3.4", true],
+		["::ffff:10.1.3.4", false],
+		["2001:db8::1", true],
+		["2001:db8::2", false],
+		["11.0.0.1", false]
+	],
+	"publicOrNet": [
+		["8.8.8.8", true],
+		["10.128.0.1", true],
+		["10.0.0.1", false],
+		["192.168.0.1", false]
+	]
+}

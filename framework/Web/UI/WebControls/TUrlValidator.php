@@ -31,8 +31,22 @@ use Prado\TPropertyValue;
  * "xn--" top-level label, so "http://localhost" fails. An IP address host needs
  * no top-level label.
  *
- * The validation checks the syntax only; it makes no network request. The
- * validation succeeds if the associated input control contains empty input.
+ * By default, the validation checks the syntax only and makes no network request. With
+ * {@see setCheckDns CheckDns}, the server also looks up an A or AAAA record of a
+ * domain name host, so "http://unregistered-name.example" fails; an IP address
+ * host needs no lookup. CheckDns defaults to false because:
+ * - browser script cannot query DNS, so the lookup runs on the postback only;
+ * - a record does not show that a web server answers at the host, and a
+ *   registered domain may have no A or AAAA record;
+ * - checkdnsrr() reports a resolver timeout or failure as a missing record, so
+ *   a valid host fails while DNS is unavailable;
+ * - the lookup blocks the request for as long as the resolver takes;
+ * - the lookup sends the input to the name servers of its domain;
+ * - the record can change after validation, so a server that later connects to
+ *   the URL checks the address it resolves then, such as against server-side
+ *   request forgery.
+ *
+ * The validation succeeds if the associated input control contains empty input.
  * Use a {@see \Prado\Web\UI\WebControls\TRequiredFieldValidator} to ensure the
  * input is not empty.
  *
@@ -137,6 +151,24 @@ class TUrlValidator extends TBaseValidator
 	}
 
 	/**
+	 * @return bool whether the server looks up the DNS record of a domain name host. Defaults to false.
+	 */
+	public function getCheckDns()
+	{
+		return $this->getViewState('CheckDns', false);
+	}
+
+	/**
+	 * Sets whether the server looks up an A or AAAA record of a domain name host.
+	 * A host without a record fails. The client does not check DNS.
+	 * @param bool $value whether the server looks up the DNS record of a domain name host.
+	 */
+	public function setCheckDns($value)
+	{
+		$this->setViewState('CheckDns', TPropertyValue::ensureBoolean($value), false);
+	}
+
+	/**
 	 * This method overrides the parent's implementation.
 	 * The validation succeeds if the input is empty or is a valid URL.
 	 * @return bool whether the validation succeeds
@@ -151,7 +183,8 @@ class TUrlValidator extends TBaseValidator
 	}
 
 	/**
-	 * Checks a URL against the scheme, host, and port restrictions.
+	 * Checks a URL against the scheme, host, and port restrictions. With
+	 * {@see setCheckDns CheckDns}, a domain name host also needs a DNS record.
 	 * @param string $value the URL.
 	 * @return bool whether the URL is valid.
 	 */
@@ -167,7 +200,38 @@ class TUrlValidator extends TBaseValidator
 		if (($matches['port'] ?? '') !== '' && (int) $matches['port'] > 65535) {
 			return false;
 		}
-		return $this->isValidHost($matches['host']);
+		if (!$this->isValidHost($matches['host'])) {
+			return false;
+		}
+		return !$this->getCheckDns() || $this->hostHasDnsRecord($matches['host']);
+	}
+
+	/**
+	 * Checks whether a valid host has a DNS record. An IP address host has no
+	 * lookup and passes. A domain name is converted to ASCII before the lookup.
+	 * @param string $host the host, already checked by {@see isValidHost}.
+	 * @return bool whether the host has a DNS record.
+	 */
+	protected function hostHasDnsRecord(string $host): bool
+	{
+		if ($host[0] === '[' || preg_match('/^[0-9.]+$/', $host)) {
+			return true;
+		}
+		if (preg_match('/[^\x00-\x7f]/', $host)) {
+			$host = idn_to_ascii($host, IDNA_NONTRANSITIONAL_TO_ASCII, INTL_IDNA_VARIANT_UTS46);
+		}
+		return $this->lookupDns(strtolower($host));
+	}
+
+	/**
+	 * Looks up an A or AAAA record of an ASCII domain name. The name is queried
+	 * as fully qualified, so the resolver appends no search domain.
+	 * @param string $domain the ASCII domain name.
+	 * @return bool whether the domain name has an A or AAAA record.
+	 */
+	protected function lookupDns(string $domain): bool
+	{
+		return checkdnsrr($domain . '.', 'A') || checkdnsrr($domain . '.', 'AAAA');
 	}
 
 	/**

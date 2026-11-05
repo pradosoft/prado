@@ -28,6 +28,8 @@ Authentication, authorization, user management, and role-based access control (R
 
 - **`TAuthManager`** — Module that coordinates authentication and authorization. Properties: `UserManager`, `LoginPage`, `AuthExpire`, `AllowAutoLogin`. Manages session-based auth, cookie auto-login, login/logout events, and redirect-to-login on auth failure. Enforces `TAuthorizationRule` collection.
 
+- [`TLoginName`](../Web/UI/WebControls/TLoginName.md) (WebControls) displays the name of `TApplication::getUser()`, set by `TAuthManager`.
+
 - **`TAuthorizationRule`** — Single access control rule. Matches on: HTTP verb, user name (or `*`/`?` wildcards), roles, IP address, page/action. Priority-ordered.
 
 - **`TAuthorizationRuleCollection`** — Ordered collection of [`TAuthorizationRule`](TAuthorizationRule.md) objects; first matching rule wins.

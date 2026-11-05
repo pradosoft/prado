@@ -38,6 +38,8 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 - **`TLabel`** — `<label>` or `<span>`; properties: `Text`, `For`.
 
+- **`TLoginName`** — `<span>` with the current user's name; nothing for a guest; properties: `FormatString`, `NameProperty`, `DisplayGuest`.
+
 - **`TOutput`** — `<output>` result of a calculation; a `status` live region; properties: `Text`, `ForControl`.
 
 - **`TImage`** — `<img>`; properties: `ImageUrl`, `AlternateText`.
@@ -93,7 +95,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 - **`TBaseValidator`** — Base class for all validators; properties: `ControlToValidate`, `ErrorMessage`, `Display`, `ValidationGroup`.
 
-- **`TRequiredFieldValidator`** / **`TCompareValidator`** / **`TRangeValidator`** / **`TRegularExpressionValidator`** / **`TCustomValidator`** / **`TEmailAddressValidator`** / **`TIbanValidator`** / **`TJsonValidator`** / **`TLuhnValidator`** / **`TPasswordStrengthValidator`** / **`TUrlValidator`** / **`TUnicodeValidator`** / **`TUuidValidator`** / **`TDataTypeValidator`** — Specific validation logic.
+- **`TRequiredFieldValidator`** / **`TCompareValidator`** / **`TRangeValidator`** / **`TRegularExpressionValidator`** / **`TCustomValidator`** / **`TEmailAddressValidator`** / **`TIbanValidator`** / **`TIpAddressValidator`** / **`TJsonValidator`** / **`TLuhnValidator`** / **`TPasswordStrengthValidator`** / **`TUrlValidator`** / **`TUnicodeValidator`** / **`TUuidValidator`** / **`TDataTypeValidator`** — Specific validation logic.
 
 - **`TValidationSummary`** — Displays all errors in a group; `DisplayMode`: `List`, `BulletList`, `SingleParagraph`.
 
