@@ -1,0 +1,21 @@
+<com:TContent ID="Content">
+<h1>TAuthView Test</h1>
+<com:TForm>
+<ul id="nav">
+<com:TAuthView ID="Nav">
+	<com:TAuthViewTemplate Users="?">
+		<li><com:TButton ID="SignIn" Text="Sign in as Joe" OnClick="Page.signIn" /></li>
+	</com:TAuthViewTemplate>
+	<com:TAuthViewTemplate Roles="Administrator">
+		<li><a id="admin-link" href="#admin">Administration</a></li>
+		<li><com:TButton ID="Purge" Text="Purge" OnClick="Page.purge" /></li>
+	</com:TAuthViewTemplate>
+	<li id="welcome">Welcome, <%= $this->User->Name %></li>
+	<li><com:TButton ID="Count" Text="Count" OnClick="Page.count" /> <com:TLabel ID="Counter" Text="0" /></li>
+	<li><com:TButton ID="SignOut" Text="Sign out" OnClick="Page.signOut" /></li>
+</com:TAuthView>
+</ul>
+<p id="single"><com:TAuthView Users="?">Guests only</com:TAuthView></p>
+<p id="purged"><com:TLabel ID="Purged" /></p>
+</com:TForm>
+</com:TContent>

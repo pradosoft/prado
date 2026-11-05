@@ -687,6 +687,8 @@ return [
 'TArticle' => 'Prado\Web\UI\WebControls\TArticle',
 'TAside' => 'Prado\Web\UI\WebControls\TAside',
 'TAudio' => 'Prado\Web\UI\WebControls\TAudio',
+'TAuthView' => 'Prado\Web\UI\WebControls\TAuthView',
+'TAuthViewTemplate' => 'Prado\Web\UI\WebControls\TAuthViewTemplate',
 'TAutoCapitalize' => 'Prado\Web\UI\WebControls\TAutoCapitalize',
 'TBaseDataList' => 'Prado\Web\UI\WebControls\TBaseDataList',
 'TBaseEdit' => 'Prado\Web\UI\WebControls\TBaseEdit',
