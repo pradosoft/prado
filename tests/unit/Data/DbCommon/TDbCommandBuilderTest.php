@@ -421,7 +421,6 @@ class TDbCommandBuilderTest extends \PHPUnit\Framework\TestCase
 		$tx = self::$conn->beginTransaction();
 		try {
 			$method = new \ReflectionMethod(TDbCommandBuilder::class, 'assertActiveTransaction');
-			$method->setAccessible(true);
 			$method->invoke($this->builder()); // must not throw
 			$this->assertTrue(true);
 		} finally {
@@ -436,7 +435,6 @@ class TDbCommandBuilderTest extends \PHPUnit\Framework\TestCase
 			self::$conn->getCurrentTransaction()->rollback();
 		}
 		$method = new \ReflectionMethod(TDbCommandBuilder::class, 'assertActiveTransaction');
-		$method->setAccessible(true);
 
 		$this->expectException(\Prado\Exceptions\TDbException::class);
 		$method->invoke($this->builder());

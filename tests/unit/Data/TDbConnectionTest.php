@@ -1190,7 +1190,6 @@ class TDbConnectionTest extends \PHPUnit\Framework\TestCase
 		$conn = new TDbConnection('mysql:host=localhost;dbname=test', 'user', 'pass');
 		// Use reflection to call protected method
 		$method = new ReflectionMethod(TDbConnection::class, 'extractCharsetFromDsn');
-		$method->setAccessible(true);
 
 		// No charset in DSN
 		$this->assertNull($method->invoke($conn, 'mysql:host=localhost;dbname=test'));
@@ -1206,7 +1205,6 @@ class TDbConnectionTest extends \PHPUnit\Framework\TestCase
 	{
 		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
 		$method = new ReflectionMethod(TDbConnection::class, 'extractCharsetFromDsn');
-		$method->setAccessible(true);
 
 		// SQLite doesn't have DSN charset
 		$this->assertNull($method->invoke($conn, 'sqlite:' . TEST_DB_FILE));
@@ -1216,7 +1214,6 @@ class TDbConnectionTest extends \PHPUnit\Framework\TestCase
 	{
 		$conn = new TDbConnection('mysql:host=localhost', 'user', 'pass');
 		$method = new ReflectionMethod(TDbConnection::class, 'extractCharsetFromDsn');
-		$method->setAccessible(true);
 
 		// Test case insensitive matching
 		$this->assertEquals('utf8', $method->invoke($conn, 'mysql:host=localhost;CHARSET=utf8'));
@@ -1305,11 +1302,9 @@ class TDbConnectionTest extends \PHPUnit\Framework\TestCase
 		$conn = new TDbConnection($driver . ':host=localhost');
 
 		$activeProp = new \ReflectionProperty(TDbConnection::class, '_active');
-		$activeProp->setAccessible(true);
 		$activeProp->setValue($conn, true);
 
 		$pdoProp = new \ReflectionProperty(TDbConnection::class, '_pdo');
-		$pdoProp->setAccessible(true);
 		$pdoProp->setValue($conn, $mockPdo);
 
 		$this->expectException(\Prado\Exceptions\TDbException::class);
@@ -1662,7 +1657,6 @@ class TDbConnectionTest extends \PHPUnit\Framework\TestCase
 		$dsn    = 'interbase:dbname=localhost:/db/test.gdb';
 		$conn   = new TDbConnection($dsn, '', '', 'UTF-8');
 		$method = new \ReflectionMethod(TDbConnection::class, 'applyCharsetToDsn');
-		$method->setAccessible(true);
 		$result = $method->invoke($conn, $dsn);
 		$this->assertStringContainsString('charset=', $result);
 	}
@@ -1702,7 +1696,6 @@ class TDbConnectionTest extends \PHPUnit\Framework\TestCase
 	private function callApplySocketToDsn(TDbConnection $conn, string $dsn): string
 	{
 		$method = new \ReflectionMethod(TDbConnection::class, 'applySocketToDsn');
-		$method->setAccessible(true);
 		return $method->invoke($conn, $dsn);
 	}
 

@@ -142,15 +142,12 @@ class TDbTransactionTest extends \PHPUnit\Framework\TestCase
 		$conn = new TDbConnection();
 		$ref = new ReflectionClass($conn);
 		$pdoProp = $ref->getProperty('_pdo');
-		$pdoProp->setAccessible(true);
 		$pdoProp->setValue($conn, $pdo);
 		$activeProp = $ref->getProperty('_active');
-		$activeProp->setAccessible(true);
 		$activeProp->setValue($conn, true);
 
 		$transaction = new TDbTransaction($conn);
 		$txnProp = $ref->getProperty('_transaction');
-		$txnProp->setAccessible(true);
 		$txnProp->setValue($conn, $transaction);
 
 		$transaction->rollBack();
