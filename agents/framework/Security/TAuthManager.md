@@ -61,6 +61,21 @@ Module that handles authentication and authorization flow. Registered in `applic
 1. On `OnAuthentication` application event: reads session/cookie → sets `$app->setUser()`.
 2. On `OnAuthorization` application event: checks `TAuthorizationRuleCollection` → redirects to `LoginPage` if denied.
 
+### Return URL
+
+The return URL is where the login page sends the user after login.
+
+| Source | Set by | Read by |
+|---|---|---|
+| `ReturnUrl` request parameter (`RETURN_URL_VAR`) | `constructLoginUrl($returnUrl)`, for a "Sign in" link (@since 4.4.0) | `getRequestReturnUrl()` (@since 4.4.0) |
+| Session key `ReturnUrlVarName` | `leave()` on a 401, or `setReturnUrl()` | `getReturnUrl()` |
+
+`getReturnUrl()` returns the request parameter when it is local, otherwise the session value. The parameter needs no session, so a page with a "Sign in" link does not start one. A login form that posts to a URL without the query string carries the parameter in a hidden `ReturnUrl` field.
+
+`isLocalReturnUrl()` (@since 4.4.0) accepts a path that starts with one `/`, and an `http` or `https` URL on the server's host. It rejects `//host`, other schemes such as `javascript:`, relative paths, backslashes, whitespace, and control characters, so the parameter cannot redirect to another site. `THttpUtility::isLocalUrl()` treats `//host` and `javascript:` as relative and is not used alone.
+
+`constructLoginUrl()` requires `LoginPage` and a running `TPageService`, and drops a return URL that is not local. Its `&` is not HTML-encoded; encode the URL when writing it into HTML.
+
 ### Authorization Rules
 
 ```xml
@@ -163,6 +178,7 @@ return [
 
 - `TAuthManager` must be registered **before** `TPermissionsManager` in `application.xml`.
 - `LoginPage` must be publicly accessible — it is exempted from authorization checks.
+- A `ReturnUrl` request parameter takes precedence over the session return URL in `getReturnUrl()` (@since 4.4.0); the session value set by `leave()` applies when the parameter is absent or not local.
 - Cookie auto-login requires a stable `ValidationKey` (or `CookieValidationKey`) in `TSecurityManager`. `createUserCookie()`, `signUserCookie()`, and `validateUserCookie()` (protected, @since 4.4.0) build, sign, and check the cookie whether or not `EnableCookieValidation` is on; a cookie with a bad HMAC is ignored.
 - `TDbUserManager` needs a DB connection module ID in `ConnectionID` property.
 - `UserManager` cannot be changed after `init()`.

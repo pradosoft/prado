@@ -1,4 +1,5 @@
 ## Version 4.4.0 - TBA
+ENH: Issue #1404 - `TAuthManager::getReturnUrl()` prefers a local `ReturnUrl` request parameter to the session value; `constructLoginUrl()` builds a login link carrying it, and `isLocalReturnUrl()` rejects other hosts and schemes. (belisoful)
 ENH: Issue #1405 - `TJsonLd` renders structured data as an `application/ld+json` data block from its JSON body or a `StructuredData` PHP array, and `TOpenGraph` renders the Open Graph `og:*` and X Card `twitter:*` meta tags of a page; `TMetaTag` gains `Property`. (belisoful)
 NEW: Issue #1399 - `TSkipLink` renders a skip link to the main content, hidden until focused (WCAG 2.4.1); `TargetID` names the target control or element. (belisoful)
 NEW: Issue #1404 - `TLoginName` displays the current user's name, HTML-encoded, with `FormatString`, `NameProperty`, and `DisplayGuest`; it renders nothing for a guest. (belisoful)

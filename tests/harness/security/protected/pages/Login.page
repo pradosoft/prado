@@ -12,6 +12,7 @@
 		<input type="checkbox" id="remember" name="auth_remember" value="1" />
 		Remember me (30 days)
 	</label><br />
+	<input type="hidden" id="return-url" name="ReturnUrl" value="<%= htmlspecialchars((string) $this->RequestReturnUrl) %>" />
 	<button type="submit" id="login-button">Login</button>
 </form>
 </com:TContent>

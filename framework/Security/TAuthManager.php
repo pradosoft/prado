@@ -17,6 +17,7 @@ use Prado\Util\Clock\TApplicationClockAwareTrait;
 use Prado\Util\Traits\TInitializedTrait;
 use Prado\Web\Services\TPageService;
 use Prado\Web\THttpCookie;
+use Prado\Web\THttpUtility;
 
 /**
  * TAuthManager class
@@ -81,6 +82,14 @@ use Prado\Web\THttpCookie;
  * ];
  * ```
  *
+ * The return URL is where a login page sends the user after login.  {@see leave()}
+ * stores the denied request URI in the session.  A link to the login page can carry
+ * it instead in the {@see RETURN_URL_VAR} request parameter, built by
+ * {@see constructLoginUrl()}, so a page does not start a session for it.
+ * {@see getReturnUrl()} prefers the parameter, and accepts only a URL that
+ * {@see isLocalReturnUrl()} finds local, so the parameter cannot redirect to
+ * another site.
+ *
  * When a user logs in, onLogin event is raised with the TUser as the parameter.
  * If the user trying to login but fails the check, onLoginFailed is raised with the
  * user name as parameter.  When the user logs out, onLogout is raised with the TUser
@@ -97,7 +106,7 @@ class TAuthManager extends \Prado\TModule
 	use TApplicationClockAwareTrait;
 
 	/**
-	 * GET variable name for return url
+	 * Request parameter name of the return URL.
 	 */
 	public const RETURN_URL_VAR = 'ReturnUrl';
 	/**
@@ -230,11 +239,77 @@ class TAuthManager extends \Prado\TModule
 	}
 
 	/**
-	 * @return string URL that the browser should be redirected to when login succeeds.
+	 * Returns the URL that the browser is redirected to when login succeeds: the
+	 * {@see getRequestReturnUrl() request parameter} when it is local, otherwise the
+	 * session value set by {@see setReturnUrl()}.
+	 * @return ?string the return URL; null when neither is set.
 	 */
 	public function getReturnUrl()
 	{
+		if (($url = $this->getRequestReturnUrl()) !== null) {
+			return $url;
+		}
 		return $this->requireSession()->itemAt($this->getReturnUrlVarName());
+	}
+
+	/**
+	 * Returns the {@see RETURN_URL_VAR} request parameter when {@see isLocalReturnUrl()} accepts it.
+	 * @return ?string the local return URL of the request; null when absent or not local.
+	 * @since 4.4.0
+	 */
+	public function getRequestReturnUrl(): ?string
+	{
+		$url = $this->getRequest()->itemAt(self::RETURN_URL_VAR);
+		return (is_string($url) && $this->isLocalReturnUrl($url)) ? $url : null;
+	}
+
+	/**
+	 * Returns whether a URL is safe to redirect to after login.
+	 *
+	 * | URL | Local |
+	 * |---|---|
+	 * | path starting with one `/`, such as `/index.php?page=Home` | yes |
+	 * | `http` or `https` URL whose host is {@see \Prado\Web\THttpRequest::getServerName()} | yes |
+	 * | starting with `//` (another host) | no |
+	 * | any other scheme, such as `javascript:` | no |
+	 * | relative path without a leading `/` | no |
+	 * | containing a backslash, whitespace, or a control character | no |
+	 * @param string $url the URL.
+	 * @return bool whether the URL is local.
+	 * @since 4.4.0
+	 */
+	public function isLocalReturnUrl(string $url): bool
+	{
+		if ($url === '' || preg_match('/[\x00-\x20\x7f\\\\]/', $url)) {
+			return false;
+		}
+		if ($url[0] === '/') {
+			return !isset($url[1]) || $url[1] !== '/';
+		}
+		$scheme = strtolower((string) parse_url($url, PHP_URL_SCHEME));
+		return ($scheme === 'http' || $scheme === 'https') && THttpUtility::isLocalUrl($url);
+	}
+
+	/**
+	 * Returns the URL of the {@see getLoginPage() login page}, with a return URL in the
+	 * {@see RETURN_URL_VAR} parameter when it is local.
+	 * @param ?string $returnUrl the URL to return to after login; null for none.
+	 * @throws TConfigurationException if LoginPage is not set.
+	 * @throws TInvalidOperationException if the current service is not a {@see TPageService}.
+	 * @return string the login page URL, with `&` not HTML-encoded.
+	 * @since 4.4.0
+	 */
+	public function constructLoginUrl(?string $returnUrl = null): string
+	{
+		if (($loginPage = $this->getLoginPage()) === null || $loginPage === '') {
+			throw new TConfigurationException('authmanager_loginpage_required');
+		}
+		$service = $this->getApplication()->getService();
+		if (!($service instanceof TPageService)) {
+			throw new TInvalidOperationException('authmanager_pageservice_required');
+		}
+		$params = ($returnUrl !== null && $this->isLocalReturnUrl($returnUrl)) ? [self::RETURN_URL_VAR => $returnUrl] : null;
+		return $service->constructUrl($loginPage, $params, false);
 	}
 
 	/**
