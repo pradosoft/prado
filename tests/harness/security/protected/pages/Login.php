@@ -9,6 +9,14 @@ class Login extends \Prado\Web\UI\TPage
 		return $this->_errorMessage;
 	}
 
+	/**
+	 * The local ReturnUrl request parameter, carried through the form post.
+	 */
+	public function getRequestReturnUrl(): ?string
+	{
+		return $this->Application->getModule('auth')->getRequestReturnUrl();
+	}
+
 	public function onLoad($param)
 	{
 		parent::onLoad($param);
