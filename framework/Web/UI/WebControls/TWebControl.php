@@ -13,6 +13,7 @@ namespace Prado\Web\UI\WebControls;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\TPropertyValue;
+use Prado\Util\TMultibyteString;
 use Prado\Collections\TAttributeCollection;
 use Prado\Collections\TWebAttributeCollection;
 
@@ -331,7 +332,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	public function setAccessKey($value)
 	{
 		$value = TPropertyValue::ensureString($value);
-		if (strlen($value) > 1) {
+		if (TMultibyteString::length($value) > 1) {
 			throw new TInvalidDataValueException('webcontrol_accesskey_invalid', $this::class, $value);
 		}
 		$this->setViewState('AccessKey', $value, '');

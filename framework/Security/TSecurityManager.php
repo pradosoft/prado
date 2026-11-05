@@ -107,7 +107,6 @@ class TSecurityManager extends \Prado\TModule
 	private $_cryptAlgorithm = 'aes-256-cbc';
 	private $_encryptionKeyAlgorithm = 'sha256';
 	private $_useEncryptionHmac = true;
-	private $_mbstring;
 	private $_closureSecretKey;
 	private ?bool $_closureUnencrypted = null;
 
@@ -118,7 +117,6 @@ class TSecurityManager extends \Prado\TModule
 	 */
 	public function init($config)
 	{
-		$this->_mbstring = extension_loaded('mbstring');
 		$this->setupSerializableClosure();
 		$this->setAppSecurityManager();
 		parent::init($config);
@@ -653,21 +651,18 @@ class TSecurityManager extends \Prado\TModule
 	}
 
 	/**
-	 * Returns the length of the given string.
-	 * If available uses the multibyte string function mb_strlen.
-	 * @param string $string $string the string being measured for length
+	 * Returns the length of the given string in bytes.
+	 * @param string $string the string being measured for length
 	 * @return int the length of the string
 	 */
 	private function strlen($string)
 	{
-		return $this->_mbstring ? mb_strlen($string, '8bit') : strlen($string);
+		return strlen($string);
 	}
 
 	/**
-	 * Returns the portion of string specified by the start and optional length parameters.
-	 * If available uses the multibyte string function mb_substr.
-	 * When $length is omitted (null) the substring extends to the end of the string,
-	 * mirroring the behaviour of the native substr() and mb_substr() functions.
+	 * Returns the portion of string specified by the start and optional length parameters, in bytes.
+	 * When $length is omitted (null) the substring extends to the end of the string.
 	 * @param string $string the input string. Must be one character or longer.
 	 * @param int $start the starting position
 	 * @param ?int $length the desired portion length, or null to read to the end
@@ -675,7 +670,7 @@ class TSecurityManager extends \Prado\TModule
 	 */
 	private function substr($string, $start, $length = null)
 	{
-		return $this->_mbstring ? mb_substr($string, $start, $length, '8bit') : substr($string, $start, $length);
+		return substr($string, $start, $length);
 	}
 
 	/**
