@@ -195,9 +195,9 @@ class TDataGatewayCommand extends \Prado\TComponent
 	}
 
 	/**
-	 * Constructs a "(col1, col2) IN ((v1, v2), ...)" condition over the index columns.
-	 * An empty value list yields `1=0`, which matches no row in every driver; a bare
-	 * `FALSE` is not a predicate in Oracle, SQL Server, Firebird, and DB2.
+	 * Constructs the SQL condition that matches the index column values of `$table`.
+	 * {@see TDbCommandBuilder::getIndexCondition()} builds it: `t.a IN (...)` for one column,
+	 * an `OR` of `AND`-joined equalities for several, and `1=0` for no values.
 	 * @deprecated 4.3.3 — use {@see \Prado\Data\Common\IDataCommandBuilder::createIndexCriteria}
 	 *   for a portable equivalent that works across SQL and non-SQL drivers.
 	 * @param \Prado\Data\Common\TDbTableInfo $table table information.
@@ -207,15 +207,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	 */
 	public function getIndexKeyCondition($table, $fields, $values)
 	{
-		if (!count($values)) {
-			return '1=0';
-		}
-		$columns = [];
-		$tableName = $table->getTableFullName();
-		foreach ($fields as $field) {
-			$columns[] = $tableName . '.' . $table->getColumn($field)->getColumnName();
-		}
-		return '(' . implode(', ', $columns) . ') IN ' . $this->quoteTuple($values);
+		return $this->getBuilder()->getIndexCondition($fields, $values, $table);
 	}
 
 	/**
@@ -265,8 +257,8 @@ class TDataGatewayCommand extends \Prado\TComponent
 	/**
 	 * @param array $array values
 	 * @return string quoted recursive tuple values, e.g. "('val1', 'val2')".
-	 * @deprecated 4.3.3 — internal SQL-quoting helper for the legacy
-	 *   {@see getIndexKeyCondition} path; no replacement (the portable
+	 * @deprecated 4.3.3 — SQL-quoting helper of the former
+	 *   {@see getIndexKeyCondition} body, now unused; no replacement (the portable
 	 *   {@see \Prado\Data\Common\IDataCommandBuilder::createIndexCriteria}
 	 *   handles quoting internally).
 	 */
