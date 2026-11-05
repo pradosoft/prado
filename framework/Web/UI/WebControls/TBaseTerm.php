@@ -17,6 +17,7 @@ use DOMText;
 use DOMXPath;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\TPropertyValue;
+use Prado\Util\TMultibyteString;
 use Prado\Web\THttpUtility;
 use Prado\Web\UI\TControl;
 use Prado\Web\UI\TRenderFilterParameter;
@@ -427,7 +428,7 @@ abstract class TBaseTerm extends THtmlElement implements \Prado\IDataRenderer
 	public function getTermKey(string $term): string
 	{
 		$term = preg_replace('/\s+/u', ' ', $term);
-		return $this->getCaseSensitive() ? $term : mb_strtolower($term, 'UTF-8');
+		return $this->getCaseSensitive() ? $term : TMultibyteString::lower($term);
 	}
 
 	/**

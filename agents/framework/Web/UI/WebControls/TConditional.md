@@ -20,3 +20,4 @@ TConditional displays content based on evaluation of a PHP expression. If true, 
 ## See Also
 
 - [TControl](../TControl.md)
+- [TAuthView](./TAuthView.md) - content by authentication state, without PHP expressions

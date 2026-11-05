@@ -4,6 +4,8 @@ namespace Prado\Test\Unit\Web\UI\WebControls;
 
 use PHPUnit\Framework\TestCase;
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Test\Unit\PradoUnit;
+use Prado\Util\TMultibyteString;
 use Prado\Web\UI\WebControls\TKeyShortcuts;
 
 class TKeyShortcutsTest extends TestCase
@@ -37,6 +39,21 @@ class TKeyShortcutsTest extends TestCase
 	public function testNormalizeKeepsLetterWithMultiCharacterUppercase()
 	{
 		$this->assertSame('ß É', TKeyShortcuts::normalize('ß é'));
+	}
+
+	public function testNormalizeWithoutMbstring()
+	{
+		$newline = PradoUnit::invoke(TKeyShortcuts::class, 'normalizeKey', "a\n");
+		$mbstring = PradoUnit::getStaticProp(TMultibyteString::class, '_mbstring');
+		PradoUnit::setStaticProp(TMultibyteString::class, '_mbstring', false);
+		try {
+			$this->assertSame('Control+S Meta+S', TKeyShortcuts::normalize('Control+S meta+s control+s'));
+			$this->assertSame('ß É', TKeyShortcuts::normalize('ß é'));
+			$this->assertSame('A Escape', TKeyShortcuts::normalize('a esc'));
+			$this->assertSame($newline, PradoUnit::invoke(TKeyShortcuts::class, 'normalizeKey', "a\n"));
+		} finally {
+			PradoUnit::setStaticProp(TMultibyteString::class, '_mbstring', $mbstring);
+		}
 	}
 
 	public function testNormalizeEmpty()

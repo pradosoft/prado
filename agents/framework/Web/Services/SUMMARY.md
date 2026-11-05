@@ -6,6 +6,8 @@ Application services handling different response types; registered in `applicati
 
 - **`TPageService`** — Primary service serving `.page` template-based web pages; discovers page classes from `BasePath`; runs full `TPage` lifecycle; raises `onPreRunPage`.
 
+- **`Rest/`** — `TRestService` JSON API service; `TRestResource` handlers declared with `#[TRestRoute]`; `TRestRoutePattern` routes; `TRestException` problem documents; `TRestPagination`.
+
 - **`TJsonService`** — Returns JSON-formatted responses; configures named JSON response handlers.
 
 - **`TSoapService`** — SOAP/WSDL service; auto-generates WSDL from provider classes using `@soapmethod` PHPDoc annotations.

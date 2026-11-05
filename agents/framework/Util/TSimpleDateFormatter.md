@@ -21,7 +21,7 @@
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `Pattern` | `string` | — | The format pattern (e.g. `'MM/dd/yyyy'`). |
-| `Charset` | `string` | `'UTF-8'` | Character set used when measuring and slicing strings. |
+| `Charset` | `string` | `'UTF-8'` | Character set used when measuring and slicing strings; UTF-8 goes through [`TMultibyteString`](TMultibyteString.md), any other charset through `iconv_strlen()` and `iconv_substr()`, which need the iconv extension. |
 | `Culture` | `string` | `''` | Locale code (e.g. `'fr_FR'`) for culture-specific month and weekday names. |
 
 ## Key Methods

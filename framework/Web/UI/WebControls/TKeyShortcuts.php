@@ -11,6 +11,7 @@
 namespace Prado\Web\UI\WebControls;
 
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Util\TMultibyteString;
 
 /**
  * TKeyShortcuts validates and normalizes keyboard shortcuts in the
@@ -133,9 +134,9 @@ class TKeyShortcuts
 	 */
 	protected static function normalizeKey(string $token): ?string
 	{
-		if (mb_strlen($token) === 1) {
-			$upper = mb_strtoupper($token);
-			return mb_strlen($upper) === 1 ? $upper : $token;
+		if (TMultibyteString::length($token) === 1) {
+			$upper = TMultibyteString::upper($token);
+			return TMultibyteString::length($upper) === 1 ? $upper : $token;
 		}
 		$lower = strtolower($token);
 		if (isset(self::KEY_NAMES[$lower])) {
