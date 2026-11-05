@@ -949,6 +949,7 @@ return [
 'TSeparator' => 'Prado\Web\UI\WebControls\TSeparator',
 'TServerValidateEventParameter' => 'Prado\Web\UI\WebControls\TServerValidateEventParameter',
 'TShadowRootMode' => 'Prado\Web\UI\WebControls\TShadowRootMode',
+'TSkipLink' => 'Prado\Web\UI\WebControls\TSkipLink',
 'TSlider' => 'Prado\Web\UI\WebControls\TSlider',
 'TSliderClientScript' => 'Prado\Web\UI\WebControls\TSliderClientScript',
 'TSliderDirection' => 'Prado\Web\UI\WebControls\TSliderDirection',
