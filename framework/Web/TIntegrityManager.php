@@ -187,7 +187,6 @@ class TIntegrityManager extends TModule
 	 * @param string $method the SRI hash algorithm, one of {@see SRI_ALGORITHMS} (default `sha384`)
 	 * @throws TConfigurationException if `$method` is not an SRI-supported algorithm
 	 * @return string the fully-formed `algo-digest` SRI string (e.g. `sha384-…`)
-	 * @since 4.4.0
 	 */
 	public static function calculateIntegrity(string $content, string $method = 'sha384'): string
 	{
@@ -210,7 +209,6 @@ class TIntegrityManager extends TModule
 	 * @throws TConfigurationException if the file does not exist or cannot be read,
 	 *   or if `$method` is not an SRI-supported algorithm
 	 * @return string the fully-formed `algo-digest` SRI string (e.g. `sha384-…`)
-	 * @since 4.4.0
 	 */
 	public static function calculateIntegrityForFile(string $path, string $method = 'sha384'): string
 	{

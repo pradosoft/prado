@@ -67,7 +67,6 @@ interface IDataColumn
 	 * {@see \Prado\Data\IDataConnection} `PARAM_*` constants; resolves to
 	 * `PDO::PARAM_*` for SQL/PDO drivers.
 	 * @return int the bind-parameter token.
-	 * @since 4.3.3
 	 */
 	public function getParamType();
 

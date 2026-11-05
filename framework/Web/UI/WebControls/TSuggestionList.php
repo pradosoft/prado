@@ -156,7 +156,6 @@ class TSuggestionList extends TListControl
 	 * @param TListItem $item the item
 	 * @return ?array `[value, label, attributes]`; the label is '' when it equals the
 	 *   value, and attributes exclude `Group`. Null when the item is disabled or has no value.
-	 * @since 4.4.0
 	 */
 	public function getOptionData($item): ?array
 	{

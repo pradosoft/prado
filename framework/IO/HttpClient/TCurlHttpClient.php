@@ -73,7 +73,6 @@ class TCurlHttpClient extends THttpClient
 	 * @param ?string $body Raw request body, or null.
 	 * @param array<string,string> $responseHeaders Receives the response headers, by reference.
 	 * @return \CurlHandle The handle, ready for `curl_exec()` or a multi handle.
-	 * @since 4.4.0
 	 */
 	protected function createHandle(string $method, string $url, array $headers, ?string $body, array &$responseHeaders): \CurlHandle
 	{
@@ -129,7 +128,6 @@ class TCurlHttpClient extends THttpClient
 	 * @param array<string,string> $responseHeaders The collected response headers.
 	 * @param string $body The response body.
 	 * @return THttpClientResponse The response with the handle's status code.
-	 * @since 4.4.0
 	 */
 	protected function createResponse(\CurlHandle $ch, array $responseHeaders, string $body): THttpClientResponse
 	{

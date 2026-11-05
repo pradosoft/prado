@@ -252,7 +252,6 @@ class TDot extends TImage implements IPublishable
 	 * The default {@see getDepth Depth}: the color offset that computes the Main and
 	 * Highlight colors from a single color. The value is fit to track the {@see COLORS}
 	 * presets jointly with {@see NUDGE_EXPONENT} and {@see MAIN_DEPTH_SCALE}.
-	 * @since 4.4.0
 	 */
 	public const DEFAULT_DEPTH = 24;
 
@@ -276,7 +275,6 @@ class TDot extends TImage implements IPublishable
 	 * the per-channel RGB {@see nudge} handles the remainder. This cascade tracks the
 	 * {@see COLORS} presets more closely than nudging in either color space alone. The
 	 * value is fit to the presets jointly with the other tuning constants.
-	 * @since 4.4.0
 	 */
 	protected const HSL_DEPTH_FRACTION = 0.2312;
 
@@ -285,7 +283,6 @@ class TDot extends TImage implements IPublishable
 	 * colors take a larger hue-preserving lightness shift, near-grays a smaller one. The
 	 * factor is `1 + HSL_CHROMA_MOD * (2 * chroma - 1)`. The value is fit to the presets
 	 * jointly with the other tuning constants.
-	 * @since 4.4.0
 	 */
 	protected const HSL_CHROMA_MOD = 0.2157;
 
@@ -294,7 +291,6 @@ class TDot extends TImage implements IPublishable
 	 * take a smaller per-channel shift (leaning on the lightness move), near-grays a larger
 	 * one. The factor is `1 + RGB_SAT_MOD * (2 * saturation - 1)`. The value is fit to the
 	 * presets jointly with the other tuning constants.
-	 * @since 4.4.0
 	 */
 	protected const RGB_SAT_MOD = -0.2100;
 

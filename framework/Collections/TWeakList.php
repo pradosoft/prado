@@ -109,7 +109,6 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 	 * if the object being added is a TEventHandler, we use the {@see \Prado\TEventHandler::getHandlerObject}
 	 * object instead of the TEventHandler itself.
 	 * @param object $object The object to add to the managed weak map.
-	 * @since 4.3.0
 	 */
 	protected function weakCustomAdd(object $object)
 	{
@@ -125,7 +124,6 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 	 * if the object being removed is a TEventHandler, we use the {@see \Prado\TEventHandler::getHandlerObject}
 	 * object instead of the TEventHandler itself.
 	 * @param object $object The object to remove to the managed weak map.
-	 * @since 4.3.0
 	 */
 	protected function weakCustomRemove(object $object)
 	{

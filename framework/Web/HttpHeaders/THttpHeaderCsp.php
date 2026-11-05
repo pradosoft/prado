@@ -220,7 +220,6 @@ class THttpHeaderCsp extends TBaseHttpHeader
 	 * when stored as a raw unparseable string by {@see setHeaderValue()}.
 	 * When `false`, {@see setPolicy()}, {@see getPolicy()}, {@see hasPolicy()},
 	 * and {@see removePolicy()} are silent no-ops.
-	 * @since 4.4.0
 	 */
 	public function isPoliciesStructured(): bool
 	{

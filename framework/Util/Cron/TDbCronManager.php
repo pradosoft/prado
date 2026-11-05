@@ -887,7 +887,6 @@ class TDbCronManager extends TCronModule implements IDbModule
 
 	/**
 	 * @return string the error message key when createDbConnection could not find the ConnectionID.
-	 * @since 4.3.3
 	 */
 	protected function getConnectionInvalidExceptionKey(): string
 	{
@@ -896,7 +895,6 @@ class TDbCronManager extends TCronModule implements IDbModule
 
 	/**
 	 * @return string the SQLite database filename within the PRADO runtime path.
-	 * @since 4.3.3
 	 */
 	protected function getSqliteDatabaseName(): string
 	{

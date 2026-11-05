@@ -70,7 +70,6 @@ interface IDataConnection
 	 * their own routing tokens.  Callers should reference them on the
 	 * connection instance (e.g. `$conn::PARAM_INT`) so the runtime class's
 	 * value is used.
-	 * @since 4.3.3
 	 */
 	public const PARAM_NULL = 0;
 	public const PARAM_INT = 1;
@@ -196,7 +195,6 @@ interface IDataConnection
 	 * {@see \Prado\Data\Common\TDbMetaData} subclass for the active driver.
 	 *
 	 * @return IDataMetaData the metadata helper for this connection.
-	 * @since 4.3.3
 	 */
 	public function getDbMetaData();
 
