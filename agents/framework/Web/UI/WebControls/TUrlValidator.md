@@ -35,7 +35,7 @@ Validates an absolute URL of the form `scheme://host[:port][/path][?query][#frag
 
 - `URL_REGEXP` splits the URL; user information (`user:pass@`) is accepted. `DOMAIN_REGEXP`, `TLD_REGEXP`, and `MAX_DOMAIN_LENGTH` check the host.
 - Server: `idn_to_ascii(IDNA_NONTRANSITIONAL_TO_ASCII, INTL_IDNA_VARIANT_UTS46)` (ext-intl is required). The `u` modifier fails a value of invalid UTF-8.
-- Client: `Prado.WebUI.TUrlValidator` in `validation3.js` converts an IDN host with `new URL()`, the WHATWG parser, which applies UTS #46 too. `isIPv4()` and `isIPv6()` are its address checks.
+- Client: `Prado.WebUI.TUrlValidator` in `validation3.js` converts an IDN host with `new URL()`, the WHATWG parser, which applies UTS #46 too. `isIPv4()` and `isIPv6()` are its address checks; they call the shared `Prado.Validation` helpers that [TIpAddressValidator](./TIpAddressValidator.md) also uses.
 - `isValidUrl(string)` is public for use outside a form; it applies `CheckDns` too.
 
 ## CheckDns
@@ -52,6 +52,7 @@ It defaults to `false`, as in Symfony, whose Url constraint dropped its `checkDN
 | The lookup blocks the request | latency set by the resolver, with no timeout option |
 | The lookup reaches the domain's name servers | input is disclosed to them |
 | DNS can change after validation | SSRF protection belongs where the server connects |
+
 - Client options: `ValidSchemes` (array), `AllowIdn`, `RequireTld`.
 
 ## Accessibility

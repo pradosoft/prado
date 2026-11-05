@@ -115,6 +115,7 @@ All validators extend `TBaseValidator`. Shared properties: `ControlToValidate`, 
 | `TCustomValidator` | Custom server-side (and optional client-side) logic |
 | `TEmailAddressValidator` | Valid email format |
 | [`TIbanValidator`](./TIbanValidator.md) | IBAN: SWIFT registry country formats and the mod 97 checksum; `Countries` (@since 4.4.0) |
+| [`TIpAddressValidator`](./TIpAddressValidator.md) | IPv4 or IPv6 address: `Version` ([`TIpAddressVersion`](./TIpAddressVersion.md)), CIDR notation (`AllowCidr`, `RequireCidr`), ordered `Ranges` with `private`, `public`, and other named ranges (@since 4.4.0) |
 | [`TJsonValidator`](./TJsonValidator.md) | JSON text; client and server agree on surrogates and the 512 depth (@since 4.4.0) |
 | [`TLuhnValidator`](./TLuhnValidator.md) | Luhn (mod 10) checksum of card, IMEI, and ID numbers; `AllowSeparators` (@since 4.4.0) |
 | [`TPasswordStrengthValidator`](./TPasswordStrengthValidator.md) | Password reaches `MinStrength` ([`TPasswordStrength`](./TPasswordStrength.md)), estimated from its characters; optional Pwned Passwords lookup (`CheckCompromised`, server only) (@since 4.4.0) |

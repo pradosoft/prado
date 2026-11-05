@@ -845,6 +845,8 @@ return [
 'TInlineFrameAlign' => 'Prado\Web\UI\WebControls\TInlineFrameAlign',
 'TInlineFrameScrollBars' => 'Prado\Web\UI\WebControls\TInlineFrameScrollBars',
 'TIns' => 'Prado\Web\UI\WebControls\TIns',
+'TIpAddressValidator' => 'Prado\Web\UI\WebControls\TIpAddressValidator',
+'TIpAddressVersion' => 'Prado\Web\UI\WebControls\TIpAddressVersion',
 'TItemDataRenderer' => 'Prado\Web\UI\WebControls\TItemDataRenderer',
 'TJavascriptLogger' => 'Prado\Web\UI\WebControls\TJavascriptLogger',
 'TJsonValidator' => 'Prado\Web\UI\WebControls\TJsonValidator',
