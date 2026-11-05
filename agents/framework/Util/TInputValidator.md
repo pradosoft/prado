@@ -92,7 +92,7 @@ Each message is built by protected `getMessage(string $text, array $parameters)`
 
 ## Patterns & Gotchas
 
-- **mbstring is optional** — `getCharacterLength()` uses `mb_strlen()` when the extension is loaded and counts UTF-8 code points with `preg_match_all()` otherwise, so `min`/`max` on strings count characters either way. Tests force the fallback through the static `_mbstring` flag.
+- **Characters, not bytes** — `min`/`max` on a string count characters through [`TMultibyteString::length()`](TMultibyteString.md), which works without the mbstring extension; the test forces the helper's `_mbstring` flag to `false`.
 - **Reusable instance** — `isValid()` / `validate()` replace the stored errors and validated data on every call; a failed `validate()` leaves the partial validated data available through `getValidated()`.
 - **`min`/`max` on a bool** pass silently; pair them with a type rule.
 - **`in` compares string forms** — `in:1,2` accepts int `1` and string `'1'`; put `in` after a coercing rule only when the coerced string form matches the options (`true` casts to `'1'`).

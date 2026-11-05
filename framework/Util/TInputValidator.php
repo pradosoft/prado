@@ -13,6 +13,7 @@ namespace Prado\Util;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TComponent;
+use Prado\Util\TMultibyteString;
 
 /**
  * TInputValidator class
@@ -82,9 +83,6 @@ class TInputValidator extends TComponent
 
 	/** @var array validated data of the last run */
 	private array $_validated = [];
-
-	/** @var ?bool whether the mbstring extension is loaded, resolved on first use */
-	private static ?bool $_mbstring = null;
 
 	/**
 	 * Constructor. Registers the built-in rules.
@@ -507,25 +505,7 @@ class TInputValidator extends TComponent
 	}
 
 	/**
-	 * Returns the length of a string in characters.
-	 * With the mbstring extension loaded, the count is `mb_strlen()`. Without it,
-	 * the count is the UTF-8 code points that `preg_match_all()` matches, and the
-	 * byte length when the string is not valid UTF-8.
-	 * @param string $value The string.
-	 * @return int The number of characters.
-	 */
-	protected function getCharacterLength(string $value): int
-	{
-		self::$_mbstring ??= extension_loaded('mbstring');
-		if (self::$_mbstring) {
-			return mb_strlen($value);
-		}
-		$count = preg_match_all('/./su', $value);
-		return $count === false ? strlen($value) : $count;
-	}
-
-	/**
-	 * A string is measured in characters ({@see getCharacterLength()}), an array in items, and a
+	 * A string is measured in characters ({@see TMultibyteString::length()}), an array in items, and a
 	 * numeric value is compared by value.
 	 * @param mixed &$value The field value.
 	 * @param ?string $parameter The minimum.
@@ -538,7 +518,7 @@ class TInputValidator extends TComponent
 		$min = $this->getNumericParameter($parameter, 'min', $field);
 		$parameters = ['field' => $field, 'parameter' => (string) $parameter];
 		if (is_string($value)) {
-			if ($this->getCharacterLength($value) < $min) {
+			if (TMultibyteString::length($value) < $min) {
 				return $this->getMessage('The {field} field must be at least {parameter} characters.', $parameters);
 			}
 		} elseif (is_array($value)) {
@@ -552,7 +532,7 @@ class TInputValidator extends TComponent
 	}
 
 	/**
-	 * A string is measured in characters ({@see getCharacterLength()}), an array in items, and a
+	 * A string is measured in characters ({@see TMultibyteString::length()}), an array in items, and a
 	 * numeric value is compared by value.
 	 * @param mixed &$value The field value.
 	 * @param ?string $parameter The maximum.
@@ -565,7 +545,7 @@ class TInputValidator extends TComponent
 		$max = $this->getNumericParameter($parameter, 'max', $field);
 		$parameters = ['field' => $field, 'parameter' => (string) $parameter];
 		if (is_string($value)) {
-			if ($this->getCharacterLength($value) > $max) {
+			if (TMultibyteString::length($value) > $max) {
 				return $this->getMessage('The {field} field must not exceed {parameter} characters.', $parameters);
 			}
 		} elseif (is_array($value)) {
