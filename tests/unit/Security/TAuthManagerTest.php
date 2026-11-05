@@ -85,6 +85,20 @@ class TTestLoginPageService extends \Prado\Web\Services\TPageService
 }
 
 /**
+ * Page-service double that records the arguments of constructUrl().
+ */
+class TTestCapturingPageService extends \Prado\Web\Services\TPageService
+{
+	public array $calls = [];
+
+	public function constructUrl($pagePath, $getParams = null, $encodeAmpersand = true, $encodeGetItems = true)
+	{
+		$this->calls[] = [$pagePath, $getParams, $encodeAmpersand];
+		return 'url:' . $pagePath;
+	}
+}
+
+/**
  * TAuthManager whose session module resolves to null, exercising the
  * `requireSession()` guard.
  */
@@ -1118,5 +1132,138 @@ class TAuthManagerTest extends \PHPUnit\Framework\TestCase
 		$authManager->onLogout[] = [$this, 'myhandler'];
 		$authManager->onLogout($this, null);
 		self::assertEquals(1, $this->_handled);
+	}
+
+	// =========================================================================
+	// Return URL request parameter
+	// =========================================================================
+
+	/**
+	 * Runs $test with the request items replaced by $items.
+	 */
+	private function withRequestItems(array $items, callable $test): void
+	{
+		$request = self::$app->getRequest();
+		$saved = PradoUnit::getProp($request, '_items');
+		PradoUnit::setProp($request, '_items', $items);
+		try {
+			$test();
+		} finally {
+			PradoUnit::setProp($request, '_items', $saved);
+		}
+	}
+
+	public static function returnUrlProvider(): array
+	{
+		return [
+			'root' => ['/', true],
+			'path' => ['/index.php?page=Home&x=1', true],
+			'empty' => ['', false],
+			'protocol relative' => ['//evil.example/path', false],
+			'backslash host' => ['/\\evil.example', false],
+			'backslash' => ['/a\\b', false],
+			'javascript' => ['javascript:alert(1)', false],
+			'data' => ['data:text/html,x', false],
+			'relative' => ['index.php', false],
+			'whitespace' => ['/a b', false],
+			'leading space' => [' /a', false],
+			'tab' => ["/\t/evil.example", false],
+			'newline' => ["/a\r\nLocation: x", false],
+			'other host' => ['https://evil.example/', false],
+		];
+	}
+
+	#[\PHPUnit\Framework\Attributes\DataProvider('returnUrlProvider')]
+	public function testIsLocalReturnUrl(string $url, bool $expected)
+	{
+		self::assertSame($expected, (new TAuthManager())->isLocalReturnUrl($url));
+	}
+
+	public function testIsLocalReturnUrlAcceptsServerHost()
+	{
+		$saved = $_SERVER['SERVER_NAME'] ?? null;
+		$_SERVER['SERVER_NAME'] = 'www.example.com';
+		try {
+			$authManager = new TAuthManager();
+			self::assertTrue($authManager->isLocalReturnUrl('https://www.example.com/index.php'));
+			self::assertTrue($authManager->isLocalReturnUrl('HTTP://WWW.EXAMPLE.COM/'));
+			self::assertFalse($authManager->isLocalReturnUrl('https://www.example.com.evil.example/'));
+			self::assertFalse($authManager->isLocalReturnUrl('ftp://www.example.com/'));
+		} finally {
+			if ($saved === null) {
+				unset($_SERVER['SERVER_NAME']);
+			} else {
+				$_SERVER['SERVER_NAME'] = $saved;
+			}
+		}
+	}
+
+	public function testGetRequestReturnUrl()
+	{
+		$authManager = new TAuthManager();
+		$this->withRequestItems([], fn () => self::assertNull($authManager->getRequestReturnUrl()));
+		$this->withRequestItems([TAuthManager::RETURN_URL_VAR => '/members'], fn () => self::assertSame('/members', $authManager->getRequestReturnUrl()));
+		$this->withRequestItems([TAuthManager::RETURN_URL_VAR => '//evil.example'], fn () => self::assertNull($authManager->getRequestReturnUrl()));
+		$this->withRequestItems([TAuthManager::RETURN_URL_VAR => ['/a']], fn () => self::assertNull($authManager->getRequestReturnUrl()));
+	}
+
+	public function testGetReturnUrlPrefersLocalRequestParameter()
+	{
+		$authManager = new TTestSessionAuthManager();
+		$authManager->setUserManager('users');
+		$authManager->init(null);
+		$authManager->setReturnUrl('/stored');
+		$this->withRequestItems([TAuthManager::RETURN_URL_VAR => '/requested'], fn () => self::assertSame('/requested', $authManager->getReturnUrl()));
+		$this->withRequestItems([TAuthManager::RETURN_URL_VAR => 'https://evil.example/'], fn () => self::assertSame('/stored', $authManager->getReturnUrl()));
+		$this->withRequestItems([], fn () => self::assertSame('/stored', $authManager->getReturnUrl()));
+	}
+
+	public function testGetReturnUrlFromRequestNeedsNoSession()
+	{
+		$authManager = new TTestNoSessionAuthManager();
+		$authManager->setUserManager('users');
+		$authManager->init(null);
+		$this->withRequestItems([TAuthManager::RETURN_URL_VAR => '/members'], fn () => self::assertSame('/members', $authManager->getReturnUrl()));
+	}
+
+	public function testConstructLoginUrl()
+	{
+		$authManager = new TAuthManager();
+		$authManager->setLoginPage('Pages.Login');
+		$savedService = self::$app->getService();
+		$service = new TTestCapturingPageService();
+		self::$app->setService($service);
+		try {
+			self::assertSame('url:Pages.Login', $authManager->constructLoginUrl());
+			self::assertSame('url:Pages.Login', $authManager->constructLoginUrl('/members?id=1'));
+			self::assertSame('url:Pages.Login', $authManager->constructLoginUrl('//evil.example'));
+			self::assertSame([
+				['Pages.Login', null, false],
+				['Pages.Login', [TAuthManager::RETURN_URL_VAR => '/members?id=1'], false],
+				['Pages.Login', null, false],
+			], $service->calls);
+		} finally {
+			self::$app->setService($savedService);
+		}
+	}
+
+	public function testConstructLoginUrlRequiresLoginPage()
+	{
+		$this->expectException(TConfigurationException::class);
+		(new TAuthManager())->constructLoginUrl();
+	}
+
+	public function testConstructLoginUrlRequiresPageService()
+	{
+		$authManager = new TAuthManager();
+		$authManager->setLoginPage('Pages.Login');
+		$savedService = self::$app->getService();
+		self::$app->setService(null);
+		try {
+			$this->expectException(TInvalidOperationException::class);
+			$authManager->constructLoginUrl();
+		} finally {
+			self::$app->setService($savedService);
+		}
 	}
 }

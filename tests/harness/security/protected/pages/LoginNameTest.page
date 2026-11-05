@@ -1,0 +1,6 @@
+<com:TContent ID="Content">
+<h1>TLoginName Test</h1>
+<p id="plain">User: <com:TLoginName ID="Plain" CssClass="login-name" /></p>
+<p id="formatted"><com:TLoginName ID="Formatted" FormatString="Signed in as <strong>{0}</strong>" /></p>
+<p id="guest"><com:TLoginName ID="Guest" DisplayGuest="true" /></p>
+</com:TContent>

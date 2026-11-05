@@ -17,7 +17,7 @@ This file provides guidance to Agents when working with code in this repository.
 
 ## Purpose
 
-Cross-cutting utilities for the Prado framework: the behavior/mixin system, logging, scheduled tasks, named locks, RPC clients, POSIX signal handling, parameter modules, and general-purpose helpers.
+Cross-cutting utilities for the Prado framework: the behavior/mixin system, logging, scheduled tasks, named locks, POSIX signal handling, parameter modules, and general-purpose helpers. The RPC clients left `Prado\Util` for `Prado\IO\Rpc` in the `pradosoft/prado-rpc` package in 4.4.0 (#1210); see [Web/Services](../Web/Services/INDEX.md#rpc-the-pradosoftprado-rpc-package).
 
 ## Behavior System
 
@@ -65,15 +65,6 @@ When a behavior registers event handlers in `attach()`, it **must** unregister t
 
 - **[`TPluginModule`](TPluginModule.md)** — Base for Prado 4 composer-based extensions.
 - **[`TDbPluginModule`](TDbPluginModule.md)** — Plugin module with a database connection.
-
-## RPC Clients
-
-- **[`TRpcClient`](TRpcClient.md)** — Abstract base. Properties: `ServerUrl`, `IsNotification`. Factory: `static create($type, $serverUrl)`.
-- **[`TJsonRpcClient`](TJsonRpcClient.md)** — JSON-RPC 1.0 client.
-- **[`TXmlRpcClient`](TXmlRpcClient.md)** — XML-RPC client via `xmlrpc_*` functions.
-- **[`TRpcClientTypesEnumerable`](TRpcClientTypesEnumerable.md)** — Enumeration mapping short type tokens (`JSON`, `XML`) to concrete client class names.
-- **[`TRpcClientRequestException`](TRpcClientRequestException.md)** — Thrown on transport/HTTP failure.
-- **[`TRpcClientResponseException`](TRpcClientResponseException.md)** — Thrown when the server returns an RPC fault. Carries an optional numeric error code.
 
 ## Other Utilities
 

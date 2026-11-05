@@ -1,4 +1,5 @@
 <com:TContent ID="Content">
 <h1>Security Test Home</h1>
 <p id="current-user"><%=$this->CurrentUser%></p>
+<p><a id="login-link" href="<%= htmlspecialchars($this->LoginUrl) %>">Sign in</a></p>
 </com:TContent>

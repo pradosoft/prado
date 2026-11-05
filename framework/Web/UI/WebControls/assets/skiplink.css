@@ -1,0 +1,22 @@
+/*! PRADO TSkipLink stylesheet | github.com/pradosoft/prado */
+
+/* Hidden until focused; screen readers still read the link in place. */
+.skip-link:not(:focus) {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+.skip-link:focus {
+	position: absolute;
+	top: 0.5rem;
+	left: 0.5rem;
+	z-index: 10000;
+	padding: 0.5rem 1rem;
+	background: Canvas;
+	color: LinkText;
+	border: 2px solid currentColor;
+}

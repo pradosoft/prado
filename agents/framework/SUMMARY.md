@@ -18,7 +18,7 @@ The exception message catalogs use the English catalog as the master and remove 
 
 - **`TModule`** — Base class for pluggable application modules registered in configuration.
 
-- **`TService`** — Base class for application services (page, JSON, RPC, SOAP, feed).
+- **`TService`** — Base class for application services (page, JSON, SOAP, feed).
 
 - **`TEventHandler`** — Invokable wrapper for event handlers; supports hierarchical invokable data.
 

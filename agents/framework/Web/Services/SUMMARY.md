@@ -10,10 +10,10 @@ Application services handling different response types; registered in `applicati
 
 - **`TJsonService`** — Returns JSON-formatted responses; configures named JSON response handlers.
 
-- **`TRpcService`** — Generic RPC framework supporting multiple protocols (JSON-RPC, XML-RPC); architecture: `TRpcProtocol`, `TRpcServer`, `TRpcApiProvider`.
-
 - **`TSoapService`** — SOAP/WSDL service; auto-generates WSDL from provider classes using `@soapmethod` PHPDoc annotations.
 
 - **`TFeedService`** — RSS/Atom feed generation; delegates to content provider classes.
 
 - **`TPageConfiguration`** — Parses per-directory `config.xml`/`config.php` files for page-level module loading, authorization rules.
+
+RPC (`TRpcService` and the protocols) is the `pradosoft/prado-rpc` package since 4.4.0 (#1210); see [INDEX.md](INDEX.md).

@@ -36,5 +36,6 @@ Inherits all properties from [TWebControl](./TWebControl.md) and [THtmlElement](
 - [THtmlElement](./THtmlElement.md)
 - [THeader](./THeader.md)
 - [TFooter](./TFooter.md)
+- [TSkipLink](./TSkipLink.md)
 
 **@since 4.3.3**
