@@ -14,6 +14,7 @@ use DateTimeImmutable;
 use DateTimeZone;
 use Prado\Prado;
 use Prado\TPropertyValue;
+use Prado\Util\TMultibyteString;
 use Prado\Util\TSimpleDateFormatter;
 
 /**
@@ -453,6 +454,9 @@ class TRangeValidator extends TBaseValidator
 	}
 
 	/**
+	 * A UTF-8 value is measured by {@see TMultibyteString::length()}; any other
+	 * {@see getCharset() Charset} is measured by `iconv_strlen()`, which needs the
+	 * iconv extension.
 	 * @param string $value string for comparision
 	 * @return bool true if min and max string length are satisfied.
 	 */
@@ -471,7 +475,7 @@ class TRangeValidator extends TBaseValidator
 			}
 		}
 
-		$length = iconv_strlen($value, $charset);
+		$length = strcasecmp(str_replace('-', '', $charset), 'utf8') === 0 ? TMultibyteString::length($value) : iconv_strlen($value, $charset);
 		if ($minValue !== '') {
 			$valid = $this->isGreaterThan($length, (int) $minValue);
 		}

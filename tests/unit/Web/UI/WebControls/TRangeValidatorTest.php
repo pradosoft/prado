@@ -4,6 +4,7 @@ namespace Prado\Test\Unit\Web\UI\WebControls;
 
 use PHPUnit\Framework\TestCase;
 use Prado\Test\Unit\PradoUnit;
+use Prado\Util\TMultibyteString;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\WebControls\TRangeValidationDataType;
 use Prado\Web\UI\WebControls\TRangeValidator;
@@ -37,6 +38,25 @@ class TRangeValidatorTest extends TestCase
 		$this->validator->setMinValue($min);
 		$this->validator->setMaxValue($max);
 		$this->validator->setStep($step);
+	}
+
+	public function testStringLengthCountsCharactersWithAndWithoutMbstring()
+	{
+		$this->configure(TRangeValidationDataType::StringLength, '4', '6');
+		$mbstring = PradoUnit::getStaticProp(TMultibyteString::class, '_mbstring');
+		try {
+			foreach ([true, false] as $flag) {
+				PradoUnit::setStaticProp(TMultibyteString::class, '_mbstring', $flag);
+				$this->assertTrue($this->valid('héllo'));
+				$this->assertTrue($this->valid('こんにちは'));
+				$this->assertFalse($this->valid('こんにちは世界'));
+				$this->assertFalse($this->valid('héé'));
+			}
+			$this->validator->setCharset('ISO-8859-1');
+			$this->assertTrue($this->valid(mb_convert_encoding('héllo', 'ISO-8859-1', 'UTF-8')));
+		} finally {
+			PradoUnit::setStaticProp(TMultibyteString::class, '_mbstring', $mbstring);
+		}
 	}
 
 	public function testStepDefaultsToEmpty()
