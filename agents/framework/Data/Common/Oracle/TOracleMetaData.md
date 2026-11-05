@@ -19,6 +19,7 @@
 - Auto-increment / sequence detection is currently commented out — Oracle trigger-based sequences must be handled manually.
 - **Oracle fix:** `getIsView()` correctly compares the `OBJECT_TYPE` scalar returned by PDO (previously the cast `(int)` was wrong; fixed to `=== 'VIEW'` string comparison).
 - `assertIdentifier()` rejects names containing double-quote characters.
+- `DbType` is the `ALL_TAB_COLUMNS` data type without its parenthesized part: `NUMBER(10,0)` → `NUMBER` with `NumericPrecision` 10 and `NumericScale` 0; an unconstrained `NUMBER` arrives as `NUMBER(,)` and leaves both null; `VARCHAR2(40)` → `ColumnSize` 40; `TIMESTAMP(6) WITH TIME ZONE` → `TIMESTAMP WITH TIME ZONE`.
 - `DefaultSchema` property — configurable; defaults to `'system'`.
 
 ## See Also

@@ -8,8 +8,9 @@
 **Namespace:** `Prado\Data\Common\Mssql`
 
 ## Overview
-`TMssqlCommandBuilder` provides SQL Server-specific query building with bracket quoting and TOP/LIMIT support.
+`TMssqlCommandBuilder` is deprecated. It is an empty subclass of [`TSqlSrvCommandBuilder`](../SqlSrv/TSqlSrvCommandBuilder.md) that keeps the 4.3.2 class name working.
 
 ## See Also
 
-- [TDbCommandBuilder](../TDbCommandBuilder.md) - Base class
+- [TSqlSrvCommandBuilder](../SqlSrv/TSqlSrvCommandBuilder.md) - Base class
+- [TDbCommandBuilder](../TDbCommandBuilder.md) - Root class

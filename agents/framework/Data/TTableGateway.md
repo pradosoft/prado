@@ -38,6 +38,17 @@ $row    = $gateway->findBySql('SELECT * FROM users WHERE id = ?', [1]);
 $n = $gateway->findCount($criteria);
 ```
 
+### Inspection Methods
+
+```php
+// Check whether the table exists and is accessible:
+$exists = $gateway->getTableExists();   // bool
+```
+
+`getTableExists()` uses a lightweight `SELECT * FROM {table} WHERE 0=1` probe rather than
+driver-specific metadata tables, so it works uniformly across all supported drivers. It returns
+`false` if the table has been dropped after the gateway was constructed.
+
 ### Mutator Methods
 
 ```php
@@ -73,7 +84,7 @@ $gateway->attachEventHandler('OnCreateCommand', function($sender, $param) {
 
 ## TSqlCriteria
 
-Query criteria value object. Used by both [`TTableGateway`](./TTableGateway.md) and [`TActiveRecord`](TActiveRecord.md).
+Query criteria value object. Used by [`TTableGateway`](./TTableGateway.md); the `pradosoft/prado-activerecord` package's `TActiveRecordCriteria` extends it.
 
 ```php
 // Constructor shorthand:
@@ -104,7 +115,7 @@ $c->Select = 'id, name, email';  // replaces SELECT *
 
 ## Patterns & Gotchas
 
-- **Stateless** — [`TTableGateway`](./TTableGateway.md) holds no row data. Use [`TActiveRecord`](TActiveRecord.md) when you need object identity or lazy relations.
+- **Stateless** — [`TTableGateway`](./TTableGateway.md) holds no row data. Use `TActiveRecord` (the `pradosoft/prado-activerecord` package) when you need object identity or lazy relations.
 - **Always parameterize** — never interpolate user input into `Condition`. Use `:name` style binding.
 - **`findAll()` returns [`TDbDataReader`](TDbDataReader.md)** — iterate it or call `readAll()`. It is a forward-only cursor; you cannot rewind.
 - **`findByPk()` composite PKs** — pass an associative array when the table has a composite primary key.

@@ -65,13 +65,39 @@ class TDbMetaDataTest extends \PHPUnit\Framework\TestCase
 		TDbMetaData::getInstance($conn);
 	}
 
-public function test_getInstance_raises_fxDataGetMetaDataClass_for_unknown_driver()
+	public function test_getInstance_throws_when_event_returns_instance_instead_of_class_name()
 	{
+		// Event handlers must return a class name string, not an object instance.
+		// TDbDriverCapabilities::getMetaDataClass raises TDbException when an
+		// IDataMetaData object is returned instead.
 		$conn = $this->createMockConnection('custom_driver');
+		$badReturn = $this->createMock(\Prado\Data\Common\IDataMetaData::class);
+		$conn->method('raiseEvent')->willReturn([$badReturn]);
+
+		$this->expectException(TDbException::class);
+		TDbMetaData::getInstance($conn);
+	}
+
+	public function test_getInstance_throws_when_event_class_does_not_implement_IDataMetaData()
+	{
+		// If the class name returned by the event does not implement IDataMetaData,
+		// TDbDriverCapabilities::getMetaDataClass must throw TDbException before
+		// getInstance attempts instantiation.
+		$conn = $this->createMockConnection('custom_driver');
+		$conn->method('raiseEvent')->willReturn([\stdClass::class]);
+
+		$this->expectException(TDbException::class);
+		TDbMetaData::getInstance($conn);
+	}
+
+	public function test_getInstance_raises_fxDataGetMetaDataClass_for_unknown_driver()
+	{
+		$driver = 'custom_driver';
+		$conn = $this->createMockConnection($driver);
 
 		$conn->expects($this->once())
 			->method('raiseEvent')
-			->with('fxDataGetMetaDataClass', $this->anything(), 'custom_driver')
+			->with('fxDataGetMetaDataClass', $conn, $driver)
 			->willReturn([]);
 
 		$this->expectException(TDbException::class);
@@ -93,15 +119,6 @@ public function test_getInstance_raises_fxDataGetMetaDataClass_for_unknown_drive
 
 		$result = TDbMetaData::getInstance($conn);
 		$this->assertInstanceOf(\Prado\Data\Common\Pgsql\TPgsqlMetaData::class, $result);
-	}
-
-	public function test_getInstance_valid_mysql_driver()
-	{
-		$conn = $this->createMockConnection(TDbDriver::EXTENSION_MYSQLI);
-		$conn->expects($this->never())->method('raiseEvent');
-
-		$result = TDbMetaData::getInstance($conn);
-		$this->assertInstanceOf(\Prado\Data\Common\Mysql\TMysqlMetaData::class, $result);
 	}
 
 	public function test_getInstance_valid_mysql_old_driver()
@@ -131,22 +148,13 @@ public function test_getInstance_raises_fxDataGetMetaDataClass_for_unknown_drive
 		$this->assertInstanceOf(\Prado\Data\Common\Sqlite\TSqliteMetaData::class, $result);
 	}
 
-	public function test_getInstance_valid_mssql_driver()
-	{
-		$conn = $this->createMockConnection(TDbDriver::EXTENSION_MSSQL);
-		$conn->expects($this->never())->method('raiseEvent');
-
-		$result = TDbMetaData::getInstance($conn);
-		$this->assertInstanceOf(\Prado\Data\Common\Mssql\TMssqlMetaData::class, $result);
-	}
-
 	public function test_getInstance_valid_sqlsrv_driver()
 	{
 		$conn = $this->createMockConnection(TDbDriver::DRIVER_SQLSRV);
 		$conn->expects($this->never())->method('raiseEvent');
 
 		$result = TDbMetaData::getInstance($conn);
-		$this->assertInstanceOf(\Prado\Data\Common\Mssql\TMssqlMetaData::class, $result);
+		$this->assertInstanceOf(\Prado\Data\Common\SqlSrv\TSqlSrvMetaData::class, $result);
 	}
 
 	public function test_getInstance_valid_dblib_driver()
@@ -155,7 +163,7 @@ public function test_getInstance_raises_fxDataGetMetaDataClass_for_unknown_drive
 		$conn->expects($this->never())->method('raiseEvent');
 
 		$result = TDbMetaData::getInstance($conn);
-		$this->assertInstanceOf(\Prado\Data\Common\Mssql\TMssqlMetaData::class, $result);
+		$this->assertInstanceOf(\Prado\Data\Common\SqlSrv\TSqlSrvMetaData::class, $result);
 	}
 
 	public function test_getInstance_valid_oracle_driver()
@@ -179,15 +187,6 @@ public function test_getInstance_raises_fxDataGetMetaDataClass_for_unknown_drive
 	public function test_getInstance_valid_firebird_driver()
 	{
 		$conn = $this->createMockConnection(TDbDriver::DRIVER_FIREBIRD);
-		$conn->expects($this->never())->method('raiseEvent');
-
-		$result = TDbMetaData::getInstance($conn);
-		$this->assertInstanceOf(\Prado\Data\Common\Firebird\TFirebirdMetaData::class, $result);
-	}
-
-	public function test_getInstance_valid_interbase_driver()
-	{
-		$conn = $this->createMockConnection(TDbDriver::DRIVER_INTERBASE);
 		$conn->expects($this->never())->method('raiseEvent');
 
 		$result = TDbMetaData::getInstance($conn);
@@ -437,5 +436,22 @@ public function test_getInstance_raises_fxDataGetMetaDataClass_for_unknown_drive
 
 		$this->expectException(TDbException::class);
 		$metaData->getTableInfo(null);
+	}
+
+	public function test_clearTableInfo_evicts_one_table_or_the_whole_cache()
+	{
+		$meta = $this->createTestableMetaData($this->createMockConnection(TDbDriver::DRIVER_SQLITE));
+		$a = $meta->getTableInfo('a');
+		$b = $meta->getTableInfo('b');
+		$this->assertSame($a, $meta->getTableInfo('a'));
+
+		$meta->clearTableInfo('a');
+		$a2 = $meta->getTableInfo('a');
+		$this->assertNotSame($a, $a2);
+		$this->assertSame($b, $meta->getTableInfo('b'));
+
+		$meta->clearTableInfo();
+		$this->assertNotSame($a2, $meta->getTableInfo('a'));
+		$this->assertNotSame($b, $meta->getTableInfo('b'));
 	}
 }

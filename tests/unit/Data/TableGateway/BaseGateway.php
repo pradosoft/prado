@@ -2,10 +2,9 @@
 
 namespace Prado\Test\Unit\Data\TableGateway;
 
-use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
-
 use Prado\Data\DataGateway\TTableGateway;
 use Prado\Data\TDbConnection;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 
 class BaseGateway extends \PHPUnit\Framework\TestCase
 {
@@ -48,11 +47,6 @@ class BaseGateway extends \PHPUnit\Framework\TestCase
 		return 'setupMysqlConnection';
 	}
 	
-	protected function getIsForActiveRecord(): bool
-	{
-		return false;
-	}
-	
 	protected function getTestTables(): array
 	{
 		return ['address', 'department_sections'];
@@ -61,7 +55,7 @@ class BaseGateway extends \PHPUnit\Framework\TestCase
 	protected function setUp(): void
 	{
 		if (!static::$conn) {
-			static::$conn = $this->setupConnection();
+			static::$conn = $this->setupPradoUnitConnection();
 			$this->gateway1 = new TTableGateway('address', static::$conn);
 		}
 	}
@@ -99,6 +93,7 @@ class BaseGateway extends \PHPUnit\Framework\TestCase
 			'int_fk2' => 1,
 		];
 	}
+
 
 	public function get_record2()
 	{

@@ -530,11 +530,14 @@ tactivecustomvalidator_clientfunction_unsupported = {0} does not support client 
 
 dbproperties_connectionid_invalid		= {1}.ConnectionID '{0}' does not identify a valid TDataSourceConfig module.
 dbproperties_property_required			= {1}.{0} is a required property.
+dbproperties_identifier_invalid			= {1}.{0} '{2}' is not a valid SQL identifier.
 
 dbconnection_open_failed				= TDbConnection failed to establish DB connection: {0}
 dbconnection_connection_inactive		= TDbConnection is inactive.
 dbconnection_unsupported_driver_charset	= Database driver '{0}' doesn't support setting charset.
 dbconnection_charset_unchangeable		= Database driver '{0}' cannot change the charset after opening. Charset is a DSN parameter.
+dbconnection_active_transaction			= TDbConnection cannot begin a new transaction: a transaction is already open and has uncommitted work pending. Commit or roll back the existing transaction first.
+dbconnection_transaction_class_invalid	= TDbConnection.TransactionClass must create a {1}, but it created '{0}'.
 
 dbcommand_prepare_failed				= TDbCommand failed to prepare the SQL statement "{1}": {0}
 dbcommand_execute_failed				= TDbCommand failed to execute the SQL statement "{1}": {0}
@@ -544,6 +547,9 @@ dbdatareader_rewind_invalid				= TDbDataReader is a forward-only stream. It can 
 dbtransaction_transaction_inactive		= TDbTransaction is inactive.
 
 dbcommandbuilder_value_must_not_be_null	= Property {0} must not be null as defined by column '{2}' in table '{1}'.
+dbcommandbuilder_insertorignore_not_supported = TDbCommandBuilder does not support insertOrIgnore(). Use a driver-specific subclass.
+dbcommandbuilder_upsert_not_supported         = TDbCommandBuilder does not support upsert(). Use a driver-specific subclass.
+dbcommandbuilder_upsert_requires_transaction  = {0} requires an active transaction. Call getDbConnection()->beginTransaction() before invoking insertOrIgnore() or upsert() with this database driver.
 
 dbcommon_invalid_table_name				= Database table '{0}' not found. Error message: {1}.
 dbcommon_invalid_identifier_name        = Invalid database identifier name '{0}', see {1} for details.
@@ -682,6 +688,7 @@ dbmetadata_not_meta_data				= Expected driver class {1} but got class {0}.
 dbmetadata_tableinfo_class_invalid		= TDbMetaData table info class '{0}' is a directory namespace, not a class.
 
 datasource_dbconnection_invalid			= TDataSourceConfig.DbConnection '{0}' is invalid. Please make sure it points to a valid application module.
+datasource_dbconnection_exists				= TDataSourceConfig.ConnectionClass cannot be set to '{0}' after the database connection is created.
 distributeddatasource_child_required		= {0} requires one '{1}' child element at minimum.
 masterslavedbconnection_connection_exists	= {0}.{1} connection already exists.
 masterslavedbconnection_interface_required	= {0}.{1} requires an instance implementing {2} interface.

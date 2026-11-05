@@ -16,11 +16,11 @@ SQLite driver-specific implementations of the database metadata and query-builde
 
 ## Classes
 
-- **`TSqliteMetaData`** — Extends `TDbMetaData`. Uses `PRAGMA table_info()` and `PRAGMA index_list()` / `PRAGMA index_info()` to introspect table structure. Handles SQLite's flexible typing and `INTEGER PRIMARY KEY` autoincrement behaviour.
+- **[`TSqliteMetaData`](./TSqliteMetaData.md)** — Extends `TDbMetaData`. Uses `PRAGMA table_info()` and `PRAGMA foreign_key_list()` to introspect table structure: `notnull` sets `AllowNull`, `pk` positions give the (composite) primary key, and a lone `INTEGER PRIMARY KEY` auto-increments.
 
 - **`TSqliteTableInfo`** — Extends `TDbTableInfo`. SQLite-specific table metadata; no schema namespace (SQLite uses attached databases instead).
 
-- **`TSqliteTableColumn`** — Extends `TDbTableColumn`. Maps SQLite's affinity types (`INTEGER`, `REAL`, `TEXT`, `BLOB`, `NUMERIC`) to PHP types. Detects `INTEGER PRIMARY KEY` as the implicit `rowid` auto-increment.
+- **[`TSqliteTableColumn`](./TSqliteTableColumn.md)** — Extends `TDbTableColumn`. `getPHPType()` maps the declared type by name, then by the SQLite affinity rules (`int` → integer, `char`/`clob`/`text` → string, `real`/`floa`/`doub` → float). Reports a lone `INTEGER PRIMARY KEY` as the implicit `rowid` auto-increment.
 
 - **`TSqliteCommandBuilder`** — Extends `TDbCommandBuilder`. Generates SQLite dialect: double-quote or backtick identifier quoting, `LIMIT`/`OFFSET`, `INSERT OR REPLACE` for upsert, `last_insert_rowid()`.
 

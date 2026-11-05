@@ -3,6 +3,10 @@
 namespace Prado\Test\Unit\Data\DbCommon;
 
 use Prado\Data\Common\TDbTableColumn;
+use Prado\Data\Common\Mysql\TMysqlTableColumn;
+use Prado\Data\Common\Sqlite\TSqliteTableColumn;
+use Prado\Data\TDbConnection;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * Unit tests for TDbTableColumn — the base column-metadata value object.
@@ -135,5 +139,27 @@ class TDbTableColumnTest extends \PHPUnit\Framework\TestCase
 
 		$this->assertEquals('"col"', $col->ColumnName);
 		$this->assertTrue($col->IsPrimaryKey);
+	}
+
+	public function test_set_info_stores_a_value_read_by_its_getter()
+	{
+		$col = new TDbTableColumn(['ColumnName' => '"a"']);
+		PradoUnit::invoke($col, 'setInfo', 'ColumnName', '"b"');
+		$this->assertSame('"b"', $col->getColumnName());
+	}
+
+	public function test_param_type_follows_the_php_type()
+	{
+		$this->assertSame(TDbConnection::PARAM_BOOL, (new TSqliteTableColumn(['DbType' => 'boolean']))->getParamType());
+		$this->assertSame(TDbConnection::PARAM_INT, (new TSqliteTableColumn(['DbType' => 'integer']))->getParamType());
+		$this->assertSame(TDbConnection::PARAM_STR, (new TSqliteTableColumn(['DbType' => 'text']))->getParamType());
+		$this->assertSame(TDbConnection::PARAM_STR, (new TSqliteTableColumn(['DbType' => 'real']))->getParamType());
+	}
+
+	public function test_mysql_tinyint_is_boolean_by_size_or_raw_type()
+	{
+		$this->assertSame('boolean', (new TMysqlTableColumn(['DbType' => 'tinyint', 'ColumnSize' => 1]))->getPHPType());
+		$this->assertSame('boolean', (new TMysqlTableColumn(['DbType' => 'tinyint', 'ColumnType' => 'TINYINT(1)']))->getPHPType());
+		$this->assertSame('integer', (new TMysqlTableColumn(['DbType' => 'tinyint unsigned', 'ColumnSize' => 4, 'ColumnType' => 'tinyint(4) unsigned']))->getPHPType());
 	}
 }

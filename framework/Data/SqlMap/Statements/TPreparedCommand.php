@@ -10,9 +10,11 @@
 
 namespace Prado\Data\SqlMap\Statements;
 
+use Prado\Data\Common\IDbCommandBuilder;
 use Prado\Data\Common\TDbCommandBuilder;
 use Prado\Data\Common\TDbMetaData;
 use Prado\Data\SqlMap\TSqlMapManager;
+use Prado\Exceptions\TDbException;
 use Prado\Prado;
 
 /**
@@ -37,6 +39,9 @@ class TPreparedCommand
 
 		if ($max !== null || $skip !== null) {
 			$builder = TDbMetaData::getInstance($connection)->createCommandBuilder();
+			if (!($builder instanceof IDbCommandBuilder)) {
+				throw new TDbException('dbmetadata_not_meta_data', get_debug_type($builder), IDbCommandBuilder::class);
+			}
 			$sql = $builder->applyLimitOffset($sql, $max, $skip);
 		}
 		$command = $connection->createCommand($sql);

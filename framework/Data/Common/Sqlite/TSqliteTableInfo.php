@@ -10,13 +10,11 @@
 
 namespace Prado\Data\Common\Sqlite;
 
-/**
- * Loads the base TDbTableInfo class and TSqliteTableColumn class.
- */
 use Prado\Data\Common\TDbTableInfo;
-use Prado\Prado;
 
 /**
+ * TSqliteTableInfo class
+ *
  * TSqliteTableInfo class provides additional table information for PostgreSQL database.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
@@ -26,10 +24,14 @@ class TSqliteTableInfo extends TDbTableInfo
 {
 	/**
 	 * @return string full name of the table, database dependent.
+	 * Double-quote delimiters are used (SQL standard identifier quoting).
+	 * Single-quotes are string literals in SQL and cause SQLITE_RANGE (error 25)
+	 * when ORDER BY references double-quoted column names against a
+	 * single-quoted table source.
 	 */
 	public function getTableFullName()
 	{
-		return "'" . $this->getTableName() . "'";
+		return '"' . $this->getTableName() . '"';
 	}
 
 	/**

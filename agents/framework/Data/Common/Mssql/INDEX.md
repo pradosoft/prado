@@ -16,16 +16,15 @@ SQL Server (MSSQL) driver-specific implementations of the database metadata and 
 
 ## Classes
 
-- **`TMssqlMetaData`** — Extends `TDbMetaData`. Queries SQL Server system catalog (`INFORMATION_SCHEMA`, `sys.*`) to build table/column metadata. Handles schema-qualified table names (`schema.table`).
+The four classes are deprecated. Each is an empty subclass of its `SqlSrv` counterpart and keeps the 4.3.2 class name working.
 
-- **`TMssqlTableInfo`** — Extends `TDbTableInfo`. SQL Server-specific table metadata; stores schema name separately from table name.
-
-- **`TMssqlTableColumn`** — Extends `TDbTableColumn`. Adds SQL Server column attributes: `identity` (auto-increment), `computed`, `xml` columns, `uniqueidentifier`.
-
-- **`TMssqlCommandBuilder`** — Extends `TDbCommandBuilder`. Generates SQL Server dialect queries: uses `TOP` for limiting rows (no `LIMIT`/`OFFSET` syntax pre-2012), brackets `[identifier]` quoting, `SCOPE_IDENTITY()` for last insert ID.
+| Class | Extends |
+|---|---|
+| `TMssqlMetaData` | [`TSqlSrvMetaData`](../SqlSrv/TSqlSrvMetaData.md) |
+| `TMssqlTableInfo` | [`TSqlSrvTableInfo`](../SqlSrv/TSqlSrvTableInfo.md) |
+| `TMssqlTableColumn` | [`TSqlSrvTableColumn`](../SqlSrv/TSqlSrvTableColumn.md) |
+| `TMssqlCommandBuilder` | [`TSqlSrvCommandBuilder`](../SqlSrv/TSqlSrvCommandBuilder.md) |
 
 ## Conventions
 
-- SQL Server uses `[brackets]` for identifier quoting — never backticks or double-quotes.
-- `LIMIT`/`OFFSET` is not supported in older SQL Server; the command builder uses `TOP` or `ROW_NUMBER()` windowing instead.
-- `identity` columns map to `getAutoIncrement() === true` on `TMssqlTableColumn`.
+- New code uses the `SqlSrv` classes. The `SqlSrv` index documents the SQL Server dialect.

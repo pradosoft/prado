@@ -20,3 +20,12 @@ CREATE TABLE address (
   "int_fk2" INT NOT NULL,
   PRIMARY KEY ("id")
 );
+
+DROP TABLE IF EXISTS upsert_test;
+CREATE TABLE upsert_test (
+  "id"       SERIAL       NOT NULL,
+  "username" VARCHAR(100) NOT NULL,
+  "score"    INT          NOT NULL DEFAULT 0,
+  PRIMARY KEY ("id"),
+  UNIQUE ("username")
+);
