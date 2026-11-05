@@ -19,7 +19,13 @@ TMetaTag represents a meta tag appearing in a page head section. Supports http-e
 - `getContent()` / `setContent()` - Gets or sets content attribute
 - `getScheme()` / `setScheme()` - Gets or sets scheme attribute (deprecated)
 - `getCharset()` / `setCharset()` - Gets or sets charset attribute
-- `render()` - Renders the meta tag
+- `render()` - Renders id, name, property, http-equiv, scheme, and charset through their getters, skipping empty values; a tag without a charset also renders `content`, even when empty
+
+Setters store strings (`TPropertyValue::ensureString()`), so null is empty.
+
+## Tests
+
+- `tests/unit/Web/UI/WebControls/TMetaTagTest.php`
 
 ## See Also
 
