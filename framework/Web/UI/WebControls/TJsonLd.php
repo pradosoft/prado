@@ -11,6 +11,7 @@
 namespace Prado\Web\UI\WebControls;
 
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\IO\TTextWriter;
 use Prado\TPropertyValue;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\TMediaType;
@@ -20,21 +21,33 @@ use Prado\Web\TMediaType;
  *
  * TJsonLd renders structured data as a `<script type="application/ld+json">`
  * data block, such as a schema.org Organization, Product, or BreadcrumbList.
- * {@see setData Data} holds the document as a PHP array, a JSON-serializable
- * object, or JSON text. TJsonLd renders where it is placed, in {@see THead} or
- * in the body; it renders nothing when Data is empty.
+ * The body of the control is the JSON document. TJsonLd renders where it is
+ * placed, in {@see THead} or in the body; it renders nothing when it has no
+ * document.
  * ```php
  * <com:THead>
- *   <com:TJsonLd ID="Organization">
- *     <prop:Data>{"@type": "Organization", "name": "Acme", "url": "https://example.com"}</prop:Data>
+ *   <com:TJsonLd>
+ *     {"@type": "Organization", "name": "Acme", "url": "https://example.com"}
  *   </com:TJsonLd>
+ *   <com:TJsonLd ID="ProductLd" />
  * </com:THead>
  * ```
+ * Page code sets {@see setStructuredData StructuredData} to a PHP array, which
+ * encodes every value, so data from a record cannot break the JSON:
  * ```php
- * $this->Organization->setData(['@type' => 'Organization', 'name' => 'Acme']);
+ * $this->ProductLd->setStructuredData(['@type' => 'Product', 'name' => $product->Name]);
  * ```
  *
- * An associative array without an `@context` key receives
+ * | Source | Use |
+ * |---|---|
+ * | {@see setStructuredData StructuredData} | A document built in code; it takes precedence over the body |
+ * | Body | A fixed document written in the template |
+ *
+ * The body renders, then decodes as JSON. An expression in the body inserts its
+ * text unescaped, so a dynamic value belongs in StructuredData. A body that is
+ * not valid JSON throws when the control renders.
+ *
+ * An associative document without an `@context` key receives
  * {@see setContext Context}, `https://schema.org` by default, as its first key.
  * The JSON escapes `<` and `>`, so a value cannot close the script element, and
  * escapes non-ASCII characters, so it is correct in any page charset. The data
@@ -55,32 +68,28 @@ class TJsonLd extends \Prado\Web\UI\TControl
 	 * @return mixed the structured data: an array, a JSON-serializable object, or
 	 *   null. Defaults to null.
 	 */
-	public function getData()
+	public function getStructuredData()
 	{
-		return $this->getViewState('Data', null);
+		return $this->getViewState('StructuredData', null);
 	}
 
 	/**
-	 * Sets the structured data. JSON text is decoded into an array.
+	 * Sets the structured data, which takes precedence over the body. JSON text is
+	 * decoded into an array.
 	 * @param mixed $value an array, a JSON-serializable object, JSON text, or null
 	 * @throws TInvalidDataValueException if the JSON text is not valid.
 	 */
-	public function setData($value)
+	public function setStructuredData($value)
 	{
 		if (is_string($value)) {
-			$value = trim($value);
-			try {
-				$value = $value === '' ? null : json_decode($value, true, 512, JSON_THROW_ON_ERROR);
-			} catch (\JsonException $e) {
-				throw new TInvalidDataValueException('jsonld_data_invalid', $e->getMessage());
-			}
+			$value = $this->decodeJson($value, 'StructuredData');
 		}
-		$this->setViewState('Data', $value, null);
+		$this->setViewState('StructuredData', $value, null);
 	}
 
 	/**
-	 * @return string the JSON-LD context added to an associative Data without one.
-	 *   Defaults to `https://schema.org`.
+	 * @return string the JSON-LD context added to an associative document without
+	 *   one. Defaults to `https://schema.org`.
 	 */
 	public function getContext()
 	{
@@ -96,13 +105,50 @@ class TJsonLd extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * Returns the encoded document: Data with its context, as script-safe JSON.
-	 * @throws \JsonException if Data cannot be encoded.
-	 * @return string the JSON, or empty when Data is empty
+	 * Decodes JSON text into an array.
+	 * @param string $json the JSON text
+	 * @param string $source the name of the source, for the error message
+	 * @throws TInvalidDataValueException if the JSON text is not valid.
+	 * @return mixed the decoded value, or null for empty text
 	 */
-	public function getJson(): string
+	protected function decodeJson(string $json, string $source)
 	{
-		$data = $this->getData();
+		if (($json = trim($json)) === '') {
+			return null;
+		}
+		try {
+			return json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+		} catch (\JsonException $e) {
+			throw new TInvalidDataValueException('jsonld_json_invalid', $source, $e->getMessage());
+		}
+	}
+
+	/**
+	 * Renders the child controls into a string. The writer keeps its render filter
+	 * context, and its output is restored afterward.
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
+	 * @return string the rendered body
+	 */
+	protected function renderBody($writer): string
+	{
+		$output = $writer->getWriter();
+		$writer->setWriter(new TTextWriter());
+		try {
+			$this->renderChildren($writer);
+			return $writer->flush();
+		} finally {
+			$writer->setWriter($output);
+		}
+	}
+
+	/**
+	 * Encodes a document with its context as script-safe JSON.
+	 * @param mixed $data the document
+	 * @throws \JsonException if the document cannot be encoded.
+	 * @return string the JSON, or empty when the document is null or `[]`
+	 */
+	protected function encodeDocument($data): string
+	{
 		if ($data === null || $data === []) {
 			return '';
 		}
@@ -114,12 +160,16 @@ class TJsonLd extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * Renders the data block.
+	 * Renders the data block of StructuredData, or else of the body.
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
+	 * @throws TInvalidDataValueException if the body is not valid JSON.
 	 */
 	public function render($writer)
 	{
-		if (($json = $this->getJson()) === '') {
+		if (($data = $this->getStructuredData()) === null && $this->getHasControls()) {
+			$data = $this->decodeJson($this->renderBody($writer), 'body');
+		}
+		if (($json = $this->encodeDocument($data)) === '') {
 			return;
 		}
 		$writer->addAttribute('type', TMediaType::JSON_LD);
