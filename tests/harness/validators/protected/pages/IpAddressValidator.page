@@ -1,0 +1,34 @@
+<com:TContent ID="Content">
+<h1>Prado IpAddressValidator Tests</h1>
+<div>
+	<com:TLabel ForControl="text1" Text="Server address" />
+	<com:TTextBox ID="text1" />
+	<com:TIpAddressValidator
+		ID="validator1"
+		ControlToValidate="text1"
+		ErrorMessage="Enter an IPv4 or IPv6 address"
+		ControlCssClass="required" />
+
+	<com:TLabel ForControl="text2" Text="Public network" />
+	<com:TTextBox ID="text2" />
+	<com:TIpAddressValidator
+		ID="validator2"
+		ControlToValidate="text2"
+		ErrorMessage="Enter a public IPv4 network in CIDR notation"
+		Version="IPv4"
+		RequireCidr="true"
+		Ranges="public" />
+
+	<com:TLabel ForControl="text3" Text="Server checked private address" />
+	<com:TTextBox ID="text3" />
+	<com:TIpAddressValidator
+		ID="validator3"
+		ControlToValidate="text3"
+		ErrorMessage="Server: enter a private address"
+		Ranges="private"
+		EnableClientScript="false" />
+
+	<com:TButton ID="submit1" Text="Test" OnClick="submitted" />
+	<com:TLabel ID="status" />
+</div>
+</com:TContent>

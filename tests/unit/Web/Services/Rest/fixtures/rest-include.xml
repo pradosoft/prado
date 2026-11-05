@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rest>
+	<resource class="Prado\Test\Unit\Web\Services\Rest\UsersFixtureResource" prefix="included" Tag="from-xml" />
+	<group prefix="debug" enabled="Debug">
+		<route verbs="GET" pattern="dump" class="Prado\Test\Unit\Web\Services\Rest\UsersFixtureResource" method="index" name="dump" />
+	</group>
+</rest>

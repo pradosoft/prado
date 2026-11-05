@@ -13,6 +13,8 @@ use Prado\Web\UI\WebControls\TStyle;
 use Prado\Web\UI\THtmlWriter;
 use Prado\IO\TTextWriter;
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Test\Unit\PradoUnit;
+use Prado\Util\TMultibyteString;
 use PHPUnit\Framework\TestCase;
 use Prado\Test\Unit\Harness\Traits\TWebControlRenderTrait;
 
@@ -253,6 +255,23 @@ class TWebControlTest extends TestCase
 		$control = new TWebControl();
 		$control->setAccessKey(null);
 		$this->assertEquals('', $control->getAccessKey());
+	}
+
+	public function testAccessKeyIsOneCharacterNotOneByte()
+	{
+		$control = new TWebControl();
+		$control->setAccessKey('é');
+		$this->assertEquals('é', $control->getAccessKey());
+		$mbstring = PradoUnit::getStaticProp(TMultibyteString::class, '_mbstring');
+		PradoUnit::setStaticProp(TMultibyteString::class, '_mbstring', false);
+		try {
+			$control->setAccessKey('ü');
+			$this->assertEquals('ü', $control->getAccessKey());
+			$this->expectException(TInvalidDataValueException::class);
+			$control->setAccessKey('éa');
+		} finally {
+			PradoUnit::setStaticProp(TMultibyteString::class, '_mbstring', $mbstring);
+		}
 	}
 
 	public function testAccessKeyTooLongThrows()

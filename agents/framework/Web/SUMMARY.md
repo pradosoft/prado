@@ -4,7 +4,7 @@ HTTP layer, URL routing, asset management, session handling, and all web UI comp
 
 ## Classes
 
-- **`THttpRequest`** — Encapsulates incoming HTTP request; implements `ArrayAccess`/`IteratorAggregate` for unified GET+POST access; `getBrowser()` requires the PHP `browscap` directive and reports a configuration exception when absent.
+- **`THttpRequest`** — Encapsulates incoming HTTP request; implements `ArrayAccess`/`IteratorAggregate` for unified GET+POST access; `getBrowser()` requires the PHP `browscap` directive and reports a configuration exception when absent; `getRawBody()` / `getParsedBody()` / `getQueryParameters()` read the request body and query string.
 
 - **`THttpResponse`** — HTTP response output; manages status codes, headers, cookies, content type, charset, output buffering, file downloads (`writeFile()`, with byte ranges), redirects.
 

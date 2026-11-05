@@ -104,6 +104,7 @@ httprequest_separator_invalid			= THttpRequest.UrlParamSeparator can only contai
 httprequest_urlmanager_inexist			= THttpRequest.UrlManager ''{0}'' does not point to an existing module.
 httprequest_urlmanager_invalid			= THttpRequest.UrlManager ''{0}'' must point to a module extending from TUrlManager.
 httprequest_csrf_session_required		= THttpRequest.EnableCsrfCookie is false, which requires a session module.
+httprequest_body_json_invalid			= THttpRequest body is not valid JSON.
 
 httpcookiecollection_httpcookie_required = THttpCookieCollection can only accept THttpCookie objects.
 
@@ -191,6 +192,25 @@ pageservice_includefile_invalid			= Unable to find page service configuration {0
 pageserviceconf_file_invalid			= Unable to open page directory configuration file ''{0}''.
 pageserviceconf_page_invalid			= <page> element must have an "id" attribute in page directory configuration file ''{0}''.
 pageserviceconf_includefile_required	= Page configuration <include> element must have a "file" attribute.
+
+restservice_class_required				= TRestService resource and route configuration requires a 'class' attribute.
+restservice_resource_invalid			= TRestService resource class ''{0}'' must implement Prado\Web\Services\Rest\IRestResource.
+restservice_route_invalid				= TRestService resource ''{0}'' returned a route of method ''{1}'' that is not a TRestRoute.
+restservice_route_method_required		= TRestService route configuration of resource ''{0}'' requires a 'method' attribute.
+restservice_route_pattern_required		= TRestService route configuration of ''{0}::{1}'' requires a 'pattern' attribute.
+restservice_routeclass_invalid			= TRestService.RouteClass ''{0}'' must extend Prado\Web\Services\Rest\TRestRoutePattern.
+restservice_include_not_found			= TRestService include file ''{0}'' could not be found.
+restservice_route_unknown				= TRestService has no route named ''{0}''.
+restservice_parameter_unbound			= TRestService handler ''{0}'' requires the parameter ''{1}'', which the matched route does not supply.
+restservice_http_error					= HTTP {0} {1}
+restroute_parameter_duplicate			= TRestRoutePattern placeholder ''{0}'' is repeated in pattern ''{1}''.
+restroute_pattern_invalid				= TRestRoutePattern pattern ''{0}'' holds a malformed placeholder.
+restroute_parameter_missing				= TRestRoutePattern placeholder ''{0}'' of pattern ''{1}'' has no value.
+restresource_invalid_header				= TRestResource response header ''{0}'' has an invalid name or a value containing CR/LF.
+inputvalidator_invalid					= TInputValidator found invalid data in field(s) ''{0}''.
+inputvalidator_rule_unknown				= TInputValidator rule ''{0}'' for field ''{1}'' is not recognized.
+inputvalidator_parameter_required		= TInputValidator rule ''{0}'' for field ''{1}'' requires a parameter.
+corsmodule_credentials_wildcard			= TCorsModule.AllowOrigin must be an explicit origin (not '*') when AllowCredentials is enabled.
 
 basebehavior_cannot_setname_with_owner	= The TBaseBehavior.Name "{0}" cannot be changed (to "{1}") after the behavior is attached.
 basebehavior_sync_no_owner				= The TBaseBehavior "{0}" has no owner and cannot synchronize event handlers on a component without owners.
@@ -449,6 +469,8 @@ basevalidator_forcontrol_unsupported	= {0}.ForControl is not supported.
 comparevalidator_controltocompare_invalid = TCompareValidator.ControlToCompare contains an invalid control ID path.
 
 filevalidator_fileupload_required		= {0}.ControlToValidate must point to a TFileUpload control.
+
+ipaddressvalidator_range_invalid		= {0}.Ranges entry ''{1}'' is not an IP address, a CIDR block, or a range name.
 
 listcontrolvalidator_invalid_control	= {0}.ControlToValidate contains an invalid TListControl ID path, "{1}" is a {2}.
 
@@ -841,6 +863,7 @@ logroute_bad_prefix_callback				= TLogRoute.PrefixCallback must be callable.
 memcached_extension_required				= TMemCache requires the memcached PHP extension.
 metatagcollection_metatag_invalid			= TMetaTagCollection can only accept TMetaTag objects.
 linktagcollection_linktag_invalid			= TLinkTagCollection can only accept TLinkTag objects.
+jsonld_json_invalid						= TJsonLd {0} is not valid JSON: {1}
 numberformat_type_invalid					= TNumberFormat.Type ''{0}'' is not valid.
 pageddatasource_datasource_invalid			= TPagedDataSource.DataSource must be an array or an object implementing Traversable.
 pageddatasource_pagesize_invalid			= TPagedDataSource.PageSize must be greater than 0.

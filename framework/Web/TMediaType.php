@@ -209,6 +209,9 @@ class TMediaType implements \ArrayAccess
 	/** `application/zstd` — Zstandard-compressed data (`.zst`, `.tar.zst`). */
 	public const ZSTD = 'application/zstd';
 
+	/** `application/problem+json` — RFC 9457 problem details. */
+	public const PROBLEM_JSON = 'application/problem+json';
+
 	/** `application/ld+json` — JSON-LD structured data. */
 	public const JSON_LD = 'application/ld+json';
 

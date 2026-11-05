@@ -895,6 +895,30 @@ class THttpHeaderName extends \Prado\TEnumerable
 	 */
 	public const AccessControlMaxAge = 'Access-Control-Max-Age';
 
+	/**
+	 * `Access-Control-Request-Method` — Sent by the browser on a preflight
+	 * request to name the method of the actual request.
+	 *
+	 * Example:
+	 * ```
+	 * Access-Control-Request-Method: PUT
+	 * ```
+	 * @since 4.4.0
+	 */
+	public const AccessControlRequestMethod = 'Access-Control-Request-Method';
+
+	/**
+	 * `Access-Control-Request-Headers` — Sent by the browser on a preflight
+	 * request to list the headers of the actual request.
+	 *
+	 * Example:
+	 * ```
+	 * Access-Control-Request-Headers: content-type, x-requested-with
+	 * ```
+	 * @since 4.4.0
+	 */
+	public const AccessControlRequestHeaders = 'Access-Control-Request-Headers';
+
 	// =========================================================================
 	// WebDAV headers (RFC 4918)
 	// =========================================================================

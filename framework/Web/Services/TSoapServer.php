@@ -192,7 +192,7 @@ class TSoapServer extends \Prado\TApplicationComponent
 	protected function guessMethodCallRequested($class)
 	{
 		$namespace = $class . 'wsdl';
-		$message = file_get_contents("php://input");
+		$message = Prado::getApplication()->getRequest()->getRawBody();
 		$matches = [];
 		if (preg_match('/xmlns:([^=]+)="urn:' . $namespace . '"/', $message, $matches)) {
 			if (preg_match('/<' . $matches[1] . ':([a-zA-Z_]+[a-zA-Z0-9_]+)/', $message, $method)) {
