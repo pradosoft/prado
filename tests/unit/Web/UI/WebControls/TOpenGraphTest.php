@@ -9,6 +9,7 @@ use Prado\Web\UI\THtmlWriter;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\WebControls\THead;
 use Prado\Web\UI\WebControls\TLinkTag;
+use Prado\Web\UI\WebControls\TLiteral;
 use Prado\Web\UI\WebControls\TMetaTag;
 use Prado\Web\UI\WebControls\TOpenGraph;
 
@@ -104,6 +105,25 @@ class TOpenGraphTest extends TestCase
 		$this->assertSame(0, $control->getControls()->getCount());
 		$this->assertSame(
 			"<meta property=\"og:type\" content=\"website\" />\n<meta property=\"article:published_time\" content=\"2026-11-04\" />\n",
+			$this->renderControl($control)
+		);
+	}
+
+	public function testBodyContentRendersAfterMetaTags()
+	{
+		$control = new TOpenGraph();
+		$meta = new TMetaTag();
+		$meta->setProperty('og:image');
+		$meta->setContent('https://example.com/b.png');
+		$literal = new TLiteral();
+		$literal->setText('<!-- social -->');
+		$control->addParsedObject("\n");
+		$control->addParsedObject($literal);
+		$control->addParsedObject($meta);
+		$this->assertSame(["\n", $literal], $control->getControls()->toArray());
+		$this->assertSame([$meta], $control->getMetaTags()->toArray());
+		$this->assertSame(
+			"<meta property=\"og:type\" content=\"website\" />\n<meta property=\"og:image\" content=\"https://example.com/b.png\" />\n\n<!-- social -->",
 			$this->renderControl($control)
 		);
 	}

@@ -93,6 +93,15 @@ class TJsonLdTest extends TestCase
 		$this->assertSame('[{"@type":"Thing"},{"@type":"Place"}]', $this->jsonOf($control));
 	}
 
+	public function testCustomContext()
+	{
+		$control = new TJsonLd();
+		$control->setContext('https://example.org/vocab');
+		$this->assertSame('https://example.org/vocab', $control->getContext());
+		$control->setStructuredData(['@type' => 'Thing']);
+		$this->assertSame('{"@context":"https://example.org/vocab","@type":"Thing"}', $this->jsonOf($control));
+	}
+
 	public function testJsonTextIsDecoded()
 	{
 		$control = new TJsonLd();
@@ -176,6 +185,22 @@ class TJsonLdTest extends TestCase
 		$this->assertSame('<p><script type="application/ld+json">{"@context":"https://schema.org","@type":"Thing"}</script>', $tw->flush());
 	}
 
+	public function testBodyRestoresWriterOutputWhenAChildThrows()
+	{
+		$control = new TJsonLd();
+		$control->addParsedObject(new TJsonLdTestThrowingControl());
+		$tw = new TTextWriter();
+		$writer = new THtmlWriter($tw);
+		try {
+			$control->render($writer);
+			$this->fail('The child exception did not propagate.');
+		} catch (\RuntimeException $e) {
+			$this->assertSame('child failed', $e->getMessage());
+		}
+		$this->assertSame($tw, $writer->getWriter());
+		$this->assertSame('', $tw->flush());
+	}
+
 	public function testTemplateBodyWithExpression()
 	{
 		$page = $this->instantiate('<com:TJsonLd ID="Ld">{"@type": "Organization", "name": "<%= \'Ac\' . \'me\' %>"}</com:TJsonLd>');
@@ -203,5 +228,14 @@ class TJsonLdTestThing implements \JsonSerializable
 	public function jsonSerialize(): mixed
 	{
 		return ['@type' => 'Thing', 'name' => 'Widget'];
+	}
+}
+
+class TJsonLdTestThrowingControl extends \Prado\Web\UI\TControl
+{
+	public function render($writer)
+	{
+		$writer->write('{"partial": ');
+		throw new \RuntimeException('child failed');
 	}
 }
