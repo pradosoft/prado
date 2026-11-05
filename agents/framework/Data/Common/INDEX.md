@@ -10,7 +10,7 @@
 | [`../`](../INDEX.md)] | Data Directory |
 | [`Firebird/`](Firebird/INDEX.md) | Firebird / InterBase - `firebird`, `interbase` |
 | [`Ibm/`](Ibm/INDEX.md) | IBM DB2 - `ibm` |
-| [`Mssql/`](Mssql/INDEX.md) | SQL Server - `mssql`, `sqlsrv`, `dblib` |
+| [`SqlSrv/`](SqlSrv/INDEX.md) | SQL Server - `mssql`, `sqlsrv`, `dblib` |
 | [`Mysql/`](Mysql/INDEX.md) | MySQL / MariaDB - `mysql`, `mysqli` |
 | [`Oracle/`](Oracle/INDEX.md) | Oracle - `oci` |
 | [`Pgsql/`](Pgsql/INDEX.md) | PostgreSQL - `pgsql` |

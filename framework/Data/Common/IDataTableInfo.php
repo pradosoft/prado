@@ -25,7 +25,7 @@ use Prado\Data\IDataConnection;
  *
  * Concrete implementations: {@see TDbTableInfo} and its driver-specific
  * subclasses ({@see TMysqlTableInfo}, {@see TSqliteTableInfo},
- * {@see TPgsqlTableInfo}, {@see TMssqlTableInfo}, {@see TOracleTableInfo},
+ * {@see TPgsqlTableInfo}, {@see TSqlSrvTableInfo}, {@see TOracleTableInfo},
  * {@see TIbmTableInfo}, {@see TFirebirdTableInfo}).
  *
  * Required for portability — see {@see \Prado\Data\IDataConnection} for the full driver-portability roadmap.

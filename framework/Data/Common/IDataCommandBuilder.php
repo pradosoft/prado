@@ -36,7 +36,7 @@ use Prado\Data\IDataConnection;
  *
  * Concrete implementations: {@see TDbCommandBuilder} and its driver-specific
  * subclasses ({@see TMysqlCommandBuilder}, {@see TSqliteCommandBuilder},
- * {@see TPgsqlCommandBuilder}, {@see TMssqlCommandBuilder},
+ * {@see TPgsqlCommandBuilder}, {@see TSqlSrvCommandBuilder},
  * {@see TOracleCommandBuilder}, {@see TIbmCommandBuilder},
  * {@see TFirebirdCommandBuilder}).
  *

@@ -36,7 +36,7 @@ use Prado\Data\IDataConnection;
  *
  * Concrete implementations: {@see TDbMetaData} and its driver-specific
  * subclasses ({@see TMysqlMetaData}, {@see TSqliteMetaData},
- * {@see TPgsqlMetaData}, {@see TMssqlMetaData}, {@see TOracleMetaData},
+ * {@see TPgsqlMetaData}, {@see TSqlSrvMetaData}, {@see TOracleMetaData},
  * {@see TIbmMetaData}, {@see TFirebirdMetaData}).
  *
  * Required for portability — see {@see \Prado\Data\IDataConnection} for the full driver-portability roadmap.

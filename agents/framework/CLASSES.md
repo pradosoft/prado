@@ -15,7 +15,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 | [Prado\\Data\\Common](./Data/Common/INDEX.md) | 4 | 4 | 8 | 36 |
 | [Prado\\Data\\Common\\Firebird](./Data/Common/Firebird/INDEX.md) | 4 | 0 | 4 | 4 |
 | [Prado\\Data\\Common\\Ibm](./Data/Common/Ibm/INDEX.md) | 4 | 0 | 4 | 4 |
-| [Prado\\Data\\Common\\Mssql](./Data/Common/Mssql/INDEX.md) | 4 | 0 | 4 | 4 |
+| [Prado\\Data\\Common\\SqlSrv](./Data/Common/SqlSrv/INDEX.md) | 4 | 0 | 4 | 4 |
 | [Prado\\Data\\Common\\Mysql](./Data/Common/Mysql/INDEX.md) | 4 | 0 | 4 | 4 |
 | [Prado\\Data\\Common\\Oracle](./Data/Common/Oracle/INDEX.md) | 4 | 0 | 4 | 4 |
 | [Prado\\Data\\Common\\Pgsql](./Data/Common/Pgsql/INDEX.md) | 4 | 0 | 4 | 4 |
@@ -230,14 +230,14 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Data\Common\Mssql](./Data/Common/Mssql/INDEX.md) - Classes: 4, Interfaces: 0, Total: 4, Recursive: 4
+## [Prado\Data\Common\SqlSrv](./Data/Common/SqlSrv/INDEX.md) - Classes: 4, Interfaces: 0, Total: 4, Recursive: 4
 
 ### Classes (4)
 
-- [TMssqlCommandBuilder](./Data/Common/Mssql/TMssqlCommandBuilder.md)
-- [TMssqlMetaData](./Data/Common/Mssql/TMssqlMetaData.md)
-- [TMssqlTableColumn](./Data/Common/Mssql/TMssqlTableColumn.md)
-- [TMssqlTableInfo](./Data/Common/Mssql/TMssqlTableInfo.md)
+- [TSqlSrvCommandBuilder](./Data/Common/SqlSrv/TSqlSrvCommandBuilder.md)
+- [TSqlSrvMetaData](./Data/Common/SqlSrv/TSqlSrvMetaData.md)
+- [TSqlSrvTableColumn](./Data/Common/SqlSrv/TSqlSrvTableColumn.md)
+- [TSqlSrvTableInfo](./Data/Common/SqlSrv/TSqlSrvTableInfo.md)
 
 ---
 
