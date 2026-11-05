@@ -22,7 +22,7 @@ Full architecture reference for the Prado codebase. See [PROJECT_SUMMARY.md](PRO
 | `TApplicationComponent` | `framework/TApplicationComponent.php` | Base for all app-aware components; shortcut accessors |
 | `TApplicationConfiguration` | `framework/TApplicationConfiguration.php` | Parses `application.xml` or `application.php` |
 | `TModule` | `framework/TModule.php` | Base for pluggable modules registered in config |
-| `TService` | `framework/TService.php` | Base for application services (page, JSON, RPC, SOAP, feed) |
+| `TService` | `framework/TService.php` | Base for application services (page, JSON, SOAP, feed) |
 | `Prado` | `framework/Prado.php` | Static framework utility; autoloader, logger, aliases |
 | `TEventHandler` | `framework/TEventHandler.php` | Invokable wrapper for event handlers with data injection |
 | `TEventSubscription` | `framework/TEventSubscription.php` | RAII-style temporary event handler subscription |
@@ -39,7 +39,8 @@ TApplication
       THttpRequest, THttpResponse, THttpSession
       TUrlManager / TUrlMapping (routing)
       TAssetManager
-      Services/      (TPageService, TJsonService, TFeedService, TRpcService, TSoapService)
+      Services/      (TPageService, TJsonService, TFeedService, TSoapService)
+      RPC (TRpcService, JSON-RPC/XML-RPC, clients): pradosoft/prado-rpc (separate package)
       UI/            (TControl, TPage, TTemplateControl, WebControls/, ActiveControls/, JuiControls/)
  └─ Data Layer     framework/Data/
       TDbConnection  (PDO wrapper)
@@ -49,7 +50,7 @@ TApplication
  └─ Security       framework/Security/   (TAuthManager, TSecurityManager, TUserManager, TPermissionsManager)
  └─ I18N           framework/I18N/       (TGlobalization, MessageSource, CultureInfo, TDateFormat, TNumberFormat)
  └─ Xml            framework/Xml/        (TXmlDocument/TXmlElement with XPath, DOM compat, ArrayAccess)
- └─ Util           framework/Util/       (logging, behaviors, cron, RPC clients, signals, TVarDumper, TCallChain)
+ └─ Util           framework/Util/       (logging, behaviors, cron, signals, TVarDumper, TCallChain)
  └─ PHPStan        framework/PHPStan/    (custom static-analysis extensions for dynamic Prado properties)
  └─ Collections    framework/Collections/ (TList, TMap, TPriorityList, TPriorityMap, TQueue, TStack, TWeakList)
  └─ Exceptions     framework/Exceptions/  (exception hierarchy, TErrorHandler, multilingual messages)
@@ -417,7 +418,6 @@ Used throughout for configuration, template processing, and application XML hand
 ### Other
 - `TVarDumper` — human-readable `TComponent` variable dump; use instead of `var_dump()`.
 - `TDataFieldAccessor` — dot-notation property path accessor (`"User.Profile.Name"`).
-- `TJsonRpcClient` / `TXmlRpcClient` — RPC clients.
 
 ---
 
@@ -476,9 +476,10 @@ Update extensions when adding new dynamic accessor prefixes or type-narrowing he
 |---|---|---|
 | `TPageService` | `page` | Template-based web pages |
 | `TJsonService` | `json` | JSON responses |
-| `TRpcService` | `rpc` | JSON-RPC / XML-RPC |
 | `TSoapService` | `soap` | SOAP / WSDL |
 | `TFeedService` | `feed` | RSS / Atom feeds |
+
+RPC (`TRpcService`, JSON-RPC and XML-RPC, and the `TRpcClient` family) left the framework in 4.4.0 (#1210). It is the `pradosoft/prado-rpc` package; `composer require pradosoft/prado-rpc` keeps the `Prado\Web\Services` server classes and short names, and the clients become `Prado\IO\Rpc`. What the framework owes the package is in [Web/Services/INDEX.md](framework/Web/Services/INDEX.md#rpc-the-pradosoftprado-rpc-package).
 
 ### UI Hierarchy
 ```
@@ -609,7 +610,7 @@ Tests require a running `TApplication`. Bootstrap: `tests/test_tools/phpunit_boo
 │   │   └── Cron/               # TCronModule, TDbCronModule, TTimeScheduler
 │   ├── Web/                    # HTTP layer, routing, asset management, UI, services, JS
 │   │   ├── Javascripts/        # TJavaScript, source/prado/ (browser JS for WebControls)
-│   │   ├── Services/           # TPageService, TJsonService, TFeedService, TRpcService, TSoapService
+│   │   ├── Services/           # TPageService, TJsonService, TFeedService, TSoapService
 │   │   └── UI/                 # TControl, TPage, TTemplateControl, TTheme
 │   │       ├── ActiveControls/ # Callback-enabled active controls
 │   │       ├── JuiControls/    # jQuery UI controls

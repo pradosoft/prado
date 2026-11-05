@@ -15,6 +15,8 @@ Input/output utilities for the Prado framework: text writer abstractions, archiv
 | [HttpClient/](HttpClient/INDEX.md) | HTTP transports: `THttpClient` with `TCurlHttpClient`, `TFopenHttpClient`, `TCachedHttpClient`, `THttpClientResponse`, and the async [`TCurlMultiHttpClient`](HttpClient/TCurlMultiHttpClient.md) on the event loop. |
 | [Socket/](Socket/INDEX.md) | Socket streams, servers, the dependency-free [`TSocketReactor`](Socket/TSocketReactor.md) event loop, and `TSocketServerModule`. |
 
+`Prado\IO\Rpc` (the JSON-RPC and XML-RPC clients `TRpcClient`, `TJsonRpcClient`, `TXmlRpcClient` and the `TXmlRpcCodec`) is the `pradosoft/prado-rpc` package, built on `HttpClient/`; see [Web/Services](../Web/Services/INDEX.md#rpc-the-pradosoftprado-rpc-package).
+
 ## Classes
 
 ### Text Writers

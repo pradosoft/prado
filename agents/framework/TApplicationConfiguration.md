@@ -88,6 +88,7 @@ return [
 - Looks for `extra.prado.bootstrap` key in each package's `composer.json`.
 - Caches the discovered extension list in the application cache under `COMPOSER_INSTALLED_CACHE`.
 - Bootstrap classes are instantiated and their `init()` is called during application init.
+- `extra.prado.class-map` (short name → FQN JSON files, `COMPOSER_EXTRA_CLASSMAP`) and `extra.prado.error-messages` (an exception message file, `COMPOSER_EXTRA_ERRORMESSAGES`) are data-only registrations that need no bootstrap class. `pradosoft/prado-rpc` uses both and nothing else; see [Web/Services](Web/Services/INDEX.md#rpc-the-pradosoftprado-rpc-package).
 
 ## Patterns & Gotchas
 

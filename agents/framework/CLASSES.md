@@ -1,6 +1,6 @@
 # PRADO Framework Classes
 
-**Total Classes: 717**
+**Total Classes: 704**
 
 This document lists all classes in the PRADO framework as defined in `classes.php`.
 
@@ -8,7 +8,7 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 | Directory | Classes | Interfaces | Total | Recursive |
 |-----------|---------|------------|-------|-----------|
-| [Prado](./INDEX.md) | 17 | 7 | 24 | 717 |
+| [Prado](./INDEX.md) | 17 | 7 | 24 | 704 |
 | [Prado\\Caching](./Caching/INDEX.md) | 18 | 2 | 20 | 20 |
 | [Prado\\Collections](./Collections/INDEX.md) | 27 | 7 | 34 | 34 |
 | [Prado\\Data](./Data/INDEX.md) | 10 | 5 | 15 | 51 |
@@ -32,17 +32,17 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 | [Prado\\Security\\Permissions](./Security/Permissions/INDEX.md) | 8 | 1 | 9 | 9 |
 | [Prado\\Shell](./Shell/INDEX.md) | 4 | 0 | 4 | 10 |
 | [Prado\\Shell\\Actions](./Shell/Actions/INDEX.md) | 5 | 0 | 5 | 5 |
-| [Prado\\Util](./Util/INDEX.md) | 24 | 7 | 31 | 79 |
+| [Prado\\Util](./Util/INDEX.md) | 18 | 7 | 25 | 73 |
 | [Prado\\Util\\Behaviors](./Util/Behaviors/INDEX.md) | 14 | 0 | 14 | 14 |
 | [Prado\\Util\\Cron](./Util/Cron/INDEX.md) | 11 | 0 | 11 | 11 |
 | [Prado\\Util\\Helpers](./Util/Helpers/INDEX.md) | 6 | 0 | 6 | 6 |
 | [Prado\\Util\\Log](./Util/Log/INDEX.md) | 13 | 1 | 14 | 14 |
 | [Prado\\Util\\Math](./Util/Math/INDEX.md) | 2 | 0 | 2 | 2 |
 | [Prado\\Util\\Traits](./Util/Traits/INDEX.md) | 2 | 0 | 2 | 2 |
-| [Prado\\Web](./Web/INDEX.md) | 21 | 0 | 21 | 424 |
+| [Prado\\Web](./Web/INDEX.md) | 21 | 0 | 21 | 417 |
 | [Prado\\Web\\Behaviors](./Web/Behaviors/INDEX.md) | 1 | 0 | 1 | 1 |
 | [Prado\\Web\\Javascripts](./Web/Javascripts/INDEX.md) | 4 | 0 | 4 | 4 |
-| [Prado\\Web\\Services](./Web/Services/INDEX.md) | 14 | 1 | 15 | 15 |
+| [Prado\\Web\\Services](./Web/Services/INDEX.md) | 7 | 1 | 8 | 8 |
 | [Prado\\Web\\UI](./Web/UI/INDEX.md) | 28 | 16 | 44 | 367 |
 | [Prado\\Web\\UI\\ActiveControls](./Web/UI/ActiveControls/INDEX.md) | 72 | 2 | 74 | 74 |
 | [Prado\\Web\\UI\\JuiControls](./Web/UI/JuiControls/INDEX.md) | 19 | 1 | 20 | 20 |
@@ -518,16 +518,11 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 - [TMultibyteString](./Util/TMultibyteString.md)
 - [TParameterModule](./Util/TParameterModule.md)
 - [TPluginModule](./Util/TPluginModule.md)
-- [TRpcClient](./Util/TRpcClient.md)
-- [TRpcClientRequestException](./Util/TRpcClientRequestException.md)
-- [TRpcClientResponseException](./Util/TRpcClientResponseException.md)
-- [TRpcClientTypesEnumerable](./Util/TRpcClientTypesEnumerable.md)
 - [TSignalParameter](./Util/TSignalParameter.md)
 - [TSignalsDispatcher](./Util/TSignalsDispatcher.md)
 - [TSimpleDateFormatter](./Util/TSimpleDateFormatter.md)
 - [TUtf8Converter](./Util/TUtf8Converter.md)
 - [TVarDumper](./Util/TVarDumper.md)
-- [TXmlRpcClient](./Util/TXmlRpcClient.md)
 
 ---
 
@@ -682,18 +677,11 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 - [TFeedService](./Web/Services/TFeedService.md)
 - [TJsonResponse](./Web/Services/TJsonResponse.md)
-- [TJsonRpcProtocol](./Web/Services/TJsonRpcProtocol.md)
 - [TJsonService](./Web/Services/TJsonService.md)
 - [TPageConfiguration](./Web/Services/TPageConfiguration.md)
 - [TPageService](./Web/Services/TPageService.md)
-- [TRpcApiProvider](./Web/Services/TRpcApiProvider.md)
-- [TRpcException](./Web/Services/TRpcException.md)
-- [TRpcProtocol](./Web/Services/TRpcProtocol.md)
-- [TRpcServer](./Web/Services/TRpcServer.md)
-- [TRpcService](./Web/Services/TRpcService.md)
 - [TSoapServer](./Web/Services/TSoapServer.md)
 - [TSoapService](./Web/Services/TSoapService.md)
-- [TXmlRpcProtocol](./Web/Services/TXmlRpcProtocol.md)
 
 ---
 
