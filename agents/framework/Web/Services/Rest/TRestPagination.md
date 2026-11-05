@@ -22,5 +22,5 @@ public function index(): array
 ```
 
 ## Gotchas
-- `getOffset()` returns `PHP_INT_MAX` instead of overflowing when `(page - 1) * perPage` exceeds it.
+- `setPage()` caps the page at `intdiv(PHP_INT_MAX, perPage)`, so `getOffset()` never overflows; a `per_page=1` request with a page near `PHP_INT_MAX` is capped, not fatal.
 - `from` and `to` are `null` for an empty total.

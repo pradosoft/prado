@@ -138,6 +138,16 @@ class TRestRoutePatternTest extends \PHPUnit\Framework\TestCase
 		$this->assertNull($route->matchPath($this->requestFor('/user')));
 	}
 
+	public function testMatchPathWithARegularExpression(): void
+	{
+		$route = new TRestRoutePattern();
+		$route->setPattern('api/re/{id}');
+		$route->setRegularExpression('#^api/re/(?P<id>\d+)$#');
+		$route->init([]);
+		$this->assertSame(['id' => '5'], $route->matchPath($this->requestFor('/api/re/5')));
+		$this->assertNull($route->matchPath($this->requestFor('/api/re/x')));
+	}
+
 	public function testMatchPathRootPattern(): void
 	{
 		$route = $this->route('');

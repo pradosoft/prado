@@ -184,13 +184,13 @@ class TRestPagination extends TApplicationComponent
 
 	/**
 	 * Sets the current page number. Values below 1 are clamped to 1, and the
-	 * value is capped so that {@see getOffset()} cannot overflow `PHP_INT_MAX`
-	 * for the current per-page size.
+	 * value is capped at `intdiv(PHP_INT_MAX, perPage)` so that {@see getOffset()}
+	 * stays below `PHP_INT_MAX` for the current per-page size.
 	 * @param int $value 1-based page number.
 	 */
 	protected function setPage(int $value): void
 	{
-		$maxPage = intdiv(PHP_INT_MAX, max(1, $this->getPerPageDirect())) + 1;
+		$maxPage = intdiv(PHP_INT_MAX, max(1, $this->getPerPageDirect()));
 		$this->setPageDirect(min($maxPage, max(1, $value)));
 	}
 
@@ -233,20 +233,13 @@ class TRestPagination extends TApplicationComponent
 	/**
 	 * Returns the SQL `OFFSET` value for the current page.
 	 *
-	 * The product is guarded against integer overflow: if `(page - 1) * perPage`
-	 * exceeds `PHP_INT_MAX` (which PHP would promote to a float), `PHP_INT_MAX`
-	 * is returned so the declared `int` return type holds.
+	 * {@see setPage()} caps the page so that the product stays below `PHP_INT_MAX`.
 	 *
 	 * @return int Zero-based row offset.
 	 */
 	public function getOffset(): int
 	{
-		$page = $this->getPage() - 1;
-		$perPage = $this->getPerPage();
-		if ($page > intdiv(PHP_INT_MAX, $perPage)) {
-			return PHP_INT_MAX;
-		}
-		return $page * $perPage;
+		return ($this->getPage() - 1) * $this->getPerPage();
 	}
 
 	/**
