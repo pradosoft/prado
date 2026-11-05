@@ -1,5 +1,8 @@
 <?php
 
+namespace Prado\Test\Unit;
+
+use Prado\Test\Unit\Harness\TTestApplication;
 use Prado\Exceptions\THttpException;
 use Prado\Prado;
 use Prado\TApplication;
@@ -68,7 +71,7 @@ class InitTrackingService extends TestBaseService
  *
  * @package System
  */
-class TApplicationServiceTest extends PHPUnit\Framework\TestCase
+class TApplicationServiceTest extends \PHPUnit\Framework\TestCase
 {
 	private TApplication $_app;
 	private array $_snap = [];
@@ -97,7 +100,6 @@ class TApplicationServiceTest extends PHPUnit\Framework\TestCase
 	{
 		PradoUnit::setProp($this->_app, '_services', $services);
 	}
-
 
 	// -----------------------------------------------------------------------
 	// getPageServiceID / setPageServiceID

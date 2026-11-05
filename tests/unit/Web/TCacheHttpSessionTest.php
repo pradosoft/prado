@@ -1,11 +1,13 @@
 <?php
 
+namespace Prado\Test\Unit\Web;
+
 use Prado\Caching\TMemCache;
 use Prado\Exceptions\TConfigurationException;
 use Prado\TApplication;
 use Prado\Web\TCacheHttpSession;
 
-class TCacheHttpSessionTest extends PHPUnit\Framework\TestCase
+class TCacheHttpSessionTest extends \PHPUnit\Framework\TestCase
 {
 	protected $app;
 	protected static $cache = null;

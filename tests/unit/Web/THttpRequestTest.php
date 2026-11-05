@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Prado;
@@ -12,7 +14,7 @@ use Prado\Web\TUrlManager;
 use Prado\Web\TUrlMapping;
 use Prado\Xml\TXmlDocument;
 
-class THttpRequestTest extends PHPUnit\Framework\TestCase
+class THttpRequestTest extends \PHPUnit\Framework\TestCase
 {
 	public static $app = null;
 
@@ -99,7 +101,6 @@ class THttpRequestTest extends PHPUnit\Framework\TestCase
 		} catch (TConfigurationException $e) {
 		}
 		$request = null;
-
 
 		// Try with valid module id, but not instance of TUrlManager
 		$module = new TAssetManager();
@@ -239,7 +240,7 @@ class THttpRequestTest extends PHPUnit\Framework\TestCase
 				else
 					self::fail ('Exception raised : '.$e->getMessage());
 		}*/
-		throw new PHPUnit\Framework\IncompleteTestError();
+		throw new \PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testGetUserAgent()
@@ -284,7 +285,7 @@ class THttpRequestTest extends PHPUnit\Framework\TestCase
 		$acceptLanguages=array('fr', 'en-us','fr-fr','en');
 		self::assertEquals($acceptLanguages, $request->getUserLanguages());
 		*/
-		throw new PHPUnit\Framework\IncompleteTestError();
+		throw new \PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testSetEnableCookieValidation()

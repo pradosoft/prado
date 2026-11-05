@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/TComponentTestBase.php';
+namespace Prado\Test\Unit;
 
 use Prado\TComponent;
 use Prado\TEventResults;
@@ -21,7 +21,7 @@ class TComponentDynamicTest extends TComponentTestBase
 		$this->component->attachBehavior('TDynamicBehavior', new TDynamicBehavior);
 
 		//Check that the behavior is working as it should
-		$this->assertTrue($this->component->isa('TDynamicBehavior'));
+		$this->assertTrue($this->component->isa(TDynamicBehavior::class));
 		$this->assertEquals('dyAttachBehavior', $this->component->getLastBehaviorDynamicMethodCalled());
 
 		// call basic behavior implemented method from object (containing behavior)
@@ -48,15 +48,13 @@ class TComponentDynamicTest extends TComponentTestBase
 		$this->assertEquals(2420, $this->component->dyTestIntraEvent(121, 10));
 
 		$this->component->detachBehavior('TDynamicBehavior');
-		$this->assertFalse($this->component->isa('TDynamicBehavior'));
-
-
+		$this->assertFalse($this->component->isa(TDynamicBehavior::class));
 
 		//Add Class Behavior with dynamic call
 		$this->component->attachBehavior('TDynamicClassBehavior', new TDynamicClassBehavior);
 
 		//Check that the behavior is working as it should
-		$this->assertTrue($this->component->isa('TDynamicClassBehavior'));
+		$this->assertTrue($this->component->isa(TDynamicClassBehavior::class));
 		$this->assertEquals('dyAttachBehavior', $this->component->getLastBehaviorDynamicMethodCalled());
 
 		// call basic behavior implemented method from object (containing behavior)
@@ -83,7 +81,7 @@ class TComponentDynamicTest extends TComponentTestBase
 		$this->assertEquals(2420, $this->component->dyTestIntraEvent(121, 10));
 
 		$this->component->detachBehavior('TDynamicClassBehavior');
-		$this->assertFalse($this->component->isa('TDynamicClassBehavior'));
+		$this->assertFalse($this->component->isa(TDynamicClassBehavior::class));
 	}
 
 	// This also tests the priority of the common global raiseEvent events
@@ -187,7 +185,6 @@ class TComponentDynamicTest extends TComponentTestBase
 
 		$this->assertEquals(0.25, $this->component->dyPowerFunction(2, 2));
 
-
 		$this->component->detachBehavior('dy1');
 		$this->component->detachBehavior('dy2');
 		$this->component->detachBehavior('dy3');
@@ -233,7 +230,6 @@ class TComponentDynamicTest extends TComponentTestBase
 		$this->component->listen();
 		$this->assertEquals(1, $this->component->IntraEvents->LastCall);
 
-
 		$this->assertEquals(3, $this->component->evaluateExpression('1+2'));
 		$this->assertEquals(7, $this->component->IntraEvents->LastCall);
 
@@ -247,7 +243,6 @@ class TComponentDynamicTest extends TComponentTestBase
 
 		$this->assertNull($this->component->addParsedObject($component2));
 		$this->assertEquals(10, $this->component->IntraEvents->LastCall);
-
 
 		//  Attach new Barbehavior
 		$behavior = new BarBehavior;
@@ -266,7 +261,6 @@ class TComponentDynamicTest extends TComponentTestBase
 
 		$this->assertEquals($behavior, $this->component->detachBehavior('BarBehavior'));
 		$this->assertEquals(12, $this->component->IntraEvents->LastCall);
-
 
 		$this->component->attachEventHandler('OnMyEvent', [$this->component, 'myEventHandler']);
 		$this->component->raiseEvent('OnMyEvent', $this, null);

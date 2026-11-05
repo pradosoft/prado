@@ -1,8 +1,10 @@
 <?php
 
+namespace Prado\Test\Unit\Web;
+
 use Prado\Web\THttpUtility;
 
-class THttpUtilityTest extends PHPUnit\Framework\TestCase
+class THttpUtilityTest extends \PHPUnit\Framework\TestCase
 {
 	public function testHtmlEncode()
 	{

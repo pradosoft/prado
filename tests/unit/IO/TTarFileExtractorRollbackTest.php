@@ -1,6 +1,8 @@
 <?php
 
+namespace Prado\Test\Unit\IO;
 
+use Prado\Test\Unit\Harness\IO\TarTestHelper;
 use PHPUnit\Framework\TestCase;
 use Prado\IO\TTarFileExtractor;
 

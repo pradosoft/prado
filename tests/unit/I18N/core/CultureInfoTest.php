@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\I18N\core;
+
 use PHPUnit\Framework\TestCase;
 use Prado\I18N\core\CultureInfo;
 use Prado\I18N\core\CultureInfoUnits;

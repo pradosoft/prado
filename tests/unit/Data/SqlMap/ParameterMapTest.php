@@ -1,6 +1,10 @@
 <?php
 
-require_once(__DIR__ . '/BaseCase.php');
+namespace Prado\Test\Unit\Data\SqlMap;
+
+use Prado\Test\Unit\Data\SqlMap\domain\Account;
+use Prado\Test\Unit\Data\SqlMap\domain\Category;
+use Prado\Test\Unit\Data\SqlMap\domain\Order;
 
 class ParameterMapTest extends BaseCase
 {
@@ -54,7 +58,6 @@ class ParameterMapTest extends BaseCase
 		$this->assertAccount6($account);
 	}
 
-
 	/// Test Test Null Value Replacement Inline
 	public function testUnknownParameterClass()
 	{
@@ -64,7 +67,6 @@ class ParameterMapTest extends BaseCase
 		$account = self::$sqlmap->queryForObject("GetAccountNullableEmail", 6);
 		$this->assertAccount6($account);
 	}
-
 
 	/// Test null replacement in ParameterMap property
 	/// for System.DateTime.MinValue
@@ -134,11 +136,9 @@ class ParameterMapTest extends BaseCase
 			$this->assertSame($category->getName(), $categoryRead->getName());
 			$this->assertSame('', $categoryRead->getGuidString());
 		} else {
-			throw new PHPUnit\Framework\IncompleteTestError();
+			throw new \PHPUnit\Framework\IncompleteTestError();
 		}
 	}
-
-
 
 	/// Test complex mapping Via hasTable
 	/// <example>

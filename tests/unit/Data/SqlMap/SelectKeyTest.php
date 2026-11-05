@@ -1,6 +1,17 @@
 <?php
 
-require_once(__DIR__ . '/BaseCase.php');
+namespace Prado\Test\Unit\Data\SqlMap;
+
+use Prado\Test\Unit\Data\SqlMap\domain\A;
+use Prado\Test\Unit\Data\SqlMap\domain\Account;
+use Prado\Test\Unit\Data\SqlMap\domain\B;
+use Prado\Test\Unit\Data\SqlMap\domain\C;
+use Prado\Test\Unit\Data\SqlMap\domain\D;
+use Prado\Test\Unit\Data\SqlMap\domain\E;
+use Prado\Test\Unit\Data\SqlMap\domain\F;
+use Prado\Test\Unit\Data\SqlMap\domain\LineItem;
+use Prado\Test\Unit\Data\SqlMap\domain\LineItemCollection;
+use Prado\Test\Unit\Data\SqlMap\domain\Order;
 
 class SelectKeyTest extends BaseCase
 {
@@ -100,7 +111,6 @@ class SelectKeyTest extends BaseCase
 		$item->getOrder()->setId(9);
 		$item->setPrice(44.00);
 		$item->setQuantity(1);
-
 
 		$key = self::$sqlmap->Insert("InsertLineItemNoKey", $item);
 

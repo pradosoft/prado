@@ -24,6 +24,8 @@
 
 declare(strict_types=1);
 
+namespace Prado\Test\Unit\PHPStan;
+
 use PHPUnit\Framework\TestCase;
 
 /**

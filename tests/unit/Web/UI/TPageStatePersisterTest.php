@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI;
+
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\TPageStatePersister;
 use Prado\Web\UI\IPageStatePersister;
@@ -23,7 +25,7 @@ class TPageStatePersisterTestPage extends TPage
 	}
 }
 
-class TPageStatePersisterTest extends PHPUnit\Framework\TestCase
+class TPageStatePersisterTest extends \PHPUnit\Framework\TestCase
 {
 	/**
 	 * Create a page with all state transformation features disabled so that

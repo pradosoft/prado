@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI;
+
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\TPageStatePersister;
 use Prado\Web\UI\TSessionPageStatePersister;
@@ -14,7 +16,7 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Web\UI\ActiveControls\TCallbackClientScript;
 
-class TPageTest extends PHPUnit\Framework\TestCase
+class TPageTest extends \PHPUnit\Framework\TestCase
 {
 	// -----------------------------------------------------------------------
 	// Construction and inheritance
@@ -188,7 +190,7 @@ class TPageTest extends PHPUnit\Framework\TestCase
 	{
 		$page = new TPage();
 		// setTheme has not been called → _theme is null; getTheme does not call service
-		$reflection = new ReflectionProperty(TPage::class, '_theme');
+		$reflection = new \ReflectionProperty(TPage::class, '_theme');
 		$reflection->setAccessible(true);
 		$this->assertNull($reflection->getValue($page));
 	}
@@ -200,7 +202,7 @@ class TPageTest extends PHPUnit\Framework\TestCase
 		$page->setTheme($theme);
 
 		// getTheme() only resolves a string; with an object it returns it directly
-		$reflection = new ReflectionProperty(TPage::class, '_theme');
+		$reflection = new \ReflectionProperty(TPage::class, '_theme');
 		$reflection->setAccessible(true);
 		$this->assertSame($theme, $reflection->getValue($page));
 	}
@@ -209,7 +211,7 @@ class TPageTest extends PHPUnit\Framework\TestCase
 	{
 		$page = new TPage();
 		$page->setTheme('');
-		$reflection = new ReflectionProperty(TPage::class, '_theme');
+		$reflection = new \ReflectionProperty(TPage::class, '_theme');
 		$reflection->setAccessible(true);
 		$this->assertNull($reflection->getValue($page));
 	}
@@ -218,7 +220,7 @@ class TPageTest extends PHPUnit\Framework\TestCase
 	{
 		$page = new TPage();
 		$page->setTheme('SomeTheme');
-		$reflection = new ReflectionProperty(TPage::class, '_theme');
+		$reflection = new \ReflectionProperty(TPage::class, '_theme');
 		$reflection->setAccessible(true);
 		$this->assertEquals('SomeTheme', $reflection->getValue($page));
 	}
@@ -226,7 +228,7 @@ class TPageTest extends PHPUnit\Framework\TestCase
 	public function testGetStyleSheetThemeIsNullByDefault(): void
 	{
 		$page = new TPage();
-		$reflection = new ReflectionProperty(TPage::class, '_styleSheet');
+		$reflection = new \ReflectionProperty(TPage::class, '_styleSheet');
 		$reflection->setAccessible(true);
 		$this->assertNull($reflection->getValue($page));
 	}
@@ -236,7 +238,7 @@ class TPageTest extends PHPUnit\Framework\TestCase
 		$page = new TPage();
 		$theme = $this->createMock(TTheme::class);
 		$page->setStyleSheetTheme($theme);
-		$reflection = new ReflectionProperty(TPage::class, '_styleSheet');
+		$reflection = new \ReflectionProperty(TPage::class, '_styleSheet');
 		$reflection->setAccessible(true);
 		$this->assertSame($theme, $reflection->getValue($page));
 	}
@@ -630,7 +632,7 @@ class TPageTest extends PHPUnit\Framework\TestCase
 		$page = new TPage();
 		$page->setFocus('myElementId');
 
-		$reflection = new ReflectionProperty(TPage::class, '_focus');
+		$reflection = new \ReflectionProperty(TPage::class, '_focus');
 		$reflection->setAccessible(true);
 		$this->assertEquals('myElementId', $reflection->getValue($page));
 	}

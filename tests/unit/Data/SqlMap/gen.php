@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Data\SqlMap;
+
 $props = <<<EOD
 _prepend
 _property

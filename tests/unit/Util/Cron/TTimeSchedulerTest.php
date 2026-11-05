@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Cron;
+
 use Prado\Util\Cron\TTimeScheduler;
 
 //date format = d. fo. = dfo
@@ -8,7 +10,7 @@ function dfo($time)
 	return date('l jS \of F Y h:i:s A', $time);
 }
 
-class TTimeSchedulerTest extends PHPUnit\Framework\TestCase
+class TTimeSchedulerTest extends \PHPUnit\Framework\TestCase
 {
 	protected $_zone;
 	protected $obj;
@@ -158,7 +160,7 @@ class TTimeSchedulerTest extends PHPUnit\Framework\TestCase
 			try {
 				$this->obj->setSchedule($schedule);
 				$this->fail('Did not raised TInvalidDataValueException on invalid Cron Schedule: ' . $schedule);
-			} catch(Exception $e) {
+			} catch(\Exception $e) {
 			}
 		}
 		$analogs = ['@annually', '@yearly', '@monthly', '@weekly', '@daily', '@hourly'];

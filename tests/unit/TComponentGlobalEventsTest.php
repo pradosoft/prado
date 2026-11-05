@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/TComponentTestBase.php';
+namespace Prado\Test\Unit;
 
 use Prado\TComponent;
 
@@ -16,7 +16,6 @@ class TComponentGlobalEventsTest extends TComponentTestBase
 		$this->component->unlisten();
 		$this->assertEquals(false, $this->component->getListeningToGlobalEvents());
 	}
-
 
 	public function testConstructorAutoListen()
 	{
@@ -36,8 +35,8 @@ class TComponentGlobalEventsTest extends TComponentTestBase
 
 		// tests order of class behaviors when a parent and class have class behavior.
 		//	The child should override the parent object-oriented programming style
-		$this->component->attachClassBehavior('Bar', 'BarBehavior', 'NewComponentNoListen');
-		$this->component->attachClassBehavior('FooBar', 'FooBarBehavior', 'NewComponent');
+		$this->component->attachClassBehavior('Bar', BarBehavior::class, NewComponentNoListen::class);
+		$this->component->attachClassBehavior('FooBar', FooBarBehavior::class, NewComponent::class);
 
 		//create new object with new class behaviors built in, defined in the two lines above
 		$component = new NewComponentNoListen;
@@ -48,10 +47,9 @@ class TComponentGlobalEventsTest extends TComponentTestBase
 		$this->assertEquals(8, $component->FooBar->moreFunction(2, 2));
 
 		$component->unlisten();// unwind object and class behaviors
-		$this->component->detachClassBehavior('FooBar', 'NewComponent');
-		$this->component->detachClassBehavior('Bar', 'NewComponentNoListen');
+		$this->component->detachClassBehavior('FooBar', NewComponent::class);
+		$this->component->detachClassBehavior('Bar', NewComponentNoListen::class);
 	}
-
 
 	public function testListenAndUnlisten()
 	{
@@ -76,7 +74,6 @@ class TComponentGlobalEventsTest extends TComponentTestBase
 		//This is from $this->component being instanced and listening.  $component is accessing the global event structure
 		$this->assertEquals(1, $component->getEventHandlers('fxAttachClassBehavior')->getCount());
 	}
-
 
 	public function testListenAndUnlistenWithDynamicEventCatching()
 	{

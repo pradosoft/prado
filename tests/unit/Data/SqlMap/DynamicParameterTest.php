@@ -1,12 +1,16 @@
 <?php
 
-require_once(__DIR__ . '/../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\SqlMap;
+
+use Prado\Data\Common\Mysql\TMysqlMetaData;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
+
 use Prado\Data\SqlMap\TSqlMapManager;
 use Prado\Data\TDbConnection;
 use Prado\Prado;
 use Prado\TApplication;
 
-class DynamicParameterTest extends PHPUnit\Framework\TestCase
+class DynamicParameterTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 	

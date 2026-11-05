@@ -1,5 +1,8 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Behaviors;
+
+use Prado\Prado;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\TComponent;
@@ -16,7 +19,7 @@ class TTestApplicationSignals extends TApplicationSignals
 	
 }
 
-class TApplicationSignalTest extends PHPUnit\Framework\TestCase
+class TApplicationSignalTest extends \PHPUnit\Framework\TestCase
 {
 	public const BEHAVIOR_NAME = 'appSignals';
 

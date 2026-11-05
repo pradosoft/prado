@@ -1,6 +1,8 @@
 <?php
 
-require_once __DIR__ . '/PradoUnitRequires.php';
+namespace Prado\Test\Unit;
+
+use Prado\Test\Unit\Harness\TTestApplication;
 
 use PHPUnit\Framework\TestCase;
 use Prado\IService;

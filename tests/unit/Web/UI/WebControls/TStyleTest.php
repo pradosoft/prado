@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI\WebControls;
+
 use Prado\Web\UI\TControl;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\TTemplate;

@@ -1,6 +1,8 @@
 <?php
 
-require_once(__DIR__ . '/../../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\DbSpecific\Sqlite;
+
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 
 use Prado\Data\TDbConnection;
 use Prado\TApplication;
@@ -17,7 +19,7 @@ use Prado\TApplication;
  *
  * Tests are skipped automatically when the pdo_sqlite extension is missing.
  */
-class TDbConnectionCharsetSqliteIntegrationTest extends PHPUnit\Framework\TestCase
+class TDbConnectionCharsetSqliteIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

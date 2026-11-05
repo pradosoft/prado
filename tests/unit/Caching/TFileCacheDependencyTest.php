@@ -1,8 +1,10 @@
 <?php
 
+namespace Prado\Test\Unit\Caching;
+
 use Prado\Caching\TFileCacheDependency;
 
-class TFileCacheDependencyTest extends PHPUnit\Framework\TestCase
+class TFileCacheDependencyTest extends \PHPUnit\Framework\TestCase
 {
 	protected function setUp(): void
 	{

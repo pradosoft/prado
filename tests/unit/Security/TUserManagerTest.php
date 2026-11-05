@@ -1,5 +1,8 @@
 <?php
 
+namespace Prado\Test\Unit\Security;
+
+use Prado\Security\TUserManagerPasswordMode;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
@@ -8,11 +11,10 @@ use Prado\Security\TUserManager;
 use Prado\TApplication;
 use Prado\Xml\TXmlDocument;
 
-class TUserManagerTest extends PHPUnit\Framework\TestCase
+class TUserManagerTest extends \PHPUnit\Framework\TestCase
 {
 	public static $app = null;
 	public static $config = null;
-
 
 	protected function setUp(): void
 	{

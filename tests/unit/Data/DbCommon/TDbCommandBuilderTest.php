@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Data\DbCommon;
+
 use Prado\Data\Common\TDbCommandBuilder;
 use Prado\Data\Common\Sqlite\TSqliteMetaData;
 use Prado\Data\TDbConnection;
@@ -15,7 +17,7 @@ use Prado\Data\TDbConnection;
  *
  * Tests that require a live connection are guarded with pdo_sqlite checks.
  */
-class TDbCommandBuilderTest extends PHPUnit\Framework\TestCase
+class TDbCommandBuilderTest extends \PHPUnit\Framework\TestCase
 {
 	private static TDbConnection $conn;
 	private static TSqliteMetaData $meta;
@@ -60,23 +62,23 @@ class TDbCommandBuilderTest extends PHPUnit\Framework\TestCase
 
 	public function test_get_pdo_type_boolean()
 	{
-		$this->assertEquals(PDO::PARAM_BOOL, TDbCommandBuilder::getPdoType(true));
-		$this->assertEquals(PDO::PARAM_BOOL, TDbCommandBuilder::getPdoType(false));
+		$this->assertEquals(\PDO::PARAM_BOOL, TDbCommandBuilder::getPdoType(true));
+		$this->assertEquals(\PDO::PARAM_BOOL, TDbCommandBuilder::getPdoType(false));
 	}
 
 	public function test_get_pdo_type_integer()
 	{
-		$this->assertEquals(PDO::PARAM_INT, TDbCommandBuilder::getPdoType(42));
+		$this->assertEquals(\PDO::PARAM_INT, TDbCommandBuilder::getPdoType(42));
 	}
 
 	public function test_get_pdo_type_string()
 	{
-		$this->assertEquals(PDO::PARAM_STR, TDbCommandBuilder::getPdoType('hello'));
+		$this->assertEquals(\PDO::PARAM_STR, TDbCommandBuilder::getPdoType('hello'));
 	}
 
 	public function test_get_pdo_type_null()
 	{
-		$this->assertEquals(PDO::PARAM_NULL, TDbCommandBuilder::getPdoType(null));
+		$this->assertEquals(\PDO::PARAM_NULL, TDbCommandBuilder::getPdoType(null));
 	}
 
 	public function test_get_pdo_type_float_returns_null()

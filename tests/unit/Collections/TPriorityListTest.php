@@ -1,20 +1,15 @@
 <?php
 
+namespace Prado\Test\Unit\Collections;
+
+use Prado\Collections\IPriorityCapture;
+use Prado\Collections\IPriorityProperty;
 use Prado\Collections\IPriorityItem;
 use Prado\Collections\TPriorityList;
 use Prado\Collections\TPriorityMap;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
-
-class PriorityListItem
-{
-	public $data = 'data';
-	public function __construct($d)
-	{
-		$this->data = $d;
-	}
-}
 
 class AutoPriorityListItem extends PriorityListItem implements IPriorityItem
 {
@@ -162,10 +157,8 @@ class TPriorityListTest extends TListTest
 	//*******  end test cases for TList operations
 	//*****************************************************************
 
-
 	//*******  start test cases for TPriorityList operations
 	//*****************************************************************
-
 
 	public function testConstructTPriorityList()
 	{
@@ -234,7 +227,6 @@ class TPriorityListTest extends TListTest
 
 		$this->assertEquals(2, count($items));
 		$this->assertEquals($this->pitem2, $items[1]);
-
 
 		$items = $this->plist->itemsAtPriority(100);
 
@@ -352,17 +344,17 @@ class TPriorityListTest extends TListTest
 		try {
 			$plist->remove($this->pitem5);
 			$this->fail('TInvalidDataValueException not raised when removing item not in the list');
-		} catch(Prado\Exceptions\TInvalidDataValueException $e) {}
+		} catch(\Prado\Exceptions\TInvalidDataValueException $e) {}
 		
 		try {
 			$plist->remove($this->pitem3, null);
 			$this->fail('TInvalidDataValueException not raised when removing item that is not at the default priority');
-		} catch(Prado\Exceptions\TInvalidDataValueException $e) {}
+		} catch(\Prado\Exceptions\TInvalidDataValueException $e) {}
 		
 		try {
 			$plist->remove($this->pitem1, 100);
 			$this->fail('TInvalidDataValueException not raised when removing item that is not at assigned priority');
-		} catch(Prado\Exceptions\TInvalidDataValueException $e) {}
+		} catch(\Prado\Exceptions\TInvalidDataValueException $e) {}
 
 		$plist->insertBefore($this->pitem3, $this->pitem4);
 		$plist->add($this->pitem3, 5);
@@ -400,7 +392,6 @@ class TPriorityListTest extends TListTest
 		self::expectException(TInvalidDataValueException::class);
 		$this->plist->itemAtIndexInPriority(2);
 	}
-
 
 	public function testInsertAtIndexInPriorityTPriorityList()
 	{
@@ -536,7 +527,6 @@ class TPriorityListTest extends TListTest
 			$this->pfirst, $this->pitem1, $this->pitem2, $this->pitem3, $this->pitem4, $this->pitem5, $this->item1, $this->item2, $this->item3
 		], $plist->toArray());
 
-
 		// no preserve cache
 		$plist = new $this->_baseClass();
 		$plist->insertAtIndexInPriority($this->pfirst, null, null, false);
@@ -661,14 +651,13 @@ class TPriorityListTest extends TListTest
 		$list->insertAtIndexInPriority($this->item1);
 	}
 
-
 	public function testRemoveAtIndexInPriorityTPriorityList()
 	{
 		$plist = new $this->_baseClass($this->plist);
 		try {
 			$plist->removeAtIndexInPriority(1, 100);
 			$this->fail('TInvalidDataValueException cannot remove item from priority beyond its count');
-		} catch(Prado\Exceptions\TInvalidDataValueException $e) {}
+		} catch(\Prado\Exceptions\TInvalidDataValueException $e) {}
 
 		$this->assertEquals($this->pitem2, $plist->removeAtIndexInPriority(1));
 		$this->assertEquals($this->pitem3, $plist->removeAtIndexInPriority(0, 100));
@@ -677,7 +666,7 @@ class TPriorityListTest extends TListTest
 		try {
 			$plist->removeAtIndexInPriority(0, 200);
 			$this->fail('TInvalidDataValueException cannot remove item from priority that does not exist');
-		} catch(Prado\Exceptions\TInvalidDataValueException $e) {}
+		} catch(\Prado\Exceptions\TInvalidDataValueException $e) {}
 
 		$this->assertEquals($this->pfirst, $plist->removeAtIndexInPriority(0, -10000000));
 		$this->assertEquals(0, $plist->getCount());

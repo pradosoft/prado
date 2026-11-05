@@ -1,82 +1,8 @@
 <?php
 
-require_once(__DIR__ . '/records/ItemRecord.php');
+namespace Prado\Test\Unit\Data\ActiveRecord;
 
-abstract class SqliteRecord extends TActiveRecord
-{
-	protected static $conn;
-
-	public function getDbConnection()
-	{
-		if (self::$conn === null) {
-			self::$conn = new TDbConnection('sqlite:' . __DIR__ . '/fk_tests.db');
-		}
-		return self::$conn;
-	}
-}
-
-class Album extends SqliteRecord
-{
-	public $title;
-
-	public $Tracks = [];
-	public $Artists = [];
-
-	public $cover;
-
-	public static $RELATIONS = [
-		'Tracks' => [self::HAS_MANY, 'Track'],
-		'Artists' => [self::MANY_TO_MANY, 'Artist', 'album_artists'],
-		'cover' => [self::HAS_ONE, 'Cover']
-	];
-
-	public static function finder($class = __CLASS__)
-	{
-		return parent::finder($class);
-	}
-}
-
-class Artist extends SqliteRecord
-{
-	public $name;
-
-	public $Albums = [];
-
-	public static $RELATIONS = [
-		'Albums' => [self::MANY_TO_MANY, 'Album', 'album_artists']
-	];
-
-	public static function finder($class = __CLASS__)
-	{
-		return parent::finder($class);
-	}
-}
-
-class Track extends SqliteRecord
-{
-	public $id;
-	public $song_name;
-	public $album_id; //FK -> Album.id
-
-	public $Album;
-
-	public static $RELATIONS = [
-		'Album' => [self::BELONGS_TO, 'Album'],
-	];
-
-	public static function finder($class = __CLASS__)
-	{
-		return parent::finder($class);
-	}
-}
-
-class Cover extends SqliteRecord
-{
-	public $album;
-	public $content;
-}
-
-class ForeignKeyTest extends PHPUnit\Framework\TestCase
+class ForeignKeyTest extends \PHPUnit\Framework\TestCase
 {
 	public function test_has_many()
 	{

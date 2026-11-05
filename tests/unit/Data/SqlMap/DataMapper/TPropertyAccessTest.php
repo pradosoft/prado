@@ -1,9 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\Data\SqlMap\DataMapper;
+
 use Prado\Exceptions\TPhpErrorException;
 use Prado\Data\SqlMap\DataMapper\TPropertyAccess;
 
-class TPropertyAccessTest extends PHPUnit\Framework\TestCase
+class TPropertyAccessTest extends \PHPUnit\Framework\TestCase
 {
 	public function testHasPublicVar()
 	{
@@ -45,7 +47,6 @@ class TPropertyAccessTest extends PHPUnit\Framework\TestCase
 		}
 	}
 
-
 	public function testHasStaticProperties()
 	{
 		$testobj = new _PropertyAccessTestHelperStaticProperties();
@@ -66,10 +67,10 @@ class TPropertyAccessTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(1, TPropertyAccess::get($testobj, 'A'));
 		self::assertEquals(2, TPropertyAccess::get($testobj, 'B'));
 
-		self::expectException(Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
+		self::expectException(\Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
 		TPropertyAccess::get($testobj, 'c');
 
-		self::expectException(Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
+		self::expectException(\Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
 		TPropertyAccess::get($testobj, 'C');
 	}
 
@@ -98,10 +99,9 @@ class TPropertyAccessTest extends PHPUnit\Framework\TestCase
 		} catch(TPhpErrorException $e) {
 		}
 			
-		self::expectException(Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
+		self::expectException(\Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
 		TPropertyAccess::get($testobj, 'C');
 	}
-
 
 	public function testHasDynamicProperties()
 	{
@@ -198,77 +198,11 @@ class TPropertyAccessTest extends PHPUnit\Framework\TestCase
 		self::assertNull(TPropertyAccess::get($testobj, 'a.e.c'));
 		self::assertNull(TPropertyAccess::get($testobj, 'a.e.C'));
 
-		self::expectException(Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
+		self::expectException(\Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
 		TPropertyAccess::get($testobj, 'a.c.C');
 
-		self::expectException(Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
+		self::expectException(\Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
 		TPropertyAccess::get($testobj, 'a.d.C');
 	}
 }
 
-
-
-class _PropertyAccessTestHelperPublicVar
-{
-	public $a = 1;
-	public $b = 2;
-}
-
-class _PropertyAccessTestHelperStaticProperties
-{
-	private $_a = 1;
-	private $_b = 2;
-
-	public function getA()
-	{
-		return $this -> _a;
-	}
-
-	public function setA($value)
-	{
-		$this -> _a = $value;
-	}
-
-	public function getB()
-	{
-		return $this -> _b;
-	}
-
-	public function setB($value)
-	{
-		$this -> _b = $value;
-	}
-}
-
-class _PropertyAccessTestHelperDynamicProperties
-{
-	private $_a = 1;
-	private $_b = 2;
-
-	public function __set($name, $value)
-	{
-		switch (strToLower($name)) {
-			case 'a':
-				$this -> _a = $value;
-			break;
-			case 'b':
-				$this -> _b = $value;
-			break;
-		}
-	}
-
-	public function __get($name)
-	{
-		switch (strToLower($name)) {
-			case 'a':
-				return $this -> _a;
-			break;
-			case 'b':
-				return $this -> _b;
-			break;
-			default:
-				return null;
-			break;
-		}
-	}
-}

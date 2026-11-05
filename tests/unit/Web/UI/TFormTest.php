@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI;
+
 use Prado\IO\ITextWriter;
 use Prado\IO\TTextWriter;
 use Prado\TComponent;
@@ -76,7 +78,7 @@ class MockHtmlWriter extends TComponent implements ITextWriter
 	}
 }
 
-class TFormTest extends PHPUnit\Framework\TestCase
+class TFormTest extends \PHPUnit\Framework\TestCase
 {
 	public function testOnInit()
 	{

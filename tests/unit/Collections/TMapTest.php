@@ -1,22 +1,13 @@
 <?php
 
+namespace Prado\Test\Unit\Collections;
+
 use Prado\Collections\TList;
 use Prado\Collections\TMap;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Util\IDynamicMethods;
 use Prado\Util\TBehavior;
-
-class TMapTest_MapItem
-{
-	public $data = 'data';
-	
-	public function __construct($d = null)
-	{
-		if($d !== null)
-			$this->data = $d;
-	}
-}
 
 class TTestMap extends TMap
 {
@@ -33,19 +24,7 @@ class TMapTestBehavior extends TBehavior implements IDynamicMethods
 		$this->args = $args;
 	}
 }
-class TMapTestNoItemBehavior extends TBehavior
-{
-	public function dyNoItem($returnValue, $key, $callchain)
-	{
-		if($key == 'key3') {
-			$returnValue = new TMapTest_MapItem;
-			$returnValue->data = 'value';
-		}
-		return $callchain->dyNoItem($returnValue, $key);
-	}
-}
-
-class TMapTest extends PHPUnit\Framework\TestCase
+class TMapTest extends \PHPUnit\Framework\TestCase
 {
 	protected const BEHAVIOR_NAME = 'catcher';
 	protected $map;
@@ -277,7 +256,7 @@ class TMapTest extends PHPUnit\Framework\TestCase
 		$this->map->detachBehavior(self::BEHAVIOR_NAME);
 		$this->map->attachBehavior(self::BEHAVIOR_NAME, $b = new TMapTestNoItemBehavior);
 		
-		$this->assertInstanceOf('TMapTest_MapItem', $item3 = $this->map['key3']);
+		$this->assertInstanceOf(TMapTest_MapItem::class, $item3 = $this->map['key3']);
 		
 		$this->assertEquals('value', $item3->data);
 		

@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI;
+
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\TSessionPageStatePersister;
 use Prado\Web\UI\IPageStatePersister;
@@ -75,7 +77,7 @@ class TSessionPersisterTestPage extends TPage
 	}
 }
 
-class TSessionPageStatePersisterTest extends PHPUnit\Framework\TestCase
+class TSessionPageStatePersisterTest extends \PHPUnit\Framework\TestCase
 {
 	/**
 	 * Create a page + fake session with all state features disabled for

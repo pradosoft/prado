@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/TComponentTestBase.php';
+namespace Prado\Test\Unit;
 
 use Prado\Collections\TPriorityList;
 use Prado\Exceptions\TInvalidOperationException;
@@ -57,7 +57,6 @@ class TComponentPropertyTest extends TComponentTestBase
 		$this->assertTrue($this->component->canGetProperty('JSColorAttribute'));
 		$this->assertTrue($this->component->canGetProperty('jscolorattribute'));
 		$this->assertFalse($this->component->canGetProperty('jsPastelAttribute'));
-
 
 		$this->assertFalse($this->component->canGetProperty('Excitement'), "Component has property Excitement");
 		$this->component->attachBehavior('ExcitementPropBehavior', new BehaviorTestBehavior);
@@ -129,7 +128,6 @@ class TComponentPropertyTest extends TComponentTestBase
 		// even undefined global events have a list as every object is able to access every event
 		$this->assertTrue($this->component->fxUndefinedEvent instanceof TPriorityList);
 
-
 		// Test the behaviors within the __get function
 		$this->component->enableBehaviors();
 
@@ -171,7 +169,6 @@ class TComponentPropertyTest extends TComponentTestBase
 		}
 		$this->component->enableBehavior('BehaviorTestBehavior');
 		$this->assertEquals('faa', $this->component->getExcitement());
-
 
 		// behaviors allow on and fx events to be passed through.
 		$this->assertTrue($this->component->onBehaviorEvent instanceof TPriorityList);
@@ -234,7 +231,6 @@ class TComponentPropertyTest extends TComponentTestBase
 		$this->assertEquals('laa', $this->component->Excitement);
 		$this->assertEquals('sol', $this->component->Excitement = 'sol');
 
-
 		$this->component->disableBehaviors();
 
 		try {
@@ -260,7 +256,6 @@ class TComponentPropertyTest extends TComponentTestBase
 		$this->component->Excitement = 'sol';
 		$this->assertEquals('sol', $this->component->Excitement);
 
-
 		$this->component->attachBehavior('BehaviorTestBehavior2', $behavior2 = new BehaviorTestBehavior);
 
 		$this->assertEquals('sol', $this->component->Excitement);
@@ -272,7 +267,6 @@ class TComponentPropertyTest extends TComponentTestBase
 		$this->assertEquals('befaad', $this->component->Excitement);
 		$this->assertEquals('befaad', $behavior1->Excitement);
 		$this->assertEquals('befaad', $behavior2->Excitement);
-
 
 		$this->component->detachBehavior('BehaviorTestBehavior2');
 
@@ -287,7 +281,6 @@ class TComponentPropertyTest extends TComponentTestBase
 
 		$this->component->BehaviorTestBehavior->getEventHandlers('onBehaviorEvent')->clear();
 	}
-
 
 	public function testIsSetFunction()
 	{
@@ -319,7 +312,6 @@ class TComponentPropertyTest extends TComponentTestBase
 		$this->assertFalse(isset($this->component->Excitement));
 		$this->assertFalse(isset($this->component->UndefinedBehaviorProperty));
 	}
-
 
 	public function testUnsetFunction()
 	{
@@ -432,7 +424,6 @@ class TComponentPropertyTest extends TComponentTestBase
 		$this->assertTrue($this->component->hasMethod('dyNonExistantLocalEvent'));
 		$this->assertTrue($this->component->hasMethod('dynonexistantlocalevent'));
 
-
 		//Test behavior events
 		$this->assertFalse($this->component->hasMethod('getExcitement'));
 		$this->component->attachBehavior($behaviorTestBehaviorName, new BehaviorTestBehavior());
@@ -449,7 +440,6 @@ class TComponentPropertyTest extends TComponentTestBase
 			$this->fail('TUnknownMethodException not raised when calling a behaviors behaviors method');
 		} catch (\Prado\Exceptions\TUnknownMethodException $e) {
 		}
-
 
 		$this->component->disableBehavior($behaviorTestBehaviorName);
 		$this->assertFalse($this->component->hasMethod('getExcitement'));
@@ -479,7 +469,6 @@ class TComponentPropertyTest extends TComponentTestBase
 		$this->component->JsColorAttribute = "['#112233', '#fedcba', 22009837]";
 		$this->assertEquals("['#112233', '#fedcba', 22009837]", $this->component->ColorAttribute);
 	}
-
 
 	public function testJavascriptIssetUnset()
 	{

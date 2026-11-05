@@ -1,6 +1,20 @@
 <?php
 
-require_once(__DIR__ . '/BaseCase.php');
+namespace Prado\Test\Unit\Data\SqlMap;
+
+use Prado\Test\Unit\Data\SqlMap\domain\A;
+use Prado\Test\Unit\Data\SqlMap\domain\Account;
+use Prado\Test\Unit\Data\SqlMap\domain\AccountBis;
+use Prado\Test\Unit\Data\SqlMap\domain\AccountCollection;
+use Prado\Test\Unit\Data\SqlMap\domain\B;
+use Prado\Test\Unit\Data\SqlMap\domain\C;
+use Prado\Test\Unit\Data\SqlMap\domain\D;
+use Prado\Test\Unit\Data\SqlMap\domain\E;
+use Prado\Test\Unit\Data\SqlMap\domain\F;
+use Prado\Test\Unit\Data\SqlMap\domain\LineItem;
+use Prado\Test\Unit\Data\SqlMap\domain\LineItemCollection;
+use Prado\Test\Unit\Data\SqlMap\domain\Order;
+use Prado\Test\Unit\Data\SqlMap\domain\Other;
 
 class StatementTest extends BaseCase
 {
@@ -34,7 +48,6 @@ class StatementTest extends BaseCase
 //		$this->initScript('enumeration-init.sql');
 		$this->initScript('other-init.sql');
 	}
-
 
 	#region Object Query tests
 
@@ -169,7 +182,7 @@ class StatementTest extends BaseCase
 		//list = self::$sqlmap->QueryForList("GetDynamicOrderedEmailAddressesViaResultMap", "Account_FirstName");
 
 		//$this->assertSame("Averel.Dalton@somewhere.com", $list[0]);
-		throw new PHPUnit\Framework\IncompleteTestError();
+		throw new \PHPUnit\Framework\IncompleteTestError();
 	}
 
 	// TODO: Test Execute QueryForList With ResultMap With Dynamic Element
@@ -186,10 +199,8 @@ class StatementTest extends BaseCase
 		//list = self::$sqlmap->QueryForList("GetAllAccountsViaResultMapWithDynamicElement", "=");
 
 		//$this->assertSame(0, $list->getCount());
-		throw new PHPUnit\Framework\IncompleteTestError();
+		throw new \PHPUnit\Framework\IncompleteTestError();
 	}
-
-
 
 	/**
 	 * Test Get Account Via Inline Parameters
@@ -220,7 +231,7 @@ class StatementTest extends BaseCase
 		//$this->assertSame(enumClass.Day, Days.Mon);
 		//$this->assertSame(enumClass.Color, Colors.Blue);
 		//$this->assertSame(enumClass.Month, Months.September);*/
-		throw new PHPUnit\Framework\IncompleteTestError();
+		throw new \PHPUnit\Framework\IncompleteTestError();
 	}
 
 	#endregion
@@ -439,7 +450,6 @@ class StatementTest extends BaseCase
 		$this->assertFalse($list->getIsNextPageAvailable());
 		$this->assertSame(1, $list->getCount());
 
-
 		$list = self::$sqlmap->QueryForPagedList("GetAllAccountsViaResultMap", null, 5);
 
 		$this->assertSame(5, $list->getCount());
@@ -549,7 +559,6 @@ class StatementTest extends BaseCase
 		$this->assertSame(4, $list[1]->getID());
 	}
 
-
 	/**
 	 * Test row delegate
 	 */
@@ -567,7 +576,7 @@ class StatementTest extends BaseCase
 		//$this->assertSame(3, $list[2]->getID());
 		//$this->assertSame(4, $list[3]->getID());
 		//$this->assertSame(5, $list[4]->getID());
-		throw new PHPUnit\Framework\IncompleteTestError();
+		throw new \PHPUnit\Framework\IncompleteTestError();
 	}
 
 	#endregion
@@ -727,7 +736,6 @@ class StatementTest extends BaseCase
 
 	#region Update tests
 
-
 	/**
 	 * Test Insert account via public fields
 	 */
@@ -782,7 +790,6 @@ class StatementTest extends BaseCase
 		$this->initScript('account-init.sql');
 		$this->initScript('order-init.sql');
 	}
-
 
 	/**
 	 * Test Insert account via inline parameters
@@ -929,8 +936,6 @@ class StatementTest extends BaseCase
 		$this->initScript('line-item-init.sql');
 	}
 
-
-
 	#endregion
 
 	#region Row delegate
@@ -1026,7 +1031,7 @@ class StatementTest extends BaseCase
 		string cacheStats = self::$sqlmap->GetDataCacheStats();
 
 		$this->assertNotNull(cacheStats);*/
-		throw new PHPUnit\Framework\IncompleteTestError();
+		throw new \PHPUnit\Framework\IncompleteTestError();
 	}
 
 	#endregion

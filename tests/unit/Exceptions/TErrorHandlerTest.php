@@ -6,6 +6,10 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
+namespace Prado\Test\Unit\Exceptions;
+
+require_once __DIR__ . '/TErrorHandlerTestGlobalClass.php';
+
 use Prado\Exceptions\TErrorHandler;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\THttpException;
@@ -13,16 +17,6 @@ use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TPhpErrorException;
 use Prado\Prado;
 use Prado\TApplicationMode;
-
-/**
- * Global class whose short name matches T[A-Z]\w+ so that
- * getErrorClassNameSpace() can resolve it via ReflectionClass without a namespace.
- */
-if (!class_exists('TErrorHandlerTestGlobalClass', false)) {
-	class TErrorHandlerTestGlobalClass
-	{
-	}
-}
 
 /**
  * Exposes all protected methods of TErrorHandler for unit testing.
@@ -302,7 +296,7 @@ class TErrorHandlerAccessor extends TErrorHandler
  * exact-trace extraction, trace-as-string formatting, CLI display, and
  * recursive error handling.
  */
-class TErrorHandlerTest extends PHPUnit\Framework\TestCase
+class TErrorHandlerTest extends \PHPUnit\Framework\TestCase
 {
 	private TErrorHandlerAccessor $handler;
 

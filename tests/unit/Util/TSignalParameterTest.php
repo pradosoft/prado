@@ -1,11 +1,13 @@
 <?php
 
+namespace Prado\Test\Unit\Util;
+
 use Prado\Util\TSignalParameter;
 
 class TTestSignalParameter extends TSignalParameter {
 }
 
-class TSignalParameterTest extends PHPUnit\Framework\TestCase
+class TSignalParameterTest extends \PHPUnit\Framework\TestCase
 {
 	protected function setUp(): void
 	{

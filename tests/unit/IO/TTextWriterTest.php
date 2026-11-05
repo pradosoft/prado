@@ -1,8 +1,10 @@
 <?php
 
+namespace Prado\Test\Unit\IO;
+
 use Prado\IO\TTextWriter;
 
-class TTextWriterTest extends PHPUnit\Framework\TestCase
+class TTextWriterTest extends \PHPUnit\Framework\TestCase
 {
 	public function testFlush()
 	{

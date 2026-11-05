@@ -1,5 +1,9 @@
 <?php
 
+namespace Prado\Test\Unit;
+
+use Prado\Test\Unit\Harness\TTestApplication;
+
 /**
  * PradoUnitTest class file.
  *
@@ -9,7 +13,6 @@
  */
 
 // No Namespace for unit tests, separate from the system.
-
 
 /**
  * Base class for the hierarchy used in PradoUnit reflection tests.

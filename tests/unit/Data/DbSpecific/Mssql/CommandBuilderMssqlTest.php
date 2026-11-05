@@ -1,8 +1,10 @@
 <?php
 
+namespace Prado\Test\Unit\Data\DbSpecific\Mssql;
+
 use Prado\Data\Common\Mssql\TMssqlCommandBuilder;
 
-class CommandBuilderMssqlTest extends PHPUnit\Framework\TestCase
+class CommandBuilderMssqlTest extends \PHPUnit\Framework\TestCase
 {
 	protected static $sql = [
 		'simple' => 'SELECT username, age FROM accounts',
@@ -19,7 +21,6 @@ class CommandBuilderMssqlTest extends PHPUnit\Framework\TestCase
 		$sql = $builder->applyLimitOffset(self::$sql['simple'], 3);
 		$expect = 'SELECT TOP 3 username, age FROM accounts';
 		$this->assertEquals($expect, $sql);
-
 
 		$sql = $builder->applyLimitOffset(self::$sql['simple'], 3, 2);
 		$expect = 'SELECT * FROM (SELECT TOP 3 * FROM (SELECT TOP 5 username, age FROM accounts) as [__inner top table__] ) as [__outer top table__] ';

@@ -1,12 +1,15 @@
 <?php
 
-require_once(__DIR__ . '/../../../PradoUnit.php');
+namespace Prado\Test\Unit\Data\DbSpecific\Mssql;
+
+use Prado\Data\TDbConnection;
+use Prado\Test\Unit\Harness\Traits\PradoUnitDataConnectionTrait;
 
 use Prado\Data\Common\Mssql\TMssqlMetaData;
 use Prado\Data\Common\TDbTableColumn;
 use Prado\Data\DataGateway\TTableGateway;
 
-class MssqlColumnTest extends PHPUnit\Framework\TestCase
+class MssqlColumnTest extends \PHPUnit\Framework\TestCase
 {
 	use PradoUnitDataConnectionTrait;
 

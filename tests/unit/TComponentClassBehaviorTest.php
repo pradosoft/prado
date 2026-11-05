@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/TComponentTestBase.php';
+namespace Prado\Test\Unit;
 
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\TComponent;
@@ -24,34 +24,33 @@ class TComponentClassBehaviorTest extends TComponentTestBase
 		//Test that the component is not a FooClassBehavior
 		$this->assertNull($this->component->asa($fooClassBehaviorName), "Component is already a FooClassBehavior and should not have this behavior");
 
-
 		//Add the FooClassBehavior
 		// Add class behavior as IClassBehavior string
-		$b1 = $this->component->attachClassBehavior($fooClassBehaviorName, 'FooClassBehavior');
+		$b1 = $this->component->attachClassBehavior($fooClassBehaviorName, FooClassBehavior::class);
 		$this->tearDownScripts[] = function() use ($fooClassBehaviorName) {$this->component->detachClassBehavior($fooClassBehaviorName);};
-		$this->assertInstanceof('FooClassBehavior', $b1);
+		$this->assertInstanceof(FooClassBehavior::class, $b1);
 		$this->assertNotNull($this->component->asa($fooClassBehaviorName), "Component is does not have the FooClassBehavior and should have this behavior");
 		$this->assertEquals(FooClassBehavior::NULL_CONFIG, $this->component->asa($fooClassBehaviorName)->_config, "Component did not initialize the behavior when it should");
 
 		// Add class behavior as instanced IClassBehavior behavior
 		$b2 = $this->component->attachClassBehavior('FooClassBehavior2', $ob2 = new FooClassBehavior());
 		$this->tearDownScripts[] = function() {$this->component->detachClassBehavior('FooClassBehavior2');};
-		$this->assertInstanceof('FooClassBehavior', $b2);
+		$this->assertInstanceof(FooClassBehavior::class, $b2);
 		$this->assertEquals($ob2, $b2);
 		$this->assertNotNull($this->component->asa('FooClassBehavior2'), "Component is does not have the FooClassBehavior2 and should have this behavior");
 		$this->assertEquals('default', $this->component->asa('FooClassBehavior2')->PropertyA, "Component is does not have the FooClassBehavior2 and should have this behavior");
 		$this->assertNull($this->component->asa('FooClassBehavior2')->_config, "Component initialized existing behavior when it should not have");
 
 		// add class behavior as array of properties
-		$b3 = $this->component->attachClassBehavior('FooClassBehavior3', ['class' => 'FooClassBehavior', 'propertyA'=>'value', IBaseBehavior::CONFIG_KEY => $foo3classdata = 'class-config-data']);
-		$this->assertInstanceof('FooClassBehavior', $b3);
+		$b3 = $this->component->attachClassBehavior('FooClassBehavior3', ['class' => FooClassBehavior::class, 'propertyA'=>'value', IBaseBehavior::CONFIG_KEY => $foo3classdata = 'class-config-data']);
+		$this->assertInstanceof(FooClassBehavior::class, $b3);
 		$this->tearDownScripts[] = function() {$this->component->detachClassBehavior('FooClassBehavior3');};
 		$this->assertNotNull($this->component->asa('FooClassBehavior3'), "Component is does not have the FooClassBehavior3 and should have this behavior");
 		$this->assertEquals('value', $this->component->asa('FooClassBehavior3')->PropertyA, "Component is does not have the FooClassBehavior2 and should have this behavior");
 		$this->assertEquals($foo3classdata, $this->component->asa('FooClassBehavior3')->_config, "Component did not initialize the behavior when it should");
 
 		// add class behavior as IBehavior string
-		$b4 = $this->component->attachClassBehavior('FooRegularBehavior', 'BehaviorTestBehavior');
+		$b4 = $this->component->attachClassBehavior('FooRegularBehavior', BehaviorTestBehavior::class);
 		$this->tearDownScripts[] = function() {$this->component->detachClassBehavior('FooRegularBehavior');};
 		$this->assertEquals([$this->component->FooRegularBehavior], $b4);
 		$this->assertNotNull($this->component->asa('FooRegularBehavior'));
@@ -59,7 +58,7 @@ class TComponentClassBehaviorTest extends TComponentTestBase
 		$this->assertEquals(BehaviorTestBehavior::NULL_CONFIG, $this->component->asa('FooRegularBehavior')->_config, "Component did not initialize the behavior when it should");
 
 		// add class behavior as IBehavior array of properties
-		$b5 = $this->component->attachClassBehavior('FooRegularBehavior2', ['class' => 'BehaviorTestBehavior', 'Excitement'=>'behavior-value', IBaseBehavior::CONFIG_KEY => $foo2data = 'config-data']);
+		$b5 = $this->component->attachClassBehavior('FooRegularBehavior2', ['class' => BehaviorTestBehavior::class, 'Excitement'=>'behavior-value', IBaseBehavior::CONFIG_KEY => $foo2data = 'config-data']);
 		$this->assertEquals([$this->component->FooRegularBehavior2], $b5);
 		$this->tearDownScripts[] = function() {$this->component->detachClassBehavior('FooRegularBehavior2');};
 		$this->assertNotNull($this->component->asa('FooRegularBehavior2'));
@@ -95,7 +94,6 @@ class TComponentClassBehaviorTest extends TComponentTestBase
 		$this->assertEquals('faa', $this->component->asa(1)->Excitement);
 		$this->assertNull($this->component->asa(1)->_config, "Component did not initialize the behavior when it should");
 
-
 		// test if the function modifies new instances of the object
 		$anothercomponent = new NewComponent();
 
@@ -111,7 +109,7 @@ class TComponentClassBehaviorTest extends TComponentTestBase
 		$anothercomponent->asa('FooRegularBehavior')->Excitement = 'foo-regular-behavior-test-value';
 
 		// Class behaviors have both classes as owners, behaviors have their owner
-		$this->assertEquals([$this->component, $anothercomponent], $this->component->asa('FooClassBehavior')->getOwners());
+		$this->assertEquals([$this->component, $anothercomponent], $this->component->asa(FooClassBehavior::class)->getOwners());
 		$this->assertEquals($this->component, $this->component->asa('FooRegularBehavior')->getOwner());
 		$this->assertEquals($anothercomponent, $anothercomponent->asa('FooRegularBehavior')->getOwner());
 		$this->assertNotEquals($this->component->asa('FooRegularBehavior'), $anothercomponent->asa('FooRegularBehavior'));
@@ -129,10 +127,9 @@ class TComponentClassBehaviorTest extends TComponentTestBase
 
 		// test when using non-class regular behavior, TComponent clones IBehaviors in class context.
 
-
 		// test TInvalidOperationException when placing a behavior on TComponent
 		try {
-			$this->component->attachClassBehavior('FooBarBehavior', 'FooBarBehavior', TComponent::class);
+			$this->component->attachClassBehavior('FooBarBehavior', FooBarBehavior::class, TComponent::class);
 			$this->fail('TInvalidOperationException not raised when trying to place a behavior on the root object TComponent');
 		} catch (TInvalidOperationException $e) {
 		}
@@ -161,13 +158,12 @@ class TComponentClassBehaviorTest extends TComponentTestBase
 		array_pop($this->tearDownScripts);
 
 		// Test attaching of single object behaviors as class-wide behaviors
-		$this->component->attachClassBehavior('BarBehaviorObject', 'BarBehavior');
+		$this->component->attachClassBehavior('BarBehaviorObject', BarBehavior::class);
 		$this->assertTrue($this->component->asa('BarBehaviorObject') instanceof BarBehavior);
 		$this->assertEquals($this->component->BarBehaviorObject->Owner, $this->component);
 		$this->component->detachClassBehavior('BarBehaviorObject');
 		$this->assertNull($this->component->asa('BarBehaviorObject'));
 	}
-
 
 	public function testAttachClassBehavior_AnonymousOverExistingAnon()
 	{
@@ -183,7 +179,6 @@ class TComponentClassBehaviorTest extends TComponentTestBase
 		$this->assertEquals($classBehaviors, $this->component->asa(0));
 	}
 
-
 	public function testDetachClassBehavior()
 	{
 		$fooClassBehaviorName = 'FooClassBehaviorName';
@@ -198,7 +193,7 @@ class TComponentClassBehaviorTest extends TComponentTestBase
 		$b = $this->component->attachClassBehavior($fooClassBehaviorName, $cb = new FooClassBehavior());
 		$this->tearDownScripts[$fooClassBehaviorName] = function() use ($fooClassBehaviorName) {$this->component->detachClassBehavior($fooClassBehaviorName);};
 		$this->assertEquals($cb, $b);
-		$b = $this->component->attachClassBehavior('FooRegularBehavior', 'BehaviorTestBehavior');
+		$b = $this->component->attachClassBehavior('FooRegularBehavior', BehaviorTestBehavior::class);
 		$this->tearDownScripts['FooRegularBehavior'] = function() {$this->component->detachClassBehavior('FooRegularBehavior');};
 		$rb = $this->component->FooRegularBehavior;
 		$this->assertEquals([$rb], $b);
@@ -236,7 +231,6 @@ class TComponentClassBehaviorTest extends TComponentTestBase
 		$this->assertNotNull($postnolistencomponent->asa($fooClassBehaviorName), "Component does not have the FooClassBehavior and should have this behavior");
 		$this->assertNull($anothercomponent->asa('FooRegularBehavior'), "Component has the FooRegularBehavior and should _not_ have this behavior");
 		$this->assertNotNull($postnolistencomponent->asa('FooRegularBehavior'), "Component does not have the FooRegularBehavior and should have this behavior");
-
 
 		//tear down function variables
 		$anothercomponent->unlisten();

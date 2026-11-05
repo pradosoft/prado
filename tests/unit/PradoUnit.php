@@ -8,13 +8,7 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-// No Namespace for unit tests, separate from the system.
-// PradoUnit lives at tests/unit/ as a central jump-off point into the test
-// harness; the shared helpers themselves live under tests/unit/Harness/, and
-// the loader at tests/unit/PradoUnitRequires.php walks that hierarchy.
-// The mutual require_once reference is intentional and safe: PHP marks a file
-// as included before executing it, so the circular reference never recurses.
-require_once __DIR__ . '/PradoUnitRequires.php';
+namespace Prado\Test\Unit;
 
 use Prado\Data\ActiveRecord\TActiveRecordManager;
 use Prado\Data\Common\Mysql\TMysqlMetaData;

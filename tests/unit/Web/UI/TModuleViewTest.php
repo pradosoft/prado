@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI;
+
 use Prado\Web\UI\TModuleView;
 use Prado\Web\UI\TCompositeControl;
 use Prado\Web\UI\TTemplate;

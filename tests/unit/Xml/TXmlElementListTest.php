@@ -9,15 +9,17 @@ NOTE TO AGENTS:
 - TXmlElement::getElements() must be used to properly access TXmlElementList.
 */
 
+namespace Prado\Test\Unit\Xml;
+
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Xml\TXmlElement;
 use Prado\Xml\TXmlElementList;
 
-class TXmlElementListTest extends PHPUnit\Framework\TestCase
+class TXmlElementListTest extends \PHPUnit\Framework\TestCase
 {
 	protected function getPrivatePropertyValue($object, $property)
 	{
-		$reflectionClass = new ReflectionClass($object);
+		$reflectionClass = new \ReflectionClass($object);
 		$reflectionProperty = $reflectionClass->getProperty($property);
 		$reflectionProperty->setAccessible(true);
 		return $reflectionProperty->getValue($object);
@@ -121,7 +123,7 @@ class TXmlElementListTest extends PHPUnit\Framework\TestCase
 		try {
 			$list->insertAt(-1, $child);
 			self::fail('Expected exception for negative index');
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			// This should throw an exception or handle gracefully
 		}
 		
@@ -129,7 +131,7 @@ class TXmlElementListTest extends PHPUnit\Framework\TestCase
 		try {
 			$list->insertAt(5, $child);
 			self::fail('Expected exception for out of bounds index');
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			// This should also throw
 		}
 		
@@ -147,13 +149,13 @@ class TXmlElementListTest extends PHPUnit\Framework\TestCase
 		try {
 			$list->removeAt(-1);
 			self::fail('Expected exception for negative index in removeAt');
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 		}
 		
 		try {
 			$list->removeAt(10);
 			self::fail('Expected exception for out of bounds index in removeAt');
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 		}
 	}
 	
@@ -324,6 +326,6 @@ class TXmlElementListTest extends PHPUnit\Framework\TestCase
 		
 		// Test with invalid types
 		$this->expectException(\Prado\Exceptions\TInvalidDataTypeException::class);
-		$list->insertAt(0, new stdClass());
+		$list->insertAt(0, new \stdClass());
 	}
 }

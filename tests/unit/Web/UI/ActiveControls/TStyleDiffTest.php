@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI\ActiveControls;
+
 use Prado\Web\UI\ActiveControls\TStyleDiff;
 use Prado\Web\UI\WebControls\TFont;
 use Prado\Web\UI\WebControls\TStyle;
@@ -58,7 +60,7 @@ class TStyleDiffTest extends TestCase
 	/** Build a TStyleDiffExposed with the given new/old values. */
 	private static function diff(mixed $new, mixed $old): TStyleDiffExposed
 	{
-		return new TStyleDiffExposed($new, $old, new stdClass());
+		return new TStyleDiffExposed($new, $old, new \stdClass());
 	}
 
 	/**
@@ -107,9 +109,9 @@ class TStyleDiffTest extends TestCase
 	}
 
 	/** The sentinel stdClass used as the null-object in getDifference(). */
-	private function nullObject(): stdClass
+	private function nullObject(): \stdClass
 	{
-		return new stdClass();
+		return new \stdClass();
 	}
 
 	// =========================================================================
@@ -217,7 +219,7 @@ class TStyleDiffTest extends TestCase
 	public function testGetCombinedStyleStdClassReturnsEmpty()
 	{
 		$d = self::diff(null, null);
-		$this->assertSame([], $d->exposedGetCombinedStyle(new stdClass()));
+		$this->assertSame([], $d->exposedGetCombinedStyle(new \stdClass()));
 	}
 
 	public function testGetCombinedStyleIntegerReturnsEmpty()
@@ -640,7 +642,7 @@ class TStyleDiffTest extends TestCase
 	public function testGetStyleDiffNewIsNonTStyleAllOldPropertiesAreRemovals()
 	{
 		$old = self::style(['display' => 'none', 'color' => 'red']);
-		$d = self::diff(new stdClass(), $old);
+		$d = self::diff(new \stdClass(), $old);
 		$result = $d->exposedGetStyleDiff();
 		$this->assertIsArray($result, 'old code returns null; new code must return array treating all old properties as removals when new is not a TStyle');
 		$this->assertArrayHasKey('display', $result, 'old property "display" must appear in diff as a removal');

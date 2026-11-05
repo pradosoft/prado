@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/TComponentTestBase.php';
+namespace Prado\Test\Unit;
 
 /**
  * Tests for TComponent serialization: __clone() and __wakeup() behaviour,
@@ -53,7 +53,6 @@ class TComponentSerializationTest extends TComponentTestBase
 		$this->assertEquals('classbehavior1', $cb1->getName());
 		$this->assertEquals('classbehavior2', $cb2->getName());
 		$this->assertEquals('classbehavior4', $cb4->getName());
-
 
 		$obj = new NewComponent();
 		$this->component = new NewComponent();

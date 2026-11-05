@@ -1,11 +1,13 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Behaviors;
+
+use Prado\Collections\TMap;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\TComponent;
 use Prado\Util\Behaviors\TMapLazyLoadBehavior;
 
-
-class TMapLazyLoadBehaviorTest extends PHPUnit\Framework\TestCase
+class TMapLazyLoadBehaviorTest extends \PHPUnit\Framework\TestCase
 {
 	public const BEHAVIOR_NAME = 'lazyload';
 	protected $map;

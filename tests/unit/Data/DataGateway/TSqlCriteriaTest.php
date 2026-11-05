@@ -1,8 +1,10 @@
 <?php
 
+namespace Prado\Test\Unit\Data\DataGateway;
+
 use Prado\Data\DataGateway\TSqlCriteria;
 
-class TSqlCriteriaTest extends PHPUnit\Framework\TestCase
+class TSqlCriteriaTest extends \PHPUnit\Framework\TestCase
 {
 	// -----------------------------------------------------------------------
 	// Constructor

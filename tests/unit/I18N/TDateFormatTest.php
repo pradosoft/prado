@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\I18N;
+
 use Prado\I18N\TDateFormat;
 use Prado\Web\UI\THtmlWriter;
 use Prado\IO\TTextWriter;

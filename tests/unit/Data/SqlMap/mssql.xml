@@ -15,7 +15,7 @@
 	</provider>
 		
 	<typeHandlers>
-		<typeHandler type="bool" dbType="Varchar" callback="OuiNonBool"/>
+		<typeHandler type="bool" dbType="Varchar" callback="Prado\Test\Unit\Data\SqlMap\OuiNonBool"/>
 	</typeHandlers>
 	
 	<sqlMaps>

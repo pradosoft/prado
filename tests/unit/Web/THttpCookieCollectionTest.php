@@ -1,11 +1,13 @@
 <?php
 
+namespace Prado\Test\Unit\Web;
+
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Web\THttpCookie;
 use Prado\Web\THttpCookieCollection;
 
-class THttpCookieCollectionTest extends PHPUnit\Framework\TestCase
+class THttpCookieCollectionTest extends \PHPUnit\Framework\TestCase
 {
 	public function testConstruct()
 	{

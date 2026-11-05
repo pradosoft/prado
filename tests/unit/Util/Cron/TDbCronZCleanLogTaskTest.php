@@ -1,5 +1,10 @@
 <?php
 
+namespace Prado\Test\Unit\Util\Cron;
+
+use Prado\IO\TTextWriter;
+use Prado\Shell\TShellWriter;
+use Prado\Util\Cron\TShellCronLogBehavior;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Util\Cron\TCronModule;
 use Prado\Util\Cron\TCronTask;

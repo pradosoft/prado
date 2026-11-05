@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit;
+
 /**
  * PradoUnitSuiteFailTest class file.
  *

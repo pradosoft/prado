@@ -1,5 +1,8 @@
 <?php
 
+namespace Prado\Test\Unit;
+
+use Prado\Test\Unit\Harness\TTestApplication;
 use Prado\Exceptions\TExitException;
 use Prado\Exceptions\THttpException;
 use Prado\TApplicationMode;
@@ -123,7 +126,7 @@ class LifecycleCustomStepsApp extends LifecycleTrackingApp
  *
  * @package System
  */
-class TApplicationLifecycleTest extends PHPUnit\Framework\TestCase
+class TApplicationLifecycleTest extends \PHPUnit\Framework\TestCase
 {
 	private LifecycleTrackingApp $_app;
 

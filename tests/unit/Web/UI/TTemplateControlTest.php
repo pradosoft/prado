@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web\UI;
+
 use Prado\Web\UI\TTemplateControl;
 use Prado\Web\UI\TTemplate;
 use Prado\Web\UI\ITemplate;
@@ -7,7 +9,7 @@ use Prado\Web\UI\WebControls\TContent;
 use Prado\Web\UI\WebControls\TContentPlaceHolder;
 use Prado\Exceptions\TConfigurationException;
 
-class TTemplateControlTest extends PHPUnit\Framework\TestCase
+class TTemplateControlTest extends \PHPUnit\Framework\TestCase
 {
 	// -----------------------------------------------------------------------
 	// Helpers — read private fields via Reflection
@@ -15,21 +17,21 @@ class TTemplateControlTest extends PHPUnit\Framework\TestCase
 
 	private function getContents(TTemplateControl $ctrl): array
 	{
-		$ref = new ReflectionProperty(TTemplateControl::class, '_contents');
+		$ref = new \ReflectionProperty(TTemplateControl::class, '_contents');
 		$ref->setAccessible(true);
 		return $ref->getValue($ctrl);
 	}
 
 	private function getPlaceholders(TTemplateControl $ctrl): array
 	{
-		$ref = new ReflectionProperty(TTemplateControl::class, '_placeholders');
+		$ref = new \ReflectionProperty(TTemplateControl::class, '_placeholders');
 		$ref->setAccessible(true);
 		return $ref->getValue($ctrl);
 	}
 
 	private function setMasterOnCtrl(TTemplateControl $ctrl, TTemplateControl $master): void
 	{
-		$ref = new ReflectionProperty(TTemplateControl::class, '_master');
+		$ref = new \ReflectionProperty(TTemplateControl::class, '_master');
 		$ref->setAccessible(true);
 		$ref->setValue($ctrl, $master);
 	}

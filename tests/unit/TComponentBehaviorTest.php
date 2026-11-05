@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/TComponentTestBase.php';
+namespace Prado\Test\Unit;
 
 use Prado\Exceptions\TApplicationException;
 use Prado\Exceptions\TInvalidDataTypeException;
@@ -69,7 +69,6 @@ class TComponentBehaviorTest extends TComponentTestBase
 		$this->assertSame($plain1, $plain3, 'getClassHierarchy() result changed after another class computed its hierarchy');
 	}
 
-
 	public function testAsA()
 	{
 		$fooClassBehaviorName = 'FooClassBehaviorName';
@@ -120,7 +119,6 @@ class TComponentBehaviorTest extends TComponentTestBase
 		$this->assertNull($anothercomponent->asa($foofooClassBehaviorName));
 		$this->assertNull($anothercomponent->asa($barClassName));
 		$this->assertNull($anothercomponent->asa($noBehaviorName));
-
 
 		$fooBehaviorName = 'FooBehaviorName';
 		$fooFooBehaviorName = 'FooFooBehavior';
@@ -208,7 +206,6 @@ class TComponentBehaviorTest extends TComponentTestBase
 
 		$this->assertTrue($this->component->isa(FooFooBehavior::class));
 
-
 		$fooBarBehaviorName = 'FooBarBehaviorName';
 		$this->component->attachBehavior($fooBarBehaviorName, new FooBarBehavior);
 
@@ -239,7 +236,6 @@ class TComponentBehaviorTest extends TComponentTestBase
 		$this->assertTrue($this->component->isa(FooFooBehavior::class));
 		$this->assertTrue($this->component->isa(FooBarBehavior::class));
 
-
 		$this->component->detachBehavior($fooFooBehaviorName);
 		$this->component->detachBehavior($fooBarBehaviorName);
 
@@ -253,14 +249,14 @@ class TComponentBehaviorTest extends TComponentTestBase
 
 	public function testIsA_with_IInstanceCheck()
 	{
-		$this->assertTrue($this->component->isa('NewComponent'));
+		$this->assertTrue($this->component->isa(NewComponent::class));
 		$this->assertFalse($this->component->isa(PreBarBehavior::class));
 
 		$this->component->attachBehavior('BarBehaviorName', $behavior = new BarBehavior);
 
 		$behavior->setInstanceReturn(null);
 
-		$this->assertTrue($this->component->isa('NewComponent'));
+		$this->assertTrue($this->component->isa(NewComponent::class));
 		$this->assertTrue($this->component->isa(PreBarBehavior::class));
 		$this->assertFalse($this->component->isa(FooBehavior::class));
 
@@ -383,7 +379,7 @@ class TComponentBehaviorTest extends TComponentTestBase
 		// Instance from string, replace first behavior.
 
 		$behavior->detached = 0;
-		$this->component->attachBehavior('FooBehavior', 'FooBehavior');
+		$this->component->attachBehavior('FooBehavior', FooBehavior::class);
 		$this->assertEquals(1, $behavior->detached,  "Attaching a behavior over an existing behavior did not call detach on the prior behavior.");
 
 		$this->component->detachBehavior('FooBehavior');
@@ -393,8 +389,7 @@ class TComponentBehaviorTest extends TComponentTestBase
 		$this->assertNull($this->component->asa('BarBehavior'));
 		$this->assertFalse($this->component->isa(BarBehavior::class));
 
-
-		$this->component->attachBehavior(strtoupper('FooBehavior'), 'FooBehavior');
+		$this->component->attachBehavior(strtoupper('FooBehavior'), FooBehavior::class);
 
 		$this->assertNotNull($this->component->asa(strtoupper('FooBehavior')));
 		$this->assertNotNull($this->component->asa('FooBehavior'));
@@ -411,7 +406,7 @@ class TComponentBehaviorTest extends TComponentTestBase
 		$this->assertFalse($this->component->isa(BarBehavior::class));
 
 		// Anonymous null named behavior
-		$this->component->attachBehavior(null, ['class' => 'FooBehavior', 'PropertyA'=>'anon_name_null']);
+		$this->component->attachBehavior(null, ['class' => FooBehavior::class, 'PropertyA'=>'anon_name_null']);
 
 		$this->assertNotNull($this->component->asa(0));
 		$this->assertTrue($this->component->isa(FooBehavior::class));
@@ -426,9 +421,8 @@ class TComponentBehaviorTest extends TComponentTestBase
 		$this->assertNull($this->component->asa('BarBehavior'));
 		$this->assertFalse($this->component->isa(BarBehavior::class));
 
-
 		// Anonymous number behavior
-		$this->component->attachBehavior(11, ['class' => 'FooBehavior', 'PropertyA'=>'anon_name']);
+		$this->component->attachBehavior(11, ['class' => FooBehavior::class, 'PropertyA'=>'anon_name']);
 
 		$this->assertNotNull($this->component->asa(1));
 		$this->assertTrue($this->component->isa(FooBehavior::class));
@@ -442,7 +436,6 @@ class TComponentBehaviorTest extends TComponentTestBase
 		$this->assertFalse($this->component->isa(FooBehavior::class));
 		$this->assertNull($this->component->asa('BarBehavior'));
 		$this->assertFalse($this->component->isa(BarBehavior::class));
-
 
 		//Instance TClassBehavior
 		$behavior = new FooClassBehavior();
@@ -470,7 +463,6 @@ class TComponentBehaviorTest extends TComponentTestBase
 		$this->assertFalse($this->component->isa(BarBehavior::class));
 	}
 
-
 	public function testAttachBehaviorEventHandlersAtPriority()
 	{
 		$this->component->attachBehavior($name1 = 'TestWithEvents1', $b1 = new FooBehaviorWithEvents());
@@ -483,7 +475,6 @@ class TComponentBehaviorTest extends TComponentTestBase
 		$this->assertEquals(3, $this->component->onMyEvent->priorityOf([$b2, $b2->eventsLog()['onMyEvent'][0]]));
 		$this->assertEquals(3, $this->component->onMyEvent->priorityOf($b2->eventsLog()['onMyEvent'][1]));
 	}
-
 
 	public function testAttachDetachBehaviors()
 	{
@@ -525,8 +516,6 @@ class TComponentBehaviorTest extends TComponentTestBase
 		$this->assertFalse($this->component->isa(FooBarBehavior::class));
 		$this->assertTrue($this->component->isa(PreBarBehavior::class));
 
-
-
 		//	testing if we can detachBehaviors just by the name of the behavior instead of an array of the behavior
 		$this->component->attachBehaviors([$fooFooBehaviorName => new FooFooBehavior, $barBehaviorName => new BarBehavior]);
 
@@ -545,7 +534,6 @@ class TComponentBehaviorTest extends TComponentTestBase
 		$this->assertFalse($this->component->isa(BarBehavior::class));
 		$this->assertFalse($this->component->isa(FooBarBehavior::class));
 	}
-
 
 	public function testClearBehaviors()
 	{

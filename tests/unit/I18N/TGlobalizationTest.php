@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\I18N;
+
 use PHPUnit\Framework\TestCase;
 use Prado\I18N\TGlobalization;
 

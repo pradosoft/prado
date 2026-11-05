@@ -1,9 +1,11 @@
 <?php
 
+namespace Prado\Test\Unit\Collections;
+
 use Prado\Collections\TAttributeCollection;
 use Prado\Exceptions\TInvalidOperationException;
 
-class TAttributeCollectionTest extends PHPUnit\Framework\TestCase
+class TAttributeCollectionTest extends \PHPUnit\Framework\TestCase
 {
 	protected function setUp(): void
 	{

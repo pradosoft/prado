@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/TComponentTestBase.php';
+namespace Prado\Test\Unit;
 
 use Prado\Collections\TPriorityList;
 use Prado\Exceptions\TInvalidOperationException;
@@ -30,7 +30,6 @@ class TComponentEventTest extends TComponentTestBase
 
 		$this->assertTrue($this->component->hasEvent('dyNonExistantLocalEvent'));
 		$this->assertTrue($this->component->hasEvent('dynonexistantlocalevent'));
-
 
 		//Test behavior events
 		$this->assertFalse($this->component->hasEvent('onBehaviorEvent'));
@@ -100,8 +99,6 @@ class TComponentEventTest extends TComponentTestBase
 			$this->fail('exception raised when getting event handlers for universal global event');
 		}
 
-
-
 		//Test behavior events
 		try {
 			$list = $this->component->getEventHandlers('onBehaviorEvent');
@@ -148,7 +145,6 @@ class TComponentEventTest extends TComponentTestBase
 		$this->assertEquals('foobar', $list[2]);
 		$this->assertEquals('foopost', $list[3]);
 
-
 		//Test attaching behavior events
 		try {
 			$this->component->attachEventHandler('onBehaviorEvent', 'foo');
@@ -194,8 +190,6 @@ class TComponentEventTest extends TComponentTestBase
 		$this->component->attachEventHandler('OnMyEvent', 'foobar', 10);
 		$this->component->attachEventHandler('OnMyEvent', 'foobarfoobar', 10);
 
-
-
 		$this->component->detachEventHandler('OnMyEvent', 'foo');
 		$list = $this->component->getEventHandlers('OnMyEvent');
 		$this->assertEquals(4, $list->getCount());
@@ -210,7 +204,6 @@ class TComponentEventTest extends TComponentTestBase
 
 		$this->component->detachEventHandler('OnMyEvent', 'foopre', 5);
 		$this->assertEquals(3, $list->getCount());
-
 
 		// Now do detaching of behavior on events
 		try {
@@ -228,8 +221,6 @@ class TComponentEventTest extends TComponentTestBase
 		$this->component->attachEventHandler('onBehaviorEvent', 'foopost', 15);
 		$this->component->attachEventHandler('onBehaviorEvent', 'foobar', 10);
 		$this->component->attachEventHandler('onBehaviorEvent', 'foobarfoobar', 10);
-
-
 
 		$this->component->detachEventHandler('onBehaviorEvent', 'foo');
 		$list = $this->component->getEventHandlers('onBehaviorEvent');

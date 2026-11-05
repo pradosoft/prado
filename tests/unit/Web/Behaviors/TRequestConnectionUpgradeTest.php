@@ -1,10 +1,13 @@
 <?php
 
+namespace Prado\Test\Unit\Web\Behaviors;
+
+use Prado\TApplication;
+use Prado\Web\THttpRequest;
 use Prado\Web\Behaviors\TRequestConnectionUpgrade;
 use Prado\Web\THttpRequestParameter;
 
-
-class TRequestConnectionUpgradeTest extends PHPUnit\Framework\TestCase
+class TRequestConnectionUpgradeTest extends \PHPUnit\Framework\TestCase
 {
 	public static $app = null;
 

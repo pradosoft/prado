@@ -1,5 +1,7 @@
 <?php
 
+namespace Prado\Test\Unit\Web;
+
 use Prado\Web\THttpRequest;
 use Prado\Web\THttpRequestUrlFormat;
 use Prado\Web\TUrlMapping;
@@ -11,7 +13,7 @@ use Prado\Xml\TXmlDocument;
 /**
  * Test class for TUrlMapping.
  */
-class TUrlMappingTest extends PHPUnit\Framework\TestCase
+class TUrlMappingTest extends \PHPUnit\Framework\TestCase
 {
 	protected static $app = null;
 
