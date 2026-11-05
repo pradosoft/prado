@@ -410,6 +410,9 @@ class PradoUnit
 	 */
 	public static function restore(object $object, array $snapshot): void
 	{
+		if (empty($snapshot)) {
+			return;
+		}
 		foreach (static::reflectionProperties($object, array_keys($snapshot)) as $name => $rp) {
 			$rp->setValue($object, $snapshot[$name]);
 		}
@@ -1070,6 +1073,21 @@ class PradoUnit
 	}
 
 	/**
+	 * Skips a test that rolls back Firebird work when pdo_firebird cannot roll it back.
+	 * Before PHP 8.4 (PHP PR #12741), pdo_firebird calls `isc_commit_retaining()` after
+	 * every statement inside an explicit transaction, so a rollback has no uncommitted
+	 * work to undo.
+	 * @param \PHPUnit\Framework\TestCase $test the test to skip.
+	 * @since 4.4.0
+	 */
+	public static function skipFirebirdRollbackBeforePhp84(\PHPUnit\Framework\TestCase $test): void
+	{
+		if (PHP_VERSION_ID < 80400) {
+			$test->markTestSkipped('pdo_firebird before PHP 8.4 commits each statement inside a transaction (PHP PR #12741), so a rollback cannot undo it.');
+		}
+	}
+
+	/**
 	 * Opens a MySQL connection and wraps it in a `TMysqlMetaData` instance.
 	 *
 	 * This is a convenience shortcut for metadata-specific tests that need both a
@@ -1232,7 +1250,7 @@ class PradoUnit
 	 * @param string $database       Optional database name appended as `;Database=<name>`.
 	 * @return array{0:string,1:string}|\Exception|\Prado\Data\TDbConnection
 	 */
-	public static function setupMssqlConnection($database = '')
+	public static function setupSqlSrvConnection($database = '')
 	{
 		if (!extension_loaded('pdo_sqlsrv')) {
 			return ['extension:pdo_sqlsrv', 'The pdo_sqlsrv extension is not available.'];
@@ -1252,6 +1270,18 @@ class PradoUnit
 	}
 
 	/**
+	 * Opens a Microsoft SQL Server database connection for unit tests.
+	 * @param string $database Optional database name appended as `;Database=<name>`.
+	 * @return array{0:string,1:string}|\Exception|\Prado\Data\TDbConnection
+	 * @deprecated 4.4.0 use {@see setupSqlSrvConnection()}; retained for the extracted
+	 *   packages' test suites.
+	 */
+	public static function setupMssqlConnection($database = '')
+	{
+		return static::setupSqlSrvConnection($database);
+	}
+
+	/**
 	 * Opens an Oracle database connection for unit tests.
 	 *
 	 * The service name defaults to the `ORACLE_SERVICE_NAME` environment variable, or
@@ -1265,7 +1295,7 @@ class PradoUnit
 	 *   environment variable default when non-empty.
 	 * @return array{0:string,1:string}|\Exception|\Prado\Data\TDbConnection
 	 */
-	public static function setupOciConnection($database = '')
+	public static function setupOracleConnection($database = '')
 	{
 		if (!extension_loaded('pdo_oci')) {
 			return ['extension:pdo_oci', 'The pdo_oci extension is not available.'];
@@ -1282,6 +1312,18 @@ class PradoUnit
 			return static::processException($e, $conn);
 		}
 		return $conn;
+	}
+
+	/**
+	 * Opens an Oracle database connection for unit tests.
+	 * @param string $database Optional Oracle service name.
+	 * @return array{0:string,1:string}|\Exception|\Prado\Data\TDbConnection
+	 * @deprecated 4.4.0 use {@see setupOracleConnection()}; retained for the extracted
+	 *   packages' test suites.
+	 */
+	public static function setupOciConnection($database = '')
+	{
+		return static::setupOracleConnection($database);
 	}
 
 	/**
@@ -1405,7 +1447,13 @@ class PradoUnit
 	 */
 	public static function isNoConnection($e): bool
 	{
-		return is_int(stripos((string) $e, 'No such file')) || is_int(stripos((string) $e, 'Connection refused')) || is_int(stripos((string) $e, 'failed to establish'));
+		$msg = (string) $e->getMessage();
+		return is_int(stripos($msg, 'No such file')) ||
+			   is_int(stripos($msg, 'Connection refused')) ||
+			   is_int(stripos($msg, 'failed to establish')) ||
+			   is_int(stripos($msg, 'Unable to complete network request')) ||
+			   is_int(stripos($msg, 'ODBC Driver for SQL Server')) ||
+			   is_int(stripos($msg, 'could not connect'));
 	}
 
 	/**
@@ -1420,22 +1468,37 @@ class PradoUnit
 	 */
 	public static function isNoDatabase($e): bool
 	{
-		return is_int(stripos((string) $e, 'Unknown database'));
+		return is_int(stripos((string) $e->getMessage(), 'Unknown database'));
 	}
 
 	/**
 	 * Returns `true` when `$e` looks like a "table or view not found" exception.
 	 *
-	 * Matches exception message text containing `"Base table or view not found"`
-	 * (case-insensitive), which is the standard MySQL/MariaDB error text for SQLSTATE
-	 * 42S02. Extend or override this method to add equivalent phrases for other
-	 * drivers.
+	 * Matches exception message text for table-not-found errors across all supported
+	 * database drivers (case-insensitive):
+	 *
+	 * - `"Base table or view not found"` — MySQL / MariaDB  SQLSTATE 42S02
+	 * - `"Table unknown"`                — Firebird         SQLCODE -204
+	 * - `"does not exist"`               — PostgreSQL       SQLSTATE 42P01 (relation ... does not exist)
+	 * - `"ORA-00942"`                    — Oracle           table or view does not exist
+	 * - `"Invalid object name"`          — SQL Server       Msg 208
+	 * - `"SQL0204N"`                     — IBM DB2          table/view not found
+	 * - `"SQLCODE=-204"`                 — IBM DB2          alternate error format
+	 * - `"no such table"`               — SQLite            General error: 1 no such table: <name>
 	 *
 	 * @param \Exception|string $e Exception object or stringified exception text.
 	 * @return bool
 	 */
 	public static function isNoTable($e): bool
 	{
-		return is_int(stripos((string) $e, 'Base table or view not found'));
+		$msg = (string) $e->getMessage();
+		return is_int(stripos($msg, 'Base table or view not found'))  // MySQL / MariaDB  SQLSTATE 42S02
+			|| is_int(stripos($msg, 'Table unknown'))                  // Firebird         SQLCODE -204
+			|| is_int(stripos($msg, 'does not exist'))                 // PostgreSQL       SQLSTATE 42P01
+			|| is_int(stripos($msg, 'ORA-00942'))                     // Oracle           table or view does not exist
+			|| is_int(stripos($msg, 'Invalid object name'))           // SQL Server        Msg 208
+			|| is_int(stripos($msg, 'SQL0204N'))                      // IBM DB2           table not found
+			|| is_int(stripos($msg, 'SQLCODE=-204'))                  // IBM DB2           alternate format
+			|| is_int(stripos($msg, 'no such table'));                 // SQLite            General error: 1 no such table: <name>
 	}
 }

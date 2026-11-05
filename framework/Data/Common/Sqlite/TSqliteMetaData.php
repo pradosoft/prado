@@ -35,12 +35,16 @@ class TSqliteMetaData extends TDbMetaData
 
 	/**
 	 * Quotes a table name for use in a query.
+	 * SQLite uses double-quote delimiters for identifiers (SQL standard).
+	 * Single-quote delimiters produce string literals, which cause
+	 * SQLITE_RANGE (error 25) when ORDER BY references quoted column names
+	 * against a single-quoted table source.
 	 * @param string $name $name table name
 	 * @return string the properly quoted table name
 	 */
 	public function quoteTableName($name)
 	{
-		return parent::quoteTableName($name, "'", "'");
+		return parent::quoteTableName($name, '"', '"');
 	}
 
 	/**

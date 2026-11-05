@@ -10,7 +10,7 @@
 
 namespace Prado\Data\Common\Oracle;
 
-use Prado\Data\Common\IDbHasSchema;
+use Prado\Data\Common\IDataHasSchema;
 use Prado\Data\Common\TDbTableInfo;
 use Prado\Prado;
 
@@ -20,7 +20,7 @@ use Prado\Prado;
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
  */
-class TOracleTableInfo extends TDbTableInfo implements IDbHasSchema
+class TOracleTableInfo extends TDbTableInfo implements IDataHasSchema
 {
 	/**
 	 * @return string full name of the table, schema-qualified.

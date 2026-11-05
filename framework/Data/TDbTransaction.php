@@ -10,17 +10,18 @@
 
 namespace Prado\Data;
 
-use Prado\Exceptions\TDbException;
-use Prado\Prado;
-use Prado\TPropertyValue;
-
 /**
  * TDbTransaction class.
  *
- * TDbTransaction represents a DB transaction.
- * It is usually created by calling {@see \Prado\Data\TDbConnection::beginTransaction}.
+ * SQL/PDO transaction token, paired with {@see TDbConnection}.  All commit and
+ * rollback work is delegated up the chain to {@see TDbConnection}, which holds
+ * the underlying PDO handle; the driver-agnostic behavior and the
+ * {@see onCommit OnCommit} and {@see onRollback OnRollback} events live in the
+ * parent {@see TDataTransaction}.  This subclass adds {@see endOnClose()}, which
+ * reads the PDO transaction state when its connection closes.
  *
- * The following code is a common scenario of using transactions:
+ * Created by {@see TDbConnection::beginTransaction()}.  The following code is a
+ * common scenario of using transactions:
  * ```php
  * $transaction = $connection->beginTransaction();
  * try {
@@ -75,55 +76,8 @@ use Prado\TPropertyValue;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
-class TDbTransaction extends \Prado\TComponent implements IDataTransaction
+class TDbTransaction extends TDataTransaction
 {
-	private $_connection;
-	private $_active;
-
-	/**
-	 * Constructor.
-	 * @param \Prado\Data\TDbConnection $connection the connection associated with this transaction
-	 * @see TDbConnection::beginTransaction
-	 */
-	public function __construct(TDbConnection $connection)
-	{
-		$this->_connection = $connection;
-		$this->setActive(true);
-		parent::__construct();
-	}
-
-	/**
-	 * Commits a transaction and raises {@see onCommit OnCommit} when the commit succeeds.
-	 * @throws TDbException if the transaction or the DB connection is not active.
-	 */
-	public function commit()
-	{
-		if (!$this->getIsOperable()) {
-			throw new TDbException('dbtransaction_transaction_inactive');
-		}
-		$committed = $this->getConnection()->getPdoInstance()->commit();
-		$this->setActive(false);
-		if ($committed !== false) {
-			$this->onCommit();
-		}
-	}
-
-	/**
-	 * Rolls back a transaction and raises {@see onRollback OnRollback} when the rollback succeeds.
-	 * @throws TDbException if the transaction or the DB connection is not active.
-	 */
-	public function rollback()
-	{
-		if (!$this->getIsOperable()) {
-			throw new TDbException('dbtransaction_transaction_inactive');
-		}
-		$rolledBack = $this->getConnection()->getPdoInstance()->rollBack();
-		$this->setActive(false);
-		if ($rolledBack !== false) {
-			$this->onRollback();
-		}
-	}
-
 	/**
 	 * Ends the transaction because its connection is closing.  When the database still
 	 * holds the transaction (`PDO::inTransaction()`), it is rolled back, as the database
@@ -142,8 +96,9 @@ class TDbTransaction extends \Prado\TComponent implements IDataTransaction
 		if (!$this->getActive()) {
 			return false;
 		}
-		$this->setActive(false);
-		$pdo = $this->getConnection()->getPdoInstance();
+		$this->deactivate();
+		$connection = $this->getConnection();
+		$pdo = $connection instanceof IDbConnection ? $connection->getPdoInstance() : null;
 		if ($pdo === null || !$pdo->inTransaction()) {
 			return false;
 		}
@@ -153,60 +108,5 @@ class TDbTransaction extends \Prado\TComponent implements IDataTransaction
 			// The connection is going away; the server discards the uncommitted work.
 		}
 		return true;
-	}
-
-	/**
-	 * Raises the OnCommit event after the database commits the transaction.
-	 * The sender is this inactive transaction, and the parameter is null.
-	 * @since 4.4.0
-	 */
-	public function onCommit()
-	{
-		$this->raiseEvent('OnCommit', $this, null);
-	}
-
-	/**
-	 * Raises the OnRollback event after the database rolls back the transaction, by
-	 * {@see rollback()} or by the closing of its connection ({@see endOnClose()}).
-	 * The sender is this inactive transaction, and the parameter is null.
-	 * @since 4.4.0
-	 */
-	public function onRollback()
-	{
-		$this->raiseEvent('OnRollback', $this, null);
-	}
-
-	/**
-	 * Returns whether the transaction can commit or roll back.
-	 * @return bool whether this transaction and its DB connection are both active.
-	 * @since 4.4.0
-	 */
-	protected function getIsOperable(): bool
-	{
-		return $this->getActive() && $this->getConnection()->getActive();
-	}
-
-	/**
-	 * @return \Prado\Data\TDbConnection the DB connection for this transaction
-	 */
-	public function getConnection()
-	{
-		return $this->_connection;
-	}
-
-	/**
-	 * @return bool whether this transaction is active
-	 */
-	public function getActive()
-	{
-		return $this->_active;
-	}
-
-	/**
-	 * @param bool $value whether this transaction is active
-	 */
-	protected function setActive($value)
-	{
-		$this->_active = TPropertyValue::ensureBoolean($value);
 	}
 }

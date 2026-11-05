@@ -591,7 +591,6 @@ class TMediaType implements \ArrayAccess
 	 * @param string $mediaType the media type, without parameters.
 	 * @param string $pattern the media type pattern.
 	 * @return bool whether the media type matches the pattern.
-	 * @since 4.4.0
 	 */
 	public static function matchesPattern(string $mediaType, string $pattern): bool
 	{
@@ -613,7 +612,6 @@ class TMediaType implements \ArrayAccess
 	 * @param string $mediaType the media type, without parameters.
 	 * @param string[] $patterns the media type patterns.
 	 * @return bool whether the media type matches any of the patterns.
-	 * @since 4.4.0
 	 */
 	public static function matchesAnyPattern(string $mediaType, array $patterns): bool
 	{
@@ -636,7 +634,6 @@ class TMediaType implements \ArrayAccess
 	 * ```
 	 * @param array|string $pattern the media type pattern, or a list of them.
 	 * @return bool whether this media type matches.
-	 * @since 4.4.0
 	 */
 	public function matches(array|string $pattern): bool
 	{

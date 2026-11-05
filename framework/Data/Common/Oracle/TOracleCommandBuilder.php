@@ -11,17 +11,58 @@
 namespace Prado\Data\Common\Oracle;
 
 use Prado\Data\Common\TDbCommandBuilder;
-use Prado\Prado;
+use Prado\Data\TDbCommand;
 
 /**
  * TOracleCommandBuilder provides specifics methods to create limit/offset query commands
  * for Oracle database.
  *
  * @author Marcos Nobre <marconobre[at]gmail[dot]com>
+ * @author Brad Anderson <belisoful@icloud.com> insertOrIgnore, upsert
  * @since 3.1
  */
 class TOracleCommandBuilder extends TDbCommandBuilder
 {
+	/**
+	 * Creates an Oracle MERGE ... WHEN NOT MATCHED THEN INSERT command (insertOrIgnore).
+	 * Requires an active transaction; throws TDbException otherwise.
+	 * Uses Oracle MERGE with USING (SELECT ... FROM DUAL) and no AS keyword for aliases.
+	 * @param array $data name-value pairs of data to be inserted.
+	 * @return TDbCommand insert-or-ignore MERGE command.
+	 * @since 4.4.0
+	 */
+	public function createInsertOrIgnoreCommand(array $data): TDbCommand
+	{
+		$this->assertActiveTransaction();
+		$conflictColumns = $this->resolveConflictColumns(null);
+		return $this->buildMergeStatement($data, [], $conflictColumns, 'FROM DUAL', false);
+	}
+
+	/**
+	 * Creates an Oracle MERGE ... WHEN MATCHED THEN UPDATE WHEN NOT MATCHED THEN INSERT command.
+	 * Requires an active transaction; throws TDbException otherwise.
+	 * Uses Oracle MERGE with USING (SELECT ... FROM DUAL) and no AS keyword for aliases.
+	 *
+	 * The $updateData parameter supports four modes:
+	 * - **null** — all non-conflict columns updated via the MERGE source alias (s.col).
+	 * - **[] empty array** — no WHEN MATCHED branch (insert-or-ignore semantics).
+	 * - **integer-keyed list** (e.g. `['score']`) — those columns use the source alias (s.col).
+	 * - **string-keyed explicit map** (e.g. `['score' => 99]`) — those columns use a bound literal (`:_upsert_col`).
+	 * - **mixed** — integer-keyed use s.col; string-keyed use bound literals.
+	 *
+	 * @param array $data name-value pairs of data to insert.
+	 * @param null|array $updateData null, column-name list, explicit col=>value map, or mixed; controls what is updated on conflict.
+	 * @param null|array $conflictColumns conflict target columns; null = primary key columns.
+	 * @return TDbCommand upsert MERGE command.
+	 * @since 4.4.0
+	 */
+	public function createUpsertCommand(array $data, ?array $updateData = null, ?array $conflictColumns = null): TDbCommand
+	{
+		$this->assertActiveTransaction();
+		$conflictColumns = $this->resolveConflictColumns($conflictColumns);
+		return $this->buildMergeStatement($data, $updateData, $conflictColumns, 'FROM DUAL', false);
+	}
+
 	/**
 	 * Overrides parent implementation. Only column of type text or character (and its variants)
 	 * accepts the LIKE criteria.
@@ -142,8 +183,7 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 			$fields = substr($fields, 0, strlen($fields) - 1);
 		} else {
 			if (strpos($fields, ',') !== false) {
-				$arr = $this->getTableInfo()->getColumns();
-				foreach ($arr as $field) {
+				foreach (explode(',', $fields) as $field) {
 					$field = strtolower($field);
 					$existAS = str_ireplace(' as ', '-as-', $field);
 					if (strpos($existAS, '-as-') === false) {
@@ -168,8 +208,11 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 				  ") WHERE {$pradoNUMLIN} >= {$offset} ";
 
 		************************* */
-		$offset = (int) $offset;
-		$toReg = $offset + $limit;
+		// An unset offset arrives as -1 and an unset limit as -1: the row window starts
+		// at row 0 without an offset, and has no upper bound without a limit.
+		$offset = max(0, (int) $offset);
+		$limit = (int) $limit;
+		$upperBound = $limit > 0 ? " AND nn.{$pradoNUMLIN} < " . ($offset + $limit) : '';
 		$fullTableName = $this->getTableInfo()->getTableFullName();
 		if (empty($sORDERBY)) {
 			$sORDERBY = "ROWNUM";
@@ -180,7 +223,7 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 					"		SELECT ROW_NUMBER() OVER ( ORDER BY {$sORDERBY} ) -1 as {$pradoNUMLIN} {$aliasedFields} " .
 					"		FROM {$fullTableName} {$fieldsALIAS} $WhereInSubSelect" .
 					") nn					" .
-					" WHERE nn.{$pradoNUMLIN} >= {$offset} AND nn.{$pradoNUMLIN} < {$toReg} ";
+					" WHERE nn.{$pradoNUMLIN} >= {$offset}{$upperBound} ";
 		//echo $newSql."\n<br>\n";
 		return $newSql;
 	}

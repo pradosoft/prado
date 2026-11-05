@@ -61,6 +61,10 @@ Upgrading from v4.3.3
   as before, and an `IDataRenderer` control such as a `TDropDownList` named after a column now binds as well. The
   package's migration guide lists every behavior difference:
   https://github.com/pradosoft/prado-activerecord/blob/main/docs/migration.md
+- The deprecated SQL Server classes in `Prado\Data\Common\Mssql` are removed. Code that names them uses the
+  `Prado\Data\Common\SqlSrv` replacements: `TMssqlCommandBuilder` → `TSqlSrvCommandBuilder`, `TMssqlMetaData` →
+  `TSqlSrvMetaData`, `TMssqlTableColumn` → `TSqlSrvTableColumn`, and `TMssqlTableInfo` → `TSqlSrvTableInfo`. The
+  `mssql`, `sqlsrv`, and `dblib` drivers already use the replacements, so code that only connects needs no change.
 - `TSecurityManager::UseEncryptionHmac` defaults to `true`; it was `false`. `decrypt()` reads data with or without the
   HMAC, so existing encrypted data still decrypts. Prado versions before 4.3.3 cannot decrypt the new output; an
   application sharing encrypted data with them sets `UseEncryptionHmac="false"`.

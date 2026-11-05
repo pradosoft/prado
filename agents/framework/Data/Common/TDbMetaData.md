@@ -53,7 +53,7 @@ $meta->quoteColumnAlias(string $name, string $lft = '', string $rgt = ''): strin
 | `mysql`, `mysqli` | [`TMysqlMetaData`](./Mysql/TMysqlMetaData.md) |
 | `pgsql` | [`TPgsqlMetaData`](./Pgsql/TPgsqlMetaData.md) |
 | `sqlite`, `sqlite2` | [`TSqliteMetaData`](./Sqlite/TSqliteMetaData.md) |
-| `mssql`, `sqlsrv`, `dblib` | [`TMssqlMetaData`](./Mssql/TMssqlMetaData.md) |
+| `mssql`, `sqlsrv`, `dblib` | [`TSqlSrvMetaData`](./SqlSrv/TSqlSrvMetaData.md) |
 | `oci` | [`TOracleMetaData`](./Oracle/TOracleMetaData.md) |
 | `ibm` | [`TIbmMetaData`](./Ibm/TIbmMetaData.md) |
 | `firebird`, `interbase` | [`TFirebirdMetaData`](./Firebird/TFirebirdMetaData.md) |

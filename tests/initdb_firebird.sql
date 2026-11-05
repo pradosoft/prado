@@ -53,4 +53,12 @@ CREATE TABLE address (
 INSERT INTO table1 (name) VALUES ('test');
 INSERT INTO address (username, phone, field2_date) VALUES ('wei', '1111111', CURRENT_DATE);
 
+/* Firebird upsert uses MERGE ... USING (SELECT ... FROM RDB$DATABASE) ON the PK.
+   DEFAULT must come BEFORE NOT NULL in Firebird column definitions. */
+CREATE TABLE upsert_test (
+	username VARCHAR(100)  NOT NULL,
+	score    INTEGER       DEFAULT 0 NOT NULL,
+	CONSTRAINT pk_upsert_test PRIMARY KEY (username)
+);
+
 COMMIT;

@@ -3,6 +3,7 @@
 namespace Prado\Test\Unit\Data;
 
 use Prado\Data\TDbConnection;
+use Prado\Data\TDbCommand;
 use Prado\Data\TDbDataReader;
 use Prado\Exceptions\TDbException;
 use Prado\TApplication;
@@ -173,7 +174,7 @@ class TDbCommandTest extends \PHPUnit\Framework\TestCase
 		// test unprepared SQL query
 		$sql = 'SELECT * FROM foo';
 		$row = $this->_connection->createCommand($sql)->queryRow();
-		$this->assertSame('1', $row['id']);
+		$this->assertEquals(1, $row['id']);
 		$this->assertSame('my name', $row['name']);
 
 		// test unprepared SQL query
@@ -181,7 +182,7 @@ class TDbCommandTest extends \PHPUnit\Framework\TestCase
 		$command = $this->_connection->createCommand($sql);
 		$command->prepare();
 		$row = $command->queryRow();
-		$this->assertSame('1', $row['id']);
+		$this->assertEquals(1, $row['id']);
 		$this->assertSame('my name', $row['name']);
 
 		// test exception raising
@@ -198,14 +199,14 @@ class TDbCommandTest extends \PHPUnit\Framework\TestCase
 		// test unprepared SQL query
 		$sql = 'SELECT * FROM foo';
 		$id = $this->_connection->createCommand($sql)->queryScalar();
-		$this->assertSame('1', $id);
+		$this->assertEquals(1, $id);
 
 		// test unprepared SQL query
 		$sql = 'SELECT * FROM foo';
 		$command = $this->_connection->createCommand($sql);
 		$command->prepare();
 		$row = $command->queryScalar();
-		$this->assertSame('1', $id);
+		$this->assertEquals(1, $id);
 
 		// test exception raising
 		try {
@@ -214,5 +215,66 @@ class TDbCommandTest extends \PHPUnit\Framework\TestCase
 			$this->fail('Expected exception is not raised');
 		} catch (TDbException $e) {
 		}
+	}
+
+	public function testSerializeDropsThePreparedStatement()
+	{
+		$command = $this->_connection->createCommand('SELECT name FROM foo WHERE id = 1');
+		$command->prepare();
+		$this->assertInstanceOf(\PDOStatement::class, $command->getPdoStatement());
+
+		$copy = unserialize(serialize($command));
+
+		$this->assertSame('SELECT name FROM foo WHERE id = 1', $copy->getText());
+		$this->assertNull($copy->getPdoStatement());
+	}
+
+	public function testBindParameterWithLength()
+	{
+		$command = $this->_connection->createCommand('INSERT INTO foo (id,name) VALUES (3,:name)');
+		$name = 'sized';
+		$command->bindParameter(':name', $name, \PDO::PARAM_STR, 8);
+		$command->execute();
+		$this->assertSame('sized', $this->_connection->createCommand('SELECT name FROM foo WHERE id=3')->queryScalar());
+	}
+
+	public function testColumnTypeFromValueWhenTheDriverIsUnknown()
+	{
+		$command = new TDbCommand(new TDbConnection('no-driver-dsn'), 'SELECT 1');
+		$this->assertSame(\PDO::PARAM_INT, $command->getColumnTypeFromValue(5));
+		$this->assertSame(\PDO::PARAM_STR, $command->getColumnTypeFromValue('a'));
+		$this->assertSame(\PDO::PARAM_BOOL, $command->getColumnTypeFromValue(true));
+		$this->assertSame(\PDO::PARAM_NULL, $command->getColumnTypeFromValue(null));
+		$this->assertNull($command->getColumnTypeFromValue(1.5));
+	}
+
+	public function testColumnTypeFromValueIsNullForUntypedDriver()
+	{
+		$command = new TDbCommand(new TDbConnection('ibm:DATABASE=sample'), 'SELECT 1');
+		$this->assertNull($command->getColumnTypeFromValue(5));
+		$this->assertNull($command->getColumnTypeFromValue('a'));
+	}
+
+	public function testBindParameterWithTypeOnly()
+	{
+		$command = $this->_connection->createCommand('INSERT INTO foo (id,name) VALUES (3,:name)');
+		$name = 'typed';
+		$command->bindParameter(':name', $name, \PDO::PARAM_STR);
+		$command->execute();
+		$this->assertSame('typed', $this->_connection->createCommand('SELECT name FROM foo WHERE id=3')->queryScalar());
+	}
+
+	public function testDebugStatementTextIsTheTextUntilPrepared()
+	{
+		$command = $this->_connection->createCommand('SELECT * FROM foo');
+		$this->assertSame('SELECT * FROM foo', $command->getDebugStatementText());
+		$command->prepare();
+		$this->assertSame('SELECT * FROM foo', $command->getDebugStatementText());
+		$this->assertSame($command->getPdoStatement()->queryString, $command->getDebugStatementText());
+	}
+
+	public function testQueryRowAsNumericArray()
+	{
+		$this->assertSame([1, 'my name'], $this->_connection->createCommand('SELECT id, name FROM foo ORDER BY id')->queryRow(false));
 	}
 }

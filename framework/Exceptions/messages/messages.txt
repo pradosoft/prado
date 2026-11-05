@@ -585,6 +585,8 @@ dbproperties_identifier_invalid			= {1}.{0} ''{2}'' is not a valid SQL identifie
 
 dbconnection_open_failed				= TDbConnection failed to establish DB connection: {0}
 dbconnection_connection_inactive		= TDbConnection is inactive.
+dbconnection_active_transaction			= TDbConnection cannot begin a new transaction: a transaction is already open and has uncommitted work pending. Commit or roll back the existing transaction first.
+dbconnection_transaction_class_invalid	= TDbConnection.TransactionClass must create a {1}, but it created ''{0}''.
 dbconnection_unsupported_driver_charset	= Database driver ''{0}'' doesn't support setting charset.
 dbconnection_charset_unchangeable		= Database driver ''{0}'' cannot change the charset after opening. Charset is a DSN parameter.
 
@@ -593,6 +595,10 @@ dbcommand_execute_failed				= TDbCommand failed to execute the SQL statement "{1
 dbcommand_query_failed					= TDbCommand failed to execute the query SQL "{1}": {0}
 dbdatareader_rewind_invalid				= TDbDataReader is a forward-only stream. It can only be traversed once.
 dbtransaction_transaction_inactive		= TDbTransaction is inactive.
+
+dbcommandbuilder_insertorignore_not_supported = TDbCommandBuilder does not support insertOrIgnore(). Use a driver-specific subclass.
+dbcommandbuilder_upsert_not_supported         = TDbCommandBuilder does not support upsert(). Use a driver-specific subclass.
+dbcommandbuilder_upsert_requires_transaction  = {0} requires an active transaction. Call getDbConnection()->beginTransaction() before invoking insertOrIgnore() or upsert() with this database driver.
 
 dbcommon_invalid_table_name				= Database table ''{0}'' not found. Error message: {1}.
 dbcommon_invalid_identifier_name        = Invalid database identifier name ''{0}'', see {1} for details.

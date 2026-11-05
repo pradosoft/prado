@@ -39,7 +39,7 @@ jobs:
         with:
           php-version: ${{ matrix.php-versions }}
           # sysvsem and sync back TSemaphoreMutex and TSyncMutex
-          extensions: ctype, dom, intl, json, mbstring, memcached, pdo_mysql, pdo_pgsql, pdo_sqlite, openssl, pcre, spl, zlib, bz2, zstd, brotli, sysvsem, sync
+          extensions: ctype, dom, intl, json, mbstring, memcached, pdo_mysql, pdo_pgsql, pdo_sqlite, openssl, pcre, spl, zlib, bz2, zstd, brotli, sysvsem, sync, :pdo_firebird, :pdo_sqlsrv
           tools: php-cs-fixer, phpstan, cs2pr
 
       - name: Report mutex extensions
@@ -490,7 +490,7 @@ jobs:
         run: >-
           /opt/mssql-tools18/bin/sqlcmd -C
           -U sa -P Prado_Unitest1
-          -i ./tests/initdb_mssql.sql
+          -i ./tests/initdb_sqlsrv.sql
 
       - name: Run SQL Server tests
         run: vendor/bin/phpunit --testsuite db-sqlsrv

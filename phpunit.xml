@@ -19,7 +19,7 @@
       <directory suffix="Test.php">./tests/unit/Data/DbSpecific/Firebird</directory>
     </testsuite>
     <testsuite name="db-sqlsrv">
-      <directory suffix="Test.php">./tests/unit/Data/DbSpecific/Mssql</directory>
+      <directory suffix="Test.php">./tests/unit/Data/DbSpecific/SqlSrv</directory>
     </testsuite>
     <testsuite name="db-oracle">
       <directory suffix="Test.php">./tests/unit/Data/DbSpecific/Oracle</directory>

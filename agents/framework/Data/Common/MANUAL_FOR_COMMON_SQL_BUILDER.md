@@ -268,7 +268,7 @@ abstract class TDbCommandBuilder extends \Prado\TComponent {
 
 ### Provider-Specific Builders
 - `TMysqlCommandBuilder` - MySQL dialect and parameter conventions
-- `TMssqlCommandBuilder` - T-SQL nuances and parameter syntax
+- `TSqlSrvCommandBuilder` - T-SQL nuances and parameter syntax
 - `TPgsqlCommandBuilder` - PostgreSQL specifics
 - `TOracleCommandBuilder` - Oracle quirks and bind variables  
 - `TSqliteCommandBuilder` - SQLite specifics
@@ -410,7 +410,7 @@ $metadata = TDbMetaData::getInstance($connection);
    - 'mysql', 'mysqli' → `TMysqlMetaData`
    - 'pgsql' → `TPgsqlMetaData`
    - 'sqlite', 'sqlite2' → `TSqliteMetaData`
-   - 'mssql', 'sqlsrv', 'dblib' → `TMssqlMetaData`
+   - 'mssql', 'sqlsrv', 'dblib' → `TSqlSrvMetaData`
    - 'oci' → `TOracleMetaData`
 4. Factory creates appropriate metadata subclass
 5. Metadata object's `createCommandBuilder()` creates builder for specific dialect
@@ -722,10 +722,10 @@ The Data.Common framework ships with provider-specific implementations under the
   - `TSqliteMetaData`: Retrieves SQLite metadata
 
 - **MSSQL Provider**
-  - `TMssqlCommandBuilder`: Extends `TDbCommandBuilder` for T-SQL dialect
-  - `TMssqlTableInfo`: Manages MSSQL table metadata
-  - `TMssqlTableColumn`: Maps MSSQL column types to PHP types
-  - `TMssqlMetaData`: Retrieves MSSQL metadata
+  - `TSqlSrvCommandBuilder`: Extends `TDbCommandBuilder` for T-SQL dialect
+  - `TSqlSrvTableInfo`: Manages MSSQL table metadata
+  - `TSqlSrvTableColumn`: Maps MSSQL column types to PHP types
+  - `TSqlSrvMetaData`: Retrieves MSSQL metadata
 
 - **Oracle Provider**
   - `TOracleCommandBuilder`: Extends `TDbCommandBuilder` for Oracle dialect
@@ -742,7 +742,7 @@ The system automatically selects and maps to the correct provider based on the d
    - 'mysql', 'mysqli' → `TMysqlMetaData`
    - 'pgsql' → `TPgsqlMetaData`
    - 'sqlite', 'sqlite2' → `TSqliteMetaData`
-   - 'mssql', 'sqlsrv', 'dblib' → `TMssqlMetaData`
+   - 'mssql', 'sqlsrv', 'dblib' → `TSqlSrvMetaData`
    - 'oci' → `TOracleMetaData`
 3. Factory class `TDbMetaData::getInstance()` returns appropriate instance
 4. `createCommandBuilder()` creates specific provider builder

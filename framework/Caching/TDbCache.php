@@ -14,6 +14,7 @@ use Prado\Prado;
 use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbConnection;
 use Prado\Data\TDbDriver;
+use Prado\Data\TDbDriverCapabilities;
 use Prado\Data\TDbPropertiesTrait;
 use Prado\Exceptions\TConfigurationException;
 use Prado\TPropertyValue;
@@ -184,8 +185,11 @@ class TDbCache extends TSerializingCache implements IDbModule
 		if (!static::getIsAvailable()) {
 			throw new TConfigurationException('dbcache_unavailable');
 		}
-		$this->getApplication()->attachEventHandler('OnLoadStateComplete', [$this, 'doInitializeCache']);
-		$this->getApplication()->attachEventHandler('OnSaveState', [$this, 'doFlushCacheExpired']);
+		$app = $this->getApplication();
+		if ($app) {
+			$app->attachEventHandler('OnLoadStateComplete', [$this, 'doInitializeCache']);
+			$app->attachEventHandler('OnSaveState', [$this, 'doFlushCacheExpired']);
+		}
 		parent::init($config);
 	}
 
@@ -249,7 +253,7 @@ class TDbCache extends TSerializingCache implements IDbModule
 			// DB table not exists
 			Prado::trace('Autocreate: ' . $cacheTable, TDbCache::class);
 
-			$driver = $db->getDriverName();
+			$driver = TDbDriverCapabilities::normalizeDriver($db->getDriverName());
 			if ($driver === TDbDriver::DRIVER_MYSQL) {
 				$blob = 'LONGBLOB';
 			} elseif ($driver === TDbDriver::DRIVER_PGSQL) {
@@ -491,8 +495,9 @@ class TDbCache extends TSerializingCache implements IDbModule
 		}
 
 		$sql = 'SELECT value FROM ' . $this->getCacheTableName() . ' WHERE itemkey=:key AND (expire=0 OR expire>=' . $this->getClock()->time() . ') ORDER BY expire DESC';
-		$command = $this->getDbConnection()->createCommand($sql);
-		$command->bindValue(':key', $key, \PDO::PARAM_STR);
+		$db = $this->getDbConnection();
+		$command = $db->createCommand($sql);
+		$command->bindValue(':key', $key, $db::PARAM_STR);
 		try {
 			return $command->queryScalar();
 		} catch (\Exception $e) {
@@ -514,11 +519,11 @@ class TDbCache extends TSerializingCache implements IDbModule
 			$this->initializeCache();
 		}
 		$db = $this->getDbConnection();
-		$driver = $db->getDriverName();
-		if (in_array($driver, [TDbDriver::DRIVER_MYSQL, TDbDriver::EXTENSION_MYSQLI, TDbDriver::DRIVER_SQLITE, TDbDriver::DRIVER_IBM, TDbDriver::DRIVER_OCI, TDbDriver::DRIVER_SQLSRV, TDbDriver::EXTENSION_MSSQL, TDbDriver::DRIVER_DBLIB, TDbDriver::DRIVER_PGSQL])) {
+		$driver = TDbDriverCapabilities::normalizeDriver($db->getDriverName());
+		if (in_array($driver, [TDbDriver::DRIVER_MYSQL, TDbDriver::DRIVER_SQLITE, TDbDriver::DRIVER_IBM, TDbDriver::DRIVER_OCI, TDbDriver::DRIVER_SQLSRV, TDbDriver::DRIVER_DBLIB, TDbDriver::DRIVER_PGSQL])) {
 			$expire = ($expire <= 0) ? 0 : $this->getClock()->time() + $expire;
 			$cacheTable = $this->getCacheTableName();
-			if (in_array($driver, [TDbDriver::DRIVER_MYSQL, TDbDriver::EXTENSION_MYSQLI, TDbDriver::DRIVER_SQLITE])) {
+			if (in_array($driver, [TDbDriver::DRIVER_MYSQL, TDbDriver::DRIVER_SQLITE])) {
 				$sql = "REPLACE INTO {$cacheTable} (itemkey,value,expire) VALUES (:key,:value,$expire)";
 			} elseif ($driver === TDbDriver::DRIVER_PGSQL) {
 				$sql = "INSERT INTO {$cacheTable} (itemkey, value, expire) VALUES (:key, :value, :expire) " .
@@ -534,8 +539,8 @@ class TDbCache extends TSerializingCache implements IDbModule
 					"VALUES (data.itemkey, data.value, data.expire)";
 			}
 			$command = $db->createCommand($sql);
-			$command->bindValue(':key', $key, \PDO::PARAM_STR);
-			$command->bindValue(':value', $value, \PDO::PARAM_LOB);
+			$command->bindValue(':key', $key, $db::PARAM_STR);
+			$command->bindValue(':value', $value, $db::PARAM_LOB);
 
 			try {
 				$command->execute();
@@ -578,9 +583,10 @@ class TDbCache extends TSerializingCache implements IDbModule
 		}
 		$expire = ($expire <= 0) ? 0 : $this->getClock()->time() + $expire;
 		$sql = "INSERT INTO {$this->getCacheTableName()} (itemkey,value,expire) VALUES(:key,:value,$expire)";
-		$command = $this->getDbConnection()->createCommand($sql);
-		$command->bindValue(':key', $key, \PDO::PARAM_STR);
-		$command->bindValue(':value', $value, \PDO::PARAM_LOB);
+		$db = $this->getDbConnection();
+		$command = $db->createCommand($sql);
+		$command->bindValue(':key', $key, $db::PARAM_STR);
+		$command->bindValue(':value', $value, $db::PARAM_LOB);
 
 		try {
 			$command->execute();
@@ -606,8 +612,9 @@ class TDbCache extends TSerializingCache implements IDbModule
 			$this->initializeCache();
 		}
 
-		$command = $this->getDbConnection()->createCommand("DELETE FROM {$this->getCacheTableName()} WHERE itemkey=:key");
-		$command->bindValue(':key', $key, \PDO::PARAM_STR);
+		$db = $this->getDbConnection();
+		$command = $db->createCommand("DELETE FROM {$this->getCacheTableName()} WHERE itemkey=:key");
+		$command->bindValue(':key', $key, $db::PARAM_STR);
 		try {
 			$command->execute();
 			return true;

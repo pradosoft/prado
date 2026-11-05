@@ -32,6 +32,89 @@ use Prado\Data\Common\TDbCommandBuilder;
 class TFirebirdCommandBuilder extends TDbCommandBuilder
 {
 	/**
+	 * Creates a Firebird MERGE ... WHEN NOT MATCHED THEN INSERT command (insertOrIgnore).
+	 * Requires an active transaction; throws TDbException otherwise.
+	 * Uses Firebird MERGE with USING (SELECT ... FROM RDB$DATABASE) and no AS keyword for aliases.
+	 * @param array $data name-value pairs of data to be inserted.
+	 * @return TDbCommand insert-or-ignore MERGE command.
+	 */
+	public function createInsertOrIgnoreCommand(array $data): TDbCommand
+	{
+		$this->assertActiveTransaction();
+		$this->clearInsertIdentity();
+		$conflictColumns = $this->resolveConflictColumns(null);
+		return $this->buildMergeStatement($data, [], $conflictColumns, 'FROM RDB$DATABASE', false);
+	}
+
+	/**
+	 * Creates a Firebird MERGE ... WHEN MATCHED THEN UPDATE WHEN NOT MATCHED THEN INSERT command.
+	 * Requires an active transaction; throws TDbException otherwise.
+	 * Uses Firebird MERGE with USING (SELECT ... FROM RDB$DATABASE) and no AS keyword for aliases.
+	 *
+	 * The $updateData parameter supports four modes:
+	 * - **null** — all non-conflict columns updated via the MERGE source alias (s.col).
+	 * - **[] empty array** — no WHEN MATCHED branch (insert-or-ignore semantics).
+	 * - **integer-keyed list** (e.g. `['score']`) — those columns use the source alias (s.col).
+	 * - **string-keyed explicit map** (e.g. `['score' => 99]`) — those columns use a bound literal (`:_upsert_col`).
+	 * - **mixed** — integer-keyed use s.col; string-keyed use bound literals.
+	 *
+	 * @param array $data name-value pairs of data to insert.
+	 * @param null|array $updateData null, column-name list, explicit col=>value map, or mixed; controls what is updated on conflict.
+	 * @param null|array $conflictColumns conflict target columns; null = primary key columns.
+	 * @return TDbCommand upsert MERGE command.
+	 */
+	public function createUpsertCommand(array $data, ?array $updateData = null, ?array $conflictColumns = null): TDbCommand
+	{
+		$this->assertActiveTransaction();
+		$this->clearInsertIdentity();
+		$conflictColumns = $this->resolveConflictColumns($conflictColumns);
+		return $this->buildMergeStatement($data, $updateData, $conflictColumns, 'FROM RDB$DATABASE', false);
+	}
+
+	/**
+	 * Children override this if there is something specific about the column Name.
+	 * @param string $columnName The name of the column to place in the sql.
+	 * @return string null if no change, or a string if there is a change.
+	 */
+	protected function processMergeColumn(string $columnName): string
+	{
+		$castType = $this->getFirebirdCastType($columnName);
+		return 'CAST(:' . $columnName . ' AS ' . $castType . ') AS ' . $columnName;
+	}
+
+	/**
+	 * Builds a Firebird-compatible CAST type string for the named column.
+	 *
+	 * Firebird requires explicit type annotations in CAST() expressions. This helper
+	 * maps the column's DbType (and ColumnSize / NumericPrecision / NumericScale where
+	 * applicable) to the correct SQL type string.
+	 *
+	 * @param string $name logical column name (PHP array key from $data).
+	 * @return string SQL type string suitable for use in CAST(:name AS <type>).
+	 */
+	private function getFirebirdCastType(string $name): string
+	{
+		$column = $this->getTableInfo()->getColumn($name);
+		if ($column === null) {
+			return 'VARCHAR(255)';
+		}
+
+		$dbType = strtoupper(trim($column->getDbType()));
+		$size = (int) $column->getColumnSize();
+		$prec = (int) $column->getNumericPrecision();
+		$scale = (int) $column->getNumericScale();
+
+		if (in_array($dbType, ['VARCHAR', 'CHAR'], true) && $size > 0) {
+			return $dbType . '(' . $size . ')';
+		}
+		if (in_array($dbType, ['DECIMAL', 'NUMERIC'], true) && $prec > 0) {
+			return $dbType . '(' . $prec . ($scale > 0 ? ',' . $scale : '') . ')';
+		}
+		// Fixed-length types and all others: return as-is.
+		return $dbType;
+	}
+
+	/**
 	 * @var ?TDbCommand the last insert command with a `RETURNING` clause.
 	 */
 	private $_insertCommand;
@@ -55,6 +138,19 @@ class TFirebirdCommandBuilder extends TDbCommandBuilder
 	}
 
 	/**
+	 * Clears the `RETURNING` insert command and its identity value so that
+	 * {@see getLastInsertID()} never reports the identity of an earlier insert
+	 * after a new command has been created. The MERGE-based insertOrIgnore and
+	 * upsert commands carry no `RETURNING` row, so their last insert id is null.
+	 * @since 4.4.0
+	 */
+	protected function clearInsertIdentity(): void
+	{
+		$this->_insertCommand = null;
+		$this->_lastInsertID = null;
+	}
+
+	/**
 	 * Overrides parent implementation. The insert statement of a table with an
 	 * identity column ends in `RETURNING <column>`, so the generated value comes
 	 * back with the statement and {@see getLastInsertID()} returns it.
@@ -64,8 +160,7 @@ class TFirebirdCommandBuilder extends TDbCommandBuilder
 	 */
 	public function createInsertCommand($data)
 	{
-		$this->_insertCommand = null;
-		$this->_lastInsertID = null;
+		$this->clearInsertIdentity();
 		$table = $this->getTableInfo()->getTableFullName();
 		[$fields, $bindings] = $this->getInsertFieldBindings($data);
 		$sql = "INSERT INTO {$table}({$fields}) VALUES ($bindings)";

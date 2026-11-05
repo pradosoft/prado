@@ -5,6 +5,7 @@ namespace Prado\Test\Unit\Data;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TDbException;
 use Prado\TApplication;
+use Prado\Test\Unit\PradoUnit;
 use Prado\TComponent;
 use Prado\TApplicationMode;
 
@@ -67,9 +68,9 @@ class TDbDataReaderTest extends \PHPUnit\Framework\TestCase
 	{
 		$reader = $this->_connection->createCommand('SELECT * FROM foo')->query();
 		$row = $reader->read();
-		$this->assertTrue($row['id'] === '1' && $row['name'] === 'my name');
+		$this->assertTrue((string) $row['id'] === '1' && $row['name'] === 'my name');
 		$row = $reader->read();
-		$this->assertTrue($row['id'] === '2' && $row['name'] === 'my name 2');
+		$this->assertTrue((string) $row['id'] === '2' && $row['name'] === 'my name 2');
 		$row = $reader->read();
 		$this->assertFalse($row);
 	}
@@ -97,9 +98,9 @@ class TDbDataReaderTest extends \PHPUnit\Framework\TestCase
 		$rows = $reader->readAll();
 		$this->assertEquals(count($rows), 2);
 		$row = $rows[0];
-		$this->assertTrue($row['id'] === '1' && $row['name'] === 'my name');
+		$this->assertTrue((string) $row['id'] === '1' && $row['name'] === 'my name');
 		$row = $rows[1];
-		$this->assertTrue($row['id'] === '2' && $row['name'] === 'my name 2');
+		$this->assertTrue((string) $row['id'] === '2' && $row['name'] === 'my name 2');
 
 		$reader = $this->_connection->createCommand('SELECT * FROM foo WHERE id=3')->query();
 		$rows = $reader->readAll();
@@ -143,7 +144,7 @@ class TDbDataReaderTest extends \PHPUnit\Framework\TestCase
 			$ids[] = $row['id'];
 		}
 		$this->assertEquals(count($ids), 2);
-		$this->assertTrue($ids[0] === '1' && $ids[1] === '2');
+		$this->assertTrue((string) $ids[0] === '1' && (string) $ids[1] === '2');
 
 		try {
 			foreach ($reader as $row) {
@@ -183,5 +184,49 @@ class TDbDataReaderTest extends \PHPUnit\Framework\TestCase
 		$reader->read();
 		$this->assertEquals($id, '2');
 		$this->assertEquals($name, 'my name 2');
+	}
+
+	public function testSerializeDropsTheStatement()
+	{
+		$reader = $this->_connection->createCommand('SELECT * FROM foo')->query();
+		$reader->read();
+
+		$copy = unserialize(serialize($reader));
+
+		$this->assertNull(PradoUnit::getProp($copy, '_statement'));
+		$this->assertFalse($copy->getIsClosed());
+	}
+
+	public function testBindColumnWithType()
+	{
+		$reader = $this->_connection->createCommand('SELECT * FROM foo')->query();
+		$id = null;
+		$reader->bindColumn('id', $id, \PDO::PARAM_INT);
+		$reader->read();
+		$this->assertSame(1, $id);
+	}
+
+	public function testNextResultRaisesWhereTheDriverHasNoMultipleRowsets()
+	{
+		$reader = $this->_connection->createCommand('SELECT * FROM foo')->query();
+		$this->expectException(\PDOException::class);
+		$reader->nextResult();
+	}
+
+	public function testRowCountOfADeleteIsTheAffectedRows()
+	{
+		$reader = $this->_connection->createCommand('DELETE FROM foo')->query();
+		$this->assertSame(2, $reader->getRowCount());
+	}
+
+	public function testKeyFollowsTheIteratorPosition()
+	{
+		$reader = $this->_connection->createCommand('SELECT * FROM foo')->query();
+		$keys = [];
+		foreach ($reader as $key => $row) {
+			$keys[] = $key;
+			$this->assertSame($key, $reader->key());
+		}
+		$this->assertSame([0, 1], $keys);
 	}
 }

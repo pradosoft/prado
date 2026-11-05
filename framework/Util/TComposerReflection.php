@@ -134,7 +134,6 @@ class TComposerReflection extends \Prado\TComponent
 	 * use it to invalidate caches derived from the installed packages.
 	 * @return null|int the newest manifest modification time, or null when no
 	 *   manifest exists.
-	 * @since 4.4.0
 	 */
 	public static function getInstalledManifestsTime(): ?int
 	{

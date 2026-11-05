@@ -13,7 +13,7 @@ namespace Prado\Data\Common\Mysql;
 /**
  * Loads the base TDbTableInfo class and TMysqlTableColumn class.
  */
-use Prado\Data\Common\IDbHasSchema;
+use Prado\Data\Common\IDataHasSchema;
 use Prado\Data\Common\TDbTableInfo;
 use Prado\Prado;
 
@@ -23,7 +23,7 @@ use Prado\Prado;
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
  */
-class TMysqlTableInfo extends TDbTableInfo implements IDbHasSchema
+class TMysqlTableInfo extends TDbTableInfo implements IDataHasSchema
 {
 	/**
 	 * @return string full name of the table, database dependent.

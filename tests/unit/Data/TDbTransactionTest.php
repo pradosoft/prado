@@ -2,14 +2,125 @@
 
 namespace Prado\Test\Unit\Data;
 
+use PDO;
 use Prado\Data\TDbConnection;
+use Prado\Data\IDataConnection;
 use Prado\Data\TDbTransaction;
 use Prado\Exceptions\TDbException;
+use ReflectionClass;
 use Prado\TApplication;
+use Prado\Test\Unit\PradoUnit;
 use Prado\TApplicationMode;
 
 if (!defined('TEST_DB_FILE')) {
 	define('TEST_DB_FILE', __DIR__ . '/db/test.db');
+}
+
+/**
+ * Hand-rolled PDO stub that pretends to be a Firebird connection.
+ *
+ * PHPUnit mocks of native C-extension classes (like PDO) are unreliable because
+ * PHP requires the native constructor to have run before any C-level method can
+ * be invoked — even on a stub object.  Overriding __construct() in a subclass
+ * prevents the C-level initialisation and keeps all method calls at the PHP level.
+ */
+class FirebirdPdoStub extends PDO
+{
+	/** @var string[] SQL statements passed to exec() */
+	public array $execCalls = [];
+	public bool $rollBackCalled = false;
+
+	/** Suppress native PDO constructor so no C-level state is required. */
+	public function __construct() {}
+
+	public function getAttribute(int $attribute): mixed
+	{
+		return $attribute === PDO::ATTR_DRIVER_NAME ? 'firebird' : null;
+	}
+
+	public function exec(string $statement): int|false
+	{
+		$this->execCalls[] = $statement;
+		return 0;
+	}
+
+	public function rollBack(): bool
+	{
+		$this->rollBackCalled = true;
+		return true;
+	}
+
+	public bool $commitCalled = false;
+
+	public function commit(): bool
+	{
+		$this->commitCalled = true;
+		return true;
+	}
+}
+
+/**
+ * PDO stub with a configurable driver name and failure points, for the
+ * connection's transaction paths that tolerate driver exceptions.
+ */
+class TDbTransactionTestPdoStub extends PDO
+{
+	public string $driver = 'firebird';
+	public bool $attributeThrows = false;
+	public bool $attributeErrors = false;
+	public bool $commitThrows = false;
+	public bool $commitErrors = false;
+	public bool $rollBackThrows = false;
+	public bool $inTx = true;
+	/** @var string[] PDO transaction calls in order */
+	public array $calls = [];
+
+	public function __construct()
+	{
+	}
+
+	public function getAttribute(int $attribute): mixed
+	{
+		if ($this->attributeThrows) {
+			throw new \PDOException('attribute unavailable');
+		}
+		if ($this->attributeErrors) {
+			throw new \Error('attribute handle released');
+		}
+		return $attribute === PDO::ATTR_DRIVER_NAME ? $this->driver : null;
+	}
+
+	public function beginTransaction(): bool
+	{
+		$this->calls[] = 'begin';
+		return true;
+	}
+
+	public function commit(): bool
+	{
+		$this->calls[] = 'commit';
+		if ($this->commitThrows) {
+			throw new \PDOException('no transaction to commit');
+		}
+		if ($this->commitErrors) {
+			throw new \Error('commit handle released');
+		}
+		return true;
+	}
+
+	public function rollBack(): bool
+	{
+		$this->calls[] = 'rollBack';
+		if ($this->rollBackThrows) {
+			throw new \PDOException('connection lost');
+		}
+		return true;
+	}
+
+	public function inTransaction(): bool
+	{
+		return $this->inTx;
+	}
 }
 
 class TDbTransactionTest extends \PHPUnit\Framework\TestCase
@@ -76,6 +187,47 @@ class TDbTransactionTest extends \PHPUnit\Framework\TestCase
 		}
 		$result = $this->_connection->createCommand('SELECT * FROM foo')->query()->readAll();
 		$this->assertEquals(count($result), 2);
+	}
+
+	public function testRollBackFlushesImplicitTransactionForFirebird()
+	{
+		// Use FirebirdPdoStub (defined above) rather than a PHPUnit mock of PDO.
+		// PHPUnit mocks of native extension classes fail with "PDO object is not
+		// initialized, constructor was not called" when C-level methods are invoked,
+		// because the C-level constructor was suppressed.  The stub subclass
+		// overrides __construct() and the relevant methods at the PHP level,
+		// so no C-level state is needed.
+		//
+		// The connection is the source of truth for transaction control:
+		// TDbConnection::rollback() runs the PDO call and invokes
+		// completeTransaction(), which performs the Firebird-specific post-flush.
+		// TDbTransaction::rollback() simply delegates here, so we test the
+		// flush behaviour against the connection directly.
+		$pdo = new FirebirdPdoStub();
+
+		$conn = new TDbConnection();
+		$ref = new ReflectionClass($conn);
+		$pdoProp = $ref->getProperty('_pdo');
+		$pdoProp->setValue($conn, $pdo);
+		$activeProp = $ref->getProperty('_active');
+		$activeProp->setValue($conn, true);
+
+		$transaction = new TDbTransaction($conn);
+		$txnProp = $ref->getProperty('_transaction');
+		$txnProp->setValue($conn, $transaction);
+
+		$transaction->rollBack();
+
+		self::assertTrue(
+			$pdo->rollBackCalled,
+			'PDO::rollBack() must be called to roll back the Firebird transaction.'
+		);
+		self::assertTrue(
+			$pdo->commitCalled,
+			'PDO::commit() must be called after rollback to flush the implicit transaction ' .
+			'that pdo_firebird opens automatically (requiresPostTransactionFlush).'
+		);
+		self::assertFalse($transaction->Active, 'Transaction must be inactive after rollback.');
 	}
 
 	public function testCommitWithoutHandlers()
@@ -394,8 +546,8 @@ class TDbTransactionTest extends \PHPUnit\Framework\TestCase
 		$transaction = $this->_connection->beginTransaction();
 		try {
 			$this->_connection->beginTransaction();
-			$this->fail('Expected PDOException for a nested transaction');
-		} catch (\PDOException $e) {
+			$this->fail('Expected TDbException for a nested transaction');
+		} catch (TDbException $e) {
 		}
 		$this->assertSame($transaction, $this->_connection->getCurrentTransaction());
 		$transaction->rollback();
@@ -411,5 +563,124 @@ class TDbTransactionTest extends \PHPUnit\Framework\TestCase
 		$count = (int) $other->createCommand('SELECT COUNT(*) FROM foo')->queryScalar();
 		$other->Active = false;
 		return $count;
+	}
+
+	private function stubbedConnection(TDbTransactionTestPdoStub $pdo): TDbConnection
+	{
+		$conn = new TDbConnection();
+		PradoUnit::setProp($conn, '_pdo', $pdo);
+		PradoUnit::setProp($conn, '_active', true);
+		return $conn;
+	}
+
+	public function testBeginTransactionIgnoresAFailedImplicitCommitBeforeBegin()
+	{
+		$pdo = new TDbTransactionTestPdoStub();
+		$pdo->commitThrows = true;
+		$conn = $this->stubbedConnection($pdo);
+
+		$transaction = $conn->beginTransaction();
+
+		$this->assertSame(['commit', 'begin'], $pdo->calls);
+		$this->assertTrue($transaction->getActive());
+		$this->assertSame($transaction, $conn->getCurrentTransaction());
+	}
+
+	public function testRollbackIgnoresAFailedPostTransactionFlush()
+	{
+		$pdo = new TDbTransactionTestPdoStub();
+		$conn = $this->stubbedConnection($pdo);
+		$transaction = $conn->beginTransaction();
+		$rolledBack = 0;
+		$transaction->attachEventHandler('OnRollback', function () use (&$rolledBack) {
+			$rolledBack++;
+		});
+		$pdo->commitThrows = true;
+
+		$this->assertTrue($conn->rollback());
+
+		$this->assertSame(['commit', 'begin', 'rollBack', 'commit'], $pdo->calls);
+		$this->assertFalse($transaction->getActive());
+		$this->assertSame(1, $rolledBack);
+	}
+
+	public function testCommitCompletesWhenTheDriverNameCannotBeRead()
+	{
+		$pdo = new TDbTransactionTestPdoStub();
+		$pdo->driver = 'sqlite';
+		$conn = $this->stubbedConnection($pdo);
+		$transaction = $conn->beginTransaction();
+		$committed = 0;
+		$transaction->attachEventHandler('OnCommit', function () use (&$committed) {
+			$committed++;
+		});
+		$pdo->attributeThrows = true;
+
+		$this->assertTrue($conn->commit());
+
+		$this->assertSame(['begin', 'commit'], $pdo->calls);
+		$this->assertFalse($transaction->getActive());
+		$this->assertSame(1, $committed);
+	}
+
+	public function testEndOnCloseReportsARollbackThatTheDriverCannotSend()
+	{
+		$pdo = new TDbTransactionTestPdoStub();
+		$pdo->rollBackThrows = true;
+		$transaction = new TDbTransaction($this->stubbedConnection($pdo));
+
+		$this->assertTrue($transaction->endOnClose());
+		$this->assertSame(['rollBack'], $pdo->calls);
+		$this->assertFalse($transaction->getActive());
+	}
+
+	public function testEndOnCloseIsFalseWhenTheDatabaseHoldsNoTransaction()
+	{
+		$pdo = new TDbTransactionTestPdoStub();
+		$pdo->inTx = false;
+		$transaction = new TDbTransaction($this->stubbedConnection($pdo));
+
+		$this->assertFalse($transaction->endOnClose());
+		$this->assertSame([], $pdo->calls);
+		$this->assertFalse($transaction->getActive());
+	}
+
+	public function testActivateMarksADeactivatedTransactionActive()
+	{
+		$transaction = $this->_connection->beginTransaction();
+		$transaction->deactivate();
+		$this->assertFalse($transaction->getActive());
+
+		PradoUnit::invoke($transaction, 'activate');
+
+		$this->assertTrue($transaction->getActive());
+		$transaction->rollback();
+		$this->assertFalse($transaction->getActive());
+	}
+
+	public function testEndOnCloseWithoutAPdoConnectionIsFalse()
+	{
+		$transaction = new TDbTransaction($this->createMock(IDataConnection::class));
+
+		$this->assertFalse($transaction->endOnClose());
+		$this->assertFalse($transaction->getActive());
+	}
+
+	public function testRollbackCompletesWhenTheDriverRaisesErrors()
+	{
+		$pdo = new TDbTransactionTestPdoStub();
+		$conn = $this->stubbedConnection($pdo);
+		$first = $conn->beginTransaction();
+		$pdo->commitErrors = true;
+		$this->assertTrue($conn->rollback());
+		$this->assertSame(['commit', 'begin', 'rollBack', 'commit'], $pdo->calls);
+		$this->assertFalse($first->getActive());
+
+		$pdo->commitErrors = false;
+		$second = $conn->beginTransaction();
+		$pdo->attributeErrors = true;
+		$this->assertTrue($conn->rollback());
+		$this->assertSame(['commit', 'begin', 'rollBack', 'commit', 'commit', 'begin', 'rollBack'], $pdo->calls);
+		$this->assertFalse($second->getActive());
 	}
 }

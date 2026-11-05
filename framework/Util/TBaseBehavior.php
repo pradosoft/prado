@@ -322,7 +322,6 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 	 *   for normal action and no override (true/null) or reset (false).
 	 * @throws TInvalidOperationException When synchronizing a component without owners
 	 *   or the component that isn't an owner.
-	 * @since 4.3.0
 	 */
 	public function syncEventHandlers(?object $component = null, $attachOverride = 0)
 	{
@@ -355,12 +354,11 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 		}
 	}
 
-	/*
+	/**
 	 * Attaches the behavior event handlers to an owner component. This tracks of the
 	 * attachment status of handlers on the owner components.
 	 * @param TComponent $component The component to attach the behavior event handlers to.
 	 * @return bool Successfully attached the event handlers.
-	 * @since 4.3.0
 	 */
 	protected function attachEventHandlers(TComponent $component): bool
 	{
@@ -379,12 +377,11 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 		return false;
 	}
 
-	/*
+	/**
 	 * Detaches the behavior event handlers from an owner component. This tracks of the
 	 * attachment status of handlers on the owner components.
 	 * @param TComponent $component The component to detach the behavior event handlers from.
 	 * @return bool Successfully detached the event handlers.
-	 * @since 4.3.0
 	 */
 	protected function detachEventHandlers(TComponent $component): bool
 	{
@@ -408,7 +405,6 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 	 * @param ?TComponent $component The component to check the status of the handlers.
 	 *   Null only works for IBehavior and returns the status of the single owner.
 	 * @return bool Are the behavior handlers attached to the given owner events.
-	 * @since 4.3.0
 	 */
 	abstract protected function getHandlersStatus(?TComponent $component = null): ?bool;
 
@@ -419,7 +415,6 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 	 * @param bool $attach "true" to attach the handlers or "false" detach them.
 	 * @return bool Is there a change in the attachment status for the given owner
 	 *   component.
-	 * @since 4.3.0
 	 */
 	abstract protected function setHandlersStatus(TComponent $component, bool $attach): bool;
 

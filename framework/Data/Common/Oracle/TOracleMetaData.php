@@ -261,7 +261,7 @@ class TOracleMetaData extends TDbMetaData
 	/**
 	 * @param mixed $tableInfo
 	 * @param mixed $src
-	 * @return null|string serial name if found, null otherwise.
+	 * @return ?string serial name if found, null otherwise.
 	 */
 	protected function getSequenceName($tableInfo, $src)
 	{
@@ -413,7 +413,7 @@ class TOracleMetaData extends TDbMetaData
 	WHERE object_type = 'TABLE' AND owner=:schema
 	EOD;
 			$command = $this->getDbConnection()->createCommand($sql);
-			$command->bindParameter(':schema', $schema);
+			$command->bindValue(':schema', $schema);
 		}
 
 		$rows = $command->query();

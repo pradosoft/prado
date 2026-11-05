@@ -302,4 +302,36 @@ class TDataSourceConfigTest extends \PHPUnit\Framework\TestCase
 		$this->expectException(TConfigurationException::class);
 		$module->getDbConnection();
 	}
+
+	/**
+	 * The ConnectionClass setter stores the class name before a connection exists.
+	 */
+	public function testSetConnectionClass()
+	{
+		$config = new TDataSourceConfig();
+		$config->ConnectionClass = 'CustomDbConnection';
+		$this->assertSame('CustomDbConnection', $config->ConnectionClass);
+	}
+
+	/**
+	 * The ConnectionID property round-trips through its getter and setter.
+	 */
+	public function testConnectionIdGetterSetter()
+	{
+		$config = new TDataSourceConfig();
+		$config->ConnectionID = 'testDb';
+		$this->assertSame('testDb', $config->ConnectionID);
+
+		$config->ConnectionID = 'anotherDb';
+		$this->assertSame('anotherDb', $config->ConnectionID);
+	}
+
+	/**
+	 * A fresh module reports no connection until one is built.
+	 */
+	public function testGetHasDbConnectionInitiallyFalse()
+	{
+		$config = new TDataSourceConfig();
+		$this->assertFalse($config->getHasDbConnection());
+	}
 }

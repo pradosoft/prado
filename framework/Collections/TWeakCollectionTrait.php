@@ -238,7 +238,6 @@ trait TWeakCollectionTrait
 	 *    excluding null causes wakeup to re-derive correctly.
 	 *
 	 * @param array &$exprops Properties to remove from serialize.
-	 * @since 4.3.0
 	 */
 	protected function _weakZappableSleepProps(array &$exprops): void
 	{

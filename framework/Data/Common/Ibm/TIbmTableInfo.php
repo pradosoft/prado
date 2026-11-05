@@ -10,7 +10,7 @@
 
 namespace Prado\Data\Common\Ibm;
 
-use Prado\Data\Common\IDbHasSchema;
+use Prado\Data\Common\IDataHasSchema;
 use Prado\Data\Common\TDbTableInfo;
 
 /**
@@ -19,7 +19,7 @@ use Prado\Data\Common\TDbTableInfo;
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3
  */
-class TIbmTableInfo extends TDbTableInfo implements IDbHasSchema
+class TIbmTableInfo extends TDbTableInfo implements IDataHasSchema
 {
 	/**
 	 * @return string fully qualified table name (schema + table), double-quote delimited.

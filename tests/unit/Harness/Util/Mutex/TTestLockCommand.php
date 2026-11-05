@@ -89,6 +89,11 @@ class TTestLockCommand implements IDataCommand
 		return [];
 	}
 
+	public function getColumnTypeFromValue($value)
+	{
+		return null;
+	}
+
 	public function bindValue($name, $value, $dataType = null)
 	{
 		$this->bound[$name] = $value;

@@ -11,6 +11,8 @@
 namespace Prado\Data\DataGateway;
 
 /**
+ * TDataGatewayEventParameter class
+ *
  * TDataGatewayEventParameter class contains the TDbCommand to be executed as
  * well as the criteria object.
  *
@@ -30,9 +32,12 @@ class TDataGatewayEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * The database command to be executed. Do not rebind the parameters or change
-	 * the sql query string.
-	 * @return \Prado\Data\TDbCommand command to be executed.
+	 * The data command to be executed.  Do not rebind the parameters or change
+	 * the query string.  The runtime type is the connection's command class —
+	 * {@see \Prado\Data\TDbCommand} for SQL drivers — but handlers that need
+	 * to stay driver-agnostic should type-hint the {@see \Prado\Data\IDataCommand}
+	 * interface only.
+	 * @return \Prado\Data\IDataCommand command to be executed.
 	 */
 	public function getCommand()
 	{

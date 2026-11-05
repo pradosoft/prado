@@ -38,6 +38,17 @@ $row    = $gateway->findBySql('SELECT * FROM users WHERE id = ?', [1]);
 $n = $gateway->findCount($criteria);
 ```
 
+### Inspection Methods
+
+```php
+// Check whether the table exists and is accessible:
+$exists = $gateway->getTableExists();   // bool
+```
+
+`getTableExists()` uses a lightweight `SELECT * FROM {table} WHERE 0=1` probe rather than
+driver-specific metadata tables, so it works uniformly across all supported drivers. It returns
+`false` if the table has been dropped after the gateway was constructed.
+
 ### Mutator Methods
 
 ```php

@@ -12,8 +12,8 @@ namespace Prado\Util\Log;
 
 use Exception;
 use Prado\Data\TDataSourceConfig;
-use Prado\Data\TDbConnection;
 use Prado\Data\TDbDriver;
+use Prado\Data\TDbDriverCapabilities;
 use Prado\Data\TDbPropertiesTrait;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
@@ -327,7 +327,7 @@ class TDbLogRoute extends TLogRoute
 	protected function createDbTable()
 	{
 		$db = $this->getDbConnection();
-		$driver = $db->getDriverName();
+		$driver = TDbDriverCapabilities::normalizeDriver($db->getDriverName());
 		$autoidAttributes = '';
 		if ($driver === TDbDriver::DRIVER_MYSQL) {
 			$autoidAttributes = 'AUTO_INCREMENT';

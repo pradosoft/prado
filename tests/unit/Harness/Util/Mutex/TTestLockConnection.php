@@ -11,6 +11,7 @@
 namespace Prado\Test\Unit\Harness\Util\Mutex;
 
 use Prado\Data\IDataConnection;
+use Prado\Data\IDataTransaction;
 
 /**
  * TTestLockConnection is an {@see IDataConnection} of a named driver whose
@@ -68,6 +69,26 @@ class TTestLockConnection implements IDataConnection
 	}
 
 	public function getCurrentTransaction()
+	{
+		return null;
+	}
+
+	public function getLastTransaction(): ?IDataTransaction
+	{
+		return null;
+	}
+
+	public function commit(): ?bool
+	{
+		return false;
+	}
+
+	public function rollback(): ?bool
+	{
+		return false;
+	}
+
+	public function getDbMetaData()
 	{
 		return null;
 	}
