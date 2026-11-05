@@ -367,6 +367,7 @@ return [
 'TCallChain' => 'Prado\Util\TCallChain',
 'TClassBehavior' => 'Prado\Util\TClassBehavior',
 'TClassBehaviorEventParameter' => 'Prado\Util\TClassBehaviorEventParameter',
+'TComposerReflection' => 'Prado\Util\TComposerReflection',
 'TDataFieldAccessor' => 'Prado\Util\TDataFieldAccessor',
 'TDbLogRoute' => 'Prado\Util\TDbLogRoute',
 'TDbModule' => 'Prado\Util\TDbModule',
