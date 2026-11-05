@@ -3,11 +3,14 @@
 namespace Prado\Test\Unit\Data\DbCommon;
 
 use Prado\Data\Common\IDataHasSchema;
+use Prado\Data\Common\Mysql\TMysqlTableInfo;
+use Prado\Data\Common\Pgsql\TPgsqlTableInfo;
 use Prado\Data\Common\TDbCommandBuilder;
 use Prado\Data\Common\TDbTableColumn;
 use Prado\Data\Common\TDbTableInfo;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TDbException;
+use Prado\Test\Unit\PradoUnit;
 
 /**
  * Unit tests for TDbTableInfo — the base table-metadata value object.
@@ -208,5 +211,25 @@ class TDbTableInfoTest extends \PHPUnit\Framework\TestCase
 		$this->assertInstanceOf(TDbCommandBuilder::class, $builder);
 		$this->assertSame($conn, $builder->getDbConnection());
 		$this->assertSame($tableInfo, $builder->getTableInfo());
+	}
+
+	public function test_set_info_stores_a_value_read_by_get_info()
+	{
+		$tableInfo = $this->makeInfo();
+		PradoUnit::invoke($tableInfo, 'setInfo', 'TableName', 'renamed');
+		$this->assertSame('renamed', $tableInfo->getTableName());
+		$this->assertSame('fallback', PradoUnit::invoke($tableInfo, 'getInfo', 'Missing', 'fallback'));
+	}
+
+	public function test_mysql_table_full_name_without_schema_is_quoted_table()
+	{
+		$this->assertSame('`t1`', (new TMysqlTableInfo(['TableName' => 't1']))->getTableFullName());
+		$this->assertSame('`db`.`t1`', (new TMysqlTableInfo(['TableName' => 't1', 'SchemaName' => 'db']))->getTableFullName());
+	}
+
+	public function test_pgsql_table_full_name_without_schema_is_bare_table()
+	{
+		$this->assertSame('t1', (new TPgsqlTableInfo(['TableName' => 't1']))->getTableFullName());
+		$this->assertSame('s1.t1', (new TPgsqlTableInfo(['TableName' => 't1', 'SchemaName' => 's1']))->getTableFullName());
 	}
 }

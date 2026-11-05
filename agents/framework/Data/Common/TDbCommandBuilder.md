@@ -29,6 +29,10 @@ $cmd = $builder->createDeleteCommand($where, $params);
 $id = $builder->getLastInsertID();
 ```
 
+## Search Expression
+
+`getSearchExpression($fields, $keywords)` ORs one `LIKE` condition group per column; each group ANDs one condition per whitespace-separated keyword. `getSearchPattern($word)` quotes `%word%` and appends `ESCAPE '\'` (`SEARCH_ESCAPE_CHAR`), after `escapeSearchWord()` prefixes `%`, `_`, and `\` in the keyword with the escape character, so a keyword's wildcards match literally on every driver. `TPgsqlCommandBuilder` uses the same pattern with `ILIKE`.
+
 ## Properties
 
 - `DbConnection` - The database connection

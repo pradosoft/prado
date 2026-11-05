@@ -15,7 +15,7 @@ All built-in driver-specific metadata classes implement this interface by extend
 
 ## When This Interface Matters
 
-When a PDO driver has no built-in Prado metadata class, `TDbMetaData::getInstance()` raises the **`fxDataGetMetaDataClass`** global event on the connection. Event handlers must return the fully-qualified class name of a class implementing `IDataMetaData`. The returned class is then instantiated with the connection as the sole constructor argument.
+`TDbMetaData::getInstance()` raises the **`fxDataGetMetaDataClass`** global event on the connection, with the driver name as the parameter. A `TDbConnection` raises it when its PDO driver has no built-in Prado metadata class; any other `IDataConnection` (a Prado Data plugin connection) raises it before the built-in lookup, so a plugin reporting `mysqli` or `sqlsrv` supplies its own class. Event handlers must return the fully-qualified class name of a class implementing `IDataMetaData`. The returned class is then instantiated with the connection as the sole constructor argument.
 
 ## Methods
 

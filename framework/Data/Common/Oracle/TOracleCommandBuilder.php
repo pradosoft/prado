@@ -11,17 +11,58 @@
 namespace Prado\Data\Common\Oracle;
 
 use Prado\Data\Common\TDbCommandBuilder;
-use Prado\Prado;
+use Prado\Data\TDbCommand;
 
 /**
  * TOracleCommandBuilder provides specifics methods to create limit/offset query commands
  * for Oracle database.
  *
  * @author Marcos Nobre <marconobre[at]gmail[dot]com>
+ * @author Brad Anderson <belisoful@icloud.com> insertOrIgnore, upsert
  * @since 3.1
  */
 class TOracleCommandBuilder extends TDbCommandBuilder
 {
+	/**
+	 * Creates an Oracle MERGE ... WHEN NOT MATCHED THEN INSERT command (insertOrIgnore).
+	 * Requires an active transaction; throws TDbException otherwise.
+	 * Uses Oracle MERGE with USING (SELECT ... FROM DUAL) and no AS keyword for aliases.
+	 * @param array $data name-value pairs of data to be inserted.
+	 * @return TDbCommand insert-or-ignore MERGE command.
+	 * @since 4.4.0
+	 */
+	public function createInsertOrIgnoreCommand(array $data): TDbCommand
+	{
+		$this->assertActiveTransaction();
+		$conflictColumns = $this->resolveConflictColumns(null);
+		return $this->buildMergeStatement($data, [], $conflictColumns, 'FROM DUAL', false);
+	}
+
+	/**
+	 * Creates an Oracle MERGE ... WHEN MATCHED THEN UPDATE WHEN NOT MATCHED THEN INSERT command.
+	 * Requires an active transaction; throws TDbException otherwise.
+	 * Uses Oracle MERGE with USING (SELECT ... FROM DUAL) and no AS keyword for aliases.
+	 *
+	 * The $updateData parameter supports four modes:
+	 * - **null** — all non-conflict columns updated via the MERGE source alias (s.col).
+	 * - **[] empty array** — no WHEN MATCHED branch (insert-or-ignore semantics).
+	 * - **integer-keyed list** (e.g. `['score']`) — those columns use the source alias (s.col).
+	 * - **string-keyed explicit map** (e.g. `['score' => 99]`) — those columns use a bound literal (`:_upsert_col`).
+	 * - **mixed** — integer-keyed use s.col; string-keyed use bound literals.
+	 *
+	 * @param array $data name-value pairs of data to insert.
+	 * @param null|array $updateData null, column-name list, explicit col=>value map, or mixed; controls what is updated on conflict.
+	 * @param null|array $conflictColumns conflict target columns; null = primary key columns.
+	 * @return TDbCommand upsert MERGE command.
+	 * @since 4.4.0
+	 */
+	public function createUpsertCommand(array $data, ?array $updateData = null, ?array $conflictColumns = null): TDbCommand
+	{
+		$this->assertActiveTransaction();
+		$conflictColumns = $this->resolveConflictColumns($conflictColumns);
+		return $this->buildMergeStatement($data, $updateData, $conflictColumns, 'FROM DUAL', false);
+	}
+
 	/**
 	 * Overrides parent implementation. Only column of type text or character (and its variants)
 	 * accepts the LIKE criteria.
@@ -85,23 +126,45 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 			return $sql;
 		}
 
+		// When called without a specific table (e.g. a mapped query with skip/max),
+		// getTableInfo() returns an empty stub without a table name or columns.
+		// In that case, use Oracle 12c+ OFFSET/FETCH NEXT syntax which handles
+		// arbitrary SQL without column or table metadata.
+		$tableName = $this->getTableInfo()?->getTableName();
+		if ($tableName === null || $tableName === '') {
+			$result = rtrim($sql);
+			$offset = (int) $offset;
+			$limit = (int) $limit;
+			if ($offset > 0) {
+				$result .= ' OFFSET ' . $offset . ' ROWS';
+			}
+			if ($limit > 0) {
+				$result .= ' FETCH NEXT ' . $limit . ' ROWS ONLY';
+			}
+			return $result;
+		}
+
 		$pradoNUMLIN = 'pradoNUMLIN';
 		$fieldsALIAS = 'xyz';
 
 		$nfimDaSQL = strlen($sql);
-		$nfimDoWhere = (strpos($sql, 'ORDER') !== false ? strpos($sql, 'ORDER') : $nfimDaSQL);
-		$niniDoSelect = strpos($sql, 'SELECT') + 6;
-		$nfimDoSelect = (strpos($sql, 'FROM') !== false ? strpos($sql, 'FROM') : $nfimDaSQL);
+		$orderBy = $this->findClause($sql, 'ORDER\s+BY');
+		$select = $this->findClause($sql, 'SELECT');
+		$from = $this->findClause($sql, 'FROM');
+		$where = $this->findClause($sql, 'WHERE');
+		$nfimDoWhere = $orderBy !== null ? $orderBy[0] : $nfimDaSQL;
+		$niniDoSelect = $select !== null ? $select[0] + $select[1] : 0;
+		$nfimDoSelect = $from !== null ? $from[0] : $nfimDaSQL;
 
 		$WhereInSubSelect = "";
-		if (strpos($sql, 'WHERE') !== false) {
-			$WhereInSubSelect = "WHERE " . substr($sql, strpos($sql, 'WHERE') + 5, $nfimDoWhere);
+		if ($where !== null) {
+			$whereStart = $where[0] + $where[1];
+			$WhereInSubSelect = "WHERE " . substr($sql, $whereStart, $nfimDoWhere - $whereStart);
 		}
 
 		$sORDERBY = '';
-		if (stripos($sql, 'ORDER') !== false) {
-			$p = stripos($sql, 'ORDER');
-			$sORDERBY = substr($sql, $p + 8);
+		if ($orderBy !== null) {
+			$sORDERBY = substr($sql, $orderBy[0] + $orderBy[1]);
 		}
 
 		$fields = substr($sql, 0, $nfimDoSelect);
@@ -120,8 +183,7 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 			$fields = substr($fields, 0, strlen($fields) - 1);
 		} else {
 			if (strpos($fields, ',') !== false) {
-				$arr = $this->getTableInfo()->getColumns();
-				foreach ($arr as $field) {
+				foreach (explode(',', $fields) as $field) {
 					$field = strtolower($field);
 					$existAS = str_ireplace(' as ', '-as-', $field);
 					if (strpos($existAS, '-as-') === false) {
@@ -146,8 +208,11 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 				  ") WHERE {$pradoNUMLIN} >= {$offset} ";
 
 		************************* */
-		$offset = (int) $offset;
-		$toReg = $offset + $limit;
+		// An unset offset arrives as -1 and an unset limit as -1: the row window starts
+		// at row 0 without an offset, and has no upper bound without a limit.
+		$offset = max(0, (int) $offset);
+		$limit = (int) $limit;
+		$upperBound = $limit > 0 ? " AND nn.{$pradoNUMLIN} < " . ($offset + $limit) : '';
 		$fullTableName = $this->getTableInfo()->getTableFullName();
 		if (empty($sORDERBY)) {
 			$sORDERBY = "ROWNUM";
@@ -158,8 +223,31 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 					"		SELECT ROW_NUMBER() OVER ( ORDER BY {$sORDERBY} ) -1 as {$pradoNUMLIN} {$aliasedFields} " .
 					"		FROM {$fullTableName} {$fieldsALIAS} $WhereInSubSelect" .
 					") nn					" .
-					" WHERE nn.{$pradoNUMLIN} >= {$offset} AND nn.{$pradoNUMLIN} < {$toReg} ";
+					" WHERE nn.{$pradoNUMLIN} >= {$offset}{$upperBound} ";
 		//echo $newSql."\n<br>\n";
 		return $newSql;
+	}
+
+	/**
+	 * Locates the first occurrence of an SQL keyword as a whole word outside quoted
+	 * strings and quoted identifiers, so a column such as `sort_order` or a literal
+	 * `'from'` does not pass for a clause.
+	 * @param string $sql SQL text.
+	 * @param string $keyword keyword as a regular expression fragment, such as `ORDER\s+BY`.
+	 * @return ?array `[offset, length]` of the keyword in `$sql`, or null when absent.
+	 * @since 4.4.0
+	 */
+	protected function findClause($sql, $keyword)
+	{
+		$pattern = "/'(?:[^']|'')*'|\"[^\"]*\"|\\b(" . $keyword . ")\\b/i";
+		if (!preg_match_all($pattern, $sql, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE)) {
+			return null;
+		}
+		foreach ($matches as $match) {
+			if (isset($match[1]) && $match[1][1] >= 0) {
+				return [$match[1][1], strlen($match[1][0])];
+			}
+		}
+		return null;
 	}
 }

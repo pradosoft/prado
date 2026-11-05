@@ -21,6 +21,7 @@ namespace Prado\Data;
  * Implemented by {@see TDbCommand}.  Mirrors the
  * {@see IDataConnection} / {@see IDbConnection} discovery-marker pattern.
  *
+ * Optional SQL/PDO discovery marker — see {@see \Prado\Data\IDataConnection} for the full driver-portability roadmap.
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3
  */

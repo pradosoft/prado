@@ -17,6 +17,7 @@ namespace Prado\Data;
  *
  * Implementations include {@see TDbDataReader} for SQL/PDO result sets.
  *
+ * Required for portability — see {@see \Prado\Data\IDataConnection} for the full driver-portability roadmap.
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3
  */

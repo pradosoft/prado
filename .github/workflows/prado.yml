@@ -368,7 +368,7 @@ jobs:
         run: >-
           /opt/mssql-tools18/bin/sqlcmd -C
           -U sa -P Prado_Unitest1
-          -i ./tests/initdb_mssql.sql
+          -i ./tests/initdb_sqlsrv.sql
 
       - name: Run SQL Server tests
         run: php vendor/bin/phpunit --testsuite db-sqlsrv

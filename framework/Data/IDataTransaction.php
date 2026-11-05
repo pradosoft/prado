@@ -21,6 +21,7 @@ namespace Prado\Data;
  *
  * Implementations include {@see TDbTransaction} for SQL/PDO databases.
  *
+ * Required for portability — see {@see \Prado\Data\IDataConnection} for the full driver-portability roadmap.
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3
  */

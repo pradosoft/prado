@@ -55,7 +55,7 @@ $newId = $gateway->insert(['name' => 'Alice', 'email' => 'alice@example.com']);
 
 ## Patterns & Gotchas
 
-- **Stateless** — `TTableGateway` holds no row data; every call hits the database. Prefer `TActiveRecord` when you need object identity or lazy relations.
+- **Stateless** — `TTableGateway` holds no row data; every call hits the database. Prefer `TActiveRecord` (the `pradosoft/prado-activerecord` package) when you need object identity or lazy relations.
 - **Always use parameterised `Condition`** — never interpolate user input into the `Condition` string.
 - **`OnCreateCommand` hook** — useful for logging, query modification (e.g. adding tenant scoping), or debugging. Attach a handler before calling find/insert/update/delete.
 - `findByPk` / `deleteByPk` accept a scalar for single-column PKs or an associative array for composite PKs.

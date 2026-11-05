@@ -13,7 +13,7 @@
 
 `TDbMetaData` is the abstract base class for retrieving schema metadata (tables, columns, keys) from a database connection. It caches `TDbTableInfo` instances per table name to avoid redundant queries.
 
-The static factory `TDbMetaData::getInstance($conn)` selects the right driver-specific subclass and returns an `IDataMetaData`. For unsupported drivers it raises the `fxDataGetMetaDataClass` global event so third-party code can supply a class name.
+The static factory `TDbMetaData::getInstance($conn)` selects the right driver-specific subclass and returns an `IDataMetaData`. It raises the `fxDataGetMetaDataClass` global event so third-party code can supply a class name: for a `TDbConnection` with an unsupported driver, and first for any other `IDataConnection`.
 
 ## Constructor
 
@@ -30,9 +30,9 @@ TDbMetaData::getInstance(IDataConnection $conn): IDataMetaData
 ```
 
 1. Calls `$conn->setActive(true)` to ensure the connection is open.
-2. Reads `$conn->getDriverName()` and switches on the driver string.
-3. Returns a new instance of the matching driver subclass.
-4. **Unknown driver fallback:** raises `fxDataGetMetaDataClass` on `$conn` with the driver name string as the parameter. Handlers return a fully-qualified class name implementing `IDataMetaData`; the **last returned value** wins (`array_pop`). The class is instantiated with `new $class($conn)`. Throws `TDbException('dbmetadata_invalid_database_driver')` if no handler responds, or `TDbException('dbmetadata_not_meta_data')` if the returned class does not implement `IDataMetaData`.
+2. Resolves the class through `TDbDriverCapabilities::getMetaDataClass($conn)` from `$conn->getDriverName()`.
+3. **Plugin connections** (any `IDataConnection` that is not a `TDbConnection`): raises `fxDataGetMetaDataClass` first; when no handler answers, falls back to the built-in class for the driver name.
+4. **`TDbConnection`:** returns the built-in driver subclass; for an unknown driver it raises `fxDataGetMetaDataClass` on `$conn` with the driver name string as the parameter. Handlers return a fully-qualified class name implementing `IDataMetaData`; the **last returned value** wins (`array_pop`). The class is instantiated with `new $class($conn)`. Throws `TDbException('dbmetadata_invalid_database_driver')` if no handler responds, or `TDbException('dbmetadata_not_meta_data')` if the returned class does not implement `IDataMetaData`.
 
 ## Key Methods
 
@@ -53,7 +53,7 @@ $meta->quoteColumnAlias(string $name, string $lft = '', string $rgt = ''): strin
 | `mysql`, `mysqli` | [`TMysqlMetaData`](./Mysql/TMysqlMetaData.md) |
 | `pgsql` | [`TPgsqlMetaData`](./Pgsql/TPgsqlMetaData.md) |
 | `sqlite`, `sqlite2` | [`TSqliteMetaData`](./Sqlite/TSqliteMetaData.md) |
-| `mssql`, `sqlsrv`, `dblib` | [`TMssqlMetaData`](./Mssql/TMssqlMetaData.md) |
+| `mssql`, `sqlsrv`, `dblib` | [`TSqlSrvMetaData`](./SqlSrv/TSqlSrvMetaData.md) |
 | `oci` | [`TOracleMetaData`](./Oracle/TOracleMetaData.md) |
 | `ibm` | [`TIbmMetaData`](./Ibm/TIbmMetaData.md) |
 | `firebird`, `interbase` | [`TFirebirdMetaData`](./Firebird/TFirebirdMetaData.md) |

@@ -14,29 +14,38 @@ namespace Prado\Data\Common;
  * IDbMetaData interface
  *
  * Discovery marker for metadata classes that perform SQL identifier quoting.
- * Driver-agnostic schema introspection lives on the parent {@see IDataMetaData}.
- * Implemented by {@see TDbMetaData}.
+ * All driver-agnostic schema introspection lives on the parent
+ * {@see IDataMetaData}; this sub-interface adds the quoting helpers needed by
+ * code that composes SQL text.
  *
+ * Implemented by {@see TDbMetaData}.  Mirrors the
+ * {@see \Prado\Data\IDataConnection} / {@see \Prado\Data\IDbConnection}
+ * discovery-marker pattern.
+ *
+ * Optional SQL/PDO discovery marker — see {@see \Prado\Data\IDataConnection} for the full driver-portability roadmap.
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3
  */
 interface IDbMetaData extends IDataMetaData
 {
 	/**
-	 * @param string $name the table name.
-	 * @return string the SQL-quoted table name.
+	 * Quotes a table name for use in SQL queries.
+	 * @param string $name the table name to quote.
+	 * @return string the properly quoted table name.
 	 */
 	public function quoteTableName($name);
 
 	/**
-	 * @param string $name the column name.
-	 * @return string the SQL-quoted column name.
+	 * Quotes a column name for use in SQL queries.
+	 * @param string $name the column name to quote.
+	 * @return string the properly quoted column name.
 	 */
 	public function quoteColumnName($name);
 
 	/**
-	 * @param string $name the column alias.
-	 * @return string the SQL-quoted column alias (`alias` in `AS alias`).
+	 * Quotes a column alias for use in SQL queries (the `alias` in `AS alias`).
+	 * @param string $name the column alias to quote.
+	 * @return string the properly quoted column alias.
 	 */
 	public function quoteColumnAlias($name);
 }

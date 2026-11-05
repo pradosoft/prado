@@ -29,6 +29,7 @@ namespace Prado\Data\Common;
  * may introduce analogous markers (IDataHasKeyspace, IDataHasCollection, etc.)
  * following the same convention.
  *
+ * Capability marker — see {@see \Prado\Data\IDataConnection} for the full driver-portability roadmap.
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3
  */

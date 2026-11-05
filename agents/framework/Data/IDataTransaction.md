@@ -20,6 +20,8 @@
 | `commit()` | Commits the transaction. The transaction becomes inactive; call `beginTransaction()` on this object or on the connection to start another work unit. |
 | `rollback()` | Rolls back (aborts) the transaction. The transaction becomes inactive; call `beginTransaction()` to start another work unit. |
 
+`TDbTransaction` raises `OnCommit` and `OnRollback`; the interface does not declare them, so other implementations need not provide them.
+
 ## See Also
 
 - [IDataConnection](./IDataConnection.md) - Connection interface

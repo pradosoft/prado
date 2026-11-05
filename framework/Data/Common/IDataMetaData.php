@@ -23,23 +23,27 @@ use Prado\Data\IDataConnection;
  * supported data store through a single, stable API — including future NoSQL or
  * third-party implementations that do not extend {@see TDbMetaData}.
  *
- * The interface covers four areas:
+ * The interface covers three areas:
  * - **Table introspection** — {@see getTableInfo()} returns a structured
  *   {@see IDataTableInfo} describing the columns, keys, and constraints of a
  *   named table.
  * - **Command builder factory** — {@see createCommandBuilder()} returns an
  *   {@see IDataCommandBuilder} ready to generate CRUD commands for a table.
- * - **Identifier quoting** — {@see quoteTableName()}, {@see quoteColumnName()},
- *   and {@see quoteColumnAlias()} wrap identifiers in driver-specific delimiters.
  * - **Table discovery** — {@see findTableNames()} enumerates all tables in a
  *   schema.
  *
+ * SQL-specific identifier quoting lives on the {@see IDbMetaData} sub-interface.
+ *
  * Concrete implementations: {@see TDbMetaData} and its driver-specific
  * subclasses ({@see TMysqlMetaData}, {@see TSqliteMetaData},
- * {@see TPgsqlMetaData}, {@see TMssqlMetaData}, {@see TOracleMetaData},
+ * {@see TPgsqlMetaData}, {@see TSqlSrvMetaData}, {@see TOracleMetaData},
  * {@see TIbmMetaData}, {@see TFirebirdMetaData}).
  *
+ * Required for portability — see {@see \Prado\Data\IDataConnection} for the full driver-portability roadmap.
  * @author Brad Anderson <belisoful@icloud.com>
+ * @method string quoteTableName(string $name) Quotes a table identifier.
+ * @method string quoteColumnName(string $name) Quotes a column identifier.
+ * @method string quoteColumnAlias(string $name) Quotes a column alias.
  * @since 4.3.3
  */
 interface IDataMetaData

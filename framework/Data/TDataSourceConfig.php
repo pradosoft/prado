@@ -16,8 +16,9 @@ use Prado\TApplication;
 use Prado\TModule;
 
 /**
- * TDataSourceConfig module class provides Application Module configuration
- * for database connections.
+ * TDataSourceConfig class
+ *
+ * TDataSourceConfig module class provides <module> configuration for database connections.
  *
  * XML configuration style, for example with a MySQL connection:
  * ```xml
@@ -69,7 +70,27 @@ class TDataSourceConfig extends TModule
 {
 	use TDbPropertiesTrait;
 
-	private $_connClass = \Prado\Data\TDbConnection::class;
+	/**
+	 * The default database connection class created by {@see getDbConnection}
+	 * when no {@see setConnectionID ConnectionID} is supplied and
+	 * {@see setConnectionClass ConnectionClass} has not been overridden.
+	 * Subclasses override this constant to default to a different connection
+	 * class (e.g. a non-SQL driver).
+	 * @since 4.4.0
+	 */
+	public const DEFAULT_CONNECTION_CLASS = \Prado\Data\TDbConnection::class;
+
+	private $_connClass;
+
+	/**
+	 * Initializes the default connection class from {@see DEFAULT_CONNECTION_CLASS}.
+	 * @since 4.4.0
+	 */
+	public function __construct()
+	{
+		$this->_connClass = static::DEFAULT_CONNECTION_CLASS;
+		parent::__construct();
+	}
 
 	/**
 	 * Initalize the database connection properties from attributes in <database> tag.
@@ -88,7 +109,7 @@ class TDataSourceConfig extends TModule
 			if ($prop = $config->getElementByTagName('database')) {
 				$db = $this->getDbConnection();
 				foreach ($prop->getAttributes() as $name => $value) {
-					$db->setSubproperty($name, $value);
+					$db->setSubProperty($name, $value);
 				}
 			}
 		}

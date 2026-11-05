@@ -86,6 +86,11 @@ class TMysqlMetaData extends TDbMetaData
 	protected function createTableInfo($table)
 	{
 		[$schemaName, $tableName] = $this->getSchemaTableName($table);
+		// Resolve the table name to its actual stored case. On Linux, MySQL is
+		// case-sensitive for table names (lower_case_table_names=0), so a lookup
+		// for `accounts` must find the `Accounts` table.
+		$tableName = $this->resolveTableNameCase($schemaName, $tableName);
+		$table = $schemaName === null ? $tableName : $schemaName . '.' . $tableName;
 		$find = $schemaName === null ? "`{$tableName}`" : "`{$schemaName}`.`{$tableName}`";
 		$colCase = $this->getDbConnection()->getColumnCase();
 		if ($colCase != TDbColumnCaseMode::Preserved) {
@@ -151,6 +156,12 @@ class TMysqlMetaData extends TDbMetaData
 			$info['IsForeignKey'] = true;
 		}
 
+		// Preserve the raw type string (e.g. 'tinyint(1)', 'varchar(255)') before
+		// the parenthesized part is stripped into DbType + ColumnSize.  This is used
+		// by TMysqlTableColumn::getPHPType() to detect the tinyint(1) → boolean
+		// convention in a way that is forward-compatible with MySQL versions that may
+		// eventually stop including integer display widths in SHOW FULL FIELDS output.
+		$info['ColumnType'] = $col['Type'];
 		$info['DbType'] = $col['Type'];
 		$match = [];
 		//find SET/ENUM values, column size, precision, and scale
@@ -221,13 +232,52 @@ class TMysqlMetaData extends TDbMetaData
 	}
 
 	/**
-	 * http://dev.mysql.com/doc/refman/5.0/en/identifiers.html
+	 * Resolves a table name to its actual stored case via information_schema.
+	 *
+	 * MySQL on Linux is case-sensitive for table names
+	 * (lower_case_table_names=0), so a metadata lookup using a different case
+	 * than the stored name (e.g. `accounts` for a table created as `Accounts`)
+	 * fails.  This performs a case-insensitive match and returns the real name.
+	 * The input name is returned unchanged when no match is found (the caller
+	 * then raises the usual "invalid table" error) or when the lookup fails.
+	 *
+	 * @param ?string $schemaName database name, null to use the connection default.
+	 * @param string $tableName the requested table name, possibly mis-cased.
+	 * @return string the actual stored table name, or the input when unresolved.
+	 * @since 4.4.0
+	 */
+	protected function resolveTableNameCase($schemaName, $tableName)
+	{
+		try {
+			$conn = $this->getDbConnection();
+			$conn->setActive(true);
+			if ($schemaName === null) {
+				$sql = 'SELECT TABLE_NAME FROM information_schema.TABLES'
+					. ' WHERE TABLE_SCHEMA = DATABASE() AND LOWER(TABLE_NAME) = LOWER(:t)';
+				$command = $conn->createCommand($sql);
+			} else {
+				$sql = 'SELECT TABLE_NAME FROM information_schema.TABLES'
+					. ' WHERE TABLE_SCHEMA = :s AND LOWER(TABLE_NAME) = LOWER(:t)';
+				$command = $conn->createCommand($sql);
+				$command->bindValue(':s', $schemaName);
+			}
+			$command->bindValue(':t', $tableName);
+			$actual = $command->queryScalar();
+		} catch (\Exception $e) {
+			return $tableName;
+		}
+		return ($actual === false || $actual === null) ? $tableName : (string) $actual;
+	}
+
+	/**
+	 * Checks a database or table name part.  It must not contain `/`, `\`, `.`, NUL,
+	 * or byte 0xFF.  http://dev.mysql.com/doc/refman/5.0/en/identifiers.html
 	 * @param string $name identifier name
 	 * @return bool true if valid identifier.
 	 */
 	protected function isValidIdentifier($name)
 	{
-		return !preg_match('#/|\\|.|\x00|\xFF#', $name);
+		return !preg_match('#[/\\\\.\x00\xFF]#', $name);
 	}
 
 	/**
@@ -252,6 +302,7 @@ class TMysqlMetaData extends TDbMetaData
 	 * http://dev.mysql.com/doc/refman/5.0/en/show-tables.html
 	 *
 	 * For MySQL version 5.0.1 or earlier, this always return false.
+	 * The table name is quoted with its `LIKE` wildcards escaped, so it matches exactly.
 	 * @param string $schemaName database name, null to use default connection database.
 	 * @param string $tableName table or view name.
 	 * @throws TDbException if table or view does not exist.
@@ -262,10 +313,11 @@ class TMysqlMetaData extends TDbMetaData
 		if ($this->getServerVersion() < 5.01) {
 			return false;
 		}
+		$like = $this->getDbConnection()->quoteString(str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $tableName));
 		if ($schemaName !== null) {
-			$sql = "SHOW FULL TABLES FROM `{$schemaName}` LIKE '{$tableName}'";
+			$sql = "SHOW FULL TABLES FROM `{$schemaName}` LIKE {$like}";
 		} else {
-			$sql = "SHOW FULL TABLES LIKE '{$tableName}'";
+			$sql = "SHOW FULL TABLES LIKE {$like}";
 		}
 
 		$command = $this->getDbConnection()->createCommand($sql);
@@ -307,13 +359,14 @@ class TMysqlMetaData extends TDbMetaData
 
 	/**
 	 * Gets foreign relationship constraint keys and table name
-	 * @param string $schemaName database name
+	 * @param ?string $schemaName database name, or null for the current database
 	 * @param string $tableName table name
 	 * @return array foreign relationship table name and keys.
 	 */
 	protected function getForeignConstraints($schemaName, $tableName)
 	{
-		$andSchema = $schemaName !== null ? 'AND TABLE_SCHEMA LIKE :schema' : 'AND TABLE_SCHEMA LIKE DATABASE()';
+		$hasSchema = $schemaName !== null;
+		$andSchema = $hasSchema ? 'AND TABLE_SCHEMA LIKE :schema' : 'AND TABLE_SCHEMA LIKE DATABASE()';
 		$sql =
 <<<EOD
 	SELECT
@@ -331,7 +384,7 @@ class TMysqlMetaData extends TDbMetaData
 	EOD;
 		$command = $this->getDbConnection()->createCommand($sql);
 		$command->bindValue(':table', $tableName);
-		if ($schemaName !== null) {
+		if ($hasSchema) {
 			$command->bindValue(':schema', $schemaName);
 		}
 		$fkeys = [];

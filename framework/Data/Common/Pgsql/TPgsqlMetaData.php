@@ -102,6 +102,15 @@ class TPgsqlMetaData extends TDbMetaData
 	protected function createTableInfo($table)
 	{
 		[$schemaName, $tableName] = $this->getSchemaTableName($table);
+		// PostgreSQL folds unquoted identifiers to lower-case in the system catalogue
+		// (pg_class.relname is always stored in the normalized form).  Apply the same
+		// normalization here so that a caller such as ActiveRecord that stores its
+		// table name as mixed-case (e.g. 'Accounts') still resolves correctly.
+		// Skip the fold when the original string used double-quote delimiters, since
+		// those preserve the exact case in the catalogue.
+		if (strpos($table, '"') === false) {
+			$tableName = strtolower($tableName);
+		}
 
 		// This query is made much more complex by the addition of the 'attisserial' field.
 		// The subquery to get that field checks to see if there is an internally dependent
@@ -257,7 +266,7 @@ class TPgsqlMetaData extends TDbMetaData
 	/**
 	 * @param TPgsqlTableInfo $tableInfo
 	 * @param mixed $src
-	 * @return null|string serial name if found, null otherwise.
+	 * @return ?string serial name if found, null otherwise.
 	 */
 	protected function getSequenceName($tableInfo, $src)
 	{

@@ -261,14 +261,13 @@ This document lists all classes in the PRADO framework as defined in `classes.ph
 
 ---
 
-## [Prado\Data\Common](./Data/Common/INDEX.md) - Classes: 4, Interfaces: 4, Total: 8, Recursive: 36
+## [Prado\Data\Common](./Data/Common/INDEX.md) - Classes: 4, Interfaces: 3, Total: 7, Recursive: 35
 
-### Interfaces (4)
+### Interfaces (3)
 
 - IDataCommandBuilder
 - IDataMetaData
 - IDataTableInfo
-- IDbHasSchema
 
 ### Classes (4)
 

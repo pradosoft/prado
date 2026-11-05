@@ -8,8 +8,9 @@
 **Namespace:** `Prado\Data\Common\Mssql`
 
 ## Overview
-`TMssqlMetaData` provides Microsoft SQL Server-specific database metadata introspection.
+`TMssqlMetaData` is deprecated. It is an empty subclass of [`TSqlSrvMetaData`](../SqlSrv/TSqlSrvMetaData.md) that keeps the 4.3.2 class name working.
 
 ## See Also
 
-- [TDbMetaData](../TDbMetaData.md) - Base class
+- [TSqlSrvMetaData](../SqlSrv/TSqlSrvMetaData.md) - Base class
+- [TDbMetaData](../TDbMetaData.md) - Root class

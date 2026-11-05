@@ -53,3 +53,15 @@ CREATE TABLE address (
 
 INSERT INTO table1 (name) VALUES ('test')@
 INSERT INTO address (username, phone, field2_date, field4_int) VALUES ('wei', '1111111', CURRENT_DATE, 1)@
+
+BEGIN
+  DECLARE CONTINUE HANDLER FOR SQLSTATE '42704' BEGIN END;
+  EXECUTE IMMEDIATE 'DROP TABLE upsert_test';
+END@
+
+-- DB2 upsert uses MERGE ... USING (SELECT ... FROM SYSIBM.SYSDUMMY1) ON the PK.
+CREATE TABLE upsert_test (
+	username VARCHAR(100) NOT NULL,
+	score    INTEGER      NOT NULL DEFAULT 0,
+	PRIMARY KEY (username)
+)@

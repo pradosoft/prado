@@ -15,15 +15,24 @@ use Prado\Exceptions\TDbException;
 /**
  * TDataTransaction class.
  *
- * Driver-agnostic transaction token.  {@see commit} and {@see rollback}
- * delegate to the owning {@see IDataConnection}, which performs the actual
- * work.  Has no SQL/PDO dependency; {@see TDbTransaction} is the SQL/PDO
- * subclass kept as a BC discovery marker.
+ * Driver-agnostic transaction token.  Delegates {@see commit()} and
+ * {@see rollback()} to the owning {@see IDataConnection}, which is the source
+ * of truth for the underlying transaction handle.  This class has no
+ * SQL/PDO dependency and may be reused by any {@see IDataConnection}
+ * implementation; {@see TDbTransaction} is the SQL/PDO subclass kept for
+ * backward compatibility.
  *
+ * The owning connection raises {@see onCommit OnCommit} after it commits the
+ * transaction and {@see onRollback OnRollback} after it rolls the transaction
+ * back; the transaction is already inactive when the handlers run.  See
+ * {@see TDbTransaction} for the full event behavior.
+ *
+ * Typical use:
  * ```php
- * $transaction = $connection->beginTransaction();
  * try {
+ *     $transaction = $connection->beginTransaction();
  *     $connection->createCommand($sql1)->execute();
+ *     $connection->createCommand($sql2)->execute();
  *     $transaction->commit();
  * } catch (Exception $e) {
  *     $transaction->rollback();
@@ -60,7 +69,9 @@ class TDataTransaction extends \Prado\TComponent implements IDataTransaction
 	}
 
 	/**
-	 * Sets the owning connection.  Called once by the constructor.
+	 * Sets the connection that owns this transaction.  Called once by the
+	 * constructor; not intended for external use.
+	 *
 	 * @param IDataConnection $connection the owning connection.
 	 * @return static
 	 */
@@ -80,7 +91,7 @@ class TDataTransaction extends \Prado\TComponent implements IDataTransaction
 
 	/**
 	 * Marks this transaction inactive.  Called by {@see IDataConnection::commit}
-	 * / {@see IDataConnection::rollback} after the underlying operation succeeds.
+	 * and {@see IDataConnection::rollback} after the underlying operation succeeds.
 	 */
 	public function deactivate(): void
 	{
@@ -88,8 +99,9 @@ class TDataTransaction extends \Prado\TComponent implements IDataTransaction
 	}
 
 	/**
-	 * Marks this transaction active.  Used by reuse-pattern subclasses that
-	 * reactivate a completed transaction for a new work unit.
+	 * Marks this transaction active.  Used by subclasses that support reuse:
+	 * reactivating a completed transaction object for a new work unit (e.g.
+	 * after a fresh `beginTransaction` on the underlying driver session).
 	 */
 	protected function activate(): void
 	{
@@ -99,8 +111,8 @@ class TDataTransaction extends \Prado\TComponent implements IDataTransaction
 	//	-----   Methods  -----
 
 	/**
-	 * Commits the transaction.  Delegates to {@see IDataConnection::commit}.
-	 * @throws TDbException if the transaction or connection is not active.
+	 * Commits the transaction.  Delegates to {@see IDataConnection::commit()}.
+	 * @throws TDbException if the transaction or its connection is not active.
 	 */
 	public function commit()
 	{
@@ -109,8 +121,8 @@ class TDataTransaction extends \Prado\TComponent implements IDataTransaction
 	}
 
 	/**
-	 * Rolls back the transaction.  Delegates to {@see IDataConnection::rollback}.
-	 * @throws TDbException if the transaction or connection is not active.
+	 * Rolls back the transaction.  Delegates to {@see IDataConnection::rollback()}.
+	 * @throws TDbException if the transaction or its connection is not active.
 	 */
 	public function rollback()
 	{
@@ -119,7 +131,29 @@ class TDataTransaction extends \Prado\TComponent implements IDataTransaction
 	}
 
 	/**
-	 * @throws TDbException if the transaction or connection is not active.
+	 * Raises the OnCommit event after the connection commits the transaction.
+	 * The sender is this inactive transaction, and the parameter is null.
+	 * @since 4.4.0
+	 */
+	public function onCommit()
+	{
+		$this->raiseEvent('OnCommit', $this, null);
+	}
+
+	/**
+	 * Raises the OnRollback event after the connection rolls back the transaction,
+	 * by {@see rollback()} or by the closing of the connection.
+	 * The sender is this inactive transaction, and the parameter is null.
+	 * @since 4.4.0
+	 */
+	public function onRollback()
+	{
+		$this->raiseEvent('OnRollback', $this, null);
+	}
+
+	/**
+	 * Asserts that this transaction and its connection are both active.
+	 * @throws TDbException if the transaction or its connection is not active.
 	 */
 	protected function assertActive(): void
 	{
