@@ -322,6 +322,12 @@ class TInputValidatorTest extends TestCase
 		}
 	}
 
+	public function testNullableWithAValuePasses(): void
+	{
+		$result = $this->validator()->validate(['x' => 'a'], ['x' => 'nullable|string']);
+		$this->assertSame(['x' => 'a'], $result);
+	}
+
 	public function testValidateMinOnStringUsesMultibyteLength(): void
 	{
 		// "héllo" is 5 mb chars; min:5 must pass.

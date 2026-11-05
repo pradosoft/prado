@@ -10,6 +10,7 @@ use Prado\Web\Services\Rest\TRestException;
 use Prado\Web\Services\Rest\TRestResource;
 use Prado\Web\Services\Rest\TRestRoute;
 use Prado\Web\Services\Rest\TRestRoutePattern;
+use Prado\Web\Services\Rest\TRestService;
 
 // ── Fixtures ──────────────────────────────────────────────────────────────────
 
@@ -166,6 +167,19 @@ class TRestResourceTest extends \PHPUnit\Framework\TestCase
 	public function testGetServiceIsNullOutsideTheService(): void
 	{
 		$this->assertNull((new UsersFixtureResource())->getService());
+	}
+
+	public function testGetServiceIsTheRunningRestService(): void
+	{
+		$application = Prado::getApplication();
+		$saved = PradoUnit::getProp($application, '_service');
+		$service = new TRestService();
+		PradoUnit::setProp($application, '_service', $service);
+		try {
+			$this->assertSame($service, (new UsersFixtureResource())->getService());
+		} finally {
+			PradoUnit::setProp($application, '_service', $saved);
+		}
 	}
 
 	// ── Response state ────────────────────────────────────────────────────────

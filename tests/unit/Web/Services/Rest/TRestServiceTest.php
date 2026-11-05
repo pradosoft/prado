@@ -139,6 +139,19 @@ class TypedParamsResource extends TRestResource
 		return ['request' => $request::class, 'route' => $route->getName()];
 	}
 
+	#[TRestRoute('GET', 'loose/{x}')]
+	public function loose($x): array
+	{
+		return ['x' => $x];
+	}
+
+	#[TRestRoute('GET', 'headed')]
+	public function headed(): array
+	{
+		$this->addResponseHeader('X-Test', 'yes');
+		return ['ok' => true];
+	}
+
 	#[TRestRoute('GET', 'unbound')]
 	public function unbound(string $nope): array
 	{
@@ -298,6 +311,7 @@ class TRestServiceTest extends \PHPUnit\Framework\TestCase
 		$config = $this->service->xmlToArray($this->xml(
 			'<service BasePath="api">
 				<resource class="A" prefix="a" Tag="t"><authorization><allow roles="admin" verb="POST" /><deny users="?" /></authorization></resource>
+				<resource class="B"><authorization /></resource>
 				<route verbs="GET" pattern="x/{id}" class="A" method="m" parameters.id="\d+" query.mode="edit" />
 				<group prefix="g"><include file="F" /></group>
 			</service>'
@@ -307,6 +321,7 @@ class TRestServiceTest extends \PHPUnit\Framework\TestCase
 			['action' => 'allow', 'roles' => 'admin', 'verb' => 'POST'],
 			['action' => 'deny', 'users' => '?'],
 		]], $config['resources'][0]);
+		$this->assertSame(['class' => 'B'], $config['resources'][1]);
 		$this->assertSame(['verbs' => 'GET', 'pattern' => 'x/{id}', 'class' => 'A', 'method' => 'm', 'parameters' => ['id' => '\d+'], 'query' => ['mode' => 'edit']], $config['routes'][0]);
 		$this->assertSame(['prefix' => 'g', 'include' => ['F']], $config['groups'][0]);
 	}
@@ -389,7 +404,7 @@ class TRestServiceTest extends \PHPUnit\Framework\TestCase
 			}
 		}
 		$this->assertSame([null], $anyVerbs);
-		$this->assertCount(7, $this->service->getRoutes());
+		$this->assertCount(9, $this->service->getRoutes());
 	}
 
 	public function testGroupPrefixAndEnabled(): void
@@ -415,6 +430,42 @@ class TRestServiceTest extends \PHPUnit\Framework\TestCase
 		$this->assertTrue($this->service->isEnabled('debug'));
 		PradoUnit::setProp(Prado::getApplication(), '_mode', TApplicationMode::Normal);
 		$this->assertFalse($this->service->isEnabled('Debug'));
+	}
+
+	public function testDisabledResourceAndRouteAreSkipped(): void
+	{
+		$this->load([
+			'resources' => [['class' => UsersFixtureResource::class, 'enabled' => false]],
+			'routes' => [['verbs' => 'GET', 'pattern' => 'off', 'class' => UsersFixtureResource::class, 'method' => 'index', 'enabled' => 'false']],
+		]);
+		$this->assertSame([], $this->routeTable());
+	}
+
+	public function testRouteRequiresClass(): void
+	{
+		$this->expectException(TConfigurationException::class);
+		$this->load(['routes' => [['pattern' => 'x', 'method' => 'index']]]);
+	}
+
+	public function testRouteParametersAndQueryFromConfiguration(): void
+	{
+		$this->load(['routes' => [[
+			'verbs' => 'GET', 'pattern' => 'items/{id}', 'class' => UsersFixtureResource::class, 'method' => 'index', 'name' => 'items',
+			'parameters' => ['id' => '\d+'], 'query' => ['mode' => 'edit'],
+		]]]);
+		$route = $this->service->getRoutes()[0];
+		$this->assertSame('items', $route->getName());
+		$this->assertSame('\d+', $route->getParameters()->itemAt('id'));
+		$this->assertSame('edit', $route->getQuery()->itemAt('mode'));
+	}
+
+	public function testIncludePhpReturningNoArrayContributesNothing(): void
+	{
+		$application = Prado::getApplication();
+		$application->setConfigurationType(TApplication::CONFIG_TYPE_PHP);
+		PradoUnit::setProp($application, '_configFileExt', null);
+		$this->load(['include' => 'RestFixtures.rest-include-scalar']);
+		$this->assertSame([], $this->routeTable());
 	}
 
 	public function testIncludeXml(): void
@@ -561,6 +612,16 @@ class TRestServiceTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame('UsersFixtureResource.index', $this->service->getRoute()->getName());
 	}
 
+	public function testHeadDoesNotFallBackToAPostOnlyRoute(): void
+	{
+		$this->load(['routes' => [['verbs' => 'POST', 'pattern' => 'only', 'class' => UsersFixtureResource::class, 'method' => 'index']]]);
+		$_SERVER['REQUEST_METHOD'] = 'HEAD';
+		$this->setPath('/api/only');
+		$this->service->resolveRoute();
+		$this->assertNull($this->service->getRoute());
+		$this->assertSame(['POST'], $this->service->getAllowedVerbs());
+	}
+
 	public function testAllowedVerbsForARouteWithoutVerbs(): void
 	{
 		$this->load(['resources' => [['class' => TypedParamsResource::class]]]);
@@ -608,6 +669,7 @@ class TRestServiceTest extends \PHPUnit\Framework\TestCase
 		$this->assertSame($base . '/rest/api/users?page=2', $this->service->constructUrl('UsersFixtureResource.index', [], ['page' => 2]));
 		$request->setUrlFormat(THttpRequestUrlFormat::HiddenPath);
 		$this->assertSame(rtrim(str_replace('\\', '/', dirname($base)), '/') . '/rest/api/users/42', $this->service->constructUrl('UsersFixtureResource.show', ['id' => 42]));
+		$this->assertSame(rtrim(str_replace('\\', '/', dirname($base)), '/') . '/rest/api/users?page=2', $this->service->constructUrl('UsersFixtureResource.index', [], ['page' => 2]));
 	}
 
 	public function testRoutePathDropsTheServiceIdSegment(): void
@@ -669,6 +731,46 @@ class TRestServiceTest extends \PHPUnit\Framework\TestCase
 		$this->service->setID('rest');
 		$this->service->setBasePath('api');
 		$this->assertSame(404, $this->runWith('GET', '/api/export/csv/9', $config)->status);
+	}
+
+	public function testDispatchPassesAnUntypedParameterAsAString(): void
+	{
+		$response = $this->runWith('GET', '/api/loose/7', ['resources' => [['class' => TypedParamsResource::class]]]);
+		$this->assertSame(200, $response->status);
+		$this->assertSame(['x' => '7'], json_decode($response->body, true));
+	}
+
+	public function testDispatchCastsANonBooleanValueToFalse(): void
+	{
+		$response = $this->runWith('GET', '/api/typed/5/2.5/maybe', ['resources' => [['class' => TypedParamsResource::class]]]);
+		$this->assertSame(200, $response->status);
+		$this->assertFalse(json_decode($response->body, true)['b']);
+	}
+
+	public function testDispatchRejectsANonIntegerForAnIntBackedEnum(): void
+	{
+		$this->assertSame(404, $this->runWith('GET', '/api/export/csv/high', ['resources' => [['class' => TypedParamsResource::class]]])->status);
+	}
+
+	public function testRunSendsTheResourceHeaders(): void
+	{
+		$response = $this->runWith('GET', '/api/headed', ['resources' => [['class' => TypedParamsResource::class]]]);
+		$this->assertSame(200, $response->status);
+		$this->assertSame('X-Test: yes', $response->headerLine('X-Test'));
+	}
+
+	public function testRunWithAnUnregisteredResourceIs500(): void
+	{
+		$this->service->setExposeErrors(true);
+		$this->load($this->usersConfig());
+		$this->service->addRoute('ghost', 'Ghost', 'index', 'GET', [], [], 'ghost', [], []);
+		$response = new CapturingResponse();
+		$this->service->setInjectedResponse($response);
+		$this->setPath('/api/ghost');
+		$this->service->resolveRoute();
+		$this->service->run();
+		$this->assertSame(500, $response->status);
+		$this->assertStringContainsString('Ghost', json_decode($response->body, true)['detail']);
 	}
 
 	public function testDispatchRefusesAStaticMethod(): void

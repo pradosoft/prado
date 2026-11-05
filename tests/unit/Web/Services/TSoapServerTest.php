@@ -283,4 +283,24 @@ class TSoapServerTest extends \PHPUnit\Framework\TestCase
 		$faults = $this->faultsFor($exception, TApplicationMode::Normal);
 		$this->assertSame([[$exception->getMessage(), '']], $faults);
 	}
+
+	// ── guessMethodCallRequested() ──────────────────────────────────────────
+
+	public function testGuessMethodCallRequestedReadsTheRawBody()
+	{
+		$request = Prado::getApplication()->getRequest();
+		$saved = PradoUnit::getProp($request, '_rawBody');
+		PradoUnit::setProp($request, '_rawBody', '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="urn:' . self::PROVIDER . 'wsdl"><soap:Body><ns1:getQuote><symbol>PRADO</symbol></ns1:getQuote></soap:Body></soap:Envelope>');
+		try {
+			$server = new TTestSoapFaultServer();
+			PradoUnit::invoke($server, 'guessMethodCallRequested', self::PROVIDER);
+			$this->assertSame('getQuote', $server->getRequestedMethod());
+			PradoUnit::setProp($request, '_rawBody', '<soap:Envelope><soap:Body><other:call /></soap:Body></soap:Envelope>');
+			$server = new TTestSoapFaultServer();
+			PradoUnit::invoke($server, 'guessMethodCallRequested', self::PROVIDER);
+			$this->assertNull($server->getRequestedMethod());
+		} finally {
+			PradoUnit::setProp($request, '_rawBody', $saved);
+		}
+	}
 }

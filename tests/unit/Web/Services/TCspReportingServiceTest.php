@@ -15,7 +15,9 @@
 
 namespace Prado\Test\Unit\Web\Services;
 
+use Prado\Prado;
 use Prado\TApplication;
+use Prado\Test\Unit\PradoUnit;
 use Prado\Web\Services\TCspReportingService;
 use Prado\Web\Services\TCspViolationParameter;
 use Prado\TApplicationMode;
@@ -773,5 +775,17 @@ class TCspReportingServiceTest extends \PHPUnit\Framework\TestCase
 		self::assertCount(1, $log1, 'First handler must fire once');
 		self::assertCount(1, $log2, 'Second handler must fire once');
 		self::assertSame($log1[0], $log2[0], 'Both handlers must receive the same document URL');
+	}
+
+	public function testReadBodyReturnsTheRawRequestBody(): void
+	{
+		$request = Prado::getApplication()->getRequest();
+		$saved = PradoUnit::getProp($request, '_rawBody');
+		PradoUnit::setProp($request, '_rawBody', '{"csp-report":{"document-uri":"https://example.test/"}}');
+		try {
+			self::assertSame('{"csp-report":{"document-uri":"https://example.test/"}}', PradoUnit::invoke(new TCspReportingService(), 'readBody'));
+		} finally {
+			PradoUnit::setProp($request, '_rawBody', $saved);
+		}
 	}
 }

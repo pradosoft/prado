@@ -257,6 +257,15 @@ class TRestPaginationTest extends \PHPUnit\Framework\TestCase
 		$offset = $p->getOffset();
 		$this->assertIsInt($offset);
 		$this->assertLessThanOrEqual(PHP_INT_MAX, $offset);
+		$this->assertSame(intdiv(PHP_INT_MAX, 100), $p->getPage());
+	}
+
+	public function testHugePageWithPerPageOneIsCapped(): void
+	{
+		// intdiv(PHP_INT_MAX, 1) + 1 overflowed to a float before the cap.
+		$p = new TRestPagination(PHP_INT_MAX, 1, 100);
+		$this->assertSame(PHP_INT_MAX, $p->getPage());
+		$this->assertSame(PHP_INT_MAX - 1, $p->getOffset());
 	}
 
 	public function testFromRequestHugePageDoesNotCrash(): void
